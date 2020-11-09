@@ -1,0 +1,13 @@
+/* ThreeDGarden - Custom Admin Styles */
+
+/* WP SMARTER ADMIN MENUS */
+#adminmenumain { position: sticky; z-index: 9991; }
+#wpcontent { overflow: scroll; position: fixed; z-index: 9989; }
+#wp-toolbar { padding-left: 160px; }
+/*.wp-submenu { z-index: 9999 !important; }*/
+#adminmenu { margin-top: -32px !important; }
+
+/* THREE D GARDEN */
+.planting_plan_bed_plant_schedule { background-color: #333333; }
+.planting_plan_bed   { background-color: #330000; }
+.planting_plan_plant { background-color: #003300; }
