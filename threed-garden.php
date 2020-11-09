@@ -2,7 +2,7 @@
 /*
 Plugin Name: WP 3D Garden
 Description: Design + manage your garden plants, beds + allotments in 3D
-Version:     0.3.4
+Version:     0.3.5
 Text Domain: threedgarden
 Domain Path: /languages
 Author:      Marty McGee, Company Juice
@@ -901,6 +901,8 @@ class ThreeDGardenPlugin{
 
 		add_option( 'threedgarden_posts_per_page', 10 );
 		add_option( 'threedgarden_show_welcome_page', true );
+
+		flush_rewrite_rules();
 	}
 
 	// do stuff on deactivation
@@ -1258,20 +1260,19 @@ class ThreeDGardenPlugin{
 			*/
 			wp_enqueue_style( 
 				'threedgarden', 
-				plugin_dir_url( dirname( __FILE__ ) ) . 'public/css/threedgarden-login.css', 
+				plugin_dir_url( dirname( __FILE__ ) ) . 'threed-garden/public/css/threedgarden-login.css', 
 				array(), 
 				null, 
 				'screen' 
 			);
 			wp_enqueue_script( 
 				'threedgarden', 
-				plugin_dir_url( dirname( __FILE__ ) ) . 'public/js/threedgarden-login.js', 
+				plugin_dir_url( dirname( __FILE__ ) ) . 'threed-garden/public/js/threedgarden-login.js', 
 				array(), 
 				null, 
 				true 
 			);
 		}
-		
 	}
 	// custom login message
 	public function threedgarden_custom_login_message( $message ) {
@@ -1324,25 +1325,50 @@ class ThreeDGardenPlugin{
 		
 		wp_update_user( $args );
 	}
+	// custom admin styles
+	public function threedgarden_custom_admin_styles() {
 
-
-	/**
-	 * Sticky Admin Menu Main
-	 */
-	public function threedgarden_stickyadminmenu() {
-		echo '<style>' .
-				// WP SMARTER ADMIN MENUS
-				'#adminmenumain { position: sticky; z-index: 9991; } ' .
-				'#wpcontent { overflow: scroll; position: fixed; z-index: 9989; } ' .
-				'#wp-toolbar { padding-left: 160px; } ' .
-				//'.wp-submenu { z-index: 9999 !important; } ' .
-				'#adminmenu { margin-top: -32px !important; } ' .
-				// THREE D GARDEN
-				'.planting_plan_bed_plant_schedule { background-color: #333333; } ' .
-				'.planting_plan_bed   { background-color: #330000; } ' .
-				'.planting_plan_plant { background-color: #003300; } ' .
-			 '</style>';
+		// $styles = false;
+		// $options = get_option( 'threedgarden_options', $this->threedgarden_options_default() );
+		
+		// if ( isset( $options['custom_style'] ) && ! empty( $options['custom_style'] ) ) {
+		// 	$styles = sanitize_text_field( $options['custom_style'] );
+		// }
+		
+		// if ( 'enable' === $styles ) {
+			/*
+			wp_enqueue_style( 
+				string           $handle, 
+				string           $src = '', 
+				array            $deps = array(), 
+				string|bool|null $ver = false, 
+				string           $media = 'all' 
+			)
+			wp_enqueue_script( 
+				string           $handle, 
+				string           $src = '', 
+				array            $deps = array(), 
+				string|bool|null $ver = false, 
+				bool             $in_footer = false 
+			)
+			*/
+			wp_enqueue_style( 
+				'threedgarden', 
+				plugin_dir_url( dirname( __FILE__ ) ) . 'threed-garden/admin/css/threedgarden-admin.css', 
+				array(), 
+				null, 
+				'screen' 
+			);
+			wp_enqueue_script( 
+				'threedgarden', 
+				plugin_dir_url( dirname( __FILE__ ) ) . 'threed-garden/admin/js/threedgarden-admin.js', 
+				array(), 
+				null, 
+				true 
+			);
+		// }
 	}
+
 
 	/**
 	 * run plugin init
@@ -1381,9 +1407,8 @@ class ThreeDGardenPlugin{
 		add_action( 'wp_before_admin_bar_render', array($this, 'threedgarden_custom_admin_toolbar'), 999 );
 		add_action( 'user_register', array($this, 'threedgarden_custom_admin_scheme') );
 
-		add_action( 'admin_head', array($this, 'threedgarden_stickyadminmenu') );
+		add_action( 'admin_enqueue_scripts', array($this, 'threedgarden_custom_admin_styles') );
 	}
-
 
 }
 
