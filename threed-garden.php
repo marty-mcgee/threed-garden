@@ -2,12 +2,13 @@
 /*
 Plugin Name: WP 3D Garden
 Description: Design + manage your garden plants, beds + allotments in 3D
-Version:     0.3.3
+Version:     0.3.4
+Text Domain: threedgarden
+Domain Path: /languages
 Author:      Marty McGee, Company Juice
 Author URI:  https://companyjuice.com/
 License:     GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Text Domain: threedgarden
 */
 
 if ( ! defined('ABSPATH') ){
@@ -1255,8 +1256,20 @@ class ThreeDGardenPlugin{
 				bool             $in_footer = false 
 			)
 			*/
-			wp_enqueue_style( 'threedgarden', plugin_dir_url( dirname( __FILE__ ) ) . 'public/css/threedgarden-login.css', array(), null, 'screen' );
-			wp_enqueue_script( 'threedgarden', plugin_dir_url( dirname( __FILE__ ) ) . 'public/js/threedgarden-login.js', array(), null, true );
+			wp_enqueue_style( 
+				'threedgarden', 
+				plugin_dir_url( dirname( __FILE__ ) ) . 'public/css/threedgarden-login.css', 
+				array(), 
+				null, 
+				'screen' 
+			);
+			wp_enqueue_script( 
+				'threedgarden', 
+				plugin_dir_url( dirname( __FILE__ ) ) . 'public/js/threedgarden-login.js', 
+				array(), 
+				null, 
+				true 
+			);
 		}
 		
 	}
