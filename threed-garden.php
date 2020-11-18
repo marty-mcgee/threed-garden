@@ -23,6 +23,63 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+/**
+ * Currently plugin version.
+ * Start at version 1.0.0 and use SemVer - https://semver.org
+ * Rename this for your plugin and update it as you release new versions.
+ */
+define( 'THREED_GARDEN_VERSION', '1.3.6' );
+
+/**
+ * The code that runs during plugin activation.
+ * This action is documented in includes/class-threed-garden-activator.php
+ */
+function activate_threed_garden() {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-threed-garden-activator.php';
+	ThreeD_Garden_Activator::activate();
+}
+
+/**
+ * The code that runs during plugin deactivation.
+ * This action is documented in includes/class-threed-garden-deactivator.php
+ */
+function deactivate_threed_garden() {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-threed-garden-deactivator.php';
+	ThreeD_Garden_Deactivator::deactivate();
+}
+
+register_activation_hook( __FILE__, 'activate_threed_garden' );
+register_deactivation_hook( __FILE__, 'deactivate_threed_garden' );
+
+/**
+ * The core plugin class that is used to define internationalization,
+ * admin-specific hooks, and public-facing site hooks.
+ */
+require plugin_dir_path( __FILE__ ) . 'includes/class-threed-garden.php';
+
+/**
+ * Begins execution of the plugin.
+ *
+ * Since everything within the plugin is registered via hooks,
+ * then kicking off the plugin from this point in the file does
+ * not affect the page life cycle.
+ *
+ * @since    1.0.0
+ */
+function run_threed_garden() {
+
+	$plugin = new ThreeD_Garden();
+	$plugin->run();
+
+}
+run_threed_garden();
+
+
+/**
+ * TESTING
+ * **********************************************************************************************
+ */
+
 class ThreeDGardenPlugin{
   
 	private static $instance;
@@ -37,13 +94,6 @@ class ThreeDGardenPlugin{
 		return self::$instance;
 	}
 	
-	
-
-	
-
-	
-
-
 	
 
 	// register plugin settings
@@ -146,6 +196,21 @@ class ThreeDGardenPlugin{
 			'threedgarden',
 			'threedgarden_section_admin',
 			[ 'id' => 'custom_scheme', 'label' => 'Default color scheme for new users' ]
+		);
+
+	}
+
+	// default plugin options
+	public function threedgarden_options_default() {
+
+		return array(
+			'custom_url'     => 'https://garden.university/',
+			'custom_title'   => 'Powered by Company Juice',
+			'custom_style'   => 'disable',
+			'custom_message' => '<p class="custom-message">My custom message</p>',
+			'custom_footer'  => 'Special message for users',
+			'custom_toolbar' => false,
+			'custom_scheme'  => 'default',
 		);
 
 	}
@@ -320,20 +385,7 @@ class ThreeDGardenPlugin{
 
 
 
-	// default plugin options
-	public function threedgarden_options_default() {
-
-		return array(
-			'custom_url'     => 'https://garden.university/',
-			'custom_title'   => 'Powered by Company Juice',
-			'custom_style'   => 'disable',
-			'custom_message' => '<p class="custom-message">My custom message</p>',
-			'custom_footer'  => 'Special message for users',
-			'custom_toolbar' => false,
-			'custom_scheme'  => 'default',
-		);
-
-	}
+	
 
 
 
@@ -451,49 +503,7 @@ class ThreeDGardenPlugin{
 		
 		wp_update_user( $args );
 	}
-	// custom admin styles
-	public function threedgarden_custom_admin_styles() {
 
-		// $styles = false;
-		// $options = get_option( 'threedgarden_options', $this->threedgarden_options_default() );
-		
-		// if ( isset( $options['custom_style'] ) && ! empty( $options['custom_style'] ) ) {
-		// 	$styles = sanitize_text_field( $options['custom_style'] );
-		// }
-		
-		// if ( 'enable' === $styles ) {
-			/*
-			wp_enqueue_style( 
-				string           $handle, 
-				string           $src = '', 
-				array            $deps = array(), 
-				string|bool|null $ver = false, 
-				string           $media = 'all' 
-			)
-			wp_enqueue_script( 
-				string           $handle, 
-				string           $src = '', 
-				array            $deps = array(), 
-				string|bool|null $ver = false, 
-				bool             $in_footer = false 
-			)
-			*/
-			wp_enqueue_style( 
-				'threedgarden', 
-				plugin_dir_url( dirname( __FILE__ ) ) . 'threed-garden/admin/css/threedgarden-admin.css', 
-				array(), 
-				null, 
-				'screen' 
-			);
-			wp_enqueue_script( 
-				'threedgarden', 
-				plugin_dir_url( dirname( __FILE__ ) ) . 'threed-garden/admin/js/threedgarden-admin.js', 
-				array(), 
-				null, 
-				true 
-			);
-		// }
-	}
 
 
 
@@ -522,9 +532,6 @@ class ThreeDGardenPlugin{
 		add_filter( 'admin_footer_text', array($this, 'threedgarden_custom_admin_footer') );
 		add_action( 'wp_before_admin_bar_render', array($this, 'threedgarden_custom_admin_toolbar'), 999 );
 		add_action( 'user_register', array($this, 'threedgarden_custom_admin_scheme') );
-
-		//add_action( 'login_enqueue_scripts', array($this, 'threedgarden_custom_login_styles') );
-		//add_action( 'admin_enqueue_scripts', array($this, 'threedgarden_custom_admin_styles') );
 	}
 
 }
@@ -535,67 +542,7 @@ class ThreeDGardenPlugin{
 $ThreeDGardenPlugin = ThreeDGardenPlugin::threedgarden_get_instance();
 $ThreeDGardenPlugin->threedgarden_plugin_init();
 
-
-
-
-
-
-
-
 /**
+ * END FILE
  * **********************************************************************************************
  */
-
-
-
-/**
- * Currently plugin version.
- * Start at version 1.0.0 and use SemVer - https://semver.org
- * Rename this for your plugin and update it as you release new versions.
- */
-define( 'THREED_GARDEN_VERSION', '1.3.6' );
-
-/**
- * The code that runs during plugin activation.
- * This action is documented in includes/class-threed-garden-activator.php
- */
-function activate_threed_garden() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-threed-garden-activator.php';
-	ThreeD_Garden_Activator::activate();
-}
-
-/**
- * The code that runs during plugin deactivation.
- * This action is documented in includes/class-threed-garden-deactivator.php
- */
-function deactivate_threed_garden() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-threed-garden-deactivator.php';
-	ThreeD_Garden_Deactivator::deactivate();
-}
-
-register_activation_hook( __FILE__, 'activate_threed_garden' );
-register_deactivation_hook( __FILE__, 'deactivate_threed_garden' );
-
-/**
- * The core plugin class that is used to define internationalization,
- * admin-specific hooks, and public-facing site hooks.
- */
-require plugin_dir_path( __FILE__ ) . 'includes/class-threed-garden.php';
-
-/**
- * Begins execution of the plugin.
- *
- * Since everything within the plugin is registered via hooks,
- * then kicking off the plugin from this point in the file does
- * not affect the page life cycle.
- *
- * @since    1.0.0
- */
-function run_threed_garden() {
-
-	$plugin = new ThreeD_Garden();
-	$plugin->run();
-
-}
-run_threed_garden();
-
