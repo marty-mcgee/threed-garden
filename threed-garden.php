@@ -1,17 +1,17 @@
 <?php
 
 /**
- * @link              http://mojostud.io
+ * @link              https://garden.university
  * @since             1.0.0
  * @package           ThreeD_Garden
  *
  * @wordpress-plugin
  * Plugin Name:       WP 3D Garden
- * Plugin URI:        http://example.com/threed-garden-uri/
+ * Plugin URI:        https://garden.university/threed-garden-uri/
  * Description:       Design + manage your garden plants, beds + allotments in 3D
- * Version:           1.3.5
+ * Version:           1.3.6
  * Author:            Marty McGee
- * Author URI:        http://mojostud.io
+ * Author URI:        https://garden.university
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       threedgarden
@@ -25,28 +25,11 @@ if ( ! defined( 'WPINC' ) ) {
 
 class ThreeDGardenPlugin{
   
-	private $threedgarden_topmenu;
-	private $threedgarden_submenu1;
-	private $threedgarden_submenu2;
-	private $threedgarden_submenu3;
-	private $threedgarden_submenu4;
-	private $threedgarden_submenu5;
-	private $threedgarden_submenu6;
-	private $threedgarden_submenu7;
-	private $threedgarden_submenu8;
-	private $threedgarden_submenu9;
-	private $threedgarden_submenu10;
-	private $threedgarden_submenu11;
-	private $threedgarden_submenu12;
-	private $threedgarden_submenu13;
-	private $threedgarden_submenu14;
-	private $threedgarden_submenu15;
 	private static $instance;
 	 /*......*/
 
 	static function threedgarden_get_instance()
 	{
-		
 		if (!isset(self::$instance))
 		{
 			self::$instance = new self();
@@ -54,236 +37,7 @@ class ThreeDGardenPlugin{
 		return self::$instance;
 	}
 	
-	public function threedgarden_set_plugin_menu()
-	{
-		$this->threedgarden_topmenu = add_menu_page(
-			'3D Garden',
-			'3D Garden', 
-			'manage_options',
-			'threedgarden', 
-			array($this, 'RenderPage'), 
-			plugins_url('/threed-garden/admin/media/threedgarden-icon.png',__DIR__), //'dashicons-media-code',
-			31 //null
-			);
-		$this->threedgarden_submenu1 = add_submenu_page(
-			'threedgarden', 
-			'Plants', 
-			'Plants', 
-			'manage_options', 
-			'edit.php?post_type=plant',
-            '',
-            null
-		);
-		$this->threedgarden_submenu2 = add_submenu_page(
-			'threedgarden', 
-			'Plant Types', 
-			'Plant Types', 
-			'manage_options', 
-			'edit-tags.php?taxonomy=plant_type&post_type=plant',
-            '',
-            null
-		);
-		$this->threedgarden_submenu3 = add_submenu_page(
-			'threedgarden', 
-			'Plant Seasons', 
-			'Plant Seasons', 
-			'manage_options', 
-			'edit-tags.php?taxonomy=plant_season&post_type=plant',
-            '',
-            null
-		);
-		$this->threedgarden_submenu5 = add_submenu_page(
-			'threedgarden', 
-			'Allotments', 
-			'Allotments', 
-			'manage_options', 
-			'edit.php?post_type=allotment',
-            '',
-            null
-		);
-		$this->threedgarden_submenu6 = add_submenu_page(
-			'threedgarden', 
-			'Allotment Types', 
-			'Allotment Types', 
-			'manage_options', 
-			'edit-tags.php?taxonomy=allotment_type&post_type=allotment',
-            '',
-            null
-		);
-		$this->threedgarden_submenu7 = add_submenu_page(
-			'threedgarden', 
-			'Allotment Seasons', 
-			'Allotment Seasons', 
-			'manage_options', 
-			'edit-tags.php?taxonomy=allotment_season&post_type=allotment',
-            '',
-            null
-		);
-		$this->threedgarden_submenu8 = add_submenu_page(
-			'threedgarden', 
-			'Beds', 
-			'Beds', 
-			'manage_options', 
-			'edit.php?post_type=bed',
-            '',
-            null
-		);
-		$this->threedgarden_submenu9 = add_submenu_page(
-			'threedgarden', 
-			'Bed Types', 
-			'Bed Types', 
-			'manage_options', 
-			'edit-tags.php?taxonomy=bed_type&post_type=bed',
-            '',
-            null
-		);
-		$this->threedgarden_submenu10 = add_submenu_page(
-			'threedgarden', 
-			'Bed Soils', 
-			'Bed Soils', 
-			'manage_options', 
-			'edit-tags.php?taxonomy=bed_soil&post_type=bed',
-            '',
-            null
-		);
-		$this->threedgarden_submenu11 = add_submenu_page(
-			'threedgarden', 
-			'Planting Plans', 
-			'Planting Plans', 
-			'manage_options', 
-			'edit.php?post_type=planting_plan',
-            '',
-            null
-		);
-		$this->threedgarden_submenu12 = add_submenu_page(
-			'threedgarden', 
-			'Planting Plan Types', 
-			'Planting Plan Types', 
-			'manage_options', 
-			'edit-tags.php?taxonomy=planting_plan_type&post_type=planting_plan',
-            '',
-            null
-		);
-		$this->threedgarden_submenu13 = add_submenu_page(
-			'threedgarden', 
-			'Planting Plan Soils', 
-			'Planting Plan Soils', 
-			'manage_options', 
-			'edit-tags.php?taxonomy=planting_plan_soil&post_type=planting_plan',
-            '',
-            null
-		);
-		$this->threedgarden_submenu14 = add_submenu_page(
-			'threedgarden', 
-			'Options', 
-			'Options', 
-			'manage_options', 
-			__FILE__.'/custom', 
-			array($this, 'RenderPageCustom'),
-			'',
-			null
-		);
-		$this->threedgarden_submenu15 = add_submenu_page(
-			'threedgarden', 
-			'About', 
-			'About', 
-			'manage_options', 
-			__FILE__.'/about', 
-			array($this, 'RenderPageAbout'),
-			'',
-			null
-		);
-								  
-	}
-
-	/**
-     * set current menu
-     */
-    public function threedgarden_set_current_menu( $parent_file )
-    {
-        global $submenu_file, $current_screen, $pagenow;
-        if ( $pagenow == 'edit-tags.php' ) {
-            if ( isset( $_GET['taxonomy'] ) ) {
-				if ( $_GET['taxonomy'] == 'plant_type' || 
-					 $_GET['taxonomy'] == 'plant_season' || 
-					 $_GET['taxonomy'] == 'allotment_type' || 
-					 $_GET['taxonomy'] == 'allotment_season' || 
-					 $_GET['taxonomy'] == 'bed_type' || 
-					 $_GET['taxonomy'] == 'bed_soil' || 
-					 $_GET['taxonomy'] == 'planting_plan_type' || 
-					 $_GET['taxonomy'] == 'planting_plan_soil') {
-                    $submenu_file = 'edit-tags.php?taxonomy=' . $_GET['taxonomy'] . '&post_type=' . $current_screen->post_type;
-                    $parent_file = 'threedgarden';
-                }
-            
-            }
-        }
-        if ( $pagenow == 'post-new.php' ) {
-            if ( isset( $_GET['post_type'] ) ) {
-				if ( $_GET['post_type'] == 'plant' || 
-					 $_GET['post_type'] == 'allotment' || 
-					 $_GET['post_type'] == 'bed' || 
-					 $_GET['post_type'] == 'planting_plan' ) {
-                    $submenu_file = 'edit.php?post_type=' . $current_screen->post_type;
-                    $parent_file = 'threedgarden';
-                }
-            
-            }
-        }
-        return $parent_file;
-    }
 	
-	public function RenderPage(){
-		// check if user is allowed access
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-	?>
-		<div class="wrap">
-			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			<h2>Welcome to your WP 3D Garden</h2>
-		</div>
-	<?php
-	}
-	public function RenderPageCustom(){
-		// check if user is allowed access
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-		?>
-		<div class="wrap">
-			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			<h2>Custom Options</h2>
-			<form action="options.php" method="post">
-				<?php
-				// output security fields
-				settings_fields( 'threedgarden_options' );
-				
-				// output setting sections
-				do_settings_sections( 'threedgarden' );
-				
-				// submit button
-				submit_button();
-				?>
-			</form>
-		</div>
-		<?php
-	}
-	public function RenderPageAbout(){
-		// check if user is allowed access
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-		?>
-		<div class='wrap'>
-			<h2>ABOUT PAGE</h2>
-		</div>
-		<?php
-	}
-
-
-
-
 
 	/**
 	 * Register a post type for "plants"
@@ -902,31 +656,7 @@ class ThreeDGardenPlugin{
 	}
 
 
-
-	// do stuff on activation
-	public function threedgarden_on_activation() {
-		if ( ! current_user_can( 'activate_plugins' ) ) return;
-
-		add_option( 'threedgarden_posts_per_page', 10 );
-		add_option( 'threedgarden_show_welcome_page', true );
-
-		flush_rewrite_rules();
-	}
-
-	// do stuff on deactivation
-	public function threedgarden_on_deactivation() {
-		if ( ! current_user_can( 'activate_plugins' ) ) return;
-
-		flush_rewrite_rules();
-	}
-
-	// do stuff on uninstall
-	public function threedgarden_on_uninstall() {
-		if ( ! current_user_can( 'activate_plugins' ) ) return;
-
-		delete_option( 'threedgarden_posts_per_page', 10 );
-		delete_option( 'threedgarden_show_welcome_page', true );
-	}
+	
 
 	// register plugin settings
 	public function threedgarden_register_settings() {
@@ -1206,7 +936,7 @@ class ThreeDGardenPlugin{
 	public function threedgarden_options_default() {
 
 		return array(
-			'custom_url'     => 'http://mojostud.io/',
+			'custom_url'     => 'https://garden.university/',
 			'custom_title'   => 'Powered by Company Juice',
 			'custom_style'   => 'disable',
 			'custom_message' => '<p class="custom-message">My custom message</p>',
@@ -1378,14 +1108,21 @@ class ThreeDGardenPlugin{
 	}
 
 
+
+	// do stuff on uninstall
+	public function threedgarden_on_uninstall() {
+		if ( ! current_user_can( 'activate_plugins' ) ) return;
+
+		delete_option( 'threedgarden_posts_per_page', 10 );
+		delete_option( 'threedgarden_show_welcome_page', true );
+	}
+
 	/**
 	 * run plugin init
 	 */
 	public function threedgarden_plugin_init()
 	{	
 		// if ( is_admin() ) {
-		register_activation_hook( __FILE__, array($this, 'threedgarden_on_activation') );
-		register_deactivation_hook( __FILE__, array($this, 'threedgarden_on_deactivation') );
 		register_uninstall_hook( __FILE__, array($this, 'threedgarden_on_uninstall') );
 		
 		add_action( 'init', array($this, 'threedgarden_plants_init') );
@@ -1401,21 +1138,19 @@ class ThreeDGardenPlugin{
 		add_filter( 'post_updated_messages', array($this, 'threedgarden_planting_plan_updated_messages') );
 		add_action( 'init', array($this, 'threedgarden_planting_plan_taxonomies'), 0 );
 
-		add_action( 'admin_menu', array($this, 'threedgarden_set_plugin_menu') );
-		add_filter( 'parent_file', array($this, 'threedgarden_set_current_menu') );
 
 		add_action( 'admin_init', array($this, 'threedgarden_register_settings') );
 		// }
 		
 		add_filter( 'login_headerurl', array($this, 'threedgarden_custom_login_url') );
 		add_filter( 'login_headertitle', array($this, 'threedgarden_custom_login_title') );
-		//add_action( 'login_enqueue_scripts', array($this, 'threedgarden_custom_login_styles') );
 		add_filter( 'login_message', array($this, 'threedgarden_custom_login_message') );
 		add_filter( 'admin_footer_text', array($this, 'threedgarden_custom_admin_footer') );
 		add_action( 'wp_before_admin_bar_render', array($this, 'threedgarden_custom_admin_toolbar'), 999 );
 		add_action( 'user_register', array($this, 'threedgarden_custom_admin_scheme') );
 
-		add_action( 'admin_enqueue_scripts', array($this, 'threedgarden_custom_admin_styles') );
+		//add_action( 'login_enqueue_scripts', array($this, 'threedgarden_custom_login_styles') );
+		//add_action( 'admin_enqueue_scripts', array($this, 'threedgarden_custom_admin_styles') );
 	}
 
 }
@@ -1427,44 +1162,7 @@ $ThreeDGardenPlugin = ThreeDGardenPlugin::threedgarden_get_instance();
 $ThreeDGardenPlugin->threedgarden_plugin_init();
 
 
-/**
- * **********************************************************************************************
- */
 
-// display all custom field for each post
-function myplugin_display_all_custom_fields( $content ) {
-
-	/*
-		get_post_meta(
-			int $post_id,
-			string $key = '',
-			bool $single = false
-		)
-	*/
-	
-	$append_output = '<h3>Custom Fields</h3>';
-
-	$all_custom_fields = get_post_custom();
-
-	foreach ( $all_custom_fields as $key => $array ) {
-		foreach ( $array as $value ) {
-			if ( '_' !== substr( $key, 0, 1 ) ) {
-				$append_output .= '<div>' . $key . ' => ' . $value . '</div>';
-			}
-		}
-	}
-
-	// $current_mood = get_post_meta( get_the_ID(), 'mood', true );
-
-	// $append_output  = '<div>';
-	// $append_output .= esc_html__( 'Feeling ' );
-	// $append_output .= sanitize_text_field( $current_mood );
-	// $append_output .= '</div>';
-
-	return $content . $append_output;
-
-}
-add_filter( 'the_content', 'myplugin_display_all_custom_fields' );
 
 
 
@@ -1481,7 +1179,7 @@ add_filter( 'the_content', 'myplugin_display_all_custom_fields' );
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'THREED_GARDEN_VERSION', '1.3.5' );
+define( 'THREED_GARDEN_VERSION', '1.3.6' );
 
 /**
  * The code that runs during plugin activation.

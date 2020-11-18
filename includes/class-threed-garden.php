@@ -6,7 +6,7 @@
  * A class definition that includes attributes and functions used across both the
  * public-facing side of the site and the admin area.
  *
- * @link       http://example.com
+ * @link       https://garden.university
  * @since      1.0.0
  *
  * @package    ThreeD_Garden
@@ -25,7 +25,7 @@
  * @since      1.0.0
  * @package    ThreeD_Garden
  * @subpackage ThreeD_Garden/includes
- * @author     Your Name <email@example.com>
+ * @author     Marty McGee <support@companyjuice.com>
  */
 class ThreeD_Garden {
 
@@ -154,8 +154,15 @@ class ThreeD_Garden {
 
 		$plugin_admin = new ThreeD_Garden_Admin( $this->get_plugin_name(), $this->get_version() );
 
+		// css + js
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+
+		// admin menu
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'construct_plugin_menu' );
+		$this->loader->add_filter( 'parent_file', $plugin_admin, 'set_current_menu' );
+
+
 
 	}
 
@@ -170,8 +177,12 @@ class ThreeD_Garden {
 
 		$plugin_public = new ThreeD_Garden_Public( $this->get_plugin_name(), $this->get_version() );
 
+		// css + js
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+
+		// custom fields testing
+		$this->loader->add_filter( 'the_content', $plugin_public , 'display_all_custom_fields' );
 
 	}
 
