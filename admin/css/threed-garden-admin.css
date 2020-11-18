@@ -1,4 +1,9 @@
-/* ThreeDGarden - Custom Admin Styles */
+/**
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
+
+ /* ThreeDGarden - Custom Admin Styles */
 
 /* WP SMARTER ADMIN MENUS */
 #adminmenumain { position: sticky; z-index: 9991; }
