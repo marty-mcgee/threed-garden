@@ -176,7 +176,11 @@ class ThreeD_Garden {
 		$this->loader->add_action( 'init', $plugin_admin, 'planting_plan_taxonomies' );
 		$this->loader->add_filter( 'post_updated_messages', $plugin_admin, 'planting_plan_updated_messages' );
 
-
+		// testing rest api
+		//$this->loader->add_action( 'rest_api_init', $plugin_admin, 'slug_add_post_data' );
+		//$this->loader->add_action( 'rest_api_init', $plugin_admin, 'create_ACF_meta_in_REST' );
+		//$this->loader->add_filter( 'rest_prepare_post', $plugin_admin, 'acf_to_rest_api' );
+		
 	}
 
 	/**
@@ -195,8 +199,7 @@ class ThreeD_Garden {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 		// custom fields testing
-		$this->loader->add_filter( 'the_content', $plugin_public , 'display_all_custom_fields' );
-
+		$this->loader->add_filter( 'the_content', $plugin_public, 'display_all_custom_fields' );
 	}
 
 	/**

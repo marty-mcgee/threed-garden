@@ -319,6 +319,7 @@ class ThreeD_Garden_Admin {
 		}
 		?>
 		<div class="wrap">
+			<?php settings_errors(); ?>
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 			<h2>Custom Options</h2>
 			<form action="options.php" method="post">
@@ -981,8 +982,100 @@ class ThreeD_Garden_Admin {
 	}
 	
 	/**
+	 * TESTING
 	 * **********************************************************************************************
 	 */
 
+	/** 
+	 * register acf fields to Wordpress API
+	 * https://support.advancedcustomfields.com/forums/topic/json-rest-api-and-acf/
+	 */
+	public function acf_to_rest_api($response, $post, $request) {
+		if (!function_exists('get_fields')) return $response;
+
+		if (isset($post)) {
+			$acf = get_fields($post->id);
+			$response->data['acf'] = $acf;
+		}
+		return $response;
+	}
+
+	/**
+	 * TESTING
+	 * **********************************************************************************************
+	 */
+
+	public function create_ACF_meta_in_REST() {
+		$postypes_to_exclude = [];//['acf-field-group','acf-field'];
+		$extra_postypes_to_include = ["page"];
+		$post_types = array_diff(get_post_types(["_builtin" => false], 'names'), $postypes_to_exclude);
+	
+		array_push($post_types, $extra_postypes_to_include);
+	
+		foreach ($post_types as $post_type) {
+			register_rest_field( 
+				$post_type, 
+				'ACF', 
+				[
+					'get_callback'    => 'expose_ACF_fields',
+					'schema'          => null,
+		   		]
+		 );
+		}
+	
+	}
+	
+	public function expose_ACF_fields( $object ) {
+		$ID = $object['id'];
+		return get_fields($ID);
+	}
+
+	/**
+	 * TESTING
+	 * **********************************************************************************************
+	 */
+
+	public function slug_add_post_data() {
+		register_rest_field(
+			'bed',
+			'bed_width',
+			array(
+				'get_callback' => 'slug_get_field',
+				'update_callback' => 'slug_update_field',
+				'schema' => array(
+									'description' => 'My special field',
+									'type' => 'string',
+									'context' => array('view', 'edit')
+								)
+			)
+		);
+	}
+	 
+	public function slug_get_field($post, $field_name, $request) {
+		//return get_post_meta($post->id, $field_name);
+		$all_custom_fields = get_post_custom();
+		$append_output = '<h3>Custom Fields</h3>';
+		foreach ( $all_custom_fields as $key => $array ) {
+			foreach ( $array as $value ) {
+				if ( '_' !== substr( $key, 0, 1 ) ) {
+					$append_output .= '<div>' . $key . ' => ' . $value . '</div>';
+				}
+			}
+		}
+		return $append_output;
+	}
+	 
+	public function slug_update_field($value, $post, $field_name) {
+		if (!$value || !is_string($value)) {
+			return;
+		}
+
+		return update_post_meta($post->ID, $field_name, strip_tags($value));
+	}
+
+	/**
+	 * TESTING
+	 * **********************************************************************************************
+	 */
 
 } // end class
