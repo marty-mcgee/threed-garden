@@ -3,7 +3,7 @@
 /**
  * Fired during plugin deactivation
  *
- * @link       http://example.com
+ * @link       https://garden.university
  * @since      1.0.0
  *
  * @package    ThreeD_Garden
@@ -18,7 +18,7 @@
  * @since      1.0.0
  * @package    ThreeD_Garden
  * @subpackage ThreeD_Garden/includes
- * @author     Your Name <email@example.com>
+ * @author     Marty McGee <support@companyjuice.com>
  */
 class ThreeD_Garden_Deactivator {
 
@@ -30,7 +30,9 @@ class ThreeD_Garden_Deactivator {
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {
+		if ( ! current_user_can( 'activate_plugins' ) ) return;
 
+		flush_rewrite_rules();
 	}
 
 }

@@ -3,7 +3,7 @@
 /**
  * Fired during plugin activation
  *
- * @link       http://example.com
+ * @link       https://garden.university
  * @since      1.0.0
  *
  * @package    ThreeD_Garden
@@ -18,7 +18,7 @@
  * @since      1.0.0
  * @package    ThreeD_Garden
  * @subpackage ThreeD_Garden/includes
- * @author     Your Name <email@example.com>
+ * @author     Marty McGee <support@companyjuice.com>
  */
 class ThreeD_Garden_Activator {
 
@@ -30,7 +30,12 @@ class ThreeD_Garden_Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate() {
+		if ( ! current_user_can( 'activate_plugins' ) ) return;
 
+		add_option( 'threedgarden_posts_per_page', 10 );
+		add_option( 'threedgarden_show_welcome_page', true );
+
+		flush_rewrite_rules();
 	}
 
 }

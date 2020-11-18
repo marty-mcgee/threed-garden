@@ -6,7 +6,7 @@
  * Loads and defines the internationalization files for this plugin
  * so that it is ready for translation.
  *
- * @link       http://example.com
+ * @link       https://garden.university
  * @since      1.0.0
  *
  * @package    ThreeD_Garden
@@ -22,7 +22,7 @@
  * @since      1.0.0
  * @package    ThreeD_Garden
  * @subpackage ThreeD_Garden/includes
- * @author     Your Name <email@example.com>
+ * @author     Marty McGee <support@companyjuice.com>
  */
 class ThreeD_Garden_i18n {
 

@@ -3,7 +3,7 @@
 /**
  * Register all actions and filters for the plugin
  *
- * @link       http://example.com
+ * @link       https://garden.university
  * @since      1.0.0
  *
  * @package    ThreeD_Garden
@@ -19,7 +19,7 @@
  *
  * @package    ThreeD_Garden
  * @subpackage ThreeD_Garden/includes
- * @author     Your Name <email@example.com>
+ * @author     Marty McGee <support@companyjuice.com>
  */
 class ThreeD_Garden_Loader {
 
