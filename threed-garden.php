@@ -1,18 +1,26 @@
 <?php
-/*
-Plugin Name: WP 3D Garden
-Description: Design + manage your garden plants, beds + allotments in 3D
-Version:     0.3.5
-Text Domain: threedgarden
-Domain Path: /languages
-Author:      Marty McGee, Company Juice
-Author URI:  https://companyjuice.com/
-License:     GPL2
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
-*/
 
-if ( ! defined('ABSPATH') ){
-	exit;
+/**
+ * @link              http://mojostud.io
+ * @since             1.0.0
+ * @package           ThreeD_Garden
+ *
+ * @wordpress-plugin
+ * Plugin Name:       WP 3D Garden
+ * Plugin URI:        http://example.com/threed-garden-uri/
+ * Description:       Design + manage your garden plants, beds + allotments in 3D
+ * Version:           1.3.5
+ * Author:            Marty McGee
+ * Author URI:        http://mojostud.io
+ * License:           GPL-2.0+
+ * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
+ * Text Domain:       threedgarden
+ * Domain Path:       /languages
+ */
+
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+	die;
 }
 
 class ThreeDGardenPlugin{
@@ -1260,14 +1268,14 @@ class ThreeDGardenPlugin{
 			*/
 			wp_enqueue_style( 
 				'threedgarden', 
-				plugin_dir_url( dirname( __FILE__ ) ) . 'threed-garden/public/css/threedgarden-login.css', 
+				plugin_dir_url( dirname( __FILE__ ) ) . 'threed-garden/public/css/threed-garden-public-custom.css', 
 				array(), 
 				null, 
 				'screen' 
 			);
 			wp_enqueue_script( 
 				'threedgarden', 
-				plugin_dir_url( dirname( __FILE__ ) ) . 'threed-garden/public/js/threedgarden-login.js', 
+				plugin_dir_url( dirname( __FILE__ ) ) . 'threed-garden/public/js/threed-garden-public-custom.js', 
 				array(), 
 				null, 
 				true 
@@ -1401,7 +1409,7 @@ class ThreeDGardenPlugin{
 		
 		add_filter( 'login_headerurl', array($this, 'threedgarden_custom_login_url') );
 		add_filter( 'login_headertitle', array($this, 'threedgarden_custom_login_title') );
-		add_action( 'login_enqueue_scripts', array($this, 'threedgarden_custom_login_styles') );
+		//add_action( 'login_enqueue_scripts', array($this, 'threedgarden_custom_login_styles') );
 		add_filter( 'login_message', array($this, 'threedgarden_custom_login_message') );
 		add_filter( 'admin_footer_text', array($this, 'threedgarden_custom_admin_footer') );
 		add_action( 'wp_before_admin_bar_render', array($this, 'threedgarden_custom_admin_toolbar'), 999 );
@@ -1417,3 +1425,105 @@ class ThreeDGardenPlugin{
  */
 $ThreeDGardenPlugin = ThreeDGardenPlugin::threedgarden_get_instance();
 $ThreeDGardenPlugin->threedgarden_plugin_init();
+
+
+/**
+ * **********************************************************************************************
+ */
+
+// display all custom field for each post
+function myplugin_display_all_custom_fields( $content ) {
+
+	/*
+		get_post_meta(
+			int $post_id,
+			string $key = '',
+			bool $single = false
+		)
+	*/
+	
+	$append_output = '<h3>Custom Fields</h3>';
+
+	$all_custom_fields = get_post_custom();
+
+	foreach ( $all_custom_fields as $key => $array ) {
+		foreach ( $array as $value ) {
+			if ( '_' !== substr( $key, 0, 1 ) ) {
+				$append_output .= '<div>' . $key . ' => ' . $value . '</div>';
+			}
+		}
+	}
+
+	// $current_mood = get_post_meta( get_the_ID(), 'mood', true );
+
+	// $append_output  = '<div>';
+	// $append_output .= esc_html__( 'Feeling ' );
+	// $append_output .= sanitize_text_field( $current_mood );
+	// $append_output .= '</div>';
+
+	return $content . $append_output;
+
+}
+add_filter( 'the_content', 'myplugin_display_all_custom_fields' );
+
+
+
+
+
+/**
+ * **********************************************************************************************
+ */
+
+
+
+/**
+ * Currently plugin version.
+ * Start at version 1.0.0 and use SemVer - https://semver.org
+ * Rename this for your plugin and update it as you release new versions.
+ */
+define( 'THREED_GARDEN_VERSION', '1.3.5' );
+
+/**
+ * The code that runs during plugin activation.
+ * This action is documented in includes/class-threed-garden-activator.php
+ */
+function activate_threed_garden() {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-threed-garden-activator.php';
+	ThreeD_Garden_Activator::activate();
+}
+
+/**
+ * The code that runs during plugin deactivation.
+ * This action is documented in includes/class-threed-garden-deactivator.php
+ */
+function deactivate_threed_garden() {
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-threed-garden-deactivator.php';
+	ThreeD_Garden_Deactivator::deactivate();
+}
+
+register_activation_hook( __FILE__, 'activate_threed_garden' );
+register_deactivation_hook( __FILE__, 'deactivate_threed_garden' );
+
+/**
+ * The core plugin class that is used to define internationalization,
+ * admin-specific hooks, and public-facing site hooks.
+ */
+require plugin_dir_path( __FILE__ ) . 'includes/class-threed-garden.php';
+
+/**
+ * Begins execution of the plugin.
+ *
+ * Since everything within the plugin is registered via hooks,
+ * then kicking off the plugin from this point in the file does
+ * not affect the page life cycle.
+ *
+ * @since    1.0.0
+ */
+function run_threed_garden() {
+
+	$plugin = new ThreeD_Garden();
+	$plugin->run();
+
+}
+run_threed_garden();
+
