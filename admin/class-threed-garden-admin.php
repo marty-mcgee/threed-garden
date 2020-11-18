@@ -55,6 +55,10 @@ class ThreeD_Garden_Admin {
 	}
 
 	/**
+	 * **********************************************************************************************
+	 */
+
+	/**
 	 * Register the stylesheets for the admin area.
 	 *
 	 * @since    1.0.0
@@ -99,6 +103,10 @@ class ThreeD_Garden_Admin {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin.js', array( 'jquery' ), $this->version, false );
 
 	}
+
+	/**
+	 * **********************************************************************************************
+	 */
 
 	/**
 	 * construct the left menu for the admin area.
@@ -282,6 +290,10 @@ class ThreeD_Garden_Admin {
     }
 
 	/**
+	 * **********************************************************************************************
+	 */
+
+	/**
      * output welcome page
      */
 	public function RenderPage(){
@@ -340,5 +352,637 @@ class ThreeD_Garden_Admin {
 		<?php
 	}
 
+	/**
+	 * **********************************************************************************************
+	 */
 
-}
+	/**
+	 * Register a post type for "plants"
+	 *
+	 * @link http://codex.wordpress.org/Function_Reference/register_post_type
+	 */
+	public function plants_init() {
+		$labels = array(
+			'name'               => _x( 'Plants', 'post type general name', 'threedgarden' ),
+			'singular_name'      => _x( 'Plant', 'post type singular name', 'threedgarden' ),
+			'menu_name'          => _x( 'Plants', 'admin menu', 'threedgarden' ),
+			'name_admin_bar'     => _x( 'Plant', 'add new on admin bar', 'threedgarden' ),
+			'add_new'            => _x( 'Add New', 'plant', 'threedgarden' ),
+			'add_new_item'       => __( 'Add New Plant', 'threedgarden' ),
+			'new_item'           => __( 'New Plant', 'threedgarden' ),
+			'edit_item'          => __( 'Edit Plant', 'threedgarden' ),
+			'view_item'          => __( 'View Plant', 'threedgarden' ),
+			'all_items'          => __( 'All Plants', 'threedgarden' ),
+			'search_items'       => __( 'Search Plants', 'threedgarden' ),
+			'parent_item_colon'  => __( 'Parent Plants:', 'threedgarden' ),
+			'not_found'          => __( 'No plants found.', 'threedgarden' ),
+			'not_found_in_trash' => __( 'No plants found in Trash.', 'threedgarden' )
+		);
+
+		$args = array(
+			'labels'             => $labels,
+			'description'        => __( 'Post type for plant notes and information.', 'threedgarden' ),
+			'public'             => true,
+			'publicly_queryable' => true,
+			'show_ui'            => true,
+			'show_in_menu'       => false,
+			'query_var'          => true,
+			'rewrite'            => array( 'slug' => 'plant' ),
+			'capability_type'    => 'post',
+			'show_in_rest'       => true,
+			'has_archive'        => true,
+			'hierarchical'       => false,
+			'menu_position'      => null,
+			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
+			//'taxonomies'         => array('category', 'post_tag' )
+		);
+
+		register_post_type( 'plant', $args );
+	}
+
+	/**
+	 * Create two taxonomies, Type and Season, for the post type "Plant"
+	 */
+	public function plant_taxonomies() {
+		
+		// Add Plant Type taxonomy, make it hierarchical (like categories)
+		$labels = array(
+			'name'              => _x( 'Plant Types', 'taxonomy general name' ),
+			'singular_name'     => _x( 'Plant Type', 'taxonomy singular name' ),
+			'search_items'      => __( 'Search Plant Types' ),
+			'all_items'         => __( 'All Plant Types' ),
+			'parent_item'       => __( 'Parent Plant Type' ),
+			'parent_item_colon' => __( 'Parent Plant Type:' ),
+			'edit_item'         => __( 'Edit Plant Type' ),
+			'update_item'       => __( 'Update Plant Type' ),
+			'add_new_item'      => __( 'Add New Plant Type' ),
+			'new_item_name'     => __( 'New Plant Type Name' ),
+			'menu_name'         => __( 'Plant Types' ),
+		);
+		$args = array(
+			'hierarchical'      => true,
+			'labels'            => $labels,
+			'show_ui'           => true,
+			'show_admin_column' => true,
+			'query_var'         => true,
+			'show_in_rest'      => true,
+			'rewrite'           => array( 'slug' => 'plant_type' ),
+		);
+		register_taxonomy( 'plant_type', array( 'plant' ), $args );
+
+		// Add Plant Season taxonomy, make it non-hierarchical (like tags)
+		$labels = array(
+			'name'                       => _x( 'Plant Seasons', 'taxonomy general name' ),
+			'singular_name'              => _x( 'Plant Season', 'taxonomy singular name' ),
+			'search_items'               => __( 'Search Plant Seasons' ),
+			'popular_items'              => __( 'Popular Plant Seasons' ),
+			'all_items'                  => __( 'All Plant Seasons' ),
+			'parent_item'                => null,
+			'parent_item_colon'          => null,
+			'edit_item'                  => __( 'Edit Plant Season' ),
+			'update_item'                => __( 'Update Plant Season' ),
+			'add_new_item'               => __( 'Add New Plant Season' ),
+			'new_item_name'              => __( 'New Plant Season Name' ),
+			'separate_items_with_commas' => __( 'Separate plant seasons with commas' ),
+			'add_or_remove_items'        => __( 'Add or remove plant seasons' ),
+			'choose_from_most_used'      => __( 'Choose from the most used plant seasons' ),
+			'not_found'                  => __( 'No plant seasons found.' ),
+			'menu_name'                  => __( 'Plant Seasons' ),
+		);
+		$args = array(
+			'hierarchical'          => true,
+			'labels'                => $labels,
+			'show_ui'               => true,
+			'show_admin_column'     => true,
+			'update_count_callback' => '_update_post_term_count',
+			'query_var'             => true,
+			'show_in_rest'          => true,
+			'rewrite'               => array( 'slug' => 'plant_season' ),
+		);
+		register_taxonomy( 'plant_season', 'plant', $args );
+	}
+
+	/**
+	 * Update messages for "plants"
+	 *
+	 * See /wp-admin/edit-form-advanced.php
+	 *
+	 * @param array $messages Existing post update messages.
+	 *
+	 * @return array Amended post update messages with new CPT update messages.
+	 */
+	public function plant_updated_messages( $messages ) {
+		$post             = get_post();
+		$post_type        = get_post_type( $post );
+		$post_type_object = get_post_type_object( $post_type );
+
+		$messages['plant'] = array(
+			0  => '', // Unused. Messages start at index 1.
+			1  => __( 'Plant updated.', 'threedgarden' ),
+			2  => __( 'Custom field updated.', 'threedgarden' ),
+			3  => __( 'Custom field deleted.', 'threedgarden' ),
+			4  => __( 'Plant updated.', 'threedgarden' ),
+			/* translators: %s: date and time of the revision */
+			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Plant restored to revision from %s', 'threedgarden' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6  => __( 'Plant published.', 'threedgarden' ),
+			7  => __( 'Plant saved.', 'threedgarden' ),
+			8  => __( 'Plant submitted.', 'threedgarden' ),
+			9  => sprintf(
+				__( 'Plant scheduled for: <strong>%1$s</strong>.', 'threedgarden' ),
+				// translators: Publish box date format, see http://php.net/date
+				date_i18n( __( 'M j, Y @ G:i', 'threedgarden' ), strtotime( $post->post_date ) )
+			),
+			10 => __( 'Plant draft updated.', 'threedgarden' )
+		);
+
+		if ( $post_type_object->publicly_queryable ) {
+			$permalink = get_permalink( $post->ID );
+
+			$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View plant', 'threedgarden' ) );
+			$messages[ $post_type ][1] .= $view_link;
+			$messages[ $post_type ][6] .= $view_link;
+			$messages[ $post_type ][9] .= $view_link;
+
+			$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
+			$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview plant', 'threedgarden' ) );
+			$messages[ $post_type ][8]  .= $preview_link;
+			$messages[ $post_type ][10] .= $preview_link;
+		}
+
+		return $messages;
+	}
+
+	/**
+	 * Register a post type for "allotments"
+	 *
+	 * @link http://codex.wordpress.org/Function_Reference/register_post_type
+	 */
+	public function allotments_init() {
+		$labels = array(
+			'name'               => _x( 'Allotments', 'post type general name', 'threedgarden' ),
+			'singular_name'      => _x( 'Allotment', 'post type singular name', 'threedgarden' ),
+			'menu_name'          => _x( 'Allotments', 'admin menu', 'threedgarden' ),
+			'name_admin_bar'     => _x( 'Allotment', 'add new on admin bar', 'threedgarden' ),
+			'add_new'            => _x( 'Add New', 'allotment', 'threedgarden' ),
+			'add_new_item'       => __( 'Add New Allotment', 'threedgarden' ),
+			'new_item'           => __( 'New Allotment', 'threedgarden' ),
+			'edit_item'          => __( 'Edit Allotment', 'threedgarden' ),
+			'view_item'          => __( 'View Allotment', 'threedgarden' ),
+			'all_items'          => __( 'All Allotments', 'threedgarden' ),
+			'search_items'       => __( 'Search Allotments', 'threedgarden' ),
+			'parent_item_colon'  => __( 'Parent Allotments:', 'threedgarden' ),
+			'not_found'          => __( 'No allotments found.', 'threedgarden' ),
+			'not_found_in_trash' => __( 'No allotments found in Trash.', 'threedgarden' )
+		);
+
+		$args = array(
+			'labels'             => $labels,
+			'description'        => __( 'Post type for allotment notes and information.', 'threedgarden' ),
+			'public'             => true,
+			'publicly_queryable' => true,
+			'show_ui'            => true,
+			'show_in_menu'       => false,
+			'query_var'          => true,
+			'rewrite'            => array( 'slug' => 'allotment' ),
+			'capability_type'    => 'post',
+			'show_in_rest'       => true,
+			'has_archive'        => true,
+			'hierarchical'       => false,
+			'menu_position'      => null,
+			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
+			//'taxonomies'         => array('category', 'post_tag' )
+		);
+
+		register_post_type( 'allotment', $args );
+	}
+
+	/**
+	 * Create two taxonomies, Type and Season, for the post type "Allotment"
+	 */
+	public function allotment_taxonomies() {
+		
+		// Add Allotment Type taxonomy, make it hierarchical (like categories)
+		$labels = array(
+			'name'              => _x( 'Allotment Types', 'taxonomy general name' ),
+			'singular_name'     => _x( 'Allotment Type', 'taxonomy singular name' ),
+			'search_items'      => __( 'Search Allotment Types' ),
+			'all_items'         => __( 'All Allotment Types' ),
+			'parent_item'       => __( 'Parent Allotment Type' ),
+			'parent_item_colon' => __( 'Parent Allotment Type:' ),
+			'edit_item'         => __( 'Edit Allotment Type' ),
+			'update_item'       => __( 'Update Allotment Type' ),
+			'add_new_item'      => __( 'Add New Allotment Type' ),
+			'new_item_name'     => __( 'New Allotment Type Name' ),
+			'menu_name'         => __( 'Allotment Types' ),
+		);
+		$args = array(
+			'hierarchical'      => true,
+			'labels'            => $labels,
+			'show_ui'           => true,
+			'show_admin_column' => true,
+			'query_var'         => true,
+			'show_in_rest'      => true,
+			'rewrite'           => array( 'slug' => 'allotment_type' ),
+		);
+		register_taxonomy( 'allotment_type', array( 'allotment' ), $args );
+
+		// Add Allotment Season taxonomy, make it non-hierarchical (like tags)
+		$labels = array(
+			'name'                       => _x( 'Allotment Seasons', 'taxonomy general name' ),
+			'singular_name'              => _x( 'Allotment Season', 'taxonomy singular name' ),
+			'search_items'               => __( 'Search Allotment Seasons' ),
+			'popular_items'              => __( 'Popular Allotment Seasons' ),
+			'all_items'                  => __( 'All Allotment Seasons' ),
+			'parent_item'                => null,
+			'parent_item_colon'          => null,
+			'edit_item'                  => __( 'Edit Allotment Season' ),
+			'update_item'                => __( 'Update Allotment Season' ),
+			'add_new_item'               => __( 'Add New Allotment Season' ),
+			'new_item_name'              => __( 'New Allotment Season Name' ),
+			'separate_items_with_commas' => __( 'Separate allotment seasons with commas' ),
+			'add_or_remove_items'        => __( 'Add or remove allotment seasons' ),
+			'choose_from_most_used'      => __( 'Choose from the most used allotment seasons' ),
+			'not_found'                  => __( 'No allotment seasons found.' ),
+			'menu_name'                  => __( 'Allotment Seasons' ),
+		);
+		$args = array(
+			'hierarchical'          => true,
+			'labels'                => $labels,
+			'show_ui'               => true,
+			'show_admin_column'     => true,
+			'update_count_callback' => '_update_post_term_count',
+			'query_var'             => true,
+			'show_in_rest'          => true,
+			'rewrite'               => array( 'slug' => 'allotment_season' ),
+		);
+		register_taxonomy( 'allotment_season', 'allotment', $args );
+	}
+
+	/**
+	 * Update messages for "allotments"
+	 *
+	 * See /wp-admin/edit-form-advanced.php
+	 *
+	 * @param array $messages Existing post update messages.
+	 *
+	 * @return array Amended post update messages with new CPT update messages.
+	 */
+	public function allotment_updated_messages( $messages ) {
+		$post             = get_post();
+		$post_type        = get_post_type( $post );
+		$post_type_object = get_post_type_object( $post_type );
+
+		$messages['allotment'] = array(
+			0  => '', // Unused. Messages start at index 1.
+			1  => __( 'Allotment updated.', 'threedgarden' ),
+			2  => __( 'Custom field updated.', 'threedgarden' ),
+			3  => __( 'Custom field deleted.', 'threedgarden' ),
+			4  => __( 'Allotment updated.', 'threedgarden' ),
+			/* translators: %s: date and time of the revision */
+			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Allotment restored to revision from %s', 'threedgarden' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6  => __( 'Allotment published.', 'threedgarden' ),
+			7  => __( 'Allotment saved.', 'threedgarden' ),
+			8  => __( 'Allotment submitted.', 'threedgarden' ),
+			9  => sprintf(
+				__( 'Allotment scheduled for: <strong>%1$s</strong>.', 'threedgarden' ),
+				// translators: Publish box date format, see http://php.net/date
+				date_i18n( __( 'M j, Y @ G:i', 'threedgarden' ), strtotime( $post->post_date ) )
+			),
+			10 => __( 'Allotment draft updated.', 'threedgarden' )
+		);
+
+		if ( $post_type_object->publicly_queryable ) {
+			$permalink = get_permalink( $post->ID );
+
+			$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View allotment', 'threedgarden' ) );
+			$messages[ $post_type ][1] .= $view_link;
+			$messages[ $post_type ][6] .= $view_link;
+			$messages[ $post_type ][9] .= $view_link;
+
+			$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
+			$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview allotment', 'threedgarden' ) );
+			$messages[ $post_type ][8]  .= $preview_link;
+			$messages[ $post_type ][10] .= $preview_link;
+		}
+
+		return $messages;
+	}
+
+	/**
+	 * Register a post type for "beds"
+	 *
+	 * @link http://codex.wordpress.org/Function_Reference/register_post_type
+	 */
+	public function beds_init() {
+		$labels = array(
+			'name'               => _x( 'Beds', 'post type general name', 'threedgarden' ),
+			'singular_name'      => _x( 'Bed', 'post type singular name', 'threedgarden' ),
+			'menu_name'          => _x( 'Beds', 'admin menu', 'threedgarden' ),
+			'name_admin_bar'     => _x( 'Bed', 'add new on admin bar', 'threedgarden' ),
+			'add_new'            => _x( 'Add New', 'bed', 'threedgarden' ),
+			'add_new_item'       => __( 'Add New Bed', 'threedgarden' ),
+			'new_item'           => __( 'New Bed', 'threedgarden' ),
+			'edit_item'          => __( 'Edit Bed', 'threedgarden' ),
+			'view_item'          => __( 'View Bed', 'threedgarden' ),
+			'all_items'          => __( 'All Beds', 'threedgarden' ),
+			'search_items'       => __( 'Search Beds', 'threedgarden' ),
+			'parent_item_colon'  => __( 'Parent Beds:', 'threedgarden' ),
+			'not_found'          => __( 'No beds found.', 'threedgarden' ),
+			'not_found_in_trash' => __( 'No beds found in Trash.', 'threedgarden' )
+		);
+
+		$args = array(
+			'labels'             => $labels,
+			'description'        => __( 'Post type for bed notes and information.', 'threedgarden' ),
+			'public'             => true,
+			'publicly_queryable' => true,
+			'show_ui'            => true,
+			'show_in_menu'       => false,
+			'query_var'          => true,
+			'rewrite'            => array( 'slug' => 'bed' ),
+			'capability_type'    => 'post',
+			'show_in_rest'       => true,
+			'has_archive'        => true,
+			'hierarchical'       => false,
+			'menu_position'      => null,
+			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
+			//'taxonomies'         => array('category', 'post_tag' )
+		);
+
+		register_post_type( 'bed', $args );
+	}
+
+	/**
+	 * Create two taxonomies, Type and Soil, for the post type "Bed"
+	 */
+	public function bed_taxonomies() {
+		
+		// Add Bed Type taxonomy, make it hierarchical (like categories)
+		$labels = array(
+			'name'              => _x( 'Bed Types', 'taxonomy general name' ),
+			'singular_name'     => _x( 'Bed Type', 'taxonomy singular name' ),
+			'search_items'      => __( 'Search Bed Types' ),
+			'all_items'         => __( 'All Bed Types' ),
+			'parent_item'       => __( 'Parent Bed Type' ),
+			'parent_item_colon' => __( 'Parent Bed Type:' ),
+			'edit_item'         => __( 'Edit Bed Type' ),
+			'update_item'       => __( 'Update Bed Type' ),
+			'add_new_item'      => __( 'Add New Bed Type' ),
+			'new_item_name'     => __( 'New Bed Type Name' ),
+			'menu_name'         => __( 'Bed Types' ),
+		);
+		$args = array(
+			'hierarchical'      => true,
+			'labels'            => $labels,
+			'show_ui'           => true,
+			'show_admin_column' => true,
+			'query_var'         => true,
+			'show_in_rest'      => true,
+			'rewrite'           => array( 'slug' => 'bed_type' ),
+		);
+		register_taxonomy( 'bed_type', array( 'bed' ), $args );
+
+		// Add Bed Soil taxonomy, make it non-hierarchical (like tags)
+		$labels = array(
+			'name'                       => _x( 'Bed Soils', 'taxonomy general name' ),
+			'singular_name'              => _x( 'Bed Soil', 'taxonomy singular name' ),
+			'search_items'               => __( 'Search Bed Soils' ),
+			'popular_items'              => __( 'Popular Bed Soils' ),
+			'all_items'                  => __( 'All Bed Soils' ),
+			'parent_item'                => null,
+			'parent_item_colon'          => null,
+			'edit_item'                  => __( 'Edit Bed Soil' ),
+			'update_item'                => __( 'Update Bed Soil' ),
+			'add_new_item'               => __( 'Add New Bed Soil' ),
+			'new_item_name'              => __( 'New Bed Soil Name' ),
+			'separate_items_with_commas' => __( 'Separate bed soils with commas' ),
+			'add_or_remove_items'        => __( 'Add or remove bed soils' ),
+			'choose_from_most_used'      => __( 'Choose from the most used bed soils' ),
+			'not_found'                  => __( 'No bed soils found.' ),
+			'menu_name'                  => __( 'Bed Soils' ),
+		);
+		$args = array(
+			'hierarchical'          => true,
+			'labels'                => $labels,
+			'show_ui'               => true,
+			'show_admin_column'     => true,
+			'update_count_callback' => '_update_post_term_count',
+			'query_var'             => true,
+			'show_in_rest'          => true,
+			'rewrite'               => array( 'slug' => 'bed_soil' ),
+		);
+		register_taxonomy( 'bed_soil', 'bed', $args );
+	}
+
+	/**
+	 * Update messages for "beds"
+	 *
+	 * See /wp-admin/edit-form-advanced.php
+	 *
+	 * @param array $messages Existing post update messages.
+	 *
+	 * @return array Amended post update messages with new CPT update messages.
+	 */
+	public function bed_updated_messages( $messages ) {
+		$post             = get_post();
+		$post_type        = get_post_type( $post );
+		$post_type_object = get_post_type_object( $post_type );
+
+		$messages['bed'] = array(
+			0  => '', // Unused. Messages start at index 1.
+			1  => __( 'Bed updated.', 'threedgarden' ),
+			2  => __( 'Custom field updated.', 'threedgarden' ),
+			3  => __( 'Custom field deleted.', 'threedgarden' ),
+			4  => __( 'Bed updated.', 'threedgarden' ),
+			/* translators: %s: date and time of the revision */
+			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Bed restored to revision from %s', 'threedgarden' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6  => __( 'Bed published.', 'threedgarden' ),
+			7  => __( 'Bed saved.', 'threedgarden' ),
+			8  => __( 'Bed submitted.', 'threedgarden' ),
+			9  => sprintf(
+				__( 'Bed scheduled for: <strong>%1$s</strong>.', 'threedgarden' ),
+				// translators: Publish box date format, see http://php.net/date
+				date_i18n( __( 'M j, Y @ G:i', 'threedgarden' ), strtotime( $post->post_date ) )
+			),
+			10 => __( 'Bed draft updated.', 'threedgarden' )
+		);
+
+		if ( $post_type_object->publicly_queryable ) {
+			$permalink = get_permalink( $post->ID );
+
+			$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View bed', 'threedgarden' ) );
+			$messages[ $post_type ][1] .= $view_link;
+			$messages[ $post_type ][6] .= $view_link;
+			$messages[ $post_type ][9] .= $view_link;
+
+			$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
+			$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview bed', 'threedgarden' ) );
+			$messages[ $post_type ][8]  .= $preview_link;
+			$messages[ $post_type ][10] .= $preview_link;
+		}
+
+		return $messages;
+	}
+
+	/**
+	 * Register a post type for "planting plans"
+	 *
+	 * @link http://codex.wordpress.org/Function_Reference/register_post_type
+	 */
+	public function planting_plans_init() {
+		$labels = array(
+			'name'               => _x( 'Planting Plans', 'post type general name', 'threedgarden' ),
+			'singular_name'      => _x( 'Planting Plan', 'post type singular name', 'threedgarden' ),
+			'menu_name'          => _x( 'Planting Plans', 'admin menu', 'threedgarden' ),
+			'name_admin_bar'     => _x( 'Planting Plan', 'add new on admin bar', 'threedgarden' ),
+			'add_new'            => _x( 'Add New', 'planting_plan', 'threedgarden' ),
+			'add_new_item'       => __( 'Add New Planting Plan', 'threedgarden' ),
+			'new_item'           => __( 'New Planting Plan', 'threedgarden' ),
+			'edit_item'          => __( 'Edit Planting Plan', 'threedgarden' ),
+			'view_item'          => __( 'View Planting Plan', 'threedgarden' ),
+			'all_items'          => __( 'All Planting Plans', 'threedgarden' ),
+			'search_items'       => __( 'Search Planting Plans', 'threedgarden' ),
+			'parent_item_colon'  => __( 'Parent Planting Plans:', 'threedgarden' ),
+			'not_found'          => __( 'No planting plans found.', 'threedgarden' ),
+			'not_found_in_trash' => __( 'No planting plans found in Trash.', 'threedgarden' )
+		);
+
+		$args = array(
+			'labels'             => $labels,
+			'description'        => __( 'Post type for planting plan notes and information.', 'threedgarden' ),
+			'public'             => true,
+			'publicly_queryable' => true,
+			'show_ui'            => true,
+			'show_in_menu'       => false,
+			'query_var'          => true,
+			'rewrite'            => array( 'slug' => 'planting_plan' ),
+			'capability_type'    => 'post',
+			'show_in_rest'       => true,
+			'has_archive'        => true,
+			'hierarchical'       => false,
+			'menu_position'      => null,
+			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
+			//'taxonomies'         => array('category', 'post_tag' )
+		);
+
+		register_post_type( 'planting_plan', $args );
+	}
+
+	/**
+	 * Create two taxonomies, Type and Soil, for the post type "Planting Plan"
+	 */
+	public function planting_plan_taxonomies() {
+		
+		// Add Planting Plan Type taxonomy, make it hierarchical (like categories)
+		$labels = array(
+			'name'              => _x( 'Planting Plan Types', 'taxonomy general name' ),
+			'singular_name'     => _x( 'Planting Plan Type', 'taxonomy singular name' ),
+			'search_items'      => __( 'Search Planting Plan Types' ),
+			'all_items'         => __( 'All Planting Plan Types' ),
+			'parent_item'       => __( 'Parent Planting Plan Type' ),
+			'parent_item_colon' => __( 'Parent Planting Plan Type:' ),
+			'edit_item'         => __( 'Edit Planting Plan Type' ),
+			'update_item'       => __( 'Update Planting Plan Type' ),
+			'add_new_item'      => __( 'Add New Planting Plan Type' ),
+			'new_item_name'     => __( 'New Planting Plan Type Name' ),
+			'menu_name'         => __( 'Planting Plan Types' ),
+		);
+		$args = array(
+			'hierarchical'      => true,
+			'labels'            => $labels,
+			'show_ui'           => true,
+			'show_admin_column' => true,
+			'query_var'         => true,
+			'show_in_rest'      => true,
+			'rewrite'           => array( 'slug' => 'planting_plan_type' ),
+		);
+		register_taxonomy( 'planting_plan_type', array( 'planting_plan' ), $args );
+
+		// Add Planting Plan Soil taxonomy, make it non-hierarchical (like tags)
+		$labels = array(
+			'name'                       => _x( 'Planting Plan Soils', 'taxonomy general name' ),
+			'singular_name'              => _x( 'Planting Plan Soil', 'taxonomy singular name' ),
+			'search_items'               => __( 'Search Planting Plan Soils' ),
+			'popular_items'              => __( 'Popular Planting Plan Soils' ),
+			'all_items'                  => __( 'All Planting Plan Soils' ),
+			'parent_item'                => null,
+			'parent_item_colon'          => null,
+			'edit_item'                  => __( 'Edit Planting Plan Soil' ),
+			'update_item'                => __( 'Update Planting Plan Soil' ),
+			'add_new_item'               => __( 'Add New Planting Plan Soil' ),
+			'new_item_name'              => __( 'New Planting Plan Soil Name' ),
+			'separate_items_with_commas' => __( 'Separate planting plan soils with commas' ),
+			'add_or_remove_items'        => __( 'Add or remove planting plan soils' ),
+			'choose_from_most_used'      => __( 'Choose from the most used planting plan soils' ),
+			'not_found'                  => __( 'No planting plan soils found.' ),
+			'menu_name'                  => __( 'Planting Plan Soils' ),
+		);
+		$args = array(
+			'hierarchical'          => true,
+			'labels'                => $labels,
+			'show_ui'               => true,
+			'show_admin_column'     => true,
+			'update_count_callback' => '_update_post_term_count',
+			'query_var'             => true,
+			'show_in_rest'          => true,
+			'rewrite'               => array( 'slug' => 'planting_plan_soil' ),
+		);
+		register_taxonomy( 'planting_plan_soil', 'planting_plan', $args );
+	}
+
+	/**
+	 * Update messages for "planting plans"
+	 *
+	 * See /wp-admin/edit-form-advanced.php
+	 *
+	 * @param array $messages Existing post update messages.
+	 *
+	 * @return array Amended post update messages with new CPT update messages.
+	 */
+	public function planting_plan_updated_messages( $messages ) {
+		$post             = get_post();
+		$post_type        = get_post_type( $post );
+		$post_type_object = get_post_type_object( $post_type );
+
+		$messages['planting_plan'] = array(
+			0  => '', // Unused. Messages start at index 1.
+			1  => __( 'Planting Plan updated.', 'threedgarden' ),
+			2  => __( 'Custom field updated.', 'threedgarden' ),
+			3  => __( 'Custom field deleted.', 'threedgarden' ),
+			4  => __( 'Planting Plan updated.', 'threedgarden' ),
+			/* translators: %s: date and time of the revision */
+			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Planting Plan restored to revision from %s', 'threedgarden' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6  => __( 'Planting Plan published.', 'threedgarden' ),
+			7  => __( 'Planting Plan saved.', 'threedgarden' ),
+			8  => __( 'Planting Plan submitted.', 'threedgarden' ),
+			9  => sprintf(
+				__( 'Planting Plan scheduled for: <strong>%1$s</strong>.', 'threedgarden' ),
+				// translators: Publish box date format, see http://php.net/date
+				date_i18n( __( 'M j, Y @ G:i', 'threedgarden' ), strtotime( $post->post_date ) )
+			),
+			10 => __( 'Planting Plan draft updated.', 'threedgarden' )
+		);
+
+		if ( $post_type_object->publicly_queryable ) {
+			$permalink = get_permalink( $post->ID );
+
+			$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View planting plan', 'threedgarden' ) );
+			$messages[ $post_type ][1] .= $view_link;
+			$messages[ $post_type ][6] .= $view_link;
+			$messages[ $post_type ][9] .= $view_link;
+
+			$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
+			$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview planting plan', 'threedgarden' ) );
+			$messages[ $post_type ][8]  .= $preview_link;
+			$messages[ $post_type ][10] .= $preview_link;
+		}
+
+		return $messages;
+	}
+	
+	/**
+	 * **********************************************************************************************
+	 */
+
+
+} // end class
