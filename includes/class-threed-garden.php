@@ -162,6 +162,19 @@ class ThreeD_Garden {
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'construct_plugin_menu' );
 		$this->loader->add_filter( 'parent_file', $plugin_admin, 'set_current_menu' );
 
+		// custom post types + taxonomies
+		$this->loader->add_action( 'init', $plugin_admin, 'plants_init' );
+		$this->loader->add_action( 'init', $plugin_admin, 'plant_taxonomies' );
+		$this->loader->add_filter( 'post_updated_messages', $plugin_admin, 'plant_updated_messages' );
+		$this->loader->add_action( 'init', $plugin_admin, 'allotments_init' );
+		$this->loader->add_action( 'init', $plugin_admin, 'allotment_taxonomies' );
+		$this->loader->add_filter( 'post_updated_messages', $plugin_admin, 'allotment_updated_messages' );
+		$this->loader->add_action( 'init', $plugin_admin, 'beds_init' );
+		$this->loader->add_action( 'init', $plugin_admin, 'bed_taxonomies' );
+		$this->loader->add_filter( 'post_updated_messages', $plugin_admin, 'bed_updated_messages' );
+		$this->loader->add_action( 'init', $plugin_admin, 'planting_plans_init' );
+		$this->loader->add_action( 'init', $plugin_admin, 'planting_plan_taxonomies' );
+		$this->loader->add_filter( 'post_updated_messages', $plugin_admin, 'planting_plan_updated_messages' );
 
 
 	}

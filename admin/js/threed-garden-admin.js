@@ -34,4 +34,4 @@
 
 /* ThreeDGarden - Custom Admin JavaScript */
 
-alert("HEY HEY HEY -- FROM ADMIN");
+//alert("HEY HEY HEY -- FROM ADMIN");
