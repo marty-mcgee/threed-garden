@@ -50,16 +50,16 @@ function init() {
 	//plane.position.y = 0;
 
 	let pointLight = getPointLight(0xffffff, 1);
-	pointLight.position.y = 50;
-	pointLight.position.z = 50;
+	pointLight.position.y = 2;
+	pointLight.position.z = 2;
 	console.log("-------------------------");
 	console.log(pointLight);
 	console.log("-------------------------");
 	
 	// add objects to scene
 	plane.add(cube);
+	plane.add(pointLight);
 	scene.add(plane);
-	scene.add(pointLight);
 	console.log("-------------------------");
 	console.log(plane);
 	console.log("-------------------------");
