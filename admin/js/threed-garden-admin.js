@@ -39,18 +39,27 @@
 function init() {
 	let scene = new THREE.Scene();
 	scene.background = new THREE.Color(0x333333);
-	
+	//scene.fog = new THREE.FogExp2(0xffffff, 0.2);
+
 	let cube = getBox(32, 16, 5, 0x007700);
 	cube.position.y = cube.geometry.parameters.height / 2;
 
-	let plane = getPlane(100, 100, 0xffffff);
+	let plane = getPlane(100, 100, 0x000000);
 	plane.name = "plane-1";
 	plane.rotation.x = Math.PI / 2; //90 degrees in radians
 	//plane.position.y = 0;
 
+	let pointLight = getPointLight(0xffffff, 1);
+	pointLight.position.y = 50;
+	pointLight.position.z = 50;
+	console.log("-------------------------");
+	console.log(pointLight);
+	console.log("-------------------------");
+	
 	// add objects to scene
 	plane.add(cube);
 	scene.add(plane);
+	scene.add(pointLight);
 	console.log("-------------------------");
 	console.log(plane);
 	console.log("-------------------------");
@@ -119,6 +128,11 @@ function getPlane(x, y, color, side){
 	});
 	let mesh = new THREE.Mesh(geometry, material);
 	return mesh;
+}
+
+function getPointLight(color, intensity){
+	let light = new THREE.PointLight(color, intensity);
+	return light;
 }
 
 // maybe
