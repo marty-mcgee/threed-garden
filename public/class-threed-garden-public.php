@@ -85,19 +85,19 @@ class ThreeD_Garden_Public {
 	public function enqueue_scripts() {
 
 		/**
-		 * This function is provided for demonstration purposes only.
-		 *
 		 * An instance of this class should be passed to the run() function
 		 * defined in ThreeD_Garden_Loader as all of the hooks are defined
 		 * in that particular class.
 		 *
 		 * The ThreeD_Garden_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
+		 * between the defined hooks and the functions defined in this class.
 		 */
 
+		// THREE JS
+		wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/three.js', array(), $this->version, false );
+		// THREED GARDEN PUBLIC JS
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-public.js', array( 'jquery' ), $this->version, false );
-
+		
 	}
 
 	/**
