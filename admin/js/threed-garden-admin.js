@@ -38,16 +38,21 @@
 
 function init() {
 	let scene = new THREE.Scene();
+	scene.background = new THREE.Color(0x333333);
 	
-	let cube = getBox(30, 30, 30, 0x00ff00);
+	let cube = getBox(32, 16, 5, 0x007700);
+	cube.position.y = cube.geometry.parameters.height / 2;
+
 	let plane = getPlane(100, 100, 0xffffff);
-	plane.rotation.x = 90;
+	plane.name = "plane-1";
+	plane.rotation.x = Math.PI / 2; //90 degrees in radians
+	//plane.position.y = 0;
 
 	// add objects to scene
-	scene.add(cube);
+	plane.add(cube);
 	scene.add(plane);
 	console.log("-------------------------");
-	console.log(scene);
+	console.log(plane);
 	console.log("-------------------------");
 
 	var camera = new THREE.PerspectiveCamera(
@@ -56,19 +61,20 @@ function init() {
 		0.1,
 		1000
 	);
-	camera.position.x = 20;
-	camera.position.y = 40;
-	camera.position.z = 100;
-	//camera.position.set( 20, 40, 100 );
-	camera.lookAt(new THREE.Vector3(0, 0, 0));
+	// camera.position.x = 20;
+	// camera.position.y = 40;
+	// camera.position.z = 100;
+	camera.position.set( 20, 40, 100 );
 	//camera.lookAt( 0, 0, 0 );
+	camera.lookAt(new THREE.Vector3(0, 0, 0));
 	//scene.add(camera);
 	console.log("-------------------------");
 	console.log(camera);
 	console.log("-------------------------");
 	
-	let renderer = new THREE.WebGLRenderer();
+	let renderer = new THREE.WebGLRenderer(); //{ alpha: true }
 	renderer.setSize(window.innerWidth - 240, window.innerHeight - 100);
+	//renderer.setClearColor( 0x000000, 0.5 ); // the default
 	console.log("-------------------------");
 	console.log(renderer);
 	console.log("-------------------------");
@@ -80,21 +86,20 @@ function init() {
 	console.log("-------------------------");
 	console.log(canvas);
 	console.log("-------------------------");
-	// renderer.render(
-	// 	scene,
-	// 	camera
-	// )
 
+	// render + animate (continuous rendering)
+	//update(renderer, scene, camera);
 	let animate = function () {
 		requestAnimationFrame( animate );
-
-		cube.rotation.x += 0.01;
-		cube.rotation.y += 0.01;
-
+		cube.rotation.x += 0.005;
+		cube.rotation.y += 0.005;
+		plane.rotation.x += 0.002;
+		plane.rotation.y += 0.002;
 		renderer.render( scene, camera );
 	};
-
 	animate();
+
+	return scene;
 }
 
 function getBox(x, y, z, color){
@@ -116,12 +121,25 @@ function getPlane(x, y, color, side){
 	return mesh;
 }
 
+// maybe
+function update(renderer, scene, camera){
+	renderer.render( scene, camera );
+	// recursive function loading
+	requestAnimationFrame( function(){
+		update(renderer, scene, camera);
+	} );
+}
+
 /**
  * run app on window load, when everything is ready
  */
 $(window).on("load",function(){
 	// init
-	init();
+	let garden = init();
+	console.log("-------------------------");
+	console.log(garden);
+	console.log("-------------------------");
+
 });
 /** ************************************************************************************* */
 })( jQuery );
