@@ -39,10 +39,10 @@
 function init() {
 	let scene = new THREE.Scene();
 	scene.background = new THREE.Color(0x333333);
-	//scene.fog = new THREE.FogExp2(0xffffff, 0.2);
+	scene.fog = new THREE.Fog(0x000000, 0.2);
 
 	let cube = getBox(32, 16, 5, 0x007700);
-	cube.position.y = cube.geometry.parameters.height / 2;
+	cube.position.y = cube.geometry.parameters.height;
 
 	let plane = getPlane(100, 100, 0x000000);
 	plane.name = "plane-1";
@@ -50,16 +50,25 @@ function init() {
 	//plane.position.y = 0;
 
 	let pointLight = getPointLight(0xffffff, 1);
-	pointLight.position.y = 2;
-	pointLight.position.z = 2;
+	// pointLight.position.y = 2;
+	// pointLight.position.z = 2;
+	pointLight.position.set( 20, 40, 100 );
+	pointLight.intensity = 2;
 	console.log("-------------------------");
 	console.log(pointLight);
+	console.log("-------------------------");
+
+	let gui = new dat.GUI();
+	gui.add(pointLight, "intensity", 0, 10);
+	gui.add(plane, "name");
+	console.log("-------------------------");
+	console.log(gui);
 	console.log("-------------------------");
 	
 	// add objects to scene
 	plane.add(cube);
-	plane.add(pointLight);
 	scene.add(plane);
+	scene.add(pointLight);
 	console.log("-------------------------");
 	console.log(plane);
 	console.log("-------------------------");
@@ -88,10 +97,21 @@ function init() {
 	console.log(renderer);
 	console.log("-------------------------");
 
+	let controls = new THREE.OrbitControls(camera, renderer.domElement);
+	controls.enableDamping = true;
+	controls.dampingFactor = 0.25;
+	controls.enableZoom = true;
+	controls.autoRotate = true;
+	console.log("-------------------------");
+	console.log(controls);
+	console.log("-------------------------");
+
 	//document.getElementById('webgl').appendChild(renderer.domElement);
 	//$( "#webgl" ).css("border","1px solid black").append(renderer.domElement);
 	let canvas = $("#webgl");
-	canvas.css("border","1px solid black").append(renderer.domElement);
+	canvas.css("border","1px solid black")
+		.append(gui.domElement)
+		.append(renderer.domElement);
 	console.log("-------------------------");
 	console.log(canvas);
 	console.log("-------------------------");
@@ -99,6 +119,7 @@ function init() {
 	// render + animate (continuous rendering)
 	//update(renderer, scene, camera);
 	let animate = function () {
+		controls.update();
 		requestAnimationFrame( animate );
 		cube.rotation.x += 0.005;
 		cube.rotation.y += 0.005;

@@ -77,6 +77,10 @@ class ThreeD_Garden_Admin {
 		 * class.
 		 */
 
+		// THREE JS -- DAT GUI CSS
+		wp_enqueue_style( 'datgui', plugin_dir_url( __FILE__ ) . 'js/dat.gui.css', array(), $this->version, 'all' );
+		
+		// THREED GARDEN ADMIN CSS
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/threed-garden-admin.css', array(), $this->version, 'all' );
 
 	}
@@ -99,6 +103,9 @@ class ThreeD_Garden_Admin {
 
 		// THREE JS
 		wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/three.js', array(), $this->version, false );
+		wp_enqueue_script( 'datgui', plugin_dir_url( __FILE__ ) . 'js/dat.gui.min.js', array(), $this->version, false );
+		wp_enqueue_script( 'orbitcontrols', plugin_dir_url( __FILE__ ) . 'js/OrbitControls.js', array(), $this->version, false );
+
 		// THREED GARDEN ADMIN JS
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin.js', array( 'jquery' ), $this->version, false );
 
