@@ -1,10 +1,5 @@
 /* ThreeDGarden - Custom Admin JavaScript */
 
-//alert("HEY HEY HEY -- FROM ADMIN");
-//console.log("HEY HEY HEY -- FROM ADMIN");
-//console.log(THREE);
-//console.log("-------------------------");
-
 (function( $ ) {
 'use strict';
 
@@ -49,11 +44,9 @@ function init() {
 	plane.rotation.x = -Math.PI / 2; //-90 degrees in radians
 	//plane.position.y = 0;
 
-	let pointLight = getPointLight(0xFFFFFF, 1);
-	// pointLight.position.y = 2;
-	// pointLight.position.z = 2;
-	pointLight.position.set( 20, 40, 100 );
-	pointLight.intensity = 2;
+	let pointLight = getPointLight(0xFFFFFF, 3.0);
+	pointLight.position.set( -20, 85, 20 );
+	//pointLight.intensity = 2;
 	console.log("-------------------------");
 	console.log(pointLight);
 	console.log("-------------------------");
@@ -61,7 +54,11 @@ function init() {
 	let gui = new dat.GUI({ autoPlace: true, closeOnTop: true });
 	gui.close();
 	gui.add(pointLight, "intensity", 0, 10);
-	gui.add(plane, "name");
+	gui.add(pointLight.position, "x", -100, 100);
+	gui.add(pointLight.position, "y", -100, 100);
+	gui.add(pointLight.position, "z", -100, 100);
+	gui.add(cube.position, "z", -100, 100);
+	//gui.add(plane, "name");
 	console.log("-------------------------");
 	console.log(gui);
 	console.log("-------------------------");
@@ -135,7 +132,7 @@ function init() {
 
 function getBox(x, y, z, color){
 	let geometry = new THREE.BoxGeometry(x, y, z);
-	let material = new THREE.MeshBasicMaterial({
+	let material = new THREE.MeshPhongMaterial({
 		color: color
 	});
 	let mesh = new THREE.Mesh(geometry, material);
@@ -144,7 +141,7 @@ function getBox(x, y, z, color){
 
 function getPlane(x, y, color, side){
 	let geometry = new THREE.PlaneGeometry(x, y);
-	let material = new THREE.MeshBasicMaterial({
+	let material = new THREE.MeshPhongMaterial({
 		color: color,
 		side: THREE.DoubleSide
 	});
