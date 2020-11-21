@@ -44,9 +44,9 @@ function init() {
 	plane.rotation.x = -Math.PI / 2; //-90 degrees in radians
 	//plane.position.y = 0;
 
-	let pointLight = getPointLight(0xFFFFFF, 3.0);
-	pointLight.position.set( -20, 85, 20 );
-	//pointLight.intensity = 2;
+	let pointLight = getPointLight(0xFFFFFF, 4.0);
+	pointLight.position.set( -20, -60, 20 );
+	//pointLight.intensity = 3.0;
 	console.log("-------------------------");
 	console.log(pointLight);
 	console.log("-------------------------");
@@ -65,8 +65,8 @@ function init() {
 	
 	// add objects to scene
 	plane.add(cube);
+	plane.add(pointLight);
 	scene.add(plane);
-	scene.add(pointLight);
 	console.log("-------------------------");
 	console.log(plane);
 	console.log("-------------------------");
@@ -88,9 +88,10 @@ function init() {
 	console.log(camera);
 	console.log("-------------------------");
 	
-	let renderer = new THREE.WebGLRenderer(); //{ alpha: true }
+	let renderer = new THREE.WebGLRenderer({ alpha: true }); //{ alpha: true }
+	renderer.shadowMap.enabled = true;
 	renderer.setSize(window.innerWidth - 240, window.innerHeight - 100);
-	//renderer.setClearColor(0xFFFFFF);
+	renderer.setClearColor(0xFFFFFF);
 	console.log("-------------------------");
 	console.log(renderer);
 	console.log("-------------------------");
@@ -136,6 +137,7 @@ function getBox(x, y, z, color){
 		color: color
 	});
 	let mesh = new THREE.Mesh(geometry, material);
+	mesh.castShadow = true;
 	return mesh;
 }
 
@@ -146,11 +148,13 @@ function getPlane(x, y, color, side){
 		side: THREE.DoubleSide
 	});
 	let mesh = new THREE.Mesh(geometry, material);
+	mesh.receiveShadow = true;
 	return mesh;
 }
 
 function getPointLight(color, intensity){
 	let light = new THREE.PointLight(color, intensity);
+	light.castShadow = true;
 	return light;
 }
 
@@ -176,6 +180,14 @@ $(window).on("load",function(){
 });
 /** ************************************************************************************* */
 })( jQuery );
+/** ************************************************************************************* */
+
+/**
+ * query wordpress rest api for garden post types + taxonomies
+ */
+
+
+
 /** 
  * END FILE
  * ************************************************************************************** 
