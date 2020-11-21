@@ -58,26 +58,21 @@ function init() {
 	console.log(spotLight);
 	console.log("-------------------------");
 
-	let gui = new dat.GUI({ autoPlace: true, closeOnTop: true });
-	gui.close();
-	gui.add(pointLight, "intensity", 0, 10);
-	gui.add(pointLight.position, "x", -100, 100);
-	gui.add(pointLight.position, "y", -100, 100);
-	gui.add(pointLight.position, "z", -100, 100);
-	gui.add(spotLight, "intensity", 0, 10);
-	gui.add(spotLight.position, "x", -100, 100);
-	gui.add(spotLight.position, "y", -100, 100);
-	gui.add(spotLight.position, "z", -100, 100);
-	gui.add(cube.position, "z", -100, 100);
-	//gui.add(plane, "name");
+	let directionalLight = getDirectionalLight(0xFFFFFF, 6.0);
+	directionalLight.position.set( -100, -100, 25 );
+	//directionalLight.intensity = 3.0;
 	console.log("-------------------------");
-	console.log(gui);
+	console.log(directionalLight);
 	console.log("-------------------------");
+
+	let helper = new THREE.CameraHelper(directionalLight.shadow.camera);
 	
 	// add objects to scene
 	plane.add(cube);
-	plane.add(pointLight);
-	plane.add(spotLight);
+	//plane.add(pointLight);
+	//plane.add(spotLight);
+	plane.add(directionalLight);
+	plane.add(helper);
 	scene.add(plane);
 	console.log("-------------------------");
 	console.log(plane);
@@ -92,7 +87,7 @@ function init() {
 	// camera.position.x = 20;
 	// camera.position.y = 40;
 	// camera.position.z = 100;
-	camera.position.set( 20, 40, 100 );
+	camera.position.set( -55, 40, 100 );
 	//camera.lookAt( 0, 0, 0 );
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 	//scene.add(camera);
@@ -115,6 +110,29 @@ function init() {
 	controls.autoRotate = false;
 	console.log("-------------------------");
 	console.log(controls);
+	console.log("-------------------------");
+
+	let gui = new dat.GUI({ autoPlace: true, closeOnTop: true });
+	gui.close();
+	gui.add(camera.position, "x", -100, 100);
+	gui.add(camera.position, "y", -100, 100);
+	gui.add(camera.position, "z", -100, 100);
+	// gui.add(pointLight, "intensity", 0, 10);
+	// gui.add(pointLight.position, "x", -100, 100);
+	// gui.add(pointLight.position, "y", -100, 100);
+	// gui.add(pointLight.position, "z", -100, 100);
+	// gui.add(spotLight, "intensity", 0, 10);
+	// gui.add(spotLight.position, "x", -100, 100);
+	// gui.add(spotLight.position, "y", -100, 100);
+	// gui.add(spotLight.position, "z", -100, 100);
+	gui.add(directionalLight, "intensity", 0, 20);
+	gui.add(directionalLight.position, "x", -100, 100);
+	gui.add(directionalLight.position, "y", -100, 100);
+	gui.add(directionalLight.position, "z", -100, 100);
+	gui.add(cube.position, "z", -100, 100);
+	//gui.add(plane, "name");
+	console.log("-------------------------");
+	console.log(gui);
 	console.log("-------------------------");
 
 	//document.getElementById('webgl').appendChild(renderer.domElement);
@@ -179,6 +197,19 @@ function getSpotLight(color, intensity){
 	light.shadow.bias = 0.001;
 	light.shadow.mapSize.width = 2048; //default = 1024
 	light.shadow.mapSize.height = 2048; //default = 1024
+	return light;
+}
+
+function getDirectionalLight(color, intensity){
+	let light = new THREE.DirectionalLight(color, intensity);
+	light.castShadow = true;
+	light.shadow.bias 			= 0.001;
+	light.shadow.mapSize.width 	= 2048; //default = 1024
+	light.shadow.mapSize.height = 2048; //default = 1024
+	light.shadow.camera.left 	= -50; //default = -5
+	light.shadow.camera.bottom 	= -50; //default = -5
+	light.shadow.camera.right 	= 50; //default = 5
+	light.shadow.camera.top 	= 50; //default = 5
 	return light;
 }
 
