@@ -42,7 +42,7 @@ function init() {
 	scene.fog = new THREE.Fog(0x000000, 0.2);
 
 	let cube = getBox(32, 16, 5, 0x007700);
-	cube.position.y = cube.geometry.parameters.height;
+	cube.position.z = -cube.geometry.parameters.depth / 2;
 
 	let plane = getPlane(100, 100, 0x000000);
 	plane.name = "plane-1";
@@ -58,7 +58,7 @@ function init() {
 	console.log(pointLight);
 	console.log("-------------------------");
 
-	let gui = new dat.GUI();
+	let gui = new dat.GUI({ autoPlace: true });
 	gui.add(pointLight, "intensity", 0, 10);
 	gui.add(plane, "name");
 	console.log("-------------------------");
@@ -101,7 +101,7 @@ function init() {
 	controls.enableDamping = true;
 	controls.dampingFactor = 0.25;
 	controls.enableZoom = true;
-	controls.autoRotate = true;
+	controls.autoRotate = false;
 	console.log("-------------------------");
 	console.log(controls);
 	console.log("-------------------------");
@@ -109,7 +109,7 @@ function init() {
 	//document.getElementById('webgl').appendChild(renderer.domElement);
 	//$( "#webgl" ).css("border","1px solid black").append(renderer.domElement);
 	let canvas = $("#webgl");
-	canvas.css("border","1px solid black")
+	canvas.css("border","0px solid black")
 		.append(gui.domElement)
 		.append(renderer.domElement);
 	console.log("-------------------------");
@@ -121,10 +121,10 @@ function init() {
 	let animate = function () {
 		controls.update();
 		requestAnimationFrame( animate );
-		cube.rotation.x += 0.005;
-		cube.rotation.y += 0.005;
-		plane.rotation.x += 0.002;
-		plane.rotation.y += 0.002;
+		// cube.rotation.x += 0.005;
+		// cube.rotation.y += 0.005;
+		// plane.rotation.x += 0.002;
+		// plane.rotation.y += 0.002;
 		renderer.render( scene, camera );
 	};
 	animate();
