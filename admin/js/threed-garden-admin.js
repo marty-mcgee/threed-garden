@@ -42,11 +42,11 @@ function init() {
 	//scene.fog = new THREE.Fog(0xFFFFFF, 0, 500);
 
 	let cube = getBox(32, 16, 5, 0x007700);
-	cube.position.z = -cube.geometry.parameters.depth / 2;
+	cube.position.z = cube.geometry.parameters.depth / 2;
 
 	let plane = getPlane(100, 100, 0x000000);
 	plane.name = "plane-1";
-	plane.rotation.x = Math.PI / 2; //90 degrees in radians
+	plane.rotation.x = -Math.PI / 2; //-90 degrees in radians
 	//plane.position.y = 0;
 
 	let pointLight = getPointLight(0xFFFFFF, 1);
