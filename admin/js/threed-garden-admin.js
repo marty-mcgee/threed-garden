@@ -39,7 +39,7 @@
 function init() {
 	let scene = new THREE.Scene();
 	scene.background = new THREE.Color(0x333333);
-	scene.fog = new THREE.Fog(0x000000, 0.2);
+	//scene.fog = new THREE.Fog(0xFFFFFF, 0, 500);
 
 	let cube = getBox(32, 16, 5, 0x007700);
 	cube.position.z = -cube.geometry.parameters.depth / 2;
@@ -49,7 +49,7 @@ function init() {
 	plane.rotation.x = Math.PI / 2; //90 degrees in radians
 	//plane.position.y = 0;
 
-	let pointLight = getPointLight(0xffffff, 1);
+	let pointLight = getPointLight(0xFFFFFF, 1);
 	// pointLight.position.y = 2;
 	// pointLight.position.z = 2;
 	pointLight.position.set( 20, 40, 100 );
@@ -58,7 +58,8 @@ function init() {
 	console.log(pointLight);
 	console.log("-------------------------");
 
-	let gui = new dat.GUI({ autoPlace: true });
+	let gui = new dat.GUI({ autoPlace: true, closeOnTop: true });
+	gui.close();
 	gui.add(pointLight, "intensity", 0, 10);
 	gui.add(plane, "name");
 	console.log("-------------------------");
@@ -92,7 +93,7 @@ function init() {
 	
 	let renderer = new THREE.WebGLRenderer(); //{ alpha: true }
 	renderer.setSize(window.innerWidth - 240, window.innerHeight - 100);
-	//renderer.setClearColor( 0x000000, 0.5 ); // the default
+	//renderer.setClearColor(0xFFFFFF);
 	console.log("-------------------------");
 	console.log(renderer);
 	console.log("-------------------------");
