@@ -39,7 +39,7 @@ function init() {
 	let cube = getBox(32, 16, 5, 0x007700);
 	cube.position.z = cube.geometry.parameters.depth / 2;
 
-	let plane = getPlane(100, 100, 0x000000);
+	let plane = getPlane(100, 100, 0xFFFFFF);
 	plane.name = "plane-1";
 	plane.rotation.x = -Math.PI / 2; //-90 degrees in radians
 	//plane.position.y = 0;
@@ -51,12 +51,23 @@ function init() {
 	console.log(pointLight);
 	console.log("-------------------------");
 
+	let spotLight = getSpotLight(0xFFFFFF, 4.0);
+	spotLight.position.set( -20, -60, 20 );
+	//spotLight.intensity = 3.0;
+	console.log("-------------------------");
+	console.log(spotLight);
+	console.log("-------------------------");
+
 	let gui = new dat.GUI({ autoPlace: true, closeOnTop: true });
 	gui.close();
 	gui.add(pointLight, "intensity", 0, 10);
 	gui.add(pointLight.position, "x", -100, 100);
 	gui.add(pointLight.position, "y", -100, 100);
 	gui.add(pointLight.position, "z", -100, 100);
+	gui.add(spotLight, "intensity", 0, 10);
+	gui.add(spotLight.position, "x", -100, 100);
+	gui.add(spotLight.position, "y", -100, 100);
+	gui.add(spotLight.position, "z", -100, 100);
 	gui.add(cube.position, "z", -100, 100);
 	//gui.add(plane, "name");
 	console.log("-------------------------");
@@ -66,6 +77,7 @@ function init() {
 	// add objects to scene
 	plane.add(cube);
 	plane.add(pointLight);
+	plane.add(spotLight);
 	scene.add(plane);
 	console.log("-------------------------");
 	console.log(plane);
@@ -88,10 +100,10 @@ function init() {
 	console.log(camera);
 	console.log("-------------------------");
 	
-	let renderer = new THREE.WebGLRenderer({ alpha: true }); //{ alpha: true }
+	let renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 	renderer.shadowMap.enabled = true;
 	renderer.setSize(window.innerWidth - 240, window.innerHeight - 100);
-	renderer.setClearColor(0xFFFFFF);
+	//renderer.setClearColor(0xFFFFFF);
 	console.log("-------------------------");
 	console.log(renderer);
 	console.log("-------------------------");
@@ -155,6 +167,18 @@ function getPlane(x, y, color, side){
 function getPointLight(color, intensity){
 	let light = new THREE.PointLight(color, intensity);
 	light.castShadow = true;
+	light.shadow.bias = 0.001;
+	light.shadow.mapSize.width = 2048; //default = 1024
+	light.shadow.mapSize.height = 2048; //default = 1024
+	return light;
+}
+
+function getSpotLight(color, intensity){
+	let light = new THREE.SpotLight(color, intensity);
+	light.castShadow = true;
+	light.shadow.bias = 0.001;
+	light.shadow.mapSize.width = 2048; //default = 1024
+	light.shadow.mapSize.height = 2048; //default = 1024
 	return light;
 }
 
