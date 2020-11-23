@@ -26,7 +26,12 @@ function init() {
 	/** TEXTURES ************************************************************************* */
 
 	let loader = new THREE.TextureLoader();
-	cube.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/fence-lattice-redwood-plastic-large.png')
+	cube.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/fence-lattice-redwood-100x100.png');
+	
+	let texture = cube.material.map;
+	texture.wrapS = THREE.RepeatWrapping;
+	texture.wrapT = THREE.RepeatWrapping;
+	texture.repeat.set(5, 5);
 
 	/** LIGHTS *************************************************************************** */
 
@@ -114,9 +119,9 @@ function init() {
 	let gui = new dat.GUI({ autoPlace: true, closeOnTop: true });
 	gui.close();
 	let folder1 = gui.addFolder("Camera Position");
-	folder1.add(camera.position, "x", -100, 100);
-	folder1.add(camera.position, "y", -100, 100);
-	folder1.add(camera.position, "z", -100, 100);
+	folder1.add(camera.position, "x", -100, 100).listen();
+	folder1.add(camera.position, "y", -100, 100).listen();
+	folder1.add(camera.position, "z", -100, 100).listen();
 	let folder2 = gui.addFolder("Directional Light");
 	folder2.add(directionalLight, "intensity", 0, 20);
 	folder2.add(directionalLight.position, "x", -100, 100);
