@@ -78,7 +78,7 @@ class ThreeD_Garden_Admin {
 		 */
 
 		// THREE JS -- DAT GUI CSS
-		wp_enqueue_style( 'datgui', plugin_dir_url( __FILE__ ) . 'js/dat.gui.css', array(), $this->version, 'all' );
+		wp_enqueue_style( 'datgui', plugin_dir_url( __FILE__ ) . 'css/dat.gui.css', array(), $this->version, 'all' );
 		
 		// THREED GARDEN ADMIN CSS
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/threed-garden-admin.css', array(), $this->version, 'all' );
