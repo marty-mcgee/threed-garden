@@ -14,11 +14,11 @@ function init() {
 	plane.name = "plane-1";
 	plane.rotation.x = -Math.PI / 2; //-90 degrees in radians
 	//plane.position.y = 0;
-	//plane.material.roughness = 1;
+	plane.material.roughness = 0.0;
 
-	let cube = getCube(32, 16, 5, 0x007700);
+	let cube = getCube(32, 16, 5, 0x772200);
 	cube.position.z = cube.geometry.parameters.depth / 2;
-	//cube.material.roughness = 0;
+	cube.material.roughness = 0.9;
 	console.log("-------------------------");
 	console.log(cube);
 	console.log("-------------------------");
@@ -26,12 +26,37 @@ function init() {
 	/** TEXTURES ************************************************************************* */
 
 	let loader = new THREE.TextureLoader();
-	cube.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/fence-lattice-redwood-100x100.png');
-	
-	let texture = cube.material.map;
-	texture.wrapS = THREE.RepeatWrapping;
-	texture.wrapT = THREE.RepeatWrapping;
-	texture.repeat.set(5, 5);
+	plane.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big.jpg');
+	//plane.material.bumpMap = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big-nm.jpg');
+	//plane.material.bumpScale = 0.05;
+
+	cube.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/fence-lattice-redwood-100x100-white.png');
+	//cube.material.bumpMap = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/fence-lattice-redwood-100x100-white.png');
+	//cube.material.bumpScale = 0.05;
+
+	let texturePlane = plane.material.map;
+	texturePlane.wrapS = THREE.RepeatWrapping;
+	texturePlane.wrapT = THREE.RepeatWrapping;
+	texturePlane.repeat.set(4, 4);
+
+	let textureCube = cube.material.map;
+	textureCube.wrapS = THREE.RepeatWrapping;
+	textureCube.wrapT = THREE.RepeatWrapping;
+	textureCube.repeat.set(4, 4);
+
+	// manipulate materials
+	// load the cube map
+	var path = '/wp-content/plugins/threed-garden/admin/media/textures/cubemap/';
+	var format = '.jpg';
+	var urls = [
+		path + 'px' + format, path + 'nx' + format,
+		path + 'py' + format, path + 'ny' + format,
+		path + 'pz' + format, path + 'nz' + format
+	];
+	var reflectionCube = new THREE.CubeTextureLoader().load(urls);
+	reflectionCube.format = THREE.RGBFormat;
+
+	scene.background = reflectionCube;
 
 	/** LIGHTS *************************************************************************** */
 
@@ -49,8 +74,8 @@ function init() {
 	console.log(spotLight);
 	console.log("-------------------------");
 
-	let directionalLight = getDirectionalLight(0xFFFFFF, 6.0);
-	directionalLight.position.set( -100, -100, 35 );
+	let directionalLight = getDirectionalLight(0xFFFFFF, 3.5);
+	directionalLight.position.set( -100, -100, 55 );
 	//directionalLight.intensity = 3.0;
 	console.log("-------------------------");
 	console.log(directionalLight);
