@@ -1,4 +1,4 @@
-/* ThreeDGarden - Custom Admin JavaScript */
+/** ThreeDGarden - Custom Admin JavaScript */
 
 (function( $ ) {
 'use strict';
@@ -118,6 +118,7 @@ function init() {
 
 	let gui = new dat.GUI({ autoPlace: true, closeOnTop: true });
 	gui.close();
+	gui.domElement.id = 'gui';
 	let folder1 = gui.addFolder("Camera Position");
 	folder1.add(camera.position, "x", -100, 100).listen();
 	folder1.add(camera.position, "y", -100, 100).listen();
