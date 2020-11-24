@@ -3,25 +3,34 @@
 (function( $ ) {
 'use strict';
 
+const pluginName = postdata.plugin_name;
+const pluginVersion = postdata.plugin_version;
+const pluginURL = postdata.plugin_url;
+const themeURI = postdata.theme_uri;
+const restURL = postdata.rest_url;
+console.log("-------------------------");
+console.log(pluginName, pluginVersion, pluginURL, themeURI, restURL);
+console.log("-------------------------");
+
 function init() {
 	let scene = new THREE.Scene();
 	scene.background = new THREE.Color(0x333333);
 	//scene.fog = new THREE.Fog(0xFFFFFF, 0, 500);
 
-	/** GEOMETRY ************************************************************************* */
+	/** GEOMETRIES *********************************************************************** */
 	
-	let plane = getPlane(100, 100, 0xFFFFFF);
+	let plane = getPlane(200, 200, 0xFFFFFF);
 	plane.name = "plane-1";
 	plane.rotation.x = -Math.PI / 2; //-90 degrees in radians
 	//plane.position.y = 0;
 	plane.material.roughness = 0.0;
 
-	let cube = getCube(32, 16, 5, 0x772200);
-	cube.position.z = cube.geometry.parameters.depth / 2;
-	cube.material.roughness = 0.9;
-	console.log("-------------------------");
-	console.log(cube);
-	console.log("-------------------------");
+	/** QUERY FOR BOXES ****************************************************************** */
+
+	let queryURL = `${restURL}planting_plan/?_embed`;
+	fetch( queryURL )
+		.then( response => response.json() )
+		.then( postObject => buildNewPlantingPlan( postObject, plane ) );
 
 	/** TEXTURES ************************************************************************* */
 
@@ -30,7 +39,8 @@ function init() {
 	//plane.material.bumpMap = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big-nm.jpg');
 	//plane.material.bumpScale = 0.05;
 
-	cube.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/fence-lattice-redwood-100x100-white.png');
+	// let loader = new THREE.TextureLoader();
+	// cube.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/fence-lattice-redwood-100x100-white.png');
 	//cube.material.bumpMap = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/fence-lattice-redwood-100x100-white.png');
 	//cube.material.bumpScale = 0.05;
 
@@ -39,15 +49,17 @@ function init() {
 	texturePlane.wrapT = THREE.RepeatWrapping;
 	texturePlane.repeat.set(4, 4);
 
-	let textureCube = cube.material.map;
-	textureCube.wrapS = THREE.RepeatWrapping;
-	textureCube.wrapT = THREE.RepeatWrapping;
-	textureCube.repeat.set(4, 4);
+	// let textureCube = cube.material.map;
+	// textureCube.wrapS = THREE.RepeatWrapping;
+	// textureCube.wrapT = THREE.RepeatWrapping;
+	// textureCube.repeat.set(4, 4);
+
+	/** BACKGROUND *************************************************************************** */
 
 	// manipulate materials
 	// load the cube map
-	var path = '/wp-content/plugins/threed-garden/admin/media/textures/cubemap/';
-	var format = '.jpg';
+	var path = '/wp-content/plugins/threed-garden/admin/media/textures/cube/Forest-Meadow-Cube-Map-2/';
+	var format = '.png';
 	var urls = [
 		path + 'px' + format, path + 'nx' + format,
 		path + 'py' + format, path + 'ny' + format,
@@ -60,19 +72,19 @@ function init() {
 
 	/** LIGHTS *************************************************************************** */
 
-	let pointLight = getPointLight(0xFFFFFF, 4.0);
-	pointLight.position.set( -20, -60, 20 );
-	//pointLight.intensity = 3.0;
-	console.log("-------------------------");
-	console.log(pointLight);
-	console.log("-------------------------");
+	// let pointLight = getPointLight(0xFFFFFF, 4.0);
+	// pointLight.position.set( -20, -60, 20 );
+	// //pointLight.intensity = 3.0;
+	// console.log("-------------------------");
+	// console.log(pointLight);
+	// console.log("-------------------------");
 
-	let spotLight = getSpotLight(0xFFFFFF, 4.0);
-	spotLight.position.set( -20, -60, 20 );
-	//spotLight.intensity = 3.0;
-	console.log("-------------------------");
-	console.log(spotLight);
-	console.log("-------------------------");
+	// let spotLight = getSpotLight(0xFFFFFF, 4.0);
+	// spotLight.position.set( -20, -60, 20 );
+	// //spotLight.intensity = 3.0;
+	// console.log("-------------------------");
+	// console.log(spotLight);
+	// console.log("-------------------------");
 
 	let directionalLight = getDirectionalLight(0xFFFFFF, 3.5);
 	directionalLight.position.set( -100, -100, 55 );
@@ -81,7 +93,7 @@ function init() {
 	console.log(directionalLight);
 	console.log("-------------------------");
 
-	//let helper = new THREE.CameraHelper(directionalLight.shadow.camera);
+	let helper = new THREE.CameraHelper(directionalLight.shadow.camera);
 
 	let ambientLight = getAmbientLight(0xFFFFFF, 0.2);
 	//ambientLight.position.set( -100, -100, 25 );
@@ -93,12 +105,12 @@ function init() {
 	/** SCENE ***************************************************************************** */
 
 	// add objects to scene
-	plane.add(cube);
+	//plane.add(cube);
 	//plane.add(pointLight);
 	//plane.add(spotLight);
 	plane.add(directionalLight);
 	plane.add(ambientLight);
-	//plane.add(helper);
+	plane.add(helper);
 	scene.add(plane);
 	console.log("-------------------------");
 	console.log(plane);
@@ -107,12 +119,12 @@ function init() {
 	/** CAMERA **************************************************************************** */
 
 	var camera = new THREE.PerspectiveCamera(
-		45,
+		55,
 		window.innerWidth/window.innerHeight,
 		0.1,
 		1000
 	);
-	camera.position.set( -55, 40, 100 );
+	camera.position.set( -55, 40, 200 );
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 	console.log("-------------------------");
 	console.log(camera);
@@ -150,12 +162,12 @@ function init() {
 	folder1.add(camera.position, "z", -100, 100).listen();
 	let folder2 = gui.addFolder("Directional Light");
 	folder2.add(directionalLight, "intensity", 0, 20);
-	folder2.add(directionalLight.position, "x", -100, 100);
-	folder2.add(directionalLight.position, "y", -100, 100);
-	folder2.add(directionalLight.position, "z", -100, 100);
+	folder2.add(directionalLight.position, "x", -500, 500);
+	folder2.add(directionalLight.position, "y", -500, 500);
+	folder2.add(directionalLight.position, "z", -500, 500);
 	let folder3 = gui.addFolder("Roughness");
 	folder3.add(plane.material, "roughness", 0, 1);
-	folder3.add(cube.material, "roughness", 0, 1);
+	// folder3.add(cube.material, "roughness", 0, 1);
 	//gui.add(cube.position, "z", -100, 100);
 	//gui.add(plane, "name");
 	console.log("-------------------------");
@@ -239,10 +251,10 @@ function getDirectionalLight(color, intensity){
 	light.shadow.bias 			= 0.001;
 	light.shadow.mapSize.width 	= 2048; //default = 1024
 	light.shadow.mapSize.height = 2048; //default = 1024
-	light.shadow.camera.left 	= -50; //default = -5
-	light.shadow.camera.bottom 	= -50; //default = -5
-	light.shadow.camera.right 	= 50; //default = 5
-	light.shadow.camera.top 	= 50; //default = 5
+	light.shadow.camera.left 	= -250; //default = -5
+	light.shadow.camera.bottom 	= -250; //default = -5
+	light.shadow.camera.right 	= 250; //default = 5
+	light.shadow.camera.top 	= 250; //default = 5
 	return light;
 }
 
@@ -260,6 +272,56 @@ function update(renderer, scene, camera){
 	} );
 }
 
+
+function buildNewPlantingPlan( postObject, plane ){
+	//alert("HEY HEY HEY -- FROM JS");
+	console.log("-------------------------");
+	console.log("postObject---------------");
+	console.log(postObject);
+	console.log("-------------------------");
+
+	let loader = new THREE.TextureLoader();
+
+	let cube1 = getCube(32, 16, 5, 0x772200);
+	cube1.position.x = 40;
+	cube1.position.y = -12;
+	cube1.position.z = cube1.geometry.parameters.depth / 2;
+	cube1.material.roughness = 0.9;
+	cube1.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/fence-lattice-redwood-100x100-white.png');
+	console.log("-------------------------");
+	console.log("cube1--------------------");
+	console.log(cube1);
+	console.log("-------------------------");
+	
+	let cube2 = getCube(88, 22, 8, 0x773300);
+	cube2.position.x = -80;
+	cube2.position.y = 40;
+	cube2.position.z = cube2.geometry.parameters.depth / 2;
+	cube2.rotation.z = Math.PI / 2;
+	cube2.material.roughness = 0.9;
+	cube2.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/fence-lattice-redwood-100x100-white.png');
+	console.log("-------------------------");
+	console.log("cube2--------------------");
+	console.log(cube2);
+	console.log("-------------------------");
+	
+	let cube3 = getCube(10, 16, 12, 0x772200);
+	cube3.position.x = 10;
+	cube3.position.y = 20;
+	cube3.position.z = cube3.geometry.parameters.depth / 2;
+	cube3.rotation.z = Math.PI / 2;
+	cube3.material.roughness = 0.9;
+	cube3.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/fence-lattice-redwood-100x100-white.png');
+	console.log("-------------------------");
+	console.log("cube3--------------------");
+	console.log(cube3);
+	console.log("-------------------------");
+
+	plane.add(cube1);
+	plane.add(cube2);
+	plane.add(cube3);
+}
+
 /**
  * run app on window load, when everything is ready
  */
@@ -274,6 +336,13 @@ $(window).on("load",function(){
 /** ************************************************************************************* */
 })( jQuery );
 /** ************************************************************************************* */
+
+
+
+
+
+
+
 
 /**
  * query wordpress rest api for garden post types + taxonomies
