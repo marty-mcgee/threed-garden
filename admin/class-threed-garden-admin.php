@@ -108,7 +108,17 @@ class ThreeD_Garden_Admin {
 
 		// THREED GARDEN ADMIN JS
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin.js', array( 'jquery' ), $this->version, false );
+		//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin-2.js', array( 'jquery' ), $this->version, false );
 
+		wp_localize_script( $this->plugin_name, 'postdata',
+			array(
+				'plugin_name' => $this->plugin_name,
+				'plugin_version' => $this->version,
+				'plugin_url' => plugin_dir_url(__FILE__),
+				'theme_uri' => get_stylesheet_directory_uri(),
+				'rest_url' => rest_url('wp/v2/'),
+			)
+		);
 	}
 
 	/**
@@ -356,6 +366,11 @@ class ThreeD_Garden_Admin {
 		?>
 		<div class='wrap'>
 			<h2>ABOUT PAGE</h2>
+			<div class="annotation">
+				<p><strong>Cube</strong></p>
+				<p>In geometry, a cube is a three-dimensional solid object bounded by six square faces, facets or sides, with three meeting at each vertex.</p>
+			</div>
+			<canvas id="number" width="64" height="64"></canvas>
 		</div>
 		<?php
 	}
