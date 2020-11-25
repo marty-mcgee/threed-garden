@@ -199,7 +199,7 @@ class ThreeD_Garden {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 		// custom fields testing
-		$this->loader->add_filter( 'the_content', $plugin_public, 'display_all_custom_fields' );
+		//$this->loader->add_filter( 'the_content', $plugin_public, 'display_all_custom_fields' );
 	}
 
 	/**
