@@ -309,7 +309,7 @@ function buildAllotments(postObject, plane){
 		console.log(allotment);
 		console.log("-------------------------");
 
-		//buildNewPost(key);
+		buildNewPost(key);
 		let image = getFeaturedImage(key);
 		console.log("-------------------------");
 		console.log("image--------------------");
@@ -444,7 +444,7 @@ function buildNewPost( postObject ) {
 
 		if (postObject.tagLinks !== '') {
 			tagMarkup = `
-				${getTaxonomies( postObject, false )}
+				<pre>${getTaxonomies( postObject, false )}</pre>
 			`;
 		}   
 		
@@ -452,12 +452,12 @@ function buildNewPost( postObject ) {
 	}
 
 	let output = `
-		${getTaxonomies( postObject, true )}
+		<pre>${getTaxonomies( postObject, true )}</pre>
 
-		${getFeaturedImage( postObject )}
+		<pre>${getFeaturedImage( postObject )}</pre>
 
-		${conditionalTags( postObject )}
-		
+		<pre>${conditionalTags( postObject )}</pre>
+
 	`;
 
 	// Remove "load previous" container.
