@@ -99,7 +99,7 @@ function init() {
 	/** SCENE ***************************************************************************** */
 
 	// add objects to scene
-	//plane.add(cube);
+	//plane.add(structure);
 	//plane.add(pointLight);
 	//plane.add(spotLight);
 	plane.add(directionalLight);
@@ -118,7 +118,7 @@ function init() {
 		0.1,
 		1000
 	);
-	camera.position.set( -55, 40, 200 );
+	camera.position.set( 86, 64, 182 );
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 	// console.log("-------------------------");
 	// console.log(camera);
@@ -161,8 +161,8 @@ function init() {
 	folder2.add(directionalLight.position, "z", -500, 500);
 	let folder3 = gui.addFolder("Roughness");
 	folder3.add(plane.material, "roughness", 0, 1);
-	// folder3.add(cube.material, "roughness", 0, 1);
-	//gui.add(cube.position, "z", -100, 100);
+	// folder3.add(structure.material, "roughness", 0, 1);
+	//gui.add(structure.position, "z", -100, 100);
 	//gui.add(plane, "name");
 	// console.log("-------------------------");
 	// console.log(gui);
@@ -187,8 +187,8 @@ function init() {
 	let animate = function () {
 		controls.update();
 		requestAnimationFrame( animate );
-		// cube.rotation.x += 0.005;
-		// cube.rotation.y += 0.005;
+		// structure.rotation.x += 0.005;
+		// structure.rotation.y += 0.005;
 		// plane.rotation.x += 0.002;
 		// plane.rotation.y += 0.002;
 		renderer.render( scene, camera );
@@ -199,8 +199,22 @@ function init() {
 	return scene;
 }
 
-function getCube(x, y, z, color){
-	let geometry = new THREE.BoxGeometry(x, y, z);
+function getGeometry(shape, x, y, z, color){
+	let geometry;
+	switch (shape) {
+		case 'box':
+			geometry = new THREE.BoxGeometry(x, y, z);
+			break;
+		case 'cone':
+			geometry = new THREE.ConeGeometry(x, y, z);
+			break;
+		case 'cylinder':
+			geometry = new THREE.CylinderGeometry(x, y, z, 50);
+			break;
+		default:
+			geometry = new THREE.BoxGeometry(x, y, z);
+			break;
+	}
 	let material = new THREE.MeshStandardMaterial({
 		color: color,
 		side: THREE.DoubleSide
@@ -210,7 +224,7 @@ function getCube(x, y, z, color){
 	return mesh;
 }
 
-function getPlane(x, y, color, side){
+function getPlane(x, y, color){
 	let geometry = new THREE.PlaneGeometry(x, y);
 	let material = new THREE.MeshStandardMaterial({
 		color: color,
@@ -303,33 +317,35 @@ function buildAllotments(postObject, plane){
 		console.log(allotment);
 		console.log("-------------------------");
 
+		// annotations + additional media
 		//buildNewPost(key);
 
-		let cube = getCube(
+		let structure = getGeometry(
+			allotment.shape,
 			allotment.parameters.x, 
 			allotment.parameters.y, 
 			allotment.parameters.z, 
-			0x772200
+			allotment.color
 		);
-		cube.position.x = allotment.position.x;
-		cube.position.y = allotment.position.y;
-		cube.position.z = (cube.geometry.parameters.depth / 2); // + allotment.position.z
-		cube.material.roughness = 0.9;
-		cube.material.map = loader.load(allotment.images.texture);
-		cube.material.bumpMap = loader.load(allotment.images.texture);
-		cube.material.bumpScale = 0.05;
-		let cubeTextureMap = cube.material.map;
-		cubeTextureMap.wrapS = THREE.RepeatWrapping;
-		cubeTextureMap.wrapT = THREE.RepeatWrapping;
-		cubeTextureMap.repeat.set(4, 4);
+		structure.position.x = allotment.position.x;
+		structure.position.y = allotment.position.y;
+		structure.position.z = (structure.geometry.parameters.depth / 2); // + allotment.position.z
+		structure.material.roughness = 0.9;
+		structure.material.map = loader.load(allotment.images.texture);
+		structure.material.bumpMap = loader.load(allotment.images.texture);
+		structure.material.bumpScale = 0.05;
+		let structureTextureMap = structure.material.map;
+		structureTextureMap.wrapS = THREE.RepeatWrapping;
+		structureTextureMap.wrapT = THREE.RepeatWrapping;
+		structureTextureMap.repeat.set(4, 4);
 		
-		plane.add(cube);
+		plane.add(structure);
 		console.log("-------------------------");
-		console.log("cube---------------------");
-		console.log(cube);
+		console.log("structure---------------------");
+		console.log(structure);
 		console.log("-------------------------");
 	});
-	
+
 	return true;
 }
 
