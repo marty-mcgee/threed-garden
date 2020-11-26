@@ -41,23 +41,12 @@ function init() {
 
 	let loader = new THREE.TextureLoader();
 	plane.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big.jpg');
-	//plane.material.bumpMap = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big-nm.jpg');
-	//plane.material.bumpScale = 0.05;
-
-	// let loader = new THREE.TextureLoader();
-	// cube.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/fence-lattice-redwood-100x100-white.png');
-	//cube.material.bumpMap = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/fence-lattice-redwood-100x100-white.png');
-	//cube.material.bumpScale = 0.05;
-
-	let texturePlane = plane.material.map;
-	texturePlane.wrapS = THREE.RepeatWrapping;
-	texturePlane.wrapT = THREE.RepeatWrapping;
-	texturePlane.repeat.set(4, 4);
-
-	// let textureCube = cube.material.map;
-	// textureCube.wrapS = THREE.RepeatWrapping;
-	// textureCube.wrapT = THREE.RepeatWrapping;
-	// textureCube.repeat.set(4, 4);
+	plane.material.bumpMap = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big-nm.jpg');
+	plane.material.bumpScale = 0.05;
+	let planeTextureMap = plane.material.map;
+	planeTextureMap.wrapS = THREE.RepeatWrapping;
+	planeTextureMap.wrapT = THREE.RepeatWrapping;
+	planeTextureMap.repeat.set(4, 4);
 
 	/** BACKGROUND *************************************************************************** */
 
@@ -298,34 +287,23 @@ function buildAllotments(postObject, plane){
 		let allotment = {};
 		allotment.parameters = {};
 		allotment.position = {};
+		allotment.images = {};
 		allotment.parameters.x = parseInt(key.acf.allotment_width);
 		allotment.parameters.y = parseInt(key.acf.allotment_length);
 		allotment.parameters.z = parseInt(key.acf.allotment_height);
 		allotment.position.x = parseInt(key.acf.allotment_position_x);
 		allotment.position.y = parseInt(key.acf.allotment_position_y);
 		allotment.position.z = parseInt(key.acf.allotment_position_z);
+		allotment.images.texture = key.acf.allotment_texture_image;
+		allotment.images.featured = getFeaturedImage(key);
+		allotment.shape = key.acf.allotment_shape;
+		allotment.color = key.acf.allotment_color;
 		console.log("-------------------------");
 		console.log("allotment----------------");
 		console.log(allotment);
 		console.log("-------------------------");
 
 		//buildNewPost(key);
-
-		let image = getFeaturedImage(key);
-		console.log("-------------------------");
-		console.log("image--------------------");
-		console.log(image);
-		console.log("-------------------------");
-		let imageUrl = '/wp-content/plugins/threed-garden/admin/media/textures/fence-lattice-redwood-100x100-white.png';
-		console.log(imageUrl);
-		console.log("-------------------------");
-		if (image){
-			console.log("-------------------------");
-			console.log("HEY HEY HEY -- WHAT WO---");
-			console.log(imageUrl);
-			console.log("-------------------------");
-		}
-
 
 		let cube = getCube(
 			allotment.parameters.x, 
@@ -337,7 +315,13 @@ function buildAllotments(postObject, plane){
 		cube.position.y = allotment.position.y;
 		cube.position.z = (cube.geometry.parameters.depth / 2); // + allotment.position.z
 		cube.material.roughness = 0.9;
-		cube.material.map = loader.load(imageUrl);
+		cube.material.map = loader.load(allotment.images.texture);
+		cube.material.bumpMap = loader.load(allotment.images.texture);
+		cube.material.bumpScale = 0.05;
+		let cubeTextureMap = cube.material.map;
+		cubeTextureMap.wrapS = THREE.RepeatWrapping;
+		cubeTextureMap.wrapT = THREE.RepeatWrapping;
+		cubeTextureMap.repeat.set(4, 4);
 		
 		plane.add(cube);
 		console.log("-------------------------");
@@ -345,47 +329,8 @@ function buildAllotments(postObject, plane){
 		console.log(cube);
 		console.log("-------------------------");
 	});
-
-
-
-	// let cube1 = getCube(32, 16, 5, 0x772200);
-	// cube1.position.x = 40;
-	// cube1.position.y = -12;
-	// cube1.position.z = cube1.geometry.parameters.depth / 2;
-	// cube1.material.roughness = 0.9;
-	// cube1.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/fence-lattice-redwood-100x100-white.png');
-	// console.log("-------------------------");
-	// console.log("cube1--------------------");
-	// console.log(cube1);
-	// console.log("-------------------------");
 	
-	// let cube2 = getCube(88, 22, 8, 0x773300);
-	// cube2.position.x = -80;
-	// cube2.position.y = 40;
-	// cube2.position.z = cube2.geometry.parameters.depth / 2;
-	// cube2.rotation.z = Math.PI / 2;
-	// cube2.material.roughness = 0.9;
-	// cube2.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/fence-lattice-redwood-100x100-white.png');
-	// console.log("-------------------------");
-	// console.log("cube2--------------------");
-	// console.log(cube2);
-	// console.log("-------------------------");
-	
-	// let cube3 = getCube(10, 16, 12, 0x772200);
-	// cube3.position.x = 10;
-	// cube3.position.y = 20;
-	// cube3.position.z = cube3.geometry.parameters.depth / 2;
-	// cube3.rotation.z = Math.PI / 2;
-	// cube3.material.roughness = 0.9;
-	// cube3.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/fence-lattice-redwood-100x100-white.png');
-	// console.log("-------------------------");
-	// console.log("cube3--------------------");
-	// console.log(cube3);
-	// console.log("-------------------------");
-
-	// plane.add(cube1);
-	// plane.add(cube2);
-	// plane.add(cube3);
+	return true;
 }
 
 /**
