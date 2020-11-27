@@ -3,6 +3,7 @@
 (function( $ ) {
 'use strict';
 
+/** PARAMETERS FROM PHP */
 const pluginName = postdata.plugin_name;
 const pluginVersion = postdata.plugin_version;
 const pluginURL = postdata.plugin_url;
@@ -12,6 +13,14 @@ const restURL = postdata.rest_url;
 // console.log(pluginName, pluginVersion, pluginURL, themeURI, restURL);
 // console.log("-------------------------");
 
+/** MOUSE CLICKS */
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+var sprite1;
+var canvas1, context1, texture1;
+var INTERSECTED;
+
+/** MAIN INIT */
 function init() {
 	let scene = new THREE.Scene();
 	scene.background = new THREE.Color(0x333333);
@@ -104,15 +113,15 @@ function init() {
 	//plane.add(spotLight);
 	plane.add(directionalLight);
 	plane.add(ambientLight);
-	scene.add(helper);
+	//scene.add(helper);
 	scene.add(plane);
 
 	/** CAMERA **************************************************************************** */
 
 	var camera = new THREE.PerspectiveCamera(
-		55,
+		60,
 		window.innerWidth/window.innerHeight,
-		0.1,
+		1,
 		1000
 	);
 	camera.position.set(86, 64, 182);
@@ -178,10 +187,121 @@ function init() {
 	// console.log("-------------------------");
 
 
+	// // Draw a line from pointA in the given direction at distance 100
+    // var pointA = new THREE.Vector3( 0, 0, 0 );
+    // var direction = new THREE.Vector3( 10, 0, 0 );
+    // direction.normalize();
+
+    // var distance = 100; // at what distance to determine pointB
+
+    // var pointB = new THREE.Vector3();
+    // pointB.addVectors ( pointA, direction.multiplyScalar( distance ) );
+
+    // var geometry = new THREE.Geometry();
+    // geometry.vertices.push( pointA );
+    // geometry.vertices.push( pointB );
+    // var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
+    // var line = new THREE.Line( geometry, material );
+    // scene.add( line );
+
+
+	// /////// draw text on canvas /////////
+
+	// // create a canvas element
+	// canvas1 = document.createElement('canvas');
+	// context1 = canvas1.getContext('2d');
+	// context1.font = "Bold 20px Arial";
+	// context1.fillStyle = "rgba(0,0,0,0.95)";
+    // context1.fillText('Hello, world!', 0, 20);
+    
+	// // canvas contents will be used for a texture
+	// texture1 = new THREE.Texture(canvas1) 
+	// texture1.needsUpdate = true;
+	
+	// ////////////////////////////////////////
+	
+	// var spriteMaterial = new THREE.SpriteMaterial({ map: texture1 });
+	// sprite1 = new THREE.Sprite(spriteMaterial);
+	// sprite1.scale.set(50, 25, 1.0);
+	// sprite1.position.set(20, 20, 20);
+	// plane.add(sprite1);	
+
+	// //////////////////////////////////////////
+
+
 	/** ANIMATE + RENDER (continuous rendering) ******************************************** */
 
 	//update(renderer, scene, camera);
 	let animate = function () {
+
+		/** MOUSE CLICKS *********************************************************************/
+		
+		// update the picking ray with the camera and mouse position
+		raycaster.setFromCamera(mouse, camera);
+		//raycaster.set( camera.getWorldPosition(), camera.getWorldDirection() );
+
+		//let helper2 = new THREE.CameraHelper(directionalLight.shadow.camera);
+
+		// calculate objects intersecting the picking ray
+		const intersects = raycaster.intersectObjects(plane.children);
+		
+		for (let i = 0; i < intersects.length; i ++) {
+			// hightlight object
+			//intersects[ i ].object.material.color.set(0xff0000);
+		}
+
+		// if there is one (or more) intersections
+		if ( intersects.length > 0 )
+		{
+			// if the closest object intersected is not the currently stored intersection object
+			if ( intersects[ 0 ].object != INTERSECTED ) 
+			{
+				// restore previous intersection object (if it exists) to its original color
+				if ( INTERSECTED ) 
+					INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
+				// store reference to closest object as current intersection object
+				INTERSECTED = intersects[ 0 ].object;
+				// store color of closest object (for later restoration)
+				INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
+				// set a new color for closest object
+				INTERSECTED.material.color.setHex( 0xffff00 );
+				
+				// // update text, if it has a "name" field.
+				// if ( intersects[ 0 ].object.name )
+				// {
+				// 	context1.clearRect(0,0,640,480);
+				// 	var message = intersects[ 0 ].object.name;
+				// 	var metrics = context1.measureText(message);
+				// 	var width = metrics.width;
+				// 	context1.fillStyle = "rgba(0,0,0,0.95)"; // black border
+				// 	context1.fillRect( 0,0, width+8,20+8);
+				// 	context1.fillStyle = "rgba(255,255,255,0.95)"; // white filler
+				// 	context1.fillRect( 2,2, width+4,20+4 );
+				// 	context1.fillStyle = "rgba(0,0,0,1)"; // text color
+				// 	context1.fillText( message, 4,20 );
+				// 	texture1.needsUpdate = true;
+				// }
+				// else
+				// {
+				// 	context1.clearRect(0,0,300,300);
+				// 	texture1.needsUpdate = true;
+				// }
+			}
+		} 
+		else // there are no intersections
+		{
+			// restore previous intersection object (if it exists) to its original color
+			if ( INTERSECTED ) 
+				INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
+			// remove previous intersection object reference
+			//     by setting current intersection object to "nothing"
+			INTERSECTED = null;
+			// context1.clearRect(0,0,300,300);
+			// texture1.needsUpdate = true;
+		}
+		/** MOUSE CLICKS END *****************************************************************/
+
+		/** CONTINUE PLEASE (MANDATORY) */
 		controls.update();
 		requestAnimationFrame( animate );
 		// structure.rotation.x += 0.005;
@@ -330,6 +450,7 @@ function buildAllotments(postObject, plane){
 			allotment.parameters.z, 
 			allotment.color
 		);
+		structure.name = allotment.title;
 		structure.position.x = allotment.position.x;
 		structure.position.y = allotment.position.y;
 		structure.position.z = (structure.geometry.parameters.depth / 2); // + allotment.position.z
@@ -349,14 +470,14 @@ function buildAllotments(postObject, plane){
 		console.log("-------------------------");
 
 		var spritey = makeTextSprite(
-			allotment.title, 
+			structure.name, 
 			{ 	fontsize: 24, 
 				fontface: "Calibri", 
 				borderColor: {r:255, g:0, b:0, a:0.7}, 
 				backgroundColor: {r:255, g:255, b:255, a:0.7} 
 			} 
 		);
-		spritey.position.set(5, 5, allotment.parameters.z + 10);
+		spritey.position.set(5, 5, allotment.parameters.z + 15);
 		structure.add(spritey);
 	
 
@@ -371,19 +492,14 @@ function buildAllotments(postObject, plane){
 function makeTextSprite( message, parameters )
 {
 	if ( parameters === undefined ) parameters = {};
-	
 	var fontface = parameters.hasOwnProperty("fontface") ? 
 		parameters["fontface"] : "Arial";
-	
 	var fontsize = parameters.hasOwnProperty("fontsize") ? 
 		parameters["fontsize"] : 18;
-	
 	var borderThickness = parameters.hasOwnProperty("borderThickness") ? 
 		parameters["borderThickness"] : 4;
-	
 	var borderColor = parameters.hasOwnProperty("borderColor") ?
 		parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 };
-	
 	var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?
 		parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
 
@@ -456,6 +572,44 @@ function roundRect(ctx, x, y, w, h, r)
 	ctx.stroke();   
 }
 
+/**
+ * MOUSE CLICKS **********************************************************************************
+ */
+// function onMouseMove(event) {
+// 	// calculate mouse position in normalized device coordinates
+// 	// (-1 to +1) for both components
+// 	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+// 	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+// 	// console.log("------------------");
+// 	// console.log("mouse-------------");
+// 	// console.log(mouse.x, mouse.y);
+// 	// console.log("------------------");
+// }
+// /** MOUSE CLICKS */
+// window.addEventListener('mousemove', onMouseMove, false);
+function onDocumentMouseMove( event ) 
+{
+	// the following line would stop any other event handler from firing
+	// (such as the mouse's TrackballControls)
+	// event.preventDefault();
+
+	// update sprite position (tooltip)
+	//sprite1.position.set( event.clientX, event.clientY - 20, 0 );
+	
+	// update the mouse variable
+	// mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	// mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+	// mouse.x = (event.offsetX / canvas.clientWidth) * 2 - 1;
+	// mouse.y = -(event.offsetY / canvas.clientHeight) * 2 + 1;
+	mouse.x = (event.offsetX / (window.innerWidth - 240)) * 2 - 1;
+	mouse.y = -(event.offsetY / (window.innerHeight - 100)) * 2 + 1;
+	// console.log("------------------");
+	// console.log("mouse-------------");
+	// console.log(mouse.x, mouse.y);
+	// console.log("------------------");
+}
+// when the mouse moves, call the given function
+document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
 /**
  * TESTING ***************************************************************************************
@@ -507,10 +661,10 @@ function getFeaturedImage( postObject ) {
 			featImage.imgHeight = featImage.featuredObject.media_details.sizes.full.height;
 			featImage.imgLargeUrl = featImage.featuredObject.media_details.sizes.large.source_url +  ' 1024w, ';
 		}
-		console.log("-------------------------");
-		console.log("featImage----------------");
-		console.log(featImage);
-		console.log("-------------------------");
+		// console.log("-------------------------");
+		// console.log("featImage----------------");
+		// console.log(featImage);
+		// console.log("-------------------------");
 	}
 
 	return featImage;
@@ -523,25 +677,19 @@ function getFeaturedImage( postObject ) {
 function buildNewPost( postObject ) {
 	// Only output tag markup if there are actual tags for the post.
 	let conditionalTags = ( postObject ) => {
-
 		let tagMarkup = '';
-
 		if (postObject.tagLinks !== '') {
 			tagMarkup = `
 				<pre>${getTaxonomies( postObject, false )}</pre>
 			`;
-		}   
-		
+		}
 		return tagMarkup;
 	}
 
 	let output = `
 		<pre>${getTaxonomies( postObject, true )}</pre>
-
 		<pre>${getFeaturedImage( postObject )}</pre>
-
 		<pre>${conditionalTags( postObject )}</pre>
-
 	`;
 
 	// Remove "load previous" container.
