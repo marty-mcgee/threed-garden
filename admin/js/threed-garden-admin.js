@@ -41,8 +41,8 @@ function init() {
 
 	let loader = new THREE.TextureLoader();
 	plane.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big.jpg');
-	plane.material.bumpMap = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big-nm.jpg');
-	plane.material.bumpScale = 0.05;
+	// plane.material.bumpMap = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big-nm.jpg');
+	// plane.material.bumpScale = 0.01;
 	let planeTextureMap = plane.material.map;
 	planeTextureMap.wrapS = THREE.RepeatWrapping;
 	planeTextureMap.wrapT = THREE.RepeatWrapping;
@@ -104,11 +104,8 @@ function init() {
 	//plane.add(spotLight);
 	plane.add(directionalLight);
 	plane.add(ambientLight);
-	plane.add(helper);
+	scene.add(helper);
 	scene.add(plane);
-	// console.log("-------------------------");
-	// console.log(plane);
-	// console.log("-------------------------");
 
 	/** CAMERA **************************************************************************** */
 
@@ -118,7 +115,7 @@ function init() {
 		0.1,
 		1000
 	);
-	camera.position.set( 86, 64, 182 );
+	camera.position.set(86, 64, 182);
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 	// console.log("-------------------------");
 	// console.log(camera);
@@ -281,6 +278,10 @@ function update(renderer, scene, camera){
 }
 
 
+
+/**
+ * BUILD FROM REST API POST OBJECT ************************************************************
+ */
 function buildAllotments(postObject, plane){
 	//alert("HEY HEY HEY -- FROM JS");
 	console.log("-------------------------");
@@ -312,6 +313,8 @@ function buildAllotments(postObject, plane){
 		allotment.images.featured = getFeaturedImage(key);
 		allotment.shape = key.acf.allotment_shape;
 		allotment.color = key.acf.allotment_color;
+		allotment.title = key.title.rendered;
+		allotment.description = key.content.rendered;
 		console.log("-------------------------");
 		console.log("allotment----------------");
 		console.log(allotment);
@@ -332,8 +335,8 @@ function buildAllotments(postObject, plane){
 		structure.position.z = (structure.geometry.parameters.depth / 2); // + allotment.position.z
 		structure.material.roughness = 0.9;
 		structure.material.map = loader.load(allotment.images.texture);
-		structure.material.bumpMap = loader.load(allotment.images.texture);
-		structure.material.bumpScale = 0.05;
+		// structure.material.bumpMap = loader.load(allotment.images.texture);
+		// structure.material.bumpScale = 0.05;
 		let structureTextureMap = structure.material.map;
 		structureTextureMap.wrapS = THREE.RepeatWrapping;
 		structureTextureMap.wrapT = THREE.RepeatWrapping;
@@ -344,10 +347,119 @@ function buildAllotments(postObject, plane){
 		console.log("structure---------------------");
 		console.log(structure);
 		console.log("-------------------------");
+
+		var spritey = makeTextSprite(
+			allotment.title, 
+			{ 	fontsize: 24, 
+				fontface: "Calibri", 
+				borderColor: {r:255, g:0, b:0, a:0.7}, 
+				backgroundColor: {r:255, g:255, b:255, a:0.7} 
+			} 
+		);
+		spritey.position.set(5, 5, allotment.parameters.z + 10);
+		structure.add(spritey);
+	
+
 	});
 
 	return true;
 }
+
+/**
+ * TEXT *******************************************************************************************
+ */
+function makeTextSprite( message, parameters )
+{
+	if ( parameters === undefined ) parameters = {};
+	
+	var fontface = parameters.hasOwnProperty("fontface") ? 
+		parameters["fontface"] : "Arial";
+	
+	var fontsize = parameters.hasOwnProperty("fontsize") ? 
+		parameters["fontsize"] : 18;
+	
+	var borderThickness = parameters.hasOwnProperty("borderThickness") ? 
+		parameters["borderThickness"] : 4;
+	
+	var borderColor = parameters.hasOwnProperty("borderColor") ?
+		parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 };
+	
+	var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?
+		parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
+
+	//var spriteAlignment = THREE.SpriteAlignment.topLeft;
+		
+	var canvas = document.createElement('canvas');
+	var context = canvas.getContext('2d');
+	context.font = "Bold " + fontsize + "px " + fontface;
+	//context.textAlign = "center";
+    
+	// get size data (height depends only on font size)
+	var metrics = context.measureText( message );
+	var textWidth = metrics.width;
+	console.log("-------------------------");
+	console.log("metrics------------------");
+	console.log(textWidth);
+	console.log("-------------------------");
+
+	// background color
+	context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
+								  + backgroundColor.b + "," + backgroundColor.a + ")";
+	// border color
+	context.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
+								  + borderColor.b + "," + borderColor.a + ")";
+
+	context.lineWidth = borderThickness;
+	roundRect(
+		context, 
+		borderThickness/2, 
+		borderThickness/2, 
+		textWidth + borderThickness, 
+		fontsize * 1.4 + borderThickness, 
+		6
+	);
+	// 1.4 is extra height factor for text below baseline: g,j,p,q.
+	
+	// text color
+	context.fillStyle = "rgba(0, 0, 0, 1.0)";
+
+	context.fillText( message, borderThickness, fontsize + borderThickness);
+	
+	// canvas contents will be used for a texture
+	var texture = new THREE.Texture(canvas);
+	texture.needsUpdate = true;
+
+	var spriteMaterial = new THREE.SpriteMaterial( 
+		{ map: texture } //, useScreenCoordinates: false, alignment: spriteAlignment
+	);
+	var sprite = new THREE.Sprite( spriteMaterial );
+	sprite.scale.set(50, 25, 1.0);
+
+	return sprite;
+}
+
+// function for drawing rounded rectangles
+function roundRect(ctx, x, y, w, h, r) 
+{
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.lineTo(x+w-r, y);
+    ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+    ctx.lineTo(x+w, y+h-r);
+    ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+    ctx.lineTo(x+r, y+h);
+    ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+    ctx.lineTo(x, y+r);
+    ctx.quadraticCurveTo(x, y, x+r, y);
+    ctx.closePath();
+    ctx.fill();
+	ctx.stroke();   
+}
+
+
+/**
+ * TESTING ***************************************************************************************
+ */
 
 /**
  * Get the current category IDs and request their category objects.
