@@ -16,8 +16,8 @@ const restURL = postdata.rest_url;
 /** MOUSE CLICKS */
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
-var sprite1;
-var canvas1, context1, texture1;
+// var sprite1;
+// var canvas1, context1, texture1;
 var INTERSECTED;
 
 /** MAIN INIT */
@@ -33,18 +33,6 @@ function init() {
 	plane.rotation.x = -Math.PI / 2; //-90 degrees in radians
 	//plane.position.y = 0;
 	plane.material.roughness = 0.0;
-
-	/** QUERY FOR BOXES ****************************************************************** */
-
-	let queryURLAllotments = `${restURL}allotment/?_embed`;
-	fetch( queryURLAllotments )
-		.then( response => response.json() )
-		.then( postObject => buildAllotments( postObject, plane ) );
-		
-	// let queryURLPlantingPlans = `${restURL}planting_plan/?_embed`;
-	// fetch( queryURLPlantingPlans )
-	// 	.then( response => response.json() )
-	// 	.then( postObject => buildPlantingPlans( postObject, plane ) );
 
 	/** TEXTURES ************************************************************************* */
 
@@ -119,9 +107,9 @@ function init() {
 	/** CAMERA **************************************************************************** */
 
 	var camera = new THREE.PerspectiveCamera(
-		60,
+		55,
 		window.innerWidth/window.innerHeight,
-		1,
+		0.1,
 		1000
 	);
 	camera.position.set(86, 64, 182);
@@ -186,47 +174,17 @@ function init() {
 	// console.log(canvas);
 	// console.log("-------------------------");
 
+	/** QUERY FOR BOXES ****************************************************************** */
 
-	// // Draw a line from pointA in the given direction at distance 100
-    // var pointA = new THREE.Vector3( 0, 0, 0 );
-    // var direction = new THREE.Vector3( 10, 0, 0 );
-    // direction.normalize();
-
-    // var distance = 100; // at what distance to determine pointB
-
-    // var pointB = new THREE.Vector3();
-    // pointB.addVectors ( pointA, direction.multiplyScalar( distance ) );
-
-    // var geometry = new THREE.Geometry();
-    // geometry.vertices.push( pointA );
-    // geometry.vertices.push( pointB );
-    // var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
-    // var line = new THREE.Line( geometry, material );
-    // scene.add( line );
-
-
-	// /////// draw text on canvas /////////
-
-	// // create a canvas element
-	// canvas1 = document.createElement('canvas');
-	// context1 = canvas1.getContext('2d');
-	// context1.font = "Bold 20px Arial";
-	// context1.fillStyle = "rgba(0,0,0,0.95)";
-    // context1.fillText('Hello, world!', 0, 20);
-    
-	// // canvas contents will be used for a texture
-	// texture1 = new THREE.Texture(canvas1) 
-	// texture1.needsUpdate = true;
-	
-	// ////////////////////////////////////////
-	
-	// var spriteMaterial = new THREE.SpriteMaterial({ map: texture1 });
-	// sprite1 = new THREE.Sprite(spriteMaterial);
-	// sprite1.scale.set(50, 25, 1.0);
-	// sprite1.position.set(20, 20, 20);
-	// plane.add(sprite1);	
-
-	// //////////////////////////////////////////
+	let queryURLAllotments = `${restURL}allotment/?_embed`;
+	fetch( queryURLAllotments )
+		.then( response => response.json() )
+		.then( postObject => buildAllotments( postObject, plane, canvas, gui ) );
+		
+	// let queryURLPlantingPlans = `${restURL}planting_plan/?_embed`;
+	// fetch( queryURLPlantingPlans )
+	// 	.then( response => response.json() )
+	// 	.then( postObject => buildPlantingPlans( postObject, plane ) );
 
 
 	/** ANIMATE + RENDER (continuous rendering) ******************************************** */
@@ -266,26 +224,15 @@ function init() {
 				// set a new color for closest object
 				INTERSECTED.material.color.setHex( 0xffff00 );
 				
-				// // update text, if it has a "name" field.
-				// if ( intersects[ 0 ].object.name )
-				// {
-				// 	context1.clearRect(0,0,640,480);
-				// 	var message = intersects[ 0 ].object.name;
-				// 	var metrics = context1.measureText(message);
-				// 	var width = metrics.width;
-				// 	context1.fillStyle = "rgba(0,0,0,0.95)"; // black border
-				// 	context1.fillRect( 0,0, width+8,20+8);
-				// 	context1.fillStyle = "rgba(255,255,255,0.95)"; // white filler
-				// 	context1.fillRect( 2,2, width+4,20+4 );
-				// 	context1.fillStyle = "rgba(0,0,0,1)"; // text color
-				// 	context1.fillText( message, 4,20 );
-				// 	texture1.needsUpdate = true;
-				// }
-				// else
-				// {
-				// 	context1.clearRect(0,0,300,300);
-				// 	texture1.needsUpdate = true;
-				// }
+				// update text, if it has a "name" field.
+				if ( intersects[ 0 ].object.name )
+				{
+					
+				}
+				else
+				{
+					
+				}
 			}
 		} 
 		else // there are no intersections
@@ -296,8 +243,6 @@ function init() {
 			// remove previous intersection object reference
 			//     by setting current intersection object to "nothing"
 			INTERSECTED = null;
-			// context1.clearRect(0,0,300,300);
-			// texture1.needsUpdate = true;
 		}
 		/** MOUSE CLICKS END *****************************************************************/
 
@@ -402,7 +347,7 @@ function update(renderer, scene, camera){
 /**
  * BUILD FROM REST API POST OBJECT ************************************************************
  */
-function buildAllotments(postObject, plane){
+function buildAllotments(postObject, plane, canvas, gui) {
 	//alert("HEY HEY HEY -- FROM JS");
 	console.log("-------------------------");
 	console.log("postObject---------------");
@@ -410,6 +355,9 @@ function buildAllotments(postObject, plane){
 	console.log("-------------------------");
 
 	let loader = new THREE.TextureLoader();
+
+	var sprites = [];
+	let folderHey = gui.addFolder("Annotations");
 
 	postObject.forEach( function(key){
 
@@ -469,7 +417,7 @@ function buildAllotments(postObject, plane){
 		console.log(structure);
 		console.log("-------------------------");
 
-		var spritey = makeTextSprite(
+		sprites[key] = makeTextSprite(
 			structure.name, 
 			{ 	fontsize: 24, 
 				fontface: "Calibri", 
@@ -477,9 +425,12 @@ function buildAllotments(postObject, plane){
 				backgroundColor: {r:255, g:255, b:255, a:0.7} 
 			} 
 		);
-		spritey.position.set(5, 5, allotment.parameters.z + 15);
-		structure.add(spritey);
-	
+		sprites[key].position.set(5, 5, allotment.parameters.z + 15);
+		sprites[key].visible = false;
+		
+		structure.add(sprites[key]);
+
+		folderHey.add(sprites[key], "visible").listen();
 
 	});
 
@@ -575,26 +526,11 @@ function roundRect(ctx, x, y, w, h, r)
 /**
  * MOUSE CLICKS **********************************************************************************
  */
-// function onMouseMove(event) {
-// 	// calculate mouse position in normalized device coordinates
-// 	// (-1 to +1) for both components
-// 	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-// 	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-// 	// console.log("------------------");
-// 	// console.log("mouse-------------");
-// 	// console.log(mouse.x, mouse.y);
-// 	// console.log("------------------");
-// }
-// /** MOUSE CLICKS */
-// window.addEventListener('mousemove', onMouseMove, false);
 function onDocumentMouseMove( event ) 
 {
 	// the following line would stop any other event handler from firing
 	// (such as the mouse's TrackballControls)
 	// event.preventDefault();
-
-	// update sprite position (tooltip)
-	//sprite1.position.set( event.clientX, event.clientY - 20, 0 );
 	
 	// update the mouse variable
 	// mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
