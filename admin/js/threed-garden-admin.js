@@ -16,9 +16,9 @@ const restURL = postdata.rest_url;
 /** MOUSE CLICKS */
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
-// var sprite1;
-// var canvas1, context1, texture1;
-var INTERSECTED;
+// let sprite1;
+// let canvas1, context1, texture1;
+let INTERSECTED;
 
 /** MAIN INIT */
 function init() {
@@ -49,14 +49,14 @@ function init() {
 
 	// manipulate materials
 	// load the cube map
-	var path = '/wp-content/plugins/threed-garden/admin/media/textures/cube/Forest-Meadow-Cube-Map-2/';
-	var format = '.png';
-	var urls = [
+	let path = '/wp-content/plugins/threed-garden/admin/media/textures/cube/Forest-Meadow-Cube-Map-2/';
+	let format = '.png';
+	let urls = [
 		path + 'px' + format, path + 'nx' + format,
 		path + 'py' + format, path + 'ny' + format,
 		path + 'pz' + format, path + 'nz' + format
 	];
-	var reflectionCube = new THREE.CubeTextureLoader().load(urls);
+	let reflectionCube = new THREE.CubeTextureLoader().load(urls);
 	reflectionCube.format = THREE.RGBFormat;
 
 	scene.background = reflectionCube;
@@ -106,7 +106,7 @@ function init() {
 
 	/** CAMERA **************************************************************************** */
 
-	var camera = new THREE.PerspectiveCamera(
+	let camera = new THREE.PerspectiveCamera(
 		55,
 		window.innerWidth/window.innerHeight,
 		0.1,
@@ -334,13 +334,13 @@ function getAmbientLight(color, intensity){
 }
 
 // maybe
-function update(renderer, scene, camera){
-	renderer.render( scene, camera );
-	// recursive function loading
-	requestAnimationFrame( function(){
-		update(renderer, scene, camera);
-	} );
-}
+// function update(renderer, scene, camera){
+// 	renderer.render( scene, camera );
+// 	// recursive function loading
+// 	requestAnimationFrame( function(){
+// 		update(renderer, scene, camera);
+// 	} );
+// }
 
 
 
@@ -356,7 +356,7 @@ function buildAllotments(postObject, plane, canvas, gui) {
 
 	let loader = new THREE.TextureLoader();
 
-	var sprites = [];
+	let sprites = [];
 	let folderHey = gui.addFolder("Annotations");
 
 	postObject.forEach( function(key){
@@ -443,27 +443,27 @@ function buildAllotments(postObject, plane, canvas, gui) {
 function makeTextSprite( message, parameters )
 {
 	if ( parameters === undefined ) parameters = {};
-	var fontface = parameters.hasOwnProperty("fontface") ? 
+	let fontface = parameters.hasOwnProperty("fontface") ? 
 		parameters["fontface"] : "Arial";
-	var fontsize = parameters.hasOwnProperty("fontsize") ? 
+	let fontsize = parameters.hasOwnProperty("fontsize") ? 
 		parameters["fontsize"] : 18;
-	var borderThickness = parameters.hasOwnProperty("borderThickness") ? 
+	let borderThickness = parameters.hasOwnProperty("borderThickness") ? 
 		parameters["borderThickness"] : 4;
-	var borderColor = parameters.hasOwnProperty("borderColor") ?
+	let borderColor = parameters.hasOwnProperty("borderColor") ?
 		parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 };
-	var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?
+	let backgroundColor = parameters.hasOwnProperty("backgroundColor") ?
 		parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
 
-	//var spriteAlignment = THREE.SpriteAlignment.topLeft;
+	//let spriteAlignment = THREE.SpriteAlignment.topLeft;
 		
-	var canvas = document.createElement('canvas');
-	var context = canvas.getContext('2d');
+	let canvas = document.createElement('canvas');
+	let context = canvas.getContext('2d');
 	context.font = "Bold " + fontsize + "px " + fontface;
 	//context.textAlign = "center";
     
 	// get size data (height depends only on font size)
-	var metrics = context.measureText( message );
-	var textWidth = metrics.width;
+	let metrics = context.measureText( message );
+	let textWidth = metrics.width;
 	console.log("-------------------------");
 	console.log("metrics------------------");
 	console.log(textWidth);
@@ -493,13 +493,13 @@ function makeTextSprite( message, parameters )
 	context.fillText( message, borderThickness, fontsize + borderThickness);
 	
 	// canvas contents will be used for a texture
-	var texture = new THREE.Texture(canvas);
+	let texture = new THREE.Texture(canvas);
 	texture.needsUpdate = true;
 
-	var spriteMaterial = new THREE.SpriteMaterial( 
+	let spriteMaterial = new THREE.SpriteMaterial( 
 		{ map: texture } //, useScreenCoordinates: false, alignment: spriteAlignment
 	);
-	var sprite = new THREE.Sprite( spriteMaterial );
+	let sprite = new THREE.Sprite( spriteMaterial );
 	sprite.scale.set(50, 25, 1.0);
 
 	return sprite;
