@@ -112,45 +112,11 @@ function init() {
 		0.1,
 		1000
 	);
-	camera.name = "mycamera";
+	camera.name = "gardencam1";
 	camera.position.set(86, 64, 182);
-	camera.lookAt(new THREE.Vector3(0, 0, 0));
+	//camera.lookAt(new THREE.Vector3(0, 0, 0)); // overridden by OrbitControls.target
 	// console.log("-------------------------");
 	// console.log(camera);
-	// console.log("-------------------------");
-
-	/** RENDERER ************************************************************************** */
-	
-	let renderer = new THREE.WebGLRenderer(
-		{ 	alpha: true, 
-			antialias: true 
-		}
-	);
-	renderer.shadowMap.enabled = true;
-	renderer.setSize(window.innerWidth - 240, window.innerHeight - 100);
-	//renderer.setClearColor(0xFFFFFF);
-	renderer.domElement.camera = camera;
-	//renderer.domElement.targetList = targetList;
-	renderer.domElement.targetList = plane.children;
-	// renderer.domElement.addEventListener("pointermove", 
-	// 	function (event) { onPointerMove(event) }, false);
-	renderer.domElement.addEventListener("pointermove", onPointerMove, false);
-	// renderer.domElement.addEventListener("pointerdown", 
-	// 	function (event, camera, targetList) { onPointerDown(event, camera, targetList) }, false);
-	renderer.domElement.addEventListener("pointerdown", onPointerDown, false);
-	// console.log("-------------------------");
-	// console.log(renderer);
-	// console.log("-------------------------");
-
-	/** CONTROLS ************************************************************************** */
-
-	let controls = new THREE.OrbitControls(camera, renderer.domElement);
-	controls.enableDamping = true;
-	controls.dampingFactor = 0.25;
-	controls.enableZoom = true;
-	controls.autoRotate = false;
-	// console.log("-------------------------");
-	// console.log(controls);
 	// console.log("-------------------------");
 
 	/** DAT.GUI *************************************************************************** */
@@ -159,9 +125,9 @@ function init() {
 	gui.close();
 	gui.domElement.id = 'gui';
 	let folder1 = gui.addFolder("Camera Position");
-	folder1.add(camera.position, "x", -100, 100).listen();
-	folder1.add(camera.position, "y", -100, 100).listen();
-	folder1.add(camera.position, "z", -100, 100).listen();
+	folder1.add(camera.position, "x", -500, 500).listen();
+	folder1.add(camera.position, "y", -500, 500).listen();
+	folder1.add(camera.position, "z", -500, 500).listen();
 	let folder2 = gui.addFolder("Directional Light");
 	folder2.add(directionalLight, "intensity", 0, 20);
 	folder2.add(directionalLight.position, "x", -500, 500);
@@ -174,6 +140,41 @@ function init() {
 	//gui.add(plane, "name");
 	// console.log("-------------------------");
 	// console.log(gui);
+	// console.log("-------------------------");
+
+	/** RENDERER ************************************************************************** */
+	
+	let renderer = new THREE.WebGLRenderer(
+		{ 	alpha: true, 
+			antialias: true 
+		}
+	);
+	renderer.shadowMap.enabled = true;
+	renderer.setSize(window.innerWidth - 240, window.innerHeight - 100);
+	//renderer.setClearColor(0xFFFFFF);
+	/** CONTROLS ************************************************************************** */
+		let controls = new THREE.OrbitControls(camera, renderer.domElement);
+		controls.enableDamping = true;
+		controls.dampingFactor = 0.1;
+		controls.enableZoom = true;
+		controls.rotateSpeed = 0.1;
+		controls.autoRotate = false;
+		controls.autoRotateSpeed = 0.03;
+		controls.minDistance = 1;
+		controls.maxDistance = 200;
+		controls.maxPolarAngle = Math.PI/2 - .04;
+		controls.target = new THREE.Vector3(0, 0, 0);
+		//controls.target.set(0, 5, 0);
+		// console.log("-------------------------");
+		// console.log(controls);
+		// console.log("-------------------------");
+	renderer.domElement.camera = camera;
+	renderer.domElement.targetList = plane.children; //targetList
+	renderer.domElement.controls = controls;
+	renderer.domElement.addEventListener("pointermove", onPointerMove, false);
+	renderer.domElement.addEventListener("pointerdown", onPointerDown, false);
+	// console.log("-------------------------");
+	// console.log(renderer);
 	// console.log("-------------------------");
 
 	/** WEBGL CANVAS *********************************************************************** */
@@ -363,10 +364,10 @@ function getAmbientLight(color, intensity){
  */
 function buildAllotments(postObject, plane, canvas, gui) {
 	//alert("HEY HEY HEY -- FROM JS");
-	console.log("-------------------------");
-	console.log("postObject---------------");
-	console.log(postObject);
-	console.log("-------------------------");
+	// console.log("-------------------------");
+	// console.log("postObject---------------");
+	// console.log(postObject);
+	// console.log("-------------------------");
 
 	let loader = new THREE.TextureLoader();
 
@@ -376,11 +377,11 @@ function buildAllotments(postObject, plane, canvas, gui) {
 
 	postObject.forEach( function(key){
 
-		console.log("-------------------------");
-		console.log("key.id (postObject)------");
-		console.log(key.id);
-		console.log(key);
-		console.log("-------------------------");
+		// console.log("-------------------------");
+		// console.log("key.id (postObject)------");
+		// console.log(key.id);
+		// console.log(key);
+		// console.log("-------------------------");
 
 		let allotment = {};
 		allotment.parameters = {};
@@ -485,10 +486,10 @@ function makeTextSprite( message, parameters )
 	// get size data (height depends only on font size)
 	let metrics = context.measureText( message );
 	let textWidth = metrics.width;
-	console.log("-------------------------");
-	console.log("metrics------------------");
-	console.log(textWidth);
-	console.log("-------------------------");
+	// console.log("-------------------------");
+	// console.log("metrics------------------");
+	// console.log(textWidth);
+	// console.log("-------------------------");
 
 	// background color
 	context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
@@ -612,17 +613,17 @@ function onPointerDown(event)
 	// 	event.originalTarget.camera.getWorldPosition(), 
 	// 	event.originalTarget.camera.getWorldDirection() 
 	// );
-	console.log("------------------");
-	console.log("raycaster2--------");
-	console.log(raycaster2);
-	console.log("------------------");
+	// console.log("------------------");
+	// console.log("raycaster2--------");
+	// console.log(raycaster2);
+	// console.log("------------------");
 
 	// create an array containing all objects in the scene with which the raycaster2 intersects
 	var intersects = raycaster2.intersectObjects( event.originalTarget.targetList );
-	console.log("------------------");
-	console.log("intersects--------");
-	console.log(intersects);
-	console.log("------------------");
+	// console.log("------------------");
+	// console.log("intersects--------");
+	// console.log(intersects);
+	// console.log("------------------");
 	
 	// if there is one (or more) intersections
 	if ( intersects.length > 0 )
@@ -636,10 +637,10 @@ function onPointerDown(event)
 		let intersectedObject = intersects[ 0 ].object;
 		// if ( intersectedObject != INTERSECTED2 ) 
 		// {
-			console.log("------------------");
-			console.log("intersectedObject--------");
-			console.log(intersectedObject);
-			console.log("------------------");
+			// console.log("------------------");
+			// console.log("intersectedObject--------");
+			// console.log(intersectedObject);
+			// console.log("------------------");
 
 			// restore previous intersection object (if it exists) to its original color
 			if ( INTERSECTED2 ) 
@@ -654,6 +655,15 @@ function onPointerDown(event)
 			// set a new color for closest object
 			//INTERSECTED2.material.color.setHex( 0xff0000 );
 			
+			// point the camera controls to the intersected object?
+			//event.originalTarget.controls.reset();
+			event.originalTarget.controls.target = new THREE.Vector3(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z);
+			event.originalTarget.camera.position.set(100, 200, 200);
+			console.log("------------------");
+			console.log("event.originalTarget.controls--------");
+			console.log(event.originalTarget.controls);
+			console.log("------------------");
+
 			intersectedObject.children.forEach( function(key) {
 				// console.log("-------------------------");
 				// console.log("key.type (intersectedObject.children)------");
