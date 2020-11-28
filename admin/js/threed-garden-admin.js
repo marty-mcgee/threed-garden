@@ -16,9 +16,9 @@ const restURL = postdata.rest_url;
 /** MOUSE CLICKS */
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
-// let sprite1;
-// let canvas1, context1, texture1;
 let INTERSECTED;
+let INTERSECTED2;
+let targetList = [];
 
 /** MAIN INIT */
 function init() {
@@ -112,6 +112,7 @@ function init() {
 		0.1,
 		1000
 	);
+	camera.name = "mycamera";
 	camera.position.set(86, 64, 182);
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 	// console.log("-------------------------");
@@ -120,10 +121,23 @@ function init() {
 
 	/** RENDERER ************************************************************************** */
 	
-	let renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+	let renderer = new THREE.WebGLRenderer(
+		{ 	alpha: true, 
+			antialias: true 
+		}
+	);
 	renderer.shadowMap.enabled = true;
 	renderer.setSize(window.innerWidth - 240, window.innerHeight - 100);
 	//renderer.setClearColor(0xFFFFFF);
+	renderer.domElement.camera = camera;
+	//renderer.domElement.targetList = targetList;
+	renderer.domElement.targetList = plane.children;
+	// renderer.domElement.addEventListener("pointermove", 
+	// 	function (event) { onPointerMove(event) }, false);
+	renderer.domElement.addEventListener("pointermove", onPointerMove, false);
+	// renderer.domElement.addEventListener("pointerdown", 
+	// 	function (event, camera, targetList) { onPointerDown(event, camera, targetList) }, false);
+	renderer.domElement.addEventListener("pointerdown", onPointerDown, false);
 	// console.log("-------------------------");
 	// console.log(renderer);
 	// console.log("-------------------------");
@@ -358,6 +372,7 @@ function buildAllotments(postObject, plane, canvas, gui) {
 
 	let sprites = [];
 	let folderHey = gui.addFolder("Annotations");
+	//let targetList = [];
 
 	postObject.forEach( function(key){
 
@@ -412,10 +427,10 @@ function buildAllotments(postObject, plane, canvas, gui) {
 		structureTextureMap.repeat.set(4, 4);
 		
 		plane.add(structure);
-		console.log("-------------------------");
-		console.log("structure---------------------");
-		console.log(structure);
-		console.log("-------------------------");
+		// console.log("-------------------------");
+		// console.log("structure---------------------");
+		// console.log(structure);
+		// console.log("-------------------------");
 
 		sprites[key] = makeTextSprite(
 			structure.name, 
@@ -429,8 +444,14 @@ function buildAllotments(postObject, plane, canvas, gui) {
 		sprites[key].visible = false;
 		
 		structure.add(sprites[key]);
+		console.log("-------------------------");
+		console.log("structure---------------------");
+		console.log(structure);
+		console.log("-------------------------");
 
 		folderHey.add(sprites[key], "visible").listen();
+
+		targetList.push(structure);
 
 	});
 
@@ -526,7 +547,10 @@ function roundRect(ctx, x, y, w, h, r)
 /**
  * MOUSE CLICKS **********************************************************************************
  */
-function onDocumentMouseMove( event ) 
+
+// when the mouse moves, call the given function
+//document.addEventListener( 'pointermove', onPointerMove, false );
+function onPointerMove( event ) 
 {
 	// the following line would stop any other event handler from firing
 	// (such as the mouse's TrackballControls)
@@ -540,12 +564,146 @@ function onDocumentMouseMove( event )
 	mouse.x = (event.offsetX / (window.innerWidth - 240)) * 2 - 1;
 	mouse.y = -(event.offsetY / (window.innerHeight - 100)) * 2 + 1;
 	// console.log("------------------");
-	// console.log("mouse-------------");
+	// console.log("mouse hover-------");
 	// console.log(mouse.x, mouse.y);
 	// console.log("------------------");
 }
+
 // when the mouse moves, call the given function
-document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+//document.addEventListener( 'pointerdown', onPointerDown, false );
+function onPointerDown(event) 
+{
+	// the following line would stop any other event handler from firing
+	// (such as the mouse's TrackballControls)
+	// event.preventDefault();
+	
+	// update the mouse variable
+	// mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	// mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+	// mouse.x = (event.offsetX / canvas.clientWidth) * 2 - 1;
+	// mouse.y = -(event.offsetY / canvas.clientHeight) * 2 + 1;
+	mouse.x = (event.offsetX / (window.innerWidth - 240)) * 2 - 1;
+	mouse.y = -(event.offsetY / (window.innerHeight - 100)) * 2 + 1;
+	// console.log("------------------");
+	// console.log("mouse clicked-----");
+	// console.log(mouse.x, mouse.y);
+	// console.log("------------------");
+	
+	// let camera = scene.getObjectByName("mycamera");
+	console.log("------------------");
+	console.log("event------------");
+	console.log(event);
+	console.log("------------------");
+
+
+	// find intersections
+
+	// create a Ray with origin at the mouse position
+	//   and direction into the scene (camera direction)
+	// let vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
+	//projector.unprojectVector( vector, camera );
+	// let raycaster2 = new THREE.Raycaster( 
+	// 	event.originalTarget.camera.position, 
+	// 	vector.sub( event.originalTarget.camera.position ).normalize() 
+	// );
+	let raycaster2 = new THREE.Raycaster();
+	raycaster2.setFromCamera(mouse, event.originalTarget.camera);
+	// raycaster2.set( 
+	// 	event.originalTarget.camera.getWorldPosition(), 
+	// 	event.originalTarget.camera.getWorldDirection() 
+	// );
+	console.log("------------------");
+	console.log("raycaster2--------");
+	console.log(raycaster2);
+	console.log("------------------");
+
+	// create an array containing all objects in the scene with which the raycaster2 intersects
+	var intersects = raycaster2.intersectObjects( event.originalTarget.targetList );
+	console.log("------------------");
+	console.log("intersects--------");
+	console.log(intersects);
+	console.log("------------------");
+	
+	// if there is one (or more) intersections
+	if ( intersects.length > 0 )
+	{
+		console.log("Hit @ " + toString( intersects[0].point ) );
+		// change the color of the closest face.
+		// intersects[ 0 ].face.color.setRGB( 0.8 * Math.random() + 0.2, 0, 0 ); 
+		// intersects[ 0 ].object.geometry.colorsNeedUpdate = true;
+
+		// if the closest object intersected is not the currently stored intersection object
+		let intersectedObject = intersects[ 0 ].object;
+		// if ( intersectedObject != INTERSECTED2 ) 
+		// {
+			console.log("------------------");
+			console.log("intersectedObject--------");
+			console.log(intersectedObject);
+			console.log("------------------");
+
+			// restore previous intersection object (if it exists) to its original color
+			if ( INTERSECTED2 ) 
+			{
+				//INTERSECTED2.material.color.setHex( INTERSECTED2.currentHex );
+				
+			}
+			// store reference to closest object as current intersection object
+			INTERSECTED2 = intersectedObject;
+			// store color of closest object (for later restoration)
+			//INTERSECTED2.currentHex = INTERSECTED2.material.color.getHex();
+			// set a new color for closest object
+			//INTERSECTED2.material.color.setHex( 0xff0000 );
+			
+			intersectedObject.children.forEach( function(key) {
+				// console.log("-------------------------");
+				// console.log("key.type (intersectedObject.children)------");
+				// console.log(key.type);
+				// console.log(key);
+				// console.log("-------------------------");
+				if (key.type === "Sprite"){
+					if (key.visible === true){
+						key.visible = false;
+					}
+					else {
+						key.visible = true;
+					}
+				}
+			});
+
+			// update text, if it has a "name" field.
+			if ( intersectedObject.name )
+			{
+				
+			}
+			else
+			{
+				
+			}
+		// }
+		// else
+		// {
+		// 	console.log("INTERSECTED2 already stored.");
+		// 	console.log("------------------");
+		// 	console.log("intersectedObject--------");
+		// 	console.log(intersectedObject);
+		// 	console.log("------------------");
+		// }
+	} 
+	else // there are no intersections
+	{
+		// restore previous intersection object (if it exists) to its original color
+		if ( INTERSECTED2 ) {
+			//INTERSECTED2.material.color.setHex( INTERSECTED2.currentHex );
+		}
+		// remove previous intersection object reference
+		//     by setting current intersection object to "nothing"
+		INTERSECTED2 = null;
+	}
+
+}
+function toString(v) { return "[ " + v.x + ", " + v.y + ", " + v.z + " ]"; }
+
+
 
 /**
  * TESTING ***************************************************************************************
