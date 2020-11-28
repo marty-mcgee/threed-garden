@@ -22,6 +22,13 @@ let targetList = [];
 
 /** MAIN INIT */
 function init() {
+
+
+	const panorama = new PANOLENS.BasicPanorama();
+	const viewer = new PANOLENS.Viewer();
+	viewer.add( panorama );
+
+
 	let scene = new THREE.Scene();
 	scene.background = new THREE.Color(0x333333);
 	//scene.fog = new THREE.Fog(0xFFFFFF, 0, 500);
@@ -92,6 +99,9 @@ function init() {
 	// console.log("-------------------------");
 	// console.log(ambientLight);
 	// console.log("-------------------------");
+
+	/** INFOSPOTS ************************************************************************* */
+	//addInfospots(plane);
 	
 	/** SCENE ***************************************************************************** */
 
@@ -155,9 +165,9 @@ function init() {
 	/** CONTROLS ************************************************************************** */
 		let controls = new THREE.OrbitControls(camera, renderer.domElement);
 		controls.enableDamping = true;
-		controls.dampingFactor = 0.1;
+		controls.dampingFactor = 0.25;
 		controls.enableZoom = true;
-		controls.rotateSpeed = 0.1;
+		controls.rotateSpeed = 0.5;
 		controls.autoRotate = false;
 		controls.autoRotateSpeed = 0.03;
 		controls.minDistance = 1;
@@ -263,6 +273,7 @@ function init() {
 
 		/** CONTINUE PLEASE (MANDATORY) */
 		controls.update();
+		TWEEN.update();
 		requestAnimationFrame( animate );
 		// structure.rotation.x += 0.005;
 		// structure.rotation.y += 0.005;
@@ -428,10 +439,10 @@ function buildAllotments(postObject, plane, canvas, gui) {
 		structureTextureMap.repeat.set(4, 4);
 		
 		plane.add(structure);
-		// console.log("-------------------------");
-		// console.log("structure---------------------");
-		// console.log(structure);
-		// console.log("-------------------------");
+		console.log("-------------------------");
+		console.log("structure---------------------");
+		console.log(structure);
+		console.log("-------------------------");
 
 		sprites[key] = makeTextSprite(
 			structure.name, 
@@ -441,7 +452,11 @@ function buildAllotments(postObject, plane, canvas, gui) {
 				backgroundColor: {r:255, g:255, b:255, a:0.7} 
 			} 
 		);
-		sprites[key].position.set(5, 5, allotment.parameters.z + 15);
+		sprites[key].position.set(
+			0, 
+			0, 
+			structure.geometry.parameters.depth + 1
+		);
 		sprites[key].visible = false;
 		
 		structure.add(sprites[key]);
@@ -453,6 +468,23 @@ function buildAllotments(postObject, plane, canvas, gui) {
 		folderHey.add(sprites[key], "visible").listen();
 
 		targetList.push(structure);
+
+		/** INFOSPOTS ********************************************************************* */
+		let infospot = new PANOLENS.Infospot( 5, PANOLENS.DataImage.Info );
+        infospot.position.set( 
+			structure.position.x - 1, 
+			structure.position.y - 1, 
+			structure.geometry.parameters.depth + 5 
+		);
+        infospot.addHoverText( structure.name );
+		infospot.show();
+    	//infospot.addHoverElement( document.getElementById( 'chair-container' ), 280 );
+		folderHey.add(infospot, "visible").listen();
+        plane.add( infospot );
+		console.log("-------------------------");
+		console.log("infospot---------------------");
+		console.log(infospot);
+		console.log("-------------------------");
 
 	});
 
@@ -591,10 +623,10 @@ function onPointerDown(event)
 	// console.log("------------------");
 	
 	// let camera = scene.getObjectByName("mycamera");
-	console.log("------------------");
-	console.log("event------------");
-	console.log(event);
-	console.log("------------------");
+	// console.log("------------------");
+	// console.log("event------------");
+	// console.log(event);
+	// console.log("------------------");
 
 
 	// find intersections
@@ -643,13 +675,18 @@ function onPointerDown(event)
 			// console.log("------------------");
 
 			// restore previous intersection object (if it exists) to its original color
-			if ( INTERSECTED2 ) 
-			{
+			if ( INTERSECTED2 ) {
 				//INTERSECTED2.material.color.setHex( INTERSECTED2.currentHex );
-				
+				INTERSECTED2 = intersectedObject;
+				// zoom out
+				//panCam(100, 200, 200, 800, event.originalTarget.camera, event.originalTarget.controls);
+			} else {
+				INTERSECTED2 = intersectedObject;
+				// zoom in
+				//panCam(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z, 800, event.originalTarget.camera, event.originalTarget.controls);	
 			}
 			// store reference to closest object as current intersection object
-			INTERSECTED2 = intersectedObject;
+			//INTERSECTED2 = intersectedObject;
 			// store color of closest object (for later restoration)
 			//INTERSECTED2.currentHex = INTERSECTED2.material.color.getHex();
 			// set a new color for closest object
@@ -657,12 +694,19 @@ function onPointerDown(event)
 			
 			// point the camera controls to the intersected object?
 			//event.originalTarget.controls.reset();
-			event.originalTarget.controls.target = new THREE.Vector3(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z);
-			event.originalTarget.camera.position.set(100, 200, 200);
-			console.log("------------------");
-			console.log("event.originalTarget.controls--------");
-			console.log(event.originalTarget.controls);
-			console.log("------------------");
+			//event.originalTarget.controls.target = new THREE.Vector3(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z);
+			//event.originalTarget.camera.position.set(100, 200, 200);
+			// if (event.buttons == 1) {
+			// 	// zoom in
+			// 	panCam(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z, 1200, event.originalTarget.camera, event.originalTarget.controls);
+			// } else if (event.buttons == 2) {
+			// 	// zoom out
+			// 	panCam(100, 200, 200, 1200, event.originalTarget.camera, event.originalTarget.controls);
+			// }
+			// console.log("------------------");
+			// console.log("event.originalTarget.controls--------");
+			// console.log(event.originalTarget.controls);
+			// console.log("------------------");
 
 			intersectedObject.children.forEach( function(key) {
 				// console.log("-------------------------");
@@ -713,6 +757,43 @@ function onPointerDown(event)
 }
 function toString(v) { return "[ " + v.x + ", " + v.y + ", " + v.z + " ]"; }
 
+
+// controls.enabled = false;
+// var xTarget=0;
+// var yTarget=-0.7;
+// var zTarget=-1.65;
+// var tweenDuration=2000;
+
+function panCam(xTarget, yTarget, zTarget, tweenDuration, camera, controls){
+
+	var camNewPosition= { x : xTarget, y : yTarget, z : zTarget};
+	var targetNewPos = {x : xTarget, y : yTarget, z : -1.65};
+
+	var camTween = new TWEEN.Tween(camera.position)
+		.to(camNewPosition, tweenDuration)
+		.easing(TWEEN.Easing.Quadratic.Out)
+		.onComplete(function() {
+			camera.position.copy(camNewPosition);
+			console.log("onComplete camera---------");
+		})
+		.start();
+	var targetTween = new TWEEN.Tween(controls.target)
+		.to(targetNewPos, tweenDuration)
+		.easing(TWEEN.Easing.Quadratic.Out)
+		.onComplete(function() {
+			controls.target.copy(targetNewPos);
+			console.log("onComplete controls---------");
+		})
+		.start();
+
+	console.log("------------------");
+	console.log("camTween, targetTween---------");
+	console.log(camTween);
+	console.log(targetTween);
+	console.log("------------------");
+	
+}
+    
 
 
 /**
@@ -810,6 +891,148 @@ function buildNewPost( postObject ) {
 	//getPreviousPost();
 }
 
+
+
+
+
+
+
+
+
+
+    //   var panorama, viewer, dae, path, format, loader, pointlight, intersect, infospots;
+
+    //   var chairModels = [];
+
+    //   // Disable warning from loading dae model
+    //   console.warn = ()=>{};
+
+    //   path = 'asset/textures/cube/room/';
+    //   format = '.jpg';
+    //   panorama = new PANOLENS.CubePanorama( [
+    //       path + 'px' + format, path + 'nx' + format,
+    //       path + 'py' + format, path + 'ny' + format,
+    //       path + 'pz' + format, path + 'nz' + format
+    //   ] );
+
+    //   viewer = new PANOLENS.Viewer();
+    //   viewer.add( panorama );
+
+    //   loader = new THREE.ColladaLoader();
+    //   loader.load( './asset/models/room/room.dae', function ( collada ) {
+
+    //     dae = collada.scene;
+
+    //     dae.scale.multiplyScalar( 15 );
+    //     dae.position.set( -60, -20, 370 );
+    //     dae.rotation.set( -Math.PI/2, 0, -1.9 );
+
+    //     dae.traverse( child => {
+
+    //       if ( child.material instanceof THREE.Material ) {
+    //         const map = child.material.map;
+    //         child.material = new THREE.MeshPhysicalMaterial({map, reflectivity: 0, metalness: 0});
+    //       }
+
+    //     } );
+
+    //     // Get chair model
+    //     dae.children.map( function( object ) {
+    //       if ( object.name === 'Chair-Desk' && 
+    //           object.material.name === 'Textile - Slate Blue' ) {
+    //         chairModels.push( object );
+    //       }
+    //     } )
+
+    //     panorama.add( dae );
+
+    //   } );
+
+    //   panorama.addEventListener( 'click', function( event ){
+
+    //     if ( event.intersects.length > 0 ) {
+
+    //       intersect = event.intersects[ 0 ].object;
+
+    //       if ( !(intersect instanceof PANOLENS.Infospot) && intersect.material ) {
+
+    //         if ( !intersect.previousMaterial ) {
+
+    //           intersect.previousMaterial = intersect.material.clone();
+    //           intersect.material = new THREE.MeshNormalMaterial();
+
+    //         } else {
+
+    //           intersect.material = intersect.previousMaterial;
+    //           intersect.previousMaterial.dispose();
+    //           intersect.previousMaterial = undefined;
+
+    //         } 
+
+    //       }
+
+    //     }
+
+    //   } );
+
+    //   addPointLights();
+    //   addInfospots();
+
+    //   function addPointLights () {
+
+    //     pointlight = new THREE.PointLight( 0xFFD6AA, 0.8 );
+    //     pointlight.position.set( 0, 0, 0 );
+    //     panorama.add( pointlight );
+
+    //     pointlight = pointlight.clone();
+    //     pointlight.position.set( 65, 0, -45 );
+    //     panorama.add( pointlight );
+
+    //   }
+
+      function addInfospots (scene) {
+
+        var infospot = new PANOLENS.Infospot( 1.5, PANOLENS.DataImage.Info );
+        infospot.position.set( 28.22, 5.24, 6.63 );
+        infospot.addHoverText( 'Dell - E2414HM 24" LED HD Monitor - Black - $149.00' );
+        scene.add( infospot );
+
+        infospot = new PANOLENS.Infospot( 1, PANOLENS.DataImage.Info );
+        infospot.position.set( 24.16, -3.15, 6.25 );
+        infospot.addHoverText( 'Razer - BlackWidow Mechanical Keyboard - Black - $156.99' );
+        scene.add( infospot );
+
+        infospot = new PANOLENS.Infospot( 1, PANOLENS.DataImage.Info );
+        infospot.position.set( 13.35, -8.08, 6.57 );
+        infospot.addHoverElement( document.getElementById( 'chair-container' ), 280 );
+        scene.add( infospot );
+
+        infospot = new PANOLENS.Infospot( 2, 'asset/textures/danger.png' );
+        infospot.position.set( 9.47, 24.41, -8.44 );
+        infospot.addHoverText( 'Ventilation Pipe - Caution - Extremely Hot' );
+        scene.add( infospot );
+
+      }
+
+    //   function onChairColorClick ( hex ) {
+        
+    //     if ( chairModels ) {
+
+    //       chairModels.map( function ( object ) {
+
+    //         if ( object.material ) {
+
+    //           object.material = new THREE.MeshPhongMaterial({ color: hex });
+
+    //         }
+
+    //       } );
+
+    //     }
+
+    //   }
+
+    
 /** ************************************************************************************* */
 /**
  * run app on window load, when everything is ready
