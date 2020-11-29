@@ -1,62 +1,52 @@
 /** ThreeDGarden - Custom Admin JavaScript */
 
-(function( $ ) {
-'use strict';
-
 /** PARAMETERS FROM PHP */
 const pluginName = postdata.plugin_name;
 const pluginVersion = postdata.plugin_version;
 const pluginURL = postdata.plugin_url;
 const themeURI = postdata.theme_uri;
 const restURL = postdata.rest_url;
-// console.log("-------------------------");
-// console.log(pluginName, pluginVersion, pluginURL, themeURI, restURL);
-// console.log("-------------------------");// three.js
+console.log("-------------------------");
+console.log("pluginName: " . pluginName); //, pluginVersion, pluginURL, themeURI, restURL
+console.log("-------------------------");
 
 /** MOUSE CLICKS */
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
-let INTERSECTED;
+let INTERSECTED1;
 let INTERSECTED2;
 let targetList = [];
 
 
-	// // init
-	// let garden = init();
-    // let grow = animate();
-	// // console.log("-------------------------");
-	// // console.log(garden);
-	// // console.log(grow);
-	// // console.log("-------------------------");
+// init
+// let garden = init();
+// let grow = animate();
+// console.log("-------------------------");
+// console.log(garden);
+// console.log(grow);
+// console.log("-------------------------");
 
+
+/** JQUERY ************************************************************************************ */
+(function( $ ) {
+'use strict';
 
 
 /** MAIN INIT */
 function init() {
 
+    let scene;
+    let canvas;
     let camera;
     let controls;
-    let scene;
+    let gui;
     let renderer;
-    let sprite;
-    let mesh;
-    let spriteBehindObject;
-    let canvas;
 
-	// const panorama = new PANOLENS.BasicPanorama();
-	// panorama.setContainer($("#webgl"));
-	// const viewer = new PANOLENS.Viewer();
-	// viewer.add( panorama );
-	// console.log("-------------------------");
-	// console.log("viewer-------------------");
-	// console.log(viewer);
-	// console.log("-------------------------");
-	// console.log("-------------------------");
-	// console.log("panorama-----------------");
-	// console.log(panorama);
-	// console.log("-------------------------");
+    // let sprite;
+    // let mesh;
+    // let spriteBehindObject;
 
-
+	/** THREE JS SCENE ******************************************************************* */
 
 	scene = new THREE.Scene();
 	scene.background = new THREE.Color(0x333333);
@@ -81,7 +71,7 @@ function init() {
 	planeTextureMap.wrapT = THREE.RepeatWrapping;
 	planeTextureMap.repeat.set(4, 4);
 
-	/** BACKGROUND *************************************************************************** */
+	/** BACKGROUND *********************************************************************** */
 
 	// manipulate materials
 	// load the cube map
@@ -128,9 +118,6 @@ function init() {
 	// console.log("-------------------------");
 	// console.log(ambientLight);
 	// console.log("-------------------------");
-
-	/** INFOSPOTS ************************************************************************* */
-	//addInfospots(plane);
 	
 	/** SCENE ***************************************************************************** */
 
@@ -140,9 +127,8 @@ function init() {
 	//plane.add(spotLight);
 	plane.add(directionalLight);
 	plane.add(ambientLight);
-	//scene.add(helper);
+	scene.add(helper);
 	scene.add(plane);
-	//viewer.add(scene);
 
 	/** CAMERA **************************************************************************** */
 
@@ -161,7 +147,7 @@ function init() {
 
 	/** DAT.GUI *************************************************************************** */
 
-	let gui = new dat.GUI({ autoPlace: true, closeOnTop: true });
+	gui = new dat.GUI({ autoPlace: true, closeOnTop: true });
 	gui.close();
 	gui.domElement.id = 'gui';
 	let folder1 = gui.addFolder("Camera Position");
@@ -192,6 +178,16 @@ function init() {
 	renderer.shadowMap.enabled = true;
 	renderer.setSize(window.innerWidth - 240, window.innerHeight - 100);
 	//renderer.setClearColor(0xFFFFFF);
+
+	renderer.domElement.camera = camera;
+	renderer.domElement.targetList = plane.children; //targetList
+	
+	renderer.domElement.addEventListener("pointermove", onPointerMove, false);
+	renderer.domElement.addEventListener("pointerup", onPointerUp, false);
+	// console.log("-------------------------");
+	// console.log(renderer);
+	// console.log("-------------------------");
+	
 	/** CONTROLS ************************************************************************** */
 		controls = new THREE.OrbitControls(camera, renderer.domElement);
 		controls.enableDamping = true;
@@ -208,14 +204,7 @@ function init() {
 		// console.log("-------------------------");
 		// console.log(controls);
 		// console.log("-------------------------");
-	renderer.domElement.camera = camera;
-	renderer.domElement.targetList = plane.children; //targetList
-	renderer.domElement.controls = controls;
-	renderer.domElement.addEventListener("pointermove", onPointerMove, false);
-	renderer.domElement.addEventListener("pointerup", onPointerUp, false);
-	// console.log("-------------------------");
-	// console.log(renderer);
-	// console.log("-------------------------");
+		renderer.domElement.controls = controls;
 
 	/** WEBGL CANVAS *********************************************************************** */
 
@@ -267,17 +256,17 @@ function init() {
 		if ( intersects.length > 0 )
 		{
 			// if the closest object intersected is not the currently stored intersection object
-			if ( intersects[ 0 ].object != INTERSECTED ) 
+			if ( intersects[ 0 ].object != INTERSECTED1 ) 
 			{
 				// restore previous intersection object (if it exists) to its original color
-				if ( INTERSECTED ) 
-					INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
+				if ( INTERSECTED1 ) 
+					INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
 				// store reference to closest object as current intersection object
-				INTERSECTED = intersects[ 0 ].object;
+				INTERSECTED1 = intersects[ 0 ].object;
 				// store color of closest object (for later restoration)
-				INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
+				INTERSECTED1.currentHex = INTERSECTED1.material.color.getHex();
 				// set a new color for closest object
-				INTERSECTED.material.color.setHex( 0xffff00 );
+				INTERSECTED1.material.color.setHex( 0xffff00 );
 				
 				// update text, if it has a "name" field.
 				if ( intersects[ 0 ].object.name )
@@ -293,11 +282,11 @@ function init() {
 		else // there are no intersections
 		{
 			// restore previous intersection object (if it exists) to its original color
-			if ( INTERSECTED ) 
-				INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
+			if ( INTERSECTED1 ) 
+				INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
 			// remove previous intersection object reference
 			//     by setting current intersection object to "nothing"
-			INTERSECTED = null;
+			INTERSECTED1 = null;
 		}
 		/** MOUSE CLICKS END *****************************************************************/
 
