@@ -540,7 +540,7 @@ function buildAllotments(postObject, plane, canvas, gui, renderer, camera) {
 		});
 
 		let sprite = new THREE.Sprite(spriteMaterial);
-		sprite.position.set(1, 1, structure.geometry.parameters.depth + 5);
+		sprite.position.set(0, 0, structure.geometry.parameters.depth + 1);
 		sprite.scale.set(5, 5, 1);
 
 		structure.add(sprite);
