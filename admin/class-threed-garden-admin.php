@@ -105,7 +105,7 @@ class ThreeD_Garden_Admin {
 		wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/three.min.js', array(), $this->version, false );
 		wp_enqueue_script( 'datgui', plugin_dir_url( __FILE__ ) . 'js/dat.gui.min.js', array(), $this->version, false );
 		wp_enqueue_script( 'orbitcontrols', plugin_dir_url( __FILE__ ) . 'js/OrbitControls.js', array(), $this->version, false );
-		wp_enqueue_script( 'panolens', plugin_dir_url( __FILE__ ) . 'js/panolens.min.js', array(), $this->version, false );
+		//wp_enqueue_script( 'panolens', plugin_dir_url( __FILE__ ) . 'js/panolens.min.js', array(), $this->version, false );
 
 		// TWEEN JS
 		wp_enqueue_script( 'tweenjs', plugin_dir_url( __FILE__ ) . 'js/tween.umd.js', array(), $this->version, false );
@@ -327,30 +327,11 @@ class ThreeD_Garden_Admin {
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 			<div id="webgl"></div>
 
-			<div id="chair-container" class="container" style="display:none;">
-				<img src="https://secure.img2.wfrcdn.com/lf/47/hash/19291/14959461/1/.jpg">
-				<div class="product-name">Modway Prim Mid-Back Task Chair</div>
-				<div>Etiquette presides over the properly styled Prim armless office chair
-					<a class="product-link" href="https://www.google.com/search?q=Modway+Prim+Mid-Back+Task+Chair&amp;source=univ&amp;tbm=shop" target="_blank">...more</a>
-				</div>
-				<div class="proudct-price">US$90.99</div>
-				<div class="product-attribute">Rating</div>
-				<div>
-					<i class="material-icons">star</i>
-					<i class="material-icons">star</i>
-					<i class="material-icons">star</i>
-					<i class="material-icons">star_half</i>
-					<i class="material-icons">star_border</i>
-				</div>
-				<div class="product-attribute">Change Color</div>
-				<div>
-					<i class="color blue" onclick="onChairColorClick(0x0000ff)"></i>
-					<i class="color red" onclick="onChairColorClick(0xff0000)"></i>
-					<i class="color green" onclick="onChairColorClick(0x00ff00)"></i>
-					<i class="color yellow" onclick="onChairColorClick(0xffff00)"></i>
-					<i class="color purple" onclick="onChairColorClick(0x00ffff)"></i>
-				</div>
+			<div class="annotation">
+				<p><strong>Cube</strong></p>
+				<p>In geometry, a cube is a three-dimensional solid object bounded by six square faces, facets or sides, with three meeting at each vertex.</p>
 			</div>
+			<canvas id="number" width="64" height="64"></canvas>
 		</div>
 	<?php
 	}

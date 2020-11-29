@@ -6,11 +6,11 @@
 /**
  * run app on window load, when everything is ready
  */
-$(window).on("load",function(){
+$(window).on("load", function() {
 
     // Number
 
-    const canvas = document.getElementById("number");
+    const canvas = document.querySelector("#number");
     const ctx = canvas.getContext("2d");
     const x = 32;
     const y = 32;
@@ -44,16 +44,16 @@ $(window).on("load",function(){
     let sprite;
     let mesh;
     let spriteBehindObject;
-    const annotation = document.querySelector(".annotation");
+    const annotation = $(".annotation")[0];
 
 
 	// init
 	let garden = init();
     let grow = animate();
-	console.log("-------------------------");
-	console.log(garden);
-	console.log(grow);
-	console.log("-------------------------");
+	// console.log("-------------------------");
+	// console.log(garden);
+	// console.log(grow);
+	// console.log("-------------------------");
 
 
 function init() {
@@ -137,7 +137,7 @@ function init() {
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x333333, 1);
-    document.body.appendChild(renderer.domElement);
+    $("#webgl").append(renderer.domElement);
 
     // Controls
 
@@ -174,7 +174,7 @@ function updateAnnotationOpacity() {
 
     // Do you want a number that changes size according to its position?
     // Comment out the following line and the `::before` pseudo-element.
-    sprite.material.opacity = 0;
+    sprite.material.opacity = 1;
 }
 
 function updateScreenPosition() {
