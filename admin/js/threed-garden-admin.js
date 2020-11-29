@@ -27,6 +27,15 @@ function init() {
 	const panorama = new PANOLENS.BasicPanorama();
 	const viewer = new PANOLENS.Viewer();
 	viewer.add( panorama );
+	console.log("-------------------------");
+	console.log("viewer-------------------");
+	console.log(viewer);
+	console.log("-------------------------");
+	console.log("-------------------------");
+	console.log("panorama-----------------");
+	console.log(panorama);
+	console.log("-------------------------");
+
 
 
 	let scene = new THREE.Scene();
@@ -113,6 +122,7 @@ function init() {
 	plane.add(ambientLight);
 	//scene.add(helper);
 	scene.add(plane);
+	//viewer.add(scene);
 
 	/** CAMERA **************************************************************************** */
 
@@ -272,6 +282,7 @@ function init() {
 		/** MOUSE CLICKS END *****************************************************************/
 
 		/** CONTINUE PLEASE (MANDATORY) */
+		//viewer.update();
 		controls.update();
 		TWEEN.update();
 		requestAnimationFrame( animate );
@@ -455,7 +466,7 @@ function buildAllotments(postObject, plane, canvas, gui) {
 		sprites[key].position.set(
 			0, 
 			0, 
-			structure.geometry.parameters.depth + 1
+			structure.geometry.parameters.depth + 5
 		);
 		sprites[key].visible = false;
 		
@@ -465,22 +476,26 @@ function buildAllotments(postObject, plane, canvas, gui) {
 		console.log(structure);
 		console.log("-------------------------");
 
-		folderHey.add(sprites[key], "visible").listen();
-
-		targetList.push(structure);
-
 		/** INFOSPOTS ********************************************************************* */
 		let infospot = new PANOLENS.Infospot( 5, PANOLENS.DataImage.Info );
         infospot.position.set( 
 			structure.position.x - 1, 
 			structure.position.y - 1, 
-			structure.geometry.parameters.depth + 5 
+			structure.geometry.parameters.depth + 2
 		);
+		infospot.show(true);
         infospot.addHoverText( structure.name );
-		infospot.show();
-    	//infospot.addHoverElement( document.getElementById( 'chair-container' ), 280 );
+    	//infospot.addHoverElement( document.getElementById( 'chair-container' ), 20 );
+		//infospot.lockHoverElement();
+        structure.parent.add( infospot );
+
+		
+
+		folderHey.add(sprites[key], "visible").listen();
 		folderHey.add(infospot, "visible").listen();
-        plane.add( infospot );
+
+		targetList.push(structure);
+		
 		console.log("-------------------------");
 		console.log("infospot---------------------");
 		console.log(infospot);
@@ -623,10 +638,10 @@ function onPointerDown(event)
 	// console.log("------------------");
 	
 	// let camera = scene.getObjectByName("mycamera");
-	// console.log("------------------");
-	// console.log("event------------");
-	// console.log(event);
-	// console.log("------------------");
+	console.log("------------------");
+	console.log("event------------");
+	console.log(event);
+	console.log("------------------");
 
 
 	// find intersections
@@ -636,14 +651,14 @@ function onPointerDown(event)
 	// let vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
 	//projector.unprojectVector( vector, camera );
 	// let raycaster2 = new THREE.Raycaster( 
-	// 	event.originalTarget.camera.position, 
-	// 	vector.sub( event.originalTarget.camera.position ).normalize() 
+	// 	event.target.camera.position, 
+	// 	vector.sub( event.target.camera.position ).normalize() 
 	// );
 	let raycaster2 = new THREE.Raycaster();
-	raycaster2.setFromCamera(mouse, event.originalTarget.camera);
+	raycaster2.setFromCamera(mouse, event.target.camera);
 	// raycaster2.set( 
-	// 	event.originalTarget.camera.getWorldPosition(), 
-	// 	event.originalTarget.camera.getWorldDirection() 
+	// 	event.target.camera.getWorldPosition(), 
+	// 	event.target.camera.getWorldDirection() 
 	// );
 	// console.log("------------------");
 	// console.log("raycaster2--------");
@@ -651,7 +666,7 @@ function onPointerDown(event)
 	// console.log("------------------");
 
 	// create an array containing all objects in the scene with which the raycaster2 intersects
-	var intersects = raycaster2.intersectObjects( event.originalTarget.targetList );
+	var intersects = raycaster2.intersectObjects( event.target.targetList );
 	// console.log("------------------");
 	// console.log("intersects--------");
 	// console.log(intersects);
@@ -679,11 +694,11 @@ function onPointerDown(event)
 				//INTERSECTED2.material.color.setHex( INTERSECTED2.currentHex );
 				INTERSECTED2 = intersectedObject;
 				// zoom out
-				//panCam(100, 200, 200, 800, event.originalTarget.camera, event.originalTarget.controls);
+				//panCam(100, 200, 200, 800, event.target.camera, event.target.controls);
 			} else {
 				INTERSECTED2 = intersectedObject;
 				// zoom in
-				//panCam(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z, 800, event.originalTarget.camera, event.originalTarget.controls);	
+				//panCam(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z, 800, event.target.camera, event.target.controls);	
 			}
 			// store reference to closest object as current intersection object
 			//INTERSECTED2 = intersectedObject;
@@ -693,19 +708,19 @@ function onPointerDown(event)
 			//INTERSECTED2.material.color.setHex( 0xff0000 );
 			
 			// point the camera controls to the intersected object?
-			//event.originalTarget.controls.reset();
-			//event.originalTarget.controls.target = new THREE.Vector3(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z);
-			//event.originalTarget.camera.position.set(100, 200, 200);
+			//event.target.controls.reset();
+			//event.target.controls.target = new THREE.Vector3(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z);
+			//event.target.camera.position.set(100, 200, 200);
 			// if (event.buttons == 1) {
 			// 	// zoom in
-			// 	panCam(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z, 1200, event.originalTarget.camera, event.originalTarget.controls);
+			// 	panCam(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z, 1200, event.target.camera, event.target.controls);
 			// } else if (event.buttons == 2) {
 			// 	// zoom out
-			// 	panCam(100, 200, 200, 1200, event.originalTarget.camera, event.originalTarget.controls);
+			// 	panCam(100, 200, 200, 1200, event.target.camera, event.target.controls);
 			// }
 			// console.log("------------------");
-			// console.log("event.originalTarget.controls--------");
-			// console.log(event.originalTarget.controls);
+			// console.log("event.target.controls--------");
+			// console.log(event.target.controls);
 			// console.log("------------------");
 
 			intersectedObject.children.forEach( function(key) {
