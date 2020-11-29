@@ -11,7 +11,7 @@ const themeURI = postdata.theme_uri;
 const restURL = postdata.rest_url;
 // console.log("-------------------------");
 // console.log(pluginName, pluginVersion, pluginURL, themeURI, restURL);
-// console.log("-------------------------");
+// console.log("-------------------------");// three.js
 
 /** MOUSE CLICKS */
 const raycaster = new THREE.Raycaster();
@@ -20,25 +20,45 @@ let INTERSECTED;
 let INTERSECTED2;
 let targetList = [];
 
+
+	// // init
+	// let garden = init();
+    // let grow = animate();
+	// // console.log("-------------------------");
+	// // console.log(garden);
+	// // console.log(grow);
+	// // console.log("-------------------------");
+
+
+
 /** MAIN INIT */
 function init() {
 
+    let camera;
+    let controls;
+    let scene;
+    let renderer;
+    let sprite;
+    let mesh;
+    let spriteBehindObject;
+    let canvas;
 
-	const panorama = new PANOLENS.BasicPanorama();
-	const viewer = new PANOLENS.Viewer();
-	viewer.add( panorama );
-	console.log("-------------------------");
-	console.log("viewer-------------------");
-	console.log(viewer);
-	console.log("-------------------------");
-	console.log("-------------------------");
-	console.log("panorama-----------------");
-	console.log(panorama);
-	console.log("-------------------------");
+	// const panorama = new PANOLENS.BasicPanorama();
+	// panorama.setContainer($("#webgl"));
+	// const viewer = new PANOLENS.Viewer();
+	// viewer.add( panorama );
+	// console.log("-------------------------");
+	// console.log("viewer-------------------");
+	// console.log(viewer);
+	// console.log("-------------------------");
+	// console.log("-------------------------");
+	// console.log("panorama-----------------");
+	// console.log(panorama);
+	// console.log("-------------------------");
 
 
 
-	let scene = new THREE.Scene();
+	scene = new THREE.Scene();
 	scene.background = new THREE.Color(0x333333);
 	//scene.fog = new THREE.Fog(0xFFFFFF, 0, 500);
 
@@ -126,7 +146,7 @@ function init() {
 
 	/** CAMERA **************************************************************************** */
 
-	let camera = new THREE.PerspectiveCamera(
+	camera = new THREE.PerspectiveCamera(
 		55,
 		window.innerWidth/window.innerHeight,
 		0.1,
@@ -164,7 +184,7 @@ function init() {
 
 	/** RENDERER ************************************************************************** */
 	
-	let renderer = new THREE.WebGLRenderer(
+	renderer = new THREE.WebGLRenderer(
 		{ 	alpha: true, 
 			antialias: true 
 		}
@@ -173,7 +193,7 @@ function init() {
 	renderer.setSize(window.innerWidth - 240, window.innerHeight - 100);
 	//renderer.setClearColor(0xFFFFFF);
 	/** CONTROLS ************************************************************************** */
-		let controls = new THREE.OrbitControls(camera, renderer.domElement);
+		controls = new THREE.OrbitControls(camera, renderer.domElement);
 		controls.enableDamping = true;
 		controls.dampingFactor = 0.25;
 		controls.enableZoom = true;
@@ -192,7 +212,7 @@ function init() {
 	renderer.domElement.targetList = plane.children; //targetList
 	renderer.domElement.controls = controls;
 	renderer.domElement.addEventListener("pointermove", onPointerMove, false);
-	renderer.domElement.addEventListener("pointerdown", onPointerDown, false);
+	renderer.domElement.addEventListener("pointerup", onPointerUp, false);
 	// console.log("-------------------------");
 	// console.log(renderer);
 	// console.log("-------------------------");
@@ -201,7 +221,7 @@ function init() {
 
 	//document.getElementById('webgl').appendChild(renderer.domElement);
 	//$( "#webgl" ).append(renderer.domElement);
-	let canvas = $("#webgl");
+	canvas = $("#webgl");
 	canvas.css("border","0px solid black")
 		.append(gui.domElement)
 		.append(renderer.domElement);
@@ -214,7 +234,7 @@ function init() {
 	let queryURLAllotments = `${restURL}allotment/?_embed`;
 	fetch( queryURLAllotments )
 		.then( response => response.json() )
-		.then( postObject => buildAllotments( postObject, plane, canvas, gui ) );
+		.then( postObject => buildAllotments(postObject, plane, canvas, gui, renderer, camera) );
 		
 	// let queryURLPlantingPlans = `${restURL}planting_plan/?_embed`;
 	// fetch( queryURLPlantingPlans )
@@ -291,6 +311,8 @@ function init() {
 		// plane.rotation.x += 0.002;
 		// plane.rotation.y += 0.002;
 		renderer.render( scene, camera );
+		updateAnnotationOpacity(camera, 20, 25);
+		updateScreenPosition(camera, renderer);
 	};
 	animate();
 
@@ -384,7 +406,7 @@ function getAmbientLight(color, intensity){
 /**
  * BUILD FROM REST API POST OBJECT ************************************************************
  */
-function buildAllotments(postObject, plane, canvas, gui) {
+function buildAllotments(postObject, plane, canvas, gui, renderer, camera) {
 	//alert("HEY HEY HEY -- FROM JS");
 	// console.log("-------------------------");
 	// console.log("postObject---------------");
@@ -469,6 +491,7 @@ function buildAllotments(postObject, plane, canvas, gui) {
 			structure.geometry.parameters.depth + 5
 		);
 		sprites[key].visible = false;
+		folderHey.add(sprites[key], "visible").listen();
 		
 		structure.add(sprites[key]);
 		console.log("-------------------------");
@@ -476,30 +499,54 @@ function buildAllotments(postObject, plane, canvas, gui) {
 		console.log(structure);
 		console.log("-------------------------");
 
+		// const vector = new THREE.Vector3(250, 250, 250);
+		// const canvas = renderer.domElement; // `renderer` is a THREE.WebGLRenderer
+
+		// vector.project(camera); // `camera` is a THREE.PerspectiveCamera
+
+		// vector.x = Math.round((0.5 + vector.x / 2) * (canvas.width / window.devicePixelRatio));
+		// vector.y = Math.round((0.5 - vector.y / 2) * (canvas.height / window.devicePixelRatio));
+
+		// const annotation = document.querySelector('.annotation');
+		// annotation.style.top = `${vector.y}px`;
+		// annotation.style.left = `${vector.x}px`;
+
 		/** INFOSPOTS ********************************************************************* */
-		let infospot = new PANOLENS.Infospot( 5, PANOLENS.DataImage.Info );
-        infospot.position.set( 
-			structure.position.x - 1, 
-			structure.position.y - 1, 
-			structure.geometry.parameters.depth + 2
+		// let infospot = new PANOLENS.Infospot( 5, PANOLENS.DataImage.Info );
+		// infospot.setContainer(canvas);
+        // infospot.position.set( 
+		// 	structure.position.x - 1, 
+		// 	structure.position.y - 1, 
+		// 	structure.geometry.parameters.depth + 2
+		// );
+		// infospot.show(true);
+        // infospot.addHoverText(structure.name);
+    	// //infospot.addHoverElement(document.getElementById('chair-container'), 20);
+		// //infospot.lockHoverElement();
+        // structure.add(infospot);
+		// folderHey.add(infospot, "visible").listen();// Sprite
+
+		const numberTexture = new THREE.CanvasTexture(
+			document.querySelector("#number")
+			//$("#number")[0]
 		);
-		infospot.show(true);
-        infospot.addHoverText( structure.name );
-    	//infospot.addHoverElement( document.getElementById( 'chair-container' ), 20 );
-		//infospot.lockHoverElement();
-        structure.parent.add( infospot );
+
+		const spriteMaterial = new THREE.SpriteMaterial({
+			map: numberTexture,
+			alphaTest: 0.5,
+			transparent: true,
+			depthTest: false,
+			depthWrite: false
+		});
+
+		let sprite = new THREE.Sprite(spriteMaterial);
+		sprite.position.set(1, 1, structure.geometry.parameters.depth + 5);
+		sprite.scale.set(5, 5, 1);
+
+		structure.add(sprite);
 
 		
-
-		folderHey.add(sprites[key], "visible").listen();
-		folderHey.add(infospot, "visible").listen();
-
-		targetList.push(structure);
-		
-		console.log("-------------------------");
-		console.log("infospot---------------------");
-		console.log(infospot);
-		console.log("-------------------------");
+		//targetList.push(structure);
 
 	});
 
@@ -592,6 +639,33 @@ function roundRect(ctx, x, y, w, h, r)
 	ctx.stroke();   
 }
 
+function updateAnnotationOpacity(camera, meshPosition, spritePosition) {
+    const meshDistance = camera.position.distanceTo(meshPosition);
+    const spriteDistance = camera.position.distanceTo(spritePosition);
+    let spriteBehindObject = spriteDistance > meshDistance;
+    //sprite.material.opacity = spriteBehindObject ? 0.5 : 1;
+
+    // Do you want a number that changes size according to its position?
+    // Comment out the following line and the `::before` pseudo-element.
+    //sprite.material.opacity = 1;
+}
+
+function updateScreenPosition(camera, renderer) {
+    const vector = new THREE.Vector3(250, 250, 250);
+    const canvas = renderer.domElement;
+	let annotation = $(".annotation")[0];
+	
+    vector.project(camera);
+
+    vector.x = Math.round((0.5 + vector.x / 2) * (canvas.width / window.devicePixelRatio));
+    vector.y = Math.round((0.5 - vector.y / 2) * (canvas.height / window.devicePixelRatio));
+
+    annotation.style.top = `${vector.y}px`;
+    annotation.style.left = `${vector.x}px`;
+    //annotation.style.opacity = spriteBehindObject ? 0.25 : 1;
+	annotation.style.opacity = 1;
+}
+
 /**
  * MOUSE CLICKS **********************************************************************************
  */
@@ -618,8 +692,8 @@ function onPointerMove( event )
 }
 
 // when the mouse moves, call the given function
-//document.addEventListener( 'pointerdown', onPointerDown, false );
-function onPointerDown(event) 
+//document.addEventListener( 'pointerup', onPointerUp, false );
+function onPointerUp(event) 
 {
 	// the following line would stop any other event handler from firing
 	// (such as the mouse's TrackballControls)
@@ -638,10 +712,10 @@ function onPointerDown(event)
 	// console.log("------------------");
 	
 	// let camera = scene.getObjectByName("mycamera");
-	console.log("------------------");
-	console.log("event------------");
-	console.log(event);
-	console.log("------------------");
+	// console.log("------------------");
+	// console.log("event------------");
+	// console.log(event);
+	// console.log("------------------");
 
 
 	// find intersections
@@ -675,7 +749,7 @@ function onPointerDown(event)
 	// if there is one (or more) intersections
 	if ( intersects.length > 0 )
 	{
-		console.log("Hit @ " + toString( intersects[0].point ) );
+		//console.log("Hit @ " + toString( intersects[0].point ) );
 		// change the color of the closest face.
 		// intersects[ 0 ].face.color.setRGB( 0.8 * Math.random() + 0.2, 0, 0 ); 
 		// intersects[ 0 ].object.geometry.colorsNeedUpdate = true;
@@ -809,6 +883,8 @@ function panCam(xTarget, yTarget, zTarget, tweenDuration, camera, controls){
 	
 }
     
+
+
 
 
 /**
@@ -1047,12 +1123,44 @@ function buildNewPost( postObject ) {
 
     //   }
 
-    
+
+
+
 /** ************************************************************************************* */
 /**
  * run app on window load, when everything is ready
  */
-$(window).on("load",function(){
+$(window).on("load", function() {
+
+	// Number
+
+	let canvas1 = $("#number");
+	let ctx = canvas1[0].getContext("2d");
+	let x = 32;
+	let y = 32;
+	let radius = 30;
+	let startAngle = 0;
+	let endAngle = Math.PI * 2;
+
+	ctx.fillStyle = "rgb(0, 0, 0)";
+	ctx.beginPath();
+	ctx.arc(x, y, radius, startAngle, endAngle);
+	ctx.fill();
+
+	ctx.strokeStyle = "rgb(255, 255, 255)";
+	ctx.lineWidth = 3;
+	ctx.beginPath();
+	ctx.arc(x, y, radius, startAngle, endAngle);
+	ctx.stroke();
+
+	ctx.fillStyle = "rgb(255, 255, 255)";
+	ctx.font = "32px sans-serif";
+	ctx.textAlign = "center";
+	ctx.textBaseline = "middle";
+	ctx.fillText("1", x, y);
+
+
+
 	// init
 	let garden = init();
 	// console.log("-------------------------");

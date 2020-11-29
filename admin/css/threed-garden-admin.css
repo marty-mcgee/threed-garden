@@ -9,7 +9,6 @@
 #adminmenumain { position: sticky; z-index: 9991; }
 #wpcontent { overflow: scroll; position: fixed; z-index: 9989; }
 #wp-toolbar { padding-left: 160px; }
-/*.wp-submenu { z-index: 9999 !important; }*/
 #adminmenu { margin-top: -32px !important; }
 
 /** THREE D GARDEN */
@@ -22,11 +21,11 @@
 
 
 /** ANNOTATIONS */
-canvas {
+/* canvas {
     width: 100%;
     height: 100px;
     display: block;
-}
+} */
 
 .annotation {
     position: absolute;
@@ -43,7 +42,7 @@ canvas {
     font-size: 12px;
     line-height: 1.2;
     transition: opacity .5s;
-    &::before {
+    /* &::before {
         content: '1';
         position: absolute;
         top: -30px;
@@ -56,10 +55,12 @@ canvas {
         line-height: 30px;
         text-align: center;
         background: rgba(0, 0, 0, 0.8);
-    }
+    } */
 }
 
 #number {
     position: absolute;
+    /* top: 0;
+    left: 0; */
     z-index: -1;
 }
