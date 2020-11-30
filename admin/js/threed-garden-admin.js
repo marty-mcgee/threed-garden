@@ -10,12 +10,11 @@ console.log("-------------------------");
 console.log("pluginName: " . pluginName); //, pluginVersion, pluginURL, themeURI, restURL
 console.log("-------------------------");
 
-/** MOUSE CLICKS */
+/** POINTER CLICKS */
 const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
+const pointer = new THREE.Vector2();
 let INTERSECTED1;
 let INTERSECTED2;
-let targetList = [];
 
 
 // init
@@ -178,7 +177,7 @@ function init() {
 
 	// utilize javascript prototyping.. add variables to the dom element :)
 	renderer.domElement.camera = camera;
-	renderer.domElement.targetList = plane.children; //targetList
+	renderer.domElement.targetList = plane.children;
 	
 	renderer.domElement.addEventListener("pointermove", onPointerMove, false);
 	renderer.domElement.addEventListener("pointerup", onPointerUp, false);
@@ -236,61 +235,7 @@ function init() {
 	//update(renderer, scene, camera);
 	let animate = function () {
 
-		/** MOUSE HOVER ******************************************************************** */
-		
-		// update the picking ray with the camera and mouse position
-		raycaster.setFromCamera(mouse, camera);
-		//raycaster.set( camera.getWorldPosition(), camera.getWorldDirection() );
-
-		//let helper2 = new THREE.CameraHelper(directionalLight.shadow.camera);
-
-		// calculate objects intersecting the picking ray
-		const intersects = raycaster.intersectObjects(plane.children);
-
-		// if there is one (or more) intersections
-		if ( intersects.length > 0 ) {
-
-			// do something to object intersected? (testing purposes only)
-			for (let i = 0; i < intersects.length; i++) {
-				// hightlight object
-				//intersects[ i ].object.material.color.set(0xff0000);
-				//console.log(intersects[ i ]);
-			}
-
-			// if the closest object intersected is not the currently stored intersection object
-			if ( intersects[ 0 ].object != INTERSECTED1 ) 
-			{
-				// restore previous intersection object (if it exists) to its original color
-				if ( INTERSECTED1 ) {
-					INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
-				}
-				// store reference to closest object as current intersection object
-				INTERSECTED1 = intersects[ 0 ].object;
-				// store color of closest object (for later restoration)
-				INTERSECTED1.currentHex = INTERSECTED1.material.color.getHex();
-				// set a new color for closest object
-				INTERSECTED1.material.color.setHex( 0xffff00 );
-				
-				// update text, if it has a "name" field.
-				if ( intersects[ 0 ].object.name ) {
-					
-				}
-				else {
-					
-				}
-			}
-		} 
-		// there are no intersections
-		else {
-			// restore previous intersection object (if it exists) to its original color
-			if ( INTERSECTED1 ) {
-				INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
-			}
-			// remove previous intersection object reference
-			//     by setting current intersection object to "nothing"
-			INTERSECTED1 = null;
-		}
-		/** MOUSE CLICKS END *****************************************************************/
+		watchPointer(camera, plane.children);
 
 		/** CONTINUE PLEASE (MANDATORY) */
 		controls.update();
@@ -408,7 +353,6 @@ function buildAllotments(postObject, plane, gui) {
 
 	let sprites = [];
 	let guiFolderInfospots = gui.addFolder("Annotations");
-	//let targetList = [];
 
 	postObject.forEach( function(key) {
 
@@ -476,12 +420,13 @@ function buildAllotments(postObject, plane, gui) {
 				backgroundColor: {r:255, g:255, b:255, a:0.7} 
 			} 
 		);
-		sprites[key].position.set(
-			0, 
-			0, 
-			structure.geometry.parameters.depth + 5
-		);
+		// sprites[key] = makeInfospot(
+		// 	structure.name, 
+		// 	0, 0, structure.geometry.parameters.depth + 5
+		// );
+		sprites[key].position.set(0, 0, structure.geometry.parameters.depth + 5);
 		sprites[key].visible = false;
+
 		guiFolderInfospots.add(sprites[key], "visible");
 		
 		structure.add(sprites[key]);
@@ -492,28 +437,16 @@ function buildAllotments(postObject, plane, gui) {
 
 		/** INFOSPOTS ********************************************************************* */
 
-		const infospotTexture = new THREE.CanvasTexture(
-			document.querySelector("#infospot")
-			//$("#infospot")[0]
+		let infospot = makeInfospot(
+			"i", 
+			structure.position.x, 
+			structure.position.y, 
+			structure.geometry.parameters.depth + 2
 		);
 
-		const infospotMaterial = new THREE.SpriteMaterial({
-			map: infospotTexture,
-			alphaTest: 0.5,
-			transparent: true,
-			depthTest: false,
-			depthWrite: false
-		});
-
-		let infospot = new THREE.Sprite(infospotMaterial);
-		infospot.position.set(structure.position.x, structure.position.y, structure.geometry.parameters.depth + 2);
-		infospot.scale.set(4, 4, 4);
-		infospot.visible = true;
 		guiFolderInfospots.add(infospot, "visible");
 
 		plane.add(infospot);
-
-		//targetList.push(structure);
 
 	});
 	
@@ -526,10 +459,62 @@ function buildAllotments(postObject, plane, gui) {
 }
 
 /**
- * TEXT *******************************************************************************************
+ * INFOSPOTS **************************************************************************************
  */
-function makeTextSprite( message, parameters )
-{
+function makeInfospot(message, positionX, positionY, positionZ) {
+	/**
+	 * infospot
+	 */
+	let infospotCanvas = $("#infospot"); //document.querySelector("#infospot")
+	let ctx = infospotCanvas[0].getContext("2d");
+	let x = 32;
+	let y = 32;
+	let radius = 30;
+	let startAngle = 0;
+	let endAngle = Math.PI * 2;
+	// background
+	ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+	ctx.beginPath();
+	ctx.arc(x, y, radius, startAngle, endAngle);
+	ctx.fill();
+	// border
+	ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
+	ctx.lineWidth = 4;
+	ctx.beginPath();
+	ctx.arc(x, y, radius, startAngle, endAngle);
+	ctx.stroke();
+	// foreground
+	ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+	ctx.font = "40px sans-serif";
+	ctx.textAlign = "center";
+	ctx.textBaseline = "middle";
+	// text
+	ctx.fillText(message, x, y);
+
+
+	const infospotTexture = new THREE.CanvasTexture(
+		infospotCanvas[0]
+		//document.querySelector("#infospot")
+		//$("#infospot")
+	);
+
+	const infospotMaterial = new THREE.SpriteMaterial({
+		map: infospotTexture,
+		alphaTest: 0.5,
+		transparent: true,
+		depthTest: false,
+		depthWrite: false
+	});
+
+	let infospot = new THREE.Sprite(infospotMaterial);
+	infospot.position.set(positionX, positionY, positionZ);
+	infospot.scale.set(4, 4, 4);
+	infospot.visible = true;
+
+	return infospot;
+}
+
+function makeTextSprite(message, parameters) {
 	if ( parameters === undefined ) parameters = {};
 	let fontface = parameters.hasOwnProperty("fontface") ? 
 		parameters["fontface"] : "Arial";
@@ -636,48 +621,106 @@ function updateAnnotationPosition(camera, rendererDomElement) {
 }
 
 /**
- * MOUSE CLICKS **********************************************************************************
+ * POINTER HOVERS + CLICKS ********************************************************************
  */
 
-// when the mouse moves, call the given function
+// when the pointer moves and hovers
+function watchPointer(camera, targetList){
+	
+	// update the picking ray with the camera and pointer position
+	raycaster.setFromCamera(pointer, camera);
+	//raycaster.set( camera.getWorldPosition(), camera.getWorldDirection() );
+
+	//let helper2 = new THREE.CameraHelper(directionalLight.shadow.camera);
+
+	// calculate objects intersecting the picking ray
+	const intersects = raycaster.intersectObjects(targetList);
+
+	// if there is one (or more) intersections
+	if ( intersects.length > 0 ) {
+
+		// do something to object intersected? (testing purposes only)
+		for (let i = 0; i < intersects.length; i++) {
+			// hightlight object
+			//intersects[ i ].object.material.color.set(0xff0000);
+			//console.log(intersects[ i ]);
+		}
+
+		// if the closest object intersected is not the currently stored intersection object
+		if ( intersects[ 0 ].object != INTERSECTED1 ) 
+		{
+			// restore previous intersection object (if it exists) to its original color
+			if ( INTERSECTED1 ) {
+				INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
+			}
+			// store reference to closest object as current intersection object
+			INTERSECTED1 = intersects[ 0 ].object;
+			// store color of closest object (for later restoration)
+			INTERSECTED1.currentHex = INTERSECTED1.material.color.getHex();
+			// set a new color for closest object
+			INTERSECTED1.material.color.setHex( 0xffff00 );
+			
+			// update text, if it has a "name" field.
+			if ( intersects[ 0 ].object.name ) {
+				
+			}
+			else {
+				
+			}
+		}
+	} 
+	// there are no intersections
+	else {
+		// restore previous intersection object (if it exists) to its original color
+		if ( INTERSECTED1 ) {
+			INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
+		}
+		// remove previous intersection object reference
+		//     by setting current intersection object to "nothing"
+		INTERSECTED1 = null;
+	}
+}
+
+
+// when the pointer moves, call the given function
 //document.addEventListener( 'pointermove', onPointerMove, false );
 function onPointerMove( event ) 
 {
 	// the following line would stop any other event handler from firing
-	// (such as the mouse's TrackballControls)
+	// (such as the pointer's TrackballControls)
 	// event.preventDefault();
 	
-	// update the mouse variable
-	// mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	// mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-	// mouse.x = (event.offsetX / canvas.clientWidth) * 2 - 1;
-	// mouse.y = -(event.offsetY / canvas.clientHeight) * 2 + 1;
-	mouse.x = (event.offsetX / (window.innerWidth - 240)) * 2 - 1;
-	mouse.y = -(event.offsetY / (window.innerHeight - 100)) * 2 + 1;
+	// update the pointer variable
+	// pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	// pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+	// pointer.x = (event.offsetX / canvas.clientWidth) * 2 - 1;
+	// pointer.y = -(event.offsetY / canvas.clientHeight) * 2 + 1;
+	pointer.x = (event.offsetX / (window.innerWidth - 240)) * 2 - 1;
+	pointer.y = -(event.offsetY / (window.innerHeight - 100)) * 2 + 1;
 	// console.log("------------------");
-	// console.log("mouse hover-------");
-	// console.log(mouse.x, mouse.y);
+	// console.log("pointer hover-------");
+	// console.log(pointer.x, pointer.y);
 	// console.log("------------------");
 }
 
-// when the mouse moves, call the given function
+// when the pointer moves, call the given function
 //document.addEventListener( 'pointerup', onPointerUp, false );
 function onPointerUp(event) 
 {
 	// the following line would stop any other event handler from firing
-	// (such as the mouse's TrackballControls)
+	// (such as the pointer's TrackballControls)
 	// event.preventDefault();
 	
-	// update the mouse variable
-	// mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	// mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-	// mouse.x = (event.offsetX / canvas.clientWidth) * 2 - 1;
-	// mouse.y = -(event.offsetY / canvas.clientHeight) * 2 + 1;
-	mouse.x = (event.offsetX / (window.innerWidth - 240)) * 2 - 1;
-	mouse.y = -(event.offsetY / (window.innerHeight - 100)) * 2 + 1;
+	// update the pointer variable
+	// pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	// pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+	// pointer.x = (event.offsetX / canvas.clientWidth) * 2 - 1;
+	// pointer.y = -(event.offsetY / canvas.clientHeight) * 2 + 1;
+	pointer.x = (event.offsetX / (window.innerWidth - 240)) * 2 - 1;
+	pointer.y = -(event.offsetY / (window.innerHeight - 100)) * 2 + 1;
 	// console.log("------------------");
-	// console.log("mouse clicked-----");
-	// console.log(mouse.x, mouse.y);
+	// console.log("pointer clicked-----");
+	// console.log(pointer.x, pointer.y);
 	// console.log("------------------");
 	
 	// let camera = scene.getObjectByName("mycamera");
@@ -689,16 +732,16 @@ function onPointerUp(event)
 
 	// find intersections
 
-	// create a Ray with origin at the mouse position
+	// create a Ray with origin at the pointer position
 	//   and direction into the scene (camera direction)
-	// let vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
+	// let vector = new THREE.Vector3( pointer.x, pointer.y, 1 );
 	//projector.unprojectVector( vector, camera );
 	// let raycaster2 = new THREE.Raycaster( 
 	// 	event.target.camera.position, 
 	// 	vector.sub( event.target.camera.position ).normalize() 
 	// );
 	let raycaster2 = new THREE.Raycaster();
-	raycaster2.setFromCamera(mouse, event.target.camera);
+	raycaster2.setFromCamera(pointer, event.target.camera);
 	// raycaster2.set( 
 	// 	event.target.camera.getWorldPosition(), 
 	// 	event.target.camera.getWorldDirection() 
@@ -959,37 +1002,6 @@ function buildNewPost( postObject ) {
  * run app on window load, when everything is ready
  */
 $(window).on("load", function() {
-
-	/**
-	 * infospot
-	 */
-	let infospotCanvas = $("#infospot");
-	let ctx = infospotCanvas[0].getContext("2d");
-	let x = 32;
-	let y = 32;
-	let radius = 30;
-	let startAngle = 0;
-	let endAngle = Math.PI * 2;
-	// background
-	ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-	ctx.beginPath();
-	ctx.arc(x, y, radius, startAngle, endAngle);
-	ctx.fill();
-	// border
-	ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
-	ctx.lineWidth = 4;
-	ctx.beginPath();
-	ctx.arc(x, y, radius, startAngle, endAngle);
-	ctx.stroke();
-	// foreground
-	ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-	ctx.font = "40px sans-serif";
-	ctx.textAlign = "center";
-	ctx.textBaseline = "middle";
-	// text
-	ctx.fillText("i", x, y);
-
-
 
 	/**
 	 * init
