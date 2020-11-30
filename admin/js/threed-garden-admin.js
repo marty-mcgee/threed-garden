@@ -7,7 +7,8 @@ const pluginURL = postdata.plugin_url;
 const themeURI = postdata.theme_uri;
 const restURL = postdata.rest_url;
 console.log("-------------------------");
-console.log("pluginName: " . pluginName); //, pluginVersion, pluginURL, themeURI, restURL
+console.log("pluginName---------------");
+console.log(pluginName);
 console.log("-------------------------");
 
 /** POINTER CLICKS */
@@ -222,15 +223,17 @@ function init() {
 	let queryURLAllotments = `${restURL}allotment/?_embed`;
 	fetch( queryURLAllotments )
 		.then( response => response.json() )
-		.then( postObject => buildAllotments(postObject, plane, gui) );
+		.then( postObject => buildAllotments(postObject, plane, gui, camera, renderer) );
 		
 	// let queryURLPlantingPlans = `${restURL}planting_plan/?_embed`;
 	// fetch( queryURLPlantingPlans )
 	// 	.then( response => response.json() )
-	// 	.then( postObject => buildPlantingPlans(postObject, plane, gui) );
+	// 	.then( postObject => buildPlantingPlans(postObject, plane, gui, camera, renderer) );
 
 
 	/** ANIMATE + RENDER (continuous rendering) ******************************************** */
+
+	//updateAnnotationPosition(camera, renderer.domElement);
 
 	//update(renderer, scene, camera);
 	let animate = function () {
@@ -248,7 +251,7 @@ function init() {
 		renderer.render(scene, camera);
 		// infospot annotations
 		//updateAnnotationOpacity(camera, 20, 25);
-		updateAnnotationPosition(camera, renderer.domElement);
+		//updateAnnotationPosition(camera, renderer.domElement);
 	};
 	animate();
 
@@ -342,8 +345,8 @@ function getAmbientLight(color, intensity){
 /**
  * BUILD FROM REST API POST OBJECT ************************************************************
  */
-function buildAllotments(postObject, plane, gui) {
-	//alert("HEY HEY HEY -- FROM JS");
+function buildAllotments(postObject, plane, gui, camera, renderer) {
+
 	// console.log("-------------------------");
 	// console.log("postObject---------------");
 	// console.log(postObject);
@@ -351,7 +354,6 @@ function buildAllotments(postObject, plane, gui) {
 
 	let loader = new THREE.TextureLoader();
 
-	let sprites = [];
 	let guiFolderInfospots = gui.addFolder("Annotations");
 
 	postObject.forEach( function(key) {
@@ -383,9 +385,6 @@ function buildAllotments(postObject, plane, gui) {
 		// console.log(allotment);
 		// console.log("-------------------------");
 
-		// annotations + additional media
-		//buildNewPost(key);
-
 		let structure = getGeometry(
 			allotment.shape,
 			allotment.parameters.x, 
@@ -412,7 +411,7 @@ function buildAllotments(postObject, plane, gui) {
 		// console.log(structure);
 		// console.log("-------------------------");
 
-		sprites[key] = makeTextSprite(
+		let sprite = makeTextSprite(
 			structure.name, 
 			{ 	fontsize: 24, 
 				fontface: "Calibri", 
@@ -420,16 +419,16 @@ function buildAllotments(postObject, plane, gui) {
 				backgroundColor: {r:255, g:255, b:255, a:0.7} 
 			} 
 		);
-		// sprites[key] = makeInfospot(
+		// sprite = makeInfospot(
 		// 	structure.name, 
 		// 	0, 0, structure.geometry.parameters.depth + 5
 		// );
-		sprites[key].position.set(0, 0, structure.geometry.parameters.depth + 5);
-		sprites[key].visible = false;
+		sprite.position.set(0, 0, structure.geometry.parameters.depth + 5);
+		sprite.visible = false;
 
-		guiFolderInfospots.add(sprites[key], "visible");
+		guiFolderInfospots.add(sprite, "visible");
 		
-		structure.add(sprites[key]);
+		structure.add(sprite);
 		// console.log("-------------------------");
 		// console.log("structure---------------------");
 		// console.log(structure);
@@ -441,12 +440,25 @@ function buildAllotments(postObject, plane, gui) {
 			"i", 
 			structure.position.x, 
 			structure.position.y, 
-			structure.geometry.parameters.depth + 2
+			structure.geometry.parameters.depth + 3
 		);
 
 		guiFolderInfospots.add(infospot, "visible");
 
 		plane.add(infospot);
+
+		/** ANNOTATIONS ****************************************************************** */
+
+		let annotation = makeAnnotation(
+			structure.name,
+			camera,
+			renderer.domElement
+		)
+
+		guiFolderInfospots.add(annotation.style, "display");
+		//annotation.style.display = "block";
+
+		plane.add(annotation);
 
 	});
 	
@@ -512,6 +524,34 @@ function makeInfospot(message, positionX, positionY, positionZ) {
 	infospot.visible = true;
 
 	return infospot;
+}
+
+function makeAnnotation(contentHTML, camera, rendererDomElement) {
+
+	let annotation = document.createElement('canvas');
+	//let annotation = $(".annotation")[0];
+	// let context = annoCanvas.getContext('2d');
+	// context.font = "Bold " + fontsize + "px " + fontface;
+
+	annotation.innerHTML = contentHTML;
+
+    let vector = new THREE.Vector3(0, 0, 0);
+	vector.project(camera);
+
+    vector.x = Math.round((0.5 + vector.x / 2) * (rendererDomElement.width / window.devicePixelRatio));
+    vector.y = Math.round((0.5 - vector.y / 2) * (rendererDomElement.height / window.devicePixelRatio));
+
+    annotation.style.top = `${vector.y}px`;
+    annotation.style.left = `${vector.x}px`;
+    //annotation.style.opacity = annotationBehindObject ? 0.25 : 1;
+	annotation.style.opacity = 1;
+	annotation.style.display = "block";
+	// console.log("------------------");
+	// console.log("annotation--------");
+	// console.log(annotation);
+	// console.log("------------------");
+
+	return annotation;
 }
 
 function makeTextSprite(message, parameters) {
@@ -618,6 +658,11 @@ function updateAnnotationPosition(camera, rendererDomElement) {
     //annotation.style.opacity = annotationBehindObject ? 0.25 : 1;
 	annotation.style.opacity = 1;
 	annotation.style.display = "block";
+	// console.log("------------------");
+	// console.log("annotation--------");
+	// console.log(annotation);
+	// console.log("------------------");
+	
 }
 
 /**
