@@ -327,11 +327,13 @@ class ThreeD_Garden_Admin {
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 			<div id="webgl"></div>
 
-			<div class="annotation">
-				<p><strong>Cube</strong></p>
-				<p>In geometry, a cube is a three-dimensional solid object bounded by six square faces, facets or sides, with three meeting at each vertex.</p>
+			<div style="display: none;">
+				<canvas id="infospot" width="64" height="64"></canvas>
+				<div class="annotation">
+					<p><strong>Cube</strong></p>
+					<p>In geometry, a cube is a three-dimensional solid object bounded by six square faces, facets or sides, with three meeting at each vertex.</p>
+				</div>
 			</div>
-			<canvas id="number" width="64" height="64"></canvas>
 		</div>
 	<?php
 	}

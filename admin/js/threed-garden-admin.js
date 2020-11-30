@@ -42,10 +42,6 @@ function init() {
     let gui;
     let renderer;
 
-    // let sprite;
-    // let mesh;
-    // let spriteBehindObject;
-
 	/** THREE JS SCENE ******************************************************************* */
 
 	scene = new THREE.Scene();
@@ -150,18 +146,18 @@ function init() {
 	gui = new dat.GUI({ autoPlace: true, closeOnTop: true });
 	gui.close();
 	gui.domElement.id = 'gui';
-	let folder1 = gui.addFolder("Camera Position");
-	folder1.add(camera.position, "x", -500, 500).listen();
-	folder1.add(camera.position, "y", -500, 500).listen();
-	folder1.add(camera.position, "z", -500, 500).listen();
-	let folder2 = gui.addFolder("Directional Light");
-	folder2.add(directionalLight, "intensity", 0, 20);
-	folder2.add(directionalLight.position, "x", -500, 500);
-	folder2.add(directionalLight.position, "y", -500, 500);
-	folder2.add(directionalLight.position, "z", -500, 500);
-	let folder3 = gui.addFolder("Roughness");
-	folder3.add(plane.material, "roughness", 0, 1);
-	// folder3.add(structure.material, "roughness", 0, 1);
+	let guiFolder1 = gui.addFolder("Camera Position");
+	guiFolder1.add(camera.position, "x", -500, 500).listen();
+	guiFolder1.add(camera.position, "y", -500, 500).listen();
+	guiFolder1.add(camera.position, "z", -500, 500).listen();
+	let guiFolder2 = gui.addFolder("Directional Light");
+	guiFolder2.add(directionalLight, "intensity", 0, 20);
+	guiFolder2.add(directionalLight.position, "x", -500, 500);
+	guiFolder2.add(directionalLight.position, "y", -500, 500);
+	guiFolder2.add(directionalLight.position, "z", -500, 500);
+	let guiFolder3 = gui.addFolder("Roughness");
+	guiFolder3.add(plane.material, "roughness", 0, 1);
+	// guiFolder3.add(structure.material, "roughness", 0, 1);
 	//gui.add(structure.position, "z", -100, 100);
 	//gui.add(plane, "name");
 	// console.log("-------------------------");
@@ -179,6 +175,7 @@ function init() {
 	renderer.setSize(window.innerWidth - 240, window.innerHeight - 100);
 	//renderer.setClearColor(0xFFFFFF);
 
+	// utilize javascript prototyping.. add variables to the dom element :)
 	renderer.domElement.camera = camera;
 	renderer.domElement.targetList = plane.children; //targetList
 	
@@ -199,8 +196,8 @@ function init() {
 		controls.minDistance = 1;
 		controls.maxDistance = 200;
 		controls.maxPolarAngle = Math.PI/2 - .04;
-		controls.target = new THREE.Vector3(0, 0, 0);
-		//controls.target.set(0, 5, 0);
+		controls.target = new THREE.Vector3(0, 0, 0); // where the camera actually points
+		//controls.target.set(0, 5, 0); // alternate way of setting target of camera
 		// console.log("-------------------------");
 		// console.log(controls);
 		// console.log("-------------------------");
@@ -228,7 +225,7 @@ function init() {
 	// let queryURLPlantingPlans = `${restURL}planting_plan/?_embed`;
 	// fetch( queryURLPlantingPlans )
 	// 	.then( response => response.json() )
-	// 	.then( postObject => buildPlantingPlans( postObject, plane ) );
+	// 	.then( postObject => buildPlantingPlans(postObject, plane, canvas, gui, renderer, camera) );
 
 
 	/** ANIMATE + RENDER (continuous rendering) ******************************************** */
@@ -236,7 +233,7 @@ function init() {
 	//update(renderer, scene, camera);
 	let animate = function () {
 
-		/** MOUSE CLICKS *********************************************************************/
+		/** MOUSE HOVER ******************************************************************** */
 		
 		// update the picking ray with the camera and mouse position
 		raycaster.setFromCamera(mouse, camera);
@@ -246,21 +243,24 @@ function init() {
 
 		// calculate objects intersecting the picking ray
 		const intersects = raycaster.intersectObjects(plane.children);
-		
-		for (let i = 0; i < intersects.length; i ++) {
-			// hightlight object
-			//intersects[ i ].object.material.color.set(0xff0000);
-		}
 
 		// if there is one (or more) intersections
-		if ( intersects.length > 0 )
-		{
+		if ( intersects.length > 0 ) {
+
+			// do something to object intersected? (testing purposes only)
+			for (let i = 0; i < intersects.length; i++) {
+				// hightlight object
+				//intersects[ i ].object.material.color.set(0xff0000);
+				//console.log(intersects[ i ]);
+			}
+
 			// if the closest object intersected is not the currently stored intersection object
 			if ( intersects[ 0 ].object != INTERSECTED1 ) 
 			{
 				// restore previous intersection object (if it exists) to its original color
-				if ( INTERSECTED1 ) 
+				if ( INTERSECTED1 ) {
 					INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
+				}
 				// store reference to closest object as current intersection object
 				INTERSECTED1 = intersects[ 0 ].object;
 				// store color of closest object (for later restoration)
@@ -269,21 +269,20 @@ function init() {
 				INTERSECTED1.material.color.setHex( 0xffff00 );
 				
 				// update text, if it has a "name" field.
-				if ( intersects[ 0 ].object.name )
-				{
+				if ( intersects[ 0 ].object.name ) {
 					
 				}
-				else
-				{
+				else {
 					
 				}
 			}
 		} 
-		else // there are no intersections
-		{
+		// there are no intersections
+		else {
 			// restore previous intersection object (if it exists) to its original color
-			if ( INTERSECTED1 ) 
+			if ( INTERSECTED1 ) {
 				INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
+			}
 			// remove previous intersection object reference
 			//     by setting current intersection object to "nothing"
 			INTERSECTED1 = null;
@@ -291,17 +290,17 @@ function init() {
 		/** MOUSE CLICKS END *****************************************************************/
 
 		/** CONTINUE PLEASE (MANDATORY) */
-		//viewer.update();
 		controls.update();
 		TWEEN.update();
-		requestAnimationFrame( animate );
+		requestAnimationFrame(animate);
 		// structure.rotation.x += 0.005;
 		// structure.rotation.y += 0.005;
 		// plane.rotation.x += 0.002;
 		// plane.rotation.y += 0.002;
-		renderer.render( scene, camera );
-		updateAnnotationOpacity(camera, 20, 25);
-		updateScreenPosition(camera, renderer);
+		renderer.render(scene, camera);
+		// infospot annotations
+		//updateAnnotationOpacity(camera, 20, 25);
+		updateAnnotationPosition(camera, renderer.domElement);
 	};
 	animate();
 
@@ -405,10 +404,10 @@ function buildAllotments(postObject, plane, canvas, gui, renderer, camera) {
 	let loader = new THREE.TextureLoader();
 
 	let sprites = [];
-	let folderHey = gui.addFolder("Annotations");
+	let guiFolderInfospots = gui.addFolder("Annotations");
 	//let targetList = [];
 
-	postObject.forEach( function(key){
+	postObject.forEach( function(key) {
 
 		// console.log("-------------------------");
 		// console.log("key.id (postObject)------");
@@ -432,10 +431,10 @@ function buildAllotments(postObject, plane, canvas, gui, renderer, camera) {
 		allotment.color = key.acf.allotment_color;
 		allotment.title = key.title.rendered;
 		allotment.description = key.content.rendered;
-		console.log("-------------------------");
-		console.log("allotment----------------");
-		console.log(allotment);
-		console.log("-------------------------");
+		// console.log("-------------------------");
+		// console.log("allotment----------------");
+		// console.log(allotment);
+		// console.log("-------------------------");
 
 		// annotations + additional media
 		//buildNewPost(key);
@@ -461,10 +460,10 @@ function buildAllotments(postObject, plane, canvas, gui, renderer, camera) {
 		structureTextureMap.repeat.set(4, 4);
 		
 		plane.add(structure);
-		console.log("-------------------------");
-		console.log("structure---------------------");
-		console.log(structure);
-		console.log("-------------------------");
+		// console.log("-------------------------");
+		// console.log("structure---------------------");
+		// console.log(structure);
+		// console.log("-------------------------");
 
 		sprites[key] = makeTextSprite(
 			structure.name, 
@@ -480,64 +479,45 @@ function buildAllotments(postObject, plane, canvas, gui, renderer, camera) {
 			structure.geometry.parameters.depth + 5
 		);
 		sprites[key].visible = false;
-		folderHey.add(sprites[key], "visible").listen();
+		guiFolderInfospots.add(sprites[key], "visible");
 		
 		structure.add(sprites[key]);
-		console.log("-------------------------");
-		console.log("structure---------------------");
-		console.log(structure);
-		console.log("-------------------------");
-
-		// const vector = new THREE.Vector3(250, 250, 250);
-		// const canvas = renderer.domElement; // `renderer` is a THREE.WebGLRenderer
-
-		// vector.project(camera); // `camera` is a THREE.PerspectiveCamera
-
-		// vector.x = Math.round((0.5 + vector.x / 2) * (canvas.width / window.devicePixelRatio));
-		// vector.y = Math.round((0.5 - vector.y / 2) * (canvas.height / window.devicePixelRatio));
-
-		// const annotation = document.querySelector('.annotation');
-		// annotation.style.top = `${vector.y}px`;
-		// annotation.style.left = `${vector.x}px`;
+		// console.log("-------------------------");
+		// console.log("structure---------------------");
+		// console.log(structure);
+		// console.log("-------------------------");
 
 		/** INFOSPOTS ********************************************************************* */
-		// let infospot = new PANOLENS.Infospot( 5, PANOLENS.DataImage.Info );
-		// infospot.setContainer(canvas);
-        // infospot.position.set( 
-		// 	structure.position.x - 1, 
-		// 	structure.position.y - 1, 
-		// 	structure.geometry.parameters.depth + 2
-		// );
-		// infospot.show(true);
-        // infospot.addHoverText(structure.name);
-    	// //infospot.addHoverElement(document.getElementById('chair-container'), 20);
-		// //infospot.lockHoverElement();
-        // structure.add(infospot);
-		// folderHey.add(infospot, "visible").listen();// Sprite
 
-		const numberTexture = new THREE.CanvasTexture(
-			document.querySelector("#number")
-			//$("#number")[0]
+		const infospotTexture = new THREE.CanvasTexture(
+			document.querySelector("#infospot")
+			//$("#infospot")[0]
 		);
 
-		const spriteMaterial = new THREE.SpriteMaterial({
-			map: numberTexture,
+		const infospotMaterial = new THREE.SpriteMaterial({
+			map: infospotTexture,
 			alphaTest: 0.5,
 			transparent: true,
 			depthTest: false,
 			depthWrite: false
 		});
 
-		let sprite = new THREE.Sprite(spriteMaterial);
-		sprite.position.set(0, 0, structure.geometry.parameters.depth + 1);
-		sprite.scale.set(5, 5, 1);
+		let infospot = new THREE.Sprite(infospotMaterial);
+		infospot.position.set(structure.position.x, structure.position.y, structure.geometry.parameters.depth + 2);
+		infospot.scale.set(5, 5, 5);
+		infospot.visible = true;
+		guiFolderInfospots.add(infospot, "visible");
 
-		structure.add(sprite);
+		plane.add(infospot);
 
-		
 		//targetList.push(structure);
 
 	});
+	
+	console.log("-------------------------");
+	console.log("plane.children-----------");
+	console.log(plane.children);
+	console.log("-------------------------");
 
 	return true;
 }
@@ -558,11 +538,9 @@ function makeTextSprite( message, parameters )
 		parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 };
 	let backgroundColor = parameters.hasOwnProperty("backgroundColor") ?
 		parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
-
-	//let spriteAlignment = THREE.SpriteAlignment.topLeft;
 		
-	let canvas = document.createElement('canvas');
-	let context = canvas.getContext('2d');
+	let newCanvas = document.createElement('canvas');
+	let context = newCanvas.getContext('2d');
 	context.font = "Bold " + fontsize + "px " + fontface;
 	//context.textAlign = "center";
     
@@ -598,7 +576,7 @@ function makeTextSprite( message, parameters )
 	context.fillText( message, borderThickness, fontsize + borderThickness);
 	
 	// canvas contents will be used for a texture
-	let texture = new THREE.Texture(canvas);
+	let texture = new THREE.Texture(newCanvas);
 	texture.needsUpdate = true;
 
 	let spriteMaterial = new THREE.SpriteMaterial( 
@@ -628,31 +606,31 @@ function roundRect(ctx, x, y, w, h, r)
 	ctx.stroke();   
 }
 
-function updateAnnotationOpacity(camera, meshPosition, spritePosition) {
+function updateAnnotationOpacity(camera, meshPosition, annotationPosition) {
     const meshDistance = camera.position.distanceTo(meshPosition);
-    const spriteDistance = camera.position.distanceTo(spritePosition);
-    let spriteBehindObject = spriteDistance > meshDistance;
-    //sprite.material.opacity = spriteBehindObject ? 0.5 : 1;
+    const annotationDistance = camera.position.distanceTo(annotationPosition);
+    let annotationBehindObject = annotationDistance > meshDistance;
+    //annotation.material.opacity = annotationBehindObject ? 0.5 : 1;
 
-    // Do you want a number that changes size according to its position?
+    // Do you want an infospot that changes size according to its position?
     // Comment out the following line and the `::before` pseudo-element.
-    //sprite.material.opacity = 1;
+    //annotation.material.opacity = 1;
 }
 
-function updateScreenPosition(camera, renderer) {
-    const vector = new THREE.Vector3(250, 250, 250);
-    const canvas = renderer.domElement;
+function updateAnnotationPosition(camera, rendererDomElement) {
+    let vector = new THREE.Vector3(20, 20, 20);
 	let annotation = $(".annotation")[0];
-	
+
     vector.project(camera);
 
-    vector.x = Math.round((0.5 + vector.x / 2) * (canvas.width / window.devicePixelRatio));
-    vector.y = Math.round((0.5 - vector.y / 2) * (canvas.height / window.devicePixelRatio));
+    vector.x = Math.round((0.5 + vector.x / 2) * (rendererDomElement.width / window.devicePixelRatio));
+    vector.y = Math.round((0.5 - vector.y / 2) * (rendererDomElement.height / window.devicePixelRatio));
 
     annotation.style.top = `${vector.y}px`;
     annotation.style.left = `${vector.x}px`;
-    //annotation.style.opacity = spriteBehindObject ? 0.25 : 1;
+    //annotation.style.opacity = annotationBehindObject ? 0.25 : 1;
 	annotation.style.opacity = 1;
+	annotation.style.display = "block";
 }
 
 /**
@@ -974,183 +952,46 @@ function buildNewPost( postObject ) {
 
 
 
-
-
-
-
-
-
-    //   var panorama, viewer, dae, path, format, loader, pointlight, intersect, infospots;
-
-    //   var chairModels = [];
-
-    //   // Disable warning from loading dae model
-    //   console.warn = ()=>{};
-
-    //   path = 'asset/textures/cube/room/';
-    //   format = '.jpg';
-    //   panorama = new PANOLENS.CubePanorama( [
-    //       path + 'px' + format, path + 'nx' + format,
-    //       path + 'py' + format, path + 'ny' + format,
-    //       path + 'pz' + format, path + 'nz' + format
-    //   ] );
-
-    //   viewer = new PANOLENS.Viewer();
-    //   viewer.add( panorama );
-
-    //   loader = new THREE.ColladaLoader();
-    //   loader.load( './asset/models/room/room.dae', function ( collada ) {
-
-    //     dae = collada.scene;
-
-    //     dae.scale.multiplyScalar( 15 );
-    //     dae.position.set( -60, -20, 370 );
-    //     dae.rotation.set( -Math.PI/2, 0, -1.9 );
-
-    //     dae.traverse( child => {
-
-    //       if ( child.material instanceof THREE.Material ) {
-    //         const map = child.material.map;
-    //         child.material = new THREE.MeshPhysicalMaterial({map, reflectivity: 0, metalness: 0});
-    //       }
-
-    //     } );
-
-    //     // Get chair model
-    //     dae.children.map( function( object ) {
-    //       if ( object.name === 'Chair-Desk' && 
-    //           object.material.name === 'Textile - Slate Blue' ) {
-    //         chairModels.push( object );
-    //       }
-    //     } )
-
-    //     panorama.add( dae );
-
-    //   } );
-
-    //   panorama.addEventListener( 'click', function( event ){
-
-    //     if ( event.intersects.length > 0 ) {
-
-    //       intersect = event.intersects[ 0 ].object;
-
-    //       if ( !(intersect instanceof PANOLENS.Infospot) && intersect.material ) {
-
-    //         if ( !intersect.previousMaterial ) {
-
-    //           intersect.previousMaterial = intersect.material.clone();
-    //           intersect.material = new THREE.MeshNormalMaterial();
-
-    //         } else {
-
-    //           intersect.material = intersect.previousMaterial;
-    //           intersect.previousMaterial.dispose();
-    //           intersect.previousMaterial = undefined;
-
-    //         } 
-
-    //       }
-
-    //     }
-
-    //   } );
-
-    //   addPointLights();
-    //   addInfospots();
-
-    //   function addPointLights () {
-
-    //     pointlight = new THREE.PointLight( 0xFFD6AA, 0.8 );
-    //     pointlight.position.set( 0, 0, 0 );
-    //     panorama.add( pointlight );
-
-    //     pointlight = pointlight.clone();
-    //     pointlight.position.set( 65, 0, -45 );
-    //     panorama.add( pointlight );
-
-    //   }
-
-      function addInfospots (scene) {
-
-        var infospot = new PANOLENS.Infospot( 1.5, PANOLENS.DataImage.Info );
-        infospot.position.set( 28.22, 5.24, 6.63 );
-        infospot.addHoverText( 'Dell - E2414HM 24" LED HD Monitor - Black - $149.00' );
-        scene.add( infospot );
-
-        infospot = new PANOLENS.Infospot( 1, PANOLENS.DataImage.Info );
-        infospot.position.set( 24.16, -3.15, 6.25 );
-        infospot.addHoverText( 'Razer - BlackWidow Mechanical Keyboard - Black - $156.99' );
-        scene.add( infospot );
-
-        infospot = new PANOLENS.Infospot( 1, PANOLENS.DataImage.Info );
-        infospot.position.set( 13.35, -8.08, 6.57 );
-        infospot.addHoverElement( document.getElementById( 'chair-container' ), 280 );
-        scene.add( infospot );
-
-        infospot = new PANOLENS.Infospot( 2, 'asset/textures/danger.png' );
-        infospot.position.set( 9.47, 24.41, -8.44 );
-        infospot.addHoverText( 'Ventilation Pipe - Caution - Extremely Hot' );
-        scene.add( infospot );
-
-      }
-
-    //   function onChairColorClick ( hex ) {
-        
-    //     if ( chairModels ) {
-
-    //       chairModels.map( function ( object ) {
-
-    //         if ( object.material ) {
-
-    //           object.material = new THREE.MeshPhongMaterial({ color: hex });
-
-    //         }
-
-    //       } );
-
-    //     }
-
-    //   }
-
-
-
-
 /** ************************************************************************************* */
 /**
  * run app on window load, when everything is ready
  */
 $(window).on("load", function() {
 
-	// Number
-
-	let canvas1 = $("#number");
-	let ctx = canvas1[0].getContext("2d");
+	/**
+	 * infospot
+	 */
+	let infospotCanvas = $("#infospot");
+	let ctx = infospotCanvas[0].getContext("2d");
 	let x = 32;
 	let y = 32;
 	let radius = 30;
 	let startAngle = 0;
 	let endAngle = Math.PI * 2;
-
+	// background
 	ctx.fillStyle = "rgb(0, 0, 0)";
 	ctx.beginPath();
 	ctx.arc(x, y, radius, startAngle, endAngle);
 	ctx.fill();
-
+	// border
 	ctx.strokeStyle = "rgb(255, 255, 255)";
-	ctx.lineWidth = 3;
+	ctx.lineWidth = 4;
 	ctx.beginPath();
 	ctx.arc(x, y, radius, startAngle, endAngle);
 	ctx.stroke();
-
+	// foreground
 	ctx.fillStyle = "rgb(255, 255, 255)";
-	ctx.font = "32px sans-serif";
+	ctx.font = "40px sans-serif";
 	ctx.textAlign = "center";
 	ctx.textBaseline = "middle";
-	ctx.fillText("1", x, y);
+	// text
+	ctx.fillText("i", x, y);
 
 
 
-	// init
+	/**
+	 * init
+	 */
 	let garden = init();
 	// console.log("-------------------------");
 	// console.log(garden);
