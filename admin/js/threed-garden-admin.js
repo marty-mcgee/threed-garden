@@ -454,9 +454,10 @@ function buildAllotments(postObject, plane, gui, camera, renderer) {
 			camera,
 			renderer.domElement
 		)
-
-		guiFolderInfospots.add(annotation.style, "display");
 		//annotation.style.display = "block";
+		annotation.hidden = false;
+
+		guiFolderInfospots.add(annotation, "hidden");
 
 		plane.add(annotation);
 
@@ -528,10 +529,9 @@ function makeInfospot(message, positionX, positionY, positionZ) {
 
 function makeAnnotation(contentHTML, camera, rendererDomElement) {
 
-	let annotation = document.createElement('canvas');
-	//let annotation = $(".annotation")[0];
-	// let context = annoCanvas.getContext('2d');
-	// context.font = "Bold " + fontsize + "px " + fontface;
+	//let annotation = document.createElement('canvas');
+	let annotation = $(".annotation")[0];
+	let annoCanvas = document.createElement('canvas');
 
 	annotation.innerHTML = contentHTML;
 
@@ -546,10 +546,12 @@ function makeAnnotation(contentHTML, camera, rendererDomElement) {
     //annotation.style.opacity = annotationBehindObject ? 0.25 : 1;
 	annotation.style.opacity = 1;
 	annotation.style.display = "block";
-	// console.log("------------------");
-	// console.log("annotation--------");
-	// console.log(annotation);
-	// console.log("------------------");
+	console.log("------------------");
+	console.log("annotation--------");
+	console.log(annotation);
+	console.log("annoCanvas--------");
+	console.log(annoCanvas);
+	console.log("------------------");
 
 	return annotation;
 }
