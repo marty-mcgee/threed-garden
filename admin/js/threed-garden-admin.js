@@ -36,11 +36,12 @@ let targetList = [];
 function init() {
 
     let scene;
-    let canvas;
     let camera;
     let controls;
     let gui;
     let renderer;
+    let canvasParent;
+    let canvas;
 
 	/** THREE JS SCENE ******************************************************************* */
 
@@ -207,11 +208,13 @@ function init() {
 
 	//document.getElementById('webgl').appendChild(renderer.domElement);
 	//$( "#webgl" ).append(renderer.domElement);
-	canvas = $("#webgl");
-	canvas.css("border","0px solid black")
+	canvasParent = $("#webgl");
+	canvasParent.css("border","0px solid black")
 		.append(gui.domElement)
 		.append(renderer.domElement);
+	//canvas = renderer.domElement;
 	// console.log("-------------------------");
+	// console.log(canvasParent);
 	// console.log(canvas);
 	// console.log("-------------------------");
 
@@ -220,12 +223,12 @@ function init() {
 	let queryURLAllotments = `${restURL}allotment/?_embed`;
 	fetch( queryURLAllotments )
 		.then( response => response.json() )
-		.then( postObject => buildAllotments(postObject, plane, canvas, gui, renderer, camera) );
+		.then( postObject => buildAllotments(postObject, plane, gui) );
 		
 	// let queryURLPlantingPlans = `${restURL}planting_plan/?_embed`;
 	// fetch( queryURLPlantingPlans )
 	// 	.then( response => response.json() )
-	// 	.then( postObject => buildPlantingPlans(postObject, plane, canvas, gui, renderer, camera) );
+	// 	.then( postObject => buildPlantingPlans(postObject, plane, gui) );
 
 
 	/** ANIMATE + RENDER (continuous rendering) ******************************************** */
@@ -394,7 +397,7 @@ function getAmbientLight(color, intensity){
 /**
  * BUILD FROM REST API POST OBJECT ************************************************************
  */
-function buildAllotments(postObject, plane, canvas, gui, renderer, camera) {
+function buildAllotments(postObject, plane, gui) {
 	//alert("HEY HEY HEY -- FROM JS");
 	// console.log("-------------------------");
 	// console.log("postObject---------------");
@@ -504,7 +507,7 @@ function buildAllotments(postObject, plane, canvas, gui, renderer, camera) {
 
 		let infospot = new THREE.Sprite(infospotMaterial);
 		infospot.position.set(structure.position.x, structure.position.y, structure.geometry.parameters.depth + 2);
-		infospot.scale.set(5, 5, 5);
+		infospot.scale.set(4, 4, 4);
 		infospot.visible = true;
 		guiFolderInfospots.add(infospot, "visible");
 
@@ -589,8 +592,7 @@ function makeTextSprite( message, parameters )
 }
 
 // function for drawing rounded rectangles
-function roundRect(ctx, x, y, w, h, r) 
-{
+function roundRect(ctx, x, y, w, h, r) {
     ctx.beginPath();
     ctx.moveTo(x+r, y);
     ctx.lineTo(x+w-r, y);
@@ -618,7 +620,7 @@ function updateAnnotationOpacity(camera, meshPosition, annotationPosition) {
 }
 
 function updateAnnotationPosition(camera, rendererDomElement) {
-    let vector = new THREE.Vector3(20, 20, 20);
+    let vector = new THREE.Vector3(0, 0, 0);
 	let annotation = $(".annotation")[0];
 
     vector.project(camera);
@@ -969,18 +971,18 @@ $(window).on("load", function() {
 	let startAngle = 0;
 	let endAngle = Math.PI * 2;
 	// background
-	ctx.fillStyle = "rgb(0, 0, 0)";
+	ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
 	ctx.beginPath();
 	ctx.arc(x, y, radius, startAngle, endAngle);
 	ctx.fill();
 	// border
-	ctx.strokeStyle = "rgb(255, 255, 255)";
+	ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
 	ctx.lineWidth = 4;
 	ctx.beginPath();
 	ctx.arc(x, y, radius, startAngle, endAngle);
 	ctx.stroke();
 	// foreground
-	ctx.fillStyle = "rgb(255, 255, 255)";
+	ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
 	ctx.font = "40px sans-serif";
 	ctx.textAlign = "center";
 	ctx.textBaseline = "middle";
