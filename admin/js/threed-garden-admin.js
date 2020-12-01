@@ -456,19 +456,21 @@ function buildAllotments(postObject, plane, gui, camera, renderer) {
 		)
 		//annotation.style.display = "block";
 		annotation.hidden = false;
+		annotation.visible = true;
 
 		guiFolderInfospots.add(annotation, "hidden");
+		guiFolderInfospots.add(annotation, "visible");
 
-		plane.add(annotation);
+		structure.add(annotation);
 
-	});
+	}); /** END ALLOTMENTS ****************************************************************** */
 	
 	console.log("-------------------------");
 	console.log("plane.children-----------");
 	console.log(plane.children);
 	console.log("-------------------------");
 
-	return true;
+	return plane.children;
 }
 
 /**
@@ -530,10 +532,13 @@ function makeInfospot(message, positionX, positionY, positionZ) {
 function makeAnnotation(contentHTML, camera, rendererDomElement) {
 
 	//let annotation = document.createElement('canvas');
-	let annotation = $(".annotation")[0];
-	let annoCanvas = document.createElement('canvas');
+	// let annotation = $(".annotation")[0];
+	//let annoCanvas = document.createElement('div');
+	let annoCanvas = $(".annotation")[0];
 
-	annotation.innerHTML = contentHTML;
+
+	// annotation.innerHTML = contentHTML;
+	annoCanvas.innerHTML = contentHTML;
 
     let vector = new THREE.Vector3(0, 0, 0);
 	vector.project(camera);
@@ -541,19 +546,42 @@ function makeAnnotation(contentHTML, camera, rendererDomElement) {
     vector.x = Math.round((0.5 + vector.x / 2) * (rendererDomElement.width / window.devicePixelRatio));
     vector.y = Math.round((0.5 - vector.y / 2) * (rendererDomElement.height / window.devicePixelRatio));
 
-    annotation.style.top = `${vector.y}px`;
-    annotation.style.left = `${vector.x}px`;
-    //annotation.style.opacity = annotationBehindObject ? 0.25 : 1;
-	annotation.style.opacity = 1;
-	annotation.style.display = "block";
+    // annotation.style.top = `${vector.y}px`;
+    // annotation.style.left = `${vector.x}px`;
+    // //annotation.style.opacity = annotationBehindObject ? 0.25 : 1;
+	// annotation.style.opacity = 1;
+	// annotation.style.display = "block";
+	// console.log("------------------");
+	// console.log("annotation--------");
+	// console.log(annotation);
+	// console.log("------------------");
+
+	annoCanvas.style.top = `${vector.y}px`;
+    annoCanvas.style.left = `${vector.x}px`;
+    //annoCanvas.style.opacity = annotationBehindObject ? 0.25 : 1;
+	annoCanvas.style.opacity = 1;
+	annoCanvas.style.display = "block";
 	console.log("------------------");
-	console.log("annotation--------");
-	console.log(annotation);
 	console.log("annoCanvas--------");
 	console.log(annoCanvas);
 	console.log("------------------");
 
-	return annotation;
+	var cssObject = new THREE.CSS3DObject( annoCanvas );
+	//var cssObject = new THREE.CSS3DObject( $(".annotation")[0] );
+	// // we reference the same position and rotation 
+	// cssObject.position = planeMesh.position;
+	// cssObject.rotation = planeMesh.rotation;
+	// // add it to the css scene
+	// cssScene.add(cssObject);
+	console.log("------------------");
+	console.log("cssObject---------");
+	console.log(cssObject);
+	console.log("------------------");
+
+
+	//return annotation;
+	//return annoCanvas;
+	return cssObject;
 }
 
 function makeTextSprite(message, parameters) {
