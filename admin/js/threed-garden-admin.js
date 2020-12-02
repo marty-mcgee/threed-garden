@@ -36,10 +36,12 @@ let INTERSECTED2;
 function init() {
 
     let scene;
+	//let scene2;
     let camera;
     let controls;
     let gui;
     let renderer;
+    //let renderer2;
     let canvasParent;
     let canvas;
 
@@ -48,6 +50,8 @@ function init() {
 	scene = new THREE.Scene();
 	scene.background = new THREE.Color(0x333333);
 	//scene.fog = new THREE.Fog(0xFFFFFF, 0, 500);
+
+	//scene2 = new THREE.Scene(); // for css objects
 
 	/** GEOMETRIES *********************************************************************** */
 	
@@ -156,8 +160,8 @@ function init() {
 	guiFolder2.add(directionalLight.position, "x", -500, 500);
 	guiFolder2.add(directionalLight.position, "y", -500, 500);
 	guiFolder2.add(directionalLight.position, "z", -500, 500);
-	let guiFolder3 = gui.addFolder("Roughness");
-	guiFolder3.add(plane.material, "roughness", 0, 1);
+	// let guiFolder3 = gui.addFolder("Roughness");
+	// guiFolder3.add(plane.material, "roughness", 0, 1);
 	// guiFolder3.add(structure.material, "roughness", 0, 1);
 	//gui.add(structure.position, "z", -100, 100);
 	//gui.add(plane, "name");
@@ -204,6 +208,12 @@ function init() {
 		// console.log("-------------------------");
 		renderer.domElement.controls = controls;
 
+	// renderer2 = new THREE.CSS3DRenderer();
+	// renderer2.setSize( window.innerWidth, window.innerHeight );
+	// renderer2.domElement.style.position = 'absolute';
+	// renderer2.domElement.style.top = 0;
+	// document.body.appendChild( renderer2.domElement );
+
 	/** WEBGL CANVAS *********************************************************************** */
 
 	//document.getElementById('webgl').appendChild(renderer.domElement);
@@ -249,6 +259,7 @@ function init() {
 		// plane.rotation.x += 0.002;
 		// plane.rotation.y += 0.002;
 		renderer.render(scene, camera);
+		//renderer2.render(scene2, camera);
 		// infospot annotations
 		//updateAnnotationOpacity(camera, 20, 25);
 		//updateAnnotationPosition(camera, renderer.domElement);
@@ -330,16 +341,6 @@ function getAmbientLight(color, intensity){
 	let light = new THREE.AmbientLight(color, intensity);
 	return light;
 }
-
-// maybe
-// function update(renderer, scene, camera){
-// 	renderer.render( scene, camera );
-// 	// recursive function loading
-// 	requestAnimationFrame( function(){
-// 		update(renderer, scene, camera);
-// 	} );
-// }
-
 
 
 /**
@@ -449,19 +450,50 @@ function buildAllotments(postObject, plane, gui, camera, renderer) {
 
 		/** ANNOTATIONS ****************************************************************** */
 
+		let vector = new THREE.Vector3(structure.position.x, structure.position.y, structure.position.z);
+		// camera.updateProjectionMatrix();
+		// camera.updateMatrixWorld();
+		// let vector = new THREE.Vector3();
+        // vector.setFromMatrixPosition(structure.matrixWorld);
+		vector.project(camera);
+		console.log("------------------");
+		console.log("vector1--------");
+		console.log(vector);
+		console.log("------------------");
+
+		// vector.x = Math.round((0.5 + vector.x / 2) * (renderer.domElement.width / window.devicePixelRatio));
+		// vector.y = Math.round((0.5 - vector.y / 2) * (renderer.domElement.height / window.devicePixelRatio));
+		// vector.x = (structure.position.x / (window.innerWidth - 240)) * 2 - 1;
+		// vector.y = -(structure.position.y / (window.innerHeight - 100)) * 2 + 1;
+		vector.x = Math.round( (   vector.x + 1 ) * renderer.domElement.width / 2 );
+    	vector.y = Math.round( ( - vector.y + 1 ) * renderer.domElement.height / 2 );
+		
+		console.log("------------------");
+		console.log("vector2--------");
+		console.log(vector);
+		console.log("------------------");
+
+		let annoPosTop = vector.x; //structure.position.y + 10
+		let annoPosLeft = vector.y; //structure.position.x + 10
+		let annoPosZ = structure.geometry.parameters.depth + 10;
+
 		let annotation = makeAnnotation(
 			structure.name,
-			camera,
-			renderer.domElement
+			annoPosTop, 
+			annoPosLeft,
+			annoPosZ,
+			guiFolderInfospots
 		)
-		//annotation.style.display = "block";
-		annotation.hidden = false;
-		annotation.visible = true;
+		console.log("-------------------------");
+		console.log("annotation---------------------");
+		console.log(annotation);
+		console.log("-------------------------");
 
-		guiFolderInfospots.add(annotation, "hidden");
+		//guiFolderInfospots.add(annotation, "hidden");
 		guiFolderInfospots.add(annotation, "visible");
 
-		structure.add(annotation);
+		//plane.parent.add(annotation);
+		plane.add(annotation);
 
 	}); /** END ALLOTMENTS ****************************************************************** */
 	
@@ -529,58 +561,35 @@ function makeInfospot(message, positionX, positionY, positionZ) {
 	return infospot;
 }
 
-function makeAnnotation(contentHTML, camera, rendererDomElement) {
+function makeAnnotation(contentHTML, positionX, positionY, positionZ, gui) {
 
-	//let annotation = document.createElement('canvas');
-	// let annotation = $(".annotation")[0];
-	//let annoCanvas = document.createElement('div');
-	let annoCanvas = $(".annotation")[0];
+	//let annoDiv = document.createElement('div');
+	let annoDiv = $(".annotation")[0];
+	annoDiv = annoDiv.cloneNode();
+	document.body.appendChild( annoDiv );
+	// annoDiv.classList.add("annotation");
+	annoDiv.innerHTML = `${contentHTML}: ${positionX} ${positionY}`;
+	annoDiv.style.display = "block";
+	annoDiv.style.top = `${positionY}px`;
+    annoDiv.style.left = `${positionX}px`;
+	gui.add(annoDiv.style, "display");
+	gui.add(annoDiv.style, "top");
+	gui.add(annoDiv.style, "left");
 
-
-	// annotation.innerHTML = contentHTML;
-	annoCanvas.innerHTML = contentHTML;
-
-    let vector = new THREE.Vector3(0, 0, 0);
-	vector.project(camera);
-
-    vector.x = Math.round((0.5 + vector.x / 2) * (rendererDomElement.width / window.devicePixelRatio));
-    vector.y = Math.round((0.5 - vector.y / 2) * (rendererDomElement.height / window.devicePixelRatio));
-
-    // annotation.style.top = `${vector.y}px`;
-    // annotation.style.left = `${vector.x}px`;
-    // //annotation.style.opacity = annotationBehindObject ? 0.25 : 1;
-	// annotation.style.opacity = 1;
-	// annotation.style.display = "block";
-	// console.log("------------------");
-	// console.log("annotation--------");
-	// console.log(annotation);
-	// console.log("------------------");
-
-	annoCanvas.style.top = `${vector.y}px`;
-    annoCanvas.style.left = `${vector.x}px`;
-    //annoCanvas.style.opacity = annotationBehindObject ? 0.25 : 1;
-	annoCanvas.style.opacity = 1;
-	annoCanvas.style.display = "block";
-	console.log("------------------");
-	console.log("annoCanvas--------");
-	console.log(annoCanvas);
-	console.log("------------------");
-
-	var cssObject = new THREE.CSS3DObject( annoCanvas );
-	//var cssObject = new THREE.CSS3DObject( $(".annotation")[0] );
+	let cssObject = new THREE.CSS3DObject( annoDiv );
 	// // we reference the same position and rotation 
-	// cssObject.position = planeMesh.position;
-	// cssObject.rotation = planeMesh.rotation;
-	// // add it to the css scene
-	// cssScene.add(cssObject);
-	console.log("------------------");
-	console.log("cssObject---------");
-	console.log(cssObject);
-	console.log("------------------");
+	// cssObject.position = rendererDomElement.position;
+	// cssObject.rotation = rendererDomElement.rotation;
+	// cssObject.position.set(positionX, positionY, positionZ);
+	// cssObject.scale.set(4, 4, 4);
+	// cssObject.visible = true;
+	// console.log("------------------");
+	// console.log("cssObject---------");
+	// console.log(cssObject);
+	// console.log("------------------");
 
 
-	//return annotation;
-	//return annoCanvas;
+	//return annoDiv;
 	return cssObject;
 }
 
