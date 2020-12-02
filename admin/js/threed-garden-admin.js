@@ -36,12 +36,10 @@ let INTERSECTED2;
 function init() {
 
     let scene;
-	//let scene2;
     let camera;
     let controls;
     let gui;
     let renderer;
-    //let renderer2;
     let canvasParent;
     let canvas;
 
@@ -50,8 +48,6 @@ function init() {
 	scene = new THREE.Scene();
 	scene.background = new THREE.Color(0x333333);
 	//scene.fog = new THREE.Fog(0xFFFFFF, 0, 500);
-
-	//scene2 = new THREE.Scene(); // for css objects
 
 	/** GEOMETRIES *********************************************************************** */
 	
@@ -208,12 +204,6 @@ function init() {
 		// console.log("-------------------------");
 		renderer.domElement.controls = controls;
 
-	// renderer2 = new THREE.CSS3DRenderer();
-	// renderer2.setSize( window.innerWidth, window.innerHeight );
-	// renderer2.domElement.style.position = 'absolute';
-	// renderer2.domElement.style.top = 0;
-	// document.body.appendChild( renderer2.domElement );
-
 	/** WEBGL CANVAS *********************************************************************** */
 
 	//document.getElementById('webgl').appendChild(renderer.domElement);
@@ -259,10 +249,14 @@ function init() {
 		// plane.rotation.x += 0.002;
 		// plane.rotation.y += 0.002;
 		renderer.render(scene, camera);
-		//renderer2.render(scene2, camera);
 		// infospot annotations
 		//updateAnnotationOpacity(camera, 20, 25);
-		//updateAnnotationPosition(camera, renderer.domElement);
+		// updateAnnotationPosition(
+		// 	camera, 
+		// 	renderer.domElement.width,
+		// 	renderer.domElement.height,
+		// 	positionX, positionY, positionZ, annotation
+		// );
 	};
 	animate();
 
@@ -286,11 +280,35 @@ function getGeometry(shape, x, y, z, color){
 			geometry = new THREE.BoxGeometry(x, y, z);
 			break;
 	}
-	let material = new THREE.MeshStandardMaterial({
+	// let material = new THREE.MeshStandardMaterial({
+	// 	color: color,
+	// 	side: THREE.DoubleSide
+	// });
+	// let mesh = new THREE.Mesh(geometry, material);
+	// mesh.castShadow = true;
+	// return mesh;
+	
+	var opacMaterial = new THREE.MeshStandardMaterial({
+		transparent: true, 
+		opacity: 0.0,
 		color: color,
-		side: THREE.DoubleSide
+	 	side: THREE.DoubleSide
 	});
-	let mesh = new THREE.Mesh(geometry, material);
+	var solidMaterial = new THREE.MeshStandardMaterial({
+		transparent: true, 
+		opacity: 0.9,
+		color: color,
+	 	side: THREE.DoubleSide
+	});
+
+	var mesh = new THREE.Mesh(
+		geometry, 
+		new THREE.MultiMaterial([
+			solidMaterial, solidMaterial, 
+			solidMaterial, solidMaterial, 
+			opacMaterial, opacMaterial
+		])
+	);
 	mesh.castShadow = true;
 	return mesh;
 }
@@ -394,11 +412,19 @@ function buildAllotments(postObject, plane, gui, camera, renderer) {
 			allotment.color
 		);
 		structure.name = allotment.title;
+		structure.description = allotment.description;
 		structure.position.x = allotment.position.x;
 		structure.position.y = allotment.position.y;
 		structure.position.z = (structure.geometry.parameters.depth / 2); // + allotment.position.z
 		structure.material.roughness = 0.9;
 		structure.material.map = loader.load(allotment.images.texture);
+		for (let i = 0; i < structure.material.length; i++) {
+			// hightlight object
+			//structure.material[ i ].color.set(0xff0000);
+			structure.material[ i ].map = loader.load(allotment.images.texture);
+			//console.log(intersects[ i ]);
+		}
+		//structure.faces[i].materialIndex = 1;
 		// structure.material.bumpMap = loader.load(allotment.images.texture);
 		// structure.material.bumpScale = 0.05;
 		let structureTextureMap = structure.material.map;
@@ -424,6 +450,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer) {
 		// 	structure.name, 
 		// 	0, 0, structure.geometry.parameters.depth + 5
 		// );
+		sprite.name = `SPRITE: ${structure.name}`;
 		sprite.position.set(0, 0, structure.geometry.parameters.depth + 5);
 		sprite.visible = false;
 
@@ -443,6 +470,8 @@ function buildAllotments(postObject, plane, gui, camera, renderer) {
 			structure.position.y, 
 			structure.geometry.parameters.depth + 3
 		);
+		infospot.name = `INFOSPOT: ${structure.name}`;
+		infospot.visible = true;
 
 		guiFolderInfospots.add(infospot, "visible");
 
@@ -456,10 +485,10 @@ function buildAllotments(postObject, plane, gui, camera, renderer) {
 		// let vector = new THREE.Vector3();
         // vector.setFromMatrixPosition(structure.matrixWorld);
 		vector.project(camera);
-		console.log("------------------");
-		console.log("vector1--------");
-		console.log(vector);
-		console.log("------------------");
+		// console.log("------------------");
+		// console.log("vector1--------");
+		// console.log(vector);
+		// console.log("------------------");
 
 		// vector.x = Math.round((0.5 + vector.x / 2) * (renderer.domElement.width / window.devicePixelRatio));
 		// vector.y = Math.round((0.5 - vector.y / 2) * (renderer.domElement.height / window.devicePixelRatio));
@@ -468,10 +497,10 @@ function buildAllotments(postObject, plane, gui, camera, renderer) {
 		vector.x = Math.round( (   vector.x + 1 ) * renderer.domElement.width / 2 );
     	vector.y = Math.round( ( - vector.y + 1 ) * renderer.domElement.height / 2 );
 		
-		console.log("------------------");
-		console.log("vector2--------");
-		console.log(vector);
-		console.log("------------------");
+		// console.log("------------------");
+		// console.log("vector2--------");
+		// console.log(vector);
+		// console.log("------------------");
 
 		let annoPosTop = vector.x; //structure.position.y + 10
 		let annoPosLeft = vector.y; //structure.position.x + 10
@@ -484,16 +513,19 @@ function buildAllotments(postObject, plane, gui, camera, renderer) {
 			annoPosZ,
 			guiFolderInfospots
 		)
+		annotation.name = `ANNOTATION: ${structure.name}`;
+		//annotation.visible = false; // does nothing
 		console.log("-------------------------");
 		console.log("annotation---------------------");
 		console.log(annotation);
 		console.log("-------------------------");
 
 		//guiFolderInfospots.add(annotation, "hidden");
-		guiFolderInfospots.add(annotation, "visible");
+		//guiFolderInfospots.add(annotation, "visible");
 
 		//plane.parent.add(annotation);
-		plane.add(annotation);
+		//scene2.add(annotation);
+		structure.add(annotation);
 
 	}); /** END ALLOTMENTS ****************************************************************** */
 	
@@ -569,7 +601,7 @@ function makeAnnotation(contentHTML, positionX, positionY, positionZ, gui) {
 	document.body.appendChild( annoDiv );
 	// annoDiv.classList.add("annotation");
 	annoDiv.innerHTML = `${contentHTML}: ${positionX} ${positionY}`;
-	annoDiv.style.display = "block";
+	annoDiv.style.display = "none"; //block
 	annoDiv.style.top = `${positionY}px`;
     annoDiv.style.left = `${positionX}px`;
 	gui.add(annoDiv.style, "display");
@@ -587,7 +619,6 @@ function makeAnnotation(contentHTML, positionX, positionY, positionZ, gui) {
 	// console.log("cssObject---------");
 	// console.log(cssObject);
 	// console.log("------------------");
-
 
 	//return annoDiv;
 	return cssObject;
@@ -683,14 +714,14 @@ function updateAnnotationOpacity(camera, meshPosition, annotationPosition) {
     //annotation.material.opacity = 1;
 }
 
-function updateAnnotationPosition(camera, rendererDomElement) {
-    let vector = new THREE.Vector3(0, 0, 0);
-	let annotation = $(".annotation")[0];
+function updateAnnotationPosition(camera, width, height, positionX, positionY, positionZ, annotation) {
+    let vector = new THREE.Vector3(positionX, positionY, positionZ);
+	//let annotation = $(".annotation")[0];
 
     vector.project(camera);
 
-    vector.x = Math.round((0.5 + vector.x / 2) * (rendererDomElement.width / window.devicePixelRatio));
-    vector.y = Math.round((0.5 - vector.y / 2) * (rendererDomElement.height / window.devicePixelRatio));
+    vector.x = Math.round((0.5 + vector.x / 2) * (width / window.devicePixelRatio));
+    vector.y = Math.round((0.5 - vector.y / 2) * (height / window.devicePixelRatio));
 
     annotation.style.top = `${vector.y}px`;
     annotation.style.left = `${vector.x}px`;
@@ -700,8 +731,7 @@ function updateAnnotationPosition(camera, rendererDomElement) {
 	// console.log("------------------");
 	// console.log("annotation--------");
 	// console.log(annotation);
-	// console.log("------------------");
-	
+	// console.log("------------------");	
 }
 
 /**
@@ -735,14 +765,14 @@ function watchPointer(camera, targetList){
 		{
 			// restore previous intersection object (if it exists) to its original color
 			if ( INTERSECTED1 ) {
-				INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
+				//INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
 			}
 			// store reference to closest object as current intersection object
 			INTERSECTED1 = intersects[ 0 ].object;
 			// store color of closest object (for later restoration)
-			INTERSECTED1.currentHex = INTERSECTED1.material.color.getHex();
+			//INTERSECTED1.currentHex = INTERSECTED1.material.color.getHex();
 			// set a new color for closest object
-			INTERSECTED1.material.color.setHex( 0xffff00 );
+			//INTERSECTED1.material.color.setHex( 0xffff00 );
 			
 			// update text, if it has a "name" field.
 			if ( intersects[ 0 ].object.name ) {
@@ -757,7 +787,7 @@ function watchPointer(camera, targetList){
 	else {
 		// restore previous intersection object (if it exists) to its original color
 		if ( INTERSECTED1 ) {
-			INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
+			//INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
 		}
 		// remove previous intersection object reference
 		//     by setting current intersection object to "nothing"
@@ -837,10 +867,10 @@ function onPointerUp(event)
 
 	// create an array containing all objects in the scene with which the raycaster2 intersects
 	var intersects = raycaster2.intersectObjects( event.target.targetList );
-	// console.log("------------------");
-	// console.log("intersects--------");
-	// console.log(intersects);
-	// console.log("------------------");
+	console.log("------------------");
+	console.log("intersects--------");
+	console.log(intersects);
+	console.log("------------------");
 	
 	// if there is one (or more) intersections
 	if ( intersects.length > 0 )
@@ -894,17 +924,33 @@ function onPointerUp(event)
 			// console.log("------------------");
 
 			intersectedObject.children.forEach( function(key) {
-				// console.log("-------------------------");
-				// console.log("key.type (intersectedObject.children)------");
-				// console.log(key.type);
-				// console.log(key);
-				// console.log("-------------------------");
-				if (key.type === "Sprite"){
-					if (key.visible === true){
+				console.log("-------------------------");
+				console.log("key.type (intersectedObject.children)------");
+				console.log(key.type);
+				console.log(key);
+				console.log("-------------------------");
+				if (key.type === "Sprite") {
+					if (key.visible === true) {
 						key.visible = false;
 					}
 					else {
 						key.visible = true;
+					}
+				}
+				if (key.type === "Object3D") {
+					if (key.visible === true) {
+						key.visible = false;
+					}
+					else {
+						key.visible = true;
+					}
+					if (key.element.hidden === true) {
+						key.element.hidden = false;
+						key.element.style.display = "block";
+					}
+					else {
+						key.element.hidden = true;
+						key.element.style.display = "none";
 					}
 				}
 			});
