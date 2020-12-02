@@ -598,7 +598,8 @@ function makeAnnotation(contentHTML, positionX, positionY, positionZ, gui) {
 	annoDiv = annoDiv.cloneNode();
 	document.body.appendChild( annoDiv );
 	// annoDiv.classList.add("annotation");
-	annoDiv.innerHTML = `${contentHTML}: ${positionX} ${positionY}`;
+	let link = `http://garden.university.local/allotment/mcgee-home-garden-1/`;
+	annoDiv.innerHTML = `<a href="${link}" target="_blank">${contentHTML}</a> (${positionX}, ${positionY})`;
 	annoDiv.style.display = "none"; //block
 	annoDiv.style.top = `${positionY}px`;
     annoDiv.style.left = `${positionX}px`;
