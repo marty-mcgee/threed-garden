@@ -752,14 +752,14 @@ function watchPointer(camera, targetList){
 	if ( intersects.length > 0 ) {
 
 		// do something to object intersected? (testing purposes only)
-		for (let i = 0; i < intersects.length; i++) {
+		// for (let i = 0; i < intersects.length; i++) {
 			// hightlight object
 			// intersects[i].object.material.color.set(0xff0000);
 			// console.log("------------------");
 			// console.log("intersects[i]-----");
 			// console.log(intersects[i]);
 			// console.log("------------------");
-		}
+		// }
 
 		// if the closest object intersected is not the currently stored intersection object
 		if ( intersects[0].object != INTERSECTED1 ) {
@@ -808,8 +808,8 @@ function watchPointer(camera, targetList){
 
 // when the pointer moves, call the given function
 //document.addEventListener( 'pointermove', onPointerMove, false );
-function onPointerMove( event ) 
-{
+function onPointerMove( event ) {
+
 	// the following line would stop any other event handler from firing
 	// (such as the pointer's TrackballControls)
 	// event.preventDefault();
@@ -829,8 +829,13 @@ function onPointerMove( event )
 
 // when the pointer moves, call the given function
 //document.addEventListener( 'pointerup', onPointerUp, false );
-function onPointerUp(event) 
-{
+function onPointerUp(event) {
+	
+	console.log("------------------");
+	console.log("event------------");
+	console.log(event);
+	console.log("------------------");
+
 	// the following line would stop any other event handler from firing
 	// (such as the pointer's TrackballControls)
 	// event.preventDefault();
@@ -845,12 +850,6 @@ function onPointerUp(event)
 	// console.log("------------------");
 	// console.log("pointer clicked-----");
 	// console.log(pointer.x, pointer.y);
-	// console.log("------------------");
-	
-	// let camera = scene.getObjectByName("mycamera");
-	// console.log("------------------");
-	// console.log("event------------");
-	// console.log(event);
 	// console.log("------------------");
 
 
@@ -939,7 +938,7 @@ function onPointerUp(event)
 				console.log(key.type);
 				console.log(key);
 				console.log("-------------------------");
-				if (key.type === "Sprite") {
+				if (key.type === "Sprite" && event.button == 1) {
 					if (key.visible === true) {
 						key.visible = false;
 					}
@@ -947,13 +946,13 @@ function onPointerUp(event)
 						key.visible = true;
 					}
 				}
-				if (key.type === "Object3D") {
-					if (key.visible === true) {
-						key.visible = false;
-					}
-					else {
-						key.visible = true;
-					}
+				if (key.type === "Object3D" && event.button == 2) {
+					// if (key.visible === true) {
+					// 	key.visible = false;
+					// }
+					// else {
+					// 	key.visible = true;
+					// }
 					if (key.element.hidden === true) {
 						key.element.hidden = false;
 						key.element.style.display = "block";
