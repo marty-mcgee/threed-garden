@@ -6,10 +6,10 @@ const pluginVersion = postdata.plugin_version;
 const pluginURL = postdata.plugin_url;
 const themeURI = postdata.theme_uri;
 const restURL = postdata.rest_url;
-console.log("-------------------------");
-console.log("pluginName---------------");
-console.log(pluginName);
-console.log("-------------------------");
+console.log("-----------------------");
+console.log("pluginName-------------");
+console.log(pluginName, pluginVersion);
+console.log("-----------------------");
 
 /** POINTER CLICKS */
 const raycaster = new THREE.Raycaster();
@@ -235,12 +235,9 @@ function init() {
 
 	//updateAnnotationPosition(camera, renderer.domElement);
 
-	//update(renderer, scene, camera);
 	let animate = function () {
-
-		watchPointer(camera, plane.children);
-
 		/** CONTINUE PLEASE (MANDATORY) */
+		watchPointer(camera, plane.children);
 		controls.update();
 		TWEEN.update();
 		requestAnimationFrame(animate);
@@ -248,6 +245,7 @@ function init() {
 		// structure.rotation.y += 0.005;
 		// plane.rotation.x += 0.002;
 		// plane.rotation.y += 0.002;
+		// plane.rotation.z += 0.002;
 		renderer.render(scene, camera);
 		// infospot annotations
 		//updateAnnotationOpacity(camera, 20, 25);
@@ -420,17 +418,17 @@ function buildAllotments(postObject, plane, gui, camera, renderer) {
 		structure.material.map = loader.load(allotment.images.texture);
 		for (let i = 0; i < structure.material.length; i++) {
 			// hightlight object
-			//structure.material[ i ].color.set(0xff0000);
-			structure.material[ i ].map = loader.load(allotment.images.texture);
-			//console.log(intersects[ i ]);
+			//structure.material[i].color.set(0xff0000);
+			structure.material[i].map = loader.load(allotment.images.texture);
+			//structure.faces[i].materialIndex = 1;
+			//console.log(intersects[i]);
+			// structure.material[i].bumpMap = loader.load(allotment.images.texture);
+			// structure.material[i].bumpScale = 0.05;
+			let structureTextureMap = structure.material[i].map;
+			structureTextureMap.wrapS = THREE.RepeatWrapping;
+			structureTextureMap.wrapT = THREE.RepeatWrapping;
+			structureTextureMap.repeat.set(4, 4);
 		}
-		//structure.faces[i].materialIndex = 1;
-		// structure.material.bumpMap = loader.load(allotment.images.texture);
-		// structure.material.bumpScale = 0.05;
-		let structureTextureMap = structure.material.map;
-		structureTextureMap.wrapS = THREE.RepeatWrapping;
-		structureTextureMap.wrapT = THREE.RepeatWrapping;
-		structureTextureMap.repeat.set(4, 4);
 		
 		plane.add(structure);
 		// console.log("-------------------------");
@@ -756,26 +754,36 @@ function watchPointer(camera, targetList){
 		// do something to object intersected? (testing purposes only)
 		for (let i = 0; i < intersects.length; i++) {
 			// hightlight object
-			//intersects[ i ].object.material.color.set(0xff0000);
-			//console.log(intersects[ i ]);
+			// intersects[i].object.material.color.set(0xff0000);
+			// console.log("------------------");
+			// console.log("intersects[i]-----");
+			// console.log(intersects[i]);
+			// console.log("------------------");
 		}
 
 		// if the closest object intersected is not the currently stored intersection object
-		if ( intersects[ 0 ].object != INTERSECTED1 ) 
-		{
+		if ( intersects[0].object != INTERSECTED1 ) {
+
 			// restore previous intersection object (if it exists) to its original color
 			if ( INTERSECTED1 ) {
-				//INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
+				for (let i = 0; i < INTERSECTED1.material.length; i++) {
+					INTERSECTED1.material[i].color.setHex( INTERSECTED1.currentHex );
+				}
 			}
 			// store reference to closest object as current intersection object
-			INTERSECTED1 = intersects[ 0 ].object;
-			// store color of closest object (for later restoration)
-			//INTERSECTED1.currentHex = INTERSECTED1.material.color.getHex();
-			// set a new color for closest object
-			//INTERSECTED1.material.color.setHex( 0xffff00 );
-			
+			INTERSECTED1 = intersects[0].object;
+
+			// SEPARATE FOR LOOPS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			for (let i = 0; i < INTERSECTED1.material.length; i++) {
+				// store color of closest object (for later restoration)
+				INTERSECTED1.currentHex = INTERSECTED1.material[i].color.getHex();
+			}
+			for (let i = 0; i < INTERSECTED1.material.length; i++) {
+				// set a new color for closest object
+				INTERSECTED1.material[i].color.setHex( 0xffff00 );
+			}
 			// update text, if it has a "name" field.
-			if ( intersects[ 0 ].object.name ) {
+			if ( intersects[0].object.name ) {
 				
 			}
 			else {
@@ -787,10 +795,12 @@ function watchPointer(camera, targetList){
 	else {
 		// restore previous intersection object (if it exists) to its original color
 		if ( INTERSECTED1 ) {
-			//INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
+			for (let i = 0; i < INTERSECTED1.material.length; i++) {
+				INTERSECTED1.material[i].color.setHex( INTERSECTED1.currentHex );
+			}
 		}
 		// remove previous intersection object reference
-		//     by setting current intersection object to "nothing"
+		// by setting current intersection object to "nothing"
 		INTERSECTED1 = null;
 	}
 }
@@ -877,11 +887,11 @@ function onPointerUp(event)
 	{
 		//console.log("Hit @ " + toString( intersects[0].point ) );
 		// change the color of the closest face.
-		// intersects[ 0 ].face.color.setRGB( 0.8 * Math.random() + 0.2, 0, 0 ); 
-		// intersects[ 0 ].object.geometry.colorsNeedUpdate = true;
+		// intersects[0].face.color.setRGB( 0.8 * Math.random() + 0.2, 0, 0 ); 
+		// intersects[0].object.geometry.colorsNeedUpdate = true;
 
 		// if the closest object intersected is not the currently stored intersection object
-		let intersectedObject = intersects[ 0 ].object;
+		let intersectedObject = intersects[0].object;
 		// if ( intersectedObject != INTERSECTED2 ) 
 		// {
 			// console.log("------------------");
@@ -891,7 +901,7 @@ function onPointerUp(event)
 
 			// restore previous intersection object (if it exists) to its original color
 			if ( INTERSECTED2 ) {
-				//INTERSECTED2.material.color.setHex( INTERSECTED2.currentHex );
+				//INTERSECTED2.material[i].color.setHex( INTERSECTED2.currentHex );
 				INTERSECTED2 = intersectedObject;
 				// zoom out
 				//panCam(100, 200, 200, 800, event.target.camera, event.target.controls);
