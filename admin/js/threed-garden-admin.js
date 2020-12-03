@@ -921,10 +921,10 @@ function onPointerUp(event) {
 			//event.target.controls.reset();
 			//event.target.controls.target = new THREE.Vector3(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z);
 			//event.target.camera.position.set(100, 200, 200);
-			// if (event.buttons == 1) {
+			// if (event.button == 2) {
 			// 	// zoom in
 			// 	panCam(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z, 1200, event.target.camera, event.target.controls);
-			// } else if (event.buttons == 2) {
+			// } else if (event.button == 1) {
 			// 	// zoom out
 			// 	panCam(100, 200, 200, 1200, event.target.camera, event.target.controls);
 			// }
@@ -948,19 +948,15 @@ function onPointerUp(event) {
 					}
 				}
 				if (key.type === "Object3D" && event.button == 2) {
-					// if (key.visible === true) {
-					// 	key.visible = false;
-					// }
-					// else {
-					// 	key.visible = true;
-					// }
 					if (key.element.hidden === true) {
 						key.element.hidden = false;
 						key.element.style.display = "block";
+						key.visible = true; // does nothing, but keeps status accurate
 					}
 					else {
 						key.element.hidden = true;
 						key.element.style.display = "none";
+						key.visible = false; // does nothing, but keeps status accurate
 					}
 				}
 			});
