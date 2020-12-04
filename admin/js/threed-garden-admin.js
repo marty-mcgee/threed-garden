@@ -29,15 +29,6 @@ let INTERSECTED1;
 let INTERSECTED2;
 
 
-// init
-// let garden = init();
-// let grow = animate();
-// console.log("-------------------------");
-// console.log(garden);
-// console.log(grow);
-// console.log("-------------------------");
-
-
 /** JQUERY ************************************************************************************ */
 (function( $ ) {
 'use strict';
@@ -91,32 +82,20 @@ function init() {
 	// let pointLight = getPointLight(0xFFFFFF, 4.0);
 	// pointLight.position.set( -20, -60, 20 );
 	// //pointLight.intensity = 3.0;
-	// console.log("-------------------------");
-	// console.log(pointLight);
-	// console.log("-------------------------");
 
 	// let spotLight = getSpotLight(0xFFFFFF, 4.0);
 	// spotLight.position.set( -20, -60, 20 );
 	// //spotLight.intensity = 3.0;
-	// console.log("-------------------------");
-	// console.log(spotLight);
-	// console.log("-------------------------");
 
 	let directionalLight = getDirectionalLight(0xFFFFFF, 3.5);
 	directionalLight.position.set( -100, -100, 55 );
 	//directionalLight.intensity = 3.0;
-	// console.log("-------------------------");
-	// console.log(directionalLight);
-	// console.log("-------------------------");
 
 	let helper = new THREE.CameraHelper(directionalLight.shadow.camera);
 
 	let ambientLight = getAmbientLight(0xFFFFFF, 0.2);
 	//ambientLight.position.set( -100, -100, 25 );
 	//ambientLight.intensity = 3.0;
-	// console.log("-------------------------");
-	// console.log(ambientLight);
-	// console.log("-------------------------");
 	
 	/** SCENE ***************************************************************************** */
 
@@ -140,9 +119,6 @@ function init() {
 	camera.name = "gardencam1";
 	camera.position.set(86, 64, 182);
 	//camera.lookAt(new THREE.Vector3(0, 0, 0)); // overridden by OrbitControls.target
-	// console.log("-------------------------");
-	// console.log(camera);
-	// console.log("-------------------------");
 
 	/** DAT.GUI *************************************************************************** */
 
@@ -163,9 +139,6 @@ function init() {
 	// guiFolder3.add(structure.material, "roughness", 0, 1);
 	//gui.add(structure.position, "z", -100, 100);
 	//gui.add(plane, "name");
-	// console.log("-------------------------");
-	// console.log(gui);
-	// console.log("-------------------------");
 
 	/** RENDERER ************************************************************************** */
 	
@@ -184,9 +157,6 @@ function init() {
 	
 	renderer.domElement.addEventListener("pointermove", onPointerMove, false);
 	renderer.domElement.addEventListener("pointerup", onPointerUp, false);
-	// console.log("-------------------------");
-	// console.log(renderer);
-	// console.log("-------------------------");
 	
 	/** CONTROLS ************************************************************************** */
 		controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -201,9 +171,7 @@ function init() {
 		controls.maxPolarAngle = Math.PI/2 - .04;
 		controls.target = new THREE.Vector3(0, 0, 0); // where the camera actually points
 		//controls.target.set(0, 5, 0); // alternate way of setting target of camera
-		// console.log("-------------------------");
-		// console.log(controls);
-		// console.log("-------------------------");
+
 		renderer.domElement.controls = controls;
 
 	/** WEBGL CANVAS *********************************************************************** */
@@ -215,10 +183,6 @@ function init() {
 		.append(gui.domElement)
 		.append(renderer.domElement);
 	//canvas = renderer.domElement;
-	// console.log("-------------------------");
-	// console.log(canvasParent);
-	// console.log(canvas);
-	// console.log("-------------------------");
 
 	/** QUERY FOR BOXES ****************************************************************** */
 
@@ -377,11 +341,11 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 
 	postObject.forEach( function(key) {
 
-		console.log("-------------------------");
-		console.log("key.id (postObject)------");
-		console.log(key.id);
-		console.log(key);
-		console.log("-------------------------");
+		// console.log("-------------------------");
+		// console.log("key.id (postObject)------");
+		// console.log(key.id);
+		// console.log(key);
+		// console.log("-------------------------");
 
 		// BUILD ALLOTMENT OBJECT GROUP
 		let allotment = {};
@@ -401,6 +365,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		allotment.title = key.title.rendered;
 		allotment.postID = key.id;
 		allotment.description = key.content.rendered;
+
 		// console.log("-------------------------");
 		// console.log("allotment----------------");
 		// console.log(allotment);
@@ -436,10 +401,11 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		}
 		
 		plane.add(structure);
-		console.log("-------------------------");
-		console.log("allotment----------------");
-		console.log(structure);
-		console.log("-------------------------");
+		
+		// console.log("-------------------------");
+		// console.log("allotment----------------");
+		// console.log(structure);
+		// console.log("-------------------------");
 
 		// SEND AJAX FETCH TO RETRIEVE BEDS IN THIS ALLOTMENT
 		let queryURLBeds = `${restURL}bed/?_embed&per_page=100`;
@@ -467,6 +433,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		guiFolderInfospots.add(sprite, "visible");
 		
 		structure.add(sprite);
+
 		// console.log("-------------------------");
 		// console.log("structure---------------------");
 		// console.log(structure);
@@ -495,6 +462,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		// let vector = new THREE.Vector3();
         // vector.setFromMatrixPosition(structure.matrixWorld);
 		vector.project(camera);
+
 		// console.log("------------------");
 		// console.log("vector1--------");
 		// console.log(vector);
@@ -525,6 +493,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		)
 		annotation.name = `ANNOTATION: ${structure.name}`;
 		//annotation.visible = false; // does nothing
+
 		// console.log("-------------------------");
 		// console.log("annotation---------------------");
 		// console.log(annotation);
@@ -552,20 +521,20 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
  */
 function buildBeds(postObject, plane, gui, camera, renderer, allotmentID) {
 
-	console.log("-------------------------");
-	console.log("postObject BEDS----------");
-	console.log(postObject);
-	console.log("-------------------------");
+	// console.log("-------------------------");
+	// console.log("postObject BEDS----------");
+	// console.log(postObject);
+	// console.log("-------------------------");
 
 	//let guiFolderBeds = gui.addFolder("Beds");
 
 	postObject.forEach( function(key) {
 
-		console.log("-------------------------");
-		console.log("key.id (postObject)------");
-		console.log(key.id);
-		console.log(key);
-		console.log("-------------------------");
+		// console.log("-------------------------");
+		// console.log("key.id (postObject)------");
+		// console.log(key.id);
+		// console.log(key);
+		// console.log("-------------------------");
 
 		// only show beds for this allotment structure
 		if ( key.acf.bed_allotment[0].ID != null && key.acf.bed_allotment[0].ID == allotmentID ) {
@@ -587,6 +556,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID) {
 			bed.title = key.title.rendered;
 			bed.postID = key.id;
 			bed.description = key.content.rendered;
+
 			// console.log("-------------------------");
 			// console.log("bed----------------");
 			// console.log(bed);
@@ -623,10 +593,11 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID) {
 			// }
 			
 			plane.add(structure);
-			console.log("-------------------------");
-			console.log("bed----------------------");
-			console.log(structure);
-			console.log("-------------------------");
+			
+			// console.log("-------------------------");
+			// console.log("bed----------------------");
+			// console.log(structure);
+			// console.log("-------------------------");
 		/*
 			let sprite = makeTextSprite(
 				structure.name, 
@@ -647,6 +618,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID) {
 			//guiFolderBeds.add(sprite, "visible");
 			
 			structure.add(sprite);
+
 			// console.log("-------------------------");
 			// console.log("structure---------------------");
 			// console.log(structure);
