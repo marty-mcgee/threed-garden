@@ -12,7 +12,7 @@ console.log("pluginName-------------");
 console.log(pluginName, pluginVersion);
 console.log("-----------------------");
 
-/** COMMON VARIABLES */
+/** INSTANTIATE COMMON VARIABLES */
 let scene;
 let camera;
 let controls;
@@ -231,14 +231,14 @@ function init() {
 function getGeometry(shape, x, y, z, color){
 	let geometry;
 	switch (shape) {
-		case 'box':
+		case 'Rectangular':
 			geometry = new THREE.BoxGeometry(x, y, z);
 			break;
 		case 'cone':
 			geometry = new THREE.ConeGeometry(x, y, z);
 			break;
-		case 'cylinder':
-			geometry = new THREE.CylinderGeometry(x, y, z, 50);
+		case 'Elliptical':
+			geometry = new THREE.CylinderGeometry(x, z, y, 0);
 			break;
 		default:
 			geometry = new THREE.BoxGeometry(x, y, z);
@@ -261,10 +261,10 @@ function getGeometry(shape, x, y, z, color){
 	});
 	let solidMaterial = new THREE.MeshStandardMaterial({
 		transparent: true, 
-		opacity: 0.7,
+		opacity: 1.0,
 		color: color,
 	 	side: THREE.DoubleSide,
-		depthWrite: false
+		depthWrite: true
 	});
 
 	let mesh = new THREE.Mesh(
@@ -365,6 +365,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		allotment.title = key.title.rendered;
 		allotment.postID = key.id;
 		allotment.description = key.content.rendered;
+		allotment.link = key.link;
 
 		// console.log("-------------------------");
 		// console.log("allotment----------------");
@@ -485,6 +486,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		let annoPosZ = structure.geometry.parameters.depth + 10;
 
 		let annotation = makeAnnotation(
+			allotment.link,
 			structure.name,
 			annoPosTop, 
 			annoPosLeft,
@@ -556,6 +558,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID) {
 			bed.title = key.title.rendered;
 			bed.postID = key.id;
 			bed.description = key.content.rendered;
+			bed.link = key.link;
 
 			// console.log("-------------------------");
 			// console.log("bed----------------");
@@ -574,7 +577,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID) {
 			structure.userData.description = bed.description;
 			structure.position.x = bed.position.x ? bed.position.x : 0;
 			structure.position.y = bed.position.y ? bed.position.y : 0;
-			structure.position.z = (structure.geometry.parameters.depth / 2); // + bed.position.z
+			structure.position.z = bed.position.z ? bed.position.z - (structure.geometry.parameters.depth) : - (structure.geometry.parameters.depth);
 			//structure.rotation.x = -Math.PI / 2; //-90 degrees in radians
 			// structure.material.roughness = 0.9;
 			// structure.material.map = loader.load(bed.images.texture);
@@ -669,6 +672,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID) {
 			let annoPosZ = structure.geometry.parameters.depth + 10;
 
 			let annotation = makeAnnotation(
+				bed.link,
 				structure.name,
 				annoPosTop, 
 				annoPosLeft,
@@ -750,20 +754,20 @@ function makeInfospot(message, positionX, positionY, positionZ) {
 
 	let infospot = new THREE.Sprite(infospotMaterial);
 	infospot.position.set(positionX, positionY, positionZ);
-	infospot.scale.set(4, 4, 4);
+	infospot.scale.set(3, 3, 3);
 	infospot.visible = true;
 
 	return infospot;
 }
 
-function makeAnnotation(contentHTML, positionX, positionY, positionZ, gui) {
+function makeAnnotation(link, contentHTML, positionX, positionY, positionZ, gui) {
 
 	//let annoDiv = document.createElement('div');
 	let annoDiv = $(".annotation")[0];
 	annoDiv = annoDiv.cloneNode();
 	document.body.appendChild( annoDiv );
 	// annoDiv.classList.add("annotation");
-	let link = `http://garden.university.local/bed/mcgee-home-garden-1/`;
+	//let link = `http://garden.university.local/bed/mcgee-home-garden-1/`;
 	annoDiv.innerHTML = `<a href="${link}" target="_blank">${contentHTML}</a> (${positionX}, ${positionY})`;
 	annoDiv.style.display = "none"; //block
 	annoDiv.style.top = `${positionY}px`;
@@ -773,11 +777,12 @@ function makeAnnotation(contentHTML, positionX, positionY, positionZ, gui) {
 	// gui.add(annoDiv.style, "left");
 
 	let cssObject = new THREE.CSS3DObject( annoDiv );
+	// trying to do stuff to a cssObject does nothing :(
 	// // we reference the same position and rotation 
 	// cssObject.position = rendererDomElement.position;
 	// cssObject.rotation = rendererDomElement.rotation;
 	// cssObject.position.set(positionX, positionY, positionZ);
-	// cssObject.scale.set(4, 4, 4);
+	// cssObject.scale.set(3, 3, 3);
 	// cssObject.visible = true;
 	// console.log("------------------");
 	// console.log("cssObject---------");
