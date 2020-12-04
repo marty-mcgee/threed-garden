@@ -6,6 +6,7 @@ const pluginVersion = postdata.plugin_version;
 const pluginURL = postdata.plugin_url;
 const themeURI = postdata.theme_uri;
 const restURL = postdata.rest_url;
+const worldID = 1;
 console.log("-----------------------");
 console.log("pluginName-------------");
 console.log(pluginName, pluginVersion);
@@ -221,7 +222,7 @@ function init() {
 
 	/** QUERY FOR BOXES ****************************************************************** */
 
-	let queryURLAllotments = `${restURL}allotment/?_embed`;
+	let queryURLAllotments = `${restURL}allotment/?_embed&per_page=100`;
 	fetch( queryURLAllotments )
 		.then( response => response.json() )
 		.then( postObject => buildAllotments(postObject, plane, gui, camera, renderer) );
@@ -287,14 +288,14 @@ function getGeometry(shape, x, y, z, color){
 	// mesh.castShadow = true;
 	// return mesh;
 	
-	var opacMaterial = new THREE.MeshStandardMaterial({
+	let opacMaterial = new THREE.MeshStandardMaterial({
 		transparent: true, 
 		opacity: 0.0,
 		color: color,
 	 	side: THREE.DoubleSide,
 		depthWrite: false
 	});
-	var solidMaterial = new THREE.MeshStandardMaterial({
+	let solidMaterial = new THREE.MeshStandardMaterial({
 		transparent: true, 
 		opacity: 0.7,
 		color: color,
@@ -302,7 +303,7 @@ function getGeometry(shape, x, y, z, color){
 		depthWrite: false
 	});
 
-	var mesh = new THREE.Mesh(
+	let mesh = new THREE.Mesh(
 		geometry, 
 		[
 			solidMaterial, solidMaterial, 
@@ -365,7 +366,7 @@ function getAmbientLight(color, intensity){
 /**
  * BUILD FROM REST API POST OBJECT ************************************************************
  */
-function buildAllotments(postObject, plane, gui, camera, renderer) {
+function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 
 	console.log("-------------------------");
 	console.log("postObject ALLOTMENTS----");
@@ -376,11 +377,11 @@ function buildAllotments(postObject, plane, gui, camera, renderer) {
 
 	postObject.forEach( function(key) {
 
-		// console.log("-------------------------");
-		// console.log("key.id (postObject)------");
-		// console.log(key.id);
-		// console.log(key);
-		// console.log("-------------------------");
+		console.log("-------------------------");
+		console.log("key.id (postObject)------");
+		console.log(key.id);
+		console.log(key);
+		console.log("-------------------------");
 
 		// BUILD ALLOTMENT OBJECT GROUP
 		let allotment = {};
@@ -398,6 +399,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer) {
 		allotment.shape = key.acf.allotment_shape;
 		allotment.color = key.acf.allotment_color;
 		allotment.title = key.title.rendered;
+		allotment.postID = key.id;
 		allotment.description = key.content.rendered;
 		// console.log("-------------------------");
 		// console.log("allotment----------------");
@@ -412,7 +414,8 @@ function buildAllotments(postObject, plane, gui, camera, renderer) {
 			allotment.color
 		);
 		structure.name = allotment.title;
-		structure.description = allotment.description;
+		structure.userData.postID = allotment.postID;
+		structure.userData.description = allotment.description;
 		structure.position.x = allotment.position.x;
 		structure.position.y = allotment.position.y;
 		structure.position.z = (structure.geometry.parameters.depth / 2); // + allotment.position.z
@@ -433,16 +436,16 @@ function buildAllotments(postObject, plane, gui, camera, renderer) {
 		}
 		
 		plane.add(structure);
-		// console.log("-------------------------");
-		// console.log("structure---------------------");
-		// console.log(structure);
-		// console.log("-------------------------");
+		console.log("-------------------------");
+		console.log("allotment----------------");
+		console.log(structure);
+		console.log("-------------------------");
 
 		// SEND AJAX FETCH TO RETRIEVE BEDS IN THIS ALLOTMENT
-		let queryURLBeds = `${restURL}bed/?_embed&posts_per_page=100`;
+		let queryURLBeds = `${restURL}bed/?_embed&per_page=100`;
 		fetch( queryURLBeds )
 			.then( response => response.json() )
-			.then( postObject => buildBeds(postObject, structure, gui, camera, renderer) );
+			.then( postObject => buildBeds(postObject, structure, gui, camera, renderer, structure.userData.postID) );
 
 		// BUILD OUT SPRITES AND INFOSPOTS AND ANNOTATIONS
 		let sprite = makeTextSprite(
@@ -547,7 +550,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer) {
 /**
  * BUILD FROM REST API POST OBJECT ************************************************************
  */
-function buildBeds(postObject, plane, gui, camera, renderer) {
+function buildBeds(postObject, plane, gui, camera, renderer, allotmentID) {
 
 	console.log("-------------------------");
 	console.log("postObject BEDS----------");
@@ -558,157 +561,163 @@ function buildBeds(postObject, plane, gui, camera, renderer) {
 
 	postObject.forEach( function(key) {
 
-		// console.log("-------------------------");
-		// console.log("key.id (postObject)------");
-		// console.log(key.id);
-		// console.log(key);
-		// console.log("-------------------------");
-
-		let bed = {};
-		bed.parameters = {};
-		bed.position = {};
-		bed.images = {};
-		bed.parameters.x = parseInt(key.acf.bed_width) / 12;
-		bed.parameters.y = parseInt(key.acf.bed_length) / 12;
-		bed.parameters.z = parseInt(key.acf.bed_height) / 12;
-		bed.position.x = parseInt(key.acf.bed_position_x);
-		bed.position.y = parseInt(key.acf.bed_position_y);
-		bed.position.z = parseInt(key.acf.bed_position_z);
-		//bed.images.texture = key.acf.bed_texture_image;
-		bed.images.featured = getFeaturedImage(key);
-		bed.shape = key.acf.bed_shape;
-		bed.color = key.acf.bed_color;
-		bed.title = key.title.rendered;
-		bed.description = key.content.rendered;
-		// console.log("-------------------------");
-		// console.log("bed----------------");
-		// console.log(bed);
-		// console.log("-------------------------");
-
-		let structure = getGeometry(
-			bed.shape,
-			bed.parameters.x, 
-			bed.parameters.y, 
-			bed.parameters.z, 
-			bed.color
-		);
-		structure.name = bed.title;
-		structure.description = bed.description;
-		structure.position.x = bed.position.x ? bed.position.x : 0;
-		structure.position.y = bed.position.y ? bed.position.y : 0;
-		structure.position.z = (structure.geometry.parameters.depth / 2); // + bed.position.z
-		//structure.rotation.x = -Math.PI / 2; //-90 degrees in radians
-		// structure.material.roughness = 0.9;
-		// structure.material.map = loader.load(bed.images.texture);
-		// for (let i = 0; i < structure.material.length; i++) {
-		// 	// hightlight object
-		// 	//structure.material[i].color.set(0xff0000);
-		// 	structure.material[i].map = loader.load(bed.images.texture);
-		// 	//structure.faces[i].materialIndex = 1;
-		// 	//console.log(intersects[i]);
-		// 	// structure.material[i].bumpMap = loader.load(bed.images.texture);
-		// 	// structure.material[i].bumpScale = 0.05;
-		// 	let structureTextureMap = structure.material[i].map;
-		// 	structureTextureMap.wrapS = THREE.RepeatWrapping;
-		// 	structureTextureMap.wrapT = THREE.RepeatWrapping;
-		// 	structureTextureMap.repeat.set(4, 4);
-		// }
-		
-		plane.add(structure);
 		console.log("-------------------------");
-		console.log("structure---------------------");
-		console.log(structure);
+		console.log("key.id (postObject)------");
+		console.log(key.id);
+		console.log(key);
 		console.log("-------------------------");
-/*
-		let sprite = makeTextSprite(
-			structure.name, 
-			{ 	fontsize: 24, 
-				fontface: "Calibri", 
-				borderColor: {r:255, g:0, b:0, a:0.7}, 
-				backgroundColor: {r:255, g:255, b:255, a:0.7} 
-			} 
-		);
-		// sprite = makeInfospot(
-		// 	structure.name, 
-		// 	0, 0, structure.geometry.parameters.depth + 5
-		// );
-		sprite.name = `SPRITE: ${structure.name}`;
-		sprite.position.set(0, 0, structure.geometry.parameters.depth + 5);
-		sprite.visible = false;
 
-		//guiFolderBeds.add(sprite, "visible");
-		
-		structure.add(sprite);
-		// console.log("-------------------------");
-		// console.log("structure---------------------");
-		// console.log(structure);
-		// console.log("-------------------------");
-*/
-		/** INFOSPOTS ********************************************************************* */
-/*
-		let infospot = makeInfospot(
-			"i", 
-			structure.position.x, 
-			structure.position.y, 
-			structure.geometry.parameters.depth + 3
-		);
-		infospot.name = `INFOSPOT: ${structure.name}`;
-		infospot.visible = true;
+		// only show beds for this allotment structure
+		if ( key.acf.bed_allotment[0].ID != null && key.acf.bed_allotment[0].ID == allotmentID ) {
 
-		//guiFolderBeds.add(infospot, "visible");
+			let bed = {};
+			bed.parameters = {};
+			bed.position = {};
+			bed.images = {};
+			bed.parameters.x = parseInt(key.acf.bed_width) / 12;
+			bed.parameters.y = parseInt(key.acf.bed_length) / 12;
+			bed.parameters.z = parseInt(key.acf.bed_height) / 12;
+			bed.position.x = parseInt(key.acf.bed_position_x);
+			bed.position.y = parseInt(key.acf.bed_position_y);
+			bed.position.z = parseInt(key.acf.bed_position_z);
+			//bed.images.texture = key.acf.bed_texture_image;
+			bed.images.featured = getFeaturedImage(key);
+			bed.shape = key.acf.bed_shape;
+			bed.color = key.acf.bed_color;
+			bed.title = key.title.rendered;
+			bed.postID = key.id;
+			bed.description = key.content.rendered;
+			// console.log("-------------------------");
+			// console.log("bed----------------");
+			// console.log(bed);
+			// console.log("-------------------------");
 
-		plane.add(infospot);
-*/
-		/** ANNOTATIONS ****************************************************************** */
-/*
-		let vector = new THREE.Vector3(structure.position.x, structure.position.y, structure.position.z);
-		// camera.updateProjectionMatrix();
-		// camera.updateMatrixWorld();
-		// let vector = new THREE.Vector3();
-        // vector.setFromMatrixPosition(structure.matrixWorld);
-		vector.project(camera);
-		// console.log("------------------");
-		// console.log("vector1--------");
-		// console.log(vector);
-		// console.log("------------------");
+			let structure = getGeometry(
+				bed.shape,
+				bed.parameters.x, 
+				bed.parameters.y, 
+				bed.parameters.z, 
+				bed.color
+			);
+			structure.name = bed.title;
+			structure.userData.postID = bed.postID;
+			structure.userData.description = bed.description;
+			structure.position.x = bed.position.x ? bed.position.x : 0;
+			structure.position.y = bed.position.y ? bed.position.y : 0;
+			structure.position.z = (structure.geometry.parameters.depth / 2); // + bed.position.z
+			//structure.rotation.x = -Math.PI / 2; //-90 degrees in radians
+			// structure.material.roughness = 0.9;
+			// structure.material.map = loader.load(bed.images.texture);
+			// for (let i = 0; i < structure.material.length; i++) {
+			// 	// hightlight object
+			// 	//structure.material[i].color.set(0xff0000);
+			// 	structure.material[i].map = loader.load(bed.images.texture);
+			// 	//structure.faces[i].materialIndex = 1;
+			// 	//console.log(intersects[i]);
+			// 	// structure.material[i].bumpMap = loader.load(bed.images.texture);
+			// 	// structure.material[i].bumpScale = 0.05;
+			// 	let structureTextureMap = structure.material[i].map;
+			// 	structureTextureMap.wrapS = THREE.RepeatWrapping;
+			// 	structureTextureMap.wrapT = THREE.RepeatWrapping;
+			// 	structureTextureMap.repeat.set(4, 4);
+			// }
+			
+			plane.add(structure);
+			console.log("-------------------------");
+			console.log("bed----------------------");
+			console.log(structure);
+			console.log("-------------------------");
+		/*
+			let sprite = makeTextSprite(
+				structure.name, 
+				{ 	fontsize: 24, 
+					fontface: "Calibri", 
+					borderColor: {r:255, g:0, b:0, a:0.7}, 
+					backgroundColor: {r:255, g:255, b:255, a:0.7} 
+				} 
+			);
+			// sprite = makeInfospot(
+			// 	structure.name, 
+			// 	0, 0, structure.geometry.parameters.depth + 5
+			// );
+			sprite.name = `SPRITE: ${structure.name}`;
+			sprite.position.set(0, 0, structure.geometry.parameters.depth + 5);
+			sprite.visible = false;
 
-		// vector.x = Math.round((0.5 + vector.x / 2) * (renderer.domElement.width / window.devicePixelRatio));
-		// vector.y = Math.round((0.5 - vector.y / 2) * (renderer.domElement.height / window.devicePixelRatio));
-		// vector.x = (structure.position.x / (window.innerWidth - 240)) * 2 - 1;
-		// vector.y = -(structure.position.y / (window.innerHeight - 100)) * 2 + 1;
-		vector.x = Math.round( (   vector.x + 1 ) * renderer.domElement.width / 2 );
-    	vector.y = Math.round( ( - vector.y + 1 ) * renderer.domElement.height / 2 );
-		
-		// console.log("------------------");
-		// console.log("vector2--------");
-		// console.log(vector);
-		// console.log("------------------");
+			//guiFolderBeds.add(sprite, "visible");
+			
+			structure.add(sprite);
+			// console.log("-------------------------");
+			// console.log("structure---------------------");
+			// console.log(structure);
+			// console.log("-------------------------");
+		*/
+			/** INFOSPOTS ********************************************************************* */
+		/*
+			let infospot = makeInfospot(
+				"i", 
+				structure.position.x, 
+				structure.position.y, 
+				structure.geometry.parameters.depth + 3
+			);
+			infospot.name = `INFOSPOT: ${structure.name}`;
+			infospot.visible = true;
 
-		let annoPosTop = vector.x; //structure.position.y + 10
-		let annoPosLeft = vector.y; //structure.position.x + 10
-		let annoPosZ = structure.geometry.parameters.depth + 10;
+			//guiFolderBeds.add(infospot, "visible");
 
-		let annotation = makeAnnotation(
-			structure.name,
-			annoPosTop, 
-			annoPosLeft,
-			annoPosZ,
-			gui
-		)
-		annotation.name = `ANNOTATION: ${structure.name}`;
-		//annotation.visible = false; // does nothing
-		// console.log("-------------------------");
-		// console.log("annotation---------------------");
-		// console.log(annotation);
-		// console.log("-------------------------");
+			plane.add(infospot);
+		*/
+			/** ANNOTATIONS ****************************************************************** */
+		/*
+			let vector = new THREE.Vector3(structure.position.x, structure.position.y, structure.position.z);
+			// camera.updateProjectionMatrix();
+			// camera.updateMatrixWorld();
+			// let vector = new THREE.Vector3();
+			// vector.setFromMatrixPosition(structure.matrixWorld);
+			vector.project(camera);
+			// console.log("------------------");
+			// console.log("vector1--------");
+			// console.log(vector);
+			// console.log("------------------");
 
-		//guiFolderBeds.add(annotation, "hidden");
-		//guiFolderBeds.add(annotation, "visible");
+			// vector.x = Math.round((0.5 + vector.x / 2) * (renderer.domElement.width / window.devicePixelRatio));
+			// vector.y = Math.round((0.5 - vector.y / 2) * (renderer.domElement.height / window.devicePixelRatio));
+			// vector.x = (structure.position.x / (window.innerWidth - 240)) * 2 - 1;
+			// vector.y = -(structure.position.y / (window.innerHeight - 100)) * 2 + 1;
+			vector.x = Math.round( (   vector.x + 1 ) * renderer.domElement.width / 2 );
+			vector.y = Math.round( ( - vector.y + 1 ) * renderer.domElement.height / 2 );
+			
+			// console.log("------------------");
+			// console.log("vector2--------");
+			// console.log(vector);
+			// console.log("------------------");
 
-		//plane.parent.add(annotation);
-		//scene2.add(annotation);
-		structure.add(annotation);
-*/
+			let annoPosTop = vector.x; //structure.position.y + 10
+			let annoPosLeft = vector.y; //structure.position.x + 10
+			let annoPosZ = structure.geometry.parameters.depth + 10;
+
+			let annotation = makeAnnotation(
+				structure.name,
+				annoPosTop, 
+				annoPosLeft,
+				annoPosZ,
+				gui
+			)
+			annotation.name = `ANNOTATION: ${structure.name}`;
+			//annotation.visible = false; // does nothing
+			// console.log("-------------------------");
+			// console.log("annotation---------------------");
+			// console.log(annotation);
+			// console.log("-------------------------");
+
+			//guiFolderBeds.add(annotation, "hidden");
+			//guiFolderBeds.add(annotation, "visible");
+
+			//plane.parent.add(annotation);
+			//scene2.add(annotation);
+			structure.add(annotation);
+		*/
+		}
 	}); /** END BEDS *********************************************************************** */
 	
 	console.log("-------------------------");
