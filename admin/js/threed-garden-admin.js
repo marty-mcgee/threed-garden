@@ -234,12 +234,12 @@ function getGeometry(shape, x, y, z, color){
 		case 'Rectangular':
 			geometry = new THREE.BoxGeometry(x, y, z);
 			break;
-		case 'cone':
-			geometry = new THREE.ConeGeometry(x, y, z);
-			break;
-		case 'Elliptical':
-			geometry = new THREE.CylinderGeometry(x, z, y, 0);
-			break;
+		// case 'cone':
+		// 	geometry = new THREE.ConeGeometry(x, y, z);
+		// 	break;
+		// case 'Elliptical':
+		// 	geometry = new THREE.CylinderGeometry(x, y, z, 0);
+		// 	break;
 		default:
 			geometry = new THREE.BoxGeometry(x, y, z);
 			break;
@@ -255,13 +255,14 @@ function getGeometry(shape, x, y, z, color){
 	let opacMaterial = new THREE.MeshStandardMaterial({
 		transparent: true, 
 		opacity: 0.0,
+		alphaTest: 0.0,
 		color: color,
 	 	side: THREE.DoubleSide,
 		depthWrite: false
 	});
 	let solidMaterial = new THREE.MeshStandardMaterial({
 		transparent: true, 
-		opacity: 1.0,
+		opacity: 0.8,
 		color: color,
 	 	side: THREE.DoubleSide,
 		depthWrite: true
@@ -354,7 +355,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		allotment.images = {};
 		allotment.parameters.x = parseInt(key.acf.allotment_width);
 		allotment.parameters.y = parseInt(key.acf.allotment_length);
-		allotment.parameters.z = parseInt(key.acf.allotment_height);
+		allotment.parameters.z = parseInt(key.acf.allotment_height); //0
 		allotment.position.x = parseInt(key.acf.allotment_position_x);
 		allotment.position.y = parseInt(key.acf.allotment_position_y);
 		allotment.position.z = parseInt(key.acf.allotment_position_z);
@@ -412,7 +413,11 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		let queryURLBeds = `${restURL}bed/?_embed&per_page=100`;
 		fetch( queryURLBeds )
 			.then( response => response.json() )
-			.then( postObject => buildBeds(postObject, structure, gui, camera, renderer, structure.userData.postID) );
+			.then( postObject => buildBeds(
+					postObject, plane, gui, camera, renderer, 
+					structure.userData.postID, structure.position.x, structure.position.y, 0 //structure.position.z
+				) 
+			);
 
 		// BUILD OUT SPRITES AND INFOSPOTS AND ANNOTATIONS
 		let sprite = makeTextSprite(
@@ -521,7 +526,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 /**
  * BUILD FROM REST API POST OBJECT ************************************************************
  */
-function buildBeds(postObject, plane, gui, camera, renderer, allotmentID) {
+function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOffsetX, posOffsetY, posOffsetZ) {
 
 	// console.log("-------------------------");
 	// console.log("postObject BEDS----------");
@@ -548,9 +553,9 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID) {
 			bed.parameters.x = parseInt(key.acf.bed_width) / 12;
 			bed.parameters.y = parseInt(key.acf.bed_length) / 12;
 			bed.parameters.z = parseInt(key.acf.bed_height) / 12;
-			bed.position.x = parseInt(key.acf.bed_position_x);
-			bed.position.y = parseInt(key.acf.bed_position_y);
-			bed.position.z = parseInt(key.acf.bed_position_z);
+			bed.position.x = parseInt(key.acf.bed_position_x) + posOffsetX;
+			bed.position.y = parseInt(key.acf.bed_position_y) + posOffsetY;
+			bed.position.z = parseInt(key.acf.bed_position_z) + (bed.parameters.z / 2); // + posOffsetZ;
 			//bed.images.texture = key.acf.bed_texture_image;
 			bed.images.featured = getFeaturedImage(key);
 			bed.shape = key.acf.bed_shape;
@@ -577,7 +582,9 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID) {
 			structure.userData.description = bed.description;
 			structure.position.x = bed.position.x ? bed.position.x : 0;
 			structure.position.y = bed.position.y ? bed.position.y : 0;
-			structure.position.z = bed.position.z ? bed.position.z - (structure.geometry.parameters.depth) : - (structure.geometry.parameters.depth);
+			//structure.position.z = bed.position.z ? bed.position.z - (structure.geometry.parameters.depth) : - (structure.geometry.parameters.depth);
+			structure.position.z = bed.position.z ? bed.position.z + (structure.geometry.parameters.depth / 2) : (structure.geometry.parameters.depth / 2);
+			structure.position.z = bed.position.z ? bed.position.z : 0;
 			//structure.rotation.x = -Math.PI / 2; //-90 degrees in radians
 			// structure.material.roughness = 0.9;
 			// structure.material.map = loader.load(bed.images.texture);
