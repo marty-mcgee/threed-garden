@@ -9,7 +9,7 @@
  * Plugin Name:       WP 3D Garden
  * Plugin URI:        https://garden.university
  * Description:       Design + manage your garden plants, beds + allotments in 3D
- * Version:           1.13.3
+ * Version:           1.14.0
  * Author:            Marty McGee
  * Author URI:        https://companyjuice.com
  * License:           GPL-2.0+
@@ -28,7 +28,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'THREED_GARDEN_VERSION', '1.13.3' );
+define( 'THREED_GARDEN_VERSION', '1.14.0' );
 
 /**
  * The code that runs during plugin activation.
@@ -73,6 +73,8 @@ function run_threed_garden() {
 
 }
 run_threed_garden();
+
+
 
 
 /**
@@ -539,8 +541,8 @@ class ThreeDGardenPlugin{
 /**
  * engage wp plugin
  */
-$ThreeDGardenPlugin = ThreeDGardenPlugin::threedgarden_get_instance();
-$ThreeDGardenPlugin->threedgarden_plugin_init();
+//$ThreeDGardenPlugin = ThreeDGardenPlugin::threedgarden_get_instance();
+//$ThreeDGardenPlugin->threedgarden_plugin_init();
 
 /**
  * END FILE

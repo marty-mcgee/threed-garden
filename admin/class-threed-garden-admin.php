@@ -91,7 +91,6 @@ class ThreeD_Garden_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-
 		/**
 		 * An instance of this class should be passed to the run() function
 		 * defined in ThreeD_Garden_Loader as all of the hooks are defined
@@ -100,30 +99,35 @@ class ThreeD_Garden_Admin {
 		 * The ThreeD_Garden_Loader will then create the relationship
 		 * between the defined hooks and the functions defined in this class.
 		 */
+		global $pagenow;
+		
+        if ( $pagenow == 'admin.php' && isset( $_GET['page'] ) && $_GET['page'] == 'threedgarden' )
+        {
+			// THREE JS
+			wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/three.min.js', array(), $this->version, false );
+			wp_enqueue_script( 'datgui', plugin_dir_url( __FILE__ ) . 'js/dat.gui.min.js', array(), $this->version, false );
+			wp_enqueue_script( 'orbitcontrols', plugin_dir_url( __FILE__ ) . 'js/OrbitControls.js', array(), $this->version, false );
+			//wp_enqueue_script( 'panolens', plugin_dir_url( __FILE__ ) . 'js/panolens.min.js', array(), $this->version, false );
+			wp_enqueue_script( 'css3drenderer', plugin_dir_url( __FILE__ ) . 'js/CSS3DRenderer.js', array(), $this->version, false );
 
-		// THREE JS
-		wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/three.min.js', array(), $this->version, false );
-		wp_enqueue_script( 'datgui', plugin_dir_url( __FILE__ ) . 'js/dat.gui.min.js', array(), $this->version, false );
-		wp_enqueue_script( 'orbitcontrols', plugin_dir_url( __FILE__ ) . 'js/OrbitControls.js', array(), $this->version, false );
-		//wp_enqueue_script( 'panolens', plugin_dir_url( __FILE__ ) . 'js/panolens.min.js', array(), $this->version, false );
-		wp_enqueue_script( 'css3drenderer', plugin_dir_url( __FILE__ ) . 'js/CSS3DRenderer.js', array(), $this->version, false );
+			// TWEEN JS
+			wp_enqueue_script( 'tweenjs', plugin_dir_url( __FILE__ ) . 'js/tween.umd.js', array(), $this->version, false );
 
-		// TWEEN JS
-		wp_enqueue_script( 'tweenjs', plugin_dir_url( __FILE__ ) . 'js/tween.umd.js', array(), $this->version, false );
+			// THREED GARDEN ADMIN JS
+			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin.js', array( 'jquery' ), $this->version, true );
+			//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin-2.js', array( 'jquery' ), $this->version, true );
 
-		// THREED GARDEN ADMIN JS
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin.js', array( 'jquery' ), $this->version, true );
-		//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin-2.js', array( 'jquery' ), $this->version, true );
+			wp_localize_script( $this->plugin_name, 'postdata',
+				array(
+					'plugin_name' => $this->plugin_name,
+					'plugin_version' => $this->version,
+					'plugin_url' => plugin_dir_url(__FILE__),
+					'theme_uri' => get_stylesheet_directory_uri(),
+					'rest_url' => rest_url('wp/v2/'),
+				)
+			);
 
-		wp_localize_script( $this->plugin_name, 'postdata',
-			array(
-				'plugin_name' => $this->plugin_name,
-				'plugin_version' => $this->version,
-				'plugin_url' => plugin_dir_url(__FILE__),
-				'theme_uri' => get_stylesheet_directory_uri(),
-				'rest_url' => rest_url('wp/v2/'),
-			)
-		);
+		}
 	}
 
 	/**
@@ -143,33 +147,6 @@ class ThreeD_Garden_Admin {
 			plugins_url('/admin/media/threedgarden-icon.png',__DIR__), //'dashicons-media-code',
 			31 //null
 			);
-		add_submenu_page(
-			'threedgarden', 
-			'Plants', 
-			'Plants', 
-			'manage_options', 
-			'edit.php?post_type=plant',
-            '',
-            null
-		);
-		add_submenu_page(
-			'threedgarden', 
-			'Plant Types', 
-			'Plant Types', 
-			'manage_options', 
-			'edit-tags.php?taxonomy=plant_type&post_type=plant',
-            '',
-            null
-		);
-		add_submenu_page(
-			'threedgarden', 
-			'Plant Seasons', 
-			'Plant Seasons', 
-			'manage_options', 
-			'edit-tags.php?taxonomy=plant_season&post_type=plant',
-            '',
-            null
-		);
 		add_submenu_page(
 			'threedgarden', 
 			'Allotments', 
@@ -221,6 +198,33 @@ class ThreeD_Garden_Admin {
 			'Bed Soils', 
 			'manage_options', 
 			'edit-tags.php?taxonomy=bed_soil&post_type=bed',
+            '',
+            null
+		);
+		add_submenu_page(
+			'threedgarden', 
+			'Plants', 
+			'Plants', 
+			'manage_options', 
+			'edit.php?post_type=plant',
+            '',
+            null
+		);
+		add_submenu_page(
+			'threedgarden', 
+			'Plant Types', 
+			'Plant Types', 
+			'manage_options', 
+			'edit-tags.php?taxonomy=plant_type&post_type=plant',
+            '',
+            null
+		);
+		add_submenu_page(
+			'threedgarden', 
+			'Plant Seasons', 
+			'Plant Seasons', 
+			'manage_options', 
+			'edit-tags.php?taxonomy=plant_season&post_type=plant',
             '',
             null
 		);
