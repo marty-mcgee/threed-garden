@@ -17,6 +17,16 @@ let scene;
 let camera;
 let controls;
 let gui;
+	gui = new dat.GUI({ autoPlace: true, closeOnTop: true });
+	gui.close();
+	gui.domElement.id = 'gui';
+	let guiFolderCameras = gui.addFolder("Camera Position");
+	let guiFolderLights = gui.addFolder("Directional Light");
+	let guiFolderAllotments = gui.addFolder("Allotments");
+	let guiFolderBeds = gui.addFolder("Beds");
+	let guiFolderPlants = gui.addFolder("Plants");
+	let guiFolderInfospots = gui.addFolder("Infospots");
+	let guiFolderAnnotations = gui.addFolder("Annotations");
 let renderer;
 let canvasParent;
 let canvas;
@@ -48,7 +58,7 @@ function init() {
 	let plane = getPlane(200, 200, 0xFFFFFF);
 	plane.name = "plane-1";
 	plane.rotation.x = -Math.PI / 2; //-90 degrees in radians
-	//plane.position.y = 0;
+	plane.position.z = 1;
 	plane.material.roughness = 0.0;
 
 	/** TEXTURES ************************************************************************* */
@@ -88,8 +98,8 @@ function init() {
 	// //spotLight.intensity = 3.0;
 
 	let directionalLight = getDirectionalLight(0xFFFFFF, 3.5);
-	directionalLight.position.set( -100, -100, 55 );
-	//directionalLight.intensity = 3.0;
+	directionalLight.position.set( -100, -100, 90 );
+	directionalLight.intensity = 2.6;
 
 	let helper = new THREE.CameraHelper(directionalLight.shadow.camera);
 
@@ -97,6 +107,11 @@ function init() {
 	//ambientLight.position.set( -100, -100, 25 );
 	//ambientLight.intensity = 3.0;
 	
+	guiFolderLights.add(directionalLight, "intensity", 0, 20);
+	guiFolderLights.add(directionalLight.position, "x", -500, 500);
+	guiFolderLights.add(directionalLight.position, "y", -500, 500);
+	guiFolderLights.add(directionalLight.position, "z", -500, 500);
+
 	/** SCENE ***************************************************************************** */
 
 	// add objects to scene
@@ -120,25 +135,9 @@ function init() {
 	camera.position.set(86, 64, 182);
 	//camera.lookAt(new THREE.Vector3(0, 0, 0)); // overridden by OrbitControls.target
 
-	/** DAT.GUI *************************************************************************** */
-
-	gui = new dat.GUI({ autoPlace: true, closeOnTop: true });
-	gui.close();
-	gui.domElement.id = 'gui';
-	let guiFolder1 = gui.addFolder("Camera Position");
-	guiFolder1.add(camera.position, "x", -500, 500).listen();
-	guiFolder1.add(camera.position, "y", -500, 500).listen();
-	guiFolder1.add(camera.position, "z", -500, 500).listen();
-	let guiFolder2 = gui.addFolder("Directional Light");
-	guiFolder2.add(directionalLight, "intensity", 0, 20);
-	guiFolder2.add(directionalLight.position, "x", -500, 500);
-	guiFolder2.add(directionalLight.position, "y", -500, 500);
-	guiFolder2.add(directionalLight.position, "z", -500, 500);
-	// let guiFolder3 = gui.addFolder("Roughness");
-	// guiFolder3.add(plane.material, "roughness", 0, 1);
-	// guiFolder3.add(structure.material, "roughness", 0, 1);
-	//gui.add(structure.position, "z", -100, 100);
-	//gui.add(plane, "name");
+	guiFolderCameras.add(camera.position, "x", -500, 500).listen();
+	guiFolderCameras.add(camera.position, "y", -500, 500).listen();
+	guiFolderCameras.add(camera.position, "z", -500, 500).listen();
 
 	/** RENDERER ************************************************************************** */
 	
@@ -214,7 +213,7 @@ function init() {
 		// plane.rotation.z += 0.002;
 		renderer.render(scene, camera);
 		// infospot annotations
-		//updateAnnotationOpacity(camera, 20, 25);
+		// updateAnnotationOpacity(camera, 20, 25);
 		// updateAnnotationPosition(
 		// 	camera, 
 		// 	renderer.domElement.width,
@@ -255,7 +254,7 @@ function getGeometry(shape, x, y, z, color){
 	let opacMaterial = new THREE.MeshStandardMaterial({
 		transparent: true, 
 		opacity: 0.0,
-		alphaTest: 0.0,
+		alphaTest: 1.0,
 		color: color,
 	 	side: THREE.DoubleSide,
 		depthWrite: false
@@ -272,8 +271,7 @@ function getGeometry(shape, x, y, z, color){
 		geometry, 
 		[
 			solidMaterial, solidMaterial, 
-			solidMaterial, solidMaterial, 
-			opacMaterial, opacMaterial
+			solidMaterial, solidMaterial
 		]
 	);
 	mesh.castShadow = true;
@@ -338,8 +336,6 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 	console.log(postObject);
 	console.log("-------------------------");
 
-	let guiFolderInfospots = gui.addFolder("Annotations");
-
 	postObject.forEach( function(key) {
 
 		// console.log("-------------------------");
@@ -387,27 +383,31 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		structure.position.y = allotment.position.y;
 		structure.position.z = (structure.geometry.parameters.depth / 2); // + allotment.position.z
 		structure.material.roughness = 0.9;
-		structure.material.map = loader.load(allotment.images.texture);
-		for (let i = 0; i < structure.material.length; i++) {
-			// hightlight object
-			//structure.material[i].color.set(0xff0000);
-			structure.material[i].map = loader.load(allotment.images.texture);
-			//structure.faces[i].materialIndex = 1;
-			//console.log(intersects[i]);
-			// structure.material[i].bumpMap = loader.load(allotment.images.texture);
-			// structure.material[i].bumpScale = 0.05;
-			let structureTextureMap = structure.material[i].map;
-			structureTextureMap.wrapS = THREE.RepeatWrapping;
-			structureTextureMap.wrapT = THREE.RepeatWrapping;
-			structureTextureMap.repeat.set(4, 4);
+		if (allotment.images.texture != null && allotment.images.texture != false) {
+			structure.material.map = loader.load(allotment.images.texture);
+			for (let i = 0; i < structure.material.length; i++) {
+				// hightlight object
+				//structure.material[i].color.set(0xff0000);
+				structure.material[i].map = loader.load(allotment.images.texture);
+				//structure.faces[i].materialIndex = 1;
+				//console.log(intersects[i]);
+				// structure.material[i].bumpMap = loader.load(allotment.images.texture);
+				// structure.material[i].bumpScale = 0.05;
+				let structureTextureMap = structure.material[i].map;
+				structureTextureMap.wrapS = THREE.RepeatWrapping;
+				structureTextureMap.wrapT = THREE.RepeatWrapping;
+				structureTextureMap.repeat.set(4, 4);
+			}
 		}
 		
 		plane.add(structure);
+
+		guiFolderAllotments.add(structure.geometry.parameters, "depth", 0, allotment.parameters.z);
 		
-		// console.log("-------------------------");
-		// console.log("allotment----------------");
-		// console.log(structure);
-		// console.log("-------------------------");
+		console.log("-------------------------");
+		console.log("allotment----------------");
+		console.log(structure);
+		console.log("-------------------------");
 
 		// SEND AJAX FETCH TO RETRIEVE BEDS IN THIS ALLOTMENT
 		let queryURLBeds = `${restURL}bed/?_embed&per_page=100`;
@@ -553,10 +553,10 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			bed.parameters.x = parseInt(key.acf.bed_width) / 12;
 			bed.parameters.y = parseInt(key.acf.bed_length) / 12;
 			bed.parameters.z = parseInt(key.acf.bed_height) / 12;
-			bed.position.x = parseInt(key.acf.bed_position_x) + posOffsetX;
-			bed.position.y = parseInt(key.acf.bed_position_y) + posOffsetY;
-			bed.position.z = parseInt(key.acf.bed_position_z) + (bed.parameters.z / 2); // + posOffsetZ;
-			//bed.images.texture = key.acf.bed_texture_image;
+			bed.position.x = parseInt(key.acf.bed_position_x) / 12 + posOffsetX;
+			bed.position.y = parseInt(key.acf.bed_position_y) / 12 + posOffsetY;
+			bed.position.z = parseInt(key.acf.bed_position_z) / 12 + (bed.parameters.z / 2); // + posOffsetZ;
+			bed.images.texture = key.acf.bed_texture_image;
 			bed.images.featured = getFeaturedImage(key);
 			bed.shape = key.acf.bed_shape;
 			bed.color = key.acf.bed_color;
@@ -565,10 +565,10 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			bed.description = key.content.rendered;
 			bed.link = key.link;
 
-			// console.log("-------------------------");
-			// console.log("bed----------------");
-			// console.log(bed);
-			// console.log("-------------------------");
+			console.log("-------------------------");
+			console.log("bed----------------");
+			console.log(bed);
+			console.log("-------------------------");
 
 			let structure = getGeometry(
 				bed.shape,
@@ -583,24 +583,26 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			structure.position.x = bed.position.x ? bed.position.x : 0;
 			structure.position.y = bed.position.y ? bed.position.y : 0;
 			//structure.position.z = bed.position.z ? bed.position.z - (structure.geometry.parameters.depth) : - (structure.geometry.parameters.depth);
-			structure.position.z = bed.position.z ? bed.position.z + (structure.geometry.parameters.depth / 2) : (structure.geometry.parameters.depth / 2);
+			//structure.position.z = bed.position.z ? bed.position.z + (structure.geometry.parameters.depth / 2) : (structure.geometry.parameters.depth / 2);
 			structure.position.z = bed.position.z ? bed.position.z : 0;
 			//structure.rotation.x = -Math.PI / 2; //-90 degrees in radians
-			// structure.material.roughness = 0.9;
-			// structure.material.map = loader.load(bed.images.texture);
-			// for (let i = 0; i < structure.material.length; i++) {
-			// 	// hightlight object
-			// 	//structure.material[i].color.set(0xff0000);
-			// 	structure.material[i].map = loader.load(bed.images.texture);
-			// 	//structure.faces[i].materialIndex = 1;
-			// 	//console.log(intersects[i]);
-			// 	// structure.material[i].bumpMap = loader.load(bed.images.texture);
-			// 	// structure.material[i].bumpScale = 0.05;
-			// 	let structureTextureMap = structure.material[i].map;
-			// 	structureTextureMap.wrapS = THREE.RepeatWrapping;
-			// 	structureTextureMap.wrapT = THREE.RepeatWrapping;
-			// 	structureTextureMap.repeat.set(4, 4);
-			// }
+			structure.material.roughness = 0.9;
+			if (bed.images.texture != null && bed.images.texture != false) {
+				structure.material.map = loader.load(bed.images.texture);
+				for (let i = 0; i < structure.material.length; i++) {
+					// hightlight object
+					//structure.material[i].color.set(0xff0000);
+					structure.material[i].map = loader.load(bed.images.texture);
+					//structure.faces[i].materialIndex = 1;
+					//console.log(intersects[i]);
+					// structure.material[i].bumpMap = loader.load(bed.images.texture);
+					// structure.material[i].bumpScale = 0.05;
+					let structureTextureMap = structure.material[i].map;
+					structureTextureMap.wrapS = THREE.RepeatWrapping;
+					structureTextureMap.wrapT = THREE.RepeatWrapping;
+					structureTextureMap.repeat.set(4, 4);
+				}
+			}
 			
 			plane.add(structure);
 			
