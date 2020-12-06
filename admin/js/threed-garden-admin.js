@@ -229,52 +229,68 @@ function init() {
 
 function getGeometry(shape, x, y, z, color){
 	let geometry;
+	let material;
+	let mesh;
 	switch (shape) {
-		case 'Rectangular':
+		case 'Box':
 			geometry = new THREE.BoxGeometry(x, y, z);
+			// let opacMaterial = new THREE.MeshStandardMaterial({
+			// 	transparent: true, 
+			// 	opacity: 0.0,
+			// 	alphaTest: 1.0,
+			// 	color: color,
+			// 	side: THREE.DoubleSide,
+			// 	depthWrite: false
+			// });
+			material = new THREE.MeshStandardMaterial({
+				transparent: true, 
+				opacity: 0.9,
+				color: color,
+				side: THREE.DoubleSide,
+				depthWrite: true
+			});
+			mesh = new THREE.Mesh(
+				geometry, 
+				[
+					material, material, 
+					material, material
+				]
+			);
+			mesh.castShadow = true;
 			break;
-		// case 'cone':
-		// 	geometry = new THREE.ConeGeometry(x, y, z);
-		// 	break;
-		// case 'Elliptical':
-		// 	geometry = new THREE.CylinderGeometry(x, y, z, 0);
-		// 	break;
+
+		case 'Cone':
+			geometry = new THREE.ConeGeometry(x/2, y/2, z);
+			material = new THREE.MeshStandardMaterial({
+				color: color,
+				side: THREE.DoubleSide
+			});
+			mesh = new THREE.Mesh(geometry, material);
+			mesh.castShadow = true;
+			break;
+
+		case 'Cylinder':
+			geometry = new THREE.CylinderGeometry(x/2, y/2, z, 32, 1, true);
+			material = new THREE.MeshStandardMaterial({
+				color: color,
+				side: THREE.DoubleSide
+			});
+			mesh = new THREE.Mesh(geometry, material);
+			mesh.castShadow = true;
+			mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
+			break;
+
 		default:
 			geometry = new THREE.BoxGeometry(x, y, z);
+			material = new THREE.MeshStandardMaterial({
+				color: color,
+				side: THREE.DoubleSide
+			});
+			mesh = new THREE.Mesh(geometry, material);
+			mesh.castShadow = true;
 			break;
 	}
-	// let material = new THREE.MeshStandardMaterial({
-	// 	color: color,
-	// 	side: THREE.DoubleSide
-	// });
-	// let mesh = new THREE.Mesh(geometry, material);
-	// mesh.castShadow = true;
-	// return mesh;
 	
-	let opacMaterial = new THREE.MeshStandardMaterial({
-		transparent: true, 
-		opacity: 0.0,
-		alphaTest: 1.0,
-		color: color,
-	 	side: THREE.DoubleSide,
-		depthWrite: false
-	});
-	let solidMaterial = new THREE.MeshStandardMaterial({
-		transparent: true, 
-		opacity: 0.8,
-		color: color,
-	 	side: THREE.DoubleSide,
-		depthWrite: true
-	});
-
-	let mesh = new THREE.Mesh(
-		geometry, 
-		[
-			solidMaterial, solidMaterial, 
-			solidMaterial, solidMaterial
-		]
-	);
-	mesh.castShadow = true;
 	return mesh;
 }
 
@@ -585,7 +601,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			//structure.position.z = bed.position.z ? bed.position.z - (structure.geometry.parameters.depth) : - (structure.geometry.parameters.depth);
 			//structure.position.z = bed.position.z ? bed.position.z + (structure.geometry.parameters.depth / 2) : (structure.geometry.parameters.depth / 2);
 			structure.position.z = bed.position.z ? bed.position.z : 0;
-			//structure.rotation.x = -Math.PI / 2; //-90 degrees in radians
+			//structure.rotation.x = -Math.PI / 2; // -90 degrees in radians
 			structure.material.roughness = 0.9;
 			if (bed.images.texture != null && bed.images.texture != false) {
 				structure.material.map = loader.load(bed.images.texture);
