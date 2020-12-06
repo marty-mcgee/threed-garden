@@ -57,8 +57,8 @@ function init() {
 	
 	let plane = getPlane(200, 200, 0xFFFFFF);
 	plane.name = "plane-1";
-	plane.rotation.x = -Math.PI / 2; //-90 degrees in radians
-	plane.position.z = 1;
+	plane.rotation.x = -Math.PI / 2; // -90 degrees in radians
+	//plane.position.z = 10;
 	plane.material.roughness = 0.0;
 
 	/** TEXTURES ************************************************************************* */
@@ -98,7 +98,7 @@ function init() {
 	// //spotLight.intensity = 3.0;
 
 	let directionalLight = getDirectionalLight(0xFFFFFF, 3.5);
-	directionalLight.position.set( -100, -100, 90 );
+	directionalLight.position.set( -90, -90, 90 );
 	directionalLight.intensity = 2.6;
 
 	let helper = new THREE.CameraHelper(directionalLight.shadow.camera);
@@ -165,8 +165,8 @@ function init() {
 		controls.rotateSpeed = 0.5;
 		controls.autoRotate = false;
 		controls.autoRotateSpeed = 0.03;
-		controls.minDistance = 1;
-		controls.maxDistance = 200;
+		controls.minDistance = 0.01;
+		controls.maxDistance = 240;
 		controls.maxPolarAngle = Math.PI/2 - .04;
 		controls.target = new THREE.Vector3(0, 0, 0); // where the camera actually points
 		//controls.target.set(0, 5, 0); // alternate way of setting target of camera
@@ -310,13 +310,13 @@ function getSpotLight(color, intensity){
 function getDirectionalLight(color, intensity){
 	let light = new THREE.DirectionalLight(color, intensity);
 	light.castShadow = true;
-	light.shadow.bias 			= 0.0001;
+	light.shadow.bias 			= 0.00001;
 	light.shadow.mapSize.width 	= 2048; //default = 1024
 	light.shadow.mapSize.height = 2048; //default = 1024
-	light.shadow.camera.left 	= -500; //default = -5
-	light.shadow.camera.bottom 	= -500; //default = -5
-	light.shadow.camera.right 	= 500; //default = 5
-	light.shadow.camera.top 	= 500; //default = 5
+	light.shadow.camera.left 	= -1000; //default = -5
+	light.shadow.camera.bottom 	= -1000; //default = -5
+	light.shadow.camera.right 	= 1000; //default = 5
+	light.shadow.camera.top 	= 1000; //default = 5
 	return light;
 }
 
@@ -351,7 +351,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		allotment.images = {};
 		allotment.parameters.x = parseInt(key.acf.allotment_width);
 		allotment.parameters.y = parseInt(key.acf.allotment_length);
-		allotment.parameters.z = parseInt(key.acf.allotment_height); //0
+		allotment.parameters.z = parseInt(key.acf.allotment_height); // 0
 		allotment.position.x = parseInt(key.acf.allotment_position_x);
 		allotment.position.y = parseInt(key.acf.allotment_position_y);
 		allotment.position.z = parseInt(key.acf.allotment_position_z);
@@ -381,7 +381,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		structure.userData.description = allotment.description;
 		structure.position.x = allotment.position.x;
 		structure.position.y = allotment.position.y;
-		structure.position.z = (structure.geometry.parameters.depth / 2); // + allotment.position.z
+		structure.position.z = (structure.geometry.parameters.depth / 2) + allotment.position.z; // - 10 for gap between plane
 		structure.material.roughness = 0.9;
 		if (allotment.images.texture != null && allotment.images.texture != false) {
 			structure.material.map = loader.load(allotment.images.texture);
@@ -515,10 +515,10 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 
 	}); /** END ALLOTMENTS ****************************************************************** */
 	
-	console.log("-------------------------");
-	console.log("plane.children-----------");
-	console.log(plane.children);
-	console.log("-------------------------");
+	// console.log("-------------------------");
+	// console.log("plane.children-----------");
+	// console.log(plane.children);
+	// console.log("-------------------------");
 
 	return plane.children;
 }
@@ -610,7 +610,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			// console.log("bed----------------------");
 			// console.log(structure);
 			// console.log("-------------------------");
-		/*
+		
 			let sprite = makeTextSprite(
 				structure.name, 
 				{ 	fontsize: 24, 
@@ -635,9 +635,9 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			// console.log("structure---------------------");
 			// console.log(structure);
 			// console.log("-------------------------");
-		*/
+		
 			/** INFOSPOTS ********************************************************************* */
-		/*
+		
 			let infospot = makeInfospot(
 				"i", 
 				structure.position.x, 
@@ -650,9 +650,9 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			//guiFolderBeds.add(infospot, "visible");
 
 			plane.add(infospot);
-		*/
+		
 			/** ANNOTATIONS ****************************************************************** */
-		/*
+		
 			let vector = new THREE.Vector3(structure.position.x, structure.position.y, structure.position.z);
 			// camera.updateProjectionMatrix();
 			// camera.updateMatrixWorld();
@@ -701,14 +701,14 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			//plane.parent.add(annotation);
 			//scene2.add(annotation);
 			structure.add(annotation);
-		*/
+		
 		}
 	}); /** END BEDS *********************************************************************** */
 	
-	console.log("-------------------------");
-	console.log("plane.children-----------");
-	console.log(plane.children);
-	console.log("-------------------------");
+	// console.log("-------------------------");
+	// console.log("plane.children-----------");
+	// console.log(plane.children);
+	// console.log("-------------------------");
 
 	return plane.children;
 }
@@ -755,7 +755,7 @@ function makeInfospot(message, positionX, positionY, positionZ) {
 
 	const infospotMaterial = new THREE.SpriteMaterial({
 		map: infospotTexture,
-		alphaTest: 0.5,
+		//alphaTest: 0.5,
 		transparent: true,
 		depthTest: false,
 		depthWrite: false
@@ -763,7 +763,7 @@ function makeInfospot(message, positionX, positionY, positionZ) {
 
 	let infospot = new THREE.Sprite(infospotMaterial);
 	infospot.position.set(positionX, positionY, positionZ);
-	infospot.scale.set(3, 3, 3);
+	infospot.scale.set(2, 2, 2);
 	infospot.visible = true;
 
 	return infospot;
@@ -856,7 +856,12 @@ function makeTextSprite(message, parameters) {
 	texture.needsUpdate = true;
 
 	let spriteMaterial = new THREE.SpriteMaterial( 
-		{ map: texture } //, useScreenCoordinates: false, alignment: spriteAlignment
+		{ 
+			map: texture,
+			transparent: true,
+			depthTest: false,
+			depthWrite: false 
+		} //, useScreenCoordinates: false, alignment: spriteAlignment
 	);
 	let sprite = new THREE.Sprite( spriteMaterial );
 	sprite.scale.set(50, 25, 1.0);
