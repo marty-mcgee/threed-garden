@@ -281,6 +281,17 @@ function getGeometry(shape, x, y, z, color){
 			mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
 			break;
 
+		case 'InfoSphere':
+			geometry = new THREE.SphereGeometry(x, y, z);
+			material = new THREE.MeshStandardMaterial({
+				color: color,
+				side: THREE.DoubleSide
+			});
+			mesh = new THREE.Mesh(geometry, material);
+			mesh.castShadow = true;
+			//mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
+			break;
+
 		case 'Sphere':
 			geometry = new THREE.SphereGeometry(x, y, z);
 			material = new THREE.MeshStandardMaterial({
@@ -450,33 +461,6 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 			);
 
 		/** BUILD OUT SPRITES AND INFOSPOTS AND ANNOTATIONS ****************************** 
-
-		let sprite = makeTextSprite(
-			structure.name, 
-			{ 	fontsize: 24, 
-				fontface: "Calibri", 
-				borderColor: {r:255, g:0, b:0, a:0.7}, 
-				backgroundColor: {r:255, g:255, b:255, a:0.7} 
-			} 
-		);
-		// sprite = makeInfospot(
-		// 	structure.name, 
-		// 	0, 0, structure.geometry.parameters.depth + 5
-		// );
-		sprite.name = `SPRITE: ${structure.name}`;
-		sprite.position.set(0, 0, structure.geometry.parameters.depth + 5);
-		sprite.visible = false;
-
-		guiFolderInfospots.add(sprite, "visible");
-		
-		structure.add(sprite);
-
-		// console.log("-------------------------");
-		// console.log("structure---------------------");
-		// console.log(structure);
-		// console.log("-------------------------");
-		
-		*/
 
 		/** INFOSPOTS ********************************************************************* */
 
@@ -701,7 +685,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 /**
  * INFOSPOTS **************************************************************************************
  */
-function makeInfospot(message, positionX, positionY, positionZ) {
+function makeInfospotSprite(message, positionX, positionY, positionZ) {
 	/**
 	 * infospot
 	 */
@@ -759,8 +743,8 @@ function makeInfospotSphere(message, positionX, positionY, positionZ, postID) {
 	 * infospot
 	 */
 	let structure = getGeometry(
-		"Sphere",
-		0.75, // radius
+		"InfoSphere",
+		0.90, // radius
 		32, // width segments
 		32, // height segments
 		0x2e3959
@@ -1103,89 +1087,88 @@ function onPointerUp(event) {
 		if ( intersectedObject != INTERSECTED2 ) 
 		{
 			console.log("------------------");
+			console.log("INTERSECTED2 null------------");
 			console.log("intersectedObject NEW--------");
 			console.log(intersectedObject);
 			console.log("------------------");
-
-			// restore previous intersection object (if it exists) to its original color
-			if ( INTERSECTED2 ) {
-				//INTERSECTED2.material[i].color.setHex( INTERSECTED2.currentHex );
-				INTERSECTED2 = intersectedObject;
-				// zoom out
-				//panCam(100, 200, 200, 800, event.target.camera, event.target.controls);
-			} else {
-				INTERSECTED2 = intersectedObject;
-				// zoom in
-				//panCam(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z, 800, event.target.camera, event.target.controls);	
-			}
-			// store reference to closest object as current intersection object
-			//INTERSECTED2 = intersectedObject;
-			// store color of closest object (for later restoration)
-			//INTERSECTED2.currentHex = INTERSECTED2.material.color.getHex();
-			// set a new color for closest object
-			//INTERSECTED2.material.color.setHex( 0xff0000 );
-			
-			// point the camera controls to the intersected object?
-			//event.target.controls.reset();
-			//event.target.controls.target = new THREE.Vector3(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z);
-			//event.target.camera.position.set(100, 200, 200);
-			// if (event.button == 2) {
-			// 	// zoom in
-			// 	panCam(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z, 1200, event.target.camera, event.target.controls);
-			// } else if (event.button == 1) {
-			// 	// zoom out
-			// 	panCam(100, 200, 200, 1200, event.target.camera, event.target.controls);
-			// }
-			// console.log("------------------");
-			// console.log("event.target.controls--------");
-			// console.log(event.target.controls);
-			// console.log("------------------");
-
-			intersectedObject.children.forEach( function(key) {
-				// console.log("-------------------------");
-				// console.log("key.type (intersectedObject.children)------");
-				// console.log(key.type);
-				// console.log(key);
-				// console.log("-------------------------");
-				if (key.type === "Sprite" && event.button == 1) {
-					if (key.visible === true) {
-						key.visible = false;
-					}
-					else {
-						key.visible = true;
-					}
-				}
-				if (key.type === "Object3D" && event.button == 2) {
-					if (key.element.hidden === true) {
-						key.element.hidden = false;
-						key.element.style.display = "block";
-						key.visible = true; // does nothing, but keeps status accurate
-					}
-					else {
-						key.element.hidden = true;
-						key.element.style.display = "none";
-						key.visible = false; // does nothing, but keeps status accurate
-					}
-				}
-			});
-
-			// update text, if it has a "name" field.
-			if ( intersectedObject.name )
-			{
-				
-			}
-			else
-			{
-				
-			}
 		}
 		else
 		{
-			console.log("INTERSECTED2 already stored.");
 			console.log("------------------");
-			console.log("intersectedObject--------");
+			console.log("INTERSECTED2 already stored--");
+			console.log("intersectedObject------------");
 			console.log(intersectedObject);
 			console.log("------------------");
+		}
+
+		// restore previous intersection object (if it exists) to its original color
+		if ( INTERSECTED2 ) {
+			//INTERSECTED2.material[i].color.setHex( INTERSECTED2.currentHex );
+			INTERSECTED2 = intersectedObject;
+			// zoom out
+			//panCam(100, 200, 200, 800, event.target.camera, event.target.controls);
+		} else {
+			INTERSECTED2 = intersectedObject;
+			// zoom in
+			//panCam(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z, 800, event.target.camera, event.target.controls);	
+		}
+		// store reference to closest object as current intersection object
+		//INTERSECTED2 = intersectedObject;
+		// store color of closest object (for later restoration)
+		//INTERSECTED2.currentHex = INTERSECTED2.material.color.getHex();
+		// set a new color for closest object
+		//INTERSECTED2.material.color.setHex( 0xff0000 );
+		
+		// point the camera controls to the intersected object?
+		//event.target.controls.reset();
+		//event.target.controls.target = new THREE.Vector3(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z);
+		//event.target.camera.position.set(100, 200, 200);
+		// if (event.button == 2) {
+		// 	// zoom in
+		// 	panCam(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z, 1200, event.target.camera, event.target.controls);
+		// } else if (event.button == 1) {
+		// 	// zoom out
+		// 	panCam(100, 200, 200, 1200, event.target.camera, event.target.controls);
+		// }
+		// console.log("------------------");
+		// console.log("event.target.controls--------");
+		// console.log(event.target.controls);
+		// console.log("------------------");
+
+		intersectedObject.children.forEach( function(key) {
+			// console.log("-------------------------");
+			// console.log("key.type (intersectedObject.children)------");
+			// console.log(key.type);
+			// console.log(key);
+			// console.log("-------------------------");
+			if (key.type === "Sprite" && event.button == 1) {
+				if (key.visible === true) {
+					key.visible = false;
+				}
+				else {
+					key.visible = true;
+				}
+			}
+			if ( key.type === "Object3D" && event.button == 2 ) {
+				if (key.element.hidden === true) {
+					key.element.hidden = false;
+					key.element.style.display = "block";
+					key.visible = true; // does nothing, but keeps status accurate
+				}
+				else {
+					key.element.hidden = true;
+					key.element.style.display = "none";
+					key.visible = false; // does nothing, but keeps status accurate
+				}
+			}
+		});
+
+		// update text, if it has a "name" field.
+		if ( intersectedObject.name ) {
+			
+		}
+		else {
+			
 		}
 	} 
 	else // there are no intersections
