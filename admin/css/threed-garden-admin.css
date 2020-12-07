@@ -18,6 +18,7 @@
 
 /** DAT.GUI */
 #gui { position: absolute; right: 5px; }
+#gui dd, #gui li { margin-bottom: 0; }
 
 
 /** ANNOTATIONS */
