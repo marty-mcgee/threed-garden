@@ -26,7 +26,7 @@ let gui;
 	let guiFolderBeds = gui.addFolder("Beds");
 	let guiFolderPlants = gui.addFolder("Plants");
 	let guiFolderInfospots = gui.addFolder("Infospots");
-	let guiFolderAnnotations = gui.addFolder("Annotations");
+	//let guiFolderAnnotations = gui.addFolder("Annotations");
 let renderer;
 let canvasParent;
 let canvas;
@@ -260,13 +260,14 @@ function getGeometry(shape, x, y, z, color){
 			break;
 
 		case 'Cone':
-			geometry = new THREE.ConeGeometry(x/2, y/2, z);
+			geometry = new THREE.ConeGeometry(x/2, y/2, z, 32, 1, true);
 			material = new THREE.MeshStandardMaterial({
 				color: color,
 				side: THREE.DoubleSide
 			});
 			mesh = new THREE.Mesh(geometry, material);
 			mesh.castShadow = true;
+			mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
 			break;
 
 		case 'Cylinder':
@@ -278,6 +279,17 @@ function getGeometry(shape, x, y, z, color){
 			mesh = new THREE.Mesh(geometry, material);
 			mesh.castShadow = true;
 			mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
+			break;
+
+		case 'Sphere':
+			geometry = new THREE.SphereGeometry(x, y, z);
+			material = new THREE.MeshStandardMaterial({
+				color: color,
+				side: THREE.DoubleSide
+			});
+			mesh = new THREE.Mesh(geometry, material);
+			mesh.castShadow = true;
+			//mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
 			break;
 
 		default:
@@ -326,7 +338,7 @@ function getSpotLight(color, intensity){
 function getDirectionalLight(color, intensity){
 	let light = new THREE.DirectionalLight(color, intensity);
 	light.castShadow = true;
-	light.shadow.bias 			= 0.00001;
+	light.shadow.bias 			= 0.01;
 	light.shadow.mapSize.width 	= 2048; //default = 1024
 	light.shadow.mapSize.height = 2048; //default = 1024
 	light.shadow.camera.left 	= -1000; //default = -5
@@ -418,24 +430,27 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		
 		plane.add(structure);
 
-		guiFolderAllotments.add(structure.geometry.parameters, "depth", 0, allotment.parameters.z);
+		//guiFolderAllotments.add(structure.geometry.parameters, "depth", 0, allotment.parameters.z);
 		
-		console.log("-------------------------");
-		console.log("allotment----------------");
-		console.log(structure);
-		console.log("-------------------------");
+		// console.log("-------------------------");
+		// console.log("allotment----------------");
+		// console.log(structure);
+		// console.log("-------------------------");
 
-		// SEND AJAX FETCH TO RETRIEVE BEDS IN THIS ALLOTMENT
+		/** SEND AJAX FETCH TO RETRIEVE BEDS IN THIS ALLOTMENT *************************** */
+
 		let queryURLBeds = `${restURL}bed/?_embed&per_page=100`;
 		fetch( queryURLBeds )
 			.then( response => response.json() )
 			.then( postObject => buildBeds(
 					postObject, plane, gui, camera, renderer, 
-					structure.userData.postID, structure.position.x, structure.position.y, 0 //structure.position.z
+					structure.userData.postID, 
+					structure.position.x, structure.position.y, 0 //structure.position.z
 				) 
 			);
 
-		// BUILD OUT SPRITES AND INFOSPOTS AND ANNOTATIONS
+		/** BUILD OUT SPRITES AND INFOSPOTS AND ANNOTATIONS ****************************** 
+
 		let sprite = makeTextSprite(
 			structure.name, 
 			{ 	fontsize: 24, 
@@ -460,14 +475,17 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		// console.log("structure---------------------");
 		// console.log(structure);
 		// console.log("-------------------------");
+		
+		*/
 
 		/** INFOSPOTS ********************************************************************* */
 
-		let infospot = makeInfospot(
+		let infospot = makeInfoSphere(
 			"i", 
 			structure.position.x, 
 			structure.position.y, 
-			structure.geometry.parameters.depth + 3
+			allotment.parameters.z + 3,
+			allotment.postID
 		);
 		infospot.name = `INFOSPOT: ${structure.name}`;
 		infospot.visible = true;
@@ -476,7 +494,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 
 		plane.add(infospot);
 
-		/** ANNOTATIONS ****************************************************************** */
+		/** ANNOTATIONS ****************************************************************** 
 
 		let vector = new THREE.Vector3(structure.position.x, structure.position.y, structure.position.z);
 		// camera.updateProjectionMatrix();
@@ -504,6 +522,9 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 
 		let annoPosTop = vector.x; //structure.position.y + 10
 		let annoPosLeft = vector.y; //structure.position.x + 10
+		*/
+		let annoPosTop = 240;
+		let annoPosLeft = 240;
 		let annoPosZ = structure.geometry.parameters.depth + 10;
 
 		let annotation = makeAnnotation(
@@ -526,7 +547,6 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		//guiFolderInfospots.add(annotation, "visible");
 
 		//plane.parent.add(annotation);
-		//scene2.add(annotation);
 		structure.add(annotation);
 
 	}); /** END ALLOTMENTS ****************************************************************** */
@@ -581,10 +601,10 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			bed.description = key.content.rendered;
 			bed.link = key.link;
 
-			console.log("-------------------------");
-			console.log("bed----------------");
-			console.log(bed);
-			console.log("-------------------------");
+			// console.log("-------------------------");
+			// console.log("bed----------------");
+			// console.log(bed);
+			// console.log("-------------------------");
 
 			let structure = getGeometry(
 				bed.shape,
@@ -627,73 +647,26 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			// console.log(structure);
 			// console.log("-------------------------");
 		
-			let sprite = makeTextSprite(
-				structure.name, 
-				{ 	fontsize: 24, 
-					fontface: "Calibri", 
-					borderColor: {r:255, g:0, b:0, a:0.7}, 
-					backgroundColor: {r:255, g:255, b:255, a:0.7} 
-				} 
-			);
-			// sprite = makeInfospot(
-			// 	structure.name, 
-			// 	0, 0, structure.geometry.parameters.depth + 5
-			// );
-			sprite.name = `SPRITE: ${structure.name}`;
-			sprite.position.set(0, 0, structure.geometry.parameters.depth + 5);
-			sprite.visible = false;
-
-			//guiFolderBeds.add(sprite, "visible");
-			
-			structure.add(sprite);
-
-			// console.log("-------------------------");
-			// console.log("structure---------------------");
-			// console.log(structure);
-			// console.log("-------------------------");
-		
 			/** INFOSPOTS ********************************************************************* */
 		
-			let infospot = makeInfospot(
+			let infospot = makeInfoSphere(
 				"i", 
 				structure.position.x, 
 				structure.position.y, 
-				structure.geometry.parameters.depth + 3
+				bed.parameters.z + 3,
+				bed.postID
 			);
 			infospot.name = `INFOSPOT: ${structure.name}`;
-			infospot.visible = true;
+			infospot.visible = false;
 
-			//guiFolderBeds.add(infospot, "visible");
+			guiFolderBeds.add(infospot, "visible");
 
 			plane.add(infospot);
 		
 			/** ANNOTATIONS ****************************************************************** */
-		
-			let vector = new THREE.Vector3(structure.position.x, structure.position.y, structure.position.z);
-			// camera.updateProjectionMatrix();
-			// camera.updateMatrixWorld();
-			// let vector = new THREE.Vector3();
-			// vector.setFromMatrixPosition(structure.matrixWorld);
-			vector.project(camera);
-			// console.log("------------------");
-			// console.log("vector1--------");
-			// console.log(vector);
-			// console.log("------------------");
 
-			// vector.x = Math.round((0.5 + vector.x / 2) * (renderer.domElement.width / window.devicePixelRatio));
-			// vector.y = Math.round((0.5 - vector.y / 2) * (renderer.domElement.height / window.devicePixelRatio));
-			// vector.x = (structure.position.x / (window.innerWidth - 240)) * 2 - 1;
-			// vector.y = -(structure.position.y / (window.innerHeight - 100)) * 2 + 1;
-			vector.x = Math.round( (   vector.x + 1 ) * renderer.domElement.width / 2 );
-			vector.y = Math.round( ( - vector.y + 1 ) * renderer.domElement.height / 2 );
-			
-			// console.log("------------------");
-			// console.log("vector2--------");
-			// console.log(vector);
-			// console.log("------------------");
-
-			let annoPosTop = vector.x; //structure.position.y + 10
-			let annoPosLeft = vector.y; //structure.position.x + 10
+			let annoPosTop = 300;
+			let annoPosLeft = 300;
 			let annoPosZ = structure.geometry.parameters.depth + 10;
 
 			let annotation = makeAnnotation(
@@ -706,25 +679,21 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			)
 			annotation.name = `ANNOTATION: ${structure.name}`;
 			//annotation.visible = false; // does nothing
+
 			// console.log("-------------------------");
 			// console.log("annotation---------------------");
 			// console.log(annotation);
 			// console.log("-------------------------");
-
-			//guiFolderBeds.add(annotation, "hidden");
-			//guiFolderBeds.add(annotation, "visible");
-
-			//plane.parent.add(annotation);
-			//scene2.add(annotation);
+			
 			structure.add(annotation);
 		
 		}
 	}); /** END BEDS *********************************************************************** */
 	
-	// console.log("-------------------------");
-	// console.log("plane.children-----------");
-	// console.log(plane.children);
-	// console.log("-------------------------");
+	console.log("-------------------------");
+	console.log("plane.children-----------");
+	console.log(plane.children);
+	console.log("-------------------------");
 
 	return plane.children;
 }
@@ -771,7 +740,7 @@ function makeInfospot(message, positionX, positionY, positionZ) {
 
 	const infospotMaterial = new THREE.SpriteMaterial({
 		map: infospotTexture,
-		//alphaTest: 0.5,
+		opacity: 0.8,
 		transparent: true,
 		depthTest: false,
 		depthWrite: false
@@ -783,6 +752,31 @@ function makeInfospot(message, positionX, positionY, positionZ) {
 	infospot.visible = true;
 
 	return infospot;
+}
+
+function makeInfoSphere(message, positionX, positionY, positionZ, postID) {
+	/**
+	 * infospot
+	 */
+	let structure = getGeometry(
+		"Sphere",
+		0.75, // radius
+		32, // width segments
+		32, // height segments
+		0x2e3959
+	);	
+	structure.name = message;
+	structure.userData.postID = postID;
+	structure.userData.description = "infospot";
+	structure.position.x = positionX;
+	structure.position.y = positionY;
+	structure.position.z = positionZ;
+	structure.position.set(positionX, positionY, positionZ);
+	//structure.rotation.x = -Math.PI / 2; // -90 degrees in radians
+	//structure.scale.set(2, 2, 2);
+	structure.visible = true;
+
+	return structure;
 }
 
 function makeAnnotation(link, contentHTML, positionX, positionY, positionZ, gui) {
@@ -952,52 +946,66 @@ function watchPointer(camera, targetList){
 	// if there is one (or more) intersections
 	if ( intersects.length > 0 ) {
 
-		// do something to object intersected? (testing purposes only)
-		// for (let i = 0; i < intersects.length; i++) {
+		/* do something to object intersected? (testing purposes only)
+		for (let i = 0; i < intersects.length; i++) {
 			// hightlight object
-			// intersects[i].object.material.color.set(0xff0000);
-			// console.log("------------------");
-			// console.log("intersects[i]-----");
-			// console.log(intersects[i]);
-			// console.log("------------------");
-		// }
+			for (let j = 0; j < intersects[i].object.material.length; j++) {
+				intersects[i].object.material[j].color.setHex( 0xff0000 );
+			}
+		} */
 
 		// if the closest object intersected is not the currently stored intersection object
 		if ( intersects[0].object != INTERSECTED1 ) {
 
 			// restore previous intersection object (if it exists) to its original color
 			if ( INTERSECTED1 ) {
-				for (let i = 0; i < INTERSECTED1.material.length; i++) {
-					INTERSECTED1.material[i].color.setHex( INTERSECTED1.currentHex );
+				if ( INTERSECTED1.material.constructor.name == "Array" ) {
+					for (let i = 0; i < INTERSECTED1.material.length; i++) {
+						INTERSECTED1.material[i].color.setHex( INTERSECTED1.currentHex );
+					}
+				} else {
+					INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
 				}
 			}
+
 			// store reference to closest object as current intersection object
 			INTERSECTED1 = intersects[0].object;
 
-			// SEPARATE FOR LOOPS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			for (let i = 0; i < INTERSECTED1.material.length; i++) {
+			console.log("-------------------------");
+			console.log("INTERSECTED1-------------");
+			console.log(INTERSECTED1);
+			console.log("-------------------------");
+
+			if ( INTERSECTED1.material.constructor.name == "Array" ) {
+				// SEPARATE FOR LOOPS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				// store color of closest object (for later restoration)
-				INTERSECTED1.currentHex = INTERSECTED1.material[i].color.getHex();
-			}
-			for (let i = 0; i < INTERSECTED1.material.length; i++) {
+				for (let i = 0; i < INTERSECTED1.material.length; i++) {
+					INTERSECTED1.currentHex = INTERSECTED1.material[i].color.getHex();
+				}
 				// set a new color for closest object
-				INTERSECTED1.material[i].color.setHex( 0xffff00 );
+				for (let i = 0; i < INTERSECTED1.material.length; i++) {
+					INTERSECTED1.material[i].color.setHex( 0xdddd00 );
+				}
+				// SEPARATE FOR LOOPS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			} else {
+				// store color of closest object (for later restoration)
+				INTERSECTED1.currentHex = INTERSECTED1.material.color.getHex();
+				// set a new color for closest object
+				INTERSECTED1.material.color.setHex( 0xdddd00 );
 			}
-			// update text, if it has a "name" field.
-			if ( intersects[0].object.name ) {
-				
-			}
-			else {
-				
-			}
+			
 		}
 	} 
 	// there are no intersections
 	else {
 		// restore previous intersection object (if it exists) to its original color
 		if ( INTERSECTED1 ) {
-			for (let i = 0; i < INTERSECTED1.material.length; i++) {
-				INTERSECTED1.material[i].color.setHex( INTERSECTED1.currentHex );
+			if ( INTERSECTED1.material.constructor.name == "Array" ) {
+				for (let i = 0; i < INTERSECTED1.material.length; i++) {
+					INTERSECTED1.material[i].color.setHex( INTERSECTED1.currentHex );
+				}
+			} else {
+				INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
 			}
 		}
 		// remove previous intersection object reference
