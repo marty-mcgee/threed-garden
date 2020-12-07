@@ -43,6 +43,11 @@ let INTERSECTED2;
 (function( $ ) {
 'use strict';
 
+var currentMousePos = { x: -1, y: -1 };
+$(document).mousemove(function(event) {
+	currentMousePos.x = event.pageX;
+	currentMousePos.y = event.pageY;
+});
 
 /** MAIN INIT */
 function init() {
@@ -97,9 +102,9 @@ function init() {
 	// spotLight.position.set( -20, -60, 20 );
 	// //spotLight.intensity = 3.0;
 
-	let directionalLight = getDirectionalLight(0xFFFFFF, 3.5);
-	directionalLight.position.set( -90, -90, 90 );
-	directionalLight.intensity = 2.6;
+	let directionalLight = getDirectionalLight(0xFFFFFF, 2.4);
+	directionalLight.position.set( -90, -120, 120 );
+	//directionalLight.intensity = 2.4;
 
 	let helper = new THREE.CameraHelper(directionalLight.shadow.camera);
 
@@ -244,7 +249,7 @@ function getGeometry(shape, x, y, z, color){
 			// });
 			material = new THREE.MeshStandardMaterial({
 				transparent: true, 
-				opacity: 0.9,
+				opacity: 0.8,
 				color: color,
 				side: THREE.DoubleSide,
 				depthWrite: true
@@ -418,6 +423,8 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		structure.name = allotment.title;
 		structure.userData.postID = allotment.postID;
 		structure.userData.description = allotment.description;
+		structure.userData.annotation = allotment.title;
+		structure.userData.link = allotment.link;
 		structure.position.x = allotment.position.x;
 		structure.position.y = allotment.position.y;
 		structure.position.z = (structure.geometry.parameters.depth / 2) + allotment.position.z; // - 10 for gap between plane
@@ -465,11 +472,13 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		/** INFOSPOTS ********************************************************************* */
 
 		let infospot = makeInfospotSphere(
-			"i", 
+			structure.name, 
 			structure.position.x, 
 			structure.position.y, 
 			allotment.parameters.z + 3,
-			allotment.postID
+			allotment.postID,
+			structure.userData.annotation,
+			structure.userData.link 
 		);
 		infospot.name = `INFOSPOT: ${structure.name}`;
 		infospot.visible = true;
@@ -477,61 +486,6 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		guiFolderInfospots.add(infospot, "visible");
 
 		plane.add(infospot);
-
-		/** ANNOTATIONS ****************************************************************** 
-
-		let vector = new THREE.Vector3(structure.position.x, structure.position.y, structure.position.z);
-		// camera.updateProjectionMatrix();
-		// camera.updateMatrixWorld();
-		// let vector = new THREE.Vector3();
-        // vector.setFromMatrixPosition(structure.matrixWorld);
-		vector.project(camera);
-
-		// console.log("------------------");
-		// console.log("vector1--------");
-		// console.log(vector);
-		// console.log("------------------");
-
-		// vector.x = Math.round((0.5 + vector.x / 2) * (renderer.domElement.width / window.devicePixelRatio));
-		// vector.y = Math.round((0.5 - vector.y / 2) * (renderer.domElement.height / window.devicePixelRatio));
-		// vector.x = (structure.position.x / (window.innerWidth - 240)) * 2 - 1;
-		// vector.y = -(structure.position.y / (window.innerHeight - 100)) * 2 + 1;
-		vector.x = Math.round( (   vector.x + 1 ) * renderer.domElement.width / 2 );
-    	vector.y = Math.round( ( - vector.y + 1 ) * renderer.domElement.height / 2 );
-		
-		// console.log("------------------");
-		// console.log("vector2--------");
-		// console.log(vector);
-		// console.log("------------------");
-
-		let annoPosTop = vector.x; //structure.position.y + 10
-		let annoPosLeft = vector.y; //structure.position.x + 10
-		*/
-		let annoPosTop = 240;
-		let annoPosLeft = 240;
-		let annoPosZ = structure.geometry.parameters.depth + 10;
-
-		let annotation = makeAnnotation(
-			allotment.link,
-			structure.name,
-			annoPosTop, 
-			annoPosLeft,
-			annoPosZ,
-			guiFolderInfospots
-		)
-		annotation.name = `ANNOTATION: ${structure.name}`;
-		//annotation.visible = false; // does nothing
-
-		// console.log("-------------------------");
-		// console.log("annotation---------------------");
-		// console.log(annotation);
-		// console.log("-------------------------");
-
-		//guiFolderInfospots.add(annotation, "hidden");
-		//guiFolderInfospots.add(annotation, "visible");
-
-		//plane.parent.add(annotation);
-		structure.add(annotation);
 
 	}); /** END ALLOTMENTS ****************************************************************** */
 	
@@ -600,10 +554,10 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			structure.name = bed.title;
 			structure.userData.postID = bed.postID;
 			structure.userData.description = bed.description;
+			structure.userData.annotation = bed.title;
+			structure.userData.link = bed.link;
 			structure.position.x = bed.position.x ? bed.position.x : 0;
 			structure.position.y = bed.position.y ? bed.position.y : 0;
-			//structure.position.z = bed.position.z ? bed.position.z - (structure.geometry.parameters.depth) : - (structure.geometry.parameters.depth);
-			//structure.position.z = bed.position.z ? bed.position.z + (structure.geometry.parameters.depth / 2) : (structure.geometry.parameters.depth / 2);
 			structure.position.z = bed.position.z ? bed.position.z : 0;
 			//structure.rotation.x = -Math.PI / 2; // -90 degrees in radians
 			structure.material.roughness = 0.9;
@@ -634,11 +588,13 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			/** INFOSPOTS ********************************************************************* */
 		
 			let infospot = makeInfospotSphere(
-				"i", 
+				structure.name, 
 				structure.position.x, 
 				structure.position.y, 
 				bed.parameters.z + 3,
-				bed.postID
+				bed.postID,
+				structure.userData.annotation,
+				structure.userData.link 
 			);
 			infospot.name = `INFOSPOT: ${structure.name}`;
 			infospot.visible = false;
@@ -646,30 +602,6 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			guiFolderBeds.add(infospot, "visible");
 
 			plane.add(infospot);
-		
-			/** ANNOTATIONS ****************************************************************** */
-
-			let annoPosTop = 300;
-			let annoPosLeft = 300;
-			let annoPosZ = structure.geometry.parameters.depth + 10;
-
-			let annotation = makeAnnotation(
-				bed.link,
-				structure.name,
-				annoPosTop, 
-				annoPosLeft,
-				annoPosZ,
-				gui
-			)
-			annotation.name = `ANNOTATION: ${structure.name}`;
-			//annotation.visible = false; // does nothing
-
-			// console.log("-------------------------");
-			// console.log("annotation---------------------");
-			// console.log(annotation);
-			// console.log("-------------------------");
-			
-			structure.add(annotation);
 		
 		}
 	}); /** END BEDS *********************************************************************** */
@@ -738,9 +670,9 @@ function makeInfospotSprite(message, positionX, positionY, positionZ) {
 	return infospot;
 }
 
-function makeInfospotSphere(message, positionX, positionY, positionZ, postID) {
+function makeInfospotSphere(message, positionX, positionY, positionZ, postID, contentHTML, link) {
 	/**
-	 * infospot
+	 * INFOSPOT ********************************************************************
 	 */
 	let structure = getGeometry(
 		"InfoSphere",
@@ -752,6 +684,8 @@ function makeInfospotSphere(message, positionX, positionY, positionZ, postID) {
 	structure.name = message;
 	structure.userData.postID = postID;
 	structure.userData.description = "infospot";
+	structure.userData.annotation = contentHTML;
+	structure.userData.link = link;
 	structure.position.x = positionX;
 	structure.position.y = positionY;
 	structure.position.z = positionZ;
@@ -759,18 +693,57 @@ function makeInfospotSphere(message, positionX, positionY, positionZ, postID) {
 	//structure.rotation.x = -Math.PI / 2; // -90 degrees in radians
 	//structure.scale.set(2, 2, 2);
 	structure.visible = true;
+		
+	/** 
+	 * ANNOTATION ****************************************************************** 
+	 */
+	//
+	let vector = new THREE.Vector3(structure.position.x, structure.position.y, structure.position.z);
+	// camera.updateProjectionMatrix();
+	// camera.updateMatrixWorld();
+	// let vector = new THREE.Vector3();
+	// vector.setFromMatrixPosition(structure.matrixWorld);
+	vector.project(camera);
 
+	vector.x = Math.round((0.5 + vector.x / 2) * (renderer.domElement.width / window.devicePixelRatio));
+	vector.y = Math.round((0.5 - vector.y / 2) * (renderer.domElement.height / window.devicePixelRatio));
+	// vector.x = (structure.position.x / (window.innerWidth - 240)) * 2 - 1;
+	// vector.y = -(structure.position.y / (window.innerHeight - 100)) * 2 + 1;
+	// vector.x = Math.round( (   vector.x + 1 ) * renderer.domElement.width / 2 );
+	// vector.y = Math.round( ( - vector.y + 1 ) * renderer.domElement.height / 2 );
+
+	let annoPosTop = vector.x; //structure.position.y + 10
+	let annoPosLeft = vector.y; //structure.position.x + 10
+	//
+	// let annoPosTop = 100;
+	// let annoPosLeft = 240;
+
+	let annotation = makeAnnotation(
+		structure.userData.link,
+		structure.name,
+		annoPosTop, 
+		annoPosLeft
+	)
+	annotation.name = `ANNOTATION: ${structure.name}`;
+	//annotation.visible = false; // does nothing
+
+	// console.log("-------------------------");
+	// console.log("annotation---------------------");
+	// console.log(annotation);
+	// console.log("-------------------------");
+	
+	structure.add(annotation);
+	
 	return structure;
 }
 
-function makeAnnotation(link, contentHTML, positionX, positionY, positionZ, gui) {
+function makeAnnotation(link, contentHTML, positionX, positionY) {
 
 	//let annoDiv = document.createElement('div');
 	let annoDiv = $(".annotation")[0];
 	annoDiv = annoDiv.cloneNode();
 	document.body.appendChild( annoDiv );
 	// annoDiv.classList.add("annotation");
-	//let link = `http://garden.university.local/bed/mcgee-home-garden-1/`;
 	annoDiv.innerHTML = `<a href="${link}" target="_blank">${contentHTML}</a> (${positionX}, ${positionY})`;
 	annoDiv.style.display = "none"; //block
 	annoDiv.style.top = `${positionY}px`;
@@ -1149,7 +1122,7 @@ function onPointerUp(event) {
 					key.visible = true;
 				}
 			}
-			if ( key.type === "Object3D" && event.button == 2 ) {
+			if ( key.type === "Object3D" && event.button == 0 ) {
 				if (key.element.hidden === true) {
 					key.element.hidden = false;
 					key.element.style.display = "block";
