@@ -1163,13 +1163,20 @@ function onPointerUp(event) {
 			}
 		});
 
-		// update text, if it has a "name" field.
-		if ( intersectedObject.name ) {
-			
+		// 
+		if ( intersectedObject.userData.annotation ) {
+			console.log("------------------");
+			console.log("ANNOTATION ------------");
+			console.log(intersectedObject.userData.annotation);
+			console.log("------------------");
 		}
 		else {
-			
+			console.log("------------------");
+			console.log("ANNOTATION? ------------");
+			console.log(intersectedObject.userData);
+			console.log("------------------");
 		}
+
 	} 
 	else // there are no intersections
 	{
