@@ -480,7 +480,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 
 		/** INFOSPOTS ********************************************************************* */
 
-		let infospot = makeInfoSphere(
+		let infospot = makeInfospotSphere(
 			"i", 
 			structure.position.x, 
 			structure.position.y, 
@@ -649,7 +649,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 		
 			/** INFOSPOTS ********************************************************************* */
 		
-			let infospot = makeInfoSphere(
+			let infospot = makeInfospotSphere(
 				"i", 
 				structure.position.x, 
 				structure.position.y, 
@@ -754,7 +754,7 @@ function makeInfospot(message, positionX, positionY, positionZ) {
 	return infospot;
 }
 
-function makeInfoSphere(message, positionX, positionY, positionZ, postID) {
+function makeInfospotSphere(message, positionX, positionY, positionZ, postID) {
 	/**
 	 * infospot
 	 */
@@ -971,10 +971,10 @@ function watchPointer(camera, targetList){
 			// store reference to closest object as current intersection object
 			INTERSECTED1 = intersects[0].object;
 
-			console.log("-------------------------");
-			console.log("INTERSECTED1-------------");
-			console.log(INTERSECTED1);
-			console.log("-------------------------");
+			// console.log("-------------------------");
+			// console.log("INTERSECTED1-------------");
+			// console.log(INTERSECTED1);
+			// console.log("-------------------------");
 
 			if ( INTERSECTED1.material.constructor.name == "Array" ) {
 				// SEPARATE FOR LOOPS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1100,12 +1100,12 @@ function onPointerUp(event) {
 
 		// if the closest object intersected is not the currently stored intersection object
 		let intersectedObject = intersects[0].object;
-		// if ( intersectedObject != INTERSECTED2 ) 
-		// {
-			// console.log("------------------");
-			// console.log("intersectedObject--------");
-			// console.log(intersectedObject);
-			// console.log("------------------");
+		if ( intersectedObject != INTERSECTED2 ) 
+		{
+			console.log("------------------");
+			console.log("intersectedObject NEW--------");
+			console.log(intersectedObject);
+			console.log("------------------");
 
 			// restore previous intersection object (if it exists) to its original color
 			if ( INTERSECTED2 ) {
@@ -1178,15 +1178,15 @@ function onPointerUp(event) {
 			{
 				
 			}
-		// }
-		// else
-		// {
-		// 	console.log("INTERSECTED2 already stored.");
-		// 	console.log("------------------");
-		// 	console.log("intersectedObject--------");
-		// 	console.log(intersectedObject);
-		// 	console.log("------------------");
-		// }
+		}
+		else
+		{
+			console.log("INTERSECTED2 already stored.");
+			console.log("------------------");
+			console.log("intersectedObject--------");
+			console.log(intersectedObject);
+			console.log("------------------");
+		}
 	} 
 	else // there are no intersections
 	{
