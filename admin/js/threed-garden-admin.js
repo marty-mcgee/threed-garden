@@ -20,17 +20,24 @@ let gui;
 	gui = new dat.GUI({ autoPlace: true, closeOnTop: true });
 	gui.close();
 	gui.domElement.id = 'gui';
+	let guiFolderAnimation = gui.addFolder("Animation");
+	let guiFolderRotation = gui.addFolder("Rotation");
 	let guiFolderCameras = gui.addFolder("Camera Position");
 	let guiFolderLights = gui.addFolder("Directional Light");
 	let guiFolderAllotments = gui.addFolder("Allotments");
 	let guiFolderBeds = gui.addFolder("Beds");
 	let guiFolderPlants = gui.addFolder("Plants");
 	let guiFolderInfospots = gui.addFolder("Infospots");
-	//let guiFolderAnnotations = gui.addFolder("Annotations");
+	let guiFolderAnnotations = gui.addFolder("Annotations");
 let renderer;
 let canvasParent;
 let canvas;
 const loader = new THREE.TextureLoader();
+
+let params = {
+    ANIMATE: true
+};
+guiFolderAnimation.add(params, "ANIMATE").listen();
 
 /** POINTER HOVERS + CLICKS */
 const raycaster = new THREE.Raycaster();
@@ -61,13 +68,17 @@ function init() {
 	/** GEOMETRIES *********************************************************************** */
 	
 	let plane = getPlane(200, 200, 0xFFFFFF);
-	plane.name = "plane-1";
+	plane.name = "plane-jane";
 	plane.rotation.x = -Math.PI / 2; // -90 degrees in radians
 	//plane.position.z = 10;
-	plane.material.roughness = 0.0;
+	//plane.rotation.z += 0.002;
+	guiFolderRotation.add(plane.rotation, "x", -Math.PI, Math.PI).listen();
+	guiFolderRotation.add(plane.rotation, "y", -Math.PI, Math.PI).listen();
+	guiFolderRotation.add(plane.rotation, "z", -Math.PI, Math.PI).listen();
 
 	/** TEXTURES ************************************************************************* */
 
+	plane.material.roughness = 0.0;
 	plane.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big.jpg');
 	// plane.material.bumpMap = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big-nm.jpg');
 	// plane.material.bumpScale = 0.01;
@@ -216,7 +227,9 @@ function init() {
 		// structure.rotation.y += 0.005;
 		// plane.rotation.x += 0.002;
 		// plane.rotation.y += 0.002;
-		// plane.rotation.z += 0.002;
+		if ( params.ANIMATE ) {
+			plane.rotation.z += 0.002;
+		}
 		renderer.render(scene, camera);
 		// infospot annotations
 		// updateAnnotationOpacity(camera, 20, 25);
@@ -609,10 +622,10 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 		}
 	}); /** END BEDS *********************************************************************** */
 	
-	console.log("-------------------------");
-	console.log("plane.children-----------");
-	console.log(plane.children);
-	console.log("-------------------------");
+	// console.log("-------------------------");
+	// console.log("plane.children-----------");
+	// console.log(plane.children);
+	// console.log("-------------------------");
 
 	return plane.children;
 }
@@ -761,10 +774,14 @@ function makeAnnotation(link, contentHTML, positionX, positionY) {
 	annoDiv.style.display = "none"; //block
 	annoDiv.style.top = `${positionY}px`;
     annoDiv.style.left = `${positionX}px`;
-	// gui.add(annoDiv.style, "display");
-	// gui.add(annoDiv.style, "top");
-	// gui.add(annoDiv.style, "left");
+	guiFolderAnnotations.add(annoDiv, "hidden").listen();
+	guiFolderAnnotations.add(annoDiv.style, "display").listen();
+	guiFolderAnnotations.add(annoDiv.style, "top").listen();
+	guiFolderAnnotations.add(annoDiv.style, "left").listen();
 	document.body.appendChild( annoDiv );
+
+	// Make the DIV element draggable
+	dragElement(annoDiv);
 
 	let cssObject = new THREE.CSS3DObject( annoDiv );
 	// trying to do stuff to a cssObject does nothing :(
@@ -1136,21 +1153,21 @@ function onPointerUp(event) {
 					infospotObject.visible = true;
 				}
 			}
-			console.log("------------------");
-			console.log("infospotObject----");
-			console.log(infospotObject);
-			console.log("------------------");
+			// console.log("------------------");
+			// console.log("infospotObject----");
+			// console.log(infospotObject);
+			// console.log("------------------");
 		}
 
 		// show/hide annotations
 		INTERSECTED2.children.forEach( function(key) {
-			console.log("--------------------------------------");
-			console.log("key (pre-process)------");
-			console.log(`key.type: ${key.type}`);
-			console.log(`key.visible: ${key.visible}`);
-			console.log(`key.element.hidden: ${key.element.hidden}`);
-			console.log(key);
-			console.log("--------------------------------------");
+			// console.log("--------------------------------------");
+			// console.log("key (pre-process)------");
+			// console.log(`key.type: ${key.type}`);
+			// console.log(`key.visible: ${key.visible}`);
+			// console.log(`key.element.hidden: ${key.element.hidden}`);
+			// console.log(key);
+			// console.log("--------------------------------------");
 			// if ( key.type === "Sprite" && event.button == 1 ) {
 			// 	if (key.visible === true) {
 			// 		key.visible = false;
@@ -1179,13 +1196,13 @@ function onPointerUp(event) {
 					key.element.style.display = "none";
 					key.visible = false; // does nothing, but keeps status accurate
 				}
-				console.log("--------------------------------------");
-				console.log("key (post-process)------");
-				console.log(`key.type: ${key.type}`);
-				console.log(`key.visible: ${key.visible}`);
-				console.log(`key.element.hidden: ${key.element.hidden}`);
-				console.log(key);
-				console.log("--------------------------------------");
+				// console.log("--------------------------------------");
+				// console.log("key (post-process)------");
+				// console.log(`key.type: ${key.type}`);
+				// console.log(`key.visible: ${key.visible}`);
+				// console.log(`key.element.hidden: ${key.element.hidden}`);
+				// console.log(key);
+				// console.log("--------------------------------------");
 			}
 		});
 
@@ -1371,6 +1388,7 @@ $(window).on("load", function() {
 	 */
 	let garden = init();
 	// console.log("-------------------------");
+	// console.log("garden init--------------");
 	// console.log(garden);
 	// console.log("-------------------------");
 
@@ -1384,6 +1402,7 @@ $(window).on("load", function() {
 
 
 function dismiss(el) {
+	el.parentNode.hidden = true;
 	el.parentNode.style.display = 'none';
 };
 
@@ -1393,6 +1412,69 @@ function stringToBoolean(string) {
         case "false": case "no": case "0": case null: return false;
         default: return Boolean(string);
     }
+}
+
+
+function dragElement(elmnt) {
+
+	// console.log("-------------------------");
+	// console.log("elmnt--------------");
+	// console.log(elmnt);
+	// console.log("-------------------------");
+
+	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+	
+	if (document.getElementById(elmnt.id + "header")) {
+		// if present, the header is where you move the DIV from:
+		document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+	} else {
+		// otherwise, move the DIV from anywhere inside the DIV:
+		elmnt.onmousedown = dragMouseDown;
+	}
+
+	function dragMouseDown(e) {
+		e = e || window.event;
+		e.preventDefault();
+		// get the mouse cursor position at startup:
+		pos3 = e.clientX;
+		pos4 = e.clientY;
+
+		// console.log("-------------------------");
+		// console.log("pos3, pos4---------------");
+		// console.log(pos3, pos4);
+		// console.log("-------------------------");
+
+		document.onmouseup = closeDragElement;
+		// call a function whenever the cursor moves:
+		document.onmousemove = elementDrag;
+	}
+	
+	function elementDrag(e) {
+		e = e || window.event;
+		e.preventDefault();
+		// calculate the new cursor position:
+		pos1 = pos3 - e.clientX;
+		pos2 = pos4 - e.clientY;
+		pos3 = e.clientX;
+		pos4 = e.clientY;
+
+		// console.log("-------------------------");
+		// console.log("pos1, pos2, pos3, pos4---");
+		// console.log(pos1, pos2, pos3, pos4);
+		// console.log("-------------------------");
+
+		// set the element's new position:
+		// elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+		// elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+		elmnt.style.top = (pos4) + "px";
+		elmnt.style.left = (pos3) + "px";
+	}
+	
+	function closeDragElement() {
+		// stop moving when mouse button is released:
+		document.onmouseup = null;
+		document.onmousemove = null;
+	}
 }
 
 
