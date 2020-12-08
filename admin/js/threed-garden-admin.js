@@ -228,7 +228,7 @@ function init() {
 		// plane.rotation.x += 0.002;
 		// plane.rotation.y += 0.002;
 		if ( params.ANIMATE ) {
-			plane.rotation.z += 0.002;
+			plane.rotation.z += 0.001;
 		}
 		renderer.render(scene, camera);
 		// infospot annotations
