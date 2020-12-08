@@ -188,7 +188,8 @@ function init() {
 		.append(renderer.domElement);
 	//canvas = renderer.domElement;
 
-	/** QUERY FOR BOXES ****************************************************************** */
+	
+	/** QUERY FOR ALLOTMENTS *************************************************************** */
 
 	let queryURLAllotments = `${restURL}allotment/?_embed&per_page=100`;
 	fetch( queryURLAllotments )
@@ -686,9 +687,9 @@ function makeInfospotSphere(message, positionX, positionY, positionZ, postID, co
 	structure.userData.description = "infospot";
 	structure.userData.annotation = contentHTML;
 	structure.userData.link = link;
-	structure.position.x = positionX;
-	structure.position.y = positionY;
-	structure.position.z = positionZ;
+	// structure.position.x = positionX;
+	// structure.position.y = positionY;
+	// structure.position.z = positionZ;
 	structure.position.set(positionX, positionY, positionZ);
 	//structure.rotation.x = -Math.PI / 2; // -90 degrees in radians
 	//structure.scale.set(2, 2, 2);
@@ -1115,6 +1116,25 @@ function onPointerUp(event) {
 		// console.log(event.target.controls);
 		// console.log("------------------");
 
+		// show/hide infospheres
+		if ( INTERSECTED2.type === "Mesh" && event.button == 0 ) {
+
+			let infospotObject = scene.getObjectByName( `INFOSPOT: ${INTERSECTED2.name}` ); // , true for recursive
+			if ( infospotObject ) {
+				if (infospotObject.visible === true) {
+					infospotObject.visible = false;
+				}
+				else {
+					infospotObject.visible = true;
+				}
+			}
+			console.log("------------------");
+			console.log("infospotObject----");
+			console.log(infospotObject);
+			console.log("------------------");
+		}
+
+		// show/hide annotations
 		INTERSECTED2.children.forEach( function(key) {
 			console.log("--------------------------------------");
 			console.log("key (pre-process)------");
