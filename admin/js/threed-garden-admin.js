@@ -725,7 +725,7 @@ function makeInfospotSphere(message, positionX, positionY, positionZ, postID, co
 		annoPosLeft
 	)
 	annotation.name = `ANNOTATION: ${structure.name}`;
-	//annotation.visible = false; // does nothing
+	annotation.visible = false; // does nothing, but keeps status accurate
 
 	// console.log("-------------------------");
 	// console.log("annotation---------------------");
@@ -748,6 +748,7 @@ function makeAnnotation(link, contentHTML, positionX, positionY) {
 		(${positionX}, ${positionY})
 		<span class="dismiss" onclick="dismiss(this);">x</span>
 	`;
+	annoDiv.hidden = true;
 	annoDiv.style.display = "none"; //block
 	annoDiv.style.top = `${positionY}px`;
     annoDiv.style.left = `${positionX}px`;
@@ -924,7 +925,8 @@ function watchPointer(camera, targetList){
 					for (let i = 0; i < INTERSECTED1.material.length; i++) {
 						INTERSECTED1.material[i].color.setHex( INTERSECTED1.currentHex );
 					}
-				} else {
+				} 
+				else {
 					INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
 				}
 			}
@@ -948,7 +950,8 @@ function watchPointer(camera, targetList){
 					INTERSECTED1.material[i].color.setHex( 0xdddd00 );
 				}
 				// SEPARATE FOR LOOPS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			} else {
+			} 
+			else {
 				// store color of closest object (for later restoration)
 				INTERSECTED1.currentHex = INTERSECTED1.material.color.getHex();
 				// set a new color for closest object
@@ -965,7 +968,8 @@ function watchPointer(camera, targetList){
 				for (let i = 0; i < INTERSECTED1.material.length; i++) {
 					INTERSECTED1.material[i].color.setHex( INTERSECTED1.currentHex );
 				}
-			} else {
+			} 
+			else {
 				INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
 			}
 		}
@@ -1061,36 +1065,45 @@ function onPointerUp(event) {
 
 		// if the closest object intersected is not the currently stored intersection object
 		let intersectedObject = intersects[0].object;
-		if ( intersectedObject != INTERSECTED2 ) 
-		{
-			console.log("------------------");
-			console.log("INTERSECTED2 null------------");
-			console.log("intersectedObject NEW--------");
-			console.log(intersectedObject);
-			console.log("------------------");
-		}
-		else
-		{
-			console.log("------------------");
-			console.log("INTERSECTED2 already stored--");
-			console.log("intersectedObject------------");
-			console.log(intersectedObject);
-			console.log("------------------");
-		}
+		
+		// var copiedObject = jQuery.extend(true, {}, intersects[0].object.children[0]);
+		// if ( copiedObject != INTERSECTED2 ) 
+		// {
+		// 	console.log("------------------");
+		// 	console.log("INTERSECTED2 null------------");
+		// 	console.log("intersectedObject NEW--------");
+		// 	console.log(intersectedObject);
+		// 	console.log(intersectedObject.children[0].visible);
+		// 	console.log("copiedObject NEW--------");
+		// 	console.log(copiedObject);
+		// 	console.log(copiedObject.visible);
+		// 	console.log("------------------");
+		// }
+		// else
+		// {
+		// 	console.log("------------------");
+		// 	console.log("INTERSECTED2 already stored--");
+		// 	console.log("intersectedObject --------");
+		// 	console.log(intersectedObject);
+		// 	console.log(intersectedObject.children[0].visible);
+		// 	console.log("copiedObject------------");
+		// 	console.log(copiedObject);
+		// 	console.log(copiedObject.visible);
+		// 	console.log("------------------");
+		// }
 
 		// restore previous intersection object (if it exists) to its original color
 		if ( INTERSECTED2 ) {
 			//INTERSECTED2.material[i].color.setHex( INTERSECTED2.currentHex );
-			INTERSECTED2 = intersectedObject;
 			// zoom out
 			//panCam(100, 200, 200, 800, event.target.camera, event.target.controls);
-		} else {
-			INTERSECTED2 = intersectedObject;
+		} 
+		else {
 			// zoom in
 			//panCam(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z, 800, event.target.camera, event.target.controls);	
 		}
 		// store reference to closest object as current intersection object
-		//INTERSECTED2 = intersectedObject;
+		INTERSECTED2 = intersectedObject;
 		// store color of closest object (for later restoration)
 		//INTERSECTED2.currentHex = INTERSECTED2.material.color.getHex();
 		// set a new color for closest object
@@ -1112,27 +1125,37 @@ function onPointerUp(event) {
 		// console.log(event.target.controls);
 		// console.log("------------------");
 
-		intersectedObject.children.forEach( function(key) {
+		INTERSECTED2.children.forEach( function(key) {
 			// console.log("-------------------------");
 			// console.log("key.type (intersectedObject.children)------");
 			// console.log(key.type);
+			// console.log(key.visible);
 			// console.log(key);
 			// console.log("-------------------------");
-			if (key.type === "Sprite" && event.button == 1) {
-				if (key.visible === true) {
-					key.visible = false;
-				}
-				else {
-					key.visible = true;
-				}
-			}
+			// if ( key.type === "Sprite" && event.button == 1 ) {
+			// 	if (key.visible === true) {
+			// 		key.visible = false;
+			// 	}
+			// 	else {
+			// 		key.visible = true;
+			// 	}
+			// }
 			if ( key.type === "Object3D" && event.button == 0 ) {
 				if (key.element.hidden === true) {
+				//if (key.visible == false) {
+					// console.log("-------------------------");
+					// console.log("TRUE------");
+					// console.log(key.element.hidden);
+					// console.log("-------------------------");
 					key.element.hidden = false;
 					key.element.style.display = "block";
 					key.visible = true; // does nothing, but keeps status accurate
 				}
 				else {
+					// console.log("-------------------------");
+					// console.log("FALSE------");
+					// console.log(key.element.hidden);
+					// console.log("-------------------------");
 					key.element.hidden = true;
 					key.element.style.display = "none";
 					key.visible = false; // does nothing, but keeps status accurate
@@ -1141,16 +1164,16 @@ function onPointerUp(event) {
 		});
 
 		// 
-		if ( intersectedObject.userData.annotation ) {
+		if ( INTERSECTED2.userData.annotation ) {
 			console.log("------------------");
 			console.log("ANNOTATION ------------");
-			console.log(intersectedObject.userData.annotation);
+			console.log(INTERSECTED2.userData.annotation);
 			console.log("------------------");
 		}
 		else {
 			console.log("------------------");
 			console.log("ANNOTATION? ------------");
-			console.log(intersectedObject.userData);
+			console.log(INTERSECTED2.userData);
 			console.log("------------------");
 		}
 
@@ -1226,7 +1249,8 @@ function getTaxonomies( postObject, isCat ) {
 	let taxArray;
 	if ( isCat ) {
 		taxArray = postObject._embedded['wp:term'][0];
-	} else {
+	} 
+	else {
 		taxArray = postObject._embedded['wp:term'][1];
 	}
 	for ( let term of taxArray ) {
@@ -1248,7 +1272,8 @@ function getFeaturedImage( postObject ) {
 	// If there is no featured image, exit the function returning blank.
 	if ( 0 === postObject.featured_media ) {
 		return featImage;
-	} else {
+	} 
+	else {
 		featImage.featuredObject = postObject._embedded['wp:featuredmedia'][0];
 		featImage.imgUrl = featImage.featuredObject.source_url;
 		featImage.imgMediumUrl = '';
@@ -1335,6 +1360,13 @@ function dismiss(el) {
 	el.parentNode.style.display = 'none';
 };
 
+function stringToBoolean(string) {
+    switch(string.toString().toLowerCase().trim()){
+        case "true": case "yes": case "1": return true;
+        case "false": case "no": case "0": case null: return false;
+        default: return Boolean(string);
+    }
+}
 
 
 
