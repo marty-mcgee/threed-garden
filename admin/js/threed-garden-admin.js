@@ -739,13 +739,13 @@ function makeInfospotSphere(message, positionX, positionY, positionZ, postID, co
 
 function makeAnnotation(link, contentHTML, positionX, positionY) {
 
-	//let annoDiv = document.createElement('div');
-	let annoDiv = $(".annotation")[0];
-	annoDiv = annoDiv.cloneNode();
-	document.body.appendChild( annoDiv );
-	// annoDiv.classList.add("annotation");
+	//let annoDiv = $(".annotation")[0];
+	//annoDiv = annoDiv.cloneNode();
+	let annoDiv = document.createElement('div');
+	annoDiv.classList.add("annotation");
 	annoDiv.innerHTML = `
-		<a href="${link}" target="_blank">${contentHTML}</a> (${positionX}, ${positionY}) 
+		<a href="${link}" target="_blank">${contentHTML}</a>
+		(${positionX}, ${positionY})
 		<span class="dismiss" onclick="dismiss(this);">x</span>
 	`;
 	annoDiv.style.display = "none"; //block
@@ -754,6 +754,7 @@ function makeAnnotation(link, contentHTML, positionX, positionY) {
 	// gui.add(annoDiv.style, "display");
 	// gui.add(annoDiv.style, "top");
 	// gui.add(annoDiv.style, "left");
+	document.body.appendChild( annoDiv );
 
 	let cssObject = new THREE.CSS3DObject( annoDiv );
 	// trying to do stuff to a cssObject does nothing :(
