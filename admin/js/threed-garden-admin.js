@@ -744,7 +744,10 @@ function makeAnnotation(link, contentHTML, positionX, positionY) {
 	annoDiv = annoDiv.cloneNode();
 	document.body.appendChild( annoDiv );
 	// annoDiv.classList.add("annotation");
-	annoDiv.innerHTML = `<a href="${link}" target="_blank">${contentHTML}</a> (${positionX}, ${positionY})`;
+	annoDiv.innerHTML = `
+		<a href="${link}" target="_blank">${contentHTML}</a> (${positionX}, ${positionY}) 
+		<span class="dismiss" onclick="dismiss(this);">x</span>
+	`;
 	annoDiv.style.display = "none"; //block
 	annoDiv.style.top = `${positionY}px`;
     annoDiv.style.left = `${positionX}px`;
@@ -1326,6 +1329,10 @@ $(window).on("load", function() {
 
 
 
+
+function dismiss(el) {
+	el.parentNode.style.display = 'none';
+};
 
 
 
