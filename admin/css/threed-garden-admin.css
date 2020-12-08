@@ -53,7 +53,7 @@
     } */
 }
 
-#number {
-    position: absolute;
-    z-index: -1;
+.dismiss {
+    cursor: pointer;
+    margin-left: 5px;
 }
