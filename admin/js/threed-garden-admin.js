@@ -20,14 +20,14 @@ let gui;
 	gui = new dat.GUI({ autoPlace: true, closeOnTop: true });
 	gui.close();
 	gui.domElement.id = 'gui';
-	let guiFolderAnimation = gui.addFolder("Animation");
-	let guiFolderRotation = gui.addFolder("Rotation");
+	let guiFolderRotation = gui.addFolder("Rotation + Animation");
+	//let guiFolderAnimation = guiFolderRotation.addFolder("Animation");
 	let guiFolderCameras = gui.addFolder("Camera Position");
 	let guiFolderLights = gui.addFolder("Directional Light");
 	let guiFolderAllotments = gui.addFolder("Allotments");
 	let guiFolderBeds = gui.addFolder("Beds");
 	let guiFolderPlants = gui.addFolder("Plants");
-	let guiFolderInfospots = gui.addFolder("Infospots");
+	//let guiFolderInfospots = gui.addFolder("Infospots");
 	let guiFolderAnnotations = gui.addFolder("Annotations");
 let renderer;
 let canvasParent;
@@ -37,7 +37,7 @@ const loader = new THREE.TextureLoader();
 let params = {
     ANIMATE: true
 };
-guiFolderAnimation.add(params, "ANIMATE").name("Run Animation").listen();
+guiFolderRotation.add(params, "ANIMATE").name("Run Animation").listen();
 
 /** POINTER HOVERS + CLICKS */
 const raycaster = new THREE.Raycaster();
@@ -498,7 +498,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		infospot.name = `INFOSPOT: ${structure.name}`;
 		infospot.visible = true;
 
-		guiFolderInfospots.add(infospot, "visible");
+		guiFolderAllotments.add(infospot, "visible").name("InfoSphere").listen();
 
 		plane.add(infospot);
 
@@ -615,7 +615,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			infospot.name = `INFOSPOT: ${structure.name}`;
 			infospot.visible = false;
 
-			guiFolderBeds.add(infospot, "visible");
+			guiFolderBeds.add(infospot, "visible").name("InfoSphere").listen();
 
 			plane.add(infospot);
 		
