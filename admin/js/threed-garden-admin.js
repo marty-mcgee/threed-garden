@@ -1066,31 +1066,21 @@ function onPointerUp(event) {
 		// if the closest object intersected is not the currently stored intersection object
 		let intersectedObject = intersects[0].object;
 		
-		// var copiedObject = jQuery.extend(true, {}, intersects[0].object.children[0]);
-		// if ( copiedObject != INTERSECTED2 ) 
-		// {
-		// 	console.log("------------------");
-		// 	console.log("INTERSECTED2 null------------");
-		// 	console.log("intersectedObject NEW--------");
-		// 	console.log(intersectedObject);
-		// 	console.log(intersectedObject.children[0].visible);
-		// 	console.log("copiedObject NEW--------");
-		// 	console.log(copiedObject);
-		// 	console.log(copiedObject.visible);
-		// 	console.log("------------------");
-		// }
-		// else
-		// {
-		// 	console.log("------------------");
-		// 	console.log("INTERSECTED2 already stored--");
-		// 	console.log("intersectedObject --------");
-		// 	console.log(intersectedObject);
-		// 	console.log(intersectedObject.children[0].visible);
-		// 	console.log("copiedObject------------");
-		// 	console.log(copiedObject);
-		// 	console.log(copiedObject.visible);
-		// 	console.log("------------------");
-		// }
+		// for testing only
+		if ( intersectedObject != INTERSECTED2 ) {
+			console.log("-----------------------------");
+			console.log("INTERSECTED2 null------------");
+			console.log("intersectedObject NEW--------");
+			console.log(intersectedObject);
+			console.log("-----------------------------");
+		}
+		else {
+			console.log("-----------------------------");
+			console.log("INTERSECTED2 already stored--");
+			console.log("intersectedObject -----------");
+			console.log(intersectedObject);
+			console.log("-----------------------------");
+		}
 
 		// restore previous intersection object (if it exists) to its original color
 		if ( INTERSECTED2 ) {
@@ -1126,12 +1116,13 @@ function onPointerUp(event) {
 		// console.log("------------------");
 
 		INTERSECTED2.children.forEach( function(key) {
-			// console.log("-------------------------");
-			// console.log("key.type (intersectedObject.children)------");
-			// console.log(key.type);
-			// console.log(key.visible);
-			// console.log(key);
-			// console.log("-------------------------");
+			console.log("--------------------------------------");
+			console.log("key (pre-process)------");
+			console.log(`key.type: ${key.type}`);
+			console.log(`key.visible: ${key.visible}`);
+			console.log(`key.element.hidden: ${key.element.hidden}`);
+			console.log(key);
+			console.log("--------------------------------------");
 			// if ( key.type === "Sprite" && event.button == 1 ) {
 			// 	if (key.visible === true) {
 			// 		key.visible = false;
@@ -1160,10 +1151,17 @@ function onPointerUp(event) {
 					key.element.style.display = "none";
 					key.visible = false; // does nothing, but keeps status accurate
 				}
+				console.log("--------------------------------------");
+				console.log("key (post-process)------");
+				console.log(`key.type: ${key.type}`);
+				console.log(`key.visible: ${key.visible}`);
+				console.log(`key.element.hidden: ${key.element.hidden}`);
+				console.log(key);
+				console.log("--------------------------------------");
 			}
 		});
 
-		// 
+		/* 
 		if ( INTERSECTED2.userData.annotation ) {
 			console.log("------------------");
 			console.log("ANNOTATION ------------");
@@ -1176,6 +1174,7 @@ function onPointerUp(event) {
 			console.log(INTERSECTED2.userData);
 			console.log("------------------");
 		}
+		*/
 
 	} 
 	else // there are no intersections
