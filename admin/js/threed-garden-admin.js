@@ -698,7 +698,7 @@ function makeInfospotSphere(message, positionX, positionY, positionZ, postID, co
 	 * ANNOTATION ****************************************************************** 
 	 */
 	//
-	let vector = new THREE.Vector3(structure.position.x, structure.position.y, 0); //structure.position.z
+	let vector = new THREE.Vector3(structure.position.x, structure.position.y, 0); //camera.position.z //structure.position.z
 	// camera.updateProjectionMatrix();
 	// camera.updateMatrixWorld();
 	// let vector = new THREE.Vector3();
