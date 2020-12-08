@@ -422,6 +422,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 			allotment.color
 		);
 		structure.name = allotment.title;
+		structure.userData.type = "structure";
 		structure.userData.postID = allotment.postID;
 		structure.userData.description = allotment.description;
 		structure.userData.annotation = allotment.title;
@@ -553,6 +554,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 				bed.color
 			);
 			structure.name = bed.title;
+			structure.userData.type = "structure";
 			structure.userData.postID = bed.postID;
 			structure.userData.description = bed.description;
 			structure.userData.annotation = bed.title;
@@ -683,8 +685,9 @@ function makeInfospotSphere(message, positionX, positionY, positionZ, postID, co
 		0x2e3959
 	);	
 	structure.name = message;
+	structure.userData.type = "infospot";
 	structure.userData.postID = postID;
-	structure.userData.description = "infospot";
+	structure.userData.description = "";
 	structure.userData.annotation = contentHTML;
 	structure.userData.link = link;
 	// structure.position.x = positionX;
@@ -726,6 +729,11 @@ function makeInfospotSphere(message, positionX, positionY, positionZ, postID, co
 		annoPosLeft
 	)
 	annotation.name = `ANNOTATION: ${structure.name}`;
+	annotation.userData.type = "annotation";
+	annotation.userData.postID = postID;
+	annotation.userData.description = "";
+	annotation.userData.annotation = structure.name;
+	annotation.userData.link = link;
 	annotation.visible = false; // does nothing, but keeps status accurate
 
 	// console.log("-------------------------");
@@ -1117,7 +1125,7 @@ function onPointerUp(event) {
 		// console.log("------------------");
 
 		// show/hide infospheres
-		if ( INTERSECTED2.type === "Mesh" && event.button == 0 ) {
+		if ( INTERSECTED2.userData.type === "structure" && event.button == 0 ) {
 
 			let infospotObject = scene.getObjectByName( `INFOSPOT: ${INTERSECTED2.name}` ); // , true for recursive
 			if ( infospotObject ) {
