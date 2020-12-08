@@ -37,7 +37,7 @@ const loader = new THREE.TextureLoader();
 let params = {
     ANIMATE: true
 };
-guiFolderAnimation.add(params, "ANIMATE").listen();
+guiFolderAnimation.add(params, "ANIMATE").name("Run Animation").listen();
 
 /** POINTER HOVERS + CLICKS */
 const raycaster = new THREE.Raycaster();
