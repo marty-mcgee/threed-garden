@@ -498,7 +498,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		infospot.name = `INFOSPOT: ${structure.name}`;
 		infospot.visible = true;
 
-		guiFolderAllotments.add(infospot, "visible").name("Show InfoSphere").listen();
+		guiFolderAllotments.add(infospot, "visible").name("InfoSphere").listen();
 
 		plane.add(infospot);
 
@@ -615,7 +615,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			infospot.name = `INFOSPOT: ${structure.name}`;
 			infospot.visible = false;
 
-			guiFolderBeds.add(infospot, "visible").name("Show InfoSpot").listen();
+			guiFolderBeds.add(infospot, "visible").name("InfoSphere").listen();
 
 			plane.add(infospot);
 		
