@@ -124,6 +124,8 @@ class ThreeD_Garden_Admin {
 					'plugin_url' => plugin_dir_url(__FILE__),
 					'theme_uri' => get_stylesheet_directory_uri(),
 					'rest_url' => rest_url('wp/v2/'),
+					'world_id' => 1,
+					'scene_id' => 1
 				)
 			);
 
