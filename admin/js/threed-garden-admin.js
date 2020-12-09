@@ -46,19 +46,32 @@ const pointer = new THREE.Vector2();
 let INTERSECTED1;
 let INTERSECTED2;
 
+/** 
+ * BEGIN 
+ * ************************************************************************************** */
+window.onload = function(e){ 
 
-/** JQUERY ************************************************************************************ */
-(function( $ ) {
-'use strict';
+	/** QUERY FOR SCENES **************************************************************** */
 
-var currentMousePos = { x: -1, y: -1 };
-$(document).mousemove(function(event) {
-	currentMousePos.x = event.pageX;
-	currentMousePos.y = event.pageY;
-});
+	let queryURLScenes = `${restURL}scene/?_embed&per_page=100`;
+	fetch( queryURLScenes )
+		.then( response => response.json() )
+		/**
+		 * init main constructor
+		 */
+		.then( postObject => init(postObject) );
 
-/** MAIN INIT */
-function init() {
+}
+
+/** 
+ * MAIN INIT 
+ */
+function init(postObject) {
+
+	console.log("-----------------------");
+	console.log("postObject-------------");
+	console.log(postObject);
+	console.log("-----------------------");
 
 	/** THREE JS SCENE ******************************************************************* */
 
@@ -192,14 +205,8 @@ function init() {
 
 	/** WEBGL CANVAS *********************************************************************** */
 
-	//document.getElementById('webgl').appendChild(renderer.domElement);
-	//$( "#webgl" ).append(renderer.domElement);
-	canvasParent = $("#webgl");
-	canvasParent.css("border","0px solid black")
-		.append(gui.domElement)
-		.append(renderer.domElement);
-	//canvas = renderer.domElement;
-
+	document.querySelector('#webgl').append(gui.domElement);
+	document.querySelector('#webgl').append(renderer.domElement);
 	
 	/** QUERY FOR ALLOTMENTS *************************************************************** */
 
@@ -638,8 +645,8 @@ function makeInfospotSprite(message, positionX, positionY, positionZ) {
 	/**
 	 * infospot
 	 */
-	let infospotCanvas = $("#infospot"); //document.querySelector("#infospot")
-	let ctx = infospotCanvas[0].getContext("2d");
+	let infospotCanvas = document.querySelector("#infospot")
+	let ctx = infospotCanvas.getContext("2d");
 	let x = 32;
 	let y = 32;
 	let radius = 30;
@@ -762,8 +769,6 @@ function makeInfospotSphere(message, positionX, positionY, positionZ, postID, co
 
 function makeAnnotation(link, contentHTML, positionX, positionY) {
 
-	//let annoDiv = $(".annotation")[0];
-	//annoDiv = annoDiv.cloneNode();
 	let annoDiv = document.createElement('div');
 	annoDiv.classList.add("annotation");
 	annoDiv.innerHTML = `
@@ -1374,32 +1379,6 @@ function buildNewPost( postObject ) {
 
 	//getPreviousPost();
 }
-
-
-
-
-/** ************************************************************************************* */
-/**
- * run app on window load, when everything is ready
- */
-$(window).on("load", function() {
-
-	/**
-	 * init
-	 */
-	let garden = init();
-	// console.log("-------------------------");
-	// console.log("garden init--------------");
-	// console.log(garden);
-	// console.log("-------------------------");
-
-});
-/** ************************************************************************************* */
-})( jQuery );
-/** ************************************************************************************* */
-
-
-
 
 
 function dismiss(el) {

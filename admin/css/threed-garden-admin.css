@@ -3,12 +3,15 @@
  * included in this file.
  */
 
- /* ThreeDGarden - Custom Admin Styles */
+/* ThreeDGarden - Custom Admin Styles */
 
 /** 3D GARDEN */
 .planting_plan_bed_plant_schedule { background-color: #999999; }
 .planting_plan_bed   { background-color: #330000; }
 .planting_plan_plant { background-color: #003300; }
+
+/** WEBGL */
+#webgl { width: 100%; height: 100%; }
 
 /** DAT.GUI */
 #gui { position: absolute; right: 5px; }
