@@ -116,7 +116,11 @@ function init(postObject) {
 
 	/** GEOMETRIES *********************************************************************** */
 	
-	let plane = getPlane(200, 200, wpScene.acf.scene_plane_background_color);
+	let plane = getPlane(
+		wpScene.acf.scene_plane_width_x, 
+		wpScene.acf.scene_plane_length_y, 
+		wpScene.acf.scene_plane_background_color
+	);
 	plane.name = "plane-jane";
 	plane.rotation.x = -Math.PI / 2; // -90 degrees in radians
 	//plane.position.z = 10;
@@ -127,7 +131,7 @@ function init(postObject) {
 
 	/** TEXTURES ************************************************************************* */
 
-	if ( postObject[0].acf.scene_plane_texture_image ) {
+	if ( wpScene.acf.scene_plane_texture_image ) {
 		plane.material.roughness = 0.0;
 		//plane.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big.jpg');
 		plane.material.map = loader.load(wpScene.acf.scene_plane_texture_image);
@@ -208,7 +212,7 @@ function init(postObject) {
 	renderer.domElement.targetList = plane.children;
 	
 	renderer.domElement.addEventListener("pointermove", onPointerMove, false);
-	renderer.domElement.addEventListener("pointerup", onPointerUp, false);
+	renderer.domElement.addEventListener("pointerdown", onPointerDown, false);
 	
 	/** CONTROLS ************************************************************************** */
 		controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -1057,8 +1061,8 @@ function onPointerMove( event ) {
 }
 
 // when the pointer moves, call the given function
-//document.addEventListener( 'pointerup', onPointerUp, false );
-function onPointerUp(event) {
+//document.addEventListener( 'pointerdown', onPointerDown, false );
+function onPointerDown(event) {
 	
 	// console.log("------------------");
 	// console.log("event------------");
