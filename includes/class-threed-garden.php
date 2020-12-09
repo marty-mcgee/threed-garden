@@ -164,6 +164,7 @@ class ThreeD_Garden {
 
 		// custom post types + taxonomies
 		$this->loader->add_action( 'init', $plugin_admin, 'scenes_init' );
+		$this->loader->add_filter( 'post_updated_messages', $plugin_admin, 'scene_updated_messages' );
 		$this->loader->add_action( 'init', $plugin_admin, 'allotments_init' );
 		$this->loader->add_action( 'init', $plugin_admin, 'allotment_taxonomies' );
 		$this->loader->add_filter( 'post_updated_messages', $plugin_admin, 'allotment_updated_messages' );
