@@ -149,6 +149,15 @@ class ThreeD_Garden_Admin {
 			);
 		add_submenu_page(
 			'threedgarden', 
+			'Scenes', 
+			'Scenes', 
+			'manage_options', 
+			'edit.php?post_type=scene',
+			'',
+			null
+		);
+		add_submenu_page(
+			'threedgarden', 
 			'Allotments', 
 			'Allotments', 
 			'manage_options', 
@@ -282,36 +291,61 @@ class ThreeD_Garden_Admin {
      * set current menu based on url
      */
     public function set_current_menu( $parent_file ) {
+		// Global object containing current admin page
 		global $submenu_file, $current_screen, $pagenow;
 		
-        if ( $pagenow == 'edit-tags.php' ) {
+        if ( $pagenow == 'edit-tags.php' || $pagenow == 'term.php' ) {
             if ( isset( $_GET['taxonomy'] ) ) {
-				if ( $_GET['taxonomy'] == 'plant_type' || 
-					 $_GET['taxonomy'] == 'plant_season' || 
-					 $_GET['taxonomy'] == 'allotment_type' || 
+				if ( $_GET['taxonomy'] == 'allotment_type' || 
 					 $_GET['taxonomy'] == 'allotment_season' || 
 					 $_GET['taxonomy'] == 'bed_type' || 
 					 $_GET['taxonomy'] == 'bed_soil' || 
+					 $_GET['taxonomy'] == 'plant_type' || 
+					 $_GET['taxonomy'] == 'plant_season' || 
 					 $_GET['taxonomy'] == 'planting_plan_type' || 
-					 $_GET['taxonomy'] == 'planting_plan_soil') {
+					 $_GET['taxonomy'] == 'planting_plan_soil'
+				) {
                     $submenu_file = 'edit-tags.php?taxonomy=' . $_GET['taxonomy'] . '&post_type=' . $current_screen->post_type;
                     $parent_file = 'threedgarden';
                 }
-            
             }
         }
-        if ( $pagenow == 'post-new.php' ) {
+		
+		if ( $pagenow == 'post-new.php' ) {
             if ( isset( $_GET['post_type'] ) ) {
-				if ( $_GET['post_type'] == 'plant' || 
+				if ( $_GET['post_type'] == 'scene' || 
 					 $_GET['post_type'] == 'allotment' || 
 					 $_GET['post_type'] == 'bed' || 
-					 $_GET['post_type'] == 'planting_plan' ) {
+					 $_GET['post_type'] == 'plant' || 
+					 $_GET['post_type'] == 'planting_plan' 
+				) {
                     $submenu_file = 'edit.php?post_type=' . $current_screen->post_type;
                     $parent_file = 'threedgarden';
                 }
-            
             }
-        }
+		}
+
+		// If current page is post.php and post isset than query for its post type 
+		if ( $pagenow == 'post.php' ) {
+			if ( isset($_GET['post']) ) {
+				$thisPostType = get_post_type($_GET['post']);
+				if ( $thisPostType == 'scene' || 
+					 $thisPostType == 'allotment' || 
+					 $thisPostType == 'bed' || 
+					 $thisPostType == 'plant' || 
+					 $thisPostType == 'planting_plan'
+				) {
+                    $submenu_file = 'edit.php?post_type=' . $current_screen->post_type;
+					$parent_file = 'threedgarden';
+					
+					// For example, Do something with $post_id. 
+					//    you can get the full post object:
+					//$post_id = $_GET['post'];
+					//$post = get_post($post_id);
+				}
+			}
+		}
+
         return $parent_file;
     }
 
@@ -331,12 +365,6 @@ class ThreeD_Garden_Admin {
 		<div class="wrap">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 			<div id="webgl"></div>
-
-			<canvas id="infospot" width="64" height="64" style="display: none;"></canvas>
-			<div class="annotation" style="display: none;">
-				<p><strong>Cube</strong></p>
-				<p>In geometry, a cube is a three-dimensional solid object bounded by six square faces, facets or sides, with three meeting at each vertex.</p>
-			</div>
 		</div>
 	<?php
 	}
@@ -381,11 +409,6 @@ class ThreeD_Garden_Admin {
 		?>
 		<div class='wrap'>
 			<h2>ABOUT PAGE</h2>
-			<div class="annotation">
-				<p><strong>Cube</strong></p>
-				<p>In geometry, a cube is a three-dimensional solid object bounded by six square faces, facets or sides, with three meeting at each vertex.</p>
-			</div>
-			<canvas id="number" width="64" height="64"></canvas>
 		</div>
 		<?php
 	}
@@ -1017,6 +1040,100 @@ class ThreeD_Garden_Admin {
 
 		return $messages;
 	}
+
+	/**
+	 * Register a post type for "scenes"
+	 *
+	 * @link http://codex.wordpress.org/Function_Reference/register_post_type
+	 */
+	public function scenes_init() {
+		$labels = array(
+			'name'               => _x( 'Scenes', 'post type general name', 'threedgarden' ),
+			'singular_name'      => _x( 'Scene', 'post type singular name', 'threedgarden' ),
+			'menu_name'          => _x( 'Scenes', 'admin menu', 'threedgarden' ),
+			'name_admin_bar'     => _x( 'Scene', 'add new on admin bar', 'threedgarden' ),
+			'add_new'            => _x( 'Add New', 'scene', 'threedgarden' ),
+			'add_new_item'       => __( 'Add New Scene', 'threedgarden' ),
+			'new_item'           => __( 'New Scene', 'threedgarden' ),
+			'edit_item'          => __( 'Edit Scene', 'threedgarden' ),
+			'view_item'          => __( 'View Scene', 'threedgarden' ),
+			'all_items'          => __( 'All Scenes', 'threedgarden' ),
+			'search_items'       => __( 'Search Scenes', 'threedgarden' ),
+			'parent_item_colon'  => __( 'Parent Scenes:', 'threedgarden' ),
+			'not_found'          => __( 'No scenes found.', 'threedgarden' ),
+			'not_found_in_trash' => __( 'No scenes found in Trash.', 'threedgarden' )
+		);
+
+		$args = array(
+			'labels'             => $labels,
+			'description'        => __( 'Post type for scene notes and information.', 'threedgarden' ),
+			'public'             => true,
+			'publicly_queryable' => true,
+			'show_ui'            => true,
+			'show_in_menu'       => false,
+			'query_var'          => true,
+			'rewrite'            => array( 'slug' => 'scene' ),
+			'capability_type'    => 'post',
+			'show_in_rest'       => true,
+			'has_archive'        => true,
+			'hierarchical'       => false,
+			'menu_position'      => null,
+			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
+			//'taxonomies'         => array('category', 'post_tag' )
+		);
+
+		register_post_type( 'scene', $args );
+	}
+
+	/**
+	 * Update messages for "scenes"
+	 *
+	 * See /wp-admin/edit-form-advanced.php
+	 *
+	 * @param array $messages Existing post update messages.
+	 *
+	 * @return array Amended post update messages with new CPT update messages.
+	 */
+	public function scene_updated_messages( $messages ) {
+		$post             = get_post();
+		$post_type        = get_post_type( $post );
+		$post_type_object = get_post_type_object( $post_type );
+
+		$messages['scene'] = array(
+			0  => '', // Unused. Messages start at index 1.
+			1  => __( 'Scene updated.', 'threedgarden' ),
+			2  => __( 'Custom field updated.', 'threedgarden' ),
+			3  => __( 'Custom field deleted.', 'threedgarden' ),
+			4  => __( 'Scene updated.', 'threedgarden' ),
+			/* translators: %s: date and time of the revision */
+			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Scene restored to revision from %s', 'threedgarden' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6  => __( 'Scene published.', 'threedgarden' ),
+			7  => __( 'Scene saved.', 'threedgarden' ),
+			8  => __( 'Scene submitted.', 'threedgarden' ),
+			9  => sprintf(
+				__( 'Scene scheduled for: <strong>%1$s</strong>.', 'threedgarden' ),
+				// translators: Publish box date format, see http://php.net/date
+				date_i18n( __( 'M j, Y @ G:i', 'threedgarden' ), strtotime( $post->post_date ) )
+			),
+			10 => __( 'Scene draft updated.', 'threedgarden' )
+		);
+
+		if ( $post_type_object->publicly_queryable ) {
+			$permalink = get_permalink( $post->ID );
+
+			$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View scene', 'threedgarden' ) );
+			$messages[ $post_type ][1] .= $view_link;
+			$messages[ $post_type ][6] .= $view_link;
+			$messages[ $post_type ][9] .= $view_link;
+
+			$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
+			$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview scene', 'threedgarden' ) );
+			$messages[ $post_type ][8]  .= $preview_link;
+			$messages[ $post_type ][10] .= $preview_link;
+		}
+
+		return $messages;
+	}
 	
 	/**
 	 * TESTING
@@ -1027,6 +1144,7 @@ class ThreeD_Garden_Admin {
 	 * register acf fields to Wordpress API
 	 * https://support.advancedcustomfields.com/forums/topic/json-rest-api-and-acf/
 	 */
+	/*
 	public function acf_to_rest_api($response, $post, $request) {
 		if (!function_exists('get_fields')) return $response;
 
@@ -1035,13 +1153,14 @@ class ThreeD_Garden_Admin {
 			$response->data['acf'] = $acf;
 		}
 		return $response;
-	}
+	} 
+	*/
 
 	/**
 	 * TESTING
 	 * **********************************************************************************************
 	 */
-
+	/*
 	public function create_ACF_meta_in_REST() {
 		$postypes_to_exclude = [];//['acf-field-group','acf-field'];
 		$extra_postypes_to_include = ["page"];
@@ -1066,12 +1185,13 @@ class ThreeD_Garden_Admin {
 		$ID = $object['id'];
 		return get_fields($ID);
 	}
+	*/
 
 	/**
 	 * TESTING
 	 * **********************************************************************************************
 	 */
-
+	/*
 	public function slug_add_post_data() {
 		register_rest_field(
 			'bed',
@@ -1109,6 +1229,7 @@ class ThreeD_Garden_Admin {
 
 		return update_post_meta($post->ID, $field_name, strip_tags($value));
 	}
+	*/
 
 	/**
 	 * TESTING
