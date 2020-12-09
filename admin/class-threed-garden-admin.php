@@ -248,24 +248,24 @@ class ThreeD_Garden_Admin {
             '',
             null
 		);
-		add_submenu_page(
-			'threedgarden', 
-			'Planting Plan Types', 
-			'Planting Plan Types', 
-			'manage_options', 
-			'edit-tags.php?taxonomy=planting_plan_type&post_type=planting_plan',
-            '',
-            null
-		);
-		add_submenu_page(
-			'threedgarden', 
-			'Planting Plan Soils', 
-			'Planting Plan Soils', 
-			'manage_options', 
-			'edit-tags.php?taxonomy=planting_plan_soil&post_type=planting_plan',
-            '',
-            null
-		);
+		// add_submenu_page(
+		// 	'threedgarden', 
+		// 	'Planting Plan Types', 
+		// 	'Planting Plan Types', 
+		// 	'manage_options', 
+		// 	'edit-tags.php?taxonomy=planting_plan_type&post_type=planting_plan',
+        //     '',
+        //     null
+		// );
+		// add_submenu_page(
+		// 	'threedgarden', 
+		// 	'Planting Plan Soils', 
+		// 	'Planting Plan Soils', 
+		// 	'manage_options', 
+		// 	'edit-tags.php?taxonomy=planting_plan_soil&post_type=planting_plan',
+        //     '',
+        //     null
+		// );
 		add_submenu_page(
 			'threedgarden', 
 			'Options', 

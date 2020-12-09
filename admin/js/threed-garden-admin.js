@@ -1,4 +1,6 @@
-/** ThreeDGarden - Custom Admin JavaScript */
+/** 
+ * ThreeDGarden - Custom Admin JavaScript 
+ * *************************************************************************************** */
 
 /** PARAMETERS FROM PHP */
 const pluginName = postdata.plugin_name;
@@ -48,10 +50,10 @@ let INTERSECTED2;
 
 /** 
  * BEGIN 
- * ************************************************************************************** */
+ * *************************************************************************************** */
 window.onload = function(e){ 
 
-	/** QUERY FOR SCENES **************************************************************** */
+	/** QUERY FOR SCENES ***************************************************************** */
 
 	let queryURLScenes = `${restURL}scene/?_embed&per_page=100`;
 	fetch( queryURLScenes )
@@ -65,23 +67,56 @@ window.onload = function(e){
 
 /** 
  * MAIN INIT 
- */
+ * *************************************************************************************** */
 function init(postObject) {
 
 	console.log("-----------------------");
-	console.log("postObject-------------");
+	console.log("postObject SCENES------");
 	console.log(postObject);
 	console.log("-----------------------");
+
+	let wpScene = postObject[0];
 
 	/** THREE JS SCENE ******************************************************************* */
 
 	scene = new THREE.Scene();
-	scene.background = new THREE.Color(0x333333);
-	//scene.fog = new THREE.Fog(0xFFFFFF, 0, 500);
+
+	// load the 3D cube map?
+	if ( wpScene.acf.scene_background_image_px ) {
+		let cubeMapURLs = [
+			wpScene.acf.scene_background_image_px,
+			wpScene.acf.scene_background_image_nx,
+			wpScene.acf.scene_background_image_py,
+			wpScene.acf.scene_background_image_ny,
+			wpScene.acf.scene_background_image_pz,
+			wpScene.acf.scene_background_image_nz
+		];
+		let reflectionCube = new THREE.CubeTextureLoader().load(cubeMapURLs);
+		reflectionCube.format = THREE.RGBFormat;
+		scene.background = reflectionCube;
+	}
+	// load the 2D background image?
+	else if ( wpScene.acf.scene_background_image ) {
+		// let bgTexture = loader.load(wpScene.acf.scene_background_image);
+		// scene.background = bgTexture;
+		let bgTexture = loader.load(
+			wpScene.acf.scene_background_image,
+			() => {
+				const rt = new THREE.WebGLCubeRenderTarget(bgTexture.image.height);
+				rt.fromEquirectangularTexture(renderer, bgTexture);
+				scene.background = rt;
+			}
+		);
+	}
+	// load the background color?
+	else if ( wpScene.acf.scene_background_color ) {
+		scene.background = new THREE.Color(wpScene.acf.scene_background_color);
+		//scene.fog = new THREE.Fog(0xFFFFFF, 0, 500);
+	}
 
 	/** GEOMETRIES *********************************************************************** */
 	
-	let plane = getPlane(200, 200, 0xFFFFFF);
+	let plane = getPlane(200, 200, wpScene.acf.scene_plane_background_color);
 	plane.name = "plane-jane";
 	plane.rotation.x = -Math.PI / 2; // -90 degrees in radians
 	//plane.position.z = 10;
@@ -92,30 +127,18 @@ function init(postObject) {
 
 	/** TEXTURES ************************************************************************* */
 
-	plane.material.roughness = 0.0;
-	plane.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big.jpg');
-	// plane.material.bumpMap = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big-nm.jpg');
-	// plane.material.bumpScale = 0.01;
-	let planeTextureMap = plane.material.map;
-	planeTextureMap.wrapS = THREE.RepeatWrapping;
-	planeTextureMap.wrapT = THREE.RepeatWrapping;
-	planeTextureMap.repeat.set(4, 4);
-
-	/** BACKGROUND *********************************************************************** */
-
-	// manipulate materials
-	// load the cube map
-	let path = '/wp-content/plugins/threed-garden/admin/media/textures/cube/Forest-Meadow-Cube-Map-2/';
-	let format = '.png';
-	let urls = [
-		path + 'px' + format, path + 'nx' + format,
-		path + 'py' + format, path + 'ny' + format,
-		path + 'pz' + format, path + 'nz' + format
-	];
-	let reflectionCube = new THREE.CubeTextureLoader().load(urls);
-	reflectionCube.format = THREE.RGBFormat;
-
-	scene.background = reflectionCube;
+	if ( postObject[0].acf.scene_plane_texture_image ) {
+		plane.material.roughness = 0.0;
+		//plane.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big.jpg');
+		plane.material.map = loader.load(wpScene.acf.scene_plane_texture_image);
+		// plane.material.bumpMap = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big-nm.jpg');
+		// plane.material.bumpMap = loader.load(wpScene.acf.scene_plane_texture_image);
+		// plane.material.bumpScale = 0.01;
+		let planeTextureMap = plane.material.map;
+		planeTextureMap.wrapS = THREE.RepeatWrapping;
+		planeTextureMap.wrapT = THREE.RepeatWrapping;
+		planeTextureMap.repeat.set(4, 4);
+	}
 
 	/** LIGHTS *************************************************************************** */
 
