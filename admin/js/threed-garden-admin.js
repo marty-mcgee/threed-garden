@@ -57,101 +57,92 @@ let INTERSECTED1;
 let INTERSECTED2;
 
 /** 
- * BEGIN 
+ * BEGIN MAIN
  * *************************************************************************************** */
 
+/** REST API URLS */
 const API_URL_SCENES = `${restURL}scene/?_embed&per_page=100`;
 const API_URL_ALLOTMENTS = `${restURL}allotment/?_embed&per_page=100`;
 const API_URL_BEDS = `${restURL}bed/?_embed&per_page=100`;
 const API_URL_PLANTING_PLANS = `${restURL}planting_plan/?_embed&per_page=100`;
 const API_URL_PLANTS = `${restURL}plant/?_embed&per_page=100`;
 
-let api_urls = [
-	API_URL_SCENES,
-	API_URL_ALLOTMENTS,
-	API_URL_BEDS,
-	API_URL_PLANTING_PLANS,
-	API_URL_PLANTS
-];
+/**
+ * init main constructor
+ */
+init();
 
-Promise.allSettled(
-	api_urls.map(
-		url => fetch(url)
-				.then(results => results.json())
-				.then(data => {
-					let type = data[0].type;
-					switch (type) {
-						case "scene" :
-							params.data.scene = [...data];
-							break;
-						case "allotment" :
-							params.data.allotment = [...data];
-							break;
-						case "bed" :
-							params.data.bed = [...data];
-							break;
-						case "plant" :
-							params.data.plant = [...data];
-							break;
-						case "planting_plan" :
-							params.data.planting_plan = [...data];
-							break;
-						default :
-							break;
-					}
-					// console.log("-----------------");
-					// console.log(data);
-					// console.log("-----------------");
-				})
+function init() {
+
+	let api_urls = [
+		API_URL_SCENES,
+		API_URL_ALLOTMENTS,
+		API_URL_BEDS,
+		API_URL_PLANTING_PLANS,
+		API_URL_PLANTS
+	];
+
+	Promise.allSettled(
+		api_urls.map(
+			url => fetch(url)
+					.then(results => results.json())
+					.then(data => {
+						let type = data[0].type;
+						switch (type) {
+							case "scene" :
+								params.data.scene = [...data];
+								break;
+							case "allotment" :
+								params.data.allotment = [...data];
+								break;
+							case "bed" :
+								params.data.bed = [...data];
+								break;
+							case "plant" :
+								params.data.plant = [...data];
+								break;
+							case "planting_plan" :
+								params.data.planting_plan = [...data];
+								break;
+							default :
+								break;
+						}
+						// console.log("-----------------");
+						// console.log(data);
+						// console.log("-----------------");
+					})
+		)
 	)
-)
-.then(results => { // (*)
-		//console.log(results);
-		results.forEach((result, num) => {
-			if (result.status == "fulfilled") {
-				//alert(`${urls[num]}: ${result.value.status}`);
-				//console.log(result);
-			}
-			if (result.status == "rejected") {
-				//alert(`${urls[num]}: ${result.reason}`);
-				console.log(result);
-			}
-		})
-		console.log("-----------------");
-		console.log("params.data------");
-		console.log(params.data);
-		console.log("-----------------");
-		/**
-		 * init main constructor
-		 */
-		init();
-	}
-);
+	.then(results => { // (*)
+			//console.log(results);
+			results.forEach((result, num) => {
+				if (result.status == "fulfilled") {
+					//alert(`${urls[num]}: ${result.value.status}`);
+					//console.log(result);
+				}
+				if (result.status == "rejected") {
+					//alert(`${urls[num]}: ${result.reason}`);
+					console.log(result);
+				}
+			})
+			console.log("-----------------");
+			console.log("params.data------");
+			console.log(params.data);
+			console.log("-----------------");
+			/**
+			 * init scene constructor
+			 */
+			buildScene();
+		}
+	);
 
-//throwError();
-
-/** 
- * BEGIN CONTINUED..
- * *************************************************************************************** */
-
-window.onload = function(e){ 
-
-	/** QUERY FOR SCENES ***************************************************************** */
-
-	// let queryURLScenes = `${restURL}scene/?_embed&per_page=100`;
-	// fetch( queryURLScenes )
-	// 	.then( response => response.json() )
-	// 	/**
-	// 	 * init main constructor
-	// 	 */
-	// 	.then( postObject => init(postObject) );
-
+	//throwError();
 }
 
 /** 
- * MAIN INIT 
+ * BUILD SCENE
  * *************************************************************************************** */
-function init() {
+function buildScene() {
 
 	// console.log("-----------------------");
 	// console.log("params.data.scene------");
@@ -1735,15 +1726,7 @@ function dragElement(elmnt) {
 }
 
 
-
-/**
- * query wordpress rest api for garden post types + taxonomies
- */
-
-
-
-
-// throw manual abort of script
+/// throw manual abort of script
 function throwError() {
 	// creates a new exception type:
 	function FatalError(){ Error.apply(this, arguments); this.name = "FatalError"; }
@@ -1752,6 +1735,27 @@ function throwError() {
 	// and then, use this to trigger the error:
 	throw new FatalError("MANUAL ABORT");
 }
+
+
+/** 
+ * OLD
+ * *************************************************************************************** */
+
+window.onload = function(e){ 
+
+	/** QUERY FOR SCENES ***************************************************************** */
+
+	// let queryURLScenes = `${restURL}scene/?_embed&per_page=100`;
+	// fetch( queryURLScenes )
+	// 	.then( response => response.json() )
+	// 	/**
+	// 	 * init main constructor
+	// 	 */
+	// 	.then( postObject => init(postObject) );
+
+}
+
+
 /** 
  * END FILE
  * ************************************************************************************** 
