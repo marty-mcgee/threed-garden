@@ -9,7 +9,7 @@ const pluginURL = postdata.plugin_url;
 const themeURI = postdata.theme_uri;
 const restURL = postdata.rest_url;
 const worldID = postdata.world_id;
-const sceneID = postdata.scene_id;
+let sceneID = postdata.scene_id;
 console.log("-----------------------");
 console.log("pluginName-------------");
 console.log(pluginName, pluginVersion);
@@ -209,6 +209,7 @@ function init() {
 	// console.log("-----------------------");
 
 	let wpScene = params.data.scene[0][0];
+	sceneID = wpScene.id;
 
 	// console.log("-----------------------");
 	// console.log("wpScene----------------");
@@ -384,8 +385,8 @@ function init() {
 
 	buildAllotments(
 		params.data.allotment[0], 
-		// scene id !!! // the post-to-post relationship <3
-		plane, gui, camera, renderer
+		plane, gui, camera, renderer,
+		sceneID // the post-to-post relationship <3
 	);
 		
 	// let queryURLPlantingPlans = `${restURL}planting_plan/?_embed`;
@@ -409,7 +410,7 @@ function init() {
 		// plane.rotation.x += 0.002;
 		// plane.rotation.y += 0.002;
 		if ( params.ANIMATE ) {
-			plane.rotation.z += 0.001;
+			plane.rotation.z -= 0.0007;
 		}
 		renderer.render(scene, camera);
 		// infospot annotations
@@ -427,179 +428,25 @@ function init() {
 	return scene;
 }
 
-function getGeometry(shape, x, y, z, color){
-	let geometry;
-	let material;
-	let mesh;
-	switch (shape) {
-		case 'Box':
-			geometry = new THREE.BoxGeometry(x, y, z);
-			// let opacMaterial = new THREE.MeshStandardMaterial({
-			// 	transparent: true, 
-			// 	opacity: 0.0,
-			// 	alphaTest: 1.0,
-			// 	color: color,
-			// 	side: THREE.DoubleSide,
-			// 	depthWrite: false
-			// });
-			material = new THREE.MeshStandardMaterial({
-				transparent: true, 
-				opacity: 0.8,
-				color: color,
-				side: THREE.DoubleSide,
-				depthWrite: true
-			});
-			mesh = new THREE.Mesh(
-				geometry, 
-				[
-					material, material, 
-					material, material
-				]
-			);
-			mesh.castShadow = true;
-			break;
-
-		case 'Cone':
-			geometry = new THREE.ConeGeometry(x/2, y/2, z, 32, 1, true);
-			material = new THREE.MeshStandardMaterial({
-				color: color,
-				side: THREE.DoubleSide
-			});
-			mesh = new THREE.Mesh(geometry, material);
-			mesh.castShadow = true;
-			mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
-			break;
-
-		case 'Cylinder':
-			geometry = new THREE.CylinderGeometry(x/2, y/2, z, 32, 1, true);
-			material = new THREE.MeshStandardMaterial({
-				color: color,
-				side: THREE.DoubleSide
-			});
-			mesh = new THREE.Mesh(geometry, material);
-			mesh.castShadow = true;
-			mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
-			break;
-
-		case 'InfoSphere':
-			geometry = new THREE.SphereGeometry(x, y, z);
-			material = new THREE.MeshStandardMaterial({
-				color: color,
-				side: THREE.DoubleSide
-			});
-			mesh = new THREE.Mesh(geometry, material);
-			mesh.castShadow = true;
-			//mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
-			break;
-
-		case 'Sphere':
-			geometry = new THREE.SphereGeometry(x, y, z);
-			material = new THREE.MeshStandardMaterial({
-				color: color,
-				side: THREE.DoubleSide
-			});
-			mesh = new THREE.Mesh(geometry, material);
-			mesh.castShadow = true;
-			//mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
-			break;
-
-		default:
-			geometry = new THREE.BoxGeometry(x, y, z);
-			material = new THREE.MeshStandardMaterial({
-				color: color,
-				side: THREE.DoubleSide
-			});
-			mesh = new THREE.Mesh(geometry, material);
-			mesh.castShadow = true;
-			break;
-	}
-	
-	return mesh;
-}
-
-function getPlane(x, y, color){
-	let geometry = new THREE.PlaneGeometry(x, y);
-	let material = new THREE.MeshStandardMaterial({
-		color: color,
-		side: THREE.DoubleSide
-	});
-	let mesh = new THREE.Mesh(geometry, material);
-	mesh.receiveShadow = true;
-	return mesh;
-}
-
-function getPointLight(color, intensity){
-	let light = new THREE.PointLight(color, intensity);
-	light.castShadow = true;
-	light.shadow.bias = 0.001;
-	light.shadow.mapSize.width = 2048; //default = 1024
-	light.shadow.mapSize.height = 2048; //default = 1024
-	return light;
-}
-
-function getSpotLight(color, intensity){
-	let light = new THREE.SpotLight(color, intensity);
-	light.castShadow = true;
-	light.shadow.bias = 0.001;
-	light.shadow.mapSize.width = 2048; //default = 1024
-	light.shadow.mapSize.height = 2048; //default = 1024
-	return light;
-}
-
-function getDirectionalLight(color, intensity){
-	let light = new THREE.DirectionalLight(color, intensity);
-	light.castShadow = true;
-	light.shadow.bias 			= 0.01;
-	light.shadow.mapSize.width 	= 2048; //default = 1024
-	light.shadow.mapSize.height = 2048; //default = 1024
-	light.shadow.camera.left 	= -1000; //default = -5
-	light.shadow.camera.bottom 	= -1000; //default = -5
-	light.shadow.camera.right 	= 1000; //default = 5
-	light.shadow.camera.top 	= 1000; //default = 5
-	return light;
-}
-
-function getAmbientLight(color, intensity){
-	let light = new THREE.AmbientLight(color, intensity);
-	return light;
-}
-
 
 /**
  * BUILD "ALLOTMENTS" FROM REST API POST OBJECT ************************************************************
  */
-function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
+function buildAllotments(postObject, plane, gui, camera, renderer, sceneID) {
 
-	console.log("-------------------------");
-	console.log("postObject ALLOTMENTS----");
-	console.log(postObject);
-	console.log("-------------------------");
-
-
-
-	var obj = {
-		"postObject": [
-			{
-				"id": "460",
-				"name": "Widget 1",
-				"loc": "Shed"
-			}, {
-				"id": "461",
-				"name": "Widget 2",
-				"loc": "Kitchen"
-			}
-		]
-	};
-	var valuesWith460 = obj.postObject.filter(function (val) {
-		return val.id === "461";
+	// console.log("-------------------------");
+	// console.log("postObject ALLOTMENTS----");
+	// console.log(postObject);
+	// console.log("-------------------------");
+	
+	var filteredPostObject = postObject.filter(function (obj) {
+		return obj.acf.allotment_scene == sceneID;
 	});
-	console.log("-------------------------");
-	console.log(valuesWith460[0].name);
-	console.log("-------------------------");
+	// console.log("filteredPostObject-------");
+	// console.log(filteredPostObject);
+	// console.log("-------------------------");
 
-
-
-	postObject.forEach( function(key) {
+	filteredPostObject.forEach( function(key) {
 
 		// console.log("-------------------------");
 		// console.log("key.id (postObject)------");
@@ -734,7 +581,14 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 	// console.log(postObject);
 	// console.log("-------------------------");
 
-	postObject.forEach( function(key) {
+	var filteredPostObject = postObject.filter(function (obj) {
+		return obj.acf.bed_allotment == allotmentID;
+	});
+	// console.log("filteredPostObject-------");
+	// console.log(filteredPostObject);
+	// console.log("-------------------------");
+
+	filteredPostObject.forEach( function(key) {
 
 		// console.log("-------------------------");
 		// console.log("key.id (postObject)------");
@@ -743,7 +597,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 		// console.log("-------------------------");
 
 		// only show beds for this allotment structure
-		if ( key.acf.bed_allotment[0].ID != null && key.acf.bed_allotment[0].ID == allotmentID ) {
+		//if ( key.acf.bed_allotment[0].ID != null && key.acf.bed_allotment[0].ID == allotmentID ) {
 
 			let bed = {};
 			bed.parameters = {};
@@ -826,7 +680,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			buildPlants(
 				params.data.plant[0], 
 				plane, gui, camera, renderer, 
-				structure.userData.postID, // the post-to-post relationship <3
+				bed.postID, // the post-to-post relationship <3
 				structure.position.x, structure.position.y, 0 //structure.position.z
 			) 
 		
@@ -848,7 +702,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 
 			plane.add(infospot);
 		
-		}
+		//}
 	}); /** END BEDS *********************************************************************** */
 	
 	// console.log("-------------------------");
@@ -988,6 +842,144 @@ function buildPlants(postObject, plane, gui, camera, renderer, bedID, posOffsetX
 
 	return plane.children;
 }
+
+function getGeometry(shape, x, y, z, color){
+	let geometry;
+	let material;
+	let mesh;
+	switch (shape) {
+		case 'Box':
+			geometry = new THREE.BoxGeometry(x, y, z);
+			// let opacMaterial = new THREE.MeshStandardMaterial({
+			// 	transparent: true, 
+			// 	opacity: 0.0,
+			// 	alphaTest: 1.0,
+			// 	color: color,
+			// 	side: THREE.DoubleSide,
+			// 	depthWrite: false
+			// });
+			material = new THREE.MeshStandardMaterial({
+				transparent: true, 
+				opacity: 0.8,
+				color: color,
+				side: THREE.DoubleSide,
+				depthWrite: true
+			});
+			mesh = new THREE.Mesh(
+				geometry, 
+				[
+					material, material, 
+					material, material
+				]
+			);
+			mesh.castShadow = true;
+			break;
+
+		case 'Cone':
+			geometry = new THREE.ConeGeometry(x/2, y/2, z, 32, 1, true);
+			material = new THREE.MeshStandardMaterial({
+				color: color,
+				side: THREE.DoubleSide
+			});
+			mesh = new THREE.Mesh(geometry, material);
+			mesh.castShadow = true;
+			mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
+			break;
+
+		case 'Cylinder':
+			geometry = new THREE.CylinderGeometry(x/2, y/2, z, 32, 1, true);
+			material = new THREE.MeshStandardMaterial({
+				color: color,
+				side: THREE.DoubleSide
+			});
+			mesh = new THREE.Mesh(geometry, material);
+			mesh.castShadow = true;
+			mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
+			break;
+
+		case 'InfoSphere':
+			geometry = new THREE.SphereGeometry(x, y, z);
+			material = new THREE.MeshStandardMaterial({
+				color: color,
+				side: THREE.DoubleSide
+			});
+			mesh = new THREE.Mesh(geometry, material);
+			mesh.castShadow = true;
+			//mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
+			break;
+
+		case 'Sphere':
+			geometry = new THREE.SphereGeometry(x, y, z);
+			material = new THREE.MeshStandardMaterial({
+				color: color,
+				side: THREE.DoubleSide
+			});
+			mesh = new THREE.Mesh(geometry, material);
+			mesh.castShadow = true;
+			//mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
+			break;
+
+		default:
+			geometry = new THREE.BoxGeometry(x, y, z);
+			material = new THREE.MeshStandardMaterial({
+				color: color,
+				side: THREE.DoubleSide
+			});
+			mesh = new THREE.Mesh(geometry, material);
+			mesh.castShadow = true;
+			break;
+	}
+	
+	return mesh;
+}
+
+function getPlane(x, y, color){
+	let geometry = new THREE.PlaneGeometry(x, y);
+	let material = new THREE.MeshStandardMaterial({
+		color: color,
+		side: THREE.DoubleSide
+	});
+	let mesh = new THREE.Mesh(geometry, material);
+	mesh.receiveShadow = true;
+	return mesh;
+}
+
+function getPointLight(color, intensity){
+	let light = new THREE.PointLight(color, intensity);
+	light.castShadow = true;
+	light.shadow.bias = 0.001;
+	light.shadow.mapSize.width = 2048; //default = 1024
+	light.shadow.mapSize.height = 2048; //default = 1024
+	return light;
+}
+
+function getSpotLight(color, intensity){
+	let light = new THREE.SpotLight(color, intensity);
+	light.castShadow = true;
+	light.shadow.bias = 0.001;
+	light.shadow.mapSize.width = 2048; //default = 1024
+	light.shadow.mapSize.height = 2048; //default = 1024
+	return light;
+}
+
+function getDirectionalLight(color, intensity){
+	let light = new THREE.DirectionalLight(color, intensity);
+	light.castShadow = true;
+	light.shadow.bias 			= 0.01;
+	light.shadow.mapSize.width 	= 2048; //default = 1024
+	light.shadow.mapSize.height = 2048; //default = 1024
+	light.shadow.camera.left 	= -1000; //default = -5
+	light.shadow.camera.bottom 	= -1000; //default = -5
+	light.shadow.camera.right 	= 1000; //default = 5
+	light.shadow.camera.top 	= 1000; //default = 5
+	return light;
+}
+
+function getAmbientLight(color, intensity){
+	let light = new THREE.AmbientLight(color, intensity);
+	return light;
+}
+
 
 /**
  * INFOSPOTS **************************************************************************************
