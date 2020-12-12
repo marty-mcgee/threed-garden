@@ -40,9 +40,7 @@ const loader = new THREE.TextureLoader();
 let params = {
 	ANIMATE: true,
 	data: {
-		world: {
-			id: 1
-		},
+		world: [[{id: 1}]],
 		scene: [],
 		allotment: [],
 		bed: [],
@@ -50,7 +48,7 @@ let params = {
 		planting_plan: []
 	}
 };
-guiFolderRotation.add(params, "ANIMATE").name("Run Animation").listen();
+guiFolderRotation.add(params, "ANIMATE").name("Run Animation");
 
 /** POINTER HOVERS + CLICKS */
 const raycaster = new THREE.Raycaster();
@@ -84,19 +82,19 @@ Promise.allSettled(
 					let type = data[0].type;
 					switch (type) {
 						case "scene" :
-							params.data.scene.push(data);
+							params.data.scene = [...data];
 							break;
 						case "allotment" :
-							params.data.allotment.push(data);
+							params.data.allotment = [...data];
 							break;
 						case "bed" :
-							params.data.bed.push(data);
+							params.data.bed = [...data];
 							break;
 						case "plant" :
-							params.data.plant.push(data);
+							params.data.plant = [...data];
 							break;
 						case "planting_plan" :
-							params.data.planting_plan.push(data);
+							params.data.planting_plan = [...data];
 							break;
 						default :
 							break;
@@ -119,6 +117,10 @@ Promise.allSettled(
 				console.log(result);
 			}
 		})
+		console.log("-----------------");
+		console.log("params.data------");
+		console.log(params.data);
+		console.log("-----------------");
 		/**
 		 * init main constructor
 		 */
@@ -126,52 +128,7 @@ Promise.allSettled(
 	}
 );
 
-console.log("-----------------");
-console.log("params.data------");
-console.log(params.data);
-console.log("-----------------");
-
 //throwError();
-
-
-
-// function fetchAllotments() {
-// 	return fetch(API_URL_ALLOTMENTS)
-// 		.then(response => response.json())
-// 		.then(data => {
-// 			return data;
-// 		})
-// }
-
-// function fetchBeds(id, index) {
-// 	return fetch(API_URL_BEDS) // + id
-// 		.then(response => response.json())
-// 		.then(data => {
-// 			return [index, data];
-// 		});
-// }
-
-// (async () => {
-
-// 	const data = await fetchAllotments();
-// 	console.log("old data", data);
-
-// 	const promises = data.map((allotment, index) => fetchBeds(allotment.id, index));
-// 	await Promise.all(promises)
-// 		.then(responses => {
-// 			responses.map(response => {
-// 				data[response[0]] = {...data[response[0]], ...response[1]};
-// 				console.log("update", data[response[0]]);
-// 			})
-// 		}
-// 	);
-
-// 	console.log("new data", data);
-
-// })();
-
-// throwError();
-
 
 /** 
  * BEGIN CONTINUED..
@@ -208,7 +165,7 @@ function init() {
 	// console.log(params.data.scene.length);
 	// console.log("-----------------------");
 
-	let wpScene = params.data.scene[0][0];
+	let wpScene = params.data.scene[0];
 	sceneID = wpScene.id;
 
 	// console.log("-----------------------");
@@ -384,7 +341,7 @@ function init() {
 	// 	.then( postObject => buildAllotments(postObject, plane, gui, camera, renderer) );
 
 	buildAllotments(
-		params.data.allotment[0], 
+		params.data.allotment, 
 		plane, gui, camera, renderer,
 		sceneID // the post-to-post relationship <3
 	);
@@ -535,7 +492,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, sceneID) {
 		// 	);
 
 		buildBeds(
-			params.data.bed[0], 
+			params.data.bed, 
 			plane, gui, camera, renderer, 
 			structure.userData.postID, // the post-to-post relationship <3
 			structure.position.x, structure.position.y, 0 //structure.position.z
@@ -678,7 +635,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			// 	);
 
 			buildPlants(
-				params.data.plant[0], 
+				params.data.plant, 
 				plane, gui, camera, renderer, 
 				bed.postID, // the post-to-post relationship <3
 				structure.position.x, structure.position.y, 0 //structure.position.z
