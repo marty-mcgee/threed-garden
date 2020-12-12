@@ -384,6 +384,7 @@ function init() {
 
 	buildAllotments(
 		params.data.allotment[0], 
+		// scene id !!! // the post-to-post relationship <3
 		plane, gui, camera, renderer
 	);
 		
@@ -574,6 +575,30 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 	console.log(postObject);
 	console.log("-------------------------");
 
+
+
+	var obj = {
+		"postObject": [
+			{
+				"id": "460",
+				"name": "Widget 1",
+				"loc": "Shed"
+			}, {
+				"id": "461",
+				"name": "Widget 2",
+				"loc": "Kitchen"
+			}
+		]
+	};
+	var valuesWith460 = obj.postObject.filter(function (val) {
+		return val.id === "461";
+	});
+	console.log("-------------------------");
+	console.log(valuesWith460[0].name);
+	console.log("-------------------------");
+
+
+
 	postObject.forEach( function(key) {
 
 		// console.log("-------------------------");
@@ -665,7 +690,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 		buildBeds(
 			params.data.bed[0], 
 			plane, gui, camera, renderer, 
-			structure.userData.postID, 
+			structure.userData.postID, // the post-to-post relationship <3
 			structure.position.x, structure.position.y, 0 //structure.position.z
 		) 
 
@@ -801,7 +826,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			buildPlants(
 				params.data.plant[0], 
 				plane, gui, camera, renderer, 
-				structure.userData.postID, 
+				structure.userData.postID, // the post-to-post relationship <3
 				structure.position.x, structure.position.y, 0 //structure.position.z
 			) 
 		
@@ -839,10 +864,10 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
  */
 function buildPlants(postObject, plane, gui, camera, renderer, bedID, posOffsetX, posOffsetY, posOffsetZ) {
 
-	console.log("-------------------------");
-	console.log("postObject PLANTS--------");
-	console.log(postObject);
-	console.log("-------------------------");
+	// console.log("-------------------------");
+	// console.log("postObject PLANTS--------");
+	// console.log(postObject);
+	// console.log("-------------------------");
 
 	return;
 
