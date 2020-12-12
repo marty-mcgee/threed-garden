@@ -286,7 +286,6 @@ function buildScene() {
 	);
 	renderer.shadowMap.enabled = true;
 	renderer.setSize(window.innerWidth - 240, window.innerHeight - 100);
-	//renderer.setClearColor(0xFFFFFF);
 
 	// utilize javascript prototyping.. add variables to the dom element :)
 	renderer.domElement.camera = camera;
