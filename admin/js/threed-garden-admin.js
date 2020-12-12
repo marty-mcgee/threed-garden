@@ -38,9 +38,9 @@ let canvas;
 const loader = new THREE.TextureLoader();
 
 let params = {
-	ANIMATE: true,
+	ANIMATE: false,
 	data: {
-		world: [[{id: 1}]],
+		world: [{id: 1}],
 		scene: [],
 		allotment: [],
 		bed: [],
@@ -124,7 +124,7 @@ Promise.allSettled(
 		/**
 		 * init main constructor
 		 */
-		init(); // params.data.scene
+		init();
 	}
 );
 
@@ -152,12 +152,6 @@ window.onload = function(e){
  * MAIN INIT 
  * *************************************************************************************** */
 function init() {
-
-	// console.log("-----------------------");
-	// console.log("postObject SCENES------");
-	// console.log(postObject);
-	// console.log(postObject.length);
-	// console.log("-----------------------");
 
 	// console.log("-----------------------");
 	// console.log("params.data.scene------");
@@ -333,24 +327,13 @@ function init() {
 	canvasParent.append(renderer.domElement);
 	canvas = renderer.domElement;
 	
-	/** QUERY FOR ALLOTMENTS *************************************************************** */
-
-	// let queryURLAllotments = `${restURL}allotment/?_embed&per_page=100`;
-	// fetch( queryURLAllotments )
-	// 	.then( response => response.json() )
-	// 	.then( postObject => buildAllotments(postObject, plane, gui, camera, renderer) );
+	/** BUILD ALLOTMENTS *************************************************************** */
 
 	buildAllotments(
 		params.data.allotment, 
 		plane, gui, camera, renderer,
 		sceneID // the post-to-post relationship <3
 	);
-		
-	// let queryURLPlantingPlans = `${restURL}planting_plan/?_embed`;
-	// fetch( queryURLPlantingPlans )
-	// 	.then( response => response.json() )
-	// 	.then( postObject => buildPlantingPlans(postObject, plane, gui, camera, renderer) );
-
 
 	/** ANIMATE + RENDER (continuous rendering) ******************************************** */
 
@@ -479,17 +462,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, sceneID) {
 		// console.log(structure);
 		// console.log("-------------------------");
 
-		/** SEND AJAX FETCH TO RETRIEVE BEDS IN THIS ALLOTMENT *************************** */
-
-		// let queryURLBeds = `${restURL}bed/?_embed&per_page=100`;
-		// fetch( queryURLBeds )
-		// 	.then( response => response.json() )
-		// 	.then( postObject => buildBeds(
-		// 			postObject, plane, gui, camera, renderer, 
-		// 			structure.userData.postID, 
-		// 			structure.position.x, structure.position.y, 0 //structure.position.z
-		// 		) 
-		// 	);
+		/** BUILD BEDS IN THIS ALLOTMENT ************************************************** */
 
 		buildBeds(
 			params.data.bed, 
@@ -497,8 +470,6 @@ function buildAllotments(postObject, plane, gui, camera, renderer, sceneID) {
 			structure.userData.postID, // the post-to-post relationship <3
 			structure.position.x, structure.position.y, 0 //structure.position.z
 		) 
-
-		/** BUILD OUT SPRITES AND INFOSPOTS AND ANNOTATIONS ****************************** 
 
 		/** INFOSPOTS ********************************************************************* */
 
@@ -622,20 +593,10 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			// console.log(structure);
 			// console.log("-------------------------");
 
-			/** SEND AJAX FETCH TO RETRIEVE PLANTS IN THIS BED, ACCORDING TO PLANTING PLANS *** */
+			/** BUILD PLANTS IN THIS BED, ACCORDING TO PLANTING PLANS ************************* */
 
-			// let queryURLPlants = `${restURL}plant/?_embed&per_page=100`;
-			// fetch( queryURLPlants )
-			// 	.then( response => response.json() )
-			// 	.then( postObject => buildPlants(
-			// 			postObject, plane, gui, camera, renderer, 
-			// 			structure.userData.postID, 
-			// 			structure.position.x, structure.position.y, 0 //structure.position.z
-			// 		) 
-			// 	);
-
-			buildPlants(
-				params.data.plant, 
+			buildPlantingPlans(
+				params.data.planting_plan, 
 				plane, gui, camera, renderer, 
 				bed.postID, // the post-to-post relationship <3
 				structure.position.x, structure.position.y, 0 //structure.position.z
@@ -673,25 +634,39 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 /**
  * BUILD "PLANTS" FROM REST API POST OBJECT ************************************************************
  */
-function buildPlants(postObject, plane, gui, camera, renderer, bedID, posOffsetX, posOffsetY, posOffsetZ) {
+function buildPlantingPlans(postObject, plane, gui, camera, renderer, bedID, posOffsetX, posOffsetY, posOffsetZ) {
 
 	// console.log("-------------------------");
-	// console.log("postObject PLANTS--------");
+	// console.log("postObject PLANTING PLANS");
 	// console.log(postObject);
 	// console.log("-------------------------");
 
-	return;
+	var filteredPostObject = [];
+	var matches = [];
+	postObject.forEach(function (obj) {
+		obj.acf.planting_plan_bed_plant_schedule.forEach(function(i) {
+			if ( i.planting_plan_bed == bedID ) {
+				//matches.push(i);
+				matches.push(obj);
+				console.log("MATCHED at: ", obj)
+			}
+		})
+		filteredPostObject = [...matches];
+	});
+	// console.log("filteredPostObject-------");
+	// console.log(filteredPostObject);
+	// console.log("-------------------------");
 
-	postObject.forEach( function(key) {
+	filteredPostObject.forEach( function(key) {
 
-		// console.log("-------------------------");
-		// console.log("key.id (postObject)------");
-		// console.log(key.id);
-		// console.log(key);
-		// console.log("-------------------------");
+		console.log("-------------------------");
+		console.log("key.id (filteredPostObject)------");
+		console.log(key.id);
+		console.log(key);
+		console.log("-------------------------");
 
 		// only show plants for this allotment structure
-		if ( key.acf.plant_bed[0].ID != null && key.acf.plant_bed[0].ID == bedID ) {
+		//if ( key.acf.plant_bed[0].ID != null && key.acf.plant_bed[0].ID == bedID ) {
 
 			let plant = {};
 			plant.parameters = {};
@@ -761,15 +736,15 @@ function buildPlants(postObject, plane, gui, camera, renderer, bedID, posOffsetX
 
 			/** SEND AJAX FETCH TO RETRIEVE PLANTS IN THIS BED, ACCORDING TO PLANTING PLANS *** */
 
-			let queryURLPlants = `${restURL}plant/?_embed&per_page=100`;
-			fetch( queryURLPlants )
-				.then( response => response.json() )
-				.then( postObject => buildPlants(
-						postObject, plane, gui, camera, renderer, 
-						structure.userData.postID, 
-						structure.position.x, structure.position.y, 0 //structure.position.z
-					) 
-				);
+			// let queryURLPlants = `${restURL}plant/?_embed&per_page=100`;
+			// fetch( queryURLPlants )
+			// 	.then( response => response.json() )
+			// 	.then( postObject => buildPlants(
+			// 			postObject, plane, gui, camera, renderer, 
+			// 			structure.userData.postID, 
+			// 			structure.position.x, structure.position.y, 0 //structure.position.z
+			// 		) 
+			// 	);
 		
 			/** INFOSPOTS ********************************************************************* */
 		
@@ -789,7 +764,7 @@ function buildPlants(postObject, plane, gui, camera, renderer, bedID, posOffsetX
 
 			plane.add(infospot);
 		
-		}
+		//}
 	}); /** END BEDS *********************************************************************** */
 	
 	// console.log("-------------------------");
@@ -799,6 +774,8 @@ function buildPlants(postObject, plane, gui, camera, renderer, bedID, posOffsetX
 
 	return plane.children;
 }
+
+
 
 function getGeometry(shape, x, y, z, color){
 	let geometry;
