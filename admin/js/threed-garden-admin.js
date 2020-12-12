@@ -38,7 +38,17 @@ let canvas;
 const loader = new THREE.TextureLoader();
 
 let params = {
-    ANIMATE: true
+	ANIMATE: true,
+	data: {
+		world: {
+			id: 1
+		},
+		scene: [],
+		allotment: [],
+		bed: [],
+		plant: [],
+		planting_plan: []
+	}
 };
 guiFolderRotation.add(params, "ANIMATE").name("Run Animation").listen();
 
@@ -51,31 +61,159 @@ let INTERSECTED2;
 /** 
  * BEGIN 
  * *************************************************************************************** */
+
+const API_URL_SCENES = `${restURL}scene/?_embed&per_page=100`;
+const API_URL_ALLOTMENTS = `${restURL}allotment/?_embed&per_page=100`;
+const API_URL_BEDS = `${restURL}bed/?_embed&per_page=100`;
+const API_URL_PLANTING_PLANS = `${restURL}planting_plan/?_embed&per_page=100`;
+const API_URL_PLANTS = `${restURL}plant/?_embed&per_page=100`;
+
+let api_urls = [
+	API_URL_SCENES,
+	API_URL_ALLOTMENTS,
+	API_URL_BEDS,
+	API_URL_PLANTING_PLANS,
+	API_URL_PLANTS
+];
+
+Promise.allSettled(
+	api_urls.map(
+		url => fetch(url)
+				.then(results => results.json())
+				.then(data => {
+					let type = data[0].type;
+					switch (type) {
+						case "scene" :
+							params.data.scene.push(data);
+							break;
+						case "allotment" :
+							params.data.allotment.push(data);
+							break;
+						case "bed" :
+							params.data.bed.push(data);
+							break;
+						case "plant" :
+							params.data.plant.push(data);
+							break;
+						case "planting_plan" :
+							params.data.planting_plan.push(data);
+							break;
+						default :
+							break;
+					}
+					// console.log("-----------------");
+					// console.log(data);
+					// console.log("-----------------");
+				})
+	)
+)
+.then(results => { // (*)
+		//console.log(results);
+		results.forEach((result, num) => {
+			if (result.status == "fulfilled") {
+				//alert(`${urls[num]}: ${result.value.status}`);
+				//console.log(result);
+			}
+			if (result.status == "rejected") {
+				//alert(`${urls[num]}: ${result.reason}`);
+				console.log(result);
+			}
+		})
+		/**
+		 * init main constructor
+		 */
+		init(); // params.data.scene
+	}
+);
+
+console.log("-----------------");
+console.log("params.data------");
+console.log(params.data);
+console.log("-----------------");
+
+//throwError();
+
+
+
+// function fetchAllotments() {
+// 	return fetch(API_URL_ALLOTMENTS)
+// 		.then(response => response.json())
+// 		.then(data => {
+// 			return data;
+// 		})
+// }
+
+// function fetchBeds(id, index) {
+// 	return fetch(API_URL_BEDS) // + id
+// 		.then(response => response.json())
+// 		.then(data => {
+// 			return [index, data];
+// 		});
+// }
+
+// (async () => {
+
+// 	const data = await fetchAllotments();
+// 	console.log("old data", data);
+
+// 	const promises = data.map((allotment, index) => fetchBeds(allotment.id, index));
+// 	await Promise.all(promises)
+// 		.then(responses => {
+// 			responses.map(response => {
+// 				data[response[0]] = {...data[response[0]], ...response[1]};
+// 				console.log("update", data[response[0]]);
+// 			})
+// 		}
+// 	);
+
+// 	console.log("new data", data);
+
+// })();
+
+// throwError();
+
+
+/** 
+ * BEGIN CONTINUED..
+ * *************************************************************************************** */
+
 window.onload = function(e){ 
 
 	/** QUERY FOR SCENES ***************************************************************** */
 
-	let queryURLScenes = `${restURL}scene/?_embed&per_page=100`;
-	fetch( queryURLScenes )
-		.then( response => response.json() )
-		/**
-		 * init main constructor
-		 */
-		.then( postObject => init(postObject) );
+	// let queryURLScenes = `${restURL}scene/?_embed&per_page=100`;
+	// fetch( queryURLScenes )
+	// 	.then( response => response.json() )
+	// 	/**
+	// 	 * init main constructor
+	// 	 */
+	// 	.then( postObject => init(postObject) );
 
 }
 
 /** 
  * MAIN INIT 
  * *************************************************************************************** */
-function init(postObject) {
+function init() {
 
-	console.log("-----------------------");
-	console.log("postObject SCENES------");
-	console.log(postObject);
-	console.log("-----------------------");
+	// console.log("-----------------------");
+	// console.log("postObject SCENES------");
+	// console.log(postObject);
+	// console.log(postObject.length);
+	// console.log("-----------------------");
 
-	let wpScene = postObject[0];
+	// console.log("-----------------------");
+	// console.log("params.data.scene------");
+	// console.log(params.data.scene);
+	// console.log(params.data.scene.length);
+	// console.log("-----------------------");
+
+	let wpScene = params.data.scene[0][0];
+
+	// console.log("-----------------------");
+	// console.log("wpScene----------------");
+	// console.log(wpScene);
+	// console.log("-----------------------");
 
 	/** THREE JS SCENE ******************************************************************* */
 
@@ -232,15 +370,22 @@ function init(postObject) {
 
 	/** WEBGL CANVAS *********************************************************************** */
 
-	document.querySelector('#webgl').append(gui.domElement);
-	document.querySelector('#webgl').append(renderer.domElement);
+	canvasParent = document.querySelector('#webgl');
+	canvasParent.append(gui.domElement);
+	canvasParent.append(renderer.domElement);
+	canvas = renderer.domElement;
 	
 	/** QUERY FOR ALLOTMENTS *************************************************************** */
 
-	let queryURLAllotments = `${restURL}allotment/?_embed&per_page=100`;
-	fetch( queryURLAllotments )
-		.then( response => response.json() )
-		.then( postObject => buildAllotments(postObject, plane, gui, camera, renderer) );
+	// let queryURLAllotments = `${restURL}allotment/?_embed&per_page=100`;
+	// fetch( queryURLAllotments )
+	// 	.then( response => response.json() )
+	// 	.then( postObject => buildAllotments(postObject, plane, gui, camera, renderer) );
+
+	buildAllotments(
+		params.data.allotment[0], 
+		plane, gui, camera, renderer
+	);
 		
 	// let queryURLPlantingPlans = `${restURL}planting_plan/?_embed`;
 	// fetch( queryURLPlantingPlans )
@@ -420,7 +565,7 @@ function getAmbientLight(color, intensity){
 
 
 /**
- * BUILD FROM REST API POST OBJECT ************************************************************
+ * BUILD "ALLOTMENTS" FROM REST API POST OBJECT ************************************************************
  */
 function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 
@@ -507,15 +652,22 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 
 		/** SEND AJAX FETCH TO RETRIEVE BEDS IN THIS ALLOTMENT *************************** */
 
-		let queryURLBeds = `${restURL}bed/?_embed&per_page=100`;
-		fetch( queryURLBeds )
-			.then( response => response.json() )
-			.then( postObject => buildBeds(
-					postObject, plane, gui, camera, renderer, 
-					structure.userData.postID, 
-					structure.position.x, structure.position.y, 0 //structure.position.z
-				) 
-			);
+		// let queryURLBeds = `${restURL}bed/?_embed&per_page=100`;
+		// fetch( queryURLBeds )
+		// 	.then( response => response.json() )
+		// 	.then( postObject => buildBeds(
+		// 			postObject, plane, gui, camera, renderer, 
+		// 			structure.userData.postID, 
+		// 			structure.position.x, structure.position.y, 0 //structure.position.z
+		// 		) 
+		// 	);
+
+		buildBeds(
+			params.data.bed[0], 
+			plane, gui, camera, renderer, 
+			structure.userData.postID, 
+			structure.position.x, structure.position.y, 0 //structure.position.z
+		) 
 
 		/** BUILD OUT SPRITES AND INFOSPOTS AND ANNOTATIONS ****************************** 
 
@@ -548,7 +700,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, worldID) {
 }
 
 /**
- * BUILD FROM REST API POST OBJECT ************************************************************
+ * BUILD "BEDS" FROM REST API POST OBJECT ************************************************************
  */
 function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOffsetX, posOffsetY, posOffsetZ) {
 
@@ -556,8 +708,6 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 	// console.log("postObject BEDS----------");
 	// console.log(postObject);
 	// console.log("-------------------------");
-
-	//let guiFolderBeds = gui.addFolder("Beds");
 
 	postObject.forEach( function(key) {
 
@@ -635,6 +785,25 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 			// console.log("bed----------------------");
 			// console.log(structure);
 			// console.log("-------------------------");
+
+			/** SEND AJAX FETCH TO RETRIEVE PLANTS IN THIS BED, ACCORDING TO PLANTING PLANS *** */
+
+			// let queryURLPlants = `${restURL}plant/?_embed&per_page=100`;
+			// fetch( queryURLPlants )
+			// 	.then( response => response.json() )
+			// 	.then( postObject => buildPlants(
+			// 			postObject, plane, gui, camera, renderer, 
+			// 			structure.userData.postID, 
+			// 			structure.position.x, structure.position.y, 0 //structure.position.z
+			// 		) 
+			// 	);
+
+			buildPlants(
+				params.data.plant[0], 
+				plane, gui, camera, renderer, 
+				structure.userData.postID, 
+				structure.position.x, structure.position.y, 0 //structure.position.z
+			) 
 		
 			/** INFOSPOTS ********************************************************************* */
 		
@@ -644,6 +813,136 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 				structure.position.y, 
 				bed.parameters.z + 3,
 				bed.postID,
+				structure.userData.annotation,
+				structure.userData.link 
+			);
+			infospot.name = `INFOSPOT: ${structure.name}`;
+			infospot.visible = false;
+
+			guiFolderBeds.add(infospot, "visible").name("InfoSphere").listen();
+
+			plane.add(infospot);
+		
+		}
+	}); /** END BEDS *********************************************************************** */
+	
+	// console.log("-------------------------");
+	// console.log("plane.children-----------");
+	// console.log(plane.children);
+	// console.log("-------------------------");
+
+	return plane.children;
+}
+
+/**
+ * BUILD "PLANTS" FROM REST API POST OBJECT ************************************************************
+ */
+function buildPlants(postObject, plane, gui, camera, renderer, bedID, posOffsetX, posOffsetY, posOffsetZ) {
+
+	console.log("-------------------------");
+	console.log("postObject PLANTS--------");
+	console.log(postObject);
+	console.log("-------------------------");
+
+	return;
+
+	postObject.forEach( function(key) {
+
+		// console.log("-------------------------");
+		// console.log("key.id (postObject)------");
+		// console.log(key.id);
+		// console.log(key);
+		// console.log("-------------------------");
+
+		// only show plants for this allotment structure
+		if ( key.acf.plant_bed[0].ID != null && key.acf.plant_bed[0].ID == bedID ) {
+
+			let plant = {};
+			plant.parameters = {};
+			plant.position = {};
+			plant.images = {};
+			plant.parameters.x = parseInt(key.acf.plant_width) / 12;
+			plant.parameters.y = parseInt(key.acf.plant_length) / 12;
+			plant.parameters.z = parseInt(key.acf.plant_height) / 12;
+			plant.position.x = parseInt(key.acf.plant_position_x) / 12 + posOffsetX;
+			plant.position.y = parseInt(key.acf.plant_position_y) / 12 + posOffsetY;
+			plant.position.z = parseInt(key.acf.plant_position_z) / 12 + (plant.parameters.z / 2); // + posOffsetZ;
+			plant.images.texture = key.acf.plant_texture_image;
+			plant.images.featured = getFeaturedImage(key);
+			plant.shape = key.acf.plant_shape;
+			plant.color = key.acf.plant_color;
+			plant.title = key.title.rendered;
+			plant.postID = key.id;
+			plant.description = key.content.rendered;
+			plant.link = key.link;
+
+			// console.log("-------------------------");
+			// console.log("plant----------------");
+			// console.log(plant);
+			// console.log("-------------------------");
+
+			let structure = getGeometry(
+				plant.shape,
+				plant.parameters.x, 
+				plant.parameters.y, 
+				plant.parameters.z, 
+				plant.color
+			);
+			structure.name = plant.title;
+			structure.userData.type = "structure";
+			structure.userData.postID = plant.postID;
+			structure.userData.description = plant.description;
+			structure.userData.annotation = plant.title;
+			structure.userData.link = plant.link;
+			structure.position.x = plant.position.x ? plant.position.x : 0;
+			structure.position.y = plant.position.y ? plant.position.y : 0;
+			structure.position.z = plant.position.z ? plant.position.z : 0;
+			//structure.rotation.x = -Math.PI / 2; // -90 degrees in radians
+			structure.material.roughness = 0.9;
+			if (plant.images.texture != null && plant.images.texture != false) {
+				structure.material.map = loader.load(plant.images.texture);
+				for (let i = 0; i < structure.material.length; i++) {
+					// hightlight object
+					//structure.material[i].color.set(0xff0000);
+					structure.material[i].map = loader.load(plant.images.texture);
+					//structure.faces[i].materialIndex = 1;
+					//console.log(intersects[i]);
+					// structure.material[i].bumpMap = loader.load(plant.images.texture);
+					// structure.material[i].bumpScale = 0.05;
+					let structureTextureMap = structure.material[i].map;
+					structureTextureMap.wrapS = THREE.RepeatWrapping;
+					structureTextureMap.wrapT = THREE.RepeatWrapping;
+					structureTextureMap.repeat.set(4, 4);
+				}
+			}
+			
+			plane.add(structure);
+			
+			// console.log("-------------------------");
+			// console.log("plant----------------------");
+			// console.log(structure);
+			// console.log("-------------------------");
+
+			/** SEND AJAX FETCH TO RETRIEVE PLANTS IN THIS BED, ACCORDING TO PLANTING PLANS *** */
+
+			let queryURLPlants = `${restURL}plant/?_embed&per_page=100`;
+			fetch( queryURLPlants )
+				.then( response => response.json() )
+				.then( postObject => buildPlants(
+						postObject, plane, gui, camera, renderer, 
+						structure.userData.postID, 
+						structure.position.x, structure.position.y, 0 //structure.position.z
+					) 
+				);
+		
+			/** INFOSPOTS ********************************************************************* */
+		
+			let infospot = makeInfospotSphere(
+				structure.name, 
+				structure.position.x, 
+				structure.position.y, 
+				plant.parameters.z + 3,
+				plant.postID,
 				structure.userData.annotation,
 				structure.userData.link 
 			);
@@ -1492,6 +1791,16 @@ function dragElement(elmnt) {
 
 
 
+
+// throw manual abort of script
+function throwError() {
+	// creates a new exception type:
+	function FatalError(){ Error.apply(this, arguments); this.name = "FatalError"; }
+	FatalError.prototype = Object.create(Error.prototype);
+
+	// and then, use this to trigger the error:
+	throw new FatalError("MANUAL ABORT");
+}
 /** 
  * END FILE
  * ************************************************************************************** 
