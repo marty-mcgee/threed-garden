@@ -630,6 +630,7 @@ function buildPlantingPlans(postObject, plane, gui, camera, renderer, bedID, pos
 	// console.log(postObject);
 	// console.log("-------------------------");
 
+	// only show plants for this planting plan's bed structure
 	var filteredPostObject = [];
 	var matches = [];
 	postObject.forEach(function (obj) {
@@ -646,6 +647,7 @@ function buildPlantingPlans(postObject, plane, gui, camera, renderer, bedID, pos
 	// console.log(filteredPostObject);
 	// console.log("-------------------------");
 
+	// for each bed in this planting plan..
 	filteredPostObject.forEach( function(key) {
 
 		console.log("-------------------------");
@@ -654,94 +656,110 @@ function buildPlantingPlans(postObject, plane, gui, camera, renderer, bedID, pos
 		console.log(key);
 		console.log("-------------------------");
 
-		// only show plants for this allotment structure
-		//if ( key.acf.plant_bed[0].ID != null && key.acf.plant_bed[0].ID == bedID ) {
+		// for each planting plan bed-plant schedule..
+		key.acf.planting_plan_bed_plant_schedule.forEach(function(key2) {
+			
+			console.log("key2-------");
+			console.log(key2);
+			console.log("-------------------------");
 
-			let plant = {};
-			plant.parameters = {};
-			plant.position = {};
-			plant.images = {};
-			plant.parameters.x = parseInt(key.acf.plant_width) / 12;
-			plant.parameters.y = parseInt(key.acf.plant_length) / 12;
-			plant.parameters.z = parseInt(key.acf.plant_height) / 12;
-			plant.position.x = parseInt(key.acf.plant_position_x) / 12 + posOffsetX;
-			plant.position.y = parseInt(key.acf.plant_position_y) / 12 + posOffsetY;
-			plant.position.z = parseInt(key.acf.plant_position_z) / 12 + (plant.parameters.z / 2); // + posOffsetZ;
-			plant.images.texture = key.acf.plant_texture_image;
-			plant.images.featured = getFeaturedImage(key);
-			plant.shape = key.acf.plant_shape;
-			plant.color = key.acf.plant_color;
-			plant.title = key.title.rendered;
-			plant.postID = key.id;
-			plant.description = key.content.rendered;
-			plant.link = key.link;
+			var filteredPlant = params.data.plant.filter(function (obj) {
+				return obj.id == key2.planting_plan_plant;
+			});
+			console.log("filteredPlant------------");
+			console.log(filteredPlant);
+			console.log("-------------------------");
 
-			// console.log("-------------------------");
-			// console.log("plant----------------");
-			// console.log(plant);
-			// console.log("-------------------------");
+			// for each plant in this bed..
+			filteredPlant.forEach(function(key3) {
 
-			let structure = getGeometry(
-				plant.shape,
-				plant.parameters.x, 
-				plant.parameters.y, 
-				plant.parameters.z, 
-				plant.color
-			);
-			structure.name = plant.title;
-			structure.userData.type = "structure";
-			structure.userData.postID = plant.postID;
-			structure.userData.description = plant.description;
-			structure.userData.annotation = plant.title;
-			structure.userData.link = plant.link;
-			structure.position.x = plant.position.x ? plant.position.x : 0;
-			structure.position.y = plant.position.y ? plant.position.y : 0;
-			structure.position.z = plant.position.z ? plant.position.z : 0;
-			//structure.rotation.x = -Math.PI / 2; // -90 degrees in radians
-			structure.material.roughness = 0.9;
-			if (plant.images.texture != null && plant.images.texture != false) {
-				structure.material.map = loader.load(plant.images.texture);
-				for (let i = 0; i < structure.material.length; i++) {
-					// hightlight object
-					//structure.material[i].color.set(0xff0000);
-					structure.material[i].map = loader.load(plant.images.texture);
-					//structure.faces[i].materialIndex = 1;
-					//console.log(intersects[i]);
-					// structure.material[i].bumpMap = loader.load(plant.images.texture);
-					// structure.material[i].bumpScale = 0.05;
-					let structureTextureMap = structure.material[i].map;
-					structureTextureMap.wrapS = THREE.RepeatWrapping;
-					structureTextureMap.wrapT = THREE.RepeatWrapping;
-					structureTextureMap.repeat.set(4, 4);
+				let plant = {};
+				plant.parameters = {};
+				plant.position = {};
+				plant.images = {};
+				plant.parameters.x = parseInt(key3.acf.plant_width) / 12;
+				plant.parameters.y = parseInt(key3.acf.plant_length) / 12;
+				plant.parameters.z = parseInt(key3.acf.plant_height) / 12;
+				plant.position.x = parseInt(key3.acf.plant_position_x) / 12 + posOffsetX;
+				plant.position.y = parseInt(key3.acf.plant_position_y) / 12 + posOffsetY;
+				plant.position.z = parseInt(key3.acf.plant_position_z) / 12 + (plant.parameters.z / 2); // + posOffsetZ;
+				plant.images.texture = key3.acf.plant_texture_image;
+				plant.images.featured = getFeaturedImage(key);
+				plant.shape = key3.acf.plant_shape;
+				plant.color = key3.acf.plant_color;
+				plant.title = key3.title.rendered;
+				plant.postID = key3.id;
+				plant.description = key3.content.rendered;
+				plant.link = key3.link;
+
+				// console.log("-------------------------");
+				// console.log("plant----------------");
+				// console.log(plant);
+				// console.log("-------------------------");
+
+				let structure = getGeometry(
+					plant.shape,
+					plant.parameters.x, 
+					plant.parameters.y, 
+					plant.parameters.z, 
+					plant.color
+				);
+				structure.name = plant.title;
+				structure.userData.type = "structure";
+				structure.userData.postID = plant.postID;
+				structure.userData.description = plant.description;
+				structure.userData.annotation = plant.title;
+				structure.userData.link = plant.link;
+				structure.position.x = plant.position.x ? plant.position.x : 0;
+				structure.position.y = plant.position.y ? plant.position.y : 0;
+				structure.position.z = plant.position.z ? plant.position.z : 0;
+				//structure.rotation.x = -Math.PI / 2; // -90 degrees in radians
+				structure.material.roughness = 0.9;
+				if (plant.images.texture != null && plant.images.texture != false) {
+					structure.material.map = loader.load(plant.images.texture);
+					for (let i = 0; i < structure.material.length; i++) {
+						// hightlight object
+						//structure.material[i].color.set(0xff0000);
+						structure.material[i].map = loader.load(plant.images.texture);
+						//structure.faces[i].materialIndex = 1;
+						//console.log(intersects[i]);
+						// structure.material[i].bumpMap = loader.load(plant.images.texture);
+						// structure.material[i].bumpScale = 0.05;
+						let structureTextureMap = structure.material[i].map;
+						structureTextureMap.wrapS = THREE.RepeatWrapping;
+						structureTextureMap.wrapT = THREE.RepeatWrapping;
+						structureTextureMap.repeat.set(4, 4);
+					}
 				}
-			}
+				
+				plane.add(structure);
+				
+				console.log("-------------------------");
+				console.log("plant structure----------");
+				console.log(structure);
+				console.log("-------------------------");
 			
-			plane.add(structure);
+				/** INFOSPOTS ********************************************************************* */
 			
-			// console.log("-------------------------");
-			// console.log("plant----------------------");
-			// console.log(structure);
-			// console.log("-------------------------");
-		
-			/** INFOSPOTS ********************************************************************* */
-		
-			let infospot = makeInfospotSphere(
-				structure.name, 
-				structure.position.x, 
-				structure.position.y, 
-				plant.parameters.z + 3,
-				plant.postID,
-				structure.userData.annotation,
-				structure.userData.link 
-			);
-			infospot.name = `INFOSPOT: ${structure.name}`;
-			infospot.visible = false;
+				let infospot = makeInfospotSphere(
+					structure.name, 
+					structure.position.x, 
+					structure.position.y, 
+					plant.parameters.z + 3,
+					plant.postID,
+					structure.userData.annotation,
+					structure.userData.link 
+				);
+				infospot.name = `INFOSPOT: ${structure.name}`;
+				infospot.visible = false;
 
-			guiFolderBeds.add(infospot, "visible").name("InfoSphere").listen();
+				guiFolderBeds.add(infospot, "visible").name("InfoSphere").listen();
 
-			plane.add(infospot);
+				plane.add(infospot);
 		
-		//}
+			})
+		})
+
 	}); /** END BEDS *********************************************************************** */
 	
 	// console.log("-------------------------");
