@@ -294,7 +294,7 @@ function buildScene() {
 	renderer.domElement.addEventListener("pointermove", onPointerMove, false);
 	renderer.domElement.addEventListener("pointerdown", onPointerDown, false);
 	
-	/** CONTROLS ************************************************************************** */
+	/** CONTROLS *************************************************************************** */
 		controls = new THREE.OrbitControls(camera, renderer.domElement);
 		controls.enableDamping = true;
 		controls.dampingFactor = 0.25;
@@ -317,7 +317,7 @@ function buildScene() {
 	canvasParent.append(renderer.domElement);
 	canvas = renderer.domElement;
 	
-	/** BUILD ALLOTMENTS *************************************************************** */
+	/** BUILD ALLOTMENTS ******************************************************************* */
 
 	buildAllotments(
 		params.data.allotment, 
@@ -354,8 +354,7 @@ function buildScene() {
 	};
 	animate();
 
-	/** RETURN SCENE *********************************************************************** */
-	return scene;
+	//return scene;
 }
 
 
