@@ -366,7 +366,9 @@ class ThreeD_Garden_Admin {
 	?>
 		<div class="wrap">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			<div id="webgl"></div>
+			<div id="webgl">
+				<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+			</div>
 		</div>
 	<?php
 	}
