@@ -146,7 +146,7 @@ class ThreeD_Garden_Admin {
 			'manage_options',
 			'threedgarden', 
 			array($this, 'RenderPage'), 
-			plugins_url('/admin/media/threedgarden-icon.png',__DIR__), //'dashicons-media-code',
+			plugins_url('/media/threedgarden-icon.png',__DIR__), //'dashicons-media-code',
 			31 //null
 			);
 		add_submenu_page(
@@ -367,7 +367,11 @@ class ThreeD_Garden_Admin {
 		<div class="wrap">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 			<div id="webgl">
-				<div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+				<div class="lds-default">
+					<div></div><div></div><div></div><div></div>
+					<div></div><div></div><div></div><div></div>
+					<div></div><div></div><div></div><div></div>
+				</div>
 			</div>
 		</div>
 	<?php

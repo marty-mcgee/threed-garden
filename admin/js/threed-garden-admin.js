@@ -456,7 +456,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, sceneID) {
 		buildBeds(
 			params.data.bed, 
 			plane, gui, camera, renderer, 
-			structure.userData.postID, // the post-to-post relationship <3
+			allotment.postID, // the post-to-post relationship <3
 			structure.position.x, structure.position.y, 0 //structure.position.z
 		) 
 
@@ -637,7 +637,7 @@ function buildPlantingPlans(postObject, plane, gui, camera, renderer, bedID, pos
 			if ( i.planting_plan_bed == bedID ) {
 				//matches.push(i);
 				matches.push(obj);
-				console.log("MATCHED at: ", obj)
+				console.log("MATCHED at: ", i);
 			}
 		})
 		filteredPostObject = [...matches];
@@ -722,18 +722,6 @@ function buildPlantingPlans(postObject, plane, gui, camera, renderer, bedID, pos
 			// console.log("plant----------------------");
 			// console.log(structure);
 			// console.log("-------------------------");
-
-			/** SEND AJAX FETCH TO RETRIEVE PLANTS IN THIS BED, ACCORDING TO PLANTING PLANS *** */
-
-			// let queryURLPlants = `${restURL}plant/?_embed&per_page=100`;
-			// fetch( queryURLPlants )
-			// 	.then( response => response.json() )
-			// 	.then( postObject => buildPlants(
-			// 			postObject, plane, gui, camera, renderer, 
-			// 			structure.userData.postID, 
-			// 			structure.position.x, structure.position.y, 0 //structure.position.z
-			// 		) 
-			// 	);
 		
 			/** INFOSPOTS ********************************************************************* */
 		
