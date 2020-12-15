@@ -27,7 +27,7 @@ class ThreeD_Garden_Admin {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
+	 * @var      string    $plugin_name
 	 */
 	private $plugin_name;
 
@@ -36,7 +36,7 @@ class ThreeD_Garden_Admin {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
+	 * @var      string    $version
 	 */
 	private $version;
 
@@ -45,7 +45,7 @@ class ThreeD_Garden_Admin {
 	 * 
 	 * @since    1.18.0
 	 * @access   protected
-	 * @var      array    $templates
+	 * @var      array     $templates
 	 */
 	protected $templates;
 
@@ -53,8 +53,8 @@ class ThreeD_Garden_Admin {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of this plugin.
-	 * @param      string    $version    The version of this plugin.
+	 * @param    string    $plugin_name
+	 * @param    string    $version
 	 */
 	public function __construct( $plugin_name, $version ) {
 
