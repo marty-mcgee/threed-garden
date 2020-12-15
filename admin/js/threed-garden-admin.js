@@ -234,7 +234,7 @@ function buildScene() {
 	// spotLight.position.set( -20, -60, 20 );
 	// //spotLight.intensity = 3.0;
 
-	let directionalLight = getDirectionalLight(0xFFFFFF, 2.4);
+	let directionalLight = getDirectionalLight(0xFFFFFF, 2.0);
 	directionalLight.position.set( -90, -120, 120 );
 	//directionalLight.intensity = 2.4;
 
@@ -880,8 +880,8 @@ function getPointLight(color, intensity){
 	let light = new THREE.PointLight(color, intensity);
 	light.castShadow = true;
 	light.shadow.bias = 0.001;
-	light.shadow.mapSize.width = 2048; //default = 1024
-	light.shadow.mapSize.height = 2048; //default = 1024
+	light.shadow.mapSize.width = 4096; //default = 1024
+	light.shadow.mapSize.height = 4096; //default = 1024
 	return light;
 }
 
@@ -897,9 +897,9 @@ function getSpotLight(color, intensity){
 function getDirectionalLight(color, intensity){
 	let light = new THREE.DirectionalLight(color, intensity);
 	light.castShadow = true;
-	light.shadow.bias 			= 0.01;
-	light.shadow.mapSize.width 	= 2048; //default = 1024
-	light.shadow.mapSize.height = 2048; //default = 1024
+	light.shadow.bias 			= 0.001;
+	light.shadow.mapSize.width 	= 4096; //default = 1024
+	light.shadow.mapSize.height = 4096; //default = 1024
 	light.shadow.camera.left 	= -1000; //default = -5
 	light.shadow.camera.bottom 	= -1000; //default = -5
 	light.shadow.camera.right 	= 1000; //default = 5
