@@ -484,7 +484,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, sceneID) {
 	// console.log(plane.children);
 	// console.log("-------------------------");
 
-	return plane.children;
+	// return plane.children;
 }
 
 /**
@@ -616,7 +616,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 	// console.log(plane.children);
 	// console.log("-------------------------");
 
-	return plane.children;
+	// return plane.children;
 }
 
 /**
@@ -763,14 +763,14 @@ function buildPlantingPlans(postObject, plane, gui, camera, renderer, bedID, pos
 			})
 		})
 
-	}); /** END BEDS *********************************************************************** */
+	}); /** END PLANTS *************************************************************************** */
 	
 	// console.log("-------------------------");
 	// console.log("plane.children-----------");
 	// console.log(plane.children);
 	// console.log("-------------------------");
 
-	return plane.children;
+	// return plane.children;
 }
 
 
