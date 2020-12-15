@@ -41,7 +41,7 @@ class ThreeD_Garden_Admin {
 	private $version;
 
 	/**
-	 * The array of templates that this plugin tracks.
+	 * The array of custom templates that this plugin implements.
 	 * 
 	 * @since    1.18.0
 	 * @access   protected
