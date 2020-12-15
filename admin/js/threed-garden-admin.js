@@ -320,7 +320,7 @@ function buildScene() {
 
 	buildAllotments(
 		params.data.allotment, 
-		plane, gui, camera, renderer,
+		plane, 
 		sceneID // the post-to-post relationship <3
 	);
 
@@ -360,7 +360,7 @@ function buildScene() {
 /**
  * BUILD "ALLOTMENTS" FROM REST API POST OBJECT ************************************************************
  */
-function buildAllotments(postObject, plane, gui, camera, renderer, sceneID) {
+function buildAllotments(postObject, plane, sceneID) {
 
 	// console.log("-------------------------");
 	// console.log("postObject ALLOTMENTS----");
@@ -454,7 +454,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, sceneID) {
 
 		buildBeds(
 			params.data.bed, 
-			plane, gui, camera, renderer, 
+			plane, 
 			allotment.postID, // the post-to-post relationship <3
 			structure.position.x, structure.position.y, 0 //structure.position.z
 		) 
@@ -490,7 +490,7 @@ function buildAllotments(postObject, plane, gui, camera, renderer, sceneID) {
 /**
  * BUILD "BEDS" FROM REST API POST OBJECT ************************************************************
  */
-function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOffsetX, posOffsetY, posOffsetZ) {
+function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOffsetZ) {
 
 	// console.log("-------------------------");
 	// console.log("postObject BEDS----------");
@@ -583,7 +583,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 
 		buildPlantingPlans(
 			params.data.planting_plan, 
-			plane, gui, camera, renderer, 
+			plane, 
 			bed.postID, // the post-to-post relationship <3
 			structure.position.x, structure.position.y, 0 //structure.position.z
 		) 
@@ -619,7 +619,7 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 /**
  * BUILD "PLANTS" FROM REST API POST OBJECT ************************************************************
  */
-function buildPlantingPlans(postObject, plane, gui, camera, renderer, bedID, posOffsetX, posOffsetY, posOffsetZ) {
+function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, posOffsetZ) {
 
 	// console.log("-------------------------");
 	// console.log("postObject PLANTING PLANS");
