@@ -51,7 +51,7 @@ class ThreeD_Garden_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-
+		
 	}
 
 	/**

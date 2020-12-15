@@ -9,7 +9,6 @@ const pluginURL = postdata.plugin_url;
 const themeURI = postdata.theme_uri;
 const restURL = postdata.rest_url;
 const worldID = postdata.world_id;
-let sceneID = postdata.scene_id;
 console.log("-----------------------");
 console.log("pluginName-------------");
 console.log(pluginName, pluginVersion);

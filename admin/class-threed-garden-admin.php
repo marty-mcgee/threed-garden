@@ -41,6 +41,15 @@ class ThreeD_Garden_Admin {
 	private $version;
 
 	/**
+	 * The array of templates that this plugin tracks.
+	 * 
+	 * @since    1.18.0
+	 * @access   protected
+	 * @var      array    $templates
+	 */
+	protected $templates;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -51,6 +60,47 @@ class ThreeD_Garden_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+
+		/** PAGE TEMPLATES ******************************************************************* */
+		$this->templates = array();
+
+		// Add a filter to the attributes metabox to inject template into the cache.
+		// 4.6 and older
+		if ( version_compare( floatval( get_bloginfo( 'version' ) ), '4.7', '<' ) ) {
+			add_filter(
+				'page_attributes_dropdown_pages_args', 
+				array( $this, 'register_project_templates' )
+			);
+		} 
+		// 4.7 and newer
+		else {
+			add_filter(
+				'theme_page_templates', 
+				array( $this, 'add_new_template' )
+			);
+		}
+
+		// Add a filter to the save post to inject our template into the page cache
+		add_filter(
+			'wp_insert_post_data', 
+			array( $this, 'register_project_templates' ) 
+		);
+
+		// Add a filter to the template include to determine if the page has our 
+		// template assigned and return it's path
+		add_filter(
+			'template_include', 
+			array( $this, 'view_project_template') 
+		);
+
+		// Add your templates to this array.
+		$this->templates = array(
+			'single-scene.php' => '3D Garden Scene',
+			'single-allotment.php' => '3D Garden Allotment',
+			'single-bed.php' => '3D Garden Bed',
+			'single-plant.php' => '3D Garden Plant',
+			'single-planting_plan.php' => '3D Garden Planting Plan',
+		);
 
 	}
 
@@ -124,8 +174,7 @@ class ThreeD_Garden_Admin {
 					'plugin_url' => plugin_dir_url(__FILE__),
 					'theme_uri' => get_stylesheet_directory_uri(),
 					'rest_url' => rest_url('wp/v2/'),
-					'world_id' => 1,
-					'scene_id' => 1
+					'world_id' => 1
 				)
 			);
 
@@ -273,7 +322,6 @@ class ThreeD_Garden_Admin {
 			'manage_options', 
 			__FILE__.'/custom', 
 			array($this, 'RenderPageCustom'),
-			'',
 			null
 		);
 		add_submenu_page(
@@ -283,7 +331,6 @@ class ThreeD_Garden_Admin {
 			'manage_options', 
 			__FILE__.'/about', 
 			array($this, 'RenderPageAbout'),
-			'',
 			null
 		);
 								  
@@ -462,7 +509,7 @@ class ThreeD_Garden_Admin {
 			'has_archive'        => true,
 			'hierarchical'       => false,
 			'menu_position'      => null,
-			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
+			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments', 'page-attributes' ),
 			//'taxonomies'         => array('category', 'post_tag' )
 		);
 
@@ -618,7 +665,7 @@ class ThreeD_Garden_Admin {
 			'has_archive'        => true,
 			'hierarchical'       => false,
 			'menu_position'      => null,
-			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
+			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments', 'page-attributes' ),
 			//'taxonomies'         => array('category', 'post_tag' )
 		);
 
@@ -774,7 +821,7 @@ class ThreeD_Garden_Admin {
 			'has_archive'        => true,
 			'hierarchical'       => false,
 			'menu_position'      => null,
-			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
+			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments', 'page-attributes' ),
 			//'taxonomies'         => array('category', 'post_tag' )
 		);
 
@@ -930,7 +977,7 @@ class ThreeD_Garden_Admin {
 			'has_archive'        => true,
 			'hierarchical'       => false,
 			'menu_position'      => null,
-			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
+			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments', 'page-attributes' ),
 			//'taxonomies'         => array('category', 'post_tag' )
 		);
 
@@ -1086,7 +1133,7 @@ class ThreeD_Garden_Admin {
 			'has_archive'        => true,
 			'hierarchical'       => false,
 			'menu_position'      => null,
-			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
+			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments', 'page-attributes' ),
 			//'taxonomies'         => array('category', 'post_tag' )
 		);
 
@@ -1147,6 +1194,269 @@ class ThreeD_Garden_Admin {
 	 * TESTING
 	 * **********************************************************************************************
 	 */
+
+
+	/** PAGE TEMPLATES ******************************************************************* */
+	
+	/**
+	 * Adds our template to the page dropdown for v4.7+
+	 *
+	 */
+	public function add_new_template( $posts_templates ) {
+		$posts_templates = array_merge( $posts_templates, $this->templates );
+		return $posts_templates;
+	}
+
+	/**
+	 * Adds our template to the pages cache in order to trick WordPress
+	 * into thinking the template file exists where it doens't really exist.
+	 */
+	public function register_project_templates( $atts ) {
+
+		// Create the key used for the themes cache
+		$cache_key = 'page_templates-' . md5( get_theme_root() . '/' . get_stylesheet() );
+
+		// Retrieve the cache list. 
+		// If it doesn't exist, or it's empty prepare an array
+		$templates = wp_get_theme()->get_page_templates();
+		if ( empty( $templates ) ) {
+			$templates = array();
+		} 
+
+		// New cache, therefore remove the old one
+		wp_cache_delete( $cache_key , 'themes');
+
+		// Now add our template to the list of templates by merging our templates
+		// with the existing templates array from the cache.
+		$templates = array_merge( $templates, $this->templates );
+
+		// Add the modified cache to allow WordPress to pick it up for listing
+		// available templates
+		wp_cache_add( $cache_key, $templates, 'themes', 1800 );
+
+		return $atts;
+
+	} 
+
+	/**
+	 * Checks if the template is assigned to the page
+	 */
+	public function view_project_template( $template ) {
+		
+		// Get global post
+		global $post;
+
+		// Return template if post is empty
+		if ( ! $post ) {
+			return $template;
+		}
+
+		// Return default template if we don't have a custom one defined
+		if ( ! isset( $this->templates[get_post_meta( 
+			$post->ID, '_wp_page_template', true 
+		)] ) ) {
+			return $template;
+		} 
+
+		$file = plugin_dir_path( __FILE__ ). get_post_meta( 
+			$post->ID, '_wp_page_template', true
+		);
+
+		// Just to be safe, we check if the file exist first
+		if ( file_exists( $file ) ) {
+			return $file;
+		} else {
+			echo $file;
+		}
+
+		// Return template
+		return $template;
+
+	}
+
+	/** END PAGE TEMPLATES ******************************************************************* */	
+	
+
+	// add_filter( 'single_template', 'load_scene_template' );
+	function load_scene_template( $template ) {
+		global $post;
+		
+		if ( 'scene' === $post->post_type ) { // && locate_template( array( 'single-scene.php' ) ) !== $template
+			/*
+			 * This is a 'scene' post
+			 * AND a 'single scene template' is not found on
+			 * theme or child theme directories, so load it
+			 * from our plugin directory.
+			 */
+			return plugin_dir_path( __FILE__ ) . 'templates/single-scene.php';
+		}
+	
+		return $template;
+	}
+
+	// add_filter( 'single_template', 'load_allotment_template' );
+	function load_allotment_template( $template ) {
+		global $post;
+	
+		if ( 'allotment' === $post->post_type ) { // && locate_template( array( 'single-allotment.php' ) ) !== $template
+			/*
+			 * This is a 'allotment' post
+			 * AND a 'single allotment template' is not found on
+			 * theme or child theme directories, so load it
+			 * from our plugin directory.
+			 */
+			return plugin_dir_path( __FILE__ ) . 'templates/single-allotment.php';
+		}
+	
+		return $template;
+	}
+
+	// add_filter( 'single_template', 'load_bed_template' );
+	function load_bed_template( $template ) {
+		global $post;
+	
+		if ( 'bed' === $post->post_type ) { // && locate_template( array( 'single-bed.php' ) ) !== $template
+			/*
+			 * This is a 'bed' post
+			 * AND a 'single bed template' is not found on
+			 * theme or child theme directories, so load it
+			 * from our plugin directory.
+			 */
+			return plugin_dir_path( __FILE__ ) . 'templates/single-bed.php';
+		}
+	
+		return $template;
+	}
+
+	// add_filter( 'single_template', 'load_plant_template' );
+	function load_plant_template( $template ) {
+		global $post;
+	
+		if ( 'plant' === $post->post_type ) { // && locate_template( array( 'single-plant.php' ) ) !== $template
+			/*
+			 * This is a 'plant' post
+			 * AND a 'single plant template' is not found on
+			 * theme or child theme directories, so load it
+			 * from our plugin directory.
+			 */
+			return plugin_dir_path( __FILE__ ) . 'templates/single-plant.php';
+		}
+	
+		return $template;
+	}
+
+	// add_filter( 'single_template', 'load_planting_plan_template' );
+	function load_planting_plan_template( $template ) {
+		global $post;
+	
+		if ( 'planting_plan' === $post->post_type ) { // && locate_template( array( 'single-planting_plan.php' ) ) !== $template
+			/*
+			 * This is a 'planting_plan' post
+			 * AND a 'single planting_plan template' is not found on
+			 * theme or child theme directories, so load it
+			 * from our plugin directory.
+			 */
+			return plugin_dir_path( __FILE__ ) . 'templates/single-planting_plan.php';
+		}
+	
+		return $template;
+	}
+
+
+
+
+
+	/** Custom Post Type Template Selector **/
+	function cpt_add_meta_boxes() {
+		$post_types = get_post_types();
+		foreach( $post_types as $ptype ) {
+			if ( $ptype !== 'page') {
+				add_meta_box( 'cpt-selector', 'Attributes', array( $this , 'cpt_meta_box' ), $ptype, 'side', 'core' );
+			}
+		}
+	}
+
+	function cpt_remove_meta_boxes() {
+		$post_types = get_post_types();
+		foreach( $post_types as $ptype ) {
+			if ( $ptype !== 'page') {
+				remove_meta_box( 'pageparentdiv', $ptype, 'normal' );
+			}
+		}
+	}
+	
+	function cpt_meta_box( $post ) {
+		$post_meta = get_post_meta( $post->ID );
+		$templates = wp_get_theme()->get_page_templates();
+
+		$post_type_object = get_post_type_object($post->post_type);
+		if ( $post_type_object->hierarchical ) {
+			$dropdown_args = array(
+				'post_type'        => $post->post_type,
+				'exclude_tree'     => $post->ID,
+				'selected'         => $post->post_parent,
+				'name'             => 'parent_id',
+				'show_option_none' => __('(no parent)'),
+				'sort_column'      => 'menu_order, post_title',
+				'echo'             => 0,
+			);
+
+			$dropdown_args = apply_filters( 'page_attributes_dropdown_pages_args', $dropdown_args, $post );
+			$pages = wp_dropdown_pages( $dropdown_args );
+
+			if ( $pages ) { 
+				echo "<p><strong>Parent</strong></p>";
+				echo "<label class=\"screen-reader-text\" for=\"parent_id\">Parent</label>";
+				echo $pages;
+			}
+		}
+
+		// Template Selector
+		echo "<p><strong>Template</strong></p>";
+		echo "<select id=\"cpt-selector\" name=\"_wp_page_template\"><option value=\"default\">Default Template</option>";
+		foreach ( $templates as $template_filename => $template_name ) {
+			if ( $post->post_type == strstr( $template_filename, '-', true) ) {
+				if ( isset($post_meta['_wp_page_template'][0]) && ($post_meta['_wp_page_template'][0] == $template_filename) ) {
+					echo "<option value=\"$template_filename\" selected=\"selected\">$template_name</option>";
+				} else {
+					echo "<option value=\"$template_filename\">$template_name</option>";
+				}
+			}
+		}
+		echo "</select>";
+
+		// Page order
+		echo "<p><strong>Order</strong></p>";
+		echo "<p><label class=\"screen-reader-text\" for=\"menu_order\">Order</label><input name=\"menu_order\" type=\"text\" size=\"4\" id=\"menu_order\" value=\"". esc_attr($post->menu_order) . "\" /></p>";
+	}
+
+	function save_cpt_template_meta_data( $post_id ) {
+
+		if ( isset( $_REQUEST['_wp_page_template'] ) ) {
+			update_post_meta( $post_id, '_wp_page_template', $_REQUEST['_wp_page_template'] );
+		}
+	}
+	
+
+	function custom_single_template($template) {
+		global $post;
+
+		$post_meta = ( $post ) ? get_post_meta( $post->ID ) : null;
+		if ( isset($post_meta['_wp_page_template'][0]) && ( $post_meta['_wp_page_template'][0] != 'default' ) ) {
+			$template = get_template_directory() . '/' . $post_meta['_wp_page_template'][0];
+		}
+
+		return $template;
+	}
+	
+	/** END Custom Post Type Template Selector **/
+
+
+
+
+
+
+
 
 	/** 
 	 * register acf fields to Wordpress API
