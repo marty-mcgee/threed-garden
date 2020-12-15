@@ -39,7 +39,7 @@ const loader = new THREE.TextureLoader();
 let params = {
 	ANIMATE: false,
 	data: {
-		world: [{id: 1}],
+		world: [{id: worldID}],
 		scene: [],
 		allotment: [],
 		bed: [],
@@ -496,7 +496,8 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 	// console.log("postObject BEDS----------");
 	// console.log(postObject);
 	// console.log("-------------------------");
-
+	
+	// only show beds for this allotment structure
 	var filteredPostObject = postObject.filter(function (obj) {
 		return obj.acf.bed_allotment == allotmentID;
 	});
@@ -512,103 +513,99 @@ function buildBeds(postObject, plane, gui, camera, renderer, allotmentID, posOff
 		// console.log(key);
 		// console.log("-------------------------");
 
-		// only show beds for this allotment structure
-		//if ( key.acf.bed_allotment[0].ID != null && key.acf.bed_allotment[0].ID == allotmentID ) {
+		let bed = {};
+		bed.parameters = {};
+		bed.position = {};
+		bed.images = {};
+		bed.parameters.x = parseInt(key.acf.bed_width) / 12;
+		bed.parameters.y = parseInt(key.acf.bed_length) / 12;
+		bed.parameters.z = parseInt(key.acf.bed_height) / 12;
+		bed.position.x = parseInt(key.acf.bed_position_x) / 12 + posOffsetX;
+		bed.position.y = parseInt(key.acf.bed_position_y) / 12 + posOffsetY;
+		bed.position.z = parseInt(key.acf.bed_position_z) / 12 + (bed.parameters.z / 2); // + posOffsetZ;
+		bed.images.texture = key.acf.bed_texture_image;
+		bed.images.featured = getFeaturedImage(key);
+		bed.shape = key.acf.bed_shape;
+		bed.color = key.acf.bed_color;
+		bed.title = key.title.rendered;
+		bed.postID = key.id;
+		bed.description = key.content.rendered;
+		bed.link = key.link;
 
-			let bed = {};
-			bed.parameters = {};
-			bed.position = {};
-			bed.images = {};
-			bed.parameters.x = parseInt(key.acf.bed_width) / 12;
-			bed.parameters.y = parseInt(key.acf.bed_length) / 12;
-			bed.parameters.z = parseInt(key.acf.bed_height) / 12;
-			bed.position.x = parseInt(key.acf.bed_position_x) / 12 + posOffsetX;
-			bed.position.y = parseInt(key.acf.bed_position_y) / 12 + posOffsetY;
-			bed.position.z = parseInt(key.acf.bed_position_z) / 12 + (bed.parameters.z / 2); // + posOffsetZ;
-			bed.images.texture = key.acf.bed_texture_image;
-			bed.images.featured = getFeaturedImage(key);
-			bed.shape = key.acf.bed_shape;
-			bed.color = key.acf.bed_color;
-			bed.title = key.title.rendered;
-			bed.postID = key.id;
-			bed.description = key.content.rendered;
-			bed.link = key.link;
+		// console.log("-------------------------");
+		// console.log("bed----------------");
+		// console.log(bed);
+		// console.log("-------------------------");
 
-			// console.log("-------------------------");
-			// console.log("bed----------------");
-			// console.log(bed);
-			// console.log("-------------------------");
-
-			let structure = getGeometry(
-				bed.shape,
-				bed.parameters.x, 
-				bed.parameters.y, 
-				bed.parameters.z, 
-				bed.color
-			);
-			structure.name = bed.title;
-			structure.userData.type = "structure";
-			structure.userData.postID = bed.postID;
-			structure.userData.description = bed.description;
-			structure.userData.annotation = bed.title;
-			structure.userData.link = bed.link;
-			structure.position.x = bed.position.x ? bed.position.x : 0;
-			structure.position.y = bed.position.y ? bed.position.y : 0;
-			structure.position.z = bed.position.z ? bed.position.z : 0;
-			//structure.rotation.x = -Math.PI / 2; // -90 degrees in radians
-			structure.material.roughness = 0.9;
-			if (bed.images.texture != null && bed.images.texture != false) {
-				structure.material.map = loader.load(bed.images.texture);
-				for (let i = 0; i < structure.material.length; i++) {
-					// hightlight object
-					//structure.material[i].color.set(0xff0000);
-					structure.material[i].map = loader.load(bed.images.texture);
-					//structure.faces[i].materialIndex = 1;
-					//console.log(intersects[i]);
-					// structure.material[i].bumpMap = loader.load(bed.images.texture);
-					// structure.material[i].bumpScale = 0.05;
-					let structureTextureMap = structure.material[i].map;
-					structureTextureMap.wrapS = THREE.RepeatWrapping;
-					structureTextureMap.wrapT = THREE.RepeatWrapping;
-					structureTextureMap.repeat.set(4, 4);
-				}
+		let structure = getGeometry(
+			bed.shape,
+			bed.parameters.x, 
+			bed.parameters.y, 
+			bed.parameters.z, 
+			bed.color
+		);
+		structure.name = bed.title;
+		structure.userData.type = "structure";
+		structure.userData.postID = bed.postID;
+		structure.userData.description = bed.description;
+		structure.userData.annotation = bed.title;
+		structure.userData.link = bed.link;
+		structure.position.x = bed.position.x ? bed.position.x : 0;
+		structure.position.y = bed.position.y ? bed.position.y : 0;
+		structure.position.z = bed.position.z ? bed.position.z : 0;
+		//structure.rotation.x = -Math.PI / 2; // -90 degrees in radians
+		structure.material.roughness = 0.9;
+		if (bed.images.texture != null && bed.images.texture != false) {
+			structure.material.map = loader.load(bed.images.texture);
+			for (let i = 0; i < structure.material.length; i++) {
+				// hightlight object
+				//structure.material[i].color.set(0xff0000);
+				structure.material[i].map = loader.load(bed.images.texture);
+				//structure.faces[i].materialIndex = 1;
+				//console.log(intersects[i]);
+				// structure.material[i].bumpMap = loader.load(bed.images.texture);
+				// structure.material[i].bumpScale = 0.05;
+				let structureTextureMap = structure.material[i].map;
+				structureTextureMap.wrapS = THREE.RepeatWrapping;
+				structureTextureMap.wrapT = THREE.RepeatWrapping;
+				structureTextureMap.repeat.set(4, 4);
 			}
-			
-			plane.add(structure);
-			
-			// console.log("-------------------------");
-			// console.log("bed----------------------");
-			// console.log(structure);
-			// console.log("-------------------------");
-
-			/** BUILD PLANTS IN THIS BED, ACCORDING TO PLANTING PLANS ************************* */
-
-			buildPlantingPlans(
-				params.data.planting_plan, 
-				plane, gui, camera, renderer, 
-				bed.postID, // the post-to-post relationship <3
-				structure.position.x, structure.position.y, 0 //structure.position.z
-			) 
+		}
 		
-			/** INFOSPOTS ********************************************************************* */
+		plane.add(structure);
 		
-			let infospot = makeInfospotSphere(
-				structure.name, 
-				structure.position.x, 
-				structure.position.y, 
-				bed.parameters.z + 3,
-				bed.postID,
-				structure.userData.annotation,
-				structure.userData.link 
-			);
-			infospot.name = `INFOSPOT: ${structure.name}`;
-			infospot.visible = false;
+		// console.log("-------------------------");
+		// console.log("bed----------------------");
+		// console.log(structure);
+		// console.log("-------------------------");
 
-			guiFolderBeds.add(infospot, "visible").name("InfoSphere").listen();
+		/** BUILD PLANTS IN THIS BED, ACCORDING TO PLANTING PLANS ************************* */
 
-			plane.add(infospot);
-		
-		//}
+		buildPlantingPlans(
+			params.data.planting_plan, 
+			plane, gui, camera, renderer, 
+			bed.postID, // the post-to-post relationship <3
+			structure.position.x, structure.position.y, 0 //structure.position.z
+		) 
+	
+		/** INFOSPOTS ********************************************************************* */
+	
+		let infospot = makeInfospotSphere(
+			structure.name, 
+			structure.position.x, 
+			structure.position.y, 
+			bed.parameters.z + 3,
+			bed.postID,
+			structure.userData.annotation,
+			structure.userData.link 
+		);
+		infospot.name = `INFOSPOT: ${structure.name}`;
+		infospot.visible = false;
+
+		guiFolderBeds.add(infospot, "visible").name("InfoSphere").listen();
+
+		plane.add(infospot);
+
 	}); /** END BEDS *********************************************************************** */
 	
 	// console.log("-------------------------");
@@ -635,13 +632,17 @@ function buildPlantingPlans(postObject, plane, gui, camera, renderer, bedID, pos
 	postObject.forEach(function (obj) {
 		obj.acf.planting_plan_bed_plant_schedule.forEach(function(i) {
 			if ( i.planting_plan_bed == bedID ) {
-				//matches.push(i);
-				matches.push(obj);
 				console.log("MATCHED at: ", i);
+				//matches.push(i);
+				//matches.push(obj);
+				matches.pushIfNotExist(obj, function(e) { 
+					return e.id === obj.id; 
+				});
 			}
 		})
 		filteredPostObject = [...matches];
 	});
+
 	// console.log("filteredPostObject-------");
 	// console.log(filteredPostObject);
 	// console.log("-------------------------");
@@ -649,32 +650,34 @@ function buildPlantingPlans(postObject, plane, gui, camera, renderer, bedID, pos
 	// for each bed in this planting plan..
 	filteredPostObject.forEach( function(key) {
 
-		console.log("-------------------------");
-		console.log("key.id (filteredPostObject)------");
-		console.log(key.id);
-		console.log(key);
-		console.log("-------------------------");
+		// console.log("-------------------------");
+		// console.log("key.id (filteredPostObject)------");
+		// console.log(key.id);
+		// console.log(key);
+		// console.log("-------------------------");
 
 		// for each planting plan bed-plant schedule..
 		key.acf.planting_plan_bed_plant_schedule.forEach(function(key2) {
 			
-			console.log("key2-------");
-			console.log(key2);
-			console.log("-------------------------");
+			// console.log("key2-------");
+			// console.log(key2);
+			// console.log("-------------------------");
 
+			// show this plant (or multiple plants) in this bed..
 			var filteredPlant = params.data.plant.filter(function (obj) {
 				return obj.id == key2.planting_plan_plant;
 			});
-			console.log("filteredPlant------------");
-			console.log(filteredPlant);
-			console.log("-------------------------");
 
-			// for each plant in this bed..
+			// console.log("filteredPlant------------");
+			// console.log(filteredPlant);
+			// console.log("-------------------------");
+
+			// for this plant in this bed..
 			filteredPlant.forEach(function(key3) {
 
-				console.log("key3---------------------");
-				console.log(key3);
-				console.log("-------------------------");
+				// console.log("key3---------------------");
+				// console.log(key3);
+				// console.log("-------------------------");
 
 				let plant = {};
 				plant.parameters = {};
@@ -695,10 +698,10 @@ function buildPlantingPlans(postObject, plane, gui, camera, renderer, bedID, pos
 				plant.description = key3.content.rendered;
 				plant.link = key3.link;
 
-				console.log("-------------------------");
-				console.log("plant----------------");
-				console.log(plant);
-				console.log("-------------------------");
+				// console.log("-------------------------");
+				// console.log("plant----------------");
+				// console.log(plant);
+				// console.log("-------------------------");
 
 				let structure = getGeometry(
 					plant.shape,
@@ -1374,20 +1377,20 @@ function onPointerDown(event) {
 		let intersectedObject = intersects[0].object;
 		
 		// for testing only
-		if ( intersectedObject != INTERSECTED2 ) {
-			console.log("-----------------------------");
-			console.log("INTERSECTED2 null------------");
-			console.log("intersectedObject NEW--------");
-			console.log(intersectedObject);
-			console.log("-----------------------------");
-		}
-		else {
-			console.log("-----------------------------");
-			console.log("INTERSECTED2 already stored--");
-			console.log("intersectedObject -----------");
-			console.log(intersectedObject);
-			console.log("-----------------------------");
-		}
+		// if ( intersectedObject != INTERSECTED2 ) {
+		// 	console.log("-----------------------------");
+		// 	console.log("INTERSECTED2 null------------");
+		// 	console.log("intersectedObject NEW--------");
+		// 	console.log(intersectedObject);
+		// 	console.log("-----------------------------");
+		// }
+		// else {
+		// 	console.log("-----------------------------");
+		// 	console.log("INTERSECTED2 already stored--");
+		// 	console.log("intersectedObject -----------");
+		// 	console.log(intersectedObject);
+		// 	console.log("-----------------------------");
+		// }
 
 		// restore previous intersection object (if it exists) to its original color
 		if ( INTERSECTED2 ) {
@@ -1605,6 +1608,27 @@ function throwError() {
 	// and then, use this to trigger the error:
 	throw new FatalError("MANUAL ABORT");
 }
+
+
+
+// check if an element exists in array using a comparer function
+// comparer : function(currentElement)
+Array.prototype.inArray = function(comparer) { 
+    for(var i=0; i < this.length; i++) { 
+        if(comparer(this[i])) return true; 
+    }
+    return false; 
+}; 
+
+// adds an element to the array if it does not already exist using a comparer 
+// function
+Array.prototype.pushIfNotExist = function(element, comparer) { 
+    if (!this.inArray(comparer)) {
+        this.push(element);
+    }
+}; 
+
+
 
 /**
  * TESTING ***************************************************************************************
