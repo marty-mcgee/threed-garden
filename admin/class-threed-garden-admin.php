@@ -95,11 +95,11 @@ class ThreeD_Garden_Admin {
 
 		// Add your templates to this array.
 		$this->templates = array(
-			'single-scene.php' => '3D Garden Scene',
-			'single-allotment.php' => '3D Garden Allotment',
-			'single-bed.php' => '3D Garden Bed',
-			'single-plant.php' => '3D Garden Plant',
-			'single-planting_plan.php' => '3D Garden Planting Plan',
+			'templates/single-scene.php' => '3D Garden Scene',
+			'templates/single-allotment.php' => '3D Garden Allotment',
+			'templates/single-bed.php' => '3D Garden Bed',
+			'templates/single-plant.php' => '3D Garden Plant',
+			'templates/single-planting_plan.php' => '3D Garden Planting Plan',
 		);
 
 	}
@@ -588,42 +588,42 @@ class ThreeD_Garden_Admin {
 	 * @return array Amended post update messages with new CPT update messages.
 	 */
 	public function plant_updated_messages( $messages ) {
-		$post             = get_post();
-		$post_type        = get_post_type( $post );
-		$post_type_object = get_post_type_object( $post_type );
+		// $post             = get_post();
+		// $post_type        = get_post_type( $post );
+		// $post_type_object = get_post_type_object( $post_type );
 
-		$messages['plant'] = array(
-			0  => '', // Unused. Messages start at index 1.
-			1  => __( 'Plant updated.', 'threedgarden' ),
-			2  => __( 'Custom field updated.', 'threedgarden' ),
-			3  => __( 'Custom field deleted.', 'threedgarden' ),
-			4  => __( 'Plant updated.', 'threedgarden' ),
-			/* translators: %s: date and time of the revision */
-			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Plant restored to revision from %s', 'threedgarden' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6  => __( 'Plant published.', 'threedgarden' ),
-			7  => __( 'Plant saved.', 'threedgarden' ),
-			8  => __( 'Plant submitted.', 'threedgarden' ),
-			9  => sprintf(
-				__( 'Plant scheduled for: <strong>%1$s</strong>.', 'threedgarden' ),
-				// translators: Publish box date format, see http://php.net/date
-				date_i18n( __( 'M j, Y @ G:i', 'threedgarden' ), strtotime( $post->post_date ) )
-			),
-			10 => __( 'Plant draft updated.', 'threedgarden' )
-		);
+		// $messages['plant'] = array(
+		// 	0  => '', // Unused. Messages start at index 1.
+		// 	1  => __( 'Plant updated.', 'threedgarden' ),
+		// 	2  => __( 'Custom field updated.', 'threedgarden' ),
+		// 	3  => __( 'Custom field deleted.', 'threedgarden' ),
+		// 	4  => __( 'Plant updated.', 'threedgarden' ),
+		// 	/* translators: %s: date and time of the revision */
+		// 	5  => isset( $_GET['revision'] ) ? sprintf( __( 'Plant restored to revision from %s', 'threedgarden' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+		// 	6  => __( 'Plant published.', 'threedgarden' ),
+		// 	7  => __( 'Plant saved.', 'threedgarden' ),
+		// 	8  => __( 'Plant submitted.', 'threedgarden' ),
+		// 	9  => sprintf(
+		// 		__( 'Plant scheduled for: <strong>%1$s</strong>.', 'threedgarden' ),
+		// 		// translators: Publish box date format, see http://php.net/date
+		// 		date_i18n( __( 'M j, Y @ G:i', 'threedgarden' ), strtotime( $post->post_date ) )
+		// 	),
+		// 	10 => __( 'Plant draft updated.', 'threedgarden' )
+		// );
 
-		if ( $post_type_object->publicly_queryable ) {
-			$permalink = get_permalink( $post->ID );
+		// if ( $post_type_object->publicly_queryable ) {
+		// 	$permalink = get_permalink( $post->ID );
 
-			$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View plant', 'threedgarden' ) );
-			$messages[ $post_type ][1] .= $view_link;
-			$messages[ $post_type ][6] .= $view_link;
-			$messages[ $post_type ][9] .= $view_link;
+		// 	$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View plant', 'threedgarden' ) );
+		// 	$messages[ $post_type ][1] .= $view_link;
+		// 	$messages[ $post_type ][6] .= $view_link;
+		// 	$messages[ $post_type ][9] .= $view_link;
 
-			$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
-			$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview plant', 'threedgarden' ) );
-			$messages[ $post_type ][8]  .= $preview_link;
-			$messages[ $post_type ][10] .= $preview_link;
-		}
+		// 	$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
+		// 	$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview plant', 'threedgarden' ) );
+		// 	$messages[ $post_type ][8]  .= $preview_link;
+		// 	$messages[ $post_type ][10] .= $preview_link;
+		// }
 
 		return $messages;
 	}
@@ -744,42 +744,42 @@ class ThreeD_Garden_Admin {
 	 * @return array Amended post update messages with new CPT update messages.
 	 */
 	public function allotment_updated_messages( $messages ) {
-		$post             = get_post();
-		$post_type        = get_post_type( $post );
-		$post_type_object = get_post_type_object( $post_type );
+		// $post             = get_post();
+		// $post_type        = get_post_type( $post );
+		// $post_type_object = get_post_type_object( $post_type );
 
-		$messages['allotment'] = array(
-			0  => '', // Unused. Messages start at index 1.
-			1  => __( 'Allotment updated.', 'threedgarden' ),
-			2  => __( 'Custom field updated.', 'threedgarden' ),
-			3  => __( 'Custom field deleted.', 'threedgarden' ),
-			4  => __( 'Allotment updated.', 'threedgarden' ),
-			/* translators: %s: date and time of the revision */
-			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Allotment restored to revision from %s', 'threedgarden' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6  => __( 'Allotment published.', 'threedgarden' ),
-			7  => __( 'Allotment saved.', 'threedgarden' ),
-			8  => __( 'Allotment submitted.', 'threedgarden' ),
-			9  => sprintf(
-				__( 'Allotment scheduled for: <strong>%1$s</strong>.', 'threedgarden' ),
-				// translators: Publish box date format, see http://php.net/date
-				date_i18n( __( 'M j, Y @ G:i', 'threedgarden' ), strtotime( $post->post_date ) )
-			),
-			10 => __( 'Allotment draft updated.', 'threedgarden' )
-		);
+		// $messages['allotment'] = array(
+		// 	0  => '', // Unused. Messages start at index 1.
+		// 	1  => __( 'Allotment updated.', 'threedgarden' ),
+		// 	2  => __( 'Custom field updated.', 'threedgarden' ),
+		// 	3  => __( 'Custom field deleted.', 'threedgarden' ),
+		// 	4  => __( 'Allotment updated.', 'threedgarden' ),
+		// 	/* translators: %s: date and time of the revision */
+		// 	5  => isset( $_GET['revision'] ) ? sprintf( __( 'Allotment restored to revision from %s', 'threedgarden' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+		// 	6  => __( 'Allotment published.', 'threedgarden' ),
+		// 	7  => __( 'Allotment saved.', 'threedgarden' ),
+		// 	8  => __( 'Allotment submitted.', 'threedgarden' ),
+		// 	9  => sprintf(
+		// 		__( 'Allotment scheduled for: <strong>%1$s</strong>.', 'threedgarden' ),
+		// 		// translators: Publish box date format, see http://php.net/date
+		// 		date_i18n( __( 'M j, Y @ G:i', 'threedgarden' ), strtotime( $post->post_date ) )
+		// 	),
+		// 	10 => __( 'Allotment draft updated.', 'threedgarden' )
+		// );
 
-		if ( $post_type_object->publicly_queryable ) {
-			$permalink = get_permalink( $post->ID );
+		// if ( $post_type_object->publicly_queryable ) {
+		// 	$permalink = get_permalink( $post->ID );
 
-			$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View allotment', 'threedgarden' ) );
-			$messages[ $post_type ][1] .= $view_link;
-			$messages[ $post_type ][6] .= $view_link;
-			$messages[ $post_type ][9] .= $view_link;
+		// 	$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View allotment', 'threedgarden' ) );
+		// 	$messages[ $post_type ][1] .= $view_link;
+		// 	$messages[ $post_type ][6] .= $view_link;
+		// 	$messages[ $post_type ][9] .= $view_link;
 
-			$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
-			$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview allotment', 'threedgarden' ) );
-			$messages[ $post_type ][8]  .= $preview_link;
-			$messages[ $post_type ][10] .= $preview_link;
-		}
+		// 	$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
+		// 	$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview allotment', 'threedgarden' ) );
+		// 	$messages[ $post_type ][8]  .= $preview_link;
+		// 	$messages[ $post_type ][10] .= $preview_link;
+		// }
 
 		return $messages;
 	}
@@ -900,42 +900,42 @@ class ThreeD_Garden_Admin {
 	 * @return array Amended post update messages with new CPT update messages.
 	 */
 	public function bed_updated_messages( $messages ) {
-		$post             = get_post();
-		$post_type        = get_post_type( $post );
-		$post_type_object = get_post_type_object( $post_type );
+		// $post             = get_post();
+		// $post_type        = get_post_type( $post );
+		// $post_type_object = get_post_type_object( $post_type );
 
-		$messages['bed'] = array(
-			0  => '', // Unused. Messages start at index 1.
-			1  => __( 'Bed updated.', 'threedgarden' ),
-			2  => __( 'Custom field updated.', 'threedgarden' ),
-			3  => __( 'Custom field deleted.', 'threedgarden' ),
-			4  => __( 'Bed updated.', 'threedgarden' ),
-			/* translators: %s: date and time of the revision */
-			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Bed restored to revision from %s', 'threedgarden' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6  => __( 'Bed published.', 'threedgarden' ),
-			7  => __( 'Bed saved.', 'threedgarden' ),
-			8  => __( 'Bed submitted.', 'threedgarden' ),
-			9  => sprintf(
-				__( 'Bed scheduled for: <strong>%1$s</strong>.', 'threedgarden' ),
-				// translators: Publish box date format, see http://php.net/date
-				date_i18n( __( 'M j, Y @ G:i', 'threedgarden' ), strtotime( $post->post_date ) )
-			),
-			10 => __( 'Bed draft updated.', 'threedgarden' )
-		);
+		// $messages['bed'] = array(
+		// 	0  => '', // Unused. Messages start at index 1.
+		// 	1  => __( 'Bed updated.', 'threedgarden' ),
+		// 	2  => __( 'Custom field updated.', 'threedgarden' ),
+		// 	3  => __( 'Custom field deleted.', 'threedgarden' ),
+		// 	4  => __( 'Bed updated.', 'threedgarden' ),
+		// 	/* translators: %s: date and time of the revision */
+		// 	5  => isset( $_GET['revision'] ) ? sprintf( __( 'Bed restored to revision from %s', 'threedgarden' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+		// 	6  => __( 'Bed published.', 'threedgarden' ),
+		// 	7  => __( 'Bed saved.', 'threedgarden' ),
+		// 	8  => __( 'Bed submitted.', 'threedgarden' ),
+		// 	9  => sprintf(
+		// 		__( 'Bed scheduled for: <strong>%1$s</strong>.', 'threedgarden' ),
+		// 		// translators: Publish box date format, see http://php.net/date
+		// 		date_i18n( __( 'M j, Y @ G:i', 'threedgarden' ), strtotime( $post->post_date ) )
+		// 	),
+		// 	10 => __( 'Bed draft updated.', 'threedgarden' )
+		// );
 
-		if ( $post_type_object->publicly_queryable ) {
-			$permalink = get_permalink( $post->ID );
+		// if ( $post_type_object->publicly_queryable ) {
+		// 	$permalink = get_permalink( $post->ID );
 
-			$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View bed', 'threedgarden' ) );
-			$messages[ $post_type ][1] .= $view_link;
-			$messages[ $post_type ][6] .= $view_link;
-			$messages[ $post_type ][9] .= $view_link;
+		// 	$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View bed', 'threedgarden' ) );
+		// 	$messages[ $post_type ][1] .= $view_link;
+		// 	$messages[ $post_type ][6] .= $view_link;
+		// 	$messages[ $post_type ][9] .= $view_link;
 
-			$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
-			$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview bed', 'threedgarden' ) );
-			$messages[ $post_type ][8]  .= $preview_link;
-			$messages[ $post_type ][10] .= $preview_link;
-		}
+		// 	$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
+		// 	$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview bed', 'threedgarden' ) );
+		// 	$messages[ $post_type ][8]  .= $preview_link;
+		// 	$messages[ $post_type ][10] .= $preview_link;
+		// }
 
 		return $messages;
 	}
@@ -1056,42 +1056,42 @@ class ThreeD_Garden_Admin {
 	 * @return array Amended post update messages with new CPT update messages.
 	 */
 	public function planting_plan_updated_messages( $messages ) {
-		$post             = get_post();
-		$post_type        = get_post_type( $post );
-		$post_type_object = get_post_type_object( $post_type );
+		// $post             = get_post();
+		// $post_type        = get_post_type( $post );
+		// $post_type_object = get_post_type_object( $post_type );
 
-		$messages['planting_plan'] = array(
-			0  => '', // Unused. Messages start at index 1.
-			1  => __( 'Planting Plan updated.', 'threedgarden' ),
-			2  => __( 'Custom field updated.', 'threedgarden' ),
-			3  => __( 'Custom field deleted.', 'threedgarden' ),
-			4  => __( 'Planting Plan updated.', 'threedgarden' ),
-			/* translators: %s: date and time of the revision */
-			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Planting Plan restored to revision from %s', 'threedgarden' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6  => __( 'Planting Plan published.', 'threedgarden' ),
-			7  => __( 'Planting Plan saved.', 'threedgarden' ),
-			8  => __( 'Planting Plan submitted.', 'threedgarden' ),
-			9  => sprintf(
-				__( 'Planting Plan scheduled for: <strong>%1$s</strong>.', 'threedgarden' ),
-				// translators: Publish box date format, see http://php.net/date
-				date_i18n( __( 'M j, Y @ G:i', 'threedgarden' ), strtotime( $post->post_date ) )
-			),
-			10 => __( 'Planting Plan draft updated.', 'threedgarden' )
-		);
+		// $messages['planting_plan'] = array(
+		// 	0  => '', // Unused. Messages start at index 1.
+		// 	1  => __( 'Planting Plan updated.', 'threedgarden' ),
+		// 	2  => __( 'Custom field updated.', 'threedgarden' ),
+		// 	3  => __( 'Custom field deleted.', 'threedgarden' ),
+		// 	4  => __( 'Planting Plan updated.', 'threedgarden' ),
+		// 	/* translators: %s: date and time of the revision */
+		// 	5  => isset( $_GET['revision'] ) ? sprintf( __( 'Planting Plan restored to revision from %s', 'threedgarden' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+		// 	6  => __( 'Planting Plan published.', 'threedgarden' ),
+		// 	7  => __( 'Planting Plan saved.', 'threedgarden' ),
+		// 	8  => __( 'Planting Plan submitted.', 'threedgarden' ),
+		// 	9  => sprintf(
+		// 		__( 'Planting Plan scheduled for: <strong>%1$s</strong>.', 'threedgarden' ),
+		// 		// translators: Publish box date format, see http://php.net/date
+		// 		date_i18n( __( 'M j, Y @ G:i', 'threedgarden' ), strtotime( $post->post_date ) )
+		// 	),
+		// 	10 => __( 'Planting Plan draft updated.', 'threedgarden' )
+		// );
 
-		if ( $post_type_object->publicly_queryable ) {
-			$permalink = get_permalink( $post->ID );
+		// if ( $post_type_object->publicly_queryable ) {
+		// 	$permalink = get_permalink( $post->ID );
 
-			$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View planting plan', 'threedgarden' ) );
-			$messages[ $post_type ][1] .= $view_link;
-			$messages[ $post_type ][6] .= $view_link;
-			$messages[ $post_type ][9] .= $view_link;
+		// 	$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View planting plan', 'threedgarden' ) );
+		// 	$messages[ $post_type ][1] .= $view_link;
+		// 	$messages[ $post_type ][6] .= $view_link;
+		// 	$messages[ $post_type ][9] .= $view_link;
 
-			$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
-			$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview planting plan', 'threedgarden' ) );
-			$messages[ $post_type ][8]  .= $preview_link;
-			$messages[ $post_type ][10] .= $preview_link;
-		}
+		// 	$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
+		// 	$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview planting plan', 'threedgarden' ) );
+		// 	$messages[ $post_type ][8]  .= $preview_link;
+		// 	$messages[ $post_type ][10] .= $preview_link;
+		// }
 
 		return $messages;
 	}
@@ -1150,42 +1150,42 @@ class ThreeD_Garden_Admin {
 	 * @return array Amended post update messages with new CPT update messages.
 	 */
 	public function scene_updated_messages( $messages ) {
-		$post             = get_post();
-		$post_type        = get_post_type( $post );
-		$post_type_object = get_post_type_object( $post_type );
+		// $post             = get_post();
+		// $post_type        = get_post_type( $post );
+		// $post_type_object = get_post_type_object( $post_type );
 
-		$messages['scene'] = array(
-			0  => '', // Unused. Messages start at index 1.
-			1  => __( 'Scene updated.', 'threedgarden' ),
-			2  => __( 'Custom field updated.', 'threedgarden' ),
-			3  => __( 'Custom field deleted.', 'threedgarden' ),
-			4  => __( 'Scene updated.', 'threedgarden' ),
-			/* translators: %s: date and time of the revision */
-			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Scene restored to revision from %s', 'threedgarden' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6  => __( 'Scene published.', 'threedgarden' ),
-			7  => __( 'Scene saved.', 'threedgarden' ),
-			8  => __( 'Scene submitted.', 'threedgarden' ),
-			9  => sprintf(
-				__( 'Scene scheduled for: <strong>%1$s</strong>.', 'threedgarden' ),
-				// translators: Publish box date format, see http://php.net/date
-				date_i18n( __( 'M j, Y @ G:i', 'threedgarden' ), strtotime( $post->post_date ) )
-			),
-			10 => __( 'Scene draft updated.', 'threedgarden' )
-		);
+		// $messages['scene'] = array(
+		// 	0  => '', // Unused. Messages start at index 1.
+		// 	1  => __( 'Scene updated.', 'threedgarden' ),
+		// 	2  => __( 'Custom field updated.', 'threedgarden' ),
+		// 	3  => __( 'Custom field deleted.', 'threedgarden' ),
+		// 	4  => __( 'Scene updated.', 'threedgarden' ),
+		// 	/* translators: %s: date and time of the revision */
+		// 	5  => isset( $_GET['revision'] ) ? sprintf( __( 'Scene restored to revision from %s', 'threedgarden' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+		// 	6  => __( 'Scene published.', 'threedgarden' ),
+		// 	7  => __( 'Scene saved.', 'threedgarden' ),
+		// 	8  => __( 'Scene submitted.', 'threedgarden' ),
+		// 	9  => sprintf(
+		// 		__( 'Scene scheduled for: <strong>%1$s</strong>.', 'threedgarden' ),
+		// 		// translators: Publish box date format, see http://php.net/date
+		// 		date_i18n( __( 'M j, Y @ G:i', 'threedgarden' ), strtotime( $post->post_date ) )
+		// 	),
+		// 	10 => __( 'Scene draft updated.', 'threedgarden' )
+		// );
 
-		if ( $post_type_object->publicly_queryable ) {
-			$permalink = get_permalink( $post->ID );
+		// if ( $post_type_object->publicly_queryable ) {
+		// 	$permalink = get_permalink( $post->ID );
 
-			$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View scene', 'threedgarden' ) );
-			$messages[ $post_type ][1] .= $view_link;
-			$messages[ $post_type ][6] .= $view_link;
-			$messages[ $post_type ][9] .= $view_link;
+		// 	$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View scene', 'threedgarden' ) );
+		// 	$messages[ $post_type ][1] .= $view_link;
+		// 	$messages[ $post_type ][6] .= $view_link;
+		// 	$messages[ $post_type ][9] .= $view_link;
 
-			$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
-			$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview scene', 'threedgarden' ) );
-			$messages[ $post_type ][8]  .= $preview_link;
-			$messages[ $post_type ][10] .= $preview_link;
-		}
+		// 	$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
+		// 	$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview scene', 'threedgarden' ) );
+		// 	$messages[ $post_type ][8]  .= $preview_link;
+		// 	$messages[ $post_type ][10] .= $preview_link;
+		// }
 
 		return $messages;
 	}
@@ -1415,13 +1415,13 @@ class ThreeD_Garden_Admin {
 		echo "<p><strong>Template</strong></p>";
 		echo "<select id=\"cpt-selector\" name=\"_wp_page_template\"><option value=\"default\">Default Template</option>";
 		foreach ( $templates as $template_filename => $template_name ) {
-			if ( $post->post_type == strstr( $template_filename, '-', true) ) {
+			//if ( $post->post_type == strstr( $template_filename, '-', true) ) {
 				if ( isset($post_meta['_wp_page_template'][0]) && ($post_meta['_wp_page_template'][0] == $template_filename) ) {
 					echo "<option value=\"$template_filename\" selected=\"selected\">$template_name</option>";
 				} else {
 					echo "<option value=\"$template_filename\">$template_name</option>";
 				}
-			}
+			//}
 		}
 		echo "</select>";
 
