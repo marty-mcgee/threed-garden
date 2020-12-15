@@ -234,7 +234,7 @@ function buildScene() {
 	// spotLight.position.set( -20, -60, 20 );
 	// //spotLight.intensity = 3.0;
 
-	let directionalLight = getDirectionalLight(0xFFFFFF, 2.0);
+	let directionalLight = getDirectionalLight(0xFFFFFF, 2.1);
 	directionalLight.position.set( -90, -120, 120 );
 	//directionalLight.intensity = 2.4;
 
