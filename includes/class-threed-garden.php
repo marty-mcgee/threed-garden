@@ -193,7 +193,7 @@ class ThreeD_Garden {
 		$this->loader->add_action( 'add_meta_boxes', $plugin_admin, 'cpt_add_meta_boxes' );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'cpt_remove_meta_boxes' );
 		$this->loader->add_action( 'save_post', $plugin_admin, 'save_cpt_template_meta_data' );
-		$this->loader->add_filter( 'single_template', $plugin_admin, 'custom_single_template' );
+		//$this->loader->add_filter( 'single_template', $plugin_admin, 'custom_single_template' );
 		
 	}
 
