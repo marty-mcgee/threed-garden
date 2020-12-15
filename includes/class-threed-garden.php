@@ -183,6 +183,18 @@ class ThreeD_Garden {
 		//$this->loader->add_action( 'rest_api_init', $plugin_admin, 'create_ACF_meta_in_REST' );
 		//$this->loader->add_filter( 'rest_prepare_post', $plugin_admin, 'acf_to_rest_api' );
 		
+		// custom post type templates
+		$this->loader->add_filter( 'single_template', $plugin_admin, 'load_scene_template' );
+		$this->loader->add_filter( 'single_template', $plugin_admin, 'load_allotment_template' );
+		$this->loader->add_filter( 'single_template', $plugin_admin, 'load_bed_template' );
+		$this->loader->add_filter( 'single_template', $plugin_admin, 'load_plant_template' );
+		$this->loader->add_filter( 'single_template', $plugin_admin, 'load_planting_plan_template' );
+
+		$this->loader->add_action( 'add_meta_boxes', $plugin_admin, 'cpt_add_meta_boxes' );
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'cpt_remove_meta_boxes' );
+		$this->loader->add_action( 'save_post', $plugin_admin, 'save_cpt_template_meta_data' );
+		$this->loader->add_filter( 'single_template', $plugin_admin, 'custom_single_template' );
+		
 	}
 
 	/**
@@ -202,6 +214,7 @@ class ThreeD_Garden {
 
 		// custom fields testing
 		//$this->loader->add_filter( 'the_content', $plugin_public, 'display_all_custom_fields' );
+
 	}
 
 	/**
