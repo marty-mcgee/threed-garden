@@ -632,7 +632,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 	postObject.forEach(function (obj) {
 		obj.acf.planting_plan_bed_plant_schedule.forEach(function(i) {
 			if ( i.planting_plan_bed == bedID ) {
-				console.log("MATCHED at: ", i);
+				//console.log("MATCHED at: ", i);
 				//matches.push(i);
 				//matches.push(obj);
 				matches.pushIfNotExist(obj, function(e) { 
@@ -704,7 +704,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 				// console.log("-------------------------");
 
 				let structure = getGeometry(
-					plant.shape,
+					"Tree", // plant.shape,
 					plant.parameters.x, 
 					plant.parameters.y, 
 					plant.parameters.z, 
@@ -719,7 +719,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 				structure.position.x = plant.position.x ? plant.position.x : 0;
 				structure.position.y = plant.position.y ? plant.position.y : 0;
 				structure.position.z = plant.position.z ? plant.position.z : 0;
-				//structure.rotation.x = -Math.PI / 2; // -90 degrees in radians
+				structure.rotation.x = Math.PI / 2; // 90 degrees in radians
 				structure.material.roughness = 0.9;
 				if (plant.images.texture != null && plant.images.texture != false) {
 					structure.material.map = loader.load(plant.images.texture);
@@ -845,6 +845,26 @@ function getGeometry(shape, x, y, z, color){
 
 		case 'Sphere':
 			geometry = new THREE.SphereGeometry(x, y, z);
+			material = new THREE.MeshStandardMaterial({
+				color: color,
+				side: THREE.DoubleSide
+			});
+			mesh = new THREE.Mesh(geometry, material);
+			mesh.castShadow = true;
+			//mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
+			break;
+
+		case 'Tree':
+			var tree = new THREE.Tree({
+				generations : 3,        // # for branch' hierarchy
+				length      : 1.0,      // length of root branch
+				uvLength    : 3.0,      // uv.v ratio against geometry length (recommended is generations * length)
+				radius      : 0.1,      // radius of root branch
+				radiusSegments : 8,     // # of radius segments for each branch geometry
+				heightSegments : 8      // # of height segments for each branch geometry
+			});
+			geometry = THREE.TreeGeometry.build(tree);
+			//geometry = new THREE.SphereGeometry(x, y, z);
 			material = new THREE.MeshStandardMaterial({
 				color: color,
 				side: THREE.DoubleSide
