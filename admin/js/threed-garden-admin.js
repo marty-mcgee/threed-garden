@@ -672,6 +672,10 @@ function buildPlantingPlans(postObject, plane, gui, camera, renderer, bedID, pos
 			// for each plant in this bed..
 			filteredPlant.forEach(function(key3) {
 
+				console.log("key3---------------------");
+				console.log(key3);
+				console.log("-------------------------");
+
 				let plant = {};
 				plant.parameters = {};
 				plant.position = {};
@@ -679,9 +683,9 @@ function buildPlantingPlans(postObject, plane, gui, camera, renderer, bedID, pos
 				plant.parameters.x = parseInt(key3.acf.plant_width) / 12;
 				plant.parameters.y = parseInt(key3.acf.plant_length) / 12;
 				plant.parameters.z = parseInt(key3.acf.plant_height) / 12;
-				plant.position.x = parseInt(key3.acf.plant_position_x) / 12 + posOffsetX;
-				plant.position.y = parseInt(key3.acf.plant_position_y) / 12 + posOffsetY;
-				plant.position.z = parseInt(key3.acf.plant_position_z) / 12 + (plant.parameters.z / 2); // + posOffsetZ;
+				plant.position.x = parseInt(key2.plant_position_x) / 12 + posOffsetX;
+				plant.position.y = parseInt(key2.plant_position_y) / 12 + posOffsetY;
+				plant.position.z = parseInt(key2.plant_position_z) / 12 + (plant.parameters.z / 2); // + posOffsetZ;
 				plant.images.texture = key3.acf.plant_texture_image;
 				plant.images.featured = getFeaturedImage(key);
 				plant.shape = key3.acf.plant_shape;
@@ -691,10 +695,10 @@ function buildPlantingPlans(postObject, plane, gui, camera, renderer, bedID, pos
 				plant.description = key3.content.rendered;
 				plant.link = key3.link;
 
-				// console.log("-------------------------");
-				// console.log("plant----------------");
-				// console.log(plant);
-				// console.log("-------------------------");
+				console.log("-------------------------");
+				console.log("plant----------------");
+				console.log(plant);
+				console.log("-------------------------");
 
 				let structure = getGeometry(
 					plant.shape,
