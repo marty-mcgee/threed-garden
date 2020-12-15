@@ -1438,16 +1438,16 @@ class ThreeD_Garden_Admin {
 	}
 	
 
-	function custom_single_template($template) {
-		global $post;
+	// function custom_single_template($template) {
+	// 	global $post;
 
-		$post_meta = ( $post ) ? get_post_meta( $post->ID ) : null;
-		if ( isset($post_meta['_wp_page_template'][0]) && ( $post_meta['_wp_page_template'][0] != 'default' ) ) {
-			$template = get_template_directory() . '/' . $post_meta['_wp_page_template'][0];
-		}
+	// 	$post_meta = ( $post ) ? get_post_meta( $post->ID ) : null;
+	// 	if ( isset($post_meta['_wp_page_template'][0]) && ( $post_meta['_wp_page_template'][0] != 'default' ) ) {
+	// 		$template = get_template_directory() . '/' . $post_meta['_wp_page_template'][0];
+	// 	}
 
-		return $template;
-	}
+	// 	return $template;
+	// }
 	
 	/** END Custom Post Type Template Selector **/
 
