@@ -1518,6 +1518,98 @@ function onPointerDown(event) {
 function toString(v) { return "[ " + v.x + ", " + v.y + ", " + v.z + " ]"; }
 
 
+
+function dismiss(el) {
+	el.parentNode.hidden = true;
+	el.parentNode.style.display = 'none';
+};
+
+function stringToBoolean(string) {
+    switch(string.toString().toLowerCase().trim()){
+        case "true": case "yes": case "1": return true;
+        case "false": case "no": case "0": case null: return false;
+        default: return Boolean(string);
+    }
+}
+
+
+function dragElement(elmnt) {
+
+	// console.log("-------------------------");
+	// console.log("elmnt--------------");
+	// console.log(elmnt);
+	// console.log("-------------------------");
+
+	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+	
+	if (document.getElementById(elmnt.id + "header")) {
+		// if present, the header is where you move the DIV from:
+		document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+	} else {
+		// otherwise, move the DIV from anywhere inside the DIV:
+		elmnt.onmousedown = dragMouseDown;
+	}
+
+	function dragMouseDown(e) {
+		e = e || window.event;
+		e.preventDefault();
+		// get the mouse cursor position at startup:
+		pos3 = e.clientX;
+		pos4 = e.clientY;
+
+		// console.log("-------------------------");
+		// console.log("pos3, pos4---------------");
+		// console.log(pos3, pos4);
+		// console.log("-------------------------");
+
+		document.onmouseup = closeDragElement;
+		// call a function whenever the cursor moves:
+		document.onmousemove = elementDrag;
+	}
+	
+	function elementDrag(e) {
+		e = e || window.event;
+		e.preventDefault();
+		// calculate the new cursor position:
+		pos1 = pos3 - e.clientX;
+		pos2 = pos4 - e.clientY;
+		pos3 = e.clientX;
+		pos4 = e.clientY;
+
+		// console.log("-------------------------");
+		// console.log("pos1, pos2, pos3, pos4---");
+		// console.log(pos1, pos2, pos3, pos4);
+		// console.log("-------------------------");
+
+		// set the element's new position:
+		// elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+		// elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+		elmnt.style.top = (pos4) + "px";
+		elmnt.style.left = (pos3) + "px";
+	}
+	
+	function closeDragElement() {
+		// stop moving when mouse button is released:
+		document.onmouseup = null;
+		document.onmousemove = null;
+	}
+}
+
+
+/// throw manual abort of script
+function throwError() {
+	// creates a new exception type:
+	function FatalError(){ Error.apply(this, arguments); this.name = "FatalError"; }
+	FatalError.prototype = Object.create(Error.prototype);
+
+	// and then, use this to trigger the error:
+	throw new FatalError("MANUAL ABORT");
+}
+
+/**
+ * TESTING ***************************************************************************************
+ */
+
 // controls.enabled = false;
 // var xTarget=0;
 // var yTarget=-0.7;
@@ -1553,10 +1645,6 @@ function panCam(xTarget, yTarget, zTarget, tweenDuration, camera, controls){
 	console.log("------------------");
 	
 }
-    
-
-
-
 
 /**
  * TESTING ***************************************************************************************
@@ -1653,94 +1741,6 @@ function buildNewPost( postObject ) {
 	document.querySelector('#webgl').append(postElement);
 
 	//getPreviousPost();
-}
-
-
-function dismiss(el) {
-	el.parentNode.hidden = true;
-	el.parentNode.style.display = 'none';
-};
-
-function stringToBoolean(string) {
-    switch(string.toString().toLowerCase().trim()){
-        case "true": case "yes": case "1": return true;
-        case "false": case "no": case "0": case null: return false;
-        default: return Boolean(string);
-    }
-}
-
-
-function dragElement(elmnt) {
-
-	// console.log("-------------------------");
-	// console.log("elmnt--------------");
-	// console.log(elmnt);
-	// console.log("-------------------------");
-
-	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-	
-	if (document.getElementById(elmnt.id + "header")) {
-		// if present, the header is where you move the DIV from:
-		document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
-	} else {
-		// otherwise, move the DIV from anywhere inside the DIV:
-		elmnt.onmousedown = dragMouseDown;
-	}
-
-	function dragMouseDown(e) {
-		e = e || window.event;
-		e.preventDefault();
-		// get the mouse cursor position at startup:
-		pos3 = e.clientX;
-		pos4 = e.clientY;
-
-		// console.log("-------------------------");
-		// console.log("pos3, pos4---------------");
-		// console.log(pos3, pos4);
-		// console.log("-------------------------");
-
-		document.onmouseup = closeDragElement;
-		// call a function whenever the cursor moves:
-		document.onmousemove = elementDrag;
-	}
-	
-	function elementDrag(e) {
-		e = e || window.event;
-		e.preventDefault();
-		// calculate the new cursor position:
-		pos1 = pos3 - e.clientX;
-		pos2 = pos4 - e.clientY;
-		pos3 = e.clientX;
-		pos4 = e.clientY;
-
-		// console.log("-------------------------");
-		// console.log("pos1, pos2, pos3, pos4---");
-		// console.log(pos1, pos2, pos3, pos4);
-		// console.log("-------------------------");
-
-		// set the element's new position:
-		// elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-		// elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-		elmnt.style.top = (pos4) + "px";
-		elmnt.style.left = (pos3) + "px";
-	}
-	
-	function closeDragElement() {
-		// stop moving when mouse button is released:
-		document.onmouseup = null;
-		document.onmousemove = null;
-	}
-}
-
-
-/// throw manual abort of script
-function throwError() {
-	// creates a new exception type:
-	function FatalError(){ Error.apply(this, arguments); this.name = "FatalError"; }
-	FatalError.prototype = Object.create(Error.prototype);
-
-	// and then, use this to trigger the error:
-	throw new FatalError("MANUAL ABORT");
 }
 
 
