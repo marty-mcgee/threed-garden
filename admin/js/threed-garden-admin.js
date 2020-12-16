@@ -665,6 +665,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 			// console.log(key2);
 			// console.log("-------------------------");
 
+			// only for this bed..
 			if ( key2.planting_plan_bed == bedID ) {
 			
 				// show this plant (or multiple plants) in this bed..
