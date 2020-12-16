@@ -643,20 +643,20 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 		filteredPostObject = [...matches];
 	});
 
-	if ( filteredPostObject.length > 0 ) {
-		console.log("filteredPostObject-------");
-		console.log(filteredPostObject);
-		console.log("-------------------------");
-	}
+	// if ( filteredPostObject.length > 0 ) {
+	// 	console.log("filteredPostObject-------");
+	// 	console.log(filteredPostObject);
+	// 	console.log("-------------------------");
+	// }
 
 	// for each planting plan..
 	filteredPostObject.forEach( function(key) {
 
-		console.log("-------------------------");
-		console.log("key.id (filteredPostObject)------");
-		console.log(key.id);
-		console.log(key);
-		console.log("-------------------------");
+		// console.log("-------------------------");
+		// console.log("key.id (filteredPostObject)------");
+		// console.log(key.id);
+		// console.log(key);
+		// console.log("-------------------------");
 
 		// for each planting plan bed-plant schedule..
 		key.acf.planting_plan_bed_plant_schedule.forEach(function(key2) {
@@ -770,7 +770,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 				})
 
 			} // end if
-			
+
 		})
 
 	}); /** END PLANTS *************************************************************************** */
