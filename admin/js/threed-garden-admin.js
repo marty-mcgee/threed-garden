@@ -643,18 +643,20 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 		filteredPostObject = [...matches];
 	});
 
-	// console.log("filteredPostObject-------");
-	// console.log(filteredPostObject);
-	// console.log("-------------------------");
+	if ( filteredPostObject.length > 0 ) {
+		console.log("filteredPostObject-------");
+		console.log(filteredPostObject);
+		console.log("-------------------------");
+	}
 
-	// for each bed in this planting plan..
+	// for each planting plan..
 	filteredPostObject.forEach( function(key) {
 
-		// console.log("-------------------------");
-		// console.log("key.id (filteredPostObject)------");
-		// console.log(key.id);
-		// console.log(key);
-		// console.log("-------------------------");
+		console.log("-------------------------");
+		console.log("key.id (filteredPostObject)------");
+		console.log(key.id);
+		console.log(key);
+		console.log("-------------------------");
 
 		// for each planting plan bed-plant schedule..
 		key.acf.planting_plan_bed_plant_schedule.forEach(function(key2) {
@@ -663,107 +665,112 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 			// console.log(key2);
 			// console.log("-------------------------");
 
-			// show this plant (or multiple plants) in this bed..
-			var filteredPlant = params.data.plant.filter(function (obj) {
-				return obj.id == key2.planting_plan_plant;
-			});
+			if ( key2.planting_plan_bed == bedID ) {
+			
+				// show this plant (or multiple plants) in this bed..
+				var filteredPlant = params.data.plant.filter(function (obj) {
+					return obj.id == key2.planting_plan_plant;
+				});
 
-			// console.log("filteredPlant------------");
-			// console.log(filteredPlant);
-			// console.log("-------------------------");
-
-			// for this plant in this bed..
-			filteredPlant.forEach(function(key3) {
-
-				// console.log("key3---------------------");
-				// console.log(key3);
+				// console.log("filteredPlant------------");
+				// console.log(filteredPlant);
 				// console.log("-------------------------");
 
-				let plant = {};
-				plant.parameters = {};
-				plant.position = {};
-				plant.images = {};
-				plant.parameters.x = parseInt(key3.acf.plant_width) / 12;
-				plant.parameters.y = parseInt(key3.acf.plant_length) / 12;
-				plant.parameters.z = parseInt(key3.acf.plant_height) / 12;
-				plant.position.x = parseInt(key2.plant_position_x) / 12 + posOffsetX;
-				plant.position.y = parseInt(key2.plant_position_y) / 12 + posOffsetY;
-				plant.position.z = parseInt(key2.plant_position_z) / 12 + (plant.parameters.z / 2); // + posOffsetZ;
-				plant.images.texture = key3.acf.plant_texture_image;
-				plant.images.featured = getFeaturedImage(key);
-				plant.shape = key3.acf.plant_shape;
-				plant.color = key3.acf.plant_color;
-				plant.title = key3.title.rendered;
-				plant.postID = key3.id;
-				plant.description = key3.content.rendered;
-				plant.link = key3.link;
+				// for this plant in this bed..
+				filteredPlant.forEach(function(key3) {
 
-				// console.log("-------------------------");
-				// console.log("plant----------------");
-				// console.log(plant);
-				// console.log("-------------------------");
+					// console.log("key3---------------------");
+					// console.log(key3);
+					// console.log("-------------------------");
 
-				let structure = getGeometry(
-					"Tree", // plant.shape,
-					plant.parameters.x, 
-					plant.parameters.y, 
-					plant.parameters.z, 
-					plant.color
-				);
-				structure.name = plant.title;
-				structure.userData.type = "structure";
-				structure.userData.postID = plant.postID;
-				structure.userData.description = plant.description;
-				structure.userData.annotation = plant.title;
-				structure.userData.link = plant.link;
-				structure.position.x = plant.position.x ? plant.position.x : 0;
-				structure.position.y = plant.position.y ? plant.position.y : 0;
-				structure.position.z = plant.position.z ? plant.position.z : 0;
-				structure.rotation.x = Math.PI / 2; // 90 degrees in radians
-				structure.material.roughness = 0.9;
-				if (plant.images.texture != null && plant.images.texture != false) {
-					structure.material.map = loader.load(plant.images.texture);
-					for (let i = 0; i < structure.material.length; i++) {
-						// hightlight object
-						//structure.material[i].color.set(0xff0000);
-						structure.material[i].map = loader.load(plant.images.texture);
-						//structure.faces[i].materialIndex = 1;
-						//console.log(intersects[i]);
-						// structure.material[i].bumpMap = loader.load(plant.images.texture);
-						// structure.material[i].bumpScale = 0.05;
-						let structureTextureMap = structure.material[i].map;
-						structureTextureMap.wrapS = THREE.RepeatWrapping;
-						structureTextureMap.wrapT = THREE.RepeatWrapping;
-						structureTextureMap.repeat.set(4, 4);
+					let plant = {};
+					plant.parameters = {};
+					plant.position = {};
+					plant.images = {};
+					plant.parameters.x = parseInt(key3.acf.plant_width) / 12;
+					plant.parameters.y = parseInt(key3.acf.plant_length) / 12;
+					plant.parameters.z = parseInt(key3.acf.plant_height) / 12;
+					plant.position.x = parseInt(key2.plant_position_x) / 12 + posOffsetX;
+					plant.position.y = parseInt(key2.plant_position_y) / 12 + posOffsetY;
+					plant.position.z = parseInt(key2.plant_position_z) / 12 + (plant.parameters.z / 2); // + posOffsetZ;
+					plant.images.texture = key3.acf.plant_texture_image;
+					plant.images.featured = getFeaturedImage(key);
+					plant.shape = key3.acf.plant_shape;
+					plant.color = key3.acf.plant_color;
+					plant.title = key3.title.rendered;
+					plant.postID = key3.id;
+					plant.description = key3.content.rendered;
+					plant.link = key3.link;
+
+					// console.log("-------------------------");
+					// console.log("plant----------------");
+					// console.log(plant);
+					// console.log("-------------------------");
+
+					let structure = getGeometry(
+						"Tree", // "Bush", // plant.shape,
+						plant.parameters.x, 
+						plant.parameters.y, 
+						plant.parameters.z, 
+						plant.color
+					);
+					structure.name = plant.title;
+					structure.userData.type = "structure";
+					structure.userData.postID = plant.postID;
+					structure.userData.description = plant.description;
+					structure.userData.annotation = plant.title;
+					structure.userData.link = plant.link;
+					structure.position.x = plant.position.x ? plant.position.x : 0;
+					structure.position.y = plant.position.y ? plant.position.y : 0;
+					structure.position.z = plant.position.z ? plant.position.z : 0;
+					structure.rotation.x = Math.PI / 2; // 90 degrees in radians
+					structure.material.roughness = 0.9;
+					if (plant.images.texture != null && plant.images.texture != false) {
+						structure.material.map = loader.load(plant.images.texture);
+						for (let i = 0; i < structure.material.length; i++) {
+							// hightlight object
+							//structure.material[i].color.set(0xff0000);
+							structure.material[i].map = loader.load(plant.images.texture);
+							//structure.faces[i].materialIndex = 1;
+							//console.log(intersects[i]);
+							// structure.material[i].bumpMap = loader.load(plant.images.texture);
+							// structure.material[i].bumpScale = 0.05;
+							let structureTextureMap = structure.material[i].map;
+							structureTextureMap.wrapS = THREE.RepeatWrapping;
+							structureTextureMap.wrapT = THREE.RepeatWrapping;
+							structureTextureMap.repeat.set(4, 4);
+						}
 					}
-				}
+					
+					plane.add(structure);
+					
+					console.log("-------------------------");
+					console.log("plant structure----------");
+					console.log(structure);
+					console.log("-------------------------");
 				
-				plane.add(structure);
+					/** INFOSPOTS ********************************************************************* */
 				
-				console.log("-------------------------");
-				console.log("plant structure----------");
-				console.log(structure);
-				console.log("-------------------------");
-			
-				/** INFOSPOTS ********************************************************************* */
-			
-				let infospot = makeInfospotSphere(
-					structure.name, 
-					structure.position.x, 
-					structure.position.y, 
-					plant.parameters.z + 3,
-					plant.postID,
-					structure.userData.annotation,
-					structure.userData.link 
-				);
-				infospot.name = `INFOSPOT: ${structure.name}`;
-				infospot.visible = false;
+					let infospot = makeInfospotSphere(
+						structure.name, 
+						structure.position.x, 
+						structure.position.y, 
+						plant.parameters.z + 3,
+						plant.postID,
+						structure.userData.annotation,
+						structure.userData.link 
+					);
+					infospot.name = `INFOSPOT: ${structure.name}`;
+					infospot.visible = false;
 
-				guiFolderBeds.add(infospot, "visible").name("InfoSphere").listen();
+					guiFolderBeds.add(infospot, "visible").name("InfoSphere").listen();
 
-				plane.add(infospot);
-		
-			})
+					plane.add(infospot);
+			
+				})
+
+			} // end if
+			
 		})
 
 	}); /** END PLANTS *************************************************************************** */
@@ -855,7 +862,7 @@ function getGeometry(shape, x, y, z, color){
 			break;
 
 		case 'Tree':
-			var tree = new THREE.Tree({
+			let tree = new THREE.Tree({
 				generations : 3,        // # for branch' hierarchy
 				length      : 1.0,      // length of root branch
 				uvLength    : 3.0,      // uv.v ratio against geometry length (recommended is generations * length)
@@ -873,6 +880,81 @@ function getGeometry(shape, x, y, z, color){
 			mesh.castShadow = true;
 			//mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
 			break;
+
+		case 'Bush':
+			// CAST
+			geometry = new THREE.CubeGeometry(x, y, z);
+			
+			//color = new THREE.Color(0xff0000);
+			color = new THREE.Color("rgb(153,90,0)");
+			material = new THREE.MeshPhongMaterial({ color: color, wireframe: false });
+			mesh = new THREE.Mesh(geometry, material);
+			
+			scene.add(mesh);  
+			mesh.matrix.makeTranslation(0,-125,0);
+			mesh.matrixAutoUpdate = false;
+			
+			var levels = 4; // slow? lower this
+			var edge_w = 100;
+			var edge_h = 150;
+
+			function bush(n, mat, c) {
+				if(n > 0) {
+					var new_mat = new THREE.Matrix4();
+					var new_mat2 = new THREE.Matrix4();
+					var new_mat_t0 = new THREE.Matrix4();
+					var new_mat_t = new THREE.Matrix4();
+					var new_mat_r = new THREE.Matrix4();
+					var new_mat_r2 = new THREE.Matrix4();
+					var new_mat_s = new THREE.Matrix4();
+					var mat2 = mat.clone();
+					var col1 = c.clone();
+					var col2 = c.clone();
+					//col1.offsetHSL(0.12,0,0);
+					col1.g += 0.64/levels;
+					material = new THREE.MeshPhongMaterial( { color:col1, wireframe: false } );
+					mesh = new THREE.Mesh(geometry, material);
+					new_mat_t0.makeTranslation(edge_w/2,0,0);
+					new_mat_t.makeTranslation(0,edge_h,0);
+					new_mat_r.makeRotationZ(-Math.PI/4);
+					new_mat_r2.makeRotationY(Math.PI/2);
+					new_mat_s.makeScale(0.75,0.75,0.75);
+					new_mat.multiply(new_mat_r2);  //      
+					new_mat.multiply(new_mat_t0);
+					new_mat.multiply(new_mat_r);        
+					new_mat.multiply(new_mat_s);        
+					new_mat.multiply(new_mat_t);
+					new_mat.multiply(mat);
+					mesh.matrix.copy(new_mat);
+					mesh.matrixAutoUpdate=false;
+					mesh.updateMatrix=false; //
+					scene.add(mesh);
+					bush(n-1, mesh.matrix.clone(), col1);
+			
+					//col2.offsetHSL(0.12,0,0);
+					col2.g += 0.64/levels;
+					material = new THREE.MeshPhongMaterial( { color:col2, wireframe: false } );
+					mesh = new THREE.Mesh(geometry, material);
+					new_mat_t0.makeTranslation(-edge_w/2,0,0);
+					new_mat_t.makeTranslation(0,edge_h,0);
+					new_mat_r.makeRotationZ(Math.PI/4);
+					new_mat_r2.makeRotationY(Math.PI/2);
+					new_mat_s.makeScale(0.75,0.75,0.75);
+					new_mat2.multiply(new_mat_r2);  //      
+					new_mat2.multiply(new_mat_t0);
+					new_mat2.multiply(new_mat_r);        
+					new_mat2.multiply(new_mat_s);        
+					new_mat2.multiply(new_mat_t);
+					new_mat2.multiply(mat);
+					mesh.matrix.copy(new_mat2);
+					mesh.matrixAutoUpdate=false;
+					mesh.updateMatrix=false; //
+					scene.add(mesh);
+					bush(n-1, mesh.matrix.clone(), col2);
+				}
+			}
+			
+			bush(levels, mesh.matrix, color);
 
 		default:
 			geometry = new THREE.BoxGeometry(x, y, z);
