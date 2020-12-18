@@ -69,6 +69,10 @@ let params = {
 	/** POINTER HOVERS + CLICKS */
 	intersectedObject1: null,
 	intersectedObject2: null,
+	/** PLAYER COLLISION INTO OBJECTS */
+	colliders: [], // params.colliders.push(object3D);
+	// town.fbx
+	environment: {},
 };
 guiFolderRotation.add(params, "ANIMATE").name("Run Animation");
 
@@ -346,7 +350,7 @@ function buildScene() {
 	);
 
 	/** FBX ******************************************************************************** */
-
+	
 	loaderFBX.load( `${params.assetsPath}fbx/people/FireFighter.fbx`, function (object) {
 
 		object.mixer = new THREE.AnimationMixer( object );
@@ -390,8 +394,19 @@ function buildScene() {
 		console.log(player.object);
 		console.log("-----------------------");
 		
+
+		//createCameras();
+		
+		let joystick = new JoyStick({
+			onMove: playerControl,
+			game: container
+		});
+
+
 		//animate();
 		loadNextAnim(loaderFBX);
+		//loadEnvironment(loaderFBX);
+
 	} );
 
 	/** ANIMATE + RENDER (continuous rendering) ******************************************** */
@@ -477,11 +492,6 @@ function buildScene() {
 				console.log("anims.length = 0-------");
 				console.log(anims.length);
 				console.log("-----------------------");
-                //createCameras();
-                let joystick = new JoyStick({
-                    onMove: playerControl,
-                    game: container
-                });
 				anims = [];
 				setAction("Idle");
 				animate();
@@ -527,7 +537,7 @@ function toggleAnimation() {
 	}
 }
 
-function movePlayer(dt) {	
+function movePlayer1(dt) {	
 	// console.log("-------------------------");
 	// console.log("player.move.forward------");
 	// console.log(player.move.forward);
@@ -542,23 +552,111 @@ function movePlayer(dt) {
 	player.object.rotateY( player.move.turn * dt );
 }
 
+function movePlayer(dt){
+	const pos = player.object.position.clone();
+	pos.y += 60;
+	let dir = new THREE.Vector3();
+	player.object.getWorldDirection(dir);
+	if (player.move.forward<0) dir.negate();
+	let raycaster = new THREE.Raycaster(pos, dir);
+	let blocked = false;
+	const colliders = params.colliders;
+
+	if (colliders!==undefined){ 
+		const intersect = raycaster.intersectObjects(colliders);
+		if (intersect.length>0){
+			if (intersect[0].distance<50) blocked = true;
+		}
+	}
+	
+	if (!blocked){
+		if (player.move.forward>0){
+			const speed = (player.action=='Running') ? 24 : 8;
+			player.object.translateZ(dt*speed);
+		}
+		else if ( player.move.forward < 0 ) {
+			player.object.translateZ(-dt*2);
+		}
+	}
+	
+	if (colliders!==undefined){
+		//cast left
+		dir.set(-1,0,0);
+		dir.applyMatrix4(player.object.matrix);
+		dir.normalize();
+		raycaster = new THREE.Raycaster(pos, dir);
+
+		let intersect = raycaster.intersectObjects(colliders);
+		if (intersect.length>0){
+			if (intersect[0].distance<50) player.object.translateX(100-intersect[0].distance);
+		}
+		
+		//cast right
+		dir.set(1,0,0);
+		dir.applyMatrix4(player.object.matrix);
+		dir.normalize();
+		raycaster = new THREE.Raycaster(pos, dir);
+
+		intersect = raycaster.intersectObjects(colliders);
+		if (intersect.length>0){
+			if (intersect[0].distance<50) player.object.translateX(intersect[0].distance-100);
+		}
+		
+		//cast down
+		dir.set(0,-1,0);
+		pos.y += 200;
+		raycaster = new THREE.Raycaster(pos, dir);
+		const gravity = 30;
+
+		intersect = raycaster.intersectObjects(colliders);
+		if (intersect.length>0){
+			const targetY = pos.y - intersect[0].distance;
+			if (targetY > player.object.position.y){
+				//Going up
+				player.object.position.y = 0.8 * player.object.position.y + 0.2 * targetY;
+				player.velocityY = 0;
+			}else if (targetY < player.object.position.y){
+				//Falling
+				if (player.velocityY==undefined) player.velocityY = 0;
+				player.velocityY += dt * gravity;
+				player.object.position.y -= player.velocityY;
+				if (player.object.position.y < targetY){
+					player.velocityY = 0;
+					player.object.position.y = targetY;
+				}
+			}
+		}else if (player.object.position.y>0){
+			if (player.velocityY==undefined) player.velocityY = 0;
+			player.velocityY += dt * gravity;
+			player.object.position.y -= player.velocityY;
+			if (player.object.position.y < 0){
+				player.velocityY = 0;
+				player.object.position.y = 0;
+			}
+		}
+	}
+	
+	player.object.rotateY(player.move.turn*dt);
+}
+
+
 function playerControl(forward, turn) {
 	
 	turn = -turn;
 
-	if ( forward > 0.3 ) {
+	if ( forward > 0.2 ) {
         if ( player.action != 'Walking' && player.action != 'Running' ) {
 			setAction('Walking');
 		}
 	} 
-	else if ( forward < -0.3 ) {
+	else if ( forward < -0.2 ) {
         if ( player.action != 'Walking Backwards' ) {
 			setAction('Walking Backwards');
 		}
 	} 
 	else {
         forward = 0;
-        if ( Math.abs(turn) > 0.1 ) {
+        if ( Math.abs(turn) > 0.05 ) {
             if ( player.action != 'Turn' ) {
 				setAction('Turn');
 			}
@@ -605,6 +703,27 @@ function setActiveCamera(object) {
 }
 
 
+function loadEnvironment(loader) {
+	loader.load(`${params.assetsPath}fbx/town.fbx`, function(object){
+		params.environment = object;
+		params.colliders = [];
+		object.scale.set(0.025, 0.025, 0.025);
+		scene.add(object);
+		object.traverse( function ( child ) {
+			if ( child.isMesh ) {
+				if (child.name.startsWith("proxy")){
+					game.colliders.push(child);
+					child.material.visible = false;
+				}else{
+					child.castShadow = true;
+					child.receiveShadow = true;
+				}
+			}
+		} );
+		
+		loadNextAnim(loader);
+	})
+}
 
 
 /**
@@ -692,6 +811,8 @@ function buildAllotments(postObject, plane, sceneID) {
 		}
 		
 		plane.add(structure);
+
+		//params.colliders.push(structure);
 
 		//guiFolderAllotments.add(structure.geometry.parameters, "depth", 0, allotment.parameters.z);
 		
@@ -823,6 +944,8 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
 		}
 		
 		plane.add(structure);
+
+		params.colliders.push(structure);
 		
 		// console.log("-------------------------");
 		// console.log("bed----------------------");
@@ -994,6 +1117,8 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 					}
 					
 					plane.add(structure);
+
+					params.colliders.push(structure);
 					
 					console.log("-------------------------");
 					console.log("plant structure----------");
