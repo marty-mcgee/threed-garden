@@ -159,6 +159,10 @@ class ThreeD_Garden_Admin {
 			wp_enqueue_script( 'orbitcontrols', plugin_dir_url( __FILE__ ) . 'js/OrbitControls.js', array(), $this->version, false );
 			//wp_enqueue_script( 'panolens', plugin_dir_url( __FILE__ ) . 'js/panolens.min.js', array(), $this->version, false );
 			wp_enqueue_script( 'css3drenderer', plugin_dir_url( __FILE__ ) . 'js/CSS3DRenderer.js', array(), $this->version, false );
+			wp_enqueue_script( 'inflate', plugin_dir_url( __FILE__ ) . 'js/inflate.min.js', array(), $this->version, false );
+			wp_enqueue_script( 'fbxloader', plugin_dir_url( __FILE__ ) . 'js/FBXLoader.js', array(), $this->version, false );
+			wp_enqueue_script( 'detector', plugin_dir_url( __FILE__ ) . 'js/Detector.js', array(), $this->version, false );
+			wp_enqueue_script( 'toon3d', plugin_dir_url( __FILE__ ) . 'js/toon3d.js', array(), $this->version, false );
 
 			// THREE.TREE JS
 			wp_enqueue_script( 'tree', plugin_dir_url( __FILE__ ) . 'js/Tree.js', array(), $this->version, false );
@@ -176,7 +180,7 @@ class ThreeD_Garden_Admin {
 				array(
 					'plugin_name' => $this->plugin_name,
 					'plugin_version' => $this->version,
-					'plugin_url' => plugin_dir_url(__FILE__),
+					'plugin_url' => plugin_dir_url(__DIR__), //__FILE__
 					'theme_uri' => get_stylesheet_directory_uri(),
 					'rest_url' => rest_url('wp/v2/'),
 					'world_id' => 1
@@ -425,6 +429,7 @@ class ThreeD_Garden_Admin {
 					<div></div><div></div><div></div><div></div>
 				</div>
 			</div>
+			<button onClick="javascript:toggleAnimation()">Change Animation</button>
 		</div>
 	<?php
 	}

@@ -1,6 +1,7 @@
 /** 
  * ThreeDGarden - Custom Admin JavaScript 
  * *************************************************************************************** */
+if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
 /** PARAMETERS FROM PHP */
 const pluginName = postdata.plugin_name;
@@ -16,6 +17,7 @@ console.log("-----------------------");
 
 /** INSTANTIATE COMMON VARIABLES */
 let scene;
+let plane;
 let camera;
 let controls;
 let gui;
@@ -32,12 +34,27 @@ let gui;
 	//let guiFolderInfospots = gui.addFolder("Infospots");
 	let guiFolderAnnotations = gui.addFolder("Annotations");
 let renderer;
-let canvasParent;
+let container;
 let canvas;
-const loader = new THREE.TextureLoader();
+let player = {};
+let animations = {};
+let anims = ['Walking', 'Walking Backwards', 'Turn', 'Running', 'Pointing Gesture'];
+let stats;
+
+const loaderTexture = new THREE.TextureLoader();
+const loaderFBX = new THREE.FBXLoader();
+const clock = new THREE.Clock();
+
+/** POINTER HOVERS + CLICKS */
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
 
 let params = {
+	/** turn on/off animation */
 	ANIMATE: false,
+	/** where multimedia files located */
+	assetsPath: `${pluginURL}assets/`,
+	/** all the data from rest api calls to be stored here */
 	data: {
 		world: [{id: worldID}],
 		scene: [],
@@ -45,19 +62,12 @@ let params = {
 		bed: [],
 		plant: [],
 		planting_plan: []
-	}
+	},
+	/** POINTER HOVERS + CLICKS */
+	intersectedObject1: null,
+	intersectedObject2: null,
 };
 guiFolderRotation.add(params, "ANIMATE").name("Run Animation");
-
-/** POINTER HOVERS + CLICKS */
-const raycaster = new THREE.Raycaster();
-const pointer = new THREE.Vector2();
-let INTERSECTED1;
-let INTERSECTED2;
-
-/** 
- * BEGIN MAIN
- * *************************************************************************************** */
 
 /** REST API URLS */
 const API_URL_SCENES = `${restURL}scene/?_embed&per_page=100`;
@@ -69,8 +79,16 @@ const API_URL_PLANTS = `${restURL}plant/?_embed&per_page=100`;
 /**
  * init main constructor
  */
-init();
+window.onload = function(e){ 
+	init();
+}
+window.onError = function(error){
+	console.error(JSON.stringify(error));
+}
 
+/** 
+ * BEGIN MAIN
+ * *************************************************************************************** */
 function init() {
 
 	let api_urls = [
@@ -177,9 +195,9 @@ function buildScene() {
 	}
 	// load the 2D background image?
 	else if ( wpScene.acf.scene_background_image ) {
-		// let bgTexture = loader.load(wpScene.acf.scene_background_image);
+		// let bgTexture = loaderTexture.load(wpScene.acf.scene_background_image);
 		// scene.background = bgTexture;
-		let bgTexture = loader.load(
+		let bgTexture = loaderTexture.load(
 			wpScene.acf.scene_background_image,
 			() => {
 				const rt = new THREE.WebGLCubeRenderTarget(bgTexture.image.height);
@@ -213,10 +231,10 @@ function buildScene() {
 
 	if ( wpScene.acf.scene_plane_texture_image ) {
 		plane.material.roughness = 0.0;
-		//plane.material.map = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big.jpg');
-		plane.material.map = loader.load(wpScene.acf.scene_plane_texture_image);
-		// plane.material.bumpMap = loader.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big-nm.jpg');
-		// plane.material.bumpMap = loader.load(wpScene.acf.scene_plane_texture_image);
+		//plane.material.map = loaderTexture.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big.jpg');
+		plane.material.map = loaderTexture.load(wpScene.acf.scene_plane_texture_image);
+		// plane.material.bumpMap = loaderTexture.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big-nm.jpg');
+		// plane.material.bumpMap = loaderTexture.load(wpScene.acf.scene_plane_texture_image);
 		// plane.material.bumpScale = 0.01;
 		let planeTextureMap = plane.material.map;
 		planeTextureMap.wrapS = THREE.RepeatWrapping;
@@ -302,7 +320,7 @@ function buildScene() {
 		controls.autoRotate = false;
 		controls.autoRotateSpeed = 0.03;
 		controls.minDistance = 0.01;
-		controls.maxDistance = 240;
+		controls.maxDistance = 1240;
 		controls.maxPolarAngle = Math.PI/2 - .04;
 		controls.target = new THREE.Vector3(0, 0, 0); // where the camera actually points
 		//controls.target.set(0, 5, 0); // alternate way of setting target of camera
@@ -311,9 +329,9 @@ function buildScene() {
 
 	/** WEBGL CANVAS *********************************************************************** */
 
-	canvasParent = document.querySelector('#webgl');
-	canvasParent.append(gui.domElement);
-	canvasParent.append(renderer.domElement);
+	container = document.querySelector('#webgl');
+	container.append(gui.domElement);
+	container.append(renderer.domElement);
 	canvas = renderer.domElement;
 	
 	/** BUILD ALLOTMENTS ******************************************************************* */
@@ -324,38 +342,184 @@ function buildScene() {
 		sceneID // the post-to-post relationship <3
 	);
 
+	/** FBX ******************************************************************************** */
+
+	loaderFBX.load( `${params.assetsPath}fbx/people/FireFighter.fbx`, function (object) {
+
+		object.mixer = new THREE.AnimationMixer( object );
+		player.mixer = object.mixer;
+		player.root = object.mixer.getRoot();
+			
+		object.name = "Gardener";
+				
+		object.traverse( function ( child ) {
+			if ( child.isMesh ) {
+				child.castShadow = true;
+				child.receiveShadow = false;		
+			}
+		} );
+		
+		loaderTexture.load(`${params.assetsPath}images/SimpleFarmer_Farmer_Brown.png`, function(texture) {
+			object.traverse( function ( child ) {
+				if ( child.isMesh ){
+					child.material.map = texture;
+				}
+			} );
+		});
+
+		console.log("-----------------------");
+		console.log("object----------------");
+		console.log(object);
+		console.log("-----------------------");
+
+		player.object = new THREE.Object3D();
+		player.object.add(object);
+		player.object.scale.set(0.025, 0.025, 0.025);
+		player.object.rotation.x = Math.PI/2; // 90 degrees in radians
+		//player.mixer.clipAction(object.animations[0]).play();
+		animations.Idle = object.animations[0];
+		plane.add(player.object);
+
+		console.log("-----------------------");
+		console.log("player.object----------------");
+		console.log(player.object);
+		console.log("-----------------------");
+		
+		//animate();
+		loadNextAnim(loaderFBX);
+	} );
+
 	/** ANIMATE + RENDER (continuous rendering) ******************************************** */
-
-	//updateAnnotationPosition(camera, renderer.domElement);
-
+	
 	let animate = function () {
-		/** CONTINUE PLEASE (MANDATORY) */
+		const dt = clock.getDelta();
 		watchPointer(camera, plane.children);
 		controls.update();
 		TWEEN.update();
 		requestAnimationFrame(animate);
-		// structure.rotation.x += 0.005;
-		// structure.rotation.y += 0.005;
 		// plane.rotation.x += 0.002;
 		// plane.rotation.y += 0.002;
 		if ( params.ANIMATE ) {
 			plane.rotation.z -= 0.0007;
 		}
+		if ( player.mixer !== undefined ) {
+			player.mixer.update(dt);
+		}
 		renderer.render(scene, camera);
-		// infospot annotations
-		// updateAnnotationOpacity(camera, 20, 25);
-		// updateAnnotationPosition(
-		// 	camera, 
-		// 	renderer.domElement.width,
-		// 	renderer.domElement.height,
-		// 	positionX, positionY, positionZ, annotation
-		// );
 	};
+
 	animate();
 
+	
+	let loadNextAnim = function (loader) {
+		let anim = anims.pop();
+		console.log("-----------------------");
+		console.log("anim-------------------");
+		console.log(anim);
+		console.log("-----------------------");
+		loader.load( `${params.assetsPath}fbx/anims/${anim}.fbx`, function(object) {
+			console.log("-----------------------");
+			console.log("object-----------------");
+			console.log(object);
+			console.log("-----------------------");
+			animations[anim] = object.animations[0];
+			if (anims.length > 0){
+				console.log("-----------------------");
+				console.log("anims.length-----------");
+				console.log(anims.length);
+				console.log("-----------------------");
+				console.log("-----------------------");
+				console.log("getAction()-----------");
+				console.log(getAction());
+				console.log("-----------------------");
+				loadNextAnim(loader);
+			} 
+			else {
+				console.log("-----------------------");
+				console.log("anims.length = 0 ------");
+				console.log(anims.length);
+				console.log("-----------------------");
+				anims = [];
+				setAction("Idle");
+				animate();
+			}
+		});	
+	}
+	
 	//return scene;
 }
 
+function setAction(name) {
+	const action = player.mixer.clipAction( animations[name] );
+	action.time = 0;
+	player.mixer.stopAllAction();
+	player.action = name;
+	player.actionTime = Date.now();
+	
+	action.fadeIn(0.5);	
+	action.play();
+}
+
+function getAction() {
+	if (player === undefined || player.action === undefined) {
+		return "";
+	}
+	return player.action;
+}
+
+function toggleAnimation() {
+	if ( player.action == "Idle" ) {
+		setAction("Pointing Gesture");
+	}
+	else {
+		setAction("Idle");
+	}
+}
+
+function movePlayer(dt) {	
+	if ( player.move.forward > 0 ) {
+		const speed = ( player.action == 'Running' ) ? 400 : 150;
+		player.object.translateZ( dt * speed );
+	}
+	else {
+		player.object.translateZ( -dt * 30);
+	}
+	player.object.rotateY( player.move.turn * dt );
+}
+
+function playerControl(forward, turn) {
+	
+	turn = -turn;
+
+	if ( forward > 0.3 ) {
+        if ( player.action != 'Walking' && player.action != 'Running' ) {
+			setAction('Walking');
+		}
+	} 
+	else if ( forward < -0.3 ) {
+        if ( player.action != 'Walking Backwards' ) {
+			setAction('Walking Backwards');
+		}
+	} 
+	else {
+        forward = 0;
+        if ( Math.abs(turn) > 0.1 ) {
+            if ( player.action != 'Turn' ) {
+				setAction('Turn');
+			}
+		} 
+		else if ( player.action != "Idle" ) {
+            setAction('Idle');
+        }
+    }
+
+    if ( forward == 0 && turn == 0 ) {
+        player.move = {};
+	} 
+	else {
+        player.move = { forward, turn };
+    }
+}
 
 /**
  * BUILD "ALLOTMENTS" FROM REST API POST OBJECT ************************************************************
@@ -425,14 +589,14 @@ function buildAllotments(postObject, plane, sceneID) {
 		structure.position.z = (structure.geometry.parameters.depth / 2) + allotment.position.z; // - 10 for gap between plane
 		structure.material.roughness = 0.9;
 		if (allotment.images.texture != null && allotment.images.texture != false) {
-			structure.material.map = loader.load(allotment.images.texture);
+			structure.material.map = loaderTexture.load(allotment.images.texture);
 			for (let i = 0; i < structure.material.length; i++) {
 				// hightlight object
 				//structure.material[i].color.set(0xff0000);
-				structure.material[i].map = loader.load(allotment.images.texture);
+				structure.material[i].map = loaderTexture.load(allotment.images.texture);
 				//structure.faces[i].materialIndex = 1;
 				//console.log(intersects[i]);
-				// structure.material[i].bumpMap = loader.load(allotment.images.texture);
+				// structure.material[i].bumpMap = loaderTexture.load(allotment.images.texture);
 				// structure.material[i].bumpScale = 0.05;
 				let structureTextureMap = structure.material[i].map;
 				structureTextureMap.wrapS = THREE.RepeatWrapping;
@@ -556,14 +720,14 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
 		//structure.rotation.x = -Math.PI / 2; // -90 degrees in radians
 		structure.material.roughness = 0.9;
 		if (bed.images.texture != null && bed.images.texture != false) {
-			structure.material.map = loader.load(bed.images.texture);
+			structure.material.map = loaderTexture.load(bed.images.texture);
 			for (let i = 0; i < structure.material.length; i++) {
 				// hightlight object
 				//structure.material[i].color.set(0xff0000);
-				structure.material[i].map = loader.load(bed.images.texture);
+				structure.material[i].map = loaderTexture.load(bed.images.texture);
 				//structure.faces[i].materialIndex = 1;
 				//console.log(intersects[i]);
-				// structure.material[i].bumpMap = loader.load(bed.images.texture);
+				// structure.material[i].bumpMap = loaderTexture.load(bed.images.texture);
 				// structure.material[i].bumpScale = 0.05;
 				let structureTextureMap = structure.material[i].map;
 				structureTextureMap.wrapS = THREE.RepeatWrapping;
@@ -727,14 +891,14 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 					structure.rotation.x = Math.PI / 2; // 90 degrees in radians
 					structure.material.roughness = 0.9;
 					if (plant.images.texture != null && plant.images.texture != false) {
-						structure.material.map = loader.load(plant.images.texture);
+						structure.material.map = loaderTexture.load(plant.images.texture);
 						for (let i = 0; i < structure.material.length; i++) {
 							// hightlight object
 							//structure.material[i].color.set(0xff0000);
-							structure.material[i].map = loader.load(plant.images.texture);
+							structure.material[i].map = loaderTexture.load(plant.images.texture);
 							//structure.faces[i].materialIndex = 1;
 							//console.log(intersects[i]);
-							// structure.material[i].bumpMap = loader.load(plant.images.texture);
+							// structure.material[i].bumpMap = loaderTexture.load(plant.images.texture);
 							// structure.material[i].bumpScale = 0.05;
 							let structureTextureMap = structure.material[i].map;
 							structureTextureMap.wrapS = THREE.RepeatWrapping;
@@ -1330,45 +1494,45 @@ function watchPointer(camera, targetList){
 		} */
 
 		// if the closest object intersected is not the currently stored intersection object
-		if ( intersects[0].object != INTERSECTED1 ) {
+		if ( intersects[0].object != params.intersectedObject1 ) {
 
 			// restore previous intersection object (if it exists) to its original color
-			if ( INTERSECTED1 ) {
-				if ( INTERSECTED1.material.constructor.name == "Array" ) {
-					for (let i = 0; i < INTERSECTED1.material.length; i++) {
-						INTERSECTED1.material[i].color.setHex( INTERSECTED1.currentHex );
+			if ( params.intersectedObject1 ) {
+				if ( params.intersectedObject1.material.constructor.name == "Array" ) {
+					for (let i = 0; i < params.intersectedObject1.material.length; i++) {
+						params.intersectedObject1.material[i].color.setHex( params.intersectedObject1.currentHex );
 					}
 				} 
 				else {
-					INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
+					params.intersectedObject1.material.color.setHex( params.intersectedObject1.currentHex );
 				}
 			}
 
 			// store reference to closest object as current intersection object
-			INTERSECTED1 = intersects[0].object;
+			params.intersectedObject1 = intersects[0].object;
 
 			// console.log("-------------------------");
-			// console.log("INTERSECTED1-------------");
-			// console.log(INTERSECTED1);
+			// console.log("params.intersectedObject1-------------");
+			// console.log(params.intersectedObject1);
 			// console.log("-------------------------");
 
-			if ( INTERSECTED1.material.constructor.name == "Array" ) {
+			if ( params.intersectedObject1.material.constructor.name == "Array" ) {
 				// SEPARATE FOR LOOPS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				// store color of closest object (for later restoration)
-				for (let i = 0; i < INTERSECTED1.material.length; i++) {
-					INTERSECTED1.currentHex = INTERSECTED1.material[i].color.getHex();
+				for (let i = 0; i < params.intersectedObject1.material.length; i++) {
+					params.intersectedObject1.currentHex = params.intersectedObject1.material[i].color.getHex();
 				}
 				// set a new color for closest object
-				for (let i = 0; i < INTERSECTED1.material.length; i++) {
-					INTERSECTED1.material[i].color.setHex( 0xdddd00 );
+				for (let i = 0; i < params.intersectedObject1.material.length; i++) {
+					params.intersectedObject1.material[i].color.setHex( 0xdddd00 );
 				}
 				// SEPARATE FOR LOOPS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			} 
 			else {
 				// store color of closest object (for later restoration)
-				INTERSECTED1.currentHex = INTERSECTED1.material.color.getHex();
+				params.intersectedObject1.currentHex = params.intersectedObject1.material.color.getHex();
 				// set a new color for closest object
-				INTERSECTED1.material.color.setHex( 0xdddd00 );
+				params.intersectedObject1.material.color.setHex( 0xdddd00 );
 			}
 			
 		}
@@ -1376,19 +1540,19 @@ function watchPointer(camera, targetList){
 	// there are no intersections
 	else {
 		// restore previous intersection object (if it exists) to its original color
-		if ( INTERSECTED1 ) {
-			if ( INTERSECTED1.material.constructor.name == "Array" ) {
-				for (let i = 0; i < INTERSECTED1.material.length; i++) {
-					INTERSECTED1.material[i].color.setHex( INTERSECTED1.currentHex );
+		if ( params.intersectedObject1 ) {
+			if ( params.intersectedObject1.material.constructor.name == "Array" ) {
+				for (let i = 0; i < params.intersectedObject1.material.length; i++) {
+					params.intersectedObject1.material[i].color.setHex( params.intersectedObject1.currentHex );
 				}
 			} 
 			else {
-				INTERSECTED1.material.color.setHex( INTERSECTED1.currentHex );
+				params.intersectedObject1.material.color.setHex( params.intersectedObject1.currentHex );
 			}
 		}
 		// remove previous intersection object reference
 		// by setting current intersection object to "nothing"
-		INTERSECTED1 = null;
+		params.intersectedObject1 = null;
 	}
 }
 
@@ -1477,48 +1641,48 @@ function onPointerDown(event) {
 		// intersects[0].object.geometry.colorsNeedUpdate = true;
 
 		// if the closest object intersected is not the currently stored intersection object
-		let intersectedObject = intersects[0].object;
+		let theIntersectedObject = intersects[0].object;
 		
 		// for testing only
-		// if ( intersectedObject != INTERSECTED2 ) {
+		// if ( theIntersectedObject != params.intersectedObject2 ) {
 		// 	console.log("-----------------------------");
-		// 	console.log("INTERSECTED2 null------------");
-		// 	console.log("intersectedObject NEW--------");
-		// 	console.log(intersectedObject);
+		// 	console.log("params.intersectedObject2 null------------");
+		// 	console.log("theIntersectedObject NEW--------");
+		// 	console.log(theIntersectedObject);
 		// 	console.log("-----------------------------");
 		// }
 		// else {
 		// 	console.log("-----------------------------");
-		// 	console.log("INTERSECTED2 already stored--");
-		// 	console.log("intersectedObject -----------");
-		// 	console.log(intersectedObject);
+		// 	console.log("params.intersectedObject2 already stored--");
+		// 	console.log("theIntersectedObject -----------");
+		// 	console.log(theIntersectedObject);
 		// 	console.log("-----------------------------");
 		// }
 
 		// restore previous intersection object (if it exists) to its original color
-		if ( INTERSECTED2 ) {
-			//INTERSECTED2.material[i].color.setHex( INTERSECTED2.currentHex );
+		if ( params.intersectedObject2 ) {
+			//params.intersectedObject2.material[i].color.setHex( params.intersectedObject2.currentHex );
 			// zoom out
 			//panCam(100, 200, 200, 800, event.target.camera, event.target.controls);
 		} 
 		else {
 			// zoom in
-			//panCam(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z, 800, event.target.camera, event.target.controls);	
+			//panCam(params.intersectedObject2.position.x, params.intersectedObject2.position.y, params.intersectedObject2.position.z, 800, event.target.camera, event.target.controls);	
 		}
 		// store reference to closest object as current intersection object
-		INTERSECTED2 = intersectedObject;
+		params.intersectedObject2 = theIntersectedObject;
 		// store color of closest object (for later restoration)
-		//INTERSECTED2.currentHex = INTERSECTED2.material.color.getHex();
+		//params.intersectedObject2.currentHex = params.intersectedObject2.material.color.getHex();
 		// set a new color for closest object
-		//INTERSECTED2.material.color.setHex( 0xff0000 );
+		//params.intersectedObject2.material.color.setHex( 0xff0000 );
 		
 		// point the camera controls to the intersected object?
 		//event.target.controls.reset();
-		//event.target.controls.target = new THREE.Vector3(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z);
+		//event.target.controls.target = new THREE.Vector3(params.intersectedObject2.position.x, params.intersectedObject2.position.y, params.intersectedObject2.position.z);
 		//event.target.camera.position.set(100, 200, 200);
 		// if (event.button == 2) {
 		// 	// zoom in
-		// 	panCam(INTERSECTED2.position.x, INTERSECTED2.position.y, INTERSECTED2.position.z, 1200, event.target.camera, event.target.controls);
+		// 	panCam(params.intersectedObject2.position.x, params.intersectedObject2.position.y, params.intersectedObject2.position.z, 1200, event.target.camera, event.target.controls);
 		// } else if (event.button == 1) {
 		// 	// zoom out
 		// 	panCam(100, 200, 200, 1200, event.target.camera, event.target.controls);
@@ -1529,9 +1693,9 @@ function onPointerDown(event) {
 		// console.log("------------------");
 
 		// show/hide infospheres
-		if ( INTERSECTED2.userData.type === "structure" && event.button == 0 ) {
+		if ( params.intersectedObject2.userData.type === "structure" && event.button == 0 ) {
 
-			let infospotObject = scene.getObjectByName( `INFOSPOT: ${INTERSECTED2.name}` ); // , true for recursive
+			let infospotObject = scene.getObjectByName( `INFOSPOT: ${params.intersectedObject2.name}` ); // , true for recursive
 			if ( infospotObject ) {
 				if (infospotObject.visible === true) {
 					infospotObject.visible = false;
@@ -1547,7 +1711,7 @@ function onPointerDown(event) {
 		}
 
 		// show/hide annotations
-		INTERSECTED2.children.forEach( function(key) {
+		params.intersectedObject2.children.forEach( function(key) {
 			// console.log("--------------------------------------");
 			// console.log("key (pre-process)------");
 			// console.log(`key.type: ${key.type}`);
@@ -1594,16 +1758,16 @@ function onPointerDown(event) {
 		});
 
 		/* 
-		if ( INTERSECTED2.userData.annotation ) {
+		if ( params.intersectedObject2.userData.annotation ) {
 			console.log("------------------");
 			console.log("ANNOTATION ------------");
-			console.log(INTERSECTED2.userData.annotation);
+			console.log(params.intersectedObject2.userData.annotation);
 			console.log("------------------");
 		}
 		else {
 			console.log("------------------");
 			console.log("ANNOTATION? ------------");
-			console.log(INTERSECTED2.userData);
+			console.log(params.intersectedObject2.userData);
 			console.log("------------------");
 		}
 		*/
@@ -1612,12 +1776,12 @@ function onPointerDown(event) {
 	else // there are no intersections
 	{
 		// restore previous intersection object (if it exists) to its original color
-		if ( INTERSECTED2 ) {
-			//INTERSECTED2.material.color.setHex( INTERSECTED2.currentHex );
+		if ( params.intersectedObject2 ) {
+			//params.intersectedObject2.material.color.setHex( params.intersectedObject2.currentHex );
 		}
 		// remove previous intersection object reference
 		//     by setting current intersection object to "nothing"
-		INTERSECTED2 = null;
+		params.intersectedObject2 = null;
 	}
 
 }
@@ -1868,25 +2032,6 @@ function buildNewPost( postObject ) {
 	document.querySelector('#webgl').append(postElement);
 
 	//getPreviousPost();
-}
-
-
-/** 
- * OLD
- * *************************************************************************************** */
-
-window.onload = function(e){ 
-
-	/** QUERY FOR SCENES ***************************************************************** */
-
-	// let queryURLScenes = `${restURL}scene/?_embed&per_page=100`;
-	// fetch( queryURLScenes )
-	// 	.then( response => response.json() )
-	// 	/**
-	// 	 * init main constructor
-	// 	 */
-	// 	.then( postObject => init(postObject) );
-
 }
 
 
