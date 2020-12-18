@@ -33,6 +33,7 @@ let gui;
 	let guiFolderPlants = gui.addFolder("Plants");
 	//let guiFolderInfospots = gui.addFolder("Infospots");
 	let guiFolderAnnotations = gui.addFolder("Annotations");
+	let guiFolderPlayer = gui.addFolder("Character");
 let renderer;
 let container;
 let canvas;
@@ -320,7 +321,7 @@ function buildScene() {
 		controls.autoRotate = false;
 		controls.autoRotateSpeed = 0.03;
 		controls.minDistance = 0.01;
-		controls.maxDistance = 1240;
+		controls.maxDistance = 240;
 		controls.maxPolarAngle = Math.PI/2 - .04;
 		controls.target = new THREE.Vector3(0, 0, 0); // where the camera actually points
 		//controls.target.set(0, 5, 0); // alternate way of setting target of camera
@@ -376,9 +377,11 @@ function buildScene() {
 		player.object.add(object);
 		player.object.scale.set(0.025, 0.025, 0.025);
 		player.object.rotation.x = Math.PI/2; // 90 degrees in radians
-		//player.mixer.clipAction(object.animations[0]).play();
-		animations.Idle = object.animations[0];
+		player.mixer.clipAction(object.animations[0]).play();
+		//animations.Idle = object.animations[0];
+		//setAction("Idle");
 		plane.add(player.object);
+		guiFolderPlayer.add(player.object, "visible").name("Show Character").listen();
 
 		console.log("-----------------------");
 		console.log("player.object----------------");
@@ -396,15 +399,45 @@ function buildScene() {
 		watchPointer(camera, plane.children);
 		controls.update();
 		TWEEN.update();
+
 		requestAnimationFrame(animate);
-		// plane.rotation.x += 0.002;
-		// plane.rotation.y += 0.002;
+
 		if ( params.ANIMATE ) {
+			// plane.rotation.x += 0.002;
+			// plane.rotation.y += 0.002;
 			plane.rotation.z -= 0.0007;
 		}
+
+		/** PLAYER CHARACTER */
 		if ( player.mixer !== undefined ) {
 			player.mixer.update(dt);
 		}
+		
+        if ( player.action == 'Walking' ) {
+			const elapsedTime = Date.now() - player.actionTime;
+			if ( elapsedTime > 3000 && player.move.forward > 0 ){
+				setAction('Running');
+			}
+		}
+		
+		if ( player.move !== undefined ) {
+			movePlayer(dt);
+		}
+		
+		if ( player.cameras != undefined && player.cameras.active != undefined ) {
+			camera.position.lerp( player.cameras.active.getWorldPosition(new THREE.Vector3()), 0.05 );
+			const pos = player.object.position.clone();
+			pos.y += 200;
+			camera.lookAt(pos);
+		}
+        
+        if (directionalLight != undefined){
+            // directionalLight.position.x = player.object.position.x;
+            // directionalLight.position.y = player.object.position.y + 200;
+            // directionalLight.position.z = player.object.position.z + 100;
+            // directionalLight.target = player.object;
+        }
+		
 		renderer.render(scene, camera);
 	};
 
@@ -436,9 +469,14 @@ function buildScene() {
 			} 
 			else {
 				console.log("-----------------------");
-				console.log("anims.length = 0 ------");
+				console.log("anims.length = 0-------");
 				console.log(anims.length);
 				console.log("-----------------------");
+                //createCameras();
+                let joystick = new JoyStick({
+                    onMove: playerControl,
+                    game: container
+                });
 				anims = [];
 				setAction("Idle");
 				animate();
@@ -455,6 +493,10 @@ function setAction(name) {
 	player.mixer.stopAllAction();
 	player.action = name;
 	player.actionTime = Date.now();
+	console.log("-----------------------");
+	console.log("player-----------------");
+	console.log(player);
+	console.log("-----------------------");
 	
 	action.fadeIn(0.5);	
 	action.play();
@@ -478,11 +520,11 @@ function toggleAnimation() {
 
 function movePlayer(dt) {	
 	if ( player.move.forward > 0 ) {
-		const speed = ( player.action == 'Running' ) ? 400 : 150;
+		const speed = ( player.action == 'Running' ) ? 24 : 8;
 		player.object.translateZ( dt * speed );
 	}
 	else {
-		player.object.translateZ( -dt * 30);
+		player.object.translateZ( -dt * 2);
 	}
 	player.object.rotateY( player.move.turn * dt );
 }
@@ -520,6 +562,34 @@ function playerControl(forward, turn) {
         player.move = { forward, turn };
     }
 }
+
+function createCameras() {
+	const offset = new THREE.Vector3(0, 80, 0);
+	const front = new THREE.Object3D();
+	front.position.set(112, 100, 600);
+	front.parent = player.object;
+	const back = new THREE.Object3D();
+	back.position.set(0, 300, -600);
+	back.parent = player.object;
+	const wide = new THREE.Object3D();
+	wide.position.set(178, 139, 1665);
+	wide.parent = player.object;
+	const overhead = new THREE.Object3D();
+	overhead.position.set(0, 400, 0);
+	overhead.parent = player.object;
+	const collect = new THREE.Object3D();
+	collect.position.set(40, 82, 94);
+	collect.parent = player.object;
+	player.cameras = { front, back, wide, overhead, collect };
+	setActiveCamera(player.cameras.back);
+}
+
+function setActiveCamera(object) {
+	player.cameras.active = object;
+}
+
+
+
 
 /**
  * BUILD "ALLOTMENTS" FROM REST API POST OBJECT ************************************************************
