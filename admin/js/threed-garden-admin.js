@@ -396,7 +396,7 @@ function buildScene() {
 		
 
 		//createCameras();
-		
+
 		let joystick = new JoyStick({
 			onMove: playerControl,
 			game: container
@@ -404,7 +404,9 @@ function buildScene() {
 
 
 		//animate();
+		// OR
 		loadNextAnim(loaderFBX);
+		// OR
 		//loadEnvironment(loaderFBX);
 
 	} );
