@@ -38,6 +38,8 @@ let renderer;
 let container;
 let canvas;
 let player = {};
+	player.action = "Idle";
+	player.actionTime = Date.now();
 let animations = {};
 let anims = ['Walking', 'Walking Backwards', 'Turn', 'Running', 'Pointing Gesture'];
 let stats;
@@ -378,7 +380,7 @@ function buildScene() {
 		player.object.scale.set(0.025, 0.025, 0.025);
 		player.object.rotation.x = Math.PI/2; // 90 degrees in radians
 		player.mixer.clipAction(object.animations[0]).play();
-		//animations.Idle = object.animations[0];
+		animations.Idle = object.animations[0];
 		//setAction("Idle");
 		plane.add(player.object);
 		guiFolderPlayer.add(player.object, "visible").name("Show Character").listen();
@@ -465,6 +467,9 @@ function buildScene() {
 				console.log("getAction()-----------");
 				console.log(getAction());
 				console.log("-----------------------");
+				console.log("player.action----------");
+				console.log(player.action);
+				console.log("-----------------------");
 				loadNextAnim(loader);
 			} 
 			else {
@@ -490,6 +495,10 @@ function buildScene() {
 function setAction(name) {
 	const action = player.mixer.clipAction( animations[name] );
 	action.time = 0;
+	console.log("-----------------------");
+	console.log("action-----------------");
+	console.log(action);
+	console.log("-----------------------");
 	player.mixer.stopAllAction();
 	player.action = name;
 	player.actionTime = Date.now();
@@ -504,7 +513,7 @@ function setAction(name) {
 
 function getAction() {
 	if (player === undefined || player.action === undefined) {
-		return "";
+		return "doesn't exist yet";
 	}
 	return player.action;
 }
@@ -519,11 +528,15 @@ function toggleAnimation() {
 }
 
 function movePlayer(dt) {	
+	// console.log("-------------------------");
+	// console.log("player.move.forward------");
+	// console.log(player.move.forward);
+	// console.log("-------------------------");
 	if ( player.move.forward > 0 ) {
 		const speed = ( player.action == 'Running' ) ? 24 : 8;
 		player.object.translateZ( dt * speed );
 	}
-	else {
+	else if ( player.move.forward < 0 ) {
 		player.object.translateZ( -dt * 2);
 	}
 	player.object.rotateY( player.move.turn * dt );
@@ -552,15 +565,18 @@ function playerControl(forward, turn) {
 		} 
 		else if ( player.action != "Idle" ) {
             setAction('Idle');
-        }
+		}
+		// else {
+		// 	setAction('Idle');
+		// }
     }
 
-    if ( forward == 0 && turn == 0 ) {
-        player.move = {};
-	} 
-	else {
+    // if ( forward == 0 && turn == 0 ) {
+    //     player.move = {};
+	// } 
+	// else {
         player.move = { forward, turn };
-    }
+    // }
 }
 
 function createCameras() {
