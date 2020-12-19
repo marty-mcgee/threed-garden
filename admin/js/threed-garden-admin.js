@@ -479,30 +479,30 @@ function buildScene() {
 		console.log(anim);
 		console.log("-----------------------");
 		loader.load( `${params.assetsPath}fbx/anims/${anim}.fbx`, function(object) {
-			console.log("-----------------------");
-			console.log("object-----------------");
-			console.log(object);
-			console.log("-----------------------");
+			// console.log("-----------------------");
+			// console.log("object-----------------");
+			// console.log(object);
+			// console.log("-----------------------");
 			animations[anim] = object.animations[0];
 			if (anims.length > 0){
-				console.log("-----------------------");
-				console.log("anims.length-----------");
-				console.log(anims.length);
-				console.log("-----------------------");
-				console.log("-----------------------");
-				console.log("getAction()-----------");
-				console.log(getAction());
-				console.log("-----------------------");
-				console.log("player.action----------");
-				console.log(player.action);
-				console.log("-----------------------");
+				// console.log("-----------------------");
+				// console.log("anims.length-----------");
+				// console.log(anims.length);
+				// console.log("-----------------------");
+				// console.log("-----------------------");
+				// console.log("getAction()-----------");
+				// console.log(getAction());
+				// console.log("-----------------------");
+				// console.log("player.action----------");
+				// console.log(player.action);
+				// console.log("-----------------------");
 				loadNextAnim(loader);
 			} 
 			else {
-				console.log("-----------------------");
-				console.log("anims.length = 0-------");
-				console.log(anims.length);
-				console.log("-----------------------");
+				// console.log("-----------------------");
+				// console.log("anims.length = 0-------");
+				// console.log(anims.length);
+				// console.log("-----------------------");
 				anims = [];
 				setAction("Idle");
 				animate();
@@ -516,17 +516,17 @@ function buildScene() {
 function setAction(name) {
 	const action = player.mixer.clipAction( animations[name] );
 	action.time = 0;
-	console.log("-----------------------");
-	console.log("action-----------------");
-	console.log(action);
-	console.log("-----------------------");
+	// console.log("-----------------------");
+	// console.log("action-----------------");
+	// console.log(action);
+	// console.log("-----------------------");
 	player.mixer.stopAllAction();
 	player.action = name;
 	player.actionTime = Date.now();
-	console.log("-----------------------");
-	console.log("player-----------------");
-	console.log(player);
-	console.log("-----------------------");
+	// console.log("-----------------------");
+	// console.log("player-----------------");
+	// console.log(player);
+	// console.log("-----------------------");
 	
 	action.fadeIn(0.5);	
 	action.play();
