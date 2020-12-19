@@ -46,6 +46,7 @@ let stats;
 
 const loaderTexture = new THREE.TextureLoader();
 const loaderFBX = new THREE.FBXLoader();
+const loaderGLTF = new THREE.GLTFLoader();
 const clock = new THREE.Clock();
 
 /** POINTER HOVERS + CLICKS */
@@ -73,6 +74,8 @@ let params = {
 	colliders: [], // params.colliders.push(object3D);
 	// town.fbx
 	environment: {},
+	// custom fbx
+	farmhouse: {},
 };
 guiFolderRotation.add(params, "ANIMATE").name("Run Animation");
 
@@ -327,7 +330,7 @@ function buildScene() {
 		controls.autoRotate = false;
 		controls.autoRotateSpeed = 0.03;
 		controls.minDistance = 0.01;
-		controls.maxDistance = 240;
+		controls.maxDistance = 340;
 		controls.maxPolarAngle = Math.PI/2 - .04;
 		controls.target = new THREE.Vector3(0, 0, 0); // where the camera actually points
 		//controls.target.set(0, 5, 0); // alternate way of setting target of camera
@@ -351,6 +354,7 @@ function buildScene() {
 
 	/** FBX ******************************************************************************** */
 	
+	//loaderFBX.load( `${params.assetsPath}characters/SimplePeople.fbx`, function (object) {
 	loaderFBX.load( `${params.assetsPath}fbx/people/FireFighter.fbx`, function (object) {
 
 		object.mixer = new THREE.AnimationMixer( object );
@@ -365,7 +369,7 @@ function buildScene() {
 				child.receiveShadow = false;		
 			}
 		} );
-		
+		//loaderTexture.load(`${params.assetsPath}images/SimpleScarecrow.png`, function(texture) {
 		loaderTexture.load(`${params.assetsPath}images/SimpleFarmer_Farmer_Brown.png`, function(texture) {
 			object.traverse( function ( child ) {
 				if ( child.isMesh ){
@@ -393,14 +397,6 @@ function buildScene() {
 		console.log("player.object----------------");
 		console.log(player.object);
 		console.log("-----------------------");
-		
-
-		//createCameras();
-
-		let joystick = new JoyStick({
-			onMove: playerControl,
-			game: container
-		});
 
 
 		//animate();
@@ -411,9 +407,21 @@ function buildScene() {
 
 	} );
 
+		// AND
+		loadFarmHouse(plane);
+		
+
+	//createCameras();
+
+	let joystick = new JoyStick({
+		onMove: playerControl,
+		game: container
+	});
+
 	/** ANIMATE + RENDER (continuous rendering) ******************************************** */
 	
 	let animate = function () {
+
 		const dt = clock.getDelta();
 		watchPointer(camera, plane.children);
 		controls.update();
@@ -714,7 +722,7 @@ function loadEnvironment(loader) {
 		object.traverse( function ( child ) {
 			if ( child.isMesh ) {
 				if (child.name.startsWith("proxy")){
-					game.colliders.push(child);
+					params.colliders.push(child);
 					child.material.visible = false;
 				}else{
 					child.castShadow = true;
@@ -727,6 +735,126 @@ function loadEnvironment(loader) {
 	})
 }
 
+function loadFarmHouse(plane) {
+	loaderFBX.load(`${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function(object){
+	//loaderFBX.load(`${params.assetsPath}fbx/Building_Barn_Big_03.fbx`, function(object){
+		params.farmhouse = object;
+		params.colliders = [];
+		object.rotation.y = 270 * (Math.PI/180); // 90 degrees in radians
+		object.position.set(0, 0, 100);
+		object.scale.set(2.4, 2.4, 2.4);
+		scene.add(object);
+		object.traverse( function ( child ) {
+			if ( child.isMesh ) {
+				if (child.name.startsWith("proxy")){
+					params.colliders.push(child);
+					child.material.visible = false;
+				}else{
+					child.castShadow = true;
+					child.receiveShadow = true;
+				}
+			}
+		} );
+		loaderTexture.load(`${params.assetsPath}textures/SimpleFarm.png`, function(texture) {
+			object.traverse( function ( child ) {
+				if ( child.isMesh ){
+					child.material.map = texture;
+				}
+			} );
+		});
+		
+		//loadNextAnim(loader);
+	})
+}
+
+function loadFarmHouse2(plane) {
+	
+	// loaderFBX.load( `${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
+	loaderGLTF.load( `${params.assetsPath}gltf/Residential House.glb`, function (object) {
+
+		// object.mixer = new THREE.AnimationMixer( object );
+		// player.mixer = object.mixer;
+		// player.root = object.mixer.getRoot();
+
+		let model = object.scene;
+		model.name = "Farm House";
+		model.position.set(0, 0, 100);
+		model.scale.set(20, 20, 20);
+		model.traverse( function ( child ) {
+			if ( child.isMesh ) child.castShadow = true;
+		} );
+		scene.add(model);
+
+		helper = new THREE.SkeletonHelper(model);
+		helper.material.linewidth = 5;
+		helper.visible = true;
+		scene.add(helper);
+				
+		// object.traverse( function ( child ) {
+		// 	if ( child.isMesh ) {
+		// 		child.castShadow = true;
+		// 		child.receiveShadow = false;		
+		// 	}
+		// } );
+
+		// object.position.set(-10, 0, 70);
+		// object.scale.set(2.4, 2.4, 2.4);
+		
+		// object.traverse( function ( child ) {
+		// 	if ( child.isMesh ) {
+		// 		if (child.name.startsWith("proxy")){
+		// 			params.colliders.push(child);
+		// 			child.material.visible = false;
+		// 		}else{
+		// 			child.castShadow = true;
+		// 			child.receiveShadow = true;
+		// 		}
+		// 	}
+		// } );
+
+		// loaderTexture.load(`${params.assetsPath}images/SimpleFarmer_Farmer_Brown.png`, function(texture) {
+		// 	object.traverse( function ( child ) {
+		// 		if ( child.isMesh ){
+		// 			child.material.map = texture;
+		// 		}
+		// 	} );
+		// });
+
+		console.log("-----------------------");
+		console.log("loadFarmHouse object----------------");
+		console.log(object);
+		console.log("-----------------------");
+
+		console.log("-----------------------");
+		console.log("loadFarmHouse model----------------");
+		console.log(model);
+		console.log("-----------------------");
+
+		// player.object = new THREE.Object3D();
+		// player.object.add(object);
+		// //player.object.scale.set(0.025, 0.025, 0.025);
+		// //player.object.rotation.x = Math.PI/2; // 90 degrees in radians
+		// player.mixer.clipAction(object.animations[0]).play();
+		// //animations.Idle = object.animations[0];
+		// //setAction("Idle");
+		// plane.add(player.object);
+		//scene.add(object);
+		guiFolderPlayer.add(model, "visible").name("Show House").listen();
+
+		// console.log("-----------------------");
+		// console.log("loadFarmHouse player.object----------------");
+		// console.log(player.object);
+		// console.log("-----------------------");
+
+
+		//animate();
+		// OR
+		//loadNextAnim(loaderFBX);
+		// OR
+		//loadEnvironment(loaderFBX);
+
+	} );
+}
 
 /**
  * BUILD "ALLOTMENTS" FROM REST API POST OBJECT ************************************************************
