@@ -23,7 +23,7 @@ let controls;
 let gui;
 	gui = new dat.GUI({ autoPlace: true, closeOnTop: true });
 	gui.close();
-	gui.domElement.id = 'gui';
+	gui.domElement.id = "gui";
 	let guiFolderRotation = gui.addFolder("Rotation + Animation");
 	//let guiFolderAnimation = guiFolderRotation.addFolder("Animation");
 	let guiFolderCameras = gui.addFolder("Camera Position");
@@ -41,7 +41,7 @@ let player = {};
 	player.action = "Idle";
 	player.actionTime = Date.now();
 let animations = {};
-let anims = ['Walking', 'Walking Backwards', 'Turn', 'Running', 'Pointing Gesture'];
+let anims = ["Driving", "Pointing", "Pointing Gesture", "Running", "Talking", "Turn", "Walking", "Walking Backwards"];
 let stats;
 
 const loaderTexture = new THREE.TextureLoader();
@@ -241,9 +241,9 @@ function buildScene() {
 
 	if ( wpScene.acf.scene_plane_texture_image ) {
 		plane.material.roughness = 0.0;
-		//plane.material.map = loaderTexture.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big.jpg');
+		//plane.material.map = loaderTexture.load("/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big.jpg");
 		plane.material.map = loaderTexture.load(wpScene.acf.scene_plane_texture_image);
-		// plane.material.bumpMap = loaderTexture.load('/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big-nm.jpg');
+		// plane.material.bumpMap = loaderTexture.load("/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big-nm.jpg");
 		// plane.material.bumpMap = loaderTexture.load(wpScene.acf.scene_plane_texture_image);
 		// plane.material.bumpScale = 0.01;
 		let planeTextureMap = plane.material.map;
@@ -339,7 +339,7 @@ function buildScene() {
 
 	/** WEBGL CANVAS *********************************************************************** */
 
-	container = document.querySelector('#webgl');
+	container = document.querySelector("#webgl");
 	container.append(gui.domElement);
 	container.append(renderer.domElement);
 	canvas = renderer.domElement;
@@ -355,7 +355,8 @@ function buildScene() {
 	/** FBX ******************************************************************************** */
 	
 	//loaderFBX.load( `${params.assetsPath}characters/SimplePeople.fbx`, function (object) {
-	loaderFBX.load( `${params.assetsPath}fbx/people/FireFighter.fbx`, function (object) {
+	//loaderFBX.load( `${params.assetsPath}fbx/people/FireFighter.fbx`, function (object) {
+	loaderFBX.load( `${params.assetsPath}fbx/people/Trucker.fbx`, function (object) {
 
 		object.mixer = new THREE.AnimationMixer( object );
 		player.mixer = object.mixer;
@@ -440,10 +441,10 @@ function buildScene() {
 			player.mixer.update(dt);
 		}
 		
-        if ( player.action == 'Walking' ) {
+        if ( player.action == "Walking" ) {
 			const elapsedTime = Date.now() - player.actionTime;
 			if ( elapsedTime > 3000 && player.move.forward > 0 ){
-				setAction('Running');
+				setAction("Running");
 			}
 		}
 		
@@ -553,7 +554,7 @@ function movePlayer1(dt) {
 	// console.log(player.move.forward);
 	// console.log("-------------------------");
 	if ( player.move.forward > 0 ) {
-		const speed = ( player.action == 'Running' ) ? 24 : 8;
+		const speed = ( player.action == "Running" ) ? 24 : 8;
 		player.object.translateZ( dt * speed );
 	}
 	else if ( player.move.forward < 0 ) {
@@ -581,7 +582,7 @@ function movePlayer(dt){
 	
 	if (!blocked){
 		if (player.move.forward>0){
-			const speed = (player.action=='Running') ? 24 : 8;
+			const speed = (player.action=="Running") ? 24 : 8;
 			player.object.translateZ(dt*speed);
 		}
 		else if ( player.move.forward < 0 ) {
@@ -655,27 +656,27 @@ function playerControl(forward, turn) {
 	turn = -turn;
 
 	if ( forward > 0.2 ) {
-        if ( player.action != 'Walking' && player.action != 'Running' ) {
-			setAction('Walking');
+        if ( player.action != "Walking" && player.action != "Running" ) {
+			setAction("Walking");
 		}
 	} 
 	else if ( forward < -0.2 ) {
-        if ( player.action != 'Walking Backwards' ) {
-			setAction('Walking Backwards');
+        if ( player.action != "Walking Backwards" ) {
+			setAction("Walking Backwards");
 		}
 	} 
 	else {
         forward = 0;
         if ( Math.abs(turn) > 0.05 ) {
-            if ( player.action != 'Turn' ) {
-				setAction('Turn');
+            if ( player.action != "Turn" ) {
+				setAction("Turn");
 			}
 		} 
 		else if ( player.action != "Idle" ) {
-            setAction('Idle');
+            setAction("Idle");
 		}
 		// else {
-		// 	setAction('Idle');
+		// 	setAction("Idle");
 		// }
     }
 
@@ -1296,7 +1297,7 @@ function getGeometry(shape, x, y, z, color){
 	let material;
 	let mesh;
 	switch (shape) {
-		case 'Box':
+		case "Box":
 			geometry = new THREE.BoxGeometry(x, y, z);
 			// let opacMaterial = new THREE.MeshStandardMaterial({
 			// 	transparent: true, 
@@ -1323,7 +1324,7 @@ function getGeometry(shape, x, y, z, color){
 			mesh.castShadow = true;
 			break;
 
-		case 'Cone':
+		case "Cone":
 			geometry = new THREE.ConeGeometry(x/2, y/2, z, 32, 1, true);
 			material = new THREE.MeshStandardMaterial({
 				color: color,
@@ -1334,7 +1335,7 @@ function getGeometry(shape, x, y, z, color){
 			mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
 			break;
 
-		case 'Cylinder':
+		case "Cylinder":
 			geometry = new THREE.CylinderGeometry(x/2, y/2, z, 32, 1, true);
 			material = new THREE.MeshStandardMaterial({
 				color: color,
@@ -1345,7 +1346,7 @@ function getGeometry(shape, x, y, z, color){
 			mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
 			break;
 
-		case 'InfoSphere':
+		case "InfoSphere":
 			geometry = new THREE.SphereGeometry(x, y, z);
 			material = new THREE.MeshStandardMaterial({
 				color: color,
@@ -1356,7 +1357,7 @@ function getGeometry(shape, x, y, z, color){
 			//mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
 			break;
 
-		case 'Sphere':
+		case "Sphere":
 			geometry = new THREE.SphereGeometry(x, y, z);
 			material = new THREE.MeshStandardMaterial({
 				color: color,
@@ -1367,9 +1368,9 @@ function getGeometry(shape, x, y, z, color){
 			//mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
 			break;
 
-		case 'Tree':
+		case "Tree":
 			let tree = new THREE.Tree({
-				generations : 3,        // # for branch' hierarchy
+				generations : 3,        // # for branch hierarchy
 				length      : 1.0,      // length of root branch
 				uvLength    : 3.0,      // uv.v ratio against geometry length (recommended is generations * length)
 				radius      : 0.1,      // radius of root branch
@@ -1387,7 +1388,7 @@ function getGeometry(shape, x, y, z, color){
 			//mesh.rotation.x = Math.PI / 2; // 90 degrees in radians
 			break;
 
-		case 'Bush':
+		case "Bush":
 			// CAST
 			geometry = new THREE.CubeGeometry(x, y, z);
 			
@@ -1655,7 +1656,7 @@ function makeInfospotSphere(message, positionX, positionY, positionZ, postID, co
 
 function makeAnnotation(link, contentHTML, positionX, positionY) {
 
-	let annoDiv = document.createElement('div');
+	let annoDiv = document.createElement("div");
 	annoDiv.classList.add("annotation");
 	annoDiv.innerHTML = `
 		<a href="${link}" target="_blank">${contentHTML}</a>
@@ -1705,8 +1706,8 @@ function makeTextSprite(message, parameters) {
 	let backgroundColor = parameters.hasOwnProperty("backgroundColor") ?
 		parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
 		
-	let newCanvas = document.createElement('canvas');
-	let context = newCanvas.getContext('2d');
+	let newCanvas = document.createElement("canvas");
+	let context = newCanvas.getContext("2d");
 	context.font = "Bold " + fontsize + "px " + fontface;
 	//context.textAlign = "center";
     
@@ -1899,7 +1900,7 @@ function watchPointer(camera, targetList){
 
 
 // when the pointer moves, call the given function
-//document.addEventListener( 'pointermove', onPointerMove, false );
+//document.addEventListener( "pointermove", onPointerMove, false );
 function onPointerMove( event ) {
 
 	// the following line would stop any other event handler from firing
@@ -1920,7 +1921,7 @@ function onPointerMove( event ) {
 }
 
 // when the pointer moves, call the given function
-//document.addEventListener( 'pointerdown', onPointerDown, false );
+//document.addEventListener( "pointerdown", onPointerDown, false );
 function onPointerDown(event) {
 	
 	// console.log("------------------");
@@ -2132,7 +2133,7 @@ function toString(v) { return "[ " + v.x + ", " + v.y + ", " + v.z + " ]"; }
 
 function dismiss(el) {
 	el.parentNode.hidden = true;
-	el.parentNode.style.display = 'none';
+	el.parentNode.style.display = "none";
 };
 
 function stringToBoolean(string) {
@@ -2293,16 +2294,16 @@ function getTaxonomies( postObject, isCat ) {
 	let termLinks = [];
 	let taxArray;
 	if ( isCat ) {
-		taxArray = postObject._embedded['wp:term'][0];
+		taxArray = postObject._embedded["wp:term"][0];
 	} 
 	else {
-		taxArray = postObject._embedded['wp:term'][1];
+		taxArray = postObject._embedded["wp:term"][1];
 	}
 	for ( let term of taxArray ) {
 		termLinks.push(`<a href="${term.link}" rel="${isCat ? 'category' : ''} tag">${term.name}</a>`);
 	}
 
-	termLinks = isCat ? termLinks.join('') : termLinks.join(', ');
+	termLinks = isCat ? termLinks.join("") : termLinks.join(", ");
 
 	return termLinks;
 
@@ -2319,16 +2320,16 @@ function getFeaturedImage( postObject ) {
 		return featImage;
 	} 
 	else {
-		featImage.featuredObject = postObject._embedded['wp:featuredmedia'][0];
+		featImage.featuredObject = postObject._embedded["wp:featuredmedia"][0];
 		featImage.imgUrl = featImage.featuredObject.source_url;
-		featImage.imgMediumUrl = '';
-		featImage.imgLargeUrl = '';
+		featImage.imgMediumUrl = "";
+		featImage.imgLargeUrl = "";
 		featImage.imgWidth = featImage.featuredObject.media_details.width;
 		featImage.imgHeight = featImage.featuredObject.media_details.height;
 		if (featImage.featuredObject.media_details.sizes.hasOwnProperty("large")) {
 			featImage.imgWidth = featImage.featuredObject.media_details.sizes.full.width;
 			featImage.imgHeight = featImage.featuredObject.media_details.sizes.full.height;
-			featImage.imgLargeUrl = featImage.featuredObject.media_details.sizes.large.source_url +  ' 1024w, ';
+			featImage.imgLargeUrl = featImage.featuredObject.media_details.sizes.large.source_url +  " 1024w, ";
 		}
 		// console.log("-------------------------");
 		// console.log("featImage----------------");
@@ -2346,8 +2347,8 @@ function getFeaturedImage( postObject ) {
 function buildNewPost( postObject ) {
 	// Only output tag markup if there are actual tags for the post.
 	let conditionalTags = ( postObject ) => {
-		let tagMarkup = '';
-		if (postObject.tagLinks !== '') {
+		let tagMarkup = "";
+		if (postObject.tagLinks !== "") {
 			tagMarkup = `
 				<pre>${getTaxonomies( postObject, false )}</pre>
 			`;
@@ -2362,15 +2363,15 @@ function buildNewPost( postObject ) {
 	`;
 
 	// Remove "load previous" container.
-	//document.querySelector('.load-previous').remove();
+	//document.querySelector(".load-previous").remove();
 
 	// Create a article with appropriate classes to populate.
-  	let postElement = document.createElement('article');
-	postElement.className = 'post type-post format-standard hentry';
+  	let postElement = document.createElement("article");
+	postElement.className = "post type-post format-standard hentry";
 	postElement.innerHTML = output;
 	
 	// Append new article with all content to the bottom of the main element.
-	document.querySelector('#webgl').append(postElement);
+	document.querySelector("#webgl").append(postElement);
 
 	//getPreviousPost();
 }
