@@ -162,6 +162,7 @@ class ThreeD_Garden_Admin {
 			wp_enqueue_script( 'inflate', plugin_dir_url( __FILE__ ) . 'js/inflate.min.js', array(), $this->version, false );
 			wp_enqueue_script( 'fbxloader', plugin_dir_url( __FILE__ ) . 'js/FBXLoader.js', array(), $this->version, false );
 			wp_enqueue_script( 'gltfloader', plugin_dir_url( __FILE__ ) . 'js/GLTFLoader.js', array(), $this->version, false );
+			wp_enqueue_script( 'objloader', plugin_dir_url( __FILE__ ) . 'js/OBJLoader.js', array(), $this->version, false );
 			wp_enqueue_script( 'detector', plugin_dir_url( __FILE__ ) . 'js/Detector.js', array(), $this->version, false );
 			wp_enqueue_script( 'toon3d', plugin_dir_url( __FILE__ ) . 'js/toon3d.js', array(), $this->version, false );
 
