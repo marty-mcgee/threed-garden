@@ -44,9 +44,11 @@ let animations = {};
 let anims = ["Driving", "Pointing", "Pointing Gesture", "Running", "Talking", "Turn", "Walking", "Walking Backwards"];
 let stats;
 
-const loaderTexture = new THREE.TextureLoader();
 const loaderFBX = new THREE.FBXLoader();
 const loaderGLTF = new THREE.GLTFLoader();
+const loaderOBJ = new THREE.OBJLoader();
+const loaderTexture = new THREE.TextureLoader();
+
 const clock = new THREE.Clock();
 
 /** POINTER HOVERS + CLICKS */
@@ -266,16 +268,30 @@ function buildScene() {
 	directionalLight.position.set( -90, -120, 120 );
 	//directionalLight.intensity = 2.4;
 
-	let helper = new THREE.CameraHelper(directionalLight.shadow.camera);
+	let helperDirectionalLight = new THREE.CameraHelper(directionalLight.shadow.camera);
+	helperDirectionalLight.visible = false;
 
-	let ambientLight = getAmbientLight(0xFFFFFF, 0.2);
+	// let directionalLight2 = getDirectionalLight(0xFFFFFF, 1.0);
+	// directionalLight2.castShadow = false;
+	// directionalLight2.position.set( 90, 120, 120 );
+	// //directionalLight2.intensity = 1.4;
+
+	// let helperDirectionalLight2 = new THREE.CameraHelper(directionalLight2.shadow.camera);
+	// helperDirectionalLight2.visible = true;
+
+	//let ambientLight = getAmbientLight(0xFFFFFF, 0.1);
 	//ambientLight.position.set( -100, -100, 25 );
-	//ambientLight.intensity = 3.0;
 	
+	guiFolderLights.add(helperDirectionalLight, "visible", 0, 20).name("Show Light Helper");
 	guiFolderLights.add(directionalLight, "intensity", 0, 20);
 	guiFolderLights.add(directionalLight.position, "x", -500, 500);
 	guiFolderLights.add(directionalLight.position, "y", -500, 500);
 	guiFolderLights.add(directionalLight.position, "z", -500, 500);
+	// guiFolderLights.add(helperDirectionalLight2, "visible", 0, 20).name("Show Light 2 Helper");
+	// guiFolderLights.add(directionalLight2, "intensity", 0, 20);
+	// guiFolderLights.add(directionalLight2.position, "x", -500, 500);
+	// guiFolderLights.add(directionalLight2.position, "y", -500, 500);
+	// guiFolderLights.add(directionalLight2.position, "z", -500, 500);
 
 	/** SCENE ***************************************************************************** */
 
@@ -284,8 +300,10 @@ function buildScene() {
 	//plane.add(pointLight);
 	//plane.add(spotLight);
 	plane.add(directionalLight);
-	plane.add(ambientLight);
-	scene.add(helper);
+	//plane.add(directionalLight2);
+	//plane.add(ambientLight);
+	scene.add(helperDirectionalLight);
+	//scene.add(helperDirectionalLight2);
 	scene.add(plane);
 
 	/** CAMERA **************************************************************************** */
@@ -300,6 +318,11 @@ function buildScene() {
 	camera.position.set(86, 64, 182);
 	//camera.lookAt(new THREE.Vector3(0, 0, 0)); // overridden by OrbitControls.target
 
+	let helperCamera = new THREE.CameraHelper(camera);
+	helperCamera.visible = false;
+	scene.add(helperCamera);
+
+	guiFolderCameras.add(helperCamera, "visible", 0, 20).name("Show Camera Helper");
 	guiFolderCameras.add(camera.position, "x", -500, 500).listen();
 	guiFolderCameras.add(camera.position, "y", -500, 500).listen();
 	guiFolderCameras.add(camera.position, "z", -500, 500).listen();
@@ -357,6 +380,7 @@ function buildScene() {
 	//loaderFBX.load( `${params.assetsPath}characters/SimplePeople.fbx`, function (object) {
 	//loaderFBX.load( `${params.assetsPath}fbx/people/FireFighter.fbx`, function (object) {
 	loaderFBX.load( `${params.assetsPath}fbx/people/Trucker.fbx`, function (object) {
+	//loaderFBX.load( `${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function (object) {
 
 		object.mixer = new THREE.AnimationMixer( object );
 		player.mixer = object.mixer;
@@ -370,8 +394,9 @@ function buildScene() {
 				child.receiveShadow = false;		
 			}
 		} );
-		//loaderTexture.load(`${params.assetsPath}images/SimpleScarecrow.png`, function(texture) {
+
 		loaderTexture.load(`${params.assetsPath}images/SimpleFarmer_Farmer_Brown.png`, function(texture) {
+		//loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_A.png`, function(texture) {
 			object.traverse( function ( child ) {
 				if ( child.isMesh ){
 					child.material.map = texture;
@@ -379,37 +404,43 @@ function buildScene() {
 			} );
 		});
 
-		console.log("-----------------------");
-		console.log("object----------------");
-		console.log(object);
-		console.log("-----------------------");
+		// console.log("-----------------------");
+		// console.log("object----------------");
+		// console.log(object);
+		// console.log("-----------------------");
 
 		player.object = new THREE.Object3D();
 		player.object.add(object);
-		player.object.scale.set(0.025, 0.025, 0.025);
+		player.object.scale.set(0.022, 0.022, 0.022);
 		player.object.rotation.x = Math.PI/2; // 90 degrees in radians
 		player.mixer.clipAction(object.animations[0]).play();
 		animations.Idle = object.animations[0];
 		//setAction("Idle");
+
 		plane.add(player.object);
 		guiFolderPlayer.add(player.object, "visible").name("Show Character").listen();
 
-		console.log("-----------------------");
-		console.log("player.object----------------");
-		console.log(player.object);
-		console.log("-----------------------");
+		// console.log("-----------------------");
+		// console.log("player.object----------------");
+		// console.log(player.object);
+		// console.log("-----------------------");
 
-
-		//animate();
-		// OR
 		loadNextAnim(loaderFBX);
-		// OR
-		//loadEnvironment(loaderFBX);
 
 	} );
 
-		// AND
-		loadFarmHouse(plane);
+
+	loadFarmHouse(plane);
+	loadChickenCoop(plane);
+	//loadHen(plane);
+	loadChicken(plane);
+	//loadHenGLTF(plane);
+	//loadRooster(plane);
+	//loadChickenGLTF(plane);
+	//loadChickGLTF(plane);
+	//loadKitchenSink(plane);
+	//loadChickenFree(plane);
+	loadRoad(plane);
 		
 
 	//createCameras();
@@ -443,7 +474,7 @@ function buildScene() {
 		
         if ( player.action == "Walking" ) {
 			const elapsedTime = Date.now() - player.actionTime;
-			if ( elapsedTime > 3000 && player.move.forward > 0 ){
+			if ( elapsedTime > 2000 && player.move.forward > 0.7 ){
 				setAction("Running");
 			}
 		}
@@ -474,10 +505,10 @@ function buildScene() {
 	
 	let loadNextAnim = function (loader) {
 		let anim = anims.pop();
-		console.log("-----------------------");
-		console.log("anim-------------------");
-		console.log(anim);
-		console.log("-----------------------");
+		// console.log("-----------------------");
+		// console.log("anim-------------------");
+		// console.log(anim);
+		// console.log("-----------------------");
 		loader.load( `${params.assetsPath}fbx/anims/${anim}.fbx`, function(object) {
 			// console.log("-----------------------");
 			// console.log("object-----------------");
@@ -573,12 +604,12 @@ function movePlayer(dt){
 	let blocked = false;
 	const colliders = params.colliders;
 
-	if (colliders!==undefined){ 
-		const intersect = raycaster.intersectObjects(colliders);
-		if (intersect.length>0){
-			if (intersect[0].distance<50) blocked = true;
-		}
-	}
+	// if (colliders!==undefined){ 
+	// 	const intersect = raycaster.intersectObjects(colliders);
+	// 	if (intersect.length>0){
+	// 		if (intersect[0].distance<50) blocked = true;
+	// 	}
+	// }
 	
 	if (!blocked){
 		if (player.move.forward>0){
@@ -590,6 +621,7 @@ function movePlayer(dt){
 		}
 	}
 	
+	/*
 	if (colliders!==undefined){
 		//cast left
 		dir.set(-1,0,0);
@@ -646,6 +678,7 @@ function movePlayer(dt){
 			}
 		}
 	}
+	*/
 	
 	player.object.rotateY(player.move.turn*dt);
 }
@@ -737,13 +770,81 @@ function loadEnvironment(loader) {
 }
 
 function loadFarmHouse(plane) {
+	//loaderFBX.load(`${params.assetsPath}fbx/SM_Bld_Farmhouse_01.fbx`, function(object){
 	loaderFBX.load(`${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function(object){
 	//loaderFBX.load(`${params.assetsPath}fbx/Building_Barn_Big_03.fbx`, function(object){
 		params.farmhouse = object;
 		params.colliders = [];
 		object.rotation.y = 270 * (Math.PI/180); // 90 degrees in radians
 		object.position.set(0, 0, 100);
-		object.scale.set(2.4, 2.4, 2.4);
+		//object.scale.set(0.025, 0.025, 0.025);
+		object.scale.set(2.2, 2.2, 2.2);
+		scene.add(object);
+		object.traverse( function ( child ) {
+			if ( child.isMesh ) {
+				if (child.name.startsWith("proxy")){
+					params.colliders.push(child);
+					child.material.visible = false;
+				}else{
+					child.castShadow = true;
+					child.receiveShadow = true;
+				}
+			}
+		} );
+		//loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_A.png`, function(texture) {
+		loaderTexture.load(`${params.assetsPath}textures/SimpleFarm.png`, function(texture) {
+			object.traverse( function ( child ) {
+				if ( child.isMesh ){
+					child.material.map = texture;
+				}
+			} );
+		});
+		
+		//loadNextAnim(loader);
+	})
+}
+
+function loadFarmHouseGLTF(plane) {
+	
+	// loaderFBX.load( `${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
+	loaderGLTF.load( `${params.assetsPath}gltf/Residential House.glb`, function (object) {
+
+		let model = object.scene;
+		model.name = "Farm House";
+		model.position.set(0, 0, 100);
+		model.scale.set(20, 20, 20);
+		model.traverse( function ( child ) {
+			if ( child.isMesh ) child.castShadow = true;
+		} );
+		scene.add(model);
+
+		helper = new THREE.SkeletonHelper(model);
+		helper.material.linewidth = 5;
+		helper.visible = true;
+		scene.add(helper);
+		
+		console.log("-----------------------");
+		console.log("loadFarmHouse object----------------");
+		console.log(object);
+		console.log("-----------------------");
+
+		console.log("-----------------------");
+		console.log("loadFarmHouse model----------------");
+		console.log(model);
+		console.log("-----------------------");
+
+		guiFolderPlayer.add(model, "visible").name("Show House").listen();
+
+	} );
+}
+
+function loadChickenCoop(plane) {
+	loaderFBX.load(`${params.assetsPath}fbx/Prop_Chicken_Coop_02.fbx`, function(object){
+		params.farmhouse = object;
+		params.colliders = [];
+		object.rotation.y = 90 * (Math.PI/180); // 90 degrees in radians
+		object.position.set(80, 0, -10);
+		object.scale.set(2.2, 2.2, 2.2);
 		scene.add(object);
 		object.traverse( function ( child ) {
 			if ( child.isMesh ) {
@@ -768,39 +869,418 @@ function loadFarmHouse(plane) {
 	})
 }
 
-function loadFarmHouse2(plane) {
+function loadChicken(plane) {
 	
-	// loaderFBX.load( `${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
-	loaderGLTF.load( `${params.assetsPath}gltf/Residential House.glb`, function (object) {
-
-		// object.mixer = new THREE.AnimationMixer( object );
-		// player.mixer = object.mixer;
-		// player.root = object.mixer.getRoot();
+	loaderGLTF.load( `${params.assetsPath}gltf/Chicken.glb`, function (object) {
 
 		let model = object.scene;
-		model.name = "Farm House";
-		model.position.set(0, 0, 100);
-		model.scale.set(20, 20, 20);
+		model.name = "Chicken GLB";
+		model.position.set(-3, 0, 0);
+		//model.rotation.y = 90 * (Math.PI/180); // 90 degrees in radians
+		model.scale.set(4, 4, 4);
 		model.traverse( function ( child ) {
 			if ( child.isMesh ) child.castShadow = true;
 		} );
 		scene.add(model);
 
-		helper = new THREE.SkeletonHelper(model);
-		helper.material.linewidth = 5;
-		helper.visible = true;
-		scene.add(helper);
-				
-		// object.traverse( function ( child ) {
-		// 	if ( child.isMesh ) {
-		// 		child.castShadow = true;
-		// 		child.receiveShadow = false;		
-		// 	}
-		// } );
-
-		// object.position.set(-10, 0, 70);
-		// object.scale.set(2.4, 2.4, 2.4);
+		// helper = new THREE.SkeletonHelper(model);
+		// helper.material.linewidth = 5;
+		// helper.visible = true;
+		// scene.add(helper);
 		
+		console.log("-----------------------");
+		console.log("loadChicken object----------------");
+		console.log(object);
+		console.log("-----------------------");
+
+		console.log("-----------------------");
+		console.log("loadChicken model----------------");
+		console.log(model);
+		console.log("-----------------------");
+
+		//guiFolderPlayer.add(model, "visible").name("Show Chicken").listen();
+
+	} );
+}
+
+function loadChicken0(plane) {
+	loaderFBX.load(`${params.assetsPath}fbx/Chicken.fbx`, function(object){
+		
+		console.log("-----------------------");
+		console.log("BIRD----------------");
+		console.log(object);
+		console.log("-----------------------");
+
+		//params.farmhouse = object;
+		//params.colliders = [];
+		//object.rotation.y = 90 * (Math.PI/180); // 90 degrees in radians
+		object.position.set(0, 0, 0);
+		//object.scale.set(2.2, 2.2, 2.2);
+		scene.add(object);
+		object.traverse( function ( child ) {
+			if ( child.isMesh ) {
+				// if (child.name.startsWith("proxy")){
+				// 	params.colliders.push(child);
+				// 	child.material.visible = false;
+				// }else{
+					child.castShadow = true;
+					child.receiveShadow = true;
+				//}
+			}
+		} );
+		// loaderTexture.load(`${params.assetsPath}textures/SimpleAnimalsFarm.png`, function(texture) {
+		// 	object.traverse( function ( child ) {
+		// 		if ( child.isMesh ){
+		// 			child.material.map = texture;
+		// 		}
+		// 	} );
+		// });
+		
+		//loadNextAnim(loader);
+	})
+}
+
+function loadChicken1(plane) {
+	loaderFBX.load(`${params.assetsPath}fbx/SA_Animal_Birds.fbx`, function(object){
+		
+		console.log("-----------------------");
+		console.log("BIRD----------------");
+		console.log(object);
+		console.log("-----------------------");
+
+		//params.farmhouse = object;
+		//params.colliders = [];
+		//object.rotation.y = 90 * (Math.PI/180); // 90 degrees in radians
+		object.position.set(0, 0, 0);
+		//object.scale.set(2.2, 2.2, 2.2);
+		scene.add(object);
+		object.traverse( function ( child ) {
+			if ( child.isMesh ) {
+				// if (child.name.startsWith("proxy")){
+				// 	params.colliders.push(child);
+				// 	child.material.visible = false;
+				// }else{
+					child.castShadow = true;
+					child.receiveShadow = true;
+				//}
+			}
+		} );
+		loaderTexture.load(`${params.assetsPath}textures/SimpleAnimalsFarm.png`, function(texture) {
+			object.traverse( function ( child ) {
+				if ( child.isMesh ){
+					child.material.map = texture;
+				}
+			} );
+		});
+		
+		//loadNextAnim(loader);
+	})
+}
+
+function loadChicken2(plane) {
+	loaderFBX.load(`${params.assetsPath}fbx/SA_Animal_Pig.fbx`, function(object) {
+	//loaderFBX.load( `${params.assetsPath}fbx/people/Trucker.fbx`, function (object) {
+	//loaderFBX.load( `${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function (object) {
+
+		console.log("-----------------------");
+		console.log("object----------------");
+		console.log(object);
+		console.log("-----------------------");
+
+		// object.mixer = new THREE.AnimationMixer( object );
+		// mixers.push( object.mixer );
+		// var action = object.mixer.clipAction( object.animations[ 0 ] );
+		// action.play();
+		// scene.add( object );
+
+/*
+		object.mixer = new THREE.AnimationMixer( object );
+		mixers.push( object.mixer );
+		var action = object.mixer.clipAction( object.animations[ 0 ] );
+		action.play();
+
+		object.name = "Chicken";
+				
+		object.traverse( function ( child ) {
+			if ( child.isMesh ) {
+				child.castShadow = true;
+				child.receiveShadow = false;		
+			}
+		} );
+
+
+		loaderTexture.load(`${params.assetsPath}textures/SimpleAnimalsFarm.png`, function(texture) {
+		//loaderTexture.load(`${params.assetsPath}images/SimpleScarecrow.png`, function(texture) {
+		//loaderTexture.load(`${params.assetsPath}images/SimpleFarmer_Farmer_Brown.png`, function(texture) {
+		//loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_A.png`, function(texture) {
+			object.traverse( function ( child ) {
+				if ( child.isMesh ){
+					child.material.map = texture;
+				}
+			} );
+		});
+
+		plane.add( object );
+		
+		console.log("-----------------------");
+		console.log("object----------------");
+		console.log(object);
+		console.log("-----------------------");
+*/		
+		/*
+		player.mixer = object.mixer;
+		player.root = object.mixer.getRoot();
+			
+		object.name = "Chicken";
+				
+		object.traverse( function ( child ) {
+			if ( child.isMesh ) {
+				child.castShadow = true;
+				child.receiveShadow = false;		
+			}
+		} );
+
+
+		loaderTexture.load(`${params.assetsPath}textures/SimpleAnimalsFarm.png`, function(texture) {
+		//loaderTexture.load(`${params.assetsPath}images/SimpleScarecrow.png`, function(texture) {
+		//loaderTexture.load(`${params.assetsPath}images/SimpleFarmer_Farmer_Brown.png`, function(texture) {
+		//loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_A.png`, function(texture) {
+			object.traverse( function ( child ) {
+				if ( child.isMesh ){
+					child.material.map = texture;
+				}
+			} );
+		});
+
+		console.log("-----------------------");
+		console.log("object----------------");
+		console.log(object);
+		console.log("-----------------------");
+
+		player.object = new THREE.Object3D();
+		player.object.add(object);
+		player.object.scale.set(0.022, 0.022, 0.022);
+		player.object.rotation.x = Math.PI/2; // 90 degrees in radians
+		player.mixer.clipAction(object.animations[0]).play();
+		animations.Idle = object.animations[0];
+		//setAction("Idle");
+		scene.add(player.object);
+		guiFolderPlayer.add(player.object, "visible").name("Show Chicken").listen();
+
+		console.log("-----------------------");
+		console.log("player.object----------------");
+		console.log(player.object);
+		console.log("-----------------------");
+
+
+		//animate();
+		// OR
+		loadNextAnim(loaderFBX);
+		// OR
+		//loadEnvironment(loaderFBX);
+		*/
+	} );
+}
+
+function loadChickenGLTF(plane) {
+	
+	loaderGLTF.load( `${params.assetsPath}gltf/Animals.glb`, function (object) {
+
+		console.log("-----------------------");
+		console.log("Animals object----------------");
+		console.log(object);
+		console.log("-----------------------");
+
+		object.mixer = new THREE.AnimationMixer( object.scene );
+		player.mixer = object.mixer;
+		player.root = object.mixer.getRoot();
+			
+		object.name = "Chicken Dance";
+				
+		object.scene.traverse( function ( child ) {
+			if ( child.isMesh ) {
+				child.castShadow = true;
+				child.receiveShadow = false;		
+			}
+		} );
+
+		player.object = new THREE.Object3D();
+		player.object.add(object.scene);
+		player.object.position.set(0, 0, 10);
+		player.object.scale.set(4, 4, 4);
+		player.object.rotation.x = Math.PI/2; // 90 degrees in radians
+		player.mixer.timeScale = 0.5;
+		player.mixer.clipAction(object.animations[2]).play();
+		
+		//animations.Idle = object.animations[0];
+		//setAction("Idle");
+		plane.add(player.object);
+		//guiFolderPlayer.add(player.object, "visible").name("Show Character").listen();
+
+		//animate();
+		// OR
+		//loadNextAnim(loaderFBX);
+		// OR
+		//loadEnvironment(loaderFBX);
+
+	} );
+}
+
+function loadChickGLTF(plane) {
+	
+	loaderGLTF.load( `${params.assetsPath}gltf/Chick.glb`, function (object) {
+
+		let model = object.scene;
+		model.name = "Chick GLB";
+		model.position.set(3, 0, 0);
+		//model.rotation.y = 90 * (Math.PI/180); // 90 degrees in radians
+		model.scale.set(2, 2, 2);
+		model.traverse( function ( child ) {
+			if ( child.isMesh ) child.castShadow = true;
+		} );
+		scene.add(model);
+
+		// helper = new THREE.SkeletonHelper(model);
+		// helper.material.linewidth = 5;
+		// helper.visible = true;
+		// scene.add(helper);
+		
+		console.log("-----------------------");
+		console.log("loadChickGLTF object----------------");
+		console.log(object);
+		console.log("-----------------------");
+
+		console.log("-----------------------");
+		console.log("loadChickGLTF model----------------");
+		console.log(model);
+		console.log("-----------------------");
+
+		//guiFolderPlayer.add(model, "visible").name("Show Chicken").listen();
+
+	} );
+}
+
+function loadHen(plane) {
+	loaderFBX.load(`${params.assetsPath}Hen&Chicken_FBX/Hen_HP.fbx`, function(object){
+		params.farmhouse = object;
+		params.colliders = [];
+		//object.rotation.y = 270 * (Math.PI/180); // 90 degrees in radians
+		object.position.set(3, 0, 0);
+		object.scale.set(0.05, 0.05, 0.05);
+
+		object.traverse( function ( child ) {
+			if ( child.isMesh ) {
+				if (child.name.startsWith("proxy")){
+					params.colliders.push(child);
+					child.material.visible = false;
+				}else{
+					child.castShadow = true;
+					child.receiveShadow = true;
+				}
+			}
+		} );
+
+		loaderTexture.load(`${params.assetsPath}Hen&Chicken_FBX/Textures/Hen&Chicken_A.png`, function(texture) {
+			object.traverse( function ( child ) {
+				if ( child.isMesh ){
+					child.material.map = texture;
+
+					console.log("-----------------------");
+					console.log("loadHen child----------------");
+					console.log(child);
+					console.log(child.geometry.attributes.uv);
+					console.log("-----------------------");
+				}
+			} );
+		});
+
+		console.log("-----------------------");
+		console.log("loadHen object----------------");
+		console.log(object);
+		console.log("-----------------------");
+
+		scene.add(object);
+		
+		//loadNextAnim(loader);
+	})
+}
+
+function loadHenGLTF(plane) {
+	
+	// loaderFBX.load( `${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
+	loaderGLTF.load( `${params.assetsPath}gltf/Hen_HP.glb`, function (object) {
+
+		let model = object.scene;
+		//model.name = "Hen";
+		//model.position.set(10, 0, 0);
+		//model.scale.set(0.2, 0.2, 0.2);
+		model.traverse( function ( child ) {
+			if ( child.isMesh ) child.castShadow = true;
+		} );
+		scene.add(model);
+
+		// helper = new THREE.SkeletonHelper(model);
+		// helper.material.linewidth = 5;
+		// helper.visible = true;
+		// scene.add(helper);
+		
+		console.log("-----------------------");
+		console.log("loadHenGLTF object----------------");
+		console.log(object);
+		console.log("-----------------------");
+
+		console.log("-----------------------");
+		console.log("loadHenGLTF model----------------");
+		console.log(model);
+		console.log("-----------------------");
+
+		//guiFolderPlayer.add(model, "visible").name("Show Hen GLTF").listen();
+
+	} );
+}
+
+function loadKitchenSink(plane) {
+	loaderFBX.load(`${params.assetsPath}fbx/Prop_KitchenSink_Black.fbx`, function(object){
+		params.farmhouse = object;
+		params.colliders = [];
+		object.rotation.y = 270 * (Math.PI/180); // 90 degrees in radians
+		object.position.set(0, 0, 10);
+		//object.scale.set(0.025, 0.025, 0.025);
+		object.scale.set(2.2, 2.2, 2.2);
+		scene.add(object);
+		object.traverse( function ( child ) {
+			if ( child.isMesh ) {
+				if (child.name.startsWith("proxy")){
+					params.colliders.push(child);
+					child.material.visible = false;
+				}else{
+					child.castShadow = true;
+					child.receiveShadow = true;
+				}
+			}
+		} );
+		//loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_A.png`, function(texture) {
+		loaderTexture.load(`${params.assetsPath}textures/SimpleInteriorsHouses.png`, function(texture) {
+			object.traverse( function ( child ) {
+				if ( child.isMesh ){
+					child.material.map = texture;
+				}
+			} );
+		});
+		
+		//loadNextAnim(loader);
+	})
+}
+
+function loadChickenFree(plane) {
+	loaderOBJ.load(`${params.assetsPath}obj/chicken_01.obj`, function(object){
+		// params.farmhouse = object;
+		// params.colliders = [];
+		//object.rotation.y = 270 * (Math.PI/180); // 90 degrees in radians
+		//object.position.set(0, 0, 10);
+		//object.scale.set(0.025, 0.025, 0.025);
+		//object.scale.set(2.2, 2.2, 2.2);
+		scene.add(object);
 		// object.traverse( function ( child ) {
 		// 	if ( child.isMesh ) {
 		// 		if (child.name.startsWith("proxy")){
@@ -812,50 +1292,163 @@ function loadFarmHouse2(plane) {
 		// 		}
 		// 	}
 		// } );
-
-		// loaderTexture.load(`${params.assetsPath}images/SimpleFarmer_Farmer_Brown.png`, function(texture) {
+		// //loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_A.png`, function(texture) {
+		// loaderTexture.load(`${params.assetsPath}textures/SimpleInteriorsHouses.png`, function(texture) {
 		// 	object.traverse( function ( child ) {
 		// 		if ( child.isMesh ){
 		// 			child.material.map = texture;
 		// 		}
 		// 	} );
 		// });
-
-		console.log("-----------------------");
-		console.log("loadFarmHouse object----------------");
-		console.log(object);
-		console.log("-----------------------");
-
-		console.log("-----------------------");
-		console.log("loadFarmHouse model----------------");
-		console.log(model);
-		console.log("-----------------------");
-
-		// player.object = new THREE.Object3D();
-		// player.object.add(object);
-		// //player.object.scale.set(0.025, 0.025, 0.025);
-		// //player.object.rotation.x = Math.PI/2; // 90 degrees in radians
-		// player.mixer.clipAction(object.animations[0]).play();
-		// //animations.Idle = object.animations[0];
-		// //setAction("Idle");
-		// plane.add(player.object);
-		//scene.add(object);
-		guiFolderPlayer.add(model, "visible").name("Show House").listen();
-
-		// console.log("-----------------------");
-		// console.log("loadFarmHouse player.object----------------");
-		// console.log(player.object);
-		// console.log("-----------------------");
-
-
-		//animate();
-		// OR
-		//loadNextAnim(loaderFBX);
-		// OR
-		//loadEnvironment(loaderFBX);
-
-	} );
+		
+		//loadNextAnim(loader);
+	})
 }
+
+function loadRooster(plane) {
+	loaderFBX.load(`${params.assetsPath}fbx/rooster_1.0.1.fbx`, function(object){
+		// params.farmhouse = object;
+		// params.colliders = [];
+		//object.rotation.y = 270 * (Math.PI/180); // 90 degrees in radians
+		object.position.set(0, 0, 10);
+		object.scale.set(0.025, 0.025, 0.025);
+		//object.scale.set(2.2, 2.2, 2.2);
+		scene.add(object);
+		// object.traverse( function ( child ) {
+		// 	if ( child.isMesh ) {
+		// 		if (child.name.startsWith("proxy")){
+		// 			params.colliders.push(child);
+		// 			child.material.visible = false;
+		// 		}else{
+		// 			child.castShadow = true;
+		// 			child.receiveShadow = true;
+		// 		}
+		// 	}
+		// } );
+		// //loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_A.png`, function(texture) {
+		// loaderTexture.load(`${params.assetsPath}textures/SimpleInteriorsHouses.png`, function(texture) {
+		// 	object.traverse( function ( child ) {
+		// 		if ( child.isMesh ){
+		// 			child.material.map = texture;
+		// 		}
+		// 	} );
+		// });
+		
+		//loadNextAnim(loader);
+	})
+}
+
+function loadRoad(plane) {
+
+	let i;
+	let count = 9;
+	let startX = -45;
+	let offsetX = 0;
+	let startZ = -138;
+	let offsetZ = 20;
+
+	// ROAD A
+	for ( i = 1; i <= count; i++ ) {
+		loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_Straight_01.fbx`, function(object){
+			
+			// console.log("-----------------------");
+			// console.log("ROAD----------------");
+			// console.log(object);
+			// console.log("-----------------------");
+
+			//params.farmhouse = object;
+			//params.colliders = [];
+			//object.rotation.y = 90 * (Math.PI/180); // 90 degrees in radians
+			object.position.set(startX, 0, startZ);
+			startX = startX + offsetX;
+			startZ = startZ + offsetZ;
+			object.scale.set(0.02, 0.01, 0.02);
+			object.traverse( function ( child ) {
+				if ( child.isMesh ) {
+					// if (child.name.startsWith("proxy")){
+					// 	params.colliders.push(child);
+					// 	child.material.visible = false;
+					// }else{
+						child.castShadow = true;
+						child.receiveShadow = true;
+					//}
+				}
+			} );
+			loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_03_A.png`, function(texture) {
+				object.traverse( function ( child ) {
+					if ( child.isMesh ){
+						//child.material.color.setHex(0x000000);
+						child.material.transparent = true;
+						child.material.opacity = 0.7;
+						//child.material.depthWrite = true;
+						child.material.map = texture;
+					}
+				} );
+			});
+			
+			scene.add(object);
+			
+			console.log("-----------------------");
+			console.log("ROAD----------------");
+			console.log(object);
+			console.log("-----------------------");
+			
+			//loadNextAnim(loader);
+		});
+
+	}
+	// ROAD T
+	for ( i = 1; i <= 1; i++ ) {
+		loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_T_Section_01.fbx`, function(object){
+			
+			console.log("-----------------------");
+			console.log("ROAD T----------------");
+			console.log(startX, startZ);
+			console.log("-----------------------");
+
+			//params.farmhouse = object;
+			//params.colliders = [];
+			//object.rotation.y = 90 * (Math.PI/180); // 90 degrees in radians
+			object.position.set(startX, 0, startZ);
+			startX = startX + offsetX;
+			startZ = startZ + offsetZ;
+			object.scale.set(0.02, 0.01, 0.02);
+			object.traverse( function ( child ) {
+				if ( child.isMesh ) {
+					// if (child.name.startsWith("proxy")){
+					// 	params.colliders.push(child);
+					// 	child.material.visible = false;
+					// }else{
+						child.castShadow = true;
+						child.receiveShadow = true;
+					//}
+				}
+			} );
+			loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_03_A.png`, function(texture) {
+				object.traverse( function ( child ) {
+					if ( child.isMesh ){
+						//child.material.color.setHex(0x000000);
+						child.material.transparent = true;
+						child.material.opacity = 0.7;
+						//child.material.depthWrite = true;
+						child.material.map = texture;
+					}
+				} );
+			});
+			
+			scene.add(object);
+			
+			console.log("-----------------------");
+			console.log("ROAD T----------------");
+			console.log(object);
+			console.log("-----------------------");
+			
+			//loadNextAnim(loader);
+		});
+
+	}
+}
+
 
 /**
  * BUILD "ALLOTMENTS" FROM REST API POST OBJECT ************************************************************
@@ -1509,13 +2102,15 @@ function getSpotLight(color, intensity){
 function getDirectionalLight(color, intensity){
 	let light = new THREE.DirectionalLight(color, intensity);
 	light.castShadow = true;
-	light.shadow.bias 			= 0.001;
-	light.shadow.mapSize.width 	= 4096; //default = 1024
-	light.shadow.mapSize.height = 4096; //default = 1024
+	light.shadow.bias 			= 0.0001;
+	light.shadow.mapSize.width 	= 4096; //default = 512
+	light.shadow.mapSize.height = 4096; //default = 512
 	light.shadow.camera.left 	= -1000; //default = -5
 	light.shadow.camera.bottom 	= -1000; //default = -5
 	light.shadow.camera.right 	= 1000; //default = 5
 	light.shadow.camera.top 	= 1000; //default = 5
+	light.shadow.camera.near 	= 0.5; // default
+	light.shadow.camera.far 	= 500; // default
 	return light;
 }
 
