@@ -9,6 +9,9 @@ get_header();
 
 <main id="site-content" role="main">
 
+	<h1>HELLO MARTY</h1>
+	<div id="app"></div>
+	
 	<?php
 
 	if ( have_posts() ) {

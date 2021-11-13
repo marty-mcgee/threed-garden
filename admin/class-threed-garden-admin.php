@@ -153,6 +153,8 @@ class ThreeD_Garden_Admin {
 		
         if ( $pagenow == 'admin.php' && isset( $_GET['page'] ) && $_GET['page'] == 'threedgarden' )
         {
+			// VUE 3
+			wp_enqueue_script( 'vue', 'https://unpkg.com/vue@3.0.7/dist/vue.global.js', array(), $this->version, false );
 			// THREE JS
 			wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/three.min.js', array(), $this->version, false );
 			wp_enqueue_script( 'datgui', plugin_dir_url( __FILE__ ) . 'js/dat.gui.min.js', array(), $this->version, false );
@@ -175,8 +177,9 @@ class ThreeD_Garden_Admin {
 			wp_enqueue_script( 'tweenjs', plugin_dir_url( __FILE__ ) . 'js/tween.umd.js', array(), $this->version, false );
 
 			// THREED GARDEN ADMIN JS
-			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin.js', array( 'jquery' ), $this->version, true );
-			//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin-2.js', array( 'jquery' ), $this->version, true );
+			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin.js', array(), $this->version, true );
+			//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin-2.js', array(), $this->version, true );
+			//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/game.js', array(), $this->version, true );
 
 			wp_localize_script( $this->plugin_name, 'postdata',
 				array(
@@ -190,6 +193,100 @@ class ThreeD_Garden_Admin {
 			);
 
 		}
+	}
+
+	/**
+	 * **********************************************************************************************
+	 */
+
+	/**
+     * output welcome page
+
+			<div id="message">
+				<p id="message_text"></p>
+				<button id="message_ok">OK</button>
+			</div>
+
+			<div id="overlay"></div>
+     */
+	public function RenderPage(){
+		// check if user is allowed access
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+	?>
+		<div class="wrap">
+			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+			<div id="webgl">
+				<div class="lds-default">
+					<div></div><div></div><div></div><div></div>
+					<div></div><div></div><div></div><div></div>
+					<div></div><div></div><div></div><div></div>
+				</div>
+			</div>
+
+			<button onClick="javascript:toggleAnimation()">Change Animation</button>
+			<button id="sfx-btn"><i class="fas fa-volume-up"></i></button>
+			<button id="camera-btn"><i class="fas fa-camera"></i></button>
+			<button id="action-btn"><i class="fas fa-hand-point-up"></i></button>
+			<button id="briefcase-btn"><i class="fas fa-briefcase"></i></button>
+
+			<div id="briefcase">
+				<ul>
+					<li><a href="#"><img></img></li>
+					<li><a href="#"><img></img></li>
+					<li><a href="#"><img></img></li>
+				</ul>
+			</div>
+
+			<script defer src="https://use.fontawesome.com/releases/v5.0.13/js/all.js" integrity="sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe" crossorigin="anonymous"></script>
+
+		</div>
+	<?php
+	}
+	
+	/**
+     * output custom page
+     */
+	public function RenderPageCustom(){
+		// check if user is allowed access
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		?>
+		<div class="wrap">
+			<?php settings_errors(); ?>
+			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+			<h2>Custom Options</h2>
+			<form action="options.php" method="post">
+				<?php
+				// output security fields
+				settings_fields( 'threedgarden_options' );
+				
+				// output setting sections
+				do_settings_sections( 'threedgarden' );
+				
+				// submit button
+				submit_button();
+				?>
+			</form>
+		</div>
+		<?php
+	}
+	
+	/**
+     * output about page
+     */
+	public function RenderPageAbout(){
+		// check if user is allowed access
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		?>
+		<div class='wrap'>
+			<h2>ABOUT PAGE</h2>
+		</div>
+		<?php
 	}
 
 	/**
@@ -408,77 +505,6 @@ class ThreeD_Garden_Admin {
 
         return $parent_file;
     }
-
-	/**
-	 * **********************************************************************************************
-	 */
-
-	/**
-     * output welcome page
-     */
-	public function RenderPage(){
-		// check if user is allowed access
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-	?>
-		<div class="wrap">
-			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			<div id="webgl">
-				<div class="lds-default">
-					<div></div><div></div><div></div><div></div>
-					<div></div><div></div><div></div><div></div>
-					<div></div><div></div><div></div><div></div>
-				</div>
-			</div>
-			<button onClick="javascript:toggleAnimation()">Change Animation</button>
-		</div>
-	<?php
-	}
-	
-	/**
-     * output custom page
-     */
-	public function RenderPageCustom(){
-		// check if user is allowed access
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-		?>
-		<div class="wrap">
-			<?php settings_errors(); ?>
-			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			<h2>Custom Options</h2>
-			<form action="options.php" method="post">
-				<?php
-				// output security fields
-				settings_fields( 'threedgarden_options' );
-				
-				// output setting sections
-				do_settings_sections( 'threedgarden' );
-				
-				// submit button
-				submit_button();
-				?>
-			</form>
-		</div>
-		<?php
-	}
-	
-	/**
-     * output about page
-     */
-	public function RenderPageAbout(){
-		// check if user is allowed access
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-		?>
-		<div class='wrap'>
-			<h2>ABOUT PAGE</h2>
-		</div>
-		<?php
-	}
 
 	/**
 	 * **********************************************************************************************
