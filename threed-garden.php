@@ -58,6 +58,20 @@ register_deactivation_hook( __FILE__, 'deactivate_threed_garden' );
 require plugin_dir_path( __FILE__ ) . 'includes/class-threed-garden.php';
 
 /**
+ * [MM] CUSTOM FUNCTION for loading ES2015 modules
+ */
+function add_type_attribute($tag, $handle, $src) {
+	if ( 'threed-garden' === $handle ) {
+		// change the script tag by adding type="module" and return it.
+		$tag = '<script type="module" defer src="' . esc_url( $src ) . '"></script>';
+	} 
+	// else {
+	// 	$tag = '<script type="text/javascript" defer src="' . esc_url( $src ) . '"></script>';
+	// }
+	return $tag;
+}
+
+/**
  * Begins execution of the plugin.
  *
  * Since everything within the plugin is registered via hooks,
