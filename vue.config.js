@@ -3,7 +3,7 @@ module.exports = {
     pages: {
         index: {
             // entry for the page
-            entry: 'admin/js/threed-garden-admin.js',
+            entry: 'public/js/threed-garden-public.js',
             // the source template
             template: 'public/index.html',
             // output as dist/index.html
