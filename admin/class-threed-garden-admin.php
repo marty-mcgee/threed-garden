@@ -155,6 +155,7 @@ class ThreeD_Garden_Admin {
         {
 			// VUE 3
 			wp_enqueue_script( 'vue', 'https://unpkg.com/vue@3.0.7/dist/vue.global.js', array(), $this->version, false );
+			
 			// THREE JS
 			wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/three.min.js', array(), $this->version, false );
 			wp_enqueue_script( 'datgui', plugin_dir_url( __FILE__ ) . 'js/dat.gui.min.js', array(), $this->version, false );
@@ -180,7 +181,8 @@ class ThreeD_Garden_Admin {
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin.js', array(), $this->version, true );
 			//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin-2.js', array(), $this->version, true );
 			//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/game.js', array(), $this->version, true );
-
+			
+			// THREED GARDEN WORDPRESS API REST CONNECTIONS :)
 			wp_localize_script( $this->plugin_name, 'postdata',
 				array(
 					'plugin_name' => $this->plugin_name,

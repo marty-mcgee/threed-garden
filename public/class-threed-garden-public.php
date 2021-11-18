@@ -93,10 +93,29 @@ class ThreeD_Garden_Public {
 		 * between the defined hooks and the functions defined in this class.
 		 */
 
+		// VUE 3
+		wp_enqueue_script( 'vue', 'https://unpkg.com/vue@3.0.7/dist/vue.global.js', array(), $this->version, false );
+		
 		// THREE JS
-		// wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/three.js', array(), $this->version, false );
-		// wp_enqueue_script( 'datgui', plugin_dir_url( __FILE__ ) . 'js/dat.gui.min.js', array(), $this->version, false );
-		// wp_enqueue_script( 'orbitcontrols', plugin_dir_url( __FILE__ ) . 'js/OrbitControls.js', array(), $this->version, false );
+		wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/three.min.js', array(), $this->version, false );
+		wp_enqueue_script( 'datgui', plugin_dir_url( __FILE__ ) . 'js/dat.gui.min.js', array(), $this->version, false );
+		wp_enqueue_script( 'orbitcontrols', plugin_dir_url( __FILE__ ) . 'js/OrbitControls.js', array(), $this->version, false );
+		//wp_enqueue_script( 'panolens', plugin_dir_url( __FILE__ ) . 'js/panolens.min.js', array(), $this->version, false );
+		wp_enqueue_script( 'css3drenderer', plugin_dir_url( __FILE__ ) . 'js/CSS3DRenderer.js', array(), $this->version, false );
+		wp_enqueue_script( 'inflate', plugin_dir_url( __FILE__ ) . 'js/inflate.min.js', array(), $this->version, false );
+		wp_enqueue_script( 'fbxloader', plugin_dir_url( __FILE__ ) . 'js/FBXLoader.js', array(), $this->version, false );
+		wp_enqueue_script( 'gltfloader', plugin_dir_url( __FILE__ ) . 'js/GLTFLoader.js', array(), $this->version, false );
+		wp_enqueue_script( 'objloader', plugin_dir_url( __FILE__ ) . 'js/OBJLoader.js', array(), $this->version, false );
+		wp_enqueue_script( 'detector', plugin_dir_url( __FILE__ ) . 'js/Detector.js', array(), $this->version, false );
+		wp_enqueue_script( 'toon3d', plugin_dir_url( __FILE__ ) . 'js/toon3d.js', array(), $this->version, false );
+
+		// THREE.TREE JS
+		wp_enqueue_script( 'tree', plugin_dir_url( __FILE__ ) . 'js/Tree.js', array(), $this->version, false );
+		wp_enqueue_script( 'treegeometry', plugin_dir_url( __FILE__ ) . 'js/TreeGeometry.js', array(), $this->version, false );
+		wp_enqueue_script( 'treehelper', plugin_dir_url( __FILE__ ) . 'js/TreeHelper.js', array(), $this->version, false );
+
+		// TWEEN JS
+		wp_enqueue_script( 'tweenjs', plugin_dir_url( __FILE__ ) . 'js/tween.umd.js', array(), $this->version, false );
 
 		// THREED GARDEN PUBLIC JS
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-public.js', array( 'jquery' ), $this->version, true );
