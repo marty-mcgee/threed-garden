@@ -7,9 +7,9 @@ import router from "../../src/router"
 import store from "../../src/store"
  
 createApp(App)
-   .use(store)
-   .use(router)
-   .mount("#app")
+	.use(store)
+	.use(router)
+	.mount("#app")
 
 /** 
  * ThreeDGarden - FarmBot JavaScript
