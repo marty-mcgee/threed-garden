@@ -1,0 +1,11 @@
+/**
+ * All of the CSS for your public-facing functionality should be
+ * included in this file.
+ */
+
+ /* ThreeDGarden - Custom Login Styles */
+
+/* WP LOGIN PAGE */
+body.login { background-color: #0b7e24; }
+body.login div#login form#loginform { border-radius: 10px; }
+body.login .custom-message { text-align: center; }

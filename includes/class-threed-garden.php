@@ -122,6 +122,11 @@ class ThreeD_Garden {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-threed-garden-public.php';
 
+		/**
+		 * [MM] qmanager
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'qmanager.php';
+
 		$this->loader = new ThreeD_Garden_Loader();
 
 	}
