@@ -1,18 +1,21 @@
 <template>
 	<div class="home">
-		<img alt="Vue logo" src="../assets/logo.png" />
-		<HelloWorld msg="ThreeD Garden Vue.js App" />
+		<img src="../assets/ThreeD-Garden-Carrot-Logo-001.png" alt="ThreeD Garden == Carrot Logo" width="50" />
+		<ThreeDGarden 
+			msg="ThreeD Garden"
+			subtitle="Vue.js app using 3D Three.js as a WordPress plugin"
+		/>
 	</div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue"
+import ThreeDGarden from "@/components/ThreeDGarden.vue"
 
 export default {
 	name: "Home",
 	components: {
-		HelloWorld
+		ThreeDGarden
 	}
 }
 </script>
