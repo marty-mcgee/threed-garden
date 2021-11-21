@@ -1,9 +1,9 @@
 <template>
 	<div class="home">
-		<img src="../assets/ThreeD-Garden-Carrot-Logo-001.png" alt="ThreeD Garden == Carrot Logo" width="50" />
+		<img src="../assets/ThreeD-Garden-Carrot-Logo-001.png" alt="ThreeD Garden => Carrot Logo" width="60" />
 		<ThreeDGarden 
-			msg="ThreeD Garden"
-			subtitle="Vue.js app using 3D Three.js as a WordPress plugin"
+			msg="Vue.js App using Three.js 3D Library"
+			subtitle="as a WordPress Plugin"
 		/>
 	</div>
 </template>

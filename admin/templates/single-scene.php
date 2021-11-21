@@ -9,7 +9,7 @@ get_header();
 
 <main id="site-content" role="main">
 
-	<h1>HELLO MARTY</h1>
+	<h1>ThreeD Garden: Scene</h1>
 	<div id="app"></div>
 	
 	<?php
