@@ -76,12 +76,12 @@ class ThreeD_Garden_Public {
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/threed-garden-public.css', array(), $this->version, 'all' );
 
 		// load css & js with bundler
-		wp_enqueue_style(
-			'vue-cli-css-vendors',
-			plugins_url( '/dist/css/chunk-vendors.css', __FILE__ ),
-			[],
-			'0.1.0'
-		);
+		// wp_enqueue_style(
+		// 	'vue-cli-css-vendors',
+		// 	plugins_url( '/dist/css/chunk-vendors.css', __FILE__ ),
+		// 	[],
+		// 	'0.1.0'
+		// );
 	}
 
 	/**
@@ -108,14 +108,14 @@ class ThreeD_Garden_Public {
 			'vue-cli-css',
 			plugins_url( '/dist/css/app.css', __FILE__ ),
 			[],
-			'0.1.0'
+			$this->version
 		);
 
 		wp_enqueue_script(
 			'vue-cli-vendors',
 			plugins_url( '/dist/js/chunk-vendors.js', __FILE__ ),
 			[],
-			'0.1.0',
+			$this->version,
 			true
 		);
 
@@ -123,7 +123,7 @@ class ThreeD_Garden_Public {
 			'vue-cli-app',
 			plugins_url( '/dist/js/app.js', __FILE__ ),
 			[],
-			'0.1.0',
+			$this->version,
 			true
 		);
 		
