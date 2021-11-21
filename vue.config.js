@@ -23,29 +23,30 @@ module.exports = {
     //     //subpage: 'src/subpage/main.js'
     // },
 
+    //publicPath: '/', // default
+    publicPath: '/wp-content/plugins/threed-garden/public/dist/',
+    //publicPath: '#',
+
     outputDir: 'public/dist',
     
+    filenameHashing: false,
+
     runtimeCompiler: true, // templates (+10kb)
-    
-    //filenameHashing: false,
 
-    //publicPath: '/wp-content/plugins/threed-garden/public/dist/',
-    publicPath: '/wp-content/plugins/threed-garden/public/dist/',
+    chainWebpack: config => {
+        config.plugins.delete('html');
+        config.plugins.delete('preload');
+        config.plugins.delete('prefetch');
+    },
 
-    // chainWebpack: config => {
-    //     config.plugins.delete('html');
-    //     config.plugins.delete('preload');
-    //     config.plugins.delete('prefetch');
-    // },
+    devServer: {
+        host: 'garden.university.local',
+        hot: false,
+        writeToDisk: true,
+    },
 
-    // devServer: {
-    //     host: 'threedgarden.localhost',
-    //     hot: true,
-    //     writeToDisk: true,
-    // },
-
-    // css: {
-    //     extract: true,
-    // },
+    css: {
+        extract: true,
+    },
 }
 /** */
