@@ -12,9 +12,9 @@ module.exports = {
     runtimeCompiler: true, // for templates (+10kb)
 
     chainWebpack: config => {
-        config.plugins.delete('html');
-        config.plugins.delete('preload');
-        config.plugins.delete('prefetch');
+        config.plugins.delete('html')
+        config.plugins.delete('preload')
+        config.plugins.delete('prefetch')
     },
 
     devServer: {
