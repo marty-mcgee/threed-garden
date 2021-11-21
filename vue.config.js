@@ -5,9 +5,9 @@ module.exports = {
     publicPath: '/wp-content/plugins/threed-garden/public/dist/',
     //publicPath: '#',
 
-    outputDir: 'public/dist',
+    outputDir: 'public/dist', // not necessary?
     
-    filenameHashing: false,
+    filenameHashing: false, // define outputted file names
 
     runtimeCompiler: true, // for templates (+10kb)
 
