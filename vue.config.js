@@ -9,7 +9,7 @@ module.exports = {
     
     filenameHashing: false,
 
-    runtimeCompiler: true, // templates (+10kb)
+    runtimeCompiler: true, // for templates (+10kb)
 
     chainWebpack: config => {
         config.plugins.delete('html');
@@ -26,7 +26,7 @@ module.exports = {
     css: {
         extract: true,
     },
-    
+
     // pages: {
     //     index: {
     //         // entry for the page
