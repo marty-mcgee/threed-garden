@@ -1,8 +1,9 @@
 <template>
 	<div id="app">
 		<div id="nav">
-			<router-link to="/">Home ThreeD Garden</router-link> |
-			<router-link to="/about">About ThreeD Garden</router-link>
+			<router-link :to="{ name: 'Home', params: { userId: 123 }}">Home</router-link> |
+			<router-link :to="{ name: 'About', params: { userId: 123 }}">About</router-link> |
+			<router-link :to="{ name: 'Participate', params: { userId: 123 }}">Participate</router-link>
 		</div>
 		<router-view />
 	</div>
