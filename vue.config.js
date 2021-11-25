@@ -16,17 +16,19 @@ module.exports = {
 	runtimeCompiler: true, // for templates (+10kb)
 
 	chainWebpack: config => {
-		config.plugins.delete('html')
+		//config.plugins.delete('html')
 		config.plugins.delete('preload')
 		config.plugins.delete('prefetch')
 		
-		config.performance
+		// config
+		config
+			.performance
 			.maxEntrypointSize(900000)
 			.maxAssetSize(900000)
 		//  .resolve({root: path.resolve('./')})
 
-		// config
-		// 	.plugin('html')
+		config
+		 	.plugin('html')
 		// 	.tap(args => {
 		// 		args[0].template = '/Users/username/proj/app/templates/index.html'
 		// 		return args
