@@ -6,7 +6,7 @@ const path = require('path')
 module.exports = {
 
 	//publicPath: '/', // default
-	//publicPath: '/wp-content/plugins/threed-garden/public/dist/',
+	publicPath: '/wp-content/plugins/threed-garden/public/dist/',
 	//publicPath: '#',
 
 	outputDir: 'public/dist', // not necessary?
@@ -16,25 +16,29 @@ module.exports = {
 	runtimeCompiler: true, // for templates (+10kb)
 
 	chainWebpack: config => {
+
 		//config.plugins.delete('html')
 		config.plugins.delete('preload')
 		config.plugins.delete('prefetch')
-		
-		// config
+
 		config
 			.performance
-			.maxEntrypointSize(900000)
-			.maxAssetSize(900000)
-		//  .resolve({root: path.resolve('./')})
+			.maxEntrypointSize(2000000) // 2mb
+			.maxAssetSize(2000000) // 2mb
+		
+		// config.resolve({root: path.resolve('./')})
 
 		config
 		 	.plugin('html')
-		// 	.tap(args => {
-		// 		args[0].template = '/Users/username/proj/app/templates/index.html'
-		// 		return args
-		// 	})
+			.tap(args => {
+				//args[0].template = '/Users/username/proj/app/templates/index.html'
+				args[0].title = "HEY HEY HEY VUE"
+				//args[0].resolve = {root: path.resolve('./')}
+				return args
+			})
 
 		//	.resolve()
+		//.resolve({root: path.resolve('./')})
 
 	},
 
