@@ -1,6 +1,6 @@
 <template>
 	<div class="home">
-		<img src="../assets/ThreeD-Garden-Carrot-Logo-001.png" alt="ThreeD Garden => Carrot Logo" width="60" />
+		<img src="../assets/ThreeD-Garden-Logo-Circle-Carrot.png" alt="ThreeD Garden => Carrot Logo" width="60" />
 		<ThreeDGarden 
 			msg="Vue.js App using Three.js 3D Library"
 			subtitle="as a WordPress Plugin"
