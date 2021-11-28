@@ -26,7 +26,8 @@ module.exports = {
 			.maxEntrypointSize(2000000) // 2mb
 			.maxAssetSize(2000000) // 2mb
 		
-		// config.resolve({root: path.resolve('./')})
+		//config.context.resolve({root: path.resolve('./')})
+		console.log("config.context", config.context)
 
 		config
 		 	.plugin('html')
@@ -34,6 +35,8 @@ module.exports = {
 				//args[0].template = '/Users/username/proj/app/templates/index.html'
 				args[0].title = "HEY HEY HEY VUE"
 				//args[0].resolve = {root: path.resolve('./')}
+				console.log("args[0]", args[0])
+				console.log("config.context", config.context)
 				return args
 			})
 
