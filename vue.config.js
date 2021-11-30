@@ -6,8 +6,15 @@ const path = require('path')
 module.exports = {
 
 	//publicPath: '/', // default
-	publicPath: '/wp-content/plugins/threed-garden/public/dist/',
+	//publicPath: '/wp-content/plugins/threed-garden/public/dist/',
 	//publicPath: '#',
+	//publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
+	//publicPath: './',
+	//publicPath: process.env.BASE_URL,
+	publicPath: '.',
+
+    assetsDir: process.env.BASE_URL,
+	//assetsDir: process.env.BASE_URL + '/wp-content/plugins/threed-garden/public/dist/',
 
 	outputDir: 'public/dist', // not necessary?
 	
@@ -27,16 +34,16 @@ module.exports = {
 			.maxAssetSize(2000000) // 2mb
 		
 		//config.context.resolve({root: path.resolve('./')})
-		console.log("config.context", config.context)
+		console.log("MARTY: config.context", config.context)
 
 		config
 		 	.plugin('html')
 			.tap(args => {
 				//args[0].template = '/Users/username/proj/app/templates/index.html'
-				args[0].title = "HEY HEY HEY VUE"
-				//args[0].resolve = {root: path.resolve('./')}
-				console.log("args[0]", args[0])
-				console.log("config.context", config.context)
+				args[0].title = "HEY HEY HEY VUE VUE VUE"
+				args[0].resolve = {root: path.resolve('./')}
+				console.log("MARTY: args[0]", args[0])
+				//console.log("config.context", config.context)
 				return args
 			})
 
@@ -50,7 +57,9 @@ module.exports = {
 	// },
 
 	devServer: {
-		host: 'garden.university.local',
+		//host: 'garden.university.local',
+		//host: 'garden.university.local/scene/mcgee-home-garden/',
+		host: 'garden.university.local/wp-content/plugins/threed-garden/public/dist/',
 		hot: false,
 		writeToDisk: true,
 	},

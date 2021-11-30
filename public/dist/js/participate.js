@@ -1,2 +1,0 @@
-(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["participate"],{"3ede":function(e,n,i){"use strict";i.r(n);var r=i("f2bf"),t={class:"participate"},a=Object(r["f"])("h1",null,"Participate in ThreeD Garden in real life, online.",-1),c=Object(r["f"])("h2",null,"Yes.. remotely.. from your fingers, on a WiFi-enabled device with a browser.",-1);function o(e,n){return Object(r["o"])(),Object(r["c"])("div",t,[a,c])}var l=i("6b0d"),s=i.n(l);const b={},d=s()(b,[["render",o]]);n["default"]=d}}]);
-//# sourceMappingURL=participate.js.map
