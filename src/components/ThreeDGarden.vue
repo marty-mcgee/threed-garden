@@ -1,116 +1,41 @@
 <template>
-	<div class="hello">
+	<div class="threedgarden">
 		<h1>{{ msg }}</h1>
 		<h2>{{ subtitle }}</h2>
-		<p>
-			For a guide on how to configure + customize this project,<br />
-			check out the
-			<a href="https://cli.vuejs.org" target="_blank" rel="noopener"
-				>vue-cli documentation</a
-			>.
-		</p>
-		<h3>Installed CLI Plugins</h3>
-		<ul>
-			<li>
-				<a
-					href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel"
-					target="_blank"
-					rel="noopener"
-					>babel</a
-				>
-			</li>
-			<li>
-				<a
-					href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router"
-					target="_blank"
-					rel="noopener"
-					>router</a
-				>
-			</li>
-			<li>
-				<a
-					href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex"
-					target="_blank"
-					rel="noopener"
-					>vuex</a
-				>
-			</li>
-			<li>
-				<a
-					href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint"
-					target="_blank"
-					rel="noopener"
-					>eslint</a
-				>
-			</li>
-		</ul>
-		<h3>Essential Links</h3>
-		<ul>
-			<li>
-				<a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a>
-			</li>
-			<li>
-				<a href="https://forum.vuejs.org" target="_blank" rel="noopener"
-					>Forum</a
-				>
-			</li>
-			<li>
-				<a href="https://chat.vuejs.org" target="_blank" rel="noopener"
-					>Community Chat</a
-				>
-			</li>
-			<li>
-				<a href="https://twitter.com/vuejs" target="_blank" rel="noopener"
-					>Twitter</a
-				>
-			</li>
-			<li>
-				<a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a>
-			</li>
-		</ul>
-		<h3>Ecosystem</h3>
-		<ul>
-			<li>
-				<a href="https://router.vuejs.org" target="_blank" rel="noopener"
-					>vue-router</a
-				>
-			</li>
-			<li>
-				<a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a>
-			</li>
-			<li>
-				<a
-					href="https://github.com/vuejs/vue-devtools#vue-devtools"
-					target="_blank"
-					rel="noopener"
-					>vue-devtools</a
-				>
-			</li>
-			<li>
-				<a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener"
-					>vue-loader</a
-				>
-			</li>
-			<li>
-				<a
-					href="https://github.com/vuejs/awesome-vue"
-					target="_blank"
-					rel="noopener"
-					>awesome-vue</a
-				>
-			</li>
-		</ul>
 	</div>
 </template>
 
 <script>
+/** 
+ * ThreeDGarden - FarmBot JavaScript
+ */
+import { Farmbot } from "farmbot"
+
+let SUPER_SECRET_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJ1bmtub3duIiwic3ViIjoxNTI2NywiaWF0IjoxNjM2NjU3ODUxLCJqdGkiOiIwNTBiMzIxNC02NzcxLTRlYzktODhmMS02NTVhYWVhNWQzN2QiLCJpc3MiOiIvL215LmZhcm0uYm90OjQ0MyIsImV4cCI6MTY0MTg0MTg1MSwibXF0dCI6ImNsZXZlci1vY3RvcHVzLnJtcS5jbG91ZGFtcXAuY29tIiwiYm90IjoiZGV2aWNlXzE1Mjk3Iiwidmhvc3QiOiJ4aWNvbmZ1bSIsIm1xdHRfd3MiOiJ3c3M6Ly9jbGV2ZXItb2N0b3B1cy5ybXEuY2xvdWRhbXFwLmNvbTo0NDMvd3MvbXF0dCJ9.K8jzw-l_KduohGUgS_rkmNx4700XQyZX3-JCigk-5gXf4y-aemDNemzABGpIvULVj9D02RXEiLAzPtSxRpGS_AWpwd0OSU35HNO_pCL7-KLmtmpanAOxutflPe9KN_stU1AgZC42TmMYLYeMZY1ornQOZTaIgT6dYJkqJex7HV6D1LS-1yjvEdPM2E1UTh6OWUFDndq-fdwyVNuQfYdbu0CLhTua3SaNaXCueZ7qew3-XVUx48PS2X8XFACkveZbRfb55qgabT-WpcQB4KyujdKFbAotZqJeZ1_aCxTa4WT_y_zFV7gVptgeK2FAXC1DE9cH4FJXipt0AMPksQGShA"
+
+let bot = new Farmbot({ token: SUPER_SECRET_TOKEN })
+
+bot
+	.connect()
+	.then(function () {
+		//alert("HEY HEY HEY")
+		bot.setConfig("hey", "HEY HEY HEY")
+		console.log(bot.getConfig("hey"))
+		return bot.getConfig("hey")
+	})
+	.then(function () {
+		return bot.moveRelative({ x: 1, y: 2, z: 3, speed: 100 })
+	})
+
+console.log("bot", bot)
+
 export default {
 	name: "ThreeDGarden",
 	props: {
 		msg: String,
 		subtitle: String,
 	}
-};
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -129,7 +54,7 @@ li {
 a {
 	color: #96bc33;
 }
-.hello {
+.threedgarden {
 	margin-bottom: 40px;
 }
 </style>

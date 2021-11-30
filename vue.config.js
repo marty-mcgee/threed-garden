@@ -36,20 +36,49 @@ module.exports = {
 		//config.context.resolve({root: path.resolve('./')})
 		console.log("MARTY: config.context", config.context)
 
+		// config
+		// 	.plugin('html')
+		// 	.tap(args => {
+		// 		//args[0].template = '/Users/username/proj/app/templates/index.html'
+		// 		args[0].title = "HEY HEY HEY VUE VUE VUE"
+		// 		args[0].resolve = {root: path.resolve('./')}
+		// 		console.log("MARTY: args[0]", args[0])
+		// 		//console.log("config.context", config.context)
+		// 		return args
+		// 	})
+
+		// config
+		// 	.resolve({root: path.resolve('./')})
+
 		config
-		 	.plugin('html')
-			.tap(args => {
-				//args[0].template = '/Users/username/proj/app/templates/index.html'
-				args[0].title = "HEY HEY HEY VUE VUE VUE"
-				args[0].resolve = {root: path.resolve('./')}
-				console.log("MARTY: args[0]", args[0])
-				//console.log("config.context", config.context)
-				return args
+			.module
+			.rule('vue')
+			.use('vue-loader')
+			//.loader('vue-loader')
+			.tap(options => {
+				console.log("MARTY: options", options)
+				return {
+					transformAssetUrls: {
+						"v-img": 'src'
+					}
+				}
 			})
 
-		//	.resolve()
-		//.resolve({root: path.resolve('./')})
+	},
 
+	configureWebpack: {
+		resolve: {
+			// roots: [
+			// 	path.resolve(__dirname, 'yo', 'guys'),
+			// ],
+			// modules: [
+			// 	path.resolve(__dirname, "hey"),
+			// 	"node_modules"
+			// ],
+			alias: {
+				images: path.resolve(__dirname, 'src/assets')
+			}
+		}
 	},
 
 	// resolve: {

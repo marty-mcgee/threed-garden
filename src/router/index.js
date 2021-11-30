@@ -9,7 +9,7 @@ import Participate from "../views/Participate.vue"
 
 const routes = [
 	{
-		path: "/home",
+		path: "/",
 		name: "home",
 		component: Home
 	},
