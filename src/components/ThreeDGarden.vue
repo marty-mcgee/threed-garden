@@ -29,6 +29,52 @@ bot
 
 console.log("bot", bot)
 
+
+
+/** 
+ * ThreeDGarden - Custom Admin JavaScript 
+ * *************************************************************************************** */
+
+console.log("-----------------------")
+console.log("postdata---------------")
+console.log(postdata)
+console.log("-----------------------")
+
+// const app = Vue.createApp({
+// 	//data: function() {
+// 	data() {
+// 		return {
+// 			plugin: 'ThreeD Garden'
+// 		}
+// 	}
+// })
+// console.log("app", app)
+
+// const App = app.mount('#webgl')
+// //const App = app.mount('#app')
+// console.log("App", App)
+
+// check for WebGL
+//if ( ! Detector.webgl ) Detector.addGetWebGLMessage()
+
+/** PARAMETERS FROM PHP */
+// const pluginName = postdata.plugin_name
+// const pluginVersion = postdata.plugin_version
+// const pluginURL = postdata.plugin_url
+// const themeURI = postdata.theme_uri
+// const restURL = postdata.rest_url
+// const worldID = postdata.world_id
+// console.log("-----------------------")
+// console.log("pluginName-------------")
+// console.log(pluginName, pluginVersion)
+// console.log("-----------------------")
+
+
+/** 
+ * END FILE
+ * ************************************************************************************** 
+ */
+
 export default {
 	name: "ThreeDGarden",
 	props: {

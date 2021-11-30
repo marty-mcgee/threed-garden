@@ -32,6 +32,7 @@
     "prettier": "^1.19.1"
   },
   "eslintConfig": {
+    "quiet": true,
     "root": true,
     "env": {
       "node": true
