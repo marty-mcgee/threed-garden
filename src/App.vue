@@ -7,7 +7,7 @@
 			<router-link :to="{ name: 'Participate', params: { userId: 123 }}">Participate</router-link>
 			-->
 			<!-- -->
-			<router-link to="home">Home</router-link> |
+			<router-link to="/">Home</router-link> |
 			<router-link to="about">About</router-link> |
 			<router-link to="participate">Participate</router-link>
 		</div>

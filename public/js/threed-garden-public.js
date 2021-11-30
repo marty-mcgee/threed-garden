@@ -52,7 +52,7 @@ console.log("bot", bot)
 	$.ajax({
 		url: "https://my.farm.bot/api/tokens",
 		type: "POST",
-		data: JSON.stringify({user: {email: 'mcgee.marty@gmail.com', password: 'pursueB@8'}}),
+		data: JSON.stringify({user: {email: 'mcgee.marty@gmail.com', password: 'XXXXXXXXX'}}),
 		contentType: "application/json",
 		success: function (data) {
 			// You can now use your token:
