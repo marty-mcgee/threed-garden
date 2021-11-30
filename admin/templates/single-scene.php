@@ -13,7 +13,10 @@ get_header();
 	<h1><a href="<?php get_permalink(); ?>">ThreeD Garden: Scene</a></h1>
 
 	<!-- vue app -->
-	<div id="app"></div>
+	<div id="app">
+		<!-- threejs webgl object -->
+		<div id="webgl"></div>
+	</div>
 	
 	<?php
 
