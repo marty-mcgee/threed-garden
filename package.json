@@ -1,6 +1,6 @@
 {
-  "name": "threed-garden-real-world-vue",
-  "version": "0.1.1",
+  "name": "threed-garden-vue",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -32,17 +32,16 @@
     "prettier": "^1.19.1"
   },
   "eslintConfig": {
-    "quiet": true,
     "root": true,
     "env": {
       "node": true
     },
     "extends": [
       "plugin:vue/vue3-essential",
-      "eslint:recommended",
       "@vue/prettier"
     ],
     "parserOptions": {
+      "fix": true,
       "ecmaVersion": 7,
       "sourceType": "module",
       "ecmaFeatures": {
