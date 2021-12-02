@@ -12,6 +12,7 @@
 			<router-link to="participate">Participate</router-link>
 		</div>
 		<router-view />
+		<div id="webgl"></div>
 	</div>
 </template>
 

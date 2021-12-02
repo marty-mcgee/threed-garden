@@ -138,14 +138,14 @@ let params = {
 params.mode = params.modes.NONE
 guiFolderRotation.add(params, "ANIMATE").name("Run Animation")
 
-const sfxExt = SFX.supportsAudioType('mp3') ? 'mp3' : 'ogg'
+// const sfxExt = SFX.supportsAudioType('mp3') ? 'mp3' : 'ogg'
 const options = {
 	assets:[
-		`${params.assetsPath}sfx/gliss.${sfxExt}`,
-		`${params.assetsPath}sfx/factory.${sfxExt}`,
-		`${params.assetsPath}sfx/button.${sfxExt}`,
-		`${params.assetsPath}sfx/door.${sfxExt}`,
-		`${params.assetsPath}sfx/fan.${sfxExt}`,
+		// `${params.assetsPath}sfx/gliss.${sfxExt}`,
+		// `${params.assetsPath}sfx/factory.${sfxExt}`,
+		// `${params.assetsPath}sfx/button.${sfxExt}`,
+		// `${params.assetsPath}sfx/door.${sfxExt}`,
+		// `${params.assetsPath}sfx/fan.${sfxExt}`,
 		`${params.assetsPath}fbx/environment.fbx`,
 		`${params.assetsPath}fbx/girl-walk.fbx`,
 		`${params.assetsPath}fbx/usb.fbx`,
@@ -165,13 +165,15 @@ console.log("MARTY: options", options)
 
 //this.init()
 //this.animate()
-const preloader = new Preloader(options)
+
+// [MM]
+//const preloader = new Preloader(options)
 
 /**
  * init main constructor
  */
 window.onload = function(e){ 
-	//init()
+	init()
 }
 window.garden = this
 window.onError = function(error){
@@ -219,6 +221,8 @@ let api_urls = [
  * *************************************************************************************** */
 function init() {
 
+	console.log("MARTY: init")
+
 	Promise.allSettled(
 		api_urls.map(
 			url => fetch(url)
@@ -244,14 +248,12 @@ function init() {
 							default :
 								break
 						}
-						// console.log("-----------------")
-						// console.log(data)
-						// console.log("-----------------")
+						console.log("MARTY: data", data)
 					})
 		)
 	)
 	.then(results => { // (*)
-			//console.log(results)
+			console.log("MARTY: results", results)
 			results.forEach((result, num) => {
 				if (result.status == "fulfilled") {
 					//alert(`${urls[num]}: ${result.value.status}`)
@@ -262,10 +264,7 @@ function init() {
 					console.log(result)
 				}
 			})
-			console.log("-----------------")
-			console.log("params.data------")
-			console.log(params.data)
-			console.log("-----------------")
+			console.log("MARTY: params.data", params.data)
 			/**
 			 * init scene constructor
 			 */
@@ -281,25 +280,20 @@ function init() {
  * *************************************************************************************** */
 function buildScene() {
 
-	// console.log("-----------------------")
-	// console.log("params.data.scene------")
-	// console.log(params.data.scene)
-	// console.log(params.data.scene.length)
-	// console.log("-----------------------")
+	console.log("MARTY: params.data.scene", params.data.scene)
 
 	let wpScene = params.data.scene[0]
 	let sceneID = wpScene.id
 
-	// console.log("-----------------------")
-	// console.log("wpScene----------------")
 	// console.log(wpScene)
-	// console.log("-----------------------")
 
 	/** THREE JS SCENE ******************************************************************* */
 
 	scene = new THREE.Scene()
 	
 	scene.name = "3D Garden"
+
+	console.log("MARTY: scene", scene)
 
 	// load the 3D cube map?
 	if ( wpScene.acf.scene_background_image_px ) {
@@ -1566,10 +1560,10 @@ function loadRoad(plane) {
  */
 function buildAllotments(postObject, plane, sceneID) {
 
-	// console.log("-------------------------")
-	// console.log("postObject ALLOTMENTS----")
-	// console.log(postObject)
-	// console.log("-------------------------")
+	console.log("-------------------------")
+	console.log("postObject ALLOTMENTS----")
+	console.log(postObject)
+	console.log("-------------------------")
 	
 	var filteredPostObject = postObject.filter(function (obj) {
 		return obj.acf.allotment_scene == sceneID
