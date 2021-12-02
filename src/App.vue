@@ -1,5 +1,5 @@
 <template>
-	<div id="app">
+	<div id="APP">
 		<div id="nav">
 			<!-- 
 			<router-link :to="{ name: 'Home', params: { userId: 123 }}">Home</router-link> |
@@ -17,7 +17,7 @@
 </template>
 
 <style scoped>
-#app {
+#APP {
 	font-family: Avenir, Helvetica, Arial, sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;

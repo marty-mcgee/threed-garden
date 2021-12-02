@@ -1,10 +1,10 @@
 <template>
 	<div class="participate">
-		<h1>Participate in the ThreeD Garden real life game.</h1>
+		<h1>Participate in the "ThreeD Garden" real life game..</h1>
 		<!-- <h2>Yes.. remotely.. from your fingers, on a WiFi-enabled device with a browser.</h2> -->
 		<ThreeDGarden 
-			msg="Play"
-			subtitle="Now"
+			msg=""
+			subtitle=""
 		/>
 	</div>
 </template>

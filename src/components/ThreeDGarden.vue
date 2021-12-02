@@ -2376,7 +2376,7 @@ function makeAnnotation(link, contentHTML, positionX, positionY) {
 	// Make the DIV element draggable
 	dragElement(annoDiv)
 
-	let cssObject = new THREE.CSS3DObject( annoDiv )
+	let cssObject = { userData: {} } // new THREE.CSS3DObject( annoDiv )
 	// trying to do stuff to a cssObject does nothing :(
 	// // we reference the same position and rotation 
 	// cssObject.position = rendererDomElement.position
