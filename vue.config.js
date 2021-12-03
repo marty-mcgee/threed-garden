@@ -11,7 +11,7 @@ module.exports = {
 	//publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
 	//publicPath: './',
 	//publicPath: process.env.BASE_URL,
-	publicPath: '.',
+	publicPath: './',
 
     assetsDir: process.env.BASE_URL,
 	//assetsDir: process.env.BASE_URL + '/wp-content/plugins/threed-garden/public/dist/',

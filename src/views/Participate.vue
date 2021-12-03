@@ -1,6 +1,6 @@
 <template>
 	<div class="participate">
-		<h1>Participate in the "ThreeD Garden" real life game..</h1>
+		<h1>Participate in the real life <em>ThreeD Garden</em> game..</h1>
 		<!-- <h2>Yes.. remotely.. from your fingers, on a WiFi-enabled device with a browser.</h2> -->
 		<ThreeDGarden 
 			msg=""
@@ -11,16 +11,17 @@
 
 <script>
 // @ is an alias to /src
-import ThreeDGarden from "@/components/ThreeDGarden.vue"
+//import ThreeDGarden from "@/components/ThreeDGarden.vue"
 
 export default {
 	name: "Participate",
 	components: {
-		ThreeDGarden
+		ThreeDGarden: () => import(/* webpackPrefetch: false */ '../components/ThreeDGarden.vue')
 	},
 	data () {
 		return {
-			publicPath: process.env.BASE_URL + "/wp-content/plugins/threed-garden/public"
+			publicPath: process.env.BASE_URL + "/wp-content/plugins/threed-garden/public",
+			//componentType: 'ThreeDGarden'
 		}
 	}
 }
