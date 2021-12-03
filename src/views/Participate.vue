@@ -16,7 +16,8 @@
 export default {
 	name: "Participate",
 	components: {
-		ThreeDGarden: () => import(/* webpackPrefetch: false */ '../components/ThreeDGarden.vue')
+		//ThreeDGarden: () => import(/* webpackPrefetch: false */ '../components/ThreeDGarden.vue')
+		ThreeDGarden: () => import(/*webpackChunkName: "threed-garden-vue" */ '../components/ThreeDGarden.vue')
 	},
 	data () {
 		return {
