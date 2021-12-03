@@ -3,6 +3,7 @@
 		<h1>{{ msg }}</h1>
 		<h2>{{ subtitle }}</h2>
 	</div>
+	<div id="webgl"></div>
 </template>
 
 <script>
@@ -167,7 +168,7 @@ console.log("MARTY: options", options)
 //this.animate()
 
 // [MM]
-//const preloader = new Preloader(options)
+const preloader = new Preloader(options)
 
 /**
  * init main constructor
