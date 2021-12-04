@@ -13,7 +13,7 @@ module.exports = {
 	//publicPath: process.env.BASE_URL,
 	publicPath: './',
 
-    assetsDir: process.env.BASE_URL,
+    //assetsDir: process.env.BASE_URL,
 	//assetsDir: process.env.BASE_URL + '/wp-content/plugins/threed-garden/public/dist/',
 
 	outputDir: 'public/dist', // not necessary?
@@ -24,9 +24,22 @@ module.exports = {
 
 	chainWebpack: config => {
 
+		console.log("MARTY: chainWebpack config")
+
 		//config.plugins.delete('html')
 		config.plugins.delete('preload')
-		config.plugins.delete('prefetch')
+		//config.plugins.delete('prefetch')
+
+		// A, remove the plugin
+		//config.plugins.delete('prefetch')
+
+		// or:
+		// B. Alter settings:
+		config.plugin('prefetch').tap(options => {
+			console.log("MARTY: prefetch options", options)
+			options[0].fileBlackList.push([/myasyncRoute(.)+?\.js$/])
+			return options
+		})
 
 		config
 			.performance
@@ -34,7 +47,7 @@ module.exports = {
 			.maxAssetSize(2000000) // 2mb
 		
 		//config.context.resolve({root: path.resolve('./')})
-		console.log("MARTY: config.context", config.context)
+		//console.log("MARTY: config.context", config.context)
 
 		// config
 		// 	.plugin('html')
@@ -50,36 +63,43 @@ module.exports = {
 		// config
 		// 	.resolve({root: path.resolve('./')})
 
-		config
-			.module
-			.rule('vue')
-			.use('vue-loader')
-			//.loader('vue-loader')
-			.tap(options => {
-				console.log("MARTY: options", options)
-				return {
-					transformAssetUrls: {
-						"v-img": 'src'
-					}
-				}
-			})
+		// config
+		// 	.module
+		// 	.rule('vue')
+		// 	.use('vue-loader')
+		// 	//.loader('vue-loader')
+		// 	.tap(options => {
+		// 		console.log("MARTY: options", options)
+		// 		return {
+		// 			transformAssetUrls: {
+		// 				"v-img": 'src'
+		// 			}
+		// 		}
+		// 	})
 
 	},
 
-	configureWebpack: {
-		resolve: {
-			// roots: [
-			// 	path.resolve(__dirname, 'yo', 'guys'),
-			// ],
-			// modules: [
-			// 	path.resolve(__dirname, "hey"),
-			// 	"node_modules"
-			// ],
-			alias: {
-				images: path.resolve(__dirname, 'src/assets')
-			}
-		}
-	},
+	// configureWebpack: {
+
+	// 	output: {
+	// 	   path: '../test-folder/',
+	// 	   filename: '[name].js',
+	// 	   publicPath: '/'
+	// 	},
+		
+	// 	resolve: {
+	// 		// roots: [
+	// 		// 	path.resolve(__dirname, 'yo', 'guys'),
+	// 		// ],
+	// 		// modules: [
+	// 		// 	path.resolve(__dirname, "hey"),
+	// 		// 	"node_modules"
+	// 		// ],
+	// 		alias: {
+	// 			images: path.resolve(__dirname, 'src/assets')
+	// 		}
+	// 	}
+	// },
 
 	// resolve: {
 	// 	root: path.resolve('./')
