@@ -37,7 +37,9 @@ module.exports = {
 		// B. Alter settings:
 		config.plugin('prefetch').tap(options => {
 			console.log("MARTY: prefetch options", options)
-			options[0].fileBlackList.push([/myasyncRoute(.)+?\.js$/])
+			// options[0].fileBlacklist = options[0].fileBlacklist || []
+        	// options[0].fileBlacklist.push(/myasyncRoute(.)+?/)
+			//options.fileBlackList.push([/myasyncRoute(.)+?\.js$/])
 			return options
 		})
 
