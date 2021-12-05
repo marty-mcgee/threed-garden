@@ -27,21 +27,27 @@ module.exports = {
 		console.log("MARTY: chainWebpack config")
 
 		//config.plugins.delete('html')
-		config.plugins.delete('preload')
+		//config.plugins.delete('preload')
 		//config.plugins.delete('prefetch')
 
 		// A, remove the plugin
 		//config.plugins.delete('prefetch')
-
 		// or:
 		// B. Alter settings:
-		config.plugin('prefetch').tap(options => {
-			console.log("MARTY: prefetch options", options)
-			// options[0].fileBlacklist = options[0].fileBlacklist || []
-        	// options[0].fileBlacklist.push(/myasyncRoute(.)+?/)
-			//options.fileBlackList.push([/myasyncRoute(.)+?\.js$/])
-			return options
-		})
+		// if (config.plugins.has('prefetch')) {
+		// 	config.plugin('prefetch').tap(options => {
+		// 		options[0].fileBlacklist = options[0].fileBlacklist || []
+		// 		options[0].fileBlacklist.push(/dist(.)+?/)
+		// 		return options
+		// 	})
+		// }
+
+		// config
+		// 	.plugin('preload')
+		// 	.tap(args => [{
+		// 		...args[0],
+		// 		rel: 'prefetch',
+		// 	}])
 
 		config
 			.performance
