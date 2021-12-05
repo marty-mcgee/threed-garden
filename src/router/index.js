@@ -29,9 +29,10 @@ const routes = [
 		// route level code-splitting
 		// this generates a separate chunk (participate.[hash].js) for this route
 		// which is lazy-loaded when the route is visited.
-		component: () => import(/* webpackChunkName: "participate" */ "@/views/Participate.vue")
+		component: () => import(/* webpackMode: "eager", webpackChunkName: "participate" */ "@/views/Participate.vue")
+		//component: () => import(/* webpackChunkName: [request] */ "@/views/Participate.vue")
 		//component: Participate
-		//component: defineAsyncComponent(() => import("@/views/Participate.vue"))
+		//component: defineAsyncComponent(() => import(/* webpackChunkName: "participate" */ "@/views/Participate.vue"))
 	}
 ]
 

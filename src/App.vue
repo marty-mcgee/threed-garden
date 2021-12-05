@@ -1,15 +1,14 @@
 <template>
 	<div id="APP">
 		<div id="nav">
-			<!-- -->
+			<!-- 
 			<router-link to="/">Home</router-link> |
 			<router-link to="about">About</router-link> |
 			<router-link to="participate">Participate</router-link>
-			<!-- 
-			<router-link :to="{ name: 'Home', params: { userId: 123 }}">Home</router-link> |
-			<router-link :to="{ name: 'About', params: { userId: 123 }}">About</router-link> |
-			<router-link :to="{ name: 'Participate', params: { userId: 123 }}">Participate</router-link>
 			-->
+			<router-link :to="{ name: 'home', params: { userId: 123 }}">Home</router-link> |
+			<router-link :to="{ name: 'about', params: { userId: 123 }}">About</router-link> |
+			<router-link :to="{ name: 'participate', params: { userId: 123 }}">Participate</router-link>
 		</div>
 		<router-view />
 	</div>
