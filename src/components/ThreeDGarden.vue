@@ -163,24 +163,23 @@ params.mode = params.modes.PRELOAD
 console.log("MARTY: params", params)
 console.log("MARTY: options", options)
 
+// [MM]
+const preloader = new Preloader(options)
 
 //this.init()
 //this.animate()
 
-// [MM]
-const preloader = new Preloader(options)
-
 /**
  * init main constructor
- */
+ *
 window.onload = function(e){ 
-	init()
+	//init()
 }
 window.garden = this
 window.onError = function(error){
 	console.error(JSON.stringify(error))
 }
-
+*/
 
 /* [MM] */
 // let actionBtn = document.getElementById("action-btn")
@@ -193,6 +192,8 @@ window.onError = function(error){
 
 const loaderFBX = new THREE.FBXLoader()
 //const loaderGLTF = new THREE.GLTFLoader()
+//alert("HEY HEY HEY: LOADED GLTF")
+console.log("HEY HEY HEY: LOADED GLTF?")
 //const loaderOBJ = new THREE.OBJLoader()
 const loaderTexture = new THREE.TextureLoader()
 
@@ -222,7 +223,7 @@ let api_urls = [
  * *************************************************************************************** */
 function init() {
 
-	console.log("MARTY: init")
+	console.log("MARTY: init ***")
 
 	Promise.allSettled(
 		api_urls.map(
@@ -474,6 +475,8 @@ function buildScene() {
 	
 	/** BUILD ALLOTMENTS ******************************************************************* */
 
+	//alert("HEY HEY HEY: BUILD ALLOTMENTS?")
+
 	buildAllotments(
 		params.data.allotment, 
 		plane, 
@@ -536,16 +539,28 @@ function buildScene() {
 	} )
 
 
+	/**
+	 * LOAD 3D OBJECTS
+	 */
 	loadFarmHouse(plane)
+	
 	loadChickenCoop(plane)
+
+	// PRIMARY WORKING CHICKEN
+	//loadChicken(plane)
+
+
 	//loadHen(plane)
-	loadChicken(plane)
 	//loadHenGLTF(plane)
+	
 	//loadRooster(plane)
+	
 	//loadChickenGLTF(plane)
 	//loadChickGLTF(plane)
+	
 	//loadKitchenSink(plane)
 	//loadChickenFree(plane)
+	
 	loadRoad(plane)
 		
 
@@ -1561,10 +1576,12 @@ function loadRoad(plane) {
  */
 function buildAllotments(postObject, plane, sceneID) {
 
-	console.log("-------------------------")
-	console.log("postObject ALLOTMENTS----")
+	console.log("----------------------------")
+	console.log("MARTY: postObject ALLOTMENTS")
 	console.log(postObject)
-	console.log("-------------------------")
+	console.log("----------------------------")
+
+	//alert("HEY HEY HEY: BUILD ALLOTMENTS..")
 	
 	var filteredPostObject = postObject.filter(function (obj) {
 		return obj.acf.allotment_scene == sceneID
@@ -1653,6 +1670,8 @@ function buildAllotments(postObject, plane, sceneID) {
 
 		/** BUILD BEDS IN THIS ALLOTMENT ************************************************** */
 
+		//alert("HEY HEY HEY: BUILD BEDS??")
+
 		buildBeds(
 			params.data.bed, 
 			plane, 
@@ -1662,21 +1681,23 @@ function buildAllotments(postObject, plane, sceneID) {
 
 		/** INFOSPOTS ********************************************************************* */
 
-		let infospot = makeInfospotSphere(
-			structure.name, 
-			structure.position.x, 
-			structure.position.y, 
-			allotment.parameters.z + 3,
-			allotment.postID,
-			structure.userData.annotation,
-			structure.userData.link 
-		)
-		infospot.name = `INFOSPOT: ${structure.name}`
-		infospot.visible = true
+		//alert("HEY HEY HEY: BUILD INFOSPOTS??")
 
-		guiFolderAllotments.add(infospot, "visible").name("InfoSphere").listen()
+		// let infospot = makeInfospotSphere(
+		// 	structure.name, 
+		// 	structure.position.x, 
+		// 	structure.position.y, 
+		// 	allotment.parameters.z + 3,
+		// 	allotment.postID,
+		// 	structure.userData.annotation,
+		// 	structure.userData.link 
+		// )
+		// infospot.name = `INFOSPOT: ${structure.name}`
+		// infospot.visible = true
 
-		plane.add(infospot)
+		// guiFolderAllotments.add(infospot, "visible").name("InfoSphere").listen()
+
+		// plane.add(infospot)
 
 	}) /** END ALLOTMENTS ****************************************************************** */
 	
@@ -1784,30 +1805,34 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
 
 		/** BUILD PLANTS IN THIS BED, ACCORDING TO PLANTING PLANS ************************* */
 
-		buildPlantingPlans(
-			params.data.planting_plan, 
-			plane, 
-			bed.postID, // the post-to-post relationship <3
-			structure.position.x, structure.position.y, 0 //structure.position.z
-		) 
+		//alert("HEY HEY HEY: BUILD PLANTING PLANS??")
+
+		// buildPlantingPlans(
+		// 	params.data.planting_plan, 
+		// 	plane, 
+		// 	bed.postID, // the post-to-post relationship <3
+		// 	structure.position.x, structure.position.y, 0 //structure.position.z
+		// ) 
 	
 		/** INFOSPOTS ********************************************************************* */
-	
-		let infospot = makeInfospotSphere(
-			structure.name, 
-			structure.position.x, 
-			structure.position.y, 
-			bed.parameters.z + 3,
-			bed.postID,
-			structure.userData.annotation,
-			structure.userData.link 
-		)
-		infospot.name = `INFOSPOT: ${structure.name}`
-		infospot.visible = false
+		
+		//alert("HEY HEY HEY: BUILD INFOSPOTS??")
+		
+		// let infospot = makeInfospotSphere(
+		// 	structure.name, 
+		// 	structure.position.x, 
+		// 	structure.position.y, 
+		// 	bed.parameters.z + 3,
+		// 	bed.postID,
+		// 	structure.userData.annotation,
+		// 	structure.userData.link 
+		// )
+		// infospot.name = `INFOSPOT: ${structure.name}`
+		// infospot.visible = false
 
-		guiFolderBeds.add(infospot, "visible").name("InfoSphere").listen()
+		// guiFolderBeds.add(infospot, "visible").name("InfoSphere").listen()
 
-		plane.add(infospot)
+		// plane.add(infospot)
 
 	}) /** END BEDS *********************************************************************** */
 	
