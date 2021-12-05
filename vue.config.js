@@ -26,9 +26,9 @@ module.exports = {
 
 		console.log("MARTY: chainWebpack config")
 
-		//config.plugins.delete('html')
-		//config.plugins.delete('preload')
-		//config.plugins.delete('prefetch')
+		config.plugins.delete('html')
+		config.plugins.delete('preload')
+		config.plugins.delete('prefetch')
 
 		// A, remove the plugin
 		//config.plugins.delete('prefetch')
