@@ -11,19 +11,22 @@
 
 <script>
 // @ is an alias to /src
-//import ThreeDGarden from "@/components/ThreeDGarden.vue"
+import ThreeDGarden from "@/components/ThreeDGarden.vue"
+//import { defineAsyncComponent } from "vue"
 
 export default {
 	name: "Participate",
 	components: {
-		//ThreeDGarden: () => import(/* webpackPrefetch: false */ '../components/ThreeDGarden.vue')
-		ThreeDGarden: () => import(
-			// /* webpackExports: ["default", "named"] */ 
-			// /* webpackMode: "lazy" */ 
-			// /* webpackPrefetch: true */
-			/* webpackChunkName: "threed-garden-vue" */ 
-			'../components/ThreeDGarden.vue'
-		)
+		ThreeDGarden
+		// ThreeDGarden: defineAsyncComponent(
+		// 	() => import(
+		// 		// /* webpackExports: ["default", "named"] */ 
+		// 		// /* webpackMode: "lazy" */ 
+		// 		// /* webpackPrefetch: true */
+		// 		/* webpackChunkName: "threed-garden-vue" */
+		// 		'../components/ThreeDGarden.vue'
+		// 	)
+		// )
 	},
 	data () {
 		return {
