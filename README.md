@@ -1,6 +1,6 @@
 === ThreeD Garden ===
 
-Contributors: damartman, companyjuice
+Contributors: martymcgee, damartman, companyjuice
 
 ThreeD Garden is a WordPress Plugin for ThreeJS WebGL -- A Virtual Garden + Homestead Management Solution
 

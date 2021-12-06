@@ -191,9 +191,13 @@ window.onError = function(error){
 
 
 const loaderFBX = new THREE.FBXLoader()
-//const loaderGLTF = new THREE.GLTFLoader()
+// try {
+// 	console.log("HEY HEY HEY: LOAD GLTF?")
+// 	const loaderGLTF = new THREE.GLTFLoader()
+// } catch (e) {
+// 	console.log("MARTY: e", e)
+// }
 //alert("HEY HEY HEY: LOADED GLTF")
-console.log("HEY HEY HEY: LOADED GLTF?")
 //const loaderOBJ = new THREE.OBJLoader()
 const loaderTexture = new THREE.TextureLoader()
 

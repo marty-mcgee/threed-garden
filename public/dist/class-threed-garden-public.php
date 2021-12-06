@@ -107,63 +107,86 @@ class ThreeD_Garden_Public {
 		 * The ThreeD_Garden_Loader will then create the relationship
 		 * between the defined hooks and the functions defined in this class.
 		 */
+		// global $pagenow;
+		global $template;
+
+		//echo "MARTY MARTY MARTY: ";
+		// echo $pagenow;
+		// echo get_page_template();
+    	//echo basename($template);
+
+		$templatenow = basename($template);
 		
-		// THREE JS
-		wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/three.min.js', array(), $this->version, true );
-		wp_enqueue_script( 'datgui', plugin_dir_url( __FILE__ ) . 'js/dat.gui.min.js', array(), $this->version, true );
-		wp_enqueue_script( 'orbitcontrols', plugin_dir_url( __FILE__ ) . 'js/OrbitControls.js', array(), $this->version, true );
-		//wp_enqueue_script( 'panolens', plugin_dir_url( __FILE__ ) . 'js/panolens.min.js', array(), $this->version, true );
-		wp_enqueue_script( 'css3drenderer', plugin_dir_url( __FILE__ ) . 'js/CSS3DRenderer.js', array(), $this->version, true );
-		wp_enqueue_script( 'inflate', plugin_dir_url( __FILE__ ) . 'js/inflate.min.js', array(), $this->version, true );
-		wp_enqueue_script( 'fbxloader', plugin_dir_url( __FILE__ ) . 'js/FBXLoader.js', array(), $this->version, true );
-		wp_enqueue_script( 'gltfloader', plugin_dir_url( __FILE__ ) . 'js/GLTFLoader.js', array(), $this->version, true );
-		wp_enqueue_script( 'objloader', plugin_dir_url( __FILE__ ) . 'js/OBJLoader.js', array(), $this->version, true );
-		wp_enqueue_script( 'detector', plugin_dir_url( __FILE__ ) . 'js/Detector.js', array(), $this->version, true );
-		wp_enqueue_script( 'toon3d', plugin_dir_url( __FILE__ ) . 'js/toon3d.js', array(), $this->version, true );
-
-		// THREE.TREE JS
-		wp_enqueue_script( 'tree', plugin_dir_url( __FILE__ ) . 'js/Tree.js', array(), $this->version, true );
-		wp_enqueue_script( 'treegeometry', plugin_dir_url( __FILE__ ) . 'js/TreeGeometry.js', array(), $this->version, true );
-		wp_enqueue_script( 'treehelper', plugin_dir_url( __FILE__ ) . 'js/TreeHelper.js', array(), $this->version, true );
-
-		// TWEEN JS
-		wp_enqueue_script( 'tweenjs', plugin_dir_url( __FILE__ ) . 'js/tween.umd.js', array(), $this->version, true );
-
-		// THREED GARDEN PUBLIC JS
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-public.js', array( 'jquery' ), $this->version, true );
-		add_filter('script_loader_tag', 'add_type_attribute', 10, 3);
+        // if ( $pagenow == 'single-scene.php' || $pagenow == 'single-allotment.php' 
+		//   || $pagenow == 'single-bed.php' || $pagenow == 'single-plant.php'
+		//   || $pagenow == 'single-planting_plan.php' )
+        // {
+		// if ( is_page_template( 'templates/single-scene.php' ) ) {
+		if ( $templatenow == 'single-scene.php' || $templatenow == 'single-allotment.php' 
+		  || $templatenow == 'single-bed.php' || $templatenow == 'single-plant.php'
+		  || $templatenow == 'single-planting_plan.php' )
+        {
+				
+			// THREED GARDEN WORDPRESS API REST CONNECTIONS :)
+			wp_localize_script( $this->plugin_name, 'postdata',
+				array(
+					'plugin_name' => $this->plugin_name,
+					'plugin_version' => $this->version,
+					'plugin_url' => plugin_dir_url(__DIR__), //__FILE__
+					'theme_uri' => get_stylesheet_directory_uri(),
+					'rest_url' => rest_url('wp/v2/'),
+					'world_id' => 1
+				)
+			);
 			
-		// THREED GARDEN WORDPRESS API REST CONNECTIONS :)
-		wp_localize_script( $this->plugin_name, 'postdata',
-			array(
-				'plugin_name' => $this->plugin_name,
-				'plugin_version' => $this->version,
-				'plugin_url' => plugin_dir_url(__DIR__), //__FILE__
-				'theme_uri' => get_stylesheet_directory_uri(),
-				'rest_url' => rest_url('wp/v2/'),
-				'world_id' => 1
-			)
-		);
+			// THREE JS
+			wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/three.min.js', array(), $this->version, true );
+			wp_enqueue_script( 'datgui', plugin_dir_url( __FILE__ ) . 'js/dat.gui.min.js', array(), $this->version, true );
+			wp_enqueue_script( 'orbitcontrols', plugin_dir_url( __FILE__ ) . 'js/OrbitControls.js', array(), $this->version, true );
+			//wp_enqueue_script( 'panolens', plugin_dir_url( __FILE__ ) . 'js/panolens.min.js', array(), $this->version, true );
+			wp_enqueue_script( 'css3drenderer', plugin_dir_url( __FILE__ ) . 'js/CSS3DRenderer.js', array(), $this->version, true );
+			wp_enqueue_script( 'inflate', plugin_dir_url( __FILE__ ) . 'js/inflate.min.js', array(), $this->version, true );
+			wp_enqueue_script( 'fbxloader', plugin_dir_url( __FILE__ ) . 'js/FBXLoader.js', array(), $this->version, true );
+			wp_enqueue_script( 'gltfloader', plugin_dir_url( __FILE__ ) . 'js/GLTFLoader.js', array(), $this->version, true );
+			wp_enqueue_script( 'objloader', plugin_dir_url( __FILE__ ) . 'js/OBJLoader.js', array(), $this->version, true );
+			wp_enqueue_script( 'detector', plugin_dir_url( __FILE__ ) . 'js/Detector.js', array(), $this->version, true );
+			wp_enqueue_script( 'toon3d', plugin_dir_url( __FILE__ ) . 'js/toon3d.js', array(), $this->version, true );
 
-		// VUE 3
-		wp_enqueue_script( 'vue', 'https://unpkg.com/vue@3.0.7/dist/vue.global.js', array(), $this->version, true );
+			// THREE.TREE JS
+			wp_enqueue_script( 'tree', plugin_dir_url( __FILE__ ) . 'js/Tree.js', array(), $this->version, true );
+			wp_enqueue_script( 'treegeometry', plugin_dir_url( __FILE__ ) . 'js/TreeGeometry.js', array(), $this->version, true );
+			wp_enqueue_script( 'treehelper', plugin_dir_url( __FILE__ ) . 'js/TreeHelper.js', array(), $this->version, true );
 
-		// load css & js with bundler
-		wp_enqueue_script(
-			'vue-cli-js-vendors',
-			plugins_url( '/dist/js/chunk-vendors.js', __FILE__ ),
-			[],
-			$this->version,
-			true
-		);
+			// TWEEN JS
+			wp_enqueue_script( 'tweenjs', plugin_dir_url( __FILE__ ) . 'js/tween.umd.js', array(), $this->version, true );
 
-		wp_enqueue_script(
-			'vue-cli-js-app',
-			plugins_url( '/dist/js/app.js', __FILE__ ),
-			[],
-			$this->version,
-			true
-		);
+			// VUE 3
+			wp_enqueue_script( 'vue', 'https://unpkg.com/vue@3.0.7/dist/vue.global.js', array(), $this->version, true );
+
+			// load js with bundler
+			wp_enqueue_script(
+				'vue-cli-js-vendors',
+				plugins_url( '/dist/js/chunk-vendors.js', __FILE__ ),
+				[],
+				$this->version,
+				true
+			);
+
+			wp_enqueue_script(
+				'vue-cli-js-app',
+				plugins_url( '/dist/js/app.js', __FILE__ ),
+				[],
+				$this->version,
+				true
+			);
+
+			// THREED GARDEN PUBLIC JS
+			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-public.js', array( 'jquery' ), $this->version, true );
+			
+			// ???
+			add_filter('script_loader_tag', 'add_type_attribute', 10, 3);
+
+		}
 	}
 
 	/**
