@@ -88,7 +88,7 @@ class Game {
 		
 		this.messages = { 
 			text: [
-				"Welcome to your 3D Garden",
+				"Welcome to your ThreeD Garden",
 				"GO GROW!"
 			],
 			index: 0

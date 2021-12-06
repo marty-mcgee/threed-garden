@@ -1,6 +1,6 @@
 <?php
 /*
-Template Name: 3D Garden Scene
+Template Name: ThreeD Garden Scene
 Template Post Type: scene
 */
 

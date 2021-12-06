@@ -1,6 +1,6 @@
 <?php
 /*
-Template Name: 3D Garden Planting Plan
+Template Name: ThreeD Garden Planting Plan
 Template Post Type: planting_plan
 */
 

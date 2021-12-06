@@ -1,6 +1,6 @@
 <?php
 /*
-Template Name: 3D Garden Bed
+Template Name: ThreeD Garden Bed
 Template Post Type: bed
 */
 

@@ -1,6 +1,6 @@
 <?php
 /*
-Template Name: 3D Garden Plant
+Template Name: ThreeD Garden Plant
 Template Post Type: plant
 */
 
