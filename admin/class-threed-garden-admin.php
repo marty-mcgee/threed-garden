@@ -154,6 +154,9 @@ class ThreeD_Garden_Admin {
         if ( $pagenow == 'admin.php' && isset( $_GET['page'] ) && $_GET['page'] == 'threedgarden' )
         {
 			
+			// VUE 3
+			wp_enqueue_script( 'vue', 'https://unpkg.com/vue@3.0.7/dist/vue.global.js', array(), $this->version, true );
+			
 			// THREE JS
 			wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/three.min.js', array(), $this->version, true );
 			wp_enqueue_script( 'datgui', plugin_dir_url( __FILE__ ) . 'js/dat.gui.min.js', array(), $this->version, true );
@@ -191,9 +194,6 @@ class ThreeD_Garden_Admin {
 					'world_id' => 1
 				)
 			);
-			
-			// VUE 3
-			wp_enqueue_script( 'vue', 'https://unpkg.com/vue@3.0.7/dist/vue.global.js', array(), $this->version, true );
 
 		}
 	}
