@@ -95,11 +95,11 @@ class ThreeD_Garden_Admin {
 
 		// Add your templates to this array.
 		$this->templates = array(
-			'templates/single-scene.php' => '3D Garden Scene',
-			'templates/single-allotment.php' => '3D Garden Allotment',
-			'templates/single-bed.php' => '3D Garden Bed',
-			'templates/single-plant.php' => '3D Garden Plant',
-			'templates/single-planting_plan.php' => '3D Garden Planting Plan',
+			'templates/single-scene.php' => 'ThreeD Garden Scene',
+			'templates/single-allotment.php' => 'ThreeD Garden Allotment',
+			'templates/single-bed.php' => 'ThreeD Garden Bed',
+			'templates/single-plant.php' => 'ThreeD Garden Plant',
+			'templates/single-planting_plan.php' => 'ThreeD Garden Planting Plan',
 		);
 
 	}
@@ -301,8 +301,8 @@ class ThreeD_Garden_Admin {
 	 */
 	public function construct_plugin_menu() {
 		add_menu_page(
-			'3D Garden',
-			'3D Garden', 
+			'ThreeD Garden',
+			'ThreeD Garden', 
 			'manage_options',
 			'threedgarden', 
 			array($this, 'RenderPage'), 

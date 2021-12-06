@@ -76,7 +76,7 @@ let collect = []
 
 let messages = { 
 	text: [ 
-		"Welcome to your 3D Garden",
+		"Welcome to your ThreeD Garden",
 		"GO GROW!"
 	],
 	index: 0
@@ -281,7 +281,7 @@ function buildScene() {
 
 	scene = new THREE.Scene()
 	
-	scene.name = "3D Garden"
+	scene.name = "ThreeD Garden"
 
 	// load the 3D cube map?
 	if ( wpScene.acf.scene_background_image_px ) {

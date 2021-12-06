@@ -1,6 +1,6 @@
 <?php
 /*
-Template Name: 3D Garden Allotment
+Template Name: ThreeD Garden Allotment
 Template Post Type: allotment
 */
 

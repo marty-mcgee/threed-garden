@@ -6,7 +6,7 @@
  * @package           ThreeD_Garden
  *
  * @wordpress-plugin
- * Plugin Name:       WP 3D Garden
+ * Plugin Name:       ThreeD Garden
  * Plugin URI:        https://garden.university
  * Description:       Design + manage your garden plants, beds + allotments in 3D
  * Version:           1.22.0
