@@ -152,7 +152,7 @@ const options = {
 		`${params.assetsPath}fbx/usb.fbx`,
 	],
 	oncomplete: function(){
-		init()
+		//init()
 		//animate()
 	}
 }
@@ -3122,6 +3122,9 @@ export default {
 	props: {
 		msg: String,
 		subtitle: String,
+	},
+	mounted () {
+		init()
 	}
 }
 </script>
