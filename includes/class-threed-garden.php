@@ -125,7 +125,7 @@ class ThreeD_Garden {
 		/**
 		 * [MM] qmanager
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'qmanager.php';
+		//require_once plugin_dir_path( dirname( __FILE__ ) ) . 'qmanager.php';
 
 		$this->loader = new ThreeD_Garden_Loader();
 

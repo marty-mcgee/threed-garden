@@ -151,12 +151,23 @@ class ThreeD_Garden_Admin {
 		 */
 		global $pagenow;
 		
-        if ( $pagenow == 'admin.php' && isset( $_GET['page'] ) && $_GET['page'] == 'threedgarden' )
+        if ( $pagenow == 'admin.php' 
+		  && isset( $_GET['page'] ) 
+		  && $_GET['page'] == 'threedgarden' )
         {
 			
-			// VUE 3
-			wp_enqueue_script( 'vue', 'https://unpkg.com/vue@3.0.7/dist/vue.global.js', array(), $this->version, true );
-			
+			// THREED GARDEN WORDPRESS API REST CONNECTIONS :)
+			wp_localize_script( $this->plugin_name, 'postdata',
+				array(
+					'plugin_name' => $this->plugin_name,
+					'plugin_version' => $this->version,
+					'plugin_url' => plugin_dir_url(__DIR__), //__FILE__
+					'theme_uri' => get_stylesheet_directory_uri(),
+					'rest_url' => rest_url('wp/v2/'),
+					'world_id' => 1
+				)
+			);
+
 			// THREE JS
 			wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/three.min.js', array(), $this->version, true );
 			wp_enqueue_script( 'datgui', plugin_dir_url( __FILE__ ) . 'js/dat.gui.min.js', array(), $this->version, true );
@@ -178,22 +189,30 @@ class ThreeD_Garden_Admin {
 			// TWEEN JS
 			wp_enqueue_script( 'tweenjs', plugin_dir_url( __FILE__ ) . 'js/tween.umd.js', array(), $this->version, true );
 
+			// VUE 3
+			wp_enqueue_script( 'vue', 'https://unpkg.com/vue@3.0.7/dist/vue.global.js', array(), $this->version, true );
+
+			// load js with bundler
+			wp_enqueue_script(
+				'vue-cli-js-vendors',
+				plugins_url( '/dist/js/chunk-vendors.js', __FILE__ ),
+				[],
+				$this->version,
+				true
+			);
+
+			wp_enqueue_script(
+				'vue-cli-js-app',
+				plugins_url( '/dist/js/app.js', __FILE__ ),
+				[],
+				$this->version,
+				true
+			);
+
 			// THREED GARDEN ADMIN JS
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin.js', array(), $this->version, true );
 			//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin-2.js', array(), $this->version, true );
 			//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/game.js', array(), $this->version, true );
-			
-			// THREED GARDEN WORDPRESS API REST CONNECTIONS :)
-			wp_localize_script( $this->plugin_name, 'postdata',
-				array(
-					'plugin_name' => $this->plugin_name,
-					'plugin_version' => $this->version,
-					'plugin_url' => plugin_dir_url(__DIR__), //__FILE__
-					'theme_uri' => get_stylesheet_directory_uri(),
-					'rest_url' => rest_url('wp/v2/'),
-					'world_id' => 1
-				)
-			);
 
 		}
 	}
@@ -308,7 +327,7 @@ class ThreeD_Garden_Admin {
 			array($this, 'RenderPage'), 
 			plugins_url('/media/threedgarden-icon.png',__DIR__), //'dashicons-media-code',
 			31 //null
-			);
+		);
 		add_submenu_page(
 			'threedgarden', 
 			'Scenes', 
