@@ -126,18 +126,6 @@ class ThreeD_Garden_Public {
 		  || $templatenow == 'single-bed.php' || $templatenow == 'single-plant.php'
 		  || $templatenow == 'single-planting_plan.php' )
         {
-				
-			// THREED GARDEN WORDPRESS API REST CONNECTIONS :)
-			wp_localize_script( $this->plugin_name, 'postdata',
-				array(
-					'plugin_name' => $this->plugin_name,
-					'plugin_version' => $this->version,
-					'plugin_url' => plugin_dir_url(__DIR__), //__FILE__
-					'theme_uri' => get_stylesheet_directory_uri(),
-					'rest_url' => rest_url('wp/v2/'),
-					'world_id' => 1
-				)
-			);
 			
 			// THREE JS
 			wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/three.min.js', array(), $this->version, true );
@@ -160,10 +148,26 @@ class ThreeD_Garden_Public {
 			// TWEEN JS
 			wp_enqueue_script( 'tweenjs', plugin_dir_url( __FILE__ ) . 'js/tween.umd.js', array(), $this->version, true );
 
+			// THREED GARDEN PUBLIC JS
+			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-public.js', array( 'jquery' ), $this->version, true );
+			add_filter('script_loader_tag', 'add_type_attribute', 10, 3);
+				
+			// THREED GARDEN WORDPRESS API REST CONNECTIONS :)
+			wp_localize_script( $this->plugin_name, 'postdata',
+				array(
+					'plugin_name' => $this->plugin_name,
+					'plugin_version' => $this->version,
+					'plugin_url' => plugin_dir_url(__DIR__), //__FILE__
+					'theme_uri' => get_stylesheet_directory_uri(),
+					'rest_url' => rest_url('wp/v2/'),
+					'world_id' => 1
+				)
+			);
+
 			// VUE 3
 			wp_enqueue_script( 'vue', 'https://unpkg.com/vue@3.0.7/dist/vue.global.js', array(), $this->version, true );
 
-			// load js with bundler
+			// load css & js with bundler
 			wp_enqueue_script(
 				'vue-cli-js-vendors',
 				plugins_url( '/dist/js/chunk-vendors.js', __FILE__ ),
@@ -179,12 +183,6 @@ class ThreeD_Garden_Public {
 				$this->version,
 				true
 			);
-
-			// THREED GARDEN PUBLIC JS
-			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-public.js', array( 'jquery' ), $this->version, true );
-			
-			// ???
-			add_filter('script_loader_tag', 'add_type_attribute', 10, 3);
 
 		}
 	}
