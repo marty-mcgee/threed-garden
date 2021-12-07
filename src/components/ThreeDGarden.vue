@@ -115,7 +115,7 @@ let params = {
 	}),
 	/** turn on/off animation */
 	ANIMATE: false,
-	/** where multimedia files located */
+	/** where multimedia files are located */
 	assetsPath: `${pluginURL}assets/`,
 	/** all the data from rest api calls to be stored here */
 	data: {
@@ -445,7 +445,8 @@ function buildScene() {
 		}
 	)
 	renderer.shadowMap.enabled = true
-	renderer.setSize(window.innerWidth - 240, window.innerHeight - 100)
+	//renderer.setSize(window.innerWidth - 240, window.innerHeight - 100) //admin
+	renderer.setSize(window.innerWidth - 100, window.innerHeight - 140) //public
 
 	// utilize javascript prototyping.. add variables to the dom element :)
 	renderer.domElement.camera = camera
@@ -673,8 +674,8 @@ function setAction(name) {
 	const action = player.mixer.clipAction( animations[name] )
 	action.time = 0
 	console.log("-----------------------")
-	console.log("animations-----------------")
-	console.log(animations)
+	console.log("action-----------------")
+	console.log(action)
 	console.log("-----------------------")
 	player.mixer.stopAllAction()
 	player.action = name
