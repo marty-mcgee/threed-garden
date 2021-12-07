@@ -24,7 +24,7 @@
 	margin-bottom: 40px;
 }
 #nav {
-	padding: 20px;
+	padding: 10px;
 }
 #nav a {
 	font-weight: bold;
@@ -32,5 +32,8 @@
 }
 #nav a.router-link-exact-active {
 	color: #96bc33;
+}
+h1 {
+	margin-bottom: 10px;
 }
 </style>
