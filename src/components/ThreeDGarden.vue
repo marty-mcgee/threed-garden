@@ -456,20 +456,20 @@ function buildScene() {
 	renderer.domElement.addEventListener("pointerdown", onPointerDown, false)
 	
 	/** CONTROLS *************************************************************************** */
-		controls = new THREE.OrbitControls(camera, renderer.domElement)
-		controls.enableDamping = true
-		controls.dampingFactor = 0.25
-		controls.enableZoom = true
-		controls.rotateSpeed = 0.5
-		controls.autoRotate = false
-		controls.autoRotateSpeed = 0.03
-		controls.minDistance = 0.01
-		controls.maxDistance = 340
-		controls.maxPolarAngle = Math.PI/2 - .04
-		controls.target = new THREE.Vector3(0, 0, 0) // where the camera actually points
-		//controls.target.set(0, 5, 0) // alternate way of setting target of camera
+	controls = new THREE.OrbitControls(camera, renderer.domElement)
+	controls.enableDamping = true
+	controls.dampingFactor = 0.25
+	controls.enableZoom = true
+	controls.rotateSpeed = 0.5
+	controls.autoRotate = false
+	controls.autoRotateSpeed = 0.03
+	controls.minDistance = 0.01
+	controls.maxDistance = 340
+	controls.maxPolarAngle = Math.PI/2 - .04
+	controls.target = new THREE.Vector3(0, 0, 0) // where the camera actually points
+	//controls.target.set(0, 5, 0) // alternate way of setting target of camera
 
-		renderer.domElement.controls = controls
+	renderer.domElement.controls = controls
 
 	/** WEBGL CANVAS *********************************************************************** */
 
