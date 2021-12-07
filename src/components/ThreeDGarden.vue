@@ -229,54 +229,87 @@ function init() {
 
 	console.log("MARTY: init ***")
 
-	Promise.allSettled(
-		api_urls.map(
-			url => fetch(url)
-					.then(results => results.json())
-					.then(data => {
-						let type = data[0].type
-						switch (type) {
-							case "scene" :
-								params.data.scene = [...data]
-								break
-							case "allotment" :
-								params.data.allotment = [...data]
-								break
-							case "bed" :
-								params.data.bed = [...data]
-								break
-							case "plant" :
-								params.data.plant = [...data]
-								break
-							case "planting_plan" :
-								params.data.planting_plan = [...data]
-								break
-							default :
-								break
-						}
-						console.log("MARTY: data", data)
-					})
-		)
-	)
-	.then(results => { // (*)
-			console.log("MARTY: results", results)
-			results.forEach((result, num) => {
-				if (result.status == "fulfilled") {
-					//alert(`${urls[num]}: ${result.value.status}`)
-					//console.log(result)
-				}
-				if (result.status == "rejected") {
-					//alert(`${urls[num]}: ${result.reason}`)
-					console.log(result)
-				}
-			})
-			console.log("MARTY: params.data", params.data)
-			/**
-			 * init scene constructor
-			 */
-			buildScene()
+	let getDataFromLocalStorage = true
+
+	// LOCALSTORAGE -- look for data in localStorage first
+	if (localStorage && getDataFromLocalStorage && !debug) {
+		const getdata = localStorage.getItem('threedgarden')
+		const threedgarden = JSON.parse(getdata)
+		if (threedgarden != undefined) {
+			console.log("LOCALSTORAGE ITEM RETRIEVED", threedgarden)
+			//this.threedgarden = threedgarden
+			//params = threedgarden
+			params.data = threedgarden.data
+		} else {
+			console.log("LOCALSTORAGE ITEM NOT RETRIEVED", threedgarden)
+			getDataFromLocalStorage = false
 		}
-	)
+	} else {
+		console.log("LOCALSTORAGE NOT AVAILABLE")
+		getDataFromLocalStorage = false
+	}
+
+	if (!getDataFromLocalStorage) {
+
+		// PROMISE REST API -- call WP Rest API for data second
+		Promise.allSettled(
+			api_urls.map(
+				url => fetch(url)
+						.then(results => results.json())
+						.then(data => {
+							let type = data[0].type
+							switch (type) {
+								case "scene" :
+									params.data.scene = [...data]
+									break
+								case "allotment" :
+									params.data.allotment = [...data]
+									break
+								case "bed" :
+									params.data.bed = [...data]
+									break
+								case "plant" :
+									params.data.plant = [...data]
+									break
+								case "planting_plan" :
+									params.data.planting_plan = [...data]
+									break
+								default :
+									break
+							}
+							console.log("MARTY: data", data)
+						})
+			)
+		)
+		.then(results => { // (*)
+				console.log("MARTY: results", results)
+				results.forEach((result, num) => {
+					if (result.status == "fulfilled") {
+						//alert(`${urls[num]}: ${result.value.status}`)
+						//console.log(result)
+					}
+					if (result.status == "rejected") {
+						//alert(`${urls[num]}: ${result.reason}`)
+						console.log(result)
+					}
+				})
+				console.log("MARTY: params.data", params.data)
+
+				// save to localStorage
+				localStorage.setItem('threedgarden', JSON.stringify(params))
+
+				/**
+				 * init scene constructor
+				 */
+				buildScene()
+			}
+		)
+	} else {
+		/**
+		 * init scene constructor
+		 */
+		buildScene()
+	}
 
 	//throwError()
 }
@@ -500,7 +533,7 @@ function buildScene() {
 		player.root = object.mixer.getRoot()
 			
 		object.name = "Gardener"
-				
+		
 		object.traverse( function ( child ) {
 			if ( child.isMesh ) {
 				child.castShadow = true
@@ -3107,18 +3140,8 @@ function buildNewPost( postObject ) {
 	//getPreviousPost()
 }
 
-
-
-// example localStorage saving/reading
-//if (localStorage && ! debug){
-	//const levelIndex = Number(localStorage.getItem('levelIndex'))
-	//if (levelIndex!=undefined) this.levelIndex = levelIndex
-//}
-
-
-
 /** 
- * END FILE
+ * END THREED GARDEN JS
  * ************************************************************************************** 
  */
 
