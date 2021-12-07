@@ -281,7 +281,7 @@ function init() {
 						})
 			)
 		)
-		.then(results => { // (*)
+		.then(results => {
 				console.log("MARTY: results", results)
 				results.forEach((result, num) => {
 					if (result.status == "fulfilled") {
