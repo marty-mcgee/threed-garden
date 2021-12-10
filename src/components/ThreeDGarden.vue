@@ -330,7 +330,7 @@ function onWindowResize() {
 
 	renderer.setSize( window.innerWidth, window.innerHeight )
 
-	controls.handleResize()
+	//controls.handleResize()
 
 }
 
