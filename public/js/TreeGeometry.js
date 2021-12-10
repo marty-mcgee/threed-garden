@@ -1,5 +1,6 @@
 /*
  * @author mattatz / http://mattatz.github.io/
+ * updates by martymcgee [MM]
  * */
 
 THREE.TreeGeometry = {
@@ -8,11 +9,12 @@ THREE.TreeGeometry = {
      * build branch surface geometry.
      * */
     build : function(tree) {
-        var geometry = new THREE.Geometry();
+        var geometry = new THREE.BufferGeometry();
 
         this.buildBranches(tree.root, geometry);
-        geometry.computeFaceNormals();
-        geometry.computeVertexNormals();
+        // [MM] update
+        //geometry.computeFaceNormals();
+        //geometry.computeVertexNormals();
 
         return geometry;
     },
@@ -34,7 +36,9 @@ THREE.TreeGeometry = {
         var uvs = [];
 
         var index = 0;
-        var offset = geometry.vertices.length;
+        // [MM] update
+        //var offset = geometry.vertices.length;
+        var offset = geometry.attributes.position;
 
         for(var y = 0; y <= heightSegments; y++) {
 
@@ -70,10 +74,12 @@ THREE.TreeGeometry = {
                 var uv3 = uvs[ny][nx];
                 var uv4 = uvs[cy][nx];
 
-                faces.push(new THREE.Face3(v1, v4, v2));
+                // [MM] update
+                //faces.push(new THREE.Face3(v1, v4, v2));
                 faceVertexUvs.push([uv1, uv4, uv2]);
 
-                faces.push(new THREE.Face3(v2, v4, v3));
+                // [MM] update
+                //faces.push(new THREE.Face3(v2, v4, v3));
                 faceVertexUvs.push([uv2, uv4, uv3]);
             }
         }
@@ -99,7 +105,8 @@ THREE.TreeGeometry = {
                 var uv2 = uvs[y][x + 1];
                 var uv3 = new THREE.Vector2(uv2.x, branch.uvOffset);
 
-                faces.push(new THREE.Face3(v1, v3, v2));
+                // [MM] update
+                //faces.push(new THREE.Face3(v1, v3, v2));
                 faceVertexUvs.push([uv1, uv3, uv2]);
             }
         } else {
@@ -124,17 +131,21 @@ THREE.TreeGeometry = {
                 var uv2 = from.uvs[x];
                 var uv3 = from.uvs[x + 1];
 
-                faces.push(new THREE.Face3(v0, v3, v1));
+                // [MM] update
+                //faces.push(new THREE.Face3(v0, v3, v1));
                 faceVertexUvs.push([uv0, uv3, uv1]);
 
-                faces.push(new THREE.Face3(v0, v2, v3));
+                // [MM] update
+                //faces.push(new THREE.Face3(v0, v2, v3));
                 faceVertexUvs.push([uv0, uv2, uv3]);
             }
         }
 
-        geometry.vertices = geometry.vertices.concat(vertices);
-        geometry.faces = geometry.faces.concat(faces);
-        geometry.faceVertexUvs[0] = geometry.faceVertexUvs[0].concat(faceVertexUvs);
+        // [MM] update
+        console.log("MARTY: geometry.isBufferGeometry", geometry.isBufferGeometry);
+        // geometry.vertices = geometry.vertices.concat(vertices);
+        // geometry.faces = geometry.faces.concat(faces);
+        // geometry.faceVertexUvs[0] = geometry.faceVertexUvs[0].concat(faceVertexUvs);
 
         var self = this;
         branch.children.forEach(function(child) {
@@ -162,7 +173,7 @@ THREE.TreeGeometry = {
         };
         recur(tree.root);
 
-        var geometry = new THREE.Geometry();
+        var geometry = new THREE.BufferGeometry();
         geometry.vertices = vertices;
         return geometry;
     },
@@ -184,4 +195,3 @@ THREE.TreeGeometry = {
     }
 
 };
-
