@@ -53,6 +53,9 @@ console.log("MARTY: pluginName", pluginName, pluginVersion)
 
 
 /** INSTANTIATE COMMON VARIABLES */
+const debug = false
+const debugPhysics = false
+
 let scene
 let plane
 let camera
@@ -89,8 +92,6 @@ let interactive = false
 let levelIndex = 0
 let _hints = 0
 let score = 0
-let debug = false
-let debugPhysics = false
 let cameraFade = 0.05
 let mute = false
 let collect = []
@@ -139,7 +140,12 @@ let params = {
 params.mode = params.modes.NONE
 guiFolderRotation.add(params, "ANIMATE").name("Run Animation")
 
-// const sfxExt = SFX.supportsAudioType('mp3') ? 'mp3' : 'ogg'
+// AUDIO???
+const sfxExt = SFX.supportsAudioType('mp3') ? 'mp3' : 'ogg'
+//console.log("MARTY: SFX", SFX)
+
+
+// LOADER OPTIONS (START HERE) :) <3
 const options = {
 	assets:[
 		// `${params.assetsPath}sfx/gliss.${sfxExt}`,
@@ -152,7 +158,7 @@ const options = {
 		`${params.assetsPath}fbx/usb.fbx`,
 	],
 	oncomplete: function(){
-		//init()
+		init()
 		//animate()
 	}
 }
@@ -164,7 +170,7 @@ console.log("MARTY: params", params)
 console.log("MARTY: options", options)
 
 // [MM]
-const preloader = new Preloader(options)
+//const preloader = new Preloader(options) // now in Vue Mounted()
 
 //this.init()
 //this.animate()
@@ -311,7 +317,21 @@ function init() {
 		buildScene()
 	}
 
+	//
+	window.addEventListener( 'resize', onWindowResize, false )
+
 	//throwError()
+}
+
+function onWindowResize() {
+
+	camera.aspect = window.innerWidth / window.innerHeight
+	camera.updateProjectionMatrix()
+
+	renderer.setSize( window.innerWidth, window.innerHeight )
+
+	controls.handleResize()
+
 }
 
 /** 
@@ -604,9 +624,11 @@ function buildScene() {
 
 	//createCameras()
 
+	/** JOYSTICK <+> *********************************************************************** */
+
 	let joystick = new JoyStick({
 		onMove: playerControl,
-		game: container
+		game: container // document.querySelector("#webgl")
 	})
 
 	/** ANIMATE + RENDER (continuous rendering) ******************************************** */
@@ -1845,12 +1867,12 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
 
 		//alert("HEY HEY HEY: BUILD PLANTING PLANS??")
 
-		// buildPlantingPlans(
-		// 	params.data.planting_plan, 
-		// 	plane, 
-		// 	bed.postID, // the post-to-post relationship <3
-		// 	structure.position.x, structure.position.y, 0 //structure.position.z
-		// ) 
+		buildPlantingPlans(
+			params.data.planting_plan, 
+			plane, 
+			bed.postID, // the post-to-post relationship <3
+			structure.position.x, structure.position.y, 0 //structure.position.z
+		) 
 	
 		/** INFOSPOTS ********************************************************************* */
 		
@@ -1975,7 +1997,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 					// console.log("-------------------------")
 
 					let structure = getGeometry(
-						"Tree", // "Bush", // plant.shape,
+						"Tree", // "Box", "Bush", // plant.shape,
 						plant.parameters.x, 
 						plant.parameters.y, 
 						plant.parameters.z, 
@@ -2020,21 +2042,21 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 				
 					/** INFOSPOTS ********************************************************************* */
 				
-					let infospot = makeInfospotSphere(
-						structure.name, 
-						structure.position.x, 
-						structure.position.y, 
-						plant.parameters.z + 3,
-						plant.postID,
-						structure.userData.annotation,
-						structure.userData.link 
-					)
-					infospot.name = `INFOSPOT: ${structure.name}`
-					infospot.visible = false
+					// let infospot = makeInfospotSphere(
+					// 	structure.name, 
+					// 	structure.position.x, 
+					// 	structure.position.y, 
+					// 	plant.parameters.z + 3,
+					// 	plant.postID,
+					// 	structure.userData.annotation,
+					// 	structure.userData.link 
+					// )
+					// infospot.name = `INFOSPOT: ${structure.name}`
+					// infospot.visible = false
 
-					guiFolderBeds.add(infospot, "visible").name("InfoSphere").listen()
+					// guiFolderBeds.add(infospot, "visible").name("InfoSphere").listen()
 
-					plane.add(infospot)
+					// plane.add(infospot)
 			
 				})
 
@@ -3152,7 +3174,8 @@ export default {
 		subtitle: String,
 	},
 	mounted () {
-		init()
+		//init()
+		const preloader = new Preloader(options)
 	}
 }
 </script>

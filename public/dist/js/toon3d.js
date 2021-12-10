@@ -333,9 +333,9 @@ class SFX{
 class JoyStick{
 	constructor(options){
 		const circle = document.createElement("div");
-		circle.style.cssText = "position:absolute; bottom:35px; width:80px; height:80px; background:rgba(126, 126, 126, 0.5); border:#444 solid medium; border-radius:50%; left:calc(50% + 100px);; transform:translateX(-50%); z-index: 9998;";
+		circle.style.cssText = "position: fixed; width: 80px; height: 80px; top: 314px; left: calc(0% + 50px); transform: translateX(-50%); background: rgba(126, 126, 126, 0.5); border: #444 solid medium; border-radius: 50%; z-index: 9998;";
 		const thumb = document.createElement("div");
-		thumb.style.cssText = "position: absolute; left: 20px; top: 20px; width: 40px; height: 40px; border-radius: 50%; background: #fff; z-index: 9999;";
+		thumb.style.cssText = "position: fixed; left: 15px; top: 15px; width: 45px; height: 45px; border-radius: 50%; background: #fff; z-index: 9999;";
 		circle.appendChild(thumb);
 		document.body.appendChild(circle);
 		this.domElement = thumb;
