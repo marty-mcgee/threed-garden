@@ -2608,18 +2608,19 @@ function watchPointer(camera, targetList){
 	//let helper2 = new THREE.CameraHelper(directionalLight.shadow.camera)
 
 	// calculate objects intersecting the picking ray
-	const intersects = raycaster.intersectObjects(targetList)
+	//const intersects = raycaster.intersectObjects(targetList)
+	const intersects = []
 
 	// if there is one (or more) intersections
 	if ( intersects.length > 0 ) {
 
-		/* do something to object intersected? (testing purposes only)
+		// do something to object intersected? (testing purposes only)
 		for (let i = 0; i < intersects.length; i++) {
 			// hightlight object
-			for (let j = 0 j < intersects[i].object.material.length j++) {
+			for (let j = 0; j < intersects[i].object.material.length; j++) {
 				intersects[i].object.material[j].color.setHex( 0xff0000 )
 			}
-		} */
+		}
 
 		// if the closest object intersected is not the currently stored intersection object
 		if ( intersects[0].object != params.intersectedObject1 ) {
