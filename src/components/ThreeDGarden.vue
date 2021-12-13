@@ -213,8 +213,9 @@ let api_urls = [
  * *************************************************************************************** */
 function init() {
 
-	console.log("init ***")
+	console.log("init ************************************")
 
+	// get data
 	let getDataFromLocalStorage = true
 
 	// LOCALSTORAGE -- look for data in localStorage first
@@ -487,6 +488,7 @@ function buildScene() {
 	
 	renderer.domElement.addEventListener("pointermove", onPointerMove, false)
 	renderer.domElement.addEventListener("pointerdown", onPointerDown, false)
+	//renderer.domElement.addEventListener("mousedown", onDocumentMouseDown, false)
 	
 	/** CONTROLS *************************************************************************** */
 	controls = new THREE.OrbitControls(camera, renderer.domElement)
@@ -1807,7 +1809,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 					plant.parameters = {}
 					plant.position = {}
 					plant.images = {}
-					plant.parameters.x = Number(key3.acf.plant_width) / 12
+					plant.parameters.x = Number(key3.acf.plant_width ) / 12
 					plant.parameters.y = Number(key3.acf.plant_length) / 12
 					plant.parameters.z = Number(key3.acf.plant_height) / 12
 					plant.position.x = parseInt(key2.plant_position_x) / 12 + posOffsetX
@@ -1822,7 +1824,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 					plant.description = key3.content.rendered
 					plant.link = key3.link
 
-					console.log("plant", plant)
+					console.log("PLANT", plant)
 
 					let structure = getGeometry(
 						plant.shape, // "Tree", "Bush", "Box",
@@ -2533,15 +2535,38 @@ function onPointerMove( event ) {
 	// console.log("pointer hover, pointer.x, pointer.y) // probably shouldn't log this
 }
 
-// when the pointer moves, call the given function
-//document.addEventListener( "pointerdown", onPointerDown, false )
+/** 
+ * when the pointer moves, call the given function 
+ */
+// document.addEventListener( "mousedown", onDocumentMouseDown, false )
+function onDocumentMouseDown( e ) {
+	e.preventDefault();
+
+	var mouseVector = new THREE.Vector3(
+		( e.clientX / window.innerWidth ) * 2 - 1,
+	  - ( e.clientY / window.innerHeight) * 2 + 1,
+		1 
+	);
+
+	projector.unprojectVector( mouseVector, camera );
+	var raycaster = new THREE.Raycaster( camera.position, mouseVector.subSelf( camera.position ).normalize() );
+
+	// create an array containing all objects in the scene with which the ray intersects
+	var intersects = raycaster.intersectObjects( scene.children );
+	console.log(intersects);
+	if (intersects.length>0){
+		console.log("Intersected object:", intersects.length);
+		intersects[ 0 ].object.material.color.setHex( Math.random() * 0xffffff );
+	}
+}
+// document.addEventListener( "pointerdown", onPointerDown, false )
 function onPointerDown(event) {
 	
 	console.log("event ****************************************", event)
 
 	// the following line would stop any other event handler from firing
 	// (such as the pointer's TrackballControls)
-	// event.preventDefault()
+	event.preventDefault()
 	
 	// update the pointer variable
 	pointer.x = (event.clientX / window.innerWidth) * 2 - 1
@@ -2551,7 +2576,6 @@ function onPointerDown(event) {
 	// pointer.x = (event.offsetX / (window.innerWidth - 240)) * 2 - 1
 	// pointer.y = -(event.offsetY / (window.innerHeight - 100)) * 2 + 1
 	console.log("pointer clicked x y", pointer.x, pointer.y)
-
 
 	// find intersections
 
