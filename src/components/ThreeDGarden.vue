@@ -186,12 +186,23 @@ const loaderFBX = new THREE.FBXLoader()
 //const loaderOBJ = new THREE.OBJLoader()
 const loaderTexture = new THREE.TextureLoader()
 
+
 /** TIME CLOCK */
 const clock = new THREE.Clock()
 
+
 /** POINTER HOVERS + CLICKS */
 const raycaster = new THREE.Raycaster()
+const raycaster2 = new THREE.Raycaster()
 const pointer = new THREE.Vector2()
+// create a Ray with origin at the pointer position and direction into the scene (camera direction)
+// let vector = new THREE.Vector3( pointer.x, pointer.y, 1 )
+// projector.unprojectVector( vector, camera )
+// let raycaster2 = new THREE.Raycaster( 
+// 	event.target.camera.position, 
+// 	vector.sub( event.target.camera.position ).normalize() 
+// )
+
 
 /** REST API URLS */
 const API_URL_SCENES = `${restURL}scene/?_embed&per_page=100`
@@ -2578,15 +2589,6 @@ function onPointerDown(event) {
 	console.log("pointer clicked x y", pointer.x, pointer.y)
 
 	// find intersections
-
-	// create a Ray with origin at the pointer position and direction into the scene (camera direction)
-	// let vector = new THREE.Vector3( pointer.x, pointer.y, 1 )
-	// projector.unprojectVector( vector, camera )
-	// let raycaster2 = new THREE.Raycaster( 
-	// 	event.target.camera.position, 
-	// 	vector.sub( event.target.camera.position ).normalize() 
-	// )
-	const raycaster2 = new THREE.Raycaster()
 	raycaster2.setFromCamera(pointer, event.target.camera)
 	// raycaster2.set( 
 	// 	event.target.camera.getWorldPosition(), 
