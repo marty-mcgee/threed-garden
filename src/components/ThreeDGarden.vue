@@ -8,39 +8,18 @@
 
 <script>
 /** 
- * ThreeDGarden - FarmBot JavaScript
- */
-import { Farmbot } from "farmbot"
-
-let SUPER_SECRET_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJ1bmtub3duIiwic3ViIjoxNTI2NywiaWF0IjoxNjM2NjU3ODUxLCJqdGkiOiIwNTBiMzIxNC02NzcxLTRlYzktODhmMS02NTVhYWVhNWQzN2QiLCJpc3MiOiIvL215LmZhcm0uYm90OjQ0MyIsImV4cCI6MTY0MTg0MTg1MSwibXF0dCI6ImNsZXZlci1vY3RvcHVzLnJtcS5jbG91ZGFtcXAuY29tIiwiYm90IjoiZGV2aWNlXzE1Mjk3Iiwidmhvc3QiOiJ4aWNvbmZ1bSIsIm1xdHRfd3MiOiJ3c3M6Ly9jbGV2ZXItb2N0b3B1cy5ybXEuY2xvdWRhbXFwLmNvbTo0NDMvd3MvbXF0dCJ9.K8jzw-l_KduohGUgS_rkmNx4700XQyZX3-JCigk-5gXf4y-aemDNemzABGpIvULVj9D02RXEiLAzPtSxRpGS_AWpwd0OSU35HNO_pCL7-KLmtmpanAOxutflPe9KN_stU1AgZC42TmMYLYeMZY1ornQOZTaIgT6dYJkqJex7HV6D1LS-1yjvEdPM2E1UTh6OWUFDndq-fdwyVNuQfYdbu0CLhTua3SaNaXCueZ7qew3-XVUx48PS2X8XFACkveZbRfb55qgabT-WpcQB4KyujdKFbAotZqJeZ1_aCxTa4WT_y_zFV7gVptgeK2FAXC1DE9cH4FJXipt0AMPksQGShA"
-
-let bot = new Farmbot({ token: SUPER_SECRET_TOKEN })
-
-bot
-	.connect()
-	.then(function () {
-		//alert("HEY HEY HEY")
-		bot.setConfig("hey", "HEY HEY HEY")
-		console.log(bot.getConfig("hey"))
-		return bot.getConfig("hey")
-	})
-	.then(function () {
-		return bot.moveRelative({ x: 1, y: 2, z: 3, speed: 100 })
-	})
-
-console.log("bot", bot)
-
-
-/** 
  * ThreeDGarden - Custom JavaScript Vue
  * *************************************************************************************** */
 
+// @ is an alias to /src
+import FarmBot from "@/components/FarmBot.vue"
+
 // check for WebGL
-//if ( ! Detector.webgl ) Detector.addGetWebGLMessage()
+if ( ! Detector.webgl ) Detector.addGetWebGLMessage()
 
 // console.log(window.postdata)
 const postdata = window.postdata
-console.log("MARTY: postdata", postdata)
+console.log("postdata", postdata)
 
 /** PARAMETERS FROM PHP */
 const pluginName = postdata.plugin_name
@@ -49,7 +28,7 @@ const pluginURL = postdata.plugin_url
 const themeURI = postdata.theme_uri
 const restURL = postdata.rest_url
 const worldID = postdata.world_id
-console.log("MARTY: pluginName", pluginName, pluginVersion)
+console.log("pluginName", pluginName, pluginVersion)
 
 
 /** INSTANTIATE COMMON VARIABLES */
@@ -142,12 +121,12 @@ guiFolderRotation.add(params, "ANIMATE").name("Run Animation")
 
 // AUDIO???
 const sfxExt = SFX.supportsAudioType('mp3') ? 'mp3' : 'ogg'
-//console.log("MARTY: SFX", SFX)
+//console.log("SFX", SFX)
 
 
 // LOADER OPTIONS (START HERE) :) <3
 const options = {
-	assets:[
+	assets: [
 		// `${params.assetsPath}sfx/gliss.${sfxExt}`,
 		// `${params.assetsPath}sfx/factory.${sfxExt}`,
 		// `${params.assetsPath}sfx/button.${sfxExt}`,
@@ -157,7 +136,7 @@ const options = {
 		`${params.assetsPath}fbx/girl-walk.fbx`,
 		`${params.assetsPath}fbx/usb.fbx`,
 	],
-	oncomplete: function(){
+	oncomplete: function() {
 		init()
 		//animate()
 	}
@@ -166,26 +145,26 @@ anims.forEach( function(anim){ options.assets.push(`${params.assetsPath}fbx/anim
 
 params.mode = params.modes.PRELOAD
 
-console.log("MARTY: params", params)
-console.log("MARTY: options", options)
+console.log("params", params)
+console.log("options", options)
 
+/**
+ * init main constructor (now in Vue.mounted)
+ */
 // [MM]
 //const preloader = new Preloader(options) // now in Vue Mounted()
 
 //this.init()
 //this.animate()
 
-/**
- * init main constructor
- *
-window.onload = function(e){ 
-	//init()
-}
-window.garden = this
-window.onError = function(error){
-	console.error(JSON.stringify(error))
-}
-*/
+// window.onload = function(e){ 
+// 	//init()
+// }
+// window.garden = this
+// window.onError = function(error){
+// 	console.error(JSON.stringify(error))
+// }
+
 
 /* [MM] */
 // let actionBtn = document.getElementById("action-btn")
@@ -195,18 +174,19 @@ window.onError = function(error){
 // document.getElementById("sfx-btn").onclick = function(){ toggleSound() }
 
 
-
+/** LOADERS */
 const loaderFBX = new THREE.FBXLoader()
 // try {
 // 	console.log("HEY HEY HEY: LOAD GLTF?")
 // 	const loaderGLTF = new THREE.GLTFLoader()
 // } catch (e) {
-// 	console.log("MARTY: e", e)
+// 	console.log("e", e)
 // }
 //alert("HEY HEY HEY: LOADED GLTF")
 //const loaderOBJ = new THREE.OBJLoader()
 const loaderTexture = new THREE.TextureLoader()
 
+/** TIME CLOCK */
 const clock = new THREE.Clock()
 
 /** POINTER HOVERS + CLICKS */
@@ -233,7 +213,7 @@ let api_urls = [
  * *************************************************************************************** */
 function init() {
 
-	console.log("MARTY: init ***")
+	console.log("init ***")
 
 	let getDataFromLocalStorage = true
 
@@ -283,12 +263,12 @@ function init() {
 								default :
 									break
 							}
-							console.log("MARTY: data", data)
+							console.log("data", data)
 						})
 			)
 		)
 		.then(results => {
-				console.log("MARTY: results", results)
+				console.log("results", results)
 				results.forEach((result, num) => {
 					if (result.status == "fulfilled") {
 						//alert(`${urls[num]}: ${result.value.status}`)
@@ -299,7 +279,7 @@ function init() {
 						console.log(result)
 					}
 				})
-				console.log("MARTY: params.data", params.data)
+				console.log("params.data", params.data)
 
 				// save to localStorage
 				localStorage.setItem('threedgarden', JSON.stringify(params))
@@ -339,7 +319,7 @@ function onWindowResize() {
  * *************************************************************************************** */
 function buildScene() {
 
-	console.log("MARTY: params.data.scene", params.data.scene)
+	console.log("params.data.scene", params.data.scene)
 
 	let wpScene = params.data.scene[0]
 	let sceneID = wpScene.id
@@ -352,7 +332,7 @@ function buildScene() {
 	
 	scene.name = "ThreeD Garden"
 
-	console.log("MARTY: scene", scene)
+	console.log("scene", scene)
 
 	// load the 3D cube map?
 	if ( wpScene.acf.scene_background_image_px ) {
@@ -570,10 +550,7 @@ function buildScene() {
 			} )
 		})
 
-		// console.log("-----------------------")
-		// console.log("object----------------")
-		// console.log(object)
-		// console.log("-----------------------")
+		// console.log("object", object)
 
 		player.object = new THREE.Object3D()
 		player.object.add(object)
@@ -587,42 +564,34 @@ function buildScene() {
 		plane.add(player.object)
 		guiFolderPlayer.add(player.object, "visible").name("Show Character").listen()
 
-		// console.log("-----------------------")
-		// console.log("player.object----------------")
-		// console.log(player.object)
-		// console.log("-----------------------")
-
-		loadNextAnim(loaderFBX)
+		// console.log("player.object", player.object)
 
 	} )
 
 
-	/**
-	 * LOAD 3D OBJECTS
-	 */
+	/** LOAD 3D OBJECTS ******************************************************************** */
+
 	loadFarmHouse(plane)
+	
+	loadRoad(plane)
+
+	//loadKitchenSink(plane)
 	
 	loadChickenCoop(plane)
 
-	// PRIMARY WORKING CHICKEN
-	//loadChicken(plane)
-
-
+	//loadChicken(plane) // PRIMARY WORKING CHICKEN (GLTF)
 	//loadHen(plane)
 	//loadHenGLTF(plane)
-	
 	//loadRooster(plane)
-	
 	//loadChickenGLTF(plane)
 	//loadChickGLTF(plane)
-	
-	//loadKitchenSink(plane)
 	//loadChickenFree(plane)
-	
-	loadRoad(plane)
 		
-
+	
+	/** LOAD CAMERAS *********************************************************************** */
+	
 	//createCameras()
+
 
 	/** JOYSTICK <+> *********************************************************************** */
 
@@ -630,6 +599,8 @@ function buildScene() {
 		onMove: playerControl,
 		game: container // document.querySelector("#webgl")
 	})
+	console.log("joystick", joystick)
+
 
 	/** ANIMATE + RENDER (continuous rendering) ******************************************** */
 	
@@ -681,66 +652,42 @@ function buildScene() {
 		renderer.render(scene, camera)
 	}
 
-	animate()
-
-	
 	let loadNextAnim = function (loader) {
 		let anim = anims.pop()
-		// console.log("-----------------------")
-		// console.log("anim-------------------")
-		// console.log(anim)
-		// console.log("-----------------------")
+		// console.log("anim", anim)
 		loader.load( `${params.assetsPath}fbx/anims2/${anim}.fbx`, function(object) {
-			// console.log("-----------------------")
-			// console.log("object-----------------")
-			// console.log(object)
-			// console.log("-----------------------")
+			// console.log("object")
 			animations[anim] = object.animations[0]
 			if (anims.length > 0){
-				// console.log("-----------------------")
-				// console.log("anims.length-----------")
-				// console.log(anims.length)
-				// console.log("-----------------------")
-				// console.log("-----------------------")
-				// console.log("getAction()-----------")
-				// console.log(getAction())
-				// console.log("-----------------------")
-				// console.log("player.action----------")
-				// console.log(player.action)
-				// console.log("-----------------------")
+				// console.log("anims.length")
+				// console.log("getAction()")
+				// console.log("player.action")
 				loadNextAnim(loader)
 			} 
 			else {
-				// console.log("-----------------------")
-				// console.log("anims.length = 0-------")
-				// console.log(anims.length)
-				// console.log("-----------------------")
+				// console.log("anims.length")
 				anims = []
 				setAction("Idle")
 				animate()
 			}
 		})	
 	}
-	
-	//return scene
+
+	// DO ANIMATE NOW PLEASE
+	//animate()
+	loadNextAnim(loaderFBX)
+
 }
 
 function setAction(name) {
 	const action = player.mixer.clipAction( animations[name] )
 	action.time = 0
-	console.log("-----------------------")
-	console.log("action-----------------")
-	console.log(action)
-	console.log("-----------------------")
+	console.log("PLAYER: action", action)
 	player.mixer.stopAllAction()
 	player.action = name
 	player.actionTime = Date.now()
-	// console.log("-----------------------")
-	// console.log("player-----------------")
-	// console.log(player)
-	// console.log("-----------------------")
-	
-	action.fadeIn(0.5)	
+	//console.log("player", player)
+	//action.fadeIn(0.5) // causes arms to move awkwardly
 	action.play()
 }
 
@@ -760,11 +707,9 @@ function toggleAnimation() {
 	}
 }
 
-function movePlayer1(dt) {	
-	// console.log("-------------------------")
+function movePlayer1(dt) {
 	// console.log("player.move.forward------")
 	// console.log(player.move.forward)
-	// console.log("-------------------------")
 	if ( player.move.forward > 0 ) {
 		const speed = ( player.action == "Running" ) ? 24 : 8
 		player.object.translateZ( dt * speed )
@@ -1004,15 +949,8 @@ function loadFarmHouseGLTF(plane) {
 		helper.visible = true
 		scene.add(helper)
 		
-		console.log("-----------------------")
-		console.log("loadFarmHouse object----------------")
-		console.log(object)
-		console.log("-----------------------")
-
-		console.log("-----------------------")
-		console.log("loadFarmHouse model----------------")
-		console.log(model)
-		console.log("-----------------------")
+		console.log("loadFarmHouse object", object)
+		console.log("loadFarmHouse model", model)
 
 		guiFolderPlayer.add(model, "visible").name("Show House").listen()
 
@@ -1020,7 +958,7 @@ function loadFarmHouseGLTF(plane) {
 }
 
 function loadChickenCoop(plane) {
-	loaderFBX.load(`${params.assetsPath}fbx/Prop_Chicken_Coop_02.fbx`, function(object){
+	loaderFBX.load(`${params.assetsPath}fbx/Prop_Chicken_Coop_02.fbx`, function(object) {
 		params.farmhouse = object
 		params.colliders = []
 		object.rotation.y = 90 * (Math.PI/180) // 90 degrees in radians
@@ -1028,11 +966,11 @@ function loadChickenCoop(plane) {
 		object.scale.set(2.2, 2.2, 2.2)
 		scene.add(object)
 		object.traverse( function ( child ) {
-			if ( child.isMesh ) {
-				if (child.name.startsWith("proxy")){
+			if (child.isMesh) {
+				if (child.name.startsWith("proxy")) {
 					params.colliders.push(child)
 					child.material.visible = false
-				}else{
+				} else {
 					child.castShadow = true
 					child.receiveShadow = true
 				}
@@ -1040,13 +978,11 @@ function loadChickenCoop(plane) {
 		} )
 		loaderTexture.load(`${params.assetsPath}textures/SimpleFarm.png`, function(texture) {
 			object.traverse( function ( child ) {
-				if ( child.isMesh ){
+				if (child.isMesh){
 					child.material.map = texture
 				}
 			} )
 		})
-		
-		//loadNextAnim(loader)
 	})
 }
 
@@ -1069,15 +1005,8 @@ function loadChicken(plane) {
 		// helper.visible = true
 		// scene.add(helper)
 		
-		console.log("-----------------------")
-		console.log("loadChicken object----------------")
-		console.log(object)
-		console.log("-----------------------")
-
-		console.log("-----------------------")
-		console.log("loadChicken model----------------")
-		console.log(model)
-		console.log("-----------------------")
+		console.log("loadChicken object", object)
+		console.log("loadChicken model", model)
 
 		//guiFolderPlayer.add(model, "visible").name("Show Chicken").listen()
 
@@ -1087,10 +1016,8 @@ function loadChicken(plane) {
 function loadChicken0(plane) {
 	loaderFBX.load(`${params.assetsPath}fbx/Chicken.fbx`, function(object){
 		
-		console.log("-----------------------")
 		console.log("BIRD----------------")
 		console.log(object)
-		console.log("-----------------------")
 
 		//params.farmhouse = object
 		//params.colliders = []
@@ -1116,18 +1043,14 @@ function loadChicken0(plane) {
 		// 		}
 		// 	} )
 		// })
-		
-		//loadNextAnim(loader)
 	})
 }
 
 function loadChicken1(plane) {
 	loaderFBX.load(`${params.assetsPath}fbx/SA_Animal_Birds.fbx`, function(object){
 		
-		console.log("-----------------------")
 		console.log("BIRD----------------")
 		console.log(object)
-		console.log("-----------------------")
 
 		//params.farmhouse = object
 		//params.colliders = []
@@ -1153,8 +1076,6 @@ function loadChicken1(plane) {
 				}
 			} )
 		})
-		
-		//loadNextAnim(loader)
 	})
 }
 
@@ -1163,10 +1084,8 @@ function loadChicken2(plane) {
 	//loaderFBX.load( `${params.assetsPath}fbx/people/Trucker.fbx`, function (object) {
 	//loaderFBX.load( `${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function (object) {
 
-		console.log("-----------------------")
 		console.log("object----------------")
 		console.log(object)
-		console.log("-----------------------")
 
 		// object.mixer = new THREE.AnimationMixer( object )
 		// mixers.push( object.mixer )
@@ -1267,10 +1186,8 @@ function loadChickenGLTF(plane) {
 	
 	loaderGLTF.load( `${params.assetsPath}gltf/Animals.glb`, function (object) {
 
-		console.log("-----------------------")
 		console.log("Animals object----------------")
 		console.log(object)
-		console.log("-----------------------")
 
 		object.mixer = new THREE.AnimationMixer( object.scene )
 		player.mixer = object.mixer
@@ -1298,12 +1215,6 @@ function loadChickenGLTF(plane) {
 		plane.add(player.object)
 		//guiFolderPlayer.add(player.object, "visible").name("Show Character").listen()
 
-		//animate()
-		// OR
-		//loadNextAnim(loaderFBX)
-		// OR
-		//loadEnvironment(loaderFBX)
-
 	} )
 }
 
@@ -1326,15 +1237,10 @@ function loadChickGLTF(plane) {
 		// helper.visible = true
 		// scene.add(helper)
 		
-		console.log("-----------------------")
-		console.log("loadChickGLTF object----------------")
+		console.log("loadChickGLTF object")
 		console.log(object)
-		console.log("-----------------------")
-
-		console.log("-----------------------")
-		console.log("loadChickGLTF model----------------")
+		console.log("loadChickGLTF model")
 		console.log(model)
-		console.log("-----------------------")
 
 		//guiFolderPlayer.add(model, "visible").name("Show Chicken").listen()
 
@@ -1366,8 +1272,7 @@ function loadHen(plane) {
 				if ( child.isMesh ){
 					child.material.map = texture
 
-					console.log("-----------------------")
-					console.log("loadHen child----------------")
+					console.log("loadHen child----------")
 					console.log(child)
 					console.log(child.geometry.attributes.uv)
 					console.log("-----------------------")
@@ -1375,14 +1280,10 @@ function loadHen(plane) {
 			} )
 		})
 
-		console.log("-----------------------")
 		console.log("loadHen object----------------")
 		console.log(object)
-		console.log("-----------------------")
 
 		scene.add(object)
-		
-		//loadNextAnim(loader)
 	})
 }
 
@@ -1405,15 +1306,10 @@ function loadHenGLTF(plane) {
 		// helper.visible = true
 		// scene.add(helper)
 		
-		console.log("-----------------------")
 		console.log("loadHenGLTF object----------------")
 		console.log(object)
-		console.log("-----------------------")
-
-		console.log("-----------------------")
 		console.log("loadHenGLTF model----------------")
 		console.log(model)
-		console.log("-----------------------")
 
 		//guiFolderPlayer.add(model, "visible").name("Show Hen GLTF").listen()
 
@@ -1448,8 +1344,6 @@ function loadKitchenSink(plane) {
 				}
 			} )
 		})
-		
-		//loadNextAnim(loader)
 	})
 }
 
@@ -1481,8 +1375,6 @@ function loadChickenFree(plane) {
 		// 		}
 		// 	} )
 		// })
-		
-		//loadNextAnim(loader)
 	})
 }
 
@@ -1514,8 +1406,6 @@ function loadRooster(plane) {
 		// 		}
 		// 	} )
 		// })
-		
-		//loadNextAnim(loader)
 	})
 }
 
@@ -1530,12 +1420,9 @@ function loadRoad(plane) {
 
 	// ROAD A
 	for ( i = 1; i <= count; i++ ) {
-		loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_Straight_01.fbx`, function(object){
+		loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_Straight_01.fbx`, function(object) {
 			
-			// console.log("-----------------------")
-			// console.log("ROAD----------------")
-			// console.log(object)
-			// console.log("-----------------------")
+			// console.log("ROAD object", object)
 
 			//params.farmhouse = object
 			//params.colliders = []
@@ -1544,20 +1431,20 @@ function loadRoad(plane) {
 			startX = startX + offsetX
 			startZ = startZ + offsetZ
 			object.scale.set(0.02, 0.01, 0.02)
-			object.traverse( function ( child ) {
-				if ( child.isMesh ) {
-					// if (child.name.startsWith("proxy")){
+			object.traverse( function (child) {
+				if (child.isMesh) {
+					// if (child.name.startsWith("proxy")) {
 					// 	params.colliders.push(child)
 					// 	child.material.visible = false
-					// }else{
+					// } else {
 						child.castShadow = true
 						child.receiveShadow = true
-					//}
+					// }
 				}
 			} )
 			loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_03_A.png`, function(texture) {
-				object.traverse( function ( child ) {
-					if ( child.isMesh ){
+				object.traverse( function (child) {
+					if (child.isMesh) {
 						//child.material.color.setHex(0x000000)
 						child.material.transparent = true
 						child.material.opacity = 0.7
@@ -1569,23 +1456,15 @@ function loadRoad(plane) {
 			
 			scene.add(object)
 			
-			console.log("-----------------------")
-			console.log("ROAD----------------")
-			console.log(object)
-			console.log("-----------------------")
-			
-			//loadNextAnim(loader)
+			//console.log("ROAD object", object)
 		})
 
 	}
 	// ROAD T
 	for ( i = 1; i <= 1; i++ ) {
-		loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_T_Section_01.fbx`, function(object){
+		loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_T_Section_01.fbx`, function(object) {
 			
-			console.log("-----------------------")
-			console.log("ROAD T----------------")
-			console.log(startX, startZ)
-			console.log("-----------------------")
+			console.log("ROAD T startX, startZ", startX, startZ)
 
 			//params.farmhouse = object
 			//params.colliders = []
@@ -1594,15 +1473,15 @@ function loadRoad(plane) {
 			startX = startX + offsetX
 			startZ = startZ + offsetZ
 			object.scale.set(0.02, 0.01, 0.02)
-			object.traverse( function ( child ) {
-				if ( child.isMesh ) {
-					// if (child.name.startsWith("proxy")){
+			object.traverse( function (child) {
+				if (child.isMesh) {
+					// if (child.name.startsWith("proxy")) {
 					// 	params.colliders.push(child)
 					// 	child.material.visible = false
-					// }else{
+					// } else {
 						child.castShadow = true
 						child.receiveShadow = true
-					//}
+					// }
 				}
 			} )
 			loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_03_A.png`, function(texture) {
@@ -1619,12 +1498,7 @@ function loadRoad(plane) {
 			
 			scene.add(object)
 			
-			console.log("-----------------------")
-			console.log("ROAD T----------------")
-			console.log(object)
-			console.log("-----------------------")
-			
-			//loadNextAnim(loader)
+			console.log("ROAD T object", object)
 		})
 
 	}
@@ -1636,19 +1510,14 @@ function loadRoad(plane) {
  */
 function buildAllotments(postObject, plane, sceneID) {
 
-	console.log("----------------------------")
-	console.log("MARTY: postObject ALLOTMENTS")
-	console.log(postObject)
-	console.log("----------------------------")
+	console.log("ALLOTMENTS", postObject)
 
 	//alert("HEY HEY HEY: BUILD ALLOTMENTS..")
 	
 	var filteredPostObject = postObject.filter(function (obj) {
 		return obj.acf.allotment_scene == sceneID
 	})
-	// console.log("filteredPostObject-------")
-	// console.log(filteredPostObject)
-	// console.log("-------------------------")
+	// console.log("filteredPostObject", filteredPostObject)
 
 	filteredPostObject.forEach( function(key) {
 
@@ -1678,10 +1547,7 @@ function buildAllotments(postObject, plane, sceneID) {
 		allotment.description = key.content.rendered
 		allotment.link = key.link
 
-		// console.log("-------------------------")
-		// console.log("allotment----------------")
-		// console.log(allotment)
-		// console.log("-------------------------")
+		// console.log("allotment", allotment)
 
 		let structure = getGeometry(
 			allotment.shape,
@@ -1723,11 +1589,8 @@ function buildAllotments(postObject, plane, sceneID) {
 
 		//guiFolderAllotments.add(structure.geometry.parameters, "depth", 0, allotment.parameters.z)
 		
-		// console.log("-------------------------")
-		// console.log("allotment----------------")
-		// console.log(structure)
-		// console.log("-------------------------")
-
+		// console.log("allotment structure", structure)
+		
 		/** BUILD BEDS IN THIS ALLOTMENT ************************************************** */
 
 		//alert("HEY HEY HEY: BUILD BEDS??")
@@ -1761,12 +1624,7 @@ function buildAllotments(postObject, plane, sceneID) {
 
 	}) /** END ALLOTMENTS ****************************************************************** */
 	
-	// console.log("-------------------------")
-	// console.log("plane.children-----------")
-	// console.log(plane.children)
-	// console.log("-------------------------")
-
-	// return plane.children
+	// console.log("plane.children", plane.children)
 }
 
 /**
@@ -1774,18 +1632,13 @@ function buildAllotments(postObject, plane, sceneID) {
  */
 function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOffsetZ) {
 
-	// console.log("-------------------------")
-	// console.log("postObject BEDS----------")
-	// console.log(postObject)
-	// console.log("-------------------------")
+	// console.log("BEDS postObject", postObject)
 	
 	// only show beds for this allotment structure
 	var filteredPostObject = postObject.filter(function (obj) {
 		return obj.acf.bed_allotment == allotmentID
 	})
-	// console.log("filteredPostObject-------")
-	// console.log(filteredPostObject)
-	// console.log("-------------------------")
+	// console.log("filteredPostObject", filteredPostObject)
 
 	filteredPostObject.forEach( function(key) {
 
@@ -1814,10 +1667,7 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
 		bed.description = key.content.rendered
 		bed.link = key.link
 
-		// console.log("-------------------------")
-		// console.log("bed----------------")
-		// console.log(bed)
-		// console.log("-------------------------")
+		// console.log("bed", bed)
 
 		let structure = getGeometry(
 			bed.shape,
@@ -1858,11 +1708,8 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
 
 		params.colliders.push(structure)
 		
-		// console.log("-------------------------")
-		// console.log("bed----------------------")
-		// console.log(structure)
-		// console.log("-------------------------")
-
+		// console.log("bed structure", structure)
+		
 		/** BUILD PLANTS IN THIS BED, ACCORDING TO PLANTING PLANS ************************* */
 
 		//alert("HEY HEY HEY: BUILD PLANTING PLANS??")
@@ -1872,7 +1719,7 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
 			plane, 
 			bed.postID, // the post-to-post relationship <3
 			structure.position.x, structure.position.y, 0 //structure.position.z
-		) 
+		)
 	
 		/** INFOSPOTS ********************************************************************* */
 		
@@ -1896,12 +1743,7 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
 
 	}) /** END BEDS *********************************************************************** */
 	
-	// console.log("-------------------------")
-	// console.log("plane.children-----------")
-	// console.log(plane.children)
-	// console.log("-------------------------")
-
-	// return plane.children
+	// console.log("plane.children", plane.children)
 }
 
 /**
@@ -1909,10 +1751,7 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
  */
 function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, posOffsetZ) {
 
-	// console.log("-------------------------")
-	// console.log("postObject PLANTING PLANS")
-	// console.log(postObject)
-	// console.log("-------------------------")
+	// console.log("PLANTING PLANS postObject", postObject)
 
 	// only show plants for this planting plan's bed structure
 	var filteredPostObject = []
@@ -1931,17 +1770,15 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 		filteredPostObject = [...matches]
 	})
 
-	// if ( filteredPostObject.length > 0 ) {
-	// 	console.log("filteredPostObject-------")
-	// 	console.log(filteredPostObject)
-	// 	console.log("-------------------------")
-	// }
+	if ( filteredPostObject.length > 0 ) {
+		console.log("filteredPostObject", filteredPostObject)
+	}
 
 	// for each planting plan..
 	filteredPostObject.forEach( function(key) {
 
 		// console.log("-------------------------")
-		// console.log("key.id (filteredPostObject)------")
+		// console.log("key.id (filteredPostObject)")
 		// console.log(key.id)
 		// console.log(key)
 		// console.log("-------------------------")
@@ -1949,9 +1786,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 		// for each planting plan bed-plant schedule..
 		key.acf.planting_plan_bed_plant_schedule.forEach(function(key2) {
 			
-			// console.log("key2-------")
-			// console.log(key2)
-			// console.log("-------------------------")
+			// console.log("key2", key2)
 
 			// only for this bed..
 			if ( key2.planting_plan_bed == bedID ) {
@@ -1961,24 +1796,20 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 					return obj.id == key2.planting_plan_plant
 				})
 
-				// console.log("filteredPlant------------")
-				// console.log(filteredPlant)
-				// console.log("-------------------------")
+				// console.log("filteredPlant", filteredPlant)
 
 				// for this plant in this bed..
 				filteredPlant.forEach(function(key3) {
 
-					// console.log("key3---------------------")
-					// console.log(key3)
-					// console.log("-------------------------")
+					// console.log("key3", key3)
 
 					let plant = {}
 					plant.parameters = {}
 					plant.position = {}
 					plant.images = {}
-					plant.parameters.x = parseInt(key3.acf.plant_width) / 12
-					plant.parameters.y = parseInt(key3.acf.plant_length) / 12
-					plant.parameters.z = parseInt(key3.acf.plant_height) / 12
+					plant.parameters.x = Number(key3.acf.plant_width) / 12
+					plant.parameters.y = Number(key3.acf.plant_length) / 12
+					plant.parameters.z = Number(key3.acf.plant_height) / 12
 					plant.position.x = parseInt(key2.plant_position_x) / 12 + posOffsetX
 					plant.position.y = parseInt(key2.plant_position_y) / 12 + posOffsetY
 					plant.position.z = parseInt(key2.plant_position_z) / 12 + (plant.parameters.z / 2) // + posOffsetZ
@@ -1991,13 +1822,10 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 					plant.description = key3.content.rendered
 					plant.link = key3.link
 
-					// console.log("-------------------------")
-					// console.log("plant----------------")
-					// console.log(plant)
-					// console.log("-------------------------")
+					console.log("plant", plant)
 
 					let structure = getGeometry(
-						"Tree", // "Box", "Bush", // plant.shape,
+						plant.shape, // "Tree", "Bush", "Box",
 						plant.parameters.x, 
 						plant.parameters.y, 
 						plant.parameters.z, 
@@ -2031,14 +1859,12 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 						}
 					}
 					
+					console.log("plant structure", structure)
+					
 					plane.add(structure)
 
+					// colliders
 					params.colliders.push(structure)
-					
-					console.log("-------------------------")
-					console.log("plant structure----------")
-					console.log(structure)
-					console.log("-------------------------")
 				
 					/** INFOSPOTS ********************************************************************* */
 				
@@ -2066,14 +1892,8 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 
 	}) /** END PLANTS *************************************************************************** */
 	
-	// console.log("-------------------------")
-	// console.log("plane.children-----------")
-	// console.log(plane.children)
-	// console.log("-------------------------")
-
-	// return plane.children
+	// console.log("plane.children", plane.children)
 }
-
 
 
 function getGeometry(shape, x, y, z, color){
@@ -2173,17 +1993,40 @@ function getGeometry(shape, x, y, z, color){
 			break
 
 		case "Bush":
+
+			// [MM]
+
 			// CAST
-			geometry = new THREE.CubeGeometry(x, y, z)
-			
+			geometry = new THREE.BoxGeometry(x, y, z)
+
 			//color = new THREE.Color(0xff0000)
 			color = new THREE.Color("rgb(153,90,0)")
-			material = new THREE.MeshPhongMaterial({ color: color, wireframe: false })
-			mesh = new THREE.Mesh(geometry, material)
+
+			// material = new THREE.MeshPhongMaterial({ color: color, wireframe: false })
+			// material = new THREE.MeshStandardMaterial({
+			// 	transparent: true, 
+			// 	opacity: 0.8,
+			// 	color: color,
+			// 	side: THREE.DoubleSide,
+			// 	depthWrite: true
+			// })
 			
-			scene.add(mesh)  
-			mesh.matrix.makeTranslation(0,-125,0)
-			mesh.matrixAutoUpdate = false
+			//mesh = new THREE.Mesh(geometry, material)
+			// mesh = new THREE.Mesh(
+			// 	geometry, 
+			// 	[
+			// 		material, material, 
+			// 		material, material
+			// 	]
+			// )
+
+			// mesh.castShadow = true
+			
+			// [MM]
+			//scene.add(mesh)
+
+			// mesh.matrix.makeTranslation(0,-125,0)
+			// mesh.matrixAutoUpdate = false
 			
 			var levels = 4 // slow? lower this
 			var edge_w = 100
@@ -2231,10 +2074,10 @@ function getGeometry(shape, x, y, z, color){
 					new_mat_r.makeRotationZ(Math.PI/4)
 					new_mat_r2.makeRotationY(Math.PI/2)
 					new_mat_s.makeScale(0.75,0.75,0.75)
-					new_mat2.multiply(new_mat_r2)  //      
+					new_mat2.multiply(new_mat_r2)
 					new_mat2.multiply(new_mat_t0)
-					new_mat2.multiply(new_mat_r)        
-					new_mat2.multiply(new_mat_s)        
+					new_mat2.multiply(new_mat_r)
+					new_mat2.multiply(new_mat_s)
 					new_mat2.multiply(new_mat_t)
 					new_mat2.multiply(mat)
 					mesh.matrix.copy(new_mat2)
@@ -2245,7 +2088,8 @@ function getGeometry(shape, x, y, z, color){
 				}
 			}
 			
-			bush(levels, mesh.matrix, color)
+			// [MM]
+			//bush(levels, mesh.matrix, color)
 
 		default:
 			geometry = new THREE.BoxGeometry(x, y, z)
@@ -2344,7 +2188,6 @@ function makeInfospotSprite(message, positionX, positionY, positionZ) {
 	// text
 	ctx.fillText(message, x, y)
 
-
 	const infospotTexture = new THREE.CanvasTexture(
 		infospotCanvas[0]
 		//document.querySelector("#infospot")
@@ -2412,9 +2255,6 @@ function makeInfospotSphere(message, positionX, positionY, positionZ, postID, co
 
 	let annoPosTop = vector.x
 	let annoPosLeft = vector.y
-	//
-	// let annoPosTop = 100
-	// let annoPosLeft = 240
 
 	let annotation = makeAnnotation(
 		structure.userData.link,
@@ -2430,10 +2270,7 @@ function makeInfospotSphere(message, positionX, positionY, positionZ, postID, co
 	annotation.userData.link = link
 	annotation.visible = false // does nothing, but keeps status accurate
 
-	// console.log("-------------------------")
-	// console.log("annotation---------------------")
-	// console.log(annotation)
-	// console.log("-------------------------")
+	// console.log("annotation", annotation)
 	
 	structure.add(annotation)
 	
@@ -2450,7 +2287,7 @@ function makeAnnotation(link, contentHTML, positionX, positionY) {
 		<span class="dismiss" onclick="dismiss(this)">x</span>
 	`
 	annoDiv.hidden = true
-	annoDiv.style.display = "none" //block
+	annoDiv.style.display = "none" // block
 	annoDiv.style.top = `${positionY}px`
     annoDiv.style.left = `${positionX}px`
 	guiFolderAnnotations.add(annoDiv, "hidden").listen()
@@ -2459,7 +2296,7 @@ function makeAnnotation(link, contentHTML, positionX, positionY) {
 	guiFolderAnnotations.add(annoDiv.style, "left").listen()
 	document.body.appendChild( annoDiv )
 
-	// Make the DIV element draggable
+	// make the div element draggable
 	dragElement(annoDiv)
 
 	let cssObject = { userData: {} } // new THREE.CSS3DObject( annoDiv )
@@ -2470,11 +2307,9 @@ function makeAnnotation(link, contentHTML, positionX, positionY) {
 	// cssObject.position.set(positionX, positionY, positionZ)
 	// cssObject.scale.set(3, 3, 3)
 	// cssObject.visible = true
-	// console.log("------------------")
-	// console.log("cssObject---------")
-	// console.log(cssObject)
-	// console.log("------------------")
-
+	
+	// console.log("cssObject", cssObject)
+	
 	//return annoDiv
 	return cssObject
 }
@@ -2500,10 +2335,7 @@ function makeTextSprite(message, parameters) {
 	// get size data (height depends only on font size)
 	let metrics = context.measureText( message )
 	let textWidth = metrics.width
-	// console.log("-------------------------")
-	// console.log("metrics------------------")
-	// console.log(textWidth)
-	// console.log("-------------------------")
+	// console.log("textWidth metrics", textWidth)
 
 	// background color
 	context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
@@ -2591,7 +2423,7 @@ function updateAnnotationPosition(camera, width, height, positionX, positionY, p
 	// console.log("------------------")
 	// console.log("annotation--------")
 	// console.log(annotation)
-	// console.log("------------------")	
+	// console.log("------------------")
 }
 
 /**
@@ -2640,10 +2472,7 @@ function watchPointer(camera, targetList){
 			// store reference to closest object as current intersection object
 			params.intersectedObject1 = intersects[0].object
 
-			// console.log("-------------------------")
-			// console.log("params.intersectedObject1-------------")
-			// console.log(params.intersectedObject1)
-			// console.log("-------------------------")
+			// console.log("params.intersectedObject1, params.intersectedObject1)
 
 			if ( params.intersectedObject1.material.constructor.name == "Array" ) {
 				// SEPARATE FOR LOOPS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -2695,50 +2524,40 @@ function onPointerMove( event ) {
 	// event.preventDefault()
 	
 	// update the pointer variable
-	// pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1
-	// pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1
+	pointer.x = (event.clientX / window.innerWidth) * 2 - 1
+	pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
 	// pointer.x = (event.offsetX / canvas.clientWidth) * 2 - 1
 	// pointer.y = -(event.offsetY / canvas.clientHeight) * 2 + 1
-	pointer.x = (event.offsetX / (window.innerWidth - 240)) * 2 - 1
-	pointer.y = -(event.offsetY / (window.innerHeight - 100)) * 2 + 1
-	// console.log("------------------")
-	// console.log("pointer hover-------")
-	// console.log(pointer.x, pointer.y)
-	// console.log("------------------")
+	// pointer.x = (event.offsetX / (window.innerWidth - 240)) * 2 - 1
+	// pointer.y = -(event.offsetY / (window.innerHeight - 100)) * 2 + 1
+	// console.log("pointer hover, pointer.x, pointer.y) // probably shouldn't log this
 }
 
 // when the pointer moves, call the given function
 //document.addEventListener( "pointerdown", onPointerDown, false )
 function onPointerDown(event) {
 	
-	// console.log("------------------")
-	// console.log("event------------")
-	// console.log(event)
-	// console.log("------------------")
+	console.log("event", event)
 
 	// the following line would stop any other event handler from firing
 	// (such as the pointer's TrackballControls)
 	// event.preventDefault()
 	
 	// update the pointer variable
-	// pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1
-	// pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1
+	pointer.x = (event.clientX / window.innerWidth) * 2 - 1
+	pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
 	// pointer.x = (event.offsetX / canvas.clientWidth) * 2 - 1
 	// pointer.y = -(event.offsetY / canvas.clientHeight) * 2 + 1
-	pointer.x = (event.offsetX / (window.innerWidth - 240)) * 2 - 1
-	pointer.y = -(event.offsetY / (window.innerHeight - 100)) * 2 + 1
-	// console.log("------------------")
-	// console.log("pointer clicked-----")
-	// console.log(pointer.x, pointer.y)
-	// console.log("------------------")
+	// pointer.x = (event.offsetX / (window.innerWidth - 240)) * 2 - 1
+	// pointer.y = -(event.offsetY / (window.innerHeight - 100)) * 2 + 1
+	console.log("pointer clicked", pointer.x, pointer.y)
 
 
 	// find intersections
 
-	// create a Ray with origin at the pointer position
-	//   and direction into the scene (camera direction)
+	// create a Ray with origin at the pointer position and direction into the scene (camera direction)
 	// let vector = new THREE.Vector3( pointer.x, pointer.y, 1 )
-	//projector.unprojectVector( vector, camera )
+	// projector.unprojectVector( vector, camera )
 	// let raycaster2 = new THREE.Raycaster( 
 	// 	event.target.camera.position, 
 	// 	vector.sub( event.target.camera.position ).normalize() 
@@ -2749,22 +2568,15 @@ function onPointerDown(event) {
 	// 	event.target.camera.getWorldPosition(), 
 	// 	event.target.camera.getWorldDirection() 
 	// )
-	// console.log("------------------")
-	// console.log("raycaster2--------")
-	// console.log(raycaster2)
-	// console.log("------------------")
+	console.log("raycaster2", raycaster2)
 
 	// create an array containing all objects in the scene with which the raycaster2 intersects
-	var intersects = raycaster2.intersectObjects( event.target.targetList )
-	// console.log("------------------")
-	// console.log("intersects--------")
-	// console.log(intersects)
-	// console.log("------------------")
+	var intersects = raycaster2.intersectObjects(event.target.targetList)
+	console.log("intersects", intersects)
 	
 	// if there is one (or more) intersections
-	if ( intersects.length > 0 )
-	{
-		//console.log("Hit @ " + toString( intersects[0].point ) )
+	if (intersects.length > 0) {
+		//console.log("Hit @ " + xyzToString( intersects[0].point ) )
 		// change the color of the closest face.
 		// intersects[0].face.color.setRGB( 0.8 * Math.random() + 0.2, 0, 0 ) 
 		// intersects[0].object.geometry.colorsNeedUpdate = true
@@ -2833,10 +2645,7 @@ function onPointerDown(event) {
 					infospotObject.visible = true
 				}
 			}
-			// console.log("------------------")
-			// console.log("infospotObject----")
-			// console.log(infospotObject)
-			// console.log("------------------")
+			// console.log("infospotObject", infospotObject)
 		}
 
 		// show/hide annotations
@@ -2886,20 +2695,12 @@ function onPointerDown(event) {
 			}
 		})
 
-		/* 
-		if ( params.intersectedObject2.userData.annotation ) {
-			console.log("------------------")
-			console.log("ANNOTATION ------------")
-			console.log(params.intersectedObject2.userData.annotation)
-			console.log("------------------")
-		}
-		else {
-			console.log("------------------")
-			console.log("ANNOTATION? ------------")
-			console.log(params.intersectedObject2.userData)
-			console.log("------------------")
-		}
-		*/
+		// if ( params.intersectedObject2.userData.annotation ) {
+		// 	console.log("ANNOTATION", params.intersectedObject2.userData.annotation)
+		// }
+		// else {
+		// 	console.log("ANNOTATION?", params.intersectedObject2.userData)
+		// }
 
 	} 
 	else // there are no intersections
@@ -2908,15 +2709,11 @@ function onPointerDown(event) {
 		if ( params.intersectedObject2 ) {
 			//params.intersectedObject2.material.color.setHex( params.intersectedObject2.currentHex )
 		}
-		// remove previous intersection object reference
-		//     by setting current intersection object to "nothing"
+		// remove previous intersection object reference by setting current intersection object to "nothing"
 		params.intersectedObject2 = null
 	}
 
 }
-function toString(v) { return "[ " + v.x + ", " + v.y + ", " + v.z + " ]" }
-
-
 
 function dismiss(el) {
 	el.parentNode.hidden = true
@@ -2924,20 +2721,19 @@ function dismiss(el) {
 }
 
 function stringToBoolean(string) {
-    switch(string.toString().toLowerCase().trim()){
+    switch(string.xyzToString().toLowerCase().trim()){
         case "true": case "yes": case "1": return true
         case "false": case "no": case "0": case null: return false
         default: return Boolean(string)
     }
 }
 
+function xyzToString(v) { return "[ " + v.x + ", " + v.y + ", " + v.z + " ]" }
+
 
 function dragElement(elmnt) {
 
-	// console.log("-------------------------")
-	// console.log("elmnt--------------")
-	// console.log(elmnt)
-	// console.log("-------------------------")
+	// console.log("elmnt", elmnt)
 
 	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0
 	
@@ -2956,10 +2752,7 @@ function dragElement(elmnt) {
 		pos3 = e.clientX
 		pos4 = e.clientY
 
-		// console.log("-------------------------")
-		// console.log("pos3, pos4---------------")
-		// console.log(pos3, pos4)
-		// console.log("-------------------------")
+		// console.log("pos3, pos4", pos3, pos4)
 
 		document.onmouseup = closeDragElement
 		// call a function whenever the cursor moves:
@@ -2975,10 +2768,7 @@ function dragElement(elmnt) {
 		pos3 = e.clientX
 		pos4 = e.clientY
 
-		// console.log("-------------------------")
-		// console.log("pos1, pos2, pos3, pos4---")
-		// console.log(pos1, pos2, pos3, pos4)
-		// console.log("-------------------------")
+		// console.log("pos1, pos2, pos3, pos4", pos1, pos2, pos3, pos4)
 
 		// set the element's new position:
 		// elmnt.style.top = (elmnt.offsetTop - pos2) + "px"
@@ -3031,12 +2821,12 @@ Array.prototype.pushIfNotExist = function(element, comparer) {
  */
 
 // controls.enabled = false
-// var xTarget=0
-// var yTarget=-0.7
-// var zTarget=-1.65
-// var tweenDuration=2000
+// var xTarget = 0
+// var yTarget = -0.7
+// var zTarget = -1.65
+// var tweenDuration = 2000
 
-function panCam(xTarget, yTarget, zTarget, tweenDuration, camera, controls){
+function panCam(xTarget, yTarget, zTarget, tweenDuration, camera, controls) {
 
 	var camNewPosition= { x : xTarget, y : yTarget, z : zTarget}
 	var targetNewPos = {x : xTarget, y : yTarget, z : -1.65}
@@ -3058,11 +2848,7 @@ function panCam(xTarget, yTarget, zTarget, tweenDuration, camera, controls){
 		})
 		.start()
 
-	console.log("------------------")
-	console.log("camTween, targetTween---------")
-	console.log(camTween)
-	console.log(targetTween)
-	console.log("------------------")
+	console.log("camTween, targetTween", camTween, targetTween)
 	
 }
 
@@ -3118,10 +2904,7 @@ function getFeaturedImage( postObject ) {
 			featImage.imgHeight = featImage.featuredObject.media_details.sizes.full.height
 			featImage.imgLargeUrl = featImage.featuredObject.media_details.sizes.large.source_url +  " 1024w, "
 		}
-		// console.log("-------------------------")
-		// console.log("featImage----------------")
-		// console.log(featImage)
-		// console.log("-------------------------")
+		// console.log("featImage", featImage)
 	}
 
 	return featImage
@@ -3177,11 +2960,11 @@ export default {
 	mounted () {
 		//init()
 		const preloader = new Preloader(options)
+		//console.log("preloader", preloader)
 	}
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h3 {
 	margin: 40px 0 0;
@@ -3198,6 +2981,6 @@ a {
 	color: #96bc33;
 }
 .threedgarden {
-	margin-bottom: 40px;
+	margin-bottom: 0px;
 }
 </style>

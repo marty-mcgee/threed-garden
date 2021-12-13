@@ -24,7 +24,7 @@ module.exports = {
 
 	chainWebpack: config => {
 
-		console.log("MARTY: chainWebpack config")
+		console.log("MARTY: chainWebpack config ***")
 
 		config.plugins.delete('html')
 		config.plugins.delete('preload')
