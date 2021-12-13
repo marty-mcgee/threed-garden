@@ -2537,7 +2537,7 @@ function onPointerMove( event ) {
 //document.addEventListener( "pointerdown", onPointerDown, false )
 function onPointerDown(event) {
 	
-	console.log("event", event)
+	console.log("event ****************************************", event)
 
 	// the following line would stop any other event handler from firing
 	// (such as the pointer's TrackballControls)
@@ -2550,7 +2550,7 @@ function onPointerDown(event) {
 	// pointer.y = -(event.offsetY / canvas.clientHeight) * 2 + 1
 	// pointer.x = (event.offsetX / (window.innerWidth - 240)) * 2 - 1
 	// pointer.y = -(event.offsetY / (window.innerHeight - 100)) * 2 + 1
-	console.log("pointer clicked", pointer.x, pointer.y)
+	console.log("pointer clicked x y", pointer.x, pointer.y)
 
 
 	// find intersections
@@ -2562,7 +2562,7 @@ function onPointerDown(event) {
 	// 	event.target.camera.position, 
 	// 	vector.sub( event.target.camera.position ).normalize() 
 	// )
-	let raycaster2 = new THREE.Raycaster()
+	const raycaster2 = new THREE.Raycaster()
 	raycaster2.setFromCamera(pointer, event.target.camera)
 	// raycaster2.set( 
 	// 	event.target.camera.getWorldPosition(), 
@@ -2571,7 +2571,8 @@ function onPointerDown(event) {
 	console.log("raycaster2", raycaster2)
 
 	// create an array containing all objects in the scene with which the raycaster2 intersects
-	var intersects = raycaster2.intersectObjects(event.target.targetList)
+	//var intersects = raycaster2.intersectObjects(event.target.targetList)
+	const intersects = raycaster2.intersectObjects(event.target.targetList)
 	console.log("intersects", intersects)
 	
 	// if there is one (or more) intersections
@@ -2582,7 +2583,7 @@ function onPointerDown(event) {
 		// intersects[0].object.geometry.colorsNeedUpdate = true
 
 		// if the closest object intersected is not the currently stored intersection object
-		let theIntersectedObject = intersects[0].object
+		const theIntersectedObject = intersects[0].object
 		
 		// for testing only
 		// if ( theIntersectedObject != params.intersectedObject2 ) {
