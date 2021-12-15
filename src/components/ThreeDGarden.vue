@@ -419,24 +419,27 @@ function buildScene() {
 	// spotLight.position.set( -20, -60, 20 )
 	// //spotLight.intensity = 3.0
 
-	var shadowIntensity = 0.5; // between 0 and 1
+	//let ambientLight = getAmbientLight(0xFFFFFF, 0.1)
+	//ambientLight.position.set( -100, -100, 25 )
+
+	var shadowIntensity = 0.5; // between 0 and 1 -- suggestion
 
 	let directionalLight = getDirectionalLight(0xFFFFFF, 1.6)
 	directionalLight.position.set( -90, -120, 120 )
-	//directionalLight.intensity = 2.4
-
-	let directionalLight2 = directionalLight.clone()
-	directionalLight2.castShadow = false
-	directionalLight2.intensity = 0.5
+	directionalLight.castShadow = true
+	directionalLight.intensity = 1.6
 
 	let helperDirectionalLight = new THREE.CameraHelper(directionalLight.shadow.camera)
 	helperDirectionalLight.visible = false
 
-	// let helperDirectionalLight2 = new THREE.CameraHelper(directionalLight2.shadow.camera)
-	// helperDirectionalLight2.visible = true
+	//let directionalLight2 = directionalLight.clone()
+	let directionalLight2 = getDirectionalLight(0xFFFFFF, 0.7)
+	directionalLight2.position.set( 90, 120, 120 ) // direct opposite x,y of primary
+	directionalLight2.castShadow = false
+	directionalLight2.intensity = 1.0
 
-	//let ambientLight = getAmbientLight(0xFFFFFF, 0.1)
-	//ambientLight.position.set( -100, -100, 25 )
+	let helperDirectionalLight2 = new THREE.CameraHelper(directionalLight2.shadow.camera)
+	helperDirectionalLight2.visible = true
 	
 	guiFolderLights.add(helperDirectionalLight, "visible", 0, 20).name("Show Light Helper")
 	guiFolderLights.add(directionalLight, "intensity", 0, 20)
@@ -459,7 +462,7 @@ function buildScene() {
 	plane.add(directionalLight2)
 	//plane.add(ambientLight)
 	scene.add(helperDirectionalLight)
-	//scene.add(helperDirectionalLight2)
+	scene.add(helperDirectionalLight2)
 	scene.add(plane)
 
 	/** CAMERA **************************************************************************** */

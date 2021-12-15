@@ -10,7 +10,7 @@ get_header();
 <main id="site-content" role="main">
 
 	<!-- scene title -->
-	<h1><a href="<?php get_permalink(); ?>">ThreeD Garden: Scene</a></h1>
+	<h1><a href="<?php get_permalink(); ?>">ThreeD Garden: Scene -- <?php the_title(); ?></a></h1>
 
 	<!-- vue app -->
 	<div id="app"></div>
