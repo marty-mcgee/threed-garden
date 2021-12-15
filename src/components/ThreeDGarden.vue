@@ -419,17 +419,18 @@ function buildScene() {
 	// spotLight.position.set( -20, -60, 20 )
 	// //spotLight.intensity = 3.0
 
-	let directionalLight = getDirectionalLight(0xFFFFFF, 2.1)
+	var shadowIntensity = 0.5; // between 0 and 1
+
+	let directionalLight = getDirectionalLight(0xFFFFFF, 1.6)
 	directionalLight.position.set( -90, -120, 120 )
 	//directionalLight.intensity = 2.4
 
+	let directionalLight2 = directionalLight.clone()
+	directionalLight2.castShadow = false
+	directionalLight2.intensity = 0.5
+
 	let helperDirectionalLight = new THREE.CameraHelper(directionalLight.shadow.camera)
 	helperDirectionalLight.visible = false
-
-	// let directionalLight2 = getDirectionalLight(0xFFFFFF, 1.0)
-	// directionalLight2.castShadow = false
-	// directionalLight2.position.set( 90, 120, 120 )
-	// //directionalLight2.intensity = 1.4
 
 	// let helperDirectionalLight2 = new THREE.CameraHelper(directionalLight2.shadow.camera)
 	// helperDirectionalLight2.visible = true
@@ -455,7 +456,7 @@ function buildScene() {
 	//plane.add(pointLight)
 	//plane.add(spotLight)
 	plane.add(directionalLight)
-	//plane.add(directionalLight2)
+	plane.add(directionalLight2)
 	//plane.add(ambientLight)
 	scene.add(helperDirectionalLight)
 	//scene.add(helperDirectionalLight2)
