@@ -128,7 +128,7 @@ class ThreeD_Garden_Public {
         {
 			
 			// THREE JS
-			wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/three.min.js', array(), $this->version, true );
+			wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/three.js', array(), $this->version, true );
 			wp_enqueue_script( 'datgui', plugin_dir_url( __FILE__ ) . 'js/dat.gui.min.js', array(), $this->version, true );
 			wp_enqueue_script( 'orbitcontrols', plugin_dir_url( __FILE__ ) . 'js/OrbitControls.js', array(), $this->version, true );
 			//wp_enqueue_script( 'panolens', plugin_dir_url( __FILE__ ) . 'js/panolens.min.js', array(), $this->version, true );
