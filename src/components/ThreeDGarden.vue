@@ -640,7 +640,7 @@ function buildScene() {
         if ( player.action == "Walking" ) {
 			const elapsedTime = Date.now() - player.actionTime
 			if ( elapsedTime > 2000 && player.move.forward > 0.7 ){
-				setAction("Running")
+				//setAction("Running")
 			}
 		}
 		
@@ -1613,7 +1613,7 @@ function buildAllotments(postObject, plane, sceneID) {
 			plane, 
 			allotment.postID, // the post-to-post relationship <3
 			structure.position.x, structure.position.y, 0 //structure.position.z
-		) 
+		)
 
 		/** INFOSPOTS ********************************************************************* */
 
@@ -2444,7 +2444,9 @@ function updateAnnotationPosition(camera, width, height, positionX, positionY, p
  */
 
 // when the pointer moves and hovers
-function watchPointer(camera, targetList){
+function watchPointer(camera, targetList) {
+
+	//console.log("targetList", targetList)
 	
 	// update the picking ray with the camera and pointer position
 	raycaster.setFromCamera(pointer, camera)
@@ -2453,19 +2455,27 @@ function watchPointer(camera, targetList){
 	//let helper2 = new THREE.CameraHelper(directionalLight.shadow.camera)
 
 	// calculate objects intersecting the picking ray
-	//const intersects = raycaster.intersectObjects(targetList)
-	const intersects = []
+	//const intersects = raycaster.intersectObjects(targetList, true)
+	let intersects = []
+	try {
+		intersects = raycaster.intersectObjects(targetList, true)
+	} catch(e) {
+		intersects = []
+	}
 
 	// if there is one (or more) intersections
 	if ( intersects.length > 0 ) {
 
+		// console.log("INTERSECTS", intersects)
+		// return
+
 		// do something to object intersected? (testing purposes only)
-		for (let i = 0; i < intersects.length; i++) {
-			// hightlight object
-			for (let j = 0; j < intersects[i].object.material.length; j++) {
-				intersects[i].object.material[j].color.setHex( 0xff0000 )
-			}
-		}
+		// for (let i = 0; i < intersects.length; i++) {
+		// 	// hightlight object
+		// 	for (let j = 0; j < intersects[i].object.material.length; j++) {
+		// 		intersects[i].object.material[j].color.setHex( 0xff0000 )
+		// 	}
+		// }
 
 		// if the closest object intersected is not the currently stored intersection object
 		if ( intersects[0].object != params.intersectedObject1 ) {
@@ -2537,12 +2547,12 @@ function onPointerMove( event ) {
 	// event.preventDefault()
 	
 	// update the pointer variable
-	pointer.x = (event.clientX / window.innerWidth) * 2 - 1
-	pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
-	// pointer.x = (event.offsetX / canvas.clientWidth) * 2 - 1
-	// pointer.y = -(event.offsetY / canvas.clientHeight) * 2 + 1
+	// pointer.x = (event.clientX / window.innerWidth) * 2 - 1
+	// pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
 	// pointer.x = (event.offsetX / (window.innerWidth - 240)) * 2 - 1
 	// pointer.y = -(event.offsetY / (window.innerHeight - 100)) * 2 + 1
+	pointer.x = (event.offsetX / canvas.clientWidth) * 2 - 1
+	pointer.y = -(event.offsetY / canvas.clientHeight) * 2 + 1
 	// console.log("pointer hover, pointer.x, pointer.y) // probably shouldn't log this
 }
 
