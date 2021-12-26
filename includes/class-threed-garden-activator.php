@@ -4,7 +4,7 @@
  * Fired during plugin activation
  *
  * @link       https://garden.university
- * @since      1.0.0
+ * @since      0.0.1
  *
  * @package    ThreeD_Garden
  * @subpackage ThreeD_Garden/includes
@@ -15,7 +15,7 @@
  *
  * This class defines all code necessary to run during the plugin's activation.
  *
- * @since      1.0.0
+ * @since      0.0.1
  * @package    ThreeD_Garden
  * @subpackage ThreeD_Garden/includes
  * @author     Marty McGee <support@companyjuice.com>
@@ -27,7 +27,7 @@ class ThreeD_Garden_Activator {
 	 *
 	 * Long Description.
 	 *
-	 * @since    1.0.0
+	 * @since    0.0.1
 	 */
 	public static function activate() {
 		if ( ! current_user_can( 'activate_plugins' ) ) return;

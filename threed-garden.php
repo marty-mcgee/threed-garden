@@ -12,8 +12,8 @@
  * Version:           0.2.4
  * Author:            Marty McGee
  * Author URI:        https://companyjuice.com
- * License:           GPL-2.0+
- * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
+ * License:           GPL-3.0
+ * License URI:       http://www.gnu.org/licenses/gpl-3.0.txt
  * Text Domain:       threedgarden
  * Domain Path:       /languages
  */
@@ -24,9 +24,8 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Currently plugin version.
- * Start at version 1.0.0 and use SemVer - https://semver.org
- * Rename this for your plugin and update it as you release new versions.
+ * Current plugin version.
+ * Start at version 0.0.0 using SemVer -- https://semver.org
  */
 define( 'THREED_GARDEN_VERSION', '0.2.4' );
 
@@ -78,7 +77,7 @@ function add_type_attribute($tag, $handle, $src) {
  * then kicking off the plugin from this point in the file does
  * not affect the page life cycle.
  *
- * @since    1.0.0
+ * @since    0.0.1
  */
 function run_threed_garden() {
 
