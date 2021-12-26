@@ -324,7 +324,7 @@ class ThreeD_Garden_Admin {
 			'manage_options',
 			'threedgarden', 
 			array($this, 'RenderPage'), 
-			plugins_url('/media/threedgarden-icon.png',__DIR__), //'dashicons-media-code',
+			plugins_url('/assets/media/threedgarden-icon.png',__DIR__), //'dashicons-media-code',
 			31 //null
 		);
 		add_submenu_page(
