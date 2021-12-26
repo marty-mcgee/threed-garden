@@ -16,7 +16,7 @@ module.exports = {
     //assetsDir: process.env.BASE_URL,
 	//assetsDir: process.env.BASE_URL + '/wp-content/plugins/threed-garden/public/dist/',
 
-	outputDir: 'public/dist', // not necessary?
+	outputDir: 'dist', // not necessary?
 	
 	filenameHashing: false, // define outputted file names
 
@@ -24,7 +24,7 @@ module.exports = {
 
 	chainWebpack: config => {
 
-		console.log("MARTY: chainWebpack config ***")
+		console.log("*** MARTY: chainWebpack config ***")
 
 		config.plugins.delete('html')
 		config.plugins.delete('preload')

@@ -1,6 +1,10 @@
 .DS_Store
 node_modules
-/dist
+dist
+/admin/node_modules
+/public/node_modules
+/admin/dist
+/public/dist
 /assets/libraries
 
 

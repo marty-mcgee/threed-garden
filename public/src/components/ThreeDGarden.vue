@@ -446,11 +446,12 @@ function buildScene() {
 	guiFolderLights.add(directionalLight.position, "x", -500, 500)
 	guiFolderLights.add(directionalLight.position, "y", -500, 500)
 	guiFolderLights.add(directionalLight.position, "z", -500, 500)
-	// guiFolderLights.add(helperDirectionalLight2, "visible", 0, 20).name("Show Light 2 Helper")
-	// guiFolderLights.add(directionalLight2, "intensity", 0, 20)
-	// guiFolderLights.add(directionalLight2.position, "x", -500, 500)
-	// guiFolderLights.add(directionalLight2.position, "y", -500, 500)
-	// guiFolderLights.add(directionalLight2.position, "z", -500, 500)
+
+	guiFolderLights.add(helperDirectionalLight2, "visible", 0, 20).name("Show Light 2 Helper")
+	guiFolderLights.add(directionalLight2, "intensity", 0, 20)
+	guiFolderLights.add(directionalLight2.position, "x", -500, 500)
+	guiFolderLights.add(directionalLight2.position, "y", -500, 500)
+	guiFolderLights.add(directionalLight2.position, "z", -500, 500)
 
 	/** SCENE ***************************************************************************** */
 
@@ -1435,90 +1436,100 @@ function loadRoad(plane) {
 	let startZ = -138
 	let offsetZ = 20
 
-	// ROAD A
-	for ( i = 1; i <= count; i++ ) {
-		loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_Straight_01.fbx`, function(object) {
-			
-			// console.log("ROAD object", object)
+	const roadPromise1 = new Promise((resolve, reject) => {
 
-			//params.farmhouse = object
-			//params.colliders = []
-			//object.rotation.y = 90 * (Math.PI/180) // 90 degrees in radians
-			object.position.set(startX, 0, startZ)
-			startX = startX + offsetX
-			startZ = startZ + offsetZ
-			object.scale.set(0.02, 0.01, 0.02)
-			object.traverse( function (child) {
-				if (child.isMesh) {
-					// if (child.name.startsWith("proxy")) {
-					// 	params.colliders.push(child)
-					// 	child.material.visible = false
-					// } else {
-						child.castShadow = true
-						child.receiveShadow = true
-					// }
-				}
-			} )
-			loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_03_A.png`, function(texture) {
+		// ROAD A
+		for ( i = 1; i <= count; i++ ) {
+			loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_Straight_01.fbx`, function(object) {
+				
+				// console.log("ROAD object", object)
+
+				//params.farmhouse = object
+				//params.colliders = []
+				//object.rotation.y = 90 * (Math.PI/180) // 90 degrees in radians
+				object.position.set(startX, 0, startZ)
+				startX = startX + offsetX
+				startZ = startZ + offsetZ
+				console.log("ROAD A startX, startZ", startX, startZ)
+				object.scale.set(0.02, 0.01, 0.02)
 				object.traverse( function (child) {
 					if (child.isMesh) {
-						//child.material.color.setHex(0x000000)
-						child.material.transparent = true
-						child.material.opacity = 0.7
-						//child.material.depthWrite = true
-						child.material.map = texture
+						// if (child.name.startsWith("proxy")) {
+						// 	params.colliders.push(child)
+						// 	child.material.visible = false
+						// } else {
+							child.castShadow = true
+							child.receiveShadow = true
+						// }
 					}
 				} )
+				loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_03_A.png`, function(texture) {
+					object.traverse( function (child) {
+						if (child.isMesh) {
+							//child.material.color.setHex(0x000000)
+							child.material.transparent = true
+							child.material.opacity = 0.7
+							//child.material.depthWrite = true
+							child.material.map = texture
+						}
+					} )
+				})
+				
+				scene.add(object)
+				
+				//console.log("ROAD A object", object)
 			})
-			
-			scene.add(object)
-			
-			//console.log("ROAD object", object)
-		})
 
-	}
-	// ROAD T
-	for ( i = 1; i <= 1; i++ ) {
-		loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_T_Section_01.fbx`, function(object) {
-			
-			console.log("ROAD T startX, startZ", startX, startZ)
+		}
+		resolve(startX, startZ)
+	})
+	roadPromise1.then((startX, startZ) => {
+		// ROAD T
+		for ( i = 1; i <= 1; i++ ) {
+			loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_T_Section_01.fbx`, function(object) {
+				
+				console.log("ROAD T startX, startZ", startX, startZ)
 
-			//params.farmhouse = object
-			//params.colliders = []
-			//object.rotation.y = 90 * (Math.PI/180) // 90 degrees in radians
-			object.position.set(startX, 0, startZ)
-			startX = startX + offsetX
-			startZ = startZ + offsetZ
-			object.scale.set(0.02, 0.01, 0.02)
-			object.traverse( function (child) {
-				if (child.isMesh) {
-					// if (child.name.startsWith("proxy")) {
-					// 	params.colliders.push(child)
-					// 	child.material.visible = false
-					// } else {
-						child.castShadow = true
-						child.receiveShadow = true
-					// }
-				}
-			} )
-			loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_03_A.png`, function(texture) {
-				object.traverse( function ( child ) {
-					if ( child.isMesh ){
-						//child.material.color.setHex(0x000000)
-						child.material.transparent = true
-						child.material.opacity = 0.7
-						//child.material.depthWrite = true
-						child.material.map = texture
+				//params.farmhouse = object
+				//params.colliders = []
+				//object.rotation.y = 90 * (Math.PI/180) // 90 degrees in radians
+				object.position.set(startX, 0, startZ)
+				startX = startX + offsetX
+				startZ = startZ + offsetZ
+				console.log("ROAD T startX, startZ", startX, startZ)
+				object.scale.set(0.02, 0.01, 0.02)
+				object.traverse( function (child) {
+					if (child.isMesh) {
+						// if (child.name.startsWith("proxy")) {
+						// 	params.colliders.push(child)
+						// 	child.material.visible = false
+						// } else {
+							child.castShadow = true
+							child.receiveShadow = true
+						// }
 					}
 				} )
+				loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_03_A.png`, function(texture) {
+					object.traverse( function ( child ) {
+						if ( child.isMesh ){
+							//child.material.color.setHex(0x000000)
+							child.material.transparent = true
+							child.material.opacity = 0.7
+							//child.material.depthWrite = true
+							child.material.map = texture
+						}
+					} )
+				})
+				
+				scene.add(object)
+				
+				//console.log("ROAD T object", object)
 			})
-			
-			scene.add(object)
-			
-			console.log("ROAD T object", object)
-		})
 
-	}
+		}
+
+	})
+
 }
 
 
