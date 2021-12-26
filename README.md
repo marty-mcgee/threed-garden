@@ -1,4 +1,4 @@
-=== ThreeD Garden ===
+=== ThreeD Garden v0.2.4 ===
 
 Contributors: martymcgee, damartman, companyjuice
 
