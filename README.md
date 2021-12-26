@@ -1,11 +1,10 @@
 === ThreeD Garden v0.2.4 ===
 
-Contributors: martymcgee, damartman, companyjuice
+Contributors: martymcgee, damartman, companyjuice, gardenuniversity
 
-ThreeD Garden is a WordPress Plugin for ThreeJS WebGL -- A Virtual Garden + Homestead Management Solution
+# threed-garden
 
-
-# real-world-vue
+ThreeD Garden is a WordPress Plugin for ThreeJS WebGL, using Vue 3 -- A Virtual Garden + Homestead Management Solution
 
 ## Project setup
 ```
