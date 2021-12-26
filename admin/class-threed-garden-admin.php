@@ -4,7 +4,7 @@
  * The admin-specific functionality of the plugin.
  *
  * @link       https://garden.university
- * @since      1.0.0
+ * @since      0.0.1
  *
  * @package    ThreeD_Garden
  * @subpackage ThreeD_Garden/admin
@@ -25,7 +25,7 @@ class ThreeD_Garden_Admin {
 	/**
 	 * The ID of this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.0.1
 	 * @access   private
 	 * @var      string    $plugin_name
 	 */
@@ -34,7 +34,7 @@ class ThreeD_Garden_Admin {
 	/**
 	 * The version of this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.0.1
 	 * @access   private
 	 * @var      string    $version
 	 */
@@ -52,7 +52,7 @@ class ThreeD_Garden_Admin {
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @since    1.0.0
+	 * @since    0.0.1
 	 * @param    string    $plugin_name
 	 * @param    string    $version
 	 */
@@ -111,7 +111,7 @@ class ThreeD_Garden_Admin {
 	/**
 	 * Register the stylesheets for the admin area.
 	 *
-	 * @since    1.0.0
+	 * @since    0.0.1
 	 */
 	public function enqueue_styles() {
 
@@ -138,7 +138,7 @@ class ThreeD_Garden_Admin {
 	/**
 	 * Register the JavaScript for the admin area.
 	 *
-	 * @since    1.0.0
+	 * @since    0.0.1
 	 */
 	public function enqueue_scripts() {
 		/**
