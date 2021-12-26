@@ -25,7 +25,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 /**
  * Current plugin version.
- * Start at version 0.0.0 using SemVer -- https://semver.org
+ * Start at version 0.0.1 using SemVer -- https://semver.org
  */
 define( 'THREED_GARDEN_VERSION', '0.2.4' );
 
