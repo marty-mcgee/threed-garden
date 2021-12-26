@@ -1,0 +1,19 @@
+{
+  "name": "threed-garden",
+  "version": "0.0.1",
+  "description": "ThreeD Garden Documentation",
+  "main": "index.js",
+  "authors": {
+    "name": "Marty McGee",
+    "email": "support@companyjuice.com"
+  },
+  "repository": "/threed-garden",
+  "scripts": {
+    "dev": "vuepress dev src",
+    "build": "vuepress build src"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vuepress": "^1.5.3"
+  }
+}
