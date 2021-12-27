@@ -86,9 +86,9 @@ let messages = {
 let params = {
 	/** SET MODES */
 	modes: Object.freeze({
-		NONE:   Symbol("none"),
+		NONE: Symbol("none"),
 		PRELOAD: Symbol("preload"),
-		INITIALISING:  Symbol("initialising"),
+		INITIALIZING: Symbol("initializing"),
 		CREATING_LEVEL: Symbol("creating_level"),
 		ACTIVE: Symbol("active"),
 		GAMEOVER: Symbol("gameover")
@@ -121,7 +121,7 @@ guiFolderRotation.add(params, "ANIMATE").name("Run Animation")
 
 // AUDIO???
 const sfxExt = SFX.supportsAudioType('mp3') ? 'mp3' : 'ogg'
-//console.log("SFX", SFX)
+console.log("SFX", SFX)
 
 
 // LOADER OPTIONS (START HERE) :) <3
