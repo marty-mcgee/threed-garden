@@ -2,8 +2,8 @@
 	<div class="threedgarden">
 		<h1>{{ msg }}</h1>
 		<h2>{{ subtitle }}</h2>
+		<div id="webgl"></div>
 	</div>
-	<div id="webgl"></div>
 </template>
 
 <script>
