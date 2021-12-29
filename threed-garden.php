@@ -58,6 +58,8 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-threed-garden.php';
 
 /**
  * [MM] CUSTOM FUNCTION for loading ES2015 modules
+ * Enqueue javascript with type="module" - Stack Overflow: 
+ * https://stackoverflow.com/questions/58931144/enqueue-javascript-with-type-module
  */
 function add_type_attribute($tag, $handle, $src) {
 	if ( 'threed-garden' === $handle ) {
@@ -424,7 +426,7 @@ class ThreeDGardenPlugin{
 		
 		return $title;
 	}
-	// custom login styles
+	// custom login styles + javascript
 	public function threedgarden_custom_login_styles() {
 
 		$styles = false;
