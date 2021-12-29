@@ -177,7 +177,7 @@ class ThreeD_Garden_Admin {
 			wp_enqueue_script( 'tweenjs', plugin_dir_url( __FILE__ ) . 'js/tween.umd.js', array(), $this->version, true );
 
 			// VUE 3
-			wp_enqueue_script( 'vue', 'https://unpkg.com/vue@3.0.7/dist/vue.global.js', array(), $this->version, true );
+			wp_enqueue_script( 'vue', 'https://unpkg.com/vue@3.2.26/dist/vue.global.js', array(), $this->version, true );
 
 			// load js with bundler
 			// wp_enqueue_script(
