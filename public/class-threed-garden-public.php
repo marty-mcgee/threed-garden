@@ -187,6 +187,14 @@ class ThreeD_Garden_Public {
 				true
 			);
 
+			wp_enqueue_script(
+				'vitailse-threedgarden-sw',
+				plugins_url( '/vitailse/dist/threedgarden-sw.js', __FILE__ ),
+				[],
+				$this->version,
+				true
+			);
+
 		}
 	}
 
