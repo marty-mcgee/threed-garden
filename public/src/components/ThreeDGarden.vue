@@ -75,7 +75,7 @@ let cameraFade = 0.05
 let mute = false
 let collect = []
 
-let messages = { 
+let messages = {
 	text: [ 
 		"Welcome to your ThreeD Garden",
 		"GO GROW!"
@@ -147,6 +147,37 @@ params.mode = params.modes.PRELOAD
 
 console.log("params", params)
 console.log("options", options)
+
+
+var element = document.getElementById("APP")
+//element.classList.add("progressStyle")
+var progress = document.createElement('div')
+	progress.classList.add("progress-style")
+var progressBar = document.createElement('div')
+	progressBar.classList.add("progress-bar")
+
+progress.appendChild(progressBar)
+
+//document.body.appendChild(progress)
+element.appendChild(progress)
+
+var manager = new THREE.LoadingManager()
+manager.onProgress = function ( item, loaded, total ) {
+  progressBar.style.width = (loaded / total * 100) + '%'
+	console.log("item", item, loaded, total)
+};
+
+function addRandomPlaceHoldItImage() {
+  var r = Math.round(Math.random() * 4000)
+  new THREE.ImageLoader(manager).load('//picsum.photos/' + r + '/' + r)
+}
+
+for(var i = 0;i < 10;i++) {
+	addRandomPlaceHoldItImage()
+	//console.log("manager", manager)
+}
+
+console.log("manager", manager)
 
 /**
  * init main constructor (now in Vue.mounted)
@@ -422,7 +453,7 @@ function buildScene() {
 	//let ambientLight = getAmbientLight(0xFFFFFF, 0.1)
 	//ambientLight.position.set( -100, -100, 25 )
 
-	var shadowIntensity = 0.5; // between 0 and 1 -- suggestion
+	var shadowIntensity = 0.5;// between 0 and 1 -- suggestion
 
 	let directionalLight = getDirectionalLight(0xFFFFFF, 1.6)
 	directionalLight.position.set( -90, -120, 120 )
@@ -748,7 +779,7 @@ function movePlayer(dt){
 	let blocked = false
 	const colliders = params.colliders
 
-	// if (colliders!==undefined){ 
+	// if (colliders!==undefined){
 	// 	const intersect = raycaster.intersectObjects(colliders)
 	// 	if (intersect.length>0){
 	// 		if (intersect[0].distance<50) blocked = true
@@ -1439,7 +1470,7 @@ function loadRoad(plane) {
 	const roadPromise1 = new Promise((resolve, reject) => {
 
 		// ROAD A
-		for ( i = 1; i <= count; i++ ) {
+		for ( i = 1;i <= count;i++ ) {
 			loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_Straight_01.fbx`, function(object) {
 				
 				// console.log("ROAD object", object)
@@ -1485,7 +1516,7 @@ function loadRoad(plane) {
 	})
 	roadPromise1.then((startX, startZ) => {
 		// ROAD T
-		for ( i = 1; i <= 1; i++ ) {
+		for ( i = 1;i <= 1;i++ ) {
 			loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_T_Section_01.fbx`, function(object) {
 				
 				console.log("ROAD T startX, startZ", startX, startZ)
@@ -1596,7 +1627,7 @@ function buildAllotments(postObject, plane, sceneID) {
 		structure.material.roughness = 0.9
 		if (allotment.images.texture != null && allotment.images.texture != false) {
 			structure.material.map = loaderTexture.load(allotment.images.texture)
-			for (let i = 0; i < structure.material.length; i++) {
+			for (let i = 0;i < structure.material.length;i++) {
 				// hightlight object
 				//structure.material[i].color.set(0xff0000)
 				structure.material[i].map = loaderTexture.load(allotment.images.texture)
@@ -1717,7 +1748,7 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
 		structure.material.roughness = 0.9
 		if (bed.images.texture != null && bed.images.texture != false) {
 			structure.material.map = loaderTexture.load(bed.images.texture)
-			for (let i = 0; i < structure.material.length; i++) {
+			for (let i = 0;i < structure.material.length;i++) {
 				// hightlight object
 				//structure.material[i].color.set(0xff0000)
 				structure.material[i].map = loaderTexture.load(bed.images.texture)
@@ -1790,7 +1821,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 				//console.log("MATCHED at: ", i)
 				//matches.push(i)
 				//matches.push(obj)
-				matches.pushIfNotExist(obj, function(e) { 
+				matches.pushIfNotExist(obj, function(e) {
 					return e.id === obj.id 
 				})
 			}
@@ -1872,7 +1903,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 					structure.material.roughness = 0.9
 					if (plant.images.texture != null && plant.images.texture != false) {
 						structure.material.map = loaderTexture.load(plant.images.texture)
-						for (let i = 0; i < structure.material.length; i++) {
+						for (let i = 0;i < structure.material.length;i++) {
 							// hightlight object
 							//structure.material[i].color.set(0xff0000)
 							structure.material[i].map = loaderTexture.load(plant.images.texture)
@@ -2393,7 +2424,7 @@ function makeTextSprite(message, parameters) {
 	texture.needsUpdate = true
 
 	let spriteMaterial = new THREE.SpriteMaterial( 
-		{ 
+		{
 			map: texture,
 			transparent: true,
 			depthTest: false,
@@ -2485,9 +2516,9 @@ function watchPointer(camera, targetList) {
 		// return
 
 		// do something to object intersected? (testing purposes only)
-		// for (let i = 0; i < intersects.length; i++) {
+		// for (let i = 0;i < intersects.length;i++) {
 		// 	// hightlight object
-		// 	for (let j = 0; j < intersects[i].object.material.length; j++) {
+		// 	for (let j = 0;j < intersects[i].object.material.length;j++) {
 		// 		intersects[i].object.material[j].color.setHex( 0xff0000 )
 		// 	}
 		// }
@@ -2498,7 +2529,7 @@ function watchPointer(camera, targetList) {
 			// restore previous intersection object (if it exists) to its original color
 			if ( params.intersectedObject1 ) {
 				if ( params.intersectedObject1.material.constructor.name == "Array" ) {
-					for (let i = 0; i < params.intersectedObject1.material.length; i++) {
+					for (let i = 0;i < params.intersectedObject1.material.length;i++) {
 						params.intersectedObject1.material[i].color.setHex( params.intersectedObject1.currentHex )
 					}
 				} 
@@ -2515,11 +2546,11 @@ function watchPointer(camera, targetList) {
 			if ( params.intersectedObject1.material.constructor.name == "Array" ) {
 				// SEPARATE FOR LOOPS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				// store color of closest object (for later restoration)
-				for (let i = 0; i < params.intersectedObject1.material.length; i++) {
+				for (let i = 0;i < params.intersectedObject1.material.length;i++) {
 					params.intersectedObject1.currentHex = params.intersectedObject1.material[i].color.getHex()
 				}
 				// set a new color for closest object
-				for (let i = 0; i < params.intersectedObject1.material.length; i++) {
+				for (let i = 0;i < params.intersectedObject1.material.length;i++) {
 					params.intersectedObject1.material[i].color.setHex( 0xdddd00 )
 				}
 				// SEPARATE FOR LOOPS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -2538,7 +2569,7 @@ function watchPointer(camera, targetList) {
 		// restore previous intersection object (if it exists) to its original color
 		if ( params.intersectedObject1 ) {
 			if ( params.intersectedObject1.material.constructor.name == "Array" ) {
-				for (let i = 0; i < params.intersectedObject1.material.length; i++) {
+				for (let i = 0;i < params.intersectedObject1.material.length;i++) {
 					params.intersectedObject1.material[i].color.setHex( params.intersectedObject1.currentHex )
 				}
 			} 
@@ -2840,7 +2871,7 @@ function dragElement(elmnt) {
 /// throw manual abort of script
 function throwError() {
 	// creates a new exception type:
-	function FatalError(){ Error.apply(this, arguments); this.name = "FatalError" }
+	function FatalError(){ Error.apply(this, arguments);this.name = "FatalError" }
 	FatalError.prototype = Object.create(Error.prototype)
 
 	// and then, use this to trigger the error:
@@ -2852,7 +2883,7 @@ function throwError() {
 // check if an element exists in array using a comparer function
 // comparer : function(currentElement)
 Array.prototype.inArray = function(comparer) { 
-    for(let i = 0; i < this.length; i++) { 
+    for(let i = 0;i < this.length;i++) { 
         if (comparer(this[i])) return true
     }
     return false
@@ -3015,6 +3046,11 @@ export default {
 		//console.log("preloader", preloader)
 	}
 }
+
+/** 
+ * END THREED GARDEN JS
+ * ************************************************************************************** 
+ */
 </script>
 
 <style scoped>
@@ -3034,5 +3070,402 @@ a {
 }
 .threedgarden {
 	margin-bottom: 0px;
+}
+
+/** THREED GARDEN */
+.planting_plan_bed_plant_schedule {
+	background-color: #999999;
+}
+.planting_plan_bed {
+	background-color: #330000;
+}
+.planting_plan_plant {
+	background-color: #003300;
+}
+
+/** WEBGL */
+#webgl {
+	width: 100%;
+	height: 100%;
+}
+
+/** DAT.GUI "dg" */
+#gui {
+	position: absolute;
+	right: 5px;
+}
+#gui dd, #gui li {
+	margin-bottom: 0;
+}
+.dg li.title {
+	color: #FFFFFF;
+}
+.dg .closed li.title {
+	color: #AAAAAA;
+}
+.dg .c input {
+	font-size: 10px;
+	height: auto;
+	line-height: auto;
+}
+
+/** ANNOTATIONS */
+.annotation {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 9999;
+	margin-left: 15px;
+	margin-top: 15px;
+	padding: 1em;
+	width: 200px;
+	color: #fff;
+	background: rgba(0, 0, 0, 0.7);
+	border-radius: .5em;
+	font-size: 12px;
+	line-height: 1.2;
+	transition: opacity .5s;
+	/* &::before {
+		content: '1';
+		position: absolute;
+		top: -30px;
+		left: -30px;
+		width: 30px;
+		height: 30px;
+		border: 2px solid #fff;
+		border-radius: 50%;
+		font-size: 16px;
+		line-height: 30px;
+		text-align: center;
+		background: rgba(0, 0, 0, 0.8);
+	} */
+}
+
+/** "x" */
+.dismiss {
+	cursor: pointer;
+	margin-left: 5px;
+}
+
+/** 
+ * loader spinner 
+ */
+.lds-grid {
+	display: inline-block;
+	position: fixed;
+	width: 80px;
+	height: 80px;
+	z-index: -1;
+}
+.lds-grid div {
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: #fff;
+	animation: lds-grid 1.2s linear infinite;
+}
+.lds-grid div:nth-child(1) {
+	top: 8px;
+	left: 8px;
+	animation-delay: 0s;
+}
+.lds-grid div:nth-child(2) {
+	top: 8px;
+	left: 32px;
+	animation-delay: -0.4s;
+}
+.lds-grid div:nth-child(3) {
+	top: 8px;
+	left: 56px;
+	animation-delay: -0.8s;
+}
+.lds-grid div:nth-child(4) {
+	top: 32px;
+	left: 8px;
+	animation-delay: -0.4s;
+}
+.lds-grid div:nth-child(5) {
+	top: 32px;
+	left: 32px;
+	animation-delay: -0.8s;
+}
+.lds-grid div:nth-child(6) {
+	top: 32px;
+	left: 56px;
+	animation-delay: -1.2s;
+}
+.lds-grid div:nth-child(7) {
+	top: 56px;
+	left: 8px;
+	animation-delay: -0.8s;
+}
+.lds-grid div:nth-child(8) {
+	top: 56px;
+	left: 32px;
+	animation-delay: -1.2s;
+}
+.lds-grid div:nth-child(9) {
+	top: 56px;
+	left: 56px;
+	animation-delay: -1.6s;
+}
+@keyframes lds-grid {
+	0%, 100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
+}
+
+.lds-default {
+	display: inline-block;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-top: -40px;
+	margin-left: 60px;
+	width: 80px;
+	height: 80px;
+	z-index: -1;
+}
+.lds-default div {
+	position: absolute;
+	width: 14px;
+	height: 14px;
+	background: #009900;
+	border-radius: 50%;
+	animation: lds-default 1.2s linear infinite;
+}
+.lds-default div:nth-child(1) {
+	animation-delay: 0s;
+	top: 37px;
+	left: 66px;
+}
+.lds-default div:nth-child(2) {
+	animation-delay: -0.1s;
+	top: 22px;
+	left: 62px;
+}
+.lds-default div:nth-child(3) {
+	animation-delay: -0.2s;
+	top: 11px;
+	left: 52px;
+}
+.lds-default div:nth-child(4) {
+	animation-delay: -0.3s;
+	top: 7px;
+	left: 37px;
+}
+.lds-default div:nth-child(5) {
+	animation-delay: -0.4s;
+	top: 11px;
+	left: 22px;
+}
+.lds-default div:nth-child(6) {
+	animation-delay: -0.5s;
+	top: 22px;
+	left: 11px;
+}
+.lds-default div:nth-child(7) {
+	animation-delay: -0.6s;
+	top: 37px;
+	left: 7px;
+}
+.lds-default div:nth-child(8) {
+	animation-delay: -0.7s;
+	top: 52px;
+	left: 11px;
+}
+.lds-default div:nth-child(9) {
+	animation-delay: -0.8s;
+	top: 62px;
+	left: 22px;
+}
+.lds-default div:nth-child(10) {
+	animation-delay: -0.9s;
+	top: 66px;
+	left: 37px;
+}
+.lds-default div:nth-child(11) {
+	animation-delay: -1s;
+	top: 62px;
+	left: 52px;
+}
+.lds-default div:nth-child(12) {
+	animation-delay: -1.1s;
+	top: 52px;
+	left: 62px;
+}
+@keyframes lds-default {
+	0%, 20%, 80%, 100% {
+		transform: scale(1.0);
+	}
+	50% {
+		transform: scale(1.8);
+	}
+	0%, 100% {
+		opacity: 0.7;
+	}
+	50% {
+		opacity: 0.2;
+	}
+}
+  
+
+
+#message{
+	position:absolute;
+	left: 50%;
+	top: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	font-family: 'Kavivanar', san-serif;
+	font-size: 40px;
+	width:80%;
+	max-width:280px;
+	padding: 15px 15px 50px 15px;
+	text-align: center;
+	display:none;
+	align-content: center;
+	justify-content: center;
+	background-color: aliceblue;
+	border: medium solid #3D455C;
+	border-radius: 20px;
+	color: #3D455C;
+	z-index: 99;
+}
+#message_ok{
+	position: absolute;
+	bottom: 10px;
+	padding: 10px 20px 10px 20px;
+	font-family: sans-serif;
+	font-size: 20px;
+	background-color: #3D455C;
+	color: #fff;
+	border-radius: 8px;
+	border: medium solid #696882;
+}
+
+#sfx-btn{
+	position: absolute;
+	right: 15px;
+	top: 15px;
+	width: 40px;
+	height: 40px;
+	border: none;
+	border-radius: 50%;
+	background:#3B53A2;
+	font-size: 25px;
+	color: #fff;
+}
+
+#camera-btn{
+	position: absolute;
+	right: 15px;
+	bottom: 15px;
+	width: 40px;
+	height: 40px;
+	border: none;
+	border-radius: 50%;
+	background:#3B53A2;
+	font-size: 25px;
+	color: #fff;
+}
+
+#action-btn{
+	position: absolute;
+	left: 50%;
+	bottom: 5px;
+	width: 40px;
+	height: 40px;
+	border: none;
+	border-radius: 50%;
+	background:#3B53A2;
+	font-size: 25px;
+	color: #fff;
+	transform: translateX(-50%);
+	z-index: 9;
+}
+
+#overlay{
+	position:absolute;
+	width: 100%;
+	height: 100%;
+	background: #000000;
+	z-index: 10;
+	opacity: 1;
+}
+
+.fade-in {
+	animation-name: fade-in;
+	animation-duration: 2s;
+}
+
+@keyframes fade-in {
+	from {opacity: 1;}
+	to {opacity: 0;}
+}
+
+#briefcase-btn{
+	position: absolute;
+	left: 15px;
+	bottom: 15px;
+	width: 40px;
+	height: 40px;
+	border: none;
+	border-radius: 50%;
+	background:#3B53A2;
+	font-size: 25px;
+	color: #fff;
+}
+
+#briefcase{
+	position: absolute;
+	left: 20px;
+	bottom: 60px;
+	width: auto;
+	opacity: 0;
+	padding: 8px;
+	border-radius: 8px;
+	background:#3B53A2;
+	transition: opacity 0.5s;
+}
+
+#briefcase ul{
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+#briefcase li{
+	float: left;
+}
+
+#briefcase li a{
+	padding: 0 3px 0 3px;
+}
+
+#briefcase img{
+	width: 100px;
+	height: 75px;
+}
+
+
+/* NEW LOADER */
+div .progress-style {
+	float: left;
+	position: absolute;
+	width: 200px;
+	height: 20px;
+	background: red;
+	border: 2px solid #000;
+	z-index: 1;
+}
+div .progress-style > div .progress-bar {
+	width: 200px;
+	height: 20px;
+	background: green;
+	border: none;
 }
 </style>
