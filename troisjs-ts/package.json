@@ -1,0 +1,22 @@
+{
+  "name": "troisjs-ts",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.134.0",
+    "troisjs": "^0.3.3",
+    "vue": "^3.2.20"
+  },
+  "devDependencies": {
+    "@types/three": "^0.134.0",
+    "@vitejs/plugin-vue": "^1.9.4",
+    "@vue/compiler-sfc": "^3.2.20",
+    "typescript": "^4.4.4",
+    "vite": "^2.6.14",
+    "vue-tsc": "^0.29.5"
+  }
+}
