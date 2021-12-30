@@ -82,12 +82,12 @@ class ThreeD_Garden_Public {
 		// 	[],
 		// 	$this->version
 		// );
-		wp_enqueue_style(
-			'vue-cli-css-app',
-			plugins_url( '/dist/css/app.css', __FILE__ ),
-			[],
-			$this->version
-		);
+		// wp_enqueue_style(
+		// 	'vue-cli-css-app',
+		// 	plugins_url( '/dist/css/app.css', __FILE__ ),
+		// 	[],
+		// 	$this->version
+		// );
 
 		
 	}
@@ -171,25 +171,25 @@ class ThreeD_Garden_Public {
 			wp_enqueue_script( 'vue', 'https://unpkg.com/vue@3.2.26/dist/vue.global.js', array(), $this->version, true );
 
 			// load css & js with bundler
-			wp_enqueue_script(
-				'vue-cli-js-vendors',
-				plugins_url( '/dist/js/chunk-vendors.js', __FILE__ ),
-				[],
-				$this->version,
-				true
-			);
+			// wp_enqueue_script(
+			// 	'vue-cli-js-vendors',
+			// 	plugins_url( '/dist/js/chunk-vendors.js', __FILE__ ),
+			// 	[],
+			// 	$this->version,
+			// 	true
+			// );
 
-			wp_enqueue_script(
-				'vue-cli-js-app',
-				plugins_url( '/dist/js/app.js', __FILE__ ),
-				[],
-				$this->version,
-				true
-			);
+			// wp_enqueue_script(
+			// 	'vue-cli-js-app',
+			// 	plugins_url( '/dist/js/app.js', __FILE__ ),
+			// 	[],
+			// 	$this->version,
+			// 	true
+			// );
 
 			wp_enqueue_script(
 				'vitailse-threedgarden-sw',
-				plugins_url( '/vitailse/dist/threedgarden-sw.js', __FILE__ ),
+				plugins_url( '/dist/threedgarden-sw.js', __FILE__ ),
 				[],
 				$this->version,
 				true

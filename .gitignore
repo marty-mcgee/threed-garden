@@ -7,6 +7,8 @@ dist
 /public/dist
 /assets/libraries
 
+# temp
+public-old
 
 # local env files
 .env.local
