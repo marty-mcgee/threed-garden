@@ -96,10 +96,10 @@ export default defineConfig({
 			},
 			workbox: {
 				swDest: resolve(__dirname, '../public/dist/threedgarden-sw.js'),
-				globPatterns: [
-					'*/*.*',
-					'*.*'
-				],
+				// globPatterns: [
+				// 	'*/*.*',
+				// 	'*.*'
+				// ],
 				//directoryIndex: 'index.php'
 			},
 			// injectManifest: {
