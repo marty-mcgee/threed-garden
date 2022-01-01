@@ -1,6 +1,8 @@
 <?php
 // Silence is golden?
+?>
 
+<?php /*
 // This would be your framework default bootstrap file
 
 // During dev, this file would be hit when accessing your local host, like:
@@ -9,9 +11,9 @@
 require_once __DIR__ . '/helpers.php';
 
 ?>
+*/ ?>
 
 <?php /*
-*/ ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,6 +42,7 @@ require_once __DIR__ . '/helpers.php';
     <div id="app"></div>
 </body>
 </html>
+*/ ?>
 
 <?php /*
 <!DOCTYPE html>

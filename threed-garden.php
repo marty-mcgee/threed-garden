@@ -62,10 +62,13 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-threed-garden.php';
  * https://stackoverflow.com/questions/58931144/enqueue-javascript-with-type-module
  */
 function add_type_attribute($tag, $handle, $src) {
-	if ( 'threed-garden' === $handle ) {
+	if ( 'threed-garden' === $handle || 'threedgarden-sw' === $handle ) {
 		// change the script tag by adding type="module" and return it.
 		$tag = '<script type="module" defer src="' . esc_url( $src ) . '"></script>';
 	} 
+	// else {
+	// 	$tag .= 'HEY HEY HEY --- ' . $handle . ' --- ';
+	// }
 	// else {
 	// 	$tag = '<script type="text/javascript" defer src="' . esc_url( $src ) . '"></script>';
 	// }

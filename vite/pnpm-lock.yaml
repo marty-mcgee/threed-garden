@@ -36,6 +36,8 @@ specifiers:
   vue-i18n: ^9.2.0-beta.23
   vue-router: ^4.0.12
   vue-tsc: ^0.29.8
+  workbox-build: ^6.4.2
+  workbox-precaching: ^6.4.2
   workbox-window: ^6.4.2
 
 dependencies:
@@ -76,6 +78,8 @@ devDependencies:
   vite-plugin-vue-layouts: 0.5.0_ace9438965422abac76b04ccfce8b752
   vite-ssg: 0.17.2_86844780c059112e7052d2ced2385ac4
   vue-tsc: 0.29.8_typescript@4.5.4
+  workbox-build: 6.4.2
+  workbox-precaching: 6.4.2
   workbox-window: 6.4.2
 
 packages:
