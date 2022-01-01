@@ -1,7 +1,7 @@
 {
 	"name": "@companyjuice/threedgarden",
-	"description": "ThreeD Garden WP Plugin on Vue, using Vite starter template with TailwindCSS",
-	"version": "0.2.7",
+	"description": "ThreeD Garden WP Plugin on Vue 3, using Vite with WindiCSS, and Farmbot JS",
+	"version": "0.2.8",
 	"main": "src/main.ts",
 	"repository": {
 		"type": "git",
