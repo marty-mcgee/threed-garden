@@ -5,7 +5,14 @@ Template Post Type: scene
 */
 
 get_header();
+
+//$manifest = json_decode(file_get_contents('/wp-content/plugins/threed-garden/public/dist/manifest.json'), true);
 ?>
+<!-- 
+<script type="module" crossorigin src="/wp-content/plugins/threed-garden/public/dist/<?=$manifest['index.html']['file']?>"></script>
+<link rel="stylesheet" href="/wp-content/plugins/threed-garden/public/dist/<?=$manifest['index.html']['css'][0]?>"> 
+-->
+
 
 <main id="site-content" role="main">
 

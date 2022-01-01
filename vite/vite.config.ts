@@ -60,7 +60,12 @@ export default defineConfig({
 		Pages(),
 		Layouts(),
 		VitePWA({
+			// disable: true,
+			strategies: 'generateSW', // 'generateSW' | 'injectManifest',
+			// srcDir: 'src',
+			// filename: 'sw.ts',
 			includeAssets: [
+				'index.html',
 				'favicon-16x16.png',
 				'favicon-32x32.png',
 				'favicon.ico',
@@ -100,11 +105,14 @@ export default defineConfig({
 				// 	'*/*.*',
 				// 	'*.*'
 				// ],
-				//directoryIndex: 'index.php'
+				//directoryIndex: resolve(__dirname, '../public/index.php'),
+				//directoryIndex: null,
+				//navigationPreload: false,
+				//exclude: [/\.map$/, /^manifest.*\.js(?:on)?$/, /\.html$/],
+				//navigateFallback: '/index.php',
 			},
 			// injectManifest: {
-			// 	swDest: resolve(__dirname, 'dist/threedgarden-sw.js'),
-			// 	globPatterns: [],
+			// 	swDest: resolve(__dirname, '../public/dist/threedgarden-sw.js')
 			// },
 		}),
 		VueI18n({
@@ -129,25 +137,51 @@ export default defineConfig({
 		// emit manifest so PHP can find the hashed files
 		manifest: true,
 
+		// lib: {
+		// 	entry: resolve(__dirname, 'src/main.ts'),
+		// 	name: 'threedgarden-sw',
+		// 	formats: ['es'],
+		// 	fileName: (format) => `my-lib.${format}.js`
+		// },
+
 		// ignored when using output.assetFileNames
-		assetsDir: './assets/', 
+		//assetsDir: './assets/', 
 
   		cssCodeSplit: false,
   		minify: false,
 
+		//ssr: true,
 	  	rollupOptions: {
+
 			input: {
-				//main: 'index.html'
-				//a: 'src/main.ts',
+				//main: 'index.html',
 				//main: resolve(__dirname, 'index.php'),
 				//main: '.'
-				main: 'main.ts'
+				//main: 'main.ts'
+				//main: resolve(__dirname, 'index.html'),
+				a: 'main.ts',
+				//'b/index': resolve(__dirname, 'index.html')
+				//b: resolve(__dirname, 'index.html')
 			},
+
+			// make sure to externalize deps that shouldn't be bundled
+			// into your library
+			external: ['vue', 'jquery'],
+
 			output: {
+				format: 'cjs', // ('es' | 'cjs' | 'umd' | 'iife')
+				name: 'ThreeDGardenBundle',
 				entryFileNames: `assets/[name].js`,
 				chunkFileNames: `assets/[name].js`,
-				assetFileNames: `assets/[name].[ext]`
+				assetFileNames: `assets/[name].[ext]`,
+				// Provide global variables to use in the UMD build
+				// for externalized deps
+				globals: {
+					vue: 'Vue',
+					jquery: '$'
+				}
 			}
+
 		}
 	},
 	

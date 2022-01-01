@@ -150,10 +150,6 @@ class ThreeD_Garden_Public {
 
 			// THREED GARDEN PUBLIC JS
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-public.js', array( 'jquery' ), $this->version, true );
-			
-			// Enqueue javascript with type="module" - Stack Overflow: 
-			// https://stackoverflow.com/questions/58931144/enqueue-javascript-with-type-module
-			add_filter('script_loader_tag', 'add_type_attribute', 10, 3);
 				
 			// THREED GARDEN WORDPRESS API REST CONNECTIONS :)
 			wp_localize_script( $this->plugin_name, 'postdata',
@@ -188,12 +184,16 @@ class ThreeD_Garden_Public {
 			// );
 
 			wp_enqueue_script(
-				'vitailse-threedgarden-sw',
+				'threedgarden-sw',
 				plugins_url( '/dist/threedgarden-sw.js', __FILE__ ),
 				[],
 				$this->version,
 				true
 			);
+			
+			// Enqueue javascript with type="module" - Stack Overflow: 
+			// https://stackoverflow.com/questions/58931144/enqueue-javascript-with-type-module
+			add_filter('script_loader_tag', 'add_type_attribute', 10, 3);
 
 		}
 	}
