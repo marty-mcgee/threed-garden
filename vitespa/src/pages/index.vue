@@ -19,8 +19,8 @@ const { t } = useI18n()
       <carbon-scooter class="inline-block" />
     </p>
     <p>
-      <a rel="noreferrer" href="https://github.com/ctholho/vitespa" target="_blank">
-        Vitespa
+      <a rel="noreferrer" href="https://github.com/companyjuice/threedgarden" target="_blank">
+        ThreeD Garden
       </a>
     </p>
     <p>
