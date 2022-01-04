@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useStore } from '~/stores/index'
 import { useUserStore } from '~/stores/user'
+import ThreeDGardenLogo from '@/assets/ThreeD-Garden-Logo-Circle-Carrot.png'
 
+const store = useStore()
 const user = useUserStore()
 const name = ref(user.savedName)
 
@@ -9,6 +12,10 @@ const go = () => {
   if (name.value)
     router.push(`/hi/${encodeURIComponent(name.value)}`)
 }
+
+useHead({
+  title: 'ThreeD Garden | 3D WordPress Plugin'
+})
 
 const { t } = useI18n()
 </script>
@@ -55,6 +62,35 @@ const { t } = useI18n()
         {{ t('button.go') }}
       </button>
     </div>
+
+    <div class="mt-5 text-center">
+      <button
+        @click="store.$state.count++"
+        class="
+          px-4
+          py-2
+          dark:bg-blue-800
+          bg-blue-500
+          text-white
+          rounded
+        "
+      >
+        Count : {{ store.$state.count }}
+      </button>
+    </div>
+
+    <router-link
+      :to="{ name: 'other-page' }"
+      class="
+        mt-5
+        text-center
+        hover:text-gray-200
+        dark:hover:text-gray-500
+        hover:underline
+      "
+      >{{ t('pages.other.menu') }}</router-link
+    >
+
   </div>
 </template>
 
