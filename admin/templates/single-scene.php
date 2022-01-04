@@ -5,19 +5,23 @@ Template Post Type: scene
 */
 
 get_header();
-
-//$manifest = json_decode(file_get_contents('/wp-content/plugins/threed-garden/public/dist/manifest.json'), true);
 ?>
-<!-- 
-<script type="module" crossorigin src="/wp-content/plugins/threed-garden/public/dist/<?=$manifest['index.html']['file']?>"></script>
-<link rel="stylesheet" href="/wp-content/plugins/threed-garden/public/dist/<?=$manifest['index.html']['css'][0]?>"> 
--->
-
 
 <main id="site-content" role="main">
 
 	<!-- scene title -->
 	<h1><a href="<?php get_permalink(); ?>">ThreeD Garden: Scene -- <?php the_title(); ?></a></h1>
+
+	<!-- vite -->
+	<script>
+		(function() {
+			const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+			const setting = localStorage.getItem('vueuse-color-scheme') || 'auto'
+			if (setting === 'dark' || (prefersDark && setting !== 'light'))
+			document.documentElement.classList.toggle('dark', true)
+		})()
+	</script>
+	<link rel="modulepreload" href="/wp-content/plugins/threed-garden/public/dist/assets/vendor.js">
 
 	<!-- vue app -->
 	<div id="app"></div>
@@ -40,4 +44,3 @@ get_header();
 <?php get_template_part( 'template-parts/footer-menus-widgets' ); ?>
 
 <?php get_footer(); ?>
-

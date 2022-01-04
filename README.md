@@ -1,4 +1,4 @@
-# ThreeD Garden v0.2.8
+# ThreeD Garden v0.3.0
 
 ThreeD Garden is a WordPress Plugin for ThreeJS WebGL 3D rendering, using Vue JS 3 apps.
 

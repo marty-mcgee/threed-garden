@@ -105,9 +105,11 @@ export default defineConfig({
 			registerType: 'autoUpdate',
 			includeAssets: ['favicon.svg', 'robots.txt', 'safari-pinned-tab.svg'],
 			manifest: {
-				name: 'Vitesse',
-				short_name: 'Vitesse',
-				theme_color: '#ffffff',
+				name: 'ThreeD Garden',
+				short_name: 'ThreeD Garden',
+				description: '3D WordPress Plugin',
+				theme_color: '#076AE0',
+				background_color: "#222222",
 				icons: [
 					{
 						src: '/pwa-192x192.png',
@@ -126,7 +128,28 @@ export default defineConfig({
 						purpose: 'any maskable',
 					},
 				],
+				//start_url: "index.php",
+				//display: "standalone"
 			},
+			workbox: {
+				swDest: path.resolve(__dirname, '../public/dist/threedgarden-sw.js'),
+				// directoryIndex: path.resolve(__dirname, '../public/index.php'),
+				// directoryIndex: null,
+				// navigationPreload: false,
+				// exclude: [/\.map$/, /^manifest.*\.js(?:on)?$/, /\.html$/],
+				// navigateFallback: '/index.php',
+				// templatedURLs: {
+				// 	'/scene/mcgee-home-garden/': ['../index.php']
+				// }
+				// globPatterns: [
+				// 	// '*/*.*',
+				// 	// '*.*',
+				// 	'index.html'
+				// ],
+			},
+			// injectManifest: {
+			// 	swDest: path.resolve(__dirname, '../public/dist/threedgarden-sw.js')
+			// },
 		}),
 
 		// https://github.com/intlify/bundle-tools/tree/main/packages/vite-plugin-vue-i18n
@@ -139,7 +162,7 @@ export default defineConfig({
 		// https://github.com/antfu/vite-plugin-inspect
 		Inspect({
 			// change this to enable inspect for debugging
-			enabled: false,
+			enabled: true,
 		}),
 	],
 
@@ -151,8 +174,14 @@ export default defineConfig({
 
 	// https://github.com/antfu/vite-ssg
 	ssgOptions: {
-		script: 'async',
-		formatting: 'minify',
+		script: 'async', // 'sync' | 'async' | 'defer' | 'async defer'
+		formatting: 'none',  // 'none' | 'minify' | 'prettify'
+		// mock: true, // browser window, document, etc.. default false
+		// includeAllRoutes: false, // default false
+		// includedRoutes(routes) {
+		// 	return ['index']
+		// }
+		// mode: 'production',
 	},
 
 	optimizeDeps: {
@@ -174,5 +203,69 @@ export default defineConfig({
 		deps: {
 			inline: ['@vue', '@vueuse', 'vue-demi'],
 		},
+	},
+
+	// config
+	// root: 'src',
+	// mode: 'development',
+	// base: process.env.APP_ENV === 'development'
+	//   ? ''
+	//   : '',
+
+	build: {
+		// output dir for production build
+		outDir: path.resolve(__dirname, '../public/dist'),
+		emptyOutDir: true,
+	
+		// emit manifest so PHP can find the hashed files
+		manifest: true,
+
+		// lib: {
+		// 	entry: resolve(__dirname, 'src/main.ts'),
+		// 	name: 'threedgarden-sw',
+		// 	formats: ['es'],
+		// 	fileName: (format) => `my-lib.${format}.js`
+		// },
+
+		// ignored when using output.assetFileNames
+		//assetsDir: './assets/', 
+
+  		cssCodeSplit: false,
+  		minify: false,
+
+		//ssr: true,
+	  	rollupOptions: {
+
+			// input: {
+			// 	//main: 'index.html',
+			// 	main: path.resolve(__dirname, 'index.html'),
+			// 	//main: path.resolve(__dirname, 'index.php'),
+			// 	//main: '.',
+			// 	//main: 'src/main.ts',
+			// 	//a: 'index.html',
+			// 	//a: 'src/main.ts',
+			// 	//'b/index': path.resolve(__dirname, 'index.html'),
+			// 	//b: path.resolve(__dirname, 'index.html'),
+			// },
+
+			// make sure to externalize deps that shouldn't be bundled
+			// into your library
+			//external: ['vue', 'jquery'],
+
+			output: {
+				//format: 'cjs', // ('es' | 'cjs' | 'umd' | 'iife')
+				name: 'ThreeDGardenBundle',
+				entryFileNames: `assets/[name].js`,
+				chunkFileNames: `assets/[name].js`,
+				assetFileNames: `assets/[name].[ext]`,
+				// Provide global variables to use in the UMD build
+				// for externalized deps
+				// globals: {
+				// 	vue: 'Vue',
+				// 	jquery: '$'
+				// }
+			}
+
+		}
 	},
 })

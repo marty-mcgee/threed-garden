@@ -20,7 +20,12 @@ const routes = setupLayouts(generatedRoutes)
 export const createApp = ViteSSG(
   App,
   { routes, base: import.meta.env.BASE_URL },
-  (ctx) => {
+  (ctx) => { //({ app, router, routes, isClient, initialState }) => {
+    //ctx.app.config.performance = true
+    //console.log("ctx", ctx)
+    //console.log("meta.env", import.meta.env)
+    const self = this
+    console.log("self", self)
     // install all modules under `modules/`
     Object.values(import.meta.globEager('./modules/*.ts')).map(i => i.install?.(ctx))
   },
