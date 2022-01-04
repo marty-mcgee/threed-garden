@@ -8,7 +8,11 @@
     </h3>
 		<h1>{{ msg }}</h1>
 		<h2>{{ subtitle }}</h2>
-		<div id="webgl"></div>
+    <!-- {{isWebGLSupported() ? ( -->
+		  <div id="webgl"></div>
+    <!-- ) : (
+      <div>WebGL is not supported</div>
+    )}} -->
 	</div>
 </template>
 
@@ -139,12 +143,17 @@ let params = {
 	farmhouse: {},
 }
 params.mode = params.modes.NONE
+console.log("params.mode", params.mode)
 guiFolderRotation.add(params, "ANIMATE").name("Run Animation")
+
+params.mode = params.modes.PRELOAD
+console.log("params.mode", params.mode)
 
 // LOADER OPTIONS 
 // :) APP EXECUTION STARTS HERE <3
 // :) LET'S CHANGE HOW WE LOAD APP USING 
 // :) LoadingManager IN three.js
+//const blobs = {'fish.gltf': blob1, 'diffuse.png': blob2, 'normal.png': blob3}
 const options = {
 	assets: [
 		// `${params.assetsPath}sfx/gliss.${sfxExt}`,
@@ -156,16 +165,16 @@ const options = {
 		`${params.assetsPath}fbx/girl-walk.fbx`,
 		`${params.assetsPath}fbx/usb.fbx`,
 	],
-	oncomplete: function() {
-		init()
-		//animate()
-	}
 }
 anims.forEach( function(anim){ 
 	options.assets.push(`${params.assetsPath}fbx/anims2/${anim}.fbx`)
 })
 
-params.mode = params.modes.PRELOAD
+// three.js LOADING MANAGER
+const manager = new THREE.LoadingManager()
+
+params.mode = params.modes.INITIALIZING
+console.log("params.mode", params.mode)
 
 console.log("params", params)
 console.log("options", options)
@@ -3114,5 +3123,21 @@ a {
 }
 .threedgarden {
 	margin-bottom: 0px;
+}
+html, body, h1, h2, h3, p {
+  font-family: 'Noto Serif', serif;
+  user-select: none;
+}
+#app {
+  text-align: center;
+  color: rgba(0,0,0,0.4);
+}
+img {
+  width: 500px;
+}
+a {
+  color: #41b883;
+  text-decoration: none;
+  cursor: pointer;
 }
 </style>
