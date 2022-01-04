@@ -3109,20 +3109,6 @@ export default {
 -->
 
 <style scoped>
-h3 {
-	margin: 40px 0 0;
-}
-ul {
-	list-style-type: none;
-	padding: 0;
-}
-li {
-	display: inline-block;
-	margin: 0 10px;
-}
-a {
-	color: #96bc33;
-}
 .threedgarden {
 	margin-bottom: 0px;
 }
@@ -3138,8 +3124,16 @@ img {
   width: 500px;
 }
 a {
-  color: #41b883;
+  color: #96bc33;
   text-decoration: none;
   cursor: pointer;
+}
+ul {
+	list-style-type: none;
+	padding: 0;
+}
+li {
+	display: inline-block;
+	margin: 0 10px;
 }
 </style>
