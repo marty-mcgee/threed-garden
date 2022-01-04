@@ -8,8 +8,8 @@
 		"url": "git+https://github.com/companyjuice/threedgarden.git"
 	},
 	"keywords": [
-		"vitailse",
-		"tailwindcss",
+		"threedgarden",
+		"threejs",
 		"vite",
 		"vitesse"
 	],
