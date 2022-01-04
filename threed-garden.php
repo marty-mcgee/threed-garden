@@ -77,6 +77,9 @@ function add_type_attribute($tag, $handle, $src) {
 	return $tag;
 }
 
+// [MM] CUSTOM HELPERS (testing)
+require_once __DIR__ . '/public/helpers.php';
+
 /**
  * Begins execution of the plugin.
  *
@@ -98,7 +101,7 @@ run_threed_garden();
 
 
 /**
- * TESTING
+ * TESTING AREA
  * **********************************************************************************************
  */
 
