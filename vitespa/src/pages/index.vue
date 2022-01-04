@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useStore } from '~/stores/index'
 import { useUserStore } from '~/stores/user'
-import ThreeDGardenLogo from '@/assets/ThreeD-Garden-Logo-Circle-Carrot.png'
+import ThreeDGardenLogo from '~/assets/ThreeD-Garden-Logo-Circle-Carrot.png'
 
 const store = useStore()
 const user = useUserStore()
@@ -30,6 +30,7 @@ const { t } = useI18n()
         ThreeD Garden
       </a>
     </p>
+    <img :src="ThreeDGardenLogo" width="300" class="mx-auto" />
     <p>
       <em class="text-sm opacity-75">{{ t('intro.desc') }}</em>
     </p>
