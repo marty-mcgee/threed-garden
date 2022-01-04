@@ -89,7 +89,14 @@ class ThreeD_Garden_Public {
 		// 	$this->version
 		// );
 
-		
+		wp_enqueue_style(
+			'threedgarden-vite',
+			plugins_url( '/dist/assets/style.css', __FILE__ ),
+			[],
+			$this->version,
+			'all'
+		);
+
 	}
 
 	/**
@@ -184,8 +191,8 @@ class ThreeD_Garden_Public {
 			// );
 
 			wp_enqueue_script(
-				'threedgarden-sw',
-				plugins_url( '/dist/threedgarden-sw.js', __FILE__ ),
+				'threedgarden-vite',
+				plugins_url( '/dist/assets/index.js', __FILE__ ),
 				[],
 				$this->version,
 				true

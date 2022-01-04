@@ -9,7 +9,7 @@
  * Plugin Name:       ThreeD Garden
  * Plugin URI:        https://garden.university
  * Description:       Design + manage your garden plants, beds + allotments in 3D
- * Version:           0.2.8
+ * Version:           0.3.0
  * Author:            Marty McGee
  * Author URI:        https://companyjuice.com
  * License:           GPL-3.0
@@ -27,7 +27,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Current plugin version.
  * Start at version 0.0.1 using SemVer -- https://semver.org
  */
-define( 'THREED_GARDEN_VERSION', '0.2.8' );
+define( 'THREED_GARDEN_VERSION', '0.3.0' );
 
 /**
  * The code that runs during plugin activation.
@@ -62,13 +62,15 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-threed-garden.php';
  * https://stackoverflow.com/questions/58931144/enqueue-javascript-with-type-module
  */
 function add_type_attribute($tag, $handle, $src) {
-	if ( 'threed-garden' === $handle || 'threedgarden-sw' === $handle ) {
+	if ( 'threed-garden' === $handle || 'threedgarden-vite' === $handle ) {
 		// change the script tag by adding type="module" and return it.
-		$tag = '<script type="module" defer src="' . esc_url( $src ) . '"></script>';
-	} 
-	// else {
-	// 	$tag .= 'HEY HEY HEY --- ' . $handle . ' --- ';
-	// }
+		//$printf(strval($tag));
+		echo htmlspecialchars('Y' . ' | ' . $handle . ' | ' . $tag . ' | ' . $src) . ' |<br>';
+		$tag = '<script type="module" crossorigin src="' . esc_url( $src ) . '"></script>';
+	}
+	else {
+		//echo htmlspecialchars('-' . ' | ' . $handle . ' | ' . $tag . ' | ' . $src) . ' |<br>';
+	}
 	// else {
 	// 	$tag = '<script type="text/javascript" defer src="' . esc_url( $src ) . '"></script>';
 	// }

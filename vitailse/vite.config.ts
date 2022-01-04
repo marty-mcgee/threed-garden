@@ -65,7 +65,7 @@ export default defineConfig({
 			// srcDir: 'src',
 			// filename: 'sw.ts',
 			includeAssets: [
-				'index.html',
+				'index.html', //doesn't solve issue, not pre-cached
 				'favicon-16x16.png',
 				'favicon-32x32.png',
 				'favicon.ico',
@@ -110,6 +110,14 @@ export default defineConfig({
 				//navigationPreload: false,
 				//exclude: [/\.map$/, /^manifest.*\.js(?:on)?$/, /\.html$/],
 				//navigateFallback: '/index.php',
+				// templatedURLs: {
+				// 	'.': ['index.php']
+				// }
+				globPatterns: [
+					// '*/*.*',
+					// '*.*',
+					'index.html'
+				],
 			},
 			// injectManifest: {
 			// 	swDest: resolve(__dirname, '../public/dist/threedgarden-sw.js')

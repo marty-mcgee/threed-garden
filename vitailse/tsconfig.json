@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"target": "esnext",
 		"useDefineForClassFields": true,
-		"module": "esnext",
+		"module": "esnext", //CommonJS?
 		"moduleResolution": "node",
 		"strict": true,
 		"jsx": "preserve",
@@ -10,7 +10,7 @@
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
 		"lib": ["esnext", "dom"],
-		"baseUrl": ".",
+		"baseUrl": ".", //"/wp-content/plugins/threedgarden/public/dist/",
 		"paths": {
 			"@/*": ["src/*"]
 		},
