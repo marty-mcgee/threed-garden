@@ -12,7 +12,7 @@
 	</div>
 </template>
 
-<script setup lang="js">
+<script setup>
 import { useMouse, useCounter } from '@vueuse/core'
 const { x, y } = useMouse()
 const { count, inc, dec } = useCounter()
@@ -24,7 +24,7 @@ const { count, inc, dec } = useCounter()
 if ( ! Detector.webgl ) Detector.addGetWebGLMessage()
 
 </script>
-<script lang="js">
+<script>
 
 // console.log(window.postdata)
 const postdata = window.postdata
