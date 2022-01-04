@@ -17,8 +17,11 @@ get_header();
 		(function() {
 			const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
 			const setting = localStorage.getItem('vueuse-color-scheme') || 'auto'
-			if (setting === 'dark' || (prefersDark && setting !== 'light'))
-			document.documentElement.classList.toggle('dark', true)
+			if (setting === 'dark' || (prefersDark && setting !== 'light')) {
+				console.log("document.documentElement", document.documentElement)
+				document.documentElement.classList.toggle('dark', true)
+				// document.querySelector("#app").classList.toggle('dark', true)
+			}
 		})()
 	</script>
 	<link rel="modulepreload" href="/wp-content/plugins/threed-garden/public/dist/assets/vendor.js">
