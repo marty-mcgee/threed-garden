@@ -23,7 +23,7 @@
 <style scoped></style>
 
 <route lang="yaml">
-name: other-page
 meta:
   layout: home
+  name: other-page
 </route>
