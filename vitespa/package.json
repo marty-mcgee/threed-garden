@@ -21,11 +21,15 @@
 	"homepage": "https://github.com/companyjuice/threedgarden#readme",
   "private": true,
   "scripts": {
-    "dev": "vite --port 3333 --open --host",
     "build": "vite build",
+    "dev": "vite --port 3333 --open --host",
+    "lint": "eslint \"**/*.{vue,ts,js}\"",
     "preview": "vite preview",
     "preview-https": "serve dist",
-    "lint": "eslint \"**/*.{vue,ts,js}\""
+    "test": "vitest",
+    "test:e2e": "cypress open",
+    "test:unit": "vitest",
+    "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@vueuse/core": "^7.4.1",
@@ -43,16 +47,19 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.14.0",
-    "@iconify/json": "^1.1.408",
+    "@iconify-json/carbon": "^1.0.12",
     "@intlify/vite-plugin-vue-i18n": "^3.2.1",
     "@types/markdown-it-link-attributes": "^3.0.1",
     "@types/nprogress": "^0.2.0",
     "@vitejs/plugin-vue": "^2.0.1",
     "@vue/compiler-sfc": "^3.2.26",
     "@vue/server-renderer": "^3.2.26",
+    "@vue/test-utils": "^2.0.0-rc.18",
     "critters": "^0.0.15",
     "cross-env": "^7.0.3",
+    "cypress": "^9.1.1",
     "eslint": "^8.5.0",
+    "eslint-plugin-cypress": "^2.12.1",
     "https-localhost": "^4.7.0",
     "markdown-it-link-attributes": "^4.0.0",
     "markdown-it-prism": "^2.2.1",
@@ -69,6 +76,7 @@
     "vite-plugin-vue-layouts": "^0.5.0",
     "vite-plugin-windicss": "^1.6.1",
     "vite-ssg": "^0.17.2",
+    "vitest": "^0.0.131",
     "vue-tsc": "^0.30.0"
   }
 }

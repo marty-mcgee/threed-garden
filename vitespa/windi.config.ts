@@ -10,7 +10,6 @@ export default defineConfig({
   plugins: [
     typography(),
   ],
-  attributify: true,
   theme: {
     extend: {
       typography: {

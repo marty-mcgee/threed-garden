@@ -14,6 +14,7 @@
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "types": [
+      "cypress",
       "vite/client",
       "vite-plugin-pages/client",
       "vite-plugin-vue-layouts/client"
@@ -21,6 +22,8 @@
     "paths": {
       "~/*": ["src/*"]
     }
+    // "sourceMap": true,
+    // "allowJs": true
   },
   "exclude": ["dist", "node_modules"]
 }
