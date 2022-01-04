@@ -1,21 +1,30 @@
 <template>
 	<div class="threedgarden">
+    <h3>
+      Mouse: x={{x}} y={{y}} |
+      Counter: {{count}}
+      <a @click='inc()' style='margin-right:10px'>+</a>
+      <a @click='dec()'>-</a>
+    </h3>
 		<h1>{{ msg }}</h1>
 		<h2>{{ subtitle }}</h2>
 		<div id="webgl"></div>
 	</div>
 </template>
 
-<script>
-/** 
- * ThreeDGarden - Custom JavaScript Vue
- * *************************************************************************************** */
+<script setup lang="js">
+import { useMouse, useCounter } from '@vueuse/core'
+const { x, y } = useMouse()
+const { count, inc, dec } = useCounter()
 
 // ~ is an alias to /src
 //import FarmBot from "~/components/FarmBot.vue"
 
-// check for WebGL
+// check for required WebGL
 if ( ! Detector.webgl ) Detector.addGetWebGLMessage()
+
+</script>
+<script lang="js">
 
 // console.log(window.postdata)
 const postdata = window.postdata
