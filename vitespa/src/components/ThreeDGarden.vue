@@ -40,28 +40,28 @@ let plane
 let camera
 let controls
 let gui
-	gui = new dat.GUI({ autoPlace: true, closeOnTop: true })
-	gui.close()
-	gui.domElement.id = "gui"
-	let guiFolderRotation 		= gui.addFolder("Rotation + Animation")
-	//let guiFolderAnimation 	= guiFolderRotation.addFolder("Animation")
-	let guiFolderCameras 		= gui.addFolder("Camera Position")
-	let guiFolderLights 		= gui.addFolder("Directional Light")
-	let guiFolderAllotments 	= gui.addFolder("Allotments")
-	let guiFolderBeds 			= gui.addFolder("Beds")
-	let guiFolderPlants 		= gui.addFolder("Plants")
-	//let guiFolderInfospots 	= gui.addFolder("Infospots")
-	let guiFolderAnnotations 	= gui.addFolder("Annotations")
-	let guiFolderPlayer 		= gui.addFolder("Character")
+    gui = new dat.GUI({ autoPlace: true, closeOnTop: true })
+    gui.close()
+    gui.domElement.id = "gui"
+    let guiFolderRotation 		= gui.addFolder("Rotation + Animation")
+    //let guiFolderAnimation 	= guiFolderRotation.addFolder("Animation")
+    let guiFolderCameras 		= gui.addFolder("Camera Position")
+    let guiFolderLights 		= gui.addFolder("Directional Light")
+    let guiFolderAllotments 	= gui.addFolder("Allotments")
+    let guiFolderBeds 			= gui.addFolder("Beds")
+    let guiFolderPlants 		= gui.addFolder("Plants")
+    //let guiFolderInfospots 	= gui.addFolder("Infospots")
+    let guiFolderAnnotations 	= gui.addFolder("Annotations")
+    let guiFolderPlayer 		= gui.addFolder("Character")
 let renderer
 let container
 let canvas
 let player = {}
-	player.action = "Idle"
-	player.actionTime = Date.now()
+    player.action = "Idle"
+    player.actionTime = Date.now()
 let animations = {}
 let anims = ["Breathing Idle", "Driving", "Idle", "Left Turn", "Pointing", "Pointing Gesture"]
-	anims = [...anims, "Right Turn", "Running", "Talking", "Turn", "Walking", "Walking Backwards"]
+  	anims = [...anims, "Right Turn", "Running", "Talking", "Turn", "Walking", "Walking Backwards"]
 let anims2 = ["ascend-stairs", "gather-objects", "look-around", "push-button", "run"]
 let tweens = []
 let stats
