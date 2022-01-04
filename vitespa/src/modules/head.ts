@@ -1,5 +1,5 @@
 import { createHead } from '@vueuse/head'
-import { UserModule } from '~/types'
+import type { UserModule } from '~/types'
 
 // vueuse/head https://github.com/vueuse/head
 export const install: UserModule = ({ app }) => {
