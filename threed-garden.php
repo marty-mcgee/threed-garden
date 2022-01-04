@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @link              https://garden.university
  * @since             0.0.1
