@@ -12,7 +12,7 @@
 	</div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // vueuse components
 import { useMouse, useCounter } from '@vueuse/core'
 const { x, y } = useMouse()
@@ -55,10 +55,6 @@ console.log("pluginName", pluginName, pluginVersion)
 /** INSTANTIATE COMMON VARIABLES */
 const debug = false
 const debugPhysics = false
-
-</script>
-<!--
-<script>
 
 let scene
 let plane
@@ -108,6 +104,7 @@ let messages = {
 	index: 0
 }
 
+// PARAMS
 let params = {
 	/** SET MODES */
 	modes: Object.freeze({
@@ -144,12 +141,10 @@ let params = {
 params.mode = params.modes.NONE
 guiFolderRotation.add(params, "ANIMATE").name("Run Animation")
 
-// AUDIO???
-const sfxExt = SFX.supportsAudioType('mp3') ? 'mp3' : 'ogg'
-console.log("SFX", SFX)
-
-
-// LOADER OPTIONS (START HERE) :) <3
+// LOADER OPTIONS 
+// :) APP EXECUTION STARTS HERE <3
+// :) LET'S CHANGE HOW WE LOAD APP USING 
+// :) LoadingManager IN three.js
 const options = {
 	assets: [
 		// `${params.assetsPath}sfx/gliss.${sfxExt}`,
@@ -166,12 +161,39 @@ const options = {
 		//animate()
 	}
 }
-anims.forEach( function(anim){ options.assets.push(`${params.assetsPath}fbx/anims2/${anim}.fbx`)})
+anims.forEach( function(anim){ 
+	options.assets.push(`${params.assetsPath}fbx/anims2/${anim}.fbx`)
+})
 
 params.mode = params.modes.PRELOAD
 
 console.log("params", params)
 console.log("options", options)
+
+
+</script>
+<script lang="ts">
+export default {
+	name: "ThreeDGarden",
+	props: {
+		msg: String,
+		subtitle: String,
+	},
+	mounted () {
+		//init()
+	//	const preloader = new Preloader(options)
+		//console.log("preloader", preloader)
+	}
+}
+</script>
+<!--
+<script>
+// AUDIO???
+const sfxExt = SFX.supportsAudioType('mp3') ? 'mp3' : 'ogg'
+console.log("SFX", SFX)
+
+
+
 
 
 var element = document.getElementById("APP")
@@ -3074,20 +3096,7 @@ export default {
 }
 </script>
 -->
-<script>
-export default {
-	name: "ThreeDGarden",
-	props: {
-		msg: String,
-		subtitle: String,
-	},
-	mounted () {
-		//init()
-	//	const preloader = new Preloader(options)
-		//console.log("preloader", preloader)
-	}
-}
-</script>
+
 <style scoped>
 h3 {
 	margin: 40px 0 0;
