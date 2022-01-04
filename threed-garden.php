@@ -9,7 +9,7 @@
  * Plugin Name:       ThreeD Garden
  * Plugin URI:        https://garden.university
  * Description:       Design + manage your garden plants, beds + allotments in 3D
- * Version:           0.3.0
+ * Version:           0.3.1
  * Author:            Marty McGee
  * Author URI:        https://companyjuice.com
  * License:           GPL-3.0
@@ -27,7 +27,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Current plugin version.
  * Start at version 0.0.1 using SemVer -- https://semver.org
  */
-define( 'THREED_GARDEN_VERSION', '0.3.0' );
+define( 'THREED_GARDEN_VERSION', '0.3.1' );
 
 /**
  * The code that runs during plugin activation.
@@ -65,7 +65,7 @@ function add_type_attribute($tag, $handle, $src) {
 	if ( 'threed-garden' === $handle || 'threedgarden-vite' === $handle ) {
 		// change the script tag by adding type="module" and return it.
 		//$printf(strval($tag));
-		echo htmlspecialchars('Y' . ' | ' . $handle . ' | ' . $tag . ' | ' . $src) . ' |<br>';
+		//echo htmlspecialchars('Y' . ' | ' . $handle . ' | ' . $tag . ' | ' . $src) . ' |<br>';
 		$tag = '<script type="module" crossorigin src="' . esc_url( $src ) . '"></script>';
 	}
 	else {
