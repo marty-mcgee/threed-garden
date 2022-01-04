@@ -563,6 +563,7 @@ function buildScene() {
 	/** BUILD ALLOTMENTS ******************************************************************* */
 
 	//alert("HEY HEY HEY: BUILD ALLOTMENTS?")
+	//return null
 
 	buildAllotments(
 		params.data.allotment, 
@@ -2941,9 +2942,9 @@ function panCam(xTarget, yTarget, zTarget, tweenDuration, camera, controls) {
 
 /**
  * Get the current category IDs and request their category objects.
- * @param  {object} postObject - The entire post object
- * @param  {bool}   isCat      - Is the query a category (true) or a tag (false)
- * @return {string} termLinks  - String of HTML for either list of categories or list of tags 
+ * param  {object} postObject - The entire post object
+ * param  {bool}   isCat      - Is the query a category (true) or a tag (false)
+ * return {string} termLinks  - String of HTML for either list of categories or list of tags 
  */
 function getTaxonomies( postObject, isCat ) {
 
@@ -2966,8 +2967,8 @@ function getTaxonomies( postObject, isCat ) {
 }
 
 /**
- * Get the featured image if it exists. 
- * @param  {object} postObject - The entire post object
+ * Get the featured image if exists.
+ * param  {object} postObject - The entire post object
  */
 function getFeaturedImage( postObject ) {
 	let featImage = {}
@@ -2995,7 +2996,7 @@ function getFeaturedImage( postObject ) {
 
 /**
  * Builds out the HTML of the new post.
- * @param {object} postObject - modified post object with available term lists added
+ * param {object} postObject - modified post object with available term lists added
  */
 function buildNewPost( postObject ) {
 	// Only output tag markup if there are actual tags for the post.
