@@ -20,7 +20,7 @@ const { count, inc, dec } = useCounter()
 
 // check for required WebGL
 // js: if ( ! Detector.webgl ) Detector.addGetWebGLMessage()
-import { isWebGLSupported, isWebGL2Supported } from 'webgl-detector';
+import { isWebGLSupported, isWebGL2Supported } from 'webgl-detector'
 if (isWebGLSupported()){
   // WebGL is supported!
   console.log('WebGL is supported.')
@@ -34,12 +34,9 @@ if (isWebGL2Supported()){
 // ~ is an alias to /src
 //import FarmBot from "~/components/FarmBot.vue"
 
-
-
-
-</script>
-<!--
-<script>
+//
+// LOGIC BEGINS HERE
+//
 
 // console.log(window.postdata)
 const postdata = window.postdata
@@ -58,6 +55,10 @@ console.log("pluginName", pluginName, pluginVersion)
 /** INSTANTIATE COMMON VARIABLES */
 const debug = false
 const debugPhysics = false
+
+</script>
+<!--
+<script>
 
 let scene
 let plane
@@ -3082,7 +3083,7 @@ export default {
 	},
 	mounted () {
 		//init()
-		const preloader = new Preloader(options)
+	//	const preloader = new Preloader(options)
 		//console.log("preloader", preloader)
 	}
 }
