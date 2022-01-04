@@ -13,17 +13,32 @@
 </template>
 
 <script setup>
+// vueuse components
 import { useMouse, useCounter } from '@vueuse/core'
 const { x, y } = useMouse()
 const { count, inc, dec } = useCounter()
 
+// check for required WebGL
+// js: if ( ! Detector.webgl ) Detector.addGetWebGLMessage()
+import { isWebGLSupported, isWebGL2Supported } from 'webgl-detector';
+if (isWebGLSupported()){
+  // WebGL is supported!
+  console.log('WebGL is supported.')
+}
+// OR for WebGL2
+if (isWebGL2Supported()){
+  // WebGL2 is supported!
+  console.log('WebGL2 is supported.')
+}
+
 // ~ is an alias to /src
 //import FarmBot from "~/components/FarmBot.vue"
 
-// check for required WebGL
-if ( ! Detector.webgl ) Detector.addGetWebGLMessage()
+
+
 
 </script>
+<!--
 <script>
 
 // console.log(window.postdata)
@@ -3040,7 +3055,7 @@ function buildNewPost( postObject ) {
 }
 
 /** 
- * END THREED GARDEN JS
+ * EXPORT THREED GARDEN JS
  * ************************************************************************************** 
  */
 
@@ -3056,13 +3071,22 @@ export default {
 		//console.log("preloader", preloader)
 	}
 }
-
-/** 
- * END THREED GARDEN JS
- * ************************************************************************************** 
- */
 </script>
-
+-->
+<script>
+export default {
+	name: "ThreeDGarden",
+	props: {
+		msg: String,
+		subtitle: String,
+	},
+	mounted () {
+		//init()
+		const preloader = new Preloader(options)
+		//console.log("preloader", preloader)
+	}
+}
+</script>
 <style scoped>
 h3 {
 	margin: 40px 0 0;
