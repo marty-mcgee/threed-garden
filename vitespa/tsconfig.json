@@ -22,7 +22,7 @@
     "paths": {
       "~/*": ["src/*"]
     },
-    // "sourceMap": true,
+    "sourceMap": true,
     "allowJs": true
   },
   "exclude": ["dist", "node_modules"]
