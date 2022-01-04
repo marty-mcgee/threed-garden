@@ -5,6 +5,7 @@
       Counter: {{count}}
       <a @click='inc()' style='margin-right:10px'>+</a>
       <a @click='dec()'>-</a>
+      <!-- Mode: {{params.mode}} -->
     </h3>
 		<h1>{{ msg }}</h1>
 		<h2>{{ subtitle }}</h2>
@@ -119,6 +120,7 @@ let params = {
 		ACTIVE: Symbol("active"),
 		GAMEOVER: Symbol("gameover")
 	}),
+  mode: Symbol,
 	/** turn on/off animation */
 	ANIMATE: false,
 	/** where multimedia files are located */
@@ -175,9 +177,23 @@ const manager = new THREE.LoadingManager()
 
 params.mode = params.modes.INITIALIZING
 console.log("params.mode", params.mode)
-
 console.log("params", params)
 console.log("options", options)
+
+/** LOADERS */
+const loaderFBX = new THREE.FBXLoader(manager)
+// try {
+// 	console.log("HEY HEY HEY: LOAD GLTF?")
+// 	const loaderGLTF = new THREE.GLTFLoader()
+// } catch (e) {
+// 	console.log("e", e)
+// }
+//alert("HEY HEY HEY: LOADED GLTF")
+//const loaderOBJ = new THREE.OBJLoader()
+const loaderTexture = new THREE.TextureLoader(manager)
+
+/** TIME CLOCK */
+const clock = new THREE.Clock()
 
 
 </script>
@@ -261,21 +277,7 @@ console.log("manager", manager)
 // document.getElementById("sfx-btn").onclick = function(){ toggleSound() }
 
 
-/** LOADERS */
-const loaderFBX = new THREE.FBXLoader()
-// try {
-// 	console.log("HEY HEY HEY: LOAD GLTF?")
-// 	const loaderGLTF = new THREE.GLTFLoader()
-// } catch (e) {
-// 	console.log("e", e)
-// }
-//alert("HEY HEY HEY: LOADED GLTF")
-//const loaderOBJ = new THREE.OBJLoader()
-const loaderTexture = new THREE.TextureLoader()
 
-
-/** TIME CLOCK */
-const clock = new THREE.Clock()
 
 
 /** POINTER HOVERS + CLICKS */
