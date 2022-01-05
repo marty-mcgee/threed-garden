@@ -185,22 +185,16 @@ anims.forEach( function(anim){
 	options.assets.push(`${params.assetsPath}fbx/anims2/${anim}.fbx`)
 })
 
-// three.js LOADING MANAGER
-const manager = new THREE.LoadingManager()
-
 console.log("params", params)
 console.log("options", options)
 
+/** three.js LOADING MANAGER */
+const manager = new THREE.LoadingManager()
+
 /** LOADERS */
 const loaderFBX = new FBXLoader(manager)
-// try {
-// 	console.log("HEY HEY HEY: LOAD GLTF?")
-// 	const loaderGLTF = new THREE.GLTFLoader()
-// } catch (e) {
-// 	console.log("e", e)
-// }
-//alert("HEY HEY HEY: LOADED GLTF")
-//const loaderOBJ = new THREE.OBJLoader()
+const loaderGLTF = new GLTFLoader(manager)
+const loaderOBJ = new OBJLoader(manager)
 const loaderTexture = new THREE.TextureLoader(manager)
 
 /** TIME CLOCK */
@@ -1498,7 +1492,36 @@ Array.prototype.pushIfNotExist = function(element, comparer) {
     }
 } 
 
+/**
+ * PLAYER ACTION
+ */
+function setAction(name) {
+	const action = player.mixer.clipAction( animations[name] )
+	action.time = 0
+	console.log("PLAYER: action", action)
+	player.mixer.stopAllAction()
+	player.action = name
+	player.actionTime = Date.now()
+	//console.log("player", player)
+	//action.fadeIn(0.5) // causes arms to move awkwardly
+	action.play()
+}
 
+function getAction() {
+	if (player === undefined || player.action === undefined) {
+		return "doesn't exist yet"
+	}
+	return player.action
+}
+
+function toggleAnimation() {
+	if ( player.action == "Idle" ) {
+		setAction("Pointing Gesture")
+	}
+	else {
+		setAction("Idle")
+	}
+}
 
 /** 
  * BEGIN MAIN INIT
@@ -1796,15 +1819,16 @@ const buildScene = () => {
 
 	/** WEBGL CANVAS *********************************************************************** */
 
-  console.log("document", document)
+  // console.log("document", document)
 	container = document.querySelector("#webgl")
-  console.log("container", container)
+  // console.log("container", container)
 	canvas = renderer.domElement
-  console.log("canvas = renderer.domElement", canvas)
+  // console.log("canvas = renderer.domElement", canvas)
 	container.append(gui.domElement)
 	container.append(renderer.domElement)
 	
-	/** BUILD ALLOTMENTS ******************************************************************* */
+
+/** BUILD ALLOTMENTS ******************************************************************* */
 
 	//alert("HEY HEY HEY: BUILD ALLOTMENTS?")
 	//return null
@@ -1814,6 +1838,9 @@ const buildScene = () => {
 		plane, 
 		sceneID // the post-to-post relationship <3
 	)
+
+
+  /** LOADERS (??? here ???) */
 
 	/** FBX ******************************************************************************** */
 	
@@ -1961,7 +1988,7 @@ const buildScene = () => {
 			else {
 				// console.log("anims.length")
 				anims = []
-		//	setAction("Idle")
+			  setAction("Idle")
 				animate()
 			}
 		})	
@@ -2398,7 +2425,7 @@ export default {
 
 
 
-<!--
+<!-- TESTING
 <script>
 // AUDIO???
 const sfxExt = SFX.supportsAudioType('mp3') ? 'mp3' : 'ogg'
@@ -2660,15 +2687,6 @@ function createCameras() {
 function setActiveCamera(object) {
 	player.cameras.active = object
 }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -3134,23 +3152,6 @@ function buildNewPost( postObject ) {
 	//getPreviousPost()
 }
 
-/** 
- * EXPORT THREED GARDEN JS
- * ************************************************************************************** 
- */
-
-export default {
-	name: "ThreeDGarden",
-	props: {
-		msg: String,
-		subtitle: String,
-	},
-	mounted () {
-		//init()
-		const preloader = new Preloader(options)
-		//console.log("preloader", preloader)
-	}
-}
 </script>
 -->
 
