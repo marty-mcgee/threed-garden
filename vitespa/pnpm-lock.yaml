@@ -27,6 +27,7 @@ specifiers:
   pnpm: ^6.24.3
   prism-theme-vars: ^0.2.2
   three: ^0.136
+  three-joystick: ^1.0.2
   troisjs: ^0.3.3
   typescript: ^4.5.4
   unplugin-auto-import: ^0.5.4
@@ -55,6 +56,7 @@ dependencies:
   pinia: 2.0.9_typescript@4.5.4+vue@3.2.26
   prism-theme-vars: 0.2.2
   three: 0.136.0
+  three-joystick: 1.0.2_three@0.136.0
   troisjs: 0.3.3
   vue: 3.2.26
   vue-demi: 0.12.1_vue@3.2.26
@@ -5041,6 +5043,14 @@ packages:
   /text-table/0.2.0:
     resolution: {integrity: sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=}
     dev: true
+
+  /three-joystick/1.0.2_three@0.136.0:
+    resolution: {integrity: sha512-HsFuW+2qxlOQVAqOk3FUBfN8Q2tQUtRe7wRLoiSMZmywL+6IAoP+81Iueppe54Qcmj7IKtynxl5hZRQuSvzqQA==}
+    peerDependencies:
+      three: ^0.131.3
+    dependencies:
+      three: 0.136.0
+    dev: false
 
   /three/0.136.0:
     resolution: {integrity: sha512-+fEMX7nYLz2ZesVP/dyifli5Jf8gR3XPAnFJveQ80aMhibFduzrADnjMbARXh8+W9qLK7rshJCjAIL/6cDxC+A==}

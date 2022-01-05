@@ -31,9 +31,11 @@ const { count, inc, dec } = useCounter()
 // check for required WebGL and/or WebGL2
 import { isWebGLSupported, isWebGL2Supported } from 'webgl-detector'
 if (!isWebGLSupported()){
+  alert('WebGL is not supported.')
   console.log('WebGL is not supported.')
 }
 if (!isWebGL2Supported()){
+  alert('WebGL2 is not supported.')
   console.log('WebGL2 is not supported.')
 }
 
@@ -44,6 +46,9 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer.js'
+
+// three.js joystick
+import { JoystickControls } from 'three-joystick'
 
 // dat.gui
 import * as dat from 'dat.gui'
