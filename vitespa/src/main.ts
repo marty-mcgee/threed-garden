@@ -24,4 +24,7 @@ app.use(router)
 // install all modules under `modules/`
 Object.values(import.meta.globEager('./modules/*.ts')).map(i => i.install?.({ app, router, routes }))
 
+// add window
+app.config.globalProperties.window = window
+
 app.mount('#app')
