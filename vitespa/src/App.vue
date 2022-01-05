@@ -30,3 +30,20 @@
 		<router-view />
 	</div>
 </template>
+
+<style scoped>
+#nav {
+	text-align: center;
+}
+#nav a {
+	color: #72931f;
+	text-decoration: none;
+	cursor: pointer;
+}
+#nav a:hover, 
+#nav a:active {
+	color: #96bc33;
+	text-decoration: underline;
+	cursor: pointer;
+}
+</style>

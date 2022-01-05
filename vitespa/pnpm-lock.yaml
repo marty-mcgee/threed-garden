@@ -15,6 +15,7 @@ specifiers:
   critters: ^0.0.15
   cross-env: ^7.0.3
   cypress: ^9.1.1
+  dat.gui: ^0.7.7
   eslint: ^8.5.0
   eslint-plugin-cypress: ^2.12.1
   farmbot: ^14.6.5
@@ -48,6 +49,7 @@ specifiers:
 dependencies:
   '@vueuse/core': 7.5.1_vue@3.2.26
   '@vueuse/head': 0.7.4_vue@3.2.26
+  dat.gui: 0.7.7
   farmbot: 14.6.5
   nprogress: 0.2.0
   pinia: 2.0.9_typescript@4.5.4+vue@3.2.26
@@ -1826,6 +1828,10 @@ packages:
     dependencies:
       assert-plus: 1.0.0
     dev: true
+
+  /dat.gui/0.7.7:
+    resolution: {integrity: sha512-sRl/28gF/XRC5ywC9I4zriATTsQcpSsRG7seXCPnTkK8/EQMIbCu5NPMpICLGxX9ZEUvcXR3ArLYCtgreFoMDw==}
+    dev: false
 
   /dayjs/1.10.7:
     resolution: {integrity: sha512-P6twpd70BcPK34K26uJ1KT3wlhpuOAPoMwJzpsIWUxHZ7wpmbdZL/hQqBDfz7hGurYSa5PhzdhDHtt319hL3ig==}

@@ -13,9 +13,10 @@ watchEffect(() => {
 
 <template>
   <div>
-    <p class="text-4xl">
+    <img :src="ThreeDGardenLogo" width="77" class="mx-auto" />
+    <!-- <p class="text-4xl">
       <carbon-pedestrian class="inline-block" />
-    </p>
+    </p> -->
     <p>
       {{ t('intro.hi', { name: props.name }) }}
     </p>

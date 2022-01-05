@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useStore } from '~/stores/index'
 import { useUserStore } from '~/stores/user'
-import ThreeDGardenLogo from '~/assets/ThreeD-Garden-Logo-Circle-Carrot.png'
+import ThreeDGardenLogo from '~/assets/logo-threedgarden.png'
 
 const store = useStore()
 const user = useUserStore()
@@ -22,15 +22,15 @@ const { t } = useI18n()
 
 <template>
   <div>
-    <p class="text-4xl">
+    <img :src="ThreeDGardenLogo" width="77" class="mx-auto" />
+    <!-- <p class="text-4xl">
       <carbon-scooter class="inline-block" />
-    </p>
+    </p> -->
     <p>
       <a rel="noreferrer" href="https://github.com/companyjuice/threedgarden" target="_blank">
         ThreeD Garden
       </a>
     </p>
-    <img :src="ThreeDGardenLogo" width="300" class="mx-auto" />
     <p>
       <em class="text-sm opacity-75">{{ t('intro.desc') }}</em>
     </p>
