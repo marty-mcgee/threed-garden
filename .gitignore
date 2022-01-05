@@ -9,8 +9,6 @@ dist
 
 # temp
 public-old
-vitailse
-vitesse
 
 # local env files
 .env.local
