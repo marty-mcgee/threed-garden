@@ -17,7 +17,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 // import { getCurrentInstance } from 'vue'
 // const apple = getCurrentInstance()
 // const $global = apple.appContext.config.globalProperties
@@ -112,7 +112,6 @@ let anims = ["Breathing Idle", "Driving", "Idle", "Left Turn", "Pointing", "Poin
     anims = [...anims, "Right Turn", "Running", "Talking", "Turn", "Walking", "Walking Backwards"]
 let anims2 = ["ascend-stairs", "gather-objects", "look-around", "push-button", "run"]
 let tweens = []
-let stats
 
 let cellSize = 16
 let interactive = false
@@ -2586,8 +2585,20 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 }
 
 // init
-// params.mode = params.modes.INITIALIZING
-// console.log("params.mode", params.mode)
+params.mode = params.modes.INITIALIZING
+console.log("params.mode", params.mode)
+// console.log("this", this) // is a window
+// init()
+onMounted (() => {
+  params.mode = params.modes.INITIALIZING
+  console.log("params.mode onMounted", params.mode)
+  init()
+  //const preloader = new Preloader(options)
+  //console.log("preloader", preloader)
+})
+
+</script>
+<script lang="ts">
 // console.log("this", this) // is a window
 // init()
 
@@ -2608,9 +2619,9 @@ export default {
     }
   },
   mounted () {
-    params.mode = params.modes.INITIALIZING
-    console.log("params.mode", params.mode)
-    init()
+    // params.mode = params.modes.INITIALIZING
+    // console.log("params.mode", params.mode)
+    // init()
     //const preloader = new Preloader(options)
     //console.log("preloader", preloader)
   }
