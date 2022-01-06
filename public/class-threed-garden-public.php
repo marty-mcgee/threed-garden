@@ -191,7 +191,7 @@ class ThreeD_Garden_Public {
 			//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-public.js', array( 'jquery' ), $this->version, true );
 
 			// VUE 3
-			wp_enqueue_script( 'vue', 'https://unpkg.com/vue@3.2.26/dist/vue.global.js', array(), null, true );
+			wp_enqueue_script( 'vue', 'https://unpkg.com/vue@3.2.26/dist/vue.global.prod.js', array(), null, true );
 			// OR wp_enqueue_script( 'vue', 'https://unpkg.com/vue@next', array(), null, true );
 
 			// load css & js with bundler
