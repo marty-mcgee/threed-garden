@@ -41,7 +41,7 @@ if (!isWebGL2Supported()){
 
 // three.js
 import * as THREE from 'three'
-import Stats from 'three/examples/jsm/libs/stats.module'
+// import Stats from 'three/examples/jsm/libs/stats.module'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
@@ -2085,8 +2085,8 @@ const buildScene = () => {
 
   /** STATS ****************************************************************************** */
 
-  const stats = Stats()
-  document.body.appendChild(stats.dom)
+  // const stats = Stats()
+  // document.body.appendChild(stats.dom)
 
 
   /** ANIMATE + RENDER (continuous rendering) ******************************************** */
@@ -2164,7 +2164,7 @@ const buildScene = () => {
     // RENDER SCENE (CONTINUOUSLY)
     renderer.render(scene, camera)
 
-    stats.update()
+    // stats.update()
   }
 
   let loadNextAnim = function (loader) {
