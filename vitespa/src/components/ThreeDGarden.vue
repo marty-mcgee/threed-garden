@@ -10,7 +10,7 @@
     <h1>{{ msg }}</h1>
     <h2>{{ subtitle }}</h2>
     <!-- {{isWebGLSupported() ? ( -->
-      <div id="webgl"></div>
+      <div id="webgl" ref="root"></div>
     <!-- ) : (
       <div>WebGL is not supported</div>
     )}} -->
@@ -62,14 +62,13 @@ import * as dat from 'dat.gui'
 import FarmBot from "~/components/FarmBot.vue"
 
 //
-// LOGIC BEGINS HERE
+// LOGIC BEGINS HERE ****
 //
+
+/** PARAMETERS FROM PHP */
 // console.log("window", window)
 // console.log(window.postdata)
 const postdata = window.postdata ? window.postdata : {}
-console.log("postdata", postdata)
-
-/** PARAMETERS FROM PHP */
 const pluginName = postdata.plugin_name
 const pluginVersion = postdata.plugin_version
 const pluginURL = postdata.plugin_url
@@ -77,6 +76,7 @@ const themeURI = postdata.theme_uri
 const restURL = postdata.rest_url
 const worldID = postdata.world_id
 console.log("pluginName", pluginName, pluginVersion)
+console.log("postdata", postdata)
 
 
 /** INSTANTIATE COMMON VARIABLES */
@@ -234,6 +234,11 @@ const api_urls = [
   API_URL_PLANTING_PLANS,
   API_URL_PLANTS
 ]
+
+
+/** REFs */
+const root = ref(null)
+
 
 /** FUNCTIONS */
 const onWindowResize = () => {
@@ -2595,8 +2600,9 @@ onMounted (() => {
   init()
   //const preloader = new Preloader(options)
   //console.log("preloader", preloader)
+  // the DOM element will be assigned to the ref after initial render
+  console.log(root.value) // this is your $el
 })
-
 </script>
 <script lang="ts">
 // console.log("this", this) // is a window
@@ -2624,7 +2630,17 @@ export default {
     // init()
     //const preloader = new Preloader(options)
     //console.log("preloader", preloader)
-  }
+  },
+  // setup() {
+  //   const root = ref(null)
+  //   onMounted(() => {
+  //     // the DOM element will be assigned to the ref after initial render
+  //     console.log(root.value) // this is your $el
+  //   })
+  //   return {
+  //     root
+  //   }
+  // }
 }
 </script>
 
