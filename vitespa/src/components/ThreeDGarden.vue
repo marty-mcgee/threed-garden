@@ -1782,7 +1782,7 @@ const buildScene = () => {
   let wpScene = params.data.scene[0]
   let sceneID = wpScene.id
 
-  // console.log(wpScene)
+  // console.log("wpScene", wpScene)
 
   /** THREE JS SCENE ******************************************************************* */
 
