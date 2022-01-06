@@ -65,6 +65,10 @@ import FarmBot from "~/components/FarmBot.vue"
 // LOGIC BEGINS HERE ****
 //
 
+/** STATS */
+// const stats = Stats()
+// document.body.appendChild(stats.dom)
+
 /** PARAMETERS FROM PHP */
 // console.log("window", window)
 // console.log(window.postdata)
@@ -172,31 +176,36 @@ guiFolderRotation.add(params, "ANIMATE").name("Run Animation")
 params.mode = params.modes.PRELOAD
 console.log("params.mode", params.mode)
 
-// LOADER OPTIONS 
-// :) APP EXECUTION STARTS HERE <3
-// :) LET'S CHANGE HOW WE LOAD APP USING 
-// :) LoadingManager IN three.js
-//const blobs = {'fish.gltf': blob1, 'diffuse.png': blob2, 'normal.png': blob3}
-const options = {
-  assets: [
-    // `${params.assetsPath}sfx/gliss.${sfxExt}`,
-    // `${params.assetsPath}sfx/factory.${sfxExt}`,
-    // `${params.assetsPath}sfx/button.${sfxExt}`,
-    // `${params.assetsPath}sfx/door.${sfxExt}`,
-    // `${params.assetsPath}sfx/fan.${sfxExt}`,
-    `${params.assetsPath}fbx/environment.fbx`,
-    `${params.assetsPath}fbx/girl-walk.fbx`,
-    `${params.assetsPath}fbx/usb.fbx`,
-  ],
-}
-anims.forEach( function(anim){ 
-  options.assets.push(`${params.assetsPath}fbx/anims2/${anim}.fbx`)
-})
+/** 
+ * LOADER OPTIONS ???
+ * :) APP EXECUTION STARTS HERE <3
+ * :) LET'S CHANGE HOW WE LOAD APP USING 
+ * :) LoadingManager IN three.js
+ */
+// const blobs = {'fish.gltf': blob1, 'diffuse.png': blob2, 'normal.png': blob3} ???
+// const options = {
+//   assets: [
+//     // `${params.assetsPath}sfx/gliss.${sfxExt}`,
+//     // `${params.assetsPath}sfx/factory.${sfxExt}`,
+//     // `${params.assetsPath}sfx/button.${sfxExt}`,
+//     // `${params.assetsPath}sfx/door.${sfxExt}`,
+//     // `${params.assetsPath}sfx/fan.${sfxExt}`,
+//     `${params.assetsPath}fbx/environment.fbx`,
+//     `${params.assetsPath}fbx/girl-walk.fbx`,
+//     `${params.assetsPath}fbx/usb.fbx`,
+//   ],
+// }
+// anims.forEach( function(anim){ 
+//   options.assets.push(`${params.assetsPath}fbx/anims2/${anim}.fbx`)
+// })
 
 console.log("params", params)
-console.log("options", options)
+// console.log("options", options)
 
-/** three.js LOADING MANAGER */
+/** 
+ * three.js 
+ * LOADING MANAGER 
+ */
 const manager = new THREE.LoadingManager()
 
 manager.onLoad = function ( ) {
@@ -2097,12 +2106,6 @@ const buildScene = () => {
   )
 
 
-  /** STATS ****************************************************************************** */
-
-  // const stats = Stats()
-  // document.body.appendChild(stats.dom)
-
-
   /** ANIMATE + RENDER (continuous rendering) ******************************************** */
   
   const animate = () => {
@@ -2151,6 +2154,7 @@ const buildScene = () => {
      * Updates the rotation of the target mesh
      */
     //rotationJoystick.update()
+
 
     /** PLAYER CHARACTER */
     if ( player.mixer !== undefined ) {
@@ -2610,7 +2614,7 @@ onMounted (() => {
   // const preloader = new Preloader(options)
   // console.log("preloader", preloader)
   // the DOM element will be assigned to the ref after initial render
-  console.log("root.value (your $el)", root.value) // this is your $el
+  console.log("root.value (your $el, found in this.$refs.root)", root.value) // this is your $el
 })
 </script>
 <script lang="ts">
@@ -2625,20 +2629,20 @@ export default {
   },
   beforeCreate() {
     return {
-      martyEL: "#webgl"
+      martyEL: "#webgl" // ???
     }
   },
   data() {
     return {
-      that: this
+      that: this // ???
     }
   },
   mounted () {
     // params.mode = params.modes.INITIALIZING
     // console.log("params.mode", params.mode)
     // init()
-    //const preloader = new Preloader(options)
-    //console.log("preloader", preloader)
+    // const preloader = new Preloader(options)
+    // console.log("preloader", preloader)
   },
   // setup() {
   //   const root = ref(null)
