@@ -199,6 +199,12 @@ console.log("options", options)
 /** three.js LOADING MANAGER */
 const manager = new THREE.LoadingManager()
 
+manager.onLoad = function ( ) {
+	console.log( 'Loading complete!')
+  params.mode = params.modes.ACTIVE
+  console.log("params.mode", params.mode)
+}
+
 /** LOADERS */
 const loaderFBX = new FBXLoader(manager)
 const loaderGLTF = new GLTFLoader(manager)
@@ -1777,6 +1783,9 @@ const init = () => {
  * *************************************************************************************** */
 const buildScene = () => {
 
+  params.mode = params.modes.CREATING_LEVEL
+  console.log("params.mode", params.mode)
+
   console.log("params.data.scene", params.data.scene)
 
   let wpScene = params.data.scene[0]
@@ -2598,10 +2607,10 @@ onMounted (() => {
   params.mode = params.modes.INITIALIZING
   console.log("params.mode onMounted", params.mode)
   init()
-  //const preloader = new Preloader(options)
-  //console.log("preloader", preloader)
+  // const preloader = new Preloader(options)
+  // console.log("preloader", preloader)
   // the DOM element will be assigned to the ref after initial render
-  console.log(root.value) // this is your $el
+  console.log("root.value (your $el)", root.value) // this is your $el
 })
 </script>
 <script lang="ts">
