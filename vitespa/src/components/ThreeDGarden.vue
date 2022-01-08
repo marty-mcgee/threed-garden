@@ -82,29 +82,28 @@ const worldID = postdata.world_id
 console.log("pluginName", pluginName, pluginVersion)
 console.log("postdata", postdata)
 
-
 /** INSTANTIATE COMMON VARIABLES */
 const debug = false
 const debugPhysics = false
+
+const gui = new dat.GUI({ autoPlace: true, closeOnTop: true })
+      gui.close()
+      gui.domElement.id = "gui"
+      let guiFolderRotation 		= gui.addFolder("Rotation + Animation")
+      //let guiFolderAnimation 	= guiFolderRotation.addFolder("Animation")
+      let guiFolderCameras 		  = gui.addFolder("Camera Position")
+      let guiFolderLights 		  = gui.addFolder("Directional Light")
+      let guiFolderAllotments 	= gui.addFolder("Allotments")
+      let guiFolderBeds 			  = gui.addFolder("Beds")
+      let guiFolderPlants 		  = gui.addFolder("Plants")
+      //let guiFolderInfospots 	= gui.addFolder("Infospots")
+      let guiFolderAnnotations 	= gui.addFolder("Annotations")
+      let guiFolderPlayer 		  = gui.addFolder("Character")
 
 let scene
 let plane
 let camera
 let controls
-let gui
-    gui = new dat.GUI({ autoPlace: true, closeOnTop: true })
-    gui.close()
-    gui.domElement.id = "gui"
-    let guiFolderRotation 		= gui.addFolder("Rotation + Animation")
-    //let guiFolderAnimation 	= guiFolderRotation.addFolder("Animation")
-    let guiFolderCameras 		= gui.addFolder("Camera Position")
-    let guiFolderLights 		= gui.addFolder("Directional Light")
-    let guiFolderAllotments 	= gui.addFolder("Allotments")
-    let guiFolderBeds 			= gui.addFolder("Beds")
-    let guiFolderPlants 		= gui.addFolder("Plants")
-    //let guiFolderInfospots 	= gui.addFolder("Infospots")
-    let guiFolderAnnotations 	= gui.addFolder("Annotations")
-    let guiFolderPlayer 		= gui.addFolder("Character")
 let renderer
 let container
 let canvas
@@ -135,15 +134,18 @@ let messages = {
 }
 
 // PARAMS
-let params = {
+const params = {
   /** SET MODES */
   modes: Object.freeze({
     NONE: Symbol("none"),
     PRELOAD: Symbol("preload"),
     INITIALIZING: Symbol("initializing"),
-    CREATING_LEVEL: Symbol("creating_level"),
+    BUILDING: Symbol("building"),
+    BUILT: Symbol("built"),
+    LOADING: Symbol("loading"),
+    LOADED: Symbol("loaded"),
     ACTIVE: Symbol("active"),
-    GAMEOVER: Symbol("gameover")
+    GAMEOVER: Symbol("game_over")
   }),
   mode: Symbol,
   /** turn on/off animation */
@@ -176,11 +178,55 @@ guiFolderRotation.add(params, "ANIMATE").name("Run Animation")
 params.mode = params.modes.PRELOAD
 console.log("params.mode", params.mode)
 
+console.log("params", params)
+// console.log("options", options)
+
+/** 
+ * three.js 
+ * LOADING MANAGER 
+ * :) APP EXECUTION STARTS HERE <3
+ */
+const manager = new THREE.LoadingManager()
+
+manager.onStart = (url, itemsLoaded, itemsTotal) => {
+	console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' )
+}
+manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
+	console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' )
+}
+manager.onError = function ( url ) {
+	console.log( 'There was an error loading ' + url )
+}
+manager.onLoad = () => {
+  const startTime = new Date().toISOString()
+  console.log("manager.onLoad", startTime)
+  // console.log('starting timer...')
+  // const millis = Date.now() - startTime
+  // console.log(`milliseconds elapsed = ${Math.floor(millis)}`)
+  // console.log(`seconds elapsed = ${Math.floor(millis / 1000)}`)
+  
+  if (params.mode == params.modes.BUILT) {
+    params.mode = params.modes.LOADED
+    console.log("params.mode manager.onLoad", params.mode, startTime)
+    animate()
+    console.log("animating ****************************** ")
+    params.mode = params.modes.ACTIVE
+    console.log("params.mode manager.onLoad", params.mode, startTime)
+  } else {
+    console.log("still building ************************* ")
+    console.log("params.mode manager.onLoad", params.mode, startTime)
+  }
+  
+}
+
+/** LOADERS */
+const loaderFBX = new FBXLoader(manager)
+const loaderGLTF = new GLTFLoader(manager)
+const loaderOBJ = new OBJLoader(manager)
+const loaderTexture = new THREE.TextureLoader(manager)
+
 /** 
  * LOADER OPTIONS ???
- * :) APP EXECUTION STARTS HERE <3
- * :) LET'S CHANGE HOW WE LOAD APP USING 
- * :) LoadingManager IN three.js
  */
 // const blobs = {'fish.gltf': blob1, 'diffuse.png': blob2, 'normal.png': blob3} ???
 // const options = {
@@ -198,27 +244,6 @@ console.log("params.mode", params.mode)
 // anims.forEach( function(anim){ 
 //   options.assets.push(`${params.assetsPath}fbx/anims2/${anim}.fbx`)
 // })
-
-console.log("params", params)
-// console.log("options", options)
-
-/** 
- * three.js 
- * LOADING MANAGER 
- */
-const manager = new THREE.LoadingManager()
-
-manager.onLoad = function ( ) {
-	console.log( 'Loading complete!')
-  params.mode = params.modes.ACTIVE
-  console.log("params.mode", params.mode)
-}
-
-/** LOADERS */
-const loaderFBX = new FBXLoader(manager)
-const loaderGLTF = new GLTFLoader(manager)
-const loaderOBJ = new OBJLoader(manager)
-const loaderTexture = new THREE.TextureLoader(manager)
 
 /** TIME CLOCK */
 const clock = new THREE.Clock()
@@ -262,6 +287,8 @@ const onWindowResize = () => {
   renderer.setSize( window.innerWidth, window.innerHeight )
   //controls.handleResize()
 }
+// watch for window resize, then adjust canvas appropriately
+window.addEventListener( 'resize', onWindowResize, false )
 
 const getPlane = (x, y, color) => {
   let geometry = new THREE.PlaneGeometry(x, y)
@@ -1551,19 +1578,6 @@ function toggleAnimation() {
   }
 }
 
-function movePlayer1(dt) {
-  // console.log("player.move.forward------")
-  // console.log(player.move.forward)
-  if ( player.move.forward > 0 ) {
-    const speed = ( player.action == "Running" ) ? 24 : 8
-    player.object.translateZ( dt * speed )
-  }
-  else if ( player.move.forward < 0 ) {
-    player.object.translateZ( -dt * 2)
-  }
-  player.object.rotateY( player.move.turn * dt )
-}
-
 function movePlayer(dt){
   const pos = player.object.position.clone()
   pos.y += 60
@@ -1591,7 +1605,7 @@ function movePlayer(dt){
     }
   }
   
-  /*
+  /** COLLIDERS
   if (colliders!==undefined){
     //cast left
     dir.set(-1,0,0)
@@ -1690,24 +1704,204 @@ function playerControl(forward, turn) {
   // }
 }
 
+/** ANIMATE + RENDER (continuous rendering) ******************************************** */
+  
+const animate = () => {
+
+  const dt = clock.getDelta()
+  //watchPointer(camera, plane.children)
+  controls.update()
+  TWEEN.update()
+
+  requestAnimationFrame(animate)
+
+  /** ANIMATE SCENE? */
+  if ( params.ANIMATE ) {
+    // plane.rotation.x += 0.002
+    // plane.rotation.y += 0.002
+    plane.rotation.z -= 0.0007
+  }
+
+  /** PLAYER CHARACTER */
+  if ( player.mixer !== undefined ) {
+    player.mixer.update(dt)
+  }
+  
+  // Running
+  if ( player.action == "Walking" ) {
+    const elapsedTime = Date.now() - player.actionTime
+    if ( elapsedTime > 2000 && player.move.forward > 0.7 ){
+      //setAction("Running")
+    }
+  }
+  
+  // Move Player
+  if ( player.move !== undefined ) {
+    movePlayer(dt)
+  }
+  
+  // Move Cameras
+  if ( player.cameras != undefined && player.cameras.active != undefined ) {
+    camera.position.lerp( player.cameras.active.getWorldPosition(new THREE.Vector3()), 0.05 )
+    const pos = player.object.position.clone()
+    pos.y += 200
+    camera.lookAt(pos)
+  }
+  
+  // RENDER SCENE (CONTINUOUSLY)
+  renderer.render(scene, camera)
+
+  // stats.update()
+}
+
+/** LOADERS (??? here ???) */
+const loadAssets = () => {
+
+  params.mode = params.modes.LOADING
+  console.log("params.mode", params.mode)
+
+  /** FBX ******************************************************************************** */
+  
+  //loaderFBX.load( `${params.assetsPath}characters/SimplePeople.fbx`, function (object) {
+  //loaderFBX.load( `${params.assetsPath}fbx/people/FireFighter.fbx`, function (object) {
+  //loaderFBX.load( `${params.assetsPath}fbx/people/Trucker.fbx`, function (object) {
+  loaderFBX.load( `${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function (object) {
+
+    object.mixer = new THREE.AnimationMixer( object )
+    player.mixer = object.mixer
+    player.root = object.mixer.getRoot()
+      
+    object.name = "Gardener"
+    
+    object.traverse( function ( child ) {
+      if ( child.isMesh ) {
+        child.castShadow = true
+        child.receiveShadow = false		
+      }
+    } )
+
+    //loaderTexture.load(`${params.assetsPath}images/SimpleFarmer_Farmer_Brown.png`, function(texture) {
+    loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_B.png`, function(texture) {
+      object.traverse( function ( child ) {
+        if ( child.isMesh ){
+          child.material.map = texture
+        }
+      } )
+    })
+
+    // console.log("object", object)
+
+    player.object = new THREE.Object3D()
+    player.object.add(object)
+    //player.object.scale.set(0.022, 0.022, 0.022)
+    player.object.scale.set(0.033, 0.033, 0.033)
+    player.object.rotation.x = Math.PI/2 // 90 degrees in radians
+    //player.mixer.clipAction(object.animations[0]).play()
+    //animations.Idle = object.animations[0]
+    //setAction("Idle")
+
+    plane.add(player.object)
+    guiFolderPlayer.add(player.object, "visible").name("Show Character").listen()
+
+    // console.log("player.object", player.object)
+
+  } )
+
+
+  /** LOAD 3D OBJECTS ******************************************************************** */
+
+  loadFarmHouse(plane)
+  
+  loadRoad(plane)
+
+  //loadKitchenSink(plane)
+  
+  loadChickenCoop(plane)
+
+  loadChicken(plane) // PRIMARY WORKING CHICKEN (GLTF)
+  //loadHen(plane)
+  //loadHenGLTF(plane)
+  //loadRooster(plane)
+  //loadChickenGLTF(plane)
+  //loadChickGLTF(plane)
+  //loadChickenFree(plane)
+
+  /**
+   * LOAD ANIMATIONS
+   */
+  let loadNextAnim = function (loader) {
+    let anim = anims.pop()
+    // console.log("anim", anim)
+    loader.load( `${params.assetsPath}fbx/anims2/${anim}.fbx`, function(object) {
+      // console.log("object")
+      animations[anim] = object.animations[0]
+      if (anims.length > 0){
+        // console.log("anims.length")
+        // console.log("getAction()")
+        // console.log("player.action")
+        loadNextAnim(loader)
+      } 
+      else {
+        // console.log("anims.length")
+        anims = []
+      }
+    })	
+  }
+  // RECURSIVE FUNCTION TO LOAD ANIMATIONS
+  loadNextAnim(loaderFBX)
+
+} // end loadAssets()
+
 /** 
- * BEGIN MAIN INIT
- * **************************************************** */
-const init = () => {
+ * BEGIN BUILD (MAIN/INIT)
+ * ****************************************************** */
+const build = async () => {
 
-  console.log("init ************************************")
+  params.mode = params.modes.BUILDING
+  console.log("params.mode", params.mode)
 
+  console.log("building ********************************* ")
+
+  try {
+    let v1 = await getSceneData()
+
+    console.log("v1", v1, new Date().toISOString())
+    console.log("data retrieved ************************* ")
+
+    let v2 = await buildScene(v1)
+    console.log("v2", v2, new Date().toISOString())
+
+    let complete = async function(vN) {
+      console.log("vN", vN, new Date().toISOString())
+      params.mode = params.modes.BUILT
+      console.log("params.mode", params.mode)
+      console.log("scene built ************************** ")
+      loadAssets()
+      console.log("loading assets *********************** ")
+    }
+    await complete(v2)
+
+  } catch (e) {
+    console.log("error ***", e.message)
+  }
+
+  // const preloader = new Preloader(options)
+  // console.log("preloader", preloader)
+
+} // end build()
+
+const getSceneData = async () => {
+  
   // get data
   let getDataFromLocalStorage = true
 
   // LOCALSTORAGE -- look for data in localStorage first
   if (localStorage && getDataFromLocalStorage && !debug) {
-    const getdata = localStorage.getItem('threedgarden')
+    const getdata = localStorage.getItem('threedgarden') || ""
     const threedgarden = JSON.parse(getdata)
     if (threedgarden != undefined) {
       console.log("LOCALSTORAGE ITEM RETRIEVED", threedgarden)
       //this.threedgarden = threedgarden
-      //params = threedgarden
       params.data = threedgarden.data
     } else {
       console.log("LOCALSTORAGE ITEM NOT RETRIEVED", threedgarden)
@@ -1718,36 +1912,36 @@ const init = () => {
     getDataFromLocalStorage = false
   }
 
-  if (!getDataFromLocalStorage) {
+  if (1 === 1 || !getDataFromLocalStorage) {
 
     // PROMISE REST API -- call WP Rest API for data second
-    Promise.allSettled(
+    await Promise.allSettled(
       api_urls.map(
         url => fetch(url)
-            .then(results => results.json())
-            .then(data => {
-              let type = data[0].type
-              switch (type) {
-                case "scene" :
-                  params.data.scene = [...data]
-                  break
-                case "allotment" :
-                  params.data.allotment = [...data]
-                  break
-                case "bed" :
-                  params.data.bed = [...data]
-                  break
-                case "plant" :
-                  params.data.plant = [...data]
-                  break
-                case "planting_plan" :
-                  params.data.planting_plan = [...data]
-                  break
-                default :
-                  break
-              }
-              console.log("data", data)
-            })
+              .then(results => results.json())
+              .then(data => {
+                let type = data[0].type
+                switch (type) {
+                  case "scene" :
+                    params.data.scene = [...data]
+                    break
+                  case "allotment" :
+                    params.data.allotment = [...data]
+                    break
+                  case "bed" :
+                    params.data.bed = [...data]
+                    break
+                  case "plant" :
+                    params.data.plant = [...data]
+                    break
+                  case "planting_plan" :
+                    params.data.planting_plan = [...data]
+                    break
+                  default :
+                    break
+                }
+                console.log("data", data)
+              })
       )
     )
     .then(results => {
@@ -1767,33 +1961,30 @@ const init = () => {
         // save to localStorage
         localStorage.setItem('threedgarden', JSON.stringify(params))
 
-        /**
-         * init scene constructor
-         */
-        buildScene()
+        // fulfill Promise?
+        return true
       }
     )
-  } else {
-    /**
-     * init scene constructor
-     */
-    buildScene()
+  } 
+  else if (getDataFromLocalStorage) {
+    // fulfill Promise?
+    return true
+  } 
+  else {
+    // fulfill Promise?
+    return false
   }
-
-  //
-  window.addEventListener( 'resize', onWindowResize, false )
-
-  //throwError()
-
-} // end init()
+}
 
 /** 
  * BUILD SCENE
  * *************************************************************************************** */
-const buildScene = () => {
+const buildScene = async (v1) => {
 
-  params.mode = params.modes.CREATING_LEVEL
+  params.mode = params.modes.BUILDING
   console.log("params.mode", params.mode)
+
+  console.log("v1", v1)
 
   console.log("params.data.scene", params.data.scene)
 
@@ -1986,76 +2177,6 @@ const buildScene = () => {
   //controls.target.set(0, 5, 0) // alternate way of setting target of camera
 
   renderer.domElement.controls = controls
-
-
-  /** LOADERS (??? here ???) */
-
-  /** FBX ******************************************************************************** */
-  
-  //loaderFBX.load( `${params.assetsPath}characters/SimplePeople.fbx`, function (object) {
-  //loaderFBX.load( `${params.assetsPath}fbx/people/FireFighter.fbx`, function (object) {
-  //loaderFBX.load( `${params.assetsPath}fbx/people/Trucker.fbx`, function (object) {
-  loaderFBX.load( `${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function (object) {
-
-    object.mixer = new THREE.AnimationMixer( object )
-    player.mixer = object.mixer
-    player.root = object.mixer.getRoot()
-      
-    object.name = "Gardener"
-    
-    object.traverse( function ( child ) {
-      if ( child.isMesh ) {
-        child.castShadow = true
-        child.receiveShadow = false		
-      }
-    } )
-
-    //loaderTexture.load(`${params.assetsPath}images/SimpleFarmer_Farmer_Brown.png`, function(texture) {
-    loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_B.png`, function(texture) {
-      object.traverse( function ( child ) {
-        if ( child.isMesh ){
-          child.material.map = texture
-        }
-      } )
-    })
-
-    // console.log("object", object)
-
-    player.object = new THREE.Object3D()
-    player.object.add(object)
-    //player.object.scale.set(0.022, 0.022, 0.022)
-    player.object.scale.set(0.033, 0.033, 0.033)
-    player.object.rotation.x = Math.PI/2 // 90 degrees in radians
-    //player.mixer.clipAction(object.animations[0]).play()
-    //animations.Idle = object.animations[0]
-    //setAction("Idle")
-
-    plane.add(player.object)
-    guiFolderPlayer.add(player.object, "visible").name("Show Character").listen()
-
-    // console.log("player.object", player.object)
-
-  } )
-
-
-  /** LOAD 3D OBJECTS ******************************************************************** */
-
-  loadFarmHouse(plane)
-  
-  loadRoad(plane)
-
-  //loadKitchenSink(plane)
-  
-  loadChickenCoop(plane)
-
-  loadChicken(plane) // PRIMARY WORKING CHICKEN (GLTF)
-  //loadHen(plane)
-  //loadHenGLTF(plane)
-  //loadRooster(plane)
-  //loadChickenGLTF(plane)
-  //loadChickGLTF(plane)
-  //loadChickenFree(plane)
-    
   
   /** LOAD CAMERAS *********************************************************************** */
   
@@ -2105,110 +2226,8 @@ const buildScene = () => {
     sceneID // the post-to-post relationship <3
   )
 
-
-  /** ANIMATE + RENDER (continuous rendering) ******************************************** */
-  
-  const animate = () => {
-
-    const dt = clock.getDelta()
-    //watchPointer(camera, plane.children)
-    controls.update()
-    TWEEN.update()
-
-    requestAnimationFrame(animate)
-
-    if ( params.ANIMATE ) {
-      // plane.rotation.x += 0.002
-      // plane.rotation.y += 0.002
-      plane.rotation.z -= 0.0007
-    }
-        
-    // if (directionalLight != undefined){
-        // directionalLight.position.x = player.object.position.x
-        // directionalLight.position.y = player.object.position.y + 200
-        // directionalLight.position.z = player.object.position.z + 100
-        // directionalLight.target = player.object
-    // }
-
-    /**
-     * Joystick -- Updates a callback function with the 
-     * delta x and delta y of the users movement
-     */
-    // joystickControls.update((movement) => {
-    //   if (movement) {
-    //     /**
-    //      * The values reported back might be too large for your scene.
-    //      * In that case you will need to control the sensitivity.
-    //      */
-    //     const sensitivity = 0.0001
-
-    //     /**
-    //      * Do something with the values, for example changing the position
-    //      * of the object
-    //      */
-    //     player.position.x += movement.moveX * sensitivity
-    //     player.position.y += movement.moveY * sensitivity
-    //   }
-    // })
-    /**
-     * Updates the rotation of the target mesh
-     */
-    //rotationJoystick.update()
-
-
-    /** PLAYER CHARACTER */
-    if ( player.mixer !== undefined ) {
-      player.mixer.update(dt)
-    }
-    
-    if ( player.action == "Walking" ) {
-      const elapsedTime = Date.now() - player.actionTime
-      if ( elapsedTime > 2000 && player.move.forward > 0.7 ){
-        //setAction("Running")
-      }
-    }
-    
-    if ( player.move !== undefined ) {
-      movePlayer(dt)
-    }
-    
-    if ( player.cameras != undefined && player.cameras.active != undefined ) {
-      camera.position.lerp( player.cameras.active.getWorldPosition(new THREE.Vector3()), 0.05 )
-      const pos = player.object.position.clone()
-      pos.y += 200
-      camera.lookAt(pos)
-    }
-    
-    // RENDER SCENE (CONTINUOUSLY)
-    renderer.render(scene, camera)
-
-    // stats.update()
-  }
-
-  let loadNextAnim = function (loader) {
-    let anim = anims.pop()
-    // console.log("anim", anim)
-    loader.load( `${params.assetsPath}fbx/anims2/${anim}.fbx`, function(object) {
-      // console.log("object")
-      animations[anim] = object.animations[0]
-      if (anims.length > 0){
-        // console.log("anims.length")
-        // console.log("getAction()")
-        // console.log("player.action")
-        loadNextAnim(loader)
-      } 
-      else {
-        // console.log("anims.length")
-        anims = []
-        setAction("Idle")
-        animate()
-      }
-    })	
-  }
-
-  // DO ANIMATE NOW PLEASE ^^
-  //animate()
-  loadNextAnim(loaderFBX)
+  // fulfill Promise
+  // return true
 
 } // end buildScene
 
@@ -2458,7 +2477,8 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
  */
 function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, posOffsetZ) {
 
-  // console.log("PLANTING PLANS postObject", postObject)
+  //console.log("PLANTING PLANS postObject", postObject)
+  return null
 
   // only show plants for this planting plan's bed structure
   var filteredPostObject = []
@@ -2602,24 +2622,24 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
   // console.log("plane.children", plane.children)
 }
 
-// init
-params.mode = params.modes.INITIALIZING
-console.log("params.mode", params.mode)
-// console.log("this", this) // is a window
-// init()
-onMounted (() => {
-  params.mode = params.modes.INITIALIZING
-  console.log("params.mode onMounted", params.mode)
-  init()
-  // const preloader = new Preloader(options)
-  // console.log("preloader", preloader)
+onMounted ( () => {
   // the DOM element will be assigned to the ref after initial render
   console.log("root.value (your $el, found in this.$refs.root)", root.value) // this is your $el
+
+  params.mode = params.modes.INITIALIZING
+  console.log("params.mode onMounted", params.mode)
+
+  /**
+   * initiate build process (getData, then build scene)
+   */
+  build()
+
 })
+
 </script>
 <script lang="ts">
+
 // console.log("this", this) // is a window
-// init()
 
 export default {
   name: "ThreeDGarden",
@@ -2638,11 +2658,10 @@ export default {
     }
   },
   mounted () {
-    // params.mode = params.modes.INITIALIZING
+    // no access to params from here
+    // params.mode = params.modes.LOADED
     // console.log("params.mode", params.mode)
-    // init()
-    // const preloader = new Preloader(options)
-    // console.log("preloader", preloader)
+    console.log("export default mounted")
   },
   // setup() {
   //   const root = ref(null)
@@ -2700,22 +2719,9 @@ for(var i = 0;i < 10;i++) {
 
 console.log("manager", manager)
 
-/**
- * init main constructor (now in Vue.mounted)
- */
-// [MM]
-//const preloader = new Preloader(options) // now in Vue Mounted()
 
-//this.init()
-//this.animate()
 
-// window.onload = function(e){ 
-// 	//init()
-// }
-// window.garden = this
-// window.onError = function(error){
-// 	console.error(JSON.stringify(error))
-// }
+
 
 
 /* [MM] */
@@ -3098,21 +3104,6 @@ function dragElement(elmnt) {
     document.onmousemove = null
   }
 }
-
-
-/// throw manual abort of script
-function throwError() {
-  // creates a new exception type:
-  function FatalError(){ Error.apply(this, arguments);this.name = "FatalError" }
-  FatalError.prototype = Object.create(Error.prototype)
-
-  // and then, use this to trigger the error:
-  throw new FatalError("MANUAL ABORT")
-}
-
-
-
-
 
 
 

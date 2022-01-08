@@ -3,8 +3,8 @@ node_modules
 dist
 /admin/node_modules
 /public/node_modules
-/admin/dist
-/public/dist
+# /admin/dist
+# /public/dist
 /assets/libraries
 
 # temp
