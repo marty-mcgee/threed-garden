@@ -137,17 +137,17 @@ let messages = {
 const params = {
   /** SET MODES */
   modes: Object.freeze({
-    NONE: Symbol("none"),
-    PRELOAD: Symbol("preload"),
-    INITIALIZING: Symbol("initializing"),
-    BUILDING: Symbol("building"),
-    BUILT: Symbol("built"),
-    LOADING: Symbol("loading"),
-    LOADED: Symbol("loaded"),
-    ACTIVE: Symbol("active"),
-    GAMEOVER: Symbol("game_over")
+    NONE: "none",
+    PRELOAD: "preload",
+    INITIALIZING: "initializing",
+    BUILDING: "building",
+    BUILT: "built",
+    LOADING: "loading",
+    LOADED: "loaded",
+    ACTIVE: "active",
+    GAMEOVER: "game_over"
   }),
-  mode: Symbol,
+  mode: "string",
   /** turn on/off animation */
   ANIMATE: false,
   /** where multimedia files are located */
@@ -192,10 +192,10 @@ manager.onStart = (url, itemsLoaded, itemsTotal) => {
 	console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' )
 }
 manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
-	console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' )
+	//console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' )
 }
 manager.onError = function ( url ) {
-	console.log( 'There was an error loading ' + url )
+	console.error( 'There was an error loading ' + url )
 }
 manager.onLoad = () => {
   const startTime = new Date().toISOString()
@@ -205,9 +205,10 @@ manager.onLoad = () => {
   // console.log(`milliseconds elapsed = ${Math.floor(millis)}`)
   // console.log(`seconds elapsed = ${Math.floor(millis / 1000)}`)
   
-  if (params.mode == params.modes.BUILT) {
+  if (params.mode == params.modes.LOADING) {
     params.mode = params.modes.LOADED
     console.log("params.mode manager.onLoad", params.mode, startTime)
+    setAction("Idle")
     animate()
     console.log("animating ****************************** ")
     params.mode = params.modes.ACTIVE
@@ -1755,7 +1756,7 @@ const animate = () => {
 }
 
 /** LOADERS (??? here ???) */
-const loadAssets = () => {
+const loadAssets = (plane) => {
 
   params.mode = params.modes.LOADING
   console.log("params.mode", params.mode)
@@ -1800,13 +1801,11 @@ const loadAssets = () => {
     //animations.Idle = object.animations[0]
     //setAction("Idle")
 
+    // console.log("player.object", player.object)
     plane.add(player.object)
     guiFolderPlayer.add(player.object, "visible").name("Show Character").listen()
 
-    // console.log("player.object", player.object)
-
   } )
-
 
   /** LOAD 3D OBJECTS ******************************************************************** */
 
@@ -1863,23 +1862,24 @@ const build = async () => {
   console.log("building ********************************* ")
 
   try {
-    let v1 = await getSceneData()
+    let a1 = await getSceneData()
 
-    console.log("v1", v1, new Date().toISOString())
+    console.log("a1 boolean getSceneData", a1, new Date().toISOString())
     console.log("data retrieved ************************* ")
 
-    let v2 = await buildScene(v1)
-    console.log("v2", v2, new Date().toISOString())
+    let a2 = await buildScene(a1)
+    console.log("a2 plane returned from buildScene", a2, new Date().toISOString())
 
-    let complete = async function(vN) {
-      console.log("vN", vN, new Date().toISOString())
+    let a3 = async function(a4) {
+      console.log("a4 plane object returned from buildScene", a4, new Date().toISOString())
       params.mode = params.modes.BUILT
       console.log("params.mode", params.mode)
       console.log("scene built ************************** ")
-      loadAssets()
+      loadAssets(a2)
       console.log("loading assets *********************** ")
     }
-    await complete(v2)
+    await a3(a2)
+    console.log("a3 boolean (complete)", a1, new Date().toISOString())
 
   } catch (e) {
     console.log("error ***", e.message)
@@ -1912,7 +1912,7 @@ const getSceneData = async () => {
     getDataFromLocalStorage = false
   }
 
-  if (1 === 1 || !getDataFromLocalStorage) {
+  if (1 === 0 || !getDataFromLocalStorage) {
 
     // PROMISE REST API -- call WP Rest API for data second
     await Promise.allSettled(
@@ -1979,12 +1979,12 @@ const getSceneData = async () => {
 /** 
  * BUILD SCENE
  * *************************************************************************************** */
-const buildScene = async (v1) => {
+const buildScene = async (a5) => {
+
+  console.log("a5 boolean === a1 boolean", a5)
 
   params.mode = params.modes.BUILDING
   console.log("params.mode", params.mode)
-
-  console.log("v1", v1)
 
   console.log("params.data.scene", params.data.scene)
 
@@ -2228,6 +2228,7 @@ const buildScene = async (v1) => {
 
   // fulfill Promise
   // return true
+  return plane
 
 } // end buildScene
 
