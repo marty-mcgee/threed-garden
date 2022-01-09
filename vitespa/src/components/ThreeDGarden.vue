@@ -282,14 +282,18 @@ const root = ref(null)
 
 
 /** FUNCTIONS */
+
+// render scene + camera
 function render() {
     renderer.render(scene, camera)
 }
+
+// watch for window resize, then adjust canvas appropriately
 const onWindowResize = () => {
   camera.aspect = window.innerWidth / window.innerHeight
   camera.updateProjectionMatrix()
   renderer.setSize( window.innerWidth, window.innerHeight )
-  //controls.handleResize()
+  //controls.handleResize() or something similar to update controls
   render()
 }
 // watch for window resize, then adjust canvas appropriately
@@ -1886,10 +1890,10 @@ const build = async () => {
       console.log("loading assets *********************** ")
     }
     await a3(a2)
-    console.log("a3 boolean (complete)", a1, new Date().toISOString())
+    console.log("a3 boolean (complete)", a3, new Date().toISOString())
 
   } catch (e) {
-    console.log("error ***", e.message)
+    console.log("error ***", e.message, e)
   }
 
   // const preloader = new Preloader(options)

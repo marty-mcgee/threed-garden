@@ -1584,30 +1584,30 @@ html.dark, html.dark .main-page-wrapper {
     font-size: 1.25rem;
     line-height: 1.75rem;
   }
-}.threedgarden[data-v-cfd8b886] {
+}.threedgarden[data-v-f4e02aa0] {
   margin-bottom: 0px;
 }
-html[data-v-cfd8b886], body[data-v-cfd8b886], h1[data-v-cfd8b886], h2[data-v-cfd8b886], h3[data-v-cfd8b886], p[data-v-cfd8b886] {
+html[data-v-f4e02aa0], body[data-v-f4e02aa0], h1[data-v-f4e02aa0], h2[data-v-f4e02aa0], h3[data-v-f4e02aa0], p[data-v-f4e02aa0] {
   font-family: 'Noto Serif', serif;
   user-select: none;
 }
-#app[data-v-cfd8b886] {
+#app[data-v-f4e02aa0] {
   text-align: center;
   color: rgba(0,0,0,0.4);
 }
-img[data-v-cfd8b886] {
+img[data-v-f4e02aa0] {
   width: 500px;
 }
-a[data-v-cfd8b886] {
+a[data-v-f4e02aa0] {
   color: #96bc33;
   text-decoration: none;
   cursor: pointer;
 }
-ul[data-v-cfd8b886] {
+ul[data-v-f4e02aa0] {
   list-style-type: none;
   padding: 0;
 }
-li[data-v-cfd8b886] {
+li[data-v-f4e02aa0] {
   display: inline-block;
   margin: 0 10px;
 }

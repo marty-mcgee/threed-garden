@@ -35611,9 +35611,9 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
           console.log("loading assets *********************** ");
         };
         await a3(a2);
-        console.log("a3 boolean (complete)", a1, new Date().toISOString());
+        console.log("a3 boolean (complete)", a3, new Date().toISOString());
       } catch (e) {
-        console.log("error ***", e.message);
+        console.log("error ***", e.message, e);
       }
     };
     const getSceneData = async () => {
@@ -35985,7 +35985,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
     };
   }
 }));
-var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-cfd8b886"]]);
+var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-f4e02aa0"]]);
 const _sfc_main = {
   name: "Participate",
   components: {
