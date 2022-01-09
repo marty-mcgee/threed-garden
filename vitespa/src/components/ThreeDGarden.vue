@@ -2486,7 +2486,7 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
 function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, posOffsetZ) {
 
   //console.log("PLANTING PLANS postObject", postObject)
-  return null
+  //return null
 
   // only show plants for this planting plan's bed structure
   var filteredPostObject = []

@@ -35885,7 +35885,76 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
       });
     }
     function buildPlantingPlans(postObject, plane2, bedID, posOffsetX, posOffsetY, posOffsetZ) {
-      return null;
+      var filteredPostObject = [];
+      var matches = [];
+      postObject.forEach(function(obj) {
+        obj.acf.planting_plan_bed_plant_schedule.forEach(function(i) {
+          if (i.planting_plan_bed == bedID) {
+            matches.pushIfNotExist(obj, function(e) {
+              return e.id === obj.id;
+            });
+          }
+        });
+        filteredPostObject = [...matches];
+      });
+      if (filteredPostObject.length > 0) {
+        console.log("filteredPostObject", filteredPostObject);
+      }
+      filteredPostObject.forEach(function(key) {
+        key.acf.planting_plan_bed_plant_schedule.forEach(function(key2) {
+          if (key2.planting_plan_bed == bedID) {
+            var filteredPlant = params.data.plant.filter(function(obj) {
+              return obj.id == key2.planting_plan_plant;
+            });
+            filteredPlant.forEach(function(key3) {
+              let plant = {};
+              plant.parameters = {};
+              plant.position = {};
+              plant.images = {};
+              plant.parameters.x = Number(key3.acf.plant_width) / 12;
+              plant.parameters.y = Number(key3.acf.plant_length) / 12;
+              plant.parameters.z = Number(key3.acf.plant_height) / 12;
+              plant.position.x = parseInt(key2.plant_position_x) / 12 + posOffsetX;
+              plant.position.y = parseInt(key2.plant_position_y) / 12 + posOffsetY;
+              plant.position.z = parseInt(key2.plant_position_z) / 12 + plant.parameters.z / 2;
+              plant.images.texture = key3.acf.plant_texture_image;
+              plant.images.featured = getFeaturedImage(key);
+              plant.shape = key3.acf.plant_shape;
+              plant.color = key3.acf.plant_color;
+              plant.title = key3.title.rendered;
+              plant.postID = key3.id;
+              plant.description = key3.content.rendered;
+              plant.link = key3.link;
+              console.log("PLANT", plant);
+              let structure = getGeometry(plant.shape, plant.parameters.x, plant.parameters.y, plant.parameters.z, plant.color);
+              structure.name = plant.title;
+              structure.userData.type = "structure";
+              structure.userData.postID = plant.postID;
+              structure.userData.description = plant.description;
+              structure.userData.annotation = plant.title;
+              structure.userData.link = plant.link;
+              structure.position.x = plant.position.x ? plant.position.x : 0;
+              structure.position.y = plant.position.y ? plant.position.y : 0;
+              structure.position.z = plant.position.z ? plant.position.z : 0;
+              structure.rotation.x = Math.PI / 2;
+              structure.material.roughness = 0.9;
+              if (plant.images.texture != null && plant.images.texture != false) {
+                structure.material.map = loaderTexture.load(plant.images.texture);
+                for (let i = 0; i < structure.material.length; i++) {
+                  structure.material[i].map = loaderTexture.load(plant.images.texture);
+                  let structureTextureMap = structure.material[i].map;
+                  structureTextureMap.wrapS = RepeatWrapping;
+                  structureTextureMap.wrapT = RepeatWrapping;
+                  structureTextureMap.repeat.set(4, 4);
+                }
+              }
+              console.log("plant structure", structure);
+              plane2.add(structure);
+              params.colliders.push(structure);
+            });
+          }
+        });
+      });
     }
     onMounted(() => {
       console.log("root.value (your $el, found in this.$refs.root)", root.value);
@@ -35916,7 +35985,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
     };
   }
 }));
-var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-dc8b53a8"]]);
+var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-213ef9e8"]]);
 const _sfc_main = {
   name: "Participate",
   components: {
