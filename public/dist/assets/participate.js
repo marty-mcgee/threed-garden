@@ -35084,7 +35084,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
         ACTIVE: "active",
         GAMEOVER: "game_over"
       }),
-      mode: "string",
+      mode: "",
       ANIMATE: false,
       assetsPath: `${pluginURL}assets/`,
       data: {
@@ -35985,7 +35985,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
     };
   }
 }));
-var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-213ef9e8"]]);
+var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-cfd8b886"]]);
 const _sfc_main = {
   name: "Participate",
   components: {
