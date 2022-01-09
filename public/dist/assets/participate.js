@@ -35153,10 +35153,14 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
       API_URL_PLANTS
     ];
     const root = ref(null);
+    function render() {
+      renderer.render(scene, camera);
+    }
     const onWindowResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+      render();
     };
     window.addEventListener("resize", onWindowResize, false);
     const getPlane = (x2, y2, color) => {
@@ -35475,7 +35479,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
     function setAction(name) {
       const action = player.mixer.clipAction(animations[name]);
       action.time = 0;
-      console.log("PLAYER: action", animations[name], action);
+      console.log("CHARACTER: action name", name);
       player.mixer.stopAllAction();
       player.action = name;
       player.actionTime = Date.now();
@@ -35541,7 +35545,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
       if (player.move !== void 0) {
         movePlayer(dt);
       }
-      renderer.render(scene, camera);
+      render();
     };
     const loadAssets = (plane2) => {
       params.mode = params.modes.LOADING;
@@ -35912,7 +35916,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
     };
   }
 }));
-var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-1cd53be5"]]);
+var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-dc8b53a8"]]);
 const _sfc_main = {
   name: "Participate",
   components: {

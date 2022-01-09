@@ -282,11 +282,15 @@ const root = ref(null)
 
 
 /** FUNCTIONS */
+function render() {
+    renderer.render(scene, camera)
+}
 const onWindowResize = () => {
   camera.aspect = window.innerWidth / window.innerHeight
   camera.updateProjectionMatrix()
   renderer.setSize( window.innerWidth, window.innerHeight )
   //controls.handleResize()
+  render()
 }
 // watch for window resize, then adjust canvas appropriately
 window.addEventListener( 'resize', onWindowResize, false )
@@ -1549,12 +1553,14 @@ Array.prototype.pushIfNotExist = function(element, comparer) {
 } 
 
 /**
- * PLAYER ACTION
+ * PLAYER "CHARACTER" ACTION
  */
 function setAction(name) {
   const action = player.mixer.clipAction( animations[name] )
   action.time = 0
-  console.log("PLAYER: action", animations[name], action)
+  console.log("CHARACTER: action name", name)
+  //console.log("CHARACTER: animations[name]", animations[name])
+  //console.log("CHARACTER: action object", action)
   player.mixer.stopAllAction()
   player.action = name
   player.actionTime = Date.now()
@@ -1750,7 +1756,8 @@ const animate = () => {
   }
   
   // RENDER SCENE (CONTINUOUSLY)
-  renderer.render(scene, camera)
+  //renderer.render(scene, camera)
+  render()
 
   // stats.update()
 }
