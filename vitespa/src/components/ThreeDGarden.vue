@@ -2163,7 +2163,7 @@ const buildScene = async (a5) => {
   )
   renderer.shadowMap.enabled = true
   //renderer.setSize(window.innerWidth - 240, window.innerHeight - 100) //admin
-  renderer.setSize(window.innerWidth, window.innerHeight - 100) //public
+  renderer.setSize(window.innerWidth -100, window.innerHeight) //public
 
   // utilize javascript prototyping.. add variables to the dom element :)
   renderer.domElement.camera = camera
