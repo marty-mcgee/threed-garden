@@ -35074,17 +35074,17 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
     anims = [...anims, "Right Turn", "Running", "Talking", "Turn", "Walking", "Walking Backwards"];
     const params = {
       modes: Object.freeze({
-        NONE: Symbol("none"),
-        PRELOAD: Symbol("preload"),
-        INITIALIZING: Symbol("initializing"),
-        BUILDING: Symbol("building"),
-        BUILT: Symbol("built"),
-        LOADING: Symbol("loading"),
-        LOADED: Symbol("loaded"),
-        ACTIVE: Symbol("active"),
-        GAMEOVER: Symbol("game_over")
+        NONE: "none",
+        PRELOAD: "preload",
+        INITIALIZING: "initializing",
+        BUILDING: "building",
+        BUILT: "built",
+        LOADING: "loading",
+        LOADED: "loaded",
+        ACTIVE: "active",
+        GAMEOVER: "game_over"
       }),
-      mode: Symbol,
+      mode: "string",
       ANIMATE: false,
       assetsPath: `${pluginURL}assets/`,
       data: {
@@ -35112,17 +35112,17 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
       console.log("Started loading file: " + url + ".\nLoaded " + itemsLoaded + " of " + itemsTotal + " files.");
     };
     manager.onProgress = function(url, itemsLoaded, itemsTotal) {
-      console.log("Loading file: " + url + ".\nLoaded " + itemsLoaded + " of " + itemsTotal + " files.");
     };
     manager.onError = function(url) {
-      console.log("There was an error loading " + url);
+      console.error("There was an error loading " + url);
     };
     manager.onLoad = () => {
       const startTime = new Date().toISOString();
       console.log("manager.onLoad", startTime);
-      if (params.mode == params.modes.BUILT) {
+      if (params.mode == params.modes.LOADING) {
         params.mode = params.modes.LOADED;
         console.log("params.mode manager.onLoad", params.mode, startTime);
+        setAction("Idle");
         animate();
         console.log("animating ****************************** ");
         params.mode = params.modes.ACTIVE;
@@ -35543,7 +35543,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
       }
       renderer.render(scene, camera);
     };
-    const loadAssets = () => {
+    const loadAssets = (plane2) => {
       params.mode = params.modes.LOADING;
       console.log("params.mode", params.mode);
       loaderFBX.load(`${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function(object) {
@@ -35568,7 +35568,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
         player.object.add(object);
         player.object.scale.set(0.033, 0.033, 0.033);
         player.object.rotation.x = Math.PI / 2;
-        plane.add(player.object);
+        plane2.add(player.object);
         guiFolderPlayer.add(player.object, "visible").name("Show Character").listen();
       });
       loadFarmHouse();
@@ -35593,20 +35593,21 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
       console.log("params.mode", params.mode);
       console.log("building ********************************* ");
       try {
-        let v1 = await getSceneData();
-        console.log("v1", v1, new Date().toISOString());
+        let a1 = await getSceneData();
+        console.log("a1 boolean getSceneData", a1, new Date().toISOString());
         console.log("data retrieved ************************* ");
-        let v2 = await buildScene(v1);
-        console.log("v2", v2, new Date().toISOString());
-        let complete = async function(vN) {
-          console.log("vN", vN, new Date().toISOString());
+        let a2 = await buildScene(a1);
+        console.log("a2 plane returned from buildScene", a2, new Date().toISOString());
+        let a3 = async function(a4) {
+          console.log("a4 plane object returned from buildScene", a4, new Date().toISOString());
           params.mode = params.modes.BUILT;
           console.log("params.mode", params.mode);
           console.log("scene built ************************** ");
-          loadAssets();
+          loadAssets(a2);
           console.log("loading assets *********************** ");
         };
-        await complete(v2);
+        await a3(a2);
+        console.log("a3 boolean (complete)", a1, new Date().toISOString());
       } catch (e) {
         console.log("error ***", e.message);
       }
@@ -35627,7 +35628,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
         console.log("LOCALSTORAGE NOT AVAILABLE");
         getDataFromLocalStorage = false;
       }
-      {
+      if (!getDataFromLocalStorage) {
         await Promise.allSettled(api_urls.map((url) => fetch(url).then((results) => results.json()).then((data) => {
           let type = data[0].type;
           switch (type) {
@@ -35661,12 +35662,16 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
           localStorage.setItem("threedgarden", JSON.stringify(params));
           return true;
         });
+      } else if (getDataFromLocalStorage) {
+        return true;
+      } else {
+        return false;
       }
     };
-    const buildScene = async (v1) => {
+    const buildScene = async (a5) => {
+      console.log("a5 boolean === a1 boolean", a5);
       params.mode = params.modes.BUILDING;
       console.log("params.mode", params.mode);
-      console.log("v1", v1);
       console.log("params.data.scene", params.data.scene);
       let wpScene = params.data.scene[0];
       let sceneID = wpScene.id;
@@ -35775,6 +35780,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
       });
       console.log("joystick", joystick);
       buildAllotments(params.data.allotment, plane2, sceneID);
+      return plane2;
     };
     function buildAllotments(postObject, plane2, sceneID) {
       console.log("ALLOTMENTS", postObject);
@@ -35906,7 +35912,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
     };
   }
 }));
-var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-00c41018"]]);
+var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-1cd53be5"]]);
 const _sfc_main = {
   name: "Participate",
   components: {

@@ -1584,30 +1584,30 @@ html.dark, html.dark .main-page-wrapper {
     font-size: 1.25rem;
     line-height: 1.75rem;
   }
-}.threedgarden[data-v-00c41018] {
+}.threedgarden[data-v-1cd53be5] {
   margin-bottom: 0px;
 }
-html[data-v-00c41018], body[data-v-00c41018], h1[data-v-00c41018], h2[data-v-00c41018], h3[data-v-00c41018], p[data-v-00c41018] {
+html[data-v-1cd53be5], body[data-v-1cd53be5], h1[data-v-1cd53be5], h2[data-v-1cd53be5], h3[data-v-1cd53be5], p[data-v-1cd53be5] {
   font-family: 'Noto Serif', serif;
   user-select: none;
 }
-#app[data-v-00c41018] {
+#app[data-v-1cd53be5] {
   text-align: center;
   color: rgba(0,0,0,0.4);
 }
-img[data-v-00c41018] {
+img[data-v-1cd53be5] {
   width: 500px;
 }
-a[data-v-00c41018] {
+a[data-v-1cd53be5] {
   color: #96bc33;
   text-decoration: none;
   cursor: pointer;
 }
-ul[data-v-00c41018] {
+ul[data-v-1cd53be5] {
   list-style-type: none;
   padding: 0;
 }
-li[data-v-00c41018] {
+li[data-v-1cd53be5] {
   display: inline-block;
   margin: 0 10px;
 }
