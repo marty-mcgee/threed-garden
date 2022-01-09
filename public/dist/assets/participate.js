@@ -35757,7 +35757,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
         antialias: true
       });
       renderer.shadowMap.enabled = true;
-      renderer.setSize(window.innerWidth, window.innerHeight - 100);
+      renderer.setSize(window.innerWidth - 100, window.innerHeight);
       renderer.domElement.camera = camera;
       renderer.domElement.targetList = plane2.children;
       renderer.domElement.addEventListener("pointermove", onPointerMove, false);
@@ -35985,7 +35985,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
     };
   }
 }));
-var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-f4e02aa0"]]);
+var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-4d13346c"]]);
 const _sfc_main = {
   name: "Participate",
   components: {
