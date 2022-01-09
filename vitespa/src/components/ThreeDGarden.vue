@@ -147,7 +147,7 @@ const params = {
     ACTIVE: "active",
     GAMEOVER: "game_over"
   }),
-  mode: "string",
+  mode: "",
   /** turn on/off animation */
   ANIMATE: false,
   /** where multimedia files are located */
