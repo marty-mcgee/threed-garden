@@ -2680,6 +2680,7 @@ export default {
   data() {
     //return data
     return {
+      that: this,
       //electron: process.versions.electron,
       name: this.$route.name,
       //node: process.versions.node,
