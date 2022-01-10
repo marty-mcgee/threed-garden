@@ -17,27 +17,34 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<!-- <script setup lang="ts"> -->
+<script lang="ts">
 // import { getCurrentInstance } from 'vue'
 // const apple = getCurrentInstance()
 // const $global = apple.appContext.config.globalProperties
 // console.log("$global", $global)
-
-// vueuse components
-import { useMouse, useCounter } from '@vueuse/core'
-const { x, y } = useMouse()
-const { count, inc, dec } = useCounter()
 
 // check for required WebGL and/or WebGL2
 import { isWebGLSupported, isWebGL2Supported } from 'webgl-detector'
 if (!isWebGLSupported()){
   alert('WebGL is not supported.')
   console.log('WebGL is not supported.')
+// } else {
+//   alert('WebGL is supported.')
+//   console.log('WebGL is supported.')
 }
 if (!isWebGL2Supported()){
   alert('WebGL2 is not supported.')
   console.log('WebGL2 is not supported.')
+// } else {
+//   alert('WebGL2 is supported.')
+//   console.log('WebGL2 is supported.')
 }
+
+// vueuse components
+import { useMouse, useCounter } from '@vueuse/core'
+const { x, y } = useMouse()
+const { count, inc, dec } = useCounter()
 
 // three.js
 import * as THREE from 'three'
@@ -59,11 +66,17 @@ import * as dat from 'dat.gui'
 
 // farmbot
 // ~ is an alias to /src
-import FarmBot from "~/components/FarmBot.vue"
+// import FarmBot from "~/components/FarmBot.vue"
+// console.log("FarmBot", FarmBot)
 
 //
 // LOGIC BEGINS HERE ****
 //
+// direct instance creation
+const data = { 
+  that: this,
+  a: 1
+}
 
 /** STATS */
 // const stats = Stats()
@@ -2634,22 +2647,22 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
   // console.log("plane.children", plane.children)
 }
 
-onMounted ( () => {
-  // the DOM element will be assigned to the ref after initial render
-  console.log("root.value (your $el, found in this.$refs.root)", root.value) // this is your $el
+// onMounted ( () => {
+//   // the DOM element will be assigned to the ref after initial render
+//   console.log("root.value (your $el, found in this.$refs.root)", root.value) // this is your $el
 
-  params.mode = params.modes.INITIALIZING
-  console.log("params.mode onMounted", params.mode)
+//   params.mode = params.modes.INITIALIZING
+//   console.log("params.mode onMounted", params.mode)
 
-  /**
-   * initiate build process (getData, then build scene)
-   */
-  build()
+//   /**
+//    * initiate build process (getData, then build scene)
+//    */
+//   build()
 
-})
+// })
 
-</script>
-<script lang="ts">
+// /script>
+// script lang="ts">
 
 // console.log("this", this) // is a window
 
@@ -2665,26 +2678,37 @@ export default {
     }
   },
   data() {
+    //return data
     return {
-      that: this // ???
+      //electron: process.versions.electron,
+      name: this.$route.name,
+      //node: process.versions.node,
+      path: this.$route.path,
+      //platform: require('os').platform(),
+      //vue: require('vue/package.json').version
     }
   },
-  mounted () {
+  mounted() {
     // no access to params from here
-    // params.mode = params.modes.LOADED
-    // console.log("params.mode", params.mode)
-    console.log("export default mounted")
+    params.mode = params.modes.INITIALIZING
+    console.log("params.mode export default mounted", params.mode)
+
+    /**
+     * initiate build process (getData, then build scene)
+     */
+    build()
   },
-  // setup() {
-  //   const root = ref(null)
-  //   onMounted(() => {
-  //     // the DOM element will be assigned to the ref after initial render
-  //     console.log(root.value) // this is your $el
-  //   })
-  //   return {
-  //     root
-  //   }
-  // }
+  setup(props, context) {
+    const root = ref(null)
+    onMounted(() => {
+      // the DOM element will be assigned to the ref after initial render
+      console.log("root.value (your $el, found in this.$refs.root)", root.value) // this is your $el
+      console.log("params.mode onMounted", params.mode)
+    })
+    return {
+      root
+    }
+  }
 }
 </script>
 

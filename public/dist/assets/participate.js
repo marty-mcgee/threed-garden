@@ -1,6 +1,4 @@
 var __defProp = Object.defineProperty;
-var __defProps = Object.defineProperties;
-var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
 var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __propIsEnum = Object.prototype.propertyIsEnumerable;
@@ -16,23 +14,22 @@ var __spreadValues = (a, b) => {
     }
   return a;
 };
-var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-import { f as defineComponent, D as useMouse, E as useCounter, r as ref, F as onMounted, o as openBlock, j as createElementBlock, k as createBaseVNode, q as createTextVNode, t as toDisplayString, l as unref, n as createVNode } from "./vendor.js";
+import { D as useMouse, E as useCounter, r as ref, F as onMounted, o as openBlock, j as createElementBlock, k as createBaseVNode, q as createTextVNode, t as toDisplayString, n as createVNode } from "./vendor.js";
 import { a as _export_sfc } from "./index.js";
 var dist = {};
 Object.defineProperty(dist, "__esModule", { value: true });
 function isWebGLSupported() {
   if ((window === null || window === void 0 ? void 0 : window.WebGLRenderingContext) !== void 0) {
-    var canvas = document.createElement("canvas");
-    return canvas.getContext("webgl") != null || canvas.getContext("experimental-webgl") != null;
+    var canvas2 = document.createElement("canvas");
+    return canvas2.getContext("webgl") != null || canvas2.getContext("experimental-webgl") != null;
   }
   return false;
 }
 var isWebGLSupported_1 = dist.isWebGLSupported = isWebGLSupported;
 function isWebGL2Supported() {
   if ((window === null || window === void 0 ? void 0 : window.WebGLRenderingContext) !== void 0) {
-    var canvas = document.createElement("canvas");
-    return canvas.getContext("webgl2") != null;
+    var canvas2 = document.createElement("canvas");
+    return canvas2.getContext("webgl2") != null;
   }
   return false;
 }
@@ -903,9 +900,9 @@ class ImageUtils {
     if (typeof HTMLCanvasElement == "undefined") {
       return image.src;
     }
-    let canvas;
+    let canvas2;
     if (image instanceof HTMLCanvasElement) {
-      canvas = image;
+      canvas2 = image;
     } else {
       if (_canvas === void 0)
         _canvas = createElementNS("canvas");
@@ -917,13 +914,13 @@ class ImageUtils {
       } else {
         context.drawImage(image, 0, 0, image.width, image.height);
       }
-      canvas = _canvas;
+      canvas2 = _canvas;
     }
-    if (canvas.width > 2048 || canvas.height > 2048) {
+    if (canvas2.width > 2048 || canvas2.height > 2048) {
       console.warn("THREE.ImageUtils.getDataURL: Image converted to jpg for performance reasons", image);
-      return canvas.toDataURL("image/jpeg", 0.6);
+      return canvas2.toDataURL("image/jpeg", 0.6);
     } else {
-      return canvas.toDataURL("image/png");
+      return canvas2.toDataURL("image/png");
     }
   }
 }
@@ -2210,11 +2207,11 @@ class Vector3 {
     this.z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
     return this;
   }
-  project(camera) {
-    return this.applyMatrix4(camera.matrixWorldInverse).applyMatrix4(camera.projectionMatrix);
+  project(camera2) {
+    return this.applyMatrix4(camera2.matrixWorldInverse).applyMatrix4(camera2.projectionMatrix);
   }
-  unproject(camera) {
-    return this.applyMatrix4(camera.projectionMatrixInverse).applyMatrix4(camera.matrixWorld);
+  unproject(camera2) {
+    return this.applyMatrix4(camera2.projectionMatrixInverse).applyMatrix4(camera2.matrixWorld);
   }
   transformDirection(m) {
     const x = this.x, y = this.y, z = this.z;
@@ -2609,30 +2606,30 @@ class Box3 {
     this.clampPoint(sphere.center, _vector$b);
     return _vector$b.distanceToSquared(sphere.center) <= sphere.radius * sphere.radius;
   }
-  intersectsPlane(plane) {
+  intersectsPlane(plane2) {
     let min, max2;
-    if (plane.normal.x > 0) {
-      min = plane.normal.x * this.min.x;
-      max2 = plane.normal.x * this.max.x;
+    if (plane2.normal.x > 0) {
+      min = plane2.normal.x * this.min.x;
+      max2 = plane2.normal.x * this.max.x;
     } else {
-      min = plane.normal.x * this.max.x;
-      max2 = plane.normal.x * this.min.x;
+      min = plane2.normal.x * this.max.x;
+      max2 = plane2.normal.x * this.min.x;
     }
-    if (plane.normal.y > 0) {
-      min += plane.normal.y * this.min.y;
-      max2 += plane.normal.y * this.max.y;
+    if (plane2.normal.y > 0) {
+      min += plane2.normal.y * this.min.y;
+      max2 += plane2.normal.y * this.max.y;
     } else {
-      min += plane.normal.y * this.max.y;
-      max2 += plane.normal.y * this.min.y;
+      min += plane2.normal.y * this.max.y;
+      max2 += plane2.normal.y * this.min.y;
     }
-    if (plane.normal.z > 0) {
-      min += plane.normal.z * this.min.z;
-      max2 += plane.normal.z * this.max.z;
+    if (plane2.normal.z > 0) {
+      min += plane2.normal.z * this.min.z;
+      max2 += plane2.normal.z * this.max.z;
     } else {
-      min += plane.normal.z * this.max.z;
-      max2 += plane.normal.z * this.min.z;
+      min += plane2.normal.z * this.max.z;
+      max2 += plane2.normal.z * this.min.z;
     }
-    return min <= -plane.constant && max2 >= -plane.constant;
+    return min <= -plane2.constant && max2 >= -plane2.constant;
   }
   intersectsTriangle(triangle) {
     if (this.isEmpty()) {
@@ -2823,8 +2820,8 @@ class Sphere {
   intersectsBox(box) {
     return box.intersectsSphere(this);
   }
-  intersectsPlane(plane) {
-    return Math.abs(plane.distanceToPoint(this.center)) <= this.radius;
+  intersectsPlane(plane2) {
+    return Math.abs(plane2.distanceToPoint(this.center)) <= this.radius;
   }
   clampPoint(point, target) {
     const deltaLengthSq = this.center.distanceToSquared(point);
@@ -3012,30 +3009,30 @@ class Ray {
   intersectsSphere(sphere) {
     return this.distanceSqToPoint(sphere.center) <= sphere.radius * sphere.radius;
   }
-  distanceToPlane(plane) {
-    const denominator = plane.normal.dot(this.direction);
+  distanceToPlane(plane2) {
+    const denominator = plane2.normal.dot(this.direction);
     if (denominator === 0) {
-      if (plane.distanceToPoint(this.origin) === 0) {
+      if (plane2.distanceToPoint(this.origin) === 0) {
         return 0;
       }
       return null;
     }
-    const t = -(this.origin.dot(plane.normal) + plane.constant) / denominator;
+    const t = -(this.origin.dot(plane2.normal) + plane2.constant) / denominator;
     return t >= 0 ? t : null;
   }
-  intersectPlane(plane, target) {
-    const t = this.distanceToPlane(plane);
+  intersectPlane(plane2, target) {
+    const t = this.distanceToPlane(plane2);
     if (t === null) {
       return null;
     }
     return this.at(t, target);
   }
-  intersectsPlane(plane) {
-    const distToPoint = plane.distanceToPoint(this.origin);
+  intersectsPlane(plane2) {
+    const distToPoint = plane2.distanceToPoint(this.origin);
     if (distToPoint === 0) {
       return true;
     }
-    const denominator = plane.normal.dot(this.direction);
+    const denominator = plane2.normal.dot(this.direction);
     if (denominator * distToPoint < 0) {
       return true;
     }
@@ -4364,7 +4361,7 @@ class Object3D extends EventDispatcher {
       const images = extractFromCache(meta.images);
       const shapes = extractFromCache(meta.shapes);
       const skeletons = extractFromCache(meta.skeletons);
-      const animations = extractFromCache(meta.animations);
+      const animations2 = extractFromCache(meta.animations);
       if (geometries.length > 0)
         output.geometries = geometries;
       if (materials.length > 0)
@@ -4377,8 +4374,8 @@ class Object3D extends EventDispatcher {
         output.shapes = shapes;
       if (skeletons.length > 0)
         output.skeletons = skeletons;
-      if (animations.length > 0)
-        output.animations = animations;
+      if (animations2.length > 0)
+        output.animations = animations2;
     }
     output.object = object;
     return output;
@@ -6944,31 +6941,31 @@ class CubeCamera extends Object3D {
     cameraNZ.lookAt(new Vector3(0, 0, -1));
     this.add(cameraNZ);
   }
-  update(renderer, scene) {
+  update(renderer2, scene2) {
     if (this.parent === null)
       this.updateMatrixWorld();
     const renderTarget = this.renderTarget;
     const [cameraPX, cameraNX, cameraPY, cameraNY, cameraPZ, cameraNZ] = this.children;
-    const currentXrEnabled = renderer.xr.enabled;
-    const currentRenderTarget = renderer.getRenderTarget();
-    renderer.xr.enabled = false;
+    const currentXrEnabled = renderer2.xr.enabled;
+    const currentRenderTarget = renderer2.getRenderTarget();
+    renderer2.xr.enabled = false;
     const generateMipmaps = renderTarget.texture.generateMipmaps;
     renderTarget.texture.generateMipmaps = false;
-    renderer.setRenderTarget(renderTarget, 0);
-    renderer.render(scene, cameraPX);
-    renderer.setRenderTarget(renderTarget, 1);
-    renderer.render(scene, cameraNX);
-    renderer.setRenderTarget(renderTarget, 2);
-    renderer.render(scene, cameraPY);
-    renderer.setRenderTarget(renderTarget, 3);
-    renderer.render(scene, cameraNY);
-    renderer.setRenderTarget(renderTarget, 4);
-    renderer.render(scene, cameraPZ);
+    renderer2.setRenderTarget(renderTarget, 0);
+    renderer2.render(scene2, cameraPX);
+    renderer2.setRenderTarget(renderTarget, 1);
+    renderer2.render(scene2, cameraNX);
+    renderer2.setRenderTarget(renderTarget, 2);
+    renderer2.render(scene2, cameraPY);
+    renderer2.setRenderTarget(renderTarget, 3);
+    renderer2.render(scene2, cameraNY);
+    renderer2.setRenderTarget(renderTarget, 4);
+    renderer2.render(scene2, cameraPZ);
     renderTarget.texture.generateMipmaps = generateMipmaps;
-    renderer.setRenderTarget(renderTarget, 5);
-    renderer.render(scene, cameraNZ);
-    renderer.setRenderTarget(currentRenderTarget);
-    renderer.xr.enabled = currentXrEnabled;
+    renderer2.setRenderTarget(renderTarget, 5);
+    renderer2.render(scene2, cameraNZ);
+    renderer2.setRenderTarget(currentRenderTarget);
+    renderer2.xr.enabled = currentXrEnabled;
   }
 }
 class CubeTexture extends Texture {
@@ -7000,7 +6997,7 @@ class WebGLCubeRenderTarget extends WebGLRenderTarget {
     this.texture.minFilter = options.minFilter !== void 0 ? options.minFilter : LinearFilter;
     this.texture._needsFlipEnvMap = false;
   }
-  fromEquirectangularTexture(renderer, texture) {
+  fromEquirectangularTexture(renderer2, texture) {
     this.texture.type = texture.type;
     this.texture.format = RGBAFormat;
     this.texture.encoding = texture.encoding;
@@ -7063,20 +7060,20 @@ class WebGLCubeRenderTarget extends WebGLRenderTarget {
     const currentMinFilter = texture.minFilter;
     if (texture.minFilter === LinearMipmapLinearFilter)
       texture.minFilter = LinearFilter;
-    const camera = new CubeCamera(1, 10, this);
-    camera.update(renderer, mesh);
+    const camera2 = new CubeCamera(1, 10, this);
+    camera2.update(renderer2, mesh);
     texture.minFilter = currentMinFilter;
     mesh.geometry.dispose();
     mesh.material.dispose();
     return this;
   }
-  clear(renderer, color, depth, stencil) {
-    const currentRenderTarget = renderer.getRenderTarget();
+  clear(renderer2, color, depth, stencil) {
+    const currentRenderTarget = renderer2.getRenderTarget();
     for (let i = 0; i < 6; i++) {
-      renderer.setRenderTarget(this, i);
-      renderer.clear(color, depth, stencil);
+      renderer2.setRenderTarget(this, i);
+      renderer2.clear(color, depth, stencil);
     }
-    renderer.setRenderTarget(currentRenderTarget);
+    renderer2.setRenderTarget(currentRenderTarget);
   }
 }
 WebGLCubeRenderTarget.prototype.isWebGLCubeRenderTarget = true;
@@ -7108,9 +7105,9 @@ class Plane {
     this.setFromNormalAndCoplanarPoint(normal, a);
     return this;
   }
-  copy(plane) {
-    this.normal.copy(plane.normal);
-    this.constant = plane.constant;
+  copy(plane2) {
+    this.normal.copy(plane2.normal);
+    this.constant = plane2.constant;
     return this;
   }
   normalize() {
@@ -7173,8 +7170,8 @@ class Plane {
     this.constant -= offset.dot(this.normal);
     return this;
   }
-  equals(plane) {
-    return plane.normal.equals(this.normal) && plane.constant === this.constant;
+  equals(plane2) {
+    return plane2.normal.equals(this.normal) && plane2.constant === this.constant;
   }
   clone() {
     return new this.constructor().copy(this);
@@ -7247,11 +7244,11 @@ class Frustum {
   intersectsBox(box) {
     const planes = this.planes;
     for (let i = 0; i < 6; i++) {
-      const plane = planes[i];
-      _vector$7.x = plane.normal.x > 0 ? box.max.x : box.min.x;
-      _vector$7.y = plane.normal.y > 0 ? box.max.y : box.min.y;
-      _vector$7.z = plane.normal.z > 0 ? box.max.z : box.min.z;
-      if (plane.distanceToPoint(_vector$7) < 0) {
+      const plane2 = planes[i];
+      _vector$7.x = plane2.normal.x > 0 ? box.max.x : box.min.x;
+      _vector$7.y = plane2.normal.y > 0 ? box.max.y : box.min.y;
+      _vector$7.z = plane2.normal.z > 0 ? box.max.z : box.min.z;
+      if (plane2.distanceToPoint(_vector$7) < 0) {
         return false;
       }
     }
@@ -8108,7 +8105,7 @@ ShaderLib.physical = {
   vertexShader: ShaderChunk.meshphysical_vert,
   fragmentShader: ShaderChunk.meshphysical_frag
 };
-function WebGLBackground(renderer, cubemaps, state, objects, premultipliedAlpha) {
+function WebGLBackground(renderer2, cubemaps, state, objects, premultipliedAlpha) {
   const clearColor = new Color$1(0);
   let clearAlpha = 0;
   let planeMesh;
@@ -8116,13 +8113,13 @@ function WebGLBackground(renderer, cubemaps, state, objects, premultipliedAlpha)
   let currentBackground = null;
   let currentBackgroundVersion = 0;
   let currentTonemapping = null;
-  function render(renderList, scene) {
+  function render2(renderList, scene2) {
     let forceClear = false;
-    let background = scene.isScene === true ? scene.background : null;
+    let background = scene2.isScene === true ? scene2.background : null;
     if (background && background.isTexture) {
       background = cubemaps.get(background);
     }
-    const xr = renderer.xr;
+    const xr = renderer2.xr;
     const session = xr.getSession && xr.getSession();
     if (session && session.environmentBlendMode === "additive") {
       background = null;
@@ -8133,8 +8130,8 @@ function WebGLBackground(renderer, cubemaps, state, objects, premultipliedAlpha)
       setClear(background, 1);
       forceClear = true;
     }
-    if (renderer.autoClear || forceClear) {
-      renderer.clear(renderer.autoClearColor, renderer.autoClearDepth, renderer.autoClearStencil);
+    if (renderer2.autoClear || forceClear) {
+      renderer2.clear(renderer2.autoClearColor, renderer2.autoClearDepth, renderer2.autoClearStencil);
     }
     if (background && (background.isCubeTexture || background.mapping === CubeUVReflectionMapping)) {
       if (boxMesh === void 0) {
@@ -8150,8 +8147,8 @@ function WebGLBackground(renderer, cubemaps, state, objects, premultipliedAlpha)
         }));
         boxMesh.geometry.deleteAttribute("normal");
         boxMesh.geometry.deleteAttribute("uv");
-        boxMesh.onBeforeRender = function(renderer2, scene2, camera) {
-          this.matrixWorld.copyPosition(camera.matrixWorld);
+        boxMesh.onBeforeRender = function(renderer3, scene3, camera2) {
+          this.matrixWorld.copyPosition(camera2.matrixWorld);
         };
         Object.defineProperty(boxMesh.material, "envMap", {
           get: function() {
@@ -8162,11 +8159,11 @@ function WebGLBackground(renderer, cubemaps, state, objects, premultipliedAlpha)
       }
       boxMesh.material.uniforms.envMap.value = background;
       boxMesh.material.uniforms.flipEnvMap.value = background.isCubeTexture && background.isRenderTargetTexture === false ? -1 : 1;
-      if (currentBackground !== background || currentBackgroundVersion !== background.version || currentTonemapping !== renderer.toneMapping) {
+      if (currentBackground !== background || currentBackgroundVersion !== background.version || currentTonemapping !== renderer2.toneMapping) {
         boxMesh.material.needsUpdate = true;
         currentBackground = background;
         currentBackgroundVersion = background.version;
-        currentTonemapping = renderer.toneMapping;
+        currentTonemapping = renderer2.toneMapping;
       }
       renderList.unshift(boxMesh, boxMesh.geometry, boxMesh.material, 0, 0, null);
     } else if (background && background.isTexture) {
@@ -8194,11 +8191,11 @@ function WebGLBackground(renderer, cubemaps, state, objects, premultipliedAlpha)
         background.updateMatrix();
       }
       planeMesh.material.uniforms.uvTransform.value.copy(background.matrix);
-      if (currentBackground !== background || currentBackgroundVersion !== background.version || currentTonemapping !== renderer.toneMapping) {
+      if (currentBackground !== background || currentBackgroundVersion !== background.version || currentTonemapping !== renderer2.toneMapping) {
         planeMesh.material.needsUpdate = true;
         currentBackground = background;
         currentBackgroundVersion = background.version;
-        currentTonemapping = renderer.toneMapping;
+        currentTonemapping = renderer2.toneMapping;
       }
       renderList.unshift(planeMesh, planeMesh.geometry, planeMesh.material, 0, 0, null);
     }
@@ -8222,7 +8219,7 @@ function WebGLBackground(renderer, cubemaps, state, objects, premultipliedAlpha)
       clearAlpha = alpha;
       setClear(clearColor, clearAlpha);
     },
-    render
+    render: render2
   };
 }
 function WebGLBindingStates(gl, extensions, attributes, capabilities) {
@@ -8560,7 +8557,7 @@ function WebGLBufferRenderer(gl, extensions, info, capabilities) {
   function setMode(value) {
     mode = value;
   }
-  function render(start, count) {
+  function render2(start, count) {
     gl.drawArrays(mode, start, count);
     info.update(count, mode, 1);
   }
@@ -8583,7 +8580,7 @@ function WebGLBufferRenderer(gl, extensions, info, capabilities) {
     info.update(count, mode, primcount);
   }
   this.setMode = setMode;
-  this.render = render;
+  this.render = render2;
   this.renderInstances = renderInstances;
 }
 function WebGLCapabilities(gl, extensions, parameters) {
@@ -8658,14 +8655,14 @@ function WebGLCapabilities(gl, extensions, parameters) {
 function WebGLClipping(properties) {
   const scope = this;
   let globalState = null, numGlobalPlanes = 0, localClippingEnabled = false, renderingShadows = false;
-  const plane = new Plane(), viewNormalMatrix = new Matrix3(), uniform = { value: null, needsUpdate: false };
+  const plane2 = new Plane(), viewNormalMatrix = new Matrix3(), uniform = { value: null, needsUpdate: false };
   this.uniform = uniform;
   this.numPlanes = 0;
   this.numIntersection = 0;
-  this.init = function(planes, enableLocalClipping, camera) {
+  this.init = function(planes, enableLocalClipping, camera2) {
     const enabled = planes.length !== 0 || enableLocalClipping || numGlobalPlanes !== 0 || localClippingEnabled;
     localClippingEnabled = enableLocalClipping;
-    globalState = projectPlanes(planes, camera, 0);
+    globalState = projectPlanes(planes, camera2, 0);
     numGlobalPlanes = planes.length;
     return enabled;
   };
@@ -8677,7 +8674,7 @@ function WebGLClipping(properties) {
     renderingShadows = false;
     resetGlobalState();
   };
-  this.setState = function(material, camera, useCache) {
+  this.setState = function(material, camera2, useCache) {
     const planes = material.clippingPlanes, clipIntersection = material.clipIntersection, clipShadows = material.clipShadows;
     const materialProperties = properties.get(material);
     if (!localClippingEnabled || planes === null || planes.length === 0 || renderingShadows && !clipShadows) {
@@ -8690,7 +8687,7 @@ function WebGLClipping(properties) {
       const nGlobal = renderingShadows ? 0 : numGlobalPlanes, lGlobal = nGlobal * 4;
       let dstArray = materialProperties.clippingState || null;
       uniform.value = dstArray;
-      dstArray = projectPlanes(planes, camera, lGlobal, useCache);
+      dstArray = projectPlanes(planes, camera2, lGlobal, useCache);
       for (let i = 0; i !== lGlobal; ++i) {
         dstArray[i] = globalState[i];
       }
@@ -8707,21 +8704,21 @@ function WebGLClipping(properties) {
     scope.numPlanes = numGlobalPlanes;
     scope.numIntersection = 0;
   }
-  function projectPlanes(planes, camera, dstOffset, skipTransform) {
+  function projectPlanes(planes, camera2, dstOffset, skipTransform) {
     const nPlanes = planes !== null ? planes.length : 0;
     let dstArray = null;
     if (nPlanes !== 0) {
       dstArray = uniform.value;
       if (skipTransform !== true || dstArray === null) {
-        const flatSize = dstOffset + nPlanes * 4, viewMatrix = camera.matrixWorldInverse;
+        const flatSize = dstOffset + nPlanes * 4, viewMatrix = camera2.matrixWorldInverse;
         viewNormalMatrix.getNormalMatrix(viewMatrix);
         if (dstArray === null || dstArray.length < flatSize) {
           dstArray = new Float32Array(flatSize);
         }
         for (let i = 0, i4 = dstOffset; i !== nPlanes; ++i, i4 += 4) {
-          plane.copy(planes[i]).applyMatrix4(viewMatrix, viewNormalMatrix);
-          plane.normal.toArray(dstArray, i4);
-          dstArray[i4 + 3] = plane.constant;
+          plane2.copy(planes[i]).applyMatrix4(viewMatrix, viewNormalMatrix);
+          plane2.normal.toArray(dstArray, i4);
+          dstArray[i4 + 3] = plane2.constant;
         }
       }
       uniform.value = dstArray;
@@ -8732,7 +8729,7 @@ function WebGLClipping(properties) {
     return dstArray;
   }
 }
-function WebGLCubeMaps(renderer) {
+function WebGLCubeMaps(renderer2) {
   let cubemaps = new WeakMap();
   function mapTextureMapping(texture, mapping) {
     if (mapping === EquirectangularReflectionMapping) {
@@ -8752,11 +8749,11 @@ function WebGLCubeMaps(renderer) {
         } else {
           const image = texture.image;
           if (image && image.height > 0) {
-            const currentRenderTarget = renderer.getRenderTarget();
+            const currentRenderTarget = renderer2.getRenderTarget();
             const renderTarget = new WebGLCubeRenderTarget(image.height / 2);
-            renderTarget.fromEquirectangularTexture(renderer, texture);
+            renderTarget.fromEquirectangularTexture(renderer2, texture);
             cubemaps.set(texture, renderTarget);
-            renderer.setRenderTarget(currentRenderTarget);
+            renderer2.setRenderTarget(currentRenderTarget);
             texture.addEventListener("dispose", onTextureDispose);
             return mapTextureMapping(renderTarget.texture, texture.mapping);
           } else {
@@ -8908,18 +8905,18 @@ const _axisDirections = [
   /* @__PURE__ */ new Vector3(-PHI, INV_PHI, 0)
 ];
 class PMREMGenerator {
-  constructor(renderer) {
-    this._renderer = renderer;
+  constructor(renderer2) {
+    this._renderer = renderer2;
     this._pingPongRenderTarget = null;
     this._blurMaterial = _getBlurShader(MAX_SAMPLES);
     this._equirectShader = null;
     this._cubemapShader = null;
     this._compileMaterial(this._blurMaterial);
   }
-  fromScene(scene, sigma = 0, near = 0.1, far = 100) {
+  fromScene(scene2, sigma = 0, near = 0.1, far = 100) {
     _oldTarget = this._renderer.getRenderTarget();
     const cubeUVRenderTarget = this._allocateTargets();
-    this._sceneToCubeUV(scene, near, far, cubeUVRenderTarget);
+    this._sceneToCubeUV(scene2, near, far, cubeUVRenderTarget);
     if (sigma > 0) {
       this._blur(cubeUVRenderTarget, 0, 0, sigma);
     }
@@ -8970,7 +8967,7 @@ class PMREMGenerator {
     return cubeUVRenderTarget;
   }
   _allocateTargets(texture) {
-    const params = {
+    const params2 = {
       magFilter: LinearFilter,
       minFilter: LinearFilter,
       generateMipmaps: false,
@@ -8979,27 +8976,27 @@ class PMREMGenerator {
       encoding: LinearEncoding,
       depthBuffer: false
     };
-    const cubeUVRenderTarget = _createRenderTarget(params);
+    const cubeUVRenderTarget = _createRenderTarget(params2);
     cubeUVRenderTarget.depthBuffer = texture ? false : true;
-    this._pingPongRenderTarget = _createRenderTarget(params);
+    this._pingPongRenderTarget = _createRenderTarget(params2);
     return cubeUVRenderTarget;
   }
   _compileMaterial(material) {
     const tmpMesh = new Mesh(_lodPlanes[0], material);
     this._renderer.compile(tmpMesh, _flatCamera);
   }
-  _sceneToCubeUV(scene, near, far, cubeUVRenderTarget) {
+  _sceneToCubeUV(scene2, near, far, cubeUVRenderTarget) {
     const fov2 = 90;
     const aspect2 = 1;
     const cubeCamera = new PerspectiveCamera(fov2, aspect2, near, far);
     const upSign = [1, -1, 1, 1, 1, 1];
     const forwardSign = [1, 1, 1, -1, -1, -1];
-    const renderer = this._renderer;
-    const originalAutoClear = renderer.autoClear;
-    const toneMapping = renderer.toneMapping;
-    renderer.getClearColor(_clearColor);
-    renderer.toneMapping = NoToneMapping;
-    renderer.autoClear = false;
+    const renderer2 = this._renderer;
+    const originalAutoClear = renderer2.autoClear;
+    const toneMapping = renderer2.toneMapping;
+    renderer2.getClearColor(_clearColor);
+    renderer2.toneMapping = NoToneMapping;
+    renderer2.autoClear = false;
     const backgroundMaterial = new MeshBasicMaterial({
       name: "PMREM.Background",
       side: BackSide,
@@ -9008,11 +9005,11 @@ class PMREMGenerator {
     });
     const backgroundBox = new Mesh(new BoxGeometry(), backgroundMaterial);
     let useSolidColor = false;
-    const background = scene.background;
+    const background = scene2.background;
     if (background) {
       if (background.isColor) {
         backgroundMaterial.color.copy(background);
-        scene.background = null;
+        scene2.background = null;
         useSolidColor = true;
       }
     } else {
@@ -9032,17 +9029,17 @@ class PMREMGenerator {
         cubeCamera.lookAt(0, 0, forwardSign[i]);
       }
       _setViewport(cubeUVRenderTarget, col * SIZE_MAX, i > 2 ? SIZE_MAX : 0, SIZE_MAX, SIZE_MAX);
-      renderer.setRenderTarget(cubeUVRenderTarget);
+      renderer2.setRenderTarget(cubeUVRenderTarget);
       if (useSolidColor) {
-        renderer.render(backgroundBox, cubeCamera);
+        renderer2.render(backgroundBox, cubeCamera);
       }
-      renderer.render(scene, cubeCamera);
+      renderer2.render(scene2, cubeCamera);
     }
     backgroundBox.geometry.dispose();
     backgroundBox.material.dispose();
-    renderer.toneMapping = toneMapping;
-    renderer.autoClear = originalAutoClear;
-    scene.background = background;
+    renderer2.toneMapping = toneMapping;
+    renderer2.autoClear = originalAutoClear;
+    scene2.background = background;
   }
   _setEncoding(uniform, texture) {
     if (this._renderer.capabilities.isWebGL2 === true && texture.format === RGBAFormat && texture.type === UnsignedByteType && texture.encoding === sRGBEncoding) {
@@ -9052,7 +9049,7 @@ class PMREMGenerator {
     }
   }
   _textureToCubeUV(texture, cubeUVRenderTarget) {
-    const renderer = this._renderer;
+    const renderer2 = this._renderer;
     const isCubeTexture = texture.mapping === CubeReflectionMapping || texture.mapping === CubeRefractionMapping;
     if (isCubeTexture) {
       if (this._cubemapShader == null) {
@@ -9072,19 +9069,19 @@ class PMREMGenerator {
     }
     this._setEncoding(uniforms["inputEncoding"], texture);
     _setViewport(cubeUVRenderTarget, 0, 0, 3 * SIZE_MAX, 2 * SIZE_MAX);
-    renderer.setRenderTarget(cubeUVRenderTarget);
-    renderer.render(mesh, _flatCamera);
+    renderer2.setRenderTarget(cubeUVRenderTarget);
+    renderer2.render(mesh, _flatCamera);
   }
   _applyPMREM(cubeUVRenderTarget) {
-    const renderer = this._renderer;
-    const autoClear = renderer.autoClear;
-    renderer.autoClear = false;
+    const renderer2 = this._renderer;
+    const autoClear = renderer2.autoClear;
+    renderer2.autoClear = false;
     for (let i = 1; i < TOTAL_LODS; i++) {
       const sigma = Math.sqrt(_sigmas[i] * _sigmas[i] - _sigmas[i - 1] * _sigmas[i - 1]);
       const poleAxis = _axisDirections[(i - 1) % _axisDirections.length];
       this._blur(cubeUVRenderTarget, i - 1, i, sigma, poleAxis);
     }
-    renderer.autoClear = autoClear;
+    renderer2.autoClear = autoClear;
   }
   _blur(cubeUVRenderTarget, lodIn, lodOut, sigma, poleAxis) {
     const pingPongRenderTarget = this._pingPongRenderTarget;
@@ -9092,7 +9089,7 @@ class PMREMGenerator {
     this._halfBlur(pingPongRenderTarget, cubeUVRenderTarget, lodOut, lodOut, sigma, "longitudinal", poleAxis);
   }
   _halfBlur(targetIn, targetOut, lodIn, lodOut, sigmaRadians, direction, poleAxis) {
-    const renderer = this._renderer;
+    const renderer2 = this._renderer;
     const blurMaterial = this._blurMaterial;
     if (direction !== "latitudinal" && direction !== "longitudinal") {
       console.error("blur direction must be either latitudinal or longitudinal!");
@@ -9135,8 +9132,8 @@ class PMREMGenerator {
     const x = 3 * Math.max(0, SIZE_MAX - 2 * outputSize);
     const y = (lodOut === 0 ? 0 : 2 * SIZE_MAX) + 2 * outputSize * (lodOut > LOD_MAX - LOD_MIN ? lodOut - LOD_MAX + LOD_MIN : 0);
     _setViewport(targetOut, x, y, 3 * outputSize, 2 * outputSize);
-    renderer.setRenderTarget(targetOut);
-    renderer.render(blurMesh, _flatCamera);
+    renderer2.setRenderTarget(targetOut);
+    renderer2.render(blurMesh, _flatCamera);
   }
 }
 function _createPlanes() {
@@ -9205,8 +9202,8 @@ function _createPlanes() {
   }
   return { _lodPlanes: _lodPlanes2, _sizeLods: _sizeLods2, _sigmas: _sigmas2 };
 }
-function _createRenderTarget(params) {
-  const cubeUVRenderTarget = new WebGLRenderTarget(3 * SIZE_MAX, 3 * SIZE_MAX, params);
+function _createRenderTarget(params2) {
+  const cubeUVRenderTarget = new WebGLRenderTarget(3 * SIZE_MAX, 3 * SIZE_MAX, params2);
   cubeUVRenderTarget.texture.mapping = CubeUVReflectionMapping;
   cubeUVRenderTarget.texture.name = "PMREM.cubeUv";
   cubeUVRenderTarget.scissorTest = true;
@@ -9473,7 +9470,7 @@ function _getEncodings() {
 		}
 	`;
 }
-function WebGLCubeUVMaps(renderer) {
+function WebGLCubeUVMaps(renderer2) {
   let cubeUVmaps = new WeakMap();
   let pmremGenerator = null;
   function get3(texture) {
@@ -9487,12 +9484,12 @@ function WebGLCubeUVMaps(renderer) {
         } else {
           const image = texture.image;
           if (isEquirectMap && image && image.height > 0 || isCubeMap && image && isCubeTextureComplete(image)) {
-            const currentRenderTarget = renderer.getRenderTarget();
+            const currentRenderTarget = renderer2.getRenderTarget();
             if (pmremGenerator === null)
-              pmremGenerator = new PMREMGenerator(renderer);
+              pmremGenerator = new PMREMGenerator(renderer2);
             const renderTarget = isEquirectMap ? pmremGenerator.fromEquirectangular(texture) : pmremGenerator.fromCubemap(texture);
             cubeUVmaps.set(texture, renderTarget);
-            renderer.setRenderTarget(currentRenderTarget);
+            renderer2.setRenderTarget(currentRenderTarget);
             texture.addEventListener("dispose", onTextureDispose);
             return renderTarget.texture;
           } else {
@@ -9696,7 +9693,7 @@ function WebGLIndexedBufferRenderer(gl, extensions, info, capabilities) {
     type = value.type;
     bytesPerElement = value.bytesPerElement;
   }
-  function render(start, count) {
+  function render2(start, count) {
     gl.drawElements(mode, count, type, start * bytesPerElement);
     info.update(count, mode, 1);
   }
@@ -9720,7 +9717,7 @@ function WebGLIndexedBufferRenderer(gl, extensions, info, capabilities) {
   }
   this.setMode = setMode;
   this.setIndex = setIndex;
-  this.render = render;
+  this.render = render2;
   this.renderInstances = renderInstances;
 }
 function WebGLInfo(gl) {
@@ -9728,7 +9725,7 @@ function WebGLInfo(gl) {
     geometries: 0,
     textures: 0
   };
-  const render = {
+  const render2 = {
     frame: 0,
     calls: 0,
     triangles: 0,
@@ -9736,22 +9733,22 @@ function WebGLInfo(gl) {
     lines: 0
   };
   function update(count, mode, instanceCount) {
-    render.calls++;
+    render2.calls++;
     switch (mode) {
       case 4:
-        render.triangles += instanceCount * (count / 3);
+        render2.triangles += instanceCount * (count / 3);
         break;
       case 1:
-        render.lines += instanceCount * (count / 2);
+        render2.lines += instanceCount * (count / 2);
         break;
       case 3:
-        render.lines += instanceCount * (count - 1);
+        render2.lines += instanceCount * (count - 1);
         break;
       case 2:
-        render.lines += instanceCount * count;
+        render2.lines += instanceCount * count;
         break;
       case 0:
-        render.points += instanceCount * count;
+        render2.points += instanceCount * count;
         break;
       default:
         console.error("THREE.WebGLInfo: Unknown draw mode:", mode);
@@ -9759,15 +9756,15 @@ function WebGLInfo(gl) {
     }
   }
   function reset() {
-    render.frame++;
-    render.calls = 0;
-    render.triangles = 0;
-    render.points = 0;
-    render.lines = 0;
+    render2.frame++;
+    render2.calls = 0;
+    render2.triangles = 0;
+    render2.points = 0;
+    render2.lines = 0;
   }
   return {
     memory,
-    render,
+    render: render2,
     programs: null,
     autoReset: true,
     reset,
@@ -10477,11 +10474,11 @@ StructuredUniform.prototype.setValue = function(gl, value, textures) {
   }
 };
 const RePathPart = /(\w+)(\])?(\[|\.)?/g;
-function addUniform(container, uniformObject) {
-  container.seq.push(uniformObject);
-  container.map[uniformObject.id] = uniformObject;
+function addUniform(container2, uniformObject) {
+  container2.seq.push(uniformObject);
+  container2.map[uniformObject.id] = uniformObject;
 }
-function parseUniform(activeInfo, addr, container) {
+function parseUniform(activeInfo, addr, container2) {
   const path = activeInfo.name, pathLength = path.length;
   RePathPart.lastIndex = 0;
   while (true) {
@@ -10491,16 +10488,16 @@ function parseUniform(activeInfo, addr, container) {
     if (idIsIndex)
       id = id | 0;
     if (subscript === void 0 || subscript === "[" && matchEnd + 2 === pathLength) {
-      addUniform(container, subscript === void 0 ? new SingleUniform(id, activeInfo, addr) : new PureArrayUniform(id, activeInfo, addr));
+      addUniform(container2, subscript === void 0 ? new SingleUniform(id, activeInfo, addr) : new PureArrayUniform(id, activeInfo, addr));
       break;
     } else {
-      const map2 = container.map;
+      const map2 = container2.map;
       let next = map2[id];
       if (next === void 0) {
         next = new StructuredUniform(id);
-        addUniform(container, next);
+        addUniform(container2, next);
       }
-      container = next;
+      container2 = next;
     }
   }
 }
@@ -10747,8 +10744,8 @@ function generateEnvMapBlendingDefine(parameters) {
   }
   return envMapBlendingDefine;
 }
-function WebGLProgram(renderer, cacheKey, parameters, bindingStates) {
-  const gl = renderer.getContext();
+function WebGLProgram(renderer2, cacheKey, parameters, bindingStates) {
+  const gl = renderer2.getContext();
   const defines = parameters.defines;
   let vertexShader = parameters.vertexShader;
   let fragmentShader = parameters.fragmentShader;
@@ -10995,7 +10992,7 @@ function WebGLProgram(renderer, cacheKey, parameters, bindingStates) {
     gl.bindAttribLocation(program, 0, "position");
   }
   gl.linkProgram(program);
-  if (renderer.debug.checkShaderErrors) {
+  if (renderer2.debug.checkShaderErrors) {
     const programLog = gl.getProgramInfoLog(program).trim();
     const vertexLog = gl.getShaderInfoLog(glVertexShader).trim();
     const fragmentLog = gl.getShaderInfoLog(glFragmentShader).trim();
@@ -11120,7 +11117,7 @@ class WebGLShaderStage {
     this.usedTimes = 0;
   }
 }
-function WebGLPrograms(renderer, cubemaps, cubeuvmaps, extensions, capabilities, bindingStates, clipping) {
+function WebGLPrograms(renderer2, cubemaps, cubeuvmaps, extensions, capabilities, bindingStates, clipping) {
   const _programLayers = new Layers();
   const _customShaders = new WebGLShaderCache();
   const programs = [];
@@ -11178,9 +11175,9 @@ function WebGLPrograms(renderer, cubemaps, cubeuvmaps, extensions, capabilities,
     }
     return encoding;
   }
-  function getParameters(material, lights, shadows, scene, object) {
-    const fog = scene.fog;
-    const environment = material.isMeshStandardMaterial ? scene.environment : null;
+  function getParameters(material, lights, shadows, scene2, object) {
+    const fog = scene2.fog;
+    const environment = material.isMeshStandardMaterial ? scene2.environment : null;
     const envMap = (material.isMeshStandardMaterial ? cubeuvmaps : cubemaps).get(material.envMap || environment);
     const shaderID = shaderIDs[material.type];
     const maxBones = object.isSkinnedMesh ? getMaxBones(object) : 0;
@@ -11203,7 +11200,7 @@ function WebGLPrograms(renderer, cubemaps, cubeuvmaps, extensions, capabilities,
       customVertexShaderID = _customShaders.getVertexShaderID(material);
       customFragmentShaderID = _customShaders.getFragmentShaderID(material);
     }
-    const currentRenderTarget = renderer.getRenderTarget();
+    const currentRenderTarget = renderer2.getRenderTarget();
     const useAlphaTest = material.alphaTest > 0;
     const useClearcoat = material.clearcoat > 0;
     const parameters = {
@@ -11221,7 +11218,7 @@ function WebGLPrograms(renderer, cubemaps, cubeuvmaps, extensions, capabilities,
       instancing: object.isInstancedMesh === true,
       instancingColor: object.isInstancedMesh === true && object.instanceColor !== null,
       supportsVertexTextures: vertexTextures,
-      outputEncoding: currentRenderTarget !== null ? getTextureEncodingFromMap(currentRenderTarget.texture) : renderer.outputEncoding,
+      outputEncoding: currentRenderTarget !== null ? getTextureEncodingFromMap(currentRenderTarget.texture) : renderer2.outputEncoding,
       map: !!material.map,
       mapEncoding: getTextureEncodingFromMap(material.map),
       matcap: !!material.matcap,
@@ -11290,10 +11287,10 @@ function WebGLPrograms(renderer, cubemaps, cubeuvmaps, extensions, capabilities,
       numClipIntersection: clipping.numIntersection,
       format: material.format,
       dithering: material.dithering,
-      shadowMapEnabled: renderer.shadowMap.enabled && shadows.length > 0,
-      shadowMapType: renderer.shadowMap.type,
-      toneMapping: material.toneMapped ? renderer.toneMapping : NoToneMapping,
-      physicallyCorrectLights: renderer.physicallyCorrectLights,
+      shadowMapEnabled: renderer2.shadowMap.enabled && shadows.length > 0,
+      shadowMapType: renderer2.shadowMap.type,
+      toneMapping: material.toneMapped ? renderer2.toneMapping : NoToneMapping,
+      physicallyCorrectLights: renderer2.physicallyCorrectLights,
       premultipliedAlpha: material.premultipliedAlpha,
       doubleSided: material.side === DoubleSide,
       flipSided: material.side === BackSide,
@@ -11327,7 +11324,7 @@ function WebGLPrograms(renderer, cubemaps, cubeuvmaps, extensions, capabilities,
     if (parameters.isRawShaderMaterial === false) {
       getProgramCacheKeyParameters(array, parameters);
       getProgramCacheKeyBooleans(array, parameters);
-      array.push(renderer.outputEncoding);
+      array.push(renderer2.outputEncoding);
     }
     array.push(parameters.customProgramCacheKey);
     return array.join();
@@ -11499,7 +11496,7 @@ function WebGLPrograms(renderer, cubemaps, cubeuvmaps, extensions, capabilities,
       }
     }
     if (program === void 0) {
-      program = new WebGLProgram(renderer, cacheKey, parameters, bindingStates);
+      program = new WebGLProgram(renderer2, cacheKey, parameters, bindingStates);
       programs.push(program);
     }
     return program;
@@ -11671,17 +11668,17 @@ function WebGLRenderList() {
 }
 function WebGLRenderLists() {
   let lists = new WeakMap();
-  function get3(scene, renderCallDepth) {
+  function get3(scene2, renderCallDepth) {
     let list;
-    if (lists.has(scene) === false) {
+    if (lists.has(scene2) === false) {
       list = new WebGLRenderList();
-      lists.set(scene, [list]);
+      lists.set(scene2, [list]);
     } else {
-      if (renderCallDepth >= lists.get(scene).length) {
+      if (renderCallDepth >= lists.get(scene2).length) {
         list = new WebGLRenderList();
-        lists.get(scene).push(list);
+        lists.get(scene2).push(list);
       } else {
-        list = lists.get(scene)[renderCallDepth];
+        list = lists.get(scene2)[renderCallDepth];
       }
     }
     return list;
@@ -11982,13 +11979,13 @@ function WebGLLights(extensions, capabilities) {
       state.version = nextVersion++;
     }
   }
-  function setupView(lights, camera) {
+  function setupView(lights, camera2) {
     let directionalLength = 0;
     let pointLength = 0;
     let spotLength = 0;
     let rectAreaLength = 0;
     let hemiLength = 0;
-    const viewMatrix = camera.matrixWorldInverse;
+    const viewMatrix = camera2.matrixWorldInverse;
     for (let i = 0, l = lights.length; i < l; i++) {
       const light = lights[i];
       if (light.isDirectionalLight) {
@@ -12057,8 +12054,8 @@ function WebGLRenderState(extensions, capabilities) {
   function setupLights(physicallyCorrectLights) {
     lights.setup(lightsArray, physicallyCorrectLights);
   }
-  function setupLightsView(camera) {
-    lights.setupView(lightsArray, camera);
+  function setupLightsView(camera2) {
+    lights.setupView(lightsArray, camera2);
   }
   const state = {
     lightsArray,
@@ -12076,17 +12073,17 @@ function WebGLRenderState(extensions, capabilities) {
 }
 function WebGLRenderStates(extensions, capabilities) {
   let renderStates = new WeakMap();
-  function get3(scene, renderCallDepth = 0) {
+  function get3(scene2, renderCallDepth = 0) {
     let renderState;
-    if (renderStates.has(scene) === false) {
+    if (renderStates.has(scene2) === false) {
       renderState = new WebGLRenderState(extensions, capabilities);
-      renderStates.set(scene, [renderState]);
+      renderStates.set(scene2, [renderState]);
     } else {
-      if (renderCallDepth >= renderStates.get(scene).length) {
+      if (renderCallDepth >= renderStates.get(scene2).length) {
         renderState = new WebGLRenderState(extensions, capabilities);
-        renderStates.get(scene).push(renderState);
+        renderStates.get(scene2).push(renderState);
       } else {
-        renderState = renderStates.get(scene)[renderCallDepth];
+        renderState = renderStates.get(scene2)[renderCallDepth];
       }
     }
     return renderState;
@@ -12185,7 +12182,7 @@ function WebGLShadowMap(_renderer, _objects, _capabilities) {
   this.autoUpdate = true;
   this.needsUpdate = false;
   this.type = PCFShadowMap;
-  this.render = function(lights, scene, camera) {
+  this.render = function(lights, scene2, camera2) {
     if (scope.enabled === false)
       return;
     if (scope.autoUpdate === false && scope.needsUpdate === false)
@@ -12247,17 +12244,17 @@ function WebGLShadowMap(_renderer, _objects, _capabilities) {
         _state.viewport(_viewport);
         shadow.updateMatrices(light, vp);
         _frustum = shadow.getFrustum();
-        renderObject(scene, camera, shadow.camera, light, this.type);
+        renderObject(scene2, camera2, shadow.camera, light, this.type);
       }
       if (!shadow.isPointLightShadow && this.type === VSMShadowMap) {
-        VSMPass(shadow, camera);
+        VSMPass(shadow, camera2);
       }
       shadow.needsUpdate = false;
     }
     scope.needsUpdate = false;
     _renderer.setRenderTarget(currentRenderTarget, activeCubeFace, activeMipmapLevel);
   };
-  function VSMPass(shadow, camera) {
+  function VSMPass(shadow, camera2) {
     const geometry = _objects.update(fullScreenMesh);
     if (shadowMaterialVertical.defines.VSM_SAMPLES !== shadow.blurSamples) {
       shadowMaterialVertical.defines.VSM_SAMPLES = shadow.blurSamples;
@@ -12270,13 +12267,13 @@ function WebGLShadowMap(_renderer, _objects, _capabilities) {
     shadowMaterialVertical.uniforms.radius.value = shadow.radius;
     _renderer.setRenderTarget(shadow.mapPass);
     _renderer.clear();
-    _renderer.renderBufferDirect(camera, null, geometry, shadowMaterialVertical, fullScreenMesh, null);
+    _renderer.renderBufferDirect(camera2, null, geometry, shadowMaterialVertical, fullScreenMesh, null);
     shadowMaterialHorizontal.uniforms.shadow_pass.value = shadow.mapPass.texture;
     shadowMaterialHorizontal.uniforms.resolution.value = shadow.mapSize;
     shadowMaterialHorizontal.uniforms.radius.value = shadow.radius;
     _renderer.setRenderTarget(shadow.map);
     _renderer.clear();
-    _renderer.renderBufferDirect(camera, null, geometry, shadowMaterialHorizontal, fullScreenMesh, null);
+    _renderer.renderBufferDirect(camera2, null, geometry, shadowMaterialHorizontal, fullScreenMesh, null);
   }
   function getDepthMaterial(object, geometry, material, light, shadowCameraNear, shadowCameraFar, type) {
     let result2 = null;
@@ -12324,10 +12321,10 @@ function WebGLShadowMap(_renderer, _objects, _capabilities) {
     }
     return result2;
   }
-  function renderObject(object, camera, shadowCamera, light, type) {
+  function renderObject(object, camera2, shadowCamera, light, type) {
     if (object.visible === false)
       return;
-    const visible = object.layers.test(camera.layers);
+    const visible = object.layers.test(camera2.layers);
     if (visible && (object.isMesh || object.isLine || object.isPoints)) {
       if ((object.castShadow || object.receiveShadow && type === VSMShadowMap) && (!object.frustumCulled || _frustum.intersectsObject(object))) {
         object.modelViewMatrix.multiplyMatrices(shadowCamera.matrixWorldInverse, object.matrixWorld);
@@ -12351,7 +12348,7 @@ function WebGLShadowMap(_renderer, _objects, _capabilities) {
     }
     const children = object.children;
     for (let i = 0, l = children.length; i < l; i++) {
-      renderObject(children[i], camera, shadowCamera, light, type);
+      renderObject(children[i], camera2, shadowCamera, light, type);
     }
   }
 }
@@ -13029,13 +13026,13 @@ function WebGLTextures(_gl, extensions, state, properties, capabilities, utils, 
         const height = floor(scale * image.height);
         if (_canvas2 === void 0)
           _canvas2 = createCanvas(width, height);
-        const canvas = needsNewCanvas ? createCanvas(width, height) : _canvas2;
-        canvas.width = width;
-        canvas.height = height;
-        const context = canvas.getContext("2d");
+        const canvas2 = needsNewCanvas ? createCanvas(width, height) : _canvas2;
+        canvas2.width = width;
+        canvas2.height = height;
+        const context = canvas2.getContext("2d");
         context.drawImage(image, 0, 0, width, height);
         console.warn("THREE.WebGLRenderer: Texture has been resized from (" + image.width + "x" + image.height + ") to (" + width + "x" + height + ").");
-        return canvas;
+        return canvas2;
       } else {
         if ("data" in image) {
           console.warn("THREE.WebGLRenderer: Image in DataTexture is too big (" + image.width + "x" + image.height + ").");
@@ -14228,14 +14225,14 @@ class DepthTexture extends Texture {
 }
 DepthTexture.prototype.isDepthTexture = true;
 class WebXRManager extends EventDispatcher {
-  constructor(renderer, gl) {
+  constructor(renderer2, gl) {
     super();
     const scope = this;
     let session = null;
     let framebufferScaleFactor = 1;
     let referenceSpace = null;
     let referenceSpaceType = "local-floor";
-    const hasMultisampledRenderToTexture = renderer.extensions.has("WEBGL_multisampled_render_to_texture");
+    const hasMultisampledRenderToTexture = renderer2.extensions.has("WEBGL_multisampled_render_to_texture");
     let pose = null;
     let glBinding = null;
     let glProjLayer = null;
@@ -14299,7 +14296,7 @@ class WebXRManager extends EventDispatcher {
       inputSourcesMap.clear();
       _currentDepthNear = null;
       _currentDepthFar = null;
-      renderer.setRenderTarget(initialRenderTarget);
+      renderer2.setRenderTarget(initialRenderTarget);
       glBaseLayer = null;
       glProjLayer = null;
       glBinding = null;
@@ -14339,7 +14336,7 @@ class WebXRManager extends EventDispatcher {
     this.setSession = async function(value) {
       session = value;
       if (session !== null) {
-        initialRenderTarget = renderer.getRenderTarget();
+        initialRenderTarget = renderer2.getRenderTarget();
         session.addEventListener("select", onSessionEvent);
         session.addEventListener("selectstart", onSessionEvent);
         session.addEventListener("selectend", onSessionEvent);
@@ -14351,7 +14348,7 @@ class WebXRManager extends EventDispatcher {
         if (attributes.xrCompatible !== true) {
           await gl.makeXRCompatible();
         }
-        if (session.renderState.layers === void 0 || renderer.capabilities.isWebGL2 === false) {
+        if (session.renderState.layers === void 0 || renderer2.capabilities.isWebGL2 === false) {
           const layerInit = {
             antialias: session.renderState.layers === void 0 ? attributes.antialias : true,
             alpha: attributes.alpha,
@@ -14364,7 +14361,7 @@ class WebXRManager extends EventDispatcher {
           newRenderTarget = new WebGLRenderTarget(glBaseLayer.framebufferWidth, glBaseLayer.framebufferHeight, {
             format: RGBAFormat,
             type: UnsignedByteType,
-            encoding: renderer.outputEncoding
+            encoding: renderer2.outputEncoding
           });
         } else {
           isMultisample = attributes.antialias;
@@ -14392,7 +14389,7 @@ class WebXRManager extends EventDispatcher {
               stencilBuffer: attributes.stencil,
               ignoreDepth: glProjLayer.ignoreDepthValues,
               useRenderToTexture: hasMultisampledRenderToTexture,
-              encoding: renderer.outputEncoding
+              encoding: renderer2.outputEncoding
             });
           } else {
             newRenderTarget = new WebGLRenderTarget(glProjLayer.textureWidth, glProjLayer.textureHeight, {
@@ -14401,7 +14398,7 @@ class WebXRManager extends EventDispatcher {
               depthTexture: new DepthTexture(glProjLayer.textureWidth, glProjLayer.textureHeight, depthType, void 0, void 0, void 0, void 0, void 0, void 0, depthFormat),
               stencilBuffer: attributes.stencil,
               ignoreDepth: glProjLayer.ignoreDepthValues,
-              encoding: renderer.outputEncoding
+              encoding: renderer2.outputEncoding
             });
           }
         }
@@ -14436,7 +14433,7 @@ class WebXRManager extends EventDispatcher {
     }
     const cameraLPos = new Vector3();
     const cameraRPos = new Vector3();
-    function setProjectionFromUnion(camera, cameraL2, cameraR2) {
+    function setProjectionFromUnion(camera2, cameraL2, cameraR2) {
       cameraLPos.setFromMatrixPosition(cameraL2.matrixWorld);
       cameraRPos.setFromMatrixPosition(cameraR2.matrixWorld);
       const ipd = cameraLPos.distanceTo(cameraRPos);
@@ -14452,32 +14449,32 @@ class WebXRManager extends EventDispatcher {
       const right = near * rightFov;
       const zOffset = ipd / (-leftFov + rightFov);
       const xOffset = zOffset * -leftFov;
-      cameraL2.matrixWorld.decompose(camera.position, camera.quaternion, camera.scale);
-      camera.translateX(xOffset);
-      camera.translateZ(zOffset);
-      camera.matrixWorld.compose(camera.position, camera.quaternion, camera.scale);
-      camera.matrixWorldInverse.copy(camera.matrixWorld).invert();
+      cameraL2.matrixWorld.decompose(camera2.position, camera2.quaternion, camera2.scale);
+      camera2.translateX(xOffset);
+      camera2.translateZ(zOffset);
+      camera2.matrixWorld.compose(camera2.position, camera2.quaternion, camera2.scale);
+      camera2.matrixWorldInverse.copy(camera2.matrixWorld).invert();
       const near2 = near + zOffset;
       const far2 = far + zOffset;
       const left2 = left - xOffset;
       const right2 = right + (ipd - xOffset);
       const top2 = topFov * far / far2 * near2;
       const bottom2 = bottomFov * far / far2 * near2;
-      camera.projectionMatrix.makePerspective(left2, right2, top2, bottom2, near2, far2);
+      camera2.projectionMatrix.makePerspective(left2, right2, top2, bottom2, near2, far2);
     }
-    function updateCamera(camera, parent) {
+    function updateCamera(camera2, parent) {
       if (parent === null) {
-        camera.matrixWorld.copy(camera.matrix);
+        camera2.matrixWorld.copy(camera2.matrix);
       } else {
-        camera.matrixWorld.multiplyMatrices(parent.matrixWorld, camera.matrix);
+        camera2.matrixWorld.multiplyMatrices(parent.matrixWorld, camera2.matrix);
       }
-      camera.matrixWorldInverse.copy(camera.matrixWorld).invert();
+      camera2.matrixWorldInverse.copy(camera2.matrixWorld).invert();
     }
-    this.updateCamera = function(camera) {
+    this.updateCamera = function(camera2) {
       if (session === null)
         return;
-      cameraVR.near = cameraR.near = cameraL.near = camera.near;
-      cameraVR.far = cameraR.far = cameraL.far = camera.far;
+      cameraVR.near = cameraR.near = cameraL.near = camera2.near;
+      cameraVR.far = cameraR.far = cameraL.far = camera2.far;
       if (_currentDepthNear !== cameraVR.near || _currentDepthFar !== cameraVR.far) {
         session.updateRenderState({
           depthNear: cameraVR.near,
@@ -14486,19 +14483,19 @@ class WebXRManager extends EventDispatcher {
         _currentDepthNear = cameraVR.near;
         _currentDepthFar = cameraVR.far;
       }
-      const parent = camera.parent;
+      const parent = camera2.parent;
       const cameras2 = cameraVR.cameras;
       updateCamera(cameraVR, parent);
       for (let i = 0; i < cameras2.length; i++) {
         updateCamera(cameras2[i], parent);
       }
       cameraVR.matrixWorld.decompose(cameraVR.position, cameraVR.quaternion, cameraVR.scale);
-      camera.position.copy(cameraVR.position);
-      camera.quaternion.copy(cameraVR.quaternion);
-      camera.scale.copy(cameraVR.scale);
-      camera.matrix.copy(cameraVR.matrix);
-      camera.matrixWorld.copy(cameraVR.matrixWorld);
-      const children = camera.children;
+      camera2.position.copy(cameraVR.position);
+      camera2.quaternion.copy(cameraVR.quaternion);
+      camera2.scale.copy(cameraVR.scale);
+      camera2.matrix.copy(cameraVR.matrix);
+      camera2.matrixWorld.copy(cameraVR.matrixWorld);
+      const children = camera2.children;
       for (let i = 0, l = children.length; i < l; i++) {
         children[i].updateMatrixWorld(true);
       }
@@ -14535,8 +14532,8 @@ class WebXRManager extends EventDispatcher {
       if (pose !== null) {
         const views = pose.views;
         if (glBaseLayer !== null) {
-          renderer.setRenderTargetFramebuffer(newRenderTarget, glBaseLayer.framebuffer);
-          renderer.setRenderTarget(newRenderTarget);
+          renderer2.setRenderTargetFramebuffer(newRenderTarget, glBaseLayer.framebuffer);
+          renderer2.setRenderTarget(newRenderTarget);
         }
         let cameraVRNeedsUpdate = false;
         if (views.length !== cameraVR.cameras.length) {
@@ -14552,19 +14549,19 @@ class WebXRManager extends EventDispatcher {
             const glSubImage = glBinding.getViewSubImage(glProjLayer, view);
             viewport = glSubImage.viewport;
             if (i === 0) {
-              renderer.setRenderTargetTextures(newRenderTarget, glSubImage.colorTexture, glProjLayer.ignoreDepthValues ? void 0 : glSubImage.depthStencilTexture);
-              renderer.setRenderTarget(newRenderTarget);
+              renderer2.setRenderTargetTextures(newRenderTarget, glSubImage.colorTexture, glProjLayer.ignoreDepthValues ? void 0 : glSubImage.depthStencilTexture);
+              renderer2.setRenderTarget(newRenderTarget);
             }
           }
-          const camera = cameras[i];
-          camera.matrix.fromArray(view.transform.matrix);
-          camera.projectionMatrix.fromArray(view.projectionMatrix);
-          camera.viewport.set(viewport.x, viewport.y, viewport.width, viewport.height);
+          const camera2 = cameras[i];
+          camera2.matrix.fromArray(view.transform.matrix);
+          camera2.projectionMatrix.fromArray(view.projectionMatrix);
+          camera2.viewport.set(viewport.x, viewport.y, viewport.width, viewport.height);
           if (i === 0) {
-            cameraVR.matrix.copy(camera.matrix);
+            cameraVR.matrix.copy(camera2.matrix);
           }
           if (cameraVRNeedsUpdate === true) {
-            cameraVR.cameras.push(camera);
+            cameraVR.cameras.push(camera2);
           }
         }
       }
@@ -15010,9 +15007,9 @@ function WebGLMaterials(properties) {
   };
 }
 function createCanvasElement() {
-  const canvas = createElementNS("canvas");
-  canvas.style.display = "block";
-  return canvas;
+  const canvas2 = createElementNS("canvas");
+  canvas2.style.display = "block";
+  return canvas2;
 }
 function WebGLRenderer(parameters = {}) {
   const _canvas2 = parameters.canvas !== void 0 ? parameters.canvas : createCanvasElement(), _context2 = parameters.context !== void 0 ? parameters.context : null, _alpha = parameters.alpha !== void 0 ? parameters.alpha : false, _depth = parameters.depth !== void 0 ? parameters.depth : true, _stencil = parameters.stencil !== void 0 ? parameters.stencil : true, _antialias = parameters.antialias !== void 0 ? parameters.antialias : false, _premultipliedAlpha = parameters.premultipliedAlpha !== void 0 ? parameters.premultipliedAlpha : true, _preserveDrawingBuffer = parameters.preserveDrawingBuffer !== void 0 ? parameters.preserveDrawingBuffer : false, _powerPreference = parameters.powerPreference !== void 0 ? parameters.powerPreference : "default", _failIfMajorPerformanceCaveat = parameters.failIfMajorPerformanceCaveat !== void 0 ? parameters.failIfMajorPerformanceCaveat : false;
@@ -15337,11 +15334,11 @@ function WebGLRenderer(parameters = {}) {
       }
     }
   }
-  this.renderBufferDirect = function(camera, scene, geometry, material, object, group) {
-    if (scene === null)
-      scene = _emptyScene;
+  this.renderBufferDirect = function(camera2, scene2, geometry, material, object, group) {
+    if (scene2 === null)
+      scene2 = _emptyScene;
     const frontFaceCW = object.isMesh && object.matrixWorld.determinant() < 0;
-    const program = setProgram(camera, scene, geometry, material, object);
+    const program = setProgram(camera2, scene2, geometry, material, object);
     state.setMaterial(material, frontFaceCW);
     let index = geometry.index;
     const position = geometry.attributes.position;
@@ -15358,11 +15355,11 @@ function WebGLRenderer(parameters = {}) {
     }
     bindingStates.setup(object, material, program, geometry, index);
     let attribute;
-    let renderer = bufferRenderer;
+    let renderer2 = bufferRenderer;
     if (index !== null) {
       attribute = attributes.get(index);
-      renderer = indexedBufferRenderer;
-      renderer.setIndex(attribute);
+      renderer2 = indexedBufferRenderer;
+      renderer2.setIndex(attribute);
     }
     const dataCount = index !== null ? index.count : position.count;
     const rangeStart = geometry.drawRange.start * rangeFactor;
@@ -15377,9 +15374,9 @@ function WebGLRenderer(parameters = {}) {
     if (object.isMesh) {
       if (material.wireframe === true) {
         state.setLineWidth(material.wireframeLinewidth * getTargetPixelRatio());
-        renderer.setMode(1);
+        renderer2.setMode(1);
       } else {
-        renderer.setMode(4);
+        renderer2.setMode(4);
       }
     } else if (object.isLine) {
       let lineWidth = material.linewidth;
@@ -15387,32 +15384,32 @@ function WebGLRenderer(parameters = {}) {
         lineWidth = 1;
       state.setLineWidth(lineWidth * getTargetPixelRatio());
       if (object.isLineSegments) {
-        renderer.setMode(1);
+        renderer2.setMode(1);
       } else if (object.isLineLoop) {
-        renderer.setMode(2);
+        renderer2.setMode(2);
       } else {
-        renderer.setMode(3);
+        renderer2.setMode(3);
       }
     } else if (object.isPoints) {
-      renderer.setMode(0);
+      renderer2.setMode(0);
     } else if (object.isSprite) {
-      renderer.setMode(4);
+      renderer2.setMode(4);
     }
     if (object.isInstancedMesh) {
-      renderer.renderInstances(drawStart, drawCount, object.count);
+      renderer2.renderInstances(drawStart, drawCount, object.count);
     } else if (geometry.isInstancedBufferGeometry) {
       const instanceCount = Math.min(geometry.instanceCount, geometry._maxInstanceCount);
-      renderer.renderInstances(drawStart, drawCount, instanceCount);
+      renderer2.renderInstances(drawStart, drawCount, instanceCount);
     } else {
-      renderer.render(drawStart, drawCount);
+      renderer2.render(drawStart, drawCount);
     }
   };
-  this.compile = function(scene, camera) {
-    currentRenderState = renderStates.get(scene);
+  this.compile = function(scene2, camera2) {
+    currentRenderState = renderStates.get(scene2);
     currentRenderState.init();
     renderStateStack.push(currentRenderState);
-    scene.traverseVisible(function(object) {
-      if (object.isLight && object.layers.test(camera.layers)) {
+    scene2.traverseVisible(function(object) {
+      if (object.isLight && object.layers.test(camera2.layers)) {
         currentRenderState.pushLight(object);
         if (object.castShadow) {
           currentRenderState.pushShadow(object);
@@ -15420,16 +15417,16 @@ function WebGLRenderer(parameters = {}) {
       }
     });
     currentRenderState.setupLights(_this.physicallyCorrectLights);
-    scene.traverse(function(object) {
+    scene2.traverse(function(object) {
       const material = object.material;
       if (material) {
         if (Array.isArray(material)) {
           for (let i = 0; i < material.length; i++) {
             const material2 = material[i];
-            getProgram(material2, scene, object);
+            getProgram(material2, scene2, object);
           }
         } else {
-          getProgram(material, scene, object);
+          getProgram(material, scene2, object);
         }
       }
     });
@@ -15458,35 +15455,35 @@ function WebGLRenderer(parameters = {}) {
   };
   xr.addEventListener("sessionstart", onXRSessionStart);
   xr.addEventListener("sessionend", onXRSessionEnd);
-  this.render = function(scene, camera) {
-    if (camera !== void 0 && camera.isCamera !== true) {
+  this.render = function(scene2, camera2) {
+    if (camera2 !== void 0 && camera2.isCamera !== true) {
       console.error("THREE.WebGLRenderer.render: camera is not an instance of THREE.Camera.");
       return;
     }
     if (_isContextLost === true)
       return;
-    if (scene.autoUpdate === true)
-      scene.updateMatrixWorld();
-    if (camera.parent === null)
-      camera.updateMatrixWorld();
+    if (scene2.autoUpdate === true)
+      scene2.updateMatrixWorld();
+    if (camera2.parent === null)
+      camera2.updateMatrixWorld();
     if (xr.enabled === true && xr.isPresenting === true) {
       if (xr.cameraAutoUpdate === true)
-        xr.updateCamera(camera);
-      camera = xr.getCamera();
+        xr.updateCamera(camera2);
+      camera2 = xr.getCamera();
     }
-    if (scene.isScene === true)
-      scene.onBeforeRender(_this, scene, camera, _currentRenderTarget);
-    currentRenderState = renderStates.get(scene, renderStateStack.length);
+    if (scene2.isScene === true)
+      scene2.onBeforeRender(_this, scene2, camera2, _currentRenderTarget);
+    currentRenderState = renderStates.get(scene2, renderStateStack.length);
     currentRenderState.init();
     renderStateStack.push(currentRenderState);
-    _projScreenMatrix2.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+    _projScreenMatrix2.multiplyMatrices(camera2.projectionMatrix, camera2.matrixWorldInverse);
     _frustum.setFromProjectionMatrix(_projScreenMatrix2);
     _localClippingEnabled = this.localClippingEnabled;
-    _clippingEnabled = clipping.init(this.clippingPlanes, _localClippingEnabled, camera);
-    currentRenderList = renderLists.get(scene, renderListStack.length);
+    _clippingEnabled = clipping.init(this.clippingPlanes, _localClippingEnabled, camera2);
+    currentRenderList = renderLists.get(scene2, renderListStack.length);
     currentRenderList.init();
     renderListStack.push(currentRenderList);
-    projectObject(scene, camera, 0, _this.sortObjects);
+    projectObject(scene2, camera2, 0, _this.sortObjects);
     currentRenderList.finish();
     if (_this.sortObjects === true) {
       currentRenderList.sort(_opaqueSort, _transparentSort);
@@ -15494,28 +15491,28 @@ function WebGLRenderer(parameters = {}) {
     if (_clippingEnabled === true)
       clipping.beginShadows();
     const shadowsArray = currentRenderState.state.shadowsArray;
-    shadowMap.render(shadowsArray, scene, camera);
+    shadowMap.render(shadowsArray, scene2, camera2);
     if (_clippingEnabled === true)
       clipping.endShadows();
     if (this.info.autoReset === true)
       this.info.reset();
-    background.render(currentRenderList, scene);
+    background.render(currentRenderList, scene2);
     currentRenderState.setupLights(_this.physicallyCorrectLights);
-    if (camera.isArrayCamera) {
-      const cameras = camera.cameras;
+    if (camera2.isArrayCamera) {
+      const cameras = camera2.cameras;
       for (let i = 0, l = cameras.length; i < l; i++) {
-        const camera2 = cameras[i];
-        renderScene(currentRenderList, scene, camera2, camera2.viewport);
+        const camera22 = cameras[i];
+        renderScene(currentRenderList, scene2, camera22, camera22.viewport);
       }
     } else {
-      renderScene(currentRenderList, scene, camera);
+      renderScene(currentRenderList, scene2, camera2);
     }
     if (_currentRenderTarget !== null) {
       textures.updateMultisampleRenderTarget(_currentRenderTarget);
       textures.updateRenderTargetMipmap(_currentRenderTarget);
     }
-    if (scene.isScene === true)
-      scene.onAfterRender(_this, scene, camera);
+    if (scene2.isScene === true)
+      scene2.onAfterRender(_this, scene2, camera2);
     state.buffers.depth.setTest(true);
     state.buffers.depth.setMask(true);
     state.buffers.color.setMask(true);
@@ -15536,16 +15533,16 @@ function WebGLRenderer(parameters = {}) {
       currentRenderList = null;
     }
   };
-  function projectObject(object, camera, groupOrder, sortObjects) {
+  function projectObject(object, camera2, groupOrder, sortObjects) {
     if (object.visible === false)
       return;
-    const visible = object.layers.test(camera.layers);
+    const visible = object.layers.test(camera2.layers);
     if (visible) {
       if (object.isGroup) {
         groupOrder = object.renderOrder;
       } else if (object.isLOD) {
         if (object.autoUpdate === true)
-          object.update(camera);
+          object.update(camera2);
       } else if (object.isLight) {
         currentRenderState.pushLight(object);
         if (object.castShadow) {
@@ -15592,26 +15589,26 @@ function WebGLRenderer(parameters = {}) {
     }
     const children = object.children;
     for (let i = 0, l = children.length; i < l; i++) {
-      projectObject(children[i], camera, groupOrder, sortObjects);
+      projectObject(children[i], camera2, groupOrder, sortObjects);
     }
   }
-  function renderScene(currentRenderList2, scene, camera, viewport) {
+  function renderScene(currentRenderList2, scene2, camera2, viewport) {
     const opaqueObjects = currentRenderList2.opaque;
     const transmissiveObjects = currentRenderList2.transmissive;
     const transparentObjects = currentRenderList2.transparent;
-    currentRenderState.setupLightsView(camera);
+    currentRenderState.setupLightsView(camera2);
     if (transmissiveObjects.length > 0)
-      renderTransmissionPass(opaqueObjects, scene, camera);
+      renderTransmissionPass(opaqueObjects, scene2, camera2);
     if (viewport)
       state.viewport(_currentViewport.copy(viewport));
     if (opaqueObjects.length > 0)
-      renderObjects(opaqueObjects, scene, camera);
+      renderObjects(opaqueObjects, scene2, camera2);
     if (transmissiveObjects.length > 0)
-      renderObjects(transmissiveObjects, scene, camera);
+      renderObjects(transmissiveObjects, scene2, camera2);
     if (transparentObjects.length > 0)
-      renderObjects(transparentObjects, scene, camera);
+      renderObjects(transparentObjects, scene2, camera2);
   }
-  function renderTransmissionPass(opaqueObjects, scene, camera) {
+  function renderTransmissionPass(opaqueObjects, scene2, camera2) {
     if (_transmissionRenderTarget === null) {
       const needsAntialias = _antialias === true && capabilities.isWebGL2 === true;
       const renderTargetType = needsAntialias ? WebGLMultisampleRenderTarget : WebGLRenderTarget;
@@ -15630,55 +15627,55 @@ function WebGLRenderer(parameters = {}) {
     _this.clear();
     const currentToneMapping = _this.toneMapping;
     _this.toneMapping = NoToneMapping;
-    renderObjects(opaqueObjects, scene, camera);
+    renderObjects(opaqueObjects, scene2, camera2);
     _this.toneMapping = currentToneMapping;
     textures.updateMultisampleRenderTarget(_transmissionRenderTarget);
     textures.updateRenderTargetMipmap(_transmissionRenderTarget);
     _this.setRenderTarget(currentRenderTarget);
   }
-  function renderObjects(renderList, scene, camera) {
-    const overrideMaterial = scene.isScene === true ? scene.overrideMaterial : null;
+  function renderObjects(renderList, scene2, camera2) {
+    const overrideMaterial = scene2.isScene === true ? scene2.overrideMaterial : null;
     for (let i = 0, l = renderList.length; i < l; i++) {
       const renderItem = renderList[i];
       const object = renderItem.object;
       const geometry = renderItem.geometry;
       const material = overrideMaterial === null ? renderItem.material : overrideMaterial;
       const group = renderItem.group;
-      if (object.layers.test(camera.layers)) {
-        renderObject(object, scene, camera, geometry, material, group);
+      if (object.layers.test(camera2.layers)) {
+        renderObject(object, scene2, camera2, geometry, material, group);
       }
     }
   }
-  function renderObject(object, scene, camera, geometry, material, group) {
-    object.onBeforeRender(_this, scene, camera, geometry, material, group);
-    object.modelViewMatrix.multiplyMatrices(camera.matrixWorldInverse, object.matrixWorld);
+  function renderObject(object, scene2, camera2, geometry, material, group) {
+    object.onBeforeRender(_this, scene2, camera2, geometry, material, group);
+    object.modelViewMatrix.multiplyMatrices(camera2.matrixWorldInverse, object.matrixWorld);
     object.normalMatrix.getNormalMatrix(object.modelViewMatrix);
-    material.onBeforeRender(_this, scene, camera, geometry, object, group);
+    material.onBeforeRender(_this, scene2, camera2, geometry, object, group);
     if (material.transparent === true && material.side === DoubleSide) {
       material.side = BackSide;
       material.needsUpdate = true;
-      _this.renderBufferDirect(camera, scene, geometry, material, object, group);
+      _this.renderBufferDirect(camera2, scene2, geometry, material, object, group);
       material.side = FrontSide;
       material.needsUpdate = true;
-      _this.renderBufferDirect(camera, scene, geometry, material, object, group);
+      _this.renderBufferDirect(camera2, scene2, geometry, material, object, group);
       material.side = DoubleSide;
     } else {
-      _this.renderBufferDirect(camera, scene, geometry, material, object, group);
+      _this.renderBufferDirect(camera2, scene2, geometry, material, object, group);
     }
-    object.onAfterRender(_this, scene, camera, geometry, material, group);
+    object.onAfterRender(_this, scene2, camera2, geometry, material, group);
   }
-  function getProgram(material, scene, object) {
-    if (scene.isScene !== true)
-      scene = _emptyScene;
+  function getProgram(material, scene2, object) {
+    if (scene2.isScene !== true)
+      scene2 = _emptyScene;
     const materialProperties = properties.get(material);
     const lights = currentRenderState.state.lights;
     const shadowsArray = currentRenderState.state.shadowsArray;
     const lightsStateVersion = lights.state.version;
-    const parameters2 = programCache.getParameters(material, lights.state, shadowsArray, scene, object);
+    const parameters2 = programCache.getParameters(material, lights.state, shadowsArray, scene2, object);
     const programCacheKey = programCache.getProgramCacheKey(parameters2);
     let programs = materialProperties.programs;
-    materialProperties.environment = material.isMeshStandardMaterial ? scene.environment : null;
-    materialProperties.fog = scene.fog;
+    materialProperties.environment = material.isMeshStandardMaterial ? scene2.environment : null;
+    materialProperties.fog = scene2.fog;
     materialProperties.envMap = (material.isMeshStandardMaterial ? cubeuvmaps : cubemaps).get(material.envMap || materialProperties.environment);
     if (programs === void 0) {
       material.addEventListener("dispose", onMaterialDispose);
@@ -15746,12 +15743,12 @@ function WebGLRenderer(parameters = {}) {
     materialProperties.vertexTangents = parameters2.vertexTangents;
     materialProperties.toneMapping = parameters2.toneMapping;
   }
-  function setProgram(camera, scene, geometry, material, object) {
-    if (scene.isScene !== true)
-      scene = _emptyScene;
+  function setProgram(camera2, scene2, geometry, material, object) {
+    if (scene2.isScene !== true)
+      scene2 = _emptyScene;
     textures.resetTextureUnits();
-    const fog = scene.fog;
-    const environment = material.isMeshStandardMaterial ? scene.environment : null;
+    const fog = scene2.fog;
+    const environment = material.isMeshStandardMaterial ? scene2.environment : null;
     const encoding = _currentRenderTarget === null ? _this.outputEncoding : _currentRenderTarget.texture.encoding;
     const envMap = (material.isMeshStandardMaterial ? cubeuvmaps : cubemaps).get(material.envMap || environment);
     const vertexAlphas = material.vertexColors === true && !!geometry.attributes.color && geometry.attributes.color.itemSize === 4;
@@ -15763,9 +15760,9 @@ function WebGLRenderer(parameters = {}) {
     const materialProperties = properties.get(material);
     const lights = currentRenderState.state.lights;
     if (_clippingEnabled === true) {
-      if (_localClippingEnabled === true || camera !== _currentCamera) {
-        const useCache = camera === _currentCamera && material.id === _currentMaterialId;
-        clipping.setState(material, camera, useCache);
+      if (_localClippingEnabled === true || camera2 !== _currentCamera) {
+        const useCache = camera2 === _currentCamera && material.id === _currentMaterialId;
+        clipping.setState(material, camera2, useCache);
       }
     }
     let needsProgramChange = false;
@@ -15807,7 +15804,7 @@ function WebGLRenderer(parameters = {}) {
     }
     let program = materialProperties.currentProgram;
     if (needsProgramChange === true) {
-      program = getProgram(material, scene, object);
+      program = getProgram(material, scene2, object);
     }
     let refreshProgram = false;
     let refreshMaterial = false;
@@ -15822,27 +15819,27 @@ function WebGLRenderer(parameters = {}) {
       _currentMaterialId = material.id;
       refreshMaterial = true;
     }
-    if (refreshProgram || _currentCamera !== camera) {
-      p_uniforms.setValue(_gl, "projectionMatrix", camera.projectionMatrix);
+    if (refreshProgram || _currentCamera !== camera2) {
+      p_uniforms.setValue(_gl, "projectionMatrix", camera2.projectionMatrix);
       if (capabilities.logarithmicDepthBuffer) {
-        p_uniforms.setValue(_gl, "logDepthBufFC", 2 / (Math.log(camera.far + 1) / Math.LN2));
+        p_uniforms.setValue(_gl, "logDepthBufFC", 2 / (Math.log(camera2.far + 1) / Math.LN2));
       }
-      if (_currentCamera !== camera) {
-        _currentCamera = camera;
+      if (_currentCamera !== camera2) {
+        _currentCamera = camera2;
         refreshMaterial = true;
         refreshLights = true;
       }
       if (material.isShaderMaterial || material.isMeshPhongMaterial || material.isMeshToonMaterial || material.isMeshStandardMaterial || material.envMap) {
         const uCamPos = p_uniforms.map.cameraPosition;
         if (uCamPos !== void 0) {
-          uCamPos.setValue(_gl, _vector3.setFromMatrixPosition(camera.matrixWorld));
+          uCamPos.setValue(_gl, _vector3.setFromMatrixPosition(camera2.matrixWorld));
         }
       }
       if (material.isMeshPhongMaterial || material.isMeshToonMaterial || material.isMeshLambertMaterial || material.isMeshBasicMaterial || material.isMeshStandardMaterial || material.isShaderMaterial) {
-        p_uniforms.setValue(_gl, "isOrthographic", camera.isOrthographicCamera === true);
+        p_uniforms.setValue(_gl, "isOrthographic", camera2.isOrthographicCamera === true);
       }
       if (material.isMeshPhongMaterial || material.isMeshToonMaterial || material.isMeshLambertMaterial || material.isMeshBasicMaterial || material.isMeshStandardMaterial || material.isShaderMaterial || material.isShadowMaterial || object.isSkinnedMesh) {
-        p_uniforms.setValue(_gl, "viewMatrix", camera.matrixWorldInverse);
+        p_uniforms.setValue(_gl, "viewMatrix", camera2.matrixWorldInverse);
       }
     }
     if (object.isSkinnedMesh) {
@@ -17271,8 +17268,8 @@ class CompressedTexture extends Texture {
 }
 CompressedTexture.prototype.isCompressedTexture = true;
 class CanvasTexture extends Texture {
-  constructor(canvas, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy) {
-    super(canvas, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy);
+  constructor(canvas2, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy) {
+    super(canvas2, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy);
     this.needsUpdate = true;
   }
 }
@@ -20860,8 +20857,8 @@ class LoadingManager {
 }
 const DefaultLoadingManager = new LoadingManager();
 class Loader {
-  constructor(manager) {
-    this.manager = manager !== void 0 ? manager : DefaultLoadingManager;
+  constructor(manager2) {
+    this.manager = manager2 !== void 0 ? manager2 : DefaultLoadingManager;
     this.crossOrigin = "anonymous";
     this.withCredentials = false;
     this.path = "";
@@ -20901,8 +20898,8 @@ class Loader {
 }
 const loading = {};
 class FileLoader extends Loader {
-  constructor(manager) {
-    super(manager);
+  constructor(manager2) {
+    super(manager2);
   }
   load(url, onLoad, onProgress, onError) {
     if (url === void 0)
@@ -21031,8 +21028,8 @@ class FileLoader extends Loader {
   }
 }
 class ImageLoader extends Loader {
-  constructor(manager) {
-    super(manager);
+  constructor(manager2) {
+    super(manager2);
   }
   load(url, onLoad, onProgress, onError) {
     if (this.path !== void 0)
@@ -21080,8 +21077,8 @@ class ImageLoader extends Loader {
   }
 }
 class CubeTextureLoader extends Loader {
-  constructor(manager) {
-    super(manager);
+  constructor(manager2) {
+    super(manager2);
   }
   load(urls, onLoad, onProgress, onError) {
     const texture = new CubeTexture();
@@ -21107,8 +21104,8 @@ class CubeTextureLoader extends Loader {
   }
 }
 class TextureLoader extends Loader {
-  constructor(manager) {
-    super(manager);
+  constructor(manager2) {
+    super(manager2);
   }
   load(url, onLoad, onProgress, onError) {
     const texture = new Texture();
@@ -21179,8 +21176,8 @@ const _projScreenMatrix$1 = /* @__PURE__ */ new Matrix4();
 const _lightPositionWorld$1 = /* @__PURE__ */ new Vector3();
 const _lookTarget$1 = /* @__PURE__ */ new Vector3();
 class LightShadow {
-  constructor(camera) {
-    this.camera = camera;
+  constructor(camera2) {
+    this.camera = camera2;
     this.bias = 0;
     this.normalBias = 0;
     this.radius = 1;
@@ -21263,15 +21260,15 @@ class SpotLightShadow extends LightShadow {
     this.focus = 1;
   }
   updateMatrices(light) {
-    const camera = this.camera;
+    const camera2 = this.camera;
     const fov2 = RAD2DEG * 2 * light.angle * this.focus;
     const aspect2 = this.mapSize.width / this.mapSize.height;
-    const far = light.distance || camera.far;
-    if (fov2 !== camera.fov || aspect2 !== camera.aspect || far !== camera.far) {
-      camera.fov = fov2;
-      camera.aspect = aspect2;
-      camera.far = far;
-      camera.updateProjectionMatrix();
+    const far = light.distance || camera2.far;
+    if (fov2 !== camera2.fov || aspect2 !== camera2.aspect || far !== camera2.far) {
+      camera2.fov = fov2;
+      camera2.aspect = aspect2;
+      camera2.far = far;
+      camera2.updateProjectionMatrix();
     }
     super.updateMatrices(light);
   }
@@ -21350,22 +21347,22 @@ class PointLightShadow extends LightShadow {
     ];
   }
   updateMatrices(light, viewportIndex = 0) {
-    const camera = this.camera;
+    const camera2 = this.camera;
     const shadowMatrix = this.matrix;
-    const far = light.distance || camera.far;
-    if (far !== camera.far) {
-      camera.far = far;
-      camera.updateProjectionMatrix();
+    const far = light.distance || camera2.far;
+    if (far !== camera2.far) {
+      camera2.far = far;
+      camera2.updateProjectionMatrix();
     }
     _lightPositionWorld.setFromMatrixPosition(light.matrixWorld);
-    camera.position.copy(_lightPositionWorld);
-    _lookTarget.copy(camera.position);
+    camera2.position.copy(_lightPositionWorld);
+    _lookTarget.copy(camera2.position);
     _lookTarget.add(this._cubeDirections[viewportIndex]);
-    camera.up.copy(this._cubeUps[viewportIndex]);
-    camera.lookAt(_lookTarget);
-    camera.updateMatrixWorld();
+    camera2.up.copy(this._cubeUps[viewportIndex]);
+    camera2.lookAt(_lookTarget);
+    camera2.updateMatrixWorld();
     shadowMatrix.makeTranslation(-_lightPositionWorld.x, -_lightPositionWorld.y, -_lightPositionWorld.z);
-    _projScreenMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+    _projScreenMatrix.multiplyMatrices(camera2.projectionMatrix, camera2.matrixWorldInverse);
     this._frustum.setFromProjectionMatrix(_projScreenMatrix);
   }
 }
@@ -21650,8 +21647,8 @@ class InstancedBufferGeometry extends BufferGeometry {
 }
 InstancedBufferGeometry.prototype.isInstancedBufferGeometry = true;
 class ImageBitmapLoader extends Loader {
-  constructor(manager) {
-    super(manager);
+  constructor(manager2) {
+    super(manager2);
     if (typeof createImageBitmap === "undefined") {
       console.warn("THREE.ImageBitmapLoader: createImageBitmap() not supported.");
     }
@@ -21716,8 +21713,8 @@ const AudioContext = {
   }
 };
 class AudioLoader extends Loader {
-  constructor(manager) {
-    super(manager);
+  constructor(manager2) {
+    super(manager2);
   }
   load(url, onLoad, onProgress, onError) {
     const scope = this;
@@ -23235,17 +23232,17 @@ class Raycaster {
   set(origin, direction) {
     this.ray.set(origin, direction);
   }
-  setFromCamera(coords, camera) {
-    if (camera && camera.isPerspectiveCamera) {
-      this.ray.origin.setFromMatrixPosition(camera.matrixWorld);
-      this.ray.direction.set(coords.x, coords.y, 0.5).unproject(camera).sub(this.ray.origin).normalize();
-      this.camera = camera;
-    } else if (camera && camera.isOrthographicCamera) {
-      this.ray.origin.set(coords.x, coords.y, (camera.near + camera.far) / (camera.near - camera.far)).unproject(camera);
-      this.ray.direction.set(0, 0, -1).transformDirection(camera.matrixWorld);
-      this.camera = camera;
+  setFromCamera(coords, camera2) {
+    if (camera2 && camera2.isPerspectiveCamera) {
+      this.ray.origin.setFromMatrixPosition(camera2.matrixWorld);
+      this.ray.direction.set(coords.x, coords.y, 0.5).unproject(camera2).sub(this.ray.origin).normalize();
+      this.camera = camera2;
+    } else if (camera2 && camera2.isOrthographicCamera) {
+      this.ray.origin.set(coords.x, coords.y, (camera2.near + camera2.far) / (camera2.near - camera2.far)).unproject(camera2);
+      this.ray.direction.set(0, 0, -1).transformDirection(camera2.matrixWorld);
+      this.camera = camera2;
     } else {
-      console.error("THREE.Raycaster: Unsupported camera type: " + camera.type);
+      console.error("THREE.Raycaster: Unsupported camera type: " + camera2.type);
     }
   }
   intersectObject(object, recursive = true, intersects2 = []) {
@@ -23411,7 +23408,7 @@ class GridHelper extends LineSegments {
 const _vector = /* @__PURE__ */ new Vector3();
 const _camera = /* @__PURE__ */ new Camera();
 class CameraHelper extends LineSegments {
-  constructor(camera) {
+  constructor(camera2) {
     const geometry = new BufferGeometry();
     const material = new LineBasicMaterial({ color: 16777215, vertexColors: true, toneMapped: false });
     const vertices = [];
@@ -23463,10 +23460,10 @@ class CameraHelper extends LineSegments {
     geometry.setAttribute("color", new Float32BufferAttribute(colors, 3));
     super(geometry, material);
     this.type = "CameraHelper";
-    this.camera = camera;
+    this.camera = camera2;
     if (this.camera.updateProjectionMatrix)
       this.camera.updateProjectionMatrix();
-    this.matrix = camera.matrixWorld;
+    this.matrix = camera2.matrixWorld;
     this.matrixAutoUpdate = false;
     this.pointMap = pointMap;
     this.update();
@@ -23504,8 +23501,8 @@ class CameraHelper extends LineSegments {
     this.material.dispose();
   }
 }
-function setPoint(point, pointMap, geometry, camera, x, y, z) {
-  _vector.set(x, y, z).unproject(camera);
+function setPoint(point, pointMap, geometry, camera2, x, y, z) {
+  _vector.set(x, y, z).unproject(camera2);
   const points = pointMap[point];
   if (points !== void 0) {
     const position = geometry.getAttribute("position");
@@ -23679,9 +23676,9 @@ Ray.prototype.isIntersectionBox = function(box) {
   console.warn("THREE.Ray: .isIntersectionBox() has been renamed to .intersectsBox().");
   return this.intersectsBox(box);
 };
-Ray.prototype.isIntersectionPlane = function(plane) {
+Ray.prototype.isIntersectionPlane = function(plane2) {
   console.warn("THREE.Ray: .isIntersectionPlane() has been renamed to .intersectsPlane().");
-  return this.intersectsPlane(plane);
+  return this.intersectsPlane(plane2);
 };
 Ray.prototype.isIntersectionSphere = function(sphere) {
   console.warn("THREE.Ray: .isIntersectionSphere() has been renamed to .intersectsSphere().");
@@ -24393,13 +24390,13 @@ Audio.prototype.load = function(file) {
   });
   return this;
 };
-CubeCamera.prototype.updateCubeMap = function(renderer, scene) {
+CubeCamera.prototype.updateCubeMap = function(renderer2, scene2) {
   console.warn("THREE.CubeCamera: .updateCubeMap() is now .update().");
-  return this.update(renderer, scene);
+  return this.update(renderer2, scene2);
 };
-CubeCamera.prototype.clear = function(renderer, color, depth, stencil) {
+CubeCamera.prototype.clear = function(renderer2, color, depth, stencil) {
   console.warn("THREE.CubeCamera: .clear() is now .renderTarget.clear().");
-  return this.renderTarget.clear(renderer, color, depth, stencil);
+  return this.renderTarget.clear(renderer2, color, depth, stencil);
 };
 ImageUtils.crossOrigin = void 0;
 ImageUtils.loadTexture = function(url, mapping, onLoad, onError) {
@@ -26687,8 +26684,8 @@ let fbxTree;
 let connections;
 let sceneGraph;
 class FBXLoader extends Loader {
-  constructor(manager) {
-    super(manager);
+  constructor(manager2) {
+    super(manager2);
   }
   load(url, onLoad, onProgress, onError) {
     const scope = this;
@@ -26729,9 +26726,9 @@ class FBXLoader extends Loader {
   }
 }
 class FBXTreeParser {
-  constructor(textureLoader, manager) {
+  constructor(textureLoader, manager2) {
     this.textureLoader = textureLoader;
-    this.manager = manager;
+    this.manager = manager2;
   }
   parse() {
     connections = this.parseConnections();
@@ -27142,12 +27139,12 @@ class FBXTreeParser {
         node.updateWorldMatrix();
       }
     });
-    const animations = new AnimationParser().parse();
+    const animations2 = new AnimationParser().parse();
     if (sceneGraph.children.length === 1 && sceneGraph.children[0].isGroup) {
-      sceneGraph.children[0].animations = animations;
+      sceneGraph.children[0].animations = animations2;
       sceneGraph = sceneGraph.children[0];
     }
-    sceneGraph.animations = animations;
+    sceneGraph.animations = animations2;
   }
   parseModels(skeletons, geometryMap, materialMap) {
     const modelMap = new Map();
@@ -28972,8 +28969,8 @@ function inject(a1, index, a2) {
   return a1.slice(0, index).concat(a2).concat(a1.slice(index));
 }
 class GLTFLoader extends Loader {
-  constructor(manager) {
-    super(manager);
+  constructor(manager2) {
+    super(manager2);
     this.dracoLoader = null;
     this.ktx2Loader = null;
     this.meshoptDecoder = null;
@@ -29701,7 +29698,7 @@ class GLTFTextureTransformExtension {
   }
 }
 class GLTFMeshStandardSGMaterial extends MeshStandardMaterial {
-  constructor(params) {
+  constructor(params2) {
     super();
     this.isGLTFSpecularGlossinessMaterial = true;
     const specularMapParsFragmentChunk = [
@@ -29804,7 +29801,7 @@ class GLTFMeshStandardSGMaterial extends MeshStandardMaterial {
     delete this.roughness;
     delete this.metalnessMap;
     delete this.roughnessMap;
-    this.setValues(params);
+    this.setValues(params2);
   }
   copy(source) {
     super.copy(source);
@@ -30814,22 +30811,22 @@ class GLTFParser {
     });
   }
   loadCamera(cameraIndex) {
-    let camera;
+    let camera2;
     const cameraDef = this.json.cameras[cameraIndex];
-    const params = cameraDef[cameraDef.type];
-    if (!params) {
+    const params2 = cameraDef[cameraDef.type];
+    if (!params2) {
       console.warn("THREE.GLTFLoader: Missing camera parameters.");
       return;
     }
     if (cameraDef.type === "perspective") {
-      camera = new PerspectiveCamera(MathUtils.radToDeg(params.yfov), params.aspectRatio || 1, params.znear || 1, params.zfar || 2e6);
+      camera2 = new PerspectiveCamera(MathUtils.radToDeg(params2.yfov), params2.aspectRatio || 1, params2.znear || 1, params2.zfar || 2e6);
     } else if (cameraDef.type === "orthographic") {
-      camera = new OrthographicCamera(-params.xmag, params.xmag, params.ymag, -params.ymag, params.znear, params.zfar);
+      camera2 = new OrthographicCamera(-params2.xmag, params2.xmag, params2.ymag, -params2.ymag, params2.znear, params2.zfar);
     }
     if (cameraDef.name)
-      camera.name = this.createUniqueName(cameraDef.name);
-    assignExtrasToUserData(camera, cameraDef);
-    return Promise.resolve(camera);
+      camera2.name = this.createUniqueName(cameraDef.name);
+    assignExtrasToUserData(camera2, cameraDef);
+    return Promise.resolve(camera2);
   }
   loadSkin(skinIndex) {
     const skinDef = this.json.skins[skinIndex];
@@ -30972,8 +30969,8 @@ class GLTFParser {
         pending.push(meshPromise);
       }
       if (nodeDef.camera !== void 0) {
-        pending.push(parser.getDependency("camera", nodeDef.camera).then(function(camera) {
-          return parser._getNodeRef(parser.cameraCache, nodeDef.camera, camera);
+        pending.push(parser.getDependency("camera", nodeDef.camera).then(function(camera2) {
+          return parser._getNodeRef(parser.cameraCache, nodeDef.camera, camera2);
         }));
       }
       parser._invokeAll(function(ext) {
@@ -31032,16 +31029,16 @@ class GLTFParser {
     const extensions = this.extensions;
     const sceneDef = this.json.scenes[sceneIndex];
     const parser = this;
-    const scene = new Group();
+    const scene2 = new Group();
     if (sceneDef.name)
-      scene.name = parser.createUniqueName(sceneDef.name);
-    assignExtrasToUserData(scene, sceneDef);
+      scene2.name = parser.createUniqueName(sceneDef.name);
+    assignExtrasToUserData(scene2, sceneDef);
     if (sceneDef.extensions)
-      addUnknownExtensionsToUserData(extensions, scene, sceneDef);
+      addUnknownExtensionsToUserData(extensions, scene2, sceneDef);
     const nodeIds = sceneDef.nodes || [];
     const pending = [];
     for (let i = 0, il = nodeIds.length; i < il; i++) {
-      pending.push(buildNodeHierarchy(nodeIds[i], scene, json, parser));
+      pending.push(buildNodeHierarchy(nodeIds[i], scene2, json, parser));
     }
     return Promise.all(pending).then(function() {
       const reduceAssociations = (node) => {
@@ -31059,8 +31056,8 @@ class GLTFParser {
         });
         return reducedAssociations;
       };
-      parser.associations = reduceAssociations(scene);
-      return scene;
+      parser.associations = reduceAssociations(scene2);
+      return scene2;
     });
   }
 }
@@ -31480,8 +31477,8 @@ function ParserState() {
   return state;
 }
 class OBJLoader extends Loader {
-  constructor(manager) {
-    super(manager);
+  constructor(manager2) {
+    super(manager2);
     this.materials = null;
   }
   load(url, onLoad, onProgress, onError) {
@@ -31611,8 +31608,8 @@ class OBJLoader extends Loader {
       }
     }
     state.finalize();
-    const container = new Group();
-    container.materialLibraries = [].concat(state.materialLibraries);
+    const container2 = new Group();
+    container2.materialLibraries = [].concat(state.materialLibraries);
     const hasPrimitives = !(state.objects.length === 1 && state.objects[0].geometry.vertices.length === 0);
     if (hasPrimitives === true) {
       for (let i = 0, l = state.objects.length; i < l; i++) {
@@ -31694,7 +31691,7 @@ class OBJLoader extends Loader {
           }
         }
         mesh.name = object.name;
-        container.add(mesh);
+        container2.add(mesh);
       }
     } else {
       if (state.vertices.length > 0) {
@@ -31706,10 +31703,10 @@ class OBJLoader extends Loader {
           material.vertexColors = true;
         }
         const points = new Points(buffergeometry, material);
-        container.add(points);
+        container2.add(points);
       }
     }
-    return container;
+    return container2;
   }
 }
 const _changeEvent = { type: "change" };
@@ -31854,10 +31851,10 @@ class OrbitControls extends EventDispatcher {
     }();
     this.dispose = function() {
       scope.domElement.removeEventListener("contextmenu", onContextMenu);
-      scope.domElement.removeEventListener("pointerdown", onPointerDown);
+      scope.domElement.removeEventListener("pointerdown", onPointerDown2);
       scope.domElement.removeEventListener("pointercancel", onPointerCancel);
       scope.domElement.removeEventListener("wheel", onMouseWheel);
-      scope.domElement.removeEventListener("pointermove", onPointerMove);
+      scope.domElement.removeEventListener("pointermove", onPointerMove2);
       scope.domElement.removeEventListener("pointerup", onPointerUp);
       if (scope._domElementKeyEvents !== null) {
         scope._domElementKeyEvents.removeEventListener("keydown", onKeyDown);
@@ -32124,12 +32121,12 @@ class OrbitControls extends EventDispatcher {
       if (scope.enableRotate)
         handleTouchMoveRotate(event);
     }
-    function onPointerDown(event) {
+    function onPointerDown2(event) {
       if (scope.enabled === false)
         return;
       if (pointers.length === 0) {
         scope.domElement.setPointerCapture(event.pointerId);
-        scope.domElement.addEventListener("pointermove", onPointerMove);
+        scope.domElement.addEventListener("pointermove", onPointerMove2);
         scope.domElement.addEventListener("pointerup", onPointerUp);
       }
       addPointer(event);
@@ -32139,7 +32136,7 @@ class OrbitControls extends EventDispatcher {
         onMouseDown(event);
       }
     }
-    function onPointerMove(event) {
+    function onPointerMove2(event) {
       if (scope.enabled === false)
         return;
       if (event.pointerType === "touch") {
@@ -32152,7 +32149,7 @@ class OrbitControls extends EventDispatcher {
       removePointer(event);
       if (pointers.length === 0) {
         scope.domElement.releasePointerCapture(event.pointerId);
-        scope.domElement.removeEventListener("pointermove", onPointerMove);
+        scope.domElement.removeEventListener("pointermove", onPointerMove2);
         scope.domElement.removeEventListener("pointerup", onPointerUp);
       }
       scope.dispatchEvent(_endEvent);
@@ -32353,11 +32350,11 @@ class OrbitControls extends EventDispatcher {
       position.set(event.pageX, event.pageY);
     }
     function getSecondPointerPosition(event) {
-      const pointer = event.pointerId === pointers[0].pointerId ? pointers[1] : pointers[0];
-      return pointerPositions[pointer.pointerId];
+      const pointer2 = event.pointerId === pointers[0].pointerId ? pointers[1] : pointers[0];
+      return pointerPositions[pointer2.pointerId];
     }
     scope.domElement.addEventListener("contextmenu", onContextMenu);
-    scope.domElement.addEventListener("pointerdown", onPointerDown);
+    scope.domElement.addEventListener("pointerdown", onPointerDown2);
     scope.domElement.addEventListener("pointercancel", onPointerCancel);
     scope.domElement.addEventListener("wheel", onMouseWheel, { passive: false });
     this.update();
@@ -33314,7 +33311,7 @@ var dom = {
     }
   },
   fakeEvent: function fakeEvent(elem, eventType, pars, aux) {
-    var params = pars || {};
+    var params2 = pars || {};
     var className = EVENT_MAP_INV[eventType];
     if (!className) {
       throw new Error("Event type " + eventType + " not supported.");
@@ -33322,14 +33319,14 @@ var dom = {
     var evt = document.createEvent(className);
     switch (className) {
       case "MouseEvents": {
-        var clientX = params.x || params.clientX || 0;
-        var clientY = params.y || params.clientY || 0;
-        evt.initMouseEvent(eventType, params.bubbles || false, params.cancelable || true, window, params.clickCount || 1, 0, 0, clientX, clientY, false, false, false, false, 0, null);
+        var clientX = params2.x || params2.clientX || 0;
+        var clientY = params2.y || params2.clientY || 0;
+        evt.initMouseEvent(eventType, params2.bubbles || false, params2.cancelable || true, window, params2.clickCount || 1, 0, 0, clientX, clientY, false, false, false, false, 0, null);
         break;
       }
       case "KeyboardEvents": {
         var init = evt.initKeyboardEvent || evt.initKeyEvent;
-        Common.defaults(params, {
+        Common.defaults(params2, {
           cancelable: true,
           ctrlKey: false,
           altKey: false,
@@ -33338,11 +33335,11 @@ var dom = {
           keyCode: void 0,
           charCode: void 0
         });
-        init(eventType, params.bubbles || false, params.cancelable, window, params.ctrlKey, params.altKey, params.shiftKey, params.metaKey, params.keyCode, params.charCode);
+        init(eventType, params2.bubbles || false, params2.cancelable, window, params2.ctrlKey, params2.altKey, params2.shiftKey, params2.metaKey, params2.keyCode, params2.charCode);
         break;
       }
       default: {
-        evt.initEvent(eventType, params.bubbles || false, params.cancelable || true);
+        evt.initEvent(eventType, params2.bubbles || false, params2.cancelable || true);
         break;
       }
     }
@@ -33563,10 +33560,10 @@ function numDecimals(x) {
 }
 var NumberController = function(_Controller) {
   inherits(NumberController2, _Controller);
-  function NumberController2(object, property, params) {
+  function NumberController2(object, property, params2) {
     classCallCheck(this, NumberController2);
     var _this = possibleConstructorReturn(this, (NumberController2.__proto__ || Object.getPrototypeOf(NumberController2)).call(this, object, property));
-    var _params = params || {};
+    var _params = params2 || {};
     _this.__min = _params.min;
     _this.__max = _params.max;
     _this.__step = _params.step;
@@ -33625,9 +33622,9 @@ function roundToDecimal(value, decimals) {
 }
 var NumberControllerBox = function(_NumberController) {
   inherits(NumberControllerBox2, _NumberController);
-  function NumberControllerBox2(object, property, params) {
+  function NumberControllerBox2(object, property, params2) {
     classCallCheck(this, NumberControllerBox2);
-    var _this2 = possibleConstructorReturn(this, (NumberControllerBox2.__proto__ || Object.getPrototypeOf(NumberControllerBox2)).call(this, object, property, params));
+    var _this2 = possibleConstructorReturn(this, (NumberControllerBox2.__proto__ || Object.getPrototypeOf(NumberControllerBox2)).call(this, object, property, params2));
     _this2.__truncationSuspended = false;
     var _this = _this2;
     var prevY = void 0;
@@ -34202,7 +34199,7 @@ var hide = false;
 var hideableGuis = [];
 var GUI = function GUI2(pars) {
   var _this = this;
-  var params = pars || {};
+  var params2 = pars || {};
   this.domElement = document.createElement("div");
   this.__ul = document.createElement("ul");
   this.domElement.appendChild(this.__ul);
@@ -34212,28 +34209,28 @@ var GUI = function GUI2(pars) {
   this.__rememberedObjects = [];
   this.__rememberedObjectIndecesToControllers = [];
   this.__listening = [];
-  params = Common.defaults(params, {
+  params2 = Common.defaults(params2, {
     closeOnTop: false,
     autoPlace: true,
     width: GUI2.DEFAULT_WIDTH
   });
-  params = Common.defaults(params, {
-    resizable: params.autoPlace,
-    hideable: params.autoPlace
+  params2 = Common.defaults(params2, {
+    resizable: params2.autoPlace,
+    hideable: params2.autoPlace
   });
-  if (!Common.isUndefined(params.load)) {
-    if (params.preset) {
-      params.load.preset = params.preset;
+  if (!Common.isUndefined(params2.load)) {
+    if (params2.preset) {
+      params2.load.preset = params2.preset;
     }
   } else {
-    params.load = { preset: DEFAULT_DEFAULT_PRESET_NAME };
+    params2.load = { preset: DEFAULT_DEFAULT_PRESET_NAME };
   }
-  if (Common.isUndefined(params.parent) && params.hideable) {
+  if (Common.isUndefined(params2.parent) && params2.hideable) {
     hideableGuis.push(this);
   }
-  params.resizable = Common.isUndefined(params.parent) && params.resizable;
-  if (params.autoPlace && Common.isUndefined(params.scrollable)) {
-    params.scrollable = true;
+  params2.resizable = Common.isUndefined(params2.parent) && params2.resizable;
+  if (params2.autoPlace && Common.isUndefined(params2.scrollable)) {
+    params2.scrollable = true;
   }
   var useLocalStorage = SUPPORTS_LOCAL_STORAGE && localStorage.getItem(getLocalStorageHash(this, "isLocal")) === "true";
   var saveToLocalStorage = void 0;
@@ -34241,22 +34238,22 @@ var GUI = function GUI2(pars) {
   Object.defineProperties(this, {
     parent: {
       get: function get$$13() {
-        return params.parent;
+        return params2.parent;
       }
     },
     scrollable: {
       get: function get$$13() {
-        return params.scrollable;
+        return params2.scrollable;
       }
     },
     autoPlace: {
       get: function get$$13() {
-        return params.autoPlace;
+        return params2.autoPlace;
       }
     },
     closeOnTop: {
       get: function get$$13() {
-        return params.closeOnTop;
+        return params2.closeOnTop;
       }
     },
     preset: {
@@ -34264,13 +34261,13 @@ var GUI = function GUI2(pars) {
         if (_this.parent) {
           return _this.getRoot().preset;
         }
-        return params.load.preset;
+        return params2.load.preset;
       },
       set: function set$$13(v) {
         if (_this.parent) {
           _this.getRoot().preset = v;
         } else {
-          params.load.preset = v;
+          params2.load.preset = v;
         }
         setPresetSelectIndex(this);
         _this.revert();
@@ -34278,31 +34275,31 @@ var GUI = function GUI2(pars) {
     },
     width: {
       get: function get$$13() {
-        return params.width;
+        return params2.width;
       },
       set: function set$$13(v) {
-        params.width = v;
+        params2.width = v;
         setWidth(_this, v);
       }
     },
     name: {
       get: function get$$13() {
-        return params.name;
+        return params2.name;
       },
       set: function set$$13(v) {
-        params.name = v;
+        params2.name = v;
         if (titleRow) {
-          titleRow.innerHTML = params.name;
+          titleRow.innerHTML = params2.name;
         }
       }
     },
     closed: {
       get: function get$$13() {
-        return params.closed;
+        return params2.closed;
       },
       set: function set$$13(v) {
-        params.closed = v;
-        if (params.closed) {
+        params2.closed = v;
+        if (params2.closed) {
           dom.addClass(_this.__ul, GUI2.CLASS_CLOSED);
         } else {
           dom.removeClass(_this.__ul, GUI2.CLASS_CLOSED);
@@ -34315,7 +34312,7 @@ var GUI = function GUI2(pars) {
     },
     load: {
       get: function get$$13() {
-        return params.load;
+        return params2.load;
       }
     },
     useLocalStorage: {
@@ -34335,8 +34332,8 @@ var GUI = function GUI2(pars) {
       }
     }
   });
-  if (Common.isUndefined(params.parent)) {
-    this.closed = params.closed || false;
+  if (Common.isUndefined(params2.parent)) {
+    this.closed = params2.closed || false;
     dom.addClass(this.domElement, GUI2.CLASS_MAIN);
     dom.makeSelectable(this.domElement, false);
     if (SUPPORTS_LOCAL_STORAGE) {
@@ -34344,14 +34341,14 @@ var GUI = function GUI2(pars) {
         _this.useLocalStorage = true;
         var savedGui = localStorage.getItem(getLocalStorageHash(this, "gui"));
         if (savedGui) {
-          params.load = JSON.parse(savedGui);
+          params2.load = JSON.parse(savedGui);
         }
       }
     }
     this.__closeButton = document.createElement("div");
     this.__closeButton.innerHTML = GUI2.TEXT_CLOSED;
     dom.addClass(this.__closeButton, GUI2.CLASS_CLOSE_BUTTON);
-    if (params.closeOnTop) {
+    if (params2.closeOnTop) {
       dom.addClass(this.__closeButton, GUI2.CLASS_CLOSE_TOP);
       this.domElement.insertBefore(this.__closeButton, this.domElement.childNodes[0]);
     } else {
@@ -34362,10 +34359,10 @@ var GUI = function GUI2(pars) {
       _this.closed = !_this.closed;
     });
   } else {
-    if (params.closed === void 0) {
-      params.closed = true;
+    if (params2.closed === void 0) {
+      params2.closed = true;
     }
-    var titleRowName = document.createTextNode(params.name);
+    var titleRowName = document.createTextNode(params2.name);
     dom.addClass(titleRowName, "controller-name");
     titleRow = addRow(_this, titleRowName);
     var onClickTitle = function onClickTitle2(e) {
@@ -34376,12 +34373,12 @@ var GUI = function GUI2(pars) {
     dom.addClass(this.__ul, GUI2.CLASS_CLOSED);
     dom.addClass(titleRow, "title");
     dom.bind(titleRow, "click", onClickTitle);
-    if (!params.closed) {
+    if (!params2.closed) {
       this.closed = false;
     }
   }
-  if (params.autoPlace) {
-    if (Common.isUndefined(params.parent)) {
+  if (params2.autoPlace) {
+    if (Common.isUndefined(params2.parent)) {
       if (autoPlaceVirgin) {
         autoPlaceContainer = document.createElement("div");
         dom.addClass(autoPlaceContainer, CSS_NAMESPACE);
@@ -34393,7 +34390,7 @@ var GUI = function GUI2(pars) {
       dom.addClass(this.domElement, GUI2.CLASS_AUTO_PLACE);
     }
     if (!this.parent) {
-      setWidth(_this, params.width);
+      setWidth(_this, params2.width);
     }
   }
   this.__resizeHandler = function() {
@@ -34404,7 +34401,7 @@ var GUI = function GUI2(pars) {
   dom.bind(this.__ul, "transitionend", this.__resizeHandler);
   dom.bind(this.__ul, "oTransitionEnd", this.__resizeHandler);
   this.onResize();
-  if (params.resizable) {
+  if (params2.resizable) {
     addResizeHandle(this);
   }
   saveToLocalStorage = function saveToLocalStorage2() {
@@ -34420,14 +34417,14 @@ var GUI = function GUI2(pars) {
       root.width -= 1;
     });
   }
-  if (!params.parent) {
+  if (!params2.parent) {
     resetWidth();
   }
 };
 GUI.toggleHide = function() {
   hide = !hide;
-  Common.each(hideableGuis, function(gui) {
-    gui.domElement.style.display = hide ? "none" : "";
+  Common.each(hideableGuis, function(gui2) {
+    gui2.domElement.style.display = hide ? "none" : "";
   });
 };
 GUI.CLASS_AUTO_PLACE = "a";
@@ -34492,11 +34489,11 @@ Common.extend(GUI.prototype, {
       newGuiParams.closed = this.load.folders[name].closed;
       newGuiParams.load = this.load.folders[name];
     }
-    var gui = new GUI(newGuiParams);
-    this.__folders[name] = gui;
-    var li = addRow(this, gui.domElement);
+    var gui2 = new GUI(newGuiParams);
+    this.__folders[name] = gui2;
+    var li = addRow(this, gui2.domElement);
     dom.addClass(li, "folder");
-    return gui;
+    return gui2;
   },
   removeFolder: function removeFolder(folder) {
     this.__ul.removeChild(folder.domElement.parentElement);
@@ -34577,11 +34574,11 @@ Common.extend(GUI.prototype, {
     }
   },
   getRoot: function getRoot() {
-    var gui = this;
-    while (gui.parent) {
-      gui = gui.parent;
+    var gui2 = this;
+    while (gui2.parent) {
+      gui2 = gui2.parent;
     }
-    return gui;
+    return gui2;
   },
   getSaveObject: function getSaveObject() {
     var toReturn2 = this.load;
@@ -34617,12 +34614,12 @@ Common.extend(GUI.prototype, {
     addPresetOption(this, presetName, true);
     this.saveToLocalStorageIfPossible();
   },
-  revert: function revert(gui) {
+  revert: function revert(gui2) {
     Common.each(this.__controllers, function(controller) {
       if (!this.getRoot().load.remembered) {
         controller.setValue(controller.initialValue);
       } else {
-        recallSavedValue(gui || this.getRoot(), controller);
+        recallSavedValue(gui2 || this.getRoot(), controller);
       }
       if (controller.__onFinishChange) {
         controller.__onFinishChange.call(controller, controller.getValue());
@@ -34631,7 +34628,7 @@ Common.extend(GUI.prototype, {
     Common.each(this.__folders, function(folder) {
       folder.revert(folder);
     });
-    if (!gui) {
+    if (!gui2) {
       markPresetModified(this.getRoot(), false);
     }
   },
@@ -34651,42 +34648,42 @@ Common.extend(GUI.prototype, {
     });
   }
 });
-function addRow(gui, newDom, liBefore) {
+function addRow(gui2, newDom, liBefore) {
   var li = document.createElement("li");
   if (newDom) {
     li.appendChild(newDom);
   }
   if (liBefore) {
-    gui.__ul.insertBefore(li, liBefore);
+    gui2.__ul.insertBefore(li, liBefore);
   } else {
-    gui.__ul.appendChild(li);
+    gui2.__ul.appendChild(li);
   }
-  gui.onResize();
+  gui2.onResize();
   return li;
 }
-function removeListeners(gui) {
-  dom.unbind(window, "resize", gui.__resizeHandler);
-  if (gui.saveToLocalStorageIfPossible) {
-    dom.unbind(window, "unload", gui.saveToLocalStorageIfPossible);
+function removeListeners(gui2) {
+  dom.unbind(window, "resize", gui2.__resizeHandler);
+  if (gui2.saveToLocalStorageIfPossible) {
+    dom.unbind(window, "unload", gui2.saveToLocalStorageIfPossible);
   }
 }
-function markPresetModified(gui, modified) {
-  var opt = gui.__preset_select[gui.__preset_select.selectedIndex];
+function markPresetModified(gui2, modified) {
+  var opt = gui2.__preset_select[gui2.__preset_select.selectedIndex];
   if (modified) {
     opt.innerHTML = opt.value + "*";
   } else {
     opt.innerHTML = opt.value;
   }
 }
-function augmentController(gui, li, controller) {
+function augmentController(gui2, li, controller) {
   controller.__li = li;
-  controller.__gui = gui;
+  controller.__gui = gui2;
   Common.extend(controller, {
     options: function options(_options) {
       if (arguments.length > 1) {
         var nextSibling = controller.__li.nextElementSibling;
         controller.remove();
-        return _add(gui, controller.object, controller.property, {
+        return _add(gui2, controller.object, controller.property, {
           before: nextSibling,
           factoryArgs: [Common.toArray(arguments)]
         });
@@ -34694,7 +34691,7 @@ function augmentController(gui, li, controller) {
       if (Common.isArray(_options) || Common.isObject(_options)) {
         var _nextSibling = controller.__li.nextElementSibling;
         controller.remove();
-        return _add(gui, controller.object, controller.property, {
+        return _add(gui2, controller.object, controller.property, {
           before: _nextSibling,
           factoryArgs: [_options]
         });
@@ -34732,7 +34729,7 @@ function augmentController(gui, li, controller) {
         var oldName = controller.__li.firstElementChild.firstElementChild.innerHTML;
         var wasListening = controller.__gui.__listening.indexOf(controller) > -1;
         controller.remove();
-        var newController = _add(gui, controller.object, controller.property, {
+        var newController = _add(gui2, controller.object, controller.property, {
           before: controller.__li.nextElementSibling,
           factoryArgs: [controller.__min, controller.__max, controller.__step]
         });
@@ -34771,14 +34768,14 @@ function augmentController(gui, li, controller) {
     controller.updateDisplay();
   }
   controller.setValue = Common.compose(function(val) {
-    if (gui.getRoot().__preset_select && controller.isModified()) {
-      markPresetModified(gui.getRoot(), true);
+    if (gui2.getRoot().__preset_select && controller.isModified()) {
+      markPresetModified(gui2.getRoot(), true);
     }
     return val;
   }, controller.setValue);
 }
-function recallSavedValue(gui, controller) {
-  var root = gui.getRoot();
+function recallSavedValue(gui2, controller) {
+  var root = gui2.getRoot();
   var matchedIndex = root.__rememberedObjects.indexOf(controller.object);
   if (matchedIndex !== -1) {
     var controllerMap = root.__rememberedObjectIndecesToControllers[matchedIndex];
@@ -34790,8 +34787,8 @@ function recallSavedValue(gui, controller) {
     if (root.load && root.load.remembered) {
       var presetMap = root.load.remembered;
       var preset = void 0;
-      if (presetMap[gui.preset]) {
-        preset = presetMap[gui.preset];
+      if (presetMap[gui2.preset]) {
+        preset = presetMap[gui2.preset];
       } else if (presetMap[DEFAULT_DEFAULT_PRESET_NAME]) {
         preset = presetMap[DEFAULT_DEFAULT_PRESET_NAME];
       } else {
@@ -34805,58 +34802,58 @@ function recallSavedValue(gui, controller) {
     }
   }
 }
-function _add(gui, object, property, params) {
+function _add(gui2, object, property, params2) {
   if (object[property] === void 0) {
     throw new Error('Object "' + object + '" has no property "' + property + '"');
   }
   var controller = void 0;
-  if (params.color) {
+  if (params2.color) {
     controller = new ColorController(object, property);
   } else {
-    var factoryArgs = [object, property].concat(params.factoryArgs);
-    controller = ControllerFactory.apply(gui, factoryArgs);
+    var factoryArgs = [object, property].concat(params2.factoryArgs);
+    controller = ControllerFactory.apply(gui2, factoryArgs);
   }
-  if (params.before instanceof Controller) {
-    params.before = params.before.__li;
+  if (params2.before instanceof Controller) {
+    params2.before = params2.before.__li;
   }
-  recallSavedValue(gui, controller);
+  recallSavedValue(gui2, controller);
   dom.addClass(controller.domElement, "c");
   var name = document.createElement("span");
   dom.addClass(name, "property-name");
   name.innerHTML = controller.property;
-  var container = document.createElement("div");
-  container.appendChild(name);
-  container.appendChild(controller.domElement);
-  var li = addRow(gui, container, params.before);
+  var container2 = document.createElement("div");
+  container2.appendChild(name);
+  container2.appendChild(controller.domElement);
+  var li = addRow(gui2, container2, params2.before);
   dom.addClass(li, GUI.CLASS_CONTROLLER_ROW);
   if (controller instanceof ColorController) {
     dom.addClass(li, "color");
   } else {
     dom.addClass(li, _typeof(controller.getValue()));
   }
-  augmentController(gui, li, controller);
-  gui.__controllers.push(controller);
+  augmentController(gui2, li, controller);
+  gui2.__controllers.push(controller);
   return controller;
 }
-function getLocalStorageHash(gui, key) {
+function getLocalStorageHash(gui2, key) {
   return document.location.href + "." + key;
 }
-function addPresetOption(gui, name, setSelected) {
+function addPresetOption(gui2, name, setSelected) {
   var opt = document.createElement("option");
   opt.innerHTML = name;
   opt.value = name;
-  gui.__preset_select.appendChild(opt);
+  gui2.__preset_select.appendChild(opt);
   if (setSelected) {
-    gui.__preset_select.selectedIndex = gui.__preset_select.length - 1;
+    gui2.__preset_select.selectedIndex = gui2.__preset_select.length - 1;
   }
 }
-function showHideExplain(gui, explain) {
-  explain.style.display = gui.useLocalStorage ? "block" : "none";
+function showHideExplain(gui2, explain) {
+  explain.style.display = gui2.useLocalStorage ? "block" : "none";
 }
-function addSaveMenu(gui) {
-  var div = gui.__save_row = document.createElement("li");
-  dom.addClass(gui.domElement, "has-save");
-  gui.__ul.insertBefore(div, gui.__ul.firstChild);
+function addSaveMenu(gui2) {
+  var div = gui2.__save_row = document.createElement("li");
+  dom.addClass(gui2.domElement, "has-save");
+  gui2.__ul.insertBefore(div, gui2.__ul.firstChild);
   dom.addClass(div, "save-row");
   var gears = document.createElement("span");
   gears.innerHTML = "&nbsp;";
@@ -34873,19 +34870,19 @@ function addSaveMenu(gui) {
   button3.innerHTML = "Revert";
   dom.addClass(button3, "button");
   dom.addClass(button3, "revert");
-  var select = gui.__preset_select = document.createElement("select");
-  if (gui.load && gui.load.remembered) {
-    Common.each(gui.load.remembered, function(value, key) {
-      addPresetOption(gui, key, key === gui.preset);
+  var select = gui2.__preset_select = document.createElement("select");
+  if (gui2.load && gui2.load.remembered) {
+    Common.each(gui2.load.remembered, function(value, key) {
+      addPresetOption(gui2, key, key === gui2.preset);
     });
   } else {
-    addPresetOption(gui, DEFAULT_DEFAULT_PRESET_NAME, false);
+    addPresetOption(gui2, DEFAULT_DEFAULT_PRESET_NAME, false);
   }
   dom.bind(select, "change", function() {
-    for (var index = 0; index < gui.__preset_select.length; index++) {
-      gui.__preset_select[index].innerHTML = gui.__preset_select[index].value;
+    for (var index = 0; index < gui2.__preset_select.length; index++) {
+      gui2.__preset_select[index].innerHTML = gui2.__preset_select[index].value;
     }
-    gui.preset = this.value;
+    gui2.preset = this.value;
   });
   div.appendChild(select);
   div.appendChild(gears);
@@ -34897,13 +34894,13 @@ function addSaveMenu(gui) {
     var localStorageCheckBox = document.getElementById("dg-local-storage");
     var saveLocally = document.getElementById("dg-save-locally");
     saveLocally.style.display = "block";
-    if (localStorage.getItem(getLocalStorageHash(gui, "isLocal")) === "true") {
+    if (localStorage.getItem(getLocalStorageHash(gui2, "isLocal")) === "true") {
       localStorageCheckBox.setAttribute("checked", "checked");
     }
-    showHideExplain(gui, explain);
+    showHideExplain(gui2, explain);
     dom.bind(localStorageCheckBox, "change", function() {
-      gui.useLocalStorage = !gui.useLocalStorage;
-      showHideExplain(gui, explain);
+      gui2.useLocalStorage = !gui2.useLocalStorage;
+      showHideExplain(gui2, explain);
     });
   }
   var newConstructorTextArea = document.getElementById("dg-new-constructor");
@@ -34913,28 +34910,28 @@ function addSaveMenu(gui) {
     }
   });
   dom.bind(gears, "click", function() {
-    newConstructorTextArea.innerHTML = JSON.stringify(gui.getSaveObject(), void 0, 2);
+    newConstructorTextArea.innerHTML = JSON.stringify(gui2.getSaveObject(), void 0, 2);
     SAVE_DIALOGUE.show();
     newConstructorTextArea.focus();
     newConstructorTextArea.select();
   });
   dom.bind(button, "click", function() {
-    gui.save();
+    gui2.save();
   });
   dom.bind(button2, "click", function() {
     var presetName = prompt("Enter a new preset name.");
     if (presetName) {
-      gui.saveAs(presetName);
+      gui2.saveAs(presetName);
     }
   });
   dom.bind(button3, "click", function() {
-    gui.revert();
+    gui2.revert();
   });
 }
-function addResizeHandle(gui) {
+function addResizeHandle(gui2) {
   var pmouseX = void 0;
-  gui.__resize_handle = document.createElement("div");
-  Common.extend(gui.__resize_handle.style, {
+  gui2.__resize_handle = document.createElement("div");
+  Common.extend(gui2.__resize_handle.style, {
     width: "6px",
     marginLeft: "-3px",
     height: "200px",
@@ -34943,42 +34940,42 @@ function addResizeHandle(gui) {
   });
   function drag(e) {
     e.preventDefault();
-    gui.width += pmouseX - e.clientX;
-    gui.onResize();
+    gui2.width += pmouseX - e.clientX;
+    gui2.onResize();
     pmouseX = e.clientX;
     return false;
   }
   function dragStop() {
-    dom.removeClass(gui.__closeButton, GUI.CLASS_DRAG);
+    dom.removeClass(gui2.__closeButton, GUI.CLASS_DRAG);
     dom.unbind(window, "mousemove", drag);
     dom.unbind(window, "mouseup", dragStop);
   }
   function dragStart(e) {
     e.preventDefault();
     pmouseX = e.clientX;
-    dom.addClass(gui.__closeButton, GUI.CLASS_DRAG);
+    dom.addClass(gui2.__closeButton, GUI.CLASS_DRAG);
     dom.bind(window, "mousemove", drag);
     dom.bind(window, "mouseup", dragStop);
     return false;
   }
-  dom.bind(gui.__resize_handle, "mousedown", dragStart);
-  dom.bind(gui.__closeButton, "mousedown", dragStart);
-  gui.domElement.insertBefore(gui.__resize_handle, gui.domElement.firstElementChild);
+  dom.bind(gui2.__resize_handle, "mousedown", dragStart);
+  dom.bind(gui2.__closeButton, "mousedown", dragStart);
+  gui2.domElement.insertBefore(gui2.__resize_handle, gui2.domElement.firstElementChild);
 }
-function setWidth(gui, w) {
-  gui.domElement.style.width = w + "px";
-  if (gui.__save_row && gui.autoPlace) {
-    gui.__save_row.style.width = w + "px";
+function setWidth(gui2, w) {
+  gui2.domElement.style.width = w + "px";
+  if (gui2.__save_row && gui2.autoPlace) {
+    gui2.__save_row.style.width = w + "px";
   }
-  if (gui.__closeButton) {
-    gui.__closeButton.style.width = w + "px";
+  if (gui2.__closeButton) {
+    gui2.__closeButton.style.width = w + "px";
   }
 }
-function getCurrentPreset(gui, useInitialValues) {
+function getCurrentPreset(gui2, useInitialValues) {
   var toReturn2 = {};
-  Common.each(gui.__rememberedObjects, function(val, index) {
+  Common.each(gui2.__rememberedObjects, function(val, index) {
     var savedValues = {};
-    var controllerMap = gui.__rememberedObjectIndecesToControllers[index];
+    var controllerMap = gui2.__rememberedObjectIndecesToControllers[index];
     Common.each(controllerMap, function(controller, property) {
       savedValues[property] = useInitialValues ? controller.initialValue : controller.getValue();
     });
@@ -34986,10 +34983,10 @@ function getCurrentPreset(gui, useInitialValues) {
   });
   return toReturn2;
 }
-function setPresetSelectIndex(gui) {
-  for (var index = 0; index < gui.__preset_select.length; index++) {
-    if (gui.__preset_select[index].value === gui.preset) {
-      gui.__preset_select.selectedIndex = index;
+function setPresetSelectIndex(gui2) {
+  for (var index = 0; index < gui2.__preset_select.length; index++) {
+    if (gui2.__preset_select[index].value === gui2.preset) {
+      gui2.__preset_select.selectedIndex = index;
     }
   }
 }
@@ -35005,8 +35002,935 @@ function updateDisplays(controllerArray) {
 }
 var GUI$1 = GUI;
 var ThreeDGarden_vue_vue_type_style_index_0_scoped_true_lang = "";
-const _hoisted_1$1 = { class: "threedgarden" };
-const __default__ = {
+if (!isWebGLSupported_1()) {
+  alert("WebGL is not supported.");
+  console.log("WebGL is not supported.");
+}
+if (!isWebGL2Supported_1()) {
+  alert("WebGL2 is not supported.");
+  console.log("WebGL2 is not supported.");
+}
+useMouse();
+useCounter();
+const postdata = window.postdata ? window.postdata : {};
+const pluginName = postdata.plugin_name;
+const pluginVersion = postdata.plugin_version;
+const pluginURL = postdata.plugin_url;
+postdata.theme_uri;
+const restURL = postdata.rest_url;
+const worldID = postdata.world_id;
+console.log("pluginName", pluginName, pluginVersion);
+console.log("postdata", postdata);
+const debug = false;
+const gui = new GUI$1({ autoPlace: true, closeOnTop: true });
+gui.close();
+gui.domElement.id = "gui";
+let guiFolderRotation = gui.addFolder("Rotation + Animation");
+let guiFolderCameras = gui.addFolder("Camera Position");
+let guiFolderLights = gui.addFolder("Directional Light");
+gui.addFolder("Allotments");
+gui.addFolder("Beds");
+gui.addFolder("Plants");
+gui.addFolder("Annotations");
+let guiFolderPlayer = gui.addFolder("Character");
+let scene;
+let plane;
+let camera;
+let controls;
+let renderer;
+let container;
+let canvas;
+let player = {};
+player.action = "Idle";
+player.actionTime = Date.now();
+let animations = {};
+let anims = ["Breathing Idle", "Driving", "Idle", "Left Turn", "Pointing", "Pointing Gesture"];
+anims = [...anims, "Right Turn", "Running", "Talking", "Turn", "Walking", "Walking Backwards"];
+const params = {
+  modes: Object.freeze({
+    NONE: "none",
+    PRELOAD: "preload",
+    INITIALIZING: "initializing",
+    BUILDING: "building",
+    BUILT: "built",
+    LOADING: "loading",
+    LOADED: "loaded",
+    ACTIVE: "active",
+    GAMEOVER: "game_over"
+  }),
+  mode: "",
+  ANIMATE: false,
+  assetsPath: `${pluginURL}assets/`,
+  data: {
+    world: [{ id: worldID }],
+    scene: [],
+    allotment: [],
+    bed: [],
+    plant: [],
+    planting_plan: []
+  },
+  intersectedObject1: null,
+  intersectedObject2: null,
+  colliders: [],
+  environment: {},
+  farmhouse: {}
+};
+params.mode = params.modes.NONE;
+console.log("params.mode", params.mode);
+guiFolderRotation.add(params, "ANIMATE").name("Run Animation");
+params.mode = params.modes.PRELOAD;
+console.log("params.mode", params.mode);
+console.log("params", params);
+const manager = new LoadingManager();
+manager.onStart = (url, itemsLoaded, itemsTotal) => {
+  console.log("Started loading file: " + url + ".\nLoaded " + itemsLoaded + " of " + itemsTotal + " files.");
+};
+manager.onProgress = function(url, itemsLoaded, itemsTotal) {
+};
+manager.onError = function(url) {
+  console.error("There was an error loading " + url);
+};
+manager.onLoad = () => {
+  const startTime = new Date().toISOString();
+  console.log("manager.onLoad", startTime);
+  if (params.mode == params.modes.LOADING) {
+    params.mode = params.modes.LOADED;
+    console.log("params.mode manager.onLoad", params.mode, startTime);
+    setAction("Idle");
+    animate();
+    console.log("animating ****************************** ");
+    params.mode = params.modes.ACTIVE;
+    console.log("params.mode manager.onLoad", params.mode, startTime);
+  } else {
+    console.log("still building ************************* ");
+    console.log("params.mode manager.onLoad", params.mode, startTime);
+  }
+};
+const loaderFBX = new FBXLoader(manager);
+const loaderGLTF = new GLTFLoader(manager);
+new OBJLoader(manager);
+const loaderTexture = new TextureLoader(manager);
+const clock = new Clock();
+new Raycaster();
+const raycaster2 = new Raycaster();
+const pointer = new Vector2();
+const API_URL_SCENES = `${restURL}scene/?_embed&per_page=100`;
+const API_URL_ALLOTMENTS = `${restURL}allotment/?_embed&per_page=100`;
+const API_URL_BEDS = `${restURL}bed/?_embed&per_page=100`;
+const API_URL_PLANTING_PLANS = `${restURL}planting_plan/?_embed&per_page=100`;
+const API_URL_PLANTS = `${restURL}plant/?_embed&per_page=100`;
+const api_urls = [
+  API_URL_SCENES,
+  API_URL_ALLOTMENTS,
+  API_URL_BEDS,
+  API_URL_PLANTING_PLANS,
+  API_URL_PLANTS
+];
+ref(null);
+function render() {
+  renderer.render(scene, camera);
+}
+const onWindowResize = () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  render();
+};
+window.addEventListener("resize", onWindowResize, false);
+const getPlane = (x2, y2, color) => {
+  let geometry = new PlaneGeometry(x2, y2);
+  let material = new MeshStandardMaterial({
+    color,
+    side: DoubleSide
+  });
+  let mesh = new Mesh(geometry, material);
+  mesh.receiveShadow = true;
+  return mesh;
+};
+const getDirectionalLight = (color, intensity) => {
+  let light = new DirectionalLight(color, intensity);
+  light.castShadow = true;
+  light.shadow.bias = 1e-4;
+  light.shadow.mapSize.width = 4096;
+  light.shadow.mapSize.height = 4096;
+  light.shadow.camera.left = -1e3;
+  light.shadow.camera.bottom = -1e3;
+  light.shadow.camera.right = 1e3;
+  light.shadow.camera.top = 1e3;
+  light.shadow.camera.near = 0.5;
+  light.shadow.camera.far = 500;
+  return light;
+};
+const getGeometry = (shape, x2, y2, z, color) => {
+  let geometry;
+  let material;
+  let mesh;
+  switch (shape) {
+    case "Box":
+      geometry = new BoxGeometry(x2, y2, z);
+      material = new MeshStandardMaterial({
+        transparent: true,
+        opacity: 0.8,
+        color,
+        side: DoubleSide,
+        depthWrite: true
+      });
+      mesh = new Mesh(geometry, [
+        material,
+        material,
+        material,
+        material
+      ]);
+      mesh.castShadow = true;
+      break;
+    case "Cone":
+      geometry = new ConeGeometry(x2 / 2, y2 / 2, z, 32, 1, true);
+      material = new MeshStandardMaterial({
+        color,
+        side: DoubleSide
+      });
+      mesh = new Mesh(geometry, material);
+      mesh.castShadow = true;
+      mesh.rotation.x = Math.PI / 2;
+      break;
+    case "Cylinder":
+      geometry = new CylinderGeometry(x2 / 2, y2 / 2, z, 32, 1, true);
+      material = new MeshStandardMaterial({
+        color,
+        side: DoubleSide
+      });
+      mesh = new Mesh(geometry, material);
+      mesh.castShadow = true;
+      mesh.rotation.x = Math.PI / 2;
+      break;
+    case "InfoSphere":
+      geometry = new SphereGeometry(x2, y2, z);
+      material = new MeshStandardMaterial({
+        color,
+        side: DoubleSide
+      });
+      mesh = new Mesh(geometry, material);
+      mesh.castShadow = true;
+      break;
+    case "Sphere":
+      geometry = new SphereGeometry(x2, y2, z);
+      material = new MeshStandardMaterial({
+        color,
+        side: DoubleSide
+      });
+      mesh = new Mesh(geometry, material);
+      mesh.castShadow = true;
+      break;
+    case "Bush":
+      geometry = new BoxGeometry(x2, y2, z);
+      color = new Color$1("rgb(153,90,0)");
+    default:
+      geometry = new BoxGeometry(x2, y2, z);
+      material = new MeshStandardMaterial({
+        color,
+        side: DoubleSide
+      });
+      mesh = new Mesh(geometry, material);
+      mesh.castShadow = true;
+      break;
+  }
+  return mesh;
+};
+function loadFarmHouse(plane2) {
+  loaderFBX.load(`${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function(object) {
+    params.farmhouse = object;
+    params.colliders = [];
+    object.rotation.y = 270 * (Math.PI / 180);
+    object.position.set(0, 0, 100);
+    object.scale.set(2.2, 2.2, 2.2);
+    scene.add(object);
+    object.traverse(function(child) {
+      if (child.isMesh) {
+        if (child.name.startsWith("proxy")) {
+          params.colliders.push(child);
+          child.material.visible = false;
+        } else {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      }
+    });
+    loaderTexture.load(`${params.assetsPath}textures/SimpleFarm.png`, function(texture) {
+      object.traverse(function(child) {
+        if (child.isMesh) {
+          child.material.map = texture;
+        }
+      });
+    });
+  });
+}
+function loadChickenCoop(plane2) {
+  loaderFBX.load(`${params.assetsPath}fbx/Prop_Chicken_Coop_02.fbx`, function(object) {
+    params.farmhouse = object;
+    params.colliders = [];
+    object.rotation.y = 90 * (Math.PI / 180);
+    object.position.set(80, 0, -10);
+    object.scale.set(2.2, 2.2, 2.2);
+    scene.add(object);
+    object.traverse(function(child) {
+      if (child.isMesh) {
+        if (child.name.startsWith("proxy")) {
+          params.colliders.push(child);
+          child.material.visible = false;
+        } else {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      }
+    });
+    loaderTexture.load(`${params.assetsPath}textures/SimpleFarm.png`, function(texture) {
+      object.traverse(function(child) {
+        if (child.isMesh) {
+          child.material.map = texture;
+        }
+      });
+    });
+  });
+}
+function loadChicken(plane2) {
+  loaderGLTF.load(`${params.assetsPath}gltf/Chicken.glb`, function(object) {
+    let model = object.scene;
+    model.name = "Chicken GLB";
+    model.position.set(-3, 0, 0);
+    model.scale.set(4, 4, 4);
+    model.traverse(function(child) {
+      if (child.isMesh)
+        child.castShadow = true;
+    });
+    scene.add(model);
+    console.log("loadChicken object", object);
+    console.log("loadChicken model", model);
+  });
+}
+function loadRoad(plane2) {
+  let i;
+  let count2 = 8;
+  let startX = -45;
+  let offsetX = 0;
+  let startZ = -138;
+  let offsetZ = 20;
+  const roadPromise1 = new Promise((resolve, reject) => {
+    for (i = 1; i <= count2; i++) {
+      loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_Straight_01.fbx`, function(object) {
+        object.position.set(startX, 0, startZ);
+        startX = startX + offsetX;
+        startZ = startZ + offsetZ;
+        console.log("ROAD A startX, startZ", startX, startZ);
+        object.scale.set(0.02, 0.01, 0.02);
+        object.traverse(function(child) {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+        loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_03_A.png`, function(texture) {
+          object.traverse(function(child) {
+            if (child.isMesh) {
+              child.material.transparent = true;
+              child.material.opacity = 0.7;
+              child.material.map = texture;
+            }
+          });
+        });
+        scene.add(object);
+      });
+    }
+    resolve(startX, startZ);
+  });
+  roadPromise1.then((startX2, startZ2) => {
+    for (i = 1; i <= 1; i++) {
+      loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_T_Section_01.fbx`, function(object) {
+        console.log("ROAD T startX, startZ", startX2, startZ2);
+        object.position.set(startX2, 0, startZ2);
+        startX2 = startX2 + offsetX;
+        startZ2 = startZ2 + offsetZ;
+        console.log("ROAD T startX, startZ", startX2, startZ2);
+        object.scale.set(0.02, 0.01, 0.02);
+        object.traverse(function(child) {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+        loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_03_A.png`, function(texture) {
+          object.traverse(function(child) {
+            if (child.isMesh) {
+              child.material.transparent = true;
+              child.material.opacity = 0.7;
+              child.material.map = texture;
+            }
+          });
+        });
+        scene.add(object);
+      });
+    }
+  });
+}
+function onPointerMove(event) {
+  pointer.x = event.offsetX / canvas.clientWidth * 2 - 1;
+  pointer.y = -(event.offsetY / canvas.clientHeight) * 2 + 1;
+}
+function onPointerDown(event) {
+  console.log("event ****************************************", event);
+  event.preventDefault();
+  pointer.x = event.clientX / window.innerWidth * 2 - 1;
+  pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  console.log("pointer clicked x y", pointer.x, pointer.y);
+  raycaster2.setFromCamera(pointer, event.target.camera);
+  console.log("raycaster2", raycaster2);
+  const intersects2 = raycaster2.intersectObjects(event.target.targetList);
+  console.log("intersects", intersects2);
+  if (intersects2.length > 0) {
+    const theIntersectedObject = intersects2[0].object;
+    if (params.intersectedObject2)
+      ;
+    params.intersectedObject2 = theIntersectedObject;
+    if (params.intersectedObject2.userData.type === "structure" && event.button == 0) {
+      let infospotObject = scene.getObjectByName(`INFOSPOT: ${params.intersectedObject2.name}`);
+      if (infospotObject) {
+        if (infospotObject.visible === true) {
+          infospotObject.visible = false;
+        } else {
+          infospotObject.visible = true;
+        }
+      }
+    }
+    params.intersectedObject2.children.forEach(function(key) {
+      if (key.type === "Object3D" && event.button == 0) {
+        if (key.element.hidden === true) {
+          key.element.hidden = false;
+          key.element.style.display = "block";
+          key.visible = true;
+        } else {
+          key.element.hidden = true;
+          key.element.style.display = "none";
+          key.visible = false;
+        }
+      }
+    });
+  } else {
+    if (params.intersectedObject2)
+      ;
+    params.intersectedObject2 = null;
+  }
+}
+function getFeaturedImage(postObject) {
+  let featImage = {};
+  if (postObject.featured_media === 0) {
+    return featImage;
+  } else {
+    featImage.featuredObject = postObject._embedded["wp:featuredmedia"][0];
+    featImage.imgUrl = featImage.featuredObject.source_url;
+    featImage.imgMediumUrl = "";
+    featImage.imgLargeUrl = "";
+    featImage.imgWidth = featImage.featuredObject.media_details.width;
+    featImage.imgHeight = featImage.featuredObject.media_details.height;
+    if (featImage.featuredObject.media_details.sizes.hasOwnProperty("large")) {
+      featImage.imgWidth = featImage.featuredObject.media_details.sizes.full.width;
+      featImage.imgHeight = featImage.featuredObject.media_details.sizes.full.height;
+      featImage.imgLargeUrl = featImage.featuredObject.media_details.sizes.large.source_url + " 1024w, ";
+    }
+  }
+  return featImage;
+}
+Array.prototype.inArray = function(comparer) {
+  for (let i = 0; i < this.length; i++) {
+    if (comparer(this[i]))
+      return true;
+  }
+  return false;
+};
+Array.prototype.pushIfNotExist = function(element, comparer) {
+  if (!this.inArray(comparer)) {
+    this.push(element);
+  }
+};
+function setAction(name) {
+  const action = player.mixer.clipAction(animations[name]);
+  action.time = 0;
+  console.log("CHARACTER: action name", name);
+  player.mixer.stopAllAction();
+  player.action = name;
+  player.actionTime = Date.now();
+  action.play();
+}
+function movePlayer(dt) {
+  const pos = player.object.position.clone();
+  pos.y += 60;
+  let dir = new Vector3();
+  player.object.getWorldDirection(dir);
+  if (player.move.forward < 0)
+    dir.negate();
+  new Raycaster(pos, dir);
+  params.colliders;
+  {
+    if (player.move.forward > 0) {
+      const speed = player.action == "Running" ? 24 : 8;
+      player.object.translateZ(dt * speed);
+    } else if (player.move.forward < 0) {
+      player.object.translateZ(-dt * 2);
+    }
+  }
+  player.object.rotateY(player.move.turn * dt);
+}
+function playerControl(forward, turn) {
+  turn = -turn;
+  if (forward > 0.2) {
+    if (player.action != "Walking" && player.action != "Running") {
+      setAction("Walking");
+    }
+  } else if (forward < -0.2) {
+    if (player.action != "Walking Backwards") {
+      setAction("Walking Backwards");
+    }
+  } else {
+    forward = 0;
+    if (Math.abs(turn) > 0.05) {
+      if (player.action != "Left Turn") {
+        setAction("Left Turn");
+      }
+    } else if (player.action != "Idle") {
+      setAction("Idle");
+    }
+  }
+  player.move = { forward, turn };
+}
+const animate = () => {
+  const dt = clock.getDelta();
+  controls.update();
+  TWEEN.update();
+  requestAnimationFrame(animate);
+  if (params.ANIMATE) {
+    plane.rotation.z -= 7e-4;
+  }
+  if (player.mixer !== void 0) {
+    player.mixer.update(dt);
+  }
+  if (player.action == "Walking") {
+    const elapsedTime = Date.now() - player.actionTime;
+    if (elapsedTime > 2e3 && player.move.forward > 0.7)
+      ;
+  }
+  if (player.move !== void 0) {
+    movePlayer(dt);
+  }
+  render();
+};
+const loadAssets = (plane2) => {
+  params.mode = params.modes.LOADING;
+  console.log("params.mode", params.mode);
+  loaderFBX.load(`${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function(object) {
+    object.mixer = new AnimationMixer(object);
+    player.mixer = object.mixer;
+    player.root = object.mixer.getRoot();
+    object.name = "Gardener";
+    object.traverse(function(child) {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = false;
+      }
+    });
+    loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_B.png`, function(texture) {
+      object.traverse(function(child) {
+        if (child.isMesh) {
+          child.material.map = texture;
+        }
+      });
+    });
+    player.object = new Object3D();
+    player.object.add(object);
+    player.object.scale.set(0.033, 0.033, 0.033);
+    player.object.rotation.x = Math.PI / 2;
+    plane2.add(player.object);
+    guiFolderPlayer.add(player.object, "visible").name("Show Character").listen();
+  });
+  loadFarmHouse();
+  loadRoad();
+  loadChickenCoop();
+  loadChicken();
+  let loadNextAnim2 = function(loader) {
+    let anim = anims.pop();
+    loader.load(`${params.assetsPath}fbx/anims2/${anim}.fbx`, function(object) {
+      animations[anim] = object.animations[0];
+      if (anims.length > 0) {
+        loadNextAnim2(loader);
+      } else {
+        anims = [];
+      }
+    });
+  };
+  loadNextAnim2(loaderFBX);
+};
+const build = async () => {
+  params.mode = params.modes.BUILDING;
+  console.log("params.mode", params.mode);
+  console.log("building ********************************* ");
+  try {
+    let a1 = await getSceneData();
+    console.log("a1 boolean getSceneData", a1, new Date().toISOString());
+    console.log("data retrieved ************************* ");
+    let a2 = await buildScene(a1);
+    console.log("a2 plane returned from buildScene", a2, new Date().toISOString());
+    let a3 = async function(a4) {
+      console.log("a4 plane object returned from buildScene", a4, new Date().toISOString());
+      params.mode = params.modes.BUILT;
+      console.log("params.mode", params.mode);
+      console.log("scene built ************************** ");
+      loadAssets(a2);
+      console.log("loading assets *********************** ");
+    };
+    await a3(a2);
+    console.log("a3 boolean (complete)", a3, new Date().toISOString());
+  } catch (e) {
+    console.log("error ***", e.message, e);
+  }
+};
+const getSceneData = async () => {
+  let getDataFromLocalStorage = true;
+  if (localStorage && getDataFromLocalStorage && !debug) {
+    const getdata = localStorage.getItem("threedgarden") || "";
+    const threedgarden = JSON.parse(getdata);
+    if (threedgarden != void 0) {
+      console.log("LOCALSTORAGE ITEM RETRIEVED", threedgarden);
+      params.data = threedgarden.data;
+    } else {
+      console.log("LOCALSTORAGE ITEM NOT RETRIEVED", threedgarden);
+      getDataFromLocalStorage = false;
+    }
+  } else {
+    console.log("LOCALSTORAGE NOT AVAILABLE");
+    getDataFromLocalStorage = false;
+  }
+  if (!getDataFromLocalStorage) {
+    await Promise.allSettled(api_urls.map((url) => fetch(url).then((results) => results.json()).then((data2) => {
+      let type = data2[0].type;
+      switch (type) {
+        case "scene":
+          params.data.scene = [...data2];
+          break;
+        case "allotment":
+          params.data.allotment = [...data2];
+          break;
+        case "bed":
+          params.data.bed = [...data2];
+          break;
+        case "plant":
+          params.data.plant = [...data2];
+          break;
+        case "planting_plan":
+          params.data.planting_plan = [...data2];
+          break;
+      }
+      console.log("data", data2);
+    }))).then((results) => {
+      console.log("results", results);
+      results.forEach((result2, num) => {
+        if (result2.status == "fulfilled")
+          ;
+        if (result2.status == "rejected") {
+          console.log(result2);
+        }
+      });
+      console.log("params.data", params.data);
+      localStorage.setItem("threedgarden", JSON.stringify(params));
+      return true;
+    });
+  } else if (getDataFromLocalStorage) {
+    return true;
+  } else {
+    return false;
+  }
+};
+const buildScene = async (a5) => {
+  console.log("a5 boolean === a1 boolean", a5);
+  params.mode = params.modes.BUILDING;
+  console.log("params.mode", params.mode);
+  console.log("params.data.scene", params.data.scene);
+  let wpScene = params.data.scene[0];
+  let sceneID = wpScene.id;
+  scene = new Scene();
+  scene.name = wpScene.title.rendered;
+  console.log("scene", scene);
+  if (wpScene.acf.scene_background_image_px) {
+    let cubeMapURLs = [
+      wpScene.acf.scene_background_image_px,
+      wpScene.acf.scene_background_image_nx,
+      wpScene.acf.scene_background_image_py,
+      wpScene.acf.scene_background_image_ny,
+      wpScene.acf.scene_background_image_pz,
+      wpScene.acf.scene_background_image_nz
+    ];
+    let reflectionCube = new CubeTextureLoader().load(cubeMapURLs);
+    reflectionCube.format = RGBFormat;
+    scene.background = reflectionCube;
+  } else if (wpScene.acf.scene_background_image) {
+    let bgTexture = loaderTexture.load(wpScene.acf.scene_background_image, () => {
+      const rt = new WebGLCubeRenderTarget(bgTexture.image.height);
+      rt.fromEquirectangularTexture(renderer, bgTexture);
+      scene.background = rt;
+    });
+  } else if (wpScene.acf.scene_background_color) {
+    scene.background = new Color$1(wpScene.acf.scene_background_color);
+  }
+  let plane2 = getPlane(wpScene.acf.scene_plane_width_x, wpScene.acf.scene_plane_length_y, wpScene.acf.scene_plane_background_color);
+  plane2.name = "plane-jane";
+  plane2.rotation.x = -Math.PI / 2;
+  guiFolderRotation.add(plane2.rotation, "x", -Math.PI, Math.PI).listen();
+  guiFolderRotation.add(plane2.rotation, "y", -Math.PI, Math.PI).listen();
+  guiFolderRotation.add(plane2.rotation, "z", -Math.PI, Math.PI).listen();
+  if (wpScene.acf.scene_plane_texture_image) {
+    plane2.material.roughness = 0;
+    plane2.material.map = loaderTexture.load(wpScene.acf.scene_plane_texture_image);
+    let planeTextureMap = plane2.material.map;
+    planeTextureMap.wrapS = RepeatWrapping;
+    planeTextureMap.wrapT = RepeatWrapping;
+    planeTextureMap.repeat.set(4, 4);
+  }
+  let directionalLight = getDirectionalLight(16777215, 1.6);
+  directionalLight.position.set(-90, -120, 120);
+  directionalLight.castShadow = true;
+  let helperDirectionalLight = new CameraHelper(directionalLight.shadow.camera);
+  helperDirectionalLight.visible = false;
+  let directionalLight2 = getDirectionalLight(16777215, 1);
+  directionalLight2.position.set(90, 120, 120);
+  directionalLight2.castShadow = false;
+  let helperDirectionalLight2 = new CameraHelper(directionalLight2.shadow.camera);
+  helperDirectionalLight2.visible = true;
+  guiFolderLights.add(helperDirectionalLight, "visible", 0, 20).name("Show Light Helper");
+  guiFolderLights.add(directionalLight, "intensity", 0, 20);
+  guiFolderLights.add(directionalLight.position, "x", -500, 500);
+  guiFolderLights.add(directionalLight.position, "y", -500, 500);
+  guiFolderLights.add(directionalLight.position, "z", -500, 500);
+  guiFolderLights.add(helperDirectionalLight2, "visible", 0, 20).name("Show Light 2 Helper");
+  guiFolderLights.add(directionalLight2, "intensity", 0, 20);
+  guiFolderLights.add(directionalLight2.position, "x", -500, 500);
+  guiFolderLights.add(directionalLight2.position, "y", -500, 500);
+  guiFolderLights.add(directionalLight2.position, "z", -500, 500);
+  plane2.add(directionalLight);
+  plane2.add(directionalLight2);
+  scene.add(helperDirectionalLight);
+  scene.add(helperDirectionalLight2);
+  scene.add(plane2);
+  camera = new PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1e3);
+  camera.name = "gardencam1";
+  camera.position.set(86, 64, 182);
+  let helperCamera = new CameraHelper(camera);
+  helperCamera.visible = false;
+  scene.add(helperCamera);
+  guiFolderCameras.add(helperCamera, "visible", 0, 20).name("Show Camera Helper");
+  guiFolderCameras.add(camera.position, "x", -500, 500).listen();
+  guiFolderCameras.add(camera.position, "y", -500, 500).listen();
+  guiFolderCameras.add(camera.position, "z", -500, 500).listen();
+  renderer = new WebGLRenderer({
+    alpha: true,
+    antialias: true
+  });
+  renderer.shadowMap.enabled = true;
+  renderer.setSize(window.innerWidth - 100, window.innerHeight);
+  renderer.domElement.camera = camera;
+  renderer.domElement.targetList = plane2.children;
+  renderer.domElement.addEventListener("pointermove", onPointerMove, false);
+  renderer.domElement.addEventListener("pointerdown", onPointerDown, false);
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.25;
+  controls.enableZoom = true;
+  controls.rotateSpeed = 0.5;
+  controls.autoRotate = false;
+  controls.autoRotateSpeed = 0.03;
+  controls.minDistance = 0.01;
+  controls.maxDistance = 340;
+  controls.maxPolarAngle = Math.PI / 2 - 0.04;
+  controls.target = new Vector3(0, 0, 0);
+  renderer.domElement.controls = controls;
+  container = document.getElementById("webgl");
+  canvas = renderer.domElement;
+  container.append(gui.domElement);
+  container.append(renderer.domElement);
+  let joystick = new JoyStick({
+    onMove: playerControl,
+    game: container
+  });
+  console.log("joystick", joystick);
+  buildAllotments(params.data.allotment, plane2, sceneID);
+  return plane2;
+};
+function buildAllotments(postObject, plane2, sceneID) {
+  console.log("ALLOTMENTS", postObject);
+  var filteredPostObject = postObject.filter(function(obj) {
+    return obj.acf.allotment_scene == sceneID;
+  });
+  filteredPostObject.forEach(function(key) {
+    let allotment = {};
+    allotment.parameters = {};
+    allotment.position = {};
+    allotment.images = {};
+    allotment.parameters.x = parseInt(key.acf.allotment_width);
+    allotment.parameters.y = parseInt(key.acf.allotment_length);
+    allotment.parameters.z = parseInt(key.acf.allotment_height);
+    allotment.position.x = parseInt(key.acf.allotment_position_x);
+    allotment.position.y = parseInt(key.acf.allotment_position_y);
+    allotment.position.z = parseInt(key.acf.allotment_position_z);
+    allotment.images.texture = key.acf.allotment_texture_image;
+    allotment.images.featured = getFeaturedImage(key);
+    allotment.shape = key.acf.allotment_shape;
+    allotment.color = key.acf.allotment_color;
+    allotment.title = key.title.rendered;
+    allotment.postID = key.id;
+    allotment.description = key.content.rendered;
+    allotment.link = key.link;
+    let structure = getGeometry(allotment.shape, allotment.parameters.x, allotment.parameters.y, allotment.parameters.z, allotment.color);
+    structure.name = allotment.title;
+    structure.userData.type = "structure";
+    structure.userData.postID = allotment.postID;
+    structure.userData.description = allotment.description;
+    structure.userData.annotation = allotment.title;
+    structure.userData.link = allotment.link;
+    structure.position.x = allotment.position.x;
+    structure.position.y = allotment.position.y;
+    structure.position.z = structure.geometry.parameters.depth / 2 + allotment.position.z;
+    structure.material.roughness = 0.9;
+    if (allotment.images.texture != null && allotment.images.texture != false) {
+      structure.material.map = loaderTexture.load(allotment.images.texture);
+      for (let i = 0; i < structure.material.length; i++) {
+        structure.material[i].map = loaderTexture.load(allotment.images.texture);
+        let structureTextureMap = structure.material[i].map;
+        structureTextureMap.wrapS = RepeatWrapping;
+        structureTextureMap.wrapT = RepeatWrapping;
+        structureTextureMap.repeat.set(4, 4);
+      }
+    }
+    plane2.add(structure);
+    buildBeds(params.data.bed, plane2, allotment.postID, structure.position.x, structure.position.y);
+  });
+}
+function buildBeds(postObject, plane2, allotmentID, posOffsetX, posOffsetY, posOffsetZ) {
+  var filteredPostObject = postObject.filter(function(obj) {
+    return obj.acf.bed_allotment == allotmentID;
+  });
+  filteredPostObject.forEach(function(key) {
+    let bed = {};
+    bed.parameters = {};
+    bed.position = {};
+    bed.images = {};
+    bed.parameters.x = parseInt(key.acf.bed_width) / 12;
+    bed.parameters.y = parseInt(key.acf.bed_length) / 12;
+    bed.parameters.z = parseInt(key.acf.bed_height) / 12;
+    bed.position.x = parseInt(key.acf.bed_position_x) / 12 + posOffsetX;
+    bed.position.y = parseInt(key.acf.bed_position_y) / 12 + posOffsetY;
+    bed.position.z = parseInt(key.acf.bed_position_z) / 12 + bed.parameters.z / 2;
+    bed.images.texture = key.acf.bed_texture_image;
+    bed.images.featured = getFeaturedImage(key);
+    bed.shape = key.acf.bed_shape;
+    bed.color = key.acf.bed_color;
+    bed.title = key.title.rendered;
+    bed.postID = key.id;
+    bed.description = key.content.rendered;
+    bed.link = key.link;
+    let structure = getGeometry(bed.shape, bed.parameters.x, bed.parameters.y, bed.parameters.z, bed.color);
+    structure.name = bed.title;
+    structure.userData.type = "structure";
+    structure.userData.postID = bed.postID;
+    structure.userData.description = bed.description;
+    structure.userData.annotation = bed.title;
+    structure.userData.link = bed.link;
+    structure.position.x = bed.position.x ? bed.position.x : 0;
+    structure.position.y = bed.position.y ? bed.position.y : 0;
+    structure.position.z = bed.position.z ? bed.position.z : 0;
+    structure.material.roughness = 0.9;
+    if (bed.images.texture != null && bed.images.texture != false) {
+      structure.material.map = loaderTexture.load(bed.images.texture);
+      for (let i = 0; i < structure.material.length; i++) {
+        structure.material[i].map = loaderTexture.load(bed.images.texture);
+        let structureTextureMap = structure.material[i].map;
+        structureTextureMap.wrapS = RepeatWrapping;
+        structureTextureMap.wrapT = RepeatWrapping;
+        structureTextureMap.repeat.set(4, 4);
+      }
+    }
+    plane2.add(structure);
+    params.colliders.push(structure);
+    buildPlantingPlans(params.data.planting_plan, plane2, bed.postID, structure.position.x, structure.position.y);
+  });
+}
+function buildPlantingPlans(postObject, plane2, bedID, posOffsetX, posOffsetY, posOffsetZ) {
+  var filteredPostObject = [];
+  var matches = [];
+  postObject.forEach(function(obj) {
+    obj.acf.planting_plan_bed_plant_schedule.forEach(function(i) {
+      if (i.planting_plan_bed == bedID) {
+        matches.pushIfNotExist(obj, function(e) {
+          return e.id === obj.id;
+        });
+      }
+    });
+    filteredPostObject = [...matches];
+  });
+  if (filteredPostObject.length > 0) {
+    console.log("filteredPostObject", filteredPostObject);
+  }
+  filteredPostObject.forEach(function(key) {
+    key.acf.planting_plan_bed_plant_schedule.forEach(function(key2) {
+      if (key2.planting_plan_bed == bedID) {
+        var filteredPlant = params.data.plant.filter(function(obj) {
+          return obj.id == key2.planting_plan_plant;
+        });
+        filteredPlant.forEach(function(key3) {
+          let plant = {};
+          plant.parameters = {};
+          plant.position = {};
+          plant.images = {};
+          plant.parameters.x = Number(key3.acf.plant_width) / 12;
+          plant.parameters.y = Number(key3.acf.plant_length) / 12;
+          plant.parameters.z = Number(key3.acf.plant_height) / 12;
+          plant.position.x = parseInt(key2.plant_position_x) / 12 + posOffsetX;
+          plant.position.y = parseInt(key2.plant_position_y) / 12 + posOffsetY;
+          plant.position.z = parseInt(key2.plant_position_z) / 12 + plant.parameters.z / 2;
+          plant.images.texture = key3.acf.plant_texture_image;
+          plant.images.featured = getFeaturedImage(key);
+          plant.shape = key3.acf.plant_shape;
+          plant.color = key3.acf.plant_color;
+          plant.title = key3.title.rendered;
+          plant.postID = key3.id;
+          plant.description = key3.content.rendered;
+          plant.link = key3.link;
+          console.log("PLANT", plant);
+          let structure = getGeometry(plant.shape, plant.parameters.x, plant.parameters.y, plant.parameters.z, plant.color);
+          structure.name = plant.title;
+          structure.userData.type = "structure";
+          structure.userData.postID = plant.postID;
+          structure.userData.description = plant.description;
+          structure.userData.annotation = plant.title;
+          structure.userData.link = plant.link;
+          structure.position.x = plant.position.x ? plant.position.x : 0;
+          structure.position.y = plant.position.y ? plant.position.y : 0;
+          structure.position.z = plant.position.z ? plant.position.z : 0;
+          structure.rotation.x = Math.PI / 2;
+          structure.material.roughness = 0.9;
+          if (plant.images.texture != null && plant.images.texture != false) {
+            structure.material.map = loaderTexture.load(plant.images.texture);
+            for (let i = 0; i < structure.material.length; i++) {
+              structure.material[i].map = loaderTexture.load(plant.images.texture);
+              let structureTextureMap = structure.material[i].map;
+              structureTextureMap.wrapS = RepeatWrapping;
+              structureTextureMap.wrapT = RepeatWrapping;
+              structureTextureMap.repeat.set(4, 4);
+            }
+          }
+          console.log("plant structure", structure);
+          plane2.add(structure);
+          params.colliders.push(structure);
+        });
+      }
+    });
+  });
+}
+const _sfc_main$1 = {
   name: "ThreeDGarden",
   props: {
     msg: String,
@@ -35019,973 +35943,49 @@ const __default__ = {
   },
   data() {
     return {
-      that: this
+      name: this.$route.name,
+      path: this.$route.path
     };
   },
   mounted() {
-    console.log("export default mounted");
+    params.mode = params.modes.INITIALIZING;
+    console.log("params.mode export default mounted", params.mode);
+    build();
+  },
+  setup(props, context) {
+    const root2 = ref(null);
+    onMounted(() => {
+      console.log("root.value (your $el, found in this.$refs.root)", root2.value);
+      console.log("params.mode onMounted", params.mode);
+    });
+    return {
+      root: root2
+    };
   }
 };
-const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues({}, __default__), {
-  setup(__props) {
-    const { x, y } = useMouse();
-    const { count, inc, dec } = useCounter();
-    if (!isWebGLSupported_1()) {
-      alert("WebGL is not supported.");
-      console.log("WebGL is not supported.");
-    }
-    if (!isWebGL2Supported_1()) {
-      alert("WebGL2 is not supported.");
-      console.log("WebGL2 is not supported.");
-    }
-    const postdata = window.postdata ? window.postdata : {};
-    const pluginName = postdata.plugin_name;
-    const pluginVersion = postdata.plugin_version;
-    const pluginURL = postdata.plugin_url;
-    postdata.theme_uri;
-    const restURL = postdata.rest_url;
-    const worldID = postdata.world_id;
-    console.log("pluginName", pluginName, pluginVersion);
-    console.log("postdata", postdata);
-    const debug = false;
-    const gui = new GUI$1({ autoPlace: true, closeOnTop: true });
-    gui.close();
-    gui.domElement.id = "gui";
-    let guiFolderRotation = gui.addFolder("Rotation + Animation");
-    let guiFolderCameras = gui.addFolder("Camera Position");
-    let guiFolderLights = gui.addFolder("Directional Light");
-    gui.addFolder("Allotments");
-    gui.addFolder("Beds");
-    gui.addFolder("Plants");
-    gui.addFolder("Annotations");
-    let guiFolderPlayer = gui.addFolder("Character");
-    let scene;
-    let plane;
-    let camera;
-    let controls;
-    let renderer;
-    let container;
-    let canvas;
-    let player = {};
-    player.action = "Idle";
-    player.actionTime = Date.now();
-    let animations = {};
-    let anims = ["Breathing Idle", "Driving", "Idle", "Left Turn", "Pointing", "Pointing Gesture"];
-    anims = [...anims, "Right Turn", "Running", "Talking", "Turn", "Walking", "Walking Backwards"];
-    const params = {
-      modes: Object.freeze({
-        NONE: "none",
-        PRELOAD: "preload",
-        INITIALIZING: "initializing",
-        BUILDING: "building",
-        BUILT: "built",
-        LOADING: "loading",
-        LOADED: "loaded",
-        ACTIVE: "active",
-        GAMEOVER: "game_over"
-      }),
-      mode: "",
-      ANIMATE: false,
-      assetsPath: `${pluginURL}assets/`,
-      data: {
-        world: [{ id: worldID }],
-        scene: [],
-        allotment: [],
-        bed: [],
-        plant: [],
-        planting_plan: []
-      },
-      intersectedObject1: null,
-      intersectedObject2: null,
-      colliders: [],
-      environment: {},
-      farmhouse: {}
-    };
-    params.mode = params.modes.NONE;
-    console.log("params.mode", params.mode);
-    guiFolderRotation.add(params, "ANIMATE").name("Run Animation");
-    params.mode = params.modes.PRELOAD;
-    console.log("params.mode", params.mode);
-    console.log("params", params);
-    const manager = new LoadingManager();
-    manager.onStart = (url, itemsLoaded, itemsTotal) => {
-      console.log("Started loading file: " + url + ".\nLoaded " + itemsLoaded + " of " + itemsTotal + " files.");
-    };
-    manager.onProgress = function(url, itemsLoaded, itemsTotal) {
-    };
-    manager.onError = function(url) {
-      console.error("There was an error loading " + url);
-    };
-    manager.onLoad = () => {
-      const startTime = new Date().toISOString();
-      console.log("manager.onLoad", startTime);
-      if (params.mode == params.modes.LOADING) {
-        params.mode = params.modes.LOADED;
-        console.log("params.mode manager.onLoad", params.mode, startTime);
-        setAction("Idle");
-        animate();
-        console.log("animating ****************************** ");
-        params.mode = params.modes.ACTIVE;
-        console.log("params.mode manager.onLoad", params.mode, startTime);
-      } else {
-        console.log("still building ************************* ");
-        console.log("params.mode manager.onLoad", params.mode, startTime);
-      }
-    };
-    const loaderFBX = new FBXLoader(manager);
-    const loaderGLTF = new GLTFLoader(manager);
-    new OBJLoader(manager);
-    const loaderTexture = new TextureLoader(manager);
-    const clock = new Clock();
-    new Raycaster();
-    const raycaster2 = new Raycaster();
-    const pointer = new Vector2();
-    const API_URL_SCENES = `${restURL}scene/?_embed&per_page=100`;
-    const API_URL_ALLOTMENTS = `${restURL}allotment/?_embed&per_page=100`;
-    const API_URL_BEDS = `${restURL}bed/?_embed&per_page=100`;
-    const API_URL_PLANTING_PLANS = `${restURL}planting_plan/?_embed&per_page=100`;
-    const API_URL_PLANTS = `${restURL}plant/?_embed&per_page=100`;
-    const api_urls = [
-      API_URL_SCENES,
-      API_URL_ALLOTMENTS,
-      API_URL_BEDS,
-      API_URL_PLANTING_PLANS,
-      API_URL_PLANTS
-    ];
-    const root = ref(null);
-    function render() {
-      renderer.render(scene, camera);
-    }
-    const onWindowResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      render();
-    };
-    window.addEventListener("resize", onWindowResize, false);
-    const getPlane = (x2, y2, color) => {
-      let geometry = new PlaneGeometry(x2, y2);
-      let material = new MeshStandardMaterial({
-        color,
-        side: DoubleSide
-      });
-      let mesh = new Mesh(geometry, material);
-      mesh.receiveShadow = true;
-      return mesh;
-    };
-    const getDirectionalLight = (color, intensity) => {
-      let light = new DirectionalLight(color, intensity);
-      light.castShadow = true;
-      light.shadow.bias = 1e-4;
-      light.shadow.mapSize.width = 4096;
-      light.shadow.mapSize.height = 4096;
-      light.shadow.camera.left = -1e3;
-      light.shadow.camera.bottom = -1e3;
-      light.shadow.camera.right = 1e3;
-      light.shadow.camera.top = 1e3;
-      light.shadow.camera.near = 0.5;
-      light.shadow.camera.far = 500;
-      return light;
-    };
-    const getGeometry = (shape, x2, y2, z, color) => {
-      let geometry;
-      let material;
-      let mesh;
-      switch (shape) {
-        case "Box":
-          geometry = new BoxGeometry(x2, y2, z);
-          material = new MeshStandardMaterial({
-            transparent: true,
-            opacity: 0.8,
-            color,
-            side: DoubleSide,
-            depthWrite: true
-          });
-          mesh = new Mesh(geometry, [
-            material,
-            material,
-            material,
-            material
-          ]);
-          mesh.castShadow = true;
-          break;
-        case "Cone":
-          geometry = new ConeGeometry(x2 / 2, y2 / 2, z, 32, 1, true);
-          material = new MeshStandardMaterial({
-            color,
-            side: DoubleSide
-          });
-          mesh = new Mesh(geometry, material);
-          mesh.castShadow = true;
-          mesh.rotation.x = Math.PI / 2;
-          break;
-        case "Cylinder":
-          geometry = new CylinderGeometry(x2 / 2, y2 / 2, z, 32, 1, true);
-          material = new MeshStandardMaterial({
-            color,
-            side: DoubleSide
-          });
-          mesh = new Mesh(geometry, material);
-          mesh.castShadow = true;
-          mesh.rotation.x = Math.PI / 2;
-          break;
-        case "InfoSphere":
-          geometry = new SphereGeometry(x2, y2, z);
-          material = new MeshStandardMaterial({
-            color,
-            side: DoubleSide
-          });
-          mesh = new Mesh(geometry, material);
-          mesh.castShadow = true;
-          break;
-        case "Sphere":
-          geometry = new SphereGeometry(x2, y2, z);
-          material = new MeshStandardMaterial({
-            color,
-            side: DoubleSide
-          });
-          mesh = new Mesh(geometry, material);
-          mesh.castShadow = true;
-          break;
-        case "Bush":
-          geometry = new BoxGeometry(x2, y2, z);
-          color = new Color$1("rgb(153,90,0)");
-        default:
-          geometry = new BoxGeometry(x2, y2, z);
-          material = new MeshStandardMaterial({
-            color,
-            side: DoubleSide
-          });
-          mesh = new Mesh(geometry, material);
-          mesh.castShadow = true;
-          break;
-      }
-      return mesh;
-    };
-    function loadFarmHouse(plane2) {
-      loaderFBX.load(`${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function(object) {
-        params.farmhouse = object;
-        params.colliders = [];
-        object.rotation.y = 270 * (Math.PI / 180);
-        object.position.set(0, 0, 100);
-        object.scale.set(2.2, 2.2, 2.2);
-        scene.add(object);
-        object.traverse(function(child) {
-          if (child.isMesh) {
-            if (child.name.startsWith("proxy")) {
-              params.colliders.push(child);
-              child.material.visible = false;
-            } else {
-              child.castShadow = true;
-              child.receiveShadow = true;
-            }
-          }
-        });
-        loaderTexture.load(`${params.assetsPath}textures/SimpleFarm.png`, function(texture) {
-          object.traverse(function(child) {
-            if (child.isMesh) {
-              child.material.map = texture;
-            }
-          });
-        });
-      });
-    }
-    function loadChickenCoop(plane2) {
-      loaderFBX.load(`${params.assetsPath}fbx/Prop_Chicken_Coop_02.fbx`, function(object) {
-        params.farmhouse = object;
-        params.colliders = [];
-        object.rotation.y = 90 * (Math.PI / 180);
-        object.position.set(80, 0, -10);
-        object.scale.set(2.2, 2.2, 2.2);
-        scene.add(object);
-        object.traverse(function(child) {
-          if (child.isMesh) {
-            if (child.name.startsWith("proxy")) {
-              params.colliders.push(child);
-              child.material.visible = false;
-            } else {
-              child.castShadow = true;
-              child.receiveShadow = true;
-            }
-          }
-        });
-        loaderTexture.load(`${params.assetsPath}textures/SimpleFarm.png`, function(texture) {
-          object.traverse(function(child) {
-            if (child.isMesh) {
-              child.material.map = texture;
-            }
-          });
-        });
-      });
-    }
-    function loadChicken(plane2) {
-      loaderGLTF.load(`${params.assetsPath}gltf/Chicken.glb`, function(object) {
-        let model = object.scene;
-        model.name = "Chicken GLB";
-        model.position.set(-3, 0, 0);
-        model.scale.set(4, 4, 4);
-        model.traverse(function(child) {
-          if (child.isMesh)
-            child.castShadow = true;
-        });
-        scene.add(model);
-        console.log("loadChicken object", object);
-        console.log("loadChicken model", model);
-      });
-    }
-    function loadRoad(plane2) {
-      let i;
-      let count2 = 8;
-      let startX = -45;
-      let offsetX = 0;
-      let startZ = -138;
-      let offsetZ = 20;
-      const roadPromise1 = new Promise((resolve, reject) => {
-        for (i = 1; i <= count2; i++) {
-          loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_Straight_01.fbx`, function(object) {
-            object.position.set(startX, 0, startZ);
-            startX = startX + offsetX;
-            startZ = startZ + offsetZ;
-            console.log("ROAD A startX, startZ", startX, startZ);
-            object.scale.set(0.02, 0.01, 0.02);
-            object.traverse(function(child) {
-              if (child.isMesh) {
-                child.castShadow = true;
-                child.receiveShadow = true;
-              }
-            });
-            loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_03_A.png`, function(texture) {
-              object.traverse(function(child) {
-                if (child.isMesh) {
-                  child.material.transparent = true;
-                  child.material.opacity = 0.7;
-                  child.material.map = texture;
-                }
-              });
-            });
-            scene.add(object);
-          });
-        }
-        resolve(startX, startZ);
-      });
-      roadPromise1.then((startX2, startZ2) => {
-        for (i = 1; i <= 1; i++) {
-          loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_T_Section_01.fbx`, function(object) {
-            console.log("ROAD T startX, startZ", startX2, startZ2);
-            object.position.set(startX2, 0, startZ2);
-            startX2 = startX2 + offsetX;
-            startZ2 = startZ2 + offsetZ;
-            console.log("ROAD T startX, startZ", startX2, startZ2);
-            object.scale.set(0.02, 0.01, 0.02);
-            object.traverse(function(child) {
-              if (child.isMesh) {
-                child.castShadow = true;
-                child.receiveShadow = true;
-              }
-            });
-            loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_03_A.png`, function(texture) {
-              object.traverse(function(child) {
-                if (child.isMesh) {
-                  child.material.transparent = true;
-                  child.material.opacity = 0.7;
-                  child.material.map = texture;
-                }
-              });
-            });
-            scene.add(object);
-          });
-        }
-      });
-    }
-    function onPointerMove(event) {
-      pointer.x = event.offsetX / canvas.clientWidth * 2 - 1;
-      pointer.y = -(event.offsetY / canvas.clientHeight) * 2 + 1;
-    }
-    function onPointerDown(event) {
-      console.log("event ****************************************", event);
-      event.preventDefault();
-      pointer.x = event.clientX / window.innerWidth * 2 - 1;
-      pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
-      console.log("pointer clicked x y", pointer.x, pointer.y);
-      raycaster2.setFromCamera(pointer, event.target.camera);
-      console.log("raycaster2", raycaster2);
-      const intersects2 = raycaster2.intersectObjects(event.target.targetList);
-      console.log("intersects", intersects2);
-      if (intersects2.length > 0) {
-        const theIntersectedObject = intersects2[0].object;
-        if (params.intersectedObject2)
-          ;
-        params.intersectedObject2 = theIntersectedObject;
-        if (params.intersectedObject2.userData.type === "structure" && event.button == 0) {
-          let infospotObject = scene.getObjectByName(`INFOSPOT: ${params.intersectedObject2.name}`);
-          if (infospotObject) {
-            if (infospotObject.visible === true) {
-              infospotObject.visible = false;
-            } else {
-              infospotObject.visible = true;
-            }
-          }
-        }
-        params.intersectedObject2.children.forEach(function(key) {
-          if (key.type === "Object3D" && event.button == 0) {
-            if (key.element.hidden === true) {
-              key.element.hidden = false;
-              key.element.style.display = "block";
-              key.visible = true;
-            } else {
-              key.element.hidden = true;
-              key.element.style.display = "none";
-              key.visible = false;
-            }
-          }
-        });
-      } else {
-        if (params.intersectedObject2)
-          ;
-        params.intersectedObject2 = null;
-      }
-    }
-    function getFeaturedImage(postObject) {
-      let featImage = {};
-      if (postObject.featured_media === 0) {
-        return featImage;
-      } else {
-        featImage.featuredObject = postObject._embedded["wp:featuredmedia"][0];
-        featImage.imgUrl = featImage.featuredObject.source_url;
-        featImage.imgMediumUrl = "";
-        featImage.imgLargeUrl = "";
-        featImage.imgWidth = featImage.featuredObject.media_details.width;
-        featImage.imgHeight = featImage.featuredObject.media_details.height;
-        if (featImage.featuredObject.media_details.sizes.hasOwnProperty("large")) {
-          featImage.imgWidth = featImage.featuredObject.media_details.sizes.full.width;
-          featImage.imgHeight = featImage.featuredObject.media_details.sizes.full.height;
-          featImage.imgLargeUrl = featImage.featuredObject.media_details.sizes.large.source_url + " 1024w, ";
-        }
-      }
-      return featImage;
-    }
-    Array.prototype.inArray = function(comparer) {
-      for (let i = 0; i < this.length; i++) {
-        if (comparer(this[i]))
-          return true;
-      }
-      return false;
-    };
-    Array.prototype.pushIfNotExist = function(element, comparer) {
-      if (!this.inArray(comparer)) {
-        this.push(element);
-      }
-    };
-    function setAction(name) {
-      const action = player.mixer.clipAction(animations[name]);
-      action.time = 0;
-      console.log("CHARACTER: action name", name);
-      player.mixer.stopAllAction();
-      player.action = name;
-      player.actionTime = Date.now();
-      action.play();
-    }
-    function movePlayer(dt) {
-      const pos = player.object.position.clone();
-      pos.y += 60;
-      let dir = new Vector3();
-      player.object.getWorldDirection(dir);
-      if (player.move.forward < 0)
-        dir.negate();
-      new Raycaster(pos, dir);
-      params.colliders;
-      {
-        if (player.move.forward > 0) {
-          const speed = player.action == "Running" ? 24 : 8;
-          player.object.translateZ(dt * speed);
-        } else if (player.move.forward < 0) {
-          player.object.translateZ(-dt * 2);
-        }
-      }
-      player.object.rotateY(player.move.turn * dt);
-    }
-    function playerControl(forward, turn) {
-      turn = -turn;
-      if (forward > 0.2) {
-        if (player.action != "Walking" && player.action != "Running") {
-          setAction("Walking");
-        }
-      } else if (forward < -0.2) {
-        if (player.action != "Walking Backwards") {
-          setAction("Walking Backwards");
-        }
-      } else {
-        forward = 0;
-        if (Math.abs(turn) > 0.05) {
-          if (player.action != "Left Turn") {
-            setAction("Left Turn");
-          }
-        } else if (player.action != "Idle") {
-          setAction("Idle");
-        }
-      }
-      player.move = { forward, turn };
-    }
-    const animate = () => {
-      const dt = clock.getDelta();
-      controls.update();
-      TWEEN.update();
-      requestAnimationFrame(animate);
-      if (params.ANIMATE) {
-        plane.rotation.z -= 7e-4;
-      }
-      if (player.mixer !== void 0) {
-        player.mixer.update(dt);
-      }
-      if (player.action == "Walking") {
-        const elapsedTime = Date.now() - player.actionTime;
-        if (elapsedTime > 2e3 && player.move.forward > 0.7)
-          ;
-      }
-      if (player.move !== void 0) {
-        movePlayer(dt);
-      }
-      render();
-    };
-    const loadAssets = (plane2) => {
-      params.mode = params.modes.LOADING;
-      console.log("params.mode", params.mode);
-      loaderFBX.load(`${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function(object) {
-        object.mixer = new AnimationMixer(object);
-        player.mixer = object.mixer;
-        player.root = object.mixer.getRoot();
-        object.name = "Gardener";
-        object.traverse(function(child) {
-          if (child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = false;
-          }
-        });
-        loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_B.png`, function(texture) {
-          object.traverse(function(child) {
-            if (child.isMesh) {
-              child.material.map = texture;
-            }
-          });
-        });
-        player.object = new Object3D();
-        player.object.add(object);
-        player.object.scale.set(0.033, 0.033, 0.033);
-        player.object.rotation.x = Math.PI / 2;
-        plane2.add(player.object);
-        guiFolderPlayer.add(player.object, "visible").name("Show Character").listen();
-      });
-      loadFarmHouse();
-      loadRoad();
-      loadChickenCoop();
-      loadChicken();
-      let loadNextAnim2 = function(loader) {
-        let anim = anims.pop();
-        loader.load(`${params.assetsPath}fbx/anims2/${anim}.fbx`, function(object) {
-          animations[anim] = object.animations[0];
-          if (anims.length > 0) {
-            loadNextAnim2(loader);
-          } else {
-            anims = [];
-          }
-        });
-      };
-      loadNextAnim2(loaderFBX);
-    };
-    const build = async () => {
-      params.mode = params.modes.BUILDING;
-      console.log("params.mode", params.mode);
-      console.log("building ********************************* ");
-      try {
-        let a1 = await getSceneData();
-        console.log("a1 boolean getSceneData", a1, new Date().toISOString());
-        console.log("data retrieved ************************* ");
-        let a2 = await buildScene(a1);
-        console.log("a2 plane returned from buildScene", a2, new Date().toISOString());
-        let a3 = async function(a4) {
-          console.log("a4 plane object returned from buildScene", a4, new Date().toISOString());
-          params.mode = params.modes.BUILT;
-          console.log("params.mode", params.mode);
-          console.log("scene built ************************** ");
-          loadAssets(a2);
-          console.log("loading assets *********************** ");
-        };
-        await a3(a2);
-        console.log("a3 boolean (complete)", a3, new Date().toISOString());
-      } catch (e) {
-        console.log("error ***", e.message, e);
-      }
-    };
-    const getSceneData = async () => {
-      let getDataFromLocalStorage = true;
-      if (localStorage && getDataFromLocalStorage && !debug) {
-        const getdata = localStorage.getItem("threedgarden") || "";
-        const threedgarden = JSON.parse(getdata);
-        if (threedgarden != void 0) {
-          console.log("LOCALSTORAGE ITEM RETRIEVED", threedgarden);
-          params.data = threedgarden.data;
-        } else {
-          console.log("LOCALSTORAGE ITEM NOT RETRIEVED", threedgarden);
-          getDataFromLocalStorage = false;
-        }
-      } else {
-        console.log("LOCALSTORAGE NOT AVAILABLE");
-        getDataFromLocalStorage = false;
-      }
-      if (!getDataFromLocalStorage) {
-        await Promise.allSettled(api_urls.map((url) => fetch(url).then((results) => results.json()).then((data) => {
-          let type = data[0].type;
-          switch (type) {
-            case "scene":
-              params.data.scene = [...data];
-              break;
-            case "allotment":
-              params.data.allotment = [...data];
-              break;
-            case "bed":
-              params.data.bed = [...data];
-              break;
-            case "plant":
-              params.data.plant = [...data];
-              break;
-            case "planting_plan":
-              params.data.planting_plan = [...data];
-              break;
-          }
-          console.log("data", data);
-        }))).then((results) => {
-          console.log("results", results);
-          results.forEach((result2, num) => {
-            if (result2.status == "fulfilled")
-              ;
-            if (result2.status == "rejected") {
-              console.log(result2);
-            }
-          });
-          console.log("params.data", params.data);
-          localStorage.setItem("threedgarden", JSON.stringify(params));
-          return true;
-        });
-      } else if (getDataFromLocalStorage) {
-        return true;
-      } else {
-        return false;
-      }
-    };
-    const buildScene = async (a5) => {
-      console.log("a5 boolean === a1 boolean", a5);
-      params.mode = params.modes.BUILDING;
-      console.log("params.mode", params.mode);
-      console.log("params.data.scene", params.data.scene);
-      let wpScene = params.data.scene[0];
-      let sceneID = wpScene.id;
-      scene = new Scene();
-      scene.name = wpScene.title.rendered;
-      console.log("scene", scene);
-      if (wpScene.acf.scene_background_image_px) {
-        let cubeMapURLs = [
-          wpScene.acf.scene_background_image_px,
-          wpScene.acf.scene_background_image_nx,
-          wpScene.acf.scene_background_image_py,
-          wpScene.acf.scene_background_image_ny,
-          wpScene.acf.scene_background_image_pz,
-          wpScene.acf.scene_background_image_nz
-        ];
-        let reflectionCube = new CubeTextureLoader().load(cubeMapURLs);
-        reflectionCube.format = RGBFormat;
-        scene.background = reflectionCube;
-      } else if (wpScene.acf.scene_background_image) {
-        let bgTexture = loaderTexture.load(wpScene.acf.scene_background_image, () => {
-          const rt = new WebGLCubeRenderTarget(bgTexture.image.height);
-          rt.fromEquirectangularTexture(renderer, bgTexture);
-          scene.background = rt;
-        });
-      } else if (wpScene.acf.scene_background_color) {
-        scene.background = new Color$1(wpScene.acf.scene_background_color);
-      }
-      let plane2 = getPlane(wpScene.acf.scene_plane_width_x, wpScene.acf.scene_plane_length_y, wpScene.acf.scene_plane_background_color);
-      plane2.name = "plane-jane";
-      plane2.rotation.x = -Math.PI / 2;
-      guiFolderRotation.add(plane2.rotation, "x", -Math.PI, Math.PI).listen();
-      guiFolderRotation.add(plane2.rotation, "y", -Math.PI, Math.PI).listen();
-      guiFolderRotation.add(plane2.rotation, "z", -Math.PI, Math.PI).listen();
-      if (wpScene.acf.scene_plane_texture_image) {
-        plane2.material.roughness = 0;
-        plane2.material.map = loaderTexture.load(wpScene.acf.scene_plane_texture_image);
-        let planeTextureMap = plane2.material.map;
-        planeTextureMap.wrapS = RepeatWrapping;
-        planeTextureMap.wrapT = RepeatWrapping;
-        planeTextureMap.repeat.set(4, 4);
-      }
-      let directionalLight = getDirectionalLight(16777215, 1.6);
-      directionalLight.position.set(-90, -120, 120);
-      directionalLight.castShadow = true;
-      let helperDirectionalLight = new CameraHelper(directionalLight.shadow.camera);
-      helperDirectionalLight.visible = false;
-      let directionalLight2 = getDirectionalLight(16777215, 1);
-      directionalLight2.position.set(90, 120, 120);
-      directionalLight2.castShadow = false;
-      let helperDirectionalLight2 = new CameraHelper(directionalLight2.shadow.camera);
-      helperDirectionalLight2.visible = true;
-      guiFolderLights.add(helperDirectionalLight, "visible", 0, 20).name("Show Light Helper");
-      guiFolderLights.add(directionalLight, "intensity", 0, 20);
-      guiFolderLights.add(directionalLight.position, "x", -500, 500);
-      guiFolderLights.add(directionalLight.position, "y", -500, 500);
-      guiFolderLights.add(directionalLight.position, "z", -500, 500);
-      guiFolderLights.add(helperDirectionalLight2, "visible", 0, 20).name("Show Light 2 Helper");
-      guiFolderLights.add(directionalLight2, "intensity", 0, 20);
-      guiFolderLights.add(directionalLight2.position, "x", -500, 500);
-      guiFolderLights.add(directionalLight2.position, "y", -500, 500);
-      guiFolderLights.add(directionalLight2.position, "z", -500, 500);
-      plane2.add(directionalLight);
-      plane2.add(directionalLight2);
-      scene.add(helperDirectionalLight);
-      scene.add(helperDirectionalLight2);
-      scene.add(plane2);
-      camera = new PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1e3);
-      camera.name = "gardencam1";
-      camera.position.set(86, 64, 182);
-      let helperCamera = new CameraHelper(camera);
-      helperCamera.visible = false;
-      scene.add(helperCamera);
-      guiFolderCameras.add(helperCamera, "visible", 0, 20).name("Show Camera Helper");
-      guiFolderCameras.add(camera.position, "x", -500, 500).listen();
-      guiFolderCameras.add(camera.position, "y", -500, 500).listen();
-      guiFolderCameras.add(camera.position, "z", -500, 500).listen();
-      renderer = new WebGLRenderer({
-        alpha: true,
-        antialias: true
-      });
-      renderer.shadowMap.enabled = true;
-      renderer.setSize(window.innerWidth - 100, window.innerHeight);
-      renderer.domElement.camera = camera;
-      renderer.domElement.targetList = plane2.children;
-      renderer.domElement.addEventListener("pointermove", onPointerMove, false);
-      renderer.domElement.addEventListener("pointerdown", onPointerDown, false);
-      controls = new OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.25;
-      controls.enableZoom = true;
-      controls.rotateSpeed = 0.5;
-      controls.autoRotate = false;
-      controls.autoRotateSpeed = 0.03;
-      controls.minDistance = 0.01;
-      controls.maxDistance = 340;
-      controls.maxPolarAngle = Math.PI / 2 - 0.04;
-      controls.target = new Vector3(0, 0, 0);
-      renderer.domElement.controls = controls;
-      container = document.getElementById("webgl");
-      canvas = renderer.domElement;
-      container.append(gui.domElement);
-      container.append(renderer.domElement);
-      let joystick = new JoyStick({
-        onMove: playerControl,
-        game: container
-      });
-      console.log("joystick", joystick);
-      buildAllotments(params.data.allotment, plane2, sceneID);
-      return plane2;
-    };
-    function buildAllotments(postObject, plane2, sceneID) {
-      console.log("ALLOTMENTS", postObject);
-      var filteredPostObject = postObject.filter(function(obj) {
-        return obj.acf.allotment_scene == sceneID;
-      });
-      filteredPostObject.forEach(function(key) {
-        let allotment = {};
-        allotment.parameters = {};
-        allotment.position = {};
-        allotment.images = {};
-        allotment.parameters.x = parseInt(key.acf.allotment_width);
-        allotment.parameters.y = parseInt(key.acf.allotment_length);
-        allotment.parameters.z = parseInt(key.acf.allotment_height);
-        allotment.position.x = parseInt(key.acf.allotment_position_x);
-        allotment.position.y = parseInt(key.acf.allotment_position_y);
-        allotment.position.z = parseInt(key.acf.allotment_position_z);
-        allotment.images.texture = key.acf.allotment_texture_image;
-        allotment.images.featured = getFeaturedImage(key);
-        allotment.shape = key.acf.allotment_shape;
-        allotment.color = key.acf.allotment_color;
-        allotment.title = key.title.rendered;
-        allotment.postID = key.id;
-        allotment.description = key.content.rendered;
-        allotment.link = key.link;
-        let structure = getGeometry(allotment.shape, allotment.parameters.x, allotment.parameters.y, allotment.parameters.z, allotment.color);
-        structure.name = allotment.title;
-        structure.userData.type = "structure";
-        structure.userData.postID = allotment.postID;
-        structure.userData.description = allotment.description;
-        structure.userData.annotation = allotment.title;
-        structure.userData.link = allotment.link;
-        structure.position.x = allotment.position.x;
-        structure.position.y = allotment.position.y;
-        structure.position.z = structure.geometry.parameters.depth / 2 + allotment.position.z;
-        structure.material.roughness = 0.9;
-        if (allotment.images.texture != null && allotment.images.texture != false) {
-          structure.material.map = loaderTexture.load(allotment.images.texture);
-          for (let i = 0; i < structure.material.length; i++) {
-            structure.material[i].map = loaderTexture.load(allotment.images.texture);
-            let structureTextureMap = structure.material[i].map;
-            structureTextureMap.wrapS = RepeatWrapping;
-            structureTextureMap.wrapT = RepeatWrapping;
-            structureTextureMap.repeat.set(4, 4);
-          }
-        }
-        plane2.add(structure);
-        buildBeds(params.data.bed, plane2, allotment.postID, structure.position.x, structure.position.y);
-      });
-    }
-    function buildBeds(postObject, plane2, allotmentID, posOffsetX, posOffsetY, posOffsetZ) {
-      var filteredPostObject = postObject.filter(function(obj) {
-        return obj.acf.bed_allotment == allotmentID;
-      });
-      filteredPostObject.forEach(function(key) {
-        let bed = {};
-        bed.parameters = {};
-        bed.position = {};
-        bed.images = {};
-        bed.parameters.x = parseInt(key.acf.bed_width) / 12;
-        bed.parameters.y = parseInt(key.acf.bed_length) / 12;
-        bed.parameters.z = parseInt(key.acf.bed_height) / 12;
-        bed.position.x = parseInt(key.acf.bed_position_x) / 12 + posOffsetX;
-        bed.position.y = parseInt(key.acf.bed_position_y) / 12 + posOffsetY;
-        bed.position.z = parseInt(key.acf.bed_position_z) / 12 + bed.parameters.z / 2;
-        bed.images.texture = key.acf.bed_texture_image;
-        bed.images.featured = getFeaturedImage(key);
-        bed.shape = key.acf.bed_shape;
-        bed.color = key.acf.bed_color;
-        bed.title = key.title.rendered;
-        bed.postID = key.id;
-        bed.description = key.content.rendered;
-        bed.link = key.link;
-        let structure = getGeometry(bed.shape, bed.parameters.x, bed.parameters.y, bed.parameters.z, bed.color);
-        structure.name = bed.title;
-        structure.userData.type = "structure";
-        structure.userData.postID = bed.postID;
-        structure.userData.description = bed.description;
-        structure.userData.annotation = bed.title;
-        structure.userData.link = bed.link;
-        structure.position.x = bed.position.x ? bed.position.x : 0;
-        structure.position.y = bed.position.y ? bed.position.y : 0;
-        structure.position.z = bed.position.z ? bed.position.z : 0;
-        structure.material.roughness = 0.9;
-        if (bed.images.texture != null && bed.images.texture != false) {
-          structure.material.map = loaderTexture.load(bed.images.texture);
-          for (let i = 0; i < structure.material.length; i++) {
-            structure.material[i].map = loaderTexture.load(bed.images.texture);
-            let structureTextureMap = structure.material[i].map;
-            structureTextureMap.wrapS = RepeatWrapping;
-            structureTextureMap.wrapT = RepeatWrapping;
-            structureTextureMap.repeat.set(4, 4);
-          }
-        }
-        plane2.add(structure);
-        params.colliders.push(structure);
-        buildPlantingPlans(params.data.planting_plan, plane2, bed.postID, structure.position.x, structure.position.y);
-      });
-    }
-    function buildPlantingPlans(postObject, plane2, bedID, posOffsetX, posOffsetY, posOffsetZ) {
-      var filteredPostObject = [];
-      var matches = [];
-      postObject.forEach(function(obj) {
-        obj.acf.planting_plan_bed_plant_schedule.forEach(function(i) {
-          if (i.planting_plan_bed == bedID) {
-            matches.pushIfNotExist(obj, function(e) {
-              return e.id === obj.id;
-            });
-          }
-        });
-        filteredPostObject = [...matches];
-      });
-      if (filteredPostObject.length > 0) {
-        console.log("filteredPostObject", filteredPostObject);
-      }
-      filteredPostObject.forEach(function(key) {
-        key.acf.planting_plan_bed_plant_schedule.forEach(function(key2) {
-          if (key2.planting_plan_bed == bedID) {
-            var filteredPlant = params.data.plant.filter(function(obj) {
-              return obj.id == key2.planting_plan_plant;
-            });
-            filteredPlant.forEach(function(key3) {
-              let plant = {};
-              plant.parameters = {};
-              plant.position = {};
-              plant.images = {};
-              plant.parameters.x = Number(key3.acf.plant_width) / 12;
-              plant.parameters.y = Number(key3.acf.plant_length) / 12;
-              plant.parameters.z = Number(key3.acf.plant_height) / 12;
-              plant.position.x = parseInt(key2.plant_position_x) / 12 + posOffsetX;
-              plant.position.y = parseInt(key2.plant_position_y) / 12 + posOffsetY;
-              plant.position.z = parseInt(key2.plant_position_z) / 12 + plant.parameters.z / 2;
-              plant.images.texture = key3.acf.plant_texture_image;
-              plant.images.featured = getFeaturedImage(key);
-              plant.shape = key3.acf.plant_shape;
-              plant.color = key3.acf.plant_color;
-              plant.title = key3.title.rendered;
-              plant.postID = key3.id;
-              plant.description = key3.content.rendered;
-              plant.link = key3.link;
-              console.log("PLANT", plant);
-              let structure = getGeometry(plant.shape, plant.parameters.x, plant.parameters.y, plant.parameters.z, plant.color);
-              structure.name = plant.title;
-              structure.userData.type = "structure";
-              structure.userData.postID = plant.postID;
-              structure.userData.description = plant.description;
-              structure.userData.annotation = plant.title;
-              structure.userData.link = plant.link;
-              structure.position.x = plant.position.x ? plant.position.x : 0;
-              structure.position.y = plant.position.y ? plant.position.y : 0;
-              structure.position.z = plant.position.z ? plant.position.z : 0;
-              structure.rotation.x = Math.PI / 2;
-              structure.material.roughness = 0.9;
-              if (plant.images.texture != null && plant.images.texture != false) {
-                structure.material.map = loaderTexture.load(plant.images.texture);
-                for (let i = 0; i < structure.material.length; i++) {
-                  structure.material[i].map = loaderTexture.load(plant.images.texture);
-                  let structureTextureMap = structure.material[i].map;
-                  structureTextureMap.wrapS = RepeatWrapping;
-                  structureTextureMap.wrapT = RepeatWrapping;
-                  structureTextureMap.repeat.set(4, 4);
-                }
-              }
-              console.log("plant structure", structure);
-              plane2.add(structure);
-              params.colliders.push(structure);
-            });
-          }
-        });
-      });
-    }
-    onMounted(() => {
-      console.log("root.value (your $el, found in this.$refs.root)", root.value);
-      params.mode = params.modes.INITIALIZING;
-      console.log("params.mode onMounted", params.mode);
-      build();
-    });
-    return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$1, [
-        createBaseVNode("h3", null, [
-          createTextVNode(" Mouse: x=" + toDisplayString(unref(x)) + " y=" + toDisplayString(unref(y)) + " | Counter: " + toDisplayString(unref(count)) + " ", 1),
-          createBaseVNode("a", {
-            onClick: _cache[0] || (_cache[0] = ($event) => unref(inc)()),
-            style: { "margin-right": "10px" }
-          }, "+"),
-          createBaseVNode("a", {
-            onClick: _cache[1] || (_cache[1] = ($event) => unref(dec)())
-          }, "-")
-        ]),
-        createBaseVNode("h1", null, toDisplayString(__props.msg), 1),
-        createBaseVNode("h2", null, toDisplayString(__props.subtitle), 1),
-        createBaseVNode("div", {
-          id: "webgl",
-          ref_key: "root",
-          ref: root
-        }, null, 512)
-      ]);
-    };
-  }
-}));
-var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-4d13346c"]]);
+const _hoisted_1$1 = { class: "threedgarden" };
+const _hoisted_2 = {
+  id: "webgl",
+  ref: "root"
+};
+function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$1, [
+    createBaseVNode("h3", null, [
+      createTextVNode(" Mouse: x=" + toDisplayString(_ctx.x) + " y=" + toDisplayString(_ctx.y) + " | Counter: " + toDisplayString(_ctx.count) + " ", 1),
+      createBaseVNode("a", {
+        onClick: _cache[0] || (_cache[0] = ($event) => _ctx.inc()),
+        style: { "margin-right": "10px" }
+      }, "+"),
+      createBaseVNode("a", {
+        onClick: _cache[1] || (_cache[1] = ($event) => _ctx.dec())
+      }, "-")
+    ]),
+    createBaseVNode("h1", null, toDisplayString($props.msg), 1),
+    createBaseVNode("h2", null, toDisplayString($props.subtitle), 1),
+    createBaseVNode("div", _hoisted_2, null, 512)
+  ]);
+}
+var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-10762fcc"]]);
 const _sfc_main = {
   name: "Participate",
   components: {
