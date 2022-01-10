@@ -35986,7 +35986,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     createBaseVNode("div", _hoisted_2, null, 512)
   ]);
 }
-var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-8014b360"]]);
+var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-5216f08d"]]);
 const _sfc_main = {
   name: "Participate",
   components: {
