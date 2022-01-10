@@ -2693,7 +2693,6 @@ export default {
     // no access to params from here
     params.mode = params.modes.INITIALIZING
     console.log("params.mode export default mounted", params.mode)
-
     /**
      * initiate build process (getData, then build scene)
      */
