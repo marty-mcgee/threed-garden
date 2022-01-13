@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts">
 //console.log('HEY HEY HEY -- App.vue')
 
 // https://github.com/vueuse/head
