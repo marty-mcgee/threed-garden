@@ -34846,7 +34846,7 @@ const params = {
     GAMEOVER: "game_over"
   }),
   mode: "",
-  ANIMATE: false,
+  ANIMATE: true,
   assetsPath: `${pluginURL}assets/`,
   data: {
     world: [{ id: worldID }],
@@ -34887,7 +34887,7 @@ manager.onLoad = () => {
     animate();
     console.log("animating ****************************** ");
     params.mode = params.modes.ACTIVE;
-    console.log("params.mode manager.onLoad", params.mode, startTime);
+    console.log("params.mode manager.onLoad", params.mode, new Date().toISOString());
   } else {
     console.log("still building ************************* ");
     console.log("params.mode manager.onLoad", params.mode, startTime);
@@ -35023,14 +35023,15 @@ const getGeometry = (shape, x, y, z, color) => {
   }
   return mesh;
 };
-function loadFarmHouse(plane2) {
+function loadFarmHouse() {
   loaderFBX.load(`${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function(object) {
     params.farmhouse = object;
     params.colliders = [];
     object.rotation.y = 270 * (Math.PI / 180);
-    object.position.set(0, 0, 100);
+    object.rotation.z = 270 * (Math.PI / 180);
+    object.position.set(0, -100, 0);
     object.scale.set(2.2, 2.2, 2.2);
-    scene.add(object);
+    plane.add(object);
     object.traverse(function(child) {
       if (child.isMesh) {
         if (child.name.startsWith("proxy")) {
@@ -35051,14 +35052,14 @@ function loadFarmHouse(plane2) {
     });
   });
 }
-function loadChickenCoop(plane2) {
+function loadCoop() {
   loaderFBX.load(`${params.assetsPath}fbx/Prop_Chicken_Coop_02.fbx`, function(object) {
     params.farmhouse = object;
     params.colliders = [];
     object.rotation.y = 90 * (Math.PI / 180);
     object.position.set(80, 0, -10);
     object.scale.set(2.2, 2.2, 2.2);
-    scene.add(object);
+    plane.add(object);
     object.traverse(function(child) {
       if (child.isMesh) {
         if (child.name.startsWith("proxy")) {
@@ -35079,7 +35080,7 @@ function loadChickenCoop(plane2) {
     });
   });
 }
-function loadChicken(plane2) {
+function loadChicken() {
   loaderGLTF.load(`${params.assetsPath}gltf/Chicken.glb`, function(object) {
     let model = object.scene;
     model.name = "Chicken GLB";
@@ -35094,7 +35095,7 @@ function loadChicken(plane2) {
     console.log("loadChicken model", model);
   });
 }
-function loadRoad(plane2) {
+function loadRoad() {
   let i;
   let count = 8;
   let startX = -45;
@@ -35124,7 +35125,7 @@ function loadRoad(plane2) {
             }
           });
         });
-        scene.add(object);
+        plane.add(object);
       });
     }
     resolve(startX, startZ);
@@ -35153,7 +35154,7 @@ function loadRoad(plane2) {
             }
           });
         });
-        scene.add(object);
+        plane.add(object);
       });
     }
   });
@@ -35353,7 +35354,7 @@ const animate = () => {
   }
   render();
 };
-const loadAssets = (plane2) => {
+const loadAssets = () => {
   params.mode = params.modes.LOADING;
   console.log("params.mode", params.mode);
   loaderFBX.load(`${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function(object) {
@@ -35378,19 +35379,19 @@ const loadAssets = (plane2) => {
     player.object.add(object);
     player.object.scale.set(0.033, 0.033, 0.033);
     player.object.rotation.x = Math.PI / 2;
-    plane2.add(player.object);
+    plane.add(player.object);
     guiFolderPlayer.add(player.object, "visible").name("Show Character").listen();
   });
   loadFarmHouse();
   loadRoad();
-  loadChickenCoop();
+  loadCoop();
   loadChicken();
-  let loadNextAnim2 = function(loader) {
+  let loadNextAnim2 = function(loader2) {
     let anim = anims.pop();
-    loader.load(`${params.assetsPath}fbx/anims2/${anim}.fbx`, function(object) {
+    loader2.load(`${params.assetsPath}fbx/anims2/${anim}.fbx`, function(object) {
       animations[anim] = object.animations[0];
       if (anims.length > 0) {
-        loadNextAnim2(loader);
+        loadNextAnim2(loader2);
       } else {
         anims = [];
       }
@@ -35836,7 +35837,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
     };
   }
 }));
-var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-45aa08ff"]]);
+var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-46d42996"]]);
 const _sfc_main = {
   name: "Participate",
   components: {
