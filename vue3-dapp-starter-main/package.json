@@ -1,0 +1,28 @@
+{
+  "name": "vue3-dapp-starter",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "@babel/core": "^7.16.7",
+    "buffer": "^6.0.3",
+    "ethers": "^5.5.2",
+    "process": "^0.11.10",
+    "rollup": "^2.63.0",
+    "util": "^0.12.4",
+    "vue": "^3.2.16",
+    "vue-dapp": "^0.4.6",
+    "vue-router": "4"
+  },
+  "devDependencies": {
+    "@rollup/plugin-inject": "^4.0.3",
+    "@vitejs/plugin-vue": "^1.9.2",
+    "typescript": "^4.4.3",
+    "vite": "^2.6.0",
+    "vite-plugin-windicss": "^1.4.8",
+    "windicss": "^3.1.8"
+  }
+}

@@ -17,12 +17,14 @@
   </div>
 </template>
 
-<!-- <script setup lang="ts"> -->
-<script lang="ts">
-// import { getCurrentInstance } from 'vue'
-// const apple = getCurrentInstance()
-// const $global = apple.appContext.config.globalProperties
-// console.log("$global", $global)
+<!-- <script lang="ts"> -->
+<script setup lang="ts">
+/** BEGIN SETUP SCRIPT *************************** */
+
+import { getCurrentInstance } from 'vue'
+const apple = getCurrentInstance()
+const $global = apple.appContext.config.globalProperties
+console.log("$global", $global)
 
 // check for required WebGL and/or WebGL2
 import { isWebGLSupported, isWebGL2Supported } from 'webgl-detector'
@@ -46,6 +48,11 @@ import { useMouse, useCounter } from '@vueuse/core'
 const { x, y } = useMouse()
 const { count, inc, dec } = useCounter()
 
+/** END SETUP SCRIPT *************************** */
+</script>
+<script lang="ts">
+/** BEGIN NORMAL SCRIPT ************************ */
+
 // three.js
 import * as THREE from 'three'
 // import Stats from 'three/examples/jsm/libs/stats.module'
@@ -56,7 +63,7 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer'
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
+//import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
 
 // three.js joystick
 // import { JoystickControls, RotationJoystickControls } from 'three-joystick'
@@ -870,12 +877,6 @@ function loadChicken2(plane) {
     console.log(player.object)
     console.log("-----------------------")
 
-
-    //animate()
-    // OR
-    loadNextAnim(loaderFBX)
-    // OR
-    //loadEnvironment(loaderFBX)
     */
   } )
 }
@@ -1339,12 +1340,12 @@ function onPointerDown(event) {
   event.preventDefault()
   
   // update the pointer variable
-  pointer.x = (event.clientX / window.innerWidth) * 2 - 1
-  pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
-  // pointer.x = (event.offsetX / canvas.clientWidth) * 2 - 1
-  // pointer.y = -(event.offsetY / canvas.clientHeight) * 2 + 1
+  // pointer.x = (event.clientX / window.innerWidth) * 2 - 1
+  // pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
   // pointer.x = (event.offsetX / (window.innerWidth - 240)) * 2 - 1
   // pointer.y = -(event.offsetY / (window.innerHeight - 100)) * 2 + 1
+  pointer.x = (event.offsetX / canvas.clientWidth) * 2 - 1
+  pointer.y = -(event.offsetY / canvas.clientHeight) * 2 + 1
   console.log("pointer clicked x y", pointer.x, pointer.y)
 
   // find intersections
@@ -1733,9 +1734,9 @@ function playerControl(forward, turn) {
 const animate = () => {
 
   const dt = clock.getDelta()
-  //watchPointer(camera, plane.children)
+  watchPointer(camera, plane.children)
   controls.update()
-  TWEEN.update()
+  //TWEEN.update()
 
   requestAnimationFrame(animate)
 
@@ -1903,7 +1904,7 @@ const build = async () => {
       console.log("loading assets *********************** ")
     }
     await a3(a2)
-    console.log("a3 boolean (complete)", a3, new Date().toISOString())
+    console.log("a3 async function (complete)", a3, new Date().toISOString())
 
   } catch (e) {
     console.log("error ***", e.message, e)
@@ -2060,7 +2061,7 @@ const buildScene = async (a5) => {
 
   /** GEOMETRIES *********************************************************************** */
   
-  let plane = getPlane(
+  plane = getPlane(
     wpScene.acf.scene_plane_width_x, 
     wpScene.acf.scene_plane_length_y, 
     wpScene.acf.scene_plane_background_color
@@ -2242,7 +2243,7 @@ const buildScene = async (a5) => {
   /** BUILD ALLOTMENTS ******************************************************************* */
 
   //alert("HEY HEY HEY: BUILD ALLOTMENTS?")
-  //return null
+  //return plane
 
   buildAllotments(
     params.data.allotment, 
@@ -2699,6 +2700,8 @@ export default {
     build()
   },
   setup(props, context) {
+    console.log("setup props", props)
+    console.log("setup context", context)
     const root = ref(null)
     onMounted(() => {
       // the DOM element will be assigned to the ref after initial render

@@ -1198,7 +1198,7 @@ var _export_sfc = (sfc, props) => {
 const _sfc_main$1 = {};
 const _hoisted_1$1 = { class: "px-4 py-10 text-center text-gray-700 dark:text-gray-200" };
 const _hoisted_2$1 = /* @__PURE__ */ createBaseVNode("div", { class: "mt-5 mx-auto text-center opacity-25 text-sm" }, " [Default Layout] ", -1);
-function _sfc_render(_ctx, _cache) {
+function _sfc_render$1(_ctx, _cache) {
   const _component_router_view = resolveComponent("router-view");
   const _component_Footer = _sfc_main$2;
   return openBlock(), createElementBlock("main", _hoisted_1$1, [
@@ -1207,7 +1207,7 @@ function _sfc_render(_ctx, _cache) {
     _hoisted_2$1
   ]);
 }
-var __layout_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render]]);
+var __layout_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
 const layouts = {
   "404": () => __vitePreload(() => import("./404.js"), true ? ["assets/404.js","assets/vendor.js"] : void 0),
   "default": __layout_0,
@@ -1224,6 +1224,7 @@ function setupLayouts(routes2) {
   });
 }
 var App_vue_vue_type_style_index_0_scoped_true_lang = "";
+const _sfc_main = {};
 const _hoisted_1 = { id: "APP" };
 const _hoisted_2 = { id: "nav" };
 const _hoisted_3 = /* @__PURE__ */ createTextVNode("Home");
@@ -1231,40 +1232,36 @@ const _hoisted_4 = /* @__PURE__ */ createTextVNode(" | ");
 const _hoisted_5 = /* @__PURE__ */ createTextVNode("About");
 const _hoisted_6 = /* @__PURE__ */ createTextVNode(" | ");
 const _hoisted_7 = /* @__PURE__ */ createTextVNode("Participate");
-const _sfc_main = /* @__PURE__ */ defineComponent({
-  setup(__props) {
-    return (_ctx, _cache) => {
-      const _component_router_link = resolveComponent("router-link");
-      const _component_router_view = resolveComponent("router-view");
-      return openBlock(), createElementBlock("div", _hoisted_1, [
-        createBaseVNode("div", _hoisted_2, [
-          createVNode(_component_router_link, { to: { name: "index", params: { userId: 123 } } }, {
-            default: withCtx(() => [
-              _hoisted_3
-            ]),
-            _: 1
-          }),
-          _hoisted_4,
-          createVNode(_component_router_link, { to: { name: "about", params: { userId: 123 } } }, {
-            default: withCtx(() => [
-              _hoisted_5
-            ]),
-            _: 1
-          }),
-          _hoisted_6,
-          createVNode(_component_router_link, { to: { name: "participate", params: { userId: 123 } } }, {
-            default: withCtx(() => [
-              _hoisted_7
-            ]),
-            _: 1
-          })
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_router_link = resolveComponent("router-link");
+  const _component_router_view = resolveComponent("router-view");
+  return openBlock(), createElementBlock("div", _hoisted_1, [
+    createBaseVNode("div", _hoisted_2, [
+      createVNode(_component_router_link, { to: { name: "index", params: { userId: 123 } } }, {
+        default: withCtx(() => [
+          _hoisted_3
         ]),
-        createVNode(_component_router_view)
-      ]);
-    };
-  }
-});
-var App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-3cf9e730"]]);
+        _: 1
+      }),
+      _hoisted_4,
+      createVNode(_component_router_link, { to: { name: "about", params: { userId: 123 } } }, {
+        default: withCtx(() => [
+          _hoisted_5
+        ]),
+        _: 1
+      }),
+      _hoisted_6,
+      createVNode(_component_router_link, { to: { name: "participate", params: { userId: 123 } } }, {
+        default: withCtx(() => [
+          _hoisted_7
+        ]),
+        _: 1
+      })
+    ]),
+    createVNode(_component_router_view)
+  ]);
+}
+var App = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-2dc140ad"]]);
 var windiBase = "";
 var windiComponents = "";
 var main = "";
@@ -1277,6 +1274,6 @@ Object.values({ "./modules/head.ts": __glob_10_0, "./modules/i18n.ts": __glob_10
   var _a;
   return (_a = i.install) == null ? void 0 : _a.call(i, { app, router, routes });
 });
-app.config.globalProperties.window = window;
 app.mount("#app");
+console.log("vue app (mounted)", app);
 export { __unplugin_components_0$1 as _, _export_sfc as a, _sfc_main$2 as b, useUserStore as u };

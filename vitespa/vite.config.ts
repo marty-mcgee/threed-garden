@@ -15,6 +15,21 @@ import Inspect from 'vite-plugin-inspect'
 import Prism from 'markdown-it-prism'
 import LinkAttributes from 'markdown-it-link-attributes'
 
+import inject from '@rollup/plugin-inject'
+
+// export default defineConfig({
+//   plugins: [vue()],
+//   build: {
+//     rollupOptions: {
+//       plugins: [inject({ Buffer: ['buffer', 'Buffer'] })],
+//     },
+//     commonjsOptions: {
+//       transformMixedEsModules: true,
+//     },
+//   },
+// })
+
+
 const markdownWrapperClasses = 'prose prose-sm m-auto text-left'
 
 export default defineConfig({
@@ -235,6 +250,8 @@ export default defineConfig({
     //ssr: true,
     rollupOptions: {
 
+      plugins: [inject({ Buffer: ['buffer', 'Buffer'] })],
+
       // input: {
       // 	//main: 'index.html',
       // 	main: path.resolve(__dirname, 'index.html'),
@@ -265,6 +282,9 @@ export default defineConfig({
         // }
       }
 
-    }
+    },
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
   },
 })

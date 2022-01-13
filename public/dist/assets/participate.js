@@ -1,4 +1,6 @@
 var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
 var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __propIsEnum = Object.prototype.propertyIsEnumerable;
@@ -14,26 +16,9 @@ var __spreadValues = (a, b) => {
     }
   return a;
 };
-import { D as useMouse, E as useCounter, r as ref, F as onMounted, o as openBlock, j as createElementBlock, k as createBaseVNode, q as createTextVNode, t as toDisplayString, n as createVNode } from "./vendor.js";
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+import { r as ref, f as defineComponent, D as useMouse, E as useCounter, o as openBlock, j as createElementBlock, k as createBaseVNode, q as createTextVNode, t as toDisplayString, l as unref, F as onMounted, G as getCurrentInstance, n as createVNode } from "./vendor.js";
 import { a as _export_sfc } from "./index.js";
-var dist = {};
-Object.defineProperty(dist, "__esModule", { value: true });
-function isWebGLSupported() {
-  if ((window === null || window === void 0 ? void 0 : window.WebGLRenderingContext) !== void 0) {
-    var canvas2 = document.createElement("canvas");
-    return canvas2.getContext("webgl") != null || canvas2.getContext("experimental-webgl") != null;
-  }
-  return false;
-}
-var isWebGLSupported_1 = dist.isWebGLSupported = isWebGLSupported;
-function isWebGL2Supported() {
-  if ((window === null || window === void 0 ? void 0 : window.WebGLRenderingContext) !== void 0) {
-    var canvas2 = document.createElement("canvas");
-    return canvas2.getContext("webgl2") != null;
-  }
-  return false;
-}
-var isWebGL2Supported_1 = dist.isWebGL2Supported = isWebGL2Supported;
 /**
  * @license
  * Copyright 2010-2021 Three.js Authors
@@ -6352,7 +6337,7 @@ class Mesh extends Object3D {
       }
     }
   }
-  raycast(raycaster, intersects2) {
+  raycast(raycaster3, intersects2) {
     const geometry = this.geometry;
     const material = this.material;
     const matrixWorld = this.matrixWorld;
@@ -6362,10 +6347,10 @@ class Mesh extends Object3D {
       geometry.computeBoundingSphere();
     _sphere$3.copy(geometry.boundingSphere);
     _sphere$3.applyMatrix4(matrixWorld);
-    if (raycaster.ray.intersectsSphere(_sphere$3) === false)
+    if (raycaster3.ray.intersectsSphere(_sphere$3) === false)
       return;
     _inverseMatrix$2.copy(matrixWorld).invert();
-    _ray$2.copy(raycaster.ray).applyMatrix4(_inverseMatrix$2);
+    _ray$2.copy(raycaster3.ray).applyMatrix4(_inverseMatrix$2);
     if (geometry.boundingBox !== null) {
       if (_ray$2.intersectsBox(geometry.boundingBox) === false)
         return;
@@ -6391,7 +6376,7 @@ class Mesh extends Object3D {
               const a = index.getX(j);
               const b = index.getX(j + 1);
               const c = index.getX(j + 2);
-              intersection = checkBufferGeometryIntersection(this, groupMaterial, raycaster, _ray$2, position, morphPosition, morphTargetsRelative, uv, uv2, a, b, c);
+              intersection = checkBufferGeometryIntersection(this, groupMaterial, raycaster3, _ray$2, position, morphPosition, morphTargetsRelative, uv, uv2, a, b, c);
               if (intersection) {
                 intersection.faceIndex = Math.floor(j / 3);
                 intersection.face.materialIndex = group.materialIndex;
@@ -6406,7 +6391,7 @@ class Mesh extends Object3D {
             const a = index.getX(i);
             const b = index.getX(i + 1);
             const c = index.getX(i + 2);
-            intersection = checkBufferGeometryIntersection(this, material, raycaster, _ray$2, position, morphPosition, morphTargetsRelative, uv, uv2, a, b, c);
+            intersection = checkBufferGeometryIntersection(this, material, raycaster3, _ray$2, position, morphPosition, morphTargetsRelative, uv, uv2, a, b, c);
             if (intersection) {
               intersection.faceIndex = Math.floor(i / 3);
               intersects2.push(intersection);
@@ -6424,7 +6409,7 @@ class Mesh extends Object3D {
               const a = j;
               const b = j + 1;
               const c = j + 2;
-              intersection = checkBufferGeometryIntersection(this, groupMaterial, raycaster, _ray$2, position, morphPosition, morphTargetsRelative, uv, uv2, a, b, c);
+              intersection = checkBufferGeometryIntersection(this, groupMaterial, raycaster3, _ray$2, position, morphPosition, morphTargetsRelative, uv, uv2, a, b, c);
               if (intersection) {
                 intersection.faceIndex = Math.floor(j / 3);
                 intersection.face.materialIndex = group.materialIndex;
@@ -6439,7 +6424,7 @@ class Mesh extends Object3D {
             const a = i;
             const b = i + 1;
             const c = i + 2;
-            intersection = checkBufferGeometryIntersection(this, material, raycaster, _ray$2, position, morphPosition, morphTargetsRelative, uv, uv2, a, b, c);
+            intersection = checkBufferGeometryIntersection(this, material, raycaster3, _ray$2, position, morphPosition, morphTargetsRelative, uv, uv2, a, b, c);
             if (intersection) {
               intersection.faceIndex = Math.floor(i / 3);
               intersects2.push(intersection);
@@ -6453,7 +6438,7 @@ class Mesh extends Object3D {
   }
 }
 Mesh.prototype.isMesh = true;
-function checkIntersection(object, material, raycaster, ray, pA, pB, pC, point) {
+function checkIntersection(object, material, raycaster3, ray, pA, pB, pC, point) {
   let intersect;
   if (material.side === BackSide) {
     intersect = ray.intersectTriangle(pC, pB, pA, true, point);
@@ -6464,8 +6449,8 @@ function checkIntersection(object, material, raycaster, ray, pA, pB, pC, point) 
     return null;
   _intersectionPointWorld.copy(point);
   _intersectionPointWorld.applyMatrix4(object.matrixWorld);
-  const distance = raycaster.ray.origin.distanceTo(_intersectionPointWorld);
-  if (distance < raycaster.near || distance > raycaster.far)
+  const distance = raycaster3.ray.origin.distanceTo(_intersectionPointWorld);
+  if (distance < raycaster3.near || distance > raycaster3.far)
     return null;
   return {
     distance,
@@ -6473,7 +6458,7 @@ function checkIntersection(object, material, raycaster, ray, pA, pB, pC, point) 
     object
   };
 }
-function checkBufferGeometryIntersection(object, material, raycaster, ray, position, morphPosition, morphTargetsRelative, uv, uv2, a, b, c) {
+function checkBufferGeometryIntersection(object, material, raycaster3, ray, position, morphPosition, morphTargetsRelative, uv, uv2, a, b, c) {
   _vA$1.fromBufferAttribute(position, a);
   _vB$1.fromBufferAttribute(position, b);
   _vC$1.fromBufferAttribute(position, c);
@@ -6509,7 +6494,7 @@ function checkBufferGeometryIntersection(object, material, raycaster, ray, posit
     object.boneTransform(b, _vB$1);
     object.boneTransform(c, _vC$1);
   }
-  const intersection = checkIntersection(object, material, raycaster, ray, _vA$1, _vB$1, _vC$1, _intersectionPoint);
+  const intersection = checkIntersection(object, material, raycaster3, ray, _vA$1, _vB$1, _vC$1, _intersectionPoint);
   if (intersection) {
     if (uv) {
       _uvA$1.fromBufferAttribute(uv, a);
@@ -16502,15 +16487,15 @@ class Sprite extends Object3D {
     this.material = material !== void 0 ? material : new SpriteMaterial();
     this.center = new Vector2(0.5, 0.5);
   }
-  raycast(raycaster, intersects2) {
-    if (raycaster.camera === null) {
+  raycast(raycaster3, intersects2) {
+    if (raycaster3.camera === null) {
       console.error('THREE.Sprite: "Raycaster.camera" needs to be set in order to raycast against sprites.');
     }
     _worldScale.setFromMatrixScale(this.matrixWorld);
-    _viewWorldMatrix.copy(raycaster.camera.matrixWorld);
-    this.modelViewMatrix.multiplyMatrices(raycaster.camera.matrixWorldInverse, this.matrixWorld);
+    _viewWorldMatrix.copy(raycaster3.camera.matrixWorld);
+    this.modelViewMatrix.multiplyMatrices(raycaster3.camera.matrixWorldInverse, this.matrixWorld);
     _mvPosition.setFromMatrixPosition(this.modelViewMatrix);
-    if (raycaster.camera.isPerspectiveCamera && this.material.sizeAttenuation === false) {
+    if (raycaster3.camera.isPerspectiveCamera && this.material.sizeAttenuation === false) {
       _worldScale.multiplyScalar(-_mvPosition.z);
     }
     const rotation = this.material.rotation;
@@ -16526,17 +16511,17 @@ class Sprite extends Object3D {
     _uvA.set(0, 0);
     _uvB.set(1, 0);
     _uvC.set(1, 1);
-    let intersect = raycaster.ray.intersectTriangle(_vA$2, _vB$2, _vC$2, false, _intersectPoint);
+    let intersect = raycaster3.ray.intersectTriangle(_vA$2, _vB$2, _vC$2, false, _intersectPoint);
     if (intersect === null) {
       transformVertex(_vB$2.set(-0.5, 0.5, 0), _mvPosition, center, _worldScale, sin, cos);
       _uvB.set(0, 1);
-      intersect = raycaster.ray.intersectTriangle(_vA$2, _vC$2, _vB$2, false, _intersectPoint);
+      intersect = raycaster3.ray.intersectTriangle(_vA$2, _vC$2, _vB$2, false, _intersectPoint);
       if (intersect === null) {
         return;
       }
     }
-    const distance = raycaster.ray.origin.distanceTo(_intersectPoint);
-    if (distance < raycaster.near || distance > raycaster.far)
+    const distance = raycaster3.ray.origin.distanceTo(_intersectPoint);
+    if (distance < raycaster3.near || distance > raycaster3.far)
       return;
     intersects2.push({
       distance,
@@ -16857,7 +16842,7 @@ class InstancedMesh extends Mesh {
   getMatrixAt(index, matrix) {
     matrix.fromArray(this.instanceMatrix.array, index * 16);
   }
-  raycast(raycaster, intersects2) {
+  raycast(raycaster3, intersects2) {
     const matrixWorld = this.matrixWorld;
     const raycastTimes = this.count;
     _mesh.geometry = this.geometry;
@@ -16868,7 +16853,7 @@ class InstancedMesh extends Mesh {
       this.getMatrixAt(instanceId, _instanceLocalMatrix);
       _instanceWorldMatrix.multiplyMatrices(matrixWorld, _instanceLocalMatrix);
       _mesh.matrixWorld = _instanceWorldMatrix;
-      _mesh.raycast(raycaster, _instanceIntersects);
+      _mesh.raycast(raycaster3, _instanceIntersects);
       for (let i = 0, l = _instanceIntersects.length; i < l; i++) {
         const intersect = _instanceIntersects[i];
         intersect.instanceId = instanceId;
@@ -16954,20 +16939,20 @@ class Line extends Object3D {
     }
     return this;
   }
-  raycast(raycaster, intersects2) {
+  raycast(raycaster3, intersects2) {
     const geometry = this.geometry;
     const matrixWorld = this.matrixWorld;
-    const threshold = raycaster.params.Line.threshold;
+    const threshold = raycaster3.params.Line.threshold;
     const drawRange = geometry.drawRange;
     if (geometry.boundingSphere === null)
       geometry.computeBoundingSphere();
     _sphere$1.copy(geometry.boundingSphere);
     _sphere$1.applyMatrix4(matrixWorld);
     _sphere$1.radius += threshold;
-    if (raycaster.ray.intersectsSphere(_sphere$1) === false)
+    if (raycaster3.ray.intersectsSphere(_sphere$1) === false)
       return;
     _inverseMatrix$1.copy(matrixWorld).invert();
-    _ray$1.copy(raycaster.ray).applyMatrix4(_inverseMatrix$1);
+    _ray$1.copy(raycaster3.ray).applyMatrix4(_inverseMatrix$1);
     const localThreshold = threshold / ((this.scale.x + this.scale.y + this.scale.z) / 3);
     const localThresholdSq = localThreshold * localThreshold;
     const vStart = new Vector3();
@@ -16991,8 +16976,8 @@ class Line extends Object3D {
           if (distSq > localThresholdSq)
             continue;
           interRay.applyMatrix4(this.matrixWorld);
-          const distance = raycaster.ray.origin.distanceTo(interRay);
-          if (distance < raycaster.near || distance > raycaster.far)
+          const distance = raycaster3.ray.origin.distanceTo(interRay);
+          if (distance < raycaster3.near || distance > raycaster3.far)
             continue;
           intersects2.push({
             distance,
@@ -17013,8 +16998,8 @@ class Line extends Object3D {
           if (distSq > localThresholdSq)
             continue;
           interRay.applyMatrix4(this.matrixWorld);
-          const distance = raycaster.ray.origin.distanceTo(interRay);
-          if (distance < raycaster.near || distance > raycaster.far)
+          const distance = raycaster3.ray.origin.distanceTo(interRay);
+          if (distance < raycaster3.near || distance > raycaster3.far)
             continue;
           intersects2.push({
             distance,
@@ -17133,20 +17118,20 @@ class Points extends Object3D {
     this.geometry = source.geometry;
     return this;
   }
-  raycast(raycaster, intersects2) {
+  raycast(raycaster3, intersects2) {
     const geometry = this.geometry;
     const matrixWorld = this.matrixWorld;
-    const threshold = raycaster.params.Points.threshold;
+    const threshold = raycaster3.params.Points.threshold;
     const drawRange = geometry.drawRange;
     if (geometry.boundingSphere === null)
       geometry.computeBoundingSphere();
     _sphere.copy(geometry.boundingSphere);
     _sphere.applyMatrix4(matrixWorld);
     _sphere.radius += threshold;
-    if (raycaster.ray.intersectsSphere(_sphere) === false)
+    if (raycaster3.ray.intersectsSphere(_sphere) === false)
       return;
     _inverseMatrix.copy(matrixWorld).invert();
-    _ray.copy(raycaster.ray).applyMatrix4(_inverseMatrix);
+    _ray.copy(raycaster3.ray).applyMatrix4(_inverseMatrix);
     const localThreshold = threshold / ((this.scale.x + this.scale.y + this.scale.z) / 3);
     const localThresholdSq = localThreshold * localThreshold;
     if (geometry.isBufferGeometry) {
@@ -17159,14 +17144,14 @@ class Points extends Object3D {
         for (let i = start, il = end; i < il; i++) {
           const a = index.getX(i);
           _position$2.fromBufferAttribute(positionAttribute, a);
-          testPoint(_position$2, a, localThresholdSq, matrixWorld, raycaster, intersects2, this);
+          testPoint(_position$2, a, localThresholdSq, matrixWorld, raycaster3, intersects2, this);
         }
       } else {
         const start = Math.max(0, drawRange.start);
         const end = Math.min(positionAttribute.count, drawRange.start + drawRange.count);
         for (let i = start, l = end; i < l; i++) {
           _position$2.fromBufferAttribute(positionAttribute, i);
-          testPoint(_position$2, i, localThresholdSq, matrixWorld, raycaster, intersects2, this);
+          testPoint(_position$2, i, localThresholdSq, matrixWorld, raycaster3, intersects2, this);
         }
       }
     } else {
@@ -17199,14 +17184,14 @@ class Points extends Object3D {
   }
 }
 Points.prototype.isPoints = true;
-function testPoint(point, index, localThresholdSq, matrixWorld, raycaster, intersects2, object) {
+function testPoint(point, index, localThresholdSq, matrixWorld, raycaster3, intersects2, object) {
   const rayPointDistanceSq = _ray.distanceSqToPoint(point);
   if (rayPointDistanceSq < localThresholdSq) {
     const intersectPoint = new Vector3();
     _ray.closestPointToPoint(point, intersectPoint);
     intersectPoint.applyMatrix4(matrixWorld);
-    const distance = raycaster.ray.origin.distanceTo(intersectPoint);
-    if (distance < raycaster.near || distance > raycaster.far)
+    const distance = raycaster3.ray.origin.distanceTo(intersectPoint);
+    if (distance < raycaster3.near || distance > raycaster3.far)
       return;
     intersects2.push({
       distance,
@@ -22210,11 +22195,11 @@ class PropertyBinding {
     this.getValue = this._getValue_unbound;
     this.setValue = this._setValue_unbound;
   }
-  static create(root, path, parsedPath) {
-    if (!(root && root.isAnimationObjectGroup)) {
-      return new PropertyBinding(root, path, parsedPath);
+  static create(root2, path, parsedPath) {
+    if (!(root2 && root2.isAnimationObjectGroup)) {
+      return new PropertyBinding(root2, path, parsedPath);
     } else {
-      return new PropertyBinding.Composite(root, path, parsedPath);
+      return new PropertyBinding.Composite(root2, path, parsedPath);
     }
   }
   static sanitizeNodeName(name) {
@@ -22245,17 +22230,17 @@ class PropertyBinding {
     }
     return results;
   }
-  static findNode(root, nodeName) {
-    if (!nodeName || nodeName === "" || nodeName === "." || nodeName === -1 || nodeName === root.name || nodeName === root.uuid) {
-      return root;
+  static findNode(root2, nodeName) {
+    if (!nodeName || nodeName === "" || nodeName === "." || nodeName === -1 || nodeName === root2.name || nodeName === root2.uuid) {
+      return root2;
     }
-    if (root.skeleton) {
-      const bone = root.skeleton.getBoneByName(nodeName);
+    if (root2.skeleton) {
+      const bone = root2.skeleton.getBoneByName(nodeName);
       if (bone !== void 0) {
         return bone;
       }
     }
-    if (root.children) {
+    if (root2.children) {
       const searchNodeSubtree = function(children) {
         for (let i = 0; i < children.length; i++) {
           const childNode = children[i];
@@ -22268,7 +22253,7 @@ class PropertyBinding {
         }
         return null;
       };
-      const subTreeNode = searchNodeSubtree(root.children);
+      const subTreeNode = searchNodeSubtree(root2.children);
       if (subTreeNode) {
         return subTreeNode;
       }
@@ -22858,16 +22843,16 @@ class AnimationAction {
   }
 }
 class AnimationMixer extends EventDispatcher {
-  constructor(root) {
+  constructor(root2) {
     super();
-    this._root = root;
+    this._root = root2;
     this._initMemoryManager();
     this._accuIndex = 0;
     this.time = 0;
     this.timeScale = 1;
   }
   _bindAction(action, prototypeAction) {
-    const root = action._localRoot || this._root, tracks = action._clip.tracks, nTracks = tracks.length, bindings = action._propertyBindings, interpolants = action._interpolants, rootUuid = root.uuid, bindingsByRoot = this._bindingsByRootAndName;
+    const root2 = action._localRoot || this._root, tracks = action._clip.tracks, nTracks = tracks.length, bindings = action._propertyBindings, interpolants = action._interpolants, rootUuid = root2.uuid, bindingsByRoot = this._bindingsByRootAndName;
     let bindingsByName = bindingsByRoot[rootUuid];
     if (bindingsByName === void 0) {
       bindingsByName = {};
@@ -22888,7 +22873,7 @@ class AnimationMixer extends EventDispatcher {
           continue;
         }
         const path = prototypeAction && prototypeAction._propertyBindings[i].binding.parsedPath;
-        binding = new PropertyMixer(PropertyBinding.create(root, trackName, path), track.ValueTypeName, track.getValueSize());
+        binding = new PropertyMixer(PropertyBinding.create(root2, trackName, path), track.ValueTypeName, track.getValueSize());
         ++binding.referenceCount;
         this._addInactiveBinding(binding, rootUuid, trackName);
         bindings[i] = binding;
@@ -23081,8 +23066,8 @@ class AnimationMixer extends EventDispatcher {
     interpolants[prevIndex] = lastActiveInterpolant;
   }
   clipAction(clip, optionalRoot, blendMode) {
-    const root = optionalRoot || this._root, rootUuid = root.uuid;
-    let clipObject = typeof clip === "string" ? AnimationClip.findByName(root, clip) : clip;
+    const root2 = optionalRoot || this._root, rootUuid = root2.uuid;
+    let clipObject = typeof clip === "string" ? AnimationClip.findByName(root2, clip) : clip;
     const clipUuid = clipObject !== null ? clipObject.uuid : clip;
     const actionsForClip = this._actionsByClip[clipUuid];
     let prototypeAction = null;
@@ -23110,7 +23095,7 @@ class AnimationMixer extends EventDispatcher {
     return newAction;
   }
   existingAction(clip, optionalRoot) {
-    const root = optionalRoot || this._root, rootUuid = root.uuid, clipObject = typeof clip === "string" ? AnimationClip.findByName(root, clip) : clip, clipUuid = clipObject ? clipObject.uuid : clip, actionsForClip = this._actionsByClip[clipUuid];
+    const root2 = optionalRoot || this._root, rootUuid = root2.uuid, clipObject = typeof clip === "string" ? AnimationClip.findByName(root2, clip) : clip, clipUuid = clipObject ? clipObject.uuid : clip, actionsForClip = this._actionsByClip[clipUuid];
     if (actionsForClip !== void 0) {
       return actionsForClip.actionByRoot[rootUuid] || null;
     }
@@ -23164,8 +23149,8 @@ class AnimationMixer extends EventDispatcher {
       delete actionsByClip[clipUuid];
     }
   }
-  uncacheRoot(root) {
-    const rootUuid = root.uuid, actionsByClip = this._actionsByClip;
+  uncacheRoot(root2) {
+    const rootUuid = root2.uuid, actionsByClip = this._actionsByClip;
     for (const clipUuid in actionsByClip) {
       const actionByRoot = actionsByClip[clipUuid].actionByRoot, action = actionByRoot[rootUuid];
       if (action !== void 0) {
@@ -23261,14 +23246,14 @@ class Raycaster {
 function ascSort(a, b) {
   return a.distance - b.distance;
 }
-function intersectObject(object, raycaster, intersects2, recursive) {
-  if (object.layers.test(raycaster.layers)) {
-    object.raycast(raycaster, intersects2);
+function intersectObject(object, raycaster3, intersects2, recursive) {
+  if (object.layers.test(raycaster3.layers)) {
+    object.raycast(raycaster3, intersects2);
   }
   if (recursive === true) {
     const children = object.children;
     for (let i = 0, l = children.length; i < l; i++) {
-      intersectObject(children[i], raycaster, intersects2, true);
+      intersectObject(children[i], raycaster3, intersects2, true);
     }
   }
 }
@@ -32360,213 +32345,6 @@ class OrbitControls extends EventDispatcher {
     this.update();
   }
 }
-var _Group = function() {
-  this._tweens = {}, this._tweensAddedDuringUpdate = {};
-};
-_Group.prototype = { getAll: function() {
-  return Object.keys(this._tweens).map(function(t) {
-    return this._tweens[t];
-  }.bind(this));
-}, removeAll: function() {
-  this._tweens = {};
-}, add: function(t) {
-  this._tweens[t.getId()] = t, this._tweensAddedDuringUpdate[t.getId()] = t;
-}, remove: function(t) {
-  delete this._tweens[t.getId()], delete this._tweensAddedDuringUpdate[t.getId()];
-}, update: function(t, n) {
-  var e = Object.keys(this._tweens);
-  if (e.length === 0)
-    return false;
-  for (t = t !== void 0 ? t : TWEEN.now(); 0 < e.length; ) {
-    this._tweensAddedDuringUpdate = {};
-    for (var i = 0; i < e.length; i++) {
-      var r = this._tweens[e[i]];
-      r && r.update(t) === false && (r._isPlaying = false, n || delete this._tweens[e[i]]);
-    }
-    e = Object.keys(this._tweensAddedDuringUpdate);
-  }
-  return true;
-} };
-var TWEEN = new _Group();
-TWEEN.Group = _Group, TWEEN._nextId = 0, TWEEN.nextId = function() {
-  return TWEEN._nextId++;
-}, typeof self == "undefined" && typeof process != "undefined" && process.hrtime ? TWEEN.now = function() {
-  var t = process.hrtime();
-  return 1e3 * t[0] + t[1] / 1e6;
-} : typeof self != "undefined" && self.performance !== void 0 && self.performance.now !== void 0 ? TWEEN.now = self.performance.now.bind(self.performance) : Date.now !== void 0 ? TWEEN.now = Date.now : TWEEN.now = function() {
-  return new Date().getTime();
-}, TWEEN.Tween = function(t, n) {
-  this._object = t, this._valuesStart = {}, this._valuesEnd = {}, this._valuesStartRepeat = {}, this._duration = 1e3, this._repeat = 0, this._repeatDelayTime = void 0, this._yoyo = false, this._isPlaying = false, this._reversed = false, this._delayTime = 0, this._startTime = null, this._easingFunction = TWEEN.Easing.Linear.None, this._interpolationFunction = TWEEN.Interpolation.Linear, this._chainedTweens = [], this._onStartCallback = null, this._onStartCallbackFired = false, this._onUpdateCallback = null, this._onCompleteCallback = null, this._onStopCallback = null, this._group = n || TWEEN, this._id = TWEEN.nextId();
-}, TWEEN.Tween.prototype = { getId: function() {
-  return this._id;
-}, isPlaying: function() {
-  return this._isPlaying;
-}, to: function(t, n) {
-  return this._valuesEnd = Object.create(t), n !== void 0 && (this._duration = n), this;
-}, duration: function(t) {
-  return this._duration = t, this;
-}, start: function(t) {
-  for (var n in this._group.add(this), this._isPlaying = true, this._onStartCallbackFired = false, this._startTime = t !== void 0 ? typeof t == "string" ? TWEEN.now() + parseFloat(t) : t : TWEEN.now(), this._startTime += this._delayTime, this._valuesEnd) {
-    if (this._valuesEnd[n] instanceof Array) {
-      if (this._valuesEnd[n].length === 0)
-        continue;
-      this._valuesEnd[n] = [this._object[n]].concat(this._valuesEnd[n]);
-    }
-    this._object[n] !== void 0 && (this._valuesStart[n] = this._object[n], this._valuesStart[n] instanceof Array == false && (this._valuesStart[n] *= 1), this._valuesStartRepeat[n] = this._valuesStart[n] || 0);
-  }
-  return this;
-}, stop: function() {
-  return this._isPlaying && (this._group.remove(this), this._isPlaying = false, this._onStopCallback !== null && this._onStopCallback(this._object), this.stopChainedTweens()), this;
-}, end: function() {
-  return this.update(1 / 0), this;
-}, stopChainedTweens: function() {
-  for (var t = 0, n = this._chainedTweens.length; t < n; t++)
-    this._chainedTweens[t].stop();
-}, group: function(t) {
-  return this._group = t, this;
-}, delay: function(t) {
-  return this._delayTime = t, this;
-}, repeat: function(t) {
-  return this._repeat = t, this;
-}, repeatDelay: function(t) {
-  return this._repeatDelayTime = t, this;
-}, yoyo: function(t) {
-  return this._yoyo = t, this;
-}, easing: function(t) {
-  return this._easingFunction = t, this;
-}, interpolation: function(t) {
-  return this._interpolationFunction = t, this;
-}, chain: function() {
-  return this._chainedTweens = arguments, this;
-}, onStart: function(t) {
-  return this._onStartCallback = t, this;
-}, onUpdate: function(t) {
-  return this._onUpdateCallback = t, this;
-}, onComplete: function(t) {
-  return this._onCompleteCallback = t, this;
-}, onStop: function(t) {
-  return this._onStopCallback = t, this;
-}, update: function(t) {
-  var n, e, i;
-  if (t < this._startTime)
-    return true;
-  for (n in this._onStartCallbackFired === false && (this._onStartCallback !== null && this._onStartCallback(this._object), this._onStartCallbackFired = true), e = (t - this._startTime) / this._duration, e = this._duration === 0 || 1 < e ? 1 : e, i = this._easingFunction(e), this._valuesEnd)
-    if (this._valuesStart[n] !== void 0) {
-      var r = this._valuesStart[n] || 0, a = this._valuesEnd[n];
-      a instanceof Array ? this._object[n] = this._interpolationFunction(a, i) : (typeof a == "string" && (a = a.charAt(0) === "+" || a.charAt(0) === "-" ? r + parseFloat(a) : parseFloat(a)), typeof a == "number" && (this._object[n] = r + (a - r) * i));
-    }
-  if (this._onUpdateCallback !== null && this._onUpdateCallback(this._object), e !== 1)
-    return true;
-  if (0 < this._repeat) {
-    for (n in isFinite(this._repeat) && this._repeat--, this._valuesStartRepeat) {
-      if (typeof this._valuesEnd[n] == "string" && (this._valuesStartRepeat[n] = this._valuesStartRepeat[n] + parseFloat(this._valuesEnd[n])), this._yoyo) {
-        var s = this._valuesStartRepeat[n];
-        this._valuesStartRepeat[n] = this._valuesEnd[n], this._valuesEnd[n] = s;
-      }
-      this._valuesStart[n] = this._valuesStartRepeat[n];
-    }
-    return this._yoyo && (this._reversed = !this._reversed), this._repeatDelayTime !== void 0 ? this._startTime = t + this._repeatDelayTime : this._startTime = t + this._delayTime, true;
-  }
-  this._onCompleteCallback !== null && this._onCompleteCallback(this._object);
-  for (var o = 0, u = this._chainedTweens.length; o < u; o++)
-    this._chainedTweens[o].start(this._startTime + this._duration);
-  return false;
-} }, TWEEN.Easing = { Linear: { None: function(t) {
-  return t;
-} }, Quadratic: { In: function(t) {
-  return t * t;
-}, Out: function(t) {
-  return t * (2 - t);
-}, InOut: function(t) {
-  return (t *= 2) < 1 ? 0.5 * t * t : -0.5 * (--t * (t - 2) - 1);
-} }, Cubic: { In: function(t) {
-  return t * t * t;
-}, Out: function(t) {
-  return --t * t * t + 1;
-}, InOut: function(t) {
-  return (t *= 2) < 1 ? 0.5 * t * t * t : 0.5 * ((t -= 2) * t * t + 2);
-} }, Quartic: { In: function(t) {
-  return t * t * t * t;
-}, Out: function(t) {
-  return 1 - --t * t * t * t;
-}, InOut: function(t) {
-  return (t *= 2) < 1 ? 0.5 * t * t * t * t : -0.5 * ((t -= 2) * t * t * t - 2);
-} }, Quintic: { In: function(t) {
-  return t * t * t * t * t;
-}, Out: function(t) {
-  return --t * t * t * t * t + 1;
-}, InOut: function(t) {
-  return (t *= 2) < 1 ? 0.5 * t * t * t * t * t : 0.5 * ((t -= 2) * t * t * t * t + 2);
-} }, Sinusoidal: { In: function(t) {
-  return 1 - Math.cos(t * Math.PI / 2);
-}, Out: function(t) {
-  return Math.sin(t * Math.PI / 2);
-}, InOut: function(t) {
-  return 0.5 * (1 - Math.cos(Math.PI * t));
-} }, Exponential: { In: function(t) {
-  return t === 0 ? 0 : Math.pow(1024, t - 1);
-}, Out: function(t) {
-  return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
-}, InOut: function(t) {
-  return t === 0 ? 0 : t === 1 ? 1 : (t *= 2) < 1 ? 0.5 * Math.pow(1024, t - 1) : 0.5 * (2 - Math.pow(2, -10 * (t - 1)));
-} }, Circular: { In: function(t) {
-  return 1 - Math.sqrt(1 - t * t);
-}, Out: function(t) {
-  return Math.sqrt(1 - --t * t);
-}, InOut: function(t) {
-  return (t *= 2) < 1 ? -0.5 * (Math.sqrt(1 - t * t) - 1) : 0.5 * (Math.sqrt(1 - (t -= 2) * t) + 1);
-} }, Elastic: { In: function(t) {
-  return t === 0 ? 0 : t === 1 ? 1 : -Math.pow(2, 10 * (t - 1)) * Math.sin(5 * (t - 1.1) * Math.PI);
-}, Out: function(t) {
-  return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin(5 * (t - 0.1) * Math.PI) + 1;
-}, InOut: function(t) {
-  return t === 0 ? 0 : t === 1 ? 1 : (t *= 2) < 1 ? -0.5 * Math.pow(2, 10 * (t - 1)) * Math.sin(5 * (t - 1.1) * Math.PI) : 0.5 * Math.pow(2, -10 * (t - 1)) * Math.sin(5 * (t - 1.1) * Math.PI) + 1;
-} }, Back: { In: function(t) {
-  return t * t * (2.70158 * t - 1.70158);
-}, Out: function(t) {
-  return --t * t * (2.70158 * t + 1.70158) + 1;
-}, InOut: function(t) {
-  var n = 2.5949095;
-  return (t *= 2) < 1 ? t * t * ((1 + n) * t - n) * 0.5 : 0.5 * ((t -= 2) * t * ((1 + n) * t + n) + 2);
-} }, Bounce: { In: function(t) {
-  return 1 - TWEEN.Easing.Bounce.Out(1 - t);
-}, Out: function(t) {
-  return t < 1 / 2.75 ? 7.5625 * t * t : t < 2 / 2.75 ? 7.5625 * (t -= 1.5 / 2.75) * t + 0.75 : t < 2.5 / 2.75 ? 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375 : 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375;
-}, InOut: function(t) {
-  return t < 0.5 ? 0.5 * TWEEN.Easing.Bounce.In(2 * t) : 0.5 * TWEEN.Easing.Bounce.Out(2 * t - 1) + 0.5;
-} } }, TWEEN.Interpolation = { Linear: function(t, n) {
-  var e = t.length - 1, i = e * n, r = Math.floor(i), a = TWEEN.Interpolation.Utils.Linear;
-  return n < 0 ? a(t[0], t[1], i) : 1 < n ? a(t[e], t[e - 1], e - i) : a(t[r], t[e < r + 1 ? e : r + 1], i - r);
-}, Bezier: function(t, n) {
-  for (var e = 0, i = t.length - 1, r = Math.pow, a = TWEEN.Interpolation.Utils.Bernstein, s = 0; s <= i; s++)
-    e += r(1 - n, i - s) * r(n, s) * t[s] * a(i, s);
-  return e;
-}, CatmullRom: function(t, n) {
-  var e = t.length - 1, i = e * n, r = Math.floor(i), a = TWEEN.Interpolation.Utils.CatmullRom;
-  return t[0] === t[e] ? (n < 0 && (r = Math.floor(i = e * (1 + n))), a(t[(r - 1 + e) % e], t[r], t[(r + 1) % e], t[(r + 2) % e], i - r)) : n < 0 ? t[0] - (a(t[0], t[0], t[1], t[1], -i) - t[0]) : 1 < n ? t[e] - (a(t[e], t[e], t[e - 1], t[e - 1], i - e) - t[e]) : a(t[r ? r - 1 : 0], t[r], t[e < r + 1 ? e : r + 1], t[e < r + 2 ? e : r + 2], i - r);
-}, Utils: { Linear: function(t, n, e) {
-  return (n - t) * e + t;
-}, Bernstein: function(t, n) {
-  var e = TWEEN.Interpolation.Utils.Factorial;
-  return e(t) / e(n) / e(t - n);
-}, Factorial: function() {
-  var i = [1];
-  return function(t) {
-    var n = 1;
-    if (i[t])
-      return i[t];
-    for (var e = t; 1 < e; e--)
-      n *= e;
-    return i[t] = n;
-  };
-}(), CatmullRom: function(t, n, e, i, r) {
-  var a = 0.5 * (e - t), s = 0.5 * (i - n), o = r * r;
-  return (2 * n - 2 * e + a + s) * (r * o) + (-3 * n + 3 * e - 2 * a - s) * o + a * r + n;
-} } }, function(t) {
-  typeof define == "function" && define.amd ? define([], function() {
-    return TWEEN;
-  }) : typeof module != "undefined" && typeof exports == "object" ? module.exports = TWEEN : t !== void 0 && (t.TWEEN = TWEEN);
-}(globalThis);
 function ___$insertStyle(css2) {
   if (!css2) {
     return;
@@ -34411,10 +34189,10 @@ var GUI = function GUI2(pars) {
   };
   this.saveToLocalStorageIfPossible = saveToLocalStorage;
   function resetWidth() {
-    var root = _this.getRoot();
-    root.width += 1;
+    var root2 = _this.getRoot();
+    root2.width += 1;
     Common.defer(function() {
-      root.width -= 1;
+      root2.width -= 1;
     });
   }
   if (!params2.parent) {
@@ -34523,30 +34301,30 @@ Common.extend(GUI.prototype, {
     this.domElement.style.display = "";
   },
   onResize: function onResize() {
-    var root = this.getRoot();
-    if (root.scrollable) {
-      var top = dom.getOffset(root.__ul).top;
+    var root2 = this.getRoot();
+    if (root2.scrollable) {
+      var top = dom.getOffset(root2.__ul).top;
       var h = 0;
-      Common.each(root.__ul.childNodes, function(node) {
-        if (!(root.autoPlace && node === root.__save_row)) {
+      Common.each(root2.__ul.childNodes, function(node) {
+        if (!(root2.autoPlace && node === root2.__save_row)) {
           h += dom.getHeight(node);
         }
       });
       if (window.innerHeight - top - CLOSE_BUTTON_HEIGHT < h) {
-        dom.addClass(root.domElement, GUI.CLASS_TOO_TALL);
-        root.__ul.style.height = window.innerHeight - top - CLOSE_BUTTON_HEIGHT + "px";
+        dom.addClass(root2.domElement, GUI.CLASS_TOO_TALL);
+        root2.__ul.style.height = window.innerHeight - top - CLOSE_BUTTON_HEIGHT + "px";
       } else {
-        dom.removeClass(root.domElement, GUI.CLASS_TOO_TALL);
-        root.__ul.style.height = "auto";
+        dom.removeClass(root2.domElement, GUI.CLASS_TOO_TALL);
+        root2.__ul.style.height = "auto";
       }
     }
-    if (root.__resize_handle) {
+    if (root2.__resize_handle) {
       Common.defer(function() {
-        root.__resize_handle.style.height = root.__ul.offsetHeight + "px";
+        root2.__resize_handle.style.height = root2.__ul.offsetHeight + "px";
       });
     }
-    if (root.__closeButton) {
-      root.__closeButton.style.width = root.width + "px";
+    if (root2.__closeButton) {
+      root2.__closeButton.style.width = root2.width + "px";
     }
   },
   onResizeDebounced: Common.debounce(function() {
@@ -34775,17 +34553,17 @@ function augmentController(gui2, li, controller) {
   }, controller.setValue);
 }
 function recallSavedValue(gui2, controller) {
-  var root = gui2.getRoot();
-  var matchedIndex = root.__rememberedObjects.indexOf(controller.object);
+  var root2 = gui2.getRoot();
+  var matchedIndex = root2.__rememberedObjects.indexOf(controller.object);
   if (matchedIndex !== -1) {
-    var controllerMap = root.__rememberedObjectIndecesToControllers[matchedIndex];
+    var controllerMap = root2.__rememberedObjectIndecesToControllers[matchedIndex];
     if (controllerMap === void 0) {
       controllerMap = {};
-      root.__rememberedObjectIndecesToControllers[matchedIndex] = controllerMap;
+      root2.__rememberedObjectIndecesToControllers[matchedIndex] = controllerMap;
     }
     controllerMap[controller.property] = controller;
-    if (root.load && root.load.remembered) {
-      var presetMap = root.load.remembered;
+    if (root2.load && root2.load.remembered) {
+      var presetMap = root2.load.remembered;
       var preset = void 0;
       if (presetMap[gui2.preset]) {
         preset = presetMap[gui2.preset];
@@ -35001,17 +34779,26 @@ function updateDisplays(controllerArray) {
   });
 }
 var GUI$1 = GUI;
+var dist = {};
+Object.defineProperty(dist, "__esModule", { value: true });
+function isWebGLSupported() {
+  if ((window === null || window === void 0 ? void 0 : window.WebGLRenderingContext) !== void 0) {
+    var canvas2 = document.createElement("canvas");
+    return canvas2.getContext("webgl") != null || canvas2.getContext("experimental-webgl") != null;
+  }
+  return false;
+}
+var isWebGLSupported_1 = dist.isWebGLSupported = isWebGLSupported;
+function isWebGL2Supported() {
+  if ((window === null || window === void 0 ? void 0 : window.WebGLRenderingContext) !== void 0) {
+    var canvas2 = document.createElement("canvas");
+    return canvas2.getContext("webgl2") != null;
+  }
+  return false;
+}
+var isWebGL2Supported_1 = dist.isWebGL2Supported = isWebGL2Supported;
 var ThreeDGarden_vue_vue_type_style_index_0_scoped_true_lang = "";
-if (!isWebGLSupported_1()) {
-  alert("WebGL is not supported.");
-  console.log("WebGL is not supported.");
-}
-if (!isWebGL2Supported_1()) {
-  alert("WebGL2 is not supported.");
-  console.log("WebGL2 is not supported.");
-}
-useMouse();
-useCounter();
+const _hoisted_1$1 = { class: "threedgarden" };
 const postdata = window.postdata ? window.postdata : {};
 const pluginName = postdata.plugin_name;
 const pluginVersion = postdata.plugin_version;
@@ -35111,7 +34898,7 @@ const loaderGLTF = new GLTFLoader(manager);
 new OBJLoader(manager);
 const loaderTexture = new TextureLoader(manager);
 const clock = new Clock();
-new Raycaster();
+const raycaster = new Raycaster();
 const raycaster2 = new Raycaster();
 const pointer = new Vector2();
 const API_URL_SCENES = `${restURL}scene/?_embed&per_page=100`;
@@ -35126,7 +34913,7 @@ const api_urls = [
   API_URL_PLANTING_PLANS,
   API_URL_PLANTS
 ];
-ref(null);
+const root = ref(null);
 function render() {
   renderer.render(scene, camera);
 }
@@ -35137,8 +34924,8 @@ const onWindowResize = () => {
   render();
 };
 window.addEventListener("resize", onWindowResize, false);
-const getPlane = (x2, y2, color) => {
-  let geometry = new PlaneGeometry(x2, y2);
+const getPlane = (x, y, color) => {
+  let geometry = new PlaneGeometry(x, y);
   let material = new MeshStandardMaterial({
     color,
     side: DoubleSide
@@ -35161,13 +34948,13 @@ const getDirectionalLight = (color, intensity) => {
   light.shadow.camera.far = 500;
   return light;
 };
-const getGeometry = (shape, x2, y2, z, color) => {
+const getGeometry = (shape, x, y, z, color) => {
   let geometry;
   let material;
   let mesh;
   switch (shape) {
     case "Box":
-      geometry = new BoxGeometry(x2, y2, z);
+      geometry = new BoxGeometry(x, y, z);
       material = new MeshStandardMaterial({
         transparent: true,
         opacity: 0.8,
@@ -35184,7 +34971,7 @@ const getGeometry = (shape, x2, y2, z, color) => {
       mesh.castShadow = true;
       break;
     case "Cone":
-      geometry = new ConeGeometry(x2 / 2, y2 / 2, z, 32, 1, true);
+      geometry = new ConeGeometry(x / 2, y / 2, z, 32, 1, true);
       material = new MeshStandardMaterial({
         color,
         side: DoubleSide
@@ -35194,7 +34981,7 @@ const getGeometry = (shape, x2, y2, z, color) => {
       mesh.rotation.x = Math.PI / 2;
       break;
     case "Cylinder":
-      geometry = new CylinderGeometry(x2 / 2, y2 / 2, z, 32, 1, true);
+      geometry = new CylinderGeometry(x / 2, y / 2, z, 32, 1, true);
       material = new MeshStandardMaterial({
         color,
         side: DoubleSide
@@ -35204,7 +34991,7 @@ const getGeometry = (shape, x2, y2, z, color) => {
       mesh.rotation.x = Math.PI / 2;
       break;
     case "InfoSphere":
-      geometry = new SphereGeometry(x2, y2, z);
+      geometry = new SphereGeometry(x, y, z);
       material = new MeshStandardMaterial({
         color,
         side: DoubleSide
@@ -35213,7 +35000,7 @@ const getGeometry = (shape, x2, y2, z, color) => {
       mesh.castShadow = true;
       break;
     case "Sphere":
-      geometry = new SphereGeometry(x2, y2, z);
+      geometry = new SphereGeometry(x, y, z);
       material = new MeshStandardMaterial({
         color,
         side: DoubleSide
@@ -35222,10 +35009,10 @@ const getGeometry = (shape, x2, y2, z, color) => {
       mesh.castShadow = true;
       break;
     case "Bush":
-      geometry = new BoxGeometry(x2, y2, z);
+      geometry = new BoxGeometry(x, y, z);
       color = new Color$1("rgb(153,90,0)");
     default:
-      geometry = new BoxGeometry(x2, y2, z);
+      geometry = new BoxGeometry(x, y, z);
       material = new MeshStandardMaterial({
         color,
         side: DoubleSide
@@ -35309,13 +35096,13 @@ function loadChicken(plane2) {
 }
 function loadRoad(plane2) {
   let i;
-  let count2 = 8;
+  let count = 8;
   let startX = -45;
   let offsetX = 0;
   let startZ = -138;
   let offsetZ = 20;
   const roadPromise1 = new Promise((resolve, reject) => {
-    for (i = 1; i <= count2; i++) {
+    for (i = 1; i <= count; i++) {
       loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_Straight_01.fbx`, function(object) {
         object.position.set(startX, 0, startZ);
         startX = startX + offsetX;
@@ -35371,6 +35158,51 @@ function loadRoad(plane2) {
     }
   });
 }
+function watchPointer(camera2, targetList) {
+  raycaster.setFromCamera(pointer, camera2);
+  let intersects2 = [];
+  try {
+    intersects2 = raycaster.intersectObjects(targetList, true);
+  } catch (e) {
+    intersects2 = [];
+  }
+  if (intersects2.length > 0) {
+    if (intersects2[0].object != params.intersectedObject1) {
+      if (params.intersectedObject1) {
+        if (params.intersectedObject1.material.constructor.name == "Array") {
+          for (let i = 0; i < params.intersectedObject1.material.length; i++) {
+            params.intersectedObject1.material[i].color.setHex(params.intersectedObject1.currentHex);
+          }
+        } else {
+          params.intersectedObject1.material.color.setHex(params.intersectedObject1.currentHex);
+        }
+      }
+      params.intersectedObject1 = intersects2[0].object;
+      if (params.intersectedObject1.material.constructor.name == "Array") {
+        for (let i = 0; i < params.intersectedObject1.material.length; i++) {
+          params.intersectedObject1.currentHex = params.intersectedObject1.material[i].color.getHex();
+        }
+        for (let i = 0; i < params.intersectedObject1.material.length; i++) {
+          params.intersectedObject1.material[i].color.setHex(14540032);
+        }
+      } else {
+        params.intersectedObject1.currentHex = params.intersectedObject1.material.color.getHex();
+        params.intersectedObject1.material.color.setHex(14540032);
+      }
+    }
+  } else {
+    if (params.intersectedObject1) {
+      if (params.intersectedObject1.material.constructor.name == "Array") {
+        for (let i = 0; i < params.intersectedObject1.material.length; i++) {
+          params.intersectedObject1.material[i].color.setHex(params.intersectedObject1.currentHex);
+        }
+      } else {
+        params.intersectedObject1.material.color.setHex(params.intersectedObject1.currentHex);
+      }
+    }
+    params.intersectedObject1 = null;
+  }
+}
 function onPointerMove(event) {
   pointer.x = event.offsetX / canvas.clientWidth * 2 - 1;
   pointer.y = -(event.offsetY / canvas.clientHeight) * 2 + 1;
@@ -35378,8 +35210,8 @@ function onPointerMove(event) {
 function onPointerDown(event) {
   console.log("event ****************************************", event);
   event.preventDefault();
-  pointer.x = event.clientX / window.innerWidth * 2 - 1;
-  pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  pointer.x = event.offsetX / canvas.clientWidth * 2 - 1;
+  pointer.y = -(event.offsetY / canvas.clientHeight) * 2 + 1;
   console.log("pointer clicked x y", pointer.x, pointer.y);
   raycaster2.setFromCamera(pointer, event.target.camera);
   console.log("raycaster2", raycaster2);
@@ -35502,8 +35334,8 @@ function playerControl(forward, turn) {
 }
 const animate = () => {
   const dt = clock.getDelta();
+  watchPointer(camera, plane.children);
   controls.update();
-  TWEEN.update();
   requestAnimationFrame(animate);
   if (params.ANIMATE) {
     plane.rotation.z -= 7e-4;
@@ -35585,7 +35417,7 @@ const build = async () => {
       console.log("loading assets *********************** ");
     };
     await a3(a2);
-    console.log("a3 boolean (complete)", a3, new Date().toISOString());
+    console.log("a3 async function (complete)", a3, new Date().toISOString());
   } catch (e) {
     console.log("error ***", e.message, e);
   }
@@ -35677,16 +35509,16 @@ const buildScene = async (a5) => {
   } else if (wpScene.acf.scene_background_color) {
     scene.background = new Color$1(wpScene.acf.scene_background_color);
   }
-  let plane2 = getPlane(wpScene.acf.scene_plane_width_x, wpScene.acf.scene_plane_length_y, wpScene.acf.scene_plane_background_color);
-  plane2.name = "plane-jane";
-  plane2.rotation.x = -Math.PI / 2;
-  guiFolderRotation.add(plane2.rotation, "x", -Math.PI, Math.PI).listen();
-  guiFolderRotation.add(plane2.rotation, "y", -Math.PI, Math.PI).listen();
-  guiFolderRotation.add(plane2.rotation, "z", -Math.PI, Math.PI).listen();
+  plane = getPlane(wpScene.acf.scene_plane_width_x, wpScene.acf.scene_plane_length_y, wpScene.acf.scene_plane_background_color);
+  plane.name = "plane-jane";
+  plane.rotation.x = -Math.PI / 2;
+  guiFolderRotation.add(plane.rotation, "x", -Math.PI, Math.PI).listen();
+  guiFolderRotation.add(plane.rotation, "y", -Math.PI, Math.PI).listen();
+  guiFolderRotation.add(plane.rotation, "z", -Math.PI, Math.PI).listen();
   if (wpScene.acf.scene_plane_texture_image) {
-    plane2.material.roughness = 0;
-    plane2.material.map = loaderTexture.load(wpScene.acf.scene_plane_texture_image);
-    let planeTextureMap = plane2.material.map;
+    plane.material.roughness = 0;
+    plane.material.map = loaderTexture.load(wpScene.acf.scene_plane_texture_image);
+    let planeTextureMap = plane.material.map;
     planeTextureMap.wrapS = RepeatWrapping;
     planeTextureMap.wrapT = RepeatWrapping;
     planeTextureMap.repeat.set(4, 4);
@@ -35711,11 +35543,11 @@ const buildScene = async (a5) => {
   guiFolderLights.add(directionalLight2.position, "x", -500, 500);
   guiFolderLights.add(directionalLight2.position, "y", -500, 500);
   guiFolderLights.add(directionalLight2.position, "z", -500, 500);
-  plane2.add(directionalLight);
-  plane2.add(directionalLight2);
+  plane.add(directionalLight);
+  plane.add(directionalLight2);
   scene.add(helperDirectionalLight);
   scene.add(helperDirectionalLight2);
-  scene.add(plane2);
+  scene.add(plane);
   camera = new PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1e3);
   camera.name = "gardencam1";
   camera.position.set(86, 64, 182);
@@ -35733,7 +35565,7 @@ const buildScene = async (a5) => {
   renderer.shadowMap.enabled = true;
   renderer.setSize(window.innerWidth - 100, window.innerHeight);
   renderer.domElement.camera = camera;
-  renderer.domElement.targetList = plane2.children;
+  renderer.domElement.targetList = plane.children;
   renderer.domElement.addEventListener("pointermove", onPointerMove, false);
   renderer.domElement.addEventListener("pointerdown", onPointerDown, false);
   controls = new OrbitControls(camera, renderer.domElement);
@@ -35757,8 +35589,8 @@ const buildScene = async (a5) => {
     game: container
   });
   console.log("joystick", joystick);
-  buildAllotments(params.data.allotment, plane2, sceneID);
-  return plane2;
+  buildAllotments(params.data.allotment, plane, sceneID);
+  return plane;
 };
 function buildAllotments(postObject, plane2, sceneID) {
   console.log("ALLOTMENTS", postObject);
@@ -35930,7 +35762,7 @@ function buildPlantingPlans(postObject, plane2, bedID, posOffsetX, posOffsetY, p
     });
   });
 }
-const _sfc_main$1 = {
+const __default__ = {
   name: "ThreeDGarden",
   props: {
     msg: String,
@@ -35954,6 +35786,8 @@ const _sfc_main$1 = {
     build();
   },
   setup(props, context) {
+    console.log("setup props", props);
+    console.log("setup context", context);
     const root2 = ref(null);
     onMounted(() => {
       console.log("root.value (your $el, found in this.$refs.root)", root2.value);
@@ -35964,29 +35798,45 @@ const _sfc_main$1 = {
     };
   }
 };
-const _hoisted_1$1 = { class: "threedgarden" };
-const _hoisted_2 = {
-  id: "webgl",
-  ref: "root"
-};
-function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$1, [
-    createBaseVNode("h3", null, [
-      createTextVNode(" Mouse: x=" + toDisplayString(_ctx.x) + " y=" + toDisplayString(_ctx.y) + " | Counter: " + toDisplayString(_ctx.count) + " ", 1),
-      createBaseVNode("a", {
-        onClick: _cache[0] || (_cache[0] = ($event) => _ctx.inc()),
-        style: { "margin-right": "10px" }
-      }, "+"),
-      createBaseVNode("a", {
-        onClick: _cache[1] || (_cache[1] = ($event) => _ctx.dec())
-      }, "-")
-    ]),
-    createBaseVNode("h1", null, toDisplayString($props.msg), 1),
-    createBaseVNode("h2", null, toDisplayString($props.subtitle), 1),
-    createBaseVNode("div", _hoisted_2, null, 512)
-  ]);
-}
-var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-5216f08d"]]);
+const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues({}, __default__), {
+  setup(__props) {
+    const apple = getCurrentInstance();
+    const $global = apple.appContext.config.globalProperties;
+    console.log("$global", $global);
+    if (!isWebGLSupported_1()) {
+      alert("WebGL is not supported.");
+      console.log("WebGL is not supported.");
+    }
+    if (!isWebGL2Supported_1()) {
+      alert("WebGL2 is not supported.");
+      console.log("WebGL2 is not supported.");
+    }
+    const { x, y } = useMouse();
+    const { count, inc, dec } = useCounter();
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", _hoisted_1$1, [
+        createBaseVNode("h3", null, [
+          createTextVNode(" Mouse: x=" + toDisplayString(unref(x)) + " y=" + toDisplayString(unref(y)) + " | Counter: " + toDisplayString(unref(count)) + " ", 1),
+          createBaseVNode("a", {
+            onClick: _cache[0] || (_cache[0] = ($event) => unref(inc)()),
+            style: { "margin-right": "10px" }
+          }, "+"),
+          createBaseVNode("a", {
+            onClick: _cache[1] || (_cache[1] = ($event) => unref(dec)())
+          }, "-")
+        ]),
+        createBaseVNode("h1", null, toDisplayString(__props.msg), 1),
+        createBaseVNode("h2", null, toDisplayString(__props.subtitle), 1),
+        createBaseVNode("div", {
+          id: "webgl",
+          ref_key: "root",
+          ref: root
+        }, null, 512)
+      ]);
+    };
+  }
+}));
+var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-45aa08ff"]]);
 const _sfc_main = {
   name: "Participate",
   components: {
