@@ -169,7 +169,7 @@ const params = {
   }),
   mode: "",
   /** turn on/off animation */
-  ANIMATE: false,
+  ANIMATE: true, // starting value
   /** where multimedia files are located */
   assetsPath: `${pluginURL}assets/`,
   /** all the data from rest api calls to be stored here */
@@ -232,7 +232,7 @@ manager.onLoad = () => {
     animate()
     console.log("animating ****************************** ")
     params.mode = params.modes.ACTIVE
-    console.log("params.mode manager.onLoad", params.mode, startTime)
+    console.log("params.mode manager.onLoad", params.mode, new Date().toISOString())
   } else {
     console.log("still building ************************* ")
     console.log("params.mode manager.onLoad", params.mode, startTime)
@@ -247,8 +247,12 @@ const loaderOBJ = new OBJLoader(manager)
 const loaderTexture = new THREE.TextureLoader(manager)
 
 /** 
- * LOADER OPTIONS ???
+ * LOADER OPTIONS.ASSETS ???
  */
+// NEED TO LOAD AUDIO ASSET FILES ???
+// const sfxExt = SFX.supportsAudioType('mp3') ? 'mp3' : 'ogg'
+// console.log("SFX", SFX)
+// NEED TO LOAD KNOWN ASSET FILES ???
 // const blobs = {'fish.gltf': blob1, 'diffuse.png': blob2, 'normal.png': blob3} ???
 // const options = {
 //   assets: [
@@ -578,12 +582,12 @@ const getGeometry = (shape, x, y, z, color) => {
 }
 
 // LOADERS
-function loadEnvironment(loader) {
-  loader.load(`${params.assetsPath}fbx/town.fbx`, function(object){
+function loadTown() {
+  loaderFBX.load(`${params.assetsPath}fbx/town.fbx`, function(object){
     params.environment = object
     params.colliders = []
     object.scale.set(0.025, 0.025, 0.025)
-    scene.add(object)
+    plane.add(object)
     object.traverse( function ( child ) {
       if ( child.isMesh ) {
         if (child.name.startsWith("proxy")){
@@ -600,17 +604,18 @@ function loadEnvironment(loader) {
   })
 }
 
-function loadFarmHouse(plane) {
+function loadFarmHouse() {
   //loaderFBX.load(`${params.assetsPath}fbx/SM_Bld_Farmhouse_01.fbx`, function(object){
   loaderFBX.load(`${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function(object){
   //loaderFBX.load(`${params.assetsPath}fbx/Building_Barn_Big_03.fbx`, function(object){
     params.farmhouse = object
     params.colliders = []
     object.rotation.y = 270 * (Math.PI/180) // 90 degrees in radians
-    object.position.set(0, 0, 100)
+    object.rotation.z = 270 * (Math.PI/180) // 90 degrees in radians
+    object.position.set(0, -100, 0)
     //object.scale.set(0.025, 0.025, 0.025)
     object.scale.set(2.2, 2.2, 2.2)
-    scene.add(object)
+    plane.add(object)
     object.traverse( function ( child ) {
       if ( child.isMesh ) {
         if (child.name.startsWith("proxy")){
@@ -635,7 +640,7 @@ function loadFarmHouse(plane) {
   })
 }
 
-function loadFarmHouseGLTF(plane) {
+function loadFarmHouseGLTF() {
   
   // loaderFBX.load( `${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
   loaderGLTF.load( `${params.assetsPath}gltf/Residential House.glb`, function (object) {
@@ -654,22 +659,22 @@ function loadFarmHouseGLTF(plane) {
     helper.visible = true
     scene.add(helper)
     
-    console.log("loadFarmHouse object", object)
-    console.log("loadFarmHouse model", model)
+    console.log("loadFarmHouseGLTF object", object)
+    console.log("loadFarmHouseGLTF model", model)
 
     guiFolderPlayer.add(model, "visible").name("Show House").listen()
 
   } )
 }
 
-function loadChickenCoop(plane) {
+function loadCoop() {
   loaderFBX.load(`${params.assetsPath}fbx/Prop_Chicken_Coop_02.fbx`, function(object) {
     params.farmhouse = object
     params.colliders = []
     object.rotation.y = 90 * (Math.PI/180) // 90 degrees in radians
     object.position.set(80, 0, -10)
     object.scale.set(2.2, 2.2, 2.2)
-    scene.add(object)
+    plane.add(object)
     object.traverse( function ( child ) {
       if (child.isMesh) {
         if (child.name.startsWith("proxy")) {
@@ -691,7 +696,7 @@ function loadChickenCoop(plane) {
   })
 }
 
-function loadChicken(plane) {
+function loadChicken() {
   
   loaderGLTF.load( `${params.assetsPath}gltf/Chicken.glb`, function (object) {
 
@@ -718,7 +723,7 @@ function loadChicken(plane) {
   } )
 }
 
-function loadChicken0(plane) {
+function loadChicken0() {
   loaderFBX.load(`${params.assetsPath}fbx/Chicken.fbx`, function(object){
     
     console.log("BIRD----------------")
@@ -729,7 +734,7 @@ function loadChicken0(plane) {
     //object.rotation.y = 90 * (Math.PI/180) // 90 degrees in radians
     object.position.set(0, 0, 0)
     //object.scale.set(2.2, 2.2, 2.2)
-    scene.add(object)
+    plane.add(object)
     object.traverse( function ( child ) {
       if ( child.isMesh ) {
         // if (child.name.startsWith("proxy")){
@@ -751,7 +756,7 @@ function loadChicken0(plane) {
   })
 }
 
-function loadChicken1(plane) {
+function loadChicken1() {
   loaderFBX.load(`${params.assetsPath}fbx/SA_Animal_Birds.fbx`, function(object){
     
     console.log("BIRD----------------")
@@ -762,7 +767,7 @@ function loadChicken1(plane) {
     //object.rotation.y = 90 * (Math.PI/180) // 90 degrees in radians
     object.position.set(0, 0, 0)
     //object.scale.set(2.2, 2.2, 2.2)
-    scene.add(object)
+    plane.add(object)
     object.traverse( function ( child ) {
       if ( child.isMesh ) {
         // if (child.name.startsWith("proxy")){
@@ -784,7 +789,7 @@ function loadChicken1(plane) {
   })
 }
 
-function loadChicken2(plane) {
+function loadChicken2() {
   loaderFBX.load(`${params.assetsPath}fbx/SA_Animal_Pig.fbx`, function(object) {
   //loaderFBX.load( `${params.assetsPath}fbx/people/Trucker.fbx`, function (object) {
   //loaderFBX.load( `${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function (object) {
@@ -881,7 +886,7 @@ function loadChicken2(plane) {
   } )
 }
 
-function loadChickenGLTF(plane) {
+function loadChickenGLTF() {
   
   loaderGLTF.load( `${params.assetsPath}gltf/Animals.glb`, function (object) {
 
@@ -917,7 +922,7 @@ function loadChickenGLTF(plane) {
   } )
 }
 
-function loadChickGLTF(plane) {
+function loadChickGLTF() {
   
   loaderGLTF.load( `${params.assetsPath}gltf/Chick.glb`, function (object) {
 
@@ -946,7 +951,7 @@ function loadChickGLTF(plane) {
   } )
 }
 
-function loadHen(plane) {
+function loadHen() {
   loaderFBX.load(`${params.assetsPath}Hen&Chicken_FBX/Hen_HP.fbx`, function(object){
     params.farmhouse = object
     params.colliders = []
@@ -982,11 +987,11 @@ function loadHen(plane) {
     console.log("loadHen object----------------")
     console.log(object)
 
-    scene.add(object)
+    plane.add(object)
   })
 }
 
-function loadHenGLTF(plane) {
+function loadHenGLTF() {
   
   // loaderFBX.load( `${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
   loaderGLTF.load( `${params.assetsPath}gltf/Hen_HP.glb`, function (object) {
@@ -1015,7 +1020,7 @@ function loadHenGLTF(plane) {
   } )
 }
 
-function loadKitchenSink(plane) {
+function loadKitchenSink() {
   loaderFBX.load(`${params.assetsPath}fbx/Prop_KitchenSink_Black.fbx`, function(object){
     params.farmhouse = object
     params.colliders = []
@@ -1023,7 +1028,7 @@ function loadKitchenSink(plane) {
     object.position.set(0, 0, 10)
     //object.scale.set(0.025, 0.025, 0.025)
     object.scale.set(2.2, 2.2, 2.2)
-    scene.add(object)
+    plane.add(object)
     object.traverse( function ( child ) {
       if ( child.isMesh ) {
         if (child.name.startsWith("proxy")){
@@ -1046,7 +1051,7 @@ function loadKitchenSink(plane) {
   })
 }
 
-function loadChickenFree(plane) {
+function loadChickenFree() {
   loaderOBJ.load(`${params.assetsPath}obj/chicken_01.obj`, function(object){
     // params.farmhouse = object
     // params.colliders = []
@@ -1054,7 +1059,7 @@ function loadChickenFree(plane) {
     //object.position.set(0, 0, 10)
     //object.scale.set(0.025, 0.025, 0.025)
     //object.scale.set(2.2, 2.2, 2.2)
-    scene.add(object)
+    plane.add(object)
     // object.traverse( function ( child ) {
     // 	if ( child.isMesh ) {
     // 		if (child.name.startsWith("proxy")){
@@ -1077,7 +1082,7 @@ function loadChickenFree(plane) {
   })
 }
 
-function loadRooster(plane) {
+function loadRooster() {
   loaderFBX.load(`${params.assetsPath}fbx/rooster_1.0.1.fbx`, function(object){
     // params.farmhouse = object
     // params.colliders = []
@@ -1085,7 +1090,7 @@ function loadRooster(plane) {
     object.position.set(0, 0, 10)
     object.scale.set(0.025, 0.025, 0.025)
     //object.scale.set(2.2, 2.2, 2.2)
-    scene.add(object)
+    plane.add(object)
     // object.traverse( function ( child ) {
     // 	if ( child.isMesh ) {
     // 		if (child.name.startsWith("proxy")){
@@ -1108,7 +1113,7 @@ function loadRooster(plane) {
   })
 }
 
-function loadRoad(plane) {
+function loadRoad() {
 
   let i
   let count = 8
@@ -1156,7 +1161,7 @@ function loadRoad(plane) {
           } )
         })
         
-        scene.add(object)
+        plane.add(object)
         
         //console.log("ROAD A object", object)
       })
@@ -1202,7 +1207,7 @@ function loadRoad(plane) {
           } )
         })
         
-        scene.add(object)
+        plane.add(object)
         
         //console.log("ROAD T object", object)
       })
@@ -1781,7 +1786,7 @@ const animate = () => {
 }
 
 /** LOADERS (??? here ???) */
-const loadAssets = (plane) => {
+const loadAssets = () => {
 
   params.mode = params.modes.LOADING
   console.log("params.mode", params.mode)
@@ -1834,21 +1839,23 @@ const loadAssets = (plane) => {
 
   /** LOAD 3D OBJECTS ******************************************************************** */
 
-  loadFarmHouse(plane)
-  
-  loadRoad(plane)
+  //loadTown()
 
-  //loadKitchenSink(plane)
+  loadFarmHouse()
   
-  loadChickenCoop(plane)
+  loadRoad()
 
-  loadChicken(plane) // PRIMARY WORKING CHICKEN (GLTF)
-  //loadHen(plane)
-  //loadHenGLTF(plane)
-  //loadRooster(plane)
-  //loadChickenGLTF(plane)
-  //loadChickGLTF(plane)
-  //loadChickenFree(plane)
+  //loadKitchenSink()
+  
+  loadCoop()
+
+  loadChicken() // PRIMARY WORKING CHICKEN (GLTF)
+  //loadHen()
+  //loadHenGLTF()
+  //loadRooster()
+  //loadChickenGLTF()
+  //loadChickGLTF()
+  //loadChickenFree()
 
   /**
    * LOAD ANIMATIONS
@@ -2720,13 +2727,6 @@ export default {
 
 <!-- TESTING
 <script>
-// AUDIO???
-const sfxExt = SFX.supportsAudioType('mp3') ? 'mp3' : 'ogg'
-console.log("SFX", SFX)
-
-
-
-
 
 var element = document.getElementById("APP")
 //element.classList.add("progressStyle")
