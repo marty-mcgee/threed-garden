@@ -18,6 +18,8 @@ const { t } = useI18n()
       >
         {{ t('button.back') }}
       </button>
+      <button @click="router.go(-1)" class="btn btn-primary my-5">Go(-1)</button>
+      <button @click="router.push('/')" class="btn btn-secondary my-5">Home</button>
     </div>
   </main>
 </template>

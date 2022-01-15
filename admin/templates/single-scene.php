@@ -28,6 +28,24 @@ get_header();
 
 	<!-- vue app -->
 	<div id="app"></div>
+
+	<!-- vue dapp -->
+	<script>
+      window.global = window
+      let global = globalThis
+    </script>
+    <script type="module">
+      import process from 'process'
+      window.process = process
+    </script>
+    <script type="module">
+      import buffer from 'buffer'
+      window.Buffer = buffer.Buffer
+    </script>
+    <script type="module">
+      import util from 'util'
+      window.util = util
+    </script>
 	
 	<?php
 

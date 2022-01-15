@@ -21,6 +21,7 @@ specifiers:
   dat.gui: ^0.7.7
   eslint: ^8.5.0
   eslint-plugin-cypress: ^2.12.1
+  ethers: ^5.5.3
   farmbot: ^14.6.5
   https-localhost: ^4.7.0
   markdown-it-link-attributes: ^4.0.0
@@ -32,7 +33,6 @@ specifiers:
   process: ^0.11.10
   rollup: ^2.63.0
   three: ^0.136
-  three-joystick: ^1.0.2
   troisjs: ^0.3.3
   typescript: ^4.5.4
   unplugin-auto-import: ^0.5.4
@@ -61,6 +61,7 @@ dependencies:
   '@vueuse/head': 0.7.4_vue@3.2.26
   buffer: 6.0.3
   dat.gui: 0.7.7
+  ethers: 5.5.3
   farmbot: 14.6.5
   nprogress: 0.2.0
   pinia: 2.0.9_typescript@4.5.4+vue@3.2.26
@@ -68,7 +69,6 @@ dependencies:
   process: 0.11.10
   rollup: 2.63.0
   three: 0.136.0
-  three-joystick: 1.0.2_three@0.136.0
   troisjs: 0.3.3
   util: 0.12.4
   vue: 3.2.26
@@ -549,7 +549,7 @@ packages:
       '@ethersproject/bignumber': 5.5.0
       '@ethersproject/bytes': 5.5.0
       '@ethersproject/logger': 5.5.0
-      '@ethersproject/networks': 5.5.1
+      '@ethersproject/networks': 5.5.2
       '@ethersproject/properties': 5.5.0
       '@ethersproject/transactions': 5.5.0
       '@ethersproject/web': 5.5.1
@@ -664,7 +664,7 @@ packages:
       '@ethersproject/logger': 5.5.0
       '@ethersproject/pbkdf2': 5.5.0
       '@ethersproject/properties': 5.5.0
-      '@ethersproject/random': 5.5.0
+      '@ethersproject/random': 5.5.1
       '@ethersproject/strings': 5.5.0
       '@ethersproject/transactions': 5.5.0
       aes-js: 3.0.0
@@ -684,6 +684,12 @@ packages:
 
   /@ethersproject/networks/5.5.1:
     resolution: {integrity: sha512-tYRDM4zZtSUcKnD4UMuAlj7SeXH/k5WC4SP2u1Pn57++JdXHkRu2zwNkgNogZoxHzhm9Q6qqurDBVptHOsW49Q==}
+    dependencies:
+      '@ethersproject/logger': 5.5.0
+    dev: false
+
+  /@ethersproject/networks/5.5.2:
+    resolution: {integrity: sha512-NEqPxbGBfy6O3x4ZTISb90SjEDkWYDUbEeIFhJly0F7sZjoQMnj5KYzMSkMkLKZ+1fGpx00EDpHQCy6PrDupkQ==}
     dependencies:
       '@ethersproject/logger': 5.5.0
     dev: false
@@ -713,9 +719,36 @@ packages:
       '@ethersproject/constants': 5.5.0
       '@ethersproject/hash': 5.5.0
       '@ethersproject/logger': 5.5.0
-      '@ethersproject/networks': 5.5.1
+      '@ethersproject/networks': 5.5.2
       '@ethersproject/properties': 5.5.0
-      '@ethersproject/random': 5.5.0
+      '@ethersproject/random': 5.5.1
+      '@ethersproject/rlp': 5.5.0
+      '@ethersproject/sha2': 5.5.0
+      '@ethersproject/strings': 5.5.0
+      '@ethersproject/transactions': 5.5.0
+      '@ethersproject/web': 5.5.1
+      bech32: 1.1.4
+      ws: 7.4.6
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: false
+
+  /@ethersproject/providers/5.5.2:
+    resolution: {integrity: sha512-hkbx7x/MKcRjyrO4StKXCzCpWer6s97xnm34xkfPiarhtEUVAN4TBBpamM+z66WcTt7H5B53YwbRj1n7i8pZoQ==}
+    dependencies:
+      '@ethersproject/abstract-provider': 5.5.1
+      '@ethersproject/abstract-signer': 5.5.0
+      '@ethersproject/address': 5.5.0
+      '@ethersproject/basex': 5.5.0
+      '@ethersproject/bignumber': 5.5.0
+      '@ethersproject/bytes': 5.5.0
+      '@ethersproject/constants': 5.5.0
+      '@ethersproject/hash': 5.5.0
+      '@ethersproject/logger': 5.5.0
+      '@ethersproject/networks': 5.5.2
+      '@ethersproject/properties': 5.5.0
+      '@ethersproject/random': 5.5.1
       '@ethersproject/rlp': 5.5.0
       '@ethersproject/sha2': 5.5.0
       '@ethersproject/strings': 5.5.0
@@ -730,6 +763,13 @@ packages:
 
   /@ethersproject/random/5.5.0:
     resolution: {integrity: sha512-egGYZwZ/YIFKMHcoBUo8t3a8Hb/TKYX8BCBoLjudVCZh892welR3jOxgOmb48xznc9bTcMm7Tpwc1gHC1PFNFQ==}
+    dependencies:
+      '@ethersproject/bytes': 5.5.0
+      '@ethersproject/logger': 5.5.0
+    dev: false
+
+  /@ethersproject/random/5.5.1:
+    resolution: {integrity: sha512-YaU2dQ7DuhL5Au7KbcQLHxcRHfgyNgvFV4sQOo0HrtW3Zkrc9ctWNz8wXQ4uCSfSDsqX2vcjhroxU5RQRV0nqA==}
     dependencies:
       '@ethersproject/bytes': 5.5.0
       '@ethersproject/logger': 5.5.0
@@ -816,7 +856,7 @@ packages:
       '@ethersproject/keccak256': 5.5.0
       '@ethersproject/logger': 5.5.0
       '@ethersproject/properties': 5.5.0
-      '@ethersproject/random': 5.5.0
+      '@ethersproject/random': 5.5.1
       '@ethersproject/signing-key': 5.5.0
       '@ethersproject/transactions': 5.5.0
       '@ethersproject/wordlists': 5.5.0
@@ -885,8 +925,8 @@ packages:
       vue-i18n:
         optional: true
     dependencies:
-      '@intlify/message-compiler': 9.2.0-beta.26
-      '@intlify/shared': 9.2.0-beta.26
+      '@intlify/message-compiler': 9.2.0-beta.28
+      '@intlify/shared': 9.2.0-beta.28
       jsonc-eslint-parser: 1.3.1
       source-map: 0.6.1
       vue-i18n: 9.1.9_vue@3.2.26
@@ -921,11 +961,11 @@ packages:
       source-map: 0.6.1
     dev: false
 
-  /@intlify/message-compiler/9.2.0-beta.26:
-    resolution: {integrity: sha512-qtDgHCMqrXNTekKXGzm0Dm6r3+/X7/jFXP+E07hx+PJbPMv7DzK1iU8h5LlAMQ1/jr2UIRBgXvR5wh35OKoGrA==}
+  /@intlify/message-compiler/9.2.0-beta.28:
+    resolution: {integrity: sha512-NBH9fZyitN2cijGt8bmU1W7ZPdhKbgW01L1RxJKFJW0cRaCmknJq63Aif1Q6xcxKt9ZhPbvIKHgPGzg1nWMfeA==}
     engines: {node: '>= 12'}
     dependencies:
-      '@intlify/shared': 9.2.0-beta.26
+      '@intlify/shared': 9.2.0-beta.28
       source-map: 0.6.1
     dev: true
 
@@ -948,8 +988,8 @@ packages:
     engines: {node: '>= 10'}
     dev: false
 
-  /@intlify/shared/9.2.0-beta.26:
-    resolution: {integrity: sha512-MjUlkjNThqkqy8yXUcFKBiW/hIfqAn5cP3Vd0b4wdOHS8rPCEbvSbAnF08uiZDkVv8gTcsLyymX21GaU6oYyyQ==}
+  /@intlify/shared/9.2.0-beta.28:
+    resolution: {integrity: sha512-JBMcoj1D4kSAma7Vb0+d8z6lPLIn7hIdZJPxbU8bgeMMniwKLoIS/jGlEfrZihsB5+otckPeQp203z8skwVS0w==}
     engines: {node: '>= 12'}
     dev: true
 
@@ -967,7 +1007,7 @@ packages:
         optional: true
     dependencies:
       '@intlify/bundle-utils': 2.2.0_vue-i18n@9.1.9
-      '@intlify/shared': 9.2.0-beta.26
+      '@intlify/shared': 9.2.0-beta.28
       '@rollup/pluginutils': 4.1.2
       debug: 4.3.3
       fast-glob: 3.2.7
@@ -3751,6 +3791,44 @@ packages:
       '@ethersproject/properties': 5.5.0
       '@ethersproject/providers': 5.5.1
       '@ethersproject/random': 5.5.0
+      '@ethersproject/rlp': 5.5.0
+      '@ethersproject/sha2': 5.5.0
+      '@ethersproject/signing-key': 5.5.0
+      '@ethersproject/solidity': 5.5.0
+      '@ethersproject/strings': 5.5.0
+      '@ethersproject/transactions': 5.5.0
+      '@ethersproject/units': 5.5.0
+      '@ethersproject/wallet': 5.5.0
+      '@ethersproject/web': 5.5.1
+      '@ethersproject/wordlists': 5.5.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: false
+
+  /ethers/5.5.3:
+    resolution: {integrity: sha512-fTT4WT8/hTe/BLwRUtl7I5zlpF3XC3P/Xwqxc5AIP2HGlH15qpmjs0Ou78az93b1rLITzXLFxoNX63B8ZbUd7g==}
+    dependencies:
+      '@ethersproject/abi': 5.5.0
+      '@ethersproject/abstract-provider': 5.5.1
+      '@ethersproject/abstract-signer': 5.5.0
+      '@ethersproject/address': 5.5.0
+      '@ethersproject/base64': 5.5.0
+      '@ethersproject/basex': 5.5.0
+      '@ethersproject/bignumber': 5.5.0
+      '@ethersproject/bytes': 5.5.0
+      '@ethersproject/constants': 5.5.0
+      '@ethersproject/contracts': 5.5.0
+      '@ethersproject/hash': 5.5.0
+      '@ethersproject/hdnode': 5.5.0
+      '@ethersproject/json-wallets': 5.5.0
+      '@ethersproject/keccak256': 5.5.0
+      '@ethersproject/logger': 5.5.0
+      '@ethersproject/networks': 5.5.2
+      '@ethersproject/pbkdf2': 5.5.0
+      '@ethersproject/properties': 5.5.0
+      '@ethersproject/providers': 5.5.2
+      '@ethersproject/random': 5.5.1
       '@ethersproject/rlp': 5.5.0
       '@ethersproject/sha2': 5.5.0
       '@ethersproject/signing-key': 5.5.0
@@ -6619,14 +6697,6 @@ packages:
   /text-table/0.2.0:
     resolution: {integrity: sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=}
     dev: true
-
-  /three-joystick/1.0.2_three@0.136.0:
-    resolution: {integrity: sha512-HsFuW+2qxlOQVAqOk3FUBfN8Q2tQUtRe7wRLoiSMZmywL+6IAoP+81Iueppe54Qcmj7IKtynxl5hZRQuSvzqQA==}
-    peerDependencies:
-      three: ^0.131.3
-    dependencies:
-      three: 0.136.0
-    dev: false
 
   /three/0.136.0:
     resolution: {integrity: sha512-+fEMX7nYLz2ZesVP/dyifli5Jf8gR3XPAnFJveQ80aMhibFduzrADnjMbARXh8+W9qLK7rshJCjAIL/6cDxC+A==}

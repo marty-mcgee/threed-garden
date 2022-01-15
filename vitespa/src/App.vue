@@ -1,6 +1,9 @@
-<script lang="ts">
+<script setup lang="ts">
+//console.log('HEY HEY HEY -- App.vue')
+import LayoutHeader from './components/LayoutHeader.vue'
 //console.log('HEY HEY HEY -- App.vue')
 
+// VueUse --
 // https://github.com/vueuse/head
 // you can use this to manipulate the document head in any components,
 // they will be rendered correctly in the html results with vite-ssg
@@ -17,6 +20,7 @@
 
 <template>
 	<div id="APP">
+		<layout-header />
 		<div id="nav">
 			<!-- 
 			<router-link to="/">Home</router-link> |
@@ -28,6 +32,7 @@
 			<router-link :to="{ name: 'participate', params: { userId: 123 }}">Participate</router-link>
 		</div>
 		<router-view />
+		<vdapp-board />
 	</div>
 </template>
 
