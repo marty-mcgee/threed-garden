@@ -1,4 +1,4 @@
-import { o as openBlock, j as createElementBlock, k as createBaseVNode, f as defineComponent, u as useRouter, h as useI18n, i as resolveComponent, n as createVNode, l as unref, t as toDisplayString } from "./vendor.js";
+import { p as openBlock, j as createElementBlock, k as createBaseVNode, f as defineComponent, u as useRouter, h as useI18n, i as resolveComponent, n as createVNode, l as unref, t as toDisplayString } from "./vendor.js";
 const _hoisted_1$1 = {
   width: "1.2em",
   height: "1.2em",
@@ -46,7 +46,15 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           createBaseVNode("button", {
             class: "btn m-3 text-sm mt-8",
             onClick: _cache[0] || (_cache[0] = ($event) => unref(router).back())
-          }, toDisplayString(unref(t)("button.back")), 1)
+          }, toDisplayString(unref(t)("button.back")), 1),
+          createBaseVNode("button", {
+            onClick: _cache[1] || (_cache[1] = ($event) => unref(router).go(-1)),
+            class: "btn btn-primary my-5"
+          }, "Go(-1)"),
+          createBaseVNode("button", {
+            onClick: _cache[2] || (_cache[2] = ($event) => unref(router).push("/")),
+            class: "btn btn-secondary my-5"
+          }, "Home")
         ])
       ]);
     };

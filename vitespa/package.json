@@ -1,7 +1,7 @@
 {
   "name": "@companyjuice/threedgarden",
   "description": "ThreeD Garden WP Plugin on Vue 3, using Vite with WindiCSS, and Farmbot JS",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "main": "src/main.ts",
   "repository": {
     "type": "git",
@@ -38,6 +38,7 @@
     "@vueuse/head": "^0.7.4",
     "buffer": "^6.0.3",
     "dat.gui": "^0.7.7",
+    "ethers": "^5.5.3",
     "farmbot": "^14.6.5",
     "nprogress": "^0.2.0",
     "pinia": "^2.0.9",
@@ -45,7 +46,6 @@
     "process": "^0.11.10",
     "rollup": "^2.63.0",
     "three": "^0.136",
-    "three-joystick": "^1.0.2",
     "troisjs": "^0.3.3",
     "util": "^0.12.4",
     "vue": "^3.2.26",

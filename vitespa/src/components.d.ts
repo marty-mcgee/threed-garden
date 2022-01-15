@@ -15,6 +15,7 @@ declare module 'vue' {
     Documentation: typeof import('./components/Documentation.vue')['default']
     FarmBot: typeof import('./components/FarmBot.vue')['default']
     Footer: typeof import('./components/Footer.vue')['default']
+    LayoutHeader: typeof import('./components/LayoutHeader.vue')['default']
     README: typeof import('./components/README.md')['default']
     ThreeDGarden: typeof import('./components/ThreeDGarden.vue')['default']
   }

@@ -48,10 +48,10 @@ import { useMouse, useCounter } from '@vueuse/core'
 const { x, y } = useMouse()
 const { count, inc, dec } = useCounter()
 
-/** END SETUP SCRIPT *************************** */
+/** END SETUP SCRIPT ************************************************* */
 </script>
 <script lang="ts">
-/** BEGIN NORMAL SCRIPT ************************ */
+/** BEGIN NORMAL SCRIPT ********************************************** */
 
 // three.js
 import * as THREE from 'three'

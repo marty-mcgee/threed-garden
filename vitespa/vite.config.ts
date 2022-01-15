@@ -78,7 +78,7 @@ export default defineConfig({
         // https://github.com/antfu/unplugin-icons
         IconsResolver({
           componentPrefix: '',
-          // enabledCollections: ['carbon']
+          enabledCollections: ['carbon']
         }),
       ],
 

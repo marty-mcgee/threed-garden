@@ -1,4 +1,4 @@
-import { f as defineComponent, h as useI18n, o as openBlock, j as createElementBlock, t as toDisplayString, l as unref } from "./vendor.js";
+import { f as defineComponent, h as useI18n, p as openBlock, j as createElementBlock, t as toDisplayString, l as unref } from "./vendor.js";
 var block0 = {};
 const _sfc_main = /* @__PURE__ */ defineComponent({
   setup(__props) {
