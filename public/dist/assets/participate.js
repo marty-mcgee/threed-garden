@@ -34812,14 +34812,14 @@ const debug = false;
 const gui = new GUI$1({ autoPlace: true, closeOnTop: true });
 gui.close();
 gui.domElement.id = "gui";
-let guiFolderRotation = gui.addFolder("Rotation + Animation");
-let guiFolderCameras = gui.addFolder("Camera Position");
-let guiFolderLights = gui.addFolder("Directional Light");
+const guiFolderRotation = gui.addFolder("Rotation + Animation");
+const guiFolderCameras = gui.addFolder("Camera Position");
+const guiFolderLights = gui.addFolder("Directional Light");
 gui.addFolder("Allotments");
 gui.addFolder("Beds");
 gui.addFolder("Plants");
 gui.addFolder("Annotations");
-let guiFolderPlayer = gui.addFolder("Character");
+const guiFolderPlayer = gui.addFolder("Character");
 let scene;
 let plane;
 let camera;
@@ -35837,7 +35837,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
     };
   }
 }));
-var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-46d42996"]]);
+var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-1e80d7b6"]]);
 const _sfc_main = {
   name: "Participate",
   components: {

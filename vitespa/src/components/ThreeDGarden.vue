@@ -79,7 +79,7 @@ import * as dat from 'dat.gui'
 //
 // LOGIC BEGINS HERE ****
 //
-// direct instance creation
+
 const data = { 
   that: this,
   a: 1
@@ -109,16 +109,16 @@ const debugPhysics = false
 const gui = new dat.GUI({ autoPlace: true, closeOnTop: true })
       gui.close()
       gui.domElement.id = "gui"
-      let guiFolderRotation 		= gui.addFolder("Rotation + Animation")
-      //let guiFolderAnimation 	= guiFolderRotation.addFolder("Animation")
-      let guiFolderCameras 		  = gui.addFolder("Camera Position")
-      let guiFolderLights 		  = gui.addFolder("Directional Light")
-      let guiFolderAllotments 	= gui.addFolder("Allotments")
-      let guiFolderBeds 			  = gui.addFolder("Beds")
-      let guiFolderPlants 		  = gui.addFolder("Plants")
-      //let guiFolderInfospots 	= gui.addFolder("Infospots")
-      let guiFolderAnnotations 	= gui.addFolder("Annotations")
-      let guiFolderPlayer 		  = gui.addFolder("Character")
+const guiFolderRotation 		= gui.addFolder("Rotation + Animation")
+//const guiFolderAnimation 	= guiFolderRotation.addFolder("Animation")
+const guiFolderCameras 		  = gui.addFolder("Camera Position")
+const guiFolderLights 		  = gui.addFolder("Directional Light")
+const guiFolderAllotments 	= gui.addFolder("Allotments")
+const guiFolderBeds 			  = gui.addFolder("Beds")
+const guiFolderPlants 		  = gui.addFolder("Plants")
+//const guiFolderInfospots 	= gui.addFolder("Infospots")
+const guiFolderAnnotations 	= gui.addFolder("Annotations")
+const guiFolderPlayer 		  = gui.addFolder("Character")
 
 let scene
 let plane
@@ -278,9 +278,9 @@ const raycaster = new THREE.Raycaster()
 const raycaster2 = new THREE.Raycaster()
 const pointer = new THREE.Vector2()
 // create a Ray with origin at the pointer position and direction into the scene (camera direction)
-// let vector = new THREE.Vector3( pointer.x, pointer.y, 1 )
+// const vector = new THREE.Vector3( pointer.x, pointer.y, 1 )
 // projector.unprojectVector( vector, camera )
-// let raycaster2 = new THREE.Raycaster( 
+// const raycaster2 = new THREE.Raycaster( 
 // 	event.target.camera.position, 
 // 	vector.sub( event.target.camera.position ).normalize() 
 // )
