@@ -19,8 +19,9 @@ import { VueDapp } from 'vue-dapp'
 
 const app = createApp(App)
 
-// setup up pages with layouts
+// setup up pages with layouts as routes
 const routes = setupLayouts(generatedRoutes)
+// router
 const router = createRouter({ history: createWebHashHistory(), routes }) // note: not using createWebHistory()
 app.use(router)
 

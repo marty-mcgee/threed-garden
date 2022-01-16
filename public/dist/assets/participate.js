@@ -17,7 +17,7 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-import { r as ref, f as defineComponent, J as useMouse, K as useCounter, p as openBlock, j as createElementBlock, k as createBaseVNode, q as createTextVNode, t as toDisplayString, l as unref, L as onMounted, M as getCurrentInstance, n as createVNode } from "./vendor.js";
+import { r as ref, f as defineComponent, M as useMouse, O as useCounter, p as openBlock, j as createElementBlock, k as createBaseVNode, q as createTextVNode, t as toDisplayString, l as unref, P as onMounted, Q as getCurrentInstance, n as createVNode } from "./vendor.js";
 import { a as _export_sfc } from "./index.js";
 /**
  * @license
@@ -34797,7 +34797,6 @@ function isWebGL2Supported() {
   return false;
 }
 var isWebGL2Supported_1 = dist.isWebGL2Supported = isWebGL2Supported;
-var ThreeDGarden_vue_vue_type_style_index_0_scoped_true_lang = "";
 const _hoisted_1$1 = { class: "threedgarden" };
 const postdata = window.postdata ? window.postdata : {};
 const pluginName = postdata.plugin_name;
@@ -34914,9 +34913,9 @@ const api_urls = [
   API_URL_PLANTS
 ];
 const root = ref(null);
-function render() {
+const render = () => {
   renderer.render(scene, camera);
-}
+};
 const onWindowResize = () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
@@ -35420,14 +35419,14 @@ const build = async () => {
     await a3(a2);
     console.log("a3 async function (complete)", a3, new Date().toISOString());
   } catch (e) {
-    console.log("error ***", e.message, e);
+    console.log("error ***: ", e);
   }
 };
 const getSceneData = async () => {
   let getDataFromLocalStorage = true;
   if (localStorage && getDataFromLocalStorage && !debug) {
     const getdata = localStorage.getItem("threedgarden") || "";
-    const threedgarden = JSON.parse(getdata);
+    const threedgarden = getdata ? JSON.parse(getdata) : void 0;
     if (threedgarden != void 0) {
       console.log("LOCALSTORAGE ITEM RETRIEVED", threedgarden);
       params.data = threedgarden.data;
@@ -35564,7 +35563,7 @@ const buildScene = async (a5) => {
     antialias: true
   });
   renderer.shadowMap.enabled = true;
-  renderer.setSize(window.innerWidth - 100, window.innerHeight);
+  renderer.setSize(window.innerWidth - 100, window.innerHeight - 100);
   renderer.domElement.camera = camera;
   renderer.domElement.targetList = plane.children;
   renderer.domElement.addEventListener("pointermove", onPointerMove, false);
@@ -35816,7 +35815,12 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
     const { count, inc, dec } = useCounter();
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", _hoisted_1$1, [
-        createBaseVNode("h3", null, [
+        createBaseVNode("div", {
+          id: "webgl",
+          ref_key: "root",
+          ref: root
+        }, null, 512),
+        createBaseVNode("h6", null, [
           createTextVNode(" Mouse: x=" + toDisplayString(unref(x)) + " y=" + toDisplayString(unref(y)) + " | Counter: " + toDisplayString(unref(count)) + " ", 1),
           createBaseVNode("a", {
             onClick: _cache[0] || (_cache[0] = ($event) => unref(inc)()),
@@ -35825,23 +35829,15 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
           createBaseVNode("a", {
             onClick: _cache[1] || (_cache[1] = ($event) => unref(dec)())
           }, "-")
-        ]),
-        createBaseVNode("h1", null, toDisplayString(__props.msg), 1),
-        createBaseVNode("h2", null, toDisplayString(__props.subtitle), 1),
-        createBaseVNode("div", {
-          id: "webgl",
-          ref_key: "root",
-          ref: root
-        }, null, 512)
+        ])
       ]);
     };
   }
 }));
-var __unplugin_components_0 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-350a1465"]]);
 const _sfc_main = {
   name: "Participate",
   components: {
-    ThreeDGarden: __unplugin_components_0
+    ThreeDGarden: _sfc_main$1
   },
   data() {
     return {
@@ -35851,7 +35847,7 @@ const _sfc_main = {
 };
 const _hoisted_1 = { class: "participate" };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
-  const _component_ThreeDGarden = __unplugin_components_0;
+  const _component_ThreeDGarden = _sfc_main$1;
   return openBlock(), createElementBlock("div", _hoisted_1, [
     createVNode(_component_ThreeDGarden, {
       msg: "",

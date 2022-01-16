@@ -1,19 +1,19 @@
 <template>
   <div class="threedgarden">
-    <h3>
-      Mouse: x={{x}} y={{y}} |
-      Counter: {{count}}
-      <a @click='inc()' style='margin-right:10px'>+</a>
-      <a @click='dec()'>-</a>
-      <!-- Mode: {{params.mode}} -->
-    </h3>
-    <h1>{{ msg }}</h1>
-    <h2>{{ subtitle }}</h2>
+    <!-- <h1>{{ msg }}</h1> -->
+    <!-- <h2>{{ subtitle }}</h2> -->
     <!-- {{isWebGLSupported() ? ( -->
       <div id="webgl" ref="root"></div>
     <!-- ) : (
       <div>WebGL is not supported</div>
     )}} -->
+    <h6>
+      Mouse: x={{x}} y={{y}} |
+      Counter: {{count}}
+      <a @click='inc()' style='margin-right:10px'>+</a>
+      <a @click='dec()'>-</a>
+      <!-- Mode: {{params.mode}} -->
+    </h6>
   </div>
 </template>
 
@@ -308,7 +308,7 @@ const root = ref(null)
 /** FUNCTIONS */
 
 // render scene + camera
-function render() {
+const render = () => {
     renderer.render(scene, camera)
 }
 
@@ -1914,7 +1914,7 @@ const build = async () => {
     console.log("a3 async function (complete)", a3, new Date().toISOString())
 
   } catch (e) {
-    console.log("error ***", e.message, e)
+    console.log("error ***: ", e)
   }
 
   // const preloader = new Preloader(options)
@@ -1929,8 +1929,8 @@ const getSceneData = async () => {
 
   // LOCALSTORAGE -- look for data in localStorage first
   if (localStorage && getDataFromLocalStorage && !debug) {
-    const getdata = localStorage.getItem('threedgarden') || ""
-    const threedgarden = JSON.parse(getdata)
+    const getdata = localStorage.getItem('threedgarden') || ''
+    const threedgarden = getdata ? JSON.parse(getdata) : undefined
     if (threedgarden != undefined) {
       console.log("LOCALSTORAGE ITEM RETRIEVED", threedgarden)
       //this.threedgarden = threedgarden
@@ -2184,7 +2184,7 @@ const buildScene = async (a5) => {
   )
   renderer.shadowMap.enabled = true
   //renderer.setSize(window.innerWidth - 240, window.innerHeight - 100) //admin
-  renderer.setSize(window.innerWidth -100, window.innerHeight) //public
+  renderer.setSize(window.innerWidth - 100, window.innerHeight - 100) //public
 
   // utilize javascript prototyping.. add variables to the dom element :)
   renderer.domElement.camera = camera
@@ -3250,33 +3250,3 @@ function buildNewPost( postObject ) {
 
 </script>
 -->
-
-<style scoped>
-.threedgarden {
-  margin-bottom: 0px;
-}
-html, body, h1, h2, h3, p {
-  font-family: 'Noto Serif', serif;
-  user-select: none;
-}
-#app {
-  text-align: center;
-  color: rgba(0,0,0,0.4);
-}
-img {
-  width: 500px;
-}
-a {
-  color: #96bc33;
-  text-decoration: none;
-  cursor: pointer;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-</style>

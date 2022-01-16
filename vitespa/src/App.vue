@@ -16,39 +16,27 @@ import LayoutHeader from './components/LayoutHeader.vue'
 //   //   { name: 'description', content: '3D Virtual Homestead' }
 //   // ]
 // })
+
+// vue dapp
+
+// window.global = window
+// let global = globalThis
+
+import process from 'process'
+window.process = process
+
+import buffer from 'buffer'
+window.Buffer = buffer.Buffer
+
+import util from 'util'
+window.util = util
+
 </script>
 
 <template>
 	<div id="APP">
 		<layout-header />
-		<div id="nav">
-			<!-- 
-			<router-link to="/">Home</router-link> |
-			<router-link to="about">About</router-link> |
-			<router-link to="participate">Participate</router-link>
-			-->
-			<router-link :to="{ name: 'index', params: { userId: 123 }}">Home</router-link> |
-			<router-link :to="{ name: 'about', params: { userId: 123 }}">About</router-link> |
-			<router-link :to="{ name: 'participate', params: { userId: 123 }}">Participate</router-link>
-		</div>
 		<router-view />
 		<vdapp-board />
 	</div>
 </template>
-
-<style scoped>
-#nav {
-	text-align: center;
-}
-#nav a {
-	color: #72931f;
-	text-decoration: none;
-	cursor: pointer;
-}
-#nav a:hover, 
-#nav a:active {
-	color: #96bc33;
-	text-decoration: underline;
-	cursor: pointer;
-}
-</style>
