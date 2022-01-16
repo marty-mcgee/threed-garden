@@ -1,12 +1,12 @@
-#nav[data-v-ec3e149c] {
+#nav[data-v-02f55bb9] {
   text-align: center;
 }
-#nav a[data-v-ec3e149c] {
+#nav a[data-v-02f55bb9] {
   color: #72931f;
   text-decoration: none;
   cursor: pointer;
 }
-#nav a[data-v-ec3e149c]:hover, #nav a[data-v-ec3e149c]:active {
+#nav a[data-v-02f55bb9]:hover, #nav a[data-v-02f55bb9]:active {
   color: #96bc33;
   text-decoration: underline;
   cursor: pointer;
@@ -1240,7 +1240,7 @@ html.dark, html.dark .main-page-wrapper {
   width: 100%;
   height: 2px;
 }
-.btn {
+.btn-1 {
   --tw-bg-opacity: 1;
   background-color: rgba(220, 38, 38, var(--tw-bg-opacity));
   border-radius: 0.25rem;
@@ -1253,15 +1253,42 @@ html.dark, html.dark .main-page-wrapper {
   --tw-text-opacity: 1;
   color: rgba(255, 255, 255, var(--tw-text-opacity));
 }
-.btn:hover {
+.btn-1:hover {
   --tw-bg-opacity: 1;
   background-color: rgba(185, 28, 28, var(--tw-bg-opacity));
 }
-.btn:disabled {
+.btn-1:disabled {
   --tw-bg-opacity: 1;
   background-color: rgba(75, 85, 99, var(--tw-bg-opacity));
   cursor: default;
   opacity: 0.5;
+}
+.btn {
+  --tw-bg-opacity: 1;
+  background-color: rgba(243, 244, 246, var(--tw-bg-opacity));
+  border-radius: 0.25rem;
+  cursor: pointer;
+  display: inline-block;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  --tw-text-opacity: 1;
+  color: rgba(75, 85, 99, var(--tw-text-opacity));
+}
+.btn:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgba(229, 231, 235, var(--tw-bg-opacity));
+}
+.btn:disabled {
+  --tw-bg-opacity: 1;
+  background-color: rgba(243, 244, 246, var(--tw-bg-opacity));
+  cursor: default;
+  opacity: 0.7;
+}
+.btn:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 .icon-btn {
   cursor: pointer;
