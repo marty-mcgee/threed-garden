@@ -1,12 +1,12 @@
-#nav[data-v-c785b126] {
+#nav[data-v-ec3e149c] {
   text-align: center;
 }
-#nav a[data-v-c785b126] {
+#nav a[data-v-ec3e149c] {
   color: #72931f;
   text-decoration: none;
   cursor: pointer;
 }
-#nav a[data-v-c785b126]:hover, #nav a[data-v-c785b126]:active {
+#nav a[data-v-ec3e149c]:hover, #nav a[data-v-ec3e149c]:active {
   color: #96bc33;
   text-decoration: underline;
   cursor: pointer;
@@ -84,10 +84,10 @@ html {
   font-family: ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
   line-height: 1.5;
 }
-h1, h2, pre, p, h3 {
+h1, h2, pre, p, h3, h6 {
   margin: 0;
 }
-h1, h2, h3 {
+h1, h2, h3, h6 {
   font-size: inherit;
   font-weight: inherit;
 }
@@ -849,6 +849,22 @@ html.dark .prose {
   --prism-line-number-gutter: #eeeeee;
   --prism-line-highlight-background: #444444;
   --prism-selection-background: #444444;
+}
+.threedgarden {
+  margin-bottom: 0px;
+}
+a {
+  color: #96bc33;
+  text-decoration: none;
+  cursor: pointer;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+li {
+  display: inline-block;
+  margin: 0 10px;
 }
 .planting_plan_bed_plant_schedule {
   background-color: #999999;
@@ -1664,30 +1680,4 @@ html.dark, html.dark .main-page-wrapper {
     font-size: 1.25rem;
     line-height: 1.75rem;
   }
-}.threedgarden[data-v-350a1465] {
-  margin-bottom: 0px;
-}
-html[data-v-350a1465], body[data-v-350a1465], h1[data-v-350a1465], h2[data-v-350a1465], h3[data-v-350a1465], p[data-v-350a1465] {
-  font-family: 'Noto Serif', serif;
-  user-select: none;
-}
-#app[data-v-350a1465] {
-  text-align: center;
-  color: rgba(0,0,0,0.4);
-}
-img[data-v-350a1465] {
-  width: 500px;
-}
-a[data-v-350a1465] {
-  color: #96bc33;
-  text-decoration: none;
-  cursor: pointer;
-}
-ul[data-v-350a1465] {
-  list-style-type: none;
-  padding: 0;
-}
-li[data-v-350a1465] {
-  display: inline-block;
-  margin: 0 10px;
 }

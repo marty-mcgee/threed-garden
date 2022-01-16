@@ -176,7 +176,7 @@ export default defineConfig({
     // https://github.com/antfu/vite-plugin-inspect
     Inspect({
       // change this to enable inspect for debugging
-      enabled: true,
+      enabled: false,
     }),
   ],
 
