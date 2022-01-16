@@ -77,7 +77,7 @@ function add_type_attribute($tag, $handle, $src) {
 }
 
 // [MM] CUSTOM HELPERS (testing)
-require_once __DIR__ . '/public/helpers.php';
+//require_once __DIR__ . '/public/helpers.php';
 
 /**
  * Begins execution of the plugin.
