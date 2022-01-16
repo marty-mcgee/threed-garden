@@ -46,15 +46,13 @@ Object.values(import.meta.globEager('./modules/*.ts')).map(i => i.install?.({ ap
 // window.util = util
 
 // Ethereum: Vue Dapp
-//app.use(VueDapp) //, 
-// {
-// //   infuraId: '...', // optional: for enabling WalletConnect and/or WalletLink
-// //   appName: '...', // optional: for enabling WalletLink
-// //   appUrl: '...', // optional: for enabling MetaMask deep link for mobile devices
+app.use(VueDapp) 
+// app.use(VueDapp, {
+//   infuraId: '27e484dcd9e3efcfd25a83a78777cdf1',
+//   infuraId: '...', // optional: for enabling WalletConnect and/or WalletLink
+//   appName: '...', // optional: for enabling WalletLink
+//   appUrl: '...', // optional: for enabling MetaMask deep link for mobile devices
 // })
-app.use(VueDapp, {
-  infuraId: '',
-})
 
 console.log("vue dapp (app.use)", app)
 

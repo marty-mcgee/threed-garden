@@ -1343,9 +1343,7 @@ Object.values({ "./modules/head.ts": __glob_11_0, "./modules/i18n.ts": __glob_11
   var _a;
   return (_a = i.install) == null ? void 0 : _a.call(i, { app, router, routes });
 });
-app.use(VueDapp, {
-  infuraId: ""
-});
+app.use(VueDapp);
 console.log("vue dapp (app.use)", app);
 app.mount("#app");
 console.log("vue app (mounted)", app);
