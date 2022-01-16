@@ -11,8 +11,8 @@
       "src/pages/other-page.vue",
       "src/pages/participate.vue",
       "src/pages/README.md",
-      "src/pages/hi/[name].vue",
       "src/pages/[...all].vue",
+      "src/pages/hi/[name].vue",
       "src/layouts/404.vue",
       "src/layouts/home.vue"
     ],
@@ -57,6 +57,14 @@
       "_vendor.js"
     ]
   },
+  "src/pages/[...all].vue": {
+    "file": "assets/_...all_.js",
+    "src": "src/pages/[...all].vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor.js"
+    ]
+  },
   "src/pages/hi/[name].vue": {
     "file": "assets/_name_.js",
     "src": "src/pages/hi/[name].vue",
@@ -64,14 +72,6 @@
     "imports": [
       "_vendor.js",
       "index.html"
-    ]
-  },
-  "src/pages/[...all].vue": {
-    "file": "assets/_...all_.js",
-    "src": "src/pages/[...all].vue",
-    "isDynamicEntry": true,
-    "imports": [
-      "_vendor.js"
     ]
   },
   "src/layouts/404.vue": {

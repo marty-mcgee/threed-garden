@@ -1,4 +1,19 @@
 <script setup lang="ts">
+
+// vue dapp
+
+window.global = window
+let global = globalThis
+
+import process from 'process'
+window.process = process
+
+import buffer from 'buffer'
+window.Buffer = buffer.Buffer
+
+import util from 'util'
+window.util = util
+
 import { useBoard, useEthers, displayEther, shortenAddress } from 'vue-dapp'
 
 const { open } = useBoard()

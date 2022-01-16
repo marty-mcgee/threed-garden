@@ -17,7 +17,7 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-import { c as createHead, a as createI18n, N as NProgress, b as createPinia, d as defineStore, r as ref, e as computed, f as defineComponent, u as useRouter, g as useHead, h as useI18n, i as resolveComponent, j as createElementBlock, k as createBaseVNode, l as unref, t as toDisplayString, w as withDirectives, v as vModelText, m as withKeys, n as createVNode, o as withCtx, p as openBlock, q as createTextVNode, s as createStaticVNode, x as useDark, y as useToggle, z as createBlock, A as useEthers, B as shortenAddress, C as displayEther, D as pushScopeId, E as popScopeId, F as useBoard, G as process, H as buffer, I as util, J as createApp, K as createRouter, L as createWebHashHistory, V as VueDapp } from "./vendor.js";
+import { c as createHead, a as createI18n, N as NProgress, b as createPinia, d as defineStore, r as ref, e as computed, f as defineComponent, u as useRouter, g as useHead, h as useI18n, i as resolveComponent, j as createElementBlock, k as createBaseVNode, l as unref, t as toDisplayString, w as withDirectives, v as vModelText, m as withKeys, n as createVNode, o as withCtx, p as openBlock, q as createTextVNode, s as createStaticVNode, x as useDark, y as useToggle, z as createBlock, A as process, B as buffer, C as util, D as useEthers, E as shortenAddress, F as displayEther, G as pushScopeId, H as popScopeId, I as useBoard, J as createApp, K as createRouter, L as createWebHashHistory, V as VueDapp } from "./vendor.js";
 const p = function polyfill() {
   const relList = document.createElement("link").relList;
   if (relList && relList.supports && relList.supports("modulepreload")) {
@@ -1001,7 +1001,7 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
 });
 if (typeof block0 === "function")
   block0(_sfc_main$4);
-const routes$1 = [{ "name": "about", "path": "/about", "component": () => __vitePreload(() => import("./about.js"), true ? ["assets/about.js","assets/vendor.js"] : void 0), "props": true }, { "name": "index", "path": "/", "component": _sfc_main$4, "props": true, "meta": { "layout": "home" } }, { "name": "other-page", "path": "/other-page", "component": () => __vitePreload(() => import("./other-page.js"), true ? ["assets/other-page.js","assets/vendor.js"] : void 0), "props": true, "meta": { "layout": "home", "name": "other-page" } }, { "name": "participate", "path": "/participate", "component": () => __vitePreload(() => import("./participate.js"), true ? ["assets/participate.js","assets/vendor.js"] : void 0), "props": true }, { "name": "README", "path": "/readme", "component": () => __vitePreload(() => import("./README.js"), true ? ["assets/README.js","assets/vendor.js"] : void 0), "props": true }, { "name": "hi-name", "path": "/hi/:name", "component": () => __vitePreload(() => import("./_name_.js"), true ? ["assets/_name_.js","assets/vendor.js"] : void 0), "props": true }, { "name": "all", "path": "/:all(.*)*", "component": () => __vitePreload(() => import("./_...all_.js"), true ? ["assets/_...all_.js","assets/vendor.js"] : void 0), "props": true, "meta": { "layout": 404 } }];
+const routes$1 = [{ "name": "about", "path": "/about", "component": () => __vitePreload(() => import("./about.js"), true ? ["assets/about.js","assets/vendor.js"] : void 0), "props": true }, { "name": "index", "path": "/", "component": _sfc_main$4, "props": true, "meta": { "layout": "home" } }, { "name": "other-page", "path": "/other-page", "component": () => __vitePreload(() => import("./other-page.js"), true ? ["assets/other-page.js","assets/vendor.js"] : void 0), "props": true, "meta": { "layout": "home", "name": "other-page" } }, { "name": "participate", "path": "/participate", "component": () => __vitePreload(() => import("./participate.js"), true ? ["assets/participate.js","assets/vendor.js"] : void 0), "props": true }, { "name": "README", "path": "/readme", "component": () => __vitePreload(() => import("./README.js"), true ? ["assets/README.js","assets/vendor.js"] : void 0), "props": true }, { "name": "all", "path": "/:all(.*)*", "component": () => __vitePreload(() => import("./_...all_.js"), true ? ["assets/_...all_.js","assets/vendor.js"] : void 0), "props": true, "meta": { "layout": 404 } }, { "name": "hi-name", "path": "/hi/:name", "component": () => __vitePreload(() => import("./_name_.js"), true ? ["assets/_name_.js","assets/vendor.js"] : void 0), "props": true }];
 const _hoisted_1$9 = {
   width: "1.2em",
   height: "1.2em",
@@ -1224,7 +1224,7 @@ function setupLayouts(routes2) {
   });
 }
 var LayoutHeader_vue_vue_type_style_index_0_scoped_true_lang = "";
-const _withScopeId = (n) => (pushScopeId("data-v-ec3e149c"), n = n(), popScopeId(), n);
+const _withScopeId = (n) => (pushScopeId("data-v-02f55bb9"), n = n(), popScopeId(), n);
 const _hoisted_1$1 = { class: "w-full px-4" };
 const _hoisted_2 = { class: "flex justify-between p-4 px-3" };
 const _hoisted_3 = {
@@ -1254,6 +1254,10 @@ const _hoisted_13 = { class: "px-1 mr-1" };
 const _hoisted_14 = { class: "py-2 px-3 rounded-2xl inline-block bg-gray-100" };
 const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   setup(__props) {
+    window.global = window;
+    window.process = process;
+    window.Buffer = buffer.Buffer;
+    window.util = util;
     const { open } = useBoard();
     const { address, balance, isActivated } = useEthers();
     return (_ctx, _cache) => {
@@ -1310,13 +1314,12 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var LayoutHeader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-ec3e149c"]]);
+var LayoutHeader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-02f55bb9"]]);
 const _hoisted_1 = { id: "APP" };
+console.log("HEY HEY HEY -- App.vue 2");
 const _sfc_main = /* @__PURE__ */ defineComponent({
   setup(__props) {
-    window.process = process;
-    window.Buffer = buffer.Buffer;
-    window.util = util;
+    console.log("HEY HEY HEY -- App.vue 1");
     return (_ctx, _cache) => {
       const _component_router_view = resolveComponent("router-view");
       const _component_vdapp_board = resolveComponent("vdapp-board");

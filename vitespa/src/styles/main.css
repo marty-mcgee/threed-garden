@@ -30,11 +30,17 @@ html.dark .main-page-wrapper {
   height: 2px;
 }
 
-.btn {
+.btn-1 {
   @apply px-4 py-1 rounded inline-block
     bg-red-600 text-white cursor-pointer
     hover:bg-red-700
     disabled:cursor-default disabled:bg-gray-600 disabled:opacity-50;
+}
+.btn {
+  @apply px-6 py-3 rounded inline-block
+    bg-gray-100 text-gray-600 cursor-pointer
+    hover:bg-gray-200 focus:outline-none
+    disabled:cursor-default disabled:opacity-70 disabled:bg-gray-100;
 }
 
 .icon-btn {

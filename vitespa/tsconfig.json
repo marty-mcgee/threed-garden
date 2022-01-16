@@ -22,8 +22,11 @@
     "paths": {
       "~/*": ["src/*"]
     },
-    "sourceMap": false,
-    "allowJs": true
+    "sourceMap": true,
+    "allowJs": true,
+    "useDefineForClassFields": true,
+    "jsx": "preserve"
   },
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["dist", "node_modules"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
 }

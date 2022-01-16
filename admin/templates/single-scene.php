@@ -31,7 +31,7 @@ get_header();
     window.global = window
     let global = globalThis
 	</script>
-  <!--
+  <!-- 
 	<script type="module">
     import process from 'process'
     window.process = process
@@ -43,8 +43,9 @@ get_header();
 	<script type="module">
     import util from 'util'
     window.util = util
-	</script>
-	-->
+	</script> 
+  -->
+	
 
 	<!-- vue app -->
 	<div id="app"></div>
