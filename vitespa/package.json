@@ -1,7 +1,7 @@
 {
   "name": "@companyjuice/threedgarden",
   "description": "ThreeD Garden WP Plugin on Vue 3, using Vite with WindiCSS, and Farmbot JS",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "main": "src/main.ts",
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
     "mm": "cls && echo %DATE% %TIME% && vite build",
     "build": "vite build",
     "dev": "vite --port 3333 --open --host",
+    "serve": "vite preview",
     "lint": "eslint \"**/*.{vue,ts,js}\"",
     "preview": "vite preview",
     "preview-https": "serve dist",
