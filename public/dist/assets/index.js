@@ -17,7 +17,7 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-import { c as createHead, a as createI18n, N as NProgress, b as createPinia, d as defineStore, r as ref, e as computed, f as defineComponent, u as useRouter, g as useHead, h as useI18n, i as resolveComponent, j as createElementBlock, k as createBaseVNode, l as unref, t as toDisplayString, w as withDirectives, v as vModelText, m as withKeys, n as createVNode, o as withCtx, p as openBlock, q as createTextVNode, s as createStaticVNode, x as useDark, y as useToggle, z as createBlock, A as process, B as buffer, C as util, D as useEthers, E as shortenAddress, F as displayEther, G as pushScopeId, H as popScopeId, I as useBoard, J as createApp, K as createRouter, L as createWebHashHistory, V as VueDapp } from "./vendor.js";
+import { c as createHead, a as createI18n, N as NProgress, b as createPinia, d as defineStore, r as ref, e as computed, f as defineComponent, u as useRouter, g as useHead, h as useI18n, i as resolveComponent, j as createElementBlock, k as createBaseVNode, l as unref, t as toDisplayString, w as withDirectives, v as vModelText, m as withKeys, n as createVNode, o as withCtx, p as openBlock, q as createTextVNode, s as createStaticVNode, x as useDark, y as useToggle, z as createBlock, A as process, B as buffer, C as util, D as useEthers, E as shortenAddress, F as displayEther, G as pushScopeId, H as popScopeId, I as useBoard, W as WalletConnectProvider, J as lib, K as createApp, L as createRouter, M as createWebHashHistory, V as VueDapp } from "./vendor.js";
 const p = function polyfill() {
   const relList = document.createElement("link").relList;
   if (relList && relList.supports && relList.supports("modulepreload")) {
@@ -1316,6 +1316,11 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
 });
 var LayoutHeader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-02f55bb9"]]);
 const _hoisted_1 = { id: "APP" };
+const provider = new WalletConnectProvider({
+  infuraId: "432d743bb1d944268c6e3725f243a7e0"
+});
+const web3 = new lib(provider);
+console.log("vue web3 (provider)", web3, provider);
 console.log("HEY HEY HEY -- App.vue 2");
 const _sfc_main = /* @__PURE__ */ defineComponent({
   setup(__props) {
@@ -1343,7 +1348,9 @@ Object.values({ "./modules/head.ts": __glob_11_0, "./modules/i18n.ts": __glob_11
   var _a;
   return (_a = i.install) == null ? void 0 : _a.call(i, { app, router, routes });
 });
-app.use(VueDapp);
+app.use(VueDapp, {
+  infuraId: "432d743bb1d944268c6e3725f243a7e0"
+});
 console.log("vue dapp (app.use)", app);
 app.mount("#app");
 console.log("vue app (mounted)", app);
