@@ -1,4 +1,4 @@
-import { p as openBlock, j as createElementBlock, k as createBaseVNode, f as defineComponent, u as useRouter, h as useI18n, i as resolveComponent, n as createVNode, l as unref, t as toDisplayString } from "./vendor.js";
+import { p as openBlock, i as createElementBlock, j as createBaseVNode, f as defineComponent, u as useRouter, h as useI18n, m as createVNode, k as unref, t as toDisplayString, o as resolveComponent } from "./vendor.js";
 const _hoisted_1$1 = {
   width: "1.2em",
   height: "1.2em",

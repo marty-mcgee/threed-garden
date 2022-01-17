@@ -1,4 +1,4 @@
-import { f as defineComponent, g as useHead, i as resolveComponent, p as openBlock, j as createElementBlock, k as createBaseVNode, t as toDisplayString, n as createVNode, o as withCtx, q as createTextVNode } from "./vendor.js";
+import { f as defineComponent, g as useHead, o as resolveComponent, p as openBlock, i as createElementBlock, j as createBaseVNode, t as toDisplayString, m as createVNode, n as withCtx, q as createTextVNode } from "./vendor.js";
 var block0 = {};
 const _sfc_main = /* @__PURE__ */ defineComponent({
   setup(__props) {

@@ -1,5 +1,5 @@
 import { a as _export_sfc, b as _sfc_main$1 } from "./index.js";
-import { i as resolveComponent, j as createElementBlock, n as createVNode, k as createBaseVNode, p as openBlock } from "./vendor.js";
+import { i as createElementBlock, m as createVNode, j as createBaseVNode, o as resolveComponent, p as openBlock } from "./vendor.js";
 const _sfc_main = {};
 const _hoisted_1 = { class: "px-4 py-10 text-center text-gray-700 dark:text-gray-200" };
 const _hoisted_2 = /* @__PURE__ */ createBaseVNode("div", { class: "mt-5 mx-auto text-center opacity-25 text-sm" }, " [Home Layout] ", -1);

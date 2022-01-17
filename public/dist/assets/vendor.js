@@ -987,7 +987,7 @@ function toRef(object2, key3, defaultValue) {
   return isRef(val) ? val : new ObjectRefImpl(object2, key3, defaultValue);
 }
 class ComputedRefImpl {
-  constructor(getter, _setter, isReadonly2) {
+  constructor(getter, _setter, isReadonly2, isSSR) {
     this._setter = _setter;
     this.dep = void 0;
     this._dirty = true;
@@ -998,6 +998,7 @@ class ComputedRefImpl {
         triggerRefValue(this);
       }
     });
+    this.effect.active = !isSSR;
     this["__v_isReadonly"] = isReadonly2;
   }
   get value() {
@@ -1013,7 +1014,7 @@ class ComputedRefImpl {
     this._setter(newValue);
   }
 }
-function computed(getterOrOptions, debugOptions) {
+function computed$1(getterOrOptions, debugOptions, isSSR = false) {
   let getter;
   let setter;
   const onlyGetter = isFunction$6(getterOrOptions);
@@ -1024,10 +1025,188 @@ function computed(getterOrOptions, debugOptions) {
     getter = getterOrOptions.get;
     setter = getterOrOptions.set;
   }
-  const cRef = new ComputedRefImpl(getter, setter, onlyGetter || !setter);
+  const cRef = new ComputedRefImpl(getter, setter, onlyGetter || !setter, isSSR);
   return cRef;
 }
 Promise.resolve();
+function callWithErrorHandling(fn, instance, type, args) {
+  let res;
+  try {
+    res = args ? fn(...args) : fn();
+  } catch (err) {
+    handleError(err, instance, type);
+  }
+  return res;
+}
+function callWithAsyncErrorHandling(fn, instance, type, args) {
+  if (isFunction$6(fn)) {
+    const res = callWithErrorHandling(fn, instance, type, args);
+    if (res && isPromise$1(res)) {
+      res.catch((err) => {
+        handleError(err, instance, type);
+      });
+    }
+    return res;
+  }
+  const values = [];
+  for (let i2 = 0; i2 < fn.length; i2++) {
+    values.push(callWithAsyncErrorHandling(fn[i2], instance, type, args));
+  }
+  return values;
+}
+function handleError(err, instance, type, throwInDev = true) {
+  const contextVNode = instance ? instance.vnode : null;
+  if (instance) {
+    let cur = instance.parent;
+    const exposedInstance = instance.proxy;
+    const errorInfo = type;
+    while (cur) {
+      const errorCapturedHooks = cur.ec;
+      if (errorCapturedHooks) {
+        for (let i2 = 0; i2 < errorCapturedHooks.length; i2++) {
+          if (errorCapturedHooks[i2](err, exposedInstance, errorInfo) === false) {
+            return;
+          }
+        }
+      }
+      cur = cur.parent;
+    }
+    const appErrorHandler = instance.appContext.config.errorHandler;
+    if (appErrorHandler) {
+      callWithErrorHandling(appErrorHandler, null, 10, [err, exposedInstance, errorInfo]);
+      return;
+    }
+  }
+  logError(err, type, contextVNode, throwInDev);
+}
+function logError(err, type, contextVNode, throwInDev = true) {
+  {
+    console.error(err);
+  }
+}
+let isFlushing = false;
+let isFlushPending = false;
+const queue$2 = [];
+let flushIndex = 0;
+const pendingPreFlushCbs = [];
+let activePreFlushCbs = null;
+let preFlushIndex = 0;
+const pendingPostFlushCbs = [];
+let activePostFlushCbs = null;
+let postFlushIndex = 0;
+const resolvedPromise = Promise.resolve();
+let currentFlushPromise = null;
+let currentPreFlushParentJob = null;
+function nextTick$1(fn) {
+  const p2 = currentFlushPromise || resolvedPromise;
+  return fn ? p2.then(this ? fn.bind(this) : fn) : p2;
+}
+function findInsertionIndex(id2) {
+  let start = flushIndex + 1;
+  let end = queue$2.length;
+  while (start < end) {
+    const middle = start + end >>> 1;
+    const middleJobId = getId(queue$2[middle]);
+    middleJobId < id2 ? start = middle + 1 : end = middle;
+  }
+  return start;
+}
+function queueJob(job) {
+  if ((!queue$2.length || !queue$2.includes(job, isFlushing && job.allowRecurse ? flushIndex + 1 : flushIndex)) && job !== currentPreFlushParentJob) {
+    if (job.id == null) {
+      queue$2.push(job);
+    } else {
+      queue$2.splice(findInsertionIndex(job.id), 0, job);
+    }
+    queueFlush();
+  }
+}
+function queueFlush() {
+  if (!isFlushing && !isFlushPending) {
+    isFlushPending = true;
+    currentFlushPromise = resolvedPromise.then(flushJobs);
+  }
+}
+function invalidateJob(job) {
+  const i2 = queue$2.indexOf(job);
+  if (i2 > flushIndex) {
+    queue$2.splice(i2, 1);
+  }
+}
+function queueCb(cb, activeQueue, pendingQueue, index2) {
+  if (!isArray$a(cb)) {
+    if (!activeQueue || !activeQueue.includes(cb, cb.allowRecurse ? index2 + 1 : index2)) {
+      pendingQueue.push(cb);
+    }
+  } else {
+    pendingQueue.push(...cb);
+  }
+  queueFlush();
+}
+function queuePreFlushCb(cb) {
+  queueCb(cb, activePreFlushCbs, pendingPreFlushCbs, preFlushIndex);
+}
+function queuePostFlushCb(cb) {
+  queueCb(cb, activePostFlushCbs, pendingPostFlushCbs, postFlushIndex);
+}
+function flushPreFlushCbs(seen, parentJob = null) {
+  if (pendingPreFlushCbs.length) {
+    currentPreFlushParentJob = parentJob;
+    activePreFlushCbs = [...new Set(pendingPreFlushCbs)];
+    pendingPreFlushCbs.length = 0;
+    for (preFlushIndex = 0; preFlushIndex < activePreFlushCbs.length; preFlushIndex++) {
+      activePreFlushCbs[preFlushIndex]();
+    }
+    activePreFlushCbs = null;
+    preFlushIndex = 0;
+    currentPreFlushParentJob = null;
+    flushPreFlushCbs(seen, parentJob);
+  }
+}
+function flushPostFlushCbs(seen) {
+  if (pendingPostFlushCbs.length) {
+    const deduped = [...new Set(pendingPostFlushCbs)];
+    pendingPostFlushCbs.length = 0;
+    if (activePostFlushCbs) {
+      activePostFlushCbs.push(...deduped);
+      return;
+    }
+    activePostFlushCbs = deduped;
+    activePostFlushCbs.sort((a2, b2) => getId(a2) - getId(b2));
+    for (postFlushIndex = 0; postFlushIndex < activePostFlushCbs.length; postFlushIndex++) {
+      activePostFlushCbs[postFlushIndex]();
+    }
+    activePostFlushCbs = null;
+    postFlushIndex = 0;
+  }
+}
+const getId = (job) => job.id == null ? Infinity : job.id;
+function flushJobs(seen) {
+  isFlushPending = false;
+  isFlushing = true;
+  flushPreFlushCbs(seen);
+  queue$2.sort((a2, b2) => getId(a2) - getId(b2));
+  const check = NOOP;
+  try {
+    for (flushIndex = 0; flushIndex < queue$2.length; flushIndex++) {
+      const job = queue$2[flushIndex];
+      if (job && job.active !== false) {
+        if (false)
+          ;
+        callWithErrorHandling(job, null, 14);
+      }
+    }
+  } finally {
+    flushIndex = 0;
+    queue$2.length = 0;
+    flushPostFlushCbs();
+    isFlushing = false;
+    currentFlushPromise = null;
+    if (queue$2.length || pendingPreFlushCbs.length || pendingPostFlushCbs.length) {
+      flushJobs(seen);
+    }
+  }
+}
 function emit$1(instance, event, ...rawArgs) {
   const props = instance.vnode.props || EMPTY_OBJ;
   let args = rawArgs;
@@ -1316,6 +1495,189 @@ function inject(key3, defaultValue, treatDefaultAsFactory = false) {
     } else
       ;
   }
+}
+function watchEffect(effect, options) {
+  return doWatch(effect, null, options);
+}
+const INITIAL_WATCHER_VALUE = {};
+function watch(source, cb, options) {
+  return doWatch(source, cb, options);
+}
+function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EMPTY_OBJ) {
+  const instance = currentInstance;
+  let getter;
+  let forceTrigger = false;
+  let isMultiSource = false;
+  if (isRef(source)) {
+    getter = () => source.value;
+    forceTrigger = !!source._shallow;
+  } else if (isReactive(source)) {
+    getter = () => source;
+    deep = true;
+  } else if (isArray$a(source)) {
+    isMultiSource = true;
+    forceTrigger = source.some(isReactive);
+    getter = () => source.map((s2) => {
+      if (isRef(s2)) {
+        return s2.value;
+      } else if (isReactive(s2)) {
+        return traverse(s2);
+      } else if (isFunction$6(s2)) {
+        return callWithErrorHandling(s2, instance, 2);
+      } else
+        ;
+    });
+  } else if (isFunction$6(source)) {
+    if (cb) {
+      getter = () => callWithErrorHandling(source, instance, 2);
+    } else {
+      getter = () => {
+        if (instance && instance.isUnmounted) {
+          return;
+        }
+        if (cleanup) {
+          cleanup();
+        }
+        return callWithAsyncErrorHandling(source, instance, 3, [onCleanup]);
+      };
+    }
+  } else {
+    getter = NOOP;
+  }
+  if (cb && deep) {
+    const baseGetter = getter;
+    getter = () => traverse(baseGetter());
+  }
+  let cleanup;
+  let onCleanup = (fn) => {
+    cleanup = effect.onStop = () => {
+      callWithErrorHandling(fn, instance, 4);
+    };
+  };
+  if (isInSSRComponentSetup) {
+    onCleanup = NOOP;
+    if (!cb) {
+      getter();
+    } else if (immediate) {
+      callWithAsyncErrorHandling(cb, instance, 3, [
+        getter(),
+        isMultiSource ? [] : void 0,
+        onCleanup
+      ]);
+    }
+    return NOOP;
+  }
+  let oldValue = isMultiSource ? [] : INITIAL_WATCHER_VALUE;
+  const job = () => {
+    if (!effect.active) {
+      return;
+    }
+    if (cb) {
+      const newValue = effect.run();
+      if (deep || forceTrigger || (isMultiSource ? newValue.some((v2, i2) => hasChanged(v2, oldValue[i2])) : hasChanged(newValue, oldValue)) || false) {
+        if (cleanup) {
+          cleanup();
+        }
+        callWithAsyncErrorHandling(cb, instance, 3, [
+          newValue,
+          oldValue === INITIAL_WATCHER_VALUE ? void 0 : oldValue,
+          onCleanup
+        ]);
+        oldValue = newValue;
+      }
+    } else {
+      effect.run();
+    }
+  };
+  job.allowRecurse = !!cb;
+  let scheduler;
+  if (flush === "sync") {
+    scheduler = job;
+  } else if (flush === "post") {
+    scheduler = () => queuePostRenderEffect(job, instance && instance.suspense);
+  } else {
+    scheduler = () => {
+      if (!instance || instance.isMounted) {
+        queuePreFlushCb(job);
+      } else {
+        job();
+      }
+    };
+  }
+  const effect = new ReactiveEffect(getter, scheduler);
+  if (cb) {
+    if (immediate) {
+      job();
+    } else {
+      oldValue = effect.run();
+    }
+  } else if (flush === "post") {
+    queuePostRenderEffect(effect.run.bind(effect), instance && instance.suspense);
+  } else {
+    effect.run();
+  }
+  return () => {
+    effect.stop();
+    if (instance && instance.scope) {
+      remove(instance.scope.effects, effect);
+    }
+  };
+}
+function instanceWatch(source, value2, options) {
+  const publicThis = this.proxy;
+  const getter = isString$2(source) ? source.includes(".") ? createPathGetter(publicThis, source) : () => publicThis[source] : source.bind(publicThis, publicThis);
+  let cb;
+  if (isFunction$6(value2)) {
+    cb = value2;
+  } else {
+    cb = value2.handler;
+    options = value2;
+  }
+  const cur = currentInstance;
+  setCurrentInstance(this);
+  const res = doWatch(getter, cb.bind(publicThis), options);
+  if (cur) {
+    setCurrentInstance(cur);
+  } else {
+    unsetCurrentInstance();
+  }
+  return res;
+}
+function createPathGetter(ctx, path3) {
+  const segments2 = path3.split(".");
+  return () => {
+    let cur = ctx;
+    for (let i2 = 0; i2 < segments2.length && cur; i2++) {
+      cur = cur[segments2[i2]];
+    }
+    return cur;
+  };
+}
+function traverse(value2, seen) {
+  if (!isObject$5(value2) || value2["__v_skip"]) {
+    return value2;
+  }
+  seen = seen || new Set();
+  if (seen.has(value2)) {
+    return value2;
+  }
+  seen.add(value2);
+  if (isRef(value2)) {
+    traverse(value2.value, seen);
+  } else if (isArray$a(value2)) {
+    for (let i2 = 0; i2 < value2.length; i2++) {
+      traverse(value2[i2], seen);
+    }
+  } else if (isSet(value2) || isMap(value2)) {
+    value2.forEach((v2) => {
+      traverse(v2, seen);
+    });
+  } else if (isPlainObject$2(value2)) {
+    for (const key3 in value2) {
+      traverse(value2[key3], seen);
+    }
+  }
+  return value2;
 }
 function useTransitionState() {
   const state2 = {
@@ -1709,7 +2071,7 @@ function applyOptions(instance) {
       const opt = computedOptions[key3];
       const get15 = isFunction$6(opt) ? opt.bind(publicThis, publicThis) : isFunction$6(opt.get) ? opt.get.bind(publicThis, publicThis) : NOOP;
       const set6 = !isFunction$6(opt) && isFunction$6(opt.set) ? opt.set.bind(publicThis) : NOOP;
-      const c2 = computed({
+      const c2 = computed$1({
         get: get15,
         set: set6
       });
@@ -2540,7 +2902,7 @@ function baseCreateRenderer(options, createHydrationFns) {
     }
   };
   const mountStaticNode = (n2, container, anchor, isSVG) => {
-    [n2.el, n2.anchor] = hostInsertStaticContent(n2.children, container, anchor, isSVG);
+    [n2.el, n2.anchor] = hostInsertStaticContent(n2.children, container, anchor, isSVG, n2.el, n2.anchor);
   };
   const moveStaticNode = ({ el, anchor }, container, nextSibling) => {
     let next3;
@@ -4094,367 +4456,9 @@ function getComponentName(Component) {
 function isClassComponent(value2) {
   return isFunction$6(value2) && "__vccOpts" in value2;
 }
-function callWithErrorHandling(fn, instance, type, args) {
-  let res;
-  try {
-    res = args ? fn(...args) : fn();
-  } catch (err) {
-    handleError(err, instance, type);
-  }
-  return res;
-}
-function callWithAsyncErrorHandling(fn, instance, type, args) {
-  if (isFunction$6(fn)) {
-    const res = callWithErrorHandling(fn, instance, type, args);
-    if (res && isPromise$1(res)) {
-      res.catch((err) => {
-        handleError(err, instance, type);
-      });
-    }
-    return res;
-  }
-  const values = [];
-  for (let i2 = 0; i2 < fn.length; i2++) {
-    values.push(callWithAsyncErrorHandling(fn[i2], instance, type, args));
-  }
-  return values;
-}
-function handleError(err, instance, type, throwInDev = true) {
-  const contextVNode = instance ? instance.vnode : null;
-  if (instance) {
-    let cur = instance.parent;
-    const exposedInstance = instance.proxy;
-    const errorInfo = type;
-    while (cur) {
-      const errorCapturedHooks = cur.ec;
-      if (errorCapturedHooks) {
-        for (let i2 = 0; i2 < errorCapturedHooks.length; i2++) {
-          if (errorCapturedHooks[i2](err, exposedInstance, errorInfo) === false) {
-            return;
-          }
-        }
-      }
-      cur = cur.parent;
-    }
-    const appErrorHandler = instance.appContext.config.errorHandler;
-    if (appErrorHandler) {
-      callWithErrorHandling(appErrorHandler, null, 10, [err, exposedInstance, errorInfo]);
-      return;
-    }
-  }
-  logError(err, type, contextVNode, throwInDev);
-}
-function logError(err, type, contextVNode, throwInDev = true) {
-  {
-    console.error(err);
-  }
-}
-let isFlushing = false;
-let isFlushPending = false;
-const queue$2 = [];
-let flushIndex = 0;
-const pendingPreFlushCbs = [];
-let activePreFlushCbs = null;
-let preFlushIndex = 0;
-const pendingPostFlushCbs = [];
-let activePostFlushCbs = null;
-let postFlushIndex = 0;
-const resolvedPromise = Promise.resolve();
-let currentFlushPromise = null;
-let currentPreFlushParentJob = null;
-function nextTick$1(fn) {
-  const p2 = currentFlushPromise || resolvedPromise;
-  return fn ? p2.then(this ? fn.bind(this) : fn) : p2;
-}
-function findInsertionIndex(id2) {
-  let start = flushIndex + 1;
-  let end = queue$2.length;
-  while (start < end) {
-    const middle = start + end >>> 1;
-    const middleJobId = getId(queue$2[middle]);
-    middleJobId < id2 ? start = middle + 1 : end = middle;
-  }
-  return start;
-}
-function queueJob(job) {
-  if ((!queue$2.length || !queue$2.includes(job, isFlushing && job.allowRecurse ? flushIndex + 1 : flushIndex)) && job !== currentPreFlushParentJob) {
-    if (job.id == null) {
-      queue$2.push(job);
-    } else {
-      queue$2.splice(findInsertionIndex(job.id), 0, job);
-    }
-    queueFlush();
-  }
-}
-function queueFlush() {
-  if (!isFlushing && !isFlushPending) {
-    isFlushPending = true;
-    currentFlushPromise = resolvedPromise.then(flushJobs);
-  }
-}
-function invalidateJob(job) {
-  const i2 = queue$2.indexOf(job);
-  if (i2 > flushIndex) {
-    queue$2.splice(i2, 1);
-  }
-}
-function queueCb(cb, activeQueue, pendingQueue, index2) {
-  if (!isArray$a(cb)) {
-    if (!activeQueue || !activeQueue.includes(cb, cb.allowRecurse ? index2 + 1 : index2)) {
-      pendingQueue.push(cb);
-    }
-  } else {
-    pendingQueue.push(...cb);
-  }
-  queueFlush();
-}
-function queuePreFlushCb(cb) {
-  queueCb(cb, activePreFlushCbs, pendingPreFlushCbs, preFlushIndex);
-}
-function queuePostFlushCb(cb) {
-  queueCb(cb, activePostFlushCbs, pendingPostFlushCbs, postFlushIndex);
-}
-function flushPreFlushCbs(seen, parentJob = null) {
-  if (pendingPreFlushCbs.length) {
-    currentPreFlushParentJob = parentJob;
-    activePreFlushCbs = [...new Set(pendingPreFlushCbs)];
-    pendingPreFlushCbs.length = 0;
-    for (preFlushIndex = 0; preFlushIndex < activePreFlushCbs.length; preFlushIndex++) {
-      activePreFlushCbs[preFlushIndex]();
-    }
-    activePreFlushCbs = null;
-    preFlushIndex = 0;
-    currentPreFlushParentJob = null;
-    flushPreFlushCbs(seen, parentJob);
-  }
-}
-function flushPostFlushCbs(seen) {
-  if (pendingPostFlushCbs.length) {
-    const deduped = [...new Set(pendingPostFlushCbs)];
-    pendingPostFlushCbs.length = 0;
-    if (activePostFlushCbs) {
-      activePostFlushCbs.push(...deduped);
-      return;
-    }
-    activePostFlushCbs = deduped;
-    activePostFlushCbs.sort((a2, b2) => getId(a2) - getId(b2));
-    for (postFlushIndex = 0; postFlushIndex < activePostFlushCbs.length; postFlushIndex++) {
-      activePostFlushCbs[postFlushIndex]();
-    }
-    activePostFlushCbs = null;
-    postFlushIndex = 0;
-  }
-}
-const getId = (job) => job.id == null ? Infinity : job.id;
-function flushJobs(seen) {
-  isFlushPending = false;
-  isFlushing = true;
-  flushPreFlushCbs(seen);
-  queue$2.sort((a2, b2) => getId(a2) - getId(b2));
-  const check = NOOP;
-  try {
-    for (flushIndex = 0; flushIndex < queue$2.length; flushIndex++) {
-      const job = queue$2[flushIndex];
-      if (job && job.active !== false) {
-        if (false)
-          ;
-        callWithErrorHandling(job, null, 14);
-      }
-    }
-  } finally {
-    flushIndex = 0;
-    queue$2.length = 0;
-    flushPostFlushCbs();
-    isFlushing = false;
-    currentFlushPromise = null;
-    if (queue$2.length || pendingPreFlushCbs.length || pendingPostFlushCbs.length) {
-      flushJobs(seen);
-    }
-  }
-}
-function watchEffect(effect, options) {
-  return doWatch(effect, null, options);
-}
-const INITIAL_WATCHER_VALUE = {};
-function watch(source, cb, options) {
-  return doWatch(source, cb, options);
-}
-function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EMPTY_OBJ) {
-  const instance = currentInstance;
-  let getter;
-  let forceTrigger = false;
-  let isMultiSource = false;
-  if (isRef(source)) {
-    getter = () => source.value;
-    forceTrigger = !!source._shallow;
-  } else if (isReactive(source)) {
-    getter = () => source;
-    deep = true;
-  } else if (isArray$a(source)) {
-    isMultiSource = true;
-    forceTrigger = source.some(isReactive);
-    getter = () => source.map((s2) => {
-      if (isRef(s2)) {
-        return s2.value;
-      } else if (isReactive(s2)) {
-        return traverse(s2);
-      } else if (isFunction$6(s2)) {
-        return callWithErrorHandling(s2, instance, 2);
-      } else
-        ;
-    });
-  } else if (isFunction$6(source)) {
-    if (cb) {
-      getter = () => callWithErrorHandling(source, instance, 2);
-    } else {
-      getter = () => {
-        if (instance && instance.isUnmounted) {
-          return;
-        }
-        if (cleanup) {
-          cleanup();
-        }
-        return callWithAsyncErrorHandling(source, instance, 3, [onInvalidate]);
-      };
-    }
-  } else {
-    getter = NOOP;
-  }
-  if (cb && deep) {
-    const baseGetter = getter;
-    getter = () => traverse(baseGetter());
-  }
-  let cleanup;
-  let onInvalidate = (fn) => {
-    cleanup = effect.onStop = () => {
-      callWithErrorHandling(fn, instance, 4);
-    };
-  };
-  if (isInSSRComponentSetup) {
-    onInvalidate = NOOP;
-    if (!cb) {
-      getter();
-    } else if (immediate) {
-      callWithAsyncErrorHandling(cb, instance, 3, [
-        getter(),
-        isMultiSource ? [] : void 0,
-        onInvalidate
-      ]);
-    }
-    return NOOP;
-  }
-  let oldValue = isMultiSource ? [] : INITIAL_WATCHER_VALUE;
-  const job = () => {
-    if (!effect.active) {
-      return;
-    }
-    if (cb) {
-      const newValue = effect.run();
-      if (deep || forceTrigger || (isMultiSource ? newValue.some((v2, i2) => hasChanged(v2, oldValue[i2])) : hasChanged(newValue, oldValue)) || false) {
-        if (cleanup) {
-          cleanup();
-        }
-        callWithAsyncErrorHandling(cb, instance, 3, [
-          newValue,
-          oldValue === INITIAL_WATCHER_VALUE ? void 0 : oldValue,
-          onInvalidate
-        ]);
-        oldValue = newValue;
-      }
-    } else {
-      effect.run();
-    }
-  };
-  job.allowRecurse = !!cb;
-  let scheduler;
-  if (flush === "sync") {
-    scheduler = job;
-  } else if (flush === "post") {
-    scheduler = () => queuePostRenderEffect(job, instance && instance.suspense);
-  } else {
-    scheduler = () => {
-      if (!instance || instance.isMounted) {
-        queuePreFlushCb(job);
-      } else {
-        job();
-      }
-    };
-  }
-  const effect = new ReactiveEffect(getter, scheduler);
-  if (cb) {
-    if (immediate) {
-      job();
-    } else {
-      oldValue = effect.run();
-    }
-  } else if (flush === "post") {
-    queuePostRenderEffect(effect.run.bind(effect), instance && instance.suspense);
-  } else {
-    effect.run();
-  }
-  return () => {
-    effect.stop();
-    if (instance && instance.scope) {
-      remove(instance.scope.effects, effect);
-    }
-  };
-}
-function instanceWatch(source, value2, options) {
-  const publicThis = this.proxy;
-  const getter = isString$2(source) ? source.includes(".") ? createPathGetter(publicThis, source) : () => publicThis[source] : source.bind(publicThis, publicThis);
-  let cb;
-  if (isFunction$6(value2)) {
-    cb = value2;
-  } else {
-    cb = value2.handler;
-    options = value2;
-  }
-  const cur = currentInstance;
-  setCurrentInstance(this);
-  const res = doWatch(getter, cb.bind(publicThis), options);
-  if (cur) {
-    setCurrentInstance(cur);
-  } else {
-    unsetCurrentInstance();
-  }
-  return res;
-}
-function createPathGetter(ctx, path3) {
-  const segments2 = path3.split(".");
-  return () => {
-    let cur = ctx;
-    for (let i2 = 0; i2 < segments2.length && cur; i2++) {
-      cur = cur[segments2[i2]];
-    }
-    return cur;
-  };
-}
-function traverse(value2, seen) {
-  if (!isObject$5(value2) || value2["__v_skip"]) {
-    return value2;
-  }
-  seen = seen || new Set();
-  if (seen.has(value2)) {
-    return value2;
-  }
-  seen.add(value2);
-  if (isRef(value2)) {
-    traverse(value2.value, seen);
-  } else if (isArray$a(value2)) {
-    for (let i2 = 0; i2 < value2.length; i2++) {
-      traverse(value2[i2], seen);
-    }
-  } else if (isSet(value2) || isMap(value2)) {
-    value2.forEach((v2) => {
-      traverse(v2, seen);
-    });
-  } else if (isPlainObject$2(value2)) {
-    for (const key3 in value2) {
-      traverse(value2[key3], seen);
-    }
-  }
-  return value2;
-}
+const computed = (getterOrOptions, debugOptions) => {
+  return computed$1(getterOrOptions, debugOptions, isInSSRComponentSetup);
+};
 function h$4(type, propsOrChildren, children) {
   const l2 = arguments.length;
   if (l2 === 2) {
@@ -4475,10 +4479,10 @@ function h$4(type, propsOrChildren, children) {
     return createVNode(type, propsOrChildren, children);
   }
 }
-const version$x = "3.2.26";
+const version$x = "3.2.27";
 const svgNS = "http://www.w3.org/2000/svg";
 const doc = typeof document !== "undefined" ? document : null;
-const staticTemplateCache = new Map();
+const templateContainer = doc && doc.createElement("template");
 const nodeOps = {
   insert: (child, parent, anchor) => {
     parent.insertBefore(child, anchor || null);
@@ -4517,13 +4521,17 @@ const nodeOps = {
     }
     return cloned;
   },
-  insertStaticContent(content, parent, anchor, isSVG) {
+  insertStaticContent(content, parent, anchor, isSVG, start, end) {
     const before = anchor ? anchor.previousSibling : parent.lastChild;
-    let template = staticTemplateCache.get(content);
-    if (!template) {
-      const t2 = doc.createElement("template");
-      t2.innerHTML = isSVG ? `<svg>${content}</svg>` : content;
-      template = t2.content;
+    if (start && end) {
+      while (true) {
+        parent.insertBefore(start.cloneNode(true), anchor);
+        if (start === end || !(start = start.nextSibling))
+          break;
+      }
+    } else {
+      templateContainer.innerHTML = isSVG ? `<svg>${content}</svg>` : content;
+      const template = templateContainer.content;
       if (isSVG) {
         const wrapper = template.firstChild;
         while (wrapper.firstChild) {
@@ -4531,9 +4539,8 @@ const nodeOps = {
         }
         template.removeChild(wrapper);
       }
-      staticTemplateCache.set(content, template);
+      parent.insertBefore(template, anchor);
     }
-    parent.insertBefore(template.cloneNode(true), anchor);
     return [
       before ? before.nextSibling : parent.firstChild,
       anchor ? anchor.previousSibling : parent.lastChild
@@ -5197,7 +5204,7 @@ function isEqualNode(oldTag, newTag) {
 var getTagKey = (props) => {
   const names2 = ["key", "id", "name", "property"];
   for (const n2 of names2) {
-    const value2 = typeof props.getAttribute === "function" ? props.getAttribute(n2) : props[n2];
+    const value2 = typeof props.getAttribute === "function" ? props.hasAttribute(n2) ? props.getAttribute(n2) : void 0 : props[n2];
     if (value2 !== void 0) {
       return { name: n2, value: value2 };
     }
@@ -5276,7 +5283,7 @@ var updateElements = (document2 = window.document, type, tags2) => {
   const headCount = headCountEl ? Number(headCountEl.getAttribute("content")) : 0;
   const oldElements = [];
   if (headCountEl) {
-    for (let i2 = 0, j2 = headCountEl.previousElementSibling; i2 < headCount; i2++, j2 = j2.previousElementSibling) {
+    for (let i2 = 0, j2 = headCountEl.previousElementSibling; i2 < headCount; i2++, j2 = (j2 == null ? void 0 : j2.previousElementSibling) || null) {
       if (((_a2 = j2 == null ? void 0 : j2.tagName) == null ? void 0 : _a2.toLowerCase()) === type) {
         oldElements.push(j2);
       }
@@ -5303,14 +5310,6 @@ var updateElements = (document2 = window.document, type, tags2) => {
     return (_a22 = t2.parentNode) == null ? void 0 : _a22.removeChild(t2);
   });
   newElements.forEach((t2) => {
-    var _a22;
-    const key3 = getTagKey(t2);
-    if (key3) {
-      const uncontrolled = head.querySelector(`${t2.tagName.toLowerCase()}[${key3.name}="${key3.value}"]`);
-      if (uncontrolled) {
-        (_a22 = uncontrolled.parentNode) == null ? void 0 : _a22.removeChild(uncontrolled);
-      }
-    }
     head.insertBefore(t2, headCountEl);
   });
   headCountEl.setAttribute("content", "" + (headCount - oldElements.length + newElements.length));
@@ -9773,7 +9772,7 @@ __spreadValues$3({
   text: ""
 }, initialRect);
 const name$B = "web3";
-const version$w = "1.6.1";
+const version$w = "1.7.0";
 const description$3 = "Ethereum JavaScript API";
 const repository$3 = "https://github.com/ethereum/web3.js";
 const license$3 = "LGPL-3.0";
@@ -9823,21 +9822,21 @@ const authors = [
   }
 ];
 const dependencies$3 = {
-  "web3-bzz": "1.6.1",
-  "web3-core": "1.6.1",
-  "web3-eth": "1.6.1",
-  "web3-eth-personal": "1.6.1",
-  "web3-net": "1.6.1",
-  "web3-shh": "1.6.1",
-  "web3-utils": "1.6.1"
+  "web3-bzz": "1.7.0",
+  "web3-core": "1.7.0",
+  "web3-eth": "1.7.0",
+  "web3-eth-personal": "1.7.0",
+  "web3-net": "1.7.0",
+  "web3-shh": "1.7.0",
+  "web3-utils": "1.7.0"
 };
 const devDependencies$3 = {
   "@types/node": "^12.12.6",
   dtslint: "^3.4.1",
   typescript: "^3.9.5",
-  "web3-core-helpers": "1.6.1"
+  "web3-core-helpers": "1.7.0"
 };
-const gitHead = "3299240587db8dc3f0b2fc27aa973d218a83265b";
+const gitHead = "cd4b4d13e7e1d973ceee29c118798d4931860a2b";
 var require$$0$b = {
   name: name$B,
   version: version$w,
@@ -34778,6 +34777,9 @@ var outputTransactionReceiptFormatter = function(receipt) {
   if (Array.isArray(receipt.logs)) {
     receipt.logs = receipt.logs.map(outputLogFormatter);
   }
+  if (receipt.effectiveGasPrice) {
+    receipt.effectiveGasPrice = utils$i.hexToNumber(receipt.effectiveGasPrice);
+  }
   if (receipt.contractAddress) {
     receipt.contractAddress = utils$i.toChecksumAddress(receipt.contractAddress);
   }
@@ -34967,8 +34969,9 @@ Batch.prototype.add = function(request2) {
 };
 Batch.prototype.execute = function() {
   var requests = this.requests;
+  var sortResponses = this._sortResponses.bind(this);
   this.requestManager.sendBatch(requests, function(err, results2) {
-    results2 = results2 || [];
+    results2 = sortResponses(results2);
     requests.map(function(request2, index2) {
       return results2[index2] || {};
     }).forEach(function(result, index2) {
@@ -34987,6 +34990,9 @@ Batch.prototype.execute = function() {
       }
     });
   });
+};
+Batch.prototype._sortResponses = function(responses) {
+  return (responses || []).sort((a2, b2) => a2.id - b2.id);
 };
 var batch = Batch;
 var givenProvider$1 = null;
@@ -43398,6 +43404,7 @@ var Method$7 = function Method2(options) {
   this.transactionBlockTimeout = options.transactionBlockTimeout || 50;
   this.transactionConfirmationBlocks = options.transactionConfirmationBlocks || 24;
   this.transactionPollingTimeout = options.transactionPollingTimeout || 750;
+  this.transactionPollingInterval = options.transactionPollingInterval || 1e3;
   this.blockHeaderTimeout = options.blockHeaderTimeout || 10;
   this.defaultCommon = options.defaultCommon;
   this.defaultChain = options.defaultChain;
@@ -43692,7 +43699,7 @@ Method$7.prototype._confirmTransaction = function(defer2, result, payload) {
   var startWatching = function(existingReceipt) {
     let blockHeaderArrived = false;
     const startInterval = () => {
-      intervalId = setInterval(checkConfirmation.bind(null, existingReceipt, true), 1e3);
+      intervalId = setInterval(checkConfirmation.bind(null, existingReceipt, true), method2.transactionPollingInterval);
     };
     if (!this.requestManager.provider.on) {
       return startInterval();
@@ -47012,6 +47019,18 @@ var Contract$1 = function Contract2(jsonInterface, address2, options) {
     },
     enumerable: true
   });
+  Object.defineProperty(this, "transactionPollingInterval", {
+    get: function() {
+      if (_this.options.transactionPollingInterval === 0) {
+        return _this.options.transactionPollingInterval;
+      }
+      return _this.options.transactionPollingInterval || this.constructor.transactionPollingInterval;
+    },
+    set: function(val) {
+      _this.options.transactionPollingInterval = val;
+    },
+    enumerable: true
+  });
   Object.defineProperty(this, "transactionConfirmationBlocks", {
     get: function() {
       if (_this.options.transactionConfirmationBlocks === 0) {
@@ -47488,6 +47507,7 @@ Contract$1.prototype._executeMethod = function _executeMethod() {
         transactionBlockTimeout: _this._parent.transactionBlockTimeout,
         transactionConfirmationBlocks: _this._parent.transactionConfirmationBlocks,
         transactionPollingTimeout: _this._parent.transactionPollingTimeout,
+        transactionPollingInterval: _this._parent.transactionPollingInterval,
         defaultCommon: _this._parent.defaultCommon,
         defaultChain: _this._parent.defaultChain,
         defaultHardfork: _this._parent.defaultHardfork,
@@ -77632,6 +77652,7 @@ var Eth$1 = function Eth2() {
   var transactionBlockTimeout = 50;
   var transactionConfirmationBlocks = 24;
   var transactionPollingTimeout = 750;
+  var transactionPollingInterval = 1e3;
   var blockHeaderTimeout = 10;
   var maxListenersWarningThreshold = 100;
   var defaultChain, defaultHardfork2, defaultCommon;
@@ -77696,6 +77717,19 @@ var Eth$1 = function Eth2() {
       _this.Contract.transactionPollingTimeout = transactionPollingTimeout;
       methods2.forEach(function(method2) {
         method2.transactionPollingTimeout = transactionPollingTimeout;
+      });
+    },
+    enumerable: true
+  });
+  Object.defineProperty(this, "transactionPollingInterval", {
+    get: function() {
+      return transactionPollingInterval;
+    },
+    set: function(val) {
+      transactionPollingInterval = val;
+      _this.Contract.transactionPollingInterval = transactionPollingInterval;
+      methods2.forEach(function(method2) {
+        method2.transactionPollingInterval = transactionPollingInterval;
       });
     },
     enumerable: true
@@ -77812,6 +77846,7 @@ var Eth$1 = function Eth2() {
   this.Contract.transactionBlockTimeout = this.transactionBlockTimeout;
   this.Contract.transactionConfirmationBlocks = this.transactionConfirmationBlocks;
   this.Contract.transactionPollingTimeout = this.transactionPollingTimeout;
+  this.Contract.transactionPollingInterval = this.transactionPollingInterval;
   this.Contract.blockHeaderTimeout = this.blockHeaderTimeout;
   this.Contract.handleRevert = this.handleRevert;
   this.Contract._requestManager = this._requestManager;
@@ -78119,6 +78154,7 @@ var Eth$1 = function Eth2() {
     method2.transactionBlockTimeout = _this.transactionBlockTimeout;
     method2.transactionConfirmationBlocks = _this.transactionConfirmationBlocks;
     method2.transactionPollingTimeout = _this.transactionPollingTimeout;
+    method2.transactionPollingInterval = _this.transactionPollingInterval;
     method2.handleRevert = _this.handleRevert;
   });
 };
@@ -121699,4 +121735,4 @@ const VueDapp = {
     app.provide("appName", options === null || options === void 0 ? void 0 : options.appName);
   }
 };
-export { process$2 as A, buffer$4 as B, util$a as C, useEthers as D, shortenAddress as E, displayEther as F, pushScopeId as G, popScopeId as H, useBoard as I, lib$3 as J, createApp as K, createRouter as L, createWebHashHistory as M, NProgress as N, useMouse as O, useCounter as P, onMounted as Q, getCurrentInstance as R, watchEffect as S, Fragment$2 as T, renderList as U, VueDapp as V, WalletConnectProvider as W, createCommentVNode as X, createI18n as a, createPinia as b, createHead as c, defineStore as d, computed as e, defineComponent as f, useHead as g, useI18n as h, resolveComponent as i, createElementBlock as j, createBaseVNode as k, unref as l, withKeys as m, createVNode as n, withCtx as o, openBlock as p, createTextVNode as q, ref as r, createStaticVNode as s, toDisplayString$1 as t, useRouter as u, vModelText as v, withDirectives as w, useDark as x, useToggle as y, createBlock as z };
+export { process$2 as A, buffer$4 as B, util$a as C, useEthers as D, shortenAddress as E, displayEther as F, pushScopeId as G, popScopeId as H, useBoard as I, lib$3 as J, createApp as K, createRouter as L, createWebHashHistory as M, NProgress as N, useMouse as O, useCounter as P, onMounted as Q, getCurrentInstance as R, watchEffect as S, Fragment$2 as T, renderList as U, VueDapp as V, WalletConnectProvider as W, createCommentVNode as X, createI18n as a, createPinia as b, createHead as c, defineStore as d, computed as e, defineComponent as f, useHead as g, useI18n as h, createElementBlock as i, createBaseVNode as j, unref as k, withKeys as l, createVNode as m, withCtx as n, resolveComponent as o, openBlock as p, createTextVNode as q, ref as r, createStaticVNode as s, toDisplayString$1 as t, useRouter as u, vModelText as v, withDirectives as w, useDark as x, useToggle as y, createBlock as z };
