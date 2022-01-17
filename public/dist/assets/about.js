@@ -1,5 +1,5 @@
 import { _ as __unplugin_components_0 } from "./index.js";
-import { g as useHead, p as openBlock, j as createElementBlock, k as createBaseVNode, n as createVNode, s as createStaticVNode } from "./vendor.js";
+import { g as useHead, p as openBlock, i as createElementBlock, j as createBaseVNode, m as createVNode, s as createStaticVNode } from "./vendor.js";
 const _hoisted_1 = { class: "prose prose-sm m-auto text-left" };
 const _hoisted_2 = { class: "text-center" };
 const _hoisted_3 = /* @__PURE__ */ createBaseVNode("h3", null, "About", -1);
