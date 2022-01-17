@@ -3,11 +3,6 @@
 console.log('HEY HEY HEY -- App.vue 1')
 import LayoutHeader from './components/LayoutHeader.vue'
 
-</script>
-<script lang="ts">
-
-console.log('HEY HEY HEY -- App.vue 2')
-
 // VueUse --
 // https://github.com/vueuse/head
 // you can use this to manipulate the document head in any components,
@@ -36,6 +31,29 @@ console.log('HEY HEY HEY -- App.vue 2')
 // import util from 'util'
 // window.util = util
 
+</script>
+<script lang="ts">
+
+// vue web3
+import Web3 from "web3"
+import WalletConnectProvider from "@walletconnect/web3-provider"
+
+// Create WalletConnect Provider
+const provider = new WalletConnectProvider({
+  infuraId: "432d743bb1d944268c6e3725f243a7e0" // Required
+})
+
+// Enable session (triggers QR Code modal)
+// (async () => {
+// 	await provider.enable()
+// })()
+
+// Create Web3
+const web3 = new Web3(provider)
+
+console.log("vue web3 (provider)", web3, provider)
+
+console.log('HEY HEY HEY -- App.vue 2')
 </script>
 
 <template>

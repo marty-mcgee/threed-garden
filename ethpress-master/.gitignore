@@ -1,0 +1,6 @@
+vendor
+bin
+node_modules
+wordpress-stubs.php
+zipz
+app/Dependencies/
