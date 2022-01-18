@@ -16,6 +16,7 @@ specifiers:
   '@vue/test-utils': ^2.0.0-rc.18
   '@vueuse/core': ^7.5.3
   '@vueuse/head': ^0.7.4
+  '@walletconnect/client': ^1.7.1
   '@walletconnect/web3-provider': ^1.7.1
   buffer: ^6.0.3
   critters: ^0.0.16
@@ -25,7 +26,7 @@ specifiers:
   eslint: ^8.7.0
   eslint-plugin-cypress: ^2.12.1
   ethers: ^5.5.3
-  farmbot: ^14.7.0
+  farmbot: ^14.7.1
   https-localhost: ^4.7.0
   markdown-it-link-attributes: ^4.0.0
   markdown-it-prism: ^2.2.2
@@ -79,6 +80,7 @@ dependencies:
   '@vue/test-utils': 2.0.0-rc.18_vue@3.2.27
   '@vueuse/core': 7.5.3_vue@3.2.27
   '@vueuse/head': 0.7.5_vue@3.2.27
+  '@walletconnect/client': 1.7.1
   '@walletconnect/web3-provider': 1.7.1_@babel+core@7.16.7
   buffer: 6.0.3
   critters: 0.0.16
@@ -88,7 +90,7 @@ dependencies:
   eslint: 8.7.0
   eslint-plugin-cypress: 2.12.1_eslint@8.7.0
   ethers: 5.5.3
-  farmbot: 14.7.0
+  farmbot: 14.7.1
   https-localhost: 4.7.0
   markdown-it-link-attributes: 4.0.0
   markdown-it-prism: 2.2.2
@@ -4493,8 +4495,8 @@ packages:
       checkpoint-store: 1.1.0
     dev: false
 
-  /farmbot/14.7.0:
-    resolution: {integrity: sha512-OTEZTeCeiqlVLLus23sWP3+KUILmsNokhTPEpJMOfQoXP1qImefpoO3ZILiB/HpWff3iQGoc50jPDN0ox+dq2w==}
+  /farmbot/14.7.1:
+    resolution: {integrity: sha512-qxe84wqHnRGpS7L+Uabq8f1ZSjCimrOgfCRQyD1PWcOsXFSrgcWkC5bAYNTFI5YyCWsmixULbwG/3YyJSub19A==}
     dependencies:
       mqtt: 4.3.4
     transitivePeerDependencies:
