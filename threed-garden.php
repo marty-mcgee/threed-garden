@@ -8,7 +8,7 @@
  * Plugin Name:       ThreeD Garden
  * Plugin URI:        https://garden.university
  * Description:       Design + manage your garden plants, beds + allotments in 3D
- * Version:           0.4.3
+ * Version:           0.5.0
  * Author:            Marty McGee
  * Author URI:        https://companyjuice.com
  * License:           GPL-3.0
@@ -26,7 +26,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Current plugin version.
  * Start at version 0.0.1 using SemVer -- https://semver.org
  */
-define( 'THREED_GARDEN_VERSION', '0.4.3' );
+define( 'THREED_GARDEN_VERSION', '0.5.0' );
 
 /**
  * The code that runs during plugin activation.
