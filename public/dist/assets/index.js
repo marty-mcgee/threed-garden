@@ -1319,7 +1319,6 @@ const _hoisted_1 = { id: "APP" };
 const provider = new WalletConnectProvider({
   infuraId: "432d743bb1d944268c6e3725f243a7e0"
 });
-provider.enable();
 const web3 = new lib(provider);
 console.log("vue web3 (provider)", web3, provider);
 console.log("HEY HEY HEY -- App.vue 2");

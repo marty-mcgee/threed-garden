@@ -2956,10 +2956,6 @@ esbuild-windows-arm64@0.13.15:
   version "0.13.15"
   resolved "https://registry.yarnpkg.com/esbuild-windows-arm64/-/esbuild-windows-arm64-0.13.15.tgz#482173070810df22a752c686509c370c3be3b3c3"
 
-esbuild@^0.12.17:
-  version "0.12.29"
-  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.12.29.tgz#be602db7c4dc78944a9dbde0d1ea19d36c1f882d"
-
 esbuild@^0.13.12:
   version "0.13.15"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.13.15.tgz#db56a88166ee373f87dbb2d8798ff449e0450cdf"
@@ -5618,7 +5614,7 @@ postcss-value-parser@^4.0.2, postcss-value-parser@^4.1.0, postcss-value-parser@^
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/postcss-value-parser/-/postcss-value-parser-4.2.0.tgz#723c09920836ba6d3e5af019f92bc0971c02e514"
 
-postcss@^8.1.10, postcss@^8.3.6, postcss@^8.4.5:
+postcss@^8.1.10, postcss@^8.4.5:
   version "8.4.5"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.5.tgz#bae665764dfd4c6fcc24dc0fdf7e7aa00cc77f95"
   dependencies:
@@ -5986,7 +5982,7 @@ rollup-pluginutils@^2.8.2:
   dependencies:
     estree-walker "^0.6.1"
 
-rollup@^2.38.5, rollup@^2.40.0, rollup@^2.59.0:
+rollup@^2.40.0, rollup@^2.59.0:
   version "2.64.0"
   resolved "https://registry.yarnpkg.com/rollup/-/rollup-2.64.0.tgz#f0f59774e21fbb56de438a37d06a2189632b207a"
   optionalDependencies:
@@ -6224,8 +6220,8 @@ snapdragon@^0.8.1:
     use "^3.1.0"
 
 source-map-js@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/source-map-js/-/source-map-js-1.0.1.tgz#a1741c131e3c77d048252adfa24e23b908670caf"
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/source-map-js/-/source-map-js-1.0.2.tgz#adbc361d9c62df380125e7f161f71c826f1e490c"
 
 source-map-resolve@^0.5.0:
   version "0.5.3"
@@ -6766,7 +6762,7 @@ vite-plugin-windicss@^1.2.7:
     kolorist "^1.5.1"
     windicss "^3.4.3"
 
-vite@^2.7.0:
+vite@^2.7.0, vite@2.7.12:
   version "2.7.12"
   resolved "https://registry.yarnpkg.com/vite/-/vite-2.7.12.tgz#7784ab19e7ff98f6a192d2d7d877480a8c2b7e7d"
   dependencies:
@@ -6774,17 +6770,6 @@ vite@^2.7.0:
     postcss "^8.4.5"
     resolve "^1.20.0"
     rollup "^2.59.0"
-  optionalDependencies:
-    fsevents "~2.3.2"
-
-vite@2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-2.5.0.tgz#111ba3679432d426e44566acf480005a7914cbd6"
-  dependencies:
-    esbuild "^0.12.17"
-    postcss "^8.3.6"
-    resolve "^1.20.0"
-    rollup "^2.38.5"
   optionalDependencies:
     fsevents "~2.3.2"
 
@@ -6850,8 +6835,8 @@ walker@^1.0.7, walker@~1.0.5:
     makeerror "1.0.12"
 
 walletlink@^2.2.6:
-  version "2.4.3"
-  resolved "https://registry.yarnpkg.com/walletlink/-/walletlink-2.4.3.tgz#4cf9a713096031b690d796d62814ae6e9d408c65"
+  version "2.4.4"
+  resolved "https://registry.yarnpkg.com/walletlink/-/walletlink-2.4.4.tgz#dc2a71d1d235335ef844cfb83da7eb9c264521d0"
   dependencies:
     "@metamask/safe-event-emitter" "2.0.0"
     bind-decorator "^1.0.11"

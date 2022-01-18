@@ -1,13 +1,13 @@
 <?php
 /**
- * Plugin Name: EthPress
- * Plugin URI: https://gitlab.com/losnappas/ethpress
- * Description: Ethereum Web3 login. Enable crypto wallet logins to WordPress.
- * Author: Lynn (lynn.mvp at tutanota dot com)
- * Version: 1.1.1
- * Author URI: https://ethpress.imlynn.xyz/
- * Text Domain: ethpress
- * Domain Path: /languages
+ * XPlugin Name: ThreeD Garden EthPress
+ * XPlugin URI: https://gitlab.com/losnappas/ethpress
+ * XDescription: Ethereum Web3 login. Enable crypto wallet logins to WordPress.
+ * XAuthor: Lynn (lynn.mvp at tutanota dot com)
+ * XVersion: 1.1.1
+ * XAuthor URI: https://ethpress.imlynn.xyz/
+ * XText Domain: ethpress
+ * XDomain Path: /languages
  *
  * @package ethpress
  */
