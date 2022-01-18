@@ -44,7 +44,7 @@ const provider = new WalletConnectProvider({
 })
 
 // Enable session (triggers QR Code modal)
-provider.enable()
+//provider.enable()
 // (async () => {
 // 	await provider.enable()
 // })()

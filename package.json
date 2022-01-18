@@ -1,8 +1,21 @@
 {
-  "name": "ethpress",
-  "version": "0.1.0",
+  "name": "@companyjuice/threedgarden",
+  "description": "ThreeD Garden WP Plugin on Vue 3, using Vite with WindiCSS, and Farmbot JS",
+  "version": "0.4.3",
   "private": true,
-  "author": "losnappas",
+  "author": "Marty McGee, Company Juice",
+  "scripts": {
+    "minify": "grunt uglify",
+    "pack": "composer run-script build && grunt compress",
+    "start": "npx rollup -c --watch",
+    "build:js": "npx rollup -c --environment PRODUCTION",
+    "build": "grunt",
+    "makepot": "grunt makepot",
+    "readme": "grunt readme"
+  },
+  "dependencies": {
+    "web3-login": "git+https://gitlab.com/losnappas/web3-login.git"
+  },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^14.0.0",
     "@rollup/plugin-node-resolve": "^8.4.0",
@@ -20,17 +33,5 @@
     "rollup-plugin-terser": "^6.1.0",
     "webpack": "^4.44.2",
     "webpack-dev-server": "^3.11.0"
-  },
-  "scripts": {
-    "minify": "grunt uglify",
-    "pack": "composer run-script build && grunt compress",
-    "start": "npx rollup -c --watch",
-    "build:js": "npx rollup -c --environment PRODUCTION",
-    "build": "grunt",
-    "makepot": "grunt makepot",
-    "readme": "grunt readme"
-  },
-  "dependencies": {
-    "web3-login": "git+https://gitlab.com/losnappas/web3-login.git"
   }
 }

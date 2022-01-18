@@ -1,6 +1,6 @@
 {
   "name": "vue-dapp",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "Vue 3 library for building Dapps on Ethereum",
   "repository": "https://github.com/chnejohnson/vue-dapp",
   "bugs": {
@@ -13,7 +13,7 @@
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "cls && rmdir /Q /S dist && rollup -c",
+    "build": "cls && rmdir /s /q dist && rollup -c",
     "dev:dist": "rollup -w -c rollup.config.js",
     "dev": "vite",
     "build:demo": "vite build",
@@ -65,10 +65,10 @@
     "ts-jest": "^26.5.2",
     "typescript": "^4.2.2",
     "util": "^0.12.4",
-    "vite": "2.5.0",
+    "vite": "2.7.12",
     "vite-plugin-windicss": "^1.2.7",
     "vitepress": "^0.20.1",
-    "vue": "3.2.23",
+    "vue": "3.2.26",
     "windicss": "^3.1.7",
     "yorkie": "^2.0.0"
   },
