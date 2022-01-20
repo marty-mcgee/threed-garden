@@ -33,5 +33,14 @@
     "rollup-plugin-terser": "^6.1.0",
     "webpack": "^4.44.2",
     "webpack-dev-server": "^3.11.0"
-  }
+  },
+  "keywords": [
+    "farming",
+    "agriculture",
+    "iot",
+    "arduino",
+    "typescript",
+    "farmbot",
+    "farmduino"
+  ]
 }
