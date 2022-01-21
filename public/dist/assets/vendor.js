@@ -4459,18 +4459,6 @@ function isClassComponent(value2) {
 const computed = (getterOrOptions, debugOptions) => {
   return computed$1(getterOrOptions, debugOptions, isInSSRComponentSetup);
 };
-function withAsyncContext(getAwaitable) {
-  const ctx = getCurrentInstance();
-  let awaitable = getAwaitable();
-  unsetCurrentInstance();
-  if (isPromise$1(awaitable)) {
-    awaitable = awaitable.catch((e2) => {
-      setCurrentInstance(ctx);
-      throw e2;
-    });
-  }
-  return [awaitable, () => setCurrentInstance(ctx)];
-}
 function h$4(type, propsOrChildren, children) {
   const l2 = arguments.length;
   if (l2 === 2) {
@@ -122055,4 +122043,4 @@ Web3.modules = {
 };
 core.addProviders(Web3);
 var lib = Web3;
-export { createCommentVNode as $, process$2 as A, buffer$4 as B, util$a as C, useEthers as D, shortenAddress as E, displayEther as F, pushScopeId as G, popScopeId as H, useBoard as I, lib as J, Web3Provider as K, withAsyncContext as L, formatEther as M, NProgress as N, parseEther as O, createApp as P, createRouter as Q, createWebHashHistory as R, useMouse as S, useCounter as T, onMounted as U, VueDapp as V, WalletConnectProvider as W, getCurrentInstance as X, watchEffect as Y, Fragment$2 as Z, renderList as _, createI18n as a, createPinia as b, createHead as c, defineStore as d, computed as e, defineComponent as f, useHead as g, useI18n as h, createElementBlock as i, createBaseVNode as j, unref as k, withKeys as l, createVNode as m, withCtx as n, resolveComponent as o, openBlock as p, createTextVNode as q, ref as r, createStaticVNode as s, toDisplayString$1 as t, useRouter as u, vModelText as v, withDirectives as w, useDark as x, useToggle as y, createBlock as z };
+export { process$2 as A, buffer$4 as B, util$a as C, useEthers as D, shortenAddress as E, displayEther as F, pushScopeId as G, popScopeId as H, useBoard as I, lib as J, Web3Provider as K, createApp as L, createRouter as M, NProgress as N, createWebHashHistory as O, useMouse as P, useCounter as Q, onMounted as R, getCurrentInstance as S, watchEffect as T, Fragment$2 as U, VueDapp as V, WalletConnectProvider as W, renderList as X, createCommentVNode as Y, createI18n as a, createPinia as b, createHead as c, defineStore as d, computed as e, defineComponent as f, useHead as g, useI18n as h, createElementBlock as i, createBaseVNode as j, unref as k, withKeys as l, createVNode as m, withCtx as n, resolveComponent as o, openBlock as p, createTextVNode as q, ref as r, createStaticVNode as s, toDisplayString$1 as t, useRouter as u, vModelText as v, withDirectives as w, useDark as x, useToggle as y, createBlock as z };

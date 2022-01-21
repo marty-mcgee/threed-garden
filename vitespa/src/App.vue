@@ -32,6 +32,8 @@ import LayoutHeader from './components/LayoutHeader.vue'
 // import util from 'util'
 // window.util = util
 
+
+
 // vue web3
 import Web3 from "web3"
 import WalletConnectProvider from "@walletconnect/web3-provider"
@@ -56,6 +58,9 @@ const web3 = new Web3(provider4Web3)
 console.log("vue web3 (provider)", web3, provider4Web3)
 
 console.log('HEY HEY HEY -- App.vue 2 (web3)')
+
+
+
 
 // OPTION 1 for connecting to Ethereum
 
@@ -93,35 +98,37 @@ console.log('HEY HEY HEY -- App.vue 3 (ethers)')
 
 // Once you have a Provider, you have a read-only connection to the blockchain, which you can use to query the current state, fetch historic logs, look up deployed code and so on.
 
-// Basic Queries
-// Look up the current block number
-await provider4ethers.getBlockNumber()
-// 13722573
+// // Basic Queries
+// // Look up the current block number
+// await provider4ethers.getBlockNumber()
+// // 13722573
 
-// Get the balance of an account (by address or ENS name, if supported by network)
-balance4ethers = await provider4ethers.getBalance("ethers.eth")
-// { BigNumber: "2337132817842795605" }
+// // Get the balance of an account (by address or ENS name, if supported by network)
+// balance4ethers = await provider4ethers.getBalance("ethers.eth")
+// // { BigNumber: "2337132817842795605" }
 
-// Often you need to format the output to something more user-friendly,
-// such as in ether (instead of wei)
-ethers.utils.formatEther(balance4ethers)
-// '2.337132817842795605'
+// // Often you need to format the output to something more user-friendly,
+// // such as in ether (instead of wei)
+// ethers.utils.formatEther(balance4ethers)
+// // '2.337132817842795605'
 
-// If a user enters a string in an input field, you may need
-// to convert it from ether (as a string) to wei (as a BigNumber)
-ethers.utils.parseEther("0.0") // zero!
-// { BigNumber: "1000000000000000000" }
+// // If a user enters a string in an input field, you may need
+// // to convert it from ether (as a string) to wei (as a BigNumber)
+// ethers.utils.parseEther("0.0") // zero!
+// // { BigNumber: "1000000000000000000" }
 
-/** ------------------------------- */
-// Writing to the Blockchain
-// Sending Ether (real money transactions here, be careful here, forever)
-/** ------------------------------- */
+// /** ------------------------------- */
+// // Writing to the Blockchain
+// // Sending Ether (real money transactions here, be careful here, forever)
+// /** ------------------------------- */
 
-// Send "1" ether to an ens name.
-const tx = signer4ethers.sendTransaction({
-    to: "ricmoo.firefly.eth", // to???
-    value: ethers.utils.parseEther("0.000000") // zero!
-});
+// // Send "1" ether to an ens name.
+// const tx = signer4ethers.sendTransaction({
+//     to: "ricmoo.firefly.eth", // to???
+//     value: ethers.utils.parseEther("0.000000") // zero!
+// });
+
+// console.log("ethers tx", tx)
 
 
 </script>
