@@ -17,7 +17,7 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-import { c as createHead, a as createI18n, N as NProgress, b as createPinia, d as defineStore, r as ref, e as computed, f as defineComponent, u as useRouter, g as useHead, h as useI18n, i as createElementBlock, j as createBaseVNode, k as unref, t as toDisplayString, w as withDirectives, v as vModelText, l as withKeys, m as createVNode, n as withCtx, o as resolveComponent, p as openBlock, q as createTextVNode, s as createStaticVNode, x as useDark, y as useToggle, z as createBlock, A as process, B as buffer, C as util, D as useEthers, E as shortenAddress, F as displayEther, G as pushScopeId, H as popScopeId, I as useBoard, W as WalletConnectProvider, J as lib, K as Web3Provider, L as createApp, M as createRouter, O as createWebHashHistory, V as VueDapp } from "./vendor.js";
+import { c as createHead, a as createI18n, N as NProgress, b as createPinia, d as defineStore, r as ref, e as computed, f as defineComponent, u as useRouter, g as useHead, h as useI18n, i as createElementBlock, j as createBaseVNode, k as unref, t as toDisplayString, w as withDirectives, v as vModelText, l as withKeys, m as createVNode, n as withCtx, o as resolveComponent, p as openBlock, q as createTextVNode, s as createStaticVNode, x as useDark, y as useToggle, z as createBlock, A as process, B as buffer, C as util, D as useEthers, E as shortenAddress, F as displayEther, G as pushScopeId, H as popScopeId, I as useBoard, W as WalletConnectProvider, J as lib, K as Web3Provider, L as createApp, M as createRouter, O as createWebHashHistory } from "./vendor.js";
 const p = function polyfill() {
   const relList = document.createElement("link").relList;
   if (relList && relList.supports && relList.supports("modulepreload")) {
@@ -64,7 +64,7 @@ const install$3 = ({ app: app2 }) => {
   const head = createHead();
   app2.use(head);
 };
-var __glob_11_0 = /* @__PURE__ */ Object.freeze({
+var __glob_10_0 = /* @__PURE__ */ Object.freeze({
   __proto__: null,
   [Symbol.toStringTag]: "Module",
   install: install$3
@@ -828,7 +828,7 @@ const install$2 = ({ app: app2 }) => {
   });
   app2.use(i18n);
 };
-var __glob_11_1 = /* @__PURE__ */ Object.freeze({
+var __glob_10_1 = /* @__PURE__ */ Object.freeze({
   __proto__: null,
   [Symbol.toStringTag]: "Module",
   install: install$2
@@ -841,7 +841,7 @@ const install$1 = ({ router: router2 }) => {
     NProgress.done();
   });
 };
-var __glob_11_2 = /* @__PURE__ */ Object.freeze({
+var __glob_10_2 = /* @__PURE__ */ Object.freeze({
   __proto__: null,
   [Symbol.toStringTag]: "Module",
   install: install$1
@@ -850,7 +850,7 @@ const install = ({ app: app2 }) => {
   const pinia = createPinia();
   app2.use(pinia);
 };
-var __glob_11_3 = /* @__PURE__ */ Object.freeze({
+var __glob_10_3 = /* @__PURE__ */ Object.freeze({
   __proto__: null,
   [Symbol.toStringTag]: "Module",
   install
@@ -1348,14 +1348,10 @@ const app = createApp(_sfc_main);
 const routes = setupLayouts(routes$1);
 const router = createRouter({ history: createWebHashHistory(), routes });
 app.use(router);
-Object.values({ "./modules/head.ts": __glob_11_0, "./modules/i18n.ts": __glob_11_1, "./modules/nprogress.ts": __glob_11_2, "./modules/pinia.ts": __glob_11_3 }).map((i) => {
+Object.values({ "./modules/head.ts": __glob_10_0, "./modules/i18n.ts": __glob_10_1, "./modules/nprogress.ts": __glob_10_2, "./modules/pinia.ts": __glob_10_3 }).map((i) => {
   var _a;
   return (_a = i.install) == null ? void 0 : _a.call(i, { app, router, routes });
 });
-app.use(VueDapp, {
-  infuraId: "432d743bb1d944268c6e3725f243a7e0"
-});
-console.log("vue dapp (app.use)", app);
 app.mount("#app");
 console.log("vue app (mounted)", app);
 export { __unplugin_components_0$1 as _, _export_sfc as a, _sfc_main$3 as b, useUserStore as u };
