@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-console.log('HEY HEY HEY -- App.vue 1 (typescript setup)')
+console.log('*** HEY HEY HEY -- App.vue 1 (typescript setup)')
 
 import LayoutHeader from './components/LayoutHeader.vue'
 
@@ -32,14 +32,13 @@ import LayoutHeader from './components/LayoutHeader.vue'
 // import util from 'util'
 // window.util = util
 
+// CONNECT TO ETHEREUM NETWORK NODE(S)
 
+// OPTION 1 "web3"
 
 // vue web3
 import Web3 from "web3"
 import WalletConnectProvider from "@walletconnect/web3-provider"
-
-// vue ethers
-import { ethers } from "ethers"
 
 // Create WalletConnect Provider
 const provider4Web3 = new WalletConnectProvider({
@@ -57,12 +56,14 @@ const web3 = new Web3(provider4Web3)
 
 console.log("vue web3 (provider)", web3, provider4Web3)
 
-console.log('HEY HEY HEY -- App.vue 2 (web3)')
+console.log('*** HEY HEY HEY -- App.vue (web3)')
 
+// OPTION 2 "ethers"
 
+// vue ethers
+import { ethers } from "ethers"
 
-
-// OPTION 1 for connecting to Ethereum
+// OPTION 2.1 for connecting to "ethers"
 
 // ethers: Connecting to Ethereum: MetaMask
 // A Web3Provider wraps a standard Web3 provider, which is
@@ -75,7 +76,7 @@ const provider4ethers = new ethers.providers.Web3Provider(window.ethereum)
 const signer4ethers = provider4ethers.getSigner()
 
 // AND/OR
-// // OPTION 2 for connecting to Ethereum
+// // OPTION 2.2 for connecting to "ethers"
 
 // // ethers: Connecting to Ethereum: RPC
 // // If you don't specify a //url//, Ethers connects to the default 
@@ -89,7 +90,7 @@ const signer4ethers = provider4ethers.getSigner()
 
 console.log("ethers (provider, signer)", provider4ethers, signer4ethers)
 
-console.log('HEY HEY HEY -- App.vue 3 (ethers)')
+console.log('*** HEY HEY HEY -- App.vue (ethers)')
 
 
 /** ------------------------------- */
