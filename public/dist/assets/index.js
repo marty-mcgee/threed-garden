@@ -1318,17 +1318,17 @@ var LayoutHeader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data
 const _hoisted_1 = { id: "APP" };
 const _sfc_main = /* @__PURE__ */ defineComponent({
   setup(__props) {
-    console.log("HEY HEY HEY -- App.vue 1 (typescript setup)");
+    console.log("*** HEY HEY HEY -- App.vue 1 (typescript setup)");
     const provider4Web3 = new WalletConnectProvider({
       infuraId: "432d743bb1d944268c6e3725f243a7e0"
     });
     const web3 = new lib(provider4Web3);
     console.log("vue web3 (provider)", web3, provider4Web3);
-    console.log("HEY HEY HEY -- App.vue 2 (web3)");
+    console.log("*** HEY HEY HEY -- App.vue (web3)");
     const provider4ethers = new Web3Provider(window.ethereum);
     const signer4ethers = provider4ethers.getSigner();
     console.log("ethers (provider, signer)", provider4ethers, signer4ethers);
-    console.log("HEY HEY HEY -- App.vue 3 (ethers)");
+    console.log("*** HEY HEY HEY -- App.vue (ethers)");
     return (_ctx, _cache) => {
       const _component_router_view = resolveComponent("router-view");
       const _component_vdapp_board = resolveComponent("vdapp-board");

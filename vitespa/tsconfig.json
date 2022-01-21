@@ -25,7 +25,10 @@
     "sourceMap": true,
     "allowJs": true,
     "useDefineForClassFields": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    // for web3
+    "allowSyntheticDefaultImports": true
+    //"esModuleInterop": true
   },
   "exclude": ["dist", "node_modules"],
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
