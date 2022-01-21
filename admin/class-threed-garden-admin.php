@@ -539,25 +539,25 @@ class ThreeD_Garden_Admin {
 	 */
 	public function plants_init() {
 		$labels = array(
-			'name'               => _x( 'Plants', 'post type general name', 'threedgarden' ),
-			'singular_name'      => _x( 'Plant', 'post type singular name', 'threedgarden' ),
-			'menu_name'          => _x( 'Plants', 'admin menu', 'threedgarden' ),
-			'name_admin_bar'     => _x( 'Plant', 'add new on admin bar', 'threedgarden' ),
-			'add_new'            => _x( 'Add New', 'plant', 'threedgarden' ),
-			'add_new_item'       => __( 'Add New Plant', 'threedgarden' ),
-			'new_item'           => __( 'New Plant', 'threedgarden' ),
-			'edit_item'          => __( 'Edit Plant', 'threedgarden' ),
-			'view_item'          => __( 'View Plant', 'threedgarden' ),
-			'all_items'          => __( 'All Plants', 'threedgarden' ),
-			'search_items'       => __( 'Search Plants', 'threedgarden' ),
-			'parent_item_colon'  => __( 'Parent Plants:', 'threedgarden' ),
-			'not_found'          => __( 'No plants found.', 'threedgarden' ),
-			'not_found_in_trash' => __( 'No plants found in Trash.', 'threedgarden' )
+			'name'               => _x( 'Plants', 'post type general name', 'ethpress' ),
+			'singular_name'      => _x( 'Plant', 'post type singular name', 'ethpress' ),
+			'menu_name'          => _x( 'Plants', 'admin menu', 'ethpress' ),
+			'name_admin_bar'     => _x( 'Plant', 'add new on admin bar', 'ethpress' ),
+			'add_new'            => _x( 'Add New', 'plant', 'ethpress' ),
+			'add_new_item'       => __( 'Add New Plant', 'ethpress' ),
+			'new_item'           => __( 'New Plant', 'ethpress' ),
+			'edit_item'          => __( 'Edit Plant', 'ethpress' ),
+			'view_item'          => __( 'View Plant', 'ethpress' ),
+			'all_items'          => __( 'All Plants', 'ethpress' ),
+			'search_items'       => __( 'Search Plants', 'ethpress' ),
+			'parent_item_colon'  => __( 'Parent Plants:', 'ethpress' ),
+			'not_found'          => __( 'No plants found.', 'ethpress' ),
+			'not_found_in_trash' => __( 'No plants found in Trash.', 'ethpress' )
 		);
 
 		$args = array(
 			'labels'             => $labels,
-			'description'        => __( 'Post type for plant notes and information.', 'threedgarden' ),
+			'description'        => __( 'Post type for plant notes and information.', 'ethpress' ),
 			'public'             => true,
 			'publicly_queryable' => true,
 			'show_ui'            => true,
@@ -583,17 +583,17 @@ class ThreeD_Garden_Admin {
 		
 		// Add Plant Type taxonomy, make it hierarchical (like categories)
 		$labels = array(
-			'name'              => _x( 'Plant Types', 'taxonomy general name' ),
-			'singular_name'     => _x( 'Plant Type', 'taxonomy singular name' ),
-			'search_items'      => __( 'Search Plant Types' ),
-			'all_items'         => __( 'All Plant Types' ),
-			'parent_item'       => __( 'Parent Plant Type' ),
-			'parent_item_colon' => __( 'Parent Plant Type:' ),
-			'edit_item'         => __( 'Edit Plant Type' ),
-			'update_item'       => __( 'Update Plant Type' ),
-			'add_new_item'      => __( 'Add New Plant Type' ),
-			'new_item_name'     => __( 'New Plant Type Name' ),
-			'menu_name'         => __( 'Plant Types' ),
+			'name'              => _x( 'Plant Types', 'taxonomy general name', 'ethpress' ),
+			'singular_name'     => _x( 'Plant Type', 'taxonomy singular name', 'ethpress' ),
+			'search_items'      => __( 'Search Plant Types', 'ethpress' ),
+			'all_items'         => __( 'All Plant Types', 'ethpress' ),
+			'parent_item'       => __( 'Parent Plant Type', 'ethpress' ),
+			'parent_item_colon' => __( 'Parent Plant Type:', 'ethpress' ),
+			'edit_item'         => __( 'Edit Plant Type', 'ethpress' ),
+			'update_item'       => __( 'Update Plant Type', 'ethpress' ),
+			'add_new_item'      => __( 'Add New Plant Type', 'ethpress' ),
+			'new_item_name'     => __( 'New Plant Type Name', 'ethpress' ),
+			'menu_name'         => __( 'Plant Types', 'ethpress' ),
 		);
 		$args = array(
 			'hierarchical'      => true,
@@ -608,22 +608,22 @@ class ThreeD_Garden_Admin {
 
 		// Add Plant Season taxonomy, make it non-hierarchical (like tags)
 		$labels = array(
-			'name'                       => _x( 'Plant Seasons', 'taxonomy general name' ),
-			'singular_name'              => _x( 'Plant Season', 'taxonomy singular name' ),
-			'search_items'               => __( 'Search Plant Seasons' ),
-			'popular_items'              => __( 'Popular Plant Seasons' ),
-			'all_items'                  => __( 'All Plant Seasons' ),
+			'name'                       => _x( 'Plant Seasons', 'taxonomy general name', 'ethpress' ),
+			'singular_name'              => _x( 'Plant Season', 'taxonomy singular name', 'ethpress' ),
+			'search_items'               => __( 'Search Plant Seasons', 'ethpress' ),
+			'popular_items'              => __( 'Popular Plant Seasons', 'ethpress' ),
+			'all_items'                  => __( 'All Plant Seasons', 'ethpress' ),
 			'parent_item'                => null,
 			'parent_item_colon'          => null,
-			'edit_item'                  => __( 'Edit Plant Season' ),
-			'update_item'                => __( 'Update Plant Season' ),
-			'add_new_item'               => __( 'Add New Plant Season' ),
-			'new_item_name'              => __( 'New Plant Season Name' ),
-			'separate_items_with_commas' => __( 'Separate plant seasons with commas' ),
-			'add_or_remove_items'        => __( 'Add or remove plant seasons' ),
-			'choose_from_most_used'      => __( 'Choose from the most used plant seasons' ),
-			'not_found'                  => __( 'No plant seasons found.' ),
-			'menu_name'                  => __( 'Plant Seasons' ),
+			'edit_item'                  => __( 'Edit Plant Season', 'ethpress' ),
+			'update_item'                => __( 'Update Plant Season', 'ethpress' ),
+			'add_new_item'               => __( 'Add New Plant Season', 'ethpress' ),
+			'new_item_name'              => __( 'New Plant Season Name', 'ethpress' ),
+			'separate_items_with_commas' => __( 'Separate plant seasons with commas', 'ethpress' ),
+			'add_or_remove_items'        => __( 'Add or remove plant seasons', 'ethpress' ),
+			'choose_from_most_used'      => __( 'Choose from the most used plant seasons', 'ethpress' ),
+			'not_found'                  => __( 'No plant seasons found.', 'ethpress' ),
+			'menu_name'                  => __( 'Plant Seasons', 'ethpress' ),
 		);
 		$args = array(
 			'hierarchical'          => true,
@@ -695,25 +695,25 @@ class ThreeD_Garden_Admin {
 	 */
 	public function allotments_init() {
 		$labels = array(
-			'name'               => _x( 'Allotments', 'post type general name', 'threedgarden' ),
-			'singular_name'      => _x( 'Allotment', 'post type singular name', 'threedgarden' ),
-			'menu_name'          => _x( 'Allotments', 'admin menu', 'threedgarden' ),
-			'name_admin_bar'     => _x( 'Allotment', 'add new on admin bar', 'threedgarden' ),
-			'add_new'            => _x( 'Add New', 'allotment', 'threedgarden' ),
-			'add_new_item'       => __( 'Add New Allotment', 'threedgarden' ),
-			'new_item'           => __( 'New Allotment', 'threedgarden' ),
-			'edit_item'          => __( 'Edit Allotment', 'threedgarden' ),
-			'view_item'          => __( 'View Allotment', 'threedgarden' ),
-			'all_items'          => __( 'All Allotments', 'threedgarden' ),
-			'search_items'       => __( 'Search Allotments', 'threedgarden' ),
-			'parent_item_colon'  => __( 'Parent Allotments:', 'threedgarden' ),
-			'not_found'          => __( 'No allotments found.', 'threedgarden' ),
-			'not_found_in_trash' => __( 'No allotments found in Trash.', 'threedgarden' )
+			'name'               => _x( 'Allotments', 'post type general name', 'ethpress' ),
+			'singular_name'      => _x( 'Allotment', 'post type singular name', 'ethpress' ),
+			'menu_name'          => _x( 'Allotments', 'admin menu', 'ethpress' ),
+			'name_admin_bar'     => _x( 'Allotment', 'add new on admin bar', 'ethpress' ),
+			'add_new'            => _x( 'Add New', 'allotment', 'ethpress' ),
+			'add_new_item'       => __( 'Add New Allotment', 'ethpress' ),
+			'new_item'           => __( 'New Allotment', 'ethpress' ),
+			'edit_item'          => __( 'Edit Allotment', 'ethpress' ),
+			'view_item'          => __( 'View Allotment', 'ethpress' ),
+			'all_items'          => __( 'All Allotments', 'ethpress' ),
+			'search_items'       => __( 'Search Allotments', 'ethpress' ),
+			'parent_item_colon'  => __( 'Parent Allotments:', 'ethpress' ),
+			'not_found'          => __( 'No allotments found.', 'ethpress' ),
+			'not_found_in_trash' => __( 'No allotments found in Trash.', 'ethpress' )
 		);
 
 		$args = array(
 			'labels'             => $labels,
-			'description'        => __( 'Post type for allotment notes and information.', 'threedgarden' ),
+			'description'        => __( 'Post type for allotment notes and information.', 'ethpress' ),
 			'public'             => true,
 			'publicly_queryable' => true,
 			'show_ui'            => true,
@@ -739,17 +739,17 @@ class ThreeD_Garden_Admin {
 		
 		// Add Allotment Type taxonomy, make it hierarchical (like categories)
 		$labels = array(
-			'name'              => _x( 'Allotment Types', 'taxonomy general name' ),
-			'singular_name'     => _x( 'Allotment Type', 'taxonomy singular name' ),
-			'search_items'      => __( 'Search Allotment Types' ),
-			'all_items'         => __( 'All Allotment Types' ),
-			'parent_item'       => __( 'Parent Allotment Type' ),
-			'parent_item_colon' => __( 'Parent Allotment Type:' ),
-			'edit_item'         => __( 'Edit Allotment Type' ),
-			'update_item'       => __( 'Update Allotment Type' ),
-			'add_new_item'      => __( 'Add New Allotment Type' ),
-			'new_item_name'     => __( 'New Allotment Type Name' ),
-			'menu_name'         => __( 'Allotment Types' ),
+			'name'              => _x( 'Allotment Types', 'taxonomy general name', 'ethpress' ),
+			'singular_name'     => _x( 'Allotment Type', 'taxonomy singular name', 'ethpress' ),
+			'search_items'      => __( 'Search Allotment Types', 'ethpress' ),
+			'all_items'         => __( 'All Allotment Types', 'ethpress' ),
+			'parent_item'       => __( 'Parent Allotment Type', 'ethpress' ),
+			'parent_item_colon' => __( 'Parent Allotment Type:', 'ethpress' ),
+			'edit_item'         => __( 'Edit Allotment Type', 'ethpress' ),
+			'update_item'       => __( 'Update Allotment Type', 'ethpress' ),
+			'add_new_item'      => __( 'Add New Allotment Type', 'ethpress' ),
+			'new_item_name'     => __( 'New Allotment Type Name', 'ethpress' ),
+			'menu_name'         => __( 'Allotment Types', 'ethpress' ),
 		);
 		$args = array(
 			'hierarchical'      => true,
@@ -764,22 +764,22 @@ class ThreeD_Garden_Admin {
 
 		// Add Allotment Season taxonomy, make it non-hierarchical (like tags)
 		$labels = array(
-			'name'                       => _x( 'Allotment Seasons', 'taxonomy general name' ),
-			'singular_name'              => _x( 'Allotment Season', 'taxonomy singular name' ),
-			'search_items'               => __( 'Search Allotment Seasons' ),
-			'popular_items'              => __( 'Popular Allotment Seasons' ),
-			'all_items'                  => __( 'All Allotment Seasons' ),
+			'name'                       => _x( 'Allotment Seasons', 'taxonomy general name', 'ethpress' ),
+			'singular_name'              => _x( 'Allotment Season', 'taxonomy singular name', 'ethpress' ),
+			'search_items'               => __( 'Search Allotment Seasons', 'ethpress' ),
+			'popular_items'              => __( 'Popular Allotment Seasons', 'ethpress' ),
+			'all_items'                  => __( 'All Allotment Seasons', 'ethpress' ),
 			'parent_item'                => null,
 			'parent_item_colon'          => null,
-			'edit_item'                  => __( 'Edit Allotment Season' ),
-			'update_item'                => __( 'Update Allotment Season' ),
-			'add_new_item'               => __( 'Add New Allotment Season' ),
-			'new_item_name'              => __( 'New Allotment Season Name' ),
-			'separate_items_with_commas' => __( 'Separate allotment seasons with commas' ),
-			'add_or_remove_items'        => __( 'Add or remove allotment seasons' ),
-			'choose_from_most_used'      => __( 'Choose from the most used allotment seasons' ),
-			'not_found'                  => __( 'No allotment seasons found.' ),
-			'menu_name'                  => __( 'Allotment Seasons' ),
+			'edit_item'                  => __( 'Edit Allotment Season', 'ethpress' ),
+			'update_item'                => __( 'Update Allotment Season', 'ethpress' ),
+			'add_new_item'               => __( 'Add New Allotment Season', 'ethpress' ),
+			'new_item_name'              => __( 'New Allotment Season Name', 'ethpress' ),
+			'separate_items_with_commas' => __( 'Separate allotment seasons with commas', 'ethpress' ),
+			'add_or_remove_items'        => __( 'Add or remove allotment seasons', 'ethpress' ),
+			'choose_from_most_used'      => __( 'Choose from the most used allotment seasons', 'ethpress' ),
+			'not_found'                  => __( 'No allotment seasons found.', 'ethpress' ),
+			'menu_name'                  => __( 'Allotment Seasons', 'ethpress' ),
 		);
 		$args = array(
 			'hierarchical'          => true,
@@ -851,25 +851,25 @@ class ThreeD_Garden_Admin {
 	 */
 	public function beds_init() {
 		$labels = array(
-			'name'               => _x( 'Beds', 'post type general name', 'threedgarden' ),
-			'singular_name'      => _x( 'Bed', 'post type singular name', 'threedgarden' ),
-			'menu_name'          => _x( 'Beds', 'admin menu', 'threedgarden' ),
-			'name_admin_bar'     => _x( 'Bed', 'add new on admin bar', 'threedgarden' ),
-			'add_new'            => _x( 'Add New', 'bed', 'threedgarden' ),
-			'add_new_item'       => __( 'Add New Bed', 'threedgarden' ),
-			'new_item'           => __( 'New Bed', 'threedgarden' ),
-			'edit_item'          => __( 'Edit Bed', 'threedgarden' ),
-			'view_item'          => __( 'View Bed', 'threedgarden' ),
-			'all_items'          => __( 'All Beds', 'threedgarden' ),
-			'search_items'       => __( 'Search Beds', 'threedgarden' ),
-			'parent_item_colon'  => __( 'Parent Beds:', 'threedgarden' ),
-			'not_found'          => __( 'No beds found.', 'threedgarden' ),
-			'not_found_in_trash' => __( 'No beds found in Trash.', 'threedgarden' )
+			'name'               => _x( 'Beds', 'post type general name', 'ethpress' ),
+			'singular_name'      => _x( 'Bed', 'post type singular name', 'ethpress' ),
+			'menu_name'          => _x( 'Beds', 'admin menu', 'ethpress' ),
+			'name_admin_bar'     => _x( 'Bed', 'add new on admin bar', 'ethpress' ),
+			'add_new'            => _x( 'Add New', 'bed', 'ethpress' ),
+			'add_new_item'       => __( 'Add New Bed', 'ethpress' ),
+			'new_item'           => __( 'New Bed', 'ethpress' ),
+			'edit_item'          => __( 'Edit Bed', 'ethpress' ),
+			'view_item'          => __( 'View Bed', 'ethpress' ),
+			'all_items'          => __( 'All Beds', 'ethpress' ),
+			'search_items'       => __( 'Search Beds', 'ethpress' ),
+			'parent_item_colon'  => __( 'Parent Beds:', 'ethpress' ),
+			'not_found'          => __( 'No beds found.', 'ethpress' ),
+			'not_found_in_trash' => __( 'No beds found in Trash.', 'ethpress' )
 		);
 
 		$args = array(
 			'labels'             => $labels,
-			'description'        => __( 'Post type for bed notes and information.', 'threedgarden' ),
+			'description'        => __( 'Post type for bed notes and information.', 'ethpress' ),
 			'public'             => true,
 			'publicly_queryable' => true,
 			'show_ui'            => true,
@@ -895,17 +895,17 @@ class ThreeD_Garden_Admin {
 		
 		// Add Bed Type taxonomy, make it hierarchical (like categories)
 		$labels = array(
-			'name'              => _x( 'Bed Types', 'taxonomy general name' ),
-			'singular_name'     => _x( 'Bed Type', 'taxonomy singular name' ),
-			'search_items'      => __( 'Search Bed Types' ),
-			'all_items'         => __( 'All Bed Types' ),
-			'parent_item'       => __( 'Parent Bed Type' ),
-			'parent_item_colon' => __( 'Parent Bed Type:' ),
-			'edit_item'         => __( 'Edit Bed Type' ),
-			'update_item'       => __( 'Update Bed Type' ),
-			'add_new_item'      => __( 'Add New Bed Type' ),
-			'new_item_name'     => __( 'New Bed Type Name' ),
-			'menu_name'         => __( 'Bed Types' ),
+			'name'              => _x( 'Bed Types', 'taxonomy general name', 'ethpress' ),
+			'singular_name'     => _x( 'Bed Type', 'taxonomy singular name', 'ethpress' ),
+			'search_items'      => __( 'Search Bed Types', 'ethpress' ),
+			'all_items'         => __( 'All Bed Types', 'ethpress' ),
+			'parent_item'       => __( 'Parent Bed Type', 'ethpress' ),
+			'parent_item_colon' => __( 'Parent Bed Type:', 'ethpress' ),
+			'edit_item'         => __( 'Edit Bed Type', 'ethpress' ),
+			'update_item'       => __( 'Update Bed Type', 'ethpress' ),
+			'add_new_item'      => __( 'Add New Bed Type', 'ethpress' ),
+			'new_item_name'     => __( 'New Bed Type Name', 'ethpress' ),
+			'menu_name'         => __( 'Bed Types', 'ethpress' ),
 		);
 		$args = array(
 			'hierarchical'      => true,
@@ -920,22 +920,22 @@ class ThreeD_Garden_Admin {
 
 		// Add Bed Soil taxonomy, make it non-hierarchical (like tags)
 		$labels = array(
-			'name'                       => _x( 'Bed Soils', 'taxonomy general name' ),
-			'singular_name'              => _x( 'Bed Soil', 'taxonomy singular name' ),
-			'search_items'               => __( 'Search Bed Soils' ),
-			'popular_items'              => __( 'Popular Bed Soils' ),
-			'all_items'                  => __( 'All Bed Soils' ),
+			'name'                       => _x( 'Bed Soils', 'taxonomy general name', 'ethpress' ),
+			'singular_name'              => _x( 'Bed Soil', 'taxonomy singular name', 'ethpress' ),
+			'search_items'               => __( 'Search Bed Soils', 'ethpress' ),
+			'popular_items'              => __( 'Popular Bed Soils', 'ethpress' ),
+			'all_items'                  => __( 'All Bed Soils', 'ethpress' ),
 			'parent_item'                => null,
 			'parent_item_colon'          => null,
-			'edit_item'                  => __( 'Edit Bed Soil' ),
-			'update_item'                => __( 'Update Bed Soil' ),
-			'add_new_item'               => __( 'Add New Bed Soil' ),
-			'new_item_name'              => __( 'New Bed Soil Name' ),
-			'separate_items_with_commas' => __( 'Separate bed soils with commas' ),
-			'add_or_remove_items'        => __( 'Add or remove bed soils' ),
-			'choose_from_most_used'      => __( 'Choose from the most used bed soils' ),
-			'not_found'                  => __( 'No bed soils found.' ),
-			'menu_name'                  => __( 'Bed Soils' ),
+			'edit_item'                  => __( 'Edit Bed Soil', 'ethpress' ),
+			'update_item'                => __( 'Update Bed Soil', 'ethpress' ),
+			'add_new_item'               => __( 'Add New Bed Soil', 'ethpress' ),
+			'new_item_name'              => __( 'New Bed Soil Name', 'ethpress' ),
+			'separate_items_with_commas' => __( 'Separate bed soils with commas', 'ethpress' ),
+			'add_or_remove_items'        => __( 'Add or remove bed soils', 'ethpress' ),
+			'choose_from_most_used'      => __( 'Choose from the most used bed soils', 'ethpress' ),
+			'not_found'                  => __( 'No bed soils found.', 'ethpress' ),
+			'menu_name'                  => __( 'Bed Soils', 'ethpress' ),
 		);
 		$args = array(
 			'hierarchical'          => true,
@@ -1007,25 +1007,25 @@ class ThreeD_Garden_Admin {
 	 */
 	public function planting_plans_init() {
 		$labels = array(
-			'name'               => _x( 'Planting Plans', 'post type general name', 'threedgarden' ),
-			'singular_name'      => _x( 'Planting Plan', 'post type singular name', 'threedgarden' ),
-			'menu_name'          => _x( 'Planting Plans', 'admin menu', 'threedgarden' ),
-			'name_admin_bar'     => _x( 'Planting Plan', 'add new on admin bar', 'threedgarden' ),
-			'add_new'            => _x( 'Add New', 'planting_plan', 'threedgarden' ),
-			'add_new_item'       => __( 'Add New Planting Plan', 'threedgarden' ),
-			'new_item'           => __( 'New Planting Plan', 'threedgarden' ),
-			'edit_item'          => __( 'Edit Planting Plan', 'threedgarden' ),
-			'view_item'          => __( 'View Planting Plan', 'threedgarden' ),
-			'all_items'          => __( 'All Planting Plans', 'threedgarden' ),
-			'search_items'       => __( 'Search Planting Plans', 'threedgarden' ),
-			'parent_item_colon'  => __( 'Parent Planting Plans:', 'threedgarden' ),
-			'not_found'          => __( 'No planting plans found.', 'threedgarden' ),
-			'not_found_in_trash' => __( 'No planting plans found in Trash.', 'threedgarden' )
+			'name'               => _x( 'Planting Plans', 'post type general name', 'ethpress' ),
+			'singular_name'      => _x( 'Planting Plan', 'post type singular name', 'ethpress' ),
+			'menu_name'          => _x( 'Planting Plans', 'admin menu', 'ethpress' ),
+			'name_admin_bar'     => _x( 'Planting Plan', 'add new on admin bar', 'ethpress' ),
+			'add_new'            => _x( 'Add New', 'planting_plan', 'ethpress' ),
+			'add_new_item'       => __( 'Add New Planting Plan', 'ethpress' ),
+			'new_item'           => __( 'New Planting Plan', 'ethpress' ),
+			'edit_item'          => __( 'Edit Planting Plan', 'ethpress' ),
+			'view_item'          => __( 'View Planting Plan', 'ethpress' ),
+			'all_items'          => __( 'All Planting Plans', 'ethpress' ),
+			'search_items'       => __( 'Search Planting Plans', 'ethpress' ),
+			'parent_item_colon'  => __( 'Parent Planting Plans:', 'ethpress' ),
+			'not_found'          => __( 'No planting plans found.', 'ethpress' ),
+			'not_found_in_trash' => __( 'No planting plans found in Trash.', 'ethpress' )
 		);
 
 		$args = array(
 			'labels'             => $labels,
-			'description'        => __( 'Post type for planting plan notes and information.', 'threedgarden' ),
+			'description'        => __( 'Post type for planting plan notes and information.', 'ethpress' ),
 			'public'             => true,
 			'publicly_queryable' => true,
 			'show_ui'            => true,
@@ -1051,17 +1051,17 @@ class ThreeD_Garden_Admin {
 		
 		// Add Planting Plan Type taxonomy, make it hierarchical (like categories)
 		$labels = array(
-			'name'              => _x( 'Planting Plan Types', 'taxonomy general name' ),
-			'singular_name'     => _x( 'Planting Plan Type', 'taxonomy singular name' ),
-			'search_items'      => __( 'Search Planting Plan Types' ),
-			'all_items'         => __( 'All Planting Plan Types' ),
-			'parent_item'       => __( 'Parent Planting Plan Type' ),
-			'parent_item_colon' => __( 'Parent Planting Plan Type:' ),
-			'edit_item'         => __( 'Edit Planting Plan Type' ),
-			'update_item'       => __( 'Update Planting Plan Type' ),
-			'add_new_item'      => __( 'Add New Planting Plan Type' ),
-			'new_item_name'     => __( 'New Planting Plan Type Name' ),
-			'menu_name'         => __( 'Planting Plan Types' ),
+			'name'              => _x( 'Planting Plan Types', 'taxonomy general name', 'ethpress' ),
+			'singular_name'     => _x( 'Planting Plan Type', 'taxonomy singular name', 'ethpress' ),
+			'search_items'      => __( 'Search Planting Plan Types', 'ethpress' ),
+			'all_items'         => __( 'All Planting Plan Types', 'ethpress' ),
+			'parent_item'       => __( 'Parent Planting Plan Type', 'ethpress' ),
+			'parent_item_colon' => __( 'Parent Planting Plan Type:', 'ethpress' ),
+			'edit_item'         => __( 'Edit Planting Plan Type', 'ethpress' ),
+			'update_item'       => __( 'Update Planting Plan Type', 'ethpress' ),
+			'add_new_item'      => __( 'Add New Planting Plan Type', 'ethpress' ),
+			'new_item_name'     => __( 'New Planting Plan Type Name', 'ethpress' ),
+			'menu_name'         => __( 'Planting Plan Types', 'ethpress' ),
 		);
 		$args = array(
 			'hierarchical'      => true,
@@ -1076,22 +1076,22 @@ class ThreeD_Garden_Admin {
 
 		// Add Planting Plan Soil taxonomy, make it non-hierarchical (like tags)
 		$labels = array(
-			'name'                       => _x( 'Planting Plan Soils', 'taxonomy general name' ),
-			'singular_name'              => _x( 'Planting Plan Soil', 'taxonomy singular name' ),
-			'search_items'               => __( 'Search Planting Plan Soils' ),
-			'popular_items'              => __( 'Popular Planting Plan Soils' ),
-			'all_items'                  => __( 'All Planting Plan Soils' ),
+			'name'                       => _x( 'Planting Plan Soils', 'taxonomy general name', 'ethpress' ),
+			'singular_name'              => _x( 'Planting Plan Soil', 'taxonomy singular name', 'ethpress' ),
+			'search_items'               => __( 'Search Planting Plan Soils', 'ethpress' ),
+			'popular_items'              => __( 'Popular Planting Plan Soils', 'ethpress' ),
+			'all_items'                  => __( 'All Planting Plan Soils', 'ethpress' ),
 			'parent_item'                => null,
 			'parent_item_colon'          => null,
-			'edit_item'                  => __( 'Edit Planting Plan Soil' ),
-			'update_item'                => __( 'Update Planting Plan Soil' ),
-			'add_new_item'               => __( 'Add New Planting Plan Soil' ),
-			'new_item_name'              => __( 'New Planting Plan Soil Name' ),
-			'separate_items_with_commas' => __( 'Separate planting plan soils with commas' ),
-			'add_or_remove_items'        => __( 'Add or remove planting plan soils' ),
-			'choose_from_most_used'      => __( 'Choose from the most used planting plan soils' ),
-			'not_found'                  => __( 'No planting plan soils found.' ),
-			'menu_name'                  => __( 'Planting Plan Soils' ),
+			'edit_item'                  => __( 'Edit Planting Plan Soil', 'ethpress' ),
+			'update_item'                => __( 'Update Planting Plan Soil', 'ethpress' ),
+			'add_new_item'               => __( 'Add New Planting Plan Soil', 'ethpress' ),
+			'new_item_name'              => __( 'New Planting Plan Soil Name', 'ethpress' ),
+			'separate_items_with_commas' => __( 'Separate planting plan soils with commas', 'ethpress' ),
+			'add_or_remove_items'        => __( 'Add or remove planting plan soils', 'ethpress' ),
+			'choose_from_most_used'      => __( 'Choose from the most used planting plan soils', 'ethpress' ),
+			'not_found'                  => __( 'No planting plan soils found.', 'ethpress' ),
+			'menu_name'                  => __( 'Planting Plan Soils', 'ethpress' ),
 		);
 		$args = array(
 			'hierarchical'          => true,
@@ -1163,25 +1163,25 @@ class ThreeD_Garden_Admin {
 	 */
 	public function scenes_init() {
 		$labels = array(
-			'name'               => _x( 'Scenes', 'post type general name', 'threedgarden' ),
-			'singular_name'      => _x( 'Scene', 'post type singular name', 'threedgarden' ),
-			'menu_name'          => _x( 'Scenes', 'admin menu', 'threedgarden' ),
-			'name_admin_bar'     => _x( 'Scene', 'add new on admin bar', 'threedgarden' ),
-			'add_new'            => _x( 'Add New', 'scene', 'threedgarden' ),
-			'add_new_item'       => __( 'Add New Scene', 'threedgarden' ),
-			'new_item'           => __( 'New Scene', 'threedgarden' ),
-			'edit_item'          => __( 'Edit Scene', 'threedgarden' ),
-			'view_item'          => __( 'View Scene', 'threedgarden' ),
-			'all_items'          => __( 'All Scenes', 'threedgarden' ),
-			'search_items'       => __( 'Search Scenes', 'threedgarden' ),
-			'parent_item_colon'  => __( 'Parent Scenes:', 'threedgarden' ),
-			'not_found'          => __( 'No scenes found.', 'threedgarden' ),
-			'not_found_in_trash' => __( 'No scenes found in Trash.', 'threedgarden' )
+			'name'               => _x( 'Scenes', 'post type general name', 'ethpress' ),
+			'singular_name'      => _x( 'Scene', 'post type singular name', 'ethpress' ),
+			'menu_name'          => _x( 'Scenes', 'admin menu', 'ethpress' ),
+			'name_admin_bar'     => _x( 'Scene', 'add new on admin bar', 'ethpress' ),
+			'add_new'            => _x( 'Add New', 'scene', 'ethpress' ),
+			'add_new_item'       => __( 'Add New Scene', 'ethpress' ),
+			'new_item'           => __( 'New Scene', 'ethpress' ),
+			'edit_item'          => __( 'Edit Scene', 'ethpress' ),
+			'view_item'          => __( 'View Scene', 'ethpress' ),
+			'all_items'          => __( 'All Scenes', 'ethpress' ),
+			'search_items'       => __( 'Search Scenes', 'ethpress' ),
+			'parent_item_colon'  => __( 'Parent Scenes:', 'ethpress' ),
+			'not_found'          => __( 'No scenes found.', 'ethpress' ),
+			'not_found_in_trash' => __( 'No scenes found in Trash.', 'ethpress' )
 		);
 
 		$args = array(
 			'labels'             => $labels,
-			'description'        => __( 'Post type for scene notes and information.', 'threedgarden' ),
+			'description'        => __( 'Post type for scene notes and information.', 'ethpress' ),
 			'public'             => true,
 			'publicly_queryable' => true,
 			'show_ui'            => true,
@@ -1456,7 +1456,7 @@ class ThreeD_Garden_Admin {
 				'exclude_tree'     => $post->ID,
 				'selected'         => $post->post_parent,
 				'name'             => 'parent_id',
-				'show_option_none' => __('(no parent)'),
+				'show_option_none' => __('(no parent)', 'ethpress'),
 				'sort_column'      => 'menu_order, post_title',
 				'echo'             => 0,
 			);

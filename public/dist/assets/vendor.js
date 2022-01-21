@@ -75565,7 +75565,7 @@ WalletLink$1.VERSION = WALLETLINK_VERSION;
   }
 })(dist$1);
 var WalletLink = /* @__PURE__ */ getDefaultExportFromCjs(dist$1);
-const version$6 = "networks/5.5.2";
+const version$6 = "networks/5.5.1";
 const logger$9 = new Logger(version$6);
 function isRenetworkable(value2) {
   return value2 && typeof value2.renetwork === "function";
@@ -75682,7 +75682,6 @@ const networks = {
     name: "goerli",
     _defaultProvider: ethDefaultProvider("goerli")
   },
-  kintsugi: { chainId: 1337702, name: "kintsugi" },
   classic: {
     chainId: 61,
     name: "classic",
@@ -75923,7 +75922,7 @@ var bech32 = {
   fromWordsUnsafe,
   fromWords
 };
-const version$5 = "providers/5.5.2";
+const version$5 = "providers/5.5.1";
 const logger$8 = new Logger(version$5);
 class Formatter {
   constructor() {
@@ -76457,11 +76456,10 @@ function bytes32ify(value2) {
 function base58Encode(data) {
   return Base58.encode(concat$4([data, hexDataSlice(sha256$4(sha256$4(data)), 0, 4)]));
 }
-const matcherIpfs = new RegExp("^(ipfs)://(.*)$", "i");
 const matchers = [
   new RegExp("^(https)://(.*)$", "i"),
   new RegExp("^(data):(.*)$", "i"),
-  matcherIpfs,
+  new RegExp("^(ipfs)://(.*)$", "i"),
   new RegExp("^eip155:[0-9]+/(erc[0-9]+):(.*)$", "i")
 ];
 function _parseString(result) {
@@ -76478,9 +76476,6 @@ function _parseBytes(result) {
   const offset = BigNumber$1.from(hexDataSlice(result, 0, 32)).toNumber();
   const length3 = BigNumber$1.from(hexDataSlice(result, offset, offset + 32)).toNumber();
   return hexDataSlice(result, offset + 32, offset + 32 + length3);
-}
-function getIpfsLink(link) {
-  return `https://gateway.ipfs.io/ipfs/${link.substring(7)}`;
 }
 class Resolver$1 {
   constructor(provider, address2, name2, resolvedAddress) {
@@ -76592,7 +76587,7 @@ class Resolver$1 {
   }
   getAvatar() {
     return __awaiter$2(this, void 0, void 0, function* () {
-      const linkage = [{ type: "name", content: this.name }];
+      const linkage = [];
       try {
         const avatar = yield this.getText("avatar");
         if (avatar == null) {
@@ -76603,8 +76598,7 @@ class Resolver$1 {
           if (match == null) {
             continue;
           }
-          const scheme = match[1].toLowerCase();
-          switch (scheme) {
+          switch (match[1]) {
             case "https":
               linkage.push({ type: "url", content: avatar });
               return { linkage, url: avatar };
@@ -76613,11 +76607,11 @@ class Resolver$1 {
               return { linkage, url: avatar };
             case "ipfs":
               linkage.push({ type: "ipfs", content: avatar });
-              return { linkage, url: getIpfsLink(avatar) };
+              return { linkage, url: `https://gateway.ipfs.io/ipfs/${avatar.substring(7)}` };
             case "erc721":
             case "erc1155": {
-              const selector = scheme === "erc721" ? "0xc87b56dd" : "0x0e89341c";
-              linkage.push({ type: scheme, content: avatar });
+              const selector = match[1] === "erc721" ? "0xc87b56dd" : "0x0e89341c";
+              linkage.push({ type: match[1], content: avatar });
               const owner = this._resolvedAddress || (yield this.getAddress());
               const comps = (match[2] || "").split("/");
               if (comps.length !== 2) {
@@ -76625,7 +76619,7 @@ class Resolver$1 {
               }
               const addr = yield this.provider.formatter.address(comps[0]);
               const tokenId = hexZeroPad(BigNumber$1.from(comps[1]).toHexString(), 32);
-              if (scheme === "erc721") {
+              if (match[1] === "erc721") {
                 const tokenOwner = this.provider.formatter.callAddress(yield this.provider.call({
                   to: addr,
                   data: hexConcat(["0x6352211e", tokenId])
@@ -76634,7 +76628,7 @@ class Resolver$1 {
                   return null;
                 }
                 linkage.push({ type: "owner", content: tokenOwner });
-              } else if (scheme === "erc1155") {
+              } else if (match[1] === "erc1155") {
                 const balance = BigNumber$1.from(yield this.provider.call({
                   to: addr,
                   data: hexConcat(["0x00fdd58e", hexZeroPad(owner, 32), tokenId])
@@ -76653,30 +76647,16 @@ class Resolver$1 {
                 return null;
               }
               linkage.push({ type: "metadata-url", content: metadataUrl });
-              if (scheme === "erc1155") {
+              if (match[1] === "erc1155") {
                 metadataUrl = metadataUrl.replace("{id}", tokenId.substring(2));
-                linkage.push({ type: "metadata-url-expanded", content: metadataUrl });
               }
               const metadata = yield fetchJson(metadataUrl);
-              if (!metadata) {
+              if (!metadata || typeof metadata.image !== "string" || !metadata.image.match(/^(https:\/\/|data:)/i)) {
                 return null;
               }
               linkage.push({ type: "metadata", content: JSON.stringify(metadata) });
-              let imageUrl = metadata.image;
-              if (typeof imageUrl !== "string") {
-                return null;
-              }
-              if (imageUrl.match(/^(https:\/\/|data:)/i)) {
-              } else {
-                const ipfs2 = imageUrl.match(matcherIpfs);
-                if (ipfs2 == null) {
-                  return null;
-                }
-                linkage.push({ type: "url-ipfs", content: imageUrl });
-                imageUrl = getIpfsLink(imageUrl);
-              }
-              linkage.push({ type: "url", content: imageUrl });
-              return { linkage, url: imageUrl };
+              linkage.push({ type: "url", content: metadata.image });
+              return { linkage, url: metadata.image };
             }
           }
         }
@@ -77649,7 +77629,7 @@ class BaseProvider extends Provider {
         if (error3.code === Logger.errors.CALL_EXCEPTION) {
           return null;
         }
-        throw error3;
+        return null;
       }
     });
   }
