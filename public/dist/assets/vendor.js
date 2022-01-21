@@ -79287,26 +79287,6 @@ function useWallet(options = { library: "ethers" }) {
   };
 }
 useEthers();
-const clickOutside = {
-  beforeMount: (el, binding) => {
-    el.clickOutsideEvent = (event) => {
-      event.stopPropagation();
-      if (event.target !== el && !el.contains(event.target)) {
-        binding.value(event);
-      }
-    };
-    const clickHandler = "ontouchstart" in document.documentElement ? "touchstart" : "click";
-    setTimeout(() => {
-      document.addEventListener(clickHandler, el.clickOutsideEvent);
-    }, 0);
-  },
-  unmounted: (el) => {
-    const clickOutsideEvent = el.clickOutsideEvent;
-    delete el.clickOutsideEvent;
-    const clickHandler = "ontouchstart" in document.documentElement ? "touchstart" : "click";
-    document.removeEventListener(clickHandler, clickOutsideEvent);
-  }
-};
 var script$4 = defineComponent({
   emits: ["close"],
   props: {
@@ -79608,21 +79588,6 @@ styleInject(css_248z);
 script.render = render;
 script.__scopeId = "data-v-e1ee1034";
 script.__file = "src/components/Board.vue";
-const VueDapp = {
-  install(app, options) {
-    if (!(options === null || options === void 0 ? void 0 : options.infuraId)) {
-      console.warn('For enabling WalletConnect and WalletLink, you should provide infura ID in plugin options like "app.use(VueDapp, { infuraId: "<your-id>" })"');
-    }
-    if (!(options === null || options === void 0 ? void 0 : options.appName)) {
-      console.warn('For enabling WalletLink, you should provide the App Name in plugin options like "app.use(VueDapp, { appName: "<your-app-name>" })"');
-    }
-    app.directive("click-outside", clickOutside);
-    app.component("vdapp-board", script);
-    app.component("vdapp-modal", script$4);
-    app.provide("infuraId", options === null || options === void 0 ? void 0 : options.infuraId);
-    app.provide("appName", options === null || options === void 0 ? void 0 : options.appName);
-  }
-};
 const name$z = "web3";
 const version$4 = "1.7.0";
 const description$1 = "Ethereum JavaScript API";
@@ -122043,4 +122008,4 @@ Web3.modules = {
 };
 core.addProviders(Web3);
 var lib = Web3;
-export { process$2 as A, buffer$4 as B, util$a as C, useEthers as D, shortenAddress as E, displayEther as F, pushScopeId as G, popScopeId as H, useBoard as I, lib as J, Web3Provider as K, createApp as L, createRouter as M, NProgress as N, createWebHashHistory as O, useMouse as P, useCounter as Q, onMounted as R, getCurrentInstance as S, watchEffect as T, Fragment$2 as U, VueDapp as V, WalletConnectProvider as W, renderList as X, createCommentVNode as Y, createI18n as a, createPinia as b, createHead as c, defineStore as d, computed as e, defineComponent as f, useHead as g, useI18n as h, createElementBlock as i, createBaseVNode as j, unref as k, withKeys as l, createVNode as m, withCtx as n, resolveComponent as o, openBlock as p, createTextVNode as q, ref as r, createStaticVNode as s, toDisplayString$1 as t, useRouter as u, vModelText as v, withDirectives as w, useDark as x, useToggle as y, createBlock as z };
+export { process$2 as A, buffer$4 as B, util$a as C, useEthers as D, shortenAddress as E, displayEther as F, pushScopeId as G, popScopeId as H, useBoard as I, lib as J, Web3Provider as K, createApp as L, createRouter as M, NProgress as N, createWebHashHistory as O, useMouse as P, useCounter as Q, onMounted as R, getCurrentInstance as S, watchEffect as T, Fragment$2 as U, renderList as V, WalletConnectProvider as W, createCommentVNode as X, createI18n as a, createPinia as b, createHead as c, defineStore as d, computed as e, defineComponent as f, useHead as g, useI18n as h, createElementBlock as i, createBaseVNode as j, unref as k, withKeys as l, createVNode as m, withCtx as n, resolveComponent as o, openBlock as p, createTextVNode as q, ref as r, createStaticVNode as s, toDisplayString$1 as t, useRouter as u, vModelText as v, withDirectives as w, useDark as x, useToggle as y, createBlock as z };

@@ -14,8 +14,8 @@ import 'virtual:windi-utilities.css'
 // windicss devtools support (dev only)
 import 'virtual:windi-devtools'
 
-// Ethereum: Vue Dapp
-import { VueDapp } from 'vue-dapp'
+// // Ethereum: Vue Dapp
+// import { VueDapp } from 'vue-dapp'
 
 const app = createApp(App)
 
@@ -31,30 +31,30 @@ Object.values(import.meta.globEager('./modules/*.ts')).map(i => i.install?.({ ap
 // add window
 //app.config.globalProperties.window = window
 
-// vue dapp
+// // vue dapp
 
-// window.global = window
-// let global = globalThis
+// // window.global = window
+// // let global = globalThis
 
-// import process from 'process'
-// window.process = process
+// // import process from 'process'
+// // window.process = process
 
-// import buffer from 'buffer'
-// window.Buffer = buffer.Buffer
+// // import buffer from 'buffer'
+// // window.Buffer = buffer.Buffer
 
-// import util from 'util'
-// window.util = util
+// // import util from 'util'
+// // window.util = util
 
-// Ethereum: Vue Dapp
-// app.use(VueDapp) 
-app.use(VueDapp, {
-  infuraId: '432d743bb1d944268c6e3725f243a7e0',
-  // infuraId: '...', // optional: for enabling WalletConnect and/or WalletLink
-  // appName: '...', // optional: for enabling WalletLink
-  // appUrl: '...', // optional: for enabling MetaMask deep link for mobile devices
-})
+// // Ethereum: Vue Dapp
+// // app.use(VueDapp) 
+// app.use(VueDapp, {
+//   infuraId: '432d743bb1d944268c6e3725f243a7e0',
+//   // infuraId: '...', // optional: for enabling WalletConnect and/or WalletLink
+//   // appName: '...', // optional: for enabling WalletLink
+//   // appUrl: '...', // optional: for enabling MetaMask deep link for mobile devices
+// })
 
-console.log("vue dapp (app.use)", app)
+// console.log("vue dapp (app.use)", app)
 
 // OH, HELLO
 app.mount('#app')
