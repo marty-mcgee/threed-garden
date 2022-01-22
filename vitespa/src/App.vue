@@ -18,6 +18,10 @@ import LayoutHeader from './components/LayoutHeader.vue'
 //   // ]
 // })
 
+</script>
+<!--
+<script lang="ts">
+
 // // vue dapp
 
 // window.global = window
@@ -131,10 +135,8 @@ console.log('*** HEY HEY HEY -- App.vue (ethers)')
 
 // console.log("ethers tx", tx)
 
-
 </script>
-<script lang="ts">
-</script>
+-->
 
 <template>
 	<div id="APP">

@@ -60,6 +60,7 @@ specifiers:
   vue-router: ^4.0.12
   vue-tsc: ^0.30.2
   walletconnect: ^1.7.1
+  walletlink: ^2.4.5
   web3: ^1.6.1
   webgl-detector: ^1.1.11
   windicss: ^3.4.2
@@ -124,6 +125,7 @@ dependencies:
   vue-router: 4.0.12_vue@3.2.27
   vue-tsc: 0.30.5_typescript@4.5.4
   walletconnect: 1.7.1_@babel+core@7.16.7
+  walletlink: 2.4.5_@babel+core@7.16.7
   web3: 1.7.0
   webgl-detector: 1.1.11
   windicss: 3.4.3
@@ -1302,7 +1304,7 @@ packages:
   /@types/bn.js/4.11.6:
     resolution: {integrity: sha512-pqr857jrp2kPuO9uRjZ3PwnJTjoQy+fcdxvBTvHm6dkmEL9q+hDD/2j/0ELOBPtPnS8LjCX0gI9nbl8lVkadpg==}
     dependencies:
-      '@types/node': 12.20.42
+      '@types/node': 17.0.9
     dev: false
 
   /@types/bn.js/5.1.0:
@@ -1418,7 +1420,7 @@ packages:
     resolution: {integrity: sha512-8uALY5LTvSuHgloDVUvWP3pIauILm+8/0pDMokuDYIoNsOkSwd5AiHBTSEJjKTDcZr5z8UpgOWZkxBF4iJftoA==}
     requiresBuild: true
     dependencies:
-      '@types/node': 14.18.7
+      '@types/node': 17.0.9
     dev: false
     optional: true
 
@@ -8419,7 +8421,7 @@ packages:
       '@metamask/detect-provider': 1.2.0
       '@walletconnect/web3-provider': 1.7.1_@babel+core@7.16.7
       ethers: 5.5.2
-      walletlink: 2.4.3_@babel+core@7.16.7
+      walletlink: 2.4.5_@babel+core@7.16.7
     transitivePeerDependencies:
       - '@babel/core'
       - bufferutil
@@ -8520,8 +8522,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /walletlink/2.4.3_@babel+core@7.16.7:
-    resolution: {integrity: sha512-IGZZPhzuDStQtX3bKvVfD2AKb1HoSVBKwuU528+9S5JdzBGb1ZPEAXHh9yzHtamgqyHOpiGSrkop/rZ7NM52SQ==}
+  /walletlink/2.4.5_@babel+core@7.16.7:
+    resolution: {integrity: sha512-gt4z9E+OT4fbTmoetsB3q8FlN3jrVxW2l9TbipyKo4HfgPezKQKZAs/6jk2RI3JA4wykAYmMdj2C4+uYDFSvKw==}
     engines: {node: '>= 10.0.0'}
     dependencies:
       '@metamask/safe-event-emitter': 2.0.0

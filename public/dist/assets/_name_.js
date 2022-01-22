@@ -1,4 +1,4 @@
-import { f as defineComponent, u as useRouter, h as useI18n, T as watchEffect, o as resolveComponent, p as openBlock, i as createElementBlock, j as createBaseVNode, t as toDisplayString, k as unref, U as Fragment, V as renderList, X as createCommentVNode, m as createVNode, n as withCtx, q as createTextVNode } from "./vendor.js";
+import { f as defineComponent, u as useRouter, h as useI18n, R as watchEffect, o as resolveComponent, p as openBlock, i as createElementBlock, j as createBaseVNode, t as toDisplayString, k as unref, S as Fragment, T as renderList, U as createCommentVNode, m as createVNode, n as withCtx, q as createTextVNode } from "./vendor.js";
 import { u as useUserStore } from "./index.js";
 const _hoisted_1 = ["src"];
 const _hoisted_2 = { class: "text-sm opacity-50" };
