@@ -22,7 +22,7 @@ const app = createApp(App)
 // setup up pages with layouts as routes
 const routes = setupLayouts(generatedRoutes)
 // router
-const router = createRouter({ history: createWebHashHistory(), routes }) // note: not using createWebHistory()
+const router = createRouter({ history: createWebHashHistory(), routes }) // not using createWebHistory()
 app.use(router)
 
 // install all modules under `modules/`
