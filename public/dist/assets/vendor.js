@@ -9682,6 +9682,10 @@ function useDark(options = {}) {
   });
   return isDark;
 }
+function useLocalStorage(key2, initialValue, options = {}) {
+  const { window: window2 = defaultWindow } = options;
+  return useStorage(key2, initialValue, window2 == null ? void 0 : window2.localStorage, options);
+}
 function useMouse(options = {}) {
   const {
     type = "page",
@@ -79627,4 +79631,4 @@ const VueDapp = {
     app.provide("appName", options === null || options === void 0 ? void 0 : options.appName);
   }
 };
-export { process$2 as A, buffer$2 as B, util$7 as C, useEthers as D, shortenAddress as E, displayEther as F, pushScopeId as G, popScopeId as H, useBoard as I, createApp as J, createRouter as K, createWebHashHistory as L, useMouse as M, NProgress as N, useCounter as O, onMounted as P, getCurrentInstance as Q, watchEffect as R, Fragment$1 as S, renderList as T, createCommentVNode as U, VueDapp as V, createI18n as a, createPinia as b, createHead as c, defineStore as d, computed as e, defineComponent as f, useHead as g, useI18n as h, createElementBlock as i, createBaseVNode as j, unref as k, withKeys as l, createVNode as m, withCtx as n, resolveComponent as o, openBlock as p, createTextVNode as q, ref as r, createStaticVNode as s, toDisplayString$1 as t, useRouter as u, vModelText as v, withDirectives as w, useDark as x, useToggle as y, createBlock as z };
+export { process$2 as A, buffer$2 as B, util$7 as C, useEthers as D, shortenAddress as E, displayEther as F, pushScopeId as G, popScopeId as H, useBoard as I, createApp as J, createRouter as K, createWebHashHistory as L, useMouse as M, NProgress as N, useCounter as O, usePreferredDark as P, useLocalStorage as Q, useEventListener as R, onMounted as S, getCurrentInstance as T, watchEffect as U, VueDapp as V, Fragment$1 as W, renderList as X, createCommentVNode as Y, createI18n as a, createPinia as b, createHead as c, defineStore as d, computed as e, defineComponent as f, useHead as g, useI18n as h, createElementBlock as i, createBaseVNode as j, unref as k, withKeys as l, createVNode as m, withCtx as n, resolveComponent as o, openBlock as p, createTextVNode as q, ref as r, createStaticVNode as s, toDisplayString$1 as t, useRouter as u, vModelText as v, withDirectives as w, useDark as x, useToggle as y, createBlock as z };

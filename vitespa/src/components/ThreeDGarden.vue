@@ -2,11 +2,8 @@
   <div class="threedgarden">
     <!-- <h1>{{ msg }}</h1> -->
     <!-- <h2>{{ subtitle }}</h2> -->
-    <!-- {{isWebGLSupported() ? ( -->
-      <div id="webgl" ref="root"></div>
-    <!-- ) : (
-      <div>WebGL is not supported</div>
-    )}} -->
+    <div v-if="isWebGLSupported" id="webgl" ref="root"></div>
+    <div v-else id="webgl" ref="root">WebGL is not supported</div>
     <h6>
       Mouse: x={{x}} y={{y}} |
       Counter: {{count}}
@@ -42,10 +39,39 @@ if (!isWebGL2Supported()){
 //   console.log('WebGL2 is supported.')
 }
 
-// vueuse components
-import { useMouse, useCounter } from '@vueuse/core'
+/** VueUse components */
+import { 
+  useMouse,
+  useCounter,
+  usePreferredDark,
+  useLocalStorage,
+  useEventListener
+} from '@vueuse/core'
+// track mouse position
 const { x, y } = useMouse()
+// simple counter
 const { count, inc, dec } = useCounter()
+// if user prefers dark theme
+const isDark = usePreferredDark()
+// persist state in localStorage
+const store = useLocalStorage(
+  'threedgarden-storage', 
+  [
+    {
+      name: 'Apple',
+      color: 'red',
+    }, 
+    {
+      name: 'Orange',
+      color: 'orange',
+    },
+  ]
+)
+// event listeners
+useEventListener(document, 'visibilitychange', (evt) => { console.log(evt) })
+useEventListener(document, 'resize', (evt) => { onWindowResize(); console.log(evt) })
+
+
 
 /** END SETUP SCRIPT ************************************************* */
 </script>
@@ -62,7 +88,8 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer'
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-//import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
+// import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
+import TWEEN from '@tweenjs/tween.js'
 
 // three.js joystick
 // import { JoystickControls, RotationJoystickControls } from 'three-joystick'
@@ -313,14 +340,16 @@ const render = () => {
 
 // watch for window resize, then adjust canvas appropriately
 const onWindowResize = () => {
+  console.log("window resize to: ", window.innerWidth, window.innerHeight)
   camera.aspect = window.innerWidth / window.innerHeight
   camera.updateProjectionMatrix()
   renderer.setSize( window.innerWidth, window.innerHeight )
   //controls.handleResize() or something similar to update controls
   render()
 }
+// (now using vueuse useEventListener) ...
 // watch for window resize, then adjust canvas appropriately
-window.addEventListener( 'resize', onWindowResize, false )
+// window.addEventListener( 'resize', onWindowResize, false )
 
 const getPlane = (x, y, color) => {
   let geometry = new THREE.PlaneGeometry(x, y)
@@ -1740,7 +1769,7 @@ const animate = () => {
   const dt = clock.getDelta()
   watchPointer(camera, plane.children)
   controls.update()
-  //TWEEN.update()
+  TWEEN.update()
 
   requestAnimationFrame(animate)
 
