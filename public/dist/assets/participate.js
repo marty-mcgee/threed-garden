@@ -17,7 +17,7 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-import { r as ref, f as defineComponent, M as useMouse, O as useCounter, P as usePreferredDark, Q as useLocalStorage, R as useEventListener, p as openBlock, i as createElementBlock, k as unref, j as createBaseVNode, q as createTextVNode, t as toDisplayString, S as onMounted, T as getCurrentInstance, m as createVNode } from "./vendor.js";
+import { r as ref, f as defineComponent, A as process$1, B as buffer, C as util, M as useMouse, O as useCounter, P as usePreferredDark, Q as useLocalStorage, R as useEventListener, p as openBlock, i as createElementBlock, k as unref, j as createBaseVNode, q as createTextVNode, t as toDisplayString, S as onMounted, T as getCurrentInstance, m as createVNode } from "./vendor.js";
 import { a as _export_sfc } from "./index.js";
 /**
  * @license
@@ -7288,8 +7288,8 @@ function WebGLAttributes(gl, capabilities) {
   function createBuffer(attribute, bufferType) {
     const array = attribute.array;
     const usage = attribute.usage;
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(bufferType, buffer);
+    const buffer2 = gl.createBuffer();
+    gl.bindBuffer(bufferType, buffer2);
     gl.bufferData(bufferType, array, usage);
     attribute.onUploadCallback();
     let type = 5126;
@@ -7321,16 +7321,16 @@ function WebGLAttributes(gl, capabilities) {
       type = 5121;
     }
     return {
-      buffer,
+      buffer: buffer2,
       type,
       bytesPerElement: array.BYTES_PER_ELEMENT,
       version: attribute.version
     };
   }
-  function updateBuffer(buffer, attribute, bufferType) {
+  function updateBuffer(buffer2, attribute, bufferType) {
     const array = attribute.array;
     const updateRange = attribute.updateRange;
-    gl.bindBuffer(bufferType, buffer);
+    gl.bindBuffer(bufferType, buffer2);
     if (updateRange.count === -1) {
       gl.bufferSubData(bufferType, 0, array);
     } else {
@@ -8407,7 +8407,7 @@ function WebGLBindingStates(gl, extensions, attributes, capabilities) {
           const attribute = attributes.get(geometryAttribute);
           if (attribute === void 0)
             continue;
-          const buffer = attribute.buffer;
+          const buffer2 = attribute.buffer;
           const type = attribute.type;
           const bytesPerElement = attribute.bytesPerElement;
           if (geometryAttribute.isInterleavedBufferAttribute) {
@@ -8426,7 +8426,7 @@ function WebGLBindingStates(gl, extensions, attributes, capabilities) {
                 enableAttribute(programAttribute.location + i);
               }
             }
-            gl.bindBuffer(34962, buffer);
+            gl.bindBuffer(34962, buffer2);
             for (let i = 0; i < programAttribute.locationSize; i++) {
               vertexAttribPointer(programAttribute.location + i, size / programAttribute.locationSize, type, normalized, stride * bytesPerElement, (offset + size / programAttribute.locationSize * i) * bytesPerElement);
             }
@@ -8443,7 +8443,7 @@ function WebGLBindingStates(gl, extensions, attributes, capabilities) {
                 enableAttribute(programAttribute.location + i);
               }
             }
-            gl.bindBuffer(34962, buffer);
+            gl.bindBuffer(34962, buffer2);
             for (let i = 0; i < programAttribute.locationSize; i++) {
               vertexAttribPointer(programAttribute.location + i, size / programAttribute.locationSize, type, normalized, size * bytesPerElement, size / programAttribute.locationSize * i * bytesPerElement);
             }
@@ -9816,8 +9816,8 @@ function WebGLMorphtargets(gl, capabilities, textures) {
           height = Math.ceil(width / capabilities.maxTextureSize);
           width = capabilities.maxTextureSize;
         }
-        const buffer = new Float32Array(width * height * 4 * numberOfMorphTargets);
-        const texture = new DataTexture2DArray(buffer, width, height, numberOfMorphTargets);
+        const buffer2 = new Float32Array(width * height * 4 * numberOfMorphTargets);
+        const texture = new DataTexture2DArray(buffer2, width, height, numberOfMorphTargets);
         texture.format = RGBAFormat;
         texture.type = FloatType;
         texture.needsUpdate = true;
@@ -9831,18 +9831,18 @@ function WebGLMorphtargets(gl, capabilities, textures) {
             if (morphTarget.normalized === true)
               denormalize(morph, morphTarget);
             const stride = j * vertexDataStride;
-            buffer[offset + stride + 0] = morph.x;
-            buffer[offset + stride + 1] = morph.y;
-            buffer[offset + stride + 2] = morph.z;
-            buffer[offset + stride + 3] = 0;
+            buffer2[offset + stride + 0] = morph.x;
+            buffer2[offset + stride + 1] = morph.y;
+            buffer2[offset + stride + 2] = morph.z;
+            buffer2[offset + stride + 3] = 0;
             if (hasMorphNormals === true) {
               morph.fromBufferAttribute(morphNormal, j);
               if (morphNormal.normalized === true)
                 denormalize(morph, morphNormal);
-              buffer[offset + stride + 4] = morph.x;
-              buffer[offset + stride + 5] = morph.y;
-              buffer[offset + stride + 6] = morph.z;
-              buffer[offset + stride + 7] = 0;
+              buffer2[offset + stride + 4] = morph.x;
+              buffer2[offset + stride + 5] = morph.y;
+              buffer2[offset + stride + 6] = morph.z;
+              buffer2[offset + stride + 7] = 0;
             }
           }
         }
@@ -16006,7 +16006,7 @@ function WebGLRenderer(parameters = {}) {
     }
     _currentMaterialId = -1;
   };
-  this.readRenderTargetPixels = function(renderTarget, x, y, width, height, buffer, activeCubeFaceIndex) {
+  this.readRenderTargetPixels = function(renderTarget, x, y, width, height, buffer2, activeCubeFaceIndex) {
     if (!(renderTarget && renderTarget.isWebGLRenderTarget)) {
       console.error("THREE.WebGLRenderer.readRenderTargetPixels: renderTarget is not THREE.WebGLRenderTarget.");
       return;
@@ -16032,7 +16032,7 @@ function WebGLRenderer(parameters = {}) {
         }
         if (_gl.checkFramebufferStatus(36160) === 36053) {
           if (x >= 0 && x <= renderTarget.width - width && (y >= 0 && y <= renderTarget.height - height)) {
-            _gl.readPixels(x, y, width, height, utils.convert(textureFormat), utils.convert(textureType), buffer);
+            _gl.readPixels(x, y, width, height, utils.convert(textureFormat), utils.convert(textureType), buffer2);
           }
         } else {
           console.error("THREE.WebGLRenderer.readRenderTargetPixels: readPixels from renderTarget failed. Framebuffer not complete.");
@@ -21708,9 +21708,9 @@ class AudioLoader extends Loader {
     loader.setPath(this.path);
     loader.setRequestHeader(this.requestHeader);
     loader.setWithCredentials(this.withCredentials);
-    loader.load(url, function(buffer) {
+    loader.load(url, function(buffer2) {
       try {
-        const bufferCopy = buffer.slice(0);
+        const bufferCopy = buffer2.slice(0);
         const context = AudioContext.getContext();
         context.decodeAudioData(bufferCopy, function(audioBuffer) {
           onLoad(audioBuffer);
@@ -22043,52 +22043,52 @@ class PropertyMixer {
     this.referenceCount = 0;
   }
   accumulate(accuIndex, weight) {
-    const buffer = this.buffer, stride = this.valueSize, offset = accuIndex * stride + stride;
+    const buffer2 = this.buffer, stride = this.valueSize, offset = accuIndex * stride + stride;
     let currentWeight = this.cumulativeWeight;
     if (currentWeight === 0) {
       for (let i = 0; i !== stride; ++i) {
-        buffer[offset + i] = buffer[i];
+        buffer2[offset + i] = buffer2[i];
       }
       currentWeight = weight;
     } else {
       currentWeight += weight;
       const mix = weight / currentWeight;
-      this._mixBufferRegion(buffer, offset, 0, mix, stride);
+      this._mixBufferRegion(buffer2, offset, 0, mix, stride);
     }
     this.cumulativeWeight = currentWeight;
   }
   accumulateAdditive(weight) {
-    const buffer = this.buffer, stride = this.valueSize, offset = stride * this._addIndex;
+    const buffer2 = this.buffer, stride = this.valueSize, offset = stride * this._addIndex;
     if (this.cumulativeWeightAdditive === 0) {
       this._setIdentity();
     }
-    this._mixBufferRegionAdditive(buffer, offset, 0, weight, stride);
+    this._mixBufferRegionAdditive(buffer2, offset, 0, weight, stride);
     this.cumulativeWeightAdditive += weight;
   }
   apply(accuIndex) {
-    const stride = this.valueSize, buffer = this.buffer, offset = accuIndex * stride + stride, weight = this.cumulativeWeight, weightAdditive = this.cumulativeWeightAdditive, binding = this.binding;
+    const stride = this.valueSize, buffer2 = this.buffer, offset = accuIndex * stride + stride, weight = this.cumulativeWeight, weightAdditive = this.cumulativeWeightAdditive, binding = this.binding;
     this.cumulativeWeight = 0;
     this.cumulativeWeightAdditive = 0;
     if (weight < 1) {
       const originalValueOffset = stride * this._origIndex;
-      this._mixBufferRegion(buffer, offset, originalValueOffset, 1 - weight, stride);
+      this._mixBufferRegion(buffer2, offset, originalValueOffset, 1 - weight, stride);
     }
     if (weightAdditive > 0) {
-      this._mixBufferRegionAdditive(buffer, offset, this._addIndex * stride, 1, stride);
+      this._mixBufferRegionAdditive(buffer2, offset, this._addIndex * stride, 1, stride);
     }
     for (let i = stride, e = stride + stride; i !== e; ++i) {
-      if (buffer[i] !== buffer[i + stride]) {
-        binding.setValue(buffer, offset);
+      if (buffer2[i] !== buffer2[i + stride]) {
+        binding.setValue(buffer2, offset);
         break;
       }
     }
   }
   saveOriginalState() {
     const binding = this.binding;
-    const buffer = this.buffer, stride = this.valueSize, originalValueOffset = stride * this._origIndex;
-    binding.getValue(buffer, originalValueOffset);
+    const buffer2 = this.buffer, stride = this.valueSize, originalValueOffset = stride * this._origIndex;
+    binding.getValue(buffer2, originalValueOffset);
     for (let i = stride, e = originalValueOffset; i !== e; ++i) {
-      buffer[i] = buffer[originalValueOffset + i % stride];
+      buffer2[i] = buffer2[originalValueOffset + i % stride];
     }
     this._setIdentity();
     this.cumulativeWeight = 0;
@@ -22116,32 +22116,32 @@ class PropertyMixer {
       this.buffer[targetIndex + i] = this.buffer[startIndex + i];
     }
   }
-  _select(buffer, dstOffset, srcOffset, t, stride) {
+  _select(buffer2, dstOffset, srcOffset, t, stride) {
     if (t >= 0.5) {
       for (let i = 0; i !== stride; ++i) {
-        buffer[dstOffset + i] = buffer[srcOffset + i];
+        buffer2[dstOffset + i] = buffer2[srcOffset + i];
       }
     }
   }
-  _slerp(buffer, dstOffset, srcOffset, t) {
-    Quaternion.slerpFlat(buffer, dstOffset, buffer, dstOffset, buffer, srcOffset, t);
+  _slerp(buffer2, dstOffset, srcOffset, t) {
+    Quaternion.slerpFlat(buffer2, dstOffset, buffer2, dstOffset, buffer2, srcOffset, t);
   }
-  _slerpAdditive(buffer, dstOffset, srcOffset, t, stride) {
+  _slerpAdditive(buffer2, dstOffset, srcOffset, t, stride) {
     const workOffset = this._workIndex * stride;
-    Quaternion.multiplyQuaternionsFlat(buffer, workOffset, buffer, dstOffset, buffer, srcOffset);
-    Quaternion.slerpFlat(buffer, dstOffset, buffer, dstOffset, buffer, workOffset, t);
+    Quaternion.multiplyQuaternionsFlat(buffer2, workOffset, buffer2, dstOffset, buffer2, srcOffset);
+    Quaternion.slerpFlat(buffer2, dstOffset, buffer2, dstOffset, buffer2, workOffset, t);
   }
-  _lerp(buffer, dstOffset, srcOffset, t, stride) {
+  _lerp(buffer2, dstOffset, srcOffset, t, stride) {
     const s = 1 - t;
     for (let i = 0; i !== stride; ++i) {
       const j = dstOffset + i;
-      buffer[j] = buffer[j] * s + buffer[srcOffset + i] * t;
+      buffer2[j] = buffer2[j] * s + buffer2[srcOffset + i] * t;
     }
   }
-  _lerpAdditive(buffer, dstOffset, srcOffset, t, stride) {
+  _lerpAdditive(buffer2, dstOffset, srcOffset, t, stride) {
     for (let i = 0; i !== stride; ++i) {
       const j = dstOffset + i;
-      buffer[j] = buffer[j] + buffer[srcOffset + i] * t;
+      buffer2[j] = buffer2[j] + buffer2[srcOffset + i] * t;
     }
   }
 }
@@ -22264,72 +22264,72 @@ class PropertyBinding {
   }
   _setValue_unavailable() {
   }
-  _getValue_direct(buffer, offset) {
-    buffer[offset] = this.targetObject[this.propertyName];
+  _getValue_direct(buffer2, offset) {
+    buffer2[offset] = this.targetObject[this.propertyName];
   }
-  _getValue_array(buffer, offset) {
+  _getValue_array(buffer2, offset) {
     const source = this.resolvedProperty;
     for (let i = 0, n = source.length; i !== n; ++i) {
-      buffer[offset++] = source[i];
+      buffer2[offset++] = source[i];
     }
   }
-  _getValue_arrayElement(buffer, offset) {
-    buffer[offset] = this.resolvedProperty[this.propertyIndex];
+  _getValue_arrayElement(buffer2, offset) {
+    buffer2[offset] = this.resolvedProperty[this.propertyIndex];
   }
-  _getValue_toArray(buffer, offset) {
-    this.resolvedProperty.toArray(buffer, offset);
+  _getValue_toArray(buffer2, offset) {
+    this.resolvedProperty.toArray(buffer2, offset);
   }
-  _setValue_direct(buffer, offset) {
-    this.targetObject[this.propertyName] = buffer[offset];
+  _setValue_direct(buffer2, offset) {
+    this.targetObject[this.propertyName] = buffer2[offset];
   }
-  _setValue_direct_setNeedsUpdate(buffer, offset) {
-    this.targetObject[this.propertyName] = buffer[offset];
+  _setValue_direct_setNeedsUpdate(buffer2, offset) {
+    this.targetObject[this.propertyName] = buffer2[offset];
     this.targetObject.needsUpdate = true;
   }
-  _setValue_direct_setMatrixWorldNeedsUpdate(buffer, offset) {
-    this.targetObject[this.propertyName] = buffer[offset];
+  _setValue_direct_setMatrixWorldNeedsUpdate(buffer2, offset) {
+    this.targetObject[this.propertyName] = buffer2[offset];
     this.targetObject.matrixWorldNeedsUpdate = true;
   }
-  _setValue_array(buffer, offset) {
+  _setValue_array(buffer2, offset) {
     const dest = this.resolvedProperty;
     for (let i = 0, n = dest.length; i !== n; ++i) {
-      dest[i] = buffer[offset++];
+      dest[i] = buffer2[offset++];
     }
   }
-  _setValue_array_setNeedsUpdate(buffer, offset) {
+  _setValue_array_setNeedsUpdate(buffer2, offset) {
     const dest = this.resolvedProperty;
     for (let i = 0, n = dest.length; i !== n; ++i) {
-      dest[i] = buffer[offset++];
+      dest[i] = buffer2[offset++];
     }
     this.targetObject.needsUpdate = true;
   }
-  _setValue_array_setMatrixWorldNeedsUpdate(buffer, offset) {
+  _setValue_array_setMatrixWorldNeedsUpdate(buffer2, offset) {
     const dest = this.resolvedProperty;
     for (let i = 0, n = dest.length; i !== n; ++i) {
-      dest[i] = buffer[offset++];
+      dest[i] = buffer2[offset++];
     }
     this.targetObject.matrixWorldNeedsUpdate = true;
   }
-  _setValue_arrayElement(buffer, offset) {
-    this.resolvedProperty[this.propertyIndex] = buffer[offset];
+  _setValue_arrayElement(buffer2, offset) {
+    this.resolvedProperty[this.propertyIndex] = buffer2[offset];
   }
-  _setValue_arrayElement_setNeedsUpdate(buffer, offset) {
-    this.resolvedProperty[this.propertyIndex] = buffer[offset];
+  _setValue_arrayElement_setNeedsUpdate(buffer2, offset) {
+    this.resolvedProperty[this.propertyIndex] = buffer2[offset];
     this.targetObject.needsUpdate = true;
   }
-  _setValue_arrayElement_setMatrixWorldNeedsUpdate(buffer, offset) {
-    this.resolvedProperty[this.propertyIndex] = buffer[offset];
+  _setValue_arrayElement_setMatrixWorldNeedsUpdate(buffer2, offset) {
+    this.resolvedProperty[this.propertyIndex] = buffer2[offset];
     this.targetObject.matrixWorldNeedsUpdate = true;
   }
-  _setValue_fromArray(buffer, offset) {
-    this.resolvedProperty.fromArray(buffer, offset);
+  _setValue_fromArray(buffer2, offset) {
+    this.resolvedProperty.fromArray(buffer2, offset);
   }
-  _setValue_fromArray_setNeedsUpdate(buffer, offset) {
-    this.resolvedProperty.fromArray(buffer, offset);
+  _setValue_fromArray_setNeedsUpdate(buffer2, offset) {
+    this.resolvedProperty.fromArray(buffer2, offset);
     this.targetObject.needsUpdate = true;
   }
-  _setValue_fromArray_setMatrixWorldNeedsUpdate(buffer, offset) {
-    this.resolvedProperty.fromArray(buffer, offset);
+  _setValue_fromArray_setMatrixWorldNeedsUpdate(buffer2, offset) {
+    this.resolvedProperty.fromArray(buffer2, offset);
     this.targetObject.matrixWorldNeedsUpdate = true;
   }
   _getValue_unbound(targetArray, offset) {
@@ -24370,8 +24370,8 @@ Audio.prototype.load = function(file) {
   console.warn("THREE.Audio: .load has been deprecated. Use THREE.AudioLoader instead.");
   const scope = this;
   const audioLoader = new AudioLoader();
-  audioLoader.load(file, function(buffer) {
-    scope.setBuffer(buffer);
+  audioLoader.load(file, function(buffer2) {
+    scope.setBuffer(buffer2);
   });
   return this;
 };
@@ -26680,9 +26680,9 @@ class FBXLoader extends Loader {
     loader.setResponseType("arraybuffer");
     loader.setRequestHeader(scope.requestHeader);
     loader.setWithCredentials(scope.withCredentials);
-    loader.load(url, function(buffer) {
+    loader.load(url, function(buffer2) {
       try {
-        onLoad(scope.parse(buffer, path));
+        onLoad(scope.parse(buffer2, path));
       } catch (e) {
         if (onError) {
           onError(e);
@@ -27821,7 +27821,7 @@ class GeometryParser {
   parseNormals(NormalNode) {
     const mappingType = NormalNode.MappingInformationType;
     const referenceType = NormalNode.ReferenceInformationType;
-    const buffer = NormalNode.Normals.a;
+    const buffer2 = NormalNode.Normals.a;
     let indexBuffer = [];
     if (referenceType === "IndexToDirect") {
       if ("NormalIndex" in NormalNode) {
@@ -27832,7 +27832,7 @@ class GeometryParser {
     }
     return {
       dataSize: 3,
-      buffer,
+      buffer: buffer2,
       indices: indexBuffer,
       mappingType,
       referenceType
@@ -27841,14 +27841,14 @@ class GeometryParser {
   parseUVs(UVNode) {
     const mappingType = UVNode.MappingInformationType;
     const referenceType = UVNode.ReferenceInformationType;
-    const buffer = UVNode.UV.a;
+    const buffer2 = UVNode.UV.a;
     let indexBuffer = [];
     if (referenceType === "IndexToDirect") {
       indexBuffer = UVNode.UVIndex.a;
     }
     return {
       dataSize: 2,
-      buffer,
+      buffer: buffer2,
       indices: indexBuffer,
       mappingType,
       referenceType
@@ -27857,14 +27857,14 @@ class GeometryParser {
   parseVertexColors(ColorNode) {
     const mappingType = ColorNode.MappingInformationType;
     const referenceType = ColorNode.ReferenceInformationType;
-    const buffer = ColorNode.Colors.a;
+    const buffer2 = ColorNode.Colors.a;
     let indexBuffer = [];
     if (referenceType === "IndexToDirect") {
       indexBuffer = ColorNode.ColorIndex.a;
     }
     return {
       dataSize: 4,
-      buffer,
+      buffer: buffer2,
       indices: indexBuffer,
       mappingType,
       referenceType
@@ -28450,8 +28450,8 @@ class TextParser {
   }
 }
 class BinaryParser {
-  parse(buffer) {
-    const reader = new BinaryReader(buffer);
+  parse(buffer2) {
+    const reader = new BinaryReader(buffer2);
     reader.skip(23);
     const version = reader.getUint32();
     if (version < 6400) {
@@ -28642,8 +28642,8 @@ class BinaryParser {
   }
 }
 class BinaryReader {
-  constructor(buffer, littleEndian) {
-    this.dv = new DataView(buffer);
+  constructor(buffer2, littleEndian) {
+    this.dv = new DataView(buffer2);
     this.offset = 0;
     this.littleEndian = littleEndian !== void 0 ? littleEndian : true;
   }
@@ -28775,9 +28775,9 @@ class FBXTree {
     this[key] = val;
   }
 }
-function isFbxFormatBinary(buffer) {
+function isFbxFormatBinary(buffer2) {
   const CORRECT = "Kaydara FBX Binary  \0";
-  return buffer.byteLength >= CORRECT.length && CORRECT === convertArrayBufferToString(buffer, 0, CORRECT.length);
+  return buffer2.byteLength >= CORRECT.length && CORRECT === convertArrayBufferToString(buffer2, 0, CORRECT.length);
 }
 function isFbxFormatASCII(text) {
   const CORRECT = ["K", "a", "y", "d", "a", "r", "a", "\\", "F", "B", "X", "\\", "B", "i", "n", "a", "r", "y", "\\", "\\"];
@@ -28932,12 +28932,12 @@ function parseNumberArray(value) {
   });
   return array;
 }
-function convertArrayBufferToString(buffer, from, to) {
+function convertArrayBufferToString(buffer2, from, to) {
   if (from === void 0)
     from = 0;
   if (to === void 0)
-    to = buffer.byteLength;
-  return LoaderUtils.decodeText(new Uint8Array(buffer, from, to));
+    to = buffer2.byteLength;
+  return LoaderUtils.decodeText(new Uint8Array(buffer2, from, to));
 }
 function append(a, b) {
   for (let i = 0, j = a.length, l = b.length; i < l; i++, j++) {
@@ -29546,7 +29546,7 @@ class GLTFMeshoptCompression {
     const bufferView = json.bufferViews[index];
     if (bufferView.extensions && bufferView.extensions[this.name]) {
       const extensionDef = bufferView.extensions[this.name];
-      const buffer = this.parser.getDependency("buffer", extensionDef.buffer);
+      const buffer2 = this.parser.getDependency("buffer", extensionDef.buffer);
       const decoder = this.parser.options.meshoptDecoder;
       if (!decoder || !decoder.supported) {
         if (json.extensionsRequired && json.extensionsRequired.indexOf(this.name) >= 0) {
@@ -29555,7 +29555,7 @@ class GLTFMeshoptCompression {
           return null;
         }
       }
-      return Promise.all([buffer, decoder.ready]).then(function(res) {
+      return Promise.all([buffer2, decoder.ready]).then(function(res) {
         const byteOffset = extensionDef.byteOffset || 0;
         const byteLength = extensionDef.byteLength || 0;
         const count = extensionDef.count;
@@ -30363,10 +30363,10 @@ class GLTFParser {
   }
   loadBufferView(bufferViewIndex) {
     const bufferViewDef = this.json.bufferViews[bufferViewIndex];
-    return this.getDependency("buffer", bufferViewDef.buffer).then(function(buffer) {
+    return this.getDependency("buffer", bufferViewDef.buffer).then(function(buffer2) {
       const byteLength = bufferViewDef.byteLength || 0;
       const byteOffset = bufferViewDef.byteOffset || 0;
-      return buffer.slice(byteOffset, byteOffset + byteLength);
+      return buffer2.slice(byteOffset, byteOffset + byteLength);
     });
   }
   loadAccessor(accessorIndex) {
@@ -36489,14 +36489,18 @@ const __default__ = {
 };
 const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues({}, __default__), {
   setup(__props) {
-    const $apples = getCurrentInstance();
-    console.log("$apples (vue getCurrentInstance)", $apples);
-    const $config = $apples.appContext.config;
-    console.log("$apples.appContext.config", $config);
-    const $global = $apples.appContext.config.globalProperties;
-    console.log("$global", $global);
+    const $apple = getCurrentInstance();
+    console.log("$apple = vue getCurrentInstance()", $apple);
+    const $config = $apple.appContext.config;
+    console.log("$config = $apple.appContext.config", $config);
+    const $global = $apple.appContext.config.globalProperties;
+    console.log("$global = $apple.appContext.config.globalProperties", $global);
     const $window = $global.window;
-    console.log("$global.window", $window);
+    console.log("$window = $global.window = $apple.appContext.config.globalProperties.window", $window);
+    window.global = $window;
+    window.process = process$1;
+    window.Buffer = buffer.Buffer;
+    window.util = util;
     if (!isWebGLSupported_1()) {
       alert("WebGL is not supported.");
       console.log("WebGL is not supported.");
