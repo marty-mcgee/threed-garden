@@ -20,13 +20,24 @@
 // GET CURRENT INSTANCE OF APP GLOBAL WINDOW
 import { getCurrentInstance } from 'vue'
 const $apple = getCurrentInstance()
-console.log("$apple (vue getCurrentInstance)", $apple)
+console.log("$apple = vue getCurrentInstance()", $apple)
 const $config = $apple.appContext.config
-console.log("$apple.appContext.config", $config)
+console.log("$config = $apple.appContext.config", $config)
 const $global = $apple.appContext.config.globalProperties
-console.log("$global", $global)
+console.log("$global = $apple.appContext.config.globalProperties", $global)
 const $window = $global.window
-console.log("$global.window", $window)
+console.log("$window = $global.window = $apple.appContext.config.globalProperties.window", $window)
+
+// for vue dapp
+window.global = $window
+let global = globalThis
+import process from 'process'
+window.process = process
+import buffer from 'buffer'
+window.Buffer = buffer.Buffer
+import util from 'util'
+window.util = util
+
 
 // check for required WebGL and/or WebGL2
 import { isWebGLSupported, isWebGL2Supported } from 'webgl-detector'
