@@ -1342,6 +1342,7 @@ Object.values({ "./modules/head.ts": __glob_11_0, "./modules/i18n.ts": __glob_11
   var _a;
   return (_a = i.install) == null ? void 0 : _a.call(i, { app, router, routes });
 });
+app.config.globalProperties.window = window;
 app.use(VueDapp, {
   infuraId: "432d743bb1d944268c6e3725f243a7e0",
   appName: "ThreeDGarden"
