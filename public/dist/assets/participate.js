@@ -36489,9 +36489,14 @@ const __default__ = {
 };
 const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues({}, __default__), {
   setup(__props) {
-    const apple = getCurrentInstance();
-    const $global = apple.appContext.config.globalProperties;
+    const $apples = getCurrentInstance();
+    console.log("$apples (vue getCurrentInstance)", $apples);
+    const $config = $apples.appContext.config;
+    console.log("$apples.appContext.config", $config);
+    const $global = $apples.appContext.config.globalProperties;
     console.log("$global", $global);
+    const $window = $global.window;
+    console.log("$global.window", $window);
     if (!isWebGLSupported_1()) {
       alert("WebGL is not supported.");
       console.log("WebGL is not supported.");
@@ -36506,7 +36511,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
     useLocalStorage("threedgarden-storage", [
       {
         name: "Apple",
-        color: "red"
+        color: "green"
       },
       {
         name: "Orange",

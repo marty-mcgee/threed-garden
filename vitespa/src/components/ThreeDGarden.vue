@@ -17,10 +17,16 @@
 <script setup lang="ts">
 /** BEGIN SETUP SCRIPT *************************** */
 
+// GET CURRENT INSTANCE OF APP GLOBAL WINDOW
 import { getCurrentInstance } from 'vue'
-const apple = getCurrentInstance()
-const $global = apple.appContext.config.globalProperties
+const $apple = getCurrentInstance()
+console.log("$apple (vue getCurrentInstance)", $apple)
+const $config = $apple.appContext.config
+console.log("$apple.appContext.config", $config)
+const $global = $apple.appContext.config.globalProperties
 console.log("$global", $global)
+const $window = $global.window
+console.log("$global.window", $window)
 
 // check for required WebGL and/or WebGL2
 import { isWebGLSupported, isWebGL2Supported } from 'webgl-detector'
@@ -59,7 +65,7 @@ const store = useLocalStorage(
   [
     {
       name: 'Apple',
-      color: 'red',
+      color: 'green',
     }, 
     {
       name: 'Orange',
