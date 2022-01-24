@@ -17,7 +17,7 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-import { r as ref, f as defineComponent, M as useMouse, O as useCounter, p as openBlock, i as createElementBlock, j as createBaseVNode, q as createTextVNode, t as toDisplayString, k as unref, P as onMounted, Q as getCurrentInstance, m as createVNode } from "./vendor.js";
+import { r as ref, f as defineComponent, M as useMouse, O as useCounter, P as usePreferredDark, Q as useLocalStorage, R as useEventListener, p as openBlock, i as createElementBlock, k as unref, j as createBaseVNode, q as createTextVNode, t as toDisplayString, S as onMounted, T as getCurrentInstance, m as createVNode } from "./vendor.js";
 import { a as _export_sfc } from "./index.js";
 /**
  * @license
@@ -1733,7 +1733,7 @@ class Quaternion {
     this._onChangeCallback();
     return this;
   }
-  setFromEuler(euler, update) {
+  setFromEuler(euler, update2) {
     if (!(euler && euler.isEuler)) {
       throw new Error("THREE.Quaternion: .setFromEuler() now expects an Euler rotation rather than a Vector3 and order.");
     }
@@ -1786,7 +1786,7 @@ class Quaternion {
       default:
         console.warn("THREE.Quaternion: .setFromEuler() encountered an unknown order: " + order);
     }
-    if (update !== false)
+    if (update2 !== false)
       this._onChangeCallback();
     return this;
   }
@@ -3748,7 +3748,7 @@ class Euler {
     this._onChangeCallback();
     return this;
   }
-  setFromRotationMatrix(m, order = this._order, update = true) {
+  setFromRotationMatrix(m, order = this._order, update2 = true) {
     const te2 = m.elements;
     const m11 = te2[0], m12 = te2[4], m13 = te2[8];
     const m21 = te2[1], m22 = te2[5], m23 = te2[9];
@@ -3818,13 +3818,13 @@ class Euler {
         console.warn("THREE.Euler: .setFromRotationMatrix() encountered an unknown order: " + order);
     }
     this._order = order;
-    if (update === true)
+    if (update2 === true)
       this._onChangeCallback();
     return this;
   }
-  setFromQuaternion(q, order, update) {
+  setFromQuaternion(q, order, update2) {
     _matrix$1.makeRotationFromQuaternion(q);
-    return this.setFromRotationMatrix(_matrix$1, order, update);
+    return this.setFromRotationMatrix(_matrix$1, order, update2);
   }
   setFromVector3(v, order = this._order) {
     return this.set(v.x, v.y, v.z, order);
@@ -7347,7 +7347,7 @@ function WebGLAttributes(gl, capabilities) {
       attribute = attribute.data;
     return buffers.get(attribute);
   }
-  function remove2(attribute) {
+  function remove3(attribute) {
     if (attribute.isInterleavedBufferAttribute)
       attribute = attribute.data;
     const data = buffers.get(attribute);
@@ -7356,7 +7356,7 @@ function WebGLAttributes(gl, capabilities) {
       buffers.delete(attribute);
     }
   }
-  function update(attribute, bufferType) {
+  function update2(attribute, bufferType) {
     if (attribute.isGLBufferAttribute) {
       const cached = buffers.get(attribute);
       if (!cached || cached.version < attribute.version) {
@@ -7381,8 +7381,8 @@ function WebGLAttributes(gl, capabilities) {
   }
   return {
     get: get3,
-    remove: remove2,
-    update
+    remove: remove3,
+    update: update2
   };
 }
 class PlaneGeometry extends BufferGeometry {
@@ -9603,7 +9603,7 @@ function WebGLGeometries(gl, attributes, info, bindingStates) {
     info.memory.geometries++;
     return geometry;
   }
-  function update(geometry) {
+  function update2(geometry) {
     const geometryAttributes = geometry.attributes;
     for (const name in geometryAttributes) {
       attributes.update(geometryAttributes[name], 34962);
@@ -9663,7 +9663,7 @@ function WebGLGeometries(gl, attributes, info, bindingStates) {
   }
   return {
     get: get3,
-    update,
+    update: update2,
     getWireframeAttribute
   };
 }
@@ -9717,7 +9717,7 @@ function WebGLInfo(gl) {
     points: 0,
     lines: 0
   };
-  function update(count, mode, instanceCount) {
+  function update2(count, mode, instanceCount) {
     render2.calls++;
     switch (mode) {
       case 4:
@@ -9753,7 +9753,7 @@ function WebGLInfo(gl) {
     programs: null,
     autoReset: true,
     reset,
-    update
+    update: update2
   };
 }
 class DataTexture2DArray extends Texture {
@@ -9797,7 +9797,7 @@ function WebGLMorphtargets(gl, capabilities, textures) {
   for (let i = 0; i < 8; i++) {
     workInfluences[i] = [i, 0];
   }
-  function update(object, geometry, material, program) {
+  function update2(object, geometry, material, program) {
     const objectInfluences = object.morphTargetInfluences;
     if (capabilities.isWebGL2 === true) {
       const numberOfMorphTargets = geometry.morphAttributes.position.length;
@@ -9920,12 +9920,12 @@ function WebGLMorphtargets(gl, capabilities, textures) {
     }
   }
   return {
-    update
+    update: update2
   };
 }
 function WebGLObjects(gl, geometries, attributes, info) {
   let updateMap = new WeakMap();
-  function update(object) {
+  function update2(object) {
     const frame = info.render.frame;
     const geometry = object.geometry;
     const buffergeometry = geometries.get(object, geometry);
@@ -9955,7 +9955,7 @@ function WebGLObjects(gl, geometries, attributes, info) {
       attributes.remove(instancedMesh.instanceColor);
   }
   return {
-    update,
+    update: update2,
     dispose
   };
 }
@@ -11521,10 +11521,10 @@ function WebGLProperties() {
     }
     return map2;
   }
-  function remove2(object) {
+  function remove3(object) {
     properties.delete(object);
   }
-  function update(object, key, value) {
+  function update2(object, key, value) {
     properties.get(object)[key] = value;
   }
   function dispose() {
@@ -11532,8 +11532,8 @@ function WebGLProperties() {
   }
   return {
     get: get3,
-    remove: remove2,
-    update,
+    remove: remove3,
+    update: update2,
     dispose
   };
 }
@@ -14016,13 +14016,13 @@ class ArrayCamera extends PerspectiveCamera {
   }
 }
 ArrayCamera.prototype.isArrayCamera = true;
-class Group extends Object3D {
+class Group$1 extends Object3D {
   constructor() {
     super();
     this.type = "Group";
   }
 }
-Group.prototype.isGroup = true;
+Group$1.prototype.isGroup = true;
 const _moveEvent = { type: "move" };
 class WebXRController {
   constructor() {
@@ -14032,7 +14032,7 @@ class WebXRController {
   }
   getHandSpace() {
     if (this._hand === null) {
-      this._hand = new Group();
+      this._hand = new Group$1();
       this._hand.matrixAutoUpdate = false;
       this._hand.visible = false;
       this._hand.joints = {};
@@ -14042,7 +14042,7 @@ class WebXRController {
   }
   getTargetRaySpace() {
     if (this._targetRay === null) {
-      this._targetRay = new Group();
+      this._targetRay = new Group$1();
       this._targetRay.matrixAutoUpdate = false;
       this._targetRay.visible = false;
       this._targetRay.hasLinearVelocity = false;
@@ -14054,7 +14054,7 @@ class WebXRController {
   }
   getGripSpace() {
     if (this._grip === null) {
-      this._grip = new Group();
+      this._grip = new Group$1();
       this._grip.matrixAutoUpdate = false;
       this._grip.visible = false;
       this._grip.hasLinearVelocity = false;
@@ -14122,7 +14122,7 @@ class WebXRController {
         for (const inputjoint of inputSource.hand.values()) {
           const jointPose = frame.getJointPose(inputjoint, referenceSpace);
           if (hand.joints[inputjoint.jointName] === void 0) {
-            const joint2 = new Group();
+            const joint2 = new Group$1();
             joint2.matrixAutoUpdate = false;
             joint2.visible = false;
             hand.joints[inputjoint.jointName] = joint2;
@@ -21757,7 +21757,7 @@ class Clock {
     this.running = false;
   }
   start() {
-    this.startTime = now();
+    this.startTime = now$2();
     this.oldTime = this.startTime;
     this.elapsedTime = 0;
     this.running = true;
@@ -21778,7 +21778,7 @@ class Clock {
       return 0;
     }
     if (this.running) {
-      const newTime = now();
+      const newTime = now$2();
       diff = (newTime - this.oldTime) / 1e3;
       this.oldTime = newTime;
       this.elapsedTime += diff;
@@ -21786,7 +21786,7 @@ class Clock {
     return diff;
   }
 }
-function now() {
+function now$2() {
   return (typeof performance === "undefined" ? Date : performance).now();
 }
 class Audio extends Object3D {
@@ -24659,10 +24659,10 @@ var inflt = function(dat, buf, st) {
         lpos = pos, lm = null;
         break;
       } else {
-        var add2 = sym - 254;
+        var add3 = sym - 254;
         if (sym > 264) {
           var i = sym - 257, b = fleb[i];
-          add2 = bits(dat, pos, (1 << b) - 1) + fl[i];
+          add3 = bits(dat, pos, (1 << b) - 1) + fl[i];
           pos += b;
         }
         var d = dm[bits16(dat, pos) & dms], dsym = d >>> 4;
@@ -24681,7 +24681,7 @@ var inflt = function(dat, buf, st) {
         }
         if (noBuf)
           cbuf(bt + 131072);
-        var end = bt + add2;
+        var end = bt + add3;
         for (; bt < end; bt += 4) {
           buf[bt] = buf[bt - dt];
           buf[bt + 1] = buf[bt + 1 - dt];
@@ -26201,7 +26201,7 @@ var Unzip = /* @__PURE__ */ function() {
         buf = new u8(this.p.length + chunk.length);
         buf.set(this.p), buf.set(chunk, this.p.length);
       }
-      var l = buf.length, oc = this.c, add2 = oc && this.d;
+      var l = buf.length, oc = this.c, add3 = oc && this.d;
       var _loop_2 = function() {
         var _a2;
         var sig = b4(buf, i);
@@ -26278,8 +26278,8 @@ var Unzip = /* @__PURE__ */ function() {
       this.p = et;
       if (oc < 0) {
         var dat = f ? buf.subarray(0, is - 12 - (oc == -2 && 8) - (b4(buf, is - 16) == 134695760 && 4)) : buf.subarray(0, i);
-        if (add2)
-          add2.push(dat, !!f);
+        if (add3)
+          add3.push(dat, !!f);
         else
           this.k[+(f == 2)].push(dat);
       }
@@ -27094,7 +27094,7 @@ class FBXTreeParser {
     return rawMorphTargets;
   }
   parseScene(deformers, geometryMap, materialMap) {
-    sceneGraph = new Group();
+    sceneGraph = new Group$1();
     const modelMap = this.parseModels(deformers.skeletons, geometryMap, materialMap);
     const modelNodes = fbxTree.Objects.Model;
     const scope = this;
@@ -27159,7 +27159,7 @@ class FBXTreeParser {
             break;
           case "Null":
           default:
-            model = new Group();
+            model = new Group$1();
             break;
         }
         model.name = node.attrName ? PropertyBinding.sanitizeNodeName(node.attrName) : "";
@@ -30787,7 +30787,7 @@ class GLTFParser {
       if (meshes.length === 1) {
         return meshes[0];
       }
-      const group = new Group();
+      const group = new Group$1();
       parser.associations.set(group, { meshes: meshIndex });
       for (let i = 0, il = meshes.length; i < il; i++) {
         group.add(meshes[i]);
@@ -30969,7 +30969,7 @@ class GLTFParser {
       if (nodeDef.isBone === true) {
         node = new Bone();
       } else if (objects.length > 1) {
-        node = new Group();
+        node = new Group$1();
       } else if (objects.length === 1) {
         node = objects[0];
       } else {
@@ -31014,7 +31014,7 @@ class GLTFParser {
     const extensions = this.extensions;
     const sceneDef = this.json.scenes[sceneIndex];
     const parser = this;
-    const scene2 = new Group();
+    const scene2 = new Group$1();
     if (sceneDef.name)
       scene2.name = parser.createUniqueName(sceneDef.name);
     assignExtrasToUserData(scene2, sceneDef);
@@ -31593,7 +31593,7 @@ class OBJLoader extends Loader {
       }
     }
     state.finalize();
-    const container2 = new Group();
+    const container2 = new Group$1();
     container2.materialLibraries = [].concat(state.materialLibraries);
     const hasPrimitives = !(state.objects.length === 1 && state.objects[0].geometry.vertices.length === 0);
     if (hasPrimitives === true) {
@@ -31770,7 +31770,7 @@ class OrbitControls extends EventDispatcher {
       const lastPosition = new Vector3();
       const lastQuaternion = new Quaternion();
       const twoPI = 2 * Math.PI;
-      return function update() {
+      return function update2() {
         const position = scope.object.position;
         offset.copy(position).sub(scope.target);
         offset.applyQuaternion(quat);
@@ -32345,6 +32345,694 @@ class OrbitControls extends EventDispatcher {
     this.update();
   }
 }
+var Easing = {
+  Linear: {
+    None: function(amount) {
+      return amount;
+    }
+  },
+  Quadratic: {
+    In: function(amount) {
+      return amount * amount;
+    },
+    Out: function(amount) {
+      return amount * (2 - amount);
+    },
+    InOut: function(amount) {
+      if ((amount *= 2) < 1) {
+        return 0.5 * amount * amount;
+      }
+      return -0.5 * (--amount * (amount - 2) - 1);
+    }
+  },
+  Cubic: {
+    In: function(amount) {
+      return amount * amount * amount;
+    },
+    Out: function(amount) {
+      return --amount * amount * amount + 1;
+    },
+    InOut: function(amount) {
+      if ((amount *= 2) < 1) {
+        return 0.5 * amount * amount * amount;
+      }
+      return 0.5 * ((amount -= 2) * amount * amount + 2);
+    }
+  },
+  Quartic: {
+    In: function(amount) {
+      return amount * amount * amount * amount;
+    },
+    Out: function(amount) {
+      return 1 - --amount * amount * amount * amount;
+    },
+    InOut: function(amount) {
+      if ((amount *= 2) < 1) {
+        return 0.5 * amount * amount * amount * amount;
+      }
+      return -0.5 * ((amount -= 2) * amount * amount * amount - 2);
+    }
+  },
+  Quintic: {
+    In: function(amount) {
+      return amount * amount * amount * amount * amount;
+    },
+    Out: function(amount) {
+      return --amount * amount * amount * amount * amount + 1;
+    },
+    InOut: function(amount) {
+      if ((amount *= 2) < 1) {
+        return 0.5 * amount * amount * amount * amount * amount;
+      }
+      return 0.5 * ((amount -= 2) * amount * amount * amount * amount + 2);
+    }
+  },
+  Sinusoidal: {
+    In: function(amount) {
+      return 1 - Math.cos(amount * Math.PI / 2);
+    },
+    Out: function(amount) {
+      return Math.sin(amount * Math.PI / 2);
+    },
+    InOut: function(amount) {
+      return 0.5 * (1 - Math.cos(Math.PI * amount));
+    }
+  },
+  Exponential: {
+    In: function(amount) {
+      return amount === 0 ? 0 : Math.pow(1024, amount - 1);
+    },
+    Out: function(amount) {
+      return amount === 1 ? 1 : 1 - Math.pow(2, -10 * amount);
+    },
+    InOut: function(amount) {
+      if (amount === 0) {
+        return 0;
+      }
+      if (amount === 1) {
+        return 1;
+      }
+      if ((amount *= 2) < 1) {
+        return 0.5 * Math.pow(1024, amount - 1);
+      }
+      return 0.5 * (-Math.pow(2, -10 * (amount - 1)) + 2);
+    }
+  },
+  Circular: {
+    In: function(amount) {
+      return 1 - Math.sqrt(1 - amount * amount);
+    },
+    Out: function(amount) {
+      return Math.sqrt(1 - --amount * amount);
+    },
+    InOut: function(amount) {
+      if ((amount *= 2) < 1) {
+        return -0.5 * (Math.sqrt(1 - amount * amount) - 1);
+      }
+      return 0.5 * (Math.sqrt(1 - (amount -= 2) * amount) + 1);
+    }
+  },
+  Elastic: {
+    In: function(amount) {
+      if (amount === 0) {
+        return 0;
+      }
+      if (amount === 1) {
+        return 1;
+      }
+      return -Math.pow(2, 10 * (amount - 1)) * Math.sin((amount - 1.1) * 5 * Math.PI);
+    },
+    Out: function(amount) {
+      if (amount === 0) {
+        return 0;
+      }
+      if (amount === 1) {
+        return 1;
+      }
+      return Math.pow(2, -10 * amount) * Math.sin((amount - 0.1) * 5 * Math.PI) + 1;
+    },
+    InOut: function(amount) {
+      if (amount === 0) {
+        return 0;
+      }
+      if (amount === 1) {
+        return 1;
+      }
+      amount *= 2;
+      if (amount < 1) {
+        return -0.5 * Math.pow(2, 10 * (amount - 1)) * Math.sin((amount - 1.1) * 5 * Math.PI);
+      }
+      return 0.5 * Math.pow(2, -10 * (amount - 1)) * Math.sin((amount - 1.1) * 5 * Math.PI) + 1;
+    }
+  },
+  Back: {
+    In: function(amount) {
+      var s = 1.70158;
+      return amount * amount * ((s + 1) * amount - s);
+    },
+    Out: function(amount) {
+      var s = 1.70158;
+      return --amount * amount * ((s + 1) * amount + s) + 1;
+    },
+    InOut: function(amount) {
+      var s = 1.70158 * 1.525;
+      if ((amount *= 2) < 1) {
+        return 0.5 * (amount * amount * ((s + 1) * amount - s));
+      }
+      return 0.5 * ((amount -= 2) * amount * ((s + 1) * amount + s) + 2);
+    }
+  },
+  Bounce: {
+    In: function(amount) {
+      return 1 - Easing.Bounce.Out(1 - amount);
+    },
+    Out: function(amount) {
+      if (amount < 1 / 2.75) {
+        return 7.5625 * amount * amount;
+      } else if (amount < 2 / 2.75) {
+        return 7.5625 * (amount -= 1.5 / 2.75) * amount + 0.75;
+      } else if (amount < 2.5 / 2.75) {
+        return 7.5625 * (amount -= 2.25 / 2.75) * amount + 0.9375;
+      } else {
+        return 7.5625 * (amount -= 2.625 / 2.75) * amount + 0.984375;
+      }
+    },
+    InOut: function(amount) {
+      if (amount < 0.5) {
+        return Easing.Bounce.In(amount * 2) * 0.5;
+      }
+      return Easing.Bounce.Out(amount * 2 - 1) * 0.5 + 0.5;
+    }
+  }
+};
+var now;
+if (typeof self === "undefined" && typeof process !== "undefined" && process.hrtime) {
+  now = function() {
+    var time = process.hrtime();
+    return time[0] * 1e3 + time[1] / 1e6;
+  };
+} else if (typeof self !== "undefined" && self.performance !== void 0 && self.performance.now !== void 0) {
+  now = self.performance.now.bind(self.performance);
+} else if (Date.now !== void 0) {
+  now = Date.now;
+} else {
+  now = function() {
+    return new Date().getTime();
+  };
+}
+var now$1 = now;
+var Group = function() {
+  function Group2() {
+    this._tweens = {};
+    this._tweensAddedDuringUpdate = {};
+  }
+  Group2.prototype.getAll = function() {
+    var _this = this;
+    return Object.keys(this._tweens).map(function(tweenId) {
+      return _this._tweens[tweenId];
+    });
+  };
+  Group2.prototype.removeAll = function() {
+    this._tweens = {};
+  };
+  Group2.prototype.add = function(tween) {
+    this._tweens[tween.getId()] = tween;
+    this._tweensAddedDuringUpdate[tween.getId()] = tween;
+  };
+  Group2.prototype.remove = function(tween) {
+    delete this._tweens[tween.getId()];
+    delete this._tweensAddedDuringUpdate[tween.getId()];
+  };
+  Group2.prototype.update = function(time, preserve) {
+    if (time === void 0) {
+      time = now$1();
+    }
+    if (preserve === void 0) {
+      preserve = false;
+    }
+    var tweenIds = Object.keys(this._tweens);
+    if (tweenIds.length === 0) {
+      return false;
+    }
+    while (tweenIds.length > 0) {
+      this._tweensAddedDuringUpdate = {};
+      for (var i = 0; i < tweenIds.length; i++) {
+        var tween = this._tweens[tweenIds[i]];
+        var autoStart = !preserve;
+        if (tween && tween.update(time, autoStart) === false && !preserve) {
+          delete this._tweens[tweenIds[i]];
+        }
+      }
+      tweenIds = Object.keys(this._tweensAddedDuringUpdate);
+    }
+    return true;
+  };
+  return Group2;
+}();
+var Interpolation = {
+  Linear: function(v, k) {
+    var m = v.length - 1;
+    var f = m * k;
+    var i = Math.floor(f);
+    var fn = Interpolation.Utils.Linear;
+    if (k < 0) {
+      return fn(v[0], v[1], f);
+    }
+    if (k > 1) {
+      return fn(v[m], v[m - 1], m - f);
+    }
+    return fn(v[i], v[i + 1 > m ? m : i + 1], f - i);
+  },
+  Bezier: function(v, k) {
+    var b = 0;
+    var n = v.length - 1;
+    var pw = Math.pow;
+    var bn = Interpolation.Utils.Bernstein;
+    for (var i = 0; i <= n; i++) {
+      b += pw(1 - k, n - i) * pw(k, i) * v[i] * bn(n, i);
+    }
+    return b;
+  },
+  CatmullRom: function(v, k) {
+    var m = v.length - 1;
+    var f = m * k;
+    var i = Math.floor(f);
+    var fn = Interpolation.Utils.CatmullRom;
+    if (v[0] === v[m]) {
+      if (k < 0) {
+        i = Math.floor(f = m * (1 + k));
+      }
+      return fn(v[(i - 1 + m) % m], v[i], v[(i + 1) % m], v[(i + 2) % m], f - i);
+    } else {
+      if (k < 0) {
+        return v[0] - (fn(v[0], v[0], v[1], v[1], -f) - v[0]);
+      }
+      if (k > 1) {
+        return v[m] - (fn(v[m], v[m], v[m - 1], v[m - 1], f - m) - v[m]);
+      }
+      return fn(v[i ? i - 1 : 0], v[i], v[m < i + 1 ? m : i + 1], v[m < i + 2 ? m : i + 2], f - i);
+    }
+  },
+  Utils: {
+    Linear: function(p0, p1, t) {
+      return (p1 - p0) * t + p0;
+    },
+    Bernstein: function(n, i) {
+      var fc = Interpolation.Utils.Factorial;
+      return fc(n) / fc(i) / fc(n - i);
+    },
+    Factorial: function() {
+      var a = [1];
+      return function(n) {
+        var s = 1;
+        if (a[n]) {
+          return a[n];
+        }
+        for (var i = n; i > 1; i--) {
+          s *= i;
+        }
+        a[n] = s;
+        return s;
+      };
+    }(),
+    CatmullRom: function(p0, p1, p2, p3, t) {
+      var v0 = (p2 - p0) * 0.5;
+      var v1 = (p3 - p1) * 0.5;
+      var t2 = t * t;
+      var t3 = t * t2;
+      return (2 * p1 - 2 * p2 + v0 + v1) * t3 + (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 + v0 * t + p1;
+    }
+  }
+};
+var Sequence = function() {
+  function Sequence2() {
+  }
+  Sequence2.nextId = function() {
+    return Sequence2._nextId++;
+  };
+  Sequence2._nextId = 0;
+  return Sequence2;
+}();
+var mainGroup = new Group();
+var Tween = function() {
+  function Tween2(_object, _group) {
+    if (_group === void 0) {
+      _group = mainGroup;
+    }
+    this._object = _object;
+    this._group = _group;
+    this._isPaused = false;
+    this._pauseStart = 0;
+    this._valuesStart = {};
+    this._valuesEnd = {};
+    this._valuesStartRepeat = {};
+    this._duration = 1e3;
+    this._initialRepeat = 0;
+    this._repeat = 0;
+    this._yoyo = false;
+    this._isPlaying = false;
+    this._reversed = false;
+    this._delayTime = 0;
+    this._startTime = 0;
+    this._easingFunction = Easing.Linear.None;
+    this._interpolationFunction = Interpolation.Linear;
+    this._chainedTweens = [];
+    this._onStartCallbackFired = false;
+    this._id = Sequence.nextId();
+    this._isChainStopped = false;
+    this._goToEnd = false;
+  }
+  Tween2.prototype.getId = function() {
+    return this._id;
+  };
+  Tween2.prototype.isPlaying = function() {
+    return this._isPlaying;
+  };
+  Tween2.prototype.isPaused = function() {
+    return this._isPaused;
+  };
+  Tween2.prototype.to = function(properties, duration) {
+    this._valuesEnd = Object.create(properties);
+    if (duration !== void 0) {
+      this._duration = duration;
+    }
+    return this;
+  };
+  Tween2.prototype.duration = function(d) {
+    this._duration = d;
+    return this;
+  };
+  Tween2.prototype.start = function(time) {
+    if (this._isPlaying) {
+      return this;
+    }
+    this._group && this._group.add(this);
+    this._repeat = this._initialRepeat;
+    if (this._reversed) {
+      this._reversed = false;
+      for (var property in this._valuesStartRepeat) {
+        this._swapEndStartRepeatValues(property);
+        this._valuesStart[property] = this._valuesStartRepeat[property];
+      }
+    }
+    this._isPlaying = true;
+    this._isPaused = false;
+    this._onStartCallbackFired = false;
+    this._isChainStopped = false;
+    this._startTime = time !== void 0 ? typeof time === "string" ? now$1() + parseFloat(time) : time : now$1();
+    this._startTime += this._delayTime;
+    this._setupProperties(this._object, this._valuesStart, this._valuesEnd, this._valuesStartRepeat);
+    return this;
+  };
+  Tween2.prototype._setupProperties = function(_object, _valuesStart, _valuesEnd, _valuesStartRepeat) {
+    for (var property in _valuesEnd) {
+      var startValue = _object[property];
+      var startValueIsArray = Array.isArray(startValue);
+      var propType = startValueIsArray ? "array" : typeof startValue;
+      var isInterpolationList = !startValueIsArray && Array.isArray(_valuesEnd[property]);
+      if (propType === "undefined" || propType === "function") {
+        continue;
+      }
+      if (isInterpolationList) {
+        var endValues = _valuesEnd[property];
+        if (endValues.length === 0) {
+          continue;
+        }
+        endValues = endValues.map(this._handleRelativeValue.bind(this, startValue));
+        _valuesEnd[property] = [startValue].concat(endValues);
+      }
+      if ((propType === "object" || startValueIsArray) && startValue && !isInterpolationList) {
+        _valuesStart[property] = startValueIsArray ? [] : {};
+        for (var prop in startValue) {
+          _valuesStart[property][prop] = startValue[prop];
+        }
+        _valuesStartRepeat[property] = startValueIsArray ? [] : {};
+        this._setupProperties(startValue, _valuesStart[property], _valuesEnd[property], _valuesStartRepeat[property]);
+      } else {
+        if (typeof _valuesStart[property] === "undefined") {
+          _valuesStart[property] = startValue;
+        }
+        if (!startValueIsArray) {
+          _valuesStart[property] *= 1;
+        }
+        if (isInterpolationList) {
+          _valuesStartRepeat[property] = _valuesEnd[property].slice().reverse();
+        } else {
+          _valuesStartRepeat[property] = _valuesStart[property] || 0;
+        }
+      }
+    }
+  };
+  Tween2.prototype.stop = function() {
+    if (!this._isChainStopped) {
+      this._isChainStopped = true;
+      this.stopChainedTweens();
+    }
+    if (!this._isPlaying) {
+      return this;
+    }
+    this._group && this._group.remove(this);
+    this._isPlaying = false;
+    this._isPaused = false;
+    if (this._onStopCallback) {
+      this._onStopCallback(this._object);
+    }
+    return this;
+  };
+  Tween2.prototype.end = function() {
+    this._goToEnd = true;
+    this.update(Infinity);
+    return this;
+  };
+  Tween2.prototype.pause = function(time) {
+    if (time === void 0) {
+      time = now$1();
+    }
+    if (this._isPaused || !this._isPlaying) {
+      return this;
+    }
+    this._isPaused = true;
+    this._pauseStart = time;
+    this._group && this._group.remove(this);
+    return this;
+  };
+  Tween2.prototype.resume = function(time) {
+    if (time === void 0) {
+      time = now$1();
+    }
+    if (!this._isPaused || !this._isPlaying) {
+      return this;
+    }
+    this._isPaused = false;
+    this._startTime += time - this._pauseStart;
+    this._pauseStart = 0;
+    this._group && this._group.add(this);
+    return this;
+  };
+  Tween2.prototype.stopChainedTweens = function() {
+    for (var i = 0, numChainedTweens = this._chainedTweens.length; i < numChainedTweens; i++) {
+      this._chainedTweens[i].stop();
+    }
+    return this;
+  };
+  Tween2.prototype.group = function(group) {
+    this._group = group;
+    return this;
+  };
+  Tween2.prototype.delay = function(amount) {
+    this._delayTime = amount;
+    return this;
+  };
+  Tween2.prototype.repeat = function(times) {
+    this._initialRepeat = times;
+    this._repeat = times;
+    return this;
+  };
+  Tween2.prototype.repeatDelay = function(amount) {
+    this._repeatDelayTime = amount;
+    return this;
+  };
+  Tween2.prototype.yoyo = function(yoyo) {
+    this._yoyo = yoyo;
+    return this;
+  };
+  Tween2.prototype.easing = function(easingFunction) {
+    this._easingFunction = easingFunction;
+    return this;
+  };
+  Tween2.prototype.interpolation = function(interpolationFunction) {
+    this._interpolationFunction = interpolationFunction;
+    return this;
+  };
+  Tween2.prototype.chain = function() {
+    var tweens = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+      tweens[_i] = arguments[_i];
+    }
+    this._chainedTweens = tweens;
+    return this;
+  };
+  Tween2.prototype.onStart = function(callback) {
+    this._onStartCallback = callback;
+    return this;
+  };
+  Tween2.prototype.onUpdate = function(callback) {
+    this._onUpdateCallback = callback;
+    return this;
+  };
+  Tween2.prototype.onRepeat = function(callback) {
+    this._onRepeatCallback = callback;
+    return this;
+  };
+  Tween2.prototype.onComplete = function(callback) {
+    this._onCompleteCallback = callback;
+    return this;
+  };
+  Tween2.prototype.onStop = function(callback) {
+    this._onStopCallback = callback;
+    return this;
+  };
+  Tween2.prototype.update = function(time, autoStart) {
+    if (time === void 0) {
+      time = now$1();
+    }
+    if (autoStart === void 0) {
+      autoStart = true;
+    }
+    if (this._isPaused)
+      return true;
+    var property;
+    var elapsed;
+    var endTime = this._startTime + this._duration;
+    if (!this._goToEnd && !this._isPlaying) {
+      if (time > endTime)
+        return false;
+      if (autoStart)
+        this.start(time);
+    }
+    this._goToEnd = false;
+    if (time < this._startTime) {
+      return true;
+    }
+    if (this._onStartCallbackFired === false) {
+      if (this._onStartCallback) {
+        this._onStartCallback(this._object);
+      }
+      this._onStartCallbackFired = true;
+    }
+    elapsed = (time - this._startTime) / this._duration;
+    elapsed = this._duration === 0 || elapsed > 1 ? 1 : elapsed;
+    var value = this._easingFunction(elapsed);
+    this._updateProperties(this._object, this._valuesStart, this._valuesEnd, value);
+    if (this._onUpdateCallback) {
+      this._onUpdateCallback(this._object, elapsed);
+    }
+    if (elapsed === 1) {
+      if (this._repeat > 0) {
+        if (isFinite(this._repeat)) {
+          this._repeat--;
+        }
+        for (property in this._valuesStartRepeat) {
+          if (!this._yoyo && typeof this._valuesEnd[property] === "string") {
+            this._valuesStartRepeat[property] = this._valuesStartRepeat[property] + parseFloat(this._valuesEnd[property]);
+          }
+          if (this._yoyo) {
+            this._swapEndStartRepeatValues(property);
+          }
+          this._valuesStart[property] = this._valuesStartRepeat[property];
+        }
+        if (this._yoyo) {
+          this._reversed = !this._reversed;
+        }
+        if (this._repeatDelayTime !== void 0) {
+          this._startTime = time + this._repeatDelayTime;
+        } else {
+          this._startTime = time + this._delayTime;
+        }
+        if (this._onRepeatCallback) {
+          this._onRepeatCallback(this._object);
+        }
+        return true;
+      } else {
+        if (this._onCompleteCallback) {
+          this._onCompleteCallback(this._object);
+        }
+        for (var i = 0, numChainedTweens = this._chainedTweens.length; i < numChainedTweens; i++) {
+          this._chainedTweens[i].start(this._startTime + this._duration);
+        }
+        this._isPlaying = false;
+        return false;
+      }
+    }
+    return true;
+  };
+  Tween2.prototype._updateProperties = function(_object, _valuesStart, _valuesEnd, value) {
+    for (var property in _valuesEnd) {
+      if (_valuesStart[property] === void 0) {
+        continue;
+      }
+      var start = _valuesStart[property] || 0;
+      var end = _valuesEnd[property];
+      var startIsArray = Array.isArray(_object[property]);
+      var endIsArray = Array.isArray(end);
+      var isInterpolationList = !startIsArray && endIsArray;
+      if (isInterpolationList) {
+        _object[property] = this._interpolationFunction(end, value);
+      } else if (typeof end === "object" && end) {
+        this._updateProperties(_object[property], start, end, value);
+      } else {
+        end = this._handleRelativeValue(start, end);
+        if (typeof end === "number") {
+          _object[property] = start + (end - start) * value;
+        }
+      }
+    }
+  };
+  Tween2.prototype._handleRelativeValue = function(start, end) {
+    if (typeof end !== "string") {
+      return end;
+    }
+    if (end.charAt(0) === "+" || end.charAt(0) === "-") {
+      return start + parseFloat(end);
+    } else {
+      return parseFloat(end);
+    }
+  };
+  Tween2.prototype._swapEndStartRepeatValues = function(property) {
+    var tmp2 = this._valuesStartRepeat[property];
+    var endValue = this._valuesEnd[property];
+    if (typeof endValue === "string") {
+      this._valuesStartRepeat[property] = this._valuesStartRepeat[property] + parseFloat(endValue);
+    } else {
+      this._valuesStartRepeat[property] = this._valuesEnd[property];
+    }
+    this._valuesEnd[property] = tmp2;
+  };
+  return Tween2;
+}();
+var VERSION = "18.6.4";
+var nextId = Sequence.nextId;
+var TWEEN = mainGroup;
+var getAll = TWEEN.getAll.bind(TWEEN);
+var removeAll = TWEEN.removeAll.bind(TWEEN);
+var add = TWEEN.add.bind(TWEEN);
+var remove = TWEEN.remove.bind(TWEEN);
+var update = TWEEN.update.bind(TWEEN);
+var exports = {
+  Easing,
+  Group,
+  Interpolation,
+  now: now$1,
+  Sequence,
+  nextId,
+  Tween,
+  VERSION,
+  getAll,
+  removeAll,
+  add,
+  remove,
+  update
+};
 function ___$insertStyle(css2) {
   if (!css2) {
     return;
@@ -34010,7 +34698,7 @@ var GUI = function GUI2(pars) {
   if (params2.autoPlace && Common.isUndefined(params2.scrollable)) {
     params2.scrollable = true;
   }
-  var useLocalStorage = SUPPORTS_LOCAL_STORAGE && localStorage.getItem(getLocalStorageHash(this, "isLocal")) === "true";
+  var useLocalStorage2 = SUPPORTS_LOCAL_STORAGE && localStorage.getItem(getLocalStorageHash(this, "isLocal")) === "true";
   var saveToLocalStorage = void 0;
   var titleRow = void 0;
   Object.defineProperties(this, {
@@ -34095,11 +34783,11 @@ var GUI = function GUI2(pars) {
     },
     useLocalStorage: {
       get: function get$$13() {
-        return useLocalStorage;
+        return useLocalStorage2;
       },
       set: function set$$13(bool) {
         if (SUPPORTS_LOCAL_STORAGE) {
-          useLocalStorage = bool;
+          useLocalStorage2 = bool;
           if (bool) {
             dom.bind(window, "unload", saveToLocalStorage);
           } else {
@@ -34115,7 +34803,7 @@ var GUI = function GUI2(pars) {
     dom.addClass(this.domElement, GUI2.CLASS_MAIN);
     dom.makeSelectable(this.domElement, false);
     if (SUPPORTS_LOCAL_STORAGE) {
-      if (useLocalStorage) {
+      if (useLocalStorage2) {
         _this.useLocalStorage = true;
         var savedGui = localStorage.getItem(getLocalStorageHash(this, "gui"));
         if (savedGui) {
@@ -34225,7 +34913,7 @@ GUI._keydownHandler = function(e) {
 };
 dom.bind(window, "keydown", GUI._keydownHandler, false);
 Common.extend(GUI.prototype, {
-  add: function add(object, property) {
+  add: function add2(object, property) {
     return _add(this, object, property, {
       factoryArgs: Array.prototype.slice.call(arguments, 2)
     });
@@ -34235,7 +34923,7 @@ Common.extend(GUI.prototype, {
       color: true
     });
   },
-  remove: function remove(controller) {
+  remove: function remove2(controller) {
     this.__ul.removeChild(controller.__li);
     this.__controllers.splice(this.__controllers.indexOf(controller), 1);
     var _this = this;
@@ -34483,7 +35171,7 @@ function augmentController(gui2, li, controller) {
       controller.__gui.listen(controller);
       return controller;
     },
-    remove: function remove2() {
+    remove: function remove3() {
       controller.__gui.remove(controller);
       return controller;
     }
@@ -34917,12 +35605,12 @@ const render = () => {
   renderer.render(scene, camera);
 };
 const onWindowResize = () => {
+  console.log("window resize to: ", window.innerWidth, window.innerHeight);
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
   render();
 };
-window.addEventListener("resize", onWindowResize, false);
 const getPlane = (x, y, color) => {
   let geometry = new PlaneGeometry(x, y);
   let material = new MeshStandardMaterial({
@@ -35336,6 +36024,7 @@ const animate = () => {
   const dt = clock.getDelta();
   watchPointer(camera, plane.children);
   controls.update();
+  exports.update();
   requestAnimationFrame(animate);
   if (params.ANIMATE) {
     plane.rotation.z -= 7e-4;
@@ -35813,13 +36502,37 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues
     }
     const { x, y } = useMouse();
     const { count, inc, dec } = useCounter();
+    usePreferredDark();
+    useLocalStorage("threedgarden-storage", [
+      {
+        name: "Apple",
+        color: "red"
+      },
+      {
+        name: "Orange",
+        color: "orange"
+      }
+    ]);
+    useEventListener(document, "visibilitychange", (evt) => {
+      console.log(evt);
+    });
+    useEventListener(document, "resize", (evt) => {
+      onWindowResize();
+      console.log(evt);
+    });
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", _hoisted_1$1, [
-        createBaseVNode("div", {
+        unref(isWebGLSupported_1) ? (openBlock(), createElementBlock("div", {
+          key: 0,
           id: "webgl",
           ref_key: "root",
           ref: root
-        }, null, 512),
+        }, null, 512)) : (openBlock(), createElementBlock("div", {
+          key: 1,
+          id: "webgl",
+          ref_key: "root",
+          ref: root
+        }, "WebGL is not supported", 512)),
         createBaseVNode("h6", null, [
           createTextVNode(" Mouse: x=" + toDisplayString(unref(x)) + " y=" + toDisplayString(unref(y)) + " | Counter: " + toDisplayString(unref(count)) + " ", 1),
           createBaseVNode("a", {
