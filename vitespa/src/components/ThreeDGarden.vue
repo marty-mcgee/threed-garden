@@ -32,7 +32,7 @@ console.log("$window = $global.window = $apple.appContext.config.globalPropertie
 window.global = $window
 let global = globalThis
 import process from 'process'
-window.process = process
+window.process = process 
 import buffer from 'buffer'
 window.Buffer = buffer.Buffer
 import util from 'util'
