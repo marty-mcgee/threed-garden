@@ -1,6 +1,6 @@
 {
-  "name": "eth.build",
-  "version": "0.1.0",
+  "name": "@companyjuice/eth.build",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
     "3box": "^1.19.1",
@@ -97,15 +97,7 @@
     "web3": "^1.7.0",
     "web3modal": "^1.9.5",
     "webpack": "^4.46.0",
-    "winston": "^3.5.0",
-
-    "body-parser": "^1.19.1",
-    "cors": "^2.8.5",
-    "express": "^4.17.2",
-    "http": "0.0.0",
-    "request": "^2.88.2",
-    "request-promise": "^4.2.6",
-    "socket.io": "^2.4.1"
+    "winston": "^3.5.0"
   },
   "scripts": {
     "mm": "react-scripts --max_old_space_size=8192 start",
