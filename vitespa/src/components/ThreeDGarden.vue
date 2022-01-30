@@ -29,14 +29,14 @@ const $window = $global.window
 console.log("$window = $global.window = $apple.appContext.config.globalProperties.window", $window)
 
 // for vue dapp
-window.global = $window
-let global = globalThis
-import process from 'process'
-window.process = process 
-import buffer from 'buffer'
-window.Buffer = buffer.Buffer
-import util from 'util'
-window.util = util
+// window.global = $window
+// let global = globalThis
+// import process from 'process'
+// window.process = process 
+// import buffer from 'buffer'
+// window.Buffer = buffer.Buffer
+// import util from 'util'
+// window.util = util
 
 
 // check for required WebGL and/or WebGL2
