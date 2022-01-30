@@ -4,6 +4,7 @@
 
 window.global = window
 let global = globalThis
+console.log("vue-dapp window.global")
 
 import process from 'process'
 window.process = process
@@ -89,17 +90,17 @@ const { address, balance, isActivated } = useEthers()
 
             <div v-if="isActivated" class="flex items-center">
               <!-- Account -->
-              <!-- sm:hidden -->
-              <div class="sm:hidden py-2 px-3 rounded-2xl inline-block bg-gray-100">
-                {{ shortenAddress(address) }}
-              </div>
               <!-- hidden -->
-              <div class="hidden sm:flex py-1 px-2 flex items-center rounded-3xl border border-solid">
-                <div class="px-1 mr-1">{{ displayEther(balance) }} ETH</div>
+              <div class="sm:flex py-1 px-2 flex items-center rounded-3xl border border-solid">
+                <div class="px-1 mr-1">{{ displayEther(balance, 10) }} ETH</div>
                 <div class="py-2 px-3 rounded-2xl inline-block bg-gray-100">
                   {{ shortenAddress(address) }}
                 </div>
               </div>
+              <!-- sm:hidden -->
+              <!-- <div class="sm:hidden py-2 px-3 rounded-2xl inline-block bg-gray-100">
+                {{ shortenAddress(address) }}
+              </div> -->
             </div>
 
             <button v-else @click="open" class="btn">Connect Wallet</button>
