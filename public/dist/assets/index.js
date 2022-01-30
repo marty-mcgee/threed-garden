@@ -17,7 +17,7 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-import { c as createHead, a as createI18n, N as NProgress, b as createPinia, d as defineStore, r as ref, e as computed, f as defineComponent, u as useRouter, g as useHead, h as useI18n, i as createElementBlock, j as createBaseVNode, k as unref, t as toDisplayString, w as withDirectives, v as vModelText, l as withKeys, m as createVNode, n as withCtx, o as resolveComponent, p as openBlock, q as createTextVNode, s as createStaticVNode, x as useDark, y as useToggle, z as createBlock, A as process, B as buffer, C as util, D as useEthers, E as shortenAddress, F as displayEther, G as pushScopeId, H as popScopeId, I as useBoard, J as createApp, K as createRouter, L as createWebHashHistory, V as VueDapp } from "./vendor.js";
+import { c as createHead, a as createI18n, N as NProgress, b as createPinia, d as defineStore, r as ref, e as computed, f as defineComponent, u as useRouter, g as useHead, h as useI18n, i as createElementBlock, j as createBaseVNode, k as unref, t as toDisplayString, w as withDirectives, v as vModelText, l as withKeys, m as createVNode, n as withCtx, o as resolveComponent, p as openBlock, q as createTextVNode, s as createStaticVNode, x as useDark, y as useToggle, z as createBlock, A as process, B as buffer, C as util, D as useEthers, E as displayEther, F as shortenAddress, G as pushScopeId, H as popScopeId, I as useBoard, J as createApp, K as createRouter, L as createWebHashHistory, V as VueDapp } from "./vendor.js";
 const p = function polyfill() {
   const relList = document.createElement("link").relList;
   if (relList && relList.supports && relList.supports("modulepreload")) {
@@ -1224,7 +1224,7 @@ function setupLayouts(routes2) {
   });
 }
 var LayoutHeader_vue_vue_type_style_index_0_scoped_true_lang = "";
-const _withScopeId = (n) => (pushScopeId("data-v-02f55bb9"), n = n(), popScopeId(), n);
+const _withScopeId = (n) => (pushScopeId("data-v-7c948b0a"), n = n(), popScopeId(), n);
 const _hoisted_1$1 = { class: "w-full px-4" };
 const _hoisted_2 = { class: "flex justify-between p-4 px-3" };
 const _hoisted_3 = {
@@ -1248,13 +1248,13 @@ const _hoisted_10 = {
   key: 0,
   class: "flex items-center"
 };
-const _hoisted_11 = { class: "sm:hidden py-2 px-3 rounded-2xl inline-block bg-gray-100" };
-const _hoisted_12 = { class: "hidden sm:flex py-1 px-2 flex items-center rounded-3xl border border-solid" };
-const _hoisted_13 = { class: "px-1 mr-1" };
-const _hoisted_14 = { class: "py-2 px-3 rounded-2xl inline-block bg-gray-100" };
+const _hoisted_11 = { class: "sm:flex py-1 px-2 flex items-center rounded-3xl border border-solid" };
+const _hoisted_12 = { class: "px-1 mr-1" };
+const _hoisted_13 = { class: "py-2 px-3 rounded-2xl inline-block bg-gray-100" };
 const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   setup(__props) {
     window.global = window;
+    console.log("vue-dapp window.global");
     window.process = process;
     window.Buffer = buffer.Buffer;
     window.util = util;
@@ -1296,10 +1296,9 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
                   _: 1
                 }),
                 unref(isActivated) ? (openBlock(), createElementBlock("div", _hoisted_10, [
-                  createBaseVNode("div", _hoisted_11, toDisplayString(unref(shortenAddress)(unref(address))), 1),
-                  createBaseVNode("div", _hoisted_12, [
-                    createBaseVNode("div", _hoisted_13, toDisplayString(unref(displayEther)(unref(balance))) + " ETH", 1),
-                    createBaseVNode("div", _hoisted_14, toDisplayString(unref(shortenAddress)(unref(address))), 1)
+                  createBaseVNode("div", _hoisted_11, [
+                    createBaseVNode("div", _hoisted_12, toDisplayString(unref(displayEther)(unref(balance), 10)) + " ETH", 1),
+                    createBaseVNode("div", _hoisted_13, toDisplayString(unref(shortenAddress)(unref(address))), 1)
                   ])
                 ])) : (openBlock(), createElementBlock("button", {
                   key: 1,
@@ -1314,7 +1313,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var LayoutHeader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-02f55bb9"]]);
+var LayoutHeader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-7c948b0a"]]);
 const _hoisted_1 = { id: "APP" };
 const _sfc_main = /* @__PURE__ */ defineComponent({
   setup(__props) {
