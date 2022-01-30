@@ -3,7 +3,7 @@ const EthWallet = require("ethereumjs-wallet");
 const EthUtil = require("ethereumjs-util");
 
 const defaultProvider =
-  "https://mainnet.infura.io/v3/e59c464c322f47e2963f5f00638be2f8";
+  "https://mainnet.infura.io/v3/432d743bb1d944268c6e3725f243a7e0";
 
 function Wallet() {
   this.addInput("[blockchain]", "string");
