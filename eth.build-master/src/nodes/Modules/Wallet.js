@@ -30,7 +30,13 @@ function Module() {
 
   //this.subgraph.configure( obj )
   codec.decompress(compressed).then(json => {
-    this.subgraph.configure( json )
+    console.log("[mm] decompressed json", json)
+    let jsonString = JSON.stringify(json)
+    console.log("[mm] string json", jsonString)
+    jsonString = jsonString.replaceAll('e59c464c322f47e2963f5f00638be2f8', '432d743bb1d944268c6e3725f243a7e0')
+    console.log("[mm] replaced json", jsonString)
+    let jsonObject = JSON.parse(jsonString)
+    this.subgraph.configure(jsonObject)
   })
 }
 
