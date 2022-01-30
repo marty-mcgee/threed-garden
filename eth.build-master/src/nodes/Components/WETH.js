@@ -1,7 +1,7 @@
 var Web3 = require('web3');
 
 //choose your default RPC if they don't define a blockchain
-const defaultProvider = "https://mainnet.infura.io/v3/e59c464c322f47e2963f5f00638be2f8"
+const defaultProvider = "https://mainnet.infura.io/v3/432d743bb1d944268c6e3725f243a7e0"
 
 function CustomContractBlock() {
   //if you want to customize your inputs and outputs you can here:
