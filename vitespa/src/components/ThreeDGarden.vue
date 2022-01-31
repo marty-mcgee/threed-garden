@@ -28,18 +28,9 @@ console.log("$global = $apple.appContext.config.globalProperties", $global)
 const $window = $global.window
 console.log("$window = $global.window = $apple.appContext.config.globalProperties.window", $window)
 
-// for vue dapp
-// window.global = $window
-// let global = globalThis
-// import process from 'process'
-// window.process = process 
-// import buffer from 'buffer'
-// window.Buffer = buffer.Buffer
-// import util from 'util'
-// window.util = util
-
-
-// check for required WebGL and/or WebGL2
+/**
+ * WebGL + WebGL2 check
+ */ 
 import { isWebGLSupported, isWebGL2Supported } from 'webgl-detector'
 if (!isWebGLSupported()){
   alert('WebGL is not supported.')
@@ -56,7 +47,9 @@ if (!isWebGL2Supported()){
 //   console.log('WebGL2 is supported.')
 }
 
-/** VueUse components */
+/** 
+ * VueUse components 
+ */
 import { 
   useMouse,
   useCounter,
@@ -105,6 +98,7 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer'
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+
 // import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
 import TWEEN from '@tweenjs/tween.js'
 
@@ -149,13 +143,27 @@ console.log("postdata", postdata)
 const debug = false
 const debugPhysics = false
 
-const gui = new dat.GUI({ autoPlace: true, closeOnTop: true })
-      gui.close()
-      gui.domElement.id = "gui"
-const guiFolderRotation 		= gui.addFolder("Rotation + Animation")
-//const guiFolderAnimation 	= guiFolderRotation.addFolder("Animation")
-const guiFolderCameras 		  = gui.addFolder("Camera Position")
-const guiFolderLights 		  = gui.addFolder("Directional Light")
+/**
+ * DAT.GUI
+ */
+const gui = new dat.GUI(
+  { 
+    name: "ThreeDGarden Controls",
+    autoPlace: true, 
+    closeOnTop: true, 
+    width: 180,
+    //closed: true,
+    useLocalStorage: true,
+
+  }
+)
+gui.domElement.id = "gui"
+gui.close()
+// folders
+const guiFolderAnimation 	  = gui.addFolder("Animation")
+const guiFolderRotation 		= gui.addFolder("Rotation")
+const guiFolderCameras 		  = gui.addFolder("Camera")
+const guiFolderLights 		  = gui.addFolder("Lights")
 const guiFolderAllotments 	= gui.addFolder("Allotments")
 const guiFolderBeds 			  = gui.addFolder("Beds")
 const guiFolderPlants 		  = gui.addFolder("Plants")
@@ -163,6 +171,9 @@ const guiFolderPlants 		  = gui.addFolder("Plants")
 const guiFolderAnnotations 	= gui.addFolder("Annotations")
 const guiFolderPlayer 		  = gui.addFolder("Character")
 
+/**
+ * THREE.JS ENVIRONMENT
+ */
 let scene
 let plane
 let camera
@@ -196,7 +207,9 @@ let messages = {
   index: 0
 }
 
-// PARAMS
+/**
+ * PARAMS (props)
+ */
 const params = {
   /** SET MODES */
   modes: Object.freeze({
@@ -236,13 +249,12 @@ const params = {
 }
 params.mode = params.modes.NONE
 console.log("params.mode", params.mode)
-guiFolderRotation.add(params, "ANIMATE").name("Run Animation")
+guiFolderAnimation.add(params, "ANIMATE").name("Run Animation")
 
 params.mode = params.modes.PRELOAD
 console.log("params.mode", params.mode)
 
 console.log("params", params)
-// console.log("options", options)
 
 /** 
  * three.js 
@@ -312,6 +324,7 @@ const loaderTexture = new THREE.TextureLoader(manager)
 // anims.forEach( function(anim){ 
 //   options.assets.push(`${params.assetsPath}fbx/anims2/${anim}.fbx`)
 // })
+// console.log("options", options)
 
 /** TIME CLOCK */
 const clock = new THREE.Clock()
@@ -544,7 +557,7 @@ const getGeometry = (shape, x, y, z, color) => {
       // mesh.castShadow = true
       
       // [MM]
-      //scene.add(mesh)
+      //plane.add(mesh)
 
       // mesh.matrix.makeTranslation(0,-125,0)
       // mesh.matrixAutoUpdate = false
@@ -583,7 +596,7 @@ const getGeometry = (shape, x, y, z, color) => {
           mesh.matrix.copy(new_mat)
           mesh.matrixAutoUpdate=false
           mesh.updateMatrix=false //
-          scene.add(mesh)
+          plane.add(mesh)
           bush(n-1, mesh.matrix.clone(), col1)
       
           //col2.offsetHSL(0.12,0,0)
@@ -604,7 +617,7 @@ const getGeometry = (shape, x, y, z, color) => {
           mesh.matrix.copy(new_mat2)
           mesh.matrixAutoUpdate=false
           mesh.updateMatrix=false //
-          scene.add(mesh)
+          plane.add(mesh)
           bush(n-1, mesh.matrix.clone(), col2)
         }
       }
@@ -697,12 +710,12 @@ function loadFarmHouseGLTF() {
     model.traverse( function ( child ) {
       if ( child.isMesh ) child.castShadow = true
     } )
-    scene.add(model)
+    plane.add(model)
 
     helper = new THREE.SkeletonHelper(model)
     helper.material.linewidth = 5
     helper.visible = true
-    scene.add(helper)
+    plane.add(helper)
     
     console.log("loadFarmHouseGLTF object", object)
     console.log("loadFarmHouseGLTF model", model)
@@ -716,8 +729,10 @@ function loadCoop() {
   loaderFBX.load(`${params.assetsPath}fbx/Prop_Chicken_Coop_02.fbx`, function(object) {
     params.farmhouse = object
     params.colliders = []
+    object.rotation.x = 180 * (Math.PI/180) // 90 degrees in radians
     object.rotation.y = 90 * (Math.PI/180) // 90 degrees in radians
-    object.position.set(80, 0, -10)
+    object.rotation.z = 270 * (Math.PI/180) // 90 degrees in radians
+    object.position.set(80, 0, 0)
     object.scale.set(2.2, 2.2, 2.2)
     plane.add(object)
     object.traverse( function ( child ) {
@@ -748,17 +763,17 @@ function loadChicken() {
     let model = object.scene
     model.name = "Chicken GLB"
     model.position.set(-3, 0, 0)
-    //model.rotation.y = 90 * (Math.PI/180) // 90 degrees in radians
+    model.rotation.x = 90 * (Math.PI/180) // 90 degrees in radians
     model.scale.set(4, 4, 4)
     model.traverse( function ( child ) {
       if ( child.isMesh ) child.castShadow = true
     } )
-    scene.add(model)
+    plane.add(model)
 
     // helper = new THREE.SkeletonHelper(model)
     // helper.material.linewidth = 5
     // helper.visible = true
-    // scene.add(helper)
+    // plane.add(helper)
     
     console.log("loadChicken object", object)
     console.log("loadChicken model", model)
@@ -846,7 +861,7 @@ function loadChicken2() {
     // mixers.push( object.mixer )
     // var action = object.mixer.clipAction( object.animations[ 0 ] )
     // action.play()
-    // scene.add( object )
+    // plane.add( object )
 
 /*
     object.mixer = new THREE.AnimationMixer( object )
@@ -919,7 +934,7 @@ function loadChicken2() {
     player.mixer.clipAction(object.animations[0]).play()
     animations.Idle = object.animations[0]
     //setAction("Idle")
-    scene.add(player.object)
+    plane.add(player.object)
     guiFolderPlayer.add(player.object, "visible").name("Show Chicken").listen()
 
     console.log("-----------------------")
@@ -979,12 +994,12 @@ function loadChickGLTF() {
     model.traverse( function ( child ) {
       if ( child.isMesh ) child.castShadow = true
     } )
-    scene.add(model)
+    plane.add(model)
 
     // helper = new THREE.SkeletonHelper(model)
     // helper.material.linewidth = 5
     // helper.visible = true
-    // scene.add(helper)
+    // plane.add(helper)
     
     console.log("loadChickGLTF object")
     console.log(object)
@@ -1048,12 +1063,12 @@ function loadHenGLTF() {
     model.traverse( function ( child ) {
       if ( child.isMesh ) child.castShadow = true
     } )
-    scene.add(model)
+    plane.add(model)
 
     // helper = new THREE.SkeletonHelper(model)
     // helper.material.linewidth = 5
     // helper.visible = true
-    // scene.add(helper)
+    // plane.add(helper)
     
     console.log("loadHenGLTF object----------------")
     console.log(object)
@@ -1170,15 +1185,15 @@ function loadRoad() {
   const roadPromise1 = new Promise((resolve, reject) => {
 
     // ROAD A
-    for ( i = 1;i <= count;i++ ) {
+    for ( i = 1; i <= count; i++ ) {
       loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_Straight_01.fbx`, function(object) {
         
         // console.log("ROAD object", object)
 
         //params.farmhouse = object
         //params.colliders = []
-        //object.rotation.y = 90 * (Math.PI/180) // 90 degrees in radians
-        object.position.set(startX, 0, startZ)
+        object.rotation.x = 90 * (Math.PI/180) // 90 degrees in radians
+        object.position.set(startX, startZ, 0)
         startX = startX + offsetX
         startZ = startZ + offsetZ
         console.log("ROAD A startX, startZ", startX, startZ)
@@ -2151,39 +2166,49 @@ const buildScene = async (a5) => {
   // spotLight.position.set( -20, -60, 20 )
   // //spotLight.intensity = 3.0
 
-  //let ambientLight = getAmbientLight(0xFFFFFF, 0.1)
-  //ambientLight.position.set( -100, -100, 25 )
+  // ambient sunlight
+  let ambientLight = getAmbientLight(0xFFFFFF, 0.75)
+  //ambientLight.position.set( 0, 0, 0 ) // does nothing
+  
+  guiFolderLights.add(ambientLight, "visible").name("Show Ambient Light")
+  guiFolderLights.add(ambientLight, "intensity", -2.0, 2.0)
+  guiFolderLights.add(ambientLight.position, "x", -800, 800)
+  guiFolderLights.add(ambientLight.position, "y", -800, 800)
+  guiFolderLights.add(ambientLight.position, "z", -800, 800)
 
-  //let shadowIntensity = 0.5;// between 0 and 1 -- suggestion
-
-  let directionalLight = getDirectionalLight(0xFFFFFF, 1.6)
-  directionalLight.position.set( -90, -120, 120 )
+  // the sun
+  let directionalLight = getDirectionalLight(0xFFFFFF, 0.75)
+  // x = sun?, y = time of day?, z = ???
+  directionalLight.position.set( -90, -120, 135 )
   directionalLight.castShadow = true
-  //directionalLight.intensity = 1.6
+  //directionalLight.intensity = 1.6 // overwrite?
 
   let helperDirectionalLight = new THREE.CameraHelper(directionalLight.shadow.camera)
   helperDirectionalLight.visible = false
 
+  // indirect sunlight
   //let directionalLight2 = directionalLight.clone()
-  let directionalLight2 = getDirectionalLight(0xFFFFFF, 1.0)
-  directionalLight2.position.set( 90, 120, 120 ) // direct opposite x,y of primary
+  let directionalLight2 = getDirectionalLight(0xFFFFFF, 0.66)
+  directionalLight2.position.set( -90, 135, 135 ) // direct opposite x,y of primary?
   directionalLight2.castShadow = false
-  //directionalLight2.intensity = 1.0
+  //directionalLight2.intensity = 1.0 // overwrite?
 
   let helperDirectionalLight2 = new THREE.CameraHelper(directionalLight2.shadow.camera)
   helperDirectionalLight2.visible = true
   
-  guiFolderLights.add(helperDirectionalLight, "visible", 0, 20).name("Show Light Helper")
-  guiFolderLights.add(directionalLight, "intensity", 0, 20)
-  guiFolderLights.add(directionalLight.position, "x", -500, 500)
-  guiFolderLights.add(directionalLight.position, "y", -500, 500)
-  guiFolderLights.add(directionalLight.position, "z", -500, 500)
+  guiFolderLights.add(directionalLight, "visible").name("Show Light")
+  guiFolderLights.add(helperDirectionalLight, "visible").name("Show Light Helper")
+  guiFolderLights.add(directionalLight, "intensity", -2.0, 2.0)
+  guiFolderLights.add(directionalLight.position, "x", -800, 800)
+  guiFolderLights.add(directionalLight.position, "y", -800, 800)
+  guiFolderLights.add(directionalLight.position, "z", -800, 800)
 
-  guiFolderLights.add(helperDirectionalLight2, "visible", 0, 20).name("Show Light 2 Helper")
-  guiFolderLights.add(directionalLight2, "intensity", 0, 20)
-  guiFolderLights.add(directionalLight2.position, "x", -500, 500)
-  guiFolderLights.add(directionalLight2.position, "y", -500, 500)
-  guiFolderLights.add(directionalLight2.position, "z", -500, 500)
+  guiFolderLights.add(directionalLight2, "visible").name("Show Light 2")
+  guiFolderLights.add(helperDirectionalLight2, "visible").name("Show Light 2 Helper")
+  guiFolderLights.add(directionalLight2, "intensity", -2.0, 2.0)
+  guiFolderLights.add(directionalLight2.position, "x", -800, 800)
+  guiFolderLights.add(directionalLight2.position, "y", -800, 800)
+  guiFolderLights.add(directionalLight2.position, "z", -800, 800)
 
   /** SCENE ***************************************************************************** */
 
@@ -2193,7 +2218,7 @@ const buildScene = async (a5) => {
   //plane.add(spotLight)
   plane.add(directionalLight)
   plane.add(directionalLight2)
-  //plane.add(ambientLight)
+  plane.add(ambientLight)
   scene.add(helperDirectionalLight)
   scene.add(helperDirectionalLight2)
   scene.add(plane)
@@ -2215,9 +2240,9 @@ const buildScene = async (a5) => {
   scene.add(helperCamera)
 
   guiFolderCameras.add(helperCamera, "visible", 0, 20).name("Show Camera Helper")
-  guiFolderCameras.add(camera.position, "x", -500, 500).listen()
-  guiFolderCameras.add(camera.position, "y", -500, 500).listen()
-  guiFolderCameras.add(camera.position, "z", -500, 500).listen()
+  guiFolderCameras.add(camera.position, "x", -800, 800).listen()
+  guiFolderCameras.add(camera.position, "y", -800, 800).listen()
+  guiFolderCameras.add(camera.position, "z", -800, 800).listen()
 
   /** RENDERER ************************************************************************** */
   
