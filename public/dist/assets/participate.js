@@ -35496,12 +35496,19 @@ const worldID = postdata.world_id;
 console.log("pluginName", pluginName, pluginVersion);
 console.log("postdata", postdata);
 const debug = false;
-const gui = new GUI$1({ autoPlace: true, closeOnTop: true });
-gui.close();
+const gui = new GUI$1({
+  name: "ThreeDGarden Controls",
+  autoPlace: true,
+  closeOnTop: true,
+  width: 180,
+  useLocalStorage: true
+});
 gui.domElement.id = "gui";
-const guiFolderRotation = gui.addFolder("Rotation + Animation");
-const guiFolderCameras = gui.addFolder("Camera Position");
-const guiFolderLights = gui.addFolder("Directional Light");
+gui.close();
+const guiFolderAnimation = gui.addFolder("Animation");
+const guiFolderRotation = gui.addFolder("Rotation");
+const guiFolderCameras = gui.addFolder("Camera");
+const guiFolderLights = gui.addFolder("Lights");
 gui.addFolder("Allotments");
 gui.addFolder("Beds");
 gui.addFolder("Plants");
@@ -35551,7 +35558,7 @@ const params = {
 };
 params.mode = params.modes.NONE;
 console.log("params.mode", params.mode);
-guiFolderRotation.add(params, "ANIMATE").name("Run Animation");
+guiFolderAnimation.add(params, "ANIMATE").name("Run Animation");
 params.mode = params.modes.PRELOAD;
 console.log("params.mode", params.mode);
 console.log("params", params);
@@ -35633,6 +35640,10 @@ const getDirectionalLight = (color, intensity) => {
   light.shadow.camera.top = 1e3;
   light.shadow.camera.near = 0.5;
   light.shadow.camera.far = 500;
+  return light;
+};
+const getAmbientLight = (color, intensity) => {
+  let light = new AmbientLight(color, intensity);
   return light;
 };
 const getGeometry = (shape, x, y, z, color) => {
@@ -35743,8 +35754,10 @@ function loadCoop() {
   loaderFBX.load(`${params.assetsPath}fbx/Prop_Chicken_Coop_02.fbx`, function(object) {
     params.farmhouse = object;
     params.colliders = [];
+    object.rotation.x = 180 * (Math.PI / 180);
     object.rotation.y = 90 * (Math.PI / 180);
-    object.position.set(80, 0, -10);
+    object.rotation.z = 270 * (Math.PI / 180);
+    object.position.set(80, 0, 0);
     object.scale.set(2.2, 2.2, 2.2);
     plane.add(object);
     object.traverse(function(child) {
@@ -35772,12 +35785,13 @@ function loadChicken() {
     let model = object.scene;
     model.name = "Chicken GLB";
     model.position.set(-3, 0, 0);
+    model.rotation.x = 90 * (Math.PI / 180);
     model.scale.set(4, 4, 4);
     model.traverse(function(child) {
       if (child.isMesh)
         child.castShadow = true;
     });
-    scene.add(model);
+    plane.add(model);
     console.log("loadChicken object", object);
     console.log("loadChicken model", model);
   });
@@ -35792,7 +35806,8 @@ function loadRoad() {
   const roadPromise1 = new Promise((resolve, reject) => {
     for (i = 1; i <= count; i++) {
       loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_Straight_01.fbx`, function(object) {
-        object.position.set(startX, 0, startZ);
+        object.rotation.x = 90 * (Math.PI / 180);
+        object.position.set(startX, startZ, 0);
         startX = startX + offsetX;
         startZ = startZ + offsetZ;
         console.log("ROAD A startX, startZ", startX, startZ);
@@ -36212,28 +36227,37 @@ const buildScene = async (a5) => {
     planeTextureMap.wrapT = RepeatWrapping;
     planeTextureMap.repeat.set(4, 4);
   }
-  let directionalLight = getDirectionalLight(16777215, 1.6);
-  directionalLight.position.set(-90, -120, 120);
+  let ambientLight = getAmbientLight(16777215, 0.75);
+  guiFolderLights.add(ambientLight, "visible").name("Show Ambient Light");
+  guiFolderLights.add(ambientLight, "intensity", -2, 2);
+  guiFolderLights.add(ambientLight.position, "x", -800, 800);
+  guiFolderLights.add(ambientLight.position, "y", -800, 800);
+  guiFolderLights.add(ambientLight.position, "z", -800, 800);
+  let directionalLight = getDirectionalLight(16777215, 0.75);
+  directionalLight.position.set(-90, -120, 135);
   directionalLight.castShadow = true;
   let helperDirectionalLight = new CameraHelper(directionalLight.shadow.camera);
   helperDirectionalLight.visible = false;
-  let directionalLight2 = getDirectionalLight(16777215, 1);
-  directionalLight2.position.set(90, 120, 120);
+  let directionalLight2 = getDirectionalLight(16777215, 0.66);
+  directionalLight2.position.set(-90, 135, 135);
   directionalLight2.castShadow = false;
   let helperDirectionalLight2 = new CameraHelper(directionalLight2.shadow.camera);
   helperDirectionalLight2.visible = true;
-  guiFolderLights.add(helperDirectionalLight, "visible", 0, 20).name("Show Light Helper");
-  guiFolderLights.add(directionalLight, "intensity", 0, 20);
-  guiFolderLights.add(directionalLight.position, "x", -500, 500);
-  guiFolderLights.add(directionalLight.position, "y", -500, 500);
-  guiFolderLights.add(directionalLight.position, "z", -500, 500);
-  guiFolderLights.add(helperDirectionalLight2, "visible", 0, 20).name("Show Light 2 Helper");
-  guiFolderLights.add(directionalLight2, "intensity", 0, 20);
-  guiFolderLights.add(directionalLight2.position, "x", -500, 500);
-  guiFolderLights.add(directionalLight2.position, "y", -500, 500);
-  guiFolderLights.add(directionalLight2.position, "z", -500, 500);
+  guiFolderLights.add(directionalLight, "visible").name("Show Light");
+  guiFolderLights.add(helperDirectionalLight, "visible").name("Show Light Helper");
+  guiFolderLights.add(directionalLight, "intensity", -2, 2);
+  guiFolderLights.add(directionalLight.position, "x", -800, 800);
+  guiFolderLights.add(directionalLight.position, "y", -800, 800);
+  guiFolderLights.add(directionalLight.position, "z", -800, 800);
+  guiFolderLights.add(directionalLight2, "visible").name("Show Light 2");
+  guiFolderLights.add(helperDirectionalLight2, "visible").name("Show Light 2 Helper");
+  guiFolderLights.add(directionalLight2, "intensity", -2, 2);
+  guiFolderLights.add(directionalLight2.position, "x", -800, 800);
+  guiFolderLights.add(directionalLight2.position, "y", -800, 800);
+  guiFolderLights.add(directionalLight2.position, "z", -800, 800);
   plane.add(directionalLight);
   plane.add(directionalLight2);
+  plane.add(ambientLight);
   scene.add(helperDirectionalLight);
   scene.add(helperDirectionalLight2);
   scene.add(plane);
@@ -36244,9 +36268,9 @@ const buildScene = async (a5) => {
   helperCamera.visible = false;
   scene.add(helperCamera);
   guiFolderCameras.add(helperCamera, "visible", 0, 20).name("Show Camera Helper");
-  guiFolderCameras.add(camera.position, "x", -500, 500).listen();
-  guiFolderCameras.add(camera.position, "y", -500, 500).listen();
-  guiFolderCameras.add(camera.position, "z", -500, 500).listen();
+  guiFolderCameras.add(camera.position, "x", -800, 800).listen();
+  guiFolderCameras.add(camera.position, "y", -800, 800).listen();
+  guiFolderCameras.add(camera.position, "z", -800, 800).listen();
   renderer = new WebGLRenderer({
     alpha: true,
     antialias: true

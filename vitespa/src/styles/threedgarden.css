@@ -34,18 +34,21 @@ li {
 /** DAT.GUI "dg" */
 #gui {
 	position: absolute;
-	right: 5px;
+	right: 0px;
+	width: 200px;
 }
-#gui dd, #gui li {
+#gui dd, 
+#gui li {
+	display: block;
 	margin-bottom: 0;
 }
-.dg li.title {
+#gui .dg li.title {
 	color: #FFFFFF;
 }
-.dg .closed li.title {
+#gui .dg .closed li.title {
 	color: #AAAAAA;
 }
-.dg .c input {
+#gui .dg .c input {
 	font-size: 10px;
 	height: auto;
 	line-height: auto;
