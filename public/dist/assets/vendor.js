@@ -292,7 +292,7 @@ class ReactiveEffect {
     if (!this.active) {
       return this.fn();
     }
-    if (!effectStack.includes(this)) {
+    if (!effectStack.length || !effectStack.includes(this)) {
       try {
         effectStack.push(activeEffect = this);
         enableTracking();
@@ -491,6 +491,8 @@ function createGetter(isReadonly2 = false, shallow = false) {
       return !isReadonly2;
     } else if (key2 === "__v_isReadonly") {
       return isReadonly2;
+    } else if (key2 === "__v_isShallow") {
+      return shallow;
     } else if (key2 === "__v_raw" && receiver === (isReadonly2 ? shallow ? shallowReadonlyMap : readonlyMap : shallow ? shallowReactiveMap : reactiveMap).get(target)) {
       return target;
     }
@@ -523,9 +525,14 @@ const shallowSet = /* @__PURE__ */ createSetter(true);
 function createSetter(shallow = false) {
   return function set6(target, key2, value2, receiver) {
     let oldValue = target[key2];
+    if (isReadonly(oldValue) && isRef(oldValue) && !isRef(value2)) {
+      return false;
+    }
     if (!shallow && !isReadonly(value2)) {
-      value2 = toRaw(value2);
-      oldValue = toRaw(oldValue);
+      if (!isShallow(value2)) {
+        value2 = toRaw(value2);
+        oldValue = toRaw(oldValue);
+      }
       if (!isArray$9(target) && isRef(oldValue) && !isRef(value2)) {
         oldValue.value = value2;
         return true;
@@ -585,7 +592,7 @@ const shallowReactiveHandlers = /* @__PURE__ */ extend$4({}, mutableHandlers, {
 });
 const toShallow = (value2) => value2;
 const getProto$2 = (v2) => Reflect.getPrototypeOf(v2);
-function get$1(target, key2, isReadonly2 = false, isShallow = false) {
+function get$1(target, key2, isReadonly2 = false, isShallow2 = false) {
   target = target["__v_raw"];
   const rawTarget = toRaw(target);
   const rawKey = toRaw(key2);
@@ -594,7 +601,7 @@ function get$1(target, key2, isReadonly2 = false, isShallow = false) {
   }
   !isReadonly2 && track(rawTarget, "get", rawKey);
   const { has: has2 } = getProto$2(rawTarget);
-  const wrap2 = isShallow ? toShallow : isReadonly2 ? toReadonly : toReactive;
+  const wrap2 = isShallow2 ? toShallow : isReadonly2 ? toReadonly : toReactive;
   if (has2.call(rawTarget, key2)) {
     return wrap2(target.get(key2));
   } else if (has2.call(rawTarget, rawKey)) {
@@ -671,19 +678,19 @@ function clear() {
   }
   return result;
 }
-function createForEach(isReadonly2, isShallow) {
+function createForEach(isReadonly2, isShallow2) {
   return function forEach3(callback, thisArg) {
     const observed = this;
     const target = observed["__v_raw"];
     const rawTarget = toRaw(target);
-    const wrap2 = isShallow ? toShallow : isReadonly2 ? toReadonly : toReactive;
+    const wrap2 = isShallow2 ? toShallow : isReadonly2 ? toReadonly : toReactive;
     !isReadonly2 && track(rawTarget, "iterate", ITERATE_KEY);
     return target.forEach((value2, key2) => {
       return callback.call(thisArg, wrap2(value2), wrap2(key2), observed);
     });
   };
 }
-function createIterableMethod(method2, isReadonly2, isShallow) {
+function createIterableMethod(method2, isReadonly2, isShallow2) {
   return function(...args) {
     const target = this["__v_raw"];
     const rawTarget = toRaw(target);
@@ -691,7 +698,7 @@ function createIterableMethod(method2, isReadonly2, isShallow) {
     const isPair = method2 === "entries" || method2 === Symbol.iterator && targetIsMap;
     const isKeyOnly = method2 === "keys" && targetIsMap;
     const innerIterator = target[method2](...args);
-    const wrap2 = isShallow ? toShallow : isReadonly2 ? toReadonly : toReactive;
+    const wrap2 = isShallow2 ? toShallow : isReadonly2 ? toReadonly : toReactive;
     !isReadonly2 && track(rawTarget, "iterate", isKeyOnly ? MAP_KEY_ITERATE_KEY : ITERATE_KEY);
     return {
       next() {
@@ -832,7 +839,7 @@ function getTargetType(value2) {
   return value2["__v_skip"] || !Object.isExtensible(value2) ? 0 : targetTypeMap(toRawType(value2));
 }
 function reactive(target) {
-  if (target && target["__v_isReadonly"]) {
+  if (isReadonly(target)) {
     return target;
   }
   return createReactiveObject(target, false, mutableHandlers, mutableCollectionHandlers, reactiveMap);
@@ -870,6 +877,9 @@ function isReactive(value2) {
 }
 function isReadonly(value2) {
   return !!(value2 && value2["__v_isReadonly"]);
+}
+function isShallow(value2) {
+  return !!(value2 && value2["__v_isShallow"]);
 }
 function isProxy(value2) {
   return isReactive(value2) || isReadonly(value2);
@@ -919,22 +929,22 @@ function createRef(rawValue, shallow) {
   return new RefImpl(rawValue, shallow);
 }
 class RefImpl {
-  constructor(value2, _shallow) {
-    this._shallow = _shallow;
+  constructor(value2, __v_isShallow) {
+    this.__v_isShallow = __v_isShallow;
     this.dep = void 0;
     this.__v_isRef = true;
-    this._rawValue = _shallow ? value2 : toRaw(value2);
-    this._value = _shallow ? value2 : toReactive(value2);
+    this._rawValue = __v_isShallow ? value2 : toRaw(value2);
+    this._value = __v_isShallow ? value2 : toReactive(value2);
   }
   get value() {
     trackRefValue(this);
     return this._value;
   }
   set value(newVal) {
-    newVal = this._shallow ? newVal : toRaw(newVal);
+    newVal = this.__v_isShallow ? newVal : toRaw(newVal);
     if (hasChanged(newVal, this._rawValue)) {
       this._rawValue = newVal;
-      this._value = this._shallow ? newVal : toReactive(newVal);
+      this._value = this.__v_isShallow ? newVal : toReactive(newVal);
       triggerRefValue(this);
     }
   }
@@ -987,21 +997,22 @@ class ComputedRefImpl {
   constructor(getter, _setter, isReadonly2, isSSR) {
     this._setter = _setter;
     this.dep = void 0;
-    this._dirty = true;
     this.__v_isRef = true;
+    this._dirty = true;
     this.effect = new ReactiveEffect(getter, () => {
       if (!this._dirty) {
         this._dirty = true;
         triggerRefValue(this);
       }
     });
-    this.effect.active = !isSSR;
+    this.effect.computed = this;
+    this.effect.active = this._cacheable = !isSSR;
     this["__v_isReadonly"] = isReadonly2;
   }
   get value() {
     const self2 = toRaw(this);
     trackRefValue(self2);
-    if (self2._dirty) {
+    if (self2._dirty || !self2._cacheable) {
       self2._dirty = false;
       self2._value = self2.effect.run();
     }
@@ -1507,7 +1518,7 @@ function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EM
   let isMultiSource = false;
   if (isRef(source)) {
     getter = () => source.value;
-    forceTrigger = !!source._shallow;
+    forceTrigger = isShallow(source);
   } else if (isReactive(source)) {
     getter = () => source;
     deep = true;
@@ -2068,7 +2079,7 @@ function applyOptions(instance) {
       const opt = computedOptions[key2];
       const get15 = isFunction$4(opt) ? opt.bind(publicThis, publicThis) : isFunction$4(opt.get) ? opt.get.bind(publicThis, publicThis) : NOOP;
       const set6 = !isFunction$4(opt) && isFunction$4(opt.set) ? opt.set.bind(publicThis) : NOOP;
-      const c2 = computed$1({
+      const c2 = computed({
         get: get15,
         set: set6
       });
@@ -2369,7 +2380,7 @@ function updateProps(instance, rawProps, rawPrevProps, optimized) {
     }
     if (attrs !== rawCurrentProps) {
       for (const key2 in attrs) {
-        if (!rawProps || !hasOwn$5(rawProps, key2)) {
+        if (!rawProps || !hasOwn$5(rawProps, key2) && true) {
           delete attrs[key2];
           hasAttrsChanged = true;
         }
@@ -4068,7 +4079,7 @@ function mergeProps(...args) {
       } else if (isOn(key2)) {
         const existing = ret[key2];
         const incoming = toMerge[key2];
-        if (existing !== incoming && !(isArray$9(existing) && existing.includes(incoming))) {
+        if (incoming && existing !== incoming && !(isArray$9(existing) && existing.includes(incoming))) {
           ret[key2] = existing ? [].concat(existing, incoming) : incoming;
         }
       } else if (key2 !== "") {
@@ -4476,7 +4487,7 @@ function h$4(type, propsOrChildren, children) {
     return createVNode(type, propsOrChildren, children);
   }
 }
-const version$s = "3.2.27";
+const version$s = "3.2.29";
 const svgNS = "http://www.w3.org/2000/svg";
 const doc = typeof document !== "undefined" ? document : null;
 const templateContainer = doc && doc.createElement("template");
@@ -4520,7 +4531,7 @@ const nodeOps = {
   },
   insertStaticContent(content, parent, anchor, isSVG, start, end) {
     const before = anchor ? anchor.previousSibling : parent.lastChild;
-    if (start && end) {
+    if (start && (start === end || start.nextSibling)) {
       while (true) {
         parent.insertBefore(start.cloneNode(true), anchor);
         if (start === end || !(start = start.nextSibling))
@@ -4749,7 +4760,7 @@ function patchStopImmediatePropagation(e2, value2) {
       originalStop.call(e2);
       e2._stopped = true;
     };
-    return value2.map((fn) => (e3) => !e3._stopped && fn(e3));
+    return value2.map((fn) => (e3) => !e3._stopped && fn && fn(e3));
   } else {
     return value2;
   }
@@ -7396,8 +7407,8 @@ var nprogress = { exports: {} };
 var NProgress = nprogress.exports;
 var isVue2 = false;
 /*!
-  * pinia v2.0.9
-  * (c) 2021 Eduardo San Martin Morote
+  * pinia v2.0.11
+  * (c) 2022 Eduardo San Martin Morote
   * @license MIT
   */
 let activePinia;
@@ -7461,7 +7472,7 @@ function addSubscription(subscriptions2, callback, detached, onCleanup = noop$9)
   return removeSubscription;
 }
 function triggerSubscriptions(subscriptions2, ...args) {
-  subscriptions2.forEach((callback) => {
+  subscriptions2.slice().forEach((callback) => {
     callback(...args);
   });
 }
@@ -9449,9 +9460,10 @@ function useMediaQuery(query2, options = {}) {
   });
   return matches;
 }
+const _global = typeof globalThis === "undefined" ? void 0 : globalThis;
 const globalKey = "__vueuse_ssr_handlers__";
-globalThis[globalKey] = globalThis[globalKey] || {};
-const handlers = globalThis[globalKey];
+_global[globalKey] = _global[globalKey] || {};
+const handlers = _global[globalKey];
 function getSSRHandler(key2, fallback2) {
   return handlers[key2] || fallback2;
 }
@@ -72578,6 +72590,9 @@ class WalletLinkProvider extends safe_event_emitter_1.default {
   }
   async addEthereumChain(chainId, rpcUrls, blockExplorerUrls, chainName, iconUrls, nativeCurrency) {
     var _a2, _b2;
+    if ((0, util_1$4.ensureIntNumber)(chainId) === this.getChainId()) {
+      return false;
+    }
     const relay = await this.initializeRelay();
     const res = await relay.addEthereumChain(chainId.toString(), rpcUrls, iconUrls, blockExplorerUrls, chainName, nativeCurrency).promise;
     if (typeof res.result === "boolean") {
@@ -73621,10 +73636,7 @@ function q(n2) {
   }];
 }
 function x$1() {
-  var t2;
-  for (i$1.sort(function(n2, t3) {
-    return n2.__v.__b - t3.__v.__b;
-  }); t2 = i$1.pop(); )
+  for (var t2; t2 = i$1.shift(); )
     if (t2.__P)
       try {
         t2.__H.__h.forEach(g), t2.__H.__h.forEach(j), t2.__H.__h = [];
@@ -76179,7 +76191,7 @@ class WalletLinkRelayEventManager {
 }
 WalletLinkRelayEventManager$1.WalletLinkRelayEventManager = WalletLinkRelayEventManager;
 const name = "walletlink";
-const version$2 = "2.4.5";
+const version$2 = "2.4.6";
 const description = "WalletLink JavaScript SDK";
 const keywords = [
   "cipher",
@@ -76775,7 +76787,7 @@ var bech32 = {
   fromWordsUnsafe,
   fromWords
 };
-const version = "providers/5.5.2";
+const version = "providers/5.5.3";
 const logger$3 = new Logger(version);
 class Formatter {
   constructor() {
@@ -77332,7 +77344,14 @@ function _parseBytes(result) {
   return hexDataSlice(result, offset + 32, offset + 32 + length);
 }
 function getIpfsLink(link) {
-  return `https://gateway.ipfs.io/ipfs/${link.substring(7)}`;
+  if (link.match(/^ipfs:\/\/ipfs\//i)) {
+    link = link.substring(12);
+  } else if (link.match(/^ipfs:\/\//i)) {
+    link = link.substring(7);
+  } else {
+    logger$2.throwArgumentError("unsupported IPFS format", "link", link);
+  }
+  return `https://gateway.ipfs.io/ipfs/${link}`;
 }
 class Resolver {
   constructor(provider, address, name2, resolvedAddress) {
@@ -77504,11 +77523,15 @@ class Resolver {
               if (metadataUrl == null) {
                 return null;
               }
-              linkage.push({ type: "metadata-url", content: metadataUrl });
+              linkage.push({ type: "metadata-url-base", content: metadataUrl });
               if (scheme === "erc1155") {
                 metadataUrl = metadataUrl.replace("{id}", tokenId.substring(2));
                 linkage.push({ type: "metadata-url-expanded", content: metadataUrl });
               }
+              if (metadataUrl.match(/^ipfs:/i)) {
+                metadataUrl = getIpfsLink(metadataUrl);
+              }
+              linkage.push({ type: "metadata-url", content: metadataUrl });
               const metadata = yield fetchJson(metadataUrl);
               if (!metadata) {
                 return null;

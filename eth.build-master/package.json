@@ -100,7 +100,7 @@
     "winston": "^3.5.0"
   },
   "scripts": {
-    "mm": "react-scripts --max_old_space_size=8192 start",
+    "mm": "echo BUILD ETH.BUILD... %DATE% %TIME% && react-scripts --max_old_space_size=8192 start",
     "start": "react-scripts --max_old_space_size=8192 start",
     "build": "react-scripts --max-old-space-size=8192 build ",
     "test": "react-scripts test",
