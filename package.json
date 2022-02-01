@@ -20,7 +20,7 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^14.0.0",
     "@rollup/plugin-node-resolve": "^8.4.0",
-    "eslint": "^5.16.0",
+    "eslint": "7.11.0",
     "eslint-config-wordpress": "^2.0.0",
     "grunt": "^0.4.5",
     "grunt-cli": "^1.4.3",
@@ -32,8 +32,8 @@
     "grunt-wp-readme-to-markdown": "^1.0.0",
     "rollup": "^2.66.1",
     "rollup-plugin-terser": "^6.1.0",
-    "webpack": "^4.46.0",
-    "webpack-dev-server": "^3.11.3"
+    "webpack": "4.44.2",
+    "webpack-dev-server": "3.11.0"
   },
   "keywords": [
     "farming",
