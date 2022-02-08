@@ -9,7 +9,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 
-const INFURA_KEY = "32f4c2933abd4a74a383747ccf2d7003";
+// const INFURA_KEY = "32f4c2933abd4a74a383747ccf2d7003";
+const INFURA_KEY = "432d743bb1d944268c6e3725f243a7e0";
 
 const availableChains = [
   { label: "Main Ethereum Chain", value: `https://mainnet.infura.io/v3/${INFURA_KEY}` },
