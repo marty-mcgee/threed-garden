@@ -31,8 +31,8 @@ node_modules
 /packages/web_three_interface
 
 # local env files
-.env.local
-.env.*.local
+# .env.local
+# .env.*.local
 
 # Log files
 npm-debug.log*
@@ -42,7 +42,7 @@ pnpm-debug.log*
 
 # Editor directories and files
 .idea
-.vscode
+# .vscode
 *.suo
 *.ntvs*
 *.njsproj
