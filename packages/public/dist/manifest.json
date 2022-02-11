@@ -1,0 +1,94 @@
+{
+  "index.html": {
+    "file": "assets/index.js",
+    "src": "index.html",
+    "isEntry": true,
+    "imports": [
+      "_vendor.js"
+    ],
+    "dynamicImports": [
+      "src/pages/about.md",
+      "src/pages/other-page.vue",
+      "src/pages/participate.vue",
+      "src/pages/README.md",
+      "src/pages/[...all].vue",
+      "src/pages/hi/[name].vue",
+      "src/layouts/404.vue",
+      "src/layouts/home.vue"
+    ],
+    "assets": [
+      "assets/logo-threedgarden.png"
+    ]
+  },
+  "_vendor.js": {
+    "file": "assets/vendor.js"
+  },
+  "src/pages/about.md": {
+    "file": "assets/about.js",
+    "src": "src/pages/about.md",
+    "isDynamicEntry": true,
+    "imports": [
+      "index.html",
+      "_vendor.js"
+    ]
+  },
+  "src/pages/other-page.vue": {
+    "file": "assets/other-page.js",
+    "src": "src/pages/other-page.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor.js"
+    ]
+  },
+  "src/pages/participate.vue": {
+    "file": "assets/participate.js",
+    "src": "src/pages/participate.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor.js",
+      "index.html"
+    ]
+  },
+  "src/pages/README.md": {
+    "file": "assets/README.js",
+    "src": "src/pages/README.md",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor.js"
+    ]
+  },
+  "src/pages/[...all].vue": {
+    "file": "assets/_...all_.js",
+    "src": "src/pages/[...all].vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor.js"
+    ]
+  },
+  "src/pages/hi/[name].vue": {
+    "file": "assets/_name_.js",
+    "src": "src/pages/hi/[name].vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor.js",
+      "index.html"
+    ]
+  },
+  "src/layouts/404.vue": {
+    "file": "assets/404.js",
+    "src": "src/layouts/404.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor.js"
+    ]
+  },
+  "src/layouts/home.vue": {
+    "file": "assets/home.js",
+    "src": "src/layouts/home.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "index.html",
+      "_vendor.js"
+    ]
+  }
+}

@@ -20,7 +20,7 @@ node_modules
 # /packages/pet-shop
 # /packages/packages-*
 # /packages/sapling
-# /packages/scaffold-eth
+/packages/scaffold-eth
 /packages/smart_home_3d_webapp
 # /packages/threejs-ts-bp-anno
 # /packages/threejs-ts-bp-statsgui
