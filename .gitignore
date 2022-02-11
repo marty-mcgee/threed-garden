@@ -8,7 +8,26 @@ node_modules
 /assets/libraries
 
 # temp
-public-old
+/packages/dao.new
+/packages/dapparatus
+/packages/defi-app
+/packages/eth-vue
+# /packages/eth.build
+# /packages/ethpress
+# /packages/metacoin
+# /packages/my-eth-app
+# /packages/pet-shop
+# /packages/packages-*
+# /packages/sapling
+# /packages/scaffold-eth
+/packages/smart_home_3d_webapp
+# /packages/threejs-ts-bp-anno
+# /packages/threejs-ts-bp-statsgui
+# /packages/vitespa !! main
+/packages/vue-dapp
+/packages/vue-tailwind-ethereum-template
+/packages/vue3-dapp-starter
+/packages/web_three_interface
 
 # local env files
 .env.local
