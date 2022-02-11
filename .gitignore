@@ -8,7 +8,7 @@ node_modules
 # /public/dist
 /assets/libraries
 
-# temp
+# packages
 /packages/dao.new
 /packages/dapparatus
 /packages/defi-app
@@ -29,6 +29,9 @@ node_modules
 /packages/vue-tailwind-ethereum-template
 /packages/vue3-dapp-starter
 /packages/web_three_interface
+
+# temp
+# /public-old
 
 # local env files
 # .env.local
