@@ -1,0 +1,197 @@
+{
+  "contractName": "ScaffoldContract",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.11+commit.d7f03943\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/ScaffoldContract.sol\":\"ScaffoldContract\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/ScaffoldContract.sol\":{\"keccak256\":\"0x85e81aeff893d768653b7b8c10959d528ae20c5f0650d1703ac8ee163da44460\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://58183ab36b353d7d266dd596d03cf2356c2297d5c992f8ae1969741696cda5d6\",\"dweb:/ipfs/QmQ1xcxdLu7npnTkN8wPczyMRw9VBD87kUSgiNambjEHwM\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea26469706673582212209fe2fe9957bd8340bc6810f00861239b4963aeea96f691baf0d64f20ddf6386d64736f6c634300080b0033",
+  "deployedBytecode": "0x6080604052600080fdfea26469706673582212209fe2fe9957bd8340bc6810f00861239b4963aeea96f691baf0d64f20ddf6386d64736f6c634300080b0033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "66:101:9:-:0;;;134:30;;;;;;;;;;66:101;;;;;;",
+  "deployedSourceMap": "66:101:9:-:0;;;;;",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity >=0.4.22 <0.9.0;\n\ncontract ScaffoldContract {\n\n  // public (ignored, use abstract?)\n  constructor() {\n    // ???\n  }\n\n}\n",
+  "sourcePath": "C:\\Users\\mcgee\\Local Sites\\gardenuniversity\\app\\public\\wp-content\\plugins\\threed-garden\\defi-app\\contracts\\ScaffoldContract.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/ScaffoldContract.sol",
+    "exportedSymbols": {
+      "ScaffoldContract": [
+        1391
+      ]
+    },
+    "id": 1392,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1386,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".22",
+          "<",
+          "0.9",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:32:9"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "ScaffoldContract",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 1391,
+        "linearizedBaseContracts": [
+          1391
+        ],
+        "name": "ScaffoldContract",
+        "nameLocation": "75:16:9",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 1389,
+              "nodeType": "Block",
+              "src": "148:16:9",
+              "statements": []
+            },
+            "id": 1390,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1387,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "145:2:9"
+            },
+            "returnParameters": {
+              "id": 1388,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "148:0:9"
+            },
+            "scope": 1391,
+            "src": "134:30:9",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 1392,
+        "src": "66:101:9",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:136:9"
+  },
+  "legacyAST": {
+    "absolutePath": "project:/contracts/ScaffoldContract.sol",
+    "exportedSymbols": {
+      "ScaffoldContract": [
+        1391
+      ]
+    },
+    "id": 1392,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1386,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".22",
+          "<",
+          "0.9",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:32:9"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "ScaffoldContract",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 1391,
+        "linearizedBaseContracts": [
+          1391
+        ],
+        "name": "ScaffoldContract",
+        "nameLocation": "75:16:9",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 1389,
+              "nodeType": "Block",
+              "src": "148:16:9",
+              "statements": []
+            },
+            "id": 1390,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1387,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "145:2:9"
+            },
+            "returnParameters": {
+              "id": 1388,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "148:0:9"
+            },
+            "scope": 1391,
+            "src": "134:30:9",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 1392,
+        "src": "66:101:9",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:136:9"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.11+commit.d7f03943.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.4",
+  "updatedAt": "2022-02-10T22:17:49.430Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

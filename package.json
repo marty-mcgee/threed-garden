@@ -14,6 +14,7 @@
     "readme": "grunt readme"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^4.5.0",
     "web3-login": "git+https://gitlab.com/losnappas/web3-login.git",
     "yarn": "^1.22.17"
   },
