@@ -34,8 +34,9 @@ node_modules
 # /public-old
 
 # local env files
-# .env.local
-# .env.*.local
+.env
+.env.local
+.env.*.local
 
 # Log files
 npm-debug.log*
