@@ -17,7 +17,7 @@ const monitorWeb3 = function(state) {
     window.ethereum.enable();
   } else {
     console.log("monitorWeb3: No web3 in browser");
-    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8547"));
     isLocalWeb3 = true;
   }
 

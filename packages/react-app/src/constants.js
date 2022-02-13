@@ -13,7 +13,7 @@ export const NETWORKS = {
     color: "#666666",
     chainId: 31337,
     blockExplorer: "",
-    rpcUrl: "http://" + window.location.hostname + ":8545",
+    rpcUrl: "http://" + window.location.hostname + ":8547",
   },
   mainnet: {
     name: "mainnet",
@@ -125,7 +125,7 @@ export const NETWORKS = {
     color: "#f01a37",
     chainId: 420,
     blockExplorer: "",
-    rpcUrl: "http://" + window.location.hostname + ":8545",
+    rpcUrl: "http://" + window.location.hostname + ":8547",
     gasPrice: 0,
   },
   kovanOptimism: {

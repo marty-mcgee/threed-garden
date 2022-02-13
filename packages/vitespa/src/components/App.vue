@@ -84,7 +84,7 @@ const signer4ethers = provider4ethers.getSigner()
 
 // // ethers: Connecting to Ethereum: RPC
 // // If you don't specify a //url//, Ethers connects to the default 
-// // (i.e. ``http:/\/localhost:8545``)
+// // (i.e. ``http:/\/localhost:8547``)
 // const provider4ethers = new ethers.providers.JsonRpcProvider();
 
 // // The provider also allows signing transactions to
