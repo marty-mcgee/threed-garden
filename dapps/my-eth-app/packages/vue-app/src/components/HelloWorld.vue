@@ -59,7 +59,7 @@
 <script>
   import { Contract } from "@ethersproject/contracts";
   import { getDefaultProvider } from "@ethersproject/providers";
-  import { addresses, abis } from "@project/contracts";
+  import { addresses, abis } from "@scaffold-eth/contracts";
   import GET_TRANSFERS from "../graphql/subgraph";
 
   export default {

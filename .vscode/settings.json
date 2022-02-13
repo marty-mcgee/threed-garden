@@ -2,7 +2,7 @@
   "editor.tabSize": 2,
   "git.enableSmartCommit": true,
 
-  "solidity.packageDefaultDependenciesDirectory": "node_modules/@scaffold-eth/hardhat/node_modules/",
+  "solidity.packageDefaultDependenciesDirectory": "node_modules/@threed/hardhat/node_modules/",
   "solidity-va.test.defaultUnittestTemplate": "hardhat",
   
   "files.exclude": {

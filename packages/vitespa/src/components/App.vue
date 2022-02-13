@@ -2,7 +2,7 @@
 
 console.log('*** HEY HEY HEY -- App.vue 1 (typescript setup)')
 
-import LayoutHeader from './components/LayoutHeader.vue'
+import LayoutHeader from './LayoutHeader.vue'
 
 // VueUse --
 // https://github.com/vueuse/head
@@ -137,7 +137,7 @@ console.log('*** HEY HEY HEY -- App.vue (ethers)')
 
 </script>
 -->
-<script>
+<script lang="ts">
 import HelloWorld from "./HelloWorld.vue";
 
 export default {
