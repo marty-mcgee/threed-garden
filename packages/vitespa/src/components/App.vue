@@ -137,9 +137,20 @@ console.log('*** HEY HEY HEY -- App.vue (ethers)')
 
 </script>
 -->
+<script>
+import HelloWorld from "./components/HelloWorld.vue";
+
+export default {
+  name: "EthereumApp",
+  components: {
+    HelloWorld,
+  },
+};
+</script>
 
 <template>
 	<div id="APP">
+		<HelloWorld msg="Welcome to Your Ethereum App" />
 		<layout-header />
 		<router-view />
 		<vdapp-board />
