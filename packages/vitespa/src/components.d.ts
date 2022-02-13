@@ -4,6 +4,7 @@
 
 declare module 'vue' {
   export interface GlobalComponents {
+    App: typeof import('./components/App.vue')['default']
     CarbonDicomOverlay: typeof import('~icons/carbon/dicom-overlay')['default']
     CarbonLanguage: typeof import('~icons/carbon/language')['default']
     CarbonLogoGithub: typeof import('~icons/carbon/logo-github')['default']
@@ -15,6 +16,7 @@ declare module 'vue' {
     Documentation: typeof import('./components/Documentation.vue')['default']
     FarmBot: typeof import('./components/FarmBot.vue')['default']
     Footer: typeof import('./components/Footer.vue')['default']
+    HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     LayoutHeader: typeof import('./components/LayoutHeader.vue')['default']
     README: typeof import('./components/README.md')['default']
     ThreeDGarden: typeof import('./components/ThreeDGarden.vue')['default']

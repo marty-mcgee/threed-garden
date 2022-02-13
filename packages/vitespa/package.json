@@ -1,5 +1,5 @@
 {
-  "name": "@companyjuice/threedgarden/vitespa",
+  "name": "@threed/vue-app",
   "description": "ThreeD Garden WP Plugin on Vue 3, using Vite with WindiCSS, and Farmbot JS",
   "main": "src/main.ts",
   "repository": {

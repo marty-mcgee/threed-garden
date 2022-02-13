@@ -1,4 +1,4 @@
-# @project/vue-app
+# @scaffold-eth/vue-app
 
 This package is a fork of the default app built by the [Vue CLI](https://cli.vuejs.org/).
 

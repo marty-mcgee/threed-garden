@@ -1,5 +1,5 @@
 {
-  "name": "@project/vue-app",
+  "name": "@scaffold-eth/vue-app",
   "version": "1.0.0",
   "browserslist": [
     "> 1%",
@@ -7,7 +7,7 @@
     "not dead"
   ],
   "dependencies": {
-    "@project/contracts": "^1.0.0",
+    "@scaffold-eth/contracts": "^1.0.0",
     "@ethersproject/contracts": "^5.3.0",
     "@ethersproject/providers": "^5.3.1",
     "@vue/cli-plugin-babel": "~4.5.13",
