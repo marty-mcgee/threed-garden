@@ -13,18 +13,22 @@ desktop.ini
 # /public/dist
 /assets/libraries
 
-# packages
+# packages --
+# subgraph
 packages/subgraph/subgraph.yaml
 packages/subgraph/generated
 packages/subgraph/abis/*
 packages/subgraph/config/config.json
-
+# subgraph (my-eth-app)
+packages/subgraph/build/
+packages/subgraph/src/types/
+# hardhat
 packages/hardhat/artifacts*
 packages/hardhat/cache*
 packages/hardhat-ts/cache*
 packages/hardhat/deployments
 packages/hardhat/*.txt
-
+# react-app
 packages/react-app/src/contracts/*
 !packages/react-app/src/contracts/external_contracts.js
 !packages/react-app/src/contracts/contracts.js
