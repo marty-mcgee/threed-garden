@@ -1,3 +1,11 @@
+// from vue-dapp
+export * from './constants'
+export * from './composables'
+export * from './wallets'
+export * from './utils'
+export * from './plugin'
+
+// mm normal begin main
 import { createApp } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import generatedRoutes from 'virtual:generated-pages'
