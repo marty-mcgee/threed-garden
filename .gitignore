@@ -4,6 +4,7 @@ node_modules
 
 .DS_Store
 desktop.ini
+.env*
 
 # dist
 /admin/node_modules
