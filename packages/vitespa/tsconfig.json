@@ -18,6 +18,10 @@
       "vite/client",
       "vite-plugin-pages/client",
       "vite-plugin-vue-layouts/client"
+      // from "vue-tailwind-ethereum-template"
+      // "webpack-env", 
+      // "mocha", 
+      // "chai"
     ],
     "paths": {
       "~/*": ["src/*"]
