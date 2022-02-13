@@ -1,3 +1,7 @@
+/*📡
+  This is where you configure your deploy configuration for 🏗 scaffold-eth
+  From here look at deploy/00_deploy_your_contract.js
+*/
 require("dotenv").config();
 const { utils } = require("ethers");
 const fs = require("fs");
@@ -13,11 +17,6 @@ require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
 
 const { isAddress, getAddress, formatUnits, parseUnits } = utils;
-
-/*
-      📡 This is where you configure your deploy configuration for 🏗 scaffold-eth
-      From here look at deploy/00_deploy_your_contract.js
-*/
 
 // Select the network you want to deploy to here:
 const defaultNetwork = "localhost";
