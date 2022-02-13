@@ -54,6 +54,7 @@ function LoadDialog(props) {
   const web3Modal = useWeb3Modal();
 
   const connected = web3Modal.connected;
+  console.log("MM: web3modal LoadDialog", web3Modal)
 
   const [threeBoxStatus, setThreeBoxStatus] = React.useState(null);
   const [threeBoxConnectionStep, setThreeBoxConnectionStep] = React.useState(0);
@@ -73,7 +74,7 @@ function LoadDialog(props) {
     console.log({
       isLoggedIn: web3Modal.address
         ? Box.isLoggedIn(web3Modal.address)
-        : "n/a"
+        : "n/a (LoadDialog)"
     });
 
     let space = getSpace();
