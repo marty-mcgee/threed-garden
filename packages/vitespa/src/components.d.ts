@@ -5,6 +5,7 @@
 declare module 'vue' {
   export interface GlobalComponents {
     App: typeof import('./components/App.vue')['default']
+    Board: typeof import('./components/Board.vue')['default']
     CarbonDicomOverlay: typeof import('~icons/carbon/dicom-overlay')['default']
     CarbonLanguage: typeof import('~icons/carbon/language')['default']
     CarbonLogoGithub: typeof import('~icons/carbon/logo-github')['default']
@@ -18,8 +19,13 @@ declare module 'vue' {
     Footer: typeof import('./components/Footer.vue')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     LayoutHeader: typeof import('./components/LayoutHeader.vue')['default']
+    MetaMask: typeof import('./components/logos/MetaMask.vue')['default']
+    Modal: typeof import('./components/Modal.vue')['default']
     README: typeof import('./components/README.md')['default']
+    Source: typeof import('./components/logos/source.md')['default']
     ThreeDGarden: typeof import('./components/ThreeDGarden.vue')['default']
+    WalletConnect: typeof import('./components/logos/WalletConnect.vue')['default']
+    WalletLink: typeof import('./components/logos/WalletLink.vue')['default']
   }
 }
 
