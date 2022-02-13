@@ -88,6 +88,7 @@ function SaveDialog(props) {
   //   web3Modal.provider
   // );
   const connected = web3Modal.connected;
+  console.log("MM: web3modal SaveDialog", web3Modal)
 
   const [threeBoxStatus, setThreeBoxStatus] = React.useState(null);
   const [threeBoxConnectionStep, setThreeBoxConnectionStep] = React.useState(0);
@@ -110,11 +111,11 @@ function SaveDialog(props) {
       });
     }
 
-    // console.log({
-    //   isLoggedIn: web3Modal.address
-    //     ? Box.isLoggedIn(web3Modal.address)
-    //     : "n/a"
-    // });
+    console.log({
+      isLoggedIn: web3Modal.address
+        ? Box.isLoggedIn(web3Modal.address)
+        : "n/a (SaveDialog)"
+    });
 
     let space = getSpace();
     let box = getBox();
