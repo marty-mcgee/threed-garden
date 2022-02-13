@@ -2,7 +2,7 @@
 
 /* eslint-disable no-undef */
 const Setup = artifacts.require("./Setup.sol");
-const deployment = require("../migration-utilities/deployment");
+const deployment = require("../../migration-utilities/deployment");
 
 // Deploy eth-vue Smart Contract - Setup
 module.exports = async deployer => {

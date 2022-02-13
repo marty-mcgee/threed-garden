@@ -1,12 +1,37 @@
+# See https://help.github.com/articles/ignoring-files/
+**/node_modules
+node_modules
+
 .DS_Store
 desktop.ini
-node_modules
+
 # dist
 /admin/node_modules
 /public/node_modules
 # /admin/dist
 # /public/dist
 /assets/libraries
+
+# packages
+packages/subgraph/subgraph.yaml
+packages/subgraph/generated
+packages/subgraph/abis/*
+packages/subgraph/config/config.json
+
+packages/hardhat/artifacts*
+packages/hardhat/deployments
+packages/hardhat/*.txt
+packages/hardhat/cache*
+packages/hardhat-ts/cache
+
+packages/react-app/src/contracts/*
+!packages/react-app/src/contracts/external_contracts.js
+!packages/react-app/src/contracts/contracts.js
+
+packages/**/data
+
+tenderly.yaml
+**/aws.json
 
 # dapps
 /dapps/dao.new
