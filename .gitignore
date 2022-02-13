@@ -20,10 +20,10 @@ packages/subgraph/abis/*
 packages/subgraph/config/config.json
 
 packages/hardhat/artifacts*
+packages/hardhat/cache*
+packages/hardhat-ts/cache*
 packages/hardhat/deployments
 packages/hardhat/*.txt
-packages/hardhat/cache*
-packages/hardhat-ts/cache
 
 packages/react-app/src/contracts/*
 !packages/react-app/src/contracts/external_contracts.js
