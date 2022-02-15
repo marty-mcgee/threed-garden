@@ -23,5 +23,19 @@ export default {
   },
   isDAppReady: false,
   isValidUserBut: "0",
-  originalIsValidUserBut: "0"
+  originalIsValidUserBut: "0",
+  // vuesoft
+  hideConfigButton: false,
+  isPinned: true,
+  showConfig: false,
+  isTransparent: "",
+  isRTL: false,
+  mcolor: "",
+  isNavFixed: false,
+  isAbsolute: false,
+  showNavs: true,
+  showSidenav: true,
+  showNavbar: true,
+  showFooter: true,
+  showMain: true,
 };

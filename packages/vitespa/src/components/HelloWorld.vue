@@ -60,7 +60,7 @@
 <script>
   import { Contract } from "@ethersproject/contracts";
   import { getDefaultProvider } from "@ethersproject/providers";
-  import { addresses, abis } from "@threed/contracts";
+  import { addresses, abis } from "../../../threed/contracts"; // "@threed/contracts";
   import GET_TRANSFERS from "../graphql/subgraph";
 
   export default {

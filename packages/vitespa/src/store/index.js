@@ -10,7 +10,7 @@ import mutations from "./mutations";
 const vuexLocalStorage = new VuexPersist({
   key: "vuex",
   storage: window.localStorage,
-  reducer: state => ({ user: state.user })
+  reducer: (/** @type {{ user: any; }} */ state) => ({ user: state.user })
 });
 
 const store = createStore({

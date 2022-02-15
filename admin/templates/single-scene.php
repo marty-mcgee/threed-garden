@@ -7,10 +7,16 @@ Template Post Type: scene
 get_header();
 ?>
 
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+
+<!-- Font Awesome Icons -->
+<script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
 <main id="site-content" role="main">
 
-	<!-- scene title -->
-	<h1><a href="<?php get_permalink(); ?>">ThreeD Garden: Scene -- <?php the_title(); ?></a></h1>
+	<!-- scene title
+	<h1><a href="<?php get_permalink(); ?>">ThreeD Garden: Scene -- <?php the_title(); ?></a></h1> -->
 
 	<!-- vite -->
 	<script>
