@@ -240,5 +240,34 @@ export default {
   },
   [MUTATION_TYPES.CHANGE_CURRENT_ROUTE_TO](state, newRoute) {
     state.currentRoute = newRoute;
-  }
+  },
+
+  // vuesoft
+  toggleConfigurator(state) {
+    state.showConfig = !state.showConfig;
+  },
+  navbarMinimize(state) {
+    const sidenav_show = document.querySelector(".g-sidenav-show");
+
+    if (sidenav_show.classList.contains("g-sidenav-hidden")) {
+      sidenav_show.classList.remove("g-sidenav-hidden");
+      sidenav_show.classList.add("g-sidenav-pinned");
+      state.isPinned = true;
+    } else {
+      sidenav_show.classList.add("g-sidenav-hidden");
+      sidenav_show.classList.remove("g-sidenav-pinned");
+      state.isPinned = false;
+    }
+  },
+  sidebarType(state, payload) {
+    state.isTransparent = payload;
+  },
+  navbarFixed(state) {
+    if (state.isNavFixed === false) {
+      state.isNavFixed = true;
+    } else {
+      state.isNavFixed = false;
+    }
+  },
+  
 };

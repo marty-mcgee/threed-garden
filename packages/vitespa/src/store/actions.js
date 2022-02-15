@@ -93,5 +93,10 @@ export default {
   },
   [ACTION_TYPES.CHANGE_CURRENT_ROUTE_TO]({ commit }, newRoute) {
     commit(MUTATION_TYPES.CHANGE_CURRENT_ROUTE_TO, newRoute);
-  }
+  },
+  
+  // vuesoft
+  toggleSidebarColor({ commit }, payload) {
+    commit("sidebarType", payload);
+  },
 };
