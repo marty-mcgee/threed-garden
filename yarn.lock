@@ -2414,10 +2414,10 @@
     schema-utils "^2.6.5"
     source-map "^0.7.3"
 
-"@popperjs/core@2.10.2":
-  version "2.10.2"
-  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.10.2.tgz#0798c03351f0dea1a5a4cabddf26a55a7cbee590"
-  integrity sha512-IXf3XA7+XyN7CP9gGh/XB0UxVMlvARGEgGXLubFICsUMGz6Q+DU+i4gGlpOxTjKvXjkJDJC8YdqdKkDj9qZHEQ==
+"@popperjs/core@2.11.2":
+  version "2.11.2"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.2.tgz#830beaec4b4091a9e9398ac50f865ddea52186b9"
+  integrity sha512-92FRmppjjqz29VMJ2dn+xdyXZBrMlE42AV6Kq6BwjWV7CNUW1hs2FtxSNLQE+gJhaZ6AAmYuO9y8dshhcBl7vA==
 
 "@portis/web3@^4.0.5":
   version "4.0.7"

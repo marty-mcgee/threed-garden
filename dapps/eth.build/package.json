@@ -24,7 +24,7 @@
     "ace-builds": "^1.4.14",
     "autoprefixer": "^10.4.2",
     "axios": "^0.19.2",
-    "babel-loader": "^8.2.3",
+    "babel-loader": "^8.1.0",
     "base64url": "^3.0.1",
     "bignumber.js": "^9.0.2",
     "bip39": "^3.0.4",
