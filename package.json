@@ -1,6 +1,17 @@
 {
     "name": "@companyjuice/threed-garden",
-    "version": "1.22.15",
+    "version": "0.7.3",
+    "description": "ThreeD Garden WP Plugin on Vue 3, using Vite with WindiCSS, and Farmbot JS",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/companyjuice/threedgarden.git"
+    },
+    "author": "Marty McGee, Company Juice",
+    "license": "GPL-3.0",
+    "bugs": {
+      "url": "https://github.com/companyjuice/threedgarden/issues"
+    },
+    "homepage": "https://github.com/companyjuice/threedgarden#readme",
     "private": true,
     "scripts": {
         "react-app:build": "yarn workspace @threed/react-app build --max-old-space-size=12288",
