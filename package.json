@@ -1,6 +1,6 @@
 {
     "name": "@companyjuice/threed-garden",
-    "version": "0.7.3",
+    "version": "1.22.15",
     "private": true,
     "scripts": {
         "react-app:build": "yarn workspace @threed/react-app build --max-old-space-size=12288",
@@ -68,9 +68,7 @@
             "**/hardhat-ts/**"
         ]
     },
-    "dependencies": {
-        "pnpm": "^6.31.0"
-    },
+    "dependencies": {},
     "keywords": [
         "ethereum",
         "vue",
