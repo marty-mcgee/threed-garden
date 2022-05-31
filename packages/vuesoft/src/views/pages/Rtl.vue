@@ -2,90 +2,195 @@
   <div class="py-4 container-fluid">
     <div class="row">
       <div class="col-lg-3 col-md-6">
-        <card
-          class="p-0 bg-gradient-success"
-          title="صحة البطارية"
-          value="99 %"
-          iconClass="text-dark ni ni-controller"
-          titleColor="opacity-7 text-white"
-          valueColor="text-white"
-          directionReverse
+        <mini-statistics-card
+          class="bg-gradient-success p-0"
+          :title="{
+            text: 'صحة البطارية',
+            color: 'opacity-7 text-white',
+          }"
+          :value="{
+            text: '99 %',
+            color: 'text-white',
+          }"
+          :icon="{
+            component: 'text-dark ni ni-controller',
+            background: 'bg-white',
+          }"
+          direction-reverse
         />
-        <card
-          class="p-0 bg-gradient-success"
-          title="طبقة صوت الموسيقا"
-          value="15/100"
-          iconClass="text-dark ni ni-note-03"
-          titleColor="opacity-7 text-white"
-          valueColor="text-white"
-          directionReverse
+        <mini-statistics-card
+          class="bg-gradient-success p-0"
+          :title="{
+            text: 'طبقة صوت الموسيقا',
+            color: 'opacity-7 text-white',
+          }"
+          :value="{
+            text: '15/100',
+            color: 'text-white',
+          }"
+          :icon="{
+            component: 'text-dark ni ni-note-03',
+            background: 'bg-white',
+          }"
+          direction-reverse
         />
       </div>
       <div class="col-lg-3 col-md-6">
-        <income-chart title="دخل" />
+        <line-chart
+          id="chart-widgets"
+          title="دخل"
+          :value="{
+            amount: '$130,832',
+            percentage: { value: '+90%', color: 'success' },
+          }"
+          :chart="{
+            labels: [
+              'Apr',
+              'May',
+              'Jun',
+              'Jul',
+              'Aug',
+              'Sep',
+              'Oct',
+              'Nov',
+              'Dec',
+            ],
+            datasets: {
+              label: 'Income',
+              data: [50, 45, 60, 60, 80, 65, 90, 80, 100],
+            },
+          }"
+        />
       </div>
       <div class="col-lg-6">
-        <tasks-card title="مهام" />
+        <progress-line-chart
+          title="مهام"
+          :count="480"
+          :progress="60"
+          :chart="{
+            labels: [
+              'Apr',
+              'May',
+              'Jun',
+              'Jul',
+              'Aug',
+              'Sep',
+              'Oct',
+              'Nov',
+              'Dec',
+            ],
+            data: [40, 45, 42, 41, 40, 43, 40, 42, 39],
+          }"
+        />
       </div>
     </div>
     <div class="row">
       <div class="col-lg-4 col-sm-6">
-        <events-card
-          title="الأحداث القادمة"
-          subTitle="انضم"
-          eventTitle="أسبوع الإنترنت"
-          eventDate="01 يونيو 2021, ي 12:30 PM"
-          eventTitle2="لقاء مع ماري"
-          eventDate2="24 مايو 2021, ي 10:00 PM"
-        />
+        <div class="card">
+          <div class="card-header p-3 pb-0">
+            <h6 class="mb-0">الأحداث القادمة</h6>
+            <p class="text-sm mb-0 text-capitalize font-weight-bold">انضم</p>
+          </div>
+          <div class="card-body border-radius-lg p-3">
+            <default-item
+              :icon="{ component: 'money-coins', color: 'info' }"
+              title="أسبوع الإنترنت"
+              description="01 يونيو 2021, ي 12:30 PM"
+            />
+            <default-item
+              :icon="{ component: 'bell-55', color: 'success' }"
+              title="لقاء مع ماري"
+              description="24 مايو 2021, ي 10:00 PM"
+            />
+          </div>
+        </div>
       </div>
       <div class="col-lg-4 col-sm-6">
         <div class="row">
           <div class="col-md-6">
             <default-info-card
-              classIcon="text-white fas fa-landmark"
+              icon="text-white fas fa-landmark"
               title="مرتب"
-              desc="تنتمي التفاعلية"
-              price="+$2000"
+              description="تنتمي التفاعلية"
+              value="+$2000"
             />
           </div>
           <div class="col-md-6">
             <default-info-card
-              classIcon="text-white fab fa-paypal"
+              icon="text-white fab fa-paypal"
               title="باي بال"
-              desc="دفع لحسابهم الخاص"
-              price="$455.00"
+              description="دفع لحسابهم الخاص"
+              value="$455.00"
             />
           </div>
         </div>
       </div>
       <div class="col-lg-4">
         <master-card
-          cardHolderText="حامل البطاقة"
-          name="جاك بيترسون"
-          cardExpirationText="نتهي"
+          :card="{
+            number: '7852 4594 1122 4562',
+            holderName: 'جاك بيترسون',
+            expiryDate: '11/22',
+            holderText: 'حامل البطاقة',
+            expiryText: 'نتهي',
+            background: 'dark',
+          }"
         />
       </div>
     </div>
     <div class="mt-4 row">
       <div class="col-lg-3 col-md-6">
-        <full-body-card
+        <info-card
           title="جسم كامل"
-          badgeText="معتدل"
           description="ما يهم هو الأشخاص الذين أوقدوه. والناس الذين يشبهونهم مستاءون منه."
+          :badge="{ text: 'معتدل', color: 'success' }"
         />
       </div>
       <div class="col-lg-2 col-md-6">
-        <controller-card controllerIs="على" text="درجة حرارة" />
+        <controller-card id="lights" controller-is="على" text="درجة حرارة" />
       </div>
       <div class="col-lg-3">
-        <calories-chart title="سعرات حراريه" />
+        <line-chart
+          id="line-chart"
+          title="سعرات حراريه"
+          :value="{
+            amount: '97',
+            percentage: { value: '+5%', color: 'success' },
+          }"
+          :chart="{
+            labels: [
+              'Apr',
+              'May',
+              'Jun',
+              'Jul',
+              'Aug',
+              'Sep',
+              'Oct',
+              'Nov',
+              'Dec',
+            ],
+            datasets: {
+              label: 'Income',
+              data: [50, 45, 60, 60, 80, 65, 90, 80, 100],
+            },
+          }"
+        />
       </div>
       <div class="col-lg-2 col-md-6">
-        <mini-info-card unit="م" location="مدينة نيويورك" />
+        <mini-info-card
+          icon="curved-next"
+          color="success"
+          title="754
+        <span class='text-sm text-secondary'>م</span>"
+          description="مدينة نيويورك"
+        />
       </div>
       <div class="col-lg-2 col-md-6">
-        <steps-card title="خطوات" steps="11.4ک" />
+        <steps-card
+          title="خطوات"
+          count="۱۱.۴ک"
+          :badge="{ label: '+4.3%', color: 'success' }"
+        />
       </div>
     </div>
     <div class="mt-4 row">
@@ -93,77 +198,125 @@
         <calendar title="تقویم" />
       </div>
       <div class="mt-0 col-lg-3">
-        <categories-card
-          cardTitle="فئات"
-          title="الأجهزة"
-          titleDesc="250 في المخزن"
-          titleDesc2="346+ تم البيع"
-          title2="تذاكر"
-          title2Desc="123 مغلق"
-          title2Desc2="15 افتح"
-          title3="سجلات الخطأ"
-          title3Desc="1 is نشيط"
-          title3Desc2="40 مغلق"
+        <categories-list
+          title="فئات"
+          :items="[
+            {
+              icon: { component: faRocket, background: 'dark' },
+              title: 'الأجهزة',
+              description: '250 في المخزن, <strong>346+ تم البيع</strong>',
+            },
+
+            {
+              icon: {
+                component: faScrewdriverWrench,
+                background: 'dark',
+              },
+              title: 'تذاكر',
+              description: '123 مغلق, <strong>15 افتح</strong>',
+            },
+            {
+              icon: { component: faCube, background: 'dark' },
+              title: 'سجلات الخطأ',
+              description: '1 is نشيط, <strong>40 مغلق</strong>',
+            },
+          ]"
         />
-        <music-player title="نوع من البلوز" desc="ديفتونز" />
+        <mini-player-card
+          class="mt-4"
+          color="dark"
+          :song="{ title: 'نوع من البلوز', singer: 'ديفتونز' }"
+        />
       </div>
       <div class="col-lg-4">
-        <Orders-card
+        <timeline-list
           title="نظرة عامة على الطلبات"
-          text="هذا الشهر"
-          order="$2400, تغييرات في التصميم"
-          date="22 ديسمبر 7:20 مساءً"
-          newOrder="طلب جديد # 1832412"
-          orderDate="21 ديسمبر 11 م"
-          payment="مدفوعات الخادم لشهر أبريل"
-          paymentDate="21 ديسمبر 9:34 مساءً"
-          newCard="تمت إضافة بطاقة جديدة للأمر رقم 4395133"
-          newCardDate="20 ديسمبر 2:20 صباحًا"
-          unlockPackages="فتح الحزم من أجل التطوير"
-          unlockPackagesDate="18 ديسمبر ، 4:54 صباحًا"
-          newOrder2="طلب جديد # 9583120"
-          newOrder2Date="17 ديسمبر"
-        />
+          description="<i class='fa fa-arrow-up text-success' aria-hidden='true'></i>
+        <span class='font-weight-bold'>24%</span>هذا الشهر"
+        >
+          <timeline-item
+            color="success"
+            icon="bell-55"
+            title="$2400, تغييرات في التصميم"
+            date-time="22 ديسمبر 7:20 مساءً"
+          />
+          <TimelineItem
+            color="danger"
+            icon="html5"
+            title="طلب جديد # 1832412"
+            date-time="21 ديسمبر 11 م"
+          />
+          <TimelineItem
+            color="info"
+            icon="cart"
+            title="مدفوعات الخادم لشهر أبريل"
+            date-time="21 ديسمبر 9:34 مساءً"
+          />
+          <TimelineItem
+            color="warning"
+            icon="credit-card"
+            title="تمت إضافة بطاقة جديدة للأمر رقم 4395133"
+            date-time="20 ديسمبر 2:20 صباحًا"
+          />
+          <TimelineItem
+            color="primary"
+            icon="key-25"
+            title="فتح الحزم من أجل التطوير"
+            date-time="18 ديسمبر ، 4:54 صباحًا"
+          />
+        </timeline-list>
       </div>
     </div>
   </div>
 </template>
-
 <script>
-import Card from "@/examples/Cards/Card.vue";
-import TasksCard from "./projects/components/TasksCard.vue";
+import MiniStatisticsCard from "@/examples/Cards/MiniStatisticsCard.vue";
+import ProgressLineChart from "./projects/components/ProgressLineChart.vue";
 import DefaultInfoCard from "@/examples/Cards/DefaultInfoCard.vue";
 import MasterCard from "@/examples/Cards/MasterCard.vue";
-import IncomeChart from "./components/IncomeChart.vue";
-import CaloriesChart from "./components/CaloriesChart.vue";
-import EventsCard from "./components/EventsCard.vue";
-import FullBodyCard from "./components/FullBodyCard.vue";
+import LineChart from "./components/LineChart.vue";
+import DefaultItem from "./components/DefaultItem.vue";
+import InfoCard from "./components/InfoCard.vue";
 import ControllerCard from "./components/ControllerCard.vue";
 import MiniInfoCard from "./components/MiniInfoCard.vue";
 import StepsCard from "./components/StepsCard.vue";
 import Calendar from "@/examples/Calendar.vue";
-import CategoriesCard from "@/views/dashboards/components/CategoriesCard.vue";
-import MusicPlayer from "./components/MusicPlayer.vue";
-import OrdersCard from "./components/OrdersCard.vue";
+import CategoriesList from "../dashboards/components/CategoriesList.vue";
+import MiniPlayerCard from "@/examples/Cards/MiniPlayerCard.vue";
+import TimelineList from "./projects/components/TimelineList.vue";
+import TimelineItem from "./projects/components/TimelineItem.vue";
+
+import {
+  faRocket,
+  faScrewdriverWrench,
+  faCube,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default {
-  name: "rtl-page",
+  name: "RtlPage",
   components: {
-    Card,
-    TasksCard,
+    MiniStatisticsCard,
+    ProgressLineChart,
     DefaultInfoCard,
     MasterCard,
-    IncomeChart,
-    CaloriesChart,
-    EventsCard,
-    FullBodyCard,
+    LineChart,
+    DefaultItem,
+    InfoCard,
     ControllerCard,
     MiniInfoCard,
     StepsCard,
     Calendar,
-    CategoriesCard,
-    OrdersCard,
-    MusicPlayer,
+    CategoriesList,
+    MiniPlayerCard,
+    TimelineItem,
+    TimelineList,
+  },
+  data() {
+    return {
+      faRocket,
+      faScrewdriverWrench,
+      faCube,
+    };
   },
   beforeMount() {
     this.$store.state.isRTL = true;

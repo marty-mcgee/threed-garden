@@ -27,16 +27,16 @@
         </span>
       </button>
       <div
-        class="pt-3 pb-2 collapse navbar-collapse w-100 py-lg-0"
         id="navigation"
+        class="pt-3 pb-2 collapse navbar-collapse w-100 py-lg-0"
       >
         <ul class="mx-auto navbar-nav navbar-nav-hover">
           <li class="mx-2 nav-item dropdown dropdown-hover">
             <a
+              id="dropdownMenuPages"
               role="button"
               class="cursor-pointer nav-link ps-2 d-flex justify-content-between align-items-center"
               :class="[darkModes]"
-              id="dropdownMenuPages"
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
@@ -69,7 +69,7 @@
                           <div
                             class="text-center icon icon-shape icon-xs border-radius-md bg-gradient-success me-2 d-flex align-items-center justify-content-center"
                           >
-                            <icon name="spaceship" />
+                            <spaceship />
                           </div>
                         </div>
                         Dashboards
@@ -111,7 +111,7 @@
                           <div
                             class="text-center icon icon-shape icon-xs border-radius-md bg-gradient-success me-2 d-flex align-items-center justify-content-center ps-0"
                           >
-                            <icon name="office" />
+                            <office />
                           </div>
                         </div>
                         Users
@@ -138,7 +138,7 @@
                           <div
                             class="text-center icon icon-shape icon-xs border-radius-md bg-gradient-success me-2 d-flex align-items-center justify-content-center"
                           >
-                            <icon name="dashboard" />
+                            <shop />
                           </div>
                         </div>
                         Profile
@@ -168,7 +168,7 @@
                           <div
                             class="text-center icon icon-shape icon-xs border-radius-md bg-gradient-success me-2 d-flex align-items-center justify-content-center ps-0"
                           >
-                            <icon name="box3d" />
+                            <box3d />
                           </div>
                         </div>
                         Projects
@@ -201,7 +201,7 @@
                           <div
                             class="text-center icon icon-shape icon-xs border-radius-md bg-gradient-success me-2 d-flex align-items-center justify-content-center ps-0"
                           >
-                            <icon name="customer-support" />
+                            <customer-support />
                           </div>
                         </div>
                         Account
@@ -237,7 +237,7 @@
                           <div
                             class="text-center icon icon-shape icon-xs border-radius-md bg-gradient-success me-2 d-flex align-items-center justify-content-center ps-0"
                           >
-                            <icon name="document" />
+                            <document />
                           </div>
                         </div>
                         Extra
@@ -273,7 +273,7 @@
                     <div
                       class="text-center icon icon-shape icon-xs border-radius-md bg-gradient-success me-2 d-flex align-items-center justify-content-center"
                     >
-                      <icon name="document" />
+                      <document />
                     </div>
                   </div>
                   Dashboards
@@ -310,7 +310,7 @@
                     <div
                       class="text-center icon icon-shape icon-xs border-radius-md bg-gradient-success me-2 d-flex align-items-center justify-content-center ps-0"
                     >
-                      <icon name="office" />
+                      <office />
                     </div>
                   </div>
                   Users
@@ -330,7 +330,7 @@
                     <div
                       class="text-center icon icon-shape icon-xs border-radius-md bg-gradient-success me-2 d-flex align-items-center justify-content-center ps-0"
                     >
-                      <icon name="customer-support" />
+                      <shop />
                     </div>
                   </div>
                   Profile
@@ -355,7 +355,7 @@
                     <div
                       class="text-center icon icon-shape icon-xs border-radius-md bg-gradient-success me-2 d-flex align-items-center justify-content-center ps-0"
                     >
-                      <icon name="box3d" />
+                      <box3d />
                     </div>
                   </div>
                   Projects
@@ -382,7 +382,7 @@
                     <div
                       class="text-center icon icon-shape icon-xs border-radius-md bg-gradient-success me-2 d-flex align-items-center justify-content-center ps-0"
                     >
-                      <icon name="document" />
+                      <document />
                     </div>
                   </div>
                   Account
@@ -414,7 +414,7 @@
                     <div
                       class="text-center icon icon-shape icon-xs border-radius-md bg-gradient-success me-2 d-flex align-items-center justify-content-center ps-0"
                     >
-                      <icon name="spaceship" />
+                      <spaceship />
                     </div>
                   </div>
                   Extra
@@ -439,10 +439,10 @@
           </li>
           <li class="mx-2 nav-item dropdown dropdown-hover">
             <a
+              id="dropdownMenuAccount"
               role="button"
               class="cursor-pointer nav-link ps-2 d-flex justify-content-between align-items-center"
               :class="[darkModes]"
-              id="dropdownMenuAccount"
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
@@ -500,8 +500,8 @@
                       class="p-0 border-0 nav-item dropdown dropdown-hover dropdown-subitem list-group-item"
                     >
                       <a
-                        class="mb-1 dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between"
                         id="dropdownSignIn"
+                        class="mb-1 dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between"
                       >
                         <span>Sign In</span>
                         <img
@@ -538,8 +538,8 @@
                       class="p-0 border-0 nav-item dropdown dropdown-hover dropdown-subitem list-group-item"
                     >
                       <a
-                        class="mb-1 dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between"
                         id="dropdownSignUp"
+                        class="mb-1 dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between"
                       >
                         <span>Sign Up</span>
                         <img
@@ -576,8 +576,8 @@
                       class="p-0 border-0 nav-item dropdown dropdown-hover dropdown-subitem list-group-item"
                     >
                       <a
-                        class="mb-1 dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between"
                         id="dropdownPasswordReset"
+                        class="mb-1 dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between"
                       >
                         <span>Reset Password</span>
                         <img
@@ -614,8 +614,8 @@
                       class="p-0 border-0 nav-item dropdown dropdown-hover dropdown-subitem list-group-item"
                     >
                       <a
-                        class="mb-1 dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between"
                         id="dropdownLock"
+                        class="mb-1 dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between"
                       >
                         <span>Lock</span>
                         <img
@@ -652,8 +652,8 @@
                       class="p-0 border-0 nav-item dropdown dropdown-hover dropdown-subitem list-group-item"
                     >
                       <a
-                        class="mb-1 dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between"
                         id="dropdown2fa"
+                        class="mb-1 dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between"
                       >
                         <span>2-Step Verification</span>
                         <img
@@ -690,8 +690,8 @@
                       class="p-0 border-0 nav-item dropdown dropdown-hover dropdown-subitem list-group-item"
                     >
                       <a
-                        class="mb-1 dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between"
                         id="dropdownError"
+                        class="mb-1 dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between"
                       >
                         <span>Error</span>
                         <img
@@ -845,10 +845,10 @@
           </li>
           <li class="mx-2 nav-item dropdown dropdown-hover">
             <a
+              id="dropdownMenuBlocks"
               role="button"
               class="cursor-pointer nav-link ps-2 d-flex justify-content-between align-items-center"
               :class="[darkModes]"
-              id="dropdownMenuBlocks"
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
@@ -1051,10 +1051,10 @@
           </li>
           <li class="mx-2 nav-item dropdown dropdown-hover">
             <a
+              id="dropdownMenuEcommerce"
               role="button"
               class="cursor-pointer nav-link ps-2 d-flex justify-content-between align-items-center"
               :class="[darkModes]"
-              id="dropdownMenuEcommerce"
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
@@ -1148,7 +1148,7 @@
                           <div
                             class="text-center icon icon-shape icon-xs border-radius-md bg-gradient-success me-2 d-flex align-items-center justify-content-center ps-0"
                           >
-                            <icon name="box3d" />
+                            <box3d />
                           </div>
                         </div>
                         General
@@ -1175,7 +1175,7 @@
                           <div
                             class="text-center icon icon-shape icon-xs border-radius-md bg-gradient-success me-2 d-flex align-items-center justify-content-center"
                           >
-                            <icon name="dashboard" />
+                            <shop />
                           </div>
                         </div>
                         Products
@@ -1217,7 +1217,7 @@
                     <div
                       class="text-center icon icon-shape icon-xs border-radius-md bg-gradient-success me-2 d-flex align-items-center justify-content-center"
                     >
-                      <icon name="shop" />
+                      <shop />
                     </div>
                   </div>
                   Orders
@@ -1239,7 +1239,7 @@
                     <div
                       class="text-center icon icon-shape icon-xs border-radius-md bg-gradient-success me-2 d-flex align-items-center justify-content-center ps-0"
                     >
-                      <icon name="box3d" />
+                      <box3d />
                     </div>
                   </div>
                   General
@@ -1261,7 +1261,7 @@
                     <div
                       class="text-center icon icon-shape icon-xs border-radius-md bg-gradient-success me-2 d-flex align-items-center justify-content-center ps-0"
                     >
-                      <icon name="shop" />
+                      <shop />
                     </div>
                   </div>
                   Products
@@ -1291,10 +1291,10 @@
           </li>
           <li class="mx-2 nav-item dropdown dropdown-hover">
             <a
+              id="dropdownMenuDocs"
               role="button"
               class="cursor-pointer nav-link ps-2 d-flex justify-content-between align-items-center"
               :class="[darkModes]"
-              id="dropdownMenuDocs"
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
@@ -1321,11 +1321,11 @@
                   <li class="p-0 border-0 nav-item list-group-item">
                     <a
                       class="py-2 dropdown-item ps-3 border-radius-md"
-                      href="https://www.creative-tim.com/learning-lab/bootstrap/overview/soft-ui-dashboard"
+                      href="https://www.creative-tim.com/learning-lab/vue/overview/soft-ui-dashboard/"
                     >
                       <div class="d-flex">
                         <div class="h-10 mt-1 icon me-3 d-flex">
-                          <icon name="getting-started" />
+                          <getting-started />
                         </div>
                         <div>
                           <h6
@@ -1344,11 +1344,15 @@
                   <li class="p-0 border-0 nav-item list-group-item">
                     <a
                       class="py-2 dropdown-item ps-3 border-radius-md"
-                      href="https://www.creative-tim.com/learning-lab/bootstrap/colors/soft-ui-dashboard"
+                      href="https://www.creative-tim.com/learning-lab/vue/colors/soft-ui-dashboard/"
                     >
                       <div class="d-flex">
                         <div class="h-10 mt-1 icon me-3 d-flex">
-                          <icon name="foundation" />
+                          <Document
+                            height="16px"
+                            width="16px"
+                            class="text-secondary"
+                          />
                         </div>
                         <div>
                           <h6
@@ -1366,11 +1370,15 @@
                   <li class="p-0 border-0 nav-item list-group-item">
                     <a
                       class="py-2 dropdown-item ps-3 border-radius-md"
-                      href="https://www.creative-tim.com/learning-lab/bootstrap/alerts/soft-ui-dashboard"
+                      href="https://www.creative-tim.com/learning-lab/vue/alerts/soft-ui-dashboard/"
                     >
                       <div class="d-flex">
                         <div class="h-10 mt-1 icon me-3 d-flex">
-                          <icon name="components" />
+                          <box3d
+                            height="16px"
+                            width="16px"
+                            class="text-secondary"
+                          />
                         </div>
                         <div>
                           <h6
@@ -1388,11 +1396,11 @@
                   <li class="p-0 border-0 nav-item list-group-item">
                     <a
                       class="py-2 dropdown-item ps-3 border-radius-md"
-                      href="https://www.creative-tim.com/learning-lab/bootstrap/datepicker/soft-ui-dashboard"
+                      href="https://www.creative-tim.com/learning-lab/vue/datepicker/soft-ui-dashboard/"
                     >
                       <div class="d-flex">
                         <div class="h-10 mt-1 icon me-3 d-flex">
-                          <icon name="switches" />
+                          <switches />
                         </div>
                         <div>
                           <h6
@@ -1410,11 +1418,15 @@
                   <li class="p-0 border-0 nav-item list-group-item">
                     <a
                       class="py-2 dropdown-item ps-3 border-radius-md"
-                      href="https://www.creative-tim.com/learning-lab/bootstrap/utilities/soft-ui-dashboard"
+                      href="https://www.creative-tim.com/learning-lab/vue/utilities/soft-ui-dashboard/"
                     >
                       <div class="d-flex">
                         <div class="h-10 mt-1 icon me-3 d-flex">
-                          <icon name="settings" />
+                          <settings
+                            height="16px"
+                            width="16px"
+                            class="text-secondary"
+                          />
                         </div>
                         <div>
                           <h6
@@ -1440,7 +1452,11 @@
                   >
                     <div class="d-flex">
                       <div class="h-10 mt-1 icon me-3 d-flex">
-                        <icon name="spaceship" />
+                        <spaceship
+                          height="16px"
+                          width="16px"
+                          class="text-secondary"
+                        />
                       </div>
                       <div>
                         <h6
@@ -1460,7 +1476,11 @@
                   >
                     <div class="d-flex">
                       <div class="h-10 mt-1 icon me-3 d-flex">
-                        <icon name="document" />
+                        <Document
+                          height="16px"
+                          width="16px"
+                          class="text-secondary"
+                        />
                       </div>
                       <div>
                         <h6
@@ -1480,7 +1500,11 @@
                   >
                     <div class="d-flex">
                       <div class="h-10 mt-1 icon me-3 d-flex">
-                        <icon name="components" />
+                        <box3d
+                          height="16px"
+                          width="16px"
+                          class="text-secondary"
+                        />
                       </div>
                       <div>
                         <h6
@@ -1500,7 +1524,7 @@
                   >
                     <div class="d-flex">
                       <div class="h-10 mt-1 icon me-3 d-flex">
-                        <icon name="switches" />
+                        <switches />
                       </div>
                       <div>
                         <h6
@@ -1520,7 +1544,11 @@
                   >
                     <div class="d-flex">
                       <div class="h-10 mt-1 icon me-3 d-flex">
-                        <icon name="settings" />
+                        <settings
+                          height="16px"
+                          width="16px"
+                          class="text-secondary"
+                        />
                       </div>
                       <div>
                         <h6
@@ -1557,33 +1585,52 @@
 </template>
 
 <script>
+/*eslint-disable*/
 import downArrWhite from "@/assets/img/down-arrow-white.svg";
 import downArrBlack from "@/assets/img/down-arrow-dark.svg";
-import Icon from "@/components/Icon.vue";
+import Office from "../../components/Icon/Office.vue";
+import Shop from "../../components/Icon/Shop.vue";
+import CustomerSupport from "../../components/Icon/CustomerSupport.vue";
+import Document from "../../components/Icon/Document.vue";
+import Spaceship from "../../components/Icon/Spaceship.vue";
+import GettingStarted from "../../components/Icon/GettingStarted.vue";
+import Switches from "../../components/Icon/Switches.vue";
+import Box3d from "../../components/Icon/Box3d.vue";
+import Settings from "../../components/Icon/Settings.vue";
 
 export default {
-  name: "navbar",
-  data() {
-    return {
-      downArrWhite,
-      downArrBlack,
-    };
+  name: "Navbar",
+  components: {
+    Office,
+    Shop,
+    CustomerSupport,
+    Document,
+    Spaceship,
+    GettingStarted,
+    Switches,
+    Box3d,
+    Settings
   },
   props: {
     btnBackground: String,
     isBlur: String,
     darkMode: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
-  components: { Icon },
+  data() {
+    return {
+      downArrWhite,
+      downArrBlack
+    };
+  },
   computed: {
     darkModes() {
       return {
-        "text-dark": this.darkMode,
+        "text-dark": this.darkMode
       };
-    },
-  },
+    }
+  }
 };
 </script>

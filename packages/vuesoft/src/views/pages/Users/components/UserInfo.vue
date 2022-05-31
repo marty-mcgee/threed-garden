@@ -10,6 +10,7 @@
         <div class="col-12 col-sm-6">
           <label>First Name</label>
           <vsud-input
+            id="firstName"
             class="multisteps-form__input"
             type="text"
             placeholder="eg. Michael"
@@ -18,6 +19,7 @@
         <div class="col-12 col-sm-6 mt-3 mt-sm-0">
           <label>Last Name</label>
           <vsud-input
+            id="lastName"
             class="multisteps-form__input"
             type="text"
             placeholder="eg. Prior"
@@ -28,6 +30,7 @@
         <div class="col-12 col-sm-6">
           <label>Company</label>
           <vsud-input
+            id="company"
             class="multisteps-form__input"
             type="text"
             placeholder="eg. Creative Tim"
@@ -36,6 +39,7 @@
         <div class="col-12 col-sm-6 mt-3 mt-sm-0">
           <label>Email Address</label>
           <vsud-input
+            id="companyEmail"
             class="multisteps-form__input"
             type="email"
             placeholder="eg. soft@dashboard.com"
@@ -46,6 +50,7 @@
         <div class="col-12 col-sm-6">
           <label>Password</label>
           <vsud-input
+            id="password"
             class="multisteps-form__input"
             type="password"
             placeholder="******"
@@ -54,6 +59,7 @@
         <div class="col-12 col-sm-6 mt-3 mt-sm-0">
           <label>Repeat Password</label>
           <vsud-input
+            id="confirmPassword"
             class="multisteps-form__input"
             type="password"
             placeholder="******"
@@ -79,7 +85,7 @@ import VsudInput from "@/components/VsudInput.vue";
 import VsudButton from "@/components/VsudButton.vue";
 
 export default {
-  name: "user-info",
+  name: "UserInfo",
   components: {
     VsudInput,
     VsudButton,

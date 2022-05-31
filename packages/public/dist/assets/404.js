@@ -6,24 +6,19 @@ const _hoisted_1$1 = {
   viewBox: "0 0 32 32"
 };
 const _hoisted_2$1 = /* @__PURE__ */ createBaseVNode("path", {
-  d: "M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2zm0 26a12 12 0 1 1 12-12a12 12 0 0 1-12 12z",
-  fill: "currentColor"
+  fill: "currentColor",
+  d: "M16 2a14 14 0 1 0 14 14A14 14 0 0 0 16 2Zm0 26a12 12 0 1 1 12-12a12 12 0 0 1-12 12Z"
 }, null, -1);
 const _hoisted_3 = /* @__PURE__ */ createBaseVNode("path", {
-  d: "M15 8h2v11h-2z",
-  fill: "currentColor"
+  fill: "currentColor",
+  d: "M15 8h2v11h-2zm1 14a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 16 22z"
 }, null, -1);
-const _hoisted_4 = /* @__PURE__ */ createBaseVNode("path", {
-  d: "M16 22a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 16 22z",
-  fill: "currentColor"
-}, null, -1);
-const _hoisted_5 = [
+const _hoisted_4 = [
   _hoisted_2$1,
-  _hoisted_3,
-  _hoisted_4
+  _hoisted_3
 ];
 function render(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$1, _hoisted_5);
+  return openBlock(), createElementBlock("svg", _hoisted_1$1, _hoisted_4);
 }
 var __unplugin_components_0 = { name: "carbon-warning", render };
 const _hoisted_1 = { class: "text-center text-teal-700 dark:text-gray-200" };

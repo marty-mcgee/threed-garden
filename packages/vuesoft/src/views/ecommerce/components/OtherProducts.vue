@@ -213,6 +213,6 @@
 
 <script>
 export default {
-  name: "other-products",
+  name: "OtherProducts",
 };
 </script>

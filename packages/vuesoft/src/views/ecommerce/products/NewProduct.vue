@@ -205,8 +205,8 @@
                   class="multisteps-form__progress-btn js-active"
                   type="button"
                   title="Product Info"
-                  @click="activeStep = 0"
                   :class="activeStep >= 0 ? activeClass : ''"
+                  @click="activeStep = 0"
                 >
                   <span>1. Product Info</span>
                 </button>
@@ -214,8 +214,8 @@
                   class="multisteps-form__progress-btn"
                   type="button"
                   title="Media"
-                  @click="activeStep = 1"
                   :class="activeStep >= 1 ? activeClass : ''"
+                  @click="activeStep = 1"
                 >
                   2. Media
                 </button>
@@ -223,8 +223,8 @@
                   class="multisteps-form__progress-btn"
                   type="button"
                   title="Socials"
-                  @click="activeStep = 2"
                   :class="activeStep >= 2 ? activeClass : ''"
+                  @click="activeStep = 2"
                 >
                   3. Socials
                 </button>
@@ -232,8 +232,8 @@
                   class="multisteps-form__progress-btn"
                   type="button"
                   title="Pricing"
-                  @click="activeStep = 3"
                   :class="activeStep >= 3 ? activeClass : ''"
+                  @click="activeStep = 3"
                 >
                   4. Pricing
                 </button>
@@ -269,7 +269,13 @@ import Pricing from "./components/Pricing.vue";
 
 import setNavPills from "@/assets/js/nav-pills.js";
 export default {
-  name: "profile-overview",
+  name: "ProfileOverview",
+  components: {
+    ProductInfo,
+    Media,
+    Socials,
+    Pricing,
+  },
   data() {
     return {
       showMenu: false,
@@ -278,35 +284,26 @@ export default {
       formSteps: 3,
     };
   },
-  components: {
-    ProductInfo,
-    Media,
-    Socials,
-    Pricing,
-  },
-  methods: {
-    nextStep() {
-      if (this.activeStep < this.formSteps) {
-        this.activeStep += 1;
-        console.log(this.activeStep);
-      } else {
-        this.activeStep -= 1;
-        console.log(this.activeStep);
-      }
-    },
-    prevStep() {
-      if (this.activeStep > 0) {
-        this.activeStep -= 1;
-        console.log(this.activeStep);
-      }
-    },
-  },
   mounted() {
     this.$store.state.isAbsolute = true;
     setNavPills();
   },
   beforeUnmount() {
     this.$store.state.isAbsolute = false;
+  },
+  methods: {
+    nextStep() {
+      if (this.activeStep < this.formSteps) {
+        this.activeStep += 1;
+      } else {
+        this.activeStep -= 1;
+      }
+    },
+    prevStep() {
+      if (this.activeStep > 0) {
+        this.activeStep -= 1;
+      }
+    },
   },
 };
 </script>

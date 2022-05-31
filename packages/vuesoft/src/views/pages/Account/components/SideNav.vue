@@ -348,6 +348,6 @@
 
 <script>
 export default {
-  name: "side-nav",
+  name: "SideNav",
 };
 </script>

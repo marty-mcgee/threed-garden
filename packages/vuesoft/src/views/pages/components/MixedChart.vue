@@ -1,28 +1,53 @@
 <template>
-  <canvas id="mixed-chart" class="chart-canvas" height="300"></canvas>
+  <canvas :id="id" class="chart-canvas" :height="height"></canvas>
 </template>
 
 <script>
 import Chart from "chart.js/auto";
 export default {
-  name: "bar-chart",
+  name: "MixedChart",
+  props: {
+    id: {
+      type: String,
+      default: "mixed-chart",
+    },
+    height: {
+      type: [String, Number],
+      default: "300",
+    },
+    chart: {
+      type: Object,
+      required: true,
+      labels: Array,
+      datasets: {
+        type: Array,
+        label: String,
+        data: Array,
+      },
+    },
+  },
   mounted() {
     // Mixed chart
-    var ctx7 = document.getElementById("mixed-chart").getContext("2d");
+    var ctx = document.getElementById(this.id).getContext("2d");
 
-    var gradientStroke1 = ctx7.createLinearGradient(0, 230, 0, 50);
+    var gradientStroke1 = ctx.createLinearGradient(0, 230, 0, 50);
 
     gradientStroke1.addColorStop(1, "rgba(203,12,159,0.2)");
     gradientStroke1.addColorStop(0.2, "rgba(72,72,176,0.0)");
-    gradientStroke1.addColorStop(0, "rgba(203,12,159,0)"); //purple colors
+    gradientStroke1.addColorStop(0, "rgba(203,12,159,0)");
 
-    new Chart(ctx7, {
+    let chartStatus = Chart.getChart(this.id);
+    if (chartStatus != undefined) {
+      chartStatus.destroy();
+    }
+
+    new Chart(ctx, {
       data: {
-        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        labels: this.chart.labels,
         datasets: [
           {
             type: "bar",
-            label: "Organic Search",
+            label: this.chart.datasets[0].label,
             weight: 5,
             tension: 0.4,
             borderWidth: 0,
@@ -31,12 +56,12 @@ export default {
             backgroundColor: "#3A416F",
             borderRadius: 4,
             borderSkipped: false,
-            data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
+            data: this.chart.datasets[0].data,
             maxBarThickness: 10,
           },
           {
             type: "line",
-            label: "Referral",
+            label: this.chart.datasets[1].label,
             tension: 0.4,
             borderWidth: 0,
             pointRadius: 0,
@@ -45,7 +70,7 @@ export default {
             // eslint-disable-next-line no-dupe-keys
             borderWidth: 3,
             backgroundColor: gradientStroke1,
-            data: [30, 90, 40, 140, 290, 290, 340, 230, 400],
+            data: this.chart.datasets[1].data,
             fill: true,
           },
         ],

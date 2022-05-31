@@ -59,7 +59,8 @@
                 href="https://getbootstrap.com/docs/5.0/components/toasts/"
                 target="
           "
-              >here</a>.
+                >here</a
+              >.
             </p>
           </div>
           <div class="card-body p-3">
@@ -70,7 +71,9 @@
                   type="button"
                   data-target="successToast"
                   @click="snackbar = 'success'"
-                >Success Notification</button>
+                >
+                  Success Notification
+                </button>
               </div>
               <div class="col-lg-3 col-sm-6 col-12 mt-sm-0 mt-2">
                 <button
@@ -78,7 +81,9 @@
                   type="button"
                   data-target="infoToast"
                   @click="snackbar = 'info'"
-                >Info Notification</button>
+                >
+                  Info Notification
+                </button>
               </div>
               <div class="col-lg-3 col-sm-6 col-12 mt-lg-0 mt-2">
                 <button
@@ -86,7 +91,9 @@
                   type="button"
                   data-target="warningToast"
                   @click="snackbar = 'warning'"
-                >Warning Notification</button>
+                >
+                  Warning Notification
+                </button>
               </div>
               <div class="col-lg-3 col-sm-6 col-12 mt-lg-0 mt-2">
                 <button
@@ -94,7 +101,9 @@
                   type="button"
                   data-target="dangerToast"
                   @click="snackbar = 'danger'"
-                >Danger Notification</button>
+                >
+                  Danger Notification
+                </button>
               </div>
             </div>
           </div>
@@ -107,40 +116,36 @@
         title="Soft UI Dashboard"
         date="11 mins ago"
         description="Hello, world! This is a notification message."
-        icon="ni ni-check-bold"
+        :icon="{ component: 'ni ni-check-bold', color: 'success' }"
         color="white"
-        iconColor="success"
-        :closeHandler="closeSnackbar"
+        :close-handler="closeSnackbar"
       />
       <vsud-snackbar
         v-if="snackbar === 'info'"
         title="Soft UI Dashboard"
         date="11 mins ago"
         description="Hello, world! This is a notification message."
-        icon="ni ni-check-bold"
+        :icon="{ component: 'ni ni-check-bold', color: 'white' }"
         color="info"
-        iconColor="white"
-        :closeHandler="closeSnackbar"
+        :close-handler="closeSnackbar"
       />
       <vsud-snackbar
         v-if="snackbar === 'warning'"
         title="Soft UI Dashboard"
         date="11 mins ago"
         description="Hello, world! This is a notification message."
-        icon="ni ni-check-bold"
+        :icon="{ component: 'ni ni-check-bold', color: 'warning' }"
         color="white"
-        iconColor="warning"
-        :closeHandler="closeSnackbar"
+        :close-handler="closeSnackbar"
       />
       <vsud-snackbar
         v-if="snackbar === 'danger'"
         title="Soft UI Dashboard"
         date="11 mins ago"
         description="Hello, world! This is a notification message."
-        icon="ni ni-check-bold"
+        :icon="{ component: 'ni ni-check-bold', color: 'danger' }"
         color="white"
-        iconColor="danger"
-        :closeHandler="closeSnackbar"
+        :close-handler="closeSnackbar"
       />
     </div>
   </div>

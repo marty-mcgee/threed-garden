@@ -1,40 +1,28 @@
 <template>
   <div class="card h-100">
     <div class="card-header pb-0 p-3">
-      <h6 class="mb-0">Reviews</h6>
+      <h6 class="mb-0">{{ title }}</h6>
     </div>
     <div class="card-body pb-0 p-3">
       <ul class="list-group">
-        <li class="list-group-item border-0 d-flex align-items-center px-0 mb-0">
+        <li
+          v-for="({ title: reviewTitle, value, color }, index) of reviews"
+          :key="index"
+          class="list-group-item border-0 d-flex align-items-center px-0 mb-0"
+        >
           <div class="w-100">
             <div class="d-flex mb-2">
-              <span class="me-2 text-sm font-weight-bold text-capitalize">Positive reviews</span>
-              <span class="ms-auto text-sm font-weight-bold">80%</span>
+              <span class="me-2 text-sm font-weight-bold text-capitalize">
+                {{ reviewTitle }}
+              </span>
+              <span class="ms-auto text-sm font-weight-bold">{{ value }}%</span>
             </div>
             <div>
-              <vsud-progress color="info" variant="gradient" percentage="80" />
-            </div>
-          </div>
-        </li>
-        <li class="list-group-item border-0 d-flex align-items-center px-0 mb-2">
-          <div class="w-100">
-            <div class="d-flex mb-2">
-              <span class="me-2 text-sm font-weight-bold text-capitalize">Neutral reviews</span>
-              <span class="ms-auto text-sm font-weight-bold">17%</span>
-            </div>
-            <div>
-              <vsud-progress color="dark" variant="gradient" percentage="17" />
-            </div>
-          </div>
-        </li>
-        <li class="list-group-item border-0 d-flex align-items-center px-0 mb-2">
-          <div class="w-100">
-            <div class="d-flex mb-2">
-              <span class="me-2 text-sm font-weight-bold text-capitalize">Negative reviews</span>
-              <span class="ms-auto text-sm font-weight-bold">3%</span>
-            </div>
-            <div>
-              <vsud-progress color="danger" variant="gradient" percentage="3" />
+              <vsud-progress
+                :color="color"
+                variant="gradient"
+                :percentage="value"
+              />
             </div>
           </div>
         </li>
@@ -42,14 +30,17 @@
     </div>
     <div class="card-footer pt-0 p-3 d-flex align-items-center">
       <div class="w-60">
-        <p class="text-sm">
-          More than
-          <b>1,500,000</b> developers used Creative Tim's products and over
-          <b>700,000</b> projects were created.
-        </p>
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <p class="text-sm" v-html="description"></p>
       </div>
       <div class="w-40 text-end">
-        <a class="btn bg-gradient-dark mb-0 text-end" href="javascript:;">View all reviews</a>
+        <a
+          class="btn mb-0 text-end"
+          :class="`bg-gradient-${action.color}`"
+          :href="action.route"
+        >
+          {{ action.label }}
+        </a>
       </div>
     </div>
   </div>
@@ -59,9 +50,37 @@
 import VsudProgress from "@/components/VsudProgress.vue";
 
 export default {
-  name: "review-card",
+  name: "ReviewCard",
   components: {
     VsudProgress,
+  },
+  props: {
+    title: {
+      type: String,
+      default: "Reviews",
+    },
+    description: {
+      type: String,
+      default: "",
+    },
+    reviews: {
+      type: Array,
+      title: String,
+      value: Number,
+      color: String,
+      default: () => [],
+    },
+    action: {
+      type: Object,
+      route: String,
+      color: String,
+      label: String,
+      default: () => ({
+        route: "javascript:;",
+        color: "dark",
+        label: "View all reviews",
+      }),
+    },
   },
 };
 </script>

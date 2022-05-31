@@ -30,15 +30,15 @@
                     Import
                   </button>
                   <div
-                    class="modal fade"
                     id="import"
+                    class="modal fade"
                     tabindex="-1"
                     aria-hidden="true"
                   >
                     <div class="modal-dialog mt-lg-10">
                       <div class="modal-content">
                         <div class="modal-header">
-                          <h5 class="modal-title" id="ModalLabel">
+                          <h5 id="ModalLabel" class="modal-title">
                             Import CSV
                           </h5>
                           <i class="fas fa-upload ms-3"></i>
@@ -58,10 +58,10 @@
                           />
                           <div class="form-check">
                             <input
+                              id="importCheck"
                               class="form-check-input"
                               type="checkbox"
                               value=""
-                              id="importCheck"
                               checked=""
                             />
                             <label
@@ -103,7 +103,7 @@
           </div>
           <div class="px-0 pb-0 card-body">
             <div class="table-responsive">
-              <table class="table table-flush" id="products-list">
+              <table id="products-list" class="table table-flush">
                 <thead class="thead-light">
                   <tr>
                     <th>Product</th>
@@ -121,9 +121,9 @@
                       <div class="d-flex">
                         <div class="my-auto form-check">
                           <input
+                            id="customCheck1"
                             class="form-check-input"
                             type="checkbox"
-                            id="customCheck1"
                             checked
                           />
                         </div>
@@ -174,9 +174,9 @@
                       <div class="d-flex">
                         <div class="my-auto form-check">
                           <input
+                            id="customCheck2"
                             class="form-check-input"
                             type="checkbox"
-                            id="customCheck2"
                             checked
                           />
                         </div>
@@ -227,9 +227,9 @@
                       <div class="d-flex">
                         <div class="my-auto form-check">
                           <input
+                            id="customCheck3"
                             class="form-check-input"
                             type="checkbox"
-                            id="customCheck3"
                           />
                         </div>
                         <img
@@ -277,9 +277,9 @@
                       <div class="d-flex">
                         <div class="my-auto form-check">
                           <input
+                            id="customCheck10"
                             class="form-check-input"
                             type="checkbox"
-                            id="customCheck10"
                           />
                         </div>
                         <img
@@ -329,9 +329,9 @@
                       <div class="d-flex">
                         <div class="my-auto form-check">
                           <input
+                            id="customCheck5"
                             class="form-check-input"
                             type="checkbox"
-                            id="customCheck5"
                           />
                         </div>
                         <img
@@ -379,9 +379,9 @@
                       <div class="d-flex">
                         <div class="my-auto form-check">
                           <input
+                            id="customCheck6"
                             class="form-check-input"
                             type="checkbox"
-                            id="customCheck6"
                           />
                         </div>
                         <img
@@ -429,9 +429,9 @@
                       <div class="d-flex">
                         <div class="my-auto form-check">
                           <input
+                            id="customCheck7"
                             class="form-check-input"
                             type="checkbox"
-                            id="customCheck7"
                             checked
                           />
                         </div>
@@ -480,9 +480,9 @@
                       <div class="d-flex">
                         <div class="my-auto form-check">
                           <input
+                            id="customCheck9"
                             class="form-check-input"
                             type="checkbox"
-                            id="customCheck9"
                             checked
                           />
                         </div>
@@ -531,9 +531,9 @@
                       <div class="d-flex">
                         <div class="my-auto form-check">
                           <input
+                            id="customCheck11"
                             class="form-check-input"
                             type="checkbox"
-                            id="customCheck11"
                             checked
                           />
                         </div>
@@ -582,9 +582,9 @@
                       <div class="d-flex">
                         <div class="my-auto form-check">
                           <input
+                            id="customCheck12"
                             class="form-check-input"
                             type="checkbox"
-                            id="customCheck12"
                           />
                         </div>
                         <img
@@ -634,9 +634,9 @@
                       <div class="d-flex">
                         <div class="my-auto form-check">
                           <input
+                            id="customCheck13"
                             class="form-check-input"
                             type="checkbox"
-                            id="customCheck13"
                             checked
                           />
                         </div>
@@ -685,9 +685,9 @@
                       <div class="d-flex">
                         <div class="my-auto form-check">
                           <input
+                            id="customCheck4"
                             class="form-check-input"
                             type="checkbox"
-                            id="customCheck4"
                           />
                         </div>
                         <img
@@ -735,9 +735,9 @@
                       <div class="d-flex">
                         <div class="my-auto form-check">
                           <input
+                            id="customCheck8"
                             class="form-check-input"
                             type="checkbox"
-                            id="customCheck8"
                             checked
                           />
                         </div>
@@ -786,9 +786,9 @@
                       <div class="d-flex">
                         <div class="my-auto form-check">
                           <input
+                            id="customCheck22"
                             class="form-check-input"
                             type="checkbox"
-                            id="customCheck22"
                           />
                         </div>
                         <img
@@ -838,9 +838,9 @@
                       <div class="d-flex">
                         <div class="my-auto form-check">
                           <input
+                            id="customCheck23"
                             class="form-check-input"
                             type="checkbox"
-                            id="customCheck23"
                             checked
                           />
                         </div>
@@ -910,13 +910,13 @@ import { DataTable } from "simple-datatables";
 import setTooltip from "@/assets/js/tooltip.js";
 
 export default {
-  name: "products-list",
+  name: "ProductsList",
   mounted() {
     if (document.getElementById("products-list")) {
       const dataTableSearch = new DataTable("#products-list", {
         searchable: true,
         fixedHeight: false,
-        perPage: 7,
+        perPage: 7
       });
 
       document.querySelectorAll(".export").forEach(function (el) {
@@ -925,7 +925,7 @@ export default {
 
           var data = {
             type: type,
-            filename: "soft-ui-" + type,
+            filename: "soft-ui-" + type
           };
 
           if (type === "csv") {
@@ -936,7 +936,7 @@ export default {
         });
       });
     }
-    setTooltip();
-  },
+    setTooltip(this.$store.state.bootstrap);
+  }
 };
 </script>

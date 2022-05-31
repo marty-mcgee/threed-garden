@@ -4,7 +4,7 @@
       href="javascript:;"
       class="border avatar avatar-lg rounded-circle border-primary"
     >
-      <img alt="Image placeholder" class="p-1" :src="img" />
+      <img :alt="name" class="p-1" :src="image" />
     </a>
     <p class="mb-0 text-sm">{{ name }}</p>
   </div>
@@ -12,10 +12,16 @@
 
 <script>
 export default {
-  name: "story-avatar",
+  name: "StoryAvatar",
   props: {
-    img: String,
-    name: String,
+    image: {
+      type: String,
+      default: "",
+    },
+    name: {
+      type: String,
+      default: "",
+    },
   },
 };
 </script>

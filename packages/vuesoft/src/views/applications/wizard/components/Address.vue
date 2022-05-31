@@ -41,9 +41,9 @@
         <div class="mt-3 col-12 col-md-5 ms-auto text-start">
           <label>Country</label>
           <select
+            id="choices-country"
             class="form-control"
             name="choices-country"
-            id="choices-country"
           >
             <option value="Argentina">Argentina</option>
             <option value="Albania">Albania</option>
@@ -80,7 +80,7 @@
 <script>
 import Choices from "choices.js";
 export default {
-  name: "address",
+  name: "Address",
   mounted() {
     if (document.getElementById("choices-country")) {
       var country = document.getElementById("choices-country");

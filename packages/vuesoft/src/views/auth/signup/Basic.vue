@@ -1,5 +1,5 @@
 <template>
-  <navbar btnBackground="bg-gradient-primary" />
+  <navbar btn-background="bg-gradient-primary" />
   <div
     class="pt-5 m-3 page-header align-items-start min-vh-50 pb-11 border-radius-lg"
     :style="{
@@ -138,10 +138,16 @@
           <div class="card-body">
             <form role="form">
               <div class="mb-3">
-                <vsud-input type="text" placeholder="Name" aria-label="Name" />
+                <vsud-input
+                  id="name"
+                  type="text"
+                  placeholder="Name"
+                  aria-label="Name"
+                />
               </div>
               <div class="mb-3">
                 <vsud-input
+                  id="email"
                   type="email"
                   placeholder="Email"
                   aria-label="Email"
@@ -149,12 +155,17 @@
               </div>
               <div class="mb-3">
                 <vsud-input
+                  id="password"
                   type="password"
                   placeholder="Password"
                   aria-label="Password"
                 />
               </div>
-              <vsud-checkbox id="flexCheckDefault" checked>
+              <vsud-checkbox
+                id="flexCheckDefault"
+                name="flexCheckDefault"
+                checked
+              >
                 I agree the
                 <a href="javascript:;" class="text-dark font-weight-bolder"
                   >Terms and Conditions</a
@@ -164,7 +175,7 @@
               <div class="text-center">
                 <vsud-button
                   color="dark"
-                  fullWidth
+                  full-width
                   variant="gradient"
                   class="my-4 mb-2"
                   >Sign up</vsud-button
@@ -192,8 +203,10 @@ import VsudInput from "@/components/VsudInput.vue";
 import VsudCheckbox from "@/components/VsudCheckbox.vue";
 import VsudButton from "@/components/VsudButton.vue";
 
+import { mapMutations } from "vuex";
+
 export default {
-  name: "signup-basic",
+  name: "SignupBasic",
   components: {
     Navbar,
     AppFooter,
@@ -202,16 +215,15 @@ export default {
     VsudButton,
   },
   created() {
-    this.$store.state.hideConfigButton = true;
-    this.$store.state.showNavbar = false;
-    this.$store.state.showSidenav = false;
-    this.$store.state.showFooter = false;
+    this.toggleEveryDisplay();
+    this.toggleHideConfig();
   },
   beforeUnmount() {
-    this.$store.state.hideConfigButton = false;
-    this.$store.state.showNavbar = true;
-    this.$store.state.showSidenav = true;
-    this.$store.state.showFooter = true;
+    this.toggleEveryDisplay();
+    this.toggleHideConfig();
+  },
+  methods: {
+    ...mapMutations(["toggleEveryDisplay", "toggleHideConfig"]),
   },
 };
 </script>

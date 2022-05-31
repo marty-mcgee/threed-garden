@@ -154,7 +154,7 @@
 
 <script>
 export default {
-  name: "sweet-alerts",
+  name: "SweetAlerts",
 
   methods: {
     showSwal(type) {

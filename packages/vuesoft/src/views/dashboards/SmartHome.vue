@@ -47,10 +47,10 @@
             </div>
             <div class="pt-2 dropdown">
               <a
+                id="dropdownCam"
                 href="#"
                 class="text-secondary ps-4"
                 :class="{ show: showMenu }"
-                id="dropdownCam"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
                 @click="showMenu = !showMenu"
@@ -85,16 +85,16 @@
             </div>
           </div>
           <div class="p-3 mt-2 card-body">
-            <div class="tab-content" id="v-pills-tabContent">
+            <div id="v-pills-tabContent" class="tab-content">
               <div
-                class="tab-pane fade show position-relative active height-400 border-radius-lg"
                 id="cam1"
+                class="tab-pane fade show position-relative active height-400 border-radius-lg"
                 role="tabpanel"
                 aria-labelledby="cam1"
                 :style="{
                   backgroundImage:
                     'url(' + require('@/assets/img/bg-smart-home-1.jpg') + ')',
-                  backgroundSize: 'cover',
+                  backgroundSize: 'cover'
                 }"
               >
                 <div class="top-0 position-absolute d-flex w-100">
@@ -108,14 +108,14 @@
                 </div>
               </div>
               <div
-                class="tab-pane fade position-relative height-400 border-radius-lg"
                 id="cam2"
+                class="tab-pane fade position-relative height-400 border-radius-lg"
                 role="tabpanel"
                 aria-labelledby="cam2"
                 :style="{
                   backgroundImage:
                     'url(' + require('@/assets/img/bg-smart-home-2.jpg') + ')',
-                  backgroundSize: 'cover',
+                  backgroundSize: 'cover'
                 }"
               >
                 <div class="top-0 position-absolute d-flex w-100">
@@ -129,14 +129,14 @@
                 </div>
               </div>
               <div
-                class="tab-pane fade position-relative height-400 border-radius-lg"
                 id="cam3"
+                class="tab-pane fade position-relative height-400 border-radius-lg"
                 role="tabpanel"
                 aria-labelledby="cam3"
                 :style="{
                   backgroundImage:
                     'url(' + require('@/assets/img/home-decor-3.jpg') + ')',
-                  backgroundSize: 'cover',
+                  backgroundSize: 'cover'
                 }"
               >
                 <div class="top-0 position-absolute d-flex w-100">
@@ -186,41 +186,37 @@
         </div>
         <div class="mt-4 row">
           <div class="col-md-6">
-            <temperature-card
-              id="status1"
-              status="21 "
-              unit=" °C"
+            <default-counter-card
+              :count="21"
+              suffix=" °C"
               title="Living Room"
-              desc="Temperature"
+              description="Temperature"
             />
           </div>
           <div class="mt-4 col-md-6 mt-md-0">
-            <temperature-card
-              id="status2"
-              status="44 "
-              unit=" %"
+            <default-counter-card
+              :count="44"
+              suffix=" %"
               title="Outside"
-              desc="Humidity"
+              description="Humidity"
             />
           </div>
         </div>
         <div class="mt-4 row">
           <div class="col-md-6">
-            <temperature-card
-              id="status3"
-              status="87 "
-              unit=" m³"
+            <default-counter-card
+              :count="87"
+              suffix=" m³"
               title="Water"
-              desc="Consumption"
+              description="Consumption"
             />
           </div>
           <div class="mt-4 col-md-6 mt-md-0">
-            <temperature-card
-              id="status4"
-              status="417 "
-              unit=" GB"
+            <default-counter-card
+              :count="417"
+              suffix=" GB"
               title="Internet"
-              desc="All devices"
+              description="All devices"
             />
           </div>
         </div>
@@ -228,26 +224,34 @@
     </div>
     <div class="mt-4 row">
       <div class="col-lg-6 ms-auto">
-        <consumption-room-chart />
+        <reports-doughnut-chart />
       </div>
       <div class="mt-4 col-lg-6 mt-lg-0">
         <div class="row">
           <div class="col-sm-6">
-            <consumption-day-chart />
+            <thin-bar-chart
+              title="Consumption per day"
+              :chart="{
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: {
+                  label: 'Watts',
+                  data: [150, 230, 380, 220, 420, 200, 70, 500]
+                }
+              }"
+            />
           </div>
           <div class="mt-4 col-sm-6 mt-sm-0">
             <div class="card h-100">
-              <div class="p-3 text-center card-body">
+              <div
+                class="p-3 text-center card-body d-flex flex-column align-items-center"
+              >
                 <h6 class="text-start">Device limit</h6>
-                <round-slider
-                  value="21"
-                  valueLabel="Temperature"
-                ></round-slider>
+                <div id="slider"></div>
                 <h4 class="font-weight-bold mt-n7">
-                  <span class="text-dark" id="value">21</span
+                  <span id="value" class="text-dark">21</span
                   ><span class="text-body">°C</span>
                 </h4>
-                <p class="mt-5 mb-0 ps-1">
+                <p class="mt-n2 mb-0 ps-1">
                   <span class="text-xs">16°C</span
                   ><span class="px-3">Temperature</span
                   ><span class="text-xs">38°C</span>
@@ -262,66 +266,67 @@
     <div class="row">
       <div class="col-lg-2 col-sm-6">
         <switch-card
-          state="Off"
-          stateText="Humidity"
-          stateDescription="Inactive since: 2 days"
-          classCustom="mt-4"
+          :item="{
+            state: 'Off',
+            label: 'Humidity',
+            description: 'Inactive since: 2 days',
+            classCustom: 'mt-4'
+          }"
         >
-          <template v-slot:icon>
-            <icon name="humidity" />
-          </template>
+          <humidity />
         </switch-card>
       </div>
       <div class="mt-4 col-lg-2 col-sm-6 mt-lg-0">
         <switch-card
-          state="On"
-          stateText="Temperature"
-          stateDescription="Active"
-          isChecked="true"
+          :item="{
+            state: 'On',
+            label: 'Temperature',
+            description: 'Active',
+            classCustom: 'mt-2',
+            isChecked: 'true'
+          }"
           class="text-white bg-gradient-success"
-          classCustom="mt-2"
         >
-          <template v-slot:icon>
-            <icon name="temperature" />
-          </template>
+          <temperature />
         </switch-card>
       </div>
       <div class="mt-4 col-lg-2 col-sm-6 mt-lg-0">
         <switch-card
-          state="Off"
-          stateText="Air Conditioner"
-          stateDescription="Inactive since: 1 hour"
-          classCustom="mt-4"
+          :item="{
+            state: 'Off',
+            label: 'Air Conditioner',
+            description: 'Inactive since: 1 hour',
+            classCustom: 'mt-4',
+            isChecked: true
+          }"
         >
-          <template v-slot:icon>
-            <icon name="air" />
-          </template>
+          <air />
         </switch-card>
       </div>
       <div class="mt-4 col-lg-2 col-sm-6 mt-lg-0">
         <switch-card
-          state="Off"
-          stateText="Lights"
-          stateDescription="Inactive since: 27 min"
-          classCustom="mt-4"
+          :item="{
+            state: 'Off',
+            label: 'Lights',
+            description: 'Inactive since: 27 min',
+            classCustom: 'mt-4'
+          }"
         >
-          <template v-slot:icon>
-            <icon name="lights" />
-          </template>
+          <lights />
         </switch-card>
       </div>
       <div class="mt-4 col-lg-2 col-sm-6 mt-lg-0">
         <switch-card
-          state="On"
-          stateText="Wi-fi"
-          stateDescription="Active"
-          isChecked="true"
+          :item="{
+            state: 'On',
+            label: 'Wi-fi',
+            description: 'Active',
+            classCustom: 'mt-4',
+            isChecked: true
+          }"
           class="text-white bg-gradient-success"
-          classCustom="mt-4"
         >
-          <template v-slot:icon>
-            <icon name="wifi" />
-          </template>
+          <wifi />
         </switch-card>
       </div>
       <div class="mt-4 col-lg-2 col-sm-6 mt-sm-0">
@@ -341,34 +346,67 @@
 </template>
 
 <script>
-import ConsumptionRoomChart from "@/examples/Charts/ConsumptionRoomChart.vue";
-import ConsumptionDayChart from "@/examples/Charts/ConsumptionDayChart.vue";
-import TemperatureCard from "@/examples/Cards/TempCard.vue";
+import ReportsDoughnutChart from "@/examples/Charts/ReportsDoughnutChart.vue";
+import ThinBarChart from "@/examples/Charts/ThinBarChart.vue";
+import DefaultCounterCard from "@/examples/Cards/DefaultCounterCard.vue";
 import SwitchCard from "@/examples/Cards/SwitchCard.vue";
-import Icon from "@/components/Icon.vue";
 
 import setNavPills from "@/assets/js/nav-pills.js";
 import setTooltip from "@/assets/js/tooltip.js";
+import Temperature from "../../components/Icon/Temperature.vue";
+import Air from "../../components/Icon/Air.vue";
+import Lights from "../../components/Icon/Lights.vue";
+import Wifi from "../../components/Icon/Wifi.vue";
+import Humidity from "../../components/Icon/Humidity.vue";
+import roundSlider from "round-slider";
 
+import $ from "jquery";
 export default {
-  name: "smart-home",
+  name: "SmartHome",
+  components: {
+    // eslint-disable-next-line vue/no-unused-components
+    roundSlider,
+    DefaultCounterCard,
+    ReportsDoughnutChart,
+    ThinBarChart,
+    SwitchCard,
+    Temperature,
+    Air,
+    Lights,
+    Wifi,
+    Humidity
+  },
   data() {
     return {
-      showMenu: false,
+      showMenu: false
     };
   },
-  components: {
-    // RoundSlider,
-    TemperatureCard,
-    ConsumptionRoomChart,
-    ConsumptionDayChart,
-    SwitchCard,
-    Icon,
-  },
-
   mounted() {
     setNavPills();
-    setTooltip();
+    setTooltip(this.$store.state.bootstrap);
+
+    let jq = document.createElement("script");
+    jq.setAttribute("src", "https://code.jquery.com/jquery-3.2.1.js");
+    document.head.appendChild(jq);
+
+    let recaptchaScript = document.createElement("script");
+    recaptchaScript.setAttribute(
+      "src",
+      "https://cdn.jsdelivr.net/npm/round-slider@1.6.1/dist/roundslider.min.js"
+    );
+    document.head.appendChild(recaptchaScript);
+
+    $("#slider").roundSlider({
+      width: 22,
+      radius: 100,
+      value: 45,
+      readOnly: true,
+      circleShape: "half-top",
+      sliderType: "min-range",
+      lineCap: "round",
+      min: 16,
+      max: 38
+    });
     // Rounded slider
     const setValue = function (value, active) {
       document.querySelectorAll("round-slider").forEach(function (el) {
@@ -398,6 +436,6 @@ export default {
         else if (ev.detail.high !== undefined) setHigh(ev.detail.high, true);
       });
     });
-  },
+  }
 };
 </script>

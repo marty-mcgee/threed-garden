@@ -18,9 +18,15 @@
     <div class="p-3 pb-0 mt-4 card-body">
       <div class="row">
         <div class="col-7 text-start">
-          <div class="chart">
-            <canvas :id="chartId" class="chart-canvas" height="200"></canvas>
-          </div>
+          <pie-chart
+            :chart="{
+              labels: ['Facebook', 'Direct', 'Organic', 'Referral'],
+              datasets: {
+                label: 'Projects',
+                data: [15, 20, 12, 60],
+              },
+            }"
+          />
         </div>
         <div class="my-auto col-5">
           <span class="badge badge-md badge-dot me-4 d-block text-start">
@@ -57,74 +63,11 @@
 </template>
 
 <script>
-import Chart from "chart.js/auto";
+import PieChart from "@/examples/Charts/PieChart.vue";
 export default {
-  name: "channels-chart-card",
-  data() {
-    return {
-      chartId: "chart-pie",
-    };
-  },
-  mounted() {
-    var pieChart = document.getElementById(this.chartId).getContext("2d");
-
-    // Pie chart
-    new Chart(pieChart, {
-      type: "pie",
-      data: {
-        labels: ["Facebook", "Direct", "Organic", "Referral"],
-        datasets: [
-          {
-            label: "Projects",
-            weight: 9,
-            cutout: 0,
-            tension: 0.9,
-            pointRadius: 2,
-            borderWidth: 2,
-            backgroundColor: ["#17c1e8", "#cb0c9f", "#3A416F", "#a8b8d8"],
-            data: [15, 20, 12, 60],
-            fill: false,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          },
-        },
-        interaction: {
-          intersect: false,
-          mode: "index",
-        },
-        scales: {
-          y: {
-            grid: {
-              drawBorder: false,
-              display: false,
-              drawOnChartArea: false,
-              drawTicks: false,
-            },
-            ticks: {
-              display: false,
-            },
-          },
-          x: {
-            grid: {
-              drawBorder: false,
-              display: false,
-              drawOnChartArea: false,
-              drawTicks: false,
-            },
-            ticks: {
-              display: false,
-            },
-          },
-        },
-      },
-    });
+  name: "ChannelsChartCard",
+  components: {
+    PieChart,
   },
 };
 </script>

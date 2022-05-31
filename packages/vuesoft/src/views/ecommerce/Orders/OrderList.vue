@@ -7,26 +7,33 @@
       <div class="d-flex">
         <div class="dropdown d-inline">
           <vsud-button
+            id="navbarDropdownMenuLink2"
             color="dark"
             variant="outline"
             class="dropdown-toggle"
             data-bs-toggle="dropdown"
-            id="navbarDropdownMenuLink2"
             aria-expanded="false"
-          >Filters</vsud-button>
+            >Filters</vsud-button
+          >
           <ul
             class="dropdown-menu dropdown-menu-lg-start px-2 py-3"
             aria-labelledby="navbarDropdownMenuLink2"
             style
           >
             <li>
-              <a class="dropdown-item border-radius-md" href="javascript:;">Status: Paid</a>
+              <a class="dropdown-item border-radius-md" href="javascript:;"
+                >Status: Paid</a
+              >
             </li>
             <li>
-              <a class="dropdown-item border-radius-md" href="javascript:;">Status: Refunded</a>
+              <a class="dropdown-item border-radius-md" href="javascript:;"
+                >Status: Refunded</a
+              >
             </li>
             <li>
-              <a class="dropdown-item border-radius-md" href="javascript:;">Status: Canceled</a>
+              <a class="dropdown-item border-radius-md" href="javascript:;"
+                >Status: Canceled</a
+              >
             </li>
             <li>
               <hr class="horizontal dark my-2" />
@@ -35,7 +42,8 @@
               <a
                 class="dropdown-item border-radius-md text-danger"
                 href="javascript:;"
-              >Remove Filter</a>
+                >Remove Filter</a
+              >
             </li>
           </ul>
         </div>
@@ -57,7 +65,7 @@
       <div class="col-12">
         <div class="card mt-4">
           <div class="table-responsive">
-            <table class="table table-flush" id="order-list">
+            <table id="order-list" class="table table-flush">
               <thead class="thead-light">
                 <tr>
                   <th>Id</th>
@@ -97,8 +105,8 @@
                         :img="img1"
                         class="me-2"
                         size="xs"
-                        circular="rounded-circle"
                         alt="user image"
+                        circular
                       />
                       <span>Orlando Imieto</span>
                     </div>
@@ -137,9 +145,9 @@
                       <vsud-avatar
                         :img="img2"
                         size="xs"
-                        circular="rounded-circle"
                         class="me-2"
                         alt="user image"
+                        circular
                       />
                       <span>Alice Murinho</span>
                     </div>
@@ -220,8 +228,8 @@
                           :img="img3"
                           size="xs"
                           class="me-2"
-                          circular="rounded-circle"
                           alt="user image"
+                          circular
                         />
                         <span>Andrew Nichel</span>
                       </div>
@@ -262,9 +270,9 @@
                         <vsud-avatar
                           :img="img4"
                           size="xs"
-                          circular="rounded-circle"
                           class="me-2"
                           alt="user image"
+                          circular
                         />
                         <span>Sebastian Koga</span>
                       </div>
@@ -419,9 +427,9 @@
                         <vsud-avatar
                           :img="img5"
                           size="xs"
-                          circular="rounded-circle"
                           class="me-2"
                           alt="user image"
+                          circular
                         />
                         <span>Rugna Ilpio</span>
                       </div>
@@ -463,8 +471,8 @@
                           :img="img6"
                           size="xs"
                           class="me-2"
-                          circular="rounded"
                           alt="user image"
+                          circular
                         />
                         <span>Anna Landa</span>
                       </div>
@@ -576,7 +584,7 @@ import img5 from "../../../assets/img/team-5.jpg";
 import img6 from "../../../assets/img/ivana-squares.jpg";
 
 export default {
-  name: "order-list",
+  name: "OrderList",
   components: {
     VsudButton,
     VsudAvatar,

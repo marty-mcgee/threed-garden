@@ -17,7 +17,12 @@
                   <b>KF332</b>
                 </p>
               </div>
-              <vsud-button color="secondary" variant="gradient" class="ms-auto mb-0">Invoice</vsud-button>
+              <vsud-button
+                color="secondary"
+                variant="gradient"
+                class="ms-auto mb-0"
+                >Invoice</vsud-button
+              >
             </div>
           </div>
           <div class="card-body p-3 pt-0">
@@ -37,12 +42,16 @@
                   <div>
                     <h6 class="text-lg mb-0 mt-2">Gold Glasses</h6>
                     <p class="text-sm mb-3">Order was delivered 2 days ago.</p>
-                    <vsud-badge color="success" variant="gradient" size="sm">Delivered</vsud-badge>
+                    <vsud-badge color="success" variant="gradient" size="sm"
+                      >Delivered</vsud-badge
+                    >
                   </div>
                 </div>
               </div>
               <div class="col-lg-6 col-md-6 col-12 my-auto text-end">
-                <vsud-button color="info" variant="gradient" class="mb-0">Contact Us</vsud-button>
+                <vsud-button color="info" variant="gradient" class="mb-0"
+                  >Contact Us</vsud-button
+                >
                 <p class="text-sm mt-2 mb-0">
                   Do you like the product? Leave us a review
                   <a href="javascript:;">here</a>.
@@ -59,8 +68,14 @@
                       <i class="ni ni-bell-55 text-secondary"></i>
                     </span>
                     <div class="timeline-content">
-                      <h6 class="text-dark text-sm font-weight-bold mb-0">Order received</h6>
-                      <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">22 DEC 7:20 AM</p>
+                      <h6 class="text-dark text-sm font-weight-bold mb-0">
+                        Order received
+                      </h6>
+                      <p
+                        class="text-secondary font-weight-bold text-xs mt-1 mb-0"
+                      >
+                        22 DEC 7:20 AM
+                      </p>
                     </div>
                   </div>
                   <div class="timeline-block mb-3">
@@ -68,8 +83,14 @@
                       <i class="ni ni-html5 text-secondary"></i>
                     </span>
                     <div class="timeline-content">
-                      <h6 class="text-dark text-sm font-weight-bold mb-0">Generate order id #1832412</h6>
-                      <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">22 DEC 7:21 AM</p>
+                      <h6 class="text-dark text-sm font-weight-bold mb-0">
+                        Generate order id #1832412
+                      </h6>
+                      <p
+                        class="text-secondary font-weight-bold text-xs mt-1 mb-0"
+                      >
+                        22 DEC 7:21 AM
+                      </p>
                     </div>
                   </div>
                   <div class="timeline-block mb-3">
@@ -77,19 +98,31 @@
                       <i class="ni ni-cart text-secondary"></i>
                     </span>
                     <div class="timeline-content">
-                      <h6
-                        class="text-dark text-sm font-weight-bold mb-0"
-                      >Order transmited to courier</h6>
-                      <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">22 DEC 8:10 AM</p>
+                      <h6 class="text-dark text-sm font-weight-bold mb-0">
+                        Order transmited to courier
+                      </h6>
+                      <p
+                        class="text-secondary font-weight-bold text-xs mt-1 mb-0"
+                      >
+                        22 DEC 8:10 AM
+                      </p>
                     </div>
                   </div>
                   <div class="timeline-block mb-3">
                     <span class="timeline-step">
-                      <i class="ni ni-check-bold text-success text-gradient"></i>
+                      <i
+                        class="ni ni-check-bold text-success text-gradient"
+                      ></i>
                     </span>
                     <div class="timeline-content">
-                      <h6 class="text-dark text-sm font-weight-bold mb-0">Order delivered</h6>
-                      <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">22 DEC 4:54 PM</p>
+                      <h6 class="text-dark text-sm font-weight-bold mb-0">
+                        Order delivered
+                      </h6>
+                      <p
+                        class="text-secondary font-weight-bold text-xs mt-1 mb-0"
+                      >
+                        22 DEC 4:54 PM
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -104,9 +137,9 @@
                     src="../../../assets/img/logos/mastercard.png"
                     alt="logo"
                   />
-                  <h6
-                    class="mb-0"
-                  >****&nbsp;&nbsp;&nbsp;****&nbsp;&nbsp;&nbsp;****&nbsp;&nbsp;&nbsp;7852</h6>
+                  <h6 class="mb-0">
+                    ****&nbsp;&nbsp;&nbsp;****&nbsp;&nbsp;&nbsp;****&nbsp;&nbsp;&nbsp;7852
+                  </h6>
                   <vsud-button
                     color="secondary"
                     variant="outline"
@@ -121,22 +154,28 @@
                 </div>
                 <h6 class="mb-3 mt-4">Billing Information</h6>
                 <ul class="list-group">
-                  <li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg">
+                  <li
+                    class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg"
+                  >
                     <div class="d-flex flex-column">
                       <h6 class="mb-3 text-sm">Oliver Liam</h6>
                       <span class="mb-2 text-xs">
                         Company Name:
-                        <span class="text-dark font-weight-bold ms-2">Viking Burrito</span>
+                        <span class="text-dark font-weight-bold ms-2"
+                          >Viking Burrito</span
+                        >
                       </span>
                       <span class="mb-2 text-xs">
                         Email Address:
-                        <span
-                          class="text-dark ms-2 font-weight-bold"
-                        >oliver@burrito.com</span>
+                        <span class="text-dark ms-2 font-weight-bold"
+                          >oliver@burrito.com</span
+                        >
                       </span>
                       <span class="text-xs">
                         VAT Number:
-                        <span class="text-dark ms-2 font-weight-bold">FRB1235476</span>
+                        <span class="text-dark ms-2 font-weight-bold"
+                          >FRB1235476</span
+                        >
                       </span>
                     </div>
                   </li>
@@ -158,7 +197,9 @@
                 </div>
                 <div class="d-flex justify-content-between mt-4">
                   <span class="mb-2 text-lg">Total:</span>
-                  <span class="text-dark text-lg ms-2 font-weight-bold">$105.95</span>
+                  <span class="text-dark text-lg ms-2 font-weight-bold"
+                    >$105.95</span
+                  >
                 </div>
               </div>
             </div>
@@ -175,7 +216,7 @@ import VsudAvatar from "@/components/VsudAvatar.vue";
 import VsudBadge from "@/components/VsudBadge.vue";
 
 export default {
-  name: "order-details",
+  name: "OrderDetails",
   components: {
     VsudButton,
     VsudAvatar,

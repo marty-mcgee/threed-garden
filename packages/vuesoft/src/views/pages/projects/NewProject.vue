@@ -7,7 +7,7 @@
           <p class="mb-0 text-sm">Create new project</p>
           <hr class="my-3 horizontal dark" />
           <label for="projectName" class="form-label">Project Name</label>
-          <input type="text" class="form-control" id="projectName" />
+          <input id="projectName" type="text" class="form-control" />
           <div class="mt-4 row">
             <div class="col-12 col-md-6">
               <div class="form-group">
@@ -18,9 +18,9 @@
                 </p>
                 <div class="form-check form-switch ms-1">
                   <input
+                    id="flexSwitchCheckDefault"
                     class="form-check-input"
                     type="checkbox"
-                    id="flexSwitchCheckDefault"
                     onclick="notify(this)"
                     data-type="warning"
                     data-content="Once a project is made private, you cannot revert it to a public project."
@@ -46,9 +46,9 @@
           </div>
           <label class="mt-4 form-label">Project Tags</label>
           <select
+            id="choices-multiple-remove-button"
             class="form-control"
             name="choices-multiple-remove-button"
-            id="choices-multiple-remove-button"
             multiple
           >
             <option value="Choice 1" selected>Choice 1</option>
@@ -78,9 +78,9 @@
           </div>
           <label class="mt-4 form-label">Starting Files</label>
           <form
+            id="dropzone"
             action="/file-upload"
             class="form-control dropzone"
-            id="dropzone"
           >
             <div class="fallback">
               <input name="file" type="file" multiple />
@@ -111,7 +111,10 @@ import Choices from "choices.js";
 import Quill from "quill";
 
 export default {
-  name: "new-project",
+  name: "NewProject",
+  components: {
+    flatPickr,
+  },
   data() {
     return {
       date: "",
@@ -120,9 +123,6 @@ export default {
         allowInput: true,
       },
     };
-  },
-  components: {
-    flatPickr,
   },
   mounted() {
     if (document.getElementById("editor")) {

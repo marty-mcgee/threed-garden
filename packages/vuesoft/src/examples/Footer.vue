@@ -64,6 +64,6 @@
 
 <script>
 export default {
-  name: "app-footer",
+  name: "AppFooter",
 };
 </script>

@@ -1,69 +1,91 @@
 <template>
-  <canvas id="line-chart" class="chart-canvas" height="300"></canvas>
+  <div class="card overflow-hidden">
+    <div class="card-header p-3">
+      <p class="text-sm mb-0 text-capitalize font-weight-bold">{{ title }}</p>
+      <h5 class="font-weight-bolder mb-0">
+        {{ value.amount }}
+        <span
+          class="text-sm font-weight-bolder"
+          :class="`text-${value.percentage.color}`"
+        >
+          {{ value.percentage.value }}
+        </span>
+      </h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="chart">
+        <canvas :id="id" class="chart-canvas" :height="height"></canvas>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import Chart from "chart.js/auto";
 
 export default {
-  name: "line-chart",
+  name: "LineChart",
+  props: {
+    id: {
+      type: String,
+      default: "chart-widgets-2",
+    },
+    height: {
+      type: String,
+      default: "100",
+    },
+    title: {
+      type: String,
+      default: "",
+    },
+    value: {
+      type: Object,
+      amount: String,
+      percentage: {
+        type: Object,
+        value: [Number, String],
+        color: String,
+      },
+      default: () => {},
+    },
+    chart: {
+      type: Object,
+      required: true,
+      labels: Array,
+      datasets: {
+        type: Object,
+        label: String,
+        data: Array,
+      },
+      default: () => {},
+    },
+  },
   mounted() {
-    // Line chart
-    var ctx1 = document.getElementById("line-chart").getContext("2d");
-    var gradientStroke1 = ctx1.createLinearGradient(0, 230, 0, 50);
+    var ctx2 = document.getElementById(this.id).getContext("2d");
 
-    gradientStroke1.addColorStop(1, "rgba(203,12,159,0.2)");
-    gradientStroke1.addColorStop(0.2, "rgba(72,72,176,0.0)");
-    gradientStroke1.addColorStop(0, "rgba(203,12,159,0)"); //purple colors
-    var gradientStroke2 = ctx1.createLinearGradient(0, 230, 0, 50);
+    var gradientStroke2 = ctx2.createLinearGradient(0, 230, 0, 50);
 
-    gradientStroke2.addColorStop(1, "rgba(20,23,39,0.2)");
-    gradientStroke2.addColorStop(0.2, "rgba(72,72,176,0.0)");
-    gradientStroke2.addColorStop(0, "rgba(20,23,39,0)"); //purple colors
+    gradientStroke2.addColorStop(1, "rgba(37,47,64,0.05)");
 
-    new Chart(ctx1, {
+    let chartStatus = Chart.getChart(this.id);
+    if (chartStatus != undefined) {
+      chartStatus.destroy();
+    }
+    new Chart(ctx2, {
       type: "line",
       data: {
-        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        labels: this.chart.labels,
         datasets: [
           {
-            label: "Organic Search",
-            tension: 0.4,
+            label: this.chart.datasets.label,
+            tension: 0.5,
             borderWidth: 0,
-            pointRadius: 2,
-            pointBackgroundColor: "#cb0c9f",
-            borderColor: "#cb0c9f",
-            // eslint-disable-next-line no-dupe-keys
-            borderWidth: 3,
-            backgroundColor: gradientStroke1,
-            data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
-            maxBarThickness: 6,
-          },
-          {
-            label: "Referral",
-            tension: 0.4,
-            borderWidth: 0,
-            pointRadius: 2,
-            pointBackgroundColor: "#3A416F",
-            borderColor: "#3A416F",
-            // eslint-disable-next-line no-dupe-keys
-            borderWidth: 3,
+            pointRadius: 0,
+            borderColor: "#252f40",
             backgroundColor: gradientStroke2,
-            data: [30, 90, 40, 140, 290, 290, 340, 230, 400],
+            data: this.chart.datasets.data,
             maxBarThickness: 6,
-          },
-          {
-            label: "Direct",
-            tension: 0.4,
-            borderWidth: 0,
-            pointRadius: 2,
-            pointBackgroundColor: "#17c1e8",
-            borderColor: "#17c1e8",
-            // eslint-disable-next-line no-dupe-keys
-            borderWidth: 3,
-            backgroundColor: gradientStroke2,
-            data: [40, 80, 70, 90, 30, 90, 140, 130, 200],
-            maxBarThickness: 6,
+            fill: true,
           },
         ],
       },
@@ -83,41 +105,23 @@ export default {
           y: {
             grid: {
               drawBorder: false,
-              display: true,
-              drawOnChartArea: true,
+              display: false,
+              drawOnChartArea: false,
               drawTicks: false,
-              borderDash: [5, 5],
             },
             ticks: {
-              display: true,
-              padding: 10,
-              color: "#b2b9bf",
-              font: {
-                size: 11,
-                family: "Open Sans",
-                style: "normal",
-                lineHeight: 2,
-              },
+              display: false,
             },
           },
           x: {
             grid: {
               drawBorder: false,
-              display: true,
-              drawOnChartArea: true,
-              drawTicks: true,
-              borderDash: [5, 5],
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
             },
             ticks: {
-              display: true,
-              color: "#b2b9bf",
-              padding: 10,
-              font: {
-                size: 11,
-                family: "Open Sans",
-                style: "normal",
-                lineHeight: 2,
-              },
+              display: false,
             },
           },
         },

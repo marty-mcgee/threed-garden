@@ -1,21 +1,18 @@
 <template>
   <sidenav
-    :custom_class="this.$store.state.mcolor"
-    :class="[
-      this.$store.state.isTransparent,
-      this.$store.state.isRTL ? 'fixed-end' : 'fixed-start',
-    ]"
-    v-if="this.$store.state.showSidenav"
+    v-if="showSidenav"
+    :custom_class="mcolor"
+    :class="[isTransparent, isRTL ? 'fixed-end' : 'fixed-start']"
   />
   <main
     class="main-content position-relative max-height-vh-100 h-100 border-radius-lg"
   >
     <!-- nav -->
     <navbar
-      :class="[navClasses]"
-      :textWhite="this.$store.state.isAbsolute ? 'text-white opacity-8' : ''"
-      :minNav="navbarMinimize"
       v-if="this.$store.state.showNavbar"
+      :class="[isNavFixed ? navbarFixed : '', isAbsolute ? absolute : '']"
+      :text-white="isAbsolute ? 'text-white opacity-8' : ''"
+      :min-nav="navbarMinimize"
     />
     <router-view />
     <app-footer v-show="this.$store.state.showFooter" />
@@ -33,7 +30,7 @@ import Sidenav from "./examples/Sidenav";
 import Configurator from "@/examples/Configurator.vue";
 import Navbar from "@/examples/Navbars/Navbar.vue";
 import AppFooter from "@/examples/Footer.vue";
-import { mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
 export default {
   name: "App",
   components: {
@@ -42,22 +39,23 @@ export default {
     Navbar,
     AppFooter,
   },
-  methods: {
-    ...mapMutations(["toggleConfigurator", "navbarMinimize"]),
-  },
   computed: {
-    navClasses() {
-      return {
-        "position-sticky blur shadow-blur mt-4 left-auto top-1 z-index-sticky": this
-          .$store.state.isNavFixed,
-        "position-absolute px-4 mx-0 w-100 z-index-2": this.$store.state
-          .isAbsolute,
-        "px-0 mx-4 mt-4": !this.$store.state.isAbsolute,
-      };
-    },
+    ...mapState([
+      "isTransparent",
+      "isRTL",
+      "isNavFixed",
+      "isAbsolute",
+      "navbarFixed",
+      "absolute",
+      "mcolor",
+      "showSidenav",
+    ]),
   },
   beforeMount() {
     this.$store.state.isTransparent = "bg-transparent";
+  },
+  methods: {
+    ...mapMutations(["toggleConfigurator", "navbarMinimize"]),
   },
 };
 </script>

@@ -1,90 +1,53 @@
 <template>
-  <canvas id="bubble-chart" class="chart-canvas" height="140"></canvas>
+  <canvas :id="id" class="chart-canvas" :height="height"></canvas>
 </template>
 
 <script>
 import Chart from "chart.js/auto";
 export default {
-  name: "bar-chart",
+  name: "BubbleChart",
+  props: {
+    id: {
+      type: String,
+      default: "bubble-chart",
+    },
+    height: {
+      type: [String, Number],
+      default: "140",
+    },
+    chart: {
+      type: Object,
+      required: true,
+      labels: Array,
+      datasets: {
+        type: Array,
+        label: String,
+        data: Array,
+      },
+    },
+  },
   mounted() {
     // Bubble chart
-    var ctx8 = document.getElementById("bubble-chart").getContext("2d");
+    var ctx = document.getElementById(this.id).getContext("2d");
 
-    new Chart(ctx8, {
+    let chartStatus = Chart.getChart(this.id);
+    if (chartStatus != undefined) {
+      chartStatus.destroy();
+    }
+
+    new Chart(ctx, {
       type: "bubble",
       data: {
-        labels: ["0", "10", "20", "30", "40", "50", "60", "70", "80", "90"],
+        labels: this.chart.labels,
         datasets: [
           {
-            label: "Dataset 1",
-            data: [
-              {
-                x: 100,
-                y: 0,
-                r: 10,
-              },
-              {
-                x: 60,
-                y: 30,
-                r: 20,
-              },
-              {
-                x: 40,
-                y: 350,
-                r: 10,
-              },
-              {
-                x: 80,
-                y: 80,
-                r: 10,
-              },
-              {
-                x: 20,
-                y: 30,
-                r: 15,
-              },
-              {
-                x: 0,
-                y: 100,
-                r: 5,
-              },
-            ],
+            label: this.chart.datasets[0].label,
+            data: this.chart.datasets[0].data,
             backgroundColor: "#cb0c9f",
           },
           {
-            label: "Dataset 2",
-            data: [
-              {
-                x: 70,
-                y: 40,
-                r: 10,
-              },
-              {
-                x: 30,
-                y: 60,
-                r: 20,
-              },
-              {
-                x: 10,
-                y: 300,
-                r: 25,
-              },
-              {
-                x: 60,
-                y: 200,
-                r: 10,
-              },
-              {
-                x: 50,
-                y: 300,
-                r: 15,
-              },
-              {
-                x: 20,
-                y: 350,
-                r: 5,
-              },
-            ],
+            label: this.chart.datasets[1].label,
+            data: this.chart.datasets[1].data,
             backgroundColor: "#3A416F",
           },
         ],

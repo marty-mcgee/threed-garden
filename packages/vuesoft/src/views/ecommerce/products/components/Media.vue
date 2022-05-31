@@ -8,11 +8,15 @@
       <div class="mt-3 row">
         <div class="col-12">
           <label>Product images</label>
-          <div
+          <form
+            id="dropzone"
             action="/file-upload"
             class="form-control dropzone"
-            id="productImg"
-          ></div>
+          >
+            <div class="fallback">
+              <input name="file" type="file" multiple />
+            </div>
+          </form>
         </div>
       </div>
       <div class="mt-4 button-row d-flex col-12">
@@ -40,11 +44,20 @@
 
 <script>
 import VsudButton from "@/components/VsudButton.vue";
+import Dropzone from "dropzone";
 
 export default {
-  name: "media",
+  name: "Media",
   components: {
     VsudButton,
+  },
+  mounted() {
+    Dropzone.autoDiscover = false;
+    var drop = document.getElementById("dropzone");
+    new Dropzone(drop, {
+      url: "/file/post",
+      addRemoveLinks: true,
+    });
   },
 };
 </script>

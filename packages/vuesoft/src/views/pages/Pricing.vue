@@ -21,14 +21,14 @@
         <div class="mx-auto text-center col-lg-4 col-md-6 col-7">
           <div class="mt-5 nav-wrapper position-relative z-index-2">
             <ul
-              class="flex-row p-1 nav nav-pills nav-fill"
               id="tabs-pricing"
+              class="flex-row p-1 nav nav-pills nav-fill"
               role="tablist"
             >
               <li class="nav-item">
                 <a
-                  class="mb-0 nav-link active"
                   id="tabs-iconpricing-tab-1"
+                  class="mb-0 nav-link active"
                   data-bs-toggle="tab"
                   href="#monthly"
                   role="tab"
@@ -40,8 +40,8 @@
               </li>
               <li class="nav-item">
                 <a
-                  class="mb-0 nav-link"
                   id="tabs-iconpricing-tab-2"
+                  class="mb-0 nav-link"
                   data-bs-toggle="tab"
                   href="#annual"
                   role="tab"
@@ -60,64 +60,116 @@
   <div class="mt-n8">
     <div class="container">
       <div class="tab-content tab-space">
-        <div class="tab-pane active" id="monthly">
+        <div id="monthly" class="tab-pane active">
           <div class="row">
-            <div class="mb-4 col-lg-4 mb-lg-0">
-              <pricing-card />
-            </div>
-            <div class="mb-4 col-lg-4 mb-lg-0">
-              <pricing-card
-                mPackage="Premium"
-                value="89"
-                numOfMembers="10"
-                storage="40"
-                intHelp
-                skFiles
-                premium
-              />
-            </div>
-            <div class="mb-4 col-lg-4 mb-lg-0">
-              <pricing-card
-                mPackage="Enterprise"
-                value="99"
-                numOfMembers="Unlimited"
-                storage="100"
-                intHelp
-                skFiles
-                apiAccess
-                comDocument
-              />
-            </div>
+            <pricing-card
+              :badge="{ color: 'secondary', label: 'Starter' }"
+              :price="{ currency: '$', value: '59' }"
+              :specifications="[
+                { label: '2 team members', includes: true },
+                { label: '20GB Cloud storage', includes: true },
+                { label: 'Integration help', includes: false },
+                { label: 'Sketch Files', includes: false },
+                { label: 'API Access', includes: false },
+                { label: 'Complete documentation', includes: false },
+              ]"
+              :action="{
+                color: 'dark',
+                route: 'javascript:;',
+                label: 'Join',
+              }"
+            />
+            <pricing-card
+              :badge="{ color: 'secondary', label: 'premium' }"
+              :price="{ currency: '$', value: '89' }"
+              :specifications="[
+                { label: '10 team members', includes: true },
+                { label: '40GB Cloud storage', includes: true },
+                { label: 'Integration help', includes: true },
+                { label: 'Sketch Files', includes: true },
+                { label: 'API Access', includes: false },
+                { label: 'Complete documentation', includes: false },
+              ]"
+              :action="{
+                color: 'success',
+                route: 'javascript:;',
+                label: 'Join',
+              }"
+            />
+
+            <pricing-card
+              :badge="{ color: 'secondary', label: 'Enterprise' }"
+              :price="{ currency: '$', value: '99' }"
+              :specifications="[
+                { label: 'Unlimited team members', includes: true },
+                { label: '100GB Cloud storage', includes: true },
+                { label: 'Integration help', includes: true },
+                { label: 'Sketch Files', includes: true },
+                { label: 'API Access', includes: true },
+                { label: 'Complete documentation', includes: true },
+              ]"
+              :action="{
+                color: 'dark',
+                route: 'javascript:;',
+                label: 'Join',
+              }"
+            />
           </div>
         </div>
-        <div class="tab-pane" id="annual">
+        <div id="annual" class="tab-pane">
           <div class="row">
-            <div class="mb-4 col-lg-4 mb-lg-0">
-              <pricing-card value="119" />
-            </div>
-            <div class="mb-4 col-lg-4 mb-lg-0">
-              <pricing-card
-                mPackage="Premium"
-                value="159"
-                numOfMembers="10"
-                storage="40"
-                intHelp
-                skFiles
-                premium
-              />
-            </div>
-            <div class="mb-4 col-lg-4 mb-lg-0">
-              <pricing-card
-                mPackage="Enterprise"
-                value="399"
-                numOfMembers="Unlimited"
-                storage="100"
-                intHelp
-                skFiles
-                apiAccess
-                comDocument
-              />
-            </div>
+            <pricing-card
+              :badge="{ color: 'secondary', label: 'Starter' }"
+              :price="{ currency: '$', value: '119' }"
+              :specifications="[
+                { label: '2 team members', includes: true },
+                { label: '20GB Cloud storage', includes: true },
+                { label: 'Integration help', includes: false },
+                { label: 'Sketch Files', includes: false },
+                { label: 'API Access', includes: false },
+                { label: 'Complete documentation', includes: false },
+              ]"
+              :action="{
+                color: 'dark',
+                route: 'javascript:;',
+                label: 'Join',
+              }"
+            />
+            <pricing-card
+              :badge="{ color: 'secondary', label: 'premium' }"
+              :price="{ currency: '$', value: '159' }"
+              :specifications="[
+                { label: '10 team members', includes: true },
+                { label: '40GB Cloud storage', includes: true },
+                { label: 'Integration help', includes: true },
+                { label: 'Sketch Files', includes: true },
+                { label: 'API Access', includes: false },
+                { label: 'Complete documentation', includes: false },
+              ]"
+              :action="{
+                color: 'success',
+                route: 'javascript:;',
+                label: 'Join',
+              }"
+            />
+
+            <pricing-card
+              :badge="{ color: 'secondary', label: 'Enterprise' }"
+              :price="{ currency: '$', value: '399' }"
+              :specifications="[
+                { label: 'Unlimited team members', includes: true },
+                { label: '100GB Cloud storage', includes: true },
+                { label: 'Integration help', includes: true },
+                { label: 'Sketch Files', includes: true },
+                { label: 'API Access', includes: true },
+                { label: 'Complete documentation', includes: true },
+              ]"
+              :action="{
+                color: 'dark',
+                route: 'javascript:;',
+                label: 'Join',
+              }"
+            />
           </div>
         </div>
       </div>
@@ -173,107 +225,79 @@
         />
       </div>
     </div>
-    <div class="mt-8 row">
-      <div class="mx-auto text-center col-md-6">
-        <h2>Frequently Asked Questions</h2>
-        <p>
-          A lot of people don&#39;t appreciate the moment until it’s passed.
-          I&#39;m not trying my hardest, and I&#39;m not trying to do
-        </p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="mx-auto col-md-10">
-        <div class="accordion" id="accordionRental">
-          <accordion-item
-            accordionId="headingOne"
-            collapseId="collapseOne"
-            active
-          >
-            <template v-slot:question> How do I order? </template>
-            <template v-slot:answer>
-              We’re not always in the position that we want to be at. We’re
-              constantly growing. We’re constantly making mistakes. We’re
-              constantly trying to express ourselves and actualize our dreams.
-              If you have the opportunity to play this game of life you need to
-              appreciate every moment. A lot of people don’t appreciate the
-              moment until it’s passed.
-            </template>
-          </accordion-item>
-          <accordion-item accordionId="headingTwo" collapseId="collapseTwo">
-            <template v-slot:question>How can i make the payment?</template>
-            <template v-slot:answer>
-              It really matters and then like it really doesn’t matter. What
-              matters is the people who are sparked by it. And the people who
-              are like offended by it, it doesn’t matter. Because it&#39;s
-              motivating the doers. Because I’m here to follow my dreams and and
-              inspire other people to follow their dreams, too.
-              <br />
-              We’re not always in the position that we want to be at. We’re
-              constantly growing. We’re constantly making mistakes. We’re
-              constantly trying to express ourselves and actualize our dreams.
-              If you have the opportunity to play this game of life you need to
-              appreciate every moment. A lot of people don’t appreciate the
-              moment until it’s passed.
-            </template>
-          </accordion-item>
+    <accordion
+      title="Frequently Asked Questions"
+      description="A lot of people don&#39;t appreciate the moment until it’s passed.
+        I&#39;m not trying my hardest, and I&#39;m not trying to do"
+    >
+      <accordion-item
+        accordion-id="headingTwo"
+        collapse-id="collapseTwo"
+        question="How can i make the payment?"
+      >
+        It really matters and then like it really doesn’t matter. What matters
+        is the people who are sparked by it. And the people who are like
+        offended by it, it doesn’t matter. Because it&#39;s motivating the
+        doers. Because I’m here to follow my dreams and and inspire other people
+        to follow their dreams, too.
+        <br />
+        We’re not always in the position that we want to be at. We’re constantly
+        growing. We’re constantly making mistakes. We’re constantly trying to
+        express ourselves and actualize our dreams. If you have the opportunity
+        to play this game of life you need to appreciate every moment. A lot of
+        people don’t appreciate the moment until it’s passed.
+      </accordion-item>
 
-          <accordion-item accordionId="headingThree" collapseId="collapseThree">
-            <template v-slot:question
-              >How much time does it take to receive the order?</template
-            >
-            <template v-slot:answer>
-              The time is now for it to be okay to be great. People in this
-              world shun people for being great. For being a bright color. For
-              standing out. But the time is now to be okay to be the greatest
-              you. Would you believe in what you believe in, if you were the
-              only one who believed it? If everything I did failed - which it
-              doesn&#39;t, it actually succeeds - just the fact that I&#39;m
-              willing to fail is an inspiration. People are so scared to lose
-              that they don&#39;t even try. Like, one thing people can&#39;t say
-              is that I&#39;m not trying, and I&#39;m not trying my hardest, and
-              I&#39;m not trying to do the best way I know how.
-            </template>
-          </accordion-item>
+      <accordion-item
+        accordion-id="headingThree"
+        collapse-id="collapseThree"
+        question="How much time does it take to receive the order?"
+      >
+        The time is now for it to be okay to be great. People in this world shun
+        people for being great. For being a bright color. For standing out. But
+        the time is now to be okay to be the greatest you. Would you believe in
+        what you believe in, if you were the only one who believed it? If
+        everything I did failed - which it doesn&#39;t, it actually succeeds -
+        just the fact that I&#39;m willing to fail is an inspiration. People are
+        so scared to lose that they don&#39;t even try. Like, one thing people
+        can&#39;t say is that I&#39;m not trying, and I&#39;m not trying my
+        hardest, and I&#39;m not trying to do the best way I know how.
+      </accordion-item>
 
-          <accordion-item accordionId="headingFour" collapseId="collapseFour">
-            <template v-slot:question>Can I resell the products?</template>
-            <template v-slot:answer>
-              I always felt like I could do anything. That’s the main thing
-              people are controlled by! Thoughts- their perception of
-              themselves! They&#39;re slowed down by their perception of
-              themselves. If you&#39;re taught you can’t do anything, you won’t
-              do anything. I was taught I could do everything.
-              <br /><br />
-              If everything I did failed - which it doesn&#39;t, it actually
-              succeeds - just the fact that I&#39;m willing to fail is an
-              inspiration. People are so scared to lose that they don&#39;t even
-              even try. Like, one thing people can&#39;t say is that I&#39;m not
-              trying, and I&#39;m not trying my hardest, and I&#39;m not trying
-              trying to do the best way I know how.
-            </template>
-          </accordion-item>
+      <accordion-item
+        accordion-id="headingFour"
+        collapse-id="collapseFour"
+        question="Can I resell the products?"
+      >
+        I always felt like I could do anything. That’s the main thing people are
+        controlled by! Thoughts- their perception of themselves! They&#39;re
+        slowed down by their perception of themselves. If you&#39;re taught you
+        can’t do anything, you won’t do anything. I was taught I could do
+        everything.
+        <br /><br />
+        If everything I did failed - which it doesn&#39;t, it actually succeeds
+        - just the fact that I&#39;m willing to fail is an inspiration. People
+        are so scared to lose that they don&#39;t even even try. Like, one thing
+        people can&#39;t say is that I&#39;m not trying, and I&#39;m not trying
+        my hardest, and I&#39;m not trying trying to do the best way I know how.
+      </accordion-item>
 
-          <accordion-item accordionId="headingFifth" collapseId="collapseFifth">
-            <template v-slot:question
-              >Where do I find the shipping details?</template
-            >
-            <template v-slot:answer>
-              There’s nothing I really wanted to do in life that I wasn’t able
-              to get good at. That’s my skill. I’m not really specifically
-              talented at anything except for the ability to learn. That’s what
-              I do. That’s what I’m here for. Don’t be afraid to be wrong
-              because you can’t learn anything from a compliment. I always felt
-              like I could do anything. That’s the main thing people are
-              controlled by! Thoughts- their perception of themselves!
-              They&#39;re slowed down by their perception of themselves. If
-              you&#39;re taught you can’t do anything, you won’t do anything. I
-              was taught I could do everything.
-            </template>
-          </accordion-item>
-        </div>
-      </div>
-    </div>
+      <accordion-item
+        accordion-id="headingFifth"
+        collapse-id="collapseFifth"
+        question="Where do I find the shipping details?"
+      >
+        There’s nothing I really wanted to do in life that I wasn’t able to get
+        good at. That’s my skill. I’m not really specifically talented at
+        anything except for the ability to learn. That’s what I do. That’s what
+        I’m here for. Don’t be afraid to be wrong because you can’t learn
+        anything from a compliment. I always felt like I could do anything.
+        That’s the main thing people are controlled by! Thoughts- their
+        perception of themselves! They&#39;re slowed down by their perception of
+        themselves. If you&#39;re taught you can’t do anything, you won’t do
+        anything. I was taught I could do everything.
+      </accordion-item>
+    </accordion>
   </div>
   <app-footer />
 </template>
@@ -283,17 +307,19 @@ import PricingCard from "./components/PricingCard.vue";
 import AppFooter from "@/examples/PageLayout/Footer.vue";
 import AccordionItem from "./components/AccordionItem.vue";
 import setNavPills from "@/assets/js/nav-pills.js";
+import Accordion from "./components/Accordion.vue";
 
 export default {
-  name: "pricing",
-  data() {
-    return {};
-  },
+  name: "Pricing",
   components: {
     Navbar,
     PricingCard,
     AppFooter,
     AccordionItem,
+    Accordion,
+  },
+  data() {
+    return {};
   },
   mounted() {
     this.$store.state.showSidenav = false;

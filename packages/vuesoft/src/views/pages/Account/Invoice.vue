@@ -12,16 +12,21 @@
             <div class="card-header text-center">
               <div class="row justify-content-between">
                 <div class="col-md-4 text-start">
-                  <img class="mb-2 w-25 p-2" src="../../../assets/img/logo-ct.png" alt="Logo" />
-                  <h6>St. Independence Embankment, 050105 Bucharest, Romania</h6>
+                  <img
+                    class="mb-2 w-25 p-2"
+                    src="../../../assets/img/logo-ct.png"
+                    alt="Logo"
+                  />
+                  <h6>
+                    St. Independence Embankment, 050105 Bucharest, Romania
+                  </h6>
                   <p class="d-block text-secondary">tel: +4 (074) 1090873</p>
                 </div>
                 <div class="col-lg-3 col-md-7 text-md-end text-start mt-5">
                   <h6 class="d-block mt-2 mb-0">Billed to: John Doe</h6>
                   <p class="text-secondary">
                     4006 Locust View Drive
-                    <br />San Francisco CA
-                    <br />California
+                    <br />San Francisco CA <br />California
                   </p>
                 </div>
               </div>
@@ -101,9 +106,10 @@
               <div class="row">
                 <div class="col-lg-5 text-left">
                   <h5>Thank you!</h5>
-                  <p
-                    class="text-secondary text-sm"
-                  >If you encounter any issues related to the invoice you can contact us at:</p>
+                  <p class="text-secondary text-sm">
+                    If you encounter any issues related to the invoice you can
+                    contact us at:
+                  </p>
                   <h6 class="text-secondary mb-0">
                     email:
                     <span class="text-dark">support@creative-tim.com</span>
@@ -117,7 +123,8 @@
                     onclick="window.print()"
                     type="button"
                     name="button"
-                  >Print</vsud-button>
+                    >Print</vsud-button
+                  >
                 </div>
               </div>
             </div>

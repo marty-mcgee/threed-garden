@@ -15,7 +15,7 @@
     <div class="multisteps-form__content">
       <div class="mt-4 row">
         <div class="col-sm-3 ms-auto">
-          <input type="checkbox" class="btn-check" id="btncheck1" />
+          <input id="btncheck1" type="checkbox" class="btn-check" />
           <label
             class="px-6 py-5 border-2 btn btn-lg btn-outline-secondary"
             for="btncheck1"
@@ -61,7 +61,7 @@
           <h6>Design</h6>
         </div>
         <div class="col-sm-3">
-          <input type="checkbox" class="btn-check" id="btncheck2" />
+          <input id="btncheck2" type="checkbox" class="btn-check" />
           <label
             class="px-6 py-5 border-2 btn btn-lg btn-outline-secondary"
             for="btncheck2"
@@ -107,7 +107,7 @@
           <h6>Code</h6>
         </div>
         <div class="col-sm-3 me-auto">
-          <input type="checkbox" class="btn-check" id="btncheck3" />
+          <input id="btncheck3" type="checkbox" class="btn-check" />
           <label
             class="px-6 py-5 border-2 btn btn-lg btn-outline-secondary"
             for="btncheck3"
@@ -181,6 +181,6 @@
 
 <script>
 export default {
-  name: "account",
+  name: "Account",
 };
 </script>

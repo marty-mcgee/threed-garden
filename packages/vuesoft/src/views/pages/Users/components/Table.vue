@@ -4,29 +4,48 @@
       <table class="table align-items-center mb-0">
         <thead>
           <tr>
-            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Name</th>
+            <th
+              class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+            >
+              Name
+            </th>
             <th
               class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
-            >Function</th>
+            >
+              Function
+            </th>
             <th
               class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
-            >Review</th>
+            >
+              Review
+            </th>
             <th
               class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-            >Email</th>
+            >
+              Email
+            </th>
             <th
               class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-            >Employed</th>
+            >
+              Employed
+            </th>
             <th
               class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-            >Id</th>
+            >
+              Id
+            </th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>
               <div class="d-flex px-2 py-1">
-                <vsud-avatar :img="img1" class="me-3" alt="avatar image" border-radius="lg" />
+                <vsud-avatar
+                  :img="img1"
+                  class="me-3"
+                  alt="avatar image"
+                  border-radius="lg"
+                />
                 <div class="d-flex flex-column justify-content-center">
                   <h6 class="mb-0 text-sm">John Michael</h6>
                 </div>
@@ -54,7 +73,12 @@
           <tr>
             <td>
               <div class="d-flex px-2 py-1">
-                <vsud-avatar :img="img2" class="me-3" alt="avatar image" border-radius="lg" />
+                <vsud-avatar
+                  :img="img2"
+                  class="me-3"
+                  alt="avatar image"
+                  border-radius="lg"
+                />
                 <div class="d-flex flex-column justify-content-center">
                   <h6 class="mb-0 text-sm">Alexa Liras</h6>
                 </div>
@@ -73,7 +97,9 @@
               <p class="text-secondary mb-0 text-sm">alexa@user.com</p>
             </td>
             <td class="align-middle text-center">
-              <span class="text-secondary text-xs font-weight-bold">11/01/19</span>
+              <span class="text-secondary text-xs font-weight-bold"
+                >11/01/19</span
+              >
             </td>
             <td class="align-middle text-center">
               <span class="text-secondary text-sm">93021</span>
@@ -82,7 +108,12 @@
           <tr>
             <td>
               <div class="d-flex px-2 py-1">
-                <vsud-avatar :img="img3" class="me-3" alt="avatar image" border-radius="lg" />
+                <vsud-avatar
+                  :img="img3"
+                  class="me-3"
+                  alt="avatar image"
+                  border-radius="lg"
+                />
                 <div class="d-flex flex-column justify-content-center">
                   <h6 class="mb-0 text-sm">Laurent Perrier</h6>
                 </div>
@@ -101,7 +132,9 @@
               <p class="text-secondary mb-0 text-sm">laurent@user.com</p>
             </td>
             <td class="align-middle text-center">
-              <span class="text-secondary text-xs font-weight-bold">19/09/17</span>
+              <span class="text-secondary text-xs font-weight-bold"
+                >19/09/17</span
+              >
             </td>
             <td class="align-middle text-center">
               <span class="text-secondary text-sm">10392</span>
@@ -110,7 +143,12 @@
           <tr>
             <td>
               <div class="d-flex px-2 py-1">
-                <vsud-avatar :img="img4" class="me-3" alt="avatar image" border-radius="lg" />
+                <vsud-avatar
+                  :img="img4"
+                  class="me-3"
+                  alt="avatar image"
+                  border-radius="lg"
+                />
                 <div class="d-flex flex-column justify-content-center">
                   <h6 class="mb-0 text-sm">Michael Levi</h6>
                 </div>
@@ -129,7 +167,9 @@
               <p class="text-secondary mb-0 text-sm">michael@user.com</p>
             </td>
             <td class="align-middle text-center">
-              <span class="text-secondary text-xs font-weight-bold">24/12/08</span>
+              <span class="text-secondary text-xs font-weight-bold"
+                >24/12/08</span
+              >
             </td>
             <td class="align-middle text-center">
               <span class="text-secondary text-sm">34002</span>
@@ -138,7 +178,12 @@
           <tr>
             <td>
               <div class="d-flex px-2 py-1">
-                <vsud-avatar :img="img5" class="me-3" alt="avatar image" border-radius="lg" />
+                <vsud-avatar
+                  :img="img5"
+                  class="me-3"
+                  alt="avatar image"
+                  border-radius="lg"
+                />
                 <div class="d-flex flex-column justify-content-center">
                   <h6 class="mb-0 text-sm">Richard Gran</h6>
                 </div>
@@ -157,7 +202,9 @@
               <p class="text-secondary mb-0 text-sm">richard@user.com</p>
             </td>
             <td class="align-middle text-center">
-              <span class="text-secondary text-xs font-weight-bold">04/10/21</span>
+              <span class="text-secondary text-xs font-weight-bold"
+                >04/10/21</span
+              >
             </td>
             <td class="align-middle text-center">
               <span class="text-secondary text-sm">91879</span>
@@ -166,7 +213,12 @@
           <tr>
             <td>
               <div class="d-flex px-2 py-1">
-                <vsud-avatar :img="img1" class="me-3" alt="avatar image" border-radius="lg" />
+                <vsud-avatar
+                  :img="img1"
+                  class="me-3"
+                  alt="avatar image"
+                  border-radius="lg"
+                />
                 <div class="d-flex flex-column justify-content-center">
                   <h6 class="mb-0 text-sm">Miriam Eric</h6>
                 </div>
@@ -185,7 +237,9 @@
               <p class="text-secondary mb-0 text-sm">miriam@user.com</p>
             </td>
             <td class="align-middle text-center">
-              <span class="text-secondary text-xs font-weight-bold">14/09/20</span>
+              <span class="text-secondary text-xs font-weight-bold"
+                >14/09/20</span
+              >
             </td>
             <td class="align-middle text-center">
               <span class="text-secondary text-sm">23042</span>

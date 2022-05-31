@@ -10,8 +10,8 @@
                   class="multisteps-form__progress-btn js-active"
                   type="button"
                   title="User Info"
-                  @click="activeStep = 0"
                   :class="activeStep >= 0 ? activeClass : ''"
+                  @click="activeStep = 0"
                 >
                   <span>User Info</span>
                 </button>
@@ -19,8 +19,8 @@
                   class="multisteps-form__progress-btn"
                   type="button"
                   title="Address"
-                  @click="activeStep = 1"
                   :class="activeStep >= 1 ? activeClass : ''"
+                  @click="activeStep = 1"
                 >
                   Address
                 </button>
@@ -28,8 +28,8 @@
                   class="multisteps-form__progress-btn"
                   type="button"
                   title="Socials"
-                  @click="activeStep = 2"
                   :class="activeStep >= 2 ? activeClass : ''"
+                  @click="activeStep = 2"
                 >
                   Socials
                 </button>
@@ -37,8 +37,8 @@
                   class="multisteps-form__progress-btn"
                   type="button"
                   title="Profile"
-                  @click="activeStep = 3"
                   :class="activeStep >= 3 ? activeClass : ''"
+                  @click="activeStep = 3"
                 >
                   Profile
                 </button>
@@ -73,7 +73,7 @@ import Socials from "./components/Socials.vue";
 import Profile from "./components/Profile.vue";
 
 export default {
-  name: "new-user",
+  name: "NewUser",
   components: {
     UserInfo,
     Address,
@@ -92,16 +92,13 @@ export default {
     nextStep() {
       if (this.activeStep < this.formSteps) {
         this.activeStep += 1;
-        console.log(this.activeStep);
       } else {
         this.activeStep -= 1;
-        console.log(this.activeStep);
       }
     },
     prevStep() {
       if (this.activeStep > 0) {
         this.activeStep -= 1;
-        console.log(this.activeStep);
       }
     },
   },
