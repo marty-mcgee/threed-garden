@@ -3,11 +3,10 @@
     :data-bs-toggle="collapse ? 'collapse' : ''"
     :href="collapse ? `#${collapseRef}` : collapseRef"
     :aria-controls="collapseRef"
-    :aria-expanded="isExpanded"
+    aria-expanded="false"
     class="nav-link"
     v-bind="$attrs"
     type="button"
-    @click="this.isExpanded = !this.isExpanded"
   >
     <div
       class="text-center bg-white shadow icon icon-shape icon-sm border-radius-md d-flex align-items-center justify-content-center"
@@ -21,31 +20,26 @@
       >{{ navText }}</span
     >
   </a>
-  <div :class="isExpanded ? 'collapse show' : 'collapse'">
+  <div :id="collapseRef" class="collapse">
     <slot name="list"></slot>
   </div>
 </template>
 <script>
 export default {
-  name: "sidenav-collapse",
+  name: "SidenavCollapse",
   props: {
     collapseRef: {
       type: String,
-      required: true,
+      required: true
     },
     navText: {
       type: String,
-      required: true,
+      required: true
     },
     collapse: {
       type: Boolean,
-      default: true,
-    },
-  },
-  data() {
-    return {
-      isExpanded: false,
-    };
-  },
+      default: true
+    }
+  }
 };
 </script>

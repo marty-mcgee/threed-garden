@@ -3,9 +3,7 @@
     <div class="toast-header bg-transparent border-0">
       <i class="me-2" :class="getIcon(icon, iconColor)" />
       <span class="me-auto font-weight-bold" :class="getTextColor(color)">
-        {{
-        title
-        }}
+        {{ title }}
       </span>
       <small :class="getTextColor(color)">{{ date }}</small>
       <i
@@ -21,21 +19,40 @@
 
 <script>
 export default {
-  name: "vsud-snackbar",
+  name: "VsudSnackbar",
   props: {
-    title: String,
-    date: String,
-    description: String,
-    icon: String,
+    title: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: String,
+      default: "",
+    },
+    description: {
+      type: String,
+      default: "",
+    },
+    icon: {
+      type: [String, Object],
+      component: {
+        type: String,
+      },
+      color: {
+        type: String,
+      },
+      default: () => ({
+        color: "success",
+      }),
+    },
     color: {
       type: String,
       default: "success",
     },
-    iconColor: {
-      type: String,
-      default: "success",
+    closeHandler: {
+      type: Function,
+      default: null,
     },
-    closeHandler: Function,
   },
   methods: {
     getColor: (color) => {
@@ -49,8 +66,15 @@ export default {
 
       return colorValue;
     },
-    getIcon: (icon, iconColor) =>
-      icon && iconColor ? `${icon} text-${iconColor}` : null,
+    getIcon(icon) {
+      if (icon && typeof icon === "string") {
+        return icon;
+      } else if (icon && typeof icon === "object") {
+        return `${icon.component} text-${icon.color}`;
+      } else {
+        return null;
+      }
+    },
     getTextColor: (color) => (color === "white" ? "text-dark" : "text-white"),
     getHrColor: (color) => (color === "white" ? "dark" : "light"),
   },

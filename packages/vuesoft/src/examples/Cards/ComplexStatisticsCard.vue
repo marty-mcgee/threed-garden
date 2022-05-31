@@ -5,30 +5,35 @@
       background-image: url('../../../assets/img/curved-images/white-curved.jpeg');
     "
   >
-    <span class="mask bg-gradient-dark opacity-9 border-radius-xl"></span>
+    <span
+      class="mask opacity-9 border-radius-xl"
+      :class="`bg-gradient-${backgroundColor}`"
+    ></span>
     <div class="card-body p-3 position-relative">
       <div class="row">
         <div class="col-8 text-start">
           <div
             class="icon icon-shape bg-white shadow text-center border-radius-md"
-            :class="icon_bg"
+            :class="typeof icon === 'object' ? icon.background : ''"
           >
             <i
               class="text-dark text-gradient text-lg opacity-10"
-              :class="classIcon"
+              :class="typeof icon === 'string' ? icon : icon.component"
               aria-hidden="true"
             ></i>
           </div>
-          <h5 class="text-white font-weight-bolder mb-0 mt-3">{{ caption }}</h5>
-          <span class="text-white text-sm">{{ activeUsers }}</span>
+          <h5 class="text-white font-weight-bolder mb-0 mt-3">
+            {{ count.number }}
+          </h5>
+          <span class="text-white text-sm">{{ count.label }}</span>
         </div>
         <div class="col-4">
           <div class="dropdown text-end mb-6">
             <a
+              id="dropdownUsers1"
               href="javascript:;"
               class="cursor-pointer"
               :class="{ show: showMenu }"
-              id="dropdownUsers1"
               data-bs-toggle="dropdown"
               aria-expanded="false"
               @click="showMenu = !showMenu"
@@ -58,10 +63,14 @@
             </ul>
           </div>
           <p
-            class="text-white text-sm text-end font-weight-bolder mt-auto mb-0"
-            :class="class_percentage"
+            class="text-sm text-end font-weight-bolder mt-auto mb-0"
+            :class="percentage.color ? percentage.color : 'text-white'"
           >
-            {{ percentage }}
+            {{
+              typeof percentage === "string"
+                ? `${percentage}`
+                : `${percentage.label}`
+            }}
           </p>
         </div>
       </div>
@@ -71,28 +80,50 @@
 
 <script>
 export default {
-  name: "complex-statistics-card",
+  name: "ComplexStatisticsCard",
+  props: {
+    icon: {
+      type: [String, Object],
+      required: true,
+      component: {
+        type: String,
+      },
+      background: {
+        type: String,
+      },
+      default: () => ({
+        background: "bg-white",
+      }),
+    },
+    count: {
+      type: Object,
+      default: null,
+      number: {
+        type: Number,
+      },
+      label: {
+        type: String,
+      },
+    },
+    percentage: {
+      type: [String, Object],
+      default: "",
+      label: {
+        type: String,
+      },
+      color: {
+        type: String,
+      },
+    },
+    backgroundColor: {
+      type: String,
+      default: "dark",
+    },
+  },
   data() {
     return {
       showMenu: false,
     };
-  },
-  props: {
-    classIcon: {
-      type: String,
-      required: true,
-    },
-    activeUsers: String,
-    percentage: String,
-    class_percentage: {
-      type: String,
-      default: "text-success",
-    },
-    icon_bg: {
-      type: String,
-      default: "bg-white",
-    },
-    caption: String,
   },
 };
 </script>

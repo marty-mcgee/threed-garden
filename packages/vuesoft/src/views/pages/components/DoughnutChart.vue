@@ -1,22 +1,47 @@
 <template>
-  <canvas id="doughnut-chart" class="chart-canvas" height="300"></canvas>
+  <canvas :id="id" class="chart-canvas" :height="height"></canvas>
 </template>
 
 <script>
 import Chart from "chart.js/auto";
 export default {
-  name: "bar-chart",
+  name: "DoughnutChart",
+  props: {
+    id: {
+      type: String,
+      default: "doughnut-chart",
+    },
+    height: {
+      type: String,
+      default: "300",
+    },
+    chart: {
+      type: Object,
+      required: true,
+      labels: Array,
+      datasets: {
+        type: Object,
+        label: String,
+        data: Array,
+      },
+    },
+  },
   mounted() {
     // Doughnut chart
-    var ctx3 = document.getElementById("doughnut-chart").getContext("2d");
+    var ctx = document.getElementById(this.id).getContext("2d");
 
-    new Chart(ctx3, {
+    let chartStatus = Chart.getChart(this.id);
+    if (chartStatus != undefined) {
+      chartStatus.destroy();
+    }
+
+    new Chart(ctx, {
       type: "doughnut",
       data: {
-        labels: ["Creative Tim", "Github", "Bootsnipp", "Dev.to", "Codeinwp"],
+        labels: this.chart.labels,
         datasets: [
           {
-            label: "Projects",
+            label: this.chart.datasets.label,
             weight: 9,
             cutout: 60,
             tension: 0.9,
@@ -29,7 +54,7 @@ export default {
               "#a8b8d8",
               "#cb0c9f",
             ],
-            data: [15, 20, 12, 60, 20],
+            data: this.chart.datasets.data,
             fill: false,
           },
         ],

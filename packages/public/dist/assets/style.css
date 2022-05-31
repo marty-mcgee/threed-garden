@@ -1984,6 +1984,9 @@ html.dark, html.dark .main-page-wrapper {
   outline: 2px solid transparent;
   outline-offset: 2px;
 }
+.outline {
+  outline-style: solid;
+}
 .overflow-auto {
   overflow: auto;
 }

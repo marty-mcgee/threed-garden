@@ -1,5 +1,5 @@
 <template>
-  <navbar btnBackground="bg-gradient-success" />
+  <navbar btn-background="bg-gradient-success" />
   <div
     class="pt-5 m-3 page-header align-items-start min-vh-50 pb-11 border-radius-lg"
     :style="{
@@ -131,22 +131,30 @@
           <div class="card-body">
             <form role="form" class="text-start">
               <div class="mb-3">
-                <vsud-input type="email" placeholder="Email" name="email" />
+                <vsud-input
+                  id="email"
+                  type="email"
+                  placeholder="Email"
+                  name="email"
+                />
               </div>
               <div class="mb-3">
                 <vsud-input
+                  id="password"
+                  name="password"
                   type="password"
                   placeholder="Password"
-                  name="password"
                 />
               </div>
-              <vsud-switch id="rememberMe"> Remember me </vsud-switch>
+              <vsud-switch id="rememberMe" name="rememberMe">
+                Remember me
+              </vsud-switch>
               <div class="text-center">
                 <vsud-button
                   class="my-4 mb-2"
                   variant="gradient"
                   color="info"
-                  fullWidth
+                  full-width
                   >Sign in
                 </vsud-button>
               </div>
@@ -162,7 +170,7 @@
                   class="mt-2 mb-4"
                   variant="gradient"
                   color="dark"
-                  fullWidth
+                  full-width
                   >Sign up
                 </vsud-button>
               </div>
@@ -182,8 +190,9 @@ import VsudInput from "@/components/VsudInput.vue";
 import VsudSwitch from "@/components/VsudSwitch.vue";
 import VsudButton from "@/components/VsudButton.vue";
 
+import { mapMutations } from "vuex";
 export default {
-  name: "signin-basic",
+  name: "SigninBasic",
   components: {
     Navbar,
     AppFooter,
@@ -191,17 +200,17 @@ export default {
     VsudSwitch,
     VsudButton,
   },
-  beforeMount() {
-    this.$store.state.hideConfigButton = true;
-    this.$store.state.showNavbar = false;
-    this.$store.state.showSidenav = false;
-    this.$store.state.showFooter = false;
+
+  created() {
+    this.toggleEveryDisplay();
+    this.toggleHideConfig();
   },
   beforeUnmount() {
-    this.$store.state.hideConfigButton = false;
-    this.$store.state.showNavbar = true;
-    this.$store.state.showSidenav = true;
-    this.$store.state.showFooter = true;
+    this.toggleEveryDisplay();
+    this.toggleHideConfig();
+  },
+  methods: {
+    ...mapMutations(["toggleEveryDisplay", "toggleHideConfig"]),
   },
 };
 </script>

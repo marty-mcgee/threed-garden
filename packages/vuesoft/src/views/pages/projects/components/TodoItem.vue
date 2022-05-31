@@ -4,14 +4,14 @@
   >
     <div class="checklist-item checklist-item-primary ps-2 ms-3">
       <div class="d-flex align-items-center">
-        <vsud-checkbox :name="title" :id="checkboxId" :checked="checked" />
+        <vsud-checkbox :id="checkboxId" :name="title" :checked="checked" />
         <h6 class="mb-0 text-sm text-dark font-weight-bold">{{ title }}</h6>
         <div class="dropdown float-lg-end ms-auto pe-4">
           <a
+            :id="dropdownTableId"
             href="#"
             class="cursor-pointer"
             :class="{ show: showMenu }"
-            :id="dropdownTableId"
             data-bs-toggle="dropdown"
             aria-expanded="false"
             @click="showMenu = !showMenu"
@@ -24,18 +24,10 @@
             :aria-labelledby="dropdownTableId"
             style=""
           >
-            <li>
-              <a class="dropdown-item border-radius-md" href="#">Action</a>
-            </li>
-            <li>
-              <a class="dropdown-item border-radius-md" href="#"
-                >Another action</a
-              >
-            </li>
-            <li>
-              <a class="dropdown-item border-radius-md" href="#"
-                >Something else here</a
-              >
+            <li v-for="({ label, route }, index) of action" :key="index">
+              <a class="dropdown-item border-radius-md" :href="route">{{
+                label
+              }}</a>
             </li>
           </ul>
         </div>
@@ -63,23 +55,50 @@
 import VsudCheckbox from "@/components/VsudCheckbox.vue";
 
 export default {
-  name: "todo-item",
+  name: "TodoItem",
+  components: {
+    VsudCheckbox,
+  },
+  props: {
+    title: {
+      type: String,
+      default: "",
+    },
+    checkboxId: {
+      type: String,
+      default: "",
+    },
+    dropdownTableId: {
+      type: String,
+      default: "",
+    },
+    date: {
+      type: String,
+      default: "",
+    },
+    projectId: {
+      type: String,
+      default: "",
+    },
+    company: {
+      type: String,
+      default: "",
+    },
+    checked: {
+      type: Boolean,
+      default: false,
+    },
+    action: {
+      type: Array,
+      default: () => [],
+      label: String,
+      route: String,
+    },
+  },
   data() {
     return {
       showMenu: false,
     };
-  },
-  props: {
-    title: String,
-    checkboxId: String,
-    dropdownTableId: String,
-    date: String,
-    projectId: String,
-    company: String,
-    checked: Boolean,
-  },
-  components:{
-    VsudCheckbox,
   },
 };
 </script>

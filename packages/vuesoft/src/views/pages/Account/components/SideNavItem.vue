@@ -1,8 +1,14 @@
 <template>
-  <div class="card card-body mt-4" id="profile">
+  <div id="profile" class="card card-body mt-4">
     <div class="row justify-content-center align-items-center">
       <div class="col-sm-auto col-4">
-        <vsud-avatar :img="img" alt="bruce" size="xl" shadow="sm" border-radius="lg" />
+        <vsud-avatar
+          :img="img"
+          alt="bruce"
+          size="xl"
+          shadow="sm"
+          border-radius="lg"
+        />
       </div>
       <div class="col-sm-auto col-8 my-auto">
         <div class="h-100">
@@ -14,11 +20,11 @@
         <label class="form-check-label mb-0 me-2">
           <small id="profileVisibility">Switch to invisible</small>
         </label>
-        <vsud-switch checked />
+        <vsud-switch id="profile" name="profileVisibility" checked />
       </div>
     </div>
   </div>
-  <div class="card mt-4" id="basic-info">
+  <div id="basic-info" class="card mt-4">
     <div class="card-header">
       <h5>Basic Info</h5>
     </div>
@@ -26,17 +32,21 @@
       <div class="row">
         <div class="col-6">
           <label class="form-label">First Name</label>
-          <vsud-input type="text" placeholder="Alec" />
+          <vsud-input id="firstName" type="text" placeholder="Alec" />
         </div>
         <div class="col-6">
           <label class="form-label">Last Name</label>
-          <vsud-input type="text" placeholder="Thompson" />
+          <vsud-input id="lastName" type="text" placeholder="Thompson" />
         </div>
       </div>
       <div class="row">
         <div class="col-sm-4 col-6">
           <label class="form-label mt-2">I'm</label>
-          <select class="form-control" name="choices-gender" id="choices-gender">
+          <select
+            id="choices-gender"
+            class="form-control"
+            name="choices-gender"
+          >
             <option value="Male">Male</option>
             <option value="Female">Female</option>
           </select>
@@ -45,15 +55,27 @@
           <div class="row">
             <div class="col-sm-5 col-5">
               <label class="form-label mt-2">Birth Date</label>
-              <select class="form-control" name="choices-month" id="choices-month"></select>
+              <select
+                id="choices-month"
+                class="form-control"
+                name="choices-month"
+              ></select>
             </div>
             <div class="col-sm-4 col-3">
               <label class="form-label mt-2">&nbsp;</label>
-              <select class="form-control" name="choices-day" id="choices-day"></select>
+              <select
+                id="choices-day"
+                class="form-control"
+                name="choices-day"
+              ></select>
             </div>
             <div class="col-sm-3 col-4">
               <label class="form-label mt-2">&nbsp;</label>
-              <select class="form-control" name="choices-year" id="choices-year"></select>
+              <select
+                id="choices-year"
+                class="form-control"
+                name="choices-year"
+              ></select>
             </div>
           </div>
         </div>
@@ -61,27 +83,39 @@
       <div class="row">
         <div class="col-6">
           <label class="form-label mt-2">Email</label>
-          <vsud-input type="password" placeholder="example@email.com" />
+          <vsud-input id="email" type="email" placeholder="example@email.com" />
         </div>
         <div class="col-6">
           <label class="form-label mt-2">Confirmation Email</label>
-          <vsud-input type="password" placeholder="example@email.com" />
+          <vsud-input
+            id="confirmEmail"
+            type="email"
+            placeholder="example@email.com"
+          />
         </div>
       </div>
       <div class="row">
         <div class="col-6">
           <label class="form-label mt-2">Your location</label>
-          <vsud-input type="password" placeholder="Sydney, A" />
+          <vsud-input id="location" type="text" placeholder="Sydney, A" />
         </div>
         <div class="col-6">
           <label class="form-label mt-2">Phone Number</label>
-          <vsud-input type="text" placeholder="+40 745 765 439" />
+          <vsud-input
+            id="phoneNumber"
+            type="phone"
+            placeholder="+40 745 765 439"
+          />
         </div>
       </div>
       <div class="row">
         <div class="col-md-6 align-self-center">
           <label class="form-label mt-2">Language</label>
-          <select class="form-control" name="choices-language" id="choices-language">
+          <select
+            id="choices-language"
+            class="form-control"
+            name="choices-language"
+          >
             <option value="English">English</option>
             <option value="French">French</option>
             <option value="Spanish">Spanish</option>
@@ -90,8 +124,8 @@
         <div class="col-md-6">
           <label class="form-label mt-2">Skills</label>
           <input
-            class="form-control"
             id="choices-skills"
+            class="form-control"
             type="text"
             value="vuejs, angular, react"
             placeholder="Enter something"
@@ -102,19 +136,29 @@
       </div>
     </div>
   </div>
-  <div class="card mt-4" id="password">
+  <div id="password" class="card mt-4">
     <div class="card-header">
       <h5>Change Password</h5>
     </div>
     <div class="card-body pt-0">
       <label class="form-label">Current password</label>
-      <vsud-input type="password" placeholder="Current Password" />
+      <vsud-input
+        id="currentPassword"
+        type="password"
+        placeholder="Current Password"
+      />
       <label class="form-label">New password</label>
-      <vsud-input type="password" placeholder="New Password" />
+      <vsud-input id="newPassword" type="password" placeholder="New Password" />
       <label class="form-label">Confirm new password</label>
-      <vsud-input type="password" placeholder="Confirm password" />
+      <vsud-input
+        id="confirmPassword"
+        type="password"
+        placeholder="Confirm password"
+      />
       <h5 class="mt-5">Password requirements</h5>
-      <p class="text-muted mb-2">Please follow this guide for a strong password:</p>
+      <p class="text-muted mb-2">
+        Please follow this guide for a strong password:
+      </p>
       <ul class="text-muted ps-4 mb-0 float-start">
         <li>
           <span class="text-sm">One special characters</span>
@@ -134,10 +178,11 @@
         color="dark"
         variant="gradient"
         size="sm"
-      >Update password</vsud-button>
+        >Update password</vsud-button
+      >
     </div>
   </div>
-  <div class="card mt-4" id="2fa">
+  <div id="2fa" class="card mt-4">
     <div class="card-header d-flex">
       <h5 class="mb-0">Two-factor authentication</h5>
       <vsud-badge color="success" class="ms-auto">Enabled</vsud-badge>
@@ -145,27 +190,54 @@
     <div class="card-body">
       <div class="d-flex">
         <p class="my-auto">Security keys</p>
-        <p class="text-secondary text-sm ms-auto my-auto me-3">No Security Keys</p>
-        <vsud-button color="dark" variant="outline" size="sm" class="mb-0" type="button">Add</vsud-button>
+        <p class="text-secondary text-sm ms-auto my-auto me-3">
+          No Security Keys
+        </p>
+        <vsud-button
+          color="dark"
+          variant="outline"
+          size="sm"
+          class="mb-0"
+          type="button"
+          >Add</vsud-button
+        >
       </div>
       <hr class="horizontal dark" />
       <div class="d-flex">
         <p class="my-auto">SMS number</p>
         <p class="text-secondary text-sm ms-auto my-auto me-3">+4012374423</p>
-        <vsud-button color="dark" variant="outline" size="sm" class="mb-0" type="button">Edit</vsud-button>
+        <vsud-button
+          color="dark"
+          variant="outline"
+          size="sm"
+          class="mb-0"
+          type="button"
+          >Edit</vsud-button
+        >
       </div>
       <hr class="horizontal dark" />
       <div class="d-flex">
         <p class="my-auto">Authenticator app</p>
-        <p class="text-secondary text-sm ms-auto my-auto me-3">Not Configured</p>
-        <vsud-button color="dark" variant="outline" size="sm" class="mb-0" type="button">Set up</vsud-button>
+        <p class="text-secondary text-sm ms-auto my-auto me-3">
+          Not Configured
+        </p>
+        <vsud-button
+          color="dark"
+          variant="outline"
+          size="sm"
+          class="mb-0"
+          type="button"
+          >Set up</vsud-button
+        >
       </div>
     </div>
   </div>
-  <div class="card mt-4" id="accounts">
+  <div id="accounts" class="card mt-4">
     <div class="card-header">
       <h5>Accounts</h5>
-      <p class="text-sm">Here you can setup and manage your integration settings.</p>
+      <p class="text-sm">
+        Here you can setup and manage your integration settings.
+      </p>
     </div>
     <div class="card-body pt-0">
       <div class="d-flex">
@@ -181,22 +253,32 @@
         </div>
         <p class="text-sm text-secondary ms-auto me-3 my-auto">Enabled</p>
         <div class="my-auto">
-          <vsud-switch checked />
+          <vsud-switch id="slack" name="showMore" checked />
         </div>
       </div>
       <div class="ps-5 pt-3 ms-3">
         <p class="mb-0 text-sm">
-          You haven't added your Slack yet or you aren't authorized. Please add our Slack Bot to your account by clicking on
-          <a
-            href="javascript"
-          >here</a>. When you've added the bot, send your verification code that you have received.
+          You haven't added your Slack yet or you aren't authorized. Please add
+          our Slack Bot to your account by clicking on
+          <a href="javascript">here</a>. When you've added the bot, send your
+          verification code that you have received.
         </p>
-        <div class="d-sm-flex align-items-center bg-gray-100 border-radius-lg p-2 my-4">
-          <p class="text-sm font-weight-bold my-auto ps-sm-2">Verification Code</p>
-          <vsud-input type="text" value="1172913" class="my-auto w-20 ms-sm-auto" />
+        <div
+          class="d-sm-flex align-items-center bg-gray-100 border-radius-lg p-2 my-4"
+        >
+          <p class="text-sm font-weight-bold my-auto ps-sm-2">
+            Verification Code
+          </p>
+          <vsud-input
+            type="text"
+            value="1172913"
+            class="my-auto w-20 ms-sm-auto"
+          />
         </div>
         <div class="d-sm-flex bg-gray-100 border-radius-lg p-2 my-4">
-          <p class="text-sm font-weight-bold my-auto ps-sm-2">Connected account</p>
+          <p class="text-sm font-weight-bold my-auto ps-sm-2">
+            Connected account
+          </p>
           <h6 class="text-sm ms-auto me-3 my-auto">hello@creative-tim.com</h6>
           <vsud-button
             color="danger"
@@ -205,7 +287,8 @@
             class="my-sm-auto mt-2 mb-0"
             type="button"
             name="button"
-          >Delete</vsud-button>
+            >Delete</vsud-button
+          >
         </div>
       </div>
       <hr class="horizontal dark" />
@@ -219,7 +302,7 @@
         </div>
         <p class="text-sm text-secondary ms-auto me-3 my-auto">Enabled</p>
         <div class="my-auto">
-          <vsud-switch checked />
+          <vsud-switch id="spotify" name="show" checked />
         </div>
       </div>
       <hr class="horizontal dark" />
@@ -233,7 +316,7 @@
         </div>
         <p class="text-sm text-secondary ms-auto me-3 my-auto">Enabled</p>
         <div class="my-auto">
-          <vsud-switch checked />
+          <vsud-switch id="atlassian" name="showMore2" checked />
         </div>
       </div>
       <hr class="horizontal dark" />
@@ -246,17 +329,18 @@
           </div>
         </div>
         <div class="my-auto ms-auto">
-          <vsud-switch />
+          <vsud-switch id="Asana" name="showMore3" />
         </div>
       </div>
     </div>
   </div>
-  <div class="card mt-4" id="notifications">
+  <div id="notifications" class="card mt-4">
     <div class="card-header">
       <h5>Notifications</h5>
-      <p
-        class="text-sm"
-      >Choose how you receive notifications. These notification settings apply to the things you’re watching.</p>
+      <p class="text-sm">
+        Choose how you receive notifications. These notification settings apply
+        to the things you’re watching.
+      </p>
     </div>
     <div class="card-body pt-0">
       <div class="table-responsive">
@@ -282,24 +366,28 @@
               <td class="ps-1" colspan="4">
                 <div class="my-auto">
                   <span class="text-dark d-block text-sm">Mentions</span>
-                  <span
-                    class="text-xs font-weight-normal"
-                  >Notify when another user mentions you in a comment</span>
+                  <span class="text-xs font-weight-normal"
+                    >Notify when another user mentions you in a comment</span
+                  >
                 </div>
               </td>
               <td>
                 <div class="ms-auto">
-                  <vsud-switch checked />
+                  <vsud-switch
+                    id="mentionsEmail"
+                    name="mentionsEmail"
+                    checked
+                  />
                 </div>
               </td>
               <td>
                 <div class="ms-auto">
-                  <vsud-switch />
+                  <vsud-switch id="mentionsPush" name="mentionsPush" />
                 </div>
               </td>
               <td>
                 <div class="ms-auto">
-                  <vsud-switch />
+                  <vsud-switch id="mentionsSms" name="mentionsSms" />
                 </div>
               </td>
             </tr>
@@ -307,24 +395,28 @@
               <td class="ps-1" colspan="4">
                 <div class="my-auto">
                   <span class="text-dark d-block text-sm">Comments</span>
-                  <span
-                    class="text-xs font-weight-normal"
-                  >Notify when another user comments your item.</span>
+                  <span class="text-xs font-weight-normal"
+                    >Notify when another user comments your item.</span
+                  >
                 </div>
               </td>
               <td>
                 <div class="ms-auto">
-                  <vsud-switch checked />
+                  <vsud-switch
+                    id="commentsEmail"
+                    name="commentsEmail"
+                    checked
+                  />
                 </div>
               </td>
               <td>
                 <div class="ms-auto">
-                  <vsud-switch checked />
+                  <vsud-switch id="commentsPush" name="commentsPush" checked />
                 </div>
               </td>
               <td>
                 <div class="ms-auto">
-                  <vsud-switch />
+                  <vsud-switch id="commentsSms" name="commentsSms" />
                 </div>
               </td>
             </tr>
@@ -332,22 +424,24 @@
               <td class="ps-1" colspan="4">
                 <div class="my-auto">
                   <span class="text-dark d-block text-sm">Follows</span>
-                  <span class="text-xs font-weight-normal">Notify when another user follows you.</span>
+                  <span class="text-xs font-weight-normal"
+                    >Notify when another user follows you.</span
+                  >
                 </div>
               </td>
               <td>
                 <div class="ms-auto">
-                  <vsud-switch checked />
+                  <vsud-switch id="followsEmail" name="followsEmail" checked />
                 </div>
               </td>
               <td>
                 <div class="ms-auto">
-                  <vsud-switch checked />
+                  <vsud-switch id="followsEmail" name="followsPush" checked />
                 </div>
               </td>
               <td>
                 <div class="ms-auto">
-                  <vsud-switch checked />
+                  <vsud-switch id="followsEmail" name="followsSms" checked />
                 </div>
               </td>
             </tr>
@@ -359,17 +453,17 @@
               </td>
               <td>
                 <div class="ms-auto">
-                  <vsud-switch checked />
+                  <vsud-switch id="deviceEmail" name="deviceEmail" checked />
                 </div>
               </td>
               <td>
                 <div class="ms-auto">
-                  <vsud-switch checked />
+                  <vsud-switch id="devicePush" name="devicePush" checked />
                 </div>
               </td>
               <td>
                 <div class="ms-auto">
-                  <vsud-switch checked />
+                  <vsud-switch id="deviceSms" name="deviceSms" checked />
                 </div>
               </td>
             </tr>
@@ -378,12 +472,13 @@
       </div>
     </div>
   </div>
-  <div class="card mt-4" id="sessions">
+  <div id="sessions" class="card mt-4">
     <div class="card-header pb-3">
       <h5>Sessions</h5>
-      <p
-        class="text-sm"
-      >This is a list of devices that have logged into your account. Remove those that you do not recognize.</p>
+      <p class="text-sm">
+        This is a list of devices that have logged into your account. Remove
+        those that you do not recognize.
+      </p>
     </div>
     <div class="card-body pt-0">
       <div class="d-flex align-items-center">
@@ -396,9 +491,14 @@
             <p class="mb-0 text-xs">Your current session</p>
           </div>
         </div>
-        <vsud-badge color="success" size="sm" class="my-auto ms-auto me-3">Active</vsud-badge>
+        <vsud-badge color="success" size="sm" class="my-auto ms-auto me-3"
+          >Active</vsud-badge
+        >
         <p class="text-secondary text-sm my-auto me-3">EU</p>
-        <a href="javascript:;" class="text-primary text-sm icon-move-right my-auto">
+        <a
+          href="javascript:;"
+          class="text-primary text-sm icon-move-right my-auto"
+        >
           See more
           <i class="fas fa-arrow-right text-xs ms-1" aria-hidden="true"></i>
         </a>
@@ -410,7 +510,10 @@
         </div>
         <p class="my-auto ms-3">Chrome on macOS</p>
         <p class="text-secondary text-sm ms-auto my-auto me-3">US</p>
-        <a href="javascript:;" class="text-primary text-sm icon-move-right my-auto">
+        <a
+          href="javascript:;"
+          class="text-primary text-sm icon-move-right my-auto"
+        >
           See more
           <i class="fas fa-arrow-right text-xs ms-1" aria-hidden="true"></i>
         </a>
@@ -422,27 +525,32 @@
         </div>
         <p class="my-auto ms-3">Safari on iPhone</p>
         <p class="text-secondary text-sm ms-auto my-auto me-3">US</p>
-        <a href="javascript:;" class="text-primary text-sm icon-move-right my-auto">
+        <a
+          href="javascript:;"
+          class="text-primary text-sm icon-move-right my-auto"
+        >
           See more
           <i class="fas fa-arrow-right text-xs ms-1" aria-hidden="true"></i>
         </a>
       </div>
     </div>
   </div>
-  <div class="card mt-4" id="delete">
+  <div id="delete" class="card mt-4">
     <div class="card-header">
       <h5>Delete Account</h5>
-      <p
-        class="text-sm mb-0"
-      >Once you delete your account, there is no going back. Please be certain.</p>
+      <p class="text-sm mb-0">
+        Once you delete your account, there is no going back. Please be certain.
+      </p>
     </div>
     <div class="card-body d-sm-flex pt-0">
       <div class="d-flex align-items-center mb-sm-0 mb-4">
         <div>
-          <vsud-switch />
+          <vsud-switch id="deleteAccount" name="deleteAccount" />
         </div>
         <div class="ms-2">
-          <span class="text-dark font-weight-bold d-block text-sm">Confirm</span>
+          <span class="text-dark font-weight-bold d-block text-sm"
+            >Confirm</span
+          >
           <span class="text-xs d-block">I want to delete my account.</span>
         </div>
       </div>
@@ -452,14 +560,16 @@
         class="mb-0 ms-auto"
         type="button"
         name="button"
-      >Deactivate</vsud-button>
+        >Deactivate</vsud-button
+      >
       <vsud-button
         color="danger"
         variant="gradient"
         class="mb-0 ms-2"
         type="button"
         name="button"
-      >Delete Account</vsud-button>
+        >Delete Account</vsud-button
+      >
     </div>
   </div>
 </template>
@@ -478,7 +588,7 @@ import img3 from "../../../../assets/img/small-logos/logo-atlassian.svg";
 import img4 from "../../../../assets/img/small-logos/logo-asana.svg";
 
 export default {
-  name: "side-nav-item",
+  name: "SideNavItem",
   components: {
     VsudButton,
     VsudSwitch,

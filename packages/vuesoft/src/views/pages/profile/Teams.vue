@@ -5,7 +5,7 @@
       :style="{
         backgroundImage:
           'url(' + require('@/assets/img/curved-images/curved14.jpg') + ')',
-        backgroundPositionY: '50%',
+        backgroundPositionY: '50%'
       }"
     >
       <span class="mask bg-gradient-success opacity-6"></span>
@@ -208,17 +208,12 @@
               </a>
               <p class="mb-0 text-sm" style="margin-top: 6px">Add story</p>
             </div>
-            <story-avatar :img="team1" name="Abbie W" />
-            <story-avatar :img="team2" name="Boris U" />
-            <story-avatar :img="team3" name="Kay R" />
-            <story-avatar :img="team4" name="Tom M" />
-            <story-avatar :img="team5" name="Nicole N" />
-            <story-avatar :img="marie" name="Marie P" />
-            <story-avatar :img="bruce" name="Bruce M" />
-            <story-avatar :img="ivana" name="Sandra A" />
-            <story-avatar :img="kal" name="Katty L" />
-            <story-avatar :img="emma" name="Emma O" />
-            <story-avatar :img="imgURL" name="Tao G" />
+            <story-avatar
+              v-for="({ name, image }, index) of stories"
+              :key="index"
+              :image="image"
+              :name="name"
+            />
           </div>
         </div>
       </div>
@@ -228,81 +223,122 @@
         <post-card />
       </div>
       <div class="col-12 col-lg-4">
-        <marketing-card
+        <team-profile-card
           title="Digital Marketing"
           description="A group of people who collectively are responsible for all of the
               work necessary to produce working, validated assets."
           industry="Marketing Team"
-          :img1="team1"
-          :img2="team2"
-          :img3="team3"
-          :img4="team4"
-          img1Title="Alexa Tompson"
-          img2Title="Romina Hadid"
-          img3Title="Alexander Smith"
-          img4Title="Martin Doe"
-        >
-          <i class="fas fa-star-half-alt"></i>
-        </marketing-card>
-
-        <marketing-card
+          :rating="4.5"
+          :members="[
+            {
+              name: 'Alexa Tompson',
+              image: team1
+            },
+            {
+              name: 'Romina Hadid',
+              image: team2
+            },
+            {
+              name: 'Alexander Smith',
+              image: team3
+            },
+            {
+              name: 'Martin Doe',
+              image: team4
+            }
+          ]"
+          :dropdown="[
+            {
+              label: 'Action',
+              route: 'javascript:;'
+            },
+            {
+              label: 'Another action',
+              route: 'javascript:;'
+            },
+            {
+              label: 'Something else here',
+              route: 'javascript:;'
+            }
+          ]"
+        />
+        <team-profile-card
           title="Design"
           description="Because it's about motivating the doers. Because I’m here to
               follow my dreams and inspire other people to follow their dreams,
               too."
           industry="Design Team"
-          :img1="team4"
-          :img2="team3"
-          :img3="team1"
-          :img4="team5"
-          img1Title="Martin Doe"
-          img2Title="Romina Hadid"
-          img3Title="Alexa Tompson"
-          img4Title="Alexandra Smith"
-        >
-          <i class="fas fa-star"></i>
-        </marketing-card>
-        <meet-card
+          :rating="5"
+          :members="[
+            {
+              name: 'Martin Doe',
+              image: team4
+            },
+            {
+              name: 'Alexander Smith',
+              image: team3
+            },
+            {
+              name: 'Romina Hadid',
+              image: team2
+            },
+            {
+              name: 'Alexa Tompson',
+              image: team1
+            }
+          ]"
+          :dropdown="[
+            {
+              label: 'Action',
+              route: 'javascript:;'
+            },
+            {
+              label: 'Another action',
+              route: 'javascript:;'
+            },
+            {
+              label: 'Something else here',
+              route: 'javascript:;'
+            }
+          ]"
+        />
+        <event-card
+          id="902-128-281"
           title="Slack Meet"
           description="You have an upcoming meet for Marketing Planning"
-          time="11:00 AM"
-          meetId="902-128-281"
-          :logo="slackLogo"
-          :img1="team1"
-          :img2="team2"
-          :img3="team3"
-          :img4="ivana"
-          img1Title="Alexa Tompson"
-          img2Title="Romina Hadid"
-          img3Title="Alexander Smith"
-          img4Title="Martin Doe"
-        >
-          <template v-slot:description>
-            <p class="mt-3">You have an upcoming meet for Marketing Planning</p>
-          </template>
-        </meet-card>
-        <meet-card
+          date-tim="11:00 AM"
+          :image="slackLogo"
+          :members="[
+            { name: 'Alexa tompson', image: team1 },
+            { name: 'Romina Hadid', image: team2 },
+            { name: 'Alexander Smith', image: team3 },
+            { name: 'Martin Doe', image: ivana }
+          ]"
+          :action="{
+            route: '',
+            label: 'Join',
+            color: 'success'
+          }"
+        />
+        <event-card
+          id="111-968-981"
           title="Invision"
-          description="You have an upcoming meet for Marketing Planning"
-          time="4:50 PM"
-          meetId=" 111-968-981"
-          :logo="invisionLogo"
-          :img1="team1"
-          :img2="team2"
-          :img3="team3"
-          :img4="ivana"
-          img1Title="Alexa Tompson"
-          img2Title="Romina Hadid"
-          img3Title="Alexander Smith"
-          img4Title="Martin Doe"
-        >
-          <template v-slot:description>
-            <p class="mt-3">
-              You have an upcoming video call for
-              <span class="text-primary">Soft Design</span> at 5:00 PM.
-            </p>
-          </template>
-        </meet-card>
+          description="You have an upcoming video call for
+              <span class='text-primary'>Soft Design</span> at 5:00 PM."
+          date-tim="4:50 PM"
+          :image="invisionLogo"
+          :members="[
+            { name: 'Alexa tompson', image: team1 },
+            { name: 'Romina Hadid', image: team2 },
+            { name: 'Alexander Smith', image: team3 },
+            { name: 'Martin Doe', image: ivana }
+          ]"
+          :action="{
+            route: '',
+            label: 'Join',
+            color: 'primary'
+          }"
+        />
       </div>
     </div>
   </div>
@@ -324,48 +360,93 @@ import slackLogo from "../../../assets/img/small-logos/logo-slack.svg";
 import invisionLogo from "../../../assets/img/small-logos/logo-invision.svg";
 import PostCard from "./components/PostCard.vue";
 import StoryAvatar from "./components/StoryAvatar.vue";
-import MarketingCard from "./components/MarketingCard.vue";
-import MeetCard from "./components/MeetCard.vue";
+import TeamProfileCard from "./components/TeamProfileCard.vue";
+import EventCard from "./components/EventCard.vue";
 
 import setNavPills from "@/assets/js/nav-pills.js";
 import setTooltip from "@/assets/js/tooltip.js";
 
 export default {
-  name: "profile-team",
+  name: "ProfileTeam",
+  components: {
+    TeamProfileCard,
+    PostCard,
+    StoryAvatar,
+    EventCard
+  },
   data() {
     return {
       showMenu: false,
-      imgURL:
-        "https://raw.githubusercontent.com/creativetimofficial/public-assets/master/soft-ui-design-system/assets/img/team-9.jpg",
+      stories: [
+        {
+          name: "Abbie W",
+          image: team1
+        },
+        {
+          name: "Boris U",
+          image: team2
+        },
+        {
+          name: "Kay R",
+          image: team3
+        },
+        {
+          name: "Tom M",
+          image: team4
+        },
+        {
+          name: "Nicole N",
+          image: team5
+        },
+        {
+          name: "Marie P",
+          image: marie
+        },
+        {
+          name: "Bruce M",
+          image: bruce
+        },
+        {
+          name: "Sandra A",
+          image: ivana
+        },
+        {
+          name: "Katty L",
+          image: kal
+        },
+        {
+          name: "Emma O",
+          image: emma
+        },
+        {
+          name: "Tao G",
+          image:
+            "https://raw.githubusercontent.com/creativetimofficial/public-assets/master/soft-ui-design-system/assets/img/team-9.jpg"
+        }
+      ],
+      nick,
+      slackLogo,
+      invisionLogo,
       kal,
       marie,
       ivana,
       bruce,
       emma,
-      nick,
       team1,
       team2,
       team3,
       team4,
-      team5,
-      slackLogo,
-      invisionLogo,
+      team5
     };
-  },
-  components: {
-    MarketingCard,
-    PostCard,
-    StoryAvatar,
-    MeetCard,
   },
 
   mounted() {
     this.$store.state.isAbsolute = true;
     setNavPills();
-    setTooltip();
+    setTooltip(this.$store.state.bootstrap);
   },
   beforeUnmount() {
     this.$store.state.isAbsolute = false;
-  },
+  }
 };
 </script>

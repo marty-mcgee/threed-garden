@@ -28,7 +28,7 @@
         <a href="#" class="switch-trigger background-color">
           <div
             class="my-2 badge-colors"
-            :class="this.$store.state.isRTL ? 'text-end' : ' text-start'"
+            :class="isRTL ? 'text-end' : ' text-start'"
           >
             <span
               class="badge filter bg-gradient-primary active"
@@ -71,7 +71,7 @@
           <button
             id="btn-transparent"
             class="px-3 mb-2 btn bg-gradient-success w-100"
-            :class="ifTransparent === 'bg-transparent' ? 'active' : ''"
+            :class="isTransparent === 'bg-transparent' ? 'active' : ''"
             @click="sidebarType('bg-transparent')"
           >
             Transparent
@@ -79,7 +79,7 @@
           <button
             id="btn-white"
             class="px-3 mb-2 btn bg-gradient-success w-100 ms-2"
-            :class="ifTransparent === 'bg-white' ? 'active' : ''"
+            :class="isTransparent === 'bg-white' ? 'active' : ''"
             @click="sidebarType('bg-white')"
           >
             White
@@ -94,11 +94,11 @@
         </div>
         <div class="form-check form-switch ps-0">
           <input
-            class="mt-1 form-check-input"
-            :class="this.$store.state.isRTL ? 'float-end  me-auto' : ' ms-auto'"
-            type="checkbox"
             id="navbarFixed"
-            :checked="this.$store.state.isNavFixed"
+            class="mt-1 form-check-input"
+            :class="isRTL ? 'float-end  me-auto' : ' ms-auto'"
+            type="checkbox"
+            :checked="isNavFixed"
             @click="setNavbarFixed"
           />
         </div>
@@ -108,49 +108,50 @@
         </div>
         <div class="form-check form-switch ps-0">
           <input
-            class="mt-1 form-check-input"
-            :class="this.$store.state.isRTL ? 'float-end  me-auto' : ' ms-auto'"
-            type="checkbox"
             id="navbarMinimize"
+            class="mt-1 form-check-input"
+            :class="isRTL ? 'float-end  me-auto' : ' ms-auto'"
+            type="checkbox"
+            :checked="!isPinned"
             @click="navbarMinimize"
           />
         </div>
         <hr class="horizontal dark my-sm-4" />
         <a
           class="btn bg-gradient-info w-100"
-          href="https://www.creative-tim.com/product/soft-ui-dashboard-pro"
+          href="https://www.creative-tim.com/product/vue-soft-ui-dashboard-pro"
           >Buy now</a
         >
         <a
           class="btn bg-gradient-dark w-100"
-          href="https://www.creative-tim.com/product/soft-ui-dashboard"
+          href="https://www.creative-tim.com/product/vue-soft-ui-dashboard"
           >Free demo</a
         >
         <a
           class="btn btn-outline-dark w-100"
-          href="https://www.creative-tim.com/learning-lab/bootstrap/overview/soft-ui-dashboard"
+          href="https://www.creative-tim.com/learning-lab/vue/overview/soft-ui-dashboard"
           >View documentation</a
         >
         <div class="text-center w-100">
           <a
             class="github-button"
-            href="https://github.com/creativetimofficial/ct-soft-ui-dashboard-pro"
+            href="https://github.com/creativetimofficial/ct-vue-soft-ui-dashboard-pro"
             data-icon="octicon-star"
             data-size="large"
             data-show-count="true"
-            aria-label="Star creativetimofficial/soft-ui-dashboard on GitHub"
+            aria-label="Star creativetimofficial/vue-soft-ui-dashboard on GitHub"
             >Star</a
           >
           <h6 class="mt-3">Thank you for sharing!</h6>
           <a
-            href="https://twitter.com/intent/tweet?text=Check%20Soft%20UI%20Dashboard%20PRO%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23bootstrap5&amp;url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fsoft-ui-dashboard-pro"
+            href="https://twitter.com/intent/tweet?text=Check%20Vue%20Soft%20UI%20Dashboard%20PRO%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23bootstrap5%20%23vuejs&amp;url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fvue-soft-ui-dashboard-pro"
             class="mb-0 btn btn-dark me-2"
             target="_blank"
           >
             <i class="fab fa-twitter me-1" aria-hidden="true"></i> Tweet
           </a>
           <a
-            href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/soft-ui-dashboard-pro"
+            href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/vue-soft-ui-dashboard-pro"
             class="mb-0 btn btn-dark me-2"
             target="_blank"
           >
@@ -163,17 +164,41 @@
 </template>
 
 <script>
-import { mapMutations, mapActions } from "vuex";
+import { mapMutations, mapActions, mapState } from "vuex";
 export default {
-  name: "configurator",
-  props: ["toggle"],
+  name: "Configurator",
+  props: {
+    toggle: {
+      type: Function,
+      default: null
+    }
+  },
+  computed: {
+    ...mapState([
+      "isTransparent",
+      "isNavFixed",
+      "isAbsolute",
+      "isPinned",
+      "isRTL",
+      "absolute"
+    ]),
+    sidenavResponsive() {
+      return this.sidenavTypeOnResize;
+    }
+  },
+  beforeMount() {
+    this.$store.state.isTransparent = "bg-transparent";
+    // Deactivate sidenav type buttons on resize and small screens
+    window.addEventListener("resize", this.sidenavTypeOnResize);
+    window.addEventListener("load", this.sidenavTypeOnResize);
+  },
   methods: {
     ...mapMutations(["navbarMinimize", "sidebarType", "navbarFixed"]),
     ...mapActions(["toggleSidebarColor"]),
 
     sidebarColor(color = "success") {
       document.querySelector("#sidenav-main").setAttribute("data-color", color);
-      this.$store.state.mcolor = `card-background-mask-${color}`;
+      this.mcolor = `card-background-mask-${color}`;
     },
 
     sidebarType(type) {
@@ -181,14 +206,10 @@ export default {
     },
 
     setNavbarFixed() {
-      if (
-        this.$route.name !== "Profile Overview" ||
-        this.$route.name !== "Teams" ||
-        this.$route.name !== "All Projects"
-      ) {
-        // do nothing
+      if (!this.isAbsolute) {
+        this.navbarFixed();
       } else {
-        this.$store.commit("navbarFixed");
+        this.absolute;
       }
     },
 
@@ -202,21 +223,7 @@ export default {
         transparent.classList.remove("disabled");
         white.classList.remove("disabled");
       }
-    },
-  },
-  computed: {
-    ifTransparent() {
-      return this.$store.state.isTransparent;
-    },
-    sidenavResponsive() {
-      return this.sidenavTypeOnResize;
-    },
-  },
-  beforeMount() {
-    this.$store.state.isTransparent = "bg-transparent";
-    // Deactivate sidenav type buttons on resize and small screens
-    window.addEventListener("resize", this.sidenavTypeOnResize);
-    window.addEventListener("load", this.sidenavTypeOnResize);
-  },
+    }
+  }
 };
 </script>

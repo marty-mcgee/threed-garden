@@ -1,55 +1,55 @@
 <template>
   <div
-    class="w-auto h-auto collapse navbar-collapse max-height-vh-100 h-100"
     id="sidenav-collapse-main"
+    class="w-auto h-auto collapse navbar-collapse max-height-vh-100 h-100"
   >
     <ul class="navbar-nav">
       <li class="nav-item">
         <sidenav-collapse
-          collapseRef="dashboardsExamples"
-          navText="Dashboards"
+          collapse-ref="dashboardsExamples"
+          nav-text="Dashboards"
           :class="getRoute() === 'dashboards' ? 'active' : ''"
         >
-          <template v-slot:icon>
-            <icon name="dashboard" />
+          <template #icon>
+            <Shop />
           </template>
-          <template v-slot:list>
+          <template #list>
             <ul class="nav ms-4 ps-3">
               <!-- nav links -->
               <sidenav-item
                 :to="{ name: 'Default' }"
-                miniIcon="D"
+                mini-icon="D"
                 text="Default"
               />
               <sidenav-item
                 :to="{ name: 'Automotive' }"
-                miniIcon="A"
+                mini-icon="A"
                 text="Automotive"
               />
               <sidenav-item
                 :to="{ name: 'Smart Home' }"
-                miniIcon="S"
+                mini-icon="S"
                 text="Smart Home"
               />
               <sidenav-collapse-item
                 refer="vrExamples"
-                miniIcon="V"
+                mini-icon="V"
                 text="Virtual Reality"
               >
-                <template v-slot:nav-child-item>
+                <template #nav-child-item>
                   <sidenav-item
                     :to="{ name: 'VR Default' }"
-                    miniIcon="V"
+                    mini-icon="V"
                     text="VR Default"
                   />
                   <sidenav-item
                     :to="{ name: 'VR Info' }"
-                    miniIcon="V"
+                    mini-icon="V"
                     text="VR Info"
                   />
                 </template>
               </sidenav-collapse-item>
-              <sidenav-item :to="{ name: 'CRM' }" miniIcon="C" text="CRM" />
+              <sidenav-item :to="{ name: 'CRM' }" mini-icon="C" text="CRM" />
             </ul>
           </template>
         </sidenav-collapse>
@@ -57,42 +57,42 @@
       <li class="mt-3 nav-item">
         <h6
           class="text-xs ps-4 text-uppercase font-weight-bolder opacity-6"
-          :class="this.$store.state.isRTL ? 'me-4' : 'ms-2'"
+          :class="$store.state.isRTL ? 'me-4' : 'ms-2'"
         >
           PAGES
         </h6>
       </li>
       <li class="nav-item">
         <sidenav-collapse
-          collapseRef="pagesExamples"
-          navText="Pages"
+          collapse-ref="pagesExamples"
+          nav-text="Pages"
           :class="getRoute() === 'pages' ? 'active' : ''"
         >
-          <template v-slot:icon>
-            <icon name="pages" />
+          <template #icon>
+            <Office />
           </template>
-          <template v-slot:list>
+          <template #list>
             <ul class="nav ms-4 ps-3">
               <!-- nav links -->
               <sidenav-collapse-item
                 refer="profileExample"
-                miniIcon="P"
+                mini-icon="P"
                 text="Profile"
               >
-                <template v-slot:nav-child-item>
+                <template #nav-child-item>
                   <sidenav-item
                     :to="{ name: 'Profile Overview' }"
-                    miniIcon="P"
+                    mini-icon="P"
                     text="Profile Overview"
                   />
                   <sidenav-item
                     :to="{ name: 'Teams' }"
-                    miniIcon="T"
+                    mini-icon="T"
                     text="Teams"
                   />
                   <sidenav-item
                     :to="{ name: 'All Projects' }"
-                    miniIcon="A"
+                    mini-icon="A"
                     text="All Projects"
                   />
                 </template>
@@ -100,18 +100,18 @@
 
               <sidenav-collapse-item
                 refer="usersExample"
-                miniIcon="U"
+                mini-icon="U"
                 text="Users"
               >
-                <template v-slot:nav-child-item>
+                <template #nav-child-item>
                   <sidenav-item
                     :to="{ name: 'Reports' }"
-                    miniIcon="R"
+                    mini-icon="R"
                     text="Reports"
                   />
                   <sidenav-item
                     :to="{ name: 'New User' }"
-                    miniIcon="N"
+                    mini-icon="N"
                     text="New User"
                   />
                 </template>
@@ -119,28 +119,28 @@
 
               <sidenav-collapse-item
                 refer="accountExample"
-                miniIcon="A"
+                mini-icon="A"
                 text="Account"
               >
-                <template v-slot:nav-child-item>
+                <template #nav-child-item>
                   <sidenav-item
                     :to="{ name: 'Settings' }"
-                    miniIcon="S"
+                    mini-icon="S"
                     text="Settings"
                   />
                   <sidenav-item
                     :to="{ name: 'Billing' }"
-                    miniIcon="B"
+                    mini-icon="B"
                     text="Billing"
                   />
                   <sidenav-item
                     :to="{ name: 'Invoice' }"
-                    miniIcon="I"
+                    mini-icon="I"
                     text="Invoice"
                   />
                   <sidenav-item
                     :to="{ name: 'Security' }"
-                    miniIcon="S"
+                    mini-icon="S"
                     text="Security"
                   />
                 </template>
@@ -148,23 +148,23 @@
 
               <sidenav-collapse-item
                 refer="projectsExample"
-                miniIcon="P"
+                mini-icon="P"
                 text="Projects"
               >
-                <template v-slot:nav-child-item>
+                <template #nav-child-item>
                   <sidenav-item
                     :to="{ name: 'General' }"
-                    miniIcon="G"
+                    mini-icon="G"
                     text="General"
                   />
                   <sidenav-item
                     :to="{ name: 'Timeline' }"
-                    miniIcon="T"
+                    mini-icon="T"
                     text="Timeline"
                   />
                   <sidenav-item
                     :to="{ name: 'New Project' }"
-                    miniIcon="N"
+                    mini-icon="N"
                     text="New Project"
                   />
                 </template>
@@ -172,28 +172,28 @@
 
               <sidenav-item
                 :to="{ name: 'Pricing Page' }"
-                miniIcon="P"
+                mini-icon="P"
                 text="Pricing Page"
               />
-              <sidenav-item :to="{ name: 'RTL' }" miniIcon="R" text="RTL" />
+              <sidenav-item :to="{ name: 'RTL' }" mini-icon="R" text="RTL" />
               <sidenav-item
                 :to="{ name: 'Widgets' }"
-                miniIcon="W"
+                mini-icon="W"
                 text="Widgets"
               />
               <sidenav-item
                 :to="{ name: 'Charts' }"
-                miniIcon="C"
+                mini-icon="C"
                 text="Charts"
               />
               <sidenav-item
                 :to="{ name: 'Sweet Alerts' }"
-                miniIcon="S"
+                mini-icon="S"
                 text="Sweet Alerts"
               />
               <sidenav-item
                 :to="{ name: 'Notifications' }"
-                miniIcon="N"
+                mini-icon="N"
                 text="Notifications"
               />
             </ul>
@@ -203,40 +203,40 @@
 
       <li class="nav-item">
         <sidenav-collapse
-          collapseRef="applicationsExamples"
-          navText="Applications"
+          collapse-ref="applicationsExamples"
+          nav-text="Applications"
           :class="getRoute() === 'applications' ? 'active' : ''"
         >
-          <template v-slot:icon>
-            <icon name="applications" />
+          <template #icon>
+            <Settings />
           </template>
-          <template v-slot:list>
+          <template #list>
             <ul class="nav ms-4 ps-3">
               <!-- nav links -->
 
               <sidenav-item
                 :to="{ name: 'Kanban' }"
-                miniIcon="K"
+                mini-icon="K"
                 text="Kanban"
               />
               <sidenav-item
                 :to="{ name: 'Wizard' }"
-                miniIcon="W"
+                mini-icon="W"
                 text="Wizard"
               />
               <sidenav-item
                 :to="{ name: 'Data Tables' }"
-                miniIcon="D"
+                mini-icon="D"
                 text="Data Tables"
               />
               <sidenav-item
                 :to="{ name: 'Calendar' }"
-                miniIcon="C"
+                mini-icon="C"
                 text="Calendar"
               />
               <sidenav-item
                 :to="{ name: 'Analytics' }"
-                miniIcon="A"
+                mini-icon="A"
                 text="Analytics"
               />
             </ul>
@@ -246,46 +246,46 @@
 
       <li class="nav-item">
         <sidenav-collapse
-          collapseRef="ecommerceExamples"
-          navText="Ecommerce"
+          collapse-ref="ecommerceExamples"
+          nav-text="Ecommerce"
           :class="getRoute() === 'ecommerce' ? 'active' : ''"
         >
-          <template v-slot:icon>
-            <icon name="ecommerce" />
+          <template #icon>
+            <Basket />
           </template>
-          <template v-slot:list>
+          <template #list>
             <ul class="nav ms-4 ps-3">
               <!-- nav links -->
               <sidenav-item
                 :to="{ name: 'Overview' }"
-                miniIcon="O"
+                mini-icon="O"
                 text="Overview"
               />
 
               <sidenav-collapse-item
                 refer="productsExample"
-                miniIcon="P"
+                mini-icon="P"
                 text="Products"
               >
-                <template v-slot:nav-child-item>
+                <template #nav-child-item>
                   <sidenav-item
                     :to="{ name: 'New Product' }"
-                    miniIcon="N"
+                    mini-icon="N"
                     text="New Product"
                   />
                   <sidenav-item
                     :to="{ name: 'Edit Product' }"
-                    miniIcon="E"
+                    mini-icon="E"
                     text="Edit Product"
                   />
                   <sidenav-item
                     :to="{ name: 'Product Page' }"
-                    miniIcon="P"
+                    mini-icon="P"
                     text="Product page"
                   />
                   <sidenav-item
                     :to="{ name: 'Products List' }"
-                    miniIcon="P"
+                    mini-icon="P"
                     text="Products List"
                   />
                 </template>
@@ -293,25 +293,25 @@
 
               <sidenav-collapse-item
                 refer="ordersExample"
-                miniIcon="O"
+                mini-icon="O"
                 text="Orders"
               >
-                <template v-slot:nav-child-item>
+                <template #nav-child-item>
                   <sidenav-item
                     :to="{ name: 'Order List' }"
-                    miniIcon="O"
+                    mini-icon="O"
                     text="Order List"
                   />
                   <sidenav-item
                     :to="{ name: 'Order Details' }"
-                    miniIcon="O"
+                    mini-icon="O"
                     text="Order Details"
                   />
                 </template>
               </sidenav-collapse-item>
               <sidenav-item
                 :to="{ name: 'Referral' }"
-                miniIcon="R"
+                mini-icon="R"
                 text="Referral"
               />
             </ul>
@@ -321,35 +321,35 @@
 
       <li class="nav-item">
         <sidenav-collapse
-          collapseRef="authExamples"
-          navText="Authentication"
+          collapse-ref="authExamples"
+          nav-text="Authentication"
           :class="getRoute() === 'authentication' ? 'active' : ''"
         >
-          <template v-slot:icon>
-            <icon name="authentication" />
+          <template #icon>
+            <Document />
           </template>
-          <template v-slot:list>
+          <template #list>
             <ul class="nav ms-4 ps-3">
               <!-- nav links -->
               <sidenav-collapse-item
                 refer="signinExample"
-                miniIcon="S"
+                mini-icon="S"
                 text="Sign In"
               >
-                <template v-slot:nav-child-item>
+                <template #nav-child-item>
                   <sidenav-item
                     :to="{ name: 'Signin Basic' }"
-                    miniIcon="B"
+                    mini-icon="B"
                     text="Basic"
                   />
                   <sidenav-item
                     :to="{ name: 'Signin Cover' }"
-                    miniIcon="C"
+                    mini-icon="C"
                     text="Cover"
                   />
                   <sidenav-item
                     :to="{ name: 'Signin Illustration' }"
-                    miniIcon="I"
+                    mini-icon="I"
                     text="Illustration"
                   />
                 </template>
@@ -357,23 +357,23 @@
 
               <sidenav-collapse-item
                 refer="signupExample"
-                miniIcon="S"
+                mini-icon="S"
                 text="Sign Up"
               >
-                <template v-slot:nav-child-item>
+                <template #nav-child-item>
                   <sidenav-item
                     :to="{ name: 'Signup Basic' }"
-                    miniIcon="B"
+                    mini-icon="B"
                     text="Basic"
                   />
                   <sidenav-item
                     :to="{ name: 'Signup Cover' }"
-                    miniIcon="C"
+                    mini-icon="C"
                     text="Cover"
                   />
                   <sidenav-item
                     :to="{ name: 'Signup Illustration' }"
-                    miniIcon="I"
+                    mini-icon="I"
                     text="Illustration"
                   />
                 </template>
@@ -381,23 +381,23 @@
 
               <sidenav-collapse-item
                 refer="resetExample"
-                miniIcon="R"
+                mini-icon="R"
                 text="Reset Password"
               >
-                <template v-slot:nav-child-item>
+                <template #nav-child-item>
                   <sidenav-item
                     :to="{ name: 'Reset Basic' }"
-                    miniIcon="B"
+                    mini-icon="B"
                     text="Basic"
                   />
                   <sidenav-item
                     :to="{ name: 'Reset Cover' }"
-                    miniIcon="C"
+                    mini-icon="C"
                     text="Cover"
                   />
                   <sidenav-item
                     :to="{ name: 'Reset Illustration' }"
-                    miniIcon="I"
+                    mini-icon="I"
                     text="Illustration"
                   />
                 </template>
@@ -405,23 +405,23 @@
 
               <sidenav-collapse-item
                 refer="lockExample"
-                miniIcon="L"
+                mini-icon="L"
                 text="Lock"
               >
-                <template v-slot:nav-child-item>
+                <template #nav-child-item>
                   <sidenav-item
                     :to="{ name: 'Lock Basic' }"
-                    miniIcon="B"
+                    mini-icon="B"
                     text="Basic"
                   />
                   <sidenav-item
                     :to="{ name: 'Lock Cover' }"
-                    miniIcon="C"
+                    mini-icon="C"
                     text="Cover"
                   />
                   <sidenav-item
                     :to="{ name: 'Lock Illustration' }"
-                    miniIcon="I"
+                    mini-icon="I"
                     text="Illustration"
                   />
                 </template>
@@ -429,23 +429,23 @@
 
               <sidenav-collapse-item
                 refer="StepExample"
-                miniIcon="2"
+                mini-icon="2"
                 text="2-Step Verification"
               >
-                <template v-slot:nav-child-item>
+                <template #nav-child-item>
                   <sidenav-item
                     :to="{ name: 'Verification Basic' }"
-                    miniIcon="B"
+                    mini-icon="B"
                     text="Basic"
                   />
                   <sidenav-item
                     :to="{ name: 'Verification Cover' }"
-                    miniIcon="C"
+                    mini-icon="C"
                     text="Cover"
                   />
                   <sidenav-item
                     :to="{ name: 'Verification Illustration' }"
-                    miniIcon="I"
+                    mini-icon="I"
                     text="Illustration"
                   />
                 </template>
@@ -453,18 +453,18 @@
 
               <sidenav-collapse-item
                 refer="errorExample"
-                miniIcon="E"
+                mini-icon="E"
                 text="Error"
               >
-                <template v-slot:nav-child-item>
+                <template #nav-child-item>
                   <sidenav-item
                     :to="{ name: 'Error Error404' }"
-                    miniIcon="E"
+                    mini-icon="E"
                     text="Error 404"
                   />
                   <sidenav-item
                     :to="{ name: 'Error Error500' }"
-                    miniIcon="E"
+                    mini-icon="E"
                     text="Error 500"
                   />
                 </template>
@@ -477,33 +477,33 @@
         <hr class="mt-0 horizontal dark" />
         <h6
           class="text-xs ps-4 ms-2 text-uppercase font-weight-bolder opacity-6"
-          :class="this.$store.state.isRTL ? 'me-4' : 'ms-2'"
+          :class="$store.state.isRTL ? 'me-4' : 'ms-2'"
         >
           DOCS
         </h6>
       </li>
       <li class="nav-item">
         <sidenav-collapse
-          collapseRef="basicExamples"
-          navText="Basic"
+          collapse-ref="basicExamples"
+          nav-text="Basic"
           :class="getRoute() === 'basic' ? 'active' : ''"
         >
-          <template v-slot:icon>
-            <icon name="basic" />
+          <template #icon>
+            <Spaceship height="20px" />
           </template>
-          <template v-slot:list>
+          <template #list>
             <ul class="nav ms-4 ps-3">
               <!-- nav links -->
               <sidenav-collapse-item
                 refer="gettingStartedExample"
-                miniIcon="G"
+                mini-icon="G"
                 text="Getting Started"
               >
-                <template v-slot:nav-child-item>
+                <template #nav-child-item>
                   <li class="nav-item">
                     <a
                       class="nav-link"
-                      href="https://www.creative-tim.com/learning-lab/bootstrap/quick-start/soft-ui-dashboard"
+                      href="https://www.creative-tim.com/learning-lab/vue/quick-start/soft-ui-dashboard"
                       target="_blank"
                     >
                       <span class="text-xs sidenav-mini-icon">Q</span>
@@ -513,7 +513,7 @@
                   <li class="nav-item">
                     <a
                       class="nav-link"
-                      href="https://www.creative-tim.com/learning-lab/bootstrap/license/soft-ui-dashboard"
+                      href="https://www.creative-tim.com/learning-lab/vue/license/soft-ui-dashboard"
                       target="_blank"
                     >
                       <span class="text-xs sidenav-mini-icon">L</span>
@@ -523,7 +523,7 @@
                   <li class="nav-item">
                     <a
                       class="nav-link"
-                      href="https://www.creative-tim.com/learning-lab/bootstrap/overview/soft-ui-dashboard"
+                      href="https://www.creative-tim.com/learning-lab/vue/overview/soft-ui-dashboard"
                       target="_blank"
                     >
                       <span class="text-xs sidenav-mini-icon">C</span>
@@ -533,7 +533,7 @@
                   <li class="nav-item">
                     <a
                       class="nav-link"
-                      href="https://www.creative-tim.com/learning-lab/bootstrap/build-tools/soft-ui-dashboard"
+                      href="https://www.creative-tim.com/learning-lab/vue/build-tools/soft-ui-dashboard"
                       target="_blank"
                     >
                       <span class="text-xs sidenav-mini-icon">B</span>
@@ -545,14 +545,14 @@
 
               <sidenav-collapse-item
                 refer="foundationExample"
-                miniIcon="F"
+                mini-icon="F"
                 text="Foundation"
               >
-                <template v-slot:nav-child-item>
+                <template #nav-child-item>
                   <li class="nav-item">
                     <a
                       class="nav-link"
-                      href="https://www.creative-tim.com/learning-lab/bootstrap/colors/soft-ui-dashboard"
+                      href="https://www.creative-tim.com/learning-lab/vue/colors/soft-ui-dashboard"
                       target="_blank"
                     >
                       <span class="text-xs sidenav-mini-icon">C</span>
@@ -562,7 +562,7 @@
                   <li class="nav-item">
                     <a
                       class="nav-link"
-                      href="https://www.creative-tim.com/learning-lab/bootstrap/grid/soft-ui-dashboard"
+                      href="https://www.creative-tim.com/learning-lab/vue/grid/soft-ui-dashboard"
                       target="_blank"
                     >
                       <span class="text-xs sidenav-mini-icon">G</span>
@@ -572,7 +572,7 @@
                   <li class="nav-item">
                     <a
                       class="nav-link"
-                      href="https://www.creative-tim.com/learning-lab/bootstrap/typography/soft-ui-dashboard"
+                      href="https://www.creative-tim.com/learning-lab/vue/typography/soft-ui-dashboard"
                       target="_blank"
                     >
                       <span class="text-xs sidenav-mini-icon">T</span>
@@ -582,7 +582,7 @@
                   <li class="nav-item">
                     <a
                       class="nav-link"
-                      href="https://www.creative-tim.com/learning-lab/bootstrap/icons/soft-ui-dashboard"
+                      href="https://www.creative-tim.com/learning-lab/vue/icons/soft-ui-dashboard"
                       target="_blank"
                     >
                       <span class="text-xs sidenav-mini-icon">I</span>
@@ -597,20 +597,20 @@
       </li>
       <li class="nav-item">
         <sidenav-collapse
-          collapseRef="componentsExamples"
-          navText="Components"
+          collapse-ref="componentsExamples"
+          nav-text="Components"
           :class="getRoute() === 'components' ? 'active' : ''"
         >
-          <template v-slot:icon>
-            <icon name="components" />
+          <template #icon>
+            <Box3d />
           </template>
-          <template v-slot:list>
+          <template #list>
             <ul class="nav ms-4 ps-3">
               <!-- nav links -->
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="https://www.creative-tim.com/learning-lab/bootstrap/alerts/soft-ui-dashboard"
+                  href="https://www.creative-tim.com/learning-lab/vue/alerts/soft-ui-dashboard"
                   target="_blank"
                 >
                   <span class="sidenav-mini-icon">A</span>
@@ -620,7 +620,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="https://www.creative-tim.com/learning-lab/bootstrap/badge/soft-ui-dashboard"
+                  href="https://www.creative-tim.com/learning-lab/vue/badge/soft-ui-dashboard"
                   target="_blank"
                 >
                   <span class="sidenav-mini-icon">B</span>
@@ -630,7 +630,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="https://www.creative-tim.com/learning-lab/bootstrap/buttons/soft-ui-dashboard"
+                  href="https://www.creative-tim.com/learning-lab/vue/buttons/soft-ui-dashboard"
                   target="_blank"
                 >
                   <span class="sidenav-mini-icon">B</span>
@@ -640,7 +640,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="https://www.creative-tim.com/learning-lab/bootstrap/cards/soft-ui-dashboard"
+                  href="https://www.creative-tim.com/learning-lab/vue/cards/soft-ui-dashboard"
                   target="_blank"
                 >
                   <span class="sidenav-mini-icon">C</span>
@@ -650,7 +650,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="https://www.creative-tim.com/learning-lab/bootstrap/carousel/soft-ui-dashboard"
+                  href="https://www.creative-tim.com/learning-lab/vue/carousel/soft-ui-dashboard"
                   target="_blank"
                 >
                   <span class="sidenav-mini-icon">C</span>
@@ -660,7 +660,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="https://www.creative-tim.com/learning-lab/bootstrap/collapse/soft-ui-dashboard"
+                  href="https://www.creative-tim.com/learning-lab/vue/collapse/soft-ui-dashboard"
                   target="_blank"
                 >
                   <span class="sidenav-mini-icon">C</span>
@@ -670,7 +670,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="https://www.creative-tim.com/learning-lab/bootstrap/dropdowns/soft-ui-dashboard"
+                  href="https://www.creative-tim.com/learning-lab/vue/dropdowns/soft-ui-dashboard"
                   target="_blank"
                 >
                   <span class="sidenav-mini-icon">D</span>
@@ -680,7 +680,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="https://www.creative-tim.com/learning-lab/bootstrap/forms/soft-ui-dashboard"
+                  href="https://www.creative-tim.com/learning-lab/vue/forms/soft-ui-dashboard"
                   target="_blank"
                 >
                   <span class="sidenav-mini-icon">F</span>
@@ -690,7 +690,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="https://www.creative-tim.com/learning-lab/bootstrap/modal/soft-ui-dashboard"
+                  href="https://www.creative-tim.com/learning-lab/vue/modal/soft-ui-dashboard"
                   target="_blank"
                 >
                   <span class="sidenav-mini-icon">M</span>
@@ -700,7 +700,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="https://www.creative-tim.com/learning-lab/bootstrap/navs/soft-ui-dashboard"
+                  href="https://www.creative-tim.com/learning-lab/vue/navs/soft-ui-dashboard"
                   target="_blank"
                 >
                   <span class="sidenav-mini-icon">N</span>
@@ -710,7 +710,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="https://www.creative-tim.com/learning-lab/bootstrap/navbar/soft-ui-dashboard"
+                  href="https://www.creative-tim.com/learning-lab/vue/navbar/soft-ui-dashboard"
                   target="_blank"
                 >
                   <span class="sidenav-mini-icon">N</span>
@@ -720,7 +720,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="https://www.creative-tim.com/learning-lab/bootstrap/pagination/soft-ui-dashboard"
+                  href="https://www.creative-tim.com/learning-lab/vue/pagination/soft-ui-dashboard"
                   target="_blank"
                 >
                   <span class="sidenav-mini-icon">P</span>
@@ -730,7 +730,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="https://www.creative-tim.com/learning-lab/bootstrap/popovers/soft-ui-dashboard"
+                  href="https://www.creative-tim.com/learning-lab/vue/popovers/soft-ui-dashboard"
                   target="_blank"
                 >
                   <span class="sidenav-mini-icon">P</span>
@@ -740,7 +740,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="https://www.creative-tim.com/learning-lab/bootstrap/progress/soft-ui-dashboard"
+                  href="https://www.creative-tim.com/learning-lab/vue/progress/soft-ui-dashboard"
                   target="_blank"
                 >
                   <span class="sidenav-mini-icon">P</span>
@@ -750,7 +750,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="https://www.creative-tim.com/learning-lab/bootstrap/spinners/soft-ui-dashboard"
+                  href="https://www.creative-tim.com/learning-lab/vue/spinners/soft-ui-dashboard"
                   target="_blank"
                 >
                   <span class="sidenav-mini-icon">S</span>
@@ -760,7 +760,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="https://www.creative-tim.com/learning-lab/bootstrap/tables/soft-ui-dashboard"
+                  href="https://www.creative-tim.com/learning-lab/vue/tables/soft-ui-dashboard"
                   target="_blank"
                 >
                   <span class="sidenav-mini-icon">T</span>
@@ -770,7 +770,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="https://www.creative-tim.com/learning-lab/bootstrap/tooltips/soft-ui-dashboard"
+                  href="https://www.creative-tim.com/learning-lab/vue/tooltips/soft-ui-dashboard"
                   target="_blank"
                 >
                   <span class="sidenav-mini-icon">T</span>
@@ -783,14 +783,14 @@
       </li>
       <li class="nav-item">
         <sidenav-collapse
-          navText="Changelog"
-          v-bind:collapse="false"
+          nav-text="Changelog"
+          :collapse="false"
           url="#"
           :aria-controls="''"
-          collapseRef="https://github.com/creativetimofficial/ct-soft-ui-dashboard-pro/blob/main/CHANGELOG.md"
+          collapse-ref="https://github.com/creativetimofficial/ct-vue-soft-ui-dashboard-pro/blob/main/CHANGELOG.md"
         >
-          <template v-slot:icon>
-            <icon name="changelog" />
+          <template #icon>
+            <CreditCard />
           </template>
         </sidenav-collapse>
       </li>
@@ -799,45 +799,44 @@
   <div class="pt-3 mx-3 mt-3 sidenav-footer">
     <sidenav-card
       :class="cardBg"
-      textPrimary="Need Help?"
-      textSecondary="Please check our docs"
-      href="https://www.creative-tim.com/learning-lab/bootstrap/overview/soft-ui-dashboard"
-      linkText="Documentation"
-      iconClass="ni ni-diamond"
+      text-primary="Need Help?"
+      text-secondary="Please check our docs"
+      href="https://www.creative-tim.com/learning-lab/vue/overview/soft-ui-dashboard"
+      link-text="Documentation"
+      icon-class="ni ni-diamond"
     />
   </div>
 </template>
 <script>
-import Icon from "@/components/Icon.vue";
-import SidenavItem from "./SidenavItem.vue";
-import SidenavCollapse from "./SidenavCollapse.vue";
-import SidenavCard from "./SidenavCard.vue";
-import SidenavCollapseItem from "./SidenavCollapseItem.vue";
-
 export default {
   name: "SidenavList",
-  props: {
-    cardBg: String,
-  },
-  data() {
-    return {
-      title: "Soft UI Dashboard PRO",
-      controls: "dashboardsExamples",
-      isActive: "active",
-    };
-  },
-  components: {
-    Icon,
-    SidenavItem,
-    SidenavCollapse,
-    SidenavCard,
-    SidenavCollapseItem,
-  },
   methods: {
     getRoute() {
       const routeArr = this.$route.path.split("/");
       return routeArr[1];
-    },
-  },
+    }
+  }
 };
+</script>
+<script setup>
+/* eslint-disable no-unused-vars */
+import SidenavItem from "./SidenavItem.vue";
+import SidenavCollapse from "./SidenavCollapse.vue";
+import SidenavCard from "./SidenavCard.vue";
+import SidenavCollapseItem from "./SidenavCollapseItem.vue";
+import Settings from "../../components/Icon/Settings.vue";
+import Basket from "../../components/Icon/Basket.vue";
+import Box3d from "../../components/Icon/Box3d.vue";
+import Shop from "../../components/Icon/Shop.vue";
+import Office from "../../components/Icon/Office.vue";
+import Document from "../../components/Icon/Document.vue";
+import Spaceship from "../../components/Icon/Spaceship.vue";
+import CreditCard from "../../components/Icon/CreditCard.vue";
+
+defineProps({
+  cardBg: {
+    type: String,
+    default: ""
+  }
+});
 </script>

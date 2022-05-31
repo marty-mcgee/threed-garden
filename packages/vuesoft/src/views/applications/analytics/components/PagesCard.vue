@@ -42,112 +42,23 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">1. /bits</p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">345</p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">00:17:07</p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">40.91%</p>
-              </td>
-            </tr>
-            <tr>
+            <tr
+              v-for="({ url, views, time, rate }, index) of pages"
+              :key="index"
+            >
               <td>
                 <p class="mb-0 text-sm font-weight-bold">
-                  2. /pages/argon-dashboard
+                  {{ index + 1 }}. {{ url }}
                 </p>
               </td>
               <td>
-                <p class="mb-0 text-sm font-weight-bold">520</p>
+                <p class="mb-0 text-sm font-weight-bold">{{ views }}</p>
               </td>
               <td>
-                <p class="mb-0 text-sm font-weight-bold">00:23:13</p>
+                <p class="mb-0 text-sm font-weight-bold">{{ time }}</p>
               </td>
               <td>
-                <p class="mb-0 text-sm font-weight-bold">30.14%</p>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">
-                  3. /pages/soft-ui-dashboard
-                </p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">122</p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">00:3:10</p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">54.10%</p>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">
-                  4. /bootstrap-themes
-                </p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">1,900</p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">00:30:42</p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">20.93%</p>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">5. /react-themes</p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">1,442</p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">00:31:50</p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">34.98%</p>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">
-                  6. /product/argon-dashboard-angular
-                </p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">201</p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">00:12:42</p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">21.4%</p>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">
-                  7. /product/material-dashboard-pro
-                </p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">2,115</p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">00:50:11</p>
-              </td>
-              <td>
-                <p class="mb-0 text-sm font-weight-bold">34.98%</p>
+                <p class="mb-0 text-sm font-weight-bold">{{ rate }}</p>
               </td>
             </tr>
           </tbody>
@@ -159,6 +70,16 @@
 
 <script>
 export default {
-  name: "pages-card",
+  name: "PagesCard",
+  props: {
+    pages: {
+      type: Array,
+      default: () => [],
+      url: String,
+      views: [Number, String],
+      time: String,
+      rate: String,
+    },
+  },
 };
 </script>

@@ -86,15 +86,46 @@
       </div>
       <div class="col-xl-9">
         <div class="card card-calendar">
-          <div class="p-3 card-body">
-            <calendar-table />
-          </div>
+          <div class="p-3 card-body"><Calendar /></div>
         </div>
       </div>
       <div class="col-xl-3">
         <div class="row">
           <div class="mt-4 col-xl-12 col-md-6 mt-xl-0">
-            <events-card />
+            <events-card
+              :events="[
+                {
+                  icon: 'money-coins',
+                  color: 'danger',
+                  event: 'Cyber Week',
+                  date: '27 March 2021, at 12:30 PM',
+                },
+                {
+                  icon: 'bell-55',
+                  color: 'primary',
+                  event: 'Meeting with Marry',
+                  date: '24 March 2021, at 10:00 PM',
+                },
+                {
+                  icon: 'books',
+                  color: 'success',
+                  event: 'Book Deposit Hall',
+                  date: '25 March 2021, at 9:30 AM',
+                },
+                {
+                  icon: 'delivery-fast',
+                  color: 'warning',
+                  event: 'Shipment Deal UK',
+                  date: '25 March 2021, at 2:00 PM',
+                },
+                {
+                  icon: 'palette',
+                  color: 'info',
+                  event: 'Verify Dashboard Color Palette',
+                  date: '26 March 2021, at 9:00 AM',
+                },
+              ]"
+            />
           </div>
           <div class="mt-4 col-xl-12 col-md-6">
             <div class="card bg-gradient-dark">
@@ -113,9 +144,9 @@
                   <div class="col-5 text-end">
                     <div class="dropdown me-3">
                       <a
+                        id="dropdownTable"
                         class="cursor-pointer"
                         href="javascript:;"
-                        id="dropdownTable"
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                         role="button"
@@ -157,7 +188,27 @@
                 </div>
               </div>
               <div class="p-0 card-body">
-                <productivity-chart />
+                <mini-line-chart
+                  :chart="{
+                    labels: [
+                      'Apr',
+                      'May',
+                      'Jun',
+                      'Jul',
+                      'Aug',
+                      'Sep',
+                      'Oct',
+                      'Nov',
+                      'Dec',
+                    ],
+                    datasets: [
+                      {
+                        label: 'Visitors',
+                        data: [50, 45, 60, 60, 80, 65, 90, 80, 100],
+                      },
+                    ],
+                  }"
+                />
               </div>
             </div>
           </div>
@@ -168,12 +219,12 @@
 </template>
 
 <script>
-import CalendarTable from "./components/CalendarTable.vue";
 import EventsCard from "./components/EventsCard.vue";
-import ProductivityChart from "./components/ProductivityChart.vue";
+import MiniLineChart from "./components/MiniLineChart.vue";
+import Calendar from "../../examples/Calendar.vue";
 
 export default {
-  name: "calendar",
-  components: { CalendarTable, EventsCard, ProductivityChart },
+  name: "CalendarApp",
+  components: { Calendar, EventsCard, MiniLineChart },
 };
 </script>

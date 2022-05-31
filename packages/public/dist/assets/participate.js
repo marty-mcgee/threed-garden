@@ -7304,7 +7304,7 @@ function WebGLAnimation() {
 }
 function WebGLAttributes(gl, capabilities) {
   const isWebGL2 = capabilities.isWebGL2;
-  const buffers = new WeakMap();
+  const buffers = /* @__PURE__ */ new WeakMap();
   function createBuffer(attribute, bufferType) {
     const array = attribute.array;
     const usage = attribute.usage;
@@ -8735,7 +8735,7 @@ function WebGLClipping(properties) {
   }
 }
 function WebGLCubeMaps(renderer2) {
-  let cubemaps = new WeakMap();
+  let cubemaps = /* @__PURE__ */ new WeakMap();
   function mapTextureMapping(texture, mapping) {
     if (mapping === EquirectangularReflectionMapping) {
       texture.mapping = CubeReflectionMapping;
@@ -8777,7 +8777,7 @@ function WebGLCubeMaps(renderer2) {
     }
   }
   function dispose() {
-    cubemaps = new WeakMap();
+    cubemaps = /* @__PURE__ */ new WeakMap();
   }
   return {
     get: get3,
@@ -9433,7 +9433,7 @@ function _getCommonVertexShader() {
 	`;
 }
 function WebGLCubeUVMaps(renderer2) {
-  let cubeUVmaps = new WeakMap();
+  let cubeUVmaps = /* @__PURE__ */ new WeakMap();
   let pmremGenerator = null;
   function get3(texture) {
     if (texture && texture.isTexture) {
@@ -9489,7 +9489,7 @@ function WebGLCubeUVMaps(renderer2) {
     }
   }
   function dispose() {
-    cubeUVmaps = new WeakMap();
+    cubeUVmaps = /* @__PURE__ */ new WeakMap();
     if (pmremGenerator !== null) {
       pmremGenerator.dispose();
       pmremGenerator = null;
@@ -9558,7 +9558,7 @@ function WebGLExtensions(gl) {
 }
 function WebGLGeometries(gl, attributes, info, bindingStates) {
   const geometries = {};
-  const wireframeAttributes = new WeakMap();
+  const wireframeAttributes = /* @__PURE__ */ new WeakMap();
   function onGeometryDispose(event) {
     const geometry = event.target;
     if (geometry.index !== null) {
@@ -9776,7 +9776,7 @@ function denormalize(morph, attribute) {
 function WebGLMorphtargets(gl, capabilities, textures) {
   const influencesList = {};
   const morphInfluences = new Float32Array(8);
-  const morphTextures = new WeakMap();
+  const morphTextures = /* @__PURE__ */ new WeakMap();
   const morph = new Vector3();
   const workInfluences = [];
   for (let i = 0; i < 8; i++) {
@@ -9915,7 +9915,7 @@ function WebGLMorphtargets(gl, capabilities, textures) {
   };
 }
 function WebGLObjects(gl, geometries, attributes, info) {
-  let updateMap = new WeakMap();
+  let updateMap = /* @__PURE__ */ new WeakMap();
   function update2(object) {
     const frame = info.render.frame;
     const geometry = object.geometry;
@@ -9936,7 +9936,7 @@ function WebGLObjects(gl, geometries, attributes, info) {
     return buffergeometry;
   }
   function dispose() {
-    updateMap = new WeakMap();
+    updateMap = /* @__PURE__ */ new WeakMap();
   }
   function onInstancedMeshDispose(event) {
     const instancedMesh = event.target;
@@ -11022,8 +11022,8 @@ function WebGLProgram(renderer2, cacheKey, parameters, bindingStates) {
 let _id = 0;
 class WebGLShaderCache {
   constructor() {
-    this.shaderCache = new Map();
-    this.materialCache = new Map();
+    this.shaderCache = /* @__PURE__ */ new Map();
+    this.materialCache = /* @__PURE__ */ new Map();
   }
   update(material) {
     const vertexShader = material.vertexShader;
@@ -11064,7 +11064,7 @@ class WebGLShaderCache {
   _getShaderCacheForMaterial(material) {
     const cache = this.materialCache;
     if (cache.has(material) === false) {
-      cache.set(material, new Set());
+      cache.set(material, /* @__PURE__ */ new Set());
     }
     return cache.get(material);
   }
@@ -11468,7 +11468,7 @@ function WebGLPrograms(renderer2, cubemaps, cubeuvmaps, extensions, capabilities
   };
 }
 function WebGLProperties() {
-  let properties = new WeakMap();
+  let properties = /* @__PURE__ */ new WeakMap();
   function get3(object) {
     let map2 = properties.get(object);
     if (map2 === void 0) {
@@ -11484,7 +11484,7 @@ function WebGLProperties() {
     properties.get(object)[key] = value;
   }
   function dispose() {
-    properties = new WeakMap();
+    properties = /* @__PURE__ */ new WeakMap();
   }
   return {
     get: get3,
@@ -11608,7 +11608,7 @@ function WebGLRenderList() {
   };
 }
 function WebGLRenderLists() {
-  let lists = new WeakMap();
+  let lists = /* @__PURE__ */ new WeakMap();
   function get3(scene2, renderCallDepth) {
     let list;
     if (lists.has(scene2) === false) {
@@ -11625,7 +11625,7 @@ function WebGLRenderLists() {
     return list;
   }
   function dispose() {
-    lists = new WeakMap();
+    lists = /* @__PURE__ */ new WeakMap();
   }
   return {
     get: get3,
@@ -12013,7 +12013,7 @@ function WebGLRenderState(extensions, capabilities) {
   };
 }
 function WebGLRenderStates(extensions, capabilities) {
-  let renderStates = new WeakMap();
+  let renderStates = /* @__PURE__ */ new WeakMap();
   function get3(scene2, renderCallDepth = 0) {
     let renderState;
     if (renderStates.has(scene2) === false) {
@@ -12030,7 +12030,7 @@ function WebGLRenderStates(extensions, capabilities) {
     return renderState;
   }
   function dispose() {
-    renderStates = new WeakMap();
+    renderStates = /* @__PURE__ */ new WeakMap();
   }
   return {
     get: get3,
@@ -12471,7 +12471,7 @@ function WebGLState(gl, extensions, capabilities) {
   const stencilBuffer = new StencilBuffer();
   let enabledCapabilities = {};
   let currentBoundFramebuffers = {};
-  let currentDrawbuffers = new WeakMap();
+  let currentDrawbuffers = /* @__PURE__ */ new WeakMap();
   let defaultDrawbuffers = [];
   let currentProgram = null;
   let currentBlendingEnabled = false;
@@ -12923,7 +12923,7 @@ function WebGLState(gl, extensions, capabilities) {
     currentTextureSlot = null;
     currentBoundTextures = {};
     currentBoundFramebuffers = {};
-    currentDrawbuffers = new WeakMap();
+    currentDrawbuffers = /* @__PURE__ */ new WeakMap();
     defaultDrawbuffers = [];
     currentProgram = null;
     currentBlendingEnabled = false;
@@ -12988,7 +12988,7 @@ function WebGLTextures(_gl, extensions, state, properties, capabilities, utils, 
   const maxSamples = capabilities.maxSamples;
   const hasMultisampledRenderToTexture = extensions.has("WEBGL_multisampled_render_to_texture");
   const MultisampledRenderToTextureExtension = hasMultisampledRenderToTexture ? extensions.get("WEBGL_multisampled_render_to_texture") : void 0;
-  const _videoTextures = new WeakMap();
+  const _videoTextures = /* @__PURE__ */ new WeakMap();
   let _canvas2;
   let useOffscreenCanvas = false;
   try {
@@ -14308,7 +14308,7 @@ class WebXRManager extends EventDispatcher {
     let initialRenderTarget = null;
     let newRenderTarget = null;
     const controllers = [];
-    const inputSourcesMap = new Map();
+    const inputSourcesMap = /* @__PURE__ */ new Map();
     const cameraL = new PerspectiveCamera();
     cameraL.layers.enable(1);
     cameraL.viewport = new Vector4();
@@ -15743,7 +15743,7 @@ function WebGLRenderer(parameters = {}) {
     materialProperties.envMap = (material.isMeshStandardMaterial ? cubeuvmaps : cubemaps).get(material.envMap || materialProperties.environment);
     if (programs === void 0) {
       material.addEventListener("dispose", onMaterialDispose);
-      programs = new Map();
+      programs = /* @__PURE__ */ new Map();
       materialProperties.programs = programs;
     }
     let program = programs.get(programCacheKey);
@@ -26451,9 +26451,8 @@ function unzipSync(data) {
   }
   return files;
 }
-var fflate = /* @__PURE__ */ Object.freeze({
+var fflate = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   Deflate,
   AsyncDeflate,
   deflate,
@@ -26502,7 +26501,7 @@ var fflate = /* @__PURE__ */ Object.freeze({
   Unzip,
   unzip,
   unzipSync
-});
+}, Symbol.toStringTag, { value: "Module" }));
 function findSpan(p, u, U) {
   const n = U.length - p - 1;
   if (u >= U[n]) {
@@ -26784,7 +26783,7 @@ class FBXTreeParser {
     return sceneGraph;
   }
   parseConnections() {
-    const connectionMap = new Map();
+    const connectionMap = /* @__PURE__ */ new Map();
     if ("Connections" in fbxTree) {
       const rawConnections = fbxTree.Connections.connections;
       rawConnections.forEach(function(rawConnection) {
@@ -26876,7 +26875,7 @@ class FBXTreeParser {
     }
   }
   parseTextures(images) {
-    const textureMap = new Map();
+    const textureMap = /* @__PURE__ */ new Map();
     if ("Texture" in fbxTree.Objects) {
       const textureNodes = fbxTree.Objects.Texture;
       for (const nodeID in textureNodes) {
@@ -26934,7 +26933,7 @@ class FBXTreeParser {
     return texture;
   }
   parseMaterials(textureMap) {
-    const materialMap = new Map();
+    const materialMap = /* @__PURE__ */ new Map();
     if ("Material" in fbxTree.Objects) {
       const materialNodes = fbxTree.Objects.Material;
       for (const nodeID in materialNodes) {
@@ -27190,7 +27189,7 @@ class FBXTreeParser {
     sceneGraph.animations = animations2;
   }
   parseModels(skeletons, geometryMap, materialMap) {
-    const modelMap = new Map();
+    const modelMap = /* @__PURE__ */ new Map();
     const modelNodes = fbxTree.Objects.Model;
     for (const nodeID in modelNodes) {
       const id = parseInt(nodeID);
@@ -27511,7 +27510,7 @@ class FBXTreeParser {
 }
 class GeometryParser {
   parse(deformers) {
-    const geometryMap = new Map();
+    const geometryMap = /* @__PURE__ */ new Map();
     if ("Geometry" in fbxTree.Objects) {
       const geoNodes = fbxTree.Objects.Geometry;
       for (const nodeID in geoNodes) {
@@ -28009,7 +28008,7 @@ class AnimationParser {
   }
   parseAnimationCurveNodes() {
     const rawCurveNodes = fbxTree.Objects.AnimationCurveNode;
-    const curveNodesMap = new Map();
+    const curveNodesMap = /* @__PURE__ */ new Map();
     for (const nodeID in rawCurveNodes) {
       const rawCurveNode = rawCurveNodes[nodeID];
       if (rawCurveNode.attrName.match(/S|R|T|DeformPercent/) !== null) {
@@ -28049,7 +28048,7 @@ class AnimationParser {
   }
   parseAnimationLayers(curveNodesMap) {
     const rawLayers = fbxTree.Objects.AnimationLayer;
-    const layersMap = new Map();
+    const layersMap = /* @__PURE__ */ new Map();
     for (const nodeID in rawLayers) {
       const layerCurveNodes = [];
       const connection = connections.get(parseInt(nodeID));
@@ -30207,7 +30206,7 @@ class GLTFParser {
     this.plugins = {};
     this.options = options;
     this.cache = new GLTFRegistry();
-    this.associations = new Map();
+    this.associations = /* @__PURE__ */ new Map();
     this.primitiveCache = {};
     this.meshCache = { refs: {}, uses: {} };
     this.cameraCache = { refs: {}, uses: {} };
@@ -31083,7 +31082,7 @@ class GLTFParser {
     }
     return Promise.all(pending).then(function() {
       const reduceAssociations = (node) => {
-        const reducedAssociations = new Map();
+        const reducedAssociations = /* @__PURE__ */ new Map();
         for (const [key, value] of parser.associations) {
           if (key instanceof Material || key instanceof Texture) {
             reducedAssociations.set(key, value);
@@ -33290,7 +33289,7 @@ var INTERPRETATIONS = [
       },
       CSS_RGB: {
         read: function read3(original) {
-          var test = original.match(/^rgb\(\s*(.+)\s*,\s*(.+)\s*,\s*(.+)\s*\)/);
+          var test = original.match(/^rgb\(\s*(\S+)\s*,\s*(\S+)\s*,\s*(\S+)\s*\)/);
           if (test === null) {
             return false;
           }
@@ -33305,7 +33304,7 @@ var INTERPRETATIONS = [
       },
       CSS_RGBA: {
         read: function read4(original) {
-          var test = original.match(/^rgba\(\s*(.+)\s*,\s*(.+)\s*,\s*(.+)\s*,\s*(.+)\s*\)/);
+          var test = original.match(/^rgba\(\s*(\S+)\s*,\s*(\S+)\s*,\s*(\S+)\s*,\s*(\S+)\s*\)/);
           if (test === null) {
             return false;
           }
@@ -34701,7 +34700,7 @@ var CenteredDiv = function() {
   }]);
   return CenteredDiv2;
 }();
-var styleSheet = ___$insertStyle(".dg ul{list-style:none;margin:0;padding:0;width:100%;clear:both}.dg.ac{position:fixed;top:0;left:0;right:0;height:0;z-index:0}.dg:not(.ac) .main{overflow:hidden}.dg.main{-webkit-transition:opacity .1s linear;-o-transition:opacity .1s linear;-moz-transition:opacity .1s linear;transition:opacity .1s linear}.dg.main.taller-than-window{overflow-y:auto}.dg.main.taller-than-window .close-button{opacity:1;margin-top:-1px;border-top:1px solid #2c2c2c}.dg.main ul.closed .close-button{opacity:1 !important}.dg.main:hover .close-button,.dg.main .close-button.drag{opacity:1}.dg.main .close-button{-webkit-transition:opacity .1s linear;-o-transition:opacity .1s linear;-moz-transition:opacity .1s linear;transition:opacity .1s linear;border:0;line-height:19px;height:20px;cursor:pointer;text-align:center;background-color:#000}.dg.main .close-button.close-top{position:relative}.dg.main .close-button.close-bottom{position:absolute}.dg.main .close-button:hover{background-color:#111}.dg.a{float:right;margin-right:15px;overflow-y:visible}.dg.a.has-save>ul.close-top{margin-top:0}.dg.a.has-save>ul.close-bottom{margin-top:27px}.dg.a.has-save>ul.closed{margin-top:0}.dg.a .save-row{top:0;z-index:1002}.dg.a .save-row.close-top{position:relative}.dg.a .save-row.close-bottom{position:fixed}.dg li{-webkit-transition:height .1s ease-out;-o-transition:height .1s ease-out;-moz-transition:height .1s ease-out;transition:height .1s ease-out;-webkit-transition:overflow .1s linear;-o-transition:overflow .1s linear;-moz-transition:overflow .1s linear;transition:overflow .1s linear}.dg li:not(.folder){cursor:auto;height:27px;line-height:27px;padding:0 4px 0 5px}.dg li.folder{padding:0;border-left:4px solid rgba(0,0,0,0)}.dg li.title{cursor:pointer;margin-left:-4px}.dg .closed li:not(.title),.dg .closed ul li,.dg .closed ul li>*{height:0;overflow:hidden;border:0}.dg .cr{clear:both;padding-left:3px;height:27px;overflow:hidden}.dg .property-name{cursor:default;float:left;clear:left;width:40%;overflow:hidden;text-overflow:ellipsis}.dg .c{float:left;width:60%;position:relative}.dg .c input[type=text]{border:0;margin-top:4px;padding:3px;width:100%;float:right}.dg .has-slider input[type=text]{width:30%;margin-left:0}.dg .slider{float:left;width:66%;margin-left:-5px;margin-right:0;height:19px;margin-top:4px}.dg .slider-fg{height:100%}.dg .c input[type=checkbox]{margin-top:7px}.dg .c select{margin-top:5px}.dg .cr.function,.dg .cr.function .property-name,.dg .cr.function *,.dg .cr.boolean,.dg .cr.boolean *{cursor:pointer}.dg .cr.color{overflow:visible}.dg .selector{display:none;position:absolute;margin-left:-9px;margin-top:23px;z-index:10}.dg .c:hover .selector,.dg .selector.drag{display:block}.dg li.save-row{padding:0}.dg li.save-row .button{display:inline-block;padding:0px 6px}.dg.dialogue{background-color:#222;width:460px;padding:15px;font-size:13px;line-height:15px}#dg-new-constructor{padding:10px;color:#222;font-family:Monaco, monospace;font-size:10px;border:0;resize:none;box-shadow:inset 1px 1px 1px #888;word-wrap:break-word;margin:12px 0;display:block;width:440px;overflow-y:scroll;height:100px;position:relative}#dg-local-explain{display:none;font-size:11px;line-height:17px;border-radius:3px;background-color:#333;padding:8px;margin-top:10px}#dg-local-explain code{font-size:10px}#dat-gui-save-locally{display:none}.dg{color:#eee;font:11px 'Lucida Grande', sans-serif;text-shadow:0 -1px 0 #111}.dg.main::-webkit-scrollbar{width:5px;background:#1a1a1a}.dg.main::-webkit-scrollbar-corner{height:0;display:none}.dg.main::-webkit-scrollbar-thumb{border-radius:5px;background:#676767}.dg li:not(.folder){background:#1a1a1a;border-bottom:1px solid #2c2c2c}.dg li.save-row{line-height:25px;background:#dad5cb;border:0}.dg li.save-row select{margin-left:5px;width:108px}.dg li.save-row .button{margin-left:5px;margin-top:1px;border-radius:2px;font-size:9px;line-height:7px;padding:4px 4px 5px 4px;background:#c5bdad;color:#fff;text-shadow:0 1px 0 #b0a58f;box-shadow:0 -1px 0 #b0a58f;cursor:pointer}.dg li.save-row .button.gears{background:#c5bdad url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAANCAYAAAB/9ZQ7AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAQJJREFUeNpiYKAU/P//PwGIC/ApCABiBSAW+I8AClAcgKxQ4T9hoMAEUrxx2QSGN6+egDX+/vWT4e7N82AMYoPAx/evwWoYoSYbACX2s7KxCxzcsezDh3evFoDEBYTEEqycggWAzA9AuUSQQgeYPa9fPv6/YWm/Acx5IPb7ty/fw+QZblw67vDs8R0YHyQhgObx+yAJkBqmG5dPPDh1aPOGR/eugW0G4vlIoTIfyFcA+QekhhHJhPdQxbiAIguMBTQZrPD7108M6roWYDFQiIAAv6Aow/1bFwXgis+f2LUAynwoIaNcz8XNx3Dl7MEJUDGQpx9gtQ8YCueB+D26OECAAQDadt7e46D42QAAAABJRU5ErkJggg==) 2px 1px no-repeat;height:7px;width:8px}.dg li.save-row .button:hover{background-color:#bab19e;box-shadow:0 -1px 0 #b0a58f}.dg li.folder{border-bottom:0}.dg li.title{padding-left:16px;background:#000 url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==) 6px 10px no-repeat;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.2)}.dg .closed li.title{background-image:url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlGIWqMCbWAEAOw==)}.dg .cr.boolean{border-left:3px solid #806787}.dg .cr.color{border-left:3px solid}.dg .cr.function{border-left:3px solid #e61d5f}.dg .cr.number{border-left:3px solid #2FA1D6}.dg .cr.number input[type=text]{color:#2FA1D6}.dg .cr.string{border-left:3px solid #1ed36f}.dg .cr.string input[type=text]{color:#1ed36f}.dg .cr.function:hover,.dg .cr.boolean:hover{background:#111}.dg .c input[type=text]{background:#303030;outline:none}.dg .c input[type=text]:hover{background:#3c3c3c}.dg .c input[type=text]:focus{background:#494949;color:#fff}.dg .c .slider{background:#303030;cursor:ew-resize}.dg .c .slider-fg{background:#2FA1D6;max-width:100%}.dg .c .slider:hover{background:#3c3c3c}.dg .c .slider:hover .slider-fg{background:#44abda}\n");
+var styleSheet = ___$insertStyle(".dg ul{list-style:none;margin:0;padding:0;width:100%;clear:both}.dg.ac{position:fixed;top:0;left:0;right:0;height:0;z-index:0}.dg:not(.ac) .main{overflow:hidden}.dg.main{-webkit-transition:opacity .1s linear;-o-transition:opacity .1s linear;-moz-transition:opacity .1s linear;transition:opacity .1s linear}.dg.main.taller-than-window{overflow-y:auto}.dg.main.taller-than-window .close-button{opacity:1;margin-top:-1px;border-top:1px solid #2c2c2c}.dg.main ul.closed .close-button{opacity:1 !important}.dg.main:hover .close-button,.dg.main .close-button.drag{opacity:1}.dg.main .close-button{-webkit-transition:opacity .1s linear;-o-transition:opacity .1s linear;-moz-transition:opacity .1s linear;transition:opacity .1s linear;border:0;line-height:19px;height:20px;cursor:pointer;text-align:center;background-color:#000}.dg.main .close-button.close-top{position:relative}.dg.main .close-button.close-bottom{position:absolute}.dg.main .close-button:hover{background-color:#111}.dg.a{float:right;margin-right:15px;overflow-y:visible}.dg.a.has-save>ul.close-top{margin-top:0}.dg.a.has-save>ul.close-bottom{margin-top:27px}.dg.a.has-save>ul.closed{margin-top:0}.dg.a .save-row{top:0;z-index:1002}.dg.a .save-row.close-top{position:relative}.dg.a .save-row.close-bottom{position:fixed}.dg li{-webkit-transition:height .1s ease-out;-o-transition:height .1s ease-out;-moz-transition:height .1s ease-out;transition:height .1s ease-out;-webkit-transition:overflow .1s linear;-o-transition:overflow .1s linear;-moz-transition:overflow .1s linear;transition:overflow .1s linear}.dg li:not(.folder){cursor:auto;height:27px;line-height:27px;padding:0 4px 0 5px}.dg li.folder{padding:0;border-left:4px solid rgba(0,0,0,0)}.dg li.title{cursor:pointer;margin-left:-4px}.dg .closed li:not(.title),.dg .closed ul li,.dg .closed ul li>*{height:0;overflow:hidden;border:0}.dg .cr{clear:both;padding-left:3px;height:27px;overflow:hidden}.dg .property-name{cursor:default;float:left;clear:left;width:40%;overflow:hidden;text-overflow:ellipsis}.dg .cr.function .property-name{width:100%}.dg .c{float:left;width:60%;position:relative}.dg .c input[type=text]{border:0;margin-top:4px;padding:3px;width:100%;float:right}.dg .has-slider input[type=text]{width:30%;margin-left:0}.dg .slider{float:left;width:66%;margin-left:-5px;margin-right:0;height:19px;margin-top:4px}.dg .slider-fg{height:100%}.dg .c input[type=checkbox]{margin-top:7px}.dg .c select{margin-top:5px}.dg .cr.function,.dg .cr.function .property-name,.dg .cr.function *,.dg .cr.boolean,.dg .cr.boolean *{cursor:pointer}.dg .cr.color{overflow:visible}.dg .selector{display:none;position:absolute;margin-left:-9px;margin-top:23px;z-index:10}.dg .c:hover .selector,.dg .selector.drag{display:block}.dg li.save-row{padding:0}.dg li.save-row .button{display:inline-block;padding:0px 6px}.dg.dialogue{background-color:#222;width:460px;padding:15px;font-size:13px;line-height:15px}#dg-new-constructor{padding:10px;color:#222;font-family:Monaco, monospace;font-size:10px;border:0;resize:none;box-shadow:inset 1px 1px 1px #888;word-wrap:break-word;margin:12px 0;display:block;width:440px;overflow-y:scroll;height:100px;position:relative}#dg-local-explain{display:none;font-size:11px;line-height:17px;border-radius:3px;background-color:#333;padding:8px;margin-top:10px}#dg-local-explain code{font-size:10px}#dat-gui-save-locally{display:none}.dg{color:#eee;font:11px 'Lucida Grande', sans-serif;text-shadow:0 -1px 0 #111}.dg.main::-webkit-scrollbar{width:5px;background:#1a1a1a}.dg.main::-webkit-scrollbar-corner{height:0;display:none}.dg.main::-webkit-scrollbar-thumb{border-radius:5px;background:#676767}.dg li:not(.folder){background:#1a1a1a;border-bottom:1px solid #2c2c2c}.dg li.save-row{line-height:25px;background:#dad5cb;border:0}.dg li.save-row select{margin-left:5px;width:108px}.dg li.save-row .button{margin-left:5px;margin-top:1px;border-radius:2px;font-size:9px;line-height:7px;padding:4px 4px 5px 4px;background:#c5bdad;color:#fff;text-shadow:0 1px 0 #b0a58f;box-shadow:0 -1px 0 #b0a58f;cursor:pointer}.dg li.save-row .button.gears{background:#c5bdad url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAANCAYAAAB/9ZQ7AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAQJJREFUeNpiYKAU/P//PwGIC/ApCABiBSAW+I8AClAcgKxQ4T9hoMAEUrxx2QSGN6+egDX+/vWT4e7N82AMYoPAx/evwWoYoSYbACX2s7KxCxzcsezDh3evFoDEBYTEEqycggWAzA9AuUSQQgeYPa9fPv6/YWm/Acx5IPb7ty/fw+QZblw67vDs8R0YHyQhgObx+yAJkBqmG5dPPDh1aPOGR/eugW0G4vlIoTIfyFcA+QekhhHJhPdQxbiAIguMBTQZrPD7108M6roWYDFQiIAAv6Aow/1bFwXgis+f2LUAynwoIaNcz8XNx3Dl7MEJUDGQpx9gtQ8YCueB+D26OECAAQDadt7e46D42QAAAABJRU5ErkJggg==) 2px 1px no-repeat;height:7px;width:8px}.dg li.save-row .button:hover{background-color:#bab19e;box-shadow:0 -1px 0 #b0a58f}.dg li.folder{border-bottom:0}.dg li.title{padding-left:16px;background:#000 url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==) 6px 10px no-repeat;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.2)}.dg .closed li.title{background-image:url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlGIWqMCbWAEAOw==)}.dg .cr.boolean{border-left:3px solid #806787}.dg .cr.color{border-left:3px solid}.dg .cr.function{border-left:3px solid #e61d5f}.dg .cr.number{border-left:3px solid #2FA1D6}.dg .cr.number input[type=text]{color:#2FA1D6}.dg .cr.string{border-left:3px solid #1ed36f}.dg .cr.string input[type=text]{color:#1ed36f}.dg .cr.function:hover,.dg .cr.boolean:hover{background:#111}.dg .c input[type=text]{background:#303030;outline:none}.dg .c input[type=text]:hover{background:#3c3c3c}.dg .c input[type=text]:focus{background:#494949;color:#fff}.dg .c .slider{background:#303030;cursor:ew-resize}.dg .c .slider-fg{background:#2FA1D6;max-width:100%}.dg .c .slider:hover{background:#3c3c3c}.dg .c .slider:hover .slider-fg{background:#44abda}\n");
 css.inject(styleSheet);
 var CSS_NAMESPACE = "dg";
 var HIDE_KEY_CODE = 72;
@@ -36110,6 +36109,12 @@ const animate = () => {
   }
   if (player.move !== void 0) {
     movePlayer(dt);
+  }
+  if (player.cameras != void 0 && player.cameras.active != void 0) {
+    camera.position.lerp(player.cameras.active.getWorldPosition(new Vector3()), 0.05);
+    const pos = player.object.position.clone();
+    pos.y += 200;
+    camera.lookAt(pos);
   }
   render();
 };

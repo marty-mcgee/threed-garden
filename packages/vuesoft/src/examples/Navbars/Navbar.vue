@@ -1,20 +1,22 @@
 <template>
   <nav
-    class="shadow-none navbar navbar-main navbar-expand-lg border-radius-xl"
-    :class="
-      this.$store.state.isRTL ? 'top-1 position-sticky z-index-sticky' : ''
-    "
-    v-bind="$attrs"
     id="navbarBlur"
+    class="shadow-none navbar navbar-main navbar-expand-lg border-radius-xl"
+    :class="[isRTL ? 'top-1 position-sticky z-index-sticky' : '']"
+    v-bind="$attrs"
     data-scroll="true"
   >
     <div class="px-3 py-1 container-fluid">
-      <breadcrumbs :currentPage="currentRouteName" :textWhite="textWhite" />
+      <breadcrumbs
+        :current-directory="currentDirectory"
+        :current-page="currentRouteName"
+        :text-white="textWhite"
+      />
       <div
         class="sidenav-toggler sidenav-toggler-inner d-xl-block d-none"
-        :class="this.$store.state.isRTL ? 'me-3' : ''"
+        :class="isRTL ? 'me-3' : ''"
       >
-        <a @click.prevent="minNav" href="#" class="p-0 nav-link text-body">
+        <a href="#" class="p-0 nav-link text-body" @click.prevent="minNav">
           <div class="sidenav-toggler-inner">
             <i
               class="sidenav-toggler-line"
@@ -32,13 +34,13 @@
         </a>
       </div>
       <div
-        class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4"
-        :class="this.$store.state.isRTL ? 'px-0' : 'me-sm-4'"
         id="navbar"
+        class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4"
+        :class="isRTL ? 'px-0' : 'me-sm-4'"
       >
         <div
           class="pe-md-3 d-flex align-items-center"
-          :class="this.$store.state.isRTL ? 'me-md-auto' : 'ms-md-auto'"
+          :class="isRTL ? 'me-md-auto' : 'ms-md-auto'"
         >
           <div class="input-group">
             <span class="input-group-text text-body"
@@ -47,9 +49,7 @@
             <input
               type="text"
               class="form-control"
-              :placeholder="
-                this.$store.state.isRTL ? 'أكتب هنا...' : 'Type here...'
-              "
+              :placeholder="isRTL ? 'أكتب هنا...' : 'Type here...'"
             />
           </div>
         </div>
@@ -61,22 +61,17 @@
               :class="textWhite ? textWhite : 'text-body'"
               target="_blank"
             >
-              <i
-                class="fa fa-user"
-                :class="this.$store.state.isRTL ? 'ms-sm-2' : 'me-sm-1'"
-              ></i>
-              <span v-if="this.$store.state.isRTL" class="d-sm-inline d-none"
-                >يسجل دخول</span
-              >
+              <i class="fa fa-user" :class="isRTL ? 'ms-sm-2' : 'me-sm-1'"></i>
+              <span v-if="isRTL" class="d-sm-inline d-none">يسجل دخول</span>
               <span v-else class="d-sm-inline d-none">Sign In </span>
             </router-link>
           </li>
           <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
             <a
-              href="#"
-              @click="toggleSidebar"
-              class="p-0 nav-link text-body"
               id="iconNavbarSidenav"
+              href="#"
+              class="p-0 nav-link text-body"
+              @click="toggleSidebar"
             >
               <div class="sidenav-toggler-inner">
                 <i class="sidenav-toggler-line"></i>
@@ -88,24 +83,24 @@
           <li class="px-3 nav-item d-flex align-items-center">
             <a
               class="p-0 nav-link"
-              @click="toggleConfigurator"
               :class="textWhite ? textWhite : 'text-body'"
+              @click="toggleConfigurator"
             >
               <i class="cursor-pointer fa fa-cog fixed-plugin-button-nav"></i>
             </a>
           </li>
           <li
             class="nav-item dropdown d-flex align-items-center"
-            :class="this.$store.state.isRTL ? 'ps-2' : 'pe-2'"
+            :class="isRTL ? 'ps-2' : 'pe-2'"
           >
             <a
+              id="dropdownMenuButton"
               href="#"
               class="p-0 nav-link"
               :class="[
                 textWhite ? textWhite : 'text-body',
                 showMenu ? 'show' : '',
               ]"
-              id="dropdownMenuButton"
               data-bs-toggle="dropdown"
               aria-expanded="false"
               @click="showMenu = !showMenu"
@@ -227,16 +222,38 @@
 </template>
 <script>
 import Breadcrumbs from "../Breadcrumbs.vue";
-import { mapMutations, mapActions } from "vuex";
+import { mapMutations, mapActions, mapState } from "vuex";
 
 export default {
-  name: "navbar",
+  name: "Navbar",
+  components: {
+    Breadcrumbs,
+  },
+  props: {
+    minNav: {
+      type: Function,
+      default: () => {},
+    },
+    textWhite: {
+      type: String,
+      default: "",
+    },
+  },
   data() {
     return {
       showMenu: false,
     };
   },
-  props: ["minNav", "textWhite"],
+  computed: {
+    ...mapState(["isRTL"]),
+    currentRouteName() {
+      return this.$route.name;
+    },
+    currentDirectory() {
+      let dir = this.$route.path.split("/")[1];
+      return dir.charAt(0).toUpperCase() + dir.slice(1);
+    },
+  },
   created() {
     this.minNav;
   },
@@ -247,14 +264,6 @@ export default {
     toggleSidebar() {
       this.toggleSidebarColor("bg-white");
       this.navbarMinimize();
-    },
-  },
-  components: {
-    Breadcrumbs,
-  },
-  computed: {
-    currentRouteName() {
-      return this.$route.name;
     },
   },
 };

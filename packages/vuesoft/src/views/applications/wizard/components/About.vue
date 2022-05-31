@@ -66,7 +66,8 @@
           class="mb-0 btn bg-gradient-dark ms-auto js-btn-next"
           type="button"
           title="Next"
-          @click="this.$parent.nextStep">
+          @click="this.$parent.nextStep"
+        >
           Next
         </button>
       </div>
@@ -76,6 +77,6 @@
 
 <script>
 export default {
-  name: "about",
+  name: "About",
 };
 </script>

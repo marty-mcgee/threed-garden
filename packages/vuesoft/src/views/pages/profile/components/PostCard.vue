@@ -50,38 +50,16 @@
           <div class="d-flex align-items-center justify-content-sm-end">
             <div class="d-flex align-items-center">
               <a
+                v-for="({ image, name }, index) of likers"
+                :key="index"
                 href="javascript:;"
                 class="avatar avatar-xs rounded-circle"
                 data-toggle="tooltip"
-                data-original-title="Jessica Rowland"
+                :data-original-title="name"
               >
                 <img
                   alt="Image placeholder"
-                  :src="team5"
-                  class="rounded-circle"
-                />
-              </a>
-              <a
-                href="javascript:;"
-                class="avatar avatar-xs rounded-circle"
-                data-toggle="tooltip"
-                data-original-title="Audrey Love"
-              >
-                <img
-                  alt="Image placeholder"
-                  :src="team2"
-                  class="rounded-circle"
-                />
-              </a>
-              <a
-                href="javascript:;"
-                class="avatar avatar-xs rounded-circle"
-                data-toggle="tooltip"
-                data-original-title="Michael Lewis"
-              >
-                <img
-                  alt="Image placeholder"
-                  :src="team1"
+                  :src="image"
                   class="rounded-circle"
                 />
               </a>
@@ -178,9 +156,23 @@ import team4 from "@/assets/img/team-4.jpg";
 import team5 from "@/assets/img/team-5.jpg";
 
 export default {
-  name: "post-card",
+  name: "PostCard",
   data() {
     return {
+      likers: [
+        {
+          name: "Jessica Rowland",
+          image: team1,
+        },
+        {
+          name: "Audry Love",
+          image: team2,
+        },
+        {
+          name: "Michael Lewis",
+          image: team5,
+        },
+      ],
       bruce,
       team1,
       team2,

@@ -1,4 +1,5 @@
 import { createStore } from "vuex";
+import bootstrap from "bootstrap/dist/js/bootstrap.min.js";
 
 export default createStore({
   state: {
@@ -15,6 +16,10 @@ export default createStore({
     showNavbar: true,
     showFooter: true,
     showMain: true,
+    navbarFixed:
+      "position-sticky blur shadow-blur left-auto top-1 z-index-sticky px-0 mx-4",
+    absolute: "position-absolute px-4 mx-0 w-100 z-index-2",
+    bootstrap
   },
   mutations: {
     toggleConfigurator(state) {
@@ -22,7 +27,6 @@ export default createStore({
     },
     navbarMinimize(state) {
       const sidenav_show = document.querySelector(".g-sidenav-show");
-
       if (sidenav_show.classList.contains("g-sidenav-hidden")) {
         sidenav_show.classList.remove("g-sidenav-hidden");
         sidenav_show.classList.add("g-sidenav-pinned");
@@ -43,11 +47,19 @@ export default createStore({
         state.isNavFixed = false;
       }
     },
+    toggleEveryDisplay(state) {
+      state.showNavbar = !state.showNavbar;
+      state.showSidenav = !state.showSidenav;
+      state.showFooter = !state.showFooter;
+    },
+    toggleHideConfig(state) {
+      state.hideConfigButton = !state.hideConfigButton;
+    }
   },
   actions: {
     toggleSidebarColor({ commit }, payload) {
       commit("sidebarType", payload);
-    },
+    }
   },
-  getters: {},
+  getters: {}
 });

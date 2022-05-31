@@ -13,7 +13,7 @@
       >
         <button
           type="button"
-          class="mt-2 mb-0  btn bg-gradient-success ms-lg-auto me-lg-0 me-auto mt-lg-0"
+          class="mt-2 mb-0 btn bg-gradient-success ms-lg-auto me-lg-0 me-auto mt-lg-0"
         >
           Save
         </button>
@@ -101,9 +101,9 @@
               <div class="col-sm-6">
                 <label class="mt-4">Category</label>
                 <select
+                  id="choices-category-edit"
                   class="form-control"
                   name="choices-category"
-                  id="choices-category-edit"
                 >
                   <option value="Choice 1" selected="">Furniture</option>
                   <option value="Choice 2">Real Estate</option>
@@ -113,9 +113,9 @@
                 </select>
                 <label>Color</label>
                 <select
+                  id="choices-color-edit"
                   class="form-control"
                   name="choices-color"
-                  id="choices-color-edit"
                 >
                   <option value="Choice 1" selected="">Black</option>
                   <option value="Choice 2">White</option>
@@ -155,9 +155,9 @@
               <div class="col-4">
                 <label>Currency</label>
                 <select
+                  id="choices-currency-edit"
                   class="form-control"
                   name="choices-sizes"
-                  id="choices-currency-edit"
                 >
                   <option value="Choice 1" selected="">USD</option>
                   <option value="Choice 2">EUR</option>
@@ -176,9 +176,9 @@
               <div class="col-12">
                 <label class="mt-4">Tags</label>
                 <select
+                  id="choices-tags-edit"
                   class="form-control"
                   name="choices-tags"
-                  id="choices-tags-edit"
                   multiple
                 >
                   <option value="Choice 1" selected>In Stock</option>
@@ -200,7 +200,7 @@ import Quill from "quill";
 import Choices from "choices.js";
 
 export default {
-  name: "edit-product",
+  name: "EditProduct",
 
   mounted() {
     if (document.getElementById("edit-description-edit")) {

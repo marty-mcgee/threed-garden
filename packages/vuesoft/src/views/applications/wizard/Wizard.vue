@@ -15,8 +15,8 @@
                   class="multisteps-form__progress-btn"
                   type="button"
                   title="User Info"
-                  @click="activeStep = 0"
                   :class="activeStep >= 0 ? activeClass : ''"
+                  @click="activeStep = 0"
                 >
                   <span>About</span>
                 </button>
@@ -24,8 +24,8 @@
                   class="multisteps-form__progress-btn"
                   type="button"
                   title="Address"
-                  @click="activeStep = 1"
                   :class="activeStep >= 1 ? activeClass : ''"
+                  @click="activeStep = 1"
                 >
                   <span>Account</span>
                 </button>
@@ -33,8 +33,8 @@
                   class="multisteps-form__progress-btn"
                   type="button"
                   title="Order Info"
-                  @click="activeStep = 2"
                   :class="activeStep === 2 ? activeClass : ''"
+                  @click="activeStep = 2"
                 >
                   <span>Address</span>
                 </button>
@@ -65,8 +65,8 @@ import About from "./components/About.vue";
 import Account from "./components/Account.vue";
 import AppAddress from "./components/Address.vue";
 export default {
+  name: "Wizard",
   components: { About, Account, AppAddress },
-  name: "wizard",
   data() {
     return {
       activeClass: "js-active position-relative",

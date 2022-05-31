@@ -2,10 +2,10 @@
   <div class="card blur shadow-blur">
     <div class="card-body">
       <div class="d-flex">
-        <p class="mb-0" :class="this.$store.state.isRTL ? 'ms-5' : 'me-5'">
+        <p class="mb-0" :class="isRTL ? 'ms-5' : 'me-5'">
           {{ controllerIs }}
         </p>
-        <vsud-switch checked />
+        <vsud-switch :id="id" :name="text" checked />
       </div>
       <img
         class="img-fluid pt-3 pb-2"
@@ -19,13 +19,17 @@
 
 <script>
 import VsudSwitch from "@/components/VsudSwitch.vue";
-
+import { mapState } from "vuex";
 export default {
-  name: "controller-card",
+  name: "ControllerCard",
   components: {
     VsudSwitch,
   },
   props: {
+    id: {
+      type: String,
+      default: "",
+    },
     controllerIs: {
       type: String,
       default: "On",
@@ -34,6 +38,9 @@ export default {
       type: String,
       default: "Lights",
     },
+  },
+  computed: {
+    ...mapState(["isRTL"]),
   },
 };
 </script>

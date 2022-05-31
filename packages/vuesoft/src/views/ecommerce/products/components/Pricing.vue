@@ -17,9 +17,9 @@
         <div class="col-4">
           <label>Currency</label>
           <select
+            id="choices-currency"
             class="form-control"
             name="choices-sizes"
-            id="choices-currency"
           >
             <option value="Choice 1" selected="">USD</option>
             <option value="Choice 2">EUR</option>
@@ -42,9 +42,9 @@
         <div class="col-12">
           <label class="mt-4 form-label">Tags</label>
           <select
+            id="choices-tags"
             class="form-control"
             name="choices-tags"
-            id="choices-tags"
             multiple
           >
             <option value="Choice 1" selected>In Stock</option>
@@ -82,7 +82,7 @@ import Choices from "choices.js";
 import VsudButton from "@/components/VsudButton.vue";
 
 export default {
-  name: "pricing",
+  name: "Pricing",
   components: {
     VsudButton,
   },
@@ -115,7 +115,7 @@ export default {
         ],
         "value",
         "label",
-        false,
+        false
       );
     }
   },

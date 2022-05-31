@@ -1,5 +1,5 @@
 <template>
-  <navbar btnBackground="bg-gradient-dark" v-bind:darkMode="true" />
+  <navbar btn-background="bg-gradient-dark" :dark-mode="true" />
   <main class="main-content mt-0 ps">
     <section class="my-10">
       <div class="container">
@@ -35,24 +35,25 @@ import Navbar from "@/examples/PageLayout/Navbar.vue";
 import AppFooter from "@/examples/PageLayout/Footer.vue";
 import VsudButton from "@/components/VsudButton.vue";
 
+import { mapMutations } from "vuex";
+
 export default {
-  name: "signup-basic",
+  name: "SignupBasic",
   components: {
     Navbar,
     AppFooter,
     VsudButton,
   },
   created() {
-    this.$store.state.hideConfigButton = true;
-    this.$store.state.showNavbar = false;
-    this.$store.state.showSidenav = false;
-    this.$store.state.showFooter = false;
+    this.toggleEveryDisplay();
+    this.toggleHideConfig();
   },
   beforeUnmount() {
-    this.$store.state.hideConfigButton = false;
-    this.$store.state.showNavbar = true;
-    this.$store.state.showSidenav = true;
-    this.$store.state.showFooter = true;
+    this.toggleEveryDisplay();
+    this.toggleHideConfig();
+  },
+  methods: {
+    ...mapMutations(["toggleEveryDisplay", "toggleHideConfig"]),
   },
 };
 </script>

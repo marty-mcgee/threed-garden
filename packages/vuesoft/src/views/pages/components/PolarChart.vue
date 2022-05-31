@@ -1,23 +1,48 @@
 <template>
-  <canvas id="polar-chart" class="chart-canvas" height="100"></canvas>
+  <canvas :id="id" class="chart-canvas" :height="height"></canvas>
 </template>
 
 <script>
 import Chart from "chart.js/auto";
 export default {
-  name: "bar-chart",
+  name: "PolarChart",
+  props: {
+    id: {
+      type: String,
+      default: "polar-chart",
+    },
+    height: {
+      type: [String, Number],
+      default: "100",
+    },
+    chart: {
+      type: Object,
+      required: true,
+      labels: Array,
+      datasets: {
+        type: Object,
+        label: String,
+        data: Array,
+      },
+    },
+  },
   mounted() {
     // Radar chart
-    var ctx10 = document.getElementById("polar-chart").getContext("2d");
+    var ctx = document.getElementById(this.id).getContext("2d");
 
-    new Chart(ctx10, {
+    let chartStatus = Chart.getChart(this.id);
+    if (chartStatus != undefined) {
+      chartStatus.destroy();
+    }
+
+    new Chart(ctx, {
       type: "polarArea",
       data: {
-        labels: ["Red", "Green", "Yellow", "Grey", "Blue"],
+        labels: this.chart.labels,
         datasets: [
           {
-            label: "My First Dataset",
-            data: [11, 16, 7, 3, 14],
+            label: this.chart.datasets.label,
+            data: this.chart.datasets.data,
             backgroundColor: [
               "#17c1e8",
               "#cb0c9f",

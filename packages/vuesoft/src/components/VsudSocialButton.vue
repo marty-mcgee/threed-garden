@@ -1,5 +1,9 @@
 <template>
-  <button type="button" class="btn" :class="getClasses(iconOnly, socialBtn, rounded, size)">
+  <button
+    type="button"
+    class="btn"
+    :class="getClasses(iconOnly, socialBtn, rounded, size)"
+  >
     <span class="btn-inner--icon">
       <i :class="getIcon(icon)"></i>
     </span>
@@ -12,11 +16,20 @@
 
 <script>
 export default {
-  name: "vsud-socialButton",
+  name: "VsudSocialButton",
   props: {
-    icon: String,
-    iconOnly: String,
-    socialBtn: String,
+    icon: {
+      type: String,
+      required: true,
+    },
+    iconOnly: {
+      type: Boolean,
+      default: false,
+    },
+    socialBtn: {
+      type: String,
+      required: true,
+    },
     rounded: {
       type: Boolean,
       default: false,

@@ -12,36 +12,36 @@
             </p>
           </div>
           <div class="table-responsive">
-            <table class="table table-flush" id="datatable-basic">
+            <table id="datatable-basic" class="table table-flush">
               <thead class="thead-light">
                 <tr>
                   <th
-                    class=" text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
                   >
                     Name
                   </th>
                   <th
-                    class=" text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
                   >
                     Position
                   </th>
                   <th
-                    class=" text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
                   >
                     Office
                   </th>
                   <th
-                    class=" text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
                   >
                     Age
                   </th>
                   <th
-                    class=" text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
                   >
                     Start date
                   </th>
                   <th
-                    class=" text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
                   >
                     Salary
                   </th>
@@ -556,7 +556,7 @@
             </p>
           </div>
           <div class="table-responsive">
-            <table class="table table-flush" id="datatable-search">
+            <table id="datatable-search" class="table table-flush">
               <thead class="thead-light">
                 <tr>
                   <th>Name</th>
@@ -1071,7 +1071,7 @@
 import { DataTable } from "simple-datatables";
 
 export default {
-  name: "data-tables",
+  name: "DataTables",
   mounted() {
     // eslint-disable-next-line no-unused-vars
     const dataTableBasic = new DataTable("#datatable-basic", {

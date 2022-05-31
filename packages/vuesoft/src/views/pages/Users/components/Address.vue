@@ -9,6 +9,7 @@
         <div class="col">
           <label>Address 1</label>
           <vsud-input
+            id="address1"
             class="multisteps-form__input"
             type="text"
             placeholder="eg. Street 111"
@@ -19,6 +20,7 @@
         <div class="col">
           <label>Address 2</label>
           <vsud-input
+            id="address2"
             class="multisteps-form__input"
             type="text"
             placeholder="eg. Street 221"
@@ -29,6 +31,7 @@
         <div class="col-12 col-sm-6">
           <label>City</label>
           <vsud-input
+            id="city"
             class="multisteps-form__input"
             type="text"
             placeholder="eg. Tokyo"
@@ -37,9 +40,9 @@
         <div class="col-6 col-sm-3 mt-3 mt-sm-0">
           <label>State</label>
           <select
+            id="choices-state"
             class="multisteps-form__select form-control"
             name="choices-state"
-            id="choices-state"
           >
             <option selected="selected">...</option>
             <option value="1">State 1</option>
@@ -49,6 +52,7 @@
         <div class="col-6 col-sm-3 mt-3 mt-sm-0">
           <label>Zip</label>
           <vsud-input
+            id="zipCode"
             class="multisteps-form__input"
             type="text"
             placeholder="7 letters"
@@ -83,7 +87,7 @@ import VsudButton from "@/components/VsudButton.vue";
 import Choices from "choices.js";
 
 export default {
-  name: "address",
+  name: "Address",
   components: {
     VsudInput,
     VsudButton,

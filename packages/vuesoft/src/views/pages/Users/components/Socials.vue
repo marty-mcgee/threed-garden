@@ -57,7 +57,7 @@
 import VsudButton from "@/components/VsudButton.vue";
 
 export default {
-  name: "socials",
+  name: "Socials",
   components: {
     VsudButton,
   },

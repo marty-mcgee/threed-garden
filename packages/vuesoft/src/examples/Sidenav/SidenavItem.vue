@@ -8,7 +8,7 @@
 </template>
 <script>
 export default {
-  name: "sidenav-item",
+  name: "SidenavItem",
   props: {
     to: {
       type: [Object, String],

@@ -9,6 +9,7 @@
         <div class="col-12">
           <label>Public Email</label>
           <vsud-input
+            id="email"
             class="multisteps-form__input"
             type="text"
             placeholder="Use an address you don't use frequently."
@@ -17,6 +18,7 @@
         <div class="col-12">
           <label>Bio</label>
           <vsud-textarea
+            id="bio"
             class="multisteps-form__textarea"
             rows="5"
             placeholder="Say a few words about who you are or what you're working on."
@@ -50,7 +52,7 @@ import VsudButton from "@/components/VsudButton.vue";
 import VsudTextarea from "@/components/VsudTextarea.vue";
 
 export default {
-  name: "profile",
+  name: "Profile",
   components: {
     VsudInput,
     VsudButton,

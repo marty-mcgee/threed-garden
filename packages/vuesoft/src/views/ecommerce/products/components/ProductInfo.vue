@@ -34,9 +34,9 @@
         <div class="mt-4 col-sm-6 mt-sm-0">
           <label class="mt-4">Category</label>
           <select
+            id="choices-category"
             class="form-control"
             name="choices-category"
-            id="choices-category"
           >
             <option value="Choice 1" selected="">Clothing</option>
             <option value="Choice 2">Real Estate</option>
@@ -45,7 +45,7 @@
             <option value="Choice 5">Others</option>
           </select>
           <label>Sizes</label>
-          <select class="form-control" name="choices-sizes" id="choices-sizes">
+          <select id="choices-sizes" class="form-control" name="choices-sizes">
             <option value="Choice 1" selected="">Medium</option>
             <option value="Choice 2">Small</option>
             <option value="Choice 3">Large</option>
@@ -75,7 +75,7 @@ import Choices from "choices.js";
 import VsudButton from "@/components/VsudButton.vue";
 
 export default {
-  name: "product-info",
+  name: "ProductInfo",
   components: {
     VsudButton,
   },

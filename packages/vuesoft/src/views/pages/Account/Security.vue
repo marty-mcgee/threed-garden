@@ -9,9 +9,9 @@
       <div class="col-sm-6">
         <label class="form-label">Security Question</label>
         <select
+          id="choices-questions"
           class="form-control"
           name="choices-questions"
-          id="choices-questions"
         >
           <option value="Question 1">Question 1</option>
           <option value="Question 2">Question 2</option>
@@ -21,7 +21,7 @@
       </div>
       <div class="col-sm-6">
         <label class="form-label">Your Answer</label>
-        <vsud-input type="text" placeholder="Enter your answer" />
+        <vsud-input id="answer" type="text" placeholder="Enter your answer" />
       </div>
       <hr class="horizontal dark mt-1 mb-3" />
       <div class="col-md-6 pb-3">
@@ -34,7 +34,12 @@
               class="form-group d-flex align-items-center justify-content-between"
             >
               <span class="text-sm">Notify me via email when logging in</span>
-              <vsud-switch checked class="ms-3" />
+              <vsud-switch
+                id="notification"
+                name="Notification"
+                checked
+                class="ms-3"
+              />
             </div>
             <div
               class="form-group d-flex align-items-center justify-content-between"
@@ -42,7 +47,7 @@
               <span class="text-sm"
                 >Send SMS confirmation for all online payments</span
               >
-              <vsud-switch class="ms-3" />
+              <vsud-switch id="sms" name="SMS" class="ms-3" />
             </div>
             <div
               class="form-group d-flex align-items-center justify-content-between"
@@ -50,7 +55,7 @@
               <span class="text-sm"
                 >Check which devices accessed your account</span
               >
-              <vsud-switch checked class="ms-3" />
+              <vsud-switch id="device" name="Device" checked class="ms-3" />
             </div>
             <div
               class="form-group d-flex align-items-center justify-content-between"
@@ -59,7 +64,7 @@
                 >Find My Device, make sure your device can be found if it gets
                 lost</span
               >
-              <vsud-switch class="ms-3" />
+              <vsud-switch id="findDevice" name="Find Device" class="ms-3" />
             </div>
             <div
               class="form-group d-flex align-items-center justify-content-between"
@@ -67,7 +72,7 @@
               <span class="text-sm"
                 >Lock your device with a PIN, pattern, or password</span
               >
-              <vsud-switch class="ms-3" />
+              <vsud-switch id="lockDevice" name="Lock Device" class="ms-3" />
             </div>
             <div
               class="form-group d-flex align-items-center justify-content-between"
@@ -76,7 +81,12 @@
                 >Manage what apps have access to app-usage data on your
                 device</span
               >
-              <vsud-switch checked class="ms-3" />
+              <vsud-switch
+                id="manageApps"
+                name="Manage Apps"
+                checked
+                class="ms-3"
+              />
             </div>
             <div class="row mt-5">
               <div class="col-lg-8 col-12 actions text-end ms-auto">
@@ -147,15 +157,27 @@
           </div>
           <div class="card-body p-3">
             <label class="form-label">Current password</label>
-            <vsud-input type="password" placeholder="Current Password" />
+            <vsud-input
+              id="currentPassword"
+              type="password"
+              placeholder="Current Password"
+            />
             <label class="form-label">New password</label>
-            <vsud-input type="password" placeholder="New Password" />
+            <vsud-input
+              id="newPassword"
+              type="password"
+              placeholder="New Password"
+            />
             <label class="form-label">Confirm new password</label>
-            <vsud-input type="password" placeholder="Confirm password" />
+            <vsud-input
+              id="confirmPassword"
+              type="password"
+              placeholder="Confirm password"
+            />
             <vsud-button
               color="dark"
               variant="gradient"
-              fullWidth
+              full-width
               class="w-100 mb-0"
               >Update password</vsud-button
             >

@@ -1,7 +1,7 @@
 <template>
   <div
-    class="shadow-none card card-background card-background-mask-secondary"
     id="sidenavCard"
+    class="shadow-none card card-background card-background-mask-secondary"
   >
     <div
       class="full-background"
@@ -12,10 +12,10 @@
         class="mb-3 text-center bg-white shadow icon icon-shape icon-sm d-flex align-items-center justify-content-center border-radius-md"
       >
         <i
+          id="sidenavCardIcon"
           class="top-0 text-lg text-dark text-gradient"
           aria-hidden="true"
           :class="iconClass"
-          id="sidenavCardIcon"
         ></i>
       </div>
       <div v-if="this.$store.state.isRTL" class="docs-info">
@@ -40,7 +40,7 @@
 <script>
 import imgWhiteCurved from "../../assets/img/curved-images/white-curved.jpeg";
 export default {
-  name: "sidenav-card",
+  name: "SidenavCard",
   props: ["textPrimary", "textSecondary", "href", "linkText", "iconClass"],
   data() {
     return {

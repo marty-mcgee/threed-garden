@@ -1,37 +1,55 @@
 <template>
-  <canvas id="radar-chart" class="chart-canvas" height="100"></canvas>
+  <canvas :id="id" class="chart-canvas" :height="height"></canvas>
 </template>
 
 <script>
 import Chart from "chart.js/auto";
 export default {
-  name: "bar-chart",
+  name: "RadarChart",
+  props: {
+    id: {
+      type: String,
+      default: "radar-chart",
+    },
+    height: {
+      type: [String, Number],
+      default: "100",
+    },
+    chart: {
+      type: Object,
+      required: true,
+      labels: Array,
+      datasets: {
+        type: Array,
+        label: String,
+        data: Array,
+      },
+    },
+  },
   mounted() {
     // Radar chart
-    var ctx9 = document.getElementById("radar-chart").getContext("2d");
+    var ctx = document.getElementById(this.id).getContext("2d");
 
-    new Chart(ctx9, {
+    let chartStatus = Chart.getChart(this.id);
+    if (chartStatus != undefined) {
+      chartStatus.destroy();
+    }
+
+    new Chart(ctx, {
       type: "radar",
       data: {
-        labels: [
-          "English",
-          "Maths",
-          "Physics",
-          "Chemistry",
-          "Biology",
-          "History",
-        ],
+        labels: this.chart.labels,
         datasets: [
           {
-            label: "Student A",
+            label: this.chart.datasets[0].label,
             backgroundColor: "rgba(58,65,111,0.2)",
-            data: [65, 75, 70, 80, 60, 80],
+            data: this.chart.datasets[0].data,
             borderDash: [5, 5],
           },
           {
-            label: "Student B",
+            label: this.chart.datasets[1].label,
             backgroundColor: "rgba(203,12,159,0.2)",
-            data: [54, 65, 60, 70, 70, 75],
+            data: this.chart.datasets[1].label,
           },
         ],
       },

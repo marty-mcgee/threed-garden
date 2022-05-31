@@ -1,11 +1,10 @@
-# [Vue Soft UI Dashboard PRO](http://demos.creative-tim.com/vue-soft-ui-dashboard-pro/#/dashboards/dashboard-default?ref=readme-vsudp) [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&logo=twitter)](https://twitter.com/intent/tweet?url=https://www.creative-tim.com/product/vue-soft-ui-dashboard-pro&text=Check%20Vue%20Soft%20UI%20Dashboard%20Pro%20made%20by%20@CreativeTim%20#webdesign%20#dashboard%20#softdesign%20#vue%20https://www.creative-tim.com/product/vue-soft-ui-dashboard-pro)
+# [Vue Soft UI Dashboard PRO](http://demos.creative-tim.com/vue-soft-ui-dashboard-pro/?ref=readme-vsudp) [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&logo=twitter)](https://twitter.com/intent/tweet?url=https://www.creative-tim.com/product/vue-soft-ui-dashboard-pro&text=Check%20Vue%20Soft%20UI%20Dashboard%20Pro%20made%20by%20@CreativeTim%20#webdesign%20#dashboard%20#softdesign%20#vue%20https://www.creative-tim.com/product/vue-soft-ui-dashboard-pro)
 
-![version](https://img.shields.io/badge/version-1.0.0-blue.svg) [![GitHub issues open](https://img.shields.io/github/issues/creativetimofficial/ct-vue-soft-ui-dashboard-pro.svg)](https://github.com/creativetimofficial/ct-vue-soft-ui-dashboard/issues?q=is%3Aopen+is%3Aissue) [![GitHub issues closed](https://img.shields.io/github/issues-closed-raw/creativetimofficial/ct-vue-soft-ui-dashboard-pro.svg)](https://github.com/creativetimofficial/ct-vue-soft-ui-dashboard-pro/issues?q=is%3Aissue+is%3Aclosed)
+![version](https://img.shields.io/badge/version-2.0.0-blue.svg) [![GitHub issues open](https://img.shields.io/github/issues/creativetimofficial/ct-vue-soft-ui-dashboard-pro.svg)](https://github.com/creativetimofficial/ct-vue-soft-ui-dashboard/issues?q=is%3Aopen+is%3Aissue) [![GitHub issues closed](https://img.shields.io/github/issues-closed-raw/creativetimofficial/ct-vue-soft-ui-dashboard-pro.svg)](https://github.com/creativetimofficial/ct-vue-soft-ui-dashboard-pro/issues?q=is%3Aissue+is%3Aclosed)
 
 ![Image](https://s3.amazonaws.com/creativetim_bucket/products/589/original/vue-soft-ui-dashboard-pro.jpg)
 
-Start your Development with an Innovative Admin Template for Bootstrap 5 and VueJS 3. If you like the look & feel of the hottest design trend right now, Soft UI, you will fall in love with this dashboard! It features a huge number of components built to fit together and look amazing. 
-
+Start your Development with an Innovative Admin Template for Bootstrap 5 and VueJS 3. If you like the look & feel of the hottest design trend right now, Soft UI, you will fall in love with this dashboard! It features a huge number of components built to fit together and look amazing.
 
 **Fully Coded Components**
 
@@ -14,20 +13,18 @@ Vue Soft UI Dashboard PRO is built with over 300 frontend individual elements, l
 This Premium Bootstrap 5 & VueJS 3 Dashboard is coming with prebuilt design blocks, so the development process is seamless,
 switching from our pages to the real website is very easy to be done.
 
-View [all components here](https://www.creative-tim.com/learning-lab/vue/alerts/soft-ui-dashboard).
-
+View [all components here](https://www.creative-tim.com/learning-lab/vue/alerts/soft-ui-dashboard/).
 
 **Documentation built by Developers**
 
 Each element is well presented in very complex documentation.
-You can read more about the [documentation here](https://www.creative-tim.com/learning-lab/vue/overview/soft-ui-dashboard).
-
+You can read more about the [documentation here](https://www.creative-tim.com/learning-lab/vue/overview/soft-ui-dashboard/).
 
 **Example Pages**
 
 If you want to get inspiration or just show something directly to your clients, you can jump-start your development with our pre-built example pages. Every page is spaced well, with attractive layouts and pleasing shapes. From specially designed dashboards for smart homes, virtual reality, and automotives to CRM admins, Vue Soft UI Dashboard PRO has everything you need to quickly set up an amazing project.
 
-View [example pages here](https://demos.creative-tim.com/vue-soft-ui-dashboard-pro/dashboards/dashboard-default).
+View [example pages here](https://demos.creative-tim.com/vue-soft-ui-dashboard-pro/).
 
 **HELPFUL LINKS**
 
@@ -38,11 +35,9 @@ View [example pages here](https://demos.creative-tim.com/vue-soft-ui-dashboard-p
 
 During the development of this dashboard, we have used many existing resources from awesome developers. We want to thank them for providing their tools open source:
 
-- [noUISlider](https://refreshless.com/nouislider/) - JavaScript Range Slider
 - [Popper.js](https://popper.js.org/) - Kickass library used to manage poppers
 - [Flatpickr](https://flatpickr.js.org/) - Useful library used to select date
 - [Choices JS](https://joshuajohnson.co.uk/Choices/) - A nice plugin that select elements with intuitive multiselection and searching but also for managing tags.
-- [CountUp JS](https://inorganik.github.io/countUp.js/) - A dependency-free, lightweight JavaScript class that can be used to quickly create animations that display numerical data in a more interesting way.
 - [Charts Js](https://www.chartjs.org/) - Simple yet flexible JavaScript charting for designers & developers
 - [FullCalendar](https://fullcalendar.io/) - Full-sized drag & drop event calendar
 - [Dropzone](https://www.dropzonejs.com/) - An open source library that provides drag’n’drop file uploads with image previews.
@@ -77,7 +72,7 @@ Let us know your thoughts below. And good luck with development!
 | VueJS |
 | ----- |
 
-| [![Vue Soft UI Dashboard PRO](https://s3.amazonaws.com/creativetim_bucket/products/589/thumb/vue-soft-ui-dashboard-pro.jpg)](http://demos.creative-tim.com/vue-soft-ui-dashboard-pro/#/dashboards/dashboard-default?ref=readme-vsudp)
+| [![Vue Soft UI Dashboard PRO](https://s3.amazonaws.com/creativetim_bucket/products/589/thumb/vue-soft-ui-dashboard-pro.jpg)](http://demos.creative-tim.com/vue-soft-ui-dashboard-pro/?ref=readme-vsudp)
 
 ## Demo
 
@@ -89,8 +84,8 @@ Let us know your thoughts below. And good luck with development!
 - [RTL](https://demos.creative-tim.com/vue-soft-ui-dashboard-pro/#/pages/rtl-page?ref=readme-vsudp)
 - [Applications](https://demos.creative-tim.com/vue-soft-ui-dashboard-pro/#/applications/kanban?ref=readme-vsudp)
 - [Ecommerce](https://demos.creative-tim.com/vue-soft-ui-dashboard-pro/#/ecommerce/overview?ref=readme-vsudp)
-- [Sign In](https://demos.creative-tim.com/vue-soft-ui-dashboard-pro/#/authentication/sign-in/basic?ref=readme-vsudp)
-- [Sign Up](https://demos.creative-tim.com/vue-soft-ui-dashboard-pro/#/authentication/sign-up/basic?ref=readme-vsudp)
+- [Sign In](https://demos.creative-tim.com/vue-soft-ui-dashboard-pro/#/authentication/signin/basic?ref=readme-vsudp)
+- [Sign Up](https://demos.creative-tim.com/vue-soft-ui-dashboard-pro/#/authentication/signup/basic?ref=readme-vsudp)
 
 [View More](https://demos.creative-tim.com/vue-soft-ui-dashboard-pro/#/dashboards/dashboard-default?ref=readme-vsudp).
 
@@ -107,7 +102,7 @@ Quick start options:
 
 ## Documentation
 
-The documentation for the Soft UI Dashboard is hosted at our [website](https://www.creative-tim.com/learning-lab/vue/overview/soft-ui-dashboard?ref=readme-vsudp).
+The documentation for the Soft UI Dashboard is hosted at our [website](https://www.creative-tim.com/learning-lab/vue/overview/soft-ui-dashboard/?ref=readme-vsudp).
 
 ### What's included
 
@@ -126,7 +121,7 @@ vue-soft-ui-dashboard-pro
     │   │   ├── js
     │   │   └── scss
     │   ├── components
-    │   │   ├── Icon.vue
+    │   │   ├── Icon
     │   │   ├── VsudAlert.vue
     │   │   ├── VsudAvatar.vue
     │   │   ├── VsudBadge.vue
@@ -149,6 +144,7 @@ vue-soft-ui-dashboard-pro
     │   │   ├── Sidenav
     │   │   ├── Breadcrumbs.vue
     │   │   ├── Calendar.vue
+    │   │   ├── Configurator.vue
     │   │   ├── Footer.vue
     │   │   └── Globe.vue
     │   ├── router
@@ -183,7 +179,7 @@ At present, we officially aim to support the last two versions of the following 
 
 - [Live Preview](https://demos.creative-tim.com/vue-soft-ui-dashboard-pro/#/dashboards/dashboard-default?ref=readme-vsudp)
 - [Buy Page](https://www.creative-tim.com/product/vue-soft-ui-dashboard-pro?ref=readme-vsudp)
-- Documentation is [here](https://www.creative-tim.com/learning-lab/vue/overview/soft-ui-dashboard?ref=readme-vsudp)
+- Documentation is [here](https://www.creative-tim.com/learning-lab/vue/overview/soft-ui-dashboard/?ref=readme-vsudp)
 - [License Agreement](https://www.creative-tim.com/license?ref=readme-vsudp)
 - [Support](https://www.creative-tim.com/contact-us?ref=readme-vsudp)
 - Issues: [Github Issues Page](https://github.com/creativetimofficial/ct-soft-ui-dashboard-pro-react/issues)

@@ -49,7 +49,7 @@
 import setNavPills from "@/assets/js/nav-pills.js";
 
 export default {
-  name: "nav-pill",
+  name: "NavPill",
   mounted() {
     setNavPills();
   },

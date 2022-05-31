@@ -1,27 +1,53 @@
 <template>
-  <canvas id="bar-chart" class="chart-canvas" height="300"></canvas>
+  <canvas :id="id" class="chart-canvas" :height="height"></canvas>
 </template>
 
 <script>
 import Chart from "chart.js/auto";
 export default {
-  name: "bar-chart",
+  name: "BarChart",
+  props: {
+    id: {
+      type: String,
+      default: "bar-chart",
+    },
+    height: {
+      type: [String, Number],
+      default: "300",
+    },
+    chart: {
+      type: Object,
+      required: true,
+      labels: Array,
+      datasets: {
+        type: Object,
+        required: true,
+        label: String,
+        data: Array,
+      },
+    },
+  },
   mounted() {
     // Bar chart
-    var ctx5 = document.getElementById("bar-chart").getContext("2d");
+    var ctx = document.getElementById(this.id).getContext("2d");
 
-    new Chart(ctx5, {
+    let chartStatus = Chart.getChart(this.id);
+    if (chartStatus != undefined) {
+      chartStatus.destroy();
+    }
+
+    new Chart(ctx, {
       type: "bar",
       data: {
-        labels: ["16-20", "21-25", "26-30", "31-36", "36-42", "42+"],
+        labels: this.chart.labels,
         datasets: [
           {
-            label: "Sales by age",
+            label: this.chart.datasets.label,
             weight: 5,
             borderWidth: 0,
             borderRadius: 4,
             backgroundColor: "#3A416F",
-            data: [15, 20, 12, 60, 20, 15],
+            data: this.chart.datasets.data,
             fill: false,
             maxBarThickness: 35,
           },

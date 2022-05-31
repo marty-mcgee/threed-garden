@@ -1,4 +1,3 @@
-/* eslint-disable */
 <template>
   <div class="py-4 container-fluid">
     <div class="m-3 d-flex">
@@ -88,7 +87,7 @@
         <div id="myKanban"></div>
       </div>
     </div>
-    <div class="modal fade" id="new-board-modal" role="dialog">
+    <div id="new-board-modal" class="modal fade" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -109,16 +108,16 @@
                 <i class="far fa-edit"></i>
               </span>
               <input
+                id="jkanban-new-board-name"
                 class="form-control"
                 placeholder="Board Name"
                 type="text"
-                id="jkanban-new-board-name"
               />
             </div>
             <div class="text-end">
               <button
-                class="m-1 btn btn-primary"
                 id="jkanban-add-new-board"
+                class="m-1 btn btn-primary"
                 data-toggle="modal"
                 data-target="#new-board-modal"
               >
@@ -137,12 +136,12 @@
       </div>
     </div>
     <div
-      class="fixed inset-0 z-40 hidden bg-black opacity-50"
       id="new-board-modal-backdrop"
+      class="fixed inset-0 z-40 hidden bg-black opacity-50"
     ></div>
     <div
-      class="modal fade"
       id="jkanban-info-modal"
+      class="modal fade"
       style="display: none"
       tabindex="-1"
       role="dialog"
@@ -167,10 +166,10 @@
                 <i class="far fa-edit"></i>
               </span>
               <input
+                id="jkanban-task-title"
                 class="form-control"
                 placeholder="Task Title"
                 type="text"
-                id="jkanban-task-title"
               />
             </div>
             <div class="mb-4 input-group">
@@ -178,25 +177,25 @@
                 <i class="fas fa-user"></i>
               </span>
               <input
+                id="jkanban-task-assignee"
                 class="form-control"
                 placeholder="Task Assignee"
                 type="text"
-                id="jkanban-task-assignee"
               />
             </div>
             <div class="form-group">
               <textarea
+                id="jkanban-task-description"
                 class="form-control"
                 placeholder="Task Description"
-                id="jkanban-task-description"
                 rows="4"
               ></textarea>
             </div>
             <div class="alert alert-success d-none">Changes saved!</div>
             <div class="text-end">
               <button
-                class="m-1 btn btn-primary"
                 id="jkanban-update-task"
+                class="m-1 btn btn-primary"
                 data-toggle="modal"
                 data-target="#jkanban-info-modal"
               >
@@ -215,22 +214,24 @@
       </div>
     </div>
     <div
-      class="fixed inset-0 z-40 hidden bg-black opacity-50"
       id="jkanban-info-modal-backdrop"
+      class="fixed inset-0 z-40 hidden bg-black opacity-50"
     ></div>
   </div>
 </template>
 
 <script>
+/* eslint-disable */
 import "jkanban/dist/jkanban.min.js";
 import "jkanban/dist/jkanban.min.css";
 
 export default {
-  name: "kanban",
+  name: "Kanban",
   mounted() {
+    const bootstrap = this.$store.state.bootstrap;
+
     (function () {
       if (document.getElementById("myKanban")) {
-        // eslint-disable-next-line no-undef
         var KanbanTest = new jKanban({
           element: "#myKanban",
           gutter: "10px",
@@ -238,6 +239,10 @@ export default {
           buttonContent: "+",
           widthBoard: "450px",
           click: (el) => {
+            let jkanbanInfoModal = document.getElementById(
+              "jkanban-info-modal"
+            );
+
             let jkanbanInfoModalTaskId = document.querySelector(
               "#jkanban-info-modal #jkanban-task-id"
             );
@@ -259,6 +264,10 @@ export default {
             jkanbanInfoModalTaskTitle.value = taskTitle;
             jkanbanInfoModalTaskAssignee.value = taskAssignee;
             jkanbanInfoModalTaskDescription.value = taskDescription;
+            var myModal = new bootstrap.Modal(jkanbanInfoModal, {
+              show: true
+            });
+            myModal.show();
           },
           buttonClick: function (el, boardId) {
             if (
@@ -286,7 +295,7 @@ export default {
                 KanbanTest.addElement(boardId, {
                   id: newTaskId,
                   title: text,
-                  class: ["border-radius-md"],
+                  class: ["border-radius-md"]
                 });
                 formItem.parentNode.removeChild(formItem);
               });
@@ -305,13 +314,13 @@ export default {
                 {
                   id: "_task_1_title_id",
                   title: '<p class="mb-0 text">Click me to change title</p>',
-                  class: ["border-radius-md"],
+                  class: ["border-radius-md"]
                 },
                 {
                   id: "_task_2_title_id",
                   title:
                     '<p class="mb-0 text">Drag me to "In progress" section</p>',
-                  class: ["border-radius-md"],
+                  class: ["border-radius-md"]
                 },
                 {
                   id: "_task_do_something_id",
@@ -320,9 +329,9 @@ export default {
                   assignee: "Done Joe",
                   description:
                     "This task's description is for something, but not for anything",
-                  class: ["border-radius-md"],
-                },
-              ],
+                  class: ["border-radius-md"]
+                }
+              ]
             },
             {
               id: "_progress",
@@ -332,13 +341,13 @@ export default {
                   id: "_task_3_title_id",
                   title:
                     '<span class="mt-2 badge badge-sm bg-gradient-warning">Errors</span><p class="mt-2 text">Fix Firefox errors</p><div class="d-flex"><div> <i class="text-sm fa fa-paperclip me-1"></i><span class="text-sm">11</span></div><div class="avatar-group ms-auto"><a href="javascript:;" class="avatar avatar-xs me-2 rounded-circle" data-toggle="tooltip" data-original-title="Jana Lucie"><img alt="Image placeholder" src="https://demos.creative-tim.com/soft-ui-dashboard-pro/assets/img/team-3.jpg" class=""></a><a href="javascript:;" class="avatar avatar-xs me-2 rounded-circle" data-toggle="tooltip" data-original-title="Jessica Rowland"><img alt="Image placeholder" src="https://demos.creative-tim.com/soft-ui-dashboard-pro/assets/img/team-2.jpg" class=""></a></div></div>',
-                  class: ["border-radius-md"],
+                  class: ["border-radius-md"]
                 },
                 {
                   id: "_task_4_title_id",
                   title:
                     '<span class="mt-2 badge badge-sm bg-gradient-info">Updates</span><p class="mt-2 text">Argon Dashboard PRO - Angular 11</p><div class="d-flex"><div> <i class="text-sm fa fa-paperclip me-1"></i><span class="text-sm">3</span></div><div class="avatar-group ms-auto"><a href="javascript:;" class="avatar avatar-xs me-2 rounded-circle" data-toggle="tooltip" data-original-title="Jana Lucie"><img alt="Image placeholder" src="https://demos.creative-tim.com/soft-ui-dashboard-pro/assets/img/team-5.jpg" class=""></a><a href="javascript:;" class="avatar avatar-xs me-2 rounded-circle" data-toggle="tooltip" data-original-title="Jessica Rowland"><img alt="Image placeholder" src="https://demos.creative-tim.com/soft-ui-dashboard-pro/assets/img/team-4.jpg" class=""></a></div></div>',
-                  class: ["border-radius-md"],
+                  class: ["border-radius-md"]
                 },
                 {
                   id: "_task_do_something_4_id",
@@ -347,9 +356,9 @@ export default {
                   assignee: "Done Joe",
                   description:
                     "This task's description is for something, but not for anything",
-                  class: ["border-radius-md"],
-                },
-              ],
+                  class: ["border-radius-md"]
+                }
+              ]
             },
             {
               id: "_working",
@@ -362,7 +371,7 @@ export default {
                   assignee: "Done Joe",
                   description:
                     "This task's description is for something, but not for anything",
-                  class: ["border-radius-md"],
+                  class: ["border-radius-md"]
                 },
                 {
                   id: "_task_run_id",
@@ -371,7 +380,7 @@ export default {
                   assignee: "Done Joe",
                   description:
                     "This task's description is for something, but not for anything",
-                  class: ["border-radius-md"],
+                  class: ["border-radius-md"]
                 },
                 {
                   id: "_task_do_something_3_id",
@@ -380,9 +389,9 @@ export default {
                   assignee: "Done Joe",
                   description:
                     "This task's description is for something, but not for anything",
-                  class: ["border-radius-md"],
-                },
-              ],
+                  class: ["border-radius-md"]
+                }
+              ]
             },
             {
               id: "_done",
@@ -395,7 +404,7 @@ export default {
                   assignee: "Done Joe",
                   description:
                     "This task's description is for something, but not for anything",
-                  class: ["border-radius-md"],
+                  class: ["border-radius-md"]
                 },
                 {
                   id: "_task_ok_id",
@@ -404,11 +413,11 @@ export default {
                   assignee: "Done Joe",
                   description:
                     "This task's description is for something, but not for anything",
-                  class: ["border-radius-md"],
-                },
-              ],
-            },
-          ],
+                  class: ["border-radius-md"]
+                }
+              ]
+            }
+          ]
         });
 
         var addBoardDefault = document.getElementById("jkanban-add-new-board");
@@ -420,8 +429,8 @@ export default {
             {
               id: newBoardId,
               title: newBoardName,
-              item: [],
-            },
+              item: []
+            }
           ]);
           document.querySelector("#new-board-modal").classList.remove("show");
           document.querySelector("body").classList.remove("modal-open");
@@ -446,7 +455,7 @@ export default {
           KanbanTest.replaceElement(jkanbanInfoModalTaskId.value, {
             title: jkanbanInfoModalTaskTitle.value,
             assignee: jkanbanInfoModalTaskAssignee.value,
-            description: jkanbanInfoModalTaskDescription.value,
+            description: jkanbanInfoModalTaskDescription.value
           });
           jkanbanInfoModalTaskId.value;
           jkanbanInfoModalTaskTitle.value;
@@ -460,6 +469,6 @@ export default {
         });
       }
     })();
-  },
+  }
 };
 </script>

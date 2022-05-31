@@ -129,7 +129,7 @@ It's a separate element, as animating opacity is faster than rgba(). -->
                           Prev
                         </button>
                         <button
-                          class=" btn btn-white btn-sm pswp__button pswp__button--arrow--right"
+                          class="btn btn-white btn-sm pswp__button pswp__button--arrow--right"
                         >
                           Next
                         </button>
@@ -185,9 +185,9 @@ It's a separate element, as animating opacity is faster than rgba(). -->
                   <div class="mt-2 col-lg-5 mt-lg-0">
                     <label>Frame Material</label>
                     <select
+                      id="choices-material"
                       class="form-control"
                       name="choices-material"
-                      id="choices-material"
                     >
                       <option value="Choice 1" selected="">Wood</option>
                       <option value="Choice 2">Steel</option>
@@ -198,9 +198,9 @@ It's a separate element, as animating opacity is faster than rgba(). -->
                   <div class="mt-2 col-lg-5 mt-lg-0">
                     <label>Color</label>
                     <select
+                      id="choices-colors"
                       class="form-control"
                       name="choices-colors"
-                      id="choices-colors"
                     >
                       <option value="Choice 1" selected="">White</option>
                       <option value="Choice 2">Gray</option>
@@ -213,9 +213,9 @@ It's a separate element, as animating opacity is faster than rgba(). -->
                   <div class="col-lg-2">
                     <label>Quantity</label>
                     <select
+                      id="choices-quantity"
                       class="form-control"
                       name="choices-quantity"
-                      id="choices-quantity"
                     >
                       <option value="Choice 1" selected="">1</option>
                       <option value="Choice 2">2</option>
@@ -255,16 +255,17 @@ It's a separate element, as animating opacity is faster than rgba(). -->
 <script>
 import Choices from "choices.js";
 import PhotoSwipe from "photoswipe";
-import bootstrap from "bootstrap/dist/js/bootstrap";
 import PhotoSwipeUI_Default from "photoswipe/dist/photoswipe-ui-default";
 
 import OtherProducts from "./components/OtherProducts.vue";
 
 export default {
-  name: "product-page",
+  name: "ProductPage",
   components: { OtherProducts },
 
   mounted() {
+    const bootstrap = this.$store.state.bootstrap;
+
     this.getChoices("choices-quantity");
     this.getChoices("choices-material");
     this.getChoices("choices-colors");
@@ -305,7 +306,7 @@ export default {
           item = {
             src: linkEl.getAttribute("href"),
             w: parseInt(size[0], 10),
-            h: parseInt(size[1], 10),
+            h: parseInt(size[1], 10)
           };
 
           if (figureEl.children.length > 1) {
@@ -429,9 +430,9 @@ export default {
             return {
               x: rect.left,
               y: rect.top + pageYScroll,
-              w: rect.width,
+              w: rect.width
             };
-          },
+          }
         };
 
         // PhotoSwipe opened from URL
@@ -501,10 +502,10 @@ export default {
         var element = document.getElementById(id);
         return new Choices(element, {
           searchEnabled: false,
-          itemSelectText: "",
+          itemSelectText: ""
         });
       }
-    },
-  },
+    }
+  }
 };
 </script>

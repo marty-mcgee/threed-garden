@@ -64,11 +64,10 @@ const install$3 = ({ app: app2 }) => {
   const head = createHead();
   app2.use(head);
 };
-var __glob_16_0 = /* @__PURE__ */ Object.freeze({
+var __glob_16_0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   install: install$3
-});
+}, Symbol.toStringTag, { value: "Module" }));
 var de = {
   "button": {
     "about": (ctx) => {
@@ -123,11 +122,10 @@ var de = {
     return _normalize(["Nicht gefunden"]);
   }
 };
-var __glob_1_0 = /* @__PURE__ */ Object.freeze({
+var __glob_1_0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   "default": de
-});
+}, Symbol.toStringTag, { value: "Module" }));
 var en = {
   "button": {
     "about": (ctx) => {
@@ -182,11 +180,10 @@ var en = {
     return _normalize(["Not found"]);
   }
 };
-var __glob_1_1 = /* @__PURE__ */ Object.freeze({
+var __glob_1_1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   "default": en
-});
+}, Symbol.toStringTag, { value: "Module" }));
 var es = {
   "button": {
     "about": (ctx) => {
@@ -241,11 +238,10 @@ var es = {
     return _normalize(["No se ha encontrado"]);
   }
 };
-var __glob_1_2 = /* @__PURE__ */ Object.freeze({
+var __glob_1_2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   "default": es
-});
+}, Symbol.toStringTag, { value: "Module" }));
 var fr = {
   "button": {
     "about": (ctx) => {
@@ -300,11 +296,10 @@ var fr = {
     return _normalize(["Page non trouv\xE9e"]);
   }
 };
-var __glob_1_3 = /* @__PURE__ */ Object.freeze({
+var __glob_1_3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   "default": fr
-});
+}, Symbol.toStringTag, { value: "Module" }));
 var it = {
   "button": {
     "about": (ctx) => {
@@ -355,11 +350,10 @@ var it = {
     return _normalize(["Non trovato"]);
   }
 };
-var __glob_1_4 = /* @__PURE__ */ Object.freeze({
+var __glob_1_4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   "default": it
-});
+}, Symbol.toStringTag, { value: "Module" }));
 var ja = {
   "button": {
     "about": (ctx) => {
@@ -410,11 +404,10 @@ var ja = {
     return _normalize(["\u898B\u3064\u304B\u308A\u307E\u305B\u3093\u3067\u3057\u305F"]);
   }
 };
-var __glob_1_5 = /* @__PURE__ */ Object.freeze({
+var __glob_1_5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   "default": ja
-});
+}, Symbol.toStringTag, { value: "Module" }));
 var ko = {
   "button": {
     "about": (ctx) => {
@@ -465,11 +458,10 @@ var ko = {
     return _normalize(["\uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4"]);
   }
 };
-var __glob_1_6 = /* @__PURE__ */ Object.freeze({
+var __glob_1_6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   "default": ko
-});
+}, Symbol.toStringTag, { value: "Module" }));
 var pl = {
   "button": {
     "about": (ctx) => {
@@ -524,11 +516,10 @@ var pl = {
     return _normalize(["Nie znaleziono"]);
   }
 };
-var __glob_1_7 = /* @__PURE__ */ Object.freeze({
+var __glob_1_7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   "default": pl
-});
+}, Symbol.toStringTag, { value: "Module" }));
 var ptBR = {
   "button": {
     "about": (ctx) => {
@@ -583,11 +574,10 @@ var ptBR = {
     return _normalize(["N\xE3o encontrado"]);
   }
 };
-var __glob_1_8 = /* @__PURE__ */ Object.freeze({
+var __glob_1_8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   "default": ptBR
-});
+}, Symbol.toStringTag, { value: "Module" }));
 var ru = {
   "button": {
     "about": (ctx) => {
@@ -638,11 +628,10 @@ var ru = {
     return _normalize(["\u041D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D"]);
   }
 };
-var __glob_1_9 = /* @__PURE__ */ Object.freeze({
+var __glob_1_9 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   "default": ru
-});
+}, Symbol.toStringTag, { value: "Module" }));
 var tr = {
   "button": {
     "about": (ctx) => {
@@ -697,11 +686,10 @@ var tr = {
     return _normalize(["Bulunamad\u0131"]);
   }
 };
-var __glob_1_10 = /* @__PURE__ */ Object.freeze({
+var __glob_1_10 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   "default": tr
-});
+}, Symbol.toStringTag, { value: "Module" }));
 var vi = {
   "button": {
     "about": (ctx) => {
@@ -752,11 +740,10 @@ var vi = {
     return _normalize(["Kh\xF4ng t\xECm th\u1EA5y"]);
   }
 };
-var __glob_1_11 = /* @__PURE__ */ Object.freeze({
+var __glob_1_11 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   "default": vi
-});
+}, Symbol.toStringTag, { value: "Module" }));
 var zhCN = {
   "button": {
     "about": (ctx) => {
@@ -811,11 +798,10 @@ var zhCN = {
     return _normalize(["\u672A\u627E\u5230\u9875\u9762"]);
   }
 };
-var __glob_1_12 = /* @__PURE__ */ Object.freeze({
+var __glob_1_12 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   "default": zhCN
-});
+}, Symbol.toStringTag, { value: "Module" }));
 const messages = Object.fromEntries(Object.entries({ "../../locales/de.yml": __glob_1_0, "../../locales/en.yml": __glob_1_1, "../../locales/es.yml": __glob_1_2, "../../locales/fr.yml": __glob_1_3, "../../locales/it.yml": __glob_1_4, "../../locales/ja.yml": __glob_1_5, "../../locales/ko.yml": __glob_1_6, "../../locales/pl.yml": __glob_1_7, "../../locales/pt-BR.yml": __glob_1_8, "../../locales/ru.yml": __glob_1_9, "../../locales/tr.yml": __glob_1_10, "../../locales/vi.yml": __glob_1_11, "../../locales/zh-CN.yml": __glob_1_12 }).map(([key, value]) => {
   const yaml = key.endsWith(".yaml");
   return [key.slice(14, yaml ? -5 : -4), value.default];
@@ -828,11 +814,10 @@ const install$2 = ({ app: app2 }) => {
   });
   app2.use(i18n);
 };
-var __glob_16_1 = /* @__PURE__ */ Object.freeze({
+var __glob_16_1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   install: install$2
-});
+}, Symbol.toStringTag, { value: "Module" }));
 const install$1 = ({ router: router2 }) => {
   router2.beforeEach(() => {
     NProgress.start();
@@ -841,22 +826,19 @@ const install$1 = ({ router: router2 }) => {
     NProgress.done();
   });
 };
-var __glob_16_2 = /* @__PURE__ */ Object.freeze({
+var __glob_16_2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   install: install$1
-});
+}, Symbol.toStringTag, { value: "Module" }));
 const install = ({ app: app2 }) => {
   const pinia = createPinia();
   app2.use(pinia);
 };
-var __glob_16_3 = /* @__PURE__ */ Object.freeze({
+var __glob_16_3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  [Symbol.toStringTag]: "Module",
   install
-});
-var ChainId;
-(function(ChainId2) {
+}, Symbol.toStringTag, { value: "Module" }));
+var ChainId = /* @__PURE__ */ ((ChainId2) => {
   ChainId2[ChainId2["Hardhat"] = 31337] = "Hardhat";
   ChainId2[ChainId2["Mainnet"] = 1] = "Mainnet";
   ChainId2[ChainId2["Ropsten"] = 3] = "Ropsten";
@@ -867,7 +849,8 @@ var ChainId;
   ChainId2[ChainId2["Rinkarby"] = 421611] = "Rinkarby";
   ChainId2[ChainId2["Arbitrum"] = 42161] = "Arbitrum";
   ChainId2[ChainId2["Polygon"] = 137] = "Polygon";
-})(ChainId || (ChainId = {}));
+  return ChainId2;
+})(ChainId || {});
 const NETWORK_DETAILS = {
   [42161]: {
     chainId: "0x" + 42161 .toString(16),
@@ -1565,14 +1548,14 @@ const _hoisted_1$f = {
   class: "modal"
 };
 const _hoisted_2$e = { class: "modal-inner" };
-const _hoisted_3$a = { class: "modal-content" };
+const _hoisted_3$c = { class: "modal-content" };
 function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createBlock(Teleport, { to: "body" }, [
     createVNode(Transition, { name: "modal-animation" }, {
       default: withCtx(() => [
         _ctx.modalOpen ? (openBlock(), createElementBlock("div", _hoisted_1$f, [
           createBaseVNode("div", _hoisted_2$e, [
-            createBaseVNode("div", _hoisted_3$a, [
+            createBaseVNode("div", _hoisted_3$c, [
               renderSlot(_ctx.$slots, "default", {}, void 0, true)
             ])
           ])
@@ -1594,11 +1577,11 @@ const _hoisted_2$d = /* @__PURE__ */ createBaseVNode("path", {
   d: "m81.9180572 48.3416816c65.2149658-63.8508884 170.9493158-63.8508884 236.1642788 0l7.848727 7.6845565c3.260748 3.1925442 3.260748 8.3686816 0 11.5612272l-26.848927 26.2873374c-1.630375 1.5962734-4.273733 1.5962734-5.904108 0l-10.800779-10.5748639c-45.495589-44.5439756-119.258514-44.5439756-164.754105 0l-11.566741 11.3248068c-1.630376 1.5962721-4.273735 1.5962721-5.904108 0l-26.8489263-26.2873375c-3.2607483-3.1925456-3.2607483-8.3686829 0-11.5612272zm291.6903948 54.3649934 23.895596 23.395862c3.260732 3.19253 3.260751 8.368636.000041 11.561187l-107.746894 105.494845c-3.260726 3.192568-8.547443 3.192604-11.808214.000083-.000013-.000013-.000029-.000029-.000042-.000043l-76.472191-74.872762c-.815187-.798136-2.136867-.798136-2.952053 0-.000006.000005-.00001.00001-.000015.000014l-76.470562 74.872708c-3.260715 3.192576-8.547434 3.19263-11.808215.000116-.000019-.000018-.000039-.000037-.000059-.000058l-107.74989297-105.496247c-3.26074695-3.192544-3.26074695-8.368682 0-11.561226l23.89563947-23.395823c3.260747-3.1925446 8.5474652-3.1925446 11.8082136 0l76.4733029 74.873809c.815188.798136 2.136866.798136 2.952054 0 .000012-.000012.000023-.000023.000035-.000032l76.469471-74.873777c3.260673-3.1926181 8.547392-3.1927378 11.808214-.000267.000046.000045.000091.00009.000135.000135l76.473203 74.873909c.815186.798135 2.136866.798135 2.952053 0l76.471967-74.872433c3.260748-3.1925458 8.547465-3.1925458 11.808213 0z",
   fill: "#3b99fc"
 }, null, -1);
-const _hoisted_3$9 = [
+const _hoisted_3$b = [
   _hoisted_2$d
 ];
 function _sfc_render$4(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$e, _hoisted_3$9);
+  return openBlock(), createElementBlock("svg", _hoisted_1$e, _hoisted_3$b);
 }
 var WalletConnectIcon = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$4]]);
 const _sfc_main$7 = {};
@@ -1609,11 +1592,11 @@ const _hoisted_1$d = {
   xmlns: "http://www.w3.org/2000/svg"
 };
 const _hoisted_2$c = /* @__PURE__ */ createStaticVNode('<g fill="none" fill-rule="evenodd" transform="translate(-1 -1)"><path d="m114.622644 327.195472 52.004717 13.810198v-18.05949l4.245283-4.249292h29.716982v21.246459 14.872523h-31.839624l-39.268868-16.997169z" fill="#cdbdb2"></path><path d="m199.528305 327.195472 50.943397 13.810198v-18.05949l4.245283-4.249292h29.716981v21.246459 14.872523h-31.839623l-39.268868-16.997169z" fill="#cdbdb2" transform="matrix(-1 0 0 1 483.96227 0)"></path><path d="m170.872644 287.889523-4.245283 35.056657 5.306604-4.249292h55.18868l6.367925 4.249292-4.245284-35.056657-8.490565-5.311615-42.452832 1.062323z" fill="#393939"></path><path d="m142.216984 50.9915022 25.471698 59.4900858 11.674528 173.158643h41.391511l12.735849-173.158643 23.349056-59.4900858z" fill="#f89c35"></path><path d="m30.7783023 181.657226-29.71698153 86.048161 74.29245393-4.249293h47.7594343v-37.181303l-2.122641-76.487253-10.613208 8.498583z" fill="#f89d35"></path><path d="m87.0283032 191.218134 87.0283028 2.124646-9.551886 44.617563-41.391511-10.623229z" fill="#d87c30"></path><path d="m87.0283032 192.280457 36.0849058 33.994334v33.994334z" fill="#ea8d3a"></path><path d="m123.113209 227.337114 42.452831 10.623229 13.79717 45.679888-9.551886 5.311615-46.698115-27.620398z" fill="#f89d35"></path><path d="m123.113209 261.331448-8.490565 65.864024 56.25-39.305949z" fill="#eb8f35"></path><path d="m174.056606 193.34278 5.306604 90.297451-15.919812-46.211049z" fill="#ea8e3a"></path><path d="m74.2924539 262.393771 48.8207551-1.062323-8.490565 65.864024z" fill="#d87c30"></path><path d="m24.4103777 355.878193 90.2122663-28.682721-40.3301901-64.801701-73.23113313 5.311616z" fill="#eb8f35"></path><path d="m167.688682 110.481588-45.636793 38.243627-35.0235858 42.492919 87.0283028 3.186969z" fill="#e8821e"></path><path d="m114.622644 327.195472 56.25-39.305949-4.245283 33.994334v19.121813l-38.207548-7.43626z" fill="#dfcec3"></path><path d="m229.245286 327.195472 55.18868-39.305949-4.245283 33.994334v19.121813l-38.207548-7.43626z" fill="#dfcec3" transform="matrix(-1 0 0 1 513.679252 0)"></path><path d="m132.665096 212.464593-11.674528 24.433427 41.39151-10.623229z" fill="#393939" transform="matrix(-1 0 0 1 283.372646 0)"></path><path d="m23.349057 1.06232296 144.339625 109.41926504-24.410378-59.4900858z" fill="#e88f35"></path><path d="m23.349057 1.06232296-19.10377392 58.42776294 10.61320772 63.7393781-7.42924541 4.249292 10.61320771 9.560906-8.49056617 7.436261 11.67452847 10.623229-7.4292454 6.373938 16.9811323 21.246459 79.5990577-24.433428c38.915096-31.161473 58.018869-47.096318 57.311322-47.804533-.707548-.708215-48.820756-37.1813036-144.339625-109.41926504z" fill="#8e5a30"></path><g transform="matrix(-1 0 0 1 399.056611 0)"><path d="m30.7783023 181.657226-29.71698153 86.048161 74.29245393-4.249293h47.7594343v-37.181303l-2.122641-76.487253-10.613208 8.498583z" fill="#f89d35"></path><path d="m87.0283032 191.218134 87.0283028 2.124646-9.551886 44.617563-41.391511-10.623229z" fill="#d87c30"></path><path d="m87.0283032 192.280457 36.0849058 33.994334v33.994334z" fill="#ea8d3a"></path><path d="m123.113209 227.337114 42.452831 10.623229 13.79717 45.679888-9.551886 5.311615-46.698115-27.620398z" fill="#f89d35"></path><path d="m123.113209 261.331448-8.490565 65.864024 55.18868-38.243626z" fill="#eb8f35"></path><path d="m174.056606 193.34278 5.306604 90.297451-15.919812-46.211049z" fill="#ea8e3a"></path><path d="m74.2924539 262.393771 48.8207551-1.062323-8.490565 65.864024z" fill="#d87c30"></path><path d="m24.4103777 355.878193 90.2122663-28.682721-40.3301901-64.801701-73.23113313 5.311616z" fill="#eb8f35"></path><path d="m167.688682 110.481588-45.636793 38.243627-35.0235858 42.492919 87.0283028 3.186969z" fill="#e8821e"></path><path d="m132.665096 212.464593-11.674528 24.433427 41.39151-10.623229z" fill="#393939" transform="matrix(-1 0 0 1 283.372646 0)"></path><path d="m23.349057 1.06232296 144.339625 109.41926504-24.410378-59.4900858z" fill="#e88f35"></path><path d="m23.349057 1.06232296-19.10377392 58.42776294 10.61320772 63.7393781-7.42924541 4.249292 10.61320771 9.560906-8.49056617 7.436261 11.67452847 10.623229-7.4292454 6.373938 16.9811323 21.246459 79.5990577-24.433428c38.915096-31.161473 58.018869-47.096318 57.311322-47.804533-.707548-.708215-48.820756-37.1813036-144.339625-109.41926504z" fill="#8e5a30"></path></g></g>', 1);
-const _hoisted_3$8 = [
+const _hoisted_3$a = [
   _hoisted_2$c
 ];
 function _sfc_render$3(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$d, _hoisted_3$8);
+  return openBlock(), createElementBlock("svg", _hoisted_1$d, _hoisted_3$a);
 }
 var MetaMaskIcon = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$3]]);
 const _sfc_main$6 = {};
@@ -1623,11 +1606,11 @@ const _hoisted_1$c = {
   "xmlns:xlink": "http://www.w3.org/1999/xlink"
 };
 const _hoisted_2$b = /* @__PURE__ */ createStaticVNode('<defs><circle id="a" cx="59.928" cy="59.928" r="59.928"></circle><linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="c"><stop stop-color="#2E66F8" offset="0%"></stop><stop stop-color="#124ADB" offset="100%"></stop></linearGradient></defs><g fill="none" fill-rule="evenodd"><path fill="#FFF" fill-rule="nonzero" d="M0 0h128v128H0z"></path><path fill="#FFF" fill-rule="nonzero" d="M0 0h128v128H0z"></path><path d="M0 0h128v128H0z"></path><path d="M19 64c0 24.853 20.147 45 45 45s45-20.147 45-45-20.147-45-45-45-45 20.147-45 45zm33.5-14.5a3 3 0 0 0-3 3v23a3 3 0 0 0 3 3h23a3 3 0 0 0 3-3v-23a3 3 0 0 0-3-3h-23z" fill="#FFF"></path><g transform="translate(4 4)"><mask id="b" fill="#fff"><use xlink:href="#a"></use></mask><g mask="url(#b)"><path d="M0 0h119.856v119.856H0z"></path><rect fill="url(#c)" fill-rule="nonzero" width="119.856" height="119.856" rx="48"></rect><path d="M24.97 59.928c0 19.307 15.651 34.958 34.958 34.958s34.958-15.651 34.958-34.958S79.235 24.97 59.928 24.97 24.97 40.62 24.97 59.928zm26.024-11.264a2.33 2.33 0 0 0-2.33 2.33v17.868a2.33 2.33 0 0 0 2.33 2.33h17.868a2.33 2.33 0 0 0 2.33-2.33V50.994a2.33 2.33 0 0 0-2.33-2.33H50.994z" fill="#FFF"></path></g></g></g>', 2);
-const _hoisted_4$5 = [
+const _hoisted_4$4 = [
   _hoisted_2$b
 ];
 function _sfc_render$2(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$c, _hoisted_4$5);
+  return openBlock(), createElementBlock("svg", _hoisted_1$c, _hoisted_4$4);
 }
 var WalletLinkIcon = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$2]]);
 var Board_vue_vue_type_style_index_0_scoped_true_lang = "";
@@ -1752,7 +1735,7 @@ const __vitePreload = function preload(baseModule, deps) {
     if (isCss) {
       return new Promise((res, rej) => {
         link.addEventListener("load", res);
-        link.addEventListener("error", rej);
+        link.addEventListener("error", () => rej(new Error(`Unable to preload CSS for ${dep}`)));
       });
     }
   })).then(() => baseModule());
@@ -1764,7 +1747,7 @@ const useStore = defineStore("store", {
 });
 const useUserStore = defineStore("user", () => {
   const savedName = ref("");
-  const previousNames = ref(new Set());
+  const previousNames = ref(/* @__PURE__ */ new Set());
   const usedNames = computed(() => Array.from(previousNames.value));
   const otherNames = computed(() => usedNames.value.filter((name) => name !== savedName.value));
   function setNewName(name) {
@@ -1788,14 +1771,14 @@ const _hoisted_2$a = /* @__PURE__ */ createBaseVNode("p", null, [
     target: "_blank"
   }, " ThreeD Garden ")
 ], -1);
-const _hoisted_3$7 = { class: "text-sm opacity-75" };
-const _hoisted_4$4 = /* @__PURE__ */ createBaseVNode("div", { class: "py-4" }, null, -1);
+const _hoisted_3$9 = { class: "text-sm opacity-75" };
+const _hoisted_4$3 = /* @__PURE__ */ createBaseVNode("div", { class: "py-4" }, null, -1);
 const _hoisted_5$2 = ["placeholder", "aria-label", "onKeydown"];
 const _hoisted_6$2 = {
   class: "hidden",
   for: "input"
 };
-const _hoisted_7$2 = ["disabled"];
+const _hoisted_7$1 = ["disabled"];
 const _hoisted_8$1 = { class: "mt-5 text-center" };
 const _sfc_main$5 = /* @__PURE__ */ defineComponent({
   setup(__props) {
@@ -1821,9 +1804,9 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
         }, null, 8, _hoisted_1$b),
         _hoisted_2$a,
         createBaseVNode("p", null, [
-          createBaseVNode("em", _hoisted_3$7, toDisplayString(unref(t)("intro.desc")), 1)
+          createBaseVNode("em", _hoisted_3$9, toDisplayString(unref(t)("intro.desc")), 1)
         ]),
-        _hoisted_4$4,
+        _hoisted_4$3,
         withDirectives(createBaseVNode("input", {
           id: "input",
           "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => name.value = $event),
@@ -1847,7 +1830,7 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
             class: "m-3 text-sm btn",
             disabled: !name.value,
             onClick: go
-          }, toDisplayString(unref(t)("button.go")), 9, _hoisted_7$2)
+          }, toDisplayString(unref(t)("button.go")), 9, _hoisted_7$1)
         ]),
         createBaseVNode("div", _hoisted_8$1, [
           createBaseVNode("button", {
@@ -1878,15 +1861,15 @@ const _hoisted_1$a = {
   viewBox: "0 0 32 32"
 };
 const _hoisted_2$9 = /* @__PURE__ */ createBaseVNode("path", {
-  d: "M16 2a14 14 0 0 0-4.43 27.28c.7.13 1-.3 1-.67v-2.38c-3.89.84-4.71-1.88-4.71-1.88a3.71 3.71 0 0 0-1.62-2.05c-1.27-.86.1-.85.1-.85a2.94 2.94 0 0 1 2.14 1.45a3 3 0 0 0 4.08 1.16a2.93 2.93 0 0 1 .88-1.87c-3.1-.36-6.37-1.56-6.37-6.92a5.4 5.4 0 0 1 1.44-3.76a5 5 0 0 1 .14-3.7s1.17-.38 3.85 1.43a13.3 13.3 0 0 1 7 0c2.67-1.81 3.84-1.43 3.84-1.43a5 5 0 0 1 .14 3.7a5.4 5.4 0 0 1 1.44 3.76c0 5.38-3.27 6.56-6.39 6.91a3.33 3.33 0 0 1 .95 2.59v3.84c0 .46.25.81 1 .67A14 14 0 0 0 16 2z",
+  fill: "currentColor",
   "fill-rule": "evenodd",
-  fill: "currentColor"
+  d: "M16 2a14 14 0 0 0-4.43 27.28c.7.13 1-.3 1-.67v-2.38c-3.89.84-4.71-1.88-4.71-1.88a3.71 3.71 0 0 0-1.62-2.05c-1.27-.86.1-.85.1-.85a2.94 2.94 0 0 1 2.14 1.45a3 3 0 0 0 4.08 1.16a2.93 2.93 0 0 1 .88-1.87c-3.1-.36-6.37-1.56-6.37-6.92a5.4 5.4 0 0 1 1.44-3.76a5 5 0 0 1 .14-3.7s1.17-.38 3.85 1.43a13.3 13.3 0 0 1 7 0c2.67-1.81 3.84-1.43 3.84-1.43a5 5 0 0 1 .14 3.7a5.4 5.4 0 0 1 1.44 3.76c0 5.38-3.27 6.56-6.39 6.91a3.33 3.33 0 0 1 .95 2.59v3.84c0 .46.25.81 1 .67A14 14 0 0 0 16 2Z"
 }, null, -1);
-const _hoisted_3$6 = [
+const _hoisted_3$8 = [
   _hoisted_2$9
 ];
 function render$5(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$a, _hoisted_3$6);
+  return openBlock(), createElementBlock("svg", _hoisted_1$a, _hoisted_3$8);
 }
 var __unplugin_components_5 = { name: "carbon-logo-github", render: render$5 };
 const _hoisted_1$9 = {
@@ -1899,11 +1882,11 @@ const _hoisted_2$8 = /* @__PURE__ */ createBaseVNode("path", {
   d: "M28 6v20H4V6h24m0-2H4a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h24a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z",
   fill: "currentColor"
 }, null, -1);
-const _hoisted_3$5 = /* @__PURE__ */ createBaseVNode("path", {
+const _hoisted_3$7 = /* @__PURE__ */ createBaseVNode("path", {
   d: "M6 8h10v2H6z",
   fill: "currentColor"
 }, null, -1);
-const _hoisted_4$3 = /* @__PURE__ */ createBaseVNode("path", {
+const _hoisted_4$2 = /* @__PURE__ */ createBaseVNode("path", {
   d: "M6 12h10v2H6z",
   fill: "currentColor"
 }, null, -1);
@@ -1913,8 +1896,8 @@ const _hoisted_5$1 = /* @__PURE__ */ createBaseVNode("path", {
 }, null, -1);
 const _hoisted_6$1 = [
   _hoisted_2$8,
-  _hoisted_3$5,
-  _hoisted_4$3,
+  _hoisted_3$7,
+  _hoisted_4$2,
   _hoisted_5$1
 ];
 function render$4(_ctx, _cache) {
@@ -1927,12 +1910,15 @@ const _hoisted_1$8 = {
   preserveAspectRatio: "xMidYMid meet",
   viewBox: "0 0 32 32"
 };
-const _hoisted_2$7 = /* @__PURE__ */ createStaticVNode('<path d="M18 19h6v2h-6z" fill="currentColor"></path><path d="M18 15h12v2H18z" fill="currentColor"></path><path d="M18 11h12v2H18z" fill="currentColor"></path><path d="M14 21v-2H9v-2H7v2H2v2h8.215a8.591 8.591 0 0 1-2.216 3.977A9.273 9.273 0 0 1 6.552 23H4.333a10.855 10.855 0 0 0 2.145 3.297A14.658 14.658 0 0 1 3 28.127L3.702 30a16.42 16.42 0 0 0 4.29-2.336A16.488 16.488 0 0 0 12.299 30L13 28.127A14.664 14.664 0 0 1 9.523 26.3a10.313 10.313 0 0 0 2.729-5.3z" fill="currentColor"></path><path d="M11.167 13h2.166L8.75 2H6.583L2 13h2.166L5 11h5.333zM5.833 9l1.833-4.4L9.5 9z" fill="currentColor"></path>', 5);
-const _hoisted_7$1 = [
+const _hoisted_2$7 = /* @__PURE__ */ createBaseVNode("path", {
+  fill: "currentColor",
+  d: "M18 19h6v2h-6zm0-4h12v2H18zm0-4h12v2H18zm-4 10v-2H9v-2H7v2H2v2h8.215a8.591 8.591 0 0 1-2.216 3.977A9.273 9.273 0 0 1 6.552 23H4.333a10.855 10.855 0 0 0 2.145 3.297A14.658 14.658 0 0 1 3 28.127L3.702 30a16.42 16.42 0 0 0 4.29-2.336A16.488 16.488 0 0 0 12.299 30L13 28.127A14.664 14.664 0 0 1 9.523 26.3a10.313 10.313 0 0 0 2.729-5.3zm-2.833-8h2.166L8.75 2H6.583L2 13h2.166L5 11h5.333zM5.833 9l1.833-4.4L9.5 9z"
+}, null, -1);
+const _hoisted_3$6 = [
   _hoisted_2$7
 ];
 function render$3(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$8, _hoisted_7$1);
+  return openBlock(), createElementBlock("svg", _hoisted_1$8, _hoisted_3$6);
 }
 var __unplugin_components_3 = { name: "carbon-language", render: render$3 };
 const _hoisted_1$7 = {
@@ -1941,12 +1927,15 @@ const _hoisted_1$7 = {
   preserveAspectRatio: "xMidYMid meet",
   viewBox: "0 0 32 32"
 };
-const _hoisted_2$6 = /* @__PURE__ */ createStaticVNode('<path d="M16 12.005a4 4 0 1 1-4 4a4.005 4.005 0 0 1 4-4m0-2a6 6 0 1 0 6 6a6 6 0 0 0-6-6z" fill="currentColor"></path><path d="M5.394 6.813l1.414-1.415l3.506 3.506L8.9 10.318z" fill="currentColor"></path><path d="M2 15.005h5v2H2z" fill="currentColor"></path><path d="M5.394 25.197L8.9 21.691l1.414 1.415l-3.506 3.505z" fill="currentColor"></path><path d="M15 25.005h2v5h-2z" fill="currentColor"></path><path d="M21.687 23.106l1.414-1.415l3.506 3.506l-1.414 1.414z" fill="currentColor"></path><path d="M25 15.005h5v2h-5z" fill="currentColor"></path><path d="M21.687 8.904l3.506-3.506l1.414 1.415l-3.506 3.505z" fill="currentColor"></path><path d="M15 2.005h2v5h-2z" fill="currentColor"></path>', 9);
-const _hoisted_11$1 = [
+const _hoisted_2$6 = /* @__PURE__ */ createBaseVNode("path", {
+  fill: "currentColor",
+  d: "M16 12.005a4 4 0 1 1-4 4a4.005 4.005 0 0 1 4-4m0-2a6 6 0 1 0 6 6a6 6 0 0 0-6-6ZM5.394 6.813L6.81 5.399l3.505 3.506L8.9 10.319zM2 15.005h5v2H2zm3.394 10.193L8.9 21.692l1.414 1.414l-3.505 3.506zM15 25.005h2v5h-2zm6.687-1.9l1.414-1.414l3.506 3.506l-1.414 1.414zm3.313-8.1h5v2h-5zm-3.313-6.101l3.506-3.506l1.414 1.414l-3.506 3.506zM15 2.005h2v5h-2z"
+}, null, -1);
+const _hoisted_3$5 = [
   _hoisted_2$6
 ];
 function render$2(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$7, _hoisted_11$1);
+  return openBlock(), createElementBlock("svg", _hoisted_1$7, _hoisted_3$5);
 }
 var __unplugin_components_2 = { name: "carbon-sun", render: render$2 };
 const _hoisted_1$6 = {
@@ -1956,8 +1945,8 @@ const _hoisted_1$6 = {
   viewBox: "0 0 32 32"
 };
 const _hoisted_2$5 = /* @__PURE__ */ createBaseVNode("path", {
-  d: "M13.502 5.414a15.075 15.075 0 0 0 11.594 18.194a11.113 11.113 0 0 1-7.975 3.39c-.138 0-.278.005-.418 0a11.094 11.094 0 0 1-3.2-21.584M14.98 3a1.002 1.002 0 0 0-.175.016a13.096 13.096 0 0 0 1.825 25.981c.164.006.328 0 .49 0a13.072 13.072 0 0 0 10.703-5.555a1.01 1.01 0 0 0-.783-1.565A13.08 13.08 0 0 1 15.89 4.38A1.015 1.015 0 0 0 14.98 3z",
-  fill: "currentColor"
+  fill: "currentColor",
+  d: "M13.502 5.414a15.075 15.075 0 0 0 11.594 18.194a11.113 11.113 0 0 1-7.975 3.39c-.138 0-.278.005-.418 0a11.094 11.094 0 0 1-3.2-21.584M14.98 3a1.002 1.002 0 0 0-.175.016a13.096 13.096 0 0 0 1.825 25.981c.164.006.328 0 .49 0a13.072 13.072 0 0 0 10.703-5.555a1.01 1.01 0 0 0-.783-1.565A13.08 13.08 0 0 1 15.89 4.38A1.015 1.015 0 0 0 14.98 3Z"
 }, null, -1);
 const _hoisted_3$4 = [
   _hoisted_2$5
@@ -1973,19 +1962,14 @@ const _hoisted_1$5 = {
   viewBox: "0 0 32 32"
 };
 const _hoisted_2$4 = /* @__PURE__ */ createBaseVNode("path", {
-  d: "M26 28a4 4 0 1 1 4-4a4.005 4.005 0 0 1-4 4zm0-6a2 2 0 1 0 2 2a2.002 2.002 0 0 0-2-2z",
-  fill: "currentColor"
+  fill: "currentColor",
+  d: "M26 28a4 4 0 1 1 4-4a4.005 4.005 0 0 1-4 4zm0-6a2 2 0 1 0 2 2a2.002 2.002 0 0 0-2-2zM24 8h-6v2h6a1 1 0 0 1 0 2h-3a1 1 0 0 0-.98 1.196l.924 4.621L18.434 22h-2.69l-2.572-8.575A1.988 1.988 0 0 0 11.256 12H6v2h5.256l.6 2H7a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h1a4 4 0 0 0 8 0h7a1 1 0 0 0 .857-.485l3-5a1 1 0 0 0 .123-.711L22.22 14H24a3 3 0 0 0 0-6zM8 26a2.002 2.002 0 0 1-2-2h4a2.002 2.002 0 0 1-2 2zm-4-4v-1a3.003 3.003 0 0 1 3-3h5.456l1.2 4z"
 }, null, -1);
-const _hoisted_3$3 = /* @__PURE__ */ createBaseVNode("path", {
-  d: "M24 8h-6v2h6a1 1 0 0 1 0 2h-3a1 1 0 0 0-.98 1.196l.924 4.621L18.434 22h-2.69l-2.572-8.575A1.988 1.988 0 0 0 11.256 12H6v2h5.256l.6 2H7a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h1a4 4 0 0 0 8 0h7a1 1 0 0 0 .857-.485l3-5a1 1 0 0 0 .123-.711L22.22 14H24a3 3 0 0 0 0-6zM8 26a2.002 2.002 0 0 1-2-2h4a2.002 2.002 0 0 1-2 2zm-4-4v-1a3.003 3.003 0 0 1 3-3h5.456l1.2 4z",
-  fill: "currentColor"
-}, null, -1);
-const _hoisted_4$2 = [
-  _hoisted_2$4,
-  _hoisted_3$3
+const _hoisted_3$3 = [
+  _hoisted_2$4
 ];
 function render(_ctx, _cache) {
-  return openBlock(), createElementBlock("svg", _hoisted_1$5, _hoisted_4$2);
+  return openBlock(), createElementBlock("svg", _hoisted_1$5, _hoisted_3$3);
 }
 var __unplugin_components_0 = { name: "carbon-scooter", render };
 const _hoisted_1$4 = { class: "text-xl mt-6" };

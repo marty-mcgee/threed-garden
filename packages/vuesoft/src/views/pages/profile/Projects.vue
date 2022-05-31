@@ -208,87 +208,114 @@
       <div class="mt-2 row mt-lg-4">
         <div class="mb-4 col-lg-4 col-md-6">
           <projects-card
-            :logo="slackLogo"
+            :image="slackLogo"
             title="Slack Bot"
             description="If everything I did failed - which it doesn&#39;t, I think that
                 it actually succeeds."
-            numberOfParticipants="5"
-            date="02.03.22"
-            :img1="team3"
-            :img2="team4"
-            :img3="team2"
-            :img4="team3"
-            :img5="team4"
+            date-time="02.03.22"
+            :members="[team3, team4, team2, team3, team4]"
+            :dropdown="[
+              {
+                label: 'Action',
+                route: 'javascript:;',
+              },
+              {
+                label: 'Another action',
+                route: 'javascript:;',
+              },
+              {
+                label: 'Something else here',
+                route: 'javascript:;',
+              },
+            ]"
           />
         </div>
         <div class="mb-4 col-lg-4 col-md-6">
           <projects-card
-            :logo="spotifyLogo"
+            :image="spotifyLogo"
             title="Premium support"
             description="Pink is obviously a better color. Everyone’s born confident, and
                 everything’s taken away from you."
-            numberOfParticipants="3"
-            date="22.11.21"
-            :img1="team4"
-            :img2="team3"
-            :img3="team2"
+            date-time="22.11.21"
+            :members="[team4, team3, team2]"
+            :dropdown="[
+              {
+                label: 'Action',
+                route: 'javascript:;',
+              },
+              {
+                label: 'Another action',
+                route: 'javascript:;',
+              },
+              {
+                label: 'Something else here',
+                route: 'javascript:;',
+              },
+            ]"
           />
         </div>
         <div class="mb-4 col-lg-4 col-md-6">
           <projects-card
-            :logo="xdLogo"
+            :image="xdLogo"
             title="Design tools"
             description="Constantly growing. We’re constantly making mistakes from which
                 we learn and improve."
-            numberOfParticipants="4"
-            date="06.03.20"
-            :img1="team4"
-            :img2="team2"
-            :img3="team3"
-            :img4="team4"
+            date-time="06.03.20"
+            :members="[team4, team2, team3, team4]"
+            :dropdown="[
+              {
+                label: 'Action',
+                route: 'javascript:;',
+              },
+              {
+                label: 'Another action',
+                route: 'javascript:;',
+              },
+            ]"
           />
         </div>
         <div class="mb-4 col-lg-4 col-md-6">
           <projects-card
-            :logo="asanaLogo"
+            :image="asanaLogo"
             title="Looking great"
             description="You have the opportunity to play this game of life you need to
                 appreciate every moment."
-            numberOfParticipants="6"
-            date="14.03.24"
-            :img1="team3"
-            :img2="team4"
-            :img3="team2"
-            :img4="team3"
-            :img5="team4"
-            :img6="team2"
+            date-time="14.03.24"
+            :members="[team3, team4, team2, team3, team4, team2]"
+            :dropdown="[
+              {
+                label: 'Action',
+                route: 'javascript:;',
+              },
+              {
+                label: 'Something else here',
+                route: 'javascript:;',
+              },
+            ]"
           />
         </div>
         <div class="mb-4 col-lg-4 col-md-6">
           <projects-card
-            :logo="invisionLogo"
+            :image="invisionLogo"
             title="Developer First"
             description="For standing out. But the time is now to be okay to be the
                 greatest you."
-            numberOfParticipants="4"
-            date="16.01.22"
-            :img1="team4"
-            :img2="team3"
-            :img3="team2"
-            :img4="team4"
+            date-time="16.01.22"
+            :members="[team4, team3, team2, team4]"
+            :dropdown="[
+              {
+                label: 'Action',
+                route: 'javascript:;',
+              },
+              {
+                label: 'Another action',
+                route: 'javascript:;',
+              },
+            ]"
           />
         </div>
         <div class="mb-4 col-lg-4 col-md-6">
-          <div class="card h-100">
-            <div
-              class="text-center card-body d-flex flex-column justify-content-center"
-            >
-              <a href="javascript:;">
-                <i class="mb-3 fa fa-plus text-secondary"></i>
-                <h5 class="text-secondary">New project</h5>
-              </a>
-            </div>
-          </div>
+          <place-holder-card :title="{ text: 'New project', variant: 'h5' }" />
         </div>
       </div>
     </section>
@@ -306,12 +333,16 @@ import invisionLogo from "../../../assets/img/small-logos/logo-invision.svg";
 import spotifyLogo from "../../../assets/img/small-logos/logo-spotify.svg";
 import xdLogo from "../../../assets/img/small-logos/logo-xd.svg";
 import asanaLogo from "../../../assets/img/small-logos/logo-asana.svg";
-
-import ProjectsCard from "./components/ProjectsCard.vue";
+import PlaceHolderCard from "../../../examples/Cards/PlaceHolderCard.vue";
+import ProjectsCard from "./components/ComplexProjectCard.vue";
 import setNavPills from "@/assets/js/nav-pills.js";
 
 export default {
-  name: "profile-team",
+  name: "ProfileTeam",
+  components: {
+    ProjectsCard,
+    PlaceHolderCard,
+  },
   data() {
     return {
       showMenu: false,
@@ -326,9 +357,6 @@ export default {
       xdLogo,
       asanaLogo,
     };
-  },
-  components: {
-    ProjectsCard,
   },
 
   mounted() {
