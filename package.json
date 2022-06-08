@@ -3,13 +3,13 @@
     "version": "0.7.3",
     "description": "ThreeD Garden WP Plugin on Vue 3, using Vite with WindiCSS, and Farmbot JS",
     "repository": {
-      "type": "git",
-      "url": "git+https://github.com/companyjuice/threedgarden.git"
+        "type": "git",
+        "url": "git+https://github.com/companyjuice/threedgarden.git"
     },
     "author": "Marty McGee, Company Juice",
     "license": "GPL-3.0",
     "bugs": {
-      "url": "https://github.com/companyjuice/threedgarden/issues"
+        "url": "https://github.com/companyjuice/threedgarden/issues"
     },
     "homepage": "https://github.com/companyjuice/threedgarden#readme",
     "private": true,
@@ -79,7 +79,9 @@
             "**/hardhat-ts/**"
         ]
     },
-    "dependencies": {},
+    "dependencies": {
+        "pnpm": "^7.1.9"
+    },
     "keywords": [
         "ethereum",
         "vue",
