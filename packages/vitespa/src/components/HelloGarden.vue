@@ -76,7 +76,7 @@
         console.log({ tokenBalance: tokenBalance.toString() });
       },
     },
-    name: "HelloWorld",
+    name: "HelloGarden",
     props: {
       msg: String,
     },

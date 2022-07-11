@@ -17,7 +17,7 @@ declare module 'vue' {
     Documentation: typeof import('./components/Documentation.vue')['default']
     FarmBot: typeof import('./components/FarmBot.vue')['default']
     Footer: typeof import('./components/Footer.vue')['default']
-    HelloWorld: typeof import('./components/HelloWorld.vue')['default']
+    HelloGarden: typeof import('./components/HelloGarden.vue')['default']
     LayoutHeader: typeof import('./components/LayoutHeader.vue')['default']
     MetaMask: typeof import('./components/logos/MetaMask.vue')['default']
     Modal: typeof import('./components/Modal.vue')['default']
