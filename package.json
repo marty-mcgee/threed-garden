@@ -1,6 +1,6 @@
 {
     "name": "@companyjuice/threed-garden",
-    "version": "0.7.3",
+    "version": "0.7.6",
     "description": "ThreeD Garden WP Plugin on Vue 3, using Vite with WindiCSS, and Farmbot JS",
     "repository": {
         "type": "git",
@@ -80,7 +80,7 @@
         ]
     },
     "dependencies": {
-        "pnpm": "^7.1.9"
+        "pnpm": "7.5.0"
     },
     "keywords": [
         "ethereum",

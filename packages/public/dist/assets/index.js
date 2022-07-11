@@ -2387,7 +2387,7 @@ const GET_TRANSFERS = gql`
     }
   }
 `;
-var HelloWorld_vue_vue_type_style_index_0_scoped_true_lang = "";
+var HelloGarden_vue_vue_type_style_index_0_scoped_true_lang = "";
 const _sfc_main$2 = {
   methods: {
     readOnchainData: async function() {
@@ -2397,7 +2397,7 @@ const _sfc_main$2 = {
       console.log({ tokenBalance: tokenBalance.toString() });
     }
   },
-  name: "HelloWorld",
+  name: "HelloGarden",
   props: {
     msg: String
   },
@@ -2414,7 +2414,7 @@ const _sfc_main$2 = {
     }
   }
 };
-const _withScopeId$1 = (n) => (pushScopeId("data-v-351409ac"), n = n(), popScopeId(), n);
+const _withScopeId$1 = (n) => (pushScopeId("data-v-1e269aa8"), n = n(), popScopeId(), n);
 const _hoisted_1$2 = { class: "hello" };
 const _hoisted_2$1 = /* @__PURE__ */ _withScopeId$1(() => /* @__PURE__ */ createBaseVNode("p", null, [
   /* @__PURE__ */ createTextVNode(" For a guide and recipes on how to configure / customize the Vue part of "),
@@ -2427,7 +2427,7 @@ const _hoisted_2$1 = /* @__PURE__ */ _withScopeId$1(() => /* @__PURE__ */ create
   }, "vue-cli documentation"),
   /* @__PURE__ */ createTextVNode(". ")
 ], -1));
-const _hoisted_3$1 = /* @__PURE__ */ createStaticVNode('<h3 data-v-351409ac>Learn Ethereum</h3><ul data-v-351409ac><li data-v-351409ac><a href="https://ethereum.org/developers/#getting-started" target="_blank" rel="noopener" data-v-351409ac>Getting Started</a></li><li data-v-351409ac><a href="https://ethereum.org/wallets/" target="_blank" rel="noopener" data-v-351409ac>Wallets</a></li><li data-v-351409ac><a href="https://ethereum.stackexchange.com/" target="_blank" rel="noopener" data-v-351409ac>StackExchange</a></li><li data-v-351409ac><a href="https://reddit.com/r/ethdev/" target="_blank" rel="noopener" data-v-351409ac>Reddit</a></li></ul><h3 data-v-351409ac>Learn Vue</h3><ul data-v-351409ac><li data-v-351409ac><a href="https://vuejs.org" target="_blank" rel="noopener" data-v-351409ac>Core Docs</a></li><li data-v-351409ac><a href="https://forum.vuejs.org" target="_blank" rel="noopener" data-v-351409ac>Forum</a></li><li data-v-351409ac><a href="https://chat.vuejs.org" target="_blank" rel="noopener" data-v-351409ac>Community Chat</a></li><li data-v-351409ac><a href="https://twitter.com/vuejs" target="_blank" rel="noopener" data-v-351409ac>Twitter</a></li><li data-v-351409ac><a href="https://news.vuejs.org" target="_blank" rel="noopener" data-v-351409ac>News</a></li></ul><h3 data-v-351409ac>Learn The Graph</h3><ul data-v-351409ac><li data-v-351409ac><a href="https://thegraph.com/docs/quick-start" target="_blank" rel="noopener" data-v-351409ac>Core Docs</a></li><li data-v-351409ac><a href="https://discord.gg/vtvv7FP" target="_blank" rel="noopener" data-v-351409ac>Community Chat</a></li><li data-v-351409ac><a href="https://twitter.com/graphprotocol" target="_blank" rel="noopener" data-v-351409ac>Twitter</a></li></ul>', 6);
+const _hoisted_3$1 = /* @__PURE__ */ createStaticVNode('<h3 data-v-1e269aa8>Learn Ethereum</h3><ul data-v-1e269aa8><li data-v-1e269aa8><a href="https://ethereum.org/developers/#getting-started" target="_blank" rel="noopener" data-v-1e269aa8>Getting Started</a></li><li data-v-1e269aa8><a href="https://ethereum.org/wallets/" target="_blank" rel="noopener" data-v-1e269aa8>Wallets</a></li><li data-v-1e269aa8><a href="https://ethereum.stackexchange.com/" target="_blank" rel="noopener" data-v-1e269aa8>StackExchange</a></li><li data-v-1e269aa8><a href="https://reddit.com/r/ethdev/" target="_blank" rel="noopener" data-v-1e269aa8>Reddit</a></li></ul><h3 data-v-1e269aa8>Learn Vue</h3><ul data-v-1e269aa8><li data-v-1e269aa8><a href="https://vuejs.org" target="_blank" rel="noopener" data-v-1e269aa8>Core Docs</a></li><li data-v-1e269aa8><a href="https://forum.vuejs.org" target="_blank" rel="noopener" data-v-1e269aa8>Forum</a></li><li data-v-1e269aa8><a href="https://chat.vuejs.org" target="_blank" rel="noopener" data-v-1e269aa8>Community Chat</a></li><li data-v-1e269aa8><a href="https://twitter.com/vuejs" target="_blank" rel="noopener" data-v-1e269aa8>Twitter</a></li><li data-v-1e269aa8><a href="https://news.vuejs.org" target="_blank" rel="noopener" data-v-1e269aa8>News</a></li></ul><h3 data-v-1e269aa8>Learn The Graph</h3><ul data-v-1e269aa8><li data-v-1e269aa8><a href="https://thegraph.com/docs/quick-start" target="_blank" rel="noopener" data-v-1e269aa8>Core Docs</a></li><li data-v-1e269aa8><a href="https://discord.gg/vtvv7FP" target="_blank" rel="noopener" data-v-1e269aa8>Community Chat</a></li><li data-v-1e269aa8><a href="https://twitter.com/graphprotocol" target="_blank" rel="noopener" data-v-1e269aa8>Twitter</a></li></ul>', 6);
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1$2, [
     createBaseVNode("h1", null, toDisplayString($props.msg), 1),
@@ -2440,7 +2440,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _hoisted_3$1
   ]);
 }
-var HelloWorld = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render], ["__scopeId", "data-v-351409ac"]]);
+var HelloGarden = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render], ["__scopeId", "data-v-1e269aa8"]]);
 var LayoutHeader_vue_vue_type_style_index_0_scoped_true_lang = "";
 const _withScopeId = (n) => (pushScopeId("data-v-7c948b0a"), n = n(), popScopeId(), n);
 const _hoisted_1$1 = { class: "w-full px-4" };
@@ -2534,9 +2534,9 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
 var LayoutHeader = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-7c948b0a"]]);
 const _hoisted_1 = { id: "APP" };
 const __default__ = {
-  name: "EthereumApp",
+  name: "EthereumGardenApp",
   components: {
-    HelloWorld
+    HelloGarden
   }
 };
 const _sfc_main = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues({}, __default__), {
@@ -2546,7 +2546,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues({
       const _component_router_view = resolveComponent("router-view");
       const _component_vdapp_board = resolveComponent("vdapp-board");
       return openBlock(), createElementBlock("div", _hoisted_1, [
-        createVNode(HelloWorld, { msg: "Welcome to Your Ethereum App" }),
+        createVNode(HelloGarden, { msg: "Welcome to your Ethereum Garden" }),
         createVNode(LayoutHeader),
         createVNode(_component_router_view),
         createVNode(_component_vdapp_board)

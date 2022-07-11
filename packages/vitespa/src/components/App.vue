@@ -138,19 +138,19 @@ console.log('*** HEY HEY HEY -- App.vue (ethers)')
 </script>
 -->
 <script lang="ts">
-import HelloWorld from "./HelloWorld.vue";
+import HelloGarden from "./HelloGarden.vue";
 
 export default {
-  name: "EthereumApp",
+  name: "EthereumGardenApp",
   components: {
-    HelloWorld,
+    HelloGarden,
   },
 };
 </script>
 
 <template>
 	<div id="APP">
-		<HelloWorld msg="Welcome to Your Ethereum App" />
+		<HelloGarden msg="Welcome to your Ethereum Garden" />
 		<layout-header />
 		<router-view />
 		<vdapp-board />
