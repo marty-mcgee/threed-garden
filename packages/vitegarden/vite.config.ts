@@ -15,9 +15,8 @@ export default defineConfig({
     port: 8888,
   },
 
-  // [MM] from ViteSpa
+  // [MM] config (from ViteSpa)
 
-  // config
   // root: 'src',
   // mode: 'development',
   // base: process.env.APP_ENV === 'development'
