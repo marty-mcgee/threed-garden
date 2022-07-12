@@ -1,14 +1,23 @@
 <template>
-  <h1>HEY HEY HEY</h1>
+  <sidenav 
+  
+  />
+  <main 
+    id="main" 
+    class="main-content position-relative max-height-vh-100 h-100 border-radius-lg"
+  >
+    <h1>HEY HEY HEY</h1>
+  </main>
 </template>
 
 <script>
+import Sidenav from "@/views/Sidenav/Sidenav.vue"
+
 export default {
   name: "App",
   components: {
-    
+    Sidenav
   },
-
   computed: {
 
   },
@@ -37,5 +46,5 @@ export default {
       // xxl: 1400px
     }
   }
-};
+}
 </script>

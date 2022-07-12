@@ -8,4 +8,4 @@ const appInstance = createApp(App)
 appInstance.use(store)
 appInstance.mount("#app")
 
-console.log("ViteGarden [MM] -- APP LOADED")
+console.log("ViteGarden [MM] -- APP MOUNTED")
