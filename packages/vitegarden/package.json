@@ -1,7 +1,7 @@
 {
   "name": "@threed/vitegarden",
-  "version": "0.1.0",
-  "description": "ThreeD Garden on Vite Vue Three JS ('main': 'index.html')",
+  "version": "0.1.1",
+  "description": "ThreeD Garden on Vite Vue Three JS",
   "author": "Marty McGee, Company Juice",
   "license": "SEE LICENSE IN LICENSE",
   "private": true,
@@ -24,7 +24,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-vue": "^8.7.1",
     "pnpm": "^7.5.0",
-    "prettier": "2.6.0",
+    "prettier": "^2.6.0",
     "vite": "^2.9.14"
   }
 }

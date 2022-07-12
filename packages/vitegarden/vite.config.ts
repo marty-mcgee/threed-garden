@@ -6,7 +6,7 @@ const path = require("path")
 export default defineConfig({
   plugins: [
     vue({
-
+      include: [/\.vue$/, /\.md$/],
     })
   ],
   resolve: {
