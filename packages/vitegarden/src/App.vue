@@ -1,6 +1,11 @@
 <template>
   <sidenav 
-  
+    v-if="showSidenav"
+    :custom_class="cardBackgroundMaskColor"
+    :class="[
+      sideBarBackgroundClass,
+      $store.state.isRTL ? 'fixed-end' : 'fixed-start',
+    ]"
   />
   <main 
     id="main" 
@@ -12,6 +17,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex"
 import Sidenav from "@/views/Sidenav/Sidenav.vue"
 
 export default {
@@ -20,7 +26,9 @@ export default {
     Sidenav
   },
   computed: {
-
+    ...mapGetters([
+      'showSidenav',
+    ])
   },
   watch: {
 
