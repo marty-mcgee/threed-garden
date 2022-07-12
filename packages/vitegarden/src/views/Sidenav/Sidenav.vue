@@ -4,7 +4,7 @@
     class="my-3 overflow-auto border-0 sidenav navbar navbar-vertical navbar-expand-xs border-radius-xl"
   >
     <div class="sidenav-header">
-    
+      <img :src="logo" class="navbar-brand-img h-100" alt="main_logo" />
     </div>
     <hr class="mt-0 horizontal dark" />
   </aside>
@@ -30,9 +30,9 @@
   </aside> -->
 </template>
 <script>
-import { mapGetters } from "vuex"
+// import { mapGetters } from "vuex"
 // import SidenavList from "./SidenavList.vue"
-import logo from "@/assets/img/logo-ct.png"
+import logo from "@/assets/img/logo-threedgarden.png"
 
 export default {
   name: "Index",
