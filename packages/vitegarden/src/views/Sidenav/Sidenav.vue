@@ -1,7 +1,7 @@
 <template>
   <aside
     id="sidenav-main"
-    :data-color="sidebarColor"
+    :data-color="sidenavColor"
     class="my-3 overflow-auto border-0 sidenav navbar navbar-vertical navbar-expand-xs border-radius-xl"
     :class="$store.state.isRTL ? 'me-3 rotate-caret' : 'ms-3'"
   >
@@ -21,7 +21,7 @@
   </aside>
 </template>
 <script>
-// import { mapGetters } from "vuex"
+import { mapGetters } from "vuex"
 // import SidenavList from "./SidenavList.vue"
 import logo from "@/assets/img/logo-threedgarden.png"
 
@@ -41,7 +41,7 @@ export default {
     };
   },
   computed: {
-    // ...mapGetters(["sidebarColor"]),
+    ...mapGetters(["sidenavColor"]),
   },
   mounted() {
 
