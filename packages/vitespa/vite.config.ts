@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import path from 'path'
 import { defineConfig } from 'vite'
 import Vue from '@vitejs/plugin-vue'
@@ -97,9 +98,7 @@ export default defineConfig({
       headEnabled: true,
       markdownItSetup(md) {
 				// https://prismjs.com/
-				// @ts-expect-error types mismatch
 				md.use(Prism)
-				// @ts-expect-error types mismatch
 				md.use(LinkAttributes, {
 					pattern: /^https?:\/\//,
 					attrs: {
