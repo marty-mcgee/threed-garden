@@ -10,11 +10,13 @@ specifiers:
   three: ^0.124.0
   vite: ^2.9.14
   vue: ^3.2.37
+  vue-router: ^4.0.14
   vuex: ^4.0.2
 
 dependencies:
   three: 0.124.0
   vue: 3.2.37
+  vue-router: 4.1.2_vue@3.2.37
   vuex: 4.0.2_vue@3.2.37
 
 devDependencies:
@@ -1091,6 +1093,15 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /vue-router/4.1.2_vue@3.2.37:
+    resolution: {integrity: sha512-5BP1qXFncVRwgV/XnqzsKApdMjQPqWIpoUBdL1ynz8HyLxIX/UDAx7Ql2BjmA5CXT/p61JfZvkpiFWFpaqcfag==}
+    peerDependencies:
+      vue: ^3.2.0
+    dependencies:
+      '@vue/devtools-api': 6.2.0
+      vue: 3.2.37
+    dev: false
 
   /vue/3.2.37:
     resolution: {integrity: sha512-bOKEZxrm8Eh+fveCqS1/NkG/n6aMidsI6hahas7pa0w/l7jkbssJVsRhVDs07IdDq7h9KHswZOgItnwJAgtVtQ==}
