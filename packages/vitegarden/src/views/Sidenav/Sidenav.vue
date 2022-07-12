@@ -4,7 +4,8 @@
     class="my-3 overflow-auto border-0 sidenav navbar navbar-vertical navbar-expand-xs border-radius-xl"
   >
     <div class="sidenav-header">
-      <img :src="logo" class="navbar-brand-img h-100" alt="main_logo" />
+      <img :src="logo" class="navbar-brand-img h-100" alt="main_logo" width="100" height="100" />
+        <span class="ms-1 font-weight-bold">{{appName}}</span>
     </div>
     <hr class="mt-0 horizontal dark" />
   </aside>
@@ -44,8 +45,9 @@ export default {
   },
   data() {
     return {
-      logo,
+      appName: "ThreeD Garden",
       color: "success",
+      logo,
     };
   },
   computed: {
