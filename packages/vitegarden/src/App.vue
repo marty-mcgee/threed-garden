@@ -18,7 +18,7 @@
 
 <script>
 import { mapGetters } from "vuex"
-import Sidenav from "@/views/Sidenav/Sidenav.vue"
+import Sidenav from "@/sections/Sidenav/Sidenav.vue"
 
 export default {
   name: "App",

@@ -26,7 +26,7 @@ import { mapGetters } from "vuex"
 import logo from "@/assets/img/logo-threedgarden.png"
 
 export default {
-  name: "Index",
+  name: "Sidenav",
   components: {
     // SidenavList,
   },
