@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'showSidenav',
+      "showSidenav",
     ])
   },
   watch: {
@@ -35,17 +35,17 @@ export default {
   },
   mounted: function () {
     this.handleResize()
-    window.addEventListener('resize', this.handleResize)
+    window.addEventListener("resize", this.handleResize)
   },
   beforeUnmount: function () {
-    window.removeEventListener('resize', this.handleResize)
+    window.removeEventListener("resize", this.handleResize)
   },
   methods: {
     handleResize() {
       if (window.innerWidth > 1200) {
-        // this.$store.dispatch('setIsLargeScreen', true)
+        // this.$store.dispatch("setIsLargeScreen", true)
       } else {
-        // this.$store.dispatch('setIsLargeScreen', false)
+        // this.$store.dispatch("setIsLargeScreen", false)
       }
       // xs: 0,
       // sm: 576px,
