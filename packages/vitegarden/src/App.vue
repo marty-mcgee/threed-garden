@@ -7,6 +7,7 @@
     class="main-content position-relative max-height-vh-100 h-100 border-radius-lg"
   >
     <h1>HEY HEY HEY</h1>
+    <router-view />
   </main>
 </template>
 

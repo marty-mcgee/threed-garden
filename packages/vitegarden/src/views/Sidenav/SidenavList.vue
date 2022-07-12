@@ -574,7 +574,7 @@ export default {
   },
   data() {
     return {
-      title: "Vite Soft UI Dashboard PRO",
+      title: "ThreeD Garden on Vite",
       controls: "dashboardsExamples",
       isActive: "active",
     };
