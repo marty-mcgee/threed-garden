@@ -36,6 +36,7 @@ export default createStore({
       state.isNavFixed = !!payload
     },
     SET_SHOW_SIDEBAR(state, payload) {
+      console.log("SET_SHOW_SIDEBAR", payload)
       state.showSidenav = !!payload
     },
     SET_SIDEBAR_PINNED(state, payload) {

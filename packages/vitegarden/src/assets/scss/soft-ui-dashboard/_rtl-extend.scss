@@ -7,7 +7,7 @@
           .nav-item {
             .nav-link {
               &:before {
-                right: $rtl-sidebar-bullet-right !important;
+                right: $rtl-sidenav-bullet-right !important;
                 left: auto !important;
               }
             }
@@ -42,7 +42,7 @@
               .collapse,
               .collapsing {
                 .nav {
-                  padding-right: $rtl-sidebar-hover-padding-right;
+                  padding-right: $rtl-sidenav-hover-padding-right;
 
                   .nav-item {
                     .collapse,

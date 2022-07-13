@@ -46,9 +46,9 @@ export default {
       'darkMode',
       'sidebarTransparent',
       'sidebarPinned',
-      'cardBackgroundMaskColor', 'isLargeScreen'
+      'cardBackgroundMaskColor', 
+      'isLargeScreen'
     ]),
-
     sideBarBackgroundClass() {
       const bgClass = this.sidebarTransparent ? 'bg-transparent' : this.darkMode ? '' : 'bg-white'
       return this.isLargeScreen ? bgClass : this.darkMode ? 'dark' : 'bg-white'
