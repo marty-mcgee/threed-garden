@@ -21,41 +21,41 @@
       </div>
       <hr class="my-1 horizontal" :class="!darkMode ? 'dark' : 'light'" />
       <div class="pt-0 card-body pt-sm-3">
-        <!-- Sidebar Backgrounds -->
+        <!-- Sidenav Backgrounds -->
         <div>
-          <h6 class="mb-0">Sidebar Colors</h6>
+          <h6 class="mb-0">Sidenav Colors</h6>
         </div>
         <a href="#" class="switch-trigger background-color">
           <div class="my-2 badge-colors" :class="$store.state.isRTL ? 'text-end' : ' text-start'">
             <span
               class="badge filter bg-gradient-primary active"
               data-color="primary"
-              @click="$store.dispatch('setSidebarColor', 'primary')"
+              @click="$store.dispatch('setSidenavColor', 'primary')"
             ></span>
             <span
               class="badge filter bg-gradient-dark"
               data-color="dark"
-              @click="$store.dispatch('setSidebarColor', 'dark')"
+              @click="$store.dispatch('setSidenavColor', 'dark')"
             ></span>
             <span
               class="badge filter bg-gradient-info"
               data-color="info"
-              @click="$store.dispatch('setSidebarColor', 'info')"
+              @click="$store.dispatch('setSidenavColor', 'info')"
             ></span>
             <span
               class="badge filter bg-gradient-success"
               data-color="success"
-              @click="$store.dispatch('setSidebarColor', 'success')"
+              @click="$store.dispatch('setSidenavColor', 'success')"
             ></span>
             <span
               class="badge filter bg-gradient-warning"
               data-color="warning"
-              @click="$store.dispatch('setSidebarColor', 'warning')"
+              @click="$store.dispatch('setSidenavColor', 'warning')"
             ></span>
             <span
               class="badge filter bg-gradient-danger"
               data-color="danger"
-              @click="$store.dispatch('setSidebarColor', 'danger')"
+              @click="$store.dispatch('setSidenavColor', 'danger')"
             ></span>
           </div>
         </a>
@@ -68,16 +68,16 @@
           <button
             id="btn-transparent"
             class="btn bg-gradient-primary w-100 px-3 mb-2"
-            :class="sidebarTransparent ? 'active' : ''"
+            :class="sidenavTransparent ? 'active' : ''"
             :disabled="!isLargeScreen"
-            @click="$store.dispatch('setSidebarTransparent', true)"
+            @click="$store.dispatch('setSidenavTransparent', true)"
           >Transparent</button>
           <button
             id="btn-white"
             class="btn bg-gradient-primary w-100 px-3 mb-2 ms-2"
-            :class="sidebarTransparent ? '' : 'active'"
+            :class="sidenavTransparent ? '' : 'active'"
             :disabled="!isLargeScreen"
-            @click="$store.dispatch('setSidebarTransparent', false)"
+            @click="$store.dispatch('setSidenavTransparent', false)"
           >White</button>
         </div>
         <p
@@ -106,7 +106,7 @@
           <div class="form-check form-switch ps-0">
             <input
               id="navbarMinimize"
-              v-model="isSidebarPinned"
+              v-model="isSidenavPinned"
               class="mt-1 form-check-input"
               :class="$store.state.isRTL ? 'float-end  me-auto' : ' ms-auto'"
               type="checkbox"
@@ -170,11 +170,11 @@ export default {
   name: "Configurator",
   computed: {
     ...mapGetters([
-      "sidebarTransparent",
+      "sidenavTransparent",
       "darkMode",
       "navbarFixed",
       "showConfigurator",
-      "sidebarPinned",
+      "sidenavPinned",
       "isLargeScreen"
     ]),
     isDarkMode: {
@@ -185,9 +185,9 @@ export default {
       get() { return this.navbarFixed },
       set(val) { this.$store.dispatch('setNavbarFixed', val) }
     },
-    isSidebarPinned: {
-      get() { return !this.sidebarPinned },
-      set(val) { this.$store.dispatch('setSidebarPinned', !val) }
+    isSidenavPinned: {
+      get() { return !this.sidenavPinned },
+      set(val) { this.$store.dispatch('setSidenavPinned', !val) }
     },
     show: {
       get() { return this.showConfigurator },

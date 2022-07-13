@@ -17,7 +17,7 @@
         <a
           href="#"
           class="p-0 nav-link text-body"
-          @click.prevent="$store.dispatch('toggleSidebarPinned')"
+          @click.prevent="$store.dispatch('toggleSidenavPinned')"
         >
           <div class="sidenav-toggler-inner">
             <i class="sidenav-toggler-line" :class="textWhite ? 'bg-white' : ''"></i>
@@ -65,7 +65,7 @@
               id="iconNavbarSidenav"
               href="#"
               class="p-0 nav-link text-body"
-              @click.prevent="$store.dispatch('toggleSidebarPinned')"
+              @click.prevent="$store.dispatch('toggleSidenavPinned')"
             >
               <div class="sidenav-toggler-inner">
                 <i class="sidenav-toggler-line"></i>
