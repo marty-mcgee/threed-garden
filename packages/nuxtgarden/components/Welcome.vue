@@ -21,7 +21,7 @@ body {
 }
 
 h1 {
-  color: white;
+  color: gray;
   text-align: center;
   font-family: helvetica, arial, sans-serif;
   font-weight: 400;

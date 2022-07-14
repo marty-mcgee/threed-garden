@@ -1,7 +1,10 @@
 <template>
-  <main>
+  <div id="APP">
     <!-- <h1>HEY HEY HEY</h1> -->
-    <Welcome />
+    <!-- <Welcome /> -->
     <!-- <NuxtWelcome /> -->
-  </main>
+    <NuxtLayout>
+      <NuxtPage/>
+    </NuxtLayout>
+  </div>
 </template>
