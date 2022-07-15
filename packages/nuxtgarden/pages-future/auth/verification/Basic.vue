@@ -143,8 +143,8 @@
 
 <script>
 import bgImg from '@/assets/img/curved-images/curved9.jpg';
-import Navbar from "@/examples/PageLayout/Navbar.vue";
-import VsudButton from "@/components/VsudButton.vue";
+import Navbar from "@/components/sections/PageLayout/Navbar.vue";
+import VsudButton from "@/components/vitesoft/VsudButton.vue";
 
 export default {
   name: "VerificationBasic",

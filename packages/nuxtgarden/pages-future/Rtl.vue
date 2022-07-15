@@ -130,10 +130,10 @@
 </template>
 
 <script>
-import Card from "@/examples/Cards/Card.vue";
+import Card from "@/components/sections/Cards/Card.vue";
 import TasksCard from "./projects/components/TasksCard.vue";
-import DefaultInfoCard from "@/examples/Cards/DefaultInfoCard.vue";
-import MasterCard from "@/examples/Cards/MasterCard.vue";
+import DefaultInfoCard from "@/components/sections/Cards/DefaultInfoCard.vue";
+import MasterCard from "@/components/sections/Cards/MasterCard.vue";
 import IncomeChart from "./components/IncomeChart.vue";
 import CaloriesChart from "./components/CaloriesChart.vue";
 import EventsCard from "./components/EventsCard.vue";
@@ -141,8 +141,8 @@ import FullBodyCard from "./components/FullBodyCard.vue";
 import ControllerCard from "./components/ControllerCard.vue";
 import MiniInfoCard from "./components/MiniInfoCard.vue";
 import StepsCard from "./components/StepsCard.vue";
-import Calendar from "@/examples/Calendar.vue";
-import CategoriesCard from "@/views/dashboards/components/CategoriesCard.vue";
+import Calendar from "@/components/sections/Calendar.vue";
+import CategoriesCard from "@/components/dashboards/components/CategoriesCard.vue";
 import MusicPlayer from "./components/MusicPlayer.vue";
 import OrdersCard from "./components/OrdersCard.vue";
 

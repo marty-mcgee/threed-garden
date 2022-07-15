@@ -117,7 +117,7 @@
 
 <script>
 import EarningsCard from "./components/EarningsCard.vue";
-import Card from "@/examples/Cards/Card.vue";
+import Card from "@/components/sections/Cards/Card.vue";
 import JobCard from "./components/JobCard.vue";
 import TasksCard from "./components/TasksCard.vue";
 import ProjectsCard from "./components/ProjectsCard.vue";

@@ -75,8 +75,8 @@
 </template>
 
 <script>
-import VsudInput from "@/components/VsudInput.vue";
-import VsudButton from "@/components/VsudButton.vue";
+import VsudInput from "@/components/vitesoft/VsudInput.vue";
+import VsudButton from "@/components/vitesoft/VsudButton.vue";
 
 export default {
   name: "UserInfo",

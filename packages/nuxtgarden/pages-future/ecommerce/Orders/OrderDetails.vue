@@ -170,9 +170,9 @@
 </template>
 
 <script>
-import VsudButton from "@/components/VsudButton.vue";
-import VsudAvatar from "@/components/VsudAvatar.vue";
-import VsudBadge from "@/components/VsudBadge.vue";
+import VsudButton from "@/components/vitesoft/VsudButton.vue";
+import VsudAvatar from "@/components/vitesoft/VsudAvatar.vue";
+import VsudBadge from "@/components/vitesoft/VsudBadge.vue";
 
 export default {
   name: "OrderDetails",

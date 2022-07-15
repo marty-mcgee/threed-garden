@@ -1,12 +1,21 @@
 <template>
   <h1>Welcome to NuxtGarden</h1>
+  <smart-home />
 </template>
 
-<script setup>
-// works in <script> and <script setup>
+<script>
+import SmartHome from "@/components/dashboards/SmartHome.vue"
+
 definePageMeta({
   layout: "default",
   // layout: "custom",
-  title: "Home",
+  title: "Index",
 })
+
+export default {
+  name: "Index",
+  components: {
+    SmartHome,
+  },
+}
 </script>

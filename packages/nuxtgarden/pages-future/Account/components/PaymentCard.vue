@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import VsudButton from "@/components/VsudButton.vue";
+import VsudButton from "@/components/vitesoft/VsudButton.vue";
 import img1 from "../../../../assets/img/logos/mastercard.png";
 import img2 from "../../../../assets/img/logos/visa.png";
 

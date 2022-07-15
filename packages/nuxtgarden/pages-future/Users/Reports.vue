@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import ComplexStatisticsCard from "@/examples/Cards/ComplexStatisticsCard.vue";
+import ComplexStatisticsCard from "@/components/sections/Cards/ComplexStatisticsCard.vue";
 import ReviewCard from "./components/ReviewCard.vue";
 import Table from "./components/Table.vue";
 

@@ -74,8 +74,8 @@
 </template>
 
 <script>
-import VsudAvatar from "@/components/VsudAvatar.vue";
-import VsudButton from "@/components/VsudButton.vue";
+import VsudAvatar from "@/components/vitesoft/VsudAvatar.vue";
+import VsudButton from "@/components/vitesoft/VsudButton.vue";
 
 export default {
   name: "UserCard",

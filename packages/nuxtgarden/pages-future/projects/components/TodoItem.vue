@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import VsudCheckbox from "@/components/VsudCheckbox.vue";
+import VsudCheckbox from "@/components/vitesoft/VsudCheckbox.vue";
 
 export default {
   name: "TodoItem",

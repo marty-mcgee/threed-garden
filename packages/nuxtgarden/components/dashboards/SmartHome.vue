@@ -316,17 +316,17 @@
 </template>
 
 <script>
-import ConsumptionRoomChart from "@/examples/Charts/ConsumptionRoomChart.vue";
-import ConsumptionDayChart from "@/examples/Charts/ConsumptionDayChart.vue";
-import TemperatureCard from "@/examples/Cards/TempCard.vue";
-import SwitchCard from "@/examples/Cards/SwitchCard.vue";
-import Icon from "@/components/Icon.vue";
+import ConsumptionRoomChart from "@/components/sections/Charts/ConsumptionRoomChart.vue";
+import ConsumptionDayChart from "@/components/sections/Charts/ConsumptionDayChart.vue";
+import TemperatureCard from "@/components/sections/Cards/TempCard.vue";
+import SwitchCard from "@/components/sections/Cards/SwitchCard.vue";
+import Icon from "@/components/vitesoft/Icon.vue";
 import bgImg1 from '@/assets/img/bg-smart-home-1.jpg'
 import bgImg2 from '@/assets/img/bg-smart-home-2.jpg'
 import bgImg3 from '@/assets/img/home-decor-3.jpg'
 
 import setNavPills from "@/assets/js/nav-pills.js";
-import setTooltip from "@/assets/js/tooltip.js";
+// import setTooltip from "@/assets/js/tooltip.js";
 
 export default {
   name: "SmartHome",
@@ -348,7 +348,7 @@ export default {
 
   mounted() {
     setNavPills();
-    setTooltip();
+    // setTooltip();
     // Rounded slider
     const setValue = function (value, active) {
       document.querySelectorAll("round-slider").forEach(function (el) {

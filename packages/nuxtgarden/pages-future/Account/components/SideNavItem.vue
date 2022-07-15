@@ -466,11 +466,11 @@
 
 <script>
 import * as Choices from "choices.js";
-import VsudButton from "@/components/VsudButton.vue";
-import VsudSwitch from "@/components/VsudSwitch.vue";
-import VsudBadge from "@/components/VsudBadge.vue";
-import VsudAvatar from "@/components/VsudAvatar.vue";
-import VsudInput from "@/components/VsudInput.vue";
+import VsudButton from "@/components/vitesoft/VsudButton.vue";
+import VsudSwitch from "@/components/vitesoft/VsudSwitch.vue";
+import VsudBadge from "@/components/vitesoft/VsudBadge.vue";
+import VsudAvatar from "@/components/vitesoft/VsudAvatar.vue";
+import VsudInput from "@/components/vitesoft/VsudInput.vue";
 import img from "../../../../assets/img/bruce-mars.jpg";
 import img1 from "../../../../assets/img/small-logos/logo-slack.svg";
 import img2 from "../../../../assets/img/small-logos/logo-spotify.svg";

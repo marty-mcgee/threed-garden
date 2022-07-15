@@ -38,7 +38,7 @@
 
 <script>
 
-import VsudAvatar from "@/components/VsudAvatar.vue";
+import VsudAvatar from "@/components/vitesoft/VsudAvatar.vue";
 import bgImg from '@/assets/img/curved-images/curved14.jpg';
 import img from "../../assets/img/curved-images/curved14.jpg";
 import img1 from "../../assets/img/logos/mastercard.png";

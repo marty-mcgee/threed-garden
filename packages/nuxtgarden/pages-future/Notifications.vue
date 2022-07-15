@@ -147,8 +147,8 @@
 </template>
 
 <script>
-import VsudAlert from "@/components/VsudAlert.vue";
-import VsudSnackbar from "@/components/VsudSnackbar.vue";
+import VsudAlert from "@/components/vitesoft/VsudAlert.vue";
+import VsudSnackbar from "@/components/vitesoft/VsudSnackbar.vue";
 
 export default {
   name: "Notifications",

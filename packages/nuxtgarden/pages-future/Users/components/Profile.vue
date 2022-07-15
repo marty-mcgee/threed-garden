@@ -45,9 +45,9 @@
 </template>
 
 <script>
-import VsudInput from "@/components/VsudInput.vue";
-import VsudButton from "@/components/VsudButton.vue";
-import VsudTextarea from "@/components/VsudTextarea.vue";
+import VsudInput from "@/components/vitesoft/VsudInput.vue";
+import VsudButton from "@/components/vitesoft/VsudButton.vue";
+import VsudTextarea from "@/components/vitesoft/VsudTextarea.vue";
 
 export default {
   name: "Profile",

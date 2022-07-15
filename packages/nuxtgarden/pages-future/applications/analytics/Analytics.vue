@@ -123,7 +123,7 @@
 </template>
 
 <script>
-import Card from "@/examples/Cards/Card.vue";
+import Card from "@/components/sections/Cards/Card.vue";
 import TrafficChart from "./components/TrafficChart.vue";
 import ReferralsCard from "./components/ReferralsCard.vue";
 import SocialCard from "./components/SocialCard.vue";

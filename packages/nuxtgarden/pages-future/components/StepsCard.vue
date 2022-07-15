@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import VsudBadge from "@/components/VsudBadge.vue";
+import VsudBadge from "@/components/vitesoft/VsudBadge.vue";
 
 export default {
   name: "StepsCard",
