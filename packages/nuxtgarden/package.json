@@ -11,6 +11,10 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview"
   },
+  "dependencies": {
+    "chart.js": "3.7.1",
+    "three": "^0.142.0"
+  },
   "devDependencies": {
     "nuxt": "3.0.0-rc.5"
   }
