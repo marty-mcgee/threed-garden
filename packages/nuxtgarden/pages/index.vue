@@ -1,10 +1,12 @@
 <template>
   <h1>Welcome to NuxtGarden</h1>
 </template>
-<script>
-  // This will also work in `<script setup>`
-  definePageMeta({
-    // layout: "custom",
-    layout: "default",
-  })
+
+<script setup>
+// works in <script> and <script setup>
+definePageMeta({
+  layout: "default",
+  // layout: "custom",
+  title: "Home",
+})
 </script>
