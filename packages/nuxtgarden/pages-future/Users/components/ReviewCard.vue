@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import VsudProgress from "@/components/VsudProgress.vue";
+import VsudProgress from "@/components/vitesoft/VsudProgress.vue";
 
 export default {
   name: "ReviewCard",

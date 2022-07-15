@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import VsudSwitch from "@/components/VsudSwitch.vue";
+import VsudSwitch from "@/components/vitesoft/VsudSwitch.vue";
 
 export default {
   name: "ControllerCard",

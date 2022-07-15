@@ -130,7 +130,7 @@
 
 <script>
 import NavPill from "./components/NavPill.vue";
-import VsudButton from "@/components/VsudButton.vue";
+import VsudButton from "@/components/vitesoft/VsudButton.vue";
 
 export default {
   name: "Invoice",

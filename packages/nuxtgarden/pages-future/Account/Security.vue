@@ -163,9 +163,9 @@
 <script>
 import * as Choices from "choices.js";
 import NavPill from "./components/NavPill.vue";
-import VsudInput from "@/components/VsudInput.vue";
-import VsudSwitch from "@/components/VsudSwitch.vue";
-import VsudButton from "@/components/VsudButton.vue";
+import VsudInput from "@/components/vitesoft/VsudInput.vue";
+import VsudSwitch from "@/components/vitesoft/VsudSwitch.vue";
+import VsudButton from "@/components/vitesoft/VsudButton.vue";
 
 export default {
   name: "Invoice",

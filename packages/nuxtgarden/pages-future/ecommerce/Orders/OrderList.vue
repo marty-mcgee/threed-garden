@@ -565,9 +565,9 @@
 
 <script>
 import { DataTable } from "simple-datatables";
-import VsudButton from "@/components/VsudButton.vue";
-import VsudAvatar from "@/components/VsudAvatar.vue";
-import VsudCheckbox from "@/components/VsudCheckbox.vue";
+import VsudButton from "@/components/vitesoft/VsudButton.vue";
+import VsudAvatar from "@/components/vitesoft/VsudAvatar.vue";
+import VsudCheckbox from "@/components/vitesoft/VsudCheckbox.vue";
 import img1 from "../../../assets/img/team-2.jpg";
 import img2 from "../../../assets/img/team-1.jpg";
 import img3 from "../../../assets/img/team-3.jpg";

@@ -409,9 +409,9 @@
 <script>
 
 import bgImg from "@/assets/img/curved-images/curved14.jpg"
-import VsudSwitch from "@/components/VsudSwitch.vue";
+import VsudSwitch from "@/components/vitesoft/VsudSwitch.vue";
 import ProfileCard from "./components/ProfileCard.vue";
-import VsudAvatar from "../../../components/VsudAvatar.vue";
+import VsudAvatar from "../../../components/vitesoft/VsudAvatar.vue";
 import sophie from "@/assets/img/kal-visuals-square.jpg";
 import marie from "@/assets/img/marie.jpg";
 import ivana from "@/assets/img/ivana-square.jpg";

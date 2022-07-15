@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import VsudButton from "@/components/VsudButton.vue";
+import VsudButton from "@/components/vitesoft/VsudButton.vue";
 import bgImg from '@/assets/img/curved-images/curved1.jpg';
 export default {
   name: "MusicPlayer",

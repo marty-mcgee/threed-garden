@@ -147,7 +147,7 @@
 </template>
 
 <script>
-import VsudButton from "@/components/VsudButton.vue";
+import VsudButton from "@/components/vitesoft/VsudButton.vue";
 
 export default {
   name: "TransactionCard",

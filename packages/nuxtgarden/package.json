@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "chart.js": "3.7.1",
+    "choices.js": "^10.1.0",
+    "countup.js": "^2.1.0",
     "three": "^0.142.0"
   },
   "devDependencies": {

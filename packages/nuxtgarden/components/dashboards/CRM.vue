@@ -48,16 +48,16 @@
 </template>
 
 <script>
-import VisitorsCard from "@/views/dashboards/components/VisitorsCard.vue";
-import IncomeCard from "@/views/dashboards/components/IncomeCard.vue";
-import NewTabCard from "@/views/dashboards/components/NewTabCard.vue";
+import VisitorsCard from "@/components/dashboards/components/VisitorsCard.vue";
+import IncomeCard from "@/components/dashboards/components/IncomeCard.vue";
+import NewTabCard from "@/components/dashboards/components/NewTabCard.vue";
 import WealthCreationCard from "./components/WealthCreationCard.vue";
 import CategoriesCard from "./components/CategoriesCard.vue";
 import BirthdayMessageCard from "./components/BirthdayMessageCard.vue";
 import TransactionsCard from "./components/TransactionsCard.vue";
 import RevenueCard from "./components/RevenueCard.vue";
-import Calendar from "@/examples/Calendar.vue";
-import AppFooter from "@/examples/Footer.vue";
+import Calendar from "@/components/sections/Calendar.vue";
+import AppFooter from "@/components/sections/Footer.vue";
 
 export default {
   name: "Crm",

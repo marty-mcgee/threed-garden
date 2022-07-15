@@ -121,8 +121,8 @@
 </template>
 
 <script>
-import Navbar from "@/examples/PageLayout/Navbar.vue";
-import VsudButton from "@/components/VsudButton.vue";
+import Navbar from "@/components/sections/PageLayout/Navbar.vue";
+import VsudButton from "@/components/vitesoft/VsudButton.vue";
 const body = document.getElementsByTagName("body")[0];
 
 export default {

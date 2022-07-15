@@ -198,7 +198,7 @@
 </template>
 
 <script>
-import VsudAvatar from "@/components/VsudAvatar.vue";
+import VsudAvatar from "@/components/vitesoft/VsudAvatar.vue";
 import img1 from "../../../../assets/img/team-1.jpg";
 import img2 from "../../../../assets/img/team-2.jpg";
 import img3 from "../../../../assets/img/team-3.jpg";

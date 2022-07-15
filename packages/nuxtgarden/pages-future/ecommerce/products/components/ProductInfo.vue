@@ -72,7 +72,7 @@
 <script>
 import Quill from "quill";
 import Choices from "choices.js";
-import VsudButton from "@/components/VsudButton.vue";
+import VsudButton from "@/components/vitesoft/VsudButton.vue";
 
 export default {
   name: "ProductInfo",

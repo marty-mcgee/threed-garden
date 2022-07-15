@@ -165,10 +165,10 @@
 
 <script>
 import { mapGetters } from "vuex";
-import Sidenav from "@/examples/Sidenav/index.vue";
-import AppFooter from "@/examples/Footer.vue";
-import Navbar from "@/examples/Navbars/Navbar.vue";
-import Card from "@/examples/Cards/Card.vue";
+import Sidenav from "@/components/sections/Sidenav/index.vue";
+import AppFooter from "@/components/sections/Footer.vue";
+import Navbar from "@/components/sections/Navbars/Navbar.vue";
+import Card from "@/components/sections/Cards/Card.vue";
 
 import bgImg from '@/assets/img/vr-bg.jpg';
 import US from "@/assets/img/icons/flags/US.png";
@@ -176,7 +176,7 @@ import DE from "@/assets/img/icons/flags/DE.png";
 import GB from "@/assets/img/icons/flags/GB.png";
 import BR from "@/assets/img/icons/flags/BR.png";
 
-import Globe from "@/examples/Globe.vue";
+import Globe from "@/components/sections/Globe.vue";
 const body = document.getElementsByTagName("body")[0];
 
 import { mapMutations } from "vuex";
