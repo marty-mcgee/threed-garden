@@ -4,8 +4,7 @@
       <div class="col-md-6">
         <h5 class="mb-0">Charts</h5>
         <p class="mb-0 text-sm">
-          Charts on this page use Chart.js - Simple yet flexible JavaScript
-          charting for designers & developers.
+          Charts using Chart.js
         </p>
       </div>
     </div>
@@ -13,7 +12,7 @@
       <div class="col-md-6">
         <div class="card z-index-2">
           <div class="p-3 pb-0 card-header">
-            <h6>Line chart</h6>
+            <h6>Line Chart</h6>
           </div>
           <div class="p-3 card-body">
             <div class="chart">
@@ -25,7 +24,7 @@
       <div class="mt-4 col-md-6 mt-md-0">
         <div class="card z-index-2">
           <div class="p-3 pb-0 card-header">
-            <h6>Line chart with gradient</h6>
+            <h6>Line Chart with Gradient</h6>
           </div>
           <div class="p-3 card-body">
             <div class="chart">
@@ -39,7 +38,7 @@
       <div class="col-md-6">
         <div class="card z-index-2">
           <div class="p-3 pb-0 card-header">
-            <h6>Bar chart</h6>
+            <h6>Bar Chart: Vertical</h6>
           </div>
           <div class="p-3 card-body">
             <div class="chart">
@@ -51,7 +50,7 @@
       <div class="mt-4 col-md-6 mt-md-0">
         <div class="card z-index-2">
           <div class="p-3 pb-0 card-header">
-            <h6>Bar chart horizontal</h6>
+            <h6>Bar Chart: Horizontal</h6>
           </div>
           <div class="p-3 card-body">
             <div class="chart">
@@ -65,7 +64,7 @@
       <div class="col-md-6">
         <div class="card z-index-2">
           <div class="p-3 pb-0 card-header">
-            <h6>Mixed chart</h6>
+            <h6>Mixed Chart</h6>
           </div>
           <div class="p-3 card-body">
             <div class="chart">
@@ -77,7 +76,7 @@
       <div class="mt-4 col-md-6 mt-md-0">
         <div class="card z-index-2">
           <div class="p-3 pb-0 card-header">
-            <h6>Bubble chart</h6>
+            <h6>Bubble Chart</h6>
           </div>
           <div class="p-3 card-body">
             <div class="chart">
@@ -91,7 +90,7 @@
       <div class="col-md-6">
         <div class="card z-index-2">
           <div class="p-3 pb-0 card-header">
-            <h6>Doughnut chart</h6>
+            <h6>Doughnut Chart</h6>
           </div>
           <div class="p-3 card-body">
             <div class="chart">
@@ -103,7 +102,7 @@
       <div class="mt-4 col-md-6 mt-md-0">
         <div class="card z-index-2">
           <div class="p-3 pb-0 card-header">
-            <h6>Pie chart</h6>
+            <h6>Pie Chart</h6>
           </div>
           <div class="p-3 card-body">
             <div class="chart">
@@ -117,7 +116,7 @@
       <div class="col-md-6">
         <div class="card z-index-2">
           <div class="p-3 pb-0 card-header">
-            <h6>Radar chart</h6>
+            <h6>Radar Chart</h6>
           </div>
           <div class="p-5 card-body">
             <div class="chart">
@@ -129,7 +128,7 @@
       <div class="mt-4 col-md-6 mt-md-0">
         <div class="card z-index-2">
           <div class="p-3 pb-0 card-header">
-            <h6>Polar chart</h6>
+            <h6>Polar Chart</h6>
           </div>
           <div class="p-5 card-body">
             <div class="chart">
@@ -143,16 +142,16 @@
 </template>
 
 <script>
-import LineChart from "./components/LineChart.vue"
-import LineChartGradient from "./components/LineChartGradient.vue"
-import BarChart from "./components/BarChart.vue"
-import BarChartHorizontal from "./components/BarChartHorizontal.vue"
-import MixedChart from "./components/MixedChart.vue"
-import BubbleChart from "./components/BubbleChart.vue"
-import DoughnutChart from "./components/DoughnutChart.vue"
-import PieChart from "./components/PieChart.vue"
-import RadarChart from "./components/RadarChart.vue"
-import PolarChart from "./components/PolarChart.vue"
+import LineChart from "@/components/sections/charts/LineChart.vue"
+import LineChartGradient from "@/components/sections/charts/LineChartGradient.vue"
+import BarChart from "@/components/sections/charts/BarChart.vue"
+import BarChartHorizontal from "@/components/sections/charts/BarChartHorizontal.vue"
+import MixedChart from "@/components/sections/charts/MixedChart.vue"
+import BubbleChart from "@/components/sections/charts/BubbleChart.vue"
+import DoughnutChart from "@/components/sections/charts/DoughnutChart.vue"
+import PieChart from "@/components/sections/charts/PieChart.vue"
+import RadarChart from "@/components/sections/charts/RadarChart.vue"
+import PolarChart from "@/components/sections/charts/PolarChart.vue"
 
 export default {
   name: "Charts",

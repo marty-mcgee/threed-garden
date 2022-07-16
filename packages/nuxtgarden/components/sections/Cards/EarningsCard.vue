@@ -23,7 +23,7 @@
 <script>
 import bgImg from '@/assets/img/curved-images/white-curved.jpeg'
 export default {
-  name: "ErningsCard",
+  name: "EarningsCard",
   data() {  
     return{
       bgImg
