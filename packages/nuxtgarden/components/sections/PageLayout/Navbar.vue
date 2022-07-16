@@ -519,7 +519,7 @@
                         class="mb-1 dropdown-item border-radius-md ps-3 d-flex align-items-center justify-content-between"
                       >
                         <span>Lock</span>
-                        <img src="../../assets/img/down-arrow.svg" alt="down-arrow" class="arrow" />
+                        <img src="@/assets/img/down-arrow.svg" alt="down-arrow" class="arrow" />
                       </a>
                       <div class="px-2 py-3 mt-0 dropdown-menu" aria-labelledby="dropdownLock">
                         <router-link
