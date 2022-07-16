@@ -31,7 +31,7 @@ const route = useRoute()
 // console.log("route", route)
 // console.log("route.meta", route.meta)
 const title = route.meta.title
-console.log("title", route.meta.title)
+// console.log("title", route.meta.title)
 
 // DOM <head>
 useHead({
