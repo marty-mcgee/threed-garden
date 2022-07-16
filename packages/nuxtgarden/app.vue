@@ -10,6 +10,14 @@
 </template>
 
 <script setup>
+// import UIDashboard from "@/assets/js/ui-dashboard"
+
+// function useMyComposable () {
+//   const nuxtApp = useNuxtApp()
+//   // access runtime nuxt app instance
+//   nuxtApp.use(UIDashboard)
+// }
+// useMyComposable()
 
 // get current (page) route + route.meta.title
 const route = useRoute()
@@ -38,5 +46,8 @@ useHead({
 if (route.params.group === 'admins' && !route.params.id) {
   console.log('Warning! Make sure user is authenticated!')
 }
+
+</script>
+<script>
 
 </script>
