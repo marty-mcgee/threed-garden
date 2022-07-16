@@ -21,11 +21,11 @@
         <NuxtLink to="/about">
           About
         </NuxtLink>
-        <NuxtLink to="/Participate">
+        <NuxtLink to="/participate">
           Participate
         </NuxtLink>
       </div>
-      
+
       <!-- LAYOUT -->
       <div
         id="layout"

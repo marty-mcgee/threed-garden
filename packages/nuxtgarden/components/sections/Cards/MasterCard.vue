@@ -40,8 +40,8 @@
 
 import VsudAvatar from "@/components/vitesoft/VsudAvatar.vue";
 import bgImg from '@/assets/img/curved-images/curved14.jpg';
-import img from "../../assets/img/curved-images/curved14.jpg";
-import img1 from "../../assets/img/logos/mastercard.png";
+import img from "@/assets/img/curved-images/curved14.jpg";
+import img1 from "@/assets/img/logos/mastercard.png";
 
 export default {
   name: "MasterCard",

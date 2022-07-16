@@ -143,16 +143,16 @@
 </template>
 
 <script>
-import LineChart from "./components/LineChart.vue";
-import LineChartGradient from "./components/LineChartGradient.vue";
-import BarChart from "./components/BarChart.vue";
-import BarChartHorizontal from "./components/BarChartHorizontal.vue";
-import MixedChart from "./components/MixedChart.vue";
-import BubbleChart from "./components/BubbleChart.vue";
-import DoughnutChart from "./components/DoughnutChart.vue";
-import PieChart from "./components/PieChart.vue";
-import RadarChart from "./components/RadarChart.vue";
-import PolarChart from "./components/PolarChart.vue";
+import LineChart from "./components/LineChart.vue"
+import LineChartGradient from "./components/LineChartGradient.vue"
+import BarChart from "./components/BarChart.vue"
+import BarChartHorizontal from "./components/BarChartHorizontal.vue"
+import MixedChart from "./components/MixedChart.vue"
+import BubbleChart from "./components/BubbleChart.vue"
+import DoughnutChart from "./components/DoughnutChart.vue"
+import PieChart from "./components/PieChart.vue"
+import RadarChart from "./components/RadarChart.vue"
+import PolarChart from "./components/PolarChart.vue"
 
 export default {
   name: "Charts",
@@ -168,5 +168,5 @@ export default {
     RadarChart,
     PolarChart,
   },
-};
+}
 </script>

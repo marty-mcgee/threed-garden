@@ -31,7 +31,7 @@
                 <img
                   class="border-radius-lg"
                   alt="Image placeholder"
-                  src="../../../assets/img/team-1.jpg"
+                  src="@/assets/img/team-1.jpg"
                 />
               </a>
               <button
@@ -71,7 +71,7 @@
                 <div class="ms-auto">
                   <img
                     class="w-50 float-end mt-lg-n4"
-                    src="../../../assets/img/small-logos/icon-sun-cloud.png"
+                    src="@/assets/img/small-logos/icon-sun-cloud.png"
                     alt="image sun"
                   />
                 </div>

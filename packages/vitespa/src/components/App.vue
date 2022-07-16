@@ -2,8 +2,6 @@
 
 console.log('*** HEY HEY HEY -- App.vue 1 (typescript setup)')
 
-import LayoutHeader from './LayoutHeader.vue'
-
 // VueUse --
 // https://github.com/vueuse/head
 // you can use this to manipulate the document head in any components,
@@ -138,12 +136,14 @@ console.log('*** HEY HEY HEY -- App.vue (ethers)')
 </script>
 -->
 <script lang="ts">
+import LayoutHeader from './LayoutHeader.vue'
 import HelloGarden from "./HelloGarden.vue";
 
 export default {
   name: "EthereumGardenApp",
   components: {
     HelloGarden,
+		LayoutHeader
   },
 };
 </script>
