@@ -41,14 +41,8 @@
 <script>
 import SmartHome from "@/components/dashboards/SmartHome.vue"
 
-definePageMeta({
-  layout: "default",
-  // layout: "custom",
-  title: "Index",
-})
-
 export default {
-  name: "Index",
+  name: "LayoutDashboard",
   components: {
     SmartHome,
   },
