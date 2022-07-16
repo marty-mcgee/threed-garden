@@ -1,17 +1,42 @@
 <template>
-  <a href="/" title="ThreeDGarden Dashboard">
-    <img src="#" alt="logo_threedgarden" />
+  <a :href="url" title="ThreeDGarden Dashboard">
+    <img 
+      :src="src" 
+      alt="logo_threedgarden : {{logo}} : {{url}}"
+    />
   </a>
 </template>
 
 <style>
-svg {
-  width: 50vw;
+img, svg {
+  width: 4vw;
+  height: 4vw;
 }
 </style>
 
 <script>
-// [MM] you don't have to do this with NUXT 3 -- use auto-import
-// import LogoGarden from "@/components/LogoGarden.vue"
-// export default (){}
+// setup() {
+//   const foo = ref(1);
+//   const bar = reactive({ name: "hi" });
+// 
+//   return { foo, bar }
+// }
+import Logo from "@/assets/img/logos/logo-threedgarden.png"
+console.log("Logo", Logo)
+
+export default {
+  name: "LogoGarden",
+  // components: {
+  //   Logo,
+  // },
+  data() {
+    return {
+      logo: Logo, // "#Logo"
+      src: Logo, // "", // Logo.toString()
+      url: "/#HEYHEYHEY", // "#HEYHEYHEY",
+      foo: 1,
+      bar: { name: "bar" },
+    }
+  }
+}
 </script>

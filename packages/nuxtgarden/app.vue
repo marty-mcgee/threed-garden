@@ -12,12 +12,19 @@
 <script setup>
 // import UIDashboard from "@/assets/js/ui-dashboard"
 
+
+// USENUXTAPP
 // function useMyComposable () {
 //   const nuxtApp = useNuxtApp()
 //   // access runtime nuxt app instance
 //   nuxtApp.use(UIDashboard)
 // }
 // useMyComposable()
+
+const nuxtApp = useNuxtApp()
+nuxtApp.provide('hello', (name) => `Hello ${name}!`)
+console.log(nuxtApp.$hello('helper')) // Prints "Hello helper!"
+
 
 // get current (page) route + route.meta.title
 const route = useRoute()
