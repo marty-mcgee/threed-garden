@@ -147,8 +147,8 @@
 </template>
 
 <script>
-import VsudAlert from "@/components/vitesoft/VsudAlert.vue";
-import VsudSnackbar from "@/components/vitesoft/VsudSnackbar.vue";
+import VsudAlert from "@/components/vitesoft/VsudAlert.vue"
+import VsudSnackbar from "@/components/vitesoft/VsudSnackbar.vue"
 
 export default {
   name: "Notifications",
@@ -159,12 +159,12 @@ export default {
   data() {
     return {
       snackbar: null,
-    };
+    }
   },
   methods: {
     closeSnackbar() {
-      this.snackbar = null;
+      this.snackbar = null
     },
   },
-};
+}
 </script>
