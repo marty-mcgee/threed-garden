@@ -1,20 +1,13 @@
 <template>
-  <div id="MM">
+  <div id="MMDEFAULT">
     <!-- 
-    <sidenav 
-      v-if="showSidenav"
-      :custom_class="cardBackgroundMaskColor"
-      :class="[
-        sidenavBackgroundClass,
-        $store.state.isRTL ? 'fixed-end' : 'fixed-start',
-      ]"
-    /> 
+    <sidenav /> 
     -->
     <main 
       id="main" 
       class="main-content position-relative max-height-vh-100 h-100 border-radius-lg"
     >
-      <LogoNuxt />
+      <LogoGarden />
       <div>
         A *default* layout
       </div>
@@ -22,3 +15,16 @@
     </main>
   </div>
 </template>
+
+<script>
+// [MM] you don't have to do this with NUXT 3 -- use auto-imports
+// import LogoGarden from "@/components/LogoGarden.vue"
+
+// [MM] you don't have to do this with VUE 3 -- .vue auto exports
+// export default {
+//   name: "Default",
+//   components: {
+//     LogoGarden,
+//   },
+// }
+</script>
