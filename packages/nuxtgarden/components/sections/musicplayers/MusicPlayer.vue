@@ -40,7 +40,7 @@ export default {
   props: {
     title: {
       type: String,
-      default: "Some Kind Of Blues",
+      default: "TOOL",
     },
     desc: {
       type: String,

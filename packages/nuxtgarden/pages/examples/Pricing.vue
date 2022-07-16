@@ -257,11 +257,11 @@
   <app-footer />
 </template>
 <script>
-import Navbar from "@/components/sections/PageLayout/Navbar.vue";
-import PricingCard from "./components/PricingCard.vue";
-import AppFooter from "@/components/sections/PageLayout/Footer.vue";
-import AccordionItem from "./components/AccordionItem.vue";
-import setNavPills from "@/assets/js/nav-pills.js";
+import Navbar from "@/components/sections/pagelayout/Navbar.vue"
+import AppFooter from "@/components/sections/pagelayout/Footer.vue"
+import PricingCard from "@/components/sections/cards/PricingCard.vue"
+import AccordionItem from "@/components/sections/accordions/AccordionItem.vue"
+import setNavPills from "@/assets/js/nav-pills.js"
 
 export default {
   name: "Pricing",
@@ -272,24 +272,24 @@ export default {
     AccordionItem,
   },
   data() {
-    return {};
+    return {}
   },
   mounted() {
-    this.$store.state.showSidenav = false;
-    this.$store.state.showNavbar = false;
-    this.$store.state.showFooter = false;
-    setNavPills();
+    this.$store.state.showSidenav = false
+    this.$store.state.showNavbar = false
+    this.$store.state.showFooter = false
+    setNavPills()
   },
   beforeUnmount() {
-    this.$store.state.showSidenav = true;
-    this.$store.state.showNavbar = true;
-    this.$store.state.showFooter = true;
+    this.$store.state.showSidenav = true
+    this.$store.state.showNavbar = true
+    this.$store.state.showFooter = true
     if (this.$store.state.isPinned === false) {
-      const sidenav_show = document.querySelector(".g-sidenav-show");
-      sidenav_show.classList.remove("g-sidenav-hidden");
-      sidenav_show.classList.add("g-sidenav-pinned");
-      this.$store.state.isPinned = true;
+      const sidenav_show = document.querySelector(".g-sidenav-show")
+      sidenav_show.classList.remove("g-sidenav-hidden")
+      sidenav_show.classList.add("g-sidenav-pinned")
+      this.$store.state.isPinned = true
     }
   },
-};
+}
 </script>

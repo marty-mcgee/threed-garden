@@ -130,35 +130,6 @@
           </div>
         </div>
         <hr class="horizontal my-sm-4" :class="!darkMode ? 'dark' : 'light'" />
-        <a
-          class="btn bg-gradient-success w-100"
-          href="https://www.creative-tim.com/product/vite-soft-ui-dashboard-pro"
-        >Buy now</a>
-        <a
-          class="btn bg-gradient-dark w-100"
-          href="https://www.creative-tim.com/product/vite-soft-ui-dashboard"
-        >Free demo</a>
-        <a
-          class="btn btn-outline-dark w-100"
-          href="https://www.creative-tim.com/learning-lab/vue/overview/soft-ui-dashboard/"
-        >View documentation</a>
-        <div class="text-center w-100">
-          <h6 class="mt-3">Thank you for sharing!</h6>
-          <a
-            href="https://twitter.com/intent/tweet?text=Check%20Vite%20Soft%20UI%20Dashboard%20PRO%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23bootstrap5&amp;url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fvite-soft-ui-dashboard-pro"
-            class="mb-0 btn btn-dark me-2"
-            target="_blank"
-          >
-            <i class="fab fa-twitter me-1" aria-hidden="true"></i> Tweet
-          </a>
-          <a
-            href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/vite-soft-ui-dashboard-pro"
-            class="mb-0 btn btn-dark me-2"
-            target="_blank"
-          >
-            <i class="fab fa-facebook-square me-1" aria-hidden="true"></i> Share
-          </a>
-        </div>
       </div>
     </div>
   </div>
