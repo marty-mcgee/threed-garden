@@ -127,10 +127,10 @@
   </div>
 </template>
 <script>
-import Card from "@/components/sections/Cards/Card.vue";
-import ActiveUsersChart from "@/components/sections/Charts/ActiveUsersChart.vue";
-import GradientLineChart from "@/components/sections/Charts/GradientLineChart.vue";
-import Globe from "@/components/sections/Globe.vue";
+import Card from "@/components/sections/cards/Card.vue";
+import ActiveUsersChart from "@/components/sections/charts/ActiveUsersChart.vue";
+import GradientLineChart from "@/components/sections/charts/GradientLineChart.vue";
+import Globe from "@/components/sections/animations/Globe.vue";
 
 import US from "@/assets/img/icons/flags/US.png";
 import DE from "@/assets/img/icons/flags/DE.png";

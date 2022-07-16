@@ -1306,11 +1306,13 @@
 import bgImg from '@/assets/img/curved-images/curved8.jpg'
 import downArrWhite from "@/assets/img/down-arrow-white.svg";
 import downArrBlack from "@/assets/img/down-arrow-dark.svg";
-import Icon from "@/components/Icon.vue";
+import Icon from "@/components/vitesoft/Icon.vue";
 
 export default {
   name: "Navbar",
-  components: { Icon },
+  components: { 
+    Icon 
+  },
   props: {
     btnBackground: { type: String, default: "" },
     isBlur: { type: String, default: "" },

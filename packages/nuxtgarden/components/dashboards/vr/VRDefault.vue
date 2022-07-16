@@ -176,7 +176,7 @@ import DE from "@/assets/img/icons/flags/DE.png";
 import GB from "@/assets/img/icons/flags/GB.png";
 import BR from "@/assets/img/icons/flags/BR.png";
 
-import Globe from "@/components/sections/Globe.vue";
+import Globe from "@/components/sections/animations/Globe.vue";
 const body = document.getElementsByTagName("body")[0];
 
 import { mapMutations } from "vuex";

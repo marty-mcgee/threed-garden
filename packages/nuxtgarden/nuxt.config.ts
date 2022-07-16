@@ -14,7 +14,7 @@ export default defineNuxtConfig({
     // function () {
     //   return false
     // },
-    // [MM] BOOTSTRAP VUE 3
+    // [MM] BOOTSTRAP VUE 3 on NUXT 3
     "bootstrap-vue-3/nuxt",
   ],
   plugins: [

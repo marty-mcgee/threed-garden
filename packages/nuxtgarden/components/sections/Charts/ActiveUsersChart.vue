@@ -228,9 +228,9 @@
   </div>
 </template>
 <script>
-// import Chart from "chart.js/auto";
-import { Chart, registerables } from 'chart.js';
-Chart.register(...registerables);
+import Chart from "chart.js/auto";
+// import { Chart, registerables } from 'chart.js';
+// Chart.register(...registerables);
 
 export default {
   name: "ActiveUsersChart",
