@@ -1,5 +1,6 @@
 <template>
-  <h1>Welcome to NuxtGarden</h1>
+  <!-- <h1>Welcome to NuxtGarden</h1> -->
+  <!-- <Welcome /> -->
   <!-- <smart-home /> -->
 </template>
 

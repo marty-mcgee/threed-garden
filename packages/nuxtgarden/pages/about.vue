@@ -6,13 +6,13 @@
 import DefaultDashboard from "@/components/dashboards/Default.vue"
 
 definePageMeta({
-  layout: "default",
-  // layout: "custom",
-  title: "Home",
+  // layout: "default",
+  layout: "custom",
+  title: "About",
 })
 
 export default {
-  name: "Home",
+  name: "About",
   components: {
     DefaultDashboard,
   },
