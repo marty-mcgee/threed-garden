@@ -3,7 +3,7 @@ import { defineNuxtConfig } from "nuxt"
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
   modules: [
-    // [MM] EXAMPLES..
+    // [MM] NUXT EXAMPLES..
     // Using package name
     // "@nuxtjs/axios",
     // Relative to your project srcDir
@@ -14,12 +14,26 @@ export default defineNuxtConfig({
     // function () {
     //   return false
     // },
-    // [MM] BOOTSTRAP VUE 3 on NUXT 3
-    "bootstrap-vue-3/nuxt",
+
+    // [MM] BOOTSTRAP VUE 3 on NUXT 3 ?? beta af
+    // "bootstrap-vue-3/nuxt",
+    // "efficy-bootstrap-vue-3/nuxt",
+  ],
+  buildModules: [
+    // PINIA (peenya)
+    // Nuxt 2 only:
+    // https://composition-api.nuxtjs.org/getting-started/setup#quick-start
+    // '@nuxtjs/composition-api/module',
+    '@pinia/nuxt',
+
+    // [MM] BOOTSTRAP VUE 3 on NUXT 3 ?? beta af
+    // "bootstrap-vue-3/nuxt",
+    // "efficy-bootstrap-vue-3/nuxt",
   ],
   plugins: [
     // UI Dashboard Theme (SCSS, JS, icons)
     "@/assets/js/ui-dashboard",
+
     // QUESTIONABLES..
     // Choices.js
     // ERROR: [nuxt] [request error] __vite_ssr_import_1__ is not defined
@@ -56,6 +70,12 @@ export default defineNuxtConfig({
 
     ]
   },
+  css: [
+    '~/assets/css/main.css',
+    '~/assets/css/nucleo-icons.css',
+    '~/assets/css/nucleo-svg.css',
+    '~/assets/scss/soft-ui-dashboard.scss'
+  ],
   typescript: {
     // because we are using TS "Take Over Mode", 
     // we should not need to generate shims in nuxt

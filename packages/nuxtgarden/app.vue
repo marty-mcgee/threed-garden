@@ -3,15 +3,20 @@
     <!-- <h1>HEY HEY HEY</h1> -->
     <!-- <NuxtWelcome /> -->
     <!-- <Welcome /> -->
+    <button type="button" @click="counterStore.currentValue++">
+      count is: {{ counterStore.currentValue }}
+    </button>
     <NuxtLayout>
       <NuxtPage/>
     </NuxtLayout>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // import UIDashboard from "@/assets/js/ui-dashboard"
+import { useCounterStore } from './stores/counter'
 
+const counterStore = useCounterStore()
 
 // USENUXTAPP
 // function useMyComposable () {
