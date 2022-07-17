@@ -326,7 +326,7 @@ import bgImg2 from '@/assets/img/bg-smart-home-2.jpg'
 import bgImg3 from '@/assets/img/home-decor-3.jpg'
 
 import setNavPills from "@/assets/js/nav-pills.js";
-// import setTooltip from "@/assets/js/tooltip.js";
+import setTooltip from "@/assets/js/tooltip.js";
 
 export default {
   name: "SmartHome",
@@ -348,7 +348,7 @@ export default {
 
   mounted() {
     setNavPills();
-    // setTooltip();
+    setTooltip();
     // Rounded slider
     const setValue = function (value, active) {
       document.querySelectorAll("round-slider").forEach(function (el) {

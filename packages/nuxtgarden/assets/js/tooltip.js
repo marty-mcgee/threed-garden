@@ -1,4 +1,4 @@
-import bootstrap from "bootstrap/dist/js/bootstrap";
+// [MM] import bootstrap from "bootstrap/dist/js/bootstrap";
 
 // initialization of Tooltips
 export default function setTooltip() {
@@ -7,6 +7,6 @@ export default function setTooltip() {
   );
   // eslint-disable-next-line no-unused-vars
   var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl);
+    return null // [MM] new bootstrap.Tooltip(tooltipTriggerEl);
   });
 }

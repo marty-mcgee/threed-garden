@@ -255,7 +255,7 @@ It's a separate element, as animating opacity is faster than rgba(). -->
 <script>
 import Choices from "choices.js"
 import PhotoSwipe from "photoswipe";
-import bootstrap from "bootstrap/dist/js/bootstrap";
+// [MM] import bootstrap from "bootstrap/dist/js/bootstrap";
 import PhotoSwipeUI_Default from "photoswipe/dist/photoswipe-ui-default";
 
 import OtherProducts from "./components/OtherProducts.vue";
@@ -273,7 +273,7 @@ export default {
     if (document.getElementById("products-carousel")) {
       var myCarousel = document.querySelector("#products-carousel");
       // eslint-disable-next-line no-unused-vars
-      var carousel = new bootstrap.Carousel(myCarousel);
+      var carousel = null // [MM] new bootstrap.Carousel(myCarousel);
     }
 
     // Products gallery

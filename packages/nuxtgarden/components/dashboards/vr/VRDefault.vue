@@ -179,9 +179,11 @@ import BR from "@/assets/img/icons/flags/BR.png";
 import Globe from "@/components/sections/animations/Globe.vue";
 const body = document.getElementsByTagName("body")[0];
 
+// need PINIA at this point
 import { mapMutations } from "vuex";
+
 export default {
-  name: "VrDefault",
+  name: "VRDefault",
   components: {
     AppFooter,
     Sidenav,
@@ -226,6 +228,7 @@ export default {
   },
 
   computed: {
+    // need PINIA at this point
     ...mapGetters(['cardBackgroundMaskColor']),
     isTransparent() {
       return this.$store.state.isTransparent;
@@ -256,6 +259,7 @@ export default {
   },
 
   methods: {
+    // need PINIA at this point
     ...mapMutations(["navbarMinimize", "toggleConfigurator"]),
   }
 };

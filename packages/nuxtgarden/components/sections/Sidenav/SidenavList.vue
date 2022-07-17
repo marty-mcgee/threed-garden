@@ -18,11 +18,11 @@
               <!-- nav links -->
               <sidenav-item :to="{ name: 'Default' }" mini-icon="D" text="Default" />
               <sidenav-item :to="{ name: 'Automotive' }" mini-icon="A" text="Automotive" />
-              <sidenav-item :to="{ name: 'Smart Home' }" mini-icon="S" text="Smart Home" />
+              <sidenav-item :to="{ name: 'SmartHome' }" mini-icon="S" text="Smart Home" />
               <sidenav-collapse-item refer="vrExamples" mini-icon="V" text="Virtual Reality">
                 <template #nav-child-item>
-                  <sidenav-item :to="{ name: 'VR Default' }" mini-icon="V" text="VR Default" />
-                  <sidenav-item :to="{ name: 'VR Info' }" mini-icon="V" text="VR Info" />
+                  <sidenav-item :to="{ name: 'VRDefault' }" mini-icon="V" text="VR Default" />
+                  <sidenav-item :to="{ name: 'VRInfo' }" mini-icon="V" text="VR Info" />
                 </template>
               </sidenav-collapse-item>
               <sidenav-item :to="{ name: 'CRM' }" mini-icon="C" text="CRM" />
