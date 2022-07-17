@@ -111,10 +111,11 @@ import setTooltip from "@/assets/js/tooltip.js";
 import bgImg from "@/assets/img/vr-bg.jpg";
 const body = document.getElementsByTagName("body")[0];
 
+// need PINIA at this point
 import { mapGetters, mapMutations } from "vuex";
 
 export default {
-  name: "VrInfo",
+  name: "VRInfo",
   components: {
     AppFooter,
     Sidenav,
@@ -129,6 +130,7 @@ export default {
     return { bgImg }
   },
   computed: {
+    // need PINIA at this point
     ...mapGetters(['cardBackgroundMaskColor']),
     isTransparent() {
       return this.$store.state.isTransparent;
@@ -159,7 +161,8 @@ export default {
     this.$store.state.isTransparent = "bg-transparent";
   },
   methods: {
-    ...mapMutations(["navbarMinimize", "toggleConfigurator"]),
+    // need PINIA at this point
+    ...mapMutations(["navbarMinimize", "toggleConfigurator"]), 
   },
 };
 </script>

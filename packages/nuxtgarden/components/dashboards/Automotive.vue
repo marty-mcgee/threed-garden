@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import Card from "@/components/cards/Card.vue";
+import Card from "@/components/sections/cards/Card.vue";
 import CardPlayer from "./components/CardPlayer.vue";
 import CardDetail from "./components/CardDetail.vue";
 import setTooltip from "@/assets/js/tooltip.js";
