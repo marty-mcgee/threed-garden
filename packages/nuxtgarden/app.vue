@@ -16,7 +16,7 @@
 <script setup lang="ts">
 // import UIDashboard from "@/assets/js/ui-dashboard"
 
-// import { useCounterStore1 } from "./stores/counter1"
+// import { useCounterStore1 } from "./composables/stores/counter1"
 // const counterStore1 = useCounterStore1()
 
 // USENUXTAPP
