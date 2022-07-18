@@ -39,7 +39,7 @@ export default defineNuxtConfig({
     // PERSISTED STATE 
     // using a package name ??? NO
     // "pinia-plugin-persistedstate-2",
-    // using the plugin
+    // using the plugin (no need, auto-imported)
     // "@/plugins/persistedstate.ts",
     
     // Choices.js
@@ -52,32 +52,32 @@ export default defineNuxtConfig({
     // { src: "@fullcalendar/interaction", ssr: false },
     // { src: "@fullcalendar/vue3", ssr: false }
   ],
-  head: {
-    script: [
-      { 
-        hid: "stripe",
-        src: "https://js.stripe.com/v3/",
-        defer: true, 
-        async: true,
-      },
-      { 
-        hid: "jkanban",
-        src: "https://cdn.jsdelivr.net/npm/jkanban@1.3.1/dist/jkanban.min.js",
-        defer: true,
-        async: true,
-      },
-      { 
-        hid: "fa",
-        src: "https://kit.fontawesome.com/42d5adcbca.js",
-        defer: true,
-        async: true,
-        crossorigin: "anonymous",
-      },
-    ],
-    style: [
-
-    ]
-  },
+  // head: {
+  //   script: [
+  //     { 
+  //       hid: "stripe",
+  //       src: "https://js.stripe.com/v3/",
+  //       defer: true, 
+  //       async: true,
+  //     },
+  //     { 
+  //       hid: "jkanban",
+  //       src: "https://cdn.jsdelivr.net/npm/jkanban@1.3.1/dist/jkanban.min.js",
+  //       defer: true,
+  //       async: true,
+  //     },
+  //     { 
+  //       hid: "fa",
+  //       src: "https://kit.fontawesome.com/42d5adcbca.js",
+  //       defer: true,
+  //       async: true,
+  //       crossorigin: "anonymous",
+  //     },
+  //   ],
+  //   style: [
+  //
+  //   ]
+  // },
   css: [
     '~/assets/css/main.css',
     '~/assets/css/nucleo-icons.css',
