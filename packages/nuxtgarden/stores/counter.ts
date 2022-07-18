@@ -2,7 +2,7 @@ import { acceptHMRUpdate, defineStore } from 'pinia'
 
 const delay = (t: number) => new Promise((r) => setTimeout(r, t))
 
-export const useCounter = defineStore('counter', {
+export const useCounterStore = defineStore('counter-store', {
   state: () => ({
     n: 2,
     incrementedTimes: 0,
@@ -51,5 +51,5 @@ export const useCounter = defineStore('counter', {
 })
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useCounter, import.meta.hot))
+  import.meta.hot.accept(acceptHMRUpdate(useCounterStore, import.meta.hot))
 }

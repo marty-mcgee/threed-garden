@@ -23,7 +23,7 @@
 <script>
 import { mapGetters } from "vuex"
 // import SidenavList from "./SidenavList.vue"
-import logo from "@/assets/img/logo-threedgarden.png"
+import logo from "@/assets/img/logos/logo-threedgarden.png"
 
 export default {
   name: "Sidenav",

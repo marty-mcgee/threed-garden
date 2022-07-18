@@ -60,10 +60,10 @@
 </template>
 
 <script setup lang="ts">
-import { useCounter } from "~/stores/counter"
+import { useCounterStore } from "~/stores/counter"
 import LogoPinia from "~/components/LogoPinia.vue"
 
-const counter = useCounter()
+const counter = useCounterStore()
 
 // if (process.server) {
 //   counter.n = 20
