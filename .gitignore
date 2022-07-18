@@ -35,6 +35,10 @@ packages/react-app/src/contracts/*
 
 packages/**/data
 
+packages/create-nuxt-app-bootstrap-vue
+packages/farmbot-js
+packages/farmbot-web-app
+
 tenderly.yaml
 **/aws.json
 

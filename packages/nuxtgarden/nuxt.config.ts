@@ -24,7 +24,7 @@ export default defineNuxtConfig({
     // Nuxt 2 only:
     // https://composition-api.nuxtjs.org/getting-started/setup#quick-start
     // '@nuxtjs/composition-api/module',
-    '@pinia/nuxt',
+    ['@pinia/nuxt', { disableVuex: false }],
 
     // [MM] BOOTSTRAP VUE 3 on NUXT 3 ?? beta af
     // "bootstrap-vue-3/nuxt",

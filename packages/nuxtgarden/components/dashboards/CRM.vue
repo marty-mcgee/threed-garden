@@ -16,7 +16,7 @@
           </div>
           <div class="mt-4 row">
             <div class="col-12">
-              <calendar />
+              <!-- <calendar /> -->
             </div>
           </div>
         </div>
@@ -56,8 +56,8 @@ import CategoriesCard from "./components/CategoriesCard.vue";
 import BirthdayMessageCard from "./components/BirthdayMessageCard.vue";
 import TransactionsCard from "./components/TransactionsCard.vue";
 import RevenueCard from "./components/RevenueCard.vue";
-import Calendar from "@/components/sections/Calendar.vue";
-import AppFooter from "@/components/sections/Footer.vue";
+// import Calendar from "@/components/sections/calendars/Calendar.vue";
+import AppFooter from "@/components/sections/pagelayout/Footer.vue";
 
 export default {
   name: "Crm",
@@ -68,7 +68,7 @@ export default {
     WealthCreationCard,
     CategoriesCard,
     BirthdayMessageCard,
-    Calendar,
+    // Calendar,
     TransactionsCard,
     RevenueCard,
     AppFooter,

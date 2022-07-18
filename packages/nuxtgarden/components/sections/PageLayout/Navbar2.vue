@@ -206,7 +206,7 @@
   </nav>
 </template>
 <script>
-import Breadcrumbs from "../Breadcrumbs.vue";
+import Breadcrumbs from "./Breadcrumbs.vue";
 
 export default {
   name: "Navbar",

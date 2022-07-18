@@ -165,9 +165,9 @@
 
 <script>
 import { mapGetters } from "vuex";
-import Sidenav from "@/components/sections/Sidenav/index.vue";
-import AppFooter from "@/components/sections/Footer.vue";
-import Navbar from "@/components/sections/Navbars/Navbar.vue";
+import Sidenav from "@/components/sections/sidenav/Sidenav.vue";
+import AppFooter from "@/components/sections/pagelayout/Footer.vue";
+import Navbar from "@/components/sections/pagelayout/Navbar2.vue";
 import Card from "@/components/sections/Cards/Card.vue";
 
 import bgImg from '@/assets/img/vr-bg.jpg';
