@@ -33,11 +33,19 @@ export default defineNuxtConfig({
   plugins: [
     // UI Dashboard Theme (SCSS, JS, icons)
     "@/assets/js/ui-dashboard",
-
+    
     // QUESTIONABLES..
+
+    // PERSISTED STATE 
+    // using a package name ??? NO
+    // "pinia-plugin-persistedstate-2",
+    // using the plugin
+    // "@/plugins/persistedstate.ts",
+    
     // Choices.js
     // ERROR: [nuxt] [request error] __vite_ssr_import_1__ is not defined
     // { src: "choices.js", ssr: false },
+
     // FullCalendar @fullcalendar
     // { src: "@fullcalendar/core", ssr: false },
     // { src: "@fullcalendar/daygrid", ssr: false },

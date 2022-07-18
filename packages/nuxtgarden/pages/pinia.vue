@@ -68,6 +68,14 @@ const counter = useCounterStore()
 // if (process.server) {
 //   counter.n = 20
 // }
+
+definePageMeta({
+  layout: "default",
+  // layout: "custom",
+  // layout: "dashboard",
+  title: "Pinia",
+})
+
 </script>
 
 <style scoped>

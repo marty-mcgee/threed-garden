@@ -3,9 +3,10 @@
     <!-- <h1>HEY HEY HEY</h1> -->
     <!-- <NuxtWelcome /> -->
     <!-- <Welcome /> -->
-    <button type="button" @click="counterStore1.currentValue++">
+    <!-- <button type="button" @click="counterStore1.currentValue++">
       count is: {{ counterStore1.currentValue }}
     </button>
+    <hr style="margin: 5px;" /> -->
     <NuxtLayout>
       <NuxtPage/>
     </NuxtLayout>
@@ -14,9 +15,9 @@
 
 <script setup lang="ts">
 // import UIDashboard from "@/assets/js/ui-dashboard"
-import { useCounterStore1 } from './stores/counter1'
 
-const counterStore1 = useCounterStore1()
+// import { useCounterStore1 } from "./stores/counter1"
+// const counterStore1 = useCounterStore1()
 
 // USENUXTAPP
 // function useMyComposable () {
@@ -27,8 +28,8 @@ const counterStore1 = useCounterStore1()
 // useMyComposable()
 
 const nuxtApp = useNuxtApp()
-nuxtApp.provide('hello', (name) => `Hello ${name}!`)
-console.log(nuxtApp.$hello('helper')) // Prints "Hello helper!"
+nuxtApp.provide("hello", (name) => `Hello ${name}!`)
+console.log(nuxtApp.$hello("helper")) // Prints "Hello helper!"
 
 
 // get current (page) route + route.meta.title
@@ -43,20 +44,21 @@ useHead({
   title: `${title} - NuxtGarden`,
   // or, instead: ?? but why ??
   // titleTemplate: (x) => `${route.meta.title} - NuxtGarden`,
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
-  charset: 'utf-8',
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+  charset: "utf-8",
   meta: [
-    { name: 'description', content: 'ThreeD Garden on Nuxt Vue' },
-    { name: 'og:title', content: `NuxtGarden - ${title}` }
+    { name: "description", content: "ThreeD Garden on Nuxt Vue" },
+    { name: "og:title", content: `NuxtGarden - ${title}` }
   ],
   bodyAttrs: {
-    class: 'threedgarden'
+    class: "threedgarden",
+    // style: "max-width: 100%"
   }
 })
 
 // user authentication
-if (route.params.group === 'admins' && !route.params.id) {
-  console.log('Warning! Make sure user is authenticated!')
+if (route.params.group === "admins" && !route.params.id) {
+  console.log("Warning! User not authenticated!")
 }
 
 </script>
