@@ -36,8 +36,8 @@ export default defineNuxtConfig({
     
     // QUESTIONABLES..
 
-    // PERSISTED STATE 
-    // using a package name ??? NO
+    // PERSISTED STATE .js (using cookies)
+    // using a package name ??? NO!
     // "pinia-plugin-persistedstate-2",
     // using the plugin (no need, auto-imported)
     // "@/plugins/persistedstate.ts",
