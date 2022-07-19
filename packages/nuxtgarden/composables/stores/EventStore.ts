@@ -6,6 +6,13 @@ export const useEventStore = defineStore( "EventStore", {
     event: { 
       name: "Garden Event",
     },
-  })
+  }),
+  getters: {
+    getEvents: (state) => state.events,
+    getEvent: (state) => state.event,
+  },
+  actions: {
+
+  }
 })
 

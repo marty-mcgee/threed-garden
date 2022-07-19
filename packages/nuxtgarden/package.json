@@ -26,8 +26,11 @@
     "@fullcalendar/daygrid": "5.11.0",
     "@fullcalendar/interaction": "5.11.0",
     "@fullcalendar/vue3": "5.11.1",
+    "@nuxt/types": "npm:@nuxt/types-edge@2.16.0-27616340.013f051b",
+    "@nuxt/typescript-build": "^2.1.0",
     "@pinia/nuxt": "^0.3.0",
     "@vueuse/core": "^8.9.4",
+    "@vueuse/nuxt": "^8.9.4",
     "chart.js": "3.8.0",
     "choices.js": "^10.1.0",
     "cookie": "^0.5.0",
@@ -59,6 +62,7 @@
     "vue-round-slider": "1.0.1",
     "vue-sweetalert2": "^5.0.2",
     "vue-tilt.js": "^1.1.1",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "webpack": "^5.73.0"
   }
 }

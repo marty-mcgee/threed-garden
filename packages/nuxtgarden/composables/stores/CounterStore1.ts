@@ -18,7 +18,8 @@ export const useCounterStore1 = defineStore('CounterStore1', {
     getCount: (state) => {
       console.log("Count:", state.count)
       return state.count
-    }
+    },
+    double: (state) => state.count * 2,
   },
   actions: {
     increment() {
@@ -27,6 +28,5 @@ export const useCounterStore1 = defineStore('CounterStore1', {
     decrement() {
       this.count--
     },
-    double: (state) => state.count * 2,
   },
 })

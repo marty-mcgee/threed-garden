@@ -19,8 +19,8 @@ export default defineNuxtConfig({
     // "bootstrap-vue-3/nuxt",
     // "efficy-bootstrap-vue-3/nuxt",
 
-    // VITESS-NUXT3
-    // "@vueuse/nuxt",
+    // VITESSE-NUXT3
+    "@vueuse/nuxt",
     // "@unocss/nuxt",
   ],
   buildModules: [
@@ -29,6 +29,9 @@ export default defineNuxtConfig({
     // https://composition-api.nuxtjs.org/getting-started/setup#quick-start
     // "@nuxtjs/composition-api/module",
     ["@pinia/nuxt", { disableVuex: false }],
+
+    // TYPESCRIPT
+    "@nuxt/typescript-build",
 
     // [MM] BOOTSTRAP VUE 3 on NUXT 3 ?? beta af
     // "bootstrap-vue-3/nuxt",

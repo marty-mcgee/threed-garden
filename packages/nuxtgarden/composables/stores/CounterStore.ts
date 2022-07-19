@@ -11,13 +11,18 @@ export const useCounterStore = defineStore('CounterStore', {
   }),
 
   getters: {
-    double: (state) => state.n * 2,
+    getCount: (state) => state.n,
+    getCountDouble: (state) => state.n * 2,
   },
 
   actions: {
     increment(amount = 1) {
       this.incrementedTimes++
       this.n += amount
+    },
+    decrement(amount = 1) {
+      this.decrementedTimes++
+      this.n -= amount
     },
 
     changeMe() {
