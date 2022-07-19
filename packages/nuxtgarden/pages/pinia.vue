@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCounterStore } from "~/composables/stores/counter"
+import { useCounterStore } from "~/composables/stores/CounterStore"
 import LogoPinia from "~/components/LogoPinia.vue"
 
 const counter = useCounterStore()
