@@ -3,16 +3,14 @@
     <!-- <h1>HEY HEY HEY</h1> -->
     <!-- <NuxtWelcome /> -->
     <!-- <Welcome /> -->
-    <!-- <button type="button" @click="counterStore1.count++">
-      count is: {{ counterStore1.currentValue }}
-    </button> -->
-    <p>
-      Logged in as {{ userStore.user.name }}
-      | Event Name: {{ eventStore.event.name }}
-      | UI Name: {{ uiStore.name }}
-      | Counter: {{ counterStore1.getCount }} <!-- do not reference .count directly -->
-      <button @click="counterStore1.increment()">+</button>
-      <button @click="counterStore1.decrement()">-</button>
+    <p class="m-1">
+      {{ title }}
+      | Logged in as {{ userStore.getUser.username }}
+      | Event Name: {{ eventStore.getEvent.name }}
+      | UI Name: {{ uiStore.getName }} - {{ uiStore.getUI.name }}
+      | Counter: {{ counterStore.getCount }}
+      <button @click="counterStore.increment()">+</button>
+      <button @click="counterStore.decrement()">-</button>
     </p>
     <p><hr/></p>
     <NuxtLayout cl>
@@ -26,7 +24,7 @@ import { useUserStore } from "@/composables/stores/UserStore"
 import { useEventStore } from "@/composables/stores/EventStore"
 // import UIDashboard from "@/assets/js/ui-dashboard"
 import { useUIStore } from "@/composables/stores/UIStore"
-import { useCounterStore1 } from "./composables/stores/CounterStore1"
+import { useCounterStore } from "./composables/stores/CounterStore"
 
 export default {
   setup() {
@@ -34,7 +32,7 @@ export default {
     const userStore = useUserStore()
     const eventStore = useEventStore()
     const uiStore = useUIStore()
-    const counterStore1 = useCounterStore1()
+    const counterStore = useCounterStore()
 
     // USENUXTAPP
     // function useMyComposable () {
@@ -65,7 +63,8 @@ export default {
       charset: "utf-8",
       meta: [
         { name: "description", content: "ThreeD Garden on Nuxt Vue" },
-        { name: "og:title", content: `NuxtGarden - ${title}` }
+        { name: "og:title", content: `NuxtGarden - ${title}` },
+        { name: "og:description", content: "ThreeD Garden on Nuxt Vue" },
       ],
       bodyAttrs: {
         class: "threedgarden",
@@ -80,10 +79,11 @@ export default {
 
     // setup() returns an object
     return {
+      title,
       userStore,
       eventStore,
       uiStore,
-      counterStore1,
+      counterStore,
     }
   }
 } // end export default

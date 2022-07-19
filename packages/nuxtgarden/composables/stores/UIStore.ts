@@ -3,7 +3,11 @@ import { defineStore } from 'pinia'
 export const useUIStore = defineStore('UIStore', {
   state: () => ({
     name: "ThreeD Garden",
-
+    uis: [],
+    ui: {
+      name: "Smart Home"
+    },
+    
     /** @type {{ text: string, id: number, isFinished: boolean }[]} */
     todos: [],
     /** @type {'all' | 'finished' | 'unfinished'} */
@@ -59,6 +63,10 @@ export const useUIStore = defineStore('UIStore', {
     },
 
     // [MM] THREED GARDEN
+    getName: (state) => state.name,
+    getUIs: (state) => state.uis,
+    getUI: (state) => state.ui,
+
     getShowGarden: (state) => state.showGarden,
     getIsAnimated: (state) => state.isAnimated,
 
