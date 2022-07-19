@@ -3,14 +3,17 @@
     <!-- <h1>HEY HEY HEY</h1> -->
     <!-- <NuxtWelcome /> -->
     <!-- <Welcome /> -->
-    <!-- <button type="button" @click="counterStore1.currentValue++">
+    <!-- <button type="button" @click="counterStore1.count++">
       count is: {{ counterStore1.currentValue }}
     </button> -->
     <p>
       Logged in as {{ userStore.user.name }}
       | Event Name: {{ eventStore.event.name }}
       | UI Name: {{ uiStore.name }}
-      | Counter: {{ counterStore1.count }}
+      | Counter: {{ counterStore1.count }} {{ counterStore1.getCount }} 
+      <button @click="counterStore1.increment()">+</button>
+      <button @click="counterStore1.decrement()">-</button>
+      <button @click="counterStore1.getCount">get</button>      
     </p>
     <p><hr/></p>
     <NuxtLayout cl>

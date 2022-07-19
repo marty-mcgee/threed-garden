@@ -43,41 +43,34 @@ export const useUIStore = defineStore('UIStore', {
     showMain: true,
   }),
   getters: {
-    getFinishedTodos(state) {
-      // autocompletion! ✨
-      return state.todos.filter((todo) => todo.isFinished)
-    },
-    getUnfinishedTodos(state) {
-      return state.todos.filter((todo) => !todo.isFinished)
-    },
+    getFinishedTodos: (state) => state.todos.filter((todo) => todo.isFinished),
+    getUnfinishedTodos: (state) => state.todos.filter((todo) => !todo.isFinished),
     /**
      * @returns {{ text: string, id: number, isFinished: boolean }[]}
      */
     getFilteredTodos(state) {
-      if (this.filter === 'finished') {
+      if (state.filter === 'finished') {
         // call other getters with autocompletion ✨
-        return this.finishedTodos
-      } else if (this.filter === 'unfinished') {
-        return this.unfinishedTodos
+        return this.getFinishedTodos()
+      } else if (state.filter === 'unfinished') {
+        return this.getUnfinishedTodos()
       }
-      return this.todos
+      return state.todos
     },
 
     // [MM] THREED GARDEN
-    getShowGarden(state) { return state.showGarden },
-    getIsAnimated(state) { return state.isAnimated },
+    getShowGarden: (state) => state.showGarden,
+    getIsAnimated: (state) => state.isAnimated,
 
-    getIsLargeScreen(state) { return state.isLargeScreen },
-    getIsDarkMode(state) { return state.isDarkMode },
-    getIsRTL(state) { return state.isRTL },
+    getIsLargeScreen: (state) => state.isLargeScreen,
+    getIsDarkMode: (state) => state.isDarkMode,
+    getIsRTL: (state) => state.isRTL,
 
-    getShowSidenav(state) { return state.showSidenav },
-    getSidenavColor(state) { return state.sidenavColor },
-    getSidenavPinned(state) { return state.isPinned },
-    getSidenavTransparent(state) { return state.isTransparent },
-    getCardBackgroundMaskColor(state) { 
-      return `card-background-mask-${state.sidenavColor}` 
-    },
+    getShowSidenav: (state) => state.showSidenav,
+    getSidenavColor: (state) => state.sidenavColor,
+    getSidenavPinned: (state) => state.isPinned,
+    getSidenavTransparent: (state) => state.isTransparent,
+    getCardBackgroundMaskColor: (state) => `card-background-mask-${state.sidenavColor}`,
   },
   actions: {
     // any amount of arguments, return a promise or not

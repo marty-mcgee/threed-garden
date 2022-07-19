@@ -11,13 +11,22 @@ import { ref } from 'vue'
 // })
 
 export const useCounterStore1 = defineStore('CounterStore1', {
-  state: () => ({ count: 0 }),
+  state: () => ({ 
+    count: 0 
+  }),
   getters: {
-    double: (state) => state.count * 2,
+    getCount: (state) => {
+      console.log("Count:", state.count)
+      return state.count
+    }
   },
   actions: {
     increment() {
       this.count++
     },
+    decrement() {
+      this.count--
+    },
+    double: (state) => state.count * 2,
   },
 })
