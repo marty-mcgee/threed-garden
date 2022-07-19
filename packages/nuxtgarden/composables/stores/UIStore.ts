@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia'
 
-export const useUIStore = defineStore('ui-store', {
+export const useUIStore = defineStore('UIStore', {
   state: () => ({
+    name: "ThreeD Garden",
+
     /** @type {{ text: string, id: number, isFinished: boolean }[]} */
     todos: [],
     /** @type {'all' | 'finished' | 'unfinished'} */
@@ -14,7 +16,7 @@ export const useUIStore = defineStore('ui-store', {
     isAnimated: true,
 
     isLargeScreen: true,
-    isDarkMode: false,
+    isDarkMode: true,
     isRTL: false,
     showSidenav: true,
     sidenavColor: "success",
@@ -41,17 +43,17 @@ export const useUIStore = defineStore('ui-store', {
     showMain: true,
   }),
   getters: {
-    finishedTodos(state) {
+    getFinishedTodos(state) {
       // autocompletion! ✨
       return state.todos.filter((todo) => todo.isFinished)
     },
-    unfinishedTodos(state) {
+    getUnfinishedTodos(state) {
       return state.todos.filter((todo) => !todo.isFinished)
     },
     /**
      * @returns {{ text: string, id: number, isFinished: boolean }[]}
      */
-    filteredTodos(state) {
+    getFilteredTodos(state) {
       if (this.filter === 'finished') {
         // call other getters with autocompletion ✨
         return this.finishedTodos
@@ -62,18 +64,18 @@ export const useUIStore = defineStore('ui-store', {
     },
 
     // [MM] THREED GARDEN
-    showGarden(state) { return state.showGarden },
-    isAnimated(state) { return state.isAnimated },
+    getShowGarden(state) { return state.showGarden },
+    getIsAnimated(state) { return state.isAnimated },
 
-    isLargeScreen(state) { return state.isLargeScreen },
-    darkMode(state) { return state.isDarkMode },
-    isRTL(state) { return state.isRTL },
+    getIsLargeScreen(state) { return state.isLargeScreen },
+    getIsDarkMode(state) { return state.isDarkMode },
+    getIsRTL(state) { return state.isRTL },
 
-    showSidenav(state) { return state.showSidenav },
-    sidenavColor(state) { return state.sidenavColor },
-    sidenavPinned(state) { return state.isPinned },
-    sidenavTransparent(state) { return state.isTransparent },
-    cardBackgroundMaskColor(state) { 
+    getShowSidenav(state) { return state.showSidenav },
+    getSidenavColor(state) { return state.sidenavColor },
+    getSidenavPinned(state) { return state.isPinned },
+    getSidenavTransparent(state) { return state.isTransparent },
+    getCardBackgroundMaskColor(state) { 
       return `card-background-mask-${state.sidenavColor}` 
     },
   },
@@ -88,26 +90,31 @@ export const useUIStore = defineStore('ui-store', {
     setIsLargeScreen({ commit }, payload) {
       // commit("SET_IS_LARGE_SCREEN", !!payload)
       console.log("SET_IS_LARGE_SCREEN")
+      this.state.isLargeScreen = !!this.state.isLargeScreen
     },
-    setDarkMode({ commit }, payload) {
-      // commit("SET_DARK_MODE", !!payload)
-      console.log("SET_DARK_MODE")
+    setIsDarkMode({ commit }, payload) {
+      // commit("SET_IS_DARK_MODE", !!payload)
+      console.log("SET_IS_DARK_MODE")
+      this.state.isDarkMode = !!this.state.isDarkMode
     },
     setShowSidenav({ commit }, payload) {
       // commit("SET_SHOW_SIDENAV", !!payload)
       console.log("SET_SHOW_SIDENAV")
+      this.state.showSidenav = !!this.state.showSidenav
     },
-    setSidenavPinned({ commit }, payload) {
+    setIsSidenavPinned({ commit }, payload) {
       // commit("SET_SIDENAV_PINNED", !!payload)
-      console.log("SET_SIDENAV_PINNED")
+      console.log("SET_IS_SIDENAV_PINNED")
+      this.state.isSidenavPinned = !!this.state.isSidenavPinned
     },
-    toggleSidenavPinned({ commit, state }) {
+    toggleIsSidenavPinned({ commit, state }) {
       // commit("SET_SIDENAV_PINNED", !state.isPinned)
-      console.log("SET_SIDENAV_PINNED")
+      console.log("SET_IS_SIDENAV_PINNED")
+      this.state.isSidenavPinned = !!this.state.isSidenavPinned
     },
   },
     
-  // [MM] THREED GARDEN
+  // [MM] THREED GARDEN (vuex only)
   /*
   mutations: {
     SET_IS_LARGE_SCREEN(state, payload) {
@@ -127,7 +134,7 @@ export const useUIStore = defineStore('ui-store', {
   */
 })
 
-// [MM] MULTIPLE STORES
+// [MM] MULTIPLE STORES ???
 /*
 const useCounterStore = defineStore('counter', {
   state: () => ({ count: 0 }),
