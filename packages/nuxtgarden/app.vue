@@ -10,10 +10,9 @@
       Logged in as {{ userStore.user.name }}
       | Event Name: {{ eventStore.event.name }}
       | UI Name: {{ uiStore.name }}
-      | Counter: {{ counterStore1.count }} {{ counterStore1.getCount }} 
+      | Counter: {{ counterStore1.getCount }} <!-- do not reference .count directly -->
       <button @click="counterStore1.increment()">+</button>
       <button @click="counterStore1.decrement()">-</button>
-      <button @click="counterStore1.getCount">get</button>      
     </p>
     <p><hr/></p>
     <NuxtLayout cl>
