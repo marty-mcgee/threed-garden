@@ -24,7 +24,7 @@ export default defineNuxtConfig({
     // "@unocss/nuxt",
   ],
   buildModules: [
-    // PINIA (peenya)
+    // PINIA
     // Nuxt 2 only:
     // https://composition-api.nuxtjs.org/getting-started/setup#quick-start
     // "@nuxtjs/composition-api/module",

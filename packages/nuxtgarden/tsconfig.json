@@ -23,20 +23,19 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": [
-        "./*"
-      ],
-      "@/*": [
-        "./*"
-      ]
+      "~/*": ["./*"],
+      "@/*": ["./*"]
     },
     "types": [
       "@types/node",
-      "@nuxt/types"
+      "@nuxt/types",
+      "@pinia/nuxt"
     ]
   },
   
   "exclude": [
-    "node_modules"
+    "node_modules", 
+    ".nuxt", 
+    "dist"
   ]
 }
