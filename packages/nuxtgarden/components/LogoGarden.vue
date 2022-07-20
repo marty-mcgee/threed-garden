@@ -1,7 +1,6 @@
 <template>
-  <a :href="url" title="ThreeDGarden Dashboard">
-    <img 
-      :src="src" 
+  <a :href="url" :title="title">
+    <img :src="src" 
       alt="logo_threedgarden : {{logo}} : {{url}}"
     />
   </a>
@@ -15,28 +14,46 @@ img, svg {
 </style>
 
 <script>
-// setup() {
-//   const foo = ref(1);
-//   const bar = reactive({ name: "hi" });
-// 
-//   return { foo, bar }
-// }
 import Logo from "@/assets/img/logos/logo-threedgarden.png"
-console.log("Logo", Logo)
+// console.log("Logo", Logo)
 
 export default {
   name: "LogoGarden",
+
+  setup() {
+    const logo = Logo // "#LOGO"
+    const src = Logo // Logo.toString()
+    const title = "ThreeDGarden Dashboard"
+    const url = "/#LOGO" // "#HEYHEYHEY"
+    // const foo = ref(1)
+    // const bar = reactive({ name: "garden" })
+
+    return {
+      logo,
+      src,
+      title,
+      url,
+      // foo, 
+      // bar 
+    }
+  },
+
+  mounted() {
+    console.log(this.logo)
+  }
+
   // components: {
   //   Logo,
   // },
-  data() {
-    return {
-      logo: Logo, // "#Logo"
-      src: Logo, // "", // Logo.toString()
-      url: "/#HEYHEYHEY", // "#HEYHEYHEY",
-      foo: 1,
-      bar: { name: "bar" },
-    }
-  }
+  // data() {
+  //   return {
+  //     logo: Logo, // "#Logo"
+  //     src: Logo, // "", // Logo.toString()
+  //     title: "ThreeDGarden Dashboard",
+  //     url: "/#LOGO", // "#HEYHEYHEY",
+  //     foo: 1,
+  //     bar: { name: "bar" },
+  //   }
+  // }
 }
 </script>
