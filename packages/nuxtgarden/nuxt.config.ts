@@ -39,7 +39,8 @@ export default defineNuxtConfig({
   ],
   plugins: [
     // UI Dashboard Theme (SCSS, JS, icons)
-    "@/assets/js/ui-dashboard",
+    // "@/assets/js/ui-dashboard", is now at:
+    // "@/plugins/ui-dashboard",
     
     // QUESTIONABLES..
 

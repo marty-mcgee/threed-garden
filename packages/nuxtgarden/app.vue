@@ -3,17 +3,19 @@
     <!-- <h1>HEY HEY HEY</h1> -->
     <!-- <NuxtWelcome /> -->
     <!-- <Welcome /> -->
-    <p class="m-1">
-      {{ title }}
-      | Logged in as {{ userStore.getUser.username }}
-      | Event Name: {{ eventStore.getEvent.name }}
-      | UI Name: {{ uiStore.getName }} - {{ uiStore.getUI.name }}
-      | Counter: {{ counterStore.getCount }}
-      <button @click="counterStore.increment()">+</button>
-      <button @click="counterStore.decrement()">-</button>
-    </p>
-    <p><hr/></p>
-    <NuxtLayout>
+    <NuxtLayout cl>
+      <template #header>
+        <p class="m-1">
+          {{ title }}
+          | Logged in as {{ userStore.getUser.username }}
+          | Event Name: {{ eventStore.getEvent.name }}
+          | UI Name: {{ uiStore.getName }} - {{ uiStore.getUI.name }}
+          | Counter: {{ counterStore.getCount }}
+          <button @click="counterStore.increment()">+</button>
+          <button @click="counterStore.decrement()">-</button>
+        </p>
+        <p><hr></p>
+      </template>
       <NuxtPage />
     </NuxtLayout>
   </div>
@@ -44,7 +46,7 @@ export default {
 
     const nuxtApp = useNuxtApp()
     nuxtApp.provide("hello", (name) => `Hello ${name}!`)
-    console.log(nuxtApp.$hello("helper")) // Prints "Hello helper!"
+    console.log(nuxtApp.$hello("Garden")) // Prints "Hello Garden!"
 
 
     // get current (page) route + route.meta.title
@@ -74,7 +76,7 @@ export default {
 
     // user authentication
     if (route.params.group === "admins" && !route.params.id) {
-      console.log("Warning! User not authenticated!")
+      console.error("Warning! User not authenticated!")
     }
 
     // setup() returns an object

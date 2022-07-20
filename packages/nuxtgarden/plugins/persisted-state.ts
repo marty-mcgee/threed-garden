@@ -18,8 +18,10 @@ export default defineNuxtPlugin (({ $pinia, ssrContext }) => {
         },
         // Please see https://github.com/js-cookie/js-cookie#json, on how to handle JSON.
         setItem: (key, value) =>
-          Cookies.set(key, value, { expires: 365, secure: false }),
-        removeItem: (key) => Cookies.remove(key),
+          Cookies.set(key, value, { expires: 365, secure: false }), //, sameSite: "lax"
+        // firefox warning for missing SameSite attribute:
+        // see: https://github.com/js-cookie/js-cookie/issues/620
+        removeItem: (key) => Cookies.remove(key, { sameSite: "lax" }),
       },
     }),
   )
