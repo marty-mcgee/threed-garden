@@ -10,7 +10,6 @@
             >
               © {{ new Date().getFullYear() }} 
               ThreeD Garden, running on 
-              <i class="fa fa-heart"></i>
               <a
                 href="https://companyjuice.com"
                 class="font-weight-normal"
@@ -18,6 +17,11 @@
               >
                 Company Juice
               </a>.
+              <i class="fa fa-heart"></i>
+              <icon-xmark style="font-size: 2em; color: blue" />
+              <icon-account-box style="font-size: 2em; color: red" />
+              <tasty-pizza style="font-size: 2em" />
+              <icon-ps style="font-size: 2em" />
             </div>
           </div>
           <div class="col-lg-6 nav nav-footer justify-content-center justify-content-lg-end">
@@ -93,10 +97,18 @@ import { useEventStore } from "@/composables/stores/EventStore"
 import { useUIStore } from "@/composables/stores/UIStore"
 import { useCounterStore } from "@/composables/stores/CounterStore"
 
+import IconXmark from '~icons/fa6-solid/xmark'
+import IconAccountBox from '~icons/mdi/account-box'
+import TastyPizza from '~icons/noto-v1/pizza'
+import IconPs from '~icons/ri/playstation-line'
+
 export default {
   name: "PageLayoutFooter",
   components: {
-    
+    IconXmark,
+    IconAccountBox,
+    TastyPizza,
+    IconPs,
   },
   setup() {
     // state stores
@@ -129,3 +141,18 @@ export default {
   }
 } // end export default
 </script>
+<!-- 
+<script setup>
+import IconXmark from '~icons/fa6-solid/xmark'
+import IconAccountBox from '~icons/mdi/account-box'
+import TastyPizza from '~icons/noto-v1/pizza'
+import IconPs from '~icons/ri/playstation-line'
+</script>
+
+<template>
+  <icon-xmark style="font-size: 2em; color: blue" />
+  <icon-account-box style="font-size: 2em; color: red" />
+  <tasty-pizza style="font-size: 2em" />
+  <icon-ps style="font-size: 2em" />
+</template>
+-->

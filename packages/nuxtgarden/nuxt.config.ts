@@ -1,4 +1,5 @@
 import { defineNuxtConfig } from "nuxt"
+import Icons from 'unplugin-icons/vite'
 
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
@@ -25,7 +26,7 @@ export default defineNuxtConfig({
   ],
   buildModules: [
     // PINIA
-    // Nuxt 2 only:
+    // Composition API included in Nuxt 3. For Nuxt 2 only:
     // https://composition-api.nuxtjs.org/getting-started/setup#quick-start
     // "@nuxtjs/composition-api/module",
     ["@pinia/nuxt", { disableVuex: false }],
@@ -37,6 +38,23 @@ export default defineNuxtConfig({
     // "bootstrap-vue-3/nuxt",
     // "efficy-bootstrap-vue-3/nuxt",
   ],
+  // build: {
+  //   transpile: [
+  //     '@fortawesome/vue-fontawesome',
+  //     '@fortawesome/fontawesome-svg-core',
+  //     '@fortawesome/free-brands-svg-icons',
+  //     '@fortawesome/free-regular-svg-icons',
+  //     '@fortawesome/free-solid-svg-icons',
+  //   ]
+  // },
+  vite: {
+    plugins: [
+      Icons({
+        // expiremental
+        autoInstall: true
+      })
+    ]
+  },
   plugins: [
     // UI Dashboard Theme (SCSS, JS, icons)
     // "@/assets/js/ui-dashboard", is now at:
