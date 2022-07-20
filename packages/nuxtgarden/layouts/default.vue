@@ -1,5 +1,20 @@
 <template>
   <div id="MMDEFAULT">
+    <header>
+      <slot name="header">
+        <LogoGarden />
+        <!-- *dashboard* layout: header -->
+        |<NuxtLink to="/about">
+          About
+        </NuxtLink>
+        |<NuxtLink to="/participate">
+          Participate
+        </NuxtLink>
+        |<NuxtLink to="/pinia">
+          Pinia
+        </NuxtLink>
+      </slot>
+    </header>
     <!-- 
     <sidenav /> 
     -->

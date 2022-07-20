@@ -2,10 +2,10 @@
   // https://v3.nuxtjs.org/concepts/typescript
   "extends": "./.nuxt/tsconfig.json",
   
-  "types": [
-    // pinia (peenya)
-    "@pinia/nuxt"
-  ],
+  // "types": [
+  //   // pinia
+  //   "@pinia/nuxt"
+  // ],
 
   "compilerOptions": {
     "target": "ES2018",

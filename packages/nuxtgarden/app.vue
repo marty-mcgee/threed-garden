@@ -3,8 +3,6 @@
     <!-- <h1>HEY HEY HEY</h1> -->
     <!-- <NuxtWelcome /> -->
     <!-- <Welcome /> -->
-    <NuxtLayout cl>
-      <template #header>
         <p class="m-1">
           {{ title }}
           | Logged in as {{ userStore.getUser.username }}
@@ -15,7 +13,7 @@
           <button @click="counterStore.decrement()">-</button>
         </p>
         <p><hr></p>
-      </template>
+    <NuxtLayout cl>
       <NuxtPage />
     </NuxtLayout>
   </div>

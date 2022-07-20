@@ -1,5 +1,20 @@
 <template>
   <div id="MMDASHBOARD">
+    <header>
+      <slot name="header">
+        <LogoGarden />
+        <!-- *dashboard* layout: header -->
+        |<NuxtLink to="/about">
+          About
+        </NuxtLink>
+        |<NuxtLink to="/participate">
+          Participate
+        </NuxtLink>
+        |<NuxtLink to="/pinia">
+          Pinia
+        </NuxtLink>
+      </slot>
+    </header>
     <!-- 
     <sidenav 
       v-if="showSidenav"
@@ -14,25 +29,13 @@
       id="main" 
       class="main-content position-relative max-height-vh-100 h-100 border-radius-lg"
     >
-      <!-- HEADER -->
-      <div>
-        <LogoGarden />
-
-        <NuxtLink to="/about">
-          About
-        </NuxtLink>
-        <NuxtLink to="/participate">
-          Participate
-        </NuxtLink>
-      </div>
-
       <!-- LAYOUT -->
       <div
         id="layout"
         class=""
       >
         <!-- meta + context -->
-        <h6>A *dashboard* layout</h6>
+        <!-- <h6>*dashboard* layout: main</h6> -->
       
         <!-- DASHBOARD -->
         <SmartHome />
@@ -40,9 +43,14 @@
       </div>
 
       <!-- NOT SURE YET WHAT slot IS ?? -->
-      <slot />
+      <slot name="main" />
 
     </main>
+    <footer>
+      <slot name="footer">
+        *dashboard* layout: footer
+      </slot>
+    </footer>
   </div>
 </template>
 
