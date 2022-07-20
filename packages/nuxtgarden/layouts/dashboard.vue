@@ -13,8 +13,8 @@
         |<NuxtLink to="/pinia">
           Pinia
         </NuxtLink>
-        <span class="m-1" style="position: absolute; right: 0;">
-          Logged in as {{ userStore.getUser.username }}
+        <span class="m-1 position-absolute end-0">
+          User: {{ userStore.getUser.username }}
           | Route: {{ title }}
           | UI: {{ uiStore.getUI.name }}
           | Event: {{ eventStore.getEvent.name }}
@@ -37,7 +37,7 @@
     -->
     <main 
       id="main" 
-      class="main-content position-relative max-height-vh-100 h-100 border-radius-lg"
+      class="main-content border-radius-lg"
     >
       <slot name="main">
         <!-- DASHBOARD -->
