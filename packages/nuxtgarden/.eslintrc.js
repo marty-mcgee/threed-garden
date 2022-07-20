@@ -19,8 +19,8 @@ module.exports = {
     "vue/multi-word-component-names": "off",
   },
   // parser options
-  // parserOptions: {
-  //   ecmaVersion: 12, // "latest"
-  //   sourceType: "module",
-  // },
+  parserOptions: {
+    ecmaVersion: 12, // "latest"
+    sourceType: "module",
+  },
 }

@@ -57,6 +57,7 @@
     "simple-datatables": "^3.2.0",
     "three": "^0.142.0",
     "typescript": "^4.7.4",
+    "unplugin-icons": "^0.14.7",
     "vue": "^3.2.37",
     "vue-flatpickr-component": "^9.0.5",
     "vue-round-slider": "1.0.1",
