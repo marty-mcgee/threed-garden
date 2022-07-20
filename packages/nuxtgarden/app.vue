@@ -3,16 +3,6 @@
     <!-- <h1>HEY HEY HEY</h1> -->
     <!-- <NuxtWelcome /> -->
     <!-- <Welcome /> -->
-        <p class="m-1">
-          {{ title }}
-          | Logged in as {{ userStore.getUser.username }}
-          | Event Name: {{ eventStore.getEvent.name }}
-          | UI Name: {{ uiStore.getName }} - {{ uiStore.getUI.name }}
-          | Counter: {{ counterStore.getCount }}
-          <button @click="counterStore.increment()">+</button>
-          <button @click="counterStore.decrement()">-</button>
-        </p>
-        <p><hr></p>
     <NuxtLayout cl>
       <NuxtPage />
     </NuxtLayout>
@@ -22,9 +12,8 @@
 <script lang="ts">
 import { useUserStore } from "@/composables/stores/UserStore"
 import { useEventStore } from "@/composables/stores/EventStore"
-// import UIDashboard from "@/assets/js/ui-dashboard"
 import { useUIStore } from "@/composables/stores/UIStore"
-import { useCounterStore } from "./composables/stores/CounterStore"
+import { useCounterStore } from "@/composables/stores/CounterStore"
 
 export default {
   setup() {
