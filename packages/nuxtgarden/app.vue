@@ -13,7 +13,7 @@
       <button @click="counterStore.decrement()">-</button>
     </p>
     <p><hr/></p>
-    <NuxtLayout cl>
+    <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
   </div>
