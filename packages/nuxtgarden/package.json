@@ -36,6 +36,7 @@
     "@pinia/nuxt": "^0.3.0",
     "@vueuse/core": "^8.9.4",
     "@vueuse/nuxt": "^8.9.4",
+    "axios": "^0.27.2",
     "chart.js": "^3.8.0",
     "choices.js": "^10.1.0",
     "cookie": "^0.5.0",
