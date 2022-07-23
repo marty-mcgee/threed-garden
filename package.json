@@ -14,8 +14,12 @@
   "homepage": "https://github.com/marty-mcgee/threedgarden#readme",
   "private": true,
   "scripts": {
-    "mm": "yarn workspace @threed/nuxtgarden build",
+    "mm": "yarn workspace @threed/nuxtgarden mm",
+    "nuxtgarden:tsc": "yarn workspace @threed/nuxtgarden tsc",
+    "nuxtgarden:dev": "yarn workspace @threed/nuxtgarden dev",
     "nuxtgarden:build": "yarn workspace @threed/nuxtgarden build",
+    "nuxtgarden:test": "yarn workspace @threed/nuxtgarden test",
+    "nuxtgarden:jest": "yarn workspace @threed/nuxtgarden jest",
     
     "hardhat:chain": "yarn workspace @threed/hardhat chain",
     "hardhat:fork": "yarn workspace @threed/hardhat fork",

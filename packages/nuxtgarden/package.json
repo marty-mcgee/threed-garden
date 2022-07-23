@@ -8,7 +8,7 @@
   "root": true,
   "scripts": {
     "mm": "nuxt dev",
-    "mmtest": "tsc",
+    "tsc": "tsc",
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
