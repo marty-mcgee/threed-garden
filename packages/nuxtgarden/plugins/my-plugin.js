@@ -1,5 +1,3 @@
-import { defineNuxtPlugin } from "nuxt"
-
 export default defineNuxtPlugin((/* nuxtApp */) => {
   return {
     provide: {

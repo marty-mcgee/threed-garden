@@ -1,4 +1,4 @@
-// import { defineNuxtPlugin } from "nuxt3/app"
+import { defineNuxtPlugin } from "nuxt/app"
 import { library, config } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faBars, faCalendarDay, faLocationDot } from '@fortawesome/free-solid-svg-icons'

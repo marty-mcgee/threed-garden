@@ -1,14 +1,11 @@
 {
   // https://v3.nuxtjs.org/concepts/typescript
   "extends": "./.nuxt/tsconfig.json",
-  
-  // "types": [
-  //   // pinia
-  //   "@pinia/nuxt"
-  // ],
+
+  "root": true,
 
   "compilerOptions": {
-    "target": "ES2018",
+    "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Node",
     "lib": [
@@ -20,7 +17,7 @@
     "allowJs": true,
     "checkJs": true,
     "sourceMap": true,
-    "strict": true,
+    "strict": false,
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
@@ -33,12 +30,16 @@
       "@pinia/nuxt"
     ]
   },
+
+  // "include": [
+  //   "src/**/*"
+  // ],
   
   "exclude": [
     "node_modules", 
-    ".nuxt", 
-    "dist"
-  ],
-
-  "include": ["src/**/*"]
+    ".nuxt",
+    ".output", 
+    "dist",
+    "build"
+  ]
 }
