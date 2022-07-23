@@ -1,6 +1,6 @@
 {
-  "name": "@marty-mcgee/threed-garden",
-  "version": "0.7.10",
+  "name": "@threed/threed-garden",
+  "version": "0.7.11",
   "description": "ThreeD Garden WP Plugin on Vue3 using Nuxt3 and Farmbot RB/JS",
   "repository": {
     "type": "git",
@@ -74,7 +74,7 @@
     "vue-app:ipfs": "yarn workspace @threed/vue-app ipfs",
     "vue-app:lint": "yarn workspace @threed/vue-app lint",
     "vue-app:serve": "yarn workspace @threed/vue-app serve"
-    
+
   },
   "workspaces": {
     "packages": [
@@ -98,14 +98,15 @@
     "typescript": "^4.7.4"
   },
   "keywords": [
-    "ethereum",
-    "vue",
-    "react",
-    "uniswap",
+    "javascript",
+    "typescript",
     "workspaces",
-    "yarn",
+    "vue",
+    "nuxt",
+    "ethereum",
+    "farmbot",
+    "farmbot.eth",
     "threedgarden",
-    "threedgarden.eth",
-    "typescript"
+    "threedgarden.eth"
   ]
 }
