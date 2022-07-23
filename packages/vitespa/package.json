@@ -1,5 +1,5 @@
 {
-  "name": "@threed/vue-app",
+  "name": "@threed/vitegarden",
   "version": "0.7.3",
   "main": "src/main.ts",
   "private": true,
