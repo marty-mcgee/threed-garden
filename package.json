@@ -13,6 +13,23 @@
   },
   "homepage": "https://github.com/marty-mcgee/threedgarden#readme",
   "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/hardhat",
+      "packages/nuxtgarden",
+      "packages/subgraph",
+      "packages/threed",
+      "dapps/vue-dapp"
+    ],
+    "nohoist": [
+      "**/@graphprotocol/graph-ts",
+      "**/@graphprotocol/graph-ts/**",
+      "**/hardhat",
+      "**/hardhat/**",
+      "**/hardhat-ts",
+      "**/hardhat-ts/**"
+    ]
+  },
   "scripts": {
     "mm": "yarn workspace @threed/nuxtgarden mm",
     "nuxtgarden:tsc": "yarn workspace @threed/nuxtgarden tsc",
@@ -79,29 +96,15 @@
     "vue-app:serve": "yarn workspace @threed/vue-app serve"
 
   },
-  "workspaces": {
-    "packages": [
-      "packages/hardhat",
-      "packages/nuxtgarden",
-      "packages/subgraph",
-      "packages/threed",
-      "dapps/vue-dapp"
-    ],
-    "nohoist": [
-      "**/@graphprotocol/graph-ts",
-      "**/@graphprotocol/graph-ts/**",
-      "**/hardhat",
-      "**/hardhat/**",
-      "**/hardhat-ts",
-      "**/hardhat-ts/**"
-    ]
-  },
-  "dependencies": {
+  "devDependencies": {
     "pnpm": "^7.6.0",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "yarn": "^1.22.19"
   },
+  "dependencies": {},
   "keywords": [
     "javascript",
+    "ecmascript",
     "typescript",
     "workspaces",
     "vue",
