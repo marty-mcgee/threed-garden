@@ -1,7 +1,7 @@
 <template>
   <div id="MMDASHBOARD">
     <slot name="header">
-        <Header class="m-1" />
+      <Header class="m-1" />
     </slot>
     <slot name="sidenav">
       <sidenav 
@@ -32,6 +32,8 @@ import Header from "@/components/sections/pagelayout/Header.vue"
 import Footer from "@/components/sections/pagelayout/Footer2.vue"
 import Sidenav from "@/components/sections/sidenav/Sidenav.vue"
 import SmartHome from "@/components/dashboards/SmartHome.vue"
+// import Navbar from "@/components/sections/navbars/Navbar.vue"
+// import Configurator from "@/components/configs/Configurator.vue"
 
 export default {
   name: "LayoutDashboard",
@@ -39,12 +41,14 @@ export default {
     Header,
     Footer,
     Sidenav,
-    SmartHome
+    SmartHome,
+    // Navbar,
+    // Configurator,
   },
   setup() {
     // setup() returns an object
     return {
-      
+      message: "HEY HEY HEY"
     }
   }
 } // end export default

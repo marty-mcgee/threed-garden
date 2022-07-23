@@ -18,6 +18,7 @@
     ],
     "esModuleInterop": true,
     "allowJs": true,
+    "checkJs": true,
     "sourceMap": true,
     "strict": true,
     "noEmit": true,
@@ -37,5 +38,7 @@
     "node_modules", 
     ".nuxt", 
     "dist"
-  ]
+  ],
+
+  "include": ["src/**/*"]
 }
