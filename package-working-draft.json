@@ -1,7 +1,7 @@
 {
     "name": "@companyjuice/threed-garden",
-    "version": "0.7.6",
-    "description": "ThreeD Garden WP Plugin on Vue 3, using Vite with WindiCSS, and Farmbot JS",
+    "version": "0.7.10",
+    "description": "ThreeD Garden WP Plugin on Vue3 using Nuxt3 and Farmbot RB/JS",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/companyjuice/threedgarden.git"
@@ -80,6 +80,7 @@
         ]
     },
     "dependencies": {
+        "@types/jquery": "^3.5.14",
         "pnpm": "7.5.0"
     },
     "keywords": [
