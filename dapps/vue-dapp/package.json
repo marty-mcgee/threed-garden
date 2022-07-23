@@ -1,5 +1,5 @@
 {
-  "name": "vue-dapp",
+  "name": "@threed/vue-dapp",
   "version": "0.4.7",
   "description": "Vue 3 library for building Dapps on Ethereum",
   "repository": "https://github.com/chnejohnson/vue-dapp",
