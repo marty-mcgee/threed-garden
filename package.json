@@ -1,12 +1,12 @@
 {
   "name": "@threed/threed-garden",
   "version": "0.7.11",
-  "description": "ThreeD Garden WP Plugin on Vue3 using Nuxt3 and Farmbot RB/JS",
+  "description": "ThreeD Garden WP Plugin on Vue3 using Nuxt3 and Farmbot Ruby/JS",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/marty-mcgee/threedgarden.git"
   },
-  "author": "Marty McGee",
+  "author": "Marty McGee, Company Juice",
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/marty-mcgee/threedgarden/issues"
@@ -15,55 +15,54 @@
   "private": true,
   "scripts": {
     "mm": "yarn workspace @threed/nuxtgarden build",
+    "nuxtgarden:build": "yarn workspace @threed/nuxtgarden build",
+    
+    "hardhat:chain": "yarn workspace @threed/hardhat chain",
+    "hardhat:fork": "yarn workspace @threed/hardhat fork",
+    "hardhat:node": "yarn workspace @threed/hardhat chain",
+    "hardhat:test": "yarn workspace @threed/hardhat test",
+
+    "hardhat:compile": "yarn workspace @threed/hardhat compile",
+    "hardhat:deploy": "yarn workspace @threed/hardhat deploy",
+    "hardhat:watch": "yarn workspace @threed/hardhat watch",
+    "hardhat:accounts": "yarn workspace @threed/hardhat accounts",
+    "hardhat:verify": "yarn workspace @threed/hardhat verify",
+    "hardhat:balance": "yarn workspace @threed/hardhat balance",
+    "hardhat:send": "yarn workspace @threed/hardhat send",
+
+    "react-app:ipfs": "yarn workspace @threed/react-app ipfs",
+    "react-app:surge": "yarn workspace @threed/react-app surge",
+    "react-app:s3": "yarn workspace @threed/react-app s3",
+    "react-app:ship": "yarn workspace @threed/react-app ship",
+    
     "react-app:build": "yarn workspace @threed/react-app build --max-old-space-size=12288",
-    "react-app:eject": "yarn workspace @threed/react-app eject",
     "react-app:start": "yarn workspace @threed/react-app start",
+    "react-app:eject": "yarn workspace @threed/react-app eject",
     "react-app:test": "yarn workspace @threed/react-app test",
-    "build": "yarn workspace @threed/react-app build --max-old-space-size=12288",
-    "prettier": "yarn workspace @threed/react-app prettier",
-    "chain": "yarn workspace @threed/hardhat chain",
-    "fork": "yarn workspace @threed/hardhat fork",
-    "node": "yarn workspace @threed/hardhat chain",
-    "test": "yarn workspace @threed/hardhat test",
-    "start": "yarn workspace @threed/react-app start",
+    "react-app:prettier": "yarn workspace @threed/react-app prettier",
+    "react-app:theme": "yarn workspace @threed/react-app theme",
+    "react-app:watch-theme": "yarn workspace @threed/react-app watch",
 
-    "compile": "yarn workspace @threed/hardhat compile",
-    "deploy": "yarn workspace @threed/hardhat deploy",
-    "watch": "yarn workspace @threed/hardhat watch",
-    "accounts": "yarn workspace @threed/hardhat accounts",
-    "verify": "yarn workspace @threed/hardhat verify",
-    "balance": "yarn workspace @threed/hardhat balance",
-    "send": "yarn workspace @threed/hardhat send",
+    "hardhat:generate": "yarn workspace @threed/hardhat generate",
+    "hardhat:account": "yarn workspace @threed/hardhat account",
+    "hardhat:mineContractAddress": "cd packages/hardhat && npx hardhat mineContractAddress",
+    "hardhat:wallet": "cd packages/hardhat && npx hardhat wallet",
+    "hardhat:fundedwallet": "cd packages/hardhat && npx hardhat fundedwallet",
+    "hardhat:flatten": "cd packages/hardhat && npx hardhat flatten",
+    "hardhat:clean": "cd packages/hardhat && npx hardhat clean",
+    "hardhat:mint": "yarn workspace @threed/hardhat mint",
 
-    "ipfs": "yarn workspace @threed/react-app ipfs",
-    "surge": "yarn workspace @threed/react-app surge",
-    "s3": "yarn workspace @threed/react-app s3",
-    "ship": "yarn workspace @threed/react-app ship",
-
-    "generate": "yarn workspace @threed/hardhat generate",
-    "account": "yarn workspace @threed/hardhat account",
-    "mineContractAddress": "cd packages/hardhat && npx hardhat mineContractAddress",
-    "wallet": "cd packages/hardhat && npx hardhat wallet",
-    "fundedwallet": "cd packages/hardhat && npx hardhat fundedwallet",
-    "flatten": "cd packages/hardhat && npx hardhat flatten",
-    "clean": "cd packages/hardhat && npx hardhat clean",
-
-    "run-graph-node": "yarn workspace @threed/services run-graph-node",
-    "remove-graph-node": "yarn workspace @threed/services remove-graph-node",
-    "clean-graph-node": "yarn workspace @threed/services clean-graph-node",
-    "graph-prepare": "mustache packages/subgraph/config/config.json packages/subgraph/src/subgraph.template.yaml > packages/subgraph/subgraph.yaml",
-    "graph-codegen": "yarn workspace @threed/subgraph graph codegen",
-    "graph-build": "yarn workspace @threed/subgraph graph build",
-    "graph-create-local": "yarn workspace @threed/subgraph graph create --node http://localhost:8020/ scaffold-eth/your-contract",
-    "graph-remove-local": "yarn workspace @threed/subgraph graph remove --node http://localhost:8020/ scaffold-eth/your-contract",
-    "graph-deploy-local": "yarn workspace @threed/subgraph graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 scaffold-eth/your-contract",
-    "graph-ship-local": "yarn graph-prepare && yarn graph-codegen && yarn graph-deploy-local",
-    "deploy-and-graph": "yarn deploy && yarn graph-ship-local",
-
-    "mint": "yarn workspace @threed/hardhat mint",
-
-    "theme": "yarn workspace @threed/react-app theme",
-    "watch-theme": "yarn workspace @threed/react-app watch",
+    "services:run-graph-node": "yarn workspace @threed/services run-graph-node",
+    "services:remove-graph-node": "yarn workspace @threed/services remove-graph-node",
+    "services:clean-graph-node": "yarn workspace @threed/services clean-graph-node",
+    "subgraph:graph-prepare": "mustache packages/subgraph/config/config.json packages/subgraph/src/subgraph.template.yaml > packages/subgraph/subgraph.yaml",
+    "subgraph:graph-codegen": "yarn workspace @threed/subgraph graph codegen",
+    "subgraph:graph-build": "yarn workspace @threed/subgraph graph build",
+    "subgraph:graph-create-local": "yarn workspace @threed/subgraph graph create --node http://localhost:8020/ scaffold-eth-typescript/your-contract",
+    "subgraph:graph-remove-local": "yarn workspace @threed/subgraph graph remove --node http://localhost:8020/ scaffold-eth-typescript/your-contract",
+    "subgraph:graph-deploy-local": "yarn workspace @threed/subgraph graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 scaffold-eth-typescript/your-contract",
+    "subgraph:graph-ship-local": "yarn graph-prepare && yarn graph-codegen && yarn graph-deploy-local",
+    "subgraph:deploy-and-graph": "yarn deploy && yarn graph-ship-local",
 
     "subgraph:auth": "yarn workspace @threed/subgraph auth",
     "subgraph:codegen": "yarn workspace @threed/subgraph codegen",
@@ -94,7 +93,7 @@
     ]
   },
   "dependencies": {
-    "pnpm": "7.5.0",
+    "pnpm": "^7.6.0",
     "typescript": "^4.7.4"
   },
   "keywords": [
