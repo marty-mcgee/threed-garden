@@ -15,11 +15,11 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "packages/hardhat",
+      "packages/threed",
       "packages/nuxtgarden",
       "packages/vitespa",
+      "packages/hardhat",
       "packages/subgraph",
-      "packages/threed",
       "dapps/vue-dapp"
     ],
     "nohoist": [
