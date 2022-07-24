@@ -20,7 +20,7 @@
       "packages/vitespa",
       "packages/hardhat",
       "packages/subgraph",
-      "dapps/vue-dapp"
+      "packages/vue-dapp"
     ],
     "nohoist": [
       "**/@graphprotocol/graph-ts",
