@@ -19,8 +19,6 @@
     "lint2": "npm run lint:js && npm run lint:prettier",
     "lintfix": "prettier --write --list-different . && npm run lint:js -- --fix",
     "format": "prettier . --write",
-    "start": "nuxt start",
-    "nodestart": "node .output/server/index.mjs",
     "test": "cypress run",
     "jest": "jest"
   },
