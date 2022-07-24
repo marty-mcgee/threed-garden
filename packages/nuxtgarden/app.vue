@@ -17,7 +17,7 @@ import { useCounterStore } from "@/composables/stores/CounterStore"
 
 // implicit calls to (what may/should be) auto-imports from nuxt
 // import { defineComponent } from "vue"
-import { useNuxtApp, useRoute, useHead } from "#app"
+import { useNuxtApp, useRoute, useHead } from "nuxt/app"
 
 export default {
   setup() {
