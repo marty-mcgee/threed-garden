@@ -23,9 +23,6 @@
     "jest": "jest"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.1.1",
-    "@fortawesome/free-solid-svg-icons": "^6.1.1",
-    "@fortawesome/vue-fontawesome": "^2.0.8",
     "@fullcalendar/core": "^5.11.0",
     "@fullcalendar/daygrid": "^5.11.0",
     "@fullcalendar/interaction": "^5.11.0",
@@ -36,6 +33,7 @@
     "@iconify-json/ri": "^1.1.1",
     "@nuxt/types": "npm:@nuxt/types-edge@2.16.0-27616340.013f051b",
     "@nuxt/typescript-build": "^2.1.0",
+    "@nuxt/typescript-runtime": "^2.1.0",
     "@pinia/nuxt": "^0.3.0",
     "@vueuse/core": "^8.9.4",
     "@vueuse/nuxt": "^8.9.4",
