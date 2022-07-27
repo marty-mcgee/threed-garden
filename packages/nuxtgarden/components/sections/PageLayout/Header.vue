@@ -1,7 +1,7 @@
 <template>
+  <!-- *dashboard* layout: header -->
   <div id="MMHEADER">
     <LogoGarden />
-    <!-- *dashboard* layout: header -->
     |<NuxtLink to="/about">
       About
     </NuxtLink>
@@ -10,6 +10,9 @@
     </NuxtLink>
     |<NuxtLink to="/pinia">
       Pinia
+    </NuxtLink>
+    |<NuxtLink to="/editor">
+      Editor
     </NuxtLink>
     <span class="m-1 position-absolute end-0">
       User: {{ userStore.getUser.username }}
@@ -24,7 +27,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { useUserStore } from "@/composables/stores/UserStore"
 import { useEventStore } from "@/composables/stores/EventStore"
 import { useUIStore } from "@/composables/stores/UIStore"

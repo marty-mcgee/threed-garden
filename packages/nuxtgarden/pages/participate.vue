@@ -1,21 +1,38 @@
 <template>
-  <default-dashboard />
+  <GardenDashboard />
+  <!-- <div @click="handleNavigate">click</div> -->
 </template>
 
 <script>
-import DefaultDashboard from "@/components/dashboards/Default.vue"
+// import { useNuxtApp } from "nuxt/app"
+import GardenDashboard from "@/components/dashboards/Automotive.vue"
 
 definePageMeta({
-  // layout: "default",
-  layout: "custom",
-  // layout: "dashboard",
+  layout: "threed", // default | dashboard | threed | custom
   title: "Participate",
 })
 
 export default {
   name: "Participate",
   components: {
-    DefaultDashboard,
+    GardenDashboard,
   },
+  // setup() {
+
+  //   const nuxtApp = useNuxtApp()
+
+  //   definePageMeta({
+  //     layout: "threed", // default | dashboard | threed | custom
+  //     title: "Participate",
+  //   })
+
+  //   return {}
+
+  // },
+  // methods: {
+  //   handleNavigate = () => {
+  //     console.log('nuxtApp', nuxtApp)
+  //   }
+  // }
 }
 </script>

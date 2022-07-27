@@ -1,4 +1,5 @@
 <template>
+  <!-- *dashboard* layout: footer -->
   <div id="MMFOOTER">
     <hr class="m-1">
     <footer class="py-2 footer">
@@ -36,6 +37,9 @@
             </NuxtLink>
             |<NuxtLink to="/pinia">
               Pinia
+            </NuxtLink>
+            |<NuxtLink to="/editor">
+              Editor
             </NuxtLink>
             <!-- 
             <ul
@@ -91,7 +95,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { useUserStore } from "@/composables/stores/UserStore"
 import { useEventStore } from "@/composables/stores/EventStore"
 import { useUIStore } from "@/composables/stores/UIStore"
@@ -141,18 +145,3 @@ export default {
   }
 } // end export default
 </script>
-<!-- 
-<script setup>
-import IconXmark from '~icons/fa6-solid/xmark'
-import IconAccountBox from '~icons/mdi/account-box'
-import TastyPizza from '~icons/noto-v1/pizza'
-import IconPs from '~icons/ri/playstation-line'
-</script>
-
-<template>
-  <icon-xmark style="font-size: 2em; color: blue" />
-  <icon-account-box style="font-size: 2em; color: red" />
-  <tasty-pizza style="font-size: 2em" />
-  <icon-ps style="font-size: 2em" />
-</template>
--->
