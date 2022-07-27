@@ -155,8 +155,9 @@
 </template>
 
 <script>
-import "leaflet/dist/leaflet.css";
 // [MM] CARTOGRAPHY !!!
+/* [MM] @import "leaflet"; */
+// import "leaflet/dist/leaflet.css";
 // import L from "leaflet";
 
 export default {

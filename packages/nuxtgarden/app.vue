@@ -9,7 +9,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { useUserStore } from "@/composables/stores/UserStore"
 import { useEventStore } from "@/composables/stores/EventStore"
 import { useUIStore } from "@/composables/stores/UIStore"
@@ -17,7 +17,7 @@ import { useCounterStore } from "@/composables/stores/CounterStore"
 
 // implicit calls to (what may/should be) auto-imports from nuxt
 // import { defineComponent } from "vue"
-import { useNuxtApp, useRoute, useHead } from "nuxt/app"
+// import { useNuxtApp, useRoute, useHead } from "nuxt/app"
 
 export default {
   setup() {

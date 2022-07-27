@@ -6,8 +6,8 @@
 import DefaultDashboard from "@/components/dashboards/Default.vue"
 
 definePageMeta({
-  // layout: "default",
-  layout: "custom",
+  layout: "default",
+  // layout: "custom",
   // layout: "dashboard",
   title: "About",
 })

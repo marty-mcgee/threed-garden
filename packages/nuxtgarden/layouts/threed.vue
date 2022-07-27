@@ -1,5 +1,5 @@
 <template>
-  <div id="MMDASHBOARD">
+  <div id="MMTHREED">
     <slot name="header">
       <Header class="m-1" />
     </slot>
@@ -18,7 +18,10 @@
         id="main" 
         class="main-content border-radius-lg"
       >
-        <SmartHome />
+        <!-- <SmartHome /> -->
+        <div>
+          [MM] THREED
+        </div>
       </main>
     </slot>
     <slot name="footer">
@@ -31,25 +34,25 @@
 import Header from "@/components/sections/pagelayout/Header.vue"
 import Footer from "@/components/sections/pagelayout/Footer2.vue"
 import Sidenav from "@/components/sections/sidenav/Sidenav.vue"
-import SmartHome from "@/components/dashboards/SmartHome.vue"
+// import SmartHome from "@/components/dashboards/SmartHome.vue"
 // import Navbar from "@/components/sections/navbars/Navbar.vue"
 // import Configurator from "@/components/configs/Configurator.vue"
 
 export default {
-  name: "LayoutDashboard",
+  name: "LayoutThreeD",
   components: {
     Header,
     Footer,
     Sidenav,
-    SmartHome,
+    // SmartHome,
     // Navbar,
     // Configurator,
   },
-  setup() {
-    // setup() returns an object
-    return {
-      message: "HEY HEY HEY"
-    }
-  }
+  // setup() {
+  //   // setup() returns an object
+  //   return {
+  //     message: "HEY HEY HEY"
+  //   }
+  // }
 } // end export default
 </script>
