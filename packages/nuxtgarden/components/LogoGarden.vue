@@ -24,7 +24,7 @@ export default {
     const logo = Logo // "#LOGO"
     const src = Logo // Logo.toString()
     const title = "ThreeDGarden Dashboard"
-    const url = "/#LOGO" // "#HEYHEYHEY"
+    const url = "/" // "#HEYHEYHEY"
     // const foo = ref(1)
     // const bar = reactive({ name: "garden" })
 

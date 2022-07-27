@@ -59,7 +59,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { useCounterStore } from "~/composables/stores/CounterStore"
 import LogoPinia from "~/components/LogoPinia.vue"
 

@@ -15,7 +15,7 @@
                     role="tab"
                     aria-controls="cam1"
                     aria-selected="true"
-                  >Kitchen</a>
+                  >Garden 1</a>
                 </li>
                 <li class="nav-item">
                   <a
@@ -25,7 +25,7 @@
                     role="tab"
                     aria-controls="cam2"
                     aria-selected="false"
-                  >Living</a>
+                  >Garden 2</a>
                 </li>
                 <li class="nav-item">
                   <a
@@ -35,7 +35,7 @@
                     role="tab"
                     aria-controls="cam3"
                     aria-selected="false"
-                  >Attic</a>
+                  >Garden 3</a>
                 </li>
               </ul>
             </div>
@@ -89,7 +89,7 @@
                 }"
               >
                 <div class="top-0 position-absolute d-flex w-100">
-                  <p class="p-3 mb-0 text-white">17.05.2021 4:34PM</p>
+                  <p class="p-3 mb-0 text-white">{{ dateCurrent }}</p>
                   <div class="p-3 ms-auto">
                     <span class="badge badge-secondary">
                       <i class="fas fa-dot-circle text-danger"></i>
@@ -154,7 +154,7 @@
                       <p
                         class="mb-0 text-sm text-white text-capitalize font-weight-bold opacity-7"
                       >Weather today</p>
-                      <h5 class="mb-0 text-white font-weight-bolder">San Francisco - 29 °C</h5>
+                      <h5 class="mb-0 text-white font-weight-bolder">Fort Bragg: 72°F</h5>
                     </div>
                   </div>
                   <div class="col-4 text-end">
@@ -174,9 +174,9 @@
           <div class="col-md-6">
             <temperature-card
               id="status1"
-              status="21 "
-              unit=" °C"
-              title="Living Room"
+              status="77 "
+              unit=" °F"
+              title="Garden"
               desc="Temperature"
             />
           </div>
@@ -188,7 +188,7 @@
           <div class="col-md-6">
             <temperature-card
               id="status3"
-              status="87 "
+              status="16 "
               unit=" m³"
               title="Water"
               desc="Consumption"
@@ -197,10 +197,10 @@
           <div class="mt-4 col-md-6 mt-md-0">
             <temperature-card
               id="status4"
-              status="417 "
-              unit=" GB"
+              status="121 "
+              unit=" MB"
               title="Internet"
-              desc="All devices"
+              desc="All Devices"
             />
           </div>
         </div>
@@ -218,16 +218,16 @@
           <div class="mt-4 col-sm-6 mt-sm-0">
             <div class="card h-100">
               <div class="p-3 text-center card-body">
-                <h6 class="text-start">Device limit</h6>
+                <h6 class="text-start">Device Limit</h6>
 
                 <h4 class="font-weight-bold mt-n7">
                   <span id="value" class="text-dark">21</span>
-                  <span class="text-body">°C</span>
+                  <span class="text-body">°F</span>
                 </h4>
                 <p class="mt-5 mb-0 ps-1">
-                  <span class="text-xs">16°C</span>
-                  <span class="px-3">Temperature</span>
-                  <span class="text-xs">38°C</span>
+                  <span class="text-xs">56 °F</span>
+                  <span class="px-3">&lt; Temperature &gt;</span>
+                  <span class="text-xs">88 °F</span>
                 </p>
               </div>
             </div>
@@ -266,7 +266,7 @@
       <div class="mt-4 col-lg-2 col-sm-6 mt-lg-0">
         <switch-card
           state="Off"
-          state-text="Air Conditioner"
+          state-text="Airflow Fan"
           state-description="Inactive since: 1 hour"
           class-custom="mt-4"
         >
@@ -304,7 +304,7 @@
       <div class="mt-4 col-lg-2 col-sm-6 mt-sm-0">
         <div class="card h-100">
           <div class="text-center card-body d-flex flex-column justify-content-center">
-            <a href="javascript:;">
+            <a href="javascript:">
               <i class="mb-3 fa fa-plus text-secondary" aria-hidden="true"></i>
               <h5 class="text-secondary">New device</h5>
             </a>
@@ -316,17 +316,17 @@
 </template>
 
 <script>
-import ConsumptionRoomChart from "@/components/sections/Charts/ConsumptionRoomChart.vue";
-import ConsumptionDayChart from "@/components/sections/Charts/ConsumptionDayChart.vue";
-import TemperatureCard from "@/components/sections/Cards/TempCard.vue";
-import SwitchCard from "@/components/sections/Cards/SwitchCard.vue";
-import Icon from "@/components/vitesoft/Icon.vue";
+import ConsumptionRoomChart from "@/components/sections/Charts/ConsumptionRoomChart.vue"
+import ConsumptionDayChart from "@/components/sections/Charts/ConsumptionDayChart.vue"
+import TemperatureCard from "@/components/sections/Cards/TempCard.vue"
+import SwitchCard from "@/components/sections/Cards/SwitchCard.vue"
+import Icon from "@/components/vitesoft/Icon.vue"
 import bgImg1 from '@/assets/img/bg-smart-home-1.jpg'
 import bgImg2 from '@/assets/img/bg-smart-home-2.jpg'
 import bgImg3 from '@/assets/img/home-decor-3.jpg'
 
-import setNavPills from "@/assets/js/nav-pills.js";
-import setTooltip from "@/assets/js/tooltip.js";
+import setNavPills from "@/assets/js/nav-pills.js"
+import setTooltip from "@/assets/js/tooltip.js"
 
 export default {
   name: "SmartHome",
@@ -338,46 +338,48 @@ export default {
     Icon,
   },
   data() {
+    const dateCurrent = Date.toLocaleString()
     return {
       showMenu: false,
       bgImg1,
       bgImg2,
-      bgImg3
-    };
+      bgImg3,
+      dateCurrent
+    }
   },
 
   mounted() {
-    setNavPills();
-    setTooltip();
+    setNavPills()
+    setTooltip()
     // Rounded slider
     const setValue = function (value, active) {
       document.querySelectorAll("round-slider").forEach(function (el) {
-        if (el.value === undefined) return;
-        el.value = value;
-      });
-      const span = document.querySelector("#value");
-      span.innerHTML = value;
-      if (active) span.style.color = "red";
-      else span.style.color = "black";
-    };
+        if (el.value === undefined) return
+        el.value = value
+      })
+      const span = document.querySelector("#value")
+      span.innerHTML = value
+      if (active) span.style.color = "red"
+      else span.style.color = "black"
+    }
 
     document.querySelectorAll("round-slider").forEach(function (el) {
       el.addEventListener("value-changed", function (ev) {
-        if (ev.detail.value !== undefined) setValue(ev.detail.value, false);
+        if (ev.detail.value !== undefined) setValue(ev.detail.value, false)
         // eslint-disable-next-line no-undef
-        else if (ev.detail.low !== undefined) setLow(ev.detail.low, false);
+        else if (ev.detail.low !== undefined) setLow(ev.detail.low, false)
         // eslint-disable-next-line no-undef
-        else if (ev.detail.high !== undefined) setHigh(ev.detail.high, false);
-      });
+        else if (ev.detail.high !== undefined) setHigh(ev.detail.high, false)
+      })
 
       el.addEventListener("value-changing", function (ev) {
-        if (ev.detail.value !== undefined) setValue(ev.detail.value, true);
+        if (ev.detail.value !== undefined) setValue(ev.detail.value, true)
         // eslint-disable-next-line no-undef
-        else if (ev.detail.low !== undefined) setLow(ev.detail.low, true);
+        else if (ev.detail.low !== undefined) setLow(ev.detail.low, true)
         // eslint-disable-next-line no-undef
-        else if (ev.detail.high !== undefined) setHigh(ev.detail.high, true);
-      });
-    });
+        else if (ev.detail.high !== undefined) setHigh(ev.detail.high, true)
+      })
+    })
   },
-};
+}
 </script>

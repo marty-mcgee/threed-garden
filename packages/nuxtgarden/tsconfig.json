@@ -12,8 +12,9 @@
       "DOM"
     ],
     "esModuleInterop": true,
+    "noImplicitAny": false,
     "allowJs": true,
-    "checkJs": true,
+    "checkJs": false,
     "sourceMap": true,
     "strict": false,
     "noEmit": true,
