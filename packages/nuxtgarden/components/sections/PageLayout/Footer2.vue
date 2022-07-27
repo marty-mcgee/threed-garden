@@ -5,27 +5,14 @@
     <footer class="py-2 footer">
       <div class="container-fluid">
         <div class="row align-items-center justify-content-lg-between">
-          <div class="mb-4 col-lg-6 mb-lg-0">
-            <div
-              class="text-sm text-center copyright text-muted text-lg-start"
-            >
-              © {{ new Date().getFullYear() }} 
-              ThreeD Garden, running on 
-              <a
-                href="https://companyjuice.com"
-                class="font-weight-normal"
-                target="_blank"
-              >
-                Company Juice
-              </a>.
-              <i class="fa fa-heart"></i>
-              <icon-xmark style="font-size: 2em; color: blue" />
-              <icon-account-box style="font-size: 2em; color: red" />
-              <tasty-pizza style="font-size: 2em" />
-              <icon-ps style="font-size: 2em" />
-            </div>
+          <div class="mb-4 col-lg-4 mb-lg-0">
+            <i class="fa fa-heart"></i>
+            <tasty-pizza style="font-size: 1em;" />
+            <icon-ps style="font-size: 1em;" />
+            <icon-account-box style="font-size: 1em; color: green;" />
+            <icon-xmark style="font-size: 1em; color: orange;" />
           </div>
-          <div class="col-lg-6 nav nav-footer justify-content-center justify-content-lg-end">
+          <div class="mb-4 col-lg-4 mb-lg-0">
             <NuxtLink to="/">
               ThreeD Garden
             </NuxtLink>
@@ -79,6 +66,21 @@
               </li>
             </ul>
             -->
+          </div>
+          <div class="mb-4 col-lg-4 mb-lg-0">
+            <div
+              class="text-sm text-center copyright text-muted text-lg-end"
+            >
+              © {{ new Date().getFullYear() }} 
+              ThreeD Garden, running on 
+              <a
+                href="https://companyjuice.com"
+                class="font-weight-normal"
+                target="_blank"
+              >
+                Company Juice
+              </a>.
+            </div>
           </div>
         </div>
       </div>
