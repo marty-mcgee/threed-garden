@@ -28,16 +28,23 @@ export default {
     const counterStore = useCounterStore()
 
     // USENUXTAPP
-    // function useMyComposable () {
-    //   const nuxtApp = useNuxtApp()
-    //   // access runtime nuxt app instance
-    //   nuxtApp.use(UIDashboard)
-    // }
-    // useMyComposable()
-
+    // ==========
     const nuxtApp = useNuxtApp()
-    nuxtApp.provide("hello", (name) => `Hello ${name}!`)
-    console.log(nuxtApp.$hello("Garden")) // Prints "Hello Garden!"
+    nuxtApp.provide("hello", (name) => `=== Hello ${name} ===`)
+    console.log(nuxtApp.$hello("Garden")) // Prints "Hello Garden"
+
+    // COMPOSABLE FUNCTION (RETURNABLE ???)
+    // function useMyComposable() {
+    const useMyComposable = () => {
+      const nuxtApp = useNuxtApp()
+      // access runtime nuxt app instance
+      // nuxtApp.use(UIDashboard)
+      nuxtApp.provide("threed", (name) => `=== ThreeD: ${name} ===`)
+      console.log(nuxtApp.$threed("HEY HEY HEY")) // Prints "ThreeD: HEY HEY HEY"
+    }
+    // call composable function
+    // useMyComposable()
+    
 
 
     // get current (page) route + route.meta.title
@@ -77,7 +84,27 @@ export default {
       eventStore,
       uiStore,
       counterStore,
+      useMyComposable
     }
-  }
+  },
+  methods: {
+    goAheadUseMyComposable: () => {
+      console.log("GO AHEAD")
+      this.useMyComposable()
+    }
+  },
+  // never runs ???
+  // onMounted() {
+  //   console.log("ONMOUNTED")
+  //   this.goAheadUseMyComposable()
+  //   return {
+  //   }
+  // },
+  mounted() {
+    console.log("MOUNTED")
+    this.goAheadUseMyComposable()
+    return {
+    }
+  },
 } // end export default
 </script>
