@@ -3,7 +3,7 @@ import type { UserModule } from '~/types'
 
 // Setup Pinia
 // https://pinia.esm.dev/
-// Vitespa version
+// Vitegarden/Vitespa version
 export const install: UserModule = ({ app }) => {
   const pinia = createPinia()
   app.use(pinia)
