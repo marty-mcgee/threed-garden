@@ -27,32 +27,33 @@ export default {
     const uiStore = useUIStore()
     const counterStore = useCounterStore()
 
-    // USENUXTAPP
-    // ==========
+    // USENUXTAPP (COMPOSABLE)
+    // =========================
     const nuxtApp = useNuxtApp()
     nuxtApp.provide("hello", (name) => `=== Hello ${name} ===`)
     console.log(nuxtApp.$hello("Garden")) // Prints "Hello Garden"
 
     // COMPOSABLE FUNCTION (RETURNABLE ???)
     // function useMyComposable() {
-    const useMyComposable = () => {
+    const useMyComposable = (message = "HEY HEY HEY") => {
       const nuxtApp = useNuxtApp()
       // access runtime nuxt app instance
       // nuxtApp.use(UIDashboard)
       nuxtApp.provide("threed", (name) => `=== ThreeD: ${name} ===`)
-      console.log(nuxtApp.$threed("HEY HEY HEY")) // Prints "ThreeD: HEY HEY HEY"
+      console.log(nuxtApp.$threed(message)) // Prints "ThreeD: HEY HEY HEY" by default
     }
-    // call composable function
-    // useMyComposable()
+    // call composable function (test)
+    useMyComposable()
     
-
-
+    // =========================
+    // ROUTE (PAGE: META, TITLE)
     // get current (page) route + route.meta.title
     const route = useRoute()
     // console.log("route", route)
     // console.log("route.meta", route.meta)
     const title = route.meta.title
     // console.log("title", route.meta.title)
+    // =========================
 
     // DOM <head>
     useHead({
@@ -72,10 +73,12 @@ export default {
       }
     })
 
+    // =========================
     // user authentication
     if (route.params.group === "admins" && !route.params.id) {
       console.error("Warning! User not authenticated!")
     }
+    // =========================
 
     // setup() returns an object
     return {
@@ -84,25 +87,32 @@ export default {
       eventStore,
       uiStore,
       counterStore,
-      useMyComposable
+      //useMyComposable
     }
   },
   methods: {
-    goAheadUseMyComposable: () => {
-      console.log("GO AHEAD")
-      this.useMyComposable()
+    goAheadUseMyComposableMethod: async () => {
+      console.log("GO AHEAD (METHODS)")
+      await useMyComposable("GO AHEAD (from METHODS)")
+    }
+  },
+  computed: {
+    goAheadUseMyComposableComputed: () => {
+      console.log("GO AHEAD (COMPUTED)")
+      useMyComposable("GO AHEAD (from COMPUTED)")
     }
   },
   // never runs ???
   // onMounted() {
   //   console.log("ONMOUNTED")
-  //   this.goAheadUseMyComposable()
+  //   goAheadUseMyComposable()
   //   return {
   //   }
   // },
   mounted() {
     console.log("MOUNTED")
-    this.goAheadUseMyComposable()
+    this.goAheadUseMyComposableMethod()
+    goAheadUseMyComposableComputed()
     return {
     }
   },

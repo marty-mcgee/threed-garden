@@ -18,7 +18,8 @@
         id="main" 
         class="main-content border-radius-lg"
       >
-        <SmartHome />
+        <ThreeDGarden />
+        <!-- <SmartHome /> -->
       </main>
     </slot>
     <slot name="footer">
@@ -31,17 +32,19 @@
 import Header from "@/components/sections/pagelayout/Header.vue"
 import Footer from "@/components/sections/pagelayout/Footer2.vue"
 import Sidenav from "@/components/sections/sidenav/Sidenav.vue"
-import SmartHome from "@/components/dashboards/SmartHome.vue"
+import ThreeDGarden from "@/components/dashboards/ThreeDGarden.vue"
+// import SmartHome from "@/components/dashboards/SmartHome.vue"
 // import Navbar from "@/components/sections/navbars/Navbar.vue"
 // import Configurator from "@/components/configs/Configurator.vue"
-
+ 
 export default {
   name: "LayoutDashboard",
   components: {
     Header,
     Footer,
     Sidenav,
-    SmartHome,
+    ThreeDGarden,
+    // SmartHome,
     // Navbar,
     // Configurator,
   },

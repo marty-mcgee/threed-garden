@@ -153,7 +153,7 @@
                     <div class="numbers">
                       <p
                         class="mb-0 text-sm text-white text-capitalize font-weight-bold opacity-7"
-                      >Weather Now</p>
+                      >Weather Today</p>
                       <h5 class="mb-0 text-white font-weight-bolder">Fort Bragg: 72°F</h5>
                     </div>
                   </div>
