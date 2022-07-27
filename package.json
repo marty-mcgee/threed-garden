@@ -17,7 +17,7 @@
     "packages": [
       "packages/threed",
       "packages/nuxtgarden",
-      "packages/vitespa",
+      "packages/vitegarden",
       "packages/hardhat",
       "packages/subgraph",
       "packages/vue-dapp"
