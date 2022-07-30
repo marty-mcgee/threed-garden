@@ -1,0 +1,5 @@
+{
+  "baseUrl": "http://localhost:3333",
+  "chromeWebSecurity": false,
+  "pluginsFile": "tests/e2e/plugins/index.js"
+}
