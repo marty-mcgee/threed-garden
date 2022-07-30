@@ -34,9 +34,10 @@ export default defineComponent({
       if (await Metamask.check()) {
         metamaskDisabled.value = false
       }
-      if (infuraId && (await Walletconnect.check())) {
-        walletconnectDisabled.value = false
-      }
+      // [MM] debugging
+      // if (infuraId && (await Walletconnect.check())) {
+      //   walletconnectDisabled.value = false
+      // }
       if (infuraId && appName && (await Walletlink.check())) {
         walletlinkDisabled.value = false
       }

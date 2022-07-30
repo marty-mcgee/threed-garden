@@ -174,8 +174,8 @@
           <div class="col-md-6">
             <temperature-card
               id="status1"
-              status="77 "
-              unit=" °F"
+              status="77"
+              unit="°F"
               title="Garden"
               desc="Temperature"
             />
@@ -188,8 +188,8 @@
           <div class="col-md-6">
             <temperature-card
               id="status3"
-              status="16 "
-              unit=" m³"
+              status="16"
+              unit="m³"
               title="Water"
               desc="Consumption"
             />
@@ -197,8 +197,8 @@
           <div class="mt-4 col-md-6 mt-md-0">
             <temperature-card
               id="status4"
-              status="121 "
-              unit=" MB"
+              status="121"
+              unit="MB"
               title="Internet"
               desc="All Devices"
             />
@@ -321,15 +321,15 @@ import ConsumptionDayChart from "@/components/sections/Charts/ConsumptionDayChar
 import TemperatureCard from "@/components/sections/Cards/TempCard.vue"
 import SwitchCard from "@/components/sections/Cards/SwitchCard.vue"
 import Icon from "@/components/vitesoft/Icon.vue"
-import bgImg1 from '@/assets/img/bg-smart-home-1.jpg'
-import bgImg2 from '@/assets/img/bg-smart-home-2.jpg'
-import bgImg3 from '@/assets/img/home-decor-3.jpg'
+import bgImg1 from '@/assets/img/bg-threedgarden-001.jpg'
+import bgImg2 from '@/assets/img/bg-threedgarden-002.jpg'
+import bgImg3 from '@/assets/img/bg-threedgarden-003.jpg'
 
 import setNavPills from "@/assets/js/nav-pills.js"
 import setTooltip from "@/assets/js/tooltip.js"
 
 export default {
-  name: "SmartHome",
+  name: "ThreeDGarden",
   components: {
     TemperatureCard,
     ConsumptionRoomChart,
