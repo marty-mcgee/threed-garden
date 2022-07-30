@@ -2,6 +2,7 @@
   <div>
     EDITOR -- tiny mce
     <!-- <editor api-key="9pbejhvhhgrhtfgqnu32zunmtlrdi5zt1xaw2dcuhn552pw4" :init="myInit" /> -->
+    <editor api-key="9pbejhvhhgrhtfgqnu32zunmtlrdi5zt1xaw2dcuhn552pw4" />
   </div>
 </template>
 <script>
