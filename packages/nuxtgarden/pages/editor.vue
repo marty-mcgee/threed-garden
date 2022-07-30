@@ -1,8 +1,8 @@
 <template>
   <div>
     EDITOR -- tiny mce
-    <!-- <editor api-key="9pbejhvhhgrhtfgqnu32zunmtlrdi5zt1xaw2dcuhn552pw4" :init="myInit" /> -->
-    <editor api-key="9pbejhvhhgrhtfgqnu32zunmtlrdi5zt1xaw2dcuhn552pw4" />
+    <!-- <editor api-key="9pbejhvhhgrhtfgqnu32zunmtlrdi5zt1xaw2dcuhn552pw4" /> -->
+    <editor api-key="9pbejhvhhgrhtfgqnu32zunmtlrdi5zt1xaw2dcuhn552pw4" :init="myInit" />
   </div>
 </template>
 <script>
@@ -13,6 +13,20 @@ definePageMeta({
   title: "Editor (tinymce)",
 })
 
+export default {
+  data() {
+    return {
+      myInit: {
+        language: "en",
+        branding: false,
+        menubar: true,
+        height: 300,
+      }
+    }
+  }
+}
+
+// MORE OPTIONS
 // export default defineComponent({
 //   data() {
 //     return {
