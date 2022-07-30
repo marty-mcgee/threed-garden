@@ -17,9 +17,9 @@
     <span class="m-1 position-absolute end-0">
       User: {{ userStore.getUser.username }}
       | Route: {{ title }}
-      | UI: {{ uiStore.getUI.name }}
-      | Event: {{ eventStore.getEvent.name }}
-      | Counter: {{ counterStore.getCount }}
+      <!-- | UI: {{ uiStore.getUI.name }}
+      | Event: {{ eventStore.getEvent.name }} -->
+      | $<!-- Counter -->: {{ counterStore.getCount }}
       <button @click="counterStore.increment()">+</button>
       <button @click="counterStore.decrement()">-</button>
     </span>
@@ -50,7 +50,7 @@ export default {
     // console.log("route", route)
     // console.log("route.meta", route.meta)
     const title = route.meta.title
-    // console.log("title", route.meta.title)
+    console.log("title", route.meta.title)
 
 
     // user authentication

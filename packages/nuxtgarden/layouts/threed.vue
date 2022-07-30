@@ -18,9 +18,9 @@
         id="main" 
         class="main-content border-radius-lg"
       >
-        <div>
+        <!-- <div>
           [MM] THREED
-        </div>
+        </div> -->
         <ThreeDGarden />
       </main>
     </slot>
@@ -37,7 +37,7 @@ import Sidenav from "@/components/sections/sidenav/Sidenav.vue"
 import ThreeDGarden from "@/components/dashboards/ThreeDGarden.vue"
 // import SmartHome from "@/components/dashboards/SmartHome.vue"
 // import Navbar from "@/components/sections/navbars/Navbar.vue"
-// import Configurator from "@/components/configs/Configurator.vue"
+import Configurator from "@/components/configs/Configurator.vue"
 
 export default {
   name: "LayoutThreeD",
@@ -48,13 +48,13 @@ export default {
     ThreeDGarden,
     // SmartHome,
     // Navbar,
-    // Configurator,
+    Configurator,
   },
-  // setup() {
-  //   // setup() returns an object
-  //   return {
-  //     message: "HEY HEY HEY"
-  //   }
-  // }
+  setup() {
+    // setup() returns an object
+    return {
+      message: "HEY HEY HEY"
+    }
+  }
 } // end export default
 </script>

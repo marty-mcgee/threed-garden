@@ -43,7 +43,7 @@ export default {
       console.log(nuxtApp.$threed(message)) // Prints "ThreeD: HEY HEY HEY" by default
     }
     // call composable function (test)
-    useMyComposable()
+    // useMyComposable() // Prints "ThreeD: HEY HEY HEY" by default
     
     // =========================
     // ROUTE (PAGE: META, TITLE)
@@ -87,32 +87,38 @@ export default {
       eventStore,
       uiStore,
       counterStore,
-      //useMyComposable
+      useMyComposable
     }
   },
   methods: {
+    useMyComposableMethod: (message = "HEY HEY HEY") => {
+      const nuxtApp = useNuxtApp()
+      // access runtime nuxt app instance
+      // nuxtApp.use(UIDashboard)
+      nuxtApp.provide("threed", (name) => `=== ThreeD: ${name} ===`)
+      console.log(nuxtApp.$threed(message)) // Prints "ThreeD: HEY HEY HEY" by default
+    },
     goAheadUseMyComposableMethod: async () => {
       console.log("GO AHEAD (METHODS)")
-      await useMyComposable("GO AHEAD (from METHODS)")
+      // let meAwait = await this.useMyComposable("GO AHEAD (from METHODS)")
+      // console.log("meAwait", meAwait)
+      // this.useMyComposable("GO AHEAD (from METHODS)") // "this" is not defined
+      // useMyComposable("GO AHEAD (from METHODS)") // is not defined
+      // useMyComposableMethod("GO AHEAD (from METHODS)") // is not defined
+      // this.useMyComposableMethod("GO AHEAD (from METHODS)") // "this" is not defined
     }
   },
   computed: {
     goAheadUseMyComposableComputed: () => {
       console.log("GO AHEAD (COMPUTED)")
-      useMyComposable("GO AHEAD (from COMPUTED)")
+      // this.useMyComposable("GO AHEAD (from COMPUTED)")
     }
   },
-  // never runs ???
-  // onMounted() {
-  //   console.log("ONMOUNTED")
-  //   goAheadUseMyComposable()
-  //   return {
-  //   }
-  // },
   mounted() {
     console.log("MOUNTED")
     this.goAheadUseMyComposableMethod()
-    goAheadUseMyComposableComputed()
+    this.useMyComposableMethod()
+    // this.goAheadUseMyComposableComputed() // is not a function
     return {
     }
   },

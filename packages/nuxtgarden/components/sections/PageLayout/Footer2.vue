@@ -14,7 +14,7 @@
           </div>
           <div class="mb-4 col-lg-4 mb-lg-0">
             <NuxtLink to="/">
-              ThreeD Garden
+              Home
             </NuxtLink>
             |<NuxtLink to="/about">
               About
@@ -71,8 +71,15 @@
             <div
               class="text-sm text-center copyright text-muted text-lg-end"
             >
-              © {{ new Date().getFullYear() }} 
-              ThreeD Garden, running on 
+              © {{ new Date().getFullYear() }}
+              <a
+                href="https://github.com/marty-mcgee/threed-garden"
+                class="font-weight-normal"
+                target="_blank"
+              >
+              ThreeD Garden
+              </a>,
+              running on 
               <a
                 href="https://companyjuice.com"
                 class="font-weight-normal"

@@ -8,7 +8,7 @@
 // import SmartHome from "@/components/dashboards/SmartHome.vue"
 
 definePageMeta({
-  layout: "dashboard", // default | dashboard | threed | custom
+  layout: "threed", // default | dashboard | threed | custom
   title: "Index",
 })
 

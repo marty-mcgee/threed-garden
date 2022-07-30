@@ -7,6 +7,11 @@
 <script>
 // import { defineComponent } from "vue"
 
+definePageMeta({
+  layout: "custom", // default | dashboard | threed | custom
+  title: "Editor (tinymce)",
+})
+
 // export default defineComponent({
 //   data() {
 //     return {
