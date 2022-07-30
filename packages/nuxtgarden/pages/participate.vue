@@ -8,7 +8,7 @@
 import GardenDashboard from "@/components/dashboards/Automotive.vue"
 
 definePageMeta({
-  layout: "threed", // default | dashboard | threed | custom
+  layout: "custom", // default | dashboard | threed | custom
   title: "Participate",
 })
 
