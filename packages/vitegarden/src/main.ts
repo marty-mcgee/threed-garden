@@ -1,7 +1,7 @@
 // from vue-dapp
 export * from './constants'
 export * from './composables'
-export * from './wallets'
+// export * from './wallets'
 export * from './utils'
 export * from './plugin'
 
@@ -43,6 +43,8 @@ app.config.globalProperties.window = window
 
 // window.global = window
 // let global = globalThis
+// console.log("global", global)
+console.log("globalThis", globalThis)
 
 // import process from 'process'
 // window.process = process

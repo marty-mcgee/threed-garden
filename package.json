@@ -1,6 +1,6 @@
 {
   "name": "@threed/threed-garden",
-  "version": "0.7.12",
+  "version": "0.7.14",
   "description": "ThreeD Garden WP Plugin on Vue3 using Nuxt3 and Farmbot Ruby/JS",
   "repository": {
     "type": "git",

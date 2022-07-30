@@ -6,6 +6,12 @@ declare module 'vue' {
   export interface GlobalComponents {
     App: typeof import('./components/App.vue')['default']
     Board: typeof import('./components/Board.vue')['default']
+    CarbonDicomOverlay: typeof import('~icons/carbon/dicom-overlay')['default']
+    CarbonLanguage: typeof import('~icons/carbon/language')['default']
+    CarbonLogoGithub: typeof import('~icons/carbon/logo-github')['default']
+    CarbonMoon: typeof import('~icons/carbon/moon')['default']
+    CarbonScooter: typeof import('~icons/carbon/scooter')['default']
+    CarbonSun: typeof import('~icons/carbon/sun')['default']
     Counter: typeof import('./components/Counter.vue')['default']
     Documentation: typeof import('./components/Documentation.vue')['default']
     FarmBot: typeof import('./components/FarmBot.vue')['default']

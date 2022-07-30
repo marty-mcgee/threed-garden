@@ -24909,11 +24909,11 @@ function _createClass$2(Constructor, protoProps, staticProps) {
     _defineProperties$2(Constructor, staticProps);
   return Constructor;
 }
-var _require$2 = buffer$2, Buffer$h = _require$2.Buffer;
+var _require$2 = buffer$2, Buffer$i = _require$2.Buffer;
 var _require2 = require$$2$3, inspect$2 = _require2.inspect;
 var custom = inspect$2 && inspect$2.custom || "inspect";
 function copyBuffer(src2, target, offset) {
-  Buffer$h.prototype.copy.call(src2, target, offset);
+  Buffer$i.prototype.copy.call(src2, target, offset);
 }
 var buffer_list = /* @__PURE__ */ function() {
   function BufferList2() {
@@ -24983,8 +24983,8 @@ var buffer_list = /* @__PURE__ */ function() {
     key: "concat",
     value: function concat3(n2) {
       if (this.length === 0)
-        return Buffer$h.alloc(0);
-      var ret = Buffer$h.allocUnsafe(n2 >>> 0);
+        return Buffer$i.alloc(0);
+      var ret = Buffer$i.allocUnsafe(n2 >>> 0);
       var p2 = this.head;
       var i2 = 0;
       while (p2) {
@@ -25049,7 +25049,7 @@ var buffer_list = /* @__PURE__ */ function() {
   }, {
     key: "_getBuffer",
     value: function _getBuffer(n2) {
-      var ret = Buffer$h.allocUnsafe(n2);
+      var ret = Buffer$i.allocUnsafe(n2);
       var p2 = this.head;
       var c2 = 1;
       p2.data.copy(ret);
@@ -25343,14 +25343,14 @@ var internalUtil = {
   deprecate: browser$5
 };
 var Stream$1 = streamBrowser;
-var Buffer$g = buffer$2.Buffer;
+var Buffer$h = buffer$2.Buffer;
 var OurUint8Array$1 = commonjsGlobal.Uint8Array || function() {
 };
 function _uint8ArrayToBuffer$1(chunk) {
-  return Buffer$g.from(chunk);
+  return Buffer$h.from(chunk);
 }
 function _isUint8Array$1(obj) {
-  return Buffer$g.isBuffer(obj) || obj instanceof OurUint8Array$1;
+  return Buffer$h.isBuffer(obj) || obj instanceof OurUint8Array$1;
 }
 var destroyImpl$1 = destroy_1;
 var _require$1 = state, getHighWaterMark$1 = _require$1.getHighWaterMark;
@@ -25478,7 +25478,7 @@ Writable$1.prototype.write = function(chunk, encoding, cb) {
   var state2 = this._writableState;
   var ret = false;
   var isBuf = !state2.objectMode && _isUint8Array$1(chunk);
-  if (isBuf && !Buffer$g.isBuffer(chunk)) {
+  if (isBuf && !Buffer$h.isBuffer(chunk)) {
     chunk = _uint8ArrayToBuffer$1(chunk);
   }
   if (typeof encoding === "function") {
@@ -25526,7 +25526,7 @@ Object.defineProperty(Writable$1.prototype, "writableBuffer", {
 });
 function decodeChunk(state2, chunk, encoding) {
   if (!state2.objectMode && state2.decodeStrings !== false && typeof chunk === "string") {
-    chunk = Buffer$g.from(chunk, encoding);
+    chunk = Buffer$h.from(chunk, encoding);
   }
   return chunk;
 }
@@ -25878,8 +25878,8 @@ Object.defineProperty(Duplex$2.prototype, "destroyed", {
     this._writableState.destroyed = value2;
   }
 });
-var string_decoder = {};
-var safeBuffer = { exports: {} };
+var string_decoder$1 = {};
+var safeBuffer$1 = { exports: {} };
 /*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 (function(module2, exports2) {
   var buffer2 = buffer$2;
@@ -25934,9 +25934,9 @@ var safeBuffer = { exports: {} };
     }
     return buffer2.SlowBuffer(size2);
   };
-})(safeBuffer, safeBuffer.exports);
-var Buffer$f = safeBuffer.exports.Buffer;
-var isEncoding = Buffer$f.isEncoding || function(encoding) {
+})(safeBuffer$1, safeBuffer$1.exports);
+var Buffer$g = safeBuffer$1.exports.Buffer;
+var isEncoding$1 = Buffer$g.isEncoding || function(encoding) {
   encoding = "" + encoding;
   switch (encoding && encoding.toLowerCase()) {
     case "hex":
@@ -25955,7 +25955,7 @@ var isEncoding = Buffer$f.isEncoding || function(encoding) {
       return false;
   }
 };
-function _normalizeEncoding(enc) {
+function _normalizeEncoding$1(enc) {
   if (!enc)
     return "utf8";
   var retried;
@@ -25984,41 +25984,41 @@ function _normalizeEncoding(enc) {
     }
   }
 }
-function normalizeEncoding(enc) {
-  var nenc = _normalizeEncoding(enc);
-  if (typeof nenc !== "string" && (Buffer$f.isEncoding === isEncoding || !isEncoding(enc)))
+function normalizeEncoding$1(enc) {
+  var nenc = _normalizeEncoding$1(enc);
+  if (typeof nenc !== "string" && (Buffer$g.isEncoding === isEncoding$1 || !isEncoding$1(enc)))
     throw new Error("Unknown encoding: " + enc);
   return nenc || enc;
 }
-string_decoder.StringDecoder = StringDecoder$2;
-function StringDecoder$2(encoding) {
-  this.encoding = normalizeEncoding(encoding);
+string_decoder$1.StringDecoder = StringDecoder$3;
+function StringDecoder$3(encoding) {
+  this.encoding = normalizeEncoding$1(encoding);
   var nb;
   switch (this.encoding) {
     case "utf16le":
-      this.text = utf16Text;
-      this.end = utf16End;
+      this.text = utf16Text$1;
+      this.end = utf16End$1;
       nb = 4;
       break;
     case "utf8":
-      this.fillLast = utf8FillLast;
+      this.fillLast = utf8FillLast$1;
       nb = 4;
       break;
     case "base64":
-      this.text = base64Text;
-      this.end = base64End;
+      this.text = base64Text$1;
+      this.end = base64End$1;
       nb = 3;
       break;
     default:
-      this.write = simpleWrite;
-      this.end = simpleEnd;
+      this.write = simpleWrite$1;
+      this.end = simpleEnd$1;
       return;
   }
   this.lastNeed = 0;
   this.lastTotal = 0;
-  this.lastChar = Buffer$f.allocUnsafe(nb);
+  this.lastChar = Buffer$g.allocUnsafe(nb);
 }
-StringDecoder$2.prototype.write = function(buf) {
+StringDecoder$3.prototype.write = function(buf) {
   if (buf.length === 0)
     return "";
   var r2;
@@ -26036,9 +26036,9 @@ StringDecoder$2.prototype.write = function(buf) {
     return r2 ? r2 + this.text(buf, i2) : this.text(buf, i2);
   return r2 || "";
 };
-StringDecoder$2.prototype.end = utf8End;
-StringDecoder$2.prototype.text = utf8Text;
-StringDecoder$2.prototype.fillLast = function(buf) {
+StringDecoder$3.prototype.end = utf8End$1;
+StringDecoder$3.prototype.text = utf8Text$1;
+StringDecoder$3.prototype.fillLast = function(buf) {
   if (this.lastNeed <= buf.length) {
     buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, this.lastNeed);
     return this.lastChar.toString(this.encoding, 0, this.lastTotal);
@@ -26046,7 +26046,7 @@ StringDecoder$2.prototype.fillLast = function(buf) {
   buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, buf.length);
   this.lastNeed -= buf.length;
 };
-function utf8CheckByte(byte2) {
+function utf8CheckByte$1(byte2) {
   if (byte2 <= 127)
     return 0;
   else if (byte2 >> 5 === 6)
@@ -26057,11 +26057,11 @@ function utf8CheckByte(byte2) {
     return 4;
   return byte2 >> 6 === 2 ? -1 : -2;
 }
-function utf8CheckIncomplete(self2, buf, i2) {
+function utf8CheckIncomplete$1(self2, buf, i2) {
   var j2 = buf.length - 1;
   if (j2 < i2)
     return 0;
-  var nb = utf8CheckByte(buf[j2]);
+  var nb = utf8CheckByte$1(buf[j2]);
   if (nb >= 0) {
     if (nb > 0)
       self2.lastNeed = nb - 1;
@@ -26069,7 +26069,7 @@ function utf8CheckIncomplete(self2, buf, i2) {
   }
   if (--j2 < i2 || nb === -2)
     return 0;
-  nb = utf8CheckByte(buf[j2]);
+  nb = utf8CheckByte$1(buf[j2]);
   if (nb >= 0) {
     if (nb > 0)
       self2.lastNeed = nb - 2;
@@ -26077,7 +26077,7 @@ function utf8CheckIncomplete(self2, buf, i2) {
   }
   if (--j2 < i2 || nb === -2)
     return 0;
-  nb = utf8CheckByte(buf[j2]);
+  nb = utf8CheckByte$1(buf[j2]);
   if (nb >= 0) {
     if (nb > 0) {
       if (nb === 2)
@@ -26089,7 +26089,7 @@ function utf8CheckIncomplete(self2, buf, i2) {
   }
   return 0;
 }
-function utf8CheckExtraBytes(self2, buf, p2) {
+function utf8CheckExtraBytes$1(self2, buf, p2) {
   if ((buf[0] & 192) !== 128) {
     self2.lastNeed = 0;
     return "\uFFFD";
@@ -26107,9 +26107,9 @@ function utf8CheckExtraBytes(self2, buf, p2) {
     }
   }
 }
-function utf8FillLast(buf) {
+function utf8FillLast$1(buf) {
   var p2 = this.lastTotal - this.lastNeed;
-  var r2 = utf8CheckExtraBytes(this, buf);
+  var r2 = utf8CheckExtraBytes$1(this, buf);
   if (r2 !== void 0)
     return r2;
   if (this.lastNeed <= buf.length) {
@@ -26119,8 +26119,8 @@ function utf8FillLast(buf) {
   buf.copy(this.lastChar, p2, 0, buf.length);
   this.lastNeed -= buf.length;
 }
-function utf8Text(buf, i2) {
-  var total = utf8CheckIncomplete(this, buf, i2);
+function utf8Text$1(buf, i2) {
+  var total = utf8CheckIncomplete$1(this, buf, i2);
   if (!this.lastNeed)
     return buf.toString("utf8", i2);
   this.lastTotal = total;
@@ -26128,13 +26128,13 @@ function utf8Text(buf, i2) {
   buf.copy(this.lastChar, 0, end);
   return buf.toString("utf8", i2, end);
 }
-function utf8End(buf) {
+function utf8End$1(buf) {
   var r2 = buf && buf.length ? this.write(buf) : "";
   if (this.lastNeed)
     return r2 + "\uFFFD";
   return r2;
 }
-function utf16Text(buf, i2) {
+function utf16Text$1(buf, i2) {
   if ((buf.length - i2) % 2 === 0) {
     var r2 = buf.toString("utf16le", i2);
     if (r2) {
@@ -26154,7 +26154,7 @@ function utf16Text(buf, i2) {
   this.lastChar[0] = buf[buf.length - 1];
   return buf.toString("utf16le", i2, buf.length - 1);
 }
-function utf16End(buf) {
+function utf16End$1(buf) {
   var r2 = buf && buf.length ? this.write(buf) : "";
   if (this.lastNeed) {
     var end = this.lastTotal - this.lastNeed;
@@ -26162,7 +26162,7 @@ function utf16End(buf) {
   }
   return r2;
 }
-function base64Text(buf, i2) {
+function base64Text$1(buf, i2) {
   var n2 = (buf.length - i2) % 3;
   if (n2 === 0)
     return buf.toString("base64", i2);
@@ -26176,16 +26176,16 @@ function base64Text(buf, i2) {
   }
   return buf.toString("base64", i2, buf.length - n2);
 }
-function base64End(buf) {
+function base64End$1(buf) {
   var r2 = buf && buf.length ? this.write(buf) : "";
   if (this.lastNeed)
     return r2 + this.lastChar.toString("base64", 0, 3 - this.lastNeed);
   return r2;
 }
-function simpleWrite(buf) {
+function simpleWrite$1(buf) {
   return buf.toString(this.encoding);
 }
-function simpleEnd(buf) {
+function simpleEnd$1(buf) {
   return buf && buf.length ? this.write(buf) : "";
 }
 var ERR_STREAM_PREMATURE_CLOSE = errorsBrowser.codes.ERR_STREAM_PREMATURE_CLOSE;
@@ -26454,14 +26454,14 @@ var EElistenerCount = function EElistenerCount2(emitter, type) {
   return emitter.listeners(type).length;
 };
 var Stream = streamBrowser;
-var Buffer$e = buffer$2.Buffer;
+var Buffer$f = buffer$2.Buffer;
 var OurUint8Array = commonjsGlobal.Uint8Array || function() {
 };
 function _uint8ArrayToBuffer(chunk) {
-  return Buffer$e.from(chunk);
+  return Buffer$f.from(chunk);
 }
 function _isUint8Array(obj) {
-  return Buffer$e.isBuffer(obj) || obj instanceof OurUint8Array;
+  return Buffer$f.isBuffer(obj) || obj instanceof OurUint8Array;
 }
 var debugUtil = require$$2$3;
 var debug;
@@ -26475,7 +26475,7 @@ var BufferList = buffer_list;
 var destroyImpl = destroy_1;
 var _require = state, getHighWaterMark = _require.getHighWaterMark;
 var _require$codes$2 = errorsBrowser.codes, ERR_INVALID_ARG_TYPE = _require$codes$2.ERR_INVALID_ARG_TYPE, ERR_STREAM_PUSH_AFTER_EOF = _require$codes$2.ERR_STREAM_PUSH_AFTER_EOF, ERR_METHOD_NOT_IMPLEMENTED$1 = _require$codes$2.ERR_METHOD_NOT_IMPLEMENTED, ERR_STREAM_UNSHIFT_AFTER_END_EVENT = _require$codes$2.ERR_STREAM_UNSHIFT_AFTER_END_EVENT;
-var StringDecoder$1;
+var StringDecoder$2;
 var createReadableStreamAsyncIterator;
 var from$2;
 inherits_browser$3.exports(Readable, Stream);
@@ -26523,9 +26523,9 @@ function ReadableState(options, stream, isDuplex) {
   this.decoder = null;
   this.encoding = null;
   if (options.encoding) {
-    if (!StringDecoder$1)
-      StringDecoder$1 = string_decoder.StringDecoder;
-    this.decoder = new StringDecoder$1(options.encoding);
+    if (!StringDecoder$2)
+      StringDecoder$2 = string_decoder$1.StringDecoder;
+    this.decoder = new StringDecoder$2(options.encoding);
     this.encoding = options.encoding;
   }
 }
@@ -26571,7 +26571,7 @@ Readable.prototype.push = function(chunk, encoding) {
     if (typeof chunk === "string") {
       encoding = encoding || state2.defaultEncoding;
       if (encoding !== state2.encoding) {
-        chunk = Buffer$e.from(chunk, encoding);
+        chunk = Buffer$f.from(chunk, encoding);
         encoding = "";
       }
       skipChunkCheck = true;
@@ -26597,7 +26597,7 @@ function readableAddChunk(stream, chunk, encoding, addToFront, skipChunkCheck) {
     if (er) {
       errorOrDestroy(stream, er);
     } else if (state2.objectMode || chunk && chunk.length > 0) {
-      if (typeof chunk !== "string" && !state2.objectMode && Object.getPrototypeOf(chunk) !== Buffer$e.prototype) {
+      if (typeof chunk !== "string" && !state2.objectMode && Object.getPrototypeOf(chunk) !== Buffer$f.prototype) {
         chunk = _uint8ArrayToBuffer(chunk);
       }
       if (addToFront) {
@@ -26654,9 +26654,9 @@ Readable.prototype.isPaused = function() {
   return this._readableState.flowing === false;
 };
 Readable.prototype.setEncoding = function(enc) {
-  if (!StringDecoder$1)
-    StringDecoder$1 = string_decoder.StringDecoder;
-  var decoder = new StringDecoder$1(enc);
+  if (!StringDecoder$2)
+    StringDecoder$2 = string_decoder$1.StringDecoder;
+  var decoder = new StringDecoder$2(enc);
   this._readableState.decoder = decoder;
   this._readableState.encoding = this._readableState.decoder.encoding;
   var p2 = this._readableState.buffer.head;
@@ -31031,7 +31031,7 @@ var MAX_UINT32 = 4294967295;
 function oldBrowser() {
   throw new Error("Secure random number generation is not supported by this browser.\nUse Chrome, Firefox or Internet Explorer 11");
 }
-var Buffer$d = safeBuffer.exports.Buffer;
+var Buffer$e = safeBuffer$1.exports.Buffer;
 var crypto$3 = commonjsGlobal.crypto || commonjsGlobal.msCrypto;
 if (crypto$3 && crypto$3.getRandomValues) {
   browser$4.exports = randomBytes$2;
@@ -31041,7 +31041,7 @@ if (crypto$3 && crypto$3.getRandomValues) {
 function randomBytes$2(size2, cb) {
   if (size2 > MAX_UINT32)
     throw new RangeError("requested too many random bytes");
-  var bytes3 = Buffer$d.allocUnsafe(size2);
+  var bytes3 = Buffer$e.allocUnsafe(size2);
   if (size2 > 0) {
     if (size2 > MAX_BYTES) {
       for (var generated = 0; generated < size2; generated += MAX_BYTES) {
@@ -35863,17 +35863,17 @@ function toBuffer$1(v2) {
   }
   return v2;
 }
-var Buffer$c = safeBuffer.exports.Buffer;
+var Buffer$d = safeBuffer$1.exports.Buffer;
 var Transform$1 = readableBrowser.exports.Transform;
 var inherits$f = inherits_browser$3.exports;
 function throwIfNotStringOrBuffer(val, prefix) {
-  if (!Buffer$c.isBuffer(val) && typeof val !== "string") {
+  if (!Buffer$d.isBuffer(val) && typeof val !== "string") {
     throw new TypeError(prefix + " must be a string or a buffer");
   }
 }
 function HashBase$2(blockSize) {
   Transform$1.call(this);
-  this._block = Buffer$c.allocUnsafe(blockSize);
+  this._block = Buffer$d.allocUnsafe(blockSize);
   this._blockSize = blockSize;
   this._blockOffset = 0;
   this._length = [0, 0, 0, 0];
@@ -35902,8 +35902,8 @@ HashBase$2.prototype.update = function(data, encoding) {
   throwIfNotStringOrBuffer(data, "Data");
   if (this._finalized)
     throw new Error("Digest already called");
-  if (!Buffer$c.isBuffer(data))
-    data = Buffer$c.from(data, encoding);
+  if (!Buffer$d.isBuffer(data))
+    data = Buffer$d.from(data, encoding);
   var block = this._block;
   var offset = 0;
   while (this._blockOffset + data.length - offset >= this._blockSize) {
@@ -35944,7 +35944,7 @@ HashBase$2.prototype._digest = function() {
 var hashBase = HashBase$2;
 var inherits$e = inherits_browser$3.exports;
 var HashBase$1 = hashBase;
-var Buffer$b = safeBuffer.exports.Buffer;
+var Buffer$c = safeBuffer$1.exports.Buffer;
 var ARRAY16$1 = new Array(16);
 function MD5$1() {
   HashBase$1.call(this, 64);
@@ -36042,7 +36042,7 @@ MD5$1.prototype._digest = function() {
   this._block.writeUInt32LE(this._length[0], 56);
   this._block.writeUInt32LE(this._length[1], 60);
   this._update();
-  var buffer2 = Buffer$b.allocUnsafe(16);
+  var buffer2 = Buffer$c.allocUnsafe(16);
   buffer2.writeInt32LE(this._a, 0);
   buffer2.writeInt32LE(this._b, 4);
   buffer2.writeInt32LE(this._c, 8);
@@ -36065,7 +36065,7 @@ function fnI(a2, b2, c2, d2, m2, k2, s2) {
   return rotl$1(a2 + (c2 ^ (b2 | ~d2)) + m2 + k2 | 0, s2) + b2 | 0;
 }
 var md5_js = MD5$1;
-var Buffer$a = buffer$2.Buffer;
+var Buffer$b = buffer$2.Buffer;
 var inherits$d = inherits_browser$3.exports;
 var HashBase = hashBase;
 var ARRAY16 = new Array(16);
@@ -36470,7 +36470,7 @@ RIPEMD160$1.prototype._digest = function() {
   this._block.writeUInt32LE(this._length[0], 56);
   this._block.writeUInt32LE(this._length[1], 60);
   this._update();
-  var buffer2 = Buffer$a.alloc ? Buffer$a.alloc(20) : new Buffer$a(20);
+  var buffer2 = Buffer$b.alloc ? Buffer$b.alloc(20) : new Buffer$b(20);
   buffer2.writeInt32LE(this._a, 0);
   buffer2.writeInt32LE(this._b, 4);
   buffer2.writeInt32LE(this._c, 8);
@@ -36498,9 +36498,9 @@ function fn5(a2, b2, c2, d2, e2, m2, k2, s2) {
 }
 var ripemd160$1 = RIPEMD160$1;
 var sha_js = { exports: {} };
-var Buffer$9 = safeBuffer.exports.Buffer;
+var Buffer$a = safeBuffer$1.exports.Buffer;
 function Hash$7(blockSize, finalSize) {
-  this._block = Buffer$9.alloc(blockSize);
+  this._block = Buffer$a.alloc(blockSize);
   this._finalSize = finalSize;
   this._blockSize = blockSize;
   this._len = 0;
@@ -36508,7 +36508,7 @@ function Hash$7(blockSize, finalSize) {
 Hash$7.prototype.update = function(data, enc) {
   if (typeof data === "string") {
     enc = enc || "utf8";
-    data = Buffer$9.from(data, enc);
+    data = Buffer$a.from(data, enc);
   }
   var block = this._block;
   var blockSize = this._blockSize;
@@ -36556,7 +36556,7 @@ Hash$7.prototype._update = function() {
 var hash$1 = Hash$7;
 var inherits$c = inherits_browser$3.exports;
 var Hash$6 = hash$1;
-var Buffer$8 = safeBuffer.exports.Buffer;
+var Buffer$9 = safeBuffer$1.exports.Buffer;
 var K$4 = [
   1518500249,
   1859775393,
@@ -36618,7 +36618,7 @@ Sha.prototype._update = function(M2) {
   this._e = e2 + this._e | 0;
 };
 Sha.prototype._hash = function() {
-  var H2 = Buffer$8.allocUnsafe(20);
+  var H2 = Buffer$9.allocUnsafe(20);
   H2.writeInt32BE(this._a | 0, 0);
   H2.writeInt32BE(this._b | 0, 4);
   H2.writeInt32BE(this._c | 0, 8);
@@ -36629,7 +36629,7 @@ Sha.prototype._hash = function() {
 var sha$1 = Sha;
 var inherits$b = inherits_browser$3.exports;
 var Hash$5 = hash$1;
-var Buffer$7 = safeBuffer.exports.Buffer;
+var Buffer$8 = safeBuffer$1.exports.Buffer;
 var K$3 = [
   1518500249,
   1859775393,
@@ -36694,7 +36694,7 @@ Sha1.prototype._update = function(M2) {
   this._e = e2 + this._e | 0;
 };
 Sha1.prototype._hash = function() {
-  var H2 = Buffer$7.allocUnsafe(20);
+  var H2 = Buffer$8.allocUnsafe(20);
   H2.writeInt32BE(this._a | 0, 0);
   H2.writeInt32BE(this._b | 0, 4);
   H2.writeInt32BE(this._c | 0, 8);
@@ -36705,7 +36705,7 @@ Sha1.prototype._hash = function() {
 var sha1 = Sha1;
 var inherits$a = inherits_browser$3.exports;
 var Hash$4 = hash$1;
-var Buffer$6 = safeBuffer.exports.Buffer;
+var Buffer$7 = safeBuffer$1.exports.Buffer;
 var K$2 = [
   1116352408,
   1899447441,
@@ -36844,7 +36844,7 @@ Sha256$1.prototype._update = function(M2) {
   this._h = h2 + this._h | 0;
 };
 Sha256$1.prototype._hash = function() {
-  var H2 = Buffer$6.allocUnsafe(32);
+  var H2 = Buffer$7.allocUnsafe(32);
   H2.writeInt32BE(this._a, 0);
   H2.writeInt32BE(this._b, 4);
   H2.writeInt32BE(this._c, 8);
@@ -36859,7 +36859,7 @@ var sha256$3 = Sha256$1;
 var inherits$9 = inherits_browser$3.exports;
 var Sha256 = sha256$3;
 var Hash$3 = hash$1;
-var Buffer$5 = safeBuffer.exports.Buffer;
+var Buffer$6 = safeBuffer$1.exports.Buffer;
 var W$3 = new Array(64);
 function Sha224() {
   this.init();
@@ -36879,7 +36879,7 @@ Sha224.prototype.init = function() {
   return this;
 };
 Sha224.prototype._hash = function() {
-  var H2 = Buffer$5.allocUnsafe(28);
+  var H2 = Buffer$6.allocUnsafe(28);
   H2.writeInt32BE(this._a, 0);
   H2.writeInt32BE(this._b, 4);
   H2.writeInt32BE(this._c, 8);
@@ -36892,7 +36892,7 @@ Sha224.prototype._hash = function() {
 var sha224 = Sha224;
 var inherits$8 = inherits_browser$3.exports;
 var Hash$2 = hash$1;
-var Buffer$4 = safeBuffer.exports.Buffer;
+var Buffer$5 = safeBuffer$1.exports.Buffer;
 var K$1 = [
   1116352408,
   3609767458,
@@ -37210,7 +37210,7 @@ Sha512.prototype._update = function(M2) {
   this._hh = this._hh + hh + getCarry(this._hl, hl2) | 0;
 };
 Sha512.prototype._hash = function() {
-  var H2 = Buffer$4.allocUnsafe(64);
+  var H2 = Buffer$5.allocUnsafe(64);
   function writeInt64BE(h2, l2, offset) {
     H2.writeInt32BE(h2, offset);
     H2.writeInt32BE(l2, offset + 4);
@@ -37229,7 +37229,7 @@ var sha512$1 = Sha512;
 var inherits$7 = inherits_browser$3.exports;
 var SHA512 = sha512$1;
 var Hash$1 = hash$1;
-var Buffer$3 = safeBuffer.exports.Buffer;
+var Buffer$4 = safeBuffer$1.exports.Buffer;
 var W$1 = new Array(160);
 function Sha384() {
   this.init();
@@ -37257,7 +37257,7 @@ Sha384.prototype.init = function() {
   return this;
 };
 Sha384.prototype._hash = function() {
-  var H2 = Buffer$3.allocUnsafe(48);
+  var H2 = Buffer$4.allocUnsafe(48);
   function writeInt64BE(h2, l2, offset) {
     H2.writeInt32BE(h2, offset);
     H2.writeInt32BE(l2, offset + 4);
@@ -37284,7 +37284,315 @@ exports.sha224 = sha224;
 exports.sha256 = sha256$3;
 exports.sha384 = sha384;
 exports.sha512 = sha512$1;
-var Buffer$2 = safeBuffer.exports.Buffer;
+var string_decoder = {};
+var safeBuffer = { exports: {} };
+(function(module2, exports2) {
+  var buffer2 = buffer$2;
+  var Buffer2 = buffer2.Buffer;
+  function copyProps(src2, dst) {
+    for (var key2 in src2) {
+      dst[key2] = src2[key2];
+    }
+  }
+  if (Buffer2.from && Buffer2.alloc && Buffer2.allocUnsafe && Buffer2.allocUnsafeSlow) {
+    module2.exports = buffer2;
+  } else {
+    copyProps(buffer2, exports2);
+    exports2.Buffer = SafeBuffer;
+  }
+  function SafeBuffer(arg, encodingOrOffset, length) {
+    return Buffer2(arg, encodingOrOffset, length);
+  }
+  copyProps(Buffer2, SafeBuffer);
+  SafeBuffer.from = function(arg, encodingOrOffset, length) {
+    if (typeof arg === "number") {
+      throw new TypeError("Argument must not be a number");
+    }
+    return Buffer2(arg, encodingOrOffset, length);
+  };
+  SafeBuffer.alloc = function(size2, fill2, encoding) {
+    if (typeof size2 !== "number") {
+      throw new TypeError("Argument must be a number");
+    }
+    var buf = Buffer2(size2);
+    if (fill2 !== void 0) {
+      if (typeof encoding === "string") {
+        buf.fill(fill2, encoding);
+      } else {
+        buf.fill(fill2);
+      }
+    } else {
+      buf.fill(0);
+    }
+    return buf;
+  };
+  SafeBuffer.allocUnsafe = function(size2) {
+    if (typeof size2 !== "number") {
+      throw new TypeError("Argument must be a number");
+    }
+    return Buffer2(size2);
+  };
+  SafeBuffer.allocUnsafeSlow = function(size2) {
+    if (typeof size2 !== "number") {
+      throw new TypeError("Argument must be a number");
+    }
+    return buffer2.SlowBuffer(size2);
+  };
+})(safeBuffer, safeBuffer.exports);
+var Buffer$3 = safeBuffer.exports.Buffer;
+var isEncoding = Buffer$3.isEncoding || function(encoding) {
+  encoding = "" + encoding;
+  switch (encoding && encoding.toLowerCase()) {
+    case "hex":
+    case "utf8":
+    case "utf-8":
+    case "ascii":
+    case "binary":
+    case "base64":
+    case "ucs2":
+    case "ucs-2":
+    case "utf16le":
+    case "utf-16le":
+    case "raw":
+      return true;
+    default:
+      return false;
+  }
+};
+function _normalizeEncoding(enc) {
+  if (!enc)
+    return "utf8";
+  var retried;
+  while (true) {
+    switch (enc) {
+      case "utf8":
+      case "utf-8":
+        return "utf8";
+      case "ucs2":
+      case "ucs-2":
+      case "utf16le":
+      case "utf-16le":
+        return "utf16le";
+      case "latin1":
+      case "binary":
+        return "latin1";
+      case "base64":
+      case "ascii":
+      case "hex":
+        return enc;
+      default:
+        if (retried)
+          return;
+        enc = ("" + enc).toLowerCase();
+        retried = true;
+    }
+  }
+}
+function normalizeEncoding(enc) {
+  var nenc = _normalizeEncoding(enc);
+  if (typeof nenc !== "string" && (Buffer$3.isEncoding === isEncoding || !isEncoding(enc)))
+    throw new Error("Unknown encoding: " + enc);
+  return nenc || enc;
+}
+string_decoder.StringDecoder = StringDecoder$1;
+function StringDecoder$1(encoding) {
+  this.encoding = normalizeEncoding(encoding);
+  var nb;
+  switch (this.encoding) {
+    case "utf16le":
+      this.text = utf16Text;
+      this.end = utf16End;
+      nb = 4;
+      break;
+    case "utf8":
+      this.fillLast = utf8FillLast;
+      nb = 4;
+      break;
+    case "base64":
+      this.text = base64Text;
+      this.end = base64End;
+      nb = 3;
+      break;
+    default:
+      this.write = simpleWrite;
+      this.end = simpleEnd;
+      return;
+  }
+  this.lastNeed = 0;
+  this.lastTotal = 0;
+  this.lastChar = Buffer$3.allocUnsafe(nb);
+}
+StringDecoder$1.prototype.write = function(buf) {
+  if (buf.length === 0)
+    return "";
+  var r2;
+  var i2;
+  if (this.lastNeed) {
+    r2 = this.fillLast(buf);
+    if (r2 === void 0)
+      return "";
+    i2 = this.lastNeed;
+    this.lastNeed = 0;
+  } else {
+    i2 = 0;
+  }
+  if (i2 < buf.length)
+    return r2 ? r2 + this.text(buf, i2) : this.text(buf, i2);
+  return r2 || "";
+};
+StringDecoder$1.prototype.end = utf8End;
+StringDecoder$1.prototype.text = utf8Text;
+StringDecoder$1.prototype.fillLast = function(buf) {
+  if (this.lastNeed <= buf.length) {
+    buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, this.lastNeed);
+    return this.lastChar.toString(this.encoding, 0, this.lastTotal);
+  }
+  buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, buf.length);
+  this.lastNeed -= buf.length;
+};
+function utf8CheckByte(byte2) {
+  if (byte2 <= 127)
+    return 0;
+  else if (byte2 >> 5 === 6)
+    return 2;
+  else if (byte2 >> 4 === 14)
+    return 3;
+  else if (byte2 >> 3 === 30)
+    return 4;
+  return byte2 >> 6 === 2 ? -1 : -2;
+}
+function utf8CheckIncomplete(self2, buf, i2) {
+  var j2 = buf.length - 1;
+  if (j2 < i2)
+    return 0;
+  var nb = utf8CheckByte(buf[j2]);
+  if (nb >= 0) {
+    if (nb > 0)
+      self2.lastNeed = nb - 1;
+    return nb;
+  }
+  if (--j2 < i2 || nb === -2)
+    return 0;
+  nb = utf8CheckByte(buf[j2]);
+  if (nb >= 0) {
+    if (nb > 0)
+      self2.lastNeed = nb - 2;
+    return nb;
+  }
+  if (--j2 < i2 || nb === -2)
+    return 0;
+  nb = utf8CheckByte(buf[j2]);
+  if (nb >= 0) {
+    if (nb > 0) {
+      if (nb === 2)
+        nb = 0;
+      else
+        self2.lastNeed = nb - 3;
+    }
+    return nb;
+  }
+  return 0;
+}
+function utf8CheckExtraBytes(self2, buf, p2) {
+  if ((buf[0] & 192) !== 128) {
+    self2.lastNeed = 0;
+    return "\uFFFD";
+  }
+  if (self2.lastNeed > 1 && buf.length > 1) {
+    if ((buf[1] & 192) !== 128) {
+      self2.lastNeed = 1;
+      return "\uFFFD";
+    }
+    if (self2.lastNeed > 2 && buf.length > 2) {
+      if ((buf[2] & 192) !== 128) {
+        self2.lastNeed = 2;
+        return "\uFFFD";
+      }
+    }
+  }
+}
+function utf8FillLast(buf) {
+  var p2 = this.lastTotal - this.lastNeed;
+  var r2 = utf8CheckExtraBytes(this, buf);
+  if (r2 !== void 0)
+    return r2;
+  if (this.lastNeed <= buf.length) {
+    buf.copy(this.lastChar, p2, 0, this.lastNeed);
+    return this.lastChar.toString(this.encoding, 0, this.lastTotal);
+  }
+  buf.copy(this.lastChar, p2, 0, buf.length);
+  this.lastNeed -= buf.length;
+}
+function utf8Text(buf, i2) {
+  var total = utf8CheckIncomplete(this, buf, i2);
+  if (!this.lastNeed)
+    return buf.toString("utf8", i2);
+  this.lastTotal = total;
+  var end = buf.length - (total - this.lastNeed);
+  buf.copy(this.lastChar, 0, end);
+  return buf.toString("utf8", i2, end);
+}
+function utf8End(buf) {
+  var r2 = buf && buf.length ? this.write(buf) : "";
+  if (this.lastNeed)
+    return r2 + "\uFFFD";
+  return r2;
+}
+function utf16Text(buf, i2) {
+  if ((buf.length - i2) % 2 === 0) {
+    var r2 = buf.toString("utf16le", i2);
+    if (r2) {
+      var c2 = r2.charCodeAt(r2.length - 1);
+      if (c2 >= 55296 && c2 <= 56319) {
+        this.lastNeed = 2;
+        this.lastTotal = 4;
+        this.lastChar[0] = buf[buf.length - 2];
+        this.lastChar[1] = buf[buf.length - 1];
+        return r2.slice(0, -1);
+      }
+    }
+    return r2;
+  }
+  this.lastNeed = 1;
+  this.lastTotal = 2;
+  this.lastChar[0] = buf[buf.length - 1];
+  return buf.toString("utf16le", i2, buf.length - 1);
+}
+function utf16End(buf) {
+  var r2 = buf && buf.length ? this.write(buf) : "";
+  if (this.lastNeed) {
+    var end = this.lastTotal - this.lastNeed;
+    return r2 + this.lastChar.toString("utf16le", 0, end);
+  }
+  return r2;
+}
+function base64Text(buf, i2) {
+  var n2 = (buf.length - i2) % 3;
+  if (n2 === 0)
+    return buf.toString("base64", i2);
+  this.lastNeed = 3 - n2;
+  this.lastTotal = 3;
+  if (n2 === 1) {
+    this.lastChar[0] = buf[buf.length - 1];
+  } else {
+    this.lastChar[0] = buf[buf.length - 2];
+    this.lastChar[1] = buf[buf.length - 1];
+  }
+  return buf.toString("base64", i2, buf.length - n2);
+}
+function base64End(buf) {
+  var r2 = buf && buf.length ? this.write(buf) : "";
+  if (this.lastNeed)
+    return r2 + this.lastChar.toString("base64", 0, 3 - this.lastNeed);
+  return r2;
+}
+function simpleWrite(buf) {
+  return buf.toString(this.encoding);
+}
+function simpleEnd(buf) {
+  return buf && buf.length ? this.write(buf) : "";
+}
+var Buffer$2 = safeBuffer$1.exports.Buffer;
 var Transform = require$$2$3.Transform;
 var StringDecoder = string_decoder.StringDecoder;
 var inherits$6 = inherits_browser$3.exports;
@@ -37529,7 +37837,7 @@ var lib$2 = {
   var rlp2 = dist_browser;
   var BN2 = bn$2.exports;
   var createHash2 = browser$3;
-  var Buffer2 = safeBuffer.exports.Buffer;
+  var Buffer2 = safeBuffer$1.exports.Buffer;
   Object.assign(exports2, lib$2);
   exports2.MAX_INTEGER = new BN2("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16);
   exports2.TWO_POW256 = new BN2("10000000000000000000000000000000000000000000000000000000000000000", 16);
