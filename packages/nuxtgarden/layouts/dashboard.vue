@@ -4,7 +4,7 @@
       <Header class="m-1" />
     </slot>
     <slot name="sidenav">
-      <!-- <sidenav 
+      <!-- <Sidenav 
         v-if="showSidenav"
         :custom_class="cardBackgroundMaskColor"
         :class="[
@@ -20,6 +20,7 @@
       >
         <!-- <ThreeDGarden /> -->
         <SmartHome />
+        <slot />
       </main>
     </slot>
     <slot name="footer">

@@ -4,7 +4,7 @@
       <Header class="m-1" />
     </slot>
     <slot name="sidenav">
-      <!-- <sidenav 
+      <!-- <Sidenav 
         v-if="showSidenav"
         :custom_class="cardBackgroundMaskColor"
         :class="[
@@ -18,9 +18,9 @@
         id="main" 
         class="main-content border-radius-lg"
       >
-        <!-- <div>
-          A *default* layout
-        </div> -->
+        <div>
+          [MM] DEFAULT
+        </div>
         <!-- <SmartHome /> -->
         <slot />
       </main>
