@@ -45,6 +45,7 @@
     "cookie": "^0.5.0",
     "countup.js": "^2.1.0",
     "cypress": "^10.3.0",
+    "dat.gui": "^0.7.9",
     "dragula": "^3.7.3",
     "dropzone": "^6.0.0-beta.2",
     "eslint": "^8.19.0",
