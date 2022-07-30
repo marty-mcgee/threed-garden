@@ -1,6 +1,6 @@
 {
   "name": "@threed/threed-garden",
-  "version": "0.7.14",
+  "version": "0.7.15",
   "description": "ThreeD Garden WP Plugin on Vue3 using Nuxt3 and Farmbot Ruby/JS",
   "repository": {
     "type": "git",
@@ -15,12 +15,11 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "packages/threed",
       "packages/nuxtgarden",
-      "packages/vitegarden",
-      "packages/hardhat",
-      "packages/subgraph",
-      "packages/vue-dapp"
+      "packages/threed",
+      "packages/threed/vitegarden",
+      "packages/threed/hardhat-1",
+      "packages/threed/subgraph-1"
     ],
     "nohoist": [
       "**/@graphprotocol/graph-ts",
