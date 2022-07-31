@@ -137,7 +137,6 @@ export default {
     const title = route.meta.title
     // console.log("title", route.meta.title)
 
-
     // user authentication
     if (route.params.group === "admins" && !route.params.id) {
       console.error("Warning! User not authenticated!")
