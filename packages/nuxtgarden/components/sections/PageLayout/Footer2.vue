@@ -1,5 +1,5 @@
 <template>
-  <!-- *dashboard* layout: footer -->
+  <!-- page layout: footer -->
   <div id="MMFOOTER">
     <hr class="m-1">
     <footer class="py-2 footer">

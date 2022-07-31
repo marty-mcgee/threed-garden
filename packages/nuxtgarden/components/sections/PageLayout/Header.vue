@@ -1,5 +1,5 @@
 <template>
-  <!-- *dashboard* layout: header -->
+  <!-- page layout: header -->
   <div id="MMHEADER">
     <LogoGarden />
     |<NuxtLink to="/about">
