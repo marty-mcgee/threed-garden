@@ -47,8 +47,8 @@ export default {
 
     // get current (page) route + route.meta.title
     const route = useRoute()
-    // console.log("route", route)
-    // console.log("route.meta", route.meta)
+    console.log("route", route)
+    console.log("route.meta", route.meta)
     const title = route.meta.title
     console.log("title", route.meta.title)
 
