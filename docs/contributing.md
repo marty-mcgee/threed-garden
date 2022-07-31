@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for being interested in contributing to this project!
+Thanks for being interested in contributing to the ThreeD Garden Farmbot project!
 
 Just submit your changes via pull request and I will review them before merging.
 
@@ -14,16 +14,22 @@ Clone this repo to your local machine and install the dependencies.
 
 ```bash
 yarn install
+pnpm i
+npm install
 ```
 
-To run the demo, add `.env` for using your infura ID, and run:
+To run the demo, add `.env` if using your infura ID, and run:
 
 ```bash
 yarn dev
+pnpm dev
+npm run dev
 ```
 
 To run the docs:
 
 ```bash
 yarn dev:docs
+pnpm dev:docs
+npm run dev:docs
 ```
