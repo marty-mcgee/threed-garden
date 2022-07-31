@@ -39,7 +39,7 @@ export default {
     
   },
   setup() {
-    // state stores
+    // state stores (singletons)
     const userStore = useUserStore()
     const eventStore = useEventStore()
     const uiStore = useUIStore()
