@@ -42,7 +42,7 @@
               </li>
               <li class="nav-item">
                 <a
-                  href="https://www.creative-tim.com/presentation"
+                  href="https://companyjuice.com/presentation"
                   class="nav-link text-muted"
                   target="_blank"
                   >About Us</a
@@ -50,7 +50,7 @@
               </li>
               <li class="nav-item">
                 <a
-                  href="https://www.creative-tim.com/blog"
+                  href="https://companyjuice.com/blog"
                   class="nav-link text-muted"
                   target="_blank"
                   >Blog</a
@@ -58,7 +58,7 @@
               </li>
               <li class="nav-item">
                 <a
-                  href="https://www.creative-tim.com/license"
+                  href="https://companyjuice.com/license"
                   class="nav-link pe-0 text-muted"
                   target="_blank"
                   >License</a
