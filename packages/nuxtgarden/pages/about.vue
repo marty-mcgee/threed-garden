@@ -6,9 +6,7 @@
 import DefaultDashboard from "@/components/dashboards/Default.vue"
 
 definePageMeta({
-  layout: "default",
-  // layout: "custom",
-  // layout: "dashboard",
+  layout: "default", // default | dashboard | threed | custom
   title: "About",
 })
 
