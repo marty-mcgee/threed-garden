@@ -97,7 +97,7 @@
       | Route: {{ title }}
       | UI: {{ uiStore.getUI.name }}
       | Event: {{ eventStore.getEvent.name }}
-      | Counter: {{ counterStore.getCount }}
+      | Counter $: {{ counterStore.getCount }}
       <button @click="counterStore.increment()">+</button>
       <button @click="counterStore.decrement()">-</button>
     </span>
