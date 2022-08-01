@@ -7,8 +7,10 @@
 .navbar-vertical {
   .navbar-brand > img,
   .navbar-brand-img {
-    max-width: 100%;
-    max-height: 2rem;
+    // max-width: 100%;
+    // max-height: 2rem;
+    max-width: 3vw;
+    max-height: 3vw;
   }
   // Navbar navigaton
   .navbar-nav {
