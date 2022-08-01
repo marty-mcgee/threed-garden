@@ -3,7 +3,7 @@
     <div class="full-background" :style="{ 'background-image': 'url(' + imgWhiteCurved + ')' }"></div>
     <div class="p-3 card-body text-start w-100">
       <div
-        class="mb-3 text-center bg-white shadow icon icon-shape icon-sm d-flex align-items-center justify-content-center border-radius-md"
+        class="d-flex align-items-center justify-content-center text-center bg-white shadow icon icon-shape icon-sm border-radius-md mb-3"
       >
         <i
           id="sidenavCardIcon"
@@ -12,10 +12,10 @@
           :class="iconClass"
         ></i>
       </div>
-      <div v-if="$store.state.isRTL" class="docs-info">
-        <h6 class="mb-0 text-white up text-end">تحتاج مساعدة ؟</h6>
-        <p class="text-xs font-weight-bold text-end">يرجى التحقق من مستنداتنا</p>
-        <a :href="href" target="_blank" class="mb-0 btn btn-white btn-sm w-100">توثيق</a>
+      <div v-if="uiStore.isRTL" class="docs-info">
+        <h6 class="mb-0 text-white up text-end">{{ textPrimary }}</h6>
+        <p class="text-xs font-weight-bold text-end">{{ textSecondary }}</p>
+        <a :href="href" target="_blank" class="mb-0 btn btn-white btn-sm w-100">{{ linkText }}</a>
       </div>
       <div v-else class="docs-info">
         <h6 class="mb-0 text-white up">{{ textPrimary }}</h6>
@@ -25,8 +25,11 @@
     </div>
   </div>
 </template>
+
 <script>
-import imgWhiteCurved from "@/assets/img/curved-images/white-curved.jpeg";
+import imgWhiteCurved from "@/assets/img/curved-images/white-curved.jpeg"
+import { useUIStore } from "@/composables/stores/UIStore"
+
 export default {
   name: "SidenavCard",
   props: {
@@ -47,10 +50,16 @@ export default {
       default: ""
     }
   },
+  setup() {
+    const uiStore = useUIStore()
+    return {
+      uiStore,
+    }
+  },
   data() {
     return {
       imgWhiteCurved,
-    };
+    }
   },
-};
+}
 </script>

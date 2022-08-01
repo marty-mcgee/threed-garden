@@ -16,16 +16,16 @@
           <template #list>
             <ul class="nav ms-4 ps-3">
               <!-- nav links -->
-              <sidenav-item :to="{ name: 'Default' }" mini-icon="D" text="Default" />
-              <sidenav-item :to="{ name: 'Automotive' }" mini-icon="A" text="Automotive" />
-              <sidenav-item :to="{ name: 'SmartHome' }" mini-icon="S" text="Smart Home" />
-              <sidenav-collapse-item refer="vrExamples" mini-icon="V" text="Virtual Reality">
+              <sidenav-item :to="{ name: 'index' }" mini-icon="H" text="Home" />
+              <sidenav-item :to="{ name: 'about' }" mini-icon="A" text="About" />
+              <sidenav-item :to="{ name: 'participate' }" mini-icon="P" text="Participate" />
+              <sidenav-item :to="{ name: 'pinia' }" mini-icon="P" text="Pinia" />
+              <!-- <sidenav-collapse-item refer="vrExamples" mini-icon="V" text="Virtual Reality">
                 <template #nav-child-item>
                   <sidenav-item :to="{ name: 'VRDefault' }" mini-icon="V" text="VR Default" />
                   <sidenav-item :to="{ name: 'VRInfo' }" mini-icon="V" text="VR Info" />
                 </template>
-              </sidenav-collapse-item>
-              <sidenav-item :to="{ name: 'CRM' }" mini-icon="C" text="CRM" />
+              </sidenav-collapse-item> -->
             </ul>
           </template>
         </sidenav-collapse>
@@ -33,7 +33,7 @@
       <li class="mt-3 nav-item">
         <h6
           class="text-xs ps-4 text-uppercase font-weight-bolder opacity-6"
-          :class="$store.state.isRTL ? 'me-4' : 'ms-2'"
+          :class="uiStore.isRTL ? 'me-4' : 'ms-2'"
         >PAGES</h6>
       </li>
       <li class="nav-item">
@@ -48,48 +48,44 @@
           <template #list>
             <ul class="nav ms-4 ps-3">
               <!-- nav links -->
-              <sidenav-collapse-item refer="profileExample" mini-icon="P" text="Profile">
+              <!-- <sidenav-collapse-item refer="profileExample" mini-icon="P" text="Profile">
                 <template #nav-child-item>
-                  <sidenav-item
-                    :to="{ name: 'Profile Overview' }"
-                    mini-icon="P"
-                    text="Profile Overview"
-                  />
+                  <sidenav-item :to="{ name: 'Profile Overview' }" mini-icon="P" text="Profile Overview" />
                   <sidenav-item :to="{ name: 'Teams' }" mini-icon="T" text="Teams" />
                   <sidenav-item :to="{ name: 'All Projects' }" mini-icon="A" text="All Projects" />
                 </template>
-              </sidenav-collapse-item>
+              </sidenav-collapse-item> -->
 
-              <sidenav-collapse-item refer="usersExample" mini-icon="U" text="Users">
+              <!-- <sidenav-collapse-item refer="usersExample" mini-icon="U" text="Users">
                 <template #nav-child-item>
                   <sidenav-item :to="{ name: 'Reports' }" mini-icon="R" text="Reports" />
                   <sidenav-item :to="{ name: 'New User' }" mini-icon="N" text="New User" />
                 </template>
-              </sidenav-collapse-item>
+              </sidenav-collapse-item> -->
 
-              <sidenav-collapse-item refer="accountExample" mini-icon="A" text="Account">
+              <!-- <sidenav-collapse-item refer="accountExample" mini-icon="A" text="Account">
                 <template #nav-child-item>
                   <sidenav-item :to="{ name: 'Settings' }" mini-icon="S" text="Settings" />
                   <sidenav-item :to="{ name: 'Billing' }" mini-icon="B" text="Billing" />
                   <sidenav-item :to="{ name: 'Invoice' }" mini-icon="I" text="Invoice" />
                   <sidenav-item :to="{ name: 'Security' }" mini-icon="S" text="Security" />
                 </template>
-              </sidenav-collapse-item>
+              </sidenav-collapse-item> -->
 
-              <sidenav-collapse-item refer="projectsExample" mini-icon="P" text="Projects">
+              <!-- <sidenav-collapse-item refer="projectsExample" mini-icon="P" text="Projects">
                 <template #nav-child-item>
                   <sidenav-item :to="{ name: 'General' }" mini-icon="G" text="General" />
                   <sidenav-item :to="{ name: 'Timeline' }" mini-icon="T" text="Timeline" />
                   <sidenav-item :to="{ name: 'New Project' }" mini-icon="N" text="New Project" />
                 </template>
-              </sidenav-collapse-item>
+              </sidenav-collapse-item> -->
 
-              <sidenav-item :to="{ name: 'Pricing Page' }" mini-icon="P" text="Pricing Page" />
-              <sidenav-item :to="{ name: 'RTL' }" mini-icon="R" text="RTL" />
-              <sidenav-item :to="{ name: 'Widgets' }" mini-icon="W" text="Widgets" />
-              <sidenav-item :to="{ name: 'Charts' }" mini-icon="C" text="Charts" />
-              <sidenav-item :to="{ name: 'Sweet Alerts' }" mini-icon="S" text="Sweet Alerts" />
-              <sidenav-item :to="{ name: 'Notifications' }" mini-icon="N" text="Notifications" />
+              <!-- <sidenav-item :to="{ name: 'Pricing Page' }" mini-icon="P" text="Pricing Page" /> -->
+              <!-- <sidenav-item :to="{ name: 'RTL' }" mini-icon="R" text="RTL" /> -->
+              <!-- <sidenav-item :to="{ name: 'Widgets' }" mini-icon="W" text="Widgets" /> -->
+              <!-- <sidenav-item :to="{ name: 'Charts' }" mini-icon="C" text="Charts" /> -->
+              <!-- <sidenav-item :to="{ name: 'Sweet Alerts' }" mini-icon="S" text="Sweet Alerts" /> -->
+              <!-- <sidenav-item :to="{ name: 'Notifications' }" mini-icon="N" text="Notifications" /> -->
             </ul>
           </template>
         </sidenav-collapse>
@@ -108,11 +104,11 @@
             <ul class="nav ms-4 ps-3">
               <!-- nav links -->
 
-              <sidenav-item :to="{ name: 'Kanban' }" mini-icon="K" text="Kanban" />
+              <!-- <sidenav-item :to="{ name: 'Kanban' }" mini-icon="K" text="Kanban" />
               <sidenav-item :to="{ name: 'Wizard' }" mini-icon="W" text="Wizard" />
               <sidenav-item :to="{ name: 'Data Tables' }" mini-icon="D" text="Data Tables" />
               <sidenav-item :to="{ name: 'Calendar' }" mini-icon="C" text="Calendar" />
-              <sidenav-item :to="{ name: 'Analytics' }" mini-icon="A" text="Analytics" />
+              <sidenav-item :to="{ name: 'Analytics' }" mini-icon="A" text="Analytics" /> -->
             </ul>
           </template>
         </sidenav-collapse>
@@ -130,24 +126,24 @@
           <template #list>
             <ul class="nav ms-4 ps-3">
               <!-- nav links -->
-              <sidenav-item :to="{ name: 'Overview' }" mini-icon="O" text="Overview" />
+              <!-- <sidenav-item :to="{ name: 'Overview' }" mini-icon="O" text="Overview" /> -->
 
-              <sidenav-collapse-item refer="productsExample" mini-icon="P" text="Products">
+              <!-- <sidenav-collapse-item refer="productsExample" mini-icon="P" text="Products">
                 <template #nav-child-item>
                   <sidenav-item :to="{ name: 'New Product' }" mini-icon="N" text="New Product" />
                   <sidenav-item :to="{ name: 'Edit Product' }" mini-icon="E" text="Edit Product" />
                   <sidenav-item :to="{ name: 'Product Page' }" mini-icon="P" text="Product page" />
                   <sidenav-item :to="{ name: 'Products List' }" mini-icon="P" text="Products List" />
                 </template>
-              </sidenav-collapse-item>
+              </sidenav-collapse-item> -->
 
-              <sidenav-collapse-item refer="ordersExample" mini-icon="O" text="Orders">
+              <!-- <sidenav-collapse-item refer="ordersExample" mini-icon="O" text="Orders">
                 <template #nav-child-item>
                   <sidenav-item :to="{ name: 'Order List' }" mini-icon="O" text="Order List" />
                   <sidenav-item :to="{ name: 'Order Details' }" mini-icon="O" text="Order Details" />
                 </template>
-              </sidenav-collapse-item>
-              <sidenav-item :to="{ name: 'Referral' }" mini-icon="R" text="Referral" />
+              </sidenav-collapse-item> -->
+              <!-- <sidenav-item :to="{ name: 'Referral' }" mini-icon="R" text="Referral" /> -->
             </ul>
           </template>
         </sidenav-collapse>
@@ -165,7 +161,7 @@
           <template #list>
             <ul class="nav ms-4 ps-3">
               <!-- nav links -->
-              <sidenav-collapse-item refer="signinExample" mini-icon="S" text="Sign In">
+              <!-- <sidenav-collapse-item refer="signinExample" mini-icon="S" text="Sign In">
                 <template #nav-child-item>
                   <sidenav-item :to="{ name: 'Signin Basic' }" mini-icon="B" text="Basic" />
                   <sidenav-item :to="{ name: 'Signin Cover' }" mini-icon="C" text="Cover" />
@@ -175,9 +171,9 @@
                     text="Illustration"
                   />
                 </template>
-              </sidenav-collapse-item>
+              </sidenav-collapse-item> -->
 
-              <sidenav-collapse-item refer="signupExample" mini-icon="S" text="Sign Up">
+              <!-- <sidenav-collapse-item refer="signupExample" mini-icon="S" text="Sign Up">
                 <template #nav-child-item>
                   <sidenav-item :to="{ name: 'Signup Basic' }" mini-icon="B" text="Basic" />
                   <sidenav-item :to="{ name: 'Signup Cover' }" mini-icon="C" text="Cover" />
@@ -187,9 +183,9 @@
                     text="Illustration"
                   />
                 </template>
-              </sidenav-collapse-item>
+              </sidenav-collapse-item> -->
 
-              <sidenav-collapse-item refer="resetExample" mini-icon="R" text="Reset Password">
+              <!-- <sidenav-collapse-item refer="resetExample" mini-icon="R" text="Reset Password">
                 <template #nav-child-item>
                   <sidenav-item :to="{ name: 'Reset Basic' }" mini-icon="B" text="Basic" />
                   <sidenav-item :to="{ name: 'Reset Cover' }" mini-icon="C" text="Cover" />
@@ -199,9 +195,9 @@
                     text="Illustration"
                   />
                 </template>
-              </sidenav-collapse-item>
+              </sidenav-collapse-item> -->
 
-              <sidenav-collapse-item refer="lockExample" mini-icon="L" text="Lock">
+              <!-- <sidenav-collapse-item refer="lockExample" mini-icon="L" text="Lock">
                 <template #nav-child-item>
                   <sidenav-item :to="{ name: 'Lock Basic' }" mini-icon="B" text="Basic" />
                   <sidenav-item :to="{ name: 'Lock Cover' }" mini-icon="C" text="Cover" />
@@ -211,9 +207,9 @@
                     text="Illustration"
                   />
                 </template>
-              </sidenav-collapse-item>
+              </sidenav-collapse-item> -->
 
-              <sidenav-collapse-item refer="StepExample" mini-icon="2" text="2-Step Verification">
+              <!-- <sidenav-collapse-item refer="StepExample" mini-icon="2" text="2-Step Verification">
                 <template #nav-child-item>
                   <sidenav-item :to="{ name: 'Verification Basic' }" mini-icon="B" text="Basic" />
                   <sidenav-item :to="{ name: 'Verification Cover' }" mini-icon="C" text="Cover" />
@@ -223,14 +219,14 @@
                     text="Illustration"
                   />
                 </template>
-              </sidenav-collapse-item>
+              </sidenav-collapse-item> -->
 
-              <sidenav-collapse-item refer="errorExample" mini-icon="E" text="Error">
+              <!-- <sidenav-collapse-item refer="errorExample" mini-icon="E" text="Error">
                 <template #nav-child-item>
                   <sidenav-item :to="{ name: 'Error Error404' }" mini-icon="E" text="Error 404" />
                   <sidenav-item :to="{ name: 'Error Error500' }" mini-icon="E" text="Error 500" />
                 </template>
-              </sidenav-collapse-item>
+              </sidenav-collapse-item> -->
             </ul>
           </template>
         </sidenav-collapse>
@@ -239,7 +235,7 @@
         <hr class="mt-0 horizontal dark" />
         <h6
           class="text-xs ps-4 ms-2 text-uppercase font-weight-bolder opacity-6"
-          :class="$store.state.isRTL ? 'me-4' : 'ms-2'"
+          :class="uiStore.isRTL ? 'me-4' : 'ms-2'"
         >DOCS</h6>
       </li>
       <li class="nav-item">
@@ -554,11 +550,14 @@
   </div>
 </template>
 <script>
-import Icon from "@/components/Icon.vue";
-import SidenavItem from "./SidenavItem.vue";
-import SidenavCollapse from "./SidenavCollapse.vue";
-import SidenavCard from "./SidenavCard.vue";
-import SidenavCollapseItem from "./SidenavCollapseItem.vue";
+import Icon from "@/components/vitesoft/Icon.vue"
+import SidenavItem from "@/components/sections/sidenav/SidenavItem.vue"
+import SidenavCollapse from "@/components/sections/sidenav/SidenavCollapse.vue"
+import SidenavCard from "@/components/sections/sidenav/SidenavCard.vue"
+import SidenavCollapseItem from "@/components/sections/sidenav/SidenavCollapseItem.vue"
+
+// state store (singletons)
+import { useUIStore } from "@/composables/stores/UIStore"
 
 export default {
   name: "SidenavList",
@@ -572,17 +571,27 @@ export default {
   props: {
     cardBg: { type: String, default: "" },
   },
-  data() {
+  setup() {
+    const uiStore = useUIStore()
     return {
-      title: "ThreeD Garden on Vite",
+      uiStore,
+      title: "ThreeD Garden on Nuxt",
       controls: "dashboardsExamples",
       isActive: "active",
-    };
+    }
   },
+  // data() {
+  //   return {
+  //     title: "ThreeD Garden on Vite",
+  //     controls: "dashboardsExamples",
+  //     isActive: "active",
+  //   }
+  // },
   methods: {
     getRoute() {
-      const routeArr = this.$route.path.split("/");
-      return routeArr[1];
+      // const routeArr = this.$route.path.split("/");
+      // return routeArr[1];
+      return "dashboards" // applications | dashboards | ecommerce | authentication | components | pages | basic
     },
   },
 };

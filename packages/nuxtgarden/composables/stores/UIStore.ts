@@ -2,10 +2,11 @@ import { defineStore } from 'pinia'
 
 export const useUIStore = defineStore('UIStore', {
   state: () => ({
-    name: "ThreeD Garden",
+    name: "UI",
     uis: [],
     ui: {
-      name: "Smart Home"
+      name: "ThreeD Garden",
+      version: "1.0.0"
     },
     
     /** @type {{ text: string, id: number, isFinished: boolean }[]} */
