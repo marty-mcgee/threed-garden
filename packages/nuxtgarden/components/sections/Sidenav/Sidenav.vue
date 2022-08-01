@@ -12,7 +12,7 @@
         aria-hidden="true"
       ></i>
       <NuxtLink class="m-0 navbar-brand" :to="{ name: 'index' }">
-        <img :src="logo" class="navbar-brand-img h-100" alt="sidenav_logo" />
+        <img :src="logo" class="navbar-brand-img" alt="sidenav_logo" />
         <span class="ms-1 font-weight-bold">{{ title }}</span>
       </NuxtLink>
     </div>
@@ -20,12 +20,13 @@
     <sidenav-list :card-bg="customClass" />
   </aside>
 </template>
-<script>
-// import { mapGetters } from "vuex"
-import SidenavList from "@/components/sections/sidenav/SidenavList.vue"
-import logo from "@/assets/img/logos/logo-threedgarden.png"
 
-// state store (singletons)
+<script>
+// import { mapGetters } from "vuex" // pinia | vuex
+import SidenavList from "@/components/sections/sidenav/SidenavList.vue"
+import logo from "@/assets/img/logos/logo-threedgarden-alt.png"
+
+// state store (singletons) // pinia | vuex
 import { useUIStore } from "@/composables/stores/UIStore"
 
 export default {

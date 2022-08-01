@@ -6,7 +6,7 @@
   </a>
 </template>
 
-<style>
+<style scoped>
 img, svg {
   width: 4vw;
   height: 4vw;
