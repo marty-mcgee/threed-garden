@@ -4,14 +4,14 @@
       <Header class="m-1" />
     </slot>
     <slot name="sidenav">
-      <!-- <Sidenav 
-        v-if="showSidenav"
-        :custom_class="cardBackgroundMaskColor"
+      <Sidenav 
+        v-if="uiStore.showSidenav"
+        :custom_class="uiStore.cardBackgroundMaskColor"
         :class="[
-          sidenavBackgroundClass,
-          $store.state.isRTL ? 'fixed-end' : 'fixed-start',
+          uiStore.sidenavBackgroundClass,
+          uiStore.isRTL ? 'fixed-end' : 'fixed-start',
         ]"
-      /> -->
+      />
     </slot>
     <slot name="main">
       <main 
@@ -40,6 +40,9 @@ import ThreeDGarden from "@/components/dashboards/ThreeDGarden.vue"
 // import Navbar from "@/components/sections/navbars/Navbar.vue"
 import Configurator from "@/components/configs/Configurator.vue"
 
+// state store (singletons)
+import { useUIStore } from "@/composables/stores/UIStore"
+
 export default {
   name: "LayoutThreeD",
   components: {
@@ -52,9 +55,11 @@ export default {
     Configurator,
   },
   setup() {
+    const uiStore = useUIStore()
     // setup() returns an object
     return {
-      message: "HEY HEY HEY"
+      message: "HEY HEY HEY",
+      uiStore
     }
   }
 } // end export default

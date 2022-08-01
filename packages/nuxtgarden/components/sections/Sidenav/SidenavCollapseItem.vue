@@ -7,8 +7,8 @@
       :href="`#${refer}`"
       @click="isExpanded = !isExpanded"
     >
-      <span class="sidenav-mini-icon"> {{ miniIcon }} </span>
-      <span class="sidenav-normal"> {{ text }} <b class="caret"></b></span>
+      <span class="sidenav-mini-icon">{{ miniIcon }}</span>
+      <span class="sidenav-normal">{{ text }} <b class="caret"></b></span>
     </a>
     <div :class="isExpanded ? 'collapse show' : 'collapse'">
       <ul class="nav nav-sm flex-column">
@@ -38,7 +38,7 @@ export default {
   data() {
     return {
       isExpanded: false,
-    };
+    }
   },
-};
+}
 </script>

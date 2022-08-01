@@ -3,6 +3,7 @@ import Icons from 'unplugin-icons/vite'
 
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
+  // HEY NUXT, LOAD THESE MODULES FOR ME
   modules: [
     // [MM] NUXT EXAMPLES..
     // Using package name
@@ -16,14 +17,19 @@ export default defineNuxtConfig({
     //   return false
     // },
 
+    // [MM] ADD SPRINKLES
+    "@vueuse/nuxt",
+    "@unocss/nuxt",
+    
+    // [MM] (DO NOT) USE AXIOS -- USE NUXT 3 "isomorphic fetch"
+    // "@nuxtjs/axios",
+
     // [MM] BOOTSTRAP VUE 3 on NUXT 3 ?? beta af
     // "bootstrap-vue-3/nuxt",
     // "efficy-bootstrap-vue-3/nuxt",
 
-    // VITESSE-NUXT3
-    "@vueuse/nuxt",
-    // "@unocss/nuxt",
   ],
+  // HEY NUXT, BUILD THESE MODULES FOR ME
   buildModules: [
     // PINIA
     // Composition API included in Nuxt 3. For Nuxt 2 only:
@@ -38,6 +44,8 @@ export default defineNuxtConfig({
     // "bootstrap-vue-3/nuxt",
     // "efficy-bootstrap-vue-3/nuxt",
   ],
+  // OLD ??? build.transpile
+  // =======================
   // build: {
   //   transpile: [
   //     '@fortawesome/vue-fontawesome',
@@ -47,14 +55,19 @@ export default defineNuxtConfig({
   //     '@fortawesome/free-solid-svg-icons',
   //   ]
   // },
+  // HEY NUXT, TALK TO VITE -- EXPERIMENTAL
+  // ======================================
   vite: {
     plugins: [
       Icons({
-        // expiremental
-        autoInstall: true
+        // experimental
+        autoInstall: true,
       })
     ]
   },
+  // NUXT AUTO-IMPORTS FROM /plugins DIRECTORY
+  // =========================================
+  // YOU CAN MANUALLY SET UP PLUGINS HERE:....
   plugins: [
     // UI Dashboard Theme (SCSS, JS, icons)
     // "@/assets/js/ui-dashboard", is now at:
@@ -78,6 +91,8 @@ export default defineNuxtConfig({
     // { src: "@fullcalendar/interaction", ssr: false },
     // { src: "@fullcalendar/vue3", ssr: false }
   ],
+  // HEY NUXT, SET <head> PARAMETERS/LOADERS (FOR GLOBAL DOM SETTINGS)
+  // =================================================================
   // head: {
   //   script: [
   //     { 
@@ -101,18 +116,42 @@ export default defineNuxtConfig({
   //     },
   //   ],
   //   style: [
-  //
+  
   //   ]
   // },
+  // LOAD CSS + SASS: CASCADING STYLE SHEETS
+  // =======================================
   css: [
     "~/assets/css/main.css",
     "~/assets/css/nucleo-icons.css",
     "~/assets/css/nucleo-svg.css",
-    "~/assets/scss/soft-ui-dashboard.scss"
+    "~/assets/scss/soft-ui-dashboard.scss",
   ],
+  // USE UNOCSS
+  // ==========
+  unocss: {
+    // presets
+    uno: true, // enabled `@unocss/preset-uno`
+    icons: true, // enabled `@unocss/preset-icons`
+    attributify: true, // enabled `@unocss/preset-attributify`,
+
+    // core options
+    shortcuts: [],
+    rules: [],
+  },
+  // (DO NOT) USE AXIOS -- USE NUXT 3 "isomorphic fetch"
+  // https://v3.nuxtjs.org/docs/usage/data-fetching/#usefetch
+  // ========================================================
+  // axios: {
+  //   debug: true,
+  //   progress: true,
+  //   proxyHeaders: true,
+  // },
+  // TALK TO TYPESCRIPT
+  // ==================
   typescript: {
     // because we are using TS "Take Over Mode", 
     // we should not need to generate shims in nuxt
-    shim: false
+    shim: false,
   },
 })
