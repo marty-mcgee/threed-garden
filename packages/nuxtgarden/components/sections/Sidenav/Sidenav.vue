@@ -1,8 +1,11 @@
 <template>
+<!-- aside sidenav navbar navbar-vertical : 
+  [ sidenav navbar navbar-vertical navbar-expand-xs overflow-auto my-3 border-0 border-radius-xl ]
+-->
   <aside
     id="sidenav-main"
     :data-color="uiStore.sidenavColor"
-    class="sidenav navbar navbar-vertical navbar-expand-xs overflow-auto my-3 border-0 border-radius-xl"
+    class="sidenav navbar navbar-vertical overflow-auto my-3 border-0 border-radius-xl"
     :class="uiStore.isRTL ? 'me-3 rotate-caret' : 'ms-3'"
   >
     <div class="sidenav-header">
