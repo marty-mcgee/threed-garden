@@ -466,7 +466,7 @@
     }
   }
 }
-@include media-breakpoint-up(mm) {
+@include media-breakpoint-up(xl) {
   .g-sidenav-hidden {
     &.rtl .main-content {
       margin-right: $navbar-vertical-hidden-width !important;
