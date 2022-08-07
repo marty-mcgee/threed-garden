@@ -129,7 +129,7 @@
   }
 }
 
-@include media-breakpoint-down(mm) {
+@include media-breakpoint-down(lg) {
   .navbar {
     &.navbar-transparent {
       .navbar-collapse {
@@ -150,18 +150,19 @@
       }
     }
   
-    // .g-sidenav-show & {
-    //   &:not(.sidenav).navbar-main {
-    //     .navbar-collapse {
-    //       display: flex !important;
-    //       flex-basis: auto;
-    //     }
+    .g-sidenav-show & {
+      &:not(.sidenav).navbar-main {
+        .navbar-collapse {
+          display: flex !important;
+          flex-basis: auto;
+        }
 
-    //     .navbar-nav {
-    //       flex-direction: row;
-    //     }
-    //   }
-    // }
+        .navbar-nav {
+          flex-direction: row;
+        }
+      }
+
+    }
   }
 
   .navbar {

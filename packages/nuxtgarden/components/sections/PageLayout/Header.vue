@@ -57,9 +57,11 @@ export default {
       console.error("Warning! User not authenticated!")
     }
 
-    // setup() returns an object
+    // setup() returns an object{}
     return {
+      // meta
       title,
+      // singletons
       userStore,
       eventStore,
       uiStore,
