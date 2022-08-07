@@ -31,8 +31,8 @@
     ]
   },
   "scripts": {
-    "mm": "nuxtgarden:mm",
-    "build": "nuxtgarden:build",
+    "mm": "echo 'USE nuxtgarden:mm'",
+    "build": "echo 'USE nuxtgarden:build'",
     "nuxtgarden:mm": "yarn workspace @threed/nuxtgarden mm",
     "nuxtgarden:tsc": "yarn workspace @threed/nuxtgarden tsc",
     "nuxtgarden:dev": "yarn workspace @threed/nuxtgarden dev",
@@ -47,8 +47,8 @@
     "vue-dapp:ipfs": "yarn workspace @threed/vue-dapp ipfs",
     "vue-dapp:lint": "yarn workspace @threed/vue-dapp lint",
     "vue-dapp:serve": "yarn workspace @threed/vue-dapp serve",
-    "scaffold:mm": "mm",
-    "scaffold:build": "build",
+    "scaffold:mm": "echo 'USE scaffold:mm'",
+    "scaffold:build": "echo 'USE scaffold:build'",
     "hardhat:chain": "yarn workspace @threed/hardhat chain",
     "hardhat:fork": "yarn workspace @threed/hardhat fork",
     "hardhat:node": "yarn workspace @threed/hardhat chain",

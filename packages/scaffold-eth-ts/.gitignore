@@ -1,0 +1,58 @@
+packages/subgraph/subgraph.yaml
+packages/subgraph/generated
+packages/subgraph/abis/*
+packages/hardhat/*.txt
+**/aws.json
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+**/node_modules
+
+packages/subgraph/config/config.json
+tenderly.yaml
+
+#build
+*.tsbuildinfo
+*.stackdump
+.yalc
+yalc.lock
+packages/vite-app-ts/dist
+packages/hardhat-ts/mnemonic.secret
+
+# ts
+packages/hardhat-ts/cache
+# secrets
+.secret
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+# yarn / eslint
+.yarn/cache
+.yarn/install-state.gz
+.yarn/build-state.yml
+.eslintcache
+
+# testing
+coverage
+
+# production
+build
+dist
+
+#Hardhat files
+cache
+artifacts
+
+# misc
+.DS_Store
+.netlify
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.idea
+
+
+
