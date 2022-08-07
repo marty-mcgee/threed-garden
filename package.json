@@ -9,9 +9,9 @@
   "author": "Marty McGee, Company Juice",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/marty-mcgee/threedgarden/issues"
+    "url": "https://github.com/marty-mcgee/threed-garden/issues/"
   },
-  "homepage": "https://github.com/marty-mcgee/threedgarden#readme",
+  "homepage": "https://github.com/marty-mcgee/threed-garden/#readme",
   "private": true,
   "workspaces": {
     "packages": [
