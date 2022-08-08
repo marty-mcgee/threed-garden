@@ -1,10 +1,10 @@
 {
   "name": "@threed/threed-garden",
   "version": "0.7.17",
-  "description": "ThreeD Garden WP Plugin on Vue3 using Nuxt3 and Farmbot Ruby/JS",
+  "description": "ThreeD Garden on Vue3 using Nuxt3 and Farmbot Ruby/JS as a WP Plugin",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/marty-mcgee/threedgarden.git"
+    "url": "git+https://github.com/marty-mcgee/threed-garden.git"
   },
   "author": "Marty McGee, Company Juice",
   "license": "GPL-3.0",
