@@ -1,7 +1,7 @@
 {
   "name": "@threed/threed-garden",
-  "version": "0.7.17",
-  "description": "ThreeD Garden on Vue3 using Nuxt3 and Farmbot Ruby/JS as a WP Plugin",
+  "version": "0.8.0",
+  "description": "ThreeD Garden on React using NextJS and Farmbot Ruby/JS as a WP Plugin",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/marty-mcgee/threed-garden.git"
@@ -106,6 +106,8 @@
     "ecmascript",
     "typescript",
     "workspaces",
+    "react",
+    "nextjs",
     "vue",
     "nuxt",
     "ethereum",
