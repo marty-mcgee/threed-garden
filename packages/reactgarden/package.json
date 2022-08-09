@@ -1,6 +1,6 @@
 {
-  "name": "@threed/react-garden",
-  "version": "0.1.0",
+  "name": "@threed/reactgarden",
+  "version": "0.1.1",
   "private": true,
   "description": "React + TypeScript app using Material UI on NextJS",
   "scripts": {
@@ -54,7 +54,7 @@
     "react-scripts": "5.0.1",
     "react-table": "7.7.0",
     "stylis": "4.1.1",
-    "stylis-plugin-rtl": "styled-components/stylis-plugin-rtl#main",
+    "stylis-plugin-rtl": "marty-mcgee/stylis-plugin-rtl#main",
     "uuid": "8.3.2",
     "web-vitals": "2.1.4",
     "yup": "0.32.11"
