@@ -4,6 +4,7 @@
   "private": true,
   "description": "React + TypeScript app using Material UI on NextJS",
   "scripts": {
+    "mm": "yarn start",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
