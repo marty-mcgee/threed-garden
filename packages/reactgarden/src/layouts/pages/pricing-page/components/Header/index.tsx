@@ -19,7 +19,7 @@ import DefaultNavbar from "examples/Navbars/DefaultNavbar"
 import pageRoutes from "page.routes"
 
 // Images
-import bgImage from "assets/images/bg-pricing.jpg"
+import bgImage from "assets/images/any/bg-pricing.jpg"
 
 // Declaring props types for Header
 interface Props {

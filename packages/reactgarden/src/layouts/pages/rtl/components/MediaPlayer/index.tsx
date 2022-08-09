@@ -9,7 +9,7 @@ import MDTypography from "components/MDTypography"
 import MDButton from "components/MDButton"
 
 // Images
-import bgImage from "assets/images/bg-player.jpeg"
+import bgImage from "assets/images/any/bg-player.jpg"
 
 function MediaPlayer(): JSX.Element {
   const mediaPlayerButtonStyles = ({ functions: { pxToRem } }: Theme) => ({

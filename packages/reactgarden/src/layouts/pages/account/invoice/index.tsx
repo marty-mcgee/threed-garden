@@ -15,8 +15,8 @@ import MDButton from "components/MDButton"
 import BaseLayout from "layouts/pages/account/components/BaseLayout"
 
 // Images
-import logoCT from "assets/images/logo-ct.png"
-import logoCTDark from "assets/images/logo-ct-dark.png"
+import logoCT from "assets/images/logos/logo-threedgarden.png"
+import logoCTDark from "assets/images/logos/logo-threedgarden-alt.png"
 
 // Company Juice Dashboard context
 import { useMaterialUIController } from "context"

@@ -15,10 +15,10 @@ import MDInput from "components/MDInput"
 import MDButton from "components/MDButton"
 
 // Images
-import logoSlack from "assets/images/small-logos/logo-slack.svg"
-import logoSpotify from "assets/images/small-logos/logo-spotify.svg"
-import logoAtlassian from "assets/images/small-logos/logo-atlassian.svg"
-import logoAsana from "assets/images/small-logos/logo-asana.svg"
+import logoSlack from "assets/images/logos/small-logos/logo-slack.svg"
+import logoSpotify from "assets/images/logos/small-logos/logo-spotify.svg"
+import logoAtlassian from "assets/images/logos/small-logos/logo-atlassian.svg"
+import logoAsana from "assets/images/logos/small-logos/logo-asana.svg"
 
 // Company Juice Dashboard components
 import { useMaterialUIController } from "context"

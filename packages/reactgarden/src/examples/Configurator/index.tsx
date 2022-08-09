@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 
 // react-github-btn
-import GitHubButton from "react-github-btn"
+// import GitHubButton from "react-github-btn"
 
 // @mui material components
 import Divider from "@mui/material/Divider"
@@ -329,7 +329,7 @@ function Configurator(): JSX.Element {
           </MDButton>
         </MDBox>
         <MDBox display="flex" justifyContent="center">
-          <GitHubButton
+          {/* <GitHubButton
             href="https://github.com/marty-mcgee/company-juice-dashboard"
             data-icon="octicon-star"
             data-size="large"
@@ -337,7 +337,7 @@ function Configurator(): JSX.Element {
             aria-label="Star marty-mcgee/company-juice-dashboard on GitHub"
           >
             Star
-          </GitHubButton>
+          </GitHubButton> */}
         </MDBox>
         <MDBox mt={2} textAlign="center">
           <MDBox mb={0.5}>

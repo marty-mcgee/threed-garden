@@ -17,7 +17,7 @@ import MDButton from "components/MDButton"
 import CoverLayout from "layouts/authentication/components/CoverLayout"
 
 // Images
-import bgImage from "assets/images/bg-sign-in-cover.jpeg"
+import bgImage from "assets/images/any/bg-sign-in-cover.jpg"
 
 function Cover(): JSX.Element {
   const [rememberMe, setRememberMe] = useState<boolean>(true)
