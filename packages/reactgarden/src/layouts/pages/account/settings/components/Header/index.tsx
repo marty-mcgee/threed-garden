@@ -11,7 +11,7 @@ import MDTypography from "components/MDTypography"
 import MDAvatar from "components/MDAvatar"
 
 // Images
-import burceMars from "assets/images/bruce-mars.jpg"
+import burceMars from "assets/images/people/bruce-mars.jpg"
 
 function Header(): JSX.Element {
   const [visible, setVisible] = useState<boolean>(true)
