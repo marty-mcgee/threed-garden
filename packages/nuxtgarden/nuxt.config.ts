@@ -3,6 +3,11 @@ import Icons from 'unplugin-icons/vite'
 
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
+  // NUXT IS LOADING (BETWEEN ROUTES)
+  loading: {
+    color: 'green',
+    height: '10px'
+  },
   // HEY NUXT, LOAD THESE MODULES FOR ME
   modules: [
     // [MM] NUXT EXAMPLES..
@@ -11,11 +16,11 @@ export default defineNuxtConfig({
     // Relative to your project srcDir
     // "~/modules/awesome.js",
     // Providing options
-    // ["@nuxtjs/google-analytics", { ua: "X1234567" }],
+    // ["@nuxtjs/google-analytics", { id: "UA-12345-67" }],
     // Inline definition
-    // function () {
-    //   return false
-    // },
+    function () {
+      return false
+    },
 
     // [MM] ADD SPRINKLES
     "@vueuse/nuxt",
@@ -43,6 +48,9 @@ export default defineNuxtConfig({
     // [MM] BOOTSTRAP VUE 3 on NUXT 3 ?? beta af
     // "bootstrap-vue-3/nuxt",
     // "efficy-bootstrap-vue-3/nuxt",
+
+    // GOOGLE ANALYTICS (not working -- Error compiling template)
+    // ["@nuxtjs/google-analytics", { id: "UA-12345-67" }],
   ],
   // OLD ??? build.transpile
   // =======================
