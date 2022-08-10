@@ -24,14 +24,14 @@ function UpcomingEvents(): JSX.Element {
           color="dark"
           icon="savings"
           title="Cyber Week"
-          description="27 March 2020, at 12:30 PM"
+          description="27 March 2022, at 12:30 PM"
         />
         <MDBox mt={2.5}>
           <DefaultItem
             color="dark"
             icon="notifications_active"
             title="Meeting with Marry"
-            description="24 March 2020, at 10:00 PM"
+            description="24 March 2022, at 10:00 PM"
           />
         </MDBox>
         <MDBox mt={2.5}>
@@ -39,7 +39,7 @@ function UpcomingEvents(): JSX.Element {
             color="dark"
             icon="task"
             title="Tasks planification"
-            description="24 March 2020, at 12:30 AM"
+            description="24 March 2022, at 12:30 AM"
           />
         </MDBox>
       </MDBox>

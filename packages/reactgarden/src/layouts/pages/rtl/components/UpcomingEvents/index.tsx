@@ -24,14 +24,14 @@ function UpcomingEvents(): JSX.Element {
           color="dark"
           icon="savings"
           title="أسبوع الإنترنت"
-          description="01 يونيو 2021, ي 12:30 PM"
+          description="01 يونيو 2022, ي 12:30 PM"
         />
         <MDBox mt={2.5}>
           <DefaultItem
             color="dark"
             icon="notifications_active"
             title="لقاء مع ماري"
-            description="24 مايو 2021, ي 10:00 PM"
+            description="24 مايو 2022, ي 10:00 PM"
           />
         </MDBox>
         <MDBox mt={2.5}>
@@ -39,7 +39,7 @@ function UpcomingEvents(): JSX.Element {
             color="dark"
             icon="task"
             title="تخطيط المهمة"
-            description="25 مايو 2021, ي 10:00 PM"
+            description="25 مايو 2022, ي 10:00 PM"
           />
         </MDBox>
       </MDBox>

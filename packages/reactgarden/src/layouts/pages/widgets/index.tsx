@@ -158,10 +158,10 @@ function Widgets(): JSX.Element {
             {useMemo(
               () => (
                 <Calendar
-                  header={{ title: "calendar", date: "Monday, 2021" }}
+                  header={{ title: "calendar", date: "Monday, 2022" }}
                   headerToolbar={false}
                   initialView="dayGridMonth"
-                  initialDate="2021-08-10"
+                  initialDate="2022-08-10"
                   events={calendarEventsData}
                   selectable
                   editable
