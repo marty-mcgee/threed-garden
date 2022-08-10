@@ -30,30 +30,37 @@ import {
   setWhiteSidenav,
 } from "context"
 
+type StaticImageData = {
+  src: string
+  height: number
+  width: number
+  blurDataURL?: string
+}
+
 // Declaring props types for Sidenav
 interface Props {
   color?:
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "dark"
-  brand?: string
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "dark"
+  brand?: string | StaticImageData
   brandName: string
   routes: {
     [key: string]:
+    | ReactNode
+    | string
+    | {
+      [key: string]:
       | ReactNode
       | string
       | {
-          [key: string]:
-            | ReactNode
-            | string
-            | {
-                [key: string]: ReactNode | string
-              }[]
-        }[]
+        [key: string]: ReactNode | string
+      }[]
+    }[]
   }[]
   [key: string]: any
 }
@@ -66,9 +73,7 @@ function Sidenav({
   ...rest
 }: Props): JSX.Element {
   const [openCollapse, setOpenCollapse] = useState<boolean | string>(false)
-  const [openNestedCollapse, setOpenNestedCollapse] = useState<
-    boolean | string
-  >(false)
+  const [openNestedCollapse, setOpenNestedCollapse] = useState<boolean | string>(false)
   const [controller, dispatch] = useMaterialUIController()
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode } = controller
   const location = useLocation()
@@ -115,7 +120,7 @@ function Sidenav({
       setWhiteSidenav(dispatch, window.innerWidth < 1200 ? false : whiteSidenav)
     }
 
-    /** 
+    /**
      The event listener that's calling the handleMiniSidenav function when resizing the window.
     */
     window.addEventListener("resize", handleMiniSidenav)
@@ -163,7 +168,7 @@ function Sidenav({
             open={openNestedCollapse === key}
             onClick={({ currentTarget }: any) =>
               openNestedCollapse === key &&
-              currentTarget.classList.contains("MuiListItem-root")
+                currentTarget.classList.contains("MuiListItem-root")
                 ? setOpenNestedCollapse(false)
                 : setOpenNestedCollapse(key)
             }>
