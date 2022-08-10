@@ -22,6 +22,7 @@ const nextConfig = {
       "secure.gravatar.com",
     ],
   },
+  reactStrictMode: true,
 }
 
 module.exports = nextConfig
