@@ -43,6 +43,9 @@
  */
 const nextConfig = {
   /* config options here */
+  env: {
+    customKey: "HEY HEY HEY",
+  },
 }
 
 module.exports = nextConfig
