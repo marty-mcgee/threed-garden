@@ -21,8 +21,8 @@
     "strictNullChecks": false,
     "downlevelIteration": true,
     "incremental": true,
-    // "baseUrl": "src",
-    "baseUrl": "."
+    "baseUrl": "src"
+    // "baseUrl": "."
   },
   "include": ["src"],
   "exclude": ["node_modules"]

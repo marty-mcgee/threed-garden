@@ -28,13 +28,20 @@
     "no-shadow": "off",
     "react/jsx-props-no-spreading": "off",
     "react/react-in-jsx-scope": "off",
+    // "import/extensions": [
+    //   "error",
+    //   "ignorePackages",
+    //   {
+    //     "ts": "never",
+    //     "tsx": "never",
+    //     "js": "never"
+    //   }
+    // ],
     "import/extensions": [
       "error",
-      "ignorePackages",
+      "always",
       {
-        "ts": "never",
-        "tsx": "never",
-        "js": "never"
+        "ignorePackages": true
       }
     ],
     "react/jsx-filename-extension": [
