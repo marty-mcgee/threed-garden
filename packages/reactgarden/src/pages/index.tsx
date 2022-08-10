@@ -1,58 +1,50 @@
-import Head from 'next/head'
-import { GetStaticProps } from 'next'
-import Container from 'components/Blog/container'
-import MoreStories from 'components/Blog/more-stories'
-import HeroPost from 'components/Blog/hero-post'
-import Intro from 'components/Blog/intro'
-import Layout from 'components/Blog/layout'
-import { getAllPostsForHome } from 'lib/api'
-import { CMS_NAME } from 'lib/constants'
+import * as React from "react"
+import type { NextPage } from "next"
+import Container from "@mui/material/Container"
+import Typography from "@mui/material/Typography"
+import Box from "@mui/material/Box"
+import Link from "../src/Link"
+import ProTip from "../src/ProTip"
+import Copyright from "../src/Copyright"
 
-export default function Index({ allPosts: { edges }, preview }) {
-  const heroPost = edges[0]?.node
-  const morePosts = edges.slice(1)
+const Home: NextPage = () => (
+  <Container maxWidth="lg">
+    <Box
+      sx={{
+        my: 4,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+      }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        MUI v5 + Next.js with TypeScript example
+      </Typography>
+      <Link href="/about" color="secondary">
+        Go to the about page
+      </Link>
+      <ProTip />
+      <Copyright />
+    </Box>
+  </Container>
+)
 
-  return (
-    <Layout preview={preview}>
-      <Head>
-        <title>Next.js Blog Example with {CMS_NAME}</title>
-      </Head>
-      <Container>
-        <Intro />
-        {heroPost && (
-          <HeroPost
-            title={heroPost.title}
-            coverImage={heroPost.featuredImage}
-            date={heroPost.date}
-            author={heroPost.author}
-            slug={heroPost.slug}
-            excerpt={heroPost.excerpt}
-          />
-        )}
-        {morePosts.length > 0 && <MoreStories posts={morePosts} />}
-      </Container>
-    </Layout>
-  )
-}
+export default Home
 
-export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
-  const allPosts = await getAllPostsForHome(preview)
+/* TARGET
+import ReactDOM from "react-dom"
+import { BrowserRouter } from "react-router-dom"
+import App from "App"
 
-  return {
-    props: { allPosts, preview },
-    revalidate: 10,
-  }
-}
+// Material UI Context Provider
+import { MaterialUIControllerProvider } from "context"
 
-/*
-import React from "react"
-import Router from "next/router"
-
-export default function Index() {
-  React.useEffect(() => {
-    Router.push("/admin/dashboard")
-  })
-
-  return <div />
-}
+ReactDOM.render(
+  <BrowserRouter>
+    <MaterialUIControllerProvider>
+      <App />
+    </MaterialUIControllerProvider>
+  </BrowserRouter>,
+  document.getElementById("root")
+)
 */
