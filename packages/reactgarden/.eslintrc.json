@@ -39,7 +39,7 @@
     // ],
     "import/extensions": [
       "error",
-      "always",
+      "never",
       {
         "ignorePackages": true
       }
