@@ -1,12 +1,13 @@
-// import { AppProps } from 'next/app'
-// import '../styles/index.css'
+import { AppProps } from 'next/app'
+import '../styles/index.css'
 
-// function MyApp({ Component, pageProps }: AppProps) {
-//   return <Component {...pageProps} />
-// }
+function MyApp({ Component, pageProps }: AppProps) {
+  return <Component {...pageProps} />
+}
 
-// export default MyApp
+export default MyApp
 
+/*
 import React from "react"
 import ReactDOM from "react-dom"
 import App from "next/app"
@@ -64,7 +65,7 @@ export default class MyApp extends App {
             content="width=device-width, initial-scale=1, shrink-to-fit=no"
           />
           <title>React Garden</title>
-          {/* <script src={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}`} /> */}
+          <script src={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}`} />
         </Head>
         <Layout>
           <Component {...pageProps} />
@@ -73,3 +74,4 @@ export default class MyApp extends App {
     )
   }
 }
+*/
