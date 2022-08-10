@@ -1,6 +1,23 @@
+import Document, { Html, Head, Main, NextScript } from 'next/document'
+
+export default class MyDocument extends Document {
+  render() {
+    return (
+      <Html lang="en">
+        <Head />
+        <body>
+          <Main />
+          <NextScript />
+        </body>
+      </Html>
+    )
+  }
+}
+
+/*
 import React from "react"
 import Document, { Html, Head, Main, NextScript } from "next/document"
-// import { ServerStyleSheets } from "@material-ui/styles"
+import { ServerStyleSheets } from "@material-ui/styles"
 
 class MyDocument extends Document {
   render() {
@@ -11,7 +28,6 @@ class MyDocument extends Document {
           <meta name="theme-color" content="#000000" />
           <link rel="icon" href="assets/img/favicon.png" />
           <link rel="apple-touch-icon" sizes="76x76" href="assets/img/apple-icon.png" />
-          {/* Fonts and icons */}
           <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css" />
           <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js" />
           <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" />
@@ -28,7 +44,6 @@ class MyDocument extends Document {
   }
 }
 
-/*
 MyDocument.getInitialProps = async (ctx) => {
   // Resolution order
   //
@@ -74,5 +89,6 @@ MyDocument.getInitialProps = async (ctx) => {
     ],
   }
 }
-*/
+
 export default MyDocument
+*/

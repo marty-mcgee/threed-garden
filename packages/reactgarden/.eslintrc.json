@@ -66,11 +66,13 @@
     //   }
     // ],
     // UNUSED VARS
-    "no-unused-vars": "off"
+    "no-unused-vars": "off",
     // [
     //   "error",
     //   { "vars": "local", "args": "after-used", "ignoreRestSiblings": false }
     // ]
+    // TERNARY OPERATORS
+    "no-nested-ternary": "off"
   },
   "settings": {
     "import/resolver": {
