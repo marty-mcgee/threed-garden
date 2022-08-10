@@ -33,4 +33,4 @@ yarn.lock
 
 # next
 .next
-next-env.d.ts
+# next-env.d.ts
