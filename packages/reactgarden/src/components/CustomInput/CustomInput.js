@@ -10,7 +10,7 @@ import Input from "@material-ui/core/Input"
 import Clear from "@material-ui/icons/Clear"
 import Check from "@material-ui/icons/Check"
 // core components
-import styles from "assets/jss/nextjs-material-dashboard/components/customInputStyle.js"
+import styles from "styles/jss/nextjs-material-dashboard/components/customInputStyle.js"
 
 export default function CustomInput(props) {
   const useStyles = makeStyles(styles)

@@ -13,7 +13,7 @@ import Card from "components/Card/Card.js"
 import CardBody from "components/Card/CardBody.js"
 import CardHeader from "components/Card/CardHeader.js"
 
-import styles from "assets/jss/nextjs-material-dashboard/components/customTabsStyle.js"
+import styles from "styles/jss/nextjs-material-dashboard/components/customTabsStyle.js"
 
 export default function CustomTabs(props) {
   const [value, setValue] = React.useState(0)

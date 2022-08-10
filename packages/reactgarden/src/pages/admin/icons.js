@@ -12,7 +12,7 @@ import Card from "components/Card/Card.js"
 import CardHeader from "components/Card/CardHeader.js"
 import CardBody from "components/Card/CardBody.js"
 
-import styles from "assets/jss/nextjs-material-dashboard/views/iconsStyle.js"
+import styles from "styles/jss/nextjs-material-dashboard/views/iconsStyle.js"
 
 function Icons() {
   const useStyles = makeStyles(styles)

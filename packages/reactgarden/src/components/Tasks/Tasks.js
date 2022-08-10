@@ -15,7 +15,7 @@ import Edit from "@material-ui/icons/Edit"
 import Close from "@material-ui/icons/Close"
 import Check from "@material-ui/icons/Check"
 // core components
-import styles from "assets/jss/nextjs-material-dashboard/components/tasksStyle.js"
+import styles from "styles/jss/nextjs-material-dashboard/components/tasksStyle.js"
 
 export default function Tasks(props) {
   const useStyles = makeStyles(styles)
