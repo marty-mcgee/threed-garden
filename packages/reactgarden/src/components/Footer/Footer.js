@@ -6,7 +6,7 @@ import { makeStyles } from "@material-ui/core/styles"
 import ListItem from "@material-ui/core/ListItem"
 import List from "@material-ui/core/List"
 // core components
-import styles from "assets/jss/nextjs-material-dashboard/components/footerStyle.js"
+import styles from "styles/jss/nextjs-material-dashboard/components/footerStyle.js"
 
 export default function Footer(props) {
   const useStyles = makeStyles(styles)

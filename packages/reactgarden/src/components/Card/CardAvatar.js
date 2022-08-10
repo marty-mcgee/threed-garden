@@ -8,7 +8,7 @@ import { makeStyles } from "@material-ui/core/styles"
 // @material-ui/icons
 // core components
 
-import styles from "assets/jss/nextjs-material-dashboard/components/cardAvatarStyle.js"
+import styles from "styles/jss/nextjs-material-dashboard/components/cardAvatarStyle.js"
 
 export default function CardAvatar(props) {
   const useStyles = makeStyles(styles)

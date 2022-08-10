@@ -41,7 +41,7 @@ import {
   completedTasksChart,
 } from "variables/charts.js"
 
-import styles from "assets/jss/nextjs-material-dashboard/views/rtlStyle.js"
+import styles from "styles/jss/nextjs-material-dashboard/views/rtlStyle.js"
 
 import avatar from "assets/img/faces/marc.jpg"
 

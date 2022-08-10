@@ -12,7 +12,7 @@ import Hidden from "@material-ui/core/Hidden"
 import Menu from "@material-ui/icons/Menu"
 // core components
 import Button from "components/CustomButtons/Button.js"
-import styles from "assets/jss/nextjs-material-dashboard/components/headerStyle.js"
+import styles from "styles/jss/nextjs-material-dashboard/components/headerStyle.js"
 import AdminNavbarLinks from "./AdminNavbarLinks.js"
 import RTLNavbarLinks from "./RTLNavbarLinks.js"
 

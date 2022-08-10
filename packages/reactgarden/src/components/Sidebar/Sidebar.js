@@ -16,7 +16,7 @@ import Icon from "@material-ui/core/Icon"
 import AdminNavbarLinks from "components/Navbars/AdminNavbarLinks.js"
 import RTLNavbarLinks from "components/Navbars/RTLNavbarLinks.js"
 
-import styles from "assets/jss/nextjs-material-dashboard/components/sidebarStyle.js"
+import styles from "styles/jss/nextjs-material-dashboard/components/sidebarStyle.js"
 
 export default function Sidebar(props) {
   // used for checking current route

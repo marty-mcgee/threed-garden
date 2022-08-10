@@ -28,8 +28,8 @@ import theme from "assets/theme"
 import themeRTL from "assets/theme/theme-rtl"
 
 // Company Juice Dashboard Dark Mode themes
-import themeDark from "assets/theme-dark"
-import themeDarkRTL from "assets/theme-dark/theme-rtl"
+import themeDark from "themes/theme-dark"
+import themeDarkRTL from "themes/theme-dark/theme-rtl"
 
 // RTL plugins
 import rtlPlugin from "stylis-plugin-rtl"

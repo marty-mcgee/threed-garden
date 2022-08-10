@@ -39,7 +39,7 @@ import {
   completedTasksChart,
 } from "variables/charts.js"
 
-import styles from "assets/jss/nextjs-material-dashboard/views/dashboardStyle.js"
+import styles from "styles/jss/nextjs-material-dashboard/views/dashboardStyle.js"
 
 function Dashboard() {
   const useStyles = makeStyles(styles)
