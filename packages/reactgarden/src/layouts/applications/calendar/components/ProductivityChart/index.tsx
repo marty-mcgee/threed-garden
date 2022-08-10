@@ -62,7 +62,7 @@ function ProductivityChart(): JSX.Element {
                 <MDTypography variant="button" color="white" fontWeight="medium">
                   4% more{" "}
                   <MDTypography variant="button" color="white">
-                    in 2021
+                    in 2022
                   </MDTypography>
                 </MDTypography>
               </MDBox>

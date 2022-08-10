@@ -64,7 +64,7 @@ function BasicInfo(): JSX.Element {
                   </Grid>
                   <Grid item xs={12} sm={3}>
                     <Autocomplete
-                      defaultValue="2021"
+                      defaultValue="2022"
                       options={selectData.years}
                       renderInput={(params) => (
                         <FormField {...params} InputLabelProps={{ shrink: true }} />

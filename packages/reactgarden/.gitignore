@@ -28,5 +28,9 @@ yarn-error.log*
 package-lock.json
 yarn.lock
 
-// vs code
+# vs code
 *.code-workspace
+
+# next
+.next
+next-env.d.ts

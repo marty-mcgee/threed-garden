@@ -22,9 +22,9 @@ function Invoices(): JSX.Element {
       </MDBox>
       <MDBox p={2}>
         <MDBox component="ul" display="flex" flexDirection="column" p={0} m={0}>
-          <Invoice date="March, 01, 2020" id="#MS-415646" price="$180" />
-          <Invoice date="February, 10, 2021" id="#RV-126749" price="$250" />
-          <Invoice date="April, 05, 2020" id="#QW-103578" price="$120" />
+          <Invoice date="March, 01, 2022" id="#MS-415646" price="$180" />
+          <Invoice date="February, 10, 2022" id="#RV-126749" price="$250" />
+          <Invoice date="April, 05, 2022" id="#QW-103578" price="$120" />
           <Invoice date="June, 25, 2019" id="#MS-415646" price="$180" />
           <Invoice date="March, 01, 2019" id="#AR-803481" price="$300" noGutter />
         </MDBox>
