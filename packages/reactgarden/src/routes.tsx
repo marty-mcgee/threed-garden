@@ -1,4 +1,4 @@
-/** 
+/**
   All app routes are added here.
   You can add a new route, customize the routes and delete the routes here.
 
@@ -7,7 +7,7 @@
 
   For adding a new route you can follow the existing routes in the routes array.
   1. The `type` key with the `collapse` value is used for a route.
-  2. The `type` key with the `title` value is used for a title inside the Sidenav. 
+  2. The `type` key with the `title` value is used for a title inside the Sidenav.
   3. The `type` key with the `divider` value is used for a divider between Sidenav items.
   4. The `name` key is used for the name of the route on the Sidenav.
   5. The `key` key is used for the key of the route (It will help you with the key prop inside a loop).
@@ -187,8 +187,18 @@ const routes = [
         component: <PricingPage />,
       },
       { name: "RTL", key: "rtl", route: "/pages/rtl", component: <RTL /> },
-      { name: "Widgets", key: "widgets", route: "/pages/widgets", component: <Widgets /> },
-      { name: "Charts", key: "charts", route: "/pages/charts", component: <Charts /> },
+      {
+        name: "Widgets",
+        key: "widgets",
+        route: "/pages/widgets",
+        component: <Widgets />,
+      },
+      {
+        name: "Charts",
+        key: "charts",
+        route: "/pages/charts",
+        component: <Charts />,
+      },
       {
         name: "Notfications",
         key: "notifications",

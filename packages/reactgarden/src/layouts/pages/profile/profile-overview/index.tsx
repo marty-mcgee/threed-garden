@@ -81,7 +81,11 @@ function Overview(): JSX.Element {
               <Divider orientation="vertical" sx={{ mx: 0 }} />
             </Grid>
             <Grid item xs={12} xl={4}>
-              <ProfilesList title="conversations" profiles={profilesListData} shadow={false} />
+              <ProfilesList
+                title="conversations"
+                profiles={profilesListData}
+                shadow={false}
+              />
             </Grid>
           </Grid>
         </MDBox>

@@ -12,13 +12,26 @@ import MDAlertCloseIcon from "components/MDAlert/MDAlertCloseIcon"
 
 // Declaring props types for MDAlert
 interface Props {
-  color?: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "light" | "dark"
+  color?:
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "light"
+    | "dark"
   dismissible?: boolean
   children: ReactNode
   [key: string]: any
 }
 
-function MDAlert({ color, dismissible, children, ...rest }: Props): JSX.Element | null {
+function MDAlert({
+  color,
+  dismissible,
+  children,
+  ...rest
+}: Props): JSX.Element | null {
   const [alertStatus, setAlertStatus] = useState("mount")
 
   const handleAlertStatus = () => setAlertStatus("fadeOut")

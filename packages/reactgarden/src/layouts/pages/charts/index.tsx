@@ -42,8 +42,8 @@ function Charts(): JSX.Element {
             <Grid item xs={12} md={6} sx={{ lineHeight: 0 }}>
               <MDTypography variant="h5">Charts</MDTypography>
               <MDTypography variant="button" color="text">
-                Charts on this page use Chart.js - Simple yet flexible JavaScript charting for
-                designers & developers.
+                Charts on this page use Chart.js - Simple yet flexible
+                JavaScript charting for designers & developers.
               </MDTypography>
             </Grid>
           </Grid>

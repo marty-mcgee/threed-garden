@@ -1,19 +1,19 @@
-import React from "react";
+import React from "react"
 // @material-ui/core components
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles"
 // layout for this page
-import Admin from "layouts/Admin.js";
+import Admin from "layouts/Admin.js"
 // core components
-import Quote from "components/Typography/Quote.js";
-import Muted from "components/Typography/Muted.js";
-import Primary from "components/Typography/Primary.js";
-import Info from "components/Typography/Info.js";
-import Success from "components/Typography/Success.js";
-import Warning from "components/Typography/Warning.js";
-import Danger from "components/Typography/Danger.js";
-import Card from "components/Card/Card.js";
-import CardHeader from "components/Card/CardHeader.js";
-import CardBody from "components/Card/CardBody.js";
+import Quote from "components/Typography/Quote.js"
+import Muted from "components/Typography/Muted.js"
+import Primary from "components/Typography/Primary.js"
+import Info from "components/Typography/Info.js"
+import Success from "components/Typography/Success.js"
+import Warning from "components/Typography/Warning.js"
+import Danger from "components/Typography/Danger.js"
+import Card from "components/Card/Card.js"
+import CardHeader from "components/Card/CardHeader.js"
+import CardBody from "components/Card/CardBody.js"
 
 const styles = {
   typo: {
@@ -50,11 +50,11 @@ const styles = {
     marginBottom: "3px",
     textDecoration: "none",
   },
-};
+}
 
 function TypographyPage() {
-  const useStyles = makeStyles(styles);
-  const classes = useStyles();
+  const useStyles = makeStyles(styles)
+  const classes = useStyles()
   return (
     <Card>
       <CardHeader color="primary">
@@ -152,16 +152,14 @@ function TypographyPage() {
           <h2>
             Header with small subtitle
             <br />
-            <small>
-              Use {'"'}Small{'"'} tag for the headers
-            </small>
+            <small>Use "Small" tag for the headers</small>
           </h2>
         </div>
       </CardBody>
     </Card>
-  );
+  )
 }
 
-TypographyPage.layout = Admin;
+TypographyPage.layout = Admin
 
-export default TypographyPage;
+export default TypographyPage

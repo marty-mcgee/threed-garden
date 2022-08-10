@@ -15,7 +15,15 @@ import MDProgress from "components/MDProgress"
 interface Props {
   image?: string
   badge: {
-    color: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "dark" | "light"
+    color:
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "dark"
+      | "light"
     label: string
   }
   content: ReactNode
@@ -24,7 +32,14 @@ interface Props {
   members: string[]
 }
 
-function Card({ image, badge, content, progress, attachedFiles, members }: Props): JSX.Element {
+function Card({
+  image,
+  badge,
+  content,
+  progress,
+  attachedFiles,
+  members,
+}: Props): JSX.Element {
   const renderMembers = members.map((member, key) => {
     const imageAlt = `image-${key}`
 
@@ -52,15 +67,32 @@ function Card({ image, badge, content, progress, attachedFiles, members }: Props
 
   return (
     <>
-      {image && <MDBox component="img" src={image} width="100%" borderRadius="lg" mb={1} />}
-      <MDBadge size="xs" color={badge.color} badgeContent={badge.label} container />
+      {image && (
+        <MDBox
+          component="img"
+          src={image}
+          width="100%"
+          borderRadius="lg"
+          mb={1}
+        />
+      )}
+      <MDBadge
+        size="xs"
+        color={badge.color}
+        badgeContent={badge.label}
+        container
+      />
       <MDBox mt={1} mb={2}>
         <MDTypography variant="body2" color="text">
           {content}
         </MDTypography>
         {progress > 0 && (
           <MDBox mt={0.25}>
-            <MDProgress variant="gradient" value={progress} color={badge.color} />
+            <MDProgress
+              variant="gradient"
+              value={progress}
+              color={badge.color}
+            />
           </MDBox>
         )}
       </MDBox>

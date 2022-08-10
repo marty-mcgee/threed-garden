@@ -26,8 +26,7 @@ function Cover(): JSX.Element {
           mt={-3}
           py={2}
           mb={1}
-          textAlign="center"
-        >
+          textAlign="center">
           <MDTypography variant="h3" fontWeight="medium" color="white" mt={1}>
             Reset Password
           </MDTypography>
@@ -38,7 +37,12 @@ function Cover(): JSX.Element {
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">
             <MDBox mb={4}>
-              <MDInput type="email" label="Email" variant="standard" fullWidth />
+              <MDInput
+                type="email"
+                label="Email"
+                variant="standard"
+                fullWidth
+              />
             </MDBox>
             <MDBox mt={6} mb={1}>
               <MDButton variant="gradient" color="info" fullWidth>

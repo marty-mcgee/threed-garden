@@ -1,20 +1,20 @@
-import React from "react";
-import classNames from "classnames";
-import PropTypes from "prop-types";
+import React from "react"
+import classNames from "classnames"
+import PropTypes from "prop-types"
 // @material-ui/core components
-import { makeStyles } from "@material-ui/core/styles";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Input from "@material-ui/core/Input";
+import { makeStyles } from "@material-ui/core/styles"
+import FormControl from "@material-ui/core/FormControl"
+import InputLabel from "@material-ui/core/InputLabel"
+import Input from "@material-ui/core/Input"
 // @material-ui/icons
-import Clear from "@material-ui/icons/Clear";
-import Check from "@material-ui/icons/Check";
+import Clear from "@material-ui/icons/Clear"
+import Check from "@material-ui/icons/Check"
 // core components
-import styles from "assets/jss/nextjs-material-dashboard/components/customInputStyle.js";
+import styles from "assets/jss/nextjs-material-dashboard/components/customInputStyle.js"
 
 export default function CustomInput(props) {
-  const useStyles = makeStyles(styles);
-  const classes = useStyles();
+  const useStyles = makeStyles(styles)
+  const classes = useStyles()
   const {
     formControlProps,
     labelText,
@@ -23,31 +23,29 @@ export default function CustomInput(props) {
     inputProps,
     error,
     success,
-  } = props;
+  } = props
 
   const labelClasses = classNames({
-    [" " + classes.labelRootError]: error,
-    [" " + classes.labelRootSuccess]: success && !error,
-  });
+    [` ${classes.labelRootError}`]: error,
+    [` ${classes.labelRootSuccess}`]: success && !error,
+  })
   const underlineClasses = classNames({
     [classes.underlineError]: error,
     [classes.underlineSuccess]: success && !error,
     [classes.underline]: true,
-  });
+  })
   const marginTop = classNames({
     [classes.marginTop]: labelText === undefined,
-  });
+  })
   return (
     <FormControl
       {...formControlProps}
-      className={formControlProps.className + " " + classes.formControl}
-    >
+      className={`${formControlProps.className} ${classes.formControl}`}>
       {labelText !== undefined ? (
         <InputLabel
           className={classes.labelRoot + labelClasses}
           htmlFor={id}
-          {...labelProps}
-        >
+          {...labelProps}>
           {labelText}
         </InputLabel>
       ) : null}
@@ -61,12 +59,12 @@ export default function CustomInput(props) {
         {...inputProps}
       />
       {error ? (
-        <Clear className={classes.feedback + " " + classes.labelRootError} />
+        <Clear className={`${classes.feedback} ${classes.labelRootError}`} />
       ) : success ? (
-        <Check className={classes.feedback + " " + classes.labelRootSuccess} />
+        <Check className={`${classes.feedback} ${classes.labelRootSuccess}`} />
       ) : null}
     </FormControl>
-  );
+  )
 }
 
 CustomInput.propTypes = {
@@ -77,4 +75,4 @@ CustomInput.propTypes = {
   formControlProps: PropTypes.object,
   error: PropTypes.bool,
   success: PropTypes.bool,
-};
+}

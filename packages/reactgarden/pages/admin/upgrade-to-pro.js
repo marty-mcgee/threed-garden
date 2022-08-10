@@ -91,10 +91,12 @@ function UpgradeToPro() {
       <GridItem xs={12} sm={12} md={8}>
         <Card>
           <CardHeader color="info">
-            <h4 className={classes.cardTitleWhite}>Material Dashboard PRO React</h4>
+            <h4 className={classes.cardTitleWhite}>
+              Material Dashboard PRO React
+            </h4>
             <p className={classes.cardCategoryWhite}>
-              Are you looking for more components? Please check our Premium Version of Material
-              Dashboard Angular.
+              Are you looking for more components? Please check our Premium
+              Version of Material Dashboard Angular.
             </p>
           </CardHeader>
           <CardBody>
@@ -138,8 +140,8 @@ function UpgradeToPro() {
                   </tr>
                   <tr>
                     <td>
-                      ReactTables, ReactVectorMap, ReactSweetAlert, Wizard, Validation,
-                      ReactBigCalendar etc...
+                      ReactTables, ReactVectorMap, ReactSweetAlert, Wizard,
+                      Validation, ReactBigCalendar etc...
                     </td>
                     <td className={classes.center}>
                       <Danger>
@@ -194,8 +196,7 @@ function UpgradeToPro() {
                       <Button
                         round
                         color="danger"
-                        href="https://www.companyjuice.com/product/material-dashboard-pro-react?ref=njsmd-upgrade-live"
-                      >
+                        href="https://www.companyjuice.com/product/material-dashboard-pro-react?ref=njsmd-upgrade-live">
                         Upgrade to Pro
                       </Button>
                     </td>

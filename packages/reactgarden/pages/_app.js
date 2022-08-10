@@ -1,20 +1,3 @@
-/*!
-
-=========================================================
-* NextJS Material Dashboard v1.1.0 based on Material Dashboard React v1.9.0
-=========================================================
-
-* Product Page: https://www.companyjuice.com/product/nextjs-material-dashboard
-* Copyright 2022 Company Juice (https://www.companyjuice.com)
-* Licensed under MIT (https://github.com/creativetimofficial/nextjs-material-dashboard/blob/master/LICENSE.md)
-
-* Coded by Company Juice
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react"
 import ReactDOM from "react-dom"
 import App from "next/app"
@@ -28,7 +11,10 @@ import "assets/css/nextjs-material-dashboard.css?v=1.1.0"
 Router.events.on("routeChangeStart", (url) => {
   console.log(`Loading: ${url}`)
   document.body.classList.add("body-page-transition")
-  ReactDOM.render(<PageChange path={url} />, document.getElementById("page-transition"))
+  ReactDOM.render(
+    <PageChange path={url} />,
+    document.getElementById("page-transition")
+  )
 })
 Router.events.on("routeChangeComplete", () => {
   ReactDOM.unmountComponentAtNode(document.getElementById("page-transition"))
@@ -41,23 +27,7 @@ Router.events.on("routeChangeError", () => {
 
 export default class MyApp extends App {
   componentDidMount() {
-    const comment = document.createComment(`
-
-=========================================================
-* * NextJS Material Dashboard v1.1.0 based on Material Dashboard React v1.9.0
-=========================================================
-
-* Product Page: https://www.companyjuice.com/product/nextjs-material-dashboard
-* Copyright 2022 Company Juice (https://www.companyjuice.com)
-* Licensed under MIT (https://github.com/creativetimofficial/nextjs-material-dashboard/blob/master/LICENSE.md)
-
-* Coded by Company Juice
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-`)
+    const comment = document.createComment(`HEY HEY HEY`)
     document.insertBefore(comment, document.documentElement)
   }
 
@@ -74,13 +44,16 @@ export default class MyApp extends App {
   render() {
     const { Component, pageProps } = this.props
 
-    const Layout = Component.layout || (({ children }) => <>{children}</>)
+    const Layout = Component.layout || (({ children }) => ({ children }))
 
     return (
       <>
         <Head>
-          <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-          <title>NextJS Material Dashboard by Company Juice</title>
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+          />
+          <title>React Garden</title>
           <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE" />
         </Head>
         <Layout>

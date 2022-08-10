@@ -28,7 +28,14 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
     collapse === name ? setCollapse(false) : setCollapse(name)
 
   const renderNavbarItems = routes.map(
-    ({ name, icon, collapse: routeCollapses, href, route, collapse: navCollapse }: any) => (
+    ({
+      name,
+      icon,
+      collapse: routeCollapses,
+      href,
+      route,
+      collapse: navCollapse,
+    }: any) => (
       <DefaultNavbarDropdown
         key={name}
         name={name}
@@ -37,9 +44,9 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
         onClick={() => handleSetCollapse(name)}
         href={href}
         route={route}
-        collapse={Boolean(navCollapse)}
-      >
-        <MDBox sx={{ height: "15rem", maxHeight: "15rem", overflowY: "scroll" }}>
+        collapse={Boolean(navCollapse)}>
+        <MDBox
+          sx={{ height: "15rem", maxHeight: "15rem", overflowY: "scroll" }}>
           {routeCollapses &&
             routeCollapses.map((item: any) => (
               <MDBox key={item.name} px={2}>
@@ -51,8 +58,7 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
                       fontWeight="bold"
                       textTransform="capitalize"
                       py={1}
-                      px={0.5}
-                    >
+                      px={0.5}>
                       {item.name}
                     </MDTypography>
                     {item.collapse.map((el: any) => (
@@ -71,7 +77,10 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
                         fontWeight="regular"
                         py={0.625}
                         px={2}
-                        sx={({ palette: { grey, dark }, borders: { borderRadius } }: Theme) => ({
+                        sx={({
+                          palette: { grey, dark },
+                          borders: { borderRadius },
+                        }: Theme) => ({
                           borderRadius: borderRadius.md,
                           cursor: "pointer",
                           transition: "all 300ms linear",
@@ -80,8 +89,7 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
                             backgroundColor: grey[200],
                             color: dark.main,
                           },
-                        })}
-                      >
+                        })}>
                         {el.name}
                       </MDTypography>
                     ))}
@@ -95,7 +103,10 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
                     href={item.href ? item.href : ""}
                     target={item.href ? "_blank" : ""}
                     rel={item.href ? "noreferrer" : "noreferrer"}
-                    sx={({ palette: { grey, dark }, borders: { borderRadius } }) => ({
+                    sx={({
+                      palette: { grey, dark },
+                      borders: { borderRadius },
+                    }) => ({
                       borderRadius: borderRadius.md,
                       cursor: "pointer",
                       transition: "all 300ms linear",
@@ -110,14 +121,12 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
                           color: dark.main,
                         },
                       },
-                    })}
-                  >
+                    })}>
                     <MDTypography
                       display="block"
                       variant="button"
                       fontWeight="bold"
-                      textTransform="capitalize"
-                    >
+                      textTransform="capitalize">
                       {item.name}
                     </MDTypography>
                     <MDTypography
@@ -125,8 +134,7 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
                       variant="button"
                       color="text"
                       fontWeight="regular"
-                      sx={{ transition: "all 300ms linear" }}
-                    >
+                      sx={{ transition: "all 300ms linear" }}>
                       {item.description}
                     </MDTypography>
                   </MDBox>

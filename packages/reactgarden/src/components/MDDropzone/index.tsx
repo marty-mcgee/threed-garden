@@ -36,7 +36,8 @@ function MDDropzone({ options }: Props): JSX.Element {
     }
 
     function removeDropzone() {
-      if (Dropzone.instances.length > 0) Dropzone.instances.forEach((dz: any) => dz.destroy())
+      if (Dropzone.instances.length > 0)
+        Dropzone.instances.forEach((dz: any) => dz.destroy())
     }
 
     createDropzone()
@@ -49,8 +50,7 @@ function MDDropzone({ options }: Props): JSX.Element {
       action="/file-upload"
       ref={dropzoneRef}
       className="form-control dropzone"
-      ownerState={{ darkMode }}
-    >
+      ownerState={{ darkMode }}>
       <MDBox className="fallback" bgColor="transparent">
         <input name="file" type="file" multiple />
       </MDBox>

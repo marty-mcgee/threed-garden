@@ -79,19 +79,25 @@ function NewProduct(): JSX.Element {
               <MDBox p={2}>
                 <MDBox>
                   {getStepContent(activeStep)}
-                  <MDBox mt={3} width="100%" display="flex" justifyContent="space-between">
+                  <MDBox
+                    mt={3}
+                    width="100%"
+                    display="flex"
+                    justifyContent="space-between">
                     {activeStep === 0 ? (
                       <MDBox />
                     ) : (
-                      <MDButton variant="gradient" color="light" onClick={handleBack}>
+                      <MDButton
+                        variant="gradient"
+                        color="light"
+                        onClick={handleBack}>
                         back
                       </MDButton>
                     )}
                     <MDButton
                       variant="gradient"
                       color="dark"
-                      onClick={!isLastStep ? handleNext : undefined}
-                    >
+                      onClick={!isLastStep ? handleNext : undefined}>
                       {isLastStep ? "send" : "next"}
                     </MDButton>
                   </MDBox>

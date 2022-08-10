@@ -36,8 +36,7 @@ function Cover(): JSX.Element {
           mt={-3}
           p={3}
           mb={1}
-          textAlign="center"
-        >
+          textAlign="center">
           <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
             Sign in
           </MDTypography>
@@ -74,8 +73,7 @@ function Cover(): JSX.Element {
                 fontWeight="regular"
                 color="text"
                 onClick={handleSetRememberMe}
-                sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}
-              >
+                sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}>
                 &nbsp;&nbsp;Remember me
               </MDTypography>
             </MDBox>
@@ -93,8 +91,7 @@ function Cover(): JSX.Element {
                   variant="button"
                   color="info"
                   fontWeight="medium"
-                  textGradient
-                >
+                  textGradient>
                   Sign up
                 </MDTypography>
               </MDTypography>

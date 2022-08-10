@@ -5,7 +5,11 @@
 // Company Juice Dashboard Helper Functions
 import rgba from "assets/theme/functions/rgba"
 
-function gradientChartLine(chart: any, color: string, opacity: number = 0.2): any {
+function gradientChartLine(
+  chart: any,
+  color: string,
+  opacity: number = 0.2
+): any {
   const ctx = chart.getContext("2d")
   const gradientStroke = ctx.createLinearGradient(0, 230, 0, 50)
   const primaryColor = rgba(color, opacity).toString()

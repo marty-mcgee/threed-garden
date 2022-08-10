@@ -14,8 +14,12 @@ function configs(color: string, labels: any, label: any, data: any) {
           label,
           tension: 0,
           pointRadius: 3,
-          pointBackgroundColor: gradients[color] ? gradients[color].main : gradients.info.main,
-          borderColor: gradients[color] ? gradients[color].main : gradients.info.main,
+          pointBackgroundColor: gradients[color]
+            ? gradients[color].main
+            : gradients.info.main,
+          borderColor: gradients[color]
+            ? gradients[color].main
+            : gradients.info.main,
           borderWidth: 4,
           backgroundColor: "transparent",
           maxBarThickness: 6,

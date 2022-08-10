@@ -63,7 +63,10 @@ function PricingCards({ prices }: { prices: string[] }): JSX.Element {
         <Grid item xs={12} lg={4}>
           <DefaultPricingCard
             color={darkMode ? "dark" : "white"}
-            badge={{ color: darkMode ? "warning" : "light", label: "enterprise" }}
+            badge={{
+              color: darkMode ? "warning" : "light",
+              label: "enterprise",
+            }}
             price={{ currency: "$", value: enterprise, type: "mo" }}
             specifications={[
               { label: "Unlimited team members", includes: true },

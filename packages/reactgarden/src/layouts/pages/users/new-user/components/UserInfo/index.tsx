@@ -10,7 +10,8 @@ import FormField from "layouts/pages/users/new-user/components/FormField"
 
 function UserInfo({ formData }: any): JSX.Element {
   const { formField, values, errors, touched } = formData
-  const { firstName, lastName, company, email, password, repeatPassword } = formField
+  const { firstName, lastName, company, email, password, repeatPassword } =
+    formField
   const {
     firstName: firstNameV,
     lastName: lastNameV,

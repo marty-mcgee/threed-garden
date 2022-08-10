@@ -35,7 +35,11 @@ function ProductInfo(): JSX.Element {
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
             <MDBox mb={1} ml={0.5} lineHeight={0} display="inline-block">
-              <MDTypography component="label" variant="button" fontWeight="regular" color="text">
+              <MDTypography
+                component="label"
+                variant="button"
+                fontWeight="regular"
+                color="text">
                 Description&nbsp;&nbsp;
                 <MDTypography variant="caption" color="text">
                   (optional)
@@ -52,15 +56,22 @@ function ProductInfo(): JSX.Element {
                   variant="button"
                   fontWeight="regular"
                   color="text"
-                  textTransform="capitalize"
-                >
+                  textTransform="capitalize">
                   Category
                 </MDTypography>
               </MDBox>
               <Autocomplete
                 defaultValue="Clothing"
-                options={["Clothing", "Electronics", "Furniture", "Others", "Real Estate"]}
-                renderInput={(params) => <MDInput {...params} variant="standard" />}
+                options={[
+                  "Clothing",
+                  "Electronics",
+                  "Furniture",
+                  "Others",
+                  "Real Estate",
+                ]}
+                renderInput={(params) => (
+                  <MDInput {...params} variant="standard" />
+                )}
               />
             </MDBox>
             <MDBox mb={2} display="inline-block">
@@ -69,15 +80,22 @@ function ProductInfo(): JSX.Element {
                 variant="button"
                 fontWeight="regular"
                 color="text"
-                textTransform="capitalize"
-              >
+                textTransform="capitalize">
                 Size
               </MDTypography>
             </MDBox>
             <Autocomplete
               defaultValue="Medium"
-              options={["Extra Large", "Extra Small", "Large", "Medium", "Small"]}
-              renderInput={(params) => <MDInput {...params} variant="standard" />}
+              options={[
+                "Extra Large",
+                "Extra Small",
+                "Large",
+                "Medium",
+                "Small",
+              ]}
+              renderInput={(params) => (
+                <MDInput {...params} variant="standard" />
+              )}
             />
           </Grid>
         </Grid>

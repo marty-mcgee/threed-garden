@@ -10,14 +10,28 @@ import MDButton from "components/MDButton"
 
 // Declaring props types for Transaction
 interface Props {
-  color: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "light" | "dark"
+  color:
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "light"
+    | "dark"
   icon: ReactNode
   name: string
   description: string
   value: string
 }
 
-function Transaction({ color, icon, name, description, value }: Props): JSX.Element {
+function Transaction({
+  color,
+  icon,
+  name,
+  description,
+  value,
+}: Props): JSX.Element {
   return (
     <MDBox key={name} component="li" py={1} pr={2} mb={1}>
       <MDBox display="flex" justifyContent="space-between" alignItems="center">
@@ -36,7 +50,11 @@ function Transaction({ color, icon, name, description, value }: Props): JSX.Elem
             </MDTypography>
           </MDBox>
         </MDBox>
-        <MDTypography variant="button" color={color} fontWeight="medium" textGradient>
+        <MDTypography
+          variant="button"
+          color={color}
+          fontWeight="medium"
+          textGradient>
           {value}
         </MDTypography>
       </MDBox>

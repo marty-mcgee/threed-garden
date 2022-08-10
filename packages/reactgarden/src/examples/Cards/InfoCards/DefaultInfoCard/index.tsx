@@ -11,7 +11,14 @@ import MDTypography from "components/MDTypography"
 
 // Declaring props types for DefaultInfoCard
 interface Props {
-  color?: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "dark"
+  color?:
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "dark"
   icon: ReactNode
   title: string
   description?: string
@@ -19,7 +26,13 @@ interface Props {
   [key: string]: any
 }
 
-function DefaultInfoCard({ color, icon, title, description, value }: Props): JSX.Element {
+function DefaultInfoCard({
+  color,
+  icon,
+  title,
+  description,
+  value,
+}: Props): JSX.Element {
   return (
     <Card>
       <MDBox p={2} mx={3} display="flex" justifyContent="center">
@@ -33,13 +46,15 @@ function DefaultInfoCard({ color, icon, title, description, value }: Props): JSX
           height="4rem"
           shadow="md"
           borderRadius="lg"
-          variant="gradient"
-        >
+          variant="gradient">
           <Icon>{icon}</Icon>
         </MDBox>
       </MDBox>
       <MDBox pb={2} px={2} textAlign="center" lineHeight={1.25}>
-        <MDTypography variant="h6" fontWeight="medium" textTransform="capitalize">
+        <MDTypography
+          variant="h6"
+          fontWeight="medium"
+          textTransform="capitalize">
           {title}
         </MDTypography>
         {description && (

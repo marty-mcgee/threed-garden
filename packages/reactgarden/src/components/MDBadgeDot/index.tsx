@@ -7,7 +7,15 @@ import MDTypography from "components/MDTypography"
 // declaring props types for MDBadgeDot
 interface Props {
   variant?: "gradient" | "contained"
-  color?: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "light" | "dark"
+  color?:
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "light"
+    | "dark"
   size?: "xs" | "sm" | "md" | "lg"
   badgeContent: string
   font?:
@@ -72,8 +80,7 @@ const MDBadgeDot: FC<Props> = forwardRef(
           variant={fontSize}
           fontWeight={font.weight ? font.weight : "regular"}
           color={font.color ? font.color : "dark"}
-          sx={{ lineHeight: 0 }}
-        >
+          sx={{ lineHeight: 0 }}>
           {badgeContent}
         </MDTypography>
       </MDBox>

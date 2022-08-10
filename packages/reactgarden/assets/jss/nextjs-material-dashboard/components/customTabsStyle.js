@@ -1,4 +1,4 @@
-import { hexToRgb, whiteColor } from "assets/jss/nextjs-material-dashboard.js";
+import { hexToRgb, whiteColor } from "assets/jss/nextjs-material-dashboard.js"
 
 const customTabsStyle = {
   cardTitle: {
@@ -31,14 +31,14 @@ const customTabsStyle = {
     borderRadius: "3px",
     lineHeight: "24px",
     border: "0 !important",
-    color: whiteColor + " !important",
+    color: `${whiteColor} !important`,
     marginLeft: "4px",
     "&:last-child": {
       marginLeft: "0px",
     },
   },
   tabSelected: {
-    backgroundColor: "rgba(" + hexToRgb(whiteColor) + ", 0.2)",
+    backgroundColor: `rgba(${hexToRgb(whiteColor)}, 0.2)`,
     transition: "0.2s background-color 0.1s",
   },
   tabWrapper: {
@@ -57,6 +57,6 @@ const customTabsStyle = {
       margin: "-1px 5px 0 0 !important",
     },
   },
-};
+}
 
-export default customTabsStyle;
+export default customTabsStyle

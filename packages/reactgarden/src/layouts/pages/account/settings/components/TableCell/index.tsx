@@ -13,7 +13,13 @@ interface Props {
   noBorder?: boolean
 }
 
-function TableCell({ width, align, padding, noBorder, children }: Props): JSX.Element {
+function TableCell({
+  width,
+  align,
+  padding,
+  noBorder,
+  children,
+}: Props): JSX.Element {
   return (
     <MDBox
       component="th"
@@ -26,8 +32,7 @@ function TableCell({ width, align, padding, noBorder, children }: Props): JSX.El
       sx={{
         border: ({ borders: { borderWidth }, palette: { light } }) =>
           noBorder ? 0 : `${borderWidth[1]} solid ${light.main}`,
-      }}
-    >
+      }}>
       <MDTypography component="div" variant="body2" color="text">
         {children}
       </MDTypography>

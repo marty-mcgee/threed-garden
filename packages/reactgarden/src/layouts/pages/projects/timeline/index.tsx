@@ -35,7 +35,9 @@ function Timeline(): JSX.Element {
       <MDBox my={3}>
         <Grid container spacing={3}>
           <Grid item xs={12} lg={6}>
-            <TimelineList title="Timeline with dotted line">{renderTimelineItems}</TimelineList>
+            <TimelineList title="Timeline with dotted line">
+              {renderTimelineItems}
+            </TimelineList>
           </Grid>
           <Grid item xs={12} lg={6}>
             <TimelineList title="Timeline with dotted line" dark>

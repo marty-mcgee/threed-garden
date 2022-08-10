@@ -30,8 +30,8 @@ function EditProduct(): JSX.Element {
               </MDTypography>
               <MDBox mt={1} mb={2}>
                 <MDTypography variant="body2" color="text">
-                  We’re constantly trying to express ourselves and actualize our dreams. If you have
-                  the opportunity to play.
+                  We’re constantly trying to express ourselves and actualize our
+                  dreams. If you have the opportunity to play.
                 </MDTypography>
               </MDBox>
             </Grid>

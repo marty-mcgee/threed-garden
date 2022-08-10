@@ -28,18 +28,17 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
       <MuiBreadcrumbs
         sx={{
           "& .MuiBreadcrumbs-separator": {
-            color: ({ palette: { white, grey } }) => (light ? white.main : grey[600]),
+            color: ({ palette: { white, grey } }) =>
+              light ? white.main : grey[600],
           },
-        }}
-      >
+        }}>
         <Link to="/">
           <MDTypography
             component="span"
             variant="body2"
             color={light ? "white" : "dark"}
             opacity={light ? 0.8 : 0.5}
-            sx={{ lineHeight: 0 }}
-          >
+            sx={{ lineHeight: 0 }}>
             <Icon>{icon}</Icon>
           </MDTypography>
         </Link>
@@ -52,8 +51,7 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
               textTransform="capitalize"
               color={light ? "white" : "dark"}
               opacity={light ? 0.8 : 0.5}
-              sx={{ lineHeight: 0 }}
-            >
+              sx={{ lineHeight: 0 }}>
               {el}
             </MDTypography>
           </Link>
@@ -63,8 +61,7 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
           fontWeight="regular"
           textTransform="capitalize"
           color={light ? "white" : "dark"}
-          sx={{ lineHeight: 0 }}
-        >
+          sx={{ lineHeight: 0 }}>
           {title.replace("-", " ")}
         </MDTypography>
       </MuiBreadcrumbs>
@@ -73,8 +70,7 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
         textTransform="capitalize"
         variant="h6"
         color={light ? "white" : "dark"}
-        noWrap
-      >
+        noWrap>
         {title.replace("-", " ")}
       </MDTypography>
     </MDBox>

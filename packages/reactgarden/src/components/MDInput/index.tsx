@@ -7,16 +7,23 @@ import { OutlinedTextFieldProps, StandardTextFieldProps } from "@mui/material"
 import MDInputRoot from "components/MDInput/MDInputRoot"
 
 // Declaring props types for MDInput
-interface Props extends Omit<OutlinedTextFieldProps | StandardTextFieldProps, "variant"> {
+interface Props
+  extends Omit<OutlinedTextFieldProps | StandardTextFieldProps, "variant"> {
   variant?: "standard" | "outlined"
   error?: boolean
   success?: boolean
   disabled?: boolean
 }
 
-const MDInput: FC<Props | any> = forwardRef(({ error, success, disabled, ...rest }, ref) => (
-  <MDInputRoot {...rest} ref={ref} ownerState={{ error, success, disabled }} />
-))
+const MDInput: FC<Props | any> = forwardRef(
+  ({ error, success, disabled, ...rest }, ref) => (
+    <MDInputRoot
+      {...rest}
+      ref={ref}
+      ownerState={{ error, success, disabled }}
+    />
+  )
+)
 
 // Declaring default props for MDInput
 MDInput.defaultProps = {

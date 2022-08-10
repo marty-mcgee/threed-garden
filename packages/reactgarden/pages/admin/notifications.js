@@ -127,11 +127,15 @@ function Notifications() {
         <h4 className={classes.cardTitleWhite}>Notifications</h4>
         <p className={classes.cardCategoryWhite}>
           Handcrafted by our friends from{" "}
-          <a target="_blank" href="https://material-ui-next.com/?ref=creativetime">
+          <a
+            target="_blank"
+            href="https://material-ui-next.com/?ref=creativetime">
             Material UI
           </a>{" "}
           and styled by{" "}
-          <a target="_blank" href="https://www.companyjuice.com/?ref=njsmd-notifications-page">
+          <a
+            target="_blank"
+            href="https://www.companyjuice.com/?ref=njsmd-notifications-page">
             Company Juice
           </a>
           . Please checkout the{" "}
@@ -147,7 +151,10 @@ function Notifications() {
             <h5>Notifications Style</h5>
             <br />
             <SnackbarContent message={"This is a plain notification"} />
-            <SnackbarContent message={"This is a notification with close button."} close />
+            <SnackbarContent
+              message={"This is a notification with close button."}
+              close
+            />
             <SnackbarContent
               message={"This is a notification with close button and icon."}
               close
@@ -165,27 +172,37 @@ function Notifications() {
             <h5>Notifications States</h5>
             <br />
             <SnackbarContent
-              message={'INFO - This is a regular notification made with color="info"'}
+              message={
+                'INFO - This is a regular notification made with color="info"'
+              }
               close
               color="info"
             />
             <SnackbarContent
-              message={'SUCCESS - This is a regular notification made with color="success"'}
+              message={
+                'SUCCESS - This is a regular notification made with color="success"'
+              }
               close
               color="success"
             />
             <SnackbarContent
-              message={'WARNING - This is a regular notification made with color="warning"'}
+              message={
+                'WARNING - This is a regular notification made with color="warning"'
+              }
               close
               color="warning"
             />
             <SnackbarContent
-              message={'DANGER - This is a regular notification made with color="danger"'}
+              message={
+                'DANGER - This is a regular notification made with color="danger"'
+              }
               close
               color="danger"
             />
             <SnackbarContent
-              message={'PRIMARY - This is a regular notification made with color="primary"'}
+              message={
+                'PRIMARY - This is a regular notification made with color="primary"'
+              }
               close
               color="primary"
             />
@@ -206,7 +223,10 @@ function Notifications() {
           <GridItem xs={12} sm={12} md={10} lg={8}>
             <GridContainer>
               <GridItem xs={12} sm={12} md={4}>
-                <Button fullWidth color="primary" onClick={() => showNotification("tl")}>
+                <Button
+                  fullWidth
+                  color="primary"
+                  onClick={() => showNotification("tl")}>
                   Top Left
                 </Button>
                 <Snackbar
@@ -220,7 +240,10 @@ function Notifications() {
                 />
               </GridItem>
               <GridItem xs={12} sm={12} md={4}>
-                <Button fullWidth color="primary" onClick={() => showNotification("tc")}>
+                <Button
+                  fullWidth
+                  color="primary"
+                  onClick={() => showNotification("tc")}>
                   Top Center
                 </Button>
                 <Snackbar
@@ -234,7 +257,10 @@ function Notifications() {
                 />
               </GridItem>
               <GridItem xs={12} sm={12} md={4}>
-                <Button fullWidth color="primary" onClick={() => showNotification("tr")}>
+                <Button
+                  fullWidth
+                  color="primary"
+                  onClick={() => showNotification("tr")}>
                   Top Right
                 </Button>
                 <Snackbar
@@ -254,7 +280,10 @@ function Notifications() {
           <GridItem xs={12} sm={12} md={10} lg={8}>
             <GridContainer>
               <GridItem xs={12} sm={12} md={4}>
-                <Button fullWidth color="primary" onClick={() => showNotification("bl")}>
+                <Button
+                  fullWidth
+                  color="primary"
+                  onClick={() => showNotification("bl")}>
                   Bottom Left
                 </Button>
                 <Snackbar
@@ -268,7 +297,10 @@ function Notifications() {
                 />
               </GridItem>
               <GridItem xs={12} sm={12} md={4}>
-                <Button fullWidth color="primary" onClick={() => showNotification("bc")}>
+                <Button
+                  fullWidth
+                  color="primary"
+                  onClick={() => showNotification("bc")}>
                   Bottom Center
                 </Button>
                 <Snackbar
@@ -282,7 +314,10 @@ function Notifications() {
                 />
               </GridItem>
               <GridItem xs={12} sm={12} md={4}>
-                <Button fullWidth color="primary" onClick={() => showNotification("br")}>
+                <Button
+                  fullWidth
+                  color="primary"
+                  onClick={() => showNotification("br")}>
                   Bottom Right
                 </Button>
                 <Snackbar

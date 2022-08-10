@@ -24,7 +24,9 @@ interface Props {
 }
 
 function BaseLayout({ stickyNavbar, children }: Props): JSX.Element {
-  const [tabsOrientation, setTabsOrientation] = useState<"horizontal" | "vertical">("horizontal")
+  const [tabsOrientation, setTabsOrientation] = useState<
+    "horizontal" | "vertical"
+  >("horizontal")
   const [tabValue, setTabValue] = useState<number>(0)
 
   useEffect(() => {
@@ -47,7 +49,8 @@ function BaseLayout({ stickyNavbar, children }: Props): JSX.Element {
     return () => window.removeEventListener("resize", handleTabsOrientation)
   }, [tabsOrientation])
 
-  const handleSetTabValue = (event: any, newValue: number) => setTabValue(newValue)
+  const handleSetTabValue = (event: any, newValue: number) =>
+    setTabValue(newValue)
 
   return (
     <DashboardLayout>
@@ -56,7 +59,10 @@ function BaseLayout({ stickyNavbar, children }: Props): JSX.Element {
         <Grid container>
           <Grid item xs={12} sm={8} lg={4}>
             <AppBar position="static">
-              <Tabs orientation={tabsOrientation} value={tabValue} onChange={handleSetTabValue}>
+              <Tabs
+                orientation={tabsOrientation}
+                value={tabValue}
+                onChange={handleSetTabValue}>
                 <Tab label="Messages" />
                 <Tab label="Social" />
                 <Tab label="Notifications" />

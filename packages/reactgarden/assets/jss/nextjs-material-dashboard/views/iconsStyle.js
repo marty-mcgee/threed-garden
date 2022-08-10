@@ -3,7 +3,7 @@ import {
   whiteColor,
   grayColor,
   hexToRgb,
-} from "assets/jss/nextjs-material-dashboard.js";
+} from "assets/jss/nextjs-material-dashboard.js"
 
 const iconsStyle = {
   iframe: {
@@ -17,7 +17,7 @@ const iconsStyle = {
   },
   cardCategoryWhite: {
     "&,& a,& a:hover,& a:focus": {
-      color: "rgba(" + hexToRgb(whiteColor) + ",.62)",
+      color: `rgba(${hexToRgb(whiteColor)},.62)`,
       margin: "0",
       fontSize: "14px",
       marginTop: "0",
@@ -41,6 +41,6 @@ const iconsStyle = {
       lineHeight: "1",
     },
   },
-};
+}
 
-export default iconsStyle;
+export default iconsStyle

@@ -14,18 +14,41 @@ import { useMaterialUIController } from "context"
 
 // Decalaring props types for MiniStatisticsCard
 interface Props {
-  bgColor?: "white" | "primary" | "secondary" | "info" | "success" | "warning" | "error" | "dark"
+  bgColor?:
+    | "white"
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "dark"
   title?: {
     fontWeight?: "light" | "regular" | "medium" | "bold"
     text?: string
   }
   count: string | number
   percentage?: {
-    color: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "dark" | "white"
+    color:
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "dark"
+      | "white"
     text: string | number
   }
   icon: {
-    color: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "dark"
+    color:
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "dark"
     component: ReactNode
   }
   direction?: "right" | "left"
@@ -50,8 +73,7 @@ function MiniStatisticsCard({
         variant="gradient"
         sx={({ palette: { background } }: { palette: any }) => ({
           background: darkMode && background.card,
-        })}
-      >
+        })}>
         <MDBox p={2}>
           <Grid container alignItems="center">
             {direction === "left" ? (
@@ -66,8 +88,7 @@ function MiniStatisticsCard({
                   display="flex"
                   justifyContent="center"
                   alignItems="center"
-                  shadow="md"
-                >
+                  shadow="md">
                   <Icon fontSize="medium" color="inherit">
                     {icon.component}
                   </Icon>
@@ -78,24 +99,24 @@ function MiniStatisticsCard({
               <MDBox
                 ml={direction === "left" ? 2 : 0}
                 lineHeight={1}
-                textAlign={direction === "left" ? "right" : "left"}
-              >
+                textAlign={direction === "left" ? "right" : "left"}>
                 <MDTypography
                   variant="button"
                   color={bgColor === "white" ? "text" : "white"}
                   opacity={bgColor === "white" ? 1 : 0.7}
                   textTransform="capitalize"
-                  fontWeight={title.fontWeight}
-                >
+                  fontWeight={title.fontWeight}>
                   {title.text}
                 </MDTypography>
                 <MDTypography
                   variant="h5"
                   fontWeight="bold"
-                  color={bgColor === "white" ? "dark" : "white"}
-                >
+                  color={bgColor === "white" ? "dark" : "white"}>
                   {count}{" "}
-                  <MDTypography variant="button" color={percentage.color} fontWeight="bold">
+                  <MDTypography
+                    variant="button"
+                    color={percentage.color}
+                    fontWeight="bold">
                     {percentage.text}
                   </MDTypography>
                 </MDTypography>
@@ -114,8 +135,7 @@ function MiniStatisticsCard({
                   display="flex"
                   justifyContent="center"
                   alignItems="center"
-                  shadow="md"
-                >
+                  shadow="md">
                   <Icon fontSize="medium" color="inherit">
                     {icon.component}
                   </Icon>

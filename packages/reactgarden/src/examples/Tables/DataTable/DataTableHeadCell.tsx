@@ -18,7 +18,13 @@ interface Props {
   align?: "left" | "right" | "center"
 }
 
-function DataTableHeadCell({ width, children, sorted, align, ...rest }: Props): JSX.Element {
+function DataTableHeadCell({
+  width,
+  children,
+  sorted,
+  align,
+  ...rest
+}: Props): JSX.Element {
   const [controller] = useMaterialUIController()
   const { darkMode } = controller
 
@@ -30,8 +36,7 @@ function DataTableHeadCell({ width, children, sorted, align, ...rest }: Props): 
       px={3}
       sx={({ palette: { light }, borders: { borderWidth } }: Theme) => ({
         borderBottom: `${borderWidth[1]} solid ${light.main}`,
-      })}
-    >
+      })}>
       <MDBox
         {...rest}
         position="relative"
@@ -44,8 +49,7 @@ function DataTableHeadCell({ width, children, sorted, align, ...rest }: Props): 
           textTransform: "uppercase",
           cursor: sorted && "pointer",
           userSelect: sorted && "none",
-        })}
-      >
+        })}>
         {children}
         {sorted && (
           <MDBox
@@ -55,22 +59,19 @@ function DataTableHeadCell({ width, children, sorted, align, ...rest }: Props): 
             left={align === "right" ? "-5px" : "unset"}
             sx={({ typography: { size } }: any) => ({
               fontSize: size.lg,
-            })}
-          >
+            })}>
             <MDBox
               position="absolute"
               top={-6}
               color={sorted === "asce" ? "text" : "secondary"}
-              opacity={sorted === "asce" ? 1 : 0.5}
-            >
+              opacity={sorted === "asce" ? 1 : 0.5}>
               <Icon>arrow_drop_up</Icon>
             </MDBox>
             <MDBox
               position="absolute"
               top={0}
               color={sorted === "desc" ? "text" : "secondary"}
-              opacity={sorted === "desc" ? 1 : 0.5}
-            >
+              opacity={sorted === "desc" ? 1 : 0.5}>
               <Icon>arrow_drop_down</Icon>
             </MDBox>
           </MDBox>

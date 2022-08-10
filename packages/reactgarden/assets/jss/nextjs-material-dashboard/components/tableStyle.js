@@ -7,7 +7,7 @@ import {
   roseColor,
   grayColor,
   defaultFont,
-} from "assets/jss/nextjs-material-dashboard.js";
+} from "assets/jss/nextjs-material-dashboard.js"
 
 const tableStyle = (theme) => ({
   warningTableHeader: {
@@ -72,6 +72,6 @@ const tableStyle = (theme) => ({
     outline: "none",
     verticalAlign: "middle",
   },
-});
+})
 
-export default tableStyle;
+export default tableStyle

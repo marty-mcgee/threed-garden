@@ -26,8 +26,11 @@ function ProductivityChart(): JSX.Element {
   const [chart, setChart] = useState([])
   const { data, options }: any = chart
 
-  const handleOpenMenu = ({ currentTarget }: { currentTarget: HTMLSpanElement }) =>
-    setOpenMenu(currentTarget)
+  const handleOpenMenu = ({
+    currentTarget,
+  }: {
+    currentTarget: HTMLSpanElement
+  }) => setOpenMenu(currentTarget)
   const handleCloseMenu = () => setOpenMenu(null)
 
   useEffect(() => setChart(configs()), [])
@@ -38,8 +41,7 @@ function ProductivityChart(): JSX.Element {
       transformOrigin={{ vertical: "top", horizontal: "right" }}
       open={Boolean(openMenu)}
       onClose={handleCloseMenu}
-      keepMounted
-    >
+      keepMounted>
       <MenuItem onClick={handleCloseMenu}>Action</MenuItem>
       <MenuItem onClick={handleCloseMenu}>Anoter action</MenuItem>
       <MenuItem onClick={handleCloseMenu}>Something else here</MenuItem>
@@ -56,10 +58,18 @@ function ProductivityChart(): JSX.Element {
                 Productivity
               </MDTypography>
               <MDBox display="flex" alignItems="center">
-                <MDBox fontSize={size.lg} color="success" mb={0.3} mr={0.5} lineHeight={0}>
+                <MDBox
+                  fontSize={size.lg}
+                  color="success"
+                  mb={0.3}
+                  mr={0.5}
+                  lineHeight={0}>
                   <Icon sx={{ fontWeight: "bold" }}>arrow_upward</Icon>
                 </MDBox>
-                <MDTypography variant="button" color="white" fontWeight="medium">
+                <MDTypography
+                  variant="button"
+                  color="white"
+                  fontWeight="medium">
                   4% more{" "}
                   <MDTypography variant="button" color="white">
                     in 2022

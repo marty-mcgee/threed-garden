@@ -23,9 +23,11 @@ interface Props extends AvatarProps {
   [key: string]: any
 }
 
-const MDAvatar: FC<Props> = forwardRef(({ bgColor, size, shadow, ...rest }, ref) => (
-  <MDAvatarRoot ref={ref} ownerState={{ shadow, bgColor, size }} {...rest} />
-))
+const MDAvatar: FC<Props> = forwardRef(
+  ({ bgColor, size, shadow, ...rest }, ref) => (
+    <MDAvatarRoot ref={ref} ownerState={{ shadow, bgColor, size }} {...rest} />
+  )
+)
 
 // Declaring default props for MDAvatar
 MDAvatar.defaultProps = {

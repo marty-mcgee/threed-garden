@@ -6,7 +6,7 @@ import {
   blackColor,
   grayColor,
   hexToRgb,
-} from "assets/jss/nextjs-material-dashboard.js";
+} from "assets/jss/nextjs-material-dashboard.js"
 
 const dropdownStyle = (theme) => ({
   buttonLink: {
@@ -67,7 +67,7 @@ const dropdownStyle = (theme) => ({
         padding: "0px !important",
         backgroundColor: "transparent !important",
         "& ul li": {
-          color: whiteColor + " !important",
+          color: `${whiteColor} !important`,
           margin: "10px 15px 0!important",
           padding: "10px 15px !important",
           "&:hover": {
@@ -81,7 +81,7 @@ const dropdownStyle = (theme) => ({
   dropdown: {
     borderRadius: "3px",
     border: "0",
-    boxShadow: "0 2px 5px 0 rgba(" + hexToRgb(blackColor) + ", 0.26)",
+    boxShadow: `0 2px 5px 0 rgba(${hexToRgb(blackColor)}, 0.26)`,
     top: "100%",
     zIndex: "1000",
     minWidth: "160px",
@@ -119,6 +119,6 @@ const dropdownStyle = (theme) => ({
       ...primaryBoxShadow,
     },
   },
-});
+})
 
-export default dropdownStyle;
+export default dropdownStyle

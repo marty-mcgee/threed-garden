@@ -34,7 +34,13 @@ function ProductImages(): JSX.Element {
   return (
     <MDBox>
       <ImgsViewer
-        imgs={[{ src: image1 }, { src: image2 }, { src: image3 }, { src: image4 }, { src: image5 }]}
+        imgs={[
+          { src: image1 },
+          { src: image2 },
+          { src: image3 },
+          { src: image4 },
+          { src: image5 },
+        ]}
         isOpen={imgsViewer}
         onClose={closeImgsViewer}
         currImg={imgsViewerCurrent}

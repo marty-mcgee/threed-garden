@@ -20,8 +20,17 @@ function ChangePassword(): JSX.Element {
     const itemKey = `element-${key}`
 
     return (
-      <MDBox key={itemKey} component="li" color="text" fontSize="1.25rem" lineHeight={1}>
-        <MDTypography variant="button" color="text" fontWeight="regular" verticalAlign="middle">
+      <MDBox
+        key={itemKey}
+        component="li"
+        color="text"
+        fontSize="1.25rem"
+        lineHeight={1}>
+        <MDTypography
+          variant="button"
+          color="text"
+          fontWeight="regular"
+          verticalAlign="middle">
           {item}
         </MDTypography>
       </MDBox>
@@ -65,7 +74,11 @@ function ChangePassword(): JSX.Element {
             Please follow this guide for a strong password
           </MDTypography>
         </MDBox>
-        <MDBox display="flex" justifyContent="space-between" alignItems="flex-end" flexWrap="wrap">
+        <MDBox
+          display="flex"
+          justifyContent="space-between"
+          alignItems="flex-end"
+          flexWrap="wrap">
           <MDBox component="ul" m={0} pl={3.25} mb={{ xs: 8, sm: 0 }}>
             {renderPasswordRequirements}
           </MDBox>

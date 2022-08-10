@@ -11,11 +11,27 @@ import MDTypography from "components/MDTypography"
 
 // Declaring props types for CompleStatisticsCard
 interface Props {
-  color?: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "light" | "dark"
+  color?:
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "light"
+    | "dark"
   title: string
   count: string | number
   percentage?: {
-    color: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "dark" | "white"
+    color:
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "dark"
+      | "white"
     amount: string | number
     label: string
   }
@@ -23,7 +39,13 @@ interface Props {
   [key: string]: any
 }
 
-function ComplexStatisticsCard({ color, title, count, percentage, icon }: Props): JSX.Element {
+function ComplexStatisticsCard({
+  color,
+  title,
+  count,
+  percentage,
+  icon,
+}: Props): JSX.Element {
   return (
     <Card>
       <MDBox display="flex" justifyContent="space-between" pt={1} px={2}>
@@ -38,8 +60,7 @@ function ComplexStatisticsCard({ color, title, count, percentage, icon }: Props)
           alignItems="center"
           width="4rem"
           height="4rem"
-          mt={-3}
-        >
+          mt={-3}>
           <Icon fontSize="medium" color="inherit">
             {icon}
           </Icon>
@@ -53,13 +74,16 @@ function ComplexStatisticsCard({ color, title, count, percentage, icon }: Props)
       </MDBox>
       <Divider />
       <MDBox pb={2} px={2}>
-        <MDTypography component="p" variant="button" color="text" display="flex">
+        <MDTypography
+          component="p"
+          variant="button"
+          color="text"
+          display="flex">
           <MDTypography
             component="span"
             variant="button"
             fontWeight="bold"
-            color={percentage.color}
-          >
+            color={percentage.color}>
             {percentage.amount}
           </MDTypography>
           &nbsp;{percentage.label}

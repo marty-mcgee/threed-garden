@@ -24,14 +24,29 @@ interface Props {
   title: string
   count: number | ReactNode
   percentage: {
-    color: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "dark"
+    color:
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "dark"
     label: string | ReactNode
   }
   chart: {
     labels: string[]
     datasets: {
       label: string
-      color: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "light" | "dark"
+      color:
+        | "primary"
+        | "secondary"
+        | "info"
+        | "success"
+        | "warning"
+        | "error"
+        | "light"
+        | "dark"
       data: number[]
     }[]
   }
@@ -64,12 +79,19 @@ function Chart({ title, count, percentage, chart }: Props): JSX.Element {
   return (
     <Card>
       <MDBox p={2} lineHeight={1}>
-        <MDTypography variant="button" textTransform="capitalize" fontWeight="medium" color="text">
+        <MDTypography
+          variant="button"
+          textTransform="capitalize"
+          fontWeight="medium"
+          color="text">
           {title}
         </MDTypography>
         <MDTypography variant="h5" fontWeight="bold" color="dark">
           {count}&nbsp;
-          <MDTypography variant="button" fontWeight="bold" color={percentage.color}>
+          <MDTypography
+            variant="button"
+            fontWeight="bold"
+            color={percentage.color}>
             {percentage.label}
           </MDTypography>
         </MDTypography>

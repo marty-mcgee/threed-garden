@@ -1,5 +1,12 @@
 // react
-import { useState, useEffect, useMemo, JSXElementConstructor, Key, ReactElement } from "react"
+import {
+  useState,
+  useEffect,
+  useMemo,
+  JSXElementConstructor,
+  Key,
+  ReactElement,
+} from "react"
 
 // react-router components
 import { Routes, Route, Navigate, useLocation } from "react-router-dom"
@@ -33,7 +40,11 @@ import createCache from "@emotion/cache"
 import routes from "routes"
 
 // Company Juice Dashboard contexts
-import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context"
+import {
+  useMaterialUIController,
+  setMiniSidenav,
+  setOpenConfigurator,
+} from "context"
 
 // Images
 import brandWhite from "assets/images/logos/logo-threedgarden.png"
@@ -83,7 +94,8 @@ export default function App() {
   }
 
   // Change the openConfigurator state
-  const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator)
+  const handleConfiguratorOpen = () =>
+    setOpenConfigurator(dispatch, !openConfigurator)
 
   // Setting the dir attribute for the body element
   useEffect(() => {
@@ -109,7 +121,13 @@ export default function App() {
         }
 
         if (route.route) {
-          return <Route path={route.route} element={route.component} key={route.key} />
+          return (
+            <Route
+              path={route.route}
+              element={route.component}
+              key={route.key}
+            />
+          )
         }
 
         return null
@@ -132,8 +150,7 @@ export default function App() {
       zIndex={99}
       color="dark"
       sx={{ cursor: "pointer" }}
-      onClick={handleConfiguratorOpen}
-    >
+      onClick={handleConfiguratorOpen}>
       <Icon fontSize="small" color="inherit">
         settings
       </Icon>
@@ -148,7 +165,11 @@ export default function App() {
           <>
             <Sidenav
               color={sidenavColor}
-              brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
+              brand={
+                (transparentSidenav && !darkMode) || whiteSidenav
+                  ? brandDark
+                  : brandWhite
+              }
               brandName="Company Juice"
               routes={routes}
               onMouseEnter={handleOnMouseEnter}
@@ -172,7 +193,11 @@ export default function App() {
         <>
           <Sidenav
             color={sidenavColor}
-            brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
+            brand={
+              (transparentSidenav && !darkMode) || whiteSidenav
+                ? brandDark
+                : brandWhite
+            }
             brandName="Company Juice"
             routes={routes}
             onMouseEnter={handleOnMouseEnter}

@@ -23,7 +23,15 @@ import colors from "assets/theme/base/colors"
 // Declaring props types for MixedChart
 interface Props {
   icon?: {
-    color?: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "light" | "dark"
+    color?:
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "light"
+      | "dark"
     component: ReactNode
   }
   title?: string
@@ -34,14 +42,28 @@ interface Props {
     datasets: {
       chartType: string
       label: string
-      color: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "light" | "dark"
+      color:
+        | "primary"
+        | "secondary"
+        | "info"
+        | "success"
+        | "warning"
+        | "error"
+        | "light"
+        | "dark"
       data: number[]
     }[]
   }
   [key: string]: any
 }
 
-function MixedChart({ icon, title, description, height, chart }: Props): JSX.Element {
+function MixedChart({
+  icon,
+  title,
+  description,
+  height,
+  chart,
+}: Props): JSX.Element {
   const chartRef = useRef(null)
   const [chartData, setChartData] = useState({})
   const { data, options }: any = chartData
@@ -79,7 +101,9 @@ function MixedChart({ icon, title, description, height, chart }: Props): JSX.Ele
             maxBarThickness: 6,
             backgroundColor: gradientChartLine(
               chartRef.current.children[0],
-              colors[dataset.color] ? colors[dataset.color || "dark"].main : colors.dark.main
+              colors[dataset.color]
+                ? colors[dataset.color || "dark"].main
+                : colors.dark.main
             ),
           }
 
@@ -143,8 +167,7 @@ function MixedChart({ icon, title, description, height, chart }: Props): JSX.Ele
               alignItems="center"
               color="white"
               mt={-5}
-              mr={2}
-            >
+              mr={2}>
               <Icon fontSize="medium">{icon.component}</Icon>
             </MDBox>
           )}

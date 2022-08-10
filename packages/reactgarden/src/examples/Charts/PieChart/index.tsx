@@ -17,7 +17,15 @@ import configs from "examples/Charts/PieChart/configs"
 // Declaring props types for PieChart
 interface Props {
   icon?: {
-    color?: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "light" | "dark"
+    color?:
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "light"
+      | "dark"
     component: ReactNode
   }
   title?: string
@@ -34,7 +42,13 @@ interface Props {
   [key: string]: any
 }
 
-function PieChart({ icon, title, description, height, chart }: Props): JSX.Element {
+function PieChart({
+  icon,
+  title,
+  description,
+  height,
+  chart,
+}: Props): JSX.Element {
   const { data, options } = configs(chart.labels || [], chart.datasets || {})
 
   const renderChart = (
@@ -54,8 +68,7 @@ function PieChart({ icon, title, description, height, chart }: Props): JSX.Eleme
               alignItems="center"
               color="white"
               mt={-5}
-              mr={2}
-            >
+              mr={2}>
               <Icon fontSize="medium">{icon.component}</Icon>
             </MDBox>
           )}

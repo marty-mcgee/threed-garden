@@ -13,7 +13,7 @@ import {
   grayColor,
   blackColor,
   hexToRgb,
-} from "assets/jss/nextjs-material-dashboard.js";
+} from "assets/jss/nextjs-material-dashboard.js"
 
 const sidebarStyle = (theme) => ({
   drawerPaper: {
@@ -72,7 +72,7 @@ const sidebarStyle = (theme) => ({
       height: "1px",
       right: "15px",
       width: "calc(100% - 30px)",
-      backgroundColor: "rgba(" + hexToRgb(grayColor[6]) + ", 0.3)",
+      backgroundColor: `rgba(${hexToRgb(grayColor[6])}, 0.3)`,
     },
   },
   logoLink: {
@@ -165,7 +165,7 @@ const sidebarStyle = (theme) => ({
     marginRight: "15px",
     textAlign: "center",
     verticalAlign: "middle",
-    color: "rgba(" + hexToRgb(whiteColor) + ", 0.8)",
+    color: `rgba(${hexToRgb(whiteColor)}, 0.8)`,
   },
   itemIconRTL: {
     marginRight: "3px",
@@ -195,118 +195,88 @@ const sidebarStyle = (theme) => ({
   },
   blue: {
     backgroundColor: infoColor[0],
-    boxShadow:
-      "0 12px 20px -10px rgba(" +
-      hexToRgb(infoColor[0]) +
-      ",.28), 0 4px 20px 0 rgba(" +
-      hexToRgb(blackColor) +
-      ",.12), 0 7px 8px -5px rgba(" +
-      hexToRgb(infoColor[0]) +
-      ",.2)",
+    boxShadow: `0 12px 20px -10px rgba(${hexToRgb(
+      infoColor[0]
+    )},.28), 0 4px 20px 0 rgba(${hexToRgb(
+      blackColor
+    )},.12), 0 7px 8px -5px rgba(${hexToRgb(infoColor[0])},.2)`,
     "&:hover,&:focus": {
       backgroundColor: infoColor[0],
-      boxShadow:
-        "0 12px 20px -10px rgba(" +
-        hexToRgb(infoColor[0]) +
-        ",.28), 0 4px 20px 0 rgba(" +
-        hexToRgb(blackColor) +
-        ",.12), 0 7px 8px -5px rgba(" +
-        hexToRgb(infoColor[0]) +
-        ",.2)",
+      boxShadow: `0 12px 20px -10px rgba(${hexToRgb(
+        infoColor[0]
+      )},.28), 0 4px 20px 0 rgba(${hexToRgb(
+        blackColor
+      )},.12), 0 7px 8px -5px rgba(${hexToRgb(infoColor[0])},.2)`,
     },
   },
   green: {
     backgroundColor: successColor[0],
-    boxShadow:
-      "0 12px 20px -10px rgba(" +
-      hexToRgb(successColor[0]) +
-      ",.28), 0 4px 20px 0 rgba(" +
-      hexToRgb(blackColor) +
-      ",.12), 0 7px 8px -5px rgba(" +
-      hexToRgb(successColor[0]) +
-      ",.2)",
+    boxShadow: `0 12px 20px -10px rgba(${hexToRgb(
+      successColor[0]
+    )},.28), 0 4px 20px 0 rgba(${hexToRgb(
+      blackColor
+    )},.12), 0 7px 8px -5px rgba(${hexToRgb(successColor[0])},.2)`,
     "&:hover,&:focus": {
       backgroundColor: successColor[0],
-      boxShadow:
-        "0 12px 20px -10px rgba(" +
-        hexToRgb(successColor[0]) +
-        ",.28), 0 4px 20px 0 rgba(" +
-        hexToRgb(blackColor) +
-        ",.12), 0 7px 8px -5px rgba(" +
-        hexToRgb(successColor[0]) +
-        ",.2)",
+      boxShadow: `0 12px 20px -10px rgba(${hexToRgb(
+        successColor[0]
+      )},.28), 0 4px 20px 0 rgba(${hexToRgb(
+        blackColor
+      )},.12), 0 7px 8px -5px rgba(${hexToRgb(successColor[0])},.2)`,
     },
   },
   orange: {
     backgroundColor: warningColor[0],
-    boxShadow:
-      "0 12px 20px -10px rgba(" +
-      hexToRgb(warningColor[0]) +
-      ",.28), 0 4px 20px 0 rgba(" +
-      hexToRgb(blackColor) +
-      ",.12), 0 7px 8px -5px rgba(" +
-      hexToRgb(warningColor[0]) +
-      ",.2)",
+    boxShadow: `0 12px 20px -10px rgba(${hexToRgb(
+      warningColor[0]
+    )},.28), 0 4px 20px 0 rgba(${hexToRgb(
+      blackColor
+    )},.12), 0 7px 8px -5px rgba(${hexToRgb(warningColor[0])},.2)`,
     "&:hover,&:focus": {
       backgroundColor: warningColor[0],
-      boxShadow:
-        "0 12px 20px -10px rgba(" +
-        hexToRgb(warningColor[0]) +
-        ",.28), 0 4px 20px 0 rgba(" +
-        hexToRgb(blackColor) +
-        ",.12), 0 7px 8px -5px rgba(" +
-        hexToRgb(warningColor[0]) +
-        ",.2)",
+      boxShadow: `0 12px 20px -10px rgba(${hexToRgb(
+        warningColor[0]
+      )},.28), 0 4px 20px 0 rgba(${hexToRgb(
+        blackColor
+      )},.12), 0 7px 8px -5px rgba(${hexToRgb(warningColor[0])},.2)`,
     },
   },
   red: {
     backgroundColor: dangerColor[0],
-    boxShadow:
-      "0 12px 20px -10px rgba(" +
-      hexToRgb(dangerColor[0]) +
-      ",.28), 0 4px 20px 0 rgba(" +
-      hexToRgb(blackColor) +
-      ",.12), 0 7px 8px -5px rgba(" +
-      hexToRgb(dangerColor[0]) +
-      ",.2)",
+    boxShadow: `0 12px 20px -10px rgba(${hexToRgb(
+      dangerColor[0]
+    )},.28), 0 4px 20px 0 rgba(${hexToRgb(
+      blackColor
+    )},.12), 0 7px 8px -5px rgba(${hexToRgb(dangerColor[0])},.2)`,
     "&:hover,&:focus": {
       backgroundColor: dangerColor[0],
-      boxShadow:
-        "0 12px 20px -10px rgba(" +
-        hexToRgb(dangerColor[0]) +
-        ",.28), 0 4px 20px 0 rgba(" +
-        hexToRgb(blackColor) +
-        ",.12), 0 7px 8px -5px rgba(" +
-        hexToRgb(dangerColor[0]) +
-        ",.2)",
+      boxShadow: `0 12px 20px -10px rgba(${hexToRgb(
+        dangerColor[0]
+      )},.28), 0 4px 20px 0 rgba(${hexToRgb(
+        blackColor
+      )},.12), 0 7px 8px -5px rgba(${hexToRgb(dangerColor[0])},.2)`,
     },
   },
   white: {
     backgroundColor: whiteColor,
-    boxShadow:
-      "0 12px 20px -10px rgba(" +
-      hexToRgb(whiteColor) +
-      ",.28), 0 4px 20px 0 rgba(" +
-      hexToRgb(blackColor) +
-      ",.12), 0 7px 8px -5px rgba(" +
-      hexToRgb(whiteColor) +
-      ",.2)",
+    boxShadow: `0 12px 20px -10px rgba(${hexToRgb(
+      whiteColor
+    )},.28), 0 4px 20px 0 rgba(${hexToRgb(
+      blackColor
+    )},.12), 0 7px 8px -5px rgba(${hexToRgb(whiteColor)},.2)`,
     "&:hover,&:focus": {
       backgroundColor: whiteColor,
-      boxShadow:
-        "0 12px 20px -10px rgba(" +
-        hexToRgb(whiteColor) +
-        ",.28), 0 4px 20px 0 rgba(" +
-        hexToRgb(blackColor) +
-        ",.12), 0 7px 8px -5px rgba(" +
-        hexToRgb(whiteColor) +
-        ",.2)",
+      boxShadow: `0 12px 20px -10px rgba(${hexToRgb(
+        whiteColor
+      )},.28), 0 4px 20px 0 rgba(${hexToRgb(
+        blackColor
+      )},.12), 0 7px 8px -5px rgba(${hexToRgb(whiteColor)},.2)`,
     },
     "& $itemText": {
       color: grayColor[8],
     },
     "& $itemIcon": {
-      color: "rgba(" + hexToRgb(grayColor[8]) + ", 0.8)",
+      color: `rgba(${hexToRgb(grayColor[8])}, 0.8)`,
     },
   },
   sidebarWrapper: {
@@ -324,6 +294,6 @@ const sidebarStyle = (theme) => ({
       bottom: "13px",
     },
   },
-});
+})
 
-export default sidebarStyle;
+export default sidebarStyle

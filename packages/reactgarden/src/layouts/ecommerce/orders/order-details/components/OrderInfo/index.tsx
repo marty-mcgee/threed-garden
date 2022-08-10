@@ -45,7 +45,12 @@ function OrderInfo(): JSX.Element {
         <MDBox mt={0.5}>
           <MDTypography variant="button" color="text">
             Do you like the product? Leave us a review{" "}
-            <MDTypography component="a" href="#" variant="button" color="text" fontWeight="regular">
+            <MDTypography
+              component="a"
+              href="#"
+              variant="button"
+              color="text"
+              fontWeight="regular">
               here
             </MDTypography>
             .

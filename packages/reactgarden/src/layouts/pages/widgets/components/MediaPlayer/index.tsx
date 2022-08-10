@@ -22,15 +22,17 @@ function MediaPlayer(): JSX.Element {
 
   return (
     <Card
-      sx={({ functions: { linearGradient, rgba }, palette: { gradients } }) => ({
+      sx={({
+        functions: { linearGradient, rgba },
+        palette: { gradients },
+      }) => ({
         backgroundImage: `${linearGradient(
           rgba(gradients.dark.main, 0.85),
           rgba(gradients.dark.state, 0.85)
         )}, url(${bgImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-      })}
-    >
+      })}>
       <MDBox p={3} position="relative" lineHeight={0}>
         <MDTypography variant="h5" color="white" fontWeight="medium">
           Some Kind Of Blues
@@ -45,8 +47,7 @@ function MediaPlayer(): JSX.Element {
               size="large"
               circular
               iconOnly
-              sx={mediaPlayerButtonStyles}
-            >
+              sx={mediaPlayerButtonStyles}>
               <Icon>skip_previous</Icon>
             </MDButton>
             <MDButton
@@ -54,8 +55,7 @@ function MediaPlayer(): JSX.Element {
               size="large"
               circular
               iconOnly
-              sx={mediaPlayerButtonStyles}
-            >
+              sx={mediaPlayerButtonStyles}>
               <Icon>play_arrow</Icon>
             </MDButton>
             <MDButton
@@ -63,8 +63,7 @@ function MediaPlayer(): JSX.Element {
               size="large"
               circular
               iconOnly
-              sx={mediaPlayerButtonStyles}
-            >
+              sx={mediaPlayerButtonStyles}>
               <Icon>skip_next</Icon>
             </MDButton>
           </MDBox>

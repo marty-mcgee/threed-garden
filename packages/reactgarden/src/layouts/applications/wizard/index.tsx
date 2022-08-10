@@ -76,19 +76,25 @@ function Wizard(): JSX.Element {
               <MDBox p={2}>
                 <MDBox>
                   {getStepContent(activeStep)}
-                  <MDBox mt={3} width="100%" display="flex" justifyContent="space-between">
+                  <MDBox
+                    mt={3}
+                    width="100%"
+                    display="flex"
+                    justifyContent="space-between">
                     {activeStep === 0 ? (
                       <MDBox />
                     ) : (
-                      <MDButton variant="outlined" color="dark" onClick={handleBack}>
+                      <MDButton
+                        variant="outlined"
+                        color="dark"
+                        onClick={handleBack}>
                         back
                       </MDButton>
                     )}
                     <MDButton
                       variant="gradient"
                       color="dark"
-                      onClick={!isLastStep ? handleNext : undefined}
-                    >
+                      onClick={!isLastStep ? handleNext : undefined}>
                       {isLastStep ? "send" : "next"}
                     </MDButton>
                   </MDBox>

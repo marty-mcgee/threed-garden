@@ -24,8 +24,7 @@ function Footer(): JSX.Element {
                 href="#"
                 variant="body2"
                 fontWeight="regular"
-                color="secondary"
-              >
+                color="secondary">
                 Company
               </MDTypography>
             </MDBox>
@@ -35,8 +34,7 @@ function Footer(): JSX.Element {
                 href="#"
                 variant="body2"
                 fontWeight="regular"
-                color="secondary"
-              >
+                color="secondary">
                 About Us
               </MDTypography>
             </MDBox>
@@ -46,8 +44,7 @@ function Footer(): JSX.Element {
                 href="#"
                 variant="body2"
                 fontWeight="regular"
-                color="secondary"
-              >
+                color="secondary">
                 Team
               </MDTypography>
             </MDBox>
@@ -57,8 +54,7 @@ function Footer(): JSX.Element {
                 href="#"
                 variant="body2"
                 fontWeight="regular"
-                color="secondary"
-              >
+                color="secondary">
                 Product
               </MDTypography>
             </MDBox>
@@ -68,8 +64,7 @@ function Footer(): JSX.Element {
                 href="#"
                 variant="body2"
                 fontWeight="regular"
-                color="secondary"
-              >
+                color="secondary">
                 Blog
               </MDTypography>
             </MDBox>
@@ -79,8 +74,7 @@ function Footer(): JSX.Element {
                 href="#"
                 variant="body2"
                 fontWeight="regular"
-                color="secondary"
-              >
+                color="secondary">
                 Pricing
               </MDTypography>
             </MDBox>

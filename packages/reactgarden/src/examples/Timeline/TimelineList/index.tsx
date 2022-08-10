@@ -31,10 +31,15 @@ function TimelineList({ title, dark, children }: Props): JSX.Element {
           bgColor={dark ? "dark" : "white"}
           variant="gradient"
           borderRadius="xl"
-          sx={{ background: ({ palette: { background } }: any) => darkMode && background.card }}
-        >
+          sx={{
+            background: ({ palette: { background } }: any) =>
+              darkMode && background.card,
+          }}>
           <MDBox pt={3} px={3}>
-            <MDTypography variant="h6" fontWeight="medium" color={dark ? "white" : "dark"}>
+            <MDTypography
+              variant="h6"
+              fontWeight="medium"
+              color={dark ? "white" : "dark"}>
               {title}
             </MDTypography>
           </MDBox>

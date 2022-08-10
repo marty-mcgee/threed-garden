@@ -31,8 +31,7 @@ function DashboardLayout({ children }: { children: ReactNode }): JSX.Element {
             duration: transitions.duration.standard,
           }),
         },
-      })}
-    >
+      })}>
       {children}
     </MDBox>
   )
