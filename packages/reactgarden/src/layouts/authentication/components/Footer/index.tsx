@@ -23,24 +23,29 @@ function Footer({ light }: { light?: boolean }): JSX.Element {
           flexDirection={{ xs: "column", lg: "row" }}
           justifyContent="space-between"
           alignItems="center"
-          px={1.5}
-        >
+          px={1.5}>
           <MDBox
             display="flex"
             justifyContent="center"
             alignItems="center"
             flexWrap="wrap"
             color={light ? "white" : "text"}
-            fontSize={size.sm}
-          >
+            fontSize={size.sm}>
             &copy; {new Date().getFullYear()}
-            <MDBox fontSize={size.md} color={light ? "white" : "dark"} mb={-0.5} mx={0.25}>
+            <MDBox
+              fontSize={size.md}
+              color={light ? "white" : "dark"}
+              mb={-0.5}
+              mx={0.25}>
               <Icon color="inherit" fontSize="inherit">
                 favorite
               </Icon>
             </MDBox>
             <Link href="https://companyjuice.com/" target="_blank">
-              <MDTypography variant="button" fontWeight="medium" color={light ? "white" : "dark"}>
+              <MDTypography
+                variant="button"
+                fontWeight="medium"
+                color={light ? "white" : "dark"}>
                 &nbsp;Company Juice&nbsp;
               </MDTypography>
             </Link>
@@ -60,26 +65,25 @@ function Footer({ light }: { light?: boolean }): JSX.Element {
               [breakpoints.up("lg")]: {
                 mt: 0,
               },
-            })}
-          >
+            })}>
             <MDBox component="li" pr={2} lineHeight={1}>
               <Link href="https://companyjuice.com/" target="_blank">
                 <MDTypography
                   variant="button"
                   fontWeight="regular"
-                  color={light ? "white" : "dark"}
-                >
+                  color={light ? "white" : "dark"}>
                   Company Juice
                 </MDTypography>
               </Link>
             </MDBox>
             <MDBox component="li" px={2} lineHeight={1}>
-              <Link href="https://companyjuice.com/presentation" target="_blank">
+              <Link
+                href="https://companyjuice.com/presentation"
+                target="_blank">
                 <MDTypography
                   variant="button"
                   fontWeight="regular"
-                  color={light ? "white" : "dark"}
-                >
+                  color={light ? "white" : "dark"}>
                   About Us
                 </MDTypography>
               </Link>
@@ -89,8 +93,7 @@ function Footer({ light }: { light?: boolean }): JSX.Element {
                 <MDTypography
                   variant="button"
                   fontWeight="regular"
-                  color={light ? "white" : "dark"}
-                >
+                  color={light ? "white" : "dark"}>
                   Blog
                 </MDTypography>
               </Link>
@@ -100,8 +103,7 @@ function Footer({ light }: { light?: boolean }): JSX.Element {
                 <MDTypography
                   variant="button"
                   fontWeight="regular"
-                  color={light ? "white" : "dark"}
-                >
+                  color={light ? "white" : "dark"}>
                   License
                 </MDTypography>
               </Link>

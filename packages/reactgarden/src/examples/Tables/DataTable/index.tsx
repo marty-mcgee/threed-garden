@@ -1,7 +1,13 @@
 import { useMemo, useEffect, useState } from "react"
 
 // react-table components
-import { useTable, usePagination, useGlobalFilter, useAsyncDebounce, useSortBy } from "react-table"
+import {
+  useTable,
+  usePagination,
+  useGlobalFilter,
+  useAsyncDebounce,
+  useSortBy,
+} from "react-table"
 
 // @mui material components
 import Table from "@mui/material/Table"
@@ -37,7 +43,15 @@ interface Props {
   }
   pagination?: {
     variant: "contained" | "gradient"
-    color: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "dark" | "light"
+    color:
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "dark"
+      | "light"
   }
   isSorted?: boolean
   noEndBorder?: boolean
@@ -56,8 +70,12 @@ function DataTable({
   let entries: any[]
 
   if (entriesPerPage) {
-    defaultValue = entriesPerPage.defaultValue ? entriesPerPage.defaultValue : "10"
-    entries = entriesPerPage.entries ? entriesPerPage.entries : ["10", "25", "50", "100"]
+    defaultValue = entriesPerPage.defaultValue
+      ? entriesPerPage.defaultValue
+      : "10"
+    entries = entriesPerPage.entries
+      ? entriesPerPage.entries
+      : ["10", "25", "50", "100"]
   }
 
   const columns = useMemo<any>(() => table.columns, [table])
@@ -100,21 +118,23 @@ function DataTable({
       item
       key={option}
       onClick={() => gotoPage(Number(option))}
-      active={pageIndex === option}
-    >
+      active={pageIndex === option}>
       {option + 1}
     </MDPagination>
   ))
 
   // Handler for the input to set the pagination index
   const handleInputPagination = ({ target: { value } }: any) =>
-    value > pageOptions.length || value < 0 ? gotoPage(0) : gotoPage(Number(value))
+    value > pageOptions.length || value < 0
+      ? gotoPage(0)
+      : gotoPage(Number(value))
 
   // Customized page options starting from 1
   const customizedPageOptions = pageOptions.map((option: any) => option + 1)
 
   // Setting value for the pagination input
-  const handleInputPaginationValue = ({ target: value }: any) => gotoPage(Number(value.value - 1))
+  const handleInputPaginationValue = ({ target: value }: any) =>
+    gotoPage(Number(value.value - 1))
 
   // Search input value state
   const [search, setSearch] = useState(globalFilter)
@@ -140,7 +160,8 @@ function DataTable({
   }
 
   // Setting the entries starting point
-  const entriesStart = pageIndex === 0 ? pageIndex + 1 : pageIndex * pageSize + 1
+  const entriesStart =
+    pageIndex === 0 ? pageIndex + 1 : pageIndex * pageSize + 1
 
   // Setting the entries ending point
   let entriesEnd
@@ -156,7 +177,11 @@ function DataTable({
   return (
     <TableContainer sx={{ boxShadow: "none" }}>
       {entriesPerPage || canSearch ? (
-        <MDBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
+        <MDBox
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          p={3}>
           {entriesPerPage && (
             <MDBox display="flex" alignItems="center">
               <Autocomplete
@@ -197,11 +222,12 @@ function DataTable({
             <TableRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column: any) => (
                 <DataTableHeadCell
-                  {...column.getHeaderProps(isSorted && column.getSortByToggleProps())}
+                  {...column.getHeaderProps(
+                    isSorted && column.getSortByToggleProps()
+                  )}
                   width={column.width ? column.width : "auto"}
                   align={column.align ? column.align : "left"}
-                  sorted={setSortedValue(column)}
-                >
+                  sorted={setSortedValue(column)}>
                   {column.render("Header")}
                 </DataTableHeadCell>
               ))}
@@ -217,8 +243,7 @@ function DataTable({
                   <DataTableBodyCell
                     noBorder={noEndBorder && rows.length - 1 === key}
                     align={cell.column.align ? cell.column.align : "left"}
-                    {...cell.getCellProps()}
-                  >
+                    {...cell.getCellProps()}>
                     {cell.render("Cell")}
                   </DataTableBodyCell>
                 ))}
@@ -233,11 +258,13 @@ function DataTable({
         flexDirection={{ xs: "column", sm: "row" }}
         justifyContent="space-between"
         alignItems={{ xs: "flex-start", sm: "center" }}
-        p={!showTotalEntries && pageOptions.length === 1 ? 0 : 3}
-      >
+        p={!showTotalEntries && pageOptions.length === 1 ? 0 : 3}>
         {showTotalEntries && (
           <MDBox mb={{ xs: 3, sm: 0 }}>
-            <MDTypography variant="button" color="secondary" fontWeight="regular">
+            <MDTypography
+              variant="button"
+              color="secondary"
+              fontWeight="regular">
               Showing {entriesStart} to {entriesEnd} of {rows.length} entries
             </MDTypography>
           </MDBox>
@@ -245,8 +272,7 @@ function DataTable({
         {pageOptions.length > 1 && (
           <MDPagination
             variant={pagination.variant ? pagination.variant : "gradient"}
-            color={pagination.color ? pagination.color : "info"}
-          >
+            color={pagination.color ? pagination.color : "info"}>
             {canPreviousPage && (
               <MDPagination item onClick={() => previousPage()}>
                 <Icon sx={{ fontWeight: "bold" }}>chevron_left</Icon>
@@ -255,7 +281,11 @@ function DataTable({
             {renderPagination.length > 6 ? (
               <MDBox width="5rem" mx={1}>
                 <MDInput
-                  inputProps={{ type: "number", min: 1, max: customizedPageOptions.length }}
+                  inputProps={{
+                    type: "number",
+                    min: 1,
+                    max: customizedPageOptions.length,
+                  }}
                   value={customizedPageOptions[pageIndex]}
                   onChange={(event: any) => {
                     handleInputPagination(event)

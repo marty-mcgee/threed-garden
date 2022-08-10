@@ -29,8 +29,7 @@ function PageLayout({ background, children }: Props): JSX.Element {
       height="100%"
       minHeight="100vh"
       bgColor={background}
-      sx={{ overflowX: "hidden" }}
-    >
+      sx={{ overflowX: "hidden" }}>
       {children}
     </MDBox>
   )

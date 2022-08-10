@@ -44,8 +44,7 @@ function Footer({ company, links }: Props): JSX.Element {
       flexDirection={{ xs: "column", lg: "row" }}
       justifyContent="space-between"
       alignItems="center"
-      px={1.5}
-    >
+      px={1.5}>
       <MDBox
         display="flex"
         justifyContent="center"
@@ -53,8 +52,7 @@ function Footer({ company, links }: Props): JSX.Element {
         flexWrap="wrap"
         color="text"
         fontSize={size.sm}
-        px={1.5}
-      >
+        px={1.5}>
         <MDBox fontSize={size.md} color="text" mb={-0.5} mx={0.25}>
           <Icon color="inherit" fontSize="inherit">
             favorite
@@ -82,8 +80,7 @@ function Footer({ company, links }: Props): JSX.Element {
           [breakpoints.up("lg")]: {
             mt: 0,
           },
-        })}
-      >
+        })}>
         {renderLinks()}
       </MDBox>
     </MDBox>

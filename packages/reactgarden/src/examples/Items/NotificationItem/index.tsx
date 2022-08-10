@@ -19,17 +19,24 @@ interface Props extends MenuItemProps {
   [key: string]: any
 }
 
-const NotificationItem: FC<Props> = forwardRef(({ icon, title, ...rest }, ref) => (
-  <MenuItem {...rest} ref={ref} sx={(theme) => menuItem(theme)}>
-    <MDBox component={Link} py={0.5} display="flex" alignItems="center" lineHeight={1}>
-      <MDTypography variant="body1" color="secondary" lineHeight={0.75}>
-        {icon}
-      </MDTypography>
-      <MDTypography variant="button" fontWeight="regular" sx={{ ml: 1 }}>
-        {title}
-      </MDTypography>
-    </MDBox>
-  </MenuItem>
-))
+const NotificationItem: FC<Props> = forwardRef(
+  ({ icon, title, ...rest }, ref) => (
+    <MenuItem {...rest} ref={ref} sx={(theme) => menuItem(theme)}>
+      <MDBox
+        component={Link}
+        py={0.5}
+        display="flex"
+        alignItems="center"
+        lineHeight={1}>
+        <MDTypography variant="body1" color="secondary" lineHeight={0.75}>
+          {icon}
+        </MDTypography>
+        <MDTypography variant="button" fontWeight="regular" sx={{ ml: 1 }}>
+          {title}
+        </MDTypography>
+      </MDBox>
+    </MenuItem>
+  )
+)
 
 export default NotificationItem

@@ -35,27 +35,35 @@ import dataTableData from "layouts/dashboards/sales/data/dataTableData"
 
 function Sales(): JSX.Element {
   // DefaultStatisticsCard state for the dropdown value
-  const [salesDropdownValue, setSalesDropdownValue] = useState<string>("6 May - 7 May")
-  const [customersDropdownValue, setCustomersDropdownValue] = useState<string>("6 May - 7 May")
-  const [revenueDropdownValue, setRevenueDropdownValue] = useState<string>("6 May - 7 May")
+  const [salesDropdownValue, setSalesDropdownValue] =
+    useState<string>("6 May - 7 May")
+  const [customersDropdownValue, setCustomersDropdownValue] =
+    useState<string>("6 May - 7 May")
+  const [revenueDropdownValue, setRevenueDropdownValue] =
+    useState<string>("6 May - 7 May")
 
   // DefaultStatisticsCard state for the dropdown action
   const [salesDropdown, setSalesDropdown] = useState<string | null>(null)
-  const [customersDropdown, setCustomersDropdown] = useState<string | null>(null)
+  const [customersDropdown, setCustomersDropdown] = useState<string | null>(
+    null
+  )
   const [revenueDropdown, setRevenueDropdown] = useState<string | null>(null)
 
   // DefaultStatisticsCard handler for the dropdown action
-  const openSalesDropdown = ({ currentTarget }: any) => setSalesDropdown(currentTarget)
+  const openSalesDropdown = ({ currentTarget }: any) =>
+    setSalesDropdown(currentTarget)
   const closeSalesDropdown = ({ currentTarget }: any) => {
     setSalesDropdown(null)
     setSalesDropdownValue(currentTarget.innerText || salesDropdownValue)
   }
-  const openCustomersDropdown = ({ currentTarget }: any) => setCustomersDropdown(currentTarget)
+  const openCustomersDropdown = ({ currentTarget }: any) =>
+    setCustomersDropdown(currentTarget)
   const closeCustomersDropdown = ({ currentTarget }: any) => {
     setCustomersDropdown(null)
     setCustomersDropdownValue(currentTarget.innerText || salesDropdownValue)
   }
-  const openRevenueDropdown = ({ currentTarget }: any) => setRevenueDropdown(currentTarget)
+  const openRevenueDropdown = ({ currentTarget }: any) =>
+    setRevenueDropdown(currentTarget)
   const closeRevenueDropdown = ({ currentTarget }: any) => {
     setRevenueDropdown(null)
     setRevenueDropdownValue(currentTarget.innerText || salesDropdownValue)
@@ -69,8 +77,7 @@ function Sales(): JSX.Element {
       open={Boolean(state)}
       onClose={close}
       keepMounted
-      disableAutoFocusItem
-    >
+      disableAutoFocusItem>
       <MenuItem onClick={close}>Last 7 days</MenuItem>
       <MenuItem onClick={close}>Last week</MenuItem>
       <MenuItem onClick={close}>Last 30 days</MenuItem>
@@ -144,18 +151,28 @@ function Sales(): JSX.Element {
                 description={
                   <MDBox display="flex" justifyContent="space-between">
                     <MDBox display="flex" ml={-1}>
-                      <MDBadgeDot color="info" size="sm" badgeContent="Facebook Ads" />
-                      <MDBadgeDot color="dark" size="sm" badgeContent="Google Ads" />
+                      <MDBadgeDot
+                        color="info"
+                        size="sm"
+                        badgeContent="Facebook Ads"
+                      />
+                      <MDBadgeDot
+                        color="dark"
+                        size="sm"
+                        badgeContent="Google Ads"
+                      />
                     </MDBox>
                     <MDBox mt={-4} mr={-1} position="absolute" right="1.5rem">
-                      <Tooltip title="See which ads perform better" placement="left" arrow>
+                      <Tooltip
+                        title="See which ads perform better"
+                        placement="left"
+                        arrow>
                         <MDButton
                           variant="outlined"
                           color="secondary"
                           size="small"
                           circular
-                          iconOnly
-                        >
+                          iconOnly>
                           <Icon>priority_high</Icon>
                         </MDButton>
                       </Tooltip>
@@ -170,7 +187,10 @@ function Sales(): JSX.Element {
         <MDBox mb={3}>
           <Grid container spacing={3}>
             <Grid item xs={12} lg={8}>
-              <HorizontalBarChart title="Sales by age" chart={horizontalBarChartData} />
+              <HorizontalBarChart
+                title="Sales by age"
+                chart={horizontalBarChartData}
+              />
             </Grid>
             <Grid item xs={12} lg={4}>
               <SalesTable title="Sales by Country" rows={salesTableData} />

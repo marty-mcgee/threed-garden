@@ -21,7 +21,15 @@ import { useMaterialUIController } from "context"
 
 // Declaring props types for MDSnackbar
 interface Props extends SnackbarProps {
-  color?: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "dark" | "light"
+  color?:
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "dark"
+    | "light"
   icon: ReactNode
   title: string
   dateTime: string
@@ -72,11 +80,14 @@ function MDSnackbar({
       }}
       {...rest}
       action={
-        <IconButton size="small" aria-label="close" color="inherit" onClick={close}>
+        <IconButton
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={close}>
           <Icon fontSize="small">close</Icon>
         </IconButton>
-      }
-    >
+      }>
       <MDBox
         variant={bgWhite ? "contained" : "gradient"}
         bgColor={bgWhite ? "white" : color}
@@ -87,26 +98,27 @@ function MDSnackbar({
         p={1}
         sx={{
           backgroundColor: ({ palette }: { palette: any }) =>
-            darkMode ? palette.background.card : palette[color] || palette.white.main,
-        }}
-      >
+            darkMode
+              ? palette.background.card
+              : palette[color] || palette.white.main,
+        }}>
         <MDBox
           display="flex"
           justifyContent="space-between"
           alignItems="center"
           color="dark"
-          p={1.5}
-        >
+          p={1.5}>
           <MDBox display="flex" alignItems="center" lineHeight={0}>
-            <MDSnackbarIconRoot fontSize="small" ownerState={{ color, bgWhite }}>
+            <MDSnackbarIconRoot
+              fontSize="small"
+              ownerState={{ color, bgWhite }}>
               {icon}
             </MDSnackbarIconRoot>
             <MDTypography
               variant="button"
               fontWeight="medium"
               color={titleColor}
-              textGradient={bgWhite}
-            >
+              textGradient={bgWhite}>
               {title}
             </MDTypography>
           </MDBox>
@@ -117,14 +129,16 @@ function MDSnackbar({
             <Icon
               sx={{
                 color: ({ palette: { dark, white } }) =>
-                  (bgWhite && !darkMode) || color === "light" ? dark.main : white.main,
-                fontWeight: ({ typography: { fontWeightBold } }) => fontWeightBold,
+                  (bgWhite && !darkMode) || color === "light"
+                    ? dark.main
+                    : white.main,
+                fontWeight: ({ typography: { fontWeightBold } }) =>
+                  fontWeightBold,
                 cursor: "pointer",
                 marginLeft: 2,
                 transform: "translateY(-1px)",
               }}
-              onClick={close}
-            >
+              onClick={close}>
               close
             </Icon>
           </MDBox>
@@ -135,7 +149,10 @@ function MDSnackbar({
           sx={{
             fontSize: ({ typography: { size } }) => size.sm,
             color: ({ palette }: { palette: any }) => {
-              let colorValue = bgWhite || color === "light" ? palette.text.main : palette.white.main
+              let colorValue =
+                bgWhite || color === "light"
+                  ? palette.text.main
+                  : palette.white.main
 
               if (darkMode) {
                 colorValue = color === "light" ? "inherit" : palette.white.main
@@ -143,8 +160,7 @@ function MDSnackbar({
 
               return colorValue
             },
-          }}
-        >
+          }}>
           {content}
         </MDBox>
       </MDBox>

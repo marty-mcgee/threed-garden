@@ -1,15 +1,15 @@
-import React from "react";
+import React from "react"
 // layout for this page
-import Admin from "layouts/Admin.js";
+import Admin from "layouts/Admin.js"
 
-const CustomSkinMap = () => {
-  const mapRef = React.useRef(null);
+function CustomSkinMap() {
+  const mapRef = React.useRef(null)
   React.useEffect(() => {
-    let google = window.google;
-    let map = mapRef.current;
-    let lat = "40.748817";
-    let lng = "-73.985428";
-    const myLatlng = new google.maps.LatLng(lat, lng);
+    const { google } = window
+    let map = mapRef.current
+    const lat = "40.748817"
+    const lng = "-73.985428"
+    const myLatlng = new google.maps.LatLng(lat, lng)
     const mapOptions = {
       zoom: 13,
       center: myLatlng,
@@ -71,35 +71,35 @@ const CustomSkinMap = () => {
           stylers: [{ visibility: "simplified" }],
         },
       ],
-    };
-    map = new google.maps.Map(map, mapOptions);
+    }
+    map = new google.maps.Map(map, mapOptions)
 
     const marker = new google.maps.Marker({
       position: myLatlng,
-      map: map,
+      map,
       animation: google.maps.Animation.DROP,
       title: "NextJS Material Dashboard PRO",
-    });
+    })
 
     const contentString =
       '<div class="info-window-content"><h2>NextJS Material Dashboard PRO</h2>' +
-      "<p>A premium Admin for Material Design, Material-UI, React, and React Hooks.</p></div>";
+      "<p>A premium Admin for Material Design, Material-UI, React, and React Hooks.</p></div>"
 
     const infowindow = new google.maps.InfoWindow({
       content: contentString,
-    });
+    })
 
-    google.maps.event.addListener(marker, "click", function () {
-      infowindow.open(map, marker);
-    });
-  }, []);
-  return <div style={{ height: `100vh` }} ref={mapRef} />;
-};
-
-function Maps() {
-  return <CustomSkinMap />;
+    google.maps.event.addListener(marker, "click", () => {
+      infowindow.open(map, marker)
+    })
+  }, [])
+  return <div style={{ height: `100vh` }} ref={mapRef} />
 }
 
-Maps.layout = Admin;
+function Maps() {
+  return <CustomSkinMap />
+}
 
-export default Maps;
+Maps.layout = Admin
+
+export default Maps

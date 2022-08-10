@@ -22,8 +22,7 @@ function Invoice({ date, id, price, noGutter }: Props): JSX.Element {
       alignItems="center"
       py={1}
       pr={1}
-      mb={noGutter ? 0 : 1}
-    >
+      mb={noGutter ? 0 : 1}>
       <MDBox lineHeight={1.125}>
         <MDTypography display="block" variant="button" fontWeight="medium">
           {date}
@@ -36,7 +35,12 @@ function Invoice({ date, id, price, noGutter }: Props): JSX.Element {
         <MDTypography variant="button" fontWeight="regular" color="text">
           {price}
         </MDTypography>
-        <MDBox display="flex" alignItems="center" lineHeight={1} ml={3} sx={{ cursor: "pointer" }}>
+        <MDBox
+          display="flex"
+          alignItems="center"
+          lineHeight={1}
+          ml={3}
+          sx={{ cursor: "pointer" }}>
           <Icon fontSize="small">picture_as_pdf</Icon>
           <MDTypography variant="button" fontWeight="bold">
             &nbsp;PDF

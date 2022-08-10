@@ -59,14 +59,12 @@ function DefaultNavbarDropdown({
         opacity={light ? 1 : 0.6}
         sx={{ cursor: "pointer", userSelect: "none" }}
         {...(route && routeComponent)}
-        {...(href && linkComponent)}
-      >
+        {...(href && linkComponent)}>
         <MDTypography
           variant="body2"
           lineHeight={1}
           color="inherit"
-          sx={{ alignSelf: "center", "& *": { verticalAlign: "middle" } }}
-        >
+          sx={{ alignSelf: "center", "& *": { verticalAlign: "middle" } }}>
           {icon}
         </MDTypography>
         <MDTypography
@@ -74,11 +72,13 @@ function DefaultNavbarDropdown({
           fontWeight="regular"
           textTransform="capitalize"
           color={light ? "white" : "dark"}
-          sx={{ fontWeight: "100%", ml: 1, mr: 0.25 }}
-        >
+          sx={{ fontWeight: "100%", ml: 1, mr: 0.25 }}>
           {name}
         </MDTypography>
-        <MDTypography variant="body2" color={light ? "white" : "dark"} ml="auto">
+        <MDTypography
+          variant="body2"
+          color={light ? "white" : "dark"}
+          ml="auto">
           <Icon sx={{ fontWeight: "normal", verticalAlign: "middle" }}>
             {collapse && "keyboard_arrow_down"}
           </Icon>

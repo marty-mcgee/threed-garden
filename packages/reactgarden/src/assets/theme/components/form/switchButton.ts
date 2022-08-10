@@ -50,7 +50,10 @@ const switchButton: Types = {
       },
 
       "&.Mui-focusVisible .MuiSwitch-thumb": {
-        backgroundImage: linearGradient(gradients.info.main, gradients.info.state),
+        backgroundImage: linearGradient(
+          gradients.info.main,
+          gradients.info.state
+        ),
       },
     },
 

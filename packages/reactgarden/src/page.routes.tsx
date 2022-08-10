@@ -1,4 +1,4 @@
-/** 
+/**
   All of the routes for the Material Kit 2 PRO React React are added here,
   You can add a new route, customize the routes and delete the routes here.
 

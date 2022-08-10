@@ -44,8 +44,7 @@ export default function Footer(props) {
             <a
               href="https://www.companyjuice.com?ref=njsmd-footer"
               target="_blank"
-              className={classes.a}
-            >
+              className={classes.a}>
               Company Juice
             </a>
             , made with love for a better web

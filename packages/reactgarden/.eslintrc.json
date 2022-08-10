@@ -14,16 +14,16 @@
   },
   "plugins": ["react", "@typescript-eslint", "prettier"],
   "rules": {
-    "prettier/prettier": [
-      "error",
-      {
-        "endOfLine": "auto",
-        "trailingComma": "es5",
-        "tabWidth": 2,
-        "semi": false,
-        "singleQuote": false
-      }
-    ],
+    // "prettier/prettier": [
+    //   "error",
+    //   {
+    //     "endOfLine": "auto",
+    //     "trailingComma": "es5",
+    //     "tabWidth": 2,
+    //     "semi": false,
+    //     "singleQuote": false
+    //   }
+    // ],
     "react/prop-types": "off",
     "no-shadow": "off",
     "react/jsx-props-no-spreading": "off",
@@ -40,7 +40,7 @@
     "react/jsx-filename-extension": [
       "warn",
       {
-        "extensions": [".tsx"]
+        "extensions": [".ts", ".tsx", ".js", ".jsx"]
       }
     ],
     "import/no-extraneous-dependencies": [

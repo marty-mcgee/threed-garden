@@ -39,8 +39,7 @@ const MDButton: FC<Props> = forwardRef(
       <MDButtonRoot
         {...rest}
         ref={ref}
-        ownerState={{ color, variant, size, circular, iconOnly, darkMode }}
-      >
+        ownerState={{ color, variant, size, circular, iconOnly, darkMode }}>
         {children}
       </MDButtonRoot>
     )

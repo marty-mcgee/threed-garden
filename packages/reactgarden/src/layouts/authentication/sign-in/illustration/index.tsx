@@ -27,8 +27,7 @@ function Illustration(): JSX.Element {
     <IllustrationLayout
       title="Sign In"
       description="Enter your email and password to sign in"
-      illustration={bgImage}
-    >
+      illustration={bgImage}>
       <MDBox component="form" role="form">
         <MDBox mb={2}>
           <MDInput type="email" label="Email" fullWidth />
@@ -43,8 +42,7 @@ function Illustration(): JSX.Element {
             fontWeight="regular"
             color="text"
             onClick={handleSetRememberMe}
-            sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}
-          >
+            sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}>
             &nbsp;&nbsp;Remember me
           </MDTypography>
         </MDBox>
@@ -62,8 +60,7 @@ function Illustration(): JSX.Element {
               variant="button"
               color="info"
               fontWeight="medium"
-              textGradient
-            >
+              textGradient>
               Sign up
             </MDTypography>
           </MDTypography>

@@ -17,7 +17,15 @@ import configs from "examples/Charts/DoughnutCharts/DefaultDoughnutChart/configs
 // Declaring props types for DefaultDoughnutChart
 interface Props {
   icon?: {
-    color?: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "light" | "dark"
+    color?:
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "light"
+      | "dark"
     component: ReactNode
   }
   title?: string
@@ -35,8 +43,18 @@ interface Props {
   [key: string]: any
 }
 
-function DefaultDoughnutChart({ icon, title, description, height, chart }: Props): JSX.Element {
-  const { data, options } = configs(chart.labels || [], chart.datasets || {}, chart.cutout)
+function DefaultDoughnutChart({
+  icon,
+  title,
+  description,
+  height,
+  chart,
+}: Props): JSX.Element {
+  const { data, options } = configs(
+    chart.labels || [],
+    chart.datasets || {},
+    chart.cutout
+  )
 
   const renderChart = (
     <MDBox py={2} pr={2} pl={icon.component ? 1 : 2}>
@@ -55,8 +73,7 @@ function DefaultDoughnutChart({ icon, title, description, height, chart }: Props
               alignItems="center"
               color="white"
               mt={-5}
-              mr={2}
-            >
+              mr={2}>
               <Icon fontSize="medium">{icon.component}</Icon>
             </MDBox>
           )}

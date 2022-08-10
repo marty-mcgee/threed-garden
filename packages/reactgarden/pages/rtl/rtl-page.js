@@ -35,7 +35,11 @@ import CardBody from "components/Card/CardBody.js"
 import CardFooter from "components/Card/CardFooter.js"
 import SnackbarContent from "components/Snackbar/SnackbarContent.js"
 
-import { dailySalesChart, emailsSubscriptionChart, completedTasksChart } from "variables/charts.js"
+import {
+  dailySalesChart,
+  emailsSubscriptionChart,
+  completedTasksChart,
+} from "variables/charts.js"
 
 import styles from "assets/jss/nextjs-material-dashboard/views/rtlStyle.js"
 
@@ -235,14 +239,24 @@ function RTLPage() {
                 tabName: "وبسایت",
                 tabIcon: Code,
                 tabContent: (
-                  <Tasks checkedIndexes={[0]} tasksIndexes={[0, 1]} tasks={website} rtlActive />
+                  <Tasks
+                    checkedIndexes={[0]}
+                    tasksIndexes={[0, 1]}
+                    tasks={website}
+                    rtlActive
+                  />
                 ),
               },
               {
                 tabName: "سرور",
                 tabIcon: Cloud,
                 tabContent: (
-                  <Tasks checkedIndexes={[1]} tasksIndexes={[0, 1, 2]} tasks={server} rtlActive />
+                  <Tasks
+                    checkedIndexes={[1]}
+                    tasksIndexes={[0, 1, 2]}
+                    tasks={server}
+                    rtlActive
+                  />
                 ),
               },
             ]}
@@ -252,7 +266,9 @@ function RTLPage() {
           <Card>
             <CardHeader color="warning">
               <h4 className={classes.cardTitleWhite}>آمار کارکنان</h4>
-              <p className={classes.cardCategoryWhite}>کارکنان جدید از ۱۵ آبان ۱۳۹۶</p>
+              <p className={classes.cardCategoryWhite}>
+                کارکنان جدید از ۱۵ آبان ۱۳۹۶
+              </p>
             </CardHeader>
             <CardBody>
               <Table
@@ -276,11 +292,15 @@ function RTLPage() {
               <h4 className={classes.cardTitleWhite}>اعلان ها</h4>
               <p className={classes.cardCategoryWhite}>
                 يدويا من قبل أصدقائنا من{" "}
-                <a target="_blank" href="https://material-ui-next.com/?ref=creativetime">
+                <a
+                  target="_blank"
+                  href="https://material-ui-next.com/?ref=creativetime">
                   واجهة المستخدم المادية
                 </a>{" "}
                 ونصب من قبل{" "}
-                <a target="_blank" href="https://www.companyjuice.com/?ref=njsmd-rtl-page">
+                <a
+                  target="_blank"
+                  href="https://www.companyjuice.com/?ref=njsmd-rtl-page">
                   الإبداعية تيم
                 </a>
                 . يرجى التحقق من{" "}
@@ -292,13 +312,17 @@ function RTLPage() {
             </CardHeader>
             <CardBody>
               <SnackbarContent
-                message={'این یک اعلان است که با کلاس color="warning" ایجاد شده است.'}
+                message={
+                  'این یک اعلان است که با کلاس color="warning" ایجاد شده است.'
+                }
                 close
                 rtlActive
                 color="warning"
               />
               <SnackbarContent
-                message={'این یک اعلان است که با کلاس color="primary" ایجاد شده است.'}
+                message={
+                  'این یک اعلان است که با کلاس color="primary" ایجاد شده است.'
+                }
                 close
                 rtlActive
                 color="primary"
@@ -323,10 +347,11 @@ function RTLPage() {
               <h6 className={classes.cardCategory}>مدیرعامل / مدیرفنی</h6>
               <h4 className={classes.cardTitle}>خداداد عزیزی</h4>
               <p className={classes.description}>
-                طراح گرافیک از این متن به عنوان عنصری از ترکیب بندی برای پر کردن صفحه و ارایه اولیه
-                شکل ظاهری و کلی طرح سفارش گرفته شده استفاده می نماید، تا از نظر گرافیکی نشانگر
-                چگونگی نوع و اندازه فونت و ظاهر متن باشد. معمولا طراحان گرافیک برای صفحه‌آرایی، نخست
-                از متن‌های آزمایشی و بی‌معنی استفاده می‌کنند ...
+                طراح گرافیک از این متن به عنوان عنصری از ترکیب بندی برای پر کردن
+                صفحه و ارایه اولیه شکل ظاهری و کلی طرح سفارش گرفته شده استفاده
+                می نماید، تا از نظر گرافیکی نشانگر چگونگی نوع و اندازه فونت و
+                ظاهر متن باشد. معمولا طراحان گرافیک برای صفحه‌آرایی، نخست از
+                متن‌های آزمایشی و بی‌معنی استفاده می‌کنند ...
               </p>
               <Button color="primary" round>
                 دنبال‌کردن

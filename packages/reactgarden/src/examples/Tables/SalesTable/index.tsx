@@ -25,7 +25,10 @@ interface Props {
 
 function SalesTable({ title, rows, shadow }: Props): JSX.Element {
   const renderTableCells = rows.map(
-    (row: { [key: string]: string | number | (string | number)[] }, key: any) => {
+    (
+      row: { [key: string]: string | number | (string | number)[] },
+      key: any
+    ) => {
       const tableRows: any = []
       const rowKey = `row-${key}`
 

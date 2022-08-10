@@ -13,7 +13,12 @@ import FormField from "layouts/pages/users/new-user/components/FormField"
 function Address({ formData }: any): JSX.Element {
   const { formField, values, errors, touched } = formData
   const { address1, address2, city, zip } = formField
-  const { address1: address1V, address2: address2V, city: cityV, zip: zipV } = values
+  const {
+    address1: address1V,
+    address2: address2V,
+    city: cityV,
+    zip: zipV,
+  } = values
 
   return (
     <MDBox>
@@ -60,7 +65,9 @@ function Address({ formData }: any): JSX.Element {
           <Grid item xs={6} sm={3}>
             <Autocomplete
               options={["State 1", "State 2", "State 3"]}
-              renderInput={(params) => <MDInput {...params} variant="standard" label="State" />}
+              renderInput={(params) => (
+                <MDInput {...params} variant="standard" label="State" />
+              )}
             />
           </Grid>
           <Grid item xs={6} sm={3}>

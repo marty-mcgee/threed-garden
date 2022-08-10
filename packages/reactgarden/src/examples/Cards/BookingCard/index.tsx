@@ -20,23 +20,28 @@ interface Props {
   [key: string]: any
 }
 
-function BookingCard({ image, title, description, price, location, action }: Props): JSX.Element {
+function BookingCard({
+  image,
+  title,
+  description,
+  price,
+  location,
+  action,
+}: Props): JSX.Element {
   return (
     <Card
       sx={{
         "&:hover .card-header": {
           transform: action && "translate3d(0, -50px, 0)",
         },
-      }}
-    >
+      }}>
       <MDBox
         position="relative"
         borderRadius="lg"
         mt={-3}
         mx={2}
         className="card-header"
-        sx={{ transition: "transform 300ms cubic-bezier(0.34, 1.61, 0.7, 1)" }}
-      >
+        sx={{ transition: "transform 300ms cubic-bezier(0.34, 1.61, 0.7, 1)" }}>
         <MDBox
           component="img"
           src={image}
@@ -65,7 +70,11 @@ function BookingCard({ image, title, description, price, location, action }: Pro
         />
       </MDBox>
       <MDBox textAlign="center" pt={3} px={3}>
-        <MDBox display="flex" justifyContent="center" alignItems="center" mt={action ? -8 : -4.25}>
+        <MDBox
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          mt={action ? -8 : -4.25}>
           {action}
         </MDBox>
         <MDTypography variant="h5" fontWeight="regular" sx={{ mt: 4 }}>
@@ -83,8 +92,7 @@ function BookingCard({ image, title, description, price, location, action }: Pro
         pt={0.5}
         pb={3}
         px={3}
-        lineHeight={1}
-      >
+        lineHeight={1}>
         <MDTypography variant="body2" fontWeight="regular" color="text">
           {price}
         </MDTypography>

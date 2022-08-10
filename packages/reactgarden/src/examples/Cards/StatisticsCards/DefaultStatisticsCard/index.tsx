@@ -17,7 +17,15 @@ interface Props {
   title: string
   count: string | number
   percentage?: {
-    color: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "dark" | "white"
+    color:
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "dark"
+      | "white"
     value: string | number
     label: string
   }
@@ -29,7 +37,12 @@ interface Props {
   [key: string]: any
 }
 
-function DefaultStatisticsCard({ title, count, percentage, dropdown }: Props): JSX.Element {
+function DefaultStatisticsCard({
+  title,
+  count,
+  percentage,
+  dropdown,
+}: Props): JSX.Element {
   const [controller] = useMaterialUIController()
   const { darkMode } = controller
 
@@ -43,8 +56,7 @@ function DefaultStatisticsCard({ title, count, percentage, dropdown }: Props): J
                 variant="button"
                 fontWeight="medium"
                 color="text"
-                textTransform="capitalize"
-              >
+                textTransform="capitalize">
                 {title}
               </MDTypography>
             </MDBox>
@@ -52,13 +64,15 @@ function DefaultStatisticsCard({ title, count, percentage, dropdown }: Props): J
               <MDTypography variant="h5" fontWeight="bold">
                 {count}
               </MDTypography>
-              <MDTypography variant="button" fontWeight="bold" color={percentage.color}>
+              <MDTypography
+                variant="button"
+                fontWeight="bold"
+                color={percentage.color}>
                 {percentage.value}&nbsp;
                 <MDTypography
                   variant="button"
                   fontWeight="regular"
-                  color={darkMode ? "text" : "secondary"}
-                >
+                  color={darkMode ? "text" : "secondary"}>
                   {percentage.label}
                 </MDTypography>
               </MDTypography>
@@ -72,8 +86,7 @@ function DefaultStatisticsCard({ title, count, percentage, dropdown }: Props): J
                   color="secondary"
                   fontWeight="regular"
                   sx={{ cursor: "pointer" }}
-                  onClick={dropdown.action}
-                >
+                  onClick={dropdown.action}>
                   {dropdown.value}
                 </MDTypography>
                 {dropdown.menu}

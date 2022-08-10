@@ -33,8 +33,7 @@ function SalesByCountry(): JSX.Element {
           shadow="md"
           borderRadius="xl"
           ml={3}
-          mt={-2}
-        >
+          mt={-2}>
           <Icon fontSize="medium" color="inherit">
             language
           </Icon>

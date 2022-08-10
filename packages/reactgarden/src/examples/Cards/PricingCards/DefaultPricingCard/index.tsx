@@ -23,7 +23,15 @@ interface Props {
     | "dark"
     | "white"
   badge: {
-    color: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "light" | "dark"
+    color:
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "light"
+      | "dark"
     label: string
   }
   price: {
@@ -39,7 +47,15 @@ interface Props {
     type: "external" | "internal"
     route: string
     label: string
-    color: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "light" | "dark"
+    color:
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "light"
+      | "dark"
   }
   shadow?: boolean
   [key: string]: any
@@ -62,33 +78,30 @@ function DefaultPricingCard({
         width="1.5rem"
         height="1.5rem"
         mr={2}
-        mt={-0.125}
-      >
+        mt={-0.125}>
         <MDTypography
           variant="body1"
           color={color === "white" ? "text" : "white"}
-          sx={{ lineHeight: 0 }}
-        >
+          sx={{ lineHeight: 0 }}>
           <Icon>{includes ? "done" : "remove"}</Icon>
         </MDTypography>
       </MDBox>
       <MDTypography
         variant="body2"
         color={color === "white" ? "text" : "white"}
-        fontWeight="regular"
-      >
+        fontWeight="regular">
         {label}
       </MDTypography>
     </MDBox>
   ))
 
   return (
-    <Card sx={{ boxShadow: ({ boxShadows: { lg } }) => (shadow ? lg : "none") }}>
+    <Card
+      sx={{ boxShadow: ({ boxShadows: { lg } }) => (shadow ? lg : "none") }}>
       <MDBox
         bgColor={color}
         variant={color === "white" ? "contained" : "gradient"}
-        borderRadius="xl"
-      >
+        borderRadius="xl">
         <MDBox
           bgColor={badge.color}
           width="max-content"
@@ -98,31 +111,34 @@ function DefaultPricingCard({
           mx="auto"
           mt={-1.375}
           borderRadius="section"
-          lineHeight={1}
-        >
+          lineHeight={1}>
           <MDTypography
             variant="caption"
             textTransform="uppercase"
             fontWeight="medium"
-            color={badge.color === "light" ? "dark" : "white"}
-          >
+            color={badge.color === "light" ? "dark" : "white"}>
             {badge.label}
           </MDTypography>
         </MDBox>
         <MDBox pt={3} pb={2} px={2} textAlign="center">
           <MDBox my={1}>
-            <MDTypography variant="h1" color={color === "white" ? "dark" : "white"}>
+            <MDTypography
+              variant="h1"
+              color={color === "white" ? "dark" : "white"}>
               <MDTypography
                 display="inline"
                 component="small"
                 variant="h5"
                 color="inherit"
-                verticalAlign="top"
-              >
+                verticalAlign="top">
                 {price.currency}
               </MDTypography>
               {price.value}
-              <MDTypography display="inline" component="small" variant="h5" color="inherit">
+              <MDTypography
+                display="inline"
+                component="small"
+                variant="h5"
+                color="inherit">
                 /{price.type}
               </MDTypography>
             </MDTypography>
@@ -137,8 +153,7 @@ function DefaultPricingCard({
                 to={action.route}
                 variant="gradient"
                 color={action.color}
-                fullWidth
-              >
+                fullWidth>
                 {action.label}&nbsp;
                 <Icon sx={{ fontWeight: "bold" }}>arrow_forward</Icon>
               </MDButton>
@@ -152,8 +167,7 @@ function DefaultPricingCard({
                 rel="noreferrer"
                 variant="gradient"
                 color={action.color}
-                fullWidth
-              >
+                fullWidth>
                 {action.label}&nbsp;
                 <Icon sx={{ fontWeight: "bold" }}>arrow_forward</Icon>
               </MDButton>

@@ -9,7 +9,7 @@ import {
   dangerColor,
   whiteColor,
   grayColor,
-} from "assets/jss/nextjs-material-dashboard.js";
+} from "assets/jss/nextjs-material-dashboard.js"
 
 const headerStyle = () => ({
   appBar: {
@@ -77,6 +77,6 @@ const headerStyle = () => ({
     color: whiteColor,
     ...defaultBoxShadow,
   },
-});
+})
 
-export default headerStyle;
+export default headerStyle

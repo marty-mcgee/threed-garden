@@ -20,7 +20,15 @@ import colors from "assets/theme/base/colors"
 // Declaring props types for BubbleChart
 interface Props {
   icon?: {
-    color?: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "light" | "dark"
+    color?:
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "light"
+      | "dark"
     component: ReactNode
   }
   title?: string
@@ -30,7 +38,15 @@ interface Props {
     labels: string[]
     datasets: {
       label: string
-      color: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "light" | "dark"
+      color:
+        | "primary"
+        | "secondary"
+        | "info"
+        | "success"
+        | "warning"
+        | "error"
+        | "light"
+        | "dark"
       data: {
         x: number
         y: number
@@ -41,7 +57,13 @@ interface Props {
   [key: string]: any
 }
 
-function BubbleChart({ icon, title, description, height, chart }: Props): JSX.Element {
+function BubbleChart({
+  icon,
+  title,
+  description,
+  height,
+  chart,
+}: Props): JSX.Element {
   const chartDatasets = chart.datasets
     ? chart.datasets.map((dataset) => ({
         ...dataset,
@@ -77,8 +99,7 @@ function BubbleChart({ icon, title, description, height, chart }: Props): JSX.El
               alignItems="center"
               color="white"
               mt={-5}
-              mr={2}
-            >
+              mr={2}>
               <Icon fontSize="medium">{icon.component}</Icon>
             </MDBox>
           )}

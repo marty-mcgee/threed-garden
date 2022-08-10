@@ -1,4 +1,11 @@
-import { ReactNode, FC, forwardRef, createContext, useContext, useMemo } from "react"
+import {
+  ReactNode,
+  FC,
+  forwardRef,
+  createContext,
+  useContext,
+  useMemo,
+} from "react"
 
 // Company Juice Dashboard components
 import MDBox from "components/MDBox"
@@ -53,8 +60,7 @@ const MDPagination: FC<Props | any> = forwardRef(
             color={active ? context.color : "secondary"}
             iconOnly
             circular
-            ownerState={{ variant, active, paginationSize }}
-          >
+            ownerState={{ variant, active, paginationSize }}>
             {children}
           </MDPaginationItemRoot>
         ) : (
@@ -62,8 +68,7 @@ const MDPagination: FC<Props | any> = forwardRef(
             display="flex"
             justifyContent="flex-end"
             alignItems="center"
-            sx={{ listStyle: "none" }}
-          >
+            sx={{ listStyle: "none" }}>
             {children}
           </MDBox>
         )}

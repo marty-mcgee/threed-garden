@@ -2,7 +2,8 @@
 import { Theme } from "@mui/material/styles"
 
 function navbar(theme: Theme | any, ownerState: any) {
-  const { palette, boxShadows, functions, transitions, breakpoints, borders } = theme
+  const { palette, boxShadows, functions, transitions, breakpoints, borders } =
+    theme
   const { transparentNavbar, absolute, light, darkMode } = ownerState
 
   const { dark, white, text, transparent, background } = palette
@@ -12,7 +13,10 @@ function navbar(theme: Theme | any, ownerState: any) {
 
   return {
     boxShadow: transparentNavbar || absolute ? "none" : navbarBoxShadow,
-    backdropFilter: transparentNavbar || absolute ? "none" : `saturate(200%) blur(${pxToRem(30)})`,
+    backdropFilter:
+      transparentNavbar || absolute
+        ? "none"
+        : `saturate(200%) blur(${pxToRem(30)})`,
     backgroundColor:
       transparentNavbar || absolute
         ? `${transparent.main} !important`
@@ -129,4 +133,11 @@ const navbarMobileMenu = ({ breakpoints }: Theme) => ({
   },
 })
 
-export { navbar, navbarContainer, navbarRow, navbarIconButton, navbarDesktopMenu, navbarMobileMenu }
+export {
+  navbar,
+  navbarContainer,
+  navbarRow,
+  navbarIconButton,
+  navbarDesktopMenu,
+  navbarMobileMenu,
+}

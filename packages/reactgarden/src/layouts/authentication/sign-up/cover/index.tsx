@@ -30,8 +30,7 @@ function Cover(): JSX.Element {
           mt={-3}
           p={3}
           mb={1}
-          textAlign="center"
-        >
+          textAlign="center">
           <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
             Join us today
           </MDTypography>
@@ -45,10 +44,20 @@ function Cover(): JSX.Element {
               <MDInput type="text" label="Name" variant="standard" fullWidth />
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="email" label="Email" variant="standard" fullWidth />
+              <MDInput
+                type="email"
+                label="Email"
+                variant="standard"
+                fullWidth
+              />
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="password" label="Password" variant="standard" fullWidth />
+              <MDInput
+                type="password"
+                label="Password"
+                variant="standard"
+                fullWidth
+              />
             </MDBox>
             <MDBox display="flex" alignItems="center" ml={-1}>
               <Checkbox />
@@ -56,8 +65,7 @@ function Cover(): JSX.Element {
                 variant="button"
                 fontWeight="regular"
                 color="text"
-                sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}
-              >
+                sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}>
                 &nbsp;&nbsp;I agree the&nbsp;
               </MDTypography>
               <MDTypography
@@ -66,8 +74,7 @@ function Cover(): JSX.Element {
                 variant="button"
                 fontWeight="bold"
                 color="info"
-                textGradient
-              >
+                textGradient>
                 Terms and Conditions
               </MDTypography>
             </MDBox>
@@ -85,8 +92,7 @@ function Cover(): JSX.Element {
                   variant="button"
                   color="info"
                   fontWeight="medium"
-                  textGradient
-                >
+                  textGradient>
                   Sign In
                 </MDTypography>
               </MDTypography>

@@ -1,4 +1,4 @@
-import { grayColor } from "assets/jss/nextjs-material-dashboard.js";
+import { grayColor } from "assets/jss/nextjs-material-dashboard.js"
 
 const cardFooterStyle = {
   cardFooter: {
@@ -21,7 +21,7 @@ const cardFooterStyle = {
     backgroundColor: "transparent",
   },
   cardFooterStats: {
-    borderTop: "1px solid " + grayColor[10],
+    borderTop: `1px solid ${grayColor[10]}`,
     marginTop: "20px",
     "& svg": {
       position: "relative",
@@ -40,8 +40,8 @@ const cardFooterStyle = {
     },
   },
   cardFooterChart: {
-    borderTop: "1px solid " + grayColor[10],
+    borderTop: `1px solid ${grayColor[10]}`,
   },
-};
+}
 
-export default cardFooterStyle;
+export default cardFooterStyle

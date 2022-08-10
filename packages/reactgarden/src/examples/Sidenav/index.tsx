@@ -32,7 +32,14 @@ import {
 
 // Declaring props types for Sidenav
 interface Props {
-  color?: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "dark"
+  color?:
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "dark"
   brand?: string
   brandName: string
   routes: {
@@ -51,9 +58,17 @@ interface Props {
   [key: string]: any
 }
 
-function Sidenav({ color, brand, brandName, routes, ...rest }: Props): JSX.Element {
+function Sidenav({
+  color,
+  brand,
+  brandName,
+  routes,
+  ...rest
+}: Props): JSX.Element {
   const [openCollapse, setOpenCollapse] = useState<boolean | string>(false)
-  const [openNestedCollapse, setOpenNestedCollapse] = useState<boolean | string>(false)
+  const [openNestedCollapse, setOpenNestedCollapse] = useState<
+    boolean | string
+  >(false)
   const [controller, dispatch] = useMaterialUIController()
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode } = controller
   const location = useLocation()
@@ -93,7 +108,10 @@ function Sidenav({ color, brand, brandName, routes, ...rest }: Props): JSX.Eleme
     // A function that sets the mini state of the sidenav.
     function handleMiniSidenav() {
       setMiniSidenav(dispatch, window.innerWidth < 1200)
-      setTransparentSidenav(dispatch, window.innerWidth < 1200 ? false : transparentSidenav)
+      setTransparentSidenav(
+        dispatch,
+        window.innerWidth < 1200 ? false : transparentSidenav
+      )
       setWhiteSidenav(dispatch, window.innerWidth < 1200 ? false : whiteSidenav)
     }
 
@@ -118,8 +136,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }: Props): JSX.Eleme
           href={href}
           target="_blank"
           rel="noreferrer"
-          sx={{ textDecoration: "none" }}
-        >
+          sx={{ textDecoration: "none" }}>
           <SidenavItem name={name} nested />
         </Link>
       ) : (
@@ -145,11 +162,11 @@ function Sidenav({ color, brand, brandName, routes, ...rest }: Props): JSX.Eleme
             active={key === itemParentName ? "isParent" : false}
             open={openNestedCollapse === key}
             onClick={({ currentTarget }: any) =>
-              openNestedCollapse === key && currentTarget.classList.contains("MuiListItem-root")
+              openNestedCollapse === key &&
+              currentTarget.classList.contains("MuiListItem-root")
                 ? setOpenNestedCollapse(false)
                 : setOpenNestedCollapse(key)
-            }
-          >
+            }>
             {renderNestedCollapse(collapse)}
           </SidenavItem>
         )
@@ -160,8 +177,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }: Props): JSX.Eleme
             key={key}
             target="_blank"
             rel="noreferrer"
-            sx={{ textDecoration: "none" }}
-          >
+            sx={{ textDecoration: "none" }}>
             <SidenavItem color={color} name={name} active={key === itemName} />
           </Link>
         ) : (
@@ -175,7 +191,17 @@ function Sidenav({ color, brand, brandName, routes, ...rest }: Props): JSX.Eleme
 
   // Render all the routes from the routes.js (All the visible items on the Sidenav)
   const renderRoutes = routes.map(
-    ({ type, name, icon, title, collapse, noCollapse, key, href, route }: any) => {
+    ({
+      type,
+      name,
+      icon,
+      title,
+      collapse,
+      noCollapse,
+      key,
+      href,
+      route,
+    }: any) => {
       let returnValue
 
       if (type === "collapse") {
@@ -186,8 +212,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }: Props): JSX.Eleme
               key={key}
               target="_blank"
               rel="noreferrer"
-              sx={{ textDecoration: "none" }}
-            >
+              sx={{ textDecoration: "none" }}>
               <SidenavCollapse
                 name={name}
                 icon={icon}
@@ -203,8 +228,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }: Props): JSX.Eleme
                 name={name}
                 icon={icon}
                 noCollapse={noCollapse}
-                active={key === collapseName}
-              >
+                active={key === collapseName}>
                 {collapse ? renderCollapse(collapse) : null}
               </SidenavCollapse>
             </NavLink>
@@ -217,8 +241,11 @@ function Sidenav({ color, brand, brandName, routes, ...rest }: Props): JSX.Eleme
               icon={icon}
               active={key === collapseName}
               open={openCollapse === key}
-              onClick={() => (openCollapse === key ? setOpenCollapse(false) : setOpenCollapse(key))}
-            >
+              onClick={() =>
+                openCollapse === key
+                  ? setOpenCollapse(false)
+                  : setOpenCollapse(key)
+              }>
               {collapse ? renderCollapse(collapse) : null}
             </SidenavCollapse>
           )
@@ -235,8 +262,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }: Props): JSX.Eleme
             pl={3}
             mt={2}
             mb={1}
-            ml={1}
-          >
+            ml={1}>
             {title}
           </MDTypography>
         )
@@ -260,8 +286,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }: Props): JSX.Eleme
     <SidenavRoot
       {...rest}
       variant="permanent"
-      ownerState={{ transparentSidenav, whiteSidenav, miniSidenav, darkMode }}
-    >
+      ownerState={{ transparentSidenav, whiteSidenav, miniSidenav, darkMode }}>
       <MDBox pt={3} pb={1} px={4} textAlign="center">
         <MDBox
           display={{ xs: "block", xl: "none" }}
@@ -270,19 +295,23 @@ function Sidenav({ color, brand, brandName, routes, ...rest }: Props): JSX.Eleme
           right={0}
           p={1.625}
           onClick={closeSidenav}
-          sx={{ cursor: "pointer" }}
-        >
+          sx={{ cursor: "pointer" }}>
           <MDTypography variant="h6" color="secondary">
             <Icon sx={{ fontWeight: "bold" }}>close</Icon>
           </MDTypography>
         </MDBox>
         <MDBox component={NavLink} to="/" display="flex" alignItems="center">
-          {brand && <MDBox component="img" src={brand} alt="Brand" width="2rem" />}
+          {brand && (
+            <MDBox component="img" src={brand} alt="Brand" width="2rem" />
+          )}
           <MDBox
             width={!brandName && "100%"}
-            sx={(theme: any) => sidenavLogoLabel(theme, { miniSidenav })}
-          >
-            <MDTypography component="h6" variant="button" fontWeight="medium" color={textColor}>
+            sx={(theme: any) => sidenavLogoLabel(theme, { miniSidenav })}>
+            <MDTypography
+              component="h6"
+              variant="button"
+              fontWeight="medium"
+              color={textColor}>
               {brandName}
             </MDTypography>
           </MDBox>

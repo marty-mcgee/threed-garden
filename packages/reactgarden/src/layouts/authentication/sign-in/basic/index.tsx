@@ -43,24 +43,39 @@ function Basic(): JSX.Element {
           mt={-3}
           p={2}
           mb={1}
-          textAlign="center"
-        >
+          textAlign="center">
           <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
             Sign in
           </MDTypography>
-          <Grid container spacing={3} justifyContent="center" sx={{ mt: 1, mb: 2 }}>
+          <Grid
+            container
+            spacing={3}
+            justifyContent="center"
+            sx={{ mt: 1, mb: 2 }}>
             <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
+              <MDTypography
+                component={MuiLink}
+                href="#"
+                variant="body1"
+                color="white">
                 <FacebookIcon color="inherit" />
               </MDTypography>
             </Grid>
             <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
+              <MDTypography
+                component={MuiLink}
+                href="#"
+                variant="body1"
+                color="white">
                 <GitHubIcon color="inherit" />
               </MDTypography>
             </Grid>
             <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
+              <MDTypography
+                component={MuiLink}
+                href="#"
+                variant="body1"
+                color="white">
                 <GoogleIcon color="inherit" />
               </MDTypography>
             </Grid>
@@ -81,8 +96,7 @@ function Basic(): JSX.Element {
                 fontWeight="regular"
                 color="text"
                 onClick={handleSetRememberMe}
-                sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}
-              >
+                sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}>
                 &nbsp;&nbsp;Remember me
               </MDTypography>
             </MDBox>
@@ -100,8 +114,7 @@ function Basic(): JSX.Element {
                   variant="button"
                   color="info"
                   fontWeight="medium"
-                  textGradient
-                >
+                  textGradient>
                   Sign up
                 </MDTypography>
               </MDTypography>

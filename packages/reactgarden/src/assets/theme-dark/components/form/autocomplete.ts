@@ -40,10 +40,11 @@ const autocompletle: Types = {
       color: text.main,
       transition: "background-color 300ms ease, color 300ms ease",
 
-      "&:hover, &:focus, &.Mui-selected, &.Mui-selected:hover, &.Mui-selected:focus": {
-        backgroundColor: rgba(light.main, 0.2),
-        color: white.main,
-      },
+      "&:hover, &:focus, &.Mui-selected, &.Mui-selected:hover, &.Mui-selected:focus":
+        {
+          backgroundColor: rgba(light.main, 0.2),
+          color: white.main,
+        },
 
       '&[aria-selected="true"]': {
         backgroundColor: `${rgba(light.main, 0.2)} !important`,
@@ -78,10 +79,11 @@ const autocompletle: Types = {
         padding: `0 ${pxToRem(10)} 0 ${pxToRem(4)}`,
       },
 
-      "& .MuiSvgIcon-root, & .MuiSvgIcon-root:hover, & .MuiSvgIcon-root:focus": {
-        color: white.main,
-        marginRight: 0,
-      },
+      "& .MuiSvgIcon-root, & .MuiSvgIcon-root:hover, & .MuiSvgIcon-root:focus":
+        {
+          color: white.main,
+          marginRight: 0,
+        },
     },
 
     popupIndicator: {

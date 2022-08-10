@@ -3,7 +3,7 @@ import {
   whiteColor,
   grayColor,
   hexToRgb,
-} from "assets/jss/nextjs-material-dashboard.js";
+} from "assets/jss/nextjs-material-dashboard.js"
 
 const rtlStyle = {
   successText: {
@@ -43,7 +43,7 @@ const rtlStyle = {
     marginBottom: "0",
   },
   cardCategoryWhite: {
-    color: "rgba(" + hexToRgb(whiteColor) + ",.62)",
+    color: `rgba(${hexToRgb(whiteColor)},.62)`,
     margin: "0",
     fontSize: "14px",
     marginTop: "0",
@@ -80,6 +80,6 @@ const rtlStyle = {
       lineHeight: "1",
     },
   },
-};
+}
 
-export default rtlStyle;
+export default rtlStyle

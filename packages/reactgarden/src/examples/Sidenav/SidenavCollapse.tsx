@@ -51,14 +51,25 @@ function SidenavCollapse({
         <MDBox
           {...rest}
           sx={(theme: any) =>
-            collapseItem(theme, { active, transparentSidenav, whiteSidenav, darkMode })
-          }
-        >
+            collapseItem(theme, {
+              active,
+              transparentSidenav,
+              whiteSidenav,
+              darkMode,
+            })
+          }>
           <ListItemIcon
-            sx={(theme) => collapseIconBox(theme, { transparentSidenav, whiteSidenav, darkMode })}
-          >
+            sx={(theme) =>
+              collapseIconBox(theme, {
+                transparentSidenav,
+                whiteSidenav,
+                darkMode,
+              })
+            }>
             {typeof icon === "string" ? (
-              <Icon sx={(theme) => collapseIcon(theme, { active })}>{icon}</Icon>
+              <Icon sx={(theme) => collapseIcon(theme, { active })}>
+                {icon}
+              </Icon>
             ) : (
               icon
             )}
@@ -87,8 +98,7 @@ function SidenavCollapse({
                 active,
                 darkMode,
               })
-            }
-          >
+            }>
             expand_less
           </Icon>
         </MDBox>

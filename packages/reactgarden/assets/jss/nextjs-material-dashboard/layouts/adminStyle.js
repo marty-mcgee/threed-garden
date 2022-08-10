@@ -2,7 +2,7 @@ import {
   drawerWidth,
   transition,
   container,
-} from "assets/jss/nextjs-material-dashboard.js";
+} from "assets/jss/nextjs-material-dashboard.js"
 
 const appStyle = (theme) => ({
   wrapper: {
@@ -31,6 +31,6 @@ const appStyle = (theme) => ({
   map: {
     marginTop: "70px",
   },
-});
+})
 
-export default appStyle;
+export default appStyle

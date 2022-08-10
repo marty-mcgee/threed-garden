@@ -16,16 +16,14 @@ function ProductImage(): JSX.Element {
         "&:hover .card-header": {
           transform: "translate3d(0, -50px, 0)",
         },
-      }}
-    >
+      }}>
       <MDBox
         position="relative"
         borderRadius="lg"
         mt={-3}
         mx={2}
         className="card-header"
-        sx={{ transition: "transform 300ms cubic-bezier(0.34, 1.61, 0.7, 1)" }}
-      >
+        sx={{ transition: "transform 300ms cubic-bezier(0.34, 1.61, 0.7, 1)" }}>
         <MDBox
           component="img"
           src={productImage}
@@ -46,8 +44,7 @@ function ProductImage(): JSX.Element {
           alignItems="center"
           mt={-11}
           position="relative"
-          zIndex={1}
-        >
+          zIndex={1}>
           <MDBox mr={1}>
             <MDButton variant="gradient" color="info" size="small">
               edit
@@ -61,8 +58,9 @@ function ProductImage(): JSX.Element {
           Product Image
         </MDTypography>
         <MDTypography variant="body2" color="text" sx={{ mt: 1.5, mb: 1 }}>
-          The place is close to Barceloneta Beach and bus stop just 2 min by walk and near to
-          &#8220;Naviglio&#8221; where you can enjoy the main night life in Barcelona.
+          The place is close to Barceloneta Beach and bus stop just 2 min by
+          walk and near to &#8220;Naviglio&#8221; where you can enjoy the main
+          night life in Barcelona.
         </MDTypography>
       </MDBox>
     </Card>

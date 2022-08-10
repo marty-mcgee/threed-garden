@@ -16,7 +16,7 @@ import {
   primaryColor,
   warningColor,
   hexToRgb,
-} from "assets/jss/nextjs-material-dashboard.js";
+} from "assets/jss/nextjs-material-dashboard.js"
 
 const snackbarContentStyle = {
   root: {
@@ -32,14 +32,11 @@ const snackbarContentStyle = {
     borderRadius: "3px",
     minWidth: "unset",
     maxWidth: "unset",
-    boxShadow:
-      "0 12px 20px -10px rgba(" +
-      hexToRgb(whiteColor) +
-      ", 0.28), 0 4px 20px 0px rgba(" +
-      hexToRgb(blackColor) +
-      ", 0.12), 0 7px 8px -5px rgba(" +
-      hexToRgb(whiteColor) +
-      ", 0.2)",
+    boxShadow: `0 12px 20px -10px rgba(${hexToRgb(
+      whiteColor
+    )}, 0.28), 0 4px 20px 0px rgba(${hexToRgb(
+      blackColor
+    )}, 0.12), 0 7px 8px -5px rgba(${hexToRgb(whiteColor)}, 0.2)`,
   },
   top20: {
     top: "20px",
@@ -126,6 +123,6 @@ const snackbarContentStyle = {
     marginLeft: "-8px",
     marginRight: "auto",
   },
-};
+}
 
-export default snackbarContentStyle;
+export default snackbarContentStyle

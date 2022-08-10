@@ -50,18 +50,22 @@ function Header({ tabValue, tabHandler, children }: Props): JSX.Element {
         m={2}
         pt={2}
         sx={{
-          backgroundImage: ({ functions: { linearGradient, rgba }, palette: { black } }) =>
-            `${linearGradient(rgba(black.main, 0.25), rgba(black.main, 0.25))}, url(${bgImage})`,
+          backgroundImage: ({
+            functions: { linearGradient, rgba },
+            palette: { black },
+          }) =>
+            `${linearGradient(
+              rgba(black.main, 0.25),
+              rgba(black.main, 0.25)
+            )}, url(${bgImage})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-        }}
-      >
+        }}>
         <Grid
           container
           spacing={3}
           justifyContent="center"
-          sx={{ position: "relative", py: 22, textAlign: "center" }}
-        >
+          sx={{ position: "relative", py: 22, textAlign: "center" }}>
           <Grid item xs={11} lg={5}>
             <MDBox mb={1}>
               <MDTypography variant="h2" color="white" fontWeight="bold">
@@ -70,7 +74,8 @@ function Header({ tabValue, tabHandler, children }: Props): JSX.Element {
             </MDBox>
             <MDBox mb={2}>
               <MDTypography variant="body2" color="white" fontWeight="light">
-                You have Free Unlimited Updates and Premium Support on each package.
+                You have Free Unlimited Updates and Premium Support on each
+                package.
               </MDTypography>
             </MDBox>
           </Grid>

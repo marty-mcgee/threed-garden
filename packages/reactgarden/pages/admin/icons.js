@@ -1,22 +1,22 @@
 /*eslint-disable*/
-import React from "react";
+import React from "react"
 // @material-ui/core components
-import { makeStyles } from "@material-ui/core/styles";
-import Hidden from "@material-ui/core/Hidden";
+import { makeStyles } from "@material-ui/core/styles"
+import Hidden from "@material-ui/core/Hidden"
 // layout for this page
-import Admin from "layouts/Admin.js";
+import Admin from "layouts/Admin.js"
 // core components
-import GridItem from "components/Grid/GridItem.js";
-import GridContainer from "components/Grid/GridContainer.js";
-import Card from "components/Card/Card.js";
-import CardHeader from "components/Card/CardHeader.js";
-import CardBody from "components/Card/CardBody.js";
+import GridItem from "components/Grid/GridItem.js"
+import GridContainer from "components/Grid/GridContainer.js"
+import Card from "components/Card/Card.js"
+import CardHeader from "components/Card/CardHeader.js"
+import CardBody from "components/Card/CardBody.js"
 
-import styles from "assets/jss/nextjs-material-dashboard/views/iconsStyle.js";
+import styles from "assets/jss/nextjs-material-dashboard/views/iconsStyle.js"
 
 function Icons() {
-  const useStyles = makeStyles(styles);
-  const classes = useStyles();
+  const useStyles = makeStyles(styles)
+  const classes = useStyles()
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
@@ -27,8 +27,7 @@ function Icons() {
               Handcrafted by our friends from{" "}
               <a
                 href="https://design.google.com/icons/?ref=creativetime"
-                target="_blank"
-              >
+                target="_blank">
                 Google
               </a>
             </p>
@@ -38,8 +37,7 @@ function Icons() {
               <iframe
                 className={classes.iframe}
                 src="https://material.io/icons/"
-                title="Icons iframe"
-              >
+                title="Icons iframe">
                 <p>Your browser does not support iframes.</p>
               </iframe>
             </Hidden>
@@ -51,8 +49,7 @@ function Icons() {
                   the icons on their original page on Google. Check the
                   <a
                     href="https://design.google.com/icons/?ref=creativetime"
-                    target="_blank"
-                  >
+                    target="_blank">
                     Material Icons
                   </a>
                 </h5>
@@ -62,9 +59,9 @@ function Icons() {
         </Card>
       </GridItem>
     </GridContainer>
-  );
+  )
 }
 
-Icons.layout = Admin;
+Icons.layout = Admin
 
-export default Icons;
+export default Icons

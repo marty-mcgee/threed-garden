@@ -36,8 +36,7 @@ const MDSocialButton: FC<Props> = forwardRef(
       variant="contained"
       color="primary"
       size={size}
-      ownerState={{ color, size, iconOnly, circular }}
-    >
+      ownerState={{ color, size, iconOnly, circular }}>
       {children}
     </MDSocialButtonRoot>
   )

@@ -19,13 +19,25 @@ function Socials(): JSX.Element {
         <MDBox mt={1}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <FormField type="text" label="Shoppify Handle" defaultValue="@soft" />
+              <FormField
+                type="text"
+                label="Shoppify Handle"
+                defaultValue="@soft"
+              />
             </Grid>
             <Grid item xs={12}>
-              <FormField type="text" label="Facebook Account" defaultValue="https://..." />
+              <FormField
+                type="text"
+                label="Facebook Account"
+                defaultValue="https://..."
+              />
             </Grid>
             <Grid item xs={12}>
-              <FormField type="text" label="Instagram Account" defaultValue="https://..." />
+              <FormField
+                type="text"
+                label="Instagram Account"
+                defaultValue="https://..."
+              />
             </Grid>
           </Grid>
         </MDBox>

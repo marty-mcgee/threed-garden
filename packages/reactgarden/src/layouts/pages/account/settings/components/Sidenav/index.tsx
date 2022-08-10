@@ -54,8 +54,7 @@ function Sidenav(): JSX.Element {
             "&:hover": {
               backgroundColor: light.main,
             },
-          })}
-        >
+          })}>
           <MDBox mr={1.5} lineHeight={1} color={darkMode ? "white" : "dark"}>
             <Icon fontSize="small">{icon}</Icon>
           </MDBox>
@@ -71,16 +70,14 @@ function Sidenav(): JSX.Element {
         borderRadius: ({ borders: { borderRadius } }) => borderRadius.lg,
         position: "sticky",
         top: "1%",
-      }}
-    >
+      }}>
       <MDBox
         component="ul"
         display="flex"
         flexDirection="column"
         p={2}
         m={0}
-        sx={{ listStyle: "none" }}
-      >
+        sx={{ listStyle: "none" }}>
         {renderSidenavItems}
       </MDBox>
     </Card>

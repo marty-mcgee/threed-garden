@@ -54,12 +54,19 @@ function Calendar({ header, ...rest }: Props): JSX.Element {
     <Card sx={{ height: "100%" }}>
       <MDBox pt={header.title || header.date ? 2 : 0} px={2} lineHeight={1}>
         {header.title ? (
-          <MDTypography variant="h6" fontWeight="medium" textTransform="capitalize">
+          <MDTypography
+            variant="h6"
+            fontWeight="medium"
+            textTransform="capitalize">
             {header.title}
           </MDTypography>
         ) : null}
         {header.date ? (
-          <MDTypography component="p" variant="button" color="text" fontWeight="regular">
+          <MDTypography
+            component="p"
+            variant="button"
+            color="text"
+            fontWeight="regular">
             {header.date}
           </MDTypography>
         ) : null}

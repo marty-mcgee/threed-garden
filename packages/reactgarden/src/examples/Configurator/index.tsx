@@ -116,11 +116,15 @@ function Configurator(): JSX.Element {
     palette: { white, gradients, background },
   }: Theme | any) => ({
     height: pxToRem(39),
-    background: darkMode ? white.main : linearGradient(gradients.dark.main, gradients.dark.state),
+    background: darkMode
+      ? white.main
+      : linearGradient(gradients.dark.main, gradients.dark.state),
     color: darkMode ? background.sidenav : white.main,
 
     "&:hover, &:focus, &:focus:not(:hover)": {
-      background: darkMode ? white.main : linearGradient(gradients.dark.main, gradients.dark.state),
+      background: darkMode
+        ? white.main
+        : linearGradient(gradients.dark.main, gradients.dark.state),
       color: darkMode ? background.sidenav : white.main,
     },
   })
@@ -133,8 +137,7 @@ function Configurator(): JSX.Element {
         alignItems="baseline"
         pt={4}
         pb={0.5}
-        px={3}
-      >
+        px={3}>
         <MDBox>
           <MDTypography variant="h5">Material UI Configurator</MDTypography>
           <MDTypography variant="body2" color="text">
@@ -151,8 +154,7 @@ function Configurator(): JSX.Element {
             cursor: "pointer",
             transform: "translateY(5px)",
           })}
-          onClick={handleCloseConfigurator}
-        >
+          onClick={handleCloseConfigurator}>
           close
         </Icon>
       </MDBox>
@@ -175,7 +177,9 @@ function Configurator(): JSX.Element {
                   width: "24px",
                   height: "24px",
                   padding: 0,
-                  border: `${borderWidth[1]} solid ${darkMode ? background.sidenav : white.main}`,
+                  border: `${borderWidth[1]} solid ${
+                    darkMode ? background.sidenav : white.main
+                  }`,
                   borderColor: () => {
                     let borderColorValue = sidenavColor === color && dark.main
 
@@ -189,8 +193,14 @@ function Configurator(): JSX.Element {
                     easing: transitions.easing.sharp,
                     duration: transitions.duration.shorter,
                   }),
-                  backgroundImage: ({ functions: { linearGradient }, palette: { gradients } }) =>
-                    linearGradient(gradients[color].main, gradients[color].state),
+                  backgroundImage: ({
+                    functions: { linearGradient },
+                    palette: { gradients },
+                  }) =>
+                    linearGradient(
+                      gradients[color].main,
+                      gradients[color].state
+                    ),
 
                   "&:not(:last-child)": {
                     mr: 1,
@@ -217,8 +227,7 @@ function Configurator(): JSX.Element {
               display: "flex",
               mt: 2,
               mr: 1,
-            }}
-          >
+            }}>
             <MDButton
               color="dark"
               variant="gradient"
@@ -229,8 +238,7 @@ function Configurator(): JSX.Element {
                 !transparentSidenav && !whiteSidenav
                   ? sidenavTypeActiveButtonStyles
                   : sidenavTypeButtonsStyles
-              }
-            >
+              }>
               Dark
             </MDButton>
             <MDBox sx={{ mx: 1, width: "8rem", minWidth: "8rem" }}>
@@ -244,8 +252,7 @@ function Configurator(): JSX.Element {
                   transparentSidenav && !whiteSidenav
                     ? sidenavTypeActiveButtonStyles
                     : sidenavTypeButtonsStyles
-                }
-              >
+                }>
                 Transparent
               </MDButton>
             </MDBox>
@@ -259,8 +266,7 @@ function Configurator(): JSX.Element {
                 whiteSidenav && !transparentSidenav
                   ? sidenavTypeActiveButtonStyles
                   : sidenavTypeButtonsStyles
-              }
-            >
+              }>
               White
             </MDButton>
           </MDBox>
@@ -270,20 +276,27 @@ function Configurator(): JSX.Element {
           justifyContent="space-between"
           alignItems="center"
           mt={3}
-          lineHeight={1}
-        >
+          lineHeight={1}>
           <MDTypography variant="h6">Navbar Fixed</MDTypography>
 
           <Switch checked={fixedNavbar} onChange={handleFixedNavbar} />
         </MDBox>
         <Divider />
-        <MDBox display="flex" justifyContent="space-between" alignItems="center" lineHeight={1}>
+        <MDBox
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          lineHeight={1}>
           <MDTypography variant="h6">Sidenav Mini</MDTypography>
 
           <Switch checked={miniSidenav} onChange={handleMiniSidenav} />
         </MDBox>
         <Divider />
-        <MDBox display="flex" justifyContent="space-between" alignItems="center" lineHeight={1}>
+        <MDBox
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          lineHeight={1}>
           <MDTypography variant="h6">Light / Dark</MDTypography>
 
           <Switch checked={darkMode} onChange={handleDarkMode} />
@@ -298,8 +311,7 @@ function Configurator(): JSX.Element {
               rel="noreferrer"
               color="info"
               variant="gradient"
-              fullWidth
-            >
+              fullWidth>
               buy now
             </MDButton>
           </MDBox>
@@ -311,8 +323,7 @@ function Configurator(): JSX.Element {
               rel="noreferrer"
               color="dark"
               variant="gradient"
-              fullWidth
-            >
+              fullWidth>
               buy javascript version
             </MDButton>
           </MDBox>
@@ -323,8 +334,7 @@ function Configurator(): JSX.Element {
             rel="noreferrer"
             color={darkMode ? "light" : "dark"}
             variant="outlined"
-            fullWidth
-          >
+            fullWidth>
             view documentation
           </MDButton>
         </MDBox>
@@ -351,8 +361,7 @@ function Configurator(): JSX.Element {
                 href="//twitter.com/intent/tweet?text=Check%20Company%20Juice%20%23webdesign%20%23dashboard%20%23react%20%mui&url=https%3A%2F%2Fcompanyjuice.com%2Fproduct%2Fcompany-juice-dashboard"
                 target="_blank"
                 rel="noreferrer"
-                color="dark"
-              >
+                color="dark">
                 <TwitterIcon />
                 &nbsp; Tweet
               </MDButton>
@@ -362,8 +371,7 @@ function Configurator(): JSX.Element {
               href="https://www.facebook.com/sharer/sharer.php?u=https://companyjuice.com/product/company-juice-dashboard"
               target="_blank"
               rel="noreferrer"
-              color="dark"
-            >
+              color="dark">
               <FacebookIcon />
               &nbsp; Share
             </MDButton>

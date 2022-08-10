@@ -21,6 +21,6 @@ const cardImagesStyles = {
     width: "100%",
     borderRadius: "calc(.25rem - 1px)",
   },
-};
+}
 
-export default cardImagesStyles;
+export default cardImagesStyles

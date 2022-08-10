@@ -27,11 +27,20 @@ function StatusCell({ icon, color, status }: Props): JSX.Element {
   return (
     <MDBox display="flex" alignItems="center">
       <MDBox mr={1}>
-        <MDButton variant="outlined" color={color} size="small" iconOnly circular>
+        <MDButton
+          variant="outlined"
+          color={color}
+          size="small"
+          iconOnly
+          circular>
           <Icon sx={{ fontWeight: "bold" }}>{icon}</Icon>
         </MDButton>
       </MDBox>
-      <MDTypography variant="caption" fontWeight="medium" color="text" sx={{ lineHeight: 0 }}>
+      <MDTypography
+        variant="caption"
+        fontWeight="medium"
+        color="text"
+        sx={{ lineHeight: 0 }}>
         {status}
       </MDTypography>
     </MDBox>

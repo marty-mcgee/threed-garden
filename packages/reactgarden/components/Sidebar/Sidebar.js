@@ -46,7 +46,8 @@ export default function Sidebar(props) {
         }
         const whiteFontClasses = classNames({
           [" " + classes.whiteFont]:
-            activeRoute(prop.layout + prop.path) || prop.path === "/upgrade-to-pro",
+            activeRoute(prop.layout + prop.path) ||
+            prop.path === "/upgrade-to-pro",
         })
         return (
           <Link href={prop.layout + prop.path} key={key}>
@@ -56,8 +57,7 @@ export default function Sidebar(props) {
                   <Icon
                     className={classNames(classes.itemIcon, whiteFontClasses, {
                       [classes.itemIconRTL]: props.rtlActive,
-                    })}
-                  >
+                    })}>
                     {prop.icon}
                   </Icon>
                 ) : (
@@ -88,8 +88,7 @@ export default function Sidebar(props) {
         className={classNames(classes.logoLink, {
           [classes.logoLinkRTL]: props.rtlActive,
         })}
-        target="_blank"
-      >
+        target="_blank">
         <div className={classes.logoImage}>
           <img src={logo} alt="logo" className={classes.img} />
         </div>
@@ -112,15 +111,19 @@ export default function Sidebar(props) {
           onClose={props.handleDrawerToggle}
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.
-          }}
-        >
+          }}>
           {brand}
           <div className={classes.sidebarWrapper}>
             {props.rtlActive ? <RTLNavbarLinks /> : <AdminNavbarLinks />}
             {links}
           </div>
           {image !== undefined ? (
-            <div className={classes.background} style={{ backgroundImage: "url(" + image + ")" }} />
+            <div
+              className={classes.background}
+              style={{
+                backgroundImage: "url(" + image + ")",
+              }}
+            />
           ) : null}
         </Drawer>
       </Hidden>
@@ -133,12 +136,16 @@ export default function Sidebar(props) {
             paper: classNames(classes.drawerPaper, {
               [classes.drawerPaperRTL]: props.rtlActive,
             }),
-          }}
-        >
+          }}>
           {brand}
           <div className={classes.sidebarWrapper}>{links}</div>
           {image !== undefined ? (
-            <div className={classes.background} style={{ backgroundImage: "url(" + image + ")" }} />
+            <div
+              className={classes.background}
+              style={{
+                backgroundImage: "url(" + image + ")",
+              }}
+            />
           ) : null}
         </Drawer>
       </Hidden>
@@ -149,7 +156,14 @@ export default function Sidebar(props) {
 Sidebar.propTypes = {
   rtlActive: PropTypes.bool,
   handleDrawerToggle: PropTypes.func,
-  bgColor: PropTypes.oneOf(["white", "purple", "blue", "green", "orange", "red"]),
+  bgColor: PropTypes.oneOf([
+    "white",
+    "purple",
+    "blue",
+    "green",
+    "orange",
+    "red",
+  ]),
   logo: PropTypes.string,
   image: PropTypes.string,
   logoText: PropTypes.string,

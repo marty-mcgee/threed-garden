@@ -3,7 +3,7 @@ import {
   container,
   primaryColor,
   grayColor,
-} from "assets/jss/nextjs-material-dashboard.js";
+} from "assets/jss/nextjs-material-dashboard.js"
 
 const footerStyle = {
   block: {
@@ -30,7 +30,7 @@ const footerStyle = {
   },
   footer: {
     bottom: "0",
-    borderTop: "1px solid " + grayColor[11],
+    borderTop: `1px solid ${grayColor[11]}`,
     padding: "15px 0",
     ...defaultFont,
   },
@@ -50,5 +50,5 @@ const footerStyle = {
     padding: "0px",
     width: "auto",
   },
-};
-export default footerStyle;
+}
+export default footerStyle

@@ -3,7 +3,7 @@ import {
   whiteColor,
   grayColor,
   hexToRgb,
-} from "assets/jss/nextjs-material-dashboard.js";
+} from "assets/jss/nextjs-material-dashboard.js"
 
 const dashboardStyle = {
   successText: {
@@ -43,7 +43,7 @@ const dashboardStyle = {
     marginBottom: "0",
   },
   cardCategoryWhite: {
-    color: "rgba(" + hexToRgb(whiteColor) + ",.62)",
+    color: `rgba(${hexToRgb(whiteColor)},.62)`,
     margin: "0",
     fontSize: "14px",
     marginTop: "0",
@@ -77,6 +77,6 @@ const dashboardStyle = {
       lineHeight: "1",
     },
   },
-};
+}
 
-export default dashboardStyle;
+export default dashboardStyle

@@ -76,8 +76,7 @@ function DefaultProjectCard({
         backgroundColor: "transparent",
         boxShadow: "none",
         overflow: "visible",
-      }}
-    >
+      }}>
       <MDBox position="relative" width="100.25%" shadow="xl" borderRadius="xl">
         <CardMedia
           src={image}
@@ -93,7 +92,11 @@ function DefaultProjectCard({
         />
       </MDBox>
       <MDBox mt={1} mx={0.5}>
-        <MDTypography variant="button" fontWeight="regular" color="text" textTransform="capitalize">
+        <MDTypography
+          variant="button"
+          fontWeight="regular"
+          color="text"
+          textTransform="capitalize">
           {label}
         </MDTypography>
         <MDBox mb={1}>
@@ -102,8 +105,7 @@ function DefaultProjectCard({
               component={Link}
               to={action.route}
               variant="h5"
-              textTransform="capitalize"
-            >
+              textTransform="capitalize">
               {title}
             </MDTypography>
           ) : (
@@ -113,8 +115,7 @@ function DefaultProjectCard({
               target="_blank"
               rel="noreferrer"
               variant="h5"
-              textTransform="capitalize"
-            >
+              textTransform="capitalize">
               {title}
             </MDTypography>
           )}
@@ -124,15 +125,17 @@ function DefaultProjectCard({
             {description}
           </MDTypography>
         </MDBox>
-        <MDBox display="flex" justifyContent="space-between" alignItems="center">
+        <MDBox
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center">
           {action.type === "internal" ? (
             <MDButton
               component={Link}
               to={action.route}
               variant="outlined"
               size="small"
-              color={action.color}
-            >
+              color={action.color}>
               {action.label}
             </MDButton>
           ) : (
@@ -143,8 +146,7 @@ function DefaultProjectCard({
               rel="noreferrer"
               variant="outlined"
               size="small"
-              color={action.color}
-            >
+              color={action.color}>
               {action.label}
             </MDButton>
           )}

@@ -17,7 +17,15 @@ import configs from "examples/Charts/PolarChart/configs"
 // Declaring props types for PolarChart
 interface Props {
   icon?: {
-    color?: "primary" | "secondary" | "info" | "success" | "warning" | "error" | "light" | "dark"
+    color?:
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "light"
+      | "dark"
     component: ReactNode
   }
   title?: string
@@ -53,8 +61,7 @@ function PolarChart({ icon, title, description, chart }: Props): JSX.Element {
               alignItems="center"
               color="white"
               mt={-5}
-              mr={2}
-            >
+              mr={2}>
               <Icon fontSize="medium">{icon.component}</Icon>
             </MDBox>
           )}
