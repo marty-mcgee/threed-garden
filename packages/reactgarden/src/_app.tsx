@@ -37,7 +37,7 @@ import { CacheProvider } from "@emotion/react"
 import createCache from "@emotion/cache"
 
 // Company Juice Dashboard routes
-import routes from "routes"
+import routes from "routes/routes"
 
 // Company Juice Dashboard contexts
 import {

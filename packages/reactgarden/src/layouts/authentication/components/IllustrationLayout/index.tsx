@@ -12,7 +12,7 @@ import DefaultNavbar from "examples/Navbars/DefaultNavbar"
 import PageLayout from "examples/LayoutContainers/PageLayout"
 
 // Company Juice Dashboard page layout routes
-import pageRoutes from "page.routes"
+import pageRoutes from "routes/page.routes"
 
 // Company Juice Dashboard context
 import { useMaterialUIController } from "context"

@@ -53,6 +53,7 @@
     "@types/node": "16.11.21",
     "@types/react": "17.0.38",
     "@types/react-dom": "17.0.11",
+    "axios": "^0.27.2",
     "chart.js": "3.4.1",
     "chartist": "0.10.1",
     "chroma-js": "2.4.2",
@@ -81,6 +82,7 @@
     "react-table": "7.7.0",
     "stylis": "4.1.1",
     "stylis-plugin-rtl": "marty-mcgee/stylis-plugin-rtl#main",
+    "tailwindcss": "^3.1.8",
     "uuid": "8.3.2",
     "web-vitals": "2.1.4",
     "yup": "0.32.11"

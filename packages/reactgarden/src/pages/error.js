@@ -1,9 +1,11 @@
+// WORKING EXAMPLE OF NEXTJS _error.js
+
 function Error({ statusCode }) {
   return (
     <p>
       {statusCode
-        ? `An error ${statusCode} occurred on server`
-        : 'An error occurred on client'}
+        ? `Status code ${statusCode} occurred on server`
+        : "Status code Unknown/Error occurred on client"}
     </p>
   )
 }

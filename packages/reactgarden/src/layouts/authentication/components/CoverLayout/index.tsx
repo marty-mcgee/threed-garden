@@ -15,7 +15,7 @@ import PageLayout from "examples/LayoutContainers/PageLayout"
 import Footer from "layouts/authentication/components/Footer"
 
 // Company Juice Dashboard page layout routes
-import pageRoutes from "page.routes"
+import pageRoutes from "routes/page.routes"
 
 // Declaring props types for CoverLayout
 interface Props {

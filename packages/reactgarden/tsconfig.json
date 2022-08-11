@@ -26,6 +26,6 @@
     // "baseUrl": "."
   },
   // "include": ["src"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/error.js"],
   "exclude": ["node_modules"]
 }

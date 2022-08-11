@@ -16,7 +16,7 @@ import MDTypography from "components/MDTypography"
 import DefaultNavbar from "examples/Navbars/DefaultNavbar"
 
 // Company Juice Dashboard page layout routes
-import pageRoutes from "page.routes"
+import pageRoutes from "routes/page.routes"
 
 // Images
 import bgImage from "assets/images/any/bg-pricing.jpg"

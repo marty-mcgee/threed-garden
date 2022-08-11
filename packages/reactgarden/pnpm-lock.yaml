@@ -36,6 +36,7 @@ specifiers:
   '@types/uuid': 8.3.4
   '@typescript-eslint/eslint-plugin': 5.32.0
   '@typescript-eslint/parser': 5.32.0
+  axios: ^0.27.2
   chart.js: 3.4.1
   chartist: 0.10.1
   chroma-js: 2.4.2
@@ -76,6 +77,7 @@ specifiers:
   react-table: 7.7.0
   stylis: 4.1.1
   stylis-plugin-rtl: marty-mcgee/stylis-plugin-rtl#main
+  tailwindcss: ^3.1.8
   typescript: 4.7.4
   uuid: 8.3.2
   web-vitals: 2.1.4
@@ -110,6 +112,7 @@ dependencies:
   '@types/node': 16.11.21
   '@types/react': 17.0.38
   '@types/react-dom': 17.0.11
+  axios: 0.27.2
   chart.js: 3.4.1
   chartist: 0.10.1
   chroma-js: 2.4.2
@@ -138,6 +141,7 @@ dependencies:
   react-table: 7.7.0_react@17.0.2
   stylis: 4.1.1
   stylis-plugin-rtl: github.com/marty-mcgee/stylis-plugin-rtl/11091b85aee662e8990eacb441a4a77cddcab079_stylis@4.1.1
+  tailwindcss: 3.1.8
   uuid: 8.3.2
   web-vitals: 2.1.4
   yup: 0.32.11
@@ -4113,6 +4117,15 @@ packages:
     resolution: {integrity: sha512-32+ub6kkdhhWick/UjvEwRchgoetXqTK14INLqbGm5U2TzBkBNF3nQtLYm8ovxSkQWArjEQvftCKryjZaATu3w==}
     engines: {node: '>=4'}
 
+  /axios/0.27.2:
+    resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
+    dependencies:
+      follow-redirects: 1.15.1
+      form-data: 4.0.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
   /axobject-query/2.2.0:
     resolution: {integrity: sha512-Td525n+iPOOyUQIeBfcASuG6uJsDOITl7Mds5gFyerkWiX7qhUTdYUBlSgNMyVqtSJqwpt1kXGLdUt6SykLMRA==}
 
@@ -6505,6 +6518,15 @@ packages:
 
   /form-data/3.0.1:
     resolution: {integrity: sha512-RHkBKtLWUVwd7SqRIvCZMEvAMoGUp0XU+seQiZejj0COz3RI3hWP4sCv3gZWWLjJTd7rGwcsF5eKZGii0r/hbg==}
+    engines: {node: '>= 6'}
+    dependencies:
+      asynckit: 0.4.0
+      combined-stream: 1.0.8
+      mime-types: 2.1.35
+    dev: false
+
+  /form-data/4.0.0:
+    resolution: {integrity: sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==}
     engines: {node: '>= 6'}
     dependencies:
       asynckit: 0.4.0
