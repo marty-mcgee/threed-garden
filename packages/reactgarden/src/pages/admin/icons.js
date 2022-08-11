@@ -4,15 +4,15 @@ import React from "react"
 import { makeStyles } from "@material-ui/core/styles"
 import Hidden from "@material-ui/core/Hidden"
 // layout for this page
-import Admin from "layouts/Admin.js"
+import Admin from "layouts/Admin"
 // core components
-import GridItem from "components/Grid/GridItem.js"
-import GridContainer from "components/Grid/GridContainer.js"
-import Card from "components/Card/Card.js"
-import CardHeader from "components/Card/CardHeader.js"
-import CardBody from "components/Card/CardBody.js"
+import GridItem from "components/Grid/GridItem"
+import GridContainer from "components/Grid/GridContainer"
+import Card from "components/Card/Card"
+import CardHeader from "components/Card/CardHeader"
+import CardBody from "components/Card/CardBody"
 
-import styles from "styles/jss/nextjs-material-dashboard/views/iconsStyle.js"
+import styles from "styles/jss/nextjs-material-dashboard/views/iconsStyle"
 
 function Icons() {
   const useStyles = makeStyles(styles)
