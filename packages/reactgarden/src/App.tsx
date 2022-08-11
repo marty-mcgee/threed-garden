@@ -24,7 +24,7 @@ import Sidenav from "examples/Sidenav"
 import Configurator from "examples/Configurator"
 
 // Company Juice Dashboard themes
-import theme from "assets/theme"
+import theme from "themes/theme-light"
 import themeRTL from "themes/theme-light/theme-rtl"
 
 // Company Juice Dashboard Dark Mode themes

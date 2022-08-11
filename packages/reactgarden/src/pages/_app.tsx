@@ -7,9 +7,14 @@ import { CacheProvider, EmotionCache } from "@emotion/react"
 import theme from "themes/theme-dark"
 import createEmotionCache from "themes/createEmotionCache"
 
+// Material UI Context Provider
+import { MaterialUIControllerProvider } from "context"
+
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache()
 
+// NOTE: THROWS ERROR if using .babelrc with @babel/preset-typescript
+// "Syntax error: Unexpected reserved word 'interface'."
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache
 }
@@ -18,14 +23,16 @@ export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
   return (
     <CacheProvider value={emotionCache}>
-      <Head>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
-      </Head>
-      <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <Component {...pageProps} />
-      </ThemeProvider>
+      <MaterialUIControllerProvider>
+        <Head>
+          <meta name="viewport" content="initial-scale=1, width=device-width" />
+        </Head>
+        <ThemeProvider theme={theme}>
+          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline />
+          <Component {...pageProps} />
+        </ThemeProvider>
+      </MaterialUIControllerProvider>
     </CacheProvider>
   )
 }

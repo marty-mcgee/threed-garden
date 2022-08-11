@@ -1,3 +1,22 @@
+/* TARGET (goes in _app.tsx)
+import ReactDOM from "react-dom"
+import { BrowserRouter } from "react-router-dom"
+import App from "App"
+
+// Material UI Context Provider
+import { MaterialUIControllerProvider } from "context"
+
+ReactDOM.render(
+  <BrowserRouter>
+    <MaterialUIControllerProvider>
+      <App />
+    </MaterialUIControllerProvider>
+  </BrowserRouter>,
+  document.getElementById("root")
+)
+*/
+
+/* EXAMPLE (WORDPRESS HEADLESS) */
 import * as React from "react"
 import type { NextPage } from "next"
 import Container from "@mui/material/Container"
@@ -30,21 +49,4 @@ const Home: NextPage = () => (
 )
 
 export default Home
-
-/* TARGET
-import ReactDOM from "react-dom"
-import { BrowserRouter } from "react-router-dom"
-import App from "App"
-
-// Material UI Context Provider
-import { MaterialUIControllerProvider } from "context"
-
-ReactDOM.render(
-  <BrowserRouter>
-    <MaterialUIControllerProvider>
-      <App />
-    </MaterialUIControllerProvider>
-  </BrowserRouter>,
-  document.getElementById("root")
-)
-*/
+/**/

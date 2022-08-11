@@ -11,7 +11,7 @@ if (!process.env.WORDPRESS_API_URL) {
 const nextConfig = {
   /* config options here */
   env: {
-    customKey: "HEY HEY HEY",
+    customKey: "HEY HEY HEY", // process.env.CUSTOM_KEY
   },
   images: {
     domains: [
