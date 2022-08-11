@@ -13,7 +13,7 @@ import { MaterialUIControllerProvider } from "context"
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache()
 
-// NOTE: THROWS ERROR if using .babelrc with @babel/preset-typescript
+// NOTE: THROWS ERROR if using .babelrc
 // "Syntax error: Unexpected reserved word 'interface'."
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache
