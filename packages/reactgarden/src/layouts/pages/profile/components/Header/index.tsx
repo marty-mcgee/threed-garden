@@ -14,7 +14,7 @@ import MDTypography from "components/MDTypography"
 import MDAvatar from "components/MDAvatar"
 
 // Company Juice Dashboard Base Styles
-import breakpoints from "assets/theme/base/breakpoints"
+import breakpoints from "themes/theme-light/base/breakpoints"
 
 // Images
 import burceMars from "assets/images/people/bruce-mars.jpg"
@@ -34,7 +34,7 @@ function Header({ children }: { children?: ReactNode }): JSX.Element {
         : setTabsOrientation("horizontal")
     }
 
-    /** 
+    /**
      The event listener that's calling the handleTabsOrientation function when resizing the window.
     */
     window.addEventListener("resize", handleTabsOrientation)

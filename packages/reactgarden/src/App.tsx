@@ -25,7 +25,7 @@ import Configurator from "examples/Configurator"
 
 // Company Juice Dashboard themes
 import theme from "assets/theme"
-import themeRTL from "assets/theme/theme-rtl"
+import themeRTL from "themes/theme-light/theme-rtl"
 
 // Company Juice Dashboard Dark Mode themes
 import themeDark from "themes/theme-dark"

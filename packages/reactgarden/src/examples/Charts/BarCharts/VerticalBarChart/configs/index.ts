@@ -1,5 +1,5 @@
 // Company Juice Dashboard Base Styles
-import typography from "assets/theme/base/typography"
+import typography from "themes/theme-light/base/typography"
 
 function configs(labels: any, datasets: any) {
   return {

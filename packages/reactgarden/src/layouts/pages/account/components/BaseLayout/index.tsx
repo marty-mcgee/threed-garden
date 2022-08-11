@@ -10,7 +10,7 @@ import Tab from "@mui/material/Tab"
 import MDBox from "components/MDBox"
 
 // Company Juice Dashboard Base Styles
-import breakpoints from "assets/theme/base/breakpoints"
+import breakpoints from "themes/theme-light/base/breakpoints"
 
 // Company Juice Dashboard examples components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout"
@@ -37,7 +37,7 @@ function BaseLayout({ stickyNavbar, children }: Props): JSX.Element {
         : setTabsOrientation("horizontal")
     }
 
-    /** 
+    /**
      The event listener that's calling the handleTabsOrientation function when resizing the window.
     */
     window.addEventListener("resize", handleTabsOrientation)

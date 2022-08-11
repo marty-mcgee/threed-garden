@@ -9,7 +9,7 @@ import MDBox from "components/MDBox"
 import MDTypography from "components/MDTypography"
 
 // Company Juice Dashboard components
-import borders from "assets/theme/base/borders"
+import borders from "themes/theme-light/base/borders"
 
 // Declaring props types for FaqCollapse
 interface Props {

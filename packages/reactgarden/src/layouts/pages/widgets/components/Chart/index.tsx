@@ -11,13 +11,13 @@ import MDBox from "components/MDBox"
 import MDTypography from "components/MDTypography"
 
 // Company Juice Dashboard Helper Functions
-import gradientChartLine from "assets/theme/functions/gradientChartLine"
+import gradientChartLine from "themes/theme-light/functions/gradientChartLine"
 
 // Chart configurations
 import configs from "layouts/pages/widgets/components/Chart/configs"
 
 // Company Juice Dashboard Base Styles
-import colors from "assets/theme/base/colors"
+import colors from "themes/theme-light/base/colors"
 
 // Declaring props types for Chart
 interface Props {
@@ -25,13 +25,13 @@ interface Props {
   count: number | ReactNode
   percentage: {
     color:
-      | "primary"
-      | "secondary"
-      | "info"
-      | "success"
-      | "warning"
-      | "error"
-      | "dark"
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "dark"
     label: string | ReactNode
   }
   chart: {
@@ -39,14 +39,14 @@ interface Props {
     datasets: {
       label: string
       color:
-        | "primary"
-        | "secondary"
-        | "info"
-        | "success"
-        | "warning"
-        | "error"
-        | "light"
-        | "dark"
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "light"
+      | "dark"
       data: number[]
     }[]
   }

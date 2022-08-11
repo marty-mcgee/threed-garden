@@ -17,7 +17,7 @@ import MDTypography from "components/MDTypography"
 import configs from "layouts/applications/calendar/components/ProductivityChart/configs"
 
 // Company Juice Dashboard Base Styles
-import typography from "assets/theme/base/typography"
+import typography from "themes/theme-light/base/typography"
 
 function ProductivityChart(): JSX.Element {
   const { size } = typography

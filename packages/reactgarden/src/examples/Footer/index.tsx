@@ -7,7 +7,7 @@ import MDBox from "components/MDBox"
 import MDTypography from "components/MDTypography"
 
 // Company Juice Dashboard Base Styles
-import typography from "assets/theme/base/typography"
+import typography from "themes/theme-light/base/typography"
 
 // Declaring props types for Footer
 interface Props {

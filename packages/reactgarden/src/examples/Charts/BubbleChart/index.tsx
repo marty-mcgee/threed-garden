@@ -15,20 +15,20 @@ import MDTypography from "components/MDTypography"
 import configs from "examples/Charts/BubbleChart/configs"
 
 // Company Juice Dashboard Base Styles
-import colors from "assets/theme/base/colors"
+import colors from "themes/theme-light/base/colors"
 
 // Declaring props types for BubbleChart
 interface Props {
   icon?: {
     color?:
-      | "primary"
-      | "secondary"
-      | "info"
-      | "success"
-      | "warning"
-      | "error"
-      | "light"
-      | "dark"
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "light"
+    | "dark"
     component: ReactNode
   }
   title?: string
@@ -39,14 +39,14 @@ interface Props {
     datasets: {
       label: string
       color:
-        | "primary"
-        | "secondary"
-        | "info"
-        | "success"
-        | "warning"
-        | "error"
-        | "light"
-        | "dark"
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "light"
+      | "dark"
       data: {
         x: number
         y: number
@@ -66,18 +66,18 @@ function BubbleChart({
 }: Props): JSX.Element {
   const chartDatasets = chart.datasets
     ? chart.datasets.map((dataset) => ({
-        ...dataset,
-        tension: 0.4,
-        borderWidth: 3,
-        pointRadius: 2,
-        backgroundColor: colors[dataset.color]
-          ? colors[dataset.color || "dark"].main
-          : colors.dark.main,
-        borderColor: colors[dataset.color]
-          ? colors[dataset.color || "dark"].main
-          : colors.dark.main,
-        maxBarThickness: 6,
-      }))
+      ...dataset,
+      tension: 0.4,
+      borderWidth: 3,
+      pointRadius: 2,
+      backgroundColor: colors[dataset.color]
+        ? colors[dataset.color || "dark"].main
+        : colors.dark.main,
+      borderColor: colors[dataset.color]
+        ? colors[dataset.color || "dark"].main
+        : colors.dark.main,
+      maxBarThickness: 6,
+    }))
     : []
 
   const { data, options } = configs(chart.labels || [], chartDatasets)

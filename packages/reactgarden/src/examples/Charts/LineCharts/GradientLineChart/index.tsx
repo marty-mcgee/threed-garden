@@ -12,26 +12,26 @@ import MDBox from "components/MDBox"
 import MDTypography from "components/MDTypography"
 
 // Company Juice Dashboard Helper Functions
-import gradientChartLine from "assets/theme/functions/gradientChartLine"
+import gradientChartLine from "themes/theme-light/functions/gradientChartLine"
 
 // GradientLineChart configurations
 import configs from "examples/Charts/LineCharts/GradientLineChart/configs"
 
 // Company Juice Dashboard Base Styles
-import colors from "assets/theme/base/colors"
+import colors from "themes/theme-light/base/colors"
 
 // Declaring props types for GradientLineChart
 interface Props {
   icon?: {
     color?:
-      | "primary"
-      | "secondary"
-      | "info"
-      | "success"
-      | "warning"
-      | "error"
-      | "light"
-      | "dark"
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "light"
+    | "dark"
     component: ReactNode
   }
   title?: string
@@ -42,14 +42,14 @@ interface Props {
     datasets: {
       label: string
       color:
-        | "primary"
-        | "secondary"
-        | "info"
-        | "success"
-        | "warning"
-        | "error"
-        | "light"
-        | "dark"
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "light"
+      | "dark"
       data: number[]
     }[]
   }
@@ -70,22 +70,22 @@ function GradientLineChart({
   useEffect(() => {
     const chartDatasets = chart.datasets
       ? chart.datasets.map((dataset) => ({
-          ...dataset,
-          tension: 0,
-          pointRadius: 0,
-          borderWidth: 4,
-          borderColor: colors[dataset.color]
+        ...dataset,
+        tension: 0,
+        pointRadius: 0,
+        borderWidth: 4,
+        borderColor: colors[dataset.color]
+          ? colors[dataset.color || "dark"].main
+          : colors.dark.main,
+        fill: true,
+        maxBarThickness: 6,
+        backgroundColor: gradientChartLine(
+          chartRef.current.children[0],
+          colors[dataset.color]
             ? colors[dataset.color || "dark"].main
-            : colors.dark.main,
-          fill: true,
-          maxBarThickness: 6,
-          backgroundColor: gradientChartLine(
-            chartRef.current.children[0],
-            colors[dataset.color]
-              ? colors[dataset.color || "dark"].main
-              : colors.dark.main
-          ),
-        }))
+            : colors.dark.main
+        ),
+      }))
       : []
 
     setChartData(configs(chart.labels || [], chartDatasets))

@@ -4,7 +4,7 @@ import borders from "themes/theme-dark/base/borders"
 import boxShadows from "themes/theme-dark/base/boxShadows"
 
 // Company Juice Dashboard Helper Functions
-// import rgba from "assets/theme-dark/functions/rgba";
+// import rgba from "themes/theme-dark/functions/rgba";
 import pxToRem from "themes/theme-dark/functions/pxToRem"
 import linearGradient from "themes/theme-dark/functions/linearGradient"
 

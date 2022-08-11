@@ -8,7 +8,7 @@ import MDTypography from "components/MDTypography"
 import MDButton from "components/MDButton"
 
 // Company Juice Dashboard Base Styles
-import borders from "assets/theme/base/borders"
+import borders from "themes/theme-light/base/borders"
 
 // Images
 import masterCardLogo from "assets/images/logos/mastercard.png"
