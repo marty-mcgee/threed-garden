@@ -24,6 +24,7 @@
     //     "singleQuote": false
     //   }
     // ],
+    "react/require-default-props": "off",
     "react/prop-types": "off",
     "no-shadow": "off",
     "react/jsx-props-no-spreading": "off",

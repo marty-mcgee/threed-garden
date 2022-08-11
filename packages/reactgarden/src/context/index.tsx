@@ -13,7 +13,7 @@ import {
   useReducer,
 } from "react"
 
-// The Company Juice DashboardUI Dashboard PRO Material main context
+// Company Juice Dashboard PRO Material main context
 const MaterialUI = createContext<any>(null)
 
 // Setting custom name for the context which is visible on react dev tools
