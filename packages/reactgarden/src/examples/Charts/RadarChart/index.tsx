@@ -15,23 +15,23 @@ import MDTypography from "components/MDTypography"
 import configs from "examples/Charts/RadarChart/configs"
 
 // Company Juice Dashboard Base Styles
-import colors from "assets/theme/base/colors"
+import colors from "themes/theme-light/base/colors"
 
 // Company Juice Dashboard Helper Functions
-import rgba from "assets/theme/functions/rgba"
+import rgba from "themes/theme-light/functions/rgba"
 
 // Declaring props types for RadarChart
 interface Props {
   icon?: {
     color?:
-      | "primary"
-      | "secondary"
-      | "info"
-      | "success"
-      | "warning"
-      | "error"
-      | "light"
-      | "dark"
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "light"
+    | "dark"
     component: ReactNode
   }
   title?: string
@@ -41,14 +41,14 @@ interface Props {
     datasets: {
       label: string
       color:
-        | "primary"
-        | "secondary"
-        | "info"
-        | "success"
-        | "warning"
-        | "error"
-        | "light"
-        | "dark"
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "light"
+      | "dark"
       data: number[]
       borderDash?: number[]
     }[]
@@ -59,11 +59,11 @@ interface Props {
 function RadarChart({ icon, title, description, chart }: Props): JSX.Element {
   const chartDatasets = chart.datasets
     ? chart.datasets.map((dataset) => ({
-        ...dataset,
-        backgroundColor: colors[dataset.color]
-          ? rgba(colors[dataset.color || "dark"].main, 0.2)
-          : rgba(colors.dark.main, 0.2),
-      }))
+      ...dataset,
+      backgroundColor: colors[dataset.color]
+        ? rgba(colors[dataset.color || "dark"].main, 0.2)
+        : rgba(colors.dark.main, 0.2),
+    }))
     : []
 
   const { data, options } = configs(chart.labels || [], chartDatasets)

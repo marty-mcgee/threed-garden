@@ -24,7 +24,7 @@ import DefaultNavbarDropdown from "examples/Navbars/DefaultNavbar/DefaultNavbarD
 import DefaultNavbarMobile from "examples/Navbars/DefaultNavbar/DefaultNavbarMobile"
 
 // Company Juice Dashboard Base Styles
-import breakpoints from "assets/theme/base/breakpoints"
+import breakpoints from "themes/theme-light/base/breakpoints"
 
 // Company Juice Dashboard context
 import { useMaterialUIController } from "context"
@@ -33,11 +33,11 @@ import { useMaterialUIController } from "context"
 interface Props {
   routes: {
     [key: string]:
-      | ReactNode
-      | string
-      | {
-          [key: string]: string | any
-        }[]
+    | ReactNode
+    | string
+    | {
+      [key: string]: string | any
+    }[]
   }[]
   brand?: string
   transparent?: boolean
@@ -46,14 +46,14 @@ interface Props {
     type: "external" | "internal"
     route: string
     color:
-      | "primary"
-      | "secondary"
-      | "info"
-      | "success"
-      | "warning"
-      | "error"
-      | "dark"
-      | "light"
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "dark"
+    | "light"
     label: string
   }
 }
@@ -101,8 +101,8 @@ function DefaultNavbar({
       }
     }
 
-    /** 
-     The event listener that's calling the displayMobileNavbar function when 
+    /**
+     The event listener that's calling the displayMobileNavbar function when
      resizing the window.
     */
     window.addEventListener("resize", displayMobileNavbar)
@@ -413,88 +413,88 @@ function DefaultNavbar({
   const renderNestedRoutes = routes.map(({ collapse, columns }: any) =>
     collapse && !columns
       ? collapse.map(({ name: parentName, collapse: nestedCollapse }: any) => {
-          let template
+        let template
 
-          if (parentName === nestedDropdownName) {
-            template =
-              nestedCollapse &&
-              nestedCollapse.map((item: any) => {
-                const linkComponent = {
-                  component: MuiLink,
-                  href: item.href,
-                  target: "_blank",
-                  rel: "noreferrer",
-                }
+        if (parentName === nestedDropdownName) {
+          template =
+            nestedCollapse &&
+            nestedCollapse.map((item: any) => {
+              const linkComponent = {
+                component: MuiLink,
+                href: item.href,
+                target: "_blank",
+                rel: "noreferrer",
+              }
 
-                const routeComponent = {
-                  component: Link,
-                  to: item.route,
-                }
+              const routeComponent = {
+                component: Link,
+                to: item.route,
+              }
 
-                return (
-                  <MDTypography
-                    key={item.name}
-                    {...(item.route ? routeComponent : linkComponent)}
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    variant="button"
-                    textTransform="capitalize"
-                    minWidth={item.description ? "14rem" : "12rem"}
-                    color={item.description ? "dark" : "text"}
-                    fontWeight={item.description ? "bold" : "regular"}
-                    py={item.description ? 1 : 0.625}
-                    px={2}
-                    sx={({
-                      palette: { grey, dark },
-                      borders: { borderRadius },
-                    }: Theme) => ({
-                      borderRadius: borderRadius.md,
-                      cursor: "pointer",
-                      transition: "all 300ms linear",
+              return (
+                <MDTypography
+                  key={item.name}
+                  {...(item.route ? routeComponent : linkComponent)}
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  variant="button"
+                  textTransform="capitalize"
+                  minWidth={item.description ? "14rem" : "12rem"}
+                  color={item.description ? "dark" : "text"}
+                  fontWeight={item.description ? "bold" : "regular"}
+                  py={item.description ? 1 : 0.625}
+                  px={2}
+                  sx={({
+                    palette: { grey, dark },
+                    borders: { borderRadius },
+                  }: Theme) => ({
+                    borderRadius: borderRadius.md,
+                    cursor: "pointer",
+                    transition: "all 300ms linear",
 
-                      "&:hover": {
-                        backgroundColor: grey[200],
+                    "&:hover": {
+                      backgroundColor: grey[200],
+                      color: dark.main,
+
+                      "& *": {
                         color: dark.main,
-
-                        "& *": {
-                          color: dark.main,
-                        },
                       },
-                    })}>
-                    {item.description ? (
-                      <MDBox>
-                        {item.name}
-                        <MDTypography
-                          display="block"
-                          variant="button"
-                          color="text"
-                          fontWeight="regular"
-                          sx={{ transition: "all 300ms linear" }}>
-                          {item.description}
-                        </MDTypography>
-                      </MDBox>
-                    ) : (
-                      item.name
-                    )}
-                    {item.collapse && (
-                      <Icon
-                        fontSize="small"
-                        sx={{
-                          fontWeight: "normal",
-                          verticalAlign: "middle",
-                          mr: -0.5,
-                        }}>
-                        keyboard_arrow_right
-                      </Icon>
-                    )}
-                  </MDTypography>
-                )
-              })
-          }
+                    },
+                  })}>
+                  {item.description ? (
+                    <MDBox>
+                      {item.name}
+                      <MDTypography
+                        display="block"
+                        variant="button"
+                        color="text"
+                        fontWeight="regular"
+                        sx={{ transition: "all 300ms linear" }}>
+                        {item.description}
+                      </MDTypography>
+                    </MDBox>
+                  ) : (
+                    item.name
+                  )}
+                  {item.collapse && (
+                    <Icon
+                      fontSize="small"
+                      sx={{
+                        fontWeight: "normal",
+                        verticalAlign: "middle",
+                        mr: -0.5,
+                      }}>
+                      keyboard_arrow_right
+                    </Icon>
+                  )}
+                </MDTypography>
+              )
+            })
+        }
 
-          return template
-        })
+        return template
+      })
       : null
   )
 

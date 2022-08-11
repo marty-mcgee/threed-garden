@@ -15,20 +15,20 @@ import MDTypography from "components/MDTypography"
 import configs from "examples/Charts/BarCharts/HorizontalBarChart/configs"
 
 // Company Juice Dashboard Base Styles
-import colors from "assets/theme/base/colors"
+import colors from "themes/theme-light/base/colors"
 
 // Declaring props types for HorizontalBarChart
 interface Props {
   icon?: {
     color?:
-      | "primary"
-      | "secondary"
-      | "info"
-      | "success"
-      | "warning"
-      | "error"
-      | "light"
-      | "dark"
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "light"
+    | "dark"
     component: ReactNode
   }
   title?: string
@@ -39,14 +39,14 @@ interface Props {
     datasets: {
       label: string
       color:
-        | "primary"
-        | "secondary"
-        | "info"
-        | "success"
-        | "warning"
-        | "error"
-        | "light"
-        | "dark"
+      | "primary"
+      | "secondary"
+      | "info"
+      | "success"
+      | "warning"
+      | "error"
+      | "light"
+      | "dark"
       data: number[]
     }[]
   }
@@ -62,16 +62,16 @@ function HorizontalBarChart({
 }: Props): JSX.Element {
   const chartDatasets = chart.datasets
     ? chart.datasets.map((dataset) => ({
-        ...dataset,
-        weight: 5,
-        borderWidth: 0,
-        borderRadius: 4,
-        backgroundColor: colors[dataset.color]
-          ? colors[dataset.color || "dark"].main
-          : colors.dark.main,
-        fill: false,
-        maxBarThickness: 35,
-      }))
+      ...dataset,
+      weight: 5,
+      borderWidth: 0,
+      borderRadius: 4,
+      backgroundColor: colors[dataset.color]
+        ? colors[dataset.color || "dark"].main
+        : colors.dark.main,
+      fill: false,
+      maxBarThickness: 35,
+    }))
     : []
 
   const { data, options } = configs(chart.labels || [], chartDatasets)

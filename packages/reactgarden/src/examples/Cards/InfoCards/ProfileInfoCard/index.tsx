@@ -12,8 +12,8 @@ import MDBox from "components/MDBox"
 import MDTypography from "components/MDTypography"
 
 // Company Juice Dashboard Base Styles
-import colors from "assets/theme/base/colors"
-import typography from "assets/theme/base/typography"
+import colors from "themes/theme-light/base/colors"
+import typography from "themes/theme-light/base/typography"
 
 // Declaring props types for ProfileInfoCard
 interface Props {
