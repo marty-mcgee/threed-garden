@@ -6,19 +6,19 @@ import type { NextPage } from "next"
 import type { AppProps } from "next/app"
 // import { AppProps } from "next/app"
 import Head from "next/head"
-// theme mui
+// theme: mui
 import { ThemeProvider } from "@mui/material/styles"
 import CssBaseline from "@mui/material/CssBaseline" // CssBaseline: kickstart an elegant, consistent, simple baseline to build upon ???
-// theme mui: Material UI Context Provider
+// theme: mui: Material UI Context Provider
 import { MaterialUIControllerProvider } from "context"
-// theme mui: emotion cache
+// theme: mui: emotion cache
 import { CacheProvider, EmotionCache } from "@emotion/react"
 import createEmotionCache from "themes/createEmotionCache"
-// theme mui: threed-garden
+// theme: mui: threed-garden
 import theme from "themes/theme-dark"
-// theme chakra
+// theme: chakra
 // import { ChakraProvider } from "@chakra-ui/react"
-// api interface: apollo: graphql
+// api: apollo: graphql
 // import { ApolloProvider } from "@apollo/client"
 // import { useApollo } from "lib/apollo/client"
 // ========================================================
@@ -37,13 +37,13 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout,
   emotionCache?: EmotionCache
 }
-
-// NOTE: throws error if using .babelrc
-// "Syntax error: Unexpected reserved word 'interface'."
+// OR !!!
 interface MyAppProps extends AppProps {
   Component: NextPageWithLayout,
   emotionCache?: EmotionCache
 }
+// NOTE: throws error if using .babelrc
+// "Syntax error: Unexpected reserved word 'interface'."
 
 // ========================================================
 
