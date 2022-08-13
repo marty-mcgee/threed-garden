@@ -32,15 +32,13 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 interface ErrorProps {
   statusCode: number
 }
-function Error({ statusCode }: ErrorProps) {
-  return (
-    <p>
-      {statusCode
-        ? `Status code ${statusCode} occurred on server`
-        : "Status code Unknown/Error occurred on client"}
-    </p>
-  )
-}
+const Error = ({ statusCode }: ErrorProps) => (
+  <p>
+    {statusCode
+      ? `Status code ${statusCode} occurred on server`
+      : "Status code Unknown/Error occurred on client"}
+  </p>
+)
 
 interface InitialProps {
   res: NextApiResponse

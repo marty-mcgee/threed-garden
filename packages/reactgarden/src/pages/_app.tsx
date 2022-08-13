@@ -1,4 +1,8 @@
-import * as React from 'react'
+// following this tutorial:
+// https://dev.to/hajhosein/nextjs-mui-v5-typescript-tutorial-and-starter-3pab
+
+import React from 'react'
+// import PropTypes from 'prop-types'
 import Head from "next/head"
 import { AppProps } from "next/app"
 import { ThemeProvider } from "@mui/material/styles"
@@ -19,7 +23,8 @@ interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache
 }
 
-export default function MyApp(props: MyAppProps) {
+// export default function MyApp(props: MyAppProps) {
+const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
   return (
     <CacheProvider value={emotionCache}>
@@ -36,6 +41,14 @@ export default function MyApp(props: MyAppProps) {
     </CacheProvider>
   )
 }
+
+export default MyApp
+
+// MyApp.propTypes = {
+//   Component: PropTypes.elementType.isRequired,
+//   emotionCache: PropTypes.object,
+//   pageProps: PropTypes.object.isRequired,
+// }
 
 /* WORKING
 import { AppProps } from 'next/app'

@@ -1,32 +1,25 @@
-import type { NextPage } from 'next';
-import { GetServerSideProps } from 'next';
-import axios from 'axios';
+import type { NextPage } from "next"
+import { GetServerSideProps } from "next"
+import axios from "axios"
 
-import { Event } from '../types/interfaces';
+import { Event } from "../types/interfaces"
 
-const Home: NextPage = ({ events }) => (
+const EventsPage: NextPage<{ events: Event[] }> = ({ events }) => (
   <div>
     {events.map((event: Event) => (
-      <div key={event.title}>{event.title}</div>
+      <div key={event.title.rendered}>{event.title.rendered}</div>
     ))}
   </div>
-);
-
-const Events: NextPage<{ events: Event[] }> = ({ events }) => (
-  <div>
-    {events.map((event: Event) => (
-      <div key={event.title}>{event.title}</div>
-    ))}
-  </div>
-);
+)
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const res = await axios.get<Event[]>(`${process.env.API_URL}/events`);
+  const res = await axios.get<Event[]>(`${process.env.WP_REST_API_URL}/scene`)
+
+  console.log("res.data", res.data)
 
   return {
     props: { events: res.data },
-  };
-};
+  }
+}
 
-// export default { Home, Events };
-export default Events;
+export default EventsPage

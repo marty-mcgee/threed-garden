@@ -1,4 +1,7 @@
-import * as React from 'react'
+// following this tutorial:
+// https://dev.to/hajhosein/nextjs-mui-v5-typescript-tutorial-and-starter-3pab
+
+import React from 'react'
 import Document, { Html, Head, Main, NextScript } from "next/document"
 import createEmotionServer from "@emotion/server/create-instance"
 import theme from "themes/theme-dark"
@@ -62,10 +65,8 @@ MyDocument.getInitialProps = async (ctx) => {
 
   ctx.renderPage = () =>
     originalRenderPage({
-      enhanceApp: (App: any) =>
-        function EnhanceApp(props) {
-          return <App emotionCache={cache} {...props} />
-        },
+      enhanceApp: (App: any) => (props) =>
+        <App emotionCache={cache} {...props} />,
     })
 
   const initialProps = await Document.getInitialProps(ctx)
@@ -83,7 +84,12 @@ MyDocument.getInitialProps = async (ctx) => {
 
   return {
     ...initialProps,
-    emotionStyleTags,
+    // emotionStyleTags,
+    // Styles fragment is rendered after the app and page rendering finish.
+    styles: [
+      ...React.Children.toArray(initialProps.styles),
+      ...emotionStyleTags,
+    ],
   }
 }
 
