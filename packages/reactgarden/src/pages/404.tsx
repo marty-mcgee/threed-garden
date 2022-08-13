@@ -1,46 +1,44 @@
-// export default function Custom404() {
-//   return <h1>404 - Page Not Found</h1>
-// }
+export default function Custom404() {
+  return <h1>404 - Page Not Found</h1>
+}
 
 // ================================
 
-import type { NextPage } from 'next';
-import { GetServerSideProps } from 'next';
-import axios from '../lib/axios';
+// [MM] APPROACH with TypeScript (moved to events.tsx for testing)
+// import type { NextPage } from 'next';
+// import { GetServerSideProps } from 'next';
+// import axios from 'axios';
 
-import { Event } from '../ts/interfaces';
+// import { Event } from '../types/interfaces';
 
-const Home: NextPage = ({ events }) => {
-  return (
-    <div>
-      {events.map((event: Event) => (
-        <div key={event.title}>{event.title}</div>
-      ))}
-    </div>
-  );
-};
+// const Home: NextPage = ({ events }) => (
+//   <div>
+//     {events.map((event: Event) => (
+//       <div key={event.title}>{event.title}</div>
+//     ))}
+//   </div>
+// );
 
-// import { Event } from '../ts/interfaces';
+// // import { Event } from '../ts/interfaces';
 
-const Custom404: NextPage<{ events: Event[] }> = ({ events }) => {
-  return (
-    <div>
-      {events.map((event: Event) => (
-        <div key={event.title}>{event.title}</div>
-      ))}
-    </div>
-  );
-};
+// const Custom404: NextPage<{ events: Event[] }> = ({ events }) => (
+//   <div>
+//     {events.map((event: Event) => (
+//       <div key={event.title}>{event.title}</div>
+//     ))}
+//   </div>
+// );
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const res = await axios.get<Event[]>(`${process.env.API_URL}/events`);
+// export const getServerSideProps: GetServerSideProps = async () => {
+//   const res = await axios.get<Event[]>(`${process.env.API_URL}/events`);
 
-  return {
-    props: { events: res.data },
-  };
-};
+//   return {
+//     props: { events: res.data },
+//   };
+// };
 
-export default {Home, Custom404};
+// // export default { Home, Custom404 };
+// export default Custom404;
 
 
 // ================================

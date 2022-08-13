@@ -1,7 +1,7 @@
-if (!process.env.WORDPRESS_API_URL) {
+if (!process.env.WP_GRAPHQL_API_URL) {
   throw new Error(`
     Please provide a valid WordPress instance URL.
-    Add to your environment variables WORDPRESS_API_URL.
+    Add to your environment variables WP_GRAPHQL_API_URL.
   `)
 }
 
@@ -15,7 +15,7 @@ const nextConfig = {
   },
   images: {
     domains: [
-      process.env.WORDPRESS_API_URL.match(/(?!(w+)\.)\w*(?:\w+\.)+\w+/)[0], // Valid WP Image domain.
+      process.env.WP_GRAPHQL_API_URL.match(/(?!(w+)\.)\w*(?:\w+\.)+\w+/)[0], // Valid WP Image domain.
       "0.gravatar.com",
       "1.gravatar.com",
       "2.gravatar.com",
