@@ -2,39 +2,26 @@ import type { NextPage } from "next"
 import { GetServerSideProps } from "next"
 import axios from "axios"
 
-import { Scene } from "../../types/interfaces"
+import { IScene } from "@/types/interfaces"
 
-const ScenesPage: NextPage<{ scenes: Scene[] }> = ({ scenes }) => (
+const ScenesPage: NextPage<{ scenes: IScene[] }> = ({ scenes }) => (
   <div>
-    {scenes.map((scene: Scene) => (
-      <div key={scene.title.rendered}>{scene.title.rendered}</div>
-    ))}
+    {
+      scenes.map((scene: IScene) => (
+        <div key={scene.title.rendered}>{scene.title.rendered}</div>
+      ))
+    }
   </div>
 )
 
 export const getServerSideProps: GetServerSideProps = async () => {
 
-  let res = {
-    data: [
-      {
-        title: {
-          rendered: "HEY HEY HEY"
-        }
-      }
-    ]
-  }
+  let res = { data: [{ title: { rendered: "HEY HEY HEY" } }] }
 
   try {
-    res = await axios.get<Scene[]>(`${process.env.WP_REST_API_URL}/scene`)
+    res = await axios.get<IScene[]>(`${process.env.WP_REST_API_URL}/scene`)
   } catch (e: any) {
-    // res: Scene[] = Scene
-    res.data = [
-      {
-        title: {
-          rendered: "HEY HEY HEY"
-        }
-      }
-    ]
+    res.data = [{ title: { rendered: "HEY HEY HEY" } }]
     console.log("catch e", e)
   }
 

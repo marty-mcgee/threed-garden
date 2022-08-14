@@ -2,11 +2,11 @@ import type { NextPage } from "next"
 import { GetServerSideProps } from "next"
 import axios from "axios"
 
-import { Event } from "../../types/interfaces"
+import { IEvent } from "@/types/interfaces"
 
-const EventsPage: NextPage<{ events: Event[] }> = ({ events }) => (
+const EventsPage: NextPage<{ events: IEvent[] }> = ({ events }) => (
   <div>
-    {events.map((event: Event) => (
+    {events.map((event: IEvent) => (
       <div key={event.title.rendered}>{event.title.rendered}</div>
     ))}
   </div>
@@ -14,27 +14,12 @@ const EventsPage: NextPage<{ events: Event[] }> = ({ events }) => (
 
 export const getServerSideProps: GetServerSideProps = async () => {
 
-  let res = {
-    data: [
-      {
-        title: {
-          rendered: "HEY HEY HEY"
-        }
-      }
-    ]
-  }
+  let res = { data: [{ title: { rendered: "HEY HEY HEY" } }] }
 
   try {
-    res = await axios.get<Event[]>(`${process.env.WP_REST_API_URL}/event`)
+    res = await axios.get<IEvent[]>(`${process.env.WP_REST_API_URL}/event`)
   } catch (e: any) {
-    // res: Event[] = Event
-    res.data = [
-      {
-        title: {
-          rendered: "HEY HEY HEY"
-        }
-      }
-    ]
+    res.data = [{ title: { rendered: "HEY HEY HEY" } }]
     console.log("catch e", e)
   }
 

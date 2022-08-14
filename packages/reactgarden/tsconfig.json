@@ -22,8 +22,14 @@
     "strictNullChecks": false,
     "downlevelIteration": true,
     "incremental": true,
-    "baseUrl": "src"
-    // "baseUrl": "."
+    "baseUrl": "src",
+    // "baseUrl": ".",
+    "paths": {
+      "@/*": ["*"],
+      "~/*": ["*"],
+      // "@/components/*": ["components/*"]
+      "-||-/*": ["layouts/dashboards/threed/*"]
+    }
   },
   // "include": ["src"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/error.js"],
