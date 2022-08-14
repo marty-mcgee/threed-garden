@@ -2,7 +2,7 @@ import type { NextPage } from "next"
 import { GetServerSideProps } from "next"
 import axios from "axios"
 
-import { IEvent } from "@/types/interfaces"
+import { IEvent } from "~/types/interfaces"
 
 const EventsPage: NextPage<{ events: IEvent[] }> = ({ events }) => (
   <div>

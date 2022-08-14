@@ -26,9 +26,9 @@
     // "baseUrl": ".",
     "paths": {
       "@/*": ["*"],
-      "~/*": ["*"],
-      // "@/components/*": ["components/*"]
-      "-||-/*": ["layouts/dashboards/threed/*"]
+      "~/*": ["*"], // preferable (nuxt + npm)
+      // "~/components/*": ["components/*"] // example
+      "-||-*": ["layouts/dashboards/threed/*"] // threed
     }
   },
   // "include": ["src"],

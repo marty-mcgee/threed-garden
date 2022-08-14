@@ -1,6 +1,6 @@
 // import { NextPage } from 'next'
 import type { NextPage } from "next"
-import { IProps, IBooleans, IValues, IStructures } from "types/interfaces" // "@threed/garden/cpt"
+import { IPage, IProps, IBooleans, IValues, IStructures } from "types/interfaces" // "@threed/garden/cpt"
 import type { Page } from "types/interfaces"
 
 // examples
@@ -16,28 +16,47 @@ const userContext: IStructures = {
 // end examples
 
 // const Pages: NextPage<{ pages: Page[] }> = ({ pages }) => (
-//   <div>
+//   <main>
 //     {pages.map((page: Page) => (
 //       <>
 //         <div>[MM] Boilerplate Page</div>
 //         <div key={page.title.rendered}>{page.title.rendered}</div>
 //       </>
 //     ))}
-//   </div>
+//   </main>
 // )
-// const Pages: NextPage<{ pages: Page[] }> = ({ pages }) => (
-const PagePage: NextPage<IProps> = ({ userAgent }) => (
+
+// const PagePage: NextPage<IProps> = ({ userAgent }) => (
+const PagePage: NextPage<IPage> = ({ userAgent }) => (
   <main>
     <div>[MM] Boilerplate Page</div>
     <div>Your user agent: {userAgent}</div>
   </main>
 )
 
+// export const getServerSideProps: GetServerSideProps = async () => {
+
+//   let res = { data: [{ title: { rendered: "HEY HEY HEY" } }] }
+
+//   try {
+//     res = await axios.get<IPage[]>(`${process.env.WP_REST_API_URL}/page`)
+//   } catch (e: any) {
+//     res.data = [{ title: { rendered: "HEY HEY HEY" } }]
+//     console.log("catch e", e)
+//   }
+
+//   console.log("res.data", res.data)
+
+//   return {
+//     props: { pages: res.data },
+//   }
+// }
+
 PagePage.getInitialProps = async ({ req }) => {
   const userAgent = req ? req.headers['user-agent'] : navigator.userAgent
-  return { userAgent }
+  const title = { rendered: "HEY HEY HEY" }
+  return { title, userAgent }
 }
 
 // export default Pages
 export default PagePage
-

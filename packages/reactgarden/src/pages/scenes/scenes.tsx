@@ -2,7 +2,7 @@ import type { NextPage } from "next"
 import { GetServerSideProps } from "next"
 import axios from "axios"
 
-import { IScene } from "@/types/interfaces"
+import { IScene } from "~/types/interfaces"
 
 const ScenesPage: NextPage<{ scenes: IScene[] }> = ({ scenes }) => (
   <div>
