@@ -17,6 +17,7 @@ interface IProps {
 
 interface IPage {
   title: Rendered
+  userAgent?: string
 }
 
 interface IEvent {

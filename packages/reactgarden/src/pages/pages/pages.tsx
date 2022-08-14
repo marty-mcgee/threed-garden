@@ -1,7 +1,10 @@
 // import { NextPage } from 'next'
 import type { NextPage } from "next"
-import { IProps, IBooleans, IValues, IStructures } from "types/interfaces" // "@threed/garden/cpt"
+import { IPage, IProps, IBooleans, IValues, IStructures } from "types/interfaces" // "@threed/garden/cpt"
 import type { Page } from "types/interfaces"
+
+import { GetServerSideProps } from "next"
+import axios from "axios"
 
 // examples
 const flags: IBooleans = { read: true, write: false, delete: false }
@@ -15,29 +18,47 @@ const userContext: IStructures = {
 }
 // end examples
 
-// const Pages: NextPage<{ pages: Page[] }> = ({ pages }) => (
-//   <div>
-//     {pages.map((page: Page) => (
-//       <>
-//         <div>[MM] Boilerplate Page</div>
-//         <div key={page.title.rendered}>{page.title.rendered}</div>
-//       </>
-//     ))}
-//   </div>
-// )
-// const Pages: NextPage<{ pages: Page[] }> = ({ pages }) => (
-const PagePage: NextPage<IProps> = ({ userAgent }) => (
+const Pages: NextPage<{ pages: IPage[] }> = ({ pages }) => (
   <main>
-    <div>[MM] Boilerplate Page</div>
-    <div>Your user agent: {userAgent}</div>
+    {pages.map((page: Page) => ( // ooooo, interesting [MM] HEY HEY HEY
+      <>
+        <div>[MM] Boilerplate Page</div>
+        <div key={page.title.rendered}>{page.title.rendered}</div>
+      </>
+    ))}
   </main>
 )
 
-PagePage.getInitialProps = async ({ req }) => {
-  const userAgent = req ? req.headers['user-agent'] : navigator.userAgent
-  return { userAgent }
+// const PagePage: NextPage<IProps> = ({ userAgent }) => (
+//   <main>
+//     <div>[MM] Boilerplate Page</div>
+//     <div>Your user agent: {userAgent}</div>
+//   </main>
+// )
+
+export const getServerSideProps: GetServerSideProps = async () => {
+
+  let res = { data: [{ title: { rendered: "HEY HEY HEY" } }] }
+
+  try {
+    res = await axios.get<IPage[]>(`${process.env.WP_REST_API_URL}/page`)
+  } catch (e: any) {
+    res.data = [{ title: { rendered: "HEY HEY HEY" } }]
+    console.log("catch e", e)
+  }
+
+  console.log("res.data", res.data)
+
+  return {
+    props: { pages: res.data },
+  }
 }
 
-// export default Pages
-export default PagePage
+// PagePage.getInitialProps = async ({ req }) => {
+//   const userAgent = req ? req.headers['user-agent'] : navigator.userAgent
+//   return { userAgent }
+// }
+
+export default Pages
+// export default PagePage
 
