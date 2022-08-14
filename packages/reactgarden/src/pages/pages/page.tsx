@@ -42,7 +42,7 @@ const PagePage: NextPage<IPage> = ({ userAgent }) => (
 //     res = await axios.get<IPage[]>(`${process.env.WP_REST_API_URL}/page`)
 //   } catch (e: any) {
 //     res.data = [{ title: { rendered: "HEY HEY HEY" } }]
-//     console.log("catch e", e)
+//     // console.log("catch e", e)
 //   }
 
 //   console.log("res.data", res.data)
