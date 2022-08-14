@@ -4,8 +4,9 @@
 import React from 'react'
 import Document, { Html, Head, Main, NextScript } from "next/document"
 import createEmotionServer from "@emotion/server/create-instance"
-import theme from "themes/theme-dark"
-import createEmotionCache from "themes/createEmotionCache"
+import theme from "~/themes/theme-dark"
+import createEmotionCache from "~/themes/createEmotionCache"
+import ThreeDLinks from "~/themes/threedLinks"
 
 export default class MyDocument extends Document {
   render() {
@@ -23,6 +24,7 @@ export default class MyDocument extends Document {
           {(this.props as any).emotionStyleTags}
         </Head>
         <body>
+          <ThreeDLinks />
           <Main />
           <NextScript />
         </body>
