@@ -66,7 +66,7 @@ export {
 }
 
 // =================
-// https://stackoverflow.com/questions/37263357/how-to-declare-and-import-typescript-interfaces-in-a-separate-file
+// https://stackoverflow.com/questions/37263357/
 
 interface IWords {
   [key: string]: string
