@@ -15,6 +15,7 @@
   "private": true,
   "workspaces": {
     "packages": [
+      "packages/reactgarden",
       "packages/nuxtgarden",
       "packages/vitegarden",
       "packages/threed/hardhat",
