@@ -20,7 +20,7 @@ export function middleware(request: NextRequest) {
 }
 
 // const ua = middleware
-const ua = userAgent
+const ua = middleware
 console.log("ua", ua)
 
 // App.getInitialProps = async ({ req }) => {
@@ -41,18 +41,26 @@ const Pages: NextPage<{ pages: IPage[] }> = ({ pages }) => {
   const word = "word"
   // const userAgent = middleware
   return (
-    <main>
+    <main style={{ padding: "1em" }}>
       <h1>
         [MM] Boilerplate Page
       </h1>
       <div>
-        User Agent: ??? {word}
+        User Agent: {word} ???
       </div>
-      <hr />
       {pages.map((page: Page) => ( // ooooo, interesting [MM] HEY HEY HEY
-        <div key={(Math.floor(100000 + Math.random() * 900000))}>
-          <div key={page.title.rendered}>{page.title.rendered}</div>
-          <hr />
+        <div
+          key={(Math.floor(100000 + Math.random() * 900000))}
+          style={{ display: "inline-flex" }}
+        >
+          <div>|</div>
+          <div
+            key={page.title.rendered}
+          >
+
+            {page.title.rendered}
+
+          </div>
         </div>
       ))}
     </main>
@@ -83,6 +91,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
 export default Pages
 
+// ============================================================================================
 // examples
 const flags: IBooleans = { read: true, write: false, delete: false }
 
@@ -94,3 +103,4 @@ const userContext: IStructures = {
   counts: { views: 3, writes: 1 } // => INumbers (lint: try to remove IValues from IStructures)
 }
 // end examples
+// ============================================================================================
