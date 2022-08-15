@@ -35,6 +35,15 @@ const ThreeDLinks = () => {
         + Scene
       </Link>
       <div>-||-</div>
+      <Link href="/events">
+        Events
+      </Link>
+      <div>-||-</div>
+      <Link href="/api/hello" passHref>
+        {/* eslint-disable jsx-a11y/anchor-is-valid */}
+        <a target="_blank" rel="noopener noreferrer">API: Hello</a>
+      </Link>
+      <div>-||-</div>
     </nav>
   )
 }
