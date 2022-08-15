@@ -12,27 +12,27 @@ const ThreeDLinks = () => {
       <div>{word}</div>
       <div>|</div>
       <Link href="/">
-        <div>
-          Home
-        </div>
+        Home
       </Link>
       <div>|</div>
-      <Link href="/">
-        <div>
-          Link 2
-        </div>
+      <Link href="/about">
+        About
       </Link>
       <div>|</div>
-      <Link href="/">
-        <div>
-          Link 3
-        </div>
+      <Link href="/pages">
+        Pages
       </Link>
       <div>|</div>
-      <Link href="/">
-        <div>
-          Link 4
-        </div>
+      <Link href="/pages/page">
+        -- Page
+      </Link>
+      <div>|</div>
+      <Link href="/scenes">
+        Scenes
+      </Link>
+      <div>|</div>
+      <Link href="/scenes/scene">
+        -- Scene
       </Link>
       <div>|</div>
     </nav>
