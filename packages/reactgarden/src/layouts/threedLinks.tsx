@@ -44,6 +44,11 @@ const ThreeDLinks = () => {
         <a target="_blank" rel="noopener noreferrer">API: Hello</a>
       </Link>
       <div>-||-</div>
+      <Link href="/api/preview" passHref>
+        {/* eslint-disable jsx-a11y/anchor-is-valid */}
+        <a target="_blank" rel="noopener noreferrer">API: Preview</a>
+      </Link>
+      <div>-||-</div>
     </nav>
   )
 }
