@@ -13,7 +13,7 @@ import CssBaseline from "@mui/material/CssBaseline" // CssBaseline: kickstart an
 import { MaterialUIControllerProvider } from "context"
 // theme: mui: emotion cache
 import { CacheProvider, EmotionCache } from "@emotion/react"
-import createEmotionCache from "themes/createEmotionCache"
+import createEmotionCache from "~/themes/common/createEmotionCache"
 // theme: mui: threed-garden
 import theme from "themes/theme-dark"
 // theme: chakra

@@ -25,8 +25,8 @@
     "baseUrl": "src",
     // "baseUrl": ".",
     "paths": {
-      "@/*": ["*"],
       "~/*": ["*"], // preferable (nuxt + npm)
+      "@/*": ["*"],
       "-||-*": ["layouts/dashboards/threed/*"] // threed
       // "~/components/*": ["components/*"] // example
     }
