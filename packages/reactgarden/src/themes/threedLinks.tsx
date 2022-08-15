@@ -10,31 +10,31 @@ const ThreeDLinks = () => {
   return (
     <nav style={{ display: "inline-flex", padding: "0.5rem" }}>
       <div>{word}</div>
-      <div>|</div>
+      <div>-||-</div>
       <Link href="/">
         Home
       </Link>
-      <div>|</div>
+      <div>-||-</div>
       <Link href="/about">
         About
       </Link>
-      <div>|</div>
+      <div>-||-</div>
       <Link href="/pages">
         Pages
       </Link>
-      <div>|</div>
+      <div>-||-</div>
       <Link href="/pages/page">
-        -- Page
+        + Page
       </Link>
-      <div>|</div>
+      <div>-||-</div>
       <Link href="/scenes">
         Scenes
       </Link>
-      <div>|</div>
+      <div>-||-</div>
       <Link href="/scenes/scene">
-        -- Scene
+        + Scene
       </Link>
-      <div>|</div>
+      <div>-||-</div>
     </nav>
   )
 }
