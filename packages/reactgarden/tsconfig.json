@@ -27,8 +27,8 @@
     "paths": {
       "@/*": ["*"],
       "~/*": ["*"], // preferable (nuxt + npm)
-      // "~/components/*": ["components/*"] // example
       "-||-*": ["layouts/dashboards/threed/*"] // threed
+      // "~/components/*": ["components/*"] // example
     }
   },
   // "include": ["src"],
