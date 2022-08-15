@@ -1,4 +1,4 @@
-// import { NextPage } from 'next'
+// import { NextPage, GetServerSideProps } from "next"
 import type { NextPage } from "next"
 import { IPage, IProps, IBooleans, IValues, IStructures } from "types/interfaces" // "@threed/garden/cpt"
 import type { Page } from "types/interfaces"
@@ -6,37 +6,60 @@ import type { Page } from "types/interfaces"
 import { GetServerSideProps } from "next"
 import axios from "axios"
 
-// examples
-const flags: IBooleans = { read: true, write: false, delete: false }
+// import App from 'next/app'
 
-const userFile: IValues = { user: 1, username: 'One', file: 'types.txt' }
+import { NextRequest, NextResponse, userAgent } from 'next/server'
 
-const userContext: IStructures = {
-  file: userFile,
-  permissions: flags,
-  counts: { views: 3, writes: 1 } // => INumbers (lint: try to remove IValues from IStructures)
+export function middleware(request: NextRequest) {
+  // const url = request.nextUrl
+  // const { device } = userAgent(request)
+  // const viewport = device.type === 'mobile' ? 'mobile' : 'desktop'
+  // url.searchParams.set('viewport', viewport)
+  // return NextResponse.rewrite(url)
+  return userAgent(request)
 }
-// end examples
 
-const Pages: NextPage<{ pages: IPage[] }> = ({ pages }) => (
-  <main>
-    <div key={(Math.floor(100000 + Math.random() * 900000))}>[MM] Boilerplate Page</div>
-    {pages.map((page: Page) => ( // ooooo, interesting [MM] HEY HEY HEY
-      <div key={(Math.floor(100000 + Math.random() * 900000))}>
-        <div key={page.title.rendered}>{page.title.rendered}</div>
-      </div>
-    ))}
-  </main>
-)
+// const ua = middleware
+const ua = userAgent
+console.log("ua", ua)
+
+// App.getInitialProps = async ({ req }) => {
+//   const userAgent = req ? req.headers['user-agent'] : navigator.userAgent
+//   const title = { rendered: "HEY HEY HEY" }
+//   return { title, userAgent }
+// }
 
 // const PagePage: NextPage<IProps> = ({ userAgent }) => (
+// const PagePage: NextPage<IPage> = ({ userAgent }) => (
 //   <main>
 //     <div>[MM] Boilerplate Page</div>
 //     <div>Your user agent: {userAgent}</div>
 //   </main>
 // )
 
-export const getServerSideProps: GetServerSideProps = async () => {
+const Pages: NextPage<{ pages: IPage[] }> = ({ pages }) => {
+  const word = "word"
+  // const userAgent = middleware
+  return (
+    <main>
+      <h1>
+        [MM] Boilerplate Page
+      </h1>
+      <div>
+        User Agent: ??? {word}
+      </div>
+      <hr />
+      {pages.map((page: Page) => ( // ooooo, interesting [MM] HEY HEY HEY
+        <div key={(Math.floor(100000 + Math.random() * 900000))}>
+          <div key={page.title.rendered}>{page.title.rendered}</div>
+          <hr />
+        </div>
+      ))}
+    </main>
+  )
+}
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   let res = { data: [{ title: { rendered: "HEY HEY HEY" } }] }
   // console.log("let res", res)
@@ -49,18 +72,25 @@ export const getServerSideProps: GetServerSideProps = async () => {
     res.data = [{ title: { rendered: "NOPE NOPE NOPE" } }]
     // console.log("catch e", e)
   }
-
   // console.log("res.data", res.data)
 
+  // const userAgent = req ? req.headers["user-agent"] : navigator.userAgent
+
   return {
-    props: { pages: res.data },
+    props: { pages: res.data }, // ua: userAgent
   }
 }
 
-// PagePage.getInitialProps = async ({ req }) => {
-//   const userAgent = req ? req.headers['user-agent'] : navigator.userAgent
-//   return { userAgent }
-// }
-
 export default Pages
-// export default PagePage
+
+// examples
+const flags: IBooleans = { read: true, write: false, delete: false }
+
+const userFile: IValues = { user: 1, username: 'One', file: 'types.txt' }
+
+const userContext: IStructures = {
+  file: userFile,
+  permissions: flags,
+  counts: { views: 3, writes: 1 } // => INumbers (lint: try to remove IValues from IStructures)
+}
+// end examples
