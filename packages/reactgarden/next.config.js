@@ -9,9 +9,9 @@ if (!process.env.WP_GRAPHQL_API_URL) {
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
-  /* config options here */
+  /* nextjs config options here */
   env: {
-    customKey: "HEY HEY HEY", // process.env.CUSTOM_KEY
+    customKey: process.env.HEY_HEY_HEY, // "HEY HEY HEY" | process.env.HEY_HEY_HEY
   },
   images: {
     domains: [

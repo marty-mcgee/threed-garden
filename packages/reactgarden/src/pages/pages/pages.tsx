@@ -20,9 +20,9 @@ const userContext: IStructures = {
 
 const Pages: NextPage<{ pages: IPage[] }> = ({ pages }) => (
   <main>
+    <div key={(Math.floor(100000 + Math.random() * 900000))}>[MM] Boilerplate Page</div>
     {pages.map((page: Page) => ( // ooooo, interesting [MM] HEY HEY HEY
       <div key={(Math.floor(100000 + Math.random() * 900000))}>
-        <div key={(Math.floor(100000 + Math.random() * 900000))}>[MM] Boilerplate Page</div>
         <div key={page.title.rendered}>{page.title.rendered}</div>
       </div>
     ))}
@@ -39,15 +39,18 @@ const Pages: NextPage<{ pages: IPage[] }> = ({ pages }) => (
 export const getServerSideProps: GetServerSideProps = async () => {
 
   let res = { data: [{ title: { rendered: "HEY HEY HEY" } }] }
+  // console.log("let res", res)
 
   try {
-    res = await axios.get<IPage[]>(`${process.env.WP_REST_API_URL}/page`)
+    // REST GET resPONSE
+    res = await axios.get<IPage[]>(`${process.env.WP_REST_API_URL}/pages`)
+    // console.log("try res", res)
   } catch (e: any) {
-    res.data = [{ title: { rendered: "HEY HEY HEY" } }]
+    res.data = [{ title: { rendered: "NOPE NOPE NOPE" } }]
     // console.log("catch e", e)
   }
 
-  console.log("res.data", res.data)
+  // console.log("res.data", res.data)
 
   return {
     props: { pages: res.data },
