@@ -1,6 +1,4 @@
-// @react-jvectormap components
-import { VectorMap } from "@react-jvectormap/core"
-import { worldMerc } from "@react-jvectormap/world"
+import { useEffect } from "react"
 
 // @mui material components
 import Card from "@mui/material/Card"
@@ -18,6 +16,60 @@ import SalesTable from "examples/Tables/SalesTable"
 import salesTableData from "layouts/dashboards/analytics/components/SalesByCountry/data/salesTableData"
 
 function SalesByCountry(): JSX.Element {
+
+  useEffect(() => {
+    const mapContainer = document.getElementById("map");
+    const jsVectorMap = require("jsvectormap");
+    require("jsvectormap/dist/maps/world-merc.js");
+
+    const createMap = () =>
+      new jsVectorMap({
+        selector: "#map",
+        map: "world_merc",
+        zoomOnScroll: false,
+        zoomButtons: false,
+        selectedMarkers: [1, 3],
+        markersSelectable: true,
+        markers: [
+          {
+            name: "USA",
+            coords: [40.71296415909766, -74.00437720027804],
+          },
+          {
+            name: "Germany",
+            coords: [51.17661451970939, 10.97947735117339],
+          },
+          {
+            name: "Brazil",
+            coords: [-7.596735421549542, -54.781694323779185],
+          },
+          {
+            name: "Russia",
+            coords: [62.318222797104276, 89.81564777631716],
+          },
+          {
+            name: "China",
+            coords: [22.320178999475512, 114.17161225541399],
+          },
+        ],
+        markerStyle: {
+          initial: {
+            fill: "#1A73E8",
+          },
+          hover: {
+            fill: "#1A73E8",
+          },
+          selected: {
+            fill: "#191919",
+          },
+        },
+      });
+
+    if (mapContainer && mapContainer.children.length === 0) createMap();
+
+    () => mapContainer.children[0].remove();
+  }, [])
+
   return (
     <Card sx={{ width: "100%" }}>
       <MDBox display="flex">
@@ -33,7 +85,8 @@ function SalesByCountry(): JSX.Element {
           shadow="md"
           borderRadius="xl"
           ml={3}
-          mt={-2}>
+          mt={-2}
+        >
           <Icon fontSize="medium" color="inherit">
             language
           </Icon>
@@ -48,71 +101,7 @@ function SalesByCountry(): JSX.Element {
             <SalesTable rows={salesTableData} shadow={false} />
           </Grid>
           <Grid item xs={12} md={5} lg={6} sx={{ mt: { xs: 5, lg: 0 } }}>
-            <VectorMap
-              map={worldMerc}
-              zoomOnScroll={false}
-              zoomButtons={false}
-              markersSelectable
-              backgroundColor="transparent"
-              selectedMarkers={["1", "3"]}
-              markers={[
-                {
-                  name: "USA",
-                  latLng: [40.71296415909766, -74.00437720027804],
-                },
-                {
-                  name: "Germany",
-                  latLng: [51.17661451970939, 10.97947735117339],
-                },
-                {
-                  name: "Brazil",
-                  latLng: [-7.596735421549542, -54.781694323779185],
-                },
-                {
-                  name: "Russia",
-                  latLng: [62.318222797104276, 89.81564777631716],
-                },
-                {
-                  name: "China",
-                  latLng: [22.320178999475512, 114.17161225541399],
-                },
-              ]}
-              regionStyle={{
-                initial: {
-                  fill: "#dee2e7",
-                  "fill-opacity": 1,
-                  stroke: "none",
-                  "stroke-width": 0,
-                  "stroke-opacity": 0,
-                },
-              }}
-              markerStyle={{
-                initial: {
-                  fill: "#e91e63",
-                  stroke: "#ffffff",
-                  "stroke-width": 5,
-                  "stroke-opacity": 0.5,
-                  r: 7,
-                },
-                hover: {
-                  fill: "E91E63",
-                  stroke: "#ffffff",
-                  "stroke-width": 5,
-                  "stroke-opacity": 0.5,
-                },
-                selected: {
-                  fill: "E91E63",
-                  stroke: "#ffffff",
-                  "stroke-width": 5,
-                  "stroke-opacity": 0.5,
-                },
-              }}
-              style={{
-                marginTop: "-1.5rem",
-              }}
-              onRegionTipShow={() => false}
-              onMarkerTipShow={() => false}
-            />
+            <MDBox id="map" width="100%" height="100%" mt={-3} />
           </Grid>
         </Grid>
       </MDBox>

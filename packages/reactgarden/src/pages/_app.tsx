@@ -48,10 +48,10 @@ import themeDark from "themes/theme-dark"
 import themeDarkRTL from "themes/theme-dark/theme-rtl"
 import rtlPlugin from "stylis-plugin-rtl"
 
-// @fullcalendar styles
-import "@fullcalendar/common/main.css"
-import "@fullcalendar/daygrid/main.css"
-import "@fullcalendar/timegrid/main.css"
+// @fullcalendar styles (NOT HERE)
+// import "@fullcalendar/common/main.css"
+// import "@fullcalendar/daygrid/main.css"
+// import "@fullcalendar/timegrid/main.css"
 
 // images
 import favicon from "assets/images/icons/favicon.png"
@@ -220,7 +220,7 @@ const Main: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPro
           <Sidenav
             color={sidenavColor}
             brand={brandIcon}
-            brandName="Material Dashboard PRO"
+            brandName="ThreeD Garden"
             routes={routes}
             onMouseEnter={handleOnMouseEnter}
             onMouseLeave={handleOnMouseLeave}
@@ -239,7 +239,7 @@ const Main: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPro
 const MyApp: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => { // [MM] ooooo, very interesting (type|interface)
   const { Component, emotionCache = clientSideEmotionCache, pageProps, router } = props
   // const router = useRouter()
-  console.log("[MM] MyApp")
+  console.log("[MM] MyApp: ThreeD Garden")
   return (
     <MaterialUIControllerProvider>
       <CacheProvider value={emotionCache}>
@@ -248,7 +248,7 @@ const MyApp: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPr
           <meta name="threed-garden" content="initial-scale=1, width=device-width" />
           <link rel="icon" href={favicon.src} />
           <link rel="apple-touch-icon" sizes="76x76" href={appleIcon.src} />
-          <title>Next Material Dashboard 2 PRO</title>
+          <title>ThreeD Garden</title>
         </Head>
         <Main Component={Component} pageProps={pageProps} router={router} />
       </CacheProvider>
