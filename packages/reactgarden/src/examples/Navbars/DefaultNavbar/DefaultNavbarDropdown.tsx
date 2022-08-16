@@ -1,7 +1,7 @@
 import { ReactNode } from "react"
 
-// react-router-dom components
-import { Link } from "react-router-dom"
+// nextjs components
+import { Link } from "next/link"
 
 // @mui material components
 import Collapse from "@mui/material/Collapse"

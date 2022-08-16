@@ -12,7 +12,9 @@ import React, {
   ReactNode,
   FunctionComponent
 } from "react"
-// import PropTypes from 'prop-types'
+
+// old way. new way: do with TS interfaces
+// import PropTypes from "prop-types"
 
 // react-router components
 import { Routes, Route, Navigate, useLocation } from "react-router-dom"
@@ -22,7 +24,7 @@ import type { NextPage } from "next"
 import type { AppProps } from "next/app"
 // import { AppProps } from "next/app"
 import Head from "next/head"
-import { useRouter } from "next/router"
+import { useRouter, withRouter, NextRouter } from "next/router"
 
 // theme: mui
 import { ThemeProvider } from "@mui/material/styles"
@@ -83,16 +85,22 @@ const clientSideEmotionCache = createEmotionCache() // using insertionPoint
 // ========================================================
 // TS
 
+interface WithRouterProps {
+  router: NextRouter
+}
+interface MyComponentProps extends WithRouterProps { }
+
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: React.ReactElement) => React.ReactNode
 }
 
-type AppPropsWithLayout = AppProps & {
+type AppPropsWithLayoutEmotion = AppProps & {
   Component: NextPageWithLayout,
-  emotionCache?: EmotionCache
+  emotionCache?: EmotionCache,
+  router: NextRouter
 }
 // OR !!!
-interface MyAppProps extends AppProps {
+interface IAppPropsWithLayoutEmotion extends AppProps {
   Component: NextPageWithLayout,
   emotionCache?: EmotionCache
 }
@@ -102,8 +110,8 @@ interface MyAppProps extends AppProps {
 // ========================================================
 // MAIN
 
-// export default function MyApp(props: MyAppProps) { ???
-const Main: React.FunctionComponent<MyAppProps> = (props: AppPropsWithLayout) => { // [MM] ooooo, very interesting (type|interface)
+// export default function MyApp(props: IAppPropsWithLayoutEmotion) { ???
+const Main: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => { // [MM] ooooo, very interesting (type|interface)
 
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
 
@@ -175,7 +183,7 @@ const Main: React.FunctionComponent<MyAppProps> = (props: AppPropsWithLayout) =>
   // components
 
   const brandIcon =
-  (transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite
+    (transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite
 
   const configsButton = (
     <MDBox
@@ -204,38 +212,48 @@ const Main: React.FunctionComponent<MyAppProps> = (props: AppPropsWithLayout) =>
   // ========================================================
   // RETURN TSX
   return (
-    <CacheProvider value={emotionCache}>
-      <MaterialUIControllerProvider>
-        <Head>
-          <meta name="threed-garden" content="initial-scale=1, width=device-width" />
-        </Head>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Component {...pageProps} />
-        </ThemeProvider>
-      </MaterialUIControllerProvider>
-    </CacheProvider>
+    <ThemeProvider theme={darkMode ? themeDark : theme}>
+      <CssBaseline />
+      <Component {...pageProps} />
+      {layout === "dashboard" && (
+        <>
+          <Sidenav
+            color={sidenavColor}
+            brand={brandIcon}
+            brandName="Material Dashboard PRO"
+            routes={routes}
+            onMouseEnter={handleOnMouseEnter}
+            onMouseLeave={handleOnMouseLeave}
+          />
+          <Configurator />
+          {configsButton}
+        </>
+      )}
+      {layout === "vr" && <Configurator />}
+    </ThemeProvider>
   )
 }
 
-function MyApp({
-  Component,
-  pageProps,
-  emotionCache = clientSideEmotionCache,
-}) {
+// ========================================================
+// APP
+const MyApp: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => { // [MM] ooooo, very interesting (type|interface)
+  const { Component, emotionCache = clientSideEmotionCache, pageProps, router } = props
+  // const router = useRouter()
+  console.log("[MM] MyApp")
   return (
     <MaterialUIControllerProvider>
       <CacheProvider value={emotionCache}>
         <Head>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <link rel="shortcut icon" href={favicon.src} />
+          <meta name="viewport" content="initial-scale=1, width=device-width" />
+          <meta name="threed-garden" content="initial-scale=1, width=device-width" />
+          <link rel="icon" href={favicon.src} />
           <link rel="apple-touch-icon" sizes="76x76" href={appleIcon.src} />
           <title>Next Material Dashboard 2 PRO</title>
         </Head>
-        <Main Component={Component} pageProps={pageProps} />
+        <Main Component={Component} pageProps={pageProps} router={router} />
       </CacheProvider>
     </MaterialUIControllerProvider>
-  );
+  )
 }
 
 export default MyApp
@@ -302,12 +320,12 @@ export default function BoilerplateApp(props: AppPropsWithLayout) {
 
 // // NOTE: THROWS ERROR if using .babelrc
 // // "Syntax error: Unexpected reserved word 'interface'."
-// interface MyAppProps extends AppProps {
+// interface IAppPropsWithEmotion extends AppProps {
 //   emotionCache?: EmotionCache
 // }
 
-// // export default function MyApp(props: MyAppProps) {
-// const MyApp: React.FunctionComponent<MyAppProps> = (props) => {
+// // export default function MyApp(props: IAppPropsWithEmotion) {
+// const MyApp: React.FunctionComponent<IAppPropsWithEmotion> = (props) => {
 //   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
 //   return (
 //     <CacheProvider value={emotionCache}>

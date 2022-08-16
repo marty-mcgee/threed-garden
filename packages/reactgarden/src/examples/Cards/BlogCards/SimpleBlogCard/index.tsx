@@ -1,5 +1,5 @@
 // react-router components
-import { Link } from "react-router-dom"
+import { Link } from "next/link"
 
 // @mui material components
 import Card from "@mui/material/Card"
@@ -19,15 +19,15 @@ interface Props {
     type: "external" | "internal"
     route: string
     color:
-      | "primary"
-      | "secondary"
-      | "info"
-      | "success"
-      | "warning"
-      | "error"
-      | "dark"
-      | "light"
-      | "default"
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "dark"
+    | "light"
+    | "default"
     label: string
     [key: string]: any
   }

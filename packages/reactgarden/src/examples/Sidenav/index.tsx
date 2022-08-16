@@ -1,6 +1,6 @@
 import { useEffect, useState, ReactNode } from "react"
 
-// react-router-dom components
+// nextjs components
 import { useLocation, NavLink } from "react-router-dom"
 
 // @mui material components
