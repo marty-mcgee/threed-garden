@@ -6,7 +6,7 @@ import Document, { Html, Head, Main, NextScript } from "next/document"
 import createEmotionServer from "@emotion/server/create-instance"
 import theme from "~/themes/theme-dark"
 import createEmotionCache from "~/themes/common/createEmotionCache"
-import ThreeDLinks from "@/layouts/threedLinks"
+import ThreeDLinks from "~/layouts/threedLinks"
 
 export default class MyDocument extends Document {
   render() {
@@ -67,8 +67,10 @@ MyDocument.getInitialProps = async (ctx) => {
 
   ctx.renderPage = () =>
     originalRenderPage({
-      enhanceApp: (App: any) => (props) =>
-        <App emotionCache={cache} {...props} />,
+      enhanceApp: (App: any) =>
+        function EnhanceApp(props) {
+          return <App emotionCache={cache} {...props} />
+        },
     })
 
   const initialProps = await Document.getInitialProps(ctx)

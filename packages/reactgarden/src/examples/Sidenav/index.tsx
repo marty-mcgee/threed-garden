@@ -1,13 +1,15 @@
 import { useEffect, useState, ReactNode } from "react"
 
 // nextjs components
-import { useLocation, NavLink } from "react-router-dom"
+// import { useLocation, NavLink } from "react-router-dom"
+import { useRouter, NextRouter } from "next/router"
+import NextLink from "next/link"
 
 // @mui material components
+import MuiLink from "@mui/material/Link"
+import Icon from "@mui/material/Icon"
 import List from "@mui/material/List"
 import Divider from "@mui/material/Divider"
-import Link from "@mui/material/Link"
-import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
 import MDBox from "components/MDBox"
@@ -30,12 +32,13 @@ import {
   setWhiteSidenav,
 } from "context"
 
-type StaticImageData = {
-  src: string
-  height: number
-  width: number
-  blurDataURL?: string
-}
+import { StaticImageData } from "next/image"
+// type StaticImageData = {
+//   src: string
+//   height: number
+//   width: number
+//   blurDataURL?: string
+// }
 
 // Declaring props types for Sidenav
 interface Props {
@@ -76,7 +79,8 @@ function Sidenav({
   const [openNestedCollapse, setOpenNestedCollapse] = useState<boolean | string>(false)
   const [controller, dispatch] = useMaterialUIController()
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode } = controller
-  const location = useLocation()
+  // const location = useLocation()
+  const location = useRouter()
   const { pathname } = location
   const collapseName = pathname.split("/").slice(1)[0]
   const items = pathname.split("/").slice(1)
@@ -136,18 +140,18 @@ function Sidenav({
   const renderNestedCollapse = (collapse: any) => {
     const template = collapse.map(({ name, route, key, href }: any) =>
       href ? (
-        <Link
+        <MuiLink
           key={key}
           href={href}
           target="_blank"
           rel="noreferrer"
           sx={{ textDecoration: "none" }}>
           <SidenavItem name={name} nested />
-        </Link>
+        </MuiLink>
       ) : (
-        <NavLink to={route} key={key} style={{ textDecoration: "none" }}>
+        <NextLink href={route} key={key} style={{ textDecoration: "none" }}>
           <SidenavItem name={name} active={route === pathname} nested />
-        </NavLink>
+        </NextLink>
       )
     )
 
@@ -177,18 +181,18 @@ function Sidenav({
         )
       } else {
         returnValue = href ? (
-          <Link
+          <MuiLink
             href={href}
             key={key}
             target="_blank"
             rel="noreferrer"
             sx={{ textDecoration: "none" }}>
             <SidenavItem color={color} name={name} active={key === itemName} />
-          </Link>
+          </MuiLink>
         ) : (
-          <NavLink to={route} key={key} style={{ textDecoration: "none" }}>
+          <NextLink href={route} key={key} style={{ textDecoration: "none" }}>
             <SidenavItem color={color} name={name} active={key === itemName} />
-          </NavLink>
+          </NextLink>
         )
       }
       return <SidenavList key={key}>{returnValue}</SidenavList>
@@ -212,31 +216,33 @@ function Sidenav({
       if (type === "collapse") {
         if (href) {
           returnValue = (
-            <Link
-              href={href}
-              key={key}
-              target="_blank"
-              rel="noreferrer"
-              sx={{ textDecoration: "none" }}>
-              <SidenavCollapse
-                name={name}
-                icon={icon}
-                active={key === collapseName}
-                noCollapse={noCollapse}
-              />
-            </Link>
+            // <MuiLink
+            //   href={href}
+            //   key={key}
+            //   target="_blank"
+            //   rel="noreferrer"
+            //   sx={{ textDecoration: "none" }}>
+            //   <SidenavCollapse
+            //     name={name}
+            //     icon={icon}
+            //     active={key === collapseName}
+            //     noCollapse={noCollapse}
+            //   />
+            // </MuiLink>
+            <div>HEY HEY HEY</div>
           )
         } else if (noCollapse && route) {
           returnValue = (
-            <NavLink to={route} key={key}>
-              <SidenavCollapse
-                name={name}
-                icon={icon}
-                noCollapse={noCollapse}
-                active={key === collapseName}>
-                {collapse ? renderCollapse(collapse) : null}
-              </SidenavCollapse>
-            </NavLink>
+            // <NextLink href={route} key={key}>
+            //   <SidenavCollapse
+            //     name={name}
+            //     icon={icon}
+            //     noCollapse={noCollapse}
+            //     active={key === collapseName}>
+            //     {collapse ? renderCollapse(collapse) : null}
+            //   </SidenavCollapse>
+            // </NextLink>
+            <div>HEY HEY HEY</div>
           )
         } else {
           returnValue = (
@@ -305,21 +311,23 @@ function Sidenav({
             <Icon sx={{ fontWeight: "bold" }}>close</Icon>
           </MDTypography>
         </MDBox>
-        <MDBox component={NavLink} to="/" display="flex" alignItems="center">
-          {brand && (
-            <MDBox component="img" src={brand} alt="Brand" width="2rem" />
-          )}
-          <MDBox
-            width={!brandName && "100%"}
-            sx={(theme: any) => sidenavLogoLabel(theme, { miniSidenav })}>
-            <MDTypography
-              component="h6"
-              variant="button"
-              fontWeight="medium"
-              color={textColor}>
-              {brandName}
-            </MDTypography>
-          </MDBox>
+        <MDBox component={NextLink} href="/" display="flex" alignItems="center">
+          <>
+            {brand && (
+              <MDBox component="img" src={brand} alt="Brand" width="2rem" />
+            )}
+            <MDBox
+              width={!brandName && "100%"}
+              sx={(theme: any) => sidenavLogoLabel(theme, { miniSidenav })}>
+              <MDTypography
+                component="h6"
+                variant="button"
+                fontWeight="medium"
+                color={textColor}>
+                {brandName}
+              </MDTypography>
+            </MDBox>
+          </>
         </MDBox>
       </MDBox>
       <Divider
@@ -328,7 +336,7 @@ function Sidenav({
           (darkMode && !transparentSidenav && whiteSidenav)
         }
       />
-      <List>{renderRoutes}</List>
+      {/* <List>{renderRoutes}</List> */}
     </SidenavRoot>
   )
 }

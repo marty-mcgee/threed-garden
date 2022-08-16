@@ -46,15 +46,15 @@ const nextConfig = {
       "secure.gravatar.com",
     ],
   },
-  async redirects() {
-    return [
-      {
-        source: "/",
-        destination: "/dashboards/analytics",
-        permanent: true,
-      },
-    ]
-  },
+  // async redirects() {
+  //   return [
+  //     {
+  //       source: "/",
+  //       destination: "/dashboards/sales",
+  //       permanent: true,
+  //     },
+  //   ]
+  // },
   reactStrictMode: true,
 }
 

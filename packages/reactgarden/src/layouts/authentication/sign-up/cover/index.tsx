@@ -1,5 +1,5 @@
 // nextjs components
-import { Link } from "next/link"
+import Link from "next/link"
 
 // @mui material components
 import Card from "@mui/material/Card"
@@ -15,11 +15,11 @@ import MDButton from "components/MDButton"
 import CoverLayout from "layouts/authentication/components/CoverLayout"
 
 // Images
-import bgImage from "assets/images/any/bg-sign-up-cover.jpg"
+import theImage from "assets/images/any/bg-sign-up-cover.jpg"
 
 function Cover(): JSX.Element {
   return (
-    <CoverLayout image={bgImage}>
+    <CoverLayout image={theImage}>
       <Card>
         <MDBox
           variant="gradient"

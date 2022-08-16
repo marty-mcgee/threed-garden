@@ -17,10 +17,13 @@ import Footer from "layouts/authentication/components/Footer"
 // Company Juice Dashboard page layout routes
 import pageRoutes from "routes/page.routes"
 
+// for image typing
+import { StaticImageData } from "next/image"
+
 // Declaring props types for CoverLayout
 interface Props {
   coverHeight?: string
-  image: string
+  image: string | StaticImageData
   children: ReactNode
 }
 

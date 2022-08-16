@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
 import { useState, useEffect, ReactNode, Fragment } from "react"
 
-// react-router components
-import { Link } from "next/link"
+// nextjs components
+import Link from "next/link"
 
 // @mui material components
 import Icon from "@mui/material/Icon"
