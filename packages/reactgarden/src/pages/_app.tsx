@@ -17,7 +17,7 @@ import React, {
 // import PropTypes from "prop-types"
 
 // react-router components
-import { Routes, Route, Navigate, useLocation } from "react-router-dom"
+// import { Routes, Route, Navigate, useLocation } from "react-router-dom"
 
 // nextjs
 import type { NextPage } from "next"

@@ -1,7 +1,8 @@
 import { useEffect, ReactNode } from "react"
 
 // nextjs components
-import { useLocation } from "react-router-dom"
+// import { useLocation } from "react-router-dom"
+import { useRouter, NextRouter } from "next/router"
 
 // Company Juice Dashboard components
 import MDBox from "components/MDBox"
@@ -17,7 +18,8 @@ interface Props {
 
 function PageLayout({ background, children }: Props): JSX.Element {
   const [, dispatch] = useMaterialUIController()
-  const { pathname } = useLocation()
+  // const { pathname } = useLocation()
+  const { pathname } = useRouter()
 
   useEffect(() => {
     setLayout(dispatch, "page")

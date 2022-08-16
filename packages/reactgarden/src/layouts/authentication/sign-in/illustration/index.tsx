@@ -1,7 +1,7 @@
 import { useState } from "react"
 
 // nextjs components
-import { Link } from "next/link"
+import Link from "next/link"
 
 // @mui material components
 import Switch from "@mui/material/Switch"

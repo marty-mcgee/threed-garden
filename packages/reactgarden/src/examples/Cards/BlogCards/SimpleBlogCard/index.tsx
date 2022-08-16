@@ -1,5 +1,5 @@
-// react-router components
-import { Link } from "next/link"
+// nextjs components
+import Link from "next/link"
 
 // @mui material components
 import Card from "@mui/material/Card"
@@ -89,7 +89,7 @@ function SimpleBlogCard({
             </MDButton>
           </MuiLink>
         ) : (
-          <Link to={action.route}>
+          <Link href={action.route}>
             <MDButton color={action.color ? action.color : "dark"}>
               {action.label}
             </MDButton>

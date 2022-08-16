@@ -1,7 +1,8 @@
 import { useState } from "react"
 
 // @asseinfo/react-kanban components
-import Board from "@asseinfo/react-kanban"
+// import Board from "@asseinfo/react-kanban"
+import dynamic from "next/dynamic"
 
 // html-react-parser
 import parse from "html-react-parser"
@@ -32,6 +33,9 @@ import boards from "layouts/applications/kanban/data"
 
 // Company Juice Dashboard context
 import { useMaterialUIController } from "context"
+
+// @asseinfo/react-kanban components
+const Board = dynamic(() => import("@asseinfo/react-kanban"), { ssr: false })
 
 function Kanban(): JSX.Element {
   const [controller] = useMaterialUIController()

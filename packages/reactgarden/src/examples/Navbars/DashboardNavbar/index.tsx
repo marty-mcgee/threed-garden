@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react"
 
 // react-router components
-import { useLocation, Link } from "react-router-dom"
+// import { useLocation, Link } from "react-router-dom"
+// nextjs components
+import Link from "next/link"
+import { useRouter, NextRouter } from "next/router"
 
 // @material-ui core components
 import AppBar from "@mui/material/AppBar"
@@ -57,7 +60,9 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
     darkMode,
   } = controller
   const [openMenu, setOpenMenu] = useState<any>(false)
-  const route = useLocation().pathname.split("/").slice(1)
+  // const route = useLocation().pathname.split("/").slice(1)
+  const { pathname } = useRouter()
+  const route = pathname.split("/").slice(1)
 
   useEffect(() => {
     // Setting the navbar type
@@ -75,8 +80,8 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
       )
     }
 
-    /** 
-     The event listener that's calling the handleTransparentNavbar function when 
+    /**
+     The event listener that's calling the handleTransparentNavbar function when
      scrolling the window.
     */
     window.addEventListener("scroll", handleTransparentNavbar)
@@ -171,7 +176,7 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
               <MDInput label="Search here" />
             </MDBox>
             <MDBox color={light ? "white" : "inherit"}>
-              <Link to="/authentication/sign-in/basic">
+              <Link href="/authentication/sign-in/basic">
                 <IconButton sx={navbarIconButton} size="small" disableRipple>
                   <Icon sx={iconsStyle}>account_circle</Icon>
                 </IconButton>

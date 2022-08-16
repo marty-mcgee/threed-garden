@@ -1,7 +1,7 @@
 import { ReactNode } from "react"
 
 // next/link components
-import { Link } from "next/link"
+import Link from "next/link"
 
 // @mui material components
 import { Breadcrumbs as MuiBreadcrumbs } from "@mui/material"
@@ -32,7 +32,7 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
               light ? white.main : grey[600],
           },
         }}>
-        <Link to="/">
+        <Link href="/">
           <MDTypography
             component="span"
             variant="body2"
@@ -43,7 +43,7 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
           </MDTypography>
         </Link>
         {routes.map((el: string) => (
-          <Link to={`/${el}`} key={el}>
+          <Link href={`/${el}`} key={el}>
             <MDTypography
               component="span"
               variant="button"

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react"
 
 // Dropzone components
-import Dropzone from "dropzone"
+// import Dropzone from "dropzone"
 
 // Dropzone styles
 import "dropzone/dist/dropzone.css"
@@ -29,9 +29,16 @@ function MDDropzone({ options }: Props): JSX.Element {
   const dropzoneRef = useRef<HTMLFormElement | null>(null)
 
   useEffect(() => {
-    Dropzone.autoDiscover = false
+    // Dropzone.autoDiscover = false
 
-    function createDropzone() {
+    // function createDropzone() {
+    //   return new Dropzone(dropzoneRef.current, { ...options })
+    // }
+    async function createDropzone() {
+      const Dropzone = (await import("dropzone")).default
+
+      Dropzone.autoDiscover = false
+
       return new Dropzone(dropzoneRef.current, { ...options })
     }
 

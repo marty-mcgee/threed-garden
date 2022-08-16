@@ -10,6 +10,8 @@ import {
 
 // react-router components
 import { Routes, Route, Navigate, useLocation } from "react-router-dom"
+// nextjs components
+import { useRouter, NextRouter } from "next/router"
 
 // @mui material components
 import { ThemeProvider } from "@mui/material/styles"
