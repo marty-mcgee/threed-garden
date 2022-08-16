@@ -1,5 +1,5 @@
-// react-router-dom components
-import { Link } from "react-router-dom"
+// nextjs components
+import { Link } from "next/link"
 
 // @mui material components
 import Card from "@mui/material/Card"
@@ -13,6 +13,17 @@ import MDButton from "components/MDButton"
 // Declaring props types for DefaultPricingCard
 interface Props {
   color?:
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "light"
+  | "dark"
+  | "white"
+  badge: {
+    color:
     | "primary"
     | "secondary"
     | "info"
@@ -21,17 +32,6 @@ interface Props {
     | "error"
     | "light"
     | "dark"
-    | "white"
-  badge: {
-    color:
-      | "primary"
-      | "secondary"
-      | "info"
-      | "success"
-      | "warning"
-      | "error"
-      | "light"
-      | "dark"
     label: string
   }
   price: {
@@ -48,14 +48,14 @@ interface Props {
     route: string
     label: string
     color:
-      | "primary"
-      | "secondary"
-      | "info"
-      | "success"
-      | "warning"
-      | "error"
-      | "light"
-      | "dark"
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "light"
+    | "dark"
   }
   shadow?: boolean
   [key: string]: any

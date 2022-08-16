@@ -1,5 +1,5 @@
 // react-routers components
-import { Link } from "react-router-dom"
+import { Link } from "next/link"
 
 // @mui material components
 import Card from "@mui/material/Card"

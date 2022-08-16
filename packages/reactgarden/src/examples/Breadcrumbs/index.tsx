@@ -1,7 +1,7 @@
 import { ReactNode } from "react"
 
-// react-router-dom components
-import { Link } from "react-router-dom"
+// next/link components
+import { Link } from "next/link"
 
 // @mui material components
 import { Breadcrumbs as MuiBreadcrumbs } from "@mui/material"
@@ -11,7 +11,7 @@ import Icon from "@mui/material/Icon"
 import MDBox from "components/MDBox"
 import MDTypography from "components/MDTypography"
 
-// Declaring props types for the Breadcrumbs
+// Declaring + Typechecking props types for the Breadcrumbs
 interface Props {
   icon: ReactNode
   title: string

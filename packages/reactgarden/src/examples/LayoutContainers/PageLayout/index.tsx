@@ -1,6 +1,6 @@
 import { useEffect, ReactNode } from "react"
 
-// react-router-dom components
+// nextjs components
 import { useLocation } from "react-router-dom"
 
 // Company Juice Dashboard components

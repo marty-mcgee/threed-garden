@@ -2,7 +2,7 @@
 import { useState, useEffect, ReactNode, Fragment } from "react"
 
 // react-router components
-import { Link } from "react-router-dom"
+import { Link } from "next/link"
 
 // @mui material components
 import Icon from "@mui/material/Icon"

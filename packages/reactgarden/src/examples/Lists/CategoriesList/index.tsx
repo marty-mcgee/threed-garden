@@ -1,7 +1,7 @@
 import { ReactNode } from "react"
 
-// react-router-dom components
-import { Link } from "react-router-dom"
+// nextjs components
+import { Link } from "next/link"
 
 // @mui material components
 import Card from "@mui/material/Card"
@@ -16,14 +16,14 @@ interface Props {
   title: string
   categories: {
     color?:
-      | "primary"
-      | "secondary"
-      | "info"
-      | "success"
-      | "warning"
-      | "error"
-      | "light"
-      | "dark"
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "light"
+    | "dark"
     icon: ReactNode | string
     name: string
     description: ReactNode
