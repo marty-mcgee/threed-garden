@@ -1,0 +1,50 @@
+stages:
+  - docker
+  - deploy
+
+docker_job:
+  stage: docker
+  image: docker:stable
+
+  services:
+    - docker:dind
+
+  only:
+    - master
+
+  tags:
+    - docker
+
+  artifacts:
+    paths:
+      - build
+
+  before_script:
+    - docker login --username "$(printenv GIT_USERNAME)" --password "$(printenv GIT_PASSWORD)" "$(printenv GIT_REGISTRY)"
+
+  script:
+    - docker build --tag "$(printenv GIT_REPOSITORY):latest" ./
+    - docker push "$(printenv GIT_REPOSITORY):latest"
+
+deploy_job:
+  stage: deploy
+
+  only:
+    - master
+
+  tags:
+    - hetzner
+
+  before_script:
+    - docker rm --force "$(printenv CONTAINER_NAME)"
+    - docker login --username "$(printenv GIT_USERNAME)" --password "$(printenv GIT_PASSWORD)" "$(printenv GIT_REGISTRY)"
+
+  script:
+    - docker pull "$(printenv GIT_REPOSITORY):latest"
+    - docker run --detach
+      --env "HOST=$(printenv ROOT_URL)"
+      --env "PORT=$(printenv PORT)"
+      --name "$(printenv CONTAINER_NAME)"
+      --publish $(printenv PORT):$(printenv PORT)
+      --restart=always
+      "$(printenv GIT_REPOSITORY):latest"
