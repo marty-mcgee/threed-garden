@@ -2,8 +2,8 @@
 import TableCell from "@mui/material/TableCell"
 
 // Company Juice Dashboard components
-import MDTypography from "components/MDTypography"
-import MDBox from "components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDBox from "~/components/MDBox"
 
 // Declaring prop types for SalesTableCell
 interface Props {

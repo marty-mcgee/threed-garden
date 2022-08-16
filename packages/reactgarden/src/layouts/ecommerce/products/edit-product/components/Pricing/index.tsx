@@ -4,12 +4,12 @@ import Grid from "@mui/material/Grid"
 import Autocomplete from "@mui/material/Autocomplete"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDInput from "components/MDInput"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDInput from "~/components/MDInput"
 
 // NewProduct page components
-import FormField from "layouts/ecommerce/products/edit-product/components/FormField"
+import FormField from "~/layouts/ecommerce/products/edit-product/components/FormField"
 
 function Pricing(): JSX.Element {
   return (

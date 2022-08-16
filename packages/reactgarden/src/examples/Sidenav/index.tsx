@@ -12,17 +12,15 @@ import List from "@mui/material/List"
 import Divider from "@mui/material/Divider"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-
-// Company Juice Dashboard examples components
-import SidenavCollapse from "examples/Sidenav/SidenavCollapse"
-import SidenavList from "examples/Sidenav/SidenavList"
-import SidenavItem from "examples/Sidenav/SidenavItem"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Custom styles for the Sidenav
-import SidenavRoot from "examples/Sidenav/SidenavRoot"
-import sidenavLogoLabel from "examples/Sidenav/styles/sidenav"
+import SidenavCollapse from "~/examples/Sidenav/SidenavCollapse"
+import SidenavItem from "~/examples/Sidenav/SidenavItem"
+import SidenavList from "~/examples/Sidenav/SidenavList"
+import SidenavRoot from "~/examples/Sidenav/SidenavRoot"
+import sidenavLogoLabel from "~/examples/Sidenav/styles/sidenav"
 
 // Company Juice Dashboard context
 import {
@@ -30,7 +28,7 @@ import {
   setMiniSidenav,
   setTransparentSidenav,
   setWhiteSidenav,
-} from "context"
+} from "~/context"
 
 import { StaticImageData } from "next/image"
 // type StaticImageData = {

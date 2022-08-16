@@ -6,7 +6,7 @@ import {
   warningColor,
   dangerColor,
   grayColor,
-} from "styles/jss/nextjs-material-dashboard.js"
+} from "~/styles/jss/nextjs-material-dashboard.js"
 
 const typographyStyle = {
   defaultFontStyle: {

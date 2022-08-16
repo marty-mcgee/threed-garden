@@ -5,35 +5,35 @@ import Grid from "@mui/material/Grid"
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Company Juice Dashboard examples components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout"
-import DashboardNavbar from "examples/Navbars/DashboardNavbar"
-import Footer from "examples/Footer"
-import MiniStatisticsCard from "examples/Cards/StatisticsCards/MiniStatisticsCard"
-import ProgressLineChart from "examples/Charts/LineCharts/ProgressLineChart"
-import DefaultInfoCard from "examples/Cards/InfoCards/DefaultInfoCard"
-import MasterCard from "examples/Cards/MasterCard"
-import MiniInfoCard from "examples/Cards/InfoCards/MiniInfoCard"
-import ControllerCard from "examples/Cards/ControllerCard"
-import Calendar from "examples/Calendar"
-import CategoriesList from "examples/Lists/CategoriesList"
+import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
+import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
+import Footer from "~/examples/Footer"
+import MiniStatisticsCard from "~/examples/Cards/StatisticsCards/MiniStatisticsCard"
+import ProgressLineChart from "~/examples/Charts/LineCharts/ProgressLineChart"
+import DefaultInfoCard from "~/examples/Cards/InfoCards/DefaultInfoCard"
+import MasterCard from "~/examples/Cards/MasterCard"
+import MiniInfoCard from "~/examples/Cards/InfoCards/MiniInfoCard"
+import ControllerCard from "~/examples/Cards/ControllerCard"
+import Calendar from "~/examples/Calendar"
+import CategoriesList from "~/examples/Lists/CategoriesList"
 
 // Widgets page components
-import Steps from "layouts/pages/widgets/components/Steps"
-import FullBody from "layouts/pages/widgets/components/FullBody"
-import MediaPlayer from "layouts/pages/widgets/components/MediaPlayer"
-import OrdersOverview from "layouts/pages/widgets/components/OrdersOverview"
-import UpcomingEvents from "layouts/pages/widgets/components/UpcomingEvents"
-import Chart from "layouts/pages/widgets/components/Chart"
+import Steps from "~/layouts/pages/widgets/components/Steps"
+import FullBody from "~/layouts/pages/widgets/components/FullBody"
+import MediaPlayer from "~/layouts/pages/widgets/components/MediaPlayer"
+import OrdersOverview from "~/layouts/pages/widgets/components/OrdersOverview"
+import UpcomingEvents from "~/layouts/pages/widgets/components/UpcomingEvents"
+import Chart from "~/layouts/pages/widgets/components/Chart"
 
 // Data
-import progressLineChartData from "layouts/pages/widgets/data/progressLineChartData"
-import calendarEventsData from "layouts/pages/widgets/data/calendarEventsData"
-import categoriesListData from "layouts/pages/widgets/data/categoriesListData"
-import caloriesChartData from "layouts/pages/widgets/data/caloriesChartData"
+import progressLineChartData from "~/layouts/pages/widgets/data/progressLineChartData"
+import calendarEventsData from "~/layouts/pages/widgets/data/calendarEventsData"
+import categoriesListData from "~/layouts/pages/widgets/data/categoriesListData"
+import caloriesChartData from "~/layouts/pages/widgets/data/caloriesChartData"
 
 function Widgets(): JSX.Element {
   const [lights, setLights] = useState<boolean>(false)

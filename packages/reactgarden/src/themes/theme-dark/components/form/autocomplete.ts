@@ -1,12 +1,12 @@
 // Company Juice Dashboard Base Styles
-import boxShadows from "themes/theme-dark/base/boxShadows"
-import typography from "themes/theme-dark/base/typography"
-import colors from "themes/theme-dark/base/colors"
-import borders from "themes/theme-dark/base/borders"
+import boxShadows from "~/themes/theme-dark/base/boxShadows"
+import typography from "~/themes/theme-dark/base/typography"
+import colors from "~/themes/theme-dark/base/colors"
+import borders from "~/themes/theme-dark/base/borders"
 
 // Company Juice Dashboard Helper Functions
-import pxToRem from "themes/theme-dark/functions/pxToRem"
-import rgba from "themes/theme-dark/functions/rgba"
+import pxToRem from "~/themes/theme-dark/functions/pxToRem"
+import rgba from "~/themes/theme-dark/functions/rgba"
 
 const { md } = boxShadows
 const { size } = typography

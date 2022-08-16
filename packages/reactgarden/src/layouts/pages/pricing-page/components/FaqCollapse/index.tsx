@@ -5,11 +5,11 @@ import Icon from "@mui/material/Icon"
 import Collapse from "@mui/material/Collapse"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Company Juice Dashboard components
-import borders from "themes/theme-light/base/borders"
+import borders from "~/themes/theme-light/base/borders"
 
 // Declaring props types for FaqCollapse
 interface Props {

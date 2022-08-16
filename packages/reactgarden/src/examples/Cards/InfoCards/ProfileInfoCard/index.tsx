@@ -8,12 +8,12 @@ import Tooltip from "@mui/material/Tooltip"
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-light/base/colors"
-import typography from "themes/theme-light/base/typography"
+import colors from "~/themes/theme-light/base/colors"
+import typography from "~/themes/theme-light/base/typography"
 
 // Declaring props types for ProfileInfoCard
 interface Props {

@@ -8,19 +8,19 @@ import Step from "@mui/material/Step"
 import StepLabel from "@mui/material/StepLabel"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDButton from "components/MDButton"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDButton from "~/components/MDButton"
 
 // Company Juice Dashboard examples components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout"
-import DashboardNavbar from "examples/Navbars/DashboardNavbar"
-import Footer from "examples/Footer"
+import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
+import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
+import Footer from "~/examples/Footer"
 
 // Wizard page components
-import About from "layouts/applications/wizard/components/About"
-import Account from "layouts/applications/wizard/components/Account"
-import Address from "layouts/applications/wizard/components/Address"
+import About from "~/layouts/applications/wizard/components/About"
+import Account from "~/layouts/applications/wizard/components/Account"
+import Address from "~/layouts/applications/wizard/components/Address"
 
 function getSteps(): string[] {
   return ["About", "Account", "Address"]

@@ -4,23 +4,23 @@ import { useState, ReactNode } from "react"
 import Fade from "@mui/material/Fade"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
+import MDBox from "~/components/MDBox"
 
 // Custom styles for the MDAlert
-import MDAlertRoot from "components/MDAlert/MDAlertRoot"
-import MDAlertCloseIcon from "components/MDAlert/MDAlertCloseIcon"
+import MDAlertRoot from "~/components/MDAlert/MDAlertRoot"
+import MDAlertCloseIcon from "~/components/MDAlert/MDAlertCloseIcon"
 
 // Declaring props types for MDAlert
 interface Props {
   color?:
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "light"
-    | "dark"
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "light"
+  | "dark"
   dismissible?: boolean
   children: ReactNode
   [key: string]: any

@@ -6,11 +6,11 @@ import Link from "@mui/material/Link"
 import { MenuItemProps } from "@mui/material"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // custom styles for the NotificationItem
-import menuItem from "examples/Items/NotificationItem/styles"
+import menuItem from "~/examples/Items/NotificationItem/styles"
 
 // Declaring props types for NotificationItem
 interface Props extends MenuItemProps {

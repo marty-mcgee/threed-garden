@@ -1,11 +1,11 @@
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-dark/base/colors"
-import borders from "themes/theme-dark/base/borders"
-import boxShadows from "themes/theme-dark/base/boxShadows"
+import colors from "~/themes/theme-dark/base/colors"
+import borders from "~/themes/theme-dark/base/borders"
+import boxShadows from "~/themes/theme-dark/base/boxShadows"
 
 // Company Juice Dashboard Helper Functions
-import pxToRem from "themes/theme-dark/functions/pxToRem"
-import linearGradient from "themes/theme-dark/functions/linearGradient"
+import pxToRem from "~/themes/theme-dark/functions/pxToRem"
+import linearGradient from "~/themes/theme-dark/functions/linearGradient"
 
 const { transparent, gradients } = colors
 const { borderRadius } = borders

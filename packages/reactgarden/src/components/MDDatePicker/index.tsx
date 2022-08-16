@@ -5,7 +5,7 @@ import Flatpickr from "react-flatpickr"
 import "flatpickr/dist/flatpickr.css"
 
 // Company Juice Dashboard components
-import MDInput from "components/MDInput"
+import MDInput from "~/components/MDInput"
 
 // types
 interface Props {

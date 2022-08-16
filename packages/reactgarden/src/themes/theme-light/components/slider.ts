@@ -1,11 +1,11 @@
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-light/base/colors"
-import borders from "themes/theme-light/base/borders"
-import boxShadows from "themes/theme-light/base/boxShadows"
+import colors from "~/themes/theme-light/base/colors"
+import borders from "~/themes/theme-light/base/borders"
+import boxShadows from "~/themes/theme-light/base/boxShadows"
 
 // Company Juice Dashboard Helper Functions
-import pxToRem from "themes/theme-light/functions/pxToRem"
-import boxShadow from "themes/theme-light/functions/boxShadow"
+import pxToRem from "~/themes/theme-light/functions/pxToRem"
+import boxShadow from "~/themes/theme-light/functions/boxShadow"
 
 const { grey, white, black, info } = colors
 const { borderRadius, borderWidth } = borders

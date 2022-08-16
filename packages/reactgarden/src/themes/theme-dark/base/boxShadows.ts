@@ -5,10 +5,10 @@
  */
 
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-dark/base/colors"
+import colors from "~/themes/theme-dark/base/colors"
 
 // Company Juice Dashboard Helper Functions
-import boxShadow from "themes/theme-dark/functions/boxShadow"
+import boxShadow from "~/themes/theme-dark/functions/boxShadow"
 
 const { black, dark, tabs, coloredShadows } = colors
 

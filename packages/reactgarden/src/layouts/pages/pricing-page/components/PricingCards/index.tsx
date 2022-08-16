@@ -2,13 +2,13 @@
 import Grid from "@mui/material/Grid"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
+import MDBox from "~/components/MDBox"
 
 // Company Juice Dashboard examples components
-import DefaultPricingCard from "examples/Cards/PricingCards/DefaultPricingCard"
+import DefaultPricingCard from "~/examples/Cards/PricingCards/DefaultPricingCard"
 
 // Company Juice Dashboard context
-import { useMaterialUIController } from "context"
+import { useMaterialUIController } from "~/context"
 
 function PricingCards({ prices }: { prices: string[] }): JSX.Element {
   const [controller] = useMaterialUIController()

@@ -2,9 +2,9 @@
 import { ErrorMessage, Field } from "formik"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDInput from "components/MDInput"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDInput from "~/components/MDInput"
 
 // Declaring props types for FormField
 interface Props {

@@ -5,38 +5,38 @@ import Grid from "@mui/material/Grid"
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Company Juice Dashboard examples components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout"
-import DashboardNavbar from "examples/Navbars/DashboardNavbar"
-import Footer from "examples/Footer"
-import MiniStatisticsCard from "examples/Cards/StatisticsCards/MiniStatisticsCard"
-import ProgressLineChart from "examples/Charts/LineCharts/ProgressLineChart"
-import DefaultInfoCard from "examples/Cards/InfoCards/DefaultInfoCard"
-import MasterCard from "examples/Cards/MasterCard"
-import MiniInfoCard from "examples/Cards/InfoCards/MiniInfoCard"
-import ControllerCard from "examples/Cards/ControllerCard"
-import Calendar from "examples/Calendar"
-import CategoriesList from "examples/Lists/CategoriesList"
+import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
+import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
+import Footer from "~/examples/Footer"
+import MiniStatisticsCard from "~/examples/Cards/StatisticsCards/MiniStatisticsCard"
+import ProgressLineChart from "~/examples/Charts/LineCharts/ProgressLineChart"
+import DefaultInfoCard from "~/examples/Cards/InfoCards/DefaultInfoCard"
+import MasterCard from "~/examples/Cards/MasterCard"
+import MiniInfoCard from "~/examples/Cards/InfoCards/MiniInfoCard"
+import ControllerCard from "~/examples/Cards/ControllerCard"
+import Calendar from "~/examples/Calendar"
+import CategoriesList from "~/examples/Lists/CategoriesList"
 
 // RTL page components
-import Steps from "layouts/pages/rtl/components/Steps"
-import FullBody from "layouts/pages/rtl/components/FullBody"
-import MediaPlayer from "layouts/pages/rtl/components/MediaPlayer"
-import OrdersOverview from "layouts/pages/rtl/components/OrdersOverview"
-import UpcomingEvents from "layouts/pages/rtl/components/UpcomingEvents"
-import Chart from "layouts/pages/rtl/components/Chart"
+import Steps from "~/layouts/pages/rtl/components/Steps"
+import FullBody from "~/layouts/pages/rtl/components/FullBody"
+import MediaPlayer from "~/layouts/pages/rtl/components/MediaPlayer"
+import OrdersOverview from "~/layouts/pages/rtl/components/OrdersOverview"
+import UpcomingEvents from "~/layouts/pages/rtl/components/UpcomingEvents"
+import Chart from "~/layouts/pages/rtl/components/Chart"
 
 // Data
-import progressLineChartData from "layouts/pages/rtl/data/progressLineChartData"
-import calendarEventsData from "layouts/pages/rtl/data/calendarEventsData"
-import categoriesListData from "layouts/pages/rtl/data/categoriesListData"
-import caloriesChartData from "layouts/pages/rtl/data/caloriesChartData"
+import progressLineChartData from "~/layouts/pages/rtl/data/progressLineChartData"
+import calendarEventsData from "~/layouts/pages/rtl/data/calendarEventsData"
+import categoriesListData from "~/layouts/pages/rtl/data/categoriesListData"
+import caloriesChartData from "~/layouts/pages/rtl/data/caloriesChartData"
 
 // Company Juice Dashboard contexts
-import { useMaterialUIController, setDirection } from "context"
+import { useMaterialUIController, setDirection } from "~/context"
 
 function RTL(): JSX.Element {
   const [, dispatch] = useMaterialUIController()

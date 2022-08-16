@@ -2,18 +2,18 @@
 import Grid from "@mui/material/Grid"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
+import MDBox from "~/components/MDBox"
 
 // Company Juice Dashboard components
-import MasterCard from "examples/Cards/MasterCard"
-import DefaultInfoCard from "examples/Cards/InfoCards/DefaultInfoCard"
+import MasterCard from "~/examples/Cards/MasterCard"
+import DefaultInfoCard from "~/examples/Cards/InfoCards/DefaultInfoCard"
 
 // Billing page components
-import BaseLayout from "layouts/pages/account/components/BaseLayout"
-import PaymentMethod from "layouts/pages/account/billing/components/PaymentMethod"
-import Invoices from "layouts/pages/account/billing/components/Invoices"
-import BillingInformation from "layouts/pages/account/billing/components/BillingInformation"
-import Transactions from "layouts/pages/account/billing/components/Transactions"
+import BaseLayout from "~/layouts/pages/account/components/BaseLayout"
+import PaymentMethod from "~/layouts/pages/account/billing/components/PaymentMethod"
+import Invoices from "~/layouts/pages/account/billing/components/Invoices"
+import BillingInformation from "~/layouts/pages/account/billing/components/BillingInformation"
+import Transactions from "~/layouts/pages/account/billing/components/Transactions"
 
 function Billing(): JSX.Element {
   return (

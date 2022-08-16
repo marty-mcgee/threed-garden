@@ -1,9 +1,9 @@
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-light/base/colors"
+import colors from "~/themes/theme-light/base/colors"
 
 // Company Juice Dashboard Helper Functions
-import pxToRem from "themes/theme-light/functions/pxToRem"
-import boxShadow from "themes/theme-light/functions/boxShadow"
+import pxToRem from "~/themes/theme-light/functions/pxToRem"
+import boxShadow from "~/themes/theme-light/functions/boxShadow"
 
 const { white } = colors
 

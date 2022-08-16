@@ -1,8 +1,8 @@
 // Company Juice Dashboard Base Styles
-import breakpoints from "themes/theme-dark/base/breakpoints"
+import breakpoints from "~/themes/theme-dark/base/breakpoints"
 
 // Company Juice Dashboard Helper Functions
-import pxToRem from "themes/theme-dark/functions/pxToRem"
+import pxToRem from "~/themes/theme-dark/functions/pxToRem"
 
 // types
 type Types = any

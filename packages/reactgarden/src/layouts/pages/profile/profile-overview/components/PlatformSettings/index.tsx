@@ -5,8 +5,8 @@ import Card from "@mui/material/Card"
 import Switch from "@mui/material/Switch"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 function PlatformSettings(): JSX.Element {
   const [followsMe, setFollowsMe] = useState<boolean>(true)

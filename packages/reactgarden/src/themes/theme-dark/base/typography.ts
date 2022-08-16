@@ -5,10 +5,10 @@
  */
 
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-dark/base/colors"
+import colors from "~/themes/theme-dark/base/colors"
 
 // Company Juice Dashboard Helper Functions
-import pxToRem from "themes/theme-dark/functions/pxToRem"
+import pxToRem from "~/themes/theme-dark/functions/pxToRem"
 
 const { white } = colors
 

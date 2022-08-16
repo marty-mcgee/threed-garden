@@ -6,14 +6,14 @@ import Grid from "@mui/material/Grid"
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Company Juice Dashboard examples components
-import SalesTable from "examples/Tables/SalesTable"
+import SalesTable from "~/examples/Tables/SalesTable"
 
 // Data
-import salesTableData from "layouts/dashboards/analytics/components/SalesByCountry/data/salesTableData"
+import salesTableData from "~/layouts/dashboards/analytics/components/SalesByCountry/data/salesTableData"
 
 function SalesByCountry(): JSX.Element {
 

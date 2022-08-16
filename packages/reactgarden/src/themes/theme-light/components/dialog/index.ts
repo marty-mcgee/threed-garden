@@ -1,6 +1,6 @@
 // Company Juice Dashboard Base Styles
-import borders from "themes/theme-light/base/borders"
-import boxShadows from "themes/theme-light/base/boxShadows"
+import borders from "~/themes/theme-light/base/borders"
+import boxShadows from "~/themes/theme-light/base/boxShadows"
 
 const { borderRadius } = borders
 const { xxl } = boxShadows

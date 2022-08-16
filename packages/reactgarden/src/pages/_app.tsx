@@ -36,16 +36,16 @@ import {
   useMaterialUIController,
   setMiniSidenav,
   setOpenConfigurator,
-} from "context"
+} from "~/context"
 // theme: mui: emotion cache
 import { CacheProvider, EmotionCache } from "@emotion/react"
 import createEmotionCache from "~/themes/common/createEmotionCache"
 import createCache from "@emotion/cache"
 // theme: mui: theme-dark (threed-garden default)
-import theme from "themes/theme-light"
-import themeRTL from "themes/theme-light/theme-rtl"
-import themeDark from "themes/theme-dark"
-import themeDarkRTL from "themes/theme-dark/theme-rtl"
+import theme from "~/themes/theme-light"
+import themeRTL from "~/themes/theme-light/theme-rtl"
+import themeDark from "~/themes/theme-dark"
+import themeDarkRTL from "~/themes/theme-dark/theme-rtl"
 import rtlPlugin from "stylis-plugin-rtl"
 
 // @fullcalendar styles (NOT HERE)
@@ -54,27 +54,27 @@ import rtlPlugin from "stylis-plugin-rtl"
 // import "@fullcalendar/timegrid/main.css"
 
 // images
-import favicon from "assets/images/icons/favicon.png"
-import appleIcon from "assets/images/icons/apple-icon.png"
-import brandWhite from "assets/images/logos/logo-threedgarden.png"
-import brandDark from "assets/images/logos/logo-threedgarden-alt.png"
+import favicon from "~/assets/images/icons/favicon.png"
+import appleIcon from "~/assets/images/icons/apple-icon.png"
+import brandWhite from "~/assets/images/logos/logo-threedgarden.png"
+import brandDark from "~/assets/images/logos/logo-threedgarden-alt.png"
 
 // dashboard components
-import MDBox from "components/MDBox"
+import MDBox from "~/components/MDBox"
 
 // dashboard examples
-import Sidenav from "examples/Sidenav"
-import Configurator from "examples/Configurator"
+import Sidenav from "~/examples/Sidenav"
+import Configurator from "~/examples/Configurator"
 
 // dashboard routes
-import routes from "routes/routes"
+import routes from "~/routes/routes"
 
 // theme: chakra
 // import { ChakraProvider } from "@chakra-ui/react"
 
 // api: apollo: graphql
 // import { ApolloProvider } from "@apollo/client"
-// import { useApollo } from "lib/apollo/client"
+// import { useApollo } from "~/lib/apollo/client"
 
 // ========================================================
 
@@ -272,7 +272,7 @@ import { theme } from "@boilerplate/theme"
 import { ChakraProvider } from "@chakra-ui/react"
 
 import { ApolloProvider } from "@apollo/client"
-import { useApollo } from "lib/apollo/client"
+import { useApollo } from "~/lib/apollo/client"
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: React.ReactElement) => React.ReactNode
@@ -311,11 +311,11 @@ export default function BoilerplateApp(props: AppPropsWithLayout) {
 // import { ThemeProvider } from "@mui/material/styles"
 // import CssBaseline from "@mui/material/CssBaseline"
 // import { CacheProvider, EmotionCache } from "@emotion/react"
-// import theme from "themes/theme-dark"
-// import createEmotionCache from "themes/createEmotionCache"
+// import theme from "~/themes/theme-dark"
+// import createEmotionCache from "~/themes/createEmotionCache"
 
 // // Material UI Context Provider
-// import { MaterialUIControllerProvider } from "context"
+// import { MaterialUIControllerProvider } from "~/context"
 
 // // Client-side cache, shared for the whole session of the user in the browser.
 // const clientSideEmotionCache = createEmotionCache()
@@ -372,7 +372,7 @@ import App from "next/app"
 import Head from "next/head"
 import Router from "next/router"
 
-import PageChange from "components/PageChange/PageChange.js"
+import PageChange from "~/components/PageChange/PageChange.js"
 
 import "assets/css/nextjs-material-dashboard.css?v=1.1.0"
 

@@ -15,24 +15,24 @@ import Icon from "@mui/material/Icon"
 import { Theme } from "@mui/material/styles"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDButton from "components/MDButton"
-import MDTypography from "components/MDTypography"
-import MDInput from "components/MDInput"
+import MDBox from "~/components/MDBox"
+import MDButton from "~/components/MDButton"
+import MDTypography from "~/components/MDTypography"
+import MDInput from "~/components/MDInput"
 
 // Company Juice Dashboard examples components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout"
-import DashboardNavbar from "examples/Navbars/DashboardNavbar"
-import Footer from "examples/Footer"
+import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
+import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
+import Footer from "~/examples/Footer"
 
 // Kanban application components
-import Header from "layouts/applications/kanban/components/Header"
+import Header from "~/layouts/applications/kanban/components/Header"
 
 // Data
-import boards from "layouts/applications/kanban/data"
+import boards from "~/layouts/applications/kanban/data"
 
 // Company Juice Dashboard context
-import { useMaterialUIController } from "context"
+import { useMaterialUIController } from "~/context"
 
 // @asseinfo/react-kanban components
 const Board = dynamic(() => import("@asseinfo/react-kanban"), { ssr: false })

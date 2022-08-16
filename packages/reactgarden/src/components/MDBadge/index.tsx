@@ -4,19 +4,19 @@ import { FC, ReactNode, forwardRef } from "react"
 import { BadgeProps } from "@mui/material"
 
 // Custom styles for the MDBadge
-import MDBadgeRoot from "components/MDBadge/MDBadgeRoot"
+import MDBadgeRoot from "~/components/MDBadge/MDBadgeRoot"
 
 // declaring props types for MDBadge
 interface Props extends Omit<BadgeProps, "color" | "variant"> {
   color?:
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "light"
-    | "dark"
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "light"
+  | "dark"
   variant?: "gradient" | "contained"
   size?: "xs" | "sm" | "md" | "lg"
   circular?: boolean

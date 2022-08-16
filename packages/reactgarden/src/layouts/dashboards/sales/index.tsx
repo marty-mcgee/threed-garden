@@ -9,29 +9,29 @@ import Icon from "@mui/material/Icon"
 import Card from "@mui/material/Card"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDBadgeDot from "components/MDBadgeDot"
-import MDButton from "components/MDButton"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDBadgeDot from "~/components/MDBadgeDot"
+import MDButton from "~/components/MDButton"
+import MDTypography from "~/components/MDTypography"
 
 // Company Juice Dashboard examples components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout"
-import DashboardNavbar from "examples/Navbars/DashboardNavbar"
-import Footer from "examples/Footer"
-import DefaultStatisticsCard from "examples/Cards/StatisticsCards/DefaultStatisticsCard"
-import DefaultLineChart from "examples/Charts/LineCharts/DefaultLineChart"
-import HorizontalBarChart from "examples/Charts/BarCharts/HorizontalBarChart"
-import SalesTable from "examples/Tables/SalesTable"
-import DataTable from "examples/Tables/DataTable"
+import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
+import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
+import Footer from "~/examples/Footer"
+import DefaultStatisticsCard from "~/examples/Cards/StatisticsCards/DefaultStatisticsCard"
+import DefaultLineChart from "~/examples/Charts/LineCharts/DefaultLineChart"
+import HorizontalBarChart from "~/examples/Charts/BarCharts/HorizontalBarChart"
+import SalesTable from "~/examples/Tables/SalesTable"
+import DataTable from "~/examples/Tables/DataTable"
 
 // Sales dashboard components
-import ChannelsChart from "layouts/dashboards/sales/components/ChannelsChart"
+import ChannelsChart from "~/layouts/dashboards/sales/components/ChannelsChart"
 
 // Data
-import defaultLineChartData from "layouts/dashboards/sales/data/defaultLineChartData"
-import horizontalBarChartData from "layouts/dashboards/sales/data/horizontalBarChartData"
-import salesTableData from "layouts/dashboards/sales/data/salesTableData"
-import dataTableData from "layouts/dashboards/sales/data/dataTableData"
+import defaultLineChartData from "~/layouts/dashboards/sales/data/defaultLineChartData"
+import horizontalBarChartData from "~/layouts/dashboards/sales/data/horizontalBarChartData"
+import salesTableData from "~/layouts/dashboards/sales/data/salesTableData"
+import dataTableData from "~/layouts/dashboards/sales/data/dataTableData"
 
 function Sales(): JSX.Element {
   // DefaultStatisticsCard state for the dropdown value

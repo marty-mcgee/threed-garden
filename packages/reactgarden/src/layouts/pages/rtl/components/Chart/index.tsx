@@ -7,17 +7,17 @@ import { Line } from "react-chartjs-2"
 import Card from "@mui/material/Card"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Company Juice Dashboard Helper Functions
-import gradientChartLine from "themes/theme-light/functions/gradientChartLine"
+import gradientChartLine from "~/themes/theme-light/functions/gradientChartLine"
 
 // Chart configurations
-import configs from "layouts/pages/widgets/components/Chart/configs"
+import configs from "~/layouts/pages/widgets/components/Chart/configs"
 
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-light/base/colors"
+import colors from "~/themes/theme-light/base/colors"
 
 // Declaring props types for Chart
 interface Props {

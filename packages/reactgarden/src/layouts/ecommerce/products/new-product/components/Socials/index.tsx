@@ -2,11 +2,11 @@
 import Grid from "@mui/material/Grid"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // NewProduct page components
-import FormField from "layouts/ecommerce/products/new-product/components/FormField"
+import FormField from "~/layouts/ecommerce/products/new-product/components/FormField"
 
 function Socials(): JSX.Element {
   return (

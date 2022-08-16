@@ -9,22 +9,22 @@ import Divider from "@mui/material/Divider"
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // ReportsBarChart configurations
-import configs from "examples/Charts/BarCharts/ReportsBarChart/configs"
+import configs from "~/examples/Charts/BarCharts/ReportsBarChart/configs"
 
 // Declaring props types for ReportsBarChart
 interface Props {
   color?:
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "dark"
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "dark"
   title: string
   description?: string | ReactNode
   date: string

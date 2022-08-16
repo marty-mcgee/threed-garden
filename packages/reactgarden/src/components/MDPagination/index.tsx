@@ -8,10 +8,10 @@ import {
 } from "react"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
+import MDBox from "~/components/MDBox"
 
 // Custom styles for MDPagination
-import MDPaginationItemRoot from "components/MDPagination/MDPaginationItemRoot"
+import MDPaginationItemRoot from "~/components/MDPagination/MDPaginationItemRoot"
 
 // The Pagination main context
 const Context = createContext<any>(null)
@@ -21,15 +21,15 @@ interface Props {
   item?: boolean
   variant?: "gradient" | "contained"
   color?:
-    | "white"
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "light"
-    | "dark"
+  | "white"
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "light"
+  | "dark"
   size?: "small" | "medium" | "large"
   active?: boolean
   children: ReactNode

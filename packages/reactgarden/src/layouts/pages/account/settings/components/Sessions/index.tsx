@@ -4,9 +4,9 @@ import Icon from "@mui/material/Icon"
 import Divider from "@mui/material/Divider"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDBadge from "components/MDBadge"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDBadge from "~/components/MDBadge"
 
 function Sessions(): JSX.Element {
   const actionButtonStyles = {

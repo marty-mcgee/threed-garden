@@ -1,8 +1,8 @@
 // Company Juice Dashboard Base Styles
-import borders from "themes/theme-light/base/borders"
+import borders from "~/themes/theme-light/base/borders"
 
 // Company Juice Dashboard Helper Functions
-import pxToRem from "themes/theme-light/functions/pxToRem"
+import pxToRem from "~/themes/theme-light/functions/pxToRem"
 
 const { borderRadius } = borders
 

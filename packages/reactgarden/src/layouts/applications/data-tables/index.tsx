@@ -2,17 +2,17 @@
 import Card from "@mui/material/Card"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Company Juice Dashboard examples components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout"
-import DashboardNavbar from "examples/Navbars/DashboardNavbar"
-import Footer from "examples/Footer"
-import DataTable from "examples/Tables/DataTable"
+import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
+import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
+import Footer from "~/examples/Footer"
+import DataTable from "~/examples/Tables/DataTable"
 
 // Data
-import dataTableData from "layouts/applications/data-tables/data/dataTableData"
+import dataTableData from "~/layouts/applications/data-tables/data/dataTableData"
 
 function DataTables(): JSX.Element {
   return (

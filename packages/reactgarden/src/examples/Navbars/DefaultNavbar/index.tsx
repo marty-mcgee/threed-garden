@@ -15,19 +15,19 @@ import Container from "@mui/material/Container"
 import { Theme } from "@mui/material/styles"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDButton from "components/MDButton"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDButton from "~/components/MDButton"
 
 // Company Juice Dashboard examples components
-import DefaultNavbarDropdown from "examples/Navbars/DefaultNavbar/DefaultNavbarDropdown"
-import DefaultNavbarMobile from "examples/Navbars/DefaultNavbar/DefaultNavbarMobile"
+import DefaultNavbarDropdown from "~/examples/Navbars/DefaultNavbar/DefaultNavbarDropdown"
+import DefaultNavbarMobile from "~/examples/Navbars/DefaultNavbar/DefaultNavbarMobile"
 
 // Company Juice Dashboard Base Styles
-import breakpoints from "themes/theme-light/base/breakpoints"
+import breakpoints from "~/themes/theme-light/base/breakpoints"
 
 // Company Juice Dashboard context
-import { useMaterialUIController } from "context"
+import { useMaterialUIController } from "~/context"
 
 // Declaring props types for DefaultNavbar
 interface Props {

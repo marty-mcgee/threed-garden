@@ -4,12 +4,12 @@ import Icon from "@mui/material/Icon"
 import { Theme } from "@mui/material/styles"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDButton from "components/MDButton"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDButton from "~/components/MDButton"
 
 // Images
-import bgImage from "assets/images/any/bg-player.jpg"
+import bgImage from "~/assets/images/any/bg-player.jpg"
 
 function MediaPlayer(): JSX.Element {
   const mediaPlayerButtonStyles = ({ functions: { pxToRem } }: Theme) => ({

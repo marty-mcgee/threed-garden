@@ -1,23 +1,23 @@
 import { FC, forwardRef } from "react"
 
 // Company Juice Dashboard components
-import MDTypography from "components/MDTypography"
+import MDTypography from "~/components/MDTypography"
 
 // Custom styles for MDProgress
-import MDProgressRoot from "components/MDProgress/MDProgressRoot"
+import MDProgressRoot from "~/components/MDProgress/MDProgressRoot"
 
 // Delcare props types for MDProgress
 interface Props {
   variant?: "contained" | "gradient"
   color?:
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "light"
-    | "dark"
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "light"
+  | "dark"
   value: number
   label?: boolean
   [key: string]: any

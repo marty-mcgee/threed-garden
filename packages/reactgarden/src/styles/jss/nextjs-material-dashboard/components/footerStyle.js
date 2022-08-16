@@ -3,7 +3,7 @@ import {
   container,
   primaryColor,
   grayColor,
-} from "styles/jss/nextjs-material-dashboard.js"
+} from "~/styles/jss/nextjs-material-dashboard.js"
 
 const footerStyle = {
   block: {

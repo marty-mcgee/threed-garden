@@ -4,14 +4,14 @@ import { useState } from "react"
 import Container from "@mui/material/Container"
 
 // Company Juice Dashboard examples components
-import PageLayout from "examples/LayoutContainers/PageLayout"
+import PageLayout from "~/examples/LayoutContainers/PageLayout"
 
 // Pricing page components
-import Header from "layouts/pages/pricing-page/components/Header"
-import Footer from "layouts/pages/pricing-page/components/Footer"
-import PricingCards from "layouts/pages/pricing-page/components/PricingCards"
-import TrustedBrands from "layouts/pages/pricing-page/components/TrustedBrands"
-import Faq from "layouts/pages/pricing-page/components/Faq"
+import Header from "~/layouts/pages/pricing-page/components/Header"
+import Footer from "~/layouts/pages/pricing-page/components/Footer"
+import PricingCards from "~/layouts/pages/pricing-page/components/PricingCards"
+import TrustedBrands from "~/layouts/pages/pricing-page/components/TrustedBrands"
+import Faq from "~/layouts/pages/pricing-page/components/Faq"
 
 function PricingPage(): JSX.Element {
   const [tabValue, setTabValue] = useState<number>(0)

@@ -1,6 +1,6 @@
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-light/base/colors"
-import typography from "themes/theme-light/base/typography"
+import colors from "~/themes/theme-light/base/colors"
+import typography from "~/themes/theme-light/base/typography"
 
 const { grey } = colors
 const { size } = typography

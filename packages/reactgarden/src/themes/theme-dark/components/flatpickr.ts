@@ -1,8 +1,8 @@
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-dark/base/colors"
+import colors from "~/themes/theme-dark/base/colors"
 
 // Company Juice Dashboard Helper Functions
-import rgba from "themes/theme-dark/functions/rgba"
+import rgba from "~/themes/theme-dark/functions/rgba"
 
 const { info, white, gradients } = colors
 

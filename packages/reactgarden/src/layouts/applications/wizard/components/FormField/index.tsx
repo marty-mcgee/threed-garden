@@ -1,5 +1,5 @@
 // Company Juice Dashboard components
-import MDInput from "components/MDInput"
+import MDInput from "~/components/MDInput"
 
 function FormField({
   label,

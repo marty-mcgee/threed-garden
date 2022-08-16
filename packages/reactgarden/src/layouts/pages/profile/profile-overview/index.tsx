@@ -8,33 +8,33 @@ import TwitterIcon from "@mui/icons-material/Twitter"
 import InstagramIcon from "@mui/icons-material/Instagram"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Company Juice Dashboard examples components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout"
-import DashboardNavbar from "examples/Navbars/DashboardNavbar"
-import Footer from "examples/Footer"
-import ProfileInfoCard from "examples/Cards/InfoCards/ProfileInfoCard"
-import ProfilesList from "examples/Lists/ProfilesList"
-import DefaultProjectCard from "examples/Cards/ProjectCards/DefaultProjectCard"
+import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
+import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
+import Footer from "~/examples/Footer"
+import ProfileInfoCard from "~/examples/Cards/InfoCards/ProfileInfoCard"
+import ProfilesList from "~/examples/Lists/ProfilesList"
+import DefaultProjectCard from "~/examples/Cards/ProjectCards/DefaultProjectCard"
 
 // Overview page components
-import Header from "layouts/pages/profile/components/Header"
-import PlatformSettings from "layouts/pages/profile/profile-overview/components/PlatformSettings"
+import Header from "~/layouts/pages/profile/components/Header"
+import PlatformSettings from "~/layouts/pages/profile/profile-overview/components/PlatformSettings"
 
 // Data
-import profilesListData from "layouts/pages/profile/profile-overview/data/profilesListData"
+import profilesListData from "~/layouts/pages/profile/profile-overview/data/profilesListData"
 
 // Images
-import homeDecor1 from "assets/images/any/home-decor-1.jpg"
-import homeDecor2 from "assets/images/any/home-decor-2.jpg"
-import homeDecor3 from "assets/images/any/home-decor-3.jpg"
-import homeDecor4 from "assets/images/any/home-decor-4.jpg"
-import team1 from "assets/images/people/team-1.jpg"
-import team2 from "assets/images/people/team-2.jpg"
-import team3 from "assets/images/people/team-3.jpg"
-import team4 from "assets/images/people/team-4.jpg"
+import homeDecor1 from "~/assets/images/any/home-decor-1.jpg"
+import homeDecor2 from "~/assets/images/any/home-decor-2.jpg"
+import homeDecor3 from "~/assets/images/any/home-decor-3.jpg"
+import homeDecor4 from "~/assets/images/any/home-decor-4.jpg"
+import team1 from "~/assets/images/people/team-1.jpg"
+import team2 from "~/assets/images/people/team-2.jpg"
+import team3 from "~/assets/images/people/team-3.jpg"
+import team4 from "~/assets/images/people/team-4.jpg"
 
 function Overview(): JSX.Element {
   return (

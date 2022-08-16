@@ -1,4 +1,4 @@
-import { hexToRgb, whiteColor } from "styles/jss/nextjs-material-dashboard.js"
+import { hexToRgb, whiteColor } from "~/styles/jss/nextjs-material-dashboard.js"
 
 const customTabsStyle = {
   cardTitle: {

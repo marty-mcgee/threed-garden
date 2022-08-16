@@ -8,24 +8,24 @@ import Card from "@mui/material/Card"
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // PieChart configurations
-import configs from "examples/Charts/PieChart/configs"
+import configs from "~/examples/Charts/PieChart/configs"
 
 // Declaring props types for PieChart
 interface Props {
   icon?: {
     color?:
-      | "primary"
-      | "secondary"
-      | "info"
-      | "success"
-      | "warning"
-      | "error"
-      | "light"
-      | "dark"
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "light"
+    | "dark"
     component: ReactNode
   }
   title?: string

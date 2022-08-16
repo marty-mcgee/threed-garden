@@ -8,18 +8,18 @@ import MenuItem from "@mui/material/MenuItem"
 import Divider from "@mui/material/Divider"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDButton from "components/MDButton"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDButton from "~/components/MDButton"
 
 // Company Juice Dashboard examples components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout"
-import DashboardNavbar from "examples/Navbars/DashboardNavbar"
-import Footer from "examples/Footer"
-import DataTable from "examples/Tables/DataTable"
+import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
+import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
+import Footer from "~/examples/Footer"
+import DataTable from "~/examples/Tables/DataTable"
 
 // Data
-import dataTableData from "layouts/ecommerce/orders/order-list/data/dataTableData"
+import dataTableData from "~/layouts/ecommerce/orders/order-list/data/dataTableData"
 
 function OrderList(): JSX.Element {
   const [menu, setMenu] = useState(null)
