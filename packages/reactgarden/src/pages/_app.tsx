@@ -145,7 +145,7 @@ const Main: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPro
   // ========================================================
   // event handlers
 
-  // open sidenav when mouse enter on mini sidenav
+  // open sidenav when mouse enter on mini sidenav?
   const handleOnMouseEnter = () => {
     if (miniSidenav && !onMouseEnter) {
       setMiniSidenav(dispatch, false)
@@ -153,7 +153,7 @@ const Main: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPro
     }
   }
 
-  // close sidenav when mouse leave mini sidenav
+  // close sidenav when mouse leave mini sidenav?
   const handleOnMouseLeave = () => {
     if (onMouseEnter) {
       setMiniSidenav(dispatch, true)
