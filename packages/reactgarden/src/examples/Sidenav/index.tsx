@@ -79,9 +79,9 @@ function Sidenav({
   const [openNestedCollapse, setOpenNestedCollapse] = useState<boolean | string>(false)
   const [controller, dispatch] = useMaterialUIController()
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode } = controller
-  // const location = useLocation()
-  const location = useRouter()
-  const { pathname } = location
+  // const route = useLocation()
+  const route = useRouter()
+  const { pathname } = route
   const collapseName = pathname.split("/").slice(1)[0]
   const items = pathname.split("/").slice(1)
   const itemParentName = items[1]
@@ -113,14 +113,12 @@ function Sidenav({
     setOpenNestedCollapse(itemParentName)
   }, [])
 
+  // [MM] HEY HEY HEY -- A BIG ONE 333
   useEffect(() => {
     // A function that sets the mini state of the sidenav.
     function handleMiniSidenav() {
       setMiniSidenav(dispatch, window.innerWidth < 333)
-      setTransparentSidenav(
-        dispatch,
-        window.innerWidth < 333 ? false : transparentSidenav
-      )
+      setTransparentSidenav(dispatch, window.innerWidth < 333 ? false : transparentSidenav)
       setWhiteSidenav(dispatch, window.innerWidth < 333 ? false : whiteSidenav)
     }
 
@@ -134,7 +132,7 @@ function Sidenav({
 
     // Remove event listener on cleanup
     return () => window.removeEventListener("resize", handleMiniSidenav)
-  }, [dispatch, location])
+  }, [dispatch, route])
 
   // Render all the nested collapse items from the routes.js
   const renderNestedCollapse = (collapse: any) => {
