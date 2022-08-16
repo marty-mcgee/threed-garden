@@ -33,6 +33,8 @@ import themeDarkRTL from "themes/theme-dark/theme-rtl"
 
 // RTL plugins
 import rtlPlugin from "stylis-plugin-rtl"
+
+// emotion cache
 import { CacheProvider } from "@emotion/react"
 import createCache from "@emotion/cache"
 
