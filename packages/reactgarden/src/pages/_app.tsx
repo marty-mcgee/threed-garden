@@ -237,9 +237,11 @@ const Main: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPro
 // ========================================================
 // APP
 const MyApp: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => { // [MM] ooooo, very interesting (type|interface)
+
+  console.log(`[MM] MyApp: ThreeD Garden @ ${new Date().toISOString()}`)
+
   const { Component, emotionCache = clientSideEmotionCache, pageProps, router } = props
-  // const router = useRouter()
-  console.log("[MM] MyApp: ThreeD Garden")
+
   return (
     <MaterialUIControllerProvider>
       <CacheProvider value={emotionCache}>
