@@ -1,5 +1,5 @@
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-dark/base/colors"
+import colors from "~/themes/theme-dark/base/colors"
 
 const { text } = colors
 

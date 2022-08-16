@@ -4,21 +4,21 @@ import { ReactNode } from "react"
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDButton from "components/MDButton"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDButton from "~/components/MDButton"
 
 // Declaring props types for Transaction
 interface Props {
   color:
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "light"
-    | "dark"
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "light"
+  | "dark"
   icon: ReactNode
   name: string
   description: string

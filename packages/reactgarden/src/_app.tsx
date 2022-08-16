@@ -19,19 +19,19 @@ import CssBaseline from "@mui/material/CssBaseline"
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
+import MDBox from "~/components/MDBox"
 
 // Company Juice Dashboard examples
-import Sidenav from "examples/Sidenav"
-import Configurator from "examples/Configurator"
+import Sidenav from "~/examples/Sidenav"
+import Configurator from "~/examples/Configurator"
 
 // Company Juice Dashboard themes
-import theme from "themes/theme-light"
-import themeRTL from "themes/theme-light/theme-rtl"
+import theme from "~/themes/theme-light"
+import themeRTL from "~/themes/theme-light/theme-rtl"
 
 // Company Juice Dashboard Dark Mode themes
-import themeDark from "themes/theme-dark"
-import themeDarkRTL from "themes/theme-dark/theme-rtl"
+import themeDark from "~/themes/theme-dark"
+import themeDarkRTL from "~/themes/theme-dark/theme-rtl"
 
 // RTL plugins
 import rtlPlugin from "stylis-plugin-rtl"
@@ -41,18 +41,18 @@ import { CacheProvider } from "@emotion/react"
 import createCache from "@emotion/cache"
 
 // Company Juice Dashboard routes
-import routes from "routes/routes"
+import routes from "~/routes/routes"
 
 // Company Juice Dashboard contexts
 import {
   useMaterialUIController,
   setMiniSidenav,
   setOpenConfigurator,
-} from "context"
+} from "~/context"
 
 // Images
-import brandWhite from "assets/images/logos/logo-threedgarden.png"
-import brandDark from "assets/images/logos/logo-threedgarden-alt.png"
+import brandWhite from "~/assets/images/logos/logo-threedgarden.png"
+import brandDark from "~/assets/images/logos/logo-threedgarden-alt.png"
 
 export default function App() {
   const [controller, dispatch] = useMaterialUIController()

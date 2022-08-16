@@ -1,6 +1,6 @@
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 function OrderSummary(): JSX.Element {
   return (

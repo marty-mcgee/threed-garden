@@ -9,11 +9,11 @@ import MuiLink from "@mui/material/Link"
 import { Theme } from "@mui/material/styles"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Company Juice Dashboard exampless
-import DefaultNavbarDropdown from "examples/Navbars/DefaultNavbar/DefaultNavbarDropdown"
+import DefaultNavbarDropdown from "~/examples/Navbars/DefaultNavbar/DefaultNavbarDropdown"
 
 // Declaring props types for DefaultNavbarMobile
 interface Props {

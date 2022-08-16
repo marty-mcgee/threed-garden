@@ -1,7 +1,7 @@
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-light/base/colors"
-import typography from "themes/theme-light/base/typography"
-import borders from "themes/theme-light/base/borders"
+import colors from "~/themes/theme-light/base/colors"
+import typography from "~/themes/theme-light/base/typography"
+import borders from "~/themes/theme-light/base/borders"
 
 const { info, inputBorderColor, dark } = colors
 const { size } = typography

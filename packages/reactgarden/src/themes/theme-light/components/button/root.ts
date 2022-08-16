@@ -1,9 +1,9 @@
 // Company Juice Dashboard Base Styles
-import typography from "themes/theme-light/base/typography"
-import borders from "themes/theme-light/base/borders"
+import typography from "~/themes/theme-light/base/typography"
+import borders from "~/themes/theme-light/base/borders"
 
 // Company Juice Dashboard Helper Functions
-import pxToRem from "themes/theme-light/functions/pxToRem"
+import pxToRem from "~/themes/theme-light/functions/pxToRem"
 
 const { fontWeightBold, size } = typography
 const { borderRadius } = borders

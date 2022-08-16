@@ -9,8 +9,8 @@ import PinterestIcon from "@mui/icons-material/Pinterest"
 import LinkedInIcon from "@mui/icons-material/LinkedIn"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 function Footer(): JSX.Element {
   return (

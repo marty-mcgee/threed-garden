@@ -4,21 +4,21 @@ import { useMemo } from "react"
 import Grid from "@mui/material/Grid"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
+import MDBox from "~/components/MDBox"
 
 // Company Juice Dashboard examples components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout"
-import DashboardNavbar from "examples/Navbars/DashboardNavbar"
-import Footer from "examples/Footer"
-import EventCalendar from "examples/Calendar"
+import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
+import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
+import Footer from "~/examples/Footer"
+import EventCalendar from "~/examples/Calendar"
 
 // Calendar application components
-import Header from "layouts/applications/calendar/components/Header"
-import NextEvents from "layouts/applications/calendar/components/NextEvents"
-import ProductivityChart from "layouts/applications/calendar/components/ProductivityChart"
+import Header from "~/layouts/applications/calendar/components/Header"
+import NextEvents from "~/layouts/applications/calendar/components/NextEvents"
+import ProductivityChart from "~/layouts/applications/calendar/components/ProductivityChart"
 
 // Data
-import calendarEventsData from "layouts/applications/calendar/data/calendarEventsData"
+import calendarEventsData from "~/layouts/applications/calendar/data/calendarEventsData"
 
 function Calendar(): JSX.Element {
   return (

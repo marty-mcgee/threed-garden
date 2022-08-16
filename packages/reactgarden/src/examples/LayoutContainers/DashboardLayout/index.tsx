@@ -5,10 +5,10 @@ import { useEffect, ReactNode } from "react"
 import { useRouter, NextRouter } from "next/router"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
+import MDBox from "~/components/MDBox"
 
 // Company Juice Dashboard context
-import { useMaterialUIController, setLayout } from "context"
+import { useMaterialUIController, setLayout } from "~/context"
 
 function DashboardLayout({ children }: { children: ReactNode }): JSX.Element {
   const [controller, dispatch] = useMaterialUIController()

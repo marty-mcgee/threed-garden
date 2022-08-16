@@ -6,23 +6,23 @@ import Grid from "@mui/material/Grid"
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Company Juice Dashboard context
-import { useMaterialUIController } from "context"
+import { useMaterialUIController } from "~/context"
 
 // Decalaring props types for MiniStatisticsCard
 interface Props {
   bgColor?:
-    | "white"
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "dark"
+  | "white"
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "dark"
   title?: {
     fontWeight?: "light" | "regular" | "medium" | "bold"
     text?: string
@@ -30,25 +30,25 @@ interface Props {
   count: string | number
   percentage?: {
     color:
-      | "primary"
-      | "secondary"
-      | "info"
-      | "success"
-      | "warning"
-      | "error"
-      | "dark"
-      | "white"
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "dark"
+    | "white"
     text: string | number
   }
   icon: {
     color:
-      | "primary"
-      | "secondary"
-      | "info"
-      | "success"
-      | "warning"
-      | "error"
-      | "dark"
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "dark"
     component: ReactNode
   }
   direction?: "right" | "left"

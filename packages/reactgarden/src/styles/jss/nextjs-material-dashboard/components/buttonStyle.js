@@ -9,7 +9,7 @@ import {
   whiteColor,
   blackColor,
   hexToRgb,
-} from "styles/jss/nextjs-material-dashboard.js"
+} from "~/styles/jss/nextjs-material-dashboard.js"
 
 const buttonStyle = {
   button: {

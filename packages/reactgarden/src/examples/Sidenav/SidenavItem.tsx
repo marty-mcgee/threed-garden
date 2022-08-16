@@ -8,28 +8,28 @@ import Icon from "@mui/material/Icon"
 import { Theme } from "@mui/material/styles"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
+import MDBox from "~/components/MDBox"
 
 // Custom styles for the SidenavItem
 import {
   item,
   itemContent,
   itemArrow,
-} from "examples/Sidenav/styles/sidenavItem"
+} from "~/examples/Sidenav/styles/sidenavItem"
 
 // Company Juice Dashboard contexts
-import { useMaterialUIController } from "context"
+import { useMaterialUIController } from "~/context"
 
 // Declaring props types for SidenavCollapse
 interface Props {
   color?:
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "dark"
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "dark"
   name: string
   active?: boolean | string
   nested?: boolean

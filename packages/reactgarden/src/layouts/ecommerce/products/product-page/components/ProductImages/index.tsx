@@ -7,14 +7,14 @@ import ImgsViewer from "react-images-viewer"
 import Stack from "@mui/material/Stack"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
+import MDBox from "~/components/MDBox"
 
 // Images
-import image1 from "assets/images/products/product-details-1.jpg"
-import image2 from "assets/images/products/product-details-2.jpg"
-import image3 from "assets/images/products/product-details-3.jpg"
-import image4 from "assets/images/products/product-details-4.jpg"
-import image5 from "assets/images/products/product-details-5.jpg"
+import image1 from "~/assets/images/products/product-details-1.jpg"
+import image2 from "~/assets/images/products/product-details-2.jpg"
+import image3 from "~/assets/images/products/product-details-3.jpg"
+import image4 from "~/assets/images/products/product-details-4.jpg"
+import image5 from "~/assets/images/products/product-details-5.jpg"
 
 function ProductImages(): JSX.Element {
   const [currentImage, setCurrentImage] = useState<string>(image1)

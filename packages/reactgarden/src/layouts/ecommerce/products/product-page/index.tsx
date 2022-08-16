@@ -3,21 +3,21 @@ import Card from "@mui/material/Card"
 import Grid from "@mui/material/Grid"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Company Juice Dashboard examples components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout"
-import DashboardNavbar from "examples/Navbars/DashboardNavbar"
-import Footer from "examples/Footer"
-import DataTable from "examples/Tables/DataTable"
+import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
+import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
+import Footer from "~/examples/Footer"
+import DataTable from "~/examples/Tables/DataTable"
 
 // ProductPage page components
-import ProductImages from "layouts/ecommerce/products/product-page/components/ProductImages"
-import ProductInfo from "layouts/ecommerce/products/product-page/components/ProductInfo"
+import ProductImages from "~/layouts/ecommerce/products/product-page/components/ProductImages"
+import ProductInfo from "~/layouts/ecommerce/products/product-page/components/ProductInfo"
 
 // Data
-import dataTableData from "layouts/ecommerce/products/product-page/data/dataTableData"
+import dataTableData from "~/layouts/ecommerce/products/product-page/data/dataTableData"
 
 function ProductPage(): JSX.Element {
   return (

@@ -9,16 +9,16 @@ import Tab from "@mui/material/Tab"
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDAvatar from "components/MDAvatar"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDAvatar from "~/components/MDAvatar"
 
 // Company Juice Dashboard Base Styles
-import breakpoints from "themes/theme-light/base/breakpoints"
+import breakpoints from "~/themes/theme-light/base/breakpoints"
 
 // Images
-import burceMars from "assets/images/people/bruce-mars.jpg"
-import backgroundImage from "assets/images/any/bg-profile.jpg"
+import burceMars from "~/assets/images/people/bruce-mars.jpg"
+import backgroundImage from "~/assets/images/any/bg-profile.jpg"
 
 function Header({ children }: { children?: ReactNode }): JSX.Element {
   const [tabsOrientation, setTabsOrientation] = useState<

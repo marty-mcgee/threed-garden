@@ -1,5 +1,5 @@
 // Company Juice Dashboard Base Styles
-import borders from "themes/theme-dark/base/borders"
+import borders from "~/themes/theme-dark/base/borders"
 
 const { borderRadius } = borders
 

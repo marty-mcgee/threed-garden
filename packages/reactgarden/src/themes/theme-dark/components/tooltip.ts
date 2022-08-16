@@ -2,12 +2,12 @@
 import Fade from "@mui/material/Fade"
 
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-dark/base/colors"
-import typography from "themes/theme-dark/base/typography"
-import borders from "themes/theme-dark/base/borders"
+import colors from "~/themes/theme-dark/base/colors"
+import typography from "~/themes/theme-dark/base/typography"
+import borders from "~/themes/theme-dark/base/borders"
 
 // Company Juice Dashboard Helper Functions
-import pxToRem from "themes/theme-dark/functions/pxToRem"
+import pxToRem from "~/themes/theme-dark/functions/pxToRem"
 
 const { black, white } = colors
 const { size, fontWeightRegular } = typography

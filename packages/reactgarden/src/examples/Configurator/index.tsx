@@ -16,12 +16,12 @@ import TwitterIcon from "@mui/icons-material/Twitter"
 import FacebookIcon from "@mui/icons-material/Facebook"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDButton from "components/MDButton"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDButton from "~/components/MDButton"
 
 // Custom styles for the Configurator
-import ConfiguratorRoot from "examples/Configurator/ConfiguratorRoot"
+import ConfiguratorRoot from "~/examples/Configurator/ConfiguratorRoot"
 
 // Company Juice Dashboard context
 import {
@@ -33,7 +33,7 @@ import {
   setFixedNavbar,
   setSidenavColor,
   setDarkMode,
-} from "context"
+} from "~/context"
 
 function Configurator(): JSX.Element {
   const [controller, dispatch] = useMaterialUIController()
@@ -177,9 +177,8 @@ function Configurator(): JSX.Element {
                   width: "24px",
                   height: "24px",
                   padding: 0,
-                  border: `${borderWidth[1]} solid ${
-                    darkMode ? background.sidenav : white.main
-                  }`,
+                  border: `${borderWidth[1]} solid ${darkMode ? background.sidenav : white.main
+                    }`,
                   borderColor: () => {
                     let borderColorValue = sidenavColor === color && dark.main
 

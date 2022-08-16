@@ -4,26 +4,26 @@ import { ReactNode } from "react"
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Timeline context
-import { useTimeline } from "examples/Timeline/context"
+import { useTimeline } from "~/examples/Timeline/context"
 
 // Custom styles for the TimelineItem
-import timelineItem from "examples/Timeline/TimelineItem/styles"
+import timelineItem from "~/examples/Timeline/TimelineItem/styles"
 
 // Declaring prop types for TimelineItem
 interface Props {
   color?:
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "dark"
-    | "light"
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "dark"
+  | "light"
   icon: ReactNode
   title: string
   dateTime: string

@@ -8,14 +8,14 @@ import interactionPlugin from "@fullcalendar/interaction"
 import Card from "@mui/material/Card"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Custom styles for Calendar
-import CalendarRoot from "examples/Calendar/CalendarRoot"
+import CalendarRoot from "~/examples/Calendar/CalendarRoot"
 
 // Company Juice Dashboard context
-import { useMaterialUIController } from "context"
+import { useMaterialUIController } from "~/context"
 
 // Declaring props types for the Calender
 interface Props {
@@ -43,11 +43,11 @@ function Calendar({ header, ...rest }: Props): JSX.Element {
 
   const events = rest.events
     ? rest.events.map((el: any) => ({
-        ...el,
-        className: validClassNames.find((item) => item === el.className)
-          ? `event-${el.className}`
-          : "event-info",
-      }))
+      ...el,
+      className: validClassNames.find((item) => item === el.className)
+        ? `event-${el.className}`
+        : "event-info",
+    }))
     : []
 
   return (

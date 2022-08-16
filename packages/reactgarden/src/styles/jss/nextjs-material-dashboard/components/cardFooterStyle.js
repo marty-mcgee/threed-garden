@@ -1,4 +1,4 @@
-import { grayColor } from "styles/jss/nextjs-material-dashboard.js"
+import { grayColor } from "~/styles/jss/nextjs-material-dashboard.js"
 
 const cardFooterStyle = {
   cardFooter: {

@@ -4,37 +4,37 @@ import { FC, ReactNode, forwardRef } from "react"
 import { TypographyProps } from "@mui/material"
 
 // Custom styles for MDTypography
-import MDTypographyRoot from "components/MDTypography/MDTypographyRoot"
+import MDTypographyRoot from "~/components/MDTypography/MDTypographyRoot"
 
 // Company Juice Dashboard contexts
-import { useMaterialUIController } from "context"
+import { useMaterialUIController } from "~/context"
 
 // Declaring props types for MDTypography
 interface Props extends TypographyProps {
   color?:
-    | "inherit"
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "light"
-    | "dark"
-    | "text"
-    | "white"
+  | "inherit"
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "light"
+  | "dark"
+  | "text"
+  | "white"
   fontWeight?: "light" | "regular" | "medium" | "bold" | undefined
   textTransform?: "none" | "capitalize" | "uppercase" | "lowercase"
   verticalAlign?:
-    | "unset"
-    | "baseline"
-    | "sub"
-    | "super"
-    | "text-top"
-    | "text-bottom"
-    | "middle"
-    | "top"
-    | "bottom"
+  | "unset"
+  | "baseline"
+  | "sub"
+  | "super"
+  | "text-top"
+  | "text-bottom"
+  | "middle"
+  | "top"
+  | "bottom"
   textGradient?: boolean
   children: ReactNode
   opacity?: number

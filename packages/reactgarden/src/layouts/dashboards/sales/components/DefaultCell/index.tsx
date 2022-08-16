@@ -1,7 +1,7 @@
 import { ReactNode } from "react"
 
 // Company Juice Dashboard components
-import MDTypography from "components/MDTypography"
+import MDTypography from "~/components/MDTypography"
 
 function DefaultCell({ children }: { children: ReactNode }): JSX.Element {
   return (

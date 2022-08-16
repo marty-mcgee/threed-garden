@@ -9,17 +9,17 @@ import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Company Juice Dashboard examples components
-import DefaultNavbar from "examples/Navbars/DefaultNavbar"
+import DefaultNavbar from "~/examples/Navbars/DefaultNavbar"
 
 // Company Juice Dashboard page layout routes
-import pageRoutes from "routes/page.routes"
+import pageRoutes from "~/routes/page.routes"
 
 // Images
-import bgImage from "assets/images/any/bg-pricing.jpg"
+import bgImage from "~/assets/images/any/bg-pricing.jpg"
 
 // Declaring props types for Header
 interface Props {

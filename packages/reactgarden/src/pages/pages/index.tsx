@@ -1,7 +1,7 @@
 // import { NextPage, GetServerSideProps } from "next"
 import type { NextPage } from "next"
-import { IPage, IProps, IBooleans, IValues, IStructures } from "types/interfaces" // "@threed/garden/cpt"
-import type { Page } from "types/interfaces"
+import { IPage, IProps, IBooleans, IValues, IStructures } from "~/types/interfaces" // "@threed/garden/cpt"
+import type { Page } from "~/types/interfaces"
 
 import { GetServerSideProps } from "next"
 import axios from "axios"

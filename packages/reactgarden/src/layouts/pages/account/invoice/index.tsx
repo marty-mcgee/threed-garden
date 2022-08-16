@@ -7,19 +7,19 @@ import TableBody from "@mui/material/TableBody"
 import { Theme } from "@mui/material/styles"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDButton from "components/MDButton"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDButton from "~/components/MDButton"
 
 // Invoice page components
-import BaseLayout from "layouts/pages/account/components/BaseLayout"
+import BaseLayout from "~/layouts/pages/account/components/BaseLayout"
 
 // Images
-import logoCT from "assets/images/logos/logo-threedgarden.png"
-import logoCTDark from "assets/images/logos/logo-threedgarden-alt.png"
+import logoCT from "~/assets/images/logos/logo-threedgarden.png"
+import logoCTDark from "~/assets/images/logos/logo-threedgarden-alt.png"
 
 // Company Juice Dashboard context
-import { useMaterialUIController } from "context"
+import { useMaterialUIController } from "~/context"
 
 function Invoice(): JSX.Element {
   const [controller] = useMaterialUIController()

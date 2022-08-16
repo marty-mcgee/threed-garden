@@ -8,20 +8,20 @@ import StepLabel from "@mui/material/StepLabel"
 import Card from "@mui/material/Card"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDButton from "components/MDButton"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDButton from "~/components/MDButton"
+import MDTypography from "~/components/MDTypography"
 
 // Company Juice Dashboard examples components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout"
-import DashboardNavbar from "examples/Navbars/DashboardNavbar"
-import Footer from "examples/Footer"
+import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
+import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
+import Footer from "~/examples/Footer"
 
 // NewProduct page components
-import ProductInfo from "layouts/ecommerce/products/new-product/components/ProductInfo"
-import Media from "layouts/ecommerce/products/new-product/components/Media"
-import Socials from "layouts/ecommerce/products/new-product/components/Socials"
-import Pricing from "layouts/ecommerce/products/new-product/components/Pricing"
+import ProductInfo from "~/layouts/ecommerce/products/new-product/components/ProductInfo"
+import Media from "~/layouts/ecommerce/products/new-product/components/Media"
+import Socials from "~/layouts/ecommerce/products/new-product/components/Socials"
+import Pricing from "~/layouts/ecommerce/products/new-product/components/Pricing"
 
 function getSteps(): string[] {
   return ["1. Product Info", "2. Media", "3. Social", "4. Pricing"]

@@ -2,7 +2,7 @@ import {
   primaryColor,
   blackColor,
   hexToRgb,
-} from "styles/jss/nextjs-material-dashboard.js"
+} from "~/styles/jss/nextjs-material-dashboard.js"
 
 const checkboxAdnRadioStyle = {
   root: {

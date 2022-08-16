@@ -6,32 +6,32 @@ import Divider from "@mui/material/Divider"
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Declaring props types for CompleStatisticsCard
 interface Props {
   color?:
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "light"
+  | "dark"
+  title: string
+  count: string | number
+  percentage?: {
+    color:
     | "primary"
     | "secondary"
     | "info"
     | "success"
     | "warning"
     | "error"
-    | "light"
     | "dark"
-  title: string
-  count: string | number
-  percentage?: {
-    color:
-      | "primary"
-      | "secondary"
-      | "info"
-      | "success"
-      | "warning"
-      | "error"
-      | "dark"
-      | "white"
+    | "white"
     amount: string | number
     label: string
   }

@@ -3,15 +3,15 @@ import Icon from "@mui/material/Icon"
 import Tooltip from "@mui/material/Tooltip"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDButton from "components/MDButton"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDButton from "~/components/MDButton"
 
 // Company Juice Dashboard Base Styles
-import borders from "themes/theme-light/base/borders"
+import borders from "~/themes/theme-light/base/borders"
 
 // Images
-import masterCardLogo from "assets/images/logos/mastercard.png"
+import masterCardLogo from "~/assets/images/logos/mastercard.png"
 
 function PaymentDetails(): JSX.Element {
   const { borderWidth, borderColor } = borders

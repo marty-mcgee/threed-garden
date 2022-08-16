@@ -3,7 +3,7 @@ import {
   whiteColor,
   grayColor,
   hexToRgb,
-} from "styles/jss/nextjs-material-dashboard.js"
+} from "~/styles/jss/nextjs-material-dashboard.js"
 
 const iconsStyle = {
   iframe: {

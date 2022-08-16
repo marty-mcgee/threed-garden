@@ -4,7 +4,7 @@ import { ReactNode } from "react"
 import { Theme } from "@mui/material/styles"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
+import MDBox from "~/components/MDBox"
 
 // Declaring prop types for DataTableBodyCell
 interface Props {

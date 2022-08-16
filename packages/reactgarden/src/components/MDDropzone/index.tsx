@@ -7,13 +7,13 @@ import { useEffect, useRef } from "react"
 import "dropzone/dist/dropzone.css"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
+import MDBox from "~/components/MDBox"
 
 // Custom styles for the MDDropzone
-import MDDropzoneRoot from "components/MDDropzone/MDDropzoneRoot"
+import MDDropzoneRoot from "~/components/MDDropzone/MDDropzoneRoot"
 
 // Company Juice Dashboard context
-import { useMaterialUIController } from "context"
+import { useMaterialUIController } from "~/context"
 
 // Declaring props types for MDDropzone
 interface Props {

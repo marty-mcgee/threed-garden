@@ -1,29 +1,29 @@
 import { FC, forwardRef } from "react"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // declaring props types for MDBadgeDot
 interface Props {
   variant?: "gradient" | "contained"
   color?:
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "light"
-    | "dark"
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "light"
+  | "dark"
   size?: "xs" | "sm" | "md" | "lg"
   badgeContent: string
   font?:
-    | {
-        color: string
-        weight: string
-      }
-    | any
+  | {
+    color: string
+    weight: string
+  }
+  | any
   [key: string]: any
 }
 

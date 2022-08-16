@@ -1,6 +1,6 @@
 // Company Juice Dashboard Base Styles
-import borders from "themes/theme-dark/base/borders"
-import colors from "themes/theme-dark/base/colors"
+import borders from "~/themes/theme-dark/base/borders"
+import colors from "~/themes/theme-dark/base/colors"
 
 const { white } = colors
 const { borderWidth } = borders

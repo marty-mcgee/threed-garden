@@ -15,16 +15,16 @@ import GitHubIcon from "@mui/icons-material/GitHub"
 import GoogleIcon from "@mui/icons-material/Google"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDInput from "components/MDInput"
-import MDButton from "components/MDButton"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDInput from "~/components/MDInput"
+import MDButton from "~/components/MDButton"
 
 // Authentication layout components
-import BasicLayout from "layouts/authentication/components/BasicLayout"
+import BasicLayout from "~/layouts/authentication/components/BasicLayout"
 
 // Images
-import bgImage from "assets/images/any/bg-sign-in-basic.jpg"
+import bgImage from "~/assets/images/any/bg-sign-in-basic.jpg"
 
 function Basic(): JSX.Element {
   const [rememberMe, setRememberMe] = useState<boolean>(false)

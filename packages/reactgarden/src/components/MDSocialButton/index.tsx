@@ -4,23 +4,23 @@ import { FC, ReactNode, forwardRef } from "react"
 import { ButtonProps } from "@mui/material"
 
 // Custom styles for MDSocialButton
-import MDSocialButtonRoot from "components/MDSocialButton/MDSocialButtonRoot"
+import MDSocialButtonRoot from "~/components/MDSocialButton/MDSocialButtonRoot"
 
 // Declaring props types for MDButton
 interface Props extends Omit<ButtonProps, "color" | "variant"> {
   color?:
-    | "facebook"
-    | "twitter"
-    | "instagram"
-    | "linkedin"
-    | "pinterest"
-    | "youtube"
-    | "github"
-    | "vimeo"
-    | "slack"
-    | "dribbble"
-    | "reddit"
-    | "tumblr"
+  | "facebook"
+  | "twitter"
+  | "instagram"
+  | "linkedin"
+  | "pinterest"
+  | "youtube"
+  | "github"
+  | "vimeo"
+  | "slack"
+  | "dribbble"
+  | "reddit"
+  | "tumblr"
   size?: "small" | "medium" | "large"
   circular?: boolean
   iconOnly?: boolean

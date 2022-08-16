@@ -3,10 +3,10 @@ import Card from "@mui/material/Card"
 import Grid from "@mui/material/Grid"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDButton from "components/MDButton"
-import MDInput from "components/MDInput"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDButton from "~/components/MDButton"
+import MDInput from "~/components/MDInput"
 
 function ChangePassword(): JSX.Element {
   const passwordRequirements = [

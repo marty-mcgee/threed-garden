@@ -8,14 +8,14 @@ import Card from "@mui/material/Card"
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // DefaultLineChart configurations
-import configs from "examples/Charts/LineCharts/DefaultLineChart/configs"
+import configs from "~/examples/Charts/LineCharts/DefaultLineChart/configs"
 
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-light/base/colors"
+import colors from "~/themes/theme-light/base/colors"
 
 // Declaring props types for DefaultLineChart
 interface Props {

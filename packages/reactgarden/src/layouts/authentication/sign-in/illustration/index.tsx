@@ -7,16 +7,16 @@ import Link from "next/link"
 import Switch from "@mui/material/Switch"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDInput from "components/MDInput"
-import MDButton from "components/MDButton"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDInput from "~/components/MDInput"
+import MDButton from "~/components/MDButton"
 
 // Authentication layout components
-import IllustrationLayout from "layouts/authentication/components/IllustrationLayout"
+import IllustrationLayout from "~/layouts/authentication/components/IllustrationLayout"
 
 // Image
-import bgImage from "assets/images/illustrations/illustration-reset.jpg"
+import bgImage from "~/assets/images/illustrations/illustration-reset.jpg"
 
 function Illustration(): JSX.Element {
   const [rememberMe, setRememberMe] = useState<boolean>(false)

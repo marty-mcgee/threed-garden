@@ -3,22 +3,22 @@ import Card from "@mui/material/Card"
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Images
-import pattern from "assets/images/illustrations/pattern-tree.svg"
-import masterCardLogo from "assets/images/logos/mastercard.png"
+import pattern from "~/assets/images/illustrations/pattern-tree.svg"
+import masterCardLogo from "~/assets/images/logos/mastercard.png"
 
 interface Props {
   color?:
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "dark"
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "dark"
   number: number
   holder: string
   expires: string

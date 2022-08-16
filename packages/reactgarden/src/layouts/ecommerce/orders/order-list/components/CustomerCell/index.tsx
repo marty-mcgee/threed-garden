@@ -1,22 +1,22 @@
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDAvatar from "components/MDAvatar"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDAvatar from "~/components/MDAvatar"
 
 // Declaring props types for CustomerCell
 interface Props {
   image?: string
   name: string
   color?:
-    | "transparent"
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "light"
-    | "dark"
+  | "transparent"
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "light"
+  | "dark"
 }
 
 function CustomerCell({ image, name, color }: Props): JSX.Element {

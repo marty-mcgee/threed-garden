@@ -2,11 +2,11 @@
 import Card from "@mui/material/Card"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Company Juice Dashboard examples components
-import DefaultItem from "examples/Items/DefaultItem"
+import DefaultItem from "~/examples/Items/DefaultItem"
 
 function NextEvents(): JSX.Element {
   return (

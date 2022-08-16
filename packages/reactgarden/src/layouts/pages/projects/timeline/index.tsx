@@ -2,17 +2,17 @@
 import Grid from "@mui/material/Grid"
 
 // Company Juice DashboardUI Dashboard PRO React components
-import MDBox from "components/MDBox"
+import MDBox from "~/components/MDBox"
 
 // Company Juice DashboardUI Dashboard PRO React example components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout"
-import DashboardNavbar from "examples/Navbars/DashboardNavbar"
-import Footer from "examples/Footer"
-import TimelineList from "examples/Timeline/TimelineList"
-import TimelineItem from "examples/Timeline/TimelineItem"
+import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
+import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
+import Footer from "~/examples/Footer"
+import TimelineList from "~/examples/Timeline/TimelineList"
+import TimelineItem from "~/examples/Timeline/TimelineItem"
 
 // Data
-import timelineData from "layouts/pages/projects/timeline/data/timelineData"
+import timelineData from "~/layouts/pages/projects/timeline/data/timelineData"
 
 function Timeline(): JSX.Element {
   const renderTimelineItems = timelineData.map(

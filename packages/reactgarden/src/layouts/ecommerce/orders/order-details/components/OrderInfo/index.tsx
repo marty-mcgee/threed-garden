@@ -2,14 +2,14 @@
 import Grid from "@mui/material/Grid"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDButton from "components/MDButton"
-import MDAvatar from "components/MDAvatar"
-import MDBadge from "components/MDBadge"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDButton from "~/components/MDButton"
+import MDAvatar from "~/components/MDAvatar"
+import MDBadge from "~/components/MDBadge"
 
 // Images
-import orderImage from "assets/images/products/product-12.jpg"
+import orderImage from "~/assets/images/products/product-12.jpg"
 
 function OrderInfo(): JSX.Element {
   return (

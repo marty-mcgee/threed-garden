@@ -1,9 +1,9 @@
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-dark/base/colors"
-import typography from "themes/theme-dark/base/typography"
+import colors from "~/themes/theme-dark/base/colors"
+import typography from "~/themes/theme-dark/base/typography"
 
 // Company Juice Dashboard Helper Functions
-import pxToRem from "themes/theme-dark/functions/pxToRem"
+import pxToRem from "~/themes/theme-dark/functions/pxToRem"
 
 const { white, text, info, secondary } = colors
 const { size } = typography

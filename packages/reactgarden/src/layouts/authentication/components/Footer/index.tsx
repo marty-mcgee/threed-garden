@@ -5,11 +5,11 @@ import Icon from "@mui/material/Icon"
 import { Theme } from "@mui/material/styles"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Company Juice Dashboard Base Styles
-import typography from "themes/theme-light/base/typography"
+import typography from "~/themes/theme-light/base/typography"
 
 function Footer({ light }: { light?: boolean }): JSX.Element {
   const { size } = typography

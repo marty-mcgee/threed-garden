@@ -8,23 +8,23 @@ import Card from "@mui/material/Card"
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDProgress from "components/MDProgress"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDProgress from "~/components/MDProgress"
 
 // ProgressLineChart configurations
-import configs from "examples/Charts/LineCharts/ProgressLineChart/config"
+import configs from "~/examples/Charts/LineCharts/ProgressLineChart/config"
 
 // Declaring props types for GradientLineChart
 interface Props {
   color?:
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "dark"
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "dark"
   icon: ReactNode
   title: string
   count?: string | number

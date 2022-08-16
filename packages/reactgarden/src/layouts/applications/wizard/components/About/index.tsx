@@ -4,16 +4,16 @@ import Icon from "@mui/material/Icon"
 import Tooltip from "@mui/material/Tooltip"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDAvatar from "components/MDAvatar"
-import MDButton from "components/MDButton"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDAvatar from "~/components/MDAvatar"
+import MDButton from "~/components/MDButton"
 
 // Wizard application components
-import FormField from "layouts/applications/wizard/components/FormField"
+import FormField from "~/layouts/applications/wizard/components/FormField"
 
 // Images
-import team2 from "assets/images/people/team-2.jpg"
+import team2 from "~/assets/images/people/team-2.jpg"
 
 function About(): JSX.Element {
   return (

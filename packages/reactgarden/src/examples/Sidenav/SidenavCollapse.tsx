@@ -8,7 +8,7 @@ import ListItemText from "@mui/material/ListItemText"
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
+import MDBox from "~/components/MDBox"
 
 // Custom styles for the SidenavCollapse
 import {
@@ -17,10 +17,10 @@ import {
   collapseIcon,
   collapseText,
   collapseArrow,
-} from "examples/Sidenav/styles/sidenavCollapse"
+} from "~/examples/Sidenav/styles/sidenavCollapse"
 
 // Company Juice Dashboard context
-import { useMaterialUIController } from "context"
+import { useMaterialUIController } from "~/context"
 
 // Declaring props types for SidenavCollapse
 interface Props {

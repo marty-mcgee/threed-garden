@@ -7,15 +7,15 @@ import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
+import MDBox from "~/components/MDBox"
 
 // Company Juice Dashboard Base Styles
-import breakpoints from "themes/theme-light/base/breakpoints"
+import breakpoints from "~/themes/theme-light/base/breakpoints"
 
 // Company Juice Dashboard examples components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout"
-import DashboardNavbar from "examples/Navbars/DashboardNavbar"
-import Footer from "examples/Footer"
+import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
+import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
+import Footer from "~/examples/Footer"
 
 // Declaring props types for BaseLayout
 interface Props {

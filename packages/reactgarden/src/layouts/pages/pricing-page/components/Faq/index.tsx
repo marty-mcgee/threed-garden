@@ -3,11 +3,11 @@ import { useState } from "react"
 // @mui material components
 import Grid from "@mui/material/Grid"
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Pricing page components
-import FaqCollapse from "layouts/pages/pricing-page/components/FaqCollapse"
+import FaqCollapse from "~/layouts/pages/pricing-page/components/FaqCollapse"
 
 function Faq(): JSX.Element {
   const [collapse, setCollapse] = useState<number | boolean>(false)

@@ -3,8 +3,8 @@
  */
 
 // Company Juice Dashboard Helper Functions
-import rgba from "themes/theme-light/functions/rgba"
-import pxToRem from "themes/theme-light/functions/pxToRem"
+import rgba from "~/themes/theme-light/functions/rgba"
+import pxToRem from "~/themes/theme-light/functions/pxToRem"
 
 function boxShadow(
   offset: number[],

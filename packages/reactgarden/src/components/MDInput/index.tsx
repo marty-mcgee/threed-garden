@@ -4,7 +4,7 @@ import { FC, forwardRef } from "react"
 import { OutlinedTextFieldProps, StandardTextFieldProps } from "@mui/material"
 
 // Custom styles for MDInput
-import MDInputRoot from "components/MDInput/MDInputRoot"
+import MDInputRoot from "~/components/MDInput/MDInputRoot"
 
 // Declaring props types for MDInput
 interface Props

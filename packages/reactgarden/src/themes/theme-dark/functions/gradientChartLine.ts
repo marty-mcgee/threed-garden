@@ -3,7 +3,7 @@
  */
 
 // Company Juice Dashboard Helper Functions
-import rgba from "themes/theme-light/functions/rgba"
+import rgba from "~/themes/theme-light/functions/rgba"
 
 function gradientChartLine(
   chart: any,

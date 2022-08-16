@@ -4,7 +4,7 @@ import { BrowserRouter } from "react-router-dom"
 import App from "App"
 
 // Material UI Context Provider
-import { MaterialUIControllerProvider } from "context"
+import { MaterialUIControllerProvider } from "~/context"
 
 ReactDOM.render(
   <BrowserRouter>
@@ -22,9 +22,9 @@ import type { NextPage } from "next"
 import Container from "@mui/material/Container"
 import Typography from "@mui/material/Typography"
 import Box from "@mui/material/Box"
-import Link from "themes/theme-example/Link"
-import ProTip from "themes/theme-example/ProTip"
-import Copyright from "themes/theme-example/Copyright"
+import Link from "~/themes/theme-example/Link"
+import ProTip from "~/themes/theme-example/ProTip"
+import Copyright from "~/themes/theme-example/Copyright"
 
 const Home: NextPage = () => (
   <Container maxWidth="lg">

@@ -2,8 +2,8 @@
 import Checkbox from "@mui/material/Checkbox"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Declaring props types for IdCell
 interface Props {

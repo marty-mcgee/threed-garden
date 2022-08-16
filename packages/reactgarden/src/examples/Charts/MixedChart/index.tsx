@@ -8,17 +8,17 @@ import Card from "@mui/material/Card"
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Company Juice Dashboard Helper Functions
-import gradientChartLine from "themes/theme-light/functions/gradientChartLine"
+import gradientChartLine from "~/themes/theme-light/functions/gradientChartLine"
 
 // MixedChart configurations
-import configs from "examples/Charts/MixedChart/configs"
+import configs from "~/examples/Charts/MixedChart/configs"
 
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-light/base/colors"
+import colors from "~/themes/theme-light/base/colors"
 
 // Declaring props types for MixedChart
 interface Props {

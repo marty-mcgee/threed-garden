@@ -2,12 +2,12 @@
 import Card from "@mui/material/Card"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDButton from "components/MDButton"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDButton from "~/components/MDButton"
 
 // Images
-import productImage from "assets/images/products/product-11.jpg"
+import productImage from "~/assets/images/products/product-11.jpg"
 
 function ProductImage(): JSX.Element {
   return (

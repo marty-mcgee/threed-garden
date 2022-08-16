@@ -8,20 +8,20 @@ import Tooltip from "@mui/material/Tooltip"
 import Divider from "@mui/material/Divider"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDAvatar from "components/MDAvatar"
-import MDInput from "components/MDInput"
-import MDButton from "components/MDButton"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDAvatar from "~/components/MDAvatar"
+import MDInput from "~/components/MDInput"
+import MDButton from "~/components/MDButton"
 
 // Images
-import logoSlack from "assets/images/logos/small-logos/logo-slack.svg"
-import logoSpotify from "assets/images/logos/small-logos/logo-spotify.svg"
-import logoAtlassian from "assets/images/logos/small-logos/logo-atlassian.svg"
-import logoAsana from "assets/images/logos/small-logos/logo-asana.svg"
+import logoSlack from "~/assets/images/logos/small-logos/logo-slack.svg"
+import logoSpotify from "~/assets/images/logos/small-logos/logo-spotify.svg"
+import logoAtlassian from "~/assets/images/logos/small-logos/logo-atlassian.svg"
+import logoAsana from "~/assets/images/logos/small-logos/logo-asana.svg"
 
 // Company Juice Dashboard components
-import { useMaterialUIController } from "context"
+import { useMaterialUIController } from "~/context"
 
 function Accounts(): JSX.Element {
   const [controller] = useMaterialUIController()

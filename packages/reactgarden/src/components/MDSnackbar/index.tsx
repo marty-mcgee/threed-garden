@@ -10,26 +10,26 @@ import Fade from "@mui/material/Fade"
 import { SnackbarProps } from "@mui/material"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
 
 // Custom styles for the MDSnackbar
-import MDSnackbarIconRoot from "components/MDSnackbar/MDSnackbarIconRoot"
+import MDSnackbarIconRoot from "~/components/MDSnackbar/MDSnackbarIconRoot"
 
 // Company Juice Dashboard context
-import { useMaterialUIController } from "context"
+import { useMaterialUIController } from "~/context"
 
 // Declaring props types for MDSnackbar
 interface Props extends SnackbarProps {
   color?:
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "dark"
-    | "light"
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "dark"
+  | "light"
   icon: ReactNode
   title: string
   dateTime: string

@@ -4,7 +4,7 @@ import {
   successColor,
   grayColor,
   defaultFont,
-} from "styles/jss/nextjs-material-dashboard.js"
+} from "~/styles/jss/nextjs-material-dashboard.js"
 
 const customInputStyle = {
   disabled: {

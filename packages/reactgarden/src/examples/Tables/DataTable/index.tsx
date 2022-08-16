@@ -18,23 +18,23 @@ import Icon from "@mui/material/Icon"
 import Autocomplete from "@mui/material/Autocomplete"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDInput from "components/MDInput"
-import MDPagination from "components/MDPagination"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDInput from "~/components/MDInput"
+import MDPagination from "~/components/MDPagination"
 
 // Company Juice Dashboard examples components
-import DataTableHeadCell from "examples/Tables/DataTable/DataTableHeadCell"
-import DataTableBodyCell from "examples/Tables/DataTable/DataTableBodyCell"
+import DataTableHeadCell from "~/examples/Tables/DataTable/DataTableHeadCell"
+import DataTableBodyCell from "~/examples/Tables/DataTable/DataTableBodyCell"
 
 // Declaring props types for DataTable
 interface Props {
   entriesPerPage?:
-    | false
-    | {
-        defaultValue: number
-        entries: number[]
-      }
+  | false
+  | {
+    defaultValue: number
+    entries: number[]
+  }
   canSearch?: boolean
   showTotalEntries?: boolean
   table: {
@@ -44,14 +44,14 @@ interface Props {
   pagination?: {
     variant: "contained" | "gradient"
     color:
-      | "primary"
-      | "secondary"
-      | "info"
-      | "success"
-      | "warning"
-      | "error"
-      | "dark"
-      | "light"
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "dark"
+    | "light"
   }
   isSorted?: boolean
   noEndBorder?: boolean

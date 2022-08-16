@@ -4,24 +4,24 @@ import { FC, ReactNode, forwardRef } from "react"
 import { ButtonProps } from "@mui/material"
 
 // Custom styles for MDButton
-import MDButtonRoot from "components/MDButton/MDButtonRoot"
+import MDButtonRoot from "~/components/MDButton/MDButtonRoot"
 
 // Company Juice Dashboard contexts
-import { useMaterialUIController } from "context"
+import { useMaterialUIController } from "~/context"
 
 // Declaring props types for MDButton
 interface Props extends Omit<ButtonProps, "color" | "variant"> {
   color?:
-    | "white"
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "light"
-    | "dark"
-    | "default"
+  | "white"
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "light"
+  | "dark"
+  | "default"
   variant?: "text" | "contained" | "outlined" | "gradient"
   size?: "small" | "medium" | "large"
   circular?: boolean

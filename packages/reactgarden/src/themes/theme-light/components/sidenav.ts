@@ -1,9 +1,9 @@
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-light/base/colors"
-import borders from "themes/theme-light/base/borders"
+import colors from "~/themes/theme-light/base/colors"
+import borders from "~/themes/theme-light/base/borders"
 
 // Company Juice Dashboard Helper Functions
-import pxToRem from "themes/theme-light/functions/pxToRem"
+import pxToRem from "~/themes/theme-light/functions/pxToRem"
 
 const { white } = colors
 const { borderRadius } = borders

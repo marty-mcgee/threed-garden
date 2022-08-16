@@ -1,7 +1,7 @@
 // import { NextPage } from 'next'
 import type { NextPage } from "next"
-import { IPage, IProps, IBooleans, IValues, IStructures } from "types/interfaces" // "@threed/garden/cpt"
-import type { Page } from "types/interfaces"
+import { IPage, IProps, IBooleans, IValues, IStructures } from "~/types/interfaces" // "@threed/garden/cpt"
+import type { Page } from "~/types/interfaces"
 
 // examples
 const flags: IBooleans = { read: true, write: false, delete: false }

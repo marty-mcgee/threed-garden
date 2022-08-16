@@ -1,7 +1,7 @@
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-dark/base/colors"
-import boxShadows from "themes/theme-dark/base/boxShadows"
-import borders from "themes/theme-dark/base/borders"
+import colors from "~/themes/theme-dark/base/colors"
+import boxShadows from "~/themes/theme-dark/base/boxShadows"
+import borders from "~/themes/theme-dark/base/borders"
 
 const { transparent } = colors
 const { lg } = boxShadows

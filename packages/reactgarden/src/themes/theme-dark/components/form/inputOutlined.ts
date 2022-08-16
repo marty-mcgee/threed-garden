@@ -1,11 +1,11 @@
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-dark/base/colors"
-import borders from "themes/theme-dark/base/borders"
-import typography from "themes/theme-dark/base/typography"
+import colors from "~/themes/theme-dark/base/colors"
+import borders from "~/themes/theme-dark/base/borders"
+import typography from "~/themes/theme-dark/base/typography"
 
 // // Company Juice DashboardUI Dashboard PRO helper functions
-import pxToRem from "themes/theme-dark/functions/pxToRem"
-import rgba from "themes/theme-dark/functions/rgba"
+import pxToRem from "~/themes/theme-dark/functions/pxToRem"
+import rgba from "~/themes/theme-dark/functions/rgba"
 
 const { inputBorderColor, info, grey, transparent, white } = colors
 const { borderRadius } = borders

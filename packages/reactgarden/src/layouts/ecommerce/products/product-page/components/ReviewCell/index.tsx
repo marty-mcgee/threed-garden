@@ -2,7 +2,7 @@
 import Icon from "@mui/material/Icon"
 
 // Company Juice Dashboard components
-import MDTypography from "components/MDTypography"
+import MDTypography from "~/components/MDTypography"
 
 function ReviewCell({ rating }: { rating: number }): JSX.Element {
   const ratings: any = {

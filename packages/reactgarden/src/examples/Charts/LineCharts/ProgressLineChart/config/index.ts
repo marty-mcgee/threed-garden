@@ -1,7 +1,7 @@
 /* eslint-disable no-dupe-keys */
 
 // Company Juice Dashboard Base Styles
-import colors from "themes/theme-light/base/colors"
+import colors from "~/themes/theme-light/base/colors"
 
 const { gradients } = colors
 

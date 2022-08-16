@@ -6,12 +6,12 @@ import Grid from "@mui/material/Grid"
 import Switch from "@mui/material/Switch"
 
 // Company Juice Dashboard components
-import MDBox from "components/MDBox"
-import MDTypography from "components/MDTypography"
-import MDAvatar from "components/MDAvatar"
+import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/MDTypography"
+import MDAvatar from "~/components/MDAvatar"
 
 // Images
-import burceMars from "assets/images/people/bruce-mars.jpg"
+import burceMars from "~/assets/images/people/bruce-mars.jpg"
 
 function Header(): JSX.Element {
   const [visible, setVisible] = useState<boolean>(true)
