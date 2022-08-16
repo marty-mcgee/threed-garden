@@ -216,33 +216,31 @@ function Sidenav({
       if (type === "collapse") {
         if (href) {
           returnValue = (
-            // <MuiLink
-            //   href={href}
-            //   key={key}
-            //   target="_blank"
-            //   rel="noreferrer"
-            //   sx={{ textDecoration: "none" }}>
-            //   <SidenavCollapse
-            //     name={name}
-            //     icon={icon}
-            //     active={key === collapseName}
-            //     noCollapse={noCollapse}
-            //   />
-            // </MuiLink>
-            <div>HEY HEY HEY</div>
+            <MuiLink
+              href={href}
+              key={key}
+              target="_blank"
+              rel="noreferrer"
+              sx={{ textDecoration: "none" }}>
+              <SidenavCollapse
+                name={name}
+                icon={icon}
+                active={key === collapseName}
+                noCollapse={noCollapse}
+              />
+            </MuiLink>
           )
         } else if (noCollapse && route) {
           returnValue = (
-            // <NextLink href={route} key={key}>
-            //   <SidenavCollapse
-            //     name={name}
-            //     icon={icon}
-            //     noCollapse={noCollapse}
-            //     active={key === collapseName}>
-            //     {collapse ? renderCollapse(collapse) : null}
-            //   </SidenavCollapse>
-            // </NextLink>
-            <div>HEY HEY HEY</div>
+            <NextLink href={route} key={key}>
+              <SidenavCollapse
+                name={name}
+                icon={icon}
+                noCollapse={noCollapse}
+                active={key === collapseName}>
+                {collapse ? renderCollapse(collapse) : null}
+              </SidenavCollapse>
+            </NextLink>
           )
         } else {
           returnValue = (
@@ -336,7 +334,7 @@ function Sidenav({
           (darkMode && !transparentSidenav && whiteSidenav)
         }
       />
-      {/* <List>{renderRoutes}</List> */}
+      <List>{renderRoutes}</List>
     </SidenavRoot>
   )
 }
