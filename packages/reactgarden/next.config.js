@@ -5,8 +5,32 @@ if (!process.env.WP_GRAPHQL_API_URL) {
   `)
 }
 
+const withTM = require("next-transpile-modules")([
+  "@babel/preset-react",
+  "@fullcalendar/common",
+  "@fullcalendar/daygrid",
+  "@fullcalendar/interaction",
+  "@fullcalendar/react",
+  "@fullcalendar/timegrid",
+  "react-github-btn",
+])
+
+const { PHASE_DEVELOPMENT_SERVER } = require("next/constants")
+
+console.log("PHASE_DEVELOPMENT_SERVER", PHASE_DEVELOPMENT_SERVER)
+
+// if (phase === PHASE_DEVELOPMENT_SERVER) {
+//     return {
+//       /* development only config options here */
+//       env: {
+//         customKey: "my-value",
+//       },
+//     }
+//   }
+// }
+
 /**
- * @type {import('next').NextConfig}
+ * @type {import("next").NextConfig}
  */
 const nextConfig = {
   /* nextjs config options here */
@@ -22,10 +46,19 @@ const nextConfig = {
       "secure.gravatar.com",
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/dashboards/analytics",
+        permanent: true,
+      },
+    ]
+  },
   reactStrictMode: true,
 }
 
-module.exports = nextConfig
+module.exports = withTM(nextConfig)
 
 // NEXT 12
 // const { PHASE_DEVELOPMENT_SERVER } = require("next/constants")
@@ -35,7 +68,7 @@ module.exports = nextConfig
 //     return {
 //       /* development only config options here */
 //       env: {
-//         customKey: 'my-value',
+//         customKey: "my-value",
 //       },
 //     }
 //   }
@@ -43,7 +76,7 @@ module.exports = nextConfig
 //   return {
 //     /* config options for all phases except development here */
 //       env: {
-//         customKey: 'my-value-2',
+//         customKey: "my-value-2",
 //       },
 //   }
 // }
