@@ -15,6 +15,7 @@
   "private": true,
   "workspaces": {
     "packages": [
+      "packages/_sandbox",
       "packages/reactgarden",
       "packages/nuxtgarden",
       "packages/vitegarden",

@@ -1,0 +1,47 @@
+{
+  "name": "@threed/sandbox-migrations",
+  "version": "0.0.1",
+  "author": "Marty McGee, Ivan S Glazunov",
+  "description": "Sandbox Playground -- Data Migrations",
+  "license": "ISC",
+  "scripts": {
+    "migrate": "knex migrate:latest --verbose",
+    "unmigrate": "knex migrate:rollback --all --verbose",
+    "test": "ts-mocha --timeout 100000 --project ./tsconfig.mocha.json test/index.ts"
+  },
+  "dependencies": {
+    "@types/chai": "^4.2.4",
+    "@types/lodash": "^4.14.138",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.7.5",
+    "apollo-cache-inmemory": "^1.6.3",
+    "apollo-client": "^2.6.4",
+    "apollo-link-context": "^1.0.19",
+    "apollo-link-http": "^1.5.16",
+    "chai": "^4.2.0",
+    "debug": "^4.1.1",
+    "dotenv": "^8.1.0",
+    "fast-safe-stringify": "^2.0.7",
+    "graphql": "^14.5.6",
+    "graphql-tag": "^2.10.1",
+    "knex": "^0.21.21",
+    "lodash": "^4.17.15",
+    "mocha": "^6.2.2",
+    "node-fetch": "^2.6.0",
+    "pg": "^8.7.3",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4",
+    "ts-mocha": "^6.0.0",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.3",
+    "uniqid": "^5.0.3"
+  },
+  "keywords": [
+    "marty-mcgee/ivansglazunov-sandbox-migrations",
+    "knex",
+    "pg",
+    "hasura",
+    "data",
+    "migrations"
+  ]
+}
