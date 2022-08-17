@@ -4,13 +4,14 @@
   "private": true,
   "description": "React + TypeScript app using Material UI on NextJS",
   "scripts": {
-    "mm": "next -p 7777",
     "linebreak0": "==========================================",
+    "mm": "next -p 7777",
+    "linebreak1": "==========================================",
     "start": "PORT=3000 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "linebreak1": "==========================================",
+    "linebreak2": "==========================================",
     "prettier": "prettier --write **/*.{ts,tsx,js,jsx}",
     "prettier:eslint": "prettier-eslint --write **/*.{ts,tsx,js,jsx}",
     "lint": "eslint src --ext .ts",
@@ -18,12 +19,13 @@
     "lint:next": "next lint",
     "test:lint": "run lint && pnpm test:run",
     "test:run": "jest",
-    "linebreak2": "==========================================",
+    "linebreak3": "==========================================",
     "next": "next -p 7777",
     "next:dev": "next dev -p 7777",
     "next:build": "next build",
     "next:start": "next start -p 7777",
-    "next:test": "echo \"Error: no test specified\" && exit 1"
+    "next:test": "echo \"Error: no test specified\" && exit 1",
+    "linebreakX": "=========================================="
   },
   "dependencies": {
     "@asseinfo/react-kanban": "2.2.0",
