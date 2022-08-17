@@ -1,4 +1,4 @@
-// Company Juice Dashboard Button Styles
+// ThreeD Garden Button Styles
 import root from "~/themes/theme-light/components/button/root"
 import contained from "~/themes/theme-light/components/button/contained"
 import outlined from "~/themes/theme-light/components/button/outlined"

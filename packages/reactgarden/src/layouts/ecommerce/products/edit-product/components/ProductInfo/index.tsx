@@ -5,7 +5,7 @@ import Grid from "@mui/material/Grid"
 import Card from "@mui/material/Card"
 import Autocomplete from "@mui/material/Autocomplete"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 import MDEditor from "~/components/MDEditor"

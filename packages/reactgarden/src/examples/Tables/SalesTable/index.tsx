@@ -7,11 +7,11 @@ import TableContainer from "@mui/material/TableContainer"
 import TableHead from "@mui/material/TableHead"
 import TableRow from "@mui/material/TableRow"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDTypography from "~/components/MDTypography"
 import MDBox from "~/components/MDBox"
 
-// Company Juice Dashboard examples components
+// ThreeD Garden examples components
 import SalesTableCell from "~/examples/Tables/SalesTable/SalesTableCell"
 
 // Declaring props types for SalesTable

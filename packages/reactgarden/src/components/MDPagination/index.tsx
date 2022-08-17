@@ -7,7 +7,7 @@ import {
   useMemo,
 } from "react"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 
 // Custom styles for MDPagination

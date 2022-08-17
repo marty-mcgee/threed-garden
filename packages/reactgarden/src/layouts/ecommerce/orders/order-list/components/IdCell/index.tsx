@@ -1,7 +1,7 @@
 // @mui material components
 import Checkbox from "@mui/material/Checkbox"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 

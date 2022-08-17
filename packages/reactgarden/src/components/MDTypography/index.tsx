@@ -6,7 +6,7 @@ import { TypographyProps } from "@mui/material"
 // Custom styles for MDTypography
 import MDTypographyRoot from "~/components/MDTypography/MDTypographyRoot"
 
-// Company Juice Dashboard contexts
+// ThreeD Garden contexts
 import { useMaterialUIController } from "~/context"
 
 // Declaring props types for MDTypography

@@ -4,7 +4,7 @@ import Flatpickr from "react-flatpickr"
 // react-flatpickr styles
 import "flatpickr/dist/flatpickr.css"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDInput from "~/components/MDInput"
 
 // types

@@ -6,7 +6,7 @@ import TableRow from "@mui/material/TableRow"
 import TableBody from "@mui/material/TableBody"
 import { Theme } from "@mui/material/styles"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 import MDButton from "~/components/MDButton"
@@ -18,7 +18,7 @@ import BaseLayout from "~/layouts/pages/account/components/BaseLayout"
 import logoCT from "~/assets/images/logos/logo-threedgarden.png"
 import logoCTDark from "~/assets/images/logos/logo-threedgarden-alt.png"
 
-// Company Juice Dashboard context
+// ThreeD Garden context
 import { useMaterialUIController } from "~/context"
 
 function Invoice(): JSX.Element {

@@ -2,7 +2,7 @@
   The gradientChartLine() function helps you to create a gradient color for the chart line
  */
 
-// Company Juice Dashboard Helper Functions
+// ThreeD Garden Helper Functions
 import rgba from "~/themes/theme-light/functions/rgba"
 
 function gradientChartLine(

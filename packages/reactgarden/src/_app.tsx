@@ -18,18 +18,18 @@ import { ThemeProvider } from "@mui/material/styles"
 import CssBaseline from "@mui/material/CssBaseline"
 import Icon from "@mui/material/Icon"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 
-// Company Juice Dashboard examples
+// ThreeD Garden examples
 import Sidenav from "~/examples/Sidenav"
 import Configurator from "~/examples/Configurator"
 
-// Company Juice Dashboard themes
+// ThreeD Garden themes
 import theme from "~/themes/theme-light"
 import themeRTL from "~/themes/theme-light/theme-rtl"
 
-// Company Juice Dashboard Dark Mode themes
+// ThreeD Garden Dark Mode themes
 import themeDark from "~/themes/theme-dark"
 import themeDarkRTL from "~/themes/theme-dark/theme-rtl"
 
@@ -40,10 +40,10 @@ import rtlPlugin from "stylis-plugin-rtl"
 import { CacheProvider } from "@emotion/react"
 import createCache from "@emotion/cache"
 
-// Company Juice Dashboard routes
+// ThreeD Garden routes
 import routes from "~/routes/routes"
 
-// Company Juice Dashboard contexts
+// ThreeD Garden contexts
 import {
   useMaterialUIController,
   setMiniSidenav,

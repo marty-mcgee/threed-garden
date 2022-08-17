@@ -17,13 +17,13 @@ import TableRow from "@mui/material/TableRow"
 import Icon from "@mui/material/Icon"
 import Autocomplete from "@mui/material/Autocomplete"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 import MDInput from "~/components/MDInput"
 import MDPagination from "~/components/MDPagination"
 
-// Company Juice Dashboard examples components
+// ThreeD Garden examples components
 import DataTableHeadCell from "~/examples/Tables/DataTable/DataTableHeadCell"
 import DataTableBodyCell from "~/examples/Tables/DataTable/DataTableBodyCell"
 

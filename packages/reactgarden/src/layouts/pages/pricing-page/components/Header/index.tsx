@@ -8,14 +8,14 @@ import AppBar from "@mui/material/AppBar"
 import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 
-// Company Juice Dashboard examples components
+// ThreeD Garden examples components
 import DefaultNavbar from "~/examples/Navbars/DefaultNavbar"
 
-// Company Juice Dashboard page layout routes
+// ThreeD Garden page layout routes
 import pageRoutes from "~/routes/page.routes"
 
 // Images

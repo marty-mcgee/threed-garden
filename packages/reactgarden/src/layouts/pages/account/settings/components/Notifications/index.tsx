@@ -5,7 +5,7 @@ import TableRow from "@mui/material/TableRow"
 import TableBody from "@mui/material/TableBody"
 import Switch from "@mui/material/Switch"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 

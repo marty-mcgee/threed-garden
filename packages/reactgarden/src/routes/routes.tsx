@@ -50,7 +50,7 @@ import SignInIllustration from "~/layouts/authentication/sign-in/illustration"
 import SignUpCover from "~/layouts/authentication/sign-up/cover"
 import ResetCover from "~/layouts/authentication/reset-password/cover"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDAvatar from "~/components/MDAvatar"
 
 // @mui icons

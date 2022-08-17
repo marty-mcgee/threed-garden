@@ -4,7 +4,7 @@ import Icon from "@mui/material/Icon"
 import Tooltip from "@mui/material/Tooltip"
 import { Theme } from "@mui/material/styles"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 import MDAvatar from "~/components/MDAvatar"

@@ -5,7 +5,7 @@ import Link from "next/link"
 import Card from "@mui/material/Card"
 import MuiLink from "@mui/material/Link"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 import MDButton from "~/components/MDButton"

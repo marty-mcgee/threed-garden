@@ -4,7 +4,7 @@ import Tooltip from "@mui/material/Tooltip"
 import Icon from "@mui/material/Icon"
 import Grid from "@mui/material/Grid"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 import MDButton from "~/components/MDButton"
@@ -14,7 +14,7 @@ import PieChart from "~/examples/Charts/PieChart"
 // Data
 import channelChartData from "~/layouts/dashboards/sales/components/ChannelsChart/data"
 
-// Company Juice Dashboard contexts
+// ThreeD Garden contexts
 import { useMaterialUIController } from "~/context"
 
 function ChannelsChart(): JSX.Element {

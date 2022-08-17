@@ -8,7 +8,7 @@ import InstagramIcon from "@mui/icons-material/Instagram"
 import PinterestIcon from "@mui/icons-material/Pinterest"
 import LinkedInIcon from "@mui/icons-material/LinkedIn"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 

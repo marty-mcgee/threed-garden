@@ -14,13 +14,13 @@ import { v4 as uuidv4 } from "uuid"
 import Icon from "@mui/material/Icon"
 import { Theme } from "@mui/material/styles"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDButton from "~/components/MDButton"
 import MDTypography from "~/components/MDTypography"
 import MDInput from "~/components/MDInput"
 
-// Company Juice Dashboard examples components
+// ThreeD Garden examples components
 import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
 import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
 import Footer from "~/examples/Footer"
@@ -31,7 +31,7 @@ import Header from "~/layouts/applications/kanban/components/Header"
 // Data
 import boards from "~/layouts/applications/kanban/data"
 
-// Company Juice Dashboard context
+// ThreeD Garden context
 import { useMaterialUIController } from "~/context"
 
 // @asseinfo/react-kanban components

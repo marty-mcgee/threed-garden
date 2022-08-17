@@ -6,13 +6,13 @@ import AppBar from "@mui/material/AppBar"
 import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import breakpoints from "~/themes/theme-light/base/breakpoints"
 
-// Company Juice Dashboard examples components
+// ThreeD Garden examples components
 import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
 import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
 import Footer from "~/examples/Footer"

@@ -4,10 +4,10 @@ import { ReactNode } from "react"
 import Icon from "@mui/material/Icon"
 import { Theme } from "@mui/material/styles"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 
-// Company Juice Dashboard contexts
+// ThreeD Garden contexts
 import { useMaterialUIController } from "~/context"
 
 // Declaring props types for DataTableHeadCell

@@ -3,7 +3,7 @@ import { useState, ReactNode } from "react"
 // @mui material components
 import Fade from "@mui/material/Fade"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 
 // Custom styles for the MDAlert

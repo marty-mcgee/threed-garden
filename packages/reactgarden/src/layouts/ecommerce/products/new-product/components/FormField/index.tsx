@@ -1,4 +1,4 @@
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDInput from "~/components/MDInput"
 
 // Declaring props types for FormField

@@ -1,6 +1,6 @@
 import { FC, forwardRef } from "react"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDTypography from "~/components/MDTypography"
 
 // Custom styles for MDProgress

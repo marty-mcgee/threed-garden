@@ -1,7 +1,7 @@
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import breakpoints from "~/themes/theme-light/base/breakpoints"
 
-// Company Juice Dashboard Helper Functions
+// ThreeD Garden Helper Functions
 import pxToRem from "~/themes/theme-light/functions/pxToRem"
 
 // types

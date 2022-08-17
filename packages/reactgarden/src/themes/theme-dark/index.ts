@@ -2,7 +2,7 @@
 import { createTheme } from "@mui/material/styles"
 // import Fade from "@mui/material/Fade";
 
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import colors from "~/themes/theme-dark/base/colors"
 import breakpoints from "~/themes/theme-dark/base/breakpoints"
 import typography from "~/themes/theme-dark/base/typography"
@@ -10,14 +10,14 @@ import boxShadows from "~/themes/theme-dark/base/boxShadows"
 import borders from "~/themes/theme-dark/base/borders"
 import globals from "~/themes/theme-dark/base/globals"
 
-// Company Juice Dashboard Helper Functions
+// ThreeD Garden Helper Functions
 import boxShadow from "~/themes/theme-dark/functions/boxShadow"
 import hexToRgb from "~/themes/theme-dark/functions/hexToRgb"
 import linearGradient from "~/themes/theme-dark/functions/linearGradient"
 import pxToRem from "~/themes/theme-dark/functions/pxToRem"
 import rgba from "~/themes/theme-dark/functions/rgba"
 
-// Company Juice Dashboard components base styles for @mui material components
+// ThreeD Garden components base styles for @mui material components
 import sidenav from "~/themes/theme-dark/components/sidenav"
 import list from "~/themes/theme-dark/components/list"
 import listItem from "~/themes/theme-dark/components/list/listItem"

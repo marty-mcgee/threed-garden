@@ -2,7 +2,7 @@
   The boxShadow() function helps you to create a box shadow for an element
  */
 
-// Company Juice Dashboard Helper Functions
+// ThreeD Garden Helper Functions
 import rgba from "~/themes/theme-light/functions/rgba"
 import pxToRem from "~/themes/theme-light/functions/pxToRem"
 

@@ -13,12 +13,12 @@ import IconButton from "@mui/material/IconButton"
 import Menu from "@mui/material/Menu"
 import Icon from "@mui/material/Icon"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDInput from "~/components/MDInput"
 import MDBadge from "~/components/MDBadge"
 
-// Company Juice Dashboard examples components
+// ThreeD Garden examples components
 import Breadcrumbs from "~/examples/Breadcrumbs"
 import NotificationItem from "~/examples/Items/NotificationItem"
 
@@ -32,7 +32,7 @@ import {
   navbarMobileMenu,
 } from "~/examples/Navbars/DashboardNavbar/styles"
 
-// Company Juice Dashboard context
+// ThreeD Garden context
 import {
   useMaterialUIController,
   setTransparentNavbar,

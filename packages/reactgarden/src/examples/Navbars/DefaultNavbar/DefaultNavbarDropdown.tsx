@@ -7,7 +7,7 @@ import Link from "next/link"
 import Collapse from "@mui/material/Collapse"
 import Icon from "@mui/material/Icon"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 

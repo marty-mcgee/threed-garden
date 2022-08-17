@@ -5,7 +5,7 @@ import MenuItem from "@mui/material/MenuItem"
 import Link from "@mui/material/Link"
 import { MenuItemProps } from "@mui/material"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 

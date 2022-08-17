@@ -7,12 +7,12 @@ import Menu from "@mui/material/Menu"
 import MenuItem from "@mui/material/MenuItem"
 import Divider from "@mui/material/Divider"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 import MDButton from "~/components/MDButton"
 
-// Company Juice Dashboard examples components
+// ThreeD Garden examples components
 import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
 import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
 import Footer from "~/examples/Footer"

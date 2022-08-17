@@ -7,7 +7,7 @@ import Switch from "@mui/material/Switch"
 import Tooltip from "@mui/material/Tooltip"
 import Divider from "@mui/material/Divider"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 import MDAvatar from "~/components/MDAvatar"
@@ -20,7 +20,7 @@ import logoSpotify from "~/assets/images/logos/small-logos/logo-spotify.svg"
 import logoAtlassian from "~/assets/images/logos/small-logos/logo-atlassian.svg"
 import logoAsana from "~/assets/images/logos/small-logos/logo-asana.svg"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import { useMaterialUIController } from "~/context"
 
 function Accounts(): JSX.Element {

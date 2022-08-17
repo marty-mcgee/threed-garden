@@ -4,11 +4,11 @@ import { useEffect, useMemo, useState } from "react"
 import Grid from "@mui/material/Grid"
 import Icon from "@mui/material/Icon"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 
-// Company Juice Dashboard examples components
+// ThreeD Garden examples components
 import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
 import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
 import Footer from "~/examples/Footer"
@@ -35,7 +35,7 @@ import calendarEventsData from "~/layouts/pages/rtl/data/calendarEventsData"
 import categoriesListData from "~/layouts/pages/rtl/data/categoriesListData"
 import caloriesChartData from "~/layouts/pages/rtl/data/caloriesChartData"
 
-// Company Juice Dashboard contexts
+// ThreeD Garden contexts
 import { useMaterialUIController, setDirection } from "~/context"
 
 function RTL(): JSX.Element {

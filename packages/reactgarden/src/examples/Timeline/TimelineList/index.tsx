@@ -3,11 +3,11 @@ import { ReactNode } from "react"
 // @mui material components
 import Card from "@mui/material/Card"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import { useMaterialUIController } from "~/context"
 
 // Timeline context

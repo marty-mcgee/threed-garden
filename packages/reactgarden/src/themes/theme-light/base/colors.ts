@@ -1,7 +1,7 @@
 /**
- * The base colors for the Company Juice DashboardUI Dashboard PRO Material.
+ * The base colors for the ThreeD GardenUI Dashboard PRO Material.
  * You can add new color using this file.
- * You can customized the colors for the entire Company Juice DashboardUI Dashboard PRO Material using thie file.
+ * You can customized the colors for the entire ThreeD GardenUI Dashboard PRO Material using thie file.
  */
 
 // types

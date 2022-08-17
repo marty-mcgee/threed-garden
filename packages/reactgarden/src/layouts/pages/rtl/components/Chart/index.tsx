@@ -6,17 +6,17 @@ import { Line } from "react-chartjs-2"
 // @mui material components
 import Card from "@mui/material/Card"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 
-// Company Juice Dashboard Helper Functions
+// ThreeD Garden Helper Functions
 import gradientChartLine from "~/themes/theme-light/functions/gradientChartLine"
 
 // Chart configurations
 import configs from "~/layouts/pages/widgets/components/Chart/configs"
 
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import colors from "~/themes/theme-light/base/colors"
 
 // Declaring props types for Chart

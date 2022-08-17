@@ -1,4 +1,4 @@
-// Company Juice Dashboard Helper Functions
+// ThreeD Garden Helper Functions
 import pxToRem from "~/themes/theme-light/functions/pxToRem"
 
 // types

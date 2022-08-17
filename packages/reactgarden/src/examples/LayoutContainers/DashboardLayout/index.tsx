@@ -4,10 +4,10 @@ import { useEffect, ReactNode } from "react"
 // import { useLocation } from "react-router-dom"
 import { useRouter, NextRouter } from "next/router"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 
-// Company Juice Dashboard context
+// ThreeD Garden context
 import { useMaterialUIController, setLayout } from "~/context"
 
 function DashboardLayout({ children }: { children: ReactNode }): JSX.Element {

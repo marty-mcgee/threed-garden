@@ -8,11 +8,11 @@ import Collapse from "@mui/material/Collapse"
 import MuiLink from "@mui/material/Link"
 import { Theme } from "@mui/material/styles"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 
-// Company Juice Dashboard exampless
+// ThreeD Garden exampless
 import DefaultNavbarDropdown from "~/examples/Navbars/DefaultNavbar/DefaultNavbarDropdown"
 
 // Declaring props types for DefaultNavbarMobile

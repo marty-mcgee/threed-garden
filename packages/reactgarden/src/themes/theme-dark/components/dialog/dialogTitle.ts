@@ -1,7 +1,7 @@
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import typography from "~/themes/theme-dark/base/typography"
 
-// Company Juice Dashboard Helper Functions
+// ThreeD Garden Helper Functions
 import pxToRem from "~/themes/theme-dark/functions/pxToRem"
 
 const { size } = typography

@@ -1,7 +1,7 @@
 // formik components
 import { ErrorMessage, Field } from "formik"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 import MDInput from "~/components/MDInput"

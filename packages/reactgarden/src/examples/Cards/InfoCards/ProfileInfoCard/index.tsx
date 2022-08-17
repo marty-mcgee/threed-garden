@@ -7,11 +7,11 @@ import Divider from "@mui/material/Divider"
 import Tooltip from "@mui/material/Tooltip"
 import Icon from "@mui/material/Icon"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import colors from "~/themes/theme-light/base/colors"
 import typography from "~/themes/theme-light/base/typography"
 

@@ -6,7 +6,7 @@ import Link from "next/link"
 // @mui material components
 import Switch from "@mui/material/Switch"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 import MDInput from "~/components/MDInput"

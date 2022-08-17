@@ -1,12 +1,12 @@
 // @mui material components
 import Fade from "@mui/material/Fade"
 
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import colors from "~/themes/theme-light/base/colors"
 import typography from "~/themes/theme-light/base/typography"
 import borders from "~/themes/theme-light/base/borders"
 
-// Company Juice Dashboard Helper Functions
+// ThreeD Garden Helper Functions
 import pxToRem from "~/themes/theme-light/functions/pxToRem"
 
 const { black, light } = colors

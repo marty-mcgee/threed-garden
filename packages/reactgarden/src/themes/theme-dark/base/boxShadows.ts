@@ -1,13 +1,13 @@
 /**
- * The base box-shadow styles for the Company Juice DashboardUI Dashboard PRO Material.
+ * The base box-shadow styles for the ThreeD GardenUI Dashboard PRO Material.
  * You can add new box-shadow using this file.
- * You can customized the box-shadow for the entire Company Juice DashboardUI Dashboard PRO Material using thie file.
+ * You can customized the box-shadow for the entire ThreeD GardenUI Dashboard PRO Material using thie file.
  */
 
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import colors from "~/themes/theme-dark/base/colors"
 
-// Company Juice Dashboard Helper Functions
+// ThreeD Garden Helper Functions
 import boxShadow from "~/themes/theme-dark/functions/boxShadow"
 
 const { black, dark, tabs, coloredShadows } = colors

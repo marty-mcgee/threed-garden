@@ -7,7 +7,7 @@ import ListItemIcon from "@mui/material/ListItemIcon"
 import ListItemText from "@mui/material/ListItemText"
 import Icon from "@mui/material/Icon"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 
 // Custom styles for the SidenavCollapse
@@ -19,7 +19,7 @@ import {
   collapseArrow,
 } from "~/examples/Sidenav/styles/sidenavCollapse"
 
-// Company Juice Dashboard context
+// ThreeD Garden context
 import { useMaterialUIController } from "~/context"
 
 // Declaring props types for SidenavCollapse
