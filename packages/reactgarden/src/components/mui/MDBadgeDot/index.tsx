@@ -1,8 +1,8 @@
 import { FC, forwardRef } from "react"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
 
 // declaring props types for MDBadgeDot
 interface Props {

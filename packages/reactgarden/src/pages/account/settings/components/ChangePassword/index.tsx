@@ -3,10 +3,10 @@ import Card from "@mui/material/Card"
 import Grid from "@mui/material/Grid"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
-import MDButton from "~/components/MDButton"
-import MDInput from "~/components/MDInput"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDButton from "~/components/mui/MDButton"
+import MDInput from "~/components/mui/MDInput"
 
 function ChangePassword(): JSX.Element {
   const passwordRequirements = [

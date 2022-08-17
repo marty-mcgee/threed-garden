@@ -9,10 +9,10 @@ import Icon from "@mui/material/Icon"
 import Card from "@mui/material/Card"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDBadgeDot from "~/components/MDBadgeDot"
-import MDButton from "~/components/MDButton"
-import MDTypography from "~/components/MDTypography"
+import MDBox from "~/components/mui/MDBox"
+import MDBadgeDot from "~/components/mui/MDBadgeDot"
+import MDButton from "~/components/mui/MDButton"
+import MDTypography from "~/components/mui/MDTypography"
 
 // ThreeD Garden examples components
 import DashboardLayout from "~/components/examples/LayoutContainers/DashboardLayout"

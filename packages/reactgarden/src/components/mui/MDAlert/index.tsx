@@ -4,7 +4,7 @@ import { useState, ReactNode } from "react"
 import Fade from "@mui/material/Fade"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
+import MDBox from "~/components/mui/MDBox"
 
 // Custom styles for the MDAlert
 import MDAlertRoot from "~/components/mui/MDAlert/MDAlertRoot"

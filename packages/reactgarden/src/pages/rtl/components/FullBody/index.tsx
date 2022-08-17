@@ -2,9 +2,9 @@
 import Card from "@mui/material/Card"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
-import MDBadge from "~/components/MDBadge"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDBadge from "~/components/mui/MDBadge"
 
 function FullBody(): JSX.Element {
   return (

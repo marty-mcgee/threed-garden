@@ -1,5 +1,5 @@
 // ThreeD Garden components
-import MDTypography from "~/components/MDTypography"
+import MDTypography from "~/components/mui/MDTypography"
 
 // Declaring props types for DefaultCell
 interface Props {

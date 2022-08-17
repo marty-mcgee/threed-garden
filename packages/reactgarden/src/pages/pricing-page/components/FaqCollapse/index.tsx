@@ -5,8 +5,8 @@ import Icon from "@mui/material/Icon"
 import Collapse from "@mui/material/Collapse"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
 
 // ThreeD Garden components
 import borders from "~/themes/theme-light/base/borders"

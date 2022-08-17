@@ -4,7 +4,7 @@ import { FC, forwardRef } from "react"
 import { AvatarProps } from "@mui/material"
 
 // Custom styles for MDAvatar
-import MDAvatarRoot from "~/components/MDAvatar/MDAvatarRoot"
+import MDAvatarRoot from "~/components/mui/MDAvatar/MDAvatarRoot"
 
 // declare props types for MDAvatar
 interface Props extends AvatarProps {

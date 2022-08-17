@@ -10,7 +10,7 @@ import dynamic from 'next/dynamic'
 import "react-quill/dist/quill.snow.css"
 
 // Custom styles for the MDEditor
-import MDEditorRoot from "~/components/MDEditor/MDEditorRoot"
+import MDEditorRoot from "~/components/mui/MDEditor/MDEditorRoot"
 
 // ThreeD Garden context
 import { useMaterialUIController } from "~/context"

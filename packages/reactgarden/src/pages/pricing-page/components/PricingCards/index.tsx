@@ -2,7 +2,7 @@
 import Grid from "@mui/material/Grid"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
+import MDBox from "~/components/mui/MDBox"
 
 // ThreeD Garden examples components
 import DefaultPricingCard from "~/components/examples/Cards/PricingCards/DefaultPricingCard"

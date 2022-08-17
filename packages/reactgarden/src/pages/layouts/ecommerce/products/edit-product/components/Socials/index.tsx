@@ -3,8 +3,8 @@ import Card from "@mui/material/Card"
 import Grid from "@mui/material/Grid"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
 
 // EditProduct page components
 import FormField from "~/pages/layouts/ecommerce/products/edit-product/components/FormField"

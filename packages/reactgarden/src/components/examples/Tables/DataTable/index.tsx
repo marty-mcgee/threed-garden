@@ -18,10 +18,10 @@ import Icon from "@mui/material/Icon"
 import Autocomplete from "@mui/material/Autocomplete"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
-import MDInput from "~/components/MDInput"
-import MDPagination from "~/components/MDPagination"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDInput from "~/components/mui/MDInput"
+import MDPagination from "~/components/mui/MDPagination"
 
 // ThreeD Garden examples components
 import DataTableHeadCell from "~/components/examples/Tables/DataTable/DataTableHeadCell"

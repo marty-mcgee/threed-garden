@@ -7,7 +7,7 @@ import ImgsViewer from "react-images-viewer"
 import Stack from "@mui/material/Stack"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
+import MDBox from "~/components/mui/MDBox"
 
 // Images
 import image1 from "~/assets/images/products/product-details-1.jpg"

@@ -4,8 +4,8 @@ import { ReactNode } from "react"
 import Grid from "@mui/material/Grid"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
 
 // ThreeD Garden examples components
 import DefaultNavbar from "~/components/examples/Navbars/DefaultNavbar"

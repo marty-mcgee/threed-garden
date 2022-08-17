@@ -4,8 +4,8 @@ import Grid from "@mui/material/Grid"
 import Autocomplete from "@mui/material/Autocomplete"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
 
 // Settings page components
 import FormField from "~/layouts/pages/account/components/FormField"

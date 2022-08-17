@@ -1,7 +1,7 @@
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
-import MDAvatar from "~/components/MDAvatar"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDAvatar from "~/components/mui/MDAvatar"
 
 // Declaring props types for ProductCell
 interface Props {

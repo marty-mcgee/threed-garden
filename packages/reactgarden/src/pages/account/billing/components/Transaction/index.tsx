@@ -4,9 +4,9 @@ import { ReactNode } from "react"
 import Icon from "@mui/material/Icon"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
-import MDButton from "~/components/MDButton"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDButton from "~/components/mui/MDButton"
 
 // Declaring props types for Transaction
 interface Props {

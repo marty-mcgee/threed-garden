@@ -5,11 +5,11 @@ import Grid from "@mui/material/Grid"
 import Card from "@mui/material/Card"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
 import MDAlert from "~/components/mui/MDAlert"
-import MDButton from "~/components/MDButton"
-import MDSnackbar from "~/components/MDSnackbar"
+import MDButton from "~/components/mui/MDButton"
+import MDSnackbar from "~/components/mui/MDSnackbar"
 
 // ThreeD Garden examples components
 import DashboardLayout from "~/components/examples/LayoutContainers/DashboardLayout"

@@ -19,7 +19,7 @@ import CssBaseline from "@mui/material/CssBaseline"
 import Icon from "@mui/material/Icon"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
+import MDBox from "~/components/mui/MDBox"
 
 // ThreeD Garden examples
 import Sidenav from "~/components/examples/Sidenav"

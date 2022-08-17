@@ -8,8 +8,8 @@ import TableHead from "@mui/material/TableHead"
 import TableRow from "@mui/material/TableRow"
 
 // ThreeD Garden components
-import MDTypography from "~/components/MDTypography"
-import MDBox from "~/components/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDBox from "~/components/mui/MDBox"
 
 // ThreeD Garden examples components
 import SalesTableCell from "~/components/examples/Tables/SalesTable/SalesTableCell"

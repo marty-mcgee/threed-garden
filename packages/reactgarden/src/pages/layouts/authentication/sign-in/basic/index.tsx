@@ -15,10 +15,10 @@ import GitHubIcon from "@mui/icons-material/GitHub"
 import GoogleIcon from "@mui/icons-material/Google"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
-import MDInput from "~/components/MDInput"
-import MDButton from "~/components/MDButton"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDInput from "~/components/mui/MDInput"
+import MDButton from "~/components/mui/MDButton"
 
 // Authentication layout components
 import BasicLayout from "~/pages/layouts/authentication/components/BasicLayout"

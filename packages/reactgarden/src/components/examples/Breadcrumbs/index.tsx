@@ -8,8 +8,8 @@ import { Breadcrumbs as MuiBreadcrumbs } from "@mui/material"
 import Icon from "@mui/material/Icon"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
 
 // Declaring + Typechecking props types for the Breadcrumbs
 interface Props {

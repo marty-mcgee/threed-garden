@@ -9,8 +9,8 @@ import MuiLink from "@mui/material/Link"
 import { Theme } from "@mui/material/styles"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
 
 // ThreeD Garden exampless
 import DefaultNavbarDropdown from "~/components/examples/Navbars/DefaultNavbar/DefaultNavbarDropdown"

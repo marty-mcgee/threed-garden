@@ -7,8 +7,8 @@ import { Line } from "react-chartjs-2"
 import Card from "@mui/material/Card"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
 
 // ThreeD Garden Helper Functions
 import gradientChartLine from "~/themes/theme-light/functions/gradientChartLine"

@@ -5,7 +5,7 @@ import { useEffect, ReactNode } from "react"
 import { useRouter, NextRouter } from "next/router"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
+import MDBox from "~/components/mui/MDBox"
 
 // ThreeD Garden context
 import { useMaterialUIController, setLayout } from "~/context"

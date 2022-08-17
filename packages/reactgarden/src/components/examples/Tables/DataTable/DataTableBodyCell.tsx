@@ -4,7 +4,7 @@ import { ReactNode } from "react"
 import { Theme } from "@mui/material/styles"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
+import MDBox from "~/components/mui/MDBox"
 
 // Declaring prop types for DataTableBodyCell
 interface Props {

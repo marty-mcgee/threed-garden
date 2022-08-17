@@ -5,7 +5,7 @@ import Grid from "@mui/material/Grid"
 import { Theme } from "@mui/material/styles"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
+import MDBox from "~/components/mui/MDBox"
 
 // ThreeD Garden examples components
 import DefaultNavbar from "~/components/examples/Navbars/DefaultNavbar"

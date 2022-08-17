@@ -14,9 +14,9 @@ import Menu from "@mui/material/Menu"
 import Icon from "@mui/material/Icon"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDInput from "~/components/MDInput"
-import MDBadge from "~/components/MDBadge"
+import MDBox from "~/components/mui/MDBox"
+import MDInput from "~/components/mui/MDInput"
+import MDBadge from "~/components/mui/MDBadge"
 
 // ThreeD Garden examples components
 import Breadcrumbs from "~/components/examples/Breadcrumbs"

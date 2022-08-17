@@ -15,9 +15,9 @@ import Container from "@mui/material/Container"
 import { Theme } from "@mui/material/styles"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
-import MDButton from "~/components/MDButton"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDButton from "~/components/mui/MDButton"
 
 // ThreeD Garden examples components
 import DefaultNavbarDropdown from "~/components/examples/Navbars/DefaultNavbar/DefaultNavbarDropdown"

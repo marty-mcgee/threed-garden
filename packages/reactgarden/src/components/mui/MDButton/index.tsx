@@ -4,7 +4,7 @@ import { FC, ReactNode, forwardRef } from "react"
 import { ButtonProps } from "@mui/material"
 
 // Custom styles for MDButton
-import MDButtonRoot from "~/components/MDButton/MDButtonRoot"
+import MDButtonRoot from "~/components/mui/MDButton/MDButtonRoot"
 
 // ThreeD Garden contexts
 import { useMaterialUIController } from "~/context"

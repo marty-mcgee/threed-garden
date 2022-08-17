@@ -2,9 +2,9 @@
 import Card from "@mui/material/Card"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
-import MDButton from "~/components/MDButton"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDButton from "~/components/mui/MDButton"
 
 // Images
 import productImage from "~/assets/images/products/product-11.jpg"

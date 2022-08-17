@@ -60,7 +60,7 @@ import brandWhite from "~/assets/images/logos/logo-threedgarden.png"
 import brandDark from "~/assets/images/logos/logo-threedgarden-alt.png"
 
 // dashboard components
-import MDBox from "~/components/MDBox"
+import MDBox from "~/components/mui/MDBox"
 
 // dashboard examples
 import Sidenav from "~/components/examples/Sidenav"

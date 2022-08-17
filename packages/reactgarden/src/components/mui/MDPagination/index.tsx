@@ -8,10 +8,10 @@ import {
 } from "react"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
+import MDBox from "~/components/mui/MDBox"
 
 // Custom styles for MDPagination
-import MDPaginationItemRoot from "~/components/MDPagination/MDPaginationItemRoot"
+import MDPaginationItemRoot from "~/components/mui/MDPagination/MDPaginationItemRoot"
 
 // The Pagination main context
 const Context = createContext<any>(null)
