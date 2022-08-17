@@ -63,8 +63,8 @@ import brandDark from "~/assets/images/logos/logo-threedgarden-alt.png"
 import MDBox from "~/components/mui/MDBox"
 
 // dashboard examples
-import Sidenav from "~/components/examples/Sidenav"
-import Configurator from "~/components/examples/Configurator"
+import Sidenav from "~/components/elements/Sidenav"
+import Configurator from "~/components/elements/Configurator"
 
 // dashboard routes
 import routes from "~/routes/routes"
@@ -204,7 +204,7 @@ const Main: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPro
       onClick={handleConfiguratorOpen}
     >
       <Icon fontSize="small" color="inherit">
-        settings
+        Settings
       </Icon>
     </MDBox>
   )
@@ -238,7 +238,7 @@ const Main: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPro
 // APP
 const MyApp: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => { // [MM] ooooo, very interesting (type|interface)
 
-  console.log(`[MM] MyApp: ThreeD Garden @ ${new Date().toISOString()}`)
+  console.log(`[MM] MyApp: ThreeDGarden @ ${new Date().toISOString()}`)
 
   const { Component, emotionCache = clientSideEmotionCache, pageProps, router } = props
 

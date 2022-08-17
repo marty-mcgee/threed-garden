@@ -5,8 +5,8 @@ import Grid from "@mui/material/Grid"
 import MDBox from "~/components/mui/MDBox"
 
 // ThreeD Garden components
-import MasterCard from "~/components/examples/Cards/MasterCard"
-import DefaultInfoCard from "~/components/examples/Cards/InfoCards/DefaultInfoCard"
+import MasterCard from "~/components/elements/Cards/MasterCard"
+import DefaultInfoCard from "~/components/elements/Cards/InfoCards/DefaultInfoCard"
 
 // Billing page components
 import BaseLayout from "~/pages/account/components/BaseLayout"

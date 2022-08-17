@@ -6,7 +6,7 @@ import Document, { Html, Head, Main, NextScript } from "next/document"
 import createEmotionServer from "@emotion/server/create-instance"
 import theme from "~/themes/theme-dark"
 import createEmotionCache from "~/themes/common/createEmotionCache"
-import ThreeDLinks from "~/pages/layouts/threedLinks"
+import ThreeDLinks from "~/components/threed/ThreeDLinks"
 
 export default class MyDocument extends Document {
   render() {
@@ -15,11 +15,6 @@ export default class MyDocument extends Document {
         <Head>
           {/* PWA primary color */}
           <meta name="theme-color" content={theme.palette.primary.main} />
-          <link rel="icon" href="/favicon/favicon.ico" />
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-          />
           <meta name="emotion-insertion-point" content="" />
           {(this.props as any).emotionStyleTags}
         </Head>

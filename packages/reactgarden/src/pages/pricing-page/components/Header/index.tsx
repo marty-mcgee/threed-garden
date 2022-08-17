@@ -13,7 +13,7 @@ import MDBox from "~/components/mui/MDBox"
 import MDTypography from "~/components/mui/MDTypography"
 
 // ThreeD Garden examples components
-import DefaultNavbar from "~/components/examples/Navbars/DefaultNavbar"
+import DefaultNavbar from "~/components/elements/Navbars/DefaultNavbar"
 
 // ThreeD Garden page layout routes
 import pageRoutes from "~/routes/page.routes"

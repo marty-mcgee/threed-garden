@@ -7,7 +7,7 @@ import MDBox from "~/components/mui/MDBox"
 import MDTypography from "~/components/mui/MDTypography"
 
 // ThreeD Garden examples components
-import TimelineItem from "~/components/examples/Timeline/TimelineItem"
+import TimelineItem from "~/components/elements/Timeline/TimelineItem"
 
 function OrdersOverview(): JSX.Element {
   return (
