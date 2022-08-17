@@ -63,8 +63,8 @@ import brandDark from "~/assets/images/logos/logo-threedgarden-alt.png"
 import MDBox from "~/components/MDBox"
 
 // dashboard examples
-import Sidenav from "~/examples/Sidenav"
-import Configurator from "~/examples/Configurator"
+import Sidenav from "~/components/examples/Sidenav"
+import Configurator from "~/components/examples/Configurator"
 
 // dashboard routes
 import routes from "~/routes/routes"
