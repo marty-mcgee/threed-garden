@@ -64,7 +64,7 @@ const routes = [
     type: "collapse",
     name: "Brooklyn Alice",
     key: "brooklyn-alice",
-    icon: <MDAvatar src={profilePicture} alt="Brooklyn Alice" size="sm" />,
+    icon: <MDAvatar src={profilePicture.src} alt="Brooklyn Alice" size="sm" />,
     collapse: [
       {
         name: "My Profile",
