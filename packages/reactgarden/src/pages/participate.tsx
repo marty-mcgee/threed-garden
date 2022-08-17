@@ -8,7 +8,7 @@ import ThemeExampleLink from "~/themes/theme-example/Link"
 import ProTip from "~/themes/theme-example/ProTip"
 import Copyright from "~/themes/theme-example/Copyright"
 
-const About: NextPage = () => (
+const Participate: NextPage = () => (
   <Container maxWidth="lg">
     <Box
       sx={{
@@ -24,8 +24,11 @@ const About: NextPage = () => (
       <Typography component="h2" variant="h4" gutterBottom>
         MUI v5 + Next.js with TypeScript
       </Typography>
-      <ThemeExampleLink href="/participate" color="primary">
-        Click Here to Participate -- ThreeD Garden
+
+      {/* <ThreeDGarden /> */}
+
+      <ThemeExampleLink href="/about" color="primary">
+        Click Here to Read More About -- ThreeD Garden
       </ThemeExampleLink>
       <Box maxWidth="sm">
         <Button component={ThemeExampleLink} variant="contained" noLinkStyle href="/">
@@ -38,4 +41,4 @@ const About: NextPage = () => (
   </Container>
 )
 
-export default About
+export default Participate
