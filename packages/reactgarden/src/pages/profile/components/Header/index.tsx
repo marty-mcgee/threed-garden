@@ -9,9 +9,9 @@ import Tab from "@mui/material/Tab"
 import Icon from "@mui/material/Icon"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
-import MDAvatar from "~/components/MDAvatar"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDAvatar from "~/components/mui/MDAvatar"
 
 // ThreeD Garden Base Styles
 import breakpoints from "~/themes/theme-light/base/breakpoints"

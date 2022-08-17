@@ -7,7 +7,7 @@ import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
+import MDBox from "~/components/mui/MDBox"
 
 // ThreeD Garden Base Styles
 import breakpoints from "~/themes/theme-light/base/breakpoints"

@@ -4,7 +4,7 @@ import Card from "@mui/material/Card"
 import Divider from "@mui/material/Divider"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
+import MDBox from "~/components/mui/MDBox"
 
 // ThreeD Garden examples components
 import DashboardLayout from "~/components/examples/LayoutContainers/DashboardLayout"

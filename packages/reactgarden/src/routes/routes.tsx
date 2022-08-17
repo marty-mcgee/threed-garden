@@ -51,7 +51,7 @@ import SignUpCover from "~/pages/layouts/authentication/sign-up/cover"
 import ResetCover from "~/pages/layouts/authentication/reset-password/cover"
 
 // ThreeD Garden components
-import MDAvatar from "~/components/MDAvatar"
+import MDAvatar from "~/components/mui/MDAvatar"
 
 // @mui icons
 import Icon from "@mui/material/Icon"

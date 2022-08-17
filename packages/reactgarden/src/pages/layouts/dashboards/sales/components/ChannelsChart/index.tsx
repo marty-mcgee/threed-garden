@@ -5,10 +5,10 @@ import Icon from "@mui/material/Icon"
 import Grid from "@mui/material/Grid"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
-import MDButton from "~/components/MDButton"
-import MDBadgeDot from "~/components/MDBadgeDot"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDButton from "~/components/mui/MDButton"
+import MDBadgeDot from "~/components/mui/MDBadgeDot"
 import PieChart from "~/components/examples/Charts/PieChart"
 
 // Data

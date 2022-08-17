@@ -5,7 +5,7 @@ import Flatpickr from "react-flatpickr"
 import "flatpickr/dist/flatpickr.css"
 
 // ThreeD Garden components
-import MDInput from "~/components/MDInput"
+import MDInput from "~/components/mui/MDInput"
 
 // types
 interface Props {

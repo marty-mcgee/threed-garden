@@ -2,7 +2,7 @@
 import Grid from "@mui/material/Grid"
 
 // ThreeD GardenUI Dashboard PRO React components
-import MDBox from "~/components/MDBox"
+import MDBox from "~/components/mui/MDBox"
 
 // ThreeD GardenUI Dashboard PRO React example components
 import DashboardLayout from "~/components/examples/LayoutContainers/DashboardLayout"

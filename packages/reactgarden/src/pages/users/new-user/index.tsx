@@ -11,8 +11,8 @@ import Step from "@mui/material/Step"
 import StepLabel from "@mui/material/StepLabel"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDButton from "~/components/MDButton"
+import MDBox from "~/components/mui/MDBox"
+import MDButton from "~/components/mui/MDButton"
 
 // ThreeD Garden examples components
 import DashboardLayout from "~/components/examples/LayoutContainers/DashboardLayout"

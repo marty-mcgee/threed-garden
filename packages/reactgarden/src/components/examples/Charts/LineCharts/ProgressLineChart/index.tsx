@@ -8,9 +8,9 @@ import Card from "@mui/material/Card"
 import Icon from "@mui/material/Icon"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
-import MDProgress from "~/components/MDProgress"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDProgress from "~/components/mui/MDProgress"
 
 // ProgressLineChart configurations
 import configs from "~/components/examples/Charts/LineCharts/ProgressLineChart/config"

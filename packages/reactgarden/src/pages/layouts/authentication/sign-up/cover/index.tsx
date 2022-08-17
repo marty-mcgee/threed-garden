@@ -6,10 +6,10 @@ import Card from "@mui/material/Card"
 import Checkbox from "@mui/material/Checkbox"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
-import MDInput from "~/components/MDInput"
-import MDButton from "~/components/MDButton"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDInput from "~/components/mui/MDInput"
+import MDButton from "~/components/mui/MDButton"
 
 // Authentication layout components
 import CoverLayout from "~/pages/layouts/authentication/components/CoverLayout"

@@ -8,8 +8,8 @@ import Tooltip from "@mui/material/Tooltip"
 import Icon from "@mui/material/Icon"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
 
 // ThreeD Garden Base Styles
 import colors from "~/themes/theme-light/base/colors"

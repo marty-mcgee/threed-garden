@@ -5,7 +5,7 @@ import Icon from "@mui/material/Icon"
 import { Theme } from "@mui/material/styles"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
+import MDBox from "~/components/mui/MDBox"
 
 // ThreeD Garden contexts
 import { useMaterialUIController } from "~/context"

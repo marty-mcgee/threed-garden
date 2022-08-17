@@ -5,10 +5,10 @@ import Link from "next/link"
 import Card from "@mui/material/Card"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
-import MDAvatar from "~/components/MDAvatar"
-import MDButton from "~/components/MDButton"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDAvatar from "~/components/mui/MDAvatar"
+import MDButton from "~/components/mui/MDButton"
 
 // Declaring props types for ProfilesList
 interface Props {

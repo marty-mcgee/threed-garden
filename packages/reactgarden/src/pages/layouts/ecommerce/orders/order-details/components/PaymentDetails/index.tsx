@@ -3,9 +3,9 @@ import Icon from "@mui/material/Icon"
 import Tooltip from "@mui/material/Tooltip"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
-import MDButton from "~/components/MDButton"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDButton from "~/components/mui/MDButton"
 
 // ThreeD Garden Base Styles
 import borders from "~/themes/theme-light/base/borders"

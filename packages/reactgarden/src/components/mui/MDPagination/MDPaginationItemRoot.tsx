@@ -2,7 +2,7 @@
 import { styled, Theme } from "@mui/material/styles"
 
 // ThreeD Garden components
-import MDButton from "~/components/MDButton"
+import MDButton from "~/components/mui/MDButton"
 
 export default styled(MDButton)(
   ({ theme, ownerState }: { theme?: Theme; ownerState: any }) => {

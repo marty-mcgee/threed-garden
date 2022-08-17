@@ -4,7 +4,7 @@ import { forwardRef, FC } from "react"
 import { BoxProps } from "@mui/material"
 
 // Custom styles for MDBox
-import MDBoxRoot from "~/components/MDBox/MDBoxRoot"
+import MDBoxRoot from "~/components/mui/MDBox/MDBoxRoot"
 
 // declaring props types for MDBox
 interface Props extends BoxProps {

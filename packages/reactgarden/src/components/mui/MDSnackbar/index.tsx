@@ -10,11 +10,11 @@ import Fade from "@mui/material/Fade"
 import { SnackbarProps } from "@mui/material"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
 
 // Custom styles for the MDSnackbar
-import MDSnackbarIconRoot from "~/components/MDSnackbar/MDSnackbarIconRoot"
+import MDSnackbarIconRoot from "~/components/mui/MDSnackbar/MDSnackbarIconRoot"
 
 // ThreeD Garden context
 import { useMaterialUIController } from "~/context"

@@ -16,10 +16,10 @@ import Icon from "@mui/material/Icon"
 import { Theme } from "@mui/material/styles"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDButton from "~/components/MDButton"
-import MDTypography from "~/components/MDTypography"
-import MDInput from "~/components/MDInput"
+import MDBox from "~/components/mui/MDBox"
+import MDButton from "~/components/mui/MDButton"
+import MDTypography from "~/components/mui/MDTypography"
+import MDInput from "~/components/mui/MDInput"
 
 // ThreeD Garden examples components
 import DashboardLayout from "~/components/examples/LayoutContainers/DashboardLayout"

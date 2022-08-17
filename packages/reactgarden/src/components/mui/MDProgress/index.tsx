@@ -1,10 +1,10 @@
 import { FC, forwardRef } from "react"
 
 // ThreeD Garden components
-import MDTypography from "~/components/MDTypography"
+import MDTypography from "~/components/mui/MDTypography"
 
 // Custom styles for MDProgress
-import MDProgressRoot from "~/components/MDProgress/MDProgressRoot"
+import MDProgressRoot from "~/components/mui/MDProgress/MDProgressRoot"
 
 // Delcare props types for MDProgress
 interface Props {

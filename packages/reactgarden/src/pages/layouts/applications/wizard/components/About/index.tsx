@@ -4,10 +4,10 @@ import Icon from "@mui/material/Icon"
 import Tooltip from "@mui/material/Tooltip"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
-import MDAvatar from "~/components/MDAvatar"
-import MDButton from "~/components/MDButton"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDAvatar from "~/components/mui/MDAvatar"
+import MDButton from "~/components/mui/MDButton"
 
 // Wizard application components
 import FormField from "~/pages/layouts/applications/wizard/components/FormField"

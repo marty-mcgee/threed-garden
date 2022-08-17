@@ -8,10 +8,10 @@ import { useEffect, useRef } from "react"
 import "dropzone/dist/dropzone.css"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
+import MDBox from "~/components/mui/MDBox"
 
 // Custom styles for the MDDropzone
-import MDDropzoneRoot from "~/components/MDDropzone/MDDropzoneRoot"
+import MDDropzoneRoot from "~/components/mui/MDDropzone/MDDropzoneRoot"
 
 // ThreeD Garden context
 import { useMaterialUIController } from "~/context"

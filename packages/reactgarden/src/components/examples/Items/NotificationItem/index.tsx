@@ -6,8 +6,8 @@ import Link from "@mui/material/Link"
 import { MenuItemProps } from "@mui/material"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
 
 // custom styles for the NotificationItem
 import menuItem from "~/components/examples/Items/NotificationItem/styles"

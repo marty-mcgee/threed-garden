@@ -8,7 +8,7 @@ import ListItemText from "@mui/material/ListItemText"
 import Icon from "@mui/material/Icon"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
+import MDBox from "~/components/mui/MDBox"
 
 // Custom styles for the SidenavCollapse
 import {

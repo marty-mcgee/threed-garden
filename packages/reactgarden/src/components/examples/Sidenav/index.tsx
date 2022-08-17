@@ -12,8 +12,8 @@ import List from "@mui/material/List"
 import Divider from "@mui/material/Divider"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
 
 // Custom styles for the Sidenav
 import SidenavCollapse from "~/components/examples/Sidenav/SidenavCollapse"

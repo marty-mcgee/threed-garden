@@ -4,7 +4,7 @@ import { FC, ReactNode, forwardRef } from "react"
 import { TypographyProps } from "@mui/material"
 
 // Custom styles for MDTypography
-import MDTypographyRoot from "~/components/MDTypography/MDTypographyRoot"
+import MDTypographyRoot from "~/components/mui/MDTypography/MDTypographyRoot"
 
 // ThreeD Garden contexts
 import { useMaterialUIController } from "~/context"

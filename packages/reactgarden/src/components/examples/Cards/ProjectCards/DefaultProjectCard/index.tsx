@@ -7,10 +7,10 @@ import CardMedia from "@mui/material/CardMedia"
 import Tooltip from "@mui/material/Tooltip"
 
 // ThreeD Garden components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
-import MDButton from "~/components/MDButton"
-import MDAvatar from "~/components/MDAvatar"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDButton from "~/components/mui/MDButton"
+import MDAvatar from "~/components/mui/MDAvatar"
 
 // Declaring props types for DefaultProjectCard
 interface Props {

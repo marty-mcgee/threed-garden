@@ -4,8 +4,8 @@ import Card from "@mui/material/Card"
 import Icon from "@mui/material/Icon"
 
 // Custom components
-import MDBox from "~/components/MDBox"
-import MDTypography from "~/components/MDTypography"
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
 
 // Billing page components
 import Transaction from "~/layouts/pages/account/billing/components/Transaction"
