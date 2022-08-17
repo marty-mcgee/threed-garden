@@ -9,11 +9,11 @@ import MasterCard from "~/components/examples/Cards/MasterCard"
 import DefaultInfoCard from "~/components/examples/Cards/InfoCards/DefaultInfoCard"
 
 // Billing page components
-import BaseLayout from "~/layouts/pages/account/components/BaseLayout"
-import PaymentMethod from "~/layouts/pages/account/billing/components/PaymentMethod"
-import Invoices from "~/layouts/pages/account/billing/components/Invoices"
-import BillingInformation from "~/layouts/pages/account/billing/components/BillingInformation"
-import Transactions from "~/layouts/pages/account/billing/components/Transactions"
+import BaseLayout from "~/pages/account/components/BaseLayout"
+import PaymentMethod from "~/pages/account/billing/components/PaymentMethod"
+import Invoices from "~/pages/account/billing/components/Invoices"
+import BillingInformation from "~/pages/account/billing/components/BillingInformation"
+import Transactions from "~/pages/account/billing/components/Transactions"
 
 function Billing(): JSX.Element {
   return (

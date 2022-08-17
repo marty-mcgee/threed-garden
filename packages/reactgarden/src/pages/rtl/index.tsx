@@ -22,18 +22,18 @@ import Calendar from "~/components/examples/Calendar"
 import CategoriesList from "~/components/examples/Lists/CategoriesList"
 
 // RTL page components
-import Steps from "~/layouts/pages/rtl/components/Steps"
-import FullBody from "~/layouts/pages/rtl/components/FullBody"
-import MediaPlayer from "~/layouts/pages/rtl/components/MediaPlayer"
-import OrdersOverview from "~/layouts/pages/rtl/components/OrdersOverview"
-import UpcomingEvents from "~/layouts/pages/rtl/components/UpcomingEvents"
-import Chart from "~/layouts/pages/rtl/components/Chart"
+import Steps from "~/pages/rtl/components/Steps"
+import FullBody from "~/pages/rtl/components/FullBody"
+import MediaPlayer from "~/pages/rtl/components/MediaPlayer"
+import OrdersOverview from "~/pages/rtl/components/OrdersOverview"
+import UpcomingEvents from "~/pages/rtl/components/UpcomingEvents"
+import Chart from "~/pages/rtl/components/Chart"
 
 // Data
-import progressLineChartData from "~/layouts/pages/rtl/data/progressLineChartData"
-import calendarEventsData from "~/layouts/pages/rtl/data/calendarEventsData"
-import categoriesListData from "~/layouts/pages/rtl/data/categoriesListData"
-import caloriesChartData from "~/layouts/pages/rtl/data/caloriesChartData"
+import progressLineChartData from "~/pages/rtl/data/progressLineChartData"
+import calendarEventsData from "~/pages/rtl/data/calendarEventsData"
+import categoriesListData from "~/pages/rtl/data/categoriesListData"
+import caloriesChartData from "~/pages/rtl/data/caloriesChartData"
 
 // ThreeD Garden contexts
 import { useMaterialUIController, setDirection } from "~/context"

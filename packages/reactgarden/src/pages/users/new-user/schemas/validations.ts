@@ -1,5 +1,5 @@
 import * as Yup from "yup"
-import checkout from "~/layouts/pages/users/new-user/schemas/form"
+import checkout from "~/pages/users/new-user/schemas/form"
 
 const {
   formField: {

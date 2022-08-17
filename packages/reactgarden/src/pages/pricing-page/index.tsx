@@ -7,11 +7,11 @@ import Container from "@mui/material/Container"
 import PageLayout from "~/components/examples/LayoutContainers/PageLayout"
 
 // Pricing page components
-import Header from "~/layouts/pages/pricing-page/components/Header"
-import Footer from "~/layouts/pages/pricing-page/components/Footer"
-import PricingCards from "~/layouts/pages/pricing-page/components/PricingCards"
-import TrustedBrands from "~/layouts/pages/pricing-page/components/TrustedBrands"
-import Faq from "~/layouts/pages/pricing-page/components/Faq"
+import Header from "~/pages/pricing-page/components/Header"
+import Footer from "~/pages/pricing-page/components/Footer"
+import PricingCards from "~/pages/pricing-page/components/PricingCards"
+import TrustedBrands from "~/pages/pricing-page/components/TrustedBrands"
+import Faq from "~/pages/pricing-page/components/Faq"
 
 function PricingPage(): JSX.Element {
   const [tabValue, setTabValue] = useState<number>(0)

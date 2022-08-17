@@ -7,7 +7,7 @@ import MDTypography from "~/components/mui/MDTypography"
 import MDButton from "~/components/mui/MDButton"
 
 // Billing page components
-import Invoice from "~/layouts/pages/account/billing/components/Invoice"
+import Invoice from "~/pages/account/billing/components/Invoice"
 
 function Invoices(): JSX.Element {
   return (

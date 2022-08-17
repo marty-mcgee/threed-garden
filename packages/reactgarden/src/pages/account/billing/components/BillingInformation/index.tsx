@@ -6,7 +6,7 @@ import MDBox from "~/components/mui/MDBox"
 import MDTypography from "~/components/mui/MDTypography"
 
 // Billing page components
-import Bill from "~/layouts/pages/account/billing/components/Bill"
+import Bill from "~/pages/account/billing/components/Bill"
 
 function BillingInformation(): JSX.Element {
   return (

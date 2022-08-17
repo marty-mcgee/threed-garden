@@ -20,15 +20,15 @@ import DashboardNavbar from "~/components/examples/Navbars/DashboardNavbar"
 import Footer from "~/components/examples/Footer"
 
 // NewUser page components
-import UserInfo from "~/layouts/pages/users/new-user/components/UserInfo"
-import Address from "~/layouts/pages/users/new-user/components/Address"
-import Socials from "~/layouts/pages/users/new-user/components/Socials"
-import Profile from "~/layouts/pages/users/new-user/components/Profile"
+import UserInfo from "~/pages/users/new-user/components/UserInfo"
+import Address from "~/pages/users/new-user/components/Address"
+import Socials from "~/pages/users/new-user/components/Socials"
+import Profile from "~/pages/users/new-user/components/Profile"
 
 // NewUser layout schemas for form and form feilds
-import validations from "~/layouts/pages/users/new-user/schemas/validations"
-import form from "~/layouts/pages/users/new-user/schemas/form"
-import initialValues from "~/layouts/pages/users/new-user/schemas/initialValues"
+import validations from "~/pages/users/new-user/schemas/validations"
+import form from "~/pages/users/new-user/schemas/form"
+import initialValues from "~/pages/users/new-user/schemas/initialValues"
 
 function getSteps(): string[] {
   return ["User Info", "Address", "Social", "Profile"]

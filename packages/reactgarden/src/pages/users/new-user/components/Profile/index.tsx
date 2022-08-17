@@ -6,7 +6,7 @@ import MDBox from "~/components/mui/MDBox"
 import MDTypography from "~/components/mui/MDTypography"
 
 // NewUser page components
-import FormField from "~/layouts/pages/users/new-user/components/FormField"
+import FormField from "~/pages/users/new-user/components/FormField"
 
 function Profile({ formData }: any): JSX.Element {
   const { formField, values } = formData
