@@ -6,7 +6,7 @@ import Document, { Html, Head, Main, NextScript } from "next/document"
 import createEmotionServer from "@emotion/server/create-instance"
 import theme from "~/themes/theme-dark"
 import createEmotionCache from "~/themes/common/createEmotionCache"
-import ThreeDLinks from "~/layouts/threedLinks"
+import ThreeDLinks from "~/pages/layouts/threedLinks"
 
 export default class MyDocument extends Document {
   render() {

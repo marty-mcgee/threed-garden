@@ -21,34 +21,34 @@
 */
 
 // layouts
-import Analytics from "~/layouts/dashboards/analytics"
-import Sales from "~/layouts/dashboards/sales"
-import ProfileOverview from "~/layouts/pages/profile/profile-overview"
-import AllProjects from "~/layouts/pages/profile/all-projects"
-import NewUser from "~/layouts/pages/users/new-user"
-import Settings from "~/layouts/pages/account/settings"
-import Billing from "~/layouts/pages/account/billing"
-import Invoice from "~/layouts/pages/account/invoice"
-import Timeline from "~/layouts/pages/projects/timeline"
-import PricingPage from "~/layouts/pages/pricing-page"
-import Widgets from "~/layouts/pages/widgets"
-import RTL from "~/layouts/pages/rtl"
-import Charts from "~/layouts/pages/charts"
-import Notifications from "~/layouts/pages/notifications"
-import Kanban from "~/layouts/applications/kanban"
-import Wizard from "~/layouts/applications/wizard"
-import DataTables from "~/layouts/applications/data-tables"
-import Calendar from "~/layouts/applications/calendar"
-import NewProduct from "~/layouts/ecommerce/products/new-product"
-import EditProduct from "~/layouts/ecommerce/products/edit-product"
-import ProductPage from "~/layouts/ecommerce/products/product-page"
-import OrderList from "~/layouts/ecommerce/orders/order-list"
-import OrderDetails from "~/layouts/ecommerce/orders/order-details"
-import SignInBasic from "~/layouts/authentication/sign-in/basic"
-import SignInCover from "~/layouts/authentication/sign-in/cover"
-import SignInIllustration from "~/layouts/authentication/sign-in/illustration"
-import SignUpCover from "~/layouts/authentication/sign-up/cover"
-import ResetCover from "~/layouts/authentication/reset-password/cover"
+import Analytics from "~/pages/layouts/dashboards/analytics"
+import Sales from "~/pages/layouts/dashboards/sales"
+import ProfileOverview from "~/pages/profile/profile-overview"
+import AllProjects from "~/pages/profile/all-projects"
+import NewUser from "~/pages/users/new-user"
+import Settings from "~/pages/account/settings"
+import Billing from "~/pages/account/billing"
+import Invoice from "~/pages/account/invoice"
+import Timeline from "~/pages/projects/timeline"
+import PricingPage from "~/pages/pricing-page"
+import Widgets from "~/pages/widgets"
+import RTL from "~/pages/rtl"
+import Charts from "~/pages/charts"
+import Notifications from "~/pages/notifications"
+import Kanban from "~/pages/layouts/applications/kanban"
+import Wizard from "~/pages/layouts/applications/wizard"
+import DataTables from "~/pages/layouts/applications/data-tables"
+import Calendar from "~/pages/layouts/applications/calendar"
+import NewProduct from "~/pages/layouts/ecommerce/products/new-product"
+import EditProduct from "~/pages/layouts/ecommerce/products/edit-product"
+import ProductPage from "~/pages/layouts/ecommerce/products/product-page"
+import OrderList from "~/pages/layouts/ecommerce/orders/order-list"
+import OrderDetails from "~/pages/layouts/ecommerce/orders/order-details"
+import SignInBasic from "~/pages/layouts/authentication/sign-in/basic"
+import SignInCover from "~/pages/layouts/authentication/sign-in/cover"
+import SignInIllustration from "~/pages/layouts/authentication/sign-in/illustration"
+import SignUpCover from "~/pages/layouts/authentication/sign-up/cover"
+import ResetCover from "~/pages/layouts/authentication/reset-password/cover"
 
 // ThreeD Garden components
 import MDAvatar from "~/components/MDAvatar"
@@ -57,25 +57,25 @@ import MDAvatar from "~/components/MDAvatar"
 import Icon from "@mui/material/Icon"
 
 // Images
-import profilePicture from "~/assets/images/people/team-3.jpg"
+import profilePicture from "~/assets/images/people/team-5.jpg"
 
 const routes = [
   {
     type: "collapse",
-    name: "Brooklyn Alice",
-    key: "brooklyn-alice",
-    icon: <MDAvatar src={profilePicture.src} alt="Brooklyn Alice" size="sm" />,
+    name: "Juice Master",
+    key: "juice-master",
+    icon: <MDAvatar src={profilePicture.src} alt="Juice Master" size="sm" />,
     collapse: [
       {
         name: "My Profile",
         key: "my-profile",
-        route: "/pages/profile/profile-overview",
+        route: "/profile/profile-overview",
         component: <ProfileOverview />,
       },
       {
         name: "Settings",
         key: "profile-settings",
-        route: "/pages/account/settings",
+        route: "/account/settings",
         component: <Settings />,
       },
       {
@@ -121,13 +121,13 @@ const routes = [
           {
             name: "Profile Overview",
             key: "profile-overview",
-            route: "/pages/profile/profile-overview",
+            route: "/profile/profile-overview",
             component: <ProfileOverview />,
           },
           {
             name: "All Projects",
             key: "all-projects",
-            route: "/pages/profile/all-projects",
+            route: "/profile/all-projects",
             component: <AllProjects />,
           },
         ],
@@ -139,7 +139,7 @@ const routes = [
           {
             name: "New User",
             key: "new-user",
-            route: "/pages/users/new-user",
+            route: "/users/new-user",
             component: <NewUser />,
           },
         ],
@@ -151,19 +151,19 @@ const routes = [
           {
             name: "Settings",
             key: "settings",
-            route: "/pages/account/settings",
+            route: "/account/settings",
             component: <Settings />,
           },
           {
             name: "Billing",
             key: "billing",
-            route: "/pages/account/billing",
+            route: "/account/billing",
             component: <Billing />,
           },
           {
             name: "Invoice",
             key: "invoice",
-            route: "/pages/account/invoice",
+            route: "/account/invoice",
             component: <Invoice />,
           },
         ],
@@ -175,7 +175,7 @@ const routes = [
           {
             name: "Timeline",
             key: "timeline",
-            route: "/pages/projects/timeline",
+            route: "/projects/timeline",
             component: <Timeline />,
           },
         ],
@@ -183,26 +183,26 @@ const routes = [
       {
         name: "Pricing Page",
         key: "pricing-page",
-        route: "/pages/pricing-page",
+        route: "/pricing-page",
         component: <PricingPage />,
       },
-      { name: "RTL", key: "rtl", route: "/pages/rtl", component: <RTL /> },
+      { name: "RTL", key: "rtl", route: "/rtl", component: <RTL /> },
       {
         name: "Widgets",
         key: "widgets",
-        route: "/pages/widgets",
+        route: "/widgets",
         component: <Widgets />,
       },
       {
         name: "Charts",
         key: "charts",
-        route: "/pages/charts",
+        route: "/charts",
         component: <Charts />,
       },
       {
         name: "Notfications",
         key: "notifications",
-        route: "/pages/notifications",
+        route: "/notifications",
         component: <Notifications />,
       },
     ],
