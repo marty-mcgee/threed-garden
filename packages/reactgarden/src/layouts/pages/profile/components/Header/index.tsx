@@ -8,12 +8,12 @@ import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
 import Icon from "@mui/material/Icon"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 import MDAvatar from "~/components/MDAvatar"
 
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import breakpoints from "~/themes/theme-light/base/breakpoints"
 
 // Images

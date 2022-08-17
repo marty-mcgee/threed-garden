@@ -1,13 +1,13 @@
 /**
- * The base border styles for the Company Juice DashboardUI Dashboard PRO Material.
+ * The base border styles for the ThreeD GardenUI Dashboard PRO Material.
  * You can add new border width, border color or border radius using this file.
- * You can customized the borders value for the entire Company Juice DashboardUI Dashboard PRO Material using thie file.
+ * You can customized the borders value for the entire ThreeD GardenUI Dashboard PRO Material using thie file.
  */
 
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import colors from "~/themes/theme-dark/base/colors"
 
-// Company Juice Dashboard Helper Functions
+// ThreeD Garden Helper Functions
 import pxToRem from "~/themes/theme-dark/functions/pxToRem"
 import rgba from "~/themes/theme-dark/functions/rgba"
 

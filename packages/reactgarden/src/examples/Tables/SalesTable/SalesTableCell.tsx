@@ -1,7 +1,7 @@
 // @mui material components
 import TableCell from "@mui/material/TableCell"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDTypography from "~/components/MDTypography"
 import MDBox from "~/components/MDBox"
 

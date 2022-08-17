@@ -1,9 +1,9 @@
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import colors from "~/themes/theme-light/base/colors"
 import borders from "~/themes/theme-light/base/borders"
 import boxShadows from "~/themes/theme-light/base/boxShadows"
 
-// Company Juice Dashboard Helper Function
+// ThreeD Garden Helper Function
 import rgba from "~/themes/theme-light/functions/rgba"
 
 const { black, white } = colors

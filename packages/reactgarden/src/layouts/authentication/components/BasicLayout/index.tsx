@@ -4,14 +4,14 @@ import { ReactNode } from "react"
 import Grid from "@mui/material/Grid"
 import { Theme } from "@mui/material/styles"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 
-// Company Juice Dashboard examples components
+// ThreeD Garden examples components
 import DefaultNavbar from "~/examples/Navbars/DefaultNavbar"
 import PageLayout from "~/examples/LayoutContainers/PageLayout"
 
-// Company Juice Dashboard page layout routes
+// ThreeD Garden page layout routes
 import pageRoutes from "~/routes/page.routes"
 
 // Authentication pages components

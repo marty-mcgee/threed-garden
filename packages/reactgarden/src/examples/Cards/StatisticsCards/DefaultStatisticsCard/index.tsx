@@ -5,11 +5,11 @@ import { ReactNode } from "react"
 import Card from "@mui/material/Card"
 import Grid from "@mui/material/Grid"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 
-// Company Juice Dashboard contexts
+// ThreeD Garden contexts
 import { useMaterialUIController } from "~/context"
 
 // Declaring prop types for DefaultStatisticsCard

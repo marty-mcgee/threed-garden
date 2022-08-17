@@ -1,8 +1,8 @@
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 
-// Company Juice Dashboard context
+// ThreeD Garden context
 import { useMaterialUIController } from "~/context"
 
 function BillingInformation(): JSX.Element {

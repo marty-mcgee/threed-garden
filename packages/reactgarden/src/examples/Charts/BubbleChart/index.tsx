@@ -7,14 +7,14 @@ import { Bubble } from "react-chartjs-2"
 import Card from "@mui/material/Card"
 import Icon from "@mui/material/Icon"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 
 // BubbleChart configurations
 import configs from "~/examples/Charts/BubbleChart/configs"
 
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import colors from "~/themes/theme-light/base/colors"
 
 // Declaring props types for BubbleChart

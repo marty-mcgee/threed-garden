@@ -3,7 +3,7 @@ import Grid from "@mui/material/Grid"
 import Icon from "@mui/material/Icon"
 import Tooltip from "@mui/material/Tooltip"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 import MDAvatar from "~/components/MDAvatar"

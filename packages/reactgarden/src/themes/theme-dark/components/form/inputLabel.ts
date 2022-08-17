@@ -1,4 +1,4 @@
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import colors from "~/themes/theme-dark/base/colors"
 import typography from "~/themes/theme-dark/base/typography"
 

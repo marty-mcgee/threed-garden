@@ -9,14 +9,14 @@ import Menu from "@mui/material/Menu"
 import MenuItem from "@mui/material/MenuItem"
 import Icon from "@mui/material/Icon"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 
 // Chart configurations
 import configs from "~/layouts/applications/calendar/components/ProductivityChart/configs"
 
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import typography from "~/themes/theme-light/base/typography"
 
 function ProductivityChart(): JSX.Element {

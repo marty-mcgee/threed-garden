@@ -1,8 +1,8 @@
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import colors from "~/themes/theme-dark/base/colors"
 import typography from "~/themes/theme-dark/base/typography"
 
-// Company Juice Dashboard Helper Functions
+// ThreeD Garden Helper Functions
 import pxToRem from "~/themes/theme-dark/functions/pxToRem"
 
 const { transparent, light, info, secondary } = colors

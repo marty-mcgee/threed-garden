@@ -1,7 +1,7 @@
 // @mui material components
 import Card from "@mui/material/Card"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 import MDInput from "~/components/MDInput"

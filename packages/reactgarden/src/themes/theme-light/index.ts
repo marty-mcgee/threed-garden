@@ -1,7 +1,7 @@
 // @mui material components
 import { createTheme } from "@mui/material"
 
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import colors from "~/themes/theme-light/base/colors"
 import breakpoints from "~/themes/theme-light/base/breakpoints"
 import typography from "~/themes/theme-light/base/typography"
@@ -9,14 +9,14 @@ import boxShadows from "~/themes/theme-light/base/boxShadows"
 import borders from "~/themes/theme-light/base/borders"
 import globals from "~/themes/theme-light/base/globals"
 
-// Company Juice Dashboard Helper Functions
+// ThreeD Garden Helper Functions
 import boxShadow from "~/themes/theme-light/functions/boxShadow"
 import hexToRgb from "~/themes/theme-light/functions/hexToRgb"
 import linearGradient from "~/themes/theme-light/functions/linearGradient"
 import pxToRem from "~/themes/theme-light/functions/pxToRem"
 import rgba from "~/themes/theme-light/functions/rgba"
 
-// Company Juice Dashboard components base styles for @mui material components
+// ThreeD Garden components base styles for @mui material components
 import sidenav from "~/themes/theme-light/components/sidenav"
 import list from "~/themes/theme-light/components/list"
 import listItem from "~/themes/theme-light/components/list/listItem"

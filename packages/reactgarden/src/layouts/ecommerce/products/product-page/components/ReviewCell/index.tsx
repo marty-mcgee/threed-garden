@@ -1,7 +1,7 @@
 // @mui material components
 import Icon from "@mui/material/Icon"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDTypography from "~/components/MDTypography"
 
 function ReviewCell({ rating }: { rating: number }): JSX.Element {

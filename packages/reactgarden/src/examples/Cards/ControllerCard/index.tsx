@@ -4,11 +4,11 @@ import { ReactNode } from "react"
 import Card from "@mui/material/Card"
 import Switch from "@mui/material/Switch"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 
-// Company Juice Dashboard context
+// ThreeD Garden context
 import { useMaterialUIController } from "~/context"
 
 // Declaring props types for ControllerCard

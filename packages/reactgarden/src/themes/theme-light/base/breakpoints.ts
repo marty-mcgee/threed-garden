@@ -1,7 +1,7 @@
 /**
- * The base breakpoints for the Company Juice DashboardUI Dashboard PRO Material.
+ * The base breakpoints for the ThreeD GardenUI Dashboard PRO Material.
  * You can add new breakpoints using this file.
- * You can customized the breakpoints for the entire Company Juice DashboardUI Dashboard PRO Material using thie file.
+ * You can customized the breakpoints for the entire ThreeD GardenUI Dashboard PRO Material using thie file.
  */
 
 const breakpoints = {

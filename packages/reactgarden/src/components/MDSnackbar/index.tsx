@@ -9,14 +9,14 @@ import Divider from "@mui/material/Divider"
 import Fade from "@mui/material/Fade"
 import { SnackbarProps } from "@mui/material"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 
 // Custom styles for the MDSnackbar
 import MDSnackbarIconRoot from "~/components/MDSnackbar/MDSnackbarIconRoot"
 
-// Company Juice Dashboard context
+// ThreeD Garden context
 import { useMaterialUIController } from "~/context"
 
 // Declaring props types for MDSnackbar

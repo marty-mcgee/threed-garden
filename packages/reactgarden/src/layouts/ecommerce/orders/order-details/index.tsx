@@ -3,10 +3,10 @@ import Grid from "@mui/material/Grid"
 import Card from "@mui/material/Card"
 import Divider from "@mui/material/Divider"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 
-// Company Juice Dashboard examples components
+// ThreeD Garden examples components
 import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
 import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
 import Footer from "~/examples/Footer"

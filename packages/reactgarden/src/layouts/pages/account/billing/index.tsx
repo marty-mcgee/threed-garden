@@ -1,10 +1,10 @@
 // @mui material components
 import Grid from "@mui/material/Grid"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MasterCard from "~/examples/Cards/MasterCard"
 import DefaultInfoCard from "~/examples/Cards/InfoCards/DefaultInfoCard"
 

@@ -4,11 +4,11 @@ import Link from "@mui/material/Link"
 import Icon from "@mui/material/Icon"
 import { Theme } from "@mui/material/styles"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import typography from "~/themes/theme-light/base/typography"
 
 function Footer({ light }: { light?: boolean }): JSX.Element {

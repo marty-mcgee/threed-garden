@@ -6,7 +6,7 @@ import { ButtonProps } from "@mui/material"
 // Custom styles for MDButton
 import MDButtonRoot from "~/components/MDButton/MDButtonRoot"
 
-// Company Juice Dashboard contexts
+// ThreeD Garden contexts
 import { useMaterialUIController } from "~/context"
 
 // Declaring props types for MDButton

@@ -1,4 +1,4 @@
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import borders from "~/themes/theme-dark/base/borders"
 
 const { borderRadius } = borders

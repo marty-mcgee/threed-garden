@@ -3,7 +3,7 @@ import { useState } from "react"
 // @mui material components
 import Container from "@mui/material/Container"
 
-// Company Juice Dashboard examples components
+// ThreeD Garden examples components
 import PageLayout from "~/examples/LayoutContainers/PageLayout"
 
 // Pricing page components

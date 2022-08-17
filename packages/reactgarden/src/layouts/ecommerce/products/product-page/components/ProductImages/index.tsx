@@ -6,7 +6,7 @@ import ImgsViewer from "react-images-viewer"
 // @mui material components
 import Stack from "@mui/material/Stack"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 
 // Images

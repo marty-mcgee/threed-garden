@@ -1,4 +1,4 @@
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDTypography from "~/components/MDTypography"
 
 // Declaring props types for DefaultCell

@@ -15,7 +15,7 @@ import { Theme } from "@mui/material/styles"
 import TwitterIcon from "@mui/icons-material/Twitter"
 import FacebookIcon from "@mui/icons-material/Facebook"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 import MDButton from "~/components/MDButton"
@@ -23,7 +23,7 @@ import MDButton from "~/components/MDButton"
 // Custom styles for the Configurator
 import ConfiguratorRoot from "~/examples/Configurator/ConfiguratorRoot"
 
-// Company Juice Dashboard context
+// ThreeD Garden context
 import {
   useMaterialUIController,
   setOpenConfigurator,

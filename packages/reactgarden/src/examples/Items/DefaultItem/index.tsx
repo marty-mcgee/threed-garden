@@ -3,7 +3,7 @@ import { forwardRef, FC, ReactNode } from "react"
 // @mui material components
 import Icon from "@mui/material/Icon"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 

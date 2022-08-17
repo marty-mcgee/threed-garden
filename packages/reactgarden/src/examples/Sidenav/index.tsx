@@ -11,7 +11,7 @@ import Icon from "@mui/material/Icon"
 import List from "@mui/material/List"
 import Divider from "@mui/material/Divider"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 
@@ -22,7 +22,7 @@ import SidenavList from "~/examples/Sidenav/SidenavList"
 import SidenavRoot from "~/examples/Sidenav/SidenavRoot"
 import sidenavLogoLabel from "~/examples/Sidenav/styles/sidenav"
 
-// Company Juice Dashboard context
+// ThreeD Garden context
 import {
   useMaterialUIController,
   setMiniSidenav,

@@ -3,7 +3,7 @@
   to convert the hex code into rgb for using it inside the rgba color format.
  */
 
-// Company Juice Dashboard Helper Functions
+// ThreeD Garden Helper Functions
 import hexToRgb from "~/themes/theme-light/functions/hexToRgb"
 
 function rgba(color: string, opacity: number): string {

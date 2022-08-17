@@ -1,13 +1,13 @@
 /**
- * The base typography styles for the Company Juice DashboardUI Dashboard PRO Material.
+ * The base typography styles for the ThreeD GardenUI Dashboard PRO Material.
  * You can add new typography style using this file.
- * You can customized the typography styles for the entire Company Juice DashboardUI Dashboard PRO Material using thie file.
+ * You can customized the typography styles for the entire ThreeD GardenUI Dashboard PRO Material using thie file.
  */
 
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import colors from "~/themes/theme-light/base/colors"
 
-// Company Juice Dashboard Helper Functions
+// ThreeD Garden Helper Functions
 import pxToRem from "~/themes/theme-light/functions/pxToRem"
 
 const { dark } = colors

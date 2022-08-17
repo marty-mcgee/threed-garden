@@ -1,9 +1,9 @@
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import colors from "~/themes/theme-dark/base/colors"
 import typography from "~/themes/theme-dark/base/typography"
 import borders from "~/themes/theme-dark/base/borders"
 
-// Company Juice Dashboard Helper Functions
+// ThreeD Garden Helper Functions
 import rgba from "~/themes/theme-dark/functions/rgba"
 
 const { info, inputBorderColor, dark, grey, white } = colors

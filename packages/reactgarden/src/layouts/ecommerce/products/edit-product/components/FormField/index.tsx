@@ -1,4 +1,4 @@
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDInput from "~/components/MDInput"
 import MDBox from "~/components/MDBox"
 

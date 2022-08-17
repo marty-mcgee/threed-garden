@@ -1,9 +1,9 @@
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import colors from "~/themes/theme-dark/base/colors"
 import borders from "~/themes/theme-dark/base/borders"
 import typography from "~/themes/theme-dark/base/typography"
 
-// // Company Juice DashboardUI Dashboard PRO helper functions
+// // ThreeD GardenUI Dashboard PRO helper functions
 import pxToRem from "~/themes/theme-dark/functions/pxToRem"
 import rgba from "~/themes/theme-dark/functions/rgba"
 

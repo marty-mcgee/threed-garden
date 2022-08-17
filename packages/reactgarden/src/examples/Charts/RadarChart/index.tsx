@@ -7,17 +7,17 @@ import { Radar } from "react-chartjs-2"
 import Card from "@mui/material/Card"
 import Icon from "@mui/material/Icon"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 
 // RadarChart configurations
 import configs from "~/examples/Charts/RadarChart/configs"
 
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import colors from "~/themes/theme-light/base/colors"
 
-// Company Juice Dashboard Helper Functions
+// ThreeD Garden Helper Functions
 import rgba from "~/themes/theme-light/functions/rgba"
 
 // Declaring props types for RadarChart

@@ -1,7 +1,7 @@
 // @mui material components
 import { styled, Theme } from "@mui/material/styles"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDButton from "~/components/MDButton"
 
 export default styled(MDButton)(

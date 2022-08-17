@@ -1,10 +1,10 @@
 // @mui material components
 import Grid from "@mui/material/Grid"
 
-// Company Juice DashboardUI Dashboard PRO React components
+// ThreeD GardenUI Dashboard PRO React components
 import MDBox from "~/components/MDBox"
 
-// Company Juice DashboardUI Dashboard PRO React example components
+// ThreeD GardenUI Dashboard PRO React example components
 import DashboardLayout from "~/examples/LayoutContainers/DashboardLayout"
 import DashboardNavbar from "~/examples/Navbars/DashboardNavbar"
 import Footer from "~/examples/Footer"

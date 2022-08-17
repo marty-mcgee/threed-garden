@@ -13,7 +13,7 @@ import {
   useReducer,
 } from "react"
 
-// Company Juice Dashboard PRO Material main context
+// ThreeD Garden PRO Material main context
 const MaterialUI = createContext<any>(null)
 
 // Setting custom name for the context which is visible on react dev tools
@@ -25,14 +25,14 @@ interface StateTypes {
   transparentSidenav: boolean
   whiteSidenav: boolean
   sidenavColor:
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "light"
-    | "dark"
+  | "primary"
+  | "secondary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "light"
+  | "dark"
   transparentNavbar: boolean
   fixedNavbar: boolean
   openConfigurator: boolean
@@ -43,20 +43,20 @@ interface StateTypes {
 
 interface ActionTypes {
   type:
-    | "MINI_SIDENAV"
-    | "TRANSPARENT_SIDENAV"
-    | "WHITE_SIDENAV"
-    | "SIDENAV_COLOR"
-    | "TRANSPARENT_NAVBAR"
-    | "FIXED_NAVBAR"
-    | "OPEN_CONFIGURATOR"
-    | "DIRECTION"
-    | "LAYOUT"
-    | "DARKMODE"
+  | "MINI_SIDENAV"
+  | "TRANSPARENT_SIDENAV"
+  | "WHITE_SIDENAV"
+  | "SIDENAV_COLOR"
+  | "TRANSPARENT_NAVBAR"
+  | "FIXED_NAVBAR"
+  | "OPEN_CONFIGURATOR"
+  | "DIRECTION"
+  | "LAYOUT"
+  | "DARKMODE"
   value: any
 }
 
-// Company Juice Dashboard reducer
+// ThreeD Garden reducer
 function reducer(state: StateTypes, action: ActionTypes) {
   switch (action.type) {
     case "MINI_SIDENAV": {
@@ -95,7 +95,7 @@ function reducer(state: StateTypes, action: ActionTypes) {
   }
 }
 
-// Company Juice Dashboard context provider
+// ThreeD Garden context provider
 function MaterialUIControllerProvider({
   children,
 }: {
@@ -121,7 +121,7 @@ function MaterialUIControllerProvider({
   return <MaterialUI.Provider value={value}>{children}</MaterialUI.Provider>
 }
 
-// Company Juice Dashboard custom hook for using context
+// ThreeD Garden custom hook for using context
 function useMaterialUIController() {
   const context = useContext(MaterialUI)
 
@@ -151,14 +151,14 @@ const setSidenavColor = (
   dispatch: (arg: {
     type: "SIDENAV_COLOR"
     value:
-      | "primary"
-      | "secondary"
-      | "info"
-      | "success"
-      | "warning"
-      | "error"
-      | "light"
-      | "dark"
+    | "primary"
+    | "secondary"
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "light"
+    | "dark"
   }) => void,
   value:
     | "primary"

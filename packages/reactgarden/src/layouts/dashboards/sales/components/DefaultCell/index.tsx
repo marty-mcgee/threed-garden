@@ -1,6 +1,6 @@
 import { ReactNode } from "react"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDTypography from "~/components/MDTypography"
 
 function DefaultCell({ children }: { children: ReactNode }): JSX.Element {

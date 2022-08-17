@@ -3,18 +3,18 @@ import { ReactNode } from "react"
 // @mui material components
 import Grid from "@mui/material/Grid"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 
-// Company Juice Dashboard examples components
+// ThreeD Garden examples components
 import DefaultNavbar from "~/examples/Navbars/DefaultNavbar"
 import PageLayout from "~/examples/LayoutContainers/PageLayout"
 
-// Company Juice Dashboard page layout routes
+// ThreeD Garden page layout routes
 import pageRoutes from "~/routes/page.routes"
 
-// Company Juice Dashboard context
+// ThreeD Garden context
 import { useMaterialUIController } from "~/context"
 
 // Declaring props types for IllustrationLayout

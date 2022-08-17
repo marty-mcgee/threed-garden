@@ -4,7 +4,7 @@ import { ReactNode } from "react"
 import Icon from "@mui/material/Icon"
 import { Theme } from "@mui/material/styles"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDBadge from "~/components/MDBadge"
 import MDTypography from "~/components/MDTypography"

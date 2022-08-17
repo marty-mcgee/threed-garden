@@ -14,19 +14,19 @@ import MuiLink from "@mui/material/Link"
 import Container from "@mui/material/Container"
 import { Theme } from "@mui/material/styles"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 import MDButton from "~/components/MDButton"
 
-// Company Juice Dashboard examples components
+// ThreeD Garden examples components
 import DefaultNavbarDropdown from "~/examples/Navbars/DefaultNavbar/DefaultNavbarDropdown"
 import DefaultNavbarMobile from "~/examples/Navbars/DefaultNavbar/DefaultNavbarMobile"
 
-// Company Juice Dashboard Base Styles
+// ThreeD Garden Base Styles
 import breakpoints from "~/themes/theme-light/base/breakpoints"
 
-// Company Juice Dashboard context
+// ThreeD Garden context
 import { useMaterialUIController } from "~/context"
 
 // Declaring props types for DefaultNavbar

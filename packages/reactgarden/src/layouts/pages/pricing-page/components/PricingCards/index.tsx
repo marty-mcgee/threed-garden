@@ -1,13 +1,13 @@
 // @mui material components
 import Grid from "@mui/material/Grid"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 
-// Company Juice Dashboard examples components
+// ThreeD Garden examples components
 import DefaultPricingCard from "~/examples/Cards/PricingCards/DefaultPricingCard"
 
-// Company Juice Dashboard context
+// ThreeD Garden context
 import { useMaterialUIController } from "~/context"
 
 function PricingCards({ prices }: { prices: string[] }): JSX.Element {

@@ -7,14 +7,14 @@ import interactionPlugin from "@fullcalendar/interaction"
 // @mui material components
 import Card from "@mui/material/Card"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 import MDTypography from "~/components/MDTypography"
 
 // Custom styles for Calendar
 import CalendarRoot from "~/examples/Calendar/CalendarRoot"
 
-// Company Juice Dashboard context
+// ThreeD Garden context
 import { useMaterialUIController } from "~/context"
 
 // Declaring props types for the Calender

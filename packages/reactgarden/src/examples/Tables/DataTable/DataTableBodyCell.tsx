@@ -3,7 +3,7 @@ import { ReactNode } from "react"
 // @mui material components
 import { Theme } from "@mui/material/styles"
 
-// Company Juice Dashboard components
+// ThreeD Garden components
 import MDBox from "~/components/MDBox"
 
 // Declaring prop types for DataTableBodyCell
