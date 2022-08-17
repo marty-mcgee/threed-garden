@@ -10,7 +10,7 @@ import MDBox from "~/components/mui/MDBox"
 import MDTypography from "~/components/mui/MDTypography"
 
 // Setting pages components
-import TableCell from "~/layouts/pages/account/settings/components/TableCell"
+import TableCell from "~/pages/account/settings/components/TableCell"
 
 function Notifications(): JSX.Element {
   return (

@@ -8,7 +8,7 @@ import MDBox from "~/components/mui/MDBox"
 import MDTypography from "~/components/mui/MDTypography"
 
 // Billing page components
-import Transaction from "~/layouts/pages/account/billing/components/Transaction"
+import Transaction from "~/pages/account/billing/components/Transaction"
 
 function Transactions(): JSX.Element {
   return (

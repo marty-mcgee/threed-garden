@@ -12,7 +12,7 @@ import MDTypography from "~/components/mui/MDTypography"
 import MDButton from "~/components/mui/MDButton"
 
 // Invoice page components
-import BaseLayout from "~/layouts/pages/account/components/BaseLayout"
+import BaseLayout from "~/pages/account/components/BaseLayout"
 
 // Images
 import logoCT from "~/assets/images/logos/logo-threedgarden.png"

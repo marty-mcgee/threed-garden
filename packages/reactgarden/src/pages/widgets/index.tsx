@@ -22,18 +22,18 @@ import Calendar from "~/components/examples/Calendar"
 import CategoriesList from "~/components/examples/Lists/CategoriesList"
 
 // Widgets page components
-import Steps from "~/layouts/pages/widgets/components/Steps"
-import FullBody from "~/layouts/pages/widgets/components/FullBody"
-import MediaPlayer from "~/layouts/pages/widgets/components/MediaPlayer"
-import OrdersOverview from "~/layouts/pages/widgets/components/OrdersOverview"
-import UpcomingEvents from "~/layouts/pages/widgets/components/UpcomingEvents"
-import Chart from "~/layouts/pages/widgets/components/Chart"
+import Steps from "~/pages/widgets/components/Steps"
+import FullBody from "~/pages/widgets/components/FullBody"
+import MediaPlayer from "~/pages/widgets/components/MediaPlayer"
+import OrdersOverview from "~/pages/widgets/components/OrdersOverview"
+import UpcomingEvents from "~/pages/widgets/components/UpcomingEvents"
+import Chart from "~/pages/widgets/components/Chart"
 
 // Data
-import progressLineChartData from "~/layouts/pages/widgets/data/progressLineChartData"
-import calendarEventsData from "~/layouts/pages/widgets/data/calendarEventsData"
-import categoriesListData from "~/layouts/pages/widgets/data/categoriesListData"
-import caloriesChartData from "~/layouts/pages/widgets/data/caloriesChartData"
+import progressLineChartData from "~/pages/widgets/data/progressLineChartData"
+import calendarEventsData from "~/pages/widgets/data/calendarEventsData"
+import categoriesListData from "~/pages/widgets/data/categoriesListData"
+import caloriesChartData from "~/pages/widgets/data/caloriesChartData"
 
 function Widgets(): JSX.Element {
   const [lights, setLights] = useState<boolean>(false)

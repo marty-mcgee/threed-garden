@@ -12,7 +12,7 @@ import TimelineList from "~/components/examples/Timeline/TimelineList"
 import TimelineItem from "~/components/examples/Timeline/TimelineItem"
 
 // Data
-import timelineData from "~/layouts/pages/projects/timeline/data/timelineData"
+import timelineData from "~/pages/projects/timeline/data/timelineData"
 
 function Timeline(): JSX.Element {
   const renderTimelineItems = timelineData.map(

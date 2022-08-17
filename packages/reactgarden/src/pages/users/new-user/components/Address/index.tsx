@@ -8,7 +8,7 @@ import MDTypography from "~/components/mui/MDTypography"
 import MDInput from "~/components/mui/MDInput"
 
 // NewUser page components
-import FormField from "~/layouts/pages/users/new-user/components/FormField"
+import FormField from "~/pages/users/new-user/components/FormField"
 
 function Address({ formData }: any): JSX.Element {
   const { formField, values, errors, touched } = formData

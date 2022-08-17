@@ -7,7 +7,7 @@ import MDBox from "~/components/mui/MDBox"
 import MDTypography from "~/components/mui/MDTypography"
 
 // Pricing page components
-import FaqCollapse from "~/layouts/pages/pricing-page/components/FaqCollapse"
+import FaqCollapse from "~/pages/pricing-page/components/FaqCollapse"
 
 function Faq(): JSX.Element {
   const [collapse, setCollapse] = useState<number | boolean>(false)
