@@ -104,15 +104,23 @@ function Sidenav({
     textColor = "inherit"
   }
 
+  // ===============================================================
+  // [MM] VERY IMPORTANT SECTION HERE
+
+  // [MM] SIMPLE CLOSE SIDENAV / COLLAPSE
   const closeSidenav = () => setMiniSidenav(dispatch, true)
 
+  // [MM] BEGIN COMPONENTDIDMOUNT HOOK -- A BIG ONE
   useEffect(() => {
+
     setOpenCollapse(collapseName)
     setOpenNestedCollapse(itemParentName)
+
   }, [])
 
-  // [MM] HEY HEY HEY -- A BIG ONE 333
+  // [MM] HEY HEY HEY -- ANOTHER BIG ONE 333
   useEffect(() => {
+
     // A function that sets the mini state of the sidenav.
     function handleMiniSidenav() {
       setMiniSidenav(dispatch, window.innerWidth < 333)
@@ -130,6 +138,7 @@ function Sidenav({
 
     // Remove event listener on cleanup
     return () => window.removeEventListener("resize", handleMiniSidenav)
+
   }, [dispatch, route])
 
   // Render all the nested collapse items from the routes.js
