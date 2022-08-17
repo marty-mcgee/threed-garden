@@ -5,7 +5,7 @@ import Grid from "@mui/material/Grid"
 import MDBox from "~/components/mui/MDBox"
 
 // ThreeD Garden examples components
-import DefaultPricingCard from "~/components/examples/Cards/PricingCards/DefaultPricingCard"
+import DefaultPricingCard from "~/components/elements/Cards/PricingCards/DefaultPricingCard"
 
 // ThreeD Garden context
 import { useMaterialUIController } from "~/context"

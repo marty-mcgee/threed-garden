@@ -8,6 +8,8 @@ import ThemeExampleLink from "~/themes/theme-example/Link"
 import ProTip from "~/themes/theme-example/ProTip"
 import Copyright from "~/themes/theme-example/Copyright"
 
+import ThreeDGarden from "~/components/threed/ThreeDGarden"
+
 const Participate: NextPage = () => (
   <Container maxWidth="lg">
     <Box
@@ -25,7 +27,7 @@ const Participate: NextPage = () => (
         MUI v5 + Next.js with TypeScript
       </Typography>
 
-      {/* <ThreeDGarden /> */}
+      <ThreeDGarden />
 
       <ThemeExampleLink href="/about" color="primary">
         Click Here to Read More About -- ThreeD Garden

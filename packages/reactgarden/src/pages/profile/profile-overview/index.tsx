@@ -12,12 +12,12 @@ import MDBox from "~/components/mui/MDBox"
 import MDTypography from "~/components/mui/MDTypography"
 
 // ThreeD Garden examples components
-import DashboardLayout from "~/components/examples/LayoutContainers/DashboardLayout"
-import DashboardNavbar from "~/components/examples/Navbars/DashboardNavbar"
-import Footer from "~/components/examples/Footer"
-import ProfileInfoCard from "~/components/examples/Cards/InfoCards/ProfileInfoCard"
-import ProfilesList from "~/components/examples/Lists/ProfilesList"
-import DefaultProjectCard from "~/components/examples/Cards/ProjectCards/DefaultProjectCard"
+import DashboardLayout from "~/components/elements/LayoutContainers/DashboardLayout"
+import DashboardNavbar from "~/components/elements/Navbars/DashboardNavbar"
+import Footer from "~/components/elements/Footer"
+import ProfileInfoCard from "~/components/elements/Cards/InfoCards/ProfileInfoCard"
+import ProfilesList from "~/components/elements/Lists/ProfilesList"
+import DefaultProjectCard from "~/components/elements/Cards/ProjectCards/DefaultProjectCard"
 
 // Overview page components
 import Header from "~/pages/profile/components/Header"

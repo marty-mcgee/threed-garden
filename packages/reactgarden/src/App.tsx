@@ -22,8 +22,8 @@ import Icon from "@mui/material/Icon"
 import MDBox from "~/components/mui/MDBox"
 
 // ThreeD Garden examples
-import Sidenav from "~/components/examples/Sidenav"
-import Configurator from "~/components/examples/Configurator"
+import Sidenav from "~/components/elements/Sidenav"
+import Configurator from "~/components/elements/Configurator"
 
 // ThreeD Garden themes
 import theme from "~/themes/theme-light"
