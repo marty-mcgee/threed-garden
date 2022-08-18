@@ -7,6 +7,8 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer'
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+// types
+import type { Scene, Plane, Camera, Renderer, Object3D } from "three"
 
 // import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
 import TWEEN from '@tweenjs/tween.js'
@@ -22,86 +24,120 @@ import * as dat from 'dat.gui'
 // console.log("FarmBot", FarmBot)
 
 // ================================================================
-// LOGIC BEGINS HERE
+// TS
+interface IPostData {
+  plugin_name: string,
+  plugin_version: string,
+  plugin_url: string,
+  theme_uri: "light" | "dark",
+  rest_url: string,
+  world_id: number | string,
+  scene_id: number | string,
+}
 
-/** STATS */
+interface IThreeDEnv {
+  pluginName: string,
+  pluginVersion: string,
+  pluginURL: string,
+  themeURI: "light" | "dark",
+  restURL: string,
+  worldID: number | string,
+  sceneID: number | string,
+}
+
+// ================================================================
+// SETUP BEGINS HERE
+
+// PARAMETERS FROM PHP
+// console.log("window", window)
+// console.log(window.postdata)
+// const postdata = window?.postdata ? window.postdata : {}
+const postdata: IPostData = {
+  plugin_name: "ThreeD Garden",
+  plugin_version: "v0.8.0",
+  plugin_url: "https://garden.university.local/",
+  theme_uri: "dark",
+  rest_url: "https://garden.university.local/wp-json/wp/v2/",
+  world_id: 1,
+  scene_id: 1
+}
+
+const env: IThreeDEnv = {
+  pluginName: postdata.plugin_name,
+  pluginVersion: postdata.plugin_version,
+  pluginURL: postdata.plugin_url,
+  themeURI: postdata.theme_uri,
+  restURL: postdata.rest_url,
+  worldID: postdata.world_id,
+  sceneID: postdata.scene_id
+}
+
+console.log("pluginName", env.pluginName, env.pluginVersion)
+console.log("postdata", postdata)
+
+// STATS
 // const stats = Stats()
 // document.body.appendChild(stats.dom)
 
-/** PARAMETERS FROM PHP */
-// console.log("window", window)
-// console.log(window.postdata)
-const postdata = window?.postdata ? window.postdata : {}
-const pluginName = postdata.plugin_name
-const pluginVersion = postdata.plugin_version
-const pluginURL = postdata.plugin_url
-const themeURI = postdata.theme_uri
-const restURL = postdata.rest_url
-const worldID = postdata.world_id
-console.log("pluginName", pluginName, pluginVersion)
-console.log("postdata", postdata)
-
-/** INSTANTIATE COMMON VARIABLES */
+// INSTANTIATE COMMON VARIABLES
 const debug = false
 const debugPhysics = false
 
-/**
- * DAT.GUI
- */
- const gui = new dat.GUI(
-  {
-    name: "ThreeDGarden Controls",
-    autoPlace: true,
-    closeOnTop: true,
-    width: 180,
-    //closed: true,
-    useLocalStorage: true,
-
-  }
-)
+// DAT.GUI
+const gui = new dat.GUI({
+  name: "ThreeDGarden Controls",
+  autoPlace: true,
+  closeOnTop: true,
+  width: 180,
+  // closed: true,
+  // useLocalStorage: true,
+})
 gui.domElement.id = "gui"
 gui.close()
 // folders
-const guiFolderAnimation 	  = gui.addFolder("Animation")
-const guiFolderRotation 		= gui.addFolder("Rotation")
-const guiFolderCameras 		  = gui.addFolder("Camera")
-const guiFolderLights 		  = gui.addFolder("Lights")
-const guiFolderAllotments 	= gui.addFolder("Allotments")
-const guiFolderBeds 			  = gui.addFolder("Beds")
-const guiFolderPlants 		  = gui.addFolder("Plants")
+const guiFolderAnimation = gui.addFolder("Animation")
+const guiFolderRotation = gui.addFolder("Rotation")
+const guiFolderCameras = gui.addFolder("Camera")
+const guiFolderLights = gui.addFolder("Lights")
+const guiFolderAllotments = gui.addFolder("Allotments")
+const guiFolderBeds = gui.addFolder("Beds")
+const guiFolderPlants = gui.addFolder("Plants")
 // const guiFolderInfospots 	= gui.addFolder("Infospots")
-const guiFolderAnnotations 	= gui.addFolder("Annotations")
-const guiFolderPlayer 		  = gui.addFolder("Character")
+const guiFolderAnnotations = gui.addFolder("Annotations")
+const guiFolderPlayer = gui.addFolder("Character")
 
-/**
- * THREE.JS ENVIRONMENT
- */
-let scene
-let plane
-let camera
-let controls
-let renderer
-let container
-let canvas
-let player = {}
-    player.action = "Idle"
-    player.actionTime = Date.now()
-let animations = {}
+// =====================================================================
+// THREE.JS ENVIRONMENT
+
+let scene: Scene
+let plane: Plane
+let camera: Camera
+let controls: any
+let renderer: Renderer
+let container: any
+let canvas: any
+
+const player: any = {}
+player.action = "Idle"
+player.actionTime = Date.now()
+const animations = {}
 let anims = ["Breathing Idle", "Driving", "Idle", "Left Turn", "Pointing", "Pointing Gesture"]
-    anims = [...anims, "Right Turn", "Running", "Talking", "Turn", "Walking", "Walking Backwards"]
-let anims2 = ["ascend-stairs", "gather-objects", "look-around", "push-button", "run"]
-let tweens = []
+anims = [...anims, "Right Turn", "Running", "Talking", "Turn", "Walking", "Walking Backwards"]
+// let anims2 = ["ascend-stairs", "gather-objects", "look-around", "push-button", "run"]
+// let tweens = []
 
-let cellSize = 16
-let interactive = false
-let levelIndex = 0
-let _hints = 0
-let score = 0
-let cameraFade = 0.05
-let mute = false
-let collect = []
+// let cellSize = 16
+// let interactive = false
+// let levelIndex = 0
+// let _hints = 0
+// let score = 0
+// let cameraFade = 0.05
+// let mute = false
+// let collect = []
 
-let messages = {
+// =====================================================================
+// MESSAGES (to client)
+const messages = {
   text: [
     "Welcome to your ThreeD Garden",
     "GO GROW!"
@@ -109,11 +145,12 @@ let messages = {
   index: 0
 }
 
-/**
- * PARAMS (props)
- */
+// =====================================================================
+// PARAMS (props)
+
 const params = {
   /** SET MODES */
+  mode: "",
   modes: Object.freeze({
     NONE: "none",
     PRELOAD: "preload",
@@ -125,25 +162,24 @@ const params = {
     ACTIVE: "active",
     GAMEOVER: "game_over"
   }),
-  mode: "",
   /** turn on/off animation */
   ANIMATE: true, // starting value
   /** where multimedia files are located */
-  assetsPath: `${pluginURL}assets/`,
+  assetsPath: `${env.pluginURL}assets/`,
   /** all the data from rest api calls to be stored here */
   data: {
-    world: [{id: worldID}],
-    scene: [],
-    allotment: [],
-    bed: [],
-    plant: [],
-    planting_plan: []
+    world: [{ id: env.worldID }],
+    scene: [{ id: env.sceneID }],
+    allotment: [{}],
+    bed: [{}],
+    plant: [{}],
+    planting_plan: [{}]
   },
   /** POINTER HOVERS + CLICKS */
-  intersectedObject1: null,
-  intersectedObject2: null,
+  intersectedObject1: {},
+  intersectedObject2: {},
   /** PLAYER COLLISION INTO OBJECTS */
-  colliders: [], // params.colliders.push(object3D)
+  colliders: [{}], // params.colliders.push(object3D)
   // town.fbx
   environment: {},
   // custom fbx
@@ -158,6 +194,9 @@ console.log("params.mode", params.mode)
 
 console.log("params", params)
 
+// ================================================================
+// LOGIC BEGINS HERE
+
 /**
  * three.js
  * LOADING MANAGER
@@ -166,13 +205,13 @@ console.log("params", params)
 const manager = new THREE.LoadingManager()
 
 manager.onStart = (url, itemsLoaded, itemsTotal) => {
-	console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' )
+  console.log('Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.')
 }
-manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
-	//console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' )
+manager.onProgress = function (url, itemsLoaded, itemsTotal) {
+  //console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' )
 }
-manager.onError = function ( url ) {
-	console.error( 'There was an error loading ' + url )
+manager.onError = function (url) {
+  console.error('There was an error loading ' + url)
 }
 manager.onLoad = () => {
   const startTime = new Date().toISOString()
@@ -182,7 +221,7 @@ manager.onLoad = () => {
   // console.log(`milliseconds elapsed = ${Math.floor(millis)}`)
   // console.log(`seconds elapsed = ${Math.floor(millis / 1000)}`)
 
-  if (params.mode == params.modes.LOADING) {
+  if (params.mode === params.modes.LOADING) {
     params.mode = params.modes.LOADED
     console.log("params.mode manager.onLoad", params.mode, startTime)
     setAction("Idle")
@@ -267,7 +306,7 @@ const root = ref(null)
 
 // render scene + camera
 const render = () => {
-    renderer.render(scene, camera)
+  renderer.render(scene, camera)
 }
 
 // watch for window resize, then adjust canvas appropriately
@@ -275,7 +314,7 @@ const onWindowResize = () => {
   console.log("window resize to: ", window.innerWidth, window.innerHeight)
   camera.aspect = window.innerWidth / window.innerHeight
   camera.updateProjectionMatrix()
-  renderer.setSize( window.innerWidth, window.innerHeight )
+  renderer.setSize(window.innerWidth, window.innerHeight)
   //controls.handleResize() or something similar to update controls
   render()
 }
@@ -315,15 +354,15 @@ const getSpotLight = (color, intensity) => {
 const getDirectionalLight = (color, intensity) => {
   let light = new THREE.DirectionalLight(color, intensity)
   light.castShadow = true
-  light.shadow.bias 			= 0.0001
-  light.shadow.mapSize.width 	= 4096 //default = 512
+  light.shadow.bias = 0.0001
+  light.shadow.mapSize.width = 4096 //default = 512
   light.shadow.mapSize.height = 4096 //default = 512
-  light.shadow.camera.left 	= -1000 //default = -5
-  light.shadow.camera.bottom 	= -1000 //default = -5
-  light.shadow.camera.right 	= 1000 //default = 5
-  light.shadow.camera.top 	= 1000 //default = 5
-  light.shadow.camera.near 	= 0.5 // default
-  light.shadow.camera.far 	= 500 // default
+  light.shadow.camera.left = -1000 //default = -5
+  light.shadow.camera.bottom = -1000 //default = -5
+  light.shadow.camera.right = 1000 //default = 5
+  light.shadow.camera.top = 1000 //default = 5
+  light.shadow.camera.near = 0.5 // default
+  light.shadow.camera.far = 500 // default
   return light
 }
 
@@ -365,7 +404,7 @@ const getGeometry = (shape, x, y, z, color) => {
       break
 
     case "Cone":
-      geometry = new THREE.ConeGeometry(x/2, y/2, z, 32, 1, true)
+      geometry = new THREE.ConeGeometry(x / 2, y / 2, z, 32, 1, true)
       material = new THREE.MeshStandardMaterial({
         color: color,
         side: THREE.DoubleSide
@@ -376,7 +415,7 @@ const getGeometry = (shape, x, y, z, color) => {
       break
 
     case "Cylinder":
-      geometry = new THREE.CylinderGeometry(x/2, y/2, z, 32, 1, true)
+      geometry = new THREE.CylinderGeometry(x / 2, y / 2, z, 32, 1, true)
       material = new THREE.MeshStandardMaterial({
         color: color,
         side: THREE.DoubleSide
@@ -469,7 +508,7 @@ const getGeometry = (shape, x, y, z, color) => {
       var edge_h = 150
 
       function bush(n, mat, c) {
-        if(n > 0) {
+        if (n > 0) {
           var new_mat = new THREE.Matrix4()
           var new_mat2 = new THREE.Matrix4()
           var new_mat_t0 = new THREE.Matrix4()
@@ -481,14 +520,14 @@ const getGeometry = (shape, x, y, z, color) => {
           var col1 = c.clone()
           var col2 = c.clone()
           //col1.offsetHSL(0.12,0,0)
-          col1.g += 0.64/levels
-          material = new THREE.MeshPhongMaterial( { color:col1, wireframe: false } )
+          col1.g += 0.64 / levels
+          material = new THREE.MeshPhongMaterial({ color: col1, wireframe: false })
           mesh = new THREE.Mesh(geometry, material)
-          new_mat_t0.makeTranslation(edge_w/2,0,0)
-          new_mat_t.makeTranslation(0,edge_h,0)
-          new_mat_r.makeRotationZ(-Math.PI/4)
-          new_mat_r2.makeRotationY(Math.PI/2)
-          new_mat_s.makeScale(0.75,0.75,0.75)
+          new_mat_t0.makeTranslation(edge_w / 2, 0, 0)
+          new_mat_t.makeTranslation(0, edge_h, 0)
+          new_mat_r.makeRotationZ(-Math.PI / 4)
+          new_mat_r2.makeRotationY(Math.PI / 2)
+          new_mat_s.makeScale(0.75, 0.75, 0.75)
           new_mat.multiply(new_mat_r2)  //
           new_mat.multiply(new_mat_t0)
           new_mat.multiply(new_mat_r)
@@ -496,20 +535,20 @@ const getGeometry = (shape, x, y, z, color) => {
           new_mat.multiply(new_mat_t)
           new_mat.multiply(mat)
           mesh.matrix.copy(new_mat)
-          mesh.matrixAutoUpdate=false
-          mesh.updateMatrix=false //
+          mesh.matrixAutoUpdate = false
+          mesh.updateMatrix = false //
           plane.add(mesh)
-          bush(n-1, mesh.matrix.clone(), col1)
+          bush(n - 1, mesh.matrix.clone(), col1)
 
           //col2.offsetHSL(0.12,0,0)
-          col2.g += 0.64/levels
-          material = new THREE.MeshPhongMaterial( { color:col2, wireframe: false } )
+          col2.g += 0.64 / levels
+          material = new THREE.MeshPhongMaterial({ color: col2, wireframe: false })
           mesh = new THREE.Mesh(geometry, material)
-          new_mat_t0.makeTranslation(-edge_w/2,0,0)
-          new_mat_t.makeTranslation(0,edge_h,0)
-          new_mat_r.makeRotationZ(Math.PI/4)
-          new_mat_r2.makeRotationY(Math.PI/2)
-          new_mat_s.makeScale(0.75,0.75,0.75)
+          new_mat_t0.makeTranslation(-edge_w / 2, 0, 0)
+          new_mat_t.makeTranslation(0, edge_h, 0)
+          new_mat_r.makeRotationZ(Math.PI / 4)
+          new_mat_r2.makeRotationY(Math.PI / 2)
+          new_mat_s.makeScale(0.75, 0.75, 0.75)
           new_mat2.multiply(new_mat_r2)
           new_mat2.multiply(new_mat_t0)
           new_mat2.multiply(new_mat_r)
@@ -517,15 +556,15 @@ const getGeometry = (shape, x, y, z, color) => {
           new_mat2.multiply(new_mat_t)
           new_mat2.multiply(mat)
           mesh.matrix.copy(new_mat2)
-          mesh.matrixAutoUpdate=false
-          mesh.updateMatrix=false //
+          mesh.matrixAutoUpdate = false
+          mesh.updateMatrix = false //
           plane.add(mesh)
-          bush(n-1, mesh.matrix.clone(), col2)
+          bush(n - 1, mesh.matrix.clone(), col2)
         }
       }
 
-      // [MM]
-      //bush(levels, mesh.matrix, color)
+    // [MM]
+    //bush(levels, mesh.matrix, color)
 
     default:
       geometry = new THREE.BoxGeometry(x, y, z)
@@ -543,22 +582,22 @@ const getGeometry = (shape, x, y, z, color) => {
 
 // LOADERS
 function loadTown() {
-  loaderFBX.load(`${params.assetsPath}fbx/town.fbx`, function(object){
+  loaderFBX.load(`${params.assetsPath}fbx/town.fbx`, function (object) {
     params.environment = object
     params.colliders = []
     object.scale.set(0.025, 0.025, 0.025)
     plane.add(object)
-    object.traverse( function ( child ) {
-      if ( child.isMesh ) {
-        if (child.name.startsWith("proxy")){
+    object.traverse(function (child) {
+      if (child.isMesh) {
+        if (child.name.startsWith("proxy")) {
           params.colliders.push(child)
           child.material.visible = false
-        }else{
+        } else {
           child.castShadow = true
           child.receiveShadow = true
         }
       }
-    } )
+    })
 
     loadNextAnim(loader)
   })
@@ -566,34 +605,34 @@ function loadTown() {
 
 function loadFarmHouse() {
   //loaderFBX.load(`${params.assetsPath}fbx/SM_Bld_Farmhouse_01.fbx`, function(object){
-  loaderFBX.load(`${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function(object){
-  //loaderFBX.load(`${params.assetsPath}fbx/Building_Barn_Big_03.fbx`, function(object){
+  loaderFBX.load(`${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
+    //loaderFBX.load(`${params.assetsPath}fbx/Building_Barn_Big_03.fbx`, function(object){
     params.farmhouse = object
     params.colliders = []
-    object.rotation.y = 270 * (Math.PI/180) // 90 degrees in radians
-    object.rotation.z = 270 * (Math.PI/180) // 90 degrees in radians
+    object.rotation.y = 270 * (Math.PI / 180) // 90 degrees in radians
+    object.rotation.z = 270 * (Math.PI / 180) // 90 degrees in radians
     object.position.set(0, -100, 0)
     //object.scale.set(0.025, 0.025, 0.025)
     object.scale.set(2.2, 2.2, 2.2)
     plane.add(object)
-    object.traverse( function ( child ) {
-      if ( child.isMesh ) {
-        if (child.name.startsWith("proxy")){
+    object.traverse(function (child) {
+      if (child.isMesh) {
+        if (child.name.startsWith("proxy")) {
           params.colliders.push(child)
           child.material.visible = false
-        }else{
+        } else {
           child.castShadow = true
           child.receiveShadow = true
         }
       }
-    } )
+    })
     //loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_A.png`, function(texture) {
-    loaderTexture.load(`${params.assetsPath}textures/SimpleFarm.png`, function(texture) {
-      object.traverse( function ( child ) {
-        if ( child.isMesh ){
+    loaderTexture.load(`${params.assetsPath}textures/SimpleFarm.png`, function (texture) {
+      object.traverse(function (child) {
+        if (child.isMesh) {
           child.material.map = texture
         }
-      } )
+      })
     })
 
     //loadNextAnim(loader)
@@ -603,15 +642,15 @@ function loadFarmHouse() {
 function loadFarmHouseGLTF() {
 
   // loaderFBX.load( `${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
-  loaderGLTF.load( `${params.assetsPath}gltf/Residential House.glb`, function (object) {
+  loaderGLTF.load(`${params.assetsPath}gltf/Residential House.glb`, function (object) {
 
     let model = object.scene
     model.name = "Farm House"
     model.position.set(0, 0, 100)
     model.scale.set(20, 20, 20)
-    model.traverse( function ( child ) {
-      if ( child.isMesh ) child.castShadow = true
-    } )
+    model.traverse(function (child) {
+      if (child.isMesh) child.castShadow = true
+    })
     plane.add(model)
 
     helper = new THREE.SkeletonHelper(model)
@@ -624,20 +663,20 @@ function loadFarmHouseGLTF() {
 
     guiFolderPlayer.add(model, "visible").name("Show House").listen()
 
-  } )
+  })
 }
 
 function loadCoop() {
-  loaderFBX.load(`${params.assetsPath}fbx/Prop_Chicken_Coop_02.fbx`, function(object) {
+  loaderFBX.load(`${params.assetsPath}fbx/Prop_Chicken_Coop_02.fbx`, function (object) {
     params.farmhouse = object
     params.colliders = []
-    object.rotation.x = 180 * (Math.PI/180) // 90 degrees in radians
-    object.rotation.y = 90 * (Math.PI/180) // 90 degrees in radians
-    object.rotation.z = 270 * (Math.PI/180) // 90 degrees in radians
+    object.rotation.x = 180 * (Math.PI / 180) // 90 degrees in radians
+    object.rotation.y = 90 * (Math.PI / 180) // 90 degrees in radians
+    object.rotation.z = 270 * (Math.PI / 180) // 90 degrees in radians
     object.position.set(80, 0, 0)
     object.scale.set(2.2, 2.2, 2.2)
     plane.add(object)
-    object.traverse( function ( child ) {
+    object.traverse(function (child) {
       if (child.isMesh) {
         if (child.name.startsWith("proxy")) {
           params.colliders.push(child)
@@ -647,29 +686,29 @@ function loadCoop() {
           child.receiveShadow = true
         }
       }
-    } )
-    loaderTexture.load(`${params.assetsPath}textures/SimpleFarm.png`, function(texture) {
-      object.traverse( function ( child ) {
-        if (child.isMesh){
+    })
+    loaderTexture.load(`${params.assetsPath}textures/SimpleFarm.png`, function (texture) {
+      object.traverse(function (child) {
+        if (child.isMesh) {
           child.material.map = texture
         }
-      } )
+      })
     })
   })
 }
 
 function loadChicken() {
 
-  loaderGLTF.load( `${params.assetsPath}gltf/Chicken.glb`, function (object) {
+  loaderGLTF.load(`${params.assetsPath}gltf/Chicken.glb`, function (object) {
 
     let model = object.scene
     model.name = "Chicken GLB"
     model.position.set(-3, 0, 0)
-    model.rotation.x = 90 * (Math.PI/180) // 90 degrees in radians
+    model.rotation.x = 90 * (Math.PI / 180) // 90 degrees in radians
     model.scale.set(4, 4, 4)
-    model.traverse( function ( child ) {
-      if ( child.isMesh ) child.castShadow = true
-    } )
+    model.traverse(function (child) {
+      if (child.isMesh) child.castShadow = true
+    })
     plane.add(model)
 
     // helper = new THREE.SkeletonHelper(model)
@@ -682,11 +721,11 @@ function loadChicken() {
 
     //guiFolderPlayer.add(model, "visible").name("Show Chicken").listen()
 
-  } )
+  })
 }
 
 function loadChicken0() {
-  loaderFBX.load(`${params.assetsPath}fbx/Chicken.fbx`, function(object){
+  loaderFBX.load(`${params.assetsPath}fbx/Chicken.fbx`, function (object) {
 
     console.log("BIRD----------------")
     console.log(object)
@@ -697,17 +736,17 @@ function loadChicken0() {
     object.position.set(0, 0, 0)
     //object.scale.set(2.2, 2.2, 2.2)
     plane.add(object)
-    object.traverse( function ( child ) {
-      if ( child.isMesh ) {
+    object.traverse(function (child) {
+      if (child.isMesh) {
         // if (child.name.startsWith("proxy")){
         // 	params.colliders.push(child)
         // 	child.material.visible = false
         // }else{
-          child.castShadow = true
-          child.receiveShadow = true
+        child.castShadow = true
+        child.receiveShadow = true
         //}
       }
-    } )
+    })
     // loaderTexture.load(`${params.assetsPath}textures/SimpleAnimalsFarm.png`, function(texture) {
     // 	object.traverse( function ( child ) {
     // 		if ( child.isMesh ){
@@ -719,7 +758,7 @@ function loadChicken0() {
 }
 
 function loadChicken1() {
-  loaderFBX.load(`${params.assetsPath}fbx/SA_Animal_Birds.fbx`, function(object){
+  loaderFBX.load(`${params.assetsPath}fbx/SA_Animal_Birds.fbx`, function (object) {
 
     console.log("BIRD----------------")
     console.log(object)
@@ -730,31 +769,31 @@ function loadChicken1() {
     object.position.set(0, 0, 0)
     //object.scale.set(2.2, 2.2, 2.2)
     plane.add(object)
-    object.traverse( function ( child ) {
-      if ( child.isMesh ) {
+    object.traverse(function (child) {
+      if (child.isMesh) {
         // if (child.name.startsWith("proxy")){
         // 	params.colliders.push(child)
         // 	child.material.visible = false
         // }else{
-          child.castShadow = true
-          child.receiveShadow = true
+        child.castShadow = true
+        child.receiveShadow = true
         //}
       }
-    } )
-    loaderTexture.load(`${params.assetsPath}textures/SimpleAnimalsFarm.png`, function(texture) {
-      object.traverse( function ( child ) {
-        if ( child.isMesh ){
+    })
+    loaderTexture.load(`${params.assetsPath}textures/SimpleAnimalsFarm.png`, function (texture) {
+      object.traverse(function (child) {
+        if (child.isMesh) {
           child.material.map = texture
         }
-      } )
+      })
     })
   })
 }
 
 function loadChicken2() {
-  loaderFBX.load(`${params.assetsPath}fbx/SA_Animal_Pig.fbx`, function(object) {
-  //loaderFBX.load( `${params.assetsPath}fbx/people/Trucker.fbx`, function (object) {
-  //loaderFBX.load( `${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function (object) {
+  loaderFBX.load(`${params.assetsPath}fbx/SA_Animal_Pig.fbx`, function (object) {
+    //loaderFBX.load( `${params.assetsPath}fbx/people/Trucker.fbx`, function (object) {
+    //loaderFBX.load( `${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function (object) {
 
     console.log("object----------------")
     console.log(object)
@@ -765,40 +804,40 @@ function loadChicken2() {
     // action.play()
     // plane.add( object )
 
-/*
-    object.mixer = new THREE.AnimationMixer( object )
-    mixers.push( object.mixer )
-    var action = object.mixer.clipAction( object.animations[ 0 ] )
-    action.play()
+    /*
+        object.mixer = new THREE.AnimationMixer( object )
+        mixers.push( object.mixer )
+        var action = object.mixer.clipAction( object.animations[ 0 ] )
+        action.play()
 
-    object.name = "Chicken"
+        object.name = "Chicken"
 
-    object.traverse( function ( child ) {
-      if ( child.isMesh ) {
-        child.castShadow = true
-        child.receiveShadow = false
-      }
-    } )
+        object.traverse( function ( child ) {
+          if ( child.isMesh ) {
+            child.castShadow = true
+            child.receiveShadow = false
+          }
+        } )
 
 
-    loaderTexture.load(`${params.assetsPath}textures/SimpleAnimalsFarm.png`, function(texture) {
-    //loaderTexture.load(`${params.assetsPath}images/SimpleScarecrow.png`, function(texture) {
-    //loaderTexture.load(`${params.assetsPath}images/SimpleFarmer_Farmer_Brown.png`, function(texture) {
-    //loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_A.png`, function(texture) {
-      object.traverse( function ( child ) {
-        if ( child.isMesh ){
-          child.material.map = texture
-        }
-      } )
-    })
+        loaderTexture.load(`${params.assetsPath}textures/SimpleAnimalsFarm.png`, function(texture) {
+        //loaderTexture.load(`${params.assetsPath}images/SimpleScarecrow.png`, function(texture) {
+        //loaderTexture.load(`${params.assetsPath}images/SimpleFarmer_Farmer_Brown.png`, function(texture) {
+        //loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_A.png`, function(texture) {
+          object.traverse( function ( child ) {
+            if ( child.isMesh ){
+              child.material.map = texture
+            }
+          } )
+        })
 
-    plane.add( object )
+        plane.add( object )
 
-    console.log("-----------------------")
-    console.log("object----------------")
-    console.log(object)
-    console.log("-----------------------")
-*/
+        console.log("-----------------------")
+        console.log("object----------------")
+        console.log(object)
+        console.log("-----------------------")
+    */
     /*
     player.mixer = object.mixer
     player.root = object.mixer.getRoot()
@@ -845,34 +884,34 @@ function loadChicken2() {
     console.log("-----------------------")
 
     */
-  } )
+  })
 }
 
 function loadChickenGLTF() {
 
-  loaderGLTF.load( `${params.assetsPath}gltf/Animals.glb`, function (object) {
+  loaderGLTF.load(`${params.assetsPath}gltf/Animals.glb`, function (object) {
 
     console.log("Animals object----------------")
     console.log(object)
 
-    object.mixer = new THREE.AnimationMixer( object.scene )
+    object.mixer = new THREE.AnimationMixer(object.scene)
     player.mixer = object.mixer
     player.root = object.mixer.getRoot()
 
     object.name = "Chicken Dance"
 
-    object.scene.traverse( function ( child ) {
-      if ( child.isMesh ) {
+    object.scene.traverse(function (child) {
+      if (child.isMesh) {
         child.castShadow = true
         child.receiveShadow = false
       }
-    } )
+    })
 
     player.object = new THREE.Object3D()
     player.object.add(object.scene)
     player.object.position.set(0, 0, 10)
     player.object.scale.set(4, 4, 4)
-    player.object.rotation.x = Math.PI/2 // 90 degrees in radians
+    player.object.rotation.x = Math.PI / 2 // 90 degrees in radians
     player.mixer.timeScale = 0.5
     player.mixer.clipAction(object.animations[2]).play()
 
@@ -881,21 +920,21 @@ function loadChickenGLTF() {
     plane.add(player.object)
     //guiFolderPlayer.add(player.object, "visible").name("Show Character").listen()
 
-  } )
+  })
 }
 
 function loadChickGLTF() {
 
-  loaderGLTF.load( `${params.assetsPath}gltf/Chick.glb`, function (object) {
+  loaderGLTF.load(`${params.assetsPath}gltf/Chick.glb`, function (object) {
 
     let model = object.scene
     model.name = "Chick GLB"
     model.position.set(3, 0, 0)
     //model.rotation.y = 90 * (Math.PI/180) // 90 degrees in radians
     model.scale.set(2, 2, 2)
-    model.traverse( function ( child ) {
-      if ( child.isMesh ) child.castShadow = true
-    } )
+    model.traverse(function (child) {
+      if (child.isMesh) child.castShadow = true
+    })
     plane.add(model)
 
     // helper = new THREE.SkeletonHelper(model)
@@ -910,32 +949,32 @@ function loadChickGLTF() {
 
     //guiFolderPlayer.add(model, "visible").name("Show Chicken").listen()
 
-  } )
+  })
 }
 
 function loadHen() {
-  loaderFBX.load(`${params.assetsPath}Hen&Chicken_FBX/Hen_HP.fbx`, function(object){
+  loaderFBX.load(`${params.assetsPath}Hen&Chicken_FBX/Hen_HP.fbx`, function (object) {
     params.farmhouse = object
     params.colliders = []
     //object.rotation.y = 270 * (Math.PI/180) // 90 degrees in radians
     object.position.set(3, 0, 0)
     object.scale.set(0.05, 0.05, 0.05)
 
-    object.traverse( function ( child ) {
-      if ( child.isMesh ) {
-        if (child.name.startsWith("proxy")){
+    object.traverse(function (child) {
+      if (child.isMesh) {
+        if (child.name.startsWith("proxy")) {
           params.colliders.push(child)
           child.material.visible = false
-        }else{
+        } else {
           child.castShadow = true
           child.receiveShadow = true
         }
       }
-    } )
+    })
 
-    loaderTexture.load(`${params.assetsPath}Hen&Chicken_FBX/Textures/Hen&Chicken_A.png`, function(texture) {
-      object.traverse( function ( child ) {
-        if ( child.isMesh ){
+    loaderTexture.load(`${params.assetsPath}Hen&Chicken_FBX/Textures/Hen&Chicken_A.png`, function (texture) {
+      object.traverse(function (child) {
+        if (child.isMesh) {
           child.material.map = texture
 
           console.log("loadHen child----------")
@@ -943,7 +982,7 @@ function loadHen() {
           console.log(child.geometry.attributes.uv)
           console.log("-----------------------")
         }
-      } )
+      })
     })
 
     console.log("loadHen object----------------")
@@ -956,15 +995,15 @@ function loadHen() {
 function loadHenGLTF() {
 
   // loaderFBX.load( `${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
-  loaderGLTF.load( `${params.assetsPath}gltf/Hen_HP.glb`, function (object) {
+  loaderGLTF.load(`${params.assetsPath}gltf/Hen_HP.glb`, function (object) {
 
     let model = object.scene
     //model.name = "Hen"
     //model.position.set(10, 0, 0)
     //model.scale.set(0.2, 0.2, 0.2)
-    model.traverse( function ( child ) {
-      if ( child.isMesh ) child.castShadow = true
-    } )
+    model.traverse(function (child) {
+      if (child.isMesh) child.castShadow = true
+    })
     plane.add(model)
 
     // helper = new THREE.SkeletonHelper(model)
@@ -979,42 +1018,42 @@ function loadHenGLTF() {
 
     //guiFolderPlayer.add(model, "visible").name("Show Hen GLTF").listen()
 
-  } )
+  })
 }
 
 function loadKitchenSink() {
-  loaderFBX.load(`${params.assetsPath}fbx/Prop_KitchenSink_Black.fbx`, function(object){
+  loaderFBX.load(`${params.assetsPath}fbx/Prop_KitchenSink_Black.fbx`, function (object) {
     params.farmhouse = object
     params.colliders = []
-    object.rotation.y = 270 * (Math.PI/180) // 90 degrees in radians
+    object.rotation.y = 270 * (Math.PI / 180) // 90 degrees in radians
     object.position.set(0, 0, 10)
     //object.scale.set(0.025, 0.025, 0.025)
     object.scale.set(2.2, 2.2, 2.2)
     plane.add(object)
-    object.traverse( function ( child ) {
-      if ( child.isMesh ) {
-        if (child.name.startsWith("proxy")){
+    object.traverse(function (child) {
+      if (child.isMesh) {
+        if (child.name.startsWith("proxy")) {
           params.colliders.push(child)
           child.material.visible = false
-        }else{
+        } else {
           child.castShadow = true
           child.receiveShadow = true
         }
       }
-    } )
+    })
     //loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_A.png`, function(texture) {
-    loaderTexture.load(`${params.assetsPath}textures/SimpleInteriorsHouses.png`, function(texture) {
-      object.traverse( function ( child ) {
-        if ( child.isMesh ){
+    loaderTexture.load(`${params.assetsPath}textures/SimpleInteriorsHouses.png`, function (texture) {
+      object.traverse(function (child) {
+        if (child.isMesh) {
           child.material.map = texture
         }
-      } )
+      })
     })
   })
 }
 
 function loadChickenFree() {
-  loaderOBJ.load(`${params.assetsPath}obj/chicken_01.obj`, function(object){
+  loaderOBJ.load(`${params.assetsPath}obj/chicken_01.obj`, function (object) {
     // params.farmhouse = object
     // params.colliders = []
     //object.rotation.y = 270 * (Math.PI/180) // 90 degrees in radians
@@ -1045,7 +1084,7 @@ function loadChickenFree() {
 }
 
 function loadRooster() {
-  loaderFBX.load(`${params.assetsPath}fbx/rooster_1.0.1.fbx`, function(object){
+  loaderFBX.load(`${params.assetsPath}fbx/rooster_1.0.1.fbx`, function (object) {
     // params.farmhouse = object
     // params.colliders = []
     //object.rotation.y = 270 * (Math.PI/180) // 90 degrees in radians
@@ -1087,32 +1126,32 @@ function loadRoad() {
   const roadPromise1 = new Promise((resolve, reject) => {
 
     // ROAD A
-    for ( i = 1; i <= count; i++ ) {
-      loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_Straight_01.fbx`, function(object) {
+    for (i = 1; i <= count; i++) {
+      loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_Straight_01.fbx`, function (object) {
 
         // console.log("ROAD object", object)
 
         //params.farmhouse = object
         //params.colliders = []
-        object.rotation.x = 90 * (Math.PI/180) // 90 degrees in radians
+        object.rotation.x = 90 * (Math.PI / 180) // 90 degrees in radians
         object.position.set(startX, startZ, 0)
         startX = startX + offsetX
         startZ = startZ + offsetZ
         console.log("ROAD A startX, startZ", startX, startZ)
         object.scale.set(0.02, 0.01, 0.02)
-        object.traverse( function (child) {
+        object.traverse(function (child) {
           if (child.isMesh) {
             // if (child.name.startsWith("proxy")) {
             // 	params.colliders.push(child)
             // 	child.material.visible = false
             // } else {
-              child.castShadow = true
-              child.receiveShadow = true
+            child.castShadow = true
+            child.receiveShadow = true
             // }
           }
-        } )
-        loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_03_A.png`, function(texture) {
-          object.traverse( function (child) {
+        })
+        loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_03_A.png`, function (texture) {
+          object.traverse(function (child) {
             if (child.isMesh) {
               //child.material.color.setHex(0x000000)
               child.material.transparent = true
@@ -1120,7 +1159,7 @@ function loadRoad() {
               //child.material.depthWrite = true
               child.material.map = texture
             }
-          } )
+          })
         })
 
         plane.add(object)
@@ -1133,8 +1172,8 @@ function loadRoad() {
   })
   roadPromise1.then((startX, startZ) => {
     // ROAD T
-    for ( i = 1;i <= 1;i++ ) {
-      loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_T_Section_01.fbx`, function(object) {
+    for (i = 1; i <= 1; i++) {
+      loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_T_Section_01.fbx`, function (object) {
 
         console.log("ROAD T startX, startZ", startX, startZ)
 
@@ -1146,27 +1185,27 @@ function loadRoad() {
         startZ = startZ + offsetZ
         console.log("ROAD T startX, startZ", startX, startZ)
         object.scale.set(0.02, 0.01, 0.02)
-        object.traverse( function (child) {
+        object.traverse(function (child) {
           if (child.isMesh) {
             // if (child.name.startsWith("proxy")) {
             // 	params.colliders.push(child)
             // 	child.material.visible = false
             // } else {
-              child.castShadow = true
-              child.receiveShadow = true
+            child.castShadow = true
+            child.receiveShadow = true
             // }
           }
-        } )
-        loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_03_A.png`, function(texture) {
-          object.traverse( function ( child ) {
-            if ( child.isMesh ){
+        })
+        loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_03_A.png`, function (texture) {
+          object.traverse(function (child) {
+            if (child.isMesh) {
               //child.material.color.setHex(0x000000)
               child.material.transparent = true
               child.material.opacity = 0.7
               //child.material.depthWrite = true
               child.material.map = texture
             }
-          } )
+          })
         })
 
         plane.add(object)
@@ -1200,12 +1239,12 @@ function watchPointer(camera, targetList) {
   let intersects = []
   try {
     intersects = raycaster.intersectObjects(targetList, true)
-  } catch(e) {
+  } catch (e) {
     intersects = []
   }
 
   // if there is one (or more) intersections
-  if ( intersects.length > 0 ) {
+  if (intersects.length > 0) {
 
     // console.log("INTERSECTS", intersects)
     // return
@@ -1219,17 +1258,17 @@ function watchPointer(camera, targetList) {
     // }
 
     // if the closest object intersected is not the currently stored intersection object
-    if ( intersects[0].object != params.intersectedObject1 ) {
+    if (intersects[0].object != params.intersectedObject1) {
 
       // restore previous intersection object (if it exists) to its original color
-      if ( params.intersectedObject1 ) {
-        if ( params.intersectedObject1.material.constructor.name == "Array" ) {
-          for (let i = 0;i < params.intersectedObject1.material.length;i++) {
-            params.intersectedObject1.material[i].color.setHex( params.intersectedObject1.currentHex )
+      if (params.intersectedObject1) {
+        if (params.intersectedObject1.material.constructor.name == "Array") {
+          for (let i = 0; i < params.intersectedObject1.material.length; i++) {
+            params.intersectedObject1.material[i].color.setHex(params.intersectedObject1.currentHex)
           }
         }
         else {
-          params.intersectedObject1.material.color.setHex( params.intersectedObject1.currentHex )
+          params.intersectedObject1.material.color.setHex(params.intersectedObject1.currentHex)
         }
       }
 
@@ -1238,15 +1277,15 @@ function watchPointer(camera, targetList) {
 
       // console.log("params.intersectedObject1, params.intersectedObject1)
 
-      if ( params.intersectedObject1.material.constructor.name == "Array" ) {
+      if (params.intersectedObject1.material.constructor.name == "Array") {
         // SEPARATE FOR LOOPS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // store color of closest object (for later restoration)
-        for (let i = 0;i < params.intersectedObject1.material.length;i++) {
+        for (let i = 0; i < params.intersectedObject1.material.length; i++) {
           params.intersectedObject1.currentHex = params.intersectedObject1.material[i].color.getHex()
         }
         // set a new color for closest object
-        for (let i = 0;i < params.intersectedObject1.material.length;i++) {
-          params.intersectedObject1.material[i].color.setHex( 0xdddd00 )
+        for (let i = 0; i < params.intersectedObject1.material.length; i++) {
+          params.intersectedObject1.material[i].color.setHex(0xdddd00)
         }
         // SEPARATE FOR LOOPS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       }
@@ -1254,7 +1293,7 @@ function watchPointer(camera, targetList) {
         // store color of closest object (for later restoration)
         params.intersectedObject1.currentHex = params.intersectedObject1.material.color.getHex()
         // set a new color for closest object
-        params.intersectedObject1.material.color.setHex( 0xdddd00 )
+        params.intersectedObject1.material.color.setHex(0xdddd00)
       }
 
     }
@@ -1262,14 +1301,14 @@ function watchPointer(camera, targetList) {
   // there are no intersections
   else {
     // restore previous intersection object (if it exists) to its original color
-    if ( params.intersectedObject1 ) {
-      if ( params.intersectedObject1.material.constructor.name == "Array" ) {
-        for (let i = 0;i < params.intersectedObject1.material.length;i++) {
-          params.intersectedObject1.material[i].color.setHex( params.intersectedObject1.currentHex )
+    if (params.intersectedObject1) {
+      if (params.intersectedObject1.material.constructor.name == "Array") {
+        for (let i = 0; i < params.intersectedObject1.material.length; i++) {
+          params.intersectedObject1.material[i].color.setHex(params.intersectedObject1.currentHex)
         }
       }
       else {
-        params.intersectedObject1.material.color.setHex( params.intersectedObject1.currentHex )
+        params.intersectedObject1.material.color.setHex(params.intersectedObject1.currentHex)
       }
     }
     // remove previous intersection object reference
@@ -1280,7 +1319,7 @@ function watchPointer(camera, targetList) {
 
 // when the pointer moves, call the given function
 //document.addEventListener( "pointermove", onPointerMove, false )
-function onPointerMove( event ) {
+function onPointerMove(event) {
 
   // the following line would stop any other event handler from firing
   // (such as the pointer's TrackballControls)
@@ -1355,7 +1394,7 @@ function onPointerDown(event) {
     // }
 
     // restore previous intersection object (if it exists) to its original color
-    if ( params.intersectedObject2 ) {
+    if (params.intersectedObject2) {
       //params.intersectedObject2.material[i].color.setHex( params.intersectedObject2.currentHex )
       // zoom out
       //panCam(100, 200, 200, 800, event.target.camera, event.target.controls)
@@ -1388,10 +1427,10 @@ function onPointerDown(event) {
     // console.log("------------------")
 
     // show/hide infospheres
-    if ( params.intersectedObject2.userData.type === "structure" && event.button == 0 ) {
+    if (params.intersectedObject2.userData.type === "structure" && event.button == 0) {
 
-      let infospotObject = scene.getObjectByName( `INFOSPOT: ${params.intersectedObject2.name}` ) // , true for recursive
-      if ( infospotObject ) {
+      let infospotObject = scene.getObjectByName(`INFOSPOT: ${params.intersectedObject2.name}`) // , true for recursive
+      if (infospotObject) {
         if (infospotObject.visible === true) {
           infospotObject.visible = false
         }
@@ -1403,7 +1442,7 @@ function onPointerDown(event) {
     }
 
     // show/hide annotations
-    params.intersectedObject2.children.forEach( function(key) {
+    params.intersectedObject2.children.forEach(function (key) {
       // console.log("--------------------------------------")
       // console.log("key (pre-process)------")
       // console.log(`key.type: ${key.type}`)
@@ -1419,9 +1458,9 @@ function onPointerDown(event) {
       // 		key.visible = true
       // 	}
       // }
-      if ( key.type === "Object3D" && event.button == 0 ) {
+      if (key.type === "Object3D" && event.button == 0) {
         if (key.element.hidden === true) {
-        //if (key.visible == false) {
+          //if (key.visible == false) {
           // console.log("-------------------------")
           // console.log("TRUE------")
           // console.log(key.element.hidden)
@@ -1460,7 +1499,7 @@ function onPointerDown(event) {
   else // there are no intersections
   {
     // restore previous intersection object (if it exists) to its original color
-    if ( params.intersectedObject2 ) {
+    if (params.intersectedObject2) {
       //params.intersectedObject2.material.color.setHex( params.intersectedObject2.currentHex )
     }
     // remove previous intersection object reference by setting current intersection object to "nothing"
@@ -1470,34 +1509,34 @@ function onPointerDown(event) {
 }
 // OR
 // document.addEventListener( "mousedown", onDocumentMouseDown, false )
-function onDocumentMouseDown( e ) {
+function onDocumentMouseDown(e) {
   e.preventDefault();
 
   var mouseVector = new THREE.Vector3(
-    ( e.clientX / window.innerWidth ) * 2 - 1,
-    - ( e.clientY / window.innerHeight) * 2 + 1,
+    (e.clientX / window.innerWidth) * 2 - 1,
+    - (e.clientY / window.innerHeight) * 2 + 1,
     1
   );
 
-  projector.unprojectVector( mouseVector, camera );
-  var raycaster = new THREE.Raycaster( camera.position, mouseVector.subSelf( camera.position ).normalize() );
+  projector.unprojectVector(mouseVector, camera);
+  var raycaster = new THREE.Raycaster(camera.position, mouseVector.subSelf(camera.position).normalize());
 
   // create an array containing all objects in the scene with which the ray intersects
-  var intersects = raycaster.intersectObjects( scene.children );
+  var intersects = raycaster.intersectObjects(scene.children);
   console.log(intersects);
-  if (intersects.length>0){
+  if (intersects.length > 0) {
     console.log("Intersected object:", intersects.length);
-    intersects[ 0 ].object.material.color.setHex( Math.random() * 0xffffff );
+    intersects[0].object.material.color.setHex(Math.random() * 0xffffff);
   }
 }
 
 /**
  * GET FEATURED IMAGE
  */
-function getFeaturedImage( postObject ) {
+function getFeaturedImage(postObject) {
   let featImage = {}
   // If there is no featured image, exit the function returning blank.
-  if ( 0 === postObject.featured_media ) {
+  if (0 === postObject.featured_media) {
     return featImage
   }
   else {
@@ -1510,7 +1549,7 @@ function getFeaturedImage( postObject ) {
     if (featImage.featuredObject.media_details.sizes.hasOwnProperty("large")) {
       featImage.imgWidth = featImage.featuredObject.media_details.sizes.full.width
       featImage.imgHeight = featImage.featuredObject.media_details.sizes.full.height
-      featImage.imgLargeUrl = featImage.featuredObject.media_details.sizes.large.source_url +  " 1024w, "
+      featImage.imgLargeUrl = featImage.featuredObject.media_details.sizes.large.source_url + " 1024w, "
     }
     // console.log("featImage", featImage)
   }
@@ -1523,25 +1562,25 @@ function getFeaturedImage( postObject ) {
  */
 // check if an element exists in array using a comparer function
 // comparer : function(currentElement)
-Array.prototype.inArray = function(comparer) {
-    for(let i = 0;i < this.length;i++) {
-        if (comparer(this[i])) return true
-    }
-    return false
+Array.prototype.inArray = function (comparer) {
+  for (let i = 0; i < this.length; i++) {
+    if (comparer(this[i])) return true
+  }
+  return false
 }
 // adds an element to the array
 // if it does not already exist using a comparer function
-Array.prototype.pushIfNotExist = function(element, comparer) {
-    if (!this.inArray(comparer)) {
-        this.push(element)
-    }
+Array.prototype.pushIfNotExist = function (element, comparer) {
+  if (!this.inArray(comparer)) {
+    this.push(element)
+  }
 }
 
 /**
  * PLAYER "CHARACTER" ACTION
  */
 function setAction(name) {
-  const action = player.mixer.clipAction( animations[name] )
+  const action = player.mixer.clipAction(animations[name])
   action.time = 0
   console.log("CHARACTER: action name", name)
   //console.log("CHARACTER: animations[name]", animations[name])
@@ -1562,7 +1601,7 @@ function getAction() {
 }
 
 function toggleAnimation() {
-  if ( player.action == "Idle" ) {
+  if (player.action == "Idle") {
     setAction("Pointing Gesture")
   }
   else {
@@ -1570,12 +1609,12 @@ function toggleAnimation() {
   }
 }
 
-function movePlayer(dt){
+function movePlayer(dt) {
   const pos = player.object.position.clone()
   pos.y += 60
   let dir = new THREE.Vector3()
   player.object.getWorldDirection(dir)
-  if (player.move.forward<0) dir.negate()
+  if (player.move.forward < 0) dir.negate()
   let raycaster = new THREE.Raycaster(pos, dir)
   let blocked = false
   const colliders = params.colliders
@@ -1587,13 +1626,13 @@ function movePlayer(dt){
   // 	}
   // }
 
-  if (!blocked){
-    if (player.move.forward>0){
-      const speed = (player.action=="Running") ? 24 : 8
-      player.object.translateZ(dt*speed)
+  if (!blocked) {
+    if (player.move.forward > 0) {
+      const speed = (player.action == "Running") ? 24 : 8
+      player.object.translateZ(dt * speed)
     }
-    else if ( player.move.forward < 0 ) {
-      player.object.translateZ(-dt*2)
+    else if (player.move.forward < 0) {
+      player.object.translateZ(-dt * 2)
     }
   }
 
@@ -1656,43 +1695,43 @@ function movePlayer(dt){
   }
   */
 
-  player.object.rotateY(player.move.turn*dt)
+  player.object.rotateY(player.move.turn * dt)
 }
 
 function playerControl(forward, turn) {
 
   turn = -turn
 
-  if ( forward > 0.2 ) {
-    if ( player.action != "Walking" && player.action != "Running" ) {
+  if (forward > 0.2) {
+    if (player.action != "Walking" && player.action != "Running") {
       setAction("Walking")
     }
   }
-  else if ( forward < -0.2 ) {
-    if ( player.action != "Walking Backwards" ) {
+  else if (forward < -0.2) {
+    if (player.action != "Walking Backwards") {
       setAction("Walking Backwards")
     }
   }
   else {
     forward = 0
-    if ( Math.abs(turn) > 0.05 ) {
-      if ( player.action != "Left Turn" ) {
+    if (Math.abs(turn) > 0.05) {
+      if (player.action != "Left Turn") {
         setAction("Left Turn")
       }
     }
-    else if ( player.action != "Idle" ) {
+    else if (player.action != "Idle") {
       setAction("Idle")
     }
     // else {
     // 	setAction("Idle")
     // }
-    }
+  }
 
-    // if ( forward == 0 && turn == 0 ) {
-    //   player.move = {}
-    // }
+  // if ( forward == 0 && turn == 0 ) {
+  //   player.move = {}
+  // }
   // else {
-    player.move = { forward, turn }
+  player.move = { forward, turn }
   // }
 }
 
@@ -1708,33 +1747,33 @@ const animate = () => {
   requestAnimationFrame(animate)
 
   /** ANIMATE SCENE? */
-  if ( params.ANIMATE ) {
+  if (params.ANIMATE) {
     // plane.rotation.x += 0.002
     // plane.rotation.y += 0.002
     plane.rotation.z -= 0.0007
   }
 
   /** PLAYER CHARACTER */
-  if ( player.mixer !== undefined ) {
+  if (player.mixer !== undefined) {
     player.mixer.update(dt)
   }
 
   // Running
-  if ( player.action == "Walking" ) {
+  if (player.action == "Walking") {
     const elapsedTime = Date.now() - player.actionTime
-    if ( elapsedTime > 2000 && player.move.forward > 0.7 ){
+    if (elapsedTime > 2000 && player.move.forward > 0.7) {
       //setAction("Running")
     }
   }
 
   // Move Player
-  if ( player.move !== undefined ) {
+  if (player.move !== undefined) {
     movePlayer(dt)
   }
 
   // Move Cameras
-  if ( player.cameras != undefined && player.cameras.active != undefined ) {
-    camera.position.lerp( player.cameras.active.getWorldPosition(new THREE.Vector3()), 0.05 )
+  if (player.cameras != undefined && player.cameras.active != undefined) {
+    camera.position.lerp(player.cameras.active.getWorldPosition(new THREE.Vector3()), 0.05)
     const pos = player.object.position.clone()
     pos.y += 200
     camera.lookAt(pos)
@@ -1758,28 +1797,28 @@ const loadAssets = () => {
   //loaderFBX.load( `${params.assetsPath}characters/SimplePeople.fbx`, function (object) {
   //loaderFBX.load( `${params.assetsPath}fbx/people/FireFighter.fbx`, function (object) {
   //loaderFBX.load( `${params.assetsPath}fbx/people/Trucker.fbx`, function (object) {
-  loaderFBX.load( `${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function (object) {
+  loaderFBX.load(`${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function (object) {
 
-    object.mixer = new THREE.AnimationMixer( object )
+    object.mixer = new THREE.AnimationMixer(object)
     player.mixer = object.mixer
     player.root = object.mixer.getRoot()
 
     object.name = "Gardener"
 
-    object.traverse( function ( child ) {
-      if ( child.isMesh ) {
+    object.traverse(function (child) {
+      if (child.isMesh) {
         child.castShadow = true
         child.receiveShadow = false
       }
-    } )
+    })
 
     //loaderTexture.load(`${params.assetsPath}images/SimpleFarmer_Farmer_Brown.png`, function(texture) {
-    loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_B.png`, function(texture) {
-      object.traverse( function ( child ) {
-        if ( child.isMesh ){
+    loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_B.png`, function (texture) {
+      object.traverse(function (child) {
+        if (child.isMesh) {
           child.material.map = texture
         }
-      } )
+      })
     })
 
     // console.log("object", object)
@@ -1788,7 +1827,7 @@ const loadAssets = () => {
     player.object.add(object)
     //player.object.scale.set(0.022, 0.022, 0.022)
     player.object.scale.set(0.033, 0.033, 0.033)
-    player.object.rotation.x = Math.PI/2 // 90 degrees in radians
+    player.object.rotation.x = Math.PI / 2 // 90 degrees in radians
     //player.mixer.clipAction(object.animations[0]).play()
     //animations.Idle = object.animations[0]
     //setAction("Idle")
@@ -1797,7 +1836,7 @@ const loadAssets = () => {
     plane.add(player.object)
     guiFolderPlayer.add(player.object, "visible").name("Show Character").listen()
 
-  } )
+  })
 
   /** LOAD 3D OBJECTS ******************************************************************** */
 
@@ -1825,10 +1864,10 @@ const loadAssets = () => {
   let loadNextAnim = function (loader) {
     let anim = anims.pop()
     // console.log("anim", anim)
-    loader.load( `${params.assetsPath}fbx/anims2/${anim}.fbx`, function(object) {
+    loader.load(`${params.assetsPath}fbx/anims2/${anim}.fbx`, function (object) {
       // console.log("object")
       animations[anim] = object.animations[0]
-      if (anims.length > 0){
+      if (anims.length > 0) {
         // console.log("anims.length")
         // console.log("getAction()")
         // console.log("player.action")
@@ -1864,7 +1903,7 @@ const build = async () => {
     let a2 = await buildScene(a1)
     console.log("a2 plane returned from buildScene", a2, new Date().toISOString())
 
-    let a3 = async function(a4) {
+    let a3 = async function (a4) {
       console.log("a4 plane object returned from buildScene", a4, new Date().toISOString())
       params.mode = params.modes.BUILT
       console.log("params.mode", params.mode)
@@ -1912,33 +1951,33 @@ const getSceneData = async () => {
     await Promise.allSettled(
       api_urls.map(
         url => fetch(url)
-              .then(results => results.json())
-              .then(data => {
-                let type = data[0].type
-                switch (type) {
-                  case "scene" :
-                    params.data.scene = [...data]
-                    break
-                  case "allotment" :
-                    params.data.allotment = [...data]
-                    break
-                  case "bed" :
-                    params.data.bed = [...data]
-                    break
-                  case "plant" :
-                    params.data.plant = [...data]
-                    break
-                  case "planting_plan" :
-                    params.data.planting_plan = [...data]
-                    break
-                  default :
-                    break
-                }
-                console.log("data", data)
-              })
+          .then(results => results.json())
+          .then(data => {
+            let type = data[0].type
+            switch (type) {
+              case "scene":
+                params.data.scene = [...data]
+                break
+              case "allotment":
+                params.data.allotment = [...data]
+                break
+              case "bed":
+                params.data.bed = [...data]
+                break
+              case "plant":
+                params.data.plant = [...data]
+                break
+              case "planting_plan":
+                params.data.planting_plan = [...data]
+                break
+              default:
+                break
+            }
+            console.log("data", data)
+          })
       )
     )
-    .then(results => {
+      .then(results => {
         console.log("results", results)
         results.forEach((result, num) => {
           if (result.status == "fulfilled") {
@@ -1958,7 +1997,7 @@ const getSceneData = async () => {
         // fulfill Promise?
         return true
       }
-    )
+      )
   }
   else if (getDataFromLocalStorage) {
     // fulfill Promise?
@@ -1996,7 +2035,7 @@ const buildScene = async (a5) => {
   console.log("scene", scene)
 
   // load the 3D cube map?
-  if ( wpScene.acf.scene_background_image_px ) {
+  if (wpScene.acf.scene_background_image_px) {
     let cubeMapURLs = [
       wpScene.acf.scene_background_image_px,
       wpScene.acf.scene_background_image_nx,
@@ -2010,7 +2049,7 @@ const buildScene = async (a5) => {
     scene.background = reflectionCube
   }
   // load the 2D background image?
-  else if ( wpScene.acf.scene_background_image ) {
+  else if (wpScene.acf.scene_background_image) {
     // let bgTexture = loaderTexture.load(wpScene.acf.scene_background_image)
     // scene.background = bgTexture
     let bgTexture = loaderTexture.load(
@@ -2023,7 +2062,7 @@ const buildScene = async (a5) => {
     )
   }
   // load the background color?
-  else if ( wpScene.acf.scene_background_color ) {
+  else if (wpScene.acf.scene_background_color) {
     scene.background = new THREE.Color(wpScene.acf.scene_background_color)
     //scene.fog = new THREE.Fog(0xFFFFFF, 0, 500)
   }
@@ -2045,7 +2084,7 @@ const buildScene = async (a5) => {
 
   /** TEXTURES ************************************************************************* */
 
-  if ( wpScene.acf.scene_plane_texture_image ) {
+  if (wpScene.acf.scene_plane_texture_image) {
     plane.material.roughness = 0.0
     //plane.material.map = loaderTexture.load("/wp-content/plugins/threed-garden/admin/media/textures/grasslight-big.jpg")
     plane.material.map = loaderTexture.load(wpScene.acf.scene_plane_texture_image)
@@ -2081,7 +2120,7 @@ const buildScene = async (a5) => {
   // the sun
   let directionalLight = getDirectionalLight(0xFFFFFF, 0.75)
   // x = sun?, y = time of day?, z = ???
-  directionalLight.position.set( -90, -120, 135 )
+  directionalLight.position.set(-90, -120, 135)
   directionalLight.castShadow = true
   //directionalLight.intensity = 1.6 // overwrite?
 
@@ -2091,7 +2130,7 @@ const buildScene = async (a5) => {
   // indirect sunlight
   //let directionalLight2 = directionalLight.clone()
   let directionalLight2 = getDirectionalLight(0xFFFFFF, 0.66)
-  directionalLight2.position.set( -90, 135, 135 ) // direct opposite x,y of primary?
+  directionalLight2.position.set(-90, 135, 135) // direct opposite x,y of primary?
   directionalLight2.castShadow = false
   //directionalLight2.intensity = 1.0 // overwrite?
 
@@ -2129,7 +2168,7 @@ const buildScene = async (a5) => {
 
   camera = new THREE.PerspectiveCamera(
     55,
-    window.innerWidth/window.innerHeight,
+    window.innerWidth / window.innerHeight,
     0.1,
     1000
   )
@@ -2176,7 +2215,7 @@ const buildScene = async (a5) => {
   controls.autoRotateSpeed = 0.03
   controls.minDistance = 0.01
   controls.maxDistance = 340
-  controls.maxPolarAngle = Math.PI/2 - .04
+  controls.maxPolarAngle = Math.PI / 2 - .04
   controls.target = new THREE.Vector3(0, 0, 0) // where the camera actually points
   //controls.target.set(0, 5, 0) // alternate way of setting target of camera
 
@@ -2202,8 +2241,8 @@ const buildScene = async (a5) => {
 
   // OG working
   let joystick = new JoyStick({
-  	onMove: playerControl,
-  	game: container // document.querySelector("#webgl")
+    onMove: playerControl,
+    game: container // document.querySelector("#webgl")
   })
   console.log("joystick", joystick)
 
@@ -2250,7 +2289,7 @@ function buildAllotments(postObject, plane, sceneID) {
   })
   // console.log("filteredPostObject", filteredPostObject)
 
-  filteredPostObject.forEach( function(key) {
+  filteredPostObject.forEach(function (key) {
 
     // console.log("-------------------------")
     // console.log("key.id (postObject)------")
@@ -2299,7 +2338,7 @@ function buildAllotments(postObject, plane, sceneID) {
     structure.material.roughness = 0.9
     if (allotment.images.texture != null && allotment.images.texture != false) {
       structure.material.map = loaderTexture.load(allotment.images.texture)
-      for (let i = 0;i < structure.material.length;i++) {
+      for (let i = 0; i < structure.material.length; i++) {
         // hightlight object
         //structure.material[i].color.set(0xff0000)
         structure.material[i].map = loaderTexture.load(allotment.images.texture)
@@ -2371,7 +2410,7 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
   })
   // console.log("filteredPostObject", filteredPostObject)
 
-  filteredPostObject.forEach( function(key) {
+  filteredPostObject.forEach(function (key) {
 
     // console.log("-------------------------")
     // console.log("key.id (postObject)------")
@@ -2420,7 +2459,7 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
     structure.material.roughness = 0.9
     if (bed.images.texture != null && bed.images.texture != false) {
       structure.material.map = loaderTexture.load(bed.images.texture)
-      for (let i = 0;i < structure.material.length;i++) {
+      for (let i = 0; i < structure.material.length; i++) {
         // hightlight object
         //structure.material[i].color.set(0xff0000)
         structure.material[i].map = loaderTexture.load(bed.images.texture)
@@ -2489,12 +2528,12 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
   var filteredPostObject = []
   var matches = []
   postObject.forEach(function (obj) {
-    obj.acf.planting_plan_bed_plant_schedule.forEach(function(i) {
-      if ( i.planting_plan_bed == bedID ) {
+    obj.acf.planting_plan_bed_plant_schedule.forEach(function (i) {
+      if (i.planting_plan_bed == bedID) {
         //console.log("MATCHED at: ", i)
         //matches.push(i)
         //matches.push(obj)
-        matches.pushIfNotExist(obj, function(e) {
+        matches.pushIfNotExist(obj, function (e) {
           return e.id === obj.id
         })
       }
@@ -2502,12 +2541,12 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
     filteredPostObject = [...matches]
   })
 
-  if ( filteredPostObject.length > 0 ) {
+  if (filteredPostObject.length > 0) {
     console.log("filteredPostObject", filteredPostObject)
   }
 
   // for each planting plan..
-  filteredPostObject.forEach( function(key) {
+  filteredPostObject.forEach(function (key) {
 
     // console.log("-------------------------")
     // console.log("key.id (filteredPostObject)")
@@ -2516,12 +2555,12 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
     // console.log("-------------------------")
 
     // for each planting plan bed-plant schedule..
-    key.acf.planting_plan_bed_plant_schedule.forEach(function(key2) {
+    key.acf.planting_plan_bed_plant_schedule.forEach(function (key2) {
 
       // console.log("key2", key2)
 
       // only for this bed..
-      if ( key2.planting_plan_bed == bedID ) {
+      if (key2.planting_plan_bed == bedID) {
 
         // show this plant (or multiple plants) in this bed..
         var filteredPlant = params.data.plant.filter(function (obj) {
@@ -2531,7 +2570,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
         // console.log("filteredPlant", filteredPlant)
 
         // for this plant in this bed..
-        filteredPlant.forEach(function(key3) {
+        filteredPlant.forEach(function (key3) {
 
           // console.log("key3", key3)
 
@@ -2539,7 +2578,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
           plant.parameters = {}
           plant.position = {}
           plant.images = {}
-          plant.parameters.x = Number(key3.acf.plant_width ) / 12
+          plant.parameters.x = Number(key3.acf.plant_width) / 12
           plant.parameters.y = Number(key3.acf.plant_length) / 12
           plant.parameters.z = Number(key3.acf.plant_height) / 12
           plant.position.x = parseInt(key2.plant_position_x) / 12 + posOffsetX
@@ -2576,7 +2615,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
           structure.material.roughness = 0.9
           if (plant.images.texture != null && plant.images.texture != false) {
             structure.material.map = loaderTexture.load(plant.images.texture)
-            for (let i = 0;i < structure.material.length;i++) {
+            for (let i = 0; i < structure.material.length; i++) {
               // hightlight object
               //structure.material[i].color.set(0xff0000)
               structure.material[i].map = loaderTexture.load(plant.images.texture)
