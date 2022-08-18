@@ -49,7 +49,9 @@ interface IThreeDEnv {
 
 interface IPlayer {
   action: string,
-  actionTime: number | Date
+  actionTime: number | Date,
+  move: Function
+
 }
 
 // ================================================================
@@ -127,6 +129,10 @@ let canvas: any
 const player: IPlayer = {
   action: "Idle", // player.action = "Idle"
   actionTime: Date.now(), // player.actionTime = Date.now()
+  move: () => {},
+  move: () => {},
+  move: () => {},
+  move: () => {},
 }
 
 const animations = {}
@@ -251,7 +257,7 @@ const API_URL_BEDS = `${env.restURL}bed/?_embed&per_page=100`
 const API_URL_PLANTING_PLANS = `${env.restURL}planting_plan/?_embed&per_page=100`
 const API_URL_PLANTS = `${env.restURL}plant/?_embed&per_page=100`
 
-const api_urls = [
+const API_URLS = [
   API_URL_SCENES,
   API_URL_ALLOTMENTS,
   API_URL_BEDS,
@@ -893,6 +899,7 @@ function loadChicken2() {
   })
 }
 
+// NOT USED or TESTED
 function loadChickenGLTF() {
 
   loaderGLTF.load(`${params.assetsPath}gltf/Animals.glb`, function (object) {
@@ -928,7 +935,9 @@ function loadChickenGLTF() {
 
   })
 }
+//
 
+// NOT USED or TESTED
 function loadChickGLTF() {
 
   loaderGLTF.load(`${params.assetsPath}gltf/Chick.glb`, function (object) {
@@ -957,7 +966,9 @@ function loadChickGLTF() {
 
   })
 }
+//
 
+// NOT USED or TESTED
 function loadHen() {
   loaderFBX.load(`${params.assetsPath}Hen&Chicken_FBX/Hen_HP.fbx`, function (object) {
     params.farmhouse = object
@@ -1120,6 +1131,7 @@ function loadRooster() {
   })
 }
 
+// LOAD ROAD
 function loadRoad() {
 
   let i
@@ -1955,7 +1967,7 @@ const getSceneData = async () => {
 
     // PROMISE REST API -- call WP Rest API for data second
     await Promise.allSettled(
-      api_urls.map(
+      API_URLS.map(
         url => fetch(url)
           .then(results => results.json())
           .then(data => {
