@@ -90,13 +90,13 @@ const env: IThreeDEnv = {
 console.log("pluginName", env.pluginName, env.pluginVersion)
 console.log("postdata", postdata)
 
+// INSTANTIATE COMMON VARIABLES
+const debug: boolean = false
+// const debugPhysics: boolean = false
+
 // STATS
 // const stats = Stats()
 // document.body.appendChild(stats.dom)
-
-// INSTANTIATE COMMON VARIABLES
-const debug = false
-// const debugPhysics = false
 
 // // DAT.GUI
 // const gui = new dat.GUI({
@@ -135,6 +135,8 @@ let canvas: any
 const player: IPlayer = {
   action: "Idle", // player.action = "Idle"
   actionTime: Date.now(), // player.actionTime = Date.now()
+  object: new THREE.Object3D(),
+  mixer: new THREE.AnimationMixer(new THREE.Object3D()),
   move: () => { },
   /**
    * PLAYER "CHARACTER" ACTIONS
@@ -290,7 +292,8 @@ const player: IPlayer = {
     // else {
     player.move = { forward, turn }
     // }
-  }
+  },
+
 }
 
 const animations = {}
@@ -485,7 +488,7 @@ const onWindowResize = () => {
   camera.aspect = window.innerWidth / window.innerHeight
   camera.updateProjectionMatrix()
   renderer.setSize(window.innerWidth, window.innerHeight)
-  //controls.handleResize() or something similar to update controls
+  // controls.handleResize() or something similar to update controls
   render()
 }
 // (now using vueuse useEventListener) ...
@@ -493,12 +496,12 @@ const onWindowResize = () => {
 // window.addEventListener( 'resize', onWindowResize, false )
 
 const getPlane = (x, y, color) => {
-  let geometry = new THREE.PlaneGeometry(x, y)
-  let material = new THREE.MeshStandardMaterial({
+  const geometry = new THREE.PlaneGeometry(x, y)
+  const material = new THREE.MeshStandardMaterial({
     color: color,
     side: THREE.DoubleSide
   })
-  let mesh = new THREE.Mesh(geometry, material)
+  const mesh = new THREE.Mesh(geometry, material)
   mesh.receiveShadow = true
   return mesh
 }
@@ -1400,7 +1403,7 @@ function loadRoad() {
  */
 
 // when the pointer moves and hovers
-function watchPointer(camera, targetList) {
+function watchPointer(camera: Camera, targetList) {
 
   //console.log("targetList", targetList)
 
