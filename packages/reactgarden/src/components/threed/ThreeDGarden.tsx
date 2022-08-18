@@ -10,7 +10,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer'
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 // types
-import type { Scene, Plane, Camera, Renderer, Object3D } from "three"
+import type { Scene, Plane, Camera, Renderer, Object3D, AnimationMixer } from "three"
 
 // import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
 import TWEEN from '@tweenjs/tween.js'
@@ -50,8 +50,14 @@ interface IThreeDEnv {
 interface IPlayer {
   action: string,
   actionTime: number | Date,
-  move: Function
-
+  object: Object3D,
+  mixer: AnimationMixer,
+  setAction: Function,
+  getAction: Function,
+  toggleAnimation: Function,
+  move: Function,
+  movePlayer: Function,
+  playerControl: Function
 }
 
 // ================================================================
@@ -90,7 +96,7 @@ console.log("postdata", postdata)
 
 // INSTANTIATE COMMON VARIABLES
 const debug = false
-const debugPhysics = false
+// const debugPhysics = false
 
 // // DAT.GUI
 // const gui = new dat.GUI({
@@ -129,10 +135,162 @@ let canvas: any
 const player: IPlayer = {
   action: "Idle", // player.action = "Idle"
   actionTime: Date.now(), // player.actionTime = Date.now()
-  move: () => {},
-  move: () => {},
-  move: () => {},
-  move: () => {},
+  move: () => { },
+  /**
+   * PLAYER "CHARACTER" ACTIONS
+   */
+  setAction(name: string) {
+    const action = player.mixer.clipAction(animations[name])
+    action.time = 0
+    console.log("CHARACTER: action name", name)
+    // console.log("CHARACTER: animations[name]", animations[name])
+    // console.log("CHARACTER: action object", action)
+    player.mixer.stopAllAction()
+    player.action = name
+    player.actionTime = Date.now()
+    // console.log("player", player)
+    // action.fadeIn(0.5) // causes arms to move awkwardly
+    action.play()
+  },
+  getAction() {
+    if (player === undefined || player.action === undefined) {
+      return "doesn't exist yet"
+    }
+    return player.action
+  },
+  toggleAnimation() {
+    if (player.action == "Idle") {
+      this.setAction("Pointing Gesture")
+    }
+    else {
+      this.setAction("Idle")
+    }
+  },
+  movePlayer(dt: any) {
+    const pos = player.object.position.clone()
+    pos.y += 60
+    const dir = new THREE.Vector3()
+    player.object.getWorldDirection(dir)
+    if (player.move.forward < 0) dir.negate()
+    let raycaster = new THREE.Raycaster(pos, dir)
+    const blocked = false
+    const { colliders } = params
+
+    // if (colliders!==undefined){
+    // 	const intersect = raycaster.intersectObjects(colliders)
+    // 	if (intersect.length>0){
+    // 		if (intersect[0].distance<50) blocked = true
+    // 	}
+    // }
+
+    if (!blocked) {
+      if (player.move.forward > 0) {
+        const speed = (player.action == "Running") ? 24 : 8
+        player.object.translateZ(dt * speed)
+      }
+      else if (player.move.forward < 0) {
+        player.object.translateZ(-dt * 2)
+      }
+    }
+
+    // COLLIDERS
+    if (colliders !== undefined) {
+      // cast left
+      dir.set(-1, 0, 0)
+      dir.applyMatrix4(player.object.matrix)
+      dir.normalize()
+      raycaster = new THREE.Raycaster(pos, dir)
+
+      let intersect = raycaster.intersectObjects(colliders)
+      if (intersect.length > 0) {
+        if (intersect[0].distance < 50) player.object.translateX(100 - intersect[0].distance)
+      }
+
+      // cast right
+      dir.set(1, 0, 0)
+      dir.applyMatrix4(player.object.matrix)
+      dir.normalize()
+      raycaster = new THREE.Raycaster(pos, dir)
+
+      intersect = raycaster.intersectObjects(colliders)
+      if (intersect.length > 0) {
+        if (intersect[0].distance < 50) player.object.translateX(intersect[0].distance - 100)
+      }
+
+      // cast down
+      dir.set(0, -1, 0)
+      pos.y += 200
+      raycaster = new THREE.Raycaster(pos, dir)
+      const gravity = 30
+
+      intersect = raycaster.intersectObjects(colliders)
+      if (intersect.length > 0) {
+        const targetY = pos.y - intersect[0].distance
+        if (targetY > player.object.position.y) {
+          // Going up
+          player.object.position.y = 0.8 * player.object.position.y + 0.2 * targetY
+          player.velocityY = 0
+        } else if (targetY < player.object.position.y) {
+          // Falling
+          if (player.velocityY == undefined) player.velocityY = 0
+          player.velocityY += dt * gravity
+          player.object.position.y -= player.velocityY
+          if (player.object.position.y < targetY) {
+            player.velocityY = 0
+            player.object.position.y = targetY
+          }
+        }
+      } else if (player.object.position.y > 0) {
+        if (player.velocityY == undefined) player.velocityY = 0
+        player.velocityY += dt * gravity
+        player.object.position.y -= player.velocityY
+        if (player.object.position.y < 0) {
+          player.velocityY = 0
+          player.object.position.y = 0
+        }
+      }
+    }
+    //
+
+    player.object.rotateY(player.move.turn * dt)
+  },
+
+  playerControl(forward, turn) {
+
+    turn = -turn
+
+    if (forward > 0.2) {
+      if (player.action !== "Walking" && player.action !== "Running") {
+        this.setAction("Walking")
+      }
+    }
+    else if (forward < -0.2) {
+      if (player.action !== "Walking Backwards") {
+        this.setAction("Walking Backwards")
+      }
+    }
+    else {
+      forward = 0
+      if (Math.abs(turn) > 0.05) {
+        if (player.action != "Left Turn") {
+          this.setAction("Left Turn")
+        }
+      }
+      else if (player.action != "Idle") {
+        this.setAction("Idle")
+      }
+      // else {
+      // 	this.setAction("Idle")
+      // }
+    }
+
+    // if ( forward == 0 && turn == 0 ) {
+    //   player.move = {}
+    // }
+    // else {
+    player.move = { forward, turn }
+    // }
+  }
 }
 
 const animations = {}
@@ -294,7 +452,7 @@ manager.onLoad = () => {
   if (params.mode === params.modes.LOADING) {
     params.mode = params.modes.LOADED
     console.log("params.mode manager.onLoad", params.mode, startTime)
-    setAction("Idle")
+    player.setAction("Idle")
     animate()
     console.log("animating ****************************** ")
     params.mode = params.modes.ACTIVE
@@ -1594,164 +1752,7 @@ Array.prototype.pushIfNotExist = function (element, comparer) {
   }
 }
 
-/**
- * PLAYER "CHARACTER" ACTION
- */
-function setAction(name: string) {
-  const action = player.mixer.clipAction(animations[name])
-  action.time = 0
-  console.log("CHARACTER: action name", name)
-  // console.log("CHARACTER: animations[name]", animations[name])
-  // console.log("CHARACTER: action object", action)
-  player.mixer.stopAllAction()
-  player.action = name
-  player.actionTime = Date.now()
-  // console.log("player", player)
-  // action.fadeIn(0.5) // causes arms to move awkwardly
-  action.play()
-}
 
-function getAction() {
-  if (player === undefined || player.action === undefined) {
-    return "doesn't exist yet"
-  }
-  return player.action
-}
-
-function toggleAnimation() {
-  if (player.action == "Idle") {
-    setAction("Pointing Gesture")
-  }
-  else {
-    setAction("Idle")
-  }
-}
-
-function movePlayer(dt) {
-  const pos = player.object.position.clone()
-  pos.y += 60
-  let dir = new THREE.Vector3()
-  player.object.getWorldDirection(dir)
-  if (player.move.forward < 0) dir.negate()
-  let raycaster = new THREE.Raycaster(pos, dir)
-  let blocked = false
-  const colliders = params.colliders
-
-  // if (colliders!==undefined){
-  // 	const intersect = raycaster.intersectObjects(colliders)
-  // 	if (intersect.length>0){
-  // 		if (intersect[0].distance<50) blocked = true
-  // 	}
-  // }
-
-  if (!blocked) {
-    if (player.move.forward > 0) {
-      const speed = (player.action == "Running") ? 24 : 8
-      player.object.translateZ(dt * speed)
-    }
-    else if (player.move.forward < 0) {
-      player.object.translateZ(-dt * 2)
-    }
-  }
-
-  /** COLLIDERS
-  if (colliders!==undefined){
-    //cast left
-    dir.set(-1,0,0)
-    dir.applyMatrix4(player.object.matrix)
-    dir.normalize()
-    raycaster = new THREE.Raycaster(pos, dir)
-
-    let intersect = raycaster.intersectObjects(colliders)
-    if (intersect.length>0){
-      if (intersect[0].distance<50) player.object.translateX(100-intersect[0].distance)
-    }
-
-    //cast right
-    dir.set(1,0,0)
-    dir.applyMatrix4(player.object.matrix)
-    dir.normalize()
-    raycaster = new THREE.Raycaster(pos, dir)
-
-    intersect = raycaster.intersectObjects(colliders)
-    if (intersect.length>0){
-      if (intersect[0].distance<50) player.object.translateX(intersect[0].distance-100)
-    }
-
-    //cast down
-    dir.set(0,-1,0)
-    pos.y += 200
-    raycaster = new THREE.Raycaster(pos, dir)
-    const gravity = 30
-
-    intersect = raycaster.intersectObjects(colliders)
-    if (intersect.length>0){
-      const targetY = pos.y - intersect[0].distance
-      if (targetY > player.object.position.y){
-        //Going up
-        player.object.position.y = 0.8 * player.object.position.y + 0.2 * targetY
-        player.velocityY = 0
-      }else if (targetY < player.object.position.y){
-        //Falling
-        if (player.velocityY==undefined) player.velocityY = 0
-        player.velocityY += dt * gravity
-        player.object.position.y -= player.velocityY
-        if (player.object.position.y < targetY){
-          player.velocityY = 0
-          player.object.position.y = targetY
-        }
-      }
-    }else if (player.object.position.y>0){
-      if (player.velocityY==undefined) player.velocityY = 0
-      player.velocityY += dt * gravity
-      player.object.position.y -= player.velocityY
-      if (player.object.position.y < 0){
-        player.velocityY = 0
-        player.object.position.y = 0
-      }
-    }
-  }
-  */
-
-  player.object.rotateY(player.move.turn * dt)
-}
-
-function playerControl(forward, turn) {
-
-  turn = -turn
-
-  if (forward > 0.2) {
-    if (player.action != "Walking" && player.action != "Running") {
-      setAction("Walking")
-    }
-  }
-  else if (forward < -0.2) {
-    if (player.action != "Walking Backwards") {
-      setAction("Walking Backwards")
-    }
-  }
-  else {
-    forward = 0
-    if (Math.abs(turn) > 0.05) {
-      if (player.action != "Left Turn") {
-        setAction("Left Turn")
-      }
-    }
-    else if (player.action != "Idle") {
-      setAction("Idle")
-    }
-    // else {
-    // 	setAction("Idle")
-    // }
-  }
-
-  // if ( forward == 0 && turn == 0 ) {
-  //   player.move = {}
-  // }
-  // else {
-  player.move = { forward, turn }
-  // }
-}
 
 /** ANIMATE + RENDER (continuous rendering) ******************************************** */
 
