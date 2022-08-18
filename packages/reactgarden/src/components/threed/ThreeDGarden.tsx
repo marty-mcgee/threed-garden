@@ -438,19 +438,19 @@ const bootManager = {
 
   manager: new THREE.LoadingManager(),
 
-  onStart (url, itemsLoaded, itemsTotal) {
+  onStart(url, itemsLoaded, itemsTotal) {
     console.log(`Started loading file: ${url}.\nLoaded ${itemsLoaded} of ${itemsTotal} files.`)
   },
 
-  onProgress (url, itemsLoaded, itemsTotal) {
+  onProgress(url, itemsLoaded, itemsTotal) {
     // console.log(`Loading file: ${url}.\nLoaded ${itemsLoaded} of ${itemsTotal} files.`)
   },
 
-  onError (url) {
+  onError(url) {
     console.error(`There was an error loading ${url}`)
   },
 
-  onLoad () {
+  onLoad() {
     const startTime = new Date().toISOString()
     console.log("manager.onLoad", startTime)
     // console.log('starting timer...')
@@ -462,7 +462,7 @@ const bootManager = {
       params.mode = params.modes.LOADED
       console.log("params.mode manager.onLoad", params.mode, startTime)
       player.setAction("Idle")
-      animate()
+      world.animate()
       console.log("animating ****************************** ")
       params.mode = params.modes.ACTIVE
       console.log("params.mode manager.onLoad", params.mode, new Date().toISOString())
@@ -471,12 +471,12 @@ const bootManager = {
       console.log("params.mode manager.onLoad", params.mode, startTime)
     }
   },
-
-  loaderFBX: new FBXLoader(this.manager),
-  loaderGLTF: new GLTFLoader(this.manager),
-  loaderOBJ: new OBJLoader(this.manager),
-  loaderTexture: new THREE.TextureLoader(this.manager),
 }
+
+const loaderFBX = new FBXLoader(bootManager.manager)
+const loaderGLTF = new GLTFLoader(bootManager.manager)
+const loaderOBJ = new OBJLoader(bootManager.manager)
+const loaderTexture = new THREE.TextureLoader(bootManager.manager)
 // }, []) // useEffect
 
 // ==================================================================
@@ -1798,7 +1798,7 @@ const animate = () => {
 
   // Move Player
   if (player.move !== undefined) {
-    movePlayer(dt)
+    player.movePlayer(dt)
   }
 
   // Move Cameras
@@ -2713,11 +2713,11 @@ const ThreeDGarden = (): JSX.Element => {
   const word = "HEY HEY HEY"
   const title = useRef()
   const root = useRef()
-  const scene = new THREE.Scene()
+  // const scene = new THREE.Scene()
   return (
     <div>
       <div ref={title}>ThreeDGarden: {word}</div>
-      <div id="root" ref={root}>ThreeDGarden: {JSON.stringify(root)}</div>
+      <div id="root" ref={root}>Three root: {JSON.stringify(root)}</div>
       <MyComponent />
     </div>
   )
