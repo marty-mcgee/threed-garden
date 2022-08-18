@@ -132,6 +132,21 @@ let renderer: Renderer
 let container: any
 let canvas: any
 
+const animations = {}
+let anims = ["Breathing Idle", "Driving", "Idle", "Left Turn", "Pointing", "Pointing Gesture"]
+anims = [...anims, "Right Turn", "Running", "Talking", "Turn", "Walking", "Walking Backwards"]
+// let anims2 = ["ascend-stairs", "gather-objects", "look-around", "push-button", "run"]
+// let tweens = []
+
+// let cellSize = 16
+// let interactive = false
+// let levelIndex = 0
+// let _hints = 0
+// let score = 0
+// let cameraFade = 0.05
+// let mute = false
+// let collect = []
+
 const player: IPlayer = {
   action: "Idle", // player.action = "Idle"
   actionTime: Date.now(), // player.actionTime = Date.now()
@@ -296,21 +311,6 @@ const player: IPlayer = {
 
 }
 
-const animations = {}
-let anims = ["Breathing Idle", "Driving", "Idle", "Left Turn", "Pointing", "Pointing Gesture"]
-anims = [...anims, "Right Turn", "Running", "Talking", "Turn", "Walking", "Walking Backwards"]
-// let anims2 = ["ascend-stairs", "gather-objects", "look-around", "push-button", "run"]
-// let tweens = []
-
-// let cellSize = 16
-// let interactive = false
-// let levelIndex = 0
-// let _hints = 0
-// let score = 0
-// let cameraFade = 0.05
-// let mute = false
-// let collect = []
-
 // =====================================================================
 // MESSAGES (to client)
 const messages = {
@@ -398,6 +398,7 @@ console.log("params", params)
 
 /** TIME CLOCK */
 const clock = new THREE.Clock()
+console.log("clock", clock)
 
 /** POINTER HOVERS + CLICKS */
 const raycaster = new THREE.Raycaster()
@@ -433,46 +434,53 @@ const API_URLS = [
 // LOADING MANAGER
 // :) APP EXECUTION BEGINS HERE <3
 // useEffect(() => {
-const manager = new THREE.LoadingManager()
+const bootManager = {
 
-manager.onStart = (url, itemsLoaded, itemsTotal) => {
-  console.log(`Started loading file: ${url}.\nLoaded ${itemsLoaded} of ${itemsTotal} files.`)
-}
-manager.onProgress = (url, itemsLoaded, itemsTotal) => {
-  // console.log(`Loading file: ${url}.\nLoaded ${itemsLoaded} of ${itemsTotal} files.`)
-}
-manager.onError = (url) => {
-  console.error(`There was an error loading ${url}`)
-}
-manager.onLoad = () => {
-  const startTime = new Date().toISOString()
-  console.log("manager.onLoad", startTime)
-  // console.log('starting timer...')
-  // const millis = Date.now() - startTime
-  // console.log(`milliseconds elapsed = ${Math.floor(millis)}`)
-  // console.log(`seconds elapsed = ${Math.floor(millis / 1000)}`)
+  manager: new THREE.LoadingManager(),
 
-  if (params.mode === params.modes.LOADING) {
-    params.mode = params.modes.LOADED
-    console.log("params.mode manager.onLoad", params.mode, startTime)
-    player.setAction("Idle")
-    animate()
-    console.log("animating ****************************** ")
-    params.mode = params.modes.ACTIVE
-    console.log("params.mode manager.onLoad", params.mode, new Date().toISOString())
-  } else {
-    console.log("still building ************************* ")
-    console.log("params.mode manager.onLoad", params.mode, startTime)
-  }
+  onStart (url, itemsLoaded, itemsTotal) {
+    console.log(`Started loading file: ${url}.\nLoaded ${itemsLoaded} of ${itemsTotal} files.`)
+  },
 
+  onProgress (url, itemsLoaded, itemsTotal) {
+    // console.log(`Loading file: ${url}.\nLoaded ${itemsLoaded} of ${itemsTotal} files.`)
+  },
+
+  onError (url) {
+    console.error(`There was an error loading ${url}`)
+  },
+
+  onLoad () {
+    const startTime = new Date().toISOString()
+    console.log("manager.onLoad", startTime)
+    // console.log('starting timer...')
+    // const millis = Date.now() - startTime
+    // console.log(`milliseconds elapsed = ${Math.floor(millis)}`)
+    // console.log(`seconds elapsed = ${Math.floor(millis / 1000)}`)
+
+    if (params.mode === params.modes.LOADING) {
+      params.mode = params.modes.LOADED
+      console.log("params.mode manager.onLoad", params.mode, startTime)
+      player.setAction("Idle")
+      animate()
+      console.log("animating ****************************** ")
+      params.mode = params.modes.ACTIVE
+      console.log("params.mode manager.onLoad", params.mode, new Date().toISOString())
+    } else {
+      console.log("still building ************************* ")
+      console.log("params.mode manager.onLoad", params.mode, startTime)
+    }
+  },
+
+  loaderFBX: new FBXLoader(this.manager),
+  loaderGLTF: new GLTFLoader(this.manager),
+  loaderOBJ: new OBJLoader(this.manager),
+  loaderTexture: new THREE.TextureLoader(this.manager),
 }
-// }, [])
+// }, []) // useEffect
 
-/** LOADERS */
-const loaderFBX = new FBXLoader(manager)
-const loaderGLTF = new GLTFLoader(manager)
-const loaderOBJ = new OBJLoader(manager)
-const loaderTexture = new THREE.TextureLoader(manager)
+// ==================================================================
+// LOADERS
 
 // ==================================================================
 // FUNCTIONS
@@ -2304,7 +2312,7 @@ function buildAllotments(postObject, plane, sceneID) {
 
   console.log("ALLOTMENTS", postObject)
 
-  //alert("HEY HEY HEY: BUILD ALLOTMENTS..")
+  // alert("HEY HEY HEY: BUILD ALLOTMENTS..")
 
   var filteredPostObject = postObject.filter(function (obj) {
     return obj.acf.allotment_scene == sceneID
@@ -2688,6 +2696,19 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
   // console.log("plane.children", plane.children)
 }
 
+const MyComponent = () => {
+  useEffect(() => {
+    console.log('MyComponent onMount')
+    bootManager
+    return () => {
+      console.log('MyComponent onUnmount')
+    };
+  }, [])
+  return (
+    <div>Component body here...</div>
+  )
+}
+
 const ThreeDGarden = (): JSX.Element => {
   const word = "HEY HEY HEY"
   const title = useRef()
@@ -2696,7 +2717,8 @@ const ThreeDGarden = (): JSX.Element => {
   return (
     <div>
       <div ref={title}>ThreeDGarden: {word}</div>
-      <div id="root" ref={root}>ThreeDGarden: {word}</div>
+      <div id="root" ref={root}>ThreeDGarden: {JSON.stringify(root)}</div>
+      <MyComponent />
     </div>
   )
 }
