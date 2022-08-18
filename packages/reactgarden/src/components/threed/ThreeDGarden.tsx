@@ -1,3 +1,5 @@
+import { useRef, useEffect } from "react"
+
 import * as THREE from "three"
 // import Stats from 'three/examples/jsm/libs/stats.module'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
@@ -45,6 +47,11 @@ interface IThreeDEnv {
   sceneID: number | string,
 }
 
+interface IPlayer {
+  action: string,
+  actionTime: number | Date
+}
+
 // ================================================================
 // SETUP BEGINS HERE
 
@@ -83,28 +90,28 @@ console.log("postdata", postdata)
 const debug = false
 const debugPhysics = false
 
-// DAT.GUI
-const gui = new dat.GUI({
-  name: "ThreeDGarden Controls",
-  autoPlace: true,
-  closeOnTop: true,
-  width: 180,
-  // closed: true,
-  // useLocalStorage: true,
-})
-gui.domElement.id = "gui"
-gui.close()
-// folders
-const guiFolderAnimation = gui.addFolder("Animation")
-const guiFolderRotation = gui.addFolder("Rotation")
-const guiFolderCameras = gui.addFolder("Camera")
-const guiFolderLights = gui.addFolder("Lights")
-const guiFolderAllotments = gui.addFolder("Allotments")
-const guiFolderBeds = gui.addFolder("Beds")
-const guiFolderPlants = gui.addFolder("Plants")
-// const guiFolderInfospots 	= gui.addFolder("Infospots")
-const guiFolderAnnotations = gui.addFolder("Annotations")
-const guiFolderPlayer = gui.addFolder("Character")
+// // DAT.GUI
+// const gui = new dat.GUI({
+//   name: "ThreeDGarden Controls",
+//   autoPlace: true,
+//   closeOnTop: true,
+//   width: 180,
+//   // closed: true,
+//   // useLocalStorage: true,
+// })
+// gui.domElement.id = "gui"
+// gui.close()
+// // folders
+// const guiFolderAnimation = gui.addFolder("Animation")
+// const guiFolderRotation = gui.addFolder("Rotation")
+// const guiFolderCameras = gui.addFolder("Camera")
+// const guiFolderLights = gui.addFolder("Lights")
+// const guiFolderAllotments = gui.addFolder("Allotments")
+// const guiFolderBeds = gui.addFolder("Beds")
+// const guiFolderPlants = gui.addFolder("Plants")
+// // const guiFolderInfospots 	= gui.addFolder("Infospots")
+// const guiFolderAnnotations = gui.addFolder("Annotations")
+// const guiFolderPlayer = gui.addFolder("Character")
 
 // =====================================================================
 // THREE.JS ENVIRONMENT
@@ -117,9 +124,11 @@ let renderer: Renderer
 let container: any
 let canvas: any
 
-const player: any = {}
-player.action = "Idle"
-player.actionTime = Date.now()
+const player: IPlayer = {
+  action: "Idle", // player.action = "Idle"
+  actionTime: Date.now(), // player.actionTime = Date.now()
+}
+
 const animations = {}
 let anims = ["Breathing Idle", "Driving", "Idle", "Left Turn", "Pointing", "Pointing Gesture"]
 anims = [...anims, "Right Turn", "Running", "Talking", "Turn", "Walking", "Walking Backwards"]
@@ -187,67 +196,20 @@ const params = {
 }
 params.mode = params.modes.NONE
 console.log("params.mode", params.mode)
-guiFolderAnimation.add(params, "ANIMATE").name("Run Animation")
+// guiFolderAnimation.add(params, "ANIMATE").name("Run Animation")
 
 params.mode = params.modes.PRELOAD
 console.log("params.mode", params.mode)
 
 console.log("params", params)
 
-// ================================================================
-// LOGIC BEGINS HERE
-
-/**
- * three.js
- * LOADING MANAGER
- * :) APP EXECUTION STARTS HERE <3
- */
-const manager = new THREE.LoadingManager()
-
-manager.onStart = (url, itemsLoaded, itemsTotal) => {
-  console.log('Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.')
-}
-manager.onProgress = function (url, itemsLoaded, itemsTotal) {
-  //console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' )
-}
-manager.onError = function (url) {
-  console.error('There was an error loading ' + url)
-}
-manager.onLoad = () => {
-  const startTime = new Date().toISOString()
-  console.log("manager.onLoad", startTime)
-  // console.log('starting timer...')
-  // const millis = Date.now() - startTime
-  // console.log(`milliseconds elapsed = ${Math.floor(millis)}`)
-  // console.log(`seconds elapsed = ${Math.floor(millis / 1000)}`)
-
-  if (params.mode === params.modes.LOADING) {
-    params.mode = params.modes.LOADED
-    console.log("params.mode manager.onLoad", params.mode, startTime)
-    setAction("Idle")
-    animate()
-    console.log("animating ****************************** ")
-    params.mode = params.modes.ACTIVE
-    console.log("params.mode manager.onLoad", params.mode, new Date().toISOString())
-  } else {
-    console.log("still building ************************* ")
-    console.log("params.mode manager.onLoad", params.mode, startTime)
-  }
-
-}
-
-/** LOADERS */
-const loaderFBX = new FBXLoader(manager)
-const loaderGLTF = new GLTFLoader(manager)
-const loaderOBJ = new OBJLoader(manager)
-const loaderTexture = new THREE.TextureLoader(manager)
-
-/**
- * LOADER OPTIONS.ASSETS ???
- */
+//
+// PARAMS.ASSETS ???
+//
 // NEED TO LOAD AUDIO ASSET FILES ???
 // const sfxExt = SFX.supportsAudioType('mp3') ? 'mp3' : 'ogg'
 // console.log("SFX", SFX)
+//
 // NEED TO LOAD KNOWN ASSET FILES ???
 // const blobs = {'fish.gltf': blob1, 'diffuse.png': blob2, 'normal.png': blob3} ???
 // const options = {
@@ -283,11 +245,11 @@ const pointer = new THREE.Vector2()
 // )
 
 /** REST API URLS */
-const API_URL_SCENES = `${restURL}scene/?_embed&per_page=100`
-const API_URL_ALLOTMENTS = `${restURL}allotment/?_embed&per_page=100`
-const API_URL_BEDS = `${restURL}bed/?_embed&per_page=100`
-const API_URL_PLANTING_PLANS = `${restURL}planting_plan/?_embed&per_page=100`
-const API_URL_PLANTS = `${restURL}plant/?_embed&per_page=100`
+const API_URL_SCENES = `${env.restURL}scene/?_embed&per_page=100`
+const API_URL_ALLOTMENTS = `${env.restURL}allotment/?_embed&per_page=100`
+const API_URL_BEDS = `${env.restURL}bed/?_embed&per_page=100`
+const API_URL_PLANTING_PLANS = `${env.restURL}planting_plan/?_embed&per_page=100`
+const API_URL_PLANTS = `${env.restURL}plant/?_embed&per_page=100`
 
 const api_urls = [
   API_URL_SCENES,
@@ -297,12 +259,56 @@ const api_urls = [
   API_URL_PLANTS
 ]
 
+// ================================================================
+// LOGIC BEGINS HERE
 
-/** REFs */
-const root = ref(null)
+// three.js
+// LOADING MANAGER
+// :) APP EXECUTION BEGINS HERE <3
+// useEffect(() => {
+const manager = new THREE.LoadingManager()
 
+manager.onStart = (url, itemsLoaded, itemsTotal) => {
+  console.log(`Started loading file: ${url}.\nLoaded ${itemsLoaded} of ${itemsTotal} files.`)
+}
+manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+  // console.log(`Loading file: ${url}.\nLoaded ${itemsLoaded} of ${itemsTotal} files.`)
+}
+manager.onError = (url) => {
+  console.error(`There was an error loading ${url}`)
+}
+manager.onLoad = () => {
+  const startTime = new Date().toISOString()
+  console.log("manager.onLoad", startTime)
+  // console.log('starting timer...')
+  // const millis = Date.now() - startTime
+  // console.log(`milliseconds elapsed = ${Math.floor(millis)}`)
+  // console.log(`seconds elapsed = ${Math.floor(millis / 1000)}`)
 
-/** FUNCTIONS */
+  if (params.mode === params.modes.LOADING) {
+    params.mode = params.modes.LOADED
+    console.log("params.mode manager.onLoad", params.mode, startTime)
+    setAction("Idle")
+    animate()
+    console.log("animating ****************************** ")
+    params.mode = params.modes.ACTIVE
+    console.log("params.mode manager.onLoad", params.mode, new Date().toISOString())
+  } else {
+    console.log("still building ************************* ")
+    console.log("params.mode manager.onLoad", params.mode, startTime)
+  }
+
+}
+// }, [])
+
+/** LOADERS */
+const loaderFBX = new FBXLoader(manager)
+const loaderGLTF = new GLTFLoader(manager)
+const loaderOBJ = new OBJLoader(manager)
+const loaderTexture = new THREE.TextureLoader(manager)
+
+// ==================================================================
+// FUNCTIONS
 
 // render scene + camera
 const render = () => {
@@ -1579,17 +1585,17 @@ Array.prototype.pushIfNotExist = function (element, comparer) {
 /**
  * PLAYER "CHARACTER" ACTION
  */
-function setAction(name) {
+function setAction(name: string) {
   const action = player.mixer.clipAction(animations[name])
   action.time = 0
   console.log("CHARACTER: action name", name)
-  //console.log("CHARACTER: animations[name]", animations[name])
-  //console.log("CHARACTER: action object", action)
+  // console.log("CHARACTER: animations[name]", animations[name])
+  // console.log("CHARACTER: action object", action)
   player.mixer.stopAllAction()
   player.action = name
   player.actionTime = Date.now()
-  //console.log("player", player)
-  //action.fadeIn(0.5) // causes arms to move awkwardly
+  // console.log("player", player)
+  // action.fadeIn(0.5) // causes arms to move awkwardly
   action.play()
 }
 
@@ -1834,7 +1840,7 @@ const loadAssets = () => {
 
     // console.log("player.object", player.object)
     plane.add(player.object)
-    guiFolderPlayer.add(player.object, "visible").name("Show Character").listen()
+    // guiFolderPlayer.add(player.object, "visible").name("Show Character").listen()
 
   })
 
@@ -2668,9 +2674,14 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 
 const ThreeDGarden = (): JSX.Element => {
   const word = "HEY HEY HEY"
+  const title = useRef()
+  const root = useRef()
   const scene = new THREE.Scene()
   return (
-    <div>ThreeDGarden: {word}</div>
+    <div>
+      <div ref={title}>ThreeDGarden: {word}</div>
+      <div id="root" ref={root}>ThreeDGarden: {word}</div>
+    </div>
   )
 }
 
