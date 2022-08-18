@@ -5,10 +5,10 @@ import * as THREE from "three"
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
-import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
+// import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer'
-import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+// import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer'
+// import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 // types
 import type { Scene, Plane, Camera, Renderer, Object3D, AnimationMixer } from "three"
 
@@ -202,7 +202,7 @@ const player: IPlayer = {
 
     if (!blocked) {
       if (player.move.forward > 0) {
-        const speed = (player.action == "Running") ? 24 : 8
+        const speed = (player.action === "Running") ? 24 : 8
         player.object.translateZ(dt * speed)
       }
       else if (player.move.forward < 0) {
@@ -249,7 +249,7 @@ const player: IPlayer = {
           player.velocityY = 0
         } else if (targetY < player.object.position.y) {
           // Falling
-          if (player.velocityY == undefined) player.velocityY = 0
+          if (player.velocityY === undefined) player.velocityY = 0
           player.velocityY += dt * gravity
           player.object.position.y -= player.velocityY
           if (player.object.position.y < targetY) {
@@ -258,7 +258,7 @@ const player: IPlayer = {
           }
         }
       } else if (player.object.position.y > 0) {
-        if (player.velocityY == undefined) player.velocityY = 0
+        if (player.velocityY === undefined) player.velocityY = 0
         player.velocityY += dt * gravity
         player.object.position.y -= player.velocityY
         if (player.object.position.y < 0) {
@@ -289,11 +289,11 @@ const player: IPlayer = {
     else {
       forward = 0
       if (Math.abs(turn) > 0.05) {
-        if (player.action != "Left Turn") {
+        if (player.action !== "Left Turn") {
           this.setAction("Left Turn")
         }
       }
-      else if (player.action != "Idle") {
+      else if (player.action !== "Idle") {
         this.setAction("Idle")
       }
       // else {
@@ -301,7 +301,7 @@ const player: IPlayer = {
       // }
     }
 
-    // if ( forward == 0 && turn == 0 ) {
+    // if ( forward === 0 && turn === 0 ) {
     //   player.move = {}
     // }
     // else {
@@ -434,23 +434,26 @@ const API_URLS = [
 // LOADING MANAGER
 // :) APP EXECUTION BEGINS HERE <3
 // useEffect(() => {
-const bootManager = {
+// eslint-disable-next-line arrow-body-style
+const bootManager = () => {
+  return (<div>BEGIN BOOT PROCESS</div>)
+}
 
-  manager: new THREE.LoadingManager(),
+  const manager = new THREE.LoadingManager()
 
-  onStart(url, itemsLoaded, itemsTotal) {
+  manager.onStart = (url, itemsLoaded, itemsTotal) => {
     console.log(`Started loading file: ${url}.\nLoaded ${itemsLoaded} of ${itemsTotal} files.`)
-  },
+  }
 
-  onProgress(url, itemsLoaded, itemsTotal) {
+  manager.onProgress = (url, itemsLoaded, itemsTotal) => {
     // console.log(`Loading file: ${url}.\nLoaded ${itemsLoaded} of ${itemsTotal} files.`)
-  },
+  }
 
-  onError(url) {
+  manager.onError = (url) => {
     console.error(`There was an error loading ${url}`)
-  },
+  }
 
-  onLoad() {
+  manager.onLoad = () => {
     const startTime = new Date().toISOString()
     console.log("manager.onLoad", startTime)
     // console.log('starting timer...')
@@ -470,13 +473,13 @@ const bootManager = {
       console.log("still building ************************* ")
       console.log("params.mode manager.onLoad", params.mode, startTime)
     }
-  },
-}
+  }
+// }
 
-const loaderFBX = new FBXLoader(bootManager.manager)
-const loaderGLTF = new GLTFLoader(bootManager.manager)
-const loaderOBJ = new OBJLoader(bootManager.manager)
-const loaderTexture = new THREE.TextureLoader(bootManager.manager)
+const loaderFBX = new FBXLoader(manager)
+const loaderGLTF = new GLTFLoader(manager)
+const loaderOBJ = new OBJLoader(manager)
+const loaderTexture = new THREE.TextureLoader(manager)
 // }, []) // useEffect
 
 // ==================================================================
@@ -503,10 +506,10 @@ const onWindowResize = () => {
 // watch for window resize, then adjust canvas appropriately
 // window.addEventListener( 'resize', onWindowResize, false )
 
-const getPlane = (x, y, color) => {
+const getPlane = (x, y, color1) => {
   const geometry = new THREE.PlaneGeometry(x, y)
   const material = new THREE.MeshStandardMaterial({
-    color: color,
+    color: color1,
     side: THREE.DoubleSide
   })
   const mesh = new THREE.Mesh(geometry, material)
