@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 
 import * as THREE from "three"
 // import Stats from 'three/examples/jsm/libs/stats.module'
@@ -10,7 +10,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 // import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer'
 // import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 // types
-import type { Scene, Plane, Camera, Renderer, Object3D, AnimationMixer } from "three"
+import type { Scene, Plane, Camera, Renderer, Object3D, AnimationMixer, LoadingManager } from "three"
 
 // import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
 import TWEEN from '@tweenjs/tween.js'
@@ -62,6 +62,37 @@ interface IPlayer {
 
 // ================================================================
 // SETUP BEGINS HERE
+
+const toJSON = (proto: any) => {
+  const jsoned = {}
+  const toConvert = proto || this
+  Object.getOwnPropertyNames(toConvert).forEach((prop) => {
+    const val = toConvert[prop]
+    // do not include these
+    if (prop === 'toJSON' || prop === 'constructor') {
+      return
+    }
+    if (typeof val === 'function') {
+      jsoned[prop] = val.bind(jsoned)
+      return
+    }
+    jsoned[prop] = val
+  })
+
+  const inherited = Object.getPrototypeOf(toConvert)
+  if (inherited !== null) {
+    Object.keys(toJSON(inherited)).forEach(key => {
+      if (!!jsoned[key] || key === 'constructor' || key === 'toJSON')
+        return
+      if (typeof inherited[key] === 'function') {
+        jsoned[key] = inherited[key].bind(jsoned)
+        return
+      }
+      jsoned[key] = inherited[key]
+    });
+  }
+  return jsoned
+}
 
 // PARAMETERS FROM PHP
 // console.log("window", window)
@@ -433,13 +464,49 @@ const API_URLS = [
 // three.js
 // LOADING MANAGER
 // :) APP EXECUTION BEGINS HERE <3
-// useEffect(() => {
-// eslint-disable-next-line arrow-body-style
+
+THREE.DefaultLoadingManager.onStart = function (url, itemsLoaded, itemsTotal) {
+  console.log('Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
+};
+
+THREE.DefaultLoadingManager.onLoad = function () {
+  console.log('Loading Complete!');
+
+  const startTime = new Date().toISOString()
+  console.log("manager.onLoad", startTime)
+
+  if (params.mode === params.modes.LOADING) {
+    params.mode = params.modes.LOADED
+    console.log("params.mode manager.onLoad", params.mode, startTime)
+    player.setAction("Idle")
+    world.animate()
+    console.log("animating ****************************** ")
+    params.mode = params.modes.ACTIVE
+    console.log("params.mode manager.onLoad", params.mode, new Date().toISOString())
+  } else {
+    console.log("still building ************************* ")
+    console.log("params.mode manager.onLoad", params.mode, startTime)
+  }
+
+};
+
+THREE.DefaultLoadingManager.onProgress = function (url, itemsLoaded, itemsTotal) {
+  console.log('Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
+};
+
+THREE.DefaultLoadingManager.onError = function (url) {
+  console.log('There was an error loading ' + url);
+};
+
+
+
+// const [manager, setManager] = useState(new THREE.LoadingManager())
 const bootManager = () => {
-  return (<div>BEGIN BOOT PROCESS</div>)
-}
 
   const manager = new THREE.LoadingManager()
+
+  // const wtfayd = toJSON(manager)
+  // console.log("HEY HEY HEY wtfayd", wtfayd)
 
   manager.onStart = (url, itemsLoaded, itemsTotal) => {
     console.log(`Started loading file: ${url}.\nLoaded ${itemsLoaded} of ${itemsTotal} files.`)
@@ -474,13 +541,20 @@ const bootManager = () => {
       console.log("params.mode manager.onLoad", params.mode, startTime)
     }
   }
-// }
+  // }
 
-const loaderFBX = new FBXLoader(manager)
-const loaderGLTF = new GLTFLoader(manager)
-const loaderOBJ = new OBJLoader(manager)
-const loaderTexture = new THREE.TextureLoader(manager)
-// }, []) // useEffect
+  // const wtfayd2 = toJSON(manager)
+  // console.log("HEY HEY HEY wtfayd2", wtfayd2)
+
+  const loaders = {
+    loaderFBX: new FBXLoader(manager),
+    loaderGLTF: new GLTFLoader(manager),
+    loaderOBJ: new OBJLoader(manager),
+    loaderTexture: new THREE.TextureLoader(manager),
+  }
+
+  return (<div>BEGIN BOOT PROCESS</div>)
+}
 
 // ==================================================================
 // LOADERS
@@ -766,7 +840,7 @@ const getGeometry = (shape, x, y, z, color) => {
 
 // LOADERS
 function loadTown() {
-  loaderFBX.load(`${params.assetsPath}fbx/town.fbx`, function (object) {
+  loaders.loaderFBX.load(`${params.assetsPath}fbx/town.fbx`, function (object) {
     params.environment = object
     params.colliders = []
     object.scale.set(0.025, 0.025, 0.025)
@@ -788,15 +862,15 @@ function loadTown() {
 }
 
 function loadFarmHouse() {
-  //loaderFBX.load(`${params.assetsPath}fbx/SM_Bld_Farmhouse_01.fbx`, function(object){
-  loaderFBX.load(`${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
-    //loaderFBX.load(`${params.assetsPath}fbx/Building_Barn_Big_03.fbx`, function(object){
+  // loaders.loaderFBX.load(`${params.assetsPath}fbx/SM_Bld_Farmhouse_01.fbx`, function(object){
+  loaders.loaderFBX.load(`${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
+    // loaders.loaderFBX.load(`${params.assetsPath}fbx/Building_Barn_Big_03.fbx`, function(object){
     params.farmhouse = object
     params.colliders = []
     object.rotation.y = 270 * (Math.PI / 180) // 90 degrees in radians
     object.rotation.z = 270 * (Math.PI / 180) // 90 degrees in radians
     object.position.set(0, -100, 0)
-    //object.scale.set(0.025, 0.025, 0.025)
+    // object.scale.set(0.025, 0.025, 0.025)
     object.scale.set(2.2, 2.2, 2.2)
     plane.add(object)
     object.traverse(function (child) {
@@ -810,7 +884,7 @@ function loadFarmHouse() {
         }
       }
     })
-    //loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_A.png`, function(texture) {
+    // loaderTexture.load(`${params.assetsPath}textures/PolygonFarm_Texture_01_A.png`, function(texture) {
     loaderTexture.load(`${params.assetsPath}textures/SimpleFarm.png`, function (texture) {
       object.traverse(function (child) {
         if (child.isMesh) {
@@ -825,7 +899,7 @@ function loadFarmHouse() {
 
 function loadFarmHouseGLTF() {
 
-  // loaderFBX.load( `${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
+  // loaders.loaderFBX.load( `${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
   loaderGLTF.load(`${params.assetsPath}gltf/Residential House.glb`, function (object) {
 
     let model = object.scene
@@ -851,7 +925,7 @@ function loadFarmHouseGLTF() {
 }
 
 function loadCoop() {
-  loaderFBX.load(`${params.assetsPath}fbx/Prop_Chicken_Coop_02.fbx`, function (object) {
+  loaders.loaderFBX.load(`${params.assetsPath}fbx/Prop_Chicken_Coop_02.fbx`, function (object) {
     params.farmhouse = object
     params.colliders = []
     object.rotation.x = 180 * (Math.PI / 180) // 90 degrees in radians
@@ -909,7 +983,7 @@ function loadChicken() {
 }
 
 function loadChicken0() {
-  loaderFBX.load(`${params.assetsPath}fbx/Chicken.fbx`, function (object) {
+  loaders.loaderFBX.load(`${params.assetsPath}fbx/Chicken.fbx`, function (object) {
 
     console.log("BIRD----------------")
     console.log(object)
@@ -942,7 +1016,7 @@ function loadChicken0() {
 }
 
 function loadChicken1() {
-  loaderFBX.load(`${params.assetsPath}fbx/SA_Animal_Birds.fbx`, function (object) {
+  loaders.loaderFBX.load(`${params.assetsPath}fbx/SA_Animal_Birds.fbx`, function (object) {
 
     console.log("BIRD----------------")
     console.log(object)
@@ -975,9 +1049,9 @@ function loadChicken1() {
 }
 
 function loadChicken2() {
-  loaderFBX.load(`${params.assetsPath}fbx/SA_Animal_Pig.fbx`, function (object) {
-    //loaderFBX.load( `${params.assetsPath}fbx/people/Trucker.fbx`, function (object) {
-    //loaderFBX.load( `${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function (object) {
+  loaders.loaderFBX.load(`${params.assetsPath}fbx/SA_Animal_Pig.fbx`, function (object) {
+    // loaders.loaderFBX.load( `${params.assetsPath}fbx/people/Trucker.fbx`, function (object) {
+    // loaders.loaderFBX.load( `${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function (object) {
 
     console.log("object----------------")
     console.log(object)
@@ -1142,7 +1216,7 @@ function loadChickGLTF() {
 
 // NOT USED or TESTED
 function loadHen() {
-  loaderFBX.load(`${params.assetsPath}Hen&Chicken_FBX/Hen_HP.fbx`, function (object) {
+  loaders.loaderFBX.load(`${params.assetsPath}Hen&Chicken_FBX/Hen_HP.fbx`, function (object) {
     params.farmhouse = object
     params.colliders = []
     //object.rotation.y = 270 * (Math.PI/180) // 90 degrees in radians
@@ -1183,7 +1257,7 @@ function loadHen() {
 
 function loadHenGLTF() {
 
-  // loaderFBX.load( `${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
+  // loaders.loaderFBX.load( `${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
   loaderGLTF.load(`${params.assetsPath}gltf/Hen_HP.glb`, function (object) {
 
     let model = object.scene
@@ -1211,7 +1285,7 @@ function loadHenGLTF() {
 }
 
 function loadKitchenSink() {
-  loaderFBX.load(`${params.assetsPath}fbx/Prop_KitchenSink_Black.fbx`, function (object) {
+  loaders.loaderFBX.load(`${params.assetsPath}fbx/Prop_KitchenSink_Black.fbx`, function (object) {
     params.farmhouse = object
     params.colliders = []
     object.rotation.y = 270 * (Math.PI / 180) // 90 degrees in radians
@@ -1273,7 +1347,7 @@ function loadChickenFree() {
 }
 
 function loadRooster() {
-  loaderFBX.load(`${params.assetsPath}fbx/rooster_1.0.1.fbx`, function (object) {
+  loaders.loaderFBX.load(`${params.assetsPath}fbx/rooster_1.0.1.fbx`, function (object) {
     // params.farmhouse = object
     // params.colliders = []
     //object.rotation.y = 270 * (Math.PI/180) // 90 degrees in radians
@@ -1317,7 +1391,7 @@ function loadRoad() {
 
     // ROAD A
     for (i = 1; i <= count; i++) {
-      loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_Straight_01.fbx`, function (object) {
+      loaders.loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_Straight_01.fbx`, function (object) {
 
         // console.log("ROAD object", object)
 
@@ -1363,7 +1437,7 @@ function loadRoad() {
   roadPromise1.then((startX, startZ) => {
     // ROAD T
     for (i = 1; i <= 1; i++) {
-      loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_T_Section_01.fbx`, function (object) {
+      loaders.loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_T_Section_01.fbx`, function (object) {
 
         console.log("ROAD T startX, startZ", startX, startZ)
 
@@ -1827,10 +1901,10 @@ const loadAssets = () => {
 
   /** FBX ******************************************************************************** */
 
-  //loaderFBX.load( `${params.assetsPath}characters/SimplePeople.fbx`, function (object) {
-  //loaderFBX.load( `${params.assetsPath}fbx/people/FireFighter.fbx`, function (object) {
-  //loaderFBX.load( `${params.assetsPath}fbx/people/Trucker.fbx`, function (object) {
-  loaderFBX.load(`${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function (object) {
+  //loaders.loaderFBX.load( `${params.assetsPath}characters/SimplePeople.fbx`, function (object) {
+  //loaders.loaderFBX.load( `${params.assetsPath}fbx/people/FireFighter.fbx`, function (object) {
+  //loaders.loaderFBX.load( `${params.assetsPath}fbx/people/Trucker.fbx`, function (object) {
+  loaders.loaderFBX.load(`${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function (object) {
 
     object.mixer = new THREE.AnimationMixer(object)
     player.mixer = object.mixer
@@ -1913,7 +1987,7 @@ const loadAssets = () => {
     })
   }
   // RECURSIVE FUNCTION TO LOAD ANIMATIONS
-  loadNextAnim(loaderFBX)
+  loadNextAnim(loaders.loaderFBX)
 
 } // end loadAssets()
 
@@ -2293,14 +2367,14 @@ const buildScene = async (a5) => {
 
   /** BUILD ALLOTMENTS ******************************************************************* */
 
-  //alert("HEY HEY HEY: BUILD ALLOTMENTS?")
-  //return plane
+  alert("HEY HEY HEY: BUILD ALLOTMENTS?")
+  // return plane
 
-  buildAllotments(
-    params.data.allotment,
-    plane,
-    sceneID // the post-to-post relationship <3
-  )
+  // buildAllotments(
+  //   params.data.allotment,
+  //   plane,
+  //   sceneID // the post-to-post relationship <3
+  // )
 
   // fulfill Promise
   // return true
@@ -2361,6 +2435,7 @@ function buildAllotments(postObject, plane, sceneID) {
     )
     structure.name = allotment.title
     structure.userData.type = "structure"
+
     structure.userData.postID = allotment.postID
     structure.userData.description = allotment.description
     structure.userData.annotation = allotment.title
@@ -2702,7 +2777,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 const MyComponent = () => {
   useEffect(() => {
     console.log('MyComponent onMount')
-    bootManager
+
     return () => {
       console.log('MyComponent onUnmount')
     };
@@ -2717,6 +2792,9 @@ const ThreeDGarden = (): JSX.Element => {
   const title = useRef()
   const root = useRef()
   // const scene = new THREE.Scene()
+  useEffect(() => {
+    bootManager()
+  }, [])
   return (
     <div>
       <div ref={title}>ThreeDGarden: {word}</div>
