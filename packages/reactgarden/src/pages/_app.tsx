@@ -54,8 +54,8 @@ import rtlPlugin from "stylis-plugin-rtl"
 // import "@fullcalendar/timegrid/main.css"
 
 // images
-import favicon from "~/assets/images/icons/favicon.png"
-import appleIcon from "~/assets/images/icons/apple-icon.png"
+import favicon from "~/assets/images/logos/favicon.png"
+import appleIcon from "~/assets/images/logos/apple-icon.png"
 import brandWhite from "~/assets/images/logos/logo-threedgarden.png"
 import brandDark from "~/assets/images/logos/logo-threedgarden-alt.png"
 
