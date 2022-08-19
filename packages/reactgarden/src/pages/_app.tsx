@@ -41,9 +41,9 @@ import {
 import { CacheProvider, EmotionCache } from "@emotion/react"
 import createEmotionCache from "~/themes/common/createEmotionCache"
 import createCache from "@emotion/cache"
-// theme: mui: theme-dark (threed-garden default)
-import theme from "~/themes/theme-light"
-import themeRTL from "~/themes/theme-light/theme-rtl"
+// theme: mui: custom
+import themeLight from "~/themes/theme-light"
+import themeLightRTL from "~/themes/theme-light/theme-rtl"
 import themeDark from "~/themes/theme-dark"
 import themeDarkRTL from "~/themes/theme-dark/theme-rtl"
 import rtlPlugin from "stylis-plugin-rtl"
@@ -212,7 +212,7 @@ const Main: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPro
   // ========================================================
   // RETURN TSX
   return (
-    <ThemeProvider theme={darkMode ? themeDark : theme}>
+    <ThemeProvider theme={darkMode ? themeDark : themeLight}>
       <CssBaseline />
       <Component {...pageProps} />
       {layout === "dashboard" && (
