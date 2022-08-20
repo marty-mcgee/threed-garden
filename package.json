@@ -1,6 +1,6 @@
 {
   "name": "@threed/threed-garden",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "ThreeD Garden on React using NextJS and Farmbot Ruby/JS as a WP Plugin",
   "repository": {
     "type": "git",
@@ -16,11 +16,11 @@
   "workspaces": {
     "packages": [
       "packages/_sandbox",
-      "packages/reactgarden",
-      "packages/nuxtgarden",
-      "packages/vitegarden",
-      "packages/threed/hardhat",
-      "packages/threed/subgraph",
+      "packages/nuxt-garden",
+      "packages/react-garden",
+      "packages/vite-garden",
+      "packages/@threed/hardhat",
+      "packages/@threed/subgraph",
       "packages/react-app"
     ],
     "nohoist": [
