@@ -21,7 +21,7 @@
       "packages/vite-garden",
       "packages/@threed/hardhat",
       "packages/@threed/subgraph",
-      "packages/react-app"
+      "packages/@threed/react-app"
     ],
     "nohoist": [
       "**/@graphprotocol/graph-ts",
