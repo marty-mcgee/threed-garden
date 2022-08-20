@@ -3,6 +3,7 @@
 # node
 **/node_modules
 node_modules
+.yarn
 
 # os junk
 .DS_Store
@@ -15,14 +16,21 @@ desktop.ini
 .env.test.local
 .env.production.local
 
+# sensitive policy breakers
+.cert
+
 # dist | build
 # /admin/dist
 # /public/dist
 
 # assets | static
-# /assets/libraries
+/assets/*
+/assets/libraries
+/assets/media
+/assets/sfx
 
-# packages --
+# packages workspace --
+
 # subgraph
 packages/subgraph/subgraph.yaml
 packages/subgraph/generated
@@ -31,12 +39,14 @@ packages/subgraph/config/config.json
 # subgraph (my-eth-app)
 packages/subgraph/build/
 packages/subgraph/src/types/
+
 # hardhat
 packages/hardhat/artifacts*
 packages/hardhat/cache*
 packages/hardhat-ts/cache*
 packages/hardhat/deployments
 packages/hardhat/*.txt
+
 # react-dapp
 packages/react-dapp/src/contracts/*
 !packages/react-dapp/src/contracts/external_contracts.js
@@ -45,6 +55,7 @@ packages/react-dapp/src/contracts/*
 # ignore certain packages
 packages/farmbot-js
 packages/farmbot-web-app
+packages/scaffold-eth-ts
 
 # misc
 tenderly.yaml
@@ -65,5 +76,6 @@ pnpm-debug.log*
 *.sln
 *.sw?
 
-# temp | testing
+# temp | scratchpad | testing
 # /public-old
+/temp*
