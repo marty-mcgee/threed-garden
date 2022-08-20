@@ -1,5 +1,5 @@
 {
-  "name": "@threed/react-app",
+  "name": "@threed/react-dapp",
   "version": "1.0.0",
   "homepage": ".",
   "browserslist": {
@@ -82,7 +82,7 @@
     "surge": "^0.21.5"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-dapp"
   },
   "scripts": {
     "build": "react-scripts build",

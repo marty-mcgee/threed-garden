@@ -62,7 +62,7 @@ const config: HardhatUserConfig = {
     },
   },
   // don't forget to set your provider like:
-  // REACT_APP_PROVIDER=https://dai.poa.network in packages/react-app/.env
+  // REACT_APP_PROVIDER=https://dai.poa.network in packages/react-dapp/.env
   // (then your frontend will talk to your contracts on the live network!)
   // (you will need to restart the `yarn run start` dev server after editing the .env)
 

@@ -6,15 +6,13 @@ const directoryName = "build";
 
 const BUCKETNAME = "sandbox.eth.build"; // <<---- SET YOUR BUCKET NAME AND CREATE aws.json ** see below vvvvvvvvvv
 
-
- const invalidation = {
+const invalidation = {
   awsDistributionId: "ELRHIIIOM3P69",
-  awsInvalidationPath: "/*"
- }
-
+  awsInvalidationPath: "/*",
+};
 
 if (!BUCKETNAME) {
-  console.log("☢️   Enter a bucket name in packages/react-app/scripts/s3.js ");
+  console.log("☢️   Enter a bucket name in packages/react-dapp/scripts/s3.js ");
   process.exit(1);
 }
 
@@ -24,7 +22,7 @@ try {
 } catch (e) {
   console.log(e);
   console.log(
-    '☢️   Create an aws.json credentials file in packages/react-app/ like { "accessKeyId": "xxx", "secretAccessKey": "xxx", "region": "xxx" } ',
+    '☢️   Create an aws.json credentials file in packages/react-dapp/ like { "accessKeyId": "xxx", "secretAccessKey": "xxx", "region": "xxx" } '
   );
   process.exit(1);
 }
@@ -86,7 +84,7 @@ s3.createBucket(bucketParams, function (err, data) {
         ///
         /// After the bucket is created, we upload to it:
         ///
-        s3FolderUpload(directoryName, credentials, options  , invalidation );
+        s3FolderUpload(directoryName, credentials, options, invalidation);
       }
     });
   }

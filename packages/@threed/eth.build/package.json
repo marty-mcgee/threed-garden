@@ -107,7 +107,7 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-dapp"
   },
   "browserslist": {
     "production": [

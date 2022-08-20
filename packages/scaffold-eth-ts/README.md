@@ -29,19 +29,18 @@ Running the app
 
    ```bash
    # build hardhat & external contracts types
-   yarn contracts:build 
+   yarn contracts:build
    # deploy your hardhat contracts
    yarn deploy
-   # start vite 
-   yarn start 
+   # start vite
+   yarn start
    ```
-   
+
 ## Guides
 
 - Check out [eth-hooks docs](https://scaffold-eth.github.io/eth-hooks/docs/overview) for example of how to use hooks
-- you can look at [speedrun ethereum](https://speedrunethereum.com/) to get started with scaffold-eth-typescript and web3.  
+- you can look at [speedrun ethereum](https://speedrunethereum.com/) to get started with scaffold-eth-typescript and web3.
   - 🏁 Make sure to click on the typescript tab!
-
 
 ## Overview
 
@@ -55,12 +54,12 @@ Everything you need to build on Ethereum! 🚀 Quickly experiment with Solidity 
 - 📱 Open http://localhost:3000 to see the app
 
 ## More Information!
+
 ### 📚 Documentation
 
 Documentation, tutorials, challenges, and many more resources, visit: [docs.scaffoldeth.io](https://docs.scaffoldeth.io)
 
-Eth-hooks documentation is [here](https://scaffold-eth.github.io/eth-hooks/).  Learn how to use the contexts here.
-
+Eth-hooks documentation is [here](https://scaffold-eth.github.io/eth-hooks/). Learn how to use the contexts here.
 
 ### 🔭 Learning Solidity
 
@@ -68,8 +67,8 @@ Read the docs: https://docs.soliditylang.org
 
 Go through each topic from [solidity by example](https://solidity-by-example.org) editing `YourContract.sol` in **🏗 scaffold-eth**
 
-
 ### 🏃💨 Speedrun Ethereum
+
 Register as a builder [here](https://speedrunethereum.com) and start on some of the challenges and build a portfolio.
 
 ### 🛠 Buidl
@@ -78,10 +77,9 @@ Check out all the [active branches](https://github.com/austintgriffith/scaffold-
 
 [Follow the full Ethereum Speed Run](https://medium.com/@austin_48503/%EF%B8%8Fethereum-dev-speed-run-bd72bcba6a4c)
 
-
 ### 💌 P.S.
 
-You need an RPC key for testnets and production deployments, create an [Alchemy](https://www.alchemy.com/) account and replace the value of `ALCHEMY_KEY = xxx` in `packages/react-app/src/constants.js` with your new key.
+You need an RPC key for testnets and production deployments, create an [Alchemy](https://www.alchemy.com/) account and replace the value of `ALCHEMY_KEY = xxx` in `packages/react-dapp/src/constants.js` with your new key.
 
 ### 💬 Support Chat
 
