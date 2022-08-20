@@ -33,8 +33,14 @@
     ]
   },
   "scripts": {
-    "mm": "pnpm nuxt-garden:mm",
-    "build": "pnpm nuxt-garden:build",
+    "mm": "pnpm react-garden:mm",
+    "build": "pnpm react-garden:build",
+    "react-garden:mm": "yarn workspace react-garden mm",
+    "react-garden:tsc": "yarn workspace react-garden tsc",
+    "react-garden:dev": "yarn workspace react-garden dev",
+    "react-garden:build": "yarn workspace react-garden build",
+    "react-garden:test": "yarn workspace react-garden test",
+    "react-garden:jest": "yarn workspace react-garden jest",
     "nuxt-garden:mm": "yarn workspace nuxt-garden mm",
     "nuxt-garden:tsc": "yarn workspace nuxt-garden tsc",
     "nuxt-garden:dev": "yarn workspace nuxt-garden dev",

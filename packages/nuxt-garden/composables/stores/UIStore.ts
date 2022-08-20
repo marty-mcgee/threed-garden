@@ -6,7 +6,7 @@ export const useUIStore = defineStore('UIStore', {
     uis: [],
     ui: {
       name: "ThreeD Garden",
-      version: "1.0.0"
+      version: "0.0.0"
     },
     
     /** @type {{ text: string, id: number, isFinished: boolean }[]} */
