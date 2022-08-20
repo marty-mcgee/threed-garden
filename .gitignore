@@ -42,8 +42,6 @@ packages/react-app/src/contracts/*
 !packages/react-app/src/contracts/external_contracts.js
 !packages/react-app/src/contracts/contracts.js
 
-packages/**/data
-
 # ignore certain packages
 packages/farmbot-js
 packages/farmbot-web-app
