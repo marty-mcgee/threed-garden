@@ -174,7 +174,7 @@ export default function ExampleUI({
         <Card>
           Check out all the{" "}
           <a
-            href="https://github.com/austintgriffith/scaffold-eth/tree/master/packages/react-app/src/components"
+            href="https://github.com/austintgriffith/scaffold-eth/tree/master/packages/react-dapp/src/components"
             target="_blank"
             rel="noopener noreferrer"
           >

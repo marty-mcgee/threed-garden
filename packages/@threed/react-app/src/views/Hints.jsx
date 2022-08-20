@@ -44,7 +44,7 @@ export default function Hints({ yourLocalBalance, mainnetProvider, price, addres
           className="highlight"
           style={{ marginLeft: 4, /* backgroundColor: "#f9f9f9", */ padding: 4, borderRadius: 4, fontWeight: "bolder" }}
         >
-          packages/react-app/src/contracts/
+          packages/react-dapp/src/contracts/
         </span>
       </div>
 

@@ -3,7 +3,7 @@ const chalk = require("chalk");
 
 const graphDir = "../subgraph";
 const deploymentsDir = "./deployments";
-const publishDir = "../react-app/src/contracts";
+const publishDir = "../react-dapp/src/contracts";
 
 function publishContract(contractName, networkName) {
   try {
@@ -37,7 +37,7 @@ function publishContract(contractName, networkName) {
       JSON.stringify(contract.abi, null, 2)
     );
 
-    //Hardhat Deploy writes a file with all ABIs in react-app/src/contracts/contracts.json
+    //Hardhat Deploy writes a file with all ABIs in react-dapp/src/contracts/contracts.json
     //If you need the bytecodes and/or you want one file per ABIs, un-comment the following block.
     //Write the contracts ABI, address and bytecodes in case the front-end needs them
     // fs.writeFileSync(

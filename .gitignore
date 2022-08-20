@@ -37,10 +37,10 @@ packages/hardhat/cache*
 packages/hardhat-ts/cache*
 packages/hardhat/deployments
 packages/hardhat/*.txt
-# react-app
-packages/react-app/src/contracts/*
-!packages/react-app/src/contracts/external_contracts.js
-!packages/react-app/src/contracts/contracts.js
+# react-dapp
+packages/react-dapp/src/contracts/*
+!packages/react-dapp/src/contracts/external_contracts.js
+!packages/react-dapp/src/contracts/contracts.js
 
 # ignore certain packages
 packages/farmbot-js

@@ -66,7 +66,7 @@ export const Hints: FC<IHintsProps> = (props) => {
             borderRadius: 4,
             fontWeight: 'bolder',
           }}>
-          packages/react-app/src/contracts/
+          packages/react-dapp/src/contracts/
         </span>
       </div>
 
