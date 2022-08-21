@@ -47,6 +47,8 @@
     "@mui/joy": "^5.0.0-alpha.40",
     "@mui/material": "5.10.0",
     "@mui/styled-engine": "5.10.1",
+    "@react-three/cannon": "^6.4.0",
+    "@react-three/fiber": "^8.4.1",
     "@testing-library/dom": ">=7.21.4",
     "@testing-library/jest-dom": "5.16.2",
     "@testing-library/react": "12.1.2",
