@@ -1,7 +1,7 @@
 # ThreeD Garden
 
 ## Description
-ThreeD Garden WP Plugin on Vue3 using Nuxt3 and Farmbot Ruby/JS
+ThreeD Garden on ThreeJS React-Fiber using NextJS and Farmbot Ruby/JS (as a WP Plugin)
 
 ## Details
 ThreeD Garden is a WordPress Plugin for ThreeJS WebGL 3D rendering, using Vue JS 3 apps.

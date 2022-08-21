@@ -13,6 +13,7 @@ const withTM = require("next-transpile-modules")([
   "@fullcalendar/react",
   "@fullcalendar/timegrid",
   "react-github-btn",
+  "three"
 ])
 
 const { PHASE_DEVELOPMENT_SERVER } = require("next/constants")
@@ -59,6 +60,9 @@ const nextConfig = {
 }
 
 module.exports = withTM(nextConfig)
+
+// =============================================================
+// NOTES + EXAMPLES
 
 // NEXT 12
 // const { PHASE_DEVELOPMENT_SERVER } = require("next/constants")
