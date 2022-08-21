@@ -1,13 +1,14 @@
 {
   "name": "threed-garden",
-  "version": "0.9.0",
-  "description": "ThreeD Garden on React using NextJS and Farmbot Ruby/JS as a WP Plugin",
+  "version": "0.10.0",
+  "description": "ThreeD Garden on ThreeJS React-Fiber using NextJS and Farmbot Ruby/JS (as a WP Plugin)",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/marty-mcgee/threed-garden.git"
   },
   "author": "Marty McGee, Company Juice",
   "license": "GPL-3.0",
+  "private": false,
   "bugs": {
     "url": "https://github.com/marty-mcgee/threed-garden/issues/"
   },

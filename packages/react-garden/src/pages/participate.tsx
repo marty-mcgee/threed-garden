@@ -27,6 +27,7 @@ const Participate: NextPage = () => (
         MUI v5 + Next.js with TypeScript
       </Typography>
 
+      {/* HEY HEY HEY */}
       <ThreeDGarden />
 
       <ThemeExampleLink href="/about" color="primary">
