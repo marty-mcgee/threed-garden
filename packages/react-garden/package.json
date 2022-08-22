@@ -1,7 +1,12 @@
 {
   "name": "@threed/react-garden",
   "version": "0.5.0",
-  "private": true,
+  "author": {
+    "name": "Marty McGee",
+    "email": "mcgee.marty@gmail.com",
+    "url": "https://github.com/marty-mcgee"
+  },
+  "private": false,
   "description": "React + TypeScript app using Material UI on NextJS",
   "scripts": {
     "________0": "=== custom scripts ===============================",
@@ -23,8 +28,9 @@
     "lint": "eslint src --ext .ts",
     "lint:fix": "pnpm lint -- --fix",
     "lint:next": "next lint",
-    "test:lint": "run lint && pnpm test:run",
+    "________4": "=== testing, testing =============================",
     "test:run": "jest",
+    "test:lint": "run lint && pnpm test:run",
     "________X": "=================================================="
   },
   "dependencies": {
