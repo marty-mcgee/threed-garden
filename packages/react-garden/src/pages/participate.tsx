@@ -22,6 +22,7 @@ import MDTypography from "~/components/mui/MDTypography"
 import DashboardLayout from "~/components/elements/LayoutContainers/DashboardLayout"
 import PageLayout from "~/components/elements/LayoutContainers/PageLayout"
 import DashboardNavbar from "~/components/elements/Navbars/DashboardNavbar"
+import Footer from "~/components/elements/Footer"
 
 import ThreeDGarden from "~/components/threed/ThreeDGarden"
 
@@ -64,6 +65,8 @@ const Participate: NextPage = () => (
       </Box>
     </Container>
     */}
+
+    <Footer />
   </DashboardLayout>
 )
 

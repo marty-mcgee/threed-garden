@@ -55,7 +55,7 @@ function Footer({ company, links }: Props): JSX.Element {
         px={1.5}>
         <MDBox fontSize={size.md} color="text" mb={-0.5} mx={0.25}>
           <Icon color="inherit" fontSize="inherit">
-            favorite
+            copyright
           </Icon>
         </MDBox>
         {new Date().getFullYear()}
