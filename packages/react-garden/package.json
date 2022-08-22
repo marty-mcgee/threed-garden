@@ -11,7 +11,7 @@
   "scripts": {
     "________0": "=== custom scripts ===============================",
     "mm": "next -p 7777",
-    "mm:install": "npm install --no-optional",
+    "mm:install": "npm install --no-optional --omit=optional",
     "mm:install:full": "npm install",
     "mm:install:pnpm": "pnpm i",
     "________1": "=== use these ====================================",
