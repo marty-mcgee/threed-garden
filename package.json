@@ -6,9 +6,13 @@
     "type": "git",
     "url": "git+https://github.com/marty-mcgee/threed-garden.git"
   },
-  "author": "Marty McGee, Company Juice",
-  "license": "GPL-3.0",
+  "author": {
+    "name": "Marty McGee",
+    "email": "mcgee.marty@gmail.com",
+    "url": "https://github.com/marty-mcgee"
+  },
   "private": false,
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/marty-mcgee/threed-garden/issues/"
   },
@@ -33,7 +37,13 @@
     ]
   },
   "scripts": {
+    "________0": "=== custom scripts ===============================",
     "mm": "pnpm react-garden:mm",
+    "mm:next": "next -p 7777",
+    "mm:install": "npm install --no-optional",
+    "mm:install:full": "npm install",
+    "mm:install:pnpm": "pnpm i",
+    "________1": "=== use these ====================================",
     "build": "pnpm react-garden:build",
     "react-garden:mm": "yarn workspace react-garden mm",
     "react-garden:tsc": "yarn workspace react-garden tsc",
@@ -101,10 +111,11 @@
     "subgraph:graph-remove-local": "yarn workspace @threed/subgraph graph remove --node http://localhost:8020/ scaffold-eth-typescript/your-contract",
     "subgraph:graph-deploy-local": "yarn workspace @threed/subgraph graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 scaffold-eth-typescript/your-contract",
     "subgraph:graph-ship-local": "yarn graph-prepare && yarn graph-codegen && yarn graph-deploy-local",
-    "subgraph:deploy-and-graph": "yarn deploy && yarn graph-ship-local"
+    "subgraph:deploy-and-graph": "yarn deploy && yarn graph-ship-local",
+    "________X": "=================================================="
   },
   "devDependencies": {
-    "pnpm": "^7.6.0",
+    "pnpm": "^7.9.3",
     "typescript": "^4.7.4",
     "yarn": "^1.22.19"
   },
