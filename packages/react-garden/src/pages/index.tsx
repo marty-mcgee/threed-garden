@@ -13,6 +13,7 @@ import MDTypography from "~/components/mui/MDTypography"
 import DashboardLayout from "~/components/elements/LayoutContainers/DashboardLayout"
 import PageLayout from "~/components/elements/LayoutContainers/PageLayout"
 import DashboardNavbar from "~/components/elements/Navbars/DashboardNavbar"
+import Footer from "~/components/elements/Footer"
 
 /* EXAMPLE (WORDPRESS HEADLESS) */
 import Container from "@mui/material/Container"
@@ -31,15 +32,16 @@ const Home: NextPage = () => (
         <Container maxWidth="lg">
           <Box
             sx={{
-              my: 4,
+              my: 1,
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
             }}>
-            <Typography component="h1" variant="h3" gutterBottom>
+            <Typography component="h1" variant="h6" gutterBottom>
               ThreeD Garden for FarmBot + ThreeJS
             </Typography>
+            {/*
             <Typography component="h2" variant="h4" gutterBottom>
               MUI v5 + Next.js with TypeScript
             </Typography>
@@ -48,11 +50,13 @@ const Home: NextPage = () => (
             </Link>
             <ProTip />
             <Copyright />
+            */}
           </Box>
         </Container>
 
       </Grid>
     </MDBox>
+    <Footer />
   </DashboardLayout>
 )
 

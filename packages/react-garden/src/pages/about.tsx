@@ -13,6 +13,7 @@ import MDTypography from "~/components/mui/MDTypography"
 import DashboardLayout from "~/components/elements/LayoutContainers/DashboardLayout"
 import PageLayout from "~/components/elements/LayoutContainers/PageLayout"
 import DashboardNavbar from "~/components/elements/Navbars/DashboardNavbar"
+import Footer from "~/components/elements/Footer"
 
 /* EXAMPLE (WORDPRESS HEADLESS) */
 import Container from "@mui/material/Container"
@@ -53,6 +54,7 @@ const About: NextPage = () => (
 
       </Grid>
     </MDBox>
+    <Footer />
   </DashboardLayout>
 )
 
