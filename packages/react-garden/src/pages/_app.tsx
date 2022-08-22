@@ -68,6 +68,8 @@ import Configurator from "~/components/elements/Configurator"
 
 // dashboard routes
 import routes from "~/routes/routes"
+// import pageRoutes from "~/routes/page.routes"
+// const routes = pageRoutes
 
 // theme: chakra
 // import { ChakraProvider } from "@chakra-ui/react"
@@ -108,10 +110,10 @@ interface IAppPropsWithLayoutEmotion extends AppProps {
 // "Syntax error: Unexpected reserved word 'interface'."
 
 // ========================================================
-// MAIN
+// MAIN APP
 
 // export default function MyApp(props: IAppPropsWithLayoutEmotion) { ???
-const Main: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => { // [MM] ooooo, very interesting (type|interface)
+const App: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => { // [MM] ooooo, very interesting (type|interface)
 
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
 
@@ -182,8 +184,7 @@ const Main: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPro
   // ========================================================
   // components
 
-  const brandIcon =
-    (transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite
+  const brandIcon = (transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite
 
   const configsButton = (
     <MDBox
@@ -204,7 +205,7 @@ const Main: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPro
       onClick={handleConfiguratorOpen}
     >
       <Icon fontSize="small" color="inherit">
-        Settings
+        settings
       </Icon>
     </MDBox>
   )
@@ -213,8 +214,13 @@ const Main: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPro
   // RETURN TSX
   return (
     <ThemeProvider theme={darkMode ? themeDark : themeLight}>
+
       <CssBaseline />
+
+      {/* PASS THE COMPONENT IN */}
       <Component {...pageProps} />
+
+      {/* SHOW/HIDE SIDENAV */}
       {layout === "dashboard" && (
         <>
           <Sidenav
@@ -229,18 +235,22 @@ const Main: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPro
           {configsButton}
         </>
       )}
+
       {layout === "vr" && <Configurator />}
+
     </ThemeProvider>
   )
 }
 
 // ========================================================
-// APP
-const MyApp: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => { // [MM] ooooo, very interesting (type|interface)
+// WRAPPED APP
+const WrappedApp: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => { // [MM] ooooo, very interesting (type|interface)
 
-  console.log(`[MM] MyApp: ThreeDGarden @ ${new Date().toISOString()}`)
+  console.log(`[MM] WrappedApp: ThreeDGarden @ ${new Date().toISOString()}`)
 
   const { Component, emotionCache = clientSideEmotionCache, pageProps, router } = props
+
+  console.log(`[MM] WrappedApp: Component`, Component)
 
   return (
     <MaterialUIControllerProvider>
@@ -252,13 +262,13 @@ const MyApp: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPr
           <link rel="apple-touch-icon" sizes="76x76" href={appleIcon.src} />
           <title>ThreeD Garden</title>
         </Head>
-        <Main Component={Component} pageProps={pageProps} router={router} />
+        <App Component={Component} pageProps={pageProps} router={router} />
       </CacheProvider>
     </MaterialUIControllerProvider>
   )
 }
 
-export default MyApp
+export default WrappedApp
 
 /* EXAMPLE -- TARGET APPROACH with APOLLO + CHAKRA and TYPES
 // https://stackoverflow.com/questions/73340415/react-component-cannot-be-used-as-a-jsx-component

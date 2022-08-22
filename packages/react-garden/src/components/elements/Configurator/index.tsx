@@ -139,9 +139,9 @@ function Configurator(): JSX.Element {
         pb={0.5}
         px={3}>
         <MDBox>
-          <MDTypography variant="h5">Material UI Configurator</MDTypography>
+          <MDTypography variant="h5">Dashboard Configurator</MDTypography>
           <MDTypography variant="body2" color="text">
-            See our dashboard options.
+            Set your dashboard options here.
           </MDTypography>
         </MDBox>
 
@@ -276,7 +276,9 @@ function Configurator(): JSX.Element {
           alignItems="center"
           mt={3}
           lineHeight={1}>
-          <MDTypography variant="h6">Navbar Fixed</MDTypography>
+          <MDTypography variant="h6">
+            Navbar Fixed
+          </MDTypography>
 
           <Switch checked={fixedNavbar} onChange={handleFixedNavbar} />
         </MDBox>
@@ -286,7 +288,9 @@ function Configurator(): JSX.Element {
           justifyContent="space-between"
           alignItems="center"
           lineHeight={1}>
-          <MDTypography variant="h6">Sidenav Mini</MDTypography>
+          <MDTypography variant="h6">
+            Sidenav Mini
+          </MDTypography>
 
           <Switch checked={miniSidenav} onChange={handleMiniSidenav} />
         </MDBox>
@@ -296,7 +300,9 @@ function Configurator(): JSX.Element {
           justifyContent="space-between"
           alignItems="center"
           lineHeight={1}>
-          <MDTypography variant="h6">Light / Dark</MDTypography>
+          <MDTypography variant="h6">
+            Light / Dark
+          </MDTypography>
 
           <Switch checked={darkMode} onChange={handleDarkMode} />
         </MDBox>
@@ -310,7 +316,8 @@ function Configurator(): JSX.Element {
               rel="noreferrer"
               color="info"
               variant="gradient"
-              fullWidth>
+              fullWidth
+            >
               Button info:gradient
             </MDButton>
           </MDBox>
@@ -322,7 +329,8 @@ function Configurator(): JSX.Element {
               rel="noreferrer"
               color="dark"
               variant="gradient"
-              fullWidth>
+              fullWidth
+            >
               Button dark:gradient
             </MDButton>
           </MDBox>
@@ -333,7 +341,8 @@ function Configurator(): JSX.Element {
             rel="noreferrer"
             color={darkMode ? "light" : "dark"}
             variant="outlined"
-            fullWidth>
+            fullWidth
+          >
             Button mode:outlined
           </MDButton>
         </MDBox>
@@ -360,7 +369,8 @@ function Configurator(): JSX.Element {
                 href="//twitter.com/intent/tweet?text=Check%20Company%20Juice%20%23webdesign%20%23dashboard%20%23react%20%mui&url=https%3A%2F%2Fcompanyjuice.com%2Fportfolio%2Fthreed-garden"
                 target="_blank"
                 rel="noreferrer"
-                color="dark">
+                color="dark"
+              >
                 <TwitterIcon />
                 &nbsp; Tweet
               </MDButton>
@@ -370,7 +380,8 @@ function Configurator(): JSX.Element {
               href="https://www.facebook.com/sharer/sharer.php?u=https://companyjuice.com/portfolio/threed-garden"
               target="_blank"
               rel="noreferrer"
-              color="dark">
+              color="dark"
+            >
               <FacebookIcon />
               &nbsp; Share
             </MDButton>

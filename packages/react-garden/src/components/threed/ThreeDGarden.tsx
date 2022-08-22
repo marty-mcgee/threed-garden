@@ -31,7 +31,7 @@ const ThreeDGarden = (): JSX.Element => {
       <div ref={title}>ThreeDGarden: {word}</div>
       {/* <div ref={root}>Three root</div> */}
       <MyComponent />
-      <div id="canvas-container" style={{ height: '50vh', width: '100vw' }}>
+      <div id="canvas-container">
         {/* @ts-ignore */}
         <Canvas>
           <mesh>
