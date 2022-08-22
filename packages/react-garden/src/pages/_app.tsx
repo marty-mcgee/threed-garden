@@ -71,9 +71,6 @@ import routes from "~/routes/routes"
 // import pageRoutes from "~/routes/page.routes"
 // const routes = pageRoutes
 
-// theme: chakra
-// import { ChakraProvider } from "@chakra-ui/react"
-
 // api: apollo: graphql
 // import { ApolloProvider } from "@apollo/client"
 // import { useApollo } from "~/lib/apollo/client"
@@ -311,7 +308,7 @@ export default function BoilerplateApp(props: AppPropsWithLayout) {
 }
 */
 
-// following this tutorial:
+/* following this tutorial:
 // https://dev.to/hajhosein/nextjs-mui-v5-typescript-tutorial-and-starter-3pab
 
 // import React from 'react'
@@ -346,7 +343,6 @@ export default function BoilerplateApp(props: AppPropsWithLayout) {
 //           <meta name="viewport" content="initial-scale=1, width=device-width" />
 //         </Head>
 //         <ThemeProvider theme={theme}>
-//           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
 //           <CssBaseline />
 //           <Component {...pageProps} />
 //         </ThemeProvider>
@@ -362,7 +358,7 @@ export default function BoilerplateApp(props: AppPropsWithLayout) {
 //   emotionCache: PropTypes.object,
 //   pageProps: PropTypes.object.isRequired,
 // }
-
+*/
 
 /* WORKING APPROACH (DEFAULT)
 import { AppProps } from 'next/app'
