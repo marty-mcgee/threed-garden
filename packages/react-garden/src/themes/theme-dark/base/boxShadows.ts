@@ -1,7 +1,7 @@
 /**
- * The base box-shadow styles for the ThreeD GardenUI Dashboard PRO Material.
+ * The base box-shadow styles for the ThreeD Garden UI Dashboard PRO Material.
  * You can add new box-shadow using this file.
- * You can customized the box-shadow for the entire ThreeD GardenUI Dashboard PRO Material using thie file.
+ * You can customized the box-shadow for the entire ThreeD Garden UI Dashboard PRO Material using thie file.
  */
 
 // ThreeD Garden Base Styles

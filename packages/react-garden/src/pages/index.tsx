@@ -18,9 +18,9 @@ import DashboardNavbar from "~/components/elements/Navbars/DashboardNavbar"
 import Container from "@mui/material/Container"
 import Typography from "@mui/material/Typography"
 import Box from "@mui/material/Box"
-import Link from "~/themes/theme-example/Link"
-import ProTip from "~/themes/theme-example/ProTip"
-import Copyright from "~/themes/theme-example/Copyright"
+import Link from "~/themes/theme-blog/Link"
+import ProTip from "~/themes/theme-blog/ProTip"
+import Copyright from "~/themes/theme-blog/Copyright"
 
 const Home: NextPage = () => (
   <DashboardLayout>

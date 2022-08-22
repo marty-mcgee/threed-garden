@@ -1,7 +1,7 @@
 /**
- * The base typography styles for the ThreeD GardenUI Dashboard PRO Material.
+ * The base typography styles for the ThreeD Garden UI Dashboard PRO Material.
  * You can add new typography style using this file.
- * You can customized the typography styles for the entire ThreeD GardenUI Dashboard PRO Material using thie file.
+ * You can customized the typography styles for the entire ThreeD Garden UI Dashboard PRO Material using thie file.
  */
 
 // ThreeD Garden Base Styles

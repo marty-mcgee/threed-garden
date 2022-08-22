@@ -6,9 +6,9 @@ import Typography from "@mui/material/Typography"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 
-import ThemeExampleLink from "~/themes/theme-example/Link"
-import ProTip from "~/themes/theme-example/ProTip"
-import Copyright from "~/themes/theme-example/Copyright"
+import ThemeExampleLink from "~/themes/theme-blog/Link"
+import ProTip from "~/themes/theme-blog/ProTip"
+import Copyright from "~/themes/theme-blog/Copyright"
 
 // @mui material components
 import Grid from "@mui/material/Grid"

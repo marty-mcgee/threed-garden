@@ -3,7 +3,7 @@ import colors from "~/themes/theme-dark/base/colors"
 import borders from "~/themes/theme-dark/base/borders"
 import typography from "~/themes/theme-dark/base/typography"
 
-// // ThreeD GardenUI Dashboard PRO helper functions
+// // ThreeD Garden UI Dashboard PRO helper functions
 import pxToRem from "~/themes/theme-dark/functions/pxToRem"
 import rgba from "~/themes/theme-dark/functions/rgba"
 
