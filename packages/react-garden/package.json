@@ -1,13 +1,13 @@
 {
   "name": "@threed/react-garden",
   "version": "0.5.0",
+  "description": "React + TypeScript app using Material UI on NextJS",
   "author": {
     "name": "Marty McGee",
     "email": "mcgee.marty@gmail.com",
     "url": "https://github.com/marty-mcgee"
   },
   "private": false,
-  "description": "React + TypeScript app using Material UI on NextJS",
   "scripts": {
     "________0": "=== custom scripts ===============================",
     "mm": "next -p 7777",
