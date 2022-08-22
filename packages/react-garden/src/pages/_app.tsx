@@ -56,7 +56,7 @@ import rtlPlugin from "stylis-plugin-rtl"
 // images
 import favicon from "~/assets/images/logos/favicon.png"
 import appleIcon from "~/assets/images/logos/apple-icon.png"
-import brandWhite from "~/assets/images/logos/logo-threedgarden.png"
+import brandLight from "~/assets/images/logos/logo-threedgarden.png"
 import brandDark from "~/assets/images/logos/logo-threedgarden-alt.png"
 
 // dashboard components
@@ -184,7 +184,7 @@ const App: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppProp
   // ========================================================
   // components
 
-  const brandIcon = (transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite
+  const brandIcon = (transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandLight
 
   const configsButton = (
     <MDBox
@@ -232,7 +232,7 @@ const App: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppProp
             onMouseLeave={handleOnMouseLeave}
           />
           <Configurator />
-          {configsButton}
+          {/* {configsButton} */}
         </>
       )}
 

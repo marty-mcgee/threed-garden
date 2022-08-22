@@ -19,7 +19,8 @@ import Footer from "~/components/elements/Footer"
 import Container from "@mui/material/Container"
 import Typography from "@mui/material/Typography"
 import Box from "@mui/material/Box"
-import Link from "~/themes/theme-blog/Link"
+import Link from "@mui/material/Link"
+// import Link from "~/themes/theme-blog/Link"
 import ProTip from "~/themes/theme-blog/ProTip"
 import Copyright from "~/themes/theme-blog/Copyright"
 
@@ -44,7 +45,7 @@ const About: NextPage = () => (
             <Typography component="h2" variant="h4" gutterBottom>
               MUI v5 + Next.js with TypeScript
             </Typography>
-            <Link href="/participate" color="secondary">
+            <Link href="/participate" color="primary">
               Click Here to Participate in ThreeD Garden
             </Link>
             <ProTip />

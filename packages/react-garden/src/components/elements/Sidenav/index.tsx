@@ -8,6 +8,7 @@ import NextLink from "next/link"
 // @mui material components
 import MuiLink from "@mui/material/Link"
 import Icon from "@mui/material/Icon"
+import IconButton from "@mui/material/IconButton"
 import List from "@mui/material/List"
 import Divider from "@mui/material/Divider"
 
@@ -21,6 +22,16 @@ import SidenavItem from "~/components/elements/Sidenav/SidenavItem"
 import SidenavList from "~/components/elements/Sidenav/SidenavList"
 import SidenavRoot from "~/components/elements/Sidenav/SidenavRoot"
 import sidenavLogoLabel from "~/components/elements/Sidenav/styles/sidenav"
+
+// Custom styles for DashboardNavbar
+import {
+  navbar,
+  navbarContainer,
+  navbarRow,
+  navbarIconButton,
+  navbarDesktopMenu,
+  navbarMobileMenu,
+} from "~/components/elements/Navbars/DashboardNavbar/styles"
 
 // ThreeD Garden context
 import {
@@ -50,6 +61,7 @@ interface Props {
   | "dark"
   brand?: string | StaticImageData
   brandName: string
+  light?: boolean
   routes: {
     [key: string]:
     | ReactNode
@@ -70,13 +82,14 @@ function Sidenav({
   color,
   brand,
   brandName,
+  light,
   routes,
   ...rest
 }: Props): JSX.Element {
   const [openCollapse, setOpenCollapse] = useState<boolean | string>(false)
   const [openNestedCollapse, setOpenNestedCollapse] = useState<boolean | string>(false)
   const [controller, dispatch] = useMaterialUIController()
-  const { miniSidenav, transparentSidenav, whiteSidenav, darkMode } = controller
+  const { miniSidenav, transparentSidenav, transparentNavbar, whiteSidenav, darkMode } = controller
   // const route = useLocation()
   const route = useRouter()
   const { pathname } = route
@@ -105,10 +118,13 @@ function Sidenav({
   }
 
   // ===============================================================
-  // [MM] VERY IMPORTANT SECTION HERE
+  // [MM] HEY HEY HEY -- VERY IMPORTANT SECTION HERE
 
   // [MM] SIMPLE CLOSE SIDENAV / COLLAPSE
   const closeSidenav = () => setMiniSidenav(dispatch, true)
+
+  // [MM] migrated from DashboardNavbar
+  const hamburgerMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav)
 
   // [MM] BEGIN COMPONENTDIDMOUNT HOOK -- A BIG ONE
   useEffect(() => {
@@ -296,12 +312,31 @@ function Sidenav({
     }
   )
 
+  // Styles for the navbar icons
+  const iconsStyle = ({
+    palette: { dark, white, text },
+    functions: { rgba },
+  }: {
+    palette: any
+    functions: any
+  }) => ({
+    color: () => {
+      let colorValue = light || darkMode ? white.main : dark.main
+
+      if (transparentNavbar && !light) {
+        colorValue = darkMode ? rgba(text.main, 0.6) : text.main
+      }
+
+      return colorValue
+    },
+  })
+
   return (
     <SidenavRoot
       {...rest}
       variant="permanent"
       ownerState={{ transparentSidenav, whiteSidenav, miniSidenav, darkMode }}>
-      <MDBox pt={3} pb={1} px={4} textAlign="center">
+      <MDBox pt={2} pb={1} px={2} textAlign="center">
         <MDBox
           display={{ xs: "block", xl: "none" }}
           position="absolute"
@@ -322,7 +357,7 @@ function Sidenav({
                   component="img"
                   src={brand.src}
                   alt={brandName}
-                  width="1.75rem"
+                  width="2.25rem"
                 />
               ) : (
                 brand
@@ -339,6 +374,15 @@ function Sidenav({
                 >
                   {brandName}
                 </MDTypography>
+                <IconButton
+                  sx={navbarDesktopMenu}
+                  onClick={hamburgerMiniSidenav}
+                  size="small"
+                  disableRipple>
+                  <Icon fontSize="small" sx={iconsStyle}>
+                    {miniSidenav ? "menu_open" : "menu"}
+                  </Icon>
+                </IconButton>
               </MDBox>
             </MDBox>
           </a>
@@ -359,6 +403,7 @@ function Sidenav({
 Sidenav.defaultProps = {
   color: "info",
   brand: "",
+  light: false,
 }
 
 export default Sidenav

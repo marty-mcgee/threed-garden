@@ -103,7 +103,7 @@ function MaterialUIControllerProvider({
 }): JSX.Element {
   const initialState: StateTypes = {
     miniSidenav: false,
-    transparentSidenav: false,
+    transparentSidenav: true,
     whiteSidenav: false,
     sidenavColor: "info",
     transparentNavbar: true,
@@ -111,7 +111,7 @@ function MaterialUIControllerProvider({
     openConfigurator: false,
     direction: "ltr",
     layout: "dashboard",
-    darkMode: false,
+    darkMode: true,
   }
 
   const [controller, dispatch] = useReducer(reducer, initialState)

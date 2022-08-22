@@ -110,15 +110,19 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
       }}
       open={Boolean(openMenu)}
       onClose={handleCloseMenu}
-      sx={{ mt: 2 }}>
-      <NotificationItem icon={<Icon>email</Icon>} title="Check new messages" />
+      sx={{ mt: 1 }}
+    >
+      <NotificationItem
+        icon={<Icon>email</Icon>}
+        title="Check Messages"
+      />
       <NotificationItem
         icon={<Icon>podcasts</Icon>}
-        title="Manage Podcast sessions"
+        title="Manage Sessions"
       />
       <NotificationItem
         icon={<Icon>shopping_cart</Icon>}
-        title="Payment successfully completed"
+        title="Shopping Cart"
       />
     </Menu>
   )
@@ -153,13 +157,9 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
         <MDBox
           color="inherit"
           mb={{ xs: 1, md: 0 }}
-          sx={(theme) => navbarRow(theme, { isMini })}>
-          <Breadcrumbs
-            icon="home"
-            title={route[route.length - 1]}
-            route={route}
-            light={light}
-          />
+          sx={(theme) => navbarRow(theme, { isMini })}
+        >
+          {/*
           <IconButton
             sx={navbarDesktopMenu}
             onClick={handleMiniSidenav}
@@ -169,12 +169,22 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
               {miniSidenav ? "menu_open" : "menu"}
             </Icon>
           </IconButton>
+          */}
+
+          <Breadcrumbs
+            icon="home"
+            title={route[route.length - 1]}
+            route={route}
+            light={light}
+          />
         </MDBox>
         {isMini ? null : (
           <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
+            {/*
             <MDBox pr={1}>
               <MDInput label="Search here" />
             </MDBox>
+            */}
             <MDBox color={light ? "white" : "inherit"}>
               <Link href="/authentication/sign-in/basic">
                 <IconButton sx={navbarIconButton} size="small" disableRipple>
@@ -204,7 +214,7 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
                 color="inherit"
                 sx={navbarIconButton}
                 onClick={handleOpenMenu}>
-                <MDBadge badgeContent={9} color="error" size="xs" circular>
+                <MDBadge badgeContent={3} color="error" size="xs" circular>
                   <Icon sx={iconsStyle}>notifications</Icon>
                 </MDBadge>
               </IconButton>
