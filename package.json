@@ -11,7 +11,7 @@
     "email": "mcgee.marty@gmail.com",
     "url": "https://github.com/marty-mcgee"
   },
-  "private": false,
+  "private": true,
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/marty-mcgee/threed-garden/issues/"
