@@ -1,10 +1,10 @@
 // @mui material components
 import Grid from "@mui/material/Grid"
 
-// ThreeD GardenUI Dashboard PRO React components
+// ThreeD Garden UI Dashboard PRO React components
 import MDBox from "~/components/mui/MDBox"
 
-// ThreeD GardenUI Dashboard PRO React example components
+// ThreeD Garden UI Dashboard PRO React example components
 import DashboardLayout from "~/components/elements/LayoutContainers/DashboardLayout"
 import DashboardNavbar from "~/components/elements/Navbars/DashboardNavbar"
 import Footer from "~/components/elements/Footer"

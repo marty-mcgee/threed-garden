@@ -3,7 +3,7 @@ import colors from "~/themes/theme-light/base/colors"
 import borders from "~/themes/theme-light/base/borders"
 import typography from "~/themes/theme-light/base/typography"
 
-// // ThreeD GardenUI Dashboard PRO helper functions
+// // ThreeD Garden UI Dashboard PRO helper functions
 import pxToRem from "~/themes/theme-light/functions/pxToRem"
 
 const { inputBorderColor, info, grey, transparent } = colors
