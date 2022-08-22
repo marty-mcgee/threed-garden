@@ -21,6 +21,8 @@ desktop.ini
 
 # sensitive policy breakers
 .cert
+.crt
+.pem
 
 # dist | build
 # /admin/dist
