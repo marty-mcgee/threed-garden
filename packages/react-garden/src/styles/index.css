@@ -12,7 +12,17 @@
 @tailwind utilities;
 /* Stop purging. */
 
+/* [MM] HEY HEY HEY */
+
 /* Your own custom utilities */
+
+body {
+  border: 3px solid red;
+}
+#canvas-container {
+  height: '50vh';
+  width: '100vw';
+}
 
 .has-text-align-left {
   @apply text-left;

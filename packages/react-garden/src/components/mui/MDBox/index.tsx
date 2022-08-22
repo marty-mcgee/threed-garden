@@ -18,6 +18,7 @@ interface Props extends BoxProps {
   [key: string]: any
 }
 
+// eslint-disable-next-line react/display-name
 const MDBox: FC<Props> = forwardRef(
   (
     {

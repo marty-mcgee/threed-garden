@@ -18,7 +18,7 @@ const withTM = require("next-transpile-modules")([
 
 const { PHASE_DEVELOPMENT_SERVER } = require("next/constants")
 
-console.log("PHASE_DEVELOPMENT_SERVER", PHASE_DEVELOPMENT_SERVER)
+// console.log("PHASE_DEVELOPMENT_SERVER", PHASE_DEVELOPMENT_SERVER)
 
 // if (phase === PHASE_DEVELOPMENT_SERVER) {
 //     return {

@@ -314,24 +314,35 @@ function Sidenav({
             <Icon sx={{ fontWeight: "bold" }}>close</Icon>
           </MDTypography>
         </MDBox>
-        <MDBox component={NextLink} href="/" display="flex" alignItems="center">
-          <>
-            {brand && (
-              <MDBox component="img" src={brand} alt="Brand" width="2rem" />
-            )}
-            <MDBox
-              width={!brandName && "100%"}
-              sx={(theme: any) => sidenavLogoLabel(theme, { miniSidenav })}>
-              <MDTypography
-                component="h6"
-                variant="button"
-                fontWeight="medium"
-                color={textColor}>
-                {brandName}
-              </MDTypography>
+        <NextLink href="/">
+          <a>
+            <MDBox display="flex" alignItems="center">
+              {brand && brand.src ? (
+                <MDBox
+                  component="img"
+                  src={brand.src}
+                  alt={brandName}
+                  width="1.75rem"
+                />
+              ) : (
+                brand
+              )}
+              <MDBox
+                width={!brandName && "100%"}
+                sx={(theme) => sidenavLogoLabel(theme, { miniSidenav })}
+              >
+                <MDTypography
+                  component="h6"
+                  variant="button"
+                  fontWeight="medium"
+                  color={textColor}
+                >
+                  {brandName}
+                </MDTypography>
+              </MDBox>
             </MDBox>
-          </>
-        </MDBox>
+          </a>
+        </NextLink>
       </MDBox>
       <Divider
         light={

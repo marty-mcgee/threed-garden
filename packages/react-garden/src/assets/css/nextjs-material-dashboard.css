@@ -1,3 +1,16 @@
+/* [MM] HEY HEY HEY */
+/* Your own custom utilities */
+
+body {
+  border: 3px solid red;
+}
+#canvas-container {
+  height: '50vh';
+  width: '100vw';
+}
+
+/* ORIGINAL ... */
+
 .ct-grid {
   stroke: rgba(255, 255, 255, 0.2);
   stroke-width: 1px;
