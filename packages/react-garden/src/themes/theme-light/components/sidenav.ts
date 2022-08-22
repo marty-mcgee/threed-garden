@@ -5,7 +5,7 @@ import borders from "~/themes/theme-light/base/borders"
 // ThreeD Garden Helper Functions
 import pxToRem from "~/themes/theme-light/functions/pxToRem"
 
-const { white } = colors
+const { background } = colors
 const { borderRadius } = borders
 
 // types
@@ -14,17 +14,17 @@ type Types = any
 const sidenav: Types = {
   styleOverrides: {
     root: {
-      width: pxToRem(250),
+      width: pxToRem(240),
       whiteSpace: "nowrap",
       border: "none",
     },
 
     paper: {
-      width: pxToRem(250),
-      backgroundColor: white.main,
-      height: `calc(100vh - ${pxToRem(32)})`,
-      margin: pxToRem(16),
-      borderRadius: borderRadius.xl,
+      width: pxToRem(240),
+      backgroundColor: background.sidenav,
+      height: `calc(100vh - ${pxToRem(0)})`,
+      margin: pxToRem(0),
+      borderRadius: 0, // borderRadius.xl,
       border: "none",
     },
 

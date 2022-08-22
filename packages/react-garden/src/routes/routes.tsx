@@ -57,14 +57,14 @@ import MDAvatar from "~/components/mui/MDAvatar"
 import Icon from "@mui/material/Icon"
 
 // Images
-import profilePicture from "~/assets/images/people/team-5.jpg"
+import profilePicture from "~/assets/images/people/team-0.png"
 
 const routes = [
   {
     type: "collapse",
     name: "Juice Master",
     key: "juice-master",
-    icon: <MDAvatar src={profilePicture.src} alt="Juice Master" size="sm" />,
+    icon: <MDAvatar src={profilePicture.src} alt="Juice Master" size="xs" />,
     collapse: [
       {
         name: "My Profile",

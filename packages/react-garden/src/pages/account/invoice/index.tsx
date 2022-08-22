@@ -15,8 +15,8 @@ import MDButton from "~/components/mui/MDButton"
 import BaseLayout from "~/pages/account/components/BaseLayout"
 
 // Images
-import logoCT from "~/assets/images/logos/logo-threedgarden.png"
-import logoCTDark from "~/assets/images/logos/logo-threedgarden-alt.png"
+import logo from "~/assets/images/logos/logo-threedgarden.png"
+import logoDark from "~/assets/images/logos/logo-threedgarden-text.png"
 
 // ThreeD Garden context
 import { useMaterialUIController } from "~/context"
@@ -42,7 +42,7 @@ function Invoice(): JSX.Element {
                   <Grid item xs={12} md={4}>
                     <MDBox
                       component="img"
-                      src={darkMode ? logoCT : logoCTDark}
+                      src={darkMode ? logo : logoDark}
                       width="25%"
                       p={1}
                       mb={1}

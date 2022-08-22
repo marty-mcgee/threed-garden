@@ -51,7 +51,7 @@ import {
 } from "~/context"
 
 // Images
-import brandWhite from "~/assets/images/logos/logo-threedgarden.png"
+import brandLight from "~/assets/images/logos/logo-threedgarden.png"
 import brandDark from "~/assets/images/logos/logo-threedgarden-alt.png"
 
 export default function App() {
@@ -172,7 +172,7 @@ export default function App() {
               brand={
                 (transparentSidenav && !darkMode) || whiteSidenav
                   ? brandDark
-                  : brandWhite
+                  : brandLight
               }
               brandName="Company Juice"
               routes={routes}
@@ -200,7 +200,7 @@ export default function App() {
             brand={
               (transparentSidenav && !darkMode) || whiteSidenav
                 ? brandDark
-                : brandWhite
+                : brandLight
             }
             brandName="ThreeD Garden"
             routes={routes}
