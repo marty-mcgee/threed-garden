@@ -134,6 +134,11 @@
     "react-table": "7.7.0",
     "yup": "0.32.11"
   },
+  "peerDependenciesMeta": {
+    "yup": {
+      "optional": true
+    }
+  },
   "eslintConfig": {
     "extends": [
       "react-dapp",
