@@ -135,6 +135,9 @@
     "yup": "0.32.11"
   },
   "peerDependenciesMeta": {
+    "react-quill": {
+      "optional": true
+    },
     "yup": {
       "optional": true
     }
