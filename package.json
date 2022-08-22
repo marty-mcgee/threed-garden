@@ -39,7 +39,7 @@
   "scripts": {
     "________0": "=== custom scripts ===============================",
     "mm": "pnpm react-garden:mm",
-    "mm:next": "next -p 7777",
+    "mm:next": "next -p 333",
     "mm:install": "npm install --no-optional",
     "mm:install:full": "npm install",
     "mm:install:pnpm": "pnpm i",
@@ -107,9 +107,9 @@
     "subgraph:graph-prepare": "mustache packages/subgraph/config/config.json packages/subgraph/src/subgraph.template.yaml > packages/subgraph/subgraph.yaml",
     "subgraph:graph-codegen": "yarn workspace @threed/subgraph graph codegen",
     "subgraph:graph-build": "yarn workspace @threed/subgraph graph build",
-    "subgraph:graph-create-local": "yarn workspace @threed/subgraph graph create --node http://localhost:8020/ scaffold-eth-typescript/your-contract",
-    "subgraph:graph-remove-local": "yarn workspace @threed/subgraph graph remove --node http://localhost:8020/ scaffold-eth-typescript/your-contract",
-    "subgraph:graph-deploy-local": "yarn workspace @threed/subgraph graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 scaffold-eth-typescript/your-contract",
+    "subgraph:graph-create-local": "yarn workspace @threed/subgraph graph create --node http://localhost:8020/ scaffold-eth-ts/your-contract",
+    "subgraph:graph-remove-local": "yarn workspace @threed/subgraph graph remove --node http://localhost:8020/ scaffold-eth-ts/your-contract",
+    "subgraph:graph-deploy-local": "yarn workspace @threed/subgraph graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 scaffold-eth-ts/your-contract",
     "subgraph:graph-ship-local": "yarn graph-prepare && yarn graph-codegen && yarn graph-deploy-local",
     "subgraph:deploy-and-graph": "yarn deploy && yarn graph-ship-local",
     "________X": "=================================================="
