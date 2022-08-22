@@ -11,6 +11,7 @@
   "scripts": {
     "________0": "=== custom scripts ===============================",
     "mm": "next -p 7777",
+    "mm:scrub": "del /f node_modules && del /f .next && del /f pnpm-lock.yaml && del /f .pnpm-debug.log ;",
     "mm:install": "npm install --no-optional --omit=optional",
     "mm:install:full": "npm install",
     "mm:install:pnpm": "pnpm i",
