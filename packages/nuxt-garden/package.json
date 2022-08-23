@@ -4,7 +4,7 @@
   "description": "ThreeD Garden on Nuxt 3 Vue Vite Pinia Three JS",
   "author": "Marty McGee, Company Juice",
   "license": "SEE LICENSE IN LICENSE",
-  "private": true,
+  "private": false,
   "root": true,
   "type": "module",
   "scripts": {

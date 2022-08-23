@@ -2,7 +2,7 @@
   "name": "@threed/vitegarden",
   "version": "0.7.4",
   "main": "src/main.ts",
-  "private": true,
+  "private": false,
   "scripts": {
     "mm": "cls && echo BUILD THREED GARDEN... %DATE% %TIME% && vite build",
     "build": "vite build",
