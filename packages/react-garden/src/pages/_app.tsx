@@ -257,7 +257,97 @@ const WrappedApp: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: 
           <meta name="threed-garden" content="initial-scale=1, width=device-width" />
           <link rel="icon" href={favicon.src} />
           <link rel="apple-touch-icon" sizes="76x76" href={appleIcon.src} />
-          <title>ThreeD Garden</title>
+          <title>ThreeDGarden</title>
+
+          <base href="http://localhost:5500/" />
+
+          <link rel="stylesheet" href="css/style.css" />
+          <link rel="stylesheet" href="css/all.css" />
+          <link rel="stylesheet" href="css/jquery.minicolors.css" />
+
+          <meta name="description" content="Create house and garden plans in 2D and 3D" />
+          <meta name="keywords"
+                content="Architecture, Planning, 3D Plan, Home Ideas, Floor Plan, Garden Planning, 3D Design Ideas, Building Plan" />
+          <meta name="author" content="Marty McGee" />
+          <meta name="viewport" content="initial-scale=1, viewport-fit=cover" />
+          <meta name="twitter:card" value="Create house and garden plans in 2D and 3D" />
+
+          <meta property="og:title" content="ThreeDGarden" />
+          <meta property="og:type" content="website" />
+          <meta property="og:description" content="Design house, landscape, garden plans in 2D + 3D" />
+          <meta property="og:url" content="https://threedgarden.com" />
+          <meta property="og:image" content="https://threedgarden.com/api/thumb3dview" />
+          <meta property="og:image:width" content="600" />
+          <meta property="og:image:height" content="337" />
+
+          <link rel="alternate" type="application/json+oembed" href="/oembed.json" />
+
+          <script type="text/javascript" src="scripts/jquery-1.11.3.min.js"></script>
+          <script type="text/javascript" src="scripts/paper-full.js?a=1"></script>
+          <script type="text/javascript" src="scripts/b3.min.js"></script>
+          <script type="text/javascript" src="scripts/three.min.js"></script>
+          <script type="text/javascript" src="scripts/trackballcontrols.js"></script>
+          <script type="text/javascript" src="scripts/tween.js"></script>
+          <script type="text/javascript" src="scripts/MTLLoader.js"></script>
+          <script type="text/javascript" src="scripts/OBJLoader.js"></script>
+          <script type="text/javascript" src="scripts/OBJExporter.js"></script>
+
+          {/*
+          <!-- <script type="text/javascript" src="scripts/jsonc.min.js"></script> -->
+          <!-- SHADERS + PROCESSORS -->
+          <!-- <script type="text/javascript" src="scripts/shaders/CopyShader.js"></script> -->
+          <!-- <script type="text/javascript" src="scripts/volumeMaskShader.js"></script> -->
+          <!-- <script type="text/javascript" src="scripts/shaders/RGBShiftShader.js"></script> -->
+          <!-- <script type="text/javascript" src="scripts/postprocessing/EffectComposer.js"></script> -->
+          <!-- <script type="text/javascript" src="scripts/postprocessing/RenderPass.js"></script> -->
+          <!-- <script type="text/javascript" src="scripts/postprocessing/ShaderPass.js"></script> -->
+          */}
+
+          <script type="text/javascript" src="scripts/sky.js"></script>
+          <script type="text/javascript" src="scripts/ThreeCSG.js"></script>
+          <script type="text/javascript" src="scripts/jquery.minicolors.min.js"></script>
+
+          <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-touch-icon.png" />
+          <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png" />
+          <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png" />
+          <link rel="manifest" href="/site.webmanifest" />
+          <link rel="mask-icon" href="favicon/safari-pinned-tab.svg" color="#5bbad5" />
+          <meta name="msapplication-TileColor" content="#da532c" />
+
+          <meta name="theme-color" content="#F0F0F0" />
+
+          {/*
+          <script type="text/javascript" data-cfasync="false">
+            var fragment = null;
+            var readOnly = false;
+            var UILayout = "default";
+
+            if (!!window.location.hash) { //for old fragment type links. very rare
+              var tmpFragment = window.location.hash.substr(1);
+              var tmpUILayout = "default";
+              if (tmpFragment.endsWith("_plan")) {
+                tmpFragment = tmpFragment.split("_")[0];
+                tmpUILayout = "planView";
+              } else if (tmpFragment.endsWith("_3d")) {
+                tmpFragment = tmpFragment.split("_")[0];
+                tmpUILayout = "3dView";
+              }
+
+              var re = /[0-9A-Fa-f]/g;
+              if (re.test(tmpFragment) && tmpFragment.length >= 40 && tmpFragment.length < 50) {
+                //reload with static url
+                if (tmpUILayout === "planView") {
+                  window.location.href = "/plan/" + tmpFragment;
+                } else if (tmpUILayout === "3dView") {
+                  window.location.href = "/3d/" + tmpFragment;
+                } else {
+                  window.location.href = "/edit/" + tmpFragment;
+                }
+              }
+            }
+          </script>
+          */}
+
         </Head>
         <App Component={Component} pageProps={pageProps} router={router} />
       </CacheProvider>
