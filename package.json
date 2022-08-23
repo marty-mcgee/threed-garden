@@ -11,7 +11,7 @@
     "email": "mcgee.marty@gmail.com",
     "url": "https://github.com/marty-mcgee"
   },
-  "private": true,
+  "private": false,
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/marty-mcgee/threed-garden/issues/"
@@ -23,6 +23,7 @@
       "packages/nuxt-garden",
       "packages/react-garden",
       "packages/vite-garden",
+      "packages/wordpress-plugin",
       "packages/@threed/hardhat",
       "packages/@threed/subgraph",
       "packages/@threed/react-dapp"
