@@ -10,8 +10,10 @@
   "private": false,
   "scripts": {
     "________0": "=== custom scripts ===============================",
+    "i": "pnpm i",
+    "install": "pnpm i",
     "mm": "next -p 7777",
-    "mm:scrub": "rd /S /Q .\\node_modules & rd /S /Q .\\.next & del /F .\\pnpm-lock.yaml & del /F .\\.pnpm-debug.log ;",
+    "mm:scrub": "rd /S /Q .\\node_modules & rd /S /Q .\\.next & del /F .\\pnpm-lock.yaml ;",
     "mm:install": "npm install --no-optional --omit=optional",
     "mm:install:full": "npm install",
     "mm:install:pnpm": "pnpm i",
@@ -46,11 +48,6 @@
     "@emotion/react": "11.10.0",
     "@emotion/server": "11.10.0",
     "@emotion/styled": "11.10.0",
-    "@fullcalendar/common": "5.11.2",
-    "@fullcalendar/daygrid": "5.11.2",
-    "@fullcalendar/interaction": "5.11.2",
-    "@fullcalendar/react": "5.11.2",
-    "@fullcalendar/timegrid": "5.11.2",
     "@mui/icons-material": "5.8.4",
     "@mui/material": "5.10.0",
     "@mui/styled-engine": "5.10.1",
@@ -102,15 +99,18 @@
     "eslint-plugin-react": "7.30.1",
     "eslint-plugin-react-hooks": "4.6.0",
     "prettier": "2.7.1",
-    "prettier-eslint-cli": "6.0.1"
-  },
-  "optionalDependencies": {
+    "prettier-eslint-cli": "6.0.1",
     "cross-env": "7.0.3",
     "pnpm": "7.9.4",
     "typescript": "4.7.4"
   },
-  "peerDependencies": {
+  "optionalDependencies": {
     "@asseinfo/react-kanban": "2.2.0",
+    "@fullcalendar/common": "5.11.2",
+    "@fullcalendar/daygrid": "5.11.2",
+    "@fullcalendar/interaction": "5.11.2",
+    "@fullcalendar/react": "5.11.2",
+    "@fullcalendar/timegrid": "5.11.2",
     "@testing-library/dom": "^8.17.1",
     "@testing-library/jest-dom": "5.16.2",
     "@testing-library/react": "12.1.2",
@@ -135,23 +135,6 @@
     "react-table": "7.7.0",
     "regenerator-runtime": "0.13.9",
     "yup": "0.32.11"
-  },
-  "peerDependenciesMeta": {
-    "history": {
-      "optional": true
-    },
-    "react-router-dom": {
-      "optional": true
-    },
-    "react-scripts": {
-      "optional": true
-    },
-    "react-quill": {
-      "optional": true
-    },
-    "yup": {
-      "optional": true
-    }
   },
   "eslintConfig": {
     "extends": [

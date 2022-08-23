@@ -4,7 +4,7 @@
   "author": "Marty McGee, Ivan S Glazunov",
   "description": "Sandbox Playground",
   "license": "ISC",
-  "private": true,
+  "private": false,
   "scripts": {
     "flow": "flow",
     "dev": "next -p 3001",

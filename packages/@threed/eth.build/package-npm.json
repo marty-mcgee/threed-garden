@@ -1,7 +1,7 @@
 {
   "name": "eth.build",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "dependencies": {
     "3box": "^1.19.1",
     "@fortawesome/fontawesome-svg-core": "^1.2.25",

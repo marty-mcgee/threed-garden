@@ -1,7 +1,7 @@
 {
   "name": "@companyjuice/eth.build",
   "version": "0.2.0",
-  "private": true,
+  "private": false,
   "dependencies": {
     "3box": "^1.19.1",
     "@babel/core": "^7.16.12",
