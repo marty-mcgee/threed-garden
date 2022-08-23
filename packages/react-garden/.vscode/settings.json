@@ -1,5 +1,5 @@
 {
   "liveServer.settings.host": "localhost",
-  "liveServer.settings.root": "/public",
-  "liveServer.settings.multiRootWorkspaceName": "/public"
+  "liveServer.settings.root": "/public/demo",
+  "liveServer.settings.multiRootWorkspaceName": "/public/demo"
 }
