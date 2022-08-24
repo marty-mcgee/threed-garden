@@ -35,13 +35,13 @@ function navbar(theme: Theme | any, ownerState: any) {
 
       return color
     },
-    top: absolute ? 0 : pxToRem(4),
+    top: absolute ? 0 : pxToRem(0),
     minHeight: pxToRem(0), // 75
     display: "grid",
     alignItems: "center",
     borderRadius: borderRadius.xl,
-    paddingTop: pxToRem(1),
-    paddingBottom: pxToRem(1),
+    paddingTop: pxToRem(0),
+    paddingBottom: pxToRem(0),
     paddingRight: absolute ? pxToRem(2) : pxToRem(8),
     paddingLeft: absolute ? pxToRem(2) : pxToRem(0),
 
@@ -120,6 +120,7 @@ const navbarIconButton = ({ typography: { size }, breakpoints }: Theme) => ({
 const navbarDesktopMenu = ({ breakpoints }: Theme) => ({
   display: "none !important",
   cursor: "pointer",
+  mt: 0.5,
 
   [breakpoints.up("xl")]: {
     display: "inline-block !important",

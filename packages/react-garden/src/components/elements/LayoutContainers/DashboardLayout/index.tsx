@@ -27,14 +27,14 @@ function DashboardLayout({ children }: { children: ReactNode }): JSX.Element {
         position: "relative",
 
         [breakpoints.up("xl")]: {
-          marginLeft: miniSidenav ? pxToRem(0) : pxToRem(274),
+          marginLeft: miniSidenav ? pxToRem(90) : pxToRem(274),
           transition: transitions.create(["margin-left", "margin-right"], {
             easing: transitions.easing.easeInOut,
             duration: transitions.duration.standard,
           }),
         },
         [breakpoints.down("xl")]: {
-          marginLeft: miniSidenav ? pxToRem(0) : pxToRem(274),
+          marginLeft: miniSidenav ? pxToRem(90) : pxToRem(274),
           transition: transitions.create(["margin-left", "margin-right"], {
             easing: transitions.easing.easeInOut,
             duration: transitions.duration.standard,
