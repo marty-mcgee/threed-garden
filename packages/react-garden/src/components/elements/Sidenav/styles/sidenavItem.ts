@@ -66,17 +66,18 @@ function itemContent(theme: Theme, ownerState: any) {
 
   const { white, dark } = palette
   const { size, fontWeightRegular, fontWeightLight } = typography
-  const { pxToRem } = functions
+  const { pxToRem, rgba } = functions
 
   return {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
     width: "100%",
-    padding: `${pxToRem(2)} ${pxToRem(0)}`,
-    marginLeft: pxToRem(42),
+    padding: `${pxToRem(0)} ${pxToRem(0)}`,
+    marginLeft: pxToRem(42), // "[MM] HEY HEY HEY"
     userSelect: "none",
     position: "relative",
+    borderRadius: "50%",
 
     "& span": {
       color:
@@ -94,21 +95,21 @@ function itemContent(theme: Theme, ownerState: any) {
     },
 
     "&::before": {
-      content: `"${name[0]}"`,
+      content: `"--"`, // `"${name[0]}"`,
+      position: "absolute",
+      top: "50%",
+      left: pxToRem(-30),
       color:
         ((transparentSidenav && !darkMode) || whiteSidenav) &&
         (active === "isParent" || !active)
-          ? dark.main
-          : white.main,
+          ? rgba(dark.main, 0.25)
+          : rgba(white.main, 0.25),
       fontWeight: fontWeightRegular,
       display: "flex",
       alignItems: "center",
-      position: "absolute",
-      top: "50%",
       transform: "translateY(-50%)",
-      // left: pxToRem(-15),
       opacity: 1,
-      borderRadius: 0, // "50%",
+      borderRadius: "50%",
       fontSize: size.sm,
     },
   }
@@ -156,7 +157,7 @@ function itemArrow(theme: Theme, ownerState: any) {
     [breakpoints.up("xl")]: {
       display:
         noCollapse || (transparentSidenav && miniSidenav) || miniSidenav
-          ? "block !important" // none "HEY HEY HEY"
+          ? "none !important" // none "HEY HEY HEY"
           : "block !important",
     },
   }

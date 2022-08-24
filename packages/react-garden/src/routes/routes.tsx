@@ -509,7 +509,7 @@ const routes = [
     type: "collapse",
     name: "Change Log",
     key: "changelog",
-    href: "https://github.com/marty-mcgee/threed-garden/blob/main/CHANGELOG.md",
+    href: "https://github.com/marty-mcgee/threed-garden/",
     icon: <Icon fontSize="medium">receipt_long</Icon>,
     noCollapse: true,
   },
