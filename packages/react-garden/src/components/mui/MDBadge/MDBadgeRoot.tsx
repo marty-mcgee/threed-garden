@@ -23,6 +23,8 @@ export default styled(Badge)(
 
     // padding values
     const paddings: { [key: string]: string } = {
+      none: "0",
+      xxs: "0.05em 0.0em",
       xs: "0.45em 0.775em",
       sm: "0.55em 0.9em",
       md: "0.65em 1em",
@@ -113,7 +115,7 @@ export default styled(Badge)(
     return {
       "& .MuiBadge-badge": {
         height: "auto",
-        padding: paddings[size] || paddings.xs,
+        padding: paddings.xxs, // paddings[size] || paddings.xs || paddings.none
         fontSize: fontSizeValue,
         fontWeight: fontWeightBold,
         textTransform: "uppercase",

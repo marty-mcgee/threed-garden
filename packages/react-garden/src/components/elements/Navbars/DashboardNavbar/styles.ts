@@ -35,15 +35,15 @@ function navbar(theme: Theme | any, ownerState: any) {
 
       return color
     },
-    top: absolute ? 0 : pxToRem(12),
+    top: absolute ? 0 : pxToRem(4),
     minHeight: pxToRem(0), // 75
     display: "grid",
     alignItems: "center",
     borderRadius: borderRadius.xl,
     paddingTop: pxToRem(1),
     paddingBottom: pxToRem(1),
-    paddingRight: absolute ? pxToRem(2) : 0,
-    paddingLeft: absolute ? pxToRem(2) : 0,
+    paddingRight: absolute ? pxToRem(2) : pxToRem(8),
+    paddingLeft: absolute ? pxToRem(2) : pxToRem(0),
 
     "& > *": {
       transition: transitions.create("all", {
@@ -71,6 +71,8 @@ const navbarContainer = ({ breakpoints }: Theme): any => ({
   justifyContent: "space-between",
   pt: 0.0,
   pb: 0.0,
+  // borderBottom: 1,
+  // borderColor: "darkgreen",
 
   [breakpoints.up("md")]: {
     flexDirection: "row",

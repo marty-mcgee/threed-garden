@@ -7,7 +7,7 @@ import { useRouter, NextRouter } from "next/router"
 // ThreeD Garden components
 import MDBox from "~/components/mui/MDBox"
 
-// ThreeD Garden context
+// ThreeD Garden Material UI context as Controller
 import { useMaterialUIController, setLayout } from "~/context"
 
 function DashboardLayout({ children }: { children: ReactNode }): JSX.Element {
@@ -23,11 +23,18 @@ function DashboardLayout({ children }: { children: ReactNode }): JSX.Element {
   return (
     <MDBox
       sx={({ breakpoints, transitions, functions: { pxToRem } }) => ({
-        p: 3,
+        p: 0,
         position: "relative",
 
         [breakpoints.up("xl")]: {
-          marginLeft: miniSidenav ? pxToRem(120) : pxToRem(274),
+          marginLeft: miniSidenav ? pxToRem(0) : pxToRem(274),
+          transition: transitions.create(["margin-left", "margin-right"], {
+            easing: transitions.easing.easeInOut,
+            duration: transitions.duration.standard,
+          }),
+        },
+        [breakpoints.down("xl")]: {
+          marginLeft: miniSidenav ? pxToRem(0) : pxToRem(274),
           transition: transitions.create(["margin-left", "margin-right"], {
             easing: transitions.easing.easeInOut,
             duration: transitions.duration.standard,

@@ -66,7 +66,7 @@ const Participate: NextPage = () => (
     </Container>
     */}
 
-    <Footer />
+    {/* <Footer /> */}
   </DashboardLayout>
 )
 

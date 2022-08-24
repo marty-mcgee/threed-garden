@@ -33,13 +33,25 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
           },
         }}>
         <Link href="/">
-          <MDTypography
+          {/* <MDTypography
             component="span"
             variant="body2"
             color={light ? "white" : "dark"}
             opacity={light ? 0.8 : 0.5}
-            sx={{ lineHeight: 0 }}>
+            sx={{ lineHeight: 0 }}
+          >
             <Icon>{icon}</Icon>
+          </MDTypography> */}
+          <MDTypography
+            component="span"
+            variant="button"
+            fontWeight="regular"
+            textTransform="capitalize"
+            color={light ? "white" : "dark"}
+            opacity={light ? 0.8 : 0.5}
+            sx={{ lineHeight: 0, cursor: "pointer" }}
+          >
+            ThreeD Garden
           </MDTypography>
         </Link>
         {routes.map((el: string) => (
@@ -51,7 +63,8 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
               textTransform="capitalize"
               color={light ? "white" : "dark"}
               opacity={light ? 0.8 : 0.5}
-              sx={{ lineHeight: 0 }}>
+              sx={{ lineHeight: 0, cursor: "pointer" }}
+            >
               {el}
             </MDTypography>
           </Link>
@@ -61,18 +74,19 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
           fontWeight="regular"
           textTransform="capitalize"
           color={light ? "white" : "dark"}
-          sx={{ lineHeight: 0 }}>
+          sx={{ lineHeight: 0, cursor: "pointer" }}
+        >
           {title.replace("-", " ")}
         </MDTypography>
       </MuiBreadcrumbs>
-      <MDTypography
+      {/* <MDTypography
         fontWeight="bold"
         textTransform="capitalize"
         variant="h6"
         color={light ? "white" : "dark"}
         noWrap>
         {title.replace("-", " ")}
-      </MDTypography>
+      </MDTypography> */}
     </MDBox>
   )
 }

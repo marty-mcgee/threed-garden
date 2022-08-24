@@ -37,6 +37,6 @@
     "**/*.ts",
     "**/*.tsx",
     "src/types/global-types.d.ts"
-  ],
+, "src/components/threed/useEffectOnlyOnce.js"  ],
   "exclude": ["node_modules"]
 }
