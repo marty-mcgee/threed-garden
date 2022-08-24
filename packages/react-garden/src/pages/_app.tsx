@@ -241,13 +241,16 @@ const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithL
 
 // ========================================================
 // WRAPPED APP
-const WrappedApp: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => { // [MM] ooooo, very interesting (type|interface)
+const WrappedApp: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => { // [MM] ooooo, very interesting (type|interface)
 
   console.log(`[MM] WrappedApp: ThreeDGarden @ ${new Date().toISOString()}`)
 
   const { Component, emotionCache = clientSideEmotionCache, pageProps, router } = props
 
   console.log(`[MM] WrappedApp: Component`, Component)
+  console.log(`[MM] WrappedApp: emotionCache`, emotionCache)
+  console.log(`[MM] WrappedApp: pageProps`, pageProps)
+  console.log(`[MM] WrappedApp: router`, router)
 
   return (
     <MaterialUIControllerProvider>
@@ -255,9 +258,16 @@ const WrappedApp: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: 
         <Head>
           <meta name="viewport" content="initial-scale=1, width=device-width" />
           <meta name="threed-garden" content="initial-scale=1, width=device-width" />
-          <link rel="icon" href={favicon.src} />
-          <link rel="apple-touch-icon" sizes="76x76" href={appleIcon.src} />
           <title>ThreeDGarden</title>
+          {/* <link rel="manifest" href="/site.webmanifest" /> */}
+
+          <link rel="icon" href={favicon.src} />
+          <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png" />
+          <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png" />
+          <link rel="apple-touch-icon" sizes="76x76" href={appleIcon.src} />
+          <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-touch-icon.png" />
+          <link rel="mask-icon" href="favicon/safari-pinned-tab.svg" color="#5bbad5" />
+          <meta name="msapplication-TileColor" content="#da532c" />
 
           <meta name="description" content="Create house and garden plans in 2D and 3D" />
           <meta name="keywords"
@@ -276,15 +286,6 @@ const WrappedApp: React.FunctionComponent<IAppPropsWithLayoutEmotion> = (props: 
           <meta property="og:image" content="https://threedgarden.com/api/thumb3dview" />
           <meta property="og:image:width" content="600" />
           <meta property="og:image:height" content="337" />
-
-          <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-touch-icon.png" />
-          <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png" />
-          <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png" />
-          <link rel="manifest" href="/site.webmanifest" />
-          <link rel="mask-icon" href="favicon/safari-pinned-tab.svg" color="#5bbad5" />
-          <meta name="msapplication-TileColor" content="#da532c" />
-
-          <meta name="theme-color" content="#F0F0F0" />
 
         </Head>
 

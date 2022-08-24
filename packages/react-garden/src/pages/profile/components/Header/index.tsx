@@ -17,7 +17,7 @@ import MDAvatar from "~/components/mui/MDAvatar"
 import breakpoints from "~/themes/theme-light/base/breakpoints"
 
 // Images
-import burceMars from "~/assets/images/people/bruce-mars.jpg"
+import profileImage from "~/assets/images/people/team-0.png"
 import backgroundImage from "~/assets/images/any/bg-profile.jpg"
 
 function Header({ children }: { children?: ReactNode }): JSX.Element {
@@ -81,7 +81,7 @@ function Header({ children }: { children?: ReactNode }): JSX.Element {
         <Grid container spacing={3} alignItems="center">
           <Grid item>
             <MDAvatar
-              src={burceMars}
+              src={profileImage}
               alt="profile-image"
               size="xl"
               shadow="sm"
@@ -90,10 +90,10 @@ function Header({ children }: { children?: ReactNode }): JSX.Element {
           <Grid item>
             <MDBox height="100%" mt={0.5} lineHeight={1}>
               <MDTypography variant="h5" fontWeight="medium">
-                Richard Davis
+                Juice Master
               </MDTypography>
               <MDTypography variant="button" color="text" fontWeight="regular">
-                CEO / Co-Founder
+                Author, Contributor
               </MDTypography>
             </MDBox>
           </Grid>
