@@ -21,13 +21,13 @@ import Typography from "@mui/material/Typography"
 import Box from "@mui/material/Box"
 import Link from "@mui/material/Link"
 // import Link from "~/themes/theme-blog/Link"
-import ProTip from "~/themes/theme-blog/ProTip"
-import Copyright from "~/themes/theme-blog/Copyright"
+// import ProTip from "~/themes/theme-blog/ProTip"
+// import Copyright from "~/themes/theme-blog/Copyright"
 
 const Home: NextPage = () => (
   <DashboardLayout>
     <DashboardNavbar />
-    <MDBox py={3}>
+    <MDBox py={1}>
       <Grid container>
 
         <Container maxWidth="lg">

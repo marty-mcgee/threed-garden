@@ -58,7 +58,7 @@ function Kanban(): JSX.Element {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox py={3}>
+      <MDBox py={1}>
         <MDBox display="flex" justifyContent="flex-end" m={2}>
           <Header />
         </MDBox>

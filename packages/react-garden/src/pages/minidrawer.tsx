@@ -252,7 +252,7 @@ const Participate: NextPage = () => (
 const ParticipateOG: NextPage = () => (
   <DashboardLayout>
     <DashboardNavbar />
-    <MDBox py={3}>
+    <MDBox py={1}>
       <Grid container>
         {/* HEY HEY HEY
         <ThreeDGarden />
