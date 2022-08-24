@@ -93,9 +93,8 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
     return () => window.removeEventListener("scroll", handleTransparentNavbar)
   }, [dispatch, fixedNavbar])
 
-  const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav)
-  const handleConfiguratorOpen = () =>
-    setOpenConfigurator(dispatch, !openConfigurator)
+  // const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav)
+  const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator)
   const handleOpenMenu = (event: any) => setOpenMenu(event.currentTarget)
   const handleCloseMenu = () => setOpenMenu(false)
 
@@ -186,12 +185,7 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
             </MDBox>
             */}
             <MDBox color={light ? "white" : "inherit"}>
-              <Link href="/authentication/sign-in/basic">
-                <IconButton sx={navbarIconButton} size="small" disableRipple>
-                  <Icon sx={iconsStyle}>account_circle</Icon>
-                </IconButton>
-              </Link>
-              <IconButton
+              {/* <IconButton
                 size="small"
                 disableRipple
                 color="inherit"
@@ -200,15 +194,7 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
                 <Icon sx={iconsStyle} fontSize="medium">
                   {miniSidenav ? "menu_open" : "menu"}
                 </Icon>
-              </IconButton>
-              <IconButton
-                size="small"
-                disableRipple
-                color="inherit"
-                sx={navbarIconButton}
-                onClick={handleConfiguratorOpen}>
-                <Icon sx={iconsStyle}>settings</Icon>
-              </IconButton>
+              </IconButton> */}
               <IconButton
                 size="small"
                 color="inherit"
@@ -218,6 +204,19 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
                   <Icon sx={iconsStyle}>notifications</Icon>
                 </MDBadge>
               </IconButton>
+              <IconButton
+                size="small"
+                disableRipple
+                color="inherit"
+                sx={navbarIconButton}
+                onClick={handleConfiguratorOpen}>
+                <Icon sx={iconsStyle}>settings</Icon>
+              </IconButton>
+              <Link href="/authentication/sign-in/basic">
+                <IconButton sx={navbarIconButton} size="small" disableRipple>
+                  <Icon sx={iconsStyle}>account_circle</Icon>
+                </IconButton>
+              </Link>
               {renderMenu()}
             </MDBox>
           </MDBox>

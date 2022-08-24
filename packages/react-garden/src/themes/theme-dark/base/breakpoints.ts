@@ -1,7 +1,6 @@
 /**
  * The base breakpoints for the ThreeD Garden UI Dashboard PRO Material.
- * You can add new breakpoints using this file.
- * You can customized the breakpoints for the entire ThreeD Garden UI Dashboard PRO Material using thie file.
+ * You can add new breakpoints, and customize built-in breakpoints here.
  */
 
 const breakpoints = {
