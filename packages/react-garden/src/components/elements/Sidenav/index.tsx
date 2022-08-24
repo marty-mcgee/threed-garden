@@ -313,6 +313,7 @@ function Sidenav({
         returnValue = (
           <Divider
             key={key}
+            sx={{ marginTop: 0.5 }}
             light={
               (!darkMode && !whiteSidenav && !transparentSidenav) ||
               (darkMode && !transparentSidenav && whiteSidenav)
@@ -387,6 +388,7 @@ function Sidenav({
         </NextLink>
       </MDBox>
       <Divider
+        sx={{ margin: 0 }}
         light={
           (!darkMode && !whiteSidenav && !transparentSidenav) ||
           (darkMode && !transparentSidenav && whiteSidenav)

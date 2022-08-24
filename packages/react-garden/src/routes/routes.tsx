@@ -349,8 +349,8 @@ const routes = [
   { type: "title", title: "Docs", key: "title-docs" },
   {
     type: "collapse",
-    name: "Basic",
-    key: "basic",
+    name: "Introduction",
+    key: "intro",
     icon: <Icon fontSize="medium">upcoming</Icon>,
     collapse: [
       {
@@ -384,31 +384,6 @@ const routes = [
         key: "foundation",
         collapse: [
           {
-            name: "Colors",
-            key: "colors",
-            href: "https://companyjuice.com/learning-lab/react/colors/material-dashboard/",
-          },
-          {
-            name: "Grid",
-            key: "grid",
-            href: "https://companyjuice.com/learning-lab/react/grid/material-dashboard/",
-          },
-          {
-            name: "Typography",
-            key: "base-typography",
-            href: "https://companyjuice.com/learning-lab/react/base-typography/material-dashboard/",
-          },
-          {
-            name: "Borders",
-            key: "borders",
-            href: "https://companyjuice.com/learning-lab/react/borders/material-dashboard/",
-          },
-          {
-            name: "Box Shadows",
-            key: "box-shadows",
-            href: "https://companyjuice.com/learning-lab/react/box-shadows/material-dashboard/",
-          },
-          {
             name: "Functions",
             key: "functions",
             href: "https://companyjuice.com/learning-lab/react/functions/material-dashboard/",
@@ -424,91 +399,8 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Components",
-    key: "components",
-    icon: <Icon fontSize="medium">view_in_ar</Icon>,
-    collapse: [
-      {
-        name: "Alerts",
-        key: "alerts",
-        href: "https://companyjuice.com/learning-lab/react/alerts/material-dashboard/",
-      },
-      {
-        name: "Avatar",
-        key: "avatar",
-        href: "https://companyjuice.com/learning-lab/react/avatar/material-dashboard/",
-      },
-      {
-        name: "Badge",
-        key: "badge",
-        href: "https://companyjuice.com/learning-lab/react/badge/material-dashboard/",
-      },
-      {
-        name: "Badge Dot",
-        key: "badge-dot",
-        href: "https://companyjuice.com/learning-lab/react/badge-dot/material-dashboard/",
-      },
-      {
-        name: "Box",
-        key: "box",
-        href: "https://companyjuice.com/learning-lab/react/box/material-dashboard/",
-      },
-      {
-        name: "Buttons",
-        key: "buttons",
-        href: "https://companyjuice.com/learning-lab/react/buttons/material-dashboard/",
-      },
-      {
-        name: "Date Picker",
-        key: "date-picker",
-        href: "https://companyjuice.com/learning-lab/react/datepicker/material-dashboard/",
-      },
-      {
-        name: "Dropzone",
-        key: "dropzone",
-        href: "https://companyjuice.com/learning-lab/react/dropzone/material-dashboard/",
-      },
-      {
-        name: "Editor",
-        key: "editor",
-        href: "https://companyjuice.com/learning-lab/react/quill/material-dashboard/",
-      },
-      {
-        name: "Input",
-        key: "input",
-        href: "https://companyjuice.com/learning-lab/react/input/material-dashboard/",
-      },
-      {
-        name: "Pagination",
-        key: "pagination",
-        href: "https://companyjuice.com/learning-lab/react/pagination/material-dashboard/",
-      },
-      {
-        name: "Progress",
-        key: "progress",
-        href: "https://companyjuice.com/learning-lab/react/progress/material-dashboard/",
-      },
-      {
-        name: "Snackbar",
-        key: "snackbar",
-        href: "https://companyjuice.com/learning-lab/react/snackbar/material-dashboard/",
-      },
-      {
-        name: "Social Button",
-        key: "social-button",
-        href: "https://companyjuice.com/learning-lab/react/social-buttons/material-dashboard/",
-      },
-      {
-        name: "Typography",
-        key: "typography",
-        href: "https://companyjuice.com/learning-lab/react/typography/material-dashboard/",
-      },
-    ],
-  },
-  {
-    type: "collapse",
-    name: "Change Log",
-    key: "changelog",
+    name: "View Code",
+    key: "codebase",
     href: "https://github.com/marty-mcgee/threed-garden/",
     icon: <Icon fontSize="medium">receipt_long</Icon>,
     noCollapse: true,
