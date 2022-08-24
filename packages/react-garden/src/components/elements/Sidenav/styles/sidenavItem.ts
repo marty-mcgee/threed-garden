@@ -5,19 +5,17 @@ import { Theme } from "@mui/material/styles"
 
 function item(theme: Theme | any, ownerState: any) {
   const { palette, borders, functions, transitions } = theme
-  const { active, color, transparentSidenav, whiteSidenav, darkMode } =
-    ownerState
-
+  const { active, color, transparentSidenav, whiteSidenav, darkMode } = ownerState
   const { transparent, white, grey } = palette
   const { borderRadius } = borders
   const { rgba } = functions
 
   return {
-    pl: 3,
-    mt: 0.375,
-    mb: 0.3,
+    // pl: 1,
+    // mt: 0.375,
+    // mb: 0.3,
     width: "100%",
-    borderRadius: borderRadius.md,
+    borderRadius: 0, // borderRadius.md,
     cursor: "pointer",
     backgroundColor: () => {
       let backgroundValue = transparent.main
@@ -75,8 +73,8 @@ function itemContent(theme: Theme, ownerState: any) {
     alignItems: "center",
     justifyContent: "space-between",
     width: "100%",
-    padding: `${pxToRem(12)} ${pxToRem(16)}`,
-    marginLeft: pxToRem(18),
+    // padding: `${pxToRem(12)} ${pxToRem(16)}`,
+    // marginLeft: pxToRem(18),
     userSelect: "none",
     position: "relative",
 
@@ -108,9 +106,9 @@ function itemContent(theme: Theme, ownerState: any) {
       position: "absolute",
       top: "50%",
       transform: "translateY(-50%)",
-      left: pxToRem(-15),
+      // left: pxToRem(-15),
       opacity: 1,
-      borderRadius: "50%",
+      borderRadius: 0, // "50%",
       fontSize: size.sm,
     },
   }
@@ -158,7 +156,7 @@ function itemArrow(theme: Theme, ownerState: any) {
     [breakpoints.up("xl")]: {
       display:
         noCollapse || (transparentSidenav && miniSidenav) || miniSidenav
-          ? "none !important"
+          ? "block !important" // none "HEY HEY HEY"
           : "block !important",
     },
   }

@@ -34,8 +34,8 @@ function collapseItem(theme: Theme, ownerState: any) {
     display: "flex",
     alignItems: "center",
     width: "100%",
-    padding: `${pxToRem(8)} ${pxToRem(16)}`,
-    margin: `${pxToRem(1.5)} ${pxToRem(16)}`,
+    padding: `${pxToRem(4)} ${pxToRem(8)}`,
+    margin: `${pxToRem(0.75)} ${pxToRem(8)}`,
     borderRadius: borderRadius.md,
     cursor: "pointer",
     userSelect: "none",
@@ -102,7 +102,7 @@ function collapseText(theme: any, ownerState: any) {
   const { pxToRem } = functions
 
   return {
-    marginLeft: pxToRem(10),
+    // marginLeft: pxToRem(10),
 
     [breakpoints.up("xl")]: {
       opacity: miniSidenav || (miniSidenav && transparentSidenav) ? 0 : 1,

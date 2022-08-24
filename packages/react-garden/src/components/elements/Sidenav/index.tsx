@@ -59,7 +59,7 @@ interface Props {
   | "warning"
   | "error"
   | "dark"
-  brand?: string | StaticImageData
+  brandLogo?: string | StaticImageData
   brandName: string
   light?: boolean
   routes: {
@@ -80,7 +80,7 @@ interface Props {
 
 function Sidenav({
   color,
-  brand,
+  brandLogo,
   brandName,
   light,
   routes,
@@ -196,7 +196,8 @@ function Sidenav({
                 currentTarget.classList.contains("MuiListItem-root")
                 ? setOpenNestedCollapse(false)
                 : setOpenNestedCollapse(key)
-            }>
+            }
+          >
             {renderNestedCollapse(collapse)}
           </SidenavItem>
         )
@@ -207,11 +208,16 @@ function Sidenav({
             key={key}
             target="_blank"
             rel="noreferrer"
-            sx={{ textDecoration: "none" }}>
+            sx={{ textDecoration: "none" }}
+          >
             <SidenavItem color={color} name={name} active={key === itemName} />
           </MuiLink>
         ) : (
-          <NextLink href={route} key={key} style={{ textDecoration: "none" }}>
+          <NextLink
+            href={route}
+            key={key}
+            style={{ textDecoration: "none" }}
+          >
             <SidenavItem color={color} name={name} active={key === itemName} />
           </NextLink>
         )
@@ -242,7 +248,8 @@ function Sidenav({
               key={key}
               target="_blank"
               rel="noreferrer"
-              sx={{ textDecoration: "none" }}>
+              sx={{ textDecoration: "none" }}
+            >
               <SidenavCollapse
                 name={name}
                 icon={icon}
@@ -253,12 +260,16 @@ function Sidenav({
           )
         } else if (noCollapse && route) {
           returnValue = (
-            <NextLink href={route} key={key}>
+            <NextLink
+              href={route}
+              key={key}
+            >
               <SidenavCollapse
                 name={name}
                 icon={icon}
                 noCollapse={noCollapse}
-                active={key === collapseName}>
+                active={key === collapseName}
+              >
                 {collapse ? renderCollapse(collapse) : null}
               </SidenavCollapse>
             </NextLink>
@@ -275,7 +286,8 @@ function Sidenav({
                 openCollapse === key
                   ? setOpenCollapse(false)
                   : setOpenCollapse(key)
-              }>
+              }
+            >
               {collapse ? renderCollapse(collapse) : null}
             </SidenavCollapse>
           )
@@ -344,10 +356,10 @@ function Sidenav({
             alignItems="center"
             sx={{ cursor: "pointer" }}
           >
-            {brand && brand?.src ? (
+            {brandLogo && brandLogo?.src ? (
               <MDBox
                 component="img"
-                src={brand.src}
+                src={brandLogo.src}
                 alt={brandName}
                 width="2.25rem"
               />
@@ -384,7 +396,7 @@ function Sidenav({
 // Declaring default props for Sidenav
 Sidenav.defaultProps = {
   color: "info",
-  brand: "",
+  brandLogo: null,
   light: false,
 }
 
