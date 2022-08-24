@@ -29,7 +29,7 @@ import ThreeDGarden from "~/components/threed/ThreeDGarden"
 const Participate: NextPage = () => (
   <DashboardLayout>
     <DashboardNavbar />
-    <MDBox py={3}>
+    <MDBox py={1}>
       <Grid container>
         {/* HEY HEY HEY */}
         <ThreeDGarden />
