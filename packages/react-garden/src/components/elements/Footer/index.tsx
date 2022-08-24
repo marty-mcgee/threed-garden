@@ -22,6 +22,11 @@ interface Props {
   [key: string]: any
 }
 
+function FooterBlank({ company, links }: Props): JSX.Element {
+  return (
+    <div />
+  )
+}
 function Footer({ company, links }: Props): JSX.Element {
   const { href, name } = company
   const { size } = typography
@@ -98,4 +103,4 @@ Footer.defaultProps = {
   ],
 }
 
-export default Footer
+export default FooterBlank
