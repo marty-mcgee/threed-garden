@@ -60,33 +60,33 @@ import Icon from "@mui/material/Icon"
 import profilePicture from "~/assets/images/people/team-0.png"
 
 const routes = [
-  {
-    type: "collapse",
-    name: "Juice Master",
-    key: "juice-master",
-    icon: <MDAvatar src={profilePicture.src} alt="Juice Master" size="xs" />,
-    collapse: [
-      {
-        name: "My Profile",
-        key: "my-profile",
-        route: "/profile/profile-overview",
-        component: <ProfileOverview />,
-      },
-      {
-        name: "Settings",
-        key: "profile-settings",
-        route: "/account/settings",
-        component: <Settings />,
-      },
-      {
-        name: "Logout",
-        key: "logout",
-        route: "/authentication/sign-in/basic",
-        component: <SignInBasic />,
-      },
-    ],
-  },
-  { type: "divider", key: "divider-0" },
+  // {
+  //   type: "collapse",
+  //   name: "Juice Master",
+  //   key: "juice-master",
+  //   icon: <MDAvatar src={profilePicture.src} alt="Juice Master" size="xs" />,
+  //   collapse: [
+  //     {
+  //       name: "My Profile",
+  //       key: "my-profile",
+  //       route: "/profile/profile-overview",
+  //       component: <ProfileOverview />,
+  //     },
+  //     {
+  //       name: "Settings",
+  //       key: "profile-settings",
+  //       route: "/account/settings",
+  //       component: <Settings />,
+  //     },
+  //     {
+  //       name: "Logout",
+  //       key: "logout",
+  //       route: "/authentication/sign-in/basic",
+  //       component: <SignInBasic />,
+  //     },
+  //   ],
+  // },
+  // { type: "divider", key: "divider-0" },
   {
     type: "collapse",
     name: "Dashboards",
@@ -509,7 +509,7 @@ const routes = [
     type: "collapse",
     name: "Change Log",
     key: "changelog",
-    href: "https://github.com/marty-mcgee/company-juice-dashboard/blob/main/CHANGELOG.md",
+    href: "https://github.com/marty-mcgee/threed-garden/blob/main/CHANGELOG.md",
     icon: <Icon fontSize="medium">receipt_long</Icon>,
     noCollapse: true,
   },

@@ -34,7 +34,7 @@ function CoverLayout({ coverHeight, image, children }: Props): JSX.Element {
         routes={pageRoutes}
         action={{
           type: "external",
-          route: "https://companyjuice.com/product/company-juice-dashboard",
+          route: "https://companyjuice.com/product/threed-garden",
           label: "buy now",
           color: "info",
         }}

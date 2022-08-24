@@ -304,7 +304,7 @@ function Sidenav({
             pl={3}
             mt={2}
             mb={1}
-            ml={1}
+            ml={0}
           >
             {title}
           </MDTypography>
