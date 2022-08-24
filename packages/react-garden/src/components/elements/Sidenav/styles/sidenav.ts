@@ -9,7 +9,7 @@ export default function sidenavLogoLabel(theme: Theme, ownerState: any) {
   const { fontWeightMedium } = typography
 
   return {
-    ml: 0.5,
+    ml: 1,
     fontWeight: fontWeightMedium,
     wordSpacing: pxToRem(-1),
     transition: transitions.create("opacity", {
