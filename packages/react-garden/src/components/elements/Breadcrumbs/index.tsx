@@ -26,6 +26,7 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
   return (
     <MDBox mr={{ xs: 0, xl: 8 }}>
       <MuiBreadcrumbs
+        separator="_"
         sx={{
           "& .MuiBreadcrumbs-separator": {
             color: ({ palette: { white, grey } }) =>
@@ -33,7 +34,7 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
           },
         }}>
         <Link href="/">
-          {/* <MDTypography
+          <MDTypography
             component="span"
             variant="body2"
             color={light ? "white" : "dark"}
@@ -41,8 +42,8 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
             sx={{ lineHeight: 0 }}
           >
             <Icon>{icon}</Icon>
-          </MDTypography> */}
-          <MDTypography
+          </MDTypography>
+          {/* <MDTypography
             component="span"
             variant="button"
             fontWeight="regular"
@@ -52,7 +53,7 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
             sx={{ lineHeight: 0, cursor: "pointer" }}
           >
             ThreeD Garden
-          </MDTypography>
+          </MDTypography> */}
         </Link>
         {routes.map((el: string) => (
           <Link href={`/${el}`} key={el}>
