@@ -87,7 +87,7 @@ function Sales(): JSX.Element {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox py={3}>
+      <MDBox py={1}>
         <MDBox mb={3}>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={4}>

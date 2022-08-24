@@ -58,7 +58,7 @@ function Analytics(): JSX.Element {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox py={3}>
+      <MDBox py={1}>
         <Grid container>
           <SalesByCountry />
         </Grid>

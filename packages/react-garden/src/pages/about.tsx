@@ -27,7 +27,7 @@ import Copyright from "~/themes/theme-blog/Copyright"
 const About: NextPage = () => (
   <DashboardLayout>
     <DashboardNavbar />
-    <MDBox py={3}>
+    <MDBox py={1}>
       <Grid container>
 
         <Container maxWidth="lg">
