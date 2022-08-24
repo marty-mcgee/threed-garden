@@ -4,7 +4,7 @@
 import React from 'react'
 import Document, { Html, Head, Main, NextScript } from "next/document"
 import createEmotionServer from "@emotion/server/create-instance"
-import theme from "~/themes/theme-light"
+import theme from "~/themes/theme-dark"
 import createEmotionCache from "~/themes/common/createEmotionCache"
 import ThreeDLinks from "~/components/threed/ThreeDLinks"
 
@@ -13,14 +13,17 @@ export default class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
-          {/* PWA primary color */}
-          <meta name="theme-color" content={theme.palette.primary.main} />
+          {/* Emotion Cache */}
           <meta name="emotion-insertion-point" content="" />
           {(this.props as any).emotionStyleTags}
+          {/* PWA primary color */}
+          <meta name="theme-color" content={theme.palette.primary.main} />
+          {/* Google Fonts -- Text */}
           <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
           />
+          {/* Google Fonts -- Material Icons */}
           {/* eslint-disable @next/next/google-font-display */}
           <link
             href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp"

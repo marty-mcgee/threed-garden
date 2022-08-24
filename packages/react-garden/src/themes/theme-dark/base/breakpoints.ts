@@ -5,7 +5,8 @@
 
 const breakpoints = {
   values: {
-    xs: 0,
+    xxs: 0,
+    xs: 333,
     sm: 576,
     md: 768,
     lg: 992,

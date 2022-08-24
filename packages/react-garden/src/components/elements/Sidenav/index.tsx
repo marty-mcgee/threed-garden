@@ -292,7 +292,8 @@ function Sidenav({
             pl={3}
             mt={2}
             mb={1}
-            ml={1}>
+            ml={1}
+          >
             {title}
           </MDTypography>
         )
@@ -338,54 +339,59 @@ function Sidenav({
       ownerState={{ transparentSidenav, whiteSidenav, miniSidenav, darkMode }}>
       <MDBox pt={2} pb={1} px={2} textAlign="center">
         <MDBox
-          display={{ xs: "block", xl: "none" }}
+          display={{ xs: "block", xl: "block" }}
           position="absolute"
-          top={0}
-          right={0}
-          p={1.625}
-          onClick={closeSidenav}
+          top={19}
+          right={19}
+          p={0}
+          // onClick={closeSidenav}
+          // onClick={hamburgerMiniSidenav}
           sx={{ cursor: "pointer" }}>
-          <MDTypography variant="h6" color="secondary">
-            <Icon sx={{ fontWeight: "bold" }}>close</Icon>
+          <MDTypography color="secondary">
+            {/* <Icon sx={{ fontWeight: "bold" }}>close</Icon> */}
+            {/* <Icon fontSize="small" sx={iconsStyle}>
+              {miniSidenav ? "menu" : "menu_open"}
+            </Icon> */}
+            <IconButton
+              sx={navbarDesktopMenu}
+              onClick={hamburgerMiniSidenav}
+              size="small"
+              disableRipple>
+              <Icon fontSize="small" sx={iconsStyle}>
+                {miniSidenav ? "menu" : "menu_open"}
+              </Icon>
+            </IconButton>
           </MDTypography>
         </MDBox>
         <NextLink href="/">
-          <a>
-            <MDBox display="flex" alignItems="center">
-              {brand && brand.src ? (
-                <MDBox
-                  component="img"
-                  src={brand.src}
-                  alt={brandName}
-                  width="2.25rem"
-                />
-              ) : (
-                brand
-              )}
+          <MDBox display="flex"
+            alignItems="center"
+            sx={{ cursor: "pointer" }}
+          >
+            {brand && brand?.src ? (
               <MDBox
-                width={!brandName && "100%"}
-                sx={(theme) => sidenavLogoLabel(theme, { miniSidenav })}
+                component="img"
+                src={brand.src}
+                alt={brandName}
+                width="2.25rem"
+              />
+            ) : (
+              brandName
+            )}
+            <MDBox
+              width={!brandName && "100%"}
+              sx={(theme) => sidenavLogoLabel(theme, { miniSidenav })}
+            >
+              <MDTypography
+                component="h6"
+                variant="button"
+                fontWeight="medium"
+                color={textColor}
               >
-                <MDTypography
-                  component="h6"
-                  variant="button"
-                  fontWeight="medium"
-                  color={textColor}
-                >
-                  {brandName}
-                </MDTypography>
-                <IconButton
-                  sx={navbarDesktopMenu}
-                  onClick={hamburgerMiniSidenav}
-                  size="small"
-                  disableRipple>
-                  <Icon fontSize="small" sx={iconsStyle}>
-                    {miniSidenav ? "menu_open" : "menu"}
-                  </Icon>
-                </IconButton>
-              </MDBox>
+                {brandName}
+              </MDTypography>
             </MDBox>
-          </a>
+          </MDBox>
         </NextLink>
       </MDBox>
       <Divider

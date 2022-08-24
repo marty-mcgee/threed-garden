@@ -23,10 +23,12 @@ interface Props {
 function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
   const routes: string[] | any = route.slice(0, -1)
 
+  const word = title || "Home"
+
   return (
     <MDBox mr={{ xs: 0, xl: 8 }}>
       <MuiBreadcrumbs
-        separator="_"
+        separator=">"
         sx={{
           "& .MuiBreadcrumbs-separator": {
             color: ({ palette: { white, grey } }) =>
@@ -39,11 +41,13 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
             variant="body2"
             color={light ? "white" : "dark"}
             opacity={light ? 0.8 : 0.5}
-            sx={{ lineHeight: 0 }}
+            sx={{ lineHeight: 0, cursor: "pointer" }}
           >
             <Icon>{icon}</Icon>
           </MDTypography>
-          {/* <MDTypography
+        </Link>
+        {/* <Link href="/">
+          <MDTypography
             component="span"
             variant="button"
             fontWeight="regular"
@@ -52,9 +56,9 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
             opacity={light ? 0.8 : 0.5}
             sx={{ lineHeight: 0, cursor: "pointer" }}
           >
-            ThreeD Garden
-          </MDTypography> */}
-        </Link>
+            Home
+          </MDTypography>
+        </Link> */}
         {routes.map((el: string) => (
           <Link href={`/${el}`} key={el}>
             <MDTypography
@@ -77,7 +81,7 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
           color={light ? "white" : "dark"}
           sx={{ lineHeight: 0, cursor: "pointer" }}
         >
-          {title.replace("-", " ")}
+          {word.replace("-", " ")}
         </MDTypography>
       </MuiBreadcrumbs>
       {/* <MDTypography
@@ -86,9 +90,9 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
         variant="h6"
         color={light ? "white" : "dark"}
         noWrap>
-        {title.replace("-", " ")}
+        {word.replace("-", " ")}
       </MDTypography> */}
-    </MDBox>
+    </MDBox >
   )
 }
 
