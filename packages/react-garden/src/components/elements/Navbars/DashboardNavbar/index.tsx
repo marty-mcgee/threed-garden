@@ -93,7 +93,7 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
     return () => window.removeEventListener("scroll", handleTransparentNavbar)
   }, [dispatch, fixedNavbar])
 
-  // const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav)
+  const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav)
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator)
   const handleOpenMenu = (event: any) => setOpenMenu(event.currentTarget)
   const handleCloseMenu = () => setOpenMenu(false)
@@ -158,17 +158,18 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
           mb={{ xs: 1, md: 0 }}
           sx={(theme) => navbarRow(theme, { isMini })}
         >
-          {/*
+
           <IconButton
             sx={navbarDesktopMenu}
             onClick={handleMiniSidenav}
             size="small"
-            disableRipple>
+            disableRipple
+          >
             <Icon fontSize="medium" sx={iconsStyle}>
               {miniSidenav ? "menu_open" : "menu"}
             </Icon>
           </IconButton>
-          */}
+
 
           <Breadcrumbs
             icon="home"
@@ -200,7 +201,7 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
                 color="inherit"
                 sx={navbarIconButton}
                 onClick={handleOpenMenu}>
-                <MDBadge badgeContent={3} color="error" size="xs" circular>
+                <MDBadge badgeContent={3} color="info" size="xs" circular>
                   <Icon sx={iconsStyle}>notifications</Icon>
                 </MDBadge>
               </IconButton>
@@ -209,7 +210,8 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
                 disableRipple
                 color="inherit"
                 sx={navbarIconButton}
-                onClick={handleConfiguratorOpen}>
+                onClick={handleConfiguratorOpen}
+              >
                 <Icon sx={iconsStyle}>settings</Icon>
               </IconButton>
               <Link href="/authentication/sign-in/basic">

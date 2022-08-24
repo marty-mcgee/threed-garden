@@ -24,14 +24,14 @@ import SidenavRoot from "~/components/elements/Sidenav/SidenavRoot"
 import sidenavLogoLabel from "~/components/elements/Sidenav/styles/sidenav"
 
 // Custom styles for DashboardNavbar
-import {
-  navbar,
-  navbarContainer,
-  navbarRow,
-  navbarIconButton,
-  navbarDesktopMenu,
-  navbarMobileMenu,
-} from "~/components/elements/Navbars/DashboardNavbar/styles"
+// import {
+//   navbar,
+//   navbarContainer,
+//   navbarRow,
+//   navbarIconButton,
+//   navbarDesktopMenu,
+//   navbarMobileMenu,
+// } from "~/components/elements/Navbars/DashboardNavbar/styles"
 
 // ThreeD Garden context
 import {
@@ -336,33 +336,9 @@ function Sidenav({
     <SidenavRoot
       {...rest}
       variant="permanent"
-      ownerState={{ transparentSidenav, whiteSidenav, miniSidenav, darkMode }}>
+      ownerState={{ transparentSidenav, whiteSidenav, miniSidenav, darkMode }}
+    >
       <MDBox pt={2} pb={1} px={2} textAlign="center">
-        <MDBox
-          display={{ xs: "block", xl: "block" }}
-          position="absolute"
-          top={19}
-          right={19}
-          p={0}
-          // onClick={closeSidenav}
-          // onClick={hamburgerMiniSidenav}
-          sx={{ cursor: "pointer" }}>
-          <MDTypography color="secondary">
-            {/* <Icon sx={{ fontWeight: "bold" }}>close</Icon> */}
-            {/* <Icon fontSize="small" sx={iconsStyle}>
-              {miniSidenav ? "menu" : "menu_open"}
-            </Icon> */}
-            <IconButton
-              sx={navbarDesktopMenu}
-              onClick={hamburgerMiniSidenav}
-              size="small"
-              disableRipple>
-              <Icon fontSize="small" sx={iconsStyle}>
-                {miniSidenav ? "menu" : "menu_open"}
-              </Icon>
-            </IconButton>
-          </MDTypography>
-        </MDBox>
         <NextLink href="/">
           <MDBox display="flex"
             alignItems="center"
@@ -413,3 +389,32 @@ Sidenav.defaultProps = {
 }
 
 export default Sidenav
+
+// ========
+/*
+<MDBox
+display={{ xs: "block", xl: "block" }}
+position="absolute"
+top={19}
+right={19}
+p={0}
+// onClick={closeSidenav}
+// onClick={hamburgerMiniSidenav}
+sx={{ cursor: "pointer" }}>
+<MDTypography color="secondary">
+  <Icon sx={{ fontWeight: "bold" }}>close</Icon>
+  <Icon fontSize="small" sx={iconsStyle}>
+    {miniSidenav ? "menu" : "menu_open"}
+  </Icon>
+  <IconButton
+    sx={navbarDesktopMenu}
+    onClick={hamburgerMiniSidenav}
+    size="small"
+    disableRipple>
+    <Icon fontSize="small" sx={iconsStyle}>
+      {miniSidenav ? "menu" : "menu_open"}
+    </Icon>
+  </IconButton>
+</MDTypography>
+</MDBox>
+*/
