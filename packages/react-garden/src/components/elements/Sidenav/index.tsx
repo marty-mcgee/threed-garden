@@ -356,16 +356,20 @@ function Sidenav({
             alignItems="center"
             sx={{ cursor: "pointer" }}
           >
+            {/*
             {brandLogo && brandLogo?.src ? (
-              <MDBox
-                component="img"
-                src={brandLogo.src}
-                alt={brandName}
-                width="2.25rem"
-              />
+            */}
+            <MDBox
+              component="img"
+              src={brandLogo.src}
+              alt={brandName}
+              width="2.0rem"
+            />
+            {/*
             ) : (
-              brandName
+               brandName
             )}
+            */}
             <MDBox
               width={!brandName && "100%"}
               sx={(theme) => sidenavLogoLabel(theme, { miniSidenav })}
