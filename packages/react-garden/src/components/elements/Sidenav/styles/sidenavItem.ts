@@ -73,8 +73,8 @@ function itemContent(theme: Theme, ownerState: any) {
     alignItems: "center",
     justifyContent: "space-between",
     width: "100%",
-    // padding: `${pxToRem(12)} ${pxToRem(16)}`,
-    // marginLeft: pxToRem(18),
+    padding: `${pxToRem(2)} ${pxToRem(0)}`,
+    marginLeft: pxToRem(42),
     userSelect: "none",
     position: "relative",
 
