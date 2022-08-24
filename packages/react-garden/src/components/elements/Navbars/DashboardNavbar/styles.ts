@@ -121,6 +121,7 @@ const navbarDesktopMenu = ({ breakpoints }: Theme) => ({
   display: "none !important",
   cursor: "pointer",
   mt: 0.5,
+  mr: 0.5,
 
   [breakpoints.up("xl")]: {
     display: "inline-block !important",

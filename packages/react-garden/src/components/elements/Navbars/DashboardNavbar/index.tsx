@@ -165,8 +165,8 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
             size="small"
             disableRipple
           >
-            <Icon fontSize="medium" sx={iconsStyle}>
-              {miniSidenav ? "menu_open" : "menu"}
+            <Icon fontSize="small" sx={iconsStyle}>
+              {miniSidenav ? "menu" : "menu_open"}
             </Icon>
           </IconButton>
 

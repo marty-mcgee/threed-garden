@@ -58,6 +58,7 @@ import favicon from "~/assets/images/logos/favicon.png"
 import appleIcon from "~/assets/images/logos/apple-icon.png"
 import brandLight from "~/assets/images/logos/logo-threedgarden.png"
 import brandDark from "~/assets/images/logos/logo-threedgarden-alt.png"
+import brandText from "~/assets/images/logos/logo-threedgarden-text.png"
 
 // dashboard components
 import MDBox from "~/components/mui/MDBox"
@@ -222,7 +223,7 @@ const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithL
         <>
           <Sidenav
             color={sidenavColor}
-            brand={brandIcon}
+            brandLogo={brandIcon}
             brandName="ThreeD Garden"
             routes={routes}
             onMouseEnter={handleOnMouseEnter}
