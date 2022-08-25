@@ -150,7 +150,7 @@ function DefaultPricingCard({
             <MDBox mt={3}>
               <MDButton
                 component={Link}
-                to={action.route}
+                href={action.route}
                 variant="gradient"
                 color={action.color}
                 fullWidth>

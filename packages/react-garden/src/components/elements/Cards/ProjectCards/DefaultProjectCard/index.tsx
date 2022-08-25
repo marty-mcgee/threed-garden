@@ -103,7 +103,7 @@ function DefaultProjectCard({
           {action.type === "internal" ? (
             <MDTypography
               component={Link}
-              to={action.route}
+              href={action.route}
               variant="h5"
               textTransform="capitalize">
               {title}
@@ -132,7 +132,7 @@ function DefaultProjectCard({
           {action.type === "internal" ? (
             <MDButton
               component={Link}
-              to={action.route}
+              href={action.route}
               variant="outlined"
               size="small"
               color={action.color}>

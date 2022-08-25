@@ -86,7 +86,7 @@ function CategoriesList({ title, categories }: Props): JSX.Element {
             component={Link}
             variant="button"
             color={color}
-            to={route}
+            href={route}
             sx={{
               lineHeight: 0,
               transition: "all 0.2s cubic-bezier(.34,1.61,.7,1.3)",

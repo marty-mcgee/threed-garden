@@ -112,7 +112,7 @@ function ProfileInfoCard({
         </MDTypography>
         <MDTypography
           component={Link}
-          to={action.route}
+          href={action.route}
           variant="body2"
           color="secondary">
           <Tooltip title={action.tooltip} placement="top">

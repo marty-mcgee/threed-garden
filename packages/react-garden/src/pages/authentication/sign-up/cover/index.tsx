@@ -88,7 +88,7 @@ function Cover(): JSX.Element {
                 Already have an account?{" "}
                 <MDTypography
                   component={Link}
-                  to="/authentication/sign-in/cover"
+                  href="/authentication/sign-in/cover"
                   variant="button"
                   color="info"
                   fontWeight="medium"

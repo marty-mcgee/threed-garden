@@ -65,7 +65,7 @@ function ProfilesList({ title, profiles, shadow }: Props): JSX.Element {
           {action.type === "internal" ? (
             <MDButton
               component={Link}
-              to={action.route}
+              href={action.route}
               variant="text"
               color="info">
               {action.label}
