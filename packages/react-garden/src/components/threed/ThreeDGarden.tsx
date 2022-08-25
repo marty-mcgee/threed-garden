@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react"
+import { useRef, useEffect, useState, MouseEventHandler } from "react"
 
 import Head from "next/head"
 import dynamic from "next/dynamic"
@@ -442,61 +442,104 @@ const ToolBar = (): JSX.Element => {
       console.debug('ToolBar onUnmount')
     }
   }, [])
+
+  const setNewPlan: MouseEventHandler<HTMLAnchorElement> = () => {
+    alert("HEY HEY HEY setNewPlan")
+  }
+
   return (
     <div id="toolBar">
       <ul>
         <li className="dropdown">
-          <a href="#javascript:void(0)" className="dropbtn">File</a>
+          <a href="#javascript:void(0)" className="dropbtn">
+            File
+          </a>
           <div className="dropdown-content">
-            <a onClick="setNewPlan();">New</a>
-            <a id="loadBtn" onClick="document.getElementById('file').click();"
-            >Load</a>
+            {/* <a onClick="setNewPlan();"> */}
+            <a onClick={setNewPlan}>
+              New
+            </a>
+            {/* <a
+              id="loadBtn"
+              onClick="document.getElementById('file').click();">
+              Load
+            </a>
             <input
               type="file"
               style={{ display: "none" }}
               id="file"
               name="file"
               onChange="loadFileAsText(event)" />
-            <a id="saveBtn" onClick="savePlan();">Save</a>
-            <a id="shareBtn" onClick="openShareDialog();">Share</a>
+            <a
+              id="saveBtn"
+              onClick="savePlan();">
+              Save
+            </a>
+            <a
+              id="shareBtn"
+              onClick="openShareDialog();">
+              Share
+            </a>
             <hr />
-            <a id="defaultsBtn" onClick="setPropertiesView('defaults');"
-            >Defaults</a>
-            <a id="groundPropertiesButton" onClick="setToolMode('ground');">Ground Properties</a>
-            <a id="fullscreenApp" onClick="openFullscreen('appBody');"
-            >Fullscreen</a>
+            <a
+              id="defaultsBtn"
+              onClick="setPropertiesView('defaults');">
+              Defaults
+            </a>
+            <a
+              id="groundPropertiesButton"
+              onClick="setToolMode('ground');">
+              Ground Properties
+            </a>
+            <a
+              id="fullscreenApp"
+              onClick="openFullscreen('DEMO');">
+              Fullscreen
+            </a> */}
           </div>
         </li>
-        <li className="dropdown">
-          <a href="#javascript:void(0)" className="dropbtn">Edit</a>
+        {/* <li className="dropdown">
+          <a href="#javascript:void(0)" className="dropbtn">
+            Edit
+          </a>
           <div className="dropdown-content">
             <a id="undoBtn" onClick="doUndo();">Undo</a>
             <a id="redoBtn" onClick="doRedo();">Redo</a>
           </div>
-        </li>
-        <li className="dropdown">
-          <a href="#javascript:void(0)" className="dropbtn">Plan View</a>
+        </li> */}
+        {/* <li className="dropdown">
+          <a href="#javascript:void(0)" className="dropbtn">
+            Plan View
+          </a>
           <div className="dropdown-content">
             <a onClick="setPropertiesView('planView');">Background Template</a>
             <a onClick="newLevel();">Add Level</a>
             <a onClick="openFullscreen('planView');">Fullscreen</a>
           </div>
-        </li>
-        <li className="dropdown">
-          <a href="#javascript:void(0)" className="dropbtn">3D View</a>
+        </li> */}
+        {/* <li className="dropdown">
+          <a href="#javascript:void(0)" className="dropbtn">
+            3D View
+          </a>
           <div className="dropdown-content">
             <a onClick="setPropertiesView('3dView');">Properties</a>
             <a onClick="openFullscreen('view3d');">Fullscreen</a>
             <a onClick="exportToObj();">Export As OBJ</a>
             <a id="createThumb" onClick="createThumbForHistory();">Create Thumb</a>
           </div>
-        </li>
+        </li> */}
         <li>
           <a onClick="doLog()">Log</a>
         </li>
         <li>
           <a onClick="showAbout()">About</a>
         </li>
+        <li id="deleteme" style={{ width: "auto" }}>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          TOOLS:
+          &nbsp;&nbsp;
+        </li>
+        {/*
         <li>
           <a
             id="pointerTool"
@@ -567,6 +610,7 @@ const ToolBar = (): JSX.Element => {
             <img src="/demo/media/newTextWhite.png" height="24px" />
           </a>
         </li>
+        */}
       </ul>
     </div>
   )
