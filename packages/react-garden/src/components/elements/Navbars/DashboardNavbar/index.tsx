@@ -170,14 +170,15 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
             </Icon>
           </IconButton>
 
-
-          <Breadcrumbs
+          {/* <Breadcrumbs
             icon="home"
             title={route[route.length - 1]}
             route={route}
             light={light}
-          />
+          /> */}
+
         </MDBox>
+
         {isMini ? null : (
           <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
             {/*

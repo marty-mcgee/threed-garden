@@ -58,7 +58,7 @@ export default styled(Drawer)(
         boxShadow: transparentSidenav ? "none" : xxl,
         marginBottom: transparentSidenav ? 0 : "inherit",
         left: "0",
-        width: pxToRem(96),
+        width: pxToRem(64),
         overflowX: "hidden",
         transform: "translateX(0)",
         transition: transitions.create(["width", "background-color"], {
@@ -71,7 +71,10 @@ export default styled(Drawer)(
     return {
       "& .MuiDrawer-paper": {
         boxShadow: xxl,
-        border: "none",
+        // border: "none",
+        borderRightWidth: "1px",
+        borderRightStyle: "solid",
+        borderRightColor: darkMode ? "#272930" : "#DFDFDF",
 
         ...(miniSidenav ? drawerCloseStyles() : drawerOpenStyles()),
       },

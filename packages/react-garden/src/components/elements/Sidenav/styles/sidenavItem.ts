@@ -88,7 +88,7 @@ function itemContent(theme: Theme, ownerState: any) {
       color:
         ((transparentSidenav && !darkMode) || whiteSidenav) &&
         (active === "isParent" || !active)
-          ? dark.main
+          ? dark.success
           : white.main,
       fontWeight: active ? fontWeightRegular : fontWeightLight,
       fontSize: size.sm,

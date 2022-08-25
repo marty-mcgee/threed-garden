@@ -313,7 +313,7 @@ function Sidenav({
         returnValue = (
           <Divider
             key={key}
-            sx={{ marginTop: 1 }}
+            sx={{ my: 1 }}
             light={
               (!darkMode && !whiteSidenav && !transparentSidenav) ||
               (darkMode && !transparentSidenav && whiteSidenav)

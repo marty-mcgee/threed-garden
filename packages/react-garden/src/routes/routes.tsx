@@ -21,6 +21,9 @@
 */
 
 // layouts
+import Home from "~/pages/index"
+import About from "~/pages/about"
+import Participate from "~/pages/participate"
 import Analytics from "~/pages/dashboards/analytics"
 import Sales from "~/pages/dashboards/sales"
 import ProfileOverview from "~/pages/profile/profile-overview"
@@ -55,6 +58,9 @@ import MDAvatar from "~/components/mui/MDAvatar"
 
 // @mui icons
 import Icon from "@mui/material/Icon"
+import AddHomeWorkIcon from "@mui/icons-material/AddHomeWork"
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings"
+import BadgeIcon from "@mui/icons-material/Badge"
 
 // Images
 import profilePicture from "~/assets/images/people/team-0.png"
@@ -86,7 +92,36 @@ const routes = [
   //     },
   //   ],
   // },
-  // { type: "divider", key: "divider-0" },
+  // { type: "divider", key: "divider-threed" },
+  // { type: "title", title: "ThreeD Garden", key: "title-threed" },
+  // {
+  //   type: "collapse",
+  //   noCollapse: true,
+  //   name: "Home",
+  //   key: "home",
+  //   route: "/",
+  //   // component: <Home />,
+  //   icon: <Icon fontSize="medium">home</Icon>,
+  // },
+  {
+    type: "collapse",
+    noCollapse: true,
+    name: "About",
+    key: "about",
+    route: "/about",
+    // component: <About />,
+    icon: <AddHomeWorkIcon fontSize="medium" />,
+  },
+  {
+    type: "collapse",
+    noCollapse: true,
+    name: "Participate",
+    key: "participate",
+    route: "/participate",
+    // component: <Participate />,
+    icon: <Icon fontSize="medium">agriculture</Icon>,
+  },
+  { type: "divider", key: "divider-dashboards" },
   {
     type: "collapse",
     name: "Dashboards",
@@ -107,8 +142,8 @@ const routes = [
       },
     ],
   },
-  { type: "divider", key: "divider-0" },
-  { type: "title", title: "Pages", key: "title-pages" },
+  // { type: "divider", key: "divider-pages" },
+  // { type: "title", title: "Pages", key: "title-pages" },
   {
     type: "collapse",
     name: "Pages",
@@ -299,7 +334,7 @@ const routes = [
     type: "collapse",
     name: "Authentication",
     key: "authentication",
-    icon: <Icon fontSize="medium">content_paste</Icon>,
+    icon: <BadgeIcon fontSize="medium" />,
     collapse: [
       {
         name: "Sign In",
@@ -351,12 +386,12 @@ const routes = [
       },
     ],
   },
-  { type: "divider", key: "divider-1" },
-  { type: "title", title: "Docs", key: "title-docs" },
+  { type: "divider", key: "divider-docs" },
+  // { type: "title", title: "Docs", key: "title-docs" },
   {
     type: "collapse",
-    name: "Introduction",
-    key: "intro",
+    name: "Docs",
+    key: "docs",
     icon: <Icon fontSize="medium">upcoming</Icon>,
     collapse: [
       {
