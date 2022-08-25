@@ -5,7 +5,7 @@ import dynamic from "next/dynamic"
 import Script from "next/script"
 // import "~/assets/demo/css/Demo.module.css"
 
-// import * as $ from "jquery"
+// import * as $ from "jquery" // [MM] HEY HEY HEY
 import paper from "paper"
 import * as THREE from "three"
 import { TrackballControls } from "three/examples/jsm/controls/TrackballControls.js"
@@ -20,19 +20,24 @@ import TWEEN from "@tweenjs/tween.js"
 const Demo: FunctionComponent = (props): JSX.Element => {
 
   const word = "HEY HEY HEY"
-  // const fragment = null
-  // const readOnly = false
-  // const UILayout = "default"
 
-  console.log("props", props)
+  const fragment = null // grenade?
+  const readOnly = false // really?
+  const UILayout = "default" // ok?
+
+  // console.debug("props", props)
 
   useEffect(() => {
-    console.debug("Demo onMount", word)
+    // console.debug("Demo onMount", word)
     // window.$ = window.jQuery = require('jquery')
-    window.$ = window.jQuery = require("~/assets/demo/scripts/jquery-1.11.3.min")
-    // window.$ = window.jQuery
+    // window.$ = window.jQuery = require("~/assets/demo/scripts/jquery-1.11.3.min")
     // window.Diamonds = require('../public/jquery.diamonds.js')
-    // console.log("$", window.$)
+    const jQuery = require("~/assets/demo/scripts/jquery-1.11.3.min")
+    // window.$ = window.jQuery = jQuery
+    window.jQuery = jQuery
+    // window.$ = window.jQuery
+    // console.debug("$", window.$)
+    // console.debug(`[MM] Demo.tsx: $ @ ${new Date().toISOString()}`, window.$)
 
     // useEffect(() => {
     const B3 = dynamic(
@@ -47,7 +52,7 @@ const Demo: FunctionComponent = (props): JSX.Element => {
     // window.b3 = require("~/assets/demo/scripts/b3.min")
     // const B3 = require("~/assets/demo/scripts/b3.min")
     // require("~/assets/demo/scripts/b3.min")
-    console.log("B3.MM", B3)
+    console.debug(`[MM] Demo.tsx: B3.MM @ ${new Date().toISOString()}`, B3)
 
     // window.ThreeCSG = require("~/assets/demo/scripts/ThreeCSG")
     // window.minicolors = require("~/assets/demo/scripts/jquery.minicolors.min")
@@ -60,11 +65,12 @@ const Demo: FunctionComponent = (props): JSX.Element => {
     //     itemSelector : `.${styles.item}` // the css selector to use to select diamonds-items.
     // })
     return (
-      console.debug("Demo onUnmount", word)
+      // console.debug("Demo onUnmount", word)
+      console.debug(`[MM] Demo.tsx: onUnmount @ ${new Date().toISOString()}`)
     )
   }, [])
 
-  /*
+  /* OLD OLD
   // eslint-disable-next-line no-extra-boolean-cast
   if (!!window.location.hash) { // for old fragment type links. very rare.
     let tmpFragment = window.location.hash.substr(1)
@@ -99,6 +105,8 @@ const Demo: FunctionComponent = (props): JSX.Element => {
         {/* <base href="http://localhost:5500/" /> */}
         <link rel="alternate" type="application/json+oembed" href="oembed.json" />
       </Head>
+
+      {/* NOPE NOPE NOPE */}
 
       {/* <Script id="heyheyhey">
         {`

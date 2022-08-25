@@ -12,6 +12,7 @@ const DynamicCSRDemo = dynamic(
 )
 
 const DemoPage: FunctionComponent = (props): JSX.Element => {
+
   const word = "HEY HEY HEY -- DEMO PAGE"
 
   useEffect(() => {
@@ -33,7 +34,7 @@ const DemoPage: FunctionComponent = (props): JSX.Element => {
     // console.log("B3 onMount", B3)
 
     return (
-      console.log("B3 onUnmount", newword)
+      console.debug(`[MM] /demo: onUnmount @ ${new Date().toISOString()} ${newword}`)
     )
   }, [])
 
