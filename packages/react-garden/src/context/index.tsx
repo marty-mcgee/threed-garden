@@ -103,10 +103,10 @@ function MaterialUIControllerProvider({
 }): JSX.Element {
   const initialState: StateTypes = {
     miniSidenav: false,
-    transparentSidenav: true,
+    transparentSidenav: false,
     whiteSidenav: false,
-    sidenavColor: "info",
-    transparentNavbar: true,
+    sidenavColor: "success",
+    transparentNavbar: false,
     fixedNavbar: true,
     openConfigurator: false,
     direction: "ltr",

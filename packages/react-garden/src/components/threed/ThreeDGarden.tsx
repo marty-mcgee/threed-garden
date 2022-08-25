@@ -4,9 +4,9 @@ import { Canvas, useFrame } from '@react-three/fiber'
 
 const MyComponent = () => {
   useEffect(() => {
-    console.log('MyComponent onMount')
+    console.debug('MyComponent onMount')
     return () => {
-      console.log('MyComponent onUnmount')
+      console.debug('MyComponent onUnmount')
     }
   }, [])
   return (
@@ -20,14 +20,14 @@ const ThreeDGarden = (): JSX.Element => {
   // const root = useRef()
   // const scene = new THREE.Scene()
   useEffect(() => {
-    console.log('ThreeDGarden onMount')
+    console.debug('ThreeDGarden onMount')
     // bootManager()
     return () => {
-      console.log('ThreeDGarden onUnmount')
+      console.debug('ThreeDGarden onUnmount')
     }
   }, [])
   return (
-    <div>
+    <div style={{ textAlign: "center" }}>
       <div ref={title}>ThreeDGarden: {word}</div>
       {/* <div ref={root}>Three root</div> */}
       <MyComponent />

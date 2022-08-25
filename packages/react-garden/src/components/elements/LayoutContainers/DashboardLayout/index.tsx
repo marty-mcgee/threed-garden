@@ -23,18 +23,20 @@ function DashboardLayout({ children }: { children: ReactNode }): JSX.Element {
   return (
     <MDBox
       sx={({ breakpoints, transitions, functions: { pxToRem } }) => ({
-        p: 0,
+        // p: 10,
+        mr: 1,
+        my: 0,
         position: "relative",
 
         [breakpoints.up("xl")]: {
-          marginLeft: miniSidenav ? pxToRem(90) : pxToRem(274),
+          marginLeft: miniSidenav ? pxToRem(80) : pxToRem(250),
           transition: transitions.create(["margin-left", "margin-right"], {
             easing: transitions.easing.easeInOut,
             duration: transitions.duration.standard,
           }),
         },
         [breakpoints.down("xl")]: {
-          marginLeft: miniSidenav ? pxToRem(90) : pxToRem(274),
+          marginLeft: miniSidenav ? pxToRem(80) : pxToRem(250),
           transition: transitions.create(["margin-left", "margin-right"], {
             easing: transitions.easing.easeInOut,
             duration: transitions.duration.standard,

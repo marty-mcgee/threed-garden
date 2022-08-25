@@ -234,7 +234,9 @@ const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithL
         </>
       )}
 
-      {layout === "vr" && <Configurator />}
+      {layout === "vr" && (
+        <Configurator />
+      )}
 
     </ThemeProvider>
   )
@@ -244,14 +246,14 @@ const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithL
 // WRAPPED APP
 const WrappedApp: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => { // [MM] ooooo, very interesting (type|interface)
 
-  console.log(`[MM] WrappedApp: ThreeDGarden @ ${new Date().toISOString()}`)
+  console.debug(`[MM] WrappedApp: ThreeDGarden @ ${new Date().toISOString()}`)
 
   const { Component, emotionCache = clientSideEmotionCache, pageProps, router } = props
 
-  // console.log(`[MM] WrappedApp: Component`, Component)
-  // console.log(`[MM] WrappedApp: emotionCache`, emotionCache)
-  // console.log(`[MM] WrappedApp: pageProps`, pageProps)
-  // console.log(`[MM] WrappedApp: router`, router)
+  // console.debug(`[MM] WrappedApp: Component`, Component)
+  // console.debug(`[MM] WrappedApp: emotionCache`, emotionCache)
+  // console.debug(`[MM] WrappedApp: pageProps`, pageProps)
+  // console.debug(`[MM] WrappedApp: router`, router)
 
   return (
     <MaterialUIControllerProvider>
@@ -414,7 +416,7 @@ import PageChange from "~/components/PageChange/PageChange.js"
 import "assets/css/nextjs-material-dashboard.css?v=1.1.0"
 
 Router.events.on("routeChangeStart", (url) => {
-  console.log(`Loading: ${url}`)
+  console.debug(`Loading: ${url}`)
   document.body.classList.add("body-page-transition")
   ReactDOM.render(
     <PageChange path={url} />,
@@ -448,7 +450,7 @@ export default class MyApp extends App {
 
   render() {
     const { Component, pageProps } = this.props
-    console.log("Component", Component)
+    console.debug("Component", Component)
 
     const Layout = Component.layout || (({ children }) => <>({children})</>)
 

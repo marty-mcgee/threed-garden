@@ -132,9 +132,9 @@ interface Types {
 
 const colors: Types = {
   background: {
-    default: "#131418",
-    sidenav: "#1f283e",
-    card: "#202940",
+    default: "#09090D", // 09090D | 131418 | original 1f283e
+    sidenav: "#131418",
+    card: "#131418", // 131418 | original 202940
   },
 
   text: {
@@ -147,6 +147,7 @@ const colors: Types = {
   },
 
   white: {
+    light: "#ffffff",
     main: "#ffffff",
     focus: "#ffffff",
   },

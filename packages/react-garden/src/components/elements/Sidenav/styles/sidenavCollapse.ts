@@ -82,7 +82,10 @@ function collapseIconBox(theme: Theme, ownerState: any) {
     }),
 
     "& svg, svg g": {
-      color: transparentSidenav || whiteSidenav ? dark.main : white.main,
+      color:
+        (transparentSidenav && !darkMode) || whiteSidenav
+          ? dark.main
+          : white.main,
     },
   }
 }
