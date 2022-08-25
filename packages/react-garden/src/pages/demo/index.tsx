@@ -6,7 +6,7 @@ import dynamic from "next/dynamic"
 const DynamicCSRDemo = dynamic(
   () => import("~/components/threed/Demo"),
   {
-    loading: () => <p>...loading...</p>,
+    // loading: () => <p>...loading...</p>,
     ssr: false
   }
 )

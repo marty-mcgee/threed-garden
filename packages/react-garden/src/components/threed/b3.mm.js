@@ -1,6 +1,6 @@
 // "use strict"
-console.log("[MM] HEY HEY HEY -- B3")
-function deselectAll() {
+console.log("[MM] HEY HEY HEY -- B3 -- export function x()")
+export function deselectAll() {
   try {
     ;(mouseMode = -1),
       selectedItem &&
@@ -1434,7 +1434,7 @@ function resetPlan() {
     console.log("resetPlan : 15 : " + e)
   }
 }
-function setNewPlan() {
+export function setNewPlan() {
   try {
     resetPlan(),
       (planHistory = []),

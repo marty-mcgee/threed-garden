@@ -1,9 +1,5 @@
 import { useRef, useEffect, useState, MouseEventHandler } from "react"
 
-import Head from "next/head"
-import dynamic from "next/dynamic"
-import Script from "next/script"
-
 import paper from "paper"
 
 import * as THREE from "three"
@@ -17,12 +13,13 @@ import { Sky } from "three/examples/jsm/objects/Sky.js"
 import TWEEN from "@tweenjs/tween.js"
 import { Canvas, useFrame } from '@react-three/fiber'
 
+// do this from _app.tsx
 // import "~/assets/demo/css/Demo.module.css"
 // import "~/assets/demo/css/all.css"
 // import "~/assets/demo/css/jquery.minicolors.css"
 // import "~/assets/demo/css/style.css"
 
-// no no no
+// no no no, never
 // import * as $ from "jquery"
 
 // ======================================================
@@ -443,8 +440,19 @@ const ToolBar = (): JSX.Element => {
     }
   }, [])
 
-  const setNewPlan: MouseEventHandler<HTMLAnchorElement> = () => {
+  const setNewPlan: MouseEventHandler<HTMLAnchorElement> = (): any => {
     alert("HEY HEY HEY setNewPlan")
+    // try {
+    //   // resetPlan(),
+    //   //   (planHistory = []),
+    //   //   (planHistoryPosition = 0),
+    //   //   planHistory.push(JSON.stringify(plan)),
+    //   //   setToolMode("pointer"),
+    //   localStorage.clear()
+    //   console.log("[MM] setNewPlan TRY: localStorage.clear()")
+    // } catch (e) {
+    //   console.log("[MM] setNewPlan CATCH e:", e)
+    // }
   }
 
   return (
@@ -528,12 +536,12 @@ const ToolBar = (): JSX.Element => {
             <a id="createThumb" onClick="createThumbForHistory();">Create Thumb</a>
           </div>
         </li> */}
-        <li>
+        {/* <li>
           <a onClick="doLog()">Log</a>
         </li>
         <li>
           <a onClick="showAbout()">About</a>
-        </li>
+        </li> */}
         <li id="deleteme" style={{ width: "auto" }}>
           &nbsp;&nbsp;&nbsp;&nbsp;
           TOOLS:
@@ -1789,15 +1797,15 @@ const MyComponent = (): JSX.Element => {
 }
 
 const ThreeDGarden = (): JSX.Element => {
-  const word = "HEY HEY HEY"
+  const word = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
   const title = useRef()
   // const root = useRef()
   // const scene = new THREE.Scene()
   useEffect(() => {
-    console.debug('ThreeDGarden onMount')
+    console.debug('ThreeDGarden onMount', word)
     // bootManager()
     return () => {
-      console.debug('ThreeDGarden onUnmount')
+      console.debug('ThreeDGarden onUnmount', word)
     }
   }, [])
   return (

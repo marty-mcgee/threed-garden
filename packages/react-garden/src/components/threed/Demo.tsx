@@ -6,6 +6,7 @@ import Script from "next/script"
 // import "~/assets/demo/css/Demo.module.css"
 
 // import * as $ from "jquery" // [MM] HEY HEY HEY
+
 import paper from "paper"
 import * as THREE from "three"
 import { TrackballControls } from "three/examples/jsm/controls/TrackballControls.js"
@@ -15,6 +16,8 @@ import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader"
 import { Sky } from "three/examples/jsm/objects/Sky.js"
 // import { TWEEN } from "three/examples/jsm/libs/tween.module.min"
 import TWEEN from "@tweenjs/tween.js"
+
+const B3MM3 = require("~/components/threed/b3.mm")
 
 // <script type="text/javascript" data-cfasync="false">
 const Demo: FunctionComponent = (props): JSX.Element => {
@@ -58,6 +61,16 @@ const Demo: FunctionComponent = (props): JSX.Element => {
 
     const B3MM = B3
     console.debug(`[MM] Demo.tsx: B3MM @ ${new Date().toISOString()}`, B3MM)
+
+    const B3MM1 = { ...B3MM }
+    console.debug(`[MM] Demo.tsx: B3MM1 @ ${new Date().toISOString()}`, B3MM1)
+
+    const B3MM2 = B3MM
+    console.debug(`[MM] Demo.tsx: B3MM2 @ ${new Date().toISOString()}`, B3MM2)
+
+    // const B3MM3 = B3MM3
+    console.debug(`[MM] Demo.tsx: B3MM3 @ ${new Date().toISOString()}`, B3MM3)
+
 
     // window.ThreeCSG = require("~/assets/demo/scripts/ThreeCSG")
     // window.minicolors = require("~/assets/demo/scripts/jquery.minicolors.min")
