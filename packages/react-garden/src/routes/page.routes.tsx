@@ -49,7 +49,7 @@ const pageRoutes = [
         collapse: [
           {
             name: "reports",
-            route: "/pages/users/reports",
+            route: "/users/reports",
           },
         ],
       },
@@ -59,14 +59,14 @@ const pageRoutes = [
         collapse: [
           {
             name: "pricing page",
-            route: "/pages/pricing-page",
+            route: "/pricing",
           },
-          { name: "RTL", route: "/pages/rtl" },
-          { name: "widgets", route: "/pages/widgets" },
-          { name: "charts", route: "/pages/charts" },
+          { name: "RTL", route: "/rtl" },
+          { name: "widgets", route: "/widgets" },
+          { name: "charts", route: "/charts" },
           {
             name: "notfications",
-            route: "/pages/notifications",
+            route: "/notifications",
           },
         ],
       },
@@ -76,7 +76,7 @@ const pageRoutes = [
         collapse: [
           {
             name: "timeline",
-            route: "/pages/projects/timeline",
+            route: "/projects/timeline",
           },
         ],
       },
@@ -86,15 +86,15 @@ const pageRoutes = [
         collapse: [
           {
             name: "settings",
-            route: "/pages/account/setting",
+            route: "/account/setting",
           },
           {
             name: "billing",
-            route: "/pages/account/billing",
+            route: "/account/billing",
           },
           {
             name: "invoice",
-            route: "/pages/account/invoice",
+            route: "/account/invoice",
           },
         ],
       },
@@ -104,11 +104,11 @@ const pageRoutes = [
         collapse: [
           {
             name: "profile overview",
-            route: "/pages/profile/profile-overview",
+            route: "/profile/profile-overview",
           },
           {
             name: "all projects",
-            route: "/pages/profile/all-projects",
+            route: "/profile/all-projects",
           },
         ],
       },
@@ -161,27 +161,29 @@ const pageRoutes = [
     ],
   },
   {
-    name: "application",
+    name: "applications",
+    columns: 3,
+    rowsPerColumn: 2,
     collapse: [
       {
         name: "kanban",
         route: "/applications/kanban",
-        icon: "widgets",
+        icon: <Icon>widgets</Icon>,
       },
       {
         name: "wizard",
         route: "/applications/wizard",
-        icon: "import_contacts",
+        icon: <Icon>import_contacts</Icon>,
       },
       {
         name: "data tables",
         route: "/applications/data-tables",
-        icon: "backup_table",
+        icon: <Icon>backup_table</Icon>,
       },
       {
         name: "calendar",
         route: "/applications/calendar",
-        icon: "event",
+        icon: <Icon>event</Icon>,
       },
     ],
   },
@@ -229,25 +231,25 @@ const pageRoutes = [
     collapse: [
       {
         name: "getting started",
-        href: "https://companyjuice.com/learning-lab/react/quick-start/material-dashboard/",
+        href: "#react/quick-start/material-dashboard/",
         description: "All about overview, quick start, license and contents",
         icon: <Icon>article</Icon>,
       },
       {
         name: "foundation",
-        href: "https://companyjuice.com/learning-lab/react/colors/material-dashboard/",
+        href: "#react/colors/material-dashboard/",
         description: "See our colors, icons and typography",
         icon: <Icon>grading</Icon>,
       },
       {
         name: "components",
-        href: "https://companyjuice.com/learning-lab/react/alerts/material-dashboard/",
+        href: "#react/alerts/material-dashboard/",
         description: "Explore our collection of fully designed components",
         icon: <Icon>apps</Icon>,
       },
       {
         name: "plugins",
-        href: "https://companyjuice.com/learning-lab/react/datepicker/material-dashboard/",
+        href: "#react/datepicker/material-dashboard/",
         description: "Check how you can integrate our plugins",
         icon: <Icon>extension</Icon>,
       },

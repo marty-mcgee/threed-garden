@@ -1,8 +1,5 @@
 import { useMemo, ReactNode } from "react"
 
-// react-chartjs-2 components
-import { Bar } from "react-chartjs-2"
-
 // @mui material components
 import Card from "@mui/material/Card"
 import Divider from "@mui/material/Divider"
@@ -14,6 +11,27 @@ import MDTypography from "~/components/mui/MDTypography"
 
 // ReportsBarChart configurations
 import configs from "~/components/elements/Charts/BarCharts/ReportsBarChart/configs"
+
+// react-chartjs-2 components
+import { Bar } from "react-chartjs-2"
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+} from "chart.js"
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+)
 
 // Declaring props types for ReportsBarChart
 interface Props {

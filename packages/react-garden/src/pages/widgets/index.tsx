@@ -43,8 +43,8 @@ function Widgets(): JSX.Element {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox my={3}>
-        <Grid container spacing={3}>
+      <MDBox my={2} mr={2}>
+        <Grid container spacing={2}>
           <Grid item xs={12} lg={5}>
             {useMemo(
               () => (
@@ -74,25 +74,25 @@ function Widgets(): JSX.Element {
             <OrdersOverview />
           </Grid>
         </Grid>
-        <MDBox my={3}>
-          <Grid container spacing={3}>
+        <MDBox my={2}>
+          <Grid container spacing={2}>
             <Grid item xs={12} sm={6} lg={4}>
               <UpcomingEvents />
             </Grid>
             <Grid item xs={12} lg={8}>
               <ProgressLineChart
                 icon="date_range"
-                title="Tasks"
-                count={480}
-                progress={60}
+                title="Sprints"
+                count={48}
+                progress={88}
                 height="13.375rem"
                 chart={progressLineChartData}
               />
             </Grid>
           </Grid>
         </MDBox>
-        <MDBox mb={3}>
-          <Grid container spacing={3}>
+        <MDBox my={2}>
+          <Grid container spacing={2}>
             <Grid item xs={12} md={6} lg={3}>
               <MDBox mb={3}>
                 <MiniStatisticsCard
@@ -142,8 +142,8 @@ function Widgets(): JSX.Element {
             </Grid>
           </Grid>
         </MDBox>
-        <MDBox mb={3}>
-          <Grid container spacing={3}>
+        <MDBox my={2}>
+          <Grid container spacing={2}>
             <Grid item xs={12} md={6} lg={3}>
               <FullBody />
             </Grid>

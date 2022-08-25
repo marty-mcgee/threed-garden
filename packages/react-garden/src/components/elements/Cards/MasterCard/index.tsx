@@ -60,8 +60,9 @@ function MasterCard({ color, number, holder, expires }: Props): JSX.Element {
         height="100%"
         opacity={0.2}
         sx={{
-          backgroundImage: `url(${pattern})`,
+          backgroundImage: `url(${pattern.src})`,
           backgroundSize: "cover",
+          borderRadius: 5,
         }}
       />
       <MDBox position="relative" zIndex={2} px={4} py={2}>

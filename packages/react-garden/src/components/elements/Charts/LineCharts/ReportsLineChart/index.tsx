@@ -1,8 +1,5 @@
 import { useMemo, ReactNode } from "react"
 
-// react-chartjs-2 components
-import { Line } from "react-chartjs-2"
-
 // @mui material components
 import Card from "@mui/material/Card"
 import Divider from "@mui/material/Divider"
@@ -14,6 +11,29 @@ import MDTypography from "~/components/mui/MDTypography"
 
 // ReportsLineChart configurations
 import configs from "~/components/elements/Charts/LineCharts/ReportsLineChart/configs"
+
+// react-chartjs-2 components
+import { Line } from "react-chartjs-2"
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from "chart.js"
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+)
 
 // Declaring props types for ReportsLineChart
 interface Props {

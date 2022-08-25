@@ -30,7 +30,7 @@ import Settings from "~/pages/account/settings"
 import Billing from "~/pages/account/billing"
 import Invoice from "~/pages/account/invoice"
 import Timeline from "~/pages/projects/timeline"
-import PricingPage from "~/pages/pricing-page"
+import Pricing from "~/pages/pricing"
 import Widgets from "~/pages/widgets"
 import RTL from "~/pages/rtl"
 import Charts from "~/pages/charts"
@@ -181,12 +181,17 @@ const routes = [
         ],
       },
       {
-        name: "Pricing Page",
-        key: "pricing-page",
-        route: "/pricing-page",
-        component: <PricingPage />,
+        name: "Pricing",
+        key: "pricing",
+        route: "/pricing",
+        component: <Pricing />,
       },
-      { name: "RTL", key: "rtl", route: "/rtl", component: <RTL /> },
+      // {
+      //   name: "RTL",
+      //   key: "rtl",
+      //   route: "/rtl",
+      //   component: <RTL />
+      // },
       {
         name: "Widgets",
         key: "widgets",

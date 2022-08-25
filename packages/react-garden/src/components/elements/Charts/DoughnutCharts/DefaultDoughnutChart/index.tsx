@@ -1,8 +1,5 @@
 import { useMemo, ReactNode } from "react"
 
-// react-chartjs-2 components
-import { Doughnut } from "react-chartjs-2"
-
 // @mui material components
 import Card from "@mui/material/Card"
 import Icon from "@mui/material/Icon"
@@ -13,6 +10,33 @@ import MDTypography from "~/components/mui/MDTypography"
 
 // DefaultDoughnutChart configurations
 import configs from "~/components/elements/Charts/DoughnutCharts/DefaultDoughnutChart/configs"
+
+// react-chartjs-2 components
+import { Doughnut } from "react-chartjs-2"
+import {
+  Chart as ChartJS,
+  ArcElement,
+  // CategoryScale,
+  // LinearScale,
+  // PointElement,
+  // LineElement,
+  // BarElement,
+  Title,
+  Tooltip,
+  Legend
+} from "chart.js"
+
+ChartJS.register(
+  ArcElement,
+  // CategoryScale,
+  // LinearScale,
+  // PointElement,
+  // LineElement,
+  // BarElement,
+  Title,
+  Tooltip,
+  Legend
+)
 
 // Declaring props types for DefaultDoughnutChart
 interface Props {

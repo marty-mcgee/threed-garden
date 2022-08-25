@@ -1,8 +1,5 @@
 import { useMemo, ReactNode } from "react"
 
-// react-chartjs-2 components
-import { Bubble } from "react-chartjs-2"
-
 // @mui material components
 import Card from "@mui/material/Card"
 import Icon from "@mui/material/Icon"
@@ -16,6 +13,27 @@ import configs from "~/components/elements/Charts/BubbleChart/configs"
 
 // ThreeD Garden Base Styles
 import colors from "~/themes/theme-light/base/colors"
+
+// react-chartjs-2 components
+import { Bubble } from "react-chartjs-2"
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend
+} from "chart.js"
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend
+)
 
 // Declaring props types for BubbleChart
 interface Props {

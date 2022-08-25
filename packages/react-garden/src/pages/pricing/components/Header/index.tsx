@@ -35,8 +35,8 @@ function Header({ tabValue, tabHandler, children }: Props): JSX.Element {
         routes={pageRoutes}
         action={{
           type: "external",
-          route: "https://companyjuice.com/product/threed-garden",
-          label: "buy now",
+          route: "https://github.com/marty-mcgee/threed-garden",
+          label: "download now",
           color: "light",
         }}
         transparent
@@ -57,7 +57,7 @@ function Header({ tabValue, tabHandler, children }: Props): JSX.Element {
             `${linearGradient(
               rgba(black.main, 0.25),
               rgba(black.main, 0.25)
-            )}, url(${bgImage})`,
+            )}, url(${bgImage.src})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}>

@@ -36,65 +36,85 @@ function Charts(): JSX.Element {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox my={3}>
-        <MDBox mb={3}>
-          <Grid container spacing={3}>
+      <MDBox my={3} mr={2}>
+        {/* <MDBox my={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} md={6} sx={{ lineHeight: 0 }}>
               <MDTypography variant="h5">Charts</MDTypography>
               <MDTypography variant="button" color="text">
                 Charts on this page use Chart.js - Simple yet flexible
-                JavaScript charting for designers & developers.
+                JavaScript charting for designers + developers.
               </MDTypography>
             </Grid>
           </Grid>
+        </MDBox> */}
+        <MDBox mb={3}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <RadarChart
+                icon={{ color: "warning", component: "data_saver_on" }}
+                title="Radar Science Scores"
+                description="Radar Chart"
+                chart={radarChartData}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <PolarChart
+                icon={{ color: "warning", component: "scatter_plot" }}
+                title="Polar Bear Sightings"
+                description="Polar Chart"
+                chart={polarChartData}
+              />
+            </Grid>
+          </Grid>
         </MDBox>
-        <MDBox mb={6}>
-          <Grid container spacing={3}>
+        <MDBox my={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
               <DefaultLineChart
                 icon={{ component: "insights" }}
-                title="Line chart"
-                description="Product insights"
+                title="Project Insights"
+                description="Line Chart"
                 chart={defaultLineChartData}
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <GradientLineChart
                 icon={{ component: "show_chart" }}
-                title="Line chart with gradient"
-                description="Visits from devices"
+                title="Visits per Device"
+                description="Line Chart with Gradients"
                 chart={gradientLineChartData}
               />
             </Grid>
           </Grid>
         </MDBox>
-        <MDBox mb={6}>
-          <Grid container spacing={3}>
+        <MDBox my={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
               <VerticalBarChart
                 icon={{ color: "dark", component: "leaderboard" }}
-                title="Bar chart"
-                description="Sales related to age average"
+                title="Sales Related to Average Age"
+                description="Bar Chart Vertical"
                 chart={verticalBarChartData}
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <HorizontalBarChart
                 icon={{ color: "dark", component: "splitscreen" }}
-                title="Bar chart horizontal"
-                description="Sales related to age average"
+                title="Sales Related to Average Age"
+                description="Bar Chart Horizontal"
                 chart={horizontalBarChartData}
               />
             </Grid>
           </Grid>
         </MDBox>
-        <MDBox mb={6}>
-          <Grid container spacing={3}>
+        <MDBox my={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
               <MixedChart
                 icon={{ color: "primary", component: "auto_graph" }}
-                title="Mixed chart"
-                description="Analytics Insights"
+                title="Analytics Insights"
+                description="Mixed Chart"
                 height="19.75rem"
                 chart={mixedChartData}
               />
@@ -102,49 +122,30 @@ function Charts(): JSX.Element {
             <Grid item xs={12} md={6}>
               <BubbleChart
                 icon={{ color: "primary", component: "multiline_chart" }}
-                title="Bubble chart"
-                description="Users divided by regions"
+                title="Users by Region"
+                description="Bubble Chart"
+                height="19.75rem"
                 chart={bubbleChartData}
               />
             </Grid>
           </Grid>
         </MDBox>
-        <MDBox mb={6}>
-          <Grid container spacing={3}>
+        <MDBox my={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
               <DefaultDoughnutChart
                 icon={{ color: "success", component: "donut_small" }}
-                title="Doughnut chart"
-                description="Affiliates program"
+                title="Affiliate Program"
+                description="Doughnut Chart"
                 chart={defaultDoughnutChartData}
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <PieChart
                 icon={{ color: "success", component: "donut_small" }}
-                title="Pie chart"
-                description="Analytics Insights"
+                title="Membership Program"
+                description="Pie Chart"
                 chart={pieChartData}
-              />
-            </Grid>
-          </Grid>
-        </MDBox>
-        <MDBox mb={3}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <RadarChart
-                icon={{ color: "warning", component: "data_saver_on" }}
-                title="Radar chart"
-                description="Sciences score"
-                chart={radarChartData}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <PolarChart
-                icon={{ color: "warning", component: "scatter_plot" }}
-                title="Polar chart"
-                description="Analytics Insights"
-                chart={polarChartData}
               />
             </Grid>
           </Grid>
