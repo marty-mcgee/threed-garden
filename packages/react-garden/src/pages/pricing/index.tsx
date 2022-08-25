@@ -31,9 +31,9 @@ function PricingPage(): JSX.Element {
     <PageLayout>
       <Header tabValue={tabValue} tabHandler={handleSetTabValue}>
         <Container>
-          {/* <PricingCards prices={prices} />
+          <PricingCards prices={prices} />
           <TrustedBrands />
-          <Faq /> */}
+          <Faq />
         </Container>
       </Header>
       <Footer />

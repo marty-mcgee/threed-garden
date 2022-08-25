@@ -66,16 +66,15 @@ function Header({ tabValue, tabHandler, children }: Props): JSX.Element {
           spacing={3}
           justifyContent="center"
           sx={{ position: "relative", py: 22, textAlign: "center" }}>
-          <Grid item xs={11} lg={5}>
+          <Grid item xs={11} lg={6}>
             <MDBox mb={1}>
               <MDTypography variant="h2" color="white" fontWeight="bold">
-                Pick the best plan for you
+                Pick the plan that&apos;s best for you
               </MDTypography>
             </MDBox>
             <MDBox mb={2}>
               <MDTypography variant="body2" color="white" fontWeight="light">
-                You have Free Unlimited Updates and Premium Support on each
-                package.
+                You get Free Unlimited Updates and Premium Support on each package.
               </MDTypography>
             </MDBox>
           </Grid>
@@ -84,7 +83,7 @@ function Header({ tabValue, tabHandler, children }: Props): JSX.Element {
       <Grid container sx={{ px: 6, my: 8 }}>
         <Grid item xs={12}>
           <Card sx={{ mt: -16 }}>
-            <MDBox minWidth={{ xs: "22rem", md: "25rem" }} mx="auto" mt={6}>
+            <MDBox minWidth={{ xs: "22rem", md: "25rem" }} mx="auto" mt={5}>
               <AppBar position="static">
                 <Tabs value={tabValue} onChange={tabHandler}>
                   <Tab
@@ -99,7 +98,7 @@ function Header({ tabValue, tabHandler, children }: Props): JSX.Element {
                     id="annual"
                     label={
                       <MDBox py={0.5} px={2} color="inherit">
-                        Annual
+                        Yearly
                       </MDBox>
                     }
                   />

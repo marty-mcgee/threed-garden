@@ -20,7 +20,7 @@ function PricingCards({ prices }: { prices: string[] }): JSX.Element {
         <Grid item xs={12} lg={4}>
           <DefaultPricingCard
             color={darkMode ? "dark" : "white"}
-            badge={{ color: darkMode ? "warning" : "light", label: "starter" }}
+            badge={{ color: darkMode ? "success" : "light", label: "starter" }}
             price={{ currency: "$", value: starter, type: "mo" }}
             specifications={[
               { label: "2 team members", includes: true },
@@ -33,7 +33,7 @@ function PricingCards({ prices }: { prices: string[] }): JSX.Element {
             action={{
               type: "internal",
               route: "/",
-              color: darkMode ? "warning" : "dark",
+              color: darkMode ? "success" : "dark",
               label: "join",
             }}
             shadow={darkMode}
@@ -80,7 +80,7 @@ function PricingCards({ prices }: { prices: string[] }): JSX.Element {
               type: "internal",
               route: "/",
               color: darkMode ? "warning" : "dark",
-              label: "join",
+              label: "contact us",
             }}
             shadow={darkMode}
           />

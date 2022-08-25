@@ -40,9 +40,8 @@ function Overview(): JSX.Element {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox mb={2} />
       <Header>
-        <MDBox mt={5} mb={3}>
+        <MDBox mt={0} mb={0}>
           <Grid container spacing={1}>
             <Grid item xs={12} md={6} xl={4}>
               <PlatformSettings />
@@ -51,21 +50,21 @@ function Overview(): JSX.Element {
               <Divider orientation="vertical" sx={{ ml: -2, mr: 1 }} />
               <ProfileInfoCard
                 title="profile information"
-                description="Hi, I’m Alec Thompson, Decisions: If you can’t decide, the answer is no. If two equally difficult paths, choose the one more painful in the short term (pain avoidance is creating an illusion of equality)."
+                description="Hi, I’m Marty McGee. Decisions: If you can’t decide, the answer is no. If two equally difficult paths, choose the one more painful in the short term (pain avoidance is creating an illusion of equality)."
                 info={{
-                  fullName: "Alec M. Thompson",
-                  mobile: "(44) 123 1234 123",
-                  email: "alecthompson@mail.com",
+                  fullName: "Marty McGee",
+                  mobile: "+1 707-980-1136",
+                  email: "mcgee.marty@mail.com",
                   location: "USA",
                 }}
                 social={[
                   {
-                    link: "https://www.facebook.com/CompanyJuice/",
+                    link: "https://www.facebook.com/mcgee.marty/",
                     icon: <FacebookIcon />,
                     color: "facebook",
                   },
                   {
-                    link: "https://twitter.com/companyjuice/",
+                    link: "https://twitter.com/martymcgee/",
                     icon: <TwitterIcon />,
                     color: "twitter",
                   },
@@ -103,81 +102,81 @@ function Overview(): JSX.Element {
           <Grid container spacing={6}>
             <Grid item xs={12} md={6} xl={3}>
               <DefaultProjectCard
-                image={homeDecor1}
+                image={homeDecor1.src}
                 label="project #2"
                 title="modern"
                 description="As Uber works through a huge amount of internal management turmoil."
                 action={{
                   type: "internal",
-                  route: "/pages/profile/profile-overview",
+                  route: "/profile/profile-overview",
                   color: "info",
                   label: "view project",
                 }}
                 authors={[
-                  { image: team1, name: "Elena Morison" },
-                  { image: team2, name: "Ryan Milly" },
-                  { image: team3, name: "Nick Daniel" },
-                  { image: team4, name: "Peterson" },
+                  { image: team1.src, name: "Elena Morison" },
+                  { image: team2.src, name: "Ryan Milly" },
+                  { image: team3.src, name: "Nick Daniel" },
+                  { image: team4.src, name: "Peterson" },
                 ]}
               />
             </Grid>
             <Grid item xs={12} md={6} xl={3}>
               <DefaultProjectCard
-                image={homeDecor2}
+                image={homeDecor2.src}
                 label="project #1"
                 title="scandinavian"
                 description="Music is something that everyone has their own specific opinion about."
                 action={{
                   type: "internal",
-                  route: "/pages/profile/profile-overview",
+                  route: "/profile/profile-overview",
                   color: "info",
                   label: "view project",
                 }}
                 authors={[
-                  { image: team3, name: "Nick Daniel" },
-                  { image: team4, name: "Peterson" },
-                  { image: team1, name: "Elena Morison" },
-                  { image: team2, name: "Ryan Milly" },
+                  { image: team3.src, name: "Nick Daniel" },
+                  { image: team4.src, name: "Peterson" },
+                  { image: team1.src, name: "Elena Morison" },
+                  { image: team2.src, name: "Ryan Milly" },
                 ]}
               />
             </Grid>
             <Grid item xs={12} md={6} xl={3}>
               <DefaultProjectCard
-                image={homeDecor3}
+                image={homeDecor3.src}
                 label="project #3"
                 title="minimalist"
                 description="Different people have different taste, and various types of music."
                 action={{
                   type: "internal",
-                  route: "/pages/profile/profile-overview",
+                  route: "/profile/profile-overview",
                   color: "info",
                   label: "view project",
                 }}
                 authors={[
-                  { image: team4, name: "Peterson" },
-                  { image: team3, name: "Nick Daniel" },
-                  { image: team2, name: "Ryan Milly" },
-                  { image: team1, name: "Elena Morison" },
+                  { image: team4.src, name: "Peterson" },
+                  { image: team3.src, name: "Nick Daniel" },
+                  { image: team2.src, name: "Ryan Milly" },
+                  { image: team1.src, name: "Elena Morison" },
                 ]}
               />
             </Grid>
             <Grid item xs={12} md={6} xl={3}>
               <DefaultProjectCard
-                image={homeDecor4}
+                image={homeDecor4.src}
                 label="project #4"
                 title="gothic"
                 description="Why would anyone pick blue over pink? Pink is obviously a better color."
                 action={{
                   type: "internal",
-                  route: "/pages/profile/profile-overview",
+                  route: "/profile/profile-overview",
                   color: "info",
                   label: "view project",
                 }}
                 authors={[
-                  { image: team4, name: "Peterson" },
-                  { image: team3, name: "Nick Daniel" },
-                  { image: team2, name: "Ryan Milly" },
-                  { image: team1, name: "Elena Morison" },
+                  { image: team4.src, name: "Peterson" },
+                  { image: team3.src, name: "Nick Daniel" },
+                  { image: team2.src, name: "Ryan Milly" },
+                  { image: team1.src, name: "Elena Morison" },
                 ]}
               />
             </Grid>

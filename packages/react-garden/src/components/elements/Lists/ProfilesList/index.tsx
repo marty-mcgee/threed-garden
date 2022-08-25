@@ -47,7 +47,7 @@ function ProfilesList({ title, profiles, shadow }: Props): JSX.Element {
         py={1}
         mb={1}>
         <MDBox mr={2}>
-          <MDAvatar src={image} alt="something here" shadow="md" />
+          <MDAvatar src={image} alt="Avatar Image Here" shadow="md" />
         </MDBox>
         <MDBox
           display="flex"
@@ -62,7 +62,7 @@ function ProfilesList({ title, profiles, shadow }: Props): JSX.Element {
           </MDTypography>
         </MDBox>
         <MDBox ml="auto">
-          {action.type === "internal" ? (
+          {1 === 0 && action.type === "internal" ? (
             <MDButton
               component={Link}
               href={action.route}

@@ -49,7 +49,7 @@ function Header({ children }: { children?: ReactNode }): JSX.Element {
   const handleSetTabValue = (event: any, newValue: any) => setTabValue(newValue)
 
   return (
-    <MDBox position="relative" mb={5}>
+    <MDBox position="relative" mb={3} mr={2}>
       <MDBox
         display="flex"
         alignItems="center"
@@ -64,7 +64,7 @@ function Header({ children }: { children?: ReactNode }): JSX.Element {
             `${linearGradient(
               rgba(gradients.info.main, 0.6),
               rgba(gradients.info.state, 0.6)
-            )}, url(${backgroundImage})`,
+            )}, url(${backgroundImage.src})`,
           backgroundSize: "cover",
           backgroundPosition: "50%",
           overflow: "hidden",
@@ -74,14 +74,14 @@ function Header({ children }: { children?: ReactNode }): JSX.Element {
         sx={{
           position: "relative",
           mt: -8,
-          mx: 3,
+          mx: 2,
           py: 2,
           px: 2,
         }}>
-        <Grid container spacing={3} alignItems="center">
+        <Grid container spacing={2} alignItems="center">
           <Grid item>
             <MDAvatar
-              src={profileImage}
+              src={profileImage.src}
               alt="profile-image"
               size="xl"
               shadow="sm"
@@ -97,7 +97,7 @@ function Header({ children }: { children?: ReactNode }): JSX.Element {
               </MDTypography>
             </MDBox>
           </Grid>
-          <Grid item xs={12} md={6} lg={4} sx={{ ml: "auto" }}>
+          <Grid item xs={12} md={6} lg={5} sx={{ ml: "auto" }}>
             <AppBar position="static">
               <Tabs
                 orientation={tabsOrientation}
@@ -105,6 +105,7 @@ function Header({ children }: { children?: ReactNode }): JSX.Element {
                 onChange={handleSetTabValue}>
                 <Tab
                   label="App"
+                  sx={{ p: 1 }}
                   icon={
                     <Icon fontSize="small" sx={{ mt: -0.25 }}>
                       home
@@ -112,7 +113,8 @@ function Header({ children }: { children?: ReactNode }): JSX.Element {
                   }
                 />
                 <Tab
-                  label="Message"
+                  label="Messages"
+                  sx={{ p: 1 }}
                   icon={
                     <Icon fontSize="small" sx={{ mt: -0.25 }}>
                       email
@@ -121,6 +123,7 @@ function Header({ children }: { children?: ReactNode }): JSX.Element {
                 />
                 <Tab
                   label="Settings"
+                  sx={{ p: 1 }}
                   icon={
                     <Icon fontSize="small" sx={{ mt: -0.25 }}>
                       settings
