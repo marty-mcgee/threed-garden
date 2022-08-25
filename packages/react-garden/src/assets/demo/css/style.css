@@ -102,8 +102,9 @@
 
 #DEMO #planView {
   position: absolute; /* absolute */
-  bottom: 100px; /* */
   background-color: white;
+  bottom: 100px; /* */
+  left: 100px; /* */
 }
 
 #DEMO #planCanvas {
