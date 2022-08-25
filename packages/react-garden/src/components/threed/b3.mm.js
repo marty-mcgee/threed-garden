@@ -1,5 +1,5 @@
 // "use strict"
-console.log("HEY HEY HEY B3")
+console.log("[MM] HEY HEY HEY -- B3")
 function deselectAll() {
   try {
     ;(mouseMode = -1),
