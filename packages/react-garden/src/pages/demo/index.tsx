@@ -25,7 +25,7 @@ const DemoPage: FunctionComponent = (props): JSX.Element => {
     // console.log("window.$", window.$)
 
     // const B3 = dynamic(() =>
-    //   require("~/assets/demo/scripts/b3.min"),
+    //   require("~/components/threed/b3.mm"),
     //   {
     //     ssr: false
     //   }

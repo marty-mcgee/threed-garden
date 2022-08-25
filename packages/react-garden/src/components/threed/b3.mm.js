@@ -8546,6 +8546,7 @@ let backgroundRaster,
 // ========================================================
 // [MM] LOOKIE LOOKIE HERE -- time for DOM manipulation
 // with jQuery :( -- time to convert to React + Next.JS
+
 /*
 $(document).ready(function () {
   switch (UILayout) {
