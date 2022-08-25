@@ -34,7 +34,7 @@ const DemoPage: FunctionComponent = (props): JSX.Element => {
     // console.log("B3 onMount", B3)
 
     return (
-      console.debug(`[MM] /demo: onUnmount @ ${new Date().toISOString()} ${newword}`)
+      console.info(`[MM] /demo: onUnmount @ ${new Date().toISOString()} ${newword}`)
     )
   }, [])
 
