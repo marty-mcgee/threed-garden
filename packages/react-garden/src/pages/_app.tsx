@@ -72,6 +72,7 @@ import routes from "~/routes/routes"
 // import pageRoutes from "~/routes/page.routes"
 // const routes = pageRoutes
 
+// custom app css
 import "~/assets/demo/css/all.css"
 import "~/assets/demo/css/jquery.minicolors.css"
 import "~/assets/demo/css/style.css"
@@ -225,14 +226,14 @@ const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithL
       {/* SHOW/HIDE SIDENAV */}
       {layout === "dashboard" && (
         <>
-          <Sidenav
+          {/* <Sidenav
             color={sidenavColor}
             brandLogo={brandIcon}
             brandName="ThreeD Garden"
             routes={routes}
             onMouseEnter={handleOnMouseEnter}
             onMouseLeave={handleOnMouseLeave}
-          />
+          /> */}
           <Configurator />
           {/* {configsButton} */}
         </>

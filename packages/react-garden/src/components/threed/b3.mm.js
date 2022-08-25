@@ -8546,7 +8546,7 @@ let backgroundRaster,
 // ========================================================
 // [MM] LOOKIE LOOKIE HERE -- time for DOM manipulation
 // with jQuery :( -- time to convert to React + Next.JS
-
+/*
 $(document).ready(function () {
   switch (UILayout) {
     case "3dView":
@@ -9356,6 +9356,7 @@ $(document).ready(function () {
       : e.target == shareModal &&
         ($("#shareModal").hide(), showMouseIndicators())
   })
+*/
 
 // ========================================================
 // [MM] HEY HEY HEY -- more variables
