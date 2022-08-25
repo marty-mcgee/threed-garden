@@ -37,7 +37,7 @@
     left: 0px;
     right: 0px;
     height: 30px;
-    background-color: #4e4e4e;
+    background-color: #424346;
 }
 
 #catalogFilters {
@@ -46,7 +46,7 @@
     left: 0px;
     width: 100%;
     height: 30px;
-    background-color: #3a3a3a
+    background-color: #131418
 }
 
 #catalogTextFilter {
@@ -57,7 +57,7 @@
     color: white;
     /* font-family: 'Courier New', Courier, monospace; */
     border: 1px solid #2a2a2a;
-    background-color: #4e4e4e;
+    background-color: #424346;
 }
 
 #catalogItems {
@@ -69,19 +69,19 @@
     cursor: default;
     border-top: 1px solid gray;
     border-bottom: 1px solid gray;
-    background-color: #3a3a3a;
+    background-color: #131418;
 }
 
 #catalogView {
     position: absolute;
-    background-color: #4e4e4e;
+    background-color: #424346;
 }
 
 #propertiesView {
     position: absolute;
     overflow-y: auto;
     overflow-x: hidden;
-    background-color: #3a3a3a;
+    background-color: #131418;
     color: white;
     font-size: 14px;
     display: none;
@@ -91,7 +91,7 @@
     font-size: 17px;
     color: white;
     /* font-family: 'Courier New', Courier, monospace; */
-    background-color: #4e4e4e;
+    background-color: #424346;
     padding: 2px 4px 2px 4px;
 }
 
@@ -109,7 +109,7 @@
     bottom: 50px;
     left: 30px;
     right: 0px;
-    background-color: #3a3a3a;
+    background-color: #131418;
 }
 
 #rulerLeft {
@@ -149,7 +149,7 @@
     font-size: 12px;
     overflow: auto;
     color: white;
-    background-color: #4e4e4e;
+    background-color: #424346;
 }
 
 #modalLoadingDataInfo {
@@ -159,7 +159,7 @@
     font-size: 12px;
     overflow: auto;
     color: white;
-    background-color: #4e4e4e;
+    background-color: #424346;
 }
 
 #verticalSlider {
@@ -240,7 +240,7 @@
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #4e4e4e;
+    background-color: #424346;
 }
 
 #toolBar li {
@@ -290,7 +290,7 @@
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #4e4e4e;
+    background-color: #424346;
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 99;
@@ -318,7 +318,7 @@
     border: 1px solid #2a2a2a;
     float: left;
     margin: 4px;
-    background-color: #4e4e4e;
+    background-color: #424346;
     text-align: center;
 }
 
@@ -329,7 +329,7 @@
 
 .furnitureName {
     font-size: 12px;
-    color: #3a3a3a;
+    color: #131418;
 }
 
 .furnitureThumb {
@@ -339,7 +339,7 @@
 }
 
 .modal {
-    display: none;
+    /* display: none; */
     position: fixed;
     z-index: 1;
     left: 0px;
@@ -367,7 +367,7 @@
 
 .modal-header {
     padding: 2px 16px;
-    background-color: #4e4e4e;
+    background-color: #424346;
     color: white;
 }
 
@@ -385,7 +385,7 @@
     padding: 2px 16px;
     font-weight: 100;
     font-size: 14px;
-    background-color: #4e4e4e;
+    background-color: #424346;
     color: #8e8e8e;
 }
 
@@ -395,7 +395,7 @@
 
 .modal-content {
     position: relative;
-    background-color: #3a3a3a;
+    background-color: #131418;
     margin: auto;
     padding: 0;
     border: 1px solid #8e8e8e;
@@ -421,7 +421,7 @@
 
 .smallModal-header {
     padding: 2px 16px;
-    background-color: #4e4e4e;
+    background-color: #424346;
     color: white;
 }
 
@@ -439,7 +439,7 @@
     font-size: 14px;
     font-weight: 100;
     padding: 2px 16px;
-    background-color: #4e4e4e;
+    background-color: #424346;
     color: #bebebe;
 }
 
@@ -449,7 +449,7 @@
 
 .smallModal-content {
     position: relative;
-    background-color: #3a3a3a;
+    background-color: #131418;
     margin: auto;
     padding: 0;
     border: 1px solid #8e8e8e;
@@ -532,7 +532,7 @@
     padding: 4px 16px 4px 16px;
     border: 1px solid #2a2a2a;
     color: white;
-    background-color: #4e4e4e;
+    background-color: #424346;
 }
 
 #model3dLargeThumb {
@@ -544,7 +544,7 @@
 .tab {
     overflow: hidden;
     border: 1px solid #2a2a2a;
-    background-color: #4e4e4e;
+    background-color: #424346;
     margin-top: 10px;
 }
 
@@ -598,7 +598,7 @@
 .tooltip .tooltiptext {
     visibility: hidden;
     width: 400px;
-    background-color: #4e4e4e;
+    background-color: #424346;
     color: #fff;
     text-align: left;
     padding: 6px 12px;
@@ -612,7 +612,7 @@
 
 #localStoragePlanDiv {
     display: none;
-    background-color: #3a3a3a;
+    background-color: #131418;
 }
 
 #localStoragePlanImage {
@@ -622,7 +622,7 @@
 }
 
 #localStoragePlanImage:hover {
-    background-color: #3a3a3a;
+    background-color: #131418;
 }
 
 #loadLocalStoragePlanBtn {
@@ -633,7 +633,7 @@
     border: 1px solid #2a2a2a;
     color: white;
     padding: 12px 24px;
-    background-color: #4e4e4e;
+    background-color: #424346;
 }
 
 #loadLocalStoragePlanBtn:hover {
@@ -647,7 +647,7 @@
 }
 
 #featuredPlanImage:hover {
-    background-color: #3a3a3a;
+    background-color: #131418;
 }
 
 #DEMO hr {
@@ -668,7 +668,7 @@
     border: 1px solid #2a2a2a;
     color: white;
     padding: 12px 24px;
-    background-color: #4e4e4e;
+    background-color: #424346;
     text-decoration: none;
 }
 
@@ -683,7 +683,7 @@
     border: 1px solid #2a2a2a;
     color: white;
     padding: 1px 12px 1px 12px;
-    background-color: #4e4e4e;
+    background-color: #424346;
     text-decoration: none;
 }
 
@@ -698,7 +698,7 @@
     border: 1px solid #2a2a2a;
     color: white;
     padding: 4px 24px 4px 24px;
-    background-color: #4e4e4e;
+    background-color: #424346;
 }
 
 .mediumButton:hover {
@@ -716,7 +716,7 @@
     border: 1px solid #2a2a2a;
     display: none;
     color: white;
-    background-color: #4e4e4e;
+    background-color: #424346;
 }
 
 /* #DEMO input[type='checkbox'] {
@@ -731,7 +731,7 @@
     border: 1px solid #2a2a2a;
     color: white;
     padding: 12px 24px;
-    background-color: #4e4e4e;
+    background-color: #424346;
 }
 .propertiesViewBtn:hover{
     background-color: #787878;
