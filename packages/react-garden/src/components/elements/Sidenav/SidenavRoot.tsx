@@ -8,7 +8,7 @@ export default styled(Drawer)(
     const { transparentSidenav, whiteSidenav, miniSidenav, darkMode } =
       ownerState
 
-    const sidebarWidth = 250
+    const sidebarWidth = 240
     const { transparent, gradients, white, background } = palette
     const { xxl } = boxShadows
     const { pxToRem, linearGradient } = functions
