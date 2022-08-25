@@ -72,6 +72,10 @@ import routes from "~/routes/routes"
 // import pageRoutes from "~/routes/page.routes"
 // const routes = pageRoutes
 
+import "~/assets/demo/css/all.css"
+import "~/assets/demo/css/jquery.minicolors.css"
+import "~/assets/demo/css/style.css"
+
 // api: apollo: graphql
 // import { ApolloProvider } from "@apollo/client"
 // import { useApollo } from "~/lib/apollo/client"

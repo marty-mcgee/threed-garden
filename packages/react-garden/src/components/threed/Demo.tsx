@@ -47,7 +47,7 @@ const Demo: FunctionComponent = (props) => {
     // window.b3 = require("~/assets/demo/scripts/b3.min")
     // const B3 = require("~/assets/demo/scripts/b3.min")
     // require("~/assets/demo/scripts/b3.min")
-    const B3 = dynamic(() => require("~/assets/demo/scripts/b3.min"), { ssr: false })
+    const B3 = dynamic(() => import("~/assets/demo/scripts/b3.min"), { ssr: false })
     console.log("B3", B3)
 
     // window.ThreeCSG = require("~/assets/demo/scripts/ThreeCSG")
