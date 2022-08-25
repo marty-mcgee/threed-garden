@@ -5,18 +5,21 @@ import { Theme } from "@mui/material/styles"
 
 function item(theme: Theme | any, ownerState: any) {
   const { palette, borders, functions, transitions } = theme
-  const { active, color, transparentSidenav, whiteSidenav, darkMode } = ownerState
+  const { active, nested, color, transparentSidenav, whiteSidenav, darkMode } = ownerState
   const { transparent, white, grey } = palette
   const { borderRadius } = borders
   const { rgba } = functions
 
   return {
     // pl: 1,
-    // mt: 0.375,
-    // mb: 0.3,
+    pt: 0.5,
+    pb: 0.5,
+    mt: 0.5,
+    mb: 0.5,
     width: "100%",
     borderRadius: 0, // borderRadius.md,
     cursor: "pointer",
+
     backgroundColor: () => {
       let backgroundValue = transparent.main
 
@@ -59,6 +62,7 @@ function itemContent(theme: Theme, ownerState: any) {
     miniSidenav,
     name,
     active,
+    nested,
     transparentSidenav,
     whiteSidenav,
     darkMode,
@@ -78,6 +82,7 @@ function itemContent(theme: Theme, ownerState: any) {
     userSelect: "none",
     position: "relative",
     borderRadius: "50%",
+    pl: (nested) ? 1.25 : 0,
 
     "& span": {
       color:
@@ -124,6 +129,7 @@ function itemArrow(theme: Theme, ownerState: any) {
     miniSidenav,
     open,
     active,
+    nested,
     darkMode,
   } = ownerState
 

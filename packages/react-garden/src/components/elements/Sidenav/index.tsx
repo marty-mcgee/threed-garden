@@ -304,7 +304,7 @@ function Sidenav({
             pl={3}
             mt={2}
             mb={1}
-            ml={0}
+            ml={-0.3}
           >
             {title}
           </MDTypography>
@@ -313,7 +313,7 @@ function Sidenav({
         returnValue = (
           <Divider
             key={key}
-            sx={{ marginTop: 0.5 }}
+            sx={{ marginTop: 1 }}
             light={
               (!darkMode && !whiteSidenav && !transparentSidenav) ||
               (darkMode && !transparentSidenav && whiteSidenav)
@@ -351,7 +351,7 @@ function Sidenav({
       variant="permanent"
       ownerState={{ transparentSidenav, whiteSidenav, miniSidenav, darkMode }}
     >
-      <MDBox pt={2} pb={1} px={2} textAlign="center">
+      <MDBox pt={2} pb={2} px={2} textAlign="center">
         <NextLink href="/">
           <MDBox display="flex"
             alignItems="center"
@@ -388,7 +388,7 @@ function Sidenav({
         </NextLink>
       </MDBox>
       <Divider
-        sx={{ margin: 0 }}
+        sx={{ mt: 0, mb: 1 }}
         light={
           (!darkMode && !whiteSidenav && !transparentSidenav) ||
           (darkMode && !transparentSidenav && whiteSidenav)

@@ -107,12 +107,13 @@ const routes = [
       },
     ],
   },
+  { type: "divider", key: "divider-0" },
   { type: "title", title: "Pages", key: "title-pages" },
   {
     type: "collapse",
     name: "Pages",
     key: "pages",
-    icon: <Icon fontSize="medium">image</Icon>,
+    icon: <Icon fontSize="medium">pages</Icon>,
     collapse: [
       {
         name: "Profile",
@@ -365,22 +366,22 @@ const routes = [
           {
             name: "Overview",
             key: "overview",
-            href: "https://companyjuice.com/learning-lab/react/overview/material-dashboard/",
+            href: "#react/overview/material-dashboard/",
           },
           {
             name: "License",
             key: "license",
-            href: "https://companyjuice.com/learning-lab/react/license/material-dashboard/",
+            href: "#react/license/material-dashboard/",
           },
           {
             name: "Quick Start",
             key: "quick-start",
-            href: "https://companyjuice.com/learning-lab/react/quick-start/material-dashboard/",
+            href: "#react/quick-start/material-dashboard/",
           },
           {
             name: "Build Tools",
             key: "build-tools",
-            href: "https://companyjuice.com/learning-lab/react/build-tools/material-dashboard/",
+            href: "#react/build-tools/material-dashboard/",
           },
         ],
       },
@@ -391,12 +392,12 @@ const routes = [
           {
             name: "Functions",
             key: "functions",
-            href: "https://companyjuice.com/learning-lab/react/functions/material-dashboard/",
+            href: "#react/functions/material-dashboard/",
           },
           {
             name: "Routing System",
             key: "routing-system",
-            href: "https://companyjuice.com/learning-lab/react/routing-system/material-dashboard/",
+            href: "#react/routing-system/material-dashboard/",
           },
         ],
       },
