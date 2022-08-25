@@ -146,7 +146,7 @@ function DefaultPricingCard({
         </MDBox>
         <MDBox pb={3} px={3}>
           {renderSpecifications}
-          {action.type === "internal" ? (
+          {1 === 0 && action.type === "internal" ? (
             <MDBox mt={3}>
               <MDButton
                 component={Link}

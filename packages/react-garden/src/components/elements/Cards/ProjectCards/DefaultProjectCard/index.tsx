@@ -100,7 +100,7 @@ function DefaultProjectCard({
           {label}
         </MDTypography>
         <MDBox mb={1}>
-          {action.type === "internal" ? (
+          {1 === 0 && action.type === "internal" ? (
             <MDTypography
               component={Link}
               href={action.route}
@@ -129,7 +129,7 @@ function DefaultProjectCard({
           display="flex"
           justifyContent="space-between"
           alignItems="center">
-          {action.type === "internal" ? (
+          {1 === 0 && action.type === "internal" ? (
             <MDButton
               component={Link}
               href={action.route}
