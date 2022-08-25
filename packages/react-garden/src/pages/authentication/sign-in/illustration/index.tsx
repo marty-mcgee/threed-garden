@@ -56,7 +56,7 @@ function Illustration(): JSX.Element {
             Don&apos;t have an account?{" "}
             <MDTypography
               component={Link}
-              to="/authentication/sign-up/cover"
+              href="/authentication/sign-up/cover"
               variant="button"
               color="info"
               fontWeight="medium"

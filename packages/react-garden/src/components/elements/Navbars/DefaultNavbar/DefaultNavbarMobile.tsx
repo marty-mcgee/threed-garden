@@ -65,8 +65,13 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
                       <MDTypography
                         key={el.name}
                         component={el.route ? Link : MuiLink}
-                        to={el.route ? el.route : ""}
-                        href={el.href ? el.href : ""}
+                        // to={el.route ? el.route : ""}
+                        href={
+                          el.href
+                            ? el.href
+                            // : (e: any) => e.preventDefault()
+                            : el.route
+                        }
                         target={el.href ? "_blank" : ""}
                         rel={el.href ? "noreferrer" : "noreferrer"}
                         minWidth="11.25rem"
@@ -99,8 +104,13 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
                     key={item.key}
                     display="block"
                     component={item.route ? Link : MuiLink}
-                    to={item.route ? item.route : ""}
-                    href={item.href ? item.href : ""}
+                    // to={item.route ? item.route : ""}
+                    href={
+                      item.href
+                        ? item.href
+                        // : (e: any) => e.preventDefault()
+                        : item.route
+                    }
                     target={item.href ? "_blank" : ""}
                     rel={item.href ? "noreferrer" : "noreferrer"}
                     sx={({
