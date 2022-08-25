@@ -248,10 +248,10 @@ const WrappedApp: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPro
 
   const { Component, emotionCache = clientSideEmotionCache, pageProps, router } = props
 
-  console.log(`[MM] WrappedApp: Component`, Component)
-  console.log(`[MM] WrappedApp: emotionCache`, emotionCache)
-  console.log(`[MM] WrappedApp: pageProps`, pageProps)
-  console.log(`[MM] WrappedApp: router`, router)
+  // console.log(`[MM] WrappedApp: Component`, Component)
+  // console.log(`[MM] WrappedApp: emotionCache`, emotionCache)
+  // console.log(`[MM] WrappedApp: pageProps`, pageProps)
+  // console.log(`[MM] WrappedApp: router`, router)
 
   return (
     <MaterialUIControllerProvider>

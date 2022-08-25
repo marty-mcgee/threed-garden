@@ -7,7 +7,7 @@ const caloriesChartData: Types = {
     {
       label: "Calories",
       color: "dark",
-      data: [50, 45, 60, 60, 80, 65, 90, 80, 100],
+      data: [500, 450, 600, 600, 800, 650, 900, 800, 1000],
     },
   ],
 }
