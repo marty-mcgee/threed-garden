@@ -96,14 +96,14 @@ function ProgressLineChart({
           </MDBox>
         </MDBox>
       </MDBox>
-      {useMemo(
+      {/* {useMemo(
         () => (
           <MDBox mt={2}>
             <Line data={data} options={options} style={{ height }} />
           </MDBox>
         ),
         [chart, height, color]
-      )}
+      )} */}
     </Card>
   )
 }

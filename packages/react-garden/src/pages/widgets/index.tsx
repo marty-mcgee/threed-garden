@@ -106,8 +106,8 @@ function Widgets(): JSX.Element {
             <Grid item xs={12} lg={4}>
               <MasterCard
                 number={4562112245947852}
-                holder="jack peterson"
-                expires="11/22"
+                holder="juice master"
+                expires="07/27"
               />
             </Grid>
           </Grid>
@@ -133,8 +133,8 @@ function Widgets(): JSX.Element {
             </Grid>
             <Grid item xs={12} lg={3}>
               <Chart
-                title="calories"
-                count={97}
+                title="calories saved"
+                count={970}
                 percentage={{ color: "success", label: "+5%" }}
                 chart={caloriesChartData}
               />
@@ -161,7 +161,7 @@ function Widgets(): JSX.Element {
             </Grid>
           </Grid>
         </MDBox>
-        <Grid container spacing={3}>
+        {/* <Grid container spacing={3}>
           <Grid item xs={12} lg={5}>
             {useMemo(
               () => (
@@ -190,7 +190,7 @@ function Widgets(): JSX.Element {
           <Grid item xs={12} lg={4}>
             <OrdersOverview />
           </Grid>
-        </Grid>
+        </Grid> */}
       </MDBox>
       <Footer />
     </DashboardLayout>

@@ -1,4 +1,4 @@
-function configs(labels: any, datasets: any) {
+function configs(labels: string[], datasets: []) {
   return {
     data: {
       labels,

@@ -1,7 +1,8 @@
 import { ReactNode } from "react"
 
 // nextjs components
-import Link from "next/link"
+// import Link from "next/link"
+import Link from "@mui/material/Link"
 
 // @mui material components
 import Card from "@mui/material/Card"
