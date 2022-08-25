@@ -40,10 +40,10 @@ function navbar(theme: Theme | any, ownerState: any) {
     display: "grid",
     alignItems: "center",
     borderRadius: borderRadius.xl,
-    paddingTop: pxToRem(0),
-    paddingBottom: pxToRem(0),
+    paddingTop: pxToRem(13),
+    paddingBottom: pxToRem(12),
     paddingRight: absolute ? pxToRem(2) : pxToRem(8),
-    paddingLeft: absolute ? pxToRem(2) : pxToRem(0),
+    paddingLeft: absolute ? pxToRem(2) : pxToRem(8),
 
     "& > *": {
       transition: transitions.create("all", {
