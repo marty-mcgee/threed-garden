@@ -8,7 +8,7 @@ const bubbleChartData: Types = {
   labels: ["0", "10", "20", "30", "40", "50", "60", "70", "80", "90"],
   datasets: [
     {
-      label: "Dataset 1",
+      label: "Dataset One",
       color: "info",
       data: [
         { x: 100, y: 0, r: 10 },
@@ -20,7 +20,7 @@ const bubbleChartData: Types = {
       ],
     },
     {
-      label: "Dataset 2",
+      label: "Dataset Two",
       color: "dark",
       data: [
         { x: 70, y: 40, r: 10 },

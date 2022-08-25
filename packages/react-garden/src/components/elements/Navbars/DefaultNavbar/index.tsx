@@ -199,15 +199,16 @@ function DefaultNavbar({
                           {col.name}
                         </MDTypography>
                       </MDBox>
-                      {col.collapse.map((item: any) => (
+                      {col.collapse && col.collapse.map((item: any) => (
                         <MDTypography
                           key={item.name}
                           component={item.route ? Link : MuiLink}
-                          to={item.route ? item.route : ""}
+                          // to={item.route ? item.route : ""}
                           href={
                             item.href
                               ? item.href
-                              : (e: any) => e.preventDefault()
+                              // : (e: any) => e.preventDefault()
+                              : item.route
                           }
                           target={item.href ? "_blank" : ""}
                           rel={item.href ? "noreferrer" : "noreferrer"}
@@ -268,7 +269,7 @@ function DefaultNavbar({
 
           const routeComponent = {
             component: Link,
-            to: item.route,
+            href: item.route,
           }
 
           return (
@@ -428,7 +429,7 @@ function DefaultNavbar({
 
               const routeComponent = {
                 component: Link,
-                to: item.route,
+                href: item.route,
               }
 
               return (
@@ -560,7 +561,7 @@ function DefaultNavbar({
         })}>
         <MDBox
           component={Link}
-          to="/"
+          href="/"
           py={transparent ? 1.5 : 0.75}
           lineHeight={1}
           pl={{ xs: 0, lg: 1 }}>
@@ -579,7 +580,7 @@ function DefaultNavbar({
             <MDBox display={{ xs: "none", lg: "inline-block" }}>
               <MDButton
                 component={Link}
-                to={action.route}
+                href={action.route}
                 variant="gradient"
                 color={action.color ? action.color : "info"}
                 size="small">
@@ -622,7 +623,7 @@ function DefaultNavbar({
 
 // Declaring default props for DefaultNavbar
 DefaultNavbar.defaultProps = {
-  brand: "Company Juice",
+  brand: "ThreeD Garden",
   transparent: false,
   light: false,
   action: false,

@@ -1,8 +1,5 @@
 import { ReactNode, useMemo } from "react"
 
-// react-chartjs-2 components
-import { Bar } from "react-chartjs-2"
-
 // @mui material components
 import Card from "@mui/material/Card"
 import Icon from "@mui/material/Icon"
@@ -16,6 +13,27 @@ import configs from "~/components/elements/Charts/BarCharts/HorizontalBarChart/c
 
 // ThreeD Garden Base Styles
 import colors from "~/themes/theme-light/base/colors"
+
+// react-chartjs-2 components
+import { Bar } from "react-chartjs-2"
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+} from "chart.js"
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+)
 
 // Declaring props types for HorizontalBarChart
 interface Props {

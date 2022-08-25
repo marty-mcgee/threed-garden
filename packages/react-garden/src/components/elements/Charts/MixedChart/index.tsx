@@ -1,8 +1,5 @@
 import { useRef, useEffect, useState, useMemo, ReactNode } from "react"
 
-// react-chartjs-2 components
-import { Line } from "react-chartjs-2"
-
 // @mui material components
 import Card from "@mui/material/Card"
 import Icon from "@mui/material/Icon"
@@ -19,6 +16,29 @@ import configs from "~/components/elements/Charts/MixedChart/configs"
 
 // ThreeD Garden Base Styles
 import colors from "~/themes/theme-light/base/colors"
+
+// react-chartjs-2 components
+import { Line } from "react-chartjs-2"
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from "chart.js"
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+)
 
 // Declaring props types for MixedChart
 interface Props {
@@ -65,7 +85,16 @@ function MixedChart({
   chart,
 }: Props): JSX.Element {
   const chartRef = useRef(null)
-  const [chartData, setChartData] = useState({})
+  const defaultChartData = {
+    data: {
+      labels: ["HEY HEY HEY"],
+      datasets: [{ label: "HEY", color: "primary", data: [0] }],
+    },
+    options: {}
+  }
+  const [chartData, setChartData] = useState(
+    configs(defaultChartData.data.labels, defaultChartData.data.datasets)
+  ) // configs({}, [])
   const { data, options }: any = chartData
 
   useEffect(() => {
@@ -200,7 +229,7 @@ MixedChart.defaultProps = {
   icon: { color: "info", component: "" },
   title: "",
   description: "",
-  height: "19.125rem",
+  height: "100%",
 }
 
 export default MixedChart

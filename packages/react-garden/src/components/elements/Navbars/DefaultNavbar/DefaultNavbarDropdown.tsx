@@ -44,7 +44,7 @@ function DefaultNavbarDropdown({
 
   const routeComponent: any = {
     component: Link,
-    to: route,
+    href: route,
   }
 
   return (
@@ -59,7 +59,8 @@ function DefaultNavbarDropdown({
         opacity={light ? 1 : 0.6}
         sx={{ cursor: "pointer", userSelect: "none" }}
         {...(route && routeComponent)}
-        {...(href && linkComponent)}>
+        {...(href && linkComponent)}
+      >
         <MDTypography
           variant="body2"
           lineHeight={1}

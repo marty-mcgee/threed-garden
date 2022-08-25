@@ -1,8 +1,5 @@
 import { useMemo, ReactNode } from "react"
 
-// react-chartjs-2 components
-import { Line } from "react-chartjs-2"
-
 // @mui material components
 import Card from "@mui/material/Card"
 import Icon from "@mui/material/Icon"
@@ -14,6 +11,29 @@ import MDProgress from "~/components/mui/MDProgress"
 
 // ProgressLineChart configurations
 import configs from "~/components/elements/Charts/LineCharts/ProgressLineChart/config"
+
+// react-chartjs-2 components
+import { Line } from "react-chartjs-2"
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from "chart.js"
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+)
 
 // Declaring props types for GradientLineChart
 interface Props {
@@ -96,14 +116,14 @@ function ProgressLineChart({
           </MDBox>
         </MDBox>
       </MDBox>
-      {/* {useMemo(
+      {useMemo(
         () => (
           <MDBox mt={2}>
             <Line data={data} options={options} style={{ height }} />
           </MDBox>
         ),
         [chart, height, color]
-      )} */}
+      )}
     </Card>
   )
 }

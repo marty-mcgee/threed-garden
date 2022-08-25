@@ -1,8 +1,5 @@
 import { useMemo, ReactNode } from "react"
 
-// react-chartjs-2 components
-import { PolarArea } from "react-chartjs-2"
-
 // @mui material components
 import Card from "@mui/material/Card"
 import Icon from "@mui/material/Icon"
@@ -13,6 +10,35 @@ import MDTypography from "~/components/mui/MDTypography"
 
 // PolarChart configurations
 import configs from "~/components/elements/Charts/PolarChart/configs"
+
+// react-chartjs-2 components
+import { PolarArea } from "react-chartjs-2"
+import {
+  Chart as ChartJS,
+  RadialLinearScale,
+  ArcElement,
+  // CategoryScale,
+  // LinearScale,
+  // PointElement,
+  // LineElement,
+  // BarElement,
+  Title,
+  Tooltip,
+  Legend
+} from "chart.js"
+
+ChartJS.register(
+  RadialLinearScale,
+  ArcElement,
+  // CategoryScale,
+  // LinearScale,
+  // PointElement,
+  // LineElement,
+  // BarElement,
+  Title,
+  Tooltip,
+  Legend
+)
 
 // Declaring props types for PolarChart
 interface Props {

@@ -1,8 +1,5 @@
 import { useMemo, ReactNode } from "react"
 
-// react-chartjs-2 components
-import { Radar } from "react-chartjs-2"
-
 // @mui material components
 import Card from "@mui/material/Card"
 import Icon from "@mui/material/Icon"
@@ -19,6 +16,29 @@ import colors from "~/themes/theme-light/base/colors"
 
 // ThreeD Garden Helper Functions
 import rgba from "~/themes/theme-light/functions/rgba"
+
+// react-chartjs-2 components
+import { Radar } from "react-chartjs-2"
+import {
+  Chart as ChartJS,
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Title,
+  Tooltip,
+  Legend
+} from "chart.js"
+
+ChartJS.register(
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Title,
+  Tooltip,
+  Legend
+)
 
 // Declaring props types for RadarChart
 interface Props {
