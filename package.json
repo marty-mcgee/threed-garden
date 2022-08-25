@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "ThreeD Garden on ThreeJS React-Fiber using NextJS and Farmbot Ruby/JS (as a WP Plugin)",
   "repository": {
     "type": "git",
