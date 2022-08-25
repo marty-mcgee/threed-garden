@@ -268,7 +268,7 @@ const Model3dModal = (): JSX.Element => {
                 <td><span id="model3dLicenseModal"></span></td>
               </tr>
               <tr>
-                <td colspan="2">OBJ&nbsp;File&nbsp;Comments</td>
+                <td colSpan="2">OBJ&nbsp;File&nbsp;Comments</td>
               </tr>
             </table>
             <textarea id="modalModel3dObjHeader"></textarea>
@@ -351,7 +351,7 @@ const ShareModal = (): JSX.Element => {
           </button>
           <div style={{ margin: "10px 0px 10px 0px" }}>
             <div style={{ paddingTop: "6px" }}>
-              <label for="shareLinkUrl">Editable Copy</label><br />
+              <label htmlFor="shareLinkUrl">Editable Copy</label><br />
               <input
                 type="text"
                 id="shareLinkUrl"
@@ -375,7 +375,7 @@ const ShareModal = (): JSX.Element => {
             </div>
 
             <div style={{ paddingTop: "6px" }}>
-              <label for="shareLinkUrl3d">Read Only 3d View</label><br />
+              <label htmlFor="shareLinkUrl3d">Read Only 3d View</label><br />
               <input
                 type="text"
                 id="shareLinkUrl3d"
@@ -399,7 +399,7 @@ const ShareModal = (): JSX.Element => {
             </div>
 
             <div style={{ paddingTop: "6px" }}>
-              <label for="shareLinkUrlPlan">Read Only Plan View</label><br />
+              <label htmlFor="shareLinkUrlPlan">Read Only Plan View</label><br />
               <input
                 type="text"
                 id="shareLinkUrlPlan"
@@ -446,7 +446,7 @@ const ToolBar = (): JSX.Element => {
     <div id="toolBar">
       <ul>
         <li className="dropdown">
-          <a href="javascript:void(0)" className="dropbtn">File</a>
+          <a href="#javascript:void(0)" className="dropbtn">File</a>
           <div className="dropdown-content">
             <a onClick="setNewPlan();">New</a>
             <a id="loadBtn" onClick="document.getElementById('file').click();"
@@ -468,14 +468,14 @@ const ToolBar = (): JSX.Element => {
           </div>
         </li>
         <li className="dropdown">
-          <a href="javascript:void(0)" className="dropbtn">Edit</a>
+          <a href="#javascript:void(0)" className="dropbtn">Edit</a>
           <div className="dropdown-content">
             <a id="undoBtn" onClick="doUndo();">Undo</a>
             <a id="redoBtn" onClick="doRedo();">Redo</a>
           </div>
         </li>
         <li className="dropdown">
-          <a href="javascript:void(0)" className="dropbtn">Plan View</a>
+          <a href="#javascript:void(0)" className="dropbtn">Plan View</a>
           <div className="dropdown-content">
             <a onClick="setPropertiesView('planView');">Background Template</a>
             <a onClick="newLevel();">Add Level</a>
@@ -483,7 +483,7 @@ const ToolBar = (): JSX.Element => {
           </div>
         </li>
         <li className="dropdown">
-          <a href="javascript:void(0)" className="dropbtn">3D View</a>
+          <a href="#javascript:void(0)" className="dropbtn">3D View</a>
           <div className="dropdown-content">
             <a onClick="setPropertiesView('3dView');">Properties</a>
             <a onClick="openFullscreen('view3d');">Fullscreen</a>
@@ -604,7 +604,7 @@ const PropertiesView = (): JSX.Element => {
         <h3>3d Model Properties</h3>
         <table className="propertiesTable" style={{ minWidth: "290px" }}>
           <tr>
-            <td colspan="2" style={{ textAlign: "center" }}>
+            <td colSpan="2" style={{ textAlign: "center" }}>
               <div
                 onMouseDown="beginDrag(event, modalModel3dFurnitureId);"
                 className="disableSelection">
@@ -663,7 +663,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusOrMinusNumber(this, updateFurniturePosX);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -682,7 +682,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusOrMinusNumber(this, updateFurniturePosZ);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -701,7 +701,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusOrMinusNumber(this, updateFurniturePosY);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -720,7 +720,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusNumber(this, updateFurnitureWidth);"
-                maxlength="8" />
+                maxLength="8" />
               cm
               <input
                 type="checkbox"
@@ -743,7 +743,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusNumber(this, updateFurnitureDepth);"
-                maxlength="8" />
+                maxLength="8" />
               cm
               <input
                 type="checkbox"
@@ -766,7 +766,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusOrMinusNumber(this, updateFurnitureHeight);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -802,7 +802,7 @@ const PropertiesView = (): JSX.Element => {
                 max="360"
                 step="1"
                 value="0"
-                oninput="rotateCompass(this.value)"
+                onInput="rotateCompass(this.value)"
                 onChange="rotateCompass(this.value)" />
               <span id="compassHdgLbl">0°</span>
             </td>
@@ -827,7 +827,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusNumber(this, updateDefaultWallHeight);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -846,7 +846,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusNumber(this, updateDefaultWallThickness);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -870,7 +870,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusNumber(this, updateDefaultFloorThickness);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -894,7 +894,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusNumber(this, updateDefaultRoofThickness);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -913,7 +913,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusNumber(this, updateDefaultRoofRise);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -932,7 +932,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusOrMinusNumber(this, updateDefaultRoofStartHeight);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -951,7 +951,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusNumber(this, updateDefaultRoofWidth);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -996,7 +996,7 @@ const PropertiesView = (): JSX.Element => {
                 max="1.0"
                 step=".01"
                 value="0.33"
-                oninput="setBgTemplateOpacity(this.value)"
+                onInput="setBgTemplateOpacity(this.value)"
                 onChange="setBgTemplateOpacity(this.value)" />
             </td>
           </tr>
@@ -1140,7 +1140,7 @@ const PropertiesView = (): JSX.Element => {
                 max="1.0"
                 step=".01"
                 value="0.33"
-                oninput="setSunAzimuth(this.value)"
+                onInput="setSunAzimuth(this.value)"
                 onChange="setSunAzimuth(this.value)" />
             </td>
           </tr>
@@ -1155,7 +1155,7 @@ const PropertiesView = (): JSX.Element => {
                 max="1.0"
                 step=".01"
                 value="0.0"
-                oninput="setSunIncline(this.value)"
+                onInput="setSunIncline(this.value)"
                 onChange="setSunIncline(this.value)" />
             </td>
           </tr>
@@ -1169,7 +1169,7 @@ const PropertiesView = (): JSX.Element => {
                 min="0.0"
                 max="1.0"
                 step="0.1"
-                oninput="adjustAmbientLightBrightness(this.value)"
+                onInput="adjustAmbientLightBrightness(this.value)"
                 onChange="adjustAmbientLightBrightness(this.value)" />
             </td>
           </tr>
@@ -1183,7 +1183,7 @@ const PropertiesView = (): JSX.Element => {
                 min="0.0"
                 max="1.0"
                 step="0.1"
-                oninput="adjustDirLightBrightness(this.value)"
+                onInput="adjustDirLightBrightness(this.value)"
                 onChange="adjustDirLightBrightness(this.value)" />
             </td>
           </tr>
@@ -1197,7 +1197,7 @@ const PropertiesView = (): JSX.Element => {
                 min="0.0"
                 max="1.0"
                 step="0.1"
-                oninput="adjustHemiLightBrightness(this.value)"
+                onInput="adjustHemiLightBrightness(this.value)"
                 onChange="adjustHemiLightBrightness(this.value)" />
             </td>
           </tr>
@@ -1228,7 +1228,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusNumber(this, updateWallHeight);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -1247,7 +1247,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusNumber(this, updateWallHeight0);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -1266,7 +1266,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusNumber(this, updateWallHeight1);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -1285,7 +1285,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusNumber(this, updateWallThickness);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -1320,7 +1320,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusNumber(this, updateRoofThickness);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -1339,7 +1339,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusNumber(this, updateRoofRise);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -1358,7 +1358,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusOrMinusNumber(this, updateRoofStartHeight);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -1377,7 +1377,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusNumber(this, updateRoofWidth);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -1458,8 +1458,8 @@ const PropertiesView = (): JSX.Element => {
                   fontFamily: "'Courier New', Courier, monospace"
                 }}
                 className="editable"
-                onkeyup="validateText(event, this, updateTextValue);"
-                maxlength="100" />
+                onKeyUp="validateText(event, this, updateTextValue);"
+                maxLength="100" />
             </td>
           </tr>
           <tr>
@@ -1477,7 +1477,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusOrMinusNumber(this, updateTextX);"
-                maxlength="8" />
+                maxLength="8" />
             </td>
           </tr>
           <tr>
@@ -1495,7 +1495,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusOrMinusNumber(this, updateTextY);"
-                maxlength="8" />
+                maxLength="8" />
             </td>
           </tr>
           <tr>
@@ -1532,7 +1532,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusOrMinusNumber(this, updateLevelHeight);"
-                maxlength="8" />
+                maxLength="8" />
             </td>
           </tr>
         </table>
@@ -1555,7 +1555,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusNumber(this, updateGroundWidth);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -1574,7 +1574,7 @@ const PropertiesView = (): JSX.Element => {
                 }}
                 className="editable"
                 onChange="validatePlusNumber(this, updateGroundLength);"
-                maxlength="8" />
+                maxLength="8" />
               cm
             </td>
           </tr>
@@ -1628,6 +1628,109 @@ const PlanView = (): JSX.Element => {
   )
 }
 
+const TheBottom = (): JSX.Element => {
+  // console.debug("MyComponent")
+  useEffect(() => {
+    console.debug('MyComponent onMount')
+    return () => {
+      console.debug('MyComponent onUnmount')
+    }
+  }, [])
+  return (
+    <div>
+      <canvas
+        id="rulerLeft"
+        width="30"
+        height="500"
+        onMouseDown="addVerticalGuide();"
+        onMouseUp="removeVerticalGuide()"></canvas>
+      <canvas
+        id="rulerBottom"
+        width="1024"
+        height="20"
+        onMouseDown="addHorizontalGuide();"
+        onMouseUp="removeHorizontalGuide()"></canvas>
+
+      <div id="mouseIndicatorY"></div>
+      <div id="mouseIndicatorX"></div>
+
+      <div id="compass"></div>
+
+      <div id="view3d">
+        <canvas id="threeCanvas"></canvas>
+        <div id="overlayLogo3dView" className="overlayLogo">
+          <a
+            href="/"
+            style={{ float: "left", padding: "0px", marginTop: "0px" }}
+          ><img
+              src="favicon/favicon.png"
+              height="77px"
+              title="ThreeDGarden"
+              alt="ThreeDGarden" /></a>&nbsp;
+          <a
+            href="/"
+            style={{ paddingLeft: "10px", textDecoration: "none", fontSize: "32px" }}
+          >ThreeDGarden</a>
+        </div>
+        <div id="overlayMenu3dView">
+          <button
+            id="overlay3dviewRecenterBtn"
+            onClick="recenter3dview()"
+            className="smallButton">
+            Recenter
+          </button>
+          <button
+            id="overlay3dviewGotoPlanViewBtn"
+            onClick="gotoPlanView()"
+            className="smallButton">
+            Plan View
+          </button>
+        </div>
+      </div>
+      <div id="verticalSlider"></div>
+      <div id="horizontalSliderLeft"></div>
+      <div id="horizontalSliderRight"></div>
+
+      <div id="furnitureDragDiv"></div>
+
+      <img
+        id="fullscreenPlanViewBtn"
+        src="/demo/media/fullscreen.png"
+        width="30"
+        height="30"
+        onClick="openFullscreen('planView');" />
+      <img
+        id="fullscreen3dViewBtn"
+        src="/demo/media/fullscreen.png"
+        width="30"
+        height="30"
+        onClick="openFullscreen('view3d');" />
+
+      <progress value="50" max="100" className="center" id="progressBar"></progress>
+    </div>
+  )
+}
+
+const ReactThreeFiberView = (): JSX.Element => {
+  // console.debug("MyComponent")
+  useEffect(() => {
+    console.debug('MyComponent onMount')
+    return () => {
+      console.debug('MyComponent onUnmount')
+    }
+  }, [])
+  return (
+    <div id="canvas-container">
+      <Canvas>
+        <mesh>
+          <boxBufferGeometry />
+          <meshBasicMaterial />
+        </mesh>
+      </Canvas>
+    </div>
+  )
+}
+
 const MyComponent = (): JSX.Element => {
   // console.debug("MyComponent")
   useEffect(() => {
@@ -1654,99 +1757,26 @@ const ThreeDGarden = (): JSX.Element => {
     }
   }, [])
   return (
-    <div style={{ width: "100%" }}>
+    <div id="threedgarden-div" style={{ width: "100%" }}>
       {/* <div ref={title}>ThreeDGarden: {word}</div> */}
       {/* <div ref={root}>Three root</div> */}
-      {/* React Three Fiber
-      <div id="canvas-container">
-        <Canvas>
-          <mesh>
-            <boxBufferGeometry />
-            <meshBasicMaterial />
-          </mesh>
-        </Canvas>
-      </div>
-      */}
+
+      {/* jQuery Three Messy Happy */}
       <div id="DEMO">
-        <AboutModal />
-        <Model3dModal />
-        <LoadingModal />
-        <ShareModal />
+        {/* <AboutModal /> */}
+        {/* <Model3dModal /> */}
+        {/* <LoadingModal /> */}
+        {/* <ShareModal /> */}
         <ToolBar />
-        <CatalogView />
-        <PropertiesView />
-        <PlanView />
 
-        <canvas
-          id="rulerLeft"
-          width="30"
-          height="500"
-          onMouseDown="addVerticalGuide();"
-          onMouseUp="removeVerticalGuide()"></canvas>
-        <canvas
-          id="rulerBottom"
-          width="1024"
-          height="20"
-          onMouseDown="addHorizontalGuide();"
-          onMouseUp="removeHorizontalGuide()"></canvas>
+        {/* React Three Fiber - View */}
+        {/* <ReactThreeFiberView /> */}
 
-        <div id="mouseIndicatorY"></div>
-        <div id="mouseIndicatorX"></div>
+        {/* <CatalogView /> */}
+        {/* <PropertiesView /> */}
+        {/* <PlanView /> */}
 
-        <div id="compass"></div>
-
-        <div id="view3d">
-          <canvas id="threeCanvas"></canvas>
-          <div id="overlayLogo3dView" className="overlayLogo">
-            <a
-              href="/"
-              style={{ float: "left", padding: "0px", marginTop: "0px" }}
-            ><img
-                src="favicon/favicon.png"
-                height="77px"
-                title="ThreeDGarden"
-                alt="ThreeDGarden" /></a>&nbsp;
-            <a
-              href="/"
-              style={{ paddingLeft: "10px", textDecoration: "none", fontSize: "32px" }}
-            >ThreeDGarden</a>
-          </div>
-          <div id="overlayMenu3dView">
-            <button
-              id="overlay3dviewRecenterBtn"
-              onClick="recenter3dview()"
-              className="smallButton">
-              Recenter
-            </button>
-            <button
-              id="overlay3dviewGotoPlanViewBtn"
-              onClick="gotoPlanView()"
-              className="smallButton">
-              Plan View
-            </button>
-          </div>
-        </div>
-        <div id="verticalSlider"></div>
-        <div id="horizontalSliderLeft"></div>
-        <div id="horizontalSliderRight"></div>
-
-        <div id="furnitureDragDiv"></div>
-
-        <img
-          id="fullscreenPlanViewBtn"
-          src="/demo/media/fullscreen.png"
-          width="30"
-          height="30"
-          onClick="openFullscreen('planView');" />
-        <img
-          id="fullscreen3dViewBtn"
-          src="/demo/media/fullscreen.png"
-          width="30"
-          height="30"
-          onClick="openFullscreen('view3d');" />
-
-        <progress value="50" max="100" className="center" id="progressBar"></progress>
-
+        {/* <TheBottom /> */}
       </div>
     </div >
   )
