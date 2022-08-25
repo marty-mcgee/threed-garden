@@ -3,7 +3,7 @@ import { FunctionComponent, useEffect } from "react"
 import Head from "next/head"
 import dynamic from "next/dynamic"
 import Script from "next/script"
-import "~/assets/demo/css/Demo.module.css"
+// import "~/assets/demo/css/Demo.module.css"
 
 // import * as $ from "jquery"
 import paper from "paper"
@@ -16,13 +16,8 @@ import { Sky } from "three/examples/jsm/objects/Sky.js"
 // import { TWEEN } from "three/examples/jsm/libs/tween.module.min"
 import TWEEN from "@tweenjs/tween.js"
 
-// const B3 = dynamic(
-//   () => import("~/assets/demo/scripts/b3.min"),
-//   { loading: () => <p>...</p>, ssr: false }
-// )
-
 // <script type="text/javascript" data-cfasync="false">
-const Demo: FunctionComponent = (props) => {
+const Demo: FunctionComponent = (props): JSX.Element => {
 
   const word = "HEY HEY HEY"
   // const fragment = null
@@ -31,24 +26,28 @@ const Demo: FunctionComponent = (props) => {
 
   console.log("props", props)
 
-  // useEffect(() => {
-  // window.$ = window.jQuery = require('jquery')
-  window.$ = window.jQuery = require("~/assets/demo/scripts/jquery-1.11.3.min")
-  // window.$ = window.jQuery
-  // window.Diamonds = require('../public/jquery.diamonds.js')
-  // console.log("$", window.$)
-
   useEffect(() => {
-    // const B3 = dynamic(
-    //   () => import("~/assets/demo/scripts/b3.min"),
-    //   { loading: () => <p>...</p>, ssr: false }
-    // )
+    console.debug("Demo onMount", word)
+    // window.$ = window.jQuery = require('jquery')
+    window.$ = window.jQuery = require("~/assets/demo/scripts/jquery-1.11.3.min")
+    // window.$ = window.jQuery
+    // window.Diamonds = require('../public/jquery.diamonds.js')
+    // console.log("$", window.$)
+
+    // useEffect(() => {
+    const B3 = dynamic(
+      () => require("~/components/threed/b3.mm"),
+      {
+        // loading: () => <p>...loading...</p>,
+        ssr: false
+      }
+    )
+    // const B3 = dynamic(() => require("~/assets/demo/scripts/b3.min"), { ssr: false })
     // window.b3 = B3
     // window.b3 = require("~/assets/demo/scripts/b3.min")
     // const B3 = require("~/assets/demo/scripts/b3.min")
     // require("~/assets/demo/scripts/b3.min")
-    const B3 = dynamic(() => import("~/assets/demo/scripts/b3.min"), { ssr: false })
-    console.log("B3", B3)
+    console.log("B3.MM", B3)
 
     // window.ThreeCSG = require("~/assets/demo/scripts/ThreeCSG")
     // window.minicolors = require("~/assets/demo/scripts/jquery.minicolors.min")
@@ -60,6 +59,9 @@ const Demo: FunctionComponent = (props) => {
     //     autoRedraw : true, // Auto redraw diamonds when it detects resizing.
     //     itemSelector : `.${styles.item}` // the css selector to use to select diamonds-items.
     // })
+    return (
+      console.debug("Demo onUnmount", word)
+    )
   }, [])
 
   /*
