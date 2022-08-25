@@ -35,10 +35,10 @@ function MediaPlayer(): JSX.Element {
       })}>
       <MDBox p={3} position="relative" lineHeight={0}>
         <MDTypography variant="h5" color="white" fontWeight="medium">
-          Some Kind Of Blues
+          Schism
         </MDTypography>
         <MDTypography variant="button" color="white">
-          Deftones
+          Artist: TOOL
         </MDTypography>
         <MDBox display="flex" mt={3} pt={1}>
           <MDBox display="flex" alignItems="center" justifyContent="center">

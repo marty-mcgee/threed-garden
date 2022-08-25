@@ -64,7 +64,7 @@ function MasterCard({ color, number, holder, expires }: Props): JSX.Element {
           backgroundSize: "cover",
         }}
       />
-      <MDBox position="relative" zIndex={2} p={2}>
+      <MDBox position="relative" zIndex={2} px={4} py={2}>
         <MDBox color="white" p={1} lineHeight={0} display="inline-block">
           <Icon>wifi</Icon>
         </MDBox>
@@ -73,15 +73,14 @@ function MasterCard({ color, number, holder, expires }: Props): JSX.Element {
           color="white"
           fontWeight="medium"
           sx={{ mt: 3, mb: 5, pb: 1 }}>
-          {num1}&nbsp;&nbsp;&nbsp;{num2}&nbsp;&nbsp;&nbsp;{num3}
-          &nbsp;&nbsp;&nbsp;{num4}
+          {num1}&nbsp;&nbsp;{num2}&nbsp;&nbsp;{num3}&nbsp;&nbsp;{num4}
         </MDTypography>
         <MDBox
           display="flex"
           justifyContent="space-between"
           alignItems="center">
           <MDBox display="flex" alignItems="center">
-            <MDBox mr={3} lineHeight={1}>
+            <MDBox mr={5} lineHeight={1}>
               <MDTypography
                 variant="button"
                 color="white"
@@ -113,7 +112,7 @@ function MasterCard({ color, number, holder, expires }: Props): JSX.Element {
           <MDBox display="flex" justifyContent="flex-end" width="20%">
             <MDBox
               component="img"
-              src={masterCardLogo}
+              src={masterCardLogo.src}
               alt="master card"
               width="60%"
               mt={1}

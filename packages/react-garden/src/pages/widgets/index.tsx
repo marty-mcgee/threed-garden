@@ -44,7 +44,37 @@ function Widgets(): JSX.Element {
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox my={3}>
-        <MDBox mb={3}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} lg={5}>
+            {useMemo(
+              () => (
+                <Calendar
+                  header={{ title: "calendar", date: "August 2022" }}
+                  headerToolbar={false}
+                  initialView="dayGridMonth"
+                  initialDate="2022-08-10"
+                  events={calendarEventsData}
+                  selectable
+                  editable
+                />
+              ),
+              [calendarEventsData]
+            )}
+          </Grid>
+          <Grid item xs={12} lg={3}>
+            <MDBox mb={3}>
+              <CategoriesList
+                title="categories"
+                categories={categoriesListData}
+              />
+            </MDBox>
+            <MediaPlayer />
+          </Grid>
+          <Grid item xs={12} lg={4}>
+            <OrdersOverview />
+          </Grid>
+        </Grid>
+        <MDBox my={3}>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6} lg={4}>
               <UpcomingEvents />
@@ -90,8 +120,8 @@ function Widgets(): JSX.Element {
                 <DefaultInfoCard
                   icon="account_balance"
                   title="salary"
-                  description="Belong Interactive"
-                  value="+$2000"
+                  description="Direct Deposit"
+                  value="$4000"
                 />
               </MDBox>
               <MDBox width="100%">
@@ -161,36 +191,6 @@ function Widgets(): JSX.Element {
             </Grid>
           </Grid>
         </MDBox>
-        {/* <Grid container spacing={3}>
-          <Grid item xs={12} lg={5}>
-            {useMemo(
-              () => (
-                <Calendar
-                  header={{ title: "calendar", date: "Monday, 2022" }}
-                  headerToolbar={false}
-                  initialView="dayGridMonth"
-                  initialDate="2022-08-10"
-                  events={calendarEventsData}
-                  selectable
-                  editable
-                />
-              ),
-              [calendarEventsData]
-            )}
-          </Grid>
-          <Grid item xs={12} lg={3}>
-            <MDBox mb={3}>
-              <CategoriesList
-                title="categories"
-                categories={categoriesListData}
-              />
-            </MDBox>
-            <MediaPlayer />
-          </Grid>
-          <Grid item xs={12} lg={4}>
-            <OrdersOverview />
-          </Grid>
-        </Grid> */}
       </MDBox>
       <Footer />
     </DashboardLayout>
