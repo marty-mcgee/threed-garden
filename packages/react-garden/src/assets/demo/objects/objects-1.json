@@ -8,5 +8,25 @@
       "z": 242.08
     },
     "useMask": false
+  },
+  "birchTreeWithLeaves": {
+    "license": "CC BY 4.0",
+    "author": "Sean Bradley",
+    "size": {
+      "x": 196.13,
+      "y": 186.96,
+      "z": 200.27
+    },
+    "useMask": false
+  },
+  "willowTreeNoLeaves": {
+    "license": "CC BY 4.0",
+    "author": "Sean Bradley",
+    "size": {
+      "x": 594.45,
+      "y": 950.09,
+      "z": 635.88
+    },
+    "useMask": false
   }
 }
