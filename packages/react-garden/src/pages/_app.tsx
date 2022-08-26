@@ -1,4 +1,4 @@
-// [MM] APPROACH: TS ( future with APOLLO MUI/CHAKRA)
+// [MM] APPROACH: TS (future with APOLLO MUI)
 // ========================================================
 
 // react
@@ -9,8 +9,8 @@ import {
   ReactElement,
   ReactNode,
   FunctionComponent,
-  JSXElementConstructor,
-  Key
+  // JSXElementConstructor,
+  // Key
 } from "react"
 
 // old way. new way: do with TS interfaces
@@ -116,7 +116,8 @@ interface IAppPropsWithLayoutEmotion extends AppProps {
 // MAIN APP
 
 // export default function MyApp(props: IAppPropsWithLayoutEmotion) { ???
-const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => { // [MM] ooooo, very interesting (type|interface)
+const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => {
+  // [MM] ooooo, very interesting (type|interface)
 
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
 
