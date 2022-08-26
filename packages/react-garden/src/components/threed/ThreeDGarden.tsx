@@ -442,24 +442,60 @@ const ToolBar = (): JSX.Element => {
 
   const setNewPlan: MouseEventHandler<HTMLAnchorElement> = (): any => {
     alert("HEY HEY HEY setNewPlan")
-    // try {
-    //   // resetPlan(),
-    //   //   (planHistory = []),
-    //   //   (planHistoryPosition = 0),
-    //   //   planHistory.push(JSON.stringify(plan)),
-    //   //   setToolMode("pointer"),
-    //   localStorage.clear()
-    //   console.log("[MM] setNewPlan TRY: localStorage.clear()")
-    // } catch (e) {
-    //   console.log("[MM] setNewPlan CATCH e:", e)
-    // }
+    try {
+      // resetPlan(),
+      //   (planHistory = []),
+      //   (planHistoryPosition = 0),
+      //   planHistory.push(JSON.stringify(plan)),
+      //   setToolMode("pointer"),
+      localStorage.clear()
+      console.log("[MM] setNewPlan TRY: localStorage.clear()")
+      // LINE 1098 B3MM
+      localStorage.setItem("plan", JSON.stringify({ "word": "HEY HEY HEY, LINE 1098 setItem plan -- setNewPlan" }))
+    } catch (e) {
+      console.log("[MM] setNewPlan CATCH e:", e)
+    }
+  }
+
+  const doUndo: MouseEventHandler<HTMLAnchorElement> = (): any => {
+    alert("HEY HEY HEY doUndo")
+    try {
+      // resetPlan(),
+      //   (planHistory = []),
+      //   (planHistoryPosition = 0),
+      //   planHistory.push(JSON.stringify(plan)),
+      //   setToolMode("pointer"),
+      localStorage.clear()
+      console.log("[MM] doUndo TRY: localStorage.clear()")
+      // LINE 1098 B3MM
+      localStorage.setItem("plan", JSON.stringify({ "word": "HEY HEY HEY, LINE 1098 setItem plan -- doUndo" }))
+    } catch (e) {
+      console.log("[MM] doUndo CATCH e:", e)
+    }
+  }
+
+  const doRedo: MouseEventHandler<HTMLAnchorElement> = (): any => {
+    alert("HEY HEY HEY doRedo")
+    try {
+      // resetPlan(),
+      //   (planHistory = []),
+      //   (planHistoryPosition = 0),
+      //   planHistory.push(JSON.stringify(plan)),
+      //   setToolMode("pointer"),
+      localStorage.clear()
+      console.log("[MM] doRedo TRY: localStorage.clear()")
+      // LINE 1098 B3MM
+      localStorage.setItem("plan", JSON.stringify({ "word": "HEY HEY HEY, LINE 1098 setItem plan -- doRedo" }))
+    } catch (e) {
+      console.log("[MM] doRedo CATCH e:", e)
+    }
   }
 
   return (
     <div id="toolBar">
       <ul>
         <li className="dropdown">
-          <a href="#javascript:void(0)" className="dropbtn">
+          <a className="dropbtn">
             File
           </a>
           <div className="dropdown-content">
@@ -467,7 +503,8 @@ const ToolBar = (): JSX.Element => {
             <a onClick={setNewPlan}>
               New
             </a>
-            {/* <a
+            {/*
+            <a
               id="loadBtn"
               onClick="document.getElementById('file').click();">
               Load
@@ -503,20 +540,21 @@ const ToolBar = (): JSX.Element => {
               id="fullscreenApp"
               onClick="openFullscreen('DEMO');">
               Fullscreen
-            </a> */}
+            </a>
+            */}
           </div>
         </li>
-        {/* <li className="dropdown">
-          <a href="#javascript:void(0)" className="dropbtn">
+        <li className="dropdown">
+          <a className="dropbtn">
             Edit
           </a>
           <div className="dropdown-content">
-            <a id="undoBtn" onClick="doUndo();">Undo</a>
-            <a id="redoBtn" onClick="doRedo();">Redo</a>
+            <a id="undoBtn" onClick={doUndo}>Undo</a>
+            <a id="redoBtn" onClick={doRedo}>Redo</a>
           </div>
-        </li> */}
+        </li>
         {/* <li className="dropdown">
-          <a href="#javascript:void(0)" className="dropbtn">
+          <a className="dropbtn">
             Plan View
           </a>
           <div className="dropdown-content">
@@ -526,7 +564,7 @@ const ToolBar = (): JSX.Element => {
           </div>
         </li> */}
         {/* <li className="dropdown">
-          <a href="#javascript:void(0)" className="dropbtn">
+          <a className="dropbtn">
             3D View
           </a>
           <div className="dropdown-content">
