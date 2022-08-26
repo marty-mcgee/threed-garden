@@ -39,6 +39,267 @@ export function setNewPlan() {
     console.log("setNewPlan : " + e)
   }
 }
+export function resetPlan() {
+  try {
+    Object.keys(Texts).forEach(function (e) {
+      let t = Texts[e]
+      "object" == typeof t && deleteTextByKey(e)
+    }),
+      (textIdCounter = 0)
+  } catch (e) {
+    console.log("resetPlan : 1 : " + e)
+  }
+  try {
+    Object.keys(Dimensions).forEach(function (e) {
+      let t = Dimensions[e]
+      "object" == typeof t && deleteDimensionByKey(e)
+    }),
+      (dimensionIdCounter = 0)
+  } catch (e) {
+    console.log("resetPlan : 2 : " + e)
+  }
+  try {
+    Object.keys(Furniture).forEach(function (e) {
+      let t = Furniture[e]
+      "object" == typeof t &&
+        (Furniture[e].data.toolsRectangleInner &&
+          Furniture[e].data.toolsRectangleInner.remove(),
+        Furniture[e].remove(),
+        delete Furniture[e])
+    })
+  } catch (e) {
+    console.log("resetPlan : 3 : " + e)
+  }
+  try {
+    Object.keys(Floors).forEach(function (e) {
+      let t = Floors[e]
+      "object" == typeof t && (Floors[e].remove(), delete Floors[e])
+    }),
+      Object.keys(Floors3d).forEach(function (e) {
+        let t = Floors3d[e]
+        "object" == typeof t && (scene.remove(Floors3d[e]), delete Floors3d[e])
+      }),
+      (floorIdCounter = 0)
+  } catch (e) {
+    console.log("resetPlan : 4 : " + e)
+  }
+  try {
+    Object.keys(Walls).forEach(function (e) {
+      let t = Walls[e]
+      "object" == typeof t && (Walls[e].remove(), delete Walls[e])
+    })
+    for (let e in wallsRectangles) wallsRectangles[e].remove()
+  } catch (e) {
+    console.log("resetPlan : 5 : " + e)
+  }
+  try {
+    Object.keys(wallsRectangles3d).forEach(function (e) {
+      let t = wallsRectangles3d[e]
+      "object" == typeof t && scene.remove(wallsRectangles3d[e])
+    })
+  } catch (e) {
+    console.log("resetPlan : 6 : " + e)
+  }
+  try {
+    Object.keys(Roofs).forEach(function (e) {
+      "object" == typeof Roofs[e] && (Roofs[e].remove(), delete Roofs[e])
+    })
+    for (let t in roofsRectangles) roofsRectangles[t].remove()
+  } catch (e) {
+    console.log("resetPlan : 5.1 : " + e)
+  }
+  try {
+    Object.keys(roofsRectangles3d).forEach(function (e) {
+      "object" == typeof roofsRectangles3d[e] &&
+        scene.remove(roofsRectangles3d[e])
+    })
+  } catch (e) {
+    console.log("resetPlan : 6.1 : " + e)
+  }
+  try {
+    Object.keys(maskObjectsApplied).forEach(function (e) {
+      "object" == typeof maskObjectsApplied[e] &&
+        scene.remove(maskObjectsApplied[e])
+    })
+  } catch (e) {
+    console.log("resetPlan : 6.5 : " + e)
+  }
+  try {
+    Object.keys(maskObjectsAppliedRoof).forEach(function (e) {
+      "object" == typeof maskObjectsAppliedRoof[e] &&
+        scene.remove(maskObjectsAppliedRoof[e])
+    })
+  } catch (e) {
+    console.log("resetPlan : 6.6 : " + e)
+  }
+  try {
+    Object.keys(clickableObjects).forEach(function (e) {
+      let t = clickableObjects[e]
+      "object" == typeof t &&
+        "groundLayer" != t.name &&
+        (scene.remove(clickableObjects[e]), delete clickableObjects[e])
+    })
+  } catch (e) {
+    console.log("resetPlan : 7 : " + e)
+  }
+  try {
+    Object.keys(maskObjects).forEach(function (e) {
+      let t = maskObjects[e]
+      "object" == typeof t &&
+        (scene.remove(maskObjects[e]), delete maskObjects[e])
+    }),
+      (clickableObjectsCounter = 0)
+  } catch (e) {
+    console.log("resetPlan : 8 : " + e)
+  }
+  try {
+    backgroundRaster &&
+      backgroundRaster.data &&
+      (backgroundRaster.data.toolsRectangleInner &&
+        backgroundRaster.data.toolsRectangleInner.remove(),
+      backgroundRaster.remove(),
+      (backgroundRaster = null),
+      clearFileInput(document.getElementById("backgroundImageFile")))
+  } catch (e) {
+    console.log("resetPlan : 9 : " + e)
+  }
+  try {
+    Object.keys(verticalGuides).forEach(function (e) {
+      verticalGuides[e].remove(), delete verticalGuides[e]
+    }),
+      Object.keys(horizontalGuides).forEach(function (e) {
+        horizontalGuides[e].remove(), delete horizontalGuides[e]
+      }),
+      (guideCounter = 0)
+  } catch (e) {
+    console.log("resetPlan : 10 : " + e)
+  }
+  try {
+    ;(furnitureToLoadCount = 0),
+      (loadedFurnitureCount = 0),
+      (wallIdCounter = 0),
+      (wallsRectangles = {}),
+      (wallsRectangles3d = {}),
+      (maskObjectsApplied = {}),
+      (maskObjectsAppliedRoof = {}),
+      (roofIdCounter = 0),
+      (roofsRectangles = {}),
+      (roofsRectangles3d = {}),
+      (Furniture = {}),
+      (Walls = {}),
+      (Roofs = {}),
+      (Floors = {}),
+      (Floors3d = {}),
+      (Dimensions = {}),
+      (Texts = {}),
+      (plan = {}),
+      (plan.furniture = {}),
+      (plan.walls = {}),
+      (plan.roofs = {}),
+      (plan.levels = {}),
+      (plan.levels[0] = { id: 0, height: 0 }),
+      (plan.floors = {}),
+      (plan.dimensions = {}),
+      (plan.texts = {}),
+      (plan.verticalGuides = {}),
+      (plan.horizontalGuides = {}),
+      (plan.furnitureAddedKey = null),
+      (plan.furnitureDirtyKey = null),
+      (plan.furnitureDeletedKey = null),
+      (plan.wallAddedKey = null),
+      (plan.wallDirtyKey = null),
+      (plan.wallDeletedKey = null),
+      (plan.roofAddedKey = null),
+      (plan.roofDirtyKey = null),
+      (plan.roofDeletedKey = null),
+      (plan.floorAddedKey = null),
+      (plan.floorDirtyKey = null),
+      (plan.floorDeletedKey = null),
+      (plan.dimensionAddedKey = null),
+      (plan.dimensionEditedKey = null),
+      (plan.dimensionDeletedKey = null),
+      (plan.textAddedKey = null),
+      (plan.textEditedKey = null),
+      (plan.textDeletedKey = null),
+      (plan.wallDiffuse = wallMaterial.color),
+      (plan.wallOpacity = wallMaterial.opacity),
+      (plan.wallSpecular = wallMaterial.specular),
+      (plan.roofDiffuse = roofMaterial.color),
+      (plan.roofOpacity = roofMaterial.opacity),
+      (plan.roofSpecular = roofMaterial.specular),
+      (plan.floorDiffuse = floorMaterial.color),
+      (plan.floorOpacity = floorMaterial.opacity),
+      (plan.floorSpecular = floorMaterial.specular),
+      (plan.groundDiffuse = groundMat.color.getHexString()),
+      (plan.groundOpacity = groundMat.opacity),
+      (plan.groundSpecular = groundMat.specular.getHexString()),
+      (plan.depthWrite = document.getElementById("depthWriteMode").checked),
+      (plan.sortObjects = document.getElementById("sortObjectsMode").checked),
+      (plan.azimuth = azimuth),
+      (plan.inclination = inclination)
+  } catch (e) {
+    console.log("resetPlan : 11 : " + e)
+  }
+  try {
+    otherLayerWallsRasters &&
+      otherLayerWallsRasters.length > 0 &&
+      (otherLayerWallsRasters.forEach(function (e) {
+        e.remove()
+      }),
+      (otherLayerWallsRasters = [])),
+      otherLayerFurnitureRasters &&
+        otherLayerFurnitureRasters.length > 0 &&
+        (otherLayerFurnitureRasters.forEach(function (e) {
+          e.remove()
+        }),
+        (otherLayerFurnitureRasters = []))
+  } catch (e) {
+    console.log("resetPlan : 12 : " + e)
+  }
+  try {
+    levelButtons || addNewLevel("0"), setLevel("0")
+  } catch (e) {
+    console.log("resetPlan : 13 : " + e)
+  }
+  try {
+    Object.keys(levelButtons).forEach(function (e) {
+      "0" !== e.toString() &&
+        (levelButtons[e].parentNode.removeChild(levelButtons[e]),
+        delete levelButtons[e],
+        project.layers["level" + e].remove())
+    })
+  } catch (e) {
+    console.log("resetPlan : 14 : " + e)
+  }
+  try {
+    project.layers.forEach(function (e) {
+      "0" === !e.data.id && e.remove()
+    })
+  } catch (e) {
+    console.log("resetPlan : 15 : " + e)
+  }
+  ;(project.activeLayer.name = "level0"),
+    (project.activeLayer.data = { id: "0", height: 0 })
+  try {
+    ;(floorsGroup = {}),
+      (floorsGroup[0] = new paper.Group()),
+      (roofsGroup = {}),
+      (roofsGroup[0] = new paper.Group()),
+      (wallsGroup = {}),
+      (wallsGroup[0] = new paper.Group()),
+      (dimensionsGroup = {}),
+      (dimensionsGroup[0] = new paper.Group()),
+      (furnitureGroup = {}),
+      (furnitureGroup[0] = new paper.Group()),
+      (textsGroup = {}),
+      (textsGroup[0] = new paper.Group()),
+      (guidesGroup = new paper.Group()),
+      deselectAll(),
+      render()
+  } catch (e) {
+    console.log("resetPlan : 15 : " + e)
+  }
+}
 export function doUndo() {
   if (planHistoryPosition > 0) {
     planHistoryPosition--, deselectAll()
@@ -1184,267 +1445,6 @@ function clearFileInput(e) {
     e.value = null
   } catch (e) {}
   e.value && e.parentNode.replaceChild(e.cloneNode(!0), e)
-}
-function resetPlan() {
-  try {
-    Object.keys(Texts).forEach(function (e) {
-      let t = Texts[e]
-      "object" == typeof t && deleteTextByKey(e)
-    }),
-      (textIdCounter = 0)
-  } catch (e) {
-    console.log("resetPlan : 1 : " + e)
-  }
-  try {
-    Object.keys(Dimensions).forEach(function (e) {
-      let t = Dimensions[e]
-      "object" == typeof t && deleteDimensionByKey(e)
-    }),
-      (dimensionIdCounter = 0)
-  } catch (e) {
-    console.log("resetPlan : 2 : " + e)
-  }
-  try {
-    Object.keys(Furniture).forEach(function (e) {
-      let t = Furniture[e]
-      "object" == typeof t &&
-        (Furniture[e].data.toolsRectangleInner &&
-          Furniture[e].data.toolsRectangleInner.remove(),
-        Furniture[e].remove(),
-        delete Furniture[e])
-    })
-  } catch (e) {
-    console.log("resetPlan : 3 : " + e)
-  }
-  try {
-    Object.keys(Floors).forEach(function (e) {
-      let t = Floors[e]
-      "object" == typeof t && (Floors[e].remove(), delete Floors[e])
-    }),
-      Object.keys(Floors3d).forEach(function (e) {
-        let t = Floors3d[e]
-        "object" == typeof t && (scene.remove(Floors3d[e]), delete Floors3d[e])
-      }),
-      (floorIdCounter = 0)
-  } catch (e) {
-    console.log("resetPlan : 4 : " + e)
-  }
-  try {
-    Object.keys(Walls).forEach(function (e) {
-      let t = Walls[e]
-      "object" == typeof t && (Walls[e].remove(), delete Walls[e])
-    })
-    for (let e in wallsRectangles) wallsRectangles[e].remove()
-  } catch (e) {
-    console.log("resetPlan : 5 : " + e)
-  }
-  try {
-    Object.keys(wallsRectangles3d).forEach(function (e) {
-      let t = wallsRectangles3d[e]
-      "object" == typeof t && scene.remove(wallsRectangles3d[e])
-    })
-  } catch (e) {
-    console.log("resetPlan : 6 : " + e)
-  }
-  try {
-    Object.keys(Roofs).forEach(function (e) {
-      "object" == typeof Roofs[e] && (Roofs[e].remove(), delete Roofs[e])
-    })
-    for (let t in roofsRectangles) roofsRectangles[t].remove()
-  } catch (e) {
-    console.log("resetPlan : 5.1 : " + e)
-  }
-  try {
-    Object.keys(roofsRectangles3d).forEach(function (e) {
-      "object" == typeof roofsRectangles3d[e] &&
-        scene.remove(roofsRectangles3d[e])
-    })
-  } catch (e) {
-    console.log("resetPlan : 6.1 : " + e)
-  }
-  try {
-    Object.keys(maskObjectsApplied).forEach(function (e) {
-      "object" == typeof maskObjectsApplied[e] &&
-        scene.remove(maskObjectsApplied[e])
-    })
-  } catch (e) {
-    console.log("resetPlan : 6.5 : " + e)
-  }
-  try {
-    Object.keys(maskObjectsAppliedRoof).forEach(function (e) {
-      "object" == typeof maskObjectsAppliedRoof[e] &&
-        scene.remove(maskObjectsAppliedRoof[e])
-    })
-  } catch (e) {
-    console.log("resetPlan : 6.6 : " + e)
-  }
-  try {
-    Object.keys(clickableObjects).forEach(function (e) {
-      let t = clickableObjects[e]
-      "object" == typeof t &&
-        "groundLayer" != t.name &&
-        (scene.remove(clickableObjects[e]), delete clickableObjects[e])
-    })
-  } catch (e) {
-    console.log("resetPlan : 7 : " + e)
-  }
-  try {
-    Object.keys(maskObjects).forEach(function (e) {
-      let t = maskObjects[e]
-      "object" == typeof t &&
-        (scene.remove(maskObjects[e]), delete maskObjects[e])
-    }),
-      (clickableObjectsCounter = 0)
-  } catch (e) {
-    console.log("resetPlan : 8 : " + e)
-  }
-  try {
-    backgroundRaster &&
-      backgroundRaster.data &&
-      (backgroundRaster.data.toolsRectangleInner &&
-        backgroundRaster.data.toolsRectangleInner.remove(),
-      backgroundRaster.remove(),
-      (backgroundRaster = null),
-      clearFileInput(document.getElementById("backgroundImageFile")))
-  } catch (e) {
-    console.log("resetPlan : 9 : " + e)
-  }
-  try {
-    Object.keys(verticalGuides).forEach(function (e) {
-      verticalGuides[e].remove(), delete verticalGuides[e]
-    }),
-      Object.keys(horizontalGuides).forEach(function (e) {
-        horizontalGuides[e].remove(), delete horizontalGuides[e]
-      }),
-      (guideCounter = 0)
-  } catch (e) {
-    console.log("resetPlan : 10 : " + e)
-  }
-  try {
-    ;(furnitureToLoadCount = 0),
-      (loadedFurnitureCount = 0),
-      (wallIdCounter = 0),
-      (wallsRectangles = {}),
-      (wallsRectangles3d = {}),
-      (maskObjectsApplied = {}),
-      (maskObjectsAppliedRoof = {}),
-      (roofIdCounter = 0),
-      (roofsRectangles = {}),
-      (roofsRectangles3d = {}),
-      (Furniture = {}),
-      (Walls = {}),
-      (Roofs = {}),
-      (Floors = {}),
-      (Floors3d = {}),
-      (Dimensions = {}),
-      (Texts = {}),
-      (plan = {}),
-      (plan.furniture = {}),
-      (plan.walls = {}),
-      (plan.roofs = {}),
-      (plan.levels = {}),
-      (plan.levels[0] = { id: 0, height: 0 }),
-      (plan.floors = {}),
-      (plan.dimensions = {}),
-      (plan.texts = {}),
-      (plan.verticalGuides = {}),
-      (plan.horizontalGuides = {}),
-      (plan.furnitureAddedKey = null),
-      (plan.furnitureDirtyKey = null),
-      (plan.furnitureDeletedKey = null),
-      (plan.wallAddedKey = null),
-      (plan.wallDirtyKey = null),
-      (plan.wallDeletedKey = null),
-      (plan.roofAddedKey = null),
-      (plan.roofDirtyKey = null),
-      (plan.roofDeletedKey = null),
-      (plan.floorAddedKey = null),
-      (plan.floorDirtyKey = null),
-      (plan.floorDeletedKey = null),
-      (plan.dimensionAddedKey = null),
-      (plan.dimensionEditedKey = null),
-      (plan.dimensionDeletedKey = null),
-      (plan.textAddedKey = null),
-      (plan.textEditedKey = null),
-      (plan.textDeletedKey = null),
-      (plan.wallDiffuse = wallMaterial.color),
-      (plan.wallOpacity = wallMaterial.opacity),
-      (plan.wallSpecular = wallMaterial.specular),
-      (plan.roofDiffuse = roofMaterial.color),
-      (plan.roofOpacity = roofMaterial.opacity),
-      (plan.roofSpecular = roofMaterial.specular),
-      (plan.floorDiffuse = floorMaterial.color),
-      (plan.floorOpacity = floorMaterial.opacity),
-      (plan.floorSpecular = floorMaterial.specular),
-      (plan.groundDiffuse = groundMat.color.getHexString()),
-      (plan.groundOpacity = groundMat.opacity),
-      (plan.groundSpecular = groundMat.specular.getHexString()),
-      (plan.depthWrite = document.getElementById("depthWriteMode").checked),
-      (plan.sortObjects = document.getElementById("sortObjectsMode").checked),
-      (plan.azimuth = azimuth),
-      (plan.inclination = inclination)
-  } catch (e) {
-    console.log("resetPlan : 11 : " + e)
-  }
-  try {
-    otherLayerWallsRasters &&
-      otherLayerWallsRasters.length > 0 &&
-      (otherLayerWallsRasters.forEach(function (e) {
-        e.remove()
-      }),
-      (otherLayerWallsRasters = [])),
-      otherLayerFurnitureRasters &&
-        otherLayerFurnitureRasters.length > 0 &&
-        (otherLayerFurnitureRasters.forEach(function (e) {
-          e.remove()
-        }),
-        (otherLayerFurnitureRasters = []))
-  } catch (e) {
-    console.log("resetPlan : 12 : " + e)
-  }
-  try {
-    levelButtons || addNewLevel("0"), setLevel("0")
-  } catch (e) {
-    console.log("resetPlan : 13 : " + e)
-  }
-  try {
-    Object.keys(levelButtons).forEach(function (e) {
-      "0" !== e.toString() &&
-        (levelButtons[e].parentNode.removeChild(levelButtons[e]),
-        delete levelButtons[e],
-        project.layers["level" + e].remove())
-    })
-  } catch (e) {
-    console.log("resetPlan : 14 : " + e)
-  }
-  try {
-    project.layers.forEach(function (e) {
-      "0" === !e.data.id && e.remove()
-    })
-  } catch (e) {
-    console.log("resetPlan : 15 : " + e)
-  }
-  ;(project.activeLayer.name = "level0"),
-    (project.activeLayer.data = { id: "0", height: 0 })
-  try {
-    ;(floorsGroup = {}),
-      (floorsGroup[0] = new paper.Group()),
-      (roofsGroup = {}),
-      (roofsGroup[0] = new paper.Group()),
-      (wallsGroup = {}),
-      (wallsGroup[0] = new paper.Group()),
-      (dimensionsGroup = {}),
-      (dimensionsGroup[0] = new paper.Group()),
-      (furnitureGroup = {}),
-      (furnitureGroup[0] = new paper.Group()),
-      (textsGroup = {}),
-      (textsGroup[0] = new paper.Group()),
-      (guidesGroup = new paper.Group()),
-      deselectAll(),
-      render()
-  } catch (e) {
-    console.log("resetPlan : 15 : " + e)
-  }
 }
 function drawPlan(e) {
   setInterfacePropertiesFromPlan(e),
@@ -8310,6 +8310,7 @@ let mouseMode = 0,
   defaultCursor = "default",
   // deselectAll,
   UILayout = "default",
+
   toolsGroup,
   gridGroup,
   furnitureGroup = {},
@@ -8319,6 +8320,7 @@ let mouseMode = 0,
   dimensionsGroup = {},
   textsGroup = {},
   guidesGroup,
+
   defaultWallHeight = 265,
   defaultWallThickness = 20,
   defaultRoofThickness = 25,
@@ -8326,6 +8328,7 @@ let mouseMode = 0,
   defaultRoofRise = 300,
   defaultRoofStartHeight = 0,
   defaultFloorThickness = 25,
+
   rotateIcon,
   resizeIcon,
   elevateIcon,
@@ -8344,28 +8347,33 @@ let mouseMode = 0,
   movePointIcons = [],
   movePointIconSelectedId = 0,
   selectedMovePointIcon,
-  wallPath,
-  wallIdCounter = 0,
-  wallsRectangles = {},
-  wallsRectangles3d = {},
-  wallHelperPath,
-  wallHelperRectangle,
-  startedDrawingWalls = !1,
-  floorPath,
-  floorIdCounter = 0,
-  floorHelperPath,
-  startedDrawingFloor = !1,
-  roofPath,
-  roofIdCounter = 0,
-  roofHelperPath,
-  roofsRectangles = {},
-  roofsRectangles3d = {},
-  roofHelperRectangle,
-  startedDrawingRoofs = !1,
-  dimensionPath,
-  dimensionIdCounter = 0,
-  dimensionHelperPath,
-  startedDrawingDimension = !1,
+
+  wallPath, //
+  wallIdCounter = 0, //
+  wallsRectangles = {}, //
+  wallsRectangles3d = {}, //
+  wallHelperPath, //
+  wallHelperRectangle, //
+  startedDrawingWalls = !1, //
+
+  floorPath, //
+  floorIdCounter = 0, //
+  floorHelperPath, //
+  startedDrawingFloor = !1, //
+
+  roofPath, //
+  roofIdCounter = 0, //
+  roofHelperPath, //
+  roofsRectangles = {}, //
+  roofsRectangles3d = {}, //
+  roofHelperRectangle, //
+  startedDrawingRoofs = !1, //
+
+  dimensionPath, //
+  dimensionIdCounter = 0, //
+  dimensionHelperPath, //
+  startedDrawingDimension = !1, //
+
   stretchYPath,
   stretchYStartHeight = 0,
   elevatePath,
@@ -8380,8 +8388,11 @@ let mouseMode = 0,
   // redrawGrid,
   xLines = [],
   yLines = [],
-  furnitureToLoadCount = 0,
-  loadedFurnitureCount = 0,
+
+  furnitureItems = {}, //
+  furnitureToLoadCount = 0, //
+  loadedFurnitureCount = 0, //
+
   tools,
   offsetMousePoint,
   ctrlKeyPressed = !1,
@@ -8390,10 +8401,12 @@ let mouseMode = 0,
   screenScale,
   ratioX = 0,
   ratioY = 0,
+
   lastNewWallSegmentClick = Date.now(),
   lastNewRoofSegmentClick = Date.now(),
   lastNewFloorSegmentClick = Date.now(),
-  furnitureItems = {},
+
+  // THREE >>
   canvas3d,
   camera,
   renderer,
@@ -8413,11 +8426,15 @@ let mouseMode = 0,
   tween,
   raycaster,
   mouse,
-  clickableObjects = {},
-  clickableObjectsCounter = -1,
-  maskObjects = {},
-  maskObjectsApplied = {},
-  maskObjectsAppliedRoof = {},
+  // << THREE
+
+  clickableObjects = {}, //
+  clickableObjectsCounter = -1, //
+
+  maskObjects = {}, //
+  maskObjectsApplied = {}, //
+  maskObjectsAppliedRoof = {}, //
+
   verticalSlider,
   verticalSliderDragging,
   horizontalSliderLeft,
@@ -8439,49 +8456,58 @@ let mouseMode = 0,
   unjoinedRoofSegments = [],
   allRoofSegments = [],
   snapPointOverride = {},
-  textPath,
-  textIdCounter = 0,
-  startedDrawingText = !1,
-  editingTextId = -1,
-  Furniture = {},
-  Walls = {},
-  Roofs = {},
-  Floors = {},
-  Floors3d = {},
-  Dimensions = {},
-  Texts = {},
-  plan = {}
-;(plan.furniture = {}),
-  (plan.walls = {}),
-  (plan.roofs = {}),
-  (plan.floors = {}),
-  (plan.levels = {}),
-  (plan.levels[0] = { id: 0, height: 0 }),
-  (plan.dimensions = {}),
-  (plan.texts = {}),
-  (plan.verticalGuides = {}),
-  (plan.horizontalGuides = {})
-let planHistory = [],
-  planHistoryPosition = 0
-planHistory.push(JSON.stringify(plan))
-let backgroundRaster,
-  backgroundRasterRatioX = 1,
-  backgroundRasterRatioY = 1,
+
+  textPath, //
+  textIdCounter = 0, //
+  startedDrawingText = !1, //
+  editingTextId = -1, //
+
+  Furniture = {}, //
+  Walls = {}, //
+  Roofs = {}, //
+  Floors = {}, //
+  Floors3d = {}, //
+  Dimensions = {}, //
+  Texts = {}, //
+
+  plan = {} //
+;(plan.furniture = {}), //
+  (plan.walls = {}), //
+  (plan.roofs = {}), //
+  (plan.floors = {}), //
+  (plan.levels = {}), //
+  (plan.levels[0] = { id: 0, height: 0 }), //
+  (plan.dimensions = {}), //
+  (plan.texts = {}), //
+  (plan.verticalGuides = {}), //
+  (plan.horizontalGuides = {}) //
+
+let planHistory = [], //
+  planHistoryPosition = 0 //
+planHistory.push(JSON.stringify(plan)) //
+// <<
+
+let backgroundRaster, //
+  backgroundRasterRatioX = 1, //
+  backgroundRasterRatioY = 1, //
+
   idToCopyPaste = -1,
   lastPasteX = 0,
   lastPasteY = 0,
+
   progressBar,
   focusPoint,
   selectedItem3DAxes,
   activeLevel,
-  levelButtons,
-  otherLayerWallsRasters = [],
-  otherLayerFurnitureRasters = [],
+  levelButtons, //
+  otherLayerWallsRasters = [], //
+  otherLayerFurnitureRasters = [], //
   extrudeSettings = {
     steps: 1,
     depth: defaultFloorThickness,
     bevelEnabled: !1,
   },
+
   modalModel3dFurnitureId = -1,
   model3dObjectRef,
   model3dViewOpen = !1,
@@ -8490,6 +8516,7 @@ let backgroundRaster,
   model3dViewContainer,
   model3dSceneCamera,
   model3dViewCanvas,
+
   loadingProgressTxt = "",
   lastMousePoint,
   dltext,
@@ -8506,12 +8533,14 @@ let backgroundRaster,
   shareLinkUrl = "",
   shareLinkUrl3d = "",
   shareLinkUrlPlan = "",
-  verticalGuides = {},
-  horizontalGuides = {},
-  selectedGuideId,
-  guideCounter = 0,
-  draggingNewGuide = !1,
-  snapTolerance = 1,
+
+  verticalGuides = {}, //
+  horizontalGuides = {}, //
+  selectedGuideId, //
+  guideCounter = 0, //
+  draggingNewGuide = !1, //
+  snapTolerance = 1, //
+
   groundWidth = 5e3,
   groundLength = 5e3
 
@@ -9336,25 +9365,25 @@ $(document).ready(function () {
 // [MM] HEY HEY HEY -- more variables
 
 let busy = !1,
-  onProgress = function (e) {
-    if (e.lengthComputable) {
-      let t = (e.loaded / e.total) * 100
-      ;(progressBar.value = t), (progressBar.style.display = "block")
-    }
-  },
-  onError = function (e) {},
-  screenAvg = (screen.width + screen.height) / 2,
-  redrawing = !1,
-  strokeWidth = 0,
-  getAngleRadians = function (e, t) {
-    return Math.atan2(t.y - e.y, t.x - e.x)
-  },
-  getDistance = function (e, t) {
-    let o = e.x - t.x,
-      a = e.y - t.y,
-      n = Math.sqrt(o * o + a * a)
-    return n
+onProgress = function (e) {
+  if (e.lengthComputable) {
+    let t = (e.loaded / e.total) * 100
+    ;(progressBar.value = t), (progressBar.style.display = "block")
   }
+},
+onError = function (e) {},
+screenAvg = (screen.width + screen.height) / 2,
+redrawing = !1,
+strokeWidth = 0,
+getAngleRadians = function (e, t) {
+  return Math.atan2(t.y - e.y, t.x - e.x)
+},
+getDistance = function (e, t) {
+  let o = e.x - t.x,
+    a = e.y - t.y,
+    n = Math.sqrt(o * o + a * a)
+  return n
+}
 
 // ========================================================
 // [MM] HEY HEY HEY -- a prototype function :)

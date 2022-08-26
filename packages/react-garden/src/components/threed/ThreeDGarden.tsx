@@ -23,21 +23,12 @@ import { Canvas, useFrame } from '@react-three/fiber'
 // import * as $ from "jquery"
 
 // ======================================================
-// COLORFUL CONSOLE MESSAGES (ccm)
 
-// 1. Pass the css styles in an array
-const ccm1 = [
-  "color: green",
-  // "background: yellow",
-  // "border: 1px solid red",
-  // "text-shadow: 2px 2px black",
-  "font-size: 16px",
-  "padding: 10px",
-].join(";")
-// 2. Concatenate the individual array items
-// into a string of values separated by a semicolon (;)
-// 3. Pass the styles variable
-// console.log("%cHEY HEY HEY", ccm1)
+// COLORFUL CONSOLE MESSAGES (ccm)
+const ccm1 = "color: green; font-size: 16px;"
+const ccm2 = "color: red; font-size: 16px;"
+console.log("%cWELCOME", ccm1)
+// console.log("%cOOPSIES", ccm2)
 
 // ======================================================
 
@@ -449,8 +440,155 @@ const ShareModal = (): JSX.Element => {
 }
 
 const ToolBar = (): JSX.Element => {
-  // console.debug("ToolBar")
+
   const word = `[MM] @ ${new Date().toISOString()}`
+  // console.debug("ToolBar", word)
+
+  const plan = {
+    furniture: {},
+    walls: {},
+    roofs: {},
+    floors: {},
+    levels: [
+      { id: 0, height: 0 }, // levels[0]
+    ],
+    dimensions: {},
+    texts: {},
+    verticalGuides: {},
+    horizontalGuides: {},
+  }
+  let planHistory = []
+  planHistory.push(JSON.stringify(plan)) // planHistory[0]
+  let planHistoryPosition = 0
+
+  const Texts = {}
+  const Dimensions = {}
+  const Floors = {}
+  const Floors3d = {}
+  const Roofs = {}
+  const Walls = {}
+  const Furniture = {}
+
+  let textPath = ""
+  let textIdCounter = 0
+  let startedDrawingText = !1
+  let editingTextId = -1
+
+  let dimensionPath = ""
+  let dimensionIdCounter = 0
+  let dimensionHelperPath = ""
+  let startedDrawingDimension = !1
+
+  let floorPath = ""
+  let floorIdCounter = 0
+  let floorHelperPath = ""
+  let startedDrawingFloor = !1
+
+  let wallPath = ""
+  let wallIdCounter = 0
+  const wallsRectangles = {}
+  const wallsRectangles3d = {}
+  let wallHelperPath = ""
+  let wallHelperRectangle = ""
+  let startedDrawingWalls = !1
+
+  let roofPath = ""
+  let roofIdCounter = 0
+  let roofHelperPath = ""
+  const roofsRectangles = {}
+  const roofsRectangles3d = {}
+  let roofHelperRectangle = ""
+  let startedDrawingRoofs = !1
+
+  const maskObjects = {}
+  const maskObjectsApplied = {}
+  const maskObjectsAppliedRoof = {}
+
+  const clickableObjects = {}
+  let clickableObjectsCounter = -1
+
+  let backgroundRaster = ""
+  let backgroundRasterRatioX = 1
+  let backgroundRasterRatioY = 1
+
+  let levelButtons = ""
+  let otherLayerWallsRasters: any[] = []
+  let otherLayerFurnitureRasters: any[] = []
+
+  const verticalGuides = {}
+  const horizontalGuides = {}
+  let selectedGuideId = ""
+  let guideCounter = 0
+  let draggingNewGuide = !1
+  let snapTolerance = 1
+
+  const furnitureItems = {}
+  let furnitureToLoadCount = 0
+  let loadedFurnitureCount = 0
+
+  // THREE >>
+  let canvas3d
+  let camera
+  let renderer
+  let container
+  let scene = {}
+  let mesh
+  let ground
+  let controls
+  let tween
+  let raycaster
+  let mouse
+  // lights
+  let hemiLight
+  let dirLight
+  let ambientLight
+  let pointLight
+  // materials
+  let groundMat = {
+    color: { getHexString: () => "" },
+    opacity: 1,
+    specular: { getHexString: () => "" }
+  }
+  let wallMaterial = {
+    color: { getHexString: () => "" },
+    opacity: 1,
+    specular: { getHexString: () => "" }
+  }
+  let floorMaterial = {
+    color: { getHexString: () => "" },
+    opacity: 1,
+    specular: { getHexString: () => "" }
+  }
+  let roofMaterial = {
+    color: { getHexString: () => "" },
+    opacity: 1,
+    specular: { getHexString: () => "" }
+  }
+  // << THREE
+
+
+  // PROJECT
+  const project = {
+    activeLayer: ""
+  }
+
+  // FUNCTIONS
+  const addNewLevel = () => {
+    console.debug("%caddNewLevel called", ccm1)
+    return (
+      !1
+    )
+  }
+  const setLevel = () => {
+    console.debug("%csetLevel called", ccm1)
+    return (
+      !1
+    )
+  }
+
+  // ==================================================
+
+  // Component onMount hook
   useEffect(() => {
     // console.debug("ToolBar onMount", word)
     return () => {
@@ -461,30 +599,308 @@ const ToolBar = (): JSX.Element => {
   const setNewPlan: MouseEventHandler<HTMLAnchorElement> = (): any => {
     // alert("[MM] setNewPlan")
     try {
-      const newPlan = {}
-      // resetPlan(),
-      //   (planHistory = []),
-      //   (planHistoryPosition = 0),
-      //   planHistory.push(JSON.stringify(plan)),
-      //   setToolMode("pointer"),
+      const newPlan = { ts: new Date().toISOString() }
+      const plan = newPlan
+
+      resetPlan()
+      planHistory = []
+      planHistory.push(JSON.stringify(plan))
+      planHistoryPosition = 0
+      // setToolMode("pointer")
 
       // save to disk
-      localStorage.clear()
-      localStorage.setItem("tdg-setNewPlan", JSON.stringify({ "subject": "plan", "payload": newPlan }))
+      // localStorage.clear()
+      localStorage.setItem("tdg-setNewPlan", JSON.stringify({ subject: "plan", payload: planHistory }))
       console.debug("[MM] TRY: setNewPlan")
     } catch (e) {
       console.debug("[MM] CATCH: setNewPlan", e)
     }
   }
 
+  const resetPlan: any = (): any => {
+    // alert("[MM] resetPlan")
+    try {
+      const resetPlan = { ts: new Date().toISOString() }
+
+
+      // save to disk
+      // localStorage.clear()
+      localStorage.setItem("tdg-resetPlan", JSON.stringify({ subject: "plan", payload: resetPlan }))
+      console.debug("[MM] TRY: resetPlan")
+    } catch (e) {
+      console.debug("[MM] CATCH: resetPlan", e)
+    }
+
+    try {
+      Object.keys(Texts).forEach(function (e) {
+        let t = Texts[e]
+        "object" == typeof t && deleteTextByKey(e)
+      }),
+        (textIdCounter = 0)
+    } catch (e) {
+      console.log("resetPlan : 1 : " + e)
+    }
+    try {
+      Object.keys(Dimensions).forEach(function (e) {
+        let t = Dimensions[e]
+        "object" == typeof t && deleteDimensionByKey(e)
+      }),
+        (dimensionIdCounter = 0)
+    } catch (e) {
+      console.log("resetPlan : 2 : " + e)
+    }
+    try {
+      Object.keys(Furniture).forEach(function (e) {
+        let t = Furniture[e]
+        "object" == typeof t &&
+          (Furniture[e].data.toolsRectangleInner &&
+            Furniture[e].data.toolsRectangleInner.remove(),
+            Furniture[e].remove(),
+            delete Furniture[e])
+      })
+    } catch (e) {
+      console.log("resetPlan : 3 : " + e)
+    }
+    try {
+      Object.keys(Floors).forEach(function (e) {
+        let t = Floors[e]
+        "object" == typeof t && (Floors[e].remove(), delete Floors[e])
+      }),
+        Object.keys(Floors3d).forEach(function (e) {
+          let t = Floors3d[e]
+          "object" == typeof t && (scene.remove(Floors3d[e]), delete Floors3d[e])
+        }),
+        (floorIdCounter = 0)
+    } catch (e) {
+      console.log("resetPlan : 4 : " + e)
+    }
+    try {
+      Object.keys(Walls).forEach(function (e) {
+        let t = Walls[e]
+        "object" == typeof t && (Walls[e].remove(), delete Walls[e])
+      })
+      for (let e in wallsRectangles) wallsRectangles[e].remove()
+    } catch (e) {
+      console.log("resetPlan : 5 : " + e)
+    }
+    try {
+      Object.keys(wallsRectangles3d).forEach(function (e) {
+        let t = wallsRectangles3d[e]
+        "object" == typeof t && scene.remove(wallsRectangles3d[e])
+      })
+    } catch (e) {
+      console.log("resetPlan : 6 : " + e)
+    }
+    try {
+      Object.keys(Roofs).forEach(function (e) {
+        "object" == typeof Roofs[e] && (Roofs[e].remove(), delete Roofs[e])
+      })
+      for (let t in roofsRectangles) roofsRectangles[t].remove()
+    } catch (e) {
+      console.log("resetPlan : 5.1 : " + e)
+    }
+    try {
+      Object.keys(roofsRectangles3d).forEach(function (e) {
+        "object" == typeof roofsRectangles3d[e] &&
+          scene.remove(roofsRectangles3d[e])
+      })
+    } catch (e) {
+      console.log("resetPlan : 6.1 : " + e)
+    }
+    try {
+      Object.keys(maskObjectsApplied).forEach(function (e) {
+        "object" == typeof maskObjectsApplied[e] &&
+          scene.remove(maskObjectsApplied[e])
+      })
+    } catch (e) {
+      console.log("resetPlan : 6.5 : " + e)
+    }
+    try {
+      Object.keys(maskObjectsAppliedRoof).forEach(function (e) {
+        "object" == typeof maskObjectsAppliedRoof[e] &&
+          scene.remove(maskObjectsAppliedRoof[e])
+      })
+    } catch (e) {
+      console.log("resetPlan : 6.6 : " + e)
+    }
+    try {
+      Object.keys(clickableObjects).forEach(function (e) {
+        let t = clickableObjects[e]
+        "object" == typeof t &&
+          "groundLayer" != t.name &&
+          (scene.remove(clickableObjects[e]), delete clickableObjects[e])
+      })
+    } catch (e) {
+      console.log("resetPlan : 7 : " + e)
+    }
+    try {
+      Object.keys(maskObjects).forEach(function (e) {
+        let t = maskObjects[e]
+        "object" == typeof t &&
+          (scene.remove(maskObjects[e]), delete maskObjects[e])
+      }),
+        (clickableObjectsCounter = 0)
+    } catch (e) {
+      console.log("resetPlan : 8 : " + e)
+    }
+    try {
+      backgroundRaster &&
+        backgroundRaster.data &&
+        (backgroundRaster.data.toolsRectangleInner &&
+          backgroundRaster.data.toolsRectangleInner.remove(),
+          backgroundRaster.remove(),
+          (backgroundRaster = null),
+          clearFileInput(document.getElementById("backgroundImageFile")))
+    } catch (e) {
+      console.log("resetPlan : 9 : " + e)
+    }
+    try {
+      Object.keys(verticalGuides).forEach(function (e) {
+        verticalGuides[e].remove(), delete verticalGuides[e]
+      }),
+        Object.keys(horizontalGuides).forEach(function (e) {
+          horizontalGuides[e].remove(), delete horizontalGuides[e]
+        }),
+        (guideCounter = 0)
+    } catch (e) {
+      console.log("resetPlan : 10 : " + e)
+    }
+    try {
+      ; (furnitureToLoadCount = 0),
+        (loadedFurnitureCount = 0),
+        (wallIdCounter = 0),
+        (wallsRectangles = {}),
+        (wallsRectangles3d = {}),
+        (maskObjectsApplied = {}),
+        (maskObjectsAppliedRoof = {}),
+        (roofIdCounter = 0),
+        (roofsRectangles = {}),
+        (roofsRectangles3d = {}),
+        (Furniture = {}),
+        (Walls = {}),
+        (Roofs = {}),
+        (Floors = {}),
+        (Floors3d = {}),
+        (Dimensions = {}),
+        (Texts = {}),
+        (plan = {}),
+        (plan.furniture = {}),
+        (plan.walls = {}),
+        (plan.roofs = {}),
+        (plan.levels = {}),
+        (plan.levels[0] = { id: 0, height: 0 }),
+        (plan.floors = {}),
+        (plan.dimensions = {}),
+        (plan.texts = {}),
+        (plan.verticalGuides = {}),
+        (plan.horizontalGuides = {}),
+        (plan.furnitureAddedKey = null),
+        (plan.furnitureDirtyKey = null),
+        (plan.furnitureDeletedKey = null),
+        (plan.wallAddedKey = null),
+        (plan.wallDirtyKey = null),
+        (plan.wallDeletedKey = null),
+        (plan.roofAddedKey = null),
+        (plan.roofDirtyKey = null),
+        (plan.roofDeletedKey = null),
+        (plan.floorAddedKey = null),
+        (plan.floorDirtyKey = null),
+        (plan.floorDeletedKey = null),
+        (plan.dimensionAddedKey = null),
+        (plan.dimensionEditedKey = null),
+        (plan.dimensionDeletedKey = null),
+        (plan.textAddedKey = null),
+        (plan.textEditedKey = null),
+        (plan.textDeletedKey = null),
+        (plan.wallDiffuse = wallMaterial.color),
+        (plan.wallOpacity = wallMaterial.opacity),
+        (plan.wallSpecular = wallMaterial.specular),
+        (plan.roofDiffuse = roofMaterial.color),
+        (plan.roofOpacity = roofMaterial.opacity),
+        (plan.roofSpecular = roofMaterial.specular),
+        (plan.floorDiffuse = floorMaterial.color),
+        (plan.floorOpacity = floorMaterial.opacity),
+        (plan.floorSpecular = floorMaterial.specular),
+        (plan.groundDiffuse = groundMat.color.getHexString()),
+        (plan.groundOpacity = groundMat.opacity),
+        (plan.groundSpecular = groundMat.specular.getHexString()),
+        (plan.depthWrite = document.getElementById("depthWriteMode").checked),
+        (plan.sortObjects = document.getElementById("sortObjectsMode").checked),
+        (plan.azimuth = azimuth),
+        (plan.inclination = inclination)
+      console.debug("%cplan", ccm1, plan)
+    } catch (e) {
+      console.log("resetPlan : 11 : " + e)
+    }
+    try {
+      otherLayerWallsRasters &&
+        otherLayerWallsRasters.length > 0 &&
+        (otherLayerWallsRasters.forEach(function (e) {
+          e.remove()
+        }),
+          (otherLayerWallsRasters = [])),
+        otherLayerFurnitureRasters &&
+        otherLayerFurnitureRasters.length > 0 &&
+        (otherLayerFurnitureRasters.forEach(function (e) {
+          e.remove()
+        }),
+          (otherLayerFurnitureRasters = []))
+    } catch (e) {
+      console.log("resetPlan : 12 : " + e)
+    }
+    try {
+      levelButtons || addNewLevel("0"), setLevel("0")
+    } catch (e) {
+      console.log("resetPlan : 13 : " + e)
+    }
+    try {
+      Object.keys(levelButtons).forEach(function (e) {
+        "0" !== e.toString() &&
+          (levelButtons[e].parentNode.removeChild(levelButtons[e]),
+            delete levelButtons[e],
+            project.layers["level" + e].remove())
+      })
+    } catch (e) {
+      console.log("resetPlan : 14 : " + e)
+    }
+    try {
+      project.layers.forEach(function (e: { data: { id: any }; remove: () => any }) {
+        "0" === !e.data.id && e.remove()
+      })
+    } catch (e) {
+      console.log("resetPlan : 15 : " + e)
+    }
+    ; (project.activeLayer.name = "level0"),
+      (project.activeLayer.data = { id: "0", height: 0 })
+    try {
+      ; (floorsGroup = {}),
+        (floorsGroup[0] = new paper.Group()),
+        (roofsGroup = {}),
+        (roofsGroup[0] = new paper.Group()),
+        (wallsGroup = {}),
+        (wallsGroup[0] = new paper.Group()),
+        (dimensionsGroup = {}),
+        (dimensionsGroup[0] = new paper.Group()),
+        (furnitureGroup = {}),
+        (furnitureGroup[0] = new paper.Group()),
+        (textsGroup = {}),
+        (textsGroup[0] = new paper.Group()),
+        (guidesGroup = new paper.Group()),
+        deselectAll(),
+        render()
+    } catch (e) {
+      console.log("resetPlan : 15 : " + e)
+    }
+  }
+
   const doUndo: MouseEventHandler<HTMLAnchorElement> = (): any => {
     // alert("[MM] doUndo")
     try {
-      const undid = {}
+      const undid = { ts: new Date().toISOString() }
 
       // save to disk
-      localStorage.clear()
-      localStorage.setItem("tdg-doUndo", JSON.stringify({ "subject": "plan", "payload": undid }))
+      // localStorage.clear()
+      localStorage.setItem("tdg-doUndo", JSON.stringify({ subject: "plan", payload: undid }))
       console.debug("[MM] TRY: doUndo")
     } catch (e) {
       console.debug("[MM] CATCH: doUndo", e)
@@ -494,12 +910,11 @@ const ToolBar = (): JSX.Element => {
   const doRedo: MouseEventHandler<HTMLAnchorElement> = (): any => {
     // alert("[MM] doRedo")
     try {
-      const redid = {}
+      const redid = { ts: new Date().toISOString() }
 
       // save to disk
-      localStorage.clear()
-      localStorage.setItem("plan", JSON.stringify({ "action": "doRedo" }))
-      localStorage.setItem("tdg-doRedo", JSON.stringify({ "subject": "plan", "payload": redid }))
+      // localStorage.clear()
+      localStorage.setItem("tdg-doRedo", JSON.stringify({ subject: "plan", payload: redid }))
       console.debug("[MM] TRY: doRedo")
     } catch (e) {
       console.debug("[MM] CATCH: doRedo", e)
