@@ -27,6 +27,182 @@ export function deselectAll() {
     console.log(e)
   }
 }
+export function setNewPlan() {
+  try {
+    resetPlan(),
+      (planHistory = []),
+      (planHistoryPosition = 0),
+      planHistory.push(JSON.stringify(plan)),
+      setToolMode("pointer"),
+      localStorage.clear()
+  } catch (e) {
+    console.log("setNewPlan : " + e)
+  }
+}
+export function doUndo() {
+  if (planHistoryPosition > 0) {
+    planHistoryPosition--, deselectAll()
+    let e = JSON.parse(planHistory[planHistoryPosition])
+    plan.furnitureAddedKey
+      ? (deleteFurnitureByKey(plan.furnitureAddedKey), updatePlan(e))
+      : plan.furnitureDirtyKey
+      ? (editFurnitureByKey(e.furniture[plan.furnitureDirtyKey]), updatePlan(e))
+      : plan.furnitureDeletedKey
+      ? (loadFurniture(e.furniture[plan.furnitureDeletedKey], !1, !1),
+        updatePlan(e))
+      : plan.wallAddedKey || 0 === plan.wallAddedKey
+      ? (deleteWallByKey(plan.wallAddedKey), updatePlan(e))
+      : plan.wallDirtyKey || 0 === plan.wallDirtyKey
+      ? (deleteWallByKey(plan.wallDirtyKey),
+        loadWall(e.walls[plan.wallDirtyKey]),
+        updatePlan(e))
+      : plan.wallDeletedKey || 0 === plan.wallDeletedKey
+      ? (loadWall(e.walls[plan.wallDeletedKey]), updatePlan(e))
+      : plan.roofAddedKey || 0 === plan.roofAddedKey
+      ? (deleteRoofByKey(plan.roofAddedKey), updatePlan(e))
+      : plan.roofDirtyKey || 0 === plan.roofDirtyKey
+      ? (deleteRoofByKey(plan.roofDirtyKey),
+        loadRoof(e.roofs[plan.roofDirtyKey]),
+        updatePlan(e))
+      : plan.roofDeletedKey || 0 === plan.roofDeletedKey
+      ? (loadRoof(e.roofs[plan.roofDeletedKey]), updatePlan(e))
+      : plan.floorAddedKey
+      ? ("floor" != toolMode && setToolMode("floor"),
+        setEndDrawingFloors(),
+        deleteFloorByKey(plan.floorAddedKey),
+        updatePlan(e))
+      : plan.floorDirtyKey
+      ? (setEndDrawingFloors(),
+        deleteFloorByKey(plan.floorDirtyKey),
+        loadFloor(e.floors[plan.floorDirtyKey]),
+        Floors[plan.floorDirtyKey].segments.length > 1 &&
+          ("floor" != toolMode && setToolMode("floor"),
+          (startedDrawingFloor = !0),
+          (floorHelperPath.visible = !0),
+          (floorHelperPath.segments[0].point =
+            Floors[plan.floorDirtyKey].segments[
+              Floors[plan.floorDirtyKey].segments.length - 1
+            ].point),
+          (floorHelperPath.segments[1].point = lastMousePoint),
+          (Floors[plan.floorDirtyKey].closed = !1)),
+        updatePlan(e))
+      : plan.floorDeletedKey
+      ? (loadFloor(e.floors[plan.floorDeletedKey]),
+        2 === Floors[plan.floorDeletedKey].segments.length &&
+          ("floor" != toolMode && setToolMode("floor"),
+          (floorHelperPath.visible = !0),
+          (floorHelperPath.segments[0].point =
+            Floors[plan.floorDeletedKey].segments[
+              Floors[plan.floorDeletedKey].segments.length - 1
+            ].point),
+          (floorHelperPath.segments[1].point = lastMousePoint),
+          (Floors[plan.floorDeletedKey].closed = !1)),
+        updatePlan(e))
+      : plan.dimensionAddedKey
+      ? (deleteDimensionByKey(plan.dimensionAddedKey), updatePlan(e))
+      : plan.dimensionEditedKey ||
+        (plan.dimensionDeletedKey
+          ? (loadDimension(e.dimensions[plan.dimensionDeletedKey]),
+            updatePlan(e))
+          : plan.textAddedKey
+          ? (deleteTextByKey(plan.textAddedKey), updatePlan(e))
+          : plan.textEditedKey
+          ? (deleteTextByKey(plan.textEditedKey),
+            loadText(e.texts[plan.textEditedKey]),
+            updatePlan(e))
+          : plan.textDeletedKey
+          ? (loadText(e.texts[plan.textDeletedKey]), updatePlan(e))
+          : console.log("nothing to undo"))
+  }
+}
+export function doRedo() {
+  if (planHistory.length > planHistoryPosition + 1) {
+    planHistoryPosition++, deselectAll()
+    let e = JSON.parse(planHistory[planHistoryPosition])
+    if (e.furnitureAddedKey)
+      loadFurniture(e.furniture[e.furnitureAddedKey], !1, !1), updatePlan(e)
+    else if (e.furnitureDirtyKey)
+      editFurnitureByKey(e.furniture[e.furnitureDirtyKey]), updatePlan(e)
+    else if (e.furnitureDeletedKey)
+      deleteFurnitureByKey(e.furnitureDeletedKey), updatePlan(e)
+    else if (e.wallAddedKey || 0 === e.wallAddedKey)
+      loadWall(e.walls[e.wallAddedKey]), updatePlan(e)
+    else if (e.wallDirtyKey || 0 === e.wallDirtyKey)
+      deleteWallByKey(e.wallDirtyKey),
+        loadWall(e.walls[e.wallDirtyKey]),
+        updatePlan(e)
+    else if (e.wallDeletedKey || 0 === e.wallDeletedKey)
+      deleteWallByKey(e.wallDeletedKey), updatePlan(e)
+    else if (e.roofAddedKey || 0 === e.roofAddedKey)
+      loadRoof(e.roofs[e.roofAddedKey]), updatePlan(e)
+    else if (e.roofDirtyKey || 0 === e.roofDirtyKey)
+      deleteRoofByKey(e.roofDirtyKey),
+        loadRoof(e.roofs[e.roofDirtyKey]),
+        updatePlan(e)
+    else if (e.roofDeletedKey || 0 === e.roofDeletedKey)
+      deleteRoofByKey(e.roofDeletedKey), updatePlan(e)
+    else if (e.floorAddedKey)
+      "floor" != toolMode && setToolMode("floor"),
+        loadFloor(e.floors[e.floorAddedKey]),
+        (startedDrawingFloor = !0),
+        2 === Floors[e.floorAddedKey].segments.length &&
+          ((floorHelperPath.visible = !0),
+          (floorHelperPath.segments[0].point =
+            Floors[e.floorAddedKey].segments[
+              Floors[e.floorAddedKey].segments.length - 1
+            ].point),
+          (floorHelperPath.segments[1].point = lastMousePoint),
+          (Floors[e.floorAddedKey].closed = !1)),
+        updatePlan(e)
+    else if (e.floorDirtyKey) {
+      "floor" != toolMode && setToolMode("floor"),
+        deleteFloorByKey(e.floorDirtyKey),
+        loadFloor(e.floors[e.floorDirtyKey])
+      let t
+      planHistory.length > planHistoryPosition + 1
+        ? ((t = JSON.parse(planHistory[planHistoryPosition + 1])),
+          null === t.floorDirtyKey
+            ? ((startedDrawingFloor = !1), (floorHelperPath.visible = !1))
+            : ((startedDrawingFloor = !0),
+              (toolMode = "floor"),
+              (floorHelperPath.visible = !0),
+              (floorHelperPath.segments[0].point =
+                Floors[e.floorDirtyKey].segments[
+                  Floors[e.floorDirtyKey].segments.length - 1
+                ].point),
+              (floorHelperPath.segments[1].point = lastMousePoint),
+              (Floors[e.floorDirtyKey].closed = !1)))
+        : ((startedDrawingFloor = !0),
+          (toolMode = "floor"),
+          (floorHelperPath.visible = !0),
+          (floorHelperPath.segments[0].point =
+            Floors[e.floorDirtyKey].segments[
+              Floors[e.floorDirtyKey].segments.length - 1
+            ].point),
+          (floorHelperPath.segments[1].point = lastMousePoint),
+          (Floors[e.floorDirtyKey].closed = !1)),
+        updatePlan(e)
+    } else
+      e.floorDeletedKey
+        ? ("floor" != toolMode && setToolMode("floor"),
+          deleteFloorByKey(e.floorDeletedKey),
+          updatePlan(e))
+        : e.dimensionAddedKey
+        ? (loadDimension(e.dimensions[e.dimensionAddedKey]), updatePlan(e))
+        : e.dimensionEditedKey ||
+          (e.dimensionDeletedKey
+            ? (deleteDimensionByKey(e.dimensionDeletedKey), updatePlan(e))
+            : e.textAddedKey
+            ? (loadText(e.texts[e.textAddedKey]), updatePlan(e))
+            : e.textEditedKey
+            ? (deleteTextByKey(e.textEditedKey),
+              loadText(e.texts[e.textEditedKey]),
+              updatePlan(e))
+            : e.textDeletedKey
+            ? (deleteTextByKey(e.textDeletedKey), updatePlan(e))
+            : console.log("nothing to redo"))
+  }
+}
 function addVerticalGuide() {
   const e = paper.view.viewToProject(
     new paper.Point(
@@ -529,170 +705,6 @@ function doPaste() {
       (e.id = clickableObjectsCounter),
       loadFurniture(e, !0, !0)
   } else console.log("nothing to paste")
-}
-function doUndo() {
-  if (planHistoryPosition > 0) {
-    planHistoryPosition--, deselectAll()
-    let e = JSON.parse(planHistory[planHistoryPosition])
-    plan.furnitureAddedKey
-      ? (deleteFurnitureByKey(plan.furnitureAddedKey), updatePlan(e))
-      : plan.furnitureDirtyKey
-      ? (editFurnitureByKey(e.furniture[plan.furnitureDirtyKey]), updatePlan(e))
-      : plan.furnitureDeletedKey
-      ? (loadFurniture(e.furniture[plan.furnitureDeletedKey], !1, !1),
-        updatePlan(e))
-      : plan.wallAddedKey || 0 === plan.wallAddedKey
-      ? (deleteWallByKey(plan.wallAddedKey), updatePlan(e))
-      : plan.wallDirtyKey || 0 === plan.wallDirtyKey
-      ? (deleteWallByKey(plan.wallDirtyKey),
-        loadWall(e.walls[plan.wallDirtyKey]),
-        updatePlan(e))
-      : plan.wallDeletedKey || 0 === plan.wallDeletedKey
-      ? (loadWall(e.walls[plan.wallDeletedKey]), updatePlan(e))
-      : plan.roofAddedKey || 0 === plan.roofAddedKey
-      ? (deleteRoofByKey(plan.roofAddedKey), updatePlan(e))
-      : plan.roofDirtyKey || 0 === plan.roofDirtyKey
-      ? (deleteRoofByKey(plan.roofDirtyKey),
-        loadRoof(e.roofs[plan.roofDirtyKey]),
-        updatePlan(e))
-      : plan.roofDeletedKey || 0 === plan.roofDeletedKey
-      ? (loadRoof(e.roofs[plan.roofDeletedKey]), updatePlan(e))
-      : plan.floorAddedKey
-      ? ("floor" != toolMode && setToolMode("floor"),
-        setEndDrawingFloors(),
-        deleteFloorByKey(plan.floorAddedKey),
-        updatePlan(e))
-      : plan.floorDirtyKey
-      ? (setEndDrawingFloors(),
-        deleteFloorByKey(plan.floorDirtyKey),
-        loadFloor(e.floors[plan.floorDirtyKey]),
-        Floors[plan.floorDirtyKey].segments.length > 1 &&
-          ("floor" != toolMode && setToolMode("floor"),
-          (startedDrawingFloor = !0),
-          (floorHelperPath.visible = !0),
-          (floorHelperPath.segments[0].point =
-            Floors[plan.floorDirtyKey].segments[
-              Floors[plan.floorDirtyKey].segments.length - 1
-            ].point),
-          (floorHelperPath.segments[1].point = lastMousePoint),
-          (Floors[plan.floorDirtyKey].closed = !1)),
-        updatePlan(e))
-      : plan.floorDeletedKey
-      ? (loadFloor(e.floors[plan.floorDeletedKey]),
-        2 === Floors[plan.floorDeletedKey].segments.length &&
-          ("floor" != toolMode && setToolMode("floor"),
-          (floorHelperPath.visible = !0),
-          (floorHelperPath.segments[0].point =
-            Floors[plan.floorDeletedKey].segments[
-              Floors[plan.floorDeletedKey].segments.length - 1
-            ].point),
-          (floorHelperPath.segments[1].point = lastMousePoint),
-          (Floors[plan.floorDeletedKey].closed = !1)),
-        updatePlan(e))
-      : plan.dimensionAddedKey
-      ? (deleteDimensionByKey(plan.dimensionAddedKey), updatePlan(e))
-      : plan.dimensionEditedKey ||
-        (plan.dimensionDeletedKey
-          ? (loadDimension(e.dimensions[plan.dimensionDeletedKey]),
-            updatePlan(e))
-          : plan.textAddedKey
-          ? (deleteTextByKey(plan.textAddedKey), updatePlan(e))
-          : plan.textEditedKey
-          ? (deleteTextByKey(plan.textEditedKey),
-            loadText(e.texts[plan.textEditedKey]),
-            updatePlan(e))
-          : plan.textDeletedKey
-          ? (loadText(e.texts[plan.textDeletedKey]), updatePlan(e))
-          : console.log("nothing to undo"))
-  }
-}
-function doRedo() {
-  if (planHistory.length > planHistoryPosition + 1) {
-    planHistoryPosition++, deselectAll()
-    let e = JSON.parse(planHistory[planHistoryPosition])
-    if (e.furnitureAddedKey)
-      loadFurniture(e.furniture[e.furnitureAddedKey], !1, !1), updatePlan(e)
-    else if (e.furnitureDirtyKey)
-      editFurnitureByKey(e.furniture[e.furnitureDirtyKey]), updatePlan(e)
-    else if (e.furnitureDeletedKey)
-      deleteFurnitureByKey(e.furnitureDeletedKey), updatePlan(e)
-    else if (e.wallAddedKey || 0 === e.wallAddedKey)
-      loadWall(e.walls[e.wallAddedKey]), updatePlan(e)
-    else if (e.wallDirtyKey || 0 === e.wallDirtyKey)
-      deleteWallByKey(e.wallDirtyKey),
-        loadWall(e.walls[e.wallDirtyKey]),
-        updatePlan(e)
-    else if (e.wallDeletedKey || 0 === e.wallDeletedKey)
-      deleteWallByKey(e.wallDeletedKey), updatePlan(e)
-    else if (e.roofAddedKey || 0 === e.roofAddedKey)
-      loadRoof(e.roofs[e.roofAddedKey]), updatePlan(e)
-    else if (e.roofDirtyKey || 0 === e.roofDirtyKey)
-      deleteRoofByKey(e.roofDirtyKey),
-        loadRoof(e.roofs[e.roofDirtyKey]),
-        updatePlan(e)
-    else if (e.roofDeletedKey || 0 === e.roofDeletedKey)
-      deleteRoofByKey(e.roofDeletedKey), updatePlan(e)
-    else if (e.floorAddedKey)
-      "floor" != toolMode && setToolMode("floor"),
-        loadFloor(e.floors[e.floorAddedKey]),
-        (startedDrawingFloor = !0),
-        2 === Floors[e.floorAddedKey].segments.length &&
-          ((floorHelperPath.visible = !0),
-          (floorHelperPath.segments[0].point =
-            Floors[e.floorAddedKey].segments[
-              Floors[e.floorAddedKey].segments.length - 1
-            ].point),
-          (floorHelperPath.segments[1].point = lastMousePoint),
-          (Floors[e.floorAddedKey].closed = !1)),
-        updatePlan(e)
-    else if (e.floorDirtyKey) {
-      "floor" != toolMode && setToolMode("floor"),
-        deleteFloorByKey(e.floorDirtyKey),
-        loadFloor(e.floors[e.floorDirtyKey])
-      let t
-      planHistory.length > planHistoryPosition + 1
-        ? ((t = JSON.parse(planHistory[planHistoryPosition + 1])),
-          null === t.floorDirtyKey
-            ? ((startedDrawingFloor = !1), (floorHelperPath.visible = !1))
-            : ((startedDrawingFloor = !0),
-              (toolMode = "floor"),
-              (floorHelperPath.visible = !0),
-              (floorHelperPath.segments[0].point =
-                Floors[e.floorDirtyKey].segments[
-                  Floors[e.floorDirtyKey].segments.length - 1
-                ].point),
-              (floorHelperPath.segments[1].point = lastMousePoint),
-              (Floors[e.floorDirtyKey].closed = !1)))
-        : ((startedDrawingFloor = !0),
-          (toolMode = "floor"),
-          (floorHelperPath.visible = !0),
-          (floorHelperPath.segments[0].point =
-            Floors[e.floorDirtyKey].segments[
-              Floors[e.floorDirtyKey].segments.length - 1
-            ].point),
-          (floorHelperPath.segments[1].point = lastMousePoint),
-          (Floors[e.floorDirtyKey].closed = !1)),
-        updatePlan(e)
-    } else
-      e.floorDeletedKey
-        ? ("floor" != toolMode && setToolMode("floor"),
-          deleteFloorByKey(e.floorDeletedKey),
-          updatePlan(e))
-        : e.dimensionAddedKey
-        ? (loadDimension(e.dimensions[e.dimensionAddedKey]), updatePlan(e))
-        : e.dimensionEditedKey ||
-          (e.dimensionDeletedKey
-            ? (deleteDimensionByKey(e.dimensionDeletedKey), updatePlan(e))
-            : e.textAddedKey
-            ? (loadText(e.texts[e.textAddedKey]), updatePlan(e))
-            : e.textEditedKey
-            ? (deleteTextByKey(e.textEditedKey),
-              loadText(e.texts[e.textEditedKey]),
-              updatePlan(e))
-            : e.textDeletedKey
-            ? (deleteTextByKey(e.textDeletedKey), updatePlan(e))
-            : console.log("nothing to redo"))
-  }
 }
 function updatePlan(e) {
   ;(plan = e),
@@ -1432,18 +1444,6 @@ function resetPlan() {
       render()
   } catch (e) {
     console.log("resetPlan : 15 : " + e)
-  }
-}
-export function setNewPlan() {
-  try {
-    resetPlan(),
-      (planHistory = []),
-      (planHistoryPosition = 0),
-      planHistory.push(JSON.stringify(plan)),
-      setToolMode("pointer"),
-      localStorage.clear()
-  } catch (e) {
-    console.log("setNewPlan : " + e)
   }
 }
 function drawPlan(e) {
@@ -5533,33 +5533,6 @@ function avgAngleRad(e, t) {
     (Math.cos(e) + Math.cos(t)) / 2
   )
 }
-// function deselectAll() {
-//   try {
-//     ;(mouseMode = -1),
-//       selectedItem &&
-//         selectedItem.data &&
-//         (selectedItem.data.toolsRectangleInner &&
-//           (selectedItem.data.toolsRectangleInner.visible = !1),
-//         selectedItem.data.boxHelper &&
-//           (selectedItem.data.boxHelper.visible = !1),
-//         "dimension" === selectedItem.data.type &&
-//           ((Dimensions[selectedItem.data.id].text.selected = !1),
-//           (Dimensions[selectedItem.data.id].line.selected = !1)),
-//         (selectedItem.selected = !1),
-//         (selectedItem = null),
-//         (toolsGroup.visible = !1),
-//         updateObjectPropertiesWindow()),
-//       wallHelperPath && (wallHelperPath.visible = !1),
-//       roofHelperPath && (roofHelperPath.visible = !1),
-//       movePointIcons.forEach(function (e) {
-//         e.remove()
-//       }),
-//       (movePointIcons = []),
-//       (offsetMousePoint = new paper.Point(0, 0))
-//   } catch (e) {
-//     console.log(e)
-//   }
-// }
 function setCtrlKeyPressed(e) {
   ctrlKeyPressed = e
 }
