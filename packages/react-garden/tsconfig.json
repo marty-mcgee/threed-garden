@@ -32,11 +32,6 @@
     }
   },
   // "include": ["src"],
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "src/types/global-types.d.ts"
-, "src/components/threed/useEffectOnlyOnce.js"  ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/types/globals.d.ts"],
   "exclude": ["node_modules"]
 }
