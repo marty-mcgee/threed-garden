@@ -1,6 +1,6 @@
 {
   "name": "@threed/react-garden",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "React + TypeScript app using Material UI on NextJS",
   "author": {
     "name": "Marty McGee",
