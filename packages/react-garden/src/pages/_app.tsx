@@ -250,9 +250,11 @@ const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithL
 
 // ========================================================
 // WRAPPED APP
-const WrappedApp: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => { // [MM] ooooo, very interesting (type|interface)
+const WrappedApp: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => {
+  // [MM] ooooo, very interesting (interface|type)
 
-  console.debug(`[MM] WrappedApp: ThreeDGarden @ ${new Date().toISOString()}`)
+  // console.debug("%cThreeD Garden", "color: green; font-size: 16px;")
+  // console.debug(`[MM] WrappedApp: ThreeDGarden @ ${new Date().toISOString()}`)
 
   const { Component, emotionCache = clientSideEmotionCache, pageProps, router } = props
 

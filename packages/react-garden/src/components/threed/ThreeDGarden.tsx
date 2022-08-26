@@ -23,6 +23,23 @@ import { Canvas, useFrame } from '@react-three/fiber'
 // import * as $ from "jquery"
 
 // ======================================================
+// COLORFUL CONSOLE MESSAGES (ccm)
+
+// 1. Pass the css styles in an array
+const ccm1 = [
+  "color: green",
+  // "background: yellow",
+  // "border: 1px solid red",
+  // "text-shadow: 2px 2px black",
+  "font-size: 16px",
+  "padding: 10px",
+].join(";")
+// 2. Concatenate the individual array items
+// into a string of values separated by a semicolon (;)
+// 3. Pass the styles variable
+// console.log("%cHEY HEY HEY", ccm1)
+
+// ======================================================
 
 const AboutModal = (): JSX.Element => {
   // console.debug("AboutModal")
@@ -433,61 +450,59 @@ const ShareModal = (): JSX.Element => {
 
 const ToolBar = (): JSX.Element => {
   // console.debug("ToolBar")
+  const word = `[MM] @ ${new Date().toISOString()}`
   useEffect(() => {
-    console.debug('ToolBar onMount')
+    // console.debug("ToolBar onMount", word)
     return () => {
-      console.debug('ToolBar onUnmount')
+      // console.debug("ToolBar onUnmount", word)
     }
   }, [])
 
   const setNewPlan: MouseEventHandler<HTMLAnchorElement> = (): any => {
-    alert("HEY HEY HEY setNewPlan")
+    // alert("[MM] setNewPlan")
     try {
+      const newPlan = {}
       // resetPlan(),
       //   (planHistory = []),
       //   (planHistoryPosition = 0),
       //   planHistory.push(JSON.stringify(plan)),
       //   setToolMode("pointer"),
+
+      // save to disk
       localStorage.clear()
-      console.log("[MM] setNewPlan TRY: localStorage.clear()")
-      // LINE 1098 B3MM
-      localStorage.setItem("plan", JSON.stringify({ "word": "HEY HEY HEY, LINE 1098 setItem plan -- setNewPlan" }))
+      localStorage.setItem("tdg-setNewPlan", JSON.stringify({ "subject": "plan", "payload": newPlan }))
+      console.debug("[MM] TRY: setNewPlan")
     } catch (e) {
-      console.log("[MM] setNewPlan CATCH e:", e)
+      console.debug("[MM] CATCH: setNewPlan", e)
     }
   }
 
   const doUndo: MouseEventHandler<HTMLAnchorElement> = (): any => {
-    alert("HEY HEY HEY doUndo")
+    // alert("[MM] doUndo")
     try {
-      // resetPlan(),
-      //   (planHistory = []),
-      //   (planHistoryPosition = 0),
-      //   planHistory.push(JSON.stringify(plan)),
-      //   setToolMode("pointer"),
+      const undid = {}
+
+      // save to disk
       localStorage.clear()
-      console.log("[MM] doUndo TRY: localStorage.clear()")
-      // LINE 1098 B3MM
-      localStorage.setItem("plan", JSON.stringify({ "word": "HEY HEY HEY, LINE 1098 setItem plan -- doUndo" }))
+      localStorage.setItem("tdg-doUndo", JSON.stringify({ "subject": "plan", "payload": undid }))
+      console.debug("[MM] TRY: doUndo")
     } catch (e) {
-      console.log("[MM] doUndo CATCH e:", e)
+      console.debug("[MM] CATCH: doUndo", e)
     }
   }
 
   const doRedo: MouseEventHandler<HTMLAnchorElement> = (): any => {
-    alert("HEY HEY HEY doRedo")
+    // alert("[MM] doRedo")
     try {
-      // resetPlan(),
-      //   (planHistory = []),
-      //   (planHistoryPosition = 0),
-      //   planHistory.push(JSON.stringify(plan)),
-      //   setToolMode("pointer"),
+      const redid = {}
+
+      // save to disk
       localStorage.clear()
-      console.log("[MM] doRedo TRY: localStorage.clear()")
-      // LINE 1098 B3MM
-      localStorage.setItem("plan", JSON.stringify({ "word": "HEY HEY HEY, LINE 1098 setItem plan -- doRedo" }))
+      localStorage.setItem("plan", JSON.stringify({ "action": "doRedo" }))
+      localStorage.setItem("tdg-doRedo", JSON.stringify({ "subject": "plan", "payload": redid }))
+      console.debug("[MM] TRY: doRedo")
     } catch (e) {
-      console.log("[MM] doRedo CATCH e:", e)
+      console.debug("[MM] CATCH: doRedo", e)
     }
   }
 
@@ -1802,11 +1817,11 @@ const TheBottom = (): JSX.Element => {
 }
 
 const ReactThreeFiberView = (): JSX.Element => {
-  // console.debug("MyComponent")
+  // console.debug("ReactThreeFiberView")
   useEffect(() => {
-    console.debug('MyComponent onMount')
+    console.debug('ReactThreeFiberView onMount')
     return () => {
-      console.debug('MyComponent onUnmount')
+      console.debug('ReactThreeFiberView onUnmount')
     }
   }, [])
   return (
@@ -1835,15 +1850,16 @@ const MyComponent = (): JSX.Element => {
 }
 
 const ThreeDGarden = (): JSX.Element => {
-  const word = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
+  const word = `[MM] @ ${new Date().toISOString()}`
   const title = useRef()
   // const root = useRef()
   // const scene = new THREE.Scene()
   useEffect(() => {
-    console.debug('ThreeDGarden onMount', word)
+    // console.debug('ThreeDGarden onMount', word)
+    // begin here?
     // bootManager()
     return () => {
-      console.debug('ThreeDGarden onUnmount', word)
+      // console.debug('ThreeDGarden onUnmount', word)
     }
   }, [])
   return (
