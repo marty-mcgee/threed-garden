@@ -3398,14 +3398,14 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
           <PlanControls />
           <hr />
         </div>
-        {/* React Three Fiber - View */}
-        {/* <ReactThreeFiberView /> */}
 
         {/* <CatalogView /> */}
         {/* <PropertiesView /> */}
         {/* <PlanView /> */}
-
         {/* <TheBottom /> */}
+
+        {/* React Three Fiber - View */}
+        <ReactThreeFiberView />
       </div>
     </div >
   )
