@@ -22,7 +22,7 @@ const Participate: NextPage = () => (
     <MDBox>
       <Grid container
         sx={{
-          my: 2,
+          my: 0,
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
