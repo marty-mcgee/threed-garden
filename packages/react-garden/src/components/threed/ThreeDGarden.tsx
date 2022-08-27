@@ -3387,12 +3387,16 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
         <div id="zustandControls" style={{ padding: "1rem" }}>
           <ThreeDCounter />
           <ThreeDControls />
+          <hr />
           {/* <BearCounter /> */}
           {/* <BearControls /> */}
+          {/* <hr /> */}
           <ProjectCounter />
           <ProjectControls />
+          <hr />
           <PlanCounter />
           <PlanControls />
+          <hr />
         </div>
         {/* React Three Fiber - View */}
         {/* <ReactThreeFiberView /> */}
