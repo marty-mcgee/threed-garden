@@ -90,22 +90,29 @@ const clearObject = (object: Object, option: number = 1) => {
 // * Character        | as JS Object            | interface ICharacter
 // * Bear             | extends Character       | interface IBear
 // * Gardener         | extends Character       | interface IGardener
+// * Chicken          | extends Character       | interface IChicken
 // * Scene            | extends THREE.Scene     | interface IScene
 // * Structure        | extends THREE.Object3D  | interface IStructure
+// * Farm             | extends THREE.Group     | interface IFarm
+// * Garden           | extends THREE.Group     | interface IGarden
 // * Allotment        | extends Structure       | interface IAllotment
 // * Bed              | extends Structure       | interface IBed
 // * Furniture        | extends Structure       | interface IFurniture
+// * Equipment        | extends Structure       | interface IEquipment
 // * Plant            | extends Structure       | interface IPlant
+// * Soil             | extends Structure       | interface ISoil
+// * SoilAddendum     | extends Soil            | interface ISoilAddendum
+// * SoilPlan         | Actions | Relationships | interface ISoilPlan
 // * PlantingPlan     | Actions | Relationships | interface IPlantingPlan
 // * BuildingPlan     | Actions | Relationships | interface IBuildingPlan
 // * Tool             | as JS Object | extends ThreeD?                      | interface ITool
-// * Camera           | extends Tool | extends THREE.Camera                 | interface ITool
-// * Renderer         | extends Tool | extends THREE.Renderer               | interface ITool
-// * Light            | extends Tool | extends THREE.Light.DirectionalLight | interface ITool
-// * Plane            | extends Tool | extends THREE.Scene.Plane            | interface ITool
-// * Raster           | extends Tool | extends THREE.Raster.Rasterizer      | interface ITool
-// * Shader           | extends Tool | extends THREE.Shader.Shaderizer      | interface ITool
-// * Animation        | extends Tool | extends OBJ.animation                | interface ITool
+// * Camera           | extends Tool | extends THREE.Camera                 | interface ICamera
+// * Renderer         | extends Tool | extends THREE.Renderer               | interface IRenderer
+// * Light            | extends Tool | extends THREE.Light.DirectionalLight | interface ILight
+// * Plane            | extends Tool | extends THREE.Scene.Plane            | interface IPlane
+// * Raster           | extends Tool | extends THREE.Raster.Rasterizer      | interface IRaster
+// * Shader           | extends Tool | extends THREE.Shader.Shaderizer      | interface IShader
+// * Animation        | extends Tool | extends OBJ.animation                | interface IAnimation
 
 // ======================================================
 // Bears
