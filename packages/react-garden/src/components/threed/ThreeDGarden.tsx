@@ -91,7 +91,7 @@ const clearObject = (object: Object, option: number = 1) => {
 // * Bear             | extends Character       | interface IBear
 // * Gardener         | extends Character       | interface IGardener
 // * Scene            | extends THREE.Scene     | interface IScene
-// * Structure        | extends Three.Object3D  | interface IStructure
+// * Structure        | extends THREE.Object3D  | interface IStructure
 // * Allotment        | extends Structure       | interface IAllotment
 // * Bed              | extends Structure       | interface IBed
 // * Furniture        | extends Structure       | interface IFurniture
