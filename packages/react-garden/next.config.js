@@ -56,7 +56,7 @@ const nextConfig = {
   //     },
   //   ]
   // },
-  reactStrictMode: true,
+  reactStrictMode: false, // true causes components to load TWICE in dev, not prod
 }
 
 module.exports = withTM(nextConfig)

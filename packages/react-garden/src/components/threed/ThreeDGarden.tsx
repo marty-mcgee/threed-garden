@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, MouseEventHandler } from "react"
+import { useRef, useEffect, useState, MouseEventHandler, FunctionComponent } from "react"
 
 import paper from "paper"
 
@@ -282,23 +282,27 @@ let inclination = 0
 let azimuth = 0
 
 
-// PROJECT
-const project = createProject()
+// useEffect() ??
 
-// PLAN
-const plan = createPlan() // want this as planHistory[0] ??
-// const plan: any = null // want this as planHistory[0] ??
+// // PROJECT
+// const project = createProject()
 
-// PLAN HISTORY
-// from localStore (browser) ?? or new (server) ??
-// localStorage.clear()
-// const planHistory: Object[] = JSON.parse(localStorage.getItem("threed_setNewPlan"))
+// // PLAN
+// const plan = createPlan() // want this as planHistory[0] ?? yes
+// // const plan: any = null // want this as planHistory[0] ?? no
+
+// // PLAN HISTORY
+// // from localStore (browser) ?? or new (server) ??
+// // localStorage.clear()
+// // const planHistory: Object[] = JSON.parse(localStorage.getItem("threed_planHistory"))
 const planHistory: Object[] = []
-// want this as planHistory[0] ??
+console.debug("planHistory0", planHistory.length)
+// // want this as planHistory[0] ?? yes
 // planHistory.push(plan) // JSON.stringify(plan) ??
 let planHistoryPosition = 0
-// localStorage.setItem("threed_setNewPlan", JSON.stringify({ subject: "plan", payload: planHistory }))
+// // localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
 
+// end useEffect
 
 // ======================================================
 // COMPONENTS
@@ -751,7 +755,7 @@ const ToolBar = (): JSX.Element => {
 
       // save to disk
       // localStorage.clear()
-      localStorage.setItem("threed_setNewPlan", JSON.stringify({ subject: "plan", payload: planHistory }))
+      localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
       console.debug("[MM] TRY: setNewPlan")
     } catch (e) {
       console.debug("[MM] CATCH: setNewPlan", e)
@@ -1204,9 +1208,9 @@ const ToolBar = (): JSX.Element => {
 
   // Component onMount hook
   useEffect(() => {
-    // console.debug("ToolBar onMount", word)
+    console.debug("ToolBar onMount", word)
     return () => {
-      // console.debug("ToolBar onUnmount", word)
+      console.debug("ToolBar onUnmount", word)
     }
   }, [])
 
@@ -2553,19 +2557,59 @@ const MyComponent = (): JSX.Element => {
   )
 }
 
-const ThreeDGarden = (): JSX.Element => {
+const ThreeDGarden: FunctionComponent = (): JSX.Element => {
   const word = `[MM] @ ${new Date().toISOString()}`
-  const title = useRef()
+  // const title = useRef()
   // const root = useRef()
   // const scene = new THREE.Scene()
+
+  // const [begin, setBegin] = useState(false)
+
+  // Component onMount hook
   useEffect(() => {
-    // console.debug('ThreeDGarden onMount', word)
-    // begin here?
-    // bootManager()
+    console.debug("ThreeDGarden onMount", word)
+
+    // begin here ?? yes, um, no, um, half-n-half
+    // bootManager()...
+
+    // PROJECT
+    const project = createProject()
+
+    // PLAN
+    const plan = createPlan() // want this as planHistory[0] ?? yes
+    // const plan: any = null // want this as planHistory[0] ?? no
+    console.debug("plan", plan)
+
+    // PLAN HISTORY
+    // const planHistory: Object[] = []
+    planHistory.push(plan) // JSON.stringify(plan) ??
+
+    // from localStore (browser) ?? or new (server) ??
+    // localStorage.clear()
+    const planHistoryFromDisk: Object[] = JSON.parse(localStorage.getItem("threed_planHistory"))
+    // console.debug("planHistoryFromDisk", planHistoryFromDisk)
+    // console.debug("planHistoryFromDisk.payload", planHistoryFromDisk?.payload)
+    // want this as planHistory[0] ?? yes
+    const savedPlan = planHistoryFromDisk?.payload ? planHistoryFromDisk.payload : []
+    if (savedPlan.length) {
+      console.debug("savedPlan", savedPlan)
+      // planHistory.push(...savedPlan) // push to end of array
+      planHistory.unshift(...savedPlan) // unshift to beginning of array
+    }
+    console.debug("planHistory", planHistory)
+
+    // latest plan position is at the end of array
+    // let planHistoryPosition = 0
+    planHistoryPosition = planHistory.length - 1
+
+    localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
+
     return () => {
-      // console.debug('ThreeDGarden onUnmount', word)
+      console.debug('ThreeDGarden onUnmount', word)
     }
   }, [])
+
+  // FC returns JSX
   return (
     <div id="threedgarden-div" style={{ width: "100%" }}>
       {/* <div ref={title}>ThreeDGarden: {word}</div> */}
