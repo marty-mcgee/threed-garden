@@ -732,7 +732,8 @@ const ToolBar = (): JSX.Element => {
     )
   }
 
-  const setNewPlan: MouseEventHandler<HTMLAnchorElement> = (): any => {
+  // MouseEventHandler<HTMLAnchorElement>
+  const setNewPlan: any = (): any => {
     // alert("[MM] setNewPlan")
     try {
 
@@ -1184,6 +1185,56 @@ const ToolBar = (): JSX.Element => {
 
   }
 
+  const loadFileAsText = (f: any) => {
+    try {
+      let t = f.target
+      let o = new FileReader()
+      // console.debug("%cFileReader", ccm1, o)
+      o.onload = function () {
+        let g = o.result
+        setNewPlan()
+        // loadingProgressTxt = "Plan decoding\n" + loadingProgressTxt
+        // document.getElementById("modalLoadingDataInfo").innerHTML = loadingProgressTxt
+        console.debug("drawPlan", g)
+        // drawPlan(JSON.parse(g))
+        // clearFileInput(document.getElementById("file"))
+      }
+      // loadingProgressTxt = "Loading Saved Plan"
+      // document.getElementById("modalLoadingDataInfo").innerHTML = loadingProgressTxt
+      // $("#loadingModal").show()
+      // hideMouseIndicators()
+      o.readAsText(t.files[0])
+
+      console.debug("%cFileReader", ccm1, o)
+
+    } catch (e) {
+      console.log("%cloadFileAsText : " + e, ccm2)
+    }
+  }
+
+  const openShareDialog = () => {
+    try {
+      $("#shareModal").show()
+    } catch (e) {
+      console.log("openShareDialog : " + e)
+    }
+  }
+
+  const openFullscreen = (el: any) => {
+    try {
+      let t = document.getElementById("__next")
+      t.requestFullscreen
+        ? t.requestFullscreen()
+        : t.mozRequestFullScreen
+          ? t.mozRequestFullScreen()
+          : t.webkitRequestFullscreen
+            ? t.webkitRequestFullscreen()
+            : t.msRequestFullscreen && t.msRequestFullscreen()
+    } catch (e) {
+      console.log("openFullscreen : " + e)
+    }
+  }
+
   const doUndo: MouseEventHandler<HTMLAnchorElement> = (): any => {
     // alert("[MM] doUndo")
     try {
@@ -1234,42 +1285,53 @@ const ToolBar = (): JSX.Element => {
             <a onClick={setNewPlan}>
               New
             </a>
-            {/*
             <a
               id="loadBtn"
-              onClick="document.getElementById('file').click();">
-              Load
+            // onClick={document.getElementById('file').click()}
+            >
+              Load (off)
             </a>
             <input
               type="file"
-              style={{ display: "none" }}
+              style={{ display: "inline-block" }}
               id="file"
               name="file"
-              onChange="loadFileAsText(event)" />
+              onChange={loadFileAsText}
+            />
+            {/*
             <a
               id="saveBtn"
               onClick="savePlan();">
               Save
             </a>
+            */}
             <a
               id="shareBtn"
-              onClick="openShareDialog();">
+              onClick={openShareDialog}
+            >
               Share
             </a>
             <hr />
+            {/*
             <a
               id="defaultsBtn"
               onClick="setPropertiesView('defaults');">
               Defaults
             </a>
+            */}
+            {/*
             <a
               id="groundPropertiesButton"
-              onClick="setToolMode('ground');">
+              onClick={setToolMode('ground')}
+            >
               Ground Properties
             </a>
+            */}
+            {/*
             <a
               id="fullscreenApp"
-              onClick="openFullscreen('DEMO');">
+              onClick={openFullscreen('DEMO')}
+            >
               Fullscreen
             </a>
             */}
