@@ -296,7 +296,7 @@ let azimuth = 0
 // // localStorage.clear()
 // // const planHistory: Object[] = JSON.parse(localStorage.getItem("threed_planHistory"))
 const planHistory: Object[] = []
-console.debug("planHistory0", planHistory.length)
+// console.debug("planHistoryInit", planHistory)
 // // want this as planHistory[0] ?? yes
 // planHistory.push(plan) // JSON.stringify(plan) ??
 let planHistoryPosition = 0
@@ -739,23 +739,27 @@ const ToolBar = (): JSX.Element => {
   const setNewPlan: MouseEventHandler<HTMLAnchorElement> = (): any => {
     // alert("[MM] setNewPlan")
     try {
-      const plan = createPlan()
 
-      // reset this new plan we just created ?? nah
-      // resetPlan()
+      // PLAN
+      const plan = createPlan() // want this as planHistory[0] ?? yes
+      // const plan: any = null // want this as planHistory[0] ?? no
+      console.debug("plan", plan)
 
-      // clear existing plan array ?? or just append to it ??
-      // planHistory.length = 0
-      planHistory.push(plan) // JSON.stringify(plan) ??
-      planHistoryPosition = 0
+      // // PLAN HISTORY
+      // // const planHistory: Object[] = []
+      // planHistory.push(plan) // JSON.stringify(plan) ??
+      planHistory.unshift(plan)
+      console.debug("planHistoryNew", planHistory)
+
+      // save to disk (if new plan only)
+      localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
+
+      // latest plan position is at the end of array
+      // let planHistoryPosition = 0
+      planHistoryPosition = planHistory.length - 1
 
       // setToolMode("pointer")
 
-      console.debug("planHistory", planHistory)
-
-      // save to disk
-      // localStorage.clear()
-      localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
       console.debug("[MM] TRY: setNewPlan")
     } catch (e) {
       console.debug("[MM] CATCH: setNewPlan", e)
@@ -2572,19 +2576,20 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
     // begin here ?? yes, um, no, um, half-n-half
     // bootManager()...
 
-    // PROJECT
+    // PROJECT (create new project on Component onMount) ??
     const project = createProject()
+    console.debug("project", project)
 
-    // PLAN
-    const plan = createPlan() // want this as planHistory[0] ?? yes
-    // const plan: any = null // want this as planHistory[0] ?? no
-    console.debug("plan", plan)
+    // // PLAN
+    // const plan = createPlan() // want this as planHistory[0] ?? yes
+    // // const plan: any = null // want this as planHistory[0] ?? no
+    // console.debug("plan", plan)
 
-    // PLAN HISTORY
-    // const planHistory: Object[] = []
-    planHistory.push(plan) // JSON.stringify(plan) ??
+    // // PLAN HISTORY
+    // // const planHistory: Object[] = []
+    // planHistory.push(plan) // JSON.stringify(plan) ??
 
-    // from localStore (browser) ?? or new (server) ??
+    // retrieve from localStorage (browser) ?? or new (server) ??
     // localStorage.clear()
     const planHistoryFromDisk: Object[] = JSON.parse(localStorage.getItem("threed_planHistory"))
     // console.debug("planHistoryFromDisk", planHistoryFromDisk)
@@ -2598,11 +2603,12 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
     }
     console.debug("planHistory", planHistory)
 
-    // latest plan position is at the end of array
-    // let planHistoryPosition = 0
-    planHistoryPosition = planHistory.length - 1
+    // // latest plan position is at the end of array
+    // // let planHistoryPosition = 0
+    // planHistoryPosition = planHistory.length - 1
 
-    localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
+    // save to disk
+    // localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
 
     return () => {
       console.debug('ThreeDGarden onUnmount', word)
