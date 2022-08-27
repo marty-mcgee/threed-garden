@@ -31,8 +31,8 @@ import { v4 as newUUID } from 'uuid'
 
 const ccm1 = "color: green; font-size: 16px;"
 const ccm2 = "color: red; font-size: 16px;"
-console.log("%cWELCOME", ccm1)
-// console.log("%cOOPSIES", ccm2)
+console.log("%cThreeDGarden<FC>", ccm1)
+// console.log("%cWHOOPSIES", ccm2)
 
 // ======================================================
 // DELETE OBJECT KEYS: RESET OBJECT TO {}
@@ -72,6 +72,17 @@ const clearObject = (object: Object, option: number = 1) => {
 // ======================================================
 // FUNCTIONS
 
+const createProject = () => {
+  const project = {
+    layers: new Array,
+    activeLayer: {
+      name: "",
+      data: {}
+    }
+  }
+  return project
+}
+
 const createPlan = () => {
   const plan = {
     _id: newUUID() as string,
@@ -107,37 +118,32 @@ const createPlan = () => {
     textEditedKey: null as any,
     textDeletedKey: null as any,
 
-    // wallDiffuse: wallMaterial.color,
-    // wallOpacity: wallMaterial.opacity,
-    // wallSpecular: wallMaterial.specular,
-    // roofDiffuse: roofMaterial.color,
-    // roofOpacity: roofMaterial.opacity,
-    // roofSpecular: roofMaterial.specular,
-    // floorDiffuse: floorMaterial.color,
-    // floorOpacity: floorMaterial.opacity,
-    // floorSpecular: floorMaterial.specular,
-    // groundDiffuse: groundMat.color.getHexString(),
-    // groundOpacity: groundMat.opacity,
-    // groundSpecular: groundMat.specular.getHexString(),
+    wallDiffuse: wallMaterial.color.getHexString(),
+    wallOpacity: wallMaterial.opacity,
+    wallSpecular: wallMaterial.specular.getHexString(),
+    roofDiffuse: roofMaterial.color.getHexString(),
+    roofOpacity: roofMaterial.opacity,
+    roofSpecular: roofMaterial.specular.getHexString(),
+    floorDiffuse: floorMaterial.color.getHexString(),
+    floorOpacity: floorMaterial.opacity,
+    floorSpecular: floorMaterial.specular.getHexString(),
+    groundDiffuse: groundMat.color.getHexString(),
+    groundOpacity: groundMat.opacity,
+    groundSpecular: groundMat.specular.getHexString(),
 
-    // // depthWrite: document.getElementById("depthWriteMode").checked,
-    // // sortObjects: document.getElementById("sortObjectsMode").checked,
+    depthWrite: "checked", // document.getElementById("depthWriteMode").checked,
+    sortObjects: "checked", // document.getElementById("sortObjectsMode").checked,
 
-    // azimuth: azimuth,
-    // inclination: inclination
+    azimuth: azimuth,
+    inclination: inclination
   }
   return plan
 }
 
 // ======================================================
-// BEGIN
+// BEGIN COMPONENT PROPERTIES (VARIABLES, PARAMETERS)
 
 // const begin = () => {
-const plan = createPlan()
-
-const planHistory: Object[] = []
-planHistory.push(plan) // JSON.stringify(plan) ??
-let planHistoryPosition = 0
 
 let mouseMode = 0
 let toolMode = "pointer"
@@ -230,31 +236,26 @@ let hemiLight
 let pointLight
 // materials
 let groundMat = {
-  color: { getHexString: () => "" },
+  color: { getHexString: () => "#0xFFFFFF" },
   opacity: 1,
-  specular: { getHexString: () => "" }
+  specular: { getHexString: () => "#0xCCCCCC" }
 }
 let floorMaterial = {
-  color: { getHexString: () => "" },
+  color: { getHexString: () => "#0xFFFFFF" },
   opacity: 1,
-  specular: { getHexString: () => "" }
+  specular: { getHexString: () => "#0xCCCCCC" }
 }
 let roofMaterial = {
-  color: { getHexString: () => "" },
+  color: { getHexString: () => "#0xFFFFFF" },
   opacity: 1,
-  specular: { getHexString: () => "" }
+  specular: { getHexString: () => "#0xCCCCCC" }
 }
 let wallMaterial = {
-  color: { getHexString: () => "" },
+  color: { getHexString: () => "#0xFFFFFF" },
   opacity: 1,
-  specular: { getHexString: () => "" }
+  specular: { getHexString: () => "#0xCCCCCC" }
 }
 // << THREE
-
-
-let inclination = ""
-let azimuth = ""
-
 
 // groups
 // Paper.Group !! 2D
@@ -276,15 +277,27 @@ let guidesGroup: Object = {} // new paper.Group()
 let toolsGroup: Object = {} // new paper.Group()
 let gridGroup: Object = {} // new paper.Group()
 
+
+let inclination = 0
+let azimuth = 0
+
+
 // PROJECT
-const project = {
-  layers: new Array,
-  activeLayer: {
-    name: "",
-    data: {}
-  }
-}
-// }
+const project = createProject()
+
+// PLAN
+// const plan = createPlan()
+const plan: any = null // planHistory[0]
+
+// PLAN HISTORY
+// from localStore (browser) ?? or new (server) ??
+// localStorage.clear()
+// const planHistory: Object[] = JSON.parse(localStorage.getItem("threed_setNewPlan"))
+const planHistory: Object[] = []
+planHistory.push(plan) // JSON.stringify(plan) ??
+let planHistoryPosition = 0
+// localStorage.setItem("threed_setNewPlan", JSON.stringify({ subject: "plan", payload: planHistory }))
+
 
 // ======================================================
 // COMPONENTS
@@ -723,12 +736,14 @@ const ToolBar = (): JSX.Element => {
     try {
       const plan = createPlan()
 
-      // ??? reset this new plan?
+      // reset this new plan we just created ?? nah
       // resetPlan()
 
-      planHistory.length = 0 // clears array
+      // clear existing plan array ?? or just append to it ??
+      // planHistory.length = 0
       planHistory.push(plan) // JSON.stringify(plan) ??
       planHistoryPosition = 0
+
       // setToolMode("pointer")
 
       console.debug("planHistory", planHistory)
