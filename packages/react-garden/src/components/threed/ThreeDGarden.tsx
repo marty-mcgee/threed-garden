@@ -194,7 +194,7 @@ function ThreeDCounter() {
   console.debug("%cthreed", ccm1, threed)
   return (
     <div>
-      <div>{threedCount} threeds around here ...</div>
+      {/* <div>{threedCount} threeds around here ...</div> */}
       <div>{threeds.length} threeds around here ...</div>
     </div>
   )
@@ -208,8 +208,8 @@ function ThreeDControls() {
   return (
     <div>
       <button onClick={addThreeD}>add threed</button>
-      <br />
-      <button onClick={increaseThreeDCount}>add to threed count</button>
+      {/* <br />
+      <button onClick={increaseThreeDCount}>add to threed count</button> */}
     </div>
   )
 }
@@ -281,7 +281,7 @@ function ProjectCounter() {
   console.debug("%cproject", ccm1, project)
   return (
     <div>
-      <div>{projectCount} projects around here ...</div>
+      {/* <div>{projectCount} projects around here ...</div> */}
       <div>{projects.length} projects around here ...</div>
     </div>
   )
@@ -295,8 +295,8 @@ function ProjectControls() {
   return (
     <div>
       <button onClick={addProject}>add project</button>
-      <br />
-      <button onClick={increaseProjectCount}>add to project count</button>
+      {/* <br />
+      <button onClick={increaseProjectCount}>add to project count</button> */}
     </div>
   )
 }
@@ -485,7 +485,7 @@ function PlanCounter() {
   console.debug("%cplan", ccm1, plan)
   return (
     <div>
-      <div>{planCount} plans around here ...</div>
+      {/* <div>{planCount} plans around here ...</div> */}
       <div>{plans.length} plans around here ...</div>
     </div>
   )
@@ -499,8 +499,8 @@ function PlanControls() {
   return (
     <div>
       <button onClick={addPlan}>add plan</button>
-      <br />
-      <button onClick={increasePlanCount}>add to plan count</button>
+      {/* <br />
+      <button onClick={increasePlanCount}>add to plan count</button> */}
     </div>
   )
 }
@@ -1945,6 +1945,7 @@ const ToolBar = (): JSX.Element => {
               name="file"
               onChange={doLoadFileAsText}
             />
+            <hr />
             <a id="saveBtn" onClick={doSaveFile}>Save File</a>
             <hr />
             <a id="exportBtn" onClick={() => exportToObj}>Export As OBJ</a>
@@ -3383,15 +3384,16 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
         <ToolBar />
 
         {/* zustand */}
-        <ThreeDCounter />
-        <ThreeDControls />
-        {/* <BearCounter /> */}
-        {/* <BearControls /> */}
-        <ProjectCounter />
-        <ProjectControls />
-        <PlanCounter />
-        <PlanControls />
-
+        <div id="zustandControls" style={{ padding: "1rem" }}>
+          <ThreeDCounter />
+          <ThreeDControls />
+          {/* <BearCounter /> */}
+          {/* <BearControls /> */}
+          <ProjectCounter />
+          <ProjectControls />
+          <PlanCounter />
+          <PlanControls />
+        </div>
         {/* React Three Fiber - View */}
         {/* <ReactThreeFiberView /> */}
 

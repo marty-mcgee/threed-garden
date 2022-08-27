@@ -29,7 +29,7 @@ const About: NextPage = () => (
     <DashboardNavbar />
     <MDBox
       sx={{
-        my: 1,
+        my: 0,
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
