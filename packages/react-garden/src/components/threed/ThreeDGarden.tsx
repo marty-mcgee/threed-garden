@@ -40,32 +40,28 @@ console.log("%cThreeDGarden<FC>", ccm1)
 const clearObject = (object: Object, option: number = 1) => {
   switch (option) {
     // option 1 // ES5
-    case 1: {
+    case 1:
       Object.keys(object).forEach(key => {
         delete object[key]
       })
-    }
       break
     // option 2 // ES6
-    case 2: {
+    case 2:
       for (const key in object) {
         delete object[key]
       }
-    }
       break
     // option 3 // ES5: for enumerable and non-enumerable properties
-    case 3: {
+    case 3:
       Object.getOwnPropertyNames(object).forEach(function (key) {
         delete object[key]
       })
-    }
       break
     // option 4 // ES6: for enumerable and non-enumerable properties
-    case 4: {
+    case 4:
       for (const key of Object.getOwnPropertyNames(object)) {
         delete object[key]
       }
-    }
   }
 }
 
@@ -740,27 +736,28 @@ const ToolBar = (): JSX.Element => {
     // alert("[MM] setNewPlan")
     try {
 
+      resetPlan() // clear all plan stuff, then create new plan...
+
       // PLAN
       const plan = createPlan() // want this as planHistory[0] ?? yes
-      // const plan: any = null // want this as planHistory[0] ?? no
       console.debug("plan", plan)
 
-      // // PLAN HISTORY
-      // // const planHistory: Object[] = []
-      // planHistory.push(plan) // JSON.stringify(plan) ??
-      planHistory.unshift(plan)
+      // PLAN HISTORY
+      // const planHistory: Object[] = []
+      // planHistory.push(plan) // push to end array position [array.length]
+      planHistory.unshift(plan) // unshift to beginning array position [0]
       console.debug("planHistoryNew", planHistory)
+
+      // latest plan position is now at the beginning of array
+      // planHistoryPosition = planHistory.length - 1
+      planHistoryPosition = 0
 
       // save to disk (if new plan only)
       localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
 
-      // latest plan position is at the end of array
-      // let planHistoryPosition = 0
-      planHistoryPosition = planHistory.length - 1
+      setToolMode("pointer")
 
-      // setToolMode("pointer")
-
-      console.debug("[MM] TRY: setNewPlan")
+      // console.debug("[MM] TRY: setNewPlan")
     } catch (e) {
       console.debug("[MM] CATCH: setNewPlan", e)
     }
@@ -769,13 +766,12 @@ const ToolBar = (): JSX.Element => {
   const resetPlan: any = (): any => {
     // alert("[MM] resetPlan")
     try {
-      const resetPlan = { ts: new Date().toISOString() }
-
+      const resetPlan = { _ts: new Date().toISOString() }
 
       // save to disk
-      // localStorage.clear()
       localStorage.setItem("threed_resetPlan", JSON.stringify({ subject: "plan", payload: resetPlan }))
-      console.debug("[MM] TRY: resetPlan")
+
+      // console.debug("[MM] TRY: resetPlan")
     } catch (e) {
       console.debug("[MM] CATCH: resetPlan", e)
     }
@@ -934,53 +930,54 @@ const ToolBar = (): JSX.Element => {
       clearObject(Texts)
       clearObject(Furniture)
 
-      clearObject(plan)
-        ;
-      (plan.furniture = {}),
-        (plan.walls = {}),
-        (plan.roofs = {}),
-        (plan.levels = []),
-        (plan.levels[0] = { id: 0, height: 0 }),
-        (plan.floors = {}),
-        (plan.dimensions = {}),
-        (plan.texts = {}),
-        (plan.verticalGuides = {}),
-        (plan.horizontalGuides = {}),
-        (plan.furnitureAddedKey = null),
-        (plan.furnitureDirtyKey = null),
-        (plan.furnitureDeletedKey = null),
-        (plan.wallAddedKey = null),
-        (plan.wallDirtyKey = null),
-        (plan.wallDeletedKey = null),
-        (plan.roofAddedKey = null),
-        (plan.roofDirtyKey = null),
-        (plan.roofDeletedKey = null),
-        (plan.floorAddedKey = null),
-        (plan.floorDirtyKey = null),
-        (plan.floorDeletedKey = null),
-        (plan.dimensionAddedKey = null),
-        (plan.dimensionEditedKey = null),
-        (plan.dimensionDeletedKey = null),
-        (plan.textAddedKey = null),
-        (plan.textEditedKey = null),
-        (plan.textDeletedKey = null),
-        (plan.wallDiffuse = wallMaterial.color),
-        (plan.wallOpacity = wallMaterial.opacity),
-        (plan.wallSpecular = wallMaterial.specular),
-        (plan.roofDiffuse = roofMaterial.color),
-        (plan.roofOpacity = roofMaterial.opacity),
-        (plan.roofSpecular = roofMaterial.specular),
-        (plan.floorDiffuse = floorMaterial.color),
-        (plan.floorOpacity = floorMaterial.opacity),
-        (plan.floorSpecular = floorMaterial.specular),
-        (plan.groundDiffuse = groundMat.color.getHexString()),
-        (plan.groundOpacity = groundMat.opacity),
-        (plan.groundSpecular = groundMat.specular.getHexString()),
-        // (plan.depthWrite = document.getElementById("depthWriteMode").checked),
-        // (plan.sortObjects = document.getElementById("sortObjectsMode").checked),
-        (plan.azimuth = azimuth),
-        (plan.inclination = inclination)
-      console.debug("%cplan", ccm1, plan)
+      // clearObject(plan)
+      //   ;
+      // (plan.furniture = {}),
+      //   (plan.walls = {}),
+      //   (plan.roofs = {}),
+      //   (plan.levels = []),
+      //   (plan.levels[0] = { id: 0, height: 0 }),
+      //   (plan.floors = {}),
+      //   (plan.dimensions = {}),
+      //   (plan.texts = {}),
+      //   (plan.verticalGuides = {}),
+      //   (plan.horizontalGuides = {}),
+      //   (plan.furnitureAddedKey = null),
+      //   (plan.furnitureDirtyKey = null),
+      //   (plan.furnitureDeletedKey = null),
+      //   (plan.wallAddedKey = null),
+      //   (plan.wallDirtyKey = null),
+      //   (plan.wallDeletedKey = null),
+      //   (plan.roofAddedKey = null),
+      //   (plan.roofDirtyKey = null),
+      //   (plan.roofDeletedKey = null),
+      //   (plan.floorAddedKey = null),
+      //   (plan.floorDirtyKey = null),
+      //   (plan.floorDeletedKey = null),
+      //   (plan.dimensionAddedKey = null),
+      //   (plan.dimensionEditedKey = null),
+      //   (plan.dimensionDeletedKey = null),
+      //   (plan.textAddedKey = null),
+      //   (plan.textEditedKey = null),
+      //   (plan.textDeletedKey = null),
+      //   (plan.wallDiffuse = wallMaterial.color),
+      //   (plan.wallOpacity = wallMaterial.opacity),
+      //   (plan.wallSpecular = wallMaterial.specular),
+      //   (plan.roofDiffuse = roofMaterial.color),
+      //   (plan.roofOpacity = roofMaterial.opacity),
+      //   (plan.roofSpecular = roofMaterial.specular),
+      //   (plan.floorDiffuse = floorMaterial.color),
+      //   (plan.floorOpacity = floorMaterial.opacity),
+      //   (plan.floorSpecular = floorMaterial.specular),
+      //   (plan.groundDiffuse = groundMat.color.getHexString()),
+      //   (plan.groundOpacity = groundMat.opacity),
+      //   (plan.groundSpecular = groundMat.specular.getHexString()),
+      //   // (plan.depthWrite = document.getElementById("depthWriteMode").checked),
+      //   // (plan.sortObjects = document.getElementById("sortObjectsMode").checked),
+      //   (plan.azimuth = azimuth),
+      //   (plan.inclination = inclination)
+
+      console.debug("%cresetPlan success", ccm1)
     } catch (e) {
       console.log("resetPlan : 11 : " + e)
     }
@@ -1020,12 +1017,13 @@ const ToolBar = (): JSX.Element => {
       project.layers.forEach(function (e: { data: { id: any }; remove: () => any }) {
         "0" !== e.data.id && e.remove()
       })
+
+      project.activeLayer.name = "level0"
+      project.activeLayer.data = { id: "0", height: 0 }
+
     } catch (e) {
       console.log("resetPlan : 15 : " + e)
     }
-
-    project.activeLayer.name = "level0"
-    project.activeLayer.data = { id: "0", height: 0 }
 
     try {
       // reset Groups
@@ -1058,125 +1056,131 @@ const ToolBar = (): JSX.Element => {
     }
   }
 
-  const setToolMode: any = (e): string => {
+  const setToolMode: any = (mode): string => {
 
-    switch (
-    ("walls" === toolMode ? setEndDrawingWalls()
-      : "floor" === toolMode ? setEndDrawingFloors()
-        : "roof" === toolMode ? setEndDrawingRoofs()
-          : "dimension" === toolMode ? setEndDrawingDimension()
-            : "text" === toolMode ? setEndDrawingText()
-              : "ground" === toolMode && setEndDrawingGround(),
-      (toolMode = e),
-      e)
-    ) {
-      case "pointer":
-        modalsActive || showMouseIndicators(),
-          (defaultCursor = "default"),
-          deselectAll(),
-          document.getElementById("pointerTool").classList.add("activeTool"),
-          document.getElementById("addWallTool").classList.remove("activeTool"),
-          document.getElementById("addFloorTool").classList.remove("activeTool"),
-          document.getElementById("addRoofTool").classList.remove("activeTool"),
-          document.getElementById("addRulerTool").classList.remove("activeTool"),
-          document.getElementById("addTextTool").classList.remove("activeTool")
-        break
-      case "walls":
-        ; (defaultCursor = "crosshair"),
-          deselectAll(),
-          recalcAllUnjoinedWallSegments(-1),
-          recalcAllWallSegmentsOnOtherLevels(-1, project.activeLayer.data.id),
-          document.getElementById("pointerTool").classList.remove("activeTool"),
-          document.getElementById("addWallTool").classList.add("activeTool"),
-          document.getElementById("addFloorTool").classList.remove("activeTool"),
-          document.getElementById("addRoofTool").classList.remove("activeTool"),
-          document.getElementById("addRulerTool").classList.remove("activeTool"),
-          document.getElementById("addTextTool").classList.remove("activeTool"),
-          setPropertiesView("wallDefaults")
-        break
-      case "floor":
-        ; (defaultCursor = "crosshair"),
-          deselectAll(),
-          document.getElementById("pointerTool").classList.remove("activeTool"),
-          document.getElementById("addWallTool").classList.remove("activeTool"),
-          document.getElementById("addFloorTool").classList.add("activeTool"),
-          document.getElementById("addRoofTool").classList.remove("activeTool"),
-          document.getElementById("addRulerTool").classList.remove("activeTool"),
-          document.getElementById("addTextTool").classList.remove("activeTool"),
-          recalcAllWallCorners(),
-          setPropertiesView("floorDefaults")
-        break
-      case "roof":
-        ; (defaultCursor = "crosshair"),
-          deselectAll(),
-          document.getElementById("pointerTool").classList.remove("activeTool"),
-          document.getElementById("addWallTool").classList.remove("activeTool"),
-          document.getElementById("addFloorTool").classList.remove("activeTool"),
-          document.getElementById("addRoofTool").classList.add("activeTool"),
-          document.getElementById("addRulerTool").classList.remove("activeTool"),
-          document.getElementById("addTextTool").classList.remove("activeTool"),
-          recalcAllRoofCorners(),
-          setPropertiesView("roofDefaults")
-        break
-      case "dimension":
-        ; (defaultCursor = "crosshair"),
-          deselectAll(),
-          document.getElementById("pointerTool").classList.remove("activeTool"),
-          document.getElementById("addWallTool").classList.remove("activeTool"),
-          document.getElementById("addFloorTool").classList.remove("activeTool"),
-          document.getElementById("addRoofTool").classList.remove("activeTool"),
-          document.getElementById("addRulerTool").classList.add("activeTool"),
-          document.getElementById("addTextTool").classList.remove("activeTool"),
-          recalcAllWallCorners(),
-          recalcAllRoofCorners(),
-          setPropertiesView("dimensionDefaults")
-        break
-      case "text":
-        ; (defaultCursor = "crosshair"),
-          deselectAll(),
-          document.getElementById("pointerTool").classList.remove("activeTool"),
-          document.getElementById("addWallTool").classList.remove("activeTool"),
-          document.getElementById("addFloorTool").classList.remove("activeTool"),
-          document.getElementById("addRoofTool").classList.remove("activeTool"),
-          document.getElementById("addRulerTool").classList.remove("activeTool"),
-          document.getElementById("addTextTool").classList.add("activeTool"),
-          setPropertiesView("textnDefaults")
-        break
-      case "background":
-        ; (defaultCursor = "default"),
-          document.getElementById("pointerTool").classList.remove("activeTool"),
-          document.getElementById("addWallTool").classList.remove("activeTool"),
-          document.getElementById("addFloorTool").classList.remove("activeTool"),
-          document.getElementById("addRoofTool").classList.remove("activeTool"),
-          document.getElementById("addRulerTool").classList.remove("activeTool"),
-          document.getElementById("addTextTool").classList.remove("activeTool")
-        break
-      case "ground":
-        setLevel("0"),
-          (toolMode = e),
-          (defaultCursor = "default"),
-          (wallsGroup[0].opacity = 0.25),
-          (floorsGroup[0].opacity = 0.25),
-          (furnitureGroup[0].opacity = 0.25),
-          document.getElementById("pointerTool").classList.remove("activeTool"),
-          document.getElementById("addWallTool").classList.remove("activeTool"),
-          document.getElementById("addFloorTool").classList.remove("activeTool"),
-          document.getElementById("addRoofTool").classList.remove("activeTool"),
-          document.getElementById("addRulerTool").classList.remove("activeTool"),
-          document.getElementById("addTextTool").classList.remove("activeTool"),
-          setPropertiesView("ground")
-        break
-      case "defaults":
-        ; (defaultCursor = "default"),
-          deselectAll(),
-          document.getElementById("pointerTool").classList.remove("activeTool"),
-          document.getElementById("addWallTool").classList.remove("activeTool"),
-          document.getElementById("addFloorTool").classList.remove("activeTool"),
-          document.getElementById("addRoofTool").classList.remove("activeTool"),
-          document.getElementById("addRulerTool").classList.remove("activeTool"),
-          document.getElementById("addTextTool").classList.remove("activeTool")
+    try {
+      switch (
+      ("walls" === toolMode ? setEndDrawingWalls()
+        : "floor" === toolMode ? setEndDrawingFloors()
+          : "roof" === toolMode ? setEndDrawingRoofs()
+            : "dimension" === toolMode ? setEndDrawingDimension()
+              : "text" === toolMode ? setEndDrawingText()
+                : "ground" === toolMode && setEndDrawingGround(),
+        (toolMode = mode),
+        mode)
+      ) {
+        case "pointer":
+          // modalsActive || showMouseIndicators()
+          defaultCursor = "default"
+          // deselectAll()
+          // document.getElementById("pointerTool").classList.add("activeTool")
+          // document.getElementById("addWallTool").classList.remove("activeTool")
+          // document.getElementById("addFloorTool").classList.remove("activeTool")
+          // document.getElementById("addRoofTool").classList.remove("activeTool")
+          // document.getElementById("addRulerTool").classList.remove("activeTool")
+          // document.getElementById("addTextTool").classList.remove("activeTool")
+          break
+        case "walls":
+          ; (defaultCursor = "crosshair"),
+            deselectAll(),
+            recalcAllUnjoinedWallSegments(-1),
+            recalcAllWallSegmentsOnOtherLevels(-1, project.activeLayer.data.id),
+            document.getElementById("pointerTool").classList.remove("activeTool"),
+            document.getElementById("addWallTool").classList.add("activeTool"),
+            document.getElementById("addFloorTool").classList.remove("activeTool"),
+            document.getElementById("addRoofTool").classList.remove("activeTool"),
+            document.getElementById("addRulerTool").classList.remove("activeTool"),
+            document.getElementById("addTextTool").classList.remove("activeTool"),
+            setPropertiesView("wallDefaults")
+          break
+        case "floor":
+          ; (defaultCursor = "crosshair"),
+            deselectAll(),
+            document.getElementById("pointerTool").classList.remove("activeTool"),
+            document.getElementById("addWallTool").classList.remove("activeTool"),
+            document.getElementById("addFloorTool").classList.add("activeTool"),
+            document.getElementById("addRoofTool").classList.remove("activeTool"),
+            document.getElementById("addRulerTool").classList.remove("activeTool"),
+            document.getElementById("addTextTool").classList.remove("activeTool"),
+            recalcAllWallCorners(),
+            setPropertiesView("floorDefaults")
+          break
+        case "roof":
+          ; (defaultCursor = "crosshair"),
+            deselectAll(),
+            document.getElementById("pointerTool").classList.remove("activeTool"),
+            document.getElementById("addWallTool").classList.remove("activeTool"),
+            document.getElementById("addFloorTool").classList.remove("activeTool"),
+            document.getElementById("addRoofTool").classList.add("activeTool"),
+            document.getElementById("addRulerTool").classList.remove("activeTool"),
+            document.getElementById("addTextTool").classList.remove("activeTool"),
+            recalcAllRoofCorners(),
+            setPropertiesView("roofDefaults")
+          break
+        case "dimension":
+          ; (defaultCursor = "crosshair"),
+            deselectAll(),
+            document.getElementById("pointerTool").classList.remove("activeTool"),
+            document.getElementById("addWallTool").classList.remove("activeTool"),
+            document.getElementById("addFloorTool").classList.remove("activeTool"),
+            document.getElementById("addRoofTool").classList.remove("activeTool"),
+            document.getElementById("addRulerTool").classList.add("activeTool"),
+            document.getElementById("addTextTool").classList.remove("activeTool"),
+            recalcAllWallCorners(),
+            recalcAllRoofCorners(),
+            setPropertiesView("dimensionDefaults")
+          break
+        case "text":
+          ; (defaultCursor = "crosshair"),
+            deselectAll(),
+            document.getElementById("pointerTool").classList.remove("activeTool"),
+            document.getElementById("addWallTool").classList.remove("activeTool"),
+            document.getElementById("addFloorTool").classList.remove("activeTool"),
+            document.getElementById("addRoofTool").classList.remove("activeTool"),
+            document.getElementById("addRulerTool").classList.remove("activeTool"),
+            document.getElementById("addTextTool").classList.add("activeTool"),
+            setPropertiesView("textnDefaults")
+          break
+        case "background":
+          ; (defaultCursor = "default"),
+            document.getElementById("pointerTool").classList.remove("activeTool"),
+            document.getElementById("addWallTool").classList.remove("activeTool"),
+            document.getElementById("addFloorTool").classList.remove("activeTool"),
+            document.getElementById("addRoofTool").classList.remove("activeTool"),
+            document.getElementById("addRulerTool").classList.remove("activeTool"),
+            document.getElementById("addTextTool").classList.remove("activeTool")
+          break
+        case "ground":
+          setLevel("0"),
+            (toolMode = e),
+            (defaultCursor = "default"),
+            (wallsGroup[0].opacity = 0.25),
+            (floorsGroup[0].opacity = 0.25),
+            (furnitureGroup[0].opacity = 0.25),
+            document.getElementById("pointerTool").classList.remove("activeTool"),
+            document.getElementById("addWallTool").classList.remove("activeTool"),
+            document.getElementById("addFloorTool").classList.remove("activeTool"),
+            document.getElementById("addRoofTool").classList.remove("activeTool"),
+            document.getElementById("addRulerTool").classList.remove("activeTool"),
+            document.getElementById("addTextTool").classList.remove("activeTool"),
+            setPropertiesView("ground")
+          break
+        default:
+          defaultCursor = "default"
+        // deselectAll()
+        // document.getElementById("pointerTool").classList.remove("activeTool")
+        // document.getElementById("addWallTool").classList.remove("activeTool")
+        // document.getElementById("addFloorTool").classList.remove("activeTool")
+        // document.getElementById("addRoofTool").classList.remove("activeTool")
+        // document.getElementById("addRulerTool").classList.remove("activeTool")
+        // document.getElementById("addTextTool").classList.remove("activeTool")
+      }
+
+      // planView.style.cursor = defaultCursor
+
+    } catch (e) {
+      console.debug("ERROR: setToolMode", mode, e)
     }
-    planView.style.cursor = defaultCursor
 
   }
 
@@ -2569,6 +2573,11 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
 
   // const [begin, setBegin] = useState(false)
 
+  // PROJECT (create new project on Component onMount) ??
+  const projectNew = createProject()
+  const [project, setProject] = useState(projectNew)
+  console.debug("project", project)
+
   // Component onMount hook
   useEffect(() => {
     console.debug("ThreeDGarden onMount", word)
@@ -2576,9 +2585,10 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
     // begin here ?? yes, um, no, um, half-n-half
     // bootManager()...
 
-    // PROJECT (create new project on Component onMount) ??
-    const project = createProject()
-    console.debug("project", project)
+    // // PROJECT (create new project on Component onMount) ??
+    // const projectNew = createProject()
+    // const [project, setProject] = useState(projectNew)
+    // console.debug("project", project)
 
     // // PLAN
     // const plan = createPlan() // want this as planHistory[0] ?? yes
@@ -2597,7 +2607,7 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
     // want this as planHistory[0] ?? yes
     const savedPlan = planHistoryFromDisk?.payload ? planHistoryFromDisk.payload : []
     if (savedPlan.length) {
-      console.debug("savedPlan", savedPlan)
+      // console.debug("savedPlan", savedPlan)
       // planHistory.push(...savedPlan) // push to end of array
       planHistory.unshift(...savedPlan) // unshift to beginning of array
     }
