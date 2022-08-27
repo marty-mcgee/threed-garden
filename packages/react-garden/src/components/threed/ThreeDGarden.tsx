@@ -1,3 +1,51 @@
+// ======================================================
+// FUNCTIONAL NOUNS   (OBJECTS, AS SIMILAR TO CLASSES, BUT BETTER)
+// ================
+// * ThreeD           | as root JS Object       | interface IThreeD
+// ================
+// * Project          | as JS Object            | interface IProject
+// * Plan             | as JS Object            | interface IPlan
+// * File             | as JS Object from Any   | interface IFile
+// * Edit             | Actions | Relationships | interface IEdit
+// * View             | as JS Object | Settings | interface IView
+// ================
+// * Simulation       | as JS Object            | interface ISimulation
+// ================
+// * Game             | extends Simulation      | interface IGame
+// * World            | extends Simulation      | interface IWorld
+// * Character        | as JS Object            | interface ICharacter
+// * Bear             | extends Character       | interface IBear
+// * Gardener         | extends Character       | interface IGardener
+// * Chicken          | extends Character       | interface IChicken
+// * Scene            | extends THREE.Scene     | interface IScene
+// * Plane            | extends THREE.Object3D  | interface IPlane
+// * Structure        | extends THREE.Object3D  | interface IStructure
+// * Farm             | extends THREE.Group     | interface IFarm
+// * Garden           | extends THREE.Group     | interface IGarden
+// * Allotment        | extends Structure       | interface IAllotment
+// * Bed              | extends Structure       | interface IBed
+// * Furniture        | extends Structure       | interface IFurniture
+// * Equipment        | extends Structure       | interface IEquipment
+// * Plant            | extends Structure       | interface IPlant
+// * Soil             | extends Structure       | interface ISoil
+// * SoilAddendum     | extends Soil            | interface ISoilAddendum
+// * SoilPlan         | Actions | Relationships | interface ISoilPlan
+// * PlantingPlan     | Actions | Relationships | interface IPlantingPlan
+// * BuildingPlan     | Actions | Relationships | interface IBuildingPlan
+// ================
+// * Tool             | as JS Object | extends ThreeD?                      | interface ITool
+// * PlaneTool        | extends Tool                                        | interface IPlane
+// * Camera           | extends Tool | extends THREE.Camera                 | interface ICamera
+// * Renderer         | extends Tool | extends THREE.Renderer               | interface IRenderer
+// * Light            | extends Tool | extends THREE.Light.DirectionalLight | interface ILight
+// * Raster           | extends Tool | extends THREE.Raster.Rasterizer      | interface IRaster
+// * Shader           | extends Tool | extends THREE.Shader.Shaderizer      | interface IShader
+// * Animation        | extends Tool | extends OBJ.animation                | interface IAnimation
+
+// ======================================================
+// RESOURCES
+
+// react
 import {
   useEffect,
   useRef,
@@ -75,67 +123,97 @@ const clearObject = (object: Object, option: number = 1) => {
 }
 
 // ======================================================
-// FUNCTIONAL NOUNS (AS SIMILAR TO CLASSES, BUT BETTER)
-// ================
-// * ThreeD           | as root JS Object       | interface IThreeD
-// ================
-// * Project          | as JS Object            | interface IProject
-// * Plan             | as JS Object            | interface IPlan
-// * File             | as JS Object from Any   | interface IFile
-// * Edit             | Actions | Relationships | interface IEdit
-// * View             | as JS Object | Settings | interface IView
-// ================
-// * Game             | as JS Object            | interface IGame
-// * World            | extends Game            | interface IWorld
-// * Character        | as JS Object            | interface ICharacter
-// * Bear             | extends Character       | interface IBear
-// * Gardener         | extends Character       | interface IGardener
-// * Chicken          | extends Character       | interface IChicken
-// * Scene            | extends THREE.Scene     | interface IScene
-// * Structure        | extends THREE.Object3D  | interface IStructure
-// * Farm             | extends THREE.Group     | interface IFarm
-// * Garden           | extends THREE.Group     | interface IGarden
-// * Allotment        | extends Structure       | interface IAllotment
-// * Bed              | extends Structure       | interface IBed
-// * Furniture        | extends Structure       | interface IFurniture
-// * Equipment        | extends Structure       | interface IEquipment
-// * Plant            | extends Structure       | interface IPlant
-// * Soil             | extends Structure       | interface ISoil
-// * SoilAddendum     | extends Soil            | interface ISoilAddendum
-// * SoilPlan         | Actions | Relationships | interface ISoilPlan
-// * PlantingPlan     | Actions | Relationships | interface IPlantingPlan
-// * BuildingPlan     | Actions | Relationships | interface IBuildingPlan
-// * Tool             | as JS Object | extends ThreeD?                      | interface ITool
-// * Camera           | extends Tool | extends THREE.Camera                 | interface ICamera
-// * Renderer         | extends Tool | extends THREE.Renderer               | interface IRenderer
-// * Light            | extends Tool | extends THREE.Light.DirectionalLight | interface ILight
-// * Plane            | extends Tool | extends THREE.Scene.Plane            | interface IPlane
-// * Raster           | extends Tool | extends THREE.Raster.Rasterizer      | interface IRaster
-// * Shader           | extends Tool | extends THREE.Shader.Shaderizer      | interface IShader
-// * Animation        | extends Tool | extends OBJ.animation                | interface IAnimation
-
+// FUNCTIONAL NOUNS
 // ======================================================
-// Bears
-/*
-const useBearStore = create((set) => ({
-  bears: 0,
-  increaseBearCount: () => set((state) => ({ bears: state.bears + 1 })),
-  removeAllBears: () => set({ bears: 0 }),
-}))
+// ThreeD
 
-function BearCounter() {
-  const bears = useBearStore((state) => state.bears)
-  return <h1>{bears} bears around here ...</h1>
+const useThreeDStore = create((set) => ({
+  _id: newUUID() as string,
+  _ts: new Date().toISOString() as string,
+  threedCount: 0,
+  threeds: [],
+  threed: {
+    _id: newUUID() as string,
+    _ts: new Date().toISOString() as string,
+    layers: new Array,
+    activeLayer: {
+      name: "level0-MM",
+      data: {}
+    }
+  },
+  increaseThreeDCount: () => set(
+    (state: any) => (
+      { threedCount: state.threedCount + 1 }
+    )
+  ),
+  removeAllThreeDs: () => set(
+    {
+      threedCount: 0,
+      threeds: []
+    }
+  ),
+  addThreeD: () => {
+    // threedCurrent
+    set(
+      (state: any) => (
+        {
+          threed: {
+            _id: newUUID() as string,
+            _ts: new Date().toISOString() as string,
+            layers: new Array,
+            activeLayer: {
+              name: "level1-MM",
+              data: {}
+            }
+          },
+          threedCount: state.threedCount + 1,
+        }
+      )
+    )
+    // threedHistory
+    set(
+      (state: any) => (
+        {
+          threeds: [state.threed, ...state.threeds],
+          threedCount: state.threeds.length,
+        }
+      )
+    )
+  },
+
+})) // useThreeDStore
+
+function ThreeDCounter() {
+  // const threeds = useThreeDStore((state) => state.threeds)
+  const threedCount = useThreeDStore((state) => state.threedCount)
+  const threed = useThreeDStore((state) => state.threed)
+  const threeds = useThreeDStore((state) => state.threeds)
+  console.debug("%cthreed", ccm1, threed)
+  return (
+    <div>
+      <div>{threedCount} threeds around here ...</div>
+      <div>{threeds.length} threeds around here ...</div>
+    </div>
+  )
 }
 
-function BearControls() {
-  const increaseBearCount = useBearStore((state) => state.increaseBearCount)
-  return <button onClick={increaseBearCount}>add a bear</button>
+function ThreeDControls() {
+  const increaseThreeDCount = useThreeDStore((state) => state.increaseThreeDCount)
+
+  const addThreeD = useThreeDStore((state) => state.addThreeD)
+
+  return (
+    <div>
+      <button onClick={addThreeD}>add threed</button>
+      <br />
+      <button onClick={increaseThreeDCount}>add to threed count</button>
+    </div>
+  )
 }
-*/
 
 // ======================================================
-// Projects
+// Project
+
 const useProjectStore = create((set) => ({
   _id: newUUID() as string,
   _ts: new Date().toISOString() as string,
@@ -195,12 +273,13 @@ const useProjectStore = create((set) => ({
 function ProjectCounter() {
   // const projects = useProjectStore((state) => state.projects)
   const projectCount = useProjectStore((state) => state.projectCount)
+  const projects = useProjectStore((state) => state.projects)
   const project = useProjectStore((state) => state.project)
   console.debug("%cproject", ccm1, project)
   return (
     <div>
       <div>{projectCount} projects around here ...</div>
-      <div>{project.length} projects around here ...</div>
+      <div>{projects.length} projects around here ...</div>
     </div>
   )
 }
@@ -230,7 +309,8 @@ const createProject = () => {
 }
 
 // ======================================================
-// Plans
+// Plan
+
 const usePlanStore = create((set) => ({
   _id: newUUID() as string,
   _ts: new Date().toISOString() as string,
@@ -397,10 +477,14 @@ const usePlanStore = create((set) => ({
 function PlanCounter() {
   // const plans = usePlanStore((state) => state.plans)
   const planCount = usePlanStore((state) => state.planCount)
+  const plans = usePlanStore((state) => state.plans)
   const plan = usePlanStore((state) => state.plan)
   console.debug("%cplan", ccm1, plan)
   return (
-    <div>{planCount} plans around here ...</div>
+    <div>
+      <div>{planCount} plans around here ...</div>
+      <div>{plans.length} plans around here ...</div>
+    </div>
   )
 }
 
@@ -428,6 +512,28 @@ const createPlan = () => {
   return plan
 }
 
+// ======================================================
+// Bear
+
+const useBearStore = create((set) => ({
+  bears: 0,
+  increaseBearCount: () => set((state) => ({ bears: state.bears + 1 })),
+  removeAllBears: () => set({ bears: 0 }),
+}))
+
+function BearCounter() {
+  const bears = useBearStore((state) => state.bears)
+  return <h1>{bears} bears around here ...</h1>
+}
+
+function BearControls() {
+  const increaseBearCount = useBearStore((state) => state.increaseBearCount)
+  return <button onClick={increaseBearCount}>add a bear</button>
+}
+
+// ======================================================
+// ======================================================
+// ======================================================
 // ======================================================
 // BEGIN COMPONENT PROPERTIES (VARIABLES, PARAMETERS)
 
@@ -589,6 +695,9 @@ let planHistoryPosition = 0
 // // localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
 
 
+// ======================================================
+// ======================================================
+// ======================================================
 // ======================================================
 // COMPONENTS
 
@@ -1572,18 +1681,18 @@ const ToolBar = (): JSX.Element => {
       <ul>
         <li className="dropdown">
           <a className="dropbtn">
-            File
+            Actions
           </a>
           <div className="dropdown-content">
             {/* <a onClick="setNewPlan();"> */}
             <a onClick={fileNewPlan}>
-              New
+              New Plan
             </a>
             <a
               id="loadBtn"
             // onClick={document.getElementById('file').click()}
             >
-              Load (off)
+              Load File
             </a>
             <input
               type="file"
@@ -3015,6 +3124,8 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
         <ToolBar />
 
         {/* zustand */}
+        <ThreeDCounter />
+        <ThreeDControls />
         {/* <BearCounter /> */}
         {/* <BearControls /> */}
         <ProjectCounter />
