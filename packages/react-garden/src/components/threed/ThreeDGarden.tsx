@@ -1,4 +1,12 @@
-import { useRef, useEffect, useState, MouseEventHandler, FunctionComponent } from "react"
+import {
+  useEffect,
+  useRef,
+  useState,
+  FunctionComponent,
+  MouseEventHandler
+} from "react"
+// state management (instead of React.useState)
+import create from 'zustand'
 
 import paper from "paper"
 
@@ -29,8 +37,9 @@ import { v4 as newUUID } from 'uuid'
 // ======================================================
 // COLORFUL CONSOLE MESSAGES (ccm)
 
-const ccm1 = "color: green; font-size: 16px;"
-const ccm2 = "color: red; font-size: 16px;"
+const ccm1 = "color: green; font-size: 14px;"
+const ccm2 = "color: red; font-size: 14px;"
+const ccm3 = "color: orange; font-size: 14px;"
 console.log("%cThreeDGarden<FC>", ccm1)
 // console.log("%cWHOOPSIES", ccm2)
 
@@ -66,21 +75,107 @@ const clearObject = (object: Object, option: number = 1) => {
 }
 
 // ======================================================
-// FUNCTIONS
+// FUNCTIONS (AS SIMILAR TO CLASSES, BUT BETTER)
 
-const createProject = () => {
-  const project = {
+// ======================================================
+// Bears
+/*
+const useBearStore = create((set) => ({
+  bears: 0,
+  increaseBearCount: () => set((state) => ({ bears: state.bears + 1 })),
+  removeAllBears: () => set({ bears: 0 }),
+}))
+
+function BearCounter() {
+  const bears = useBearStore((state) => state.bears)
+  return <h1>{bears} bears around here ...</h1>
+}
+
+function BearControls() {
+  const increaseBearCount = useBearStore((state) => state.increaseBearCount)
+  return <button onClick={increaseBearCount}>add a bear</button>
+}
+*/
+
+// ======================================================
+// Projects
+const useProjectStore = create((set) => ({
+  projectCount: 0,
+  projects: [],
+  project: {
+    _id: newUUID() as string,
+    _ts: new Date().toISOString() as string,
     layers: new Array,
     activeLayer: {
-      name: "",
+      name: "level0-MM",
       data: {}
     }
-  }
+  },
+  increaseProjectCount: () => set(
+    (state: any) => (
+      { projectCount: state.projectCount + 1 }
+    )
+  ),
+  removeAllProjects: () => set(
+    {
+      projectCount: 0,
+      projects: []
+    }
+  ),
+  addProject: () => set(
+    (state: any) => (
+      {
+        // projectCount: state.projectCount + 1
+        project: {
+          _id: newUUID() as string,
+          _ts: new Date().toISOString() as string,
+          layers: new Array,
+          activeLayer: {
+            name: "level1-MM",
+            data: {}
+          }
+        }
+      }
+    )
+  )
+}))
+
+function ProjectCounter() {
+  // const projects = useProjectStore((state) => state.projects)
+  const projectCount = useProjectStore((state) => state.projectCount)
+  return <h1>{projectCount} projects around here ...</h1>
+}
+
+function ProjectControls() {
+  const increaseProjectCount = useProjectStore((state) => state.increaseProjectCount)
+
+  const addProject = useProjectStore((state) => state.addProject)
+
+  return (
+    <div>
+      <button onClick={addProject}>add project</button>
+      <br />
+      <button onClick={increaseProjectCount}>add to project count</button>
+    </div>
+  )
+}
+
+const createProject = () => {
+  const project = useProjectStore(
+    (state) => {
+      state.addProject
+      state.increaseProjectCount
+    }
+  )
   return project
 }
 
-const createPlan = () => {
-  const plan = {
+// ======================================================
+// Plans
+const usePlanStore = create((set) => ({
+  planCount: 0,
+  plans: [],
+  plan: {
     _id: newUUID() as string,
     _ts: new Date().toISOString() as string,
     levels: [{ id: 0, height: 0 }] as Object[],
@@ -114,25 +209,125 @@ const createPlan = () => {
     textEditedKey: null as any,
     textDeletedKey: null as any,
 
-    wallDiffuse: wallMaterial.color.getHexString(),
-    wallOpacity: wallMaterial.opacity,
-    wallSpecular: wallMaterial.specular.getHexString(),
-    roofDiffuse: roofMaterial.color.getHexString(),
-    roofOpacity: roofMaterial.opacity,
-    roofSpecular: roofMaterial.specular.getHexString(),
-    floorDiffuse: floorMaterial.color.getHexString(),
-    floorOpacity: floorMaterial.opacity,
-    floorSpecular: floorMaterial.specular.getHexString(),
-    groundDiffuse: groundMat.color.getHexString(),
-    groundOpacity: groundMat.opacity,
-    groundSpecular: groundMat.specular.getHexString(),
+    wallDiffuse: null as string,
+    wallOpacity: null as number,
+    wallSpecular: null as string,
+    roofDiffuse: null as string,
+    roofOpacity: null as number,
+    roofSpecular: null as string,
+    floorDiffuse: null as string,
+    floorOpacity: null as number,
+    floorSpecular: null as string,
+    groundDiffuse: null as string,
+    groundOpacity: null as number,
+    groundSpecular: null as string,
 
-    depthWrite: "checked", // document.getElementById("depthWriteMode").checked,
-    sortObjects: "checked", // document.getElementById("sortObjectsMode").checked,
+    depthWrite: "check()", // document.getElementById("depthWriteMode").checked,
+    sortObjects: "check()", // document.getElementById("sortObjectsMode").checked,
 
-    azimuth: azimuth,
-    inclination: inclination
-  }
+    azimuth: null as number,
+    inclination: null as number
+  },
+  increasePlanCount: () => set(
+    (state: any) => (
+      { planCount: state.planCount + 1 }
+    )
+  ),
+  removeAllPlans: () => set(
+    {
+      planCount: 0,
+      plans: []
+    }
+  ),
+  addPlan: () => set(
+    (state: any) => (
+      {
+        // planCount: state.planCount + 1
+        plan: {
+          _id: newUUID() as string,
+          _ts: new Date().toISOString() as string,
+          levels: [{ id: 0, height: 0 }] as Object[],
+          // levels[0]: { id: 0, height: 0 },
+          floors: [] as Object[],
+          roofs: [] as Object[],
+          walls: [] as Object[],
+          dimensions: [] as Object[],
+          texts: [] as Object[],
+          furniture: [] as Object[],
+
+          verticalGuides: [] as Object[],
+          horizontalGuides: [] as Object[],
+
+          furnitureAddedKey: null as any,
+          furnitureDirtyKey: null as any,
+          furnitureDeletedKey: null as any,
+          wallAddedKey: null as any,
+          wallDirtyKey: null as any,
+          wallDeletedKey: null as any,
+          roofAddedKey: null as any,
+          roofDirtyKey: null as any,
+          roofDeletedKey: null as any,
+          floorAddedKey: null as any,
+          floorDirtyKey: null as any,
+          floorDeletedKey: null as any,
+          dimensionAddedKey: null as any,
+          dimensionEditedKey: null as any,
+          dimensionDeletedKey: null as any,
+          textAddedKey: null as any,
+          textEditedKey: null as any,
+          textDeletedKey: null as any,
+
+          wallDiffuse: wallMaterial.color.getHexString(),
+          wallOpacity: wallMaterial.opacity,
+          wallSpecular: wallMaterial.specular.getHexString(),
+          roofDiffuse: roofMaterial.color.getHexString(),
+          roofOpacity: roofMaterial.opacity,
+          roofSpecular: roofMaterial.specular.getHexString(),
+          floorDiffuse: floorMaterial.color.getHexString(),
+          floorOpacity: floorMaterial.opacity,
+          floorSpecular: floorMaterial.specular.getHexString(),
+          groundDiffuse: groundMaterial.color.getHexString(),
+          groundOpacity: groundMaterial.opacity,
+          groundSpecular: groundMaterial.specular.getHexString(),
+
+          depthWrite: "checked", // document.getElementById("depthWriteMode").checked,
+          sortObjects: "checked", // document.getElementById("sortObjectsMode").checked,
+
+          azimuth: azimuth,
+          inclination: inclination
+        }
+      }
+    )
+  )
+}))
+
+function PlanCounter() {
+  // const plans = usePlanStore((state) => state.plans)
+  const planCount = usePlanStore((state) => state.planCount)
+  return <h1>{planCount} plans around here ...</h1>
+}
+
+function PlanControls() {
+  const increasePlanCount = usePlanStore((state) => state.increasePlanCount)
+
+  const addPlan = usePlanStore((state) => state.addPlan)
+
+  return (
+    <div>
+      <button onClick={addPlan}>add plan</button>
+      <br />
+      <button onClick={increasePlanCount}>add to plan count</button>
+    </div>
+  )
+}
+
+const createPlan = () => {
+  const plan = usePlanStore(
+    (state) => {
+      state.addPlan
+      state.increasePlanCount
+    }
+  )
   return plan
 }
 
@@ -231,7 +426,7 @@ let dirLight
 let hemiLight
 let pointLight
 // materials
-let groundMat = {
+let groundMaterial = {
   color: { getHexString: () => "#0xFFFFFF" },
   opacity: 1,
   specular: { getHexString: () => "#0xCCCCCC" }
@@ -970,9 +1165,9 @@ const ToolBar = (): JSX.Element => {
       //   (plan.floorDiffuse = floorMaterial.color),
       //   (plan.floorOpacity = floorMaterial.opacity),
       //   (plan.floorSpecular = floorMaterial.specular),
-      //   (plan.groundDiffuse = groundMat.color.getHexString()),
-      //   (plan.groundOpacity = groundMat.opacity),
-      //   (plan.groundSpecular = groundMat.specular.getHexString()),
+      //   (plan.groundDiffuse = groundMaterial.color.getHexString()),
+      //   (plan.groundOpacity = groundMaterial.opacity),
+      //   (plan.groundSpecular = groundMaterial.specular.getHexString()),
       //   // (plan.depthWrite = document.getElementById("depthWriteMode").checked),
       //   // (plan.sortObjects = document.getElementById("sortObjectsMode").checked),
       //   (plan.azimuth = azimuth),
@@ -2633,7 +2828,28 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
   // const root = useRef()
   // const scene = new THREE.Scene()
 
-  // const [begin, setBegin] = useState(false)
+  // ============================================================
+  // STATE
+
+  const [begin, setBegin] = useState(false)
+
+  const [isOpen, setIsOpen] = useState(false)
+  useEffect(() => {
+    document.body.classList.toggle('modal-open', isOpen);
+  }, [isOpen])
+
+  const [isOpenAboutModal, setIsOpenAboutModal] = useState(false)
+  useEffect(() => {
+    document.body.classList.toggle('#aboutModal', isOpenAboutModal)
+  }, [isOpenAboutModal])
+
+  const [isOpenShareModal, setIsOpenShareModal] = useState(false)
+  useEffect(() => {
+    document.body.classList.toggle('#shareModal', isOpenShareModal)
+  }, [isOpenShareModal])
+
+  // ============================================================
+  // LOCAL VARS
 
   // PROJECT (create new project on Component onMount) ??
   const projectNew = createProject()
@@ -2700,6 +2916,14 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
         {/* <LoadingModal /> */}
         {/* <ShareModal /> */}
         <ToolBar />
+
+        {/* zustand */}
+        {/* <BearCounter /> */}
+        {/* <BearControls /> */}
+        <ProjectCounter />
+        <ProjectControls />
+        <PlanCounter />
+        <PlanControls />
 
         {/* React Three Fiber - View */}
         {/* <ReactThreeFiberView /> */}
