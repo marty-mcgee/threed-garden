@@ -75,7 +75,37 @@ const clearObject = (object: Object, option: number = 1) => {
 }
 
 // ======================================================
-// FUNCTIONS (AS SIMILAR TO CLASSES, BUT BETTER)
+// FUNCTIONAL NOUNS (AS SIMILAR TO CLASSES, BUT BETTER)
+// ================
+// * ThreeD           | as root JS Object       | interface IThreeD
+// ================
+// * Project          | as JS Object            | interface IProject
+// * Plan             | as JS Object            | interface IPlan
+// * File             | as JS Object from Any   | interface IFile
+// * Edit             | Actions | Relationships | interface IEdit
+// * View             | as JS Object | Settings | interface IView
+// ================
+// * Game             | as JS Object            | interface IGame
+// * World            | extends Game            | interface IWorld
+// * Character        | as JS Object            | interface ICharacter
+// * Bear             | extends Character       | interface IBear
+// * Gardener         | extends Character       | interface IGardener
+// * Scene            | extends THREE.Scene     | interface IScene
+// * Structure        | extends Three.Object3D  | interface IStructure
+// * Allotment        | extends Structure       | interface IAllotment
+// * Bed              | extends Structure       | interface IBed
+// * Furniture        | extends Structure       | interface IFurniture
+// * Plant            | extends Structure       | interface IPlant
+// * PlantingPlan     | Actions | Relationships | interface IPlantingPlan
+// * BuildingPlan     | Actions | Relationships | interface IBuildingPlan
+// * Tool             | as JS Object | extends ThreeD?                      | interface ITool
+// * Camera           | extends Tool | extends THREE.Camera                 | interface ITool
+// * Renderer         | extends Tool | extends THREE.Renderer               | interface ITool
+// * Light            | extends Tool | extends THREE.Light.DirectionalLight | interface ITool
+// * Plane            | extends Tool | extends THREE.Scene.Plane            | interface ITool
+// * Raster           | extends Tool | extends THREE.Raster.Rasterizer      | interface ITool
+// * Shader           | extends Tool | extends THREE.Shader.Shaderizer      | interface ITool
+// * Animation        | extends Tool | extends OBJ.animation                | interface ITool
 
 // ======================================================
 // Bears
@@ -100,6 +130,8 @@ function BearControls() {
 // ======================================================
 // Projects
 const useProjectStore = create((set) => ({
+  _id: newUUID() as string,
+  _ts: new Date().toISOString() as string,
   projectCount: 0,
   projects: [],
   project: {
@@ -122,28 +154,48 @@ const useProjectStore = create((set) => ({
       projects: []
     }
   ),
-  addProject: () => set(
-    (state: any) => (
-      {
-        // projectCount: state.projectCount + 1
-        project: {
-          _id: newUUID() as string,
-          _ts: new Date().toISOString() as string,
-          layers: new Array,
-          activeLayer: {
-            name: "level1-MM",
-            data: {}
-          }
+  addProject: () => {
+    // projectCurrent
+    set(
+      (state: any) => (
+        {
+          project: {
+            _id: newUUID() as string,
+            _ts: new Date().toISOString() as string,
+            layers: new Array,
+            activeLayer: {
+              name: "level1-MM",
+              data: {}
+            }
+          },
+          projectCount: state.projectCount + 1,
         }
-      }
+      )
     )
-  )
-}))
+    // projectHistory
+    set(
+      (state: any) => (
+        {
+          projects: [state.project, ...state.projects],
+          projectCount: state.projects.length,
+        }
+      )
+    )
+  },
+
+})) // useProjectStore
 
 function ProjectCounter() {
   // const projects = useProjectStore((state) => state.projects)
   const projectCount = useProjectStore((state) => state.projectCount)
-  return <h1>{projectCount} projects around here ...</h1>
+  const project = useProjectStore((state) => state.project)
+  console.debug("%cproject", ccm1, project)
+  return (
+    <div>
+      <div>{projectCount} projects around here ...</div>
+      <div>{project.length} projects around here ...</div>
+    </div>
+  )
 }
 
 function ProjectControls() {
@@ -173,6 +225,8 @@ const createProject = () => {
 // ======================================================
 // Plans
 const usePlanStore = create((set) => ({
+  _id: newUUID() as string,
+  _ts: new Date().toISOString() as string,
   planCount: 0,
   plans: [],
   plan: {
@@ -222,8 +276,8 @@ const usePlanStore = create((set) => ({
     groundOpacity: null as number,
     groundSpecular: null as string,
 
-    depthWrite: "check()", // document.getElementById("depthWriteMode").checked,
-    sortObjects: "check()", // document.getElementById("sortObjectsMode").checked,
+    depthWrite: null as any,
+    sortObjects: null as any,
 
     azimuth: null as number,
     inclination: null as number
@@ -239,72 +293,108 @@ const usePlanStore = create((set) => ({
       plans: []
     }
   ),
-  addPlan: () => set(
-    (state: any) => (
-      {
-        // planCount: state.planCount + 1
-        plan: {
-          _id: newUUID() as string,
-          _ts: new Date().toISOString() as string,
-          levels: [{ id: 0, height: 0 }] as Object[],
-          // levels[0]: { id: 0, height: 0 },
-          floors: [] as Object[],
-          roofs: [] as Object[],
-          walls: [] as Object[],
-          dimensions: [] as Object[],
-          texts: [] as Object[],
-          furniture: [] as Object[],
+  addPlan: () => {
 
-          verticalGuides: [] as Object[],
-          horizontalGuides: [] as Object[],
+    // planCurrent
+    set(
+      (state: any) => (
+        {
+          plan: {
+            _id: newUUID() as string,
+            _ts: new Date().toISOString() as string,
+            levels: [{ id: 0, height: 0 }] as Object[],
+            // levels[0]: { id: 0, height: 0 },
+            floors: [] as Object[],
+            roofs: [] as Object[],
+            walls: [] as Object[],
+            dimensions: [] as Object[],
+            texts: [] as Object[],
+            furniture: [] as Object[],
 
-          furnitureAddedKey: null as any,
-          furnitureDirtyKey: null as any,
-          furnitureDeletedKey: null as any,
-          wallAddedKey: null as any,
-          wallDirtyKey: null as any,
-          wallDeletedKey: null as any,
-          roofAddedKey: null as any,
-          roofDirtyKey: null as any,
-          roofDeletedKey: null as any,
-          floorAddedKey: null as any,
-          floorDirtyKey: null as any,
-          floorDeletedKey: null as any,
-          dimensionAddedKey: null as any,
-          dimensionEditedKey: null as any,
-          dimensionDeletedKey: null as any,
-          textAddedKey: null as any,
-          textEditedKey: null as any,
-          textDeletedKey: null as any,
+            verticalGuides: [] as Object[],
+            horizontalGuides: [] as Object[],
 
-          wallDiffuse: wallMaterial.color.getHexString(),
-          wallOpacity: wallMaterial.opacity,
-          wallSpecular: wallMaterial.specular.getHexString(),
-          roofDiffuse: roofMaterial.color.getHexString(),
-          roofOpacity: roofMaterial.opacity,
-          roofSpecular: roofMaterial.specular.getHexString(),
-          floorDiffuse: floorMaterial.color.getHexString(),
-          floorOpacity: floorMaterial.opacity,
-          floorSpecular: floorMaterial.specular.getHexString(),
-          groundDiffuse: groundMaterial.color.getHexString(),
-          groundOpacity: groundMaterial.opacity,
-          groundSpecular: groundMaterial.specular.getHexString(),
+            furnitureAddedKey: null as any,
+            furnitureDirtyKey: null as any,
+            furnitureDeletedKey: null as any,
+            wallAddedKey: null as any,
+            wallDirtyKey: null as any,
+            wallDeletedKey: null as any,
+            roofAddedKey: null as any,
+            roofDirtyKey: null as any,
+            roofDeletedKey: null as any,
+            floorAddedKey: null as any,
+            floorDirtyKey: null as any,
+            floorDeletedKey: null as any,
+            dimensionAddedKey: null as any,
+            dimensionEditedKey: null as any,
+            dimensionDeletedKey: null as any,
+            textAddedKey: null as any,
+            textEditedKey: null as any,
+            textDeletedKey: null as any,
 
-          depthWrite: "checked", // document.getElementById("depthWriteMode").checked,
-          sortObjects: "checked", // document.getElementById("sortObjectsMode").checked,
+            wallDiffuse: wallMaterial.color.getHexString(),
+            wallOpacity: wallMaterial.opacity,
+            wallSpecular: wallMaterial.specular.getHexString(),
+            roofDiffuse: roofMaterial.color.getHexString(),
+            roofOpacity: roofMaterial.opacity,
+            roofSpecular: roofMaterial.specular.getHexString(),
+            floorDiffuse: floorMaterial.color.getHexString(),
+            floorOpacity: floorMaterial.opacity,
+            floorSpecular: floorMaterial.specular.getHexString(),
+            groundDiffuse: groundMaterial.color.getHexString(),
+            groundOpacity: groundMaterial.opacity,
+            groundSpecular: groundMaterial.specular.getHexString(),
 
-          azimuth: azimuth,
-          inclination: inclination
+            depthWrite: "checked", // document.getElementById("depthWriteMode").checked,
+            sortObjects: "checked", // document.getElementById("sortObjectsMode").checked,
+
+            azimuth: azimuth,
+            inclination: inclination
+          },
+          planCount: state.planCount + 1
         }
-      }
+      )
     )
-  )
-}))
+
+    // projectCurrent
+    set(
+      (state: any) => (
+        {
+          project: {
+            _id: newUUID() as string,
+            _ts: new Date().toISOString() as string,
+            layers: new Array,
+            activeLayer: {
+              name: "level1-MM",
+              data: {}
+            }
+          },
+          projectCount: state.projectCount + 1,
+        }
+      )
+    )
+    // planHistory
+    set(
+      (state: any) => (
+        {
+          plans: [state.plan, ...state.plans],
+          planCount: state.plans.length,
+        }
+      )
+    )
+  }
+
+})) // usePlanStore
 
 function PlanCounter() {
   // const plans = usePlanStore((state) => state.plans)
   const planCount = usePlanStore((state) => state.planCount)
-  return <h1>{planCount} plans around here ...</h1>
+  const plan = usePlanStore((state) => state.plan)
+  console.debug("%cplan", ccm1, plan)
+  return (
+    <div>{planCount} plans around here ...</div>
+  )
 }
 
 function PlanControls() {
@@ -448,7 +538,7 @@ let wallMaterial = {
 }
 // << THREE
 
-// groups
+// GROUPS
 // Paper.Group !! 2D
 // these should be arrays [] ??? YES, CHANGED
 const furnitureGroup: any[] = []
@@ -473,8 +563,6 @@ let inclination = 0
 let azimuth = 0
 
 
-// useEffect() ??
-
 // // PROJECT
 // const project = createProject()
 
@@ -493,7 +581,6 @@ const planHistory: Object[] = []
 let planHistoryPosition = 0
 // // localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
 
-// end useEffect
 
 // ======================================================
 // COMPONENTS
@@ -928,15 +1015,20 @@ const ToolBar = (): JSX.Element => {
   }
 
   // MouseEventHandler<HTMLAnchorElement>
-  const setNewPlan: any = (): any => {
-    // alert("[MM] setNewPlan")
+  const fileNewPlan: any = (): any => {
+    // alert("[MM] fileNewPlan")
     try {
 
+      // TENTATIVE
       resetPlan() // clear all plan stuff, then create new plan...
 
       // PLAN
-      const plan = createPlan() // want this as planHistory[0] ?? yes
-      console.debug("plan", plan)
+      // const plan = createPlan()
+      createPlan()
+      const plan = usePlanStore((state) => state.plan)
+      const plans = usePlanStore((state) => state.plans)
+      console.debug("fileNewPlan plan", plan)
+      console.debug("fileNewPlan plans", plans)
 
       // PLAN HISTORY
       // const planHistory: Object[] = []
@@ -953,9 +1045,9 @@ const ToolBar = (): JSX.Element => {
 
       setToolMode("pointer")
 
-      // console.debug("[MM] TRY: setNewPlan")
+      // console.debug("[MM] TRY: fileNewPlan")
     } catch (e) {
-      console.debug("[MM] CATCH: setNewPlan", e)
+      console.debug("[MM] CATCH: fileNewPlan", e)
     }
   }
 
@@ -1387,7 +1479,7 @@ const ToolBar = (): JSX.Element => {
       // console.debug("%cFileReader", ccm1, o)
       o.onload = function () {
         let g = o.result
-        setNewPlan()
+        fileNewPlan()
         // loadingProgressTxt = "Plan decoding\n" + loadingProgressTxt
         // document.getElementById("modalLoadingDataInfo").innerHTML = loadingProgressTxt
         console.debug("drawPlan", g)
@@ -1415,9 +1507,9 @@ const ToolBar = (): JSX.Element => {
     }
   }
 
-  const openFullscreen = (el: any) => {
+  const openFullscreen = (el: string) => {
     try {
-      let t = document.getElementById("__next")
+      let t = document.getElementById(el)
       t.requestFullscreen
         ? t.requestFullscreen()
         : t.mozRequestFullScreen
@@ -1477,7 +1569,7 @@ const ToolBar = (): JSX.Element => {
           </a>
           <div className="dropdown-content">
             {/* <a onClick="setNewPlan();"> */}
-            <a onClick={setNewPlan}>
+            <a onClick={fileNewPlan}>
               New
             </a>
             <a
@@ -1568,10 +1660,8 @@ const ToolBar = (): JSX.Element => {
         <li>
           <a onClick="showAbout()">About</a>
         </li> */}
-        <li id="deleteme" style={{ width: "auto" }}>
-          &nbsp;&nbsp;&nbsp;&nbsp;
+        <li id="deleteme" style={{ position: "absolute", top: "4px", right: "16px" }}>
           TOOLS:
-          &nbsp;&nbsp;
         </li>
         {/*
         <li>
@@ -2829,7 +2919,7 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
   // const scene = new THREE.Scene()
 
   // ============================================================
-  // STATE
+  // STATE (REACT + ZUSTAND)
 
   const [begin, setBegin] = useState(false)
 
@@ -2851,10 +2941,10 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
   // ============================================================
   // LOCAL VARS
 
-  // PROJECT (create new project on Component onMount) ??
-  const projectNew = createProject()
-  const [project, setProject] = useState(projectNew)
-  console.debug("project", project)
+  // // PROJECT (create new project on Component onMount) ??
+  // const projectNew = createProject()
+  // const [project, setProject] = useState(projectNew)
+  // console.debug("project", project)
 
   // Component onMount hook
   useEffect(() => {
