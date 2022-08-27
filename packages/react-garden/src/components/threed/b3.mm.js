@@ -8297,29 +8297,27 @@ function updateGroundLength(e) {
 
 
 
-
-
 // ========================================================
 // [MM] HEY HEY HEY -- all functions have been loaded above
 // now for the logic/execution instructions runtime baby...
 
 // variables to use
-let mouseMode = 0,
-  toolMode = "pointer",
-  selectedItem,
-  defaultCursor = "default",
-  // deselectAll,
-  UILayout = "default",
+let mouseMode = 0, //
+  toolMode = "pointer", //
+  selectedItem, //
+  defaultCursor = "default", //
+  // deselectAll, //
+  UILayout = "default", //
 
-  toolsGroup,
-  gridGroup,
-  furnitureGroup = {},
-  wallsGroup = {},
-  roofsGroup = {},
-  floorsGroup = {},
-  dimensionsGroup = {},
-  textsGroup = {},
-  guidesGroup,
+  toolsGroup, //
+  gridGroup, //
+  furnitureGroup = {}, //
+  wallsGroup = {}, //
+  roofsGroup = {}, //
+  floorsGroup = {}, //
+  dimensionsGroup = {}, //
+  textsGroup = {}, //
+  guidesGroup, //
 
   defaultWallHeight = 265,
   defaultWallThickness = 20,
@@ -8523,8 +8521,8 @@ let backgroundRaster, //
   zoomRectangle,
   sky,
   sunSphere,
-  inclination,
-  azimuth,
+  inclination, //
+  azimuth, //
   examplePlan,
   fLineX,
   fLineY,

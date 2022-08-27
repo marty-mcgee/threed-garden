@@ -19,7 +19,7 @@ import { Canvas, useFrame } from '@react-three/fiber'
 // import "~/assets/demo/css/jquery.minicolors.css"
 // import "~/assets/demo/css/style.css"
 
-// no no no, never
+// no no no, never again
 // import * as $ from "jquery"
 
 // ======================================================
@@ -29,6 +29,100 @@ const ccm1 = "color: green; font-size: 16px;"
 const ccm2 = "color: red; font-size: 16px;"
 console.log("%cWELCOME", ccm1)
 // console.log("%cOOPSIES", ccm2)
+
+// DELETE OBJECT KEYS: RESET OBJECT TO {}
+// ======================================================
+const clearObject = (object: Object, option: number = 1) => {
+  switch (option) {
+    // option 1 // ES5
+    case 1: {
+      Object.keys(object).forEach(key => {
+        delete object[key]
+      })
+    }
+      break
+    // option 2 // ES6
+    case 2: {
+      for (const key in object) {
+        delete object[key]
+      }
+    }
+      break
+    // option 3 // ES5: for enumerable and non-enumerable properties
+    case 3: {
+      Object.getOwnPropertyNames(object).forEach(function (key) {
+        delete object[key]
+      })
+    }
+      break
+    // option 4 // ES6: for enumerable and non-enumerable properties
+    case 4: {
+      for (const key of Object.getOwnPropertyNames(object)) {
+        delete object[key]
+      }
+    }
+  }
+}
+
+// ======================================================
+// FUNCTIONS
+
+const createPlan = () => {
+  const plan = {
+    _id: crypto.randomUUID() as string,
+    _ts: new Date().toISOString() as string,
+    levels: [{ id: 0, height: 0 }] as Object[],
+    // levels[0]: { id: 0, height: 0 },
+    floors: [] as Object[],
+    roofs: [] as Object[],
+    walls: [] as Object[],
+    dimensions: [] as Object[],
+    texts: [] as Object[],
+    furniture: [] as Object[],
+
+    verticalGuides: [] as Object[],
+    horizontalGuides: [] as Object[],
+
+    furnitureAddedKey: null as any,
+    furnitureDirtyKey: null as any,
+    furnitureDeletedKey: null as any,
+    wallAddedKey: null as any,
+    wallDirtyKey: null as any,
+    wallDeletedKey: null as any,
+    roofAddedKey: null as any,
+    roofDirtyKey: null as any,
+    roofDeletedKey: null as any,
+    floorAddedKey: null as any,
+    floorDirtyKey: null as any,
+    floorDeletedKey: null as any,
+    dimensionAddedKey: null as any,
+    dimensionEditedKey: null as any,
+    dimensionDeletedKey: null as any,
+    textAddedKey: null as any,
+    textEditedKey: null as any,
+    textDeletedKey: null as any,
+
+    // wallDiffuse: wallMaterial.color,
+    // wallOpacity: wallMaterial.opacity,
+    // wallSpecular: wallMaterial.specular,
+    // roofDiffuse: roofMaterial.color,
+    // roofOpacity: roofMaterial.opacity,
+    // roofSpecular: roofMaterial.specular,
+    // floorDiffuse: floorMaterial.color,
+    // floorOpacity: floorMaterial.opacity,
+    // floorSpecular: floorMaterial.specular,
+    // groundDiffuse: groundMat.color.getHexString(),
+    // groundOpacity: groundMat.opacity,
+    // groundSpecular: groundMat.specular.getHexString(),
+
+    // // depthWrite: document.getElementById("depthWriteMode").checked,
+    // // sortObjects: document.getElementById("sortObjectsMode").checked,
+
+    // azimuth: azimuth,
+    // inclination: inclination
+  }
+  return plan
+}
 
 // ======================================================
 
@@ -444,22 +538,18 @@ const ToolBar = (): JSX.Element => {
   const word = `[MM] @ ${new Date().toISOString()}`
   // console.debug("ToolBar", word)
 
-  const plan = {
-    furniture: {},
-    walls: {},
-    roofs: {},
-    floors: {},
-    levels: [
-      { id: 0, height: 0 }, // levels[0]
-    ],
-    dimensions: {},
-    texts: {},
-    verticalGuides: {},
-    horizontalGuides: {},
-  }
-  let planHistory = []
-  planHistory.push(JSON.stringify(plan)) // planHistory[0]
+  const plan = createPlan()
+
+  const planHistory: Object[] = []
+  planHistory.push(plan) // JSON.stringify(plan) ??
   let planHistoryPosition = 0
+
+  let mouseMode = 0
+  let toolMode = "pointer"
+  let selectedItem
+  let defaultCursor = "default"
+  // let deselectAll
+  let UILayout = "default"
 
   const Texts = {}
   const Dimensions = {}
@@ -539,17 +629,12 @@ const ToolBar = (): JSX.Element => {
   let raycaster
   let mouse
   // lights
-  let hemiLight
-  let dirLight
   let ambientLight
+  let dirLight
+  let hemiLight
   let pointLight
   // materials
   let groundMat = {
-    color: { getHexString: () => "" },
-    opacity: 1,
-    specular: { getHexString: () => "" }
-  }
-  let wallMaterial = {
     color: { getHexString: () => "" },
     opacity: 1,
     specular: { getHexString: () => "" }
@@ -564,12 +649,45 @@ const ToolBar = (): JSX.Element => {
     opacity: 1,
     specular: { getHexString: () => "" }
   }
+  let wallMaterial = {
+    color: { getHexString: () => "" },
+    opacity: 1,
+    specular: { getHexString: () => "" }
+  }
   // << THREE
 
 
+  let inclination = ""
+  let azimuth = ""
+
+
+  // groups
+  // Paper.Group !! 2D
+  // these should be arrays [] ??? YES, CHANGED
+  const furnitureGroup: any[] = []
+  // furnitureGroup[0] = new paper.Group()
+  const wallsGroup: any[] = []
+  // wallsGroup[0] = new paper.Group()
+  const roofsGroup: any[] = []
+  // roofsGroup[0] = new paper.Group()
+  const floorsGroup: any[] = []
+  // floorsGroup[0] = new paper.Group()
+  const dimensionsGroup: any[] = []
+  // dimensionsGroup[0] = new paper.Group()
+  const textsGroup: any[] = []
+  // textsGroup[0] = new paper.Group()
+  // these 3 should be const arrays [] ??
+  let guidesGroup: Object = {} // new paper.Group()
+  let toolsGroup: Object = {} // new paper.Group()
+  let gridGroup: Object = {} // new paper.Group()
+
   // PROJECT
   const project = {
-    activeLayer: ""
+    layers: new Array,
+    activeLayer: {
+      name: "",
+      data: {}
+    }
   }
 
   // FUNCTIONS
@@ -588,29 +706,24 @@ const ToolBar = (): JSX.Element => {
 
   // ==================================================
 
-  // Component onMount hook
-  useEffect(() => {
-    // console.debug("ToolBar onMount", word)
-    return () => {
-      // console.debug("ToolBar onUnmount", word)
-    }
-  }, [])
-
   const setNewPlan: MouseEventHandler<HTMLAnchorElement> = (): any => {
     // alert("[MM] setNewPlan")
     try {
-      const newPlan = { ts: new Date().toISOString() }
-      const plan = newPlan
+      const plan = createPlan()
 
-      resetPlan()
-      planHistory = []
-      planHistory.push(JSON.stringify(plan))
+      // ??? reset this new plan?
+      // resetPlan()
+
+      planHistory.length = 0 // clears array
+      planHistory.push(plan) // JSON.stringify(plan) ??
       planHistoryPosition = 0
       // setToolMode("pointer")
 
+      console.debug("planHistory", planHistory)
+
       // save to disk
       // localStorage.clear()
-      localStorage.setItem("tdg-setNewPlan", JSON.stringify({ subject: "plan", payload: planHistory }))
+      localStorage.setItem("threed_setNewPlan", JSON.stringify({ subject: "plan", payload: planHistory }))
       console.debug("[MM] TRY: setNewPlan")
     } catch (e) {
       console.debug("[MM] CATCH: setNewPlan", e)
@@ -625,7 +738,7 @@ const ToolBar = (): JSX.Element => {
 
       // save to disk
       // localStorage.clear()
-      localStorage.setItem("tdg-resetPlan", JSON.stringify({ subject: "plan", payload: resetPlan }))
+      localStorage.setItem("threed_resetPlan", JSON.stringify({ subject: "plan", payload: resetPlan }))
       console.debug("[MM] TRY: resetPlan")
     } catch (e) {
       console.debug("[MM] CATCH: resetPlan", e)
@@ -766,28 +879,31 @@ const ToolBar = (): JSX.Element => {
       console.log("resetPlan : 10 : " + e)
     }
     try {
-      ; (furnitureToLoadCount = 0),
-        (loadedFurnitureCount = 0),
-        (wallIdCounter = 0),
-        (wallsRectangles = {}),
-        (wallsRectangles3d = {}),
-        (maskObjectsApplied = {}),
-        (maskObjectsAppliedRoof = {}),
-        (roofIdCounter = 0),
-        (roofsRectangles = {}),
-        (roofsRectangles3d = {}),
-        (Furniture = {}),
-        (Walls = {}),
-        (Roofs = {}),
-        (Floors = {}),
-        (Floors3d = {}),
-        (Dimensions = {}),
-        (Texts = {}),
-        (plan = {}),
-        (plan.furniture = {}),
+      furnitureToLoadCount = 0
+      loadedFurnitureCount = 0
+      wallIdCounter = 0
+      clearObject(wallsRectangles)
+      clearObject(wallsRectangles3d)
+      clearObject(maskObjectsApplied)
+      clearObject(maskObjectsAppliedRoof)
+      roofIdCounter = 0
+      clearObject(roofsRectangles)
+      clearObject(roofsRectangles3d)
+
+      clearObject(Dimensions)
+      clearObject(Floors)
+      clearObject(Floors3d)
+      clearObject(Roofs)
+      clearObject(Walls)
+      clearObject(Texts)
+      clearObject(Furniture)
+
+      clearObject(plan)
+        ;
+      (plan.furniture = {}),
         (plan.walls = {}),
         (plan.roofs = {}),
-        (plan.levels = {}),
+        (plan.levels = []),
         (plan.levels[0] = { id: 0, height: 0 }),
         (plan.floors = {}),
         (plan.dimensions = {}),
@@ -824,8 +940,8 @@ const ToolBar = (): JSX.Element => {
         (plan.groundDiffuse = groundMat.color.getHexString()),
         (plan.groundOpacity = groundMat.opacity),
         (plan.groundSpecular = groundMat.specular.getHexString()),
-        (plan.depthWrite = document.getElementById("depthWriteMode").checked),
-        (plan.sortObjects = document.getElementById("sortObjectsMode").checked),
+        // (plan.depthWrite = document.getElementById("depthWriteMode").checked),
+        // (plan.sortObjects = document.getElementById("sortObjectsMode").checked),
         (plan.azimuth = azimuth),
         (plan.inclination = inclination)
       console.debug("%cplan", ccm1, plan)
@@ -858,39 +974,174 @@ const ToolBar = (): JSX.Element => {
         "0" !== e.toString() &&
           (levelButtons[e].parentNode.removeChild(levelButtons[e]),
             delete levelButtons[e],
-            project.layers["level" + e].remove())
+            project.layers["level" + e].remove()
+          )
       })
     } catch (e) {
       console.log("resetPlan : 14 : " + e)
     }
     try {
       project.layers.forEach(function (e: { data: { id: any }; remove: () => any }) {
-        "0" === !e.data.id && e.remove()
+        "0" !== e.data.id && e.remove()
       })
     } catch (e) {
       console.log("resetPlan : 15 : " + e)
     }
-    ; (project.activeLayer.name = "level0"),
-      (project.activeLayer.data = { id: "0", height: 0 })
+
+    project.activeLayer.name = "level0"
+    project.activeLayer.data = { id: "0", height: 0 }
+
     try {
-      ; (floorsGroup = {}),
-        (floorsGroup[0] = new paper.Group()),
-        (roofsGroup = {}),
-        (roofsGroup[0] = new paper.Group()),
-        (wallsGroup = {}),
-        (wallsGroup[0] = new paper.Group()),
-        (dimensionsGroup = {}),
-        (dimensionsGroup[0] = new paper.Group()),
-        (furnitureGroup = {}),
-        (furnitureGroup[0] = new paper.Group()),
-        (textsGroup = {}),
-        (textsGroup[0] = new paper.Group()),
-        (guidesGroup = new paper.Group()),
-        deselectAll(),
-        render()
+      // reset Groups
+      // floorsGroup = {}
+      floorsGroup.length = 0 // clearArray
+      // floorsGroup[0] = new paper.Group()
+      // roofsGroup = {}
+      roofsGroup.length = 0 // clearArray
+      // roofsGroup[0] = new paper.Group()
+      // wallsGroup = {}
+      wallsGroup.length = 0 // clearArray
+      // wallsGroup[0] = new paper.Group()
+      // dimensionsGroup = {}
+      dimensionsGroup.length = 0 // clearArray
+      // dimensionsGroup[0] = new paper.Group()
+      // furnitureGroup = {}
+      furnitureGroup.length = 0 // clearArray
+      // furnitureGroup[0] = new paper.Group()
+      // textsGroup = {}
+      textsGroup.length = 0 // clearArray
+      // textsGroup[0] = new paper.Group()
+
+      // guidesGroup = new paper.Group()
+
+      // deselectAll()
+      // render()
+
     } catch (e) {
-      console.log("resetPlan : 15 : " + e)
+      console.log("resetPlan : 16 : " + e)
     }
+  }
+
+  const setToolMode: any = (e): string => {
+
+    switch (
+    ("walls" === toolMode ? setEndDrawingWalls()
+      : "floor" === toolMode ? setEndDrawingFloors()
+        : "roof" === toolMode ? setEndDrawingRoofs()
+          : "dimension" === toolMode ? setEndDrawingDimension()
+            : "text" === toolMode ? setEndDrawingText()
+              : "ground" === toolMode && setEndDrawingGround(),
+      (toolMode = e),
+      e)
+    ) {
+      case "pointer":
+        modalsActive || showMouseIndicators(),
+          (defaultCursor = "default"),
+          deselectAll(),
+          document.getElementById("pointerTool").classList.add("activeTool"),
+          document.getElementById("addWallTool").classList.remove("activeTool"),
+          document.getElementById("addFloorTool").classList.remove("activeTool"),
+          document.getElementById("addRoofTool").classList.remove("activeTool"),
+          document.getElementById("addRulerTool").classList.remove("activeTool"),
+          document.getElementById("addTextTool").classList.remove("activeTool")
+        break
+      case "walls":
+        ; (defaultCursor = "crosshair"),
+          deselectAll(),
+          recalcAllUnjoinedWallSegments(-1),
+          recalcAllWallSegmentsOnOtherLevels(-1, project.activeLayer.data.id),
+          document.getElementById("pointerTool").classList.remove("activeTool"),
+          document.getElementById("addWallTool").classList.add("activeTool"),
+          document.getElementById("addFloorTool").classList.remove("activeTool"),
+          document.getElementById("addRoofTool").classList.remove("activeTool"),
+          document.getElementById("addRulerTool").classList.remove("activeTool"),
+          document.getElementById("addTextTool").classList.remove("activeTool"),
+          setPropertiesView("wallDefaults")
+        break
+      case "floor":
+        ; (defaultCursor = "crosshair"),
+          deselectAll(),
+          document.getElementById("pointerTool").classList.remove("activeTool"),
+          document.getElementById("addWallTool").classList.remove("activeTool"),
+          document.getElementById("addFloorTool").classList.add("activeTool"),
+          document.getElementById("addRoofTool").classList.remove("activeTool"),
+          document.getElementById("addRulerTool").classList.remove("activeTool"),
+          document.getElementById("addTextTool").classList.remove("activeTool"),
+          recalcAllWallCorners(),
+          setPropertiesView("floorDefaults")
+        break
+      case "roof":
+        ; (defaultCursor = "crosshair"),
+          deselectAll(),
+          document.getElementById("pointerTool").classList.remove("activeTool"),
+          document.getElementById("addWallTool").classList.remove("activeTool"),
+          document.getElementById("addFloorTool").classList.remove("activeTool"),
+          document.getElementById("addRoofTool").classList.add("activeTool"),
+          document.getElementById("addRulerTool").classList.remove("activeTool"),
+          document.getElementById("addTextTool").classList.remove("activeTool"),
+          recalcAllRoofCorners(),
+          setPropertiesView("roofDefaults")
+        break
+      case "dimension":
+        ; (defaultCursor = "crosshair"),
+          deselectAll(),
+          document.getElementById("pointerTool").classList.remove("activeTool"),
+          document.getElementById("addWallTool").classList.remove("activeTool"),
+          document.getElementById("addFloorTool").classList.remove("activeTool"),
+          document.getElementById("addRoofTool").classList.remove("activeTool"),
+          document.getElementById("addRulerTool").classList.add("activeTool"),
+          document.getElementById("addTextTool").classList.remove("activeTool"),
+          recalcAllWallCorners(),
+          recalcAllRoofCorners(),
+          setPropertiesView("dimensionDefaults")
+        break
+      case "text":
+        ; (defaultCursor = "crosshair"),
+          deselectAll(),
+          document.getElementById("pointerTool").classList.remove("activeTool"),
+          document.getElementById("addWallTool").classList.remove("activeTool"),
+          document.getElementById("addFloorTool").classList.remove("activeTool"),
+          document.getElementById("addRoofTool").classList.remove("activeTool"),
+          document.getElementById("addRulerTool").classList.remove("activeTool"),
+          document.getElementById("addTextTool").classList.add("activeTool"),
+          setPropertiesView("textnDefaults")
+        break
+      case "background":
+        ; (defaultCursor = "default"),
+          document.getElementById("pointerTool").classList.remove("activeTool"),
+          document.getElementById("addWallTool").classList.remove("activeTool"),
+          document.getElementById("addFloorTool").classList.remove("activeTool"),
+          document.getElementById("addRoofTool").classList.remove("activeTool"),
+          document.getElementById("addRulerTool").classList.remove("activeTool"),
+          document.getElementById("addTextTool").classList.remove("activeTool")
+        break
+      case "ground":
+        setLevel("0"),
+          (toolMode = e),
+          (defaultCursor = "default"),
+          (wallsGroup[0].opacity = 0.25),
+          (floorsGroup[0].opacity = 0.25),
+          (furnitureGroup[0].opacity = 0.25),
+          document.getElementById("pointerTool").classList.remove("activeTool"),
+          document.getElementById("addWallTool").classList.remove("activeTool"),
+          document.getElementById("addFloorTool").classList.remove("activeTool"),
+          document.getElementById("addRoofTool").classList.remove("activeTool"),
+          document.getElementById("addRulerTool").classList.remove("activeTool"),
+          document.getElementById("addTextTool").classList.remove("activeTool"),
+          setPropertiesView("ground")
+        break
+      case "defaults":
+        ; (defaultCursor = "default"),
+          deselectAll(),
+          document.getElementById("pointerTool").classList.remove("activeTool"),
+          document.getElementById("addWallTool").classList.remove("activeTool"),
+          document.getElementById("addFloorTool").classList.remove("activeTool"),
+          document.getElementById("addRoofTool").classList.remove("activeTool"),
+          document.getElementById("addRulerTool").classList.remove("activeTool"),
+          document.getElementById("addTextTool").classList.remove("activeTool")
+    }
+    planView.style.cursor = defaultCursor
+
   }
 
   const doUndo: MouseEventHandler<HTMLAnchorElement> = (): any => {
@@ -900,7 +1151,7 @@ const ToolBar = (): JSX.Element => {
 
       // save to disk
       // localStorage.clear()
-      localStorage.setItem("tdg-doUndo", JSON.stringify({ subject: "plan", payload: undid }))
+      localStorage.setItem("threed_doUndo", JSON.stringify({ subject: "plan", payload: undid }))
       console.debug("[MM] TRY: doUndo")
     } catch (e) {
       console.debug("[MM] CATCH: doUndo", e)
@@ -914,12 +1165,22 @@ const ToolBar = (): JSX.Element => {
 
       // save to disk
       // localStorage.clear()
-      localStorage.setItem("tdg-doRedo", JSON.stringify({ subject: "plan", payload: redid }))
+      localStorage.setItem("threed_doRedo", JSON.stringify({ subject: "plan", payload: redid }))
       console.debug("[MM] TRY: doRedo")
     } catch (e) {
       console.debug("[MM] CATCH: doRedo", e)
     }
   }
+
+  // ==================================================
+
+  // Component onMount hook
+  useEffect(() => {
+    // console.debug("ToolBar onMount", word)
+    return () => {
+      // console.debug("ToolBar onUnmount", word)
+    }
+  }, [])
 
   return (
     <div id="toolBar">
