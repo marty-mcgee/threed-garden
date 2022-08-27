@@ -1,5 +1,5 @@
 // ======================================================
-// FUNCTIONAL NOUNS   (OBJECTS, AS SIMILAR TO CLASSES, BUT BETTER)
+// FUNCTIONAL NOUNS   (JS OBJECTS, SIMILAR TO CLASSES, BUT BETTER)
 // ================
 // * ThreeD           | as root JS Object       | interface IThreeD
 // ================
@@ -135,6 +135,7 @@ const useThreeDStore = create((set) => ({
   threed: {
     _id: newUUID() as string,
     _ts: new Date().toISOString() as string,
+    name: "HEY HEY HEY 0",
     layers: new Array,
     activeLayer: {
       name: "level0-MM",
@@ -160,6 +161,7 @@ const useThreeDStore = create((set) => ({
           threed: {
             _id: newUUID() as string,
             _ts: new Date().toISOString() as string,
+            name: "HEY HEY HEY 1",
             layers: new Array,
             activeLayer: {
               name: "level1-MM",
