@@ -235,6 +235,13 @@ const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithL
             onMouseEnter={handleOnMouseEnter}
             onMouseLeave={handleOnMouseLeave}
           /> */}
+          <Sidenav
+            routes={routes}
+            brandLogo={brandIcon}
+            brandName="ThreeD Garden"
+            onMouseEnter={handleOnMouseEnter}
+            onMouseLeave={handleOnMouseLeave}
+          />
           <Configurator />
           {/* {configsButton} */}
         </>

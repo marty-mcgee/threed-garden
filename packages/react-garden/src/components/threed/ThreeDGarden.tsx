@@ -1947,7 +1947,8 @@ const ToolBar = (): JSX.Element => {
             />
             <a id="saveBtn" onClick={doSaveFile}>Save File</a>
             <hr />
-            <a id="exportBtn" onClick="exportToObj();">Export As OBJ</a>
+            <a id="exportBtn" onClick={() => exportToObj}>Export As OBJ</a>
+            {/* <a id="createThumb" onClick="createThumbForHistory();">Create Thumb</a> */}
           </div>
         </li>
         <li className="dropdown">
@@ -1964,13 +1965,11 @@ const ToolBar = (): JSX.Element => {
             View
           </a>
           <div className="dropdown-content">
-            <a onClick="setPropertiesView('planView');">2D Plan View Properties</a>
-            <a onClick="doOpenFullscreen('planView');">2D Fullscreen</a>
+            <a onClick={() => setPropertiesView('planView')}>2D Plan Properties</a>
+            <a onClick={() => doOpenFullscreen('planView')}>2D Plan Fullscreen</a>
             <hr />
-            <a onClick="setPropertiesView('3dView');">3D Plan View Properties</a>
-            <a onClick="doOpenFullscreen('view3d');">3D Fullscreen</a>
-            <hr />
-            <a id="createThumb" onClick="createThumbForHistory();">Create Thumb</a>
+            <a onClick={() => setPropertiesView('3dView')}>3D Plan Properties</a>
+            <a onClick={() => doOpenFullscreen('view3d')}>3D Plan Fullscreen</a>
           </div>
         </li>
         {/* <li className="dropdown">
@@ -2008,19 +2007,19 @@ const ToolBar = (): JSX.Element => {
           </div>
         </li>
         {/* <li>
-          <a onClick="doLog()">Log</a>
+          <a onClick={doLog}>Log</a>
         </li>
         <li>
-          <a onClick="showAbout()">About</a>
+          <a onClick={showAbout}>About</a>
         </li> */}
-        <li id="deleteme" style={{ position: "absolute", top: "4px", right: "16px" }}>
-          TOOLS:
+        <li id="toolModes" style={{ position: "absolute", top: "4px", right: "16px" }}>
+          -||- TOOL MODES -||-
         </li>
         {/*
         <li>
           <a
             id="pointerTool"
-            onClick="setToolMode('pointer');"
+            onClick={setToolMode('pointer')}
             className="toolButton activeTool"
             title="Pointer Select"
             alt="Pointer Select">
