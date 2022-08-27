@@ -10,9 +10,10 @@
 // * View             | as JS Object | Settings | interface IView
 // ================
 // * Simulation       | as JS Object            | interface ISimulation
-// ================
 // * Game             | extends Simulation      | interface IGame
-// * World            | extends Simulation      | interface IWorld
+// * Demo             | extends Simulation      | interface IGame
+// ================
+// * World            | as JS Object            | interface IWorld
 // * Character        | as JS Object            | interface ICharacter
 // * Bear             | extends Character       | interface IBear
 // * Gardener         | extends Character       | interface IGardener
@@ -515,6 +516,10 @@ const createPlan = () => {
 }
 
 // ======================================================
+// Simulation
+
+
+// ======================================================
 // Bear
 
 const useBearStore = create((set) => ({
@@ -678,11 +683,41 @@ let inclination = 0
 let azimuth = 0
 
 
+// ==============================================================
+// NOUN HISTORY
+
+// // THREED
+// const threed = createProject() // want this as threedHistory[0] ?? no
+// // const threed: any = null // want this as threedHistory[0] ?? no
+
+// // THREED HISTORY
+// // from localStore (browser) ?? or new (server) ??
+// // localStorage.clear()
+// // const threedHistory: Object[] = JSON.parse(localStorage.getItem("threed_threedHistory"))
+const threedHistory: Object[] = []
+// console.debug("threedHistoryInit", threedHistory)
+// // want this as threedHistory[0] ?? yes
+// threedHistory.push(threed) // JSON.stringify(threed) ??
+let threedHistoryPosition = 0
+// // localStorage.setItem("threed_threedHistory", JSON.stringify({ subject: "threed", payload: threedHistory }))
+
 // // PROJECT
-// const project = createProject()
+// const project = createProject() // want this as projectHistory[0] ?? no
+// // const project: any = null // want this as projectHistory[0] ?? no
+
+// // PROJECT HISTORY
+// // from localStore (browser) ?? or new (server) ??
+// // localStorage.clear()
+// // const projectHistory: Object[] = JSON.parse(localStorage.getItem("threed_projectHistory"))
+const projectHistory: Object[] = []
+// console.debug("projectHistoryInit", projectHistory)
+// // want this as projectHistory[0] ?? yes
+// projectHistory.push(project) // JSON.stringify(project) ??
+let projectHistoryPosition = 0
+// // localStorage.setItem("threed_projectHistory", JSON.stringify({ subject: "project", payload: projectHistory }))
 
 // // PLAN
-// const plan = createPlan() // want this as planHistory[0] ?? yes
+// const plan = createPlan() // want this as planHistory[0] ?? no
 // // const plan: any = null // want this as planHistory[0] ?? no
 
 // // PLAN HISTORY
@@ -695,6 +730,21 @@ const planHistory: Object[] = []
 // planHistory.push(plan) // JSON.stringify(plan) ??
 let planHistoryPosition = 0
 // // localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
+
+// // SIMULATION
+// const simulation = createProject() // want this as simulationHistory[0] ?? no
+// // const simulation: any = null // want this as simulationHistory[0] ?? no
+
+// // SIMULATION HISTORY
+// // from localStore (browser) ?? or new (server) ??
+// // localStorage.clear()
+// // const simulationHistory: Object[] = JSON.parse(localStorage.getItem("threed_simulationHistory"))
+const simulationHistory: Object[] = []
+// console.debug("simulationHistoryInit", simulationHistory)
+// // want this as simulationHistory[0] ?? yes
+// simulationHistory.push(simulation) // JSON.stringify(simulation) ??
+let simulationHistoryPosition = 0
+// // localStorage.setItem("threed_simulationHistory", JSON.stringify({ subject: "simulation", payload: simulationHistory }))
 
 
 // ======================================================
@@ -1116,25 +1166,11 @@ const ToolBar = (): JSX.Element => {
   // console.debug("ToolBar", word)
 
   // ====================================================
-  // FUNCTIONS
-
-  const addNewLevel = (level) => {
-    // console.debug("%caddNewLevel called", ccm1, level)
-    return (
-      !1
-    )
-  }
-
-  const setLevel = (level) => {
-    // console.debug("%csetLevel called", ccm1, level)
-    return (
-      !1
-    )
-  }
+  // FUNCTIONAL ACTIONS (FUNCTIONS ON FUNCTIONAL NOUNS)
 
   // MouseEventHandler<HTMLAnchorElement>
-  const fileNewPlan: any = (): any => {
-    // alert("[MM] fileNewPlan")
+  const actionNewThreeD: any = (): any => {
+    // alert("[MM] actionNewPlan")
     try {
 
       // TENTATIVE
@@ -1145,8 +1181,8 @@ const ToolBar = (): JSX.Element => {
       createPlan()
       const plan = usePlanStore((state) => state.plan)
       const plans = usePlanStore((state) => state.plans)
-      console.debug("fileNewPlan plan", plan)
-      console.debug("fileNewPlan plans", plans)
+      console.debug("actionNewPlan plan", plan)
+      console.debug("actionNewPlan plans", plans)
 
       // PLAN HISTORY
       // const planHistory: Object[] = []
@@ -1163,9 +1199,120 @@ const ToolBar = (): JSX.Element => {
 
       setToolMode("pointer")
 
-      // console.debug("[MM] TRY: fileNewPlan")
+      // console.debug("[MM] TRY: actionNewPlan")
     } catch (e) {
-      console.debug("[MM] CATCH: fileNewPlan", e)
+      console.debug("[MM] CATCH: actionNewPlan", e)
+    }
+  }
+
+  // MouseEventHandler<HTMLAnchorElement>
+  const actionNewSimulation: any = (): any => {
+    // alert("[MM] actionNewPlan")
+    try {
+
+      // TENTATIVE
+      resetPlan() // clear all plan stuff, then create new plan...
+
+      // PLAN
+      // const plan = createPlan()
+      createPlan()
+      const plan = usePlanStore((state) => state.plan)
+      const plans = usePlanStore((state) => state.plans)
+      console.debug("actionNewPlan plan", plan)
+      console.debug("actionNewPlan plans", plans)
+
+      // PLAN HISTORY
+      // const planHistory: Object[] = []
+      // planHistory.push(plan) // push to end array position [array.length]
+      planHistory.unshift(plan) // unshift to beginning array position [0]
+      console.debug("planHistoryNew", planHistory)
+
+      // latest plan position is now at the beginning of array
+      // planHistoryPosition = planHistory.length - 1
+      planHistoryPosition = 0
+
+      // save to disk (if new plan only)
+      localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
+
+      setToolMode("pointer")
+
+      // console.debug("[MM] TRY: actionNewPlan")
+    } catch (e) {
+      console.debug("[MM] CATCH: actionNewPlan", e)
+    }
+  }
+
+  // MouseEventHandler<HTMLAnchorElement>
+  const actionNewProject: any = (): any => {
+    // alert("[MM] actionNewPlan")
+    try {
+
+      // TENTATIVE
+      resetPlan() // clear all plan stuff, then create new plan...
+
+      // PLAN
+      // const plan = createPlan()
+      createPlan()
+      const plan = usePlanStore((state) => state.plan)
+      const plans = usePlanStore((state) => state.plans)
+      console.debug("actionNewPlan plan", plan)
+      console.debug("actionNewPlan plans", plans)
+
+      // PLAN HISTORY
+      // const planHistory: Object[] = []
+      // planHistory.push(plan) // push to end array position [array.length]
+      planHistory.unshift(plan) // unshift to beginning array position [0]
+      console.debug("planHistoryNew", planHistory)
+
+      // latest plan position is now at the beginning of array
+      // planHistoryPosition = planHistory.length - 1
+      planHistoryPosition = 0
+
+      // save to disk (if new plan only)
+      localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
+
+      setToolMode("pointer")
+
+      // console.debug("[MM] TRY: actionNewPlan")
+    } catch (e) {
+      console.debug("[MM] CATCH: actionNewPlan", e)
+    }
+  }
+
+  // MouseEventHandler<HTMLAnchorElement>
+  const actionNewPlan: any = (): any => {
+    // alert("[MM] actionNewPlan")
+    try {
+
+      // TENTATIVE -- [MM] HEY HEY HEY
+      resetPlan() // clear all plan stuff, then create new plan...
+
+      // PLAN
+      // const plan = createPlan()
+      createPlan()
+      const plan = usePlanStore((state) => state.plan)
+      const plans = usePlanStore((state) => state.plans)
+      console.debug("actionNewPlan plan", plan)
+      console.debug("actionNewPlan plans", plans)
+
+      // PLAN HISTORY
+      // const planHistory: Object[] = []
+      // planHistory.push(plan) // push to end array position [array.length]
+      planHistory.unshift(plan) // unshift to beginning array position [0]
+      console.debug("planHistoryNew", planHistory)
+
+      // latest plan position is now at the beginning of array
+      // planHistoryPosition = planHistory.length - 1
+      planHistoryPosition = 0
+
+      // save to disk (if new plan only)
+      localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
+
+      setToolMode("pointer")
+
+      // console.debug("[MM] TRY: actionNewPlan")
+    } catch (e) {
+      console.debug("[MM] CATCH: actionNewPlan", e)
     }
   }
 
@@ -1175,7 +1322,7 @@ const ToolBar = (): JSX.Element => {
       const resetPlan = { _ts: new Date().toISOString() }
 
       // save to disk
-      localStorage.setItem("threed_resetPlan", JSON.stringify({ subject: "plan", payload: resetPlan }))
+      localStorage.setItem("threed_resetPlan", JSON.stringify({ subject: "plan:reset", payload: resetPlan }))
 
       // console.debug("[MM] TRY: resetPlan")
     } catch (e) {
@@ -1404,7 +1551,7 @@ const ToolBar = (): JSX.Element => {
       console.log("resetPlan : 12 : " + e)
     }
     try {
-      levelButtons || addNewLevel("0"), setLevel("0")
+      levelButtons || doAddNewLevel("0"), doSetLevel("0")
     } catch (e) {
       console.log("resetPlan : 13 : " + e)
     }
@@ -1557,7 +1704,7 @@ const ToolBar = (): JSX.Element => {
             document.getElementById("addTextTool").classList.remove("activeTool")
           break
         case "ground":
-          setLevel("0"),
+          doSetLevel("0"),
             (toolMode = e),
             (defaultCursor = "default"),
             (wallsGroup[0].opacity = 0.25),
@@ -1590,14 +1737,46 @@ const ToolBar = (): JSX.Element => {
 
   }
 
-  const loadFileAsText = (f: any) => {
+
+  // =====================================================
+  // doThings
+
+  const doLoadFile: MouseEventHandler<HTMLAnchorElement> = (): any => {
+    // alert("[MM] doLoadFile")
+    try {
+      const loaded = { ts: new Date().toISOString() }
+
+      // save to disk
+      // localStorage.clear()
+      localStorage.setItem("threed_doLoadFile", JSON.stringify({ subject: "load", payload: loaded }))
+      console.debug("[MM] TRY: doLoadFile")
+    } catch (e) {
+      console.debug("[MM] CATCH: doLoadFile", e)
+    }
+  }
+
+  const doSaveFile: MouseEventHandler<HTMLAnchorElement> = (): any => {
+    // alert("[MM] doSaveFile")
+    try {
+      const saved = { ts: new Date().toISOString() }
+
+      // save to disk
+      // localStorage.clear()
+      localStorage.setItem("threed_doSaveFile", JSON.stringify({ subject: "save", payload: saved }))
+      console.debug("[MM] TRY: doSaveFile")
+    } catch (e) {
+      console.debug("[MM] CATCH: doSaveFile", e)
+    }
+  }
+
+  const doLoadFileAsText = (f: any) => {
     try {
       let t = f.target
       let o = new FileReader()
       // console.debug("%cFileReader", ccm1, o)
       o.onload = function () {
         let g = o.result
-        fileNewPlan()
+        actionNewPlan()
         // loadingProgressTxt = "Plan decoding\n" + loadingProgressTxt
         // document.getElementById("modalLoadingDataInfo").innerHTML = loadingProgressTxt
         console.debug("drawPlan", g)
@@ -1617,15 +1796,15 @@ const ToolBar = (): JSX.Element => {
     }
   }
 
-  const openShareDialog = () => {
+  const doOpenShareDialog = () => {
     try {
       $("#shareModal").show()
     } catch (e) {
-      console.log("openShareDialog : " + e)
+      console.log("doOpenShareDialog : " + e)
     }
   }
 
-  const openFullscreen = (el: string) => {
+  const doOpenFullscreen = (el: string) => {
     try {
       let t = document.getElementById(el)
       t.requestFullscreen
@@ -1636,8 +1815,22 @@ const ToolBar = (): JSX.Element => {
             ? t.webkitRequestFullscreen()
             : t.msRequestFullscreen && t.msRequestFullscreen()
     } catch (e) {
-      console.log("openFullscreen : " + e)
+      console.log("doOpenFullscreen : " + e)
     }
+  }
+
+  const doAddNewLevel = (level) => {
+    // console.debug("%caddNewLevel called", ccm1, level)
+    return (
+      !1
+    )
+  }
+
+  const doSetLevel = (level) => {
+    // console.debug("%csetLevel called", ccm1, level)
+    return (
+      !1
+    )
   }
 
   const doUndo: MouseEventHandler<HTMLAnchorElement> = (): any => {
@@ -1647,7 +1840,7 @@ const ToolBar = (): JSX.Element => {
 
       // save to disk
       // localStorage.clear()
-      localStorage.setItem("threed_doUndo", JSON.stringify({ subject: "plan", payload: undid }))
+      localStorage.setItem("threed_doUndo", JSON.stringify({ subject: "undo", payload: undid }))
       console.debug("[MM] TRY: doUndo")
     } catch (e) {
       console.debug("[MM] CATCH: doUndo", e)
@@ -1661,7 +1854,7 @@ const ToolBar = (): JSX.Element => {
 
       // save to disk
       // localStorage.clear()
-      localStorage.setItem("threed_doRedo", JSON.stringify({ subject: "plan", payload: redid }))
+      localStorage.setItem("threed_doRedo", JSON.stringify({ subject: "redo", payload: redid }))
       console.debug("[MM] TRY: doRedo")
     } catch (e) {
       console.debug("[MM] CATCH: doRedo", e)
@@ -1683,36 +1876,33 @@ const ToolBar = (): JSX.Element => {
       <ul>
         <li className="dropdown">
           <a className="dropbtn">
-            Actions
+            ThreeD
           </a>
           <div className="dropdown-content">
+            <a onClick={actionNewProject}>
+              New ThreeD
+            </a>
+            <hr />
+            <a onClick={actionNewProject}>
+              New Project
+            </a>
             {/* <a onClick="setNewPlan();"> */}
-            <a onClick={fileNewPlan}>
+            <a onClick={actionNewPlan}>
               New Plan
             </a>
-            <a
-              id="loadBtn"
-            // onClick={document.getElementById('file').click()}
-            >
-              Load File
-            </a>
-            <input
-              type="file"
-              style={{ display: "inline-block" }}
-              id="file"
-              name="file"
-              onChange={loadFileAsText}
-            />
             {/*
             <a
               id="saveBtn"
               onClick="savePlan();">
-              Save
+              Save Plan
             </a>
             */}
+            <a onClick={actionNewSimulation}>
+              New Simulation
+            </a>
             <a
               id="shareBtn"
-              onClick={openShareDialog}
+              onClick={doOpenShareDialog}
             >
               Share
             </a>
@@ -1735,11 +1925,29 @@ const ToolBar = (): JSX.Element => {
             {/*
             <a
               id="fullscreenApp"
-              onClick={openFullscreen('DEMO')}
+              onClick={doOpenFullscreen('DEMO')}
             >
               Fullscreen
             </a>
             */}
+          </div>
+        </li>
+        <li className="dropdown">
+          <a className="dropbtn">
+            File
+          </a>
+          <div className="dropdown-content">
+            <a id="loadBtn" onClick={doLoadFile}>Load File</a>
+            <input
+              type="file"
+              style={{ display: "inline-block" }}
+              id="file"
+              name="file"
+              onChange={doLoadFileAsText}
+            />
+            <a id="saveBtn" onClick={doSaveFile}>Save File</a>
+            <hr />
+            <a id="exportBtn" onClick="exportToObj();">Export As OBJ</a>
           </div>
         </li>
         <li className="dropdown">
@@ -1751,27 +1959,54 @@ const ToolBar = (): JSX.Element => {
             <a id="redoBtn" onClick={doRedo}>Redo</a>
           </div>
         </li>
-        {/* <li className="dropdown">
+        <li className="dropdown">
           <a className="dropbtn">
-            Plan View
+            View
           </a>
           <div className="dropdown-content">
-            <a onClick="setPropertiesView('planView');">Background Template</a>
-            <a onClick="newLevel();">Add Level</a>
-            <a onClick="openFullscreen('planView');">Fullscreen</a>
+            <a onClick="setPropertiesView('planView');">2D Plan View Properties</a>
+            <a onClick="doOpenFullscreen('planView');">2D Fullscreen</a>
+            <hr />
+            <a onClick="setPropertiesView('3dView');">3D Plan View Properties</a>
+            <a onClick="doOpenFullscreen('view3d');">3D Fullscreen</a>
+            <hr />
+            <a id="createThumb" onClick="createThumbForHistory();">Create Thumb</a>
           </div>
-        </li> */}
+        </li>
         {/* <li className="dropdown">
           <a className="dropbtn">
             3D View
           </a>
           <div className="dropdown-content">
             <a onClick="setPropertiesView('3dView');">Properties</a>
-            <a onClick="openFullscreen('view3d');">Fullscreen</a>
+            <a onClick="doOpenFullscreen('view3d');">Fullscreen</a>
             <a onClick="exportToObj();">Export As OBJ</a>
             <a id="createThumb" onClick="createThumbForHistory();">Create Thumb</a>
           </div>
         </li> */}
+        <li className="dropdown">
+          <a className="dropbtn">
+            Layers
+          </a>
+          <div className="dropdown-content">
+            <a onClick={() => { newLevel }}>New Noun Layer</a>
+          </div>
+        </li>
+        <li className="dropdown">
+          <a className="dropbtn">
+            Tools
+          </a>
+          <div className="dropdown-content">
+            <a onClick={() => { }}>Tool 1</a>
+            <a onClick={() => { }}>Tool 2</a>
+            <a onClick={() => { }}>Tool 3</a>
+            <a onClick={() => { }}>Tool 4</a>
+            <a onClick={() => { }}>Tool 5</a>
+            <a onClick={() => { }}>Tool 6</a>
+            <a onClick={() => { }}>Tool 7</a>
+            <a onClick={() => { }}>Tool 8</a>
+          </div>
+        </li>
         {/* <li>
           <a onClick="doLog()">Log</a>
         </li>
@@ -2984,13 +3219,13 @@ const TheBottom = (): JSX.Element => {
         src="/demo/media/fullscreen.png"
         width="30"
         height="30"
-        onClick="openFullscreen('planView');" />
+        onClick="doOpenFullscreen('planView');" />
       <img
         id="fullscreen3dViewBtn"
         src="/demo/media/fullscreen.png"
         width="30"
         height="30"
-        onClick="openFullscreen('view3d');" />
+        onClick="doOpenFullscreen('view3d');" />
 
       <progress value="50" max="100" className="center" id="progressBar"></progress>
     </div>
@@ -3076,34 +3311,57 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
     // const [project, setProject] = useState(projectNew)
     // console.debug("project", project)
 
+    // // PROJECT HISTORY
+    // // const projectHistory: Object[] = []
+    // projectHistory.push(plan) // JSON.stringify(project) ??
+    // retrieve from localStorage (browser) ?? or new (server) ??
+    // localStorage.clear()
+    const projectHistoryFromDisk: Object[] = JSON.parse(localStorage.getItem("threed_projectHistory"))
+    // console.debug("projectHistoryFromDisk", projectHistoryFromDisk)
+    // console.debug("projectHistoryFromDisk.payload", projectHistoryFromDisk?.payload)
+    const savedProject = projectHistoryFromDisk?.payload ? projectHistoryFromDisk.payload : []
+    if (savedProject.length) {
+      // console.debug("savedProject", savedProject)
+      // want this as projectHistory[0] ?? yes
+      // projectHistory.push(...savedProject) // push to end of array
+      projectHistory.unshift(...savedProject) // unshift to beginning of array
+    }
+    console.debug("projectHistory", projectHistory)
+
+    // // set latest plan position from array ?? no/yes
+    // // let planHistoryPosition = 0
+    // planHistoryPosition = planHistory.length - 1
+
+    // save to disk ?? not here (no need, we are just retrieving data here, not setting it)
+    // localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
+
     // // PLAN
-    // const plan = createPlan() // want this as planHistory[0] ?? yes
+    // const plan = createPlan() // want this as planHistory[0] ?? no
     // // const plan: any = null // want this as planHistory[0] ?? no
     // console.debug("plan", plan)
 
     // // PLAN HISTORY
     // // const planHistory: Object[] = []
-    // planHistory.push(plan) // JSON.stringify(plan) ??
-
+    // // planHistory.push(plan) // JSON.stringify(plan) ??
     // retrieve from localStorage (browser) ?? or new (server) ??
     // localStorage.clear()
     const planHistoryFromDisk: Object[] = JSON.parse(localStorage.getItem("threed_planHistory"))
     // console.debug("planHistoryFromDisk", planHistoryFromDisk)
     // console.debug("planHistoryFromDisk.payload", planHistoryFromDisk?.payload)
-    // want this as planHistory[0] ?? yes
     const savedPlan = planHistoryFromDisk?.payload ? planHistoryFromDisk.payload : []
     if (savedPlan.length) {
       // console.debug("savedPlan", savedPlan)
+      // want this as planHistory[0] ?? yes
       // planHistory.push(...savedPlan) // push to end of array
       planHistory.unshift(...savedPlan) // unshift to beginning of array
     }
     console.debug("planHistory", planHistory)
 
-    // // latest plan position is at the end of array
+    // // set latest plan position from array ?? no/yes
     // // let planHistoryPosition = 0
     // planHistoryPosition = planHistory.length - 1
 
-    // save to disk
+    // save to disk ?? not here (no need, we are just retrieving data here, not setting it)
     // localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
 
     return () => {
