@@ -3385,18 +3385,40 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
 
         {/* zustand */}
         <div id="zustandControls" style={{ padding: "1rem" }}>
+          <hr />
           <ThreeDCounter />
           <ThreeDControls />
           <hr />
-          {/* <BearCounter /> */}
-          {/* <BearControls /> */}
-          {/* <hr /> */}
           <ProjectCounter />
           <ProjectControls />
           <hr />
           <PlanCounter />
           <PlanControls />
           <hr />
+          {/* <BearCounter /> */}
+          {/* <BearControls /> */}
+          {/* <hr /> */}
+          {/* <GardenerCounter /> */}
+          {/* <GardenerControls /> */}
+          {/* <hr /> */}
+          {/* <ChickenCounter /> */}
+          {/* <ChickenControls /> */}
+          {/* <hr /> */}
+          {/* <AllotmentCounter /> */}
+          {/* <AllotmentControls /> */}
+          {/* <hr /> */}
+          {/* <BedCounter /> */}
+          {/* <BedControls /> */}
+          {/* <hr /> */}
+          {/* <FurnitureCounter /> */}
+          {/* <FurnitureControls /> */}
+          {/* <hr /> */}
+          {/* <PlantCounter /> */}
+          {/* <PlantControls /> */}
+          {/* <hr /> */}
+          {/* <PlantingPlanCounter /> */}
+          {/* <PlantingPlanControls /> */}
+          {/* <hr /> */}
         </div>
 
         {/* <CatalogView /> */}
