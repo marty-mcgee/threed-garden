@@ -718,15 +718,15 @@ const ToolBar = (): JSX.Element => {
   // ====================================================
   // FUNCTIONS
 
-  const addNewLevel = () => {
-    console.debug("%caddNewLevel called", ccm1)
+  const addNewLevel = (level) => {
+    // console.debug("%caddNewLevel called", ccm1, level)
     return (
       !1
     )
   }
 
-  const setLevel = () => {
-    console.debug("%csetLevel called", ccm1)
+  const setLevel = (level) => {
+    // console.debug("%csetLevel called", ccm1, level)
     return (
       !1
     )
@@ -977,7 +977,7 @@ const ToolBar = (): JSX.Element => {
       //   (plan.azimuth = azimuth),
       //   (plan.inclination = inclination)
 
-      console.debug("%cresetPlan success", ccm1)
+      // console.debug("%cresetPlan success", ccm1)
     } catch (e) {
       console.log("resetPlan : 11 : " + e)
     }
@@ -1216,9 +1216,9 @@ const ToolBar = (): JSX.Element => {
 
   // Component onMount hook
   useEffect(() => {
-    console.debug("ToolBar onMount", word)
+    // console.debug("ToolBar onMount", word)
     return () => {
-      console.debug("ToolBar onUnmount", word)
+      // console.debug("ToolBar onUnmount", word)
     }
   }, [])
 
@@ -2580,7 +2580,7 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
 
   // Component onMount hook
   useEffect(() => {
-    console.debug("ThreeDGarden onMount", word)
+    // console.debug("ThreeDGarden onMount", word)
 
     // begin here ?? yes, um, no, um, half-n-half
     // bootManager()...
@@ -2621,7 +2621,7 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
     // localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
 
     return () => {
-      console.debug('ThreeDGarden onUnmount', word)
+      // console.debug('ThreeDGarden onUnmount', word)
     }
   }, [])
 
