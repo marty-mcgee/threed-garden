@@ -286,15 +286,16 @@ let azimuth = 0
 const project = createProject()
 
 // PLAN
-// const plan = createPlan()
-const plan: any = null // planHistory[0]
+const plan = createPlan() // want this as planHistory[0] ??
+// const plan: any = null // want this as planHistory[0] ??
 
 // PLAN HISTORY
 // from localStore (browser) ?? or new (server) ??
 // localStorage.clear()
 // const planHistory: Object[] = JSON.parse(localStorage.getItem("threed_setNewPlan"))
 const planHistory: Object[] = []
-planHistory.push(plan) // JSON.stringify(plan) ??
+// want this as planHistory[0] ??
+// planHistory.push(plan) // JSON.stringify(plan) ??
 let planHistoryPosition = 0
 // localStorage.setItem("threed_setNewPlan", JSON.stringify({ subject: "plan", payload: planHistory }))
 
