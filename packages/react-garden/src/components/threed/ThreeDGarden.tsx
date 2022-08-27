@@ -23,15 +23,20 @@ import { Canvas, useFrame } from '@react-three/fiber'
 // import * as $ from "jquery"
 
 // ======================================================
+// UUID
+import { v4 as newUUID } from 'uuid'
 
+// ======================================================
 // COLORFUL CONSOLE MESSAGES (ccm)
+
 const ccm1 = "color: green; font-size: 16px;"
 const ccm2 = "color: red; font-size: 16px;"
 console.log("%cWELCOME", ccm1)
 // console.log("%cOOPSIES", ccm2)
 
-// DELETE OBJECT KEYS: RESET OBJECT TO {}
 // ======================================================
+// DELETE OBJECT KEYS: RESET OBJECT TO {}
+
 const clearObject = (object: Object, option: number = 1) => {
   switch (option) {
     // option 1 // ES5
@@ -69,7 +74,7 @@ const clearObject = (object: Object, option: number = 1) => {
 
 const createPlan = () => {
   const plan = {
-    _id: crypto.randomUUID() as string,
+    _id: newUUID() as string,
     _ts: new Date().toISOString() as string,
     levels: [{ id: 0, height: 0 }] as Object[],
     // levels[0]: { id: 0, height: 0 },
@@ -125,6 +130,164 @@ const createPlan = () => {
 }
 
 // ======================================================
+// BEGIN
+
+// const begin = () => {
+const plan = createPlan()
+
+const planHistory: Object[] = []
+planHistory.push(plan) // JSON.stringify(plan) ??
+let planHistoryPosition = 0
+
+let mouseMode = 0
+let toolMode = "pointer"
+let selectedItem
+let defaultCursor = "default"
+// let deselectAll
+let UILayout = "default"
+
+const Texts = {}
+const Dimensions = {}
+const Floors = {}
+const Floors3d = {}
+const Roofs = {}
+const Walls = {}
+const Furniture = {}
+
+let textPath = ""
+let textIdCounter = 0
+let startedDrawingText = !1
+let editingTextId = -1
+
+let dimensionPath = ""
+let dimensionIdCounter = 0
+let dimensionHelperPath = ""
+let startedDrawingDimension = !1
+
+let floorPath = ""
+let floorIdCounter = 0
+let floorHelperPath = ""
+let startedDrawingFloor = !1
+
+let wallPath = ""
+let wallIdCounter = 0
+const wallsRectangles = {}
+const wallsRectangles3d = {}
+let wallHelperPath = ""
+let wallHelperRectangle = ""
+let startedDrawingWalls = !1
+
+let roofPath = ""
+let roofIdCounter = 0
+let roofHelperPath = ""
+const roofsRectangles = {}
+const roofsRectangles3d = {}
+let roofHelperRectangle = ""
+let startedDrawingRoofs = !1
+
+const maskObjects = {}
+const maskObjectsApplied = {}
+const maskObjectsAppliedRoof = {}
+
+const clickableObjects = {}
+let clickableObjectsCounter = -1
+
+let backgroundRaster = ""
+let backgroundRasterRatioX = 1
+let backgroundRasterRatioY = 1
+
+let levelButtons = ""
+let otherLayerWallsRasters: any[] = []
+let otherLayerFurnitureRasters: any[] = []
+
+const verticalGuides = {}
+const horizontalGuides = {}
+let selectedGuideId = ""
+let guideCounter = 0
+let draggingNewGuide = !1
+let snapTolerance = 1
+
+const furnitureItems = {}
+let furnitureToLoadCount = 0
+let loadedFurnitureCount = 0
+
+// THREE >>
+let canvas3d
+let camera
+let renderer
+let container
+let scene = {}
+let mesh
+let ground
+let controls
+let tween
+let raycaster
+let mouse
+// lights
+let ambientLight
+let dirLight
+let hemiLight
+let pointLight
+// materials
+let groundMat = {
+  color: { getHexString: () => "" },
+  opacity: 1,
+  specular: { getHexString: () => "" }
+}
+let floorMaterial = {
+  color: { getHexString: () => "" },
+  opacity: 1,
+  specular: { getHexString: () => "" }
+}
+let roofMaterial = {
+  color: { getHexString: () => "" },
+  opacity: 1,
+  specular: { getHexString: () => "" }
+}
+let wallMaterial = {
+  color: { getHexString: () => "" },
+  opacity: 1,
+  specular: { getHexString: () => "" }
+}
+// << THREE
+
+
+let inclination = ""
+let azimuth = ""
+
+
+// groups
+// Paper.Group !! 2D
+// these should be arrays [] ??? YES, CHANGED
+const furnitureGroup: any[] = []
+// furnitureGroup[0] = new paper.Group()
+const wallsGroup: any[] = []
+// wallsGroup[0] = new paper.Group()
+const roofsGroup: any[] = []
+// roofsGroup[0] = new paper.Group()
+const floorsGroup: any[] = []
+// floorsGroup[0] = new paper.Group()
+const dimensionsGroup: any[] = []
+// dimensionsGroup[0] = new paper.Group()
+const textsGroup: any[] = []
+// textsGroup[0] = new paper.Group()
+// these 3 should be const arrays [] ??
+let guidesGroup: Object = {} // new paper.Group()
+let toolsGroup: Object = {} // new paper.Group()
+let gridGroup: Object = {} // new paper.Group()
+
+// PROJECT
+const project = {
+  layers: new Array,
+  activeLayer: {
+    name: "",
+    data: {}
+  }
+}
+// }
+
+// ======================================================
+// COMPONENTS
 
 const AboutModal = (): JSX.Element => {
   // console.debug("AboutModal")
@@ -538,173 +701,22 @@ const ToolBar = (): JSX.Element => {
   const word = `[MM] @ ${new Date().toISOString()}`
   // console.debug("ToolBar", word)
 
-  const plan = createPlan()
-
-  const planHistory: Object[] = []
-  planHistory.push(plan) // JSON.stringify(plan) ??
-  let planHistoryPosition = 0
-
-  let mouseMode = 0
-  let toolMode = "pointer"
-  let selectedItem
-  let defaultCursor = "default"
-  // let deselectAll
-  let UILayout = "default"
-
-  const Texts = {}
-  const Dimensions = {}
-  const Floors = {}
-  const Floors3d = {}
-  const Roofs = {}
-  const Walls = {}
-  const Furniture = {}
-
-  let textPath = ""
-  let textIdCounter = 0
-  let startedDrawingText = !1
-  let editingTextId = -1
-
-  let dimensionPath = ""
-  let dimensionIdCounter = 0
-  let dimensionHelperPath = ""
-  let startedDrawingDimension = !1
-
-  let floorPath = ""
-  let floorIdCounter = 0
-  let floorHelperPath = ""
-  let startedDrawingFloor = !1
-
-  let wallPath = ""
-  let wallIdCounter = 0
-  const wallsRectangles = {}
-  const wallsRectangles3d = {}
-  let wallHelperPath = ""
-  let wallHelperRectangle = ""
-  let startedDrawingWalls = !1
-
-  let roofPath = ""
-  let roofIdCounter = 0
-  let roofHelperPath = ""
-  const roofsRectangles = {}
-  const roofsRectangles3d = {}
-  let roofHelperRectangle = ""
-  let startedDrawingRoofs = !1
-
-  const maskObjects = {}
-  const maskObjectsApplied = {}
-  const maskObjectsAppliedRoof = {}
-
-  const clickableObjects = {}
-  let clickableObjectsCounter = -1
-
-  let backgroundRaster = ""
-  let backgroundRasterRatioX = 1
-  let backgroundRasterRatioY = 1
-
-  let levelButtons = ""
-  let otherLayerWallsRasters: any[] = []
-  let otherLayerFurnitureRasters: any[] = []
-
-  const verticalGuides = {}
-  const horizontalGuides = {}
-  let selectedGuideId = ""
-  let guideCounter = 0
-  let draggingNewGuide = !1
-  let snapTolerance = 1
-
-  const furnitureItems = {}
-  let furnitureToLoadCount = 0
-  let loadedFurnitureCount = 0
-
-  // THREE >>
-  let canvas3d
-  let camera
-  let renderer
-  let container
-  let scene = {}
-  let mesh
-  let ground
-  let controls
-  let tween
-  let raycaster
-  let mouse
-  // lights
-  let ambientLight
-  let dirLight
-  let hemiLight
-  let pointLight
-  // materials
-  let groundMat = {
-    color: { getHexString: () => "" },
-    opacity: 1,
-    specular: { getHexString: () => "" }
-  }
-  let floorMaterial = {
-    color: { getHexString: () => "" },
-    opacity: 1,
-    specular: { getHexString: () => "" }
-  }
-  let roofMaterial = {
-    color: { getHexString: () => "" },
-    opacity: 1,
-    specular: { getHexString: () => "" }
-  }
-  let wallMaterial = {
-    color: { getHexString: () => "" },
-    opacity: 1,
-    specular: { getHexString: () => "" }
-  }
-  // << THREE
-
-
-  let inclination = ""
-  let azimuth = ""
-
-
-  // groups
-  // Paper.Group !! 2D
-  // these should be arrays [] ??? YES, CHANGED
-  const furnitureGroup: any[] = []
-  // furnitureGroup[0] = new paper.Group()
-  const wallsGroup: any[] = []
-  // wallsGroup[0] = new paper.Group()
-  const roofsGroup: any[] = []
-  // roofsGroup[0] = new paper.Group()
-  const floorsGroup: any[] = []
-  // floorsGroup[0] = new paper.Group()
-  const dimensionsGroup: any[] = []
-  // dimensionsGroup[0] = new paper.Group()
-  const textsGroup: any[] = []
-  // textsGroup[0] = new paper.Group()
-  // these 3 should be const arrays [] ??
-  let guidesGroup: Object = {} // new paper.Group()
-  let toolsGroup: Object = {} // new paper.Group()
-  let gridGroup: Object = {} // new paper.Group()
-
-  // PROJECT
-  const project = {
-    layers: new Array,
-    activeLayer: {
-      name: "",
-      data: {}
-    }
-  }
-
+  // ====================================================
   // FUNCTIONS
+
   const addNewLevel = () => {
     console.debug("%caddNewLevel called", ccm1)
     return (
       !1
     )
   }
+
   const setLevel = () => {
     console.debug("%csetLevel called", ccm1)
     return (
       !1
     )
   }
-
-  // ==================================================
 
   const setNewPlan: MouseEventHandler<HTMLAnchorElement> = (): any => {
     // alert("[MM] setNewPlan")
