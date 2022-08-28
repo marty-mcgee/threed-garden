@@ -227,20 +227,13 @@ const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithL
       {/* SHOW/HIDE SIDENAV */}
       {layout === "dashboard" && (
         <>
-          {/* <Sidenav
-            color={sidenavColor}
-            brandLogo={brandIcon}
-            brandName="ThreeD Garden"
-            routes={routes}
-            onMouseEnter={handleOnMouseEnter}
-            onMouseLeave={handleOnMouseLeave}
-          /> */}
           <Sidenav
             routes={routes}
             brandLogo={brandIcon}
             brandName="ThreeD Garden"
             onMouseEnter={handleOnMouseEnter}
             onMouseLeave={handleOnMouseLeave}
+            color={sidenavColor}
           />
           <Configurator />
           {/* {configsButton} */}

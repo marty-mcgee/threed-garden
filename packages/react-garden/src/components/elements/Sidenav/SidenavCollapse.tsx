@@ -42,6 +42,7 @@ function SidenavCollapse({
   open,
   ...rest
 }: Props): JSX.Element {
+
   const [controller] = useMaterialUIController()
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode } = controller
 
