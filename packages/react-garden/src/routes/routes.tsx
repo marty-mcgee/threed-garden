@@ -121,7 +121,7 @@ const routes = [
     // component: <Participate />,
     icon: <Icon fontSize="medium">agriculture</Icon>,
   },
-  /*
+
   { type: "divider", key: "divider-dashboards" },
   {
     type: "collapse",
@@ -143,7 +143,7 @@ const routes = [
       },
     ],
   },
-  */
+
   { type: "divider", key: "divider-pages" },
   // { type: "title", title: "Pages", key: "title-pages" },
   {
@@ -330,6 +330,7 @@ const routes = [
           },
         ],
       },
+
     ],
   },
   {
@@ -388,7 +389,7 @@ const routes = [
       },
     ],
   },
-  /**/
+
   { type: "divider", key: "divider-docs" },
   // { type: "title", title: "Docs", key: "title-docs" },
   {

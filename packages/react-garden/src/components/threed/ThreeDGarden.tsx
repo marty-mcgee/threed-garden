@@ -516,6 +516,52 @@ const createPlan = () => {
 }
 
 // ======================================================
+// File
+const useFileStore = create((set) => ({
+  fileCounter: 0,
+  files: [],
+  file: {},
+})) // useFileStore
+
+function FileCounter() {
+  // const files = useFileStore((state) => state.files)
+  const fileCount = useFileStore((state) => state.fileCount)
+  const files = useFileStore((state) => state.files)
+  const file = useFileStore((state) => state.file)
+  console.debug("%cfile", ccm1, file)
+  return (
+    <div>
+      {/* <div>{fileCount} files around here ...</div> */}
+      <div>{files.length} files around here ...</div>
+    </div>
+  )
+}
+
+function FileControls() {
+  const increaseFileCount = useFileStore((state) => state.increaseFileCount)
+
+  const addFile = useFileStore((state) => state.addFile)
+
+  return (
+    <div>
+      <button onClick={addFile}>add file</button>
+      {/* <br />
+      <button onClick={increaseFileCount}>add to file count</button> */}
+    </div>
+  )
+}
+
+const createFile = () => {
+  const file = useFileStore(
+    (state) => {
+      state.addFile
+      state.increaseFileCount
+    }
+  )
+  return file
+}
+
+// ======================================================
 // Simulation
 
 
@@ -1806,7 +1852,16 @@ const ToolBar = (): JSX.Element => {
 
   const doOpenFullscreen = (el: string) => {
     try {
-      let t = document.getElementById(el)
+      // alert(el)
+      // let t = document.getElementById(el)
+      let t = document.querySelector(el)
+      if (!document.fullscreenElement) {
+        t.requestFullscreen().catch(err => {
+          alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`)
+        })
+      } else {
+        document.exitFullscreen()
+      }
       t.requestFullscreen
         ? t.requestFullscreen()
         : t.mozRequestFullScreen
@@ -1815,6 +1870,7 @@ const ToolBar = (): JSX.Element => {
             ? t.webkitRequestFullscreen()
             : t.msRequestFullscreen && t.msRequestFullscreen()
     } catch (e) {
+      // alert(e)
       console.log("doOpenFullscreen : " + e)
     }
   }
@@ -1907,29 +1963,6 @@ const ToolBar = (): JSX.Element => {
               Share
             </a>
             <hr />
-            {/*
-            <a
-              id="defaultsBtn"
-              onClick="setPropertiesView('defaults');">
-              Defaults
-            </a>
-            */}
-            {/*
-            <a
-              id="groundPropertiesButton"
-              onClick={setToolMode('ground')}
-            >
-              Ground Properties
-            </a>
-            */}
-            {/*
-            <a
-              id="fullscreenApp"
-              onClick={doOpenFullscreen('DEMO')}
-            >
-              Fullscreen
-            </a>
-            */}
           </div>
         </li>
         <li className="dropdown">
@@ -1967,23 +2000,34 @@ const ToolBar = (): JSX.Element => {
           </a>
           <div className="dropdown-content">
             <a onClick={() => setPropertiesView('planView')}>2D Plan Properties</a>
-            <a onClick={() => doOpenFullscreen('planView')}>2D Plan Fullscreen</a>
+            <a onClick={() => doOpenFullscreen('#planView')}>2D Plan Fullscreen</a>
             <hr />
             <a onClick={() => setPropertiesView('3dView')}>3D Plan Properties</a>
-            <a onClick={() => doOpenFullscreen('view3d')}>3D Plan Fullscreen</a>
+            <a onClick={() => doOpenFullscreen('#view3d')}>3D Plan Fullscreen</a>
+            {/*
+            <a
+              id="defaultsBtn"
+              onClick="setPropertiesView('defaults');"
+            >
+              Defaults
+            </a>
+            */}
+            {/*
+            <a
+              id="groundPropertiesButton"
+              onClick={setToolMode('ground')}
+            >
+              Ground Properties
+            </a>
+            */}
+            <a
+              id="fullscreenApp"
+              onClick={() => doOpenFullscreen('body')}
+            >
+              Fullscreen
+            </a>
           </div>
         </li>
-        {/* <li className="dropdown">
-          <a className="dropbtn">
-            3D View
-          </a>
-          <div className="dropdown-content">
-            <a onClick="setPropertiesView('3dView');">Properties</a>
-            <a onClick="doOpenFullscreen('view3d');">Fullscreen</a>
-            <a onClick="exportToObj();">Export As OBJ</a>
-            <a id="createThumb" onClick="createThumbForHistory();">Create Thumb</a>
-          </div>
-        </li> */}
         <li className="dropdown">
           <a className="dropbtn">
             Layers
@@ -3395,6 +3439,12 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
           <PlanCounter />
           <PlanControls />
           <hr />
+          <FileCounter />
+          <FileControls />
+          <hr />
+          {/* <CharacterCounter /> */}
+          {/* <CharacterControls /> */}
+          {/* <hr /> */}
           {/* <BearCounter /> */}
           {/* <BearControls /> */}
           {/* <hr /> */}
