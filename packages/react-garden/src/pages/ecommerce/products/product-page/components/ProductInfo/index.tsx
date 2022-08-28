@@ -15,7 +15,7 @@ function ProductInfo(): JSX.Element {
     <MDBox>
       <MDBox mb={1}>
         <MDTypography variant="h3" fontWeight="bold">
-          Minimal Bar Stool
+          Leather Couch Set
         </MDTypography>
       </MDBox>
       <MDTypography variant="h4" color="text">

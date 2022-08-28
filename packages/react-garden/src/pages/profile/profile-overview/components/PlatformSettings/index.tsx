@@ -26,7 +26,7 @@ function PlatformSettings(): JSX.Element {
           platform settings
         </MDTypography>
       </MDBox>
-      <MDBox pt={1} pb={2} px={2} lineHeight={1.25}>
+      <MDBox pt={0} pb={2} px={2} lineHeight={1.25}>
         <MDTypography
           variant="caption"
           fontWeight="bold"
@@ -73,7 +73,7 @@ function PlatformSettings(): JSX.Element {
             </MDTypography>
           </MDBox>
         </MDBox>
-        <MDBox mt={3}>
+        <MDBox mt={2}>
           <MDTypography
             variant="caption"
             fontWeight="bold"

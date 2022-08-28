@@ -18,7 +18,7 @@ import breakpoints from "~/themes/theme-light/base/breakpoints"
 
 // Images
 import profileImage from "~/assets/images/people/team-0.png"
-import backgroundImage from "~/assets/images/any/bg-profile.jpg"
+import backgroundImage from "~/assets/images/any/bg-profile-garden.jpg"
 
 function Header({ children }: { children?: ReactNode }): JSX.Element {
   const [tabsOrientation, setTabsOrientation] = useState<
@@ -49,7 +49,7 @@ function Header({ children }: { children?: ReactNode }): JSX.Element {
   const handleSetTabValue = (event: any, newValue: any) => setTabValue(newValue)
 
   return (
-    <MDBox position="relative" mb={3} mr={2}>
+    <MDBox mb={3} mx={1}>
       <MDBox
         display="flex"
         alignItems="center"
@@ -62,8 +62,8 @@ function Header({ children }: { children?: ReactNode }): JSX.Element {
             palette: { gradients },
           }) =>
             `${linearGradient(
-              rgba(gradients.info.main, 0.6),
-              rgba(gradients.info.state, 0.6)
+              rgba(gradients.info.main, 0.05),
+              rgba(gradients.info.state, 0.1)
             )}, url(${backgroundImage.src})`,
           backgroundSize: "cover",
           backgroundPosition: "50%",

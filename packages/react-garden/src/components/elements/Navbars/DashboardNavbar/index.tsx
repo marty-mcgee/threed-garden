@@ -202,7 +202,7 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
                 color="inherit"
                 sx={navbarIconButton}
                 onClick={handleOpenMenu}>
-                <MDBadge badgeContent={3} color="info" size="xs" circular>
+                <MDBadge badgeContent={3} color="info" size="xxs" circular>
                   <Icon sx={iconsStyle}>notifications</Icon>
                 </MDBadge>
               </IconButton>

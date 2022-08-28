@@ -17,7 +17,7 @@ import image4 from "~/assets/images/products/product-details-4.jpg"
 import image5 from "~/assets/images/products/product-details-5.jpg"
 
 function ProductImages(): JSX.Element {
-  const [currentImage, setCurrentImage] = useState<string>(image1)
+  const [currentImage, setCurrentImage] = useState<string>(image1.src)
   const [imgsViewer, setImgsViewer] = useState<boolean | number>(false)
   const [imgsViewerCurrent, setImgsViewerCurrent] = useState<number>(0)
 
@@ -35,11 +35,11 @@ function ProductImages(): JSX.Element {
     <MDBox>
       <ImgsViewer
         imgs={[
-          { src: image1 },
-          { src: image2 },
-          { src: image3 },
-          { src: image4 },
-          { src: image5 },
+          { src: image1.src },
+          { src: image2.src },
+          { src: image3.src },
+          { src: image4.src },
+          { src: image5.src },
         ]}
         isOpen={imgsViewer}
         onClose={closeImgsViewer}
@@ -63,7 +63,7 @@ function ProductImages(): JSX.Element {
           <MDBox
             component="img"
             id="0"
-            src={image1}
+            src={image1.src}
             alt="small image 1"
             borderRadius="lg"
             shadow="md"
@@ -76,7 +76,7 @@ function ProductImages(): JSX.Element {
           <MDBox
             component="img"
             id="1"
-            src={image2}
+            src={image2.src}
             alt="small image 2"
             borderRadius="lg"
             shadow="md"
@@ -89,7 +89,7 @@ function ProductImages(): JSX.Element {
           <MDBox
             component="img"
             id="2"
-            src={image3}
+            src={image3.src}
             alt="small image 3"
             borderRadius="lg"
             shadow="md"
@@ -102,7 +102,7 @@ function ProductImages(): JSX.Element {
           <MDBox
             component="img"
             id="3"
-            src={image4}
+            src={image4.src}
             alt="small image 4"
             borderRadius="lg"
             shadow="md"
@@ -115,7 +115,7 @@ function ProductImages(): JSX.Element {
           <MDBox
             component="img"
             id="4"
-            src={image5}
+            src={image5.src}
             alt="small image 5"
             borderRadius="lg"
             shadow="md"

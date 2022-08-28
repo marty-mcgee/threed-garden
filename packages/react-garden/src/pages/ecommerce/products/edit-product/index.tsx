@@ -21,8 +21,8 @@ function EditProduct(): JSX.Element {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox my={3}>
-        <MDBox mb={6}>
+      <MDBox mx={1}>
+        <MDBox mb={2}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} lg={6}>
               <MDTypography variant="h4" fontWeight="medium">

@@ -83,7 +83,7 @@ function Accounts(): JSX.Element {
                 {slack2FA ? "Enabled" : "Disabled"}
               </MDTypography>
             </MDBox>
-            <MDBox mr={1}>
+            <MDBox mx={1}>
               <Switch checked={slack2FA} onChange={handleSetSlack2FA} />
             </MDBox>
           </MDBox>
@@ -174,7 +174,7 @@ function Accounts(): JSX.Element {
                 {spotify2FA ? "Enabled" : "Disabled"}
               </MDTypography>
             </MDBox>
-            <MDBox mr={1}>
+            <MDBox mx={1}>
               <Switch checked={spotify2FA} onChange={handleSetSpotify2FA} />
             </MDBox>
           </MDBox>
@@ -207,7 +207,7 @@ function Accounts(): JSX.Element {
                 {atlassian2FA ? "Enabled" : "Disabled"}
               </MDTypography>
             </MDBox>
-            <MDBox mr={1}>
+            <MDBox mx={1}>
               <Switch checked={atlassian2FA} onChange={handleSetAtlassian2FA} />
             </MDBox>
           </MDBox>
@@ -240,7 +240,7 @@ function Accounts(): JSX.Element {
                 {asana2FA ? "Enabled" : "Disabled"}
               </MDTypography>
             </MDBox>
-            <MDBox mr={1}>
+            <MDBox mx={1}>
               <Switch checked={asana2FA} onChange={handleSetAsana2FA} />
             </MDBox>
           </MDBox>

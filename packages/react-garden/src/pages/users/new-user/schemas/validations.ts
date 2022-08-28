@@ -33,7 +33,7 @@ const validations = [
   Yup.object().shape({
     [address1.name]: Yup.string().required(address1.errorMsg),
     [city.name]: Yup.string().required(city.errorMsg),
-    [zip.name]: Yup.string().required(zip.errorMsg).min(6, zip.invalidMsg),
+    [zip.name]: Yup.string().required(zip.errorMsg).min(5, zip.invalidMsg),
   }),
   Yup.object().shape({
     [twitter.name]: Yup.string().required(twitter.errorMsg),

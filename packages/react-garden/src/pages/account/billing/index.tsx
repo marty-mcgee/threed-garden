@@ -21,7 +21,7 @@ function Billing(): JSX.Element {
   return (
     <DashboardLayout stickyNavbar>
       <DashboardNavbar />
-      <MDBox mr={1}>
+      <MDBox mx={1}>
         <MDBox mb={3}>
           <Grid container spacing={2}>
             <Grid item xs={12} lg={8}>

@@ -64,7 +64,7 @@ function Address({ formData }: any): JSX.Element {
           </Grid>
           <Grid item xs={6} sm={3}>
             <Autocomplete
-              options={["State 1", "State 2", "State 3"]}
+              options={["Arizona", "California", "Texas"]}
               renderInput={(params) => (
                 <MDInput {...params} variant="standard" label="State" />
               )}

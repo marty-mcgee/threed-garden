@@ -23,7 +23,7 @@ const form = {
       label: "Email Address",
       type: "email",
       errorMsg: "Email address is required.",
-      invalidMsg: "Your email address is invalid",
+      invalidMsg: "Your email address is invalid.",
     },
     password: {
       name: "password",
@@ -58,10 +58,10 @@ const form = {
     },
     zip: {
       name: "zip",
-      label: "Zip",
+      label: "Zip Code",
       type: "number",
-      errorMsg: "Zip is required.",
-      invalidMsg: "Zipcode is not valie (e.g. 70000).",
+      errorMsg: "Zip Code is required.",
+      invalidMsg: "Zipcode is not valie (e.g. 95437).",
     },
     twitter: {
       name: "twitter",

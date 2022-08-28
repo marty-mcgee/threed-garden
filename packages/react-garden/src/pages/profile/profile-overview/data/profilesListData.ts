@@ -11,8 +11,8 @@ type Types = any
 const profileListData: Types = [
   {
     image: kal,
-    name: "Sophie B.",
-    description: "Hi! I need more information..",
+    name: "Kal Sedgewick",
+    description: "Hi! I need more components..",
     action: {
       type: "internal",
       route: "/profile/profile-overview",
@@ -23,7 +23,7 @@ const profileListData: Types = [
   {
     image: marie,
     name: "Anne Marie",
-    description: "Awesome work, can you..",
+    description: "Awesome work! Can you..",
     action: {
       type: "internal",
       route: "/profile/profile-overview",
@@ -33,7 +33,7 @@ const profileListData: Types = [
   },
   {
     image: ivana,
-    name: "Ivanna",
+    name: "Ryan Givens",
     description: "About files I can..",
     action: {
       type: "internal",
@@ -44,7 +44,7 @@ const profileListData: Types = [
   },
   {
     image: team4,
-    name: "Peterson",
+    name: "Vic Peterson",
     description: "Have a great afternoon..",
     action: {
       type: "internal",
@@ -55,8 +55,8 @@ const profileListData: Types = [
   },
   {
     image: team3,
-    name: "Nick Daniel",
-    description: "Hi! I need more information..",
+    name: "Jen Daniels",
+    description: "Hiya, I need more information..",
     action: {
       type: "internal",
       route: "/profile/profile-overview",

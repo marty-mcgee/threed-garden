@@ -23,7 +23,7 @@ function ProductPage(): JSX.Element {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox py={1}>
+      <MDBox mx={1}>
         <Card sx={{ overflow: "visible" }}>
           <MDBox p={3}>
             <MDBox mb={3}>
@@ -33,7 +33,7 @@ function ProductPage(): JSX.Element {
             </MDBox>
 
             <Grid container spacing={2}>
-              <Grid item xs={12} lg={6} xl={5}>
+              <Grid item xs={12} lg={6} xl={6}>
                 <ProductImages />
               </Grid>
               <Grid item xs={12} lg={5} sx={{ mx: "auto" }}>

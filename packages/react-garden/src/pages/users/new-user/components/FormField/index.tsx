@@ -30,7 +30,7 @@ function FormField({ label, name, ...rest }: Props): JSX.Element {
           variant="caption"
           color="error"
           fontWeight="regular">
-          {/* <ErrorMessage name={name} /> */} ErrorMessage fails type check
+          <ErrorMessage name={name} />
         </MDTypography>
       </MDBox>
     </MDBox>

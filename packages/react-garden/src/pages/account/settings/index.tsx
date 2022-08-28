@@ -22,7 +22,7 @@ function Settings(): JSX.Element {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox mr={1}>
+      <MDBox mx={1}>
         <Grid container spacing={2}>
           <Grid item xs={12} lg={3}>
             <Sidenav />

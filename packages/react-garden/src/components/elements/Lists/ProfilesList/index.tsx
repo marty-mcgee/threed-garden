@@ -47,7 +47,7 @@ function ProfilesList({ title, profiles, shadow }: Props): JSX.Element {
         py={1}
         mb={1}>
         <MDBox mr={2}>
-          <MDAvatar src={image} alt="Avatar Image Here" shadow="md" />
+          <MDAvatar src={image.src} alt="Avatar Image Here" shadow="md" />
         </MDBox>
         <MDBox
           display="flex"

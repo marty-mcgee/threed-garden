@@ -27,6 +27,9 @@ import MDPagination from "~/components/mui/MDPagination"
 import DataTableHeadCell from "~/components/elements/Tables/DataTable/DataTableHeadCell"
 import DataTableBodyCell from "~/components/elements/Tables/DataTable/DataTableBodyCell"
 
+// UUID
+import { v4 as newUUID } from 'uuid'
+
 // Declaring props types for DataTable
 interface Props {
   entriesPerPage?:
@@ -140,9 +143,9 @@ function DataTable({
   const [search, setSearch] = useState(globalFilter)
 
   // Search input state handle
-  const onSearchChange = useAsyncDebounce((value) => {
-    setGlobalFilter(value || undefined)
-  }, 100)
+  // const onSearchChange = useAsyncDebounce((value) => {
+  //   setGlobalFilter(value || undefined)
+  // }, 100)
 
   // A function that sets the sorted value for the table
   const setSortedValue = (column: any) => {
@@ -219,9 +222,10 @@ function DataTable({
       <Table {...getTableProps()}>
         <MDBox component="thead">
           {headerGroups.map((headerGroup: any) => (
-            <TableRow {...headerGroup.getHeaderGroupProps()}>
+            <TableRow key={newUUID} {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column: any) => (
                 <DataTableHeadCell
+                  key={newUUID}
                   {...column.getHeaderProps(
                     isSorted && column.getSortByToggleProps()
                   )}
@@ -238,9 +242,10 @@ function DataTable({
           {page.map((row: any, key: any) => {
             prepareRow(row)
             return (
-              <TableRow {...row.getRowProps()}>
+              <TableRow key={newUUID} {...row.getRowProps()}>
                 {row.cells.map((cell: any) => (
                   <DataTableBodyCell
+                    key={newUUID}
                     noBorder={noEndBorder && rows.length - 1 === key}
                     align={cell.column.align ? cell.column.align : "left"}
                     {...cell.getCellProps()}>
