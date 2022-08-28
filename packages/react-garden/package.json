@@ -52,6 +52,7 @@
     "clsx": "^1.2.1",
     "dat.gui": "^0.7.9",
     "farmbot": "^15.3.3",
+    "immer": "^9.0.15",
     "jquery": "^3.6.0",
     "next": "^12.2.5",
     "next-transpile-modules": "9.0.0",

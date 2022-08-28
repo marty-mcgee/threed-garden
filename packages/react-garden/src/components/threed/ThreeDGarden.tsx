@@ -51,11 +51,26 @@ import {
   useEffect,
   useRef,
   useState,
+  useCallback,
   FunctionComponent,
   MouseEventHandler
 } from "react"
 // state management (instead of React.useState)
 import create from 'zustand'
+import shallow from 'zustand/shallow'
+import { subscribeWithSelector } from 'zustand/middleware'
+import produce from 'immer'
+
+import Image from 'next/image'
+
+// mui: ui
+import Modal from '@mui/material/Modal'
+// mui: Material Dashboard 2 PRO React TS components
+import MDBox from "~/components/mui/MDBox"
+import MDTypography from "~/components/mui/MDTypography"
+import MDAlert from "~/components/mui/MDAlert"
+import MDButton from "~/components/mui/MDButton"
+import MDProgress from "~/components/mui/MDProgress"
 
 import paper from "paper"
 
@@ -124,6 +139,21 @@ const clearObject = (object: Object, option: number = 1) => {
 }
 
 // ======================================================
+// STYLES (TEMP)
+const modalStyle = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '80vw',
+  height: '60vh',
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
+// ======================================================
 // FUNCTIONAL NOUNS
 // ======================================================
 // ThreeD
@@ -186,11 +216,10 @@ const useThreeDStore = create((set) => ({
 
 })) // useThreeDStore
 
-function ThreeDCounter() {
-  // const threeds = useThreeDStore((state) => state.threeds)
-  const threedCount = useThreeDStore((state) => state.threedCount)
-  const threed = useThreeDStore((state) => state.threed)
-  const threeds = useThreeDStore((state) => state.threeds)
+function ThreeDInfoPanel() {
+  const threedCount = useThreeDStore((state: any) => state.threedCount)
+  const threeds = useThreeDStore((state: any) => state.threeds)
+  const threed = useThreeDStore((state: any) => state.threed)
   console.debug("%cthreed", ccm1, threed)
   return (
     <div>
@@ -200,10 +229,10 @@ function ThreeDCounter() {
   )
 }
 
-function ThreeDControls() {
-  const increaseThreeDCount = useThreeDStore((state) => state.increaseThreeDCount)
+function ThreeDControlPanel() {
+  const increaseThreeDCount = useThreeDStore((state: any) => state.increaseThreeDCount)
 
-  const addThreeD = useThreeDStore((state) => state.addThreeD)
+  const addThreeD = useThreeDStore((state: any) => state.addThreeD)
 
   return (
     <div>
@@ -217,7 +246,7 @@ function ThreeDControls() {
 // ======================================================
 // Project
 
-const useProjectStore = create((set) => ({
+const useProjectStore = create((set, get) => ({
   _id: newUUID() as string,
   _ts: new Date().toISOString() as string,
   projectCount: 0,
@@ -242,7 +271,7 @@ const useProjectStore = create((set) => ({
       projects: []
     }
   ),
-  addProject: () => {
+  addProject: (stated: any) => {
     // projectCurrent
     set(
       (state: any) => (
@@ -269,52 +298,87 @@ const useProjectStore = create((set) => ({
         }
       )
     )
+    // saveToDisk
+    get().saveToDisk()
+    // loadFromDisk
+    get().loadFromDisk()
+
+    console.debug("%cAddProject", ccm1, get().project)
   },
+  saveToDisk: () => {
+    try {
+      localStorage.setItem("threed_projectHistory", JSON.stringify({ subject: "projects", payload: get().projects }))
+      console.debug("%cSaveToDisk", ccm1, get().projects)
+      return true
+    } catch (err) {
+      console.debug("%cSaveToDisk", ccm3, err)
+      return false
+    }
+  },
+  loadFromDisk: () => {
+    try {
+      const loaded = localStorage.getItem("threed_projectHistory")
+      if (loaded) {
+        console.debug("%cLoadFromDisk", ccm1, true) // loaded
+        return loaded // string[]
+      }
+      console.debug("%cLoadFromDisk", ccm3, loaded)
+      return false
+    } catch (err) {
+      console.debug("%cLoadFromDisk", ccm3, err)
+      return false
+    }
+  }
 
 })) // useProjectStore
 
-function ProjectCounter() {
-  // const projects = useProjectStore((state) => state.projects)
-  const projectCount = useProjectStore((state) => state.projectCount)
-  const projects = useProjectStore((state) => state.projects)
-  const project = useProjectStore((state) => state.project)
-  console.debug("%cproject", ccm1, project)
+function ProjectInfoPanel() {
+  const projectCount = useProjectStore((state: any) => state.projectCount)
+  const projects = useProjectStore((state: any) => state.projects)
+  const project = useProjectStore((state: any) => state.project)
+
+  // console.debug("%cCurrentProject", ccm1, project)
   return (
-    <div>
-      {/* <div>{projectCount} projects around here ...</div> */}
-      <div>{projects.length} projects around here ...</div>
-    </div>
+    <MDBox>
+      <MDTypography>{projects.length} projects around here ...</MDTypography>
+      {/* <MDTypography>{projectCount} projects around here ...</MDTypography> */}
+    </MDBox>
   )
 }
 
-function ProjectControls() {
-  const increaseProjectCount = useProjectStore((state) => state.increaseProjectCount)
+function ProjectControlPanel() {
+  // const increaseProjectCount = useProjectStore((state: any) => state.increaseProjectCount)
 
-  const addProject = useProjectStore((state) => state.addProject)
+  const addProject = useProjectStore((state: any) => state.addProject)
+  // const addProject = useProjectStore.getState().addProject() // this executes automatically !!
+  const saveToDisk = useProjectStore((state: any) => state.saveToDisk)
+  const loadFromDisk = useProjectStore((state: any) => state.loadFromDisk)
+
+  const addProjectAsFunction = () => {
+    // const goodIdea1 = () => useProjectStore.getState().addProject()
+    // goodIdea1()
+    const addProject = useProjectStore.getState().addProject() // this executes automatically !!
+  }
 
   return (
     <div>
+      <button onClick={addProjectAsFunction}>add project()</button>
+      <br />
       <button onClick={addProject}>add project</button>
+      <br />
+      <button onClick={saveToDisk}>save to disk</button>
+      <br />
+      <button onClick={loadFromDisk}>load from disk</button>
       {/* <br />
       <button onClick={increaseProjectCount}>add to project count</button> */}
     </div>
   )
 }
 
-const createProject = () => {
-  const project = useProjectStore(
-    (state) => {
-      state.addProject
-      state.increaseProjectCount
-    }
-  )
-  return project
-}
-
 // ======================================================
 // Plan
 
-const usePlanStore = create((set) => ({
+const usePlanStore = create((set, get) => ({
   _id: newUUID() as string,
   _ts: new Date().toISOString() as string,
   planCount: 0,
@@ -384,7 +448,6 @@ const usePlanStore = create((set) => ({
     }
   ),
   addPlan: () => {
-
     // planCurrent
     set(
       (state: any) => (
@@ -446,24 +509,6 @@ const usePlanStore = create((set) => ({
         }
       )
     )
-
-    // projectCurrent
-    set(
-      (state: any) => (
-        {
-          project: {
-            _id: newUUID() as string,
-            _ts: new Date().toISOString() as string,
-            layers: new Array,
-            activeLayer: {
-              name: "level1-MM",
-              data: {}
-            }
-          },
-          projectCount: state.projectCount + 1,
-        }
-      )
-    )
     // planHistory
     set(
       (state: any) => (
@@ -473,32 +518,77 @@ const usePlanStore = create((set) => ({
         }
       )
     )
+    // saveToDisk
+    get().saveToDisk()
+    // loadFromDisk
+    get().loadFromDisk()
+
+    console.debug("%cAddPlan", ccm1, get().plan)
+  },
+  saveToDisk: () => {
+    try {
+      localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plans", payload: get().plans }))
+      console.debug("%cSaveToDisk", ccm1, get().plans)
+      return true
+    } catch (err) {
+      console.debug("%cSaveToDisk", ccm3, err)
+      return false
+    }
+  },
+  loadFromDisk: () => {
+    try {
+      const loaded = localStorage.getItem("threed_planHistory")
+      if (loaded) {
+        console.debug("%cLoadFromDisk", ccm1, true) // loaded
+        return loaded // string[]
+      }
+      console.debug("%cLoadFromDisk", ccm3, loaded)
+      return false
+    } catch (err) {
+      console.debug("%cLoadFromDisk", ccm3, err)
+      return false
+    }
   }
 
 })) // usePlanStore
 
-function PlanCounter() {
-  // const plans = usePlanStore((state) => state.plans)
-  const planCount = usePlanStore((state) => state.planCount)
-  const plans = usePlanStore((state) => state.plans)
-  const plan = usePlanStore((state) => state.plan)
-  console.debug("%cplan", ccm1, plan)
+function PlanInfoPanel() {
+  const planCount = usePlanStore((state: any) => state.planCount)
+  const plans = usePlanStore((state: any) => state.plans)
+  const plan = usePlanStore((state: any) => state.plan)
+
+  // console.debug("%cCurrentPlan", ccm1, plan)
   return (
-    <div>
-      {/* <div>{planCount} plans around here ...</div> */}
-      <div>{plans.length} plans around here ...</div>
-    </div>
+    <MDBox>
+      <MDTypography>{plans.length} plans around here ...</MDTypography>
+      {/* <MDTypography>{planCount} plans around here ...</MDTypography> */}
+    </MDBox>
   )
 }
 
-function PlanControls() {
-  const increasePlanCount = usePlanStore((state) => state.increasePlanCount)
+function PlanControlPanel() {
+  // const increasePlanCount = usePlanStore((state: any) => state.increasePlanCount)
 
-  const addPlan = usePlanStore((state) => state.addPlan)
+  const addPlan = usePlanStore((state: any) => state.addPlan)
+  // const addPlan = usePlanStore.getState().addPlan() // this executes automatically !!
+  const saveToDisk = usePlanStore((state: any) => state.saveToDisk)
+  const loadFromDisk = usePlanStore((state: any) => state.loadFromDisk)
+
+  const addPlanAsFunction = () => {
+    // const goodIdea1 = () => usePlanStore.getState().addPlan()
+    // goodIdea1()
+    const addPlan = usePlanStore.getState().addPlan() // this executes automatically !!
+  }
 
   return (
     <div>
+      <button onClick={addPlanAsFunction}>add plan()</button>
+      <br />
       <button onClick={addPlan}>add plan</button>
+      <br />
+      <button onClick={saveToDisk}>save to disk</button>
+      <br />
+      <button onClick={loadFromDisk}>load from disk</button>
       {/* <br />
       <button onClick={increasePlanCount}>add to plan count</button> */}
     </div>
@@ -507,7 +597,7 @@ function PlanControls() {
 
 const createPlan = () => {
   const plan = usePlanStore(
-    (state) => {
+    (state: any) => {
       state.addPlan
       state.increasePlanCount
     }
@@ -518,29 +608,29 @@ const createPlan = () => {
 // ======================================================
 // File
 const useFileStore = create((set) => ({
-  fileCounter: 0,
+  fileCount: 0,
   files: [],
   file: {},
 })) // useFileStore
 
-function FileCounter() {
-  // const files = useFileStore((state) => state.files)
-  const fileCount = useFileStore((state) => state.fileCount)
-  const files = useFileStore((state) => state.files)
-  const file = useFileStore((state) => state.file)
-  console.debug("%cfile", ccm1, file)
+function FileInfoPanel() {
+  const fileCount = useFileStore((state: any) => state.fileCount)
+  const files = useFileStore((state: any) => state.files)
+  const file = useFileStore((state: any) => state.file)
+
+  // console.debug("%cCurrentFile", ccm1, file)
   return (
-    <div>
-      {/* <div>{fileCount} files around here ...</div> */}
-      <div>{files.length} files around here ...</div>
-    </div>
+    <MDBox>
+      {/* <MDTypography>{fileCount} files around here ...</MDTypography> */}
+      <MDTypography>{files.length} files around here ...</MDTypography>
+    </MDBox>
   )
 }
 
-function FileControls() {
-  const increaseFileCount = useFileStore((state) => state.increaseFileCount)
+function FileControlPanel() {
+  const increaseFileCount = useFileStore((state: any) => state.increaseFileCount)
 
-  const addFile = useFileStore((state) => state.addFile)
+  const addFile = useFileStore((state: any) => state.addFile)
 
   return (
     <div>
@@ -553,7 +643,7 @@ function FileControls() {
 
 const createFile = () => {
   const file = useFileStore(
-    (state) => {
+    (state: any) => {
       state.addFile
       state.increaseFileCount
     }
@@ -570,17 +660,17 @@ const createFile = () => {
 
 const useBearStore = create((set) => ({
   bears: 0,
-  increaseBearCount: () => set((state) => ({ bears: state.bears + 1 })),
+  increaseBearCount: () => set((state: any) => ({ bears: state.bears + 1 })),
   removeAllBears: () => set({ bears: 0 }),
 }))
 
-function BearCounter() {
-  const bears = useBearStore((state) => state.bears)
+function BearInfoPanel() {
+  const bears = useBearStore((state: any) => state.bears)
   return <h1>{bears} bears around here ...</h1>
 }
 
-function BearControls() {
-  const increaseBearCount = useBearStore((state) => state.increaseBearCount)
+function BearControlPanel() {
+  const increaseBearCount = useBearStore((state: any) => state.increaseBearCount)
   return <button onClick={increaseBearCount}>add a bear</button>
 }
 
@@ -799,203 +889,237 @@ let simulationHistoryPosition = 0
 // ======================================================
 // COMPONENTS
 
-const AboutModal = (): JSX.Element => {
+const AboutModal: FunctionComponent = (): JSX.Element => {
+
+  const [open, setOpen] = useState(false)
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
+
   // console.debug("AboutModal")
-  useEffect(() => {
-    console.debug('AboutModal onMount')
-    return () => {
-      console.debug('AboutModal onUnmount')
-    }
-  }, [])
+  // useEffect(() => {
+  //   console.debug('AboutModal onMount')
+  //   return () => {
+  //     console.debug('AboutModal onUnmount')
+  //   }
+  // }, [])
+
   return (
-    <div id="aboutModal" className="modal">
-      <div className="modal-content">
-        <div className="modal-header">
-          <span className="close">&times;</span>
-          <img src="favicon/favicon.png"
-            height="54px"
-            style={{ float: "left", paddingTop: "6px", paddingRight: "12px" }}
-            alt="ThreeDGarden"
-            title="ThreeDGarden" />
-          <h2>ThreeDGarden</h2>
-        </div>
-        <div className="modal-body">
+    <div>
+      <MDButton onClick={handleOpen}>Open About Modal</MDButton>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        {/* <div id="aboutModal" className="modal"> */}
+        <MDBox id="aboutModal" sx={modalStyle}>
+          <div className="modal-content">
+            <div className="modal-header" style={{ display: "flex" }}>
+              {/* <span className="close">&times;</span> */}
+              <Image src="/favicon/favicon.png"
+                width={50}
+                height={50}
+                alt="ThreeDGarden"
+                title="ThreeDGarden"
+              />
+              <h3>ThreeDGarden</h3>
+            </div>
+            <div className="modal-body">
 
-          <div className="tab">
-            <button className="tablinks active" onClick="openTab('tab1')" id="tab1">Intro</button>
-            <button className="tablinks" onClick="openTab('tab2')" id="tab2">Models</button>
-            <button className="tablinks" onClick="openTab('tab3')" id="tab3">Examples</button>
-            <button className="tablinks" onClick="openTab('tab4')" id="tab4">FAQ</button>
-            <button className="tablinks" onClick="openTab('tab5')" id="tab5">Contact</button>
-            <button className="tablinks" onClick="openTab('tab6')" id="tab6">Other</button>
-            <button className="tablinks" onClick="openTab('tab7')" id="tab7">
-              <i className="far fa-laugh"></i> Supporters
-            </button>
-          </div>
+              <div className="tab">
+                <MDButton className="tablinks active" onClick={() => openTab('tab1')} id="tab1">Intro</MDButton>
+                <MDButton className="tablinks" onClick={() => openTab('tab2')} id="tab2">Models</MDButton>
+                <MDButton className="tablinks" onClick={() => openTab('tab3')} id="tab3">Examples</MDButton>
+                <MDButton className="tablinks" onClick={() => openTab('tab4')} id="tab4">FAQ</MDButton>
+                <MDButton className="tablinks" onClick={() => openTab('tab5')} id="tab5">Contact</MDButton>
+                <MDButton className="tablinks" onClick={() => openTab('tab6')} id="tab6">Other</MDButton>
+                <MDButton className="tablinks" onClick={() => openTab('tab7')} id="tab7">Supporters</MDButton>
+              </div>
 
-          <div id="tab1Content" className="tabcontent" style={{ display: "block" }}>
-            <h3>ThreeDGarden Introduction</h3>
-            <p>Plan + Share Ideas for your Home + Garden in 2D + 3D</p>
-            <div style={{ border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
-              <p>Save Plan Edits to local web storage : <input type="checkbox" id="saveEditsToLocalStorage" onChange="handleSaveEditsLocalStorageOption()" />
-                <span className="tooltip"><img src="/demo/media/info.png" className="tooltip" />
-                  <span className="tooltiptext">Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br />The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the "File->Save" option in the main <a href="http://threedgarden.com">ThreeDGarden</a> toolbar.<br />More info about <a href="https://www.w3schools.com/HTML/html5_webstorage.asp" target="_blank" rel="noreferrer">Local Web Storage</a>.</span>
-                </span>
-                <div id="localStoragePlanDiv">
-                  <hr />
+              {/*
+              <div id="tab1Content" className="tabcontent" style={{ display: "block" }}>
+                <h3>ThreeDGarden Introduction</h3>
+                <p>Plan + Share Ideas for your Home + Garden in 2D + 3D</p>
+                <div style={{ border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
+                  <p>Save Plan Edits to local web storage : <input type="checkbox" id="saveEditsToLocalStorage" onChange={() => handleSaveEditsLocalStorageOption} />
+                    <span className="tooltip"><img src="/demo/media/info.png" className="tooltip" />
+                      <span className="tooltiptext">Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br />The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the "File->Save" option in the main <a href="http://threedgarden.com">ThreeDGarden</a> toolbar.<br />More info about <a href="https://www.w3schools.com/HTML/html5_webstorage.asp" target="_blank" rel="noreferrer">Local Web Storage</a>.</span>
+                    </span>
+                    <div id="localStoragePlanDiv">
+
+                      <table>
+                        <tr>
+                          <td style={{ textAlign: "center" }}>
+                            Most Recent Edit saved in Local Web Storage.<br />
+                            <button onClick={() => loadFromLocalStorage} id="loadLocalStoragePlanBtn">Load Plan</button>
+                            <br /><br /><span id="localStoragePlanLastSavedDate"></span>
+                          </td>
+                          <td>
+                            <div><img id="localStoragePlanImage" onClick={() => loadFromLocalStorage} /></div>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </p>
+                  <div id="featuredPlan">
+                    <table>
+                      <tr>
+                        <td style={{ textAlign: "center", width: "300px" }}>
+                          <button onClick={() => loadExamplePlan} id="loadFeaturedPlanBtn"
+                            className="largeButton">Load
+                            Example Plan</button><br />
+                          or<br />
+                          <button onClick={() => closeAllModals} className="largeButton">Start New Plan</button>
+                        </td>
+                        <td>
+                          <div><img id="featuredPlanImage" onClick={() => loadExamplePlan} /></div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              */}
+
+              {/*
+              <div id="tab2Content" className="tabcontent">
+                <h3>Models</h3>
+                <p>ThreeDGarden uses many 3D models which can be found on the internet as public domain, Free Art or Creative Commons.</p>
+                <p>If you would like a model added to the catalogue, please send a zipped file  to <span className="supportEmail"></span>.</p>
+                <p>Models ideally should be:
+                  <ul>
+                    <li>Saved as .obj format along with the .mtl file, plus any texture files used. Blender OBJ default export options work very well.</li>
+                    <li>1 unit in Blender = 1cm in ThreeDGarden. Eg, a cube with X:100, Y:100, Z:100, will display as 1 Meter cubed box in the 3d and Plan views.</li>
+                    <li>If using Blender, Y-Axis in your OBJ export should be UP. Blender IDE defaults with the Z-Axis being UP in normal creatiion mode, but the OBJ export plugin defaults to convert the exported OBJ with the Y-Axis being UP. This is good.</li>
+                    <li>Try to keep model low poly and the total download size smaller than 1Mb. Not totally essential but it helps.</li>
+                    <li>Your model should be released as public domain or licensed with a non restrictive open source license such as a Free Art or Creative Commons.</li>
+                    <li>Before sending your model, if the model you provide was not already in the public domain, or had an open source license, then you should own the copyright on the 3d model and textures, or have the permission of the copyight holder, and provide the model to add to the catalogue for unrestricted use as either Public Domain, Free Art or Creative Commons.</li>
+                    <li>Add the authors name, copyright year and attribution url if known.</li>
+                    <li>All models will be reviewed and maybe optimised before adding. A comment will be added to OBJ file for any modifications.</li>
+                    <li>Models with restrictive licenses cannot be added.</li>
+                  </ul>
+                </p>
+              </div>
+              */}
+
+              {/*
+              <div id="tab3Content" className="tabcontent">
+                <h3>Tutorial Videos</h3>
+                <div style={{ border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
                   <table>
                     <tr>
-                      <td style={{ textAlign: "center" }}>
-                        Most Recent Edit saved in Local Web Storage.<br />
-                        <button onClick="loadFromLocalStorage()" id="loadLocalStoragePlanBtn">Load Plan</button>
-                        <br /><br /><span id="localStoragePlanLastSavedDate"></span>
+                      <td style={{ width: "400px" }} valign="top">
+                        <h3>Mansard</h3>
+                        <p>
+                          <a href="#https://www.youtube.com/watch?v=Ppqp-dLwKIE" target="_blank"
+                            rel="noopener" className="largeButton">
+                            Watch Video
+                          </a>
+                          <button onClick={() => loadPlan('42fbd8ff0f5a37fa1285ae8b6c6ca36529b930c2')}
+                            className="largeButton">Load Plan</button>
+                        </p>
                       </td>
                       <td>
-                        <div><img id="localStoragePlanImage" onClick="loadFromLocalStorage();" /></div>
+                        <a href="#https://www.youtube.com/watch?v=Ppqp-dLwKIE" target="_blank"
+                          rel="noopener">
+                          <img src="/demo/tuts/mansard.png" style={{ border: "2px solid #2a2a2a" }} />
+                        </a>
                       </td>
                     </tr>
                   </table>
                 </div>
-              </p>
-              <div id="featuredPlan">
-                <table>
-                  <tr>
-                    <td style={{ textAlign: "center", width: "300px" }}>
-                      <button onClick="loadExamplePlan()" id="loadFeaturedPlanBtn"
-                        className="largeButton">Load
-                        Example Plan</button><br />
-                      or<br />
-                      <button onClick="closeAllModals()" className="largeButton">Start New Plan</button>
-                    </td>
-                    <td>
-                      <div><img id="featuredPlanImage" onClick="loadExamplePlan();" /></div>
-                    </td>
-                  </tr>
-                </table>
+                <br />
+                <div style={{ border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
+                  <table>
+                    <tr>
+                      <td style={{ width: "400px" }} valign="top">
+                        <h3>Gable with Valley Roof</h3>
+                        <p>
+                          <a href="#https://www.youtube.com/watch?v=DUaBywAS6Ik" target="_blank"
+                            rel="noopener" className="largeButton">
+                            Watch Video
+                          </a>
+                          <button onClick={() => loadPlan('0d371f9acad19a943f38c3a32f6d5d140bc6c913')}
+                            className="largeButton">Load Plan</button>
+                        </p>
+                      </td>
+                      <td>
+                        <a href="#https://www.youtube.com/watch?v=DUaBywAS6Ik" target="_blank"
+                          rel="noopener">
+                          <img src="/demo/tuts/gableWithValley.png" style={{ border: "2px solid #2a2a2a" }} />
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                <br />
+                <div style={{ border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
+                  <table>
+                    <tr>
+                      <td style={{ width: "400px" }} valign="top">
+                        <h3>Modern Dutch Gable (Hip with Gable)</h3>
+                        <p>
+                          <a href="#https://www.youtube.com/watch?v=0cmjXmp7D_E" target="_blank"
+                            rel="noopener" className="largeButton">
+                            Watch Video
+                          </a>
+                          <button onClick={() => loadPlan('c0300edf03b952872c37744bf570a588184dd3d5')}
+                            className="largeButton">Load Plan</button>
+                        </p>
+                      </td>
+                      <td>
+                        <a href="#https://www.youtube.com/watch?v=0cmjXmp7D_E" target="_blank"
+                          rel="noopener">
+                          <img src="/demo/tuts/modernDutchGable.png" style={{ border: "2px solid #2a2a2a" }} />
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                <p>More Coming Soon</p>
               </div>
+              */}
+
+              {/*
+              <div id="tab4Content" className="tabcontent">
+                <h3>FAQ</h3>
+              </div>
+              */}
+
+              {/*
+              <div id="tab5Content" className="tabcontent">
+                <h3>Contact</h3>
+                <p><span className="supportEmail"></span></p>
+              </div>
+              */}
+
+              {/*
+              <div id="tab6Content" className="tabcontent">
+                <h3>Tab 6 Content</h3>
+                <p>Paragraphs of words here..</p>
+                <p>The application is made available online in the hope that it will be useful,
+                  but without any warranty or implied warranty of fitness for any particular purpose.</p>
+              </div>
+              */}
+
+              {/*
+              <div id="tab7Content" className="tabcontent">
+                <h3>Tab 7 Content</h3>
+                <p>Paragraphs of words here..</p>
+                <p><span className="supportEmail"></span></p>
+              </div>
+              */}
+
             </div>
-          </div>
-
-          <div id="tab2Content" className="tabcontent">
-            <h3>Models</h3>
-            <p>ThreeDGarden uses many 3D models which can be found on the internet as public domain, Free Art or Creative Commons.</p>
-            <p>If you would like a model added to the catalogue, please send a zipped file  to <span className="supportEmail"></span>.</p>
-            <p>Models ideally should be:
-              <ul>
-                <li>Saved as .obj format along with the .mtl file, plus any texture files used. Blender OBJ default export options work very well.</li>
-                <li>1 unit in Blender = 1cm in ThreeDGarden. Eg, a cube with X:100, Y:100, Z:100, will display as 1 Meter cubed box in the 3d and Plan views.</li>
-                <li>If using Blender, Y-Axis in your OBJ export should be UP. Blender IDE defaults with the Z-Axis being UP in normal creatiion mode, but the OBJ export plugin defaults to convert the exported OBJ with the Y-Axis being UP. This is good.</li>
-                <li>Try to keep model low poly and the total download size smaller than 1Mb. Not totally essential but it helps.</li>
-                <li>Your model should be released as public domain or licensed with a non restrictive open source license such as a Free Art or Creative Commons.</li>
-                <li>Before sending your model, if the model you provide was not already in the public domain, or had an open source license, then you should own the copyright on the 3d model and textures, or have the permission of the copyight holder, and provide the model to add to the catalogue for unrestricted use as either Public Domain, Free Art or Creative Commons.</li>
-                <li>Add the authors name, copyright year and attribution url if known.</li>
-                <li>All models will be reviewed and maybe optimised before adding. A comment will be added to OBJ file for any modifications.</li>
-                <li>Models with restrictive licenses cannot be added.</li>
-              </ul>
-            </p>
-          </div>
-
-          <div id="tab3Content" className="tabcontent">
-            <h3>Tutorial Videos</h3>
-            <div style={{ border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
-              <table>
-                <tr>
-                  <td style={{ width: "400px" }} valign="top">
-                    <h3>Mansard</h3>
-                    <p>
-                      <a href="#https://www.youtube.com/watch?v=Ppqp-dLwKIE" target="_blank"
-                        rel="noopener" className="largeButton">
-                        Watch Video
-                      </a>&nbsp;<button onClick="loadPlan('42fbd8ff0f5a37fa1285ae8b6c6ca36529b930c2')"
-                        className="largeButton">Load Plan</button>
-                    </p>
-                  </td>
-                  <td>
-                    <a href="#https://www.youtube.com/watch?v=Ppqp-dLwKIE" target="_blank"
-                      rel="noopener">
-                      <img src="/demo/tuts/mansard.png" style={{ border: "2px solid #2a2a2a" }} />
-                    </a>
-                  </td>
-                </tr>
-              </table>
+            <div className="modal-footer">
+              <h3>&copy; <a href="https://threedgarden.com">ThreeDGarden</a></h3>
             </div>
-            <br />
-            <div style={{ border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
-              <table>
-                <tr>
-                  <td style={{ width: "400px" }} valign="top">
-                    <h3>Gable with Valley Roof</h3>
-                    <p>
-                      <a href="#https://www.youtube.com/watch?v=DUaBywAS6Ik" target="_blank"
-                        rel="noopener" className="largeButton">
-                        Watch Video
-                      </a>&nbsp;<button onClick="loadPlan('0d371f9acad19a943f38c3a32f6d5d140bc6c913')"
-                        className="largeButton">Load Plan</button>
-                    </p>
-                  </td>
-                  <td>
-                    <a href="#https://www.youtube.com/watch?v=DUaBywAS6Ik" target="_blank"
-                      rel="noopener">
-                      <img src="/demo/tuts/gableWithValley.png" style={{ border: "2px solid #2a2a2a" }} />
-                    </a>
-                  </td>
-                </tr>
-              </table>
-            </div>
-            <br />
-            <div style={{ border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
-              <table>
-                <tr>
-                  <td style={{ width: "400px" }} valign="top">
-                    <h3>Modern Dutch Gable (Hip with Gable)</h3>
-                    <p>
-                      <a href="#https://www.youtube.com/watch?v=0cmjXmp7D_E" target="_blank"
-                        rel="noopener" className="largeButton">
-                        Watch Video
-                      </a>&nbsp;<button onClick="loadPlan('c0300edf03b952872c37744bf570a588184dd3d5')"
-                        className="largeButton">Load Plan</button>
-                    </p>
-                  </td>
-                  <td>
-                    <a href="#https://www.youtube.com/watch?v=0cmjXmp7D_E" target="_blank"
-                      rel="noopener">
-                      <img src="/demo/tuts/modernDutchGable.png" style={{ border: "2px solid #2a2a2a" }} />
-                    </a>
-                  </td>
-                </tr>
-              </table>
-            </div>
-            <p>More Coming Soon</p>
-          </div>
-
-          <div id="tab4Content" className="tabcontent">
-            <h3>FAQ</h3>
-          </div>
-
-          <div id="tab5Content" className="tabcontent">
-            <h3>Contact</h3>
-            <p><span className="supportEmail"></span></p>
-          </div>
-
-          <div id="tab6Content" className="tabcontent">
-            <h3>Tab 6 Content</h3>
-            <p>Paragraphs of words here..</p>
-            <p>The application is made available online in the hope that it will be useful,
-              but without any warranty or implied warranty of fitness for any particular purpose.</p>
-          </div>
-
-          <div id="tab7Content" className="tabcontent">
-            <h3>Tab 7 Content</h3>
-            <p>Paragraphs of words here..</p>
-            <p><span className="supportEmail"></span></p>
-          </div>
-
-        </div>
-        <div className="modal-footer">
-          <h3>&copy; <a href="https://threedgarden.com">ThreeDGarden</a></h3>
-        </div>
-      </div>
-    </div>
+          </div >
+          {/* </div> */}
+        </MDBox >
+      </Modal >
+    </div >
   )
 }
 
@@ -1106,7 +1230,7 @@ const ShareModal = (): JSX.Element => {
         <div className="smallModal-header">
           <span className="close">&times;</span>
           <img
-            src="favicon/favicon.png"
+            src="/favicon/favicon.png"
             height="54px"
             style={{ float: "left", paddingTop: "6px", paddingRight: "12px" }}
             title="ThreeDGarden"
@@ -1118,7 +1242,7 @@ const ShareModal = (): JSX.Element => {
           <button
             id="getShareLinkBtn"
             className="mediumButton"
-            onClick="generateShareLink();">
+            onClick={() => generateShareLink()}>
             Generate Share Link
           </button>
           <div style={{ margin: "10px 0px 10px 0px" }}>
@@ -1141,7 +1265,7 @@ const ShareModal = (): JSX.Element => {
               <button
                 id="copyShareLinkBtn"
                 className="smallButton"
-                onClick="copyShareLink();">
+                onClick={() => copyShareLink()}>
                 Copy
               </button>
             </div>
@@ -1165,7 +1289,7 @@ const ShareModal = (): JSX.Element => {
               <button
                 id="copyShareLinkBtn"
                 className="smallButton"
-                onClick="copyShareLink3d();">
+                onClick={() => copyShareLink3d()}>
                 Copy
               </button>
             </div>
@@ -1189,7 +1313,7 @@ const ShareModal = (): JSX.Element => {
               <button
                 id="copyShareLinkBtn"
                 className="smallButton"
-                onClick="copyShareLinkPlan();">
+                onClick={() => copyShareLinkPlan()}>
                 Copy
               </button>
             </div>
@@ -1225,8 +1349,8 @@ const ToolBar = (): JSX.Element => {
       // PLAN
       // const plan = createPlan()
       createPlan()
-      const plan = usePlanStore((state) => state.plan)
-      const plans = usePlanStore((state) => state.plans)
+      const plan = usePlanStore((state: any) => state.plan)
+      const plans = usePlanStore((state: any) => state.plans)
       console.debug("actionNewPlan plan", plan)
       console.debug("actionNewPlan plans", plans)
 
@@ -1262,8 +1386,8 @@ const ToolBar = (): JSX.Element => {
       // PLAN
       // const plan = createPlan()
       createPlan()
-      const plan = usePlanStore((state) => state.plan)
-      const plans = usePlanStore((state) => state.plans)
+      const plan = usePlanStore((state: any) => state.plan)
+      const plans = usePlanStore((state: any) => state.plans)
       console.debug("actionNewPlan plan", plan)
       console.debug("actionNewPlan plans", plans)
 
@@ -1299,8 +1423,8 @@ const ToolBar = (): JSX.Element => {
       // PLAN
       // const plan = createPlan()
       createPlan()
-      const plan = usePlanStore((state) => state.plan)
-      const plans = usePlanStore((state) => state.plans)
+      const plan = usePlanStore((state: any) => state.plan)
+      const plans = usePlanStore((state: any) => state.plans)
       console.debug("actionNewPlan plan", plan)
       console.debug("actionNewPlan plans", plans)
 
@@ -1336,8 +1460,8 @@ const ToolBar = (): JSX.Element => {
       // PLAN
       // const plan = createPlan()
       createPlan()
-      const plan = usePlanStore((state) => state.plan)
-      const plans = usePlanStore((state) => state.plans)
+      const plan = usePlanStore((state: any) => state.plan)
+      const plans = usePlanStore((state: any) => state.plans)
       console.debug("actionNewPlan plan", plan)
       console.debug("actionNewPlan plans", plans)
 
@@ -2195,7 +2319,7 @@ const PropertiesView = (): JSX.Element => {
           <tr>
             <td>3D Model</td>
             <td>
-              <button className="moreInfoBtn" onClick="showModel3dView();">
+              <button className="moreInfoBtn" onClick={() => showModel3dView}>
                 View
               </button>
             </td>
@@ -3278,14 +3402,14 @@ const TheBottom = (): JSX.Element => {
 
 const ReactThreeFiberView = (): JSX.Element => {
   // console.debug("ReactThreeFiberView")
-  useEffect(() => {
-    console.debug('ReactThreeFiberView onMount')
-    return () => {
-      console.debug('ReactThreeFiberView onUnmount')
-    }
-  }, [])
+  // useEffect(() => {
+  //   console.debug('ReactThreeFiberView onMount')
+  //   return () => {
+  //     console.debug('ReactThreeFiberView onUnmount')
+  //   }
+  // }, [])
   return (
-    <div id="canvas-container">
+    <div id="rtf-canvas-container" style={{ width: "100%" }}>
       <Canvas>
         <mesh>
           <boxBufferGeometry />
@@ -3421,53 +3545,53 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
 
       {/* jQuery Three Messy Happy */}
       <div id="DEMO">
-        {/* <AboutModal /> */}
+        <AboutModal />
         {/* <Model3dModal /> */}
         {/* <LoadingModal /> */}
         {/* <ShareModal /> */}
         <ToolBar />
 
         {/* zustand */}
-        <div id="zustandControls" style={{ padding: "1rem" }}>
+        <div id="zustandControlPanel" style={{ padding: "1rem" }}>
           <hr />
-          <ThreeDCounter />
-          <ThreeDControls />
+          <ThreeDInfoPanel />
+          <ThreeDControlPanel />
           <hr />
-          <ProjectCounter />
-          <ProjectControls />
+          <ProjectInfoPanel />
+          <ProjectControlPanel />
           <hr />
-          <PlanCounter />
-          <PlanControls />
+          <PlanInfoPanel />
+          <PlanControlPanel />
           <hr />
-          <FileCounter />
-          <FileControls />
+          <FileInfoPanel />
+          <FileControlPanel />
           <hr />
-          {/* <CharacterCounter /> */}
-          {/* <CharacterControls /> */}
+          {/* <CharacterInfoPanel /> */}
+          {/* <CharacterControlPanel /> */}
           {/* <hr /> */}
-          {/* <BearCounter /> */}
-          {/* <BearControls /> */}
+          {/* <BearInfoPanel /> */}
+          {/* <BearControlPanel /> */}
           {/* <hr /> */}
-          {/* <GardenerCounter /> */}
-          {/* <GardenerControls /> */}
+          {/* <GardenerInfoPanel /> */}
+          {/* <GardenerControlPanel /> */}
           {/* <hr /> */}
-          {/* <ChickenCounter /> */}
-          {/* <ChickenControls /> */}
+          {/* <ChickenInfoPanel /> */}
+          {/* <ChickenControlPanel /> */}
           {/* <hr /> */}
-          {/* <AllotmentCounter /> */}
-          {/* <AllotmentControls /> */}
+          {/* <AllotmentInfoPanel /> */}
+          {/* <AllotmentControlPanel /> */}
           {/* <hr /> */}
-          {/* <BedCounter /> */}
-          {/* <BedControls /> */}
+          {/* <BedInfoPanel /> */}
+          {/* <BedControlPanel /> */}
           {/* <hr /> */}
-          {/* <FurnitureCounter /> */}
-          {/* <FurnitureControls /> */}
+          {/* <FurnitureInfoPanel /> */}
+          {/* <FurnitureControlPanel /> */}
           {/* <hr /> */}
-          {/* <PlantCounter /> */}
-          {/* <PlantControls /> */}
+          {/* <PlantInfoPanel /> */}
+          {/* <PlantControlPanel /> */}
           {/* <hr /> */}
-          {/* <PlantingPlanCounter /> */}
-          {/* <PlantingPlanControls /> */}
+          {/* <PlantingPlanInfoPanel /> */}
+          {/* <PlantingPlanControlPanel /> */}
           {/* <hr /> */}
         </div>
 
