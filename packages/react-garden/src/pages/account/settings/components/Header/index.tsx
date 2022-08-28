@@ -11,7 +11,7 @@ import MDTypography from "~/components/mui/MDTypography"
 import MDAvatar from "~/components/mui/MDAvatar"
 
 // Images
-import burceMars from "~/assets/images/people/bruce-mars.jpg"
+import profilePic from "~/assets/images/people/team-0.png"
 
 function Header(): JSX.Element {
   const [visible, setVisible] = useState<boolean>(true)
@@ -20,11 +20,11 @@ function Header(): JSX.Element {
 
   return (
     <Card id="profile">
-      <MDBox p={2}>
-        <Grid container spacing={3} alignItems="center">
+      <MDBox p={1}>
+        <Grid container spacing={2} alignItems="center">
           <Grid item>
             <MDAvatar
-              src={burceMars}
+              src={profilePic.src}
               alt="profile-image"
               size="xl"
               shadow="sm"
@@ -33,10 +33,10 @@ function Header(): JSX.Element {
           <Grid item>
             <MDBox height="100%" mt={0.5} lineHeight={1}>
               <MDTypography variant="h5" fontWeight="medium">
-                Alex Thompson
+                Marty McGee
               </MDTypography>
               <MDTypography variant="button" color="text" fontWeight="medium">
-                CEO / Co-Founder
+                Senior Web Visualization Developer
               </MDTypography>
             </MDBox>
           </Grid>
@@ -47,7 +47,7 @@ function Header(): JSX.Element {
               alignItems="center"
               lineHeight={1}>
               <MDTypography variant="caption" fontWeight="regular">
-                Switch to {visible ? "invisible" : "visible"}
+                Switch to {visible ? "invisible mode" : "visible mode"}
               </MDTypography>
               <MDBox ml={1}>
                 <Switch checked={visible} onChange={handleSetVisible} />

@@ -61,7 +61,7 @@ function Account(): JSX.Element {
         </MDTypography>
       </MDBox>
       <MDBox mt={2}>
-        <Grid container spacing={3} justifyContent="center">
+        <Grid container spacing={2} justifyContent="center">
           <Grid item xs={12} sm={3}>
             <MDBox textAlign="center">
               <MDButton

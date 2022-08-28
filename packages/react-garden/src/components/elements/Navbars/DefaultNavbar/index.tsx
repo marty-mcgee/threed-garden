@@ -159,7 +159,7 @@ function DefaultNavbar({
         )
 
         template = (
-          <Grid key={name} container spacing={3} py={1} px={1.5}>
+          <Grid key={name} container spacing={2} py={1} px={1.5}>
             {calculateColumns.map((cols: any, key: any) => {
               const gridKey = `grid-${key}`
               const dividerKey = `divider-${key}`

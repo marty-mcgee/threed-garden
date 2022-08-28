@@ -28,7 +28,7 @@ function Calendar(): JSX.Element {
         <MDBox display="flex" justifyContent="flex-end" mt={1} mb={4} mx={2}>
           <Header />
         </MDBox>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12} xl={9} sx={{ height: "max-content" }}>
             {useMemo(
               () => (

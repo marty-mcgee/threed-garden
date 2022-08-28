@@ -32,7 +32,7 @@ function ProductPage(): JSX.Element {
               </MDTypography>
             </MDBox>
 
-            <Grid container spacing={3}>
+            <Grid container spacing={2}>
               <Grid item xs={12} lg={6} xl={5}>
                 <ProductImages />
               </Grid>

@@ -13,7 +13,7 @@ import orderImage from "~/assets/images/products/product-12.jpg"
 
 function OrderInfo(): JSX.Element {
   return (
-    <Grid container spacing={3} alignItems="center">
+    <Grid container spacing={2} alignItems="center">
       <Grid item xs={12} md={6}>
         <MDBox display="flex" alignItems="center">
           <MDBox mr={2}>

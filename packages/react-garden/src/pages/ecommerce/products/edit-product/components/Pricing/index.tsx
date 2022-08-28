@@ -19,7 +19,7 @@ function Pricing(): JSX.Element {
           Pricing
         </MDTypography>
         <MDBox mt={1}>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} sm={3}>
               <FormField type="number" label="Price" defaultValue="99.00" />
             </Grid>
@@ -38,7 +38,7 @@ function Pricing(): JSX.Element {
           </Grid>
         </MDBox>
         <MDBox mt={1}>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12}>
               <MDBox my={2} display="inline-block">
                 <MDTypography

@@ -5,7 +5,9 @@ import Grid from "@mui/material/Grid"
 import MDBox from "~/components/mui/MDBox"
 
 // Settings page components
-import BaseLayout from "~/pages/account/components/BaseLayout"
+// import BaseLayout from "~/pages/account/components/BaseLayout"
+import DashboardLayout from "~/components/elements/LayoutContainers/DashboardLayout"
+import DashboardNavbar from "~/components/elements/Navbars/DashboardNavbar"
 import Sidenav from "~/pages/account/settings/components/Sidenav"
 import Header from "~/pages/account/settings/components/Header"
 import BasicInfo from "~/pages/account/settings/components/BasicInfo"
@@ -18,15 +20,16 @@ import DeleteAccount from "~/pages/account/settings/components/DeleteAccount"
 
 function Settings(): JSX.Element {
   return (
-    <BaseLayout>
-      <MDBox mt={4}>
-        <Grid container spacing={3}>
+    <DashboardLayout>
+      <DashboardNavbar />
+      <MDBox mr={1}>
+        <Grid container spacing={2}>
           <Grid item xs={12} lg={3}>
             <Sidenav />
           </Grid>
           <Grid item xs={12} lg={9}>
             <MDBox mb={3}>
-              <Grid container spacing={3}>
+              <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <Header />
                 </Grid>
@@ -56,7 +59,7 @@ function Settings(): JSX.Element {
           </Grid>
         </Grid>
       </MDBox>
-    </BaseLayout>
+    </DashboardLayout>
   )
 }
 

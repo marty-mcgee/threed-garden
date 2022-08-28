@@ -174,7 +174,7 @@ const selectData = {
     "2021",
     "2022",
   ],
-  skills: ["react", "vue", "angular", "svelte", "javascript"],
+  skills: ["react", "vue", "three", "javascript", "typescript"],
 }
 
 export default selectData

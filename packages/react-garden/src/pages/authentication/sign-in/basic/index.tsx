@@ -49,7 +49,7 @@ function Basic(): JSX.Element {
           </MDTypography>
           <Grid
             container
-            spacing={3}
+            spacing={2}
             justifyContent="center"
             sx={{ mt: 1, mb: 2 }}>
             <Grid item xs={2}>

@@ -36,7 +36,7 @@ function Charts(): JSX.Element {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox my={3} mr={2}>
+      <MDBox my={2} mr={1}>
         {/* <MDBox my={3}>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6} sx={{ lineHeight: 0 }}>

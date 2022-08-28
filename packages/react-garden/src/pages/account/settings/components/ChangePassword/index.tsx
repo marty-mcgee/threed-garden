@@ -43,7 +43,7 @@ function ChangePassword(): JSX.Element {
         <MDTypography variant="h5">Change Password</MDTypography>
       </MDBox>
       <MDBox component="form" pb={3} px={3}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12}>
             <MDInput
               fullWidth

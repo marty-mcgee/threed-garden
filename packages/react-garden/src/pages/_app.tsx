@@ -48,11 +48,6 @@ import themeDark from "~/themes/theme-dark"
 import themeDarkRTL from "~/themes/theme-dark/theme-rtl"
 import rtlPlugin from "stylis-plugin-rtl"
 
-// @fullcalendar styles (NOT HERE)
-// import "@fullcalendar/common/main.css"
-// import "@fullcalendar/daygrid/main.css"
-// import "@fullcalendar/timegrid/main.css"
-
 // images
 import favicon from "~/assets/images/logos/favicon.png"
 import appleIcon from "~/assets/images/logos/apple-icon.png"
@@ -72,10 +67,13 @@ import routes from "~/routes/routes"
 // import pageRoutes from "~/routes/page.routes"
 // const routes = pageRoutes
 
-// custom app css
-import "~/assets/demo/css/all.css"
-import "~/assets/demo/css/jquery.minicolors.css"
+// css
+// DEMO
 import "~/assets/demo/css/style.css"
+// @fullcalendar styles (HERE ??)
+import "@fullcalendar/common/main.css"
+import "@fullcalendar/daygrid/main.css"
+import "@fullcalendar/timegrid/main.css"
 
 // api: apollo: graphql
 // import { ApolloProvider } from "@apollo/client"
@@ -273,11 +271,11 @@ const WrappedApp: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPro
           {/* <link rel="manifest" href="/site.webmanifest" /> */}
 
           <link rel="icon" href={favicon.src} />
-          <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png" />
-          <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png" />
+          <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
+          <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
           <link rel="apple-touch-icon" sizes="76x76" href={appleIcon.src} />
-          <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-touch-icon.png" />
-          <link rel="mask-icon" href="favicon/safari-pinned-tab.svg" color="#5bbad5" />
+          <link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-touch-icon.png" />
+          <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5" />
           <meta name="msapplication-TileColor" content="#da532c" />
 
           <meta name="description" content="Create house and garden plans in 2D and 3D" />

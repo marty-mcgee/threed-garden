@@ -9,7 +9,9 @@ import MasterCard from "~/components/elements/Cards/MasterCard"
 import DefaultInfoCard from "~/components/elements/Cards/InfoCards/DefaultInfoCard"
 
 // Billing page components
-import BaseLayout from "~/pages/account/components/BaseLayout"
+// import BaseLayout from "~/pages/account/components/BaseLayout"
+import DashboardLayout from "~/components/elements/LayoutContainers/DashboardLayout"
+import DashboardNavbar from "~/components/elements/Navbars/DashboardNavbar"
 import PaymentMethod from "~/pages/account/billing/components/PaymentMethod"
 import Invoices from "~/pages/account/billing/components/Invoices"
 import BillingInformation from "~/pages/account/billing/components/BillingInformation"
@@ -17,12 +19,13 @@ import Transactions from "~/pages/account/billing/components/Transactions"
 
 function Billing(): JSX.Element {
   return (
-    <BaseLayout stickyNavbar>
-      <MDBox mt={4}>
+    <DashboardLayout stickyNavbar>
+      <DashboardNavbar />
+      <MDBox mr={1}>
         <MDBox mb={3}>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} lg={8}>
-              <Grid container spacing={3}>
+              <Grid container spacing={2}>
                 <Grid item xs={12} xl={6}>
                   <MasterCard
                     number={4562112245947852}
@@ -57,7 +60,7 @@ function Billing(): JSX.Element {
           </Grid>
         </MDBox>
         <MDBox mb={3}>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} md={7}>
               <BillingInformation />
             </Grid>
@@ -67,7 +70,7 @@ function Billing(): JSX.Element {
           </Grid>
         </MDBox>
       </MDBox>
-    </BaseLayout>
+    </DashboardLayout>
   )
 }
 

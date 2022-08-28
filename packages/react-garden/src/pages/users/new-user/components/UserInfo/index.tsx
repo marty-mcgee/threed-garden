@@ -30,7 +30,7 @@ function UserInfo({ formData }: any): JSX.Element {
         </MDTypography>
       </MDBox>
       <MDBox mt={1.625}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <FormField
               type={firstName.type}
@@ -54,7 +54,7 @@ function UserInfo({ formData }: any): JSX.Element {
             />
           </Grid>
         </Grid>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <FormField
               type={company.type}
@@ -76,7 +76,7 @@ function UserInfo({ formData }: any): JSX.Element {
             />
           </Grid>
         </Grid>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <FormField
               type={password.type}

@@ -22,7 +22,7 @@ function ProductInfo(): JSX.Element {
     <MDBox>
       <MDTypography variant="h5">Product Information</MDTypography>
       <MDBox mt={3}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <FormField type="text" label="Name" />
           </Grid>
@@ -32,7 +32,7 @@ function ProductInfo(): JSX.Element {
         </Grid>
       </MDBox>
       <MDBox mt={2}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <MDBox mb={1} ml={0.5} lineHeight={0} display="inline-block">
               <MDTypography

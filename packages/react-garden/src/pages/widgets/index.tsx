@@ -43,7 +43,7 @@ function Widgets(): JSX.Element {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox my={2} mr={2}>
+      <MDBox mr={1}>
         <Grid container spacing={2}>
           <Grid item xs={12} lg={5}>
             {useMemo(

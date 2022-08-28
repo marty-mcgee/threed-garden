@@ -104,7 +104,7 @@ function Notifications(): JSX.Element {
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox mt={6} mb={3}>
-        <Grid container spacing={3} justifyContent="center">
+        <Grid container spacing={2} justifyContent="center">
           <Grid item xs={12} lg={8}>
             <Card>
               <MDBox p={2}>
@@ -152,7 +152,7 @@ function Notifications(): JSX.Element {
                 </MDTypography>
               </MDBox>
               <MDBox p={2}>
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                   <Grid item xs={12} sm={6} lg={3}>
                     <MDButton
                       variant="gradient"
