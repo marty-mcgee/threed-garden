@@ -12,14 +12,16 @@ import MDTypography from "~/components/mui/MDTypography"
 import MDButton from "~/components/mui/MDButton"
 
 // Invoice page components
-import BaseLayout from "~/pages/account/components/BaseLayout"
-
-// Images
-import logo from "~/assets/images/logos/logo-threedgarden.png"
-import logoDark from "~/assets/images/logos/logo-threedgarden-text.png"
+// import BaseLayout from "~/pages/account/components/BaseLayout"
+import DashboardLayout from "~/components/elements/LayoutContainers/DashboardLayout"
+import DashboardNavbar from "~/components/elements/Navbars/DashboardNavbar"
 
 // ThreeD Garden context
 import { useMaterialUIController } from "~/context"
+
+// Images
+import logo from "~/assets/images/logos/logo-threedgarden-text.png"
+import logoDark from "~/assets/images/logos/logo-threedgarden.png"
 
 function Invoice(): JSX.Element {
   const [controller] = useMaterialUIController()
@@ -31,35 +33,39 @@ function Invoice(): JSX.Element {
   }
 
   return (
-    <BaseLayout stickyNavbar>
-      <MDBox mt={{ xs: 4, md: 10 }} mb={{ xs: 4, md: 8 }}>
+    <DashboardLayout stickyNavbar>
+      <DashboardNavbar />
+      <MDBox mt={{ xs: 0, md: 0 }} mb={{ xs: 4, md: 8 }}>
         <Grid container justifyContent="center">
-          <Grid item xs={12} sm={10} md={8}>
+          <Grid item xs={12} sm={11} md={10}>
             <Card>
-              {/* Invoice header */}
+              {/* Invoice Header */}
               <MDBox p={3}>
                 <Grid container justifyContent="space-between">
                   <Grid item xs={12} md={4}>
                     <MDBox
                       component="img"
-                      src={darkMode ? logo : logoDark}
+                      src={darkMode ? logo.src : logoDark.src}
                       width="25%"
                       p={1}
-                      mb={1}
+                      mb={0}
                     />
                     <MDTypography variant="h6" fontWeight="medium">
-                      St. Independence Embankment, 050105 Bucharest, Romania
+                      ThreeD Garden<br />
+                      Fort Bragg, California 95437
+                      <br />
+                      United States
                     </MDTypography>
                     <MDBox mt={1} mb={2}>
                       <MDTypography
                         display="block"
                         variant="body2"
                         color={darkMode ? "text" : "secondary"}>
-                        tel: +4 (074) 1090873
+                        tel: +1 707-980-1136
                       </MDTypography>
                     </MDBox>
                   </Grid>
-                  <Grid item xs={12} md={7} lg={3}>
+                  <Grid item xs={12} md={7} lg={4}>
                     <MDBox
                       width="100%"
                       textAlign={{ xs: "left", md: "right" }}
@@ -75,25 +81,25 @@ function Invoice(): JSX.Element {
                           color={darkMode ? "text" : "secondary"}>
                           4006 Locust View Drive
                           <br />
-                          San Francisco CA
+                          San Francisco, CA 94105
                           <br />
-                          California
+                          United States
                         </MDTypography>
                       </MDBox>
                     </MDBox>
                   </Grid>
                 </Grid>
-                <MDBox mt={{ xs: 5, md: 10 }}>
+                <MDBox mt={{ xs: 5, md: 6 }}>
                   <Grid container justifyContent="space-between">
                     <Grid item xs={12} md={4}>
                       <MDTypography
                         variant="h6"
                         color={darkMode ? "text" : "secondary"}
                         fontWeight="regular">
-                        Invoice no
+                        Invoice #
                       </MDTypography>
                       <MDTypography variant="h5" fontWeight="medium">
-                        #0453119
+                        #10453119
                       </MDTypography>
                     </Grid>
                     <Grid item xs={12} md={7} lg={5}>
@@ -109,12 +115,12 @@ function Invoice(): JSX.Element {
                             variant="h6"
                             color={darkMode ? "text" : "secondary"}
                             fontWeight="regular">
-                            Invoice date:
+                            Invoice Date:
                           </MDTypography>
                         </MDBox>
                         <MDBox width="50%">
                           <MDTypography variant="h6" fontWeight="medium">
-                            06/03/2019
+                            2022-03-07
                           </MDTypography>
                         </MDBox>
                       </MDBox>
@@ -129,12 +135,12 @@ function Invoice(): JSX.Element {
                             variant="h6"
                             color={darkMode ? "text" : "secondary"}
                             fontWeight="regular">
-                            Due date:
+                            Due Date:
                           </MDTypography>
                         </MDBox>
                         <MDBox width="50%">
                           <MDTypography variant="h6" fontWeight="medium">
-                            11/03/2019
+                            2022-03-11
                           </MDTypography>
                         </MDBox>
                       </MDBox>
@@ -182,7 +188,7 @@ function Invoice(): JSX.Element {
                           py={1.5}
                           pl={3}
                           pr={1}
-                          textAlign="left"
+                          textAlign="right"
                           sx={borderBottom}>
                           <MDTypography
                             variant="h6"
@@ -196,7 +202,7 @@ function Invoice(): JSX.Element {
                           py={1.5}
                           pl={3}
                           pr={1}
-                          textAlign="left"
+                          textAlign="right"
                           sx={borderBottom}>
                           <MDTypography
                             variant="h6"
@@ -237,7 +243,7 @@ function Invoice(): JSX.Element {
                         </MDBox>
                         <MDBox
                           component="td"
-                          textAlign="left"
+                          textAlign="right"
                           py={1}
                           pr={1}
                           pl={3}
@@ -251,7 +257,7 @@ function Invoice(): JSX.Element {
                         </MDBox>
                         <MDBox
                           component="td"
-                          textAlign="left"
+                          textAlign="right"
                           py={1}
                           pr={1}
                           pl={3}
@@ -293,7 +299,7 @@ function Invoice(): JSX.Element {
                         </MDBox>
                         <MDBox
                           component="td"
-                          textAlign="left"
+                          textAlign="right"
                           py={1}
                           pr={1}
                           pl={3}
@@ -307,7 +313,7 @@ function Invoice(): JSX.Element {
                         </MDBox>
                         <MDBox
                           component="td"
-                          textAlign="left"
+                          textAlign="right"
                           py={1}
                           pr={1}
                           pl={3}
@@ -326,7 +332,7 @@ function Invoice(): JSX.Element {
                             variant="body2"
                             color="text"
                             fontWeight="regular">
-                            Parts for service
+                            3rd Party Software
                           </MDTypography>
                         </MDBox>
                         <MDBox
@@ -344,7 +350,7 @@ function Invoice(): JSX.Element {
                         </MDBox>
                         <MDBox
                           component="td"
-                          textAlign="left"
+                          textAlign="right"
                           py={1}
                           pr={1}
                           pl={3}>
@@ -357,7 +363,7 @@ function Invoice(): JSX.Element {
                         </MDBox>
                         <MDBox
                           component="td"
-                          textAlign="left"
+                          textAlign="right"
                           py={1}
                           pr={1}
                           pl={3}>
@@ -386,7 +392,7 @@ function Invoice(): JSX.Element {
                         />
                         <MDBox
                           component="td"
-                          textAlign="left"
+                          textAlign="right"
                           py={1}
                           pr={1}
                           pl={3}
@@ -395,12 +401,12 @@ function Invoice(): JSX.Element {
                         </MDBox>
                         <MDBox
                           component="td"
-                          textAlign="left"
+                          textAlign="right"
                           py={1}
                           pr={1}
                           pl={3}
                           sx={borderBottom}>
-                          <MDTypography variant="h5">$ 698</MDTypography>
+                          <MDTypography variant="h5">$ 398</MDTypography>
                         </MDBox>
                       </TableRow>
                     </TableBody>
@@ -409,7 +415,7 @@ function Invoice(): JSX.Element {
               </MDBox>
 
               {/* Invoice footer */}
-              <MDBox p={3} mt={7}>
+              <MDBox p={3} mt={2}>
                 <Grid container>
                   <Grid item xs={12} lg={5}>
                     <MDTypography variant="h5" fontWeight="medium">
@@ -419,8 +425,8 @@ function Invoice(): JSX.Element {
                       <MDTypography
                         variant="button"
                         color={darkMode ? "text" : "secondary"}>
-                        If you encounter any issues related to the invoice you
-                        can contact us at:
+                        If you encounter any issues related to the invoice,
+                        you can contact us at:
                       </MDTypography>
                     </MDBox>
                     <MDTypography
@@ -459,7 +465,7 @@ function Invoice(): JSX.Element {
           </Grid>
         </Grid>
       </MDBox>
-    </BaseLayout>
+    </DashboardLayout>
   )
 }
 

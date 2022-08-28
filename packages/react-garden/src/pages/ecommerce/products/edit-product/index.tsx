@@ -23,7 +23,7 @@ function EditProduct(): JSX.Element {
       <DashboardNavbar />
       <MDBox my={3}>
         <MDBox mb={6}>
-          <Grid container spacing={3} alignItems="center">
+          <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} lg={6}>
               <MDTypography variant="h4" fontWeight="medium">
                 Make the changes below
@@ -44,7 +44,7 @@ function EditProduct(): JSX.Element {
             </Grid>
           </Grid>
         </MDBox>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12} lg={4}>
             <ProductImage />
           </Grid>

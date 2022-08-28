@@ -56,7 +56,7 @@ function RTL(): JSX.Element {
       <DashboardNavbar />
       <MDBox my={3}>
         <MDBox mb={3}>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} sm={6} lg={4}>
               <UpcomingEvents />
             </Grid>
@@ -73,7 +73,7 @@ function RTL(): JSX.Element {
           </Grid>
         </MDBox>
         <MDBox mb={3}>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} md={6} lg={3}>
               <MDBox mb={3}>
                 <MiniStatisticsCard
@@ -124,7 +124,7 @@ function RTL(): JSX.Element {
           </Grid>
         </MDBox>
         <MDBox mb={3}>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} md={6} lg={3}>
               <FullBody />
             </Grid>
@@ -172,7 +172,7 @@ function RTL(): JSX.Element {
             </Grid>
           </Grid>
         </MDBox>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12} lg={5}>
             {useMemo(
               () => (

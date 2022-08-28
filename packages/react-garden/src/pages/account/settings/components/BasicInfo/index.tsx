@@ -20,15 +20,15 @@ function BasicInfo(): JSX.Element {
         <MDTypography variant="h5">Basic Info</MDTypography>
       </MDBox>
       <MDBox component="form" pb={3} px={3}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
-            <FormField label="First Name" placeholder="Alec" />
+            <FormField label="First Name" placeholder="" />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <FormField label="Last Name" placeholder="Thompson" />
+            <FormField label="Last Name" placeholder="" />
           </Grid>
           <Grid item xs={12}>
-            <Grid container spacing={3}>
+            <Grid container spacing={2}>
               <Grid item xs={12} sm={4}>
                 <Autocomplete
                   defaultValue="Male"
@@ -43,7 +43,7 @@ function BasicInfo(): JSX.Element {
                 />
               </Grid>
               <Grid item xs={12} sm={8}>
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                   <Grid item xs={12} sm={5}>
                     <Autocomplete
                       defaultValue="February"
@@ -100,13 +100,13 @@ function BasicInfo(): JSX.Element {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <FormField label="your location" placeholder="Sydney, A" />
+            <FormField label="Location" placeholder="California" />
           </Grid>
           <Grid item xs={12} sm={6}>
             <FormField
               label="Phone Number"
-              placeholder="+40 735 631 620"
-              inputProps={{ type: "number" }}
+              placeholder="+1 707-980-1136"
+              inputProps={{ type: "string" }}
             />
           </Grid>
           <Grid item xs={12} md={6}>
@@ -115,7 +115,7 @@ function BasicInfo(): JSX.Element {
           <Grid item xs={12} md={6}>
             <Autocomplete
               multiple
-              defaultValue={["react", "angular"]}
+              defaultValue={["react", "vue", "three"]}
               options={selectData.skills}
               renderInput={(params) => (
                 <FormField {...params} InputLabelProps={{ shrink: true }} />

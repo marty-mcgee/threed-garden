@@ -86,7 +86,7 @@ function ProductInfo(): JSX.Element {
         </MDBox>
       </MDBox>
       <MDBox mt={3}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12} lg={5}>
             <MDBox mb={1.5} lineHeight={0} display="inline-block">
               <MDTypography

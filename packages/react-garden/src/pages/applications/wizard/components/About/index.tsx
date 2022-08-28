@@ -30,7 +30,7 @@ function About(): JSX.Element {
         </MDTypography>
       </MDBox>
       <MDBox mt={2}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12} sm={4} container justifyContent="center">
             <MDBox position="relative" height="max-content" mx="auto">
               <MDAvatar

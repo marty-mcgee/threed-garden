@@ -24,7 +24,7 @@ function OrderDetails(): JSX.Element {
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox my={6}>
-        <Grid container spacing={3} justifyContent="center">
+        <Grid container spacing={2} justifyContent="center">
           <Grid item xs={12} lg={8}>
             <Card>
               <MDBox pt={2} px={2}>
@@ -37,7 +37,7 @@ function OrderDetails(): JSX.Element {
                 </MDBox>
                 <Divider />
                 <MDBox mt={3}>
-                  <Grid container spacing={3}>
+                  <Grid container spacing={2}>
                     <Grid item xs={12} md={6} lg={3}>
                       <TrackOrder />
                     </Grid>

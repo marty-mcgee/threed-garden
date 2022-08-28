@@ -16,7 +16,7 @@ function PricingCards({ prices }: { prices: string[] }): JSX.Element {
   const [starter, premium, enterprise] = prices
   return (
     <MDBox position="relative" zIndex={10} mt={8} px={{ xs: 1, sm: 0 }}>
-      <Grid container spacing={3} justifyContent="center">
+      <Grid container spacing={2} justifyContent="center">
         <Grid item xs={12} lg={4}>
           <DefaultPricingCard
             color={darkMode ? "dark" : "white"}

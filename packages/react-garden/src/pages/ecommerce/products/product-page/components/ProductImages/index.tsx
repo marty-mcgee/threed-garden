@@ -59,7 +59,7 @@ function ProductImages(): JSX.Element {
         onClick={openImgsViewer}
       />
       <MDBox mt={2} pt={1}>
-        <Stack direction="row" spacing={3}>
+        <Stack direction="row" spacing={2}>
           <MDBox
             component="img"
             id="0"

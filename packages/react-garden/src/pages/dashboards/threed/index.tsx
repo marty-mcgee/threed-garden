@@ -63,7 +63,7 @@ function Analytics(): JSX.Element {
           <SalesByCountry />
         </Grid>
         <MDBox mt={6}>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} md={6} lg={4}>
               <MDBox mb={3}>
                 <ReportsBarChart
@@ -104,7 +104,7 @@ function Analytics(): JSX.Element {
           </Grid>
         </MDBox>
         <MDBox mt={1.5}>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} md={6} lg={3}>
               <MDBox mb={1.5}>
                 <ComplexStatisticsCard
@@ -167,7 +167,7 @@ function Analytics(): JSX.Element {
           </Grid>
         </MDBox>
         <MDBox mt={2}>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} md={6} lg={4}>
               <MDBox mt={3}>
                 <BookingCard

@@ -63,7 +63,7 @@ function Header({ tabValue, tabHandler, children }: Props): JSX.Element {
         }}>
         <Grid
           container
-          spacing={3}
+          spacing={2}
           justifyContent="center"
           sx={{ position: "relative", py: 22, textAlign: "center" }}>
           <Grid item xs={11} lg={6}>

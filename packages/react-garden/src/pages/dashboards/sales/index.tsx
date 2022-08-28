@@ -89,7 +89,7 @@ function Sales(): JSX.Element {
       <DashboardNavbar />
       <MDBox py={1}>
         <MDBox mb={3}>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} sm={4}>
               <DefaultStatisticsCard
                 title="sales"
@@ -141,7 +141,7 @@ function Sales(): JSX.Element {
           </Grid>
         </MDBox>
         <MDBox mb={3}>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} sm={6} lg={4}>
               <ChannelsChart />
             </Grid>
@@ -185,7 +185,7 @@ function Sales(): JSX.Element {
           </Grid>
         </MDBox>
         <MDBox mb={3}>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} lg={8}>
               <HorizontalBarChart
                 title="Sales by age"
@@ -197,7 +197,7 @@ function Sales(): JSX.Element {
             </Grid>
           </Grid>
         </MDBox>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12}>
             <Card>
               <MDBox pt={3} px={3}>

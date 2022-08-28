@@ -37,7 +37,7 @@ function PaymentMethod(): JSX.Element {
         </MDButton>
       </MDBox>
       <MDBox p={2}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <MDBox
               borderRadius="lg"
@@ -51,7 +51,7 @@ function PaymentMethod(): JSX.Element {
               }}>
               <MDBox
                 component="img"
-                src={masterCardLogo}
+                src={masterCardLogo.src}
                 alt="master card"
                 width="10%"
                 mr={2}
@@ -84,8 +84,8 @@ function PaymentMethod(): JSX.Element {
               }}>
               <MDBox
                 component="img"
-                src={visaLogo}
-                alt="master card"
+                src={visaLogo.src}
+                alt="Visa"
                 width="10%"
                 mr={2}
               />

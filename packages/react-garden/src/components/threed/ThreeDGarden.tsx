@@ -85,8 +85,8 @@ import { Sky } from "three/examples/jsm/objects/Sky.js"
 import TWEEN from "@tweenjs/tween.js"
 import { Canvas, useFrame } from '@react-three/fiber'
 
-// do this from _app.tsx
-// import "~/assets/demo/css/Demo.module.css"
+// css
+import "~/assets/demo/css/Demo.module.css"
 // import "~/assets/demo/css/all.css"
 // import "~/assets/demo/css/jquery.minicolors.css"
 // import "~/assets/demo/css/style.css"
@@ -1077,7 +1077,7 @@ const Model3dModal = (): JSX.Element => {
         <div className="modal-header">
           <span className="close">&times;</span>
           <img
-            src="favicon/favicon.png"
+            src="/favicon/favicon.png"
             height="54px"
             style={{ float: "left", paddingTop: "6px", paddingRight: "12px" }}
             title="ThreeDGarden"
@@ -1134,7 +1134,7 @@ const LoadingModal = (): JSX.Element => {
       <div className="smallModal-content">
         <div className="smallModal-header">
           <img
-            src="favicon/favicon.png"
+            src="/favicon/favicon.png"
             height="54px"
             style={{ float: "left", paddingTop: "6px", paddingRight: "12px" }}
             title="ThreeDGarden"
@@ -3229,7 +3229,7 @@ const PlanView = (): JSX.Element => {
           href="https://threedgarden.com"
           style={{ float: "left", padding: "0px", marginTop: "0px" }}>
           <img
-            src="favicon/favicon.png"
+            src="/favicon/favicon.png"
             height="77px"
             title="ThreeDGarden"
             alt="ThreeDGarden" />
@@ -3292,7 +3292,7 @@ const TheBottom = (): JSX.Element => {
             href="/"
             style={{ float: "left", padding: "0px", marginTop: "0px" }}
           ><img
-              src="favicon/favicon.png"
+              src="/favicon/favicon.png"
               height="77px"
               title="ThreeDGarden"
               alt="ThreeDGarden" /></a>&nbsp;

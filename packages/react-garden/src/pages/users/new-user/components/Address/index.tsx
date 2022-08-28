@@ -26,7 +26,7 @@ function Address({ formData }: any): JSX.Element {
         Address
       </MDTypography>
       <MDBox mt={1.625}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12}>
             <FormField
               type={address1.type}
@@ -50,7 +50,7 @@ function Address({ formData }: any): JSX.Element {
             </MDBox>
           </Grid>
         </Grid>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <FormField
               type={city.type}

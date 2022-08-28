@@ -101,7 +101,7 @@ function AllProjects(): JSX.Element {
           </Grid>
         </Grid>
         <MDBox mt={5}>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12} md={6} lg={4}>
               <MDBox mb={1.5} mt={1.5}>
                 <ComplexProjectCard
