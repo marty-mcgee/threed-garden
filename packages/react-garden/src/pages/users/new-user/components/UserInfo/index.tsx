@@ -24,9 +24,9 @@ function UserInfo({ formData }: any): JSX.Element {
   return (
     <MDBox>
       <MDBox lineHeight={0}>
-        <MDTypography variant="h5">About me</MDTypography>
+        <MDTypography variant="h5">About User</MDTypography>
         <MDTypography variant="button" color="text">
-          Mandatory informations
+          Mandatory Information
         </MDTypography>
       </MDBox>
       <MDBox mt={1.625}>

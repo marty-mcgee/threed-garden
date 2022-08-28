@@ -115,7 +115,7 @@ export default styled(Badge)(
     return {
       "& .MuiBadge-badge": {
         height: "auto",
-        padding: paddings.xxs, // paddings[size] || paddings.xs || paddings.none
+        padding: paddings[size], // paddings.xs | paddings.none
         fontSize: fontSizeValue,
         fontWeight: fontWeightBold,
         textTransform: "uppercase",

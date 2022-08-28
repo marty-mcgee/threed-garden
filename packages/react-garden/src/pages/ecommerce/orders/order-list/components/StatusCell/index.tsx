@@ -26,7 +26,7 @@ interface Props {
 function StatusCell({ icon, color, status }: Props): JSX.Element {
   return (
     <MDBox display="flex" alignItems="center">
-      <MDBox mr={1}>
+      <MDBox mx={1}>
         <MDButton
           variant="outlined"
           color={color}

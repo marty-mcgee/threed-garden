@@ -22,7 +22,7 @@ interface Props {
 function CustomerCell({ image, name, color }: Props): JSX.Element {
   return (
     <MDBox display="flex" alignItems="center">
-      <MDBox mr={1}>
+      <MDBox mx={1}>
         <MDAvatar bgColor={color} src={image} alt={name} size="xs" />
       </MDBox>
       <MDTypography

@@ -25,30 +25,30 @@ function ProductInfo(): JSX.Element {
     <Card>
       <MDBox p={3}>
         <MDTypography variant="h5">Product Information</MDTypography>
-        <MDBox mt={1}>
+        <MDBox mt={3}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <FormField
                 type="text"
                 label="Name"
-                defaultValue="Minimal Bar Stool"
+                defaultValue="Leather Couch"
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <FormField type="number" label="Weight" defaultValue={2} />
+              <FormField type="number" label="Weight (kg)" defaultValue={220} />
             </Grid>
           </Grid>
         </MDBox>
         <MDBox mt={1}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={3}>
-              <FormField type="text" label="Collection" defaultValue="Summer" />
+              <FormField type="text" label="Collection" defaultValue="Winter" />
             </Grid>
             <Grid item xs={12} sm={3}>
-              <FormField type="text" label="Price" defaultValue="$90" />
+              <FormField type="text" label="Price" defaultValue="$900" />
             </Grid>
             <Grid item xs={12} sm={3}>
-              <FormField type="number" label="Quantity" defaultValue={50} />
+              <FormField type="number" label="Quantity" defaultValue={5} />
             </Grid>
           </Grid>
         </MDBox>
@@ -85,7 +85,7 @@ function ProductInfo(): JSX.Element {
                   </MDTypography>
                 </MDBox>
                 <Autocomplete
-                  defaultValue="Clothing"
+                  defaultValue="Furniture"
                   options={[
                     "Clothing",
                     "Electronics",
@@ -109,8 +109,8 @@ function ProductInfo(): JSX.Element {
                 </MDTypography>
               </MDBox>
               <Autocomplete
-                defaultValue="Black"
-                options={["Black", "Blue", "Green", "Orange", "White"]}
+                defaultValue="Brown"
+                options={["Black", "Brown", "Blue", "Green", "Orange", "White"]}
                 renderInput={(params) => (
                   <MDInput {...params} variant="standard" />
                 )}

@@ -74,11 +74,12 @@ function AllProjects(): JSX.Element {
 
   return (
     <DashboardLayout>
-      <MDBox width="calc(100% - 48px)" position="absolute" top="1.75rem">
+      <DashboardNavbar />
+      {/* <MDBox width="calc(100% - 48px)" position="absolute" top="1.75rem">
         <DashboardNavbar light absolute />
-      </MDBox>
+      </MDBox> */}
       <Header />
-      <MDBox pb={3}>
+      <MDBox mx={1} pb={3}>
         <Grid container alignItems="center">
           <Grid item xs={12} md={7}>
             <MDBox mb={1}>
