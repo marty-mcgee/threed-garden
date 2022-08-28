@@ -1,4 +1,4 @@
-// ======================================================
+// ==========================================================
 // FUNCTIONAL NOUNS   (JS OBJECTS, SIMILAR TO CLASSES, BUT BETTER)
 // ================
 // * ThreeD           | as root JS Object       | interface IThreeD
@@ -43,7 +43,7 @@
 // * Shader           | extends Tool | extends THREE.Shader.Shaderizer      | interface IShader
 // * Animation        | extends Tool | extends OBJ.animation                | interface IAnimation
 
-// ======================================================
+// ==========================================================
 // RESOURCES
 
 // react
@@ -94,20 +94,23 @@ import { Canvas, useFrame } from '@react-three/fiber'
 // no no no, never again
 // import * as $ from "jquery"
 
-// ======================================================
+// ==========================================================
 // UUID
 import { v4 as newUUID } from 'uuid'
 
-// ======================================================
+// ==========================================================
 // COLORFUL CONSOLE MESSAGES (ccm)
 
-const ccm1 = "color: green; font-size: 14px;"
-const ccm2 = "color: red; font-size: 14px;"
-const ccm3 = "color: orange; font-size: 14px;"
+const ccm0 = "color: white; font-size: 12px;"
+const ccm1 = "color: green; font-size: 12px;"
+const ccm2 = "color: red; font-size: 12px;"
+const ccm3 = "color: orange; font-size: 12px;"
+const ccm4 = "color: yellow; font-size: 12px;"
+const ccm5 = "color: blue; font-size: 12px;"
 console.log("%cThreeDGarden<FC>", ccm1)
 // console.log("%cWHOOPSIES", ccm2)
 
-// ======================================================
+// ==========================================================
 // DELETE OBJECT KEYS: RESET OBJECT TO {}
 
 const clearObject = (object: Object, option: number = 1) => {
@@ -138,9 +141,9 @@ const clearObject = (object: Object, option: number = 1) => {
   }
 }
 
-// ======================================================
+// ==========================================================
 // STYLES (TEMP)
-const modalStyle = {
+const styleModal = {
   position: 'absolute' as 'absolute',
   top: '50%',
   left: '50%',
@@ -150,12 +153,12 @@ const modalStyle = {
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
-  p: 4,
+  p: 2,
 };
 
-// ======================================================
+// ==========================================================
 // FUNCTIONAL NOUNS
-// ======================================================
+// ==========================================================
 // ThreeD
 
 const useThreeDStore = create((set) => ({
@@ -222,10 +225,10 @@ function ThreeDInfoPanel() {
   const threed = useThreeDStore((state: any) => state.threed)
   console.debug("%cthreed", ccm1, threed)
   return (
-    <div>
-      {/* <div>{threedCount} threeds around here ...</div> */}
-      <div>{threeds.length} threeds around here ...</div>
-    </div>
+    <MDBox>
+      <MDTypography>{threeds.length} threeds around here ...</MDTypography>
+      {/* <MDTypography>{threedCount} threeds around here ...</MDTypography> */}
+    </MDBox>
   )
 }
 
@@ -235,15 +238,14 @@ function ThreeDControlPanel() {
   const addThreeD = useThreeDStore((state: any) => state.addThreeD)
 
   return (
-    <div>
-      <button onClick={addThreeD}>add threed</button>
-      {/* <br />
-      <button onClick={increaseThreeDCount}>add to threed count</button> */}
-    </div>
+    <MDBox>
+      <MDButton onClick={addThreeD}>add threed</MDButton>
+      {/* <MDButton onClick={increaseThreeDCount}>add to threed count</MDButton> */}
+    </MDBox>
   )
 }
 
-// ======================================================
+// ==========================================================
 // Project
 
 const useProjectStore = create((set, get) => ({
@@ -350,32 +352,26 @@ function ProjectControlPanel() {
   // const increaseProjectCount = useProjectStore((state: any) => state.increaseProjectCount)
 
   const addProject = useProjectStore((state: any) => state.addProject)
-  // const addProject = useProjectStore.getState().addProject() // this executes automatically !!
+  // const addProject = useProjectStore.getState().addProject() // this executes automatically !! bad
   const saveToDisk = useProjectStore((state: any) => state.saveToDisk)
   const loadFromDisk = useProjectStore((state: any) => state.loadFromDisk)
 
   const addProjectAsFunction = () => {
-    // const goodIdea1 = () => useProjectStore.getState().addProject()
-    // goodIdea1()
-    const addProject = useProjectStore.getState().addProject() // this executes automatically !!
+    const addProject = useProjectStore.getState().addProject() // this executes automatically !! good
   }
 
   return (
-    <div>
-      <button onClick={addProjectAsFunction}>add project()</button>
-      <br />
-      <button onClick={addProject}>add project</button>
-      <br />
-      <button onClick={saveToDisk}>save to disk</button>
-      <br />
-      <button onClick={loadFromDisk}>load from disk</button>
-      {/* <br />
-      <button onClick={increaseProjectCount}>add to project count</button> */}
-    </div>
+    <MDBox>
+      <MDButton onClick={addProjectAsFunction}>add project()</MDButton>
+      <MDButton onClick={addProject}>add project</MDButton>
+      <MDButton onClick={saveToDisk}>save to disk</MDButton>
+      <MDButton onClick={loadFromDisk}>load from disk</MDButton>
+      {/* <MDButton onClick={increaseProjectCount}>add to project count</MDButton> */}
+    </MDBox>
   )
 }
 
-// ======================================================
+// ==========================================================
 // Plan
 
 const usePlanStore = create((set, get) => ({
@@ -570,28 +566,22 @@ function PlanControlPanel() {
   // const increasePlanCount = usePlanStore((state: any) => state.increasePlanCount)
 
   const addPlan = usePlanStore((state: any) => state.addPlan)
-  // const addPlan = usePlanStore.getState().addPlan() // this executes automatically !!
+  // const addPlan = usePlanStore.getState().addPlan() // this executes automatically !! bad
   const saveToDisk = usePlanStore((state: any) => state.saveToDisk)
   const loadFromDisk = usePlanStore((state: any) => state.loadFromDisk)
 
   const addPlanAsFunction = () => {
-    // const goodIdea1 = () => usePlanStore.getState().addPlan()
-    // goodIdea1()
-    const addPlan = usePlanStore.getState().addPlan() // this executes automatically !!
+    const addPlan = usePlanStore.getState().addPlan() // this executes automatically !! good
   }
 
   return (
-    <div>
-      <button onClick={addPlanAsFunction}>add plan()</button>
-      <br />
-      <button onClick={addPlan}>add plan</button>
-      <br />
-      <button onClick={saveToDisk}>save to disk</button>
-      <br />
-      <button onClick={loadFromDisk}>load from disk</button>
-      {/* <br />
-      <button onClick={increasePlanCount}>add to plan count</button> */}
-    </div>
+    <MDBox>
+      <MDButton onClick={addPlanAsFunction}>add plan()</MDButton>
+      <MDButton onClick={addPlan}>add plan</MDButton>
+      <MDButton onClick={saveToDisk}>save to disk</MDButton>
+      <MDButton onClick={loadFromDisk}>load from disk</MDButton>
+      {/* <MDButton onClick={increasePlanCount}>add to plan count</MDButton> */}
+    </MDBox>
   )
 }
 
@@ -605,7 +595,7 @@ const createPlan = () => {
   return plan
 }
 
-// ======================================================
+// ==========================================================
 // File
 const useFileStore = create((set) => ({
   fileCount: 0,
@@ -621,8 +611,8 @@ function FileInfoPanel() {
   // console.debug("%cCurrentFile", ccm1, file)
   return (
     <MDBox>
-      {/* <MDTypography>{fileCount} files around here ...</MDTypography> */}
       <MDTypography>{files.length} files around here ...</MDTypography>
+      {/* <MDTypography>{fileCount} files around here ...</MDTypography> */}
     </MDBox>
   )
 }
@@ -633,11 +623,10 @@ function FileControlPanel() {
   const addFile = useFileStore((state: any) => state.addFile)
 
   return (
-    <div>
-      <button onClick={addFile}>add file</button>
-      {/* <br />
-      <button onClick={increaseFileCount}>add to file count</button> */}
-    </div>
+    <MDBox>
+      <MDButton onClick={addFile}>add file</MDButton>
+      {/* <MDButton onClick={increaseFileCount}>add to file count</MDButton> */}
+    </MDBox>
   )
 }
 
@@ -651,11 +640,11 @@ const createFile = () => {
   return file
 }
 
-// ======================================================
+// ==========================================================
 // Simulation
 
 
-// ======================================================
+// ==========================================================
 // Bear
 
 const useBearStore = create((set) => ({
@@ -666,19 +655,17 @@ const useBearStore = create((set) => ({
 
 function BearInfoPanel() {
   const bears = useBearStore((state: any) => state.bears)
-  return <h1>{bears} bears around here ...</h1>
+  return <MDBox>{bears} bears around here ...</MDBox>
 }
 
 function BearControlPanel() {
   const increaseBearCount = useBearStore((state: any) => state.increaseBearCount)
-  return <button onClick={increaseBearCount}>add a bear</button>
+  return <MDButton onClick={increaseBearCount}>add a bear</MDButton>
 }
 
-// ======================================================
-// ======================================================
-// ======================================================
-// ======================================================
+// ==========================================================
 // BEGIN COMPONENT PROPERTIES (VARIABLES, PARAMETERS)
+// ==========================================================
 
 // const begin = () => {
 
@@ -810,90 +797,43 @@ const dimensionsGroup: any[] = []
 const textsGroup: any[] = []
 // textsGroup[0] = new paper.Group()
 // these 3 should be const arrays [] ??
-let guidesGroup: Object = {} // new paper.Group()
-let toolsGroup: Object = {} // new paper.Group()
-let gridGroup: Object = {} // new paper.Group()
+const guidesGroup: Object = {} // new paper.Group()
+const toolsGroup: Object = {} // new paper.Group()
+const gridGroup: Object = {} // new paper.Group()
 
 
 let inclination = 0
 let azimuth = 0
 
 
-// ==============================================================
+// ==========================================================
 // NOUN HISTORY
 
-// // THREED
-// const threed = createProject() // want this as threedHistory[0] ?? no
-// // const threed: any = null // want this as threedHistory[0] ?? no
-
 // // THREED HISTORY
-// // from localStore (browser) ?? or new (server) ??
-// // localStorage.clear()
-// // const threedHistory: Object[] = JSON.parse(localStorage.getItem("threed_threedHistory"))
 const threedHistory: Object[] = []
-// console.debug("threedHistoryInit", threedHistory)
-// // want this as threedHistory[0] ?? yes
-// threedHistory.push(threed) // JSON.stringify(threed) ??
 let threedHistoryPosition = 0
-// // localStorage.setItem("threed_threedHistory", JSON.stringify({ subject: "threed", payload: threedHistory }))
-
-// // PROJECT
-// const project = createProject() // want this as projectHistory[0] ?? no
-// // const project: any = null // want this as projectHistory[0] ?? no
 
 // // PROJECT HISTORY
-// // from localStore (browser) ?? or new (server) ??
-// // localStorage.clear()
-// // const projectHistory: Object[] = JSON.parse(localStorage.getItem("threed_projectHistory"))
 const projectHistory: Object[] = []
-// console.debug("projectHistoryInit", projectHistory)
-// // want this as projectHistory[0] ?? yes
-// projectHistory.push(project) // JSON.stringify(project) ??
 let projectHistoryPosition = 0
-// // localStorage.setItem("threed_projectHistory", JSON.stringify({ subject: "project", payload: projectHistory }))
-
-// // PLAN
-// const plan = createPlan() // want this as planHistory[0] ?? no
-// // const plan: any = null // want this as planHistory[0] ?? no
 
 // // PLAN HISTORY
-// // from localStore (browser) ?? or new (server) ??
-// // localStorage.clear()
-// // const planHistory: Object[] = JSON.parse(localStorage.getItem("threed_planHistory"))
 const planHistory: Object[] = []
-// console.debug("planHistoryInit", planHistory)
-// // want this as planHistory[0] ?? yes
-// planHistory.push(plan) // JSON.stringify(plan) ??
 let planHistoryPosition = 0
-// // localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
-
-// // SIMULATION
-// const simulation = createProject() // want this as simulationHistory[0] ?? no
-// // const simulation: any = null // want this as simulationHistory[0] ?? no
 
 // // SIMULATION HISTORY
-// // from localStore (browser) ?? or new (server) ??
-// // localStorage.clear()
-// // const simulationHistory: Object[] = JSON.parse(localStorage.getItem("threed_simulationHistory"))
 const simulationHistory: Object[] = []
-// console.debug("simulationHistoryInit", simulationHistory)
-// // want this as simulationHistory[0] ?? yes
-// simulationHistory.push(simulation) // JSON.stringify(simulation) ??
 let simulationHistoryPosition = 0
-// // localStorage.setItem("threed_simulationHistory", JSON.stringify({ subject: "simulation", payload: simulationHistory }))
 
 
-// ======================================================
-// ======================================================
-// ======================================================
-// ======================================================
+// ==========================================================
 // COMPONENTS
 
 const AboutModal: FunctionComponent = (): JSX.Element => {
 
-  const [open, setOpen] = useState(false)
-  const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
+  const [isOpenAboutModal, setIsOpenAboutModal] = useState(false)
+  const handleOpenAboutModal = () => setIsOpenAboutModal(true)
+  const handleCloseAboutModal = () => setIsOpenAboutModal(false)
 
   // console.debug("AboutModal")
   // useEffect(() => {
@@ -905,15 +845,15 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
 
   return (
     <div>
-      <MDButton onClick={handleOpen}>Open About Modal</MDButton>
+      <MDButton onClick={handleOpenAboutModal}>Open About Modal</MDButton>
       <Modal
-        open={open}
-        onClose={handleClose}
+        open={isOpenAboutModal}
+        onClose={handleCloseAboutModal}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
         {/* <div id="aboutModal" className="modal"> */}
-        <MDBox id="aboutModal" sx={modalStyle}>
+        <MDBox id="aboutModal" sx={styleModal}>
           <div className="modal-content">
             <div className="modal-header" style={{ display: "flex" }}>
               {/* <span className="close">&times;</span> */}
@@ -952,7 +892,7 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
                         <tr>
                           <td style={{ textAlign: "center" }}>
                             Most Recent Edit saved in Local Web Storage.<br />
-                            <button onClick={() => loadFromLocalStorage} id="loadLocalStoragePlanBtn">Load Plan</button>
+                            <MDButton onClick={() => loadFromLocalStorage} id="loadLocalStoragePlanBtn">Load Plan</MDButton>
                             <br /><br /><span id="localStoragePlanLastSavedDate"></span>
                           </td>
                           <td>
@@ -966,11 +906,11 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
                     <table>
                       <tr>
                         <td style={{ textAlign: "center", width: "300px" }}>
-                          <button onClick={() => loadExamplePlan} id="loadFeaturedPlanBtn"
+                          <MDButton onClick={() => loadExamplePlan} id="loadFeaturedPlanBtn"
                             className="largeButton">Load
-                            Example Plan</button><br />
+                            Example Plan</MDButton><br />
                           or<br />
-                          <button onClick={() => closeAllModals} className="largeButton">Start New Plan</button>
+                          <MDButton onClick={() => closeAllModals} className="largeButton">Start New Plan</MDButton>
                         </td>
                         <td>
                           <div><img id="featuredPlanImage" onClick={() => loadExamplePlan} /></div>
@@ -1016,8 +956,8 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
                             rel="noopener" className="largeButton">
                             Watch Video
                           </a>
-                          <button onClick={() => loadPlan('42fbd8ff0f5a37fa1285ae8b6c6ca36529b930c2')}
-                            className="largeButton">Load Plan</button>
+                          <MDButton onClick={() => loadPlan('42fbd8ff0f5a37fa1285ae8b6c6ca36529b930c2')}
+                            className="largeButton">Load Plan</MDButton>
                         </p>
                       </td>
                       <td>
@@ -1040,8 +980,8 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
                             rel="noopener" className="largeButton">
                             Watch Video
                           </a>
-                          <button onClick={() => loadPlan('0d371f9acad19a943f38c3a32f6d5d140bc6c913')}
-                            className="largeButton">Load Plan</button>
+                          <MDButton onClick={() => loadPlan('0d371f9acad19a943f38c3a32f6d5d140bc6c913')}
+                            className="largeButton">Load Plan</MDButton>
                         </p>
                       </td>
                       <td>
@@ -1064,8 +1004,8 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
                             rel="noopener" className="largeButton">
                             Watch Video
                           </a>
-                          <button onClick={() => loadPlan('c0300edf03b952872c37744bf570a588184dd3d5')}
-                            className="largeButton">Load Plan</button>
+                          <MDButton onClick={() => loadPlan('c0300edf03b952872c37744bf570a588184dd3d5')}
+                            className="largeButton">Load Plan</MDButton>
                         </p>
                       </td>
                       <td>
@@ -1239,19 +1179,19 @@ const ShareModal = (): JSX.Element => {
         </div>
         <div className="smallModal-body">
           <h3>Share Plan</h3>
-          <button
+          <MDButton
             id="getShareLinkBtn"
             className="mediumButton"
             onClick={() => generateShareLink()}>
             Generate Share Link
-          </button>
+          </MDButton>
           <div style={{ margin: "10px 0px 10px 0px" }}>
             <div style={{ paddingTop: "6px" }}>
               <label htmlFor="shareLinkUrl">Editable Copy</label><br />
               <input
                 type="text"
                 id="shareLinkUrl"
-                placeholder="Press 'Generate Share Link' button"
+                placeholder="Press 'Generate Share Link' MDButton"
                 style={{
                   width: "580px",
                   backgroundColor: "#4e4e4e",
@@ -1262,12 +1202,12 @@ const ShareModal = (): JSX.Element => {
                   padding: "4px 24px 4px 24px",
                   pointerEvents: "none"
                 }} />&nbsp;
-              <button
+              <MDButton
                 id="copyShareLinkBtn"
                 className="smallButton"
                 onClick={() => copyShareLink()}>
                 Copy
-              </button>
+              </MDButton>
             </div>
 
             <div style={{ paddingTop: "6px" }}>
@@ -1275,7 +1215,7 @@ const ShareModal = (): JSX.Element => {
               <input
                 type="text"
                 id="shareLinkUrl3d"
-                placeholder="Press 'Generate Share Link' button"
+                placeholder="Press 'Generate Share Link' MDButton"
                 style={{
                   width: "580px",
                   backgroundColor: "#4e4e4e",
@@ -1286,12 +1226,12 @@ const ShareModal = (): JSX.Element => {
                   padding: "4px 24px 4px 24px",
                   pointerEvents: "none"
                 }} />&nbsp;
-              <button
+              <MDButton
                 id="copyShareLinkBtn"
                 className="smallButton"
                 onClick={() => copyShareLink3d()}>
                 Copy
-              </button>
+              </MDButton>
             </div>
 
             <div style={{ paddingTop: "6px" }}>
@@ -1299,7 +1239,7 @@ const ShareModal = (): JSX.Element => {
               <input
                 type="text"
                 id="shareLinkUrlPlan"
-                placeholder="Press 'Generate Share Link' button"
+                placeholder="Press 'Generate Share Link' MDButton"
                 style={{
                   width: "580px",
                   backgroundColor: "#4e4e4e",
@@ -1310,12 +1250,12 @@ const ShareModal = (): JSX.Element => {
                   padding: "4px 24px 4px 24px",
                   pointerEvents: "none"
                 }} />&nbsp;
-              <button
+              <MDButton
                 id="copyShareLinkBtn"
                 className="smallButton"
                 onClick={() => copyShareLinkPlan()}>
                 Copy
-              </button>
+              </MDButton>
             </div>
           </div>
         </div>
@@ -2319,9 +2259,9 @@ const PropertiesView = (): JSX.Element => {
           <tr>
             <td>3D Model</td>
             <td>
-              <button className="moreInfoBtn" onClick={() => showModel3dView}>
+              <MDButton className="moreInfoBtn" onClick={() => showModel3dView}>
                 View
-              </button>
+              </MDButton>
             </td>
           </tr>
         </table>
@@ -2470,9 +2410,9 @@ const PropertiesView = (): JSX.Element => {
           <tr>
             <td>3D Model</td>
             <td>
-              <button className="moreInfoBtn" onClick="showModel3dView();">
+              <MDButton className="moreInfoBtn" onClick="showModel3dView();">
                 View
-              </button>
+              </MDButton>
             </td>
           </tr>
         </table>
@@ -2710,23 +2650,23 @@ const PropertiesView = (): JSX.Element => {
           <tr>
             <td width="60"></td>
             <td>
-              <button
+              <MDButton
                 id="resizeBackgroundImageBtn"
                 onClick="enableResizeBackgroundTemplate();"
                 className="moreInfoBtn">
                 Resize
-              </button>
+              </MDButton>
             </td>
           </tr>
           <tr>
             <td width="60"></td>
             <td>
-              <button
+              <MDButton
                 id="deleteBackgroundImageBtn"
                 onClick="deleteBackgroundImage()"
                 className="moreInfoBtn">
                 Delete
-              </button>
+              </MDButton>
             </td>
           </tr>
         </table>
@@ -3193,7 +3133,7 @@ const PropertiesView = (): JSX.Element => {
           </tr>
         </table>
         <div>Type<span id="textDataTypeProp"></span></div>
-        <div><button id="deleteTextAnnotationBtn" onClick="deleteTextBtnClick()">Delete</button></div>
+        <div><MDButton id="deleteTextAnnotationBtn" onClick="deleteTextBtnClick()">Delete</MDButton></div>
       </div>
       <div id="levelPropertiesView" style={{ display: "none" }}>
         <h3>Level Properties</h3>
@@ -3300,18 +3240,18 @@ const PlanView = (): JSX.Element => {
         >ThreeDGarden</a>
       </div>
       <div id="overlayMenuPlanView">
-        <button
+        <MDButton
           id="overlayPlanViewRecenterBtn"
           onClick="recenterPlanView()"
           className="smallButton">
           Recenter
-        </button>
-        <button
+        </MDButton>
+        <MDButton
           id="overlayPlanViewGoto3dViewBtn"
           onClick="goto3dView()"
           className="smallButton">
           3d View
-        </button>
+        </MDButton>
       </div>
     </div>
   )
@@ -3362,18 +3302,18 @@ const TheBottom = (): JSX.Element => {
           >ThreeDGarden</a>
         </div>
         <div id="overlayMenu3dView">
-          <button
+          <MDButton
             id="overlay3dviewRecenterBtn"
             onClick="recenter3dview()"
             className="smallButton">
             Recenter
-          </button>
-          <button
+          </MDButton>
+          <MDButton
             id="overlay3dviewGotoPlanViewBtn"
             onClick="gotoPlanView()"
             className="smallButton">
             Plan View
-          </button>
+          </MDButton>
         </div>
       </div>
       <div id="verticalSlider"></div>
@@ -3401,6 +3341,7 @@ const TheBottom = (): JSX.Element => {
 }
 
 const ReactThreeFiberView = (): JSX.Element => {
+
   // console.debug("ReactThreeFiberView")
   // useEffect(() => {
   //   console.debug('ReactThreeFiberView onMount')
@@ -3408,15 +3349,16 @@ const ReactThreeFiberView = (): JSX.Element => {
   //     console.debug('ReactThreeFiberView onUnmount')
   //   }
   // }, [])
+
   return (
-    <div id="rtf-canvas-container" style={{ width: "100%" }}>
+    <MDBox id="rtf-canvas-container" style={{ width: "100%" }}>
       <Canvas>
         <mesh>
           <boxBufferGeometry />
           <meshBasicMaterial />
         </mesh>
       </Canvas>
-    </div>
+    </MDBox>
   )
 }
 
@@ -3434,121 +3376,62 @@ const MyComponent = (): JSX.Element => {
 }
 
 const ThreeDGarden: FunctionComponent = (): JSX.Element => {
+
+  // ==========================================================
+  // LOCAL VARS
+
   const word = `[MM] @ ${new Date().toISOString()}`
   // const title = useRef()
   // const root = useRef()
   // const scene = new THREE.Scene()
 
-  // ============================================================
-  // STATE (REACT + ZUSTAND)
-
-  const [begin, setBegin] = useState(false)
-
-  const [isOpen, setIsOpen] = useState(false)
-  useEffect(() => {
-    document.body.classList.toggle('modal-open', isOpen);
-  }, [isOpen])
-
-  const [isOpenAboutModal, setIsOpenAboutModal] = useState(false)
-  useEffect(() => {
-    document.body.classList.toggle('#aboutModal', isOpenAboutModal)
-  }, [isOpenAboutModal])
-
-  const [isOpenShareModal, setIsOpenShareModal] = useState(false)
-  useEffect(() => {
-    document.body.classList.toggle('#shareModal', isOpenShareModal)
-  }, [isOpenShareModal])
-
-  // ============================================================
-  // LOCAL VARS
-
-  // // PROJECT (create new project on Component onMount) ??
-  // const projectNew = createProject()
-  // const [project, setProject] = useState(projectNew)
-  // console.debug("project", project)
-
+  // ==========================================================
   // Component onMount hook
   useEffect(() => {
     // console.debug("ThreeDGarden onMount", word)
 
-    // begin here ?? yes, um, no, um, half-n-half
+    // begin here ?? yes
     // bootManager()...
 
-    // // PROJECT (create new project on Component onMount) ??
-    // const projectNew = createProject()
-    // const [project, setProject] = useState(projectNew)
-    // console.debug("project", project)
+    // ==========================================================
+    // LOAD HISTORIES FROM DISK
 
     // // PROJECT HISTORY
-    // // const projectHistory: Object[] = []
-    // projectHistory.push(plan) // JSON.stringify(project) ??
-    // retrieve from localStorage (browser) ?? or new (server) ??
-    // localStorage.clear()
-    const projectHistoryFromDisk: Object[] = JSON.parse(localStorage.getItem("threed_projectHistory"))
+    const projectHistoryFromDisk = useProjectStore.getState().loadFromDisk()
     // console.debug("projectHistoryFromDisk", projectHistoryFromDisk)
     // console.debug("projectHistoryFromDisk.payload", projectHistoryFromDisk?.payload)
     const savedProject = projectHistoryFromDisk?.payload ? projectHistoryFromDisk.payload : []
+    // console.debug("savedProject", savedProject)
     if (savedProject.length) {
-      // console.debug("savedProject", savedProject)
-      // want this as projectHistory[0] ?? yes
-      // projectHistory.push(...savedProject) // push to end of array
-      projectHistory.unshift(...savedProject) // unshift to beginning of array
+      projectHistory.unshift(...savedProject) // unshift to beginning of array[0]
     }
-    console.debug("projectHistory", projectHistory)
-
-    // // set latest plan position from array ?? no/yes
-    // // let planHistoryPosition = 0
-    // planHistoryPosition = planHistory.length - 1
-
-    // save to disk ?? not here (no need, we are just retrieving data here, not setting it)
-    // localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
-
-    // // PLAN
-    // const plan = createPlan() // want this as planHistory[0] ?? no
-    // // const plan: any = null // want this as planHistory[0] ?? no
-    // console.debug("plan", plan)
+    // console.debug("projectHistory", projectHistory)
 
     // // PLAN HISTORY
-    // // const planHistory: Object[] = []
-    // // planHistory.push(plan) // JSON.stringify(plan) ??
-    // retrieve from localStorage (browser) ?? or new (server) ??
-    // localStorage.clear()
-    const planHistoryFromDisk: Object[] = JSON.parse(localStorage.getItem("threed_planHistory"))
+    const planHistoryFromDisk = usePlanStore.getState().loadFromDisk()
     // console.debug("planHistoryFromDisk", planHistoryFromDisk)
     // console.debug("planHistoryFromDisk.payload", planHistoryFromDisk?.payload)
     const savedPlan = planHistoryFromDisk?.payload ? planHistoryFromDisk.payload : []
+    // console.debug("savedPlan", savedPlan)
     if (savedPlan.length) {
-      // console.debug("savedPlan", savedPlan)
-      // want this as planHistory[0] ?? yes
-      // planHistory.push(...savedPlan) // push to end of array
-      planHistory.unshift(...savedPlan) // unshift to beginning of array
+      planHistory.unshift(...savedPlan) // unshift to beginning of array[0]
     }
-    console.debug("planHistory", planHistory)
-
-    // // set latest plan position from array ?? no/yes
-    // // let planHistoryPosition = 0
-    // planHistoryPosition = planHistory.length - 1
-
-    // save to disk ?? not here (no need, we are just retrieving data here, not setting it)
-    // localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plan", payload: planHistory }))
+    // console.debug("planHistory", planHistory)
 
     return () => {
       // console.debug('ThreeDGarden onUnmount', word)
     }
   }, [])
 
+  // ==========================================================
   // FC returns JSX
   return (
     <div id="threedgarden-div" style={{ width: "100%" }}>
       {/* <div ref={title}>ThreeDGarden: {word}</div> */}
       {/* <div ref={root}>Three root</div> */}
 
-      {/* jQuery Three Messy Happy */}
+      {/* jQuery Three Happy Messy */}
       <div id="DEMO">
-        <AboutModal />
-        {/* <Model3dModal /> */}
-        {/* <LoadingModal /> */}
-        {/* <ShareModal /> */}
         <ToolBar />
 
         {/* zustand */}
@@ -3594,6 +3477,11 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
           {/* <PlantingPlanControlPanel /> */}
           {/* <hr /> */}
         </div>
+
+        <AboutModal />
+        {/* <Model3dModal /> */}
+        {/* <LoadingModal /> */}
+        {/* <ShareModal /> */}
 
         {/* <CatalogView /> */}
         {/* <PropertiesView /> */}
