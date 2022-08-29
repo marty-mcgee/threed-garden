@@ -22,8 +22,8 @@
     "strictNullChecks": false,
     "downlevelIteration": true,
     "incremental": true,
-    "baseUrl": "src",
-    // "baseUrl": ".",
+    // "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
       "~/*": ["*"], // preferable (nuxt + npm)
       "@/*": ["*"],
@@ -32,6 +32,12 @@
     }
   },
   // "include": ["src"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/types/globals.d.ts"],
+  "include": [
+    "next-env.d.ts",
+    "src",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/types/globals.d.ts"
+  ],
   "exclude": ["node_modules"]
 }
