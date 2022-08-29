@@ -66,6 +66,7 @@ import produce from "immer"
 import Image from "next/image"
 
 // mui: ui
+import Grid from "@mui/material/Grid"
 import Modal from "@mui/material/Modal"
 import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
@@ -890,7 +891,7 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
   // }, [])
 
   return (
-    <>
+    <div id="aboutModalContainer">
       <MDButton size="small" onClick={handleOpenAboutModal}>
         Open About Modal
       </MDButton>
@@ -907,8 +908,8 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
             <Image src="/favicon/favicon.png"
               width={50}
               height={50}
-              alt="ThreeDGarden"
-              title="ThreeDGarden"
+              alt="ThreeD Garden Logo"
+              title="ThreeD Garden"
             />
             <h2>ThreeD Garden</h2>
           </MDBox>
@@ -1011,80 +1012,82 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
             </TabPanel>
             <TabPanel value={value} index={2}>
               <h3>Tutorial Videos</h3>
-              <div style={{ border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
-
-                <h3>Mansard</h3>
-                <div>
+              <Grid container alignItems="center"
+                sx={{
+                  border: "1px solid #2a2a2a",
+                  px: 1,
+                  py: 1
+                }}>
+                <Grid item xs={4}>
+                  <h3>Mansard</h3>
+                  <div>
+                    <a href="#https://www.youtube.com/watch?v=Ppqp-dLwKIE" target="_blank"
+                      rel="noopener" className="largeButton">
+                      Watch Video
+                    </a>
+                    <MDButton onClick={() => loadPlan('42fbd8ff0f5a37fa1285ae8b6c6ca36529b930c2')}
+                      className="largeButton">Load Plan</MDButton>
+                  </div>
+                </Grid>
+                <Grid item xs={4}>
                   <a href="#https://www.youtube.com/watch?v=Ppqp-dLwKIE" target="_blank"
-                    rel="noopener" className="largeButton">
-                    Watch Video
+                    rel="noopener">
+                    <Image
+                      src="/demo/tuts/mansard.png"
+                      alt=""
+                      width={317}
+                      height={205}
+                      style={{ border: "2px solid #2a2a2a" }}
+                    />
                   </a>
-                  <MDButton onClick={() => loadPlan('42fbd8ff0f5a37fa1285ae8b6c6ca36529b930c2')}
-                    className="largeButton">Load Plan</MDButton>
-                </div>
-
-                <a href="#https://www.youtube.com/watch?v=Ppqp-dLwKIE" target="_blank"
-                  rel="noopener">
-                  <Image
-                    src="/demo/tuts/mansard.png"
-                    alt=""
-                    width={100}
-                    height={60}
-                    style={{ border: "2px solid #2a2a2a" }}
-                  />
-                </a>
-
-              </div>
-              <br />
-              <div style={{ border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
-
-                <h3>Gable with Valley Roof</h3>
-                <div>
+                </Grid>
+                <Grid item xs={4}>
+                  <h3>Gable with Valley Roof</h3>
+                  <div>
+                    <a href="#https://www.youtube.com/watch?v=DUaBywAS6Ik" target="_blank"
+                      rel="noopener" className="largeButton">
+                      Watch Video
+                    </a>
+                    <MDButton onClick={() => loadPlan('0d371f9acad19a943f38c3a32f6d5d140bc6c913')}
+                      className="largeButton">Load Plan</MDButton>
+                  </div>
+                </Grid>
+                <Grid item xs={4}>
                   <a href="#https://www.youtube.com/watch?v=DUaBywAS6Ik" target="_blank"
-                    rel="noopener" className="largeButton">
-                    Watch Video
+                    rel="noopener">
+                    <Image
+                      src="/demo/tuts/gableWithValley.png"
+                      alt=""
+                      width={317}
+                      height={205}
+                      style={{ border: "2px solid #2a2a2a" }}
+                    />
                   </a>
-                  <MDButton onClick={() => loadPlan('0d371f9acad19a943f38c3a32f6d5d140bc6c913')}
-                    className="largeButton">Load Plan</MDButton>
-                </div>
-
-                <a href="#https://www.youtube.com/watch?v=DUaBywAS6Ik" target="_blank"
-                  rel="noopener">
-                  <Image
-                    src="/demo/tuts/gableWithValley.png"
-                    alt=""
-                    width={100}
-                    height={60}
-                    style={{ border: "2px solid #2a2a2a" }}
-                  />
-                </a>
-
-              </div>
-              <br />
-              <div style={{ display: "flex", border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
-
-                <h3>Modern Dutch Gable (Hip with Gable)</h3>
-                <div>
+                </Grid>
+                <Grid item xs={4}>
+                  <h3>Modern Dutch Gable (Hip with Gable)</h3>
+                  <div>
+                    <a href="#https://www.youtube.com/watch?v=0cmjXmp7D_E" target="_blank"
+                      rel="noopener" className="largeButton">
+                      Watch Video
+                    </a>
+                    <MDButton onClick={() => loadPlan('c0300edf03b952872c37744bf570a588184dd3d5')}
+                      className="largeButton">Load Plan</MDButton>
+                  </div>
+                </Grid>
+                <Grid item xs={4}>
                   <a href="#https://www.youtube.com/watch?v=0cmjXmp7D_E" target="_blank"
-                    rel="noopener" className="largeButton">
-                    Watch Video
+                    rel="noopener">
+                    <Image
+                      src="/demo/tuts/modernDutchGable.png"
+                      alt=""
+                      width={317}
+                      height={205}
+                      style={{ border: "2px solid #2a2a2a" }}
+                    />
                   </a>
-                  <MDButton onClick={() => loadPlan('c0300edf03b952872c37744bf570a588184dd3d5')}
-                    className="largeButton">Load Plan</MDButton>
-                </div>
-
-                <a href="#https://www.youtube.com/watch?v=0cmjXmp7D_E" target="_blank"
-                  rel="noopener">
-                  <Image
-                    src="/demo/tuts/modernDutchGable.png"
-                    alt=""
-                    width={100}
-                    height={60}
-                    style={{ border: "2px solid #2a2a2a" }}
-                  />
-                </a>
-
-              </div>
+                </Grid>
+              </Grid>
             </TabPanel>
             <TabPanel value={value} index={3}>
               FAQ
@@ -1106,65 +1109,83 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
         </MDBox>
 
       </Modal>
-    </>
+    </div>
   )
 }
 
 const Model3dModal = (): JSX.Element => {
+
+  const [isOpenModel3dModal, setIsOpenModel3dModal] = useState(false)
+  const handleOpenModel3dModal = () => setIsOpenModel3dModal(true)
+  const handleCloseModel3dModal = () => setIsOpenModel3dModal(false)
+
   // console.debug("Model3dModal")
-  useEffect(() => {
-    console.debug('Model3dModal onMount')
-    return () => {
-      console.debug('Model3dModal onUnmount')
-    }
-  }, [])
+  // useEffect(() => {
+  //   console.debug('Model3dModal onMount')
+  //   return () => {
+  //     console.debug('Model3dModal onUnmount')
+  //   }
+  // }, [])
+
   return (
-    <div id="model3dModal" className="modal">
-      <div className="modal-content">
-        <div className="modal-header">
-          <span className="close">&times;</span>
-          <img
-            src="/favicon/favicon.png"
-            height="54px"
-            style={{ float: "left", paddingTop: "6px", paddingRight: "12px" }}
-            title="ThreeDGarden"
-            alt="ThreeDGarden" />
-          <h2>ThreeDGarden</h2>
-        </div>
-        <div className="modal-body">
-          <div id="model3dView">
-            <canvas id="model3dViewCanvas"></canvas>
+    <div id="model3dModalContainer">
+      <MDButton size="small" onClick={handleOpenModel3dModal}>
+        Open Model3d Modal
+      </MDButton>
+      <Modal
+        id="model3dModal"
+        open={isOpenModel3dModal}
+        onClose={handleCloseModel3dModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <MDBox className="modal-content" sx={styleModal}>
+
+          <MDBox className="modal-header" style={{ textAlign: "center" }}>
+            <Image src="/favicon/favicon.png"
+              width={50}
+              height={50}
+              alt="ThreeD Garden Logo"
+              title="ThreeD Garden"
+            />
+            <h2>ThreeD Garden</h2>
+          </MDBox>
+          <div className="modal-body">
+            <div id="model3dView">
+              <canvas id="model3dViewCanvas" />
+            </div>
+            <div id="modalModelDescription">
+              <h3>3d Model Properties</h3>
+              <table className="propertiesTable" style={{ width: "400px" }}>
+                <tbody>
+                  <tr>
+                    <td>Name</td>
+                    <td><span id="model3dNameModal" /></td>
+                  </tr>
+                  <tr>
+                    <td>Author</td>
+                    <td><span id="model3dAuthorModal" /></td>
+                  </tr>
+                  <tr>
+                    <td>License</td>
+                    <td><span id="model3dLicenseModal" /></td>
+                  </tr>
+                  <tr>
+                    <td colSpan={2}>OBJ&nbsp;File&nbsp;Comments</td>
+                  </tr>
+                </tbody>
+              </table>
+              <textarea id="modalModel3dObjHeader" />
+            </div>
           </div>
-          <div id="modalModelDescription">
-            <h3>3d Model Properties</h3>
-            <table className="propertiesTable" style={{ width: "400px" }}>
-              <tr>
-                <td width="70">Name</td>
-                <td><span id="model3dNameModal"></span></td>
-              </tr>
-              <tr>
-                <td>Author</td>
-                <td><span id="model3dAuthorModal"></span></td>
-              </tr>
-              <tr>
-                <td>License</td>
-                <td><span id="model3dLicenseModal"></span></td>
-              </tr>
-              <tr>
-                <td colSpan="2">OBJ&nbsp;File&nbsp;Comments</td>
-              </tr>
-            </table>
-            <textarea id="modalModel3dObjHeader"></textarea>
+          <div className="modal-footer">
+            <h3>
+              <a href="http://threedgarden.com">ThreeDGarden</a>
+            </h3>
           </div>
-        </div>
-        <div className="modal-footer">
-          <h3>
-            <a href="http://threedgarden.com">ThreeDGarden</a> &copy; Company
-            Juice.&nbsp;Version 0.1.1.1
-          </h3>
-        </div>
-      </div>
-    </div>
+        </MDBox>
+      </Modal>
+    </div >
   )
 }
 
@@ -1194,8 +1215,7 @@ const LoadingModal = (): JSX.Element => {
         </div>
         <div className="smallModal-footer">
           <h3>
-            <a href="http://threedgarden.com">ThreeDGarden</a> &copy; Company
-            Juice.&nbsp;Version 1.1.1
+            <a href="http://threedgarden.com">ThreeDGarden</a>
           </h3>
         </div>
       </div>
@@ -1308,8 +1328,7 @@ const ShareModal = (): JSX.Element => {
         </div>
         <div className="smallModal-footer">
           <h3>
-            <a href="http://threedgarden.com">ThreeDGarden</a> &copy; Company
-            Juice.&nbsp;Version 0.1.1.1
+            <a href="http://threedgarden.com">ThreeDGarden</a>
           </h3>
         </div>
       </div>
@@ -3372,15 +3391,19 @@ const TheBottom = (): JSX.Element => {
       <Image
         id="fullscreenPlanViewBtn"
         src="/demo/media/fullscreen.png"
-        width="30"
-        height="30"
-        onClick="doOpenFullscreen('planView');" />
+        width={24}
+        height={24}
+        alt="fullscreenPlanViewBtn"
+        onClick="doOpenFullscreen('planView');"
+      />
       <Image
         id="fullscreen3dViewBtn"
         src="/demo/media/fullscreen.png"
-        width="30"
-        height="30"
-        onClick="doOpenFullscreen('view3d');" />
+        width={24}
+        height={24}
+        alt="fullscreen3dViewBtn"
+        onClick="doOpenFullscreen('view3d');"
+      />
 
       <progress value="50" max="100" className="center" id="progressBar"></progress>
     </div>
@@ -3526,9 +3549,9 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
         </div>
 
         <AboutModal />
-        {/* <Model3dModal /> */}
-        {/* <LoadingModal /> */}
-        {/* <ShareModal /> */}
+        <Model3dModal />
+        <LoadingModal />
+        <ShareModal />
 
         {/* <CatalogView /> */}
         {/* <PropertiesView /> */}
