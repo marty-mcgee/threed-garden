@@ -341,6 +341,10 @@ const useProjectStore = create((set, get) => ({
 
     console.debug("%cAddProject", ccm1, get().project)
   },
+  saveProject: () => {
+    // saveToDisk
+    get().saveToDisk()
+  },
   saveToDisk: () => {
     try {
       localStorage.setItem("threed_projectHistory", JSON.stringify({ subject: "projects", payload: get().projects }))
@@ -555,6 +559,10 @@ const usePlanStore = create((set, get) => ({
 
     console.debug("%cAddPlan", ccm1, get().plan)
   },
+  savePlan: () => {
+    // saveToDisk
+    get().saveToDisk()
+  },
   saveToDisk: () => {
     try {
       localStorage.setItem("threed_planHistory", JSON.stringify({ subject: "plans", payload: get().plans }))
@@ -696,6 +704,35 @@ function BearControlPanel() {
   const increaseBearCount = useBearStore((state: any) => state.increaseBearCount)
   return <MDButton onClick={increaseBearCount}>add a bear</MDButton>
 }
+
+// ==========================================================
+// Modal
+
+const modalStore = createStore('modal')({
+  name: 'zustood',
+  isOpenModalAbout: false,
+  // handleOpenModalAbout: () => set(() => ({ isOpenModalAbout: true })),
+  // handleCloseModalAbout: () => set(() => ({ isOpenModalAbout: false }))
+  isOpenModalModel3d: false,
+  isOpenModalLoading: false,
+  isOpenModalShare: false,
+})
+
+const useModalStore = create((set, get) => ({
+  name: 'zustand',
+  isOpenAboutModal: false,
+  handleOpenAboutModal: () => set(() => ({ isOpenAboutModal: true })),
+  handleCloseAboutModal: () => set(() => ({ isOpenAboutModal: false })),
+  isOpenModel3dModal: false,
+  handleOpenModel3dModal: () => set(() => ({ isOpenModel3dModal: true })),
+  handleCloseModel3dModal: () => set(() => ({ isOpenModel3dModal: false })),
+  isOpenLoadingModal: false,
+  handleOpenLoadingModal: () => set(() => ({ isOpenLoadingModal: true })),
+  handleCloseLoadingModal: () => set(() => ({ isOpenLoadingModal: false })),
+  isOpenShareModal: false,
+  handleOpenShareModal: () => set(() => ({ isOpenShareModal: true })),
+  handleCloseShareModal: () => set(() => ({ isOpenShareModal: false })),
+}))
 
 // ==========================================================
 // BEGIN COMPONENT PROPERTIES (VARIABLES, PARAMETERS)
@@ -862,32 +899,6 @@ let simulationHistoryPosition = 0
 
 // ==========================================================
 // COMPONENTS
-
-const modalStore = createStore('modal')({
-  name: 'zustood',
-  isOpenModalAbout: false,
-  // handleOpenModalAbout: () => set(() => ({ isOpenModalAbout: true })),
-  // handleCloseModalAbout: () => set(() => ({ isOpenModalAbout: false }))
-  isOpenModalModel3d: false,
-  isOpenModalLoading: false,
-  isOpenModalShare: false,
-})
-
-const useModalStore = create((set, get) => ({
-  name: 'zustand',
-  isOpenAboutModal: false,
-  handleOpenAboutModal: () => set(() => ({ isOpenAboutModal: true })),
-  handleCloseAboutModal: () => set(() => ({ isOpenAboutModal: false })),
-  isOpenModel3dModal: false,
-  handleOpenModel3dModal: () => set(() => ({ isOpenModel3dModal: true })),
-  handleCloseModel3dModal: () => set(() => ({ isOpenModel3dModal: false })),
-  isOpenLoadingModal: false,
-  handleOpenLoadingModal: () => set(() => ({ isOpenLoadingModal: true })),
-  handleCloseLoadingModal: () => set(() => ({ isOpenLoadingModal: false })),
-  isOpenShareModal: false,
-  handleOpenShareModal: () => set(() => ({ isOpenShareModal: true })),
-  handleCloseShareModal: () => set(() => ({ isOpenShareModal: false })),
-}))
 
 // Modal: About
 const AboutModal: FunctionComponent = (): JSX.Element => {
@@ -1403,10 +1414,10 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
   // console.debug("ToolBar", word)
 
   // const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
-  const [anchorElThreeD, setAnchorElThreeD] = useState<null | HTMLElement>(null)
-  const [anchorElFile, setAnchorElFile] = useState<null | HTMLElement>(null)
-  const [anchorElEdit, setAnchorElEdit] = useState<null | HTMLElement>(null)
-  const [anchorElView, setAnchorElView] = useState<null | HTMLElement>(null)
+  const [anchorElActions, setAnchorElActions] = useState<null | HTMLElement>(null)
+  const [anchorElFiles, setAnchorElFiles] = useState<null | HTMLElement>(null)
+  const [anchorElEdits, setAnchorElEdits] = useState<null | HTMLElement>(null)
+  const [anchorElViews, setAnchorElViews] = useState<null | HTMLElement>(null)
   const [anchorElLayers, setAnchorElLayers] = useState<null | HTMLElement>(null)
   const [anchorElTools, setAnchorElTools] = useState<null | HTMLElement>(null)
 
@@ -1416,29 +1427,29 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
   // const handleCloseNavMenu = () => {
   //   setAnchorElNav(null)
   // }
-  const handleOpenThreeDMenu = (event: MouseEvent<HTMLElement>) => {
-    setAnchorElThreeD(event.currentTarget)
+  const handleOpenActionsMenu = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElActions(event.currentTarget)
   }
-  const handleCloseThreeDMenu = () => {
-    setAnchorElThreeD(null)
+  const handleCloseActionsMenu = () => {
+    setAnchorElActions(null)
   }
-  const handleOpenFileMenu = (event: MouseEvent<HTMLElement>) => {
-    setAnchorElFile(event.currentTarget)
+  const handleOpenFilesMenu = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElFiles(event.currentTarget)
   }
-  const handleCloseFileMenu = () => {
-    setAnchorElFile(null)
+  const handleCloseFilesMenu = () => {
+    setAnchorElFiles(null)
   }
-  const handleOpenEditMenu = (event: MouseEvent<HTMLElement>) => {
-    setAnchorElEdit(event.currentTarget)
+  const handleOpenEditsMenu = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElEdits(event.currentTarget)
   }
-  const handleCloseEditMenu = () => {
-    setAnchorElEdit(null)
+  const handleCloseEditsMenu = () => {
+    setAnchorElEdits(null)
   }
-  const handleOpenViewMenu = (event: MouseEvent<HTMLElement>) => {
-    setAnchorElView(event.currentTarget)
+  const handleOpenViewsMenu = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElViews(event.currentTarget)
   }
-  const handleCloseViewMenu = () => {
-    setAnchorElView(null)
+  const handleCloseViewsMenu = () => {
+    setAnchorElViews(null)
   }
   const handleOpenLayersMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElLayers(event.currentTarget)
@@ -2182,7 +2193,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
 
             <Button
               key="Actions"
-              onClick={handleOpenThreeDMenu}
+              onClick={handleOpenActionsMenu}
               sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
             >
               Actions
@@ -2190,7 +2201,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             <Menu
               sx={{ mt: 3 }}
               id="menu-appbar-actions"
-              anchorEl={anchorElThreeD}
+              anchorEl={anchorElActions}
               anchorOrigin={{
                 vertical: 'top',
                 horizontal: 'left',
@@ -2199,37 +2210,40 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 vertical: 'top',
                 horizontal: 'left',
               }}
-              open={Boolean(anchorElThreeD)}
-              onClose={handleCloseThreeDMenu}
+              open={Boolean(anchorElActions)}
+              onClose={handleCloseActionsMenu}
             >
-              <MenuItem key="New ThreeD" onClick={handleCloseThreeDMenu}>
+              <MenuItem key="New ThreeD" onClick={handleCloseActionsMenu}>
                 <Typography onClick={() => useThreeDStore.getState().addThreeD()}>New ThreeD</Typography>
               </MenuItem>
-              <MenuItem key="New Project" onClick={handleCloseThreeDMenu}>
+              <MenuItem key="New Project" onClick={handleCloseActionsMenu}>
                 <Typography onClick={() => useProjectStore.getState().addProject()}>New Project</Typography>
               </MenuItem>
-              <MenuItem key="New Plan" onClick={handleCloseThreeDMenu}>
+              <MenuItem key="Save Project" onClick={handleCloseActionsMenu}>
+                <Typography onClick={() => useProjectStore.getState().saveProject()}>Save Project</Typography>
+              </MenuItem>
+              <MenuItem key="New Plan" onClick={handleCloseActionsMenu}>
                 <Typography onClick={() => usePlanStore.getState().addPlan()}>New Plan</Typography>
               </MenuItem>
-              {/* <MenuItem key="Save Plan" onClick={handleCloseThreeDMenu}>
-                <Typography id="saveBtn" onClick={savePlan}>Save Plan</Typography>
-              </MenuItem> */}
-              <MenuItem key="New Simulation" onClick={handleCloseThreeDMenu}>
+              <MenuItem key="Save Plan" onClick={handleCloseActionsMenu}>
+                <Typography id="saveBtn" onClick={usePlanStore.getState().savePlan()}>Save Plan</Typography>
+              </MenuItem>
+              <MenuItem key="New Simulation" onClick={handleCloseActionsMenu}>
                 <Typography>New Simulation</Typography>
               </MenuItem>
             </Menu>
 
             <Button
               key="Files"
-              onClick={handleOpenFileMenu}
+              onClick={handleOpenFilesMenu}
               sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
             >
               Files
             </Button>
             <Menu
               sx={{ mt: 3 }}
-              id="menu-appbar-file"
-              anchorEl={anchorElFile}
+              id="menu-appbar-files"
+              anchorEl={anchorElFiles}
               anchorOrigin={{
                 vertical: 'top',
                 horizontal: 'left',
@@ -2239,10 +2253,10 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 vertical: 'top',
                 horizontal: 'left',
               }}
-              open={Boolean(anchorElFile)}
-              onClose={handleCloseFileMenu}
+              open={Boolean(anchorElFiles)}
+              onClose={handleCloseFilesMenu}
             >
-              <MenuItem key="Load File" onClick={handleCloseFileMenu}>
+              <MenuItem key="Load File" onClick={handleCloseFilesMenu}>
                 <Typography id="loadBtn" onClick={doLoadFile}>Load File</Typography>
                 <input
                   type="file"
@@ -2252,28 +2266,28 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                   onChange={doLoadFileAsText}
                 />
               </MenuItem>
-              <MenuItem key="Save File" onClick={handleCloseFileMenu}>
+              <MenuItem key="Save File" onClick={handleCloseFilesMenu}>
                 <Typography id="saveBtn" onClick={doSaveFile}>Save File</Typography>
               </MenuItem>
-              <MenuItem key="Export As OBJ" onClick={handleCloseFileMenu}>
+              <MenuItem key="Export As OBJ" onClick={handleCloseFilesMenu}>
                 <Typography id="exportBtn" onClick={() => exportToObj}>Export As OBJ</Typography>
               </MenuItem>
-              <MenuItem key="Create Thumb" onClick={handleCloseFileMenu}>
+              <MenuItem key="Create Thumb" onClick={handleCloseFilesMenu}>
                 <Typography id="createThumb" onClick={() => createThumbForHistory}>Create Thumb</Typography>
               </MenuItem>
             </Menu>
 
             <Button
-              key="Edit"
-              onClick={handleOpenEditMenu}
+              key="Edits"
+              onClick={handleOpenEditsMenu}
               sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
             >
-              Edit
+              Edits
             </Button>
             <Menu
               sx={{ mt: 3 }}
-              id="menu-appbar-edit"
-              anchorEl={anchorElEdit}
+              id="menu-appbar-edits"
+              anchorEl={anchorElEdits}
               anchorOrigin={{
                 vertical: 'top',
                 horizontal: 'left',
@@ -2283,28 +2297,28 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 vertical: 'top',
                 horizontal: 'left',
               }}
-              open={Boolean(anchorElEdit)}
-              onClose={handleCloseEditMenu}
+              open={Boolean(anchorElEdits)}
+              onClose={handleCloseEditsMenu}
             >
-              <MenuItem key="Undo" onClick={handleCloseEditMenu}>
+              <MenuItem key="Undo" onClick={handleCloseEditsMenu}>
                 <Typography id="undoBtn" onClick={doUndo}>Undo</Typography>
               </MenuItem>
-              <MenuItem key="Redo" onClick={handleCloseEditMenu}>
+              <MenuItem key="Redo" onClick={handleCloseEditsMenu}>
                 <Typography id="redoBtn" onClick={doRedo}>Redo</Typography>
               </MenuItem>
             </Menu>
 
             <Button
-              key="View"
-              onClick={handleOpenViewMenu}
+              key="Views"
+              onClick={handleOpenViewsMenu}
               sx={{ color: '#FFFFFF', p: 0, mr: 2 }}
             >
-              View
+              Views
             </Button>
             <Menu
               sx={{ mt: 3 }}
-              id="menu-appbar-view"
-              anchorEl={anchorElView}
+              id="menu-appbar-views"
+              anchorEl={anchorElViews}
               anchorOrigin={{
                 vertical: 'top',
                 horizontal: 'left',
@@ -2314,43 +2328,43 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 vertical: 'top',
                 horizontal: 'left',
               }}
-              open={Boolean(anchorElView)}
-              onClose={handleCloseViewMenu}
+              open={Boolean(anchorElViews)}
+              onClose={handleCloseViewsMenu}
             >
-              <MenuItem key="Modal: About" onClick={handleCloseViewMenu}>
+              <MenuItem key="Modal: About" onClick={handleCloseViewsMenu}>
                 <Typography onClick={(e) => modalStore.set.isOpenModalAbout(true)}>Modal: About</Typography>
               </MenuItem>
-              <MenuItem key="Modal: Model3d" onClick={handleCloseViewMenu}>
+              <MenuItem key="Modal: Model3d" onClick={handleCloseViewsMenu}>
                 <Typography onClick={(e) => modalStore.set.isOpenModalModel3d(true)}>Modal: Model3d</Typography>
               </MenuItem>
-              <MenuItem key="Modal: Loading" onClick={handleCloseViewMenu}>
+              <MenuItem key="Modal: Loading" onClick={handleCloseViewsMenu}>
                 <Typography onClick={(e) => modalStore.set.isOpenModalLoading(true)}>Modal: Loading</Typography>
               </MenuItem>
-              <MenuItem key="Modal: Share" onClick={handleCloseViewMenu}>
+              <MenuItem key="Modal: Share" onClick={handleCloseViewsMenu}>
                 <Typography onClick={(e) => modalStore.set.isOpenModalShare(true)}>Modal: Share</Typography>
               </MenuItem>
-              <MenuItem key="Dialog: Share" onClick={handleCloseViewMenu}>
+              <MenuItem key="Dialog: Share" onClick={handleCloseViewsMenu}>
                 <Typography onClick={doOpenShareDialog}>Dialog: Share</Typography>
               </MenuItem>
-              <MenuItem key="2D Plan Properties" onClick={handleCloseViewMenu}>
+              <MenuItem key="2D Plan Properties" onClick={handleCloseViewsMenu}>
                 <Typography onClick={() => setPropertiesView('planView')}>2D Plan Properties</Typography>
               </MenuItem>
-              <MenuItem key="2D Plan Fullscreen" onClick={handleCloseViewMenu}>
+              <MenuItem key="2D Plan Fullscreen" onClick={handleCloseViewsMenu}>
                 <Typography onClick={() => doOpenFullscreen('#planView')}>2D Plan Fullscreen</Typography>
               </MenuItem>
-              <MenuItem key="3D Plan Properties" onClick={handleCloseViewMenu}>
+              <MenuItem key="3D Plan Properties" onClick={handleCloseViewsMenu}>
                 <Typography onClick={() => setPropertiesView('3dView')}>3D Plan Properties</Typography>
               </MenuItem>
-              <MenuItem key="3D Plan Fullscreen" onClick={handleCloseViewMenu}>
+              <MenuItem key="3D Plan Fullscreen" onClick={handleCloseViewsMenu}>
                 <Typography onClick={() => doOpenFullscreen('#view3d')}>3D Plan Fullscreen</Typography>
               </MenuItem>
-              {/* <MenuItem key="Defaults" onClick={handleCloseViewMenu}>
+              {/* <MenuItem key="Defaults" onClick={handleCloseViewsMenu}>
                 <Typography onClick={() => setPropertiesView('defaults')}>Defaults</Typography>
               </MenuItem> */}
-              {/* <MenuItem key="Ground Properties" onClick={handleCloseViewMenu}>
+              {/* <MenuItem key="Ground Properties" onClick={handleCloseViewsMenu}>
                 <Typography onClick={() => setToolMode('ground')} id="groundPropertiesBtn">Ground Properties</Typography>
               </MenuItem> */}
-              <MenuItem key="Fullscreen" onClick={handleCloseViewMenu}>
+              <MenuItem key="Fullscreen" onClick={handleCloseViewsMenu}>
                 <Typography onClick={() => doOpenFullscreen('body')} id="fullscreenApp">Fullscreen</Typography>
               </MenuItem>
             </Menu>
@@ -3689,7 +3703,7 @@ const ReactThreeFiberView = (): JSX.Element => {
   // }, [])
 
   return (
-    <MDBox id="rtf-canvas-container" style={{ width: "100%" }}>
+    <MDBox id="rtf-canvas-container" style={{ width: "100%", minHeight: "40rem" }}>
       <Canvas>
         <mesh>
           <boxBufferGeometry />
@@ -3778,6 +3792,9 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
 
         {/* zustand */}
         <div id="zustandControlPanel" style={{ padding: "1rem" }}>
+
+          {/* React Three Fiber - View */}
+          <ReactThreeFiberView />
           <hr />
           <ThreeDInfoPanel />
           {/* <ThreeDControlPanel /> */}
@@ -3829,9 +3846,6 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
         {/* <PropertiesView /> */}
         {/* <PlanView /> */}
         {/* <TheBottom /> */}
-
-        {/* React Three Fiber - View */}
-        <ReactThreeFiberView />
       </div>
     </div >
   )
