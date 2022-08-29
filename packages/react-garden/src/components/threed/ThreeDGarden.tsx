@@ -62,20 +62,35 @@ import create from "zustand"
 import shallow from "zustand/shallow"
 import { subscribeWithSelector } from "zustand/middleware"
 import produce from "immer"
+import { createStore } from '@udecode/zustood'
 
 import Image from "next/image"
 
 // mui: ui
+import AppBar from "@mui/material/AppBar"
+import Toolbar from "@mui/material/Toolbar"
+import Container from "@mui/material/Container"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import IconButton from "@mui/material/IconButton"
+import Menu from "@mui/material/Menu"
+import MenuItem from "@mui/material/MenuItem"
+import MenuIcon from "@mui/icons-material/Menu"
 import Grid from "@mui/material/Grid"
 import Modal from "@mui/material/Modal"
 import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
+import Tooltip from "@mui/material/Tooltip"
+import Typography from "@mui/material/Typography"
+import Avatar from "@mui/material/Avatar"
+import AdbIcon from "@mui/icons-material/Adb"
 // mui: Material Dashboard 2 PRO React TS components
 import MDBox from "~/components/mui/MDBox"
 import MDTypography from "~/components/mui/MDTypography"
 import MDAlert from "~/components/mui/MDAlert"
 import MDButton from "~/components/mui/MDButton"
 import MDProgress from "~/components/mui/MDProgress"
+import MDTabPanel, { a11yProps } from "~/components/mui/MDTabPanel"
 
 import paper from "paper"
 
@@ -99,6 +114,7 @@ import "~/assets/demo/css/Demo.module.css"
 // ==========================================================
 // UUID
 import { v4 as newUUID } from "uuid"
+import button from "~/themes/theme-dark/components/button"
 
 // ==========================================================
 // COLORFUL CONSOLE MESSAGES (ccm)
@@ -153,49 +169,13 @@ const styleModal = {
   width: "80vw",
   height: "60vh",
   bgcolor: "#09090D",
-  border: "2px solid #000",
+  border: "2px solid #000000",
   boxShadow: 24,
   p: 2
 };
 
 // ==========================================================
 // TS INTERFACES + TYPES
-
-interface TabPanelProps {
-  children?: ReactNode
-  index: number
-  value: number
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <MDBox sx={{ p: 3 }}>
-          <MDTypography variant="div">
-            {children}
-          </MDTypography>
-        </MDBox>
-      )}
-    </div>
-  );
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}
-
 // ==========================================================
 
 // ==========================================================
@@ -871,15 +851,43 @@ let simulationHistoryPosition = 0
 // ==========================================================
 // COMPONENTS
 
+const modalStore = createStore('modal')({
+  name: 'zustood',
+  isOpenModalAbout: false,
+  // handleOpenModalAbout: () => set(() => ({ isOpenModalAbout: true })),
+  // handleCloseModalAbout: () => set(() => ({ isOpenModalAbout: false }))
+  isOpenModalModel3d: false,
+  isOpenModalLoading: false,
+  isOpenModalShare: false,
+})
+
+const useModalStore = create((set, get) => ({
+  name: 'zustand',
+  isOpenAboutModal: false,
+  handleOpenAboutModal: () => set(() => ({ isOpenAboutModal: true })),
+  handleCloseAboutModal: () => set(() => ({ isOpenAboutModal: false })),
+  isOpenModel3dModal: false,
+  handleOpenModel3dModal: () => set(() => ({ isOpenModel3dModal: true })),
+  handleCloseModel3dModal: () => set(() => ({ isOpenModel3dModal: false })),
+  isOpenLoadingModal: false,
+  handleOpenLoadingModal: () => set(() => ({ isOpenLoadingModal: true })),
+  handleCloseLoadingModal: () => set(() => ({ isOpenLoadingModal: false })),
+  isOpenShareModal: false,
+  handleOpenShareModal: () => set(() => ({ isOpenShareModal: true })),
+  handleCloseShareModal: () => set(() => ({ isOpenShareModal: false })),
+}))
+
+// Modal: About
 const AboutModal: FunctionComponent = (): JSX.Element => {
 
-  const [isOpenAboutModal, setIsOpenAboutModal] = useState(false)
-  const handleOpenAboutModal = () => setIsOpenAboutModal(true)
-  const handleCloseAboutModal = () => setIsOpenAboutModal(false)
+  // const [isOpenAboutModal, setIsOpenAboutModal] = useState(false)
+  // const handleOpenAboutModal = () => setIsOpenAboutModal(true)
+  // const handleCloseAboutModal = () => setIsOpenAboutModal(false)
+
   // tabs
-  const [value, setValue] = useState(0)
-  const handleChange = (event: SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  const [tabAboutModal, setTabAboutModal] = useState(0)
+  const handleChangeTabAboutModal = (event: SyntheticEvent, newValue: number) => {
+    setTabAboutModal(newValue);
   }
 
   // console.debug("AboutModal")
@@ -891,14 +899,15 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
   // }, [])
 
   return (
-    <div id="aboutModalContainer">
-      <MDButton size="small" onClick={handleOpenAboutModal}>
+    <MDBox id="aboutModalContainer">
+      {/* <MDButton size="small" onClick={handleOpenAboutModal}>
         Open About Modal
-      </MDButton>
+      </MDButton> */}
       <Modal
         id="aboutModal"
-        open={isOpenAboutModal}
-        onClose={handleCloseAboutModal}
+        // open={useModalStore.getState().isOpenAboutModal}
+        open={modalStore.use.isOpenModalAbout()}
+        onClose={useModalStore.getState().handleCloseAboutModal()}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -916,7 +925,7 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
 
           <MDBox className="modal-body" sx={{ width: '100%' }}>
             <MDBox sx={{ borderBottom: 1, borderColor: 'divider' }}>
-              <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+              <Tabs value={tabAboutModal} onChange={handleChangeTabAboutModal} aria-label="basic tabs example">
                 <Tab label="Intro" {...a11yProps(0)} />
                 <Tab label="Models" {...a11yProps(1)} />
                 <Tab label="Examples" {...a11yProps(2)} />
@@ -926,7 +935,7 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
                 <Tab label="Supporters" {...a11yProps(6)} />
               </Tabs>
             </MDBox>
-            <TabPanel value={value} index={0}>
+            <MDTabPanel value={tabAboutModal} index={0}>
               <div style={{ paddingBottom: 8 }}>
                 Plan + Share Ideas for your Home + Garden in 2D + 3D
               </div>
@@ -988,8 +997,8 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
                       </div> */}
                 </div>
               </div>
-            </TabPanel>
-            <TabPanel value={value} index={1}>
+            </MDTabPanel>
+            <MDTabPanel value={tabAboutModal} index={1}>
               <div>
                 ThreeDGarden uses many 3D models which can be found on the internet as Public Domain, Free Art or Creative Commons.
               </div>
@@ -1009,8 +1018,8 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
                   <li>Models with restrictive licenses should not be added.</li>
                 </ul>
               </div>
-            </TabPanel>
-            <TabPanel value={value} index={2}>
+            </MDTabPanel>
+            <MDTabPanel value={tabAboutModal} index={2}>
               <h3>Tutorial Videos</h3>
               <Grid container alignItems="center"
                 sx={{
@@ -1088,32 +1097,32 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
                   </a>
                 </Grid>
               </Grid>
-            </TabPanel>
-            <TabPanel value={value} index={3}>
+            </MDTabPanel>
+            <MDTabPanel value={tabAboutModal} index={3}>
               FAQ
-            </TabPanel>
-            <TabPanel value={value} index={4}>
+            </MDTabPanel>
+            <MDTabPanel value={tabAboutModal} index={4}>
               Contact
-            </TabPanel>
-            <TabPanel value={value} index={5}>
+            </MDTabPanel>
+            <MDTabPanel value={tabAboutModal} index={5}>
               Other
-            </TabPanel>
-            <TabPanel value={value} index={6}>
+            </MDTabPanel>
+            <MDTabPanel value={tabAboutModal} index={6}>
               Supporters
-            </TabPanel>
+            </MDTabPanel>
           </MDBox>
 
-          <div className="modal-footer">
+          <MDBox className="modal-footer">
             <h3>&copy; <a href="https://threedgarden.com">ThreeDGarden</a></h3>
-          </div>
+          </MDBox>
         </MDBox>
-
       </Modal>
-    </div>
+    </MDBox>
   )
 }
 
-const Model3dModal = (): JSX.Element => {
+// Modal: Model3d
+const Model3dModal: FunctionComponent = (): JSX.Element => {
 
   const [isOpenModel3dModal, setIsOpenModel3dModal] = useState(false)
   const handleOpenModel3dModal = () => setIsOpenModel3dModal(true)
@@ -1128,10 +1137,10 @@ const Model3dModal = (): JSX.Element => {
   // }, [])
 
   return (
-    <div id="model3dModalContainer">
-      <MDButton size="small" onClick={handleOpenModel3dModal}>
+    <MDBox id="model3dModalContainer">
+      {/* <MDButton size="small" onClick={handleOpenModel3dModal}>
         Open Model3d Modal
-      </MDButton>
+      </MDButton> */}
       <Modal
         id="model3dModal"
         open={isOpenModel3dModal}
@@ -1150,11 +1159,12 @@ const Model3dModal = (): JSX.Element => {
             />
             <h2>ThreeD Garden</h2>
           </MDBox>
-          <div className="modal-body">
-            <div id="model3dView">
+
+          <MDBox className="modal-body">
+            <MDBox id="model3dView">
               <canvas id="model3dViewCanvas" />
-            </div>
-            <div id="modalModelDescription">
+            </MDBox>
+            <MDBox id="modalModelDescription">
               <h3>3d Model Properties</h3>
               <table className="propertiesTable" style={{ width: "400px" }}>
                 <tbody>
@@ -1176,170 +1186,246 @@ const Model3dModal = (): JSX.Element => {
                 </tbody>
               </table>
               <textarea id="modalModel3dObjHeader" />
-            </div>
-          </div>
-          <div className="modal-footer">
-            <h3>
-              <a href="http://threedgarden.com">ThreeDGarden</a>
-            </h3>
-          </div>
+            </MDBox>
+          </MDBox>
+
+          <MDBox className="modal-footer">
+            <h3><a href="http://threedgarden.com">ThreeDGarden</a></h3>
+          </MDBox>
         </MDBox>
       </Modal>
-    </div >
+    </MDBox>
   )
 }
 
-const LoadingModal = (): JSX.Element => {
+// Modal: Loading
+const LoadingModal: FunctionComponent = (): JSX.Element => {
+
+  const [isOpenLoadingModal, setIsOpenLoadingModal] = useState(false)
+  const handleOpenLoadingModal = () => setIsOpenLoadingModal(true)
+  const handleCloseLoadingModal = () => setIsOpenLoadingModal(false)
+
   // console.debug("LoadingModal")
-  useEffect(() => {
-    console.debug('LoadingModal onMount')
-    return () => {
-      console.debug('LoadingModal onUnmount')
-    }
-  }, [])
+  // useEffect(() => {
+  //   console.debug('LoadingModal onMount')
+  //   return () => {
+  //     console.debug('LoadingModal onUnmount')
+  //   }
+  // }, [])
+
   return (
-    <div id="loadingModal" className="smallModal">
-      <div className="smallModal-content">
-        <div className="smallModal-header">
-          <img
-            src="/favicon/favicon.png"
-            height="54px"
-            style={{ float: "left", paddingTop: "6px", paddingRight: "12px" }}
-            title="ThreeDGarden"
-            alt="ThreeDGarden" />
-          <h2>ThreeDGarden</h2>
-        </div>
-        <div className="smallModal-body">
-          <h3>Loading Model Progress</h3>
-          <textarea id="modalLoadingDataInfo"></textarea>
-        </div>
-        <div className="smallModal-footer">
-          <h3>
-            <a href="http://threedgarden.com">ThreeDGarden</a>
-          </h3>
-        </div>
-      </div>
-    </div>
+    <MDBox id="loadingModalContainer">
+      {/* <MDButton size="small" onClick={handleOpenLoadingModal}>
+        Open Loading Modal
+      </MDButton> */}
+      <Modal
+        id="loadingModal"
+        open={isOpenLoadingModal}
+        onClose={handleCloseLoadingModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <MDBox className="modal-content" sx={styleModal}>
+
+          <MDBox className="modal-header" style={{ textAlign: "center" }}>
+            <Image src="/favicon/favicon.png"
+              width={50}
+              height={50}
+              alt="ThreeD Garden Logo"
+              title="ThreeD Garden"
+            />
+            <h2>ThreeD Garden</h2>
+          </MDBox>
+
+          <MDBox className="modal-body">
+            <h3>Loading Model Progress</h3>
+            <textarea id="modalLoadingDataInfo"></textarea>
+          </MDBox>
+
+          <MDBox className="modal-footer">
+            <h3><a href="http://threedgarden.com">ThreeDGarden</a></h3>
+          </MDBox>
+        </MDBox>
+      </Modal>
+    </MDBox>
   )
 }
 
-const ShareModal = (): JSX.Element => {
+// Modal: Share
+const ShareModal: FunctionComponent = (): JSX.Element => {
+
+  const [isOpenShareModal, setIsOpenShareModal] = useState(false)
+  const handleOpenShareModal = () => setIsOpenShareModal(true)
+  const handleCloseShareModal = () => setIsOpenShareModal(false)
+
   // console.debug("ShareModal")
-  useEffect(() => {
-    console.debug('ShareModal onMount')
-    return () => {
-      console.debug('ShareModal onUnmount')
-    }
-  }, [])
+  // useEffect(() => {
+  //   console.debug('ShareModal onMount')
+  //   return () => {
+  //     console.debug('ShareModal onUnmount')
+  //   }
+  // }, [])
+
   return (
-    <div id="shareModal" className="smallModal">
-      <div className="smallModal-content">
-        <div className="smallModal-header">
-          <span className="close">&times;</span>
-          <img
-            src="/favicon/favicon.png"
-            height="54px"
-            style={{ float: "left", paddingTop: "6px", paddingRight: "12px" }}
-            title="ThreeDGarden"
-            alt="ThreeDGarden" />
-          <h2>ThreeDGarden</h2>
-        </div>
-        <div className="smallModal-body">
-          <h3>Share Plan</h3>
-          <MDButton
-            id="getShareLinkBtn"
-            className="mediumButton"
-            onClick={() => generateShareLink()}>
-            Generate Share Link
-          </MDButton>
-          <div style={{ margin: "10px 0px 10px 0px" }}>
-            <div style={{ paddingTop: "6px" }}>
-              <label htmlFor="shareLinkUrl">Editable Copy</label><br />
-              <input
-                type="text"
-                id="shareLinkUrl"
-                placeholder="Press 'Generate Share Link' MDButton"
-                style={{
-                  width: "580px",
-                  backgroundColor: "#4e4e4e",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace",
-                  padding: "4px 24px 4px 24px",
-                  pointerEvents: "none"
-                }} />&nbsp;
-              <MDButton
-                id="copyShareLinkBtn"
-                className="smallButton"
-                onClick={() => copyShareLink()}>
-                Copy
-              </MDButton>
-            </div>
+    <MDBox id="shareModalContainer">
+      {/* <MDButton size="small" onClick={handleOpenShareModal}>
+        Open Share Modal
+      </MDButton> */}
+      <Modal
+        id="shareModal"
+        open={isOpenShareModal}
+        onClose={handleCloseShareModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <MDBox className="modal-content" sx={styleModal}>
 
-            <div style={{ paddingTop: "6px" }}>
-              <label htmlFor="shareLinkUrl3d">Read Only 3d View</label><br />
-              <input
-                type="text"
-                id="shareLinkUrl3d"
-                placeholder="Press 'Generate Share Link' MDButton"
-                style={{
-                  width: "580px",
-                  backgroundColor: "#4e4e4e",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace",
-                  padding: "4px 24px 4px 24px",
-                  pointerEvents: "none"
-                }} />&nbsp;
-              <MDButton
-                id="copyShareLinkBtn"
-                className="smallButton"
-                onClick={() => copyShareLink3d()}>
-                Copy
-              </MDButton>
-            </div>
+          <MDBox className="modal-header" style={{ textAlign: "center" }}>
+            <Image src="/favicon/favicon.png"
+              width={50}
+              height={50}
+              alt="ThreeD Garden Logo"
+              title="ThreeD Garden"
+            />
+            <h2>ThreeD Garden</h2>
+          </MDBox>
 
-            <div style={{ paddingTop: "6px" }}>
-              <label htmlFor="shareLinkUrlPlan">Read Only Plan View</label><br />
-              <input
-                type="text"
-                id="shareLinkUrlPlan"
-                placeholder="Press 'Generate Share Link' MDButton"
-                style={{
-                  width: "580px",
-                  backgroundColor: "#4e4e4e",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace",
-                  padding: "4px 24px 4px 24px",
-                  pointerEvents: "none"
-                }} />&nbsp;
-              <MDButton
-                id="copyShareLinkBtn"
-                className="smallButton"
-                onClick={() => copyShareLinkPlan()}>
-                Copy
-              </MDButton>
-            </div>
-          </div>
-        </div>
-        <div className="smallModal-footer">
-          <h3>
-            <a href="http://threedgarden.com">ThreeDGarden</a>
-          </h3>
-        </div>
-      </div>
-    </div>
+          <MDBox className="smallModal-body">
+            <h3>Share Plan</h3>
+            <MDButton
+              id="getShareLinkBtn"
+              className="mediumButton"
+              onClick={() => generateShareLink()}>
+              Generate Share Link
+            </MDButton>
+            <MDBox style={{ margin: "10px 0px 10px 0px" }}>
+              <MDBox style={{ paddingTop: "6px" }}>
+                <label htmlFor="shareLinkUrl">Editable Copy<br />
+                  <input
+                    type="text"
+                    id="shareLinkUrl"
+                    placeholder="Press 'Generate Share Link' MDButton"
+                    style={{
+                      width: "580px",
+                      backgroundColor: "#4e4e4e",
+                      border: "1px solid #2a2a2a",
+                      fontSize: "14px",
+                      color: "white",
+                      fontFamily: "'Courier New', Courier, monospace",
+                      padding: "4px 24px 4px 24px",
+                      pointerEvents: "none"
+                    }} />&nbsp;
+                </label>
+                <MDButton
+                  id="copyShareLinkBtn"
+                  className="smallButton"
+                  onClick={() => copyShareLink()}>
+                  Copy
+                </MDButton>
+              </MDBox>
+
+              <MDBox style={{ paddingTop: "6px" }}>
+                <label htmlFor="shareLinkUrl3d">Read Only 3d View<br />
+                  <input
+                    type="text"
+                    id="shareLinkUrl3d"
+                    placeholder="Press 'Generate Share Link' MDButton"
+                    style={{
+                      width: "580px",
+                      backgroundColor: "#4e4e4e",
+                      border: "1px solid #2a2a2a",
+                      fontSize: "14px",
+                      color: "white",
+                      fontFamily: "'Courier New', Courier, monospace",
+                      padding: "4px 24px 4px 24px",
+                      pointerEvents: "none"
+                    }} />&nbsp;
+                </label>
+                <MDButton
+                  id="copyShareLinkBtn"
+                  className="smallButton"
+                  onClick={() => copyShareLink3d()}>
+                  Copy
+                </MDButton>
+              </MDBox>
+
+              <MDBox style={{ paddingTop: "6px" }}>
+                <label htmlFor="shareLinkUrlPlan">Read Only Plan View<br />
+                  <input
+                    type="text"
+                    id="shareLinkUrlPlan"
+                    placeholder="Press 'Generate Share Link' MDButton"
+                    style={{
+                      width: "580px",
+                      backgroundColor: "#4e4e4e",
+                      border: "1px solid #2a2a2a",
+                      fontSize: "14px",
+                      color: "white",
+                      fontFamily: "'Courier New', Courier, monospace",
+                      padding: "4px 24px 4px 24px",
+                      pointerEvents: "none"
+                    }} />&nbsp;
+                </label>
+                <MDButton
+                  id="copyShareLinkBtn"
+                  className="smallButton"
+                  onClick={() => copyShareLinkPlan()}>
+                  Copy
+                </MDButton>
+              </MDBox>
+            </MDBox>
+          </MDBox>
+
+          <MDBox className="modal-footer">
+            <h3><a href="http://threedgarden.com">ThreeDGarden</a></h3>
+          </MDBox>
+        </MDBox>
+      </Modal>
+    </MDBox>
   )
 }
 
-const ToolBar = (): JSX.Element => {
+const ToolBar: FunctionComponent = (): JSX.Element => {
 
   const word = `[MM] @ ${new Date().toISOString()}`
   // console.debug("ToolBar", word)
+
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
+  const [anchorElThreeD, setAnchorElThreeD] = useState<null | HTMLElement>(null)
+  const [anchorElFile, setAnchorElFile] = useState<null | HTMLElement>(null)
+  const [anchorElEdit, setAnchorElEdit] = useState<null | HTMLElement>(null)
+  const [anchorElView, setAnchorElView] = useState<null | HTMLElement>(null)
+
+  const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElNav(event.currentTarget)
+  }
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null)
+  }
+  const handleOpenThreeDMenu = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElThreeD(event.currentTarget)
+  }
+  const handleCloseThreeDMenu = () => {
+    setAnchorElThreeD(null)
+  }
+  const handleOpenFileMenu = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElFile(event.currentTarget)
+  }
+  const handleCloseFileMenu = () => {
+    setAnchorElFile(null)
+  }
+  const handleOpenEditMenu = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElThreeD(event.currentTarget)
+  }
+  const handleCloseEditMenu = () => {
+    setAnchorElEdit(null)
+  }
+  const handleOpenViewMenu = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElView(event.currentTarget)
+  }
+  const handleCloseViewMenu = () => {
+    setAnchorElView(null)
+  }
 
   // ====================================================
   // FUNCTIONAL ACTIONS (FUNCTIONS ON FUNCTIONAL NOUNS)
@@ -2047,227 +2133,324 @@ const ToolBar = (): JSX.Element => {
     }
   }
 
-  // ==================================================
+  // ============================================================
 
   // Component onMount hook
   useEffect(() => {
+    const word = "YO YO YO"
     // console.debug("ToolBar onMount", word)
     return () => {
       // console.debug("ToolBar onUnmount", word)
     }
   }, [])
 
+  const pages = ['Products', 'Pricing', 'Blog'];
+  const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+
   return (
-    <div id="toolBar">
-      <ul>
-        <li className="dropdown">
-          <a className="dropbtn">
-            ThreeD
-          </a>
-          <div className="dropdown-content">
-            <a onClick={actionNewProject}>
-              New ThreeD
+    <AppBar id="toolBar" position="static">
+      <Container maxWidth="xl">
+        <Toolbar disableGutters>
+
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+
+            <Button
+              key="ThreeD"
+              onClick={handleOpenThreeDMenu}
+              sx={{ my: 1, color: 'white', display: 'block' }}
+            >
+              ThreeD
+            </Button>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar-threed"
+              anchorEl={anchorElThreeD}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              open={Boolean(anchorElThreeD)}
+              onClose={handleCloseThreeDMenu}
+            >
+              <MenuItem key="New ThreeD" onClick={handleCloseThreeDMenu}>
+                <Typography>New ThreeD</Typography>
+              </MenuItem>
+              <MenuItem key="New Project" onClick={handleCloseThreeDMenu}>
+                <Typography>New Project</Typography>
+              </MenuItem>
+              <MenuItem key="New Plan" onClick={handleCloseThreeDMenu}>
+                <Typography>New Plan</Typography>
+              </MenuItem>
+              {/* <MenuItem key="Save Plan" onClick={handleCloseThreeDMenu}>
+                <Typography id="saveBtn" onClick={savePlan}>Save Plan</Typography>
+              </MenuItem> */}
+              <MenuItem key="New Simulation" onClick={handleCloseThreeDMenu}>
+                <Typography>New Simulation</Typography>
+              </MenuItem>
+            </Menu>
+
+            <Button
+              key="File"
+              onClick={handleOpenFileMenu}
+              sx={{ my: 1, color: 'white', display: 'block' }}
+            >
+              File
+            </Button>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar-file"
+              anchorEl={anchorElFile}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElFile)}
+              onClose={handleCloseFileMenu}
+            >
+              <MenuItem key="Load File" onClick={handleCloseFileMenu}>
+                <Typography id="loadBtn" onClick={doLoadFile}>Load File</Typography>
+                <input
+                  type="file"
+                  style={{ display: "inline-block" }}
+                  id="file"
+                  name="file"
+                  onChange={doLoadFileAsText}
+                />
+              </MenuItem>
+              <MenuItem key="Save File" onClick={handleCloseFileMenu}>
+                <Typography id="saveBtn" onClick={doSaveFile}>Save File</Typography>
+              </MenuItem>
+              <MenuItem key="New Plan" onClick={handleCloseFileMenu}>
+                <Typography>New Plan</Typography>
+              </MenuItem>
+              <MenuItem key="Export As OBJ" onClick={handleCloseFileMenu}>
+                <Typography id="exportBtn" onClick={() => exportToObj}>Export As OBJ</Typography>
+              </MenuItem>
+              <MenuItem key="Create Thumb" onClick={handleCloseFileMenu}>
+                <Typography id="createThumb" onClick={() => createThumbForHistory}>Create Thumb</Typography>
+              </MenuItem>
+            </Menu>
+
+            <Button
+              key="Edit"
+              onClick={handleOpenEditMenu}
+              sx={{ my: 1, color: 'white', display: 'block' }}
+            >
+              Edit
+            </Button>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar-edit"
+              anchorEl={anchorElEdit}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElEdit)}
+              onClose={handleCloseEditMenu}
+            >
+              <MenuItem key="Undo" onClick={handleCloseEditMenu}>
+                <Typography id="undoBtn" onClick={doUndo}>Undo</Typography>
+              </MenuItem>
+              <MenuItem key="Redo" onClick={handleCloseEditMenu}>
+                <Typography id="redoBtn" onClick={doRedo}>Redo</Typography>
+              </MenuItem>
+            </Menu>
+
+            <Button
+              key="View"
+              onClick={handleOpenViewMenu}
+              sx={{ my: 1, color: 'white', display: 'block' }}
+            >
+              View
+            </Button>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar-view"
+              anchorEl={anchorElView}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElView)}
+              onClose={handleCloseViewMenu}
+            >
+              <MenuItem key="Modal: About" onClick={handleCloseViewMenu}>
+                <Typography onClick={(e) => modalStore.set.isOpenModalAbout(true)}>Modal: About</Typography>
+              </MenuItem>
+              <MenuItem key="Modal: Model3d" onClick={handleCloseViewMenu}>
+                <Typography onClick={(e) => modalStore.set.isOpenModalModel3d(true)}>Modal: Model3d</Typography>
+              </MenuItem>
+              <MenuItem key="Modal: Loading" onClick={handleCloseViewMenu}>
+                <Typography onClick={(e) => modalStore.set.isOpenModalLoading(true)}>Modal: Loading</Typography>
+              </MenuItem>
+              <MenuItem key="Modal: Share" onClick={handleCloseViewMenu}>
+                <Typography onClick={(e) => modalStore.set.isOpenModalShare(true)}>Modal: Share</Typography>
+              </MenuItem>
+              <MenuItem key="Dialog: Share" onClick={handleCloseViewMenu}>
+                <Typography onClick={doOpenShareDialog}>Dialog: Share</Typography>
+              </MenuItem>
+              <MenuItem key="2D Plan Properties" onClick={handleCloseViewMenu}>
+                <Typography onClick={() => setPropertiesView('planView')}>2D Plan Properties</Typography>
+              </MenuItem>
+              <MenuItem key="2D Plan Fullscreen" onClick={handleCloseViewMenu}>
+                <Typography onClick={() => doOpenFullscreen('#planView')}>2D Plan Fullscreen</Typography>
+              </MenuItem>
+              <MenuItem key="3D Plan Properties" onClick={handleCloseViewMenu}>
+                <Typography onClick={() => setPropertiesView('3dView')}>3D Plan Properties</Typography>
+              </MenuItem>
+              <MenuItem key="3D Plan Fullscreen" onClick={handleCloseViewMenu}>
+                <Typography onClick={() => doOpenFullscreen('#view3d')}>3D Plan Fullscreen</Typography>
+              </MenuItem>
+              {/* <MenuItem key="Defaults" onClick={handleCloseViewMenu}>
+                <Typography onClick={() => setPropertiesView('defaults')}>Defaults</Typography>
+              </MenuItem> */}
+              {/* <MenuItem key="Ground Properties" onClick={handleCloseViewMenu}>
+                <Typography onClick={() => setToolMode('ground')} id="groundPropertiesBtn">Ground Properties</Typography>
+              </MenuItem> */}
+              <MenuItem key="Fullscreen" onClick={handleCloseViewMenu}>
+                <Typography onClick={() => doOpenFullscreen('body')} id="fullscreenApp">Fullscreen</Typography>
+              </MenuItem>
+            </Menu>
+
+          </Box>
+        </Toolbar>
+
+
+        <ul style={{ display: "none" }}>
+
+          <li className="dropdown">
+            <a className="dropbtn">
+              Layers
             </a>
-            <hr />
-            <a onClick={actionNewProject}>
-              New Project
+            <div className="dropdown-content">
+              <a onClick={() => { newLevel }}>New Noun Layer</a>
+            </div>
+          </li>
+          <li className="dropdown">
+            <a className="dropbtn">
+              Tools
             </a>
-            {/* <a onClick="setNewPlan();"> */}
-            <a onClick={actionNewPlan}>
-              New Plan
-            </a>
-            {/*
-            <a
-              id="saveBtn"
-              onClick="savePlan();">
-              Save Plan
-            </a>
+            <div className="dropdown-content">
+              <a onClick={() => { }}>Tool 1</a>
+              <a onClick={() => { }}>Tool 2</a>
+              <a onClick={() => { }}>Tool 3</a>
+              <a onClick={() => { }}>Tool 4</a>
+              <a onClick={() => { }}>Tool 5</a>
+              <a onClick={() => { }}>Tool 6</a>
+              <a onClick={() => { }}>Tool 7</a>
+              <a onClick={() => { }}>Tool 8</a>
+            </div>
+          </li>
+          {/* <li>
+              <a onClick={doLog}>Log</a>
+            </li>
+            <li>
+              <a onClick={showAbout}>About</a>
+            </li> */}
+          <li id="toolModes" style={{ position: "absolute", top: "4px", right: "16px" }}>
+            -||- TOOL MODES -||-
+          </li>
+          {/*
+            <li>
+              <a
+                id="pointerTool"
+                onClick={setToolMode('pointer')}
+                className="toolButton activeTool"
+                title="Pointer Select"
+                alt="Pointer Select">
+                <img src="/demo/media/pointericonWhite.png" height="24px" />
+              </a>
+            </li>
+            <li>
+              <a
+                id="handTool"
+                onClick="setToolMode('hand');"
+                className="toolButton"
+                title="Hand Tool"
+                alt="Hand Tool">
+                <img src="/demo/media/handIcon.gif" height="24px" />
+              </a>
+            </li>
+            <li>
+              <a
+                id="addWallTool"
+                onClick="setToolMode('walls');"
+                className="toolButton"
+                title="Add Wall"
+                alt="Add Wall">
+                <img src="/demo/media/newWallWhite2.png" height="24px" />
+              </a>
+            </li>
+            <li>
+              <a
+                id="addFloorTool"
+                onClick="setToolMode('floor');"
+                className="toolButton"
+                title="Add Floor"
+                alt="Add Floor">
+                <img src="/demo/media/newFloorWhite2.png" height="24px" />
+              </a>
+            </li>
+            <li>
+              <a
+                id="addRoofTool"
+                onClick="setToolMode('roof');"
+                className="toolButton"
+                title="Add Roof"
+                alt="Add Roof">
+                <img src="/demo/media/newRoofWhite2.png" height="24px" />
+              </a>
+            </li>
+            <li>
+              <a
+                id="addRulerTool"
+                onClick="setToolMode('dimension');"
+                className="toolButton"
+                title="Add Dimension"
+                alt="Add Dimension">
+                <img src="/demo/media/newRulerWhite2.png" height="24px" />
+              </a>
+            </li>
+            <li>
+              <a
+                id="addTextTool"
+                onClick="setToolMode('text');"
+                className="toolButton"
+                title="Add Text Annotation"
+                alt="Add Text Annotation">
+                <img src="/demo/media/newTextWhite.png" height="24px" />
+              </a>
+            </li>
             */}
-            <a onClick={actionNewSimulation}>
-              New Simulation
-            </a>
-            <a
-              id="shareBtn"
-              onClick={doOpenShareDialog}
-            >
-              Share
-            </a>
-            <hr />
-          </div>
-        </li>
-        <li className="dropdown">
-          <a className="dropbtn">
-            File
-          </a>
-          <div className="dropdown-content">
-            <a id="loadBtn" onClick={doLoadFile}>Load File</a>
-            <input
-              type="file"
-              style={{ display: "inline-block" }}
-              id="file"
-              name="file"
-              onChange={doLoadFileAsText}
-            />
-            <hr />
-            <a id="saveBtn" onClick={doSaveFile}>Save File</a>
-            <hr />
-            <a id="exportBtn" onClick={() => exportToObj}>Export As OBJ</a>
-            {/* <a id="createThumb" onClick="createThumbForHistory();">Create Thumb</a> */}
-          </div>
-        </li>
-        <li className="dropdown">
-          <a className="dropbtn">
-            Edit
-          </a>
-          <div className="dropdown-content">
-            <a id="undoBtn" onClick={doUndo}>Undo</a>
-            <a id="redoBtn" onClick={doRedo}>Redo</a>
-          </div>
-        </li>
-        <li className="dropdown">
-          <a className="dropbtn">
-            View
-          </a>
-          <div className="dropdown-content">
-            <a onClick={() => setPropertiesView('planView')}>2D Plan Properties</a>
-            <a onClick={() => doOpenFullscreen('#planView')}>2D Plan Fullscreen</a>
-            <hr />
-            <a onClick={() => setPropertiesView('3dView')}>3D Plan Properties</a>
-            <a onClick={() => doOpenFullscreen('#view3d')}>3D Plan Fullscreen</a>
-            {/*
-            <a
-              id="defaultsBtn"
-              onClick="setPropertiesView('defaults');"
-            >
-              Defaults
-            </a>
-            */}
-            {/*
-            <a
-              id="groundPropertiesButton"
-              onClick={setToolMode('ground')}
-            >
-              Ground Properties
-            </a>
-            */}
-            <a
-              id="fullscreenApp"
-              onClick={() => doOpenFullscreen('body')}
-            >
-              Fullscreen
-            </a>
-          </div>
-        </li>
-        <li className="dropdown">
-          <a className="dropbtn">
-            Layers
-          </a>
-          <div className="dropdown-content">
-            <a onClick={() => { newLevel }}>New Noun Layer</a>
-          </div>
-        </li>
-        <li className="dropdown">
-          <a className="dropbtn">
-            Tools
-          </a>
-          <div className="dropdown-content">
-            <a onClick={() => { }}>Tool 1</a>
-            <a onClick={() => { }}>Tool 2</a>
-            <a onClick={() => { }}>Tool 3</a>
-            <a onClick={() => { }}>Tool 4</a>
-            <a onClick={() => { }}>Tool 5</a>
-            <a onClick={() => { }}>Tool 6</a>
-            <a onClick={() => { }}>Tool 7</a>
-            <a onClick={() => { }}>Tool 8</a>
-          </div>
-        </li>
-        {/* <li>
-          <a onClick={doLog}>Log</a>
-        </li>
-        <li>
-          <a onClick={showAbout}>About</a>
-        </li> */}
-        <li id="toolModes" style={{ position: "absolute", top: "4px", right: "16px" }}>
-          -||- TOOL MODES -||-
-        </li>
-        {/*
-        <li>
-          <a
-            id="pointerTool"
-            onClick={setToolMode('pointer')}
-            className="toolButton activeTool"
-            title="Pointer Select"
-            alt="Pointer Select">
-            <img src="/demo/media/pointericonWhite.png" height="24px" />
-          </a>
-        </li>
-        <li>
-          <a
-            id="handTool"
-            onClick="setToolMode('hand');"
-            className="toolButton"
-            title="Hand Tool"
-            alt="Hand Tool">
-            <img src="/demo/media/handIcon.gif" height="24px" />
-          </a>
-        </li>
-        <li>
-          <a
-            id="addWallTool"
-            onClick="setToolMode('walls');"
-            className="toolButton"
-            title="Add Wall"
-            alt="Add Wall">
-            <img src="/demo/media/newWallWhite2.png" height="24px" />
-          </a>
-        </li>
-        <li>
-          <a
-            id="addFloorTool"
-            onClick="setToolMode('floor');"
-            className="toolButton"
-            title="Add Floor"
-            alt="Add Floor">
-            <img src="/demo/media/newFloorWhite2.png" height="24px" />
-          </a>
-        </li>
-        <li>
-          <a
-            id="addRoofTool"
-            onClick="setToolMode('roof');"
-            className="toolButton"
-            title="Add Roof"
-            alt="Add Roof">
-            <img src="/demo/media/newRoofWhite2.png" height="24px" />
-          </a>
-        </li>
-        <li>
-          <a
-            id="addRulerTool"
-            onClick="setToolMode('dimension');"
-            className="toolButton"
-            title="Add Dimension"
-            alt="Add Dimension">
-            <img src="/demo/media/newRulerWhite2.png" height="24px" />
-          </a>
-        </li>
-        <li>
-          <a
-            id="addTextTool"
-            onClick="setToolMode('text');"
-            className="toolButton"
-            title="Add Text Annotation"
-            alt="Add Text Annotation">
-            <img src="/demo/media/newTextWhite.png" height="24px" />
-          </a>
-        </li>
-        */}
-      </ul>
-    </div>
+        </ul>
+
+      </Container>
+    </AppBar>
   )
 }
 
-const CatalogView = (): JSX.Element => {
+const CatalogView: FunctionComponent = (): JSX.Element => {
   // console.debug("CatalogView")
   useEffect(() => {
     console.debug('CatalogView onMount')
@@ -2285,7 +2468,7 @@ const CatalogView = (): JSX.Element => {
   )
 }
 
-const PropertiesView = (): JSX.Element => {
+const PropertiesView: FunctionComponent = (): JSX.Element => {
   // console.debug("PropertiesView")
   useEffect(() => {
     console.debug('PropertiesView onMount')
@@ -3279,7 +3462,7 @@ const PropertiesView = (): JSX.Element => {
   )
 }
 
-const PlanView = (): JSX.Element => {
+const PlanView: FunctionComponent = (): JSX.Element => {
   // console.debug("PlanView")
   useEffect(() => {
     console.debug('PlanView onMount')
@@ -3323,7 +3506,10 @@ const PlanView = (): JSX.Element => {
   )
 }
 
-const TheBottom = (): JSX.Element => {
+const TheBottom: FunctionComponent = (): JSX.Element => {
+
+  const word = `[MM] @ ${new Date().toISOString()}`
+
   // console.debug("MyComponent")
   useEffect(() => {
     console.debug('MyComponent onMount')
@@ -3331,42 +3517,37 @@ const TheBottom = (): JSX.Element => {
       console.debug('MyComponent onUnmount')
     }
   }, [])
+
   return (
-    <div>
+    <MDBox>
       <canvas
         id="rulerLeft"
         width="30"
         height="500"
         onMouseDown="addVerticalGuide();"
-        onMouseUp="removeVerticalGuide()"></canvas>
+        onMouseUp="removeVerticalGuide()"
+      />
       <canvas
         id="rulerBottom"
         width="1024"
         height="20"
         onMouseDown="addHorizontalGuide();"
-        onMouseUp="removeHorizontalGuide()"></canvas>
+        onMouseUp="removeHorizontalGuide()"
+      />
 
-      <div id="mouseIndicatorY"></div>
-      <div id="mouseIndicatorX"></div>
+      <div id="mouseIndicatorY" />
+      <div id="mouseIndicatorX" />
 
-      <div id="compass"></div>
+      <div id="compass" />
 
       <div id="view3d">
-        <canvas id="threeCanvas"></canvas>
+
+        <canvas id="threeCanvas" />
+
         <div id="overlayLogo3dView" className="overlayLogo">
-          <a
-            href="/"
-            style={{ float: "left", padding: "0px", marginTop: "0px" }}
-          ><img
-              src="/favicon/favicon.png"
-              height="77px"
-              title="ThreeDGarden"
-              alt="ThreeDGarden" /></a>&nbsp;
-          <a
-            href="/"
-            style={{ paddingLeft: "10px", textDecoration: "none", fontSize: "32px" }}
-          >ThreeDGarden</a>
+          HEY HEY HEY
         </div>
+
         <div id="overlayMenu3dView">
           <MDButton
             id="overlay3dviewRecenterBtn"
@@ -3382,11 +3563,12 @@ const TheBottom = (): JSX.Element => {
           </MDButton>
         </div>
       </div>
-      <div id="verticalSlider"></div>
-      <div id="horizontalSliderLeft"></div>
-      <div id="horizontalSliderRight"></div>
 
-      <div id="furnitureDragDiv"></div>
+      <div id="verticalSlider" />
+      <div id="horizontalSliderLeft" />
+      <div id="horizontalSliderRight" />
+
+      <div id="furnitureDragDiv" />
 
       <Image
         id="fullscreenPlanViewBtn"
@@ -3405,12 +3587,15 @@ const TheBottom = (): JSX.Element => {
         onClick="doOpenFullscreen('view3d');"
       />
 
-      <progress value="50" max="100" className="center" id="progressBar"></progress>
-    </div>
+      <progress value="50" max="100" className="center" id="progressBar" />
+
+    </MDBox>
   )
 }
 
 const ReactThreeFiberView = (): JSX.Element => {
+
+  const word = `[MM] @ ${new Date().toISOString()}`
 
   // console.debug("ReactThreeFiberView")
   // useEffect(() => {
@@ -3432,7 +3617,10 @@ const ReactThreeFiberView = (): JSX.Element => {
   )
 }
 
-const MyComponent = (): JSX.Element => {
+const MyComponent: FunctionComponent = (): JSX.Element => {
+
+  const word = `[MM] @ ${new Date().toISOString()}`
+
   // console.debug("MyComponent")
   useEffect(() => {
     console.debug('MyComponent onMount')
@@ -3440,6 +3628,7 @@ const MyComponent = (): JSX.Element => {
       console.debug('MyComponent onUnmount')
     }
   }, [])
+
   return (
     <div>...MyComponent [returns] JSX here...</div>
   )
