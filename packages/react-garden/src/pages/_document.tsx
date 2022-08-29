@@ -1,12 +1,13 @@
 // following this tutorial:
 // https://dev.to/hajhosein/nextjs-mui-v5-typescript-tutorial-and-starter-3pab
 
-import React from 'react'
+import { Children, Suspense } from 'react'
 import Document, { Html, Head, Main, NextScript } from "next/document"
 import createEmotionServer from "@emotion/server/create-instance"
 import theme from "~/themes/theme-dark"
 import createEmotionCache from "~/themes/common/createEmotionCache"
-import ThreeDLinks from "~/components/threed/ThreeDLinks"
+// import ThreeDLinks from "~/components/threed/ThreeDLinks"
+import CircularProgress from "@mui/material/CircularProgress"
 
 export default class MyDocument extends Document {
   render() {
@@ -32,9 +33,11 @@ export default class MyDocument extends Document {
           {/* eslint-enable @next/next/google-font-display */}
         </Head>
         <body>
-          {/* <ThreeDLinks /> */}
-          <Main />
-          <NextScript />
+          <Suspense fallback={<CircularProgress />}>
+            {/* <ThreeDLinks /> */}
+            <Main />
+            <NextScript />
+          </Suspense>
         </body>
       </Html>
     )
@@ -99,7 +102,7 @@ MyDocument.getInitialProps = async (ctx) => {
     // emotionStyleTags,
     // Styles fragment is rendered after the app and page rendering finish.
     styles: [
-      ...React.Children.toArray(initialProps.styles),
+      ...Children.toArray(initialProps.styles),
       ...emotionStyleTags,
     ],
   }
