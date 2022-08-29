@@ -18,7 +18,7 @@ module.exports = {
   },
   plugins: ['react', '@typescript-eslint', 'prettier'],
   rules: {
-    'arrow-body-style': ['error', 'always'],
+    'arrow-body-style': ['error', 'always'], // 'as-needed'
     'react/react-in-jsx-scope': 'off',
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
     'react/display-name': 'off',
@@ -41,7 +41,7 @@ module.exports = {
     // ],
 
     // add new line above return
-    'newline-before-return': 'error',
+    // 'newline-before-return': 'error',
 
     // add new line below import
     'import/newline-after-import': [
@@ -116,6 +116,13 @@ module.exports = {
     // ]
     // TERNARY OPERATORS
     'no-nested-ternary': 'off',
+    // ELSE-IF RETURNS
+    'no-else-return': [
+      'error',
+      {
+        allowElseIf: true
+      }
+    ]
   },
   settings: {
     'import/resolver': {
