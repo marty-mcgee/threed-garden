@@ -18,6 +18,7 @@
 .env.development.local
 .env.test.local
 .env.production.local
+*.pem
 
 # logs
 npm-debug.log*
@@ -34,4 +35,27 @@ pnpm-lock.yaml
 
 # next
 .next
+/.next/
+/out/
 # next-env.d.ts
+
+# typescript
+*.tsbuildinfo
+
+#amplify-do-not-edit-begin
+/amplify
+amplify/\#current-cloud-backend
+amplify/.config/local-*
+amplify/logs
+amplify/mock-data
+amplify/backend/amplify-meta.json
+amplify/backend/.temp
+awsconfiguration.json
+amplifyconfiguration.json
+amplifyconfiguration.dart
+amplify-build-config.json
+amplify-gradle-config.json
+amplifytools.xcconfig
+.secret-*
+**.sample
+#amplify-do-not-edit-end
