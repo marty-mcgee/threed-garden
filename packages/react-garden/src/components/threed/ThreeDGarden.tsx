@@ -74,7 +74,7 @@ import MDProgress from "~/components/mui/MDProgress"
 
 import paper from "paper"
 
-import * as THREE from "three"
+// import * as THREE from "three"
 import { TrackballControls } from "three/examples/jsm/controls/TrackballControls.js"
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"
@@ -87,9 +87,6 @@ import { Canvas, useFrame } from '@react-three/fiber'
 
 // css
 import "~/assets/demo/css/Demo.module.css"
-// import "~/assets/demo/css/all.css"
-// import "~/assets/demo/css/jquery.minicolors.css"
-// import "~/assets/demo/css/style.css"
 
 // no no no, never again
 // import * as $ from "jquery"

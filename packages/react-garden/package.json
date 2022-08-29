@@ -131,7 +131,7 @@
     "jsvectormap": "1.5.1",
     "react-chartjs-2": "4.3.1",
     "react-flatpickr": "3.10.13",
-    "react-images-viewer": "1.7.1",
+    "react-images-viewer": "github:marty-mcgee/react-images-viewer#master",
     "react-quill": "1.3.5",
     "react-scripts": "5.0.1",
     "react-table": "7.8.0",
