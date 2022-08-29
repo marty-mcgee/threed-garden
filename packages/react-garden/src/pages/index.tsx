@@ -1,56 +1,42 @@
-// import * as React from "react"
-import type { NextPage } from "next"
-import Link from "next/link"
+// ** React Imports
+import { useEffect } from 'react'
 
-// @mui material components
-import Grid from "@mui/material/Grid"
-// import Tooltip from "@mui/material/Tooltip"
-// import Icon from "@mui/material/Icon"
+// ** Next Imports
+import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
 
-// Material Dashboard 2 PRO React TS components
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
+// ** Spinner Import
+import Spinner from 'src/@core/components/spinner'
 
-import DashboardLayout from "~/components/elements/LayoutContainers/DashboardLayout"
-import DashboardNavbar from "~/components/elements/Navbars/DashboardNavbar"
-import Footer from "~/components/elements/Footer"
+// ** Hook Imports
+import { useAuth } from 'src/hooks/useAuth'
 
-/* EXAMPLE (WORDPRESS HEADLESS) */
-// import Container from "@mui/material/Container"
-// import Typography from "@mui/material/Typography"
-// import Box from "@mui/material/Box"
-// import MuiLink from "@mui/material/Link"
-// import Link from "~/themes/theme-blog/Link"
-import ProTip from "~/themes/theme-blog/ProTip"
-import Copyright from "~/themes/theme-blog/Copyright"
+/**
+ *  Set Home URL based on User Roles
+ */
+export const getHomeRoute = (role: any) => {
+  if (role === 'client') return '/acl'
+  else return '/dashboards/crm'
+}
 
-const Home: NextPage = () => (
-  <DashboardLayout>
-    <DashboardNavbar />
-    <MDBox>
-      <Grid container
-        sx={{
-          my: 0,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-        }}>
-        <MDTypography component="h1" variant="h3" gutterBottom>
-          ThreeD Garden for FarmBot + ThreeJS
-        </MDTypography>
-        <MDTypography component="h2" variant="h4" gutterBottom>
-          MUI v5 + Next.js with TypeScript
-        </MDTypography>
-        <Link href="/participate" color="primary">
-          -&gt; Click Here to Participate in ThreeD Garden &lt;-
-        </Link>
-        <ProTip />
-        <Copyright />
-      </Grid>
-    </MDBox>
-    <Footer />
-  </DashboardLayout>
-)
+const Home: NextPage = () => {
+  // ** Hooks
+  const auth = useAuth()
+  const router = useRouter()
+  useEffect(() => {
+    if (auth.user && auth.user.role) {
+      const homeRoute = getHomeRoute(auth.user.role)
+
+      // Redirect user to Home URL
+      router.replace(homeRoute)
+    }
+    else {
+      console.debug("user NOT AUTHORIZED")
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return <Spinner />
+}
 
 export default Home

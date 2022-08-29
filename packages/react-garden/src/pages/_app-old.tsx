@@ -222,7 +222,7 @@ const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithL
       {/* PASS THE COMPONENT IN */}
       <Component {...pageProps} />
 
-      {/* SHOW/HIDE SIDENAV */}
+      {/* SHOW/HIDE SIDENAV
       {layout === "dashboard" && (
         <>
           <Sidenav
@@ -234,13 +234,14 @@ const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithL
             color={sidenavColor}
           />
           <Configurator />
-          {/* {configsButton} */}
         </>
       )}
 
       {layout === "vr" && (
         <Configurator />
       )}
+      */}
+      {/* {configsButton} */}
 
     </ThemeProvider>
   )

@@ -21,40 +21,39 @@ const BoxWrapper = styled(Box)(({ theme }) => ({
 }))
 
 const Img = styled('img')(({ theme }) => ({
-  marginBottom: theme.spacing(10),
+  marginTop: theme.spacing(9.75),
+  marginBottom: theme.spacing(9.75),
   [theme.breakpoints.down('lg')]: {
-    height: 450,
-    marginTop: theme.spacing(10)
+    height: 450
   },
   [theme.breakpoints.down('md')]: {
     height: 400
-  },
-  [theme.breakpoints.up('lg')]: {
-    marginTop: theme.spacing(13)
   }
 }))
 
 const TreeIllustration = styled('img')(({ theme }) => ({
-  left: 0,
-  bottom: '5rem',
+  left: '0.375rem',
+  bottom: '5.5rem',
   position: 'absolute',
   [theme.breakpoints.down('lg')]: {
+    left: 0,
     bottom: 0
   }
 }))
 
-const Error500 = () => {
+const UnderMaintenance = () => {
   return (
     <Box className='content-center'>
       <Box sx={{ p: 5, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
         <BoxWrapper>
-          <Typography variant='h1'>500</Typography>
           <Typography variant='h5' sx={{ mb: 1, fontSize: '1.5rem !important' }}>
-            Internal server error 👨🏻‍💻
+            Under Maintenance! 🚧
           </Typography>
-          <Typography variant='body2'>Oops, something went wrong!</Typography>
+          <Typography variant='body2'>
+            Sorry for the inconvenience but we&prime;re performing some maintenance at the moment
+          </Typography>
         </BoxWrapper>
-        <Img height='487' alt='error-illustration' src='/images/pages/500.png' />
+        <Img height='487' alt='under-maintenance-illustration' src='/images/pages/misc-under-maintenance.png' />
         <Link passHref href='/'>
           <Button component='a' variant='contained' sx={{ px: 5.5 }}>
             Back to Home
@@ -65,6 +64,6 @@ const Error500 = () => {
     </Box>
   )
 }
-Error500.getLayout = page => <BlankLayout>{page}</BlankLayout>
+UnderMaintenance.getLayout = page => <BlankLayout>{page}</BlankLayout>
 
-export default Error500
+export default UnderMaintenance
