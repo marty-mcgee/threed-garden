@@ -114,7 +114,18 @@ import "~/assets/demo/css/Demo.module.css"
 // ==========================================================
 // UUID
 import { v4 as newUUID } from "uuid"
+
+// HMMM
 import button from "~/themes/theme-dark/components/button"
+
+// TOOL MODE ICONS
+import ToolIconPointer from '@mui/icons-material/TouchApp'
+import ToolIconHand from '@mui/icons-material/PanTool'
+import ToolIconAddWall from "@mui/icons-material/HouseSiding"
+import ToolIconAddFloor from "@mui/icons-material/ViewModule"
+import ToolIconAddRoof from "@mui/icons-material/Roofing"
+import ToolIconAddRuler from "@mui/icons-material/Straighten"
+import ToolIconAddText from "@mui/icons-material/TextFields"
 
 // ==========================================================
 // COLORFUL CONSOLE MESSAGES (ccm)
@@ -1395,6 +1406,8 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
   const [anchorElFile, setAnchorElFile] = useState<null | HTMLElement>(null)
   const [anchorElEdit, setAnchorElEdit] = useState<null | HTMLElement>(null)
   const [anchorElView, setAnchorElView] = useState<null | HTMLElement>(null)
+  const [anchorElLayers, setAnchorElLayers] = useState<null | HTMLElement>(null)
+  const [anchorElTools, setAnchorElTools] = useState<null | HTMLElement>(null)
 
   const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget)
@@ -1425,6 +1438,18 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
   }
   const handleCloseViewMenu = () => {
     setAnchorElView(null)
+  }
+  const handleOpenLayersMenu = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElLayers(event.currentTarget)
+  }
+  const handleCloseLayersMenu = () => {
+    setAnchorElLayers(null)
+  }
+  const handleOpenToolsMenu = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElTools(event.currentTarget)
+  }
+  const handleCloseToolsMenu = () => {
+    setAnchorElTools(null)
   }
 
   // ====================================================
@@ -2092,14 +2117,14 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
   }
 
   const doAddNewLevel = (level) => {
-    // console.debug("%caddNewLevel called", ccm1, level)
+    console.debug("%caddNewLevel called", ccm1, level)
     return (
       !1
     )
   }
 
   const doSetLevel = (level) => {
-    // console.debug("%csetLevel called", ccm1, level)
+    console.debug("%csetLevel called", ccm1, level)
     return (
       !1
     )
@@ -2157,7 +2182,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             <Button
               key="ThreeD"
               onClick={handleOpenThreeDMenu}
-              sx={{ my: 1, color: 'white', display: 'block' }}
+              sx={{ my: 1, color: '#FFFFFF', display: 'block' }}
             >
               ThreeD
             </Button>
@@ -2169,7 +2194,6 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 vertical: 'top',
                 horizontal: 'left',
               }}
-              keepMounted
               transformOrigin={{
                 vertical: 'top',
                 horizontal: 'left',
@@ -2197,7 +2221,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             <Button
               key="File"
               onClick={handleOpenFileMenu}
-              sx={{ my: 1, color: 'white', display: 'block' }}
+              sx={{ my: 1, color: '#FFFFFF', display: 'block' }}
             >
               File
             </Button>
@@ -2207,12 +2231,12 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               anchorEl={anchorElFile}
               anchorOrigin={{
                 vertical: 'top',
-                horizontal: 'right',
+                horizontal: 'left',
               }}
               keepMounted
               transformOrigin={{
                 vertical: 'top',
-                horizontal: 'right',
+                horizontal: 'left',
               }}
               open={Boolean(anchorElFile)}
               onClose={handleCloseFileMenu}
@@ -2244,7 +2268,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             <Button
               key="Edit"
               onClick={handleOpenEditMenu}
-              sx={{ my: 1, color: 'white', display: 'block' }}
+              sx={{ my: 1, color: '#FFFFFF', display: 'block' }}
             >
               Edit
             </Button>
@@ -2254,12 +2278,12 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               anchorEl={anchorElEdit}
               anchorOrigin={{
                 vertical: 'top',
-                horizontal: 'right',
+                horizontal: 'left',
               }}
               keepMounted
               transformOrigin={{
                 vertical: 'top',
-                horizontal: 'right',
+                horizontal: 'left',
               }}
               open={Boolean(anchorElEdit)}
               onClose={handleCloseEditMenu}
@@ -2275,7 +2299,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             <Button
               key="View"
               onClick={handleOpenViewMenu}
-              sx={{ my: 1, color: 'white', display: 'block' }}
+              sx={{ my: 1, color: '#FFFFFF', display: 'block' }}
             >
               View
             </Button>
@@ -2285,12 +2309,12 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               anchorEl={anchorElView}
               anchorOrigin={{
                 vertical: 'top',
-                horizontal: 'right',
+                horizontal: 'left',
               }}
               keepMounted
               transformOrigin={{
                 vertical: 'top',
-                horizontal: 'right',
+                horizontal: 'left',
               }}
               open={Boolean(anchorElView)}
               onClose={handleCloseViewMenu}
@@ -2333,118 +2357,179 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               </MenuItem>
             </Menu>
 
-          </Box>
-        </Toolbar>
-
-
-        <ul style={{ display: "none" }}>
-
-          <li className="dropdown">
-            <a className="dropbtn">
+            <Button
+              key="Layers"
+              onClick={handleOpenLayersMenu}
+              sx={{ my: 1, color: '#FFFFFF', display: 'block' }}
+            >
               Layers
-            </a>
-            <div className="dropdown-content">
-              <a onClick={() => { newLevel }}>New Noun Layer</a>
-            </div>
-          </li>
-          <li className="dropdown">
-            <a className="dropbtn">
-              Tools
-            </a>
-            <div className="dropdown-content">
-              <a onClick={() => { }}>Tool 1</a>
-              <a onClick={() => { }}>Tool 2</a>
-              <a onClick={() => { }}>Tool 3</a>
-              <a onClick={() => { }}>Tool 4</a>
-              <a onClick={() => { }}>Tool 5</a>
-              <a onClick={() => { }}>Tool 6</a>
-              <a onClick={() => { }}>Tool 7</a>
-              <a onClick={() => { }}>Tool 8</a>
-            </div>
-          </li>
-          {/* <li>
-              <a onClick={doLog}>Log</a>
-            </li>
-            <li>
-              <a onClick={showAbout}>About</a>
-            </li> */}
-          <li id="toolModes" style={{ position: "absolute", top: "4px", right: "16px" }}>
-            -||- TOOL MODES -||-
-          </li>
-          {/*
-            <li>
-              <a
-                id="pointerTool"
-                onClick={setToolMode('pointer')}
-                className="toolButton activeTool"
-                title="Pointer Select"
-                alt="Pointer Select">
-                <img src="/demo/media/pointericonWhite.png" height="24px" />
-              </a>
-            </li>
-            <li>
-              <a
-                id="handTool"
-                onClick="setToolMode('hand');"
-                className="toolButton"
-                title="Hand Tool"
-                alt="Hand Tool">
-                <img src="/demo/media/handIcon.gif" height="24px" />
-              </a>
-            </li>
-            <li>
-              <a
-                id="addWallTool"
-                onClick="setToolMode('walls');"
-                className="toolButton"
-                title="Add Wall"
-                alt="Add Wall">
-                <img src="/demo/media/newWallWhite2.png" height="24px" />
-              </a>
-            </li>
-            <li>
-              <a
-                id="addFloorTool"
-                onClick="setToolMode('floor');"
-                className="toolButton"
-                title="Add Floor"
-                alt="Add Floor">
-                <img src="/demo/media/newFloorWhite2.png" height="24px" />
-              </a>
-            </li>
-            <li>
-              <a
-                id="addRoofTool"
-                onClick="setToolMode('roof');"
-                className="toolButton"
-                title="Add Roof"
-                alt="Add Roof">
-                <img src="/demo/media/newRoofWhite2.png" height="24px" />
-              </a>
-            </li>
-            <li>
-              <a
-                id="addRulerTool"
-                onClick="setToolMode('dimension');"
-                className="toolButton"
-                title="Add Dimension"
-                alt="Add Dimension">
-                <img src="/demo/media/newRulerWhite2.png" height="24px" />
-              </a>
-            </li>
-            <li>
-              <a
-                id="addTextTool"
-                onClick="setToolMode('text');"
-                className="toolButton"
-                title="Add Text Annotation"
-                alt="Add Text Annotation">
-                <img src="/demo/media/newTextWhite.png" height="24px" />
-              </a>
-            </li>
-            */}
-        </ul>
+            </Button>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar-layers"
+              anchorEl={anchorElLayers}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              open={Boolean(anchorElLayers)}
+              onClose={handleCloseLayersMenu}
+            >
+              <MenuItem key="New Noun Layer" onClick={handleCloseLayersMenu}>
+                <Typography onClick={() => newLevel("noun")}>New Noun Layer</Typography>
+              </MenuItem>
+            </Menu>
 
+            <Button
+              key="Tools"
+              onClick={handleOpenToolsMenu}
+              sx={{ my: 1, color: '#FFFFFF', display: 'block' }}
+            >
+              Tools
+            </Button>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar-tools"
+              anchorEl={anchorElTools}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              open={Boolean(anchorElTools)}
+              onClose={handleCloseToolsMenu}
+            >
+              <MenuItem key="Tool 1" onClick={handleCloseToolsMenu}>
+                <Typography onClick={() => tool1}>Tool 1</Typography>
+              </MenuItem>
+              <MenuItem key="Tool 2" onClick={handleCloseToolsMenu}>
+                <Typography onClick={() => tool2}>Tool 2</Typography>
+              </MenuItem>
+              <MenuItem key="Tool 3" onClick={handleCloseToolsMenu}>
+                <Typography onClick={() => tool3}>Tool 3</Typography>
+              </MenuItem>
+              <MenuItem key="Do Log" onClick={handleCloseToolsMenu}>
+                <Typography onClick={() => doLog}>Do Log</Typography>
+              </MenuItem>
+              <MenuItem key="Show About" onClick={handleCloseToolsMenu}>
+                <Typography onClick={() => showAbout}>Show About</Typography>
+              </MenuItem>
+            </Menu>
+
+          </Box>
+
+          <Box sx={{ flexGrow: 0, display: { xs: 'none', md: 'flex' } }}>
+            {/* <Button color="inherit">-||- TOOL MODES -||-</Button> */}
+            <Tooltip title="Pointer Tool">
+              <IconButton
+                id="pointerTool"
+                onClick={() => setToolMode('pointer')}
+                aria-label="Pointer Tool"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                size="medium"
+                color="white"
+                sx={{ p: 1 }}
+              >
+                <ToolIconPointer />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Hand Tool">
+              <IconButton
+                id="handTool"
+                onClick={() => setToolMode('hand')}
+                aria-label="Hand Tool"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                size="medium"
+                color="white"
+                sx={{ p: 1 }}
+              >
+                <ToolIconHand />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Wall Tool">
+              <IconButton
+                id="addWallTool"
+                onClick={() => setToolMode('walls')}
+                aria-label="Wall Tool"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                size="medium"
+                color="white"
+                sx={{ p: 1 }}
+              >
+                <ToolIconAddWall />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Floor Tool">
+              <IconButton
+                id="addFloorTool"
+                onClick={() => setToolMode('floor')}
+                aria-label="Floor Tool"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                size="medium"
+                color="white"
+                sx={{ p: 1 }}
+              >
+                <ToolIconAddFloor />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Roof Tool">
+              <IconButton
+                id="addRoofTool"
+                onClick={() => setToolMode('roof')}
+                aria-label="Roof Tool"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                size="medium"
+                color="white"
+                sx={{ p: 1 }}
+              >
+                <ToolIconAddRoof />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Ruler Tool">
+              <IconButton
+                id="addRulerTool"
+                onClick={() => setToolMode('dimension')}
+                aria-label="Ruler Tool"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                size="medium"
+                color="white"
+                sx={{ p: 1 }}
+              >
+                <ToolIconAddRuler />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Text Tool">
+              <IconButton
+                id="addTextTool"
+                onClick={() => setToolMode('text')}
+                aria-label="Text Tool"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                size="medium"
+                color="white"
+                sx={{ p: 1 }}
+              >
+                <ToolIconAddText />
+              </IconButton>
+            </Tooltip>
+          </Box>
+
+        </Toolbar>
       </Container>
     </AppBar>
   )
