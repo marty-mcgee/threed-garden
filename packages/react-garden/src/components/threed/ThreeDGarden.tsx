@@ -53,18 +53,22 @@ import {
   useState,
   useCallback,
   FunctionComponent,
-  MouseEventHandler
+  MouseEventHandler,
+  ReactNode,
+  SyntheticEvent
 } from "react"
 // state management (instead of React.useState)
-import create from 'zustand'
-import shallow from 'zustand/shallow'
-import { subscribeWithSelector } from 'zustand/middleware'
-import produce from 'immer'
+import create from "zustand"
+import shallow from "zustand/shallow"
+import { subscribeWithSelector } from "zustand/middleware"
+import produce from "immer"
 
-import Image from 'next/image'
+import Image from "next/image"
 
 // mui: ui
-import Modal from '@mui/material/Modal'
+import Modal from "@mui/material/Modal"
+import Tabs from "@mui/material/Tabs"
+import Tab from "@mui/material/Tab"
 // mui: Material Dashboard 2 PRO React TS components
 import MDBox from "~/components/mui/MDBox"
 import MDTypography from "~/components/mui/MDTypography"
@@ -83,7 +87,7 @@ import { Sky } from "three/examples/jsm/objects/Sky.js"
 
 // import { TWEEN } from "three/examples/jsm/libs/tween.module.min"
 import TWEEN from "@tweenjs/tween.js"
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame } from "@react-three/fiber"
 
 // css
 import "~/assets/demo/css/Demo.module.css"
@@ -93,7 +97,7 @@ import "~/assets/demo/css/Demo.module.css"
 
 // ==========================================================
 // UUID
-import { v4 as newUUID } from 'uuid'
+import { v4 as newUUID } from "uuid"
 
 // ==========================================================
 // COLORFUL CONSOLE MESSAGES (ccm)
@@ -141,17 +145,57 @@ const clearObject = (object: Object, option: number = 1) => {
 // ==========================================================
 // STYLES (TEMP)
 const styleModal = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '80vw',
-  height: '60vh',
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: "80vw",
+  height: "60vh",
+  bgcolor: "#09090D",
+  border: "2px solid #000",
   boxShadow: 24,
-  p: 2,
+  p: 2
 };
+
+// ==========================================================
+// TS INTERFACES + TYPES
+
+interface TabPanelProps {
+  children?: ReactNode
+  index: number
+  value: number
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <MDBox sx={{ p: 3 }}>
+          <MDTypography variant="div">
+            {children}
+          </MDTypography>
+        </MDBox>
+      )}
+    </div>
+  );
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
+// ==========================================================
 
 // ==========================================================
 // FUNCTIONAL NOUNS
@@ -831,232 +875,238 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
   const [isOpenAboutModal, setIsOpenAboutModal] = useState(false)
   const handleOpenAboutModal = () => setIsOpenAboutModal(true)
   const handleCloseAboutModal = () => setIsOpenAboutModal(false)
+  // tabs
+  const [value, setValue] = useState(0)
+  const handleChange = (event: SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  }
 
   // console.debug("AboutModal")
   // useEffect(() => {
-  //   console.debug('AboutModal onMount')
+  //   console.debug("AboutModal onMount")
   //   return () => {
-  //     console.debug('AboutModal onUnmount')
+  //     console.debug("AboutModal onUnmount")
   //   }
   // }, [])
 
   return (
-    <div>
-      <MDButton onClick={handleOpenAboutModal}>Open About Modal</MDButton>
+    <>
+      <MDButton size="small" onClick={handleOpenAboutModal}>
+        Open About Modal
+      </MDButton>
       <Modal
+        id="aboutModal"
         open={isOpenAboutModal}
         onClose={handleCloseAboutModal}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        {/* <div id="aboutModal" className="modal"> */}
-        <MDBox id="aboutModal" sx={styleModal}>
-          <div className="modal-content">
-            <div className="modal-header" style={{ display: "flex" }}>
-              {/* <span className="close">&times;</span> */}
-              <Image src="/favicon/favicon.png"
-                width={50}
-                height={50}
-                alt="ThreeDGarden"
-                title="ThreeDGarden"
-              />
-              <h3>ThreeDGarden</h3>
-            </div>
-            <div className="modal-body">
+        <MDBox className="modal-content" sx={styleModal}>
 
-              <div className="tab">
-                <MDButton className="tablinks active" onClick={() => openTab('tab1')} id="tab1">Intro</MDButton>
-                <MDButton className="tablinks" onClick={() => openTab('tab2')} id="tab2">Models</MDButton>
-                <MDButton className="tablinks" onClick={() => openTab('tab3')} id="tab3">Examples</MDButton>
-                <MDButton className="tablinks" onClick={() => openTab('tab4')} id="tab4">FAQ</MDButton>
-                <MDButton className="tablinks" onClick={() => openTab('tab5')} id="tab5">Contact</MDButton>
-                <MDButton className="tablinks" onClick={() => openTab('tab6')} id="tab6">Other</MDButton>
-                <MDButton className="tablinks" onClick={() => openTab('tab7')} id="tab7">Supporters</MDButton>
+          <MDBox className="modal-header" style={{ textAlign: "center" }}>
+            <Image src="/favicon/favicon.png"
+              width={50}
+              height={50}
+              alt="ThreeDGarden"
+              title="ThreeDGarden"
+            />
+            <h2>ThreeD Garden</h2>
+          </MDBox>
+
+          <MDBox className="modal-body" sx={{ width: '100%' }}>
+            <MDBox sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+                <Tab label="Intro" {...a11yProps(0)} />
+                <Tab label="Models" {...a11yProps(1)} />
+                <Tab label="Examples" {...a11yProps(2)} />
+                <Tab label="FAQ" {...a11yProps(3)} />
+                <Tab label="Contact" {...a11yProps(4)} />
+                <Tab label="Other" {...a11yProps(5)} />
+                <Tab label="Supporters" {...a11yProps(6)} />
+              </Tabs>
+            </MDBox>
+            <TabPanel value={value} index={0}>
+              <div style={{ paddingBottom: 8 }}>
+                Plan + Share Ideas for your Home + Garden in 2D + 3D
               </div>
-
-              {/*
-              <div id="tab1Content" className="tabcontent" style={{ display: "block" }}>
-                <h3>ThreeDGarden Introduction</h3>
-                <p>Plan + Share Ideas for your Home + Garden in 2D + 3D</p>
-                <div style={{ border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
-                  <p>Save Plan Edits to local web storage : <input type="checkbox" id="saveEditsToLocalStorage" onChange={() => handleSaveEditsLocalStorageOption} />
-                    <span className="tooltip"><img src="/demo/media/info.png" className="tooltip" />
-                      <span className="tooltiptext">Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br />The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the "File->Save" option in the main <a href="http://threedgarden.com">ThreeDGarden</a> toolbar.<br />More info about <a href="https://www.w3schools.com/HTML/html5_webstorage.asp" target="_blank" rel="noreferrer">Local Web Storage</a>.</span>
+              <div style={{ border: "1px solid #272727", padding: 10 }}>
+                <div style={{ textAlign: "center", padding: 10 }}>
+                  <div>Save Plans to Browser&apos;s Local Storage?:</div>
+                  <input
+                    type="checkbox"
+                    id="saveEditsToLocalStorage"
+                    onChange={() => handleSaveEditsLocalStorageOption}
+                    style={{ marginLeft: 5, marginRight: 5 }}
+                  />
+                  <br />
+                  <br />
+                  <span className="tooltip">
+                    <span className="tooltiptext">
+                      Edits you make to plans will be saved to your browser&apos;s local storage so that you don&apos;t lose any work between saves. Plans will be removed if you clean your browser&apos;s cookies and history, so to save your work long term, use the &quot;File: Save&quot; option in the main toolbar.
                     </span>
-                    <div id="localStoragePlanDiv">
-
-                      <table>
-                        <tr>
-                          <td style={{ textAlign: "center" }}>
-                            Most Recent Edit saved in Local Web Storage.<br />
-                            <MDButton onClick={() => loadFromLocalStorage} id="loadLocalStoragePlanBtn">Load Plan</MDButton>
-                            <br /><br /><span id="localStoragePlanLastSavedDate"></span>
-                          </td>
-                          <td>
-                            <div><img id="localStoragePlanImage" onClick={() => loadFromLocalStorage} /></div>
-                          </td>
-                        </tr>
-                      </table>
-                    </div>
-                  </p>
-                  <div id="featuredPlan">
-                    <table>
-                      <tr>
-                        <td style={{ textAlign: "center", width: "300px" }}>
-                          <MDButton onClick={() => loadExamplePlan} id="loadFeaturedPlanBtn"
-                            className="largeButton">Load
-                            Example Plan</MDButton><br />
-                          or<br />
-                          <MDButton onClick={() => closeAllModals} className="largeButton">Start New Plan</MDButton>
-                        </td>
-                        <td>
-                          <div><img id="featuredPlanImage" onClick={() => loadExamplePlan} /></div>
-                        </td>
-                      </tr>
-                    </table>
+                  </span>
+                  <br />
+                  <br />
+                  <div id="localStoragePlanDiv" style={{ textAlign: "center" }}>
+                    <MDButton
+                      size="small"
+                      onClick={() => loadFromLocalStorage}
+                      id="loadLocalStoragePlanBtn">
+                      Load Plan from Local Storage
+                    </MDButton>
+                    <br />
+                    <span id="localStoragePlanLastSavedDate" />
+                    {/* <div>
+                          <Image
+                            id="localStoragePlanImage"
+                            alt="Local Storage Plan Image"
+                            src={null}
+                            onClick={() => loadFromLocalStorage} />
+                        </div> */}
                   </div>
                 </div>
-              </div>
-              */}
-
-              {/*
-              <div id="tab2Content" className="tabcontent">
-                <h3>Models</h3>
-                <p>ThreeDGarden uses many 3D models which can be found on the internet as public domain, Free Art or Creative Commons.</p>
-                <p>If you would like a model added to the catalogue, please send a zipped file  to <span className="supportEmail"></span>.</p>
-                <p>Models ideally should be:
-                  <ul>
-                    <li>Saved as .obj format along with the .mtl file, plus any texture files used. Blender OBJ default export options work very well.</li>
-                    <li>1 unit in Blender = 1cm in ThreeDGarden. Eg, a cube with X:100, Y:100, Z:100, will display as 1 Meter cubed box in the 3d and Plan views.</li>
-                    <li>If using Blender, Y-Axis in your OBJ export should be UP. Blender IDE defaults with the Z-Axis being UP in normal creatiion mode, but the OBJ export plugin defaults to convert the exported OBJ with the Y-Axis being UP. This is good.</li>
-                    <li>Try to keep model low poly and the total download size smaller than 1Mb. Not totally essential but it helps.</li>
-                    <li>Your model should be released as public domain or licensed with a non restrictive open source license such as a Free Art or Creative Commons.</li>
-                    <li>Before sending your model, if the model you provide was not already in the public domain, or had an open source license, then you should own the copyright on the 3d model and textures, or have the permission of the copyight holder, and provide the model to add to the catalogue for unrestricted use as either Public Domain, Free Art or Creative Commons.</li>
-                    <li>Add the authors name, copyright year and attribution url if known.</li>
-                    <li>All models will be reviewed and maybe optimised before adding. A comment will be added to OBJ file for any modifications.</li>
-                    <li>Models with restrictive licenses cannot be added.</li>
-                  </ul>
-                </p>
-              </div>
-              */}
-
-              {/*
-              <div id="tab3Content" className="tabcontent">
-                <h3>Tutorial Videos</h3>
-                <div style={{ border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
-                  <table>
-                    <tr>
-                      <td style={{ width: "400px" }} valign="top">
-                        <h3>Mansard</h3>
-                        <p>
-                          <a href="#https://www.youtube.com/watch?v=Ppqp-dLwKIE" target="_blank"
-                            rel="noopener" className="largeButton">
-                            Watch Video
-                          </a>
-                          <MDButton onClick={() => loadPlan('42fbd8ff0f5a37fa1285ae8b6c6ca36529b930c2')}
-                            className="largeButton">Load Plan</MDButton>
-                        </p>
-                      </td>
-                      <td>
-                        <a href="#https://www.youtube.com/watch?v=Ppqp-dLwKIE" target="_blank"
-                          rel="noopener">
-                          <img src="/demo/tuts/mansard.png" style={{ border: "2px solid #2a2a2a" }} />
-                        </a>
-                      </td>
-                    </tr>
-                  </table>
+                <div id="featuredPlan" style={{ textAlign: "center", padding: 10 }}>
+                  <MDButton
+                    size="small"
+                    onClick={() => loadExamplePlan}
+                    id="loadFeaturedPlanBtn">
+                    Load Example Plan
+                  </MDButton>
+                  <div>&nbsp;&nbsp;OR&nbsp;&nbsp;</div>
+                  <MDButton
+                    size="small"
+                    onClick={() => closeAllModals}>
+                    Start New Plan
+                  </MDButton>
+                  {/* <div>
+                        <Image
+                          id="featuredPlanImage"
+                          alt="Featured Plan Image"
+                          src={null}
+                          onClick={() => loadExamplePlan} />
+                      </div> */}
                 </div>
-                <br />
-                <div style={{ border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
-                  <table>
-                    <tr>
-                      <td style={{ width: "400px" }} valign="top">
-                        <h3>Gable with Valley Roof</h3>
-                        <p>
-                          <a href="#https://www.youtube.com/watch?v=DUaBywAS6Ik" target="_blank"
-                            rel="noopener" className="largeButton">
-                            Watch Video
-                          </a>
-                          <MDButton onClick={() => loadPlan('0d371f9acad19a943f38c3a32f6d5d140bc6c913')}
-                            className="largeButton">Load Plan</MDButton>
-                        </p>
-                      </td>
-                      <td>
-                        <a href="#https://www.youtube.com/watch?v=DUaBywAS6Ik" target="_blank"
-                          rel="noopener">
-                          <img src="/demo/tuts/gableWithValley.png" style={{ border: "2px solid #2a2a2a" }} />
-                        </a>
-                      </td>
-                    </tr>
-                  </table>
+              </div>
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+              <div>
+                ThreeDGarden uses many 3D models which can be found on the internet as Public Domain, Free Art or Creative Commons.
+              </div>
+              <br />
+              <div>
+                Models ideally should be:
+              </div>
+              <div>
+                <ul style={{ paddingLeft: 20 }}>
+                  <li>Saved as .obj format along with the .mtl file, plus any texture files used. Blender OBJ default export options work very well.</li>
+                  <li>1 unit in Blender = 1cm in ThreeDGarden. Eg, a cube with X:100, Y:100, Z:100, will display as 1 Meter cubed box in the 3d and Plan views.</li>
+                  <li>If using Blender, Y-Axis in your OBJ export should be UP. Blender IDE defaults with the Z-Axis being UP in normal creatiion mode, but the OBJ export plugin defaults to convert the exported OBJ with the Y-Axis being UP. This is good.</li>
+                  <li>Try to keep model low poly and the total download size smaller than 1Mb. Not totally essential but it helps.</li>
+                  <li>Your model should be released as public domain or licensed with a non restrictive open source license such as a Free Art or Creative Commons.</li>
+                  <li>You should own the copyright on the 3d model and textures, or have the permission of the copyight holder, and provide the model to add to the catalog for unrestricted use as either Public Domain, Free Art or Creative Commons.</li>
+                  <li>Add the author&apos;s name, copyright year and attribution url, if known.</li>
+                  <li>Models with restrictive licenses should not be added.</li>
+                </ul>
+              </div>
+            </TabPanel>
+            <TabPanel value={value} index={2}>
+              <h3>Tutorial Videos</h3>
+              <div style={{ border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
+
+                <h3>Mansard</h3>
+                <div>
+                  <a href="#https://www.youtube.com/watch?v=Ppqp-dLwKIE" target="_blank"
+                    rel="noopener" className="largeButton">
+                    Watch Video
+                  </a>
+                  <MDButton onClick={() => loadPlan('42fbd8ff0f5a37fa1285ae8b6c6ca36529b930c2')}
+                    className="largeButton">Load Plan</MDButton>
                 </div>
-                <br />
-                <div style={{ border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
-                  <table>
-                    <tr>
-                      <td style={{ width: "400px" }} valign="top">
-                        <h3>Modern Dutch Gable (Hip with Gable)</h3>
-                        <p>
-                          <a href="#https://www.youtube.com/watch?v=0cmjXmp7D_E" target="_blank"
-                            rel="noopener" className="largeButton">
-                            Watch Video
-                          </a>
-                          <MDButton onClick={() => loadPlan('c0300edf03b952872c37744bf570a588184dd3d5')}
-                            className="largeButton">Load Plan</MDButton>
-                        </p>
-                      </td>
-                      <td>
-                        <a href="#https://www.youtube.com/watch?v=0cmjXmp7D_E" target="_blank"
-                          rel="noopener">
-                          <img src="/demo/tuts/modernDutchGable.png" style={{ border: "2px solid #2a2a2a" }} />
-                        </a>
-                      </td>
-                    </tr>
-                  </table>
+
+                <a href="#https://www.youtube.com/watch?v=Ppqp-dLwKIE" target="_blank"
+                  rel="noopener">
+                  <Image
+                    src="/demo/tuts/mansard.png"
+                    alt=""
+                    width={100}
+                    height={60}
+                    style={{ border: "2px solid #2a2a2a" }}
+                  />
+                </a>
+
+              </div>
+              <br />
+              <div style={{ border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
+
+                <h3>Gable with Valley Roof</h3>
+                <div>
+                  <a href="#https://www.youtube.com/watch?v=DUaBywAS6Ik" target="_blank"
+                    rel="noopener" className="largeButton">
+                    Watch Video
+                  </a>
+                  <MDButton onClick={() => loadPlan('0d371f9acad19a943f38c3a32f6d5d140bc6c913')}
+                    className="largeButton">Load Plan</MDButton>
                 </div>
-                <p>More Coming Soon</p>
-              </div>
-              */}
 
-              {/*
-              <div id="tab4Content" className="tabcontent">
-                <h3>FAQ</h3>
-              </div>
-              */}
+                <a href="#https://www.youtube.com/watch?v=DUaBywAS6Ik" target="_blank"
+                  rel="noopener">
+                  <Image
+                    src="/demo/tuts/gableWithValley.png"
+                    alt=""
+                    width={100}
+                    height={60}
+                    style={{ border: "2px solid #2a2a2a" }}
+                  />
+                </a>
 
-              {/*
-              <div id="tab5Content" className="tabcontent">
-                <h3>Contact</h3>
-                <p><span className="supportEmail"></span></p>
               </div>
-              */}
+              <br />
+              <div style={{ display: "flex", border: "1px solid #2a2a2a", paddingLeft: "12px", paddingRight: "12px" }}>
 
-              {/*
-              <div id="tab6Content" className="tabcontent">
-                <h3>Tab 6 Content</h3>
-                <p>Paragraphs of words here..</p>
-                <p>The application is made available online in the hope that it will be useful,
-                  but without any warranty or implied warranty of fitness for any particular purpose.</p>
+                <h3>Modern Dutch Gable (Hip with Gable)</h3>
+                <div>
+                  <a href="#https://www.youtube.com/watch?v=0cmjXmp7D_E" target="_blank"
+                    rel="noopener" className="largeButton">
+                    Watch Video
+                  </a>
+                  <MDButton onClick={() => loadPlan('c0300edf03b952872c37744bf570a588184dd3d5')}
+                    className="largeButton">Load Plan</MDButton>
+                </div>
+
+                <a href="#https://www.youtube.com/watch?v=0cmjXmp7D_E" target="_blank"
+                  rel="noopener">
+                  <Image
+                    src="/demo/tuts/modernDutchGable.png"
+                    alt=""
+                    width={100}
+                    height={60}
+                    style={{ border: "2px solid #2a2a2a" }}
+                  />
+                </a>
+
               </div>
-              */}
+            </TabPanel>
+            <TabPanel value={value} index={3}>
+              FAQ
+            </TabPanel>
+            <TabPanel value={value} index={4}>
+              Contact
+            </TabPanel>
+            <TabPanel value={value} index={5}>
+              Other
+            </TabPanel>
+            <TabPanel value={value} index={6}>
+              Supporters
+            </TabPanel>
+          </MDBox>
 
-              {/*
-              <div id="tab7Content" className="tabcontent">
-                <h3>Tab 7 Content</h3>
-                <p>Paragraphs of words here..</p>
-                <p><span className="supportEmail"></span></p>
-              </div>
-              */}
+          <div className="modal-footer">
+            <h3>&copy; <a href="https://threedgarden.com">ThreeDGarden</a></h3>
+          </div>
+        </MDBox>
 
-            </div>
-            <div className="modal-footer">
-              <h3>&copy; <a href="https://threedgarden.com">ThreeDGarden</a></h3>
-            </div>
-          </div >
-          {/* </div> */}
-        </MDBox >
-      </Modal >
-    </div >
+      </Modal>
+    </>
   )
 }
 
@@ -3319,13 +3369,13 @@ const TheBottom = (): JSX.Element => {
 
       <div id="furnitureDragDiv"></div>
 
-      <img
+      <Image
         id="fullscreenPlanViewBtn"
         src="/demo/media/fullscreen.png"
         width="30"
         height="30"
         onClick="doOpenFullscreen('planView');" />
-      <img
+      <Image
         id="fullscreen3dViewBtn"
         src="/demo/media/fullscreen.png"
         width="30"
