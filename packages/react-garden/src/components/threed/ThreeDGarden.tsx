@@ -1401,7 +1401,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
   const word = `[MM] @ ${new Date().toISOString()}`
   // console.debug("ToolBar", word)
 
-  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
+  // const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
   const [anchorElThreeD, setAnchorElThreeD] = useState<null | HTMLElement>(null)
   const [anchorElFile, setAnchorElFile] = useState<null | HTMLElement>(null)
   const [anchorElEdit, setAnchorElEdit] = useState<null | HTMLElement>(null)
@@ -1409,12 +1409,12 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
   const [anchorElLayers, setAnchorElLayers] = useState<null | HTMLElement>(null)
   const [anchorElTools, setAnchorElTools] = useState<null | HTMLElement>(null)
 
-  const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget)
-  }
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null)
-  }
+  // const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
+  //   setAnchorElNav(event.currentTarget)
+  // }
+  // const handleCloseNavMenu = () => {
+  //   setAnchorElNav(null)
+  // }
   const handleOpenThreeDMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElThreeD(event.currentTarget)
   }
@@ -1428,7 +1428,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
     setAnchorElFile(null)
   }
   const handleOpenEditMenu = (event: MouseEvent<HTMLElement>) => {
-    setAnchorElThreeD(event.currentTarget)
+    setAnchorElEdit(event.currentTarget)
   }
   const handleCloseEditMenu = () => {
     setAnchorElEdit(null)
@@ -2182,12 +2182,12 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             <Button
               key="ThreeD"
               onClick={handleOpenThreeDMenu}
-              sx={{ my: 1, color: '#FFFFFF', display: 'block' }}
+              sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
             >
               ThreeD
             </Button>
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: 3 }}
               id="menu-appbar-threed"
               anchorEl={anchorElThreeD}
               anchorOrigin={{
@@ -2221,12 +2221,12 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             <Button
               key="File"
               onClick={handleOpenFileMenu}
-              sx={{ my: 1, color: '#FFFFFF', display: 'block' }}
+              sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
             >
               File
             </Button>
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: 3 }}
               id="menu-appbar-file"
               anchorEl={anchorElFile}
               anchorOrigin={{
@@ -2245,7 +2245,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 <Typography id="loadBtn" onClick={doLoadFile}>Load File</Typography>
                 <input
                   type="file"
-                  style={{ display: "inline-block" }}
+                  style={{ display: "inline-block", marginLeft: "4px" }}
                   id="file"
                   name="file"
                   onChange={doLoadFileAsText}
@@ -2268,12 +2268,12 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             <Button
               key="Edit"
               onClick={handleOpenEditMenu}
-              sx={{ my: 1, color: '#FFFFFF', display: 'block' }}
+              sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
             >
               Edit
             </Button>
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: 3 }}
               id="menu-appbar-edit"
               anchorEl={anchorElEdit}
               anchorOrigin={{
@@ -2299,12 +2299,12 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             <Button
               key="View"
               onClick={handleOpenViewMenu}
-              sx={{ my: 1, color: '#FFFFFF', display: 'block' }}
+              sx={{ color: '#FFFFFF', p: 0, mr: 2 }}
             >
               View
             </Button>
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: 3 }}
               id="menu-appbar-view"
               anchorEl={anchorElView}
               anchorOrigin={{
@@ -2360,12 +2360,12 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             <Button
               key="Layers"
               onClick={handleOpenLayersMenu}
-              sx={{ my: 1, color: '#FFFFFF', display: 'block' }}
+              sx={{ color: '#FFFFFF', p: 0, mr: 2 }}
             >
               Layers
             </Button>
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: 3 }}
               id="menu-appbar-layers"
               anchorEl={anchorElLayers}
               anchorOrigin={{
@@ -2388,12 +2388,12 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             <Button
               key="Tools"
               onClick={handleOpenToolsMenu}
-              sx={{ my: 1, color: '#FFFFFF', display: 'block' }}
+              sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
             >
               Tools
             </Button>
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: 3 }}
               id="menu-appbar-tools"
               anchorEl={anchorElTools}
               anchorOrigin={{
@@ -2438,7 +2438,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 aria-haspopup="true"
                 size="medium"
                 color="white"
-                sx={{ p: 1 }}
+                sx={{ mr: 1 }}
               >
                 <ToolIconPointer />
               </IconButton>
@@ -2452,7 +2452,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 aria-haspopup="true"
                 size="medium"
                 color="white"
-                sx={{ p: 1 }}
+                sx={{ mr: 1 }}
               >
                 <ToolIconHand />
               </IconButton>
@@ -2466,7 +2466,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 aria-haspopup="true"
                 size="medium"
                 color="white"
-                sx={{ p: 1 }}
+                sx={{ mr: 1 }}
               >
                 <ToolIconAddWall />
               </IconButton>
@@ -2480,7 +2480,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 aria-haspopup="true"
                 size="medium"
                 color="white"
-                sx={{ p: 1 }}
+                sx={{ mr: 1 }}
               >
                 <ToolIconAddFloor />
               </IconButton>
@@ -2494,7 +2494,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 aria-haspopup="true"
                 size="medium"
                 color="white"
-                sx={{ p: 1 }}
+                sx={{ mr: 1 }}
               >
                 <ToolIconAddRoof />
               </IconButton>
@@ -2508,7 +2508,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 aria-haspopup="true"
                 size="medium"
                 color="white"
-                sx={{ p: 1 }}
+                sx={{ mr: 1 }}
               >
                 <ToolIconAddRuler />
               </IconButton>
@@ -2522,7 +2522,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 aria-haspopup="true"
                 size="medium"
                 color="white"
-                sx={{ p: 1 }}
+                sx={{ mr: 0 }}
               >
                 <ToolIconAddText />
               </IconButton>
