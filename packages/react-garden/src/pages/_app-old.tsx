@@ -283,7 +283,6 @@ const WrappedApp: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPro
           <meta name="keywords"
             content="Architecture, Planning, 3D Plan, Home Ideas, Floor Plan, Garden Planning, 3D Design Ideas, Building Plan" />
           <meta name="author" content="Marty McGee" />
-          <meta name="viewport" content="initial-scale=1, viewport-fit=cover" />
 
           <meta name="twitter:card" content="Create house and garden plans in 2D and 3D" />
           <meta name="twitter:site" content="@companyjuice" />

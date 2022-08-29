@@ -24,7 +24,7 @@ const TabDetails = () => {
 
   return (
     <Box>
-      <TextField fullWidth sx={{ mb: 4 }} label='Application Name' placeholder='Materio Admin' />
+      <TextField fullWidth sx={{ mb: 4 }} label='Application Name' placeholder='ThreeD Garden Admin' />
       <Typography variant='h6' sx={{ mb: 4 }}>
         Category
       </Typography>

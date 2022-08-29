@@ -50,55 +50,69 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
 
 // ** Styled Components
-const LoginIllustrationWrapper = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(20),
-  paddingRight: '0 !important',
-  [theme.breakpoints.down('lg')]: {
-    padding: theme.spacing(10)
+const LoginIllustrationWrapper = styled(Box)(({ theme }) => {
+  return {
+    padding: theme.spacing(20),
+    paddingRight: '0 !important',
+    [theme.breakpoints.down('lg')]: {
+      padding: theme.spacing(10)
+    }
   }
-}))
+})
 
-const LoginIllustration = styled('img')(({ theme }) => ({
-  maxWidth: '48rem',
-  [theme.breakpoints.down('lg')]: {
-    maxWidth: '35rem'
+const LoginIllustration = styled('img')(({ theme }) => {
+  return {
+    maxWidth: '48rem',
+    [theme.breakpoints.down('lg')]: {
+      maxWidth: '35rem'
+    }
   }
-}))
+})
 
-const RightWrapper = styled(Box)(({ theme }) => ({
-  width: '100%',
-  [theme.breakpoints.up('md')]: {
-    maxWidth: 450
+const RightWrapper = styled(Box)(({ theme }) => {
+  return {
+    width: '100%',
+    [theme.breakpoints.up('md')]: {
+      maxWidth: 450
+    }
   }
-}))
+})
 
-const BoxWrapper = styled(Box)(({ theme }) => ({
-  [theme.breakpoints.down('xl')]: {
-    width: '100%'
-  },
-  [theme.breakpoints.down('md')]: {
-    maxWidth: 400
+const BoxWrapper = styled(Box)(({ theme }) => {
+  return {
+    [theme.breakpoints.down('xl')]: {
+      width: '100%'
+    },
+    [theme.breakpoints.down('md')]: {
+      maxWidth: 400
+    }
   }
-}))
+})
 
-const TypographyStyled = styled(Typography)(({ theme }) => ({
-  fontWeight: 600,
-  marginBottom: theme.spacing(1.5),
-  [theme.breakpoints.down('md')]: { mt: theme.spacing(8) }
-}))
+const TypographyStyled = styled(Typography)(({ theme }) => {
+  return {
+    fontWeight: 600,
+    marginBottom: theme.spacing(1.5),
+    [theme.breakpoints.down('md')]: { mt: theme.spacing(8) }
+  }
+})
 
-const LinkStyled = styled('a')(({ theme }) => ({
-  fontSize: '0.875rem',
-  textDecoration: 'none',
-  color: theme.palette.primary.main
-}))
-
-const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
-  '& .MuiFormControlLabel-label': {
+const LinkStyled = styled('a')(({ theme }) => {
+  return {
     fontSize: '0.875rem',
-    color: theme.palette.text.secondary
+    textDecoration: 'none',
+    color: theme.palette.primary.main
   }
-}))
+})
+
+const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => {
+  return {
+    '& .MuiFormControlLabel-label': {
+      fontSize: '0.875rem',
+      color: theme.palette.text.secondary
+    }
+  }
+})
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),
