@@ -75,6 +75,7 @@ import Button from "@mui/material/Button"
 import IconButton from "@mui/material/IconButton"
 import Menu from "@mui/material/Menu"
 import MenuItem from "@mui/material/MenuItem"
+import MenuList from "@mui/material/MenuList"
 import MenuIcon from "@mui/icons-material/Menu"
 import Grid from "@mui/material/Grid"
 import Modal from "@mui/material/Modal"
@@ -2180,15 +2181,15 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
 
             <Button
-              key="ThreeD"
+              key="Actions"
               onClick={handleOpenThreeDMenu}
               sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
             >
-              ThreeD
+              Actions
             </Button>
             <Menu
               sx={{ mt: 3 }}
-              id="menu-appbar-threed"
+              id="menu-appbar-actions"
               anchorEl={anchorElThreeD}
               anchorOrigin={{
                 vertical: 'top',
@@ -2202,13 +2203,13 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               onClose={handleCloseThreeDMenu}
             >
               <MenuItem key="New ThreeD" onClick={handleCloseThreeDMenu}>
-                <Typography>New ThreeD</Typography>
+                <Typography onClick={() => useThreeDStore.getState().addThreeD()}>New ThreeD</Typography>
               </MenuItem>
               <MenuItem key="New Project" onClick={handleCloseThreeDMenu}>
-                <Typography>New Project</Typography>
+                <Typography onClick={() => useProjectStore.getState().addProject()}>New Project</Typography>
               </MenuItem>
               <MenuItem key="New Plan" onClick={handleCloseThreeDMenu}>
-                <Typography>New Plan</Typography>
+                <Typography onClick={() => usePlanStore.getState().addPlan()}>New Plan</Typography>
               </MenuItem>
               {/* <MenuItem key="Save Plan" onClick={handleCloseThreeDMenu}>
                 <Typography id="saveBtn" onClick={savePlan}>Save Plan</Typography>
@@ -2219,11 +2220,11 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             </Menu>
 
             <Button
-              key="File"
+              key="Files"
               onClick={handleOpenFileMenu}
               sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
             >
-              File
+              Files
             </Button>
             <Menu
               sx={{ mt: 3 }}
@@ -2253,9 +2254,6 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               </MenuItem>
               <MenuItem key="Save File" onClick={handleCloseFileMenu}>
                 <Typography id="saveBtn" onClick={doSaveFile}>Save File</Typography>
-              </MenuItem>
-              <MenuItem key="New Plan" onClick={handleCloseFileMenu}>
-                <Typography>New Plan</Typography>
               </MenuItem>
               <MenuItem key="Export As OBJ" onClick={handleCloseFileMenu}>
                 <Typography id="exportBtn" onClick={() => exportToObj}>Export As OBJ</Typography>
@@ -3782,16 +3780,16 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
         <div id="zustandControlPanel" style={{ padding: "1rem" }}>
           <hr />
           <ThreeDInfoPanel />
-          <ThreeDControlPanel />
+          {/* <ThreeDControlPanel /> */}
           <hr />
           <ProjectInfoPanel />
-          <ProjectControlPanel />
+          {/* <ProjectControlPanel /> */}
           <hr />
           <PlanInfoPanel />
-          <PlanControlPanel />
+          {/* <PlanControlPanel /> */}
           <hr />
           <FileInfoPanel />
-          <FileControlPanel />
+          {/* <FileControlPanel /> */}
           <hr />
           {/* <CharacterInfoPanel /> */}
           {/* <CharacterControlPanel /> */}
