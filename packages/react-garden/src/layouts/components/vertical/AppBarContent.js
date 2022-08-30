@@ -24,9 +24,9 @@ const AppBarContent = props => {
             <MenuIcon />
           </IconButton>
         ) : null}
-        <Autocomplete hidden={hidden} settings={settings} />
       </Box>
       <Box className='actions-right' sx={{ display: 'flex', alignItems: 'center' }}>
+        <Autocomplete hidden={hidden} settings={settings} />
         <LanguageDropdown settings={settings} saveSettings={saveSettings} />
         <ModeToggler settings={settings} saveSettings={saveSettings} />
         <NotificationDropdown settings={settings} />
