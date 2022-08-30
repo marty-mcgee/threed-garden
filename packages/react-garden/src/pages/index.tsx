@@ -5,6 +5,9 @@ import { useEffect } from 'react'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 
+// ** MUI Components
+import Typography from '@mui/material/Typography'
+
 // ** Spinner Import
 import Spinner from 'src/@core/components/spinner'
 
@@ -36,7 +39,18 @@ const Home: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  return <Spinner />
+  return (
+    <>
+      <Spinner />
+
+      <Typography component="h1" variant="h5" gutterBottom>
+        ThreeD Garden for FarmBot + ThreeJS
+      </Typography>
+      <Typography component="h2" variant="h6" gutterBottom>
+        MUI v5 + Next.js with TypeScript
+      </Typography>
+    </>
+  )
 }
 
 export default Home

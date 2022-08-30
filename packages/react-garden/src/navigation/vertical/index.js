@@ -26,9 +26,13 @@ const navigation = () => {
     {
       title: 'Dashboards',
       icon: HomeOutline,
-      badgeContent: 'new',
-      badgeColor: 'error',
+      badgeContent: '', // 'new'
+      badgeColor: 'primary', // 'error'
       children: [
+        {
+          title: 'Participate',
+          path: '/participate'
+        },
         {
           title: 'CRM',
           path: '/dashboards/crm'
