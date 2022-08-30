@@ -485,13 +485,13 @@ const navigation = [
         title: 'Raise Support',
         externalLink: true,
         openInNewTab: true,
-        path: 'https://themeselection.com/support'
+        path: 'https://companyjuice.com/support'
       },
       {
         title: 'Documentation',
         externalLink: true,
         openInNewTab: true,
-        path: 'https://demos.themeselection.com/marketplace/materio-mui-react-nextjs-admin-template/documentation'
+        path: 'https://github.com/marty-mcgee/threed-garden'
       }
     ]
   }

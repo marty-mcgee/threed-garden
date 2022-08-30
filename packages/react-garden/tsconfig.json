@@ -25,19 +25,13 @@
     // "baseUrl": "src",
     "baseUrl": ".",
     "paths": {
-      "~/*": ["*"], // preferable (nuxt + npm)
-      "@/*": ["*"],
-      "-||-*": ["layouts/dashboards/threed/*"] // threed
+      "~/*": ["src/*"], // preferable (nuxt + npm)
+      "@/*": ["src/*"],
+      "-||-*": ["public/*"] // threed
       // "~/components/*": ["components/*"] // example
     }
   },
   // "include": ["src"],
-  "include": [
-    "next-env.d.ts",
-    "src",
-    "**/*.ts",
-    "**/*.tsx",
-    "src/types/globals.d.ts"
-  ],
+  "include": ["next-env.d.ts", "src", "**/*.ts", "**/*.tsx", "src/types/globals.d.ts"],
   "exclude": ["node_modules"]
 }

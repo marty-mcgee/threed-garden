@@ -224,12 +224,12 @@ const DialogAuthentication = () => {
                   </Typography>
 
                   <Box sx={{ my: 12, display: 'flex', justifyContent: 'center' }}>
-                    <img width={122} height={122} alt='qr-code' src='/images/pages/themeselection-qr.png' />
+                    <img width={122} height={122} alt='qr-code' src='/images/pages/qr-threedgarden.png' />
                   </Box>
 
                   <Alert severity='warning' icon={false} sx={{ mb: 4, '& .MuiAlert-message': { overflow: 'hidden' } }}>
                     <AlertTitle sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      ASDLKNASDA9AHS678dGhASD78AB
+                      43824fdb2add78cfa0dd77cc4a52f8de
                     </AlertTitle>
                     If you having trouble using the QR code, select manual entry on your app
                   </Alert>
