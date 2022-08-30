@@ -7,11 +7,14 @@ function DataGrabber(props) {
   const [data, setData] = useState(null)
 
   useEffect(() => {
+
     // console.debug("objects", objects)
+    console.debug("objects", Object.keys(objects).length)
+
     try {
       Object.keys(objects).forEach((key) => {
         // for (let key in objects) {
-        console.debug("key", key)
+        // console.debug("key", key)
 
         // const fetchData = async () => {
         //   const response = await fetch(`https://homeidea3d.seanwasere.com/objects/${key}.png`)
@@ -22,9 +25,9 @@ function DataGrabber(props) {
         const fetchData = async () => {
           // (A) FETCH FILE
           // const response = await fetch(`https://homeidea3d.seanwasere.com/objects/${key}/${key}.obj`)
-          // const response = await fetch(`https://homeidea3d.seanwasere.com/objects/${key}/${key}.mtl`)
-          // const response = await fetch(`https://homeidea3d.seanwasere.com/objects/${key}_top.png`)
-          const response = await fetch(`https://homeidea3d.seanwasere.com/objects/${key}.png`)
+          const response = await fetch(`https://homeidea3d.seanwasere.com/objects/${key}/${key}.mtl`)
+            // const response = await fetch(`https://homeidea3d.seanwasere.com/objects/${key}_top.png`)
+            // const response = await fetch(`https://homeidea3d.seanwasere.com/objects/${key}.png`)
             // (B) RETURN AS BLOB
             .then((result) => {
               if (result.status !== 200) { throw new Error("Bad server response"); }
@@ -40,9 +43,9 @@ function DataGrabber(props) {
               const anchor = document.createElement("a")
               anchor.href = url
               // anchor.download = `${key}.obj`
-              // anchor.download = `${key}.mtl`
-              anchor.download = `${key}.png`
-              anchor.download = `${key}_top.png`
+              anchor.download = `${key}.mtl`
+              // anchor.download = `${key}.png`
+              // anchor.download = `${key}_top.png`
               anchor.click()
 
               // (C3) CLEAN UP
@@ -58,7 +61,7 @@ function DataGrabber(props) {
         // fetchData()
       })
     } catch (err) {
-      console.debug("err", err)
+      console.debug(`err ${err}`)
     }
   }, [id])
 

@@ -47,7 +47,7 @@ const Home: NextPage = () => {
         ThreeD Garden for FarmBot + ThreeJS
       </Typography>
       <Typography component="h2" variant="h6" gutterBottom>
-        MUI v5 + Next.js with TypeScript
+        FarmBot + ThreeJS using React Three Fiber, MUI v5, Next.js and TypeScript
       </Typography>
     </>
   )
