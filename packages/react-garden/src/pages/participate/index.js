@@ -20,16 +20,16 @@ const ParticipatePage = () => {
 
   return (
     <Grid container spacing={6}>
+      {/* HEY HEY HEY */}
+      <ThreeDGarden />
       <Grid item md={6} xs={12}>
-        {/* HEY HEY HEY */}
-        <ThreeDGarden />
-        {/* <Card>
+        <Card>
           <CardHeader title='Common' />
           <CardContent>
             <Typography sx={{ mb: 4 }}>No ability is required to view this card</Typography>
             <Typography sx={{ color: 'primary.main' }}>This card is visible to 'user' and 'admin' both</Typography>
           </CardContent>
-        </Card> */}
+        </Card>
       </Grid>
       {ability?.can('read', 'analytics') ? (
         <Grid item md={6} xs={12}>
@@ -47,7 +47,7 @@ const ParticipatePage = () => {
 }
 ParticipatePage.acl = {
   action: 'read',
-  subject: 'acl-page'
+  subject: 'participate-page'
 }
 
 export default ParticipatePage

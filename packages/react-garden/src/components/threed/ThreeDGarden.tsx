@@ -259,10 +259,10 @@ function ThreeDInfoPanel() {
   const threed = useThreeDStore((state: any) => state.threed)
   console.debug("%cthreed", ccm1, threed)
   return (
-    <MDBox>
-      <MDTypography>{threeds.length} threeds around here ...</MDTypography>
-      {/* <MDTypography>{threedCount} threeds around here ...</MDTypography> */}
-    </MDBox>
+    <Box>
+      <Typography>{threeds.length} threeds around here ...</Typography>
+      {/* <Typography>{threedCount} threeds around here ...</Typography> */}
+    </Box>
   )
 }
 
@@ -272,10 +272,10 @@ function ThreeDControlPanel() {
   const addThreeD = useThreeDStore((state: any) => state.addThreeD)
 
   return (
-    <MDBox>
-      <MDButton onClick={addThreeD}>add threed</MDButton>
-      {/* <MDButton onClick={increaseThreeDCount}>add to threed count</MDButton> */}
-    </MDBox>
+    <Box>
+      <Button onClick={addThreeD}>add threed</Button>
+      {/* <Button onClick={increaseThreeDCount}>add to threed count</Button> */}
+    </Box>
   )
 }
 
@@ -379,10 +379,10 @@ function ProjectInfoPanel() {
 
   // console.debug("%cCurrentProject", ccm1, project)
   return (
-    <MDBox>
-      <MDTypography>{projects.length} projects around here ...</MDTypography>
-      {/* <MDTypography>{projectCount} projects around here ...</MDTypography> */}
-    </MDBox>
+    <Box>
+      <Typography>{projects.length} projects around here ...</Typography>
+      {/* <Typography>{projectCount} projects around here ...</Typography> */}
+    </Box>
   )
 }
 
@@ -399,13 +399,13 @@ function ProjectControlPanel() {
   }
 
   return (
-    <MDBox>
-      <MDButton onClick={addProjectAsFunction}>add project()</MDButton>
-      <MDButton onClick={addProject}>add project</MDButton>
-      <MDButton onClick={saveToDisk}>save to disk</MDButton>
-      <MDButton onClick={loadFromDisk}>load from disk</MDButton>
-      {/* <MDButton onClick={increaseProjectCount}>add to project count</MDButton> */}
-    </MDBox>
+    <Box>
+      <Button onClick={addProjectAsFunction}>add project()</Button>
+      <Button onClick={addProject}>add project</Button>
+      <Button onClick={saveToDisk}>save to disk</Button>
+      <Button onClick={loadFromDisk}>load from disk</Button>
+      {/* <Button onClick={increaseProjectCount}>add to project count</Button> */}
+    </Box>
   )
 }
 
@@ -597,10 +597,10 @@ function PlanInfoPanel() {
 
   // console.debug("%cCurrentPlan", ccm1, plan)
   return (
-    <MDBox>
-      <MDTypography>{plans.length} plans around here ...</MDTypography>
-      {/* <MDTypography>{planCount} plans around here ...</MDTypography> */}
-    </MDBox>
+    <Box>
+      <Typography>{plans.length} plans around here ...</Typography>
+      {/* <Typography>{planCount} plans around here ...</Typography> */}
+    </Box>
   )
 }
 
@@ -617,13 +617,13 @@ function PlanControlPanel() {
   }
 
   return (
-    <MDBox>
-      <MDButton onClick={addPlanAsFunction}>add plan()</MDButton>
-      <MDButton onClick={addPlan}>add plan</MDButton>
-      <MDButton onClick={saveToDisk}>save to disk</MDButton>
-      <MDButton onClick={loadFromDisk}>load from disk</MDButton>
-      {/* <MDButton onClick={increasePlanCount}>add to plan count</MDButton> */}
-    </MDBox>
+    <Box>
+      <Button onClick={addPlanAsFunction}>add plan()</Button>
+      <Button onClick={addPlan}>add plan</Button>
+      <Button onClick={saveToDisk}>save to disk</Button>
+      <Button onClick={loadFromDisk}>load from disk</Button>
+      {/* <Button onClick={increasePlanCount}>add to plan count</Button> */}
+    </Box>
   )
 }
 
@@ -652,10 +652,10 @@ function FileInfoPanel() {
 
   // console.debug("%cCurrentFile", ccm1, file)
   return (
-    <MDBox>
-      <MDTypography>{files.length} files around here ...</MDTypography>
-      {/* <MDTypography>{fileCount} files around here ...</MDTypography> */}
-    </MDBox>
+    <Box>
+      <Typography>{files.length} files around here ...</Typography>
+      {/* <Typography>{fileCount} files around here ...</Typography> */}
+    </Box>
   )
 }
 
@@ -665,10 +665,10 @@ function FileControlPanel() {
   const addFile = useFileStore((state: any) => state.addFile)
 
   return (
-    <MDBox>
-      <MDButton onClick={addFile}>add file</MDButton>
-      {/* <MDButton onClick={increaseFileCount}>add to file count</MDButton> */}
-    </MDBox>
+    <Box>
+      <Button onClick={addFile}>add file</Button>
+      {/* <Button onClick={increaseFileCount}>add to file count</Button> */}
+    </Box>
   )
 }
 
@@ -697,12 +697,12 @@ const useBearStore = create((set) => ({
 
 function BearInfoPanel() {
   const bears = useBearStore((state: any) => state.bears)
-  return <MDBox>{bears} bears around here ...</MDBox>
+  return <Box>{bears} bears around here ...</Box>
 }
 
 function BearControlPanel() {
   const increaseBearCount = useBearStore((state: any) => state.increaseBearCount)
-  return <MDButton onClick={increaseBearCount}>add a bear</MDButton>
+  return <Button onClick={increaseBearCount}>add a bear</Button>
 }
 
 // ==========================================================
@@ -922,10 +922,10 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
   // }, [])
 
   return (
-    <MDBox id="aboutModalContainer">
-      {/* <MDButton size="small" onClick={handleOpenAboutModal}>
+    <Box id="aboutModalContainer">
+      {/* <Button size="small" onClick={handleOpenAboutModal}>
         Open About Modal
-      </MDButton> */}
+      </Button> */}
       <Modal
         id="aboutModal"
         // open={useModalStore.getState().isOpenAboutModal}
@@ -934,9 +934,9 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <MDBox className="modal-content" sx={styleModal}>
+        <Box className="modal-content" sx={styleModal}>
 
-          <MDBox className="modal-header" style={{ textAlign: "center" }}>
+          <Box className="modal-header" style={{ textAlign: "center" }}>
             <Image src="/favicon/favicon.png"
               width={50}
               height={50}
@@ -944,10 +944,10 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
               title="ThreeD Garden"
             />
             <h2>ThreeD Garden</h2>
-          </MDBox>
+          </Box>
 
-          <MDBox className="modal-body" sx={{ width: '100%' }}>
-            <MDBox sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Box className="modal-body" sx={{ width: '100%' }}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs value={tabAboutModal} onChange={handleChangeTabAboutModal} aria-label="basic tabs example">
                 <Tab label="Intro" {...a11yProps(0)} />
                 <Tab label="Models" {...a11yProps(1)} />
@@ -957,7 +957,7 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
                 <Tab label="Other" {...a11yProps(5)} />
                 <Tab label="Supporters" {...a11yProps(6)} />
               </Tabs>
-            </MDBox>
+            </Box>
             <MDTabPanel value={tabAboutModal} index={0}>
               <div style={{ paddingBottom: 8 }}>
                 Plan + Share Ideas for your Home + Garden in 2D + 3D
@@ -981,12 +981,12 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
                   <br />
                   <br />
                   <div id="localStoragePlanDiv" style={{ textAlign: "center" }}>
-                    <MDButton
+                    <Button
                       size="small"
                       onClick={() => loadFromLocalStorage}
                       id="loadLocalStoragePlanBtn">
                       Load Plan from Local Storage
-                    </MDButton>
+                    </Button>
                     <br />
                     <span id="localStoragePlanLastSavedDate" />
                     {/* <div>
@@ -999,18 +999,18 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
                   </div>
                 </div>
                 <div id="featuredPlan" style={{ textAlign: "center", padding: 10 }}>
-                  <MDButton
+                  <Button
                     size="small"
                     onClick={() => loadExamplePlan}
                     id="loadFeaturedPlanBtn">
                     Load Example Plan
-                  </MDButton>
+                  </Button>
                   <div>&nbsp;&nbsp;OR&nbsp;&nbsp;</div>
-                  <MDButton
+                  <Button
                     size="small"
                     onClick={() => closeAllModals}>
                     Start New Plan
-                  </MDButton>
+                  </Button>
                   {/* <div>
                         <Image
                           id="featuredPlanImage"
@@ -1057,8 +1057,8 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
                       rel="noopener" className="largeButton">
                       Watch Video
                     </a>
-                    <MDButton onClick={() => loadPlan('42fbd8ff0f5a37fa1285ae8b6c6ca36529b930c2')}
-                      className="largeButton">Load Plan</MDButton>
+                    <Button onClick={() => loadPlan('42fbd8ff0f5a37fa1285ae8b6c6ca36529b930c2')}
+                      className="largeButton">Load Plan</Button>
                   </div>
                 </Grid>
                 <Grid item xs={4}>
@@ -1080,8 +1080,8 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
                       rel="noopener" className="largeButton">
                       Watch Video
                     </a>
-                    <MDButton onClick={() => loadPlan('0d371f9acad19a943f38c3a32f6d5d140bc6c913')}
-                      className="largeButton">Load Plan</MDButton>
+                    <Button onClick={() => loadPlan('0d371f9acad19a943f38c3a32f6d5d140bc6c913')}
+                      className="largeButton">Load Plan</Button>
                   </div>
                 </Grid>
                 <Grid item xs={4}>
@@ -1103,8 +1103,8 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
                       rel="noopener" className="largeButton">
                       Watch Video
                     </a>
-                    <MDButton onClick={() => loadPlan('c0300edf03b952872c37744bf570a588184dd3d5')}
-                      className="largeButton">Load Plan</MDButton>
+                    <Button onClick={() => loadPlan('c0300edf03b952872c37744bf570a588184dd3d5')}
+                      className="largeButton">Load Plan</Button>
                   </div>
                 </Grid>
                 <Grid item xs={4}>
@@ -1133,14 +1133,14 @@ const AboutModal: FunctionComponent = (): JSX.Element => {
             <MDTabPanel value={tabAboutModal} index={6}>
               Supporters
             </MDTabPanel>
-          </MDBox>
+          </Box>
 
-          <MDBox className="modal-footer">
+          <Box className="modal-footer">
             <h3>&copy; <a href="https://threedgarden.com">ThreeDGarden</a></h3>
-          </MDBox>
-        </MDBox>
+          </Box>
+        </Box>
       </Modal>
-    </MDBox>
+    </Box>
   )
 }
 
@@ -1160,10 +1160,10 @@ const Model3dModal: FunctionComponent = (): JSX.Element => {
   // }, [])
 
   return (
-    <MDBox id="model3dModalContainer">
-      {/* <MDButton size="small" onClick={handleOpenModel3dModal}>
+    <Box id="model3dModalContainer">
+      {/* <Button size="small" onClick={handleOpenModel3dModal}>
         Open Model3d Modal
-      </MDButton> */}
+      </Button> */}
       <Modal
         id="model3dModal"
         open={isOpenModel3dModal}
@@ -1171,9 +1171,9 @@ const Model3dModal: FunctionComponent = (): JSX.Element => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <MDBox className="modal-content" sx={styleModal}>
+        <Box className="modal-content" sx={styleModal}>
 
-          <MDBox className="modal-header" style={{ textAlign: "center" }}>
+          <Box className="modal-header" style={{ textAlign: "center" }}>
             <Image src="/favicon/favicon.png"
               width={50}
               height={50}
@@ -1181,13 +1181,13 @@ const Model3dModal: FunctionComponent = (): JSX.Element => {
               title="ThreeD Garden"
             />
             <h2>ThreeD Garden</h2>
-          </MDBox>
+          </Box>
 
-          <MDBox className="modal-body">
-            <MDBox id="model3dView">
+          <Box className="modal-body">
+            <Box id="model3dView">
               <canvas id="model3dViewCanvas" />
-            </MDBox>
-            <MDBox id="modalModelDescription">
+            </Box>
+            <Box id="modalModelDescription">
               <h3>3d Model Properties</h3>
               <table className="propertiesTable" style={{ width: "400px" }}>
                 <tbody>
@@ -1209,15 +1209,15 @@ const Model3dModal: FunctionComponent = (): JSX.Element => {
                 </tbody>
               </table>
               <textarea id="modalModel3dObjHeader" />
-            </MDBox>
-          </MDBox>
+            </Box>
+          </Box>
 
-          <MDBox className="modal-footer">
+          <Box className="modal-footer">
             <h3><a href="http://threedgarden.com">ThreeDGarden</a></h3>
-          </MDBox>
-        </MDBox>
+          </Box>
+        </Box>
       </Modal>
-    </MDBox>
+    </Box>
   )
 }
 
@@ -1237,10 +1237,10 @@ const LoadingModal: FunctionComponent = (): JSX.Element => {
   // }, [])
 
   return (
-    <MDBox id="loadingModalContainer">
-      {/* <MDButton size="small" onClick={handleOpenLoadingModal}>
+    <Box id="loadingModalContainer">
+      {/* <Button size="small" onClick={handleOpenLoadingModal}>
         Open Loading Modal
-      </MDButton> */}
+      </Button> */}
       <Modal
         id="loadingModal"
         open={isOpenLoadingModal}
@@ -1248,9 +1248,9 @@ const LoadingModal: FunctionComponent = (): JSX.Element => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <MDBox className="modal-content" sx={styleModal}>
+        <Box className="modal-content" sx={styleModal}>
 
-          <MDBox className="modal-header" style={{ textAlign: "center" }}>
+          <Box className="modal-header" style={{ textAlign: "center" }}>
             <Image src="/favicon/favicon.png"
               width={50}
               height={50}
@@ -1258,19 +1258,19 @@ const LoadingModal: FunctionComponent = (): JSX.Element => {
               title="ThreeD Garden"
             />
             <h2>ThreeD Garden</h2>
-          </MDBox>
+          </Box>
 
-          <MDBox className="modal-body">
+          <Box className="modal-body">
             <h3>Loading Model Progress</h3>
             <textarea id="modalLoadingDataInfo"></textarea>
-          </MDBox>
+          </Box>
 
-          <MDBox className="modal-footer">
+          <Box className="modal-footer">
             <h3><a href="http://threedgarden.com">ThreeDGarden</a></h3>
-          </MDBox>
-        </MDBox>
+          </Box>
+        </Box>
       </Modal>
-    </MDBox>
+    </Box>
   )
 }
 
@@ -1290,10 +1290,10 @@ const ShareModal: FunctionComponent = (): JSX.Element => {
   // }, [])
 
   return (
-    <MDBox id="shareModalContainer">
-      {/* <MDButton size="small" onClick={handleOpenShareModal}>
+    <Box id="shareModalContainer">
+      {/* <Button size="small" onClick={handleOpenShareModal}>
         Open Share Modal
-      </MDButton> */}
+      </Button> */}
       <Modal
         id="shareModal"
         open={isOpenShareModal}
@@ -1301,9 +1301,9 @@ const ShareModal: FunctionComponent = (): JSX.Element => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <MDBox className="modal-content" sx={styleModal}>
+        <Box className="modal-content" sx={styleModal}>
 
-          <MDBox className="modal-header" style={{ textAlign: "center" }}>
+          <Box className="modal-header" style={{ textAlign: "center" }}>
             <Image src="/favicon/favicon.png"
               width={50}
               height={50}
@@ -1311,23 +1311,23 @@ const ShareModal: FunctionComponent = (): JSX.Element => {
               title="ThreeD Garden"
             />
             <h2>ThreeD Garden</h2>
-          </MDBox>
+          </Box>
 
-          <MDBox className="smallModal-body">
+          <Box className="smallModal-body">
             <h3>Share Plan</h3>
-            <MDButton
+            <Button
               id="getShareLinkBtn"
               className="mediumButton"
               onClick={() => generateShareLink()}>
               Generate Share Link
-            </MDButton>
-            <MDBox style={{ margin: "10px 0px 10px 0px" }}>
-              <MDBox style={{ paddingTop: "6px" }}>
+            </Button>
+            <Box style={{ margin: "10px 0px 10px 0px" }}>
+              <Box style={{ paddingTop: "6px" }}>
                 <label htmlFor="shareLinkUrl">Editable Copy<br />
                   <input
                     type="text"
                     id="shareLinkUrl"
-                    placeholder="Press 'Generate Share Link' MDButton"
+                    placeholder="Press 'Generate Share Link' Button"
                     style={{
                       width: "580px",
                       backgroundColor: "#4e4e4e",
@@ -1339,20 +1339,20 @@ const ShareModal: FunctionComponent = (): JSX.Element => {
                       pointerEvents: "none"
                     }} />&nbsp;
                 </label>
-                <MDButton
+                <Button
                   id="copyShareLinkBtn"
                   className="smallButton"
                   onClick={() => copyShareLink()}>
                   Copy
-                </MDButton>
-              </MDBox>
+                </Button>
+              </Box>
 
-              <MDBox style={{ paddingTop: "6px" }}>
+              <Box style={{ paddingTop: "6px" }}>
                 <label htmlFor="shareLinkUrl3d">Read Only 3d View<br />
                   <input
                     type="text"
                     id="shareLinkUrl3d"
-                    placeholder="Press 'Generate Share Link' MDButton"
+                    placeholder="Press 'Generate Share Link' Button"
                     style={{
                       width: "580px",
                       backgroundColor: "#4e4e4e",
@@ -1364,20 +1364,20 @@ const ShareModal: FunctionComponent = (): JSX.Element => {
                       pointerEvents: "none"
                     }} />&nbsp;
                 </label>
-                <MDButton
+                <Button
                   id="copyShareLinkBtn"
                   className="smallButton"
                   onClick={() => copyShareLink3d()}>
                   Copy
-                </MDButton>
-              </MDBox>
+                </Button>
+              </Box>
 
-              <MDBox style={{ paddingTop: "6px" }}>
+              <Box style={{ paddingTop: "6px" }}>
                 <label htmlFor="shareLinkUrlPlan">Read Only Plan View<br />
                   <input
                     type="text"
                     id="shareLinkUrlPlan"
-                    placeholder="Press 'Generate Share Link' MDButton"
+                    placeholder="Press 'Generate Share Link' Button"
                     style={{
                       width: "580px",
                       backgroundColor: "#4e4e4e",
@@ -1389,22 +1389,22 @@ const ShareModal: FunctionComponent = (): JSX.Element => {
                       pointerEvents: "none"
                     }} />&nbsp;
                 </label>
-                <MDButton
+                <Button
                   id="copyShareLinkBtn"
                   className="smallButton"
                   onClick={() => copyShareLinkPlan()}>
                   Copy
-                </MDButton>
-              </MDBox>
-            </MDBox>
-          </MDBox>
+                </Button>
+              </Box>
+            </Box>
+          </Box>
 
-          <MDBox className="modal-footer">
+          <Box className="modal-footer">
             <h3><a href="http://threedgarden.com">ThreeDGarden</a></h3>
-          </MDBox>
-        </MDBox>
+          </Box>
+        </Box>
       </Modal>
-    </MDBox>
+    </Box>
   )
 }
 
@@ -2449,7 +2449,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 size="medium"
-                color="white"
+                color="inherit"
                 sx={{ mr: 1 }}
               >
                 <ToolIconPointer />
@@ -2463,7 +2463,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 size="medium"
-                color="white"
+                color="inherit"
                 sx={{ mr: 1 }}
               >
                 <ToolIconHand />
@@ -2477,7 +2477,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 size="medium"
-                color="white"
+                color="inherit"
                 sx={{ mr: 1 }}
               >
                 <ToolIconAddWall />
@@ -2491,7 +2491,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 size="medium"
-                color="white"
+                color="inherit"
                 sx={{ mr: 1 }}
               >
                 <ToolIconAddFloor />
@@ -2505,7 +2505,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 size="medium"
-                color="white"
+                color="inherit"
                 sx={{ mr: 1 }}
               >
                 <ToolIconAddRoof />
@@ -2519,7 +2519,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 size="medium"
-                color="white"
+                color="inherit"
                 sx={{ mr: 1 }}
               >
                 <ToolIconAddRuler />
@@ -2533,7 +2533,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 size="medium"
-                color="white"
+                color="inherit"
                 sx={{ mr: 0 }}
               >
                 <ToolIconAddText />
@@ -2605,9 +2605,9 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
           <tr>
             <td>3D Model</td>
             <td>
-              <MDButton className="moreInfoBtn" onClick={() => showModel3dView}>
+              <Button className="moreInfoBtn" onClick={() => showModel3dView}>
                 View
-              </MDButton>
+              </Button>
             </td>
           </tr>
         </table>
@@ -2756,9 +2756,9 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
           <tr>
             <td>3D Model</td>
             <td>
-              <MDButton className="moreInfoBtn" onClick="showModel3dView();">
+              <Button className="moreInfoBtn" onClick="showModel3dView();">
                 View
-              </MDButton>
+              </Button>
             </td>
           </tr>
         </table>
@@ -2996,23 +2996,23 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
           <tr>
             <td width="60"></td>
             <td>
-              <MDButton
+              <Button
                 id="resizeBackgroundImageBtn"
                 onClick="enableResizeBackgroundTemplate();"
                 className="moreInfoBtn">
                 Resize
-              </MDButton>
+              </Button>
             </td>
           </tr>
           <tr>
             <td width="60"></td>
             <td>
-              <MDButton
+              <Button
                 id="deleteBackgroundImageBtn"
                 onClick="deleteBackgroundImage()"
                 className="moreInfoBtn">
                 Delete
-              </MDButton>
+              </Button>
             </td>
           </tr>
         </table>
@@ -3479,7 +3479,7 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
           </tr>
         </table>
         <div>Type<span id="textDataTypeProp"></span></div>
-        <div><MDButton id="deleteTextAnnotationBtn" onClick="deleteTextBtnClick()">Delete</MDButton></div>
+        <div><Button id="deleteTextAnnotationBtn" onClick="deleteTextBtnClick()">Delete</Button></div>
       </div>
       <div id="levelPropertiesView" style={{ display: "none" }}>
         <h3>Level Properties</h3>
@@ -3586,18 +3586,18 @@ const PlanView: FunctionComponent = (): JSX.Element => {
         >ThreeDGarden</a>
       </div>
       <div id="overlayMenuPlanView">
-        <MDButton
+        <Button
           id="overlayPlanViewRecenterBtn"
           onClick="recenterPlanView()"
           className="smallButton">
           Recenter
-        </MDButton>
-        <MDButton
+        </Button>
+        <Button
           id="overlayPlanViewGoto3dViewBtn"
           onClick="goto3dView()"
           className="smallButton">
           3d View
-        </MDButton>
+        </Button>
       </div>
     </div>
   )
@@ -3616,7 +3616,7 @@ const TheBottom: FunctionComponent = (): JSX.Element => {
   }, [])
 
   return (
-    <MDBox>
+    <Box>
       <canvas
         id="rulerLeft"
         width="30"
@@ -3646,18 +3646,18 @@ const TheBottom: FunctionComponent = (): JSX.Element => {
         </div>
 
         <div id="overlayMenu3dView">
-          <MDButton
+          <Button
             id="overlay3dviewRecenterBtn"
             onClick="recenter3dview()"
             className="smallButton">
             Recenter
-          </MDButton>
-          <MDButton
+          </Button>
+          <Button
             id="overlay3dviewGotoPlanViewBtn"
             onClick="gotoPlanView()"
             className="smallButton">
             Plan View
-          </MDButton>
+          </Button>
         </div>
       </div>
 
@@ -3686,7 +3686,7 @@ const TheBottom: FunctionComponent = (): JSX.Element => {
 
       <progress value="50" max="100" className="center" id="progressBar" />
 
-    </MDBox>
+    </Box>
   )
 }
 
@@ -3703,14 +3703,14 @@ const ReactThreeFiberView = (): JSX.Element => {
   // }, [])
 
   return (
-    <MDBox id="rtf-canvas-container" style={{ width: "100%", minHeight: "40rem" }}>
+    <Box id="rtf-canvas-container" style={{ width: "100%", minHeight: "40rem" }}>
       <Canvas>
         <mesh>
           <boxBufferGeometry />
           <meshBasicMaterial />
         </mesh>
       </Canvas>
-    </MDBox>
+    </Box>
   )
 }
 

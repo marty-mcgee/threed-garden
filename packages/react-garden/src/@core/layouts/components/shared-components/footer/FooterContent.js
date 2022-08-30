@@ -12,13 +12,13 @@ const FooterContent = () => {
     <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
       {!hidden ? null : (
         <Typography sx={{ mr: 2 }}>
-          {`© ${new Date().getFullYear()}, Made with `}
-          <Box component='span' sx={{ color: 'error.main' }}>
+          {/* {`© ${new Date().getFullYear()} `} */}
+          {/* <Box component='span' sx={{ color: 'error.main' }}>
             💚
-          </Box>
-          {` by `}
+          </Box> */}
+          {` `}
           <Link target='_blank' href='https://companyjuice.com/'>
-            Company Juice
+           © Company Juice
           </Link>
         </Typography>
       )}

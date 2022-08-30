@@ -1,6 +1,6 @@
 import { ReactNode } from "react"
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
+import Box from "@mui/material/Box"
+import Typography from "@mui/material/Typography"
 
 interface TabPanelProps {
   children?: ReactNode
@@ -20,11 +20,11 @@ function TabPanel(props: TabPanelProps) {
       {...other}
     >
       {value === index && (
-        <MDBox sx={{ p: 3 }}>
-          <MDTypography variant="div">
+        <Box sx={{ p: 3 }}>
+          <Typography variant="div">
             {children}
-          </MDTypography>
-        </MDBox>
+          </Typography>
+        </Box>
       )}
     </div>
   );
