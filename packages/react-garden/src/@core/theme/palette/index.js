@@ -2,11 +2,13 @@ const DefaultPalette = (mode, skin, themeColor) => {
   // ** Vars
   const lightColor = '58, 53, 65'
   const darkColor = '231, 227, 252'
+  // const darkColor = '233, 244, 255'
+  // const darkColor = '76, 153, 0' // #4C9900 'ThreeD Green'
   const mainColor = mode === 'light' ? lightColor : darkColor
 
   const primaryGradient = () => {
     if (themeColor === 'primary') {
-      return '#C6A7FE'
+      return '#4C9900' // '#C6A7FE'
     } else if (themeColor === 'secondary') {
       return '#9C9FA4'
     } else if (themeColor === 'success') {
@@ -15,19 +17,21 @@ const DefaultPalette = (mode, skin, themeColor) => {
       return '#FF8C90'
     } else if (themeColor === 'warning') {
       return '#FFCF5C'
-    } else {
-      return '#6ACDFF'
     }
+    // default 'threed'
+    return '#4C9900' // '#6ACDFF'
   }
 
   const defaultBgColor = () => {
     if (skin === 'bordered' && mode === 'light') {
       return '#FFF'
     } else if (skin === 'bordered' && mode === 'dark') {
-      return '#312D4B'
+      return '#09090D' // '#312D4B'
     } else if (mode === 'light') {
       return '#F4F5FA'
-    } else return '#28243D'
+    }
+    // default
+    return '#09090D' // '#28243D'
   }
 
   return {
@@ -35,10 +39,10 @@ const DefaultPalette = (mode, skin, themeColor) => {
       dark: darkColor,
       main: mainColor,
       light: lightColor,
-      darkBg: '#28243D',
+      darkBg: '#09090D', // '#28243D',
       lightBg: '#F4F5FA',
       primaryGradient: primaryGradient(),
-      bodyBg: mode === 'light' ? '#F4F5FA' : '#28243D',
+      bodyBg: mode === 'light' ? '#F4F5FA' : '#09090D', // '#28243D',
       tableHeaderBg: mode === 'light' ? '#F9FAFC' : '#3D3759'
     },
     common: {
@@ -48,8 +52,8 @@ const DefaultPalette = (mode, skin, themeColor) => {
     mode: mode,
     primary: {
       light: '#9E69FD',
-      main: '#9155FD',
-      dark: '#804BDF',
+      main: '#4C9900', // '#9155FD'
+      dark: '#66CC00', // '#804BDF'
       contrastText: '#FFF'
     },
     secondary: {
@@ -105,7 +109,7 @@ const DefaultPalette = (mode, skin, themeColor) => {
     },
     divider: `rgba(${mainColor}, 0.12)`,
     background: {
-      paper: mode === 'light' ? '#FFF' : '#312D4B',
+      paper: mode === 'light' ? '#FFF' : '#131418', // '#312D4B'
       default: defaultBgColor()
     },
     action: {

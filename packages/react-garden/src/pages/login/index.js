@@ -267,15 +267,15 @@ const LoginPage = () => {
               </Typography>
             </Box>
             <Box sx={{ mb: 6 }}>
-              <TypographyStyled variant='h5'>Welcome to {themeConfig.templateName}! 👋🏻</TypographyStyled>
-              <Typography variant='body2'>Please sign-in to your account and start the adventure</Typography>
+              <TypographyStyled variant='h5'>Welcome to<br/>{themeConfig.templateName} 👋🏻</TypographyStyled>
+              <Typography variant='body2'>Please sign-in to your account to start the adventure..</Typography>
             </Box>
             <Alert icon={false} sx={{ py: 3, mb: 6, ...bgClasses.primaryLight, '& .MuiAlert-message': { p: 0 } }}>
               <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'primary.main' }}>
-                Admin: <strong>mcgee.marty@gmail.com</strong> / Pass: <strong>admin</strong>
+                Admin: <strong>mcgee.marty@gmail.com</strong> <br/> Pass: <strong>admin</strong>
               </Typography>
               <Typography variant='caption' sx={{ display: 'block', color: 'primary.main' }}>
-                Client: <strong>marty@companyjuice.com</strong> / Pass: <strong>client</strong>
+                Client: <strong>marty@companyjuice.com</strong> <br/> Pass: <strong>client</strong>
               </Typography>
             </Alert>
             <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
@@ -347,12 +347,12 @@ const LoginPage = () => {
                 Login
               </Button>
               <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <Typography variant='body2' sx={{ mr: 2 }}>
+                <Typography variant='body2' sx={{ mx: 2 }}>
                   New on our platform?
                 </Typography>
                 <Typography variant='body2'>
                   <Link passHref href='/register'>
-                    <LinkStyled>Create an account</LinkStyled>
+                    <LinkStyled>Create an Account</LinkStyled>
                   </Link>
                 </Typography>
               </Box>
@@ -365,6 +365,11 @@ const LoginPage = () => {
                 </Link>
                 <Link href='/' passHref>
                   <IconButton component='a' onClick={e => e.preventDefault()}>
+                    <Google sx={{ color: '#db4437' }} />
+                  </IconButton>
+                </Link>
+                <Link href='/' passHref>
+                  <IconButton component='a' onClick={e => e.preventDefault()}>
                     <Twitter sx={{ color: '#1da1f2' }} />
                   </IconButton>
                 </Link>
@@ -373,11 +378,6 @@ const LoginPage = () => {
                     <Github
                       sx={{ color: theme => (theme.palette.mode === 'light' ? '#272727' : theme.palette.grey[300]) }}
                     />
-                  </IconButton>
-                </Link>
-                <Link href='/' passHref>
-                  <IconButton component='a' onClick={e => e.preventDefault()}>
-                    <Google sx={{ color: '#db4437' }} />
                   </IconButton>
                 </Link>
               </Box>

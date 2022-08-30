@@ -18,7 +18,7 @@ module.exports = {
   },
   plugins: ['react', '@typescript-eslint', 'prettier'],
   rules: {
-    'arrow-body-style': ['error', 'as-needed', { "requireReturnForObjectLiteral": true }], // 'as-needed' is default | 'always'
+    'arrow-body-style': ['error', 'as-needed', { requireReturnForObjectLiteral: true }], // 'as-needed' is default | 'always'
     'react/react-in-jsx-scope': 'off',
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
     'react/display-name': 'off',
@@ -120,9 +120,11 @@ module.exports = {
     'no-else-return': [
       'error',
       {
-        allowElseIf: true
-      }
-    ]
+        allowElseIf: true,
+      },
+    ],
+    // 'no-else-returns': 'off',
+    'object-shorthand': ['error', 'consistent-as-needed']
   },
   settings: {
     'import/resolver': {
