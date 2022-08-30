@@ -75,7 +75,7 @@ const renderClient = row => {
     return (
       <AvatarWithoutImageLink href={`/apps/user/view/${row.id}`}>
         <CustomAvatar skin='light' color={row.avatarColor} sx={{ mr: 3, width: 30, height: 30, fontSize: '.875rem' }}>
-          {getInitials(row.fullName ? row.fullName : 'John Doe')}
+          {getInitials(row.fullName ? row.fullName : 'Marty McGee')}
         </CustomAvatar>
       </AvatarWithoutImageLink>
     )

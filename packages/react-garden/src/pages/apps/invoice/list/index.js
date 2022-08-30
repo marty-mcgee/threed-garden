@@ -137,7 +137,7 @@ const renderClient = row => {
         color={row.avatarColor || 'primary'}
         sx={{ mr: 3, fontSize: '.8rem', width: '1.875rem', height: '1.875rem' }}
       >
-        {getInitials(row.name || 'John Doe')}
+        {getInitials(row.name || 'Marty McGee')}
       </CustomAvatar>
     )
   }

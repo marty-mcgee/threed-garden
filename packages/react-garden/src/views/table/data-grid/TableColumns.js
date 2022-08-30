@@ -33,7 +33,7 @@ const renderClient = params => {
   } else {
     return (
       <CustomAvatar skin='light' color={color} sx={{ mr: 3, fontSize: '.8rem', width: '1.875rem', height: '1.875rem' }}>
-        {getInitials(row.full_name ? row.full_name : 'John Doe')}
+        {getInitials(row.full_name ? row.full_name : 'Marty McGee')}
       </CustomAvatar>
     )
   }

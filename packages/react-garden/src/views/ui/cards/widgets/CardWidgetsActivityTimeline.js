@@ -93,7 +93,7 @@ const CardWidgetsActivityTimeline = () => {
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Avatar src='/images/avatars/1.png' sx={{ mr: 2.5, width: 24, height: 24 }} />
-                <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>John Doe (Client)</Typography>
+                <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>Marty McGee (Client)</Typography>
               </Box>
             </TimelineContent>
           </TimelineItem>

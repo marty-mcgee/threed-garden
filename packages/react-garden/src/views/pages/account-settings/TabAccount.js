@@ -91,7 +91,7 @@ const TabAccount = () => {
             <TextField fullWidth label='Username' placeholder='johnDoe' defaultValue='johnDoe' />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='Name' placeholder='John Doe' defaultValue='John Doe' />
+            <TextField fullWidth label='Name' placeholder='Marty McGee' defaultValue='Marty McGee' />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField

@@ -136,7 +136,7 @@ const SidebarAddUser = props => {
                   value={value}
                   label='Full Name'
                   onChange={onChange}
-                  placeholder='John Doe'
+                  placeholder='Marty McGee'
                   error={Boolean(errors.fullName)}
                 />
               )}
