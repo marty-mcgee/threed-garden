@@ -19,7 +19,7 @@ import { useAuth } from 'src/hooks/useAuth'
  */
 export const getHomeRoute = (role: any) => {
   if (role === 'client') return '/acl'
-  else return '/dashboards/crm'
+  else return '/participate'
 }
 
 const Home: NextPage = () => {

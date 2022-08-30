@@ -1,10 +1,11 @@
 // ** Next Import
 import Link from 'next/link'
+import Image from 'next/image'
 
 // ** MUI Imports
+import { styled, useTheme } from '@mui/material/styles'
 import IconButton from '@mui/material/IconButton'
 import Box from '@mui/material/Box'
-import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
 // ** Icons
@@ -14,6 +15,13 @@ import RecordCircleOutline from 'mdi-material-ui/RecordCircleOutline'
 
 // ** Configs
 import themeConfig from 'src/configs/themeConfig'
+
+// images
+import favicon from "~/assets/images/logos/favicon.png"
+import appleIcon from "~/assets/images/logos/apple-icon.png"
+import brandLight from "~/assets/images/logos/logo-threedgarden.png"
+import brandDark from "~/assets/images/logos/logo-threedgarden-alt.png"
+import brandText from "~/assets/images/logos/logo-threedgarden-text.png"
 
 // ** Styled Components
 const MenuHeaderWrapper = styled(Box)(({ theme }) => ({
@@ -161,6 +169,12 @@ const VerticalNavHeader = props => {
                 </g>
               </g>
             </svg>
+            <Image
+              src={brandDark.src}
+              alt={themeConfig.templateName}
+              width={32}
+              height={32}
+            />
             <HeaderTitle variant='h6' sx={{ ...menuCollapsedStyles, ...(navCollapsed && !navHover ? {} : { ml: 3 }) }}>
               {themeConfig.templateName}
             </HeaderTitle>
