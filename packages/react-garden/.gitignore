@@ -19,6 +19,8 @@
 .env.test.local
 .env.production.local
 *.pem
+public/objects
+public/demo/objects
 
 # logs
 npm-debug.log*

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ThreeDGarden</title>
-    <base href="http://localhost:5500/" />
+    <title>ThreeD Home + Garden</title>
+    <base href="https://threedgarden.com/demo/" />
 
     <meta charset="UTF-8">
 
@@ -17,11 +17,11 @@
     <meta name="viewport" content="initial-scale=1, viewport-fit=cover">
     <meta name="twitter:card" value="Create house and garden plans in 2D and 3D">
 
-    <meta property="og:title" content="ThreeDGarden">
+    <meta property="og:title" content="ThreeD Home + Garden">
     <meta property="og:type" content="website">
     <meta property="og:description" content="Design house, landscape, garden plans in 2D + 3D" />
-    <meta property="og:url" content="https://threedgarden.com">
-    <meta property="og:image" content="https://threedgarden.com/api/thumb3dview">
+    <meta property="og:url" content="https://threedgarden.com/demo/">
+    <meta property="og:image" content="https://threedgarden.com/demo/api/thumb3dview">
     <meta property="og:image:width" content="600">
     <meta property="og:image:height" content="337">
 
@@ -29,7 +29,7 @@
 
     <script type="text/javascript" src="scripts/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="scripts/paper-full.js?a=1"></script>
-    <script type="text/javascript" src="scripts/b3.min.js"></script>
+    <script type="text/javascript" src="scripts/threed.min.js"></script>
     <script type="text/javascript" src="scripts/three.min.js"></script>
     <script type="text/javascript" src="scripts/trackballcontrols.js"></script>
     <script type="text/javascript" src="scripts/tween.js"></script>
@@ -94,9 +94,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <span class="close">&times;</span>
-                <img src="favicon/favicon.png" height="54px" style="float:left; padding-top:6px; padding-right: 12px;"
-                    title="ThreeDGarden" alt="ThreeDGarden" />
-                <h2>ThreeDGarden</h2>
+                <img src="favicon/favicon.png" height="48px" style="float:left; padding-top:6px padding-right: 12px;"
+                    title="ThreeD Home + Garden" alt="ThreeD Home + Garden" />
+                <h2>ThreeD Home + Garden</h2>
             </div>
             <div class="modal-body">
 
@@ -113,12 +113,12 @@
                 </div>
 
                 <div id="tab1Content" class="tabcontent" style="display:block;">
-                    <h3>ThreeDGarden Introduction</h3>
+                    <h3>ThreeD Home + Garden Introduction</h3>
                     <p>Plan + Share Ideas for your Home + Garden in 2D + 3D</p>
                     <div style="border: 1px solid #2a2a2a; padding-left:12px; padding-right:12px;">
                         <p>Save Plan Edits to local web storage : <input type="checkbox" id="saveEditsToLocalStorage" onchange="handleSaveEditsLocalStorageOption()"/>
                             <span class="tooltip"><img src="media/info.png" class="tooltip">
-                                <span class="tooltiptext">Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br/>The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the "File->Save" option in the main <a href="http://threedgarden.com">ThreeDGarden</a> toolbar.<br/>More info about <a href="https://www.w3schools.com/HTML/html5_webstorage.asp" target="_blank" rel="noreferrer">Local Web Storage</a>.</span>
+                                <span class="tooltiptext">Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br/>The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the "File->Save" option in the main <a href="http://threedgarden.com">ThreeD Home + Garden</a> toolbar.<br/>More info about <a href="https://www.w3schools.com/HTML/html5_webstorage.asp" target="_blank" rel="noreferrer">Local Web Storage</a>.</span>
                             </span>
                             <div id="localStoragePlanDiv">
                                 <hr/>
@@ -156,7 +156,7 @@
 
                 <div id="tab2Content" class="tabcontent">
                     <h3>Models</h3>
-                    <p>ThreeDGarden uses many 3D models which can be found on the internet as public domain, Free Art or
+                    <p>ThreeD Home + Garden uses many 3D models which can be found on the internet as public domain, Free Art or
                         Creative Commons.</p>
                     <p>If you would like a model added to the catalogue, please send a zipped file to <span
                             class="supportEmail"></span>.</p>
@@ -164,7 +164,7 @@
                     <ul>
                         <li>Saved as .obj format along with the .mtl file, plus any texture files used. Blender OBJ
                             default export options work very well.</li>
-                        <li>1 unit in Blender = 1cm in ThreeDGarden. Eg, a cube with X:100, Y:100, Z:100, will
+                        <li>1 unit in Blender = 1cm in ThreeD Home + Garden. Eg, a cube with X:100, Y:100, Z:100, will
                             display as 1 Meter cubed box in the 3d and Plan views.</li>
                         <li>If uisng Blender, Y-Axis in your OBJ export should be UP. Blender IDE defaults with the
                             Z-Axis being UP in normal creatiion mode, but the OBJ export plugin defaults to convert
@@ -283,7 +283,7 @@
 
             </div>
             <div class="modal-footer">
-                <h3><a href="https://threedgarden.com">ThreeDGarden</a> &copy; Company Juice.&nbsp;Version 0.1.1.1</h3>
+                <h3><a href="https://threedgarden.com/demo/">ThreeD Home + Garden</a></h3>
             </div>
         </div>
     </div>
@@ -293,8 +293,8 @@
             <div class="modal-header">
                 <span class="close">&times;</span>
                 <img src="favicon/favicon.png" height="54px" style="float:left; padding-top:6px; padding-right: 12px;"
-                    title="ThreeDGarden" alt="ThreeDGarden" />
-                <h2>ThreeDGarden</h2>
+                    title="ThreeD Home + Garden" alt="ThreeD Home + Garden" />
+                <h2>ThreeD Home + Garden</h2>
             </div>
             <div class="modal-body">
                 <div id="model3dView">
@@ -324,7 +324,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <h3><a href="http://threedgarden.com">ThreeDGarden</a> &copy; Company Juice.&nbsp;Version 0.1.1.1</h3>
+                <h3><a href="http://threedgarden.com">ThreeD Home + Garden</a></h3>
             </div>
         </div>
     </div>
@@ -334,17 +334,16 @@
         <div class="smallModal-content">
             <div class="smallModal-header">
                 <img src="favicon/favicon.png" height="54px" style="float:left; padding-top:6px; padding-right: 12px;"
-                    title="ThreeDGarden" alt="ThreeDGarden" />
-                <h2>ThreeDGarden</h2>
+                    title="ThreeD Home + Garden" alt="ThreeD Home + Garden" />
+                <h2>ThreeD Home + Garden</h2>
             </div>
             <div class="smallModal-body">
                 <h3>Loading Model Progress</h3>
                 <textarea id="modalLoadingDataInfo"></textarea>
             </div>
             <div class="smallModal-footer">
-                <h3><a href="http://threedgarden.com">ThreeDGarden</a> &copy; Company Juice.&nbsp;Version
-                    1.1.1</h3>
-            </div>
+              <h3><a href="http://threedgarden.com">ThreeD Home + Garden</a></h3>
+          </div>
         </div>
     </div>
 
@@ -353,8 +352,8 @@
             <div class="smallModal-header">
                 <span class="close">&times;</span>
                 <img src="favicon/favicon.png" height="54px" style="float:left; padding-top:6px; padding-right: 12px;"
-                    title="ThreeDGarden" alt="ThreeDGarden" />
-                <h2>ThreeDGarden</h2>
+                    title="ThreeD Home + Garden" alt="ThreeD Home + Garden" />
+                <h2>ThreeD Home + Garden</h2>
             </div>
             <div class="smallModal-body">
                 <h3>Share Plan</h3>
@@ -384,20 +383,20 @@
                 </div>
             </div>
             <div class="smallModal-footer">
-                <h3><a href="http://threedgarden.com">ThreeDGarden</a> &copy; Company Juice.&nbsp;Version 0.1.1.1</h3>
-            </div>
+              <h3><a href="http://threedgarden.com">ThreeD Home + Garden</a></h3>
+          </div>
         </div>
     </div>
 
     <div id="toolBar">
         <ul>
             <li class="brandImg">
-                <a href="https://threedgarden.com" style="padding:0px; margin:0px;"><img
-                        src="favicon/favicon.png" height="54px" title="ThreeDGarden" alt="ThreeDGarden" /></a>
+                <a href="https://threedgarden.com/demo/" style="padding:0px; margin:0px;"><img
+                        src="favicon/favicon.png" height="54px" title="ThreeD Home + Garden" alt="ThreeD Home + Garden" /></a>
             </li>
             <li class="brand">
-                <a href="https://threedgarden.com"
-                    style="text-align: center; padding-top: 15px; padding-left: 18px; padding-right: 24px; padding-bottom: 15px; text-decoration: none; font-size: 21px;">ThreeDGarden</a>
+                <a href="https://threedgarden.com/demo/"
+                    style="text-align: center; padding-top: 15px; padding-left: 18px; padding-right: 24px; padding-bottom: 15px; text-decoration: none; font-size: 21px;">ThreeD Home + Garden</a>
             </li>
             <li class="dropdown">
                 <a href="javascript:void(0)" class="dropbtn">File</a>
@@ -1068,10 +1067,10 @@
     <div id="planView">
         <canvas id="planCanvas" width="1024" height="450"></canvas>
         <div id="overlayLogoPlanView" class="overlayLogo">
-            <a href="https://threedgarden.com" style="float:left;padding:0px; margin-top:0px;"><img
-                    src="favicon/favicon.png" height="77px" title="ThreeDGarden" alt="ThreeDGarden" /></a>&nbsp;
-            <a href="https://threedgarden.com"
-                style="padding-left: 10px; text-decoration: none; font-size: 32px;">ThreeDGarden</a>
+            <a href="https://threedgarden.com/demo/" style="float:left;padding:0px; margin-top:0px;"><img
+                    src="favicon/favicon.png" height="77px" title="ThreeD Home + Garden" alt="ThreeD Home + Garden" /></a>&nbsp;
+            <a href="https://threedgarden.com/demo/"
+                style="padding-left: 10px; text-decoration: none; font-size: 32px;">ThreeD Home + Garden</a>
         </div>
         <div id="overlayMenuPlanView">
             <button id="overlayPlanViewRecenterBtn" onclick="recenterPlanView()" class="smallButton">Recenter</button>
@@ -1092,10 +1091,10 @@
     <div id="view3d">
         <canvas id="threeCanvas"></canvas>
         <div id="overlayLogo3dView" class="overlayLogo">
-            <a href="https://threedgarden.com" style="float:left;padding:0px; margin-top:0px;"><img
-                    src="favicon/favicon.png" height="77px" title="ThreeDGarden" alt="ThreeDGarden" /></a>&nbsp;
-            <a href="https://threedgarden.com"
-                style="padding-left: 10px; text-decoration: none; font-size: 32px;">ThreeDGarden</a>
+            <a href="https://threedgarden.com/demo/" style="float:left;padding:0px; margin-top:0px;"><img
+                    src="favicon/favicon.png" height="77px" title="ThreeD Home + Garden" alt="ThreeD Home + Garden" /></a>&nbsp;
+            <a href="https://threedgarden.com/demo/"
+                style="padding-left: 10px; text-decoration: none; font-size: 32px;">ThreeD Home + Garden</a>
         </div>
         <div id="overlayMenu3dView">
             <button id="overlay3dviewRecenterBtn" onclick="recenter3dview()" class="smallButton">Recenter</button>
