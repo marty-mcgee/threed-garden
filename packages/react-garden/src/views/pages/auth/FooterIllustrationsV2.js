@@ -14,12 +14,24 @@ const MaskImg = styled('img')(() => ({
 }))
 
 const TreeImg = styled('img')(({ theme }) => ({
-  left: '2.125rem',
-  bottom: '2.688rem',
+  left: '3.0rem',
+  bottom: '3.0rem',
+  height: '14.0rem',
   position: 'absolute',
   [theme.breakpoints.down('lg')]: {
     left: 0,
     bottom: 0
+  }
+}))
+
+const TreeImg2 = styled('img')(({ theme }) => ({
+  right: '-3.0rem',
+  bottom: '6.0rem',
+  height: '16.0rem',
+  position: 'absolute',
+  [theme.breakpoints.down('lg')]: {
+    right: '-4.0rem',
+    bottom: '3.0rem',
   }
 }))
 
@@ -34,10 +46,11 @@ const FooterIllustrationsV2 = props => {
   const hidden = useMediaQuery(theme.breakpoints.down('md'))
   if (!hidden) {
     return (
-      <Fragment>
+      <>
         {image || <TreeImg alt='tree' src='/images/pages/tree.png' />}
+        <TreeImg2 alt='tree' src='/images/pages/tree-purple2.png' />
         <MaskImg alt='mask' src={`/images/pages/auth-v2-mask-${theme.palette.mode}.png`} />
-      </Fragment>
+      </>
     )
   } else {
     return null

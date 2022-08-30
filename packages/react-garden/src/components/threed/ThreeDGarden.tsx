@@ -3703,7 +3703,7 @@ const ReactThreeFiberView = (): JSX.Element => {
   // }, [])
 
   return (
-    <Box id="rtf-canvas-container" style={{ width: "100%", minHeight: "40rem" }}>
+    <Box id="rtf-canvas-container" style={{ width: "100%", minHeight: "20rem" }}>
       <Canvas>
         <mesh>
           <boxBufferGeometry />

@@ -48,8 +48,19 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
+import FarmbotDemoSVG from '~/components/farmbot/FarmbotSVG'
 
 // ** Styled Components
+const SVGWrapper = styled(Box)(({ theme }) => {
+  return {
+    padding: theme.spacing(10),
+    // paddingRight: '0 !important',
+    [theme.breakpoints.down('lg')]: {
+      padding: theme.spacing(10)
+    }
+  }
+})
+
 const LoginIllustrationWrapper = styled(Box)(({ theme }) => {
   return {
     padding: theme.spacing(20),
@@ -162,13 +173,19 @@ const LoginPage = () => {
   return (
     <Box className='content-right'>
       {!hidden ? (
-        <Box sx={{ flex: 1, display: 'flex', position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
+        <Box sx={{ flex: 1, display: 'flex', position: 'relative', alignItems: 'top', justifyContent: 'center' }}>
+          <SVGWrapper>
+            <Box sx={{ height: 64 }} />
+            <FarmbotDemoSVG />
+          </SVGWrapper>
+          {/*
           <LoginIllustrationWrapper>
             <LoginIllustration
               alt='login-illustration'
               src={`/images/pages/${imageSource}-${theme.palette.mode}.png`}
             />
           </LoginIllustrationWrapper>
+          */}
           <FooterIllustrationsV2 />
         </Box>
       ) : null}
@@ -267,15 +284,15 @@ const LoginPage = () => {
               </Typography>
             </Box>
             <Box sx={{ mb: 6 }}>
-              <TypographyStyled variant='h5'>Welcome to<br/>{themeConfig.templateName} 👋🏻</TypographyStyled>
+              <TypographyStyled variant='h5'>Welcome to<br />{themeConfig.templateName} 👋🏻</TypographyStyled>
               <Typography variant='body2'>Please sign-in to your account to start the adventure..</Typography>
             </Box>
             <Alert icon={false} sx={{ py: 3, mb: 6, ...bgClasses.primaryLight, '& .MuiAlert-message': { p: 0 } }}>
               <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'primary.main' }}>
-                Admin: <strong>mcgee.marty@gmail.com</strong> <br/> Pass: <strong>admin</strong>
+                Admin: <strong>mcgee.marty@gmail.com</strong> <br /> Pass: <strong>admin</strong>
               </Typography>
               <Typography variant='caption' sx={{ display: 'block', color: 'primary.main' }}>
-                Client: <strong>marty@companyjuice.com</strong> <br/> Pass: <strong>client</strong>
+                Client: <strong>marty@companyjuice.com</strong> <br /> Pass: <strong>client</strong>
               </Typography>
             </Alert>
             <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
