@@ -24,19 +24,19 @@ const ParticipatePage = () => {
       <ThreeDGarden />
       <Grid item md={6} xs={12}>
         <Card>
-          <CardHeader title='Common' />
+          <CardHeader title='Public Content' />
           <CardContent>
-            <Typography sx={{ mb: 4 }}>No ability is required to view this card</Typography>
-            <Typography sx={{ color: 'primary.main' }}>This card is visible to 'user' and 'admin' both</Typography>
+            <Typography sx={{ mb: 4 }}>No user role "ability" is required to view this card</Typography>
+            <Typography sx={{ color: 'primary.main' }}>This card is visible to both 'user' and 'admin'</Typography>
           </CardContent>
         </Card>
       </Grid>
       {ability?.can('read', 'analytics') ? (
         <Grid item md={6} xs={12}>
           <Card>
-            <CardHeader title='Analytics' />
+            <CardHeader title='Restricted Content' />
             <CardContent>
-              <Typography sx={{ mb: 4 }}>User with 'Analytics' subject's 'Read' ability can view this card</Typography>
+              <Typography sx={{ mb: 4 }}>User with "analytics: read" ability can view this card</Typography>
               <Typography sx={{ color: 'error.main' }}>This card is visible to 'admin' only</Typography>
             </CardContent>
           </Card>
