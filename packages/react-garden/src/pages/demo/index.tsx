@@ -1,22 +1,17 @@
 // ========================================================
-import { FunctionComponent, useEffect } from "react"
-import dynamic from "next/dynamic"
+import { FunctionComponent, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 
 // import Demo from "~/components/threed/Demo"
-const DynamicCSRDemo = dynamic(
-  () => import("~/components/threed/Demo"),
-  {
-    // loading: () => <p>...loading...</p>,
-    ssr: false
-  }
-)
+const DynamicCSRDemo = dynamic(() => import('~/components/threed/Demo'), {
+  // loading: () => <p>...loading...</p>,
+  ssr: false,
+})
 
 const DemoPage: FunctionComponent = (props): JSX.Element => {
-
-  const word = "HEY HEY HEY -- DEMO PAGE"
+  const word = 'HEY HEY HEY -- DEMO PAGE'
 
   useEffect(() => {
-
     const newword = word
 
     // because we are in Client-Side-Rendering (SSR: FALSE)
@@ -33,9 +28,7 @@ const DemoPage: FunctionComponent = (props): JSX.Element => {
     // )
     // console.log("B3 onMount", B3)
 
-    return (
-      console.info(`[MM] /demo: onUnmount @ ${new Date().toISOString()} ${newword}`)
-    )
+    return console.info(`[MM] /demo: onUnmount @ ${new Date().toISOString()} ${newword}`)
   }, [])
 
   // return JSX.Element

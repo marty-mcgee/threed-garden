@@ -5,18 +5,28 @@ module.exports = {
     browser: true,
   },
   parser: '@babel/eslint-parser',
-  extends: ['plugin:react/recommended', 'next/core-web-vitals', 'airbnb', 'prettier'],
+  extends: [
+    'plugin:react/recommended',
+    'next/core-web-vitals',
+    'airbnb',
+    'prettier'
+  ],
   parserOptions: {
     ecmaVersion: 11,
     sourceType: 'module',
-    project: './jsconfig.json',
+    project: './tsconfig.json',
+    tsconfigRootDir: __dirname,
     ecmaFeatures: {
       jsx: true,
       modules: true,
       experimentalObjectRestSpread: true,
     },
   },
-  plugins: ['react', '@typescript-eslint', 'prettier'],
+  plugins: [
+    '@typescript-eslint',
+    'react',
+    'prettier'
+  ],
   rules: {
     'arrow-body-style': 'off', // ['error', 'as-needed', { requireReturnForObjectLiteral: true }], // 'as-needed' is default | 'always'
     'react/react-in-jsx-scope': 'off',
@@ -117,13 +127,13 @@ module.exports = {
     // TERNARY OPERATORS
     'no-nested-ternary': 'off',
     // ELSE-IF RETURNS
-    // 'no-else-return': [
-    //   'error',
-    //   {
-    //     allowElseIf: true,
-    //   },
-    // ],
-    'no-else-returns': 'off',
+    'no-else-return': [
+      'off',
+      {
+        allowElseIf: true,
+      },
+    ],
+    // 'no-else-returns': 'off',
     'object-shorthand': ['error', 'consistent-as-needed']
   },
   settings: {

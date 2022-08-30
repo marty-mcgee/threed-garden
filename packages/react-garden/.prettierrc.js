@@ -5,7 +5,6 @@ module.exports = {
   endOfLine: 'crlf',
   htmlWhitespaceSensitivity: 'css',
   insertPragma: false,
-  jsxBracketSameLine: true,
   jsxSingleQuote: true,
   printWidth: 120,
   proseWrap: 'preserve',
