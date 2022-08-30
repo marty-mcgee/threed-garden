@@ -112,7 +112,7 @@ const renderUserAvatar = row => {
   } else {
     return (
       <CustomAvatar skin='light' sx={{ mr: 3, width: 30, height: 30, fontSize: '.8rem' }}>
-        {getInitials(row.name ? row.name : 'John Doe')}
+        {getInitials(row.name ? row.name : 'Marty McGee')}
       </CustomAvatar>
     )
   }

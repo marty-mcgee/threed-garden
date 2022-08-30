@@ -72,7 +72,7 @@ function Invoice(): JSX.Element {
                       mt={6}>
                       <MDBox mt={1}>
                         <MDTypography variant="h6" fontWeight="medium">
-                          Billed to: John Doe
+                          Billed to: Marty McGee
                         </MDTypography>
                       </MDBox>
                       <MDBox mb={1}>

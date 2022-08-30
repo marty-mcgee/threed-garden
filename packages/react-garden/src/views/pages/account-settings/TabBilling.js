@@ -144,7 +144,7 @@ const TabBilling = () => {
                           label='Name'
                           autoComplete='off'
                           onBlur={handleBlur}
-                          placeholder='John Doe'
+                          placeholder='Marty McGee'
                           onFocus={e => setFocus(e.target.name)}
                           onChange={e => setName(e.target.value)}
                         />

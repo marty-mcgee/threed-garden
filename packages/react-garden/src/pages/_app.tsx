@@ -115,27 +115,25 @@ const App = (props: any) => {
 
           {/* <link rel='manifest' href='/site.webmanifest' /> */}
 
-          <link rel='icon' href={favicon.src} />
+          <meta name='twitter:card' content='Design your home and garden plans in 2D and 3D' />
+          <meta name='twitter:site' content='@companyjuice' />
+          <meta name='twitter:creator' content='@martymcgee' />
+
+          <meta property='og:title' content='ThreeDGarden' />
+          <meta property='og:type' content='website' />
+          <meta property='og:description' content='Design your home and garden plans in 2D + 3D' />
+          <meta property='og:url' content='https://threedgarden.com' />
+          <meta property='og:image' content='https://threedgarden.com/api/thumb3dview' />
+          <meta property='og:image:width' content='600' />
+          <meta property='og:image:height' content='337' />
+
+          <link rel='shortcut icon' href={favicon.src} />
           <link rel='icon' type='image/png' sizes='32x32' href='/favicon/favicon-32x32.png' />
           <link rel='icon' type='image/png' sizes='16x16' href='/favicon/favicon-16x16.png' />
           <link rel='apple-touch-icon' sizes='76x76' href={appleIcon.src} />
           <link rel='apple-touch-icon' sizes='76x76' href='/favicon/apple-touch-icon.png' />
           <link rel='mask-icon' href='/favicon/safari-pinned-tab.svg' color='#5bbad5' />
           <meta name='msapplication-TileColor' content='#da532c' />
-
-
-
-          <meta name='twitter:card' content='Create house and garden plans in 2D and 3D' />
-          <meta name='twitter:site' content='@companyjuice' />
-          <meta name='twitter:creator' content='@martymcgee' />
-
-          <meta property='og:title' content='ThreeDGarden' />
-          <meta property='og:type' content='website' />
-          <meta property='og:description' content='Design house, landscape, garden plans in 2D + 3D' />
-          <meta property='og:url' content='https://threedgarden.com' />
-          <meta property='og:image' content='https://threedgarden.com/api/thumb3dview' />
-          <meta property='og:image:width' content='600' />
-          <meta property='og:image:height' content='337' />
         </Head>
         <AuthProvider>
           <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : {})}>

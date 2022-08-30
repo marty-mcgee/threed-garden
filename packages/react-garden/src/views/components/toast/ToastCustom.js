@@ -20,7 +20,7 @@ const ToastCustom = () => {
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Avatar alt='Victor Anderson' src='/images/avatars/3.png' sx={{ mr: 3, width: 40, height: 40 }} />
             <Box>
-              <Typography>John Doe</Typography>
+              <Typography>Marty McGee</Typography>
               <Typography variant='caption'>Sure! 8:30pm works great!</Typography>
             </Box>
           </Box>

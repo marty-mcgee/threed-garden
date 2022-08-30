@@ -8,7 +8,7 @@ const data = {
   profileUser: {
     id: 11,
     avatar: '/images/avatars/1.png',
-    fullName: 'John Doe',
+    fullName: 'Marty McGee',
     role: 'admin',
     about:
       'Dessert chocolate cake lemon drops jujubes. Biscuit cupcake ice cream bear claw brownie brownie marshmallow.',
