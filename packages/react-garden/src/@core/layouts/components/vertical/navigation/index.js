@@ -131,13 +131,13 @@ const Navigation = props => {
           containerRef={ref => handleInfiniteScroll(ref)}
           {...(hidden
             ? {
-                onScroll: container => scrollMenu(container),
-                sx: { height: '100%', overflowY: 'auto', overflowX: 'hidden' }
-              }
+              onScroll: container => scrollMenu(container),
+              sx: { height: '100%', overflowY: 'auto', overflowX: 'hidden' }
+            }
             : {
-                options: { wheelPropagation: false },
-                onScrollY: container => scrollMenu(container)
-              })}
+              options: { wheelPropagation: false },
+              onScrollY: container => scrollMenu(container)
+            })}
         >
           {beforeVerticalNavMenuContent && beforeVerticalNavMenuContentPosition === 'static'
             ? beforeVerticalNavMenuContent(props)

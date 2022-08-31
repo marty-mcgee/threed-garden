@@ -22,13 +22,27 @@ module.exports = {
       experimentalObjectRestSpread: true,
     },
   },
+  settings: {
+    'import/resolver': {
+      typescript: {},
+    },
+  },
   plugins: [
     '@typescript-eslint',
     'react',
     'prettier'
   ],
   rules: {
-    'arrow-body-style': 'off', // ['error', 'as-needed', { requireReturnForObjectLiteral: true }], // 'as-needed' is default | 'always'
+
+    'arrow-body-style': 'off',
+    // ['error', 'as-needed', { requireReturnForObjectLiteral: true }], // 'as-needed' is default | 'always'
+
+    // "react/no-unstable-nested-components": [
+    //   "off" | "warn" | "error",
+    //   { "allowAsProps": true | false }
+    // ],
+    'react/no-unstable-nested-components': 'off',
+
     'react/react-in-jsx-scope': 'off',
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
     'react/display-name': 'off',
@@ -135,10 +149,5 @@ module.exports = {
     ],
     // 'no-else-returns': 'off',
     'object-shorthand': ['error', 'consistent-as-needed']
-  },
-  settings: {
-    'import/resolver': {
-      typescript: {},
-    },
   },
 }

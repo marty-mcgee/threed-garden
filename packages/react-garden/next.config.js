@@ -62,7 +62,10 @@ const nextConfig = {
   trailingSlash: true,
   experimental: {
     esmExternals: false,
-    // jsconfigPaths: true // enables it for both jsconfig.json and tsconfig.json
+    // jsconfigPaths: true, // enables it for both jsconfig.json and tsconfig.json
+    images: {
+      allowFutureImage: true
+    }
   },
   webpack: config => {
     config.resolve.alias = {
