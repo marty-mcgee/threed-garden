@@ -1,6 +1,6 @@
 {
   "name": "@threed/react-garden",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "private": false,
   "description": "React + TypeScript app using Material UI on NextJS",
   "author": {
