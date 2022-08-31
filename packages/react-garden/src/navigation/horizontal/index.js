@@ -40,7 +40,7 @@ const navigation = () => {
   return [
     {
       icon: HomeOutline,
-      title: 'Dashboards',
+      title: 'Adventures',
       children: [
         {
           icon: ChartDonut,
@@ -115,7 +115,7 @@ const navigation = () => {
           ]
         },
         {
-          title: 'Roles & Permissions',
+          title: 'Roles',
           icon: LockOutline,
           children: [
             {
@@ -386,7 +386,7 @@ const navigation = () => {
         },
         {
           icon: VectorArrangeBelow,
-          title: 'Dialog Examples',
+          title: 'Action Dialogs',
           path: '/pages/dialog-examples'
         }
       ]

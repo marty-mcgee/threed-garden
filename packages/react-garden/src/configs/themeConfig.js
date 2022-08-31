@@ -5,7 +5,7 @@
  * ! To clear local storage, you may refer https://www.leadshook.com/help/how-to-clear-local-storage-in-google-chrome-browser/.
  */
 // ** Icon Import
-import CircleOutline from 'mdi-material-ui/CircleOutline'
+import CircleOutline from 'mdi-material-ui/Tree'
 
 const themeConfig = {
   // ** Layout Configs

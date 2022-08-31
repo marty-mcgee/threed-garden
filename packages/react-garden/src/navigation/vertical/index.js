@@ -13,7 +13,7 @@ import DotsHorizontal from 'mdi-material-ui/DotsHorizontal'
 import MessageOutline from 'mdi-material-ui/MessageOutline'
 import FormatLetterCase from 'mdi-material-ui/FormatLetterCase'
 import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
-import VectorArrangeBelow from 'mdi-material-ui/VectorArrangeBelow'
+import ManageAccount from 'mdi-material-ui/VectorArrangeBelow'
 import FileDocumentOutline from 'mdi-material-ui/FileDocumentOutline'
 import CalendarBlankOutline from 'mdi-material-ui/CalendarBlankOutline'
 import PackageVariantClosed from 'mdi-material-ui/PackageVariantClosed'
@@ -21,10 +21,10 @@ import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
 import CheckboxMarkedCircleOutline from 'mdi-material-ui/CheckboxMarkedCircleOutline'
 
 const navigation = () => {
-  const word = "HEY HEY HEY"
+  const word = "[MM] HEY HEY HEY"
   return [
     {
-      title: 'Dashboards',
+      title: 'Home Base',
       icon: HomeOutline,
       badgeContent: '', // 'new'
       badgeColor: 'primary', // 'error'
@@ -32,20 +32,30 @@ const navigation = () => {
         {
           title: 'Participate',
           path: '/participate'
-        },
-        {
-          title: 'CRM',
-          path: '/dashboards/crm'
-        },
-        {
-          title: 'Analytics',
-          path: '/dashboards/analytics'
-        },
-        {
-          title: 'eCommerce',
-          path: '/dashboards/ecommerce'
         }
       ]
+    },
+    // Parallel
+    {
+      title: 'Account',
+      icon: ManageAccount,
+      badgeContent: 'Parallel', // 'new'
+      path: '/pages/dialog-examples'
+    },
+    {
+      title: 'Customers',
+      icon: HomeOutline,
+      path: '/dashboards/crm'
+    },
+    {
+      title: 'Analysis',
+      icon: HomeOutline,
+      path: '/dashboards/analytics'
+    },
+    {
+      title: 'eCommerce',
+      icon: HomeOutline,
+      path: '/dashboards/ecommerce'
     },
     {
       sectionTitle: 'Apps & Pages'
@@ -236,11 +246,6 @@ const navigation = () => {
           ]
         }
       ]
-    },
-    {
-      icon: VectorArrangeBelow,
-      title: 'Dialog Examples',
-      path: '/pages/dialog-examples'
     },
     {
       sectionTitle: 'User Interface'

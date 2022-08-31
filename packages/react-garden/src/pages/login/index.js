@@ -284,7 +284,7 @@ const LoginPage = () => {
               </Typography>
             </Box>
             <Box sx={{ mb: 6 }}>
-              <TypographyStyled variant='h5'>Welcome to<br />{themeConfig.templateName} 👋🏻</TypographyStyled>
+              <TypographyStyled variant='h5'>🌱 Welcome to<br />{themeConfig.templateName}</TypographyStyled>
               <Typography variant='body2'>Please sign-in to your account to start the adventure..</Typography>
             </Box>
             <Alert icon={false} sx={{ py: 3, mb: 6, ...bgClasses.primaryLight, '& .MuiAlert-message': { p: 0 } }}>

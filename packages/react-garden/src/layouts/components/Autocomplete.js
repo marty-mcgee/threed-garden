@@ -159,7 +159,7 @@ const defaultSuggestionsData = [
 ]
 
 const categoryTitle = {
-  dashboards: 'Dashboards',
+  dashboards: 'Adventures',
   appsPages: 'Apps & Pages',
   userInterface: 'User Interface',
   formsTables: 'Forms & Tables',

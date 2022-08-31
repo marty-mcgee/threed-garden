@@ -3,7 +3,7 @@ import mock from '~/@fake-db/mock'
 
 const navigation = [
   {
-    title: 'Dashboards',
+    title: 'Adventures',
     icon: 'HomeOutline',
     badgeContent: 'new',
     badgeColor: 'error',
@@ -77,7 +77,7 @@ const navigation = [
     ]
   },
   {
-    title: 'Roles & Permissions',
+    title: 'Roles',
     icon: 'LockOutline',
     children: [
       {
@@ -214,7 +214,7 @@ const navigation = [
   },
   {
     icon: 'VectorArrangeBelow',
-    title: 'Dialog Examples',
+    title: 'Action Dialogs',
     path: '/pages/dialog-examples'
   },
   {

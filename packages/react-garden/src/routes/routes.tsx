@@ -125,7 +125,7 @@ const routes = [
   { type: "divider", key: "divider-dashboards" },
   {
     type: "collapse",
-    name: "Dashboards",
+    name: "Adventures",
     key: "dashboards",
     icon: <Icon fontSize="medium">dashboard</Icon>,
     collapse: [
