@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react'
 
 // ** Full Calendar & it's Plugins
 import FullCalendar from '@fullcalendar/react'
-import listPlugin from '@fullcalendar/list'
+// import listPlugin from '@fullcalendar/list' // [MM] HEY HEY HEY
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -11,6 +11,8 @@ import interactionPlugin from '@fullcalendar/interaction'
 // ** Icons Imports
 import Menu from 'mdi-material-ui/Menu'
 
+// ==============================================================
+// [MM] HEY HEY HEY
 const blankEvent = {
   title: '',
   start: '',
@@ -25,7 +27,12 @@ const blankEvent = {
   }
 }
 
+
+// ==============================================================
+// FunctionComponent<FC><Props>
+
 const Calendar = props => {
+
   // ** Props
   const {
     store,
@@ -42,17 +49,21 @@ const Calendar = props => {
 
   // ** Refs
   const calendarRef = useRef()
+  // [MM] HEY HEY HEY
   useEffect(() => {
     if (calendarApi === null) {
       // @ts-ignore
       setCalendarApi(calendarRef.current.getApi())
     }
   }, [calendarApi, setCalendarApi])
+
+  // [MM] HEY HEY HEY
   if (store) {
+
     // ** calendarOptions(Props)
     const calendarOptions = {
       events: store.events.length ? store.events : [],
-      plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin],
+      plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin], // , listPlugin // [MM] HEY HEY HEY
       initialView: 'dayGridMonth',
       headerToolbar: {
         start: 'sidebarToggle, prev, next, title',
