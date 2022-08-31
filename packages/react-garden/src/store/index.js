@@ -9,7 +9,7 @@ import invoice from '~/store/apps/invoice'
 import calendar from '~/store/apps/calendar'
 import permissions from '~/store/apps/permissions'
 
-const store = configureStore({
+export const store = configureStore({
   reducer: {
     user,
     chat,
@@ -23,5 +23,3 @@ const store = configureStore({
       serializableCheck: false
     })
 })
-
-export default store

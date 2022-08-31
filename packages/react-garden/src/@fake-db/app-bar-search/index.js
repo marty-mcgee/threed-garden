@@ -230,7 +230,7 @@ const searchData = [
     id: 33,
     url: '/pages/dialog-examples',
     icon: 'VectorArrangeBelow',
-    title: 'Dialog Examples',
+    title: 'Action Dialogs',
     category: 'appsPages'
   },
   {
