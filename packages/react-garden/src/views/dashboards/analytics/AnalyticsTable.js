@@ -11,11 +11,11 @@ import ChartPie from 'mdi-material-ui/ChartPie'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 
 // ** Custom Components
-import CustomChip from 'src/@core/components/mui/chip'
-import CustomAvatar from 'src/@core/components/mui/avatar'
+import CustomChip from '~/@core/components/mui/chip'
+import CustomAvatar from '~/@core/components/mui/avatar'
 
 // ** Utils Import
-import { getInitials } from 'src/@core/utils/get-initials'
+import { getInitials } from '~/@core/utils/get-initials'
 
 const rows = [
   {

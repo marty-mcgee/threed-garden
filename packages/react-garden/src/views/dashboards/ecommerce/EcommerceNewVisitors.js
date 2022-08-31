@@ -9,10 +9,10 @@ import CardContent from '@mui/material/CardContent'
 import ChevronUp from 'mdi-material-ui/ChevronUp'
 
 // ** Custom Components Imports
-import ReactApexcharts from 'src/@core/components/react-apexcharts'
+import ReactApexcharts from '~/@core/components/react-apexcharts'
 
 // ** Util Import
-import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
+import { hexToRGBA } from '~/@core/utils/hex-to-rgba'
 
 const EcommerceNewVisitors = () => {
   // ** Hook

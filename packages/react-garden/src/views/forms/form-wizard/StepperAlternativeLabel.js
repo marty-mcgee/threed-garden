@@ -31,7 +31,7 @@ import StepperCustomDot from './StepperCustomDot'
 import toast from 'react-hot-toast'
 
 // ** Styled Component
-import StepperWrapper from 'src/@core/styles/mui/stepper'
+import StepperWrapper from '~/@core/styles/mui/stepper'
 
 const steps = [
   {

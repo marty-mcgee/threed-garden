@@ -2,15 +2,15 @@
 import Grid from '@mui/material/Grid'
 
 // ** Custom Components Imports
-import CardSnippet from 'src/@core/components/card-snippet'
+import CardSnippet from '~/@core/components/card-snippet'
 
 // ** Demo Components Imports
-import TimelineFilled from 'src/views/components/timeline/TimelineFilled'
-import TimelineCenter from 'src/views/components/timeline/TimelineCenter'
-import TimelineOutlined from 'src/views/components/timeline/TimelineOutlined'
+import TimelineFilled from '~/views/components/timeline/TimelineFilled'
+import TimelineCenter from '~/views/components/timeline/TimelineCenter'
+import TimelineOutlined from '~/views/components/timeline/TimelineOutlined'
 
 // ** Source code imports
-import * as source from 'src/views/components/timeline/TimelineSourceCode'
+import * as source from '~/views/components/timeline/TimelineSourceCode'
 
 const TreeView = () => {
   return (

@@ -21,7 +21,7 @@ import TableCell from '@mui/material/TableCell'
 import axios from 'axios'
 
 // ** Configs
-import themeConfig from 'src/configs/themeConfig'
+import themeConfig from '~/configs/themeConfig'
 
 const CalcWrapper = styled(Box)(({ theme }) => ({
   display: 'flex',

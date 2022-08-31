@@ -54,7 +54,7 @@ import MenuItem from '@mui/material/MenuItem'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
 
 // ** Hook Import
-import { useSettings } from 'src/@core/hooks/useSettings'
+import { useSettings } from '~/@core/hooks/useSettings'
 
 const MenuComposition = () => {
   // ** States

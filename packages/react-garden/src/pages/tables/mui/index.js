@@ -6,16 +6,16 @@ import Typography from '@mui/material/Typography'
 import CardHeader from '@mui/material/CardHeader'
 
 // ** Custom Components Imports
-import PageHeader from 'src/@core/components/page-header'
+import PageHeader from '~/@core/components/page-header'
 
 // ** Demo Components Imports
-import TableBasic from 'src/views/table/mui/TableBasic'
-import TableDense from 'src/views/table/mui/TableDense'
-import TableSpanning from 'src/views/table/mui/TableSpanning'
-import TableCustomized from 'src/views/table/mui/TableCustomized'
-import TableSortSelect from 'src/views/table/mui/TableSortSelect'
-import TableCollapsible from 'src/views/table/mui/TableCollapsible'
-import TableStickyHeader from 'src/views/table/mui/TableStickyHeader'
+import TableBasic from '~/views/table/mui/TableBasic'
+import TableDense from '~/views/table/mui/TableDense'
+import TableSpanning from '~/views/table/mui/TableSpanning'
+import TableCustomized from '~/views/table/mui/TableCustomized'
+import TableSortSelect from '~/views/table/mui/TableSortSelect'
+import TableCollapsible from '~/views/table/mui/TableCollapsible'
+import TableStickyHeader from '~/views/table/mui/TableStickyHeader'
 
 const MUITable = () => {
   return (

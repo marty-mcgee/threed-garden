@@ -3,24 +3,24 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import CardSnippet from 'src/@core/components/card-snippet'
+import CardSnippet from '~/@core/components/card-snippet'
 
 // ** Demo Components Imports
-import TextFieldSizes from 'src/views/forms/form-elements/text-field/TextFieldSizes'
-import TextFieldColor from 'src/views/forms/form-elements/text-field/TextFieldColor'
-import TextFieldIcons from 'src/views/forms/form-elements/text-field/TextFieldIcons'
-import TextFieldLayout from 'src/views/forms/form-elements/text-field/TextFieldLayout'
-import TextFieldInputs from 'src/views/forms/form-elements/text-field/TextFieldInputs'
-import TextFieldVariant from 'src/views/forms/form-elements/text-field/TextFieldVariant'
-import TextFieldFormProps from 'src/views/forms/form-elements/text-field/TextFieldFormProps'
-import TextFieldComponents from 'src/views/forms/form-elements/text-field/TextFieldComponents'
-import TextFieldCustomized from 'src/views/forms/form-elements/text-field/TextFieldCustomized'
-import TextFieldValidation from 'src/views/forms/form-elements/text-field/TextFieldValidation'
-import TextFieldInputAdornment from 'src/views/forms/form-elements/text-field/TextFieldInputAdornment'
-import TextFieldControlledUncontrolled from 'src/views/forms/form-elements/text-field/TextFieldControlledUncontrolled'
+import TextFieldSizes from '~/views/forms/form-elements/text-field/TextFieldSizes'
+import TextFieldColor from '~/views/forms/form-elements/text-field/TextFieldColor'
+import TextFieldIcons from '~/views/forms/form-elements/text-field/TextFieldIcons'
+import TextFieldLayout from '~/views/forms/form-elements/text-field/TextFieldLayout'
+import TextFieldInputs from '~/views/forms/form-elements/text-field/TextFieldInputs'
+import TextFieldVariant from '~/views/forms/form-elements/text-field/TextFieldVariant'
+import TextFieldFormProps from '~/views/forms/form-elements/text-field/TextFieldFormProps'
+import TextFieldComponents from '~/views/forms/form-elements/text-field/TextFieldComponents'
+import TextFieldCustomized from '~/views/forms/form-elements/text-field/TextFieldCustomized'
+import TextFieldValidation from '~/views/forms/form-elements/text-field/TextFieldValidation'
+import TextFieldInputAdornment from '~/views/forms/form-elements/text-field/TextFieldInputAdornment'
+import TextFieldControlledUncontrolled from '~/views/forms/form-elements/text-field/TextFieldControlledUncontrolled'
 
 // ** Source code imports
-import * as source from 'src/views/forms/form-elements/text-field/TextFieldSourceCode'
+import * as source from '~/views/forms/form-elements/text-field/TextFieldSourceCode'
 
 const TextFields = () => {
   return (

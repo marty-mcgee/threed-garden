@@ -21,9 +21,9 @@ import MessageOutline from 'mdi-material-ui/MessageOutline'
 
 // ** Custom Components Import
 import ChatLog from './ChatLog'
-import SendMsgForm from 'src/views/apps/chat/SendMsgForm'
-import CustomAvatar from 'src/@core/components/mui/avatar'
-import UserProfileRight from 'src/views/apps/chat/UserProfileRight'
+import SendMsgForm from '~/views/apps/chat/SendMsgForm'
+import CustomAvatar from '~/@core/components/mui/avatar'
+import UserProfileRight from '~/views/apps/chat/UserProfileRight'
 
 // ** Styled Components
 const ChatWrapperStartChat = styled(Box)(({ theme }) => ({

@@ -3,19 +3,19 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import CardSnippet from 'src/@core/components/card-snippet'
+import CardSnippet from '~/@core/components/card-snippet'
 
 // ** Demo Components Imports
-import SwitchesBasic from 'src/views/forms/form-elements/switch/SwitchesBasic'
-import SwitchesSizes from 'src/views/forms/form-elements/switch/SwitchesSizes'
-import SwitchesColors from 'src/views/forms/form-elements/switch/SwitchesColors'
-import SwitchesCustomized from 'src/views/forms/form-elements/switch/SwitchesCustomized'
-import SwitchesStandalone from 'src/views/forms/form-elements/switch/SwitchesStandalone'
-import SwitchesLabelPlacement from 'src/views/forms/form-elements/switch/SwitchesLabelPlacement'
-import SwitchesControlledUncontrolled from 'src/views/forms/form-elements/switch/SwitchesControlledUncontrolled'
+import SwitchesBasic from '~/views/forms/form-elements/switch/SwitchesBasic'
+import SwitchesSizes from '~/views/forms/form-elements/switch/SwitchesSizes'
+import SwitchesColors from '~/views/forms/form-elements/switch/SwitchesColors'
+import SwitchesCustomized from '~/views/forms/form-elements/switch/SwitchesCustomized'
+import SwitchesStandalone from '~/views/forms/form-elements/switch/SwitchesStandalone'
+import SwitchesLabelPlacement from '~/views/forms/form-elements/switch/SwitchesLabelPlacement'
+import SwitchesControlledUncontrolled from '~/views/forms/form-elements/switch/SwitchesControlledUncontrolled'
 
 // ** Source code imports
-import * as source from 'src/views/forms/form-elements/switch/SwitchesSourceCode'
+import * as source from '~/views/forms/form-elements/switch/SwitchesSourceCode'
 
 const Switches = () => {
   return (

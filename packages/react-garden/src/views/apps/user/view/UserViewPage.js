@@ -12,8 +12,8 @@ import Alert from '@mui/material/Alert'
 import axios from 'axios'
 
 // ** Demo Components Imports
-import UserViewLeft from 'src/views/apps/user/view/UserViewLeft'
-import UserViewRight from 'src/views/apps/user/view/UserViewRight'
+import UserViewLeft from '~/views/apps/user/view/UserViewLeft'
+import UserViewRight from '~/views/apps/user/view/UserViewRight'
 
 const UserView = ({ id, invoiceData }) => {
   // ** State

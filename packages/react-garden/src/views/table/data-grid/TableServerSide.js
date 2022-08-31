@@ -12,12 +12,12 @@ import { DataGrid } from '@mui/x-data-grid'
 import axios from 'axios'
 
 // ** Custom Components
-import CustomChip from 'src/@core/components/mui/chip'
-import CustomAvatar from 'src/@core/components/mui/avatar'
-import ServerSideToolbar from 'src/views/table/data-grid/ServerSideToolbar'
+import CustomChip from '~/@core/components/mui/chip'
+import CustomAvatar from '~/@core/components/mui/avatar'
+import ServerSideToolbar from '~/views/table/data-grid/ServerSideToolbar'
 
 // ** Utils Import
-import { getInitials } from 'src/@core/utils/get-initials'
+import { getInitials } from '~/@core/utils/get-initials'
 
 // ** renders client column
 const renderClient = params => {

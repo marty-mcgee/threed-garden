@@ -36,18 +36,18 @@ import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Hooks
-import { useAuth } from 'src/hooks/useAuth'
-import useBgColor from 'src/@core/hooks/useBgColor'
-import { useSettings } from 'src/@core/hooks/useSettings'
+import { useAuth } from '~/hooks/useAuth'
+import useBgColor from '~/@core/hooks/useBgColor'
+import { useSettings } from '~/@core/hooks/useSettings'
 
 // ** Configs
-import themeConfig from 'src/configs/themeConfig'
+import themeConfig from '~/configs/themeConfig'
 
 // ** Layout Import
-import BlankLayout from 'src/@core/layouts/BlankLayout'
+import BlankLayout from '~/@core/layouts/BlankLayout'
 
 // ** Demo Imports
-import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
+import FooterIllustrationsV2 from '~/views/pages/auth/FooterIllustrationsV2'
 import FarmbotDemoSVG from '~/components/farmbot/FarmbotSVG'
 
 // ** Styled Components

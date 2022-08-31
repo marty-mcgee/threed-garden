@@ -2,10 +2,10 @@
 import Box from '@mui/material/Box'
 
 // ** Config Import
-import themeConfig from 'src/configs/themeConfig'
+import themeConfig from '~/configs/themeConfig'
 
 // ** Utils
-// import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
+// import { hexToRGBA } from '~/@core/utils/hex-to-rgba'
 // ** Menu Components
 import HorizontalNavItems from './HorizontalNavItems'
 

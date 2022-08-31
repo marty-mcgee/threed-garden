@@ -10,12 +10,12 @@ import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 
 // ** Hooks
-import { useSettings } from 'src/@core/hooks/useSettings'
+import { useSettings } from '~/@core/hooks/useSettings'
 
 // ** Email App Component Imports
-import MailLog from 'src/views/apps/email/MailLog'
-import SidebarLeft from 'src/views/apps/email/SidebarLeft'
-import ComposePopup from 'src/views/apps/email/ComposePopup'
+import MailLog from '~/views/apps/email/MailLog'
+import SidebarLeft from '~/views/apps/email/SidebarLeft'
+import ComposePopup from '~/views/apps/email/ComposePopup'
 
 // ** Actions
 import {
@@ -26,7 +26,7 @@ import {
   updateMailLabel,
   handleSelectMail,
   handleSelectAllMail
-} from 'src/store/apps/email'
+} from '~/store/apps/email'
 
 // ** Variables
 const labelColors = {
@@ -70,10 +70,9 @@ const EmailAppLayout = ({ folder, label }) => {
   const handleLeftSidebarToggle = () => setLeftSidebarOpen(!leftSidebarOpen)
 
   const calculateAppHeight = () => {
-    return `(${
-      (appBar === 'hidden' ? 0 : theme.mixins.toolbar.minHeight) * (layout === 'horizontal' && !navHidden ? 2 : 1) +
+    return `(${(appBar === 'hidden' ? 0 : theme.mixins.toolbar.minHeight) * (layout === 'horizontal' && !navHidden ? 2 : 1) +
       (footer === 'hidden' ? 0 : 56)
-    }px + ${theme.spacing(6)} * 2)`
+      }px + ${theme.spacing(6)} * 2)`
   }
 
   return (

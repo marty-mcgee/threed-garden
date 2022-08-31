@@ -35,17 +35,17 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm, Controller } from 'react-hook-form'
 
 // ** Configs
-import themeConfig from 'src/configs/themeConfig'
+import themeConfig from '~/configs/themeConfig'
 
 // ** Layout Import
-import BlankLayout from 'src/@core/layouts/BlankLayout'
+import BlankLayout from '~/@core/layouts/BlankLayout'
 
 // ** Hooks
-import { useAuth } from 'src/hooks/useAuth'
-import { useSettings } from 'src/@core/hooks/useSettings'
+import { useAuth } from '~/hooks/useAuth'
+import { useSettings } from '~/@core/hooks/useSettings'
 
 // ** Demo Imports
-import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
+import FooterIllustrationsV2 from '~/views/pages/auth/FooterIllustrationsV2'
 
 const defaultValues = {
   email: '',

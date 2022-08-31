@@ -15,7 +15,7 @@ import CheckCircleOutline from 'mdi-material-ui/CheckCircleOutline'
 import ClockTimeThreeOutline from 'mdi-material-ui/ClockTimeThreeOutline'
 
 // ** Custom Components Imports
-import CustomAvatar from 'src/@core/components/mui/avatar'
+import CustomAvatar from '~/@core/components/mui/avatar'
 
 const CrmDeveloperMeetup = () => {
   return (

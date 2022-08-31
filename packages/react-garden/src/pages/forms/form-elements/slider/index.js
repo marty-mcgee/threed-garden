@@ -3,28 +3,28 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import CardSnippet from 'src/@core/components/card-snippet'
+import CardSnippet from '~/@core/components/card-snippet'
 
 // ** Demo Components Imports
-import SliderBasic from 'src/views/forms/form-elements/slider/SliderBasic'
-import SliderRange from 'src/views/forms/form-elements/slider/SliderRange'
-import SliderSizes from 'src/views/forms/form-elements/slider/SliderSizes'
-import SliderColors from 'src/views/forms/form-elements/slider/SliderColors'
-import SliderDiscrete from 'src/views/forms/form-elements/slider/SliderDiscrete'
-import SliderVertical from 'src/views/forms/form-elements/slider/SliderVertical'
-import SliderSmallSteps from 'src/views/forms/form-elements/slider/SliderSmallSteps'
-import SliderCustomized from 'src/views/forms/form-elements/slider/SliderCustomized'
-import SliderCustomMarks from 'src/views/forms/form-elements/slider/SliderCustomMarks'
-import SliderCustomColors from 'src/views/forms/form-elements/slider/SliderCustomColors'
-import SliderRemovedTrack from 'src/views/forms/form-elements/slider/SliderRemovedTrack'
-import SliderInvertedTrack from 'src/views/forms/form-elements/slider/SliderInvertedTrack'
-import SliderMinimumDistance from 'src/views/forms/form-elements/slider/SliderMinimumDistance'
-import SliderRestrictedValues from 'src/views/forms/form-elements/slider/SliderRestrictedValues'
-import SliderLabelAlwaysVisible from 'src/views/forms/form-elements/slider/SliderLabelAlwaysVisible'
-import SliderControlledUncontrolled from 'src/views/forms/form-elements/slider/SliderControlledUncontrolled'
+import SliderBasic from '~/views/forms/form-elements/slider/SliderBasic'
+import SliderRange from '~/views/forms/form-elements/slider/SliderRange'
+import SliderSizes from '~/views/forms/form-elements/slider/SliderSizes'
+import SliderColors from '~/views/forms/form-elements/slider/SliderColors'
+import SliderDiscrete from '~/views/forms/form-elements/slider/SliderDiscrete'
+import SliderVertical from '~/views/forms/form-elements/slider/SliderVertical'
+import SliderSmallSteps from '~/views/forms/form-elements/slider/SliderSmallSteps'
+import SliderCustomized from '~/views/forms/form-elements/slider/SliderCustomized'
+import SliderCustomMarks from '~/views/forms/form-elements/slider/SliderCustomMarks'
+import SliderCustomColors from '~/views/forms/form-elements/slider/SliderCustomColors'
+import SliderRemovedTrack from '~/views/forms/form-elements/slider/SliderRemovedTrack'
+import SliderInvertedTrack from '~/views/forms/form-elements/slider/SliderInvertedTrack'
+import SliderMinimumDistance from '~/views/forms/form-elements/slider/SliderMinimumDistance'
+import SliderRestrictedValues from '~/views/forms/form-elements/slider/SliderRestrictedValues'
+import SliderLabelAlwaysVisible from '~/views/forms/form-elements/slider/SliderLabelAlwaysVisible'
+import SliderControlledUncontrolled from '~/views/forms/form-elements/slider/SliderControlledUncontrolled'
 
 // ** Source code imports
-import * as source from 'src/views/forms/form-elements/slider/SliderSourceCode'
+import * as source from '~/views/forms/form-elements/slider/SliderSourceCode'
 
 const Sliders = () => {
   return (

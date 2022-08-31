@@ -13,9 +13,9 @@ import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
 import axios from 'axios'
 
 // ** Demo Imports
-import FaqHeader from 'src/views/pages/faq/FaqHeader'
-import FaqFooter from 'src/views/pages/faq/FaqFooter'
-import FaqAccordions from 'src/views/pages/faq/FaqAccordions'
+import FaqHeader from '~/views/pages/faq/FaqHeader'
+import FaqFooter from '~/views/pages/faq/FaqFooter'
+import FaqAccordions from '~/views/pages/faq/FaqAccordions'
 
 // Styled Box component
 const StyledBox = styled(Box)(({ theme }) => ({

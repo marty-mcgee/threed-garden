@@ -12,7 +12,7 @@ import DotsVertical from 'mdi-material-ui/DotsVertical'
 import CalendarBlankOutline from 'mdi-material-ui/CalendarBlankOutline'
 
 // ** Custom Components
-import CustomChip from 'src/@core/components/mui/chip'
+import CustomChip from '~/@core/components/mui/chip'
 
 const data = [
   {

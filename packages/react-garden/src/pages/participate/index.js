@@ -2,7 +2,7 @@
 import { useContext } from 'react'
 
 // ** Context Imports
-import { AbilityContext } from 'src/layouts/components/acl/Can'
+import { AbilityContext } from '~/layouts/components/acl/Can'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'

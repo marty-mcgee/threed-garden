@@ -12,7 +12,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import ArrowUp from 'mdi-material-ui/ArrowUp'
 
 // ** Custom Components Imports
-import CustomChip from 'src/@core/components/mui/chip'
+import CustomChip from '~/@core/components/mui/chip'
 
 const data = [
   { pv: 280, name: '7/12' },

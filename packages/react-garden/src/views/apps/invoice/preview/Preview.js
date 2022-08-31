@@ -12,10 +12,10 @@ import Alert from '@mui/material/Alert'
 import axios from 'axios'
 
 // ** Demo Components Imports
-import PreviewCard from 'src/views/apps/invoice/preview/PreviewCard'
-import PreviewActions from 'src/views/apps/invoice/preview/PreviewActions'
-import AddPaymentDrawer from 'src/views/apps/invoice/shared-drawer/AddPaymentDrawer'
-import SendInvoiceDrawer from 'src/views/apps/invoice/shared-drawer/SendInvoiceDrawer'
+import PreviewCard from '~/views/apps/invoice/preview/PreviewCard'
+import PreviewActions from '~/views/apps/invoice/preview/PreviewActions'
+import AddPaymentDrawer from '~/views/apps/invoice/shared-drawer/AddPaymentDrawer'
+import SendInvoiceDrawer from '~/views/apps/invoice/shared-drawer/SendInvoiceDrawer'
 
 const InvoicePreview = ({ id }) => {
   // ** State

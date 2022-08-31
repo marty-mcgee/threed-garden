@@ -4,23 +4,23 @@ import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import PageHeader from 'src/@core/components/page-header'
+import PageHeader from '~/@core/components/page-header'
 
 // ** Styled Component Import
-import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
-import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+import ApexChartWrapper from '~/@core/styles/libs/react-apexcharts'
+import DatePickerWrapper from '~/@core/styles/libs/react-datepicker'
 
 // ** Demo Components Imports
-import ApexBarChart from 'src/views/charts/apex-charts/ApexBarChart'
-import ApexAreaChart from 'src/views/charts/apex-charts/ApexAreaChart'
-import ApexLineChart from 'src/views/charts/apex-charts/ApexLineChart'
-import ApexRadarChart from 'src/views/charts/apex-charts/ApexRadarChart'
-import ApexDonutChart from 'src/views/charts/apex-charts/ApexDonutChart'
-import ApexColumnChart from 'src/views/charts/apex-charts/ApexColumnChart'
-import ApexScatterChart from 'src/views/charts/apex-charts/ApexScatterChart'
-import ApexHeatmapChart from 'src/views/charts/apex-charts/ApexHeatmapChart'
-import ApexRadialBarChart from 'src/views/charts/apex-charts/ApexRadialBarChart'
-import ApexCandlestickChart from 'src/views/charts/apex-charts/ApexCandlestickChart'
+import ApexBarChart from '~/views/charts/apex-charts/ApexBarChart'
+import ApexAreaChart from '~/views/charts/apex-charts/ApexAreaChart'
+import ApexLineChart from '~/views/charts/apex-charts/ApexLineChart'
+import ApexRadarChart from '~/views/charts/apex-charts/ApexRadarChart'
+import ApexDonutChart from '~/views/charts/apex-charts/ApexDonutChart'
+import ApexColumnChart from '~/views/charts/apex-charts/ApexColumnChart'
+import ApexScatterChart from '~/views/charts/apex-charts/ApexScatterChart'
+import ApexHeatmapChart from '~/views/charts/apex-charts/ApexHeatmapChart'
+import ApexRadialBarChart from '~/views/charts/apex-charts/ApexRadialBarChart'
+import ApexCandlestickChart from '~/views/charts/apex-charts/ApexCandlestickChart'
 
 // ** Third Party Styles Imports
 import 'react-datepicker/dist/react-datepicker.css'

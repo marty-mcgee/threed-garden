@@ -20,7 +20,7 @@ import Close from 'mdi-material-ui/Close'
 import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
 
 // ** Custom Components Imports
-import PlanDetails from 'src/@core/components/plan-details'
+import PlanDetails from '~/@core/components/plan-details'
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Fade ref={ref} {...props} />

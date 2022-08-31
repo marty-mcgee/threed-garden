@@ -1,5 +1,5 @@
 // ** Custom Components Imports
-import CustomChip from 'src/@core/components/mui/chip'
+import CustomChip from '~/@core/components/mui/chip'
 
 const ChipsCustomized = () => {
   return (

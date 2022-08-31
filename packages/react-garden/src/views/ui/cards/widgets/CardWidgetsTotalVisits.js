@@ -10,8 +10,8 @@ import CardContent from '@mui/material/CardContent'
 import DotsVertical from 'mdi-material-ui/DotsVertical'
 
 // ** Custom Components Imports
-import CustomChip from 'src/@core/components/mui/chip'
-import ReactApexcharts from 'src/@core/components/react-apexcharts'
+import CustomChip from '~/@core/components/mui/chip'
+import ReactApexcharts from '~/@core/components/react-apexcharts'
 
 const CardWidgetsTotalVisits = () => {
   // ** Hook

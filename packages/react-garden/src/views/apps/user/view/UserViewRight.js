@@ -17,11 +17,11 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 import BookmarkOutline from 'mdi-material-ui/BookmarkOutline'
 
 // ** Demo Components Imports
-import UserViewBilling from 'src/views/apps/user/view/UserViewBilling'
-import UserViewOverview from 'src/views/apps/user/view/UserViewOverview'
-import UserViewSecurity from 'src/views/apps/user/view/UserViewSecurity'
-import UserViewConnection from 'src/views/apps/user/view/UserViewConnection'
-import UserViewNotification from 'src/views/apps/user/view/UserViewNotification'
+import UserViewBilling from '~/views/apps/user/view/UserViewBilling'
+import UserViewOverview from '~/views/apps/user/view/UserViewOverview'
+import UserViewSecurity from '~/views/apps/user/view/UserViewSecurity'
+import UserViewConnection from '~/views/apps/user/view/UserViewConnection'
+import UserViewNotification from '~/views/apps/user/view/UserViewNotification'
 
 // ** Styled Tab component
 const Tab = styled(MuiTab)(({ theme }) => ({

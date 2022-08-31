@@ -3,20 +3,20 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import CardSnippet from 'src/@core/components/card-snippet'
+import CardSnippet from '~/@core/components/card-snippet'
 
 // ** Demo Components Imports
-import SelectProps from 'src/views/forms/form-elements/select/SelectProps'
-import SelectNative from 'src/views/forms/form-elements/select/SelectNative'
-import SelectVariants from 'src/views/forms/form-elements/select/SelectVariants'
-import SelectMultiple from 'src/views/forms/form-elements/select/SelectMultiple'
-import SelectGrouping from 'src/views/forms/form-elements/select/SelectGrouping'
-import SelectCustomized from 'src/views/forms/form-elements/select/SelectCustomized'
-import SelectWithDialog from 'src/views/forms/form-elements/select/SelectWithDialog'
-import SelectControlledUncontrolled from 'src/views/forms/form-elements/select/SelectControlledUncontrolled'
+import SelectProps from '~/views/forms/form-elements/select/SelectProps'
+import SelectNative from '~/views/forms/form-elements/select/SelectNative'
+import SelectVariants from '~/views/forms/form-elements/select/SelectVariants'
+import SelectMultiple from '~/views/forms/form-elements/select/SelectMultiple'
+import SelectGrouping from '~/views/forms/form-elements/select/SelectGrouping'
+import SelectCustomized from '~/views/forms/form-elements/select/SelectCustomized'
+import SelectWithDialog from '~/views/forms/form-elements/select/SelectWithDialog'
+import SelectControlledUncontrolled from '~/views/forms/form-elements/select/SelectControlledUncontrolled'
 
 // ** Source code imports
-import * as source from 'src/views/forms/form-elements/select/SelectSourceCode'
+import * as source from '~/views/forms/form-elements/select/SelectSourceCode'
 
 const Selects = () => {
   return (

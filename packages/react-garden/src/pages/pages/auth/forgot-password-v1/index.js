@@ -14,13 +14,13 @@ import MuiCard from '@mui/material/Card'
 import ChevronLeft from 'mdi-material-ui/ChevronLeft'
 
 // ** Configs
-import themeConfig from 'src/configs/themeConfig'
+import themeConfig from '~/configs/themeConfig'
 
 // ** Layout Import
-import BlankLayout from 'src/@core/layouts/BlankLayout'
+import BlankLayout from '~/@core/layouts/BlankLayout'
 
 // ** Demo Imports
-import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustrationsV1'
+import FooterIllustrationsV1 from '~/views/pages/auth/FooterIllustrationsV1'
 
 // ** Styled Components
 const Card = styled(MuiCard)(({ theme }) => ({

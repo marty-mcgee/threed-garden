@@ -8,22 +8,22 @@ import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
 import TruckOutline from 'mdi-material-ui/TruckOutline'
 
 // ** Custom Components Imports
-import CardStatisticsVerticalComponent from 'src/@core/components/card-statistics/card-stats-vertical'
+import CardStatisticsVerticalComponent from '~/@core/components/card-statistics/card-stats-vertical'
 
 // ** Styled Component Import
-import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
+import ApexChartWrapper from '~/@core/styles/libs/react-apexcharts'
 
 // ** Demo Components Imports
-import EcommerceTable from 'src/views/dashboards/ecommerce/EcommerceTable'
-import EcommerceTotalProfit from 'src/views/dashboards/ecommerce/EcommerceTotalProfit'
-import EcommerceNewVisitors from 'src/views/dashboards/ecommerce/EcommerceNewVisitors'
-import EcommerceTotalRevenue from 'src/views/dashboards/ecommerce/EcommerceTotalRevenue'
-import EcommerceTransactions from 'src/views/dashboards/ecommerce/EcommerceTransactions'
-import EcommerceCongratulations from 'src/views/dashboards/ecommerce/EcommerceCongratulations'
-import EcommerceTotalSalesDonut from 'src/views/dashboards/ecommerce/EcommerceTotalSalesDonut'
-import EcommerceMeetingSchedule from 'src/views/dashboards/ecommerce/EcommerceMeetingSchedule'
-import EcommerceTotalSalesRadial from 'src/views/dashboards/ecommerce/EcommerceTotalSalesRadial'
-import EcommerceWebsiteStatistics from 'src/views/dashboards/ecommerce/EcommerceWebsiteStatistics'
+import EcommerceTable from '~/views/dashboards/ecommerce/EcommerceTable'
+import EcommerceTotalProfit from '~/views/dashboards/ecommerce/EcommerceTotalProfit'
+import EcommerceNewVisitors from '~/views/dashboards/ecommerce/EcommerceNewVisitors'
+import EcommerceTotalRevenue from '~/views/dashboards/ecommerce/EcommerceTotalRevenue'
+import EcommerceTransactions from '~/views/dashboards/ecommerce/EcommerceTransactions'
+import EcommerceCongratulations from '~/views/dashboards/ecommerce/EcommerceCongratulations'
+import EcommerceTotalSalesDonut from '~/views/dashboards/ecommerce/EcommerceTotalSalesDonut'
+import EcommerceMeetingSchedule from '~/views/dashboards/ecommerce/EcommerceMeetingSchedule'
+import EcommerceTotalSalesRadial from '~/views/dashboards/ecommerce/EcommerceTotalSalesRadial'
+import EcommerceWebsiteStatistics from '~/views/dashboards/ecommerce/EcommerceWebsiteStatistics'
 
 const EcommerceDashboard = () => {
   return (

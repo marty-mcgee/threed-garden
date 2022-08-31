@@ -34,7 +34,7 @@ import ContentSaveOutline from 'mdi-material-ui/ContentSaveOutline'
 import InformationOutline from 'mdi-material-ui/InformationOutline'
 
 // ** Custom Component Imports
-import CustomAvatar from 'src/@core/components/mui/avatar'
+import CustomAvatar from '~/@core/components/mui/avatar'
 
 const StyledLink = styled('a')(({ theme }) => ({
   textDecoration: 'none',

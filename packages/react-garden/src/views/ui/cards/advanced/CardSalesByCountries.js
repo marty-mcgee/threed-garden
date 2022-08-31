@@ -12,7 +12,7 @@ import ChevronDown from 'mdi-material-ui/ChevronDown'
 import DotsVertical from 'mdi-material-ui/DotsVertical'
 
 // ** Custom Components Imports
-import CustomAvatar from 'src/@core/components/mui/avatar'
+import CustomAvatar from '~/@core/components/mui/avatar'
 
 const data = [
   {

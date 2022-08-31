@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import { styled, useTheme } from '@mui/material/styles'
 
 // ** Theme Config Import
-import themeConfig from 'src/configs/themeConfig'
+import themeConfig from '~/configs/themeConfig'
 
 const StyledLink = styled('a')(({ theme }) => ({
   display: 'flex',

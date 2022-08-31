@@ -14,7 +14,7 @@ import CircleOutline from 'mdi-material-ui/Menu'
 import RecordCircleOutline from 'mdi-material-ui/MenuOpen'
 
 // ** Configs
-import themeConfig from 'src/configs/themeConfig'
+import themeConfig from '~/configs/themeConfig'
 
 // images
 import favicon from "~/assets/images/logos/favicon.png"

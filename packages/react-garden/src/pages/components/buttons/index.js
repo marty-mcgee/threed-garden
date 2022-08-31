@@ -3,22 +3,22 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import CardSnippet from 'src/@core/components/card-snippet'
+import CardSnippet from '~/@core/components/card-snippet'
 
 // ** Demo Components Imports
-import ButtonsFab from 'src/views/components/buttons/ButtonsFab'
-import ButtonsText from 'src/views/components/buttons/ButtonsText'
-import ButtonsIcons from 'src/views/components/buttons/ButtonsIcons'
-import ButtonsSizes from 'src/views/components/buttons/ButtonsSizes'
-import ButtonsColors from 'src/views/components/buttons/ButtonsColors'
-import ButtonsOutlined from 'src/views/components/buttons/ButtonsOutlined'
-import ButtonsFabSizes from 'src/views/components/buttons/ButtonsFabSizes'
-import ButtonsContained from 'src/views/components/buttons/ButtonsContained'
-import ButtonsCustomized from 'src/views/components/buttons/ButtonsCustomized'
-import ButtonsWithIconAndLabel from 'src/views/components/buttons/ButtonsWithIconAndLabel'
+import ButtonsFab from '~/views/components/buttons/ButtonsFab'
+import ButtonsText from '~/views/components/buttons/ButtonsText'
+import ButtonsIcons from '~/views/components/buttons/ButtonsIcons'
+import ButtonsSizes from '~/views/components/buttons/ButtonsSizes'
+import ButtonsColors from '~/views/components/buttons/ButtonsColors'
+import ButtonsOutlined from '~/views/components/buttons/ButtonsOutlined'
+import ButtonsFabSizes from '~/views/components/buttons/ButtonsFabSizes'
+import ButtonsContained from '~/views/components/buttons/ButtonsContained'
+import ButtonsCustomized from '~/views/components/buttons/ButtonsCustomized'
+import ButtonsWithIconAndLabel from '~/views/components/buttons/ButtonsWithIconAndLabel'
 
 // ** Source code imports
-import * as source from 'src/views/components/buttons/ButtonsSourceCode'
+import * as source from '~/views/components/buttons/ButtonsSourceCode'
 
 const Buttons = () => {
   return (

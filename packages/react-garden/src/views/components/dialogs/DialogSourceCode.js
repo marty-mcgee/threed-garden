@@ -265,7 +265,7 @@ import Plus from 'mdi-material-ui/Plus'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 
 // ** Custom Components Imports
-import CustomAvatar from 'src/@core/components/mui/avatar'
+import CustomAvatar from '~/@core/components/mui/avatar'
 
 const emails = ['username@gmail.com', 'user02@gmail.com']
 

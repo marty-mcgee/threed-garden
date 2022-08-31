@@ -3,14 +3,14 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import CardSnippet from 'src/@core/components/card-snippet'
+import CardSnippet from '~/@core/components/card-snippet'
 
 // ** Demo Components Imports
-import TextareaBasic from 'src/views/forms/form-elements/textarea/TextareaBasic'
-import TextareaVariant from 'src/views/forms/form-elements/textarea/TextareaVariant'
+import TextareaBasic from '~/views/forms/form-elements/textarea/TextareaBasic'
+import TextareaVariant from '~/views/forms/form-elements/textarea/TextareaVariant'
 
 // ** Source code imports
-import * as source from 'src/views/forms/form-elements/textarea/TextareaSourceCode'
+import * as source from '~/views/forms/form-elements/textarea/TextareaSourceCode'
 
 const Textarea = () => {
   return (

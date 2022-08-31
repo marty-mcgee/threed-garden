@@ -14,10 +14,10 @@ import CheckAll from 'mdi-material-ui/CheckAll'
 import PerfectScrollbarComponent from 'react-perfect-scrollbar'
 
 // ** Custom Components Imports
-import CustomAvatar from 'src/@core/components/mui/avatar'
+import CustomAvatar from '~/@core/components/mui/avatar'
 
 // ** Utils Imports
-import { getInitials } from 'src/@core/utils/get-initials'
+import { getInitials } from '~/@core/utils/get-initials'
 
 const PerfectScrollbar = styled(PerfectScrollbarComponent)(({ theme }) => ({
   padding: theme.spacing(5)
@@ -128,15 +128,15 @@ const ChatLog = props => {
               }}
               {...(data.contact.avatar && !isSender
                 ? {
-                    src: data.contact.avatar,
-                    alt: data.contact.fullName
-                  }
+                  src: data.contact.avatar,
+                  alt: data.contact.fullName
+                }
                 : {})}
               {...(isSender
                 ? {
-                    src: data.userContact.avatar,
-                    alt: data.userContact.fullName
-                  }
+                  src: data.userContact.avatar,
+                  alt: data.userContact.fullName
+                }
                 : {})}
             >
               {data.contact.avatarColor ? getInitials(data.contact.fullName) : null}

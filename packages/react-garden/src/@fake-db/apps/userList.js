@@ -1,5 +1,5 @@
 // ** Mock
-import mock from 'src/@fake-db/mock'
+import mock from '~/@fake-db/mock'
 
 const data = {
   users: [

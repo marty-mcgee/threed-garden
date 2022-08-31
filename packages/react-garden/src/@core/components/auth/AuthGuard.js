@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 
 // ** Hooks Import
-import { useAuth } from 'src/hooks/useAuth'
+import { useAuth } from '~/hooks/useAuth'
 
 const AuthGuard = props => {
   const { children, fallback } = props

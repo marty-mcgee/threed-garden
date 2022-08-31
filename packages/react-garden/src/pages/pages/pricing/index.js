@@ -10,10 +10,10 @@ import MuiCardContent from '@mui/material/CardContent'
 import axios from 'axios'
 
 // ** Demo Imports
-import PricingCTA from 'src/views/pages/pricing/PricingCTA'
-import PricingPlans from 'src/views/pages/pricing/PricingPlans'
-import PricingHeader from 'src/views/pages/pricing/PricingHeader'
-import PricingFooter from 'src/views/pages/pricing/PricingFooter'
+import PricingCTA from '~/views/pages/pricing/PricingCTA'
+import PricingPlans from '~/views/pages/pricing/PricingPlans'
+import PricingHeader from '~/views/pages/pricing/PricingHeader'
+import PricingFooter from '~/views/pages/pricing/PricingFooter'
 
 // ** Styled Components
 const CardContent = styled(MuiCardContent)(({ theme }) => ({

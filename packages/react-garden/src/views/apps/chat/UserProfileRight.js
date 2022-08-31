@@ -29,8 +29,8 @@ import ClockTimeFiveOutline from 'mdi-material-ui/ClockTimeFiveOutline'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 
 // ** Custom Component Imports
-import Sidebar from 'src/@core/components/sidebar'
-import CustomAvatar from 'src/@core/components/mui/avatar'
+import Sidebar from '~/@core/components/sidebar'
+import CustomAvatar from '~/@core/components/mui/avatar'
 
 const UserProfileRight = props => {
   const {

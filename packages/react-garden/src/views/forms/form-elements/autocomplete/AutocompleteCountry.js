@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 
 // ** Data
-import { countries } from 'src/@fake-db/autocomplete'
+import { countries } from '~/@fake-db/autocomplete'
 
 const AutocompleteCountry = () => {
   return (
