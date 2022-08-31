@@ -20,13 +20,14 @@
   "workspaces": {
     "packages": [
       "packages/_sandbox",
-      "packages/nuxt-garden",
-      "packages/react-garden",
-      "packages/vite-garden",
-      "packages/wordpress-plugin",
       "packages/@threed/hardhat",
       "packages/@threed/subgraph",
-      "packages/@threed/react-dapp"
+      "packages/@threed/react-dapp",
+      "packages/nuxt-garden",
+      "packages/react-garden",
+      "packages/open-juice",
+      "packages/vite-garden",
+      "packages/wordpress-plugin"
     ],
     "nohoist": [
       "**/@graphprotocol/graph-ts",
