@@ -2,7 +2,7 @@
 import axios from 'axios'
 
 // ** Demo Components Imports
-import Email from 'src/views/apps/email/Email'
+import Email from '~/views/apps/email/Email'
 
 const EmailApp = ({ folder }) => {
   return <Email folder={folder} />

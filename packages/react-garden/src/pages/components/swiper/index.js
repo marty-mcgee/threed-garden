@@ -4,32 +4,32 @@ import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import PageHeader from 'src/@core/components/page-header'
-import CardSnippet from 'src/@core/components/card-snippet'
+import PageHeader from '~/@core/components/page-header'
+import CardSnippet from '~/@core/components/card-snippet'
 
 // ** Demo Components Imports
-import SwiperLoop from 'src/views/components/swiper/SwiperLoop'
-import SwiperZoom from 'src/views/components/swiper/SwiperZoom'
-import SwiperFader from 'src/views/components/swiper/SwiperFader'
-import SwiperDefault from 'src/views/components/swiper/SwiperDefault'
-import SwiperSpacing from 'src/views/components/swiper/SwiperSpacing'
-import SwiperFreeMode from 'src/views/components/swiper/SwiperFreeMode'
-import SwiperCentered from 'src/views/components/swiper/SwiperCentered'
-import SwiperVertical from 'src/views/components/swiper/SwiperVertical'
-import SwiperControls from 'src/views/components/swiper/SwiperControls'
-import SwiperThumbnails from 'src/views/components/swiper/SwiperThumbnails'
-import SwiperAutoSwitch from 'src/views/components/swiper/SwiperAutoSwitch'
-import SwiperMultipleSlides from 'src/views/components/swiper/SwiperMultipleSlides'
-import SwiperMutationObserver from 'src/views/components/swiper/SwiperMutationObserver'
+import SwiperLoop from '~/views/components/swiper/SwiperLoop'
+import SwiperZoom from '~/views/components/swiper/SwiperZoom'
+import SwiperFader from '~/views/components/swiper/SwiperFader'
+import SwiperDefault from '~/views/components/swiper/SwiperDefault'
+import SwiperSpacing from '~/views/components/swiper/SwiperSpacing'
+import SwiperFreeMode from '~/views/components/swiper/SwiperFreeMode'
+import SwiperCentered from '~/views/components/swiper/SwiperCentered'
+import SwiperVertical from '~/views/components/swiper/SwiperVertical'
+import SwiperControls from '~/views/components/swiper/SwiperControls'
+import SwiperThumbnails from '~/views/components/swiper/SwiperThumbnails'
+import SwiperAutoSwitch from '~/views/components/swiper/SwiperAutoSwitch'
+import SwiperMultipleSlides from '~/views/components/swiper/SwiperMultipleSlides'
+import SwiperMutationObserver from '~/views/components/swiper/SwiperMutationObserver'
 
 // ** Styled Component Import
-import KeenSliderWrapper from 'src/@core/styles/libs/keen-slider'
+import KeenSliderWrapper from '~/@core/styles/libs/keen-slider'
 
 // ** Source code imports
-import * as source from 'src/views/components/swiper/SwiperSourceCode'
+import * as source from '~/views/components/swiper/SwiperSourceCode'
 
 // ** Hook Import
-import { useSettings } from 'src/@core/hooks/useSettings'
+import { useSettings } from '~/@core/hooks/useSettings'
 
 const Swiper = () => {
   // ** Hook

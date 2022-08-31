@@ -1,5 +1,5 @@
 // ** Mock Adapter
-import mock from 'src/@fake-db/mock'
+import mock from '~/@fake-db/mock'
 
 const date = new Date()
 const nextDay = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)

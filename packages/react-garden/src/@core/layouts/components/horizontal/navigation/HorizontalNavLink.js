@@ -18,15 +18,15 @@ import MuiListItem from '@mui/material/ListItem'
 import clsx from 'clsx'
 
 // ** Theme Config Import
-import themeConfig from 'src/configs/themeConfig'
+import themeConfig from '~/configs/themeConfig'
 
 // ** Custom Components Imports
-import UserIcon from 'src/layouts/components/UserIcon'
-import Translations from 'src/layouts/components/Translations'
-import CanViewNavLink from 'src/layouts/components/acl/CanViewNavLink'
+import UserIcon from '~/layouts/components/UserIcon'
+import Translations from '~/layouts/components/Translations'
+import CanViewNavLink from '~/layouts/components/acl/CanViewNavLink'
 
 // ** Util Import
-import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
+import { hexToRGBA } from '~/@core/utils/hex-to-rgba'
 
 const ListItem = styled(MuiListItem)(({ theme }) => ({
   width: 'auto',
@@ -89,17 +89,17 @@ const HorizontalNavLink = props => {
               ...(item.disabled ? { pointerEvents: 'none' } : { cursor: 'pointer' }),
               ...(!hasParent
                 ? {
-                    px: 5.5,
-                    borderRadius: 3.5,
-                    '&.active, &.active:hover': {
-                      boxShadow: 3,
-                      backgroundImage: theme =>
-                        `linear-gradient(98deg, ${theme.palette.customColors.primaryGradient}, ${theme.palette.primary.main} 94%)`,
-                      '& .MuiTypography-root, & .MuiListItemIcon-root': {
-                        color: 'common.white'
-                      }
+                  px: 5.5,
+                  borderRadius: 3.5,
+                  '&.active, &.active:hover': {
+                    boxShadow: 3,
+                    backgroundImage: theme =>
+                      `linear-gradient(98deg, ${theme.palette.customColors.primaryGradient}, ${theme.palette.primary.main} 94%)`,
+                    '& .MuiTypography-root, & .MuiListItemIcon-root': {
+                      color: 'common.white'
                     }
                   }
+                }
                 : { px: 5 })
             }}
           >

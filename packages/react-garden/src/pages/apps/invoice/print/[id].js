@@ -2,10 +2,10 @@
 import axios from 'axios'
 
 // ** Layout Import
-import BlankLayout from 'src/@core/layouts/BlankLayout'
+import BlankLayout from '~/@core/layouts/BlankLayout'
 
 // ** Demo Components Imports
-import PrintPage from 'src/views/apps/invoice/print/PrintPage'
+import PrintPage from '~/views/apps/invoice/print/PrintPage'
 
 const InvoicePrint = ({ id }) => {
   return <PrintPage id={id} />

@@ -8,18 +8,18 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 
 // ** Store & Actions Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { sendMsg, selectChat, fetchUserProfile, fetchChatsContacts, removeSelectedChat } from 'src/store/apps/chat'
+import { sendMsg, selectChat, fetchUserProfile, fetchChatsContacts, removeSelectedChat } from '~/store/apps/chat'
 
 // ** Hooks
-import { useSettings } from 'src/@core/hooks/useSettings'
+import { useSettings } from '~/@core/hooks/useSettings'
 
 // ** Utils Imports
-import { getInitials } from 'src/@core/utils/get-initials'
-import { formatDateToMonthShort } from 'src/@core/utils/format'
+import { getInitials } from '~/@core/utils/get-initials'
+import { formatDateToMonthShort } from '~/@core/utils/format'
 
 // ** Chat App Components Imports
-import SidebarLeft from 'src/views/apps/chat/SidebarLeft'
-import ChatContent from 'src/views/apps/chat/ChatContent'
+import SidebarLeft from '~/views/apps/chat/SidebarLeft'
+import ChatContent from '~/views/apps/chat/ChatContent'
 
 const AppChat = () => {
   // ** States
@@ -56,10 +56,9 @@ const AppChat = () => {
   const handleUserProfileRightSidebarToggle = () => setUserProfileRightOpen(!userProfileRightOpen)
 
   const calculateAppHeight = () => {
-    return `(${
-      (appBar === 'hidden' ? 0 : theme.mixins.toolbar.minHeight) * (layout === 'horizontal' && !navHidden ? 2 : 1) +
+    return `(${(appBar === 'hidden' ? 0 : theme.mixins.toolbar.minHeight) * (layout === 'horizontal' && !navHidden ? 2 : 1) +
       (footer === 'hidden' ? 0 : 56)
-    }px + ${theme.spacing(6)} * 2)`
+      }px + ${theme.spacing(6)} * 2)`
   }
 
   return (

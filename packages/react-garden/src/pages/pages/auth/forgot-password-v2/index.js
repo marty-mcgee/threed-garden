@@ -13,16 +13,16 @@ import Typography from '@mui/material/Typography'
 import ChevronLeft from 'mdi-material-ui/ChevronLeft'
 
 // ** Configs
-import themeConfig from 'src/configs/themeConfig'
+import themeConfig from '~/configs/themeConfig'
 
 // ** Layout Import
-import BlankLayout from 'src/@core/layouts/BlankLayout'
+import BlankLayout from '~/@core/layouts/BlankLayout'
 
 // ** Hooks
-import { useSettings } from 'src/@core/hooks/useSettings'
+import { useSettings } from '~/@core/hooks/useSettings'
 
 // ** Demo Imports
-import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
+import FooterIllustrationsV2 from '~/views/pages/auth/FooterIllustrationsV2'
 
 // Styled Components
 const ForgotPasswordIllustrationWrapper = styled(Box)(({ theme }) => ({

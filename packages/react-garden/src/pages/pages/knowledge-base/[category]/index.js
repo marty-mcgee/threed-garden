@@ -31,7 +31,7 @@ import InformationOutline from 'mdi-material-ui/InformationOutline'
 import axios from 'axios'
 
 // ** Demo Import
-import KnowledgeBaseHeader from 'src/views/pages/knowledge-base/KnowledgeBaseHeader'
+import KnowledgeBaseHeader from '~/views/pages/knowledge-base/KnowledgeBaseHeader'
 
 // Styled Link component
 const StyledLink = styled('a')(({ theme }) => ({

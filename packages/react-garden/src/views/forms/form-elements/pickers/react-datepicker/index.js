@@ -4,28 +4,28 @@ import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import PageHeader from 'src/@core/components/page-header'
-import CardSnippet from 'src/@core/components/card-snippet'
+import PageHeader from '~/@core/components/page-header'
+import CardSnippet from '~/@core/components/card-snippet'
 
 // ** Styled Component
-import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+import DatePickerWrapper from '~/@core/styles/libs/react-datepicker'
 
 // ** Demo Components Imports
-import PickersTime from 'src/views/forms/form-elements/pickers/react-datepicker/PickersTime'
-import PickersBasic from 'src/views/forms/form-elements/pickers/react-datepicker/PickersBasic'
-import PickersRange from 'src/views/forms/form-elements/pickers/react-datepicker/PickersRange'
-import PickersMinMax from 'src/views/forms/form-elements/pickers/react-datepicker/PickersMinMax'
-import PickersLocale from 'src/views/forms/form-elements/pickers/react-datepicker/PickersLocale'
-import PickersOptions from 'src/views/forms/form-elements/pickers/react-datepicker/PickersOptions'
-import PickersCallbacks from 'src/views/forms/form-elements/pickers/react-datepicker/PickersCallbacks'
-import PickersSpecificRange from 'src/views/forms/form-elements/pickers/react-datepicker/PickersSpecificRange'
-import PickersCustomization from 'src/views/forms/form-elements/pickers/react-datepicker/PickersCustomization'
-import PickersIncludeExclude from 'src/views/forms/form-elements/pickers/react-datepicker/PickersIncludeExclude'
-import PickersMonthYearQuarter from 'src/views/forms/form-elements/pickers/react-datepicker/PickersMonthYearQuarter'
-import PickersMonthYearDropdowns from 'src/views/forms/form-elements/pickers/react-datepicker/PickersMonthYearDropdowns'
+import PickersTime from '~/views/forms/form-elements/pickers/react-datepicker/PickersTime'
+import PickersBasic from '~/views/forms/form-elements/pickers/react-datepicker/PickersBasic'
+import PickersRange from '~/views/forms/form-elements/pickers/react-datepicker/PickersRange'
+import PickersMinMax from '~/views/forms/form-elements/pickers/react-datepicker/PickersMinMax'
+import PickersLocale from '~/views/forms/form-elements/pickers/react-datepicker/PickersLocale'
+import PickersOptions from '~/views/forms/form-elements/pickers/react-datepicker/PickersOptions'
+import PickersCallbacks from '~/views/forms/form-elements/pickers/react-datepicker/PickersCallbacks'
+import PickersSpecificRange from '~/views/forms/form-elements/pickers/react-datepicker/PickersSpecificRange'
+import PickersCustomization from '~/views/forms/form-elements/pickers/react-datepicker/PickersCustomization'
+import PickersIncludeExclude from '~/views/forms/form-elements/pickers/react-datepicker/PickersIncludeExclude'
+import PickersMonthYearQuarter from '~/views/forms/form-elements/pickers/react-datepicker/PickersMonthYearQuarter'
+import PickersMonthYearDropdowns from '~/views/forms/form-elements/pickers/react-datepicker/PickersMonthYearDropdowns'
 
 // ** Source code imports
-import * as source from 'src/views/forms/form-elements/pickers/react-datepicker/PickersSourceCode'
+import * as source from '~/views/forms/form-elements/pickers/react-datepicker/PickersSourceCode'
 
 const ReactDatePicker = () => {
   return (

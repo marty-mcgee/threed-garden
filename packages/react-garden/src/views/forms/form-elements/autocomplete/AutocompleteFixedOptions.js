@@ -7,7 +7,7 @@ import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 
 // ** Data
-import { top100Films } from 'src/@fake-db/autocomplete'
+import { top100Films } from '~/@fake-db/autocomplete'
 
 const fixedOptions = [top100Films[6]]
 

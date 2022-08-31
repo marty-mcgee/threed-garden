@@ -4,12 +4,12 @@ import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import PageHeader from 'src/@core/components/page-header'
+import PageHeader from '~/@core/components/page-header'
 
 // ** Demo Components Imports
-import FormValidationBasic from 'src/views/forms/form-validation/FormValidationBasic'
-import FormValidationAsync from 'src/views/forms/form-validation/FormValidationAsync'
-import FormValidationSchema from 'src/views/forms/form-validation/FormValidationSchema'
+import FormValidationBasic from '~/views/forms/form-validation/FormValidationBasic'
+import FormValidationAsync from '~/views/forms/form-validation/FormValidationAsync'
+import FormValidationSchema from '~/views/forms/form-validation/FormValidationSchema'
 
 // ** Third Party Styles Imports
 import 'react-datepicker/dist/react-datepicker.css'

@@ -17,7 +17,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import DotsVertical from 'mdi-material-ui/DotsVertical'
 
 // ** Custom Components
-import CustomChip from 'src/@core/components/mui/chip'
+import CustomChip from '~/@core/components/mui/chip'
 
 const data = [
   {

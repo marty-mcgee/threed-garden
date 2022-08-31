@@ -21,8 +21,8 @@ import DatePicker from 'react-datepicker'
 import Close from 'mdi-material-ui/Close'
 
 // ** Styled Component
-import CleaveWrapper from 'src/@core/styles/libs/react-cleave'
-import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+import CleaveWrapper from '~/@core/styles/libs/react-cleave'
+import DatePickerWrapper from '~/@core/styles/libs/react-datepicker'
 
 // ** Third Party Styles Imports
 import 'react-datepicker/dist/react-datepicker.css'

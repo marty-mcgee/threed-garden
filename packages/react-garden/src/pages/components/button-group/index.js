@@ -3,24 +3,24 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import CardSnippet from 'src/@core/components/card-snippet'
+import CardSnippet from '~/@core/components/card-snippet'
 
 // ** Demo Components Imports
-import ButtonGroupBasic from 'src/views/components/button-group/ButtonGroupBasic'
-import ButtonGroupSizes from 'src/views/components/button-group/ButtonGroupSizes'
-import ButtonGroupSplit from 'src/views/components/button-group/ButtonGroupSplit'
-import ButtonGroupColors from 'src/views/components/button-group/ButtonGroupColors'
-import ButtonToggleSizes from 'src/views/components/button-group/ButtonToggleSizes'
-import ButtonToggleSimple from 'src/views/components/button-group/ButtonToggleSimple'
-import ButtonToggleColors from 'src/views/components/button-group/ButtonToggleColors'
-import ButtonGroupVertical from 'src/views/components/button-group/ButtonGroupVertical'
-import ButtonToggleMultiple from 'src/views/components/button-group/ButtonToggleMultiple'
-import ButtonToggleVertical from 'src/views/components/button-group/ButtonToggleVertical'
-import ButtonToggleCustomized from 'src/views/components/button-group/ButtonToggleCustomized'
-import ButtonToggleEnforceValue from 'src/views/components/button-group/ButtonToggleEnforceValue'
+import ButtonGroupBasic from '~/views/components/button-group/ButtonGroupBasic'
+import ButtonGroupSizes from '~/views/components/button-group/ButtonGroupSizes'
+import ButtonGroupSplit from '~/views/components/button-group/ButtonGroupSplit'
+import ButtonGroupColors from '~/views/components/button-group/ButtonGroupColors'
+import ButtonToggleSizes from '~/views/components/button-group/ButtonToggleSizes'
+import ButtonToggleSimple from '~/views/components/button-group/ButtonToggleSimple'
+import ButtonToggleColors from '~/views/components/button-group/ButtonToggleColors'
+import ButtonGroupVertical from '~/views/components/button-group/ButtonGroupVertical'
+import ButtonToggleMultiple from '~/views/components/button-group/ButtonToggleMultiple'
+import ButtonToggleVertical from '~/views/components/button-group/ButtonToggleVertical'
+import ButtonToggleCustomized from '~/views/components/button-group/ButtonToggleCustomized'
+import ButtonToggleEnforceValue from '~/views/components/button-group/ButtonToggleEnforceValue'
 
 // ** Source code imports
-import * as source from 'src/views/components/button-group/ButtonGroupSourceCode'
+import * as source from '~/views/components/button-group/ButtonGroupSourceCode'
 
 const ButtonGroup = () => {
   return (

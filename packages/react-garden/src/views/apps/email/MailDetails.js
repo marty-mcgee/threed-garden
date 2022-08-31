@@ -34,11 +34,11 @@ import ArrowCollapseVertical from 'mdi-material-ui/ArrowCollapseVertical'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 
 // ** Hooks
-import { useSettings } from 'src/@core/hooks/useSettings'
+import { useSettings } from '~/@core/hooks/useSettings'
 
 // ** Custom Components Imports
-import Sidebar from 'src/@core/components/sidebar'
-import CustomChip from 'src/@core/components/mui/chip'
+import Sidebar from '~/@core/components/sidebar'
+import CustomChip from '~/@core/components/mui/chip'
 
 const HiddenReplyBack = styled(Box)(({ theme }) => ({
   height: 11,
@@ -311,17 +311,17 @@ const MailDetails = props => {
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     {mail.labels && mail.labels.length
                       ? mail.labels.map(label => {
-                          return (
-                            <CustomChip
-                              key={label}
-                              size='small'
-                              skin='light'
-                              label={label}
-                              color={labelColors[label]}
-                              sx={{ textTransform: 'capitalize', '&:not(:last-of-type)': { mr: 2 } }}
-                            />
-                          )
-                        })
+                        return (
+                          <CustomChip
+                            key={label}
+                            size='small'
+                            skin='light'
+                            label={label}
+                            color={labelColors[label]}
+                            sx={{ textTransform: 'capitalize', '&:not(:last-of-type)': { mr: 2 } }}
+                          />
+                        )
+                      })
                       : null}
                   </Box>
                 </Box>
@@ -447,85 +447,85 @@ const MailDetails = props => {
 
                 {showReplies
                   ? mail.replies.map((reply, index) => {
-                      return (
-                        <Box
-                          key={index}
-                          sx={{
-                            mb: 4,
-                            boxShadow: 6,
-                            width: '100%',
-                            borderRadius: 1,
-                            backgroundColor: 'background.paper',
-                            border: theme => `1px solid ${theme.palette.divider}`
-                          }}
-                        >
-                          <Box sx={{ p: 5 }}>
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                flexWrap: 'wrap',
-                                alignItems: 'center',
-                                justifyContent: 'space-between'
-                              }}
-                            >
-                              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                <Avatar
-                                  alt={reply.from.name}
-                                  src={reply.from.avatar}
-                                  sx={{ width: '2.375rem', height: '2.375rem', mr: 3 }}
-                                />
-                                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                  <Typography sx={{ fontWeight: 500 }}>{reply.from.name}</Typography>
-                                  <Typography variant='body2'>{reply.from.email}</Typography>
-                                </Box>
-                              </Box>
-                              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                <Typography variant='caption' sx={{ mr: 3 }}>
-                                  {new Date(reply.time).toDateString()}{' '}
-                                  {new Date(reply.time).toLocaleTimeString('en-US', {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    hour12: true
-                                  })}
-                                </Typography>
-                                {mail.attachments.length ? (
-                                  <IconButton size='small'>
-                                    <Attachment sx={{ fontSize: '1.375rem' }} />
-                                  </IconButton>
-                                ) : null}
-                                <IconButton size='small'>
-                                  <DotsVertical sx={{ fontSize: '1.375rem' }} />
-                                </IconButton>
+                    return (
+                      <Box
+                        key={index}
+                        sx={{
+                          mb: 4,
+                          boxShadow: 6,
+                          width: '100%',
+                          borderRadius: 1,
+                          backgroundColor: 'background.paper',
+                          border: theme => `1px solid ${theme.palette.divider}`
+                        }}
+                      >
+                        <Box sx={{ p: 5 }}>
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              flexWrap: 'wrap',
+                              alignItems: 'center',
+                              justifyContent: 'space-between'
+                            }}
+                          >
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <Avatar
+                                alt={reply.from.name}
+                                src={reply.from.avatar}
+                                sx={{ width: '2.375rem', height: '2.375rem', mr: 3 }}
+                              />
+                              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                <Typography sx={{ fontWeight: 500 }}>{reply.from.name}</Typography>
+                                <Typography variant='body2'>{reply.from.email}</Typography>
                               </Box>
                             </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <Typography variant='caption' sx={{ mr: 3 }}>
+                                {new Date(reply.time).toDateString()}{' '}
+                                {new Date(reply.time).toLocaleTimeString('en-US', {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  hour12: true
+                                })}
+                              </Typography>
+                              {mail.attachments.length ? (
+                                <IconButton size='small'>
+                                  <Attachment sx={{ fontSize: '1.375rem' }} />
+                                </IconButton>
+                              ) : null}
+                              <IconButton size='small'>
+                                <DotsVertical sx={{ fontSize: '1.375rem' }} />
+                              </IconButton>
+                            </Box>
                           </Box>
-                          <Divider sx={{ m: 0 }} />
-                          <Box sx={{ p: 5, pt: 0 }}>
-                            <Box dangerouslySetInnerHTML={{ __html: reply.message }} />
-                          </Box>
-                          {reply.attachments.length ? (
-                            <Fragment>
-                              <Divider sx={{ m: 0 }} />
-                              <Box sx={{ p: 5 }}>
-                                <Typography variant='body2'>Attachments</Typography>
-                                <List>
-                                  {reply.attachments.map(item => {
-                                    return (
-                                      <ListItem disableGutters key={item.fileName}>
-                                        <ListItemIcon>
-                                          <img src={item.thumbnail} alt={item.fileName} width='24' height='24' />
-                                        </ListItemIcon>
-                                        <Typography variant='caption'>{item.fileName}</Typography>
-                                      </ListItem>
-                                    )
-                                  })}
-                                </List>
-                              </Box>
-                            </Fragment>
-                          ) : null}
                         </Box>
-                      )
-                    })
+                        <Divider sx={{ m: 0 }} />
+                        <Box sx={{ p: 5, pt: 0 }}>
+                          <Box dangerouslySetInnerHTML={{ __html: reply.message }} />
+                        </Box>
+                        {reply.attachments.length ? (
+                          <Fragment>
+                            <Divider sx={{ m: 0 }} />
+                            <Box sx={{ p: 5 }}>
+                              <Typography variant='body2'>Attachments</Typography>
+                              <List>
+                                {reply.attachments.map(item => {
+                                  return (
+                                    <ListItem disableGutters key={item.fileName}>
+                                      <ListItemIcon>
+                                        <img src={item.thumbnail} alt={item.fileName} width='24' height='24' />
+                                      </ListItemIcon>
+                                      <Typography variant='caption'>{item.fileName}</Typography>
+                                    </ListItem>
+                                  )
+                                })}
+                              </List>
+                            </Box>
+                          </Fragment>
+                        ) : null}
+                      </Box>
+                    )
+                  })
                   : null}
 
                 {mail.replies.length && !showReplies ? (

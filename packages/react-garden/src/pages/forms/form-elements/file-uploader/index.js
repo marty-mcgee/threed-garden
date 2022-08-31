@@ -4,19 +4,19 @@ import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import PageHeader from 'src/@core/components/page-header'
-import CardSnippet from 'src/@core/components/card-snippet'
+import PageHeader from '~/@core/components/page-header'
+import CardSnippet from '~/@core/components/card-snippet'
 
 // ** Styled Component
-import DropzoneWrapper from 'src/@core/styles/libs/react-dropzone'
+import DropzoneWrapper from '~/@core/styles/libs/react-dropzone'
 
 // ** Demo Components Imports
-import FileUploaderSingle from 'src/views/forms/form-elements/file-uploader/FileUploaderSingle'
-import FileUploaderMultiple from 'src/views/forms/form-elements/file-uploader/FileUploaderMultiple'
-import FileUploaderRestrictions from 'src/views/forms/form-elements/file-uploader/FileUploaderRestrictions'
+import FileUploaderSingle from '~/views/forms/form-elements/file-uploader/FileUploaderSingle'
+import FileUploaderMultiple from '~/views/forms/form-elements/file-uploader/FileUploaderMultiple'
+import FileUploaderRestrictions from '~/views/forms/form-elements/file-uploader/FileUploaderRestrictions'
 
 // ** Source code imports
-import * as source from 'src/views/forms/form-elements/file-uploader/FileUploaderSourceCode'
+import * as source from '~/views/forms/form-elements/file-uploader/FileUploaderSourceCode'
 
 const FileUploader = () => {
   return (

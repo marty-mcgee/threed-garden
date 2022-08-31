@@ -18,11 +18,11 @@ import BookmarkOutline from 'mdi-material-ui/BookmarkOutline'
 import InformationOutline from 'mdi-material-ui/InformationOutline'
 
 // ** Demo Tabs Imports
-import TabInfo from 'src/views/pages/account-settings/TabInfo'
-import TabAccount from 'src/views/pages/account-settings/TabAccount'
-import TabBilling from 'src/views/pages/account-settings/TabBilling'
-import TabSecurity from 'src/views/pages/account-settings/TabSecurity'
-import TabNotifications from 'src/views/pages/account-settings/TabNotifications'
+import TabInfo from '~/views/pages/account-settings/TabInfo'
+import TabAccount from '~/views/pages/account-settings/TabAccount'
+import TabBilling from '~/views/pages/account-settings/TabBilling'
+import TabSecurity from '~/views/pages/account-settings/TabSecurity'
+import TabNotifications from '~/views/pages/account-settings/TabNotifications'
 
 // ** Third Party Styles Imports
 import 'react-datepicker/dist/react-datepicker.css'

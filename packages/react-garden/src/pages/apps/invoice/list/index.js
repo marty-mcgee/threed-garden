@@ -43,21 +43,21 @@ import DatePicker from 'react-datepicker'
 
 // ** Store & Actions Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchData, deleteInvoice } from 'src/store/apps/invoice'
+import { fetchData, deleteInvoice } from '~/store/apps/invoice'
 
 // ** Utils Import
-import { getInitials } from 'src/@core/utils/get-initials'
+import { getInitials } from '~/@core/utils/get-initials'
 
 // ** Custom Components Imports
-import CustomChip from 'src/@core/components/mui/chip'
-import CustomAvatar from 'src/@core/components/mui/avatar'
-import TableHeader from 'src/views/apps/invoice/list/TableHeader'
+import CustomChip from '~/@core/components/mui/chip'
+import CustomAvatar from '~/@core/components/mui/avatar'
+import TableHeader from '~/views/apps/invoice/list/TableHeader'
 
 // ** Third Party Styles Imports
 import 'react-datepicker/dist/react-datepicker.css'
 
 // ** Styled Components
-import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+import DatePickerWrapper from '~/@core/styles/libs/react-datepicker'
 
 // ** Styled component for the link in the dataTable
 const StyledLink = styled('a')(({ theme }) => ({

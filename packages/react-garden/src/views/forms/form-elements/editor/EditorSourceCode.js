@@ -1,7 +1,7 @@
 export const EditorUncontrolledJSXCode = (
   <pre className='language-jsx'>
     <code className='language-jsx'>{`// ** Component Import
-import ReactDraftWysiwyg from 'src/@core/components/react-draft-wysiwyg'
+import ReactDraftWysiwyg from '~/@core/components/react-draft-wysiwyg'
 
 const EditorUncontrolled = () => <ReactDraftWysiwyg />
 
@@ -19,7 +19,7 @@ import { useState } from 'react'
 import { EditorState } from 'draft-js'
 
 // ** Component Import
-import ReactDraftWysiwyg from 'src/@core/components/react-draft-wysiwyg'
+import ReactDraftWysiwyg from '~/@core/components/react-draft-wysiwyg'
 
 const EditorControlled = () => {
   // ** State

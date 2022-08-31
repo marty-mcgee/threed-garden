@@ -4,16 +4,16 @@ import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import PageHeader from 'src/@core/components/page-header'
-import CardSnippet from 'src/@core/components/card-snippet'
+import PageHeader from '~/@core/components/page-header'
+import CardSnippet from '~/@core/components/card-snippet'
 
 // ** Demo Components Imports
-import DatePickers from 'src/views/forms/form-elements/pickers/mui-pickers/DatePickers'
-import TimePickers from 'src/views/forms/form-elements/pickers/mui-pickers/TimePickers'
-import DateTimePickers from 'src/views/forms/form-elements/pickers/mui-pickers/DateTimePickers'
+import DatePickers from '~/views/forms/form-elements/pickers/mui-pickers/DatePickers'
+import TimePickers from '~/views/forms/form-elements/pickers/mui-pickers/TimePickers'
+import DateTimePickers from '~/views/forms/form-elements/pickers/mui-pickers/DateTimePickers'
 
 // ** Source code imports
-import * as source from 'src/views/forms/form-elements/pickers/mui-pickers/MuiPickersSourceCode'
+import * as source from '~/views/forms/form-elements/pickers/mui-pickers/MuiPickersSourceCode'
 
 const MUIPickers = () => {
   return (

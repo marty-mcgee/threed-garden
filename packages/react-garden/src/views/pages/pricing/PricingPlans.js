@@ -2,7 +2,7 @@
 import Grid from '@mui/material/Grid'
 
 // ** Custom Components Imports
-import PlanDetails from 'src/@core/components/plan-details'
+import PlanDetails from '~/@core/components/plan-details'
 
 const PricingPlans = props => {
   // ** Props

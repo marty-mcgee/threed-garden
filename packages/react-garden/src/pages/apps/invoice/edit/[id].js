@@ -2,7 +2,7 @@
 import axios from 'axios'
 
 // ** Demo Components Imports
-import Edit from 'src/views/apps/invoice/edit/Edit'
+import Edit from '~/views/apps/invoice/edit/Edit'
 
 const InvoiceEdit = ({ id }) => {
   return <Edit id={id} />

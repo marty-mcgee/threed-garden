@@ -8,9 +8,9 @@ import Grid from '@mui/material/Grid'
 import axios from 'axios'
 
 // ** Demo Components Imports
-import AddCard from 'src/views/apps/invoice/add/AddCard'
-import AddActions from 'src/views/apps/invoice/add/AddActions'
-import AddNewCustomers from 'src/views/apps/invoice/add/AddNewCustomer'
+import AddCard from '~/views/apps/invoice/add/AddCard'
+import AddActions from '~/views/apps/invoice/add/AddActions'
+import AddNewCustomers from '~/views/apps/invoice/add/AddNewCustomer'
 
 // ** Third Party Styles Imports
 import 'react-datepicker/dist/react-datepicker.css'

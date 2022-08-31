@@ -34,18 +34,18 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Custom Components Imports
-import CustomChip from 'src/@core/components/mui/chip'
-import CustomAvatar from 'src/@core/components/mui/avatar'
+import CustomChip from '~/@core/components/mui/chip'
+import CustomAvatar from '~/@core/components/mui/avatar'
 
 // ** Utils Import
-import { getInitials } from 'src/@core/utils/get-initials'
+import { getInitials } from '~/@core/utils/get-initials'
 
 // ** Actions Imports
-import { fetchData, deleteUser } from 'src/store/apps/user'
+import { fetchData, deleteUser } from '~/store/apps/user'
 
 // ** Custom Components Imports
-import TableHeader from 'src/views/apps/user/list/TableHeader'
-import AddUserDrawer from 'src/views/apps/user/list/AddUserDrawer'
+import TableHeader from '~/views/apps/user/list/TableHeader'
+import AddUserDrawer from '~/views/apps/user/list/AddUserDrawer'
 
 // ** Vars
 const userRoleObj = {

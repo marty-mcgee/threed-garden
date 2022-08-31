@@ -14,7 +14,7 @@ import TruckOutline from 'mdi-material-ui/TruckOutline'
 import BriefcaseVariantOutline from 'mdi-material-ui/BriefcaseVariantOutline'
 
 // ** Demo Components Imports
-import CardStatisticsVertical from 'src/@core/components/card-statistics/card-stats-vertical'
+import CardStatisticsVertical from '~/@core/components/card-statistics/card-stats-vertical'
 
 const icons = {
   Poll,

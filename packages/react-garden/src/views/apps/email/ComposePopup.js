@@ -30,14 +30,14 @@ import DeleteOutline from 'mdi-material-ui/DeleteOutline'
 import { EditorState } from 'draft-js'
 
 // ** Custom Components Imports
-import CustomAvatar from 'src/@core/components/mui/avatar'
-import ReactDraftWysiwyg from 'src/@core/components/react-draft-wysiwyg'
+import CustomAvatar from '~/@core/components/mui/avatar'
+import ReactDraftWysiwyg from '~/@core/components/react-draft-wysiwyg'
 
 // ** Styled Component Imports
-import { EditorWrapper } from 'src/@core/styles/libs/react-draft-wysiwyg'
+import { EditorWrapper } from '~/@core/styles/libs/react-draft-wysiwyg'
 
 // ** Utils Import
-import { getInitials } from 'src/@core/utils/get-initials'
+import { getInitials } from '~/@core/utils/get-initials'
 
 // ** Styles
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'

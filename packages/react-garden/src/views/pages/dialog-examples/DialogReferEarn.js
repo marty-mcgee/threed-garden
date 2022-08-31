@@ -30,7 +30,7 @@ import MessageOutline from 'mdi-material-ui/MessageOutline'
 import ClipboardOutline from 'mdi-material-ui/ClipboardOutline'
 
 // ** Custom Components Imports
-import CustomAvatar from 'src/@core/components/mui/avatar'
+import CustomAvatar from '~/@core/components/mui/avatar'
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Fade ref={ref} {...props} />

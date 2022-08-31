@@ -14,8 +14,8 @@ import axios from 'axios'
 // ** Demo Components Imports
 import EditCard from './EditCard'
 import EditActions from './EditActions'
-import AddPaymentDrawer from 'src/views/apps/invoice/shared-drawer/AddPaymentDrawer'
-import SendInvoiceDrawer from 'src/views/apps/invoice/shared-drawer/SendInvoiceDrawer'
+import AddPaymentDrawer from '~/views/apps/invoice/shared-drawer/AddPaymentDrawer'
+import SendInvoiceDrawer from '~/views/apps/invoice/shared-drawer/SendInvoiceDrawer'
 
 const InvoiceEdit = ({ id }) => {
   // ** State

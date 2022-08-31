@@ -31,12 +31,12 @@ import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Custom Components Imports
-import CustomChip from 'src/@core/components/mui/chip'
-import PageHeader from 'src/@core/components/page-header'
-import TableHeader from 'src/views/apps/permissions/TableHeader'
+import CustomChip from '~/@core/components/mui/chip'
+import PageHeader from '~/@core/components/page-header'
+import TableHeader from '~/views/apps/permissions/TableHeader'
 
 // ** Actions Imports
-import { fetchData } from 'src/store/apps/permissions'
+import { fetchData } from '~/store/apps/permissions'
 
 const colors = {
   support: 'info',

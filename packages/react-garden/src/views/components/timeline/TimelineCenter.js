@@ -37,8 +37,8 @@ import MapMarkerOutline from 'mdi-material-ui/MapMarkerOutline'
 import ShareVariantOutline from 'mdi-material-ui/ShareVariantOutline'
 
 // ** Custom Components Imports
-import CustomChip from 'src/@core/components/mui/chip'
-import CustomTimelineDot from 'src/@core/components/mui/timeline-dot'
+import CustomChip from '~/@core/components/mui/chip'
+import CustomTimelineDot from '~/@core/components/mui/timeline-dot'
 
 // Styled Timeline component
 const Timeline = styled(MuiTimeline)(({ theme }) => ({

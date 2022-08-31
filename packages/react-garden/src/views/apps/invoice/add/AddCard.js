@@ -32,13 +32,13 @@ import Close from 'mdi-material-ui/Close'
 import DatePicker from 'react-datepicker'
 
 // ** Configs
-import themeConfig from 'src/configs/themeConfig'
+import themeConfig from '~/configs/themeConfig'
 
 // ** Custom Component Imports
-import Repeater from 'src/@core/components/repeater'
+import Repeater from '~/@core/components/repeater'
 
 // ** Styles
-import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+import DatePickerWrapper from '~/@core/styles/libs/react-datepicker'
 
 const CustomInput = forwardRef(({ ...props }, ref) => {
   return <TextField size='small' inputRef={ref} sx={{ width: { sm: '250px', xs: '170px' } }} {...props} />

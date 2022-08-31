@@ -8,7 +8,7 @@ import CardContent from '@mui/material/CardContent'
 import DotsVertical from 'mdi-material-ui/DotsVertical'
 
 // ** Component Import
-import ReactApexcharts from 'src/@core/components/react-apexcharts'
+import ReactApexcharts from '~/@core/components/react-apexcharts'
 
 const generateDataHeat = (count, yrange) => {
   let i = 0

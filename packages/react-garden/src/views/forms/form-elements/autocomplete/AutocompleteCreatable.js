@@ -6,7 +6,7 @@ import TextField from '@mui/material/TextField'
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
 
 // ** Data
-import { top100Films } from 'src/@fake-db/autocomplete'
+import { top100Films } from '~/@fake-db/autocomplete'
 
 const filter = createFilterOptions()
 

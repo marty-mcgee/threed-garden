@@ -5,23 +5,23 @@ import Grid from '@mui/material/Grid'
 import BriefcaseVariantOutline from 'mdi-material-ui/BriefcaseVariantOutline'
 
 // ** Custom Components Imports
-import CardStatisticsCharacter from 'src/@core/components/card-statistics/card-stats-with-image'
-import CardStatisticsVerticalComponent from 'src/@core/components/card-statistics/card-stats-vertical'
+import CardStatisticsCharacter from '~/@core/components/card-statistics/card-stats-with-image'
+import CardStatisticsVerticalComponent from '~/@core/components/card-statistics/card-stats-vertical'
 
 // ** Styled Component Import
-import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
+import ApexChartWrapper from '~/@core/styles/libs/react-apexcharts'
 
 // ** Demo Components Imports
-import CrmTotalSales from 'src/views/dashboards/crm/CrmTotalSales'
-import CrmWeeklySales from 'src/views/dashboards/crm/CrmWeeklySales'
-import CrmTotalGrowth from 'src/views/dashboards/crm/CrmTotalGrowth'
-import CrmUpgradePlan from 'src/views/dashboards/crm/CrmUpgradePlan'
-import CrmRevenueReport from 'src/views/dashboards/crm/CrmRevenueReport'
-import CrmSalesOverview from 'src/views/dashboards/crm/CrmSalesOverview'
-import CrmStatisticsCard from 'src/views/dashboards/crm/CrmStatisticsCard'
-import CrmMeetingSchedule from 'src/views/dashboards/crm/CrmMeetingSchedule'
-import CrmDeveloperMeetup from 'src/views/dashboards/crm/CrmDeveloperMeetup'
-import CrmActivityTimeline from 'src/views/dashboards/crm/CrmActivityTimeline'
+import CrmTotalSales from '~/views/dashboards/crm/CrmTotalSales'
+import CrmWeeklySales from '~/views/dashboards/crm/CrmWeeklySales'
+import CrmTotalGrowth from '~/views/dashboards/crm/CrmTotalGrowth'
+import CrmUpgradePlan from '~/views/dashboards/crm/CrmUpgradePlan'
+import CrmRevenueReport from '~/views/dashboards/crm/CrmRevenueReport'
+import CrmSalesOverview from '~/views/dashboards/crm/CrmSalesOverview'
+import CrmStatisticsCard from '~/views/dashboards/crm/CrmStatisticsCard'
+import CrmMeetingSchedule from '~/views/dashboards/crm/CrmMeetingSchedule'
+import CrmDeveloperMeetup from '~/views/dashboards/crm/CrmDeveloperMeetup'
+import CrmActivityTimeline from '~/views/dashboards/crm/CrmActivityTimeline'
 
 const data = [
   {

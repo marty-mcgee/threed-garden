@@ -13,7 +13,7 @@ import CardContent from '@mui/material/CardContent'
 import TableContainer from '@mui/material/TableContainer'
 
 // ** Data Imports
-import componentData from 'src/@fake-db/components/data'
+import componentData from '~/@fake-db/components/data'
 
 const Misc = () => {
   return (

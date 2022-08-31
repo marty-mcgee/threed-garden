@@ -25,7 +25,7 @@ import Prism from 'prismjs'
 import toast from 'react-hot-toast'
 
 // ** Hooks
-import useClipboard from 'src/@core/hooks/useClipboard'
+import useClipboard from '~/@core/hooks/useClipboard'
 
 const CardSnippet = props => {
   // ** Props
@@ -81,12 +81,12 @@ const CardSnippet = props => {
         {...(hidden
           ? {}
           : {
-              action: (
-                <IconButton onClick={() => setShowCode(!showCode)}>
-                  <CodeTags fontSize='small' />
-                </IconButton>
-              )
-            })}
+            action: (
+              <IconButton onClick={() => setShowCode(!showCode)}>
+                <CodeTags fontSize='small' />
+              </IconButton>
+            )
+          })}
       />
       <CardContent>{children}</CardContent>
       {hidden ? null : (

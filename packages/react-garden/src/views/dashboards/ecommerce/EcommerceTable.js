@@ -13,11 +13,11 @@ import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
 import CloudDownloadOutline from 'mdi-material-ui/CloudDownloadOutline'
 
 // ** Custom Components
-import CustomChip from 'src/@core/components/mui/chip'
-import CustomAvatar from 'src/@core/components/mui/avatar'
+import CustomChip from '~/@core/components/mui/chip'
+import CustomAvatar from '~/@core/components/mui/avatar'
 
 // ** Utils Import
-import { getInitials } from 'src/@core/utils/get-initials'
+import { getInitials } from '~/@core/utils/get-initials'
 
 const rows = [
   {

@@ -29,7 +29,7 @@ import CheckCircleOutline from 'mdi-material-ui/CheckCircleOutline'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 
 // ** Custom Component Imports
-import Sidebar from 'src/@core/components/sidebar'
+import Sidebar from '~/@core/components/sidebar'
 
 const UserProfileLeft = props => {
   const {

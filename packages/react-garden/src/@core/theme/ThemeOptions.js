@@ -2,7 +2,7 @@
 import { deepmerge } from '@mui/utils'
 
 // ** User Theme Options
-import UserThemeOptions from 'src/layouts/UserThemeOptions'
+import UserThemeOptions from '~/layouts/UserThemeOptions'
 
 // ** Theme Override Imports
 import palette from './palette'

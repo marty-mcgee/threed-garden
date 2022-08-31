@@ -13,7 +13,7 @@ import Angular from 'mdi-material-ui/Angular'
 import Laravel from 'mdi-material-ui/Laravel'
 
 // ** Custom Avatar Component
-import CustomAvatar from 'src/@core/components/mui/avatar'
+import CustomAvatar from '~/@core/components/mui/avatar'
 
 const TabFramework = () => {
   const [value, setValue] = useState('react')

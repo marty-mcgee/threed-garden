@@ -13,14 +13,14 @@ import { DataGrid } from '@mui/x-data-grid'
 import toast from 'react-hot-toast'
 
 // ** Custom Components
-import CustomChip from 'src/@core/components/mui/chip'
-import CustomAvatar from 'src/@core/components/mui/avatar'
+import CustomChip from '~/@core/components/mui/chip'
+import CustomAvatar from '~/@core/components/mui/avatar'
 
 // ** Utils Import
-import { getInitials } from 'src/@core/utils/get-initials'
+import { getInitials } from '~/@core/utils/get-initials'
 
 // ** Data Import
-import { rows } from 'src/@fake-db/table/static-data'
+import { rows } from '~/@fake-db/table/static-data'
 
 // ** renders client column
 const renderClient = params => {

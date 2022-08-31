@@ -5,20 +5,20 @@ import Grid from '@mui/material/Grid'
 import axios from 'axios'
 
 // ** Styled Components
-import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
+import ApexChartWrapper from '~/@core/styles/libs/react-apexcharts'
 
 // ** Demo Components Imports
-import CardStatsLineChart from 'src/views/ui/cards/statistics/CardStatsLineChart'
-import CardStatisticsVertical from 'src/views/ui/cards/statistics/CardStatisticsVertical'
-import CardStatsLineAreaChart from 'src/views/ui/cards/statistics/CardStatsLineAreaChart'
-import CardStatsRadialBarChart from 'src/views/ui/cards/statistics/CardStatsRadialBarChart'
-import CardStatisticsHorizontal from 'src/views/ui/cards/statistics/CardStatisticsHorizontal'
-import CardStatisticsTotalSales from 'src/views/ui/cards/statistics/CardStatisticsTotalSales'
-import CardStatisticsCharacters from 'src/views/ui/cards/statistics/CardStatisticsCharacters'
-import CardStatisticsTransactions from 'src/views/ui/cards/statistics/CardStatisticsTransactions'
-import CardStatsLineChartWithShadow from 'src/views/ui/cards/statistics/CardStatsLineChartWithShadow'
-import CardStatsDistributedColumnChart from 'src/views/ui/cards/statistics/CardStatsDistributedColumnChart'
-import CardStatsBarChartWithNegativeValues from 'src/views/ui/cards/statistics/CardStatsBarChartWithNegativeValues'
+import CardStatsLineChart from '~/views/ui/cards/statistics/CardStatsLineChart'
+import CardStatisticsVertical from '~/views/ui/cards/statistics/CardStatisticsVertical'
+import CardStatsLineAreaChart from '~/views/ui/cards/statistics/CardStatsLineAreaChart'
+import CardStatsRadialBarChart from '~/views/ui/cards/statistics/CardStatsRadialBarChart'
+import CardStatisticsHorizontal from '~/views/ui/cards/statistics/CardStatisticsHorizontal'
+import CardStatisticsTotalSales from '~/views/ui/cards/statistics/CardStatisticsTotalSales'
+import CardStatisticsCharacters from '~/views/ui/cards/statistics/CardStatisticsCharacters'
+import CardStatisticsTransactions from '~/views/ui/cards/statistics/CardStatisticsTransactions'
+import CardStatsLineChartWithShadow from '~/views/ui/cards/statistics/CardStatsLineChartWithShadow'
+import CardStatsDistributedColumnChart from '~/views/ui/cards/statistics/CardStatsDistributedColumnChart'
+import CardStatsBarChartWithNegativeValues from '~/views/ui/cards/statistics/CardStatsBarChartWithNegativeValues'
 
 const CardStatistics = ({ apiData }) => {
   return (

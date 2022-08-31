@@ -13,7 +13,7 @@ import Circle from 'mdi-material-ui/Circle'
 import DotsVertical from 'mdi-material-ui/DotsVertical'
 
 // ** Custom Components Imports
-import ReactApexcharts from 'src/@core/components/react-apexcharts'
+import ReactApexcharts from '~/@core/components/react-apexcharts'
 
 const CardWidgetsTotalRevenue = () => {
   // ** Hook

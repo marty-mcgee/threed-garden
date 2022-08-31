@@ -3,19 +3,19 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import CardSnippet from 'src/@core/components/card-snippet'
+import CardSnippet from '~/@core/components/card-snippet'
 
 // ** Demo Components Imports
-import AvatarsIcon from 'src/views/components/avatars/AvatarsIcon'
-import AvatarsImage from 'src/views/components/avatars/AvatarsImage'
-import AvatarsSizes from 'src/views/components/avatars/AvatarsSizes'
-import AvatarsLetter from 'src/views/components/avatars/AvatarsLetter'
-import AvatarsGrouped from 'src/views/components/avatars/AvatarsGrouped'
-import AvatarsVariants from 'src/views/components/avatars/AvatarsVariants'
-import AvatarsWithBadge from 'src/views/components/avatars/AvatarsWithBadge'
+import AvatarsIcon from '~/views/components/avatars/AvatarsIcon'
+import AvatarsImage from '~/views/components/avatars/AvatarsImage'
+import AvatarsSizes from '~/views/components/avatars/AvatarsSizes'
+import AvatarsLetter from '~/views/components/avatars/AvatarsLetter'
+import AvatarsGrouped from '~/views/components/avatars/AvatarsGrouped'
+import AvatarsVariants from '~/views/components/avatars/AvatarsVariants'
+import AvatarsWithBadge from '~/views/components/avatars/AvatarsWithBadge'
 
 // ** Source code imports
-import * as source from 'src/views/components/avatars/AvatarsSourceCode'
+import * as source from '~/views/components/avatars/AvatarsSourceCode'
 
 const Avatars = () => {
   return (

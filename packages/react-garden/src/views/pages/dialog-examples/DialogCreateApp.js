@@ -28,13 +28,13 @@ import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
 import FileDocumentOutline from 'mdi-material-ui/FileDocumentOutline'
 
 // ** Hook Imports
-import { useSettings } from 'src/@core/hooks/useSettings'
+import { useSettings } from '~/@core/hooks/useSettings'
 
 // ** Tab Content Imports
-import DialogTabDetails from 'src/views/pages/dialog-examples/create-app-tabs/DialogTabDetails'
-import DialogTabBilling from 'src/views/pages/dialog-examples/create-app-tabs/DialogTabBilling'
-import DialogTabDatabase from 'src/views/pages/dialog-examples/create-app-tabs/DialogTabDatabase'
-import DialogTabFramework from 'src/views/pages/dialog-examples/create-app-tabs/DialogTabFramework'
+import DialogTabDetails from '~/views/pages/dialog-examples/create-app-tabs/DialogTabDetails'
+import DialogTabBilling from '~/views/pages/dialog-examples/create-app-tabs/DialogTabBilling'
+import DialogTabDatabase from '~/views/pages/dialog-examples/create-app-tabs/DialogTabDatabase'
+import DialogTabFramework from '~/views/pages/dialog-examples/create-app-tabs/DialogTabFramework'
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Fade ref={ref} {...props} />

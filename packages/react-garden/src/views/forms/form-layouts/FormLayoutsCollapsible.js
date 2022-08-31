@@ -29,10 +29,10 @@ import Cards from 'react-credit-cards'
 import ChevronDown from 'mdi-material-ui/ChevronDown'
 
 // ** Styled Component Imports
-import CardWrapper from 'src/@core/styles/libs/react-credit-cards'
+import CardWrapper from '~/@core/styles/libs/react-credit-cards'
 
 // ** Util Import
-import { formatCVC, formatExpirationDate, formatCreditCardNumber } from 'src/@core/utils/format'
+import { formatCVC, formatExpirationDate, formatCreditCardNumber } from '~/@core/utils/format'
 
 // ** Styles Import
 import 'react-credit-cards/es/styles-compiled.css'

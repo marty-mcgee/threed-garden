@@ -93,7 +93,7 @@ import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 
 // ** Data
-import { top100Films } from 'src/@fake-db/autocomplete'
+import { top100Films } from '~/@fake-db/autocomplete'
 
 const AutocompleteControlledUncontrolled = () => {
   // ** State
@@ -138,7 +138,7 @@ import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 
 // ** Data
-import { countries } from 'src/@fake-db/autocomplete'
+import { countries } from '~/@fake-db/autocomplete'
 
 const AutocompleteCountry = () => {
   return (
@@ -189,7 +189,7 @@ import TextField from '@mui/material/TextField'
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
 
 // ** Data
-import { top100Films } from 'src/@fake-db/autocomplete'
+import { top100Films } from '~/@fake-db/autocomplete'
 
 const filter = createFilterOptions()
 
@@ -295,7 +295,7 @@ import TextField from '@mui/material/TextField'
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
 
 // ** Data
-import { top100Films } from 'src/@fake-db/autocomplete'
+import { top100Films } from '~/@fake-db/autocomplete'
 
 const filterOptions = createFilterOptions({
   matchFrom: 'start',
@@ -327,7 +327,7 @@ import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 
 // ** Data
-import { top100Films } from 'src/@fake-db/autocomplete'
+import { top100Films } from '~/@fake-db/autocomplete'
 
 const AutocompleteCheckboxes = () => {
   return (
@@ -364,7 +364,7 @@ import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 
 // ** Data
-import { top100Films } from 'src/@fake-db/autocomplete'
+import { top100Films } from '~/@fake-db/autocomplete'
 
 const fixedOptions = [top100Films[6]]
 
@@ -409,7 +409,7 @@ import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 
 // ** Data
-import { top100Films } from 'src/@fake-db/autocomplete'
+import { top100Films } from '~/@fake-db/autocomplete'
 
 const AutocompleteFreeSolo = () => {
   return (
@@ -462,7 +462,7 @@ import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 
 // ** Data
-import { top100Films } from 'src/@fake-db/autocomplete'
+import { top100Films } from '~/@fake-db/autocomplete'
 
 const AutocompleteGrouped = () => {
   const options = top100Films.map(option => {
@@ -500,7 +500,7 @@ import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 
 // ** Data
-import { top100Films } from 'src/@fake-db/autocomplete'
+import { top100Films } from '~/@fake-db/autocomplete'
 
 const AutocompleteMultipleValues = () => {
   return (
@@ -556,7 +556,7 @@ import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 
 // ** Data
-import { top100Films } from 'src/@fake-db/autocomplete'
+import { top100Films } from '~/@fake-db/autocomplete'
 
 const AutocompleteLimitTags = () => {
   return (
@@ -585,7 +585,7 @@ import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 
 // ** Data
-import { top100Films } from 'src/@fake-db/autocomplete'
+import { top100Films } from '~/@fake-db/autocomplete'
 
 const AutocompleteProps = () => {
   return (
@@ -679,7 +679,7 @@ import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 
 // ** Data
-import { top100Films } from 'src/@fake-db/autocomplete'
+import { top100Films } from '~/@fake-db/autocomplete'
 
 const AutocompleteVariants = () => {
   return (
@@ -729,7 +729,7 @@ import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 
 // ** Data
-import { top100Films } from 'src/@fake-db/autocomplete'
+import { top100Films } from '~/@fake-db/autocomplete'
 
 const AutocompleteSmallSize = () => {
   return (

@@ -25,7 +25,7 @@ import AlertOctagonOutline from 'mdi-material-ui/AlertOctagonOutline'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 
 // ** Custom Components Imports
-import CustomBadge from 'src/@core/components/mui/badge'
+import CustomBadge from '~/@core/components/mui/badge'
 
 // ** Styled Components
 const ListItemStyled = styled(ListItem)(({ theme }) => ({

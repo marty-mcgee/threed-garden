@@ -1,5 +1,5 @@
 // ** Component Import
-import ReactDraftWysiwyg from 'src/@core/components/react-draft-wysiwyg'
+import ReactDraftWysiwyg from '~/@core/components/react-draft-wysiwyg'
 
 const EditorUncontrolled = () => <ReactDraftWysiwyg />
 
