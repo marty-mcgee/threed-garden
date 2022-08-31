@@ -23,6 +23,7 @@ const themeOptions = settings => {
   delete userThemeConfig.typography
 
   const mergedThemeConfig = deepmerge(
+    // eslint-disable-next-line object-shorthand
     {
       direction,
       palette: palette(mode, skin, themeColor),

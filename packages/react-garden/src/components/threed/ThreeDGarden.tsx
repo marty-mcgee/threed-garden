@@ -1,5 +1,5 @@
-// ==========================================================
-// FUNCTIONAL NOUNS   (JS OBJECTS, SIMILAR TO CLASSES, BUT BETTER)
+// ==============================================================
+/* FUNCTIONAL NOUNS  (JS OBJECTS, SIMILAR TO CLASSES, BUT BETTER)
 // ================
 // * ThreeD           | as root JS Object       | interface IThreeD
 // ================
@@ -42,11 +42,12 @@
 // * Raster           | extends Tool | extends THREE.Raster.Rasterizer      | interface IRaster
 // * Shader           | extends Tool | extends THREE.Shader.Shaderizer      | interface IShader
 // * Animation        | extends Tool | extends OBJ.animation                | interface IAnimation
+*/
 
-// ==========================================================
+// ==============================================================
 // RESOURCES
 
-// react
+// ** React Imports
 import {
   useEffect,
   useRef,
@@ -57,6 +58,8 @@ import {
   ReactNode,
   SyntheticEvent
 } from "react"
+
+// ** Zustand + Zustood Imports
 // state management (instead of React.useState)
 import create from "zustand"
 import shallow from "zustand/shallow"
@@ -64,11 +67,14 @@ import { subscribeWithSelector } from "zustand/middleware"
 import produce from "immer"
 import { createStore } from '@udecode/zustood'
 
+// ** Next Imports
 import Image from "next/image"
 
+// ** MUI Imports
+import { styled, useTheme } from '@mui/material/styles'
 // mui: ui
-import AppBar from "@mui/material/AppBar"
-import Toolbar from "@mui/material/Toolbar"
+import MuiAppBar from "@mui/material/AppBar"
+import MuiToolbar from "@mui/material/Toolbar"
 import Container from "@mui/material/Container"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
@@ -172,7 +178,7 @@ const clearObject = (object: Object, option: number = 1) => {
 }
 
 // ==========================================================
-// STYLES (TEMP)
+// STYLES
 const styleModal = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -185,6 +191,29 @@ const styleModal = {
   boxShadow: 24,
   p: 2
 };
+
+const AppBar = styled(MuiAppBar)(({ theme }) => ({
+  // transition: 'none',
+  // alignItems: 'center',
+  // justifyContent: 'center',
+  // padding: theme.spacing(0, 6),
+  // backgroundColor: 'transparent',
+  // color: theme.palette.text.primary,
+  minHeight: `42px !important`,
+  // [theme.breakpoints.down('sm')]: {
+  //   paddingLeft: theme.spacing(4),
+  //   paddingRight: theme.spacing(4)
+  // }
+}))
+
+const Toolbar = styled(MuiToolbar)(({ theme }) => ({
+  // width: '100%',
+  // borderBottomLeftRadius: 10,
+  // borderBottomRightRadius: 10,
+  // padding: `${theme.spacing(0)} !important`,
+  minHeight: `42px !important`,
+  // transition: 'padding .25s ease-in-out, box-shadow .25s ease-in-out, backdrop-filter .25s ease-in-out'
+}))
 
 // ==========================================================
 // TS INTERFACES + TYPES
@@ -2194,12 +2223,12 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             <Button
               key="Actions"
               onClick={handleOpenActionsMenu}
-              sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
+              sx={{ color: '#FFFFFF', p: 0, ml: 2, mr: 3 }}
             >
               Actions
             </Button>
             <Menu
-              sx={{ mt: 3 }}
+              sx={{ mt: 8 }}
               id="menu-appbar-actions"
               anchorEl={anchorElActions}
               anchorOrigin={{
@@ -2241,7 +2270,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               Files
             </Button>
             <Menu
-              sx={{ mt: 3 }}
+              sx={{ mt: 8 }}
               id="menu-appbar-files"
               anchorEl={anchorElFiles}
               anchorOrigin={{
@@ -2285,7 +2314,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               Edits
             </Button>
             <Menu
-              sx={{ mt: 3 }}
+              sx={{ mt: 8 }}
               id="menu-appbar-edits"
               anchorEl={anchorElEdits}
               anchorOrigin={{
@@ -2316,7 +2345,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               Views
             </Button>
             <Menu
-              sx={{ mt: 3 }}
+              sx={{ mt: 8 }}
               id="menu-appbar-views"
               anchorEl={anchorElViews}
               anchorOrigin={{
@@ -2377,7 +2406,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               Layers
             </Button>
             <Menu
-              sx={{ mt: 3 }}
+              sx={{ mt: 8 }}
               id="menu-appbar-layers"
               anchorEl={anchorElLayers}
               anchorOrigin={{
@@ -2405,7 +2434,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               Tools
             </Button>
             <Menu
-              sx={{ mt: 3 }}
+              sx={{ mt: 8 }}
               id="menu-appbar-tools"
               anchorEl={anchorElTools}
               anchorOrigin={{
