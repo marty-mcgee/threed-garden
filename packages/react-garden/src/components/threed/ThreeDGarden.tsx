@@ -1,38 +1,38 @@
 // ==============================================================
 /* FUNCTIONAL NOUNS  (JS OBJECTS, SIMILAR TO CLASSES, BUT BETTER)
 // ================
-// * ThreeD           | as root JS Object       | interface IThreeD
+// * ThreeD           | as root JS Object       | interface IThreeD         | wp threed
 // ================
-// * Project          | as JS Object            | interface IProject
-// * Plan             | as JS Object            | interface IPlan
-// * File             | as JS Object from Any   | interface IFile
-// * Edit             | Actions | Relationships | interface IEdit
-// * View             | as JS Object | Settings | interface IView
+// * Project          | as JS Object            | interface IProject        | wp project
+// * Plan             | as JS Object            | interface IPlan           | wp plan
+// * File             | as JS Object from Any   | interface IFile           | wp file
+// * Edit             | Actions | Relationships | interface IEdit           | wp edit
+// * View             | as JS Object | Settings | interface IView           | wp view
 // ================
-// * Simulation       | as JS Object            | interface ISimulation
-// * Game             | extends Simulation      | interface IGame
-// * Demo             | extends Simulation      | interface IGame
+// * Simulation       | as JS Object            | interface ISimulation     | wp simulation
+// * Game             | extends Simulation      | interface IGame           | wp game
+// * Demo             | extends Simulation      | interface IGame           | wp demo
 // ================
-// * World            | as JS Object            | interface IWorld
-// * Character        | as JS Object            | interface ICharacter
-// * Bear             | extends Character       | interface IBear
-// * Gardener         | extends Character       | interface IGardener
-// * Chicken          | extends Character       | interface IChicken
-// * Scene            | extends THREE.Scene     | interface IScene
-// * Plane            | extends THREE.Object3D  | interface IPlane
-// * Structure        | extends THREE.Object3D  | interface IStructure
-// * Farm             | extends THREE.Group     | interface IFarm
-// * Garden           | extends THREE.Group     | interface IGarden
-// * Allotment        | extends Structure       | interface IAllotment
-// * Bed              | extends Structure       | interface IBed
-// * Furniture        | extends Structure       | interface IFurniture
-// * Equipment        | extends Structure       | interface IEquipment
-// * Plant            | extends Structure       | interface IPlant
-// * Soil             | extends Structure       | interface ISoil
-// * SoilAddendum     | extends Soil            | interface ISoilAddendum
-// * SoilPlan         | Actions | Relationships | interface ISoilPlan
-// * PlantingPlan     | Actions | Relationships | interface IPlantingPlan
-// * BuildingPlan     | Actions | Relationships | interface IBuildingPlan
+// * World            | as JS Object            | interface IWorld          | wp world
+// * Character        | as JS Object            | interface ICharacter      | wp characters
+// * Bear             | extends Character       | interface IBear           | wp bear
+// * Gardener         | extends Character       | interface IGardener       | wp gardener
+// * Chicken          | extends Character       | interface IChicken        | wp checken
+// * Scene            | extends THREE.Scene     | interface IScene          | wp scene
+// * Plane            | extends THREE.Object3D  | interface IPlane          | wp plane
+// * Structure        | extends THREE.Object3D  | interface IStructure      | wp structure
+// * Farm             | extends THREE.Group     | interface IFarm           | wp farm
+// * Garden           | extends THREE.Group     | interface IGarden         | wp garden
+// * Allotment        | extends Structure       | interface IAllotment      | wp allotment
+// * Bed              | extends Structure       | interface IBed            | wp bed
+// * Furniture        | extends Structure       | interface IFurniture      | wp furniture
+// * Equipment        | extends Structure       | interface IEquipment      | wp equipment
+// * Plant            | extends Structure       | interface IPlant          | wp plant
+// * Soil             | extends Structure       | interface ISoil           | wp soil
+// * SoilAddendum     | extends Soil            | interface ISoilAddendum   | wp soil_addendum
+// * SoilPlan         | Actions | Relationships | interface ISoilPlan       | wp soil_plan
+// * PlantingPlan     | Actions | Relationships | interface IPlantingPlan   | wp planting_plan
+// * BuildingPlan     | Actions | Relationships | interface IBuildingPlan   | wp building
 // ================
 // * Tool             | as JS Object | extends ThreeD?                      | interface ITool
 // * PlaneTool        | extends Tool                                        | interface IPlane
