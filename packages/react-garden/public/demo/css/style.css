@@ -39,7 +39,7 @@ body {
     left: 0px;
     right: 0px;
     height: 30px;
-    background-color: #4e4e4e;
+    background-color: #131418;
 }
 
 #catalogFilters {
@@ -48,7 +48,7 @@ body {
     left: 0px;
     width: 100%;
     height: 30px;
-    background-color: #3a3a3a
+    background-color: #09090D
 }
 
 #catalogTextFilter {
@@ -59,7 +59,7 @@ body {
     color: white;
     /* font-family: 'Courier New', Courier, monospace; */
     border: 1px solid #2a2a2a;
-    background-color: #4e4e4e;
+    background-color: #131418;
 }
 
 #catalogItems {
@@ -71,19 +71,19 @@ body {
     cursor: default;
     border-top: 1px solid gray;
     border-bottom: 1px solid gray;
-    background-color: #3a3a3a;
+    background-color: #09090D;
 }
 
 #catalogView {
     position: absolute;
-    background-color: #4e4e4e;
+    background-color: #131418;
 }
 
 #propertiesView {
     position: absolute;
     overflow-y: auto;
     overflow-x: hidden;
-    background-color: #3a3a3a;
+    background-color: #09090D;
     color: white;
     font-size: 14px;
     display: none;
@@ -93,7 +93,7 @@ body {
     font-size: 17px;
     color: white;
     /* font-family: 'Courier New', Courier, monospace; */
-    background-color: #4e4e4e;
+    background-color: #131418;
     padding: 2px 4px 2px 4px;
 }
 
@@ -111,7 +111,7 @@ body {
     bottom: 50px;
     left: 30px;
     right: 0px;
-    background-color: #3a3a3a;
+    background-color: #09090D;
 }
 
 #rulerLeft {
@@ -151,7 +151,7 @@ body {
     font-size: 12px;
     overflow: auto;
     color: white;
-    background-color: #4e4e4e;
+    background-color: #131418;
 }
 
 #modalLoadingDataInfo {
@@ -161,7 +161,7 @@ body {
     font-size: 12px;
     overflow: auto;
     color: white;
-    background-color: #4e4e4e;
+    background-color: #131418;
 }
 
 #verticalSlider {
@@ -242,7 +242,7 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #4e4e4e;
+    background-color: #131418;
 }
 
 #toolBar li {
@@ -292,7 +292,7 @@ li.dropdown {
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #4e4e4e;
+    background-color: #131418;
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 99;
@@ -320,7 +320,7 @@ li.dropdown {
     border: 1px solid #2a2a2a;
     float: left;
     margin: 4px;
-    background-color: #4e4e4e;
+    background-color: #131418;
     text-align: center;
 }
 
@@ -331,7 +331,7 @@ li.dropdown {
 
 .furnitureName {
     font-size: 12px;
-    color: #3a3a3a;
+    color: #09090D;
 }
 
 .furnitureThumb {
@@ -369,7 +369,7 @@ li.dropdown {
 
 .modal-header {
     padding: 2px 16px;
-    background-color: #4e4e4e;
+    background-color: #131418;
     color: white;
 }
 
@@ -387,20 +387,20 @@ li.dropdown {
     padding: 2px 16px;
     font-weight: 100;
     font-size: 14px;
-    background-color: #4e4e4e;
-    color: #8e8e8e;
+    background-color: #131418;
+    color: #333333;
 }
 
 .modal-footer a {
-    color: #8e8e8e;
+    color: #333333;
 }
 
 .modal-content {
     position: relative;
-    background-color: #3a3a3a;
+    background-color: #09090D;
     margin: auto;
     padding: 0;
-    border: 1px solid #8e8e8e;
+    border: 1px solid #333333;
     top: 15%;
     width: 1024px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -423,7 +423,7 @@ li.dropdown {
 
 .smallModal-header {
     padding: 2px 16px;
-    background-color: #4e4e4e;
+    background-color: #131418;
     color: white;
 }
 
@@ -441,7 +441,7 @@ li.dropdown {
     font-size: 14px;
     font-weight: 100;
     padding: 2px 16px;
-    background-color: #4e4e4e;
+    background-color: #131418;
     color: #bebebe;
 }
 
@@ -451,10 +451,10 @@ li.dropdown {
 
 .smallModal-content {
     position: relative;
-    background-color: #3a3a3a;
+    background-color: #09090D;
     margin: auto;
     padding: 0;
-    border: 1px solid #8e8e8e;
+    border: 1px solid #333333;
     top: 25%;
     width: 800px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -534,7 +534,7 @@ a[target="_blank"]:after {
     padding: 4px 16px 4px 16px;
     border: 1px solid #2a2a2a;
     color: white;
-    background-color: #4e4e4e;
+    background-color: #131418;
 }
 
 #model3dLargeThumb {
@@ -546,7 +546,7 @@ a[target="_blank"]:after {
 .tab {
     overflow: hidden;
     border: 1px solid #2a2a2a;
-    background-color: #4e4e4e;
+    background-color: #131418;
     margin-top: 10px;
 }
 
@@ -600,7 +600,7 @@ a[target="_blank"]:after {
 .tooltip .tooltiptext {
     visibility: hidden;
     width: 400px;
-    background-color: #4e4e4e;
+    background-color: #131418;
     color: #fff;
     text-align: left;
     padding: 6px 12px;
@@ -614,7 +614,7 @@ a[target="_blank"]:after {
 
 #localStoragePlanDiv {
     display: none;
-    background-color: #3a3a3a;
+    background-color: #09090D;
 }
 
 #localStoragePlanImage {
@@ -624,7 +624,7 @@ a[target="_blank"]:after {
 }
 
 #localStoragePlanImage:hover {
-    background-color: #3a3a3a;
+    background-color: #09090D;
 }
 
 #loadLocalStoragePlanBtn {
@@ -635,7 +635,7 @@ a[target="_blank"]:after {
     border: 1px solid #2a2a2a;
     color: white;
     padding: 12px 24px;
-    background-color: #4e4e4e;
+    background-color: #131418;
 }
 
 #loadLocalStoragePlanBtn:hover {
@@ -649,7 +649,7 @@ a[target="_blank"]:after {
 }
 
 #featuredPlanImage:hover {
-    background-color: #3a3a3a;
+    background-color: #09090D;
 }
 
 hr {
@@ -670,7 +670,7 @@ hr {
     border: 1px solid #2a2a2a;
     color: white;
     padding: 12px 24px;
-    background-color: #4e4e4e;
+    background-color: #131418;
     text-decoration: none;
 }
 
@@ -685,7 +685,7 @@ hr {
     border: 1px solid #2a2a2a;
     color: white;
     padding: 1px 12px 1px 12px;
-    background-color: #4e4e4e;
+    background-color: #131418;
     text-decoration: none;
 }
 
@@ -700,7 +700,7 @@ hr {
     border: 1px solid #2a2a2a;
     color: white;
     padding: 4px 24px 4px 24px;
-    background-color: #4e4e4e;
+    background-color: #131418;
 }
 
 .mediumButton:hover {
@@ -718,10 +718,10 @@ hr {
     border: 1px solid #2a2a2a;
     display: none;
     color: white;
-    background-color: #4e4e4e;
+    background-color: #131418;
 }
 
-/* input[type='checkbox'] { 
+/* input[type='checkbox'] {
     background-color: #2a2a2a;
     margin: 6px 3px 3px 3px;
  } */
@@ -733,7 +733,7 @@ hr {
     border: 1px solid #2a2a2a;
     color: white;
     padding: 12px 24px;
-    background-color: #4e4e4e;
+    background-color: #131418;
 }
 .propertiesViewBtn:hover{
     background-color: #787878;
