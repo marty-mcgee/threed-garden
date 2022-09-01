@@ -112,7 +112,7 @@ const navigation = () => {
       ]
     },
     {
-      title: 'Roles & Permissions',
+      title: 'User Roles',
       icon: LockOutline,
       children: [
         {
