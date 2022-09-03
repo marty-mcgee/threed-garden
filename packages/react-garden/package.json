@@ -198,6 +198,10 @@
     "regenerator-runtime": "0.13.9",
     "yup": "0.32.11"
   },
+  "engines" : {
+    "npm" : ">=7.0.0",
+    "node" : ">=16.0.0"
+  },
   "eslintConfig": {
     "extends": [
       "react-dapp",

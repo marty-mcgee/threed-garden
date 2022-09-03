@@ -122,6 +122,10 @@
     "yarn": "^1.22.19"
   },
   "dependencies": {},
+  "engines" : { 
+    "npm" : ">=7.0.0",
+    "node" : ">=16.0.0"
+  },
   "keywords": [
     "javascript",
     "ecmascript",
