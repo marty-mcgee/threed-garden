@@ -8,7 +8,7 @@ import viteLogo from '/images/vite-logo.svg'
 import './styles/style.css'
 
 // ** return component (tsx)
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+document.querySelector<HTMLDivElement>('#root')!.innerHTML = `
   <div>
     <div style="text-align: center; margin-bottom: 2rem;">
       <a href="https://threedgarden.com/demo" target="_blank">
