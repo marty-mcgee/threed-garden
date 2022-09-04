@@ -39,11 +39,15 @@
     ]
   },
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "____________0": "___ custom scripts ___________________________________",
     "mm":                 "pnpm mm:vite",
     "mm:start":           "node index.js",
-    "mm:vite":            "vite -p 4444",
+    "mm:vite":            "vite",
+    "mm:vite:dev":        "vite",
+    "mm:build":           "tsc && vite build",
+    "mm:preview":         "vite preview",
     "mm:next":            "next -p 3333",
     "mm:install":         "npm install --no-optional",
     "mm:install:full":    "npm install",
