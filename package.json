@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.10.5",
+  "version": "0.10.6",
   "description": "ThreeD Garden on ThreeJS React-Fiber using NextJS and Farmbot Ruby/JS (as a WP Plugin)",
   "repository": {
     "type": "git",
@@ -41,7 +41,7 @@
   "scripts": {
     "________0": "=== custom scripts ===============================",
     "mm": "pnpm react-garden:mm",
-    "mm:next": "next -p 333",
+    "mm:next": "next -p 3333",
     "mm:install": "npm install --no-optional",
     "mm:install:full": "npm install",
     "mm:install:pnpm": "pnpm i",
@@ -118,8 +118,7 @@
   },
   "devDependencies": {
     "pnpm": "^7.9.3",
-    "typescript": "^4.7.4",
-    "yarn": "^1.22.19"
+    "typescript": "^4.8.2"
   },
   "dependencies": {},
   "engines" : { 
