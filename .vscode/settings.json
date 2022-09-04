@@ -7,11 +7,13 @@
   
   "files.exclude": {
     "**/.git": true,
+    "**/.github": true,
     "**/.svn": true,
     "**/.hg": true,
     "**/.DS_Store": true,
     "**/.cache": true,
     "**/.vs/": true,
+    "**/.vscode/": false,
     "**/*.cs": true,
     "**/*.orig": true,
     "**/bin/": true,
