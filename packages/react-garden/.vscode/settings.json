@@ -1,5 +1,35 @@
 {
   "liveServer.settings.host": "localhost",
   "liveServer.settings.root": "/public/demo",
-  "liveServer.settings.multiRootWorkspaceName": "/public/demo"
+  "liveServer.settings.multiRootWorkspaceName": "/public/demo",
+
+  "git.enableSmartCommit": true,
+
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/.cache": true,
+    "**/.vs/": true,
+    "**/*.cs": true,
+    "**/*.orig": true,
+    "**/bin/": true,
+    "**/build/": false,
+    "**/debug/": true,
+    "**/dist/": false,
+    "**/node_modules/": false,
+    "**/obj": false,
+    "yarn-error.log": true,
+    "**/yarn-error.log": true,
+    "packages\\eth-hooks/lib": true
+  },
+
+  "search.exclude": {
+    "**/package-lock.json": true,
+    "**/pnpm-lock.yaml": true,
+    "**/yarn-error.log": true,
+    "**/yarn.lock": true,
+  }
 }
