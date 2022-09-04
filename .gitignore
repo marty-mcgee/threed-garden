@@ -20,9 +20,9 @@ desktop.ini
 .env.production.local
 
 # sensitive policy breakers
-.cert
-.crt
-.pem
+*.cert
+*.crt
+*.pem
 
 # dist | build
 # /admin/dist
