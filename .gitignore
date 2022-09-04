@@ -4,9 +4,10 @@
 **/node_modules
 node_modules
 package-lock.json
-.pnpm-lock.yaml
+pnpm-lock.yaml
+.pnpm
+yarn.lock
 .yarn
-.yarn-lock.yaml
 
 # os junk
 .DS_Store
@@ -29,10 +30,10 @@ desktop.ini
 # /public/dist
 
 # assets | static
-/assets/*
-/assets/libraries
-/assets/media
-/assets/sfx
+assets/*
+assets/libraries
+assets/media
+assets/sfx
 
 # packages workspace --
 
@@ -83,4 +84,4 @@ pnpm-debug.log*
 
 # temp | scratchpad | testing
 # /public-old
-/temp*
+temp*
