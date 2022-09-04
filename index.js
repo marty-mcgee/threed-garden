@@ -1,6 +1,6 @@
 // simple try:catch promise
 try {
-  console.debug("threed-garden index.js loaded")
+  console.debug('threed-garden index.js loaded')
 
   const doBootApolloServer = true
 
@@ -16,7 +16,7 @@ try {
 
     const resolvers = {
       Query: {
-        hello: () => "world"
+        hello: () => 'world'
       }
     }
 
@@ -29,5 +29,7 @@ try {
 
 } catch (err) {
   // an error has occurred. no output is being attempted here.
-  console.debug("threed-garden index.js not loaded", err)
+  console.debug('threed-garden index.js not loaded', err)
 }
+
+export default null
