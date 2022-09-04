@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from '~/vite/app'
+import App from '~/_react/app'
 
 import '~/styles/index.css'
 
