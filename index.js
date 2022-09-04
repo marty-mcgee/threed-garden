@@ -1,6 +1,6 @@
 // simple try:catch promise
 try {
-  console.log("threed-garden index.js loaded")
+  console.debug("threed-garden index.js loaded")
 
   const doBootApolloServer = true
 
@@ -23,11 +23,11 @@ try {
     const schema = new ApolloServer({ typeDefs, resolvers })
 
     schema.listen({ port: process.env.PORT }).then(({ url }) => {
-      console.log(`apollo gql schema ready at ${url}`)
+      console.debug(`apollo gql schema ready at ${url}`)
     })
   }
 
 } catch (err) {
   // an error has occurred. no output is being attempted here.
-  // console.log("threed-garden index.js not loaded")
+  console.debug("threed-garden index.js not loaded", err)
 }

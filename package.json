@@ -39,7 +39,6 @@
     ]
   },
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "____________0": "___ custom scripts ___________________________________",
     "mm":                 "pnpm mm:vite",
@@ -48,10 +47,9 @@
     "mm:vite:dev":        "vite --port 4444",
     "mm:build":           "tsc && vite build",
     "mm:preview":         "vite preview",
-    "mm:next":            "next -p 3333",
     "mm:install":         "npm install --no-optional",
-    "mm:install:full":    "npm install",
-    "mm:install:pnpm":    "pnpm i",
+    "mm:install:npm":     "npm install",
+    "mm:install:pnpm":    "pnpm i --no-optional",
     "mm:scrub":           "rd /S /Q .\\node_modules & rd /S /Q .\\.next & del /F .\\pnpm-lock.yaml ;",
     "mm:dev":             "echo \"Node Error: no 'dev' command specified\" && exit 1",
     "mm:test":            "echo \"Node Error: no 'test' command specified\" && exit 1",
