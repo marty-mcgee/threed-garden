@@ -1,11 +1,11 @@
 // ** custom components
-import { setupLikes } from './likes'
+import { setupLikes } from '~/vite/likes'
 // ** logos
-import threedgardenLogo from '/images/ThreeD-Garden-Logo-Circle-Carrot.png'
-import typescriptLogo from '/images/typescript-logo.svg'
-import viteLogo from '/images/vite-logo.svg'
+import threedgardenLogo from '/images/logo-ThreeD-Garden-Circle-Carrot.png'
+import typescriptLogo from '/images/logo-typescript.svg'
+import viteLogo from '/images/logo-vite.svg'
 // ** css
-import './styles/style.css'
+import '~/styles/style.css'
 
 // ** return component (tsx)
 document.querySelector<HTMLDivElement>('#root')!.innerHTML = `

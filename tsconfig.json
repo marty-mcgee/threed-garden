@@ -14,11 +14,16 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react", // "react-jsx",
-    "esModuleInterop": false // , // true
+    "esModuleInterop": false, // true
     // "sourceMap": true,
     // "noUnusedLocals": true,
     // "noUnusedParameters": true,
-    // "noImplicitReturns": true
+    // "noImplicitReturns": true,
+    "baseUrl": ".",
+    "paths": {
+      "~": ["/src"],
+      "@": ["/src"]
+    }
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

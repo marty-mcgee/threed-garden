@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 // ** logos
-import threedgardenLogo from '/images/ThreeD-Garden-Logo-Circle-Carrot.png'
-import typescriptLogo from '/images/typescript-logo.svg'
-import viteLogo from '/images/vite-logo.svg'
-import reactLogo from '/images/react-logo.svg'
+import threedgardenLogo from '/images/logo-ThreeD-Garden-Circle-Carrot.png'
+import typescriptLogo from '/images/logo-typescript.svg'
+import viteLogo from '/images/logo-vite.svg'
+import reactLogo from '/images/logo-react.svg'
 // ** css
-import './styles/App.css'
+import '~/styles/app.css'
 
 function App(): any {
   const [likes, setLikes] = useState(0)
