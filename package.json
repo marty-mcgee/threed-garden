@@ -1,7 +1,7 @@
 {
   "name": "threed-garden",
-  "version": "0.10.8",
-  "description": "ThreeD Garden on ThreeJS React-Fiber using Vite/NextJS and Farmbot Ruby/JS (available as a standalone app and a WordPress plugin). 'threed-garden' is a functioning, low-dependency app, a package supporting a monorepo of workspaces that utilize/depend on 'ThreeJS, WebGL, React, TypeScript <Fiber>, GraphQL', in active development.",
+  "version": "0.10.9",
+  "description": "ThreeD Garden on ThreeJS React-Fiber using Vite/NextJS and Farmbot Ruby/JS (available as a standalone app and a WordPress plugin). 'threed-garden' is a functioning, low-dependency app, a package supporting a monorepo of workspaces that utilize/depend on 'ThreeJS, WebGL, React, Vue, TypeScript <Fiber>, GraphQL', in active development.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/marty-mcgee/threed-garden.git"
@@ -38,7 +38,6 @@
       "**/hardhat-ts/**"
     ]
   },
-  "main": "index.js",
   "type": "module",
   "scripts": {
     "____________0": "___ custom scripts ___________________________________",
@@ -47,6 +46,7 @@
     "mm:vite":            "vite",
     "mm:vite:dev":        "vite --port 4444",
     "mm:build":           "tsc && vite build",
+    "mm:build:vue":       "vue-tsc --noEmit && vite build",
     "mm:preview":         "vite preview",
     "mm:install":         "npm install --no-optional",
     "mm:install:npm":     "npm install",
@@ -126,12 +126,14 @@
     "______________X": "_____________________________________________________"
   },
   "devDependencies": {
-    "@types/react": "^18.0.17",
+    "@types/react": "^18.0.18",
     "@types/react-dom": "^18.0.6",
     "@vitejs/plugin-react": "^2.0.1",
+    "@vitejs/plugin-vue": "^3.0.3",
     "pnpm": "^7.10.0",
     "typescript": "^4.8.2",
     "vite": "^3.0.9",
+    "vue-tsc": "^0.40.7",
     "yarn": "^1.22.19"
   },
   "dependencies": {
@@ -142,6 +144,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "three": "^0.144.0",
+    "vue": "^3.2.38",
     "webgl": "^0.0.7"
   },
   "engines" : { 

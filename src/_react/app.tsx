@@ -1,13 +1,14 @@
-import React, { useState } from 'react'
+import { useState, FunctionComponent, ReactNode, ReactElement } from 'react'
 // ** logos
 import threedgardenLogo from '/images/logo-ThreeD-Garden-Circle-Carrot.png'
 import typescriptLogo from '/images/logo-typescript.svg'
 import viteLogo from '/images/logo-vite.svg'
 import reactLogo from '/images/logo-react.svg'
 // ** css
-import '~/styles/app.css'
+import './style.css'
 
-function App(): any {
+const App = () => {
+
   const [likes, setLikes] = useState(0)
 
   return (
