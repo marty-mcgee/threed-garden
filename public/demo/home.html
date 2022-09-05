@@ -2,19 +2,31 @@
 <html>
 <head>
     <title>ThreeD Home + Garden</title>
-    <base href="https://threedgarden.com/demo/" />
+    <!-- <base href="https://threedgarden.com/demo/" /> -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; object-src '';"/> -->
+    <meta http-equiv="Content-Security-Policy" content="object-src 'self' threedpublic.s3.amazonaws.com ; img-src 'self' data: threedpublic.s3.amazonaws.com ; media-src 'self' threedpublic.s3.amazonaws.com ; "/>
 
     <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
+    <meta name="viewport" content="initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#222222" />
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/all.css">
     <link rel="stylesheet" href="css/jquery.minicolors.css">
 
+    <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/manifest.json">
+    <link rel="mask-icon" href="favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+
     <meta name="description" content="Create house and garden plans in 2D and 3D">
     <meta name="keywords"
           content="Home Architecture, Home and Garden Planning, 3D Plans, Home Ideas, Floor Plan, Garden Plans, 3D Design Ideas, Building Plan">
     <meta name="author" content="Marty McGee">
-    <meta name="viewport" content="initial-scale=1, viewport-fit=cover">
+    
     <meta name="twitter:card" value="Create house and garden plans in 2D and 3D">
 
     <meta property="og:title" content="ThreeD Home + Garden">
@@ -45,14 +57,6 @@
     <script type="text/javascript" src="scripts/sky.js"></script>
     <script type="text/javascript" src="scripts/ThreeCSG.js"></script>
     <script type="text/javascript" src="scripts/jquery.minicolors.min.js"></script>
-
-    <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <link rel="mask-icon" href="favicon/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#333333">
 
     <script type="text/javascript" data-cfasync="false">
         var fragment = null;

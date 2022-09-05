@@ -5,6 +5,9 @@
 		}
 	],
 	"settings": {
-		"editor.tabSize": 2
+		"editor.tabSize": 2,
+		"liveServer.settings.host": "localhost",
+		"liveServer.settings.root": "/public/demo",
+		"liveServer.settings.multiRootWorkspaceName": "/public/demo"
 	}
 }
