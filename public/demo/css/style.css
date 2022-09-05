@@ -524,7 +524,7 @@ li .brandImg img {
 }
 
 a[target="_blank"]:after {
-    content: url("/media/externallink.png");
+    content: url("../media/externallink.png");
 }
 
 .moreInfoBtn {
