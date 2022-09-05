@@ -1,9 +1,5 @@
 {
-  "liveServer.settings.host": "localhost",
-  "liveServer.settings.root": "/public/demo",
-  "liveServer.settings.multiRootWorkspaceName": "/public/demo",
-
-  "git.enableSmartCommit": true,
+  "git.enableSmartCommit": false,
   
   "files.exclude": {
     "**/.git": true,
