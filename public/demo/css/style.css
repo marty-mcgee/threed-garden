@@ -230,7 +230,7 @@ body {
 }
 
 #compass:after {
-    content: url('./media/compass_140.png');
+    content: url('../media/compass_140.png');
     position: absolute;
     margin-top: -70px;
     margin-left: -21px;
