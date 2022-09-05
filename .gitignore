@@ -25,9 +25,8 @@ desktop.ini
 *.crt
 *.pem
 
-# dist | build
-# /admin/dist
-# /public/dist
+# output for production
+build
 dist
 dist-ssr
 *.local
