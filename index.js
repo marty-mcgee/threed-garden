@@ -16,7 +16,7 @@ try {
 
     const resolvers = {
       Query: {
-        hello: () => 'world'
+        hello: () => 'HEY HEY HEY'
       }
     }
 
