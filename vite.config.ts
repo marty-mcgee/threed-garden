@@ -16,6 +16,8 @@ export default defineConfig({
     },
   },
 
+  publicDir: 'public',
+
   build: {
     // output dir for production build | dist
     outDir: "dist",
