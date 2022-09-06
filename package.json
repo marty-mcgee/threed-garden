@@ -43,6 +43,7 @@
     "mm:scrub:node":        "rd /S /Q .\\node_modules & del /F .\\pnpm-lock.yaml",
     "mm:scrub:next":        "rd /S /Q .\\.next",
     "mm:test":              "tsc",
+    "mm:jest":              "jest",
     "______________1": "___ you can use these too ______________________________",
     "build":                "pnpm mm:build",
     "react-garden:mm":      "yarn workspace react-garden mm",
@@ -64,11 +65,14 @@
     "______________X": "___ ___________________________________________________"
   },
   "devDependencies": {
+    "@types/node": "^18.7.15",
     "@types/react": "^18.0.18",
     "@types/react-dom": "^18.0.6",
     "@vitejs/plugin-react": "^2.0.1",
     "@vitejs/plugin-vue": "^3.0.3",
+    "jest": "^29.0.2",
     "pnpm": "^7.10.0",
+    "ts-node":"^10.9.1",
     "typescript": "^4.8.2",
     "vite": "^3.0.9",
     "vue-tsc": "^0.40.7",
