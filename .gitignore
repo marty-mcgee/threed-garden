@@ -33,41 +33,10 @@ dist-ssr
 
 # assets | static
 assets/*
-assets/libraries
-assets/media
-assets/sfx
-
-# packages workspace --
-
-# subgraph
-packages/subgraph/subgraph.yaml
-packages/subgraph/generated
-packages/subgraph/abis/*
-packages/subgraph/config/config.json
-# subgraph (my-eth-app)
-packages/subgraph/build/
-packages/subgraph/src/types/
-
-# hardhat
-packages/hardhat/artifacts*
-packages/hardhat/cache*
-packages/hardhat-ts/cache*
-packages/hardhat/deployments
-packages/hardhat/*.txt
-
-# react-dapp
-packages/react-dapp/src/contracts/*
-!packages/react-dapp/src/contracts/external_contracts.js
-!packages/react-dapp/src/contracts/contracts.js
-
-# ignore certain packages
-packages/farmbot-js
-packages/farmbot-web-app
-packages/scaffold-eth-ts
-
-# misc
-tenderly.yaml
-**/aws.json
+!assets/libraries
+!assets/media
+!assets/sfx
+!assets/threed/objects
 
 # logs
 logs
@@ -90,8 +59,8 @@ lerna-debug.log*
 *.sw?
 
 # temp | scratchpad | testing
-# /public-old
 temp*
+_drafts
 
 # demo
 public/demo/objects/*
