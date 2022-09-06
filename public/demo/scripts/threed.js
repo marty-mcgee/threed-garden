@@ -56,7 +56,7 @@ function removeVerticalGuide() {
         delete verticalGuides[selectedGuideId],
         delete plan.verticalGuides[selectedGuideId])
   } catch (e) {
-    console.log("removeVerticalGuide " + e)
+    console.debug("removeVerticalGuide " + e)
   }
 }
 function removeHorizontalGuide() {
@@ -66,7 +66,7 @@ function removeHorizontalGuide() {
         delete horizontalGuides[selectedGuideId],
         delete plan.horizontalGuides[selectedGuideId])
   } catch (e) {
-    console.log("removeHorizontalGuide " + e)
+    console.debug("removeHorizontalGuide " + e)
   }
 }
 function resizePlanView() {
@@ -265,7 +265,7 @@ function initThreeJS() {
     (floorMaterial.side = THREE.DoubleSide)
 }
 function showModel3dView() {
-  var e = modalModel3dFurnitureId
+  var e = modalModel3dThreedId
   e !== -1 &&
     (model3dObjectRef && model3dScene.remove(model3dObjectRef),
       new THREE.MTLLoader()
@@ -341,7 +341,7 @@ function onDoubleClick(e) {
       o = !1
     t.forEach(function (e) {
       if (!o) {
-        var t = "furniture"
+        var t = "threed"
         if (e.distance > 1) {
           if (parseInt(e.object.parent.name)) {
             parseInt(e.object.parent.name)
@@ -362,11 +362,11 @@ function onDoubleClick(e) {
               .onUpdate(render)
               .start()),
               deselectAll(),
-              "furniture" === t)
+              "threed" === t)
           ) {
-            var l = Furniture[e.object.parent.name]
+            var l = Threed[e.object.parent.name]
             setLevel(l.data.level),
-              (selectedItem = Furniture[e.object.parent.name]),
+              (selectedItem = Threed[e.object.parent.name]),
               (mouseMode = 0),
               selectedItem.bringToFront(),
               l.data.toolsRectangleInner && l.data.toolsRectangleInner.remove(),
@@ -381,7 +381,7 @@ function onDoubleClick(e) {
                 i.rotate(l.data.angle),
                 (l.data.toolsRectangleInner = i),
                 (i.visible = !0),
-                (Furniture[e.object.parent.name].data.boxHelper.visible = !0),
+                (Threed[e.object.parent.name].data.boxHelper.visible = !0),
                 redrawGrid(),
                 (rotateIcon.visible = !0),
                 (resizeIcon.visible = !0),
@@ -399,7 +399,7 @@ function onDoubleClick(e) {
                 (elevateIcon.data.level = project.activeLayer.data.id),
                 (heightIcon.data.level = project.activeLayer.data.id),
                 (toolsGroup.data.level = project.activeLayer.data.id),
-                (modalModel3dFurnitureId = selectedItem.data.fid),
+                (modalModel3dThreedId = selectedItem.data.name),
                 updateObjectPropertiesWindow(),
                 render(),
                 (focusPoint = paper.view.center),
@@ -485,34 +485,34 @@ function openTab(e) {
         document.getElementById(e).classList.add("active")
 }
 function doCopy() {
-  selectedItem && selectedItem.data && "furniture" === selectedItem.data.type
+  selectedItem && selectedItem.data && "threed" === selectedItem.data.type
     ? ((idToCopyPaste = selectedItem.data.id),
       (lastPasteX = selectedItem.position.x),
       (lastPasteY = selectedItem.position.y))
-    : console.log("copy this not supproted")
+    : console.debug("copy this not supproted")
 }
 function doPaste() {
   if (idToCopyPaste >= 0) {
-    var e = JSON.parse(JSON.stringify(plan.furniture[idToCopyPaste]))
+    var e = JSON.parse(JSON.stringify(plan.threed[idToCopyPaste]))
       ; (lastPasteX += 20),
         (lastPasteY += 20),
         (e.position.x = lastPasteX),
         (e.position.z = lastPasteY),
         clickableObjectsCounter++,
         (e.id = clickableObjectsCounter),
-        loadFurniture(e, !0, !0)
-  } else console.log("nothing to paste")
+        loadThreed(e, !0, !0)
+  } else console.debug("nothing to paste")
 }
 function doUndo() {
   if (planHistoryPosition > 0) {
     planHistoryPosition--, deselectAll()
     var e = JSON.parse(planHistory[planHistoryPosition])
-    plan.furnitureAddedKey
-      ? (deleteFurnitureByKey(plan.furnitureAddedKey), updatePlan(e))
-      : plan.furnitureDirtyKey
-        ? (editFurnitureByKey(e.furniture[plan.furnitureDirtyKey]), updatePlan(e))
-        : plan.furnitureDeletedKey
-          ? (loadFurniture(e.furniture[plan.furnitureDeletedKey], !1, !1),
+    plan.threedAddedKey
+      ? (deleteThreedByKey(plan.threedAddedKey), updatePlan(e))
+      : plan.threedDirtyKey
+        ? (editThreedByKey(e.threed[plan.threedDirtyKey]), updatePlan(e))
+        : plan.threedDeletedKey
+          ? (loadThreed(e.threed[plan.threedDeletedKey], !1, !1),
             updatePlan(e))
           : plan.wallAddedKey || 0 === plan.wallAddedKey
             ? (deleteWallByKey(plan.wallAddedKey), updatePlan(e))
@@ -576,19 +576,19 @@ function doUndo() {
                                       updatePlan(e))
                                     : plan.textDeletedKey
                                       ? (loadText(e.texts[plan.textDeletedKey]), updatePlan(e))
-                                      : console.log("nothing to undo"))
+                                      : console.debug("nothing to undo"))
   }
 }
 function doRedo() {
   if (planHistory.length > planHistoryPosition + 1) {
     planHistoryPosition++, deselectAll()
     var e = JSON.parse(planHistory[planHistoryPosition])
-    if (e.furnitureAddedKey)
-      loadFurniture(e.furniture[e.furnitureAddedKey], !1, !1), updatePlan(e)
-    else if (e.furnitureDirtyKey)
-      editFurnitureByKey(e.furniture[e.furnitureDirtyKey]), updatePlan(e)
-    else if (e.furnitureDeletedKey)
-      deleteFurnitureByKey(e.furnitureDeletedKey), updatePlan(e)
+    if (e.threedAddedKey)
+      loadThreed(e.threed[e.threedAddedKey], !1, !1), updatePlan(e)
+    else if (e.threedDirtyKey)
+      editThreedByKey(e.threed[e.threedDirtyKey]), updatePlan(e)
+    else if (e.threedDeletedKey)
+      deleteThreedByKey(e.threedDeletedKey), updatePlan(e)
     else if (e.wallAddedKey || 0 === e.wallAddedKey)
       loadWall(e.walls[e.wallAddedKey]), updatePlan(e)
     else if (e.wallDirtyKey || 0 === e.wallDirtyKey)
@@ -664,7 +664,7 @@ function doRedo() {
                   updatePlan(e))
                 : e.textDeletedKey
                   ? (deleteTextByKey(e.textDeletedKey), updatePlan(e))
-                  : console.log("nothing to redo"))
+                  : console.debug("nothing to redo"))
   }
 }
 function updatePlan(e) {
@@ -674,14 +674,14 @@ function updatePlan(e) {
     relinkRoofReferences(project.activeLayer.data.id)
 }
 function repointPlan() {
-  Object.keys(plan.furniture).forEach(function (e) {
-    var t = plan.furniture[e]
+  Object.keys(plan.threed).forEach(function (e) {
+    var t = plan.threed[e]
     "object" == typeof t &&
       (clickableObjects[e]
-        ? ((plan.furniture[e].position = clickableObjects[e].position),
-          (plan.furniture[e].scale = clickableObjects[e].scale),
-          (plan.furniture[e].rotation = clickableObjects[e].rotation))
-        : console.log("repointing plan : key " + e + " not foiund " + typeof e))
+        ? ((plan.threed[e].position = clickableObjects[e].position),
+          (plan.threed[e].scale = clickableObjects[e].scale),
+          (plan.threed[e].rotation = clickableObjects[e].rotation))
+        : console.debug("repointing plan : key " + e + " not foiund " + typeof e))
   }),
     Object.keys(plan.walls).forEach(function (e) {
       var t = plan.walls[e]
@@ -699,10 +699,10 @@ function repointPlan() {
 function deleteSelectedItem() {
   try {
     if (!readOnly && selectedItem && selectedItem.data.id)
-      if ("furniture" === selectedItem.data.type) {
+      if ("threed" === selectedItem.data.type) {
         var e = selectedItem.data.id
         deselectAll(),
-          deleteFurnitureByKey(e),
+          deleteThreedByKey(e),
           updatePlanHistory(
             plan,
             null,
@@ -724,7 +724,7 @@ function deleteSelectedItem() {
             null,
             null
           ),
-          console.log("deleted furniture " + e)
+          console.debug("deleted threed " + e)
       } else if ("wallPath" === selectedItem.data.type) {
         var e = selectedItem.data.id
         deselectAll(),
@@ -751,7 +751,7 @@ function deleteSelectedItem() {
             null,
             null
           ),
-          console.log("deleted wall " + e)
+          console.debug("deleted wall " + e)
       } else if ("roofPath" === selectedItem.data.type) {
         var e = selectedItem.data.id
         deselectAll(),
@@ -778,7 +778,7 @@ function deleteSelectedItem() {
             null,
             e
           ),
-          console.log("deleted roof " + e)
+          console.debug("deleted roof " + e)
       } else if ("floor" === selectedItem.data.type) {
         var e = selectedItem.data.id
         deselectAll(),
@@ -829,7 +829,7 @@ function deleteSelectedItem() {
             null,
             null
           ),
-          console.log("deleted dimension " + e)
+          console.debug("deleted dimension " + e)
       } else if ("text" === selectedItem.data.type) {
         var e = selectedItem.data.id
         deselectAll(),
@@ -855,11 +855,11 @@ function deleteSelectedItem() {
             null,
             null
           ),
-          console.log("deleted text " + e)
+          console.debug("deleted text " + e)
       } else
-        console.log("delete not implemented for : " + selectedItem.data.type)
+        console.debug("delete not implemented for : " + selectedItem.data.type)
   } catch (e) {
-    console.log("deleteSelectedItem : " + e)
+    console.debug("deleteSelectedItem : " + e)
   }
 }
 function deleteTextByKey(e) {
@@ -873,7 +873,7 @@ function deleteTextByKey(e) {
       }),
         delete plan.texts[e]
     } catch (e) {
-      console.log("deleteTextByKey : " + e)
+      console.debug("deleteTextByKey : " + e)
     }
 }
 function deleteDimensionByKey(e) {
@@ -890,7 +890,7 @@ function deleteDimensionByKey(e) {
       }),
         delete plan.dimensions[e]
     } catch (e) {
-      console.log("deleteDimensionByKey : " + e)
+      console.debug("deleteDimensionByKey : " + e)
     }
 }
 function deleteWallByKey(e) {
@@ -922,7 +922,7 @@ function deleteWallByKey(e) {
         }),
         delete plan.walls[e]
     } catch (e) {
-      console.log("deleteWallByKey : " + e)
+      console.debug("deleteWallByKey : " + e)
     }
 }
 function deleteRoofByKey(e) {
@@ -955,7 +955,7 @@ function deleteRoofByKey(e) {
         }),
         delete plan.roofs[e]
     } catch (e) {
-      console.log("deleteRoofByKey : " + e)
+      console.debug("deleteRoofByKey : " + e)
     }
 }
 function deleteFloorByKey(e) {
@@ -969,10 +969,10 @@ function deleteFloorByKey(e) {
         deselectAll(),
         render()
     } catch (e) {
-      console.log("deleteFurnitureByKey : " + e)
+      console.debug("deleteThreedByKey : " + e)
     }
 }
-function deleteFurnitureByKey(e) {
+function deleteThreedByKey(e) {
   if (!readOnly)
     try {
       scene.remove(maskObjects[e]),
@@ -989,20 +989,20 @@ function deleteFurnitureByKey(e) {
             o.name.toString() === e.toString() &&
             delete clickableObjects[t]
         }),
-        Object.keys(Furniture).forEach(function (t) {
-          var o = Furniture[t]
+        Object.keys(Threed).forEach(function (t) {
+          var o = Threed[t]
           "object" == typeof o &&
             o.data.id.toString() == e.toString() &&
-            (Furniture[t].data.toolsRectangleInner &&
-              Furniture[t].data.toolsRectangleInner.remove(),
-              Furniture[t].remove(),
-              delete Furniture[t])
+            (Threed[t].data.toolsRectangleInner &&
+              Threed[t].data.toolsRectangleInner.remove(),
+              Threed[t].remove(),
+              delete Threed[t])
         }),
-        delete plan.furniture[e],
+        delete plan.threed[e],
         deselectAll(),
         render()
     } catch (e) {
-      console.log("deleteFurnitureByKey : " + e)
+      console.debug("deleteThreedByKey : " + e)
     }
 }
 function updatePlanHistory(
@@ -1026,9 +1026,9 @@ function updatePlanHistory(
   h,
   v
 ) {
-  ; (e.furnitureAddedKey = t),
-    (e.furnitureDirtyKey = o),
-    (e.furnitureDeletedKey = a),
+  ; (e.threedAddedKey = t),
+    (e.threedDirtyKey = o),
+    (e.threedDeletedKey = a),
     (e.wallAddedKey = n),
     (e.wallDirtyKey = l),
     (e.wallDeletedKey = i),
@@ -1070,7 +1070,7 @@ function updatePlanHistory(
       (document.getElementById("shareLinkUrlPlan").value = ""),
       localStorage.setItem("plan", JSON.stringify(e))
   } catch (e) {
-    console.log("creating hash : " + e)
+    console.debug("creating hash : " + e)
   }
 }
 function createThumbForHistory() {
@@ -1086,7 +1086,7 @@ function createThumbForHistory() {
     var l = a.toDataURL("image/png", 0.1)
       ; (plan.thumb = l), showMouseIndicators()
   } catch (e) {
-    console.log("failed to create thumb. " + e)
+    console.debug("failed to create thumb. " + e)
   }
 }
 function getHeightFromRatio(e, t) {
@@ -1139,7 +1139,7 @@ function loadFileAsText(e) {
         hideMouseIndicators(),
         o.readAsText(t.files[0])
   } catch (e) {
-    console.log("loadFileAsText : " + e)
+    console.debug("loadFileAsText : " + e)
   }
 }
 function clearFileInput(e) {
@@ -1156,7 +1156,7 @@ function resetPlan() {
     }),
       (textIdCounter = 0)
   } catch (e) {
-    console.log("resetPlan : 1 : " + e)
+    console.debug("resetPlan : 1 : " + e)
   }
   try {
     Object.keys(Dimensions).forEach(function (e) {
@@ -1165,19 +1165,19 @@ function resetPlan() {
     }),
       (dimensionIdCounter = 0)
   } catch (e) {
-    console.log("resetPlan : 2 : " + e)
+    console.debug("resetPlan : 2 : " + e)
   }
   try {
-    Object.keys(Furniture).forEach(function (e) {
-      var t = Furniture[e]
+    Object.keys(Threed).forEach(function (e) {
+      var t = Threed[e]
       "object" == typeof t &&
-        (Furniture[e].data.toolsRectangleInner &&
-          Furniture[e].data.toolsRectangleInner.remove(),
-          Furniture[e].remove(),
-          delete Furniture[e])
+        (Threed[e].data.toolsRectangleInner &&
+          Threed[e].data.toolsRectangleInner.remove(),
+          Threed[e].remove(),
+          delete Threed[e])
     })
   } catch (e) {
-    console.log("resetPlan : 3 : " + e)
+    console.debug("resetPlan : 3 : " + e)
   }
   try {
     Object.keys(Floors).forEach(function (e) {
@@ -1190,7 +1190,7 @@ function resetPlan() {
       }),
       (floorIdCounter = 0)
   } catch (e) {
-    console.log("resetPlan : 4 : " + e)
+    console.debug("resetPlan : 4 : " + e)
   }
   try {
     Object.keys(Walls).forEach(function (e) {
@@ -1199,7 +1199,7 @@ function resetPlan() {
     })
     for (var e in wallsRectangles) wallsRectangles[e].remove()
   } catch (e) {
-    console.log("resetPlan : 5 : " + e)
+    console.debug("resetPlan : 5 : " + e)
   }
   try {
     Object.keys(wallsRectangles3d).forEach(function (e) {
@@ -1207,7 +1207,7 @@ function resetPlan() {
       "object" == typeof t && scene.remove(wallsRectangles3d[e])
     })
   } catch (e) {
-    console.log("resetPlan : 6 : " + e)
+    console.debug("resetPlan : 6 : " + e)
   }
   try {
     Object.keys(Roofs).forEach(function (e) {
@@ -1215,7 +1215,7 @@ function resetPlan() {
     })
     for (var t in roofsRectangles) roofsRectangles[t].remove()
   } catch (e) {
-    console.log("resetPlan : 5.1 : " + e)
+    console.debug("resetPlan : 5.1 : " + e)
   }
   try {
     Object.keys(roofsRectangles3d).forEach(function (e) {
@@ -1223,7 +1223,7 @@ function resetPlan() {
         scene.remove(roofsRectangles3d[e])
     })
   } catch (e) {
-    console.log("resetPlan : 6.1 : " + e)
+    console.debug("resetPlan : 6.1 : " + e)
   }
   try {
     Object.keys(maskObjectsApplied).forEach(function (e) {
@@ -1231,7 +1231,7 @@ function resetPlan() {
         scene.remove(maskObjectsApplied[e])
     })
   } catch (e) {
-    console.log("resetPlan : 6.5 : " + e)
+    console.debug("resetPlan : 6.5 : " + e)
   }
   try {
     Object.keys(maskObjectsAppliedRoof).forEach(function (e) {
@@ -1239,7 +1239,7 @@ function resetPlan() {
         scene.remove(maskObjectsAppliedRoof[e])
     })
   } catch (e) {
-    console.log("resetPlan : 6.6 : " + e)
+    console.debug("resetPlan : 6.6 : " + e)
   }
   try {
     Object.keys(clickableObjects).forEach(function (e) {
@@ -1249,7 +1249,7 @@ function resetPlan() {
         (scene.remove(clickableObjects[e]), delete clickableObjects[e])
     })
   } catch (e) {
-    console.log("resetPlan : 7 : " + e)
+    console.debug("resetPlan : 7 : " + e)
   }
   try {
     Object.keys(maskObjects).forEach(function (e) {
@@ -1259,7 +1259,7 @@ function resetPlan() {
     }),
       (clickableObjectsCounter = 0)
   } catch (e) {
-    console.log("resetPlan : 8 : " + e)
+    console.debug("resetPlan : 8 : " + e)
   }
   try {
     backgroundRaster &&
@@ -1270,7 +1270,7 @@ function resetPlan() {
         (backgroundRaster = null),
         clearFileInput(document.getElementById("backgroundImageFile")))
   } catch (e) {
-    console.log("resetPlan : 9 : " + e)
+    console.debug("resetPlan : 9 : " + e)
   }
   try {
     Object.keys(verticalGuides).forEach(function (e) {
@@ -1281,11 +1281,11 @@ function resetPlan() {
       }),
       (guideCounter = 0)
   } catch (e) {
-    console.log("resetPlan : 10 : " + e)
+    console.debug("resetPlan : 10 : " + e)
   }
   try {
-    ; (furnitureToLoadCount = 0),
-      (loadedFurnitureCount = 0),
+    ; (threedToLoadCount = 0),
+      (loadedThreedCount = 0),
       (wallIdCounter = 0),
       (wallsRectangles = {}),
       (wallsRectangles3d = {}),
@@ -1294,7 +1294,7 @@ function resetPlan() {
       (roofIdCounter = 0),
       (roofsRectangles = {}),
       (roofsRectangles3d = {}),
-      (Furniture = {}),
+      (Threed = {}),
       (Walls = {}),
       (Roofs = {}),
       (Floors = {}),
@@ -1302,7 +1302,7 @@ function resetPlan() {
       (Dimensions = {}),
       (Texts = {}),
       (plan = {}),
-      (plan.furniture = {}),
+      (plan.threed = {}),
       (plan.walls = {}),
       (plan.roofs = {}),
       (plan.levels = {}),
@@ -1312,9 +1312,9 @@ function resetPlan() {
       (plan.texts = {}),
       (plan.verticalGuides = {}),
       (plan.horizontalGuides = {}),
-      (plan.furnitureAddedKey = null),
-      (plan.furnitureDirtyKey = null),
-      (plan.furnitureDeletedKey = null),
+      (plan.threedAddedKey = null),
+      (plan.threedDirtyKey = null),
+      (plan.threedDeletedKey = null),
       (plan.wallAddedKey = null),
       (plan.wallDirtyKey = null),
       (plan.wallDeletedKey = null),
@@ -1347,7 +1347,7 @@ function resetPlan() {
       (plan.azimuth = azimuth),
       (plan.inclination = inclination)
   } catch (e) {
-    console.log("resetPlan : 11 : " + e)
+    console.debug("resetPlan : 11 : " + e)
   }
   try {
     otherLayerWallsRasters &&
@@ -1356,19 +1356,19 @@ function resetPlan() {
         e.remove()
       }),
         (otherLayerWallsRasters = [])),
-      otherLayerFurnitureRasters &&
-      otherLayerFurnitureRasters.length > 0 &&
-      (otherLayerFurnitureRasters.forEach(function (e) {
+      otherLayerThreedRasters &&
+      otherLayerThreedRasters.length > 0 &&
+      (otherLayerThreedRasters.forEach(function (e) {
         e.remove()
       }),
-        (otherLayerFurnitureRasters = []))
+        (otherLayerThreedRasters = []))
   } catch (e) {
-    console.log("resetPlan : 12 : " + e)
+    console.debug("resetPlan : 12 : " + e)
   }
   try {
     levelButtons || addNewLevel("0"), setLevel("0")
   } catch (e) {
-    console.log("resetPlan : 13 : " + e)
+    console.debug("resetPlan : 13 : " + e)
   }
   try {
     Object.keys(levelButtons).forEach(function (e) {
@@ -1378,14 +1378,14 @@ function resetPlan() {
           project.layers["level" + e].remove())
     })
   } catch (e) {
-    console.log("resetPlan : 14 : " + e)
+    console.debug("resetPlan : 14 : " + e)
   }
   try {
     project.layers.forEach(function (e) {
       "0" === !e.data.id && e.remove()
     })
   } catch (e) {
-    console.log("resetPlan : 15 : " + e)
+    console.debug("resetPlan : 15 : " + e)
   }
   ; (project.activeLayer.name = "level0"),
     (project.activeLayer.data = { id: "0", height: 0 })
@@ -1398,15 +1398,15 @@ function resetPlan() {
       (wallsGroup[0] = new paper.Group()),
       (dimensionsGroup = {}),
       (dimensionsGroup[0] = new paper.Group()),
-      (furnitureGroup = {}),
-      (furnitureGroup[0] = new paper.Group()),
+      (threedGroup = {}),
+      (threedGroup[0] = new paper.Group()),
       (textsGroup = {}),
       (textsGroup[0] = new paper.Group()),
       (guidesGroup = new paper.Group()),
       deselectAll(),
       render()
   } catch (e) {
-    console.log("resetPlan : 15 : " + e)
+    console.debug("resetPlan : 15 : " + e)
   }
 }
 function setNewPlan() {
@@ -1418,11 +1418,11 @@ function setNewPlan() {
       setToolMode("pointer"),
       localStorage.clear()
   } catch (e) {
-    console.log("setNewPlan : " + e)
+    console.debug("setNewPlan : " + e)
   }
 }
 function drawPlan(e) {
-  console.log("[MM] plan === e", e);
+  console.debug("[MM] plan === e", e);
   setInterfacePropertiesFromPlan(e),
     e.levels
       ? ((plan.levels = e.levels),
@@ -1431,23 +1431,23 @@ function drawPlan(e) {
             ((levelButtons && levelButtons[t]) || addNewLevel(t))
         }))
       : levelButtons || addNewLevel("0"),
-    e.furniture &&
-    Object.keys(e.furniture).forEach(function (t) {
-      var o = e.furniture[t]
+    e.threed &&
+    Object.keys(e.threed).forEach(function (t) {
+      var o = e.threed[t]
       "object" == typeof o &&
-        (furnitureToLoadCount++,
+        (threedToLoadCount++,
           (loadingProgressTxt =
-            "Loading Furniture id : " +
+            "Loading Threed id : " +
             o.id +
             " (" +
-            camelCaseToSentence(o.fid) +
+            camelCaseToSentence(o.name) +
             ")\n" +
             loadingProgressTxt),
           (document.getElementById("modalLoadingDataInfo").innerHTML =
             loadingProgressTxt),
-          loadFurniture(o, !1, !1))
+          loadThreed(o, !1, !1))
     }),
-    console.log("loading " + furnitureToLoadCount + " furnitures"),
+    console.debug("loading " + threedToLoadCount + " threeds"),
     e.walls &&
     Object.keys(e.walls).forEach(function (t) {
       var o = e.walls[t]
@@ -1537,13 +1537,13 @@ function drawPlan(e) {
           redrawGrid()
     }),
     render(),
-    console.log("furnitureToLoadCount = " + furnitureToLoadCount),
-    0 === furnitureToLoadCount && doLoadFinished()
+    console.debug("threedToLoadCount = " + threedToLoadCount),
+    0 === threedToLoadCount && doLoadFinished()
 }
 function doLoadFinished() {
-  ; (plan.furnitureAddedKey = null),
-    (plan.furnitureDirtyKey = null),
-    (plan.furnitureDeletedKey = null),
+  ; (plan.threedAddedKey = null),
+    (plan.threedDirtyKey = null),
+    (plan.threedDeletedKey = null),
     (plan.wallAddedKey = null),
     (plan.wallDirtyKey = null),
     (plan.wallDeletedKey = null),
@@ -1640,7 +1640,7 @@ function relinkWallReferences(e) {
       }
     })
   } catch (e) {
-    console.log("relinkWallReferences : part 1 : " + e)
+    console.debug("relinkWallReferences : part 1 : " + e)
   }
   try {
     Object.keys(Walls).forEach(function (t) {
@@ -1648,7 +1648,7 @@ function relinkWallReferences(e) {
     }),
       render()
   } catch (e) {
-    console.log("relinkWallReferences : part 2 : " + e)
+    console.debug("relinkWallReferences : part 2 : " + e)
   }
   applyMasksToWalls(e)
 }
@@ -1661,7 +1661,7 @@ function applyMasksToWalls(e) {
     }),
       render()
   } catch (e) {
-    console.log("applyMasksToWalls : part 3 : " + e)
+    console.debug("applyMasksToWalls : part 3 : " + e)
   }
 }
 function applyMasksToWall(e, t, o) {
@@ -1670,8 +1670,8 @@ function applyMasksToWall(e, t, o) {
     l = null,
     i = !1
   if (
-    (Object.keys(Furniture).forEach(function (e) {
-      if (Furniture[e].useMask && Furniture[e].data.level === o) {
+    (Object.keys(Threed).forEach(function (e) {
+      if (Threed[e].useMask && Threed[e].data.level === o) {
         var r = new THREE.Box3().setFromObject(maskObjects[e])
         if (n.intersectsBox(r)) {
           i = !0
@@ -1743,7 +1743,7 @@ function relinkRoofReferences(e) {
       }
     })
   } catch (e) {
-    console.log("relinkRoofReferences : part 1 : " + e)
+    console.debug("relinkRoofReferences : part 1 : " + e)
   }
   try {
     Object.keys(Roofs).forEach(function (t) {
@@ -1751,7 +1751,7 @@ function relinkRoofReferences(e) {
     }),
       render()
   } catch (e) {
-    console.log("relinkRoofReferences : part 2 : " + e)
+    console.debug("relinkRoofReferences : part 2 : " + e)
   }
   applyMasksToRoofs(e)
 }
@@ -1764,7 +1764,7 @@ function applyMasksToRoofs(e) {
     }),
       render()
   } catch (e) {
-    console.log("applyMasksToRoofs : part 3 : " + e)
+    console.debug("applyMasksToRoofs : part 3 : " + e)
   }
 }
 function applyMasksToRoof(e, t, o) {
@@ -1773,8 +1773,8 @@ function applyMasksToRoof(e, t, o) {
     l = null,
     i = !1
   if (
-    (Object.keys(Furniture).forEach(function (e) {
-      if (Furniture[e].useMask && Furniture[e].data.level === o) {
+    (Object.keys(Threed).forEach(function (e) {
+      if (Threed[e].useMask && Threed[e].data.level === o) {
         var r = new THREE.Box3().setFromObject(maskObjects[e])
         if (n.intersectsBox(r)) {
           i = !0
@@ -1924,7 +1924,7 @@ function loadFloor(e) {
       redrawFloor(floorPath),
       (Floors[e.id] = floorPath),
       (plan.floors[e.id] = { id: e.id, floorPath: floorPath }))
-    : (console.log("floor val missing info"), console.log(e))
+    : (console.debug("floor val missing info"), console.debug(e))
 }
 function loadWall(e) {
   if (e.wallPath[1]) {
@@ -2019,7 +2019,7 @@ function loadWall(e) {
         }),
         render()
     }
-  } else console.log("wall val missing info"), console.log(e)
+  } else console.debug("wall val missing info"), console.debug(e)
 }
 function loadRoof(e) {
   if (e.roofPath[1]) {
@@ -2123,7 +2123,7 @@ function loadRoof(e) {
         }),
         render()
     }
-  } else console.log("roof val missing info"), console.log(e)
+  } else console.debug("roof val missing info"), console.debug(e)
 }
 function resizeViews() {
   resize3dView(), resizePlanView()
@@ -2147,7 +2147,7 @@ function render() {
     try {
       renderer.render(scene, camera)
     } catch (e) {
-      console.log("render : " + e)
+      console.debug("render : " + e)
     }
     busy = !1
   }
@@ -2156,68 +2156,68 @@ function renderModel3d() {
   try {
     model3dSceneRenderer.render(model3dScene, model3dSceneCamera)
   } catch (e) {
-    console.log("renderModel3d : " + e)
+    console.debug("renderModel3d : " + e)
   }
 }
 function beginDrag(e, t) {
   try {
-    showFurnitureLicenseSummary(t),
+    showThreedLicenseSummary(t),
       setToolMode("pointer"),
-      (draggingFurnitureId = t),
-      (draggingFurnitureIcon = !0)
+      (draggingThreedId = t),
+      (draggingThreedIcon = !0)
     var o = paper.view.viewToProject(
       new paper.Point(
         e.pageX - planView.offsetLeft,
         e.pageY - planView.offsetTop
       )
     )
-      ; (draggingFurnitureRectangle.position = o),
+      ; (draggingThreedRectangle.position = o),
         threedItems[t].scale && threedItems[t].scale.x
-          ? (draggingFurnitureRectangle.bounds.width =
+          ? (draggingThreedRectangle.bounds.width =
             threedItems[t].size.x * threedItems[t].scale.x)
-          : (draggingFurnitureRectangle.bounds.width = threedItems[t].size.x),
+          : (draggingThreedRectangle.bounds.width = threedItems[t].size.x),
         threedItems[t].scale && threedItems[t].scale.z
-          ? (draggingFurnitureRectangle.bounds.height =
+          ? (draggingThreedRectangle.bounds.height =
             threedItems[t].size.z * threedItems[t].scale.z)
-          : (draggingFurnitureRectangle.bounds.height = threedItems[t].size.z),
-        (draggingFurnitureRectangle.visible = !1),
-        (furnitureDragDiv.style.background = "url('" + objectsURL + "objects/" + t + "_top.png')"),
-        (furnitureDragDiv.style.backgroundRepeat = "no-repeat")
+          : (draggingThreedRectangle.bounds.height = threedItems[t].size.z),
+        (draggingThreedRectangle.visible = !1),
+        (threedDragDiv.style.background = "url('" + objectsURL + "objects/" + t + "_top.png')"),
+        (threedDragDiv.style.backgroundRepeat = "no-repeat")
     var a, n
-      ; (a = draggingFurnitureRectangle.bounds.width),
-        (n = draggingFurnitureRectangle.bounds.height),
+      ; (a = draggingThreedRectangle.bounds.width),
+        (n = draggingThreedRectangle.bounds.height),
         (a *= paper.view.zoom),
         (n *= paper.view.zoom),
-        (furnitureDragDiv.style.left = e.clientX - a / 2 + "px"),
-        (furnitureDragDiv.style.top = e.clientY - n / 2 + "px"),
-        (furnitureDragDiv.style.width = a + "px"),
-        (furnitureDragDiv.style.height = n + "px"),
-        (furnitureDragDiv.style.backgroundSize = a + "px " + n + "px"),
-        (furnitureDragDiv.style.display = "block")
+        (threedDragDiv.style.left = e.clientX - a / 2 + "px"),
+        (threedDragDiv.style.top = e.clientY - n / 2 + "px"),
+        (threedDragDiv.style.width = a + "px"),
+        (threedDragDiv.style.height = n + "px"),
+        (threedDragDiv.style.backgroundSize = a + "px " + n + "px"),
+        (threedDragDiv.style.display = "block")
   } catch (e) {
-    console.log(e)
+    console.debug(e)
   }
 }
-function addFurniture(e) {
-  var t = draggingFurnitureRectangle.position
+function addThreed(e) {
+  var t = draggingThreedRectangle.position
   t.x > paper.view.bounds.left
     ? t.y > paper.view.bounds.top && t.y < paper.view.bounds.bottom
-      ? initFurniture(t)
+      ? initThreed(t)
       : t.y > paper.view.bounds.bottom
-        ? console.log("dropped insoide 3dview drop. todo implement")
-        : console.log("dropped not inside views")
-    : console.log("dropped not inside views"),
-    (furnitureDragDiv.style.display = "none"),
-    (draggingFurnitureId = -1),
-    (draggingFurnitureIcon = !1),
-    (furnitureDragDiv.style.background = "url('media/tmp.png')"),
-    (draggingFurnitureRectangle.visible = !1),
+        ? console.debug("dropped insoide 3dview drop. todo implement")
+        : console.debug("dropped not inside views")
+    : console.debug("dropped not inside views"),
+    (threedDragDiv.style.display = "none"),
+    (draggingThreedId = -1),
+    (draggingThreedIcon = !1),
+    (threedDragDiv.style.background = "url('media/tmp.png')"),
+    (draggingThreedRectangle.visible = !1),
     e.preventDefault()
 }
-function initFurniture(e) {
+function initThreed(e) {
   ; (e.x = parseInt(e.x)), (e.y = parseInt(e.y))
-  var t = draggingFurnitureId,
-    o = draggingFurnitureAngle
+  var t = draggingThreedId,
+    o = draggingThreedAngle
   new THREE.MTLLoader()
     .setCrossOrigin('anonymous')
     .setPath(objectsURL + "objects/")
@@ -2273,7 +2273,7 @@ function initFurniture(e) {
                         ; (m.visible = !1),
                           (m.onLoad = function () {
                             if (
-                              ((m.data.type = "furniture"),
+                              ((m.data.type = "threed"),
                                 (m.opacity = 0.5),
                                 (m.bounds.width = l.max.x - l.min.x),
                                 (m.bounds.height = l.max.z - l.min.z),
@@ -2334,12 +2334,12 @@ function initFurniture(e) {
                                           project.activeLayer.data.id),
                                         (toolsGroup.data.level =
                                           project.activeLayer.data.id),
-                                        (modalModel3dFurnitureId = t),
+                                        (modalModel3dThreedId = t),
                                         updateObjectPropertiesWindow()
                                   }
                                 }),
                                 (m.data.id = u),
-                                (m.data.fid = t),
+                                (m.data.name = t),
                                 (m.data.boxHelper = c),
                                 (m.data.level = project.activeLayer.data.id),
                                 threedItems[t].useMask)
@@ -2374,13 +2374,13 @@ function initFurniture(e) {
                                 .onUpdate(render)
                                 .start()),
                                 (m.visible = !0),
-                                (Furniture[u] = m),
-                                furnitureGroup[project.activeLayer.data.id].addChild(
-                                  Furniture[u]
+                                (Threed[u] = m),
+                                threedGroup[project.activeLayer.data.id].addChild(
+                                  Threed[u]
                                 ),
-                                (plan.furniture[u] = {
+                                (plan.threed[u] = {
                                   id: u,
-                                  fid: t,
+                                  name: t,
                                   position: clickableObjects[u].position,
                                   scale: clickableObjects[u].scale,
                                   rotation: clickableObjects[u].rotation,
@@ -2436,8 +2436,8 @@ function initFurniture(e) {
           )
     })
 }
-function loadFurniture(e, t, o) {
-  if (threedItems[e.fid])
+function loadThreed(e, t, o) {
+  if (threedItems[e.name])
     if (
       (e.id > clickableObjectsCounter && (clickableObjectsCounter = e.id),
         "planView" != UILayout)
@@ -2445,19 +2445,19 @@ function loadFurniture(e, t, o) {
       new THREE.MTLLoader()
         .setCrossOrigin('anonymous')
         .setPath(objectsURL + "objects/")
-        .load(e.fid + ".mtl", function (a) {
+        .load(e.name + ".mtl", function (a) {
           ; (a.baseUrl = objectsURL + "objects/"),
             a.preload(),
             new THREE.OBJLoader()
               .setMaterials(a)
               .setPath(objectsURL + "objects/")
               .load(
-                e.fid + ".obj",
+                e.name + ".obj",
                 function (a) {
                   try {
                     var n = new Image()
                     n.crossOrigin = 'anonymous'
-                      ; (n.src = objectsURL + "objects/" + e.fid + "_top.png"),
+                      ; (n.src = objectsURL + "objects/" + e.name + "_top.png"),
                         (n.onload = function () {
                           var l = new THREE.Box3().setFromObject(a)
                             ; (a.userData.width = l.max.x - l.min.x),
@@ -2492,18 +2492,18 @@ function loadFurniture(e, t, o) {
                             p = new paper.Raster(n)
                             ; (p.visible = !1),
                               (p.data.id = e.id),
-                              (p.data.fid = e.fid),
+                              (p.data.name = e.name),
                               (p.data.boxHelper = c),
                               (p.data.level = (e.level ? e.level : 0).toString()),
                               project.layers["level" + p.data.level] ||
                               addNewLevel(p.data.level),
                               project.activeLayer.data.id !== p.data.level &&
                               (o || setLevel(p.data.level)),
-                              furnitureGroup[p.data.level].addChild(p),
+                              threedGroup[p.data.level].addChild(p),
                               (p.data.flipX = e.flipX ? e.flipX : 1),
                               (p.data.flipZ = e.flipZ ? e.flipZ : 1),
                               (p.onLoad = (function (e) {
-                                ; (p.data.type = "furniture"),
+                                ; (p.data.type = "threed"),
                                   (p.opacity = 0.5),
                                   (p.fillColor = new paper.Color(1, 1, 1, 1)),
                                   (p.selectedColor = new paper.Color(0, 0, 0, 0)),
@@ -2559,7 +2559,7 @@ function loadFurniture(e, t, o) {
                                             project.activeLayer.data.id),
                                           (toolsGroup.data.level =
                                             project.activeLayer.data.id),
-                                          (modalModel3dFurnitureId = e.fid),
+                                          (modalModel3dThreedId = e.name),
                                           updateObjectPropertiesWindow()
                                     }
                                   }),
@@ -2575,7 +2575,7 @@ function loadFurniture(e, t, o) {
                                   (l = new THREE.Box3().setFromObject(a))
                                 var o = l.max.x - l.min.x,
                                   n = l.max.z - l.min.z
-                                if (threedItems[e.fid].useMask) {
+                                if (threedItems[e.name].useMask) {
                                   p.useMask = !0
                                   var i = new THREE.Mesh(
                                     u,
@@ -2627,10 +2627,10 @@ function loadFurniture(e, t, o) {
                                       Math.abs(e.scale.z)
                                     ))),
                                   render(),
-                                  (Furniture[e.id] = p),
-                                  (plan.furniture[e.id] = {
+                                  (Threed[e.id] = p),
+                                  (plan.threed[e.id] = {
                                     id: e.id,
-                                    fid: e.fid,
+                                    name: e.name,
                                     position: clickableObjects[e.id].position,
                                     scale: clickableObjects[e.id].scale,
                                     rotation: clickableObjects[e.id].rotation,
@@ -2641,16 +2641,16 @@ function loadFurniture(e, t, o) {
                                     flipX: p.data.flipX,
                                     flipZ: p.data.flipZ,
                                   }),
-                                  loadedFurnitureCount++,
+                                  loadedThreedCount++,
                                   (loadingProgressTxt =
-                                    "Furniture id : " +
+                                    "Threed id : " +
                                     e.id +
                                     " loaded\n" +
                                     loadingProgressTxt),
                                   (document.getElementById(
                                     "modalLoadingDataInfo"
                                   ).innerHTML = loadingProgressTxt),
-                                  loadedFurnitureCount === furnitureToLoadCount &&
+                                  loadedThreedCount === threedToLoadCount &&
                                   doLoadFinished(),
                                   (progressBar.style.display = "none")
                                 for (
@@ -2700,22 +2700,22 @@ function loadFurniture(e, t, o) {
     else {
       var a = new Image()
       a.crossOrigin = 'anonymous'
-        ; (a.src = objectsURL + "objects/" + e.fid + "_top.png"),
+        ; (a.src = objectsURL + "objects/" + e.name + "_top.png"),
           (a.onload = function () {
             var t = new paper.Raster(a)
               ; (t.visible = !1),
                 (t.data.id = e.id),
-                (t.data.fid = e.fid),
+                (t.data.name = e.name),
                 (t.data.level = (e.level ? e.level : 0).toString()),
                 project.layers["level" + t.data.level] || addNewLevel(t.data.level),
                 project.activeLayer.data.id !== t.data.level &&
                 setLevel(t.data.level),
-                furnitureGroup[t.data.level].addChild(t),
+                threedGroup[t.data.level].addChild(t),
                 (t.data.flipX = e.flipX ? e.flipX : 1),
                 (t.data.flipZ = e.flipZ ? e.flipZ : 1),
                 (t.onLoad = (function (e) {
                   if (
-                    ((t.data.type = "furniture"),
+                    ((t.data.type = "threed"),
                       (t.opacity = 0.5),
                       (t.fillColor = new paper.Color(1, 1, 1, 1)),
                       (t.visible = !0),
@@ -2734,13 +2734,13 @@ function loadFurniture(e, t, o) {
                     var o = (e.angle + 360) % 360
                     t.rotate(o), (t.data.angle = o)
                   } else t.data.angle = 0
-                    ; (Furniture[e.id] = t),
-                      loadedFurnitureCount++,
+                    ; (Threed[e.id] = t),
+                      loadedThreedCount++,
                       (loadingProgressTxt =
-                        "Furniture id : " + e.id + " loaded\n" + loadingProgressTxt),
+                        "Threed id : " + e.id + " loaded\n" + loadingProgressTxt),
                       (document.getElementById("modalLoadingDataInfo").innerHTML =
                         loadingProgressTxt),
-                      loadedFurnitureCount === furnitureToLoadCount &&
+                      loadedThreedCount === threedToLoadCount &&
                       doLoadFinished()
                   for (
                     var a = t.canvas.getContext("2d"),
@@ -2758,20 +2758,20 @@ function loadFurniture(e, t, o) {
           })
     }
   else
-    loadedFurnitureCount++,
+    loadedThreedCount++,
       (loadingProgressTxt =
-        "*** Could not find Furniture [" +
-        e.fid +
+        "*** Could not find Threed [" +
+        e.name +
         "] for id : " +
         e.id +
         " ***\n" +
         loadingProgressTxt),
       (document.getElementById("modalLoadingDataInfo").innerHTML =
         loadingProgressTxt),
-      console.log("furniture val missing info"),
-      console.log(e)
+      console.debug("threed val missing info"),
+      console.debug(e)
 }
-function editFurnitureByKey(e) {
+function editThreedByKey(e) {
   ; (clickableObjects[e.id].position.x = parseFloat(e.position.x)),
     (clickableObjects[e.id].position.y = parseFloat(e.position.y)),
     (clickableObjects[e.id].position.z = parseFloat(e.position.z)),
@@ -2793,8 +2793,8 @@ function editFurnitureByKey(e) {
       (maskObjects[e.id].rotation.x = parseFloat(e.rotation._x)),
       (maskObjects[e.id].rotation.y = parseFloat(e.rotation._y)),
       (maskObjects[e.id].rotation.z = parseFloat(e.rotation._z))),
-    Object.keys(Furniture).forEach(function (t) {
-      var o = Furniture[t]
+    Object.keys(Threed).forEach(function (t) {
+      var o = Threed[t]
       if ("object" == typeof o && o.data.id === e.id) {
         var a = (parseFloat(e.angle) + 360) % 360
           ; (o.rotation = 0),
@@ -2839,7 +2839,7 @@ function redrawGrid() {
               (movePointIcons[e].bounds.height = screenScale),
               e++)
         })
-      } else if ("furniture" === selectedItem.data.type)
+      } else if ("threed" === selectedItem.data.type)
         (rotateIcon.bounds.width = screenScale),
           (rotateIcon.bounds.height = screenScale),
           (rotateIcon.position =
@@ -3007,7 +3007,7 @@ function generateShareLink() {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (e) {
-          console.log(e),
+          console.debug(e),
             (shareLinkUrl = e.success),
             (document.getElementById("shareLinkUrl").value =
               "https://threedgarden.com/demo/edit/" + shareLinkUrl),
@@ -3017,11 +3017,11 @@ function generateShareLink() {
               "https://threedgarden.com/demo/plan/" + shareLinkUrl)
         },
         failure: function (e) {
-          console.log("generateShareLink : ajax : " + e)
+          console.debug("generateShareLink : ajax : " + e)
         },
       })
   } catch (e) {
-    console.log("generateShareLink : " + e)
+    console.debug("generateShareLink : " + e)
   }
 }
 function initPlanView() {
@@ -3071,8 +3071,8 @@ function initPlanView() {
       (wallsGroup[0] = new paper.Group()),
       (dimensionsGroup = {}),
       (dimensionsGroup[0] = new paper.Group()),
-      (furnitureGroup = {}),
-      (furnitureGroup[0] = new paper.Group()),
+      (threedGroup = {}),
+      (threedGroup[0] = new paper.Group()),
       (textsGroup = {}),
       (textsGroup[0] = new paper.Group()),
       (guidesGroup = new paper.Group()),
@@ -3141,7 +3141,7 @@ function initPlanView() {
     ; (toolsGroup = new paper.Group()),
       (toolsGroup.rotation = 0),
       (rotateIcon = new paper.Raster("media/rotate.png")),
-      (rotateIcon.data.type = "rotateFurnitureTool"),
+      (rotateIcon.data.type = "rotateThreedTool"),
       (rotateIcon.onMouseEnter = function (e) {
         planView.style.cursor = "move"
       }),
@@ -3151,7 +3151,7 @@ function initPlanView() {
       (rotateIcon.visible = !1),
       toolsGroup.addChild(rotateIcon),
       (resizeIcon = new paper.Raster("media/expand.png")),
-      (resizeIcon.data.type = "stretchFurnitureXZTool"),
+      (resizeIcon.data.type = "stretchThreedXZTool"),
       (resizeIcon.onMouseEnter = function (e) {
         planView.style.cursor = "move"
       }),
@@ -3161,7 +3161,7 @@ function initPlanView() {
       (resizeIcon.visible = !1),
       toolsGroup.addChild(resizeIcon),
       (elevateIcon = new paper.Raster("media/elevation.png")),
-      (elevateIcon.data.type = "elevateFurnitureTool"),
+      (elevateIcon.data.type = "elevateThreedTool"),
       (elevateIcon.onMouseEnter = function (e) {
         planView.style.cursor = "row-resize"
       }),
@@ -3171,7 +3171,7 @@ function initPlanView() {
       (elevateIcon.visible = !1),
       toolsGroup.addChild(elevateIcon),
       (heightIcon = new paper.Raster("media/height.png")),
-      (heightIcon.data.type = "stretchFurnitureYTool"),
+      (heightIcon.data.type = "stretchThreedYTool"),
       (heightIcon.onMouseEnter = function (e) {
         planView.style.cursor = "ns-resize"
       }),
@@ -3229,17 +3229,17 @@ function initPlanView() {
       (roofHelperRectangle.strokeScaling = !1),
       (offsetMousePoint = new paper.Point(0, 0)),
       (tools = new paper.Tool()),
-      (draggingFurnitureRectangle = new paper.Path.Rectangle(
+      (draggingThreedRectangle = new paper.Path.Rectangle(
         new Point(-1, -1),
         new Point(1, 1)
       )),
-      (draggingFurnitureRectangle.strokeColor = "#b19064"),
-      (draggingFurnitureRectangle.strokeWidth = 2),
-      (draggingFurnitureRectangle.strokeScaling = !1),
-      (draggingFurnitureRectangle.position = new paper.Point(0, 0)),
-      (draggingFurnitureRectangle.visible = !1),
-      furnitureGroup[project.activeLayer.data.id].addChild(
-        draggingFurnitureRectangle
+      (draggingThreedRectangle.strokeColor = "#b19064"),
+      (draggingThreedRectangle.strokeWidth = 2),
+      (draggingThreedRectangle.strokeScaling = !1),
+      (draggingThreedRectangle.position = new paper.Point(0, 0)),
+      (draggingThreedRectangle.visible = !1),
+      threedGroup[project.activeLayer.data.id].addChild(
+        draggingThreedRectangle
       ),
       (tools.onMouseDown = function (e) {
         if ("pointer" === toolMode)
@@ -3257,18 +3257,18 @@ function initPlanView() {
                       )),
                       (offsetMousePoint.x = parseInt(offsetMousePoint.x)),
                       (offsetMousePoint.y = parseInt(offsetMousePoint.y))
-                  else if ("rotateFurnitureTool" === t.item.data.type)
-                    (mouseMode = 1), console.log("isRotateTool")
-                  else if ("stretchFurnitureXZTool" === t.item.data.type)
-                    (mouseMode = 2), console.log("isStretchXY")
-                  else if ("stretchFurnitureYTool" === t.item.data.type)
-                    console.log("isStretchYTool"),
+                  else if ("rotateThreedTool" === t.item.data.type)
+                    (mouseMode = 1), console.debug("isRotateTool")
+                  else if ("stretchThreedXZTool" === t.item.data.type)
+                    (mouseMode = 2), console.debug("isStretchXY")
+                  else if ("stretchThreedYTool" === t.item.data.type)
+                    console.debug("isStretchYTool"),
                       (mouseMode = 4),
                       (snapPoint = e.point),
                       (snapPoint.x = parseInt(e.point.x)),
                       (snapPoint.y = parseInt(e.point.y)),
                       scalingY
-                        ? console.log("this should never happen : scalingY")
+                        ? console.debug("this should never happen : scalingY")
                         : ((scalingY = !0),
                           (stretchYStartHeight =
                             clickableObjects[selectedItem.data.id].userData
@@ -3279,14 +3279,14 @@ function initPlanView() {
                           stretchYPath.add(snapPoint),
                           stretchYPath.add(snapPoint),
                           (stretchYPath.visible = !0))
-                  else if ("elevateFurnitureTool" === t.item.data.type)
+                  else if ("elevateThreedTool" === t.item.data.type)
                     (mouseMode = 5),
-                      console.log("isElevateTool"),
+                      console.debug("isElevateTool"),
                       (snapPoint = e.point),
                       (snapPoint.x = parseInt(e.point.x)),
                       (snapPoint.y = parseInt(e.point.y)),
                       elevating
-                        ? console.log("this should never happen : elevating")
+                        ? console.debug("this should never happen : elevating")
                         : ((elevating = !0),
                           (elevateStartHeight =
                             clickableObjects[selectedItem.data.id].position.y),
@@ -3295,7 +3295,7 @@ function initPlanView() {
                           elevatePath.add(snapPoint),
                           elevatePath.add(snapPoint),
                           (elevatePath.visible = !0))
-                  else if ("furniture" === t.item.data.type)
+                  else if ("threed" === t.item.data.type)
                     selectedItem.data.id &&
                       (tween = new TWEEN.Tween(controls.target)
                         .to(clickableObjects[selectedItem.data.id].position, 500)
@@ -3444,14 +3444,14 @@ function initPlanView() {
                           (Texts[t.item.data.id].selected = !0),
                           (editingTextId = t.item.data.id),
                           updateObjectPropertiesWindow())
-                        : console.log("mouse down not handled")
+                        : console.debug("mouse down not handled")
                 else
                   t.item.data.level === -1 &&
                     ("verticalGuide" === t.item.data.type
                       ? ((selectedGuideId = t.item.data.id), (mouseMode = 9))
                       : "horizontalGuide" === t.item.data.type &&
                       ((selectedGuideId = t.item.data.id), (mouseMode = 10)))
-            } else console.log("hit result nothing"), (mouseMode = -1)
+            } else console.debug("hit result nothing"), (mouseMode = -1)
           }
         else if ("walls" === toolMode)
           if (2 === e.event.buttons) mouseMode = -1
@@ -3557,7 +3557,7 @@ function initPlanView() {
                       (Walls[wallPath.data.id] = wallPath),
                       (selectedItem = wallPath)
                 } catch (e) {
-                  console.log(e)
+                  console.debug(e)
                 }
               } else
                 (startedDrawingWalls = !0),
@@ -3736,7 +3736,7 @@ function initPlanView() {
                       (Roofs[roofPath.data.id] = roofPath),
                       (selectedItem = roofPath)
                 } catch (e) {
-                  console.log(e)
+                  console.debug(e)
                 }
               } else
                 (startedDrawingRoofs = !0),
@@ -3832,14 +3832,14 @@ function initPlanView() {
                 (offsetMousePoint = selectedItem.position.subtract(e.point)),
                 (offsetMousePoint.x = parseInt(offsetMousePoint.x)),
                 (offsetMousePoint.y = parseInt(offsetMousePoint.y)))
-              : "stretchFurnitureXZTool" === t.item.data.type
+              : "stretchThreedXZTool" === t.item.data.type
                 ? (mouseMode = 2)
                 : "verticalGuide" === t.item.data.type
-                  ? (console.log(t.item.data.type),
+                  ? (console.debug(t.item.data.type),
                     (selectedGuideId = t.item.data.id),
                     (mouseMode = 9))
                   : "horizontalGuide" === t.item.data.type &&
-                  (console.log(t.item.data.type),
+                  (console.debug(t.item.data.type),
                     (selectedGuideId = t.item.data.id),
                     (mouseMode = 10))
             : (mouseMode = -1)
@@ -4086,7 +4086,7 @@ function initPlanView() {
         0 === mouseMode && dragging
           ? selectedItem &&
             selectedItem.data &&
-            "furniture" === selectedItem.data.type
+            "threed" === selectedItem.data.type
             ? ((dragging = !1),
               (mouseMode = -1),
               updatePlanHistory(
@@ -4113,7 +4113,7 @@ function initPlanView() {
               applyMasksToWalls(project.activeLayer.data.id),
               applyMasksToRoofs(project.activeLayer.data.id),
               redrawLevelsFloors(project.activeLayer.data.id))
-            : console.log("*** mouseup, mousemode=0, " + selectedItem)
+            : console.debug("*** mouseup, mousemode=0, " + selectedItem)
           : 1 === mouseMode && rotating
             ? ((rotating = !1),
               (mouseMode = -1),
@@ -4400,11 +4400,11 @@ function initPlanView() {
                       (i.locked = !0),
                       (selectedItem.data.toolsRectangleInner = i),
                       i.rotate(selectedItem.data.angle),
-                      (furnitureAngleProp.innerText = (
+                      (threedAngleProp.innerText = (
                         (selectedItem.rotation + 360) %
                         360
                       ).toFixed(2)),
-                      (plan.furniture[selectedItem.data.id].angle =
+                      (plan.threed[selectedItem.data.id].angle =
                         selectedItem.rotation),
                       (rotateIcon.position =
                         selectedItem.data.toolsRectangleInner.segments[1].point),
@@ -4463,8 +4463,8 @@ function initPlanView() {
                       .removeOnMove()
                       .removeOnDrag())
               }
-              if (threedItems[selectedItem.data.fid].pivot) {
-                var s = threedItems[selectedItem.data.fid].pivot
+              if (threedItems[selectedItem.data.name].pivot) {
+                var s = threedItems[selectedItem.data.name].pivot
                 if (1 === selectedItem.data.flipZ) {
                   var d = snapPoint.add(new paper.Point(s).rotate(n)),
                     c = snapPoint,
@@ -4494,8 +4494,8 @@ function initPlanView() {
                   setTimeout(function () {
                     render()
                   }, 1)),
-                (furnitureXProp.value = p.toFixed(3)),
-                (furnitureZProp.value = m.toFixed(3))
+                (threedXProp.value = p.toFixed(3)),
+                (threedZProp.value = m.toFixed(3))
             }
           } else if (1 === mouseMode) {
             var g = selectedItem.bounds.center,
@@ -4530,11 +4530,11 @@ function initPlanView() {
                   (selectedItem.data.toolsRectangleInner = i),
                   i.rotate(selectedItem.data.angle)
             }
-            ; (furnitureAngleProp.innerText = (
+            ; (threedAngleProp.innerText = (
               (selectedItem.rotation + 360) %
               360
             ).toFixed(2)),
-              (plan.furniture[selectedItem.data.id].angle =
+              (plan.threed[selectedItem.data.id].angle =
                 selectedItem.rotation),
               (rotateIcon.position =
                 selectedItem.data.toolsRectangleInner.segments[1].point),
@@ -4606,16 +4606,16 @@ function initPlanView() {
                     ; (selectedItem.rotation = 0),
                       (selectedItem.bounds.width = Math.abs(T)),
                       (selectedItem.bounds.height = Math.abs(H)),
-                      (plan.furniture[selectedItem.data.id].width = T),
-                      (plan.furniture[selectedItem.data.id].depth = H),
+                      (plan.threed[selectedItem.data.id].width = T),
+                      (plan.threed[selectedItem.data.id].depth = H),
                       (selectedItem.rotation = B),
                       (selectedItem.position = C),
                       render(),
-                      (furnitureWidthProp.value = (
+                      (threedWidthProp.value = (
                         clickableObjects[selectedItem.data.id].userData.width *
                         clickableObjects[selectedItem.data.id].scale.x
                       ).toFixed(3)),
-                      (furnitureDepthProp.value = (
+                      (threedDepthProp.value = (
                         clickableObjects[selectedItem.data.id].userData.depth *
                         clickableObjects[selectedItem.data.id].scale.z
                       ).toFixed(3))
@@ -4629,7 +4629,7 @@ function initPlanView() {
                   (elevateIcon.position =
                     selectedItem.data.toolsRectangleInner.segments[0].point)
               } catch (e) {
-                console.log(e)
+                console.debug(e)
               }
             }
           } else if (3 === mouseMode) {
@@ -4824,12 +4824,12 @@ function initPlanView() {
                     stretchYStartHeight
                   ),
                   render(),
-                  (furnitureHeightProp.value = (
+                  (threedHeightProp.value = (
                     clickableObjects[selectedItem.data.id].userData.height *
                     clickableObjects[selectedItem.data.id].scale.y
                   ).toFixed(3))
               } catch (e) {
-                console.log(e)
+                console.debug(e)
               }
           } else if (5 === mouseMode) {
             if (selectedItem.data.id)
@@ -4855,9 +4855,9 @@ function initPlanView() {
                   (controls.target.y =
                     clickableObjects[selectedItem.data.id].position.y),
                   render(),
-                  (furnitureYProp.value = (elevateStartHeight + O).toFixed(3))
+                  (threedYProp.value = (elevateStartHeight + O).toFixed(3))
               } catch (e) {
-                console.log(e)
+                console.debug(e)
               }
           } else if (6 === mouseMode) {
             ; (snapPoint = e.point),
@@ -4980,7 +4980,7 @@ function initPlanView() {
                       backgroundRaster.data.toolsRectangleInner.segments[3].point)
               }
             } catch (e) {
-              console.log(e)
+              console.debug(e)
             }
           }
       }),
@@ -5395,7 +5395,7 @@ function initPlanView() {
       redrawGrid()
 }
 function setEndDrawingGround() {
-  console.log("todo")
+  console.debug("todo")
 }
 function setEndDrawingText() {
   ; (startedDrawingText = !1), deselectAll()
@@ -5538,7 +5538,7 @@ function deselectAll() {
       (movePointIcons = []),
       (offsetMousePoint = new paper.Point(0, 0))
   } catch (e) {
-    console.log(e)
+    console.debug(e)
   }
 }
 function setCtrlKeyPressed(e) {
@@ -5647,7 +5647,7 @@ function setToolMode(e) {
         (defaultCursor = "default"),
         (wallsGroup[0].opacity = 0.25),
         (floorsGroup[0].opacity = 0.25),
-        (furnitureGroup[0].opacity = 0.25),
+        (threedGroup[0].opacity = 0.25),
         document.getElementById("pointerTool").classList.remove("activeTool"),
         document.getElementById("addWallTool").classList.remove("activeTool"),
         document.getElementById("addFloorTool").classList.remove("activeTool"),
@@ -5932,7 +5932,7 @@ function reDrawWallCorners(e) {
         wallsRectangles3d[e.data.id].geometry.computeFlatVertexNormals(),
         (wallsRectangles3d[e.data.id].position.y =
           b + project.layers[e.data.level].data.height)
-  } else console.log("segments lenght was not 2")
+  } else console.debug("segments lenght was not 2")
 }
 function reDrawRoofCorners(e) {
   if (2 === e.segments.length) {
@@ -6199,50 +6199,50 @@ function reDrawRoofCorners(e) {
         roofsRectangles3d[e.data.id].geometry.computeFlatVertexNormals(),
         (roofsRectangles3d[e.data.id].position.y =
           b + x + project.layers[e.data.level].data.height + e.data.startHeight)
-  } else console.log("segments lenght was not 2")
+  } else console.debug("segments lenght was not 2")
 }
 function updateObjectPropertiesWindow() {
   if (selectedItem && selectedItem.data && selectedItem.data.type)
     switch (selectedItem.data.type) {
-      case "furniture":
-        setPropertiesView("furniture")
+      case "threed":
+        setPropertiesView("threed")
         try {
           ; (document.getElementById("objectId").innerText =
             selectedItem.data.id),
             (document.getElementById("objectName").innerText =
-              camelCaseToSentence(selectedItem.data.fid)),
-            (document.getElementById("furnitureAngleProp").innerText =
+              camelCaseToSentence(selectedItem.data.name)),
+            (document.getElementById("threedAngleProp").innerText =
               selectedItem.data.angle.toFixed(2)),
-            (document.getElementById("furnitureXProp").style.backgroundColor =
+            (document.getElementById("threedXProp").style.backgroundColor =
               "#4e4e4e"),
-            (document.getElementById("furnitureXProp").value =
+            (document.getElementById("threedXProp").value =
               clickableObjects[selectedItem.data.id].position.x.toFixed(3)),
-            (document.getElementById("furnitureYProp").style.backgroundColor =
+            (document.getElementById("threedYProp").style.backgroundColor =
               "#4e4e4e"),
-            (document.getElementById("furnitureYProp").value =
+            (document.getElementById("threedYProp").value =
               clickableObjects[selectedItem.data.id].position.y.toFixed(3)),
-            (document.getElementById("furnitureZProp").style.backgroundColor =
+            (document.getElementById("threedZProp").style.backgroundColor =
               "#4e4e4e"),
-            (document.getElementById("furnitureZProp").value =
+            (document.getElementById("threedZProp").value =
               clickableObjects[selectedItem.data.id].position.z.toFixed(3)),
             (document.getElementById(
-              "furnitureWidthProp"
+              "threedWidthProp"
             ).style.backgroundColor = "#4e4e4e"),
-            (document.getElementById("furnitureWidthProp").value = (
+            (document.getElementById("threedWidthProp").value = (
               clickableObjects[selectedItem.data.id].userData.width *
               clickableObjects[selectedItem.data.id].scale.x
             ).toFixed(3)),
             (document.getElementById(
-              "furnitureDepthProp"
+              "threedDepthProp"
             ).style.backgroundColor = "#4e4e4e"),
-            (document.getElementById("furnitureDepthProp").value = (
+            (document.getElementById("threedDepthProp").value = (
               clickableObjects[selectedItem.data.id].userData.depth *
               clickableObjects[selectedItem.data.id].scale.z
             ).toFixed(3)),
             (document.getElementById(
-              "furnitureHeightProp"
+              "threedHeightProp"
             ).style.backgroundColor = "#4e4e4e"),
-            (document.getElementById("furnitureHeightProp").value = (
+            (document.getElementById("threedHeightProp").value = (
               clickableObjects[selectedItem.data.id].userData.height *
               clickableObjects[selectedItem.data.id].scale.y
             ).toFixed(3)),
@@ -6250,10 +6250,10 @@ function updateObjectPropertiesWindow() {
               1 !== selectedItem.data.flipX),
             (document.getElementById("flipZ").checked =
               1 !== selectedItem.data.flipZ),
-            (document.getElementById("furnitureLevelProp").innerText =
+            (document.getElementById("threedLevelProp").innerText =
               selectedItem.data.level)
         } catch (e) {
-          console.log("updateObjectPropertiesWindow : furniture : " + e)
+          console.debug("updateObjectPropertiesWindow : threed : " + e)
         }
         break
       case "wallPath":
@@ -6417,9 +6417,9 @@ function loadBackgroundImage(e) {
               })
         }),
           a.readAsDataURL(o[0])
-    } else console.log("upload not supported")
+    } else console.debug("upload not supported")
   } catch (e) {
-    console.log("loadBackgroundImage : " + e)
+    console.debug("loadBackgroundImage : " + e)
   }
 }
 function setBgTemplateOpacity(e) {
@@ -6437,9 +6437,9 @@ function deleteBackgroundImage() {
 function setPropertiesView(e) {
   switch (
   ("background" != e && "background" === toolMode && setToolMode("pointer"),
-    (document.getElementById("furniture3DModelPropertiesView").style.display =
+    (document.getElementById("threed3DModelPropertiesView").style.display =
       "none"),
-    (document.getElementById("furniturePropertiesView").style.display = "none"),
+    (document.getElementById("threedPropertiesView").style.display = "none"),
     (document.getElementById("planViewPropertiesView").style.display = "none"),
     (document.getElementById("3dViewPropertiesView").style.display = "none"),
     (document.getElementById("wallPropertiesView").style.display = "none"),
@@ -6463,11 +6463,11 @@ function setPropertiesView(e) {
     e)
   ) {
     case "model3dMeta":
-      document.getElementById("furniture3DModelPropertiesView").style.display =
+      document.getElementById("threed3DModelPropertiesView").style.display =
         "block"
       break
-    case "furniture":
-      document.getElementById("furniturePropertiesView").style.display = "block"
+    case "threed":
+      document.getElementById("threedPropertiesView").style.display = "block"
       break
     case "planView":
       document.getElementById("planViewPropertiesView").style.display = "block"
@@ -6728,7 +6728,7 @@ function updateTextX(e) {
         null
       )
   } catch (e) {
-    console.log("updateTextX : " + e)
+    console.debug("updateTextX : " + e)
   }
 }
 function updateTextY(e) {
@@ -6758,7 +6758,7 @@ function updateTextY(e) {
         null
       )
   } catch (e) {
-    console.log("updateTextX : " + e)
+    console.debug("updateTextX : " + e)
   }
 }
 function clickColor(e) {
@@ -7130,7 +7130,7 @@ function adjustHemiLightBrightness(e) {
   ; (hemiLight.intensity = e), render()
 }
 function newLevel() {
-  console.log("new level button pressed"), deselectAll()
+  console.debug("new level button pressed"), deselectAll()
   var e = Object.keys(levelButtons).length,
     t = document.createElement("BUTTON")
   if (
@@ -7156,7 +7156,7 @@ function newLevel() {
       (roofsGroup[e] = new paper.Group()),
       (wallsGroup[e] = new paper.Group()),
       (dimensionsGroup[e] = new paper.Group()),
-      (furnitureGroup[e] = new paper.Group()),
+      (threedGroup[e] = new paper.Group()),
       (textsGroup[e] = new paper.Group()),
       !project.layers["level" + e])
   ) {
@@ -7175,7 +7175,7 @@ function newLevel() {
     project.layers["level" + e].addChild(roofsGroup[e]),
     project.layers["level" + e].addChild(wallsGroup[e]),
     project.layers["level" + e].addChild(dimensionsGroup[e]),
-    project.layers["level" + e].addChild(furnitureGroup[e]),
+    project.layers["level" + e].addChild(threedGroup[e]),
     project.layers["level" + e].addChild(textsGroup[e]),
     project.layers["level" + e].addChild(guidesGroup),
     (levelButtons[e] = t),
@@ -7213,7 +7213,7 @@ function addNewLevel(e) {
       (roofsGroup[e] = new paper.Group()),
       (wallsGroup[e] = new paper.Group()),
       (dimensionsGroup[e] = new paper.Group()),
-      (furnitureGroup[e] = new paper.Group()),
+      (threedGroup[e] = new paper.Group()),
       (textsGroup[e] = new paper.Group()),
       !project.layers["level" + e])
   ) {
@@ -7237,7 +7237,7 @@ function addNewLevel(e) {
     project.layers["level" + e].addChild(roofsGroup[e]),
     project.layers["level" + e].addChild(wallsGroup[e]),
     project.layers["level" + e].addChild(dimensionsGroup[e]),
-    project.layers["level" + e].addChild(furnitureGroup[e]),
+    project.layers["level" + e].addChild(threedGroup[e]),
     project.layers["level" + e].addChild(textsGroup[e]),
     project.layers["level" + e].addChild(guidesGroup),
     (levelButtons[e] = t),
@@ -7252,12 +7252,12 @@ function setLevel(e) {
       e.remove()
     }),
       (otherLayerWallsRasters = [])),
-    otherLayerFurnitureRasters &&
-    otherLayerFurnitureRasters.length > 0 &&
-    (otherLayerFurnitureRasters.forEach(function (e) {
+    otherLayerThreedRasters &&
+    otherLayerThreedRasters.length > 0 &&
+    (otherLayerThreedRasters.forEach(function (e) {
       e.remove()
     }),
-      (otherLayerFurnitureRasters = []))
+      (otherLayerThreedRasters = []))
   var t = 0
   project.layers.forEach(function (o) {
     o.data &&
@@ -7268,12 +7268,12 @@ function setLevel(e) {
         ),
           (otherLayerWallsRasters[otherLayerWallsRasters.length - 1].data.level =
             o.data.id)),
-        furnitureGroup[o.data.id] &&
-        (otherLayerFurnitureRasters.push(
-          furnitureGroup[o.data.id].rasterize(view.resolution, !1)
+        threedGroup[o.data.id] &&
+        (otherLayerThreedRasters.push(
+          threedGroup[o.data.id].rasterize(view.resolution, !1)
         ),
-          (otherLayerFurnitureRasters[
-            otherLayerFurnitureRasters.length - 1
+          (otherLayerThreedRasters[
+            otherLayerThreedRasters.length - 1
           ].data.level = o.data.id))),
       (o.visible = !1),
       (levelButtons[t].style.backgroundColor = "#4e4e4e"),
@@ -7285,7 +7285,7 @@ function setLevel(e) {
     otherLayerWallsRasters.forEach(function (e) {
       project.activeLayer.addChild(e), e.sendToBack(), (e.opacity = 0.25)
     }),
-    otherLayerFurnitureRasters.forEach(function (e) {
+    otherLayerThreedRasters.forEach(function (e) {
       project.activeLayer.addChild(e), e.sendToBack(), (e.opacity = 0.2)
     }),
     project.activeLayer.addChild(floorHelperPath),
@@ -7366,7 +7366,7 @@ function updateTextValue(e) {
         null
       )
   } catch (e) {
-    console.log("updateTextX : " + e)
+    console.debug("updateTextX : " + e)
   }
 }
 function redrawLevelsFloors(e) {
@@ -7394,8 +7394,8 @@ function redrawFloor(e) {
     l = new THREE.Box3().setFromObject(a),
     i = null,
     r = !1
-  Object.keys(Furniture).forEach(function (t) {
-    if (Furniture[t].useMask && Furniture[t].data.level === e.data.level) {
+  Object.keys(Threed).forEach(function (t) {
+    if (Threed[t].useMask && Threed[t].data.level === e.data.level) {
       var o = new THREE.Box3().setFromObject(maskObjects[t])
       if (l.intersectsBox(o)) {
         r = !0
@@ -7430,8 +7430,8 @@ function camelCaseToSentence(e) {
   } catch (e) { }
   return e
 }
-function showFurnitureLicenseSummary(e) {
-  modalModel3dFurnitureId = e
+function showThreedLicenseSummary(e) {
+  modalModel3dThreedId = e
   var t = camelCaseToSentence(e)
   document.getElementById("model3dName").innerText = t
   var o = threedItems[e].author
@@ -7543,17 +7543,17 @@ function loadExamplePlan() {
           drawPlan(JSON.parse(e))
         },
         error: function (e) {
-          console.log("loadExamplePlan : ajax : " + e)
+          console.debug("loadExamplePlan : ajax : " + e)
         },
       })
   } catch (e) {
-    console.log("loadExamplePlan : " + e)
+    console.debug("loadExamplePlan : " + e)
   }
 }
 function loadPlan(e) {
   window.location.href = "/edit/" + e
 }
-function updateFurniturePosX(e) {
+function updateThreedPosX(e) {
   if (selectedItem.data.id) {
     var t = parseFloat(e)
       ; (selectedItem.position.x = t),
@@ -7589,7 +7589,7 @@ function updateFurniturePosX(e) {
         )
   }
 }
-function updateFurniturePosZ(e) {
+function updateThreedPosZ(e) {
   if (selectedItem.data.id) {
     var t = parseFloat(e)
       ; (selectedItem.position.y = t),
@@ -7625,7 +7625,7 @@ function updateFurniturePosZ(e) {
         )
   }
 }
-function updateFurniturePosY(e) {
+function updateThreedPosY(e) {
   if (selectedItem.data.id) {
     var t = parseFloat(e)
       ; (clickableObjects[selectedItem.data.id].position.y = t),
@@ -7658,7 +7658,7 @@ function updateFurniturePosY(e) {
         )
   }
 }
-function updateFurnitureWidth(e) {
+function updateThreedWidth(e) {
   if (selectedItem.data.id) {
     var t = parseFloat(e)
       ; (clickableObjects[selectedItem.data.id].scale.x =
@@ -7688,7 +7688,7 @@ function updateFurnitureWidth(e) {
           selectedItem.data.toolsRectangleInner.segments[2].point),
         (elevateIcon.position =
           selectedItem.data.toolsRectangleInner.segments[0].point),
-        (plan.furniture[selectedItem.data.id].width = Math.abs(t)),
+        (plan.threed[selectedItem.data.id].width = Math.abs(t)),
         (selectedItem.rotation = a),
         (selectedItem.position = o),
         (selectedItem.data.toolsRectangleInner.position = o),
@@ -7724,7 +7724,7 @@ function updateFurnitureWidth(e) {
           selectedItem.data.toolsRectangleInner.segments[0].point)
   }
 }
-function updateFurnitureDepth(e) {
+function updateThreedDepth(e) {
   if (selectedItem.data.id) {
     var t = parseFloat(e)
       ; (clickableObjects[selectedItem.data.id].scale.z =
@@ -7754,7 +7754,7 @@ function updateFurnitureDepth(e) {
           selectedItem.data.toolsRectangleInner.segments[2].point),
         (elevateIcon.position =
           selectedItem.data.toolsRectangleInner.segments[0].point),
-        (plan.furniture[selectedItem.data.id].depth = Math.abs(t)),
+        (plan.threed[selectedItem.data.id].depth = Math.abs(t)),
         (selectedItem.rotation = a),
         (selectedItem.position = o),
         (selectedItem.data.toolsRectangleInner.position = o),
@@ -7790,7 +7790,7 @@ function updateFurnitureDepth(e) {
           selectedItem.data.toolsRectangleInner.segments[0].point)
   }
 }
-function updateFurnitureHeight(e) {
+function updateThreedHeight(e) {
   if (selectedItem.data.id) {
     var t = parseFloat(e)
       ; (clickableObjects[selectedItem.data.id].scale.y =
@@ -7827,10 +7827,10 @@ function flipX(e) {
   e
     ? ((selectedItem.data.flipX = -1),
       (clickableObjects[selectedItem.data.id].scale.x *= -1),
-      (plan.furniture[selectedItem.data.id].flipX = -1))
+      (plan.threed[selectedItem.data.id].flipX = -1))
     : ((selectedItem.data.flipX = 1),
       (clickableObjects[selectedItem.data.id].scale.x *= -1),
-      (plan.furniture[selectedItem.data.id].flipX = 1)),
+      (plan.threed[selectedItem.data.id].flipX = 1)),
     flipImageDataX(selectedItem),
     updatePlanHistory(
       plan,
@@ -7858,10 +7858,10 @@ function flipZ(e) {
   e
     ? ((selectedItem.data.flipZ = -1),
       (clickableObjects[selectedItem.data.id].scale.z *= -1),
-      (plan.furniture[selectedItem.data.id].flipZ = -1))
+      (plan.threed[selectedItem.data.id].flipZ = -1))
     : ((selectedItem.data.flipZ = 1),
       (clickableObjects[selectedItem.data.id].scale.z *= -1),
-      (plan.furniture[selectedItem.data.id].flipZ = 1)),
+      (plan.threed[selectedItem.data.id].flipZ = 1)),
     flipImageDataZ(selectedItem),
     updatePlanHistory(
       plan,
@@ -8206,15 +8206,15 @@ function recenterPlanView() {
   var e = { x: 0, y: 0 },
     t = { x: 1e3, y: 1e3 },
     o = { x: -1e3, y: -1e3 }
-  Object.keys(Furniture).forEach(function (a) {
-    var n = Furniture[a]
+  Object.keys(Threed).forEach(function (a) {
+    var n = Threed[a]
     "object" == typeof n &&
-      ((e.x += Furniture[a].position.x),
-        (e.y += Furniture[a].position.y),
-        (t.x = Math.min(t.x, Furniture[a].position.x)),
-        (t.y = Math.min(t.y, Furniture[a].position.y)),
-        (o.x = Math.max(o.x, Furniture[a].position.x)),
-        (o.y = Math.max(o.y, Furniture[a].position.y)))
+      ((e.x += Threed[a].position.x),
+        (e.y += Threed[a].position.y),
+        (t.x = Math.min(t.x, Threed[a].position.x)),
+        (t.y = Math.min(t.y, Threed[a].position.y)),
+        (o.x = Math.max(o.x, Threed[a].position.x)),
+        (o.y = Math.max(o.y, Threed[a].position.y)))
   }),
     Object.keys(Floors).forEach(function (a) {
       var n = Floors[a]
@@ -8274,7 +8274,7 @@ function updateGroundWidth(e) {
   var t = new THREE.PlaneBufferGeometry(100 * groundWidth, 100 * groundLength)
     ; (groundMat = new THREE.MeshPhongMaterial({ transparent: !0, opacity: 1 })),
       (groundMat.color = new THREE.Color(2304293)),
-      console.log(
+      console.debug(
         "groundDiffuse = " + document.getElementById("groundDiffuse").value
       ),
       (groundMat.specular = new THREE.Color(15925148)),
@@ -8291,7 +8291,7 @@ function updateGroundLength(e) {
   var t = new THREE.PlaneBufferGeometry(100 * groundWidth, 100 * groundLength)
     ; (groundMat = new THREE.MeshPhongMaterial({ transparent: !0, opacity: 1 })),
       (groundMat.color = new THREE.Color(2304293)),
-      console.log(
+      console.debug(
         "groundDiffuse = " + document.getElementById("groundDiffuse").value
       ),
       (groundMat.specular = new THREE.Color(15925148)),
@@ -8327,7 +8327,7 @@ var mouseMode = 0,
   deselectAll,
   toolsGroup,
   gridGroup,
-  furnitureGroup = {},
+  threedGroup = {},
   wallsGroup = {},
   roofsGroup = {},
   floorsGroup = {},
@@ -8395,8 +8395,8 @@ var mouseMode = 0,
   redrawGrid,
   xLines = [],
   yLines = [],
-  furnitureToLoadCount = 0,
-  loadedFurnitureCount = 0,
+  threedToLoadCount = 0,
+  loadedThreedCount = 0,
   tools,
   offsetMousePoint,
   ctrlKeyPressed = !1,
@@ -8439,11 +8439,11 @@ var mouseMode = 0,
   horizontalSliderLeftDragging,
   horizontalSliderRight,
   horizontalSliderRightDragging,
-  furnitureDragDiv,
-  draggingFurnitureIcon = !1,
-  draggingFurnitureId = -1,
-  draggingFurnitureAngle = 0,
-  draggingFurnitureRectangle,
+  threedDragDiv,
+  draggingThreedIcon = !1,
+  draggingThreedId = -1,
+  draggingThreedAngle = 0,
+  draggingThreedRectangle,
   wallCornersX = [],
   wallCornersY = [],
   roofCornersX = [],
@@ -8458,7 +8458,7 @@ var mouseMode = 0,
   textIdCounter = 0,
   startedDrawingText = !1,
   editingTextId = -1,
-  Furniture = {},
+  Threed = {},
   Walls = {},
   Roofs = {},
   Floors = {},
@@ -8466,7 +8466,7 @@ var mouseMode = 0,
   Dimensions = {},
   Texts = {},
   plan = {}
-  ; (plan.furniture = {}),
+  ; (plan.threed = {}),
     (plan.walls = {}),
     (plan.roofs = {}),
     (plan.floors = {}),
@@ -8491,13 +8491,13 @@ var backgroundRaster,
   activeLevel,
   levelButtons,
   otherLayerWallsRasters = [],
-  otherLayerFurnitureRasters = [],
+  otherLayerThreedRasters = [],
   extrudeSettings = {
     steps: 1,
     depth: defaultFloorThickness,
     bevelEnabled: !1,
   },
-  modalModel3dFurnitureId = -1,
+  modalModel3dThreedId = -1,
   model3dObjectRef,
   model3dViewOpen = !1,
   model3dScene,
@@ -8703,7 +8703,7 @@ $(document).ready(function () {
               $("#catalogItems").append(
                 "<div id='" +
                 e +
-                "' class='furnitureItem disableSelection' onmousedown='beginDrag(event, \"" +
+                "' class='threedItem disableSelection' onmousedown='beginDrag(event, \"" +
                 e +
                 "\");'><img " +
                 (t < 32
@@ -8711,7 +8711,7 @@ $(document).ready(function () {
                   : "src='media/thumbPlaceHolder.png'") +
                 " realsrc='" + objectsURL + "objects/" +
                 e +
-                ".png' class='furnitureThumb' alt='" +
+                ".png' class='threedThumb' alt='" +
                 o +
                 "' title='" +
                 o +
@@ -8730,7 +8730,7 @@ $(document).ready(function () {
               featuredPlanImage.src = t.thumb
             },
             error: function (e) {
-              console.log("document.ready : get thumb ajax : " + e)
+              console.debug("document.ready : get thumb ajax : " + e)
             },
           }),
             "default" === UILayout &&
@@ -8819,7 +8819,7 @@ $(document).ready(function () {
             success: function (e) {
               var t = JSON.parse(e)
               e.error
-                ? console.log(e.error)
+                ? console.debug(e.error)
                 : ((loadingProgressTxt = "Loading Shared Plan"),
                   (document.getElementById("modalLoadingDataInfo").innerHTML =
                     loadingProgressTxt),
@@ -8828,7 +8828,7 @@ $(document).ready(function () {
                   drawPlan(t))
             },
             error: function (e) {
-              console.log("document.ready : getsharelink : " + e)
+              console.debug("document.ready : getsharelink : " + e)
             },
           })
         else {
@@ -8876,7 +8876,7 @@ $(document).ready(function () {
     resize3dView(),
     resizePlanView(),
     animate(),
-    (furnitureDragDiv = document.getElementById("furnitureDragDiv")),
+    (threedDragDiv = document.getElementById("threedDragDiv")),
     (document.getElementById("catalogTextFilter").oninput = function (e) {
       var t = this.value.toLowerCase()
       t.length > 0
@@ -8938,10 +8938,10 @@ $(document).ready(function () {
         resizePlanView(),
         !1
       )
-    if (draggingFurnitureIcon) {
+    if (draggingThreedIcon) {
       var t, o
-        ; (t = draggingFurnitureRectangle.bounds.width),
-          (o = draggingFurnitureRectangle.bounds.height),
+        ; (t = draggingThreedRectangle.bounds.width),
+          (o = draggingThreedRectangle.bounds.height),
           (t *= paper.view.zoom),
           (o *= paper.view.zoom)
       var a = paper.view.viewToProject(
@@ -8951,7 +8951,7 @@ $(document).ready(function () {
         )
       ),
         n = null
-      if (threedItems[draggingFurnitureId].useMask) {
+      if (threedItems[draggingThreedId].useMask) {
         var l = 51,
           i = 0
         if (
@@ -8982,10 +8982,10 @@ $(document).ready(function () {
             .removeOnDrag(),
             (a = n)
           var r = "rotate(" + i + "deg)"
-            ; (furnitureDragDiv.style.transform = r), (draggingFurnitureAngle = i)
+            ; (threedDragDiv.style.transform = r), (draggingThreedAngle = i)
         } else {
           var r = "rotate(0deg)"
-            ; (furnitureDragDiv.style.transform = r), (draggingFurnitureAngle = 0)
+            ; (threedDragDiv.style.transform = r), (draggingThreedAngle = 0)
         }
       }
       if (null === n) {
@@ -9013,20 +9013,20 @@ $(document).ready(function () {
               .removeOnMove()
               .removeOnDrag())
       }
-      if (threedItems[draggingFurnitureId].pivot) {
+      if (threedItems[draggingThreedId].pivot) {
         var d = a.add(
-          new paper.Point(threedItems[draggingFurnitureId].pivot).rotate(
-            draggingFurnitureAngle
+          new paper.Point(threedItems[draggingThreedId].pivot).rotate(
+            draggingThreedAngle
           )
         ),
           c = a,
           u = c.subtract(d)
         a = a.add(u)
       }
-      draggingFurnitureRectangle.position = a
+      draggingThreedRectangle.position = a
       var p = paper.view.projectToView(a)
-        ; (furnitureDragDiv.style.left = p.x + planView.offsetLeft - t / 2 + "px"),
-          (furnitureDragDiv.style.top = p.y + planView.offsetTop - o / 2 + "px")
+        ; (threedDragDiv.style.left = p.x + planView.offsetLeft - t / 2 + "px"),
+          (threedDragDiv.style.top = p.y + planView.offsetTop - o / 2 + "px")
     }
     if (draggingNewGuide) {
       var m = paper.view.viewToProject(
@@ -9050,7 +9050,7 @@ $(document).ready(function () {
         ? ((horizontalSliderLeftDragging = !1), !1)
         : horizontalSliderRightDragging
           ? ((horizontalSliderRightDragging = !1), !1)
-          : (draggingFurnitureId !== -1 && addFurniture(e),
+          : (draggingThreedId !== -1 && addThreed(e),
             void (draggingNewGuide && (draggingNewGuide = !1)))
   }),
   window.addEventListener("keydown", function (e) {
@@ -9085,7 +9085,7 @@ $(document).ready(function () {
         if ("catalogTextFilter" !== document.activeElement.id) {
           if (37 === e.keyCode) {
             if (selectedItem)
-              if ("furniture" === selectedItem.data.type) {
+              if ("threed" === selectedItem.data.type) {
                 var n = 1
                 t && (n = 10),
                   (toolsGroup.position.x -= n),
@@ -9139,7 +9139,7 @@ $(document).ready(function () {
               }
           } else if (38 === e.keyCode) {
             if (selectedItem)
-              if ("furniture" === selectedItem.data.type) {
+              if ("threed" === selectedItem.data.type) {
                 var n = 1
                 t && (n = 10),
                   (toolsGroup.position.y -= n),
@@ -9193,7 +9193,7 @@ $(document).ready(function () {
               }
           } else if (39 === e.keyCode) {
             if (selectedItem)
-              if ("furniture" === selectedItem.data.type) {
+              if ("threed" === selectedItem.data.type) {
                 var n = 1
                 t && (n = 10),
                   (toolsGroup.position.x += n),
@@ -9246,7 +9246,7 @@ $(document).ready(function () {
                   redrawFloor(selectedItem)
               }
           } else if (40 === e.keyCode && selectedItem)
-            if ("furniture" === selectedItem.data.type) {
+            if ("threed" === selectedItem.data.type) {
               var n = 1
               t && (n = 10),
                 (toolsGroup.position.y += n),

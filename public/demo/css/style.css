@@ -182,7 +182,7 @@ body {
     cursor: ns-resize;
 }
 
-#furnitureDragDiv {
+#threedDragDiv {
     position: absolute;
     top: 0px;
     left: 0px;
@@ -314,7 +314,7 @@ li.dropdown {
     display: block;
 }
 
-.furnitureItem {
+.threedItem {
     width: 88px;
     height: 88px;
     border: 1px solid #2a2a2a;
@@ -324,17 +324,17 @@ li.dropdown {
     text-align: center;
 }
 
-.furnitureItem:hover {
+.threedItem:hover {
     background-color: #787878;
     cursor: pointer;
 }
 
-.furnitureName {
+.threedName {
     font-size: 12px;
     color: #09090D;
 }
 
-.furnitureThumb {
+.threedThumb {
     height: 70px;
     pointer-events: none;
     margin-top: 8px;

@@ -2,7 +2,7 @@
   "threed": {
     "3": {
       "id": 3,
-      "fid": "kitchenIsland",
+      "name": "kitchenIsland",
       "position": {
         "x": 1342.731990099396,
         "y": 25.335348658089142,
@@ -28,7 +28,7 @@
     },
     "6": {
       "id": 6,
-      "fid": "quarterLandingStaircase",
+      "name": "quarterLandingStaircase",
       "position": {
         "x": 593.4102465187012,
         "y": 25,
@@ -54,7 +54,7 @@
     },
     "7": {
       "id": 7,
-      "fid": "frontDoor",
+      "name": "frontDoor",
       "position": {
         "x": 30,
         "y": 0.00001,
@@ -80,7 +80,7 @@
     },
     "26": {
       "id": 26,
-      "fid": "tree1WithLeaves",
+      "name": "tree1WithLeaves",
       "position": {
         "x": 2280.753521149918,
         "y": 0.00001,
@@ -106,7 +106,7 @@
     },
     "27": {
       "id": 27,
-      "fid": "birchTreeWithLeaves",
+      "name": "birchTreeWithLeaves",
       "position": {
         "x": -407.14072738111287,
         "y": 0.00001,
@@ -132,7 +132,7 @@
     },
     "28": {
       "id": 28,
-      "fid": "willowTreeNoLeaves",
+      "name": "willowTreeNoLeaves",
       "position": {
         "x": -20.668312618887086,
         "y": 0.00001,
@@ -158,7 +158,7 @@
     },
     "29": {
       "id": 29,
-      "fid": "saplingTree",
+      "name": "saplingTree",
       "position": {
         "x": 1802.8056226249414,
         "y": 0.00001,
@@ -184,7 +184,7 @@
     },
     "30": {
       "id": 30,
-      "fid": "fencePanel",
+      "name": "fencePanel",
       "position": {
         "x": 1755.9013297389697,
         "y": 0.00001,
@@ -210,7 +210,7 @@
     },
     "31": {
       "id": 31,
-      "fid": "fencePanel",
+      "name": "fencePanel",
       "position": {
         "x": 2060.9013297389697,
         "y": 0.00001,
@@ -236,7 +236,7 @@
     },
     "32": {
       "id": 32,
-      "fid": "fencePanel",
+      "name": "fencePanel",
       "position": {
         "x": 2360.90132973897,
         "y": 0.00001,
@@ -262,7 +262,7 @@
     },
     "33": {
       "id": 33,
-      "fid": "fencePanel",
+      "name": "fencePanel",
       "position": {
         "x": 2661.90132973897,
         "y": 0.00001,
@@ -288,7 +288,7 @@
     },
     "34": {
       "id": 34,
-      "fid": "fencePanel",
+      "name": "fencePanel",
       "position": {
         "x": 2964.2113297389697,
         "y": 0.00001,
@@ -314,7 +314,7 @@
     },
     "35": {
       "id": 35,
-      "fid": "fencePanel",
+      "name": "fencePanel",
       "position": {
         "x": 3266.14132973897,
         "y": 0.00001,
@@ -340,7 +340,7 @@
     },
     "36": {
       "id": 36,
-      "fid": "fencePanel",
+      "name": "fencePanel",
       "position": {
         "x": 1754.868228947476,
         "y": 0.00001,
@@ -366,7 +366,7 @@
     },
     "37": {
       "id": 37,
-      "fid": "fencePanel",
+      "name": "fencePanel",
       "position": {
         "x": 2055.4690475468033,
         "y": 0.00001,
@@ -392,7 +392,7 @@
     },
     "38": {
       "id": 38,
-      "fid": "fencePanel",
+      "name": "fencePanel",
       "position": {
         "x": 2355.6160816944785,
         "y": 0.00001,
@@ -418,7 +418,7 @@
     },
     "39": {
       "id": 39,
-      "fid": "fencePanel",
+      "name": "fencePanel",
       "position": {
         "x": 2951.3761777710565,
         "y": 0.00001,
@@ -444,7 +444,7 @@
     },
     "40": {
       "id": 40,
-      "fid": "saplingTree",
+      "name": "saplingTree",
       "position": {
         "x": -71.35550750751071,
         "y": 0.00001,
@@ -470,7 +470,7 @@
     },
     "41": {
       "id": 41,
-      "fid": "saplingTree",
+      "name": "saplingTree",
       "position": {
         "x": 402.0142164389972,
         "y": 0.00001,
@@ -496,7 +496,7 @@
     },
     "42": {
       "id": 42,
-      "fid": "willowTreeNoLeaves",
+      "name": "willowTreeNoLeaves",
       "position": {
         "x": 465.72027390731205,
         "y": 0.00001,
@@ -522,7 +522,7 @@
     },
     "43": {
       "id": 43,
-      "fid": "willowTreeNoLeaves",
+      "name": "willowTreeNoLeaves",
       "position": {
         "x": 1592.0947758338377,
         "y": 0.00001,
@@ -548,7 +548,7 @@
     },
     "44": {
       "id": 44,
-      "fid": "bifoldDoor",
+      "name": "bifoldDoor",
       "position": {
         "x": 1587.097246377039,
         "y": 17.20525002368202,
@@ -574,7 +574,7 @@
     },
     "50": {
       "id": 50,
-      "fid": "window2x3",
+      "name": "window2x3",
       "position": {
         "x": 1091.6945602245776,
         "y": 353.00516924047395,
@@ -600,7 +600,7 @@
     },
     "51": {
       "id": 51,
-      "fid": "window2x3",
+      "name": "window2x3",
       "position": {
         "x": 1091.3532512516201,
         "y": 353.00516924047395,
@@ -626,7 +626,7 @@
     },
     "52": {
       "id": 52,
-      "fid": "window2x3",
+      "name": "window2x3",
       "position": {
         "x": 1091.1871719480353,
         "y": 353.00516924047395,
@@ -652,7 +652,7 @@
     },
     "53": {
       "id": 53,
-      "fid": "doubleSmallWindow2x3PanesWithSill",
+      "name": "doubleSmallWindow2x3PanesWithSill",
       "position": {
         "x": 17,
         "y": 343.4207022249318,
@@ -678,7 +678,7 @@
     },
     "55": {
       "id": 55,
-      "fid": "doubleSmallWindow2x3PanesWithSill",
+      "name": "doubleSmallWindow2x3PanesWithSill",
       "position": {
         "x": 17,
         "y": 343.4207022249318,
@@ -704,7 +704,7 @@
     },
     "56": {
       "id": 56,
-      "fid": "doubleSmallWindow2x3PanesWithSill",
+      "name": "doubleSmallWindow2x3PanesWithSill",
       "position": {
         "x": 17,
         "y": 343.4207022249318,
@@ -730,7 +730,7 @@
     },
     "58": {
       "id": 58,
-      "fid": "coffeeTable3",
+      "name": "coffeeTable3",
       "position": {
         "x": 1395.8962892033835,
         "y": 25.1,
@@ -756,7 +756,7 @@
     },
     "59": {
       "id": 59,
-      "fid": "largeCouch",
+      "name": "largeCouch",
       "position": {
         "x": 295.18860281762784,
         "y": 25.1,
@@ -782,7 +782,7 @@
     },
     "61": {
       "id": 61,
-      "fid": "laptop",
+      "name": "laptop",
       "position": {
         "x": 1340.5349411963402,
         "y": 109.52512353212009,
@@ -808,7 +808,7 @@
     },
     "62": {
       "id": 62,
-      "fid": "ballonFoot",
+      "name": "ballonFoot",
       "position": {
         "x": 748.868870392403,
         "y": 25.1,
@@ -834,7 +834,7 @@
     },
     "63": {
       "id": 63,
-      "fid": "rug",
+      "name": "rug",
       "position": {
         "x": 968.6759659570102,
         "y": 25.1,
@@ -860,7 +860,7 @@
     },
     "64": {
       "id": 64,
-      "fid": "skyLight",
+      "name": "skyLight",
       "position": {
         "x": 1340,
         "y": 260,
@@ -886,7 +886,7 @@
     },
     "65": {
       "id": 65,
-      "fid": "skyLight",
+      "name": "skyLight",
       "position": {
         "x": 1341.1565125842817,
         "y": 260,
@@ -912,7 +912,7 @@
     },
     "66": {
       "id": 66,
-      "fid": "fencePanel",
+      "name": "fencePanel",
       "position": {
         "x": 2653.1917640674524,
         "y": 0.00001,
@@ -938,7 +938,7 @@
     },
     "68": {
       "id": 68,
-      "fid": "internalDoorOpen",
+      "name": "internalDoorOpen",
       "position": {
         "x": 660.9608910598895,
         "y": 25.1,
@@ -964,7 +964,7 @@
     },
     "70": {
       "id": 70,
-      "fid": "internalDoorOpen",
+      "name": "internalDoorOpen",
       "position": {
         "x": 532.7256970091831,
         "y": 290.1,
@@ -990,7 +990,7 @@
     },
     "71": {
       "id": 71,
-      "fid": "internalDoorOpen",
+      "name": "internalDoorOpen",
       "position": {
         "x": 657.9616499018676,
         "y": 290.1,
@@ -1016,7 +1016,7 @@
     },
     "73": {
       "id": 73,
-      "fid": "internalDoorOpen",
+      "name": "internalDoorOpen",
       "position": {
         "x": 365,
         "y": 290.1,
@@ -1042,7 +1042,7 @@
     },
     "74": {
       "id": 74,
-      "fid": "window2x3",
+      "name": "window2x3",
       "position": {
         "x": 1091.8912534042975,
         "y": 353.00516924047395,
@@ -1068,7 +1068,7 @@
     },
     "75": {
       "id": 75,
-      "fid": "window2x3",
+      "name": "window2x3",
       "position": {
         "x": 1092.035908531797,
         "y": 353.00516924047395,
@@ -1094,7 +1094,7 @@
     },
     "85": {
       "id": 85,
-      "fid": "window2x3",
+      "name": "window2x3",
       "position": {
         "x": 64.58795,
         "y": 125,
@@ -1120,7 +1120,7 @@
     },
     "86": {
       "id": 86,
-      "fid": "window2x3",
+      "name": "window2x3",
       "position": {
         "x": 64.58795,
         "y": 125,
@@ -1146,7 +1146,7 @@
     },
     "87": {
       "id": 87,
-      "fid": "window2x3",
+      "name": "window2x3",
       "position": {
         "x": 64.58795,
         "y": 125,
@@ -1172,7 +1172,7 @@
     },
     "88": {
       "id": 88,
-      "fid": "window2x3",
+      "name": "window2x3",
       "position": {
         "x": 87.02704276310502,
         "y": 125,
@@ -1198,7 +1198,7 @@
     },
     "89": {
       "id": 89,
-      "fid": "window2x3",
+      "name": "window2x3",
       "position": {
         "x": 87.417215,
         "y": 125,
@@ -1224,7 +1224,7 @@
     },
     "91": {
       "id": 91,
-      "fid": "internalDoorOpen",
+      "name": "internalDoorOpen",
       "position": {
         "x": 756,
         "y": 25.1,
@@ -1250,7 +1250,7 @@
     },
     "92": {
       "id": 92,
-      "fid": "internalDoorOpen",
+      "name": "internalDoorOpen",
       "position": {
         "x": 799,
         "y": 290.1,
@@ -1276,7 +1276,7 @@
     },
     "93": {
       "id": 93,
-      "fid": "saplingTree",
+      "name": "saplingTree",
       "position": {
         "x": 1045.1705572486608,
         "y": 0.00001,
@@ -1302,7 +1302,7 @@
     },
     "94": {
       "id": 94,
-      "fid": "tree1WithLeaves",
+      "name": "tree1WithLeaves",
       "position": {
         "x": -319.29770317911886,
         "y": 0.00001,
@@ -1328,7 +1328,7 @@
     },
     "95": {
       "id": 95,
-      "fid": "birchTreeWithLeaves",
+      "name": "birchTreeWithLeaves",
       "position": {
         "x": 874.1594898169977,
         "y": 0.00001,
@@ -1354,7 +1354,7 @@
     },
     "96": {
       "id": 96,
-      "fid": "rubix2",
+      "name": "rubix2",
       "position": {
         "x": 2882,
         "y": 25.1,
