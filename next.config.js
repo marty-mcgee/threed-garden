@@ -1,3 +1,26 @@
+// =================================================================
+// ** Required Variables from .env
+
+if (!process.env) {
+  // throw new Error(`
+  console.log(`
+    Please create a .env local file.
+  `)
+} else {
+  console.log("process.env=", process.env)
+}
+if (!process.env?.THREED_WP_GRAPHQL_API_URL) {
+  // throw new Error(`
+  console.log(`
+    Please provide a valid WordPress instance URL.
+    Add to your environment variables THREED_WP_GRAPHQL_API_URL.
+  `)
+} else {
+  console.log("process.env.THREED_WP_GRAPHQL_API_URL=", process.env.THREED_WP_GRAPHQL_API_URL)
+}
+
+// =================================================================
+
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
@@ -6,6 +29,11 @@ const runtimeCaching = require('next-pwa/cache')
 
 // const path = require('path')
 
+// =================================================================
+
+/**
+ * @type {import("next").NextConfig}
+ */
 const nextConfig = {
 
   // use SWC minify instead of Terser (7x faster)

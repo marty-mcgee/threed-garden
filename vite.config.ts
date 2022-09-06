@@ -24,40 +24,47 @@ const middleware = () => {
   }
 }
 
-// https://vitejs.dev/config/
-/** @type { import('vite').UserConfig } */
+/** 
+ * @type { import('vite').UserConfig } 
+ * https://vitejs.dev/config/
+ */
 export default defineConfig({
 
   root: process.cwd(), // 'src' | 'demo' | default is process.cwd()
 
+  // vite
   server: {
-    host: 'localhost',
-    open: 'localhost:4444/',
+    // host: 'localhost',
+    // open: 'localhost:4444/',
     port: 4444,
     strictPort: true,
     hmr: {
-      port: 443 // Run the websocket server on the SSL port
+      // port: 443 // Run the websocket server on the SSL port
     },
     fs: {
       strict: true,
       // Allow serving files from one level up to the project root
-      allow: ['..']
+      // allow: ['..']
     },
   },
 
+  // vite:preview
   preview: {
     // host: 'localhost',
     // open: '/demo',
-    open: 'localhost:4446/',
-    port: 4446,
+    // open: 'localhost:4488/',
+    port: 4488,
     // strictPort: true
   },
 
-  // include these assets
+  // .env variable prefix
+  envPrefix: 'THREED_',
+
+  // always include these public assets
   publicDir: 'public',
 
   assetsInclude: [
-    // '**/*.html', // not needed/working
+    // '**/*.html', // not needed/already working
     '**/*.gltf'
   ],
 
@@ -65,6 +72,9 @@ export default defineConfig({
     // output dir for production build | dist
     outDir: 'dist',
     emptyOutDir: true,
+
+    // server side rendering ??
+    // ssr: true,
 
     // emit manifest so PHP can find the hashed files
     manifest: true,
@@ -77,12 +87,11 @@ export default defineConfig({
     // },
 
     // ignored when using output.assetFileNames
-    //assetsDir: './assets/', 
+    // assetsDir: './assets/', 
 
     cssCodeSplit: false,
     minify: false,
 
-    //ssr: true,
     rollupOptions: {
 
       // plugins: [inject({ Buffer: ['buffer', 'Buffer'] })],
@@ -101,7 +110,7 @@ export default defineConfig({
 
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      //external: ['vue', 'jquery'],
+      // external: ['vue', 'jquery'],
 
       output: {
         //format: 'cjs', // ('es' | 'cjs' | 'umd' | 'iife')
@@ -118,13 +127,14 @@ export default defineConfig({
       }
 
     },
+
     commonjsOptions: {
       transformMixedEsModules: true,
     },
   },
 
   plugins: [
-    middleware(),
+    // middleware(),
     react(),
     vue(),
   ],
