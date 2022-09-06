@@ -9,18 +9,18 @@ using the React/NextJS framework, along with Vue/NuxtJS 3 integration.
 ThreeD Garden connects to a real-life FarmBot Genesis XL 1.6 robotic gardening system
 via the FarmBot JS<TS> APIs. Let's get growing!!
 
-"A Real Garden + Homestead Management Solution, using Virtual Interfaces"
+>> "A Real Garden + Homestead Management Solution, using Virtual Interfaces"
 
 Contributors: marty-mcgee, companyjuice, garden.university
 
-@threed/DEMO: https://garden.university/scene/mcgee-home-garden
+Future Landing Pages: workin on it..
+* threed/DEMO: https://garden.university/scene/mcgee-home-garden
+* threed/GARDEN: https://garden.university/scene/mcgee-home-garden/#/participate
 
-@threed/GARDEN: https://garden.university/scene/mcgee-home-garden/#/participate
-
-## For Developers
+# For Developers
 1. install: `pnpm i`
 2. run: `pnpm dev`
 3. (ready for deployment?) build: `pnpm build`
 
 ## Documentation
-working on it.. in vitepress (or nuxtpress, or nextpress, or whateverpress)
+workin on it.. in vitepress (or nuxtpress, or nextpress, or whateverpress)
