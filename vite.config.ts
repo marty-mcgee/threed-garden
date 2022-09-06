@@ -1,11 +1,38 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import vue from '@vitejs/plugin-vue'
-import path from "path"
+import path from 'path'
+
+// custom middleware
+const middleware = () => {
+  return {
+    name: 'middleware',
+    apply: 'serve',
+    configureServer(viteDevServer) {
+      return () => {
+        viteDevServer.middlewares.use(async (req, res, next) => {
+          // if (!req.originalUrl.endsWith('.html') && req.originalUrl !== '/') {
+          //     req.url = `/templates/` + req.originalUrl + '.html'
+          // } else if (req.url === '/index.html') {
+          //     req.url = `/templates/` + req.url
+          // }
+
+          next()
+        });
+      }
+    }
+  }
+}
 
 // https://vitejs.dev/config/
+/** @type { import('vite').UserConfig } */
 export default defineConfig({
+
+  root: process.cwd(), // 'src' | 'demo' | default is process.cwd()
+
   server: {
+    host: 'localhost',
+    open: 'localhost:4444/',
     port: 4444,
     strictPort: true,
     hmr: {
@@ -13,14 +40,30 @@ export default defineConfig({
     },
     fs: {
       strict: true,
+      // Allow serving files from one level up to the project root
+      allow: ['..']
     },
   },
 
+  preview: {
+    // host: 'localhost',
+    // open: '/demo',
+    open: 'localhost:4446/',
+    port: 4446,
+    // strictPort: true
+  },
+
+  // include these assets
   publicDir: 'public',
+
+  assetsInclude: [
+    // '**/*.html', // not needed/working
+    '**/*.gltf'
+  ],
 
   build: {
     // output dir for production build | dist
-    outDir: "dist",
+    outDir: 'dist',
     emptyOutDir: true,
 
     // emit manifest so PHP can find the hashed files
@@ -81,14 +124,22 @@ export default defineConfig({
   },
 
   plugins: [
+    middleware(),
     react(),
     vue(),
   ],
+
+  // auto-inject react ?? not needed
+  // esbuild: {
+  //   jsxInject: `import React from 'react'`
+  // },
 
   resolve: {
     alias: {
       '~': path.resolve(__dirname, 'src'),
       '@': path.resolve(__dirname, 'src'),
+      // '/demo': path.resolve(__dirname, 'public/demo/index.html') // process.cwd()
     },
   }
+
 })

@@ -21,10 +21,10 @@
   "workspaces": {
     "packages": [
       "packages/_sandbox",
-      "packages/nuxt-garden",
-      "packages/react-garden",
       "packages/open-juice",
+      "packages/react-garden",
       "packages/vite-garden",
+      "packages/vue-garden",
       "packages/wordpress-plugin"
     ]
   },
@@ -52,12 +52,12 @@
     "react-garden:build":   "yarn workspace react-garden build",
     "react-garden:test":    "yarn workspace react-garden test",
     "react-garden:jest":    "yarn workspace react-garden jest",
-    "nuxt-garden:mm":       "yarn workspace nuxt-garden mm",
-    "nuxt-garden:tsc":      "yarn workspace nuxt-garden tsc",
-    "nuxt-garden:dev":      "yarn workspace nuxt-garden dev",
-    "nuxt-garden:build":    "yarn workspace nuxt-garden build",
-    "nuxt-garden:test":     "yarn workspace nuxt-garden test",
-    "nuxt-garden:jest":     "yarn workspace nuxt-garden jest",
+    "vue-garden:mm":       "yarn workspace vue-garden mm",
+    "vue-garden:tsc":      "yarn workspace vue-garden tsc",
+    "vue-garden:dev":      "yarn workspace vue-garden dev",
+    "vue-garden:build":    "yarn workspace vue-garden build",
+    "vue-garden:test":     "yarn workspace vue-garden test",
+    "vue-garden:jest":     "yarn workspace vue-garden jest",
     "vite-garden:mm":       "yarn workspace vite-garden mm",
     "vite-garden:build":    "yarn workspace vite-garden build",
     "vite-garden:dev":      "yarn workspace vite-garden dev",
@@ -65,9 +65,12 @@
     "______________X": "___ ___________________________________________________"
   },
   "devDependencies": {
+    "@types/dat.gui": "^0.7.7",
     "@types/node": "^18.7.15",
+    "@types/express": "^4.17.13",
     "@types/react": "^18.0.18",
     "@types/react-dom": "^18.0.6",
+    "@types/three": "^0.144.0",
     "@vitejs/plugin-react": "^2.0.1",
     "@vitejs/plugin-vue": "^3.0.3",
     "jest": "^29.0.2",
