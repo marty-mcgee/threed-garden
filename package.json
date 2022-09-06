@@ -30,12 +30,11 @@
   },
   "scripts": {
     "______________0": "___ custom scripts _____________________________________",
-    "mm":                   "vite",
-    "mm:vite":              "vite --port 4444",
-    "mm:dev":               "vite --port 4445",
+    "mm":                   "next",
+    "mm:dev":               "vite --port 3000",
     "mm:build":             "tsc && vite build",
     "mm:build:vue":         "vue-tsc --noEmit && vite build",
-    "mm:preview":           "vite preview --port 4446",
+    "mm:preview":           "vite preview",
     "mm:start":             "node index.js",
     "mm:install":           "npm install --no-optional",
     "mm:install:npm":       "npm install",
@@ -64,7 +63,29 @@
     "vite-garden:preview":  "yarn workspace vite-garden preview",
     "______________X": "___ ___________________________________________________"
   },
+  "dependencies": {
+    "@react-three/fiber": "^8.7.0",
+    "@react-three/drei": "^9.28.2",
+    "apollo-server": "^3.10.2",
+    "graphql": "^16.6.0",
+    "graphql-tag": "^2.12.6",
+    "next": "^12.2.5",
+    "next-pwa": "^5.6.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "three": "^0.144.0",
+    "vue": "^3.2.38",
+    "webgl": "^0.0.7",
+    "zustand": "^4.1.1"
+  },
+  "optionalDependencies": {
+    "glslify": "^7.1.1",
+    "glslify-loader": "^2.0.0",
+    "three-stdlib": "^2.12.1"
+  },
   "devDependencies": {
+    "@babel/core": "@>=7.0.0 <8.0.0",
+    "@next/bundle-analyzer": "^12.2.5",
     "@types/dat.gui": "^0.7.7",
     "@types/node": "^18.7.15",
     "@types/express": "^4.17.13",
@@ -79,22 +100,12 @@
     "typescript": "^4.8.2",
     "vite": "^3.0.9",
     "vue-tsc": "^0.40.7",
+    "webpack": "@>=5.9.0 <6.0.0",
     "yarn": "^1.22.19"
   },
-  "dependencies": {
-    "@react-three/fiber": "^8.7.0",
-    "apollo-server": "^3.10.2",
-    "graphql": "^16.6.0",
-    "graphql-tag": "^2.12.6",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "three": "^0.144.0",
-    "vue": "^3.2.38",
-    "webgl": "^0.0.7"
-  },
   "engines" : { 
-    "npm" : ">=7.0.0",
-    "node" : ">=16.0.0"
+    "npm": ">=7.0.0",
+    "node": ">=16.0.0"
   },
   "keywords": [
     "javascript",
