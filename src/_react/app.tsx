@@ -16,7 +16,7 @@ const App = () => {
   return (
     <div className='App'>
       <div style={{textAlign: 'center', marginBottom: '2rem'}}>
-        <a href='/demo' title='Three D Garden Demo'>
+        <a href='/demo/' title='Three D Garden'>
           <img src={threedgardenLogo} alt='ThreeD Garden logo' width='200' height='200' />
         </a>
         <h1>ThreeD Garden</h1>
