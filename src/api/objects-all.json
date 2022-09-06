@@ -1,13 +1,4 @@
 {
-  "houseWater": {
-    "license": "CC BY 3.0",
-    "author": "Sean Bradley",
-    "size": {
-      "x": 30.49,
-      "y": 40.94,
-      "z": 30.49
-    }
-  },
   "lamp": {
     "license": "CC BY 3.0",
     "author": "bulgakov",
