@@ -316,7 +316,7 @@ function showModel3dView() {
                             ).value = r)
                         }
                       }),
-                        s.open("GET", objectsURL + "objects/" + e + "/" + e + ".obj", !0),
+                        s.open("GET", objectsURL + "objects/" + e + ".obj", !0),
                         s.send()
                   } catch (e) {
                     console.dir(e)
@@ -1101,7 +1101,9 @@ function savePlan() {
   try {
     createThumbForHistory()
     var e = document.createElement("a")
-      ; (e.download = "ThreeDHomeGarden.dat"),
+    var _ts = new Date(Date.now()).toISOString()
+    _ts = _ts.replaceAll(':', '-').replaceAll(' ', '-')
+      ; (e.download = "threed-plan-" + _ts + ".threed"),
         (e.innerHTML = "Download File"),
         (e.href = window.URL.createObjectURL(
           new Blob([JSON.stringify(plan)], { type: "text/plain" })
@@ -1420,6 +1422,7 @@ function setNewPlan() {
   }
 }
 function drawPlan(e) {
+  console.log("[MM] plan === e", e);
   setInterfacePropertiesFromPlan(e),
     e.levels
       ? ((plan.levels = e.levels),
@@ -2169,14 +2172,14 @@ function beginDrag(e, t) {
       )
     )
       ; (draggingFurnitureRectangle.position = o),
-        furnitureItems[t].scale && furnitureItems[t].scale.x
+        threedItems[t].scale && threedItems[t].scale.x
           ? (draggingFurnitureRectangle.bounds.width =
-            furnitureItems[t].size.x * furnitureItems[t].scale.x)
-          : (draggingFurnitureRectangle.bounds.width = furnitureItems[t].size.x),
-        furnitureItems[t].scale && furnitureItems[t].scale.z
+            threedItems[t].size.x * threedItems[t].scale.x)
+          : (draggingFurnitureRectangle.bounds.width = threedItems[t].size.x),
+        threedItems[t].scale && threedItems[t].scale.z
           ? (draggingFurnitureRectangle.bounds.height =
-            furnitureItems[t].size.z * furnitureItems[t].scale.z)
-          : (draggingFurnitureRectangle.bounds.height = furnitureItems[t].size.z),
+            threedItems[t].size.z * threedItems[t].scale.z)
+          : (draggingFurnitureRectangle.bounds.height = threedItems[t].size.z),
         (draggingFurnitureRectangle.visible = !1),
         (furnitureDragDiv.style.background = "url('" + objectsURL + "objects/" + t + "_top.png')"),
         (furnitureDragDiv.style.backgroundRepeat = "no-repeat")
@@ -2339,7 +2342,7 @@ function initFurniture(e) {
                                 (m.data.fid = t),
                                 (m.data.boxHelper = c),
                                 (m.data.level = project.activeLayer.data.id),
-                                furnitureItems[t].useMask)
+                                threedItems[t].useMask)
                             ) {
                               m.useMask = !0
                               var n = new THREE.Mesh(
@@ -2434,7 +2437,7 @@ function initFurniture(e) {
     })
 }
 function loadFurniture(e, t, o) {
-  if (furnitureItems[e.fid])
+  if (threedItems[e.fid])
     if (
       (e.id > clickableObjectsCounter && (clickableObjectsCounter = e.id),
         "planView" != UILayout)
@@ -2572,7 +2575,7 @@ function loadFurniture(e, t, o) {
                                   (l = new THREE.Box3().setFromObject(a))
                                 var o = l.max.x - l.min.x,
                                   n = l.max.z - l.min.z
-                                if (furnitureItems[e.fid].useMask) {
+                                if (threedItems[e.fid].useMask) {
                                   p.useMask = !0
                                   var i = new THREE.Mesh(
                                     u,
@@ -4460,8 +4463,8 @@ function initPlanView() {
                       .removeOnMove()
                       .removeOnDrag())
               }
-              if (furnitureItems[selectedItem.data.fid].pivot) {
-                var s = furnitureItems[selectedItem.data.fid].pivot
+              if (threedItems[selectedItem.data.fid].pivot) {
+                var s = threedItems[selectedItem.data.fid].pivot
                 if (1 === selectedItem.data.flipZ) {
                   var d = snapPoint.add(new paper.Point(s).rotate(n)),
                     c = snapPoint,
@@ -7431,36 +7434,36 @@ function showFurnitureLicenseSummary(e) {
   modalModel3dFurnitureId = e
   var t = camelCaseToSentence(e)
   document.getElementById("model3dName").innerText = t
-  var o = furnitureItems[e].author
+  var o = threedItems[e].author
   document.getElementById("model3dAuthor").innerText = o
   var a = ""
-  switch (furnitureItems[e].license) {
+  switch (threedItems[e].license) {
     case "Free Art License 1.3":
       a =
         "<a href='http://artlibre.org/licence/lal/en/' target='_blank' rel='noreferrer'>" +
-        furnitureItems[e].license +
+        threedItems[e].license +
         "</a>"
       break
     case "CC-0":
       a =
         "<a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noreferrer'>" +
-        furnitureItems[e].license +
+        threedItems[e].license +
         "</a>"
       break
     case "CC BY 3.0":
       a =
         "<a href='https://creativecommons.org/licenses/by/3.0/' target='_blank' rel='noreferrer'>" +
-        furnitureItems[e].license +
+        threedItems[e].license +
         "</a>"
       break
     case "CC BY 4.0":
       a =
         "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
-        furnitureItems[e].license +
+        threedItems[e].license +
         "</a>"
       break
     default:
-      a = furnitureItems[e].license
+      a = threedItems[e].license
   }
   ; (document.getElementById("model3dLicense").innerHTML = a),
     (document.getElementById("model3dLargeThumb").src =
@@ -7470,36 +7473,36 @@ function showFurnitureLicenseSummary(e) {
 function setModalModelDescription(e) {
   var t = camelCaseToSentence(e)
   document.getElementById("model3dNameModal").innerText = t
-  var o = furnitureItems[e].author
+  var o = threedItems[e].author
   document.getElementById("model3dAuthorModal").innerText = o
   var a = ""
-  switch (furnitureItems[e].license) {
+  switch (threedItems[e].license) {
     case "Free Art License 1.3":
       a =
         "<a href='http://artlibre.org/licence/lal/en/' target='_blank' rel='noreferrer'>" +
-        furnitureItems[e].license +
+        threedItems[e].license +
         "</a>"
       break
     case "CC-0":
       a =
         "<a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noreferrer'>" +
-        furnitureItems[e].license +
+        threedItems[e].license +
         "</a>"
       break
     case "CC BY 3.0":
       a =
         "<a href='https://creativecommons.org/licenses/by/3.0/' target='_blank' rel='noreferrer'>" +
-        furnitureItems[e].license +
+        threedItems[e].license +
         "</a>"
       break
     case "CC BY 4.0":
       a =
         "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
-        furnitureItems[e].license +
+        threedItems[e].license +
         "</a>"
       break
     default:
-      a = furnitureItems[e].license
+      a = threedItems[e].license
   }
   document.getElementById("model3dLicenseModal").innerHTML = a
 }
@@ -7533,7 +7536,7 @@ function loadExamplePlan() {
       (document.getElementById("modalLoadingDataInfo").innerHTML =
         loadingProgressTxt),
       $.ajax({
-        url: "plans/examplePlanMM1.dat",
+        url: "plans/threed-plan-example-001.threed",
         type: "GET",
         contentType: "application/json",
         success: function (e) {
@@ -8405,7 +8408,7 @@ var mouseMode = 0,
   lastNewWallSegmentClick = Date.now(),
   lastNewRoofSegmentClick = Date.now(),
   lastNewFloorSegmentClick = Date.now(),
-  furnitureItems = {},
+  threedItems = {},
   canvas3d,
   camera,
   renderer,
@@ -8621,14 +8624,14 @@ $(document).ready(function () {
         (document.getElementById("catalogView").style.top = "54px"),
         (document.getElementById("catalogView").style.left = "0px"),
         (document.getElementById("catalogView").style.width = "316px"),
-        (document.getElementById("catalogView").style.height = "605px"),
+        (document.getElementById("catalogView").style.height = "832px"),
         (document.getElementById("catalogView").style.display = "block"),
         (document.getElementById("verticalSlider").style.top = "54px"),
         (document.getElementById("verticalSlider").style.bottom = "0px"),
         (document.getElementById("verticalSlider").style.left = "316px"),
         (document.getElementById("verticalSlider").style.width = "4px"),
         (document.getElementById("verticalSlider").style.display = "block"),
-        (document.getElementById("horizontalSliderLeft").style.top = "659px"),
+        (document.getElementById("horizontalSliderLeft").style.top = "879px"),
         (document.getElementById("horizontalSliderLeft").style.left = "0px"),
         (document.getElementById("horizontalSliderLeft").style.width = "316px"),
         (document.getElementById("horizontalSliderLeft").style.height = "4px"),
@@ -8653,7 +8656,7 @@ $(document).ready(function () {
         (document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"),
         (document.getElementById("fullscreen3dViewBtn").style.display =
           "block"),
-        (document.getElementById("propertiesView").style.top = "660px"),
+        (document.getElementById("propertiesView").style.top = "880px"),
         (document.getElementById("propertiesView").style.left = "0px"),
         (document.getElementById("propertiesView").style.width = "306px"),
         (document.getElementById("propertiesView").style.bottom = "0px"),
@@ -8691,10 +8694,10 @@ $(document).ready(function () {
       type: "GET",
       contentType: "application/json",
       success: function (e) {
-        if (((furnitureItems = e), "default" === UILayout)) {
+        if (((threedItems = e), "default" === UILayout)) {
           var t = 0
-          Object.keys(furnitureItems)
-            .sort()
+          Object.keys(threedItems)
+            // .sort()
             .forEach(function (e) {
               var o = camelCaseToSentence(e)
               $("#catalogItems").append(
@@ -8703,7 +8706,7 @@ $(document).ready(function () {
                 "' class='furnitureItem disableSelection' onmousedown='beginDrag(event, \"" +
                 e +
                 "\");'><img " +
-                (t < 18
+                (t < 32
                   ? "src='" + objectsURL + "objects/" + e + ".png'"
                   : "src='media/thumbPlaceHolder.png'") +
                 " realsrc='" + objectsURL + "objects/" +
@@ -8719,7 +8722,7 @@ $(document).ready(function () {
         }
         if (
           ($.ajax({
-            url: "plans/examplePlanMM1.dat",
+            url: "plans/threed-plan-example-001.threed",
             type: "GET",
             contentType: "application/json",
             success: function (e) {
@@ -8877,12 +8880,12 @@ $(document).ready(function () {
     (document.getElementById("catalogTextFilter").oninput = function (e) {
       var t = this.value.toLowerCase()
       t.length > 0
-        ? Object.keys(furnitureItems).forEach(function (e) {
+        ? Object.keys(threedItems).forEach(function (e) {
           e.toLowerCase().indexOf(t) > -1
             ? (document.getElementById(e).style.display = "block")
             : (document.getElementById(e).style.display = "none")
         })
-        : Object.keys(furnitureItems).forEach(function (e) {
+        : Object.keys(threedItems).forEach(function (e) {
           document.getElementById(e).style.display = "block"
         }),
         loadInViewThumbs()
@@ -8948,7 +8951,7 @@ $(document).ready(function () {
         )
       ),
         n = null
-      if (furnitureItems[draggingFurnitureId].useMask) {
+      if (threedItems[draggingFurnitureId].useMask) {
         var l = 51,
           i = 0
         if (
@@ -9010,9 +9013,9 @@ $(document).ready(function () {
               .removeOnMove()
               .removeOnDrag())
       }
-      if (furnitureItems[draggingFurnitureId].pivot) {
+      if (threedItems[draggingFurnitureId].pivot) {
         var d = a.add(
-          new paper.Point(furnitureItems[draggingFurnitureId].pivot).rotate(
+          new paper.Point(threedItems[draggingFurnitureId].pivot).rotate(
             draggingFurnitureAngle
           )
         ),

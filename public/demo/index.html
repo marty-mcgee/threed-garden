@@ -38,7 +38,6 @@
 
   <script type="text/javascript" src="scripts/jquery-1.11.3.min.js"></script>
   <script type="text/javascript" src="scripts/paper-full.js?a=1"></script>
-  <script type="text/javascript" src="scripts/threed.min.js"></script>
   <script type="text/javascript" src="scripts/three.min.js"></script>
   <script type="text/javascript" src="scripts/trackballcontrols.js"></script>
   <script type="text/javascript" src="scripts/tween.js"></script>
@@ -62,6 +61,7 @@
     var readOnly = false
     var UILayout = "default"
   </script>
+  <script type="text/javascript" src="scripts/threed.js"></script>
 
 </head>
 
@@ -362,7 +362,7 @@
       <table class="propertiesTable" style="min-width: 290px;">
         <tr>
           <td colspan="2" style="text-align: center;">
-            <div onmousedown="beginDrag(event, modalModel3dFurnitureId);" class="disableSelection"><img
+            <div onmousedown="beginDrag(event, modalModel3dThreedId);" class="disableSelection"><img
                 id="model3dLargeThumb" class="disableSelection" style="pointer-events: none;" /></div>
           </td>
         </tr>
@@ -387,7 +387,7 @@
       </table>
     </div>
     <div id="furniturePropertiesView" style="display: none;">
-      <h3>Furniture Properties</h3>
+      <h3>Threed Properties</h3>
       <table class="propertiesTable" style="min-width: 290px;">
         <tr>
           <td width="70">Id</td>
@@ -401,7 +401,7 @@
           <td>X</td>
           <td><input type="text" id="furnitureXProp"
               style="width: 80px; border: 1px solid #2a2a2a; font-size: 14px; color: white; font-family: 'Courier New', Courier, monospace;"
-              class="editable" onChange="validatePlusOrMinusNumber(this, updateFurniturePosX);"
+              class="editable" onChange="validatePlusOrMinusNumber(this, updateThreedPosX);"
               maxlength="8" />
             cm</td>
         </tr>
@@ -409,7 +409,7 @@
           <td>Z</td>
           <td><input type="text" id="furnitureZProp"
               style="width: 80px; border: 1px solid #2a2a2a;font-size: 14px; color: white; font-family: 'Courier New', Courier, monospace;"
-              class="editable" onChange="validatePlusOrMinusNumber(this, updateFurniturePosZ);"
+              class="editable" onChange="validatePlusOrMinusNumber(this, updateThreedPosZ);"
               maxlength="8" />
             cm</td>
         </tr>
@@ -417,7 +417,7 @@
           <td>Y</td>
           <td><input type="text" id="furnitureYProp"
               style="width: 80px; border: 1px solid #2a2a2a;font-size: 14px; color: white; font-family: 'Courier New', Courier, monospace;"
-              class="editable" onChange="validatePlusOrMinusNumber(this, updateFurniturePosY);"
+              class="editable" onChange="validatePlusOrMinusNumber(this, updateThreedPosY);"
               maxlength="8" />
             cm</td>
         </tr>
@@ -426,7 +426,7 @@
           <td>
             <input type="text" id="furnitureWidthProp"
               style="width:80px; border: 1px solid #2a2a2a;font-size: 14px; color: white; font-family: 'Courier New', Courier, monospace;"
-              class="editable" onChange="validatePlusNumber(this, updateFurnitureWidth);" maxlength="8" />
+              class="editable" onChange="validatePlusNumber(this, updateThreedWidth);" maxlength="8" />
             cm
             <input type="checkbox" id="flipX" onchange="flipX(this.checked)">Flip X
           </td>
@@ -436,7 +436,7 @@
           <td>
             <input type="text" id="furnitureDepthProp"
               style="width:80px; border: 1px solid #2a2a2a;font-size: 14px; color: white; font-family: 'Courier New', Courier, monospace;"
-              class="editable" onChange="validatePlusNumber(this, updateFurnitureDepth);" maxlength="8" />
+              class="editable" onChange="validatePlusNumber(this, updateThreedDepth);" maxlength="8" />
             cm
             <input type="checkbox" id="flipZ" onchange="flipZ(this.checked)">Flip Z
           </td>
@@ -445,7 +445,7 @@
           <td>Height</td>
           <td><input type="text" id="furnitureHeightProp"
               style="width:80px; border: 1px solid #2a2a2a;font-size: 14px; color: white; font-family: 'Courier New', Courier, monospace;"
-              class="editable" onChange="validatePlusOrMinusNumber(this, updateFurnitureHeight);"
+              class="editable" onChange="validatePlusOrMinusNumber(this, updateThreedHeight);"
               maxlength="8" /> cm</td>
         </tr>
         <tr>
