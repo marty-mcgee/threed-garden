@@ -357,7 +357,7 @@
   </div>
 
   <div id="propertiesView" style="padding-left: 10px;">
-    <div id="furniture3DModelPropertiesView" style="display: none">
+    <div id="threed3DModelPropertiesView" style="display: none">
       <h3>3d Model Properties</h3>
       <table class="propertiesTable" style="min-width: 290px;">
         <tr>
@@ -386,7 +386,7 @@
         </tr>
       </table>
     </div>
-    <div id="furniturePropertiesView" style="display: none;">
+    <div id="threedPropertiesView" style="display: none;">
       <h3>Threed Properties</h3>
       <table class="propertiesTable" style="min-width: 290px;">
         <tr>
@@ -399,7 +399,7 @@
         </tr>
         <tr>
           <td>X</td>
-          <td><input type="text" id="furnitureXProp"
+          <td><input type="text" id="threedXProp"
               style="width: 80px; border: 1px solid #2a2a2a; font-size: 14px; color: white; font-family: 'Courier New', Courier, monospace;"
               class="editable" onChange="validatePlusOrMinusNumber(this, updateThreedPosX);"
               maxlength="8" />
@@ -407,7 +407,7 @@
         </tr>
         <tr>
           <td>Z</td>
-          <td><input type="text" id="furnitureZProp"
+          <td><input type="text" id="threedZProp"
               style="width: 80px; border: 1px solid #2a2a2a;font-size: 14px; color: white; font-family: 'Courier New', Courier, monospace;"
               class="editable" onChange="validatePlusOrMinusNumber(this, updateThreedPosZ);"
               maxlength="8" />
@@ -415,7 +415,7 @@
         </tr>
         <tr>
           <td>Y</td>
-          <td><input type="text" id="furnitureYProp"
+          <td><input type="text" id="threedYProp"
               style="width: 80px; border: 1px solid #2a2a2a;font-size: 14px; color: white; font-family: 'Courier New', Courier, monospace;"
               class="editable" onChange="validatePlusOrMinusNumber(this, updateThreedPosY);"
               maxlength="8" />
@@ -424,7 +424,7 @@
         <tr>
           <td>Width</td>
           <td>
-            <input type="text" id="furnitureWidthProp"
+            <input type="text" id="threedWidthProp"
               style="width:80px; border: 1px solid #2a2a2a;font-size: 14px; color: white; font-family: 'Courier New', Courier, monospace;"
               class="editable" onChange="validatePlusNumber(this, updateThreedWidth);" maxlength="8" />
             cm
@@ -434,7 +434,7 @@
         <tr>
           <td>Depth</td>
           <td>
-            <input type="text" id="furnitureDepthProp"
+            <input type="text" id="threedDepthProp"
               style="width:80px; border: 1px solid #2a2a2a;font-size: 14px; color: white; font-family: 'Courier New', Courier, monospace;"
               class="editable" onChange="validatePlusNumber(this, updateThreedDepth);" maxlength="8" />
             cm
@@ -443,18 +443,18 @@
         </tr>
         <tr>
           <td>Height</td>
-          <td><input type="text" id="furnitureHeightProp"
+          <td><input type="text" id="threedHeightProp"
               style="width:80px; border: 1px solid #2a2a2a;font-size: 14px; color: white; font-family: 'Courier New', Courier, monospace;"
               class="editable" onChange="validatePlusOrMinusNumber(this, updateThreedHeight);"
               maxlength="8" /> cm</td>
         </tr>
         <tr>
           <td>Angle</td>
-          <td><span id="furnitureAngleProp"></span>°</td>
+          <td><span id="threedAngleProp"></span>°</td>
         </tr>
         <tr>
           <td>Level</td>
-          <td><span id="furnitureLevelProp"></span></td>
+          <td><span id="threedLevelProp"></span></td>
         </tr>
         <tr>
           <td>3D Model</td>
@@ -971,7 +971,7 @@
   <div id="horizontalSliderLeft"></div>
   <div id="horizontalSliderRight"></div>
 
-  <div id="furnitureDragDiv"></div>
+  <div id="threedDragDiv"></div>
 
   <img id="fullscreenPlanViewBtn" src="media/fullscreen.png" width="30" height="30"
     onclick="openFullscreen('planView');" />
