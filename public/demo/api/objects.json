@@ -1,1025 +1,4 @@
 {
-  "tree1WithLeaves": {
-    "license": "CC BY 4.0",
-    "author": "Sean Bradley",
-    "size": {
-      "x": 186.1,
-      "y": 226.93,
-      "z": 242.08
-    },
-    "useMask": false
-  },
-  "birchTreeWithLeaves": {
-    "license": "CC BY 4.0",
-    "author": "Sean Bradley",
-    "size": {
-      "x": 196.13,
-      "y": 186.96,
-      "z": 200.27
-    },
-    "useMask": false
-  },
-  "willowTreeNoLeaves": {
-    "license": "CC BY 4.0",
-    "author": "Sean Bradley",
-    "size": {
-      "x": 594.45,
-      "y": 950.09,
-      "z": 635.88
-    },
-    "useMask": false
-  },
-  "fixedSmallWindow": {
-    "license": "Free Art License 1.3",
-    "author": "Ola-Kristian Hoff",
-    "size": {
-      "x": 60,
-      "y": 60,
-      "z": 16
-    },
-    "useMask": true
-  },
-  "gabledRoof": {
-    "license": "CC BY 4.0",
-    "author": "Sean Bradley",
-    "size": {
-      "x": 1000,
-      "y": 250,
-      "z": 1000
-    }
-  },
-  "pyramidalRoof": {
-    "license": "CC BY 4.0",
-    "author": "Sean Bradley",
-    "size": {
-      "x": 707.1,
-      "y": 250,
-      "z": 707.1
-    }
-  },
-  "halfPyramidalRoof": {
-    "license": "CC BY 4.0",
-    "author": "Sean Bradley",
-    "size": {
-      "x": 945.01,
-      "y": 250,
-      "z": 475.83
-    }
-  },
-  "railwaySleeper": {
-    "license": "CC BY 4.0",
-    "author": "Sean Bradley",
-    "size": {
-      "x": 239.99,
-      "y": 10,
-      "z": 20
-    }
-  },
-  "couch": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 207.43,
-      "y": 85.58,
-      "z": 87.63
-    }
-  },
-  "crate": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 60,
-      "y": 59.38,
-      "z": 58.9
-    }
-  },
-  "cupboard": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 100.55,
-      "y": 149.99,
-      "z": 39.01
-    }
-  },
-  "deckChair": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 71.68,
-      "y": 83.98,
-      "z": 125.29
-    }
-  },
-  "desk": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 139.34,
-      "y": 105.44,
-      "z": 54.28
-    }
-  },
-  "desklamp": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 24.39,
-      "y": 39.99,
-      "z": 24.39
-    }
-  },
-  "doubleOven": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 59.99,
-      "y": 108.9,
-      "z": 51.53
-    }
-  },
-  "electricGuitar": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 34.48,
-      "y": 110.02,
-      "z": 32.14
-    }
-  },
-  "fireExtinguisher": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 31.07,
-      "y": 62.31,
-      "z": 18.01
-    }
-  },
-  "flowerBox": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 54.99,
-      "y": 18.79,
-      "z": 16.19
-    }
-  },
-  "horse2": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 58.27,
-      "y": 199.87,
-      "z": 261.61
-    }
-  },
-  "kalender": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 12.01,
-      "y": 10.81,
-      "z": 7.93
-    }
-  },
-  "kitchenaid": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 21.37,
-      "y": 35.29,
-      "z": 35.99
-    }
-  },
-  "led_tv": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 77.51,
-      "y": 50.78,
-      "z": 14.17
-    }
-  },
-  "littlePlant": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 26.6,
-      "y": 23.19,
-      "z": 26.59
-    }
-  },
-  "lockedLocker": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 20,
-      "y": 40,
-      "z": 21.98
-    }
-  },
-  "L_shaped_sofa": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 233.68,
-      "y": 79.98,
-      "z": 143.64
-    }
-  },
-  "mano_cooktop": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 58,
-      "y": 3.81,
-      "z": 49.99
-    }
-  },
-  "modernArmchair": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 77.31,
-      "y": 86.45,
-      "z": 84.92
-    }
-  },
-  "mofx_mailbox": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 15.89,
-      "y": 81.55,
-      "z": 46.49
-    }
-  },
-  "numberLock": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 9.98,
-      "y": 10.24,
-      "z": 0.43
-    }
-  },
-  "oakChair": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 49.09,
-      "y": 117.81,
-      "z": 61.21
-    }
-  },
-  "oakTable": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 124,
-      "y": 74.13,
-      "z": 123.99
-    }
-  },
-  "oven": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 59.99,
-      "y": 57.76,
-      "z": 51.53
-    }
-  },
-  "pianoAQueue": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 131.58,
-      "y": 103.1,
-      "z": 147.85
-    }
-  },
-  "plasticChair": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 44.42,
-      "y": 82,
-      "z": 58.39
-    }
-  },
-  "poolTable": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 255.95,
-      "y": 82.35,
-      "z": 139.25
-    }
-  },
-  "radiator": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 140.34,
-      "y": 73.07,
-      "z": 24.69
-    }
-  },
-  "radiator1": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 216.32,
-      "y": 83.36,
-      "z": 14.3
-    }
-  },
-  "radiator2": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 132.64,
-      "y": 45.65,
-      "z": 41.41
-    }
-  },
-  "relaxChair": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 66.05,
-      "y": 84.71,
-      "z": 190.03
-    }
-  },
-  "shelves": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 82.98,
-      "y": 81.9,
-      "z": 39.37
-    }
-  },
-  "shower": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 20.84,
-      "y": 114.28,
-      "z": 53.78
-    }
-  },
-  "showerDoor": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 90.14,
-      "y": 229.91,
-      "z": 22.5
-    }
-  },
-  "silla2": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 32.63,
-      "y": 78.83,
-      "z": 31.14
-    }
-  },
-  "sillaBlanca": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 50.45,
-      "y": 85,
-      "z": 58.38
-    }
-  },
-  "sofa": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 248.76,
-      "y": 78,
-      "z": 189.56
-    }
-  },
-  "speaker2": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 22.09,
-      "y": 35.37,
-      "z": 25.44
-    }
-  },
-  "speaker3": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 22.09,
-      "y": 55.13,
-      "z": 25.44
-    }
-  },
-  "stool": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 53.02,
-      "y": 97.96,
-      "z": 52.1
-    }
-  },
-  "tableWithTablecloth": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 129.23,
-      "y": 120.58,
-      "z": 130.53
-    }
-  },
-  "table_football": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 150.27,
-      "y": 100.9,
-      "z": 124.61
-    }
-  },
-  "technicalTable1": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 214.66,
-      "y": 95.08,
-      "z": 118.84
-    }
-  },
-  "technicalTable2": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 136.64,
-      "y": 101.34,
-      "z": 171.37
-    }
-  },
-  "televisionCabinet": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 135.36,
-      "y": 160.02,
-      "z": 69.27
-    }
-  },
-  "toiletPaperDispenser": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 15.56,
-      "y": 18.45,
-      "z": 10.41
-    }
-  },
-  "toiletsUnit": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 35.33,
-      "y": 77.23,
-      "z": 69.2
-    }
-  },
-  "towel2": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 21.79,
-      "y": 66.85,
-      "z": 13.69
-    }
-  },
-  "towel3": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 59.6,
-      "y": 47.84,
-      "z": 8.12
-    }
-  },
-  "umbrella": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 223.11,
-      "y": 199.8,
-      "z": 222.67
-    }
-  },
-  "verticalShelves": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 44.48,
-      "y": 196.12,
-      "z": 39
-    }
-  },
-  "wardrobeWithSlidingDoors": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 151.9,
-      "y": 236.38,
-      "z": 64.1
-    }
-  },
-  "washbasin": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 56.35,
-      "y": 93.07,
-      "z": 45.71
-    }
-  },
-  "whiteBoard": {
-    "license": "CC-0",
-    "author": "",
-    "size": {
-      "x": 124.65,
-      "y": 129,
-      "z": 55.1
-    }
-  },
-  "abdominalBench": {
-    "license": "CC BY 3.0",
-    "author": "muhtesemozcinar",
-    "size": {
-      "x": 67.19,
-      "y": 86.94,
-      "z": 192.87
-    }
-  },
-  "armchair1": {
-    "license": "CC BY 3.0",
-    "author": "aymanslman",
-    "size": {
-      "x": 100.49,
-      "y": 79.98,
-      "z": 88.17
-    }
-  },
-  "ballonFoot": {
-    "license": "CC BY 3.0",
-    "author": "DooL",
-    "size": {
-      "x": 21.99,
-      "y": 21.97,
-      "z": 21.99
-    }
-  },
-  "bathroomRadiator": {
-    "license": "CC BY 3.0",
-    "author": "nikitron",
-    "size": {
-      "x": 48.39,
-      "y": 110.75,
-      "z": 19.93
-    }
-  },
-  "bath_jay_hardy": {
-    "license": "CC BY 3.0",
-    "author": "Jay-Artist",
-    "size": {
-      "x": 180.06,
-      "y": 65.06,
-      "z": 70.08
-    }
-  },
-  "bedsideTable": {
-    "license": "CC BY 3.0",
-    "author": "SirOccor",
-    "size": {
-      "x": 50.01,
-      "y": 48,
-      "z": 41.44
-    }
-  },
-  "bike": {
-    "license": "CC BY 3.0",
-    "author": "rodrigoalves123",
-    "size": {
-      "x": 40.72,
-      "y": 76.48,
-      "z": 116.31
-    }
-  },
-  "biurko3": {
-    "license": "CC BY 3.0",
-    "author": "hilux",
-    "size": {
-      "x": 120.16,
-      "y": 72.04,
-      "z": 60.22
-    }
-  },
-  "boiler": {
-    "license": "CC BY 3.0",
-    "author": "Jay-Artist",
-    "size": {
-      "x": 17.89,
-      "y": 20.01,
-      "z": 16.22
-    }
-  },
-  "bonecoDeNeve": {
-    "license": "CC BY 3.0",
-    "author": "zema",
-    "size": {
-      "x": 94.03,
-      "y": 98.81,
-      "z": 71.06
-    }
-  },
-  "book": {
-    "license": "CC BY 3.0",
-    "author": "Jay-Artist",
-    "size": {
-      "x": 28.15,
-      "y": 2.44,
-      "z": 18.41
-    }
-  },
-  "breadBox": {
-    "license": "CC BY 3.0",
-    "author": "oldtimer",
-    "size": {
-      "x": 56.15,
-      "y": 27.52,
-      "z": 27.52
-    }
-  },
-  "bulldog": {
-    "license": "CC BY 3.0",
-    "author": "Priide",
-    "size": {
-      "x": 38.75,
-      "y": 47.39,
-      "z": 64.52
-    }
-  },
-  "bunkBed": {
-    "license": "CC BY 3.0",
-    "author": "NabHlEsCK",
-    "size": {
-      "x": 113.09,
-      "y": 159.95,
-      "z": 204.99
-    }
-  },
-  "cafe_set_mota_chair": {
-    "license": "CC BY 3.0",
-    "author": "voodoc",
-    "size": {
-      "x": 60.87,
-      "y": 78.3,
-      "z": 55.82
-    }
-  },
-  "cafe_set_mota_table": {
-    "license": "CC BY 3.0",
-    "author": "voodoc",
-    "size": {
-      "x": 62.21,
-      "y": 73.96,
-      "z": 62.21
-    }
-  },
-  "cafe_set_tonon_chair": {
-    "license": "CC BY 3.0",
-    "author": "voodoc",
-    "size": {
-      "x": 48.02,
-      "y": 82.2,
-      "z": 53.31
-    }
-  },
-  "cafe_set_tonon_table": {
-    "license": "CC BY 3.0",
-    "author": "voodoc",
-    "size": {
-      "x": 66,
-      "y": 64.43,
-      "z": 52.79
-    }
-  },
-  "chairWithCushion": {
-    "license": "CC BY 3.0",
-    "author": "Jay-Artist",
-    "size": {
-      "x": 42.3,
-      "y": 91.08,
-      "z": 44.58
-    }
-  },
-  "chairDeck": {
-    "license": "CC BY 3.0",
-    "author": "north.star",
-    "size": {
-      "x": 67.35,
-      "y": 55.27,
-      "z": 208.5
-    }
-  },
-  "chessboard": {
-    "license": "CC BY 3.0",
-    "author": "swapnilrocks98",
-    "size": {
-      "x": 30,
-      "y": 8.01,
-      "z": 30
-    }
-  },
-  "chest": {
-    "license": "CC BY 3.0",
-    "author": "elhzar",
-    "size": {
-      "x": 143.48,
-      "y": 82.05,
-      "z": 53.57
-    }
-  },
-  "childChair": {
-    "license": "CC BY 3.0",
-    "author": "Radio_hate",
-    "size": {
-      "x": 38.18,
-      "y": 67.01,
-      "z": 39.5
-    }
-  },
-  "choppingBoard": {
-    "license": "CC BY 3.0",
-    "author": "Jay-Artist",
-    "size": {
-      "x": 37.58,
-      "y": 4.51,
-      "z": 26.02
-    }
-  },
-  "cocktailGlass": {
-    "license": "CC BY 3.0",
-    "author": "xablend1122",
-    "size": {
-      "x": 8.33,
-      "y": 13.08,
-      "z": 8.33
-    }
-  },
-  "coffeePress": {
-    "license": "CC BY 3.0",
-    "author": "cephei",
-    "size": {
-      "x": 16.27,
-      "y": 26.5,
-      "z": 10.65
-    }
-  },
-  "coffeeTable": {
-    "license": "CC BY 3.0",
-    "author": "nikitron",
-    "size": {
-      "x": 120.04,
-      "y": 44.99,
-      "z": 70.08
-    }
-  },
-  "cornerSofa": {
-    "license": "CC BY 3.0",
-    "author": "nikitron",
-    "size": {
-      "x": 345.76,
-      "y": 85.53,
-      "z": 155
-    }
-  },
-  "decorativePlant": {
-    "license": "CC BY 3.0",
-    "author": "Nmn9",
-    "size": {
-      "x": 31.77,
-      "y": 60.58,
-      "z": 32.21
-    }
-  },
-  "ella_chair_f": {
-    "license": "CC BY 3.0",
-    "author": "sizzler",
-    "size": {
-      "x": 4.57,
-      "y": 9.16,
-      "z": 5.64
-    }
-  },
-  "espressokettle": {
-    "license": "CC BY 3.0",
-    "author": "krabz",
-    "size": {
-      "x": 17.87,
-      "y": 15.22,
-      "z": 9.39
-    }
-  },
-  "fordFocus": {
-    "license": "CC BY 3.0",
-    "author": "Ruff",
-    "size": {
-      "x": 204.47,
-      "y": 155.07,
-      "z": 435.81
-    }
-  },
-  "fotel": {
-    "license": "CC BY 3.0",
-    "author": "tripleJ",
-    "size": {
-      "x": 73.48,
-      "y": 69.7,
-      "z": 61.07
-    }
-  },
-  "gift": {
-    "license": "CC BY 3.0",
-    "author": "tadine",
-    "size": {
-      "x": 23.19,
-      "y": 25.08,
-      "z": 18.08
-    }
-  },
-  "glass": {
-    "license": "CC BY 3.0",
-    "author": "Jay-Artist",
-    "size": {
-      "x": 7.51,
-      "y": 19.53,
-      "z": 7.41
-    }
-  },
-  "green_stool": {
-    "license": "CC BY 3.0",
-    "author": "dalenryder",
-    "size": {
-      "x": 42.91,
-      "y": 45.97,
-      "z": 42.91
-    }
-  },
-  "hangingLight": {
-    "license": "CC BY 3.0",
-    "author": "Jay-Artist",
-    "size": {
-      "x": 43.88,
-      "y": 86.04,
-      "z": 43.88
-    }
-  },
-  "hood": {
-    "license": "CC BY 3.0",
-    "author": "Jay-Artist",
-    "size": {
-      "x": 101.55,
-      "y": 48.59,
-      "z": 39.18
-    }
-  },
-  "horse": {
-    "license": "CC BY 3.0",
-    "author": "b2przemo",
-    "size": {
-      "x": 58.74,
-      "y": 192.96,
-      "z": 229.22
-    }
-  },
-  "juniorBed": {
-    "license": "CC BY 3.0",
-    "author": "SirOccor",
-    "size": {
-      "x": 105.69,
-      "y": 65.61,
-      "z": 197.79
-    }
-  },
-  "kitchenblender": {
-    "license": "CC BY 3.0",
-    "author": "PrinterKiller",
-    "size": {
-      "x": 15.61,
-      "y": 42.73,
-      "z": 22.34
-    }
-  },
-  "kitchenDrawersCabinet": {
-    "license": "CC BY 3.0",
-    "author": "Jay-Artist",
-    "size": {
-      "x": 44.22,
-      "y": 87.8,
-      "z": 71.22
-    }
-  },
-  "kitchenGlassDoorCabinet": {
-    "license": "CC BY 3.0",
-    "author": "Jay-Artist",
-    "size": {
-      "x": 33.6,
-      "y": 77.13,
-      "z": 36.91
-    }
-  },
-  "kitchenIsland": {
-    "license": "CC BY 3.0",
-    "author": "Jay-Artist",
-    "size": {
-      "x": 93.88,
-      "y": 83.08,
-      "z": 69.94
-    }
-  },
-  "kitchenLowerCabinet": {
-    "license": "CC BY 3.0",
-    "author": "Jay-Artist",
-    "size": {
-      "x": 97.58,
-      "y": 87.8,
-      "z": 71.68
-    }
-  },
-  "kitchenScale": {
-    "license": "CC BY 3.0",
-    "author": "oldtimer",
-    "size": {
-      "x": 23,
-      "y": 27.5,
-      "z": 23
-    }
-  },
-  "kitchenSink": {
-    "license": "CC BY 3.0",
-    "author": "Jay-Artist",
-    "size": {
-      "x": 97.58,
-      "y": 97.63,
-      "z": 71.68
-    }
-  },
-  "kitchenSmallLowerCabinet": {
-    "license": "CC BY 3.0",
-    "author": "Jay-Artist",
-    "size": {
-      "x": 48.68,
-      "y": 87.8,
-      "z": 71.7
-    }
-  },
-  "kitchenSmallUpperCabinet": {
-    "license": "CC BY 3.0",
-    "author": "Jay-Artist",
-    "size": {
-      "x": 34.76,
-      "y": 77.13,
-      "z": 36.91
-    }
-  },
-  "kitchenTools": {
-    "license": "CC BY 3.0",
-    "author": "Jay-Artist",
-    "size": {
-      "x": 44,
-      "y": 31.59,
-      "z": 9.78
-    }
-  },
-  "kitchenUpperCabinet": {
-    "license": "CC BY 3.0",
-    "author": "Jay-Artist",
-    "size": {
-      "x": 109.43,
-      "y": 77.13,
-      "z": 36.91
-    }
-  },
   "lamp": {
     "license": "CC BY 3.0",
     "author": "bulgakov",
@@ -1289,6 +268,36 @@
       "y": 52.55,
       "z": 46.51
     }
+  },
+  "birchTreeWithLeaves": {
+    "license": "CC BY 4.0",
+    "author": "Sean Bradley",
+    "size": {
+      "x": 196.13,
+      "y": 186.96,
+      "z": 200.27
+    },
+    "useMask": false
+  },
+  "tree1WithLeaves": {
+    "license": "CC BY 4.0",
+    "author": "Sean Bradley",
+    "size": {
+      "x": 186.1,
+      "y": 226.93,
+      "z": 242.08
+    },
+    "useMask": false
+  },
+  "willowTreeNoLeaves": {
+    "license": "CC BY 4.0",
+    "author": "Sean Bradley",
+    "size": {
+      "x": 594.45,
+      "y": 950.09,
+      "z": 635.88
+    },
+    "useMask": false
   },
   "wallDoubleSocket": {
     "license": "CC BY 3.0",
@@ -3371,5 +2380,996 @@
       "y": -36
     },
     "useMask": true
+  },
+  "fixedSmallWindow": {
+    "license": "Free Art License 1.3",
+    "author": "Ola-Kristian Hoff",
+    "size": {
+      "x": 60,
+      "y": 60,
+      "z": 16
+    },
+    "useMask": true
+  },
+  "gabledRoof": {
+    "license": "CC BY 4.0",
+    "author": "Sean Bradley",
+    "size": {
+      "x": 1000,
+      "y": 250,
+      "z": 1000
+    }
+  },
+  "pyramidalRoof": {
+    "license": "CC BY 4.0",
+    "author": "Sean Bradley",
+    "size": {
+      "x": 707.1,
+      "y": 250,
+      "z": 707.1
+    }
+  },
+  "halfPyramidalRoof": {
+    "license": "CC BY 4.0",
+    "author": "Sean Bradley",
+    "size": {
+      "x": 945.01,
+      "y": 250,
+      "z": 475.83
+    }
+  },
+  "railwaySleeper": {
+    "license": "CC BY 4.0",
+    "author": "Sean Bradley",
+    "size": {
+      "x": 239.99,
+      "y": 10,
+      "z": 20
+    }
+  },
+  "couch": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 207.43,
+      "y": 85.58,
+      "z": 87.63
+    }
+  },
+  "crate": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 60,
+      "y": 59.38,
+      "z": 58.9
+    }
+  },
+  "cupboard": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 100.55,
+      "y": 149.99,
+      "z": 39.01
+    }
+  },
+  "deckChair": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 71.68,
+      "y": 83.98,
+      "z": 125.29
+    }
+  },
+  "desk": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 139.34,
+      "y": 105.44,
+      "z": 54.28
+    }
+  },
+  "desklamp": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 24.39,
+      "y": 39.99,
+      "z": 24.39
+    }
+  },
+  "doubleOven": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 59.99,
+      "y": 108.9,
+      "z": 51.53
+    }
+  },
+  "electricGuitar": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 34.48,
+      "y": 110.02,
+      "z": 32.14
+    }
+  },
+  "fireExtinguisher": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 31.07,
+      "y": 62.31,
+      "z": 18.01
+    }
+  },
+  "flowerBox": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 54.99,
+      "y": 18.79,
+      "z": 16.19
+    }
+  },
+  "horse2": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 58.27,
+      "y": 199.87,
+      "z": 261.61
+    }
+  },
+  "kalender": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 12.01,
+      "y": 10.81,
+      "z": 7.93
+    }
+  },
+  "kitchenaid": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 21.37,
+      "y": 35.29,
+      "z": 35.99
+    }
+  },
+  "led_tv": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 77.51,
+      "y": 50.78,
+      "z": 14.17
+    }
+  },
+  "littlePlant": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 26.6,
+      "y": 23.19,
+      "z": 26.59
+    }
+  },
+  "lockedLocker": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 20,
+      "y": 40,
+      "z": 21.98
+    }
+  },
+  "L_shaped_sofa": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 233.68,
+      "y": 79.98,
+      "z": 143.64
+    }
+  },
+  "mano_cooktop": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 58,
+      "y": 3.81,
+      "z": 49.99
+    }
+  },
+  "modernArmchair": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 77.31,
+      "y": 86.45,
+      "z": 84.92
+    }
+  },
+  "mofx_mailbox": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 15.89,
+      "y": 81.55,
+      "z": 46.49
+    }
+  },
+  "numberLock": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 9.98,
+      "y": 10.24,
+      "z": 0.43
+    }
+  },
+  "oakChair": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 49.09,
+      "y": 117.81,
+      "z": 61.21
+    }
+  },
+  "oakTable": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 124,
+      "y": 74.13,
+      "z": 123.99
+    }
+  },
+  "oven": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 59.99,
+      "y": 57.76,
+      "z": 51.53
+    }
+  },
+  "pianoAQueue": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 131.58,
+      "y": 103.1,
+      "z": 147.85
+    }
+  },
+  "plasticChair": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 44.42,
+      "y": 82,
+      "z": 58.39
+    }
+  },
+  "poolTable": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 255.95,
+      "y": 82.35,
+      "z": 139.25
+    }
+  },
+  "radiator": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 140.34,
+      "y": 73.07,
+      "z": 24.69
+    }
+  },
+  "radiator1": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 216.32,
+      "y": 83.36,
+      "z": 14.3
+    }
+  },
+  "radiator2": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 132.64,
+      "y": 45.65,
+      "z": 41.41
+    }
+  },
+  "relaxChair": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 66.05,
+      "y": 84.71,
+      "z": 190.03
+    }
+  },
+  "shelves": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 82.98,
+      "y": 81.9,
+      "z": 39.37
+    }
+  },
+  "shower": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 20.84,
+      "y": 114.28,
+      "z": 53.78
+    }
+  },
+  "showerDoor": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 90.14,
+      "y": 229.91,
+      "z": 22.5
+    }
+  },
+  "silla2": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 32.63,
+      "y": 78.83,
+      "z": 31.14
+    }
+  },
+  "sillaBlanca": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 50.45,
+      "y": 85,
+      "z": 58.38
+    }
+  },
+  "sofa": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 248.76,
+      "y": 78,
+      "z": 189.56
+    }
+  },
+  "speaker2": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 22.09,
+      "y": 35.37,
+      "z": 25.44
+    }
+  },
+  "speaker3": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 22.09,
+      "y": 55.13,
+      "z": 25.44
+    }
+  },
+  "stool": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 53.02,
+      "y": 97.96,
+      "z": 52.1
+    }
+  },
+  "tableWithTablecloth": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 129.23,
+      "y": 120.58,
+      "z": 130.53
+    }
+  },
+  "table_football": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 150.27,
+      "y": 100.9,
+      "z": 124.61
+    }
+  },
+  "technicalTable1": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 214.66,
+      "y": 95.08,
+      "z": 118.84
+    }
+  },
+  "technicalTable2": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 136.64,
+      "y": 101.34,
+      "z": 171.37
+    }
+  },
+  "televisionCabinet": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 135.36,
+      "y": 160.02,
+      "z": 69.27
+    }
+  },
+  "toiletPaperDispenser": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 15.56,
+      "y": 18.45,
+      "z": 10.41
+    }
+  },
+  "toiletsUnit": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 35.33,
+      "y": 77.23,
+      "z": 69.2
+    }
+  },
+  "towel2": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 21.79,
+      "y": 66.85,
+      "z": 13.69
+    }
+  },
+  "towel3": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 59.6,
+      "y": 47.84,
+      "z": 8.12
+    }
+  },
+  "umbrella": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 223.11,
+      "y": 199.8,
+      "z": 222.67
+    }
+  },
+  "verticalShelves": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 44.48,
+      "y": 196.12,
+      "z": 39
+    }
+  },
+  "wardrobeWithSlidingDoors": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 151.9,
+      "y": 236.38,
+      "z": 64.1
+    }
+  },
+  "washbasin": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 56.35,
+      "y": 93.07,
+      "z": 45.71
+    }
+  },
+  "whiteBoard": {
+    "license": "CC-0",
+    "author": "",
+    "size": {
+      "x": 124.65,
+      "y": 129,
+      "z": 55.1
+    }
+  },
+  "abdominalBench": {
+    "license": "CC BY 3.0",
+    "author": "muhtesemozcinar",
+    "size": {
+      "x": 67.19,
+      "y": 86.94,
+      "z": 192.87
+    }
+  },
+  "armchair1": {
+    "license": "CC BY 3.0",
+    "author": "aymanslman",
+    "size": {
+      "x": 100.49,
+      "y": 79.98,
+      "z": 88.17
+    }
+  },
+  "ballonFoot": {
+    "license": "CC BY 3.0",
+    "author": "DooL",
+    "size": {
+      "x": 21.99,
+      "y": 21.97,
+      "z": 21.99
+    }
+  },
+  "bathroomRadiator": {
+    "license": "CC BY 3.0",
+    "author": "nikitron",
+    "size": {
+      "x": 48.39,
+      "y": 110.75,
+      "z": 19.93
+    }
+  },
+  "bath_jay_hardy": {
+    "license": "CC BY 3.0",
+    "author": "Jay-Artist",
+    "size": {
+      "x": 180.06,
+      "y": 65.06,
+      "z": 70.08
+    }
+  },
+  "bedsideTable": {
+    "license": "CC BY 3.0",
+    "author": "SirOccor",
+    "size": {
+      "x": 50.01,
+      "y": 48,
+      "z": 41.44
+    }
+  },
+  "bike": {
+    "license": "CC BY 3.0",
+    "author": "rodrigoalves123",
+    "size": {
+      "x": 40.72,
+      "y": 76.48,
+      "z": 116.31
+    }
+  },
+  "biurko3": {
+    "license": "CC BY 3.0",
+    "author": "hilux",
+    "size": {
+      "x": 120.16,
+      "y": 72.04,
+      "z": 60.22
+    }
+  },
+  "boiler": {
+    "license": "CC BY 3.0",
+    "author": "Jay-Artist",
+    "size": {
+      "x": 17.89,
+      "y": 20.01,
+      "z": 16.22
+    }
+  },
+  "bonecoDeNeve": {
+    "license": "CC BY 3.0",
+    "author": "zema",
+    "size": {
+      "x": 94.03,
+      "y": 98.81,
+      "z": 71.06
+    }
+  },
+  "book": {
+    "license": "CC BY 3.0",
+    "author": "Jay-Artist",
+    "size": {
+      "x": 28.15,
+      "y": 2.44,
+      "z": 18.41
+    }
+  },
+  "breadBox": {
+    "license": "CC BY 3.0",
+    "author": "oldtimer",
+    "size": {
+      "x": 56.15,
+      "y": 27.52,
+      "z": 27.52
+    }
+  },
+  "bulldog": {
+    "license": "CC BY 3.0",
+    "author": "Priide",
+    "size": {
+      "x": 38.75,
+      "y": 47.39,
+      "z": 64.52
+    }
+  },
+  "bunkBed": {
+    "license": "CC BY 3.0",
+    "author": "NabHlEsCK",
+    "size": {
+      "x": 113.09,
+      "y": 159.95,
+      "z": 204.99
+    }
+  },
+  "cafe_set_mota_chair": {
+    "license": "CC BY 3.0",
+    "author": "voodoc",
+    "size": {
+      "x": 60.87,
+      "y": 78.3,
+      "z": 55.82
+    }
+  },
+  "cafe_set_mota_table": {
+    "license": "CC BY 3.0",
+    "author": "voodoc",
+    "size": {
+      "x": 62.21,
+      "y": 73.96,
+      "z": 62.21
+    }
+  },
+  "cafe_set_tonon_chair": {
+    "license": "CC BY 3.0",
+    "author": "voodoc",
+    "size": {
+      "x": 48.02,
+      "y": 82.2,
+      "z": 53.31
+    }
+  },
+  "cafe_set_tonon_table": {
+    "license": "CC BY 3.0",
+    "author": "voodoc",
+    "size": {
+      "x": 66,
+      "y": 64.43,
+      "z": 52.79
+    }
+  },
+  "chairWithCushion": {
+    "license": "CC BY 3.0",
+    "author": "Jay-Artist",
+    "size": {
+      "x": 42.3,
+      "y": 91.08,
+      "z": 44.58
+    }
+  },
+  "chairDeck": {
+    "license": "CC BY 3.0",
+    "author": "north.star",
+    "size": {
+      "x": 67.35,
+      "y": 55.27,
+      "z": 208.5
+    }
+  },
+  "chessboard": {
+    "license": "CC BY 3.0",
+    "author": "swapnilrocks98",
+    "size": {
+      "x": 30,
+      "y": 8.01,
+      "z": 30
+    }
+  },
+  "chest": {
+    "license": "CC BY 3.0",
+    "author": "elhzar",
+    "size": {
+      "x": 143.48,
+      "y": 82.05,
+      "z": 53.57
+    }
+  },
+  "childChair": {
+    "license": "CC BY 3.0",
+    "author": "Radio_hate",
+    "size": {
+      "x": 38.18,
+      "y": 67.01,
+      "z": 39.5
+    }
+  },
+  "choppingBoard": {
+    "license": "CC BY 3.0",
+    "author": "Jay-Artist",
+    "size": {
+      "x": 37.58,
+      "y": 4.51,
+      "z": 26.02
+    }
+  },
+  "cocktailGlass": {
+    "license": "CC BY 3.0",
+    "author": "xablend1122",
+    "size": {
+      "x": 8.33,
+      "y": 13.08,
+      "z": 8.33
+    }
+  },
+  "coffeePress": {
+    "license": "CC BY 3.0",
+    "author": "cephei",
+    "size": {
+      "x": 16.27,
+      "y": 26.5,
+      "z": 10.65
+    }
+  },
+  "coffeeTable": {
+    "license": "CC BY 3.0",
+    "author": "nikitron",
+    "size": {
+      "x": 120.04,
+      "y": 44.99,
+      "z": 70.08
+    }
+  },
+  "cornerSofa": {
+    "license": "CC BY 3.0",
+    "author": "nikitron",
+    "size": {
+      "x": 345.76,
+      "y": 85.53,
+      "z": 155
+    }
+  },
+  "decorativePlant": {
+    "license": "CC BY 3.0",
+    "author": "Nmn9",
+    "size": {
+      "x": 31.77,
+      "y": 60.58,
+      "z": 32.21
+    }
+  },
+  "ella_chair_f": {
+    "license": "CC BY 3.0",
+    "author": "sizzler",
+    "size": {
+      "x": 4.57,
+      "y": 9.16,
+      "z": 5.64
+    }
+  },
+  "espressokettle": {
+    "license": "CC BY 3.0",
+    "author": "krabz",
+    "size": {
+      "x": 17.87,
+      "y": 15.22,
+      "z": 9.39
+    }
+  },
+  "fordFocus": {
+    "license": "CC BY 3.0",
+    "author": "Ruff",
+    "size": {
+      "x": 204.47,
+      "y": 155.07,
+      "z": 435.81
+    }
+  },
+  "fotel": {
+    "license": "CC BY 3.0",
+    "author": "tripleJ",
+    "size": {
+      "x": 73.48,
+      "y": 69.7,
+      "z": 61.07
+    }
+  },
+  "gift": {
+    "license": "CC BY 3.0",
+    "author": "tadine",
+    "size": {
+      "x": 23.19,
+      "y": 25.08,
+      "z": 18.08
+    }
+  },
+  "glass": {
+    "license": "CC BY 3.0",
+    "author": "Jay-Artist",
+    "size": {
+      "x": 7.51,
+      "y": 19.53,
+      "z": 7.41
+    }
+  },
+  "green_stool": {
+    "license": "CC BY 3.0",
+    "author": "dalenryder",
+    "size": {
+      "x": 42.91,
+      "y": 45.97,
+      "z": 42.91
+    }
+  },
+  "hangingLight": {
+    "license": "CC BY 3.0",
+    "author": "Jay-Artist",
+    "size": {
+      "x": 43.88,
+      "y": 86.04,
+      "z": 43.88
+    }
+  },
+  "hood": {
+    "license": "CC BY 3.0",
+    "author": "Jay-Artist",
+    "size": {
+      "x": 101.55,
+      "y": 48.59,
+      "z": 39.18
+    }
+  },
+  "horse": {
+    "license": "CC BY 3.0",
+    "author": "b2przemo",
+    "size": {
+      "x": 58.74,
+      "y": 192.96,
+      "z": 229.22
+    }
+  },
+  "juniorBed": {
+    "license": "CC BY 3.0",
+    "author": "SirOccor",
+    "size": {
+      "x": 105.69,
+      "y": 65.61,
+      "z": 197.79
+    }
+  },
+  "kitchenblender": {
+    "license": "CC BY 3.0",
+    "author": "PrinterKiller",
+    "size": {
+      "x": 15.61,
+      "y": 42.73,
+      "z": 22.34
+    }
+  },
+  "kitchenDrawersCabinet": {
+    "license": "CC BY 3.0",
+    "author": "Jay-Artist",
+    "size": {
+      "x": 44.22,
+      "y": 87.8,
+      "z": 71.22
+    }
+  },
+  "kitchenGlassDoorCabinet": {
+    "license": "CC BY 3.0",
+    "author": "Jay-Artist",
+    "size": {
+      "x": 33.6,
+      "y": 77.13,
+      "z": 36.91
+    }
+  },
+  "kitchenIsland": {
+    "license": "CC BY 3.0",
+    "author": "Jay-Artist",
+    "size": {
+      "x": 93.88,
+      "y": 83.08,
+      "z": 69.94
+    }
+  },
+  "kitchenLowerCabinet": {
+    "license": "CC BY 3.0",
+    "author": "Jay-Artist",
+    "size": {
+      "x": 97.58,
+      "y": 87.8,
+      "z": 71.68
+    }
+  },
+  "kitchenScale": {
+    "license": "CC BY 3.0",
+    "author": "oldtimer",
+    "size": {
+      "x": 23,
+      "y": 27.5,
+      "z": 23
+    }
+  },
+  "kitchenSink": {
+    "license": "CC BY 3.0",
+    "author": "Jay-Artist",
+    "size": {
+      "x": 97.58,
+      "y": 97.63,
+      "z": 71.68
+    }
+  },
+  "kitchenSmallLowerCabinet": {
+    "license": "CC BY 3.0",
+    "author": "Jay-Artist",
+    "size": {
+      "x": 48.68,
+      "y": 87.8,
+      "z": 71.7
+    }
+  },
+  "kitchenSmallUpperCabinet": {
+    "license": "CC BY 3.0",
+    "author": "Jay-Artist",
+    "size": {
+      "x": 34.76,
+      "y": 77.13,
+      "z": 36.91
+    }
+  },
+  "kitchenTools": {
+    "license": "CC BY 3.0",
+    "author": "Jay-Artist",
+    "size": {
+      "x": 44,
+      "y": 31.59,
+      "z": 9.78
+    }
+  },
+  "kitchenUpperCabinet": {
+    "license": "CC BY 3.0",
+    "author": "Jay-Artist",
+    "size": {
+      "x": 109.43,
+      "y": 77.13,
+      "z": 36.91
+    }
   }
 }
