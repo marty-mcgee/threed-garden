@@ -1,9 +1,9 @@
 // ** custom components
 import { setupLikes } from '~/_vite/likes'
 // ** logos
-import threedgardenLogo from '/images/logo-ThreeD-Garden-Circle-Carrot.png'
-import typescriptLogo from '/images/logo-typescript.svg'
-import viteLogo from '/images/logo-vite.svg'
+import threedgardenLogo from '/media/images/logo-ThreeD-Garden-Circle-Carrot.png'
+import typescriptLogo from '/media/images/logo-typescript.svg'
+import viteLogo from '/media/images/logo-vite.svg'
 // ** css
 import '~/_vite/style.css'
 
