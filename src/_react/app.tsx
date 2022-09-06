@@ -1,10 +1,10 @@
 // ** React
 import { useState, FunctionComponent, ReactNode, ReactElement } from 'react'
 // ** Logos
-import threedgardenLogo from '/images/logo-ThreeD-Garden-Circle-Carrot.png'
-import typescriptLogo from '/images/logo-typescript.svg'
-import viteLogo from '/images/logo-vite.svg'
-import reactLogo from '/images/logo-react.svg'
+import threedgardenLogo from '/media/images/logo-ThreeD-Garden-Circle-Carrot.png'
+import typescriptLogo from '/media/images/logo-typescript.svg'
+import viteLogo from '/media/images/logo-vite.svg'
+import reactLogo from '/media/images/logo-react.svg'
 // ** CSS Styles
 import './style.css'
 

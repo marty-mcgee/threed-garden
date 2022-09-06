@@ -11,20 +11,20 @@
   <div class='App'>
     <div style='text-align: "center"; margin-bottom: 2rem'>
       <a href='https://threedgarden.com/demo' target='_blank'>
-        <img src='/images/logo-ThreeD-Garden-Circle-Carrot.png' alt='ThreeD Garden logo' width='200' height='200' />
+        <img src='/media/images/logo-ThreeD-Garden-Circle-Carrot.png' alt='ThreeD Garden logo' width='200' height='200' />
       </a>
       <h1>ThreeD Garden</h1>
       <div>FarmBot + ThreeJS using React Three Fiber, MUI, NextJS, and TypeScript</div>
     </div>
     <hr />
     <a href='https://vitejs.dev' target='_blank'>
-      <img src='/images/logo-vite.svg' class='logo' alt='Vite logo' />
+      <img src='/media/images/logo-vite.svg' class='logo' alt='Vite logo' />
     </a>
     <a href='https://www.typescriptlang.org/' target='_blank'>
-      <img src='/images/logo-typescript.svg' className='logo vanilla' alt='TypeScript logo' />
+      <img src='/media/images/logo-typescript.svg' className='logo vanilla' alt='TypeScript logo' />
     </a>
     <a href='https://vuejs.org/' target='_blank'>
-      <img src='/images/logo-vue.svg' class='logo vue' alt='Vue logo' />
+      <img src='/media/images/logo-vue.svg' class='logo vue' alt='Vue logo' />
     </a>
   </div>
   <HelloWorld msg='Vite + TypeScript + Vue' />
