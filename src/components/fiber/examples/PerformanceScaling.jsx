@@ -96,7 +96,7 @@ function Effects() {
   )
 }
 
-export default function App() {
+export default function PerformanceScaling() {
   return (
     <Canvas shadows performance={{ min: 0.1 }} gl={{ antialias: false }} camera={{ position: [0, 0, 0.8], fov: 75, near: 0.5, far: 1 }}>
       <color attach="background" args={['lightblue']} />
@@ -105,7 +105,7 @@ export default function App() {
       <Suspense fallback={null}>
         <YBot position={[0, -1.3, 0]} />
         <Text position={[0, 0, -0.2]} fontSize={0.6} color="white" font="/noto.woff" material-fog={false} letterSpacing={0}>
-          hello
+          [MM] HEY HEY HEY
         </Text>
       </Suspense>
       <mesh scale={4} position={[0, 1, -0.2]}>
