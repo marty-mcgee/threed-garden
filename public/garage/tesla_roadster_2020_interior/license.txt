@@ -1,0 +1,11 @@
+Model Information:
+* title:	Tesla roadster 2020 (interior) 2.0
+* source:	https://sketchfab.com/3d-models/tesla-roadster-2020-interior-20-dbd887637fb44c4b98b3537d995402a2
+* author:	miguelonche30 (https://sketchfab.com/miguelonche30)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Tesla roadster 2020 (interior) 2.0" (https://sketchfab.com/3d-models/tesla-roadster-2020-interior-20-dbd887637fb44c4b98b3537d995402a2) by miguelonche30 (https://sketchfab.com/miguelonche30) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)

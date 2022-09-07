@@ -24,6 +24,7 @@ desktop.ini
 *.cert
 *.crt
 *.pem
+.npmrc
 
 # output for production
 build
@@ -39,6 +40,7 @@ next-env.d.ts
 
 # assets | static
 assets/*
+!assets/garage
 !assets/libraries
 !assets/media
 !assets/sfx

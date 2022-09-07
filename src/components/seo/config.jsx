@@ -34,9 +34,9 @@ const Header = ({ title = titleDefault }) => {
           content='width=device-width, minimum-scale=1, initial-scale=1.0'
         />
 
-        {/* 
+        {/*
           Facebook Open Graph Meta Tags
-          docs: https://developers.facebook.com/docs/sharing/opengraph 
+          docs: https://developers.facebook.com/docs/sharing/opengraph
         */}
         <meta name='og:title' content={title} />
         <meta name='og:type' content='site' />
@@ -45,10 +45,10 @@ const Header = ({ title = titleDefault }) => {
         <meta name='og:site_name' content={title} />
         <meta name='og:description' content={description} />
 
-        {/* 
-          Twitter Summary card
-          documentation: https://dev.twitter.com/cards/getting-started
-          Be sure validate your Twitter card markup on the documentation site. 
+        {/*
+          Twitter Card Meta Tags
+          docs: https://dev.twitter.com/cards/getting-started
+          Validate your Twitter card markup on the docs site.
         */}
         <meta name='twitter:card' content='summary' />
         <meta name='twitter:site' content='@martymcgee' />
