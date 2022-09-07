@@ -230,7 +230,7 @@ body {
 }
 
 #compass:after {
-    content: url('../media/compass_140.png');
+    content: url('/media/compass_140.png');
     position: absolute;
     margin-top: -70px;
     margin-left: -21px;
@@ -524,7 +524,7 @@ li .brandImg img {
 }
 
 a[target="_blank"]:after {
-    content: url("../media/externallink.png");
+    content: url("/media/externallink.png");
 }
 
 .moreInfoBtn {

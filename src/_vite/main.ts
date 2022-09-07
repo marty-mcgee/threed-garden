@@ -11,7 +11,7 @@ import '~/_vite/style.css'
 document.querySelector<HTMLDivElement>('#root')!.innerHTML = `
   <div>
     <div style="text-align: center; margin-bottom: 2rem;">
-      <a href="https://threedgarden.com/demo" target="_blank">
+      <a href="https://threedgarden.com/demo/" target="_blank">
         <img src="${threedgardenLogo}" alt="ThreeD Garden Logo" width="200" height="200" />
       </a>
       <h1>ThreeD Garden</h1>

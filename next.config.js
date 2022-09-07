@@ -7,7 +7,7 @@ if (!process.env) {
     Please create a .env local file.
   `)
 } else {
-  console.log("process.env=", process.env)
+  // console.log("process.env=", process.env)
 }
 if (!process.env?.THREED_WP_GRAPHQL_API_URL) {
   // throw new Error(`
@@ -16,7 +16,7 @@ if (!process.env?.THREED_WP_GRAPHQL_API_URL) {
     Add to your environment variables THREED_WP_GRAPHQL_API_URL.
   `)
 } else {
-  console.log("process.env.THREED_WP_GRAPHQL_API_URL=", process.env.THREED_WP_GRAPHQL_API_URL)
+  // console.log("THREED_WP_GRAPHQL_API_URL=", process.env.THREED_WP_GRAPHQL_API_URL)
 }
 
 // =================================================================
@@ -27,7 +27,25 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 const withPWA = require('next-pwa')
 const runtimeCaching = require('next-pwa/cache')
 
-// const path = require('path')
+const withTM = require("next-transpile-modules")([
+  "three"
+])
+
+const path = require('path')
+
+const { PHASE_DEVELOPMENT_SERVER } = require("next/constants")
+
+// console.log("PHASE_DEVELOPMENT_SERVER", PHASE_DEVELOPMENT_SERVER)
+
+// if (phase === PHASE_DEVELOPMENT_SERVER) {
+//     return {
+//       /* development only config options here */
+//       env: {
+//         customKey: "my-value",
+//       },
+//     }
+//   }
+// }
 
 // =================================================================
 
@@ -36,10 +54,47 @@ const runtimeCaching = require('next-pwa/cache')
  */
 const nextConfig = {
 
+  env: {
+    threedKey: process.env.THREED_KEY,
+    threedKey2: process.env.THREED_KEY,
+    threedKey3: process.env.THREED_KEY,
+  },
+
+  images: {
+    domains: [
+      process.env.THREED_WP_GRAPHQL_API_URL.match(/(?!(w+)\.)\w*(?:\w+\.)+\w+/)[0], // Valid WP Image domain.
+      "0.gravatar.com",
+      "1.gravatar.com",
+      "2.gravatar.com",
+      "secure.gravatar.com",
+    ],
+  },
+
+  // async redirects() {
+  //   return [
+  //     {
+  //       source: "/",
+  //       destination: "/demo/",
+  //       permanent: true,
+  //     },
+  //   ]
+  // },
+
+  trailingSlash: true,
+
+  experimental: {
+    esmExternals: false,
+    // jsconfigPaths: true, // enables it for both jsconfig.json and tsconfig.json
+    images: {
+      allowFutureImage: true
+    }
+  },
+
   // use SWC minify instead of Terser (7x faster)
   swcMinify: true,
 
-  // do not use this in dev or prod
+  // do not use this in dev. disabled by default in prod
+  // true causes components to load TWICE in dev
   reactStrictMode: false,
 
   webpack(config, { isServer }) {
@@ -89,12 +144,18 @@ const nextConfig = {
     // config.resolve.alias['~/'] = path.join(___dirname, 'src/')
     // config.resolve.alias['@/'] = path.join(___dirname, 'src/')
 
+    // eslint-disable-next-line no-param-reassign
+    // config.resolve.alias = {
+    //   ...config.resolve.alias,
+    //   apexcharts: path.resolve(__dirname, './node_modules/apexcharts-clevision')
+    // }
+
     return config
   },
 }
 
 // manage i18n
-if (process.env.EXPORT !== 'true') {
+if (process.env.THREED_I18N !== 'true') {
   nextConfig.i18n = {
     locales: ['en-US'],
     defaultLocale: 'en-US',
@@ -114,6 +175,7 @@ module.exports = (_phase, { defaultConfig }) => {
       },
     ],
     [withBundleAnalyzer, {}],
+    [withTM, {}],
   ]
 
   return plugins.reduce(

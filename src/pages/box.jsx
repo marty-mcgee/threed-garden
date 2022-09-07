@@ -1,7 +1,6 @@
-import Instructions from '~/components/dom/Instructions'
 import dynamic from 'next/dynamic'
 
-const Box = dynamic(() => import('~/components/canvas/Box'), {
+const Box = dynamic(() => import('~/components/fiber/canvas/Box'), {
   ssr: false,
 })
 
@@ -9,7 +8,7 @@ const Box = dynamic(() => import('~/components/canvas/Box'), {
 const Page = (props) => {
   return (
     <>
-      <Instructions />
+      {/* <SomePageComponent /> */}
     </>
   )
 }

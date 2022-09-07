@@ -31,6 +31,12 @@ dist
 dist-ssr
 *.local
 
+# next
+# .next
+# /.next/
+/out/
+# next-env.d.ts
+
 # assets | static
 assets/*
 !assets/libraries
