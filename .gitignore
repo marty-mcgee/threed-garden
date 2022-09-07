@@ -32,8 +32,8 @@ dist-ssr
 *.local
 
 # next
-# .next
-# /.next/
+.next
+/.next/
 /out/
 # next-env.d.ts
 
