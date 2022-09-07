@@ -4,7 +4,6 @@ const Box = dynamic(() => import('~/components/fiber/BoxExample'), {
   ssr: false,
 })
 
-// Step 5 - delete Instructions components
 const Page = (props) => {
   return (
     <>
