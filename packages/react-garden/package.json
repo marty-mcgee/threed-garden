@@ -1,6 +1,6 @@
 {
   "name": "@threed/react-garden",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "private": false,
   "description": "React + TypeScript app using Material UI on NextJS",
   "author": {
@@ -9,37 +9,37 @@
     "url": "https://github.com/marty-mcgee"
   },
   "scripts": {
-    "________0": "=== custom scripts ===============================",
-    "mm": "next -p 7777",
-    "mm:install": "npm install --no-optional --omit=optional",
-    "mm:install:full": "npm install",
-    "mm:install:pnpm": "pnpm i",
-    "________1": "=== use these ====================================",
-    "mm:scrub": "rd /S /Q .\\node_modules & rd /S /Q .\\.next & del /F .\\pnpm-lock.yaml ;",
-    "mm:scrub:next": "rd /S /Q .\\.next ;",
-    "________2": "=== use these ====================================",
-    "next": "next -p 7777",
-    "next:dev": "next dev -p 7777",
-    "next:build": "next build",
-    "next:start": "next start -p 7777",
-    "next:export": "next export",
-    "next:test": "echo \"Error: no test specified\" && exit 1",
-    "________3": "=== old, do not use these ========================",
-    "old:start": "react-scripts start -p 2999",
-    "old:build": "react-scripts build",
-    "old:test": "react-scripts test",
-    "old:eject": "react-scripts eject",
-    "________4": "=== cleanup on aisle nine ========================",
-    "prettier": "prettier --write **/*.{ts,tsx,js,jsx}",
-    "prettier:demo": "prettier --write ./src/pages/demo/*.{ts,tsx,js,jsx}",
-    "lint:demo": "eslint ./src/pages/demo/*.{ts,tsx,js,jsx}",
-    "lint": "eslint src --ext .ts",
-    "lint:fix": "pnpm lint -- --fix",
-    "lint:next": "next lint",
-    "________5": "=== testing, testing =============================",
-    "test:run": "jest",
-    "test:lint": "run lint && pnpm test:run",
-    "________X": "=================================================="
+    "_____________0":   "____ custom scripts _______________________________",
+    "mm":               "next -p 7777",
+    "mm:install":       "npm install --no-optional --omit_optional",
+    "mm:install:full":  "npm install",
+    "mm:install:pnpm":  "pnpm i",
+    "_____________1":   "____ use these ____________________________________",
+    "mm:scrub:pnpm":    "rd /S /Q .\\node_modules & del /F .\\pnpm-lock.yaml ;",
+    "mm:scrub:next":    "rd /S /Q .\\.next ;",
+    "_____________2":   "____ use these ____________________________________",
+    "next":             "next -p 7777",
+    "next:dev":         "next dev -p 7777",
+    "next:build":       "next build",
+    "next:start":       "next start -p 7777",
+    "next:export":      "next export",
+    "next:test":        "echo \"Error: no test specified\" && exit 1",
+    "_____________3":   "____ old, do not use these ________________________",
+    "old:start":        "react-scripts start -p 2999",
+    "old:build":        "react-scripts build",
+    "old:test":         "react-scripts test",
+    "old:eject":        "react-scripts eject",
+    "_____________4":   "____ cleanup on aisle nine ________________________",
+    "prettier":         "prettier --write **/*.{ts,tsx,js,jsx}",
+    "prettier:demo":    "prettier --write ./src/pages/demo/*.{ts,tsx,js,jsx}",
+    "lint:demo":        "eslint ./src/pages/demo/*.{ts,tsx,js,jsx}",
+    "lint":             "eslint src --ext .ts",
+    "lint:fix":         "pnpm lint -- --fix",
+    "lint:next":        "next lint",
+    "_____________5":   "____ testing, testing _____________________________",
+    "test:run":         "jest",
+    "test:lint":        "run lint && pnpm test:run",
+    "_____________X":   "____ ______________________________________________"
   },
   "dependencies": {
     "@emotion/cache": "11.10.1",
@@ -66,7 +66,7 @@
     "prop-types": "15.8.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "scheduler": ">=0.19.0",
+    "scheduler": ">_0.19.0",
     "stylis": "4.1.1",
     "stylis-plugin-rtl": "github:marty-mcgee/stylis-plugin-rtl#main",
     "tailwindcss": "^3.1.8",
@@ -113,7 +113,7 @@
     "pnpm": "7.9.5",
     "prettier": "2.7.1",
     "prettier-eslint-cli": "6.0.1",
-    "typescript": ">=4.7.4"
+    "typescript": ">_4.7.4"
   },
   "optionalDependencies": {
     "@asseinfo/react-kanban": "2.2.0",
@@ -166,14 +166,14 @@
     "i18next": "21.7.1",
     "i18next-browser-languagedetector": "6.1.2",
     "i18next-http-backend": "1.3.1",
-    "immutable": ">=3.0.0 <4.0.0 || >=4.0.0 <5.0.0",
+    "immutable": ">_3.0.0 <4.0.0 || >_4.0.0 <5.0.0",
     "jsonwebtoken": "8.5.1",
     "keen-slider": "6.6.14",
     "mdi-material-ui": "7.1.0",
     "nprogress": "0.2.0",
     "payment": "2.4.6",
     "prismjs": "1.25.0",
-    "prop-types": ">=15.7.2 <16.0.0",
+    "prop-types": ">_15.7.2 <16.0.0",
     "react-apexcharts": "1.3.9",
     "react-credit-cards": "0.8.3",
     "react-datepicker": "4.5.0",
@@ -182,7 +182,7 @@
     "react-hook-form": "7.3.0",
     "react-hot-toast": "2.1.1",
     "react-i18next": "11.14.3",
-    "react-native": ">=0.59.0",
+    "react-native": ">_0.59.0",
     "react-perfect-scrollbar": "1.5.8",
     "react-popper": "2.2.5",
     "react-redux": "8.0.1",
@@ -197,27 +197,5 @@
     "react-table": "7.8.0",
     "regenerator-runtime": "0.13.9",
     "yup": "0.32.11"
-  },
-  "engines" : {
-    "npm" : ">=7.0.0",
-    "node" : ">=16.0.0"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-dapp",
-      "react-dapp/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   }
 }
