@@ -15,6 +15,14 @@ interface Annotation {
   descriptionDomElement?: HTMLElement
 }
 
+const window = {
+  innerWidth: 1000,
+  innerHeight: 600,
+  addEventListener: function(e: any) {
+    console.debug("[MM] Event Listener", e)
+  }
+}
+
 const AnnotationsPage = (props: any) => {
 
   console.debug("Annotations props coming in", props)

@@ -1,6 +1,9 @@
 // ** Next Imports
 import dynamic from 'next/dynamic'
 
+// ** Custom Imports
+import Annotations from './annotations'
+
 // ** Custom Components Imports
 // import Shader from '~/components/fiber/fiber/Shaders/Shader'
 // instead..
@@ -17,7 +20,8 @@ const Shader = dynamic(() => import('~/components/fiber/Shaders/Shader'), {
 const Page = (props) => {
   return (
     <>
-      {/* <SomePageComponent /> */}
+      <h1 style={{ paddingLeft: 48 }}>Marty McGee: Senior Web Visualization Developer</h1>
+      {/* <Annotations /> */}
       <progress value="0" max="100" id="progressBar"></progress>
       <div id="annotationsPanel"></div>
     </>
