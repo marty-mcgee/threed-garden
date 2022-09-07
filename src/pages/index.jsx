@@ -1,13 +1,15 @@
+// ** Next Imports
 import dynamic from 'next/dynamic'
-// Step 5 - delete Instructions components
-import Instructions from '~/components/dom/Instructions'
-// import Shader from '~/components/canvas/Shader/Shader'
 
-// Dynamic import is used to prevent a payload when the website start that will include threejs r3f etc..
+// ** Custom Components Imports
+// import Shader from '~/components/fiber/canvas/Shader/Shader'
+// instead..
+// Dynamic import is used to prevent a payload when the website start 
+// that will include threejs r3f etc..
 // WARNING ! errors might get obfuscated by using dynamic import.
 // If something goes wrong go back to a static import to show the error.
 // https://github.com/pmndrs/react-three-next/issues/49
-const Shader = dynamic(() => import('~/components/canvas/Shader/Shader'), {
+const Shader = dynamic(() => import('~/components/fiber/canvas/Shader/Shader'), {
   ssr: false,
 })
 
@@ -15,7 +17,9 @@ const Shader = dynamic(() => import('~/components/canvas/Shader/Shader'), {
 const Page = (props) => {
   return (
     <>
-      {/* <Instructions /> */}
+      {/* <SomePageComponent /> */}
+      <progress value="0" max="100" id="progressBar"></progress>
+      <div id="annotationsPanel"></div>
     </>
   )
 }

@@ -5,6 +5,9 @@ import { setState } from '~/stores/store'
 import Header from '~/components/seo/config'
 import Dom from '~/components/layout/dom'
 import '~/styles/index.css'
+import '~/styles/globals.css'
+import '~/styles/threed.css'
+import '~/styles/annotations.css'
 
 // ==============================================================
 // CUSTOM IMPORT (SSR true|false)

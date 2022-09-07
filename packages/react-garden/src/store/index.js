@@ -9,6 +9,7 @@ import invoice from '~/store/apps/invoice'
 import calendar from '~/store/apps/calendar'
 import permissions from '~/store/apps/permissions'
 
+// eslint-disable-next-line import/prefer-default-export
 export const store = configureStore({
   reducer: {
     user,

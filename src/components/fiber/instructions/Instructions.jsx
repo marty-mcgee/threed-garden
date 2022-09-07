@@ -15,7 +15,7 @@ export default function Instructions() {
         <span className='text-red-200'> ~/pages/index </span>
         <br />
         Step 2 - <span className='text-green-200'>update:</span>
-        <span className='text-red-200'> ~/components/canvas/Shader/Shader </span>
+        <span className='text-red-200'> ~/components/fiber/canvas/Shader/Shader </span>
         <br />
         Step 3 - <span className='text-green-200'>delete:</span>
         <span className='text-red-200'> ~/pages/box </span>
@@ -24,7 +24,7 @@ export default function Instructions() {
         <span className='text-red-200'> ~/components/seo/config </span>
         <br />
         Step 5 - <span className='text-green-200'>delete:</span>
-        <span className='text-red-200'> ~/components/dom/Instructions</span>
+        <span className='text-red-200'> ~/components/instructions/Instructions</span>
       </div>
     </div>
   )
