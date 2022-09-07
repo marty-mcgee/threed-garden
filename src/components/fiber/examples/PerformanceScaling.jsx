@@ -6,11 +6,16 @@ import { EffectComposer, SSAO, Bloom } from '@react-three/postprocessing'
 import { KernelSize, BlendFunction } from 'postprocessing'
 import { RectAreaLightUniformsLib, FlakesTexture } from 'three-stdlib'
 
-// This demo shows how to use react-three-fibers regression system
-// When call call state.regress() nothing really will happen, all it
-// does is setting a flag. But parts of the scene graph can now respond
-// to it in whatever way the want. Here we cause regression on mouse-move
-// and scale the pixel ratio as well as skipping some post-processing effects.
+// [MM] This demo shows:
+// how to use react-three-fibers regression system
+// When calling state.regress()
+// nothing really will happen,
+// all it does is setting a flag.
+// But parts of the scene graph can now
+// respond to it in whatever way the want.
+// Here, we cause regression
+// on mouse-movement, and scale the pixel ratio,
+// as well as skip some post-processing effects.
 
 RectAreaLightUniformsLib.init()
 THREE.Vector2.prototype.equals = function (v, epsilon = 0.001) {
