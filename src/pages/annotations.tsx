@@ -60,7 +60,7 @@ const AnnotationsPage = (props: any) => {
 
   const mtlLoader = new MTLLoader()
   mtlLoader.load(
-      'models/house_water.mtl',
+      'https://threedpublic.s3.amazonaws.com/demo/objects/house_water.mtl',
       (materials) => {
           materials.preload()
 
@@ -68,14 +68,14 @@ const AnnotationsPage = (props: any) => {
           const objLoader = new OBJLoader()
           objLoader.setMaterials(materials)
           objLoader.load(
-              'models/house_water.obj',
+              'https://threedpublic.s3.amazonaws.com/demo/objects/house_water.obj',
               (object) => {
                   object.scale.set(0.01, 0.01, 0.01)
                   scene.add(object)
                   sceneMeshes.push(object)
 
                   const annotationsDownload = new XMLHttpRequest()
-                  annotationsDownload.open('GET', '/wp-content/plugins/threed-garden/threejs-ts-bp-anno/dist/client/data/annotations.json')
+                  annotationsDownload.open('GET', '/api/annotations.json')
                   annotationsDownload.onreadystatechange = function () {
                       if (annotationsDownload.readyState === 4) {
                           annotations = JSON.parse(annotationsDownload.responseText)
