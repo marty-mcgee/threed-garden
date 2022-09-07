@@ -5,10 +5,16 @@
 ## Description
 ThreeD Garden on ThreeJS React-Fiber using Vite/Vue/NextJS and Farmbot Ruby/JS (available as a standalone app and a WordPress plugin). 'threed-garden' is a functioning, low-dependency app, a package supporting a monorepo of workspaces that utilize/depend on 'ThreeJS, WebGL, Vite React, Vue, TypeScript, React-Three-Fiber, GraphQL', in active development.
 
-## Details
-ThreeD Garden is an app written in JavaScript (TypeScript) for intense ThreeJS WebGL 3D rendering, using the React/Next (or Vue/Nuxt, or Vanilla/Vite) frameworks integration. ThreeD Garden can connect to a real-life FarmBot Genesis XL 1.6 robotic gardening system via the FarmBot JS/TS APIs. Let's get growing!!
+## ThreeD Nouns + Actions
+* Characters (Objects, Animated)
+* Environments (Worlds, Scenes)
+* Collisions (Interactions, Interfaces)
+* Results (Instant, Reporting)
 
 > "A Real Garden + Homestead Management Solution, using Virtual Interfaces"
+
+## Details
+ThreeD Garden is an app written in JavaScript (TypeScript) for intense ThreeJS WebGL 3D rendering, using the React/Next (or Vue/Nuxt, or Vanilla/Vite) frameworks integration. ThreeD Garden can connect to a real-life FarmBot Genesis XL 1.6 robotic gardening system via the FarmBot JS/TS APIs. Let's get growing!!
 
 Contributors: marty-mcgee, companyjuice, garden.university
 
