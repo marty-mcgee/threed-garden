@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 
-const Box = dynamic(() => import('~/components/fiber/canvas/Box'), {
+const Box = dynamic(() => import('~/components/fiber/BoxExample'), {
   ssr: false,
 })
 
