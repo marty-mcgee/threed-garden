@@ -35,7 +35,7 @@ dist-ssr
 .next
 /.next/
 /out/
-# next-env.d.ts
+next-env.d.ts
 
 # assets | static
 assets/*
