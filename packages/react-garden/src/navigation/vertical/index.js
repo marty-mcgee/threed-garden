@@ -35,11 +35,10 @@ const navigation = () => {
         }
       ]
     },
-    // Parallel
     {
       title: 'Account',
       icon: ManageAccount,
-      badgeContent: 'Parallel', // 'new'
+      badgeContent: '', // 'new'
       path: '/pages/dialog-examples'
     },
     {
@@ -60,43 +59,43 @@ const navigation = () => {
     {
       sectionTitle: 'Apps & Pages'
     },
-    {
-      title: 'Email',
-      icon: EmailOutline,
-      path: '/apps/email'
-    },
-    {
-      title: 'Chat',
-      icon: MessageOutline,
-      path: '/apps/chat'
-    },
+    // {
+    //   title: 'Email',
+    //   icon: EmailOutline,
+    //   path: '/apps/email'
+    // },
+    // {
+    //   title: 'Chat',
+    //   icon: MessageOutline,
+    //   path: '/apps/chat'
+    // },
     {
       title: 'Calendar',
       icon: CalendarBlankOutline,
       path: '/apps/calendar'
     },
-    {
-      title: 'Invoice',
-      icon: FileDocumentOutline,
-      children: [
-        {
-          title: 'List',
-          path: '/apps/invoice/list'
-        },
-        {
-          title: 'Preview',
-          path: '/apps/invoice/preview'
-        },
-        {
-          title: 'Edit',
-          path: '/apps/invoice/edit'
-        },
-        {
-          title: 'Add',
-          path: '/apps/invoice/add'
-        }
-      ]
-    },
+    // {
+    //   title: 'Invoice',
+    //   icon: FileDocumentOutline,
+    //   children: [
+    //     {
+    //       title: 'List',
+    //       path: '/apps/invoice/list'
+    //     },
+    //     {
+    //       title: 'Preview',
+    //       path: '/apps/invoice/preview'
+    //     },
+    //     {
+    //       title: 'Edit',
+    //       path: '/apps/invoice/edit'
+    //     },
+    //     {
+    //       title: 'Add',
+    //       path: '/apps/invoice/add'
+    //     }
+    //   ]
+    // },
     {
       title: 'User',
       icon: AccountOutline,
