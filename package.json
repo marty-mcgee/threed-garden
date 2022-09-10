@@ -21,9 +21,6 @@
     "packages": [
       "packages/_sandbox",
       "packages/open-juice",
-      "packages/react-garden",
-      "packages/vite-garden",
-      "packages/vue-garden",
       "packages/wordpress-plugin"
     ]
   },
