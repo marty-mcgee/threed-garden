@@ -37,7 +37,7 @@
     "mm:build:vite":        "tsc && vite build",
     "mm:build:vue":         "vue-tsc --noEmit && vite build",
     "mm:preview":           "vite build && vite preview",
-    "mm:start":             "node index.js",
+    "mm:start:node":        "node index.js",
     "mm:install":           "npm install --no-optional",
     "mm:install:npm":       "npm install",
     "mm:install:pnpm":      "pnpm i --no-optional",
