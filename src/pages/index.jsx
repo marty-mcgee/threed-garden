@@ -20,7 +20,7 @@ const Shader = dynamic(() => import('~/components/fiber/Shaders/Shader'), {
 const Page = (props) => {
   return (
     <>
-      <h1 style={{ paddingLeft: 48 }}>Marty McGee: Senior Web Visualization Developer</h1>
+      <h1 style={{ paddingLeft: 48 }}>Marty McGee: Senior Web Developer</h1>
       {/* <Annotations /> */}
       <progress value="0" max="100" id="progressBar"></progress>
       <div id="annotationsPanel"></div>
