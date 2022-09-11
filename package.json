@@ -19,9 +19,7 @@
   "private": false,
   "workspaces": {
     "packages": [
-      "packages/_sandbox",
-      "packages/open-juice",
-      "packages/wordpress-plugin"
+      "packages/_sandbox"
     ]
   },
   "scripts": {
@@ -46,23 +44,6 @@
     "mm:test":              "tsc",
     "mm:jest":              "jest",
     "mm:deploy:github":     "echo 'deploy to?'",
-    "______________1":      "____ you can use these too ______________________________",
-    "react-garden:mm":      "pnpm workspace react-garden mm",
-    "react-garden:tsc":     "pnpm workspace react-garden tsc",
-    "react-garden:dev":     "pnpm workspace react-garden dev",
-    "react-garden:build":   "pnpm workspace react-garden build",
-    "react-garden:test":    "pnpm workspace react-garden test",
-    "react-garden:jest":    "pnpm workspace react-garden jest",
-    "vue-garden:mm":        "pnpm workspace vue-garden mm",
-    "vue-garden:tsc":       "pnpm workspace vue-garden tsc",
-    "vue-garden:dev":       "pnpm workspace vue-garden dev",
-    "vue-garden:build":     "pnpm workspace vue-garden build",
-    "vue-garden:test":      "pnpm workspace vue-garden test",
-    "vue-garden:jest":      "pnpm workspace vue-garden jest",
-    "vite-garden:mm":       "pnpm workspace vite-garden mm",
-    "vite-garden:build":    "pnpm workspace vite-garden build",
-    "vite-garden:dev":      "pnpm workspace vite-garden dev",
-    "vite-garden:preview":  "pnpm workspace vite-garden preview",
     "______________X":      "____ ___________________________________________________"
   },
   "dependencies": {
