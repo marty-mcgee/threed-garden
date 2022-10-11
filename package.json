@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.11.4",
+  "version": "0.11.7",
   "description": "ThreeD Garden is a full web3 app running on ThreeJS React-Fiber using Vite/Vue/NextJS and Farmbot Ruby/JS (available as a standalone app and a WordPress plugin). 'threed-garden' is a functioning, low-dependency app, a package supporting a monorepo of workspaces that utilize/depend on 'ThreeJS, WebGL, React, Vue, TypeScript <Fiber>, GraphQL', in active development.",
   "repository": {
     "type": "git",
@@ -64,7 +64,6 @@
     "glsl-random": "^0.0.5",
     "glslify": "^7.1.1",
     "glslify-loader": "^2.0.0",
-    "leva": "^0.9.31",
     "next": "^12.2.5",
     "next-pwa": "^5.6.0",
     "paper": "^0.12.15",
@@ -117,7 +116,8 @@
     "url-loader": "^4.1.1",
     "vite": "^3.0.9",
     "vue-tsc": "^0.40.7",
-    "webpack": "@>=5.9.0 <6.0.0"
+    "webpack": "@>=5.9.0 <6.0.0",
+    "wordpress-plugin": "^0.1.8-alpha"
   },
   "engines" : {
     "npm": ">=7.0.0",

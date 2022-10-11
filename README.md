@@ -1,10 +1,14 @@
-# Project: ThreeD Garden
+# 🌱 ThreeD Garden
 
 ![ThreeD Demo Screenshot](https://threedpublic.s3.amazonaws.com/demo/marty-mcgee-portfolio-gardenuniversity-threedgarden-v002-600x338.png "ThreeD Garden React Three Fiber -- Demo Screenshot")
 
 ====
 ## Project Description
 ThreeD Garden is an app written in JavaScript (TypeScript) for intense ThreeJS WebGL 3D rendering, using the React/Next (or Vue/Nuxt, or Vanilla/Vite) frameworks, using @react-three libraries. ThreeD Garden is exportable as a standalone CommonJS app, and as a WordPress plugin. 'threed-garden' is a functioning, low-dependency app, a package supporting a monorepo of workspaces that utilize/depend on 'ThreeJS, WebGL, Vite React, Vue, TypeScript, React-Three-Fiber, GraphQL', in active development.
+
+====
+## Live Demo
+[ThreeD Garden](https://threedgarden.com/demo/)
 
 ====
 ## ThreeDs = Nouns + Actions = Interactions
@@ -38,8 +42,10 @@ Future Landing Pages: workin on it..
 1. install: `pnpm i`
 2. run: `pnpm dev`
 3. build: `pnpm build`
-3. deploy: `pnpm deploy`
+4. deploy: `pnpm deploy`
 
 ====
 ## Documentation
 workin on it.. in vitepress (or nuxtpress, or nextpress, or whateverpress)
+
+> a part of the 🌱 threed.ai code family
