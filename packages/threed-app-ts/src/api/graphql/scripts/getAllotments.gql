@@ -1,0 +1,81 @@
+query GetAllotments($first: Int, $last: Int, $after: String, $before: String) {
+  allotments(first: $first, last: $last, after: $after, before: $before) {
+    pageInfo {
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      startCursor
+    }
+    edges {
+      cursor
+      node {
+        content
+        contentTypeName
+        # databaseId
+        # date
+        # dateGmt
+        # desiredSlug
+        # enclosure
+        # guid
+        id
+        # isContentNode
+        # isPreview
+        # isRestricted
+        # isTermNode
+        link
+        # modified
+        # modifiedGmt
+        # previewRevisionDatabaseId
+        # previewRevisionId
+        slug
+        status
+        # template {
+        #   templateName
+        # }
+        title
+        uri
+        # custom fields
+        allotmentId
+        allotmentColor
+        allotmentHeightY
+        allotmentLengthZ
+        allotmentOrientation
+        allotmentScene {
+          node {
+            id
+            sceneId
+            title
+          }
+        }
+        allotmentShape
+        allotmentTextureImage {
+          node {
+            id
+            mediaItemUrl
+            mediaItemId
+            mediaType
+            mediaDetails {
+              file
+              height
+              width
+            }
+            slug
+            sourceUrl
+            status
+            uri
+            title
+          }
+        }
+        allotmentWidthX
+      }
+    }
+  }
+  # beds {
+  #   edges {
+  #     node
+  #   }
+  # }
+  # plants {
+  #   nodes
+  # }
+}

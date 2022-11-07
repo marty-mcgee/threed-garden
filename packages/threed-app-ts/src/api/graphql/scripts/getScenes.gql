@@ -1,0 +1,182 @@
+query GetScenes ($first: Int, $last: Int, $after: String, $before: String) {
+  scenes (first: $first, last: $last, after: $after, before: $before) {
+    pageInfo {
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      startCursor
+    }
+    edges {
+      cursor
+      node {
+        content
+        contentTypeName
+        # databaseId
+        # date
+        # dateGmt
+        # desiredSlug
+        # enclosure
+        # guid
+        id
+        # isContentNode
+        # isPreview
+        # isRestricted
+        # isTermNode
+        link
+        # modified
+        # modifiedGmt
+        # previewRevisionDatabaseId
+        # previewRevisionId
+        slug
+        status
+        # template {
+        #   templateName
+        # }
+        title
+        uri
+        # custom fields
+        sceneId
+        sceneBgColor
+        sceneBgImage {
+          node {
+            id
+            link
+            mediaItemId
+            mediaItemUrl
+            mediaType
+            mediaDetails {
+              file
+              height
+              width
+            }
+          }
+        }
+        sceneBgImageNx {
+          node {
+            mediaItemId
+            mediaItemUrl
+            mediaType
+            mediaDetails {
+              file
+              height
+              width
+            }
+            sourceUrl
+            title
+            uri
+            link
+            slug
+          }
+        }
+        sceneBgImageNy {
+          node {
+            mediaItemId
+            mediaItemUrl
+            mediaType
+            mediaDetails {
+              file
+              height
+              width
+            }
+            sourceUrl
+            title
+            uri
+            link
+            slug
+          }
+        }
+        sceneBgImageNz {
+          node {
+            mediaItemId
+            mediaItemUrl
+            mediaType
+            mediaDetails {
+              file
+              height
+              width
+            }
+            sourceUrl
+            title
+            uri
+            link
+            slug
+          }
+        }
+        sceneBgImagePx {
+          node {
+            mediaItemId
+            mediaItemUrl
+            mediaType
+            mediaDetails {
+              file
+              height
+              width
+            }
+            sourceUrl
+            title
+            uri
+            link
+            slug
+          }
+        }
+        sceneBgImagePy {
+          node {
+            mediaItemId
+            mediaItemUrl
+            mediaType
+            mediaDetails {
+              file
+              height
+              width
+            }
+            sourceUrl
+            title
+            uri
+            link
+            slug
+          }
+        }
+        sceneBgImagePz {
+          node {
+            mediaItemId
+            mediaItemUrl
+            mediaType
+            mediaDetails {
+              file
+              height
+              width
+            }
+            sourceUrl
+            title
+            uri
+            link
+            slug
+          }
+        }
+        scenePlaneWidthX
+        scenePlaneHeightY
+        scenePlaneLengthZ
+        scenePlaneTextureRepeatX
+        scenePlaneTextureRepeatY
+        scenePlaneTextureRepeatZ
+        scenePlaneTextureImage {
+          node {
+            mediaDetails {
+              file
+              height
+              width
+            }
+            link
+            slug
+            sourceUrl
+            title
+            uri
+          }
+        }
+      }
+    }
+  }
+  # allotments {
+  #   nodes
+  # }
+}

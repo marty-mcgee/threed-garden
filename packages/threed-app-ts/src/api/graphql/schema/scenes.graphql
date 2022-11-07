@@ -1,0 +1,8 @@
+type Scene {
+  id: ID!
+  name: String!
+}
+
+type Query {
+  getScenes: [Scene] @rest(endpoint: "https://threed.design/pods/v1/scenes")
+}
