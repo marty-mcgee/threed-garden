@@ -6,11 +6,14 @@
     "type": "git",
     "url": "git+https://github.com/marty-mcgee/threed-garden.git"
   },
-  "author": {
-    "name": "Marty McGee",
-    "email": "mcgee.marty@gmail.com",
-    "url": "https://github.com/marty-mcgee"
-  },
+  "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
+  "contributors": [
+    {
+      "name": "Marty McGee",
+      "email": "mcgee.marty@gmail.com",
+      "url": "https://github.com/marty-mcgee"
+    }
+  ],
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/marty-mcgee/threed-garden/issues/"
