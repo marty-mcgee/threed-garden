@@ -72,3 +72,7 @@ _drafts
 
 # demo
 public/demo/objects/*
+
+# custom
+@threed
+_sandbox
