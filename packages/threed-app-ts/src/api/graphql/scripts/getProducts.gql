@@ -1,0 +1,45 @@
+query GetProducts($first: Int, $last: Int, $after: String, $before: String) {
+  products(first: $first, last: $last, after: $after, before: $before) {
+    pageInfo {
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      startCursor
+    }
+    edges {
+      cursor
+      node {
+        id
+        slug
+        name
+        type
+        databaseId
+        shortDescription
+        image {
+          id
+          sourceUrl
+          altText
+        }
+        galleryImages {
+          nodes {
+            id
+            sourceUrl
+            altText
+          }
+        }
+        ... on SimpleProduct {
+          onSale
+          price
+          content
+          regularPrice
+        }
+        ... on VariableProduct {
+          onSale
+          price
+          content
+          regularPrice
+        }
+      }
+    }
+  }
+}

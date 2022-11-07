@@ -1,0 +1,11 @@
+{
+  "version": 3,
+  "sources": [
+    "/s/files/1/2040/0289/t/41/assets/what-you-can-grow.scss.css?v=174676776694382640931660686796"
+  ],
+  "sourcesContent": [
+    "#water-line path {\n  stroke-opacity: 0.2;\n  stroke-width: 6;\n  stroke: blue;\n  stroke-linecap: round; }\n\n#stage-1 .st370 {\n  fill: #C5CFD6; }\n#stage-1 .st371 {\n  fill: #AA7E4F; }\n#stage-1 .st372 {\n  fill: #CDD6E0; }\n#stage-1 .st373 {\n  fill: #516666; }\n\n#stage-2 .st0 {\n  display: none; }\n\n#stage-2 .st1 {\n  fill: #AA7E4F; }\n\n#stage-2 .st2 {\n  fill: #7D961B; }\n\n#stage-2 .st3 {\n  fill: #1A4B29; }\n\n#stage-5 .bed-lines {\n  fill: #AA7E4F; }\n\n#stage-5 .st2 {\n  fill: #7D961B; }\n\n#stage-5 .st3 {\n  fill: #1A4B29; }\n\n#stage-5 .st4 {\n  fill: #104B11; }\n\n#stage-5 .st5 {\n  fill: #EC4E1D; }\n\n#stage-5 .st6 {\n  fill: #F6A267; }\n\n#stage-5 .st7 {\n  fill: #FFFFFF; }\n\n#stage-5 .st8 {\n  fill: #96231C; }\n\n#stage-5 .st9 {\n  fill: #4F8125; }\n\n#stage-5 .st10 {\n  fill: #FCBA4F; }\n\n#stage-5 .st11 {\n  fill: #E3682C; }\n\n#stage-5 .st12 {\n  fill: #B33F38; }\n\n#stage-5 .st13 {\n  fill: #512B26; }\n\n#stage-5 .st14 {\n  fill: #68664D; }\n\n#stage-5 .st15 {\n  fill: #A7C63B; }\n\n#stage-5 .st16 {\n  fill: #E9DB30; }\n\n#stage-5 .st17 {\n  fill: #ADC645; }\n\n#stage-5 .st18 {\n  fill: #B7C943; }\n\n#stage-5 .st19 {\n  fill: #C1CC42; }\n\n#stage-5 .st20 {\n  fill: #CBD042; }\n\n#stage-5 .st21 {\n  fill: #D6D343; }\n\n#stage-5 .st22 {\n  fill: #DFD643; }\n\n#stage-5 .st23 {\n  fill: #273F0D; }\n\n#vines .vine {\n  fill: none;\n  stroke: #1A4B29;\n  stroke-width: 10;\n  stroke-linecap: round;\n  stroke-miterlimit: 10; }\n\n#vine-leaves .st172 {\n  fill: #1A4B29; }\n\n#vine-leaves .st79 {\n  fill: #7D961B; }\n"
+  ],
+  "mappings": "AAAA,iBACE,kBACA,eACA,YACA,qBAEF,gBACE,aACF,gBACE,aACF,gBACE,aACF,gBACE,aAEF,cACE,aAEF,cACE,aAEF,cACE,aAEF,cACE,aAEF,oBACE,aAEF,cACE,aAEF,cACE,aAEF,cACE,aAEF,cACE,aAEF,cACE,aAEF,cACE,UAEF,cACE,aAEF,cACE,aAEF,eACE,aAEF,eACE,aAEF,eACE,aAEF,eACE,aAEF,eACE,aAEF,eACE,aAEF,eACE,aAEF,eACE,aAEF,eACE,aAEF,eACE,aAEF,eACE,aAEF,eACE,aAEF,eACE,aAEF,eACE,aAEF,aACE,UACA,eACA,gBACA,qBACA,qBAEF,oBACE,aAEF,mBACE",
+  "names": []
+}

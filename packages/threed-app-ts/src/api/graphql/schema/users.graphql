@@ -1,0 +1,12 @@
+type User {
+  id: ID!
+  name: String!
+  username: String!
+  email: String!
+  phone: String!
+  website: String!
+}
+
+type Query {
+  getUsers: [User] @rest(endpoint: "https://threed.design/pods/v1/users")
+}

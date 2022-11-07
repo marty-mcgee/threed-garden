@@ -1,0 +1,9 @@
+# folders
+lib/
+node_modules/**/*
+**/*.md
+docs/**/*
+website/**/*
+docusaurus/**/*
+build/**/*
+**/generated/**/*

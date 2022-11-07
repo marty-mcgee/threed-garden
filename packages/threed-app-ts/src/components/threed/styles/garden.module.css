@@ -1,0 +1,717 @@
+#appBar {
+  position: relative; /* absolute */
+  /* top: 0px; */
+  /* left: 0px; */
+  /* right: 0px; */
+  /* height: 48px; */
+  background-color: #131418; /* 131418 | original 424346 */
+}
+
+#catalogFilters {
+  position: relative; /* fixed */
+  /* top: 54px; */
+  /* left: 0px; */
+  /* width: 100%; */
+  height: 16px;
+  background-color: #09090D; /* 131418 | original 424346 */
+}
+
+#catalogTextFilter {
+  font-size: 16px;
+  margin-top: 4px;
+  margin-left: 4px;
+  padding-top: 2px;
+  padding-left: 4px;
+  width: 288px;
+  color: white;
+  border: 1px solid #2a2a2a;
+  background-color: #09090D; /* 131418 | original 424346 */
+}
+
+#catalogItems {
+  position: relative; /* absolute */
+  top: 32px;
+  /* bottom: 0px; */
+  overflow-y: auto;
+  overflow-x: hidden;
+  cursor: default;
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
+  background-color: #131418;
+}
+
+#catalogView {
+  position: relative; /* absolute */
+  background-color: #09090D; /* 131418 | original 424346 */
+}
+
+#propertiesView {
+  position: relative; /* absolute */
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #131418;
+  color: white;
+  font-size: 14px;
+  display: none;
+}
+
+#propertiesView input {
+  font-size: 14px;
+  color: white;
+  background-color: #09090D; /* 131418 | original 424346 */
+  padding: 2px 4px 2px 4px;
+}
+
+#propertiesView a {
+  color: white;
+}
+
+#planView {
+  position: absolute; /* absolute */
+  background-color: white;
+  bottom: 100px; /* */
+  left: 100px; /* */
+}
+
+#planCanvas {
+  top: 0px;
+  bottom: 50px;
+  left: 32px;
+  right: 0px;
+  background-color: #131418;
+}
+
+#rulerLeft {
+  position: relative; /* absolute */
+  background-color: #131418; /* 131418 | original 636363 */
+}
+
+#rulerBottom {
+  position: relative; /* absolute */
+  background-color: #131418; /* 131418 | original 636363 */
+}
+
+#view3d {
+  position: relative; /* absolute */
+  cursor: default;
+}
+
+#model3dView {
+  width: 1024px;
+  height: 520px;
+  margin-left: -16px;
+  position: relative;
+}
+
+#modalModelDescription {
+  position: absolute;
+  top: 80px;
+  left: 16px;
+  width: 350px;
+  height: 400px;
+}
+
+#modalModel3dObjHeader {
+  width: 390px;
+  height: 300px;
+  font-size: 12px;
+  overflow: auto;
+  color: white;
+  background-color: #424346;
+}
+
+#modalLoadingDataInfo {
+  width: 760px;
+  height: 180px;
+  font-size: 12px;
+  overflow: auto;
+  color: white;
+  background-color: #424346;
+}
+
+#verticalSlider {
+  position: absolute;
+  background-color: #2a2a2a;
+  cursor: ew-resize;
+}
+
+#horizontalSliderLeft {
+  position: absolute;
+  background-color: #2a2a2a;
+  cursor: ns-resize;
+}
+
+#horizontalSliderRight {
+  position: absolute;
+  background-color: #2a2a2a;
+  cursor: ns-resize;
+}
+
+#furnitureDragDiv {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100px;
+  height: 100px;
+  display: none;
+  opacity: 0.33;
+}
+
+.disableSelection {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  outline: 0;
+}
+
+#mouseIndicatorX {
+  position: absolute;
+  background-color: rgba(128, 128, 128, 0.5);
+  text-align: center;
+  display: none;
+  pointer-events: none;
+  z-index: 98;
+}
+
+#mouseIndicatorY {
+  position: absolute;
+  background-color: rgba(128, 128, 128, 0.5);
+  text-align: center;
+  display: none;
+  pointer-events: none;
+  z-index: 98;
+}
+
+#compass {
+  position: absolute;
+  right: 70px;
+  top: 840px;
+  opacity: 0.1;
+  pointer-events: none;
+  transform-origin: bottom center;
+}
+
+#compass:after {
+  content: url('/demo/media/compass_140.png');
+  position: absolute;
+  margin-top: -70px;
+  margin-left: -21px;
+  pointer-events: none;
+}
+
+#appBar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #131418; /* 131418 | original 424346 */
+}
+
+#appBar li {
+  float: left;
+}
+
+#appBar li a, .dropbtn {
+  display: inline-block;
+  color: white;
+  text-align: left;
+  padding-top: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: 8px;
+  text-decoration: none;
+  font-size: 14px;
+  transition: 0.5s;
+  cursor: pointer;
+}
+
+#appBar .toolButton {
+  padding-top: 12px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: 8px;
+  margin: 0px;
+  transition: 0.5s;
+}
+
+#appBar .activeTool {
+  background-color: #424346; /* 131418 | original 787878 */
+}
+
+#appBar li a:hover, .dropdown:hover .dropbtn {
+  background-color: #424346; /* 131418 | original 787878 */
+}
+
+#appBar li a:focus,
+.dropdown:hover .dropbtn {
+  background-color: #bbbbbb;
+}
+
+#appBar li.dropdown {
+  display: inline-block;
+}
+
+.dropdownContent {
+  display: none;
+  position: absolute;
+  background-color: #424346;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 99;
+}
+
+.dropdownContent a {
+  color: white;
+  padding: 12px 24px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdownContent a:hover {
+  background-color: #787878;
+}
+
+.dropdown:hover .dropdownContent {
+  display: block;
+}
+
+.furnitureItem {
+  width: 88px;
+  height: 88px;
+  border: 1px solid #2a2a2a;
+  float: left;
+  margin: 4px;
+  background-color: #424346;
+  text-align: center;
+}
+
+.furnitureItem:hover {
+  background-color: #787878;
+  cursor: pointer;
+}
+
+.furnitureName {
+  font-size: 12px;
+  color: #131418;
+}
+
+.furnitureThumb {
+  height: 70px;
+  pointer-events: none;
+  margin-top: 8px;
+}
+
+.modal {
+  display: none; /* none | block */
+  position: fixed;
+  z-index: 1;
+  left: 200px;
+  top: 200px;
+  width: 77%;
+  height: 77%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.close {
+  color: white;
+  float: right;
+  font-size: 28px;
+  font-weight: 100;
+  letter-spacing: 1em;
+}
+
+.close:hover, .close:focus {
+  color: gray;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modalHeader {
+  color: white;
+  text-align: center;
+}
+
+.modalBody {
+  min-height: 512px;
+  color: white;
+}
+
+.modalBody a {
+  color: white;
+}
+
+.modalFooter {
+  font-weight: 100;
+  font-size: 14px;
+  color: #8e8e8e;
+}
+
+.modalFooter a {
+  color: #8e8e8e;
+}
+
+.modalContent {
+  padding: 16px;
+  width: 100%;
+  background-color: #121317;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 4px 8px 0 rgba(0, 0, 0, 0.49);
+  animation-name: animatetop;
+  animation-duration: 0.5s;
+}
+
+.smallModal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.smallModalHeader {
+  color: white;
+}
+
+.smallModalBody {
+  min-height: 256px;
+  color: white;
+}
+
+.smallModalBody a {
+  color: white;
+}
+
+.smallModalFooter {
+  font-size: 14px;
+  color: #bebebe;
+}
+
+.smallModalFooter a {
+  color: #bebebe;
+}
+
+.smallModalContent {
+  background-color: #121317;
+  padding: 16px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 4px 8px 0 rgba(0, 0, 0, 0.49);
+  animation-name: animatetop;
+  animation-duration: 0.5s;
+}
+
+/* Add Animation */
+
+@keyframes animatetop {
+  from {
+    top: -300px;
+    opacity: 0
+  }
+  to {
+    top: 15%;
+    opacity: 1
+  }
+}
+
+#progressBar {
+  width: 300px;
+  height: 16px;
+  position: relative;
+  left: 50%;
+  /* top: 60px; */
+  margin-left: -150px;
+}
+
+.brand a {
+  font-weight: 100;
+  font-size: 16px;
+  padding: 0px;
+}
+
+.brand li .brandImg a {
+  padding-top: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+  margin: 0px;
+}
+
+.brand li .brandImg img {
+  margin: 0px;
+  padding-top: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.propertiesTable table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.propertiesTable th, .propertiesTable td {
+  padding: 4px 0px 4px 0px;
+  text-align: left;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+#fullscreenPlanViewBtn {
+  position: absolute;
+  cursor: pointer;
+}
+
+#fullscreen3dViewBtn {
+  position: absolute;
+  cursor: pointer;
+}
+
+/* #modalContent a[target="_blank"]:after {
+  content: url("/media/externallink.png");
+} */
+
+.moreInfoBtn {
+  font-size: 17px;
+  cursor: pointer;
+  padding: 4px 16px 4px 16px;
+  border: 1px solid #2a2a2a;
+  color: white;
+  background-color: #424346;
+}
+
+#model3dLargeThumb {
+  width: 144px;
+  height: 144px;
+  pointer-events: none;
+}
+
+.tab {
+  overflow: hidden;
+  border: 1px solid #2a2a2a;
+  background-color: #424346;
+  margin-top: 10px;
+}
+
+/* Style the buttons that are used to open the tab content */
+
+.tab button {
+  font-size: 17px;
+  color: white;
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding-top: 16px;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-bottom: 16px;
+  transition: 0.15s;
+}
+
+/* Change background color of buttons on hover */
+
+.tab button:hover {
+  background-color: #787878;
+}
+
+/* Create an active/current tablink class */
+
+.tab button.active {
+  background-color: #787878;
+}
+
+/* Style the tab content */
+
+.tabContent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #2a2a2a;
+  border-top: none;
+  height: 400px;
+  overflow-y: auto;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px solid 2a2a2a;
+}
+
+.tooltip .tooltipText {
+  visibility: hidden;
+  width: 400px;
+  background-color: #424346;
+  color: #fff;
+  text-align: left;
+  padding: 6px 12px;
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip:hover .tooltipText {
+  visibility: visible;
+}
+
+#localStoragePlanDiv {
+  display: none;
+  background-color: #131418;
+}
+
+#localStoragePlanImage {
+  border: 2px solid #2a2a2a;
+  background-color: #2a2a2a;
+  cursor: pointer;
+}
+
+#localStoragePlanImage:hover {
+  background-color: #131418;
+}
+
+#loadLocalStoragePlanBtn {
+  margin-top: 10px;
+  font-size: 19px;
+  cursor: pointer;
+  border: 1px solid #2a2a2a;
+  color: white;
+  padding: 12px 24px;
+  background-color: #424346;
+}
+
+#loadLocalStoragePlanBtn:hover {
+  background-color: #787878;
+}
+
+#featuredPlanImage {
+  border: 2px solid #2a2a2a;
+  background-color: #2a2a2a;
+  cursor: pointer;
+}
+
+#featuredPlanImage:hover {
+  background-color: #131418;
+}
+
+/* hr {
+  border: 1px solid #2a2a2a;
+} */
+
+#localStoragePlanLastSavedDate {
+  font-size: 12px;
+  color: #bebebe;
+}
+
+.largeButton {
+  margin-top: 10px;
+  font-size: 19px;
+  cursor: pointer;
+  border: 1px solid #2a2a2a;
+  color: white;
+  padding: 12px 24px;
+  background-color: #424346;
+  text-decoration: none;
+}
+
+.largeButton:hover {
+  background-color: #787878;
+}
+
+.smallButton {
+  font-size: 14px;
+  cursor: pointer;
+  border: 1px solid #2a2a2a;
+  color: white;
+  padding: 1px 12px 1px 12px;
+  background-color: #424346;
+  text-decoration: none;
+}
+
+.smallButton:hover {
+  background-color: #787878;
+}
+
+.mediumButton {
+  font-size: 17px;
+  cursor: pointer;
+  border: 1px solid #2a2a2a;
+  color: white;
+  padding: 4px 24px 4px 24px;
+  background-color: #424346;
+}
+
+.mediumButton:hover {
+  background-color: #787878;
+}
+
+.levelBtn {
+  font-size: 14px;
+  position: absolute;
+  left: 0px;
+  cursor: pointer;
+  width: 100px;
+  height: 20px;
+  border: 1px solid #2a2a2a;
+  display: none;
+  color: white;
+  background-color: #424346;
+}
+
+/* #modalContent input[type='checkbox'] {
+  background-color: #2a2a2a;
+  margin: 6px 3px 3px 3px;
+} */
+
+.propertiesViewBtn {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 17px;
+  cursor: pointer;
+  border: 1px solid #2a2a2a;
+  color: white;
+  padding: 12px 24px;
+  background-color: #424346;
+}
+.propertiesViewBtn:hover {
+  background-color: #787878;
+}
+
+#overlayLogoPlanView {
+  display: none;
+}
+
+#overlayLogo3dView {
+  display: none;
+}
+
+.overlayLogo {
+  display: none; /* block */
+  position: absolute;
+  top: 50px;
+  left: 40px;
+}
+
+.overlayLogo a {
+  color: white;
+}
+
+.overlayLogo img {
+  margin-top: -20px;
+}
+
+#overlayMenu3dView {
+  display: none;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+}
+
+#overlayMenuPlanView {
+  display: none;
+  position: absolute;
+  bottom: 32px;
+  left: 40px;
+}
