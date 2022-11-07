@@ -44,7 +44,7 @@ assets/*
 !assets/libraries
 !assets/media
 !assets/sfx
-!assets/threed/objects
+assets/threeds/objects
 
 # logs
 logs
