@@ -1,6 +1,6 @@
-# 🏗 Scaffold-Eth Typescript
+# 🌱 ThreeD Garden 🌱 on Scaffold-Eth TypeScript 🌱
 
-## Features
+## 🌱 Features
 
 This is the typescript repo of scaffold-eth. Use scaffold-eth-typescript with:
 
@@ -8,9 +8,9 @@ This is the typescript repo of scaffold-eth. Use scaffold-eth-typescript with:
 - Solidity toolkit of `hardhat` or `foundry`
 - It has the a command line system that allows you to choose a **react frontend** or **solidity toolkit**
 
-## Quick Start
+## 🌱 Quick Start
 
-### Fork or clone the repo
+### 🌱 Fork or Clone the Repo
 
 - You can use the use the template link: [scaffold-eth-typescript template](https://github.com/scaffold-eth/scaffold-eth-typescript/generate)
 - You can clone the repo with git
@@ -18,9 +18,9 @@ This is the typescript repo of scaffold-eth. Use scaffold-eth-typescript with:
   git clone https://github.com/scaffold-eth/scaffold-eth-typescript.git
   ```
 
-### Starting the App
+### 🌱 Starting the App
 
-Running the app
+Running the app requires 3 separate executable processes/threads (so open 3 terminals)
 
 1. install your dependencies, `open a new command prompt`
 
@@ -52,28 +52,28 @@ Running the app
    yarn start
    ```
 
-5. Open http://localhost:3000 to see your front end
+5. Open https://localhost:3333 to see your front end
 
-## Configuration
+## 🌱 Configuration
 
 Scaffold uses `scaffold.config.json` as a configuration file located in `/packages/common/scaffold.config.json`. You can create the config file by running the command `yarn create-config`.
 
-### Command line help
+### 🌱 Command Line Help
 
 ```bash
 use `-h` with any command for help.  e.g. yarn set-react -h
 ```
 
-### Configure react and solidity toolkit
+### 🌱 Configure React and Solidity toolkit
 
 You can change the configuration file to pick different frontends and solidity toolkits.
 
 ```bash
-yarn set-react 'nextjs' or 'vite'
+yarn set-react 'threed' or 'nextjs' or 'vite'
 yarn set-solidity 'hardhat' or 'foundry'
 ```
 
-### Target network
+### 🌱 Target Network
 
 Set your `targetNetwork` in the config. This is the network the solidity toolkit is deploying against.
 
@@ -86,13 +86,13 @@ yarn set-network -h
 yarn set-network 'localhost' 'localhost, mainnet'
 ```
 
-### More commands
+### 🌱 More Commands
 
 You can see all the other commands by using `yarn scaffold`
 
-## Solidity Tookits Details
+## 🌱 Solidity Tookits Details
 
-### Hardhat
+### 🌱 Hardhat
 
 Everything will be installed with `yarn install`.
 
@@ -102,7 +102,7 @@ You can use hardhat with right context using
 yarn hardhat
 ```
 
-### Foundry
+### 🌱 Foundry
 
 Make sure you install foundry
 
@@ -120,7 +120,7 @@ yarn anvil
 yarn cast
 ```
 
-## Directories
+## 🌱 Directories
 
 The directories that you'll use are:
 
@@ -132,7 +132,7 @@ packages/vite-app-ts/
 packages/next-app-ts/
 ```
 
-### More Info
+### 🌱 More Info
 
 Other commands
 
@@ -156,7 +156,7 @@ packages/subgraph/
 packages/services/
 ```
 
-## Guides
+## 🌱 Guides
 
 Everything you need to build on Ethereum! 🚀 Quickly experiment with Solidity using a frontend that adapts to your smart contract:
 
@@ -168,15 +168,13 @@ Everything you need to build on Ethereum! 🚀 Quickly experiment with Solidity 
 - 📱 Open http://localhost:3000 to see the app
 - 👷🏽‍♂️ run `yarn hardhat` to get a list of all the tasks. Run `yarn hardhat taskname` to run the task.
 
-<br/><br/><br/>
-
 ---
 
-# Documentation
+# 🌱 Documentation
 
 Check out [eth-hooks docs](https://scaffold-eth.github.io/eth-ui) for example of how to use hooks
 
-## Video Tutorials
+## 🌱 Video Tutorials
 
 Tutorial using the CLI
 
@@ -187,17 +185,15 @@ Eth-hooks v4 & scaffold-eth-typescript overview
 - [Getting Started with eth-hooks and scaffold-eth-typescript](https://www.youtube.com/watch?v=a7W9nTX8qLk&t=3s)
 - [eth-hooks v4](https://www.youtube.com/watch?v=STxAdE8wQwY&t=86s)
 
-## 🏃💨 Speedrun Ethereum
+## 🌱 🏃💨 Speedrun Ethereum
 
 Register as a builder [here](https://speedrunethereum.com) and start on some of the challenges and build a portfolio.
 
 > 🏁 Make sure to click on the typescript tab!
 
-<br/><br/><br/>
-
 ---
 
-# Extra!
+# 🌱 Extra!
 
 ## 💬 Support Chat
 
@@ -215,3 +211,63 @@ Check out
 ### 🙏🏽 Support us!
 
 Please check out our [Gitcoin grant](https://gitcoin.co/grants/2851/scaffold-eth) too!
+
+======================================================================================
+🌱🌱🌱🌱🌱🌱🌱🌱🌱🌱
+
+# 🌱 ThreeD Garden
+
+![ThreeD Demo Screenshot](https://threedpublic.s3.amazonaws.com/demo/marty-mcgee-portfolio-gardenuniversity-threedgarden-v002-600x338.png "ThreeD Garden React Three Fiber -- Demo Screenshot")
+
+====
+## 🌱 Project Description
+ThreeD Garden is an app written in JavaScript (TypeScript) for intense ThreeJS WebGL 3D rendering, using the React/Next (or Vue/Nuxt, or Vanilla/Vite) frameworks, using @react-three libraries. ThreeD Garden is exportable as a standalone CommonJS app, and as a WordPress plugin. 'threed-garden' is a functioning, low-dependency app, a package supporting a monorepo of workspaces that utilize/depend on 'ThreeJS, WebGL, Vite React, Vue, TypeScript, React-Three-Fiber, GraphQL', in active development.
+
+====
+## 🌱 Live Demo
+[ThreeD Garden](https://threedgarden.com/demo/)
+
+====
+## 🌱 ThreeDs = Nouns + Actions = Interactions
+
+**1 ThreeD = 1 Noun + (Infinite Object Collection * Actions) = 1 Interaction = 1 ThreeD Token**
+
+* Characters (Objects, Animated)
+* Environments (Worlds, Scenes)
+* Collisions (Interactions, Interfaces)
+* Results (Instant, Reporting)
+
+> "A Real Garden + Homestead Management Solution, using Virtual Interfaces, based on ThreeD JS object structure."
+
+====
+## 🌱 Project Options
+ThreeD Garden can connect to a real-life "FarmBot Genesis XL 1.6" robotic gardening system via the FarmBot JS/TS APIs.
+
+====
+## 🌱 Project Contributors
+@marty-mcgee, @companyjuice, @garden.university, @farmbot
+
+## 🌱 Project Slogan
+Let's get growing!!
+
+====
+## 🌱 Demos
+Future Landing Pages: workin on it..
+* threed/DEMO: https://garden.university/scene/mcgee-home-garden
+* threed/GARDEN: https://garden.university/scene/mcgee-home-garden/#/participate
+
+====
+## 🌱 For Developers
+1. install: `pnpm i`
+2. run: `pnpm dev`
+3. build: `pnpm build`
+4. deploy: `pnpm deploy`
+
+====
+## 🌱 Documentation
+workin on it.. in vitepress (or nuxtpress, or nextpress, or whateverpress)
+
+> a part of the 🌱 threed.ai code family
+
+======================================================================================
+🌱🌱🌱🌱🌱🌱🌱🌱🌱🌱
