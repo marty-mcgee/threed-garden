@@ -1,18 +1,28 @@
 # See https://help.github.com/articles/ignoring-files/
 
-# node
+# node dependencies, yarn, etc
 **/node_modules
 node_modules
 package-lock.json
 pnpm-lock.yaml
 .pnpm
 yarn.lock
-.yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp
+.pnp.js
 .pnp.*
+.eslintcache
 
 # os junk
+__MACOSX
 .DS_Store
 desktop.ini
+Thumbs.db
 
 # env
 .env
@@ -35,6 +45,9 @@ dist-ssr
 /.next/
 /out/
 next-env.d.ts
+**/.vercel/**/*
+**/.next/**/*
+**/out/**/*
 
 # assets | static
 assets/*
@@ -63,10 +76,17 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+.netlify
+
+# testing
+coverage
 
 # temp | scratchpad | testing
 temp*
 _drafts
+
+# vscode
+*.code-workspace
 
 # demo
 public/demo/objects/*
