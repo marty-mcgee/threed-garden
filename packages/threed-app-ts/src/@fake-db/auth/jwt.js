@@ -6,13 +6,16 @@ import mock from '~/@fake-db/mock'
 
 // console.debug('mock', mock)
 
+// ==============================================================
+// ! users master
+
 const users = [
   {
     id: 1,
     role: 'admin',
     password: 'admin',
     fullName: 'Garden Master',
-    username: 'gardenmaster',
+    username: 'garden.master',
     email: 'mcgee.marty@gmail.com',
   },
   {
@@ -20,25 +23,41 @@ const users = [
     role: 'client',
     password: 'client',
     fullName: 'Marty McGee',
-    username: 'gardenapprentice',
+    username: 'garden.apprentice',
     email: 'marty@companyjuice.com',
+  },
+  {
+    id: 3,
+    role: 'client',
+    password: 'client',
+    fullName: 'McGee Home Garden',
+    username: 'garden.observer',
+    email: 'support@companyjuice.com',
   },
 ]
 
-// ! These two secrets should be in .env file and not in any other file
+// ==============================================================
+// ! These two secrets will later be in .env file
+// ! and not in any other file/source. For demo, it is okay.
+
 const jwtConfig = {
   secret: 'dd7f3089-40c3-403d-af14-d0c228b05cb7',
   refreshTokenSecret: '7c7c1c50-3230-45bf-9eae-c9b2e401c727',
 }
+
+// ==============================================================
+// JWT LOGIN
+
 mock.onPost('/jwt/login').reply((request) => {
   const { email, password } = JSON.parse(request.data)
 
-  console.debug('request', JSON.parse(request))
+  console.debug('request', request)
   // console.debug('request.data', JSON.parse(request.data))
 
   let error = {
     email: ['Something went wrong'],
   }
+
   const user = users.find((u) => u.email === email && u.password === password)
 
   console.debug('user', user)
@@ -49,8 +68,8 @@ mock.onPost('/jwt/login').reply((request) => {
       accessToken = jwt.sign({ id: user.id }, jwtConfig.secret)
     } catch (err) {
       // console.debug('err accessToken', jwt.sign({ id: user.id }, jwtConfig.secret))
-      // accessToken =
-      // 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjY4MDUxMjA3fQ.bMvi7fa1KCN8L386wWKmU-945KsCJpmyS7tEum9oK48'
+      accessToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjY4MDUxMjA3fQ.bMvi7fa1KCN8L386wWKmU-945KsCJpmyS7tEum9oK48'
     }
     console.debug('accessToken', accessToken)
 
@@ -67,6 +86,10 @@ mock.onPost('/jwt/login').reply((request) => {
     return [400, { error }]
   }
 })
+
+// ==============================================================
+// JWT REGISTER
+
 mock.onPost('/jwt/register').reply((request) => {
   if (request.data.length > 0) {
     const { email, password, username } = JSON.parse(request.data)
@@ -107,6 +130,10 @@ mock.onPost('/jwt/register').reply((request) => {
     return [401, { error: 'Invalid Data' }]
   }
 })
+
+// ==============================================================
+// JWT AUTH ME (DECODE)
+
 mock.onGet('/auth/me').reply((config) => {
   // @ts-ignore
   const token = config.headers.Authorization
@@ -124,3 +151,5 @@ mock.onGet('/auth/me').reply((config) => {
     return [401, { error: { error: 'Invalid User' } }]
   }
 })
+
+// end mock actions
