@@ -97,9 +97,6 @@ _sandbox
 garage
 
 # scaffold-eth
-
-
-#build
 *.tsbuildinfo
 *.stackdump
 .yalc
