@@ -11,7 +11,6 @@ import type { AppProps } from "next/app"
 import {
   Suspense,
   FC,
-  FunctionComponent,
   ReactElement,
   ReactNode,
   // JSXElementConstructor,
@@ -103,8 +102,6 @@ console.debug(`%c====================================`, ccm5)
 
 // ==============================================================
 // TYPES + INTERFACES (TYPESCRIPT)
-// note: interface throws error if using .babelrc
-// "Syntax error: Unexpected reserved word 'interface'."
 
 interface WithRouterProps {
   router: NextRouter
@@ -193,7 +190,7 @@ const Guard = ({ children, authGuard, guestGuard }: any) => {
 // ==============================================================
 // SCAFFOLD-ETH-TS APP "EthApp"
 
-const cache = createCache({ key: 'next' })
+// const cache = createCache({ key: 'next' })
 
 /**
  * 🌱 See ./MainPage.tsx for main app component!
@@ -204,11 +201,11 @@ console.debug('init eth app...')
 
 // setup themes for theme switcher
 const themes = {
-  dark: '', // './styles/ant-dark-theme.css',
-  light: '', // './styles/ant-light-theme.css',
+  dark: '/styles/ant-dark-theme.css',
+  light: '/styles/ant-light-theme.css',
 }
 // load saved theme
-const savedTheme = 'light'
+const savedTheme = 'dark'
 
 // create eth components context for options and API keys
 const ethComponentsSettings: IEthComponentsSettings = {
@@ -222,8 +219,10 @@ const ProviderWrapper: FC<{ children?: ReactNode }> = (props) => {
     <EthComponentsSettingsContext.Provider value={ethComponentsSettings}>
       <EthersAppContext disableDefaultQueryClientRoot={true}>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <ThemeSwitcherProvider themeMap={themes} defaultTheme={savedTheme ?? 'light'}>
-            <ErrorBoundary FallbackComponent={ErrorFallback}>{props.children}</ErrorBoundary>
+          <ThemeSwitcherProvider themeMap={themes} defaultTheme={savedTheme ?? 'dark'}>
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+              {props.children}
+            </ErrorBoundary>
           </ThemeSwitcherProvider>
         </ErrorBoundary>
       </EthersAppContext>
@@ -247,7 +246,7 @@ const ProviderWrapper: FC<{ children?: ReactNode }> = (props) => {
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <CacheProvider value={cache}>
+      {/* <CacheProvider value={cache}> */}
         <QueryClientProvider client={queryClient}>
           <Hydrate state={dehydradedState}>
             <ProviderWrapper>
@@ -257,19 +256,19 @@ const ProviderWrapper: FC<{ children?: ReactNode }> = (props) => {
             </ProviderWrapper>
           </Hydrate>
         </QueryClientProvider>
-      </CacheProvider>
+      {/* </CacheProvider> */}
     </ErrorBoundary>
   )
 }
-
-EthApp.getInitialProps = appGetInitialProps
-export const getInitialProps = appGetInitialProps
+// EthApp.getInitialProps = appGetInitialProps
+// export const getInitialProps = appGetInitialProps
 
 // ==============================================================
 // ** Construct App using Function Component (Functional Noun)
 
 // const App = (props: any) => {
-const App: FunctionComponent<AppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => {
+// const App: FC<AppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => {
+const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmotion> = (props) => {
   //
   // destructure props for vars
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
@@ -327,4 +326,6 @@ const App: FunctionComponent<AppPropsWithLayoutEmotion> = (props: AppPropsWithLa
   )
 }
 
+App.getInitialProps = appGetInitialProps
+export const getInitialProps = appGetInitialProps
 export default App

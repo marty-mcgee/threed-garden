@@ -36,19 +36,20 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
   const left = (
     <div
       style={{
-        position: 'fixed',
+        position: 'relative',
         textAlign: 'left',
         left: 0,
-        bottom: 20,
+        bottom: 0,
+        top: 60,
         padding: 10,
       }}>
       <Row align="middle" gutter={[4, 4]}>
-        <Col span={8}>
+        <Col span={2}>
           <Ramp price={props.price} address={ethersAppContext?.account ?? ''} networks={networkDefinitions} />
         </Col>
 
         <Col
-          span={8}
+          span={2}
           style={{
             textAlign: 'center',
             opacity: 0.8,
@@ -61,14 +62,15 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
           />
         </Col>
         <Col
-          span={8}
+          span={2}
           style={{
             textAlign: 'center',
             opacity: 1,
           }}>
           <Button
             onClick={(): void => {
-              window.open('https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA');
+              // window.open('https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA');
+              window.open('https://github.com/marty-mcgee/threed-garden/discussions');
             }}
             size="large"
             shape="round">
@@ -107,6 +109,7 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
   );
 
   const right = <ThemeSwitcher />;
+  // const right = <div />;
 
   return (
     <>

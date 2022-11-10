@@ -55,7 +55,7 @@
     "test:lint": "pnpm lint && pnpm test:run",
     "_______________5": "____ scaffold-eth ______________________________________",
     "start": "next dev -p 7777",
-    "dev": "next dev",
+    "dev": "next dev -p 7777",
     "build": "yarn build:anttheme && next build",
     "serve": "next start",
     "lint:next": "next lint",

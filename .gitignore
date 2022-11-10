@@ -95,3 +95,39 @@ public/demo/objects/*
 @threed
 _sandbox
 garage
+
+# scaffold-eth
+
+
+#build
+*.tsbuildinfo
+*.stackdump
+.yalc
+yalc.lock
+packages/vite-app-ts/dist
+packages/**/data
+build
+dist
+**/generated/**/*
+
+# solidity
+packages/solidity-ts/cache
+packages/solidity-ts/generated
+packages/common/src/generated
+cache
+artifacts
+tenderly.yaml
+
+# secrets / env
+**/.env.*.local
+**/*.secret
+**/aws.json
+!packages/solidity-ts/mnemonics/README.md
+**/mnemonics/*.secret
+**/mnemonics/*.txt
+
+#subgraph
+packages/subgraph/config/config.json
+packages/subgraph/subgraph.yaml
+packages/subgraph/generated
+packages/subgraph/abis/*

@@ -31,10 +31,11 @@ module.exports = {
       borderWidth: ['hover', 'focus'],
     },
   },
-  plugins: [require('daisyui')],
+  // plugins: [require('daisyui')],
+  plugins: [],
   daisyui: {
     darkTheme: 'business',
     themes: ['light', 'luxury', 'business', 'haloween'],
     prefix: 'daisy',
   },
-};
+}

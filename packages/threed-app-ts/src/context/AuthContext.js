@@ -84,6 +84,7 @@ const AuthProvider = ({ children }) => {
           })
       })
       .catch((err) => {
+        console.error('ERROR', err)
         if (errorCallback) errorCallback(err)
       })
   }

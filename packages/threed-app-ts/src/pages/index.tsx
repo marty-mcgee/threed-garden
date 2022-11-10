@@ -1,5 +1,5 @@
 // ** React Imports
-import { useEffect } from 'react'
+import { FC, useEffect } from 'react'
 
 // ** Next Imports
 import type { NextPage } from 'next'
@@ -24,10 +24,11 @@ const getHomeRoute = (role: any) => {
   // if (role === 'client') return '/acl'
   // else return '/participate'
   // return '/participate'
-  return '/'
+  return '/' // this page
 }
 
 // Page
+// const Page: FC<TPageProps> = (props) => {
 const Page: NextPage<TPageProps> = (props) => {
 
   // ** Hooks
@@ -40,14 +41,16 @@ const Page: NextPage<TPageProps> = (props) => {
       const homeRoute = getHomeRoute(auth.user.role)
       // redirect user to Home URL
       router.replace(homeRoute)
+      console.debug('user AUTHORIZED', auth.user)
     }
     else {
-      console.debug('user NOT AUTHORIZED')
+      console.debug('user NOT AUTHORIZED', auth.user)
     }
   }, [])
 
   return (
     <>
+
       {/* <Spinner /> */}
 
       <Typography component='h1' variant='h5' gutterBottom>
@@ -59,6 +62,8 @@ const Page: NextPage<TPageProps> = (props) => {
 
       {/* SCAFFOLD-ETH-TYPESCRIPT */}
       <MainPage pageName='main' {...props}></MainPage>
+      {/* SCAFFOLD-ETH-TYPESCRIPT */}
+
     </>
   )
 }
