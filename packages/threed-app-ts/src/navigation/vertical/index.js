@@ -22,7 +22,7 @@ import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
 import CheckboxMarkedCircleOutline from 'mdi-material-ui/CheckboxMarkedCircleOutline'
 
 const navigation = () => {
-  const word = "[MM] HEY HEY HEY"
+  const word = '[MM] HEY HEY HEY'
   return [
     // {
     //   title: 'Home Base',
@@ -46,31 +46,31 @@ const navigation = () => {
     {
       title: 'My Account',
       path: '/pages/account-settings',
-      icon: ManageAccount
+      icon: ManageAccount,
     },
     {
       title: 'Calendar',
       icon: CalendarBlankOutline,
-      path: '/apps/calendar'
+      path: '/apps/calendar',
     },
     {
       title: 'Actions',
       icon: CreditCardOutline,
       badgeContent: '$$$$',
-      path: '/pages/dialog-examples'
+      path: '/pages/dialog-examples',
     },
     {
       title: 'eCommerce',
       icon: HomeOutline,
-      path: '/dashboards/ecommerce'
+      path: '/dashboards/ecommerce',
     },
     {
       title: 'Clients',
       icon: HomeOutline,
-      path: '/dashboards/crm'
+      path: '/dashboards/crm',
     },
     {
-      sectionTitle: 'Administration'
+      sectionTitle: 'Administration',
     },
     // {
     //   title: 'Email',
@@ -112,11 +112,11 @@ const navigation = () => {
       children: [
         {
           title: 'List Users (all)',
-          path: '/apps/user/list'
+          path: '/apps/user/list',
         },
         {
           title: 'View User (id:1)',
-          path: '/apps/user/view'
+          path: '/apps/user/view',
         },
         {
           title: 'User Roles',
@@ -124,13 +124,13 @@ const navigation = () => {
           children: [
             {
               title: 'Roles',
-              path: '/apps/roles'
+              path: '/apps/roles',
             },
             {
               title: 'Permissions',
-              path: '/apps/permissions'
-            }
-          ]
+              path: '/apps/permissions',
+            },
+          ],
         },
         {
           title: 'Authentication',
@@ -141,19 +141,19 @@ const navigation = () => {
                 {
                   openInNewTab: true,
                   title: 'Login v1',
-                  path: '/pages/auth/login-v1'
+                  path: '/pages/auth/login-v1',
                 },
                 {
                   openInNewTab: true,
                   title: 'Login v2',
-                  path: '/pages/auth/login-v2'
+                  path: '/pages/auth/login-v2',
                 },
                 {
                   openInNewTab: true,
                   title: 'Login With AppBar',
-                  path: '/pages/auth/login-with-appbar'
-                }
-              ]
+                  path: '/pages/auth/login-with-appbar',
+                },
+              ],
             },
             {
               title: 'Register',
@@ -161,14 +161,14 @@ const navigation = () => {
                 {
                   openInNewTab: true,
                   title: 'Register v1',
-                  path: '/pages/auth/register-v1'
+                  path: '/pages/auth/register-v1',
                 },
                 {
                   openInNewTab: true,
                   title: 'Register v2',
-                  path: '/pages/auth/register-v2'
-                }
-              ]
+                  path: '/pages/auth/register-v2',
+                },
+              ],
             },
             {
               title: 'Forgot Password',
@@ -176,14 +176,14 @@ const navigation = () => {
                 {
                   openInNewTab: true,
                   title: 'Forgot Password v1',
-                  path: '/pages/auth/forgot-password-v1'
+                  path: '/pages/auth/forgot-password-v1',
                 },
                 {
                   openInNewTab: true,
                   title: 'Forgot Password v2',
-                  path: '/pages/auth/forgot-password-v2'
-                }
-              ]
+                  path: '/pages/auth/forgot-password-v2',
+                },
+              ],
             },
             {
               title: 'Reset Password',
@@ -191,16 +191,16 @@ const navigation = () => {
                 {
                   openInNewTab: true,
                   title: 'Reset Password v1',
-                  path: '/pages/auth/reset-password-v1'
+                  path: '/pages/auth/reset-password-v1',
                 },
                 {
                   openInNewTab: true,
                   title: 'Reset Password v2',
-                  path: '/pages/auth/reset-password-v2'
-                }
-              ]
-            }
-          ]
+                  path: '/pages/auth/reset-password-v2',
+                },
+              ],
+            },
+          ],
         },
         // {
         //   title: 'Pricing',
@@ -244,7 +244,7 @@ const navigation = () => {
         //     }
         //   ]
         // }
-      ]
+      ],
     },
     // {
     //   sectionTitle: 'User Interface'
@@ -456,12 +456,12 @@ const navigation = () => {
     //   path: '/tables/data-grid'
     // },
     {
-      sectionTitle: 'Reporting'
+      sectionTitle: 'Reporting',
     },
     {
       title: 'Analytics',
       icon: ChartPie,
-      path: '/dashboards/analytics'
+      path: '/dashboards/analytics',
     },
     {
       title: 'Charts',
@@ -469,17 +469,17 @@ const navigation = () => {
       children: [
         {
           title: 'Apex',
-          path: '/charts/apex-charts'
+          path: '/charts/apex-charts',
         },
         {
           title: 'Recharts',
-          path: '/charts/recharts'
+          path: '/charts/recharts',
         },
         {
           title: 'ChartJS',
-          path: '/charts/chartjs'
-        }
-      ]
+          path: '/charts/chartjs',
+        },
+      ],
     },
     // {
     //   path: '/acl',
@@ -493,14 +493,14 @@ const navigation = () => {
       icon: DotsHorizontal,
       externalLink: true,
       openInNewTab: true,
-      path: 'https://companyjuice.com/contact'
+      path: 'https://github.com/marty-mcgee/threed-garden/discussions',
     },
     {
       title: 'Documentation',
       icon: FileDocumentOutline,
       externalLink: true,
       openInNewTab: true,
-      path: 'https://github.com/marty-mcgee/threed-garden'
+      path: 'https://github.com/marty-mcgee/threed-garden',
     },
     // {
     //   title: 'Others',

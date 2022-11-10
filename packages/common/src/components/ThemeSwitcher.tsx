@@ -47,7 +47,7 @@ export const ThemeSwitcher: FC = () => {
   }
 
   return (
-    <div className="main fade-in" style={{ position: 'fixed', right: 10, bottom: 10 }}>
+    <div className="main fade-in" style={{ position: 'relative', top: 60, left: 10 }}>
       <span style={{ padding: 8 }}>{currentTheme === 'light' ? '☀️' : '🌜'}</span>
       <Switch checked={isDarkMode} onChange={toggleTheme} />
     </div>

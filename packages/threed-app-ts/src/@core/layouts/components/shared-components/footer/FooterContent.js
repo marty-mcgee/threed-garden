@@ -27,7 +27,7 @@ const FooterContent = () => {
           <Link target='_blank' href='https://companyjuice.com/terms-conditions/'>
             License
           </Link>
-          <Link target='_blank' href='https://companyjuice.com/contact/'>
+          <Link target='_blank' href='https://github.com/marty-mcgee/threed-garden/discussions/'>
             Support
           </Link>
         </Box>

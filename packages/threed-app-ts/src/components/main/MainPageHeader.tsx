@@ -53,19 +53,19 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
       <div>
         <PageHeader
           title="🏭 Scaffold-Eth"
-          subTitle={
-            <span>
-              v2.1 - [
-              <a href="https://youtu.be/aYMj00JoIug" target="_blank" rel="noreferrer">
-                <span style={{ marginRight: 4 }}>🎥 </span> 8min speed run
-              </a>
-              ] - [
-              <a href="https://trello.com/b/ppbUs796/buidlguidlcom-idea-board" target="_blank" rel="noreferrer">
-                <span style={{ marginRight: 4 }}>💡 </span> trello
-              </a>
-              ]{' '}
-            </span>
-          }
+          // subTitle={
+          //   <span>
+          //     v2.1 - [
+          //     <a href="https://youtu.be/aYMj00JoIug" target="_blank" rel="noreferrer">
+          //       <span style={{ marginRight: 4 }}>🎥 </span> 8min speed run
+          //     </a>
+          //     ] - [
+          //     <a href="https://trello.com/b/ppbUs796/buidlguidlcom-idea-board" target="_blank" rel="noreferrer">
+          //       <span style={{ marginRight: 4 }}>💡 </span> trello
+          //     </a>
+          //     ]{' '}
+          //   </span>
+          // }
           style={{ cursor: 'pointer' }}
         />
       </div>
@@ -101,7 +101,7 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
    * 👨‍💼 Your account is in the top right with a wallet at connect options
    */
   const right = (
-    <div style={{ position: 'fixed', textAlign: 'right', right: 0, top: 0, padding: 10, zIndex: 1 }}>
+    <div style={{ position: 'relative', textAlign: 'right', right: 0, top: 0, padding: 10, zIndex: 1 }}>
       <Account
         createLoginConnector={props.scaffoldAppProviders.createLoginConnector}
         loginOnError={onLoginError}
