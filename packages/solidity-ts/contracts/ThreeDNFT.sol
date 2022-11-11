@@ -12,12 +12,12 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 // GET LISTED ON OPENSEA: https://testnets.opensea.io/get-listed/step-two
 
-contract YourNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
+contract ThreeDNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   //
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
 
-  constructor() ERC721("YourNFT", "YNFT") {}
+  constructor() ERC721("ThreeDNFT", "THREEDNFT") {}
 
   function _baseURI() internal view virtual override returns (string memory) {
     return "https://ipfs.io/ipfs/";
