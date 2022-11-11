@@ -5,8 +5,16 @@ module.exports = {
     browser: true,
   },
   parser: '@babel/eslint-parser',
-  extends: ['plugin:react/recommended', 'next/core-web-vitals', 'airbnb', 'prettier'],
-  plugins: ['react', 'prettier'], // '@typescript-eslint',
+  // extends: ['plugin:react/recommended', 'next/core-web-vitals', 'airbnb'],
+  extends: [
+    // './packages/common/.eslintrc.js',
+    // 'plugin:@typescript-eslint/recommended', // common
+    // 'plugin:react/recommended', // common
+    // 'airbnb', // needed ?
+    // 'prettier', // needed ?
+    'next', // or 'plugin:@next/next/recommended'
+  ],
+  plugins: ['react'], // '@typescript-eslint', 'prettier',
   parserOptions: {
     ecmaVersion: 11,
     sourceType: 'module',
