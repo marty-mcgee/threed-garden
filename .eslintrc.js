@@ -7,9 +7,9 @@ module.exports = {
   parser: '@babel/eslint-parser',
   extends: [
     'plugin:react/recommended',
-    'next/core-web-vitals',
+    // 'next/core-web-vitals',
     'airbnb',
-    'prettier'
+    'prettier',
   ],
   parserOptions: {
     ecmaVersion: 11,
@@ -27,13 +27,8 @@ module.exports = {
       typescript: {},
     },
   },
-  plugins: [
-    '@typescript-eslint',
-    'react',
-    'prettier'
-  ],
+  plugins: ['@typescript-eslint', 'react', 'prettier'],
   rules: {
-
     'arrow-body-style': 'off',
     // ['error', 'as-needed', { requireReturnForObjectLiteral: true }], // 'as-needed' is default | 'always'
 
@@ -148,6 +143,6 @@ module.exports = {
       },
     ],
     // 'no-else-returns': 'off',
-    'object-shorthand': ['error', 'consistent-as-needed']
+    'object-shorthand': ['error', 'consistent-as-needed'],
   },
 }
