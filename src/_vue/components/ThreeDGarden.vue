@@ -103,9 +103,8 @@ import TWEEN from '@tweenjs/tween.js'
 import * as dat from 'dat.gui'
 
 // farmbot
-// ~ is an alias to /src
-// import FarmBot from "~/components/FarmBot.vue"
-// console.log("FarmBot", FarmBot)
+import FarmBot from '~/_vue/components/FarmBot.vue'
+console.log('FarmBot', FarmBot)
 
 //
 // LOGIC BEGINS HERE ****
@@ -145,8 +144,8 @@ const gui = new dat.GUI({
   autoPlace: true,
   closeOnTop: true,
   width: 180,
-  //closed: true,
-  useLocalStorage: true,
+  closed: true, // true | false
+  // useLocalStorage: true,
 })
 gui.domElement.id = 'gui'
 gui.close()
