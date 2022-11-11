@@ -15,6 +15,14 @@ module.exports = {
     'next', // or 'plugin:@next/next/recommended'
   ],
 
+  // plugins: [
+  //   // '@typescript-eslint',
+  //   'react',
+  //   'prettier',
+  //   // 'plugin:@next/next/recommended',
+  //   // '@next/next',
+  // ],
+
   // parser: '@babel/eslint-parser',
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -66,14 +74,6 @@ module.exports = {
       typescript: {},
     },
   },
-
-  plugins: [
-    // '@typescript-eslint',
-    'react',
-    'prettier',
-    // 'plugin:@next/next/recommended',
-    // '@next/next',
-  ],
 
   rules: {
     'arrow-body-style': 'off',

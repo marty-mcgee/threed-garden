@@ -44,7 +44,7 @@ Running the app requires 3 separate executable processes/threads (so open 3 term
 
    ```bash
    # in a new terminal
-   # compile your contracts
+   # compile your contracts (yarn contracts:build)
    yarn compile
    # deploy your hardhat contracts
    yarn deploy
