@@ -6,6 +6,7 @@ module.exports = {
   },
   parser: '@babel/eslint-parser',
   extends: ['plugin:react/recommended', 'next/core-web-vitals', 'airbnb', 'prettier'],
+  plugins: ['react', 'prettier'], // '@typescript-eslint',
   parserOptions: {
     ecmaVersion: 11,
     sourceType: 'module',
@@ -22,7 +23,6 @@ module.exports = {
       typescript: {},
     },
   },
-  plugins: ['@typescript-eslint', 'react', 'prettier'],
   rules: {
     'arrow-body-style': 'off',
     // ['error', 'as-needed', { requireReturnForObjectLiteral: true }], // 'as-needed' is default | 'always'
