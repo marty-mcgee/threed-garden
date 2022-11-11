@@ -12,9 +12,9 @@ module.exports = {
     // 'plugin:react/recommended', // common
     // 'airbnb', // needed ?
     // 'prettier', // needed ?
-    'next', // or 'plugin:@next/next/recommended'
+    // 'next', // or 'plugin:@next/next/recommended'
   ],
-  plugins: ['react'], // '@typescript-eslint', 'prettier',
+  plugins: [], // '@typescript-eslint', 'prettier', 'react'
   parserOptions: {
     ecmaVersion: 11,
     sourceType: 'module',
