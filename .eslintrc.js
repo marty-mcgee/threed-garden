@@ -5,12 +5,7 @@ module.exports = {
     browser: true,
   },
   parser: '@babel/eslint-parser',
-  extends: [
-    'plugin:react/recommended',
-    // 'next/core-web-vitals',
-    'airbnb',
-    'prettier',
-  ],
+  extends: ['plugin:react/recommended', 'next/core-web-vitals', 'airbnb', 'prettier'],
   parserOptions: {
     ecmaVersion: 11,
     sourceType: 'module',
