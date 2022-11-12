@@ -14,7 +14,7 @@
 # misc
 .DS_Store
 .env
-.env.*
+# .env.*
 *.pem
 *.crt
 .npmrc
