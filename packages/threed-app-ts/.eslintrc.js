@@ -12,7 +12,7 @@ module.exports = {
     // 'plugin:react/recommended', // common
     // 'airbnb', // needed ?
     // 'prettier', // needed ?
-    'next', // or 'plugin:@next/next/recommended'
+    // 'next', // or 'plugin:@next/next/recommended'
   ],
 
   // plugins: [
