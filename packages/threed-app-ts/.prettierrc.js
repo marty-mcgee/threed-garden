@@ -1,6 +1,6 @@
 module.exports = {
   arrowParens: 'always',
-  bracketSameLine: false,
+  bracketSameLine: true,
   bracketSpacing: true,
   endOfLine: 'crlf',
   htmlWhitespaceSensitivity: 'css',
@@ -11,7 +11,7 @@ module.exports = {
   quoteProps: 'as-needed',
   requirePragma: false,
   semi: false,
-  singleAttributePerLine: true,
+  singleAttributePerLine: false,
   singleQuote: true,
   tabWidth: 2,
   trailingComma: 'es5',
