@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 
 // ** MUI Imports
 import Alert from '@mui/material/Alert'
@@ -23,11 +23,23 @@ const SnackbarAlert = () => {
 
   return (
     <>
-      <Button variant='outlined' onClick={handleClick}>
+      <Button
+        variant='outlined'
+        onClick={handleClick}
+      >
         Open alert snackbar
       </Button>
-      <Snackbar open={open} onClose={handleClose} autoHideDuration={3000}>
-        <Alert variant='filled' elevation={3} onClose={handleClose} severity='success'>
+      <Snackbar
+        open={open}
+        onClose={handleClose}
+        autoHideDuration={3000}
+      >
+        <Alert
+          variant='filled'
+          elevation={3}
+          onClose={handleClose}
+          severity='success'
+        >
           This is a success message!
         </Alert>
       </Snackbar>

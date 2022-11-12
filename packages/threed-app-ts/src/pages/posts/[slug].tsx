@@ -14,7 +14,7 @@ import Tags from '~/components/blog/tags'
 import { getAllPostsWithSlug, getPostAndMorePosts } from '~/lib/api'
 import { CMS_NAME } from '~/lib/constants'
 
-export default function Post({ post, posts, preview }: { post: any, posts: any, preview: any }) {
+export default function Post({ post, posts, preview }: { post: any; posts: any; preview: any }) {
   const router = useRouter()
   const morePosts = posts?.edges
 
@@ -36,7 +36,7 @@ export default function Post({ post, posts, preview }: { post: any, posts: any, 
                   {post.title} | Next.js Blog Example with {CMS_NAME}
                 </title>
                 <meta
-                  property="og:image"
+                  property='og:image'
                   content={post.featuredImage?.sourceUrl}
                 />
               </Head>
@@ -48,9 +48,7 @@ export default function Post({ post, posts, preview }: { post: any, posts: any, 
                 categories={post.categories}
               />
               <PostBody content={post.content} />
-              <footer>
-                {post.tags.edges.length > 0 && <Tags tags={post.tags} />}
-              </footer>
+              <footer>{post.tags.edges.length > 0 && <Tags tags={post.tags} />}</footer>
             </article>
 
             <SectionSeparator />
@@ -62,11 +60,7 @@ export default function Post({ post, posts, preview }: { post: any, posts: any, 
   )
 }
 
-export const getStaticProps: GetStaticProps = async ({
-  params,
-  preview = false,
-  previewData,
-}) => {
+export const getStaticProps: GetStaticProps = async ({ params, preview = false, previewData }) => {
   const data = await getPostAndMorePosts(params?.slug, preview, previewData)
 
   return {

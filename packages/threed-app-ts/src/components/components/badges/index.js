@@ -19,13 +19,21 @@ import * as source from '~/views/components/badges/BadgesSourceCode'
 
 const Pagination = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12} md={6}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Simple Badges'
           code={{
             tsx: null,
-            jsx: source.BadgesBasicJSXCode
+            jsx: source.BadgesBasicJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -35,12 +43,16 @@ const Pagination = () => {
           <BadgesBasic />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Dot Badges'
           code={{
             tsx: null,
-            jsx: source.BadgesDotJSXCode
+            jsx: source.BadgesDotJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -49,12 +61,16 @@ const Pagination = () => {
           <BadgesDot />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Badge Alignment'
           code={{
             tsx: null,
-            jsx: source.BadgesAlignmentJSXCode
+            jsx: source.BadgesAlignmentJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -63,12 +79,16 @@ const Pagination = () => {
           <BadgesAlignment />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Maximum Value'
           code={{
             tsx: null,
-            jsx: source.BadgesMaxValueJSXCode
+            jsx: source.BadgesMaxValueJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -77,12 +97,16 @@ const Pagination = () => {
           <BadgesMaxValue />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Badge Overlap'
           code={{
             tsx: null,
-            jsx: source.BadgesOverlapJSXCode
+            jsx: source.BadgesOverlapJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -91,12 +115,16 @@ const Pagination = () => {
           <BadgesOverlap />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Badge visibility'
           code={{
             tsx: null,
-            jsx: source.BadgesVisibilityJSXCode
+            jsx: source.BadgesVisibilityJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -105,12 +133,15 @@ const Pagination = () => {
           <BadgesVisibility />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Custom Light Badges'
           code={{
             tsx: null,
-            jsx: source.BadgesLightJSXCode
+            jsx: source.BadgesLightJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>

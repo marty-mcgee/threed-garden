@@ -20,13 +20,21 @@ import * as source from '~/views/forms/form-elements/select/SelectSourceCode'
 
 const Selects = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12} md={6}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Variants'
           code={{
             tsx: null,
-            jsx: source.SelectVariantsJSXCode
+            jsx: source.SelectVariantsJSXCode,
           }}
         >
           <Typography>
@@ -37,12 +45,16 @@ const Selects = () => {
           <SelectVariants />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Native Select'
           code={{
             tsx: null,
-            jsx: source.SelectNativeJSXCode
+            jsx: source.SelectNativeJSXCode,
           }}
         >
           <Typography>
@@ -52,12 +64,15 @@ const Selects = () => {
           <SelectNative />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Select Props'
           code={{
             tsx: null,
-            jsx: source.SelectPropsJSXCode
+            jsx: source.SelectPropsJSXCode,
           }}
         >
           <Typography>
@@ -68,12 +83,16 @@ const Selects = () => {
           <SelectProps />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Controlled and Uncontrolled'
           code={{
             tsx: null,
-            jsx: source.SelectControlledUncontrolledJSXCode
+            jsx: source.SelectControlledUncontrolledJSXCode,
           }}
         >
           <Typography>
@@ -83,12 +102,16 @@ const Selects = () => {
           <SelectControlledUncontrolled />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Customized Select'
           code={{
             tsx: null,
-            jsx: source.SelectCustomizedJSXCode
+            jsx: source.SelectCustomizedJSXCode,
           }}
         >
           <Typography>
@@ -97,12 +120,16 @@ const Selects = () => {
           <SelectCustomized />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Multiple Select'
           code={{
             tsx: null,
-            jsx: source.SelectMultipleJSXCode
+            jsx: source.SelectMultipleJSXCode,
           }}
         >
           <Typography>
@@ -111,25 +138,38 @@ const Selects = () => {
           <SelectMultiple />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
-        <Grid container spacing={6}>
-          <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
+        <Grid
+          container
+          spacing={6}
+        >
+          <Grid
+            item
+            xs={12}
+          >
             <CardSnippet
               title='Select with Dialog'
               code={{
                 tsx: null,
-                jsx: source.SelectWithDialogJSXCode
+                jsx: source.SelectWithDialogJSXCode,
               }}
             >
               <SelectWithDialog />
             </CardSnippet>
           </Grid>
-          <Grid item xs={12}>
+          <Grid
+            item
+            xs={12}
+          >
             <CardSnippet
               title='Grouping'
               code={{
                 tsx: null,
-                jsx: source.SelectGroupingJSXCode
+                jsx: source.SelectGroupingJSXCode,
               }}
             >
               <Typography>

@@ -24,7 +24,7 @@ const ToastPromise = () => {
     return toast.promise(myPromise, {
       loading: 'Loading',
       success: 'Got the data',
-      error: 'Error when fetching'
+      error: 'Error when fetching',
     })
   }
 
@@ -33,7 +33,11 @@ const ToastPromise = () => {
       <TimerSand sx={{ mb: 2, fontSize: '2rem' }} />
       <Typography sx={{ mb: 4, fontWeight: 600 }}>Promise</Typography>
       <Typography sx={{ mb: 3 }}>Update automatically when promise resolves / fails.</Typography>
-      <Button sx={{ mb: 8 }} variant='contained' onClick={handleClick}>
+      <Button
+        sx={{ mb: 8 }}
+        variant='contained'
+        onClick={handleClick}
+      >
         Promise
       </Button>
     </Box>

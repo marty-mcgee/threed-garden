@@ -8,8 +8,16 @@ import ArrowRightThinCircleOutline from 'mdi-material-ui/ArrowRightThinCircleOut
 const ChipsIcon = () => {
   return (
     <div className='demo-space-x'>
-      <Chip label='Previous' icon={<ArrowLeftThinCircleOutline fontSize='small' />} />
-      <Chip label='Next' color='primary' variant='outlined' icon={<ArrowRightThinCircleOutline fontSize='small' />} />
+      <Chip
+        label='Previous'
+        icon={<ArrowLeftThinCircleOutline fontSize='small' />}
+      />
+      <Chip
+        label='Next'
+        color='primary'
+        variant='outlined'
+        icon={<ArrowRightThinCircleOutline fontSize='small' />}
+      />
     </div>
   )
 }

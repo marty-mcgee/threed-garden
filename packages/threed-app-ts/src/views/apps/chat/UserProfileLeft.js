@@ -1,5 +1,4 @@
 // ** React Imports
-import { Fragment } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -31,7 +30,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar'
 // ** Custom Component Imports
 import Sidebar from '~/@core/components/sidebar'
 
-const UserProfileLeft = props => {
+const UserProfileLeft = (props) => {
   const {
     store,
     hidden,
@@ -40,10 +39,10 @@ const UserProfileLeft = props => {
     sidebarWidth,
     setUserStatus,
     userProfileLeftOpen,
-    handleUserProfileLeftSidebarToggle
+    handleUserProfileLeftSidebarToggle,
   } = props
 
-  const handleUserStatus = e => {
+  const handleUserStatus = (e) => {
     setUserStatus(e.target.value)
   }
 
@@ -63,12 +62,12 @@ const UserProfileLeft = props => {
         zIndex: 9,
         height: '100%',
         width: sidebarWidth,
-        borderTopLeftRadius: theme => theme.shape.borderRadius,
-        borderBottomLeftRadius: theme => theme.shape.borderRadius,
+        borderTopLeftRadius: (theme) => theme.shape.borderRadius,
+        borderBottomLeftRadius: (theme) => theme.shape.borderRadius,
         '& + .MuiBackdrop-root': {
           zIndex: 8,
-          borderRadius: 1
-        }
+          borderRadius: 1,
+        },
       }}
     >
       {store && store.userProfile ? (
@@ -87,7 +86,7 @@ const UserProfileLeft = props => {
                 overlap='circular'
                 anchorOrigin={{
                   vertical: 'bottom',
-                  horizontal: 'right'
+                  horizontal: 'right',
                 }}
                 badgeContent={
                   <Box
@@ -98,7 +97,7 @@ const UserProfileLeft = props => {
                       borderRadius: '50%',
                       color: `${statusObj[userStatus]}.main`,
                       backgroundColor: `${statusObj[userStatus]}.main`,
-                      boxShadow: theme => `0 0 0 2px ${theme.palette.background.paper}`
+                      boxShadow: (theme) => `0 0 0 2px ${theme.palette.background.paper}`,
                     }}
                   />
                 }
@@ -111,7 +110,10 @@ const UserProfileLeft = props => {
               </Badge>
             </Box>
             <Typography sx={{ mb: 0.5, fontWeight: 500, textAlign: 'center' }}>{store.userProfile.fullName}</Typography>
-            <Typography variant='body2' sx={{ textAlign: 'center', textTransform: 'capitalize' }}>
+            <Typography
+              variant='body2'
+              sx={{ textAlign: 'center', textTransform: 'capitalize' }}
+            >
               {store.userProfile.role}
             </Typography>
           </Box>
@@ -119,43 +121,89 @@ const UserProfileLeft = props => {
           <Box sx={{ height: 'calc(100% - 11.8125rem)' }}>
             <ScrollWrapper>
               <Box sx={{ p: 5 }}>
-                <Typography variant='body2' sx={{ mb: 4, textTransform: 'uppercase' }}>
+                <Typography
+                  variant='body2'
+                  sx={{ mb: 4, textTransform: 'uppercase' }}
+                >
                   About
                 </Typography>
-                <TextField minRows={3} multiline fullWidth sx={{ mb: 4 }} defaultValue={store.userProfile.about} />
-                <Typography variant='body2' sx={{ mb: 4, textTransform: 'uppercase' }}>
+                <TextField
+                  minRows={3}
+                  multiline
+                  fullWidth
+                  sx={{ mb: 4 }}
+                  defaultValue={store.userProfile.about}
+                />
+                <Typography
+                  variant='body2'
+                  sx={{ mb: 4, textTransform: 'uppercase' }}
+                >
                   Status
                 </Typography>
-                <RadioGroup value={userStatus} sx={{ mb: 4, ml: 0.8 }} onChange={handleUserStatus}>
+                <RadioGroup
+                  value={userStatus}
+                  sx={{ mb: 4, ml: 0.8 }}
+                  onChange={handleUserStatus}
+                >
                   <div>
                     <FormControlLabel
                       value='online'
                       label='Online'
-                      control={<Radio color='success' sx={{ p: 1.5 }} />}
+                      control={
+                        <Radio
+                          color='success'
+                          sx={{ p: 1.5 }}
+                        />
+                      }
                     />
                   </div>
                   <div>
-                    <FormControlLabel value='away' label='Away' control={<Radio color='warning' sx={{ p: 1.5 }} />} />
+                    <FormControlLabel
+                      value='away'
+                      label='Away'
+                      control={
+                        <Radio
+                          color='warning'
+                          sx={{ p: 1.5 }}
+                        />
+                      }
+                    />
                   </div>
                   <div>
                     <FormControlLabel
                       value='busy'
                       label='Do not Disturb'
-                      control={<Radio color='error' sx={{ p: 1.5 }} />}
+                      control={
+                        <Radio
+                          color='error'
+                          sx={{ p: 1.5 }}
+                        />
+                      }
                     />
                   </div>
                   <div>
                     <FormControlLabel
                       value='offline'
                       label='Offline'
-                      control={<Radio color='secondary' sx={{ p: 1.5 }} />}
+                      control={
+                        <Radio
+                          color='secondary'
+                          sx={{ p: 1.5 }}
+                        />
+                      }
                     />
                   </div>
                 </RadioGroup>
-                <Typography variant='body2' sx={{ mb: 4, textTransform: 'uppercase' }}>
+                <Typography
+                  variant='body2'
+                  sx={{ mb: 4, textTransform: 'uppercase' }}
+                >
                   Settings
                 </Typography>
-                <List dense sx={{ p: 0, mb: 4 }}>
+                <List
+                  dense
+                  sx={{ p: 0, mb: 4 }}
+                >
                   <ListItem disablePadding>
                     <ListItemButton sx={{ px: 2 }}>
                       <ListItemIcon sx={{ mr: 2, color: 'text.primary' }}>

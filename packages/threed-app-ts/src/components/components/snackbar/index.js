@@ -18,13 +18,21 @@ import * as source from '~/views/components/snackbar/SnackbarSourceCode'
 
 const Snackbar = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12} md={6}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Simple Snackbar'
           code={{
             tsx: null,
-            jsx: source.SnackbarSimpleJSXCode
+            jsx: source.SnackbarSimpleJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -33,12 +41,16 @@ const Snackbar = () => {
           <SnackbarSimple />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Alert Snackbar'
           code={{
             tsx: null,
-            jsx: source.SnackbarAlertJSXCode
+            jsx: source.SnackbarAlertJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -47,12 +59,16 @@ const Snackbar = () => {
           <SnackbarAlert />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Positioned Snackbar'
           code={{
             tsx: null,
-            jsx: source.SnackbarPositionedJSXCode
+            jsx: source.SnackbarPositionedJSXCode,
           }}
         >
           <Typography>
@@ -61,36 +77,48 @@ const Snackbar = () => {
           <SnackbarPositioned />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Consecutive Snackbars'
           code={{
             tsx: null,
-            jsx: source.SnackbarConsecutiveJSXCode
+            jsx: source.SnackbarConsecutiveJSXCode,
           }}
         >
           <Typography>When multiple snackbar updates are necessary, they should appear one at a time.</Typography>
           <SnackbarConsecutive />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Change Transition'
           code={{
             tsx: null,
-            jsx: source.SnackbarTransitionJSXCode
+            jsx: source.SnackbarTransitionJSXCode,
           }}
         >
           <Typography>When multiple snackbar updates are necessary, they should appear one at a time.</Typography>
           <SnackbarTransition />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Control Slide Direction'
           code={{
             tsx: null,
-            jsx: source.SnackbarControlSlideDirectionJSXCode
+            jsx: source.SnackbarControlSlideDirectionJSXCode,
           }}
         >
           <Typography>

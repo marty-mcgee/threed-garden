@@ -16,46 +16,46 @@ const data = [
   {
     subject: 'Battery',
     'iPhone 11': 41,
-    'Samsung s20': 65
+    'Samsung s20': 65,
   },
   {
     subject: 'Brand',
     'iPhone 11': 64,
-    'Samsung s20': 46
+    'Samsung s20': 46,
   },
   {
     subject: 'Camera',
     'iPhone 11': 81,
-    'Samsung s20': 42
+    'Samsung s20': 42,
   },
   {
     subject: 'Memory',
     'iPhone 11': 60,
-    'Samsung s20': 25
+    'Samsung s20': 25,
   },
   {
     subject: 'Storage',
     'iPhone 11': 42,
-    'Samsung s20': 58
+    'Samsung s20': 58,
   },
   {
     subject: 'Display',
     'iPhone 11': 42,
-    'Samsung s20': 63
+    'Samsung s20': 63,
   },
   {
     subject: 'OS',
     'iPhone 11': 33,
-    'Samsung s20': 76
+    'Samsung s20': 76,
   },
   {
     subject: 'Price',
     'iPhone 11': 23,
-    'Samsung s20': 43
-  }
+    'Samsung s20': 43,
+  },
 ]
 
-const CustomTooltip = data => {
+const CustomTooltip = (data) => {
   const { active, payload } = data
   if (active && payload) {
     return (
@@ -64,9 +64,12 @@ const CustomTooltip = data => {
         <Divider />
         {data &&
           data.payload &&
-          data.payload.map(i => {
+          data.payload.map((i) => {
             return (
-              <Box sx={{ display: 'flex', alignItems: 'center' }} key={i.dataKey}>
+              <Box
+                sx={{ display: 'flex', alignItems: 'center' }}
+                key={i.dataKey}
+              >
                 <Circle sx={{ color: i.fill, mr: 2.5, fontSize: '0.6rem' }} />
                 <span>
                   {i.dataKey}: {i.payload[i.dataKey]}
@@ -84,17 +87,36 @@ const CustomTooltip = data => {
 const RechartsRadarChart = () => {
   return (
     <Card>
-      <CardHeader title='Mobile Comparison' titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader
+        title='Mobile Comparison'
+        titleTypographyProps={{ variant: 'h6' }}
+      />
       <CardContent>
         <Box sx={{ height: 350 }}>
           <ResponsiveContainer>
-            <RadarChart cx='50%' cy='50%' height={350} data={data} style={{ direction: 'ltr' }}>
+            <RadarChart
+              cx='50%'
+              cy='50%'
+              height={350}
+              data={data}
+              style={{ direction: 'ltr' }}
+            >
               <PolarGrid />
               <PolarAngleAxis dataKey='subject' />
               <PolarRadiusAxis />
               <Tooltip content={CustomTooltip} />
-              <Radar dataKey='iPhone 11' stroke='#fde802' fill='#fde802' fillOpacity={1} />
-              <Radar dataKey='Samsung s20' stroke='#9b88fa' fill='#9b88fa' fillOpacity={0.8} />
+              <Radar
+                dataKey='iPhone 11'
+                stroke='#fde802'
+                fill='#fde802'
+                fillOpacity={1}
+              />
+              <Radar
+                dataKey='Samsung s20'
+                stroke='#9b88fa'
+                fill='#9b88fa'
+                fillOpacity={0.8}
+              />
             </RadarChart>
           </ResponsiveContainer>
         </Box>

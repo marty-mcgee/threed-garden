@@ -22,7 +22,7 @@ const StyledCardContent = styled(CardContent)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   padding: theme.spacing(3.75, 5.5),
-  backgroundColor: `rgba(${theme.palette.customColors.main}, 0.08)`
+  backgroundColor: `rgba(${theme.palette.customColors.main}, 0.08)`,
 }))
 
 // Styled Link component
@@ -30,23 +30,23 @@ const StyledLink = styled('a')(({ theme }) => ({
   display: 'block',
   textDecoration: 'none',
   '&:not(:last-of-type)': {
-    marginBottom: theme.spacing(6)
+    marginBottom: theme.spacing(6),
   },
   '&:hover *': {
-    color: theme.palette.primary.main
-  }
+    color: theme.palette.primary.main,
+  },
 }))
 
 // Styled Grid component
 const StyledGrid = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down('md')]: {
-    order: -1
-  }
+    order: -1,
+  },
 }))
 
 // Styled component for the image
 const Img = styled('img')({
-  width: '100%'
+  width: '100%',
 })
 
 const questions = [
@@ -54,15 +54,19 @@ const questions = [
   'Can I Change My Username?',
   'Where Can I Upload My Avatar?',
   'How Do I Change My Timezone?',
-  'How Do I Change My Password?'
+  'How Do I Change My Password?',
 ]
 
 const KnowledgeBaseCategoryQuestion = () => {
   const renderQuestions = () => {
     return questions.map((question, index) => {
       return (
-        <Link href='/' passHref key={index}>
-          <StyledLink onClick={e => e.preventDefault()}>
+        <Link
+          href='/'
+          passHref
+          key={index}
+        >
+          <StyledLink onClick={(e) => e.preventDefault()}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <CircleOutline sx={{ fontSize: '0.875rem', mr: 2.25, color: 'text.secondary' }} />
               <Typography variant='body2'>{question}</Typography>
@@ -74,29 +78,46 @@ const KnowledgeBaseCategoryQuestion = () => {
   }
 
   return (
-    <Grid container spacing={6}>
-      <Grid item xs={12} md={4}>
+    <Grid
+      container
+      spacing={6}
+    >
+      <Grid
+        item
+        xs={12}
+        md={4}
+      >
         <Card>
           <StyledCardContent>
             <CogOutline sx={{ mr: 3, color: 'primary.main' }} />
             <Typography variant='h6'>{`Account Settings (${questions.length})`}</Typography>
           </StyledCardContent>
-          <CardContent sx={{ p: theme => `${theme.spacing(6.75, 5.5, 7.5)} !important` }}>
+          <CardContent sx={{ p: (theme) => `${theme.spacing(6.75, 5.5, 7.5)} !important` }}>
             {renderQuestions()}
           </CardContent>
         </Card>
       </Grid>
-      <StyledGrid item xs={12} md={8}>
+      <StyledGrid
+        item
+        xs={12}
+        md={8}
+      >
         <Card>
           <CardContent>
             <Box sx={{ mb: 3, display: 'flex' }}>
               <Cellphone sx={{ mr: 3.25, fontSize: '1.375rem', mt: 1.25 }} />
               <Typography variant='h6'>Why Was My Developer Application Rejected?</Typography>
             </Box>
-            <Typography variant='body2' sx={{ mb: 7 }}>
+            <Typography
+              variant='body2'
+              sx={{ mb: 7 }}
+            >
               Last updated on 10 Dec 2020
             </Typography>
-            <Typography variant='body2' sx={{ mb: 7 }}>
+            <Typography
+              variant='body2'
+              sx={{ mb: 7 }}
+            >
               It has been said that astronomy is a humbling and character-building experience. There is perhaps no
               better demonstration of the folly of human conceits than this distant image of our tiny world. To me, it
               underscores our responsibility to deal more kindly with one another, and to preserve and cherish the pale
@@ -106,9 +127,15 @@ const KnowledgeBaseCategoryQuestion = () => {
               inhabitants of one corner of this pixel on the scarcely distinguishable inhabitants of some other corner,
               how frequent their misunderstandings, how eager they are to kill one another, how fervent their hatreds.
             </Typography>
-            <Img alt='kb-category question' src='/images/pages/kb-category-question.png' />
+            <Img
+              alt='kb-category question'
+              src='/images/pages/kb-category-question.png'
+            />
             <Typography sx={{ mt: 7, mb: 1.75 }}>Houston</Typography>
-            <Typography variant='body2' sx={{ mb: 5.25 }}>
+            <Typography
+              variant='body2'
+              sx={{ mb: 5.25 }}
+            >
               that may have seemed like a very long final phase. The auto targeting was taking us right into a … crater,
               with a large number of big boulders and rocks … and it required … flying manually over the rock field to
               find a reasonably good area.
@@ -146,10 +173,10 @@ export const getStaticPaths = async () => {
   const CategoryResponse = await axios.get('/pages/knowledge-base/categories')
   const categoryData = await CategoryResponse.data
   const paths = []
-  data.forEach(item => {
+  data.forEach((item) => {
     const category = `${item.category}`
-    categoryData.forEach(categoryItem => {
-      categoryItem.questions.forEach(question => {
+    categoryData.forEach((categoryItem) => {
+      categoryItem.questions.forEach((question) => {
         paths.push({ params: { category, question: `${question.slug}` } })
       })
     })
@@ -157,13 +184,13 @@ export const getStaticPaths = async () => {
 
   return {
     paths,
-    fallback: false
+    fallback: false,
   }
 }
 
 export const getStaticProps = () => {
   return {
-    props: {}
+    props: {},
   }
 }
 

@@ -1,17 +1,17 @@
-import { ReactNode } from "react"
+import { ReactNode } from 'react'
 
 // @mui material components
-import Card from "@mui/material/Card"
+import Card from '@mui/material/Card'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
+import MDBox from '~/components/mui/MDBox'
+import MDTypography from '~/components/mui/MDTypography'
 
 // ThreeD Garden components
-import { useMaterialUIController } from "~/context"
+import { useMaterialUIController } from '~/context'
 
 // Timeline context
-import { TimelineProvider } from "~/components/elements/Timeline/context"
+import { TimelineProvider } from '~/components/elements/Timeline/context'
 
 // Declaring props types for TimelineList
 interface Props {
@@ -28,18 +28,22 @@ function TimelineList({ title, dark, children }: Props): JSX.Element {
     <TimelineProvider value={dark}>
       <Card>
         <MDBox
-          bgColor={dark ? "dark" : "white"}
-          variant="gradient"
-          borderRadius="xl"
+          bgColor={dark ? 'dark' : 'white'}
+          variant='gradient'
+          borderRadius='xl'
           sx={{
-            background: ({ palette: { background } }: any) =>
-              darkMode && background.card,
-          }}>
-          <MDBox pt={3} px={3}>
+            background: ({ palette: { background } }: any) => darkMode && background.card,
+          }}
+        >
+          <MDBox
+            pt={3}
+            px={3}
+          >
             <MDTypography
-              variant="h6"
-              fontWeight="medium"
-              color={dark ? "white" : "dark"}>
+              variant='h6'
+              fontWeight='medium'
+              color={dark ? 'white' : 'dark'}
+            >
               {title}
             </MDTypography>
           </MDBox>

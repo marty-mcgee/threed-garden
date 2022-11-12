@@ -20,36 +20,36 @@ const data = [
     chipColor: 'primary',
     title: 'Call with Woods',
     src: '/images/avatars/4.png',
-    subtitle: '21 Jul | 08:20-10:30'
+    subtitle: '21 Jul | 08:20-10:30',
   },
   {
     chipColor: 'success',
     chipText: 'Meditation',
     title: 'Call with hilda',
     src: '/images/avatars/8.png',
-    subtitle: '24 Jul | 11:30-12:00'
+    subtitle: '24 Jul | 11:30-12:00',
   },
   {
     chipText: 'Dinner',
     chipColor: 'error',
     title: 'Conference call',
     src: '/images/avatars/7.png',
-    subtitle: '28 Jul | 05:00-6:45'
+    subtitle: '28 Jul | 05:00-6:45',
   },
   {
     chipText: 'Meetup',
     chipColor: 'secondary',
     title: 'Meeting with Mark',
     src: '/images/avatars/3.png',
-    subtitle: '03 Aug | 07:00-8:30'
+    subtitle: '03 Aug | 07:00-8:30',
   },
   {
     chipText: 'Business',
     chipColor: 'primary',
     title: 'Meeting in Oakland',
     src: '/images/avatars/2.png',
-    subtitle: '14 Aug | 04:15-05:30'
-  }
+    subtitle: '14 Aug | 04:15-05:30',
+  },
 ]
 
 const EcommerceMeetingSchedule = () => {
@@ -59,7 +59,12 @@ const EcommerceMeetingSchedule = () => {
         title='Meeting Schedule'
         titleTypographyProps={{ sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' } }}
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }
@@ -72,17 +77,20 @@ const EcommerceMeetingSchedule = () => {
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                ...(index !== data.length - 1 ? { mb: 5.3 } : {})
+                ...(index !== data.length - 1 ? { mb: 5.3 } : {}),
               }}
             >
-              <Avatar src={item.src} sx={{ mr: 3, width: 38, height: 38 }} />
+              <Avatar
+                src={item.src}
+                sx={{ mr: 3, width: 38, height: 38 }}
+              />
               <Box
                 sx={{
                   width: '100%',
                   display: 'flex',
                   flexWrap: 'wrap',
                   alignItems: 'center',
-                  justifyContent: 'space-between'
+                  justifyContent: 'space-between',
                 }}
               >
                 <Box sx={{ mr: 2, display: 'flex', mb: 0.4, flexDirection: 'column' }}>

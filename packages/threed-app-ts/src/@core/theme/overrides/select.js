@@ -4,9 +4,9 @@ export default {
       select: {
         minWidth: '6rem !important',
         '&.MuiTablePagination-select': {
-          minWidth: '1.5rem !important'
-        }
-      }
-    }
-  }
+          minWidth: '1.5rem !important',
+        },
+      },
+    },
+  },
 }

@@ -23,7 +23,7 @@ const data = [
     avatarText: 'US',
     trendNumber: '25.8%',
     avatarColor: 'success',
-    trend: <ChevronUp sx={{ color: 'success.main', fontWeight: 600 }} />
+    trend: <ChevronUp sx={{ color: 'success.main', fontWeight: 600 }} />,
   },
   {
     sales: '645k',
@@ -33,7 +33,7 @@ const data = [
     avatarText: 'UK',
     trendNumber: '6.2%',
     avatarColor: 'error',
-    trend: <ChevronDown sx={{ color: 'error.main', fontWeight: 600 }} />
+    trend: <ChevronDown sx={{ color: 'error.main', fontWeight: 600 }} />,
   },
   {
     sales: '148k',
@@ -43,7 +43,7 @@ const data = [
     subtitle: 'India',
     trendNumber: '12.4%',
     avatarColor: 'warning',
-    trend: <ChevronUp sx={{ color: 'success.main', fontWeight: 600 }} />
+    trend: <ChevronUp sx={{ color: 'success.main', fontWeight: 600 }} />,
   },
   {
     sales: '86k',
@@ -53,7 +53,7 @@ const data = [
     subtitle: 'Japan',
     trendNumber: '11.9%',
     avatarColor: 'secondary',
-    trend: <ChevronDown sx={{ color: 'error.main', fontWeight: 600 }} />
+    trend: <ChevronDown sx={{ color: 'error.main', fontWeight: 600 }} />,
   },
   {
     sales: '42k',
@@ -63,8 +63,8 @@ const data = [
     subtitle: 'Korea',
     trendNumber: '16.2%',
     avatarColor: 'error',
-    trend: <ChevronUp sx={{ color: 'success.main', fontWeight: 600 }} />
-  }
+    trend: <ChevronUp sx={{ color: 'success.main', fontWeight: 600 }} />,
+  },
 ]
 
 const AnalyticsSalesByCountries = () => {
@@ -74,12 +74,17 @@ const AnalyticsSalesByCountries = () => {
         title='Sales by Countries'
         titleTypographyProps={{ sx: { lineHeight: '1.2 !important', letterSpacing: '0.31px !important' } }}
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }
       />
-      <CardContent sx={{ pt: theme => `${theme.spacing(2)} !important` }}>
+      <CardContent sx={{ pt: (theme) => `${theme.spacing(2)} !important` }}>
         {data.map((item, index) => {
           return (
             <Box
@@ -87,7 +92,7 @@ const AnalyticsSalesByCountries = () => {
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                ...(index !== data.length - 1 ? { mb: 6.25 } : {})
+                ...(index !== data.length - 1 ? { mb: 6.25 } : {}),
               }}
             >
               <CustomAvatar
@@ -104,7 +109,7 @@ const AnalyticsSalesByCountries = () => {
                   display: 'flex',
                   flexWrap: 'wrap',
                   alignItems: 'center',
-                  justifyContent: 'space-between'
+                  justifyContent: 'space-between',
                 }}
               >
                 <Box sx={{ mr: 2, display: 'flex', flexDirection: 'column' }}>
@@ -117,14 +122,17 @@ const AnalyticsSalesByCountries = () => {
                         sx={{
                           fontWeight: 600,
                           lineHeight: 1.5,
-                          color: item.trendDir === 'down' ? 'error.main' : 'success.main'
+                          color: item.trendDir === 'down' ? 'error.main' : 'success.main',
                         }}
                       >
                         {item.trendNumber}
                       </Typography>
                     </Box>
                   </Box>
-                  <Typography variant='caption' sx={{ lineHeight: 1.5 }}>
+                  <Typography
+                    variant='caption'
+                    sx={{ lineHeight: 1.5 }}
+                  >
                     {item.subtitle}
                   </Typography>
                 </Box>
@@ -133,7 +141,10 @@ const AnalyticsSalesByCountries = () => {
                   <Typography sx={{ fontWeight: 600, fontSize: '0.875rem', lineHeight: 1.72, letterSpacing: '0.22px' }}>
                     {item.sales}
                   </Typography>
-                  <Typography variant='caption' sx={{ lineHeight: 1.5 }}>
+                  <Typography
+                    variant='caption'
+                    sx={{ lineHeight: 1.5 }}
+                  >
                     Sales
                   </Typography>
                 </Box>

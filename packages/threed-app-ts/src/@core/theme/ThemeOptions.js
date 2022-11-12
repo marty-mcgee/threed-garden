@@ -10,7 +10,7 @@ import spacing from './spacing'
 import shadows from './shadows'
 import breakpoints from './breakpoints'
 
-const themeOptions = settings => {
+const themeOptions = (settings) => {
   // ** Vars
   const { skin, mode, direction, themeColor } = settings
 
@@ -23,7 +23,6 @@ const themeOptions = settings => {
   delete userThemeConfig.typography
 
   const mergedThemeConfig = deepmerge(
-    // eslint-disable-next-line object-shorthand
     {
       direction,
       palette: palette(mode, skin, themeColor),
@@ -42,20 +41,20 @@ const themeOptions = settings => {
             'sans-serif',
             '"Apple Color Emoji"',
             '"Segoe UI Emoji"',
-            '"Segoe UI Symbol"'
-          ].join(',')
+            '"Segoe UI Symbol"',
+          ].join(','),
       },
       shadows: shadows(mode),
       ...spacing,
       breakpoints: breakpoints(),
       shape: {
-        borderRadius: 6
+        borderRadius: 6,
       },
       mixins: {
         toolbar: {
-          minHeight: 64
-        }
-      }
+          minHeight: 64,
+        },
+      },
     },
     userThemeConfig
   )
@@ -63,9 +62,9 @@ const themeOptions = settings => {
   return deepmerge(mergedThemeConfig, {
     palette: {
       primary: {
-        ...mergedThemeConfig.palette[themeColor]
-      }
-    }
+        ...mergedThemeConfig.palette[themeColor],
+      },
+    },
   })
 }
 

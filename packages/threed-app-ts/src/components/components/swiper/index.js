@@ -34,160 +34,206 @@ import { useSettings } from '~/@core/hooks/useSettings'
 const Swiper = () => {
   // ** Hook
   const {
-    settings: { direction }
+    settings: { direction },
   } = useSettings()
 
   return (
     <KeenSliderWrapper>
-      <Grid container spacing={6} className='match-height'>
+      <Grid
+        container
+        spacing={6}
+        className='match-height'
+      >
         <PageHeader
           subtitle={<Typography variant='body2'>Swiper is the most modern free mobile touch slider.</Typography>}
           title={
             <Typography variant='h5'>
-              <Link href='https://swiperjs.com/react' target='_blank'>
+              <Link
+                href='https://swiperjs.com/react'
+                target='_blank'
+              >
                 Swiper
               </Link>
             </Typography>
           }
         />
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Default'
             code={{
               tsx: null,
-              jsx: source.SwiperDefaultJSXCode
+              jsx: source.SwiperDefaultJSXCode,
             }}
           >
             <SwiperDefault direction={direction} />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Loop'
             code={{
               tsx: null,
-              jsx: source.SwiperLoopJSXCode
+              jsx: source.SwiperLoopJSXCode,
             }}
           >
             <SwiperLoop direction={direction} />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Multiple Slides'
             code={{
               tsx: null,
-              jsx: source.SwiperMultipleSlidesJSXCode
+              jsx: source.SwiperMultipleSlidesJSXCode,
             }}
           >
             <SwiperMultipleSlides direction={direction} />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Spacing'
             code={{
               tsx: null,
-              jsx: source.SwiperSpacingJSXCode
+              jsx: source.SwiperSpacingJSXCode,
             }}
           >
             <SwiperSpacing direction={direction} />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='FreeMode'
             code={{
               tsx: null,
-              jsx: source.SwiperFreeModeJSXCode
+              jsx: source.SwiperFreeModeJSXCode,
             }}
           >
             <SwiperFreeMode direction={direction} />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Centered'
             code={{
               tsx: null,
-              jsx: source.SwiperCenteredJSXCode
+              jsx: source.SwiperCenteredJSXCode,
             }}
           >
             <SwiperCentered direction={direction} />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Vertical'
             code={{
               tsx: null,
-              jsx: source.SwiperVerticalJSXCode
+              jsx: source.SwiperVerticalJSXCode,
             }}
           >
             <SwiperVertical />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Controls'
             code={{
               tsx: null,
-              jsx: source.SwiperControlsJSXCode
+              jsx: source.SwiperControlsJSXCode,
             }}
           >
             <SwiperControls direction={direction} />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Thumbnails'
             code={{
               tsx: null,
-              jsx: source.SwiperThumbnailsJSXCode
+              jsx: source.SwiperThumbnailsJSXCode,
             }}
           >
             <SwiperThumbnails direction={direction} />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Fader'
             code={{
               tsx: null,
-              jsx: source.SwiperFaderJSXCode
+              jsx: source.SwiperFaderJSXCode,
             }}
           >
             <SwiperFader direction={direction} />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Zoom'
             code={{
               tsx: null,
-              jsx: source.SwiperZoomJSXCode
+              jsx: source.SwiperZoomJSXCode,
             }}
           >
             <SwiperZoom direction={direction} />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Auto Switch'
             code={{
               tsx: null,
-              jsx: source.SwiperAutoSwitchJSXCode
+              jsx: source.SwiperAutoSwitchJSXCode,
             }}
           >
             <SwiperAutoSwitch direction={direction} />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Mutation Observer'
             code={{
               tsx: null,
-              jsx: source.SwiperMutationObserverJSXCode
+              jsx: source.SwiperMutationObserverJSXCode,
             }}
           >
             <SwiperMutationObserver direction={direction} />

@@ -20,28 +20,28 @@ import AccountSupervisorOutline from 'mdi-material-ui/AccountSupervisorOutline'
 // Styled TreeItem component
 const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
   '&:hover > .MuiTreeItem-content:not(.Mui-selected)': {
-    backgroundColor: theme.palette.action.hover
+    backgroundColor: theme.palette.action.hover,
   },
   '& .MuiTreeItem-content': {
     paddingRight: theme.spacing(3),
     borderTopRightRadius: theme.spacing(4),
     borderBottomRightRadius: theme.spacing(4),
-    fontWeight: theme.typography.fontWeightMedium
+    fontWeight: theme.typography.fontWeightMedium,
   },
   '& .MuiTreeItem-label': {
     fontWeight: 'inherit',
-    paddingRight: theme.spacing(3)
+    paddingRight: theme.spacing(3),
   },
   '& .MuiTreeItem-group': {
     marginLeft: 0,
     '& .MuiTreeItem-content': {
       paddingLeft: theme.spacing(4),
-      fontWeight: theme.typography.fontWeightRegular
-    }
-  }
+      fontWeight: theme.typography.fontWeightRegular,
+    },
+  },
 }))
 
-const StyledTreeItem = props => {
+const StyledTreeItem = (props) => {
   // ** Props
   const { labelText, labelIcon: LabelIcon, labelInfo, ...other } = props
 
@@ -50,12 +50,21 @@ const StyledTreeItem = props => {
       {...other}
       label={
         <Box sx={{ py: 1, display: 'flex', alignItems: 'center' }}>
-          <LabelIcon color='inherit' sx={{ mr: 1 }} />
-          <Typography variant='body2' sx={{ flexGrow: 1, fontWeight: 'inherit' }}>
+          <LabelIcon
+            color='inherit'
+            sx={{ mr: 1 }}
+          />
+          <Typography
+            variant='body2'
+            sx={{ flexGrow: 1, fontWeight: 'inherit' }}
+          >
             {labelText}
           </Typography>
           {labelInfo ? (
-            <Typography variant='caption' color='inherit'>
+            <Typography
+              variant='caption'
+              color='inherit'
+            >
               {labelInfo}
             </Typography>
           ) : null}
@@ -75,15 +84,51 @@ const TreeViewGmailClone = ({ direction }) => {
       defaultExpandIcon={ExpandIcon}
       defaultCollapseIcon={<ChevronDown />}
     >
-      <StyledTreeItem nodeId='1' labelText='All Mail' labelIcon={EmailOutline} />
-      <StyledTreeItem nodeId='2' labelText='Trash' labelIcon={DeleteOutline} />
-      <StyledTreeItem nodeId='3' labelText='Categories' labelIcon={LabelOutline}>
-        <StyledTreeItem nodeId='5' labelInfo='90' labelText='Social' labelIcon={AccountSupervisorOutline} />
-        <StyledTreeItem nodeId='6' labelInfo='2,294' labelText='Updates' labelIcon={InformationOutline} />
-        <StyledTreeItem nodeId='7' labelInfo='3,566' labelText='Forums' labelIcon={ForumOutline} />
-        <StyledTreeItem nodeId='8' labelInfo='733' labelText='Promotions' labelIcon={TagOutline} />
+      <StyledTreeItem
+        nodeId='1'
+        labelText='All Mail'
+        labelIcon={EmailOutline}
+      />
+      <StyledTreeItem
+        nodeId='2'
+        labelText='Trash'
+        labelIcon={DeleteOutline}
+      />
+      <StyledTreeItem
+        nodeId='3'
+        labelText='Categories'
+        labelIcon={LabelOutline}
+      >
+        <StyledTreeItem
+          nodeId='5'
+          labelInfo='90'
+          labelText='Social'
+          labelIcon={AccountSupervisorOutline}
+        />
+        <StyledTreeItem
+          nodeId='6'
+          labelInfo='2,294'
+          labelText='Updates'
+          labelIcon={InformationOutline}
+        />
+        <StyledTreeItem
+          nodeId='7'
+          labelInfo='3,566'
+          labelText='Forums'
+          labelIcon={ForumOutline}
+        />
+        <StyledTreeItem
+          nodeId='8'
+          labelInfo='733'
+          labelText='Promotions'
+          labelIcon={TagOutline}
+        />
       </StyledTreeItem>
-      <StyledTreeItem nodeId='4' labelText='History' labelIcon={LabelOutline} />
+      <StyledTreeItem
+        nodeId='4'
+        labelText='History'
+        labelIcon={LabelOutline}
+      />
     </TreeView>
   )
 }

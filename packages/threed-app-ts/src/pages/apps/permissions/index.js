@@ -43,7 +43,7 @@ const colors = {
   users: 'success',
   manager: 'warning',
   administrator: 'primary',
-  'restricted-user': 'error'
+  'restricted-user': 'error',
 }
 
 const defaultColumns = [
@@ -52,7 +52,7 @@ const defaultColumns = [
     field: 'name',
     minWidth: 240,
     headerName: 'Name',
-    renderCell: ({ row }) => <Typography>{row.name}</Typography>
+    renderCell: ({ row }) => <Typography>{row.name}</Typography>,
   },
   {
     flex: 0.35,
@@ -70,15 +70,15 @@ const defaultColumns = [
           sx={{ '& .MuiChip-label': { textTransform: 'capitalize' }, '&:not(:last-of-type)': { mr: 3 } }}
         />
       ))
-    }
+    },
   },
   {
     flex: 0.25,
     minWidth: 215,
     field: 'createdDate',
     headerName: 'Created Date',
-    renderCell: ({ row }) => <Typography>{row.createdDate}</Typography>
-  }
+    renderCell: ({ row }) => <Typography>{row.createdDate}</Typography>,
+  },
 ]
 
 const PermissionsTable = () => {
@@ -92,23 +92,23 @@ const PermissionsTable = () => {
     control,
     setValue: setFormValue,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm({ defaultValues: { name: '' } })
   const dispatch = useDispatch()
-  const store = useSelector(state => state.permissions)
+  const store = useSelector((state) => state.permissions)
   useEffect(() => {
     dispatch(
       fetchData({
-        q: value
+        q: value,
       })
     )
   }, [dispatch, value])
 
-  const handleFilter = useCallback(val => {
+  const handleFilter = useCallback((val) => {
     setValue(val)
   }, [])
 
-  const handleEditPermission = name => {
+  const handleEditPermission = (name) => {
     setFormValue('name', name)
     setEditDialogOpen(true)
   }
@@ -136,14 +136,20 @@ const PermissionsTable = () => {
             <DeleteOutline fontSize='small' />
           </IconButton>
         </Box>
-      )
-    }
+      ),
+    },
   ]
 
   return (
     <>
-      <Grid container spacing={6}>
-        <Grid item xs={12}>
+      <Grid
+        container
+        spacing={6}
+      >
+        <Grid
+          item
+          xs={12}
+        >
           <PageHeader
             title={<Typography variant='h5'>Permissions List</Typography>}
             subtitle={
@@ -153,9 +159,15 @@ const PermissionsTable = () => {
             }
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <Card>
-            <TableHeader value={value} handleFilter={handleFilter} />
+            <TableHeader
+              value={value}
+              handleFilter={handleFilter}
+            />
             <DataGrid
               autoHeight
               rows={store.data}
@@ -163,26 +175,42 @@ const PermissionsTable = () => {
               pageSize={pageSize}
               disableSelectionOnClick
               rowsPerPageOptions={[10, 25, 50]}
-              onPageSizeChange={newPageSize => setPageSize(newPageSize)}
+              onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
             />
           </Card>
         </Grid>
       </Grid>
-      <Dialog maxWidth='sm' fullWidth onClose={handleDialogToggle} open={editDialogOpen}>
+      <Dialog
+        maxWidth='sm'
+        fullWidth
+        onClose={handleDialogToggle}
+        open={editDialogOpen}
+      >
         <DialogTitle sx={{ mx: 'auto', textAlign: 'center' }}>
-          <Typography variant='h4' component='span' sx={{ mb: 2 }}>
+          <Typography
+            variant='h4'
+            component='span'
+            sx={{ mb: 2 }}
+          >
             Edit Permission
           </Typography>
           <Typography variant='body2'>Edit permission as per your requirements.</Typography>
         </DialogTitle>
         <DialogContent sx={{ mx: 'auto' }}>
-          <Alert severity='warning' sx={{ maxWidth: '500px' }}>
+          <Alert
+            severity='warning'
+            sx={{ maxWidth: '500px' }}
+          >
             <AlertTitle>Warning!</AlertTitle>
             By editing the permission name, you might break the system permissions functionality. Please ensure you're
             absolutely certain before proceeding.
           </Alert>
 
-          <Box component='form' sx={{ mt: 8 }} onSubmit={handleSubmit(onSubmit)}>
+          <Box
+            component='form'
+            sx={{ mt: 8 }}
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <FormGroup sx={{ mb: 2, alignItems: 'center', flexDirection: 'row', flexWrap: ['wrap', 'nowrap'] }}>
               <Controller
                 name='name'
@@ -202,14 +230,20 @@ const PermissionsTable = () => {
                 )}
               />
 
-              <Button type='submit' variant='contained'>
+              <Button
+                type='submit'
+                variant='contained'
+              >
                 Update
               </Button>
             </FormGroup>
             {errors.name && (
               <FormHelperText sx={{ color: 'error.main' }}>Please enter a valid permission name</FormHelperText>
             )}
-            <FormControlLabel control={<Checkbox />} label='Set as core permission' />
+            <FormControlLabel
+              control={<Checkbox />}
+              label='Set as core permission'
+            />
           </Box>
         </DialogContent>
       </Dialog>

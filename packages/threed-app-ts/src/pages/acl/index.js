@@ -16,8 +16,15 @@ const ACLPage = () => {
   const ability = useContext(AbilityContext)
 
   return (
-    <Grid container spacing={6}>
-      <Grid item md={6} xs={12}>
+    <Grid
+      container
+      spacing={6}
+    >
+      <Grid
+        item
+        md={6}
+        xs={12}
+      >
         <Card>
           <CardHeader title='Common' />
           <CardContent>
@@ -27,7 +34,11 @@ const ACLPage = () => {
         </Card>
       </Grid>
       {ability?.can('read', 'analytics') ? (
-        <Grid item md={6} xs={12}>
+        <Grid
+          item
+          md={6}
+          xs={12}
+        >
           <Card>
             <CardHeader title='Analytics' />
             <CardContent>
@@ -42,7 +53,7 @@ const ACLPage = () => {
 }
 ACLPage.acl = {
   action: 'read',
-  subject: 'acl-page'
+  subject: 'acl-page',
 }
 
 export default ACLPage

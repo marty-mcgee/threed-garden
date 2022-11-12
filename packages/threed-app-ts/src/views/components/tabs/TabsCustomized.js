@@ -12,17 +12,17 @@ import MuiTabList from '@mui/lab/TabList'
 // Styled TabList component
 const TabList = styled(MuiTabList)(({ theme }) => ({
   '& .MuiTabs-indicator': {
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
   },
   '& .Mui-selected': {
     backgroundColor: theme.palette.primary.main,
-    color: `${theme.palette.common.white} !important`
+    color: `${theme.palette.common.white} !important`,
   },
   '& .MuiTab-root': {
     minHeight: 38,
     minWidth: 130,
-    borderRadius: theme.shape.borderRadius
-  }
+    borderRadius: theme.shape.borderRadius,
+  },
 }))
 
 const TabsCustomized = () => {
@@ -35,10 +35,22 @@ const TabsCustomized = () => {
 
   return (
     <TabContext value={value}>
-      <TabList onChange={handleChange} aria-label='customized tabs example'>
-        <Tab value='1' label='Tab 1' />
-        <Tab value='2' label='Tab 2' />
-        <Tab value='3' label='Tab 3' />
+      <TabList
+        onChange={handleChange}
+        aria-label='customized tabs example'
+      >
+        <Tab
+          value='1'
+          label='Tab 1'
+        />
+        <Tab
+          value='2'
+          label='Tab 2'
+        />
+        <Tab
+          value='3'
+          label='Tab 3'
+        />
       </TabList>
       <TabPanel value='1'>
         <Typography>

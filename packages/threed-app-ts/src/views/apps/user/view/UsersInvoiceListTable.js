@@ -38,7 +38,7 @@ import CustomAvatar from '~/@core/components/mui/avatar'
 
 const StyledLink = styled('a')(({ theme }) => ({
   textDecoration: 'none',
-  color: theme.palette.primary.main
+  color: theme.palette.primary.main,
 }))
 
 // ** Vars
@@ -48,7 +48,7 @@ const invoiceStatusObj = {
   Draft: { color: 'primary', icon: <ContentSaveOutline sx={{ fontSize: '1rem' }} /> },
   'Partial Payment': { color: 'warning', icon: <ChartPie sx={{ fontSize: '1rem' }} /> },
   'Past Due': { color: 'error', icon: <InformationOutline sx={{ fontSize: '1rem' }} /> },
-  Downloaded: { color: 'info', icon: <ArrowDown sx={{ fontSize: '1rem' }} /> }
+  Downloaded: { color: 'info', icon: <ArrowDown sx={{ fontSize: '1rem' }} /> },
 }
 
 const RowOptions = ({ id }) => {
@@ -56,7 +56,7 @@ const RowOptions = ({ id }) => {
   const [anchorEl, setAnchorEl] = useState(null)
   const rowOptionsOpen = Boolean(anchorEl)
 
-  const handleRowOptionsClick = event => {
+  const handleRowOptionsClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
 
@@ -66,7 +66,10 @@ const RowOptions = ({ id }) => {
 
   return (
     <>
-      <IconButton size='small' onClick={handleRowOptionsClick}>
+      <IconButton
+        size='small'
+        onClick={handleRowOptionsClick}
+      >
         <DotsVertical fontSize='small' />
       </IconButton>
       <Menu
@@ -76,25 +79,37 @@ const RowOptions = ({ id }) => {
         onClose={handleRowOptionsClose}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'right'
+          horizontal: 'right',
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'right'
+          horizontal: 'right',
         }}
       >
         <MenuItem>
-          <Download fontSize='small' sx={{ mr: 2 }} />
+          <Download
+            fontSize='small'
+            sx={{ mr: 2 }}
+          />
           Download
         </MenuItem>
-        <Link href={`/apps/invoice/edit/${id}`} passHref>
+        <Link
+          href={`/apps/invoice/edit/${id}`}
+          passHref
+        >
           <MenuItem>
-            <PencilOutline fontSize='small' sx={{ mr: 2 }} />
+            <PencilOutline
+              fontSize='small'
+              sx={{ mr: 2 }}
+            />
             Edit
           </MenuItem>
         </Link>
         <MenuItem>
-          <ContentCopy fontSize='small' sx={{ mr: 2 }} />
+          <ContentCopy
+            fontSize='small'
+            sx={{ mr: 2 }}
+          />
           Duplicate
         </MenuItem>
       </Menu>
@@ -109,10 +124,13 @@ const columns = [
     minWidth: 90,
     headerName: '# ID',
     renderCell: ({ row }) => (
-      <Link href={`/apps/invoice/preview/${row.id}`} passHref>
+      <Link
+        href={`/apps/invoice/preview/${row.id}`}
+        passHref
+      >
         <StyledLink>{`#${row.id}`}</StyledLink>
       </Link>
-    )
+    ),
   },
   {
     flex: 0.15,
@@ -128,42 +146,55 @@ const columns = [
         <Tooltip
           title={
             <>
-              <Typography variant='caption' sx={{ color: 'common.white', fontWeight: 600 }}>
+              <Typography
+                variant='caption'
+                sx={{ color: 'common.white', fontWeight: 600 }}
+              >
                 {invoiceStatus}
               </Typography>
               <br />
-              <Typography variant='caption' sx={{ color: 'common.white', fontWeight: 600 }}>
+              <Typography
+                variant='caption'
+                sx={{ color: 'common.white', fontWeight: 600 }}
+              >
                 Balance:
               </Typography>{' '}
               {balance}
               <br />
-              <Typography variant='caption' sx={{ color: 'common.white', fontWeight: 600 }}>
+              <Typography
+                variant='caption'
+                sx={{ color: 'common.white', fontWeight: 600 }}
+              >
                 Due Date:
               </Typography>{' '}
               {dueDate}
             </>
           }
         >
-          <CustomAvatar skin='light' color={color} sx={{ width: '1.875rem', height: '1.875rem' }}>
+          <CustomAvatar
+            skin='light'
+            color={color}
+            sx={{ width: '1.875rem', height: '1.875rem' }}
+          >
             {Icon}
           </CustomAvatar>
         </Tooltip>
       )
-    }
+    },
   },
   {
     flex: 0.25,
     minWidth: 90,
     field: 'total',
     headerName: 'Total',
-    renderCell: ({ row }) => <Typography variant='body2'>${row.total || 0}</Typography>
+    renderCell: ({ row }) => <Typography variant='body2'>${row.total || 0}</Typography>,
   },
   {
     flex: 0.3,
     minWidth: 125,
     field: 'issuedDate',
     headerName: 'Issued Date',
-    renderCell: ({ row }) => <Typography variant='body2'>{row.issuedDate}</Typography>
+    renderCell: ({ row }) => <Typography variant='body2'>{row.issuedDate}</Typography>,
   },
   {
     flex: 0.1,
@@ -180,8 +211,15 @@ const columns = [
         </Tooltip>
         <Tooltip title='View'>
           <Box>
-            <Link href={`/apps/invoice/preview/${row.id}`} passHref>
-              <IconButton size='small' component='a' sx={{ textDecoration: 'none' }}>
+            <Link
+              href={`/apps/invoice/preview/${row.id}`}
+              passHref
+            >
+              <IconButton
+                size='small'
+                component='a'
+                sx={{ textDecoration: 'none' }}
+              >
                 <EyeOutline fontSize='small' />
               </IconButton>
             </Link>
@@ -189,8 +227,8 @@ const columns = [
         </Tooltip>
         <RowOptions id={row.id} />
       </Box>
-    )
-  }
+    ),
+  },
 ]
 
 const InvoiceListTable = ({ invoiceData }) => {
@@ -201,7 +239,7 @@ const InvoiceListTable = ({ invoiceData }) => {
   // ** Var
   const open = Boolean(anchorEl)
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
 
@@ -216,7 +254,7 @@ const InvoiceListTable = ({ invoiceData }) => {
         sx={{ '& .MuiCardHeader-action': { m: 0 } }}
         titleTypographyProps={{
           variant: 'h6',
-          sx: { lineHeight: '32px !important', letterSpacing: '0.15px !important' }
+          sx: { lineHeight: '32px !important', letterSpacing: '0.15px !important' },
         }}
         action={
           <>
@@ -230,7 +268,12 @@ const InvoiceListTable = ({ invoiceData }) => {
             >
               Export
             </Button>
-            <Menu open={open} anchorEl={anchorEl} onClose={handleClose} id='user-view-overview-export'>
+            <Menu
+              open={open}
+              anchorEl={anchorEl}
+              onClose={handleClose}
+              id='user-view-overview-export'
+            >
               <MenuItem onClick={handleClose}>PDF</MenuItem>
               <MenuItem onClick={handleClose}>XLSX</MenuItem>
               <MenuItem onClick={handleClose}>CSV</MenuItem>
@@ -245,7 +288,7 @@ const InvoiceListTable = ({ invoiceData }) => {
         pageSize={pageSize}
         disableSelectionOnClick
         rowsPerPageOptions={[7, 10, 25, 50]}
-        onPageSizeChange={newPageSize => setPageSize(newPageSize)}
+        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
       />
     </Card>
   )

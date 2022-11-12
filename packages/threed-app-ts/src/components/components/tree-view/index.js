@@ -24,13 +24,21 @@ const TreeView = () => {
   const { settings } = useSettings()
 
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12} md={6}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Basic Tree View'
           code={{
             tsx: null,
-            jsx: source.TreeViewBasicJSXCode
+            jsx: source.TreeViewBasicJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -40,12 +48,16 @@ const TreeView = () => {
           <TreeViewBasic direction={settings.direction} />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Multi Selection'
           code={{
             tsx: null,
-            jsx: source.TreeViewMultiSelectionJSXCode
+            jsx: source.TreeViewMultiSelectionJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -54,12 +66,16 @@ const TreeView = () => {
           <TreeViewMultiSelection direction={settings.direction} />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Controlled Tree View'
           code={{
             tsx: null,
-            jsx: source.TreeViewControlledJSXCode
+            jsx: source.TreeViewControlledJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -69,12 +85,16 @@ const TreeView = () => {
           <TreeViewControlled direction={settings.direction} />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Rich Object'
           code={{
             tsx: null,
-            jsx: source.TreeViewRichObjectJSXCode
+            jsx: source.TreeViewRichObjectJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -84,12 +104,16 @@ const TreeView = () => {
           <TreeViewRichObject direction={settings.direction} />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Customized Tree View'
           code={{
             tsx: null,
-            jsx: source.TreeViewCustomizedJSXCode
+            jsx: source.TreeViewCustomizedJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -98,12 +122,16 @@ const TreeView = () => {
           <TreeViewCustomized />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Gmail Clone'
           code={{
             tsx: null,
-            jsx: source.TreeViewGmailCloneJSXCode
+            jsx: source.TreeViewGmailCloneJSXCode,
           }}
         >
           <TreeViewGmailClone direction={settings.direction} />

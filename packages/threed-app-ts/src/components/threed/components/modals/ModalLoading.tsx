@@ -5,16 +5,13 @@
 import { FunctionComponent, ElementType } from 'react'
 
 // ** MUI Imports
-import { styled, useTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
 import Modal from '@mui/material/Modal'
 import Typography from '@mui/material/Typography'
 import MuiButton from '@mui/material/Button'
 import MuiTabs from '@mui/material/Tabs'
-import Tab from '@mui/material/Tab'
-import MDTabPanel, { tabProps } from '~/components/mui/MDTabPanel'
 
 // ** Next Imports
 import Image from 'next/future/image'
@@ -29,16 +26,16 @@ import stylesGarden from '~/components/threed/styles/garden.module.css'
 // STYLES
 
 const stylesModal: Object = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "80vw",
-  height: "60vh",
-  bgcolor: "#09090D",
-  border: "2px solid #000000",
+  position: 'absolute' as const,
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '80vw',
+  height: '60vh',
+  bgcolor: '#09090D',
+  border: '2px solid #000000',
   boxShadow: 24,
-  p: 2
+  p: 2,
 }
 
 const Tabs: ElementType = styled(MuiTabs)(({ theme }) => ({
@@ -66,37 +63,40 @@ const ModalLoading: FunctionComponent = (): JSX.Element => {
   // }, [])
 
   return (
-    <Container id="ModalLoadingContainer">
+    <Container id='ModalLoadingContainer'>
       <Modal
-        id="ModalLoading"
-        open={modalLoadingStore.store.useStore("isVisible")}
+        id='ModalLoading'
+        open={modalLoadingStore.store.useStore('isVisible')}
         onClose={(e: any) => modalLoadingStore.actions.handleClose(e)}
-        aria-labelledby="modal-loading-title"
-        aria-describedby="modal-loading-description"
+        aria-labelledby='modal-loading-title'
+        aria-describedby='modal-loading-description'
         sx={stylesModal}
       >
         <Box className={stylesGarden.modalContent}>
-
           <Box className={stylesGarden.modalHeader}>
-            <Image src="/favicon/favicon.png"
+            <Image
+              src='/favicon/favicon.png'
               width={50}
               height={50}
-              alt="ThreeD Garden Logo"
-              title="ThreeD Garden"
+              alt='ThreeD Garden Logo'
+              title='ThreeD Garden'
             />
             <h2>ThreeD Garden</h2>
           </Box>
 
-          <Box className="modalBody">
+          <Box className='modalBody'>
             <h3>Loading Model Progress</h3>
-            <textarea id="modalLoadingDataInfo"></textarea>
+            <textarea id='modalLoadingDataInfo'></textarea>
           </Box>
 
           <Box className={stylesGarden.modalFooter}>
             <Typography>
-              🌱 a part of the <a href="https://threed.ai">threed.ai</a> code family
+              🌱 a part of the <a href='https://threed.ai'>threed.ai</a> code family
             </Typography>
-            <Button size="small" onClick={(e: any) => modalLoadingStore.actions.handleClose(e)}>
+            <Button
+              size='small'
+              onClick={(e: any) => modalLoadingStore.actions.handleClose(e)}
+            >
               [X]
             </Button>
           </Box>

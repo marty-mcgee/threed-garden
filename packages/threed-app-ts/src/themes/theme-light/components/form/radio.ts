@@ -1,10 +1,10 @@
 // ThreeD Garden Base Styles
-import borders from "~/themes/theme-light/base/borders"
-import colors from "~/themes/theme-light/base/colors"
+import borders from '~/themes/theme-light/base/borders'
+import colors from '~/themes/theme-light/base/colors'
 
 // ThreeD Garden Helper Functions
-import pxToRem from "~/themes/theme-light/functions/pxToRem"
-import linearGradient from "~/themes/theme-light/functions/linearGradient"
+import pxToRem from '~/themes/theme-light/functions/pxToRem'
+import linearGradient from '~/themes/theme-light/functions/linearGradient'
 
 const { borderWidth, borderColor } = borders
 const { transparent, info } = colors
@@ -15,35 +15,35 @@ type Types = any
 const radio: Types = {
   styleOverrides: {
     root: {
-      "& .MuiSvgIcon-root": {
+      '& .MuiSvgIcon-root': {
         width: pxToRem(20),
         height: pxToRem(20),
         color: transparent.main,
         border: `${borderWidth[1]} solid ${borderColor}`,
-        borderRadius: "50%",
+        borderRadius: '50%',
       },
 
-      "&:after": {
-        transition: "opacity 250ms ease-in-out",
+      '&:after': {
+        transition: 'opacity 250ms ease-in-out',
         content: `""`,
-        position: "absolute",
+        position: 'absolute',
         width: pxToRem(14),
         height: pxToRem(14),
-        borderRadius: "50%",
+        borderRadius: '50%',
         backgroundImage: linearGradient(info.main, info.main),
         opacity: 0,
         left: 0,
         right: 0,
         top: 0,
         bottom: 0,
-        margin: "auto",
+        margin: 'auto',
       },
 
-      "&:hover": {
+      '&:hover': {
         backgroundColor: transparent.main,
       },
 
-      "&.Mui-focusVisible": {
+      '&.Mui-focusVisible': {
         border: `${borderWidth[2]} solid ${info.main} !important`,
       },
     },
@@ -51,14 +51,14 @@ const radio: Types = {
     colorPrimary: {
       color: borderColor,
 
-      "&.Mui-checked": {
+      '&.Mui-checked': {
         color: info.main,
 
-        "& .MuiSvgIcon-root": {
+        '& .MuiSvgIcon-root': {
           borderColor: info.main,
         },
 
-        "&:after": {
+        '&:after': {
           opacity: 1,
         },
       },
@@ -67,14 +67,14 @@ const radio: Types = {
     colorSecondary: {
       color: borderColor,
 
-      "&.Mui-checked": {
+      '&.Mui-checked': {
         color: info.main,
 
-        "& .MuiSvgIcon-root": {
+        '& .MuiSvgIcon-root': {
           borderColor: info.main,
         },
 
-        "&:after": {
+        '&:after': {
           opacity: 1,
         },
       },

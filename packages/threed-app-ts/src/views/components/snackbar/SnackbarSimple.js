@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 
 // ** MUI Imports
 import Button from '@mui/material/Button'
@@ -26,7 +26,10 @@ const SnackbarSimple = () => {
 
   return (
     <>
-      <Button variant='outlined' onClick={handleClick}>
+      <Button
+        variant='outlined'
+        onClick={handleClick}
+      >
         Open simple snackbar
       </Button>
       <Snackbar
@@ -36,10 +39,18 @@ const SnackbarSimple = () => {
         autoHideDuration={3000}
         action={
           <>
-            <Button size='small' onClick={handleClose}>
+            <Button
+              size='small'
+              onClick={handleClose}
+            >
               UNDO
             </Button>
-            <IconButton size='small' aria-label='close' color='inherit' onClick={handleClose}>
+            <IconButton
+              size='small'
+              aria-label='close'
+              color='inherit'
+              onClick={handleClose}
+            >
               <Close fontSize='small' />
             </IconButton>
           </>

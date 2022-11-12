@@ -16,18 +16,25 @@ import * as source from '~/views/components/accordion/AccordionSourceCode'
 
 const Accordion = () => {
   return (
-    <Grid container spacing={6}>
-      <Grid item xs={12} md={6}>
+    <Grid
+      container
+      spacing={6}
+    >
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Simple Accordion'
           code={{
             tsx: null,
-            jsx: source.AccordionSimpleJSXCode
+            jsx: source.AccordionSimpleJSXCode,
           }}
           sx={{
             boxShadow: 'none',
             backgroundColor: 'transparent',
-            border: theme => `1px solid ${theme.palette.divider}`
+            border: (theme) => `1px solid ${theme.palette.divider}`,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -37,17 +44,21 @@ const Accordion = () => {
           <AccordionSimple />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Controlled Accordion'
           code={{
             tsx: null,
-            jsx: source.AccordionControlledJSXCode
+            jsx: source.AccordionControlledJSXCode,
           }}
           sx={{
             boxShadow: 'none',
             backgroundColor: 'transparent',
-            border: theme => `1px solid ${theme.palette.divider}`
+            border: (theme) => `1px solid ${theme.palette.divider}`,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -56,17 +67,21 @@ const Accordion = () => {
           <AccordionControlled />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Customized Accordion'
           code={{
             tsx: null,
-            jsx: source.AccordionCustomizedJSXCode
+            jsx: source.AccordionCustomizedJSXCode,
           }}
           sx={{
             boxShadow: 'none',
             backgroundColor: 'transparent',
-            border: theme => `1px solid ${theme.palette.divider}`
+            border: (theme) => `1px solid ${theme.palette.divider}`,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -75,17 +90,21 @@ const Accordion = () => {
           <AccordionCustomized />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Additional Actions'
           code={{
             tsx: null,
-            jsx: source.AccordionActionsJSXCode
+            jsx: source.AccordionActionsJSXCode,
           }}
           sx={{
             boxShadow: 'none',
             backgroundColor: 'transparent',
-            border: theme => `1px solid ${theme.palette.divider}`
+            border: (theme) => `1px solid ${theme.palette.divider}`,
           }}
         >
           <Typography sx={{ mb: 4 }}>

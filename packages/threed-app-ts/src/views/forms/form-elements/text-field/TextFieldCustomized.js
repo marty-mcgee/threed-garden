@@ -26,23 +26,33 @@ const InputBase = styled(MuiInputBase)(({ theme }) => ({
       'sans-serif',
       '"Apple Color Emoji"',
       '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"'
+      '"Segoe UI Symbol"',
     ].join(','),
     '&:focus': {
       borderColor: theme.palette.primary.main,
-      boxShadow: `${alpha(theme.palette.primary.main, 0.25)} 0 0 0 0.2rem`
-    }
-  }
+      boxShadow: `${alpha(theme.palette.primary.main, 0.25)} 0 0 0 0.2rem`,
+    },
+  },
 }))
 
 const TextFieldCustomized = () => {
   return (
-    <form noValidate autoComplete='off'>
+    <form
+      noValidate
+      autoComplete='off'
+    >
       <FormControl variant='standard'>
-        <InputLabel shrink htmlFor='bootstrap-input' sx={{ transform: 'translate(0, -4px) scale(0.75)' }}>
+        <InputLabel
+          shrink
+          htmlFor='bootstrap-input'
+          sx={{ transform: 'translate(0, -4px) scale(0.75)' }}
+        >
           Bootstrap
         </InputLabel>
-        <InputBase defaultValue='react-bootstrap' id='bootstrap-input' />
+        <InputBase
+          defaultValue='react-bootstrap'
+          id='bootstrap-input'
+        />
       </FormControl>
     </form>
   )

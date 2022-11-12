@@ -17,24 +17,27 @@ import CustomChip from '~/@core/components/mui/chip'
 const BoxWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
   padding: theme.spacing(5),
-  borderRadius: theme.shape.borderRadius
+  borderRadius: theme.shape.borderRadius,
 }))
 
 // ** Styled Component for the wrapper of all the features of a plan
 const BoxFeature = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(5.75),
   '& > :not(:first-of-type)': {
-    marginTop: theme.spacing(3.5)
-  }
+    marginTop: theme.spacing(3.5),
+  },
 }))
 
-const PlanDetails = props => {
+const PlanDetails = (props) => {
   // ** Props
   const { plan, data } = props
 
   const renderFeatures = () => {
     return data?.planBenefits.map((item, index) => (
-      <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box
+        key={index}
+        sx={{ display: 'flex', alignItems: 'center' }}
+      >
         <CircleOutline sx={{ fontSize: '0.75rem', mr: 2, color: 'text.secondary' }} />
         <Typography variant='body2'>{item}</Typography>
       </Box>
@@ -44,10 +47,10 @@ const PlanDetails = props => {
   return (
     <BoxWrapper
       sx={{
-        border: theme =>
+        border: (theme) =>
           !data?.popularPlan
             ? `1px solid ${theme.palette.divider}`
-            : `1px solid ${hexToRGBA(theme.palette.primary.main, 0.5)}`
+            : `1px solid ${hexToRGBA(theme.palette.primary.main, 0.5)}`,
       }}
     >
       {data?.popularPlan ? (
@@ -63,8 +66,8 @@ const PlanDetails = props => {
             '& .MuiChip-label': {
               px: 1.75,
               fontWeight: 600,
-              fontSize: '0.75rem'
-            }
+              fontSize: '0.75rem',
+            },
           }}
         />
       ) : null}
@@ -81,13 +84,22 @@ const PlanDetails = props => {
         <Typography variant='body2'>{data?.subtitle}</Typography>
         <Box sx={{ mt: 4.4, mb: 9.2, position: 'relative' }}>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Typography variant='body2' sx={{ mt: 1.6, alignSelf: 'flex-start' }}>
+            <Typography
+              variant='body2'
+              sx={{ mt: 1.6, alignSelf: 'flex-start' }}
+            >
               $
             </Typography>
-            <Typography variant='h3' sx={{ fontWeight: 600, color: 'primary.main', lineHeight: 1.17 }}>
+            <Typography
+              variant='h3'
+              sx={{ fontWeight: 600, color: 'primary.main', lineHeight: 1.17 }}
+            >
               {plan === 'monthly' ? data?.monthlyPrice : data?.yearlyPlan.perMonth}
             </Typography>
-            <Typography variant='body2' sx={{ mb: 1.6, alignSelf: 'flex-end' }}>
+            <Typography
+              variant='body2'
+              sx={{ mb: 1.6, alignSelf: 'flex-end' }}
+            >
               /month
             </Typography>
           </Box>

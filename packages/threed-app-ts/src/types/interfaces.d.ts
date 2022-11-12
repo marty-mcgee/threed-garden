@@ -55,16 +55,7 @@ interface IPlantingPlan {
 }
 // } // end declare module
 
-export {
-  IProps,
-  IPage,
-  IEvent,
-  IScene,
-  IAllotment,
-  IBed,
-  IPlant,
-  IPlantingPlan,
-}
+export { IProps, IPage, IEvent, IScene, IAllotment, IBed, IPlant, IPlantingPlan }
 
 // =================
 // https://stackoverflow.com/questions/37263357/

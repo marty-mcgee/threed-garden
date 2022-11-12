@@ -14,13 +14,20 @@ import * as source from '~/views/forms/form-elements/textarea/TextareaSourceCode
 
 const Textarea = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Basic Textarea'
           code={{
             tsx: null,
-            jsx: source.TextareaBasicJSXCode
+            jsx: source.TextareaBasicJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -30,12 +37,15 @@ const Textarea = () => {
           <TextareaBasic />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Variants'
           code={{
             tsx: null,
-            jsx: source.TextareaVariantJSXCode
+            jsx: source.TextareaVariantJSXCode,
           }}
         >
           <Typography>

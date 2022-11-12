@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Alert from '@mui/material/Alert'
@@ -14,15 +14,15 @@ const SnackbarConsecutive = () => {
   useEffect(() => {
     if (snackPack.length && !messageInfo) {
       setOpen(true)
-      setSnackPack(prev => prev.slice(1))
+      setSnackPack((prev) => prev.slice(1))
       setMessageInfo({ ...snackPack[0] })
     } else if (snackPack.length && messageInfo && open) {
       setOpen(false)
     }
   }, [snackPack, messageInfo, open])
 
-  const handleClick = message => () => {
-    setSnackPack(prev => [...prev, { message, key: new Date().getTime() }])
+  const handleClick = (message) => () => {
+    setSnackPack((prev) => [...prev, { message, key: new Date().getTime() }])
   }
 
   const handleClose = (event, reason) => {
@@ -39,10 +39,16 @@ const SnackbarConsecutive = () => {
   return (
     <>
       <div className='demo-space-x'>
-        <Button variant='outlined' onClick={handleClick('success')}>
+        <Button
+          variant='outlined'
+          onClick={handleClick('success')}
+        >
           Success Alert
         </Button>
-        <Button variant='outlined' onClick={handleClick('error')}>
+        <Button
+          variant='outlined'
+          onClick={handleClick('error')}
+        >
           Error Alert
         </Button>
       </div>

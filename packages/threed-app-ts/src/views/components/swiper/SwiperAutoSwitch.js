@@ -9,10 +9,10 @@ const SwiperAutoSwitch = ({ direction }) => {
   const [ref] = useKeenSlider(
     {
       loop: true,
-      rtl: direction === 'rtl'
+      rtl: direction === 'rtl',
     },
     [
-      slider => {
+      (slider) => {
         let mouseOver = false
         let timeout
 
@@ -41,26 +41,44 @@ const SwiperAutoSwitch = ({ direction }) => {
         slider.on('dragStarted', clearNextTimeout)
         slider.on('animationEnded', nextTimeout)
         slider.on('updated', nextTimeout)
-      }
+      },
     ]
   )
 
   return (
-    <Box ref={ref} className='keen-slider'>
+    <Box
+      ref={ref}
+      className='keen-slider'
+    >
       <Box className='keen-slider__slide'>
-        <img src='/images/banners/banner-1.jpg' alt='swiper 1' />
+        <img
+          src='/images/banners/banner-1.jpg'
+          alt='swiper 1'
+        />
       </Box>
       <Box className='keen-slider__slide'>
-        <img src='/images/banners/banner-2.jpg' alt='swiper 2' />
+        <img
+          src='/images/banners/banner-2.jpg'
+          alt='swiper 2'
+        />
       </Box>
       <Box className='keen-slider__slide'>
-        <img src='/images/banners/banner-3.jpg' alt='swiper 3' />
+        <img
+          src='/images/banners/banner-3.jpg'
+          alt='swiper 3'
+        />
       </Box>
       <Box className='keen-slider__slide'>
-        <img src='/images/banners/banner-4.jpg' alt='swiper 4' />
+        <img
+          src='/images/banners/banner-4.jpg'
+          alt='swiper 4'
+        />
       </Box>
       <Box className='keen-slider__slide'>
-        <img src='/images/banners/banner-5.jpg' alt='swiper 5' />
+        <img
+          src='/images/banners/banner-5.jpg'
+          alt='swiper 5'
+        />
       </Box>
     </Box>
   )

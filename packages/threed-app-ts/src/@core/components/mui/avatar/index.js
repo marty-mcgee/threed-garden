@@ -23,7 +23,7 @@ const Avatar = forwardRef((props, ref) => {
     } else if (skin === 'light-static') {
       avatarStyles = {
         color: bgColors[`${skinColor}Light`].color,
-        backgroundColor: lighten(theme.palette[skinColor].main, 0.88)
+        backgroundColor: lighten(theme.palette[skinColor].main, 0.88),
       }
     } else {
       avatarStyles = { ...bgColors[`${skinColor}Filled`] }
@@ -38,14 +38,20 @@ const Avatar = forwardRef((props, ref) => {
     success: getAvatarStyles(skin, 'success'),
     error: getAvatarStyles(skin, 'error'),
     warning: getAvatarStyles(skin, 'warning'),
-    info: getAvatarStyles(skin, 'info')
+    info: getAvatarStyles(skin, 'info'),
   }
 
-  return <MuiAvatar ref={ref} {...props} sx={!src && skin && color ? Object.assign(colors[color], sx) : sx} />
+  return (
+    <MuiAvatar
+      ref={ref}
+      {...props}
+      sx={!src && skin && color ? Object.assign(colors[color], sx) : sx}
+    />
+  )
 })
 Avatar.defaultProps = {
   skin: 'filled',
-  color: 'primary'
+  color: 'primary',
 }
 
 export default Avatar

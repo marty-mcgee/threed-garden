@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** MUI Imports
 import { styled } from '@mui/material/styles'
@@ -21,11 +21,11 @@ import FaqAccordions from '~/views/pages/faq/FaqAccordions'
 const StyledBox = styled(Box)(({ theme }) => ({
   padding: theme.spacing(14.25, 24, 0, 24),
   [theme.breakpoints.down('sm')]: {
-    padding: theme.spacing(14.25, 0, 0)
+    padding: theme.spacing(14.25, 0, 0),
   },
   '& > :not(:first-of-type)': {
-    marginTop: theme.spacing(13)
-  }
+    marginTop: theme.spacing(13),
+  },
 }))
 
 const FAQ = ({ apiData }) => {
@@ -34,7 +34,7 @@ const FAQ = ({ apiData }) => {
   const [searchTerm, setSearchTerm] = useState('')
   useEffect(() => {
     if (searchTerm !== '') {
-      axios.get('/pages/faqs', { params: { q: searchTerm } }).then(response => {
+      axios.get('/pages/faqs', { params: { q: searchTerm } }).then((response) => {
         if (response.data && response.data.length) {
           setData(response.data)
         } else {
@@ -55,7 +55,10 @@ const FAQ = ({ apiData }) => {
 
   return (
     <>
-      <FaqHeader searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      <FaqHeader
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
       <StyledBox>
         {data !== null ? <FaqAccordions data={data} /> : renderNoResult}
         <FaqFooter />
@@ -70,8 +73,8 @@ export const getStaticProps = async () => {
 
   return {
     props: {
-      apiData
-    }
+      apiData,
+    },
   }
 }
 

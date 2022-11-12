@@ -16,7 +16,7 @@ const labels = {
   3.5: 'Good',
   4: 'Good+',
   4.5: 'Excellent',
-  5: 'Excellent+'
+  5: 'Excellent+',
 }
 
 const RatingsHoverFeedback = () => {

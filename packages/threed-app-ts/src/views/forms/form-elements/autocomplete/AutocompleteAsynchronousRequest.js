@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** MUI Imports
 import TextField from '@mui/material/TextField'
@@ -10,7 +10,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import axios from 'axios'
 
 const sleep = (delay = 0) => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, delay)
   })
 }
@@ -31,7 +31,7 @@ const AutocompleteAsynchronousRequest = () => {
       await sleep(1000)
       const top100Films = await response.data
       if (active) {
-        setOptions(Object.keys(top100Films).map(key => top100Films[key]))
+        setOptions(Object.keys(top100Films).map((key) => top100Films[key]))
       }
     }
     fetchData()
@@ -54,9 +54,9 @@ const AutocompleteAsynchronousRequest = () => {
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
       id='autocomplete-asynchronous-request'
-      getOptionLabel={option => option.title}
+      getOptionLabel={(option) => option.title}
       isOptionEqualToValue={(option, value) => option.title === value.title}
-      renderInput={params => (
+      renderInput={(params) => (
         <TextField
           {...params}
           label='Asynchronous'
@@ -64,10 +64,15 @@ const AutocompleteAsynchronousRequest = () => {
             ...params.InputProps,
             endAdornment: (
               <>
-                {loading ? <CircularProgress color='inherit' size={20} /> : null}
+                {loading ? (
+                  <CircularProgress
+                    color='inherit'
+                    size={20}
+                  />
+                ) : null}
                 {params.InputProps.endAdornment}
               </>
-            )
+            ),
           }}
         />
       )}

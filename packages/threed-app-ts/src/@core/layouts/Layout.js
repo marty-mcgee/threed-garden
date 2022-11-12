@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react'
 import VerticalLayout from './VerticalLayout'
 import HorizontalLayout from './HorizontalLayout'
 
-const Layout = props => {
+const Layout = (props) => {
   // ** Props
   const { hidden, children, settings, saveSettings } = props
 

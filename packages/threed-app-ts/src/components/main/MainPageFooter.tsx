@@ -1,20 +1,20 @@
-import { Row, Col, Button } from 'antd';
-import { Faucet, GasGauge } from 'eth-components/ant';
-import { useEthersAppContext } from 'eth-hooks/context';
-import React, { FC, ReactNode, Suspense } from 'react';
+import { Row, Col, Button } from 'antd'
+import { Faucet, GasGauge } from 'eth-components/ant'
+import { useEthersAppContext } from 'eth-hooks/context'
+import React, { FC, ReactNode, Suspense } from 'react'
 
-import { Ramp, getFaucetAvailable, ThemeSwitcher } from '~common/components';
-import { networkDefinitions } from '~common/constants';
-import { getNetworkInfo } from '~common/functions';
-import { IScaffoldAppProviders } from '~common/models';
-import { FAUCET_ENABLED } from '~~/config/nextjsApp.config';
-import { TAppProps } from '~~/models/TAppProps';
+import { Ramp, getFaucetAvailable, ThemeSwitcher } from '~common/components'
+import { networkDefinitions } from '~common/constants'
+import { getNetworkInfo } from '~common/functions'
+import { IScaffoldAppProviders } from '~common/models'
+import { FAUCET_ENABLED } from '~~/config/nextjsApp.config'
+import { TAppProps } from '~~/models/TAppProps'
 
 export interface IMainPageFooterProps {
-  scaffoldAppProviders: IScaffoldAppProviders;
-  price: number;
-  children?: ReactNode;
-  appProps: TAppProps;
+  scaffoldAppProviders: IScaffoldAppProviders
+  price: number
+  children?: ReactNode
+  appProps: TAppProps
 }
 
 /**
@@ -24,14 +24,14 @@ export interface IMainPageFooterProps {
  */
 export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
   // passed in by nextjs getInitalProps
-  const appProps: TAppProps = props.appProps;
+  const appProps: TAppProps = props.appProps
 
-  const ethersAppContext = useEthersAppContext();
+  const ethersAppContext = useEthersAppContext()
 
   // Faucet Tx can be used to send funds from the faucet
-  const faucetAvailable = getFaucetAvailable(props.scaffoldAppProviders, ethersAppContext, FAUCET_ENABLED);
+  const faucetAvailable = getFaucetAvailable(props.scaffoldAppProviders, ethersAppContext, FAUCET_ENABLED)
 
-  const network = getNetworkInfo(ethersAppContext.chainId);
+  const network = getNetworkInfo(ethersAppContext.chainId)
 
   const left = (
     <div
@@ -42,10 +42,18 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
         bottom: 0,
         top: 60,
         padding: 10,
-      }}>
-      <Row align="middle" gutter={[4, 4]}>
+      }}
+    >
+      <Row
+        align='middle'
+        gutter={[4, 4]}
+      >
         <Col span={2}>
-          <Ramp price={props.price} address={ethersAppContext?.account ?? ''} networks={networkDefinitions} />
+          <Ramp
+            price={props.price}
+            address={ethersAppContext?.account ?? ''}
+            networks={networkDefinitions}
+          />
         </Col>
 
         <Col
@@ -53,12 +61,13 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
           style={{
             textAlign: 'center',
             opacity: 0.8,
-          }}>
+          }}
+        >
           <GasGauge
             chainId={props.scaffoldAppProviders.currentTargetNetwork.chainId}
             currentNetwork={network}
             provider={ethersAppContext.provider}
-            speed="average"
+            speed='average'
           />
         </Col>
         <Col
@@ -66,20 +75,23 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
           style={{
             textAlign: 'center',
             opacity: 1,
-          }}>
+          }}
+        >
           <Button
             onClick={(): void => {
               // window.open('https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA');
-              window.open('https://github.com/marty-mcgee/threed-garden/discussions');
+              window.open('https://github.com/marty-mcgee/threed-garden/discussions')
             }}
-            size="large"
-            shape="round">
+            size='large'
+            shape='round'
+          >
             <span
               style={{
                 marginRight: 8,
               }}
-              role="img"
-              aria-label="support">
+              role='img'
+              aria-label='support'
+            >
               💬
             </span>
             Support
@@ -87,7 +99,10 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
         </Col>
       </Row>
 
-      <Row align="middle" gutter={[4, 4]}>
+      <Row
+        align='middle'
+        gutter={[4, 4]}
+      >
         <Col span={24}>
           {
             /*  if the local provider has a signer, let's show the faucet:  */
@@ -106,9 +121,9 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
         </Col>
       </Row>
     </div>
-  );
+  )
 
-  const right = <ThemeSwitcher />;
+  const right = <ThemeSwitcher />
   // const right = <div />;
 
   return (
@@ -116,5 +131,5 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
       {left}
       <Suspense fallback={<div></div>}>{right}</Suspense>
     </>
-  );
-};
+  )
+}

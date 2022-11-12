@@ -32,7 +32,7 @@ const ListItemStyled = styled(ListItem)(({ theme }) => ({
   borderLeftWidth: '3px',
   borderLeftStyle: 'solid',
   padding: theme.spacing(0, 5),
-  marginBottom: theme.spacing(1)
+  marginBottom: theme.spacing(1),
 }))
 
 const ListBadge = styled(CustomBadge)(() => ({
@@ -41,11 +41,11 @@ const ListBadge = styled(CustomBadge)(() => ({
     minWidth: '18px',
     transform: 'none',
     position: 'relative',
-    transformOrigin: 'none'
-  }
+    transformOrigin: 'none',
+  },
 }))
 
-const SidebarLeft = props => {
+const SidebarLeft = (props) => {
   // ** Props
   const {
     store,
@@ -57,12 +57,19 @@ const SidebarLeft = props => {
     toggleComposeOpen,
     setMailDetailsOpen,
     handleSelectAllMail,
-    handleLeftSidebarToggle
+    handleLeftSidebarToggle,
   } = props
 
   const RenderBadge = (folder, color) => {
     if (store && store.mailMeta && store.mailMeta[folder] > 0) {
-      return <ListBadge skin='light' color={color} sx={{ ml: 2 }} badgeContent={store.mailMeta[folder]} />
+      return (
+        <ListBadge
+          skin='light'
+          color={color}
+          sx={{ ml: 2 }}
+          badgeContent={store.mailMeta[folder]}
+        />
+      )
     } else {
       return null
     }
@@ -100,7 +107,7 @@ const SidebarLeft = props => {
       variant={lgAbove ? 'permanent' : 'temporary'}
       ModalProps={{
         disablePortal: true,
-        keepMounted: true // Better open performance on mobile.
+        keepMounted: true, // Better open performance on mobile.
       }}
       sx={{
         zIndex: 9,
@@ -110,27 +117,34 @@ const SidebarLeft = props => {
           boxShadow: 'none',
           width: leftSidebarWidth,
           zIndex: lgAbove ? 2 : 'drawer',
-          position: lgAbove ? 'static' : 'absolute'
+          position: lgAbove ? 'static' : 'absolute',
         },
         '& .MuiBackdrop-root': {
-          position: 'absolute'
-        }
+          position: 'absolute',
+        },
       }}
     >
       <Box sx={{ p: 5, overflowY: 'hidden' }}>
-        <Button fullWidth variant='contained' onClick={toggleComposeOpen}>
+        <Button
+          fullWidth
+          variant='contained'
+          onClick={toggleComposeOpen}
+        >
           Compose
         </Button>
       </Box>
       <ScrollWrapper>
         <Box sx={{ pt: 0, overflowY: 'hidden' }}>
           <List component='div'>
-            <Link href='/apps/email/inbox' passHref>
+            <Link
+              href='/apps/email/inbox'
+              passHref
+            >
               <ListItemStyled
                 component='a'
                 onClick={handleListItemClick}
                 sx={{
-                  borderLeftColor: theme => (activeInboxCondition ? theme.palette.primary.main : 'transparent')
+                  borderLeftColor: (theme) => (activeInboxCondition ? theme.palette.primary.main : 'transparent'),
                 }}
               >
                 <ListItemIcon sx={{ color: activeInboxCondition ? 'primary.main' : 'text.secondary' }}>
@@ -142,20 +156,23 @@ const SidebarLeft = props => {
                     noWrap: true,
                     sx: {
                       fontWeight: 500,
-                      color: theme => (activeInboxCondition ? theme.palette.primary.main : '')
-                    }
+                      color: (theme) => (activeInboxCondition ? theme.palette.primary.main : ''),
+                    },
                   }}
                 />
                 {RenderBadge('inbox', 'primary')}
               </ListItemStyled>
             </Link>
-            <Link href='/apps/email/sent' passHref>
+            <Link
+              href='/apps/email/sent'
+              passHref
+            >
               <ListItemStyled
                 component='a'
                 onClick={handleListItemClick}
                 sx={{
-                  borderLeftColor: theme =>
-                    handleActiveItem('folder', 'sent') ? theme.palette.primary.main : 'transparent'
+                  borderLeftColor: (theme) =>
+                    handleActiveItem('folder', 'sent') ? theme.palette.primary.main : 'transparent',
                 }}
               >
                 <ListItemIcon sx={{ color: handleActiveItem('folder', 'sent') ? 'primary.main' : 'text.secondary' }}>
@@ -167,19 +184,22 @@ const SidebarLeft = props => {
                     noWrap: true,
                     sx: {
                       fontWeight: 500,
-                      color: theme => (handleActiveItem('folder', 'sent') ? theme.palette.primary.main : '')
-                    }
+                      color: (theme) => (handleActiveItem('folder', 'sent') ? theme.palette.primary.main : ''),
+                    },
                   }}
                 />
               </ListItemStyled>
             </Link>
-            <Link href='/apps/email/draft' passHref>
+            <Link
+              href='/apps/email/draft'
+              passHref
+            >
               <ListItemStyled
                 component='a'
                 onClick={handleListItemClick}
                 sx={{
-                  borderLeftColor: theme =>
-                    handleActiveItem('folder', 'draft') ? theme.palette.primary.main : 'transparent'
+                  borderLeftColor: (theme) =>
+                    handleActiveItem('folder', 'draft') ? theme.palette.primary.main : 'transparent',
                 }}
               >
                 <ListItemIcon sx={{ color: handleActiveItem('folder', 'draft') ? 'primary.main' : 'text.secondary' }}>
@@ -191,20 +211,23 @@ const SidebarLeft = props => {
                     noWrap: true,
                     sx: {
                       fontWeight: 500,
-                      color: theme => (handleActiveItem('folder', 'draft') ? theme.palette.primary.main : '')
-                    }
+                      color: (theme) => (handleActiveItem('folder', 'draft') ? theme.palette.primary.main : ''),
+                    },
                   }}
                 />
                 {RenderBadge('draft', 'warning')}
               </ListItemStyled>
             </Link>
-            <Link href='/apps/email/starred' passHref>
+            <Link
+              href='/apps/email/starred'
+              passHref
+            >
               <ListItemStyled
                 component='a'
                 onClick={handleListItemClick}
                 sx={{
-                  borderLeftColor: theme =>
-                    handleActiveItem('folder', 'starred') ? theme.palette.primary.main : 'transparent'
+                  borderLeftColor: (theme) =>
+                    handleActiveItem('folder', 'starred') ? theme.palette.primary.main : 'transparent',
                 }}
               >
                 <ListItemIcon sx={{ color: handleActiveItem('folder', 'starred') ? 'primary.main' : 'text.secondary' }}>
@@ -216,19 +239,22 @@ const SidebarLeft = props => {
                     noWrap: true,
                     sx: {
                       fontWeight: 500,
-                      color: theme => (handleActiveItem('folder', 'starred') ? theme.palette.primary.main : '')
-                    }
+                      color: (theme) => (handleActiveItem('folder', 'starred') ? theme.palette.primary.main : ''),
+                    },
                   }}
                 />
               </ListItemStyled>
             </Link>
-            <Link href='/apps/email/spam' passHref>
+            <Link
+              href='/apps/email/spam'
+              passHref
+            >
               <ListItemStyled
                 component='a'
                 onClick={handleListItemClick}
                 sx={{
-                  borderLeftColor: theme =>
-                    handleActiveItem('folder', 'spam') ? theme.palette.primary.main : 'transparent'
+                  borderLeftColor: (theme) =>
+                    handleActiveItem('folder', 'spam') ? theme.palette.primary.main : 'transparent',
                 }}
               >
                 <ListItemIcon sx={{ color: handleActiveItem('folder', 'spam') ? 'primary.main' : 'text.secondary' }}>
@@ -240,20 +266,23 @@ const SidebarLeft = props => {
                     noWrap: true,
                     sx: {
                       fontWeight: 500,
-                      color: theme => (handleActiveItem('folder', 'spam') ? theme.palette.primary.main : '')
-                    }
+                      color: (theme) => (handleActiveItem('folder', 'spam') ? theme.palette.primary.main : ''),
+                    },
                   }}
                 />
                 {RenderBadge('spam', 'error')}
               </ListItemStyled>
             </Link>
-            <Link href='/apps/email/trash' passHref>
+            <Link
+              href='/apps/email/trash'
+              passHref
+            >
               <ListItemStyled
                 component='a'
                 onClick={handleListItemClick}
                 sx={{
-                  borderLeftColor: theme =>
-                    handleActiveItem('folder', 'trash') ? theme.palette.primary.main : 'transparent'
+                  borderLeftColor: (theme) =>
+                    handleActiveItem('folder', 'trash') ? theme.palette.primary.main : 'transparent',
                 }}
               >
                 <ListItemIcon sx={{ color: handleActiveItem('folder', 'trash') ? 'primary.main' : 'text.secondary' }}>
@@ -265,8 +294,8 @@ const SidebarLeft = props => {
                     noWrap: true,
                     sx: {
                       fontWeight: 500,
-                      color: theme => (handleActiveItem('folder', 'trash') ? theme.palette.primary.main : '')
-                    }
+                      color: (theme) => (handleActiveItem('folder', 'trash') ? theme.palette.primary.main : ''),
+                    },
                   }}
                 />
               </ListItemStyled>
@@ -280,13 +309,16 @@ const SidebarLeft = props => {
             Labels
           </Typography>
           <List component='div'>
-            <Link href='/apps/email/label/personal' passHref>
+            <Link
+              href='/apps/email/label/personal'
+              passHref
+            >
               <ListItemStyled
                 component='a'
                 onClick={handleListItemClick}
                 sx={{
-                  borderLeftColor: theme =>
-                    handleActiveItem('label', 'personal') ? theme.palette.primary.main : 'transparent'
+                  borderLeftColor: (theme) =>
+                    handleActiveItem('label', 'personal') ? theme.palette.primary.main : 'transparent',
                 }}
               >
                 <ListItemIcon sx={{ mr: 3.5 }}>
@@ -298,19 +330,22 @@ const SidebarLeft = props => {
                     noWrap: true,
                     sx: {
                       fontWeight: 500,
-                      color: theme => (handleActiveItem('label', 'personal') ? theme.palette.primary.main : '')
-                    }
+                      color: (theme) => (handleActiveItem('label', 'personal') ? theme.palette.primary.main : ''),
+                    },
                   }}
                 />
               </ListItemStyled>
             </Link>
-            <Link href='/apps/email/label/company' passHref>
+            <Link
+              href='/apps/email/label/company'
+              passHref
+            >
               <ListItemStyled
                 component='a'
                 onClick={handleListItemClick}
                 sx={{
-                  borderLeftColor: theme =>
-                    handleActiveItem('label', 'company') ? theme.palette.primary.main : 'transparent'
+                  borderLeftColor: (theme) =>
+                    handleActiveItem('label', 'company') ? theme.palette.primary.main : 'transparent',
                 }}
               >
                 <ListItemIcon sx={{ mr: 3.5 }}>
@@ -322,19 +357,22 @@ const SidebarLeft = props => {
                     noWrap: true,
                     sx: {
                       fontWeight: 500,
-                      color: theme => (handleActiveItem('label', 'company') ? theme.palette.primary.main : '')
-                    }
+                      color: (theme) => (handleActiveItem('label', 'company') ? theme.palette.primary.main : ''),
+                    },
                   }}
                 />
               </ListItemStyled>
             </Link>
-            <Link href='/apps/email/label/important' passHref>
+            <Link
+              href='/apps/email/label/important'
+              passHref
+            >
               <ListItemStyled
                 component='a'
                 onClick={handleListItemClick}
                 sx={{
-                  borderLeftColor: theme =>
-                    handleActiveItem('label', 'important') ? theme.palette.primary.main : 'transparent'
+                  borderLeftColor: (theme) =>
+                    handleActiveItem('label', 'important') ? theme.palette.primary.main : 'transparent',
                 }}
               >
                 <ListItemIcon sx={{ mr: 3.5 }}>
@@ -346,19 +384,22 @@ const SidebarLeft = props => {
                     noWrap: true,
                     sx: {
                       fontWeight: 500,
-                      color: theme => (handleActiveItem('label', 'important') ? theme.palette.primary.main : '')
-                    }
+                      color: (theme) => (handleActiveItem('label', 'important') ? theme.palette.primary.main : ''),
+                    },
                   }}
                 />
               </ListItemStyled>
             </Link>
-            <Link href='/apps/email/label/private' passHref>
+            <Link
+              href='/apps/email/label/private'
+              passHref
+            >
               <ListItemStyled
                 component='a'
                 onClick={handleListItemClick}
                 sx={{
-                  borderLeftColor: theme =>
-                    handleActiveItem('label', 'private') ? theme.palette.primary.main : 'transparent'
+                  borderLeftColor: (theme) =>
+                    handleActiveItem('label', 'private') ? theme.palette.primary.main : 'transparent',
                 }}
               >
                 <ListItemIcon sx={{ mr: 3.5 }}>
@@ -370,8 +411,8 @@ const SidebarLeft = props => {
                     noWrap: true,
                     sx: {
                       fontWeight: 500,
-                      color: theme => (handleActiveItem('label', 'private') ? theme.palette.primary.main : '')
-                    }
+                      color: (theme) => (handleActiveItem('label', 'private') ? theme.palette.primary.main : ''),
+                    },
                   }}
                 />
               </ListItemStyled>

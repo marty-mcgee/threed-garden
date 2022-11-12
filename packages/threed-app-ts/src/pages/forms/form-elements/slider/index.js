@@ -28,13 +28,21 @@ import * as source from '~/views/forms/form-elements/slider/SliderSourceCode'
 
 const Sliders = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12} md={6}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Basic Slider'
           code={{
             tsx: null,
-            jsx: source.SliderBasicJSXCode
+            jsx: source.SliderBasicJSXCode,
           }}
           sx={{ px: 2 }}
         >
@@ -45,13 +53,17 @@ const Sliders = () => {
           <SliderBasic />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           sx={{ px: 2 }}
           title='Controlled and Uncontrolled'
           code={{
             tsx: null,
-            jsx: source.SliderControlledUncontrolledJSXCode
+            jsx: source.SliderControlledUncontrolledJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -61,12 +73,16 @@ const Sliders = () => {
           <SliderControlledUncontrolled />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Discrete Slider'
           code={{
             tsx: null,
-            jsx: source.SliderDiscreteJSXCode
+            jsx: source.SliderDiscreteJSXCode,
           }}
           sx={{ px: 2 }}
         >
@@ -76,12 +92,16 @@ const Sliders = () => {
           <SliderDiscrete />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Small Steps'
           code={{
             tsx: null,
-            jsx: source.SliderSmallStepsJSXCode
+            jsx: source.SliderSmallStepsJSXCode,
           }}
           sx={{ px: 2 }}
         >
@@ -91,12 +111,16 @@ const Sliders = () => {
           <SliderSmallSteps />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Custom Marks'
           code={{
             tsx: null,
-            jsx: source.SliderCustomMarksJSXCode
+            jsx: source.SliderCustomMarksJSXCode,
           }}
           sx={{ px: 2 }}
         >
@@ -106,12 +130,16 @@ const Sliders = () => {
           <SliderCustomMarks />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Restricted Values'
           code={{
             tsx: null,
-            jsx: source.SliderRestrictedValuesJSXCode
+            jsx: source.SliderRestrictedValuesJSXCode,
           }}
           sx={{ px: 2 }}
         >
@@ -122,13 +150,17 @@ const Sliders = () => {
           <SliderRestrictedValues />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Label Always Visible'
           sx={{ px: 2 }}
           code={{
             tsx: null,
-            jsx: source.SliderLabelAlwaysVisibleJSXCode
+            jsx: source.SliderLabelAlwaysVisibleJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -137,12 +169,16 @@ const Sliders = () => {
           <SliderLabelAlwaysVisible />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Range Slider'
           code={{
             tsx: null,
-            jsx: source.SliderRangeJSXCode
+            jsx: source.SliderRangeJSXCode,
           }}
           sx={{ px: 2 }}
         >
@@ -153,12 +189,16 @@ const Sliders = () => {
           <SliderRange />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Colors'
           code={{
             tsx: null,
-            jsx: source.SliderColorsJSXCode
+            jsx: source.SliderColorsJSXCode,
           }}
           sx={{ px: 2 }}
         >
@@ -168,12 +208,16 @@ const Sliders = () => {
           <SliderColors />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Customized Slider'
           code={{
             tsx: null,
-            jsx: source.SliderCustomizedJSXCode
+            jsx: source.SliderCustomizedJSXCode,
           }}
           sx={{ px: 2 }}
         >
@@ -183,12 +227,16 @@ const Sliders = () => {
           <SliderCustomized />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Custom Colors'
           code={{
             tsx: null,
-            jsx: source.SliderCustomColorsJSXCode
+            jsx: source.SliderCustomColorsJSXCode,
           }}
           sx={{ px: 2 }}
         >
@@ -198,12 +246,16 @@ const Sliders = () => {
           <SliderCustomColors />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Vertical Sliders'
           code={{
             tsx: null,
-            jsx: source.SliderVerticalJSXCode
+            jsx: source.SliderVerticalJSXCode,
           }}
           sx={{ px: 2 }}
         >
@@ -213,12 +265,16 @@ const Sliders = () => {
           <SliderVertical />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Removed Track'
           code={{
             tsx: null,
-            jsx: source.SliderRemovedTrackJSXCode
+            jsx: source.SliderRemovedTrackJSXCode,
           }}
           sx={{ px: 2 }}
         >
@@ -228,12 +284,16 @@ const Sliders = () => {
           <SliderRemovedTrack />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Inverted Track'
           code={{
             tsx: null,
-            jsx: source.SliderInvertedTrackJSXCode
+            jsx: source.SliderInvertedTrackJSXCode,
           }}
           sx={{ px: 2 }}
         >
@@ -243,12 +303,16 @@ const Sliders = () => {
           <SliderInvertedTrack />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Sizes'
           code={{
             tsx: null,
-            jsx: source.SliderSizesJSXCode
+            jsx: source.SliderSizesJSXCode,
           }}
           sx={{ px: 2 }}
         >
@@ -258,12 +322,16 @@ const Sliders = () => {
           <SliderSizes />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Minimum Distance'
           code={{
             tsx: null,
-            jsx: source.SliderMinimumDistanceJSXCode
+            jsx: source.SliderMinimumDistanceJSXCode,
           }}
           sx={{ px: 2 }}
         >

@@ -17,7 +17,7 @@ import DatePicker from 'react-datepicker'
 import ChevronDown from 'mdi-material-ui/ChevronDown'
 import CalendarOutline from 'mdi-material-ui/CalendarOutline'
 
-const ChartjsAreaChart = props => {
+const ChartjsAreaChart = (props) => {
   // ** Props
   const { blue, white, blueLight, greyLight, labelColor, borderColor } = props
 
@@ -29,28 +29,28 @@ const ChartjsAreaChart = props => {
     responsive: true,
     maintainAspectRatio: false,
     layout: {
-      padding: { top: -20 }
+      padding: { top: -20 },
     },
     scales: {
       x: {
         grid: {
           borderColor,
-          color: 'transparent'
+          color: 'transparent',
         },
-        ticks: { color: labelColor }
+        ticks: { color: labelColor },
       },
       y: {
         min: 0,
         max: 400,
         grid: {
           borderColor,
-          color: 'transparent'
+          color: 'transparent',
         },
         ticks: {
           stepSize: 100,
-          color: labelColor
-        }
-      }
+          color: labelColor,
+        },
+      },
     },
     plugins: {
       legend: {
@@ -60,10 +60,10 @@ const ChartjsAreaChart = props => {
           padding: 25,
           boxWidth: 9,
           color: labelColor,
-          usePointStyle: true
-        }
-      }
-    }
+          usePointStyle: true,
+        },
+      },
+    },
   }
 
   const data = {
@@ -82,7 +82,7 @@ const ChartjsAreaChart = props => {
       '18/12',
       '19/12',
       '20/12',
-      ''
+      '',
     ],
     datasets: [
       {
@@ -98,7 +98,7 @@ const ChartjsAreaChart = props => {
         pointHoverBorderColor: white,
         pointBorderColor: 'transparent',
         pointHoverBackgroundColor: blue,
-        data: [40, 55, 45, 75, 65, 55, 70, 60, 100, 98, 90, 120, 125, 140, 155]
+        data: [40, 55, 45, 75, 65, 55, 70, 60, 100, 98, 90, 120, 125, 140, 155],
       },
       {
         fill: true,
@@ -113,7 +113,7 @@ const ChartjsAreaChart = props => {
         pointHoverBorderColor: white,
         pointBorderColor: 'transparent',
         pointHoverBackgroundColor: blueLight,
-        data: [70, 85, 75, 150, 100, 140, 110, 105, 160, 150, 125, 190, 200, 240, 275]
+        data: [70, 85, 75, 150, 100, 140, 110, 105, 160, 150, 125, 190, 200, 240, 275],
       },
       {
         fill: true,
@@ -128,9 +128,9 @@ const ChartjsAreaChart = props => {
         pointHoverBorderColor: white,
         pointBorderColor: 'transparent',
         pointHoverBackgroundColor: greyLight,
-        data: [240, 195, 160, 215, 185, 215, 185, 200, 250, 210, 195, 250, 235, 300, 315]
-      }
-    ]
+        data: [240, 195, 160, 215, 185, 215, 185, 200, 250, 210, 195, 250, 235, 300, 315],
+      },
+    ],
   }
 
   const CustomInput = forwardRef((props, ref) => {
@@ -154,13 +154,13 @@ const ChartjsAreaChart = props => {
             <InputAdornment position='end'>
               <ChevronDown />
             </InputAdornment>
-          )
+          ),
         }}
       />
     )
   })
 
-  const handleOnChange = dates => {
+  const handleOnChange = (dates) => {
     const [start, end] = dates
     setStartDate(start)
     setEndDate(end)
@@ -175,7 +175,7 @@ const ChartjsAreaChart = props => {
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],
           '& .MuiCardHeader-action': { mb: 0 },
-          '& .MuiCardHeader-content': { mb: [2, 0] }
+          '& .MuiCardHeader-content': { mb: [2, 0] },
         }}
         action={
           <DatePicker
@@ -186,12 +186,21 @@ const ChartjsAreaChart = props => {
             startDate={startDate}
             onChange={handleOnChange}
             placeholderText='Click to select a date'
-            customInput={<CustomInput start={startDate} end={endDate} />}
+            customInput={
+              <CustomInput
+                start={startDate}
+                end={endDate}
+              />
+            }
           />
         }
       />
       <CardContent>
-        <Line data={data} options={options} height={450} />
+        <Line
+          data={data}
+          options={options}
+          height={450}
+        />
       </CardContent>
     </Card>
   )

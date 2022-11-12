@@ -17,13 +17,21 @@ import * as source from '~/views/components/ratings/RatingsSourceCode'
 
 const Ratings = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12} md={6}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Basic Ratings'
           code={{
             tsx: null,
-            jsx: source.RatingsBasicJSXCode
+            jsx: source.RatingsBasicJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -33,12 +41,16 @@ const Ratings = () => {
           <RatingsBasic />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Customized Ratings'
           code={{
             tsx: null,
-            jsx: source.RatingsCustomizedJSXCode
+            jsx: source.RatingsCustomizedJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -49,12 +61,16 @@ const Ratings = () => {
           <RatingsCustomized />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Half Ratings'
           code={{
             tsx: null,
-            jsx: source.RatingsHalfJSXCode
+            jsx: source.RatingsHalfJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -63,12 +79,16 @@ const Ratings = () => {
           <RatingsHalf />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Sizes'
           code={{
             tsx: null,
-            jsx: source.RatingsSizesJSXCode
+            jsx: source.RatingsSizesJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -77,12 +97,15 @@ const Ratings = () => {
           <RatingsSizes />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Hover Feedback'
           code={{
             tsx: null,
-            jsx: source.RatingsHoverFeedbackJSXCode
+            jsx: source.RatingsHoverFeedbackJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>

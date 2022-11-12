@@ -17,12 +17,25 @@ import componentData from '~/@fake-db/components/data'
 
 const Misc = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+      >
         <Card>
-          <CardHeader title='More Components' titleTypographyProps={{ variant: 'h6' }} />
+          <CardHeader
+            title='More Components'
+            titleTypographyProps={{ variant: 'h6' }}
+          />
           <CardContent>
-            <Alert severity='info' sx={{ mb: 4 }}>
+            <Alert
+              severity='info'
+              sx={{ mb: 4 }}
+            >
               We have themed each of the MUI components but we have skipped the demos of the following components. User
               can always copy component's code and use from links given below.
             </Alert>
@@ -36,10 +49,16 @@ const Misc = () => {
                 </TableHead>
                 <TableBody>
                   {componentData.map((data, index) => (
-                    <TableRow key={index} sx={{ '&:last-of-type .MuiTableCell-root ': { border: 0 } }}>
+                    <TableRow
+                      key={index}
+                      sx={{ '&:last-of-type .MuiTableCell-root ': { border: 0 } }}
+                    >
                       <TableCell>{data.component}</TableCell>
                       <TableCell>
-                        <Link href={data.link} target='_blank'>
+                        <Link
+                          href={data.link}
+                          target='_blank'
+                        >
                           {data.link}
                         </Link>
                       </TableCell>

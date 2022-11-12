@@ -43,13 +43,29 @@ const TabBilling = () => {
   }
 
   return (
-    <Grid container spacing={6}>
-      <Grid item xs={12} sx={{ pt: theme => ['0 !important', `${theme.spacing(6)} !important`] }}>
+    <Grid
+      container
+      spacing={6}
+    >
+      <Grid
+        item
+        xs={12}
+        sx={{ pt: (theme) => ['0 !important', `${theme.spacing(6)} !important`] }}
+      >
         <CardWrapper sx={{ '& .rccs': { m: '0 auto', display: { xs: 'none', sm: 'block' } } }}>
-          <Cards cvc={cvc} focused={focus} expiry={expiry} name={name} number={cardNumber} />
+          <Cards
+            cvc={cvc}
+            focused={focus}
+            expiry={expiry}
+            name={name}
+            number={cardNumber}
+          />
         </CardWrapper>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <TextField
           fullWidth
           name='number'
@@ -59,10 +75,14 @@ const TabBilling = () => {
           onBlur={handleBlur}
           onChange={handleInputChange}
           placeholder='0000 0000 0000 0000'
-          onFocus={e => setFocus(e.target.name)}
+          onFocus={(e) => setFocus(e.target.name)}
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+      >
         <TextField
           fullWidth
           name='name'
@@ -71,11 +91,15 @@ const TabBilling = () => {
           onBlur={handleBlur}
           label='Name on Card'
           placeholder='Marty McGee'
-          onChange={e => setName(e.target.value)}
-          onFocus={e => setFocus(e.target.name)}
+          onChange={(e) => setName(e.target.value)}
+          onFocus={(e) => setFocus(e.target.name)}
         />
       </Grid>
-      <Grid item xs={6} sm={3}>
+      <Grid
+        item
+        xs={6}
+        sm={3}
+      >
         <TextField
           fullWidth
           name='expiry'
@@ -85,10 +109,14 @@ const TabBilling = () => {
           placeholder='MM/YY'
           onChange={handleInputChange}
           inputProps={{ maxLength: '5' }}
-          onFocus={e => setFocus(e.target.name)}
+          onFocus={(e) => setFocus(e.target.name)}
         />
       </Grid>
-      <Grid item xs={6} sm={3}>
+      <Grid
+        item
+        xs={6}
+        sm={3}
+      >
         <TextField
           fullWidth
           name='cvc'
@@ -97,11 +125,14 @@ const TabBilling = () => {
           autoComplete='off'
           onBlur={handleBlur}
           onChange={handleInputChange}
-          onFocus={e => setFocus(e.target.name)}
+          onFocus={(e) => setFocus(e.target.name)}
           placeholder={Payment.fns.cardType(cardNumber) === 'amex' ? '1234' : '123'}
         />
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <FormControlLabel
           control={<Switch defaultChecked />}
           label='Save Card for future billing?'

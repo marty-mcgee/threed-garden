@@ -20,13 +20,20 @@ import * as source from '~/views/forms/form-elements/radio/RadioSourceCode'
 
 const Radios = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='RadioGroup'
           code={{
             tsx: null,
-            jsx: source.RadioGroupJSXCode
+            jsx: source.RadioGroupJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -36,12 +43,15 @@ const Radios = () => {
           <RadioGroup />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Controlled and Uncontrolled'
           code={{
             tsx: null,
-            jsx: source.RadioControlledUncontrolledJSXCode
+            jsx: source.RadioControlledUncontrolledJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -52,12 +62,16 @@ const Radios = () => {
           <RadioControlledUncontrolled />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Standalone Radio Buttons'
           code={{
             tsx: null,
-            jsx: source.RadioStandaloneJSXCode
+            jsx: source.RadioStandaloneJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -66,12 +80,16 @@ const Radios = () => {
           <RadioStandalone />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Colors'
           code={{
             tsx: null,
-            jsx: source.RadioColorJSXCode
+            jsx: source.RadioColorJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -80,12 +98,16 @@ const Radios = () => {
           <RadioColor />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Sizes'
           code={{
             tsx: null,
-            jsx: source.RadioSizesJSXCode
+            jsx: source.RadioSizesJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -94,12 +116,16 @@ const Radios = () => {
           <RadioSizes />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Customized Radio'
           code={{
             tsx: null,
-            jsx: source.RadioCustomizedJSXCode
+            jsx: source.RadioCustomizedJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -108,12 +134,16 @@ const Radios = () => {
           <RadioCustomized />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Label Placement'
           code={{
             tsx: null,
-            jsx: source.RadioLabelPlacementJSXCode
+            jsx: source.RadioLabelPlacementJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -123,12 +153,16 @@ const Radios = () => {
           <RadioLabelPlacement />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Show Error'
           code={{
             tsx: null,
-            jsx: source.RadioShowErrorJSXCode
+            jsx: source.RadioShowErrorJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>

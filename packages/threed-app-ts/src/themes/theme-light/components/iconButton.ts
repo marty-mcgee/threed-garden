@@ -1,5 +1,5 @@
 // ThreeD Garden Base Styles
-import colors from "~/themes/theme-light/base/colors"
+import colors from '~/themes/theme-light/base/colors'
 
 const { transparent } = colors
 
@@ -9,7 +9,7 @@ type Types = any
 const iconButton: Types = {
   styleOverrides: {
     root: {
-      "&:hover": {
+      '&:hover': {
         backgroundColor: transparent.main,
       },
     },

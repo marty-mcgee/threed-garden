@@ -1,5 +1,4 @@
 // ** React Imports
-import { Fragment } from 'react'
 
 // ** MUI Imports
 import List from '@mui/material/List'
@@ -18,7 +17,10 @@ import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
 const ListSimple = () => {
   return (
     <>
-      <List component='nav' aria-label='main mailbox'>
+      <List
+        component='nav'
+        aria-label='main mailbox'
+      >
         <ListItem disablePadding>
           <ListItemButton>
             <ListItemIcon>
@@ -37,7 +39,10 @@ const ListSimple = () => {
         </ListItem>
       </List>
       <Divider sx={{ m: 0 }} />
-      <List component='nav' aria-label='secondary mailbox'>
+      <List
+        component='nav'
+        aria-label='secondary mailbox'
+      >
         <ListItem disablePadding>
           <ListItemButton>
             <ListItemIcon>
@@ -47,7 +52,10 @@ const ListSimple = () => {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton component='a' href='#simple-list'>
+          <ListItemButton
+            component='a'
+            href='#simple-list'
+          >
             <ListItemIcon>
               <AlertCircleOutline fontSize='small' />
             </ListItemIcon>

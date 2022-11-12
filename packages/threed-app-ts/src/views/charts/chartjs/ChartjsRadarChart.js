@@ -9,13 +9,13 @@ import CardContent from '@mui/material/CardContent'
 // ** Third Party Imports
 import { Radar } from 'react-chartjs-2'
 
-const ChartjsRadarChart = props => {
+const ChartjsRadarChart = (props) => {
   // ** Props
   const { labelColor, gridLineColor } = props
 
   // ** States
   const [chartData, setChartData] = useState({
-    datasets: []
+    datasets: [],
   })
 
   // ** Hooks
@@ -26,29 +26,29 @@ const ChartjsRadarChart = props => {
     maintainAspectRatio: false,
     animation: { duration: 500 },
     layout: {
-      padding: { top: -20 }
+      padding: { top: -20 },
     },
     scales: {
       r: {
         ticks: {
           display: false,
           maxTicksLimit: 1,
-          color: labelColor
+          color: labelColor,
         },
         grid: { color: gridLineColor },
         pointLabels: { color: labelColor },
-        angleLines: { color: gridLineColor }
-      }
+        angleLines: { color: gridLineColor },
+      },
     },
     plugins: {
       legend: {
         position: 'top',
         labels: {
           padding: 25,
-          color: labelColor
-        }
-      }
-    }
+          color: labelColor,
+        },
+      },
+    },
   }
   useEffect(() => {
     if (!chartRef.current) {
@@ -71,7 +71,7 @@ const ChartjsRadarChart = props => {
             backgroundColor: gradientRed,
             data: [25, 59, 90, 81, 60, 82],
             pointBorderColor: 'transparent',
-            pointBackgroundColor: 'transparent'
+            pointBackgroundColor: 'transparent',
           },
           {
             fill: true,
@@ -80,9 +80,9 @@ const ChartjsRadarChart = props => {
             backgroundColor: gradientBlue,
             data: [40, 100, 40, 90, 40, 90],
             pointBorderColor: 'transparent',
-            pointBackgroundColor: 'transparent'
-          }
-        ]
+            pointBackgroundColor: 'transparent',
+          },
+        ],
       }
       setChartData(chartData)
     }
@@ -90,9 +90,17 @@ const ChartjsRadarChart = props => {
 
   return (
     <Card>
-      <CardHeader title='Radar Chart' titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader
+        title='Radar Chart'
+        titleTypographyProps={{ variant: 'h6' }}
+      />
       <CardContent>
-        <Radar ref={chartRef} data={chartData} options={options} height={350} />
+        <Radar
+          ref={chartRef}
+          data={chartData}
+          options={options}
+          height={350}
+        />
       </CardContent>
     </Card>
   )

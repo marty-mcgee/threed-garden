@@ -1,21 +1,20 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef } from 'react'
 
 // Dropzone components
 // new way [MM]
 // import Dropzone from "dropzone"
 
 // Dropzone styles
-import styles from "~/styles/dropzone/dist/dropzone.module.css"
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
+import MDBox from '~/components/mui/MDBox'
 
 // Custom styles for the MDDropzone
-import MDDropzoneRoot from "~/components/mui/MDDropzone/MDDropzoneRoot"
+import MDDropzoneRoot from '~/components/mui/MDDropzone/MDDropzoneRoot'
 
 // ThreeD Garden context
-import { useMaterialUIController } from "~/context"
-import Dropzone from "dropzone"
+import { useMaterialUIController } from '~/context'
+import Dropzone from 'dropzone'
 
 // Declaring props types for MDDropzone
 interface Props {
@@ -38,7 +37,7 @@ function MDDropzone({ options }: Props): JSX.Element {
     //   return new Dropzone(dropzoneRef.current, { ...options })
     // }
     async function createDropzone() {
-      const Dropzone = (await import("dropzone")).default
+      const Dropzone = (await import('dropzone')).default
 
       Dropzone.autoDiscover = false
 
@@ -46,8 +45,7 @@ function MDDropzone({ options }: Props): JSX.Element {
     }
 
     function removeDropzone() {
-      if (Dropzone.instances.length > 0)
-        Dropzone.instances.forEach((dz: any) => dz.destroy())
+      if (Dropzone.instances.length > 0) Dropzone.instances.forEach((dz: any) => dz.destroy())
     }
 
     createDropzone()
@@ -57,12 +55,20 @@ function MDDropzone({ options }: Props): JSX.Element {
 
   return (
     <MDDropzoneRoot
-      action="/file-upload"
+      action='/file-upload'
       ref={dropzoneRef}
-      className="form-control dropzone"
-      ownerState={{ darkMode }}>
-      <MDBox className="fallback" bgColor="transparent">
-        <input name="file" type="file" multiple />
+      className='form-control dropzone'
+      ownerState={{ darkMode }}
+    >
+      <MDBox
+        className='fallback'
+        bgColor='transparent'
+      >
+        <input
+          name='file'
+          type='file'
+          multiple
+        />
       </MDBox>
     </MDDropzoneRoot>
   )

@@ -25,7 +25,7 @@ import {
   updateEvent,
   handleSelectEvent,
   handleAllCalendars,
-  handleCalendarsUpdate
+  handleCalendarsUpdate,
 } from '~/store/apps/calendar'
 
 // ** Third Party Styles Imports
@@ -37,7 +37,7 @@ const calendarsColor = {
   Business: 'primary',
   Family: 'warning',
   Holiday: 'success',
-  ETC: 'info'
+  ETC: 'info',
 }
 
 const AppCalendar = () => {
@@ -49,13 +49,13 @@ const AppCalendar = () => {
   // ** Hooks
   const { settings } = useSettings()
   const dispatch = useDispatch()
-  const store = useSelector(state => state.calendar)
+  const store = useSelector((state) => state.calendar)
 
   // ** Vars
   const leftSidebarWidth = 260
   const addEventSidebarWidth = 400
   const { skin, direction } = settings
-  const mdAbove = useMediaQuery(theme => theme.breakpoints.up('md'))
+  const mdAbove = useMediaQuery((theme) => theme.breakpoints.up('md'))
   useEffect(() => {
     dispatch(fetchEvents(store.selectedCalendars))
   }, [dispatch, store.selectedCalendars])
@@ -67,7 +67,7 @@ const AppCalendar = () => {
       className='app-calendar'
       sx={{
         boxShadow: skin === 'bordered' ? 0 : 6,
-        ...(skin === 'bordered' && { border: theme => `1px solid ${theme.palette.divider}` })
+        ...(skin === 'bordered' && { border: (theme) => `1px solid ${theme.palette.divider}` }),
       }}
     >
       <SidebarLeft
@@ -91,7 +91,7 @@ const AppCalendar = () => {
           borderRadius: 1,
           boxShadow: 'none',
           backgroundColor: 'background.paper',
-          ...(mdAbove ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 } : {})
+          ...(mdAbove ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 } : {}),
         }}
       >
         <Calendar

@@ -1,11 +1,11 @@
 // ThreeD Garden Base Styles
-import colors from "~/themes/theme-light/base/colors"
-import borders from "~/themes/theme-light/base/borders"
-import boxShadows from "~/themes/theme-light/base/boxShadows"
+import colors from '~/themes/theme-light/base/colors'
+import borders from '~/themes/theme-light/base/borders'
+import boxShadows from '~/themes/theme-light/base/boxShadows'
 
 // ThreeD Garden Helper Functions
-import pxToRem from "~/themes/theme-light/functions/pxToRem"
-import linearGradient from "~/themes/theme-light/functions/linearGradient"
+import pxToRem from '~/themes/theme-light/functions/pxToRem'
+import linearGradient from '~/themes/theme-light/functions/linearGradient'
 
 const { transparent, gradients } = colors
 const { borderRadius } = borders
@@ -22,7 +22,7 @@ const stepper: Types = {
       borderRadius: borderRadius.lg,
       boxShadow: colored.info,
 
-      "&.MuiPaper-root": {
+      '&.MuiPaper-root': {
         backgroundColor: transparent.main,
       },
     },

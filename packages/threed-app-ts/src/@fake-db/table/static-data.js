@@ -10,7 +10,7 @@ export const rows = [
     salary: 23896.35,
     age: '61',
     experience: '1 Year',
-    status: 2
+    status: 2,
   },
   {
     id: 7,
@@ -23,7 +23,7 @@ export const rows = [
     salary: 18991.67,
     age: '59',
     experience: '9 Years',
-    status: 3
+    status: 3,
   },
   {
     id: 11,
@@ -36,7 +36,7 @@ export const rows = [
     salary: 19252.12,
     age: '30',
     experience: '0 Year',
-    status: 4
+    status: 4,
   },
   {
     id: 3,
@@ -49,7 +49,7 @@ export const rows = [
     salary: 13076.28,
     age: '66',
     experience: '6 Years',
-    status: 5
+    status: 5,
   },
   {
     id: 5,
@@ -62,7 +62,7 @@ export const rows = [
     salary: 10909.52,
     age: '33',
     experience: '3 Years',
-    status: 2
+    status: 2,
   },
   {
     id: 6,
@@ -75,7 +75,7 @@ export const rows = [
     salary: 17803.8,
     age: '61',
     experience: '1 Year',
-    status: 1
+    status: 1,
   },
   {
     id: 4,
@@ -88,7 +88,7 @@ export const rows = [
     salary: 12336.17,
     age: '22',
     experience: '2 Years',
-    status: 2
+    status: 2,
   },
   {
     id: 8,
@@ -101,7 +101,7 @@ export const rows = [
     salary: 19230.13,
     age: '55',
     experience: '5 Years',
-    status: 3
+    status: 3,
   },
   {
     id: 9,
@@ -114,7 +114,7 @@ export const rows = [
     salary: 11677.32,
     age: '39',
     experience: '9 Years',
-    status: 5
+    status: 5,
   },
   {
     id: 10,
@@ -127,7 +127,7 @@ export const rows = [
     salary: 15939.52,
     age: '23',
     experience: '3 Years',
-    status: 2
+    status: 2,
   },
   {
     id: 12,
@@ -140,7 +140,7 @@ export const rows = [
     salary: 16745.47,
     age: '22',
     experience: '2 Years',
-    status: 4
+    status: 4,
   },
   {
     id: 13,
@@ -153,7 +153,7 @@ export const rows = [
     salary: 15488.53,
     age: '36',
     experience: '6 Years',
-    status: 4
+    status: 4,
   },
   {
     id: 14,
@@ -166,7 +166,7 @@ export const rows = [
     salary: 18442.34,
     age: '43',
     experience: '3 Years',
-    status: 2
+    status: 2,
   },
   {
     id: 15,
@@ -179,7 +179,7 @@ export const rows = [
     salary: 13304.45,
     age: '19',
     experience: '9 Years',
-    status: 5
+    status: 5,
   },
   {
     id: 16,
@@ -192,7 +192,7 @@ export const rows = [
     salary: 11953.08,
     age: '66',
     experience: '6 Years',
-    status: 5
+    status: 5,
   },
   {
     id: 17,
@@ -205,7 +205,7 @@ export const rows = [
     salary: 20484.44,
     age: '64',
     experience: '4 Years',
-    status: 1
+    status: 1,
   },
   {
     id: 18,
@@ -218,7 +218,7 @@ export const rows = [
     salary: 16871.48,
     age: '59',
     experience: '9 Years',
-    status: 1
+    status: 1,
   },
   {
     id: 19,
@@ -231,7 +231,7 @@ export const rows = [
     salary: 19653.56,
     age: '41',
     experience: '1 Year',
-    status: 4
+    status: 4,
   },
   {
     id: 20,
@@ -244,7 +244,7 @@ export const rows = [
     salary: 18303.87,
     age: '35',
     experience: '5 Years',
-    status: 1
+    status: 1,
   },
   {
     id: 21,
@@ -257,7 +257,7 @@ export const rows = [
     salary: 15256.4,
     age: '30',
     experience: '0 Year',
-    status: 2
+    status: 2,
   },
   {
     id: 22,
@@ -270,7 +270,7 @@ export const rows = [
     salary: 11209.16,
     age: '40',
     experience: '0 Year',
-    status: 3
+    status: 3,
   },
   {
     id: 23,
@@ -283,7 +283,7 @@ export const rows = [
     salary: 13778.34,
     age: '21',
     experience: '1 Year',
-    status: 5
+    status: 5,
   },
   {
     id: 24,
@@ -296,7 +296,7 @@ export const rows = [
     salary: 23081.71,
     age: '23',
     experience: '3 Years',
-    status: 1
+    status: 1,
   },
   {
     id: 25,
@@ -309,7 +309,7 @@ export const rows = [
     salary: 13602.24,
     age: '47',
     experience: '7 Years',
-    status: 3
+    status: 3,
   },
   {
     id: 26,
@@ -322,7 +322,7 @@ export const rows = [
     salary: 16969.63,
     age: '42',
     experience: '2 Years',
-    status: 4
+    status: 4,
   },
   {
     id: 27,
@@ -335,7 +335,7 @@ export const rows = [
     salary: 23796.62,
     age: '28',
     experience: '8 Years',
-    status: 3
+    status: 3,
   },
   {
     id: 28,
@@ -348,7 +348,7 @@ export const rows = [
     salary: 24027.81,
     age: '28',
     experience: '8 Years',
-    status: 4
+    status: 4,
   },
   {
     id: 29,
@@ -361,7 +361,7 @@ export const rows = [
     salary: 13508.15,
     age: '48',
     experience: '8 Years',
-    status: 3
+    status: 3,
   },
   {
     id: 30,
@@ -374,7 +374,7 @@ export const rows = [
     salary: 21632.3,
     age: '20',
     experience: '0 Year',
-    status: 2
+    status: 2,
   },
   {
     id: 31,
@@ -387,7 +387,7 @@ export const rows = [
     salary: 24875.41,
     age: '37',
     experience: '7 Years',
-    status: 5
+    status: 5,
   },
   {
     id: 32,
@@ -400,7 +400,7 @@ export const rows = [
     salary: 23888.98,
     age: '53',
     experience: '3 Years',
-    status: 2
+    status: 2,
   },
   {
     id: 33,
@@ -413,7 +413,7 @@ export const rows = [
     salary: 14082.44,
     age: '27',
     experience: '7 Years',
-    status: 5
+    status: 5,
   },
   {
     id: 34,
@@ -426,7 +426,7 @@ export const rows = [
     salary: 21386.52,
     age: '22',
     experience: '2 Years',
-    status: 3
+    status: 3,
   },
   {
     id: 35,
@@ -439,7 +439,7 @@ export const rows = [
     salary: 13835.97,
     age: '46',
     experience: '6 Years',
-    status: 4
+    status: 4,
   },
   {
     id: 36,
@@ -452,7 +452,7 @@ export const rows = [
     salary: 22093.91,
     age: '47',
     experience: '7 Years',
-    status: 4
+    status: 4,
   },
   {
     id: 37,
@@ -465,7 +465,7 @@ export const rows = [
     salary: 24624.23,
     age: '51',
     experience: '1 Year',
-    status: 3
+    status: 3,
   },
   {
     id: 38,
@@ -478,7 +478,7 @@ export const rows = [
     salary: 21782.82,
     age: '41',
     experience: '1 Year',
-    status: 1
+    status: 1,
   },
   {
     id: 39,
@@ -491,7 +491,7 @@ export const rows = [
     salary: 22794.6,
     age: '62',
     experience: '2 Years',
-    status: 2
+    status: 2,
   },
   {
     id: 40,
@@ -504,7 +504,7 @@ export const rows = [
     salary: 10872.83,
     age: '37',
     experience: '7 Years',
-    status: 4
+    status: 4,
   },
   {
     id: 41,
@@ -517,7 +517,7 @@ export const rows = [
     salary: 17471.92,
     age: '65',
     experience: '5 Years',
-    status: 5
+    status: 5,
   },
   {
     id: 42,
@@ -530,7 +530,7 @@ export const rows = [
     salary: 24719.51,
     age: '64',
     experience: '4 Years',
-    status: 1
+    status: 1,
   },
   {
     id: 43,
@@ -543,7 +543,7 @@ export const rows = [
     salary: 11958.33,
     age: '38',
     experience: '8 Years',
-    status: 2
+    status: 2,
   },
   {
     id: 44,
@@ -556,7 +556,7 @@ export const rows = [
     salary: 10552.43,
     age: '37',
     experience: '7 Years',
-    status: 1
+    status: 1,
   },
   {
     id: 45,
@@ -569,7 +569,7 @@ export const rows = [
     salary: 23024.28,
     age: '61',
     experience: '1 Year',
-    status: 4
+    status: 4,
   },
   {
     id: 46,
@@ -582,7 +582,7 @@ export const rows = [
     salary: 10409.9,
     age: '47',
     experience: '7 Years',
-    status: 5
+    status: 5,
   },
   {
     id: 47,
@@ -595,7 +595,7 @@ export const rows = [
     salary: 11446.3,
     age: '64',
     experience: '4 Years',
-    status: 4
+    status: 4,
   },
   {
     id: 48,
@@ -608,7 +608,7 @@ export const rows = [
     salary: 14002.31,
     age: '63',
     experience: '3 Years',
-    status: 1
+    status: 1,
   },
   {
     id: 49,
@@ -621,7 +621,7 @@ export const rows = [
     salary: 10704.29,
     age: '56',
     experience: '6 Years',
-    status: 1
+    status: 1,
   },
   {
     id: 50,
@@ -634,7 +634,7 @@ export const rows = [
     salary: 21813.54,
     age: '43',
     experience: '3 Years',
-    status: 1
+    status: 1,
   },
   {
     id: 95,
@@ -647,6 +647,6 @@ export const rows = [
     salary: 19586.23,
     age: '27',
     experience: '2 Years',
-    status: 1
-  }
+    status: 1,
+  },
 ]

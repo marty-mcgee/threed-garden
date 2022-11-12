@@ -2,7 +2,6 @@
 // RESOURCES
 
 // ** Apollo Client 3 -- Cache Store Imports
-import { ApolloClient, InMemoryCache, useApolloClient, useQuery, gql } from '@apollo/client'
 import create from '~/api/graphql/createStore'
 
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
@@ -17,13 +16,12 @@ import GetAllotments from '~/api/graphql/scripts/getAllotments.gql'
 import GetBeds from '~/api/graphql/scripts/getBeds.gql'
 import GetPlants from '~/api/graphql/scripts/getPlants.gql'
 import GetPlantingPlans from '~/api/graphql/scripts/getPlantingPlans.gql'
-import GetProducts from '~/api/graphql/scripts/getProducts.gql'
 
 // ** UUID Imports
 import { v4 as newUUID } from 'uuid'
 
 // [MM] COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '~/@core/utils/console-colors'
+import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5 } from '~/@core/utils/console-colors'
 // console.debug(`%cSUCCESS!!`, ccm1)
 // console.debug(`%cWHOOPSIES`, ccm2)
 

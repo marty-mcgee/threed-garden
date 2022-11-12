@@ -18,26 +18,26 @@ const Accordion = styled(MuiAccordion)(({ theme }) => ({
   border:
     theme.palette.mode === 'light' ? `1px solid ${theme.palette.grey[300]}` : `1px solid ${theme.palette.divider}`,
   '&:not(:last-of-type)': {
-    borderBottom: 0
+    borderBottom: 0,
   },
   '&:before': {
-    display: 'none'
+    display: 'none',
   },
   '&.Mui-expanded': {
-    margin: 'auto'
+    margin: 'auto',
   },
   '&:first-of-type': {
     '& .MuiButtonBase-root': {
       borderTopLeftRadius: theme.shape.borderRadius,
-      borderTopRightRadius: theme.shape.borderRadius
-    }
+      borderTopRightRadius: theme.shape.borderRadius,
+    },
   },
   '&:last-of-type': {
     '& .MuiAccordionSummary-root:not(.Mui-expanded)': {
       borderBottomLeftRadius: theme.shape.borderRadius,
-      borderBottomRightRadius: theme.shape.borderRadius
-    }
-  }
+      borderBottomRightRadius: theme.shape.borderRadius,
+    },
+  },
 }))
 
 // Styled component for AccordionSummary component
@@ -49,30 +49,33 @@ const AccordionSummary = styled(MuiAccordionSummary)(({ theme }) => ({
   borderBottom:
     theme.palette.mode === 'light' ? `1px solid ${theme.palette.grey[300]}` : `1px solid ${theme.palette.divider}`,
   '&.Mui-expanded': {
-    minHeight: theme.spacing(12)
+    minHeight: theme.spacing(12),
   },
   '& .MuiAccordionSummary-content.Mui-expanded': {
-    margin: '12px 0'
-  }
+    margin: '12px 0',
+  },
 }))
 
 // Styled component for AccordionDetails component
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-  padding: `${theme.spacing(4)} !important`
+  padding: `${theme.spacing(4)} !important`,
 }))
 
 const AccordionCustomized = () => {
   // ** State
   const [expanded, setExpanded] = useState('panel1')
 
-  const handleChange = panel => (event, isExpanded) => {
+  const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false)
   }
-  const expandIcon = value => (expanded === value ? <Minus /> : <Plus />)
+  const expandIcon = (value) => (expanded === value ? <Minus /> : <Plus />)
 
   return (
     <div>
-      <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+      <Accordion
+        expanded={expanded === 'panel1'}
+        onChange={handleChange('panel1')}
+      >
         <AccordionSummary
           id='customized-panel-header-1'
           expandIcon={expandIcon('panel1')}
@@ -88,7 +91,10 @@ const AccordionCustomized = () => {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+      <Accordion
+        expanded={expanded === 'panel2'}
+        onChange={handleChange('panel2')}
+      >
         <AccordionSummary
           id='customized-panel-header-2'
           expandIcon={expandIcon('panel2')}
@@ -104,7 +110,10 @@ const AccordionCustomized = () => {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
+      <Accordion
+        expanded={expanded === 'panel3'}
+        onChange={handleChange('panel3')}
+      >
         <AccordionSummary
           id='customized-panel-header-3'
           expandIcon={expandIcon('panel3')}

@@ -14,10 +14,18 @@ const CardVerticalRatings = () => {
       <CardHeader title='The Best Answers' />
       <CardContent>
         <Box sx={{ mb: 5, display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
-          <Rating readOnly value={5} name='read-only' sx={{ mr: 2 }} />
+          <Rating
+            readOnly
+            value={5}
+            name='read-only'
+            sx={{ mr: 2 }}
+          />
           <Typography variant='body2'>5 Star | 98 reviews</Typography>
         </Box>
-        <Typography variant='body2' sx={{ mb: 3.25 }}>
+        <Typography
+          variant='body2'
+          sx={{ mb: 3.25 }}
+        >
           If you are looking for a new way to promote your business that won’t cost you more money, maybe printing is
           one of the options you won’t resist.
         </Typography>

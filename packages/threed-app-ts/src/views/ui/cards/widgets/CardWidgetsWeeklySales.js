@@ -26,7 +26,7 @@ const CardWidgetsWeeklySales = () => {
   const options = {
     chart: {
       parentHeightOffset: 0,
-      toolbar: { show: false }
+      toolbar: { show: false },
     },
     plotOptions: {
       bar: {
@@ -34,8 +34,8 @@ const CardWidgetsWeeklySales = () => {
         distributed: true,
         columnWidth: '60%',
         endingShape: 'rounded',
-        startingShape: 'rounded'
-      }
+        startingShape: 'rounded',
+      },
     },
     legend: { show: false },
     dataLabels: { enabled: false },
@@ -46,15 +46,15 @@ const CardWidgetsWeeklySales = () => {
       hexToRGBA(theme.palette.primary.main, 0.1),
       theme.palette.primary.main,
       hexToRGBA(theme.palette.primary.main, 0.1),
-      hexToRGBA(theme.palette.primary.main, 0.1)
+      hexToRGBA(theme.palette.primary.main, 0.1),
     ],
     states: {
       hover: {
-        filter: { type: 'none' }
+        filter: { type: 'none' },
       },
       active: {
-        filter: { type: 'none' }
-      }
+        filter: { type: 'none' },
+      },
     },
     xaxis: {
       categories: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
@@ -63,9 +63,9 @@ const CardWidgetsWeeklySales = () => {
       tickPlacement: 'on',
       labels: {
         style: {
-          fontSize: '12px'
-        }
-      }
+          fontSize: '12px',
+        },
+      },
     },
     yaxis: { show: false },
     grid: {
@@ -73,9 +73,9 @@ const CardWidgetsWeeklySales = () => {
       padding: {
         top: -15,
         left: -10,
-        right: -10
-      }
-    }
+        right: -10,
+      },
+    },
   }
 
   return (
@@ -85,7 +85,12 @@ const CardWidgetsWeeklySales = () => {
         subheader='Total 85.4k Sales'
         titleTypographyProps={{ sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' } }}
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }
@@ -93,29 +98,49 @@ const CardWidgetsWeeklySales = () => {
       <CardContent
         sx={{
           pb: `${theme.spacing(7)} !important`,
-          '& .apexcharts-xaxis-label': { fill: `${theme.palette.text.secondary} !important` }
+          '& .apexcharts-xaxis-label': { fill: `${theme.palette.text.secondary} !important` },
         }}
       >
-        <ReactApexcharts type='bar' height={203} series={[{ data: [40, 60, 50, 60, 90, 40, 50] }]} options={options} />
+        <ReactApexcharts
+          type='bar'
+          height={203}
+          series={[{ data: [40, 60, 50, 60, 90, 40, 50] }]}
+          options={options}
+        />
         <Box sx={{ mt: 6.25, display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
           <Box sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
-            <CustomAvatar skin='light' sx={{ mr: 4, width: 42, height: 42 }} variant='rounded'>
+            <CustomAvatar
+              skin='light'
+              sx={{ mr: 4, width: 42, height: 42 }}
+              variant='rounded'
+            >
               <TrendingUp sx={{ fontSize: '1.875rem', color: 'primary.main' }} />
             </CustomAvatar>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
               <Typography sx={{ fontWeight: 600 }}>34.6k</Typography>
-              <Typography variant='body2' sx={{ lineHeight: '1.313rem', letterSpacing: '0.25px' }}>
+              <Typography
+                variant='body2'
+                sx={{ lineHeight: '1.313rem', letterSpacing: '0.25px' }}
+              >
                 Sales
               </Typography>
             </Box>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <CustomAvatar skin='light' sx={{ mr: 4, width: 42, height: 42 }} variant='rounded' color='success'>
+            <CustomAvatar
+              skin='light'
+              sx={{ mr: 4, width: 42, height: 42 }}
+              variant='rounded'
+              color='success'
+            >
               <CurrencyUsd sx={{ fontSize: '1.875rem', color: 'success.main' }} />
             </CustomAvatar>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
               <Typography sx={{ fontWeight: 600 }}>$482k</Typography>
-              <Typography variant='body2' sx={{ lineHeight: '1.313rem', letterSpacing: '0.25px' }}>
+              <Typography
+                variant='body2'
+                sx={{ lineHeight: '1.313rem', letterSpacing: '0.25px' }}
+              >
                 Total Profit
               </Typography>
             </Box>

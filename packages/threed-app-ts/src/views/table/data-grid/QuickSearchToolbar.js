@@ -8,7 +8,7 @@ import { GridToolbarFilterButton } from '@mui/x-data-grid'
 import Close from 'mdi-material-ui/Close'
 import Magnify from 'mdi-material-ui/Magnify'
 
-const QuickSearchToolbar = props => {
+const QuickSearchToolbar = (props) => {
   return (
     <Box
       sx={{
@@ -17,7 +17,7 @@ const QuickSearchToolbar = props => {
         display: 'flex',
         flexWrap: 'wrap',
         alignItems: 'flex-start',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
       }}
     >
       <Box>
@@ -31,24 +31,29 @@ const QuickSearchToolbar = props => {
         InputProps={{
           startAdornment: <Magnify fontSize='small' />,
           endAdornment: (
-            <IconButton size='small' title='Clear' aria-label='Clear' onClick={props.clearSearch}>
+            <IconButton
+              size='small'
+              title='Clear'
+              aria-label='Clear'
+              onClick={props.clearSearch}
+            >
               <Close fontSize='small' />
             </IconButton>
-          )
+          ),
         }}
         sx={{
           width: {
             xs: 1,
-            sm: 'auto'
+            sm: 'auto',
           },
-          m: theme => theme.spacing(1, 0.5, 1.5),
+          m: (theme) => theme.spacing(1, 0.5, 1.5),
           '& .MuiSvgIcon-root': {
-            mr: 0.5
+            mr: 0.5,
           },
           '& .MuiInput-underline:before': {
             borderBottom: 1,
-            borderColor: 'divider'
-          }
+            borderColor: 'divider',
+          },
         }}
       />
     </Box>

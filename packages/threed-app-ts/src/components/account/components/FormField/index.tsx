@@ -1,5 +1,5 @@
 // ThreeD Garden components
-import MDInput from "~/components/mui/MDInput"
+import MDInput from '~/components/mui/MDInput'
 
 // Declaring props types for FormField
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 function FormField({ label, ...rest }: Props): JSX.Element {
   return (
     <MDInput
-      variant="standard"
+      variant='standard'
       label={label}
       fullWidth
       InputLabelProps={{ shrink: true }}
@@ -21,7 +21,7 @@ function FormField({ label, ...rest }: Props): JSX.Element {
 
 // Declaring default props for FormField
 FormField.defaultProps = {
-  label: " ",
+  label: ' ',
 }
 
 export default FormField

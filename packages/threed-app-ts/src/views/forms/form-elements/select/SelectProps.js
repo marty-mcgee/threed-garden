@@ -11,7 +11,12 @@ const SelectProps = () => {
     <Box sx={{ '& > *': { mt: 6, mr: 6 } }}>
       <FormControl>
         <InputLabel id='demo-simple-select-helper-label'>Age</InputLabel>
-        <Select label='Age' defaultValue='' id='demo-simple-select-helper' labelId='demo-simple-select-helper-label'>
+        <Select
+          label='Age'
+          defaultValue=''
+          id='demo-simple-select-helper'
+          labelId='demo-simple-select-helper-label'
+        >
           <MenuItem value=''>
             <em>None</em>
           </MenuItem>
@@ -22,7 +27,11 @@ const SelectProps = () => {
         <FormHelperText>With label + helper text</FormHelperText>
       </FormControl>
       <FormControl>
-        <Select defaultValue='' displayEmpty inputProps={{ 'aria-label': 'Without label' }}>
+        <Select
+          defaultValue=''
+          displayEmpty
+          inputProps={{ 'aria-label': 'Without label' }}
+        >
           <MenuItem value=''>
             <em>None</em>
           </MenuItem>
@@ -73,7 +82,7 @@ const SelectProps = () => {
           label='Age'
           defaultValue=''
           id='demo-simple-select-error'
-          renderValue={value => `⚠️  - ${value}`}
+          renderValue={(value) => `⚠️  - ${value}`}
           labelId='demo-simple-select-error-label'
         >
           <MenuItem value=''>

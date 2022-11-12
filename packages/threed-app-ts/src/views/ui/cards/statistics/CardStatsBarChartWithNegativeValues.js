@@ -10,12 +10,12 @@ import ReactApexcharts from '~/@core/components/react-apexcharts'
 const series = [
   {
     name: 'Earning',
-    data: [180, 120, 284, 180, 102]
+    data: [180, 120, 284, 180, 102],
   },
   {
     name: 'Expense',
-    data: [-100, -130, -100, -60, -120]
-  }
+    data: [-100, -130, -100, -60, -120],
+  },
 ]
 
 const CardStatsBarChartWithNegativeValues = () => {
@@ -26,18 +26,18 @@ const CardStatsBarChartWithNegativeValues = () => {
     chart: {
       stacked: true,
       parentHeightOffset: 0,
-      toolbar: { show: false }
+      toolbar: { show: false },
     },
     grid: {
       padding: {
         top: -13,
         left: -20,
         right: -10,
-        bottom: -3
+        bottom: -3,
       },
       yaxis: {
-        lines: { show: false }
-      }
+        lines: { show: false },
+      },
     },
     legend: { show: false },
     stroke: { lineCap: 'round' },
@@ -48,34 +48,42 @@ const CardStatsBarChartWithNegativeValues = () => {
         borderRadius: 4,
         columnWidth: '25%',
         endingShape: 'rounded',
-        startingShape: 'rounded'
-      }
+        startingShape: 'rounded',
+      },
     },
     states: {
       hover: {
-        filter: { type: 'none' }
+        filter: { type: 'none' },
       },
       active: {
-        filter: { type: 'none' }
-      }
+        filter: { type: 'none' },
+      },
     },
     xaxis: {
       labels: { show: false },
       axisTicks: { show: false },
       axisBorder: { show: false },
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May']
+      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
     },
     yaxis: {
-      labels: { show: false }
-    }
+      labels: { show: false },
+    },
   }
 
   return (
     <Card>
       <CardContent>
         <Typography variant='h6'>4,350</Typography>
-        <ReactApexcharts type='bar' height={116} options={options} series={series} />
-        <Typography variant='body2' sx={{ fontWeight: 600, textAlign: 'center', color: 'text.primary' }}>
+        <ReactApexcharts
+          type='bar'
+          height={116}
+          options={options}
+          series={series}
+        />
+        <Typography
+          variant='body2'
+          sx={{ fontWeight: 600, textAlign: 'center', color: 'text.primary' }}
+        >
           Sessions
         </Typography>
       </CardContent>

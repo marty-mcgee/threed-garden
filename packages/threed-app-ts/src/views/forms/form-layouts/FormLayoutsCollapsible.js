@@ -47,12 +47,12 @@ const BoxWrapper = styled(Box)(({ theme }) => ({
   borderColor: theme.palette.divider,
   '&:first-of-type': {
     borderTopLeftRadius: theme.shape.borderRadius,
-    borderTopRightRadius: theme.shape.borderRadius
+    borderTopRightRadius: theme.shape.borderRadius,
   },
   '&:last-of-type': {
     borderBottomLeftRadius: theme.shape.borderRadius,
-    borderBottomRightRadius: theme.shape.borderRadius
-  }
+    borderBottomRightRadius: theme.shape.borderRadius,
+  },
 }))
 
 const FormLayoutsCollapsible = () => {
@@ -66,7 +66,7 @@ const FormLayoutsCollapsible = () => {
   const [paymentMethod, setPaymentMethod] = useState('card')
   const [expanded, setExpanded] = useState('panel1')
 
-  const handleChange = panel => (event, isExpanded) => {
+  const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false)
   }
   const handleBlur = () => setFocus('')
@@ -85,39 +85,102 @@ const FormLayoutsCollapsible = () => {
   }
 
   return (
-    <form onSubmit={e => e.preventDefault()}>
-      <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+    <form onSubmit={(e) => e.preventDefault()}>
+      <Accordion
+        expanded={expanded === 'panel1'}
+        onChange={handleChange('panel1')}
+      >
         <AccordionSummary
           expandIcon={<ChevronDown />}
           id='form-layouts-collapsible-header-1'
           aria-controls='form-layouts-collapsible-content-1'
         >
-          <Typography variant='subtitle1' sx={{ fontWeight: 500 }}>
+          <Typography
+            variant='subtitle1'
+            sx={{ fontWeight: 500 }}
+          >
             Delivery Address
           </Typography>
         </AccordionSummary>
         <Divider sx={{ m: 0 }} />
         <AccordionDetails>
-          <Grid container spacing={5}>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Full Name' placeholder='Leonard Carter' />
+          <Grid
+            container
+            spacing={5}
+          >
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
+              <TextField
+                fullWidth
+                label='Full Name'
+                placeholder='Leonard Carter'
+              />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Phone No.' placeholder='+1-123-456-8790' />
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
+              <TextField
+                fullWidth
+                label='Phone No.'
+                placeholder='+1-123-456-8790'
+              />
             </Grid>
-            <Grid item xs={12}>
-              <TextField multiline rows={3} fullWidth label='Address' placeholder='1456, Liberty Street' />
+            <Grid
+              item
+              xs={12}
+            >
+              <TextField
+                multiline
+                rows={3}
+                fullWidth
+                label='Address'
+                placeholder='1456, Liberty Street'
+              />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth type='number' label='ZIP Code' placeholder='10005' />
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
+              <TextField
+                fullWidth
+                type='number'
+                label='ZIP Code'
+                placeholder='10005'
+              />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Landmark' placeholder='Nr. Wall Street' />
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
+              <TextField
+                fullWidth
+                label='Landmark'
+                placeholder='Nr. Wall Street'
+              />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='City' placeholder='New York' />
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
+              <TextField
+                fullWidth
+                label='City'
+                placeholder='New York'
+              />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <FormControl fullWidth>
                 <InputLabel id='form-layouts-collapsible-select-label'>Country</InputLabel>
                 <Select
@@ -133,7 +196,10 @@ const FormLayoutsCollapsible = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <FormControl>
                 <FormLabel>Address Type</FormLabel>
                 <RadioGroup
@@ -142,8 +208,16 @@ const FormLayoutsCollapsible = () => {
                   aria-label='address type'
                   name='form-layouts-collapsible-address-radio'
                 >
-                  <FormControlLabel value='home' control={<Radio />} label='Home (All day delivery)' />
-                  <FormControlLabel value='office' control={<Radio />} label='Office (Delivery between 10 AM - 5 PM)' />
+                  <FormControlLabel
+                    value='home'
+                    control={<Radio />}
+                    label='Home (All day delivery)'
+                  />
+                  <FormControlLabel
+                    value='office'
+                    control={<Radio />}
+                    label='Office (Delivery between 10 AM - 5 PM)'
+                  />
                 </RadioGroup>
               </FormControl>
             </Grid>
@@ -151,13 +225,19 @@ const FormLayoutsCollapsible = () => {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+      <Accordion
+        expanded={expanded === 'panel2'}
+        onChange={handleChange('panel2')}
+      >
         <AccordionSummary
           expandIcon={<ChevronDown />}
           id='form-layouts-collapsible-header-2'
           aria-controls='form-layouts-collapsible-content-2'
         >
-          <Typography variant='subtitle1' sx={{ fontWeight: 500 }}>
+          <Typography
+            variant='subtitle1'
+            sx={{ fontWeight: 500 }}
+          >
             Delivery Options
           </Typography>
         </AccordionSummary>
@@ -223,44 +303,91 @@ const FormLayoutsCollapsible = () => {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
+      <Accordion
+        expanded={expanded === 'panel3'}
+        onChange={handleChange('panel3')}
+      >
         <AccordionSummary
           expandIcon={<ChevronDown />}
           id='form-layouts-collapsible-header-3'
           aria-controls='form-layouts-collapsible-content-3'
         >
-          <Typography variant='subtitle1' sx={{ fontWeight: 500 }}>
+          <Typography
+            variant='subtitle1'
+            sx={{ fontWeight: 500 }}
+          >
             Payment Method
           </Typography>
         </AccordionSummary>
         <Divider sx={{ m: 0 }} />
         <AccordionDetails>
-          <Grid container spacing={5}>
-            <Grid item xs={12}>
-              <Grid container spacing={6}>
-                <Grid item xs={12}>
+          <Grid
+            container
+            spacing={5}
+          >
+            <Grid
+              item
+              xs={12}
+            >
+              <Grid
+                container
+                spacing={6}
+              >
+                <Grid
+                  item
+                  xs={12}
+                >
                   <RadioGroup
                     row
                     value={paymentMethod}
                     aria-label='payment type'
                     name='form-layouts-collapsible-payment-radio'
-                    onChange={e => setPaymentMethod(e.target.value)}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
                   >
-                    <FormControlLabel value='card' control={<Radio />} label='Credit/Debit/ATM Card' />
-                    <FormControlLabel value='cash' control={<Radio />} label='Cash on Delivery' />
+                    <FormControlLabel
+                      value='card'
+                      control={<Radio />}
+                      label='Credit/Debit/ATM Card'
+                    />
+                    <FormControlLabel
+                      value='cash'
+                      control={<Radio />}
+                      label='Cash on Delivery'
+                    />
                   </RadioGroup>
                 </Grid>
                 {paymentMethod === 'card' ? (
-                  <Grid item xs={12}>
-                    <Grid container spacing={6}>
-                      <Grid item xs={12}>
+                  <Grid
+                    item
+                    xs={12}
+                  >
+                    <Grid
+                      container
+                      spacing={6}
+                    >
+                      <Grid
+                        item
+                        xs={12}
+                      >
                         <CardWrapper>
                           {/* <Cards cvc={cvc} focused={focus} expiry={expiry} name={name} number={cardNumber} /> */}
                         </CardWrapper>
                       </Grid>
-                      <Grid item xs={12} md={8} xl={6} sx={{ mt: 2 }}>
-                        <Grid container spacing={6}>
-                          <Grid item xs={12}>
+                      <Grid
+                        item
+                        xs={12}
+                        md={8}
+                        xl={6}
+                        sx={{ mt: 2 }}
+                      >
+                        <Grid
+                          container
+                          spacing={6}
+                        >
+                          <Grid
+                            item
+                            xs={12}
+                          >
                             <TextField
                               fullWidth
                               name='number'
@@ -270,10 +397,13 @@ const FormLayoutsCollapsible = () => {
                               onBlur={handleBlur}
                               onChange={handleInputChange}
                               placeholder='0000 0000 0000 0000'
-                              onFocus={e => setFocus(e.target.name)}
+                              onFocus={(e) => setFocus(e.target.name)}
                             />
                           </Grid>
-                          <Grid item xs={12}>
+                          <Grid
+                            item
+                            xs={12}
+                          >
                             <TextField
                               fullWidth
                               name='name'
@@ -282,11 +412,14 @@ const FormLayoutsCollapsible = () => {
                               autoComplete='off'
                               onBlur={handleBlur}
                               placeholder='Marty McGee'
-                              onFocus={e => setFocus(e.target.name)}
-                              onChange={e => setName(e.target.value)}
+                              onFocus={(e) => setFocus(e.target.name)}
+                              onChange={(e) => setName(e.target.value)}
                             />
                           </Grid>
-                          <Grid item xs={6}>
+                          <Grid
+                            item
+                            xs={6}
+                          >
                             <TextField
                               fullWidth
                               name='expiry'
@@ -297,10 +430,13 @@ const FormLayoutsCollapsible = () => {
                               onBlur={handleBlur}
                               onChange={handleInputChange}
                               inputProps={{ maxLength: '5' }}
-                              onFocus={e => setFocus(e.target.name)}
+                              onFocus={(e) => setFocus(e.target.name)}
                             />
                           </Grid>
-                          <Grid item xs={6}>
+                          <Grid
+                            item
+                            xs={6}
+                          >
                             <TextField
                               fullWidth
                               name='cvc'
@@ -309,7 +445,7 @@ const FormLayoutsCollapsible = () => {
                               autoComplete='off'
                               onBlur={handleBlur}
                               onChange={handleInputChange}
-                              onFocus={e => setFocus(e.target.name)}
+                              onFocus={(e) => setFocus(e.target.name)}
                               placeholder={Payment.fns.cardType(cardNumber) === 'amex' ? '1234' : '123'}
                             />
                           </Grid>
@@ -324,10 +460,18 @@ const FormLayoutsCollapsible = () => {
         </AccordionDetails>
         <Divider sx={{ m: 0 }} />
         <AccordionDetails>
-          <Button size='large' type='submit' variant='contained' sx={{ mr: 4 }}>
+          <Button
+            size='large'
+            type='submit'
+            variant='contained'
+            sx={{ mr: 4 }}
+          >
             Place Order
           </Button>
-          <Button size='large' variant='outlined'>
+          <Button
+            size='large'
+            variant='outlined'
+          >
             Cancel
           </Button>
         </AccordionDetails>

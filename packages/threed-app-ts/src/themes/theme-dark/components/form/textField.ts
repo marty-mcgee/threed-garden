@@ -1,5 +1,5 @@
 // ThreeD Garden Base Styles
-import colors from "~/themes/theme-dark/base/colors"
+import colors from '~/themes/theme-dark/base/colors'
 
 const { transparent } = colors
 

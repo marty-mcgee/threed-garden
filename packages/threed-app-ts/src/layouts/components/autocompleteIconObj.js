@@ -122,5 +122,5 @@ export const autocompleteIconObj = {
   CardBulletedSettingsOutline,
   TransitConnectionHorizontal,
   AccountMultipleRemoveOutline,
-  CheckboxMultipleBlankOutline
+  CheckboxMultipleBlankOutline,
 }

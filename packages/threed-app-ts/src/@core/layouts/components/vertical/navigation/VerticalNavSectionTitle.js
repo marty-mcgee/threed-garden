@@ -9,13 +9,18 @@ import Translations from '~/layouts/components/Translations'
 import CanViewNavSectionTitle from '~/layouts/components/acl/CanViewNavSectionTitle'
 
 // ** Styled Components
-const ListSubheader = styled(props => <MuiListSubheader component='li' {...props} />)(({ theme }) => ({
+const ListSubheader = styled((props) => (
+  <MuiListSubheader
+    component='li'
+    {...props}
+  />
+))(({ theme }) => ({
   lineHeight: 1,
   display: 'flex',
   position: 'static',
   marginTop: theme.spacing(7),
   marginBottom: theme.spacing(2),
-  backgroundColor: 'transparent'
+  backgroundColor: 'transparent',
 }))
 
 const TypographyHeaderText = styled(Typography)(({ theme }) => ({
@@ -24,10 +29,10 @@ const TypographyHeaderText = styled(Typography)(({ theme }) => ({
   letterSpacing: '0.21px',
   textTransform: 'uppercase',
   color: theme.palette.text.disabled,
-  fontWeight: theme.typography.fontWeightMedium
+  fontWeight: theme.typography.fontWeightMedium,
 }))
 
-const VerticalNavSectionTitle = props => {
+const VerticalNavSectionTitle = (props) => {
   // ** Props
   const { item, navHover, settings, collapsedNavWidth, navigationBorderWidth } = props
 
@@ -42,22 +47,22 @@ const VerticalNavSectionTitle = props => {
       return {
         color: `rgba(${theme.palette.customColors.dark}, 0.38)`,
         '& .MuiDivider-root:before, & .MuiDivider-root:after, & hr': {
-          borderColor: `rgba(${theme.palette.customColors.dark}, ${navCollapsed && !navHover ? 0.3 : 0.12})`
-        }
+          borderColor: `rgba(${theme.palette.customColors.dark}, ${navCollapsed && !navHover ? 0.3 : 0.12})`,
+        },
       }
     } else if (skin === 'semi-dark' && theme.palette.mode === 'dark') {
       return {
         color: `rgba(${theme.palette.customColors.light}, 0.38)`,
         '& .MuiDivider-root:before, & .MuiDivider-root:after, & hr': {
-          borderColor: `rgba(${theme.palette.customColors.light}, ${navCollapsed && !navHover ? 0.3 : 0.12})`
-        }
+          borderColor: `rgba(${theme.palette.customColors.light}, ${navCollapsed && !navHover ? 0.3 : 0.12})`,
+        },
       }
     } else {
       return {
         color: theme.palette.text.disabled,
         '& .MuiDivider-root:before, & .MuiDivider-root:after, & hr': {
-          borderColor: `rgba(${theme.palette.customColors.main}, ${navCollapsed && !navHover ? 0.3 : 0.12})`
-        }
+          borderColor: `rgba(${theme.palette.customColors.main}, ${navCollapsed && !navHover ? 0.3 : 0.12})`,
+        },
       }
     }
   }
@@ -70,11 +75,11 @@ const VerticalNavSectionTitle = props => {
           ...conditionalStyling(),
           ...(navCollapsed && !navHover
             ? {
-              py: 3.5,
-              pr: (collapsedNavWidth - navigationBorderWidth - 24) / 8 - 1,
-              pl: (collapsedNavWidth - navigationBorderWidth - 24) / 8 + 0.25
-            }
-            : { px: 0, py: 1.75 })
+                py: 3.5,
+                pr: (collapsedNavWidth - navigationBorderWidth - 24) / 8 - 1,
+                pl: (collapsedNavWidth - navigationBorderWidth - 24) / 8 + 0.25,
+              }
+            : { px: 0, py: 1.75 }),
         }}
       >
         <Divider
@@ -85,11 +90,11 @@ const VerticalNavSectionTitle = props => {
             ...(navCollapsed && !navHover
               ? { width: 22 }
               : {
-                width: '100%',
-                textTransform: 'uppercase',
-                '&:before, &:after': { top: 7, transform: 'none' },
-                '& .MuiDivider-wrapper': { px: 2.5, fontSize: '0.75rem', letterSpacing: '0.21px' }
-              })
+                  width: '100%',
+                  textTransform: 'uppercase',
+                  '&:before, &:after': { top: 7, transform: 'none' },
+                  '& .MuiDivider-wrapper': { px: 2.5, fontSize: '0.75rem', letterSpacing: '0.21px' },
+                }),
           }}
         >
           {navCollapsed && !navHover ? null : (

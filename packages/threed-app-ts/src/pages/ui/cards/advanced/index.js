@@ -18,44 +18,111 @@ import CardWebsiteStatistics from '~/views/ui/cards/advanced/CardWebsiteStatisti
 
 const CardsAdvanced = () => {
   return (
-    <Grid container spacing={6}>
-      <Grid item xs={12} md={6} lg={4}>
+    <Grid
+      container
+      spacing={6}
+    >
+      <Grid
+        item
+        xs={12}
+        md={6}
+        lg={4}
+      >
         <CardTransactions />
       </Grid>
-      <Grid item xs={12} md={6} lg={4}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+        lg={4}
+      >
         <CardPlanUpgrade />
       </Grid>
-      <Grid item xs={12} md={6} lg={4}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+        lg={4}
+      >
         <CardMeetingSchedule />
       </Grid>
-      <Grid item xs={12} md={6} lg={5}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+        lg={5}
+      >
         <CardTeamMembers />
       </Grid>
-      <Grid item xs={12} lg={7}>
+      <Grid
+        item
+        xs={12}
+        lg={7}
+      >
         <CardDepositWithdraw />
       </Grid>
-      <Grid item xs={12} md={6} lg={4}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+        lg={4}
+      >
         <CardTotalEarnings />
       </Grid>
-      <Grid item xs={12} md={6} lg={5}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+        lg={5}
+      >
         <CardFinanceSummary />
       </Grid>
-      <Grid item xs={12} md={6} lg={3}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+        lg={3}
+      >
         <CardSocialAnalytics />
       </Grid>
-      <Grid item xs={12} md={6} lg={4}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+        lg={4}
+      >
         <CardWebsiteStatistics />
       </Grid>
-      <Grid item xs={12} md={6} lg={4}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+        lg={4}
+      >
         <CardDeveloperMeetup />
       </Grid>
-      <Grid item xs={12} md={6} lg={4}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+        lg={4}
+      >
         <CardSalesByCountries />
       </Grid>
-      <Grid item xs={12} md={6} lg={8}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+        lg={8}
+      >
         <CardActivityTimeline />
       </Grid>
-      <Grid item xs={12} md={6} lg={4}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+        lg={4}
+      >
         <CardCafeBadilico />
       </Grid>
     </Grid>

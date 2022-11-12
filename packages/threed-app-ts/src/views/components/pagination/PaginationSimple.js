@@ -5,8 +5,14 @@ const PaginationSimple = () => {
   return (
     <div className='demo-space-y'>
       <Pagination count={10} />
-      <Pagination count={10} color='primary' />
-      <Pagination count={10} color='secondary' />
+      <Pagination
+        count={10}
+        color='primary'
+      />
+      <Pagination
+        count={10}
+        color='secondary'
+      />
     </div>
   )
 }

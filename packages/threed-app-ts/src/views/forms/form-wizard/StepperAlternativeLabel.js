@@ -36,16 +36,16 @@ import StepperCustomDot from './StepperCustomDot'
 const steps = [
   {
     title: 'Account Details',
-    subtitle: 'Enter your Account Details'
+    subtitle: 'Enter your Account Details',
   },
   {
     title: 'Personal Info',
-    subtitle: 'Setup Information'
+    subtitle: 'Setup Information',
   },
   {
     title: 'Social Links',
-    subtitle: 'Add Social Links'
-  }
+    subtitle: 'Add Social Links',
+  },
 ]
 
 const StepperAlternativeLabel = () => {
@@ -66,16 +66,16 @@ const StepperAlternativeLabel = () => {
     password: '',
     password2: '',
     showPassword: false,
-    showPassword2: false
+    showPassword2: false,
   })
 
   // Handle Stepper
   const handleBack = () => {
-    setActiveStep(prevActiveStep => prevActiveStep - 1)
+    setActiveStep((prevActiveStep) => prevActiveStep - 1)
   }
 
   const handleNext = () => {
-    setActiveStep(prevActiveStep => prevActiveStep + 1)
+    setActiveStep((prevActiveStep) => prevActiveStep + 1)
     if (activeStep === steps.length - 1) {
       toast.success('Form Submitted')
     }
@@ -97,7 +97,7 @@ const StepperAlternativeLabel = () => {
   }
 
   // Handle Password
-  const handlePasswordChange = prop => event => {
+  const handlePasswordChange = (prop) => (event) => {
     setState({ ...state, [prop]: event.target.value })
   }
 
@@ -105,12 +105,12 @@ const StepperAlternativeLabel = () => {
     setState({ ...state, showPassword: !state.showPassword })
   }
 
-  const handleMouseDownPassword = event => {
+  const handleMouseDownPassword = (event) => {
     event.preventDefault()
   }
 
   // Handle Confirm Password
-  const handleConfirmChange = prop => event => {
+  const handleConfirmChange = (prop) => (event) => {
     setState({ ...state, [prop]: event.target.value })
   }
 
@@ -118,40 +118,52 @@ const StepperAlternativeLabel = () => {
     setState({ ...state, showPassword2: !state.showPassword2 })
   }
 
-  const handleMouseDownConfirmPassword = event => {
+  const handleMouseDownConfirmPassword = (event) => {
     event.preventDefault()
   }
 
   // Handle Language
-  const handleSelectChange = event => {
+  const handleSelectChange = (event) => {
     setLanguage(event.target.value)
   }
 
-  const getStepContent = step => {
+  const getStepContent = (step) => {
     switch (step) {
       case 0:
         return (
           <>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <TextField
                 fullWidth
                 label='Username'
                 value={username}
                 placeholder='carterLeonard'
-                onChange={e => setUsername(e.target.value)}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <TextField
                 fullWidth
                 type='email'
                 label='Email'
                 value={email}
                 placeholder='carterleonard@gmail.com'
-                onChange={e => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <FormControl fullWidth>
                 <InputLabel htmlFor='stepper-alternative-account-password'>Password</InputLabel>
                 <OutlinedInput
@@ -175,7 +187,11 @@ const StepperAlternativeLabel = () => {
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <FormControl fullWidth>
                 <InputLabel htmlFor='stepper-alternative-account-password-2'>Confirm Password</InputLabel>
                 <OutlinedInput
@@ -204,32 +220,44 @@ const StepperAlternativeLabel = () => {
       case 1:
         return (
           <Fragment key={step}>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <TextField
                 fullWidth
                 label='First Name'
                 placeholder='Leonard'
                 value={firstName}
-                onChange={e => setFirstName(e.target.value)}
+                onChange={(e) => setFirstName(e.target.value)}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <TextField
                 fullWidth
                 label='Last Name'
                 placeholder='Carter'
                 value={lastName}
-                onChange={e => setLastName(e.target.value)}
+                onChange={(e) => setLastName(e.target.value)}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <FormControl fullWidth>
                 <InputLabel id='stepper-alternative-personal-select-label'>Country</InputLabel>
                 <Select
                   label='Country'
                   value={country}
                   id='stepper-alternative-personal-select'
-                  onChange={e => setCountry(e.target.value)}
+                  onChange={(e) => setCountry(e.target.value)}
                   labelId='stepper-alternative-personal-select-label'
                 >
                   <MenuItem value='UK'>UK</MenuItem>
@@ -239,7 +267,11 @@ const StepperAlternativeLabel = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <FormControl fullWidth>
                 <InputLabel id='stepper-alternative-personal-multiple-select-label'>Language</InputLabel>
                 <Select
@@ -248,7 +280,12 @@ const StepperAlternativeLabel = () => {
                   onChange={handleSelectChange}
                   id='stepper-alternative-personal-multiple-select'
                   labelId='stepper-alternative-personal-multiple-select-label'
-                  input={<OutlinedInput label='Language' id='stepper-alternative-select-multiple-language' />}
+                  input={
+                    <OutlinedInput
+                      label='Language'
+                      id='stepper-alternative-select-multiple-language'
+                    />
+                  }
                 >
                   <MenuItem value='English'>English</MenuItem>
                   <MenuItem value='French'>French</MenuItem>
@@ -265,39 +302,55 @@ const StepperAlternativeLabel = () => {
       case 2:
         return (
           <Fragment key={step}>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <TextField
                 fullWidth
                 label='Twitter'
                 value={twitter}
-                onChange={e => setTwitter(e.target.value)}
+                onChange={(e) => setTwitter(e.target.value)}
                 placeholder='https://twitter.com/carterLeonard'
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <TextField
                 fullWidth
                 label='Facebook'
                 value={facebook}
-                onChange={e => setFacebook(e.target.value)}
+                onChange={(e) => setFacebook(e.target.value)}
                 placeholder='https://facebook.com/carterLeonard'
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <TextField
                 fullWidth
                 label='Google+'
                 value={google}
-                onChange={e => setGoogle(e.target.value)}
+                onChange={(e) => setGoogle(e.target.value)}
                 placeholder='https://plus.google.com/carterLeonard'
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <TextField
                 fullWidth
                 label='LinkedIn'
                 value={linkedIn}
-                onChange={e => setLinkedIn(e.target.value)}
+                onChange={(e) => setLinkedIn(e.target.value)}
                 placeholder='https://linkedin.com/carterLeonard'
               />
             </Grid>
@@ -314,7 +367,11 @@ const StepperAlternativeLabel = () => {
         <>
           <Typography>All steps are completed!</Typography>
           <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button size='large' variant='contained' onClick={handleReset}>
+            <Button
+              size='large'
+              variant='contained'
+              onClick={handleReset}
+            >
               Reset
             </Button>
           </Box>
@@ -322,18 +379,34 @@ const StepperAlternativeLabel = () => {
       )
     } else {
       return (
-        <form onSubmit={e => e.preventDefault()}>
-          <Grid container spacing={5}>
-            <Grid item xs={12}>
-              <Typography variant='body2' sx={{ fontWeight: 600, color: 'text.primary' }}>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <Grid
+            container
+            spacing={5}
+          >
+            <Grid
+              item
+              xs={12}
+            >
+              <Typography
+                variant='body2'
+                sx={{ fontWeight: 600, color: 'text.primary' }}
+              >
                 {steps[activeStep].title}
               </Typography>
-              <Typography variant='caption' component='p'>
+              <Typography
+                variant='caption'
+                component='p'
+              >
                 {steps[activeStep].subtitle}
               </Typography>
             </Grid>
             {getStepContent(activeStep)}
-            <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Grid
+              item
+              xs={12}
+              sx={{ display: 'flex', justifyContent: 'space-between' }}
+            >
               <Button
                 size='large'
                 variant='outlined'
@@ -343,7 +416,11 @@ const StepperAlternativeLabel = () => {
               >
                 Back
               </Button>
-              <Button size='large' variant='contained' onClick={handleNext}>
+              <Button
+                size='large'
+                variant='contained'
+                onClick={handleNext}
+              >
                 {activeStep === steps.length - 1 ? 'Submit' : 'Next'}
               </Button>
             </Grid>
@@ -356,7 +433,10 @@ const StepperAlternativeLabel = () => {
   return (
     <>
       <StepperWrapper>
-        <Stepper activeStep={activeStep} alternativeLabel>
+        <Stepper
+          activeStep={activeStep}
+          alternativeLabel
+        >
           {steps.map((step, index) => {
             return (
               <Step key={index}>

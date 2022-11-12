@@ -9,7 +9,7 @@ import TableContainer from '@mui/material/TableContainer'
 
 const TAX_RATE = 0.07
 
-const ccyFormat = num => {
+const ccyFormat = (num) => {
   return `${num.toFixed(2)}`
 }
 
@@ -23,14 +23,14 @@ const createRow = (desc, qty, unit) => {
   return { desc, qty, unit, price }
 }
 
-const subtotal = items => {
+const subtotal = (items) => {
   return items.map(({ price }) => price).reduce((sum, i) => sum + i, 0)
 }
 
 const rows = [
   createRow('Paperclips (Box)', 100, 1.15),
   createRow('Paper (Case)', 10, 45.99),
-  createRow('Waste Basket', 2, 17.99)
+  createRow('Waste Basket', 2, 17.99),
 ]
 const invoiceSubtotal = subtotal(rows)
 const invoiceTaxes = TAX_RATE * invoiceSubtotal
@@ -39,10 +39,16 @@ const invoiceTotal = invoiceTaxes + invoiceSubtotal
 const TableSpanning = () => {
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 700 }} aria-label='spanning table'>
+      <Table
+        sx={{ minWidth: 700 }}
+        aria-label='spanning table'
+      >
         <TableHead>
           <TableRow>
-            <TableCell align='center' colSpan={3}>
+            <TableCell
+              align='center'
+              colSpan={3}
+            >
               Details
             </TableCell>
             <TableCell align='right'>Price</TableCell>
@@ -55,7 +61,7 @@ const TableSpanning = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map(row => (
+          {rows.map((row) => (
             <TableRow key={row.desc}>
               <TableCell>{row.desc}</TableCell>
               <TableCell align='right'>{row.qty}</TableCell>

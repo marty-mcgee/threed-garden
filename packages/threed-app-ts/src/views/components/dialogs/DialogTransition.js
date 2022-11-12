@@ -1,5 +1,5 @@
 // ** React Imports
-import { forwardRef, Fragment, useState } from 'react'
+import { forwardRef, useState } from 'react'
 
 // ** MUI Imports
 import Button from '@mui/material/Button'
@@ -11,7 +11,13 @@ import Slide from '@mui/material/Slide'
 import DialogContentText from '@mui/material/DialogContentText'
 
 const Transition = forwardRef(function Transition(props, ref) {
-  return <Slide direction='up' ref={ref} {...props} />
+  return (
+    <Slide
+      direction='up'
+      ref={ref}
+      {...props}
+    />
+  )
 })
 
 const DialogTransition = () => {
@@ -22,7 +28,10 @@ const DialogTransition = () => {
 
   return (
     <>
-      <Button variant='outlined' onClick={handleClickOpen}>
+      <Button
+        variant='outlined'
+        onClick={handleClickOpen}
+      >
         Slide in alert dialog
       </Button>
       <Dialog

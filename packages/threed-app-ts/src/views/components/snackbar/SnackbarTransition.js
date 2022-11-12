@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 
 // ** MUI Imports
 import Button from '@mui/material/Button'
@@ -8,45 +8,59 @@ import Grow from '@mui/material/Grow'
 import Fade from '@mui/material/Fade'
 import Slide from '@mui/material/Slide'
 
-const GrowTransition = props => {
+const GrowTransition = (props) => {
   return <Grow {...props} />
 }
 
-const SlideTransition = props => {
-  return <Slide {...props} direction='up' />
+const SlideTransition = (props) => {
+  return (
+    <Slide
+      {...props}
+      direction='up'
+    />
+  )
 }
 
 const SnackbarTransition = () => {
   // ** State
   const [state, setState] = useState({
     open: false,
-    Transition: Fade
+    Transition: Fade,
   })
 
-  const handleClick = Transition => () => {
+  const handleClick = (Transition) => () => {
     setState({
       open: true,
-      Transition
+      Transition,
     })
   }
 
   const handleClose = () => {
     setState({
       ...state,
-      open: false
+      open: false,
     })
   }
 
   return (
     <>
       <div className='demo-space-x'>
-        <Button variant='outlined' onClick={handleClick(GrowTransition)}>
+        <Button
+          variant='outlined'
+          onClick={handleClick(GrowTransition)}
+        >
           Grow Transition
         </Button>
-        <Button variant='outlined' onClick={handleClick(Fade)}>
+        <Button
+          variant='outlined'
+          onClick={handleClick(Fade)}
+        >
           Fade Transition
         </Button>
-        <Button variant='outlined' onClick={handleClick(SlideTransition)}>
+        <Button
+          variant='outlined'
+          onClick={handleClick(SlideTransition)}
+        >
           Slide Transition
         </Button>
       </div>

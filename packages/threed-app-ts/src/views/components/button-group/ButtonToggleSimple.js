@@ -20,17 +20,35 @@ const ButtonToggleSimple = () => {
   }
 
   return (
-    <ToggleButtonGroup exclusive value={alignment} onChange={handleAlignment} aria-label='text alignment'>
-      <ToggleButton value='left' aria-label='left aligned'>
+    <ToggleButtonGroup
+      exclusive
+      value={alignment}
+      onChange={handleAlignment}
+      aria-label='text alignment'
+    >
+      <ToggleButton
+        value='left'
+        aria-label='left aligned'
+      >
         <FormatAlignLeft />
       </ToggleButton>
-      <ToggleButton value='center' aria-label='center aligned'>
+      <ToggleButton
+        value='center'
+        aria-label='center aligned'
+      >
         <FormatAlignCenter />
       </ToggleButton>
-      <ToggleButton value='right' aria-label='right aligned'>
+      <ToggleButton
+        value='right'
+        aria-label='right aligned'
+      >
         <FormatAlignRight />
       </ToggleButton>
-      <ToggleButton value='justify' aria-label='justified' disabled>
+      <ToggleButton
+        value='justify'
+        aria-label='justified'
+        disabled
+      >
         <FormatAlignJustify />
       </ToggleButton>
     </ToggleButtonGroup>

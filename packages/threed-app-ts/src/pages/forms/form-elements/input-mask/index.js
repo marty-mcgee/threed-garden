@@ -19,23 +19,32 @@ import * as source from '~/views/forms/form-elements/input-mask/InputMaskSourceC
 const InputMask = () => {
   return (
     <CleaveWrapper>
-      <Grid container spacing={6}>
+      <Grid
+        container
+        spacing={6}
+      >
         <PageHeader
           title={
             <Typography variant='h5'>
-              <Link href='https://github.com/nosir/cleave.js' target='_blank'>
+              <Link
+                href='https://github.com/nosir/cleave.js'
+                target='_blank'
+              >
                 Cleave.js
               </Link>
             </Typography>
           }
           subtitle={<Typography variant='body2'>Format input text content when you are typing</Typography>}
         />
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Input Masks'
             code={{
               tsx: null,
-              jsx: source.InputMaskExamplesJSXCode
+              jsx: source.InputMaskExamplesJSXCode,
             }}
           >
             <InputMaskExamples />

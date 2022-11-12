@@ -20,16 +20,25 @@ import { getInitials } from '~/@core/utils/get-initials'
 import { rows } from '~/@fake-db/table/static-data'
 
 // ** renders client column
-const renderClient = params => {
+const renderClient = (params) => {
   const { row } = params
   const stateNum = Math.floor(Math.random() * 6)
   const states = ['success', 'error', 'warning', 'info', 'primary', 'secondary']
   const color = states[stateNum]
   if (row.avatar.length) {
-    return <CustomAvatar src={`/images/avatars/${row.avatar}`} sx={{ mr: 3, width: '1.875rem', height: '1.875rem' }} />
+    return (
+      <CustomAvatar
+        src={`/images/avatars/${row.avatar}`}
+        sx={{ mr: 3, width: '1.875rem', height: '1.875rem' }}
+      />
+    )
   } else {
     return (
-      <CustomAvatar skin='light' color={color} sx={{ mr: 3, fontSize: '.8rem', width: '1.875rem', height: '1.875rem' }}>
+      <CustomAvatar
+        skin='light'
+        color={color}
+        sx={{ mr: 3, fontSize: '.8rem', width: '1.875rem', height: '1.875rem' }}
+      >
         {getInitials(row.full_name ? row.full_name : 'Marty McGee')}
       </CustomAvatar>
     )
@@ -41,7 +50,7 @@ const statusObj = {
   2: { title: 'professional', color: 'success' },
   3: { title: 'rejected', color: 'error' },
   4: { title: 'resigned', color: 'warning' },
-  5: { title: 'applied', color: 'info' }
+  5: { title: 'applied', color: 'info' },
 }
 
 const TableSort = () => {
@@ -56,23 +65,30 @@ const TableSort = () => {
       field: 'full_name',
       headerName: 'Name',
       sortable: isNameSortable,
-      renderCell: params => {
+      renderCell: (params) => {
         const { row } = params
 
         return (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             {renderClient(params)}
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+              <Typography
+                noWrap
+                variant='body2'
+                sx={{ color: 'text.primary', fontWeight: 600 }}
+              >
                 {row.full_name}
               </Typography>
-              <Typography noWrap variant='caption'>
+              <Typography
+                noWrap
+                variant='caption'
+              >
                 {row.email}
               </Typography>
             </Box>
           </Box>
         )
-      }
+      },
     },
     {
       flex: 0.2,
@@ -80,11 +96,14 @@ const TableSort = () => {
       headerName: 'Date',
       field: 'start_date',
       sortable: isNameSortable,
-      renderCell: params => (
-        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+      renderCell: (params) => (
+        <Typography
+          variant='body2'
+          sx={{ color: 'text.primary' }}
+        >
           {params.row.start_date}
         </Typography>
-      )
+      ),
     },
     {
       flex: 0.2,
@@ -92,11 +111,14 @@ const TableSort = () => {
       field: 'salary',
       headerName: 'Salary',
       sortable: isNameSortable,
-      renderCell: params => (
-        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+      renderCell: (params) => (
+        <Typography
+          variant='body2'
+          sx={{ color: 'text.primary' }}
+        >
           {params.row.salary}
         </Typography>
-      )
+      ),
     },
     {
       flex: 0.125,
@@ -104,11 +126,14 @@ const TableSort = () => {
       minWidth: 80,
       headerName: 'Age',
       sortable: isNameSortable,
-      renderCell: params => (
-        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+      renderCell: (params) => (
+        <Typography
+          variant='body2'
+          sx={{ color: 'text.primary' }}
+        >
           {params.row.age}
         </Typography>
-      )
+      ),
     },
     {
       flex: 0.2,
@@ -116,7 +141,7 @@ const TableSort = () => {
       field: 'status',
       headerName: 'Status',
       sortable: isNameSortable,
-      renderCell: params => {
+      renderCell: (params) => {
         const status = statusObj[params.row.status]
 
         return (
@@ -128,8 +153,8 @@ const TableSort = () => {
             sx={{ '& .MuiChip-label': { textTransform: 'capitalize' } }}
           />
         )
-      }
-    }
+      },
+    },
   ]
 
   return (
@@ -138,7 +163,11 @@ const TableSort = () => {
         title='Sorting'
         action={
           <Box>
-            <Button size='small' variant='contained' onClick={() => setIsNameSortable(!isNameSortable)}>
+            <Button
+              size='small'
+              variant='contained'
+              onClick={() => setIsNameSortable(!isNameSortable)}
+            >
               {`Disable Sorting: ${!isNameSortable}`}
             </Button>
           </Box>
@@ -150,7 +179,7 @@ const TableSort = () => {
         columns={columns}
         pageSize={pageSize}
         rowsPerPageOptions={[7, 10, 25, 50]}
-        onPageSizeChange={newPageSize => setPageSize(newPageSize)}
+        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
       />
     </Card>
   )

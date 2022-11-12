@@ -1,15 +1,15 @@
 // ThreeD Garden Base Styles
-import colors from "~/themes/theme-light/base/colors"
+import colors from '~/themes/theme-light/base/colors'
 
 const { white } = colors
 
-function configs(backgroundColor?: "string"): any {
+function configs(backgroundColor?: 'string'): any {
   return {
     data: {
-      labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       datasets: [
         {
-          label: "Visitors",
+          label: 'Visitors',
           tension: 0.5,
           pointRadius: 0,
           borderColor: white.main,
@@ -31,7 +31,7 @@ function configs(backgroundColor?: "string"): any {
       },
       interaction: {
         intersect: false,
-        mode: "index",
+        mode: 'index',
       },
       scales: {
         y: {

@@ -21,7 +21,15 @@ const CheckboxesSizes = () => {
           />
         }
       />
-      <FormControlLabel label='Default' control={<Checkbox defaultChecked name='size-default' />} />
+      <FormControlLabel
+        label='Default'
+        control={
+          <Checkbox
+            defaultChecked
+            name='size-default'
+          />
+        }
+      />
     </FormGroup>
   )
 }

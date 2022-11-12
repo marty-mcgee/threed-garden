@@ -1,16 +1,16 @@
-const Accordion = theme => {
+const Accordion = (theme) => {
   return {
     MuiAccordion: {
       styleOverrides: {
         root: {
           '&.Mui-disabled': {
-            backgroundColor: `rgba(${theme.palette.customColors.main}, 0.12)`
+            backgroundColor: `rgba(${theme.palette.customColors.main}, 0.12)`,
           },
           '&.Mui-expanded': {
-            boxShadow: theme.shadows[3]
-          }
-        }
-      }
+            boxShadow: theme.shadows[3],
+          },
+        },
+      },
     },
     MuiAccordionSummary: {
       styleOverrides: {
@@ -18,28 +18,28 @@ const Accordion = theme => {
           padding: `0 ${theme.spacing(5)}`,
           '& + .MuiCollapse-root': {
             '& .MuiAccordionDetails-root:first-child': {
-              paddingTop: 0
-            }
-          }
+              paddingTop: 0,
+            },
+          },
         },
         content: {
-          margin: `${theme.spacing(2.5)} 0`
+          margin: `${theme.spacing(2.5)} 0`,
         },
         expandIconWrapper: {
-          color: theme.palette.text.secondary
-        }
-      }
+          color: theme.palette.text.secondary,
+        },
+      },
     },
     MuiAccordionDetails: {
       styleOverrides: {
         root: {
           padding: theme.spacing(5),
           '& + .MuiAccordionDetails-root': {
-            paddingTop: 0
-          }
-        }
-      }
-    }
+            paddingTop: 0,
+          },
+        },
+      },
+    },
   }
 }
 

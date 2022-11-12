@@ -1,8 +1,8 @@
 // ThreeD Garden Base Styles
-import colors from "~/themes/theme-light/base/colors"
+import colors from '~/themes/theme-light/base/colors'
 
 // ThreeD Garden Helper Functions
-import pxToRem from "~/themes/theme-light/functions/pxToRem"
+import pxToRem from '~/themes/theme-light/functions/pxToRem'
 
 const { transparent } = colors
 
@@ -12,24 +12,24 @@ type Types = any
 const select: Types = {
   styleOverrides: {
     select: {
-      display: "grid",
-      alignItems: "center",
+      display: 'grid',
+      alignItems: 'center',
       padding: `0 ${pxToRem(12)} !important`,
 
-      "& .Mui-selected": {
+      '& .Mui-selected': {
         backgroundColor: transparent.main,
       },
     },
 
     selectMenu: {
-      background: "none",
-      height: "none",
-      minHeight: "none",
-      overflow: "unset",
+      background: 'none',
+      height: 'none',
+      minHeight: 'none',
+      overflow: 'unset',
     },
 
     icon: {
-      display: "none",
+      display: 'none',
     },
   },
 }

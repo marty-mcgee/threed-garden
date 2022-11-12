@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 
 // ** MUI Imports
 import Button from '@mui/material/Button'
@@ -21,7 +21,7 @@ const Form = styled('form')({
   margin: 'auto',
   display: 'flex',
   width: 'fit-content',
-  flexDirection: 'column'
+  flexDirection: 'column',
 })
 
 const DialogSizes = () => {
@@ -32,17 +32,20 @@ const DialogSizes = () => {
   const handleClickOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
 
-  const handleMaxWidthChange = event => {
+  const handleMaxWidthChange = (event) => {
     setMaxWidth(event.target.value)
   }
 
-  const handleFullWidthChange = event => {
+  const handleFullWidthChange = (event) => {
     setFullWidth(event.target.checked)
   }
 
   return (
     <>
-      <Button variant='outlined' onClick={handleClickOpen}>
+      <Button
+        variant='outlined'
+        onClick={handleClickOpen}
+      >
         Open dialog
       </Button>
       <Dialog
@@ -66,7 +69,7 @@ const DialogSizes = () => {
                 onChange={handleMaxWidthChange}
                 inputProps={{
                   name: 'max-width',
-                  id: 'max-width'
+                  id: 'max-width',
                 }}
               >
                 <MenuItem value={false}>false</MenuItem>
@@ -80,7 +83,12 @@ const DialogSizes = () => {
             <FormControlLabel
               label='Full width'
               sx={{ mt: 2 }}
-              control={<Switch checked={fullWidth} onChange={handleFullWidthChange} />}
+              control={
+                <Switch
+                  checked={fullWidth}
+                  onChange={handleFullWidthChange}
+                />
+              }
             />
           </Form>
         </DialogContent>

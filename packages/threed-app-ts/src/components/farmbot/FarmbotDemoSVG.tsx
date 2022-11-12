@@ -11,9 +11,7 @@ const parseHTML = parse(dirtyHTML)
 
 const FarmbotDemoSVG: FC = (): JSX.Element => {
   // hey hey hey
-  return (
-    <>{parseHTML}</>
-  )
+  return <>{parseHTML}</>
 }
 
 export default FarmbotDemoSVG

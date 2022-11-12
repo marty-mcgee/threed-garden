@@ -1,9 +1,9 @@
 // ThreeD Garden Base Styles
-import colors from "~/themes/theme-dark/base/colors"
+import colors from '~/themes/theme-dark/base/colors'
 
 // ThreeD Garden Helper Functions
-import pxToRem from "~/themes/theme-dark/functions/pxToRem"
-import boxShadow from "~/themes/theme-dark/functions/boxShadow"
+import pxToRem from '~/themes/theme-dark/functions/pxToRem'
+import boxShadow from '~/themes/theme-dark/functions/boxShadow'
 
 const { white } = colors
 
@@ -13,17 +13,17 @@ type Types = any
 const stepIcon: Types = {
   styleOverrides: {
     root: {
-      background: "#9fc9ff",
-      fill: "#9fc9ff",
-      stroke: "#9fc9ff",
+      background: '#9fc9ff',
+      fill: '#9fc9ff',
+      stroke: '#9fc9ff',
       strokeWidth: pxToRem(10),
       width: pxToRem(13),
       height: pxToRem(13),
-      borderRadius: "50%",
+      borderRadius: '50%',
       zIndex: 99,
-      transition: "all 200ms linear",
+      transition: 'all 200ms linear',
 
-      "&.Mui-active": {
+      '&.Mui-active': {
         background: white.main,
         fill: white.main,
         stroke: white.main,
@@ -31,7 +31,7 @@ const stepIcon: Types = {
         boxShadow: boxShadow([0, 0], [0, 2], white.main, 1),
       },
 
-      "&.Mui-completed": {
+      '&.Mui-completed': {
         background: white.main,
         fill: white.main,
         stroke: white.main,

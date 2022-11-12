@@ -4,9 +4,9 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
 // ** Fetch Users
-export const fetchData = createAsyncThunk('appUsers/fetchData', async params => {
+export const fetchData = createAsyncThunk('appUsers/fetchData', async (params) => {
   const response = await axios.get('/apps/users/list', {
-    params
+    params,
   })
 
   return response.data
@@ -15,7 +15,7 @@ export const fetchData = createAsyncThunk('appUsers/fetchData', async params => 
 // ** Add User
 export const addUser = createAsyncThunk('appUsers/addUser', async (data, { getState, dispatch }) => {
   const response = await axios.post('/apps/users/add-user', {
-    data
+    data,
   })
   dispatch(fetchData(getState().user.params))
 
@@ -25,7 +25,7 @@ export const addUser = createAsyncThunk('appUsers/addUser', async (data, { getSt
 // ** Delete User
 export const deleteUser = createAsyncThunk('appUsers/deleteUser', async (id, { getState, dispatch }) => {
   const response = await axios.delete('/apps/users/delete', {
-    data: id
+    data: id,
   })
   dispatch(fetchData(getState().user.params))
 
@@ -38,17 +38,17 @@ export const appUsersSlice = createSlice({
     data: [],
     total: 1,
     params: {},
-    allData: []
+    allData: [],
   },
   reducers: {},
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder.addCase(fetchData.fulfilled, (state, action) => {
       state.data = action.payload.users
       state.total = action.payload.total
       state.params = action.payload.params
       state.allData = action.payload.allData
     })
-  }
+  },
 })
 
 export default appUsersSlice.reducer

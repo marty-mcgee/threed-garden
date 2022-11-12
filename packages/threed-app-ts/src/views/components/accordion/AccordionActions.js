@@ -16,13 +16,16 @@ const AccordionActions = () => {
   // ** State
   const [expanded, setExpanded] = useState(false)
 
-  const handleChange = panel => (event, isExpanded) => {
+  const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false)
   }
 
   return (
     <div>
-      <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+      <Accordion
+        expanded={expanded === 'panel1'}
+        onChange={handleChange('panel1')}
+      >
         <AccordionSummary
           id='actions-panel-header-1'
           expandIcon={<ChevronDown />}
@@ -32,8 +35,8 @@ const AccordionActions = () => {
             label='Accordion 1'
             aria-label='Acknowledge'
             control={<Checkbox disableRipple />}
-            onClick={event => event.stopPropagation()}
-            onFocus={event => event.stopPropagation()}
+            onClick={(event) => event.stopPropagation()}
+            onFocus={(event) => event.stopPropagation()}
           />
         </AccordionSummary>
         <AccordionDetails>
@@ -44,7 +47,10 @@ const AccordionActions = () => {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+      <Accordion
+        expanded={expanded === 'panel2'}
+        onChange={handleChange('panel2')}
+      >
         <AccordionSummary
           id='actions-panel-header-2'
           expandIcon={<ChevronDown />}
@@ -54,8 +60,8 @@ const AccordionActions = () => {
             label='Accordion 2'
             aria-label='Acknowledge'
             control={<Checkbox disableRipple />}
-            onClick={event => event.stopPropagation()}
-            onFocus={event => event.stopPropagation()}
+            onClick={(event) => event.stopPropagation()}
+            onFocus={(event) => event.stopPropagation()}
           />
         </AccordionSummary>
         <AccordionDetails>
@@ -66,7 +72,10 @@ const AccordionActions = () => {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
+      <Accordion
+        expanded={expanded === 'panel3'}
+        onChange={handleChange('panel3')}
+      >
         <AccordionSummary
           id='actions-panel-header-3'
           expandIcon={<ChevronDown />}
@@ -76,8 +85,8 @@ const AccordionActions = () => {
             label='Accordion 3'
             aria-label='Acknowledge'
             control={<Checkbox disableRipple />}
-            onClick={event => event.stopPropagation()}
-            onFocus={event => event.stopPropagation()}
+            onClick={(event) => event.stopPropagation()}
+            onFocus={(event) => event.stopPropagation()}
           />
         </AccordionSummary>
         <AccordionDetails>

@@ -19,20 +19,32 @@ const CardSupport = () => {
           textAlign: 'center',
           alignItems: 'center',
           flexDirection: 'column',
-          p: theme => `${theme.spacing(9.75, 5, 9.25)} !important`
+          p: (theme) => `${theme.spacing(9.75, 5, 9.25)} !important`,
         }}
       >
-        <CustomAvatar skin='light' sx={{ width: 50, height: 50, mb: 2.25 }}>
+        <CustomAvatar
+          skin='light'
+          sx={{ width: 50, height: 50, mb: 2.25 }}
+        >
           <HelpCircleOutline sx={{ fontSize: '2rem' }} />
         </CustomAvatar>
-        <Typography variant='h6' sx={{ mb: 2.75 }}>
+        <Typography
+          variant='h6'
+          sx={{ mb: 2.75 }}
+        >
           Support
         </Typography>
-        <Typography variant='body2' sx={{ mb: 6 }}>
+        <Typography
+          variant='body2'
+          sx={{ mb: 6 }}
+        >
           According to us blisters are a very common thing and we come across them very often in our daily lives. It is
           a very common occurrence like cold or fever depending upon your lifestyle.
         </Typography>
-        <Button variant='contained' sx={{ p: theme => theme.spacing(1.75, 5.5) }}>
+        <Button
+          variant='contained'
+          sx={{ p: (theme) => theme.spacing(1.75, 5.5) }}
+        >
           Contact Now
         </Button>
       </CardContent>

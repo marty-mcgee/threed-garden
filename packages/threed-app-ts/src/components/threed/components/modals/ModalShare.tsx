@@ -5,16 +5,13 @@
 import { FunctionComponent, ElementType } from 'react'
 
 // ** MUI Imports
-import { styled, useTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
 import Modal from '@mui/material/Modal'
 import Typography from '@mui/material/Typography'
 import MuiButton from '@mui/material/Button'
 import MuiTabs from '@mui/material/Tabs'
-import Tab from '@mui/material/Tab'
-import MDTabPanel, { tabProps } from '~/components/mui/MDTabPanel'
 
 // ** Next Imports
 import Image from 'next/future/image'
@@ -29,16 +26,16 @@ import stylesGarden from '~/components/threed/styles/garden.module.css'
 // STYLES
 
 const stylesModal: Object = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "80vw",
-  height: "60vh",
-  bgcolor: "#09090D",
-  border: "2px solid #000000",
+  position: 'absolute' as const,
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '80vw',
+  height: '60vh',
+  bgcolor: '#09090D',
+  border: '2px solid #000000',
   boxShadow: 24,
-  p: 2
+  p: 2,
 }
 
 const Tabs: ElementType = styled(MuiTabs)(({ theme }) => ({
@@ -66,23 +63,23 @@ const ModalShare: FunctionComponent = (): JSX.Element => {
   // }, [])
 
   return (
-    <Container id="ModalShareContainer">
+    <Container id='ModalShareContainer'>
       <Modal
-        id="ModalShare"
-        open={modalShareStore.store.useStore("isVisible")}
+        id='ModalShare'
+        open={modalShareStore.store.useStore('isVisible')}
         onClose={(e: any) => modalShareStore.actions.handleClose(e)}
-        aria-labelledby="modal-share-title"
-        aria-describedby="modal-share-description"
+        aria-labelledby='modal-share-title'
+        aria-describedby='modal-share-description'
         sx={stylesModal}
       >
         <Box className={stylesGarden.modalContent}>
-
           <Box className={stylesGarden.modalHeader}>
-            <Image src="/favicon/favicon.png"
+            <Image
+              src='/favicon/favicon.png'
               width={50}
               height={50}
-              alt="ThreeD Garden Logo"
-              title="ThreeD Garden"
+              alt='ThreeD Garden Logo'
+              title='ThreeD Garden'
             />
             <h2>ThreeD Garden</h2>
           </Box>
@@ -90,86 +87,97 @@ const ModalShare: FunctionComponent = (): JSX.Element => {
           <Box className={stylesGarden.smallModalBody}>
             <h3>Share Plan</h3>
             <Button
-              id="getShareLinkBtn"
-              className="mediumButton"
+              id='getShareLinkBtn'
+              className='mediumButton'
               // onClick={() => generateShareLink()}
             >
               Generate Share Link
             </Button>
-            <Box style={{ margin: "10px 0px 10px 0px" }}>
-              <Box style={{ paddingTop: "6px" }}>
-                <label htmlFor="shareLinkUrl">Editable Copy<br />
+            <Box style={{ margin: '10px 0px 10px 0px' }}>
+              <Box style={{ paddingTop: '6px' }}>
+                <label htmlFor='shareLinkUrl'>
+                  Editable Copy
+                  <br />
                   <input
-                    type="text"
-                    id="shareLinkUrl"
+                    type='text'
+                    id='shareLinkUrl'
                     placeholder="Press 'Generate Share Link' Button"
                     style={{
-                      width: "580px",
-                      backgroundColor: "#4e4e4e",
-                      border: "1px solid #2a2a2a",
-                      fontSize: "14px",
-                      color: "white",
+                      width: '580px',
+                      backgroundColor: '#4e4e4e',
+                      border: '1px solid #2a2a2a',
+                      fontSize: '14px',
+                      color: 'white',
                       fontFamily: "'Courier New', Courier, monospace",
-                      padding: "4px 24px 4px 24px",
-                      pointerEvents: "none"
-                    }} />&nbsp;
+                      padding: '4px 24px 4px 24px',
+                      pointerEvents: 'none',
+                    }}
+                  />
+                  &nbsp;
                 </label>
                 <Button
-                  id="copyShareLinkBtn"
-                  className="smallButton"
+                  id='copyShareLinkBtn'
+                  className='smallButton'
                   // onClick={() => copyShareLink()}
                 >
                   Copy
                 </Button>
               </Box>
 
-              <Box style={{ paddingTop: "6px" }}>
-                <label htmlFor="shareLinkUrl3d">Read Only 3d View<br />
+              <Box style={{ paddingTop: '6px' }}>
+                <label htmlFor='shareLinkUrl3d'>
+                  Read Only 3d View
+                  <br />
                   <input
-                    type="text"
-                    id="shareLinkUrl3d"
+                    type='text'
+                    id='shareLinkUrl3d'
                     placeholder="Press 'Generate Share Link' Button"
                     style={{
-                      width: "580px",
-                      backgroundColor: "#4e4e4e",
-                      border: "1px solid #2a2a2a",
-                      fontSize: "14px",
-                      color: "white",
+                      width: '580px',
+                      backgroundColor: '#4e4e4e',
+                      border: '1px solid #2a2a2a',
+                      fontSize: '14px',
+                      color: 'white',
                       fontFamily: "'Courier New', Courier, monospace",
-                      padding: "4px 24px 4px 24px",
-                      pointerEvents: "none"
-                    }} />&nbsp;
+                      padding: '4px 24px 4px 24px',
+                      pointerEvents: 'none',
+                    }}
+                  />
+                  &nbsp;
                 </label>
                 <Button
-                  id="copyShareLinkBtn"
-                  className="smallButton"
+                  id='copyShareLinkBtn'
+                  className='smallButton'
                   // onClick={() => copyShareLink3d()}
                 >
                   Copy
                 </Button>
               </Box>
 
-              <Box style={{ paddingTop: "6px" }}>
-                <label htmlFor="shareLinkUrlPlan">Read Only Plan View<br />
+              <Box style={{ paddingTop: '6px' }}>
+                <label htmlFor='shareLinkUrlPlan'>
+                  Read Only Plan View
+                  <br />
                   <input
-                    type="text"
-                    id="shareLinkUrlPlan"
+                    type='text'
+                    id='shareLinkUrlPlan'
                     placeholder="Press 'Generate Share Link' Button"
                     style={{
-                      width: "580px",
-                      backgroundColor: "#4e4e4e",
-                      border: "1px solid #2a2a2a",
-                      fontSize: "14px",
-                      color: "white",
+                      width: '580px',
+                      backgroundColor: '#4e4e4e',
+                      border: '1px solid #2a2a2a',
+                      fontSize: '14px',
+                      color: 'white',
                       fontFamily: "'Courier New', Courier, monospace",
-                      padding: "4px 24px 4px 24px",
-                      pointerEvents: "none"
+                      padding: '4px 24px 4px 24px',
+                      pointerEvents: 'none',
                     }}
-                  />&nbsp;
+                  />
+                  &nbsp;
                 </label>
                 <Button
-                  id="copyShareLinkBtn"
-                  className="smallButton"
+                  id='copyShareLinkBtn'
+                  className='smallButton'
                   // onClick={() => copyShareLinkPlan()}
                 >
                   Copy
@@ -180,9 +188,12 @@ const ModalShare: FunctionComponent = (): JSX.Element => {
 
           <Box className={stylesGarden.modalFooter}>
             <Typography>
-              🌱 a part of the <a href="https://threed.ai">threed.ai</a> code family
+              🌱 a part of the <a href='https://threed.ai'>threed.ai</a> code family
             </Typography>
-            <Button size="small" onClick={(e: any) => modalShareStore.actions.handleClose(e)}>
+            <Button
+              size='small'
+              onClick={(e: any) => modalShareStore.actions.handleClose(e)}
+            >
               [X]
             </Button>
           </Box>

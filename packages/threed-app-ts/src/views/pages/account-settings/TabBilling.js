@@ -40,8 +40,8 @@ import { formatCVC, formatExpirationDate, formatCreditCardNumber } from '~/@core
 const StyledGrid = styled(Grid)(({ theme }) => ({
   marginTop: theme.spacing(4.8),
   [theme.breakpoints.down('md')]: {
-    order: -1
-  }
+    order: -1,
+  },
 }))
 
 const Chip = styled(CustomChip)(({ theme }) => ({
@@ -51,8 +51,8 @@ const Chip = styled(CustomChip)(({ theme }) => ({
   marginTop: theme.spacing(2.25),
   marginBottom: theme.spacing(5.5),
   '& .MuiChip-label': {
-    padding: theme.spacing(0, 1.7)
-  }
+    padding: theme.spacing(0, 1.7),
+  },
 }))
 
 const CreditCardWrapper = styled(Box)(({ theme }) => ({
@@ -60,16 +60,16 @@ const CreditCardWrapper = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   [theme.breakpoints.down('xl')]: {
     '& > div:first-of-type': {
-      marginBottom: theme.spacing(6)
-    }
+      marginBottom: theme.spacing(6),
+    },
   },
   [theme.breakpoints.up('xl')]: {
     alignItems: 'center',
     flexDirection: 'row',
     '& > div:first-of-type': {
-      marginRight: theme.spacing(6)
-    }
-  }
+      marginRight: theme.spacing(6),
+    },
+  },
 }))
 
 const TabBilling = () => {
@@ -98,10 +98,24 @@ const TabBilling = () => {
   return (
     <CardContent>
       <form>
-        <Grid container spacing={7}>
-          <Grid item xs={12} md={8} sx={{ mt: 2.8 }}>
-            <Grid container spacing={7}>
-              <Grid item xs={12}>
+        <Grid
+          container
+          spacing={7}
+        >
+          <Grid
+            item
+            xs={12}
+            md={8}
+            sx={{ mt: 2.8 }}
+          >
+            <Grid
+              container
+              spacing={7}
+            >
+              <Grid
+                item
+                xs={12}
+              >
                 <FormControl>
                   <FormLabel sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Payment Method</FormLabel>
                   <RadioGroup
@@ -109,21 +123,44 @@ const TabBilling = () => {
                     value={paymentMethod}
                     aria-label='payment method'
                     name='account-settings-billing-radio'
-                    onChange={e => setPaymentMethod(e.target.value)}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
                   >
-                    <FormControlLabel value='card' label='Credit/Debit/ATM Card' control={<Radio />} />
-                    <FormControlLabel value='cod' label='COD/Cheque' control={<Radio />} />
+                    <FormControlLabel
+                      value='card'
+                      label='Credit/Debit/ATM Card'
+                      control={<Radio />}
+                    />
+                    <FormControlLabel
+                      value='cod'
+                      label='COD/Cheque'
+                      control={<Radio />}
+                    />
                   </RadioGroup>
                 </FormControl>
               </Grid>
               {paymentMethod === 'card' ? (
-                <Grid item xs={12}>
+                <Grid
+                  item
+                  xs={12}
+                >
                   <CreditCardWrapper>
                     <CardWrapper>
-                      <Cards cvc={cvc} focused={focus} expiry={expiry} name={name} number={cardNumber} />
+                      <Cards
+                        cvc={cvc}
+                        focused={focus}
+                        expiry={expiry}
+                        name={name}
+                        number={cardNumber}
+                      />
                     </CardWrapper>
-                    <Grid container spacing={6}>
-                      <Grid item xs={12}>
+                    <Grid
+                      container
+                      spacing={6}
+                    >
+                      <Grid
+                        item
+                        xs={12}
+                      >
                         <TextField
                           fullWidth
                           name='number'
@@ -133,10 +170,13 @@ const TabBilling = () => {
                           onBlur={handleBlur}
                           onChange={handleInputChange}
                           placeholder='0000 0000 0000 0000'
-                          onFocus={e => setFocus(e.target.name)}
+                          onFocus={(e) => setFocus(e.target.name)}
                         />
                       </Grid>
-                      <Grid item xs={12}>
+                      <Grid
+                        item
+                        xs={12}
+                      >
                         <TextField
                           fullWidth
                           name='name'
@@ -145,11 +185,14 @@ const TabBilling = () => {
                           autoComplete='off'
                           onBlur={handleBlur}
                           placeholder='Marty McGee'
-                          onFocus={e => setFocus(e.target.name)}
-                          onChange={e => setName(e.target.value)}
+                          onFocus={(e) => setFocus(e.target.name)}
+                          onChange={(e) => setName(e.target.value)}
                         />
                       </Grid>
-                      <Grid item xs={6}>
+                      <Grid
+                        item
+                        xs={6}
+                      >
                         <TextField
                           fullWidth
                           name='expiry'
@@ -160,10 +203,13 @@ const TabBilling = () => {
                           onBlur={handleBlur}
                           onChange={handleInputChange}
                           inputProps={{ maxLength: '5' }}
-                          onFocus={e => setFocus(e.target.name)}
+                          onFocus={(e) => setFocus(e.target.name)}
                         />
                       </Grid>
-                      <Grid item xs={6}>
+                      <Grid
+                        item
+                        xs={6}
+                      >
                         <TextField
                           fullWidth
                           name='cvc'
@@ -172,7 +218,7 @@ const TabBilling = () => {
                           autoComplete='off'
                           onBlur={handleBlur}
                           onChange={handleInputChange}
-                          onFocus={e => setFocus(e.target.name)}
+                          onFocus={(e) => setFocus(e.target.name)}
                           placeholder={Payment.fns.cardType(cardNumber) === 'amex' ? '1234' : '123'}
                         />
                       </Grid>
@@ -183,18 +229,26 @@ const TabBilling = () => {
             </Grid>
           </Grid>
 
-          <StyledGrid item xs={12} md={4}>
+          <StyledGrid
+            item
+            xs={12}
+            md={4}
+          >
             <Box
               sx={{
                 borderRadius: 1,
-                p: theme => theme.spacing(2.5, 5.75, 4.75),
-                border: theme => `1px solid ${theme.palette.divider}`
+                p: (theme) => theme.spacing(2.5, 5.75, 4.75),
+                border: (theme) => `1px solid ${theme.palette.divider}`,
               }}
             >
               <Box sx={{ ml: -2.25, display: 'flex', alignItems: 'center' }}>
                 <Typography variant='h6'>Your Current Plan</Typography>
               </Box>
-              <Chip skin='light' color='primary' label='Basic Plan' />
+              <Chip
+                skin='light'
+                color='primary'
+                label='Basic Plan'
+              />
               <Box sx={{ my: 3, display: 'flex', alignItems: 'center' }}>
                 <AccountOutline sx={{ mr: 2, fontSize: '1.125rem', color: 'text.secondary' }} />
                 <Typography variant='body2'>5 Users</Typography>
@@ -207,14 +261,24 @@ const TabBilling = () => {
                 <HelpCircleOutline sx={{ mr: 2, fontSize: '1.125rem', color: 'text.secondary' }} />
                 <Typography variant='body2'>Basic Support</Typography>
               </Box>
-              <Button fullWidth variant='contained'>
+              <Button
+                fullWidth
+                variant='contained'
+              >
                 Upgrade Plan
               </Button>
             </Box>
           </StyledGrid>
 
-          <Grid item xs={12} sx={{ mt: paymentMethod === 'card' ? 3 : undefined }}>
-            <Button variant='contained' sx={{ mr: 3.5 }}>
+          <Grid
+            item
+            xs={12}
+            sx={{ mt: paymentMethod === 'card' ? 3 : undefined }}
+          >
+            <Button
+              variant='contained'
+              sx={{ mr: 3.5 }}
+            >
               Save Changes
             </Button>
             <Button

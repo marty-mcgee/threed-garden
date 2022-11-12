@@ -2,7 +2,7 @@ const clearObject = (object: any, option: number = 1) => {
   switch (option) {
     // option 1 // ES5
     case 1:
-      Object.keys(object).forEach(key => {
+      Object.keys(object).forEach((key) => {
         delete object[key]
       })
       break

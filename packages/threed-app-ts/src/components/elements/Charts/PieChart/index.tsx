@@ -1,18 +1,18 @@
-import { useMemo, ReactNode } from "react"
+import { useMemo, ReactNode } from 'react'
 
 // @mui material components
-import Card from "@mui/material/Card"
-import Icon from "@mui/material/Icon"
+import Card from '@mui/material/Card'
+import Icon from '@mui/material/Icon'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
+import MDBox from '~/components/mui/MDBox'
+import MDTypography from '~/components/mui/MDTypography'
 
 // PieChart configurations
-import configs from "~/components/elements/Charts/PieChart/config"
+import configs from '~/components/elements/Charts/PieChart/config'
 
 // react-chartjs-2 components
-import { Pie } from "react-chartjs-2"
+import { Pie } from 'react-chartjs-2'
 import {
   Chart as ChartJS,
   ArcElement,
@@ -23,8 +23,8 @@ import {
   // BarElement,
   Title,
   Tooltip,
-  Legend
-} from "chart.js"
+  Legend,
+} from 'chart.js'
 
 ChartJS.register(
   ArcElement,
@@ -41,15 +41,7 @@ ChartJS.register(
 // Declaring props types for PieChart
 interface Props {
   icon?: {
-    color?:
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "light"
-    | "dark"
+    color?: 'primary' | 'secondary' | 'info' | 'success' | 'warning' | 'error' | 'light' | 'dark'
     component: ReactNode
   }
   title?: string
@@ -66,40 +58,47 @@ interface Props {
   [key: string]: any
 }
 
-function PieChart({
-  icon,
-  title,
-  description,
-  height,
-  chart,
-}: Props): JSX.Element {
+function PieChart({ icon, title, description, height, chart }: Props): JSX.Element {
   const { data, options } = configs(chart.labels || [], chart.datasets || {})
 
   const renderChart = (
-    <MDBox py={2} pr={2} pl={icon.component ? 1 : 2}>
+    <MDBox
+      py={2}
+      pr={2}
+      pl={icon.component ? 1 : 2}
+    >
       {title || description ? (
-        <MDBox display="flex" px={description ? 1 : 0} pt={description ? 1 : 0}>
+        <MDBox
+          display='flex'
+          px={description ? 1 : 0}
+          pt={description ? 1 : 0}
+        >
           {icon.component && (
             <MDBox
-              width="4rem"
-              height="4rem"
-              bgColor={icon.color || "info"}
-              variant="gradient"
-              coloredShadow={icon.color || "info"}
-              borderRadius="xl"
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              color="white"
+              width='4rem'
+              height='4rem'
+              bgColor={icon.color || 'info'}
+              variant='gradient'
+              coloredShadow={icon.color || 'info'}
+              borderRadius='xl'
+              display='flex'
+              justifyContent='center'
+              alignItems='center'
+              color='white'
               mt={-5}
-              mr={2}>
-              <Icon fontSize="medium">{icon.component}</Icon>
+              mr={2}
+            >
+              <Icon fontSize='medium'>{icon.component}</Icon>
             </MDBox>
           )}
           <MDBox mt={icon.component ? -2 : 0}>
-            {title && <MDTypography variant="h6">{title}</MDTypography>}
+            {title && <MDTypography variant='h6'>{title}</MDTypography>}
             <MDBox mb={2}>
-              <MDTypography component="div" variant="button" color="text">
+              <MDTypography
+                component='div'
+                variant='button'
+                color='text'
+              >
                 {description}
               </MDTypography>
             </MDBox>
@@ -123,10 +122,10 @@ function PieChart({
 
 // Declaring default props for PieChart
 PieChart.defaultProps = {
-  icon: { color: "info", component: "" },
-  title: "",
-  description: "",
-  height: "19.125rem",
+  icon: { color: 'info', component: '' },
+  title: '',
+  description: '',
+  height: '19.125rem',
 }
 
 export default PieChart

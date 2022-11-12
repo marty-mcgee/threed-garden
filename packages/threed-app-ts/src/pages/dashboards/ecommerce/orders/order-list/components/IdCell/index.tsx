@@ -1,9 +1,9 @@
 // @mui material components
-import Checkbox from "@mui/material/Checkbox"
+import Checkbox from '@mui/material/Checkbox'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
+import MDBox from '~/components/mui/MDBox'
+import MDTypography from '~/components/mui/MDTypography'
 
 // Declaring props types for IdCell
 interface Props {
@@ -13,10 +13,17 @@ interface Props {
 
 function IdCell({ id, checked }: Props): JSX.Element {
   return (
-    <MDBox display="flex" alignItems="center">
+    <MDBox
+      display='flex'
+      alignItems='center'
+    >
       <Checkbox defaultChecked={checked} />
       <MDBox ml={1}>
-        <MDTypography variant="caption" fontWeight="medium" color="text">
+        <MDTypography
+          variant='caption'
+          fontWeight='medium'
+          color='text'
+        >
           {id}
         </MDTypography>
       </MDBox>

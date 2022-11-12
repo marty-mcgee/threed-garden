@@ -14,18 +14,18 @@ import MuiTabList from '@mui/lab/TabList'
 const TabList = styled(MuiTabList)(({ theme }) => ({
   border: 0,
   '& .MuiTabs-indicator': {
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
   },
   '& .Mui-selected': {
     backgroundColor: theme.palette.primary.main,
-    color: `${theme.palette.common.white} !important`
+    color: `${theme.palette.common.white} !important`,
   },
   '& .MuiTab-root': {
     minHeight: 38,
     minWidth: 130,
     margin: theme.spacing(1, 0),
-    borderRadius: theme.shape.borderRadius
-  }
+    borderRadius: theme.shape.borderRadius,
+  },
 }))
 
 const TabsCustomizedVertical = () => {
@@ -39,10 +39,23 @@ const TabsCustomizedVertical = () => {
   return (
     <TabContext value={value}>
       <Box sx={{ display: 'flex' }}>
-        <TabList orientation='vertical' onChange={handleChange} aria-label='customized vertical tabs example'>
-          <Tab value='1' label='Tab 1' />
-          <Tab value='2' label='Tab 2' />
-          <Tab value='3' label='Tab 3' />
+        <TabList
+          orientation='vertical'
+          onChange={handleChange}
+          aria-label='customized vertical tabs example'
+        >
+          <Tab
+            value='1'
+            label='Tab 1'
+          />
+          <Tab
+            value='2'
+            label='Tab 2'
+          />
+          <Tab
+            value='3'
+            label='Tab 3'
+          />
         </TabList>
         <TabPanel value='1'>
           <Typography>

@@ -15,10 +15,14 @@ import toast from 'react-hot-toast'
 const ToastCustom = () => {
   const handleClick = () => {
     return toast(
-      t => (
+      (t) => (
         <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar alt='Victor Anderson' src='/images/avatars/3.png' sx={{ mr: 3, width: 40, height: 40 }} />
+            <Avatar
+              alt='Victor Anderson'
+              src='/images/avatars/3.png'
+              sx={{ mr: 3, width: 40, height: 40 }}
+            />
             <Box>
               <Typography>Marty McGee</Typography>
               <Typography variant='caption'>Sure! 8:30pm works great!</Typography>
@@ -31,8 +35,8 @@ const ToastCustom = () => {
       ),
       {
         style: {
-          minWidth: '300px'
-        }
+          minWidth: '300px',
+        },
       }
     )
   }
@@ -42,7 +46,11 @@ const ToastCustom = () => {
       <PencilOutline sx={{ mb: 2, fontSize: '2rem' }} />
       <Typography sx={{ mb: 4, fontWeight: 600 }}>Custom</Typography>
       <Typography sx={{ mb: 3 }}>Make a toast using any custom content</Typography>
-      <Button sx={{ mb: 8 }} variant='contained' onClick={handleClick}>
+      <Button
+        sx={{ mb: 8 }}
+        variant='contained'
+        onClick={handleClick}
+      >
         Custom
       </Button>
     </Box>

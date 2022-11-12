@@ -13,7 +13,7 @@ const EcommerceTotalSalesRadial = () => {
 
   const options = {
     chart: {
-      sparkline: { enabled: true }
+      sparkline: { enabled: true },
     },
     stroke: { lineCap: 'round' },
     colors: [theme.palette.info.main],
@@ -25,21 +25,32 @@ const EcommerceTotalSalesRadial = () => {
         dataLabels: {
           name: { show: false },
           value: {
-            offsetY: 0
-          }
-        }
-      }
-    }
+            offsetY: 0,
+          },
+        },
+      },
+    },
   }
 
   return (
     <Card>
       <CardContent sx={{ '& .apexcharts-datalabel-value': { fontSize: '1.25rem', fontWeight: '500 !important' } }}>
-        <Typography variant='h6' sx={{ mb: 2.5 }}>
+        <Typography
+          variant='h6'
+          sx={{ mb: 2.5 }}
+        >
           135k
         </Typography>
-        <ReactApexcharts type='radialBar' height={103} options={options} series={[78]} />
-        <Typography variant='body2' sx={{ mt: 7.5, fontWeight: 600, textAlign: 'center', color: 'text.primary' }}>
+        <ReactApexcharts
+          type='radialBar'
+          height={103}
+          options={options}
+          series={[78]}
+        />
+        <Typography
+          variant='body2'
+          sx={{ mt: 7.5, fontWeight: 600, textAlign: 'center', color: 'text.primary' }}
+        >
           Total Sales
         </Typography>
       </CardContent>

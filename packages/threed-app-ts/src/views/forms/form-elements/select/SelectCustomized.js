@@ -12,17 +12,17 @@ import MuiFormControl from '@mui/material/FormControl'
 // Styled FormControl component
 const FormControl = styled(MuiFormControl)(({ theme }) => ({
   '& .MuiFormLabel-root.Mui-focused': {
-    color: theme.palette.info.main
+    color: theme.palette.info.main,
   },
   '& .MuiInputLabel-root': {
     left: -14,
-    zIndex: 0
+    zIndex: 0,
   },
   '& > .MuiInputBase-root': {
     marginTop: theme.spacing(4),
     '&.MuiInput-root:before, &.MuiInput-root:after': {
-      border: 0
-    }
+      border: 0,
+    },
   },
   '& .MuiInputBase-input': {
     fontSize: 16,
@@ -42,21 +42,21 @@ const FormControl = styled(MuiFormControl)(({ theme }) => ({
       'sans-serif',
       '"Apple Color Emoji"',
       '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"'
+      '"Segoe UI Symbol"',
     ].join(','),
     '&:focus': {
       borderRadius: 4,
       borderColor: '#80bdff',
-      boxShadow: '0 0 0 0.2rem rgba(0,123,255,0.25)'
-    }
-  }
+      boxShadow: '0 0 0 0.2rem rgba(0,123,255,0.25)',
+    },
+  },
 }))
 
 const SelectCustomized = () => {
   // ** State
   const [value, setValue] = useState('')
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     setValue(event.target.value)
   }
 
@@ -81,8 +81,17 @@ const SelectCustomized = () => {
       </FormControl>
       <FormControl>
         <InputLabel htmlFor='demo-customized-select-native'>Age</InputLabel>
-        <Select native input={<InputBase />} id='demo-customized-select-native' value={value} onChange={handleChange}>
-          <option aria-label='None' value='' />
+        <Select
+          native
+          input={<InputBase />}
+          id='demo-customized-select-native'
+          value={value}
+          onChange={handleChange}
+        >
+          <option
+            aria-label='None'
+            value=''
+          />
           <option value={10}>Ten</option>
           <option value={20}>Twenty</option>
           <option value={30}>Thirty</option>

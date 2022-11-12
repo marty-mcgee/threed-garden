@@ -11,7 +11,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 // ** Third Party Imports
 import { Scatter } from 'react-chartjs-2'
 
-const ChartjsScatterChart = props => {
+const ChartjsScatterChart = (props) => {
   // ** Props
   const { green, warning, primary, labelColor, borderColor, gridLineColor } = props
 
@@ -27,7 +27,7 @@ const ChartjsScatterChart = props => {
     maintainAspectRatio: false,
     animation: { duration: 800 },
     layout: {
-      padding: { top: -20 }
+      padding: { top: -20 },
     },
     scales: {
       x: {
@@ -36,12 +36,12 @@ const ChartjsScatterChart = props => {
         grid: {
           borderColor,
           drawTicks: false,
-          color: gridLineColor
+          color: gridLineColor,
         },
         ticks: {
           stepSize: 10,
-          color: labelColor
-        }
+          color: labelColor,
+        },
       },
       y: {
         min: 0,
@@ -49,13 +49,13 @@ const ChartjsScatterChart = props => {
         grid: {
           borderColor,
           drawTicks: false,
-          color: gridLineColor
+          color: gridLineColor,
         },
         ticks: {
           stepSize: 100,
-          color: labelColor
-        }
-      }
+          color: labelColor,
+        },
+      },
     },
     plugins: {
       legend: {
@@ -65,10 +65,10 @@ const ChartjsScatterChart = props => {
           padding: 25,
           boxWidth: 9,
           color: labelColor,
-          usePointStyle: true
-        }
-      }
-    }
+          usePointStyle: true,
+        },
+      },
+    },
   }
 
   const data = {
@@ -96,8 +96,8 @@ const ChartjsScatterChart = props => {
           { x: 117, y: 295 },
           { x: 126, y: 280 },
           { x: 127, y: 340 },
-          { x: 133, y: 330 }
-        ]
+          { x: 133, y: 330 },
+        ],
       },
       {
         pointRadius: 5,
@@ -121,8 +121,8 @@ const ChartjsScatterChart = props => {
           { x: 43, y: 180 },
           { x: 53, y: 202 },
           { x: 61, y: 165 },
-          { x: 67, y: 225 }
-        ]
+          { x: 67, y: 225 },
+        ],
       },
       {
         pointRadius: 5,
@@ -145,10 +145,10 @@ const ChartjsScatterChart = props => {
           { x: 94, y: 280 },
           { x: 92, y: 340 },
           { x: 100, y: 335 },
-          { x: 108, y: 330 }
-        ]
-      }
-    ]
+          { x: 108, y: 330 },
+        ],
+      },
+    ],
   }
 
   return (
@@ -160,10 +160,14 @@ const ChartjsScatterChart = props => {
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],
           '& .MuiCardHeader-action': { mb: 0 },
-          '& .MuiCardHeader-content': { mb: [2, 0] }
+          '& .MuiCardHeader-content': { mb: [2, 0] },
         }}
         action={
-          <ToggleButtonGroup exclusive value={active} onChange={handleActive}>
+          <ToggleButtonGroup
+            exclusive
+            value={active}
+            onChange={handleActive}
+          >
             <ToggleButton value='daily'>Daily</ToggleButton>
             <ToggleButton value='monthly'>Monthly</ToggleButton>
             <ToggleButton value='yearly'>Yearly</ToggleButton>
@@ -171,7 +175,11 @@ const ChartjsScatterChart = props => {
         }
       />
       <CardContent>
-        <Scatter data={data} options={options} height={400} />
+        <Scatter
+          data={data}
+          options={options}
+          height={400}
+        />
       </CardContent>
     </Card>
   )

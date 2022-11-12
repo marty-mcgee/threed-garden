@@ -9,13 +9,19 @@ const TextareaVariant = () => {
   // ** State
   const [value, setValue] = useState('Controlled')
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     setValue(event.target.value)
   }
 
   return (
-    <form noValidate autoComplete='off'>
-      <Box className='demo-space-x' sx={{ mb: 4 }}>
+    <form
+      noValidate
+      autoComplete='off'
+    >
+      <Box
+        className='demo-space-x'
+        sx={{ mb: 4 }}
+      >
         <TextField
           multiline
           maxRows={4}
@@ -24,10 +30,24 @@ const TextareaVariant = () => {
           onChange={handleChange}
           id='textarea-outlined-controlled'
         />
-        <TextField multiline id='textarea-outlined' placeholder='Placeholder' label='Multiline Placeholder' />
-        <TextField rows={4} multiline label='Multiline' defaultValue='Default Value' id='textarea-outlined-static' />
+        <TextField
+          multiline
+          id='textarea-outlined'
+          placeholder='Placeholder'
+          label='Multiline Placeholder'
+        />
+        <TextField
+          rows={4}
+          multiline
+          label='Multiline'
+          defaultValue='Default Value'
+          id='textarea-outlined-static'
+        />
       </Box>
-      <Box className='demo-space-x' sx={{ mb: 4 }}>
+      <Box
+        className='demo-space-x'
+        sx={{ mb: 4 }}
+      >
         <TextField
           multiline
           maxRows={4}

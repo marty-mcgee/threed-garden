@@ -18,21 +18,21 @@ const CardWidgetsSalesState = () => {
     chart: {
       offsetY: -30,
       parentHeightOffset: 0,
-      toolbar: { show: false }
+      toolbar: { show: false },
     },
     tooltip: { enabled: false },
     dataLabels: { enabled: false },
     stroke: {
       width: 5,
-      curve: 'smooth'
+      curve: 'smooth',
     },
     grid: {
       show: false,
       padding: {
         left: 0,
         top: -40,
-        right: 0
-      }
+        right: 0,
+      },
     },
     fill: {
       type: 'gradient',
@@ -46,30 +46,30 @@ const CardWidgetsSalesState = () => {
             {
               offset: 0,
               opacity: 0.6,
-              color: theme.palette.primary.main
+              color: theme.palette.primary.main,
             },
             {
               offset: 100,
               opacity: 0.1,
-              color: theme.palette.background.paper
-            }
-          ]
-        ]
-      }
+              color: theme.palette.background.paper,
+            },
+          ],
+        ],
+      },
     },
     theme: {
       monochrome: {
         enabled: true,
         shadeTo: 'light',
         shadeIntensity: 1,
-        color: theme.palette.primary.main
-      }
+        color: theme.palette.primary.main,
+      },
     },
     xaxis: {
       type: 'numeric',
       labels: { show: false },
       axisTicks: { show: false },
-      axisBorder: { show: false }
+      axisBorder: { show: false },
     },
     yaxis: { show: false },
     markers: {
@@ -85,10 +85,10 @@ const CardWidgetsSalesState = () => {
           seriesIndex: 0,
           dataPointIndex: 5,
           strokeColor: theme.palette.primary.main,
-          fillColor: theme.palette.background.paper
-        }
-      ]
-    }
+          fillColor: theme.palette.background.paper,
+        },
+      ],
+    },
   }
 
   return (
@@ -98,7 +98,12 @@ const CardWidgetsSalesState = () => {
         subheader='Total $42,580 Sales'
         titleTypographyProps={{ sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' } }}
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }

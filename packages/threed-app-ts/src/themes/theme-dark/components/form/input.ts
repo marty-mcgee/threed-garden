@@ -1,10 +1,10 @@
 // ThreeD Garden Base Styles
-import colors from "~/themes/theme-dark/base/colors"
-import typography from "~/themes/theme-dark/base/typography"
-import borders from "~/themes/theme-dark/base/borders"
+import colors from '~/themes/theme-dark/base/colors'
+import typography from '~/themes/theme-dark/base/typography'
+import borders from '~/themes/theme-dark/base/borders'
 
 // ThreeD Garden Helper Functions
-import rgba from "~/themes/theme-dark/functions/rgba"
+import rgba from '~/themes/theme-dark/functions/rgba'
 
 const { info, inputBorderColor, dark, grey, white } = colors
 const { size } = typography
@@ -19,22 +19,22 @@ const input: Types = {
       fontSize: size.sm,
       color: dark.main,
 
-      "&:hover:not(.Mui-disabled):before": {
+      '&:hover:not(.Mui-disabled):before': {
         borderBottom: `${borderWidth[1]} solid ${rgba(inputBorderColor, 0.6)}`,
       },
 
-      "&:before": {
+      '&:before': {
         borderColor: rgba(inputBorderColor, 0.6),
       },
 
-      "&:after": {
+      '&:after': {
         borderColor: info.main,
       },
 
       input: {
         color: white.main,
 
-        "&::-webkit-input-placeholder": {
+        '&::-webkit-input-placeholder': {
           color: grey[100],
         },
       },

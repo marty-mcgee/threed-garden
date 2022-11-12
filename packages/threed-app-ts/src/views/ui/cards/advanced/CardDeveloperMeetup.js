@@ -20,15 +20,28 @@ import CustomAvatar from '~/@core/components/mui/avatar'
 const CardDeveloperMeetup = () => {
   return (
     <Card>
-      <CardMedia sx={{ height: 168 }} image='/images/cards/workstation.png' />
+      <CardMedia
+        sx={{ height: 168 }}
+        image='/images/cards/workstation.png'
+      />
       <CardContent sx={{ pt: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <CustomAvatar skin='light' variant='rounded' sx={{ mr: 3, width: 50, height: 56 }}>
+          <CustomAvatar
+            skin='light'
+            variant='rounded'
+            sx={{ mr: 3, width: 50, height: 56 }}
+          >
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <Typography variant='body2' sx={{ color: 'primary.main' }}>
+              <Typography
+                variant='body2'
+                sx={{ color: 'primary.main' }}
+              >
                 Jan
               </Typography>
-              <Typography variant='h6' sx={{ color: 'primary.main' }}>
+              <Typography
+                variant='h6'
+                sx={{ color: 'primary.main' }}
+              >
                 24
               </Typography>
             </Box>
@@ -54,7 +67,10 @@ const CardDeveloperMeetup = () => {
           </Box>
           <Box sx={{ color: 'primary.main', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <AccountOutline sx={{ mb: 0.5 }} />
-            <Typography variant='caption' sx={{ color: 'primary.main' }}>
+            <Typography
+              variant='caption'
+              sx={{ color: 'primary.main' }}
+            >
               Invited
             </Typography>
           </Box>

@@ -5,15 +5,28 @@ import TextareaAutosize from '@mui/material/TextareaAutosize'
 
 const TextareaBasic = () => {
   return (
-    <form noValidate autoComplete='off'>
-      <Grid container spacing={4}>
+    <form
+      noValidate
+      autoComplete='off'
+    >
+      <Grid
+        container
+        spacing={4}
+      >
         <Grid item>
           <Typography sx={{ mb: 2, fontWeight: 500 }}>Simple</Typography>
-          <TextareaAutosize aria-label='empty textarea' placeholder='Empty' />
+          <TextareaAutosize
+            aria-label='empty textarea'
+            placeholder='Empty'
+          />
         </Grid>
         <Grid item>
           <Typography sx={{ mb: 2, fontWeight: 500 }}>Minimum Rows</Typography>
-          <TextareaAutosize aria-label='minimum height' minRows={3} placeholder='Minimum 3 rows' />
+          <TextareaAutosize
+            aria-label='minimum height'
+            minRows={3}
+            placeholder='Minimum 3 rows'
+          />
         </Grid>
         <Grid item>
           <Typography sx={{ mb: 2, fontWeight: 500 }}>Maximum Rows</Typography>

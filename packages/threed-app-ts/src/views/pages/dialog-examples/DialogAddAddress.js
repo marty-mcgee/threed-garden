@@ -30,7 +30,12 @@ import BriefcaseOutline from 'mdi-material-ui/BriefcaseOutline'
 import useBgColor from '~/@core/hooks/useBgColor'
 
 const Transition = forwardRef(function Transition(props, ref) {
-  return <Fade ref={ref} {...props} />
+  return (
+    <Fade
+      ref={ref}
+      {...props}
+    />
+  )
 })
 
 const DialogAddAddress = () => {
@@ -45,13 +50,19 @@ const DialogAddAddress = () => {
     <Card>
       <CardContent sx={{ textAlign: 'center' }}>
         <HomeOutline sx={{ mb: 2, fontSize: '2rem' }} />
-        <Typography variant='h6' sx={{ mb: 4 }}>
+        <Typography
+          variant='h6'
+          sx={{ mb: 4 }}
+        >
           Add New Address
         </Typography>
         <Typography sx={{ mb: 3 }}>
           Ready to use form to collect user address data with validation and custom input support.
         </Typography>
-        <Button variant='contained' onClick={() => setShow(true)}>
+        <Button
+          variant='contained'
+          onClick={() => setShow(true)}
+        >
           Show
         </Button>
       </CardContent>
@@ -73,13 +84,23 @@ const DialogAddAddress = () => {
             <Close />
           </IconButton>
           <Box sx={{ mb: 8, textAlign: 'center' }}>
-            <Typography variant='h5' sx={{ mb: 3 }}>
+            <Typography
+              variant='h5'
+              sx={{ mb: 3 }}
+            >
               Add New Address
             </Typography>
             <Typography variant='body2'>Add address for billing address</Typography>
           </Box>
-          <Grid container spacing={6}>
-            <Grid item sm={6} xs={12}>
+          <Grid
+            container
+            spacing={6}
+          >
+            <Grid
+              item
+              sm={6}
+              xs={12}
+            >
               <Box
                 onClick={() => setAddressType('home')}
                 sx={{
@@ -87,14 +108,17 @@ const DialogAddAddress = () => {
                   px: 4,
                   borderRadius: 1,
                   cursor: 'pointer',
-                  border: theme =>
+                  border: (theme) =>
                     `1px solid ${addressType === 'home' ? theme.palette.primary.main : theme.palette.divider}`,
-                  ...(addressType === 'home' ? { ...bgClasses.primaryLight } : { backgroundColor: 'action.hover' })
+                  ...(addressType === 'home' ? { ...bgClasses.primaryLight } : { backgroundColor: 'action.hover' }),
                 }}
               >
                 <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
                   <HomeOutline sx={{ mr: 2 }} />
-                  <Typography variant='h6' sx={{ ...(addressType === 'home' ? { color: 'primary.main' } : {}) }}>
+                  <Typography
+                    variant='h6'
+                    sx={{ ...(addressType === 'home' ? { color: 'primary.main' } : {}) }}
+                  >
                     Home
                   </Typography>
                 </Box>
@@ -103,7 +127,11 @@ const DialogAddAddress = () => {
                 </Typography>
               </Box>
             </Grid>
-            <Grid item sm={6} xs={12}>
+            <Grid
+              item
+              sm={6}
+              xs={12}
+            >
               <Box
                 onClick={() => setAddressType('office')}
                 sx={{
@@ -111,14 +139,17 @@ const DialogAddAddress = () => {
                   px: 4,
                   borderRadius: 1,
                   cursor: 'pointer',
-                  border: theme =>
+                  border: (theme) =>
                     `1px solid ${addressType === 'office' ? theme.palette.primary.main : theme.palette.divider}`,
-                  ...(addressType === 'office' ? { ...bgClasses.primaryLight } : { backgroundColor: 'action.hover' })
+                  ...(addressType === 'office' ? { ...bgClasses.primaryLight } : { backgroundColor: 'action.hover' }),
                 }}
               >
                 <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
                   <BriefcaseOutline sx={{ mr: 2 }} />
-                  <Typography variant='h6' sx={{ ...(addressType === 'office' ? { color: 'primary.main' } : {}) }}>
+                  <Typography
+                    variant='h6'
+                    sx={{ ...(addressType === 'office' ? { color: 'primary.main' } : {}) }}
+                  >
                     Office
                   </Typography>
                 </Box>
@@ -127,13 +158,32 @@ const DialogAddAddress = () => {
                 </Typography>
               </Box>
             </Grid>
-            <Grid item sm={6} xs={12}>
-              <TextField fullWidth label='First Name' placeholder='John' />
+            <Grid
+              item
+              sm={6}
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                label='First Name'
+                placeholder='John'
+              />
             </Grid>
-            <Grid item sm={6} xs={12}>
-              <TextField fullWidth label='Last Name' placeholder='Doe' />
+            <Grid
+              item
+              sm={6}
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                label='Last Name'
+                placeholder='Doe'
+              />
             </Grid>
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <FormControl fullWidth>
                 <InputLabel id='country-select'>Country</InputLabel>
                 <Select
@@ -152,31 +202,82 @@ const DialogAddAddress = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12}>
-              <TextField fullWidth label='Address Line 1' placeholder='12, Business Park' />
+            <Grid
+              item
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                label='Address Line 1'
+                placeholder='12, Business Park'
+              />
             </Grid>
-            <Grid item xs={12}>
-              <TextField fullWidth label='Address Line 2' placeholder='Mall Road' />
+            <Grid
+              item
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                label='Address Line 2'
+                placeholder='Mall Road'
+              />
             </Grid>
-            <Grid item xs={12}>
-              <TextField fullWidth label='Town' placeholder='Los Angeles' />
+            <Grid
+              item
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                label='Town'
+                placeholder='Los Angeles'
+              />
             </Grid>
-            <Grid item sm={6} xs={12}>
-              <TextField fullWidth label='State / Province' placeholder='California' />
+            <Grid
+              item
+              sm={6}
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                label='State / Province'
+                placeholder='California'
+              />
             </Grid>
-            <Grid item sm={6} xs={12}>
-              <TextField fullWidth label='Zip Code' placeholder='99950' />
+            <Grid
+              item
+              sm={6}
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                label='Zip Code'
+                placeholder='99950'
+              />
             </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel control={<Switch defaultChecked />} label='Make this default shipping address' />
+            <Grid
+              item
+              xs={12}
+            >
+              <FormControlLabel
+                control={<Switch defaultChecked />}
+                label='Make this default shipping address'
+              />
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'center' }}>
-          <Button variant='contained' sx={{ mr: 1 }} onClick={() => setShow(false)}>
+          <Button
+            variant='contained'
+            sx={{ mr: 1 }}
+            onClick={() => setShow(false)}
+          >
             Submit
           </Button>
-          <Button variant='outlined' color='secondary' onClick={() => setShow(false)}>
+          <Button
+            variant='outlined'
+            color='secondary'
+            onClick={() => setShow(false)}
+          >
             Cancel
           </Button>
         </DialogActions>

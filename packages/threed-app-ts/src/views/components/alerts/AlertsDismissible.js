@@ -27,7 +27,12 @@ const AlertsDismissible = () => {
         <Collapse in={open1}>
           <Alert
             action={
-              <IconButton size='small' color='inherit' aria-label='close' onClick={() => setOpen1(false)}>
+              <IconButton
+                size='small'
+                color='inherit'
+                aria-label='close'
+                onClick={() => setOpen1(false)}
+              >
                 <Close fontSize='inherit' />
               </IconButton>
             }
@@ -35,16 +40,29 @@ const AlertsDismissible = () => {
             Close me!
           </Alert>
         </Collapse>
-        <Button disabled={open1} variant='outlined' sx={{ mt: 2 }} onClick={() => setOpen1(true)}>
+        <Button
+          disabled={open1}
+          variant='outlined'
+          sx={{ mt: 2 }}
+          onClick={() => setOpen1(true)}
+        >
           Open Collapse
         </Button>
       </Box>
 
       <Box sx={{ mb: 6 }}>
-        <Fade in={open2} {...(open2 ? { timeout: 700 } : {})}>
+        <Fade
+          in={open2}
+          {...(open2 ? { timeout: 700 } : {})}
+        >
           <Alert
             action={
-              <IconButton size='small' color='inherit' aria-label='close' onClick={() => setOpen2(false)}>
+              <IconButton
+                size='small'
+                color='inherit'
+                aria-label='close'
+                onClick={() => setOpen2(false)}
+              >
                 <Close fontSize='inherit' />
               </IconButton>
             }
@@ -52,16 +70,29 @@ const AlertsDismissible = () => {
             Close me!
           </Alert>
         </Fade>
-        <Button disabled={open2} variant='outlined' sx={{ mt: 2 }} onClick={() => setOpen2(true)}>
+        <Button
+          disabled={open2}
+          variant='outlined'
+          sx={{ mt: 2 }}
+          onClick={() => setOpen2(true)}
+        >
           Open Fade
         </Button>
       </Box>
 
       <Box sx={{ mb: 6 }}>
-        <Grow in={open3} {...(open3 ? { timeout: 700 } : {})}>
+        <Grow
+          in={open3}
+          {...(open3 ? { timeout: 700 } : {})}
+        >
           <Alert
             action={
-              <IconButton size='small' color='inherit' aria-label='close' onClick={() => setOpen3(false)}>
+              <IconButton
+                size='small'
+                color='inherit'
+                aria-label='close'
+                onClick={() => setOpen3(false)}
+              >
                 <Close fontSize='inherit' />
               </IconButton>
             }
@@ -69,16 +100,30 @@ const AlertsDismissible = () => {
             Close me!
           </Alert>
         </Grow>
-        <Button disabled={open3} variant='outlined' sx={{ mt: 2 }} onClick={() => setOpen3(true)}>
+        <Button
+          disabled={open3}
+          variant='outlined'
+          sx={{ mt: 2 }}
+          onClick={() => setOpen3(true)}
+        >
           Open Grow
         </Button>
       </Box>
 
       <Box>
-        <Slide in={open4} direction='left' {...(open4 ? { timeout: 500 } : {})}>
+        <Slide
+          in={open4}
+          direction='left'
+          {...(open4 ? { timeout: 500 } : {})}
+        >
           <Alert
             action={
-              <IconButton size='small' color='inherit' aria-label='close' onClick={() => setOpen4(false)}>
+              <IconButton
+                size='small'
+                color='inherit'
+                aria-label='close'
+                onClick={() => setOpen4(false)}
+              >
                 <Close fontSize='inherit' />
               </IconButton>
             }
@@ -86,7 +131,12 @@ const AlertsDismissible = () => {
             Close me!
           </Alert>
         </Slide>
-        <Button disabled={open4} variant='outlined' sx={{ mt: 2 }} onClick={() => setOpen4(true)}>
+        <Button
+          disabled={open4}
+          variant='outlined'
+          sx={{ mt: 2 }}
+          onClick={() => setOpen4(true)}
+        >
           Open Slide
         </Button>
       </Box>

@@ -29,7 +29,15 @@ import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 
 const CustomInput = forwardRef((props, ref) => {
-  return <TextField fullWidth {...props} inputRef={ref} label='Birth Date' autoComplete='off' />
+  return (
+    <TextField
+      fullWidth
+      {...props}
+      inputRef={ref}
+      label='Birth Date'
+      autoComplete='off'
+    />
+  )
 })
 
 const FormLayoutsTabs = () => {
@@ -42,7 +50,7 @@ const FormLayoutsTabs = () => {
     password: '',
     password2: '',
     showPassword: false,
-    showPassword2: false
+    showPassword2: false,
   })
 
   const handleTabsChange = (event, newValue) => {
@@ -50,7 +58,7 @@ const FormLayoutsTabs = () => {
   }
 
   // Handle Password
-  const handlePasswordChange = prop => event => {
+  const handlePasswordChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value })
   }
 
@@ -58,12 +66,12 @@ const FormLayoutsTabs = () => {
     setValues({ ...values, showPassword: !values.showPassword })
   }
 
-  const handleMouseDownPassword = event => {
+  const handleMouseDownPassword = (event) => {
     event.preventDefault()
   }
 
   // Handle Confirm Password
-  const handleConfirmChange = prop => event => {
+  const handleConfirmChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value })
   }
 
@@ -71,12 +79,12 @@ const FormLayoutsTabs = () => {
     setValues({ ...values, showPassword2: !values.showPassword2 })
   }
 
-  const handleMouseDownConfirmPassword = event => {
+  const handleMouseDownConfirmPassword = (event) => {
     event.preventDefault()
   }
 
   // Handle Select
-  const handleSelectChange = event => {
+  const handleSelectChange = (event) => {
     setLanguage(event.target.value)
   }
 
@@ -87,23 +95,55 @@ const FormLayoutsTabs = () => {
           variant='scrollable'
           scrollButtons={false}
           onChange={handleTabsChange}
-          sx={{ borderBottom: theme => `1px solid ${theme.palette.divider}` }}
+          sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
         >
-          <Tab value='personal-info' label='Personal Info' />
-          <Tab value='account-details' label='Account Details' />
-          <Tab value='social-links' label='Social Links' />
+          <Tab
+            value='personal-info'
+            label='Personal Info'
+          />
+          <Tab
+            value='account-details'
+            label='Account Details'
+          />
+          <Tab
+            value='social-links'
+            label='Social Links'
+          />
         </TabList>
-        <form onSubmit={e => e.preventDefault()}>
+        <form onSubmit={(e) => e.preventDefault()}>
           <CardContent>
             <TabPanel value='personal-info'>
-              <Grid container spacing={5}>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='First Name' placeholder='Leonard' />
+              <Grid
+                container
+                spacing={5}
+              >
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                >
+                  <TextField
+                    fullWidth
+                    label='First Name'
+                    placeholder='Leonard'
+                  />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='Last Name' placeholder='Carter' />
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                >
+                  <TextField
+                    fullWidth
+                    label='Last Name'
+                    placeholder='Carter'
+                  />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                >
                   <FormControl fullWidth>
                     <InputLabel id='form-layouts-tabs-select-label'>Country</InputLabel>
                     <Select
@@ -119,7 +159,11 @@ const FormLayoutsTabs = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                >
                   <FormControl fullWidth>
                     <InputLabel id='form-layouts-tabs-multiple-select-label'>Language</InputLabel>
                     <Select
@@ -128,7 +172,12 @@ const FormLayoutsTabs = () => {
                       onChange={handleSelectChange}
                       id='form-layouts-tabs-multiple-select'
                       labelId='form-layouts-tabs-multiple-select-label'
-                      input={<OutlinedInput label='Language' id='tabs-select-multiple-language' />}
+                      input={
+                        <OutlinedInput
+                          label='Language'
+                          id='tabs-select-multiple-language'
+                        />
+                      }
                     >
                       <MenuItem value='English'>English</MenuItem>
                       <MenuItem value='French'>French</MenuItem>
@@ -140,7 +189,11 @@ const FormLayoutsTabs = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                >
                   <DatePicker
                     selected={date}
                     showYearDropdown
@@ -148,24 +201,56 @@ const FormLayoutsTabs = () => {
                     id='form-layouts-tabs-date'
                     placeholderText='MM-DD-YYYY'
                     customInput={<CustomInput />}
-                    onChange={date => setDate(date)}
+                    onChange={(date) => setDate(date)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='Phone No.' placeholder='+1-123-456-8790' />
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                >
+                  <TextField
+                    fullWidth
+                    label='Phone No.'
+                    placeholder='+1-123-456-8790'
+                  />
                 </Grid>
               </Grid>
             </TabPanel>
 
             <TabPanel value='account-details'>
-              <Grid container spacing={5}>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='Username' placeholder='carterLeonard' />
+              <Grid
+                container
+                spacing={5}
+              >
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                >
+                  <TextField
+                    fullWidth
+                    label='Username'
+                    placeholder='carterLeonard'
+                  />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth type='email' label='Email' placeholder='carterleonard@gmail.com' />
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                >
+                  <TextField
+                    fullWidth
+                    type='email'
+                    label='Email'
+                    placeholder='carterleonard@gmail.com'
+                  />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                >
                   <FormControl fullWidth>
                     <InputLabel htmlFor='form-layouts-tabs-password'>Password</InputLabel>
                     <OutlinedInput
@@ -189,7 +274,11 @@ const FormLayoutsTabs = () => {
                     />
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                >
                   <FormControl fullWidth>
                     <InputLabel htmlFor='form-layouts-tabs-password-2'>Confirm Password</InputLabel>
                     <OutlinedInput
@@ -217,34 +306,94 @@ const FormLayoutsTabs = () => {
             </TabPanel>
 
             <TabPanel value='social-links'>
-              <Grid container spacing={5}>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='Twitter' placeholder='https://twitter.com/carterLeonard' />
+              <Grid
+                container
+                spacing={5}
+              >
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                >
+                  <TextField
+                    fullWidth
+                    label='Twitter'
+                    placeholder='https://twitter.com/carterLeonard'
+                  />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='Facebook' placeholder='https://facebook.com/carterLeonard' />
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                >
+                  <TextField
+                    fullWidth
+                    label='Facebook'
+                    placeholder='https://facebook.com/carterLeonard'
+                  />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='Google+' placeholder='https://plus.google.com/carterLeonard' />
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                >
+                  <TextField
+                    fullWidth
+                    label='Google+'
+                    placeholder='https://plus.google.com/carterLeonard'
+                  />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='LinkedIn' placeholder='https://linkedin.com/carterLeonard' />
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                >
+                  <TextField
+                    fullWidth
+                    label='LinkedIn'
+                    placeholder='https://linkedin.com/carterLeonard'
+                  />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='Instagram' placeholder='https://instagram.com/carterLeonard' />
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                >
+                  <TextField
+                    fullWidth
+                    label='Instagram'
+                    placeholder='https://instagram.com/carterLeonard'
+                  />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='Quora' placeholder='https://quora.com/carterLeonard' />
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                >
+                  <TextField
+                    fullWidth
+                    label='Quora'
+                    placeholder='https://quora.com/carterLeonard'
+                  />
                 </Grid>
               </Grid>
             </TabPanel>
           </CardContent>
           <Divider sx={{ m: 0 }} />
           <CardActions>
-            <Button size='large' type='submit' sx={{ mr: 2 }} variant='contained'>
+            <Button
+              size='large'
+              type='submit'
+              sx={{ mr: 2 }}
+              variant='contained'
+            >
               Submit
             </Button>
-            <Button size='large' variant='outlined' color='secondary'>
+            <Button
+              size='large'
+              variant='outlined'
+              color='secondary'
+            >
               Cancel
             </Button>
           </CardActions>

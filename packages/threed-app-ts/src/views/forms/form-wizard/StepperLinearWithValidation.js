@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -41,37 +41,37 @@ import StepperCustomDot from './StepperCustomDot'
 const steps = [
   {
     title: 'Account Details',
-    subtitle: 'Enter your Account Details'
+    subtitle: 'Enter your Account Details',
   },
   {
     title: 'Personal Info',
-    subtitle: 'Setup Information'
+    subtitle: 'Setup Information',
   },
   {
     title: 'Social Links',
-    subtitle: 'Add Social Links'
-  }
+    subtitle: 'Add Social Links',
+  },
 ]
 
 const defaultAccountValues = {
   email: '',
   username: '',
   password: '',
-  'confirm-password': ''
+  'confirm-password': '',
 }
 
 const defaultPersonalValues = {
   country: '',
   language: [],
   'last-name': '',
-  'first-name': ''
+  'first-name': '',
 }
 
 const defaultSocialValues = {
   google: '',
   twitter: '',
   facebook: '',
-  linkedIn: ''
+  linkedIn: '',
 }
 
 const accountSchema = yup.object().shape({
@@ -81,21 +81,21 @@ const accountSchema = yup.object().shape({
   'confirm-password': yup
     .string()
     .required()
-    .oneOf([yup.ref('password'), null], 'Passwords must match')
+    .oneOf([yup.ref('password'), null], 'Passwords must match'),
 })
 
 const personalSchema = yup.object().shape({
   country: yup.string().required(),
   'last-name': yup.string().required(),
   'first-name': yup.string().required(),
-  language: yup.array().min(1).required()
+  language: yup.array().min(1).required(),
 })
 
 const socialSchema = yup.object().shape({
   google: yup.string().required(),
   twitter: yup.string().required(),
   facebook: yup.string().required(),
-  linkedIn: yup.string().required()
+  linkedIn: yup.string().required(),
 })
 
 const StepperLinearWithValidation = () => {
@@ -106,7 +106,7 @@ const StepperLinearWithValidation = () => {
     password: '',
     password2: '',
     showPassword: false,
-    showPassword2: false
+    showPassword2: false,
   })
 
   // ** Hooks
@@ -114,35 +114,35 @@ const StepperLinearWithValidation = () => {
     reset: accountReset,
     control: accountControl,
     handleSubmit: handleAccountSubmit,
-    formState: { errors: accountErrors }
+    formState: { errors: accountErrors },
   } = useForm({
     defaultValues: defaultAccountValues,
-    resolver: yupResolver(accountSchema)
+    resolver: yupResolver(accountSchema),
   })
 
   const {
     reset: personalReset,
     control: personalControl,
     handleSubmit: handlePersonalSubmit,
-    formState: { errors: personalErrors }
+    formState: { errors: personalErrors },
   } = useForm({
     defaultValues: defaultPersonalValues,
-    resolver: yupResolver(personalSchema)
+    resolver: yupResolver(personalSchema),
   })
 
   const {
     reset: socialReset,
     control: socialControl,
     handleSubmit: handleSocialSubmit,
-    formState: { errors: socialErrors }
+    formState: { errors: socialErrors },
   } = useForm({
     defaultValues: defaultSocialValues,
-    resolver: yupResolver(socialSchema)
+    resolver: yupResolver(socialSchema),
   })
 
   // Handle Stepper
   const handleBack = () => {
-    setActiveStep(prevActiveStep => prevActiveStep - 1)
+    setActiveStep((prevActiveStep) => prevActiveStep - 1)
   }
 
   const handleReset = () => {
@@ -164,7 +164,7 @@ const StepperLinearWithValidation = () => {
     setState({ ...state, showPassword: !state.showPassword })
   }
 
-  const handleMouseDownPassword = event => {
+  const handleMouseDownPassword = (event) => {
     event.preventDefault()
   }
 
@@ -173,25 +173,44 @@ const StepperLinearWithValidation = () => {
     setState({ ...state, showPassword2: !state.showPassword2 })
   }
 
-  const handleMouseDownConfirmPassword = event => {
+  const handleMouseDownConfirmPassword = (event) => {
     event.preventDefault()
   }
 
-  const getStepContent = step => {
+  const getStepContent = (step) => {
     switch (step) {
       case 0:
         return (
-          <form key={0} onSubmit={handleAccountSubmit(onSubmit)}>
-            <Grid container spacing={5}>
-              <Grid item xs={12}>
-                <Typography variant='body2' sx={{ fontWeight: 600, color: 'text.primary' }}>
+          <form
+            key={0}
+            onSubmit={handleAccountSubmit(onSubmit)}
+          >
+            <Grid
+              container
+              spacing={5}
+            >
+              <Grid
+                item
+                xs={12}
+              >
+                <Typography
+                  variant='body2'
+                  sx={{ fontWeight: 600, color: 'text.primary' }}
+                >
                   {steps[0].title}
                 </Typography>
-                <Typography variant='caption' component='p'>
+                <Typography
+                  variant='caption'
+                  component='p'
+                >
                   {steps[0].subtitle}
                 </Typography>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+              >
                 <FormControl fullWidth>
                   <Controller
                     name='username'
@@ -209,13 +228,20 @@ const StepperLinearWithValidation = () => {
                     )}
                   />
                   {accountErrors.username && (
-                    <FormHelperText sx={{ color: 'error.main' }} id='stepper-linear-account-username'>
+                    <FormHelperText
+                      sx={{ color: 'error.main' }}
+                      id='stepper-linear-account-username'
+                    >
                       This field is required
                     </FormHelperText>
                   )}
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+              >
                 <FormControl fullWidth>
                   <Controller
                     name='email'
@@ -234,15 +260,25 @@ const StepperLinearWithValidation = () => {
                     )}
                   />
                   {accountErrors.email && (
-                    <FormHelperText sx={{ color: 'error.main' }} id='stepper-linear-account-email'>
+                    <FormHelperText
+                      sx={{ color: 'error.main' }}
+                      id='stepper-linear-account-email'
+                    >
                       {accountErrors.email.message}
                     </FormHelperText>
                   )}
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+              >
                 <FormControl fullWidth>
-                  <InputLabel htmlFor='stepper-linear-account-password' error={Boolean(accountErrors.password)}>
+                  <InputLabel
+                    htmlFor='stepper-linear-account-password'
+                    error={Boolean(accountErrors.password)}
+                  >
                     Password
                   </InputLabel>
                   <Controller
@@ -273,13 +309,20 @@ const StepperLinearWithValidation = () => {
                     )}
                   />
                   {accountErrors.password && (
-                    <FormHelperText sx={{ color: 'error.main' }} id='stepper-linear-account-password-helper'>
+                    <FormHelperText
+                      sx={{ color: 'error.main' }}
+                      id='stepper-linear-account-password-helper'
+                    >
                       {accountErrors.password.message}
                     </FormHelperText>
                   )}
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+              >
                 <FormControl fullWidth>
                   <InputLabel
                     htmlFor='stepper-linear-account-confirm-password'
@@ -315,17 +358,33 @@ const StepperLinearWithValidation = () => {
                     )}
                   />
                   {accountErrors['confirm-password'] && (
-                    <FormHelperText sx={{ color: 'error.main' }} id='stepper-linear-account-confirm-password-helper'>
+                    <FormHelperText
+                      sx={{ color: 'error.main' }}
+                      id='stepper-linear-account-confirm-password-helper'
+                    >
                       {accountErrors['confirm-password'].message}
                     </FormHelperText>
                   )}
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Button size='large' variant='outlined' color='secondary' disabled>
+              <Grid
+                item
+                xs={12}
+                sx={{ display: 'flex', justifyContent: 'space-between' }}
+              >
+                <Button
+                  size='large'
+                  variant='outlined'
+                  color='secondary'
+                  disabled
+                >
                   Back
                 </Button>
-                <Button size='large' type='submit' variant='contained'>
+                <Button
+                  size='large'
+                  type='submit'
+                  variant='contained'
+                >
                   Next
                 </Button>
               </Grid>
@@ -334,17 +393,36 @@ const StepperLinearWithValidation = () => {
         )
       case 1:
         return (
-          <form key={1} onSubmit={handlePersonalSubmit(onSubmit)}>
-            <Grid container spacing={5}>
-              <Grid item xs={12}>
-                <Typography variant='body2' sx={{ fontWeight: 600, color: 'text.primary' }}>
+          <form
+            key={1}
+            onSubmit={handlePersonalSubmit(onSubmit)}
+          >
+            <Grid
+              container
+              spacing={5}
+            >
+              <Grid
+                item
+                xs={12}
+              >
+                <Typography
+                  variant='body2'
+                  sx={{ fontWeight: 600, color: 'text.primary' }}
+                >
                   {steps[1].title}
                 </Typography>
-                <Typography variant='caption' component='p'>
+                <Typography
+                  variant='caption'
+                  component='p'
+                >
                   {steps[1].subtitle}
                 </Typography>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+              >
                 <FormControl fullWidth>
                   <Controller
                     name='first-name'
@@ -362,13 +440,20 @@ const StepperLinearWithValidation = () => {
                     )}
                   />
                   {personalErrors['first-name'] && (
-                    <FormHelperText sx={{ color: 'error.main' }} id='stepper-linear-personal-first-name'>
+                    <FormHelperText
+                      sx={{ color: 'error.main' }}
+                      id='stepper-linear-personal-first-name'
+                    >
                       This field is required
                     </FormHelperText>
                   )}
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+              >
                 <FormControl fullWidth>
                   <Controller
                     name='last-name'
@@ -386,13 +471,20 @@ const StepperLinearWithValidation = () => {
                     )}
                   />
                   {personalErrors['last-name'] && (
-                    <FormHelperText sx={{ color: 'error.main' }} id='stepper-linear-personal-last-name'>
+                    <FormHelperText
+                      sx={{ color: 'error.main' }}
+                      id='stepper-linear-personal-last-name'
+                    >
                       This field is required
                     </FormHelperText>
                   )}
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+              >
                 <FormControl fullWidth>
                   <InputLabel
                     id='stepper-linear-personal-country'
@@ -422,13 +514,20 @@ const StepperLinearWithValidation = () => {
                     )}
                   />
                   {personalErrors.country && (
-                    <FormHelperText sx={{ color: 'error.main' }} id='stepper-linear-personal-country-helper'>
+                    <FormHelperText
+                      sx={{ color: 'error.main' }}
+                      id='stepper-linear-personal-country-helper'
+                    >
                       This field is required
                     </FormHelperText>
                   )}
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+              >
                 <FormControl fullWidth>
                   <InputLabel
                     error={Boolean(personalErrors.language)}
@@ -449,7 +548,12 @@ const StepperLinearWithValidation = () => {
                         value={Array.isArray(value) ? value : []}
                         error={Boolean(personalErrors.language)}
                         labelId='stepper-linear-personal-language-label'
-                        input={<OutlinedInput label='Language' id='stepper-linear-select-multiple-language' />}
+                        input={
+                          <OutlinedInput
+                            label='Language'
+                            id='stepper-linear-select-multiple-language'
+                          />
+                        }
                       >
                         <MenuItem value='English'>English</MenuItem>
                         <MenuItem value='French'>French</MenuItem>
@@ -462,17 +566,33 @@ const StepperLinearWithValidation = () => {
                     )}
                   />
                   {personalErrors.language && (
-                    <FormHelperText sx={{ color: 'error.main' }} id='stepper-linear-personal-language-helper'>
+                    <FormHelperText
+                      sx={{ color: 'error.main' }}
+                      id='stepper-linear-personal-language-helper'
+                    >
                       This field is required
                     </FormHelperText>
                   )}
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Button size='large' variant='outlined' color='secondary' onClick={handleBack}>
+              <Grid
+                item
+                xs={12}
+                sx={{ display: 'flex', justifyContent: 'space-between' }}
+              >
+                <Button
+                  size='large'
+                  variant='outlined'
+                  color='secondary'
+                  onClick={handleBack}
+                >
                   Back
                 </Button>
-                <Button size='large' type='submit' variant='contained'>
+                <Button
+                  size='large'
+                  type='submit'
+                  variant='contained'
+                >
                   Next
                 </Button>
               </Grid>
@@ -481,17 +601,36 @@ const StepperLinearWithValidation = () => {
         )
       case 2:
         return (
-          <form key={2} onSubmit={handleSocialSubmit(onSubmit)}>
-            <Grid container spacing={5}>
-              <Grid item xs={12}>
-                <Typography variant='body2' sx={{ fontWeight: 600, color: 'text.primary' }}>
+          <form
+            key={2}
+            onSubmit={handleSocialSubmit(onSubmit)}
+          >
+            <Grid
+              container
+              spacing={5}
+            >
+              <Grid
+                item
+                xs={12}
+              >
+                <Typography
+                  variant='body2'
+                  sx={{ fontWeight: 600, color: 'text.primary' }}
+                >
                   {steps[2].title}
                 </Typography>
-                <Typography variant='caption' component='p'>
+                <Typography
+                  variant='caption'
+                  component='p'
+                >
                   {steps[2].subtitle}
                 </Typography>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+              >
                 <FormControl fullWidth>
                   <Controller
                     name='twitter'
@@ -509,13 +648,20 @@ const StepperLinearWithValidation = () => {
                     )}
                   />
                   {socialErrors.twitter && (
-                    <FormHelperText sx={{ color: 'error.main' }} id='stepper-linear-social-twitter'>
+                    <FormHelperText
+                      sx={{ color: 'error.main' }}
+                      id='stepper-linear-social-twitter'
+                    >
                       This field is required
                     </FormHelperText>
                   )}
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+              >
                 <FormControl fullWidth>
                   <Controller
                     name='facebook'
@@ -533,13 +679,20 @@ const StepperLinearWithValidation = () => {
                     )}
                   />
                   {socialErrors.facebook && (
-                    <FormHelperText sx={{ color: 'error.main' }} id='stepper-linear-social-facebook'>
+                    <FormHelperText
+                      sx={{ color: 'error.main' }}
+                      id='stepper-linear-social-facebook'
+                    >
                       This field is required
                     </FormHelperText>
                   )}
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+              >
                 <FormControl fullWidth>
                   <Controller
                     name='google'
@@ -557,13 +710,20 @@ const StepperLinearWithValidation = () => {
                     )}
                   />
                   {socialErrors.google && (
-                    <FormHelperText sx={{ color: 'error.main' }} id='stepper-linear-social-google'>
+                    <FormHelperText
+                      sx={{ color: 'error.main' }}
+                      id='stepper-linear-social-google'
+                    >
                       This field is required
                     </FormHelperText>
                   )}
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+              >
                 <FormControl fullWidth>
                   <Controller
                     name='linkedIn'
@@ -581,17 +741,33 @@ const StepperLinearWithValidation = () => {
                     )}
                   />
                   {socialErrors.linkedIn && (
-                    <FormHelperText sx={{ color: 'error.main' }} id='stepper-linear-social-linkedIn'>
+                    <FormHelperText
+                      sx={{ color: 'error.main' }}
+                      id='stepper-linear-social-linkedIn'
+                    >
                       This field is required
                     </FormHelperText>
                   )}
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Button size='large' variant='outlined' color='secondary' onClick={handleBack}>
+              <Grid
+                item
+                xs={12}
+                sx={{ display: 'flex', justifyContent: 'space-between' }}
+              >
+                <Button
+                  size='large'
+                  variant='outlined'
+                  color='secondary'
+                  onClick={handleBack}
+                >
                   Back
                 </Button>
-                <Button size='large' type='submit' variant='contained'>
+                <Button
+                  size='large'
+                  type='submit'
+                  variant='contained'
+                >
                   Submit
                 </Button>
               </Grid>
@@ -609,7 +785,11 @@ const StepperLinearWithValidation = () => {
         <>
           <Typography>All steps are completed!</Typography>
           <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button size='large' variant='contained' onClick={handleReset}>
+            <Button
+              size='large'
+              variant='contained'
+              onClick={handleReset}
+            >
               Reset
             </Button>
           </Box>
@@ -657,7 +837,10 @@ const StepperLinearWithValidation = () => {
 
               return (
                 <Step key={index}>
-                  <StepLabel {...labelProps} StepIconComponent={StepperCustomDot}>
+                  <StepLabel
+                    {...labelProps}
+                    StepIconComponent={StepperCustomDot}
+                  >
                     <div className='step-label'>
                       <Typography className='step-number'>0{index + 1}</Typography>
                       <div>

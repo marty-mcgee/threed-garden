@@ -20,7 +20,7 @@ const data = [
     color: 'primary',
     amount: '$24,895.65',
     subtitle: 'Vuejs, React & HTML',
-    imgSrc: '/images/cards/logo-zipcar.png'
+    imgSrc: '/images/cards/logo-zipcar.png',
   },
   {
     progress: 50,
@@ -29,7 +29,7 @@ const data = [
     title: 'Bitbank',
     amount: '$8,650.20',
     subtitle: 'Sketch, Figma & XD',
-    imgSrc: '/images/cards/logo-bitbank.png'
+    imgSrc: '/images/cards/logo-bitbank.png',
   },
   {
     progress: 20,
@@ -38,8 +38,8 @@ const data = [
     color: 'secondary',
     amount: '$1,245.80',
     subtitle: 'HTML & Angular',
-    imgSrc: '/images/cards/logo-aviato.png'
-  }
+    imgSrc: '/images/cards/logo-aviato.png',
+  },
 ]
 
 const AnalyticsTotalEarning = () => {
@@ -49,25 +49,40 @@ const AnalyticsTotalEarning = () => {
         title='Total Earning'
         titleTypographyProps={{ sx: { lineHeight: '1.6 !important', letterSpacing: '0.15px !important' } }}
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }
       />
-      <CardContent sx={{ pt: theme => `${theme.spacing(2.25)} !important` }}>
+      <CardContent sx={{ pt: (theme) => `${theme.spacing(2.25)} !important` }}>
         <Box sx={{ mb: 1.5, display: 'flex', alignItems: 'center' }}>
-          <Typography variant='h4' sx={{ fontWeight: 600, fontSize: '2.125rem !important' }}>
+          <Typography
+            variant='h4'
+            sx={{ fontWeight: 600, fontSize: '2.125rem !important' }}
+          >
             $24,895
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', color: 'success.main' }}>
             <MenuUp sx={{ fontSize: '1.875rem', verticalAlign: 'middle' }} />
-            <Typography variant='body2' sx={{ fontWeight: 600, color: 'success.main' }}>
+            <Typography
+              variant='body2'
+              sx={{ fontWeight: 600, color: 'success.main' }}
+            >
               10%
             </Typography>
           </Box>
         </Box>
 
-        <Typography component='p' variant='caption' sx={{ mb: 10 }}>
+        <Typography
+          component='p'
+          variant='caption'
+          sx={{ mb: 10 }}
+        >
           Compared to $84,325 last year
         </Typography>
 
@@ -78,7 +93,7 @@ const AnalyticsTotalEarning = () => {
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                ...(index !== data.length - 1 ? { mb: 8.5 } : {})
+                ...(index !== data.length - 1 ? { mb: 8.5 } : {}),
               }}
             >
               <Avatar
@@ -87,10 +102,14 @@ const AnalyticsTotalEarning = () => {
                   mr: 3,
                   width: 40,
                   height: 40,
-                  backgroundColor: theme => `rgba(${theme.palette.customColors.main}, 0.04)`
+                  backgroundColor: (theme) => `rgba(${theme.palette.customColors.main}, 0.04)`,
                 }}
               >
-                <img src={item.imgSrc} alt={item.title} height={item.imgHeight} />
+                <img
+                  src={item.imgSrc}
+                  alt={item.title}
+                  height={item.imgHeight}
+                />
               </Avatar>
               <Box
                 sx={{
@@ -98,21 +117,31 @@ const AnalyticsTotalEarning = () => {
                   display: 'flex',
                   flexWrap: 'wrap',
                   alignItems: 'center',
-                  justifyContent: 'space-between'
+                  justifyContent: 'space-between',
                 }}
               >
                 <Box sx={{ mr: 2, display: 'flex', flexDirection: 'column' }}>
-                  <Typography variant='body2' sx={{ mb: 0.5, fontWeight: 600, color: 'text.primary' }}>
+                  <Typography
+                    variant='body2'
+                    sx={{ mb: 0.5, fontWeight: 600, color: 'text.primary' }}
+                  >
                     {item.title}
                   </Typography>
                   <Typography variant='caption'>{item.subtitle}</Typography>
                 </Box>
 
                 <Box sx={{ minWidth: 85, display: 'flex', flexDirection: 'column' }}>
-                  <Typography variant='body2' sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+                  <Typography
+                    variant='body2'
+                    sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}
+                  >
                     {item.amount}
                   </Typography>
-                  <LinearProgress color={item.color} value={item.progress} variant='determinate' />
+                  <LinearProgress
+                    color={item.color}
+                    value={item.progress}
+                    variant='determinate'
+                  />
                 </Box>
               </Box>
             </Box>

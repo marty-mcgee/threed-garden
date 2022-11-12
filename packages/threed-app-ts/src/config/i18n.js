@@ -17,18 +17,18 @@ i18n
     lng: 'en',
     backend: {
       /* translation file path */
-      loadPath: '/locales/{{lng}}.json'
+      loadPath: '/locales/{{lng}}.json',
     },
     fallbackLng: 'en',
     debug: false,
     keySeparator: false,
     react: {
-      useSuspense: false
+      useSuspense: false,
     },
     interpolation: {
       escapeValue: false,
-      formatSeparator: ','
-    }
+      formatSeparator: ',',
+    },
   })
 
 export default i18n

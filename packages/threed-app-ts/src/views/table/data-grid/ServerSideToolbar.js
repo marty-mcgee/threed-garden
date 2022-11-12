@@ -15,10 +15,10 @@ const StyledGridToolbarContainer = styled(GridToolbarContainer)({
   display: 'flex',
   flexWrap: 'wrap',
   alignItems: 'flex-start',
-  justifyContent: 'space-between'
+  justifyContent: 'space-between',
 })
 
-const ServerSideToolbar = props => {
+const ServerSideToolbar = (props) => {
   return (
     <StyledGridToolbarContainer>
       <Box>
@@ -32,24 +32,29 @@ const ServerSideToolbar = props => {
         InputProps={{
           startAdornment: <Magnify fontSize='small' />,
           endAdornment: (
-            <IconButton size='small' title='Clear' aria-label='Clear' onClick={props.clearSearch}>
+            <IconButton
+              size='small'
+              title='Clear'
+              aria-label='Clear'
+              onClick={props.clearSearch}
+            >
               <Close fontSize='small' />
             </IconButton>
-          )
+          ),
         }}
         sx={{
           width: {
             xs: 1,
-            sm: 'auto'
+            sm: 'auto',
           },
-          m: theme => theme.spacing(1, 0.5, 1.5),
+          m: (theme) => theme.spacing(1, 0.5, 1.5),
           '& .MuiSvgIcon-root': {
-            mr: 0.5
+            mr: 0.5,
           },
           '& .MuiInput-underline:before': {
             borderBottom: 1,
-            borderColor: 'divider'
-          }
+            borderColor: 'divider',
+          },
         }}
       />
     </StyledGridToolbarContainer>

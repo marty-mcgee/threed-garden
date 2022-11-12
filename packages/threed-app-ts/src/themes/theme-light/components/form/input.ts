@@ -1,7 +1,7 @@
 // ThreeD Garden Base Styles
-import colors from "~/themes/theme-light/base/colors"
-import typography from "~/themes/theme-light/base/typography"
-import borders from "~/themes/theme-light/base/borders"
+import colors from '~/themes/theme-light/base/colors'
+import typography from '~/themes/theme-light/base/typography'
+import borders from '~/themes/theme-light/base/borders'
 
 const { info, inputBorderColor, dark } = colors
 const { size } = typography
@@ -16,15 +16,15 @@ const input: Types = {
       fontSize: size.sm,
       color: dark.main,
 
-      "&:hover:not(.Mui-disabled):before": {
+      '&:hover:not(.Mui-disabled):before': {
         borderBottom: `${borderWidth[1]} solid ${inputBorderColor}`,
       },
 
-      "&:before": {
+      '&:before': {
         borderColor: inputBorderColor,
       },
 
-      "&:after": {
+      '&:after': {
         borderColor: info.main,
       },
     },

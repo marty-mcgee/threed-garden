@@ -37,10 +37,15 @@ import DialogTabDatabase from '~/views/pages/dialog-examples/create-app-tabs/Dia
 import DialogTabFramework from '~/views/pages/dialog-examples/create-app-tabs/DialogTabFramework'
 
 const Transition = forwardRef(function Transition(props, ref) {
-  return <Fade ref={ref} {...props} />
+  return (
+    <Fade
+      ref={ref}
+      {...props}
+    />
+  )
 })
 
-const TabLabel = props => {
+const TabLabel = (props) => {
   const { icon, title, subtitle, active } = props
 
   return (
@@ -54,7 +59,10 @@ const TabLabel = props => {
         </Avatar>
         <Box sx={{ textAlign: 'left' }}>
           <Typography>{title}</Typography>
-          <Typography variant='caption' sx={{ textTransform: 'none' }}>
+          <Typography
+            variant='caption'
+            sx={{ textTransform: 'none' }}
+          >
             {subtitle}
           </Typography>
         </Box>
@@ -119,13 +127,19 @@ const DialogCreateApp = () => {
     <Card>
       <CardContent sx={{ textAlign: 'center' }}>
         <CubeOutline sx={{ mb: 2, fontSize: '2rem' }} />
-        <Typography variant='h6' sx={{ mb: 4 }}>
+        <Typography
+          variant='h6'
+          sx={{ mb: 4 }}
+        >
           Create App
         </Typography>
         <Typography sx={{ mb: 3 }}>
           Provide application data with this form to create the app dialog popup example, easy to use in any page.
         </Typography>
-        <Button variant='contained' onClick={() => setShow(true)}>
+        <Button
+          variant='contained'
+          onClick={() => setShow(true)}
+        >
           Show
         </Button>
       </CardContent>
@@ -144,14 +158,21 @@ const DialogCreateApp = () => {
             pr: { xs: 5, sm: 12 },
             pb: { xs: 5, sm: 9.5 },
             pl: { xs: 4, sm: 11 },
-            position: 'relative'
+            position: 'relative',
           }}
         >
-          <IconButton size='small' onClick={handleClose} sx={{ position: 'absolute', right: '1rem', top: '1rem' }}>
+          <IconButton
+            size='small'
+            onClick={handleClose}
+            sx={{ position: 'absolute', right: '1rem', top: '1rem' }}
+          >
             <Close />
           </IconButton>
           <Box sx={{ mb: 8, textAlign: 'center' }}>
-            <Typography variant='h5' sx={{ mb: 3 }}>
+            <Typography
+              variant='h5'
+              sx={{ mb: 3 }}
+            >
               Create App
             </Typography>
             <Typography variant='body2'>Provide data with this form to create your app.</Typography>
@@ -169,9 +190,9 @@ const DialogCreateApp = () => {
                     alignItems: 'flex-start',
                     '& .MuiTab-root': {
                       width: '100%',
-                      alignItems: 'flex-start'
-                    }
-                  }
+                      alignItems: 'flex-start',
+                    },
+                  },
                 }}
               >
                 <Tab
@@ -226,36 +247,67 @@ const DialogCreateApp = () => {
                   disableRipple
                   value='submitTab'
                   label={
-                    <TabLabel title='Submit' subtitle='Submit' active={activeTab === 'submitTab'} icon={<Check />} />
+                    <TabLabel
+                      title='Submit'
+                      subtitle='Submit'
+                      active={activeTab === 'submitTab'}
+                      icon={<Check />}
+                    />
                   }
                 />
               </TabList>
-              <TabPanel value='detailsTab' sx={{ flexGrow: 1 }}>
+              <TabPanel
+                value='detailsTab'
+                sx={{ flexGrow: 1 }}
+              >
                 <DialogTabDetails />
                 {renderTabFooter()}
               </TabPanel>
-              <TabPanel value='frameworkTab' sx={{ flexGrow: 1 }}>
+              <TabPanel
+                value='frameworkTab'
+                sx={{ flexGrow: 1 }}
+              >
                 <DialogTabFramework />
                 {renderTabFooter()}
               </TabPanel>
-              <TabPanel value='DatabaseTab' sx={{ flexGrow: 1 }}>
+              <TabPanel
+                value='DatabaseTab'
+                sx={{ flexGrow: 1 }}
+              >
                 <DialogTabDatabase />
                 {renderTabFooter()}
               </TabPanel>
-              <TabPanel value='paymentTab' sx={{ flexGrow: 1 }}>
+              <TabPanel
+                value='paymentTab'
+                sx={{ flexGrow: 1 }}
+              >
                 <DialogTabBilling />
                 {renderTabFooter()}
               </TabPanel>
-              <TabPanel value='submitTab' sx={{ flexGrow: 1 }}>
+              <TabPanel
+                value='submitTab'
+                sx={{ flexGrow: 1 }}
+              >
                 <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant='h6' sx={{ mb: 2 }}>
+                  <Typography
+                    variant='h6'
+                    sx={{ mb: 2 }}
+                  >
                     Submit 🥳
                   </Typography>
-                  <Typography variant='body2' sx={{ mb: 6 }}>
+                  <Typography
+                    variant='body2'
+                    sx={{ mb: 6 }}
+                  >
                     Submit to kickstart your project.
                   </Typography>
 
-                  <img width={250} height={152} alt='submit-img' src='/images/cards/illustration-john.png' />
+                  <img
+                    width={250}
+                    height={152}
+                    alt='submit-img'
+                    src='/images/cards/illustration-john.png'
+                  />
                 </Box>
                 {renderTabFooter()}
               </TabPanel>

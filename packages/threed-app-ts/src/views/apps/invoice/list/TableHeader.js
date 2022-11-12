@@ -8,7 +8,7 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
 
-const TableHeader = props => {
+const TableHeader = (props) => {
   // ** Props
   const { value, selectedRows, handleFilter } = props
 
@@ -21,7 +21,7 @@ const TableHeader = props => {
         display: 'flex',
         flexWrap: 'wrap',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
       }}
     >
       <Select
@@ -30,9 +30,12 @@ const TableHeader = props => {
         defaultValue=''
         sx={{ mr: 4, mb: 2 }}
         disabled={selectedRows && selectedRows.length === 0}
-        renderValue={selected => (selected.length === 0 ? 'Actions' : selected)}
+        renderValue={(selected) => (selected.length === 0 ? 'Actions' : selected)}
       >
-        <MenuItem value='' disabled>
+        <MenuItem
+          value=''
+          disabled
+        >
           Actions
         </MenuItem>
         <MenuItem value='Delete'>Delete</MenuItem>
@@ -45,11 +48,17 @@ const TableHeader = props => {
           value={value}
           sx={{ mr: 4, mb: 2 }}
           placeholder='Search Invoice'
-          onChange={e => handleFilter(e.target.value)}
+          onChange={(e) => handleFilter(e.target.value)}
         />
 
-        <Link href='/apps/invoice/add' passHref>
-          <Button sx={{ mb: 2 }} variant='contained'>
+        <Link
+          href='/apps/invoice/add'
+          passHref
+        >
+          <Button
+            sx={{ mb: 2 }}
+            variant='contained'
+          >
             Create Invoice
           </Button>
         </Link>

@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, useEffect, forwardRef, useCallback, Fragment } from 'react'
+import { useState, useEffect, forwardRef, useCallback } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -26,7 +26,7 @@ import DeleteOutline from 'mdi-material-ui/DeleteOutline'
 // ** Styled Components
 import DatePickerWrapper from '~/@core/styles/libs/react-datepicker'
 
-const capitalize = string => string && string[0].toUpperCase() + string.slice(1)
+const capitalize = (string) => string && string[0].toUpperCase() + string.slice(1)
 
 const defaultState = {
   url: '',
@@ -36,10 +36,10 @@ const defaultState = {
   description: '',
   endDate: new Date(),
   calendar: 'Business',
-  startDate: new Date()
+  startDate: new Date(),
 }
 
-const AddEventSidebar = props => {
+const AddEventSidebar = (props) => {
   // ** Props
   const {
     store,
@@ -51,7 +51,7 @@ const AddEventSidebar = props => {
     deleteEvent,
     handleSelectEvent,
     addEventSidebarOpen,
-    handleAddEventSidebarToggle
+    handleAddEventSidebarToggle,
   } = props
 
   // ** States
@@ -62,7 +62,7 @@ const AddEventSidebar = props => {
     setValue,
     clearErrors,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm({ defaultValues: { title: '' } })
 
   const handleSidebarClose = async () => {
@@ -72,7 +72,7 @@ const AddEventSidebar = props => {
     handleAddEventSidebarToggle()
   }
 
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     const modifiedEvent = {
       url: values.url,
       display: 'block',
@@ -83,8 +83,8 @@ const AddEventSidebar = props => {
       extendedProps: {
         calendar: capitalize(values.calendar),
         guests: values.guests && values.guests.length ? values.guests : undefined,
-        description: values.description.length ? values.description : undefined
-      }
+        description: values.description.length ? values.description : undefined,
+      },
     }
     if (store.selectedEvent === null || (store.selectedEvent !== null && !store.selectedEvent.title.length)) {
       dispatch(addEvent(modifiedEvent))
@@ -104,7 +104,7 @@ const AddEventSidebar = props => {
     handleSidebarClose()
   }
 
-  const handleStartDate = date => {
+  const handleStartDate = (date) => {
     if (date > values.endDate) {
       setValues({ ...values, startDate: new Date(date), endDate: new Date(date) })
     }
@@ -122,7 +122,7 @@ const AddEventSidebar = props => {
         description: event.extendedProps.description || '',
         calendar: event.extendedProps.calendar || 'Business',
         endDate: event.end !== null ? event.end : event.start,
-        startDate: event.start !== null ? event.start : new Date()
+        startDate: event.start !== null ? event.start : new Date(),
       })
     }
   }, [setValue, store.selectedEvent])
@@ -156,10 +156,20 @@ const AddEventSidebar = props => {
     if (store.selectedEvent === null || (store.selectedEvent !== null && !store.selectedEvent.title.length)) {
       return (
         <>
-          <Button size='large' type='submit' variant='contained' sx={{ mr: 4 }}>
+          <Button
+            size='large'
+            type='submit'
+            variant='contained'
+            sx={{ mr: 4 }}
+          >
             Add
           </Button>
-          <Button size='large' variant='outlined' color='secondary' onClick={resetToEmptyValues}>
+          <Button
+            size='large'
+            variant='outlined'
+            color='secondary'
+            onClick={resetToEmptyValues}
+          >
             Reset
           </Button>
         </>
@@ -167,10 +177,20 @@ const AddEventSidebar = props => {
     } else {
       return (
         <>
-          <Button size='large' type='submit' variant='contained' sx={{ mr: 4 }}>
+          <Button
+            size='large'
+            type='submit'
+            variant='contained'
+            sx={{ mr: 4 }}
+          >
             Update
           </Button>
-          <Button size='large' variant='outlined' color='secondary' onClick={resetToStoredValues}>
+          <Button
+            size='large'
+            variant='outlined'
+            color='secondary'
+            onClick={resetToStoredValues}
+          >
             Reset
           </Button>
         </>
@@ -192,7 +212,7 @@ const AddEventSidebar = props => {
           display: 'flex',
           justifyContent: 'space-between',
           backgroundColor: 'background.default',
-          p: theme => theme.spacing(3, 3.255, 3, 5.255)
+          p: (theme) => theme.spacing(3, 3.255, 3, 5.255),
         }}
       >
         <Typography variant='h6'>
@@ -206,34 +226,58 @@ const AddEventSidebar = props => {
               onClick={handleDeleteEvent}
             />
           ) : null}
-          <Close fontSize='small' onClick={handleSidebarClose} sx={{ cursor: 'pointer' }} />
+          <Close
+            fontSize='small'
+            onClick={handleSidebarClose}
+            sx={{ cursor: 'pointer' }}
+          />
         </Box>
       </Box>
-      <Box className='sidebar-body' sx={{ p: theme => theme.spacing(5, 6) }}>
+      <Box
+        className='sidebar-body'
+        sx={{ p: (theme) => theme.spacing(5, 6) }}
+      >
         <DatePickerWrapper>
-          <form onSubmit={handleSubmit(onSubmit)} autoComplete='off'>
-            <FormControl fullWidth sx={{ mb: 6 }}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            autoComplete='off'
+          >
+            <FormControl
+              fullWidth
+              sx={{ mb: 6 }}
+            >
               <Controller
                 name='title'
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { value, onChange } }) => (
-                  <TextField label='Title' value={value} onChange={onChange} error={Boolean(errors.title)} />
+                  <TextField
+                    label='Title'
+                    value={value}
+                    onChange={onChange}
+                    error={Boolean(errors.title)}
+                  />
                 )}
               />
               {errors.title && (
-                <FormHelperText sx={{ color: 'error.main' }} id='event-title-error'>
+                <FormHelperText
+                  sx={{ color: 'error.main' }}
+                  id='event-title-error'
+                >
                   This field is required
                 </FormHelperText>
               )}
             </FormControl>
-            <FormControl fullWidth sx={{ mb: 6 }}>
+            <FormControl
+              fullWidth
+              sx={{ mb: 6 }}
+            >
               <InputLabel id='event-calendar'>Calendar</InputLabel>
               <Select
                 label='Calendar'
                 value={values.calendar}
                 labelId='event-calendar'
-                onChange={e => setValues({ ...values, calendar: e.target.value })}
+                onChange={(e) => setValues({ ...values, calendar: e.target.value })}
               >
                 <MenuItem value='Personal'>Personal</MenuItem>
                 <MenuItem value='Business'>Business</MenuItem>
@@ -251,8 +295,13 @@ const AddEventSidebar = props => {
                 startDate={values.startDate}
                 showTimeSelect={!values.allDay}
                 dateFormat={!values.allDay ? 'yyyy-MM-dd hh:mm' : 'yyyy-MM-dd'}
-                customInput={<PickersComponent label='Start Date' registername='startDate' />}
-                onChange={date => setValues({ ...values, startDate: new Date(date) })}
+                customInput={
+                  <PickersComponent
+                    label='Start Date'
+                    registername='startDate'
+                  />
+                }
+                onChange={(date) => setValues({ ...values, startDate: new Date(date) })}
                 onSelect={handleStartDate}
               />
             </Box>
@@ -266,15 +315,23 @@ const AddEventSidebar = props => {
                 startDate={values.startDate}
                 showTimeSelect={!values.allDay}
                 dateFormat={!values.allDay ? 'yyyy-MM-dd hh:mm' : 'yyyy-MM-dd'}
-                customInput={<PickersComponent label='End Date' registername='endDate' />}
-                onChange={date => setValues({ ...values, endDate: new Date(date) })}
+                customInput={
+                  <PickersComponent
+                    label='End Date'
+                    registername='endDate'
+                  />
+                }
+                onChange={(date) => setValues({ ...values, endDate: new Date(date) })}
               />
             </Box>
             <FormControl sx={{ mb: 6 }}>
               <FormControlLabel
                 label='All Day'
                 control={
-                  <Switch checked={values.allDay} onChange={e => setValues({ ...values, allDay: e.target.checked })} />
+                  <Switch
+                    checked={values.allDay}
+                    onChange={(e) => setValues({ ...values, allDay: e.target.checked })}
+                  />
                 }
               />
             </FormControl>
@@ -285,9 +342,12 @@ const AddEventSidebar = props => {
               sx={{ mb: 6 }}
               label='Event URL'
               value={values.url}
-              onChange={e => setValues({ ...values, url: e.target.value })}
+              onChange={(e) => setValues({ ...values, url: e.target.value })}
             />
-            <FormControl fullWidth sx={{ mb: 6 }}>
+            <FormControl
+              fullWidth
+              sx={{ mb: 6 }}
+            >
               <InputLabel id='event-guests'>Guests</InputLabel>
               <Select
                 multiple
@@ -295,7 +355,7 @@ const AddEventSidebar = props => {
                 value={values.guests}
                 labelId='event-guests'
                 id='event-guests-select'
-                onChange={e => setValues({ ...values, guests: e.target.value })}
+                onChange={(e) => setValues({ ...values, guests: e.target.value })}
               >
                 <MenuItem value='bruce'>Bruce</MenuItem>
                 <MenuItem value='clark'>Clark</MenuItem>
@@ -312,7 +372,7 @@ const AddEventSidebar = props => {
               label='Description'
               id='event-description'
               value={values.description}
-              onChange={e => setValues({ ...values, description: e.target.value })}
+              onChange={(e) => setValues({ ...values, description: e.target.value })}
             />
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <RenderSidebarFooter />

@@ -16,10 +16,10 @@ const Box = styled(MuiBox)(({ theme }) => ({
   borderWidth: 3,
   borderRadius: '50%',
   borderStyle: 'solid',
-  borderColor: hexToRGBA(theme.palette.primary.main, 0.12)
+  borderColor: hexToRGBA(theme.palette.primary.main, 0.12),
 }))
 
-const StepperCustomDot = props => {
+const StepperCustomDot = (props) => {
   // ** Props
   const { active, completed, error } = props
   if (error) {
@@ -30,7 +30,7 @@ const StepperCustomDot = props => {
     return (
       <Box
         sx={{
-          ...(active && { borderWidth: 5, borderColor: 'primary.main', backgroundColor: 'common.white' })
+          ...(active && { borderWidth: 5, borderColor: 'primary.main', backgroundColor: 'common.white' }),
         }}
       />
     )

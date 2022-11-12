@@ -17,7 +17,7 @@ import DatePicker from 'react-datepicker'
 import ChevronDown from 'mdi-material-ui/ChevronDown'
 import CalendarOutline from 'mdi-material-ui/CalendarOutline'
 
-const ChartjsBarChart = props => {
+const ChartjsBarChart = (props) => {
   // ** Props
   const { yellow, labelColor, borderColor, gridLineColor } = props
 
@@ -33,26 +33,26 @@ const ChartjsBarChart = props => {
       x: {
         grid: {
           borderColor,
-          color: gridLineColor
+          color: gridLineColor,
         },
-        ticks: { color: labelColor }
+        ticks: { color: labelColor },
       },
       y: {
         min: 0,
         max: 400,
         grid: {
           borderColor,
-          color: gridLineColor
+          color: gridLineColor,
         },
         ticks: {
           stepSize: 100,
-          color: labelColor
-        }
-      }
+          color: labelColor,
+        },
+      },
     },
     plugins: {
-      legend: { display: false }
-    }
+      legend: { display: false },
+    },
   }
 
   const data = {
@@ -69,7 +69,7 @@ const ChartjsBarChart = props => {
       '16/12',
       '17/12',
       '18/12',
-      '19/12'
+      '19/12',
     ],
     datasets: [
       {
@@ -77,9 +77,9 @@ const ChartjsBarChart = props => {
         backgroundColor: yellow,
         borderColor: 'transparent',
         borderRadius: { topRight: 15, topLeft: 15 },
-        data: [275, 90, 190, 205, 125, 85, 55, 87, 127, 150, 230, 280, 190]
-      }
-    ]
+        data: [275, 90, 190, 205, 125, 85, 55, 87, 127, 150, 230, 280, 190],
+      },
+    ],
   }
 
   const CustomInput = forwardRef(({ ...props }, ref) => {
@@ -103,13 +103,13 @@ const ChartjsBarChart = props => {
             <InputAdornment position='end'>
               <ChevronDown />
             </InputAdornment>
-          )
+          ),
         }}
       />
     )
   })
 
-  const handleOnChange = dates => {
+  const handleOnChange = (dates) => {
     const [start, end] = dates
     setStartDate(start)
     setEndDate(end)
@@ -124,7 +124,7 @@ const ChartjsBarChart = props => {
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],
           '& .MuiCardHeader-action': { mb: 0 },
-          '& .MuiCardHeader-content': { mb: [2, 0] }
+          '& .MuiCardHeader-content': { mb: [2, 0] },
         }}
         action={
           <DatePicker
@@ -135,12 +135,21 @@ const ChartjsBarChart = props => {
             startDate={startDate}
             onChange={handleOnChange}
             placeholderText='Click to select a date'
-            customInput={<CustomInput start={startDate} end={endDate} />}
+            customInput={
+              <CustomInput
+                start={startDate}
+                end={endDate}
+              />
+            }
           />
         }
       />
       <CardContent>
-        <Bar data={data} options={options} height={400} />
+        <Bar
+          data={data}
+          options={options}
+          height={400}
+        />
       </CardContent>
     </Card>
   )

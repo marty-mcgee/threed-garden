@@ -3,8 +3,8 @@ type Types = any
 
 const link: Types = {
   defaultProps: {
-    underline: "none",
-    color: "inherit",
+    underline: 'none',
+    color: 'inherit',
   },
 }
 

@@ -14,7 +14,7 @@ const TriangleImg = styled('img')(({ theme }) => ({
   bottom: 0,
   width: '10.375rem',
   position: 'absolute',
-  ...(theme.direction === 'rtl' ? { transform: 'scaleX(-1)' } : {})
+  ...(theme.direction === 'rtl' ? { transform: 'scaleX(-1)' } : {}),
 }))
 
 // Styled component for the avatar image
@@ -22,7 +22,7 @@ const AvatarImg = styled('img')({
   right: 49,
   bottom: 10,
   height: '11rem',
-  position: 'absolute'
+  position: 'absolute',
 })
 
 const CardUpgradeAccount = () => {
@@ -35,17 +35,32 @@ const CardUpgradeAccount = () => {
       <CardContent>
         <Typography variant='h6'>Upgrade Account 👩🏻‍💻</Typography>
         <Typography variant='body2'>Add 15 team members</Typography>
-        <Typography variant='h5' sx={{ color: 'primary.main', fontWeight: 600, mt: 3.5 }}>
+        <Typography
+          variant='h5'
+          sx={{ color: 'primary.main', fontWeight: 600, mt: 3.5 }}
+        >
           $199
         </Typography>
-        <Typography variant='body2' sx={{ mb: 4.25 }}>
+        <Typography
+          variant='body2'
+          sx={{ mb: 4.25 }}
+        >
           40% OFF 🤩
         </Typography>
-        <Button size='small' variant='contained'>
+        <Button
+          size='small'
+          variant='contained'
+        >
           Upgrade Plan
         </Button>
-        <TriangleImg alt='triangle background' src={`/images/misc/${imageSrc}`} />
-        <AvatarImg alt='Upgrade Account' src='/images/cards/pose-m-9.png' />
+        <TriangleImg
+          alt='triangle background'
+          src={`/images/misc/${imageSrc}`}
+        />
+        <AvatarImg
+          alt='Upgrade Account'
+          src='/images/cards/pose-m-9.png'
+        />
       </CardContent>
     </Card>
   )

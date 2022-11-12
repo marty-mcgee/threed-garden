@@ -23,47 +23,117 @@ import CardWidgetsTotalProfitStackedBar from '~/views/ui/cards/widgets/CardWidge
 const CardWidgets = () => {
   return (
     <ApexChartWrapper>
-      <Grid container spacing={6}>
-        <Grid item xs={12} md={8}>
+      <Grid
+        container
+        spacing={6}
+      >
+        <Grid
+          item
+          xs={12}
+          md={8}
+        >
           <CardWidgetsTotalProfitStackedBar />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={4}
+        >
           <CardWidgetsTotalVisitors />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={4}
+        >
           <CardWidgetsWeeklySales />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={4}
+        >
           <CardWidgetsTotalRevenue />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={4}
+        >
           <CardWidgetsWeeklyOverview />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={4}
+        >
           <CardWidgetsPerformance />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={4}
+        >
           <CardWidgetsAnalytics />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={4}
+        >
           <CardWidgetsSalesState />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={3}
+        >
           <CardWidgetsTotalProfitRadialBar />
         </Grid>
-        <Grid item xs={12} sm={4} md={3}>
+        <Grid
+          item
+          xs={12}
+          sm={4}
+          md={3}
+        >
           <CardWidgetsTotalSales />
         </Grid>
-        <Grid item xs={12} sm={4} md={3}>
+        <Grid
+          item
+          xs={12}
+          sm={4}
+          md={3}
+        >
           <CardWidgetsTotalVisits />
         </Grid>
-        <Grid item xs={12} sm={4} md={3}>
+        <Grid
+          item
+          xs={12}
+          sm={4}
+          md={3}
+        >
           <CardWidgetsRevenueReport />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+        >
           <CardWidgetsActivityTimeline />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+        >
           <CardWidgetsSalesOverview />
         </Grid>
       </Grid>

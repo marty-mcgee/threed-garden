@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent'
 // ** Third Party Imports
 import { Bar } from 'react-chartjs-2'
 
-const ChartjsHorizontalBarChart = props => {
+const ChartjsHorizontalBarChart = (props) => {
   // ** Props
   const { info, warning, labelColor, borderColor, gridLineColor } = props
 
@@ -19,12 +19,12 @@ const ChartjsHorizontalBarChart = props => {
       bar: {
         borderRadius: {
           topRight: 15,
-          bottomRight: 15
-        }
-      }
+          bottomRight: 15,
+        },
+      },
     },
     layout: {
-      padding: { top: -4 }
+      padding: { top: -4 },
     },
     scales: {
       x: {
@@ -32,25 +32,25 @@ const ChartjsHorizontalBarChart = props => {
         grid: {
           drawTicks: false,
           color: gridLineColor,
-          borderColor: 'transparent'
+          borderColor: 'transparent',
         },
-        ticks: { color: labelColor }
+        ticks: { color: labelColor },
       },
       y: {
         grid: {
           borderColor,
-          display: false
+          display: false,
         },
-        ticks: { color: labelColor }
-      }
+        ticks: { color: labelColor },
+      },
     },
     plugins: {
       legend: {
         align: 'end',
         position: 'top',
-        labels: { color: labelColor }
-      }
-    }
+        labels: { color: labelColor },
+      },
+    },
   }
 
   const data = {
@@ -61,16 +61,16 @@ const ChartjsHorizontalBarChart = props => {
         label: 'Market Data',
         backgroundColor: warning,
         borderColor: 'transparent',
-        data: [710, 350, 580, 460, 120]
+        data: [710, 350, 580, 460, 120],
       },
       {
         maxBarThickness: 15,
         backgroundColor: info,
         label: 'Personal Data',
         borderColor: 'transparent',
-        data: [430, 590, 510, 240, 360]
-      }
-    ]
+        data: [430, 590, 510, 240, 360],
+      },
+    ],
   }
 
   return (
@@ -82,7 +82,11 @@ const ChartjsHorizontalBarChart = props => {
         subheaderTypographyProps={{ variant: 'caption' }}
       />
       <CardContent>
-        <Bar data={data} options={options} height={400} />
+        <Bar
+          data={data}
+          options={options}
+          height={400}
+        />
       </CardContent>
     </Card>
   )

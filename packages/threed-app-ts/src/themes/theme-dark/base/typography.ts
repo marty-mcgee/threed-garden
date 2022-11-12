@@ -5,10 +5,10 @@
  */
 
 // ThreeD Garden Base Styles
-import colors from "~/themes/theme-dark/base/colors"
+import colors from '~/themes/theme-dark/base/colors'
 
 // ThreeD Garden Helper Functions
-import pxToRem from "~/themes/theme-dark/functions/pxToRem"
+import pxToRem from '~/themes/theme-dark/functions/pxToRem'
 
 const { white } = colors
 
@@ -123,8 +123,8 @@ interface Types {
     md: string
     lg: string
     xl: string
-    "2xl": string
-    "3xl": string
+    '2xl': string
+    '3xl': string
   }
   lineHeight: {
     sm: number
@@ -240,7 +240,7 @@ const typography: Types = {
     fontSize: baseProperties.fontSizeSM,
     fontWeight: baseProperties.fontWeightLight,
     lineHeight: 1.5,
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
   },
 
   caption: {
@@ -291,8 +291,8 @@ const typography: Types = {
     md: baseProperties.fontSizeMD,
     lg: baseProperties.fontSizeLG,
     xl: baseProperties.fontSizeXL,
-    "2xl": baseProperties.fontSize2XL,
-    "3xl": baseProperties.fontSize3XL,
+    '2xl': baseProperties.fontSize2XL,
+    '3xl': baseProperties.fontSize3XL,
   },
 
   lineHeight: {

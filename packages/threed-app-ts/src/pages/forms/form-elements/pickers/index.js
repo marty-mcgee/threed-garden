@@ -10,11 +10,21 @@ import ReactDatePicker from '~/views/forms/form-elements/pickers/react-datepicke
 
 const Pickers = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+      >
         <MUIPickers />
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <ReactDatePicker />
       </Grid>
     </Grid>

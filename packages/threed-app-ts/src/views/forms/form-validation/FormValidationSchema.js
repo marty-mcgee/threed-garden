@@ -29,7 +29,7 @@ const defaultValues = {
   email: '',
   lastName: '',
   password: '',
-  firstName: ''
+  firstName: '',
 }
 
 const showErrors = (field, valueLen, min) => {
@@ -46,52 +46,61 @@ const schema = yup.object().shape({
   email: yup.string().email().required(),
   lastName: yup
     .string()
-    .min(3, obj => showErrors('lastName', obj.value.length, obj.min))
+    .min(3, (obj) => showErrors('lastName', obj.value.length, obj.min))
     .required(),
   password: yup
     .string()
-    .min(8, obj => showErrors('password', obj.value.length, obj.min))
+    .min(8, (obj) => showErrors('password', obj.value.length, obj.min))
     .required(),
   firstName: yup
     .string()
-    .min(3, obj => showErrors('firstName', obj.value.length, obj.min))
-    .required()
+    .min(3, (obj) => showErrors('firstName', obj.value.length, obj.min))
+    .required(),
 })
 
 const FormValidationSchema = () => {
   // ** States
   const [state, setState] = useState({
     password: '',
-    showPassword: false
+    showPassword: false,
   })
 
   // ** Hook
   const {
     control,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm({
     defaultValues,
     mode: 'onChange',
-    resolver: yupResolver(schema)
+    resolver: yupResolver(schema),
   })
 
   const handleClickShowPassword = () => {
     setState({ ...state, showPassword: !state.showPassword })
   }
 
-  const handleMouseDownPassword = event => {
+  const handleMouseDownPassword = (event) => {
     event.preventDefault()
   }
   const onSubmit = () => toast.success('Form Submitted')
 
   return (
     <Card>
-      <CardHeader title='Validation Schema With OnChange' titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader
+        title='Validation Schema With OnChange'
+        titleTypographyProps={{ variant: 'h6' }}
+      />
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Grid container spacing={5}>
-            <Grid item xs={12}>
+          <Grid
+            container
+            spacing={5}
+          >
+            <Grid
+              item
+              xs={12}
+            >
               <FormControl fullWidth>
                 <Controller
                   name='firstName'
@@ -109,14 +118,20 @@ const FormValidationSchema = () => {
                   )}
                 />
                 {errors.firstName && (
-                  <FormHelperText sx={{ color: 'error.main' }} id='validation-schema-first-name'>
+                  <FormHelperText
+                    sx={{ color: 'error.main' }}
+                    id='validation-schema-first-name'
+                  >
                     {errors.firstName.message}
                   </FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <FormControl fullWidth>
                 <Controller
                   name='lastName'
@@ -134,14 +149,20 @@ const FormValidationSchema = () => {
                   )}
                 />
                 {errors.lastName && (
-                  <FormHelperText sx={{ color: 'error.main' }} id='validation-schema-last-name'>
+                  <FormHelperText
+                    sx={{ color: 'error.main' }}
+                    id='validation-schema-last-name'
+                  >
                     {errors.lastName.message}
                   </FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <FormControl fullWidth>
                 <Controller
                   name='email'
@@ -160,16 +181,25 @@ const FormValidationSchema = () => {
                   )}
                 />
                 {errors.email && (
-                  <FormHelperText sx={{ color: 'error.main' }} id='validation-schema-email'>
+                  <FormHelperText
+                    sx={{ color: 'error.main' }}
+                    id='validation-schema-email'
+                  >
                     {errors.email.message}
                   </FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <FormControl fullWidth>
-                <InputLabel htmlFor='validation-schema-password' error={Boolean(errors.password)}>
+                <InputLabel
+                  htmlFor='validation-schema-password'
+                  error={Boolean(errors.password)}
+                >
                   Password
                 </InputLabel>
                 <Controller
@@ -200,15 +230,25 @@ const FormValidationSchema = () => {
                   )}
                 />
                 {errors.password && (
-                  <FormHelperText sx={{ color: 'error.main' }} id='validation-schema-password'>
+                  <FormHelperText
+                    sx={{ color: 'error.main' }}
+                    id='validation-schema-password'
+                  >
                     {errors.password.message}
                   </FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={12}>
-              <Button size='large' type='submit' variant='contained'>
+            <Grid
+              item
+              xs={12}
+            >
+              <Button
+                size='large'
+                type='submit'
+                variant='contained'
+              >
                 Submit
               </Button>
             </Grid>

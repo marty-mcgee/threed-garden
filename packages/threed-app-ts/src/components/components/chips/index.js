@@ -22,13 +22,21 @@ import * as source from '~/views/components/chips/ChipsSourceCode'
 
 const Pagination = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12} md={6}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Chip Variants'
           code={{
             tsx: null,
-            jsx: source.ChipsVariantsJSXCode
+            jsx: source.ChipsVariantsJSXCode,
           }}
         >
           <Typography>
@@ -37,12 +45,16 @@ const Pagination = () => {
           <ChipsVariants />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Disabled Chips'
           code={{
             tsx: null,
-            jsx: source.ChipsDisabledJSXCode
+            jsx: source.ChipsDisabledJSXCode,
           }}
         >
           <Typography>
@@ -51,12 +63,16 @@ const Pagination = () => {
           <ChipsDisabled />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Colors'
           code={{
             tsx: null,
-            jsx: source.ChipsColorsJSXCode
+            jsx: source.ChipsColorsJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -65,12 +81,16 @@ const Pagination = () => {
           <ChipsColors />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='onDelete'
           code={{
             tsx: null,
-            jsx: source.ChipsOnDeleteJSXCode
+            jsx: source.ChipsOnDeleteJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -80,12 +100,16 @@ const Pagination = () => {
           <ChipsOnDelete />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Chip Sizes'
           code={{
             tsx: null,
-            jsx: source.ChipsSizesJSXCode
+            jsx: source.ChipsSizesJSXCode,
           }}
         >
           <Typography>
@@ -94,12 +118,16 @@ const Pagination = () => {
           <ChipsSizes />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Clickable Chip'
           code={{
             tsx: null,
-            jsx: source.ChipsClickableJSXCode
+            jsx: source.ChipsClickableJSXCode,
           }}
         >
           <Typography>
@@ -109,12 +137,16 @@ const Pagination = () => {
           <ChipsClickable />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Chip with Avatar'
           code={{
             tsx: null,
-            jsx: source.ChipsAvatarJSXCode
+            jsx: source.ChipsAvatarJSXCode,
           }}
         >
           <Typography>
@@ -123,12 +155,16 @@ const Pagination = () => {
           <ChipsAvatar />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Icon Chip'
           code={{
             tsx: null,
-            jsx: source.ChipsIconJSXCode
+            jsx: source.ChipsIconJSXCode,
           }}
         >
           <Typography>
@@ -137,24 +173,30 @@ const Pagination = () => {
           <ChipsIcon />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Chips Array'
           code={{
             tsx: null,
-            jsx: source.ChipsArrayJSXCode
+            jsx: source.ChipsArrayJSXCode,
           }}
         >
           <Typography>You can make a list of chips that can make some or all chips deletable.</Typography>
           <ChipsArray />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Custom Light Chips'
           code={{
             tsx: null,
-            jsx: source.ChipsLightJSXCode
+            jsx: source.ChipsLightJSXCode,
           }}
         >
           <Typography>

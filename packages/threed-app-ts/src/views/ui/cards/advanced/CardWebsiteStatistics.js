@@ -27,43 +27,43 @@ const data = [
     title: 'Direct',
     color: 'success',
     trendNumber: '15%',
-    trend: <ChevronDown sx={{ color: 'error.main' }} />
+    trend: <ChevronDown sx={{ color: 'error.main' }} />,
   },
   {
     sales: '57,484',
     title: 'Organic',
     color: 'primary',
     trendNumber: '85%',
-    trend: <ChevronUp sx={{ color: 'success.main' }} />
+    trend: <ChevronUp sx={{ color: 'success.main' }} />,
   },
   {
     sales: '2,534',
     color: 'warning',
     title: 'Referral',
     trendNumber: '48%',
-    trend: <ChevronUp sx={{ color: 'success.main' }} />
+    trend: <ChevronUp sx={{ color: 'success.main' }} />,
   },
   {
     sales: '977',
     title: 'Mail',
     color: 'error',
     trendNumber: '36%',
-    trend: <ChevronDown sx={{ color: 'error.main' }} />
+    trend: <ChevronDown sx={{ color: 'error.main' }} />,
   },
   {
     sales: '92',
     color: 'info',
     title: 'Social',
     trendNumber: '55%',
-    trend: <ChevronUp sx={{ color: 'success.main' }} />
+    trend: <ChevronUp sx={{ color: 'success.main' }} />,
   },
   {
     sales: '28',
     title: 'Other',
     color: 'secondary',
     trendNumber: '12%',
-    trend: <ChevronUp sx={{ color: 'success.main' }} />
-  }
+    trend: <ChevronUp sx={{ color: 'success.main' }} />,
+  },
 ]
 
 const chartData = [
@@ -73,7 +73,7 @@ const chartData = [
   { value: 75 },
   { value: 40 },
   { value: 75 },
-  { value: 20 }
+  { value: 20 },
 ]
 
 const CardWebsiteStats = () => {
@@ -86,7 +86,12 @@ const CardWebsiteStats = () => {
         title='Website Statistics'
         titleTypographyProps={{ sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' } }}
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical sx={{ fontSize: '1.375rem' }} />
           </IconButton>
         }
@@ -94,15 +99,26 @@ const CardWebsiteStats = () => {
       <CardContent>
         <Box sx={{ mb: 4.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography variant='h3' sx={{ mb: 0.5 }}>
+            <Typography
+              variant='h3'
+              sx={{ mb: 0.5 }}
+            >
               4,590
             </Typography>
             <Typography variant='caption'>Total Traffic</Typography>
           </Box>
           <Box sx={{ height: 75, width: '100%', maxWidth: '120px' }}>
             <ResponsiveContainer>
-              <BarChart height={100} data={chartData}>
-                <Bar dataKey='value' fill={theme.palette.primary.main} radius={4} barSize={5} />
+              <BarChart
+                height={100}
+                data={chartData}
+              >
+                <Bar
+                  dataKey='value'
+                  fill={theme.palette.primary.main}
+                  radius={4}
+                  barSize={5}
+                />
               </BarChart>
             </ResponsiveContainer>
           </Box>
@@ -110,7 +126,7 @@ const CardWebsiteStats = () => {
         <TableContainer>
           <Table>
             <TableBody>
-              {data.map(row => {
+              {data.map((row) => {
                 return (
                   <TableRow
                     key={row.title}
@@ -119,9 +135,9 @@ const CardWebsiteStats = () => {
                       '& .MuiTableCell-root': {
                         '&:last-of-type': { pr: 0 },
                         '&:first-of-type': { pl: 0 },
-                        py: theme => `${theme.spacing(2.75)} !important`
+                        py: (theme) => `${theme.spacing(2.75)} !important`,
                       },
-                      '&:first-of-type td': { borderTop: theme => `1px solid ${theme.palette.divider}` }
+                      '&:first-of-type td': { borderTop: (theme) => `1px solid ${theme.palette.divider}` },
                     }}
                   >
                     <TableCell>

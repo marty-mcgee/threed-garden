@@ -12,7 +12,7 @@ const BlankLayoutWrapper = styled(Box)(({ theme }) => ({
     minHeight: '100vh',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: theme.spacing(5)
+    padding: theme.spacing(5),
   },
 
   // For V2 Blank layout pages
@@ -20,14 +20,17 @@ const BlankLayoutWrapper = styled(Box)(({ theme }) => ({
     display: 'flex',
     minHeight: '100vh',
     overflowX: 'hidden',
-    position: 'relative'
-  }
+    position: 'relative',
+  },
 }))
 
 const BlankLayout = ({ children }) => {
   return (
     <BlankLayoutWrapper className='layout-wrapper'>
-      <Box className='app-content' sx={{ minHeight: '100vh', overflowX: 'hidden', position: 'relative' }}>
+      <Box
+        className='app-content'
+        sx={{ minHeight: '100vh', overflowX: 'hidden', position: 'relative' }}
+      >
         {children}
       </Box>
     </BlankLayoutWrapper>

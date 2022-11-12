@@ -29,8 +29,8 @@ const Tab = styled(MuiTab)(({ theme }) => ({
   flexDirection: 'row',
   '& svg': {
     marginBottom: '0 !important',
-    marginRight: theme.spacing(3)
-  }
+    marginRight: theme.spacing(3),
+  },
 }))
 
 const UserViewRight = ({ invoiceData }) => {
@@ -48,28 +48,63 @@ const UserViewRight = ({ invoiceData }) => {
         scrollButtons='auto'
         onChange={handleChange}
         aria-label='forced scroll tabs example'
-        sx={{ borderBottom: theme => `1px solid ${theme.palette.divider}` }}
+        sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
       >
-        <Tab value='overview' label='Overview' icon={<AccountOutline />} />
-        <Tab value='security' label='Security' icon={<LockOutline />} />
-        <Tab value='billing-plan' label='Billing & Plan' icon={<BookmarkOutline />} />
-        <Tab value='notification' label='Notification' icon={<BellOutline />} />
-        <Tab value='connection' label='Connection' icon={<LinkVariant />} />
+        <Tab
+          value='overview'
+          label='Overview'
+          icon={<AccountOutline />}
+        />
+        <Tab
+          value='security'
+          label='Security'
+          icon={<LockOutline />}
+        />
+        <Tab
+          value='billing-plan'
+          label='Billing & Plan'
+          icon={<BookmarkOutline />}
+        />
+        <Tab
+          value='notification'
+          label='Notification'
+          icon={<BellOutline />}
+        />
+        <Tab
+          value='connection'
+          label='Connection'
+          icon={<LinkVariant />}
+        />
       </TabList>
       <Box sx={{ mt: 6 }}>
-        <TabPanel sx={{ p: 0 }} value='overview'>
+        <TabPanel
+          sx={{ p: 0 }}
+          value='overview'
+        >
           <UserViewOverview invoiceData={invoiceData} />
         </TabPanel>
-        <TabPanel sx={{ p: 0 }} value='security'>
+        <TabPanel
+          sx={{ p: 0 }}
+          value='security'
+        >
           <UserViewSecurity />
         </TabPanel>
-        <TabPanel sx={{ p: 0 }} value='billing-plan'>
+        <TabPanel
+          sx={{ p: 0 }}
+          value='billing-plan'
+        >
           <UserViewBilling />
         </TabPanel>
-        <TabPanel sx={{ p: 0 }} value='notification'>
+        <TabPanel
+          sx={{ p: 0 }}
+          value='notification'
+        >
           <UserViewNotification />
         </TabPanel>
-        <TabPanel sx={{ p: 0 }} value='connection'>
+        <TabPanel
+          sx={{ p: 0 }}
+          value='connection'
+        >
           <UserViewConnection />
         </TabPanel>
       </Box>

@@ -17,7 +17,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 // ** Third Party Imports
 import { useForm, Controller } from 'react-hook-form'
 
-const TableHeader = props => {
+const TableHeader = (props) => {
   // ** Props
   const { value, handleFilter } = props
 
@@ -29,7 +29,7 @@ const TableHeader = props => {
     control,
     setValue,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm({ defaultValues: { name: '' } })
 
   const handleDialogToggle = () => {
@@ -52,21 +52,38 @@ const TableHeader = props => {
           value={value}
           sx={{ mr: 4, mb: 2 }}
           placeholder='Search Permission'
-          onChange={e => handleFilter(e.target.value)}
+          onChange={(e) => handleFilter(e.target.value)}
         />
-        <Button sx={{ mb: 2 }} variant='contained' onClick={handleDialogToggle}>
+        <Button
+          sx={{ mb: 2 }}
+          variant='contained'
+          onClick={handleDialogToggle}
+        >
           Add Permission
         </Button>
       </Box>
-      <Dialog fullWidth maxWidth='sm' onClose={handleDialogToggle} open={open}>
+      <Dialog
+        fullWidth
+        maxWidth='sm'
+        onClose={handleDialogToggle}
+        open={open}
+      >
         <DialogTitle sx={{ pt: 12, mx: 'auto', textAlign: 'center' }}>
-          <Typography variant='h4' component='span' sx={{ mb: 2 }}>
+          <Typography
+            variant='h4'
+            component='span'
+            sx={{ mb: 2 }}
+          >
             Add New Permission
           </Typography>
           <Typography variant='body2'>Permissions you may use and assign to your users.</Typography>
         </DialogTitle>
         <DialogContent sx={{ pb: 12, mx: 'auto' }}>
-          <Box component='form' sx={{ mt: 4 }} onSubmit={handleSubmit(onSubmit)}>
+          <Box
+            component='form'
+            sx={{ mt: 4 }}
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <FormGroup sx={{ mb: 1 }}>
               <Controller
                 name='name'
@@ -87,12 +104,27 @@ const TableHeader = props => {
                 <FormHelperText sx={{ color: 'error.main' }}>Please enter a valid permission name</FormHelperText>
               )}
             </FormGroup>
-            <FormControlLabel control={<Checkbox />} label='Set as core permission' />
-            <Box className='demo-space-x' sx={{ '&>:last-child': { mr: 0 } }}>
-              <Button size='large' type='submit' variant='contained'>
+            <FormControlLabel
+              control={<Checkbox />}
+              label='Set as core permission'
+            />
+            <Box
+              className='demo-space-x'
+              sx={{ '&>:last-child': { mr: 0 } }}
+            >
+              <Button
+                size='large'
+                type='submit'
+                variant='contained'
+              >
                 Create Permission
               </Button>
-              <Button size='large' variant='outlined' color='secondary' onClick={handleDialogToggle}>
+              <Button
+                size='large'
+                variant='outlined'
+                color='secondary'
+                onClick={handleDialogToggle}
+              >
                 Discard
               </Button>
             </Box>

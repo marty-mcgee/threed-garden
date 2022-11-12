@@ -22,7 +22,7 @@ import BriefcaseVariantOutline from 'mdi-material-ui/BriefcaseVariantOutline'
 const icons = {
   CurrencyUsd,
   HelpCircleOutline,
-  BriefcaseVariantOutline
+  BriefcaseVariantOutline,
 }
 
 const FaqAccordions = ({ data }) => {
@@ -51,10 +51,14 @@ const FaqAccordions = ({ data }) => {
     }
   }
 
-  const renderAccordions = item => {
-    return item.qAndA.map(obj => {
+  const renderAccordions = (item) => {
+    return item.qAndA.map((obj) => {
       return (
-        <Accordion key={obj.id} expanded={expanded(item.id, obj.id)} onChange={handleChange(item.id, obj.id)}>
+        <Accordion
+          key={obj.id}
+          expanded={expanded(item.id, obj.id)}
+          onChange={handleChange(item.id, obj.id)}
+        >
           <AccordionSummary
             expandIcon={<ChevronDown />}
             id={`faq-accordion-${item.id}-${obj.id}-header`}
@@ -74,7 +78,7 @@ const FaqAccordions = ({ data }) => {
     if (data) {
       return (
         <>
-          {data.map(item => {
+          {data.map((item) => {
             if (item) {
               const IconTag = icons[item.icon]
 
@@ -83,7 +87,7 @@ const FaqAccordions = ({ data }) => {
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Avatar
                       variant='rounded'
-                      sx={{ backgroundColor: theme => `rgba(${theme.palette.customColors.main}, 0.08)` }}
+                      sx={{ backgroundColor: (theme) => `rgba(${theme.palette.customColors.main}, 0.08)` }}
                     >
                       <IconTag sx={{ fontSize: '1.375rem' }} />
                     </Avatar>

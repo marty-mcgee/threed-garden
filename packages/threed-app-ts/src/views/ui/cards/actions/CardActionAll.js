@@ -33,7 +33,10 @@ const CardActionAll = () => {
   }
 
   return (
-    <Fade in={visibility} timeout={300}>
+    <Fade
+      in={visibility}
+      timeout={300}
+    >
       <Card sx={{ position: 'relative' }}>
         <CardHeader
           title='All Actions'
@@ -70,7 +73,11 @@ const CardActionAll = () => {
           <CardContent>
             <Typography variant='body2'>
               You can specifically add remove action using <code>actionRemove</code> prop Click on{' '}
-              <Close fontSize='small' sx={{ verticalAlign: 'bottom' }} /> icon to see it in action
+              <Close
+                fontSize='small'
+                sx={{ verticalAlign: 'bottom' }}
+              />{' '}
+              icon to see it in action
             </Typography>
           </CardContent>
 
@@ -78,8 +85,8 @@ const CardActionAll = () => {
             open={reload}
             sx={{
               position: 'absolute',
-              color: theme => theme.palette.common.white,
-              zIndex: theme => theme.zIndex.mobileStepper - 1
+              color: (theme) => theme.palette.common.white,
+              zIndex: (theme) => theme.zIndex.mobileStepper - 1,
             }}
           >
             <CircularProgress color='inherit' />

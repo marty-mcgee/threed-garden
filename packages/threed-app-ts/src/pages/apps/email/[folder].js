@@ -12,21 +12,21 @@ export const getStaticPaths = async () => {
   const res = await axios.get('/apps/email/allEmails')
   const data = await res.data.emails
 
-  const paths = data.map(mail => ({
-    params: { folder: mail.folder }
+  const paths = data.map((mail) => ({
+    params: { folder: mail.folder },
   }))
 
   return {
     paths,
-    fallback: false
+    fallback: false,
   }
 }
 
 export const getStaticProps = ({ params }) => {
   return {
     props: {
-      folder: params?.folder
-    }
+      folder: params?.folder,
+    },
   }
 }
 

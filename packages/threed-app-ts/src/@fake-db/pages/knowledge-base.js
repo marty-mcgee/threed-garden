@@ -9,7 +9,7 @@ const data = {
       title: 'Sales Automation 👩🏻‍💻',
       category: 'sales-automation',
       imgSrc: '/images/pages/kb-sales.png',
-      desc: 'There is perhaps no better demonstration of the folly of image of our tiny world.'
+      desc: 'There is perhaps no better demonstration of the folly of image of our tiny world.',
     },
     {
       imgWidth: 186,
@@ -17,7 +17,7 @@ const data = {
       title: 'Marketing Automation 🚀',
       category: 'marketing-automation',
       imgSrc: '/images/pages/kb-marketing.png',
-      desc: 'Look again at that dot. That’s here. That’s home. That’s us. On it everyone you love.'
+      desc: 'Look again at that dot. That’s here. That’s home. That’s us. On it everyone you love.',
     },
     {
       imgWidth: 125,
@@ -25,7 +25,7 @@ const data = {
       title: 'API Questions 📱',
       category: 'api-questions',
       imgSrc: '/images/pages/kb-api.png',
-      desc: 'Every hero and coward, every creator and destroyer of civilization.'
+      desc: 'Every hero and coward, every creator and destroyer of civilization.',
     },
     {
       imgWidth: 172,
@@ -33,7 +33,7 @@ const data = {
       title: 'Email Marketing ✉️',
       category: 'email-marketing',
       imgSrc: '/images/pages/kb-email.png',
-      desc: 'There is perhaps no better demonstration of the folly of human conceits.'
+      desc: 'There is perhaps no better demonstration of the folly of human conceits.',
     },
     {
       imgWidth: 166,
@@ -41,7 +41,7 @@ const data = {
       title: 'Personalization 🤩',
       category: 'personalization',
       imgSrc: '/images/pages/kb-personalization.png',
-      desc: 'It has been said that astronomy is a humbling and character experience.'
+      desc: 'It has been said that astronomy is a humbling and character experience.',
     },
     {
       imgWidth: 161,
@@ -49,8 +49,8 @@ const data = {
       title: 'Demand Generation 🤟🏻',
       category: 'demand-generation',
       imgSrc: '/images/pages/kb-demand.png',
-      desc: 'Competent means we will never take anything for granted.'
-    }
+      desc: 'Competent means we will never take anything for granted.',
+    },
   ],
   knowledgeBaseCategory: [
     {
@@ -60,25 +60,25 @@ const data = {
       questions: [
         {
           slug: 'how-secure-is-my-password',
-          question: 'How Secure Is My Password?'
+          question: 'How Secure Is My Password?',
         },
         {
           slug: 'can-i-change-my-username',
-          question: 'Can I Change My Username?'
+          question: 'Can I Change My Username?',
         },
         {
           slug: 'where-can-i-upload-my-avatar',
-          question: 'Where Can I Upload My Avatar?'
+          question: 'Where Can I Upload My Avatar?',
         },
         {
           slug: 'how-do-i-change-my-timezone',
-          question: 'How Do I Change My Timezone?'
+          question: 'How Do I Change My Timezone?',
         },
         {
           slug: 'how-do-i-change-my-password',
-          question: 'How Do I Change My Password?'
-        }
-      ]
+          question: 'How Do I Change My Password?',
+        },
+      ],
     },
     {
       icon: 'Link',
@@ -87,25 +87,25 @@ const data = {
       questions: [
         {
           slug: 'what-technologies-are-used',
-          question: 'What Technologies Are Used?'
+          question: 'What Technologies Are Used?',
         },
         {
           slug: 'what-are-the-api-limits',
-          question: 'What Are The API Limits?'
+          question: 'What Are The API Limits?',
         },
         {
           slug: 'why-was-my-application-rejected',
-          question: 'Why Was My Application Rejected?'
+          question: 'Why Was My Application Rejected?',
         },
         {
           slug: 'where-can-i-find-the-documentation',
-          question: 'Where can I find the documentation?'
+          question: 'Where can I find the documentation?',
         },
         {
           slug: 'how-do-i-get-an-api-key',
-          question: 'How Do I Get An API Key?'
-        }
-      ]
+          question: 'How Do I Get An API Key?',
+        },
+      ],
     },
     {
       title: 'Billing',
@@ -114,25 +114,25 @@ const data = {
       questions: [
         {
           slug: 'can-i-contact-a-salés-rep',
-          question: 'Can I Contact A Salés Rep?'
+          question: 'Can I Contact A Salés Rep?',
         },
         {
           slug: 'do-i-need-to-pay-vat',
-          question: 'Do I Need To Pay VAT?'
+          question: 'Do I Need To Pay VAT?',
         },
         {
           slug: 'can-i-get-a-refund',
-          question: 'Can I Get A Refund?'
+          question: 'Can I Get A Refund?',
         },
         {
           slug: 'difference-annual-&-monthly-billing',
-          question: 'Difference Annual & Monthly Billing'
+          question: 'Difference Annual & Monthly Billing',
         },
         {
           slug: 'what-happens-if-the-price-increases',
-          question: 'What Happens If The Price Increases?'
-        }
-      ]
+          question: 'What Happens If The Price Increases?',
+        },
+      ],
     },
     {
       iconColor: 'warning',
@@ -141,25 +141,25 @@ const data = {
       questions: [
         {
           slug: 'how-do-i-contact-legal',
-          question: 'How Do I Contact Legal?'
+          question: 'How Do I Contact Legal?',
         },
         {
           slug: 'where-are-your-offices-located',
-          question: 'Where Are Your Offices Located?'
+          question: 'Where Are Your Offices Located?',
         },
         {
           slug: 'who-owns-the-copyright-on-text',
-          question: 'Who Owns The Copyright On Text?'
+          question: 'Who Owns The Copyright On Text?',
         },
         {
           slug: 'our-content-policy',
-          question: 'Our Content Policy'
+          question: 'Our Content Policy',
         },
         {
           slug: 'how-do-i-file-a-dmca',
-          question: 'How Do I File A DMCA?'
-        }
-      ]
+          question: 'How Do I File A DMCA?',
+        },
+      ],
     },
     {
       icon: 'Cellphone',
@@ -168,25 +168,25 @@ const data = {
       questions: [
         {
           slug: 'how-do-i-download-the-android-app',
-          question: 'How Do I Download The Android App?'
+          question: 'How Do I Download The Android App?',
         },
         {
           slug: 'how-to-download-our-iPad-app',
-          question: 'How To Download Our iPad App'
+          question: 'How To Download Our iPad App',
         },
         {
           slug: 'where-can-i-upload-my-avatar',
-          question: 'Where Can I Upload My Avatar?'
+          question: 'Where Can I Upload My Avatar?',
         },
         {
           slug: 'can-i-use-my-android-phone',
-          question: 'Can I Use My Android Phone?'
+          question: 'Can I Use My Android Phone?',
         },
         {
           slug: 'is-there-an-iOS-app',
-          question: 'Is There An iOS App?'
-        }
-      ]
+          question: 'Is There An iOS App?',
+        },
+      ],
     },
     {
       title: 'Using KnowHow',
@@ -194,31 +194,31 @@ const data = {
       questions: [
         {
           slug: 'customization',
-          question: 'Customization'
+          question: 'Customization',
         },
         {
           slug: 'upgrading',
-          question: 'Upgrading'
+          question: 'Upgrading',
         },
         {
           slug: 'customizing-your-theme',
-          question: 'Customizing Your Theme'
+          question: 'Customizing Your Theme',
         },
         {
           slug: 'upgrading-your-theme',
-          question: 'Upgrading Your Theme'
-        }
-      ]
-    }
-  ]
+          question: 'Upgrading Your Theme',
+        },
+      ],
+    },
+  ],
 }
 
 // Knowledge Base
-mock.onGet('/pages/knowledge-base').reply(config => {
+mock.onGet('/pages/knowledge-base').reply((config) => {
   const { q = '' } = config.params ?? ''
   const queryLowered = q.toLowerCase()
 
-  const filteredData = data.knowledgeBase.filter(obj => {
+  const filteredData = data.knowledgeBase.filter((obj) => {
     return obj.title.toLowerCase().includes(queryLowered) || obj.desc.toLowerCase().includes(queryLowered)
   })
 
@@ -226,14 +226,14 @@ mock.onGet('/pages/knowledge-base').reply(config => {
 })
 
 // Knowledge Base Category
-mock.onGet('/pages/knowledge-base/categories').reply(config => {
+mock.onGet('/pages/knowledge-base/categories').reply((config) => {
   const { q = '' } = config.params ?? ''
   const queryLowered = q.toLowerCase()
   const filteredData = []
-  Object.entries(data.knowledgeBaseCategory).forEach(entry => {
+  Object.entries(data.knowledgeBaseCategory).forEach((entry) => {
     const categoryObj = entry[1]
 
-    const filteredQAndA = categoryObj.questions.filter(obj => {
+    const filteredQAndA = categoryObj.questions.filter((obj) => {
       return obj.question.toLowerCase().includes(queryLowered)
     })
     if (filteredQAndA.length) {

@@ -1,5 +1,4 @@
 // ** Next Imports
-import dynamic from 'next/dynamic'
 
 // ** React Imports
 import { useContext } from 'react'
@@ -21,18 +20,23 @@ import ThreeDGarden from '~/components/threed/ThreeDGarden'
 // })
 
 const ParticipatePage = () => {
-
   // ** Hooks
   const ability = useContext(AbilityContext)
 
   return (
-    <Grid container spacing={6}>
-
+    <Grid
+      container
+      spacing={6}
+    >
       {/* [MM] HEY HEY HEY */}
       <ThreeDGarden />
       {/* [MM] HEY HEY HEY */}
 
-      <Grid item md={6} xs={12}>
+      <Grid
+        item
+        md={6}
+        xs={12}
+      >
         <Card>
           <CardHeader title='Public Content' />
           <CardContent>
@@ -42,7 +46,11 @@ const ParticipatePage = () => {
         </Card>
       </Grid>
       {ability?.can('read', 'analytics') && (
-        <Grid item md={6} xs={12}>
+        <Grid
+          item
+          md={6}
+          xs={12}
+        >
           <Card>
             <CardHeader title='Restricted Content' />
             <CardContent>
@@ -57,7 +65,7 @@ const ParticipatePage = () => {
 }
 ParticipatePage.acl = {
   action: 'read',
-  subject: 'participate-page'
+  subject: 'participate-page',
 }
 
 export default ParticipatePage

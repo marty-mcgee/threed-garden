@@ -28,7 +28,7 @@ const rows = [
     name: 'Joseph Wheeler',
     email: 'nuroani@icpair.com',
     avatarSrc: '/images/avatars/1.png',
-    dueDate: `2/10/${new Date().getFullYear()}`
+    dueDate: `2/10/${new Date().getFullYear()}`,
   },
   {
     id: 1304,
@@ -38,7 +38,7 @@ const rows = [
     email: 'jeju@ma.co.uk',
     status: 'Partial Payment',
     avatarSrc: '/images/avatars/2.png',
-    dueDate: `11/9/${new Date().getFullYear()}`
+    dueDate: `11/9/${new Date().getFullYear()}`,
   },
   {
     id: 7900,
@@ -47,7 +47,7 @@ const rows = [
     name: 'William Mckinney',
     status: 'Partial Payment',
     email: 'cidagehe@nonalbo.com',
-    dueDate: `5/17/${new Date().getFullYear()}`
+    dueDate: `5/17/${new Date().getFullYear()}`,
   },
   {
     id: 63036,
@@ -57,7 +57,7 @@ const rows = [
     name: 'Warren Clarke',
     email: 'hirasles@zozzetkuv.edu',
     avatarSrc: '/images/avatars/5.png',
-    dueDate: `8/9/${new Date().getFullYear()}`
+    dueDate: `8/9/${new Date().getFullYear()}`,
   },
   {
     id: 33052,
@@ -66,7 +66,7 @@ const rows = [
     status: 'Past Due',
     name: 'Isabel Briggs',
     email: 'temiwiho@ohacma.gov',
-    dueDate: `6/26/${new Date().getFullYear()}`
+    dueDate: `6/26/${new Date().getFullYear()}`,
   },
   {
     id: 23579,
@@ -76,7 +76,7 @@ const rows = [
     email: 'boz@peh.co.uk',
     name: 'Adeline Bennett',
     avatarSrc: '/images/avatars/4.png',
-    dueDate: `4/22/${new Date().getFullYear()}`
+    dueDate: `4/22/${new Date().getFullYear()}`,
   },
   {
     id: 81618,
@@ -86,34 +86,56 @@ const rows = [
     email: 'la@omav.im',
     name: 'Lucy Rodgers',
     avatarSrc: '/images/avatars/8.png',
-    dueDate: `11/9/${new Date().getFullYear()}`
-  }
+    dueDate: `11/9/${new Date().getFullYear()}`,
+  },
 ]
 
 const statusObj = {
   'Partial Payment': { color: 'warning', icon: <ChartPie sx={{ fontSize: '1rem' }} /> },
   Draft: { color: 'primary', icon: <ContentSaveOutline sx={{ fontSize: '1rem' }} /> },
   'Past Due': { color: 'error', icon: <AlertCircleOutline sx={{ fontSize: '1rem' }} /> },
-  Downloaded: { color: 'info', icon: <CloudDownloadOutline sx={{ fontSize: '1rem' }} /> }
+  Downloaded: { color: 'info', icon: <CloudDownloadOutline sx={{ fontSize: '1rem' }} /> },
 }
 
-const renderClientAvatar = row => {
+const renderClientAvatar = (row) => {
   if (row.avatarSrc) {
-    return <CustomAvatar src={row.avatarSrc} sx={{ mr: 3.5, width: 30, height: 30 }} />
+    return (
+      <CustomAvatar
+        src={row.avatarSrc}
+        sx={{ mr: 3.5, width: 30, height: 30 }}
+      />
+    )
   } else {
     return (
-      <CustomAvatar skin='light' sx={{ mr: 3.5, width: 30, height: 30, fontSize: '.8rem' }}>
+      <CustomAvatar
+        skin='light'
+        sx={{ mr: 3.5, width: 30, height: 30, fontSize: '.8rem' }}
+      >
         {getInitials(row.name ? row.name : 'Marty McGee')}
       </CustomAvatar>
     )
   }
 }
 
-const renderBalance = row => {
+const renderBalance = (row) => {
   if (row.balance === 0) {
-    return <CustomChip size='small' skin='light' color='success' label='Paid' />
+    return (
+      <CustomChip
+        size='small'
+        skin='light'
+        color='success'
+        label='Paid'
+      />
+    )
   } else if (row.balance === 'unpaid') {
-    return <CustomChip size='small' skin='light' color='error' label='Unpaid' />
+    return (
+      <CustomChip
+        size='small'
+        skin='light'
+        color='error'
+        label='Unpaid'
+      />
+    )
   } else {
     return <Typography variant='body2'>{`$${row.balance}`}</Typography>
   }
@@ -126,10 +148,13 @@ const columns = [
     minWidth: 100,
     headerName: 'ID',
     renderCell: ({ row }) => (
-      <Typography variant='body2' sx={{ letterSpacing: '0.25px' }}>
+      <Typography
+        variant='body2'
+        sx={{ letterSpacing: '0.25px' }}
+      >
         {`#${row.id}`}
       </Typography>
-    )
+    ),
   },
   {
     flex: 0.15,
@@ -145,23 +170,33 @@ const columns = [
         <Tooltip
           title={
             <div>
-              <Typography variant='caption' sx={{ color: 'common.white', fontWeight: 600 }}>
+              <Typography
+                variant='caption'
+                sx={{ color: 'common.white', fontWeight: 600 }}
+              >
                 {status}
               </Typography>
               <br />
-              <Typography variant='caption' sx={{ color: 'common.white', fontWeight: 600 }}>
+              <Typography
+                variant='caption'
+                sx={{ color: 'common.white', fontWeight: 600 }}
+              >
                 Due Date:
               </Typography>{' '}
               {dueDate}
             </div>
           }
         >
-          <CustomAvatar skin='light' color={color} sx={{ width: 30, height: 30 }}>
+          <CustomAvatar
+            skin='light'
+            color={color}
+            sx={{ width: 30, height: 30 }}
+          >
             {Icon}
           </CustomAvatar>
         </Tooltip>
       )
-    }
+    },
   },
   {
     flex: 0.25,
@@ -179,18 +214,21 @@ const columns = [
                 fontWeight: 600,
                 lineHeight: 1.72,
                 fontSize: '0.875rem',
-                letterSpacing: '0.22px'
+                letterSpacing: '0.22px',
               }}
             >
               {row.name}
             </Typography>
-            <Typography variant='body2' sx={{ fontSize: '0.75rem', letterSpacing: '0.4px' }}>
+            <Typography
+              variant='body2'
+              sx={{ fontSize: '0.75rem', letterSpacing: '0.4px' }}
+            >
               {row.email}
             </Typography>
           </Box>
         </Box>
       )
-    }
+    },
   },
   {
     flex: 0.15,
@@ -198,24 +236,34 @@ const columns = [
     field: 'total',
     headerName: 'Total',
     renderCell: ({ row }) => (
-      <Typography variant='body2' sx={{ letterSpacing: '0.25px' }}>
+      <Typography
+        variant='body2'
+        sx={{ letterSpacing: '0.25px' }}
+      >
         {`$${row.total}`}
       </Typography>
-    )
+    ),
   },
   {
     flex: 0.15,
     minWidth: 150,
     field: 'balance',
     headerName: 'Balance',
-    renderCell: ({ row }) => renderBalance(row)
-  }
+    renderCell: ({ row }) => renderBalance(row),
+  },
 ]
 
 const EcommerceTable = () => {
   return (
     <Card>
-      <DataGrid autoHeight hideFooter rows={rows} columns={columns} disableSelectionOnClick pagination={undefined} />
+      <DataGrid
+        autoHeight
+        hideFooter
+        rows={rows}
+        columns={columns}
+        disableSelectionOnClick
+        pagination={undefined}
+      />
     </Card>
   )
 }

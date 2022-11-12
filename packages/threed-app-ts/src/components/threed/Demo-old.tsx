@@ -1,29 +1,19 @@
-import { FunctionComponent, useEffect } from "react"
+import { FunctionComponent, useEffect } from 'react'
 
-import Head from "next/head"
-import dynamic from "next/dynamic"
-import Script from "next/script"
+import Head from 'next/head'
+import dynamic from 'next/dynamic'
 // import "~/assets/demo/css/Demo.module.css"
 
 // import * as $ from "jquery" // [MM] HEY HEY HEY
-import paper from "paper"
-import * as THREE from "three"
-import { TrackballControls } from "three/examples/jsm/controls/TrackballControls"
-import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader"
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader"
-import { Sky } from "three/examples/jsm/objects/Sky"
 // import { TWEEN } from "three/examples/jsm/libs/tween.module.min"
-import TWEEN from "@tweenjs/tween.js"
 
 // <script type="text/javascript" data-cfasync="false">
 const Demo: FunctionComponent = (props): JSX.Element => {
-
-  const word = "HEY HEY HEY"
+  const word = 'HEY HEY HEY'
 
   // const fragment = null // grenade?
   const readOnly = false // really?
-  const UILayout = "default" // ok?
+  const UILayout = 'default' // ok?
 
   // console.debug("props", props)
 
@@ -32,7 +22,7 @@ const Demo: FunctionComponent = (props): JSX.Element => {
     // window.$ = window.jQuery = require('jquery')
     // window.$ = window.jQuery = require("~/assets/demo/scripts/jquery-1.11.3.min")
     // window.Diamonds = require('../public/jquery.diamonds.js')
-    const jQuery = require("~/assets/demo/scripts/jquery-1.11.3.min")
+    const jQuery = require('~/assets/demo/scripts/jquery-1.11.3.min')
     // window.$ = window.jQuery = jQuery
     // window.jQuery = jQuery
     // window.$ = window.jQuery
@@ -40,13 +30,10 @@ const Demo: FunctionComponent = (props): JSX.Element => {
     // console.debug(`[MM] Demo.tsx: $ @ ${new Date().toISOString()}`, window.$)
 
     // useEffect(() => {
-    const B3 = dynamic(
-      () => require("~/components/threed/demo-b3.mm"),
-      {
-        // loading: () => <p>...loading...</p>,
-        ssr: false
-      }
-    )
+    const B3 = dynamic(() => require('~/components/threed/demo-b3.mm'), {
+      // loading: () => <p>...loading...</p>,
+      ssr: false,
+    })
     // const B3 = dynamic(() => require("~/assets/demo/scripts/b3.min"), { ssr: false })
     // window.b3 = B3
     // window.b3 = require("~/assets/demo/scripts/b3.min")
@@ -103,7 +90,11 @@ const Demo: FunctionComponent = (props): JSX.Element => {
     <div>
       <Head>
         {/* <base href="http://localhost:5500/" /> */}
-        <link rel="alternate" type="application/json+oembed" href="oembed.json" />
+        <link
+          rel='alternate'
+          type='application/json+oembed'
+          href='oembed.json'
+        />
       </Head>
 
       {/* NOPE NOPE NOPE */}
@@ -141,9 +132,7 @@ const Demo: FunctionComponent = (props): JSX.Element => {
       <!-- <Script src="demo/scripts/postprocessing/ShaderPass.js" /> -->
       */}
 
-      <div id="DEMO">
-        DEMO
-      </div>
+      <div id='DEMO'>DEMO</div>
     </div>
   )
 }

@@ -1,8 +1,7 @@
 // ** Import React stuff
-import { FunctionComponent } from 'react'
 
 // ** Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from "next"
+import type { NextApiRequest, NextApiResponse } from 'next'
 
 // GET CLIENT FROM CONTEXT PROVIDER !!!
 // import { client } from '~/api/graphql/client'
@@ -12,7 +11,7 @@ import type { NextApiRequest, NextApiResponse } from "next"
 import { useApolloClient } from '@apollo/client'
 
 type Data = {
-  word: string,
+  word: string
   // client: ApolloClient<NormalizedCacheObject>
 }
 
@@ -24,8 +23,7 @@ function SomeComponent() {
 }
 
 const Handler = (req: NextApiRequest, res: NextApiResponse<Data>) => {
-
-  const word = "[MM] HEY HEY HEY -- apollo client Handler (from local node server (next))"
+  const word = '[MM] HEY HEY HEY -- apollo client Handler (from local node server (next))'
   console.debug('APOLLO CLIENT HTTP (api page/Handler) req', req)
   console.debug('APOLLO CLIENT HTTP (api page/Handler) Data', word)
 

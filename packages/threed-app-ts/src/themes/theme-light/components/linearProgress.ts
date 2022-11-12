@@ -1,9 +1,9 @@
 // ThreeD Garden Base Styles
-import borders from "~/themes/theme-light/base/borders"
-import colors from "~/themes/theme-light/base/colors"
+import borders from '~/themes/theme-light/base/borders'
+import colors from '~/themes/theme-light/base/colors'
 
 // ThreeD Garden Helper Functions
-import pxToRem from "~/themes/theme-light/functions/pxToRem"
+import pxToRem from '~/themes/theme-light/functions/pxToRem'
 
 const { borderRadius } = borders
 const { light } = colors
@@ -16,8 +16,8 @@ const linearProgress: Types = {
     root: {
       height: pxToRem(6),
       borderRadius: borderRadius.md,
-      overflow: "visible",
-      position: "relative",
+      overflow: 'visible',
+      position: 'relative',
     },
 
     colorPrimary: {
@@ -31,9 +31,9 @@ const linearProgress: Types = {
     bar: {
       height: pxToRem(6),
       borderRadius: borderRadius.sm,
-      position: "absolute",
+      position: 'absolute',
       transform: `translate(0, 0) !important`,
-      transition: "width 0.6s ease !important",
+      transition: 'width 0.6s ease !important',
     },
   },
 }

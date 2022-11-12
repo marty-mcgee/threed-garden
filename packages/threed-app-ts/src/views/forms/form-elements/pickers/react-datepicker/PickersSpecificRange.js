@@ -17,14 +17,17 @@ const PickersSpecificRange = () => {
   const [time, setTime] = useState(new Date())
 
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap' }} className='demo-space-x'>
+    <Box
+      sx={{ display: 'flex', flexWrap: 'wrap' }}
+      className='demo-space-x'
+    >
       <Box>
         <DatePicker
           selected={date}
           id='specific-date'
           minDate={new Date()}
           maxDate={addDays(new Date(), 5)}
-          onChange={date => setDate(date)}
+          onChange={(date) => setDate(date)}
           customInput={<CustomInput label='Specific Date Range' />}
         />
       </Box>
@@ -34,7 +37,7 @@ const PickersSpecificRange = () => {
           selected={time}
           id='specific-time'
           dateFormat='MM/dd/yyyy h:mm aa'
-          onChange={date => setTime(date)}
+          onChange={(date) => setTime(date)}
           minTime={setHours(setMinutes(new Date(), 0), 17)}
           maxTime={setHours(setMinutes(new Date(), 30), 20)}
           customInput={<CustomInput label='Specific Time' />}

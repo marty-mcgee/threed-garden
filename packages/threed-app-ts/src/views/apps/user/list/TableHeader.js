@@ -6,13 +6,18 @@ import TextField from '@mui/material/TextField'
 // ** Icons Imports
 import ExportVariant from 'mdi-material-ui/ExportVariant'
 
-const TableHeader = props => {
+const TableHeader = (props) => {
   // ** Props
   const { handleFilter, toggle, value } = props
 
   return (
     <Box sx={{ p: 5, pb: 3, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-      <Button sx={{ mr: 4, mb: 2 }} color='secondary' variant='outlined' startIcon={<ExportVariant fontSize='small' />}>
+      <Button
+        sx={{ mr: 4, mb: 2 }}
+        color='secondary'
+        variant='outlined'
+        startIcon={<ExportVariant fontSize='small' />}
+      >
         Export
       </Button>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -21,10 +26,14 @@ const TableHeader = props => {
           value={value}
           sx={{ mr: 4, mb: 2 }}
           placeholder='Search User'
-          onChange={e => handleFilter(e.target.value)}
+          onChange={(e) => handleFilter(e.target.value)}
         />
 
-        <Button sx={{ mb: 2 }} onClick={toggle} variant='contained'>
+        <Button
+          sx={{ mb: 2 }}
+          onClick={toggle}
+          variant='contained'
+        >
           Add User
         </Button>
       </Box>

@@ -5,7 +5,12 @@ import axios from 'axios'
 import UserViewPage from '~/views/apps/user/view/UserViewPage'
 
 const UserView = ({ invoiceData }) => {
-  return <UserViewPage id='1' invoiceData={invoiceData} />
+  return (
+    <UserViewPage
+      id='1'
+      invoiceData={invoiceData}
+    />
+  )
 }
 
 export const getStaticProps = async () => {
@@ -14,8 +19,8 @@ export const getStaticProps = async () => {
 
   return {
     props: {
-      invoiceData
-    }
+      invoiceData,
+    },
   }
 }
 

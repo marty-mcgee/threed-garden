@@ -1,4 +1,3 @@
-/* eslint-disable import/no-duplicates */
 // ** React Imports
 import { useState } from 'react'
 
@@ -25,13 +24,16 @@ const PickersLocale = () => {
   registerLocale(i18n.language, langObj[i18n.language])
 
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap' }} className='demo-space-x'>
+    <Box
+      sx={{ display: 'flex', flexWrap: 'wrap' }}
+      className='demo-space-x'
+    >
       <Box>
         <DatePicker
           selected={date}
           id='locale-picker'
           locale={i18n.language}
-          onChange={date => setDate(date)}
+          onChange={(date) => setDate(date)}
           customInput={<CustomInput label='Locale Dates' />}
         />
       </Box>
@@ -42,7 +44,7 @@ const PickersLocale = () => {
           id='locale-time'
           locale={i18n.language}
           dateFormat='MM/dd/yyyy h:mm aa'
-          onChange={date => setTime(date)}
+          onChange={(date) => setTime(date)}
           customInput={<CustomInput label='Locale Time' />}
         />
       </Box>

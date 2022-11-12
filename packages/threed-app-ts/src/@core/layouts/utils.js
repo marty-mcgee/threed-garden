@@ -58,7 +58,7 @@ export const hasActiveChild = (item, currentURL) => {
  * @param currentActiveGroup
  */
 export const removeChildren = (children, openGroup, currentActiveGroup) => {
-  children.forEach(child => {
+  children.forEach((child) => {
     if (!currentActiveGroup.includes(child.title)) {
       const index = openGroup.indexOf(child.title)
       if (index > -1) openGroup.splice(index, 1)

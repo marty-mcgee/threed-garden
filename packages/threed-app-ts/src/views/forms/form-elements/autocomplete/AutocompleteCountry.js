@@ -13,9 +13,13 @@ const AutocompleteCountry = () => {
       sx={{ width: 250 }}
       id='autocomplete-country-select'
       options={countries}
-      getOptionLabel={option => option.label}
+      getOptionLabel={(option) => option.label}
       renderOption={(props, option) => (
-        <Box component='li' sx={{ '& > img': { mr: 4, flexShrink: 0 } }} {...props}>
+        <Box
+          component='li'
+          sx={{ '& > img': { mr: 4, flexShrink: 0 } }}
+          {...props}
+        >
           <img
             alt=''
             width='20'
@@ -26,13 +30,13 @@ const AutocompleteCountry = () => {
           {option.label} ({option.code}) +{option.phone}
         </Box>
       )}
-      renderInput={params => (
+      renderInput={(params) => (
         <TextField
           {...params}
           label='Choose a country'
           inputProps={{
             ...params.inputProps,
-            autoComplete: 'new-password'
+            autoComplete: 'new-password',
           }}
         />
       )}

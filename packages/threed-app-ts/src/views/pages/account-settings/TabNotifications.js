@@ -15,8 +15,8 @@ const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
   '& .MuiFormControlLabel-label': {
     fontSize: '0.875rem',
     marginLeft: theme.spacing(1.5),
-    color: theme.palette.text.secondary
-  }
+    color: theme.palette.text.secondary,
+  },
 }))
 
 const TabNotifications = () => {
@@ -29,7 +29,10 @@ const TabNotifications = () => {
         </Box>
 
         <div>
-          <FormControlLabel control={<Switch defaultChecked />} label='Email me when someone comments on my article' />
+          <FormControlLabel
+            control={<Switch defaultChecked />}
+            label='Email me when someone comments on my article'
+          />
         </div>
         <div>
           <FormControlLabel
@@ -38,7 +41,10 @@ const TabNotifications = () => {
           />
         </div>
         <div>
-          <FormControlLabel control={<Switch />} label='Email me when someone follows me' />
+          <FormControlLabel
+            control={<Switch />}
+            label='Email me when someone follows me'
+          />
         </div>
 
         <Box sx={{ mt: 7, mb: 3.5, display: 'flex', alignItems: 'center' }}>
@@ -47,20 +53,36 @@ const TabNotifications = () => {
         </Box>
 
         <div>
-          <FormControlLabel control={<Switch />} label='News and announcements' />
+          <FormControlLabel
+            control={<Switch />}
+            label='News and announcements'
+          />
         </div>
         <div>
-          <FormControlLabel control={<Switch defaultChecked />} label='Weekly product updates' />
+          <FormControlLabel
+            control={<Switch defaultChecked />}
+            label='Weekly product updates'
+          />
         </div>
         <div>
-          <FormControlLabel control={<Switch />} label='Weekly blog digest' />
+          <FormControlLabel
+            control={<Switch />}
+            label='Weekly blog digest'
+          />
         </div>
 
         <Box sx={{ mt: 7.5 }}>
-          <Button variant='contained' sx={{ mr: 3.5 }}>
+          <Button
+            variant='contained'
+            sx={{ mr: 3.5 }}
+          >
             Save Changes
           </Button>
-          <Button type='reset' variant='outlined' color='secondary'>
+          <Button
+            type='reset'
+            variant='outlined'
+            color='secondary'
+          >
             Reset
           </Button>
         </Box>

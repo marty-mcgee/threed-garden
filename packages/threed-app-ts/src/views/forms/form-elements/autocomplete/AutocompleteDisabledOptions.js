@@ -12,8 +12,13 @@ const AutocompleteDisabledOptions = () => {
       sx={{ width: 250 }}
       options={timeSlots}
       id='autocomplete-disabled-options'
-      renderInput={params => <TextField {...params} label='Disabled options' />}
-      getOptionDisabled={option => option === timeSlots[0] || option === timeSlots[2]}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label='Disabled options'
+        />
+      )}
+      getOptionDisabled={(option) => option === timeSlots[0] || option === timeSlots[2]}
     />
   )
 }

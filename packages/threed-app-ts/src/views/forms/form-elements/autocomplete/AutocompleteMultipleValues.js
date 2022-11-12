@@ -16,9 +16,15 @@ const AutocompleteMultipleValues = () => {
         filterSelectedOptions
         defaultValue={[top100Films[13]]}
         id='autocomplete-multiple-outlined'
-        getOptionLabel={option => option.title}
+        getOptionLabel={(option) => option.title}
         sx={{ width: 250, mt: 5, mr: 5 }}
-        renderInput={params => <TextField {...params} label='filterSelectedOptions' placeholder='Favorites' />}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label='filterSelectedOptions'
+            placeholder='Favorites'
+          />
+        )}
       />
       <Autocomplete
         freeSolo
@@ -26,11 +32,23 @@ const AutocompleteMultipleValues = () => {
         id='autocomplete-multiple-filled'
         defaultValue={[top100Films[13].title]}
         sx={{ width: 250, mt: 5, mr: 5 }}
-        options={top100Films.map(option => option.title)}
-        renderInput={params => <TextField {...params} variant='filled' label='freeSolo' placeholder='Favorites' />}
+        options={top100Films.map((option) => option.title)}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant='filled'
+            label='freeSolo'
+            placeholder='Favorites'
+          />
+        )}
         renderTags={(value, getTagProps) =>
           value.map((option, index) => (
-            <Chip variant='outlined' label={option} {...getTagProps({ index })} key={index} />
+            <Chip
+              variant='outlined'
+              label={option}
+              {...getTagProps({ index })}
+              key={index}
+            />
           ))
         }
       />
@@ -40,9 +58,14 @@ const AutocompleteMultipleValues = () => {
         defaultValue={[top100Films[13]]}
         sx={{ width: 250, mt: 5 }}
         id='autocomplete-multiple-standard'
-        getOptionLabel={option => option.title}
-        renderInput={params => (
-          <TextField {...params} label='Multiple values' placeholder='Favorites' variant='standard' />
+        getOptionLabel={(option) => option.title}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label='Multiple values'
+            placeholder='Favorites'
+            variant='standard'
+          />
         )}
       />
     </Box>

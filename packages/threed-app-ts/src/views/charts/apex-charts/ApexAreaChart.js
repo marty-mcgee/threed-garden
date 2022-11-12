@@ -22,7 +22,7 @@ import ReactApexcharts from '~/@core/components/react-apexcharts'
 const areaColors = {
   series1: '#ab7efd',
   series2: '#b992fe',
-  series3: '#e0cffe'
+  series3: '#e0cffe',
 }
 
 const ApexAreaChart = () => {
@@ -34,27 +34,27 @@ const ApexAreaChart = () => {
     chart: {
       parentHeightOffset: 0,
       toolbar: {
-        show: false
-      }
+        show: false,
+      },
     },
     dataLabels: {
-      enabled: false
+      enabled: false,
     },
     stroke: {
       show: false,
-      curve: 'straight'
+      curve: 'straight',
     },
     legend: {
       position: 'top',
-      horizontalAlign: 'left'
+      horizontalAlign: 'left',
     },
     grid: {
       show: true,
       xaxis: {
         lines: {
-          show: true
-        }
-      }
+          show: true,
+        },
+      },
     },
     colors: [areaColors.series3, areaColors.series2, areaColors.series1],
     xaxis: {
@@ -71,31 +71,31 @@ const ApexAreaChart = () => {
         '16/12',
         '17/12',
         '18/12',
-        '19/12'
-      ]
+        '19/12',
+      ],
     },
     fill: {
       opacity: 1,
-      type: 'solid'
+      type: 'solid',
     },
     tooltip: {
-      shared: false
-    }
+      shared: false,
+    },
   }
 
   const series = [
     {
       name: 'Visits',
-      data: [100, 120, 90, 170, 130, 160, 140, 240, 220, 180, 270, 280, 375]
+      data: [100, 120, 90, 170, 130, 160, 140, 240, 220, 180, 270, 280, 375],
     },
     {
       name: 'Clicks',
-      data: [60, 80, 70, 110, 80, 100, 90, 180, 160, 140, 200, 220, 275]
+      data: [60, 80, 70, 110, 80, 100, 90, 180, 160, 140, 200, 220, 275],
     },
     {
       name: 'Sales',
-      data: [20, 40, 30, 70, 40, 60, 50, 140, 120, 100, 140, 180, 220]
-    }
+      data: [20, 40, 30, 70, 40, 60, 50, 140, 120, 100, 140, 180, 220],
+    },
   ]
 
   const CustomInput = forwardRef((props, ref) => {
@@ -119,13 +119,13 @@ const ApexAreaChart = () => {
             <InputAdornment position='end'>
               <ChevronDown />
             </InputAdornment>
-          )
+          ),
         }}
       />
     )
   })
 
-  const handleOnChange = dates => {
+  const handleOnChange = (dates) => {
     const [start, end] = dates
     setStartDate(start)
     setEndDate(end)
@@ -142,7 +142,7 @@ const ApexAreaChart = () => {
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],
           '& .MuiCardHeader-action': { mb: 0 },
-          '& .MuiCardHeader-content': { mb: [2, 0] }
+          '& .MuiCardHeader-content': { mb: [2, 0] },
         }}
         action={
           <DatePicker
@@ -153,12 +153,22 @@ const ApexAreaChart = () => {
             startDate={startDate}
             onChange={handleOnChange}
             placeholderText='Click to select a date'
-            customInput={<CustomInput start={startDate} end={endDate} />}
+            customInput={
+              <CustomInput
+                start={startDate}
+                end={endDate}
+              />
+            }
           />
         }
       />
       <CardContent>
-        <ReactApexcharts options={options} series={series} type='area' height={400} />
+        <ReactApexcharts
+          options={options}
+          series={series}
+          type='area'
+          height={400}
+        />
       </CardContent>
     </Card>
   )

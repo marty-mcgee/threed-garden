@@ -10,14 +10,25 @@ const SwitchesControlledUncontrolled = () => {
   // ** State
   const [checked, setChecked] = useState(false)
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     setChecked(event.target.checked)
   }
 
   return (
     <FormGroup row>
-      <FormControlLabel label='Controlled' control={<Switch checked={checked} onChange={handleChange} />} />
-      <FormControlLabel control={<Switch />} label='Uncontrolled' />
+      <FormControlLabel
+        label='Controlled'
+        control={
+          <Switch
+            checked={checked}
+            onChange={handleChange}
+          />
+        }
+      />
+      <FormControlLabel
+        control={<Switch />}
+        label='Uncontrolled'
+      />
     </FormGroup>
   )
 }

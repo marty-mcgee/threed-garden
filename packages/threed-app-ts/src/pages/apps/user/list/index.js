@@ -49,36 +49,64 @@ import AddUserDrawer from '~/views/apps/user/list/AddUserDrawer'
 
 // ** Vars
 const userRoleObj = {
-  admin: <Laptop fontSize='small' sx={{ mr: 3, color: 'error.main' }} />,
-  author: <CogOutline fontSize='small' sx={{ mr: 3, color: 'warning.main' }} />,
-  editor: <PencilOutline fontSize='small' sx={{ mr: 3, color: 'info.main' }} />,
-  maintainer: <ChartDonut fontSize='small' sx={{ mr: 3, color: 'success.main' }} />,
-  subscriber: <AccountOutline fontSize='small' sx={{ mr: 3, color: 'primary.main' }} />
+  admin: (
+    <Laptop
+      fontSize='small'
+      sx={{ mr: 3, color: 'error.main' }}
+    />
+  ),
+  author: (
+    <CogOutline
+      fontSize='small'
+      sx={{ mr: 3, color: 'warning.main' }}
+    />
+  ),
+  editor: (
+    <PencilOutline
+      fontSize='small'
+      sx={{ mr: 3, color: 'info.main' }}
+    />
+  ),
+  maintainer: (
+    <ChartDonut
+      fontSize='small'
+      sx={{ mr: 3, color: 'success.main' }}
+    />
+  ),
+  subscriber: (
+    <AccountOutline
+      fontSize='small'
+      sx={{ mr: 3, color: 'primary.main' }}
+    />
+  ),
 }
 
 const userStatusObj = {
   active: 'success',
   pending: 'warning',
-  inactive: 'secondary'
+  inactive: 'secondary',
 }
 
 // ** Styled component for the link for the avatar with image
 const AvatarWithImageLink = styled(Link)(({ theme }) => ({
-  marginRight: theme.spacing(3)
+  marginRight: theme.spacing(3),
 }))
 
 // ** Styled component for the link for the avatar without image
 const AvatarWithoutImageLink = styled(Link)(({ theme }) => ({
   textDecoration: 'none',
-  marginRight: theme.spacing(3)
+  marginRight: theme.spacing(3),
 }))
 
 // ** renders client column
-const renderClient = row => {
+const renderClient = (row) => {
   if (row.avatar.length) {
     return (
       <AvatarWithImageLink href={`/apps/user/view/${row.id}`}>
-        <CustomAvatar src={row.avatar} sx={{ mr: 3, width: 30, height: 30 }} />
+        <CustomAvatar
+          src={row.avatar}
+          sx={{ mr: 3, width: 30, height: 30 }}
+        />
       </AvatarWithImageLink>
     )
   } else {
@@ -103,7 +131,7 @@ const MenuItemLink = styled('a')(({ theme }) => ({
   alignItems: 'center',
   textDecoration: 'none',
   padding: theme.spacing(1.5, 4),
-  color: theme.palette.text.primary
+  color: theme.palette.text.primary,
 }))
 
 const RowOptions = ({ id }) => {
@@ -114,7 +142,7 @@ const RowOptions = ({ id }) => {
   const [anchorEl, setAnchorEl] = useState(null)
   const rowOptionsOpen = Boolean(anchorEl)
 
-  const handleRowOptionsClick = event => {
+  const handleRowOptionsClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
 
@@ -129,7 +157,10 @@ const RowOptions = ({ id }) => {
 
   return (
     <>
-      <IconButton size='small' onClick={handleRowOptionsClick}>
+      <IconButton
+        size='small'
+        onClick={handleRowOptionsClick}
+      >
         <DotsVertical />
       </IconButton>
       <Menu
@@ -139,28 +170,40 @@ const RowOptions = ({ id }) => {
         onClose={handleRowOptionsClose}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'right'
+          horizontal: 'right',
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'right'
+          horizontal: 'right',
         }}
         PaperProps={{ style: { minWidth: '8rem' } }}
       >
         <MenuItem sx={{ p: 0 }}>
-          <Link href={`/apps/user/view/${id}`} passHref>
+          <Link
+            href={`/apps/user/view/${id}`}
+            passHref
+          >
             <MenuItemLink>
-              <EyeOutline fontSize='small' sx={{ mr: 2 }} />
+              <EyeOutline
+                fontSize='small'
+                sx={{ mr: 2 }}
+              />
               View
             </MenuItemLink>
           </Link>
         </MenuItem>
         <MenuItem onClick={handleRowOptionsClose}>
-          <PencilOutline fontSize='small' sx={{ mr: 2 }} />
+          <PencilOutline
+            fontSize='small'
+            sx={{ mr: 2 }}
+          />
           Edit
         </MenuItem>
         <MenuItem onClick={handleDelete}>
-          <DeleteOutline fontSize='small' sx={{ mr: 2 }} />
+          <DeleteOutline
+            fontSize='small'
+            sx={{ mr: 2 }}
+          />
           Delete
         </MenuItem>
       </Menu>
@@ -181,7 +224,10 @@ const columns = [
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {renderClient(row)}
           <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-            <Link href={`/apps/user/view/${id}`} passHref>
+            <Link
+              href={`/apps/user/view/${id}`}
+              passHref
+            >
               <Typography
                 noWrap
                 component='a'
@@ -191,15 +237,23 @@ const columns = [
                 {fullName}
               </Typography>
             </Link>
-            <Link href={`/apps/user/view/${id}`} passHref>
-              <Typography noWrap component='a' variant='caption' sx={{ textDecoration: 'none' }}>
+            <Link
+              href={`/apps/user/view/${id}`}
+              passHref
+            >
+              <Typography
+                noWrap
+                component='a'
+                variant='caption'
+                sx={{ textDecoration: 'none' }}
+              >
                 @{username}
               </Typography>
             </Link>
           </Box>
         </Box>
       )
-    }
+    },
   },
   {
     flex: 0.2,
@@ -208,11 +262,14 @@ const columns = [
     headerName: 'Email',
     renderCell: ({ row }) => {
       return (
-        <Typography noWrap variant='body2'>
+        <Typography
+          noWrap
+          variant='body2'
+        >
           {row.email}
         </Typography>
       )
-    }
+    },
   },
   {
     flex: 0.15,
@@ -223,12 +280,15 @@ const columns = [
       return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {userRoleObj[row.role]}
-          <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+          <Typography
+            noWrap
+            sx={{ color: 'text.secondary', textTransform: 'capitalize' }}
+          >
             {row.role}
           </Typography>
         </Box>
       )
-    }
+    },
   },
   {
     flex: 0.15,
@@ -237,11 +297,14 @@ const columns = [
     field: 'currentPlan',
     renderCell: ({ row }) => {
       return (
-        <Typography noWrap sx={{ textTransform: 'capitalize' }}>
+        <Typography
+          noWrap
+          sx={{ textTransform: 'capitalize' }}
+        >
           {row.currentPlan}
         </Typography>
       )
-    }
+    },
   },
   {
     flex: 0.1,
@@ -258,7 +321,7 @@ const columns = [
           sx={{ textTransform: 'capitalize' }}
         />
       )
-    }
+    },
   },
   {
     flex: 0.1,
@@ -266,8 +329,8 @@ const columns = [
     sortable: false,
     field: 'actions',
     headerName: 'Actions',
-    renderCell: ({ row }) => <RowOptions id={row.id} />
-  }
+    renderCell: ({ row }) => <RowOptions id={row.id} />,
+  },
 ]
 
 const UserList = () => {
@@ -281,43 +344,56 @@ const UserList = () => {
 
   // ** Hooks
   const dispatch = useDispatch()
-  const store = useSelector(state => state.user)
+  const store = useSelector((state) => state.user)
   useEffect(() => {
     dispatch(
       fetchData({
         role,
         status,
         q: value,
-        currentPlan: plan
+        currentPlan: plan,
       })
     )
   }, [dispatch, plan, role, status, value])
 
-  const handleFilter = useCallback(val => {
+  const handleFilter = useCallback((val) => {
     setValue(val)
   }, [])
 
-  const handleRoleChange = useCallback(e => {
+  const handleRoleChange = useCallback((e) => {
     setRole(e.target.value)
   }, [])
 
-  const handlePlanChange = useCallback(e => {
+  const handlePlanChange = useCallback((e) => {
     setPlan(e.target.value)
   }, [])
 
-  const handleStatusChange = useCallback(e => {
+  const handleStatusChange = useCallback((e) => {
     setStatus(e.target.value)
   }, [])
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen)
 
   return (
-    <Grid container spacing={6}>
-      <Grid item xs={12}>
+    <Grid
+      container
+      spacing={6}
+    >
+      <Grid
+        item
+        xs={12}
+      >
         <Card>
           <CardHeader title='Search Filters' />
           <CardContent>
-            <Grid container spacing={6}>
-              <Grid item sm={4} xs={12}>
+            <Grid
+              container
+              spacing={6}
+            >
+              <Grid
+                item
+                sm={4}
+                xs={12}
+              >
                 <FormControl fullWidth>
                   <InputLabel id='role-select'>Select Role</InputLabel>
                   <Select
@@ -338,7 +414,11 @@ const UserList = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item sm={4} xs={12}>
+              <Grid
+                item
+                sm={4}
+                xs={12}
+              >
                 <FormControl fullWidth>
                   <InputLabel id='plan-select'>Select Plan</InputLabel>
                   <Select
@@ -358,7 +438,11 @@ const UserList = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item sm={4} xs={12}>
+              <Grid
+                item
+                sm={4}
+                xs={12}
+              >
                 <FormControl fullWidth>
                   <InputLabel id='status-select'>Select Status</InputLabel>
                   <Select
@@ -381,9 +465,16 @@ const UserList = () => {
           </CardContent>
         </Card>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <Card>
-          <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
+          <TableHeader
+            value={value}
+            handleFilter={handleFilter}
+            toggle={toggleAddUserDrawer}
+          />
           <DataGrid
             autoHeight
             rows={store.data}
@@ -392,12 +483,15 @@ const UserList = () => {
             pageSize={pageSize}
             disableSelectionOnClick
             rowsPerPageOptions={[10, 25, 50]}
-            onPageSizeChange={newPageSize => setPageSize(newPageSize)}
+            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
           />
         </Card>
       </Grid>
 
-      <AddUserDrawer open={addUserOpen} toggle={toggleAddUserDrawer} />
+      <AddUserDrawer
+        open={addUserOpen}
+        toggle={toggleAddUserDrawer}
+      />
     </Grid>
   )
 }

@@ -11,7 +11,7 @@ const ServerSideNavItems = () => {
   // ** State
   const [menuItems, setMenuItems] = useState([])
   useEffect(() => {
-    axios.get('/api/vertical-nav/data').then(response => {
+    axios.get('/api/vertical-nav/data').then((response) => {
       const menuArray = response.data
 
       /**
@@ -19,8 +19,8 @@ const ServerSideNavItems = () => {
        *  If you don't want to import the whole icon library
        *  you can create a static object and replace the icons using that object
        */
-      const finalMenuArray = items => {
-        return items.map(item => {
+      const finalMenuArray = (items) => {
+        return items.map((item) => {
           if (item.icon) {
             // @ts-ignore
             item.icon = Icons[item.icon]

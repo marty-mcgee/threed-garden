@@ -1,15 +1,15 @@
-import { ReactNode } from "react"
+import { ReactNode } from 'react'
 
 // next/link components
-import Link from "next/link"
+import Link from 'next/link'
 
 // @mui material components
-import { Breadcrumbs as MuiBreadcrumbs } from "@mui/material"
-import Icon from "@mui/material/Icon"
+import { Breadcrumbs as MuiBreadcrumbs } from '@mui/material'
+import Icon from '@mui/material/Icon'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
+import MDBox from '~/components/mui/MDBox'
+import MDTypography from '~/components/mui/MDTypography'
 
 // Declaring + Typechecking props types for the Breadcrumbs
 interface Props {
@@ -23,25 +23,25 @@ interface Props {
 function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
   const routes: string[] | any = route.slice(0, -1)
 
-  const word = title || "Home"
+  const word = title || 'Home'
 
   return (
     <MDBox mr={{ xs: 0, xl: 8 }}>
       <MuiBreadcrumbs
-        separator=">"
+        separator='>'
         sx={{
-          "& .MuiBreadcrumbs-separator": {
-            color: ({ palette: { white, grey } }) =>
-              light ? white.main : grey[600],
+          '& .MuiBreadcrumbs-separator': {
+            color: ({ palette: { white, grey } }) => (light ? white.main : grey[600]),
           },
-        }}>
-        <Link href="/">
+        }}
+      >
+        <Link href='/'>
           <MDTypography
-            component="span"
-            variant="body2"
-            color={light ? "white" : "dark"}
+            component='span'
+            variant='body2'
+            color={light ? 'white' : 'dark'}
             opacity={light ? 0.8 : 0.5}
-            sx={{ lineHeight: 0, cursor: "pointer" }}
+            sx={{ lineHeight: 0, cursor: 'pointer' }}
           >
             <Icon>{icon}</Icon>
           </MDTypography>
@@ -60,28 +60,31 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
           </MDTypography>
         </Link> */}
         {routes.map((el: string) => (
-          <Link href={`/${el}`} key={el}>
+          <Link
+            href={`/${el}`}
+            key={el}
+          >
             <MDTypography
-              component="span"
-              variant="button"
-              fontWeight="regular"
-              textTransform="capitalize"
-              color={light ? "white" : "dark"}
+              component='span'
+              variant='button'
+              fontWeight='regular'
+              textTransform='capitalize'
+              color={light ? 'white' : 'dark'}
               opacity={light ? 0.8 : 0.5}
-              sx={{ lineHeight: 0, cursor: "pointer" }}
+              sx={{ lineHeight: 0, cursor: 'pointer' }}
             >
               {el}
             </MDTypography>
           </Link>
         ))}
         <MDTypography
-          variant="button"
-          fontWeight="regular"
-          textTransform="capitalize"
-          color={light ? "white" : "dark"}
-          sx={{ lineHeight: 0, cursor: "pointer" }}
+          variant='button'
+          fontWeight='regular'
+          textTransform='capitalize'
+          color={light ? 'white' : 'dark'}
+          sx={{ lineHeight: 0, cursor: 'pointer' }}
         >
-          {word.replace("-", " ")}
+          {word.replace('-', ' ')}
         </MDTypography>
       </MuiBreadcrumbs>
       {/* <MDTypography
@@ -92,7 +95,7 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
         noWrap>
         {word.replace("-", " ")}
       </MDTypography> */}
-    </MDBox >
+    </MDBox>
   )
 }
 

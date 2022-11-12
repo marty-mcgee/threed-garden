@@ -18,14 +18,22 @@ import CustomAvatar from '~/@core/components/mui/avatar'
 const TabDatabase = () => {
   const [value, setValue] = useState('firebase')
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     setValue(event.target.value)
   }
 
   return (
     <Box>
-      <TextField fullWidth sx={{ mb: 4 }} label='Database Name' placeholder='materio_database' />
-      <Typography variant='h6' sx={{ mb: 4 }}>
+      <TextField
+        fullWidth
+        sx={{ mb: 4 }}
+        label='Database Name'
+        placeholder='materio_database'
+      />
+      <Typography
+        variant='h6'
+        sx={{ mb: 4 }}
+      >
         Select Database Engine
       </Typography>
       <Box sx={{ mb: 8 }}>
@@ -34,7 +42,12 @@ const TabDatabase = () => {
           sx={{ mb: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <CustomAvatar skin='light' color='error' variant='rounded' sx={{ mr: 3, width: 48, height: 48 }}>
+            <CustomAvatar
+              skin='light'
+              color='error'
+              variant='rounded'
+              sx={{ mr: 3, width: 48, height: 48 }}
+            >
               <Firebase />
             </CustomAvatar>
             <Box>
@@ -42,14 +55,23 @@ const TabDatabase = () => {
               <Typography variant='caption'>Cloud Firestore</Typography>
             </Box>
           </Box>
-          <Radio value='firebase' onChange={handleChange} checked={value === 'firebase'} />
+          <Radio
+            value='firebase'
+            onChange={handleChange}
+            checked={value === 'firebase'}
+          />
         </Box>
         <Box
           onClick={() => setValue('aws')}
           sx={{ mb: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <CustomAvatar skin='light' color='warning' variant='rounded' sx={{ mr: 3, width: 48, height: 48 }}>
+            <CustomAvatar
+              skin='light'
+              color='warning'
+              variant='rounded'
+              sx={{ mr: 3, width: 48, height: 48 }}
+            >
               <Aws />
             </CustomAvatar>
             <Box>
@@ -57,14 +79,23 @@ const TabDatabase = () => {
               <Typography variant='caption'>Amazon Fast NoSQL Database</Typography>
             </Box>
           </Box>
-          <Radio value='aws' onChange={handleChange} checked={value === 'aws'} />
+          <Radio
+            value='aws'
+            onChange={handleChange}
+            checked={value === 'aws'}
+          />
         </Box>
         <Box
           onClick={() => setValue('sql')}
           sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <CustomAvatar skin='light' color='info' variant='rounded' sx={{ mr: 3, width: 48, height: 48 }}>
+            <CustomAvatar
+              skin='light'
+              color='info'
+              variant='rounded'
+              sx={{ mr: 3, width: 48, height: 48 }}
+            >
               <Database />
             </CustomAvatar>
             <Box>
@@ -72,7 +103,11 @@ const TabDatabase = () => {
               <Typography variant='caption'>Basic MySQL database</Typography>
             </Box>
           </Box>
-          <Radio value='sql' onChange={handleChange} checked={value === 'sql'} />
+          <Radio
+            value='sql'
+            onChange={handleChange}
+            checked={value === 'sql'}
+          />
         </Box>
       </Box>
     </Box>

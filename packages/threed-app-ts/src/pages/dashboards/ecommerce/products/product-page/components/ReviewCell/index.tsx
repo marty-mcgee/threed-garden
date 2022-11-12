@@ -1,8 +1,8 @@
 // @mui material components
-import Icon from "@mui/material/Icon"
+import Icon from '@mui/material/Icon'
 
 // ThreeD Garden components
-import MDTypography from "~/components/mui/MDTypography"
+import MDTypography from '~/components/mui/MDTypography'
 
 function ReviewCell({ rating }: { rating: number }): JSX.Element {
   const ratings: any = {
@@ -79,7 +79,10 @@ function ReviewCell({ rating }: { rating: number }): JSX.Element {
   }
 
   return (
-    <MDTypography variant="h4" color="text">
+    <MDTypography
+      variant='h4'
+      color='text'
+    >
       {ratings[rating]}
     </MDTypography>
   )

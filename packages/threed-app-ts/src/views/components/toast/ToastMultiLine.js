@@ -21,7 +21,11 @@ const ToastMultiLine = () => {
       <TextBoxOutline sx={{ mb: 2, fontSize: '2rem' }} />
       <Typography sx={{ mb: 4, fontWeight: 600 }}>Multi Line</Typography>
       <Typography sx={{ mb: 3 }}>The most basic variant with longer texts</Typography>
-      <Button sx={{ mb: 8 }} variant='contained' onClick={handleClick}>
+      <Button
+        sx={{ mb: 8 }}
+        variant='contained'
+        onClick={handleClick}
+      >
         Multi Line
       </Button>
     </Box>

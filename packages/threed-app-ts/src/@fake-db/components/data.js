@@ -1,70 +1,70 @@
 export default [
   {
     component: 'App Bar',
-    link: 'https://mui.com/material-ui/react-app-bar/'
+    link: 'https://mui.com/material-ui/react-app-bar/',
   },
   {
     component: 'Backdrop',
-    link: 'https://mui.com/material-ui/react-backdrop/'
+    link: 'https://mui.com/material-ui/react-backdrop/',
   },
   {
     component: 'Bottom Navigation',
-    link: 'https://mui.com/material-ui/react-bottom-navigation/'
+    link: 'https://mui.com/material-ui/react-bottom-navigation/',
   },
   {
     component: 'Breadcrumbs',
-    link: 'https://mui.com/material-ui/react-breadcrumbs/'
+    link: 'https://mui.com/material-ui/react-breadcrumbs/',
   },
   {
     component: 'Date Time Picker',
-    link: 'https://mui.com/material-ui/lab-date-and-time-pickers/'
+    link: 'https://mui.com/material-ui/lab-date-and-time-pickers/',
   },
   {
     component: 'Divider',
-    link: 'https://mui.com/material-ui/react-divider/'
+    link: 'https://mui.com/material-ui/react-divider/',
   },
   {
     component: 'Drawer',
-    link: 'https://mui.com/material-ui/react-drawer/'
+    link: 'https://mui.com/material-ui/react-drawer/',
   },
   {
     component: 'Icons',
-    link: 'https://mui.com/material-ui/icons/'
+    link: 'https://mui.com/material-ui/icons/',
   },
   {
     component: 'Link',
-    link: 'https://mui.com/material-ui/react-link/'
+    link: 'https://mui.com/material-ui/react-link/',
   },
   {
     component: 'Paper',
-    link: 'https://mui.com/material-ui/react-paper/'
+    link: 'https://mui.com/material-ui/react-paper/',
   },
   {
     component: 'Popover',
-    link: 'https://mui.com/material-ui/react-popover/'
+    link: 'https://mui.com/material-ui/react-popover/',
   },
   {
     component: 'Popper',
-    link: 'https://mui.com/material-ui/react-popper/'
+    link: 'https://mui.com/material-ui/react-popper/',
   },
   {
     component: 'Progress',
-    link: 'https://mui.com/material-ui/react-progress/'
+    link: 'https://mui.com/material-ui/react-progress/',
   },
   {
     component: 'Speed Dial',
-    link: 'https://mui.com/material-ui/react-speed-dial/'
+    link: 'https://mui.com/material-ui/react-speed-dial/',
   },
   {
     component: 'Tooltip',
-    link: 'https://mui.com/material-ui/react-tooltip/'
+    link: 'https://mui.com/material-ui/react-tooltip/',
   },
   {
     component: 'Transfer List',
-    link: 'https://mui.com/material-ui/react-transfer-list/'
+    link: 'https://mui.com/material-ui/react-transfer-list/',
   },
   {
     component: 'Transitions',
-    link: 'https://mui.com/material-ui/transitions/'
-  }
+    link: 'https://mui.com/material-ui/transitions/',
+  },
 ]

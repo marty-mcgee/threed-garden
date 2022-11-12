@@ -8,7 +8,7 @@ const RadioStandalone = () => {
   // ** State
   const [selectedValue, setSelectedValue] = useState('a')
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     setSelectedValue(event.target.value)
   }
 

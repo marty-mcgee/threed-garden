@@ -1,17 +1,17 @@
 // ThreeD Garden Helper Functions
-import pxToRem from "~/themes/theme-light/functions/pxToRem"
+import pxToRem from '~/themes/theme-light/functions/pxToRem'
 
 // types
 type Types = any
 
 const svgIcon: Types = {
   defaultProps: {
-    fontSize: "inherit",
+    fontSize: 'inherit',
   },
 
   styleOverrides: {
     fontSizeInherit: {
-      fontSize: "inherit !important",
+      fontSize: 'inherit !important',
     },
 
     fontSizeSmall: {

@@ -1,8 +1,8 @@
 // ThreeD Garden Base Styles
-import breakpoints from "~/themes/theme-light/base/breakpoints"
+import breakpoints from '~/themes/theme-light/base/breakpoints'
 
 // ThreeD Garden Helper Functions
-import pxToRem from "~/themes/theme-light/functions/pxToRem"
+import pxToRem from '~/themes/theme-light/functions/pxToRem'
 
 // types
 type Types = any
@@ -20,41 +20,41 @@ const XXL = `@media (min-width: ${xxl}px)`
 const sharedClasses = {
   paddingRight: `${pxToRem(24)} !important`,
   paddingLeft: `${pxToRem(24)} !important`,
-  marginRight: "auto !important",
-  marginLeft: "auto !important",
-  width: "100% !important",
-  position: "relative",
+  marginRight: 'auto !important',
+  marginLeft: 'auto !important',
+  width: '100% !important',
+  position: 'relative',
 }
 
 const container: Types = {
   [SM]: {
-    ".MuiContainer-root": {
+    '.MuiContainer-root': {
       ...sharedClasses,
-      maxWidth: "540px !important",
+      maxWidth: '540px !important',
     },
   },
   [MD]: {
-    ".MuiContainer-root": {
+    '.MuiContainer-root': {
       ...sharedClasses,
-      maxWidth: "720px !important",
+      maxWidth: '720px !important',
     },
   },
   [LG]: {
-    ".MuiContainer-root": {
+    '.MuiContainer-root': {
       ...sharedClasses,
-      maxWidth: "960px !important",
+      maxWidth: '960px !important',
     },
   },
   [XL]: {
-    ".MuiContainer-root": {
+    '.MuiContainer-root': {
       ...sharedClasses,
-      maxWidth: "1140px !important",
+      maxWidth: '1140px !important',
     },
   },
   [XXL]: {
-    ".MuiContainer-root": {
+    '.MuiContainer-root': {
       ...sharedClasses,
-      maxWidth: "1320px !important",
+      maxWidth: '1320px !important',
     },
   },
 }

@@ -28,20 +28,20 @@ const steps = [
     title: 'Account Details',
     subtitle: 'Enter your Account Details',
     description:
-      'Chocolate cookie lollipop toffee candy canes marzipan liquorice chocolate. Cake gummi bears dessert lollipop apple pie candy. Candy pie sesame snaps lollipop biscuit chocolate cake fruitcake apple pie. Toffee carrot cake biscuit oat cake jujubes fruitcake biscuit gummi bears. Cake carrot cake jujubes sugar plum pastry gummi bears gingerbread icing. Lemon drops pie cake. Halvah marzipan bonbon gingerbread cupcake pastry gummi bears cake jujubes.'
+      'Chocolate cookie lollipop toffee candy canes marzipan liquorice chocolate. Cake gummi bears dessert lollipop apple pie candy. Candy pie sesame snaps lollipop biscuit chocolate cake fruitcake apple pie. Toffee carrot cake biscuit oat cake jujubes fruitcake biscuit gummi bears. Cake carrot cake jujubes sugar plum pastry gummi bears gingerbread icing. Lemon drops pie cake. Halvah marzipan bonbon gingerbread cupcake pastry gummi bears cake jujubes.',
   },
   {
     title: 'Personal Info',
     subtitle: 'Setup Information',
     description:
-      'Lemon drops ice cream danish macaroon bear claw cookie. Liquorice ice cream chocolate bar pastry chocolate bar candy. Caramels candy canes marshmallow soufflé biscuit tart fruitcake tiramisu. Gummi bears icing gingerbread pastry bonbon gummies candy canes pastry. Candy canes chocolate chupa chups cake cheesecake apple pie halvah dessert. Chupa chups wafer tootsie roll fruitcake lemon drops cookie donut topping powder.'
+      'Lemon drops ice cream danish macaroon bear claw cookie. Liquorice ice cream chocolate bar pastry chocolate bar candy. Caramels candy canes marshmallow soufflé biscuit tart fruitcake tiramisu. Gummi bears icing gingerbread pastry bonbon gummies candy canes pastry. Candy canes chocolate chupa chups cake cheesecake apple pie halvah dessert. Chupa chups wafer tootsie roll fruitcake lemon drops cookie donut topping powder.',
   },
   {
     title: 'Social Links',
     subtitle: 'Add Social Links',
     description:
-      'Jelly lollipop halvah bear claw jujubes macaroon candy canes. Soufflé halvah lollipop liquorice macaroon powder. Cookie topping pastry oat cake caramels bonbon. Sesame snaps sweet cookie macaroon soufflé pudding. Chocolate donut macaroon muffin donut biscuit marzipan halvah. Bear claw biscuit chocolate cake chupa chups oat cake bear claw cupcake tiramisu apple pie. Carrot cake bear claw marshmallow sweet pudding toffee.'
-  }
+      'Jelly lollipop halvah bear claw jujubes macaroon candy canes. Soufflé halvah lollipop liquorice macaroon powder. Cookie topping pastry oat cake caramels bonbon. Sesame snaps sweet cookie macaroon soufflé pudding. Chocolate donut macaroon muffin donut biscuit marzipan halvah. Bear claw biscuit chocolate cake chupa chups oat cake bear claw cupcake tiramisu apple pie. Carrot cake bear claw marshmallow sweet pudding toffee.',
+  },
 ]
 
 const StepperVerticalWithoutNumbers = () => {
@@ -50,11 +50,11 @@ const StepperVerticalWithoutNumbers = () => {
 
   // Handle Stepper
   const handleBack = () => {
-    setActiveStep(prevActiveStep => prevActiveStep - 1)
+    setActiveStep((prevActiveStep) => prevActiveStep - 1)
   }
 
   const handleNext = () => {
-    setActiveStep(prevActiveStep => prevActiveStep + 1)
+    setActiveStep((prevActiveStep) => prevActiveStep + 1)
     if (activeStep === steps.length - 1) {
       toast.success('Completed All Steps!!')
     }
@@ -66,13 +66,22 @@ const StepperVerticalWithoutNumbers = () => {
 
   return (
     <Card>
-      <CardHeader title='Vertical Stepper without Numbers' titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader
+        title='Vertical Stepper without Numbers'
+        titleTypographyProps={{ variant: 'h6' }}
+      />
       <CardContent>
         <StepperWrapper>
-          <Stepper activeStep={activeStep} orientation='vertical'>
+          <Stepper
+            activeStep={activeStep}
+            orientation='vertical'
+          >
             {steps.map((step, index) => {
               return (
-                <Step key={index} className={clsx({ active: activeStep === index })}>
+                <Step
+                  key={index}
+                  className={clsx({ active: activeStep === index })}
+                >
                   <StepLabel StepIconComponent={StepperCustomDot}>
                     <div className='step-label'>
                       <div>
@@ -93,7 +102,12 @@ const StepperVerticalWithoutNumbers = () => {
                       >
                         Back
                       </Button>
-                      <Button size='small' variant='contained' onClick={handleNext} sx={{ ml: 4 }}>
+                      <Button
+                        size='small'
+                        variant='contained'
+                        onClick={handleNext}
+                        sx={{ ml: 4 }}
+                      >
                         {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
                       </Button>
                     </div>
@@ -106,7 +120,12 @@ const StepperVerticalWithoutNumbers = () => {
         {activeStep === steps.length && (
           <Box sx={{ mt: 4 }}>
             <Typography>All steps are completed!</Typography>
-            <Button size='small' sx={{ mt: 2 }} variant='contained' onClick={handleReset}>
+            <Button
+              size='small'
+              sx={{ mt: 2 }}
+              variant='contained'
+              onClick={handleReset}
+            >
               Reset
             </Button>
           </Box>

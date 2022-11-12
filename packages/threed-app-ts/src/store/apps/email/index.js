@@ -5,20 +5,20 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
 // ** Fetch Mails
-export const fetchMails = createAsyncThunk('appEmail/fetchMails', async params => {
+export const fetchMails = createAsyncThunk('appEmail/fetchMails', async (params) => {
   const response = await axios.get('/apps/email/emails', {
-    params
+    params,
   })
 
   return { ...response.data, filter: params }
 })
 
 // ** Get Current Mail
-export const getCurrentMail = createAsyncThunk('appEmail/selectMail', async id => {
+export const getCurrentMail = createAsyncThunk('appEmail/selectMail', async (id) => {
   const response = await axios.get('/apps/email/get-email', {
     params: {
-      id
-    }
+      id,
+    },
   })
 
   return response.data
@@ -27,7 +27,7 @@ export const getCurrentMail = createAsyncThunk('appEmail/selectMail', async id =
 // ** Update Mail
 export const updateMail = createAsyncThunk('appEmail/updateMail', async (params, { dispatch, getState }) => {
   const response = await axios.post('/apps/email/update-emails', {
-    data: { emailIds: params.emailIds, dataToUpdate: params.dataToUpdate }
+    data: { emailIds: params.emailIds, dataToUpdate: params.dataToUpdate },
   })
   await dispatch(fetchMails(getState().email.filter))
   if (Array.isArray(params.emailIds)) {
@@ -40,7 +40,7 @@ export const updateMail = createAsyncThunk('appEmail/updateMail', async (params,
 // ** Update Mail Label
 export const updateMailLabel = createAsyncThunk('appEmail/updateMailLabel', async (params, { dispatch, getState }) => {
   const response = await axios.post('/apps/email/update-emails-label', {
-    data: { emailIds: params.emailIds, label: params.label }
+    data: { emailIds: params.emailIds, label: params.label },
   })
   await dispatch(fetchMails(getState().email.filter))
   if (Array.isArray(params.emailIds)) {
@@ -51,7 +51,7 @@ export const updateMailLabel = createAsyncThunk('appEmail/updateMailLabel', asyn
 })
 
 // ** Prev/Next Mails
-export const paginateMail = createAsyncThunk('appEmail/paginateMail', async params => {
+export const paginateMail = createAsyncThunk('appEmail/paginateMail', async (params) => {
   const response = await axios.get('/apps/email/paginate-email', { params })
 
   return response.data
@@ -65,10 +65,10 @@ export const appEmailSlice = createSlice({
     filter: {
       q: '',
       label: '',
-      folder: 'inbox'
+      folder: 'inbox',
     },
     currentMail: null,
-    selectedMails: []
+    selectedMails: [],
   },
   reducers: {
     handleSelectMail: (state, action) => {
@@ -86,14 +86,14 @@ export const appEmailSlice = createSlice({
         selectAllMails.length = 0
 
         // @ts-ignore
-        state.mails.forEach(mail => selectAllMails.push(mail.id))
+        state.mails.forEach((mail) => selectAllMails.push(mail.id))
       } else {
         selectAllMails.length = 0
       }
       state.selectedMails = selectAllMails
-    }
+    },
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder.addCase(fetchMails.fulfilled, (state, action) => {
       state.mails = action.payload.emails
       state.filter = action.payload.filter
@@ -105,7 +105,7 @@ export const appEmailSlice = createSlice({
     builder.addCase(paginateMail.fulfilled, (state, action) => {
       state.currentMail = action.payload
     })
-  }
+  },
 })
 
 export const { handleSelectMail, handleSelectAllMail } = appEmailSlice.actions

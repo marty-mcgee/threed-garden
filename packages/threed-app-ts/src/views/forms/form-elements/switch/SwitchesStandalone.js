@@ -6,7 +6,10 @@ const SwitchesStandalone = () => {
     <div>
       <Switch defaultChecked />
       <Switch />
-      <Switch disabled defaultChecked />
+      <Switch
+        disabled
+        defaultChecked
+      />
       <Switch disabled />
     </div>
   )

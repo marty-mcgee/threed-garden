@@ -4,9 +4,9 @@
 /** OR */
 /** @ ts-expect-error */
 
-import { useRef, useEffect, useState } from "react"
+import { useRef, useEffect } from 'react'
 
-import * as THREE from "three"
+import * as THREE from 'three'
 // import Stats from 'three/examples/jsm/libs/stats.module'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -16,7 +16,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 // import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer'
 // import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 // types
-import type { Scene, Plane, Camera, Renderer, Object3D, AnimationMixer, LoadingManager } from "three"
+import type { Scene, Plane, Camera, Renderer, Object3D, AnimationMixer } from 'three'
 
 // import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
 import TWEEN from '@tweenjs/tween.js'
@@ -25,7 +25,6 @@ import TWEEN from '@tweenjs/tween.js'
 // import { JoystickControls, RotationJoystickControls } from 'three-joystick'
 
 // dat.gui
-import * as dat from 'dat.gui'
 
 // farmbot
 // import FarmBot from "~/components/farmbot/FarmBot"
@@ -34,35 +33,35 @@ import * as dat from 'dat.gui'
 // ================================================================
 // TS
 interface IPostData {
-  plugin_name: string,
-  plugin_version: string,
-  plugin_url: string,
-  theme_uri: "light" | "dark",
-  rest_url: string,
-  world_id: number | string,
-  scene_id: number | string,
+  plugin_name: string
+  plugin_version: string
+  plugin_url: string
+  theme_uri: 'light' | 'dark'
+  rest_url: string
+  world_id: number | string
+  scene_id: number | string
 }
 
 interface IThreeDEnv {
-  pluginName: string,
-  pluginVersion: string,
-  pluginURL: string,
-  themeURI: "light" | "dark",
-  restURL: string,
-  worldID: number | string,
-  sceneID: number | string,
+  pluginName: string
+  pluginVersion: string
+  pluginURL: string
+  themeURI: 'light' | 'dark'
+  restURL: string
+  worldID: number | string
+  sceneID: number | string
 }
 
 interface IPlayer {
-  action: string,
-  actionTime: number | Date,
-  object: Object3D,
-  mixer: AnimationMixer,
-  setAction: Function,
-  getAction: Function,
-  toggleAnimation: Function,
-  move: Function,
-  movePlayer: Function,
+  action: string
+  actionTime: number | Date
+  object: Object3D
+  mixer: AnimationMixer
+  setAction: Function
+  getAction: Function
+  toggleAnimation: Function
+  move: Function
+  movePlayer: Function
   playerControl: Function
 }
 
@@ -105,16 +104,16 @@ interface IPlayer {
 // console.log(window.postdata)
 // const postdata = window?.postdata ? window.postdata : {}
 // const appVersion = process.env.npm_package_version
-const appVersion = require("../../../../../package.json").version
+const appVersion = require('../../../../../package.json').version
 // console.log("appVersion", appVersion)
 const postdata: IPostData = {
-  plugin_name: "ThreeD Garden",
+  plugin_name: 'ThreeD Garden',
   plugin_version: appVersion,
-  plugin_url: "https://garden.university.local/",
-  theme_uri: "dark",
-  rest_url: "https://garden.university.local/wp-json/wp/v2/",
+  plugin_url: 'https://garden.university.local/',
+  theme_uri: 'dark',
+  rest_url: 'https://garden.university.local/wp-json/wp/v2/',
   world_id: 1,
-  scene_id: 1
+  scene_id: 1,
 }
 
 const env: IThreeDEnv = {
@@ -124,11 +123,11 @@ const env: IThreeDEnv = {
   themeURI: postdata.theme_uri,
   restURL: postdata.rest_url,
   worldID: postdata.world_id,
-  sceneID: postdata.scene_id
+  sceneID: postdata.scene_id,
 }
 
-console.log("pluginName", env.pluginName, env.pluginVersion)
-console.log("postdata", postdata)
+console.log('pluginName', env.pluginName, env.pluginVersion)
+console.log('postdata', postdata)
 
 // INSTANTIATE COMMON VARIABLES
 const debug: boolean = false
@@ -173,8 +172,8 @@ let container: any
 let canvas: any
 
 const animations = {}
-let anims = ["Breathing Idle", "Driving", "Idle", "Left Turn", "Pointing", "Pointing Gesture"]
-anims = [...anims, "Right Turn", "Running", "Talking", "Turn", "Walking", "Walking Backwards"]
+let anims = ['Breathing Idle', 'Driving', 'Idle', 'Left Turn', 'Pointing', 'Pointing Gesture']
+anims = [...anims, 'Right Turn', 'Running', 'Talking', 'Turn', 'Walking', 'Walking Backwards']
 // let anims2 = ["ascend-stairs", "gather-objects", "look-around", "push-button", "run"]
 // let tweens = []
 
@@ -188,18 +187,18 @@ anims = [...anims, "Right Turn", "Running", "Talking", "Turn", "Walking", "Walki
 // let collect = []
 
 const player: IPlayer = {
-  action: "Idle", // player.action = "Idle"
+  action: 'Idle', // player.action = "Idle"
   actionTime: Date.now(), // player.actionTime = Date.now()
   object: new THREE.Object3D(),
   mixer: new THREE.AnimationMixer(new THREE.Object3D()),
-  move: () => { },
+  move: () => {},
   /**
    * PLAYER "CHARACTER" ACTIONS
    */
   setAction(name: string) {
     const action = player.mixer.clipAction(animations[name])
     action.time = 0
-    console.log("CHARACTER: action name", name)
+    console.log('CHARACTER: action name', name)
     // console.log("CHARACTER: animations[name]", animations[name])
     // console.log("CHARACTER: action object", action)
     player.mixer.stopAllAction()
@@ -216,11 +215,10 @@ const player: IPlayer = {
     return player.action
   },
   toggleAnimation() {
-    if (player.action === "Idle") {
-      this.setAction("Pointing Gesture")
-    }
-    else {
-      this.setAction("Idle")
+    if (player.action === 'Idle') {
+      this.setAction('Pointing Gesture')
+    } else {
+      this.setAction('Idle')
     }
   },
   movePlayer(dt: any) {
@@ -233,19 +231,18 @@ const player: IPlayer = {
     let blocked = false
     const { colliders } = params
 
-    if (colliders !== undefined){
-    	const intersect = raycaster.intersectObjects(colliders)
-    	if (intersect.length>0){
-    		if (intersect[0].distance<50) blocked = true
-    	}
+    if (colliders !== undefined) {
+      const intersect = raycaster.intersectObjects(colliders)
+      if (intersect.length > 0) {
+        if (intersect[0].distance < 50) blocked = true
+      }
     }
 
     if (!blocked) {
       if (player.move.forward > 0) {
-        const speed = (player.action === "Running") ? 24 : 8
+        const speed = player.action === 'Running' ? 24 : 8
         player.object.translateZ(dt * speed)
-      }
-      else if (player.move.forward < 0) {
+      } else if (player.move.forward < 0) {
         player.object.translateZ(-dt * 2)
       }
     }
@@ -313,28 +310,24 @@ const player: IPlayer = {
   },
 
   playerControl(forward, turn) {
-
     turn = -turn
 
     if (forward > 0.2) {
-      if (player.action !== "Walking" && player.action !== "Running") {
-        this.setAction("Walking")
+      if (player.action !== 'Walking' && player.action !== 'Running') {
+        this.setAction('Walking')
       }
-    }
-    else if (forward < -0.2) {
-      if (player.action !== "Walking Backwards") {
-        this.setAction("Walking Backwards")
+    } else if (forward < -0.2) {
+      if (player.action !== 'Walking Backwards') {
+        this.setAction('Walking Backwards')
       }
-    }
-    else {
+    } else {
       forward = 0
       if (Math.abs(turn) > 0.05) {
-        if (player.action !== "Left Turn") {
-          this.setAction("Left Turn")
+        if (player.action !== 'Left Turn') {
+          this.setAction('Left Turn')
         }
-      }
-      else if (player.action !== "Idle") {
-        this.setAction("Idle")
+      } else if (player.action !== 'Idle') {
+        this.setAction('Idle')
       }
       // else {
       // 	this.setAction("Idle")
@@ -348,17 +341,13 @@ const player: IPlayer = {
     player.move = { forward, turn }
     // }
   },
-
 }
 
 // =====================================================================
 // MESSAGES (to client)
 const messages = {
-  text: [
-    "Welcome to your ThreeD Garden",
-    "GO GROW!"
-  ],
-  index: 0
+  text: ['Welcome to your ThreeD Garden', 'GO GROW!'],
+  index: 0,
 }
 
 // =====================================================================
@@ -366,17 +355,17 @@ const messages = {
 
 const params = {
   /** SET MODES */
-  mode: "",
+  mode: '',
   modes: Object.freeze({
-    NONE: "none",
-    PRELOAD: "preload",
-    INITIALIZING: "initializing",
-    BUILDING: "building",
-    BUILT: "built",
-    LOADING: "loading",
-    LOADED: "loaded",
-    ACTIVE: "active",
-    GAMEOVER: "game_over"
+    NONE: 'none',
+    PRELOAD: 'preload',
+    INITIALIZING: 'initializing',
+    BUILDING: 'building',
+    BUILT: 'built',
+    LOADING: 'loading',
+    LOADED: 'loaded',
+    ACTIVE: 'active',
+    GAMEOVER: 'game_over',
   }),
   /** turn on/off animation */
   ANIMATE: true, // starting value
@@ -389,7 +378,7 @@ const params = {
     allotment: [{}],
     bed: [{}],
     plant: [{}],
-    planting_plan: [{}]
+    planting_plan: [{}],
   },
   /** POINTER HOVERS + CLICKS */
   intersectedObject1: {},
@@ -402,13 +391,13 @@ const params = {
   farmhouse: {},
 }
 params.mode = params.modes.NONE
-console.log("params.mode", params.mode)
+console.log('params.mode', params.mode)
 // guiFolderAnimation.add(params, "ANIMATE").name("Run Animation")
 
 params.mode = params.modes.PRELOAD
-console.log("params.mode", params.mode)
+console.log('params.mode', params.mode)
 
-console.log("params", params)
+console.log('params', params)
 
 //
 // PARAMS.ASSETS ???
@@ -438,7 +427,7 @@ console.log("params", params)
 
 /** TIME CLOCK */
 const clock = new THREE.Clock()
-console.log("clock", clock)
+console.log('clock', clock)
 
 /** POINTER HOVERS + CLICKS */
 const raycaster = new THREE.Raycaster()
@@ -459,13 +448,7 @@ const API_URL_BEDS = `${env.restURL}bed/?_embed&per_page=100`
 const API_URL_PLANTING_PLANS = `${env.restURL}planting_plan/?_embed&per_page=100`
 const API_URL_PLANTS = `${env.restURL}plant/?_embed&per_page=100`
 
-const API_URLS = [
-  API_URL_SCENES,
-  API_URL_ALLOTMENTS,
-  API_URL_BEDS,
-  API_URL_PLANTING_PLANS,
-  API_URL_PLANTS
-]
+const API_URLS = [API_URL_SCENES, API_URL_ALLOTMENTS, API_URL_BEDS, API_URL_PLANTING_PLANS, API_URL_PLANTS]
 
 // ================================================================
 // LOGIC BEGINS HERE
@@ -475,43 +458,39 @@ const API_URLS = [
 // :) APP EXECUTION BEGINS HERE <3
 
 THREE.DefaultLoadingManager.onStart = function (url, itemsLoaded, itemsTotal) {
-  console.log('Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
-};
+  console.log('Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.')
+}
 
 THREE.DefaultLoadingManager.onLoad = function () {
-  console.log('Loading Complete!');
+  console.log('Loading Complete!')
 
   const startTime = new Date().toISOString()
-  console.log("manager.onLoad", startTime)
+  console.log('manager.onLoad', startTime)
 
   if (params.mode === params.modes.LOADING) {
     params.mode = params.modes.LOADED
-    console.log("params.mode manager.onLoad", params.mode, startTime)
-    player.setAction("Idle")
+    console.log('params.mode manager.onLoad', params.mode, startTime)
+    player.setAction('Idle')
     animate()
-    console.log("animating ****************************** ")
+    console.log('animating ****************************** ')
     params.mode = params.modes.ACTIVE
-    console.log("params.mode manager.onLoad", params.mode, new Date().toISOString())
+    console.log('params.mode manager.onLoad', params.mode, new Date().toISOString())
   } else {
-    console.log("still building ************************* ")
-    console.log("params.mode manager.onLoad", params.mode, startTime)
+    console.log('still building ************************* ')
+    console.log('params.mode manager.onLoad', params.mode, startTime)
   }
-
-};
+}
 
 THREE.DefaultLoadingManager.onProgress = function (url, itemsLoaded, itemsTotal) {
-  console.log('Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
-};
+  console.log('Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.')
+}
 
 THREE.DefaultLoadingManager.onError = function (url) {
-  console.log('There was an error loading ' + url);
-};
-
-
+  console.log('There was an error loading ' + url)
+}
 
 // const [manager, setManager] = useState(new THREE.LoadingManager())
 const bootManager = () => {
-
   const manager = new THREE.LoadingManager()
 
   // const wtfayd = toJSON(manager)
@@ -531,7 +510,7 @@ const bootManager = () => {
 
   manager.onLoad = () => {
     const startTime = new Date().toISOString()
-    console.log("manager.onLoad", startTime)
+    console.log('manager.onLoad', startTime)
     // console.log('starting timer...')
     // const millis = Date.now() - startTime
     // console.log(`milliseconds elapsed = ${Math.floor(millis)}`)
@@ -539,15 +518,15 @@ const bootManager = () => {
 
     if (params.mode === params.modes.LOADING) {
       params.mode = params.modes.LOADED
-      console.log("params.mode manager.onLoad", params.mode, startTime)
-      player.setAction("Idle")
+      console.log('params.mode manager.onLoad', params.mode, startTime)
+      player.setAction('Idle')
       animate()
-      console.log("animating ****************************** ")
+      console.log('animating ****************************** ')
       params.mode = params.modes.ACTIVE
-      console.log("params.mode manager.onLoad", params.mode, new Date().toISOString())
+      console.log('params.mode manager.onLoad', params.mode, new Date().toISOString())
     } else {
-      console.log("still building ************************* ")
-      console.log("params.mode manager.onLoad", params.mode, startTime)
+      console.log('still building ************************* ')
+      console.log('params.mode manager.onLoad', params.mode, startTime)
     }
   }
   // }
@@ -562,7 +541,7 @@ const bootManager = () => {
     loaderTexture: new THREE.TextureLoader(manager),
   }
 
-  return (<div>BEGIN BOOT PROCESS</div>)
+  return <div>BEGIN BOOT PROCESS</div>
 }
 
 // ==================================================================
@@ -578,7 +557,7 @@ const render = () => {
 
 // watch for window resize, then adjust canvas appropriately
 const onWindowResize = () => {
-  console.log("window resize to: ", window.innerWidth, window.innerHeight)
+  console.log('window resize to: ', window.innerWidth, window.innerHeight)
   camera.aspect = window.innerWidth / window.innerHeight
   camera.updateProjectionMatrix()
   renderer.setSize(window.innerWidth, window.innerHeight)
@@ -593,7 +572,7 @@ const getPlane = (x, y, color1) => {
   const geometry = new THREE.PlaneGeometry(x, y)
   const material = new THREE.MeshStandardMaterial({
     color: color1,
-    side: THREE.DoubleSide
+    side: THREE.DoubleSide,
   })
   const mesh = new THREE.Mesh(geometry, material)
   mesh.receiveShadow = true
@@ -643,7 +622,7 @@ const getGeometry = (shape, x, y, z, color) => {
   let material
   let mesh
   switch (shape) {
-    case "Box":
+    case 'Box':
       geometry = new THREE.BoxGeometry(x, y, z)
       // let opacMaterial = new THREE.MeshStandardMaterial({
       // 	transparent: true,
@@ -658,56 +637,50 @@ const getGeometry = (shape, x, y, z, color) => {
         opacity: 0.8,
         color: color,
         side: THREE.DoubleSide,
-        depthWrite: true
+        depthWrite: true,
       })
-      mesh = new THREE.Mesh(
-        geometry,
-        [
-          material, material,
-          material, material
-        ]
-      )
+      mesh = new THREE.Mesh(geometry, [material, material, material, material])
       mesh.castShadow = true
       break
 
-    case "Cone":
+    case 'Cone':
       geometry = new THREE.ConeGeometry(x / 2, y / 2, z, 32, 1, true)
       material = new THREE.MeshStandardMaterial({
         color: color,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
       })
       mesh = new THREE.Mesh(geometry, material)
       mesh.castShadow = true
       mesh.rotation.x = Math.PI / 2 // 90 degrees in radians
       break
 
-    case "Cylinder":
+    case 'Cylinder':
       geometry = new THREE.CylinderGeometry(x / 2, y / 2, z, 32, 1, true)
       material = new THREE.MeshStandardMaterial({
         color: color,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
       })
       mesh = new THREE.Mesh(geometry, material)
       mesh.castShadow = true
       mesh.rotation.x = Math.PI / 2 // 90 degrees in radians
       break
 
-    case "InfoSphere":
+    case 'InfoSphere':
       geometry = new THREE.SphereGeometry(x, y, z)
       material = new THREE.MeshStandardMaterial({
         color: color,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
       })
       mesh = new THREE.Mesh(geometry, material)
       mesh.castShadow = true
       //mesh.rotation.x = Math.PI / 2 // 90 degrees in radians
       break
 
-    case "Sphere":
+    case 'Sphere':
       geometry = new THREE.SphereGeometry(x, y, z)
       material = new THREE.MeshStandardMaterial({
         color: color,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
       })
       mesh = new THREE.Mesh(geometry, material)
       mesh.castShadow = true
@@ -734,15 +707,14 @@ const getGeometry = (shape, x, y, z, color) => {
     // 	//mesh.rotation.x = Math.PI / 2 // 90 degrees in radians
     // 	break
 
-    case "Bush":
-
+    case 'Bush':
       // [MM]
 
       // CAST
       geometry = new THREE.BoxGeometry(x, y, z)
 
       //color = new THREE.Color(0xff0000)
-      color = new THREE.Color("rgb(153,90,0)")
+      color = new THREE.Color('rgb(153,90,0)')
 
       // material = new THREE.MeshPhongMaterial({ color: color, wireframe: false })
       // material = new THREE.MeshStandardMaterial({
@@ -795,7 +767,7 @@ const getGeometry = (shape, x, y, z, color) => {
           new_mat_r.makeRotationZ(-Math.PI / 4)
           new_mat_r2.makeRotationY(Math.PI / 2)
           new_mat_s.makeScale(0.75, 0.75, 0.75)
-          new_mat.multiply(new_mat_r2)  //
+          new_mat.multiply(new_mat_r2) //
           new_mat.multiply(new_mat_t0)
           new_mat.multiply(new_mat_r)
           new_mat.multiply(new_mat_s)
@@ -837,7 +809,7 @@ const getGeometry = (shape, x, y, z, color) => {
       geometry = new THREE.BoxGeometry(x, y, z)
       material = new THREE.MeshStandardMaterial({
         color: color,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
       })
       mesh = new THREE.Mesh(geometry, material)
       mesh.castShadow = true
@@ -856,7 +828,7 @@ function loadTown() {
     plane.add(object)
     object.traverse(function (child) {
       if (child.isMesh) {
-        if (child.name.startsWith("proxy")) {
+        if (child.name.startsWith('proxy')) {
           params.colliders.push(child)
           child.material.visible = false
         } else {
@@ -884,7 +856,7 @@ function loadFarmHouse() {
     plane.add(object)
     object.traverse(function (child) {
       if (child.isMesh) {
-        if (child.name.startsWith("proxy")) {
+        if (child.name.startsWith('proxy')) {
           params.colliders.push(child)
           child.material.visible = false
         } else {
@@ -907,12 +879,10 @@ function loadFarmHouse() {
 }
 
 function loadFarmHouseGLTF() {
-
   // loaders.loaderFBX.load( `${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
   loaderGLTF.load(`${params.assetsPath}gltf/Residential House.glb`, function (object) {
-
     let model = object.scene
-    model.name = "Farm House"
+    model.name = 'Farm House'
     model.position.set(0, 0, 100)
     model.scale.set(20, 20, 20)
     model.traverse(function (child) {
@@ -925,11 +895,10 @@ function loadFarmHouseGLTF() {
     helper.visible = true
     plane.add(helper)
 
-    console.log("loadFarmHouseGLTF object", object)
-    console.log("loadFarmHouseGLTF model", model)
+    console.log('loadFarmHouseGLTF object', object)
+    console.log('loadFarmHouseGLTF model', model)
 
-    guiFolderPlayer.add(model, "visible").name("Show House").listen()
-
+    guiFolderPlayer.add(model, 'visible').name('Show House').listen()
   })
 }
 
@@ -945,7 +914,7 @@ function loadCoop() {
     plane.add(object)
     object.traverse(function (child) {
       if (child.isMesh) {
-        if (child.name.startsWith("proxy")) {
+        if (child.name.startsWith('proxy')) {
           params.colliders.push(child)
           child.material.visible = false
         } else {
@@ -965,11 +934,9 @@ function loadCoop() {
 }
 
 function loadChicken() {
-
   loaderGLTF.load(`${params.assetsPath}gltf/Chicken.glb`, function (object) {
-
     let model = object.scene
-    model.name = "Chicken GLB"
+    model.name = 'Chicken GLB'
     model.position.set(-3, 0, 0)
     model.rotation.x = 90 * (Math.PI / 180) // 90 degrees in radians
     model.scale.set(4, 4, 4)
@@ -983,18 +950,16 @@ function loadChicken() {
     // helper.visible = true
     // plane.add(helper)
 
-    console.log("loadChicken object", object)
-    console.log("loadChicken model", model)
+    console.log('loadChicken object', object)
+    console.log('loadChicken model', model)
 
     //guiFolderPlayer.add(model, "visible").name("Show Chicken").listen()
-
   })
 }
 
 function loadChicken0() {
   loaders.loaderFBX.load(`${params.assetsPath}fbx/Chicken.fbx`, function (object) {
-
-    console.log("BIRD----------------")
+    console.log('BIRD----------------')
     console.log(object)
 
     //params.farmhouse = object
@@ -1026,8 +991,7 @@ function loadChicken0() {
 
 function loadChicken1() {
   loaders.loaderFBX.load(`${params.assetsPath}fbx/SA_Animal_Birds.fbx`, function (object) {
-
-    console.log("BIRD----------------")
+    console.log('BIRD----------------')
     console.log(object)
 
     //params.farmhouse = object
@@ -1062,7 +1026,7 @@ function loadChicken2() {
     // loaders.loaderFBX.load( `${params.assetsPath}fbx/people/Trucker.fbx`, function (object) {
     // loaders.loaderFBX.load( `${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function (object) {
 
-    console.log("object----------------")
+    console.log('object----------------')
     console.log(object)
 
     // object.mixer = new THREE.AnimationMixer( object )
@@ -1156,17 +1120,15 @@ function loadChicken2() {
 
 // NOT USED or TESTED
 function loadChickenGLTF() {
-
   loaderGLTF.load(`${params.assetsPath}gltf/Animals.glb`, function (object) {
-
-    console.log("Animals object----------------")
+    console.log('Animals object----------------')
     console.log(object)
 
     object.mixer = new THREE.AnimationMixer(object.scene)
     player.mixer = object.mixer
     player.root = object.mixer.getRoot()
 
-    object.name = "Chicken Dance"
+    object.name = 'Chicken Dance'
 
     object.scene.traverse(function (child) {
       if (child.isMesh) {
@@ -1187,18 +1149,15 @@ function loadChickenGLTF() {
     //setAction("Idle")
     plane.add(player.object)
     //guiFolderPlayer.add(player.object, "visible").name("Show Character").listen()
-
   })
 }
 //
 
 // NOT USED or TESTED
 function loadChickGLTF() {
-
   loaderGLTF.load(`${params.assetsPath}gltf/Chick.glb`, function (object) {
-
     let model = object.scene
-    model.name = "Chick GLB"
+    model.name = 'Chick GLB'
     model.position.set(3, 0, 0)
     //model.rotation.y = 90 * (Math.PI/180) // 90 degrees in radians
     model.scale.set(2, 2, 2)
@@ -1212,13 +1171,12 @@ function loadChickGLTF() {
     // helper.visible = true
     // plane.add(helper)
 
-    console.log("loadChickGLTF object")
+    console.log('loadChickGLTF object')
     console.log(object)
-    console.log("loadChickGLTF model")
+    console.log('loadChickGLTF model')
     console.log(model)
 
     //guiFolderPlayer.add(model, "visible").name("Show Chicken").listen()
-
   })
 }
 //
@@ -1234,7 +1192,7 @@ function loadHen() {
 
     object.traverse(function (child) {
       if (child.isMesh) {
-        if (child.name.startsWith("proxy")) {
+        if (child.name.startsWith('proxy')) {
           params.colliders.push(child)
           child.material.visible = false
         } else {
@@ -1249,15 +1207,15 @@ function loadHen() {
         if (child.isMesh) {
           child.material.map = texture
 
-          console.log("loadHen child----------")
+          console.log('loadHen child----------')
           console.log(child)
           console.log(child.geometry.attributes.uv)
-          console.log("-----------------------")
+          console.log('-----------------------')
         }
       })
     })
 
-    console.log("loadHen object----------------")
+    console.log('loadHen object----------------')
     console.log(object)
 
     plane.add(object)
@@ -1265,10 +1223,8 @@ function loadHen() {
 }
 
 function loadHenGLTF() {
-
   // loaders.loaderFBX.load( `${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
   loaderGLTF.load(`${params.assetsPath}gltf/Hen_HP.glb`, function (object) {
-
     let model = object.scene
     //model.name = "Hen"
     //model.position.set(10, 0, 0)
@@ -1283,13 +1239,12 @@ function loadHenGLTF() {
     // helper.visible = true
     // plane.add(helper)
 
-    console.log("loadHenGLTF object----------------")
+    console.log('loadHenGLTF object----------------')
     console.log(object)
-    console.log("loadHenGLTF model----------------")
+    console.log('loadHenGLTF model----------------')
     console.log(model)
 
     //guiFolderPlayer.add(model, "visible").name("Show Hen GLTF").listen()
-
   })
 }
 
@@ -1304,7 +1259,7 @@ function loadKitchenSink() {
     plane.add(object)
     object.traverse(function (child) {
       if (child.isMesh) {
-        if (child.name.startsWith("proxy")) {
+        if (child.name.startsWith('proxy')) {
           params.colliders.push(child)
           child.material.visible = false
         } else {
@@ -1388,7 +1343,6 @@ function loadRooster() {
 
 // LOAD ROAD
 function loadRoad() {
-
   let i
   let count = 8
   let startX = -45
@@ -1397,11 +1351,9 @@ function loadRoad() {
   let offsetZ = 20
 
   const roadPromise1 = new Promise((resolve, reject) => {
-
     // ROAD A
     for (i = 1; i <= count; i++) {
       loaders.loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_Straight_01.fbx`, function (object) {
-
         // console.log("ROAD object", object)
 
         //params.farmhouse = object
@@ -1410,7 +1362,7 @@ function loadRoad() {
         object.position.set(startX, startZ, 0)
         startX = startX + offsetX
         startZ = startZ + offsetZ
-        console.log("ROAD A startX, startZ", startX, startZ)
+        console.log('ROAD A startX, startZ', startX, startZ)
         object.scale.set(0.02, 0.01, 0.02)
         object.traverse(function (child) {
           if (child.isMesh) {
@@ -1439,7 +1391,6 @@ function loadRoad() {
 
         //console.log("ROAD A object", object)
       })
-
     }
     resolve(startX, startZ)
   })
@@ -1447,8 +1398,7 @@ function loadRoad() {
     // ROAD T
     for (i = 1; i <= 1; i++) {
       loaders.loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_T_Section_01.fbx`, function (object) {
-
-        console.log("ROAD T startX, startZ", startX, startZ)
+        console.log('ROAD T startX, startZ', startX, startZ)
 
         //params.farmhouse = object
         //params.colliders = []
@@ -1456,7 +1406,7 @@ function loadRoad() {
         object.position.set(startX, 0, startZ)
         startX = startX + offsetX
         startZ = startZ + offsetZ
-        console.log("ROAD T startX, startZ", startX, startZ)
+        console.log('ROAD T startX, startZ', startX, startZ)
         object.scale.set(0.02, 0.01, 0.02)
         object.traverse(function (child) {
           if (child.isMesh) {
@@ -1485,11 +1435,8 @@ function loadRoad() {
 
         //console.log("ROAD T object", object)
       })
-
     }
-
   })
-
 }
 
 /**
@@ -1498,7 +1445,6 @@ function loadRoad() {
 
 // when the pointer moves and hovers
 function watchPointer(camera: Camera, targetList) {
-
   //console.log("targetList", targetList)
 
   // update the picking ray with the camera and pointer position
@@ -1518,7 +1464,6 @@ function watchPointer(camera: Camera, targetList) {
 
   // if there is one (or more) intersections
   if (intersects.length > 0) {
-
     // console.log("INTERSECTS", intersects)
     // return
 
@@ -1532,15 +1477,13 @@ function watchPointer(camera: Camera, targetList) {
 
     // if the closest object intersected is not the currently stored intersection object
     if (intersects[0].object !== params.intersectedObject1) {
-
       // restore previous intersection object (if it exists) to its original color
       if (params.intersectedObject1) {
-        if (params.intersectedObject1.material.constructor.name === "Array") {
+        if (params.intersectedObject1.material.constructor.name === 'Array') {
           for (let i = 0; i < params.intersectedObject1.material.length; i++) {
             params.intersectedObject1.material[i].color.setHex(params.intersectedObject1.currentHex)
           }
-        }
-        else {
+        } else {
           params.intersectedObject1.material.color.setHex(params.intersectedObject1.currentHex)
         }
       }
@@ -1550,7 +1493,7 @@ function watchPointer(camera: Camera, targetList) {
 
       // console.log("params.intersectedObject1, params.intersectedObject1)
 
-      if (params.intersectedObject1.material.constructor.name === "Array") {
+      if (params.intersectedObject1.material.constructor.name === 'Array') {
         // SEPARATE FOR LOOPS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // store color of closest object (for later restoration)
         for (let i = 0; i < params.intersectedObject1.material.length; i++) {
@@ -1561,26 +1504,23 @@ function watchPointer(camera: Camera, targetList) {
           params.intersectedObject1.material[i].color.setHex(0xdddd00)
         }
         // SEPARATE FOR LOOPS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      }
-      else {
+      } else {
         // store color of closest object (for later restoration)
         params.intersectedObject1.currentHex = params.intersectedObject1.material.color.getHex()
         // set a new color for closest object
         params.intersectedObject1.material.color.setHex(0xdddd00)
       }
-
     }
   }
   // there are no intersections
   else {
     // restore previous intersection object (if it exists) to its original color
     if (params.intersectedObject1) {
-      if (params.intersectedObject1.material.constructor.name === "Array") {
+      if (params.intersectedObject1.material.constructor.name === 'Array') {
         for (let i = 0; i < params.intersectedObject1.material.length; i++) {
           params.intersectedObject1.material[i].color.setHex(params.intersectedObject1.currentHex)
         }
-      }
-      else {
+      } else {
         params.intersectedObject1.material.color.setHex(params.intersectedObject1.currentHex)
       }
     }
@@ -1593,7 +1533,6 @@ function watchPointer(camera: Camera, targetList) {
 // when the pointer moves, call the given function
 //document.addEventListener( "pointermove", onPointerMove, false )
 function onPointerMove(event) {
-
   // the following line would stop any other event handler from firing
   // (such as the pointer's TrackballControls)
   // event.preventDefault()
@@ -1611,8 +1550,7 @@ function onPointerMove(event) {
 // when the pointer moves, call the given function
 // document.addEventListener( "pointerdown", onPointerDown, false )
 function onPointerDown(event) {
-
-  console.log("event ****************************************", event)
+  console.log('event ****************************************', event)
 
   // the following line would stop any other event handler from firing
   // (such as the pointer's TrackballControls)
@@ -1625,7 +1563,7 @@ function onPointerDown(event) {
   // pointer.y = -(event.offsetY / (window.innerHeight - 100)) * 2 + 1
   pointer.x = (event.offsetX / canvas.clientWidth) * 2 - 1
   pointer.y = -(event.offsetY / canvas.clientHeight) * 2 + 1
-  console.log("pointer clicked x y", pointer.x, pointer.y)
+  console.log('pointer clicked x y', pointer.x, pointer.y)
 
   // find intersections
   raycaster2.setFromCamera(pointer, event.target.camera)
@@ -1633,12 +1571,12 @@ function onPointerDown(event) {
   // 	event.target.camera.getWorldPosition(),
   // 	event.target.camera.getWorldDirection()
   // )
-  console.log("raycaster2", raycaster2)
+  console.log('raycaster2', raycaster2)
 
   // create an array containing all objects in the scene with which the raycaster2 intersects
   //var intersects = raycaster2.intersectObjects(event.target.targetList)
   const intersects = raycaster2.intersectObjects(event.target.targetList)
-  console.log("intersects", intersects)
+  console.log('intersects', intersects)
 
   // if there is one (or more) intersections
   if (intersects.length > 0) {
@@ -1671,8 +1609,7 @@ function onPointerDown(event) {
       //params.intersectedObject2.material[i].color.setHex( params.intersectedObject2.currentHex )
       // zoom out
       //panCam(100, 200, 200, 800, event.target.camera, event.target.controls)
-    }
-    else {
+    } else {
       // zoom in
       //panCam(params.intersectedObject2.position.x, params.intersectedObject2.position.y, params.intersectedObject2.position.z, 800, event.target.camera, event.target.controls)
     }
@@ -1700,14 +1637,12 @@ function onPointerDown(event) {
     // console.log("------------------")
 
     // show/hide infospheres
-    if (params.intersectedObject2.userData.type === "structure" && event.button === 0) {
-
+    if (params.intersectedObject2.userData.type === 'structure' && event.button === 0) {
       let infospotObject = scene.getObjectByName(`INFOSPOT: ${params.intersectedObject2.name}`) // , true for recursive
       if (infospotObject) {
         if (infospotObject.visible === true) {
           infospotObject.visible = false
-        }
-        else {
+        } else {
           infospotObject.visible = true
         }
       }
@@ -1731,7 +1666,7 @@ function onPointerDown(event) {
       // 		key.visible = true
       // 	}
       // }
-      if (key.type === "Object3D" && event.button === 0) {
+      if (key.type === 'Object3D' && event.button === 0) {
         if (key.element.hidden === true) {
           //if (key.visible === false) {
           // console.log("-------------------------")
@@ -1739,16 +1674,15 @@ function onPointerDown(event) {
           // console.log(key.element.hidden)
           // console.log("-------------------------")
           key.element.hidden = false
-          key.element.style.display = "block"
+          key.element.style.display = 'block'
           key.visible = true // does nothing, but keeps status accurate
-        }
-        else {
+        } else {
           // console.log("-------------------------")
           // console.log("FALSE------")
           // console.log(key.element.hidden)
           // console.log("-------------------------")
           key.element.hidden = true
-          key.element.style.display = "none"
+          key.element.style.display = 'none'
           key.visible = false // does nothing, but keeps status accurate
         }
         // console.log("--------------------------------------")
@@ -1767,10 +1701,8 @@ function onPointerDown(event) {
     // else {
     // 	console.log("ANNOTATION?", params.intersectedObject2.userData)
     // }
-
-  }
-  else // there are no intersections
-  {
+  } // there are no intersections
+  else {
     // restore previous intersection object (if it exists) to its original color
     if (params.intersectedObject2) {
       //params.intersectedObject2.material.color.setHex( params.intersectedObject2.currentHex )
@@ -1778,28 +1710,27 @@ function onPointerDown(event) {
     // remove previous intersection object reference by setting current intersection object to "nothing"
     params.intersectedObject2 = null
   }
-
 }
 // OR
 // document.addEventListener( "mousedown", onDocumentMouseDown, false )
 function onDocumentMouseDown(e) {
-  e.preventDefault();
+  e.preventDefault()
 
   var mouseVector = new THREE.Vector3(
     (e.clientX / window.innerWidth) * 2 - 1,
-    - (e.clientY / window.innerHeight) * 2 + 1,
+    -(e.clientY / window.innerHeight) * 2 + 1,
     1
-  );
+  )
 
-  projector.unprojectVector(mouseVector, camera);
-  var raycaster = new THREE.Raycaster(camera.position, mouseVector.subSelf(camera.position).normalize());
+  projector.unprojectVector(mouseVector, camera)
+  var raycaster = new THREE.Raycaster(camera.position, mouseVector.subSelf(camera.position).normalize())
 
   // create an array containing all objects in the scene with which the ray intersects
-  var intersects = raycaster.intersectObjects(scene.children);
-  console.log(intersects);
+  var intersects = raycaster.intersectObjects(scene.children)
+  console.log(intersects)
   if (intersects.length > 0) {
-    console.log("Intersected object:", intersects.length);
-    intersects[0].object.material.color.setHex(Math.random() * 0xffffff);
+    console.log('Intersected object:', intersects.length)
+    intersects[0].object.material.color.setHex(Math.random() * 0xffffff)
   }
 }
 
@@ -1811,18 +1742,17 @@ function getFeaturedImage(postObject) {
   // If there is no featured image, exit the function returning blank.
   if (0 === postObject.featured_media) {
     return featImage
-  }
-  else {
-    featImage.featuredObject = postObject._embedded["wp:featuredmedia"][0]
+  } else {
+    featImage.featuredObject = postObject._embedded['wp:featuredmedia'][0]
     featImage.imgUrl = featImage.featuredObject.source_url
-    featImage.imgMediumUrl = ""
-    featImage.imgLargeUrl = ""
+    featImage.imgMediumUrl = ''
+    featImage.imgLargeUrl = ''
     featImage.imgWidth = featImage.featuredObject.media_details.width
     featImage.imgHeight = featImage.featuredObject.media_details.height
-    if (featImage.featuredObject.media_details.sizes.hasOwnProperty("large")) {
+    if (featImage.featuredObject.media_details.sizes.hasOwnProperty('large')) {
       featImage.imgWidth = featImage.featuredObject.media_details.sizes.full.width
       featImage.imgHeight = featImage.featuredObject.media_details.sizes.full.height
-      featImage.imgLargeUrl = featImage.featuredObject.media_details.sizes.large.source_url + " 1024w, "
+      featImage.imgLargeUrl = featImage.featuredObject.media_details.sizes.large.source_url + ' 1024w, '
     }
     // console.log("featImage", featImage)
   }
@@ -1849,12 +1779,9 @@ Array.prototype.pushIfNotExist = function (element, comparer) {
   }
 }
 
-
-
 /** ANIMATE + RENDER (continuous rendering) ******************************************** */
 
 const animate = () => {
-
   const dt = clock.getDelta()
   watchPointer(camera, plane.children)
   controls.update()
@@ -1875,7 +1802,7 @@ const animate = () => {
   }
 
   // Running
-  if (player.action === "Walking") {
+  if (player.action === 'Walking') {
     const elapsedTime = Date.now() - player.actionTime
     if (elapsedTime > 2000 && player.move.forward > 0.7) {
       //setAction("Running")
@@ -1904,9 +1831,8 @@ const animate = () => {
 
 /** LOADERS (??? here ???) */
 const loadAssets = () => {
-
   params.mode = params.modes.LOADING
-  console.log("params.mode", params.mode)
+  console.log('params.mode', params.mode)
 
   /** FBX ******************************************************************************** */
 
@@ -1914,12 +1840,11 @@ const loadAssets = () => {
   //loaders.loaderFBX.load( `${params.assetsPath}fbx/people/FireFighter.fbx`, function (object) {
   //loaders.loaderFBX.load( `${params.assetsPath}fbx/people/Trucker.fbx`, function (object) {
   loaders.loaderFBX.load(`${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function (object) {
-
     object.mixer = new THREE.AnimationMixer(object)
     player.mixer = object.mixer
     player.root = object.mixer.getRoot()
 
-    object.name = "Gardener"
+    object.name = 'Gardener'
 
     object.traverse(function (child) {
       if (child.isMesh) {
@@ -1951,7 +1876,6 @@ const loadAssets = () => {
     // console.log("player.object", player.object)
     plane.add(player.object)
     // guiFolderPlayer.add(player.object, "visible").name("Show Character").listen()
-
   })
 
   /** LOAD 3D OBJECTS ******************************************************************** */
@@ -1988,8 +1912,7 @@ const loadAssets = () => {
         // console.log("getAction()")
         // console.log("player.action")
         loadNextAnim(loader)
-      }
-      else {
+      } else {
         // console.log("anims.length")
         anims = []
       }
@@ -1997,50 +1920,45 @@ const loadAssets = () => {
   }
   // RECURSIVE FUNCTION TO LOAD ANIMATIONS
   loadNextAnim(loaders.loaderFBX)
-
 } // end loadAssets()
 
 /**
  * BEGIN BUILD (MAIN/INIT)
  * ****************************************************** */
 const build = async () => {
-
   params.mode = params.modes.BUILDING
-  console.log("params.mode", params.mode)
+  console.log('params.mode', params.mode)
 
-  console.log("building ********************************* ")
+  console.log('building ********************************* ')
 
   try {
     let a1 = await getSceneData()
 
-    console.log("a1 boolean getSceneData", a1, new Date().toISOString())
-    console.log("data retrieved ************************* ")
+    console.log('a1 boolean getSceneData', a1, new Date().toISOString())
+    console.log('data retrieved ************************* ')
 
     let a2 = await buildScene(a1)
-    console.log("a2 plane returned from buildScene", a2, new Date().toISOString())
+    console.log('a2 plane returned from buildScene', a2, new Date().toISOString())
 
     let a3 = async function (a4) {
-      console.log("a4 plane object returned from buildScene", a4, new Date().toISOString())
+      console.log('a4 plane object returned from buildScene', a4, new Date().toISOString())
       params.mode = params.modes.BUILT
-      console.log("params.mode", params.mode)
-      console.log("scene built ************************** ")
+      console.log('params.mode', params.mode)
+      console.log('scene built ************************** ')
       loadAssets(a2)
-      console.log("loading assets *********************** ")
+      console.log('loading assets *********************** ')
     }
     await a3(a2)
-    console.log("a3 async function (complete)", a3, new Date().toISOString())
-
+    console.log('a3 async function (complete)', a3, new Date().toISOString())
   } catch (e) {
-    console.log("error ***: ", e)
+    console.log('error ***: ', e)
   }
 
   // const preloader = new Preloader(options)
   // console.log("preloader", preloader)
-
 } // end build()
 
 const getSceneData = async () => {
-
   // get data
   let getDataFromLocalStorage = true
 
@@ -2049,77 +1967,72 @@ const getSceneData = async () => {
     const getdata = localStorage.getItem('threedgarden') || ''
     const threedgarden = getdata ? JSON.parse(getdata) : undefined
     if (threedgarden !== undefined) {
-      console.log("LOCALSTORAGE ITEM RETRIEVED", threedgarden)
+      console.log('LOCALSTORAGE ITEM RETRIEVED', threedgarden)
       //this.threedgarden = threedgarden
       params.data = threedgarden.data
     } else {
-      console.log("LOCALSTORAGE ITEM NOT RETRIEVED", threedgarden)
+      console.log('LOCALSTORAGE ITEM NOT RETRIEVED', threedgarden)
       getDataFromLocalStorage = false
     }
   } else {
-    console.log("LOCALSTORAGE NOT AVAILABLE")
+    console.log('LOCALSTORAGE NOT AVAILABLE')
     getDataFromLocalStorage = false
   }
 
   if (1 === 0 || !getDataFromLocalStorage) {
-
     // PROMISE REST API -- call WP Rest API for data second
     await Promise.allSettled(
-      API_URLS.map(
-        url => fetch(url)
-          .then(results => results.json())
-          .then(data => {
+      API_URLS.map((url) =>
+        fetch(url)
+          .then((results) => results.json())
+          .then((data) => {
             let type = data[0].type
             switch (type) {
-              case "scene":
+              case 'scene':
                 params.data.scene = [...data]
                 break
-              case "allotment":
+              case 'allotment':
                 params.data.allotment = [...data]
                 break
-              case "bed":
+              case 'bed':
                 params.data.bed = [...data]
                 break
-              case "plant":
+              case 'plant':
                 params.data.plant = [...data]
                 break
-              case "planting_plan":
+              case 'planting_plan':
                 params.data.planting_plan = [...data]
                 break
               default:
                 break
             }
-            console.log("data", data)
+            console.log('data', data)
           })
       )
-    )
-      .then(results => {
-        console.log("results", results)
-        results.forEach((result, num) => {
-          if (result.status === "fulfilled") {
-            //alert(`${urls[num]}: ${result.value.status}`)
-            //console.log(result)
-          }
-          if (result.status === "rejected") {
-            //alert(`${urls[num]}: ${result.reason}`)
-            console.log(result)
-          }
-        })
-        console.log("params.data", params.data)
+    ).then((results) => {
+      console.log('results', results)
+      results.forEach((result, num) => {
+        if (result.status === 'fulfilled') {
+          //alert(`${urls[num]}: ${result.value.status}`)
+          //console.log(result)
+        }
+        if (result.status === 'rejected') {
+          //alert(`${urls[num]}: ${result.reason}`)
+          console.log(result)
+        }
+      })
+      console.log('params.data', params.data)
 
-        // save to localStorage
-        localStorage.setItem('threedgarden', JSON.stringify(params))
+      // save to localStorage
+      localStorage.setItem('threedgarden', JSON.stringify(params))
 
-        // fulfill Promise?
-        return true
-      }
-      )
-  }
-  else if (getDataFromLocalStorage) {
+      // fulfill Promise?
+      return true
+    })
+  } else if (getDataFromLocalStorage) {
     // fulfill Promise?
     return true
-  }
-  else {
+  } else {
     // fulfill Promise?
     return false
   }
@@ -2129,13 +2042,12 @@ const getSceneData = async () => {
  * BUILD SCENE
  * *************************************************************************************** */
 const buildScene = async (a5) => {
-
-  console.log("a5 boolean === a1 boolean", a5)
+  console.log('a5 boolean === a1 boolean', a5)
 
   params.mode = params.modes.BUILDING
-  console.log("params.mode", params.mode)
+  console.log('params.mode', params.mode)
 
-  console.log("params.data.scene", params.data.scene)
+  console.log('params.data.scene', params.data.scene)
 
   let wpScene = params.data.scene[0]
   let sceneID = wpScene.id
@@ -2148,7 +2060,7 @@ const buildScene = async (a5) => {
 
   scene.name = wpScene.title.rendered
 
-  console.log("scene", scene)
+  console.log('scene', scene)
 
   // load the 3D cube map?
   if (wpScene.acf.scene_background_image_px) {
@@ -2158,7 +2070,7 @@ const buildScene = async (a5) => {
       wpScene.acf.scene_background_image_py,
       wpScene.acf.scene_background_image_ny,
       wpScene.acf.scene_background_image_pz,
-      wpScene.acf.scene_background_image_nz
+      wpScene.acf.scene_background_image_nz,
     ]
     let reflectionCube = new THREE.CubeTextureLoader().load(cubeMapURLs)
     reflectionCube.format = THREE.RGBFormat
@@ -2168,14 +2080,11 @@ const buildScene = async (a5) => {
   else if (wpScene.acf.scene_background_image) {
     // let bgTexture = loaderTexture.load(wpScene.acf.scene_background_image)
     // scene.background = bgTexture
-    let bgTexture = loaderTexture.load(
-      wpScene.acf.scene_background_image,
-      () => {
-        const rt = new THREE.WebGLCubeRenderTarget(bgTexture.image.height)
-        rt.fromEquirectangularTexture(renderer, bgTexture)
-        scene.background = rt
-      }
-    )
+    let bgTexture = loaderTexture.load(wpScene.acf.scene_background_image, () => {
+      const rt = new THREE.WebGLCubeRenderTarget(bgTexture.image.height)
+      rt.fromEquirectangularTexture(renderer, bgTexture)
+      scene.background = rt
+    })
   }
   // load the background color?
   else if (wpScene.acf.scene_background_color) {
@@ -2190,13 +2099,13 @@ const buildScene = async (a5) => {
     wpScene.acf.scene_plane_length_y,
     wpScene.acf.scene_plane_background_color
   )
-  plane.name = "plane-jane"
+  plane.name = 'plane-jane'
   plane.rotation.x = -Math.PI / 2 // -90 degrees in radians
   //plane.position.z = 10
   //plane.rotation.z += 0.002
-  guiFolderRotation.add(plane.rotation, "x", -Math.PI, Math.PI).listen()
-  guiFolderRotation.add(plane.rotation, "y", -Math.PI, Math.PI).listen()
-  guiFolderRotation.add(plane.rotation, "z", -Math.PI, Math.PI).listen()
+  guiFolderRotation.add(plane.rotation, 'x', -Math.PI, Math.PI).listen()
+  guiFolderRotation.add(plane.rotation, 'y', -Math.PI, Math.PI).listen()
+  guiFolderRotation.add(plane.rotation, 'z', -Math.PI, Math.PI).listen()
 
   /** TEXTURES ************************************************************************* */
 
@@ -2224,17 +2133,17 @@ const buildScene = async (a5) => {
   // //spotLight.intensity = 3.0
 
   // ambient sunlight
-  let ambientLight = getAmbientLight(0xFFFFFF, 0.75)
+  let ambientLight = getAmbientLight(0xffffff, 0.75)
   //ambientLight.position.set( 0, 0, 0 ) // does nothing
 
-  guiFolderLights.add(ambientLight, "visible").name("Show Ambient Light")
-  guiFolderLights.add(ambientLight, "intensity", -2.0, 2.0)
-  guiFolderLights.add(ambientLight.position, "x", -800, 800)
-  guiFolderLights.add(ambientLight.position, "y", -800, 800)
-  guiFolderLights.add(ambientLight.position, "z", -800, 800)
+  guiFolderLights.add(ambientLight, 'visible').name('Show Ambient Light')
+  guiFolderLights.add(ambientLight, 'intensity', -2.0, 2.0)
+  guiFolderLights.add(ambientLight.position, 'x', -800, 800)
+  guiFolderLights.add(ambientLight.position, 'y', -800, 800)
+  guiFolderLights.add(ambientLight.position, 'z', -800, 800)
 
   // the sun
-  let directionalLight = getDirectionalLight(0xFFFFFF, 0.75)
+  let directionalLight = getDirectionalLight(0xffffff, 0.75)
   // x = sun?, y = time of day?, z = ???
   directionalLight.position.set(-90, -120, 135)
   directionalLight.castShadow = true
@@ -2245,7 +2154,7 @@ const buildScene = async (a5) => {
 
   // indirect sunlight
   //let directionalLight2 = directionalLight.clone()
-  let directionalLight2 = getDirectionalLight(0xFFFFFF, 0.66)
+  let directionalLight2 = getDirectionalLight(0xffffff, 0.66)
   directionalLight2.position.set(-90, 135, 135) // direct opposite x,y of primary?
   directionalLight2.castShadow = false
   //directionalLight2.intensity = 1.0 // overwrite?
@@ -2253,19 +2162,19 @@ const buildScene = async (a5) => {
   let helperDirectionalLight2 = new THREE.CameraHelper(directionalLight2.shadow.camera)
   helperDirectionalLight2.visible = true
 
-  guiFolderLights.add(directionalLight, "visible").name("Show Light")
-  guiFolderLights.add(helperDirectionalLight, "visible").name("Show Light Helper")
-  guiFolderLights.add(directionalLight, "intensity", -2.0, 2.0)
-  guiFolderLights.add(directionalLight.position, "x", -800, 800)
-  guiFolderLights.add(directionalLight.position, "y", -800, 800)
-  guiFolderLights.add(directionalLight.position, "z", -800, 800)
+  guiFolderLights.add(directionalLight, 'visible').name('Show Light')
+  guiFolderLights.add(helperDirectionalLight, 'visible').name('Show Light Helper')
+  guiFolderLights.add(directionalLight, 'intensity', -2.0, 2.0)
+  guiFolderLights.add(directionalLight.position, 'x', -800, 800)
+  guiFolderLights.add(directionalLight.position, 'y', -800, 800)
+  guiFolderLights.add(directionalLight.position, 'z', -800, 800)
 
-  guiFolderLights.add(directionalLight2, "visible").name("Show Light 2")
-  guiFolderLights.add(helperDirectionalLight2, "visible").name("Show Light 2 Helper")
-  guiFolderLights.add(directionalLight2, "intensity", -2.0, 2.0)
-  guiFolderLights.add(directionalLight2.position, "x", -800, 800)
-  guiFolderLights.add(directionalLight2.position, "y", -800, 800)
-  guiFolderLights.add(directionalLight2.position, "z", -800, 800)
+  guiFolderLights.add(directionalLight2, 'visible').name('Show Light 2')
+  guiFolderLights.add(helperDirectionalLight2, 'visible').name('Show Light 2 Helper')
+  guiFolderLights.add(directionalLight2, 'intensity', -2.0, 2.0)
+  guiFolderLights.add(directionalLight2.position, 'x', -800, 800)
+  guiFolderLights.add(directionalLight2.position, 'y', -800, 800)
+  guiFolderLights.add(directionalLight2.position, 'z', -800, 800)
 
   /** SCENE ***************************************************************************** */
 
@@ -2282,13 +2191,8 @@ const buildScene = async (a5) => {
 
   /** CAMERA **************************************************************************** */
 
-  camera = new THREE.PerspectiveCamera(
-    55,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
-  )
-  camera.name = "gardencam1"
+  camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000)
+  camera.name = 'gardencam1'
   camera.position.set(86, 64, 182)
   //camera.lookAt(new THREE.Vector3(0, 0, 0)) // overridden by OrbitControls.target
 
@@ -2296,19 +2200,17 @@ const buildScene = async (a5) => {
   helperCamera.visible = false
   scene.add(helperCamera)
 
-  guiFolderCameras.add(helperCamera, "visible", 0, 20).name("Show Camera Helper")
-  guiFolderCameras.add(camera.position, "x", -800, 800).listen()
-  guiFolderCameras.add(camera.position, "y", -800, 800).listen()
-  guiFolderCameras.add(camera.position, "z", -800, 800).listen()
+  guiFolderCameras.add(helperCamera, 'visible', 0, 20).name('Show Camera Helper')
+  guiFolderCameras.add(camera.position, 'x', -800, 800).listen()
+  guiFolderCameras.add(camera.position, 'y', -800, 800).listen()
+  guiFolderCameras.add(camera.position, 'z', -800, 800).listen()
 
   /** RENDERER ************************************************************************** */
 
-  renderer = new THREE.WebGLRenderer(
-    {
-      alpha: true,
-      antialias: true
-    }
-  )
+  renderer = new THREE.WebGLRenderer({
+    alpha: true,
+    antialias: true,
+  })
   renderer.shadowMap.enabled = true
   //renderer.setSize(window.innerWidth - 240, window.innerHeight - 100) //admin
   renderer.setSize(window.innerWidth - 100, window.innerHeight - 100) //public
@@ -2317,8 +2219,8 @@ const buildScene = async (a5) => {
   renderer.domElement.camera = camera
   renderer.domElement.targetList = plane.children
 
-  renderer.domElement.addEventListener("pointermove", onPointerMove, false)
-  renderer.domElement.addEventListener("pointerdown", onPointerDown, false)
+  renderer.domElement.addEventListener('pointermove', onPointerMove, false)
+  renderer.domElement.addEventListener('pointerdown', onPointerDown, false)
   //renderer.domElement.addEventListener("mousedown", onDocumentMouseDown, false)
 
   /** CONTROLS *************************************************************************** */
@@ -2331,7 +2233,7 @@ const buildScene = async (a5) => {
   controls.autoRotateSpeed = 0.03
   controls.minDistance = 0.01
   controls.maxDistance = 340
-  controls.maxPolarAngle = Math.PI / 2 - .04
+  controls.maxPolarAngle = Math.PI / 2 - 0.04
   controls.target = new THREE.Vector3(0, 0, 0) // where the camera actually points
   //controls.target.set(0, 5, 0) // alternate way of setting target of camera
 
@@ -2341,26 +2243,24 @@ const buildScene = async (a5) => {
 
   //createCameras()
 
-
   /** WEBGL CANVAS *********************************************************************** */
 
   // console.log("document", document)
-  container = document.getElementById("webgl")
+  container = document.getElementById('webgl')
   // console.log("container", container)
   canvas = renderer.domElement
   // console.log("canvas = renderer.domElement", canvas)
   container.append(gui.domElement)
   container.append(renderer.domElement)
 
-
   /** JOYSTICK <+> *********************************************************************** */
 
   // OG working
   let joystick = new JoyStick({
     onMove: playerControl,
-    game: container // document.querySelector("#webgl")
+    game: container, // document.querySelector("#webgl")
   })
-  console.log("joystick", joystick)
+  console.log('joystick', joystick)
 
   // Fried Chicken testing (meh)
   // const joystickControls = new JoystickControls(
@@ -2373,10 +2273,9 @@ const buildScene = async (a5) => {
   //   player
   // )
 
-
   /** BUILD ALLOTMENTS ******************************************************************* */
 
-  alert("HEY HEY HEY: BUILD ALLOTMENTS?")
+  alert('HEY HEY HEY: BUILD ALLOTMENTS?')
   // return plane
 
   // buildAllotments(
@@ -2388,15 +2287,13 @@ const buildScene = async (a5) => {
   // fulfill Promise
   // return true
   return plane
-
 } // end buildScene
 
 /**
  * BUILD "ALLOTMENTS" FROM REST API POST OBJECT ************************************************************
  */
 function buildAllotments(postObject, plane, sceneID) {
-
-  console.log("ALLOTMENTS", postObject)
+  console.log('ALLOTMENTS', postObject)
 
   // alert("HEY HEY HEY: BUILD ALLOTMENTS..")
 
@@ -2406,7 +2303,6 @@ function buildAllotments(postObject, plane, sceneID) {
   // console.log("filteredPostObject", filteredPostObject)
 
   filteredPostObject.forEach(function (key) {
-
     // console.log("-------------------------")
     // console.log("key.id (postObject)------")
     // console.log(key.id)
@@ -2443,7 +2339,7 @@ function buildAllotments(postObject, plane, sceneID) {
       allotment.color
     )
     structure.name = allotment.title
-    structure.userData.type = "structure"
+    structure.userData.type = 'structure'
 
     structure.userData.postID = allotment.postID
     structure.userData.description = allotment.description
@@ -2451,7 +2347,7 @@ function buildAllotments(postObject, plane, sceneID) {
     structure.userData.link = allotment.link
     structure.position.x = allotment.position.x
     structure.position.y = allotment.position.y
-    structure.position.z = (structure.geometry.parameters.depth / 2) + allotment.position.z // - 10 for gap between plane
+    structure.position.z = structure.geometry.parameters.depth / 2 + allotment.position.z // - 10 for gap between plane
     structure.material.roughness = 0.9
     if (allotment.images.texture !== null && allotment.images.texture !== false) {
       structure.material.map = loaderTexture.load(allotment.images.texture)
@@ -2486,7 +2382,9 @@ function buildAllotments(postObject, plane, sceneID) {
       params.data.bed,
       plane,
       allotment.postID, // the post-to-post relationship <3
-      structure.position.x, structure.position.y, 0 //structure.position.z
+      structure.position.x,
+      structure.position.y,
+      0 //structure.position.z
     )
 
     /** INFOSPOTS ********************************************************************* */
@@ -2508,7 +2406,6 @@ function buildAllotments(postObject, plane, sceneID) {
     // guiFolderAllotments.add(infospot, "visible").name("InfoSphere").listen()
 
     // plane.add(infospot)
-
   }) /** END ALLOTMENTS ****************************************************************** */
 
   // console.log("plane.children", plane.children)
@@ -2518,7 +2415,6 @@ function buildAllotments(postObject, plane, sceneID) {
  * BUILD "BEDS" FROM REST API POST OBJECT ************************************************************
  */
 function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOffsetZ) {
-
   // console.log("BEDS postObject", postObject)
 
   // only show beds for this allotment structure
@@ -2528,7 +2424,6 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
   // console.log("filteredPostObject", filteredPostObject)
 
   filteredPostObject.forEach(function (key) {
-
     // console.log("-------------------------")
     // console.log("key.id (postObject)------")
     // console.log(key.id)
@@ -2544,7 +2439,7 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
     bed.parameters.z = parseInt(key.acf.bed_height) / 12
     bed.position.x = parseInt(key.acf.bed_position_x) / 12 + posOffsetX
     bed.position.y = parseInt(key.acf.bed_position_y) / 12 + posOffsetY
-    bed.position.z = parseInt(key.acf.bed_position_z) / 12 + (bed.parameters.z / 2) // + posOffsetZ
+    bed.position.z = parseInt(key.acf.bed_position_z) / 12 + bed.parameters.z / 2 // + posOffsetZ
     bed.images.texture = key.acf.bed_texture_image
     bed.images.featured = getFeaturedImage(key)
     bed.shape = key.acf.bed_shape
@@ -2556,15 +2451,9 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
 
     // console.log("bed", bed)
 
-    let structure = getGeometry(
-      bed.shape,
-      bed.parameters.x,
-      bed.parameters.y,
-      bed.parameters.z,
-      bed.color
-    )
+    let structure = getGeometry(bed.shape, bed.parameters.x, bed.parameters.y, bed.parameters.z, bed.color)
     structure.name = bed.title
-    structure.userData.type = "structure"
+    structure.userData.type = 'structure'
     structure.userData.postID = bed.postID
     structure.userData.description = bed.description
     structure.userData.annotation = bed.title
@@ -2605,7 +2494,9 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
       params.data.planting_plan,
       plane,
       bed.postID, // the post-to-post relationship <3
-      structure.position.x, structure.position.y, 0 //structure.position.z
+      structure.position.x,
+      structure.position.y,
+      0 //structure.position.z
     )
 
     /** INFOSPOTS ********************************************************************* */
@@ -2627,7 +2518,6 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
     // guiFolderBeds.add(infospot, "visible").name("InfoSphere").listen()
 
     // plane.add(infospot)
-
   }) /** END BEDS *********************************************************************** */
 
   // console.log("plane.children", plane.children)
@@ -2637,7 +2527,6 @@ function buildBeds(postObject, plane, allotmentID, posOffsetX, posOffsetY, posOf
  * BUILD "PLANTS" FROM REST API POST OBJECT ************************************************************
  */
 function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, posOffsetZ) {
-
   //console.log("PLANTING PLANS postObject", postObject)
   //return null
 
@@ -2659,12 +2548,11 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
   })
 
   if (filteredPostObject.length > 0) {
-    console.log("filteredPostObject", filteredPostObject)
+    console.log('filteredPostObject', filteredPostObject)
   }
 
   // for each planting plan..
   filteredPostObject.forEach(function (key) {
-
     // console.log("-------------------------")
     // console.log("key.id (filteredPostObject)")
     // console.log(key.id)
@@ -2673,12 +2561,10 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 
     // for each planting plan bed-plant schedule..
     key.acf.planting_plan_bed_plant_schedule.forEach(function (key2) {
-
       // console.log("key2", key2)
 
       // only for this bed..
       if (key2.planting_plan_bed === bedID) {
-
         // show this plant (or multiple plants) in this bed..
         var filteredPlant = params.data.plant.filter(function (obj) {
           return obj.id === key2.planting_plan_plant
@@ -2688,7 +2574,6 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
 
         // for this plant in this bed..
         filteredPlant.forEach(function (key3) {
-
           // console.log("key3", key3)
 
           let plant = {}
@@ -2700,7 +2585,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
           plant.parameters.z = Number(key3.acf.plant_height) / 12
           plant.position.x = parseInt(key2.plant_position_x) / 12 + posOffsetX
           plant.position.y = parseInt(key2.plant_position_y) / 12 + posOffsetY
-          plant.position.z = parseInt(key2.plant_position_z) / 12 + (plant.parameters.z / 2) // + posOffsetZ
+          plant.position.z = parseInt(key2.plant_position_z) / 12 + plant.parameters.z / 2 // + posOffsetZ
           plant.images.texture = key3.acf.plant_texture_image
           plant.images.featured = getFeaturedImage(key)
           plant.shape = key3.acf.plant_shape
@@ -2710,7 +2595,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
           plant.description = key3.content.rendered
           plant.link = key3.link
 
-          console.log("PLANT", plant)
+          console.log('PLANT', plant)
 
           let structure = getGeometry(
             plant.shape, // "Tree", "Bush", "Box",
@@ -2720,7 +2605,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
             plant.color
           )
           structure.name = plant.title
-          structure.userData.type = "structure"
+          structure.userData.type = 'structure'
           structure.userData.postID = plant.postID
           structure.userData.description = plant.description
           structure.userData.annotation = plant.title
@@ -2747,7 +2632,7 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
             }
           }
 
-          console.log("plant structure", structure)
+          console.log('plant structure', structure)
 
           plane.add(structure)
 
@@ -2771,13 +2656,9 @@ function buildPlantingPlans(postObject, plane, bedID, posOffsetX, posOffsetY, po
           // guiFolderBeds.add(infospot, "visible").name("InfoSphere").listen()
 
           // plane.add(infospot)
-
         })
-
       } // end if
-
     })
-
   }) /** END PLANTS *************************************************************************** */
 
   // console.log("plane.children", plane.children)
@@ -2789,15 +2670,13 @@ const MyComponent = () => {
 
     return () => {
       console.log('MyComponent onUnmount')
-    };
+    }
   }, [])
-  return (
-    <div>Component body here...</div>
-  )
+  return <div>Component body here...</div>
 }
 
 const ThreeDGarden = (): JSX.Element => {
-  const word = "HEY HEY HEY"
+  const word = 'HEY HEY HEY'
   const title = useRef()
   const root = useRef()
   // const scene = new THREE.Scene()
@@ -2807,7 +2686,12 @@ const ThreeDGarden = (): JSX.Element => {
   return (
     <div>
       <div ref={title}>ThreeDGarden: {word}</div>
-      <div id="root" ref={root}>Three root: {JSON.stringify(root)}</div>
+      <div
+        id='root'
+        ref={root}
+      >
+        Three root: {JSON.stringify(root)}
+      </div>
       <MyComponent />
     </div>
   )

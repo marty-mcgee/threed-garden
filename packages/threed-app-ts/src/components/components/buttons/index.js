@@ -22,13 +22,20 @@ import * as source from '~/views/components/buttons/ButtonsSourceCode'
 
 const Buttons = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Contained'
           code={{
             tsx: null,
-            jsx: source.ButtonsContainedJSXCode
+            jsx: source.ButtonsContainedJSXCode,
           }}
         >
           <Typography>
@@ -37,12 +44,15 @@ const Buttons = () => {
           <ButtonsContained />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Text'
           code={{
             tsx: null,
-            jsx: source.ButtonsTextJSXCode
+            jsx: source.ButtonsTextJSXCode,
           }}
         >
           <Typography>
@@ -51,12 +61,15 @@ const Buttons = () => {
           <ButtonsText />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Outlined'
           code={{
             tsx: null,
-            jsx: source.ButtonsOutlinedJSXCode
+            jsx: source.ButtonsOutlinedJSXCode,
           }}
         >
           <Typography>
@@ -65,12 +78,16 @@ const Buttons = () => {
           <ButtonsOutlined />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Buttons With Icon and Label'
           code={{
             tsx: null,
-            jsx: source.ButtonsWithIconAndLabelJSXCode
+            jsx: source.ButtonsWithIconAndLabelJSXCode,
           }}
         >
           <Typography>
@@ -80,12 +97,16 @@ const Buttons = () => {
           <ButtonsWithIconAndLabel />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Icon Buttons'
           code={{
             tsx: null,
-            jsx: source.ButtonsIconsJSXCode
+            jsx: source.ButtonsIconsJSXCode,
           }}
         >
           <Typography>
@@ -95,12 +116,15 @@ const Buttons = () => {
           <ButtonsIcons />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Button Sizes'
           code={{
             tsx: null,
-            jsx: source.ButtonsSizesJSXCode
+            jsx: source.ButtonsSizesJSXCode,
           }}
         >
           <Typography>
@@ -112,12 +136,15 @@ const Buttons = () => {
           <ButtonsSizes />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Button Colors'
           code={{
             tsx: null,
-            jsx: source.ButtonsColorsJSXCode
+            jsx: source.ButtonsColorsJSXCode,
           }}
         >
           <Typography>
@@ -126,23 +153,29 @@ const Buttons = () => {
           <ButtonsColors />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Customized Buttons'
           code={{
             tsx: null,
-            jsx: source.ButtonsCustomizedJSXCode
+            jsx: source.ButtonsCustomizedJSXCode,
           }}
         >
           <ButtonsCustomized />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Floating Action Button'
           code={{
             tsx: null,
-            jsx: source.ButtonsFabJSXCode
+            jsx: source.ButtonsFabJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -152,12 +185,15 @@ const Buttons = () => {
           <ButtonsFab />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Floating Action Button Sizes'
           code={{
             tsx: null,
-            jsx: source.ButtonsFabSizesJSXCode
+            jsx: source.ButtonsFabSizesJSXCode,
           }}
         >
           <Typography>

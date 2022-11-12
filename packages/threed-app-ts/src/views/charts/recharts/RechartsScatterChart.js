@@ -36,7 +36,7 @@ const angularData = [
   { x: 10.0, y: 190 },
   { x: 11.0, y: 220 },
   { x: 12.0, y: 170 },
-  { x: 13.0, y: 230 }
+  { x: 13.0, y: 230 },
 ]
 
 const vueData = [
@@ -52,7 +52,7 @@ const vueData = [
   { x: 19.0, y: 280 },
   { x: 17.0, y: 280 },
   { x: 22.0, y: 300 },
-  { x: 18.0, y: 120 }
+  { x: 18.0, y: 120 },
 ]
 
 const reactData = [
@@ -66,7 +66,7 @@ const reactData = [
   { x: 19.0, y: 400 },
   { x: 20.0, y: 200 },
   { x: 22.0, y: 90 },
-  { x: 20.0, y: 120 }
+  { x: 20.0, y: 120 },
 ]
 
 const RechartsScatterChart = ({ direction }) => {
@@ -98,13 +98,13 @@ const RechartsScatterChart = ({ direction }) => {
             <InputAdornment position='end'>
               <ChevronDown />
             </InputAdornment>
-          )
+          ),
         }}
       />
     )
   })
 
-  const handleOnChange = dates => {
+  const handleOnChange = (dates) => {
     const [start, end] = dates
     setStartDate(start)
     setEndDate(end)
@@ -119,7 +119,7 @@ const RechartsScatterChart = ({ direction }) => {
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],
           '& .MuiCardHeader-action': { mb: 0 },
-          '& .MuiCardHeader-content': { mb: [2, 0] }
+          '& .MuiCardHeader-content': { mb: [2, 0] },
         }}
         action={
           <DatePicker
@@ -130,7 +130,12 @@ const RechartsScatterChart = ({ direction }) => {
             startDate={startDate}
             onChange={handleOnChange}
             placeholderText='Click to select a date'
-            customInput={<CustomInput start={startDate} end={endDate} />}
+            customInput={
+              <CustomInput
+                start={startDate}
+                end={endDate}
+              />
+            }
           />
         }
       />
@@ -151,13 +156,37 @@ const RechartsScatterChart = ({ direction }) => {
         </Box>
         <Box sx={{ height: 350 }}>
           <ResponsiveContainer>
-            <ScatterChart height={350} style={{ direction }} margin={{ left: -20 }}>
+            <ScatterChart
+              height={350}
+              style={{ direction }}
+              margin={{ left: -20 }}
+            >
               <CartesianGrid />
-              <XAxis type='number' dataKey='x' reversed={direction === 'rtl'} />
-              <YAxis type='number' dataKey='y' orientation={direction === 'rtl' ? 'right' : 'left'} />
-              <Scatter name='Angular' data={angularData} fill={theme.palette.error.main} />
-              <Scatter name='Vue' data={vueData} fill={theme.palette.success.main} />
-              <Scatter name='React' data={reactData} fill={theme.palette.primary.main} />
+              <XAxis
+                type='number'
+                dataKey='x'
+                reversed={direction === 'rtl'}
+              />
+              <YAxis
+                type='number'
+                dataKey='y'
+                orientation={direction === 'rtl' ? 'right' : 'left'}
+              />
+              <Scatter
+                name='Angular'
+                data={angularData}
+                fill={theme.palette.error.main}
+              />
+              <Scatter
+                name='Vue'
+                data={vueData}
+                fill={theme.palette.success.main}
+              />
+              <Scatter
+                name='React'
+                data={reactData}
+                fill={theme.palette.primary.main}
+              />
             </ScatterChart>
           </ResponsiveContainer>
         </Box>

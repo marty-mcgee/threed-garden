@@ -13,7 +13,7 @@ const Img = styled('img')({
   right: 7,
   bottom: 0,
   height: 177,
-  position: 'absolute'
+  position: 'absolute',
 })
 
 const CardStatsCharacter = ({ data }) => {
@@ -25,7 +25,10 @@ const CardStatsCharacter = ({ data }) => {
       <CardContent>
         <Typography sx={{ mb: 6.5, fontWeight: 600 }}>{title}</Typography>
         <Box sx={{ mb: 1.5, rowGap: 1, width: '55%', display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start' }}>
-          <Typography variant='h5' sx={{ mr: 1.5 }}>
+          <Typography
+            variant='h5'
+            sx={{ mr: 1.5 }}
+          >
             {stats}
           </Typography>
           <Typography
@@ -43,7 +46,10 @@ const CardStatsCharacter = ({ data }) => {
           color={chipColor}
           sx={{ height: 20, fontWeight: 500, fontSize: '0.75rem', '& .MuiChip-label': { lineHeight: '1.25rem' } }}
         />
-        <Img src={src} alt={title} />
+        <Img
+          src={src}
+          alt={title}
+        />
       </CardContent>
     </Card>
   )
@@ -53,5 +59,5 @@ export default CardStatsCharacter
 
 CardStatsCharacter.defaultProps = {
   trend: 'positive',
-  chipColor: 'primary'
+  chipColor: 'primary',
 }

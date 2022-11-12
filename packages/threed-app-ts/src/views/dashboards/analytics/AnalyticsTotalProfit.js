@@ -16,28 +16,28 @@ const CardStatsLineChart = () => {
   const options = {
     chart: {
       parentHeightOffset: 0,
-      toolbar: { show: false }
+      toolbar: { show: false },
     },
     tooltip: { enabled: false },
     grid: {
       strokeDashArray: 6,
       xaxis: {
-        lines: { show: true }
+        lines: { show: true },
       },
       yaxis: {
-        lines: { show: false }
+        lines: { show: false },
       },
       padding: {
         top: -10,
         left: -7,
         right: 5,
-        bottom: 5
-      }
+        bottom: 5,
+      },
     },
     stroke: {
       width: 3,
       lineCap: 'butt',
-      curve: 'straight'
+      curve: 'straight',
     },
     colors: [theme.palette.primary.main],
     markers: {
@@ -53,27 +53,35 @@ const CardStatsLineChart = () => {
           seriesIndex: 0,
           strokeColor: theme.palette.primary.main,
           fillColor: theme.palette.background.paper,
-          dataPointIndex: series[0].data.length - 1
-        }
+          dataPointIndex: series[0].data.length - 1,
+        },
       ],
-      hover: { size: 7 }
+      hover: { size: 7 },
     },
     xaxis: {
       labels: { show: false },
       axisTicks: { show: false },
-      axisBorder: { show: false }
+      axisBorder: { show: false },
     },
     yaxis: {
-      labels: { show: false }
-    }
+      labels: { show: false },
+    },
   }
 
   return (
     <Card>
       <CardContent>
         <Typography variant='h6'>$86.4k</Typography>
-        <ReactApexcharts type='line' height={98} options={options} series={series} />
-        <Typography variant='body2' sx={{ fontWeight: 600, textAlign: 'center', color: 'text.primary' }}>
+        <ReactApexcharts
+          type='line'
+          height={98}
+          options={options}
+          series={series}
+        />
+        <Typography
+          variant='body2'
+          sx={{ fontWeight: 600, textAlign: 'center', color: 'text.primary' }}
+        >
           Total Profit
         </Typography>
       </CardContent>

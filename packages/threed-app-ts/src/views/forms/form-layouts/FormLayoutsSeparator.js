@@ -27,7 +27,15 @@ import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 
 const CustomInput = forwardRef((props, ref) => {
-  return <TextField fullWidth {...props} inputRef={ref} label='Birth Date' autoComplete='off' />
+  return (
+    <TextField
+      fullWidth
+      {...props}
+      inputRef={ref}
+      label='Birth Date'
+      autoComplete='off'
+    />
+  )
 })
 
 const FormLayoutsSeparator = () => {
@@ -39,11 +47,11 @@ const FormLayoutsSeparator = () => {
     password: '',
     password2: '',
     showPassword: false,
-    showPassword2: false
+    showPassword2: false,
   })
 
   // Handle Password
-  const handlePasswordChange = prop => event => {
+  const handlePasswordChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value })
   }
 
@@ -51,12 +59,12 @@ const FormLayoutsSeparator = () => {
     setValues({ ...values, showPassword: !values.showPassword })
   }
 
-  const handleMouseDownPassword = event => {
+  const handleMouseDownPassword = (event) => {
     event.preventDefault()
   }
 
   // Handle Confirm Password
-  const handleConfirmChange = prop => event => {
+  const handleConfirmChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value })
   }
 
@@ -64,34 +72,67 @@ const FormLayoutsSeparator = () => {
     setValues({ ...values, showPassword2: !values.showPassword2 })
   }
 
-  const handleMouseDownConfirmPassword = event => {
+  const handleMouseDownConfirmPassword = (event) => {
     event.preventDefault()
   }
 
   // Handle Select
-  const handleSelectChange = event => {
+  const handleSelectChange = (event) => {
     setLanguage(event.target.value)
   }
 
   return (
     <Card>
-      <CardHeader title='Multi Column with Form Separator' titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader
+        title='Multi Column with Form Separator'
+        titleTypographyProps={{ variant: 'h6' }}
+      />
       <Divider sx={{ m: 0 }} />
-      <form onSubmit={e => e.preventDefault()}>
+      <form onSubmit={(e) => e.preventDefault()}>
         <CardContent>
-          <Grid container spacing={5}>
-            <Grid item xs={12}>
-              <Typography variant='body2' sx={{ fontWeight: 600 }}>
+          <Grid
+            container
+            spacing={5}
+          >
+            <Grid
+              item
+              xs={12}
+            >
+              <Typography
+                variant='body2'
+                sx={{ fontWeight: 600 }}
+              >
                 1. Account Details
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Username' placeholder='carterLeonard' />
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
+              <TextField
+                fullWidth
+                label='Username'
+                placeholder='carterLeonard'
+              />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth type='email' label='Email' placeholder='carterleonard@gmail.com' />
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
+              <TextField
+                fullWidth
+                type='email'
+                label='Email'
+                placeholder='carterleonard@gmail.com'
+              />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <FormControl fullWidth>
                 <InputLabel htmlFor='form-layouts-separator-password'>Password</InputLabel>
                 <OutlinedInput
@@ -115,7 +156,11 @@ const FormLayoutsSeparator = () => {
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <FormControl fullWidth>
                 <InputLabel htmlFor='form-layouts-separator-password-2'>Confirm Password</InputLabel>
                 <OutlinedInput
@@ -139,21 +184,50 @@ const FormLayoutsSeparator = () => {
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <Divider sx={{ mb: 0 }} />
             </Grid>
-            <Grid item xs={12}>
-              <Typography variant='body2' sx={{ fontWeight: 600 }}>
+            <Grid
+              item
+              xs={12}
+            >
+              <Typography
+                variant='body2'
+                sx={{ fontWeight: 600 }}
+              >
                 2. Personal Info
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='First Name' placeholder='Leonard' />
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
+              <TextField
+                fullWidth
+                label='First Name'
+                placeholder='Leonard'
+              />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Last Name' placeholder='Carter' />
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
+              <TextField
+                fullWidth
+                label='Last Name'
+                placeholder='Carter'
+              />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <FormControl fullWidth>
                 <InputLabel id='form-layouts-separator-select-label'>Country</InputLabel>
                 <Select
@@ -169,7 +243,11 @@ const FormLayoutsSeparator = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <FormControl fullWidth>
                 <InputLabel id='form-layouts-separator-multiple-select-label'>Language</InputLabel>
                 <Select
@@ -178,7 +256,12 @@ const FormLayoutsSeparator = () => {
                   onChange={handleSelectChange}
                   id='form-layouts-separator-multiple-select'
                   labelId='form-layouts-separator-multiple-select-label'
-                  input={<OutlinedInput label='Language' id='select-multiple-language' />}
+                  input={
+                    <OutlinedInput
+                      label='Language'
+                      id='select-multiple-language'
+                    />
+                  }
                 >
                   <MenuItem value='English'>English</MenuItem>
                   <MenuItem value='French'>French</MenuItem>
@@ -190,7 +273,11 @@ const FormLayoutsSeparator = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <DatePicker
                 selected={date}
                 showYearDropdown
@@ -198,20 +285,37 @@ const FormLayoutsSeparator = () => {
                 placeholderText='MM-DD-YYYY'
                 customInput={<CustomInput />}
                 id='form-layouts-separator-date'
-                onChange={date => setDate(date)}
+                onChange={(date) => setDate(date)}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Phone No.' placeholder='+1-123-456-8790' />
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
+              <TextField
+                fullWidth
+                label='Phone No.'
+                placeholder='+1-123-456-8790'
+              />
             </Grid>
           </Grid>
         </CardContent>
         <Divider sx={{ m: 0 }} />
         <CardActions>
-          <Button size='large' type='submit' sx={{ mr: 2 }} variant='contained'>
+          <Button
+            size='large'
+            type='submit'
+            sx={{ mr: 2 }}
+            variant='contained'
+          >
             Submit
           </Button>
-          <Button size='large' color='secondary' variant='outlined'>
+          <Button
+            size='large'
+            color='secondary'
+            variant='outlined'
+          >
             Cancel
           </Button>
         </CardActions>

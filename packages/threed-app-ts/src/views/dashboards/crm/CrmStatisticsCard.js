@@ -21,27 +21,39 @@ const salesData = [
     stats: '245k',
     title: 'Sales',
     color: 'primary',
-    icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+    icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />,
   },
   {
     stats: '12.5k',
     title: 'Customers',
     color: 'success',
-    icon: <AccountOutline sx={{ fontSize: '1.75rem' }} />
+    icon: <AccountOutline sx={{ fontSize: '1.75rem' }} />,
   },
   {
     stats: '1.54k',
     color: 'warning',
     title: 'Products',
-    icon: <CellphoneLink sx={{ fontSize: '1.75rem' }} />
-  }
+    icon: <CellphoneLink sx={{ fontSize: '1.75rem' }} />,
+  },
 ]
 
 const renderStats = () => {
   return salesData.map((item, index) => (
-    <Grid item xs={12} sm={4} key={index}>
-      <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
-        <CustomAvatar variant='rounded' color={item.color} sx={{ mr: 3, boxShadow: 3, width: 44, height: 44 }}>
+    <Grid
+      item
+      xs={12}
+      sm={4}
+      key={index}
+    >
+      <Box
+        key={index}
+        sx={{ display: 'flex', alignItems: 'center' }}
+      >
+        <CustomAvatar
+          variant='rounded'
+          color={item.color}
+          sx={{ mr: 3, boxShadow: 3, width: 44, height: 44 }}
+        >
           {item.icon}
         </CustomAvatar>
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -59,13 +71,21 @@ const CrmStatisticsCard = () => {
       <CardHeader
         title='Statistics Card'
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }
         subheader={
           <Typography variant='body2'>
-            <Box component='span' sx={{ fontWeight: 600, color: 'text.primary' }}>
+            <Box
+              component='span'
+              sx={{ fontWeight: 600, color: 'text.primary' }}
+            >
               Total 48.5% growth
             </Box>{' '}
             😎 this month
@@ -75,12 +95,15 @@ const CrmStatisticsCard = () => {
           sx: {
             mb: 2.25,
             lineHeight: '2rem !important',
-            letterSpacing: '0.15px !important'
-          }
+            letterSpacing: '0.15px !important',
+          },
         }}
       />
-      <CardContent sx={{ pt: theme => `${theme.spacing(0.75)} !important` }}>
-        <Grid container spacing={[5, 0]}>
+      <CardContent sx={{ pt: (theme) => `${theme.spacing(0.75)} !important` }}>
+        <Grid
+          container
+          spacing={[5, 0]}
+        >
           {renderStats()}
         </Grid>
       </CardContent>

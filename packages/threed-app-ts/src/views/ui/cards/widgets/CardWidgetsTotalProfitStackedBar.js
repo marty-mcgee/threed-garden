@@ -24,45 +24,45 @@ const data = [
     title: '$48,568.20',
     avatarColor: 'success',
     subtitle: 'Total Profit',
-    icon: <TrendingUp sx={{ fontSize: '1.875rem', color: 'success.main' }} />
+    icon: <TrendingUp sx={{ fontSize: '1.875rem', color: 'success.main' }} />,
   },
   {
     title: '$38,453.25',
     avatarColor: 'primary',
     subtitle: 'Total Income',
-    icon: <CurrencyUsd sx={{ fontSize: '1.875rem', color: 'primary.main' }} />
+    icon: <CurrencyUsd sx={{ fontSize: '1.875rem', color: 'primary.main' }} />,
   },
   {
     title: '$2,453.45',
     avatarColor: 'secondary',
     subtitle: 'Total Expense',
-    icon: <Poll sx={{ color: 'secondary.main' }} />
-  }
+    icon: <Poll sx={{ color: 'secondary.main' }} />,
+  },
 ]
 
 const series = [
   {
     name: 'Product A',
-    data: [29000, 22000, 25000, 18500, 29000, 20000, 34500]
+    data: [29000, 22000, 25000, 18500, 29000, 20000, 34500],
   },
   {
     name: 'Product B',
-    data: [0, 16000, 11000, 15500, 0, 12500, 9500]
+    data: [0, 16000, 11000, 15500, 0, 12500, 9500],
   },
   {
     name: 'Product C',
-    data: [0, 0, 0, 14000, 0, 11500, 12000]
-  }
+    data: [0, 0, 0, 14000, 0, 11500, 12000],
+  },
 ]
 
 // Styled Grid component
 const StyledGrid = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down('sm')]: {
-    borderBottom: `1px solid ${theme.palette.divider}`
+    borderBottom: `1px solid ${theme.palette.divider}`,
   },
   [theme.breakpoints.up('sm')]: {
-    borderRight: `1px solid ${theme.palette.divider}`
-  }
+    borderRight: `1px solid ${theme.palette.divider}`,
+  },
 }))
 
 const CardWidgetsTotalProfitStackedBar = () => {
@@ -73,32 +73,32 @@ const CardWidgetsTotalProfitStackedBar = () => {
     chart: {
       stacked: true,
       parentHeightOffset: 0,
-      toolbar: { show: false }
+      toolbar: { show: false },
     },
     plotOptions: {
       bar: {
         borderRadius: 10,
         columnWidth: '35%',
         endingShape: 'rounded',
-        startingShape: 'rounded'
-      }
+        startingShape: 'rounded',
+      },
     },
     xaxis: {
       axisTicks: { show: false },
       axisBorder: { show: false },
-      categories: [2016, 2017, 2018, 2019, 2020, 2021, 2022]
+      categories: [2016, 2017, 2018, 2019, 2020, 2021, 2022],
     },
     yaxis: {
       labels: {
-        formatter: value => (value > 999 ? `${(value / 1000).toFixed(0)}k` : `${value}`)
-      }
+        formatter: (value) => (value > 999 ? `${(value / 1000).toFixed(0)}k` : `${value}`),
+      },
     },
     colors: [theme.palette.primary.main, theme.palette.success.main, theme.palette.secondary.main],
     grid: {
       strokeDashArray: 7,
       padding: {
-        bottom: -10
-      }
+        bottom: -10,
+      },
     },
     legend: { show: false },
     dataLabels: { enabled: false },
@@ -106,15 +106,15 @@ const CardWidgetsTotalProfitStackedBar = () => {
       width: 6,
       curve: 'smooth',
       lineCap: 'round',
-      colors: [theme.palette.background.paper]
+      colors: [theme.palette.background.paper],
     },
     states: {
       hover: {
-        filter: { type: 'none' }
+        filter: { type: 'none' },
       },
       active: {
-        filter: { type: 'none' }
-      }
+        filter: { type: 'none' },
+      },
     },
     responsive: [
       {
@@ -122,54 +122,67 @@ const CardWidgetsTotalProfitStackedBar = () => {
         options: {
           plotOptions: {
             bar: {
-              columnWidth: '45%'
-            }
-          }
-        }
+              columnWidth: '45%',
+            },
+          },
+        },
       },
       {
         breakpoint: theme.breakpoints.values.lg,
         options: {
           plotOptions: {
             bar: {
-              columnWidth: '50%'
-            }
-          }
-        }
+              columnWidth: '50%',
+            },
+          },
+        },
       },
       {
         breakpoint: theme.breakpoints.values.sm,
         options: {
           plotOptions: {
             bar: {
-              columnWidth: '45%'
-            }
-          }
-        }
+              columnWidth: '45%',
+            },
+          },
+        },
       },
       {
         breakpoint: 430,
         options: {
           plotOptions: {
             bar: {
-              columnWidth: '55%'
-            }
-          }
-        }
-      }
-    ]
+              columnWidth: '55%',
+            },
+          },
+        },
+      },
+    ],
   }
 
   return (
     <Card>
       <Grid container>
-        <StyledGrid item xs={12} sm={7}>
+        <StyledGrid
+          item
+          xs={12}
+          sm={7}
+        >
           <CardContent sx={{ height: '100%', '& .apexcharts-xcrosshairs.apexcharts-active': { opacity: 0 } }}>
             <Typography variant='h6'>Total Profit</Typography>
-            <ReactApexcharts type='bar' height={280} series={series} options={options} />
+            <ReactApexcharts
+              type='bar'
+              height={280}
+              series={series}
+              options={options}
+            />
           </CardContent>
         </StyledGrid>
-        <Grid item xs={12} sm={5}>
+        <Grid
+          item
+          xs={12}
+          sm={5}
+        >
           <CardHeader
             title='$482.85k'
             subheader='Last month balance $234.40k'
@@ -178,8 +191,8 @@ const CardWidgetsTotalProfitStackedBar = () => {
               sx: {
                 fontSize: '1.5rem !important',
                 lineHeight: '2rem !important',
-                letterSpacing: '0.43px !important'
-              }
+                letterSpacing: '0.43px !important',
+              },
             }}
             action={
               <IconButton
@@ -193,12 +206,20 @@ const CardWidgetsTotalProfitStackedBar = () => {
             }
           />
           <CardContent
-            sx={{ pt: theme => `${theme.spacing(4)} !important`, pb: theme => `${theme.spacing(5.5)} !important` }}
+            sx={{ pt: (theme) => `${theme.spacing(4)} !important`, pb: (theme) => `${theme.spacing(5.5)} !important` }}
           >
             {data.map((item, index) => {
               return (
-                <Box key={index} sx={{ mb: 4, display: 'flex', alignItems: 'center' }}>
-                  <CustomAvatar skin='light' sx={{ mr: 3.5 }} variant='rounded' color={item.avatarColor}>
+                <Box
+                  key={index}
+                  sx={{ mb: 4, display: 'flex', alignItems: 'center' }}
+                >
+                  <CustomAvatar
+                    skin='light'
+                    sx={{ mr: 3.5 }}
+                    variant='rounded'
+                    color={item.avatarColor}
+                  >
                     {item.icon}
                   </CustomAvatar>
                   <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -208,7 +229,10 @@ const CardWidgetsTotalProfitStackedBar = () => {
                 </Box>
               )
             })}
-            <Button fullWidth variant='contained'>
+            <Button
+              fullWidth
+              variant='contained'
+            >
               View Report
             </Button>
           </CardContent>

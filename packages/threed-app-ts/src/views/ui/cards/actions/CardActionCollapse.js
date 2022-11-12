@@ -36,7 +36,11 @@ const CardActionCollapse = () => {
         <CardContent>
           <Typography variant='body2'>
             You can specifically add collapsible action using <code>actionCollapse</code> prop Click on{' '}
-            <ChevronUp fontSize='small' sx={{ verticalAlign: 'bottom' }} /> icon to see it in action
+            <ChevronUp
+              fontSize='small'
+              sx={{ verticalAlign: 'bottom' }}
+            />{' '}
+            icon to see it in action
           </Typography>
         </CardContent>
       </Collapse>

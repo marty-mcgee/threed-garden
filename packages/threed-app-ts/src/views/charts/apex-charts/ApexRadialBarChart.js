@@ -11,7 +11,7 @@ const radialBarColors = {
   series2: '#32baff',
   series3: '#00d4bd',
   series4: '#7367f0',
-  series5: '#FFA1A1'
+  series5: '#FFA1A1',
 }
 
 const ApexRadialBarChart = () => {
@@ -20,19 +20,19 @@ const ApexRadialBarChart = () => {
     plotOptions: {
       radialBar: {
         hollow: {
-          size: '30%'
+          size: '30%',
         },
         track: {
-          margin: 15
+          margin: 15,
         },
         dataLabels: {
           name: {
             fontSize: '2rem',
-            fontFamily: 'Montserrat'
+            fontFamily: 'Montserrat',
           },
           value: {
             fontSize: '1rem',
-            fontFamily: 'Montserrat'
+            fontFamily: 'Montserrat',
           },
           total: {
             show: true,
@@ -48,32 +48,40 @@ const ApexRadialBarChart = () => {
               } else {
                 return totalValue.toFixed(2) + '%'
               }
-            }
-          }
-        }
-      }
+            },
+          },
+        },
+      },
     },
     grid: {
       padding: {
         top: -35,
-        bottom: -30
-      }
+        bottom: -30,
+      },
     },
     legend: {
       show: true,
-      position: 'bottom'
+      position: 'bottom',
     },
     stroke: {
-      lineCap: 'round'
+      lineCap: 'round',
     },
-    labels: ['Comments', 'Replies', 'Shares']
+    labels: ['Comments', 'Replies', 'Shares'],
   }
 
   return (
     <Card>
-      <CardHeader title='Statistics' titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader
+        title='Statistics'
+        titleTypographyProps={{ variant: 'h6' }}
+      />
       <CardContent>
-        <ReactApexcharts options={options} series={[80, 50, 35]} type='radialBar' height={400} />
+        <ReactApexcharts
+          options={options}
+          series={[80, 50, 35]}
+          type='radialBar'
+          height={400}
+        />
       </CardContent>
     </Card>
   )

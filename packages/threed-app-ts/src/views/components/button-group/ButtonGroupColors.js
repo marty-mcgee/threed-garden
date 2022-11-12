@@ -5,31 +5,46 @@ import ButtonGroup from '@mui/material/ButtonGroup'
 const ButtonGroupColor = () => {
   return (
     <div className='demo-space-x'>
-      <ButtonGroup variant='outlined' color='secondary'>
+      <ButtonGroup
+        variant='outlined'
+        color='secondary'
+      >
         <Button>One</Button>
         <Button>Two</Button>
         <Button>Three</Button>
       </ButtonGroup>
 
-      <ButtonGroup variant='outlined' color='success'>
+      <ButtonGroup
+        variant='outlined'
+        color='success'
+      >
         <Button>One</Button>
         <Button>Two</Button>
         <Button>Three</Button>
       </ButtonGroup>
 
-      <ButtonGroup variant='outlined' color='error'>
+      <ButtonGroup
+        variant='outlined'
+        color='error'
+      >
         <Button>One</Button>
         <Button>Two</Button>
         <Button>Three</Button>
       </ButtonGroup>
 
-      <ButtonGroup variant='outlined' color='warning'>
+      <ButtonGroup
+        variant='outlined'
+        color='warning'
+      >
         <Button>One</Button>
         <Button>Two</Button>
         <Button>Three</Button>
       </ButtonGroup>
 
-      <ButtonGroup variant='outlined' color='info'>
+      <ButtonGroup
+        variant='outlined'
+        color='info'
+      >
         <Button>One</Button>
         <Button>Two</Button>
         <Button>Three</Button>

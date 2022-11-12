@@ -1,8 +1,8 @@
 // ThreeD Garden Base Styles
-import typography from "~/themes/theme-light/base/typography"
+import typography from '~/themes/theme-light/base/typography'
 
 // ThreeD Garden Helper Functions
-import pxToRem from "~/themes/theme-light/functions/pxToRem"
+import pxToRem from '~/themes/theme-light/functions/pxToRem'
 
 const { size } = typography
 

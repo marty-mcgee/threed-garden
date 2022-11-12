@@ -20,21 +20,21 @@ const ChatFormWrapper = styled(Box)(({ theme }) => ({
   padding: theme.spacing(1.25, 4),
   justifyContent: 'space-between',
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: theme.palette.background.paper
+  backgroundColor: theme.palette.background.paper,
 }))
 
 const Form = styled('form')(({ theme }) => ({
-  padding: theme.spacing(0, 5, 5)
+  padding: theme.spacing(0, 5, 5),
 }))
 
-const SendMsgForm = props => {
+const SendMsgForm = (props) => {
   // ** Props
   const { store, dispatch, sendMsg } = props
 
   // ** State
   const [msg, setMsg] = useState('')
 
-  const handleSendMsg = e => {
+  const handleSendMsg = (e) => {
     e.preventDefault()
     if (store && store.selectedChat && msg.trim().length) {
       dispatch(sendMsg({ ...store.selectedChat, message: msg }))
@@ -51,19 +51,34 @@ const SendMsgForm = props => {
             value={msg}
             size='small'
             placeholder='Type your message here…'
-            onChange={e => setMsg(e.target.value)}
+            onChange={(e) => setMsg(e.target.value)}
             sx={{ '& .MuiOutlinedInput-input': { pl: 0 }, '& fieldset': { border: '0 !important' } }}
           />
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <IconButton size='small' sx={{ color: 'text.primary' }}>
+          <IconButton
+            size='small'
+            sx={{ color: 'text.primary' }}
+          >
             <Microphone sx={{ fontSize: '1.375rem' }} />
           </IconButton>
-          <IconButton size='small' component='label' htmlFor='upload-img' sx={{ mr: 4, color: 'text.primary' }}>
+          <IconButton
+            size='small'
+            component='label'
+            htmlFor='upload-img'
+            sx={{ mr: 4, color: 'text.primary' }}
+          >
             <Attachment sx={{ fontSize: '1.375rem' }} />
-            <input hidden type='file' id='upload-img' />
+            <input
+              hidden
+              type='file'
+              id='upload-img'
+            />
           </IconButton>
-          <Button type='submit' variant='contained'>
+          <Button
+            type='submit'
+            variant='contained'
+          >
             Send
           </Button>
         </Box>

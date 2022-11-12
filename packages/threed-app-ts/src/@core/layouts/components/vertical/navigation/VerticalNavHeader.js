@@ -17,11 +17,7 @@ import RecordCircleOutline from 'mdi-material-ui/MenuOpen'
 import themeConfig from '~/config/themeConfig'
 
 // images
-import favicon from '~/assets/images/logos/favicon.png'
-import appleIcon from '~/assets/images/logos/apple-icon.png'
-import brandLight from '~/assets/images/logos/logo-threedgarden.png'
 import brandDark from '~/assets/images/logos/logo-threedgarden-alt.png'
-import brandText from '~/assets/images/logos/logo-threedgarden-text.png'
 
 // ** Styled Components
 const MenuHeaderWrapper = styled(Box)(({ theme }) => ({

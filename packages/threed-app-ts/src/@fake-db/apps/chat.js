@@ -15,8 +15,8 @@ const data = {
     status: 'online',
     settings: {
       isTwoStepAuthVerificationEnabled: true,
-      isNotificationsOn: false
-    }
+      isNotificationsOn: false,
+    },
   },
   contacts: [
     {
@@ -25,7 +25,7 @@ const data = {
       role: 'Frontend Developer',
       about: 'Cake pie jelly jelly beans. Marzipan lemon drops halvah cake. Pudding cookie lemon drops icing',
       avatar: '/images/avatars/2.png',
-      status: 'offline'
+      status: 'offline',
     },
     {
       id: 2,
@@ -34,7 +34,7 @@ const data = {
       avatarColor: 'primary',
       about:
         'Toffee caramels jelly-o tart gummi bears cake I love ice cream lollipop. Sweet liquorice croissant candy danish dessert icing. Cake macaroon gingerbread toffee sweet.',
-      status: 'busy'
+      status: 'busy',
     },
     {
       id: 3,
@@ -43,7 +43,7 @@ const data = {
       about:
         'Soufflé soufflé caramels sweet roll. Jelly lollipop sesame snaps bear claw jelly beans sugar plum sugar plum.',
       avatar: '/images/avatars/8.png',
-      status: 'busy'
+      status: 'busy',
     },
     {
       id: 4,
@@ -52,7 +52,7 @@ const data = {
       about:
         'Chupa chups candy canes chocolate bar marshmallow liquorice muffin. Lemon drops oat cake tart liquorice tart cookie. Jelly-o cookie tootsie roll halvah.',
       avatar: '/images/avatars/3.png',
-      status: 'online'
+      status: 'online',
     },
     {
       id: 5,
@@ -60,7 +60,7 @@ const data = {
       role: 'Dietitian',
       avatarColor: 'success',
       about: 'Cake pie jelly jelly beans. Marzipan lemon drops halvah cake. Pudding cookie lemon drops icing',
-      status: 'busy'
+      status: 'busy',
     },
     {
       id: 6,
@@ -69,7 +69,7 @@ const data = {
       about:
         'Toffee caramels jelly-o tart gummi bears cake I love ice cream lollipop. Sweet liquorice croissant candy danish dessert icing. Cake macaroon gingerbread toffee sweet.',
       avatar: '/images/avatars/5.png',
-      status: 'online'
+      status: 'online',
     },
     {
       id: 7,
@@ -78,7 +78,7 @@ const data = {
       about:
         'Biscuit powder oat cake donut brownie ice cream I love soufflé. I love tootsie roll I love powder tootsie roll.',
       avatar: '/images/avatars/7.png',
-      status: 'online'
+      status: 'online',
     },
     {
       id: 8,
@@ -87,7 +87,7 @@ const data = {
       about:
         'Bear claw ice cream lollipop gingerbread carrot cake. Brownie gummi bears chocolate muffin croissant jelly I love marzipan wafer.',
       avatar: '/images/avatars/6.png',
-      status: 'away'
+      status: 'away',
     },
     {
       id: 9,
@@ -96,7 +96,7 @@ const data = {
       role: 'Designer, television/film set',
       about:
         'Gummies gummi bears I love candy icing apple pie I love marzipan bear claw. I love tart biscuit I love candy canes pudding chupa chups liquorice croissant.',
-      status: 'offline'
+      status: 'offline',
     },
     {
       id: 10,
@@ -104,8 +104,8 @@ const data = {
       fullName: 'Zenia Jacobs',
       role: 'Building surveyor',
       about: 'Cake pie jelly jelly beans. Marzipan lemon drops halvah cake. Pudding cookie lemon drops icing',
-      status: 'away'
-    }
+      status: 'away',
+    },
   ],
   chats: [
     {
@@ -120,8 +120,8 @@ const data = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
           message: 'Hey John, I am looking for the best admin template. Could you please help me to find it out?',
@@ -130,8 +130,8 @@ const data = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
           message: 'It should be MUI v5 compatible.',
@@ -140,8 +140,8 @@ const data = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
           message: 'Absolutely!',
@@ -150,8 +150,8 @@ const data = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
           message: 'This admin template is built with MUI!',
@@ -160,8 +160,8 @@ const data = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
           message: 'Looks clean and fresh UI. 😍',
@@ -170,8 +170,8 @@ const data = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
           message: "It's perfect for my next project.",
@@ -180,8 +180,8 @@ const data = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
           message: 'How can I purchase it?',
@@ -190,8 +190,8 @@ const data = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
           message: 'Thanks, From our official site  😇',
@@ -200,8 +200,8 @@ const data = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
           message: 'I will purchase it for sure. 👍',
@@ -210,10 +210,10 @@ const data = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
-        }
-      ]
+            isSeen: true,
+          },
+        },
+      ],
     },
     {
       id: 2,
@@ -227,8 +227,8 @@ const data = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
           message: 'Hello. How can I help You?',
@@ -237,8 +237,8 @@ const data = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
           message: 'Can I get details of my last transaction I made last month? 🤔',
@@ -247,8 +247,8 @@ const data = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
           message: 'We need to check if we can provide you such information.',
@@ -257,8 +257,8 @@ const data = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
           message: 'I will inform you as I get update on this.',
@@ -267,8 +267,8 @@ const data = {
           feedback: {
             isSent: true,
             isDelivered: true,
-            isSeen: true
-          }
+            isSeen: true,
+          },
         },
         {
           message: 'If it takes long you can mail me at my mail address.',
@@ -277,12 +277,12 @@ const data = {
           feedback: {
             isSent: true,
             isDelivered: false,
-            isSeen: false
-          }
-        }
-      ]
-    }
-  ]
+            isSeen: false,
+          },
+        },
+      ],
+    },
+  ],
 }
 
 const reorderChats = (arr, from, to) => {
@@ -296,8 +296,8 @@ const reorderChats = (arr, from, to) => {
 // GET: Return Chats Contacts and Contacts
 // ------------------------------------------------
 mock.onGet('/apps/chat/chats-and-contacts').reply(() => {
-  const chatsContacts = data.chats.map(chat => {
-    const contact = data.contacts.find(c => c.id === chat.userId)
+  const chatsContacts = data.chats.map((chat) => {
+    const contact = data.contacts.find((c) => c.id === chat.userId)
 
     // @ts-ignore
     contact.chat = { id: chat.id, unseenMsgs: chat.unseenMsgs, lastMessage: chat.chat[chat.chat.length - 1] }
@@ -305,8 +305,8 @@ mock.onGet('/apps/chat/chats-and-contacts').reply(() => {
     return contact
   })
 
-  const contactsToShow = data.contacts.filter(co => {
-    return !data.chats.some(ch => {
+  const contactsToShow = data.contacts.filter((co) => {
+    return !data.chats.some((ch) => {
       return co.id === ch.id
     })
   })
@@ -315,7 +315,7 @@ mock.onGet('/apps/chat/chats-and-contacts').reply(() => {
     id: data.profileUser.id,
     avatar: data.profileUser.avatar,
     fullName: data.profileUser.fullName,
-    status: data.profileUser.status
+    status: data.profileUser.status,
   }
 
   return [200, { chatsContacts, contacts: contactsToShow, profileUser: profileUserData }]
@@ -329,15 +329,15 @@ mock.onGet('/apps/chat/users/profile-user').reply(() => [200, data.profileUser])
 // ------------------------------------------------
 // GET: Return Single Chat
 // ------------------------------------------------
-mock.onGet('/apps/chat/get-chat').reply(config => {
+mock.onGet('/apps/chat/get-chat').reply((config) => {
   // Get event id from URL
   let userId = config.params.id
 
   //  Convert Id to number
   userId = Number(userId)
-  const chat = data.chats.find(c => c.id === userId)
+  const chat = data.chats.find((c) => c.id === userId)
   if (chat) chat.unseenMsgs = 0
-  const contact = data.contacts.find(c => c.id === userId)
+  const contact = data.contacts.find((c) => c.id === userId)
 
   // @ts-ignore
   if (contact.chat) contact.chat.unseenMsgs = 0
@@ -348,10 +348,10 @@ mock.onGet('/apps/chat/get-chat').reply(config => {
 // ------------------------------------------------
 // POST: Add new chat message
 // ------------------------------------------------
-mock.onPost('/apps/chat/send-msg').reply(config => {
+mock.onPost('/apps/chat/send-msg').reply((config) => {
   // Get event from post data
   const { obj } = JSON.parse(config.data).data
-  let activeChat = data.chats.find(chat => chat.id === obj.contact.id)
+  let activeChat = data.chats.find((chat) => chat.id === obj.contact.id)
 
   const newMessageData = {
     senderId: 11,
@@ -360,8 +360,8 @@ mock.onPost('/apps/chat/send-msg').reply(config => {
     feedback: {
       isSent: true,
       isSeen: false,
-      isDelivered: false
-    }
+      isDelivered: false,
+    },
   }
 
   // If there's new chat for user create one
@@ -372,7 +372,7 @@ mock.onPost('/apps/chat/send-msg').reply(config => {
       id: obj.contact.id,
       userId: obj.contact.id,
       unseenMsgs: 0,
-      chat: [newMessageData]
+      chat: [newMessageData],
     })
     activeChat = data.chats[data.chats.length - 1]
   } else {
@@ -384,7 +384,7 @@ mock.onPost('/apps/chat/send-msg').reply(config => {
   if (isNewChat) response.chat = activeChat
   reorderChats(
     data.chats,
-    data.chats.findIndex(i => i.id === response.id),
+    data.chats.findIndex((i) => i.id === response.id),
     0
   )
 

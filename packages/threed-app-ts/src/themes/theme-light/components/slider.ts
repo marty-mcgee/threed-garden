@@ -1,11 +1,11 @@
 // ThreeD Garden Base Styles
-import colors from "~/themes/theme-light/base/colors"
-import borders from "~/themes/theme-light/base/borders"
-import boxShadows from "~/themes/theme-light/base/boxShadows"
+import colors from '~/themes/theme-light/base/colors'
+import borders from '~/themes/theme-light/base/borders'
+import boxShadows from '~/themes/theme-light/base/boxShadows'
 
 // ThreeD Garden Helper Functions
-import pxToRem from "~/themes/theme-light/functions/pxToRem"
-import boxShadow from "~/themes/theme-light/functions/boxShadow"
+import pxToRem from '~/themes/theme-light/functions/pxToRem'
+import boxShadow from '~/themes/theme-light/functions/boxShadow'
 
 const { grey, white, black, info } = colors
 const { borderRadius, borderWidth } = borders
@@ -17,13 +17,13 @@ type Types = any
 const slider: Types = {
   styleOverrides: {
     root: {
-      width: "100%",
+      width: '100%',
 
-      "& .MuiSlider-active, & .Mui-focusVisible": {
-        boxShadow: "none !important",
+      '& .MuiSlider-active, & .Mui-focusVisible': {
+        boxShadow: 'none !important',
       },
 
-      "& .MuiSlider-valueLabel": {
+      '& .MuiSlider-valueLabel': {
         color: black.main,
       },
     },
@@ -38,8 +38,8 @@ const slider: Types = {
     track: {
       background: info.main,
       height: pxToRem(2),
-      position: "relative",
-      border: "none",
+      position: 'relative',
+      border: 'none',
       borderRadius: borderRadius.lg,
       zIndex: 1,
     },
@@ -51,17 +51,17 @@ const slider: Types = {
       zIndex: 10,
       boxShadow: sliderBoxShadow.thumb,
       border: `${borderWidth[1]} solid ${info.main}`,
-      transition: "all 200ms linear",
+      transition: 'all 200ms linear',
 
-      "&:hover": {
-        boxShadow: "none",
+      '&:hover': {
+        boxShadow: 'none',
       },
 
-      "&:active": {
-        transform: "translate(-50%, -50%) scale(1.4)",
+      '&:active': {
+        transform: 'translate(-50%, -50%) scale(1.4)',
       },
 
-      "&.Mui-active": {
+      '&.Mui-active': {
         boxShadow: boxShadow([0, 0], [0, 14], info.main, 0.16),
       },
     },

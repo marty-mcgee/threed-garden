@@ -10,14 +10,21 @@ const SwiperVertical = () => {
     vertical: true,
     slides: {
       perView: 2,
-      spacing: 8
-    }
+      spacing: 8,
+    },
   })
 
   return (
-    <Box ref={ref} className='keen-slider vertical' sx={{ maxHeight: 300 }}>
-      {[...Array(10).keys()].map(num => (
-        <Box key={num} className='keen-slider__slide default-slide'>
+    <Box
+      ref={ref}
+      className='keen-slider vertical'
+      sx={{ maxHeight: 300 }}
+    >
+      {[...Array(10).keys()].map((num) => (
+        <Box
+          key={num}
+          className='keen-slider__slide default-slide'
+        >
           {num + 1}
         </Box>
       ))}

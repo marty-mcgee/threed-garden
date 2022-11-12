@@ -26,19 +26,19 @@ const FormLayoutsBasic = () => {
   // ** States
   const [values, setValues] = useState({
     password: '',
-    showPassword: false
+    showPassword: false,
   })
 
   const [confirmPassValues, setConfirmPassValues] = useState({
     password: '',
-    showPassword: false
+    showPassword: false,
   })
 
-  const handleChange = prop => event => {
+  const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value })
   }
 
-  const handleConfirmPassChange = prop => event => {
+  const handleConfirmPassChange = (prop) => (event) => {
     setConfirmPassValues({ ...confirmPassValues, [prop]: event.target.value })
   }
 
@@ -50,20 +50,36 @@ const FormLayoutsBasic = () => {
     setConfirmPassValues({ ...confirmPassValues, showPassword: !confirmPassValues.showPassword })
   }
 
-  const handleMouseDownPassword = event => {
+  const handleMouseDownPassword = (event) => {
     event.preventDefault()
   }
 
   return (
     <Card>
-      <CardHeader title='Basic' titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader
+        title='Basic'
+        titleTypographyProps={{ variant: 'h6' }}
+      />
       <CardContent>
-        <form onSubmit={e => e.preventDefault()}>
-          <Grid container spacing={5}>
-            <Grid item xs={12}>
-              <TextField fullWidth label='Name' placeholder='Leonard Carter' />
+        <form onSubmit={(e) => e.preventDefault()}>
+          <Grid
+            container
+            spacing={5}
+          >
+            <Grid
+              item
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                label='Name'
+                placeholder='Leonard Carter'
+              />
             </Grid>
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <TextField
                 fullWidth
                 type='email'
@@ -72,7 +88,10 @@ const FormLayoutsBasic = () => {
                 helperText='You can use letters, numbers & periods'
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <FormControl fullWidth>
                 <InputLabel htmlFor='form-layouts-basic-password'>Password</InputLabel>
                 <OutlinedInput
@@ -100,7 +119,10 @@ const FormLayoutsBasic = () => {
                 </FormHelperText>
               </FormControl>
             </Grid>
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <FormControl fullWidth>
                 <InputLabel htmlFor='form-layouts-confirm-password'>Confirm Password</InputLabel>
                 <OutlinedInput
@@ -128,22 +150,32 @@ const FormLayoutsBasic = () => {
                 </FormHelperText>
               </FormControl>
             </Grid>
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <Box
                 sx={{
                   gap: 5,
                   display: 'flex',
                   flexWrap: 'wrap',
                   alignItems: 'center',
-                  justifyContent: 'space-between'
+                  justifyContent: 'space-between',
                 }}
               >
-                <Button type='submit' variant='contained' size='large'>
+                <Button
+                  type='submit'
+                  variant='contained'
+                  size='large'
+                >
                   Get Started!
                 </Button>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <Typography sx={{ mr: 2 }}>Already have an account?</Typography>
-                  <Link href='/' onClick={e => e.preventDefault()}>
+                  <Link
+                    href='/'
+                    onClick={(e) => e.preventDefault()}
+                  >
                     Log in
                   </Link>
                 </Box>

@@ -20,7 +20,7 @@ const FallbackSpinner = () => {
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'column',
-        justifyContent: 'center'
+        justifyContent: 'center',
       }}
     >
       {/* App Logo */}
@@ -85,7 +85,10 @@ const FallbackSpinner = () => {
           </g>
         </g>
       </svg> */}
-      <CircularProgress disableShrink sx={{ mt: 6 }} />
+      <CircularProgress
+        disableShrink
+        sx={{ mt: 6 }}
+      />
     </Box>
   )
 }

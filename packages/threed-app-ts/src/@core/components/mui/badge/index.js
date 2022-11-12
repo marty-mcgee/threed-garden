@@ -4,7 +4,7 @@ import MuiBadge from '@mui/material/Badge'
 // ** Hooks Imports
 import useBgColor from '~/@core/hooks/useBgColor'
 
-const Badge = props => {
+const Badge = (props) => {
   // ** Props
   const { sx, skin, color } = props
 
@@ -17,7 +17,7 @@ const Badge = props => {
     success: { ...bgColors.successLight },
     error: { ...bgColors.errorLight },
     warning: { ...bgColors.warningLight },
-    info: { ...bgColors.infoLight }
+    info: { ...bgColors.infoLight },
   }
 
   return (

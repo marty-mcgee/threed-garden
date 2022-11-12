@@ -14,7 +14,7 @@ import { Bubble } from 'react-chartjs-2'
 // ** Custom Components Imports
 import CustomChip from '~/@core/components/mui/chip'
 
-const ChartjsBubbleChart = props => {
+const ChartjsBubbleChart = (props) => {
   // ** Props
   const { yellow, primary, labelColor, borderColor, gridLineColor } = props
 
@@ -27,29 +27,29 @@ const ChartjsBubbleChart = props => {
         max: 140,
         grid: {
           borderColor,
-          color: gridLineColor
+          color: gridLineColor,
         },
         ticks: {
           stepSize: 10,
-          color: labelColor
-        }
+          color: labelColor,
+        },
       },
       y: {
         min: 0,
         max: 400,
         grid: {
           borderColor,
-          color: gridLineColor
+          color: gridLineColor,
         },
         ticks: {
           stepSize: 100,
-          color: labelColor
-        }
-      }
+          color: labelColor,
+        },
+      },
     },
     plugins: {
-      legend: { display: false }
-    }
+      legend: { display: false },
+    },
   }
 
   const data = {
@@ -72,8 +72,8 @@ const ChartjsBubbleChart = props => {
           { x: 100, y: 310, r: 5 },
           { x: 110, y: 240, r: 5 },
           { x: 120, y: 270, r: 7 },
-          { x: 130, y: 300, r: 6 }
-        ]
+          { x: 130, y: 300, r: 6 },
+        ],
       },
       {
         label: 'Dataset 2',
@@ -92,10 +92,10 @@ const ChartjsBubbleChart = props => {
           { x: 100, y: 220, r: 7 },
           { x: 120, y: 230, r: 4 },
           { x: 110, y: 320, r: 15 },
-          { x: 130, y: 330, r: 7 }
-        ]
-      }
-    ]
+          { x: 130, y: 330, r: 7 },
+        ],
+      },
+    ],
   }
 
   return (
@@ -109,11 +109,14 @@ const ChartjsBubbleChart = props => {
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],
           '& .MuiCardHeader-action': { mb: 0 },
-          '& .MuiCardHeader-content': { mb: [2, 0] }
+          '& .MuiCardHeader-content': { mb: [2, 0] },
         }}
         action={
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant='h6' sx={{ mr: 5 }}>
+            <Typography
+              variant='h6'
+              sx={{ mr: 5 }}
+            >
               $221,267
             </Typography>
             <CustomChip
@@ -131,7 +134,11 @@ const ChartjsBubbleChart = props => {
         }
       />
       <CardContent>
-        <Bubble data={data} options={options} height={450} />
+        <Bubble
+          data={data}
+          options={options}
+          height={450}
+        />
       </CardContent>
     </Card>
   )

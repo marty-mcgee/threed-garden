@@ -1,7 +1,7 @@
 // @mui material components
-import { styled } from "@mui/material"
+import { styled } from '@mui/material'
 
-export default styled("span")(({ theme }) => {
+export default styled('span')(({ theme }) => {
   const { palette, typography, functions } = theme
 
   const { white } = palette
@@ -14,7 +14,7 @@ export default styled("span")(({ theme }) => {
     padding: `${pxToRem(9)} ${pxToRem(6)} ${pxToRem(8)}`,
     marginLeft: pxToRem(40),
     fontWeight: fontWeightMedium,
-    cursor: "pointer",
+    cursor: 'pointer',
     lineHeight: 0,
   }
 })

@@ -15,14 +15,14 @@ const StyledGrid1 = styled(Grid)(({ theme }) => ({
   flexDirection: 'column',
   alignItems: 'flex-start',
   [theme.breakpoints.down('md')]: {
-    paddingTop: '0 !important'
+    paddingTop: '0 !important',
   },
   '& .MuiCardContent-root': {
     padding: theme.spacing(3, 4.75),
     [theme.breakpoints.down('md')]: {
-      paddingTop: 0
-    }
-  }
+      paddingTop: 0,
+    },
+  },
 }))
 
 // Styled Grid component
@@ -31,45 +31,75 @@ const StyledGrid2 = styled(Grid)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
   [theme.breakpoints.up('md')]: {
-    paddingLeft: '0 !important'
+    paddingLeft: '0 !important',
   },
   [theme.breakpoints.down('md')]: {
-    order: -1
-  }
+    order: -1,
+  },
 }))
 
 // Styled component for the image
 const Img = styled('img')(({ theme }) => ({
   height: '11rem',
-  borderRadius: theme.shape.borderRadius
+  borderRadius: theme.shape.borderRadius,
 }))
 
 const CardHorizontalRatings = () => {
   return (
     <Card>
-      <Grid container spacing={6}>
-        <StyledGrid1 item xs={12} md={6} lg={7}>
+      <Grid
+        container
+        spacing={6}
+      >
+        <StyledGrid1
+          item
+          xs={12}
+          md={6}
+          lg={7}
+        >
           <CardContent>
-            <Typography variant='h6' sx={{ mb: 2 }}>
+            <Typography
+              variant='h6'
+              sx={{ mb: 2 }}
+            >
               Stumptown Roasters
             </Typography>
             <Box sx={{ mb: 4.75, display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
-              <Rating readOnly value={5} name='read-only' sx={{ mr: 2 }} />
+              <Rating
+                readOnly
+                value={5}
+                name='read-only'
+                sx={{ mr: 2 }}
+              />
               <Typography variant='body2'>5 Star | 98 reviews</Typography>
             </Box>
-            <Typography variant='body2' sx={{ mb: 4 }}>
+            <Typography
+              variant='body2'
+              sx={{ mb: 4 }}
+            >
               Before there was a United States of America, there were coffee houses, because how are you supposed to
               build.
             </Typography>
           </CardContent>
-          <CardActions className='card-action-dense' sx={{ width: '100%' }}>
+          <CardActions
+            className='card-action-dense'
+            sx={{ width: '100%' }}
+          >
             <Button>Location</Button>
             <Button>Reviews</Button>
           </CardActions>
         </StyledGrid1>
-        <StyledGrid2 item xs={12} md={6} lg={5}>
+        <StyledGrid2
+          item
+          xs={12}
+          md={6}
+          lg={5}
+        >
           <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Img alt='Stumptown Roasters' src='/images/cards/analog-clock.jpg' />
+            <Img
+              alt='Stumptown Roasters'
+              src='/images/cards/analog-clock.jpg'
+            />
           </CardContent>
         </StyledGrid2>
       </Grid>

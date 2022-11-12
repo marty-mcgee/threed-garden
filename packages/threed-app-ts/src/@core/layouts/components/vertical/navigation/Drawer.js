@@ -6,21 +6,21 @@ const SwipeableDrawer = styled(MuiSwipeableDrawer)({
   overflowX: 'hidden',
   transition: 'width .25s ease-in-out',
   '& ul': {
-    listStyle: 'none'
+    listStyle: 'none',
   },
   '& .MuiListItem-gutters': {
     paddingLeft: 4,
-    paddingRight: 4
+    paddingRight: 4,
   },
   '& .MuiDrawer-paper': {
     left: 'unset',
     right: 'unset',
     overflowX: 'hidden',
-    transition: 'width .25s ease-in-out, box-shadow .25s ease-in-out'
-  }
+    transition: 'width .25s ease-in-out, box-shadow .25s ease-in-out',
+  },
 })
 
-const Drawer = props => {
+const Drawer = (props) => {
   // ** Props
   const {
     hidden,
@@ -32,7 +32,7 @@ const Drawer = props => {
     setNavHover,
     setNavVisible,
     collapsedNavWidth,
-    navigationBorderWidth
+    navigationBorderWidth,
   } = props
 
   // ** Hook
@@ -45,14 +45,14 @@ const Drawer = props => {
     if (skin === 'semi-dark' && theme.palette.mode === 'light') {
       return {
         '& .MuiTypography-root, & .MuiSvgIcon-root': {
-          color: `rgba(${theme.palette.customColors.dark}, 0.87)`
-        }
+          color: `rgba(${theme.palette.customColors.dark}, 0.87)`,
+        },
       }
     } else if (skin === 'semi-dark' && theme.palette.mode === 'dark') {
       return {
         '& .MuiTypography-root, & .MuiSvgIcon-root': {
-          color: `rgba(${theme.palette.customColors.light}, 0.87)`
-        }
+          color: `rgba(${theme.palette.customColors.light}, 0.87)`,
+        },
       }
     } else return {}
   }
@@ -60,15 +60,15 @@ const Drawer = props => {
   const drawerBgColor = () => {
     if (skin === 'semi-dark' && theme.palette.mode === 'light') {
       return {
-        backgroundColor: theme.palette.customColors.darkBg
+        backgroundColor: theme.palette.customColors.darkBg,
       }
     } else if (skin === 'semi-dark' && theme.palette.mode === 'dark') {
       return {
-        backgroundColor: theme.palette.customColors.lightBg
+        backgroundColor: theme.palette.customColors.lightBg,
       }
     } else {
       return {
-        backgroundColor: theme.palette.background.default
+        backgroundColor: theme.palette.background.default,
       }
     }
   }
@@ -79,8 +79,8 @@ const Drawer = props => {
     onOpen: () => setNavVisible(true),
     onClose: () => setNavVisible(false),
     ModalProps: {
-      keepMounted: true // Better open performance on mobile.
-    }
+      keepMounted: true, // Better open performance on mobile.
+    },
   }
 
   // Drawer Props for Desktop screens
@@ -93,7 +93,7 @@ const Drawer = props => {
     },
     onMouseLeave: () => {
       setNavHover(false)
-    }
+    },
   }
 
   return (
@@ -108,8 +108,8 @@ const Drawer = props => {
           ...drawerColor(),
           ...drawerBgColor(),
           ...(!hidden && navCollapsed && navHover ? { boxShadow: 9 } : {}),
-          borderRight: navigationBorderWidth === 0 ? 0 : `${navigationBorderWidth}px solid ${theme.palette.divider}`
-        }
+          borderRight: navigationBorderWidth === 0 ? 0 : `${navigationBorderWidth}px solid ${theme.palette.divider}`,
+        },
       }}
     >
       {children}

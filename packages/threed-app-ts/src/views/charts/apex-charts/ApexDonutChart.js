@@ -11,14 +11,14 @@ const donutColors = {
   series2: '#00d4bd',
   series3: '#826bf8',
   series4: '#32baff',
-  series5: '#ffa1a1'
+  series5: '#ffa1a1',
 }
 
 const ApexDonutChart = () => {
   const options = {
     legend: {
       show: true,
-      position: 'bottom'
+      position: 'bottom',
     },
     stroke: { width: 0 },
     labels: ['Operational', 'Networking', 'Hiring', 'R&D'],
@@ -27,7 +27,7 @@ const ApexDonutChart = () => {
       enabled: true,
       formatter(val) {
         return `${parseInt(val, 10)}%`
-      }
+      },
     },
     plotOptions: {
       pie: {
@@ -36,14 +36,14 @@ const ApexDonutChart = () => {
             show: true,
             name: {
               fontSize: '2rem',
-              fontFamily: 'Montserrat'
+              fontFamily: 'Montserrat',
             },
             value: {
               fontSize: '1rem',
               fontFamily: 'Montserrat',
               formatter(val) {
                 return `${parseInt(val, 10)}`
-              }
+              },
             },
             total: {
               show: true,
@@ -51,29 +51,29 @@ const ApexDonutChart = () => {
               label: 'Operational',
               formatter() {
                 return '31%'
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     },
     responsive: [
       {
         breakpoint: 992,
         options: {
           chart: {
-            height: 380
+            height: 380,
           },
           legend: {
-            position: 'bottom'
-          }
-        }
+            position: 'bottom',
+          },
+        },
       },
       {
         breakpoint: 576,
         options: {
           chart: {
-            height: 320
+            height: 320,
           },
           plotOptions: {
             pie: {
@@ -81,21 +81,21 @@ const ApexDonutChart = () => {
                 labels: {
                   show: true,
                   name: {
-                    fontSize: '1.5rem'
+                    fontSize: '1.5rem',
                   },
                   value: {
-                    fontSize: '1rem'
+                    fontSize: '1rem',
                   },
                   total: {
-                    fontSize: '1.5rem'
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    ]
+                    fontSize: '1.5rem',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    ],
   }
   const series = [85, 16, 50, 50]
 
@@ -110,10 +110,15 @@ const ApexDonutChart = () => {
       <CardContent
         sx={{
           '& .apexcharts-canvas .apexcharts-pie .apexcharts-datalabel-label, & .apexcharts-canvas .apexcharts-pie .apexcharts-datalabel-value':
-            { fontSize: '1.2rem' }
+            { fontSize: '1.2rem' },
         }}
       >
-        <ReactApexcharts options={options} series={series} type='donut' height={400} />
+        <ReactApexcharts
+          options={options}
+          series={series}
+          type='donut'
+          height={400}
+        />
       </CardContent>
     </Card>
   )

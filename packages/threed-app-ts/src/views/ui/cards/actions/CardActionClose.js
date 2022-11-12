@@ -17,7 +17,10 @@ const CardActionClose = () => {
   const [visibility, setVisibility] = useState(true)
 
   return (
-    <Fade in={visibility} timeout={300}>
+    <Fade
+      in={visibility}
+      timeout={300}
+    >
       <Card>
         <CardHeader
           title='Remove Card'
@@ -35,7 +38,11 @@ const CardActionClose = () => {
         <CardContent>
           <Typography variant='body2'>
             You can specifically add remove action using <code>actionRemove</code> prop Click on{' '}
-            <Close fontSize='small' sx={{ verticalAlign: 'bottom' }} /> icon to see it in action
+            <Close
+              fontSize='small'
+              sx={{ verticalAlign: 'bottom' }}
+            />{' '}
+            icon to see it in action
           </Typography>
         </CardContent>
       </Card>

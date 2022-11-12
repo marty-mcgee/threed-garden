@@ -1,10 +1,10 @@
 // formik components
-import { ErrorMessage, Field } from "formik"
+import { ErrorMessage, Field } from 'formik'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
-import MDInput from "~/components/mui/MDInput"
+import MDBox from '~/components/mui/MDBox'
+import MDTypography from '~/components/mui/MDTypography'
+import MDInput from '~/components/mui/MDInput'
 
 // Declaring props types for FormField
 interface Props {
@@ -20,16 +20,17 @@ function FormField({ label, name, ...rest }: Props): JSX.Element {
         {...rest}
         name={name}
         as={MDInput}
-        variant="standard"
+        variant='standard'
         label={label}
         fullWidth
       />
       <MDBox mt={0.75}>
         <MDTypography
-          component="div"
-          variant="caption"
-          color="error"
-          fontWeight="regular">
+          component='div'
+          variant='caption'
+          color='error'
+          fontWeight='regular'
+        >
           <ErrorMessage name={name} />
         </MDTypography>
       </MDBox>

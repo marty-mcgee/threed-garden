@@ -1,14 +1,14 @@
 // import { NextPage, GetServerSideProps } from "next"
-import type { NextPage } from "next"
-import { IPage, IProps, IBooleans, IValues, IStructures } from "~/types/interfaces" // "@threed/garden/cpt"
-import type { Page } from "~/types/interfaces"
+import type { NextPage } from 'next'
+import { IPage, IBooleans, IValues, IStructures } from '~/types/interfaces' // "@threed/garden/cpt"
+import type { Page } from '~/types/interfaces'
 
-import { GetServerSideProps } from "next"
-import axios from "axios"
+import { GetServerSideProps } from 'next'
+import axios from 'axios'
 
 // import App from 'next/app'
 
-import { NextRequest, NextResponse, userAgent } from 'next/server'
+import { NextRequest, userAgent } from 'next/server'
 
 export function middleware(request: NextRequest) {
   // const url = request.nextUrl
@@ -21,7 +21,7 @@ export function middleware(request: NextRequest) {
 
 // const ua = middleware
 const ua = middleware
-console.log("ua", ua)
+console.log('ua', ua)
 
 // App.getInitialProps = async ({ req }) => {
 //   const userAgent = req ? req.headers['user-agent'] : navigator.userAgent
@@ -38,38 +38,31 @@ console.log("ua", ua)
 // )
 
 const Pages: NextPage<{ pages: IPage[] }> = ({ pages }) => {
-  const word = "word"
+  const word = 'word'
   // const userAgent = middleware
   return (
-    <main style={{ padding: "1em" }}>
-      <h1>
-        [MM] Boilerplate Page
-      </h1>
-      <div>
-        User Agent: {word} ???
-      </div>
-      {pages.map((page: Page) => ( // ooooo, interesting [MM] HEY HEY HEY
-        <div
-          key={(Math.floor(100000 + Math.random() * 900000))}
-          style={{ display: "inline-flex" }}
-        >
-          <div>|</div>
+    <main style={{ padding: '1em' }}>
+      <h1>[MM] Boilerplate Page</h1>
+      <div>User Agent: {word} ???</div>
+      {pages.map(
+        (
+          page: Page // ooooo, interesting [MM] HEY HEY HEY
+        ) => (
           <div
-            key={page.title.rendered}
+            key={Math.floor(100000 + Math.random() * 900000)}
+            style={{ display: 'inline-flex' }}
           >
-
-            {page.title.rendered}
-
+            <div>|</div>
+            <div key={page.title.rendered}>{page.title.rendered}</div>
           </div>
-        </div>
-      ))}
+        )
+      )}
     </main>
   )
 }
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-
-  let res = { data: [{ title: { rendered: "HEY HEY HEY" } }] }
+  let res = { data: [{ title: { rendered: 'HEY HEY HEY' } }] }
   // console.log("let res", res)
 
   try {
@@ -77,7 +70,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     res = await axios.get<IPage[]>(`${process.env.WP_REST_API_URL}/pages`)
     // console.log("try res", res)
   } catch (e: any) {
-    res.data = [{ title: { rendered: "NOPE NOPE NOPE" } }]
+    res.data = [{ title: { rendered: 'NOPE NOPE NOPE' } }]
     // console.log("catch e", e)
   }
   // console.log("res.data", res.data)
@@ -100,7 +93,7 @@ const userFile: IValues = { user: 1, username: 'One', file: 'types.txt' }
 const userContext: IStructures = {
   file: userFile,
   permissions: flags,
-  counts: { views: 3, writes: 1 } // => INumbers (lint: try to remove IValues from IStructures)
+  counts: { views: 3, writes: 1 }, // => INumbers (lint: try to remove IValues from IStructures)
 }
 // end examples
 // ============================================================================================

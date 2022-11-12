@@ -8,8 +8,17 @@ const ChipsClickable = () => {
 
   return (
     <div className='demo-space-x'>
-      <Chip label='Clickable' onClick={handleClick} />
-      <Chip label='Clickable Link' component='a' href='https://themeselection.com/' target='_blank' clickable />
+      <Chip
+        label='Clickable'
+        onClick={handleClick}
+      />
+      <Chip
+        label='Clickable Link'
+        component='a'
+        href='https://themeselection.com/'
+        target='_blank'
+        clickable
+      />
     </div>
   )
 }

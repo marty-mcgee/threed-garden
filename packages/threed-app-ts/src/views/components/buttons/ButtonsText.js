@@ -5,13 +5,22 @@ const ButtonsText = () => {
   return (
     <div className='demo-space-x'>
       <Button variant='text'>Primary</Button>
-      <Button variant='text' color='secondary'>
+      <Button
+        variant='text'
+        color='secondary'
+      >
         Secondary
       </Button>
-      <Button variant='text' disabled>
+      <Button
+        variant='text'
+        disabled
+      >
         Disabled
       </Button>
-      <Button variant='text' href='#'>
+      <Button
+        variant='text'
+        href='#'
+      >
         Link
       </Button>
     </div>

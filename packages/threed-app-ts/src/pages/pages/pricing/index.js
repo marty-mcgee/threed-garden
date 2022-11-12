@@ -19,18 +19,18 @@ import PricingFooter from '~/views/pages/pricing/PricingFooter'
 const CardContent = styled(MuiCardContent)(({ theme }) => ({
   padding: theme.spacing(17.5, 36, 28.25),
   [theme.breakpoints.down('xl')]: {
-    padding: theme.spacing(12.5, 20, 20)
+    padding: theme.spacing(12.5, 20, 20),
   },
   [theme.breakpoints.down('sm')]: {
-    padding: theme.spacing(10, 5)
-  }
+    padding: theme.spacing(10, 5),
+  },
 }))
 
 const Pricing = ({ apiData }) => {
   // ** States
   const [plan, setPlan] = useState('monthly')
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     if (e.target.checked) {
       setPlan('annually')
     } else {
@@ -41,8 +41,14 @@ const Pricing = ({ apiData }) => {
   return (
     <Card>
       <CardContent>
-        <PricingHeader plan={plan} handleChange={handleChange} />
-        <PricingPlans plan={plan} data={apiData} />
+        <PricingHeader
+          plan={plan}
+          handleChange={handleChange}
+        />
+        <PricingPlans
+          plan={plan}
+          data={apiData}
+        />
       </CardContent>
       <PricingCTA />
       <PricingFooter data={apiData} />
@@ -56,8 +62,8 @@ export const getStaticProps = async () => {
 
   return {
     props: {
-      apiData
-    }
+      apiData,
+    },
   }
 }
 

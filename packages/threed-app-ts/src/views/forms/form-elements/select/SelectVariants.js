@@ -25,7 +25,12 @@ const SelectVariants = () => {
       </FormControl>
       <FormControl variant='filled'>
         <InputLabel id='demo-simple-select-filled-label'>Age</InputLabel>
-        <Select label='Age' labelId='demo-simple-select-filled-label' id='demo-simple-select-filled' defaultValue=''>
+        <Select
+          label='Age'
+          labelId='demo-simple-select-filled-label'
+          id='demo-simple-select-filled'
+          defaultValue=''
+        >
           <MenuItem value=''>
             <em>None</em>
           </MenuItem>
@@ -36,7 +41,12 @@ const SelectVariants = () => {
       </FormControl>
       <FormControl variant='standard'>
         <InputLabel id='demo-simple-select-label'>Age</InputLabel>
-        <Select label='Age' labelId='demo-simple-select-label' id='demo-simple-select' defaultValue=''>
+        <Select
+          label='Age'
+          labelId='demo-simple-select-label'
+          id='demo-simple-select'
+          defaultValue=''
+        >
           <MenuItem value={10}>Ten</MenuItem>
           <MenuItem value={20}>Twenty</MenuItem>
           <MenuItem value={30}>Thirty</MenuItem>

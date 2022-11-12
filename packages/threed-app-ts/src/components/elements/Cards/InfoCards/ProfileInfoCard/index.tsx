@@ -1,19 +1,19 @@
 // react-routers components
-import Link from "next/link"
+import Link from 'next/link'
 
 // @mui material components
-import Card from "@mui/material/Card"
-import Divider from "@mui/material/Divider"
-import Tooltip from "@mui/material/Tooltip"
-import Icon from "@mui/material/Icon"
+import Card from '@mui/material/Card'
+import Divider from '@mui/material/Divider'
+import Tooltip from '@mui/material/Tooltip'
+import Icon from '@mui/material/Icon'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
+import MDBox from '~/components/mui/MDBox'
+import MDTypography from '~/components/mui/MDTypography'
 
 // ThreeD Garden Base Styles
-import colors from "~/themes/theme-light/base/colors"
-import typography from "~/themes/theme-light/base/typography"
+import colors from '~/themes/theme-light/base/colors'
+import typography from '~/themes/theme-light/base/typography'
 
 // Declaring props types for ProfileInfoCard
 interface Props {
@@ -33,14 +33,7 @@ interface Props {
   [key: string]: any
 }
 
-function ProfileInfoCard({
-  title,
-  description,
-  info,
-  social,
-  action,
-  shadow,
-}: Props): JSX.Element {
+function ProfileInfoCard({ title, description, info, social, action, shadow }: Props): JSX.Element {
   const labels: string[] = []
   const values: string[] = []
   const { socialMediaColors } = colors
@@ -50,10 +43,7 @@ function ProfileInfoCard({
   Object.keys(info).forEach((el) => {
     if (el.match(/[A-Z\s]+/)) {
       const uppercaseLetter = Array.from(el).find((i) => i.match(/[A-Z]+/))
-      const newElement = el.replace(
-        uppercaseLetter,
-        ` ${uppercaseLetter.toLowerCase()}`
-      )
+      const newElement = el.replace(uppercaseLetter, ` ${uppercaseLetter.toLowerCase()}`)
 
       labels.push(newElement)
     } else {
@@ -66,14 +56,24 @@ function ProfileInfoCard({
 
   // Render the card info items
   const renderItems = labels.map((label, key) => (
-    <MDBox key={label} display="flex" py={1} pr={2}>
+    <MDBox
+      key={label}
+      display='flex'
+      py={1}
+      pr={2}
+    >
       <MDTypography
-        variant="button"
-        fontWeight="bold"
-        textTransform="capitalize">
+        variant='button'
+        fontWeight='bold'
+        textTransform='capitalize'
+      >
         {label}: &nbsp;
       </MDTypography>
-      <MDTypography variant="button" fontWeight="regular" color="text">
+      <MDTypography
+        variant='button'
+        fontWeight='regular'
+        color='text'
+      >
         &nbsp;{values[key]}
       </MDTypography>
     </MDBox>
@@ -83,46 +83,60 @@ function ProfileInfoCard({
   const renderSocial = social.map(({ link, icon, color }) => (
     <MDBox
       key={color}
-      component="a"
+      component='a'
       href={link}
-      target="_blank"
-      rel="noreferrer"
+      target='_blank'
+      rel='noreferrer'
       fontSize={size.lg}
       color={socialMediaColors[color].main}
       pr={1}
       pl={0.5}
-      lineHeight={1}>
+      lineHeight={1}
+    >
       {icon}
     </MDBox>
   ))
 
   return (
-    <Card sx={{ height: "100%", boxShadow: !shadow && "none" }}>
+    <Card sx={{ height: '100%', boxShadow: !shadow && 'none' }}>
       <MDBox
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
+        display='flex'
+        justifyContent='space-between'
+        alignItems='center'
         pt={2}
-        px={2}>
+        px={2}
+      >
         <MDTypography
-          variant="h6"
-          fontWeight="medium"
-          textTransform="capitalize">
+          variant='h6'
+          fontWeight='medium'
+          textTransform='capitalize'
+        >
           {title}
         </MDTypography>
         <MDTypography
           component={Link}
           href={action.route}
-          variant="body2"
-          color="secondary">
-          <Tooltip title={action.tooltip} placement="top">
+          variant='body2'
+          color='secondary'
+        >
+          <Tooltip
+            title={action.tooltip}
+            placement='top'
+          >
             <Icon>edit</Icon>
           </Tooltip>
         </MDTypography>
       </MDBox>
       <MDBox p={2}>
-        <MDBox mb={2} lineHeight={1}>
-          <MDTypography variant="button" color="text" fontWeight="light">
+        <MDBox
+          mb={2}
+          lineHeight={1}
+        >
+          <MDTypography
+            variant='button'
+            color='text'
+            fontWeight='light'
+          >
             {description}
           </MDTypography>
         </MDBox>
@@ -131,11 +145,16 @@ function ProfileInfoCard({
         </MDBox>
         <MDBox>
           {renderItems}
-          <MDBox display="flex" py={1} pr={2}>
+          <MDBox
+            display='flex'
+            py={1}
+            pr={2}
+          >
             <MDTypography
-              variant="button"
-              fontWeight="bold"
-              textTransform="capitalize">
+              variant='button'
+              fontWeight='bold'
+              textTransform='capitalize'
+            >
               social: &nbsp;
             </MDTypography>
             {renderSocial}

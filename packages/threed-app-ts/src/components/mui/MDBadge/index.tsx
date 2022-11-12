@@ -1,24 +1,16 @@
-import { FC, ReactNode, forwardRef } from "react"
+import { FC, ReactNode, forwardRef } from 'react'
 
 // @mui material components
-import { BadgeProps } from "@mui/material"
+import { BadgeProps } from '@mui/material'
 
 // Custom styles for the MDBadge
-import MDBadgeRoot from "~/components/mui/MDBadge/MDBadgeRoot"
+import MDBadgeRoot from '~/components/mui/MDBadge/MDBadgeRoot'
 
 // declaring props types for MDBadge
-interface Props extends Omit<BadgeProps, "color" | "variant"> {
-  color?:
-  | "primary"
-  | "secondary"
-  | "info"
-  | "success"
-  | "warning"
-  | "error"
-  | "light"
-  | "dark"
-  variant?: "gradient" | "contained"
-  size?: "xs" | "sm" | "md" | "lg"
+interface Props extends Omit<BadgeProps, 'color' | 'variant'> {
+  color?: 'primary' | 'secondary' | 'info' | 'success' | 'warning' | 'error' | 'light' | 'dark'
+  variant?: 'gradient' | 'contained'
+  size?: 'xs' | 'sm' | 'md' | 'lg'
   circular?: boolean
   indicator?: boolean
   border?: boolean
@@ -28,20 +20,7 @@ interface Props extends Omit<BadgeProps, "color" | "variant"> {
 }
 
 const MDBadge: FC<Props | any> = forwardRef(
-  (
-    {
-      color,
-      variant,
-      size,
-      circular,
-      indicator,
-      border,
-      container,
-      children,
-      ...rest
-    },
-    ref
-  ) => (
+  ({ color, variant, size, circular, indicator, border, container, children, ...rest }, ref) => (
     <MDBadgeRoot
       {...rest}
       ownerState={{
@@ -55,7 +34,8 @@ const MDBadge: FC<Props | any> = forwardRef(
         children,
       }}
       ref={ref}
-      color="default">
+      color='default'
+    >
       {children}
     </MDBadgeRoot>
   )
@@ -63,9 +43,9 @@ const MDBadge: FC<Props | any> = forwardRef(
 
 // declaring default props for MDBadge
 MDBadge.defaultProps = {
-  color: "info",
-  variant: "gradient",
-  size: "sm",
+  color: 'info',
+  variant: 'gradient',
+  size: 'sm',
   circular: false,
   indicator: false,
   border: false,

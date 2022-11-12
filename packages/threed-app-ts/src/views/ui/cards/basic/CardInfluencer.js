@@ -11,7 +11,10 @@ const CardInfluencer = () => {
     <Card>
       <CardHeader title='Influencing The Influencer' />
       <CardContent>
-        <Typography variant='body2' sx={{ mb: 3.25 }}>
+        <Typography
+          variant='body2'
+          sx={{ mb: 3.25 }}
+        >
           Computers have become ubiquitous in almost every facet of our lives. At work, desk jockeys spend hours in
           front of their desktops, while delivery people scan bar codes with handhelds and workers in the field stay in
           touch.

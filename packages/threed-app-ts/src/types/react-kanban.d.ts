@@ -1,4 +1,4 @@
-declare module "@asseinfo/react-kanban" {
+declare module '@asseinfo/react-kanban' {
   const noTypesYet: any
   export default noTypesYet
 }

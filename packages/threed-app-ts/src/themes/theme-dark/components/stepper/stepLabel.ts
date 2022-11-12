@@ -1,10 +1,10 @@
 // ThreeD Garden Base Styles
-import typography from "~/themes/theme-dark/base/typography"
-import colors from "~/themes/theme-dark/base/colors"
+import typography from '~/themes/theme-dark/base/typography'
+import colors from '~/themes/theme-dark/base/colors'
 
 // ThreeD Garden Helper Functions
-import pxToRem from "~/themes/theme-dark/functions/pxToRem"
-import rgba from "~/themes/theme-dark/functions/rgba"
+import pxToRem from '~/themes/theme-dark/functions/pxToRem'
+import rgba from '~/themes/theme-dark/functions/rgba'
 
 const { size, fontWeightRegular } = typography
 const { white } = colors
@@ -18,15 +18,15 @@ const stepLabel: Types = {
       marginTop: `${pxToRem(8)} !important`,
       fontWeight: fontWeightRegular,
       fontSize: size.xs,
-      color: "#9fc9ff",
-      textTransform: "uppercase",
+      color: '#9fc9ff',
+      textTransform: 'uppercase',
 
-      "&.Mui-active": {
+      '&.Mui-active': {
         fontWeight: `${fontWeightRegular} !important`,
         color: `${rgba(white.main, 0.8)} !important`,
       },
 
-      "&.Mui-completed": {
+      '&.Mui-completed': {
         fontWeight: `${fontWeightRegular} !important`,
         color: `${rgba(white.main, 0.8)} !important`,
       },

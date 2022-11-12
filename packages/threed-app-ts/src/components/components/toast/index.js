@@ -23,111 +23,163 @@ import * as source from '~/views/components/toast/ToastSourceCode'
 
 const ReactHotToasts = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
       <PageHeader
         subtitle={<Typography variant='body2'>Smoking hot React notifications.</Typography>}
         title={
           <Typography variant='h5'>
-            <Link href='https://github.com/timolins/react-hot-toast' target='_blank'>
+            <Link
+              href='https://github.com/timolins/react-hot-toast'
+              target='_blank'
+            >
               React Hot Toasts
             </Link>
           </Typography>
         }
       />
-      <Grid item xs={12} sm={6} md={4}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        md={4}
+      >
         <CardSnippet
           title=''
           code={{
             tsx: null,
-            jsx: source.ToastBlankJSXCode
+            jsx: source.ToastBlankJSXCode,
           }}
         >
           <ToastBlank />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} sm={6} md={4}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        md={4}
+      >
         <CardSnippet
           title=''
           code={{
             tsx: null,
-            jsx: source.ToastMultiLineJSXCode
+            jsx: source.ToastMultiLineJSXCode,
           }}
         >
           <ToastMultiLine />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} sm={6} md={4}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        md={4}
+      >
         <CardSnippet
           title=''
           code={{
             tsx: null,
-            jsx: source.ToastSuccessJSXCode
+            jsx: source.ToastSuccessJSXCode,
           }}
         >
           <ToastSuccess />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} sm={6} md={4}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        md={4}
+      >
         <CardSnippet
           title=''
           code={{
             tsx: null,
-            jsx: source.ToastErrorJSXCode
+            jsx: source.ToastErrorJSXCode,
           }}
         >
           <ToastError />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} sm={6} md={4}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        md={4}
+      >
         <CardSnippet
           title=''
           code={{
             tsx: null,
-            jsx: source.ToastPromiseJSXCode
+            jsx: source.ToastPromiseJSXCode,
           }}
         >
           <ToastPromise />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} sm={6} md={4}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        md={4}
+      >
         <CardSnippet
           title=''
           code={{
             tsx: null,
-            jsx: source.ToastEmojiJSXCode
+            jsx: source.ToastEmojiJSXCode,
           }}
         >
           <ToastEmoji />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} sm={6} md={4}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        md={4}
+      >
         <CardSnippet
           title=''
           code={{
             tsx: null,
-            jsx: source.ToastThemedJSXCode
+            jsx: source.ToastThemedJSXCode,
           }}
         >
           <ToastThemed />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} sm={6} md={4}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        md={4}
+      >
         <CardSnippet
           title=''
           code={{
             tsx: null,
-            jsx: source.ToastCustomJSXCode
+            jsx: source.ToastCustomJSXCode,
           }}
         >
           <ToastCustom />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} sm={6} md={4}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        md={4}
+      >
         <CardSnippet
           title=''
           code={{
             tsx: null,
-            jsx: source.ToastCustomPositionJSXCode
+            jsx: source.ToastCustomPositionJSXCode,
           }}
         >
           <ToastCustomPosition />

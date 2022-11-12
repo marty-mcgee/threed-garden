@@ -15,7 +15,7 @@ const ListWithCheckbox = () => {
   // ** State
   const [checked, setChecked] = useState([0])
 
-  const handleToggle = value => () => {
+  const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value)
     const newChecked = [...checked]
     if (currentIndex === -1) {
@@ -31,9 +31,15 @@ const ListWithCheckbox = () => {
       <ListItem disablePadding>
         <ListItemButton onClick={handleToggle(0)}>
           <ListItemAvatar>
-            <Avatar src='/images/avatars/2.png' alt='Caroline Black' />
+            <Avatar
+              src='/images/avatars/2.png'
+              alt='Caroline Black'
+            />
           </ListItemAvatar>
-          <ListItemText id='checkbox-list-label-0' primary='Caroline Black' />
+          <ListItemText
+            id='checkbox-list-label-0'
+            primary='Caroline Black'
+          />
           <ListItemSecondaryAction>
             <Checkbox
               edge='end'
@@ -49,9 +55,15 @@ const ListWithCheckbox = () => {
       <ListItem disablePadding>
         <ListItemButton onClick={handleToggle(1)}>
           <ListItemAvatar>
-            <Avatar src='/images/avatars/1.png' alt='Alfred Copeland' />
+            <Avatar
+              src='/images/avatars/1.png'
+              alt='Alfred Copeland'
+            />
           </ListItemAvatar>
-          <ListItemText id='checkbox-list-label-1' primary='Alfred Copeland' />
+          <ListItemText
+            id='checkbox-list-label-1'
+            primary='Alfred Copeland'
+          />
           <ListItemSecondaryAction>
             <Checkbox
               edge='end'
@@ -67,9 +79,15 @@ const ListWithCheckbox = () => {
       <ListItem disablePadding>
         <ListItemButton onClick={handleToggle(2)}>
           <ListItemAvatar>
-            <Avatar src='/images/avatars/8.png' alt='Celia Schneider' />
+            <Avatar
+              src='/images/avatars/8.png'
+              alt='Celia Schneider'
+            />
           </ListItemAvatar>
-          <ListItemText id='checkbox-list-label-2' primary='Celia Schneider' />
+          <ListItemText
+            id='checkbox-list-label-2'
+            primary='Celia Schneider'
+          />
           <ListItemSecondaryAction>
             <Checkbox
               edge='end'

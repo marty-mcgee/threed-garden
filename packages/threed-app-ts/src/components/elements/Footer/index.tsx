@@ -1,13 +1,13 @@
 // @mui material components
-import Link from "@mui/material/Link"
-import Icon from "@mui/material/Icon"
+import Link from '@mui/material/Link'
+import Icon from '@mui/material/Icon'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
+import MDBox from '~/components/mui/MDBox'
+import MDTypography from '~/components/mui/MDTypography'
 
 // ThreeD Garden Base Styles
-import typography from "~/themes/theme-light/base/typography"
+import typography from '~/themes/theme-light/base/typography'
 
 // Declaring props types for Footer
 interface Props {
@@ -23,9 +23,7 @@ interface Props {
 }
 
 function FooterBlank({ company, links }: Props): JSX.Element {
-  return (
-    <div />
-  )
+  return <div />
 }
 function Footer({ company, links }: Props): JSX.Element {
   const { href, name } = company
@@ -33,9 +31,21 @@ function Footer({ company, links }: Props): JSX.Element {
 
   const renderLinks = () =>
     links.map((link) => (
-      <MDBox key={link.name} component="li" px={2} lineHeight={1}>
-        <Link href={link.href} target="_blank">
-          <MDTypography variant="button" fontWeight="regular" color="text">
+      <MDBox
+        key={link.name}
+        component='li'
+        px={2}
+        lineHeight={1}
+      >
+        <Link
+          href={link.href}
+          target='_blank'
+        >
+          <MDTypography
+            variant='button'
+            fontWeight='regular'
+            color='text'
+          >
             {link.name}
           </MDTypography>
         </Link>
@@ -44,48 +54,65 @@ function Footer({ company, links }: Props): JSX.Element {
 
   return (
     <MDBox
-      width="100%"
-      display="flex"
-      flexDirection={{ xs: "column", lg: "row" }}
-      justifyContent="space-between"
-      alignItems="center"
-      px={1.5}>
+      width='100%'
+      display='flex'
+      flexDirection={{ xs: 'column', lg: 'row' }}
+      justifyContent='space-between'
+      alignItems='center'
+      px={1.5}
+    >
       <MDBox
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        flexWrap="wrap"
-        color="text"
+        display='flex'
+        justifyContent='center'
+        alignItems='center'
+        flexWrap='wrap'
+        color='text'
         fontSize={size.sm}
-        px={1.5}>
-        <MDBox fontSize={size.md} color="text" mb={-0.5} mx={0.25}>
-          <Icon color="inherit" fontSize="inherit">
+        px={1.5}
+      >
+        <MDBox
+          fontSize={size.md}
+          color='text'
+          mb={-0.5}
+          mx={0.25}
+        >
+          <Icon
+            color='inherit'
+            fontSize='inherit'
+          >
             copyright
           </Icon>
         </MDBox>
         {new Date().getFullYear()}
-        <Link href={href} target="_blank">
-          <MDTypography variant="button" fontWeight="normal">
+        <Link
+          href={href}
+          target='_blank'
+        >
+          <MDTypography
+            variant='button'
+            fontWeight='normal'
+          >
             &nbsp;{name}&nbsp;
           </MDTypography>
         </Link>
       </MDBox>
       <MDBox
-        component="ul"
+        component='ul'
         sx={({ breakpoints }) => ({
-          display: "flex",
-          flexWrap: "wrap",
-          alignItems: "center",
-          justifyContent: "center",
-          listStyle: "none",
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'center',
+          listStyle: 'none',
           mt: 3,
           mb: 0,
           p: 0,
 
-          [breakpoints.up("lg")]: {
+          [breakpoints.up('lg')]: {
             mt: 0,
           },
-        })}>
+        })}
+      >
         {renderLinks()}
       </MDBox>
     </MDBox>
@@ -94,12 +121,12 @@ function Footer({ company, links }: Props): JSX.Element {
 
 // Declaring default props for Footer
 Footer.defaultProps = {
-  company: { href: "https://companyjuice.com/", name: "Company Juice" },
+  company: { href: 'https://companyjuice.com/', name: 'Company Juice' },
   links: [
-    { href: "https://companyjuice.com/", name: "Company Juice" },
-    { href: "https://companyjuice.com/presentation", name: "About Us" },
-    { href: "https://companyjuice.com/blog", name: "Blog" },
-    { href: "https://companyjuice.com/license", name: "License" },
+    { href: 'https://companyjuice.com/', name: 'Company Juice' },
+    { href: 'https://companyjuice.com/presentation', name: 'About Us' },
+    { href: 'https://companyjuice.com/blog', name: 'Blog' },
+    { href: 'https://companyjuice.com/license', name: 'License' },
   ],
 }
 

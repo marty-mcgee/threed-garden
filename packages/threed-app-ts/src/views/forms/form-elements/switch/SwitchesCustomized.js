@@ -19,23 +19,28 @@ const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => ({
         '& + .MuiSwitch-track': {
           opacity: 1,
           border: 'none',
-          backgroundColor: '#52d869'
-        }
-      }
+          backgroundColor: '#52d869',
+        },
+      },
     },
     '& .MuiSwitch-thumb': {
       width: 24,
-      height: 24
+      height: 24,
     },
     '& .MuiSwitch-track': {
       opacity: 1,
       borderRadius: 13,
       backgroundColor: theme.palette.mode === 'dark' ? theme.palette.action.selected : theme.palette.grey[50],
       border: `1px solid ${theme.palette.grey[400]}`,
-      transition: theme.transitions.create(['background-color', 'border'])
-    }
-  }
+      transition: theme.transitions.create(['background-color', 'border']),
+    },
+  },
 }))
-const SwitchesCustomized = () => <FormControlLabel label='iOS Style' control={<Switch defaultChecked />} />
+const SwitchesCustomized = () => (
+  <FormControlLabel
+    label='iOS Style'
+    control={<Switch defaultChecked />}
+  />
+)
 
 export default SwitchesCustomized

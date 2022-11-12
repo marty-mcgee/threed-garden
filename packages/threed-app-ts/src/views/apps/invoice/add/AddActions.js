@@ -18,7 +18,7 @@ import SendOutline from 'mdi-material-ui/SendOutline'
 const OptionsWrapper = styled(Box)(() => ({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-between'
+  justifyContent: 'space-between',
 }))
 
 const AddActions = () => {
@@ -26,20 +26,41 @@ const AddActions = () => {
     <Box>
       <Card sx={{ mb: 4 }}>
         <CardContent>
-          <Button fullWidth sx={{ mb: 3.5 }} variant='contained' startIcon={<SendOutline />}>
+          <Button
+            fullWidth
+            sx={{ mb: 3.5 }}
+            variant='contained'
+            startIcon={<SendOutline />}
+          >
             Send Invoice
           </Button>
-          <Link href='/apps/invoice/preview/4987' passHref>
-            <Button fullWidth component='a' sx={{ mb: 3.5 }} variant='outlined'>
+          <Link
+            href='/apps/invoice/preview/4987'
+            passHref
+          >
+            <Button
+              fullWidth
+              component='a'
+              sx={{ mb: 3.5 }}
+              variant='outlined'
+            >
               Preview
             </Button>
           </Link>
-          <Button fullWidth variant='outlined' sx={{ mb: 3.5 }}>
+          <Button
+            fullWidth
+            variant='outlined'
+            sx={{ mb: 3.5 }}
+          >
             Save
           </Button>
         </CardContent>
       </Card>
-      <Select fullWidth defaultValue='Internet Banking' sx={{ mb: 4 }}>
+      <Select
+        fullWidth
+        defaultValue='Internet Banking'
+        sx={{ mb: 4 }}
+      >
         <MenuItem value='Internet Banking'>Internet Banking</MenuItem>
         <MenuItem value='Debit Card'>Debit Card</MenuItem>
         <MenuItem value='Credit Card'>Credit Card</MenuItem>
@@ -53,7 +74,10 @@ const AddActions = () => {
         >
           Payment Terms
         </InputLabel>
-        <Switch defaultChecked id='invoice-add-payment-terms' />
+        <Switch
+          defaultChecked
+          id='invoice-add-payment-terms'
+        />
       </OptionsWrapper>
       <OptionsWrapper sx={{ mb: 1 }}>
         <InputLabel

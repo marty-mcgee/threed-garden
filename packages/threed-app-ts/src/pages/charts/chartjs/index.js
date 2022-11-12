@@ -53,18 +53,28 @@ const ChartJS = () => {
 
   return (
     <DatePickerWrapper>
-      <Grid container spacing={6} className='match-height'>
+      <Grid
+        container
+        spacing={6}
+        className='match-height'
+      >
         <PageHeader
           title={
             <Typography variant='h5'>
-              <Link href='https://github.com/reactchartjs/react-chartjs-2' target='_blank'>
+              <Link
+                href='https://github.com/reactchartjs/react-chartjs-2'
+                target='_blank'
+              >
                 React ChartJS 2
               </Link>
             </Typography>
           }
           subtitle={<Typography variant='body2'>React wrapper for Chart.js</Typography>}
         />
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <ChartjsLineChart
             white={whiteColor}
             labelColor={labelColor}
@@ -75,10 +85,21 @@ const ChartJS = () => {
             gridLineColor={gridLineColor}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <ChartjsRadarChart labelColor={labelColor} gridLineColor={gridLineColor} />
+        <Grid
+          item
+          xs={12}
+          md={6}
+        >
+          <ChartjsRadarChart
+            labelColor={labelColor}
+            gridLineColor={gridLineColor}
+          />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+        >
           <ChartjsPolarAreaChart
             yellow={yellowColor}
             info={polarChartInfo}
@@ -89,7 +110,10 @@ const ChartJS = () => {
             warning={polarChartWarning}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <ChartjsBubbleChart
             yellow={yellowColor}
             primary={primaryColor}
@@ -98,7 +122,10 @@ const ChartJS = () => {
             gridLineColor={gridLineColor}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <ChartjsScatterChart
             primary={primaryColor}
             labelColor={labelColor}
@@ -108,7 +135,10 @@ const ChartJS = () => {
             gridLineColor={gridLineColor}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <ChartjsAreaChart
             white={whiteColor}
             blue={areaChartBlue}
@@ -118,7 +148,11 @@ const ChartJS = () => {
             greyLight={areaChartGreyLight}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+        >
           <ChartjsBarChart
             yellow={barChartYellow}
             labelColor={labelColor}
@@ -126,7 +160,11 @@ const ChartJS = () => {
             gridLineColor={gridLineColor}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+        >
           <ChartjsHorizontalBarChart
             labelColor={labelColor}
             info={horizontalBarInfo}

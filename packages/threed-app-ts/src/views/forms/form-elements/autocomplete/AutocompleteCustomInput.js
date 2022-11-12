@@ -8,9 +8,12 @@ const AutocompleteCustomInput = () => {
     <Autocomplete
       options={options}
       id='autocomplete-custom-input'
-      renderInput={params => (
+      renderInput={(params) => (
         <div ref={params.InputProps.ref}>
-          <input type='text' {...params.inputProps} />
+          <input
+            type='text'
+            {...params.inputProps}
+          />
         </div>
       )}
       sx={{
@@ -18,8 +21,8 @@ const AutocompleteCustomInput = () => {
         '& input': {
           width: 200,
           backgroundColor: 'background.paper',
-          color: theme => theme.palette.getContrastText(theme.palette.background.paper)
-        }
+          color: (theme) => theme.palette.getContrastText(theme.palette.background.paper),
+        },
       }}
     />
   )

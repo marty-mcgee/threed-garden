@@ -14,12 +14,12 @@ import ReactApexcharts from '~/@core/components/react-apexcharts'
 const series = [
   {
     name: 'Earning',
-    data: [95, 177, 284, 256, 105, 63, 168, 218, 72]
+    data: [95, 177, 284, 256, 105, 63, 168, 218, 72],
   },
   {
     name: 'Expense',
-    data: [-145, -80, -60, -180, -100, -60, -85, -75, -100]
-  }
+    data: [-145, -80, -60, -180, -100, -60, -85, -75, -100],
+  },
 ]
 
 const CardWidgetsRevenueReport = () => {
@@ -30,24 +30,24 @@ const CardWidgetsRevenueReport = () => {
     chart: {
       stacked: true,
       parentHeightOffset: 0,
-      toolbar: { show: false }
+      toolbar: { show: false },
     },
     grid: {
       yaxis: {
-        lines: { show: false }
+        lines: { show: false },
       },
       padding: {
         left: 0,
-        right: 0
-      }
+        right: 0,
+      },
     },
     legend: {
       offsetY: 8,
-      markers: { radius: 15 }
+      markers: { radius: 15 },
     },
     stroke: {
       width: 2,
-      colors: [theme.palette.background.paper]
+      colors: [theme.palette.background.paper],
     },
     dataLabels: { enabled: false },
     colors: [theme.palette.success.main, theme.palette.secondary.main],
@@ -56,32 +56,32 @@ const CardWidgetsRevenueReport = () => {
         borderRadius: 8,
         columnWidth: '50%',
         endingShape: 'rounded',
-        startingShape: 'rounded'
-      }
+        startingShape: 'rounded',
+      },
     },
     states: {
       hover: {
-        filter: { type: 'none' }
+        filter: { type: 'none' },
       },
       active: {
-        filter: { type: 'none' }
-      }
+        filter: { type: 'none' },
+      },
     },
     xaxis: {
       categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
       labels: {
-        show: false
+        show: false,
       },
       axisTicks: {
-        show: false
+        show: false,
       },
       axisBorder: {
-        show: false
-      }
+        show: false,
+      },
     },
     yaxis: {
-      labels: { show: false }
-    }
+      labels: { show: false },
+    },
   }
 
   return (
@@ -89,7 +89,12 @@ const CardWidgetsRevenueReport = () => {
       <CardHeader
         title='Revenue Report'
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }
@@ -98,12 +103,17 @@ const CardWidgetsRevenueReport = () => {
             fontSize: '1rem !important',
             fontWeight: '600 !important',
             lineHeight: '1.5rem !important',
-            letterSpacing: '0.15px !important'
-          }
+            letterSpacing: '0.15px !important',
+          },
         }}
       />
       <CardContent>
-        <ReactApexcharts type='bar' height={240} series={series} options={options} />
+        <ReactApexcharts
+          type='bar'
+          height={240}
+          series={series}
+          options={options}
+        />
       </CardContent>
     </Card>
   )

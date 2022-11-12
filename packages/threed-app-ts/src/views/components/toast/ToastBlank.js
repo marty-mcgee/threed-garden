@@ -15,7 +15,11 @@ const ToastSimple = () => {
       <CheckboxBlankOutline sx={{ mb: 2, fontSize: '2rem' }} />
       <Typography sx={{ mb: 4, fontWeight: 600 }}>Blank</Typography>
       <Typography sx={{ mb: 3 }}>The most basic variant does not have an icon.</Typography>
-      <Button sx={{ mb: 8 }} variant='contained' onClick={() => toast('Blank Toast')}>
+      <Button
+        sx={{ mb: 8 }}
+        variant='contained'
+        onClick={() => toast('Blank Toast')}
+      >
         Blank
       </Button>
     </Box>

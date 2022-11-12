@@ -20,7 +20,7 @@ const data = [
     imgAlt: 'heart',
     avatarColor: 'primary',
     subtitle: 'Number of like',
-    imgSrc: '/images/cards/heart-medical.png'
+    imgSrc: '/images/cards/heart-medical.png',
   },
   {
     imgWidth: 20,
@@ -29,7 +29,7 @@ const data = [
     imgAlt: 'bar-graph',
     avatarColor: 'warning',
     subtitle: 'Number of Followers',
-    imgSrc: '/images/cards/graph-bar.png'
+    imgSrc: '/images/cards/graph-bar.png',
   },
   {
     imgWidth: 20,
@@ -38,7 +38,7 @@ const data = [
     imgAlt: 'comments',
     avatarColor: 'info',
     subtitle: 'Number of Comments',
-    imgSrc: '/images/cards/comment-alt-lines.png'
+    imgSrc: '/images/cards/comment-alt-lines.png',
   },
   {
     imgWidth: 20,
@@ -47,8 +47,8 @@ const data = [
     title: '389.50k',
     avatarColor: 'success',
     subtitle: 'Number of Visits',
-    imgSrc: '/images/cards/user.png'
-  }
+    imgSrc: '/images/cards/user.png',
+  },
 ]
 
 const CardSocialAnalytics = () => {
@@ -58,12 +58,17 @@ const CardSocialAnalytics = () => {
         title='Social Analytics'
         titleTypographyProps={{ sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' } }}
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }
       />
-      <CardContent sx={{ pt: theme => `${theme.spacing(1.5)} !important` }}>
+      <CardContent sx={{ pt: (theme) => `${theme.spacing(1.5)} !important` }}>
         {data.map((item, index) => {
           return (
             <Box
@@ -72,7 +77,7 @@ const CardSocialAnalytics = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                mb: index !== data.length - 1 ? 4 : undefined
+                mb: index !== data.length - 1 ? 4 : undefined,
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -81,7 +86,12 @@ const CardSocialAnalytics = () => {
                   color={item.avatarColor}
                   sx={{ mr: 3.75, width: '2.5rem', height: '2.5rem' }}
                 >
-                  <img alt={item.imgAlt} src={item.imgSrc} width={item.imgWidth} height={item.imgHeight} />
+                  <img
+                    alt={item.imgAlt}
+                    src={item.imgSrc}
+                    width={item.imgWidth}
+                    height={item.imgHeight}
+                  />
                 </CustomAvatar>
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                   <Typography variant='h6'>{item.title}</Typography>

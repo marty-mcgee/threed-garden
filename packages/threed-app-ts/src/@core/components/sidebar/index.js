@@ -1,11 +1,11 @@
 // ** React Imports
-import { Fragment, useEffect } from 'react'
+import { useEffect } from 'react'
 
 // ** MUI Imports
 import Backdrop from '@mui/material/Backdrop'
 import Box from '@mui/material/Box'
 
-const Sidebar = props => {
+const Sidebar = (props) => {
   // ** Props
   const { sx, show, direction, children, hideBackdrop, onOpen, onClose, backDropClick } = props
 
@@ -38,7 +38,7 @@ const Sidebar = props => {
           ...(direction === 'right'
             ? { left: 'auto', right: show ? 0 : '-100%' }
             : { right: 'auto', left: show ? 0 : '-100%' }),
-          ...sx
+          ...sx,
         }}
       >
         {children}
@@ -48,7 +48,7 @@ const Sidebar = props => {
           open={show}
           transitionDuration={250}
           onClick={handleBackdropClick}
-          sx={{ position: 'absolute', zIndex: theme => theme.zIndex.drawer - 1 }}
+          sx={{ position: 'absolute', zIndex: (theme) => theme.zIndex.drawer - 1 }}
         />
       )}
     </>
@@ -58,5 +58,5 @@ const Sidebar = props => {
 export default Sidebar
 
 Sidebar.defaultProps = {
-  direction: 'left'
+  direction: 'left',
 }

@@ -5,16 +5,13 @@
 import { FunctionComponent, ElementType } from 'react'
 
 // ** MUI Imports
-import { styled, useTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
 import Modal from '@mui/material/Modal'
 import Typography from '@mui/material/Typography'
 import MuiButton from '@mui/material/Button'
 import MuiTabs from '@mui/material/Tabs'
-import Tab from '@mui/material/Tab'
-import MDTabPanel, { tabProps } from '~/components/mui/MDTabPanel'
 
 // ** Next Imports
 import Image from 'next/future/image'
@@ -29,16 +26,16 @@ import stylesGarden from '~/components/threed/styles/garden.module.css'
 // STYLES
 
 const stylesModal: Object = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "80vw",
-  height: "60vh",
-  bgcolor: "#09090D",
-  border: "2px solid #000000",
+  position: 'absolute' as const,
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '80vw',
+  height: '60vh',
+  bgcolor: '#09090D',
+  border: '2px solid #000000',
   boxShadow: 24,
-  p: 2
+  p: 2,
 }
 
 const Tabs: ElementType = styled(MuiTabs)(({ theme }) => ({
@@ -66,61 +63,73 @@ const ModalModel3d: FunctionComponent = (): JSX.Element => {
   // }, [])
 
   return (
-    <Container id="ModalModel3dContainer">
+    <Container id='ModalModel3dContainer'>
       <Modal
-        id="ModalModel3d"
-        open={modalModel3dStore.store.useStore("isVisible")}
+        id='ModalModel3d'
+        open={modalModel3dStore.store.useStore('isVisible')}
         onClose={(e: any) => modalModel3dStore.actions.handleClose(e)}
-        aria-labelledby="modal-model3d-title"
-        aria-describedby="modal-model3d-description"
+        aria-labelledby='modal-model3d-title'
+        aria-describedby='modal-model3d-description'
         sx={stylesModal}
       >
         <Box className={stylesGarden.modalContent}>
-
           <Box className={stylesGarden.modalHeader}>
-            <Image src="/favicon/favicon.png"
+            <Image
+              src='/favicon/favicon.png'
               width={50}
               height={50}
-              alt="ThreeD Garden Logo"
-              title="ThreeD Garden"
+              alt='ThreeD Garden Logo'
+              title='ThreeD Garden'
             />
             <h2>ThreeD Garden</h2>
           </Box>
 
-          <Box className="modalBody">
-            <Box id="model3dView">
-              <canvas id="model3dViewCanvas" />
+          <Box className='modalBody'>
+            <Box id='model3dView'>
+              <canvas id='model3dViewCanvas' />
             </Box>
-            <Box id="modalModelDescription">
+            <Box id='modalModelDescription'>
               <h3>3d Model Properties</h3>
-              <table className="propertiesTable" style={{ width: "100%" }}>
+              <table
+                className='propertiesTable'
+                style={{ width: '100%' }}
+              >
                 <tbody>
                   <tr>
                     <td>Name</td>
-                    <td><span id="model3dNameModal" /></td>
+                    <td>
+                      <span id='model3dNameModal' />
+                    </td>
                   </tr>
                   <tr>
                     <td>Author</td>
-                    <td><span id="model3dAuthorModal" /></td>
+                    <td>
+                      <span id='model3dAuthorModal' />
+                    </td>
                   </tr>
                   <tr>
                     <td>License</td>
-                    <td><span id="model3dLicenseModal" /></td>
+                    <td>
+                      <span id='model3dLicenseModal' />
+                    </td>
                   </tr>
                   <tr>
                     <td colSpan={2}>OBJ&nbsp;File&nbsp;Comments</td>
                   </tr>
                 </tbody>
               </table>
-              <textarea id="modalModel3dObjHeader" />
+              <textarea id='modalModel3dObjHeader' />
             </Box>
           </Box>
 
           <Box className={stylesGarden.modalFooter}>
             <Typography>
-              🌱 a part of the <a href="https://threed.ai">threed.ai</a> code family
+              🌱 a part of the <a href='https://threed.ai'>threed.ai</a> code family
             </Typography>
-            <Button size="small" onClick={(e: any) => modalModel3dStore.actions.handleClose(e)}>
+            <Button
+              size='small'
+              onClick={(e: any) => modalModel3dStore.actions.handleClose(e)}
+            >
               [X]
             </Button>
           </Box>

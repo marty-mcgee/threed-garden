@@ -12,14 +12,20 @@ import CustomAvatar from '~/@core/components/mui/avatar'
 
 const AvatarsIcon = () => {
   return (
-    <Box className='demo-space-x' sx={{ display: 'flex' }}>
+    <Box
+      className='demo-space-x'
+      sx={{ display: 'flex' }}
+    >
       <Avatar>
         <FolderOutline />
       </Avatar>
       <CustomAvatar color='success'>
         <Cached />
       </CustomAvatar>
-      <CustomAvatar skin='light' color='info'>
+      <CustomAvatar
+        skin='light'
+        color='info'
+      >
         <CheckboxMarkedCircleOutline />
       </CustomAvatar>
     </Box>

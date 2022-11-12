@@ -1,12 +1,12 @@
-const Typography = theme => {
+const Typography = (theme) => {
   return {
     MuiTypography: {
       styleOverrides: {
         gutterBottom: {
-          marginBottom: theme.spacing(2)
-        }
-      }
-    }
+          marginBottom: theme.spacing(2),
+        },
+      },
+    },
   }
 }
 

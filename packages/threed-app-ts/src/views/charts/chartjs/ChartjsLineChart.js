@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent'
 // ** Third Party Imports
 import { Line } from 'react-chartjs-2'
 
-const ChartjsLineChart = props => {
+const ChartjsLineChart = (props) => {
   // ** Props
   const { white, primary, success, warning, labelColor, borderColor, gridLineColor } = props
 
@@ -19,8 +19,8 @@ const ChartjsLineChart = props => {
         ticks: { color: labelColor },
         grid: {
           borderColor,
-          color: gridLineColor
-        }
+          color: gridLineColor,
+        },
       },
       y: {
         min: 0,
@@ -28,13 +28,13 @@ const ChartjsLineChart = props => {
         scaleLabel: { display: true },
         ticks: {
           stepSize: 100,
-          color: labelColor
+          color: labelColor,
         },
         grid: {
           borderColor,
-          color: gridLineColor
-        }
-      }
+          color: gridLineColor,
+        },
+      },
     },
     plugins: {
       legend: {
@@ -44,10 +44,10 @@ const ChartjsLineChart = props => {
           padding: 25,
           boxWidth: 10,
           color: labelColor,
-          usePointStyle: true
-        }
-      }
-    }
+          usePointStyle: true,
+        },
+      },
+    },
   }
 
   const data = {
@@ -66,7 +66,7 @@ const ChartjsLineChart = props => {
         pointHoverBorderColor: white,
         pointBorderColor: 'transparent',
         pointHoverBackgroundColor: primary,
-        data: [80, 150, 180, 270, 210, 160, 160, 202, 265, 210, 270, 255, 290, 360, 375]
+        data: [80, 150, 180, 270, 210, 160, 160, 202, 265, 210, 270, 255, 290, 360, 375],
       },
       {
         fill: false,
@@ -81,7 +81,7 @@ const ChartjsLineChart = props => {
         pointHoverBorderColor: white,
         pointBorderColor: 'transparent',
         pointHoverBackgroundColor: warning,
-        data: [80, 125, 105, 130, 215, 195, 140, 160, 230, 300, 220, 170, 210, 200, 280]
+        data: [80, 125, 105, 130, 215, 195, 140, 160, 230, 300, 220, 170, 210, 200, 280],
       },
       {
         fill: false,
@@ -96,9 +96,9 @@ const ChartjsLineChart = props => {
         pointHoverBorderColor: white,
         pointBorderColor: 'transparent',
         pointHoverBackgroundColor: success,
-        data: [80, 99, 82, 90, 115, 115, 74, 75, 130, 155, 125, 90, 140, 130, 180]
-      }
-    ]
+        data: [80, 99, 82, 90, 115, 115, 74, 75, 130, 155, 125, 90, 140, 130, 180],
+      },
+    ],
   }
 
   return (
@@ -110,7 +110,11 @@ const ChartjsLineChart = props => {
         subheaderTypographyProps={{ variant: 'caption' }}
       />
       <CardContent>
-        <Line data={data} options={options} height={400} />
+        <Line
+          data={data}
+          options={options}
+          height={400}
+        />
       </CardContent>
     </Card>
   )

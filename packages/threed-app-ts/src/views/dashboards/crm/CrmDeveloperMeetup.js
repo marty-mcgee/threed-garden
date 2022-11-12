@@ -20,10 +20,17 @@ import CustomAvatar from '~/@core/components/mui/avatar'
 const CrmDeveloperMeetup = () => {
   return (
     <Card>
-      <CardMedia sx={{ height: '11.25rem' }} image='/images/cards/workstation.png' />
+      <CardMedia
+        sx={{ height: '11.25rem' }}
+        image='/images/cards/workstation.png'
+      />
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <CustomAvatar skin='light' variant='rounded' sx={{ mr: 3, width: '3rem', height: '3.375rem' }}>
+          <CustomAvatar
+            skin='light'
+            variant='rounded'
+            sx={{ mr: 3, width: '3rem', height: '3.375rem' }}
+          >
             <Box sx={{ mt: 1.5, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Typography
                 variant='body2'
@@ -31,14 +38,20 @@ const CrmDeveloperMeetup = () => {
               >
                 Jan
               </Typography>
-              <Typography variant='h6' sx={{ mt: -0.75, fontWeight: 600, color: 'primary.main' }}>
+              <Typography
+                variant='h6'
+                sx={{ mt: -0.75, fontWeight: 600, color: 'primary.main' }}
+              >
                 24
               </Typography>
             </Box>
           </CustomAvatar>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <Typography sx={{ fontWeight: 600 }}>Developer Meetup</Typography>
-            <Typography variant='caption' sx={{ letterSpacing: '0.4px' }}>
+            <Typography
+              variant='caption'
+              sx={{ letterSpacing: '0.4px' }}
+            >
               The WordPress open source, free software project is the community behind the…
             </Typography>
           </Box>

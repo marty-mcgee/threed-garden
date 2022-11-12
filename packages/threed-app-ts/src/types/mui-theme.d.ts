@@ -1,6 +1,3 @@
-/* eslint-disable no-unused-vars */
-import { Theme } from "@mui/material"
-
 interface ColorsTypes {
   main: string
   focus: string
@@ -29,7 +26,7 @@ interface DisplayTypes {
   fontSize: string
 }
 
-declare module "@mui/material/styles" {
+declare module '@mui/material/styles' {
   interface Theme {
     boxShadows: {
       xs: string
@@ -418,8 +415,8 @@ declare module "@mui/material/styles" {
       md: string
       lg: string
       xl: string
-      "2xl": string
-      "3xl": string
+      '2xl': string
+      '3xl': string
     }
     lineHeight: {
       sm: number

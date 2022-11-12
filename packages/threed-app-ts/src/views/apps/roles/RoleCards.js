@@ -40,7 +40,7 @@ const cardData = [
   { totalUsers: 7, title: 'Manager', avatars: ['5.png', '6.png', '7.png', '8.png', '1.png', '2.png', '3.png'] },
   { totalUsers: 5, title: 'Users', avatars: ['4.png', '5.png', '6.png', '7.png', '8.png'] },
   { totalUsers: 3, title: 'Support', avatars: ['1.png', '2.png', '3.png'] },
-  { totalUsers: 2, title: 'Restricted User', avatars: ['4.png', '5.png'] }
+  { totalUsers: 2, title: 'Restricted User', avatars: ['4.png', '5.png'] },
 ]
 
 const rolesArr = [
@@ -52,7 +52,7 @@ const rolesArr = [
   'Reporting',
   'API Control',
   'Repository Management',
-  'Payroll'
+  'Payroll',
 ]
 
 const RolesCards = () => {
@@ -65,7 +65,7 @@ const RolesCards = () => {
     control,
     setValue,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm({ defaultValues: { name: '' } })
   const handleClickOpen = () => setOpen(true)
 
@@ -76,7 +76,13 @@ const RolesCards = () => {
 
   const renderCards = () =>
     cardData.map((item, index) => (
-      <Grid item xs={12} sm={6} lg={4} key={index}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        lg={4}
+        key={index}
+      >
         <Card>
           <CardContent>
             <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -85,11 +91,15 @@ const RolesCards = () => {
                 max={4}
                 sx={{
                   '& .MuiAvatarGroup-avatar': { fontSize: '.875rem' },
-                  '& .MuiAvatar-root, & .MuiAvatarGroup-avatar': { width: 32, height: 32 }
+                  '& .MuiAvatar-root, & .MuiAvatarGroup-avatar': { width: 32, height: 32 },
                 }}
               >
                 {item.avatars.map((img, index) => (
-                  <Avatar key={index} alt={item.title} src={`/images/avatars/${img}`} />
+                  <Avatar
+                    key={index}
+                    alt={item.title}
+                    src={`/images/avatars/${img}`}
+                  />
                 ))}
               </AvatarGroup>
             </Box>
@@ -107,7 +117,10 @@ const RolesCards = () => {
               >
                 Edit Role
               </Typography>
-              <IconButton size='small' sx={{ color: 'text.primary' }}>
+              <IconButton
+                size='small'
+                sx={{ color: 'text.primary' }}
+              >
                 <ContentCopy fontSize='small' />
               </IconButton>
             </Box>
@@ -118,9 +131,18 @@ const RolesCards = () => {
   const onSubmit = () => handleClose()
 
   return (
-    <Grid container spacing={6} className='match-height'>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
       {renderCards()}
-      <Grid item xs={12} sm={6} lg={4}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        lg={4}
+      >
         <Card
           sx={{ cursor: 'pointer' }}
           onClick={() => {
@@ -128,13 +150,27 @@ const RolesCards = () => {
             setDialogTitle('Add')
           }}
         >
-          <Grid container sx={{ height: '100%' }}>
-            <Grid item xs={5}>
+          <Grid
+            container
+            sx={{ height: '100%' }}
+          >
+            <Grid
+              item
+              xs={5}
+            >
               <Box sx={{ height: '100%', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-                <img width={65} height={130} alt='add-role' src='/images/cards/pose_m1.png' />
+                <img
+                  width={65}
+                  height={130}
+                  alt='add-role'
+                  src='/images/cards/pose_m1.png'
+                />
               </Box>
             </Grid>
-            <Grid item xs={7}>
+            <Grid
+              item
+              xs={7}
+            >
               <CardContent>
                 <Box sx={{ textAlign: 'right' }}>
                   <Button
@@ -154,10 +190,19 @@ const RolesCards = () => {
           </Grid>
         </Card>
       </Grid>
-      <Dialog fullWidth maxWidth='md' scroll='body' onClose={handleClose} open={open}>
+      <Dialog
+        fullWidth
+        maxWidth='md'
+        scroll='body'
+        onClose={handleClose}
+        open={open}
+      >
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogTitle sx={{ textAlign: 'center' }}>
-            <Typography variant='h4' component='span'>
+            <Typography
+              variant='h4'
+              component='span'
+            >
               {`${dialogTitle} Role`}
             </Typography>
             <Typography variant='body2'>Set Role Permissions</Typography>
@@ -195,11 +240,14 @@ const RolesCards = () => {
                           display: 'flex',
                           fontSize: '0.875rem',
                           alignItems: 'center',
-                          textTransform: 'capitalize'
+                          textTransform: 'capitalize',
                         }}
                       >
                         Administrator Access
-                        <Tooltip placement='top' title='Allows a full access to the system'>
+                        <Tooltip
+                          placement='top'
+                          title='Allows a full access to the system'
+                        >
                           <InformationOutline sx={{ ml: 1, fontSize: '1rem' }} />
                         </Tooltip>
                       </Box>
@@ -216,18 +264,32 @@ const RolesCards = () => {
                 <TableBody>
                   {rolesArr.map((i, index) => {
                     return (
-                      <TableRow key={index} sx={{ '& .MuiTableCell-root:first-of-type': { pl: 0 } }}>
-                        <TableCell sx={{ fontWeight: 600, color: theme => `${theme.palette.text.primary} !important` }}>
+                      <TableRow
+                        key={index}
+                        sx={{ '& .MuiTableCell-root:first-of-type': { pl: 0 } }}
+                      >
+                        <TableCell
+                          sx={{ fontWeight: 600, color: (theme) => `${theme.palette.text.primary} !important` }}
+                        >
                           {i}
                         </TableCell>
                         <TableCell>
-                          <FormControlLabel control={<Checkbox size='small' />} label='Read' />
+                          <FormControlLabel
+                            control={<Checkbox size='small' />}
+                            label='Read'
+                          />
                         </TableCell>
                         <TableCell>
-                          <FormControlLabel control={<Checkbox size='small' />} label='Write' />
+                          <FormControlLabel
+                            control={<Checkbox size='small' />}
+                            label='Write'
+                          />
                         </TableCell>
                         <TableCell>
-                          <FormControlLabel control={<Checkbox size='small' />} label='Create' />
+                          <FormControlLabel
+                            control={<Checkbox size='small' />}
+                            label='Create'
+                          />
                         </TableCell>
                       </TableRow>
                     )
@@ -238,10 +300,19 @@ const RolesCards = () => {
           </DialogContent>
           <DialogActions sx={{ pt: 0, display: 'flex', justifyContent: 'center' }}>
             <Box className='demo-space-x'>
-              <Button size='large' type='submit' variant='contained'>
+              <Button
+                size='large'
+                type='submit'
+                variant='contained'
+              >
                 Submit
               </Button>
-              <Button size='large' color='secondary' variant='outlined' onClick={handleClose}>
+              <Button
+                size='large'
+                color='secondary'
+                variant='outlined'
+                onClick={handleClose}
+              >
                 Discard
               </Button>
             </Box>

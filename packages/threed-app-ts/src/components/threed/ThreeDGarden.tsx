@@ -2,7 +2,7 @@
 /**
  * OR @ ts-ignore
  * OR @ ts-expect-error
-*/
+ */
 
 // ==============================================================
 // RESOURCES
@@ -16,12 +16,12 @@ import {
   // ReactNode,
   FunctionComponent,
   MouseEventHandler,
-  SyntheticEvent
+  SyntheticEvent,
 } from 'react'
 
 // ** Apollo Client 3 -- Cache Store Imports
 // state management (instead of React.useState, Redux, Zustand)
-import { ApolloConsumer, useQuery, gql } from '@apollo/client'
+import { ApolloConsumer } from '@apollo/client'
 // import { TestAC3Store } from '~/stores/old'
 import stores from '~/stores/apollo'
 
@@ -30,7 +30,7 @@ import Image from 'next/future/image'
 // import dynamic from 'next/dynamic'
 
 // ** MUI Imports
-import { styled, useTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 // mui: ui
 import MuiAppBar from '@mui/material/AppBar'
 import MuiToolbar from '@mui/material/Toolbar'
@@ -52,7 +52,6 @@ import Typography from '@mui/material/Typography'
 import MDTabPanel, { tabProps } from '~/components/mui/MDTabPanel'
 
 // HMM ???
-import button from '~/themes/theme-dark/components/button'
 
 // ** Icon Imports
 // Tool Mode Icons
@@ -67,17 +66,15 @@ import ToolIconAddText from '@mui/icons-material/TextFields'
 // ** Three JS Imports (not here, use R3F)
 // import * as THREE from 'three'
 // ** Three JS Controls
-import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
 // ** Three JS Loaders
 // -- use React Three Fiber R3F hooks: useFBX, useOBJ, etc --
 // import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 // import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 // import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 // ** Three JS Objects
-import { Sky } from 'three/examples/jsm/objects/Sky'
 // ** Three JS Libraries
 // import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
-import TWEEN from '@tweenjs/tween.js' // use tween at all ??
+// use tween at all ??
 
 // ** ThreeD R3F Imports
 // import { Canvas } from '@react-three/fiber'
@@ -90,7 +87,6 @@ import modals from '~/components/threed/components/modals'
 
 // ** CSS Styles Imports
 // import stylesDemo from '~/styles/demo/demo.module.css'
-import stylesGarden from '~/components/threed/styles/garden.module.css'
 
 // ** Paper Imports (DEPRECATED -- requires jQuery)
 // import paper from 'paper'
@@ -105,7 +101,7 @@ import stylesGarden from '~/components/threed/styles/garden.module.css'
 import clearObject from '~/@core/utils/clear-object'
 
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '~/@core/utils/console-colors'
+import { ccm1, ccm2, ccm3, ccm4, ccm5 } from '~/@core/utils/console-colors'
 
 // ==========================================================
 // IMPORTS COMPLETE
@@ -141,16 +137,16 @@ interface IHeyHeyHeys {
 // STYLES
 
 const stylesModal = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "80vw",
-  height: "60vh",
-  bgcolor: "#09090D",
-  border: "2px solid #000000",
+  position: 'absolute' as const,
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '80vw',
+  height: '60vh',
+  bgcolor: '#09090D',
+  border: '2px solid #000000',
   boxShadow: 24,
-  p: 2
+  p: 2,
 }
 
 const AppBar = styled(MuiAppBar)(({ theme }) => ({
@@ -224,12 +220,11 @@ const {
 // Project
 
 const ProjectInfoPanel: FunctionComponent = (_type: string = 'project'): JSX.Element => {
-
-  const projectCount = projectStore.store.useStore("count")
-  const projects = projectStore.store.useStore("all")
-  const project = projectStore.store.useStore("one")
-  const projectsDB = projectStore.store.useStore("allDB")
-  const projectDB = projectStore.store.useStore("oneDB")
+  const projectCount = projectStore.store.useStore('count')
+  const projects = projectStore.store.useStore('all')
+  const project = projectStore.store.useStore('one')
+  const projectsDB = projectStore.store.useStore('allDB')
+  const projectDB = projectStore.store.useStore('oneDB')
 
   return (
     <Box>
@@ -246,8 +241,7 @@ const ProjectInfoPanel: FunctionComponent = (_type: string = 'project'): JSX.Ele
 }
 
 const ProjectControlPanel: FunctionComponent = (_type: string = 'project'): JSX.Element => {
-
-  const increaseCount = () => projectStore.update("count", projectStore.actions.increaseCount())
+  const increaseCount = () => projectStore.update('count', projectStore.actions.increaseCount())
 
   const addNew = () => projectStore.actions.addNew()
   const saveToDisk = () => projectStore.actions.saveToDisk()
@@ -262,14 +256,12 @@ const ProjectControlPanel: FunctionComponent = (_type: string = 'project'): JSX.
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
       <ApolloConsumer>
-        {
-          client => (
-            <>
-              <Button onClick={() => saveToDB(client)}>save to db</Button>
-              <Button onClick={() => loadFromDB(client)}>load from db</Button>
-            </>
-          )
-        }
+        {(client) => (
+          <>
+            <Button onClick={() => saveToDB(client)}>save to db</Button>
+            <Button onClick={() => loadFromDB(client)}>load from db</Button>
+          </>
+        )}
       </ApolloConsumer>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
@@ -281,12 +273,11 @@ const ProjectControlPanel: FunctionComponent = (_type: string = 'project'): JSX.
 // Workspace
 
 const WorkspaceInfoPanel: FunctionComponent = (_type: string = 'workspace'): JSX.Element => {
-
-  const workspaceCount = workspaceStore.store.useStore("count")
-  const workspaces = workspaceStore.store.useStore("all")
-  const workspace = workspaceStore.store.useStore("one")
-  const workspacesDB = workspaceStore.store.useStore("allDB")
-  const workspaceDB = workspaceStore.store.useStore("oneDB")
+  const workspaceCount = workspaceStore.store.useStore('count')
+  const workspaces = workspaceStore.store.useStore('all')
+  const workspace = workspaceStore.store.useStore('one')
+  const workspacesDB = workspaceStore.store.useStore('allDB')
+  const workspaceDB = workspaceStore.store.useStore('oneDB')
 
   return (
     <Box>
@@ -303,8 +294,7 @@ const WorkspaceInfoPanel: FunctionComponent = (_type: string = 'workspace'): JSX
 }
 
 const WorkspaceControlPanel: FunctionComponent = (_type: string = 'workspace'): JSX.Element => {
-
-  const increaseCount = () => workspaceStore.update("count", workspaceStore.actions.increaseCount())
+  const increaseCount = () => workspaceStore.update('count', workspaceStore.actions.increaseCount())
 
   const addNew = () => workspaceStore.actions.addNew()
   const saveToDisk = () => workspaceStore.actions.saveToDisk()
@@ -319,14 +309,12 @@ const WorkspaceControlPanel: FunctionComponent = (_type: string = 'workspace'): 
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
       <ApolloConsumer>
-        {
-          client => (
-            <>
-              <Button onClick={() => saveToDB(client)}>save to db</Button>
-              <Button onClick={() => loadFromDB(client)}>load from db</Button>
-            </>
-          )
-        }
+        {(client) => (
+          <>
+            <Button onClick={() => saveToDB(client)}>save to db</Button>
+            <Button onClick={() => loadFromDB(client)}>load from db</Button>
+          </>
+        )}
       </ApolloConsumer>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
@@ -338,12 +326,11 @@ const WorkspaceControlPanel: FunctionComponent = (_type: string = 'workspace'): 
 // Plan
 
 const PlanInfoPanel: FunctionComponent = (_type: string = 'plan'): JSX.Element => {
-
-  const planCount = planStore.store.useStore("count")
-  const plans = planStore.store.useStore("all")
-  const plan = planStore.store.useStore("one")
-  const plansDB = planStore.store.useStore("allDB")
-  const planDB = planStore.store.useStore("oneDB")
+  const planCount = planStore.store.useStore('count')
+  const plans = planStore.store.useStore('all')
+  const plan = planStore.store.useStore('one')
+  const plansDB = planStore.store.useStore('allDB')
+  const planDB = planStore.store.useStore('oneDB')
 
   return (
     <Box>
@@ -360,8 +347,7 @@ const PlanInfoPanel: FunctionComponent = (_type: string = 'plan'): JSX.Element =
 }
 
 const PlanControlPanel: FunctionComponent = (_type: string = 'plan'): JSX.Element => {
-
-  const increaseCount = () => planStore.update("count", planStore.actions.increaseCount())
+  const increaseCount = () => planStore.update('count', planStore.actions.increaseCount())
 
   const addNew = () => planStore.actions.addNew()
   const saveToDisk = () => planStore.actions.saveToDisk()
@@ -376,14 +362,12 @@ const PlanControlPanel: FunctionComponent = (_type: string = 'plan'): JSX.Elemen
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
       <ApolloConsumer>
-        {
-          client => (
-            <>
-              <Button onClick={() => saveToDB(client)}>save to db</Button>
-              <Button onClick={() => loadFromDB(client)}>load from db</Button>
-            </>
-          )
-        }
+        {(client) => (
+          <>
+            <Button onClick={() => saveToDB(client)}>save to db</Button>
+            <Button onClick={() => loadFromDB(client)}>load from db</Button>
+          </>
+        )}
       </ApolloConsumer>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
@@ -395,12 +379,11 @@ const PlanControlPanel: FunctionComponent = (_type: string = 'plan'): JSX.Elemen
 // ThreeD
 
 const ThreeDInfoPanel: FunctionComponent = (_type: string = 'threed'): JSX.Element => {
-
-  const threedCount = threedStore.store.useStore("count")
-  const threeds = threedStore.store.useStore("all")
-  const threed = threedStore.store.useStore("one")
-  const threedsDB = threedStore.store.useStore("allDB")
-  const threedDB = threedStore.store.useStore("oneDB")
+  const threedCount = threedStore.store.useStore('count')
+  const threeds = threedStore.store.useStore('all')
+  const threed = threedStore.store.useStore('one')
+  const threedsDB = threedStore.store.useStore('allDB')
+  const threedDB = threedStore.store.useStore('oneDB')
 
   return (
     <Box>
@@ -417,8 +400,7 @@ const ThreeDInfoPanel: FunctionComponent = (_type: string = 'threed'): JSX.Eleme
 }
 
 const ThreeDControlPanel: FunctionComponent = (_type: string = 'threed'): JSX.Element => {
-
-  const increaseCount = () => threedStore.update("count", threedStore.actions.increaseCount())
+  const increaseCount = () => threedStore.update('count', threedStore.actions.increaseCount())
 
   const addNew = () => threedStore.actions.addNew()
   const saveToDisk = () => threedStore.actions.saveToDisk()
@@ -433,14 +415,12 @@ const ThreeDControlPanel: FunctionComponent = (_type: string = 'threed'): JSX.El
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
       <ApolloConsumer>
-        {
-          client => (
-            <>
-              <Button onClick={() => saveToDB(client)}>save to db</Button>
-              <Button onClick={() => loadFromDB(client)}>load from db</Button>
-            </>
-          )
-        }
+        {(client) => (
+          <>
+            <Button onClick={() => saveToDB(client)}>save to db</Button>
+            <Button onClick={() => loadFromDB(client)}>load from db</Button>
+          </>
+        )}
       </ApolloConsumer>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
@@ -452,12 +432,11 @@ const ThreeDControlPanel: FunctionComponent = (_type: string = 'threed'): JSX.El
 // File
 
 const FileInfoPanel: FunctionComponent = (_type: string = 'file'): JSX.Element => {
-
-  const fileCount = fileStore.store.useStore("count")
-  const files = fileStore.store.useStore("all")
-  const file = fileStore.store.useStore("one")
-  const filesDB = fileStore.store.useStore("allDB")
-  const fileDB = fileStore.store.useStore("oneDB")
+  const fileCount = fileStore.store.useStore('count')
+  const files = fileStore.store.useStore('all')
+  const file = fileStore.store.useStore('one')
+  const filesDB = fileStore.store.useStore('allDB')
+  const fileDB = fileStore.store.useStore('oneDB')
 
   return (
     <Box>
@@ -474,8 +453,7 @@ const FileInfoPanel: FunctionComponent = (_type: string = 'file'): JSX.Element =
 }
 
 const FileControlPanel: FunctionComponent = (_type: string = 'file'): JSX.Element => {
-
-  const increaseCount = () => fileStore.update("count", fileStore.actions.increaseCount())
+  const increaseCount = () => fileStore.update('count', fileStore.actions.increaseCount())
 
   const addNew = () => fileStore.actions.addNew()
   const saveToDisk = () => fileStore.actions.saveToDisk()
@@ -490,14 +468,12 @@ const FileControlPanel: FunctionComponent = (_type: string = 'file'): JSX.Elemen
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
       <ApolloConsumer>
-        {
-          client => (
-            <>
-              <Button onClick={() => saveToDB(client)}>save to db</Button>
-              <Button onClick={() => loadFromDB(client)}>load from db</Button>
-            </>
-          )
-        }
+        {(client) => (
+          <>
+            <Button onClick={() => saveToDB(client)}>save to db</Button>
+            <Button onClick={() => loadFromDB(client)}>load from db</Button>
+          </>
+        )}
       </ApolloConsumer>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
@@ -512,17 +488,16 @@ const FileControlPanel: FunctionComponent = (_type: string = 'file'): JSX.Elemen
 // Scene
 
 const SceneInfoPanel: FunctionComponent = (_type: string = 'scene'): JSX.Element => {
-
-  const sceneCount = sceneStore.store.useStore("count")
-  const sceneCountDB = sceneStore.store.useStore("countDB")
-  const scenes = sceneStore.store.useStore("all")
-  const scene = sceneStore.store.useStore("one")
-  const scenesDB = sceneStore.store.useStore("allDB")
-  const sceneDB = sceneStore.store.useStore("oneDB")
+  const sceneCount = sceneStore.store.useStore('count')
+  const sceneCountDB = sceneStore.store.useStore('countDB')
+  const scenes = sceneStore.store.useStore('all')
+  const scene = sceneStore.store.useStore('one')
+  const scenesDB = sceneStore.store.useStore('allDB')
+  const sceneDB = sceneStore.store.useStore('oneDB')
 
   return (
     <Box>
-      <Typography variant="h6">_type: {JSON.stringify(_type)}</Typography>
+      <Typography variant='h6'>_type: {JSON.stringify(_type)}</Typography>
       <hr />
       <Typography>count: {sceneCount}</Typography>
       <Typography>countDB: {sceneCountDB}</Typography>
@@ -546,13 +521,12 @@ const SceneInfoPanel: FunctionComponent = (_type: string = 'scene'): JSX.Element
 }
 
 const SceneControlPanel: FunctionComponent = (_type: string = 'scene'): JSX.Element => {
-
-  const increaseCount = () => sceneStore.store.update("count", sceneStore.actions.increaseCount())
-  const decreaseCount = () => sceneStore.store.update("count", sceneStore.actions.decreaseCount())
+  const increaseCount = () => sceneStore.store.update('count', sceneStore.actions.increaseCount())
+  const decreaseCount = () => sceneStore.store.update('count', sceneStore.actions.decreaseCount())
 
   const loadToWorkspace = () => {
     const scene = sceneStore.actions.loadToWorkspace()
-    console.debug("%cSceneControlPanel: loadToWorkspace {scene}", ccm3, scene)
+    console.debug('%cSceneControlPanel: loadToWorkspace {scene}', ccm3, scene)
     console.debug(`%c====================================`, ccm5)
     // return scene // ???
     return true
@@ -571,7 +545,7 @@ const SceneControlPanel: FunctionComponent = (_type: string = 'scene'): JSX.Elem
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
       <ApolloConsumer>
-        {client => (
+        {(client) => (
           <>
             <Button onClick={() => saveToDB(client)}>save to db</Button>
             <Button onClick={() => loadFromDB(client)}>load from db</Button>
@@ -591,12 +565,11 @@ const SceneControlPanel: FunctionComponent = (_type: string = 'scene'): JSX.Elem
 // Allotment
 
 const AllotmentInfoPanel: FunctionComponent = (_type: string = 'allotment'): JSX.Element => {
-
-  const allotmentCount = allotmentStore.store.useStore("count")
-  const allotments = allotmentStore.store.useStore("all")
-  const allotment = allotmentStore.store.useStore("one")
-  const allotmentsDB = allotmentStore.store.useStore("allDB")
-  const allotmentDB = allotmentStore.store.useStore("oneDB")
+  const allotmentCount = allotmentStore.store.useStore('count')
+  const allotments = allotmentStore.store.useStore('all')
+  const allotment = allotmentStore.store.useStore('one')
+  const allotmentsDB = allotmentStore.store.useStore('allDB')
+  const allotmentDB = allotmentStore.store.useStore('oneDB')
 
   return (
     <Box>
@@ -613,8 +586,7 @@ const AllotmentInfoPanel: FunctionComponent = (_type: string = 'allotment'): JSX
 }
 
 const AllotmentControlPanel: FunctionComponent = (_type: string = 'allotment'): JSX.Element => {
-
-  const increaseCount = () => allotmentStore.update("count", allotmentStore.actions.increaseCount())
+  const increaseCount = () => allotmentStore.update('count', allotmentStore.actions.increaseCount())
 
   const addNew = () => allotmentStore.actions.addNew()
   const saveToDisk = () => allotmentStore.actions.saveToDisk()
@@ -629,14 +601,12 @@ const AllotmentControlPanel: FunctionComponent = (_type: string = 'allotment'): 
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
       <ApolloConsumer>
-        {
-          client => (
-            <>
-              <Button onClick={() => saveToDB(client)}>save to db</Button>
-              <Button onClick={() => loadFromDB(client)}>load from db</Button>
-            </>
-          )
-        }
+        {(client) => (
+          <>
+            <Button onClick={() => saveToDB(client)}>save to db</Button>
+            <Button onClick={() => loadFromDB(client)}>load from db</Button>
+          </>
+        )}
       </ApolloConsumer>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>add to count</Button> */}
@@ -648,12 +618,11 @@ const AllotmentControlPanel: FunctionComponent = (_type: string = 'allotment'): 
 // Bed
 
 const BedInfoPanel: FunctionComponent = (_type: string = 'bed'): JSX.Element => {
-
-  const bedCount = bedStore.store.useStore("count")
-  const beds = bedStore.store.useStore("all")
-  const bed = bedStore.store.useStore("one")
-  const bedsDB = bedStore.store.useStore("allDB")
-  const bedDB = bedStore.store.useStore("oneDB")
+  const bedCount = bedStore.store.useStore('count')
+  const beds = bedStore.store.useStore('all')
+  const bed = bedStore.store.useStore('one')
+  const bedsDB = bedStore.store.useStore('allDB')
+  const bedDB = bedStore.store.useStore('oneDB')
 
   return (
     <Box>
@@ -670,8 +639,7 @@ const BedInfoPanel: FunctionComponent = (_type: string = 'bed'): JSX.Element => 
 }
 
 const BedControlPanel: FunctionComponent = (_type: string = 'bed'): JSX.Element => {
-
-  const increaseCount = () => bedStore.update("count", bedStore.actions.increaseCount())
+  const increaseCount = () => bedStore.update('count', bedStore.actions.increaseCount())
 
   const addNew = () => bedStore.actions.addNew()
   const saveToDisk = () => bedStore.actions.saveToDisk()
@@ -686,14 +654,12 @@ const BedControlPanel: FunctionComponent = (_type: string = 'bed'): JSX.Element 
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
       <ApolloConsumer>
-        {
-          client => (
-            <>
-              <Button onClick={() => saveToDB(client)}>save to db</Button>
-              <Button onClick={() => loadFromDB(client)}>load from db</Button>
-            </>
-          )
-        }
+        {(client) => (
+          <>
+            <Button onClick={() => saveToDB(client)}>save to db</Button>
+            <Button onClick={() => loadFromDB(client)}>load from db</Button>
+          </>
+        )}
       </ApolloConsumer>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>add to count</Button> */}
@@ -705,12 +671,11 @@ const BedControlPanel: FunctionComponent = (_type: string = 'bed'): JSX.Element 
 // Plant
 
 const PlantInfoPanel: FunctionComponent = (_type: string = 'plant'): JSX.Element => {
-
-  const plantCount = plantStore.store.useStore("count")
-  const plants = plantStore.store.useStore("all")
-  const plant = plantStore.store.useStore("one")
-  const plantsDB = plantStore.store.useStore("allDB")
-  const plantDB = plantStore.store.useStore("oneDB")
+  const plantCount = plantStore.store.useStore('count')
+  const plants = plantStore.store.useStore('all')
+  const plant = plantStore.store.useStore('one')
+  const plantsDB = plantStore.store.useStore('allDB')
+  const plantDB = plantStore.store.useStore('oneDB')
 
   return (
     <Box>
@@ -727,8 +692,7 @@ const PlantInfoPanel: FunctionComponent = (_type: string = 'plant'): JSX.Element
 }
 
 const PlantControlPanel: FunctionComponent = (_type: string = 'plant'): JSX.Element => {
-
-  const increaseCount = () => plantStore.update("count", plantStore.actions.increaseCount())
+  const increaseCount = () => plantStore.update('count', plantStore.actions.increaseCount())
 
   const addNew = () => plantStore.actions.addNew()
   const saveToDisk = () => plantStore.actions.saveToDisk()
@@ -743,14 +707,12 @@ const PlantControlPanel: FunctionComponent = (_type: string = 'plant'): JSX.Elem
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
       <ApolloConsumer>
-        {
-          client => (
-            <>
-              <Button onClick={() => saveToDB(client)}>save to db</Button>
-              <Button onClick={() => loadFromDB(client)}>load from db</Button>
-            </>
-          )
-        }
+        {(client) => (
+          <>
+            <Button onClick={() => saveToDB(client)}>save to db</Button>
+            <Button onClick={() => loadFromDB(client)}>load from db</Button>
+          </>
+        )}
       </ApolloConsumer>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>add to count</Button> */}
@@ -762,12 +724,11 @@ const PlantControlPanel: FunctionComponent = (_type: string = 'plant'): JSX.Elem
 // PlantingPlan
 
 const PlantingPlanInfoPanel: FunctionComponent = (_type: string = 'planting_plan'): JSX.Element => {
-
-  const plantingPlanCount = plantingPlanStore.store.useStore("count")
-  const plantingPlans = plantingPlanStore.store.useStore("all")
-  const plantingPlan = plantingPlanStore.store.useStore("one")
-  const plantingPlansDB = plantingPlanStore.store.useStore("allDB")
-  const plantingPlanDB = plantingPlanStore.store.useStore("oneDB")
+  const plantingPlanCount = plantingPlanStore.store.useStore('count')
+  const plantingPlans = plantingPlanStore.store.useStore('all')
+  const plantingPlan = plantingPlanStore.store.useStore('one')
+  const plantingPlansDB = plantingPlanStore.store.useStore('allDB')
+  const plantingPlanDB = plantingPlanStore.store.useStore('oneDB')
 
   return (
     <Box>
@@ -784,8 +745,7 @@ const PlantingPlanInfoPanel: FunctionComponent = (_type: string = 'planting_plan
 }
 
 const PlantingPlanControlPanel: FunctionComponent = (_type: string = 'planting_plan'): JSX.Element => {
-
-  const increaseCount = () => plantingPlanStore.update("count", plantingPlanStore.actions.increaseCount())
+  const increaseCount = () => plantingPlanStore.update('count', plantingPlanStore.actions.increaseCount())
 
   const addNew = () => plantingPlanStore.actions.addNew()
   const saveToDisk = () => plantingPlanStore.actions.saveToDisk()
@@ -800,14 +760,12 @@ const PlantingPlanControlPanel: FunctionComponent = (_type: string = 'planting_p
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
       <ApolloConsumer>
-        {
-          client => (
-            <>
-              <Button onClick={() => saveToDB(client)}>save to db</Button>
-              <Button onClick={() => loadFromDB(client)}>load from db</Button>
-            </>
-          )
-        }
+        {(client) => (
+          <>
+            <Button onClick={() => saveToDB(client)}>save to db</Button>
+            <Button onClick={() => loadFromDB(client)}>load from db</Button>
+          </>
+        )}
       </ApolloConsumer>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>add to count</Button> */}
@@ -834,11 +792,10 @@ function BearControlPanel() {
 // COMPONENTS
 
 // ** Modal Windows
-const { ModalAbout, ModalLoading, ModalModel3d, ModalShare, } = modals
+const { ModalAbout, ModalLoading, ModalModel3d, ModalShare } = modals
 
 // ** Main ToolBar
 const ToolBar: FunctionComponent = (): JSX.Element => {
-
   const word = `[MM] @ ${new Date().toISOString()}`
   // console.debug("ToolBar", word)
 
@@ -905,135 +862,129 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
       const resetPlan = { _ts: new Date().toISOString() }
 
       // save to disk
-      localStorage.setItem("threed_resetPlan", JSON.stringify({ subject: "plan:reset", payload: resetPlan }))
+      localStorage.setItem('threed_resetPlan', JSON.stringify({ subject: 'plan:reset', payload: resetPlan }))
 
       // console.debug("[MM] TRY: resetPlan")
     } catch (e) {
-      console.debug("[MM] CATCH: resetPlan", e)
+      console.debug('[MM] CATCH: resetPlan', e)
     }
 
     try {
       Object.keys(Texts).forEach(function (e) {
         let t = Texts[e]
-        "object" === typeof t && deleteTextByKey(e)
+        'object' === typeof t && deleteTextByKey(e)
       }),
         (textIdCounter = 0)
     } catch (e) {
-      console.log("resetPlan : 1 : " + e)
+      console.log('resetPlan : 1 : ' + e)
     }
     try {
       Object.keys(Dimensions).forEach(function (e) {
         let t = Dimensions[e]
-        "object" === typeof t && deleteDimensionByKey(e)
+        'object' === typeof t && deleteDimensionByKey(e)
       }),
         (dimensionIdCounter = 0)
     } catch (e) {
-      console.log("resetPlan : 2 : " + e)
+      console.log('resetPlan : 2 : ' + e)
     }
     try {
       Object.keys(Furniture).forEach(function (e) {
         let t = Furniture[e]
-        "object" === typeof t &&
-          (Furniture[e].data.toolsRectangleInner &&
-            Furniture[e].data.toolsRectangleInner.remove(),
-            Furniture[e].remove(),
-            delete Furniture[e])
+        'object' === typeof t &&
+          (Furniture[e].data.toolsRectangleInner && Furniture[e].data.toolsRectangleInner.remove(),
+          Furniture[e].remove(),
+          delete Furniture[e])
       })
     } catch (e) {
-      console.log("resetPlan : 3 : " + e)
+      console.log('resetPlan : 3 : ' + e)
     }
     try {
       Object.keys(Floors).forEach(function (e) {
         let t = Floors[e]
-        "object" === typeof t && (Floors[e].remove(), delete Floors[e])
+        'object' === typeof t && (Floors[e].remove(), delete Floors[e])
       }),
         Object.keys(Floors3d).forEach(function (e) {
           let t = Floors3d[e]
-          "object" === typeof t && (scene.remove(Floors3d[e]), delete Floors3d[e])
+          'object' === typeof t && (scene.remove(Floors3d[e]), delete Floors3d[e])
         }),
         (floorIdCounter = 0)
     } catch (e) {
-      console.log("resetPlan : 4 : " + e)
+      console.log('resetPlan : 4 : ' + e)
     }
     try {
       Object.keys(Walls).forEach(function (e) {
         let t = Walls[e]
-        "object" === typeof t && (Walls[e].remove(), delete Walls[e])
+        'object' === typeof t && (Walls[e].remove(), delete Walls[e])
       })
       for (let e in wallsRectangles) wallsRectangles[e].remove()
     } catch (e) {
-      console.log("resetPlan : 5 : " + e)
+      console.log('resetPlan : 5 : ' + e)
     }
     try {
       Object.keys(wallsRectangles3d).forEach(function (e) {
         let t = wallsRectangles3d[e]
-        "object" === typeof t && scene.remove(wallsRectangles3d[e])
+        'object' === typeof t && scene.remove(wallsRectangles3d[e])
       })
     } catch (e) {
-      console.log("resetPlan : 6 : " + e)
+      console.log('resetPlan : 6 : ' + e)
     }
     try {
       Object.keys(Roofs).forEach(function (e) {
-        "object" === typeof Roofs[e] && (Roofs[e].remove(), delete Roofs[e])
+        'object' === typeof Roofs[e] && (Roofs[e].remove(), delete Roofs[e])
       })
       for (let t in roofsRectangles) roofsRectangles[t].remove()
     } catch (e) {
-      console.log("resetPlan : 5.1 : " + e)
+      console.log('resetPlan : 5.1 : ' + e)
     }
     try {
       Object.keys(roofsRectangles3d).forEach(function (e) {
-        "object" === typeof roofsRectangles3d[e] &&
-          scene.remove(roofsRectangles3d[e])
+        'object' === typeof roofsRectangles3d[e] && scene.remove(roofsRectangles3d[e])
       })
     } catch (e) {
-      console.log("resetPlan : 6.1 : " + e)
+      console.log('resetPlan : 6.1 : ' + e)
     }
     try {
       Object.keys(maskObjectsApplied).forEach(function (e) {
-        "object" === typeof maskObjectsApplied[e] &&
-          scene.remove(maskObjectsApplied[e])
+        'object' === typeof maskObjectsApplied[e] && scene.remove(maskObjectsApplied[e])
       })
     } catch (e) {
-      console.log("resetPlan : 6.5 : " + e)
+      console.log('resetPlan : 6.5 : ' + e)
     }
     try {
       Object.keys(maskObjectsAppliedRoof).forEach(function (e) {
-        "object" === typeof maskObjectsAppliedRoof[e] &&
-          scene.remove(maskObjectsAppliedRoof[e])
+        'object' === typeof maskObjectsAppliedRoof[e] && scene.remove(maskObjectsAppliedRoof[e])
       })
     } catch (e) {
-      console.log("resetPlan : 6.6 : " + e)
+      console.log('resetPlan : 6.6 : ' + e)
     }
     try {
       Object.keys(clickableObjects).forEach(function (e) {
         let t = clickableObjects[e]
-        "object" === typeof t &&
-          "groundLayer" !== t._name &&
+        'object' === typeof t &&
+          'groundLayer' !== t._name &&
           (scene.remove(clickableObjects[e]), delete clickableObjects[e])
       })
     } catch (e) {
-      console.log("resetPlan : 7 : " + e)
+      console.log('resetPlan : 7 : ' + e)
     }
     try {
       Object.keys(maskObjects).forEach(function (e) {
         let t = maskObjects[e]
-        "object" === typeof t &&
-          (scene.remove(maskObjects[e]), delete maskObjects[e])
+        'object' === typeof t && (scene.remove(maskObjects[e]), delete maskObjects[e])
       }),
         (clickableObjectsCounter = 0)
     } catch (e) {
-      console.log("resetPlan : 8 : " + e)
+      console.log('resetPlan : 8 : ' + e)
     }
     try {
       backgroundRaster &&
         backgroundRaster.data &&
-        (backgroundRaster.data.toolsRectangleInner &&
-          backgroundRaster.data.toolsRectangleInner.remove(),
-          backgroundRaster.remove(),
-          (backgroundRaster = null),
-          clearFileInput(document.getElementById("backgroundImageFile")))
+        (backgroundRaster.data.toolsRectangleInner && backgroundRaster.data.toolsRectangleInner.remove(),
+        backgroundRaster.remove(),
+        (backgroundRaster = null),
+        clearFileInput(document.getElementById('backgroundImageFile')))
     } catch (e) {
-      console.log("resetPlan : 9 : " + e)
+      console.log('resetPlan : 9 : ' + e)
     }
     try {
       Object.keys(verticalGuides).forEach(function (e) {
@@ -1044,7 +995,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
         }),
         (guideCounter = 0)
     } catch (e) {
-      console.log("resetPlan : 10 : " + e)
+      console.log('resetPlan : 10 : ' + e)
     }
     try {
       furnitureToLoadCount = 0
@@ -1115,7 +1066,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
 
       // console.debug("%cresetPlan success", ccm1)
     } catch (e) {
-      console.log("resetPlan : 11 : " + e)
+      console.log('resetPlan : 11 : ' + e)
     }
     try {
       otherLayerWallsRasters &&
@@ -1123,42 +1074,40 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
         (otherLayerWallsRasters.forEach(function (e) {
           e.remove()
         }),
-          (otherLayerWallsRasters = [])),
+        (otherLayerWallsRasters = [])),
         otherLayerFurnitureRasters &&
-        otherLayerFurnitureRasters.length > 0 &&
-        (otherLayerFurnitureRasters.forEach(function (e) {
-          e.remove()
-        }),
+          otherLayerFurnitureRasters.length > 0 &&
+          (otherLayerFurnitureRasters.forEach(function (e) {
+            e.remove()
+          }),
           (otherLayerFurnitureRasters = []))
     } catch (e) {
-      console.log("resetPlan : 12 : " + e)
+      console.log('resetPlan : 12 : ' + e)
     }
     try {
-      levelButtons || doAddNewLevel("0"), doSetLevel("0")
+      levelButtons || doAddNewLevel('0'), doSetLevel('0')
     } catch (e) {
-      console.log("resetPlan : 13 : " + e)
+      console.log('resetPlan : 13 : ' + e)
     }
     try {
       Object.keys(levelButtons).forEach(function (e) {
-        "0" !== e.toString() &&
+        '0' !== e.toString() &&
           (levelButtons[e].parentNode.removeChild(levelButtons[e]),
-            delete levelButtons[e],
-            project.layers["level" + e].remove()
-          )
+          delete levelButtons[e],
+          project.layers['level' + e].remove())
       })
     } catch (e) {
-      console.log("resetPlan : 14 : " + e)
+      console.log('resetPlan : 14 : ' + e)
     }
     try {
       project.layers.forEach(function (e: { data: { id: any }; remove: () => any }) {
-        "0" !== e.data.id && e.remove()
+        '0' !== e.data.id && e.remove()
       })
 
-      project.layer._name = "level0"
-      project.layer.data = { id: "0", height: 0 }
-
+      project.layer._name = 'level0'
+      project.layer.data = { id: '0', height: 0 }
     } catch (e) {
-      console.log("resetPlan : 15 : " + e)
+      console.log('resetPlan : 15 : ' + e)
     }
 
     try {
@@ -1186,28 +1135,31 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
 
       // deselectAll()
       // render()
-
     } catch (e) {
-      console.log("resetPlan : 16 : " + e)
+      console.log('resetPlan : 16 : ' + e)
     }
   }
 
   const setToolMode: any = (mode): string => {
-
     try {
       switch (
-      ("walls" === toolMode ? setEndDrawingWalls()
-        : "floor" === toolMode ? setEndDrawingFloors()
-          : "roof" === toolMode ? setEndDrawingRoofs()
-            : "dimension" === toolMode ? setEndDrawingDimension()
-              : "text" === toolMode ? setEndDrawingText()
-                : "ground" === toolMode && setEndDrawingGround(),
+        ('walls' === toolMode
+          ? setEndDrawingWalls()
+          : 'floor' === toolMode
+          ? setEndDrawingFloors()
+          : 'roof' === toolMode
+          ? setEndDrawingRoofs()
+          : 'dimension' === toolMode
+          ? setEndDrawingDimension()
+          : 'text' === toolMode
+          ? setEndDrawingText()
+          : 'ground' === toolMode && setEndDrawingGround(),
         (toolMode = mode),
         mode)
       ) {
-        case "pointer":
+        case 'pointer':
           // modalsActive || showMouseIndicators()
-          defaultCursor = "default"
+          defaultCursor = 'default'
           // deselectAll()
           // document.getElementById("pointerTool").classList.add("activeTool")
           // document.getElementById("addWallTool").classList.remove("activeTool")
@@ -1216,93 +1168,93 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
           // document.getElementById("addRulerTool").classList.remove("activeTool")
           // document.getElementById("addTextTool").classList.remove("activeTool")
           break
-        case "walls":
-          ; (defaultCursor = "crosshair"),
+        case 'walls':
+          (defaultCursor = 'crosshair'),
             deselectAll(),
             recalcAllUnjoinedWallSegments(-1),
             recalcAllWallSegmentsOnOtherLevels(-1, project.layer.data.id),
-            document.getElementById("pointerTool").classList.remove("activeTool"),
-            document.getElementById("addWallTool").classList.add("activeTool"),
-            document.getElementById("addFloorTool").classList.remove("activeTool"),
-            document.getElementById("addRoofTool").classList.remove("activeTool"),
-            document.getElementById("addRulerTool").classList.remove("activeTool"),
-            document.getElementById("addTextTool").classList.remove("activeTool"),
-            setPropertiesView("wallDefaults")
+            document.getElementById('pointerTool').classList.remove('activeTool'),
+            document.getElementById('addWallTool').classList.add('activeTool'),
+            document.getElementById('addFloorTool').classList.remove('activeTool'),
+            document.getElementById('addRoofTool').classList.remove('activeTool'),
+            document.getElementById('addRulerTool').classList.remove('activeTool'),
+            document.getElementById('addTextTool').classList.remove('activeTool'),
+            setPropertiesView('wallDefaults')
           break
-        case "floor":
-          ; (defaultCursor = "crosshair"),
+        case 'floor':
+          (defaultCursor = 'crosshair'),
             deselectAll(),
-            document.getElementById("pointerTool").classList.remove("activeTool"),
-            document.getElementById("addWallTool").classList.remove("activeTool"),
-            document.getElementById("addFloorTool").classList.add("activeTool"),
-            document.getElementById("addRoofTool").classList.remove("activeTool"),
-            document.getElementById("addRulerTool").classList.remove("activeTool"),
-            document.getElementById("addTextTool").classList.remove("activeTool"),
+            document.getElementById('pointerTool').classList.remove('activeTool'),
+            document.getElementById('addWallTool').classList.remove('activeTool'),
+            document.getElementById('addFloorTool').classList.add('activeTool'),
+            document.getElementById('addRoofTool').classList.remove('activeTool'),
+            document.getElementById('addRulerTool').classList.remove('activeTool'),
+            document.getElementById('addTextTool').classList.remove('activeTool'),
             recalcAllWallCorners(),
-            setPropertiesView("floorDefaults")
+            setPropertiesView('floorDefaults')
           break
-        case "roof":
-          ; (defaultCursor = "crosshair"),
+        case 'roof':
+          (defaultCursor = 'crosshair'),
             deselectAll(),
-            document.getElementById("pointerTool").classList.remove("activeTool"),
-            document.getElementById("addWallTool").classList.remove("activeTool"),
-            document.getElementById("addFloorTool").classList.remove("activeTool"),
-            document.getElementById("addRoofTool").classList.add("activeTool"),
-            document.getElementById("addRulerTool").classList.remove("activeTool"),
-            document.getElementById("addTextTool").classList.remove("activeTool"),
+            document.getElementById('pointerTool').classList.remove('activeTool'),
+            document.getElementById('addWallTool').classList.remove('activeTool'),
+            document.getElementById('addFloorTool').classList.remove('activeTool'),
+            document.getElementById('addRoofTool').classList.add('activeTool'),
+            document.getElementById('addRulerTool').classList.remove('activeTool'),
+            document.getElementById('addTextTool').classList.remove('activeTool'),
             recalcAllRoofCorners(),
-            setPropertiesView("roofDefaults")
+            setPropertiesView('roofDefaults')
           break
-        case "dimension":
-          ; (defaultCursor = "crosshair"),
+        case 'dimension':
+          (defaultCursor = 'crosshair'),
             deselectAll(),
-            document.getElementById("pointerTool").classList.remove("activeTool"),
-            document.getElementById("addWallTool").classList.remove("activeTool"),
-            document.getElementById("addFloorTool").classList.remove("activeTool"),
-            document.getElementById("addRoofTool").classList.remove("activeTool"),
-            document.getElementById("addRulerTool").classList.add("activeTool"),
-            document.getElementById("addTextTool").classList.remove("activeTool"),
+            document.getElementById('pointerTool').classList.remove('activeTool'),
+            document.getElementById('addWallTool').classList.remove('activeTool'),
+            document.getElementById('addFloorTool').classList.remove('activeTool'),
+            document.getElementById('addRoofTool').classList.remove('activeTool'),
+            document.getElementById('addRulerTool').classList.add('activeTool'),
+            document.getElementById('addTextTool').classList.remove('activeTool'),
             recalcAllWallCorners(),
             recalcAllRoofCorners(),
-            setPropertiesView("dimensionDefaults")
+            setPropertiesView('dimensionDefaults')
           break
-        case "text":
-          ; (defaultCursor = "crosshair"),
+        case 'text':
+          (defaultCursor = 'crosshair'),
             deselectAll(),
-            document.getElementById("pointerTool").classList.remove("activeTool"),
-            document.getElementById("addWallTool").classList.remove("activeTool"),
-            document.getElementById("addFloorTool").classList.remove("activeTool"),
-            document.getElementById("addRoofTool").classList.remove("activeTool"),
-            document.getElementById("addRulerTool").classList.remove("activeTool"),
-            document.getElementById("addTextTool").classList.add("activeTool"),
-            setPropertiesView("textnDefaults")
+            document.getElementById('pointerTool').classList.remove('activeTool'),
+            document.getElementById('addWallTool').classList.remove('activeTool'),
+            document.getElementById('addFloorTool').classList.remove('activeTool'),
+            document.getElementById('addRoofTool').classList.remove('activeTool'),
+            document.getElementById('addRulerTool').classList.remove('activeTool'),
+            document.getElementById('addTextTool').classList.add('activeTool'),
+            setPropertiesView('textnDefaults')
           break
-        case "background":
-          ; (defaultCursor = "default"),
-            document.getElementById("pointerTool").classList.remove("activeTool"),
-            document.getElementById("addWallTool").classList.remove("activeTool"),
-            document.getElementById("addFloorTool").classList.remove("activeTool"),
-            document.getElementById("addRoofTool").classList.remove("activeTool"),
-            document.getElementById("addRulerTool").classList.remove("activeTool"),
-            document.getElementById("addTextTool").classList.remove("activeTool")
+        case 'background':
+          (defaultCursor = 'default'),
+            document.getElementById('pointerTool').classList.remove('activeTool'),
+            document.getElementById('addWallTool').classList.remove('activeTool'),
+            document.getElementById('addFloorTool').classList.remove('activeTool'),
+            document.getElementById('addRoofTool').classList.remove('activeTool'),
+            document.getElementById('addRulerTool').classList.remove('activeTool'),
+            document.getElementById('addTextTool').classList.remove('activeTool')
           break
-        case "ground":
-          doSetLevel("0"),
+        case 'ground':
+          doSetLevel('0'),
             (toolMode = e),
-            (defaultCursor = "default"),
+            (defaultCursor = 'default'),
             (wallsGroup[0].opacity = 0.25),
             (floorsGroup[0].opacity = 0.25),
             (furnitureGroup[0].opacity = 0.25),
-            document.getElementById("pointerTool").classList.remove("activeTool"),
-            document.getElementById("addWallTool").classList.remove("activeTool"),
-            document.getElementById("addFloorTool").classList.remove("activeTool"),
-            document.getElementById("addRoofTool").classList.remove("activeTool"),
-            document.getElementById("addRulerTool").classList.remove("activeTool"),
-            document.getElementById("addTextTool").classList.remove("activeTool"),
-            setPropertiesView("ground")
+            document.getElementById('pointerTool').classList.remove('activeTool'),
+            document.getElementById('addWallTool').classList.remove('activeTool'),
+            document.getElementById('addFloorTool').classList.remove('activeTool'),
+            document.getElementById('addRoofTool').classList.remove('activeTool'),
+            document.getElementById('addRulerTool').classList.remove('activeTool'),
+            document.getElementById('addTextTool').classList.remove('activeTool'),
+            setPropertiesView('ground')
           break
         default:
-          defaultCursor = "default"
+          defaultCursor = 'default'
         // deselectAll()
         // document.getElementById("pointerTool").classList.remove("activeTool")
         // document.getElementById("addWallTool").classList.remove("activeTool")
@@ -1313,11 +1265,9 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
       }
 
       // planView.style.cursor = defaultCursor
-
     } catch (e) {
-      console.debug("ERROR: setToolMode", mode, e)
+      console.debug('ERROR: setToolMode', mode, e)
     }
-
   }
 
   const doLoadFile: MouseEventHandler<HTMLAnchorElement> = (): any => {
@@ -1327,10 +1277,10 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
 
       // save to disk
       // localStorage.clear()
-      localStorage.setItem("threed_doLoadFile", JSON.stringify({ subject: "load", payload: loaded }))
-      console.debug("[MM] TRY: doLoadFile")
+      localStorage.setItem('threed_doLoadFile', JSON.stringify({ subject: 'load', payload: loaded }))
+      console.debug('[MM] TRY: doLoadFile')
     } catch (e) {
-      console.debug("[MM] CATCH: doLoadFile", e)
+      console.debug('[MM] CATCH: doLoadFile', e)
     }
   }
 
@@ -1341,10 +1291,10 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
 
       // save to disk
       // localStorage.clear()
-      localStorage.setItem("threed_doSaveFile", JSON.stringify({ subject: "save", payload: saved }))
-      console.debug("[MM] TRY: doSaveFile")
+      localStorage.setItem('threed_doSaveFile', JSON.stringify({ subject: 'save', payload: saved }))
+      console.debug('[MM] TRY: doSaveFile')
     } catch (e) {
-      console.debug("[MM] CATCH: doSaveFile", e)
+      console.debug('[MM] CATCH: doSaveFile', e)
     }
   }
 
@@ -1358,7 +1308,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
         // resetPlan()
         // loadingProgressTxt = "Plan decoding\n" + loadingProgressTxt
         // document.getElementById("modalLoadingDataInfo").innerHTML = loadingProgressTxt
-        console.debug("drawPlan", g)
+        console.debug('drawPlan', g)
         // drawPlan(JSON.parse(g))
         // clearFileInput(document.getElementById("file"))
       }
@@ -1368,18 +1318,17 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
       // hideMouseIndicators()
       o.readAsText(t.files[0])
 
-      console.debug("%cFileReader", ccm1, o)
-
+      console.debug('%cFileReader', ccm1, o)
     } catch (e) {
-      console.log("%cloadFileAsText : " + e, ccm2)
+      console.log('%cloadFileAsText : ' + e, ccm2)
     }
   }
 
   const doOpenShareDialog = () => {
     try {
-      $("#ModalShare").show()
+      $('#ModalShare').show()
     } catch (e) {
-      console.log("doOpenShareDialog : " + e)
+      console.log('doOpenShareDialog : ' + e)
     }
   }
 
@@ -1389,7 +1338,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
       // let t = document.getElementById(el)
       let t = document.querySelector(el)
       if (!document.fullscreenElement) {
-        t.requestFullscreen().catch(err => {
+        t.requestFullscreen().catch((err) => {
           alert(`Error attempting to enable full-screen mode: ${err.message} (${err._name})`)
         })
       } else {
@@ -1398,28 +1347,24 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
       t.requestFullscreen
         ? t.requestFullscreen()
         : t.mozRequestFullScreen
-          ? t.mozRequestFullScreen()
-          : t.webkitRequestFullscreen
-            ? t.webkitRequestFullscreen()
-            : t.msRequestFullscreen && t.msRequestFullscreen()
+        ? t.mozRequestFullScreen()
+        : t.webkitRequestFullscreen
+        ? t.webkitRequestFullscreen()
+        : t.msRequestFullscreen && t.msRequestFullscreen()
     } catch (e) {
       // alert(e)
-      console.log("doOpenFullscreen : " + e)
+      console.log('doOpenFullscreen : ' + e)
     }
   }
 
   const doAddNewLevel = (level) => {
-    console.debug("%caddNewLevel called", ccm1, level)
-    return (
-      !1
-    )
+    console.debug('%caddNewLevel called', ccm1, level)
+    return !1
   }
 
   const doSetLevel = (level) => {
-    console.debug("%csetLevel called", ccm1, level)
-    return (
-      !1
-    )
+    console.debug('%csetLevel called', ccm1, level)
+    return !1
   }
 
   const doUndo: MouseEventHandler<HTMLAnchorElement> = (): any => {
@@ -1429,10 +1374,10 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
 
       // save to disk
       // localStorage.clear()
-      localStorage.setItem("threed_doUndo", JSON.stringify({ subject: "undo", payload: undid }))
-      console.debug("[MM] TRY: doUndo")
+      localStorage.setItem('threed_doUndo', JSON.stringify({ subject: 'undo', payload: undid }))
+      console.debug('[MM] TRY: doUndo')
     } catch (e) {
-      console.debug("[MM] CATCH: doUndo", e)
+      console.debug('[MM] CATCH: doUndo', e)
     }
   }
 
@@ -1443,10 +1388,10 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
 
       // save to disk
       // localStorage.clear()
-      localStorage.setItem("threed_doRedo", JSON.stringify({ subject: "redo", payload: redid }))
-      console.debug("[MM] TRY: doRedo")
+      localStorage.setItem('threed_doRedo', JSON.stringify({ subject: 'redo', payload: redid }))
+      console.debug('[MM] TRY: doRedo')
     } catch (e) {
-      console.debug("[MM] CATCH: doRedo", e)
+      console.debug('[MM] CATCH: doRedo', e)
     }
   }
 
@@ -1454,25 +1399,26 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
 
   // Component onMount hook
   useEffect(() => {
-    const word = "YO YO YO"
+    const word = 'YO YO YO'
     // console.debug("ToolBar onMount", word)
     return () => {
       // console.debug("ToolBar onUnmount", word)
     }
   }, [])
 
-  const pages = ['Products', 'Pricing', 'Blog'];
-  const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+  const pages = ['Products', 'Pricing', 'Blog']
+  const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
   return (
-    <AppBar id="appBar" position="static">
-      <Container maxWidth="xl">
+    <AppBar
+      id='appBar'
+      position='static'
+    >
+      <Container maxWidth='xl'>
         <Toolbar disableGutters>
-
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-
             <Button
-              key="Actions"
+              key='Actions'
               onClick={handleOpenActionsMenu}
               sx={{ color: '#FFFFFF', p: 0, ml: 2, mr: 3 }}
             >
@@ -1480,7 +1426,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             </Button>
             <Menu
               sx={{ mt: 8 }}
-              id="menu-appbar-actions"
+              id='menu-appbar-actions'
               anchorEl={anchorElActions}
               anchorOrigin={{
                 vertical: 'top',
@@ -1493,28 +1439,51 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               open={Boolean(anchorElActions)}
               onClose={handleCloseActionsMenu}
             >
-              <MenuItem key="New ThreeD" onClick={handleCloseActionsMenu}>
+              <MenuItem
+                key='New ThreeD'
+                onClick={handleCloseActionsMenu}
+              >
                 <Typography onClick={() => threedStore.actions.getState().addNew()}>New ThreeD</Typography>
               </MenuItem>
-              <MenuItem key="New Project" onClick={handleCloseActionsMenu}>
+              <MenuItem
+                key='New Project'
+                onClick={handleCloseActionsMenu}
+              >
                 <Typography onClick={() => useProjectStore.getState().addProject()}>New Project</Typography>
               </MenuItem>
-              <MenuItem key="Save Project" onClick={handleCloseActionsMenu}>
+              <MenuItem
+                key='Save Project'
+                onClick={handleCloseActionsMenu}
+              >
                 <Typography onClick={() => useProjectStore.getState().saveProject()}>Save Project</Typography>
               </MenuItem>
-              <MenuItem key="New Plan" onClick={handleCloseActionsMenu}>
+              <MenuItem
+                key='New Plan'
+                onClick={handleCloseActionsMenu}
+              >
                 <Typography onClick={() => usePlanStore.getState().addPlan()}>New Plan</Typography>
               </MenuItem>
-              <MenuItem key="Save Plan" onClick={handleCloseActionsMenu}>
-                <Typography id="saveBtn" onClick={() => usePlanStore.getState().savePlan()}>Save Plan</Typography>
+              <MenuItem
+                key='Save Plan'
+                onClick={handleCloseActionsMenu}
+              >
+                <Typography
+                  id='saveBtn'
+                  onClick={() => usePlanStore.getState().savePlan()}
+                >
+                  Save Plan
+                </Typography>
               </MenuItem>
-              <MenuItem key="New Simulation" onClick={handleCloseActionsMenu}>
+              <MenuItem
+                key='New Simulation'
+                onClick={handleCloseActionsMenu}
+              >
                 <Typography>New Simulation</Typography>
               </MenuItem>
             </Menu>
 
             <Button
-              key="Files"
+              key='Files'
               onClick={handleOpenFilesMenu}
               sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
             >
@@ -1522,7 +1491,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             </Button>
             <Menu
               sx={{ mt: 8 }}
-              id="menu-appbar-files"
+              id='menu-appbar-files'
               anchorEl={anchorElFiles}
               anchorOrigin={{
                 vertical: 'top',
@@ -1536,29 +1505,61 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               open={Boolean(anchorElFiles)}
               onClose={handleCloseFilesMenu}
             >
-              <MenuItem key="Load File" onClick={handleCloseFilesMenu}>
-                <Typography id="loadBtn" onClick={doLoadFile}>Load File</Typography>
+              <MenuItem
+                key='Load File'
+                onClick={handleCloseFilesMenu}
+              >
+                <Typography
+                  id='loadBtn'
+                  onClick={doLoadFile}
+                >
+                  Load File
+                </Typography>
                 <input
-                  type="file"
-                  style={{ display: "inline-block", marginLeft: "4px" }}
-                  id="file"
-                  name="file"
+                  type='file'
+                  style={{ display: 'inline-block', marginLeft: '4px' }}
+                  id='file'
+                  name='file'
                   onChange={doLoadFileAsText}
                 />
               </MenuItem>
-              <MenuItem key="Save File" onClick={handleCloseFilesMenu}>
-                <Typography id="saveBtn" onClick={doSaveFile}>Save File</Typography>
+              <MenuItem
+                key='Save File'
+                onClick={handleCloseFilesMenu}
+              >
+                <Typography
+                  id='saveBtn'
+                  onClick={doSaveFile}
+                >
+                  Save File
+                </Typography>
               </MenuItem>
-              <MenuItem key="Export As OBJ" onClick={handleCloseFilesMenu}>
-                <Typography id="exportBtn" onClick={() => exportToObj}>Export As OBJ</Typography>
+              <MenuItem
+                key='Export As OBJ'
+                onClick={handleCloseFilesMenu}
+              >
+                <Typography
+                  id='exportBtn'
+                  onClick={() => exportToObj}
+                >
+                  Export As OBJ
+                </Typography>
               </MenuItem>
-              <MenuItem key="Create Thumb" onClick={handleCloseFilesMenu}>
-                <Typography id="createThumb" onClick={() => createThumbForHistory}>Create Thumb</Typography>
+              <MenuItem
+                key='Create Thumb'
+                onClick={handleCloseFilesMenu}
+              >
+                <Typography
+                  id='createThumb'
+                  onClick={() => createThumbForHistory}
+                >
+                  Create Thumb
+                </Typography>
               </MenuItem>
             </Menu>
 
             <Button
-              key="Edits"
+              key='Edits'
               onClick={handleOpenEditsMenu}
               sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
             >
@@ -1566,7 +1567,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             </Button>
             <Menu
               sx={{ mt: 8 }}
-              id="menu-appbar-edits"
+              id='menu-appbar-edits'
               anchorEl={anchorElEdits}
               anchorOrigin={{
                 vertical: 'top',
@@ -1580,16 +1581,32 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               open={Boolean(anchorElEdits)}
               onClose={handleCloseEditsMenu}
             >
-              <MenuItem key="Undo" onClick={handleCloseEditsMenu}>
-                <Typography id="undoBtn" onClick={doUndo}>Undo</Typography>
+              <MenuItem
+                key='Undo'
+                onClick={handleCloseEditsMenu}
+              >
+                <Typography
+                  id='undoBtn'
+                  onClick={doUndo}
+                >
+                  Undo
+                </Typography>
               </MenuItem>
-              <MenuItem key="Redo" onClick={handleCloseEditsMenu}>
-                <Typography id="redoBtn" onClick={doRedo}>Redo</Typography>
+              <MenuItem
+                key='Redo'
+                onClick={handleCloseEditsMenu}
+              >
+                <Typography
+                  id='redoBtn'
+                  onClick={doRedo}
+                >
+                  Redo
+                </Typography>
               </MenuItem>
             </Menu>
 
             <Button
-              key="Views"
+              key='Views'
               onClick={handleOpenViewsMenu}
               sx={{ color: '#FFFFFF', p: 0, mr: 2 }}
             >
@@ -1597,7 +1614,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             </Button>
             <Menu
               sx={{ mt: 8 }}
-              id="menu-appbar-views"
+              id='menu-appbar-views'
               anchorEl={anchorElViews}
               anchorOrigin={{
                 vertical: 'top',
@@ -1611,34 +1628,61 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               open={Boolean(anchorElViews)}
               onClose={handleCloseViewsMenu}
             >
-              <MenuItem key="Modal: About" onClick={handleCloseViewsMenu}>
+              <MenuItem
+                key='Modal: About'
+                onClick={handleCloseViewsMenu}
+              >
                 <Typography onClick={(e) => modalAboutStore.actions.handleOpen(e)}>Modal: About</Typography>
               </MenuItem>
-              <MenuItem key="Modal: Model3d" onClick={handleCloseViewsMenu}>
+              <MenuItem
+                key='Modal: Model3d'
+                onClick={handleCloseViewsMenu}
+              >
                 <Typography onClick={(e) => modalModel3dStore.actions.handleOpen(e)}>Modal: Model3d</Typography>
               </MenuItem>
-              <MenuItem key="Modal: Loading" onClick={handleCloseViewsMenu}>
+              <MenuItem
+                key='Modal: Loading'
+                onClick={handleCloseViewsMenu}
+              >
                 <Typography onClick={(e) => modalLoadingStore.actions.handleOpen(e)}>Modal: Loading</Typography>
               </MenuItem>
-              <MenuItem key="Modal: Share" onClick={handleCloseViewsMenu}>
+              <MenuItem
+                key='Modal: Share'
+                onClick={handleCloseViewsMenu}
+              >
                 <Typography onClick={(e) => modalShareStore.actions.handleOpen(e)}>Modal: Share</Typography>
               </MenuItem>
-              <MenuItem key="Spacer: 1" onClick={handleCloseViewsMenu}>
+              <MenuItem
+                key='Spacer: 1'
+                onClick={handleCloseViewsMenu}
+              >
                 <Typography>==============</Typography>
               </MenuItem>
               {/* <MenuItem key="Dialog: Share" onClick={handleCloseViewsMenu}>
                 <Typography onClick={doOpenShareDialog}>Dialog: Share</Typography>
               </MenuItem> */}
-              <MenuItem key="2D Plan Properties" onClick={handleCloseViewsMenu}>
+              <MenuItem
+                key='2D Plan Properties'
+                onClick={handleCloseViewsMenu}
+              >
                 <Typography onClick={(e) => setPropertiesView('planView')}>2D Plan Properties</Typography>
               </MenuItem>
-              <MenuItem key="2D Plan Fullscreen" onClick={handleCloseViewsMenu}>
+              <MenuItem
+                key='2D Plan Fullscreen'
+                onClick={handleCloseViewsMenu}
+              >
                 <Typography onClick={(e) => doOpenFullscreen('#planView')}>2D Plan Fullscreen</Typography>
               </MenuItem>
-              <MenuItem key="3D Plan Properties" onClick={handleCloseViewsMenu}>
+              <MenuItem
+                key='3D Plan Properties'
+                onClick={handleCloseViewsMenu}
+              >
                 <Typography onClick={(e) => setPropertiesView('3dView')}>3D Plan Properties</Typography>
               </MenuItem>
-              <MenuItem key="3D Plan Fullscreen" onClick={handleCloseViewsMenu}>
+              <MenuItem
+                key='3D Plan Fullscreen'
+                onClick={handleCloseViewsMenu}
+              >
                 <Typography onClick={(e) => doOpenFullscreen('#view3d')}>3D Plan Fullscreen</Typography>
               </MenuItem>
               {/* <MenuItem key="Defaults" onClick={handleCloseViewsMenu}>
@@ -1647,13 +1691,21 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               {/* <MenuItem key="Ground Properties" onClick={handleCloseViewsMenu}>
                 <Typography onClick={() => setToolMode('ground')} id="groundPropertiesBtn">Ground Properties</Typography>
               </MenuItem> */}
-              <MenuItem key="Fullscreen" onClick={handleCloseViewsMenu}>
-                <Typography onClick={() => doOpenFullscreen('body')} id="fullscreenApp">Fullscreen</Typography>
+              <MenuItem
+                key='Fullscreen'
+                onClick={handleCloseViewsMenu}
+              >
+                <Typography
+                  onClick={() => doOpenFullscreen('body')}
+                  id='fullscreenApp'
+                >
+                  Fullscreen
+                </Typography>
               </MenuItem>
             </Menu>
 
             <Button
-              key="Layers"
+              key='Layers'
               onClick={handleOpenLayersMenu}
               sx={{ color: '#FFFFFF', p: 0, mr: 2 }}
             >
@@ -1661,7 +1713,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             </Button>
             <Menu
               sx={{ mt: 8 }}
-              id="menu-appbar-layers"
+              id='menu-appbar-layers'
               anchorEl={anchorElLayers}
               anchorOrigin={{
                 vertical: 'top',
@@ -1675,13 +1727,16 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               open={Boolean(anchorElLayers)}
               onClose={handleCloseLayersMenu}
             >
-              <MenuItem key="New Noun Layer" onClick={handleCloseLayersMenu}>
-                <Typography onClick={() => newLevel("noun")}>New Noun Layer</Typography>
+              <MenuItem
+                key='New Noun Layer'
+                onClick={handleCloseLayersMenu}
+              >
+                <Typography onClick={() => newLevel('noun')}>New Noun Layer</Typography>
               </MenuItem>
             </Menu>
 
             <Button
-              key="Tools"
+              key='Tools'
               onClick={handleOpenToolsMenu}
               sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
             >
@@ -1689,7 +1744,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
             </Button>
             <Menu
               sx={{ mt: 8 }}
-              id="menu-appbar-tools"
+              id='menu-appbar-tools'
               anchorEl={anchorElTools}
               anchorOrigin={{
                 vertical: 'top',
@@ -1703,127 +1758,140 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
               open={Boolean(anchorElTools)}
               onClose={handleCloseToolsMenu}
             >
-              <MenuItem key="Tool 1" onClick={handleCloseToolsMenu}>
+              <MenuItem
+                key='Tool 1'
+                onClick={handleCloseToolsMenu}
+              >
                 <Typography onClick={() => tool1}>Tool 1</Typography>
               </MenuItem>
-              <MenuItem key="Tool 2" onClick={handleCloseToolsMenu}>
+              <MenuItem
+                key='Tool 2'
+                onClick={handleCloseToolsMenu}
+              >
                 <Typography onClick={() => tool2}>Tool 2</Typography>
               </MenuItem>
-              <MenuItem key="Tool 3" onClick={handleCloseToolsMenu}>
+              <MenuItem
+                key='Tool 3'
+                onClick={handleCloseToolsMenu}
+              >
                 <Typography onClick={() => tool3}>Tool 3</Typography>
               </MenuItem>
-              <MenuItem key="Do Log" onClick={handleCloseToolsMenu}>
+              <MenuItem
+                key='Do Log'
+                onClick={handleCloseToolsMenu}
+              >
                 <Typography onClick={() => doLog}>Do Log</Typography>
               </MenuItem>
-              <MenuItem key="Show About" onClick={handleCloseToolsMenu}>
+              <MenuItem
+                key='Show About'
+                onClick={handleCloseToolsMenu}
+              >
                 <Typography onClick={() => showAbout}>Show About</Typography>
               </MenuItem>
             </Menu>
-
           </Box>
 
           <Box sx={{ flexGrow: 0, display: { xs: 'none', md: 'flex' } }}>
             {/* <Button color="inherit">-||- TOOL MODES -||-</Button> */}
-            <Tooltip title="Pointer Tool">
+            <Tooltip title='Pointer Tool'>
               <IconButton
-                id="pointerTool"
+                id='pointerTool'
                 onClick={() => setToolMode('pointer')}
-                aria-label="Pointer Tool"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                size="medium"
-                color="inherit"
+                aria-label='Pointer Tool'
+                aria-controls='menu-appbar'
+                aria-haspopup='true'
+                size='medium'
+                color='inherit'
                 sx={{ mr: 1 }}
               >
                 <ToolIconPointer />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Hand Tool">
+            <Tooltip title='Hand Tool'>
               <IconButton
-                id="handTool"
+                id='handTool'
                 onClick={() => setToolMode('hand')}
-                aria-label="Hand Tool"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                size="medium"
-                color="inherit"
+                aria-label='Hand Tool'
+                aria-controls='menu-appbar'
+                aria-haspopup='true'
+                size='medium'
+                color='inherit'
                 sx={{ mr: 1 }}
               >
                 <ToolIconHand />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Wall Tool">
+            <Tooltip title='Wall Tool'>
               <IconButton
-                id="addWallTool"
+                id='addWallTool'
                 onClick={() => setToolMode('walls')}
-                aria-label="Wall Tool"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                size="medium"
-                color="inherit"
+                aria-label='Wall Tool'
+                aria-controls='menu-appbar'
+                aria-haspopup='true'
+                size='medium'
+                color='inherit'
                 sx={{ mr: 1 }}
               >
                 <ToolIconAddWall />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Floor Tool">
+            <Tooltip title='Floor Tool'>
               <IconButton
-                id="addFloorTool"
+                id='addFloorTool'
                 onClick={() => setToolMode('floor')}
-                aria-label="Floor Tool"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                size="medium"
-                color="inherit"
+                aria-label='Floor Tool'
+                aria-controls='menu-appbar'
+                aria-haspopup='true'
+                size='medium'
+                color='inherit'
                 sx={{ mr: 1 }}
               >
                 <ToolIconAddFloor />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Roof Tool">
+            <Tooltip title='Roof Tool'>
               <IconButton
-                id="addRoofTool"
+                id='addRoofTool'
                 onClick={() => setToolMode('roof')}
-                aria-label="Roof Tool"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                size="medium"
-                color="inherit"
+                aria-label='Roof Tool'
+                aria-controls='menu-appbar'
+                aria-haspopup='true'
+                size='medium'
+                color='inherit'
                 sx={{ mr: 1 }}
               >
                 <ToolIconAddRoof />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Ruler Tool">
+            <Tooltip title='Ruler Tool'>
               <IconButton
-                id="addRulerTool"
+                id='addRulerTool'
                 onClick={() => setToolMode('dimension')}
-                aria-label="Ruler Tool"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                size="medium"
-                color="inherit"
+                aria-label='Ruler Tool'
+                aria-controls='menu-appbar'
+                aria-haspopup='true'
+                size='medium'
+                color='inherit'
                 sx={{ mr: 1 }}
               >
                 <ToolIconAddRuler />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Text Tool">
+            <Tooltip title='Text Tool'>
               <IconButton
-                id="addTextTool"
+                id='addTextTool'
                 onClick={() => setToolMode('text')}
-                aria-label="Text Tool"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                size="medium"
-                color="inherit"
+                aria-label='Text Tool'
+                aria-controls='menu-appbar'
+                aria-haspopup='true'
+                size='medium'
+                color='inherit'
                 sx={{ mr: 0 }}
               >
                 <ToolIconAddText />
               </IconButton>
             </Tooltip>
           </Box>
-
         </Toolbar>
       </Container>
     </AppBar>
@@ -1840,11 +1908,15 @@ const CatalogView: FunctionComponent = (): JSX.Element => {
     }
   }, [])
   return (
-    <div id="catalogView">
-      <div id="catalogFilters">
-        <input type="text" id="catalogTextFilter" placeholder="Filter" />
+    <div id='catalogView'>
+      <div id='catalogFilters'>
+        <input
+          type='text'
+          id='catalogTextFilter'
+          placeholder='Filter'
+        />
       </div>
-      <div id="catalogItems"></div>
+      <div id='catalogItems'></div>
     </div>
   )
 }
@@ -1858,71 +1930,105 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
     }
   }, [])
   return (
-    <div id="propertiesView" style={{ paddingLeft: "10px" }}>
-      <div id="furniture3DModelPropertiesView" style={{ display: "none" }}>
+    <div
+      id='propertiesView'
+      style={{ paddingLeft: '10px' }}
+    >
+      <div
+        id='furniture3DModelPropertiesView'
+        style={{ display: 'none' }}
+      >
         <h3>3d Model Properties</h3>
-        <table className="propertiesTable" style={{ minWidth: "290px" }}>
+        <table
+          className='propertiesTable'
+          style={{ minWidth: '290px' }}
+        >
           <tr>
-            <td colSpan="2" style={{ textAlign: "center" }}>
+            <td
+              colSpan='2'
+              style={{ textAlign: 'center' }}
+            >
               <div
-                onMouseDown="beginDrag(event, modalModel3dFurnitureId);"
-                className="disableSelection">
+                onMouseDown='beginDrag(event, modalModel3dFurnitureId);'
+                className='disableSelection'
+              >
                 <img
-                  id="model3dLargeThumb"
-                  className="disableSelection"
-                  style={{ pointerEvents: "none" }} />
+                  id='model3dLargeThumb'
+                  className='disableSelection'
+                  style={{ pointerEvents: 'none' }}
+                />
               </div>
             </td>
           </tr>
           <tr>
-            <td width="70">Name</td>
-            <td><span id="model3dName"></span></td>
+            <td width='70'>Name</td>
+            <td>
+              <span id='model3dName'></span>
+            </td>
           </tr>
           <tr>
             <td>Author</td>
-            <td><span id="model3dAuthor"></span></td>
+            <td>
+              <span id='model3dAuthor'></span>
+            </td>
           </tr>
           <tr>
             <td>License</td>
-            <td><span id="model3dLicense"></span></td>
+            <td>
+              <span id='model3dLicense'></span>
+            </td>
           </tr>
           <tr>
             <td>3D Model</td>
             <td>
-              <Button className="moreInfoBtn" onClick={() => showModel3dView}>
+              <Button
+                className='moreInfoBtn'
+                onClick={() => showModel3dView}
+              >
                 View
               </Button>
             </td>
           </tr>
         </table>
       </div>
-      <div id="furniturePropertiesView" style={{ display: "none" }}>
+      <div
+        id='furniturePropertiesView'
+        style={{ display: 'none' }}
+      >
         <h3>Furniture Properties</h3>
-        <table className="propertiesTable" style={{ minWidth: "290px" }}>
+        <table
+          className='propertiesTable'
+          style={{ minWidth: '290px' }}
+        >
           <tr>
-            <td width="70">Id</td>
-            <td><span id="objectId"></span></td>
+            <td width='70'>Id</td>
+            <td>
+              <span id='objectId'></span>
+            </td>
           </tr>
           <tr>
             <td>Name</td>
-            <td><span id="objectName"></span></td>
+            <td>
+              <span id='objectName'></span>
+            </td>
           </tr>
           <tr>
             <td>X</td>
             <td>
               <input
-                type="text"
-                id="furnitureXProp"
+                type='text'
+                id='furnitureXProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusOrMinusNumber(this, updateFurniturePosX);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusOrMinusNumber(this, updateFurniturePosX);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
@@ -1930,18 +2036,19 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
             <td>Z</td>
             <td>
               <input
-                type="text"
-                id="furnitureZProp"
+                type='text'
+                id='furnitureZProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusOrMinusNumber(this, updateFurniturePosZ);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusOrMinusNumber(this, updateFurniturePosZ);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
@@ -1949,18 +2056,19 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
             <td>Y</td>
             <td>
               <input
-                type="text"
-                id="furnitureYProp"
+                type='text'
+                id='furnitureYProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusOrMinusNumber(this, updateFurniturePosY);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusOrMinusNumber(this, updateFurniturePosY);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
@@ -1968,125 +2076,153 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
             <td>Width</td>
             <td>
               <input
-                type="text"
-                id="furnitureWidthProp"
+                type='text'
+                id='furnitureWidthProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusNumber(this, updateFurnitureWidth);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusNumber(this, updateFurnitureWidth);'
+                maxLength='8'
+              />
               cm
               <input
-                type="checkbox"
-                id="flipX"
-                onChange="flipX(this.checked)" />Flip X
+                type='checkbox'
+                id='flipX'
+                onChange='flipX(this.checked)'
+              />
+              Flip X
             </td>
           </tr>
           <tr>
             <td>Depth</td>
             <td>
               <input
-                type="text"
-                id="furnitureDepthProp"
+                type='text'
+                id='furnitureDepthProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusNumber(this, updateFurnitureDepth);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusNumber(this, updateFurnitureDepth);'
+                maxLength='8'
+              />
               cm
               <input
-                type="checkbox"
-                id="flipZ"
-                onChange="flipZ(this.checked)" />Flip Z
+                type='checkbox'
+                id='flipZ'
+                onChange='flipZ(this.checked)'
+              />
+              Flip Z
             </td>
           </tr>
           <tr>
             <td>Height</td>
             <td>
               <input
-                type="text"
-                id="furnitureHeightProp"
+                type='text'
+                id='furnitureHeightProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusOrMinusNumber(this, updateFurnitureHeight);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusOrMinusNumber(this, updateFurnitureHeight);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
           <tr>
             <td>Angle</td>
-            <td><span id="furnitureAngleProp"></span>°</td>
+            <td>
+              <span id='furnitureAngleProp'></span>°
+            </td>
           </tr>
           <tr>
             <td>Level</td>
-            <td><span id="furnitureLevelProp"></span></td>
+            <td>
+              <span id='furnitureLevelProp'></span>
+            </td>
           </tr>
           <tr>
             <td>3D Model</td>
             <td>
-              <Button className="moreInfoBtn" onClick="showModel3dView();">
+              <Button
+                className='moreInfoBtn'
+                onClick='showModel3dView();'
+              >
                 View
               </Button>
             </td>
           </tr>
         </table>
       </div>
-      <div id="defaultsPropertiesView" style={{ display: "none" }}>
+      <div
+        id='defaultsPropertiesView'
+        style={{ display: 'none' }}
+      >
         <h3>Default Settings</h3>
-        <table className="propertiesTable" style={{ minWidth: "290px" }}>
+        <table
+          className='propertiesTable'
+          style={{ minWidth: '290px' }}
+        >
           <tr>
             <td>Compass Heading</td>
             <td>
               <input
-                type="range"
-                id="compassHdg"
-                name="compassHdg"
-                min="0"
-                max="360"
-                step="1"
-                value="0"
-                onInput="rotateCompass(this.value)"
-                onChange="rotateCompass(this.value)" />
-              <span id="compassHdgLbl">0°</span>
+                type='range'
+                id='compassHdg'
+                name='compassHdg'
+                min='0'
+                max='360'
+                step='1'
+                value='0'
+                onInput='rotateCompass(this.value)'
+                onChange='rotateCompass(this.value)'
+              />
+              <span id='compassHdgLbl'>0°</span>
             </td>
           </tr>
         </table>
       </div>
-      <div id="wallDefaultsPropertiesView" style={{ display: "none" }}>
+      <div
+        id='wallDefaultsPropertiesView'
+        style={{ display: 'none' }}
+      >
         <h3>Default Wall Settings</h3>
-        <table className="propertiesTable" style={{ minWidth: "290px" }}>
+        <table
+          className='propertiesTable'
+          style={{ minWidth: '290px' }}
+        >
           <tr>
-            <td width="70">Wall Height</td>
+            <td width='70'>Wall Height</td>
             <td>
               <input
-                type="text"
-                id="defaultWallHeightProp"
+                type='text'
+                id='defaultWallHeightProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusNumber(this, updateDefaultWallHeight);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusNumber(this, updateDefaultWallHeight);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
@@ -2094,66 +2230,81 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
             <td>Wall Thickness</td>
             <td>
               <input
-                type="text"
-                id="defaultWallThicknessProp"
+                type='text'
+                id='defaultWallThicknessProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusNumber(this, updateDefaultWallThickness);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusNumber(this, updateDefaultWallThickness);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
         </table>
       </div>
-      <div id="floorDefaultsPropertiesView" style={{ display: "none" }}>
+      <div
+        id='floorDefaultsPropertiesView'
+        style={{ display: 'none' }}
+      >
         <h3>Default Floor Settings</h3>
-        <table className="propertiesTable" style={{ minWidth: "290px" }}>
+        <table
+          className='propertiesTable'
+          style={{ minWidth: '290px' }}
+        >
           <tr>
             <td>Floor Thickness</td>
             <td>
               <input
-                type="text"
-                id="defaultFloorThicknessProp"
+                type='text'
+                id='defaultFloorThicknessProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusNumber(this, updateDefaultFloorThickness);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusNumber(this, updateDefaultFloorThickness);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
         </table>
       </div>
-      <div id="roofDefaultsPropertiesView" style={{ display: "none" }}>
+      <div
+        id='roofDefaultsPropertiesView'
+        style={{ display: 'none' }}
+      >
         <h3>Default Roof Settings</h3>
-        <table className="propertiesTable" style={{ minWidth: "290px" }}>
+        <table
+          className='propertiesTable'
+          style={{ minWidth: '290px' }}
+        >
           <tr>
             <td>Roof Thickness</td>
             <td>
               <input
-                type="text"
-                id="defaultRoofThicknessProp"
+                type='text'
+                id='defaultRoofThicknessProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusNumber(this, updateDefaultRoofThickness);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusNumber(this, updateDefaultRoofThickness);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
@@ -2161,18 +2312,19 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
             <td>Rise</td>
             <td>
               <input
-                type="text"
-                id="defaultRoofRiseProp"
+                type='text'
+                id='defaultRoofRiseProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusNumber(this, updateDefaultRoofRise);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusNumber(this, updateDefaultRoofRise);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
@@ -2180,18 +2332,19 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
             <td>Base Offset</td>
             <td>
               <input
-                type="text"
-                id="defaultRoofStartHeightProp"
+                type='text'
+                id='defaultRoofStartHeightProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusOrMinusNumber(this, updateDefaultRoofStartHeight);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusOrMinusNumber(this, updateDefaultRoofStartHeight);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
@@ -2199,295 +2352,365 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
             <td>Run</td>
             <td>
               <input
-                type="text"
-                id="defaultRoofWidthProp"
+                type='text'
+                id='defaultRoofWidthProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusNumber(this, updateDefaultRoofWidth);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusNumber(this, updateDefaultRoofWidth);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
           <tr>
             <td>Rafter Length</td>
-            <td><span id="defaultRafterLengthProp"></span> cm</td>
+            <td>
+              <span id='defaultRafterLengthProp'></span> cm
+            </td>
           </tr>
           <tr>
             <td>Roof Pitch</td>
-            <td><span id="defaultRoofPitchProp"></span>°</td>
+            <td>
+              <span id='defaultRoofPitchProp'></span>°
+            </td>
           </tr>
         </table>
       </div>
-      <div id="dimensionDefaultsPropertiesView" style={{ display: "none" }}>
+      <div
+        id='dimensionDefaultsPropertiesView'
+        style={{ display: 'none' }}
+      >
         <h3>Default Dimension Settings</h3>
       </div>
-      <div id="textDefaultsPropertiesView" style={{ display: "none" }}>
+      <div
+        id='textDefaultsPropertiesView'
+        style={{ display: 'none' }}
+      >
         <h3>Default Text Settings</h3>
       </div>
 
-      <div id="planViewPropertiesView" style={{ display: "none" }}>
+      <div
+        id='planViewPropertiesView'
+        style={{ display: 'none' }}
+      >
         <h3>Background Template</h3>
-        <table className="propertiesTable" style={{ minWidth: "290px" }}>
+        <table
+          className='propertiesTable'
+          style={{ minWidth: '290px' }}
+        >
           <tr>
-            <td width="70">File</td>
+            <td width='70'>File</td>
             <td>
               <input
-                type="file"
-                id="backgroundImageFile"
-                name="backgroundImageFile"
-                onChange="loadBackgroundImage(event)" />
+                type='file'
+                id='backgroundImageFile'
+                name='backgroundImageFile'
+                onChange='loadBackgroundImage(event)'
+              />
             </td>
           </tr>
           <tr>
             <td>Opacity</td>
             <td>
               <input
-                type="range"
-                id="bgTemplateOpacity"
-                name="bgTemplateOpacity"
-                min="0"
-                max="1.0"
-                step=".01"
-                value="0.33"
-                onInput="setBgTemplateOpacity(this.value)"
-                onChange="setBgTemplateOpacity(this.value)" />
+                type='range'
+                id='bgTemplateOpacity'
+                name='bgTemplateOpacity'
+                min='0'
+                max='1.0'
+                step='.01'
+                value='0.33'
+                onInput='setBgTemplateOpacity(this.value)'
+                onChange='setBgTemplateOpacity(this.value)'
+              />
             </td>
           </tr>
           <tr>
             <td>Flip Horizontal</td>
             <td>
               <input
-                type="checkbox"
-                id="bgTplFlipX"
-                onChange="flipBackgroundTemplateX(this.checked)" />
+                type='checkbox'
+                id='bgTplFlipX'
+                onChange='flipBackgroundTemplateX(this.checked)'
+              />
             </td>
           </tr>
           <tr>
             <td>Flip Vertical</td>
             <td>
               <input
-                type="checkbox"
-                id="bgTplFlipZ"
-                onChange="flipBackgroundTemplateZ(this.checked)" />
+                type='checkbox'
+                id='bgTplFlipZ'
+                onChange='flipBackgroundTemplateZ(this.checked)'
+              />
             </td>
           </tr>
           <tr>
-            <td width="60"></td>
+            <td width='60'></td>
             <td>
               <Button
-                id="resizeBackgroundImageBtn"
-                onClick="enableResizeBackgroundTemplate();"
-                className="moreInfoBtn">
+                id='resizeBackgroundImageBtn'
+                onClick='enableResizeBackgroundTemplate();'
+                className='moreInfoBtn'
+              >
                 Resize
               </Button>
             </td>
           </tr>
           <tr>
-            <td width="60"></td>
+            <td width='60'></td>
             <td>
               <Button
-                id="deleteBackgroundImageBtn"
-                onClick="deleteBackgroundImage()"
-                className="moreInfoBtn">
+                id='deleteBackgroundImageBtn'
+                onClick='deleteBackgroundImage()'
+                className='moreInfoBtn'
+              >
                 Delete
               </Button>
             </td>
           </tr>
         </table>
       </div>
-      <div id="3dViewPropertiesView" style={{ display: "none" }}>
+      <div
+        id='3dViewPropertiesView'
+        style={{ display: 'none' }}
+      >
         <h3>3d View Properties</h3>
-        <table className="propertiesTable" style={{ minWidth: "290px" }}>
+        <table
+          className='propertiesTable'
+          style={{ minWidth: '290px' }}
+        >
           <tr>
-            <td width="70">Wall Color</td>
+            <td width='70'>Wall Color</td>
             <td>
               <input
-                type="hidden"
-                id="wallDiffuse"
-                value="rgba(255,255,255,0.5)" />
+                type='hidden'
+                id='wallDiffuse'
+                value='rgba(255,255,255,0.5)'
+              />
             </td>
           </tr>
           <tr>
-            <td width="70">Wall Specular</td>
-            <td>
-              <input type="hidden" id="wallSpecular" value="#00ff00" />
-            </td>
-          </tr>
-          <tr>
-            <td width="70">Wall Emissive</td>
-            <td>
-              <input type="hidden" id="wallEmissive" value="#ffffff" />
-            </td>
-          </tr>
-          <tr>
-            <td width="70">Floor Color</td>
+            <td width='70'>Wall Specular</td>
             <td>
               <input
-                type="hidden"
-                id="floorDiffuse"
-                value="rgba(15,15,15,0.5)" />
+                type='hidden'
+                id='wallSpecular'
+                value='#00ff00'
+              />
             </td>
           </tr>
           <tr>
-            <td width="70">Floor Specular</td>
-            <td>
-              <input type="hidden" id="floorSpecular" value="#00ffff" />
-            </td>
-          </tr>
-          <tr>
-            <td width="70">Roof Color</td>
+            <td width='70'>Wall Emissive</td>
             <td>
               <input
-                type="hidden"
-                id="roofDiffuse"
-                value="rgba(255,255,255,0.5)" />
+                type='hidden'
+                id='wallEmissive'
+                value='#ffffff'
+              />
             </td>
           </tr>
           <tr>
-            <td width="70">Roof Specular</td>
+            <td width='70'>Floor Color</td>
             <td>
-              <input type="hidden" id="roofSpecular" value="#ff0000" />
+              <input
+                type='hidden'
+                id='floorDiffuse'
+                value='rgba(15,15,15,0.5)'
+              />
+            </td>
+          </tr>
+          <tr>
+            <td width='70'>Floor Specular</td>
+            <td>
+              <input
+                type='hidden'
+                id='floorSpecular'
+                value='#00ffff'
+              />
+            </td>
+          </tr>
+          <tr>
+            <td width='70'>Roof Color</td>
+            <td>
+              <input
+                type='hidden'
+                id='roofDiffuse'
+                value='rgba(255,255,255,0.5)'
+              />
+            </td>
+          </tr>
+          <tr>
+            <td width='70'>Roof Specular</td>
+            <td>
+              <input
+                type='hidden'
+                id='roofSpecular'
+                value='#ff0000'
+              />
             </td>
           </tr>
           <tr>
             <td>Ground Color</td>
             <td>
               <input
-                type="hidden"
-                id="groundDiffuse"
-                value="rgba(03,141,221,1.0)" />
+                type='hidden'
+                id='groundDiffuse'
+                value='rgba(03,141,221,1.0)'
+              />
             </td>
           </tr>
           <tr>
             <td>Ground Specular</td>
             <td>
-              <input type="hidden" id="groundSpecular" value="#f2ff9c" />
+              <input
+                type='hidden'
+                id='groundSpecular'
+                value='#f2ff9c'
+              />
             </td>
           </tr>
           <tr>
-            <td width="70">Depth Write</td>
+            <td width='70'>Depth Write</td>
             <td>
               <input
-                type="checkbox"
-                id="depthWriteMode"
-                onChange="setDepthWriteMode(this.checked);" />
+                type='checkbox'
+                id='depthWriteMode'
+                onChange='setDepthWriteMode(this.checked);'
+              />
             </td>
           </tr>
           <tr>
-            <td width="70">Sort Objects</td>
+            <td width='70'>Sort Objects</td>
             <td>
               <input
-                type="checkbox"
-                id="sortObjectsMode"
-                onChange="setSortObjectsMode(this.checked);" />
+                type='checkbox'
+                id='sortObjectsMode'
+                onChange='setSortObjectsMode(this.checked);'
+              />
             </td>
           </tr>
           <tr>
             <td>Sun Azimuth</td>
             <td>
               <input
-                type="range"
-                id="sunAzimuth"
-                name="sunAzimuth"
-                min="0"
-                max="1.0"
-                step=".01"
-                value="0.33"
-                onInput="setSunAzimuth(this.value)"
-                onChange="setSunAzimuth(this.value)" />
+                type='range'
+                id='sunAzimuth'
+                name='sunAzimuth'
+                min='0'
+                max='1.0'
+                step='.01'
+                value='0.33'
+                onInput='setSunAzimuth(this.value)'
+                onChange='setSunAzimuth(this.value)'
+              />
             </td>
           </tr>
           <tr>
             <td>Sun Incline</td>
             <td>
               <input
-                type="range"
-                id="sunIncline"
-                name="sunIncline"
-                min="0"
-                max="1.0"
-                step=".01"
-                value="0.0"
-                onInput="setSunIncline(this.value)"
-                onChange="setSunIncline(this.value)" />
+                type='range'
+                id='sunIncline'
+                name='sunIncline'
+                min='0'
+                max='1.0'
+                step='.01'
+                value='0.0'
+                onInput='setSunIncline(this.value)'
+                onChange='setSunIncline(this.value)'
+              />
             </td>
           </tr>
           <tr>
             <td>Ambient Intensity</td>
             <td>
               <input
-                type="range"
-                id="ambientLightBrightness"
-                name="ambientLightBrightness"
-                min="0.0"
-                max="1.0"
-                step="0.1"
-                onInput="adjustAmbientLightBrightness(this.value)"
-                onChange="adjustAmbientLightBrightness(this.value)" />
+                type='range'
+                id='ambientLightBrightness'
+                name='ambientLightBrightness'
+                min='0.0'
+                max='1.0'
+                step='0.1'
+                onInput='adjustAmbientLightBrightness(this.value)'
+                onChange='adjustAmbientLightBrightness(this.value)'
+              />
             </td>
           </tr>
           <tr>
             <td>Directional Intensity</td>
             <td>
               <input
-                type="range"
-                id="dirLightBrightness"
-                name="dirLightBrightness"
-                min="0.0"
-                max="1.0"
-                step="0.1"
-                onInput="adjustDirLightBrightness(this.value)"
-                onChange="adjustDirLightBrightness(this.value)" />
+                type='range'
+                id='dirLightBrightness'
+                name='dirLightBrightness'
+                min='0.0'
+                max='1.0'
+                step='0.1'
+                onInput='adjustDirLightBrightness(this.value)'
+                onChange='adjustDirLightBrightness(this.value)'
+              />
             </td>
           </tr>
           <tr>
             <td>Hemisphere Intensity</td>
             <td>
               <input
-                type="range"
-                id="hemiLightBrightness"
-                name="hemiLightBrightness"
-                min="0.0"
-                max="1.0"
-                step="0.1"
-                onInput="adjustHemiLightBrightness(this.value)"
-                onChange="adjustHemiLightBrightness(this.value)" />
+                type='range'
+                id='hemiLightBrightness'
+                name='hemiLightBrightness'
+                min='0.0'
+                max='1.0'
+                step='0.1'
+                onInput='adjustHemiLightBrightness(this.value)'
+                onChange='adjustHemiLightBrightness(this.value)'
+              />
             </td>
           </tr>
         </table>
       </div>
-      <div id="wallPropertiesView" style={{ display: "none" }}>
+      <div
+        id='wallPropertiesView'
+        style={{ display: 'none' }}
+      >
         <h3>Wall Properties</h3>
-        <table className="propertiesTable" style={{ minWidth: "290px" }}>
+        <table
+          className='propertiesTable'
+          style={{ minWidth: '290px' }}
+        >
           <tr>
-            <td width="70">Id</td>
+            <td width='70'>Id</td>
             <td>
-              <input type="hidden" id="wallIdHidden" />
-              <span id="wallIdProp"></span>
+              <input
+                type='hidden'
+                id='wallIdHidden'
+              />
+              <span id='wallIdProp'></span>
             </td>
           </tr>
           <tr>
             <td>Height</td>
             <td>
               <input
-                type="text"
-                id="wallHeightProp"
+                type='text'
+                id='wallHeightProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusNumber(this, updateWallHeight);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusNumber(this, updateWallHeight);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
@@ -2495,18 +2718,19 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
             <td>Height Start</td>
             <td>
               <input
-                type="text"
-                id="wallHeight0Prop"
+                type='text'
+                id='wallHeight0Prop'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusNumber(this, updateWallHeight0);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusNumber(this, updateWallHeight0);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
@@ -2514,18 +2738,19 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
             <td>Height End</td>
             <td>
               <input
-                type="text"
-                id="wallHeight1Prop"
+                type='text'
+                id='wallHeight1Prop'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusNumber(this, updateWallHeight1);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusNumber(this, updateWallHeight1);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
@@ -2533,53 +2758,66 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
             <td>Thickness</td>
             <td>
               <input
-                type="text"
-                id="wallThicknessProp"
+                type='text'
+                id='wallThicknessProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusNumber(this, updateWallThickness);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusNumber(this, updateWallThickness);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
           <tr>
             <td>Level</td>
-            <td><span id="wallLevelProp"></span></td>
+            <td>
+              <span id='wallLevelProp'></span>
+            </td>
           </tr>
         </table>
       </div>
-      <div id="roofPropertiesView" style={{ display: "none" }}>
+      <div
+        id='roofPropertiesView'
+        style={{ display: 'none' }}
+      >
         <h3>Roof Properties</h3>
-        <table className="propertiesTable" style={{ minWidth: "290px" }}>
+        <table
+          className='propertiesTable'
+          style={{ minWidth: '290px' }}
+        >
           <tr>
-            <td width="70">Id</td>
+            <td width='70'>Id</td>
             <td>
-              <input type="hidden" id="roofIdHidden" />
-              <span id="roofIdProp"></span>
+              <input
+                type='hidden'
+                id='roofIdHidden'
+              />
+              <span id='roofIdProp'></span>
             </td>
           </tr>
           <tr>
             <td>Thickness</td>
             <td>
               <input
-                type="text"
-                id="roofThicknessProp"
+                type='text'
+                id='roofThicknessProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusNumber(this, updateRoofThickness);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusNumber(this, updateRoofThickness);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
@@ -2587,18 +2825,19 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
             <td>Rise</td>
             <td>
               <input
-                type="text"
-                id="roofRiseProp"
+                type='text'
+                id='roofRiseProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusNumber(this, updateRoofRise);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusNumber(this, updateRoofRise);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
@@ -2606,18 +2845,19 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
             <td>Base Offset</td>
             <td>
               <input
-                type="text"
-                id="roofStartHeightProp"
+                type='text'
+                id='roofStartHeightProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusOrMinusNumber(this, updateRoofStartHeight);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusOrMinusNumber(this, updateRoofStartHeight);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
@@ -2625,196 +2865,271 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
             <td>Run</td>
             <td>
               <input
-                type="text"
-                id="roofWidthProp"
+                type='text'
+                id='roofWidthProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusNumber(this, updateRoofWidth);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusNumber(this, updateRoofWidth);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
           <tr>
             <td>Rafter Length</td>
-            <td><span id="rafterLengthProp"></span> cm</td>
+            <td>
+              <span id='rafterLengthProp'></span> cm
+            </td>
           </tr>
           <tr>
             <td>Roof Pitch</td>
-            <td><span id="roofPitchProp"></span>°</td>
+            <td>
+              <span id='roofPitchProp'></span>°
+            </td>
           </tr>
           <tr>
             <td>Level</td>
-            <td><span id="roofLevelProp"></span></td>
+            <td>
+              <span id='roofLevelProp'></span>
+            </td>
           </tr>
         </table>
       </div>
-      <div id="floorPropertiesView" style={{ display: "none" }}>
+      <div
+        id='floorPropertiesView'
+        style={{ display: 'none' }}
+      >
         <h3>Floor Properties</h3>
-        <table className="propertiesTable" style={{ minWidth: "290px" }}>
+        <table
+          className='propertiesTable'
+          style={{ minWidth: '290px' }}
+        >
           <tr>
-            <td width="70">Id</td>
-            <td><span id="floorIdProp"></span></td>
+            <td width='70'>Id</td>
+            <td>
+              <span id='floorIdProp'></span>
+            </td>
           </tr>
           <tr>
             <td>Area</td>
-            <td><span id="floorAreaProp"></span></td>
+            <td>
+              <span id='floorAreaProp'></span>
+            </td>
           </tr>
           <tr>
             <td>Thickness</td>
-            <td><span id="floorThicknessProp"></span></td>
+            <td>
+              <span id='floorThicknessProp'></span>
+            </td>
           </tr>
           <tr>
             <td>Level</td>
-            <td><span id="floorLevelProp"></span></td>
+            <td>
+              <span id='floorLevelProp'></span>
+            </td>
           </tr>
         </table>
       </div>
-      <div id="dimensionPropertiesView" style={{ display: "none" }}>
+      <div
+        id='dimensionPropertiesView'
+        style={{ display: 'none' }}
+      >
         <h3>Dimension Properties</h3>
-        <table className="propertiesTable" style={{ minWidth: "290px" }}>
+        <table
+          className='propertiesTable'
+          style={{ minWidth: '290px' }}
+        >
           <tr>
-            <td width="70">Id</td>
-            <td><span id="dimensionIdProp"></span></td>
+            <td width='70'>Id</td>
+            <td>
+              <span id='dimensionIdProp'></span>
+            </td>
           </tr>
           <tr>
             <td>Length</td>
-            <td><span id="dimensionLengthProp"></span></td>
+            <td>
+              <span id='dimensionLengthProp'></span>
+            </td>
           </tr>
           <tr>
             <td>Adjacent</td>
-            <td><span id="dimensionAdjacentProp"></span></td>
+            <td>
+              <span id='dimensionAdjacentProp'></span>
+            </td>
           </tr>
           <tr>
             <td>Level</td>
-            <td><span id="dimensionLevelProp"></span></td>
+            <td>
+              <span id='dimensionLevelProp'></span>
+            </td>
           </tr>
         </table>
       </div>
-      <div id="textPropertiesView" style={{ display: "none" }}>
+      <div
+        id='textPropertiesView'
+        style={{ display: 'none' }}
+      >
         <h3>Text Annotation Properties</h3>
-        <table className="propertiesTable" style={{ minWidth: "290px" }}>
+        <table
+          className='propertiesTable'
+          style={{ minWidth: '290px' }}
+        >
           <tr>
-            <td width="70">Id</td>
-            <td><span id="textIdProp"></span></td>
+            <td width='70'>Id</td>
+            <td>
+              <span id='textIdProp'></span>
+            </td>
           </tr>
           <tr>
             <td>Text</td>
             <td>
               <input
-                type="text"
-                id="textValueProp"
+                type='text'
+                id='textValueProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onKeyUp="validateText(event, this, updateTextValue);"
-                maxLength="100" />
+                className='editable'
+                onKeyUp='validateText(event, this, updateTextValue);'
+                maxLength='100'
+              />
             </td>
           </tr>
           <tr>
             <td>X</td>
             <td>
               <input
-                type="text"
-                id="textXProp"
+                type='text'
+                id='textXProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusOrMinusNumber(this, updateTextX);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusOrMinusNumber(this, updateTextX);'
+                maxLength='8'
+              />
             </td>
           </tr>
           <tr>
             <td>Y</td>
             <td>
               <input
-                type="text"
-                id="textYProp"
+                type='text'
+                id='textYProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusOrMinusNumber(this, updateTextY);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusOrMinusNumber(this, updateTextY);'
+                maxLength='8'
+              />
             </td>
           </tr>
           <tr>
             <td>Level</td>
-            <td><span id="textLevelProp"></span></td>
+            <td>
+              <span id='textLevelProp'></span>
+            </td>
           </tr>
         </table>
-        <div>Type<span id="textDataTypeProp"></span></div>
-        <div><Button id="deleteTextAnnotationBtn" onClick="deleteTextBtnClick()">Delete</Button></div>
+        <div>
+          Type<span id='textDataTypeProp'></span>
+        </div>
+        <div>
+          <Button
+            id='deleteTextAnnotationBtn'
+            onClick='deleteTextBtnClick()'
+          >
+            Delete
+          </Button>
+        </div>
       </div>
-      <div id="levelPropertiesView" style={{ display: "none" }}>
+      <div
+        id='levelPropertiesView'
+        style={{ display: 'none' }}
+      >
         <h3>Level Properties</h3>
-        <table className="propertiesTable" style={{ minWidth: "290px" }}>
+        <table
+          className='propertiesTable'
+          style={{ minWidth: '290px' }}
+        >
           <tr>
-            <td width="70">Id</td>
-            <td><span id="levelIdProp"></span></td>
+            <td width='70'>Id</td>
+            <td>
+              <span id='levelIdProp'></span>
+            </td>
           </tr>
           <tr>
             <td>Name</td>
-            <td><span id="levelNameProp"></span></td>
+            <td>
+              <span id='levelNameProp'></span>
+            </td>
           </tr>
           <tr>
             <td>Height</td>
             <td>
               <input
-                type="text"
-                id="levelHeightProp"
+                type='text'
+                id='levelHeightProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusOrMinusNumber(this, updateLevelHeight);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusOrMinusNumber(this, updateLevelHeight);'
+                maxLength='8'
+              />
             </td>
           </tr>
         </table>
       </div>
-      <div id="groundPropertiesView" style={{ display: "none" }}>
+      <div
+        id='groundPropertiesView'
+        style={{ display: 'none' }}
+      >
         <h3>Ground Layer Properties</h3>
-        <table className="propertiesTable" style={{ minWidth: "290px" }}>
+        <table
+          className='propertiesTable'
+          style={{ minWidth: '290px' }}
+        >
           <tr>
             <td>Width</td>
             <td>
               <input
-                type="text"
-                id="groundWidthProp"
+                type='text'
+                id='groundWidthProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusNumber(this, updateGroundWidth);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusNumber(this, updateGroundWidth);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
@@ -2822,18 +3137,19 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
             <td>Legth</td>
             <td>
               <input
-                type="text"
-                id="groundLengthProp"
+                type='text'
+                id='groundLengthProp'
                 style={{
-                  width: "80px",
-                  border: "1px solid #2a2a2a",
-                  fontSize: "14px",
-                  color: "white",
-                  fontFamily: "'Courier New', Courier, monospace"
+                  width: '80px',
+                  border: '1px solid #2a2a2a',
+                  fontSize: '14px',
+                  color: 'white',
+                  fontFamily: "'Courier New', Courier, monospace",
                 }}
-                className="editable"
-                onChange="validatePlusNumber(this, updateGroundLength);"
-                maxLength="8" />
+                className='editable'
+                onChange='validatePlusNumber(this, updateGroundLength);'
+                maxLength='8'
+              />
               cm
             </td>
           </tr>
@@ -2852,34 +3168,47 @@ const PlanView: FunctionComponent = (): JSX.Element => {
     }
   }, [])
   return (
-    <div id="planView">
-      <canvas id="planCanvas" width="1024" height="450"></canvas>
-      <div id="overlayLogoPlanView" className="overlayLogo">
+    <div id='planView'>
+      <canvas
+        id='planCanvas'
+        width='1024'
+        height='450'
+      ></canvas>
+      <div
+        id='overlayLogoPlanView'
+        className='overlayLogo'
+      >
         <a
-          href="https://threedgarden.com"
-          style={{ float: "left", padding: "0px", marginTop: "0px" }}>
+          href='https://threedgarden.com'
+          style={{ float: 'left', padding: '0px', marginTop: '0px' }}
+        >
           <img
-            src="/favicon/favicon.png"
-            height="77px"
-            title="ThreeD Garden"
-            alt="ThreeD Garden" />
+            src='/favicon/favicon.png'
+            height='77px'
+            title='ThreeD Garden'
+            alt='ThreeD Garden'
+          />
         </a>
         <a
-          href="https://threedgarden.com"
-          style={{ paddingLeft: "10px", textDecoration: "none", fontSize: "32px" }}
-        >ThreeD Garden</a>
+          href='https://threedgarden.com'
+          style={{ paddingLeft: '10px', textDecoration: 'none', fontSize: '32px' }}
+        >
+          ThreeD Garden
+        </a>
       </div>
-      <div id="overlayMenuPlanView">
+      <div id='overlayMenuPlanView'>
         <Button
-          id="overlayPlanViewRecenterBtn"
-          onClick="recenterPlanView()"
-          className="smallButton">
+          id='overlayPlanViewRecenterBtn'
+          onClick='recenterPlanView()'
+          className='smallButton'
+        >
           Recenter
         </Button>
         <Button
-          id="overlayPlanViewGoto3dViewBtn"
-          onClick="goto3dView()"
-          className="smallButton">
+          id='overlayPlanViewGoto3dViewBtn'
+          onClick='goto3dView()'
+          className='smallButton'
+        >
           3d View
         </Button>
       </div>
@@ -2888,7 +3217,6 @@ const PlanView: FunctionComponent = (): JSX.Element => {
 }
 
 const TheBottom: FunctionComponent = (): JSX.Element => {
-
   const word = `[MM] @ ${new Date().toISOString()}`
 
   // console.debug("MyComponent")
@@ -2902,74 +3230,82 @@ const TheBottom: FunctionComponent = (): JSX.Element => {
   return (
     <Box>
       <canvas
-        id="rulerLeft"
-        width="30"
-        height="500"
-        onMouseDown="addVerticalGuide();"
-        onMouseUp="removeVerticalGuide()"
+        id='rulerLeft'
+        width='30'
+        height='500'
+        onMouseDown='addVerticalGuide();'
+        onMouseUp='removeVerticalGuide()'
       />
       <canvas
-        id="rulerBottom"
-        width="1024"
-        height="20"
-        onMouseDown="addHorizontalGuide();"
-        onMouseUp="removeHorizontalGuide()"
+        id='rulerBottom'
+        width='1024'
+        height='20'
+        onMouseDown='addHorizontalGuide();'
+        onMouseUp='removeHorizontalGuide()'
       />
 
-      <div id="mouseIndicatorY" />
-      <div id="mouseIndicatorX" />
+      <div id='mouseIndicatorY' />
+      <div id='mouseIndicatorX' />
 
-      <div id="compass" />
+      <div id='compass' />
 
-      <div id="view3d">
+      <div id='view3d'>
+        <canvas id='threeCanvas' />
 
-        <canvas id="threeCanvas" />
-
-        <div id="overlayLogo3dView" className="overlayLogo">
+        <div
+          id='overlayLogo3dView'
+          className='overlayLogo'
+        >
           HEY HEY HEY
         </div>
 
-        <div id="overlayMenu3dView">
+        <div id='overlayMenu3dView'>
           <Button
-            id="overlay3dviewRecenterBtn"
-            onClick="recenter3dview()"
-            className="smallButton">
+            id='overlay3dviewRecenterBtn'
+            onClick='recenter3dview()'
+            className='smallButton'
+          >
             Recenter
           </Button>
           <Button
-            id="overlay3dviewGotoPlanViewBtn"
-            onClick="gotoPlanView()"
-            className="smallButton">
+            id='overlay3dviewGotoPlanViewBtn'
+            onClick='gotoPlanView()'
+            className='smallButton'
+          >
             Plan View
           </Button>
         </div>
       </div>
 
-      <div id="verticalSlider" />
-      <div id="horizontalSliderLeft" />
-      <div id="horizontalSliderRight" />
+      <div id='verticalSlider' />
+      <div id='horizontalSliderLeft' />
+      <div id='horizontalSliderRight' />
 
-      <div id="furnitureDragDiv" />
+      <div id='furnitureDragDiv' />
 
       <Image
-        id="fullscreenPlanViewBtn"
-        src="/demo/media/fullscreen.png"
+        id='fullscreenPlanViewBtn'
+        src='/demo/media/fullscreen.png'
         width={24}
         height={24}
-        alt="fullscreenPlanViewBtn"
+        alt='fullscreenPlanViewBtn'
         onClick="doOpenFullscreen('planView');"
       />
       <Image
-        id="fullscreen3dViewBtn"
-        src="/demo/media/fullscreen.png"
+        id='fullscreen3dViewBtn'
+        src='/demo/media/fullscreen.png'
         width={24}
         height={24}
-        alt="fullscreen3dViewBtn"
+        alt='fullscreen3dViewBtn'
         onClick="doOpenFullscreen('view3d');"
       />
 
-      <Progress value="50" max="100" className="center" id="progressBar" />
-
+      <Progress
+        value='50'
+        max='100'
+        className='center'
+        id='progressBar'
+      />
     </Box>
   )
 }
@@ -3011,16 +3347,27 @@ const ReactThreeFiberView: FunctionComponent = (): JSX.Element => {
 
   // console.debug(`%c====================================`, ccm5)
   return (
-    <Grid container id='ReactThreeFiberView'
-      spacing={0} sx={{ border: '0px solid orange' }}
+    <Grid
+      container
+      id='ReactThreeFiberView'
+      spacing={0}
+      sx={{ border: '0px solid orange' }}
     >
-      <Grid item id='metadata'
-        md={5} xs={12}
+      <Grid
+        item
+        id='metadata'
+        md={5}
+        xs={12}
       >
-        <Typography>{noun._type} title: {noun_title}</Typography>
+        <Typography>
+          {noun._type} title: {noun_title}
+        </Typography>
       </Grid>
-      <Grid item id='actions[loadNoun()]'
-        md={7} xs={12}
+      <Grid
+        item
+        id='actions[loadNoun()]'
+        md={7}
+        xs={12}
         style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-8px' }}
       >
         <Button onClick={() => loadNoun('world')}>load world</Button>
@@ -3028,11 +3375,17 @@ const ReactThreeFiberView: FunctionComponent = (): JSX.Element => {
         <Button onClick={() => loadNoun('character')}>load character</Button>
         <Button onClick={() => loadNoun('farmbot')}>load farmbot</Button>
       </Grid>
-      <Grid container id='cameras[{camera}]'
+      <Grid
+        container
+        id='cameras[{camera}]'
         spacing={0}
       >
-        <Grid item id='camera[0]'
-          md={12} xs={12} sx={{ border: '1px solid darkgreen' }}
+        <Grid
+          item
+          id='camera[0]'
+          md={12}
+          xs={12}
+          sx={{ border: '1px solid darkgreen' }}
         >
           <ThreeDCanvas />
         </Grid>
@@ -3057,7 +3410,6 @@ const ReactThreeFiberView: FunctionComponent = (): JSX.Element => {
 }
 
 const MyComponent: FunctionComponent = (): JSX.Element => {
-
   const word = `[MM] @ ${new Date().toISOString()}`
 
   // console.debug("MyComponent")
@@ -3068,13 +3420,10 @@ const MyComponent: FunctionComponent = (): JSX.Element => {
     }
   }, [])
 
-  return (
-    <div>...MyComponent [returns] JSX here...</div>
-  )
+  return <div>...MyComponent [returns] JSX here...</div>
 }
 
 const ThreeDGarden: FunctionComponent = (): JSX.Element => {
-
   // ==========================================================
   // LOCAL VARS
 
@@ -3094,7 +3443,7 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
   // ==========================================================
   // Component onMount hook
   useEffect(() => {
-    console.debug("%cThreeDGarden<FC,R3F>: onMount", ccm4, word)
+    console.debug('%cThreeDGarden<FC,R3F>: onMount', ccm4, word)
     console.debug(`%c====================================`, ccm5)
 
     // begin here ?? yes
@@ -3138,17 +3487,22 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
   // ==========================================================
   // FC returns JSX
   return (
-    <div id="threedgarden-div" style={{ width: "100%" }}>
+    <div
+      id='threedgarden-div'
+      style={{ width: '100%' }}
+    >
       {/* <div ref={title}>ThreeDGarden: {word}</div> */}
       {/* <div ref={root}>Three root</div> */}
 
       {/* jQuery Three Happy Messy */}
-      <div id="threedgarden">
+      <div id='threedgarden'>
         <ToolBar />
 
         {/* store access */}
-        <div id="storeControlPanel" style={{ padding: "1rem" }}>
-
+        <div
+          id='storeControlPanel'
+          style={{ padding: '1rem' }}
+        >
           {/* React Three Fiber - View */}
           <ReactThreeFiberView />
           {/* <AppPage /> */}
@@ -3157,62 +3511,128 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
             <Tabs
               value={tabInfoControl}
               onChange={handleChangeTabInfoControl}
-              aria-label="Info Control Panel"
+              aria-label='Info Control Panel'
             >
-              <Tab label="Projects" {...tabProps(0)} />
-              <Tab label="Workspaces" {...tabProps(1)} />
-              <Tab label="Plans" {...tabProps(2)} />
-              <Tab label="ThreeDs" {...tabProps(3)} />
-              <Tab label="Files" {...tabProps(4)} />
-              <Tab label="Scenes" {...tabProps(5)} />
-              <Tab label="Allotments" {...tabProps(6)} />
-              <Tab label="Beds" {...tabProps(7)} />
-              <Tab label="Plants" {...tabProps(8)} />
-              <Tab label="Planting Plans" {...tabProps(9)} />
-              <Tab label="Testing" {...tabProps(10)} />
+              <Tab
+                label='Projects'
+                {...tabProps(0)}
+              />
+              <Tab
+                label='Workspaces'
+                {...tabProps(1)}
+              />
+              <Tab
+                label='Plans'
+                {...tabProps(2)}
+              />
+              <Tab
+                label='ThreeDs'
+                {...tabProps(3)}
+              />
+              <Tab
+                label='Files'
+                {...tabProps(4)}
+              />
+              <Tab
+                label='Scenes'
+                {...tabProps(5)}
+              />
+              <Tab
+                label='Allotments'
+                {...tabProps(6)}
+              />
+              <Tab
+                label='Beds'
+                {...tabProps(7)}
+              />
+              <Tab
+                label='Plants'
+                {...tabProps(8)}
+              />
+              <Tab
+                label='Planting Plans'
+                {...tabProps(9)}
+              />
+              <Tab
+                label='Testing'
+                {...tabProps(10)}
+              />
             </Tabs>
           </Box>
-          <MDTabPanel value={tabInfoControl} index={0}>
+          <MDTabPanel
+            value={tabInfoControl}
+            index={0}
+          >
             <ProjectControlPanel />
             <ProjectInfoPanel />
           </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={1}>
+          <MDTabPanel
+            value={tabInfoControl}
+            index={1}
+          >
             <WorkspaceControlPanel />
             <WorkspaceInfoPanel />
           </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={2}>
+          <MDTabPanel
+            value={tabInfoControl}
+            index={2}
+          >
             <PlanControlPanel />
             <PlanInfoPanel />
           </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={3}>
+          <MDTabPanel
+            value={tabInfoControl}
+            index={3}
+          >
             <ThreeDControlPanel />
             <ThreeDInfoPanel />
           </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={4}>
+          <MDTabPanel
+            value={tabInfoControl}
+            index={4}
+          >
             <FileControlPanel />
             <FileInfoPanel />
           </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={5}>
+          <MDTabPanel
+            value={tabInfoControl}
+            index={5}
+          >
             <SceneControlPanel />
             <SceneInfoPanel />
           </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={6}>
+          <MDTabPanel
+            value={tabInfoControl}
+            index={6}
+          >
             <AllotmentControlPanel />
             <AllotmentInfoPanel />
           </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={7}>
+          <MDTabPanel
+            value={tabInfoControl}
+            index={7}
+          >
             <BedControlPanel />
             <BedInfoPanel />
           </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={8}>
+          <MDTabPanel
+            value={tabInfoControl}
+            index={8}
+          >
             <PlantControlPanel />
             <PlantInfoPanel />
           </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={9}>
+          <MDTabPanel
+            value={tabInfoControl}
+            index={9}
+          >
             <PlantingPlanControlPanel />
             <PlantingPlanInfoPanel />
           </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={10}>
+          <MDTabPanel
+            value={tabInfoControl}
+            index={10}
+          >
             Testing Panel
             {/* <CharacterControlPanel /> */}
             {/* <CharacterInfoPanel /> */}
@@ -3241,9 +3661,8 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
         {/* <PropertiesView /> */}
         {/* <PlanView /> */}
         {/* <TheBottom /> */}
-
       </div>
-    </div >
+    </div>
   )
 }
 

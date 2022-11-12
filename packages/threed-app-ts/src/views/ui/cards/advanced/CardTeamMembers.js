@@ -28,7 +28,7 @@ const data = [
     name: 'Dean Hogan',
     completedTasks: 87,
     post: 'IOS developer',
-    src: '/images/avatars/1.png'
+    src: '/images/avatars/1.png',
   },
   {
     value: 80,
@@ -38,7 +38,7 @@ const data = [
     name: 'Hilda Rice',
     completedTasks: 340,
     post: 'Laravel developer',
-    src: '/images/avatars/8.png'
+    src: '/images/avatars/8.png',
   },
   {
     value: 50,
@@ -48,7 +48,7 @@ const data = [
     completedTasks: 50,
     name: "Andrew O'Brian",
     post: 'React developer',
-    src: '/images/avatars/5.png'
+    src: '/images/avatars/5.png',
   },
   {
     value: 70,
@@ -58,7 +58,7 @@ const data = [
     completedTasks: 98,
     name: 'Elanor Price',
     post: 'Angular developer',
-    src: '/images/avatars/2.png'
+    src: '/images/avatars/2.png',
   },
   {
     value: 60,
@@ -68,8 +68,8 @@ const data = [
     completedTasks: 12,
     name: 'Carl Oliver',
     post: 'VueJs developer',
-    src: '/images/avatars/3.png'
-  }
+    src: '/images/avatars/3.png',
+  },
 ]
 
 const CardTeamMembers = () => {
@@ -79,7 +79,12 @@ const CardTeamMembers = () => {
         title='Team Members'
         titleTypographyProps={{ sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' } }}
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }
@@ -95,23 +100,34 @@ const CardTeamMembers = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map(row => {
+            {data.map((row) => {
               return (
                 <TableRow
                   key={row.name}
                   sx={{
-                    '&:last-child .MuiTableCell-root': { pb: theme => `${theme.spacing(4)} !important` },
-                    '& .MuiTableCell-root': { border: 0, py: theme => `${theme.spacing(2.5)} !important` }
+                    '&:last-child .MuiTableCell-root': { pb: (theme) => `${theme.spacing(4)} !important` },
+                    '& .MuiTableCell-root': { border: 0, py: (theme) => `${theme.spacing(2.5)} !important` },
                   }}
                 >
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Avatar src={row.src} alt={row.name} sx={{ width: '2.375rem', height: '2.375rem', mr: 3 }} />
+                      <Avatar
+                        src={row.src}
+                        alt={row.name}
+                        sx={{ width: '2.375rem', height: '2.375rem', mr: 3 }}
+                      />
                       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        <Typography noWrap variant='body2' sx={{ mb: 0.5, fontWeight: 600, color: 'text.primary' }}>
+                        <Typography
+                          noWrap
+                          variant='body2'
+                          sx={{ mb: 0.5, fontWeight: 600, color: 'text.primary' }}
+                        >
                           {row.name}
                         </Typography>
-                        <Typography noWrap variant='caption'>
+                        <Typography
+                          noWrap
+                          variant='caption'
+                        >
                           {row.post}
                         </Typography>
                       </Box>
@@ -128,10 +144,16 @@ const CardTeamMembers = () => {
                   </TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex' }}>
-                      <Typography variant='body2' sx={{ fontWeight: 600, color: 'primary.main' }}>
+                      <Typography
+                        variant='body2'
+                        sx={{ fontWeight: 600, color: 'primary.main' }}
+                      >
                         {`${row.completedTasks}/`}
                       </Typography>
-                      <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                      <Typography
+                        variant='body2'
+                        sx={{ fontWeight: 600 }}
+                      >
                         {row.tasks}
                       </Typography>
                     </Box>
@@ -144,8 +166,8 @@ const CardTeamMembers = () => {
                       variant='determinate'
                       sx={{
                         position: 'absolute',
-                        color: theme =>
-                          theme.palette.mode === 'light' ? theme.palette.grey[200] : theme.palette.customColors.bodyBg
+                        color: (theme) =>
+                          theme.palette.mode === 'light' ? theme.palette.grey[200] : theme.palette.customColors.bodyBg,
                       }}
                     />
                     <CircularProgress

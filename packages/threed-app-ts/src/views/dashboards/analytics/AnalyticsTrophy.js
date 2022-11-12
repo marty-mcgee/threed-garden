@@ -11,7 +11,7 @@ const TriangleImg = styled('img')(({ theme }) => ({
   bottom: 0,
   height: 170,
   position: 'absolute',
-  ...(theme.direction === 'rtl' ? { transform: 'scaleX(-1)' } : {})
+  ...(theme.direction === 'rtl' ? { transform: 'scaleX(-1)' } : {}),
 }))
 
 // Styled component for the trophy image
@@ -19,7 +19,7 @@ const TrophyImg = styled('img')({
   right: 36,
   bottom: 20,
   height: 98,
-  position: 'absolute'
+  position: 'absolute',
 })
 
 const AnalyticsTrophy = () => {
@@ -31,17 +31,32 @@ const AnalyticsTrophy = () => {
     <Card sx={{ position: 'relative' }}>
       <CardContent>
         <Typography variant='h6'>Congratulations John! 🥳</Typography>
-        <Typography variant='body2' sx={{ letterSpacing: '0.25px' }}>
+        <Typography
+          variant='body2'
+          sx={{ letterSpacing: '0.25px' }}
+        >
           Best seller of the month
         </Typography>
-        <Typography variant='h5' sx={{ my: 4, color: 'primary.main' }}>
+        <Typography
+          variant='h5'
+          sx={{ my: 4, color: 'primary.main' }}
+        >
           $42.8k
         </Typography>
-        <Button size='small' variant='contained'>
+        <Button
+          size='small'
+          variant='contained'
+        >
           View Sales
         </Button>
-        <TriangleImg alt='triangle background' src={`/images/misc/${imageSrc}`} />
-        <TrophyImg alt='trophy' src='/images/misc/trophy.png' />
+        <TriangleImg
+          alt='triangle background'
+          src={`/images/misc/${imageSrc}`}
+        />
+        <TrophyImg
+          alt='trophy'
+          src='/images/misc/trophy.png'
+        />
       </CardContent>
     </Card>
   )

@@ -25,7 +25,7 @@ const rows = [
     username: '@gslixby0',
     name: 'Joseph Wheeler',
     email: 'nuroani@icpair.com',
-    avatarSrc: '/images/avatars/1.png'
+    avatarSrc: '/images/avatars/1.png',
   },
   {
     id: 2,
@@ -34,7 +34,7 @@ const rows = [
     role: 'subscriber',
     email: 'jeju@ma.co.uk',
     username: '@hredmore1',
-    avatarSrc: '/images/avatars/2.png'
+    avatarSrc: '/images/avatars/2.png',
   },
   {
     id: 3,
@@ -42,7 +42,7 @@ const rows = [
     role: 'subscriber',
     username: '@msicely2',
     name: 'William Mckinney',
-    email: 'cidagehe@nonalbo.com'
+    email: 'cidagehe@nonalbo.com',
   },
   {
     id: 4,
@@ -51,7 +51,7 @@ const rows = [
     name: 'Warren Clarke',
     username: '@mhurran4',
     email: 'hirasles@zozzetkuv.edu',
-    avatarSrc: '/images/avatars/5.png'
+    avatarSrc: '/images/avatars/5.png',
   },
   {
     id: 5,
@@ -59,7 +59,7 @@ const rows = [
     status: 'inactive',
     username: '@crisby3',
     name: 'Isabel Briggs',
-    email: 'temiwiho@ohacma.gov'
+    email: 'temiwiho@ohacma.gov',
   },
   {
     id: 6,
@@ -68,7 +68,7 @@ const rows = [
     email: 'boz@peh.co.uk',
     name: 'Adeline Bennett',
     username: '@shalstead5',
-    avatarSrc: '/images/avatars/4.png'
+    avatarSrc: '/images/avatars/4.png',
   },
   {
     id: 7,
@@ -77,41 +77,49 @@ const rows = [
     name: 'Lora Simpson',
     email: 'dude@oco.nl',
     username: '@bkildayr',
-    avatarSrc: '/images/avatars/8.png'
-  }
+    avatarSrc: '/images/avatars/8.png',
+  },
 ]
 
 const roleObj = {
   author: {
     color: 'success',
-    icon: <Cog sx={{ fontSize: '1rem' }} />
+    icon: <Cog sx={{ fontSize: '1rem' }} />,
   },
   maintainer: {
     color: 'primary',
-    icon: <ChartPie sx={{ fontSize: '1rem' }} />
+    icon: <ChartPie sx={{ fontSize: '1rem' }} />,
   },
   editor: {
     color: 'info',
-    icon: <Pencil sx={{ fontSize: '1rem' }} />
+    icon: <Pencil sx={{ fontSize: '1rem' }} />,
   },
   subscriber: {
     color: 'warning',
-    icon: <AccountOutline sx={{ fontSize: '1rem' }} />
-  }
+    icon: <AccountOutline sx={{ fontSize: '1rem' }} />,
+  },
 }
 
 const statusObj = {
   active: { color: 'success' },
   pending: { color: 'warning' },
-  inactive: { color: 'secondary' }
+  inactive: { color: 'secondary' },
 }
 
-const renderUserAvatar = row => {
+const renderUserAvatar = (row) => {
   if (row.avatarSrc) {
-    return <CustomAvatar src={row.avatarSrc} sx={{ mr: 3, width: 30, height: 30 }} />
+    return (
+      <CustomAvatar
+        src={row.avatarSrc}
+        sx={{ mr: 3, width: 30, height: 30 }}
+      />
+    )
   } else {
     return (
-      <CustomAvatar skin='light' sx={{ mr: 3, width: 30, height: 30, fontSize: '.8rem' }}>
+      <CustomAvatar
+        skin='light'
+        sx={{ mr: 3, width: 30, height: 30, fontSize: '.8rem' }}
+      >
         {getInitials(row.name ? row.name : 'Marty McGee')}
       </CustomAvatar>
     )
@@ -135,18 +143,21 @@ const columns = [
                 fontWeight: 600,
                 lineHeight: 1.72,
                 fontSize: '0.875rem',
-                letterSpacing: '0.22px'
+                letterSpacing: '0.22px',
               }}
             >
               {row.name}
             </Typography>
-            <Typography variant='body2' sx={{ fontSize: '0.75rem', letterSpacing: '0.4px' }}>
+            <Typography
+              variant='body2'
+              sx={{ fontSize: '0.75rem', letterSpacing: '0.4px' }}
+            >
               {row.username}
             </Typography>
           </Box>
         </Box>
       )
-    }
+    },
   },
   {
     flex: 0.2,
@@ -154,10 +165,13 @@ const columns = [
     field: 'email',
     headerName: 'Email',
     renderCell: ({ row }) => (
-      <Typography variant='body2' sx={{ letterSpacing: '0.25px' }}>
+      <Typography
+        variant='body2'
+        sx={{ letterSpacing: '0.25px' }}
+      >
         {row.email}
       </Typography>
-    )
+    ),
   },
   {
     flex: 0.2,
@@ -166,14 +180,21 @@ const columns = [
     headerName: 'Role',
     renderCell: ({ row }) => (
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <CustomAvatar skin='light' color={roleObj[row.role].color} sx={{ mr: 2.5, width: 30, height: 30 }}>
+        <CustomAvatar
+          skin='light'
+          color={roleObj[row.role].color}
+          sx={{ mr: 2.5, width: 30, height: 30 }}
+        >
           {roleObj[row.role].icon}
         </CustomAvatar>
-        <Typography variant='body2' sx={{ textTransform: 'capitalize' }}>
+        <Typography
+          variant='body2'
+          sx={{ textTransform: 'capitalize' }}
+        >
           {row.role}
         </Typography>
       </Box>
-    )
+    ),
   },
   {
     flex: 0.2,
@@ -189,17 +210,24 @@ const columns = [
           height: 24,
           fontSize: '0.75rem',
           textTransform: 'capitalize',
-          '& .MuiChip-label': { fontWeight: 600, lineHeight: 1.4 }
+          '& .MuiChip-label': { fontWeight: 600, lineHeight: 1.4 },
         }}
       />
-    )
-  }
+    ),
+  },
 ]
 
 const AnalyticsTable = () => {
   return (
     <Card>
-      <DataGrid autoHeight hideFooter rows={rows} columns={columns} disableSelectionOnClick pagination={undefined} />
+      <DataGrid
+        autoHeight
+        hideFooter
+        rows={rows}
+        columns={columns}
+        disableSelectionOnClick
+        pagination={undefined}
+      />
     </Card>
   )
 }

@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useState, useEffect, forwardRef } from 'react'
+import { useState, useEffect, forwardRef } from 'react'
 
 // ** Next Import
 import Link from 'next/link'
@@ -62,7 +62,7 @@ import DatePickerWrapper from '~/@core/styles/libs/react-datepicker'
 // ** Styled component for the link in the dataTable
 const StyledLink = styled('a')(({ theme }) => ({
   textDecoration: 'none',
-  color: theme.palette.primary.main
+  color: theme.palette.primary.main,
 }))
 
 const RowOptions = ({ id }) => {
@@ -70,7 +70,7 @@ const RowOptions = ({ id }) => {
   const [anchorEl, setAnchorEl] = useState(null)
   const rowOptionsOpen = Boolean(anchorEl)
 
-  const handleRowOptionsClick = event => {
+  const handleRowOptionsClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
 
@@ -80,7 +80,10 @@ const RowOptions = ({ id }) => {
 
   return (
     <>
-      <IconButton size='small' onClick={handleRowOptionsClick}>
+      <IconButton
+        size='small'
+        onClick={handleRowOptionsClick}
+      >
         <DotsVertical fontSize='small' />
       </IconButton>
       <Menu
@@ -90,25 +93,37 @@ const RowOptions = ({ id }) => {
         onClose={handleRowOptionsClose}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'right'
+          horizontal: 'right',
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'right'
+          horizontal: 'right',
         }}
       >
         <MenuItem>
-          <Download fontSize='small' sx={{ mr: 2 }} />
+          <Download
+            fontSize='small'
+            sx={{ mr: 2 }}
+          />
           Download
         </MenuItem>
-        <Link href={`/apps/invoice/edit/${id}`} passHref>
+        <Link
+          href={`/apps/invoice/edit/${id}`}
+          passHref
+        >
           <MenuItem>
-            <PencilOutline fontSize='small' sx={{ mr: 2 }} />
+            <PencilOutline
+              fontSize='small'
+              sx={{ mr: 2 }}
+            />
             Edit
           </MenuItem>
         </Link>
         <MenuItem>
-          <ContentCopy fontSize='small' sx={{ mr: 2 }} />
+          <ContentCopy
+            fontSize='small'
+            sx={{ mr: 2 }}
+          />
           Duplicate
         </MenuItem>
       </Menu>
@@ -123,13 +138,18 @@ const invoiceStatusObj = {
   Draft: { color: 'primary', icon: <ContentSaveOutline sx={{ fontSize: '1rem' }} /> },
   'Partial Payment': { color: 'warning', icon: <ChartPie sx={{ fontSize: '1rem' }} /> },
   'Past Due': { color: 'error', icon: <InformationOutline sx={{ fontSize: '1rem' }} /> },
-  Downloaded: { color: 'info', icon: <ArrowDown sx={{ fontSize: '1rem' }} /> }
+  Downloaded: { color: 'info', icon: <ArrowDown sx={{ fontSize: '1rem' }} /> },
 }
 
 // ** renders client column
-const renderClient = row => {
+const renderClient = (row) => {
   if (row.avatar.length) {
-    return <CustomAvatar src={row.avatar} sx={{ mr: 3, width: '1.875rem', height: '1.875rem' }} />
+    return (
+      <CustomAvatar
+        src={row.avatar}
+        sx={{ mr: 3, width: '1.875rem', height: '1.875rem' }}
+      />
+    )
   } else {
     return (
       <CustomAvatar
@@ -150,10 +170,13 @@ const defaultColumns = [
     minWidth: 80,
     headerName: '#',
     renderCell: ({ row }) => (
-      <Link href={`/apps/invoice/preview/${row.id}`} passHref>
+      <Link
+        href={`/apps/invoice/preview/${row.id}`}
+        passHref
+      >
         <StyledLink>{`#${row.id}`}</StyledLink>
       </Link>
-    )
+    ),
   },
   {
     flex: 0.1,
@@ -169,28 +192,41 @@ const defaultColumns = [
         <Tooltip
           title={
             <div>
-              <Typography variant='caption' sx={{ color: 'common.white', fontWeight: 600 }}>
+              <Typography
+                variant='caption'
+                sx={{ color: 'common.white', fontWeight: 600 }}
+              >
                 {invoiceStatus}
               </Typography>
               <br />
-              <Typography variant='caption' sx={{ color: 'common.white', fontWeight: 600 }}>
+              <Typography
+                variant='caption'
+                sx={{ color: 'common.white', fontWeight: 600 }}
+              >
                 Balance:
               </Typography>{' '}
               {balance}
               <br />
-              <Typography variant='caption' sx={{ color: 'common.white', fontWeight: 600 }}>
+              <Typography
+                variant='caption'
+                sx={{ color: 'common.white', fontWeight: 600 }}
+              >
                 Due Date:
               </Typography>{' '}
               {dueDate}
             </div>
           }
         >
-          <CustomAvatar skin='light' color={color} sx={{ width: '1.875rem', height: '1.875rem' }}>
+          <CustomAvatar
+            skin='light'
+            color={color}
+            sx={{ width: '1.875rem', height: '1.875rem' }}
+          >
             {Icon}
           </CustomAvatar>
         </Tooltip>
       )
-    }
+    },
   },
   {
     flex: 0.25,
@@ -204,30 +240,37 @@ const defaultColumns = [
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {renderClient(row)}
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography noWrap variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+            <Typography
+              noWrap
+              variant='body2'
+              sx={{ color: 'text.primary', fontWeight: 600 }}
+            >
               {name}
             </Typography>
-            <Typography noWrap variant='caption'>
+            <Typography
+              noWrap
+              variant='caption'
+            >
               {companyEmail}
             </Typography>
           </Box>
         </Box>
       )
-    }
+    },
   },
   {
     flex: 0.1,
     minWidth: 90,
     field: 'total',
     headerName: 'Total',
-    renderCell: ({ row }) => <Typography variant='body2'>{`$${row.total || 0}`}</Typography>
+    renderCell: ({ row }) => <Typography variant='body2'>{`$${row.total || 0}`}</Typography>,
   },
   {
     flex: 0.15,
     minWidth: 125,
     field: 'issuedDate',
     headerName: 'Issued Date',
-    renderCell: ({ row }) => <Typography variant='body2'>{row.issuedDate}</Typography>
+    renderCell: ({ row }) => <Typography variant='body2'>{row.issuedDate}</Typography>,
   },
   {
     flex: 0.1,
@@ -236,14 +279,22 @@ const defaultColumns = [
     headerName: 'Balance',
     renderCell: ({ row }) => {
       return row.balance !== 0 ? (
-        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+        <Typography
+          variant='body2'
+          sx={{ color: 'text.primary' }}
+        >
           {row.balance}
         </Typography>
       ) : (
-        <CustomChip size='small' skin='light' color='success' label='Paid' />
+        <CustomChip
+          size='small'
+          skin='light'
+          color='success'
+          label='Paid'
+        />
       )
-    }
-  }
+    },
+  },
 ]
 /* eslint-disable */
 const CustomInput = forwardRef((props, ref) => {
@@ -269,26 +320,26 @@ const InvoiceList = () => {
 
   // ** Hooks
   const dispatch = useDispatch()
-  const store = useSelector(state => state.invoice)
+  const store = useSelector((state) => state.invoice)
   useEffect(() => {
     dispatch(
       fetchData({
         dates,
         q: value,
-        status: statusValue
+        status: statusValue,
       })
     )
   }, [dispatch, statusValue, value, dates])
 
-  const handleFilter = val => {
+  const handleFilter = (val) => {
     setValue(val)
   }
 
-  const handleStatusValue = e => {
+  const handleStatusValue = (e) => {
     setStatusValue(e.target.value)
   }
 
-  const handleOnChangeRange = dates => {
+  const handleOnChangeRange = (dates) => {
     const [start, end] = dates
     if (start !== null && end !== null) {
       setDates(dates)
@@ -308,14 +359,24 @@ const InvoiceList = () => {
       renderCell: ({ row }) => (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Tooltip title='Delete Invoice'>
-            <IconButton size='small' onClick={() => dispatch(deleteInvoice(row.id))}>
+            <IconButton
+              size='small'
+              onClick={() => dispatch(deleteInvoice(row.id))}
+            >
               <DeleteOutline fontSize='small' />
             </IconButton>
           </Tooltip>
           <Tooltip title='View'>
             <Box>
-              <Link href={`/apps/invoice/preview/${row.id}`} passHref>
-                <IconButton size='small' component='a' sx={{ textDecoration: 'none' }}>
+              <Link
+                href={`/apps/invoice/preview/${row.id}`}
+                passHref
+              >
+                <IconButton
+                  size='small'
+                  component='a'
+                  sx={{ textDecoration: 'none' }}
+                >
                   <EyeOutline fontSize='small' />
                 </IconButton>
               </Link>
@@ -323,18 +384,31 @@ const InvoiceList = () => {
           </Tooltip>
           <RowOptions id={row.id} />
         </Box>
-      )
-    }
+      ),
+    },
   ]
 
   return (
-    <Grid container spacing={6}>
-      <Grid item xs={12}>
+    <Grid
+      container
+      spacing={6}
+    >
+      <Grid
+        item
+        xs={12}
+      >
         <Card>
           <CardHeader title='Filters' />
           <CardContent>
-            <Grid container spacing={6}>
-              <Grid item xs={12} sm={6}>
+            <Grid
+              container
+              spacing={6}
+            >
+              <Grid
+                item
+                xs={12}
+                sm={6}
+              >
                 <FormControl fullWidth>
                   <InputLabel id='invoice-status-select'>Invoice Status</InputLabel>
 
@@ -355,7 +429,11 @@ const InvoiceList = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+              >
                 <DatePickerWrapper>
                   <DatePicker
                     isClearable
@@ -383,9 +461,16 @@ const InvoiceList = () => {
           </CardContent>
         </Card>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <Card>
-          <TableHeader value={value} selectedRows={selectedRows} handleFilter={handleFilter} />
+          <TableHeader
+            value={value}
+            selectedRows={selectedRows}
+            handleFilter={handleFilter}
+          />
           <DataGrid
             autoHeight
             pagination
@@ -395,8 +480,8 @@ const InvoiceList = () => {
             disableSelectionOnClick
             pageSize={Number(pageSize)}
             rowsPerPageOptions={[10, 25, 50]}
-            onSelectionModelChange={rows => setSelectedRows(rows)}
-            onPageSizeChange={newPageSize => setPageSize(newPageSize)}
+            onSelectionModelChange={(rows) => setSelectedRows(rows)}
+            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
           />
         </Card>
       </Grid>
