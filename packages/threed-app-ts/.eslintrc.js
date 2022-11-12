@@ -7,7 +7,7 @@ module.exports = {
   },
 
   extends: [
-    '../common/.eslintrc.js',
+    // '../common/.eslintrc.js',
     // 'plugin:@typescript-eslint/recommended', // common
     // 'plugin:react/recommended', // common
     // 'airbnb', // needed ?
