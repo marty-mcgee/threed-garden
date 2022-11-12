@@ -1,4 +1,4 @@
-import { YourNFT__factory, YourNFT } from 'generated/contract-types';
+import { ThreeDNFT__factory, ThreeDNFT } from 'generated/contract-types';
 import { task } from 'hardhat/config';
 import { create } from 'ipfs-http-client';
 
@@ -20,24 +20,24 @@ task('mint', 'Mints NFTs to the specified address')
     console.log('\n\n 🎫 Minting to ' + toAddress + '...\n');
 
     const { deployer } = await getHardhatSigners(hre);
-    let yourNFTContract: YourNFT | undefined = undefined;
+    let threedNFTContract: ThreeDNFT | undefined = undefined;
 
     if (contractAddress != null) {
       try {
-        yourNFTContract = YourNFT__factory.connect(contractAddress, deployer);
+        threedNFTContract = ThreeDNFT__factory.connect(contractAddress, deployer);
       } catch (e) {
-        console.log('Invalid contractAddress, creating new YourNFT contract');
+        console.log('Invalid contractAddress, creating new ThreeDNFT contract');
         return;
       }
     }
 
-    if (yourNFTContract == null) {
-      const factory = new YourNFT__factory(deployer);
-      yourNFTContract = await factory.deploy();
-      console.log(`\n\n 🎫 YourNFT contract deployed at ${yourNFTContract.address.toString()}\n`);
+    if (threedNFTContract == null) {
+      const factory = new ThreeDNFT__factory(deployer);
+      threedNFTContract = await factory.deploy();
+      console.log(`\n\n 🎫 ThreeDNFT contract deployed at ${threedNFTContract.address.toString()}\n`);
     }
 
-    if (yourNFTContract == null) {
+    if (threedNFTContract == null) {
       console.error('Could not get contract or create contract');
       return;
     }
@@ -67,7 +67,7 @@ task('mint', 'Mints NFTs to the specified address')
     const uploaded = await ipfs.add(JSON.stringify(buffalo));
 
     console.log('Minting buffalo with IPFS hash (' + uploaded.path + ')');
-    await yourNFTContract.mintItem(toAddress, uploaded.path, {
+    await threedNFTContract.mintItem(toAddress, uploaded.path, {
       gasLimit: 400000,
     });
 
@@ -97,7 +97,7 @@ task('mint', 'Mints NFTs to the specified address')
     const uploadedzebra = await ipfs.add(JSON.stringify(zebra));
 
     console.log('Minting zebra with IPFS hash (' + uploadedzebra.path + ')');
-    await yourNFTContract.mintItem(toAddress, uploadedzebra.path, {
+    await threedNFTContract.mintItem(toAddress, uploadedzebra.path, {
       gasLimit: 400000,
     });
 
@@ -127,7 +127,7 @@ task('mint', 'Mints NFTs to the specified address')
     const uploadedrhino = await ipfs.add(JSON.stringify(rhino));
 
     console.log('Minting rhino with IPFS hash (' + uploadedrhino.path + ')');
-    await yourNFTContract.mintItem(toAddress, uploadedrhino.path, {
+    await threedNFTContract.mintItem(toAddress, uploadedrhino.path, {
       gasLimit: 400000,
     });
 
@@ -157,7 +157,7 @@ task('mint', 'Mints NFTs to the specified address')
     const uploadedfish = await ipfs.add(JSON.stringify(fish));
 
     console.log('Minting fish with IPFS hash (' + uploadedfish.path + ')');
-    await yourNFTContract.mintItem(toAddress, uploadedfish.path, {
+    await threedNFTContract.mintItem(toAddress, uploadedfish.path, {
       gasLimit: 400000,
     });
 
@@ -165,7 +165,7 @@ task('mint', 'Mints NFTs to the specified address')
 
     console.log('Transferring Ownership of YourCollectible to ' + toAddress + '...');
 
-    await yourNFTContract.transferOwnership(toAddress, { gasLimit: 400000 });
+    await threedNFTContract.transferOwnership(toAddress, { gasLimit: 400000 });
 
     await sleep(delay);
 
