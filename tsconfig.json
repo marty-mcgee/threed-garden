@@ -1,49 +1,31 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "useDefineForClassFields": true,
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
-    ],
-    "skipLibCheck": true,
+    "sourceMap": true,
+    // "inlineSources": true,
     "allowJs": false,
+    "declarationMap": true,
+    "declaration": true,
     "strict": true,
-    "noEmit": true,
-    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
+    "module": "es2020",
     "moduleResolution": "Node",
+    "incremental": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve", // "preserve" for next, // "react" or "react-jsx" for vite,
-    "esModuleInterop": true, // true | false ??
-    "sourceMap": true,
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
-    // "noImplicitReturns": true,
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["src/*"],
-      "@/*": ["src/*"],
-      "three/examples/jsm/libs/tween.module.min": ["src/types/tween.js"]
-    },
-    "incremental": true
+    "noEmit": true
   },
-  // "include": ["src"],
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.d.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue"
-  ],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    }
-  ],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
+  "include": ["packages/**/*.ts", "packages/**/*.tsx"],
   "exclude": [
-    "node_modules"
+    "**/node_modules",
+    "node_modules",
+    ".husky",
+    "**/*.css",
+    "./tailwind.config.js",
+    "**/.yalc/",
+    "**/.yalc/**/*",
+    ".yalc/**/*"
   ]
 }
