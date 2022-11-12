@@ -22,13 +22,21 @@ import * as source from '~/views/components/dialogs/DialogSourceCode'
 
 const Dialog = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12} md={6}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Simple Dialog'
           code={{
             tsx: null,
-            jsx: source.DialogSimpleJSXCode
+            jsx: source.DialogSimpleJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -37,12 +45,16 @@ const Dialog = () => {
           <DialogSimple />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Alerts'
           code={{
             tsx: null,
-            jsx: source.DialogAlertJSXCode
+            jsx: source.DialogAlertJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -51,12 +63,16 @@ const Dialog = () => {
           <DialogAlert />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Transitions'
           code={{
             tsx: null,
-            jsx: source.DialogTransitionJSXCode
+            jsx: source.DialogTransitionJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -66,24 +82,32 @@ const Dialog = () => {
           <DialogTransition />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Form Dialog'
           code={{
             tsx: null,
-            jsx: source.DialogFormJSXCode
+            jsx: source.DialogFormJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>Form dialogs allow users to fill out form fields within a dialog.</Typography>
           <DialogForm />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Customized Dialog'
           code={{
             tsx: null,
-            jsx: source.DialogCustomizedJSXCode
+            jsx: source.DialogCustomizedJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -92,12 +116,16 @@ const Dialog = () => {
           <DialogCustomized />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Full Screen Dialog'
           code={{
             tsx: null,
-            jsx: source.DialogFullScreenJSXCode
+            jsx: source.DialogFullScreenJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -106,12 +134,16 @@ const Dialog = () => {
           <DialogFullScreen />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Optional Sizes'
           code={{
             tsx: null,
-            jsx: source.DialogSizesJSXCode
+            jsx: source.DialogSizesJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -122,12 +154,16 @@ const Dialog = () => {
           <DialogSizes />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Responsive full-screen'
           code={{
             tsx: null,
-            jsx: source.DialogRespoFullScreenJSXCode
+            jsx: source.DialogRespoFullScreenJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -136,12 +172,16 @@ const Dialog = () => {
           <DialogRespoFullScreen />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Confirmation Dialog'
           code={{
             tsx: null,
-            jsx: source.DialogConfirmationJSXCode
+            jsx: source.DialogConfirmationJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -151,12 +191,16 @@ const Dialog = () => {
           <DialogConfirmation />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Scrolling Long Content'
           code={{
             tsx: null,
-            jsx: source.DialogsScrollJSXCode
+            jsx: source.DialogsScrollJSXCode,
           }}
         >
           <Typography>

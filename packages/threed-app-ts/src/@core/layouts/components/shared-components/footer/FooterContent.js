@@ -2,7 +2,6 @@
 import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
-import useMediaQuery from '@mui/material/useMediaQuery'
 
 const FooterContent = () => {
   // ** Var
@@ -17,17 +16,26 @@ const FooterContent = () => {
             💚
           </Box> */}
           {``}
-          <Link target='_blank' href='https://threed.ai/'>
+          <Link
+            target='_blank'
+            href='https://threed.ai/'
+          >
             🌱 threed.ai
           </Link>
         </Typography>
       )}
       {hidden ? null : (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', '& :not(:last-child)': { mr: 4 } }}>
-          <Link target='_blank' href='https://companyjuice.com/terms-conditions/'>
+          <Link
+            target='_blank'
+            href='https://companyjuice.com/terms-conditions/'
+          >
             License
           </Link>
-          <Link target='_blank' href='https://github.com/marty-mcgee/threed-garden/discussions/'>
+          <Link
+            target='_blank'
+            href='https://github.com/marty-mcgee/threed-garden/discussions/'
+          >
             Support
           </Link>
         </Box>

@@ -1,20 +1,20 @@
-import { useState } from "react"
+import { useState } from 'react'
 
 // react-images-viewer components
-import ImgsViewer from "react-images-viewer"
+import ImgsViewer from 'react-images-viewer'
 
 // @mui material components
-import Stack from "@mui/material/Stack"
+import Stack from '@mui/material/Stack'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
+import MDBox from '~/components/mui/MDBox'
 
 // Images
-import image1 from "~/assets/images/products/product-details-1.jpg"
-import image2 from "~/assets/images/products/product-details-2.jpg"
-import image3 from "~/assets/images/products/product-details-3.jpg"
-import image4 from "~/assets/images/products/product-details-4.jpg"
-import image5 from "~/assets/images/products/product-details-5.jpg"
+import image1 from '~/assets/images/products/product-details-1.jpg'
+import image2 from '~/assets/images/products/product-details-2.jpg'
+import image3 from '~/assets/images/products/product-details-3.jpg'
+import image4 from '~/assets/images/products/product-details-4.jpg'
+import image5 from '~/assets/images/products/product-details-5.jpg'
 
 function ProductImages(): JSX.Element {
   const [currentImage, setCurrentImage] = useState<string>(image1.src)
@@ -34,13 +34,7 @@ function ProductImages(): JSX.Element {
   return (
     <MDBox>
       <ImgsViewer
-        imgs={[
-          { src: image1.src },
-          { src: image2.src },
-          { src: image3.src },
-          { src: image4.src },
-          { src: image5.src },
-        ]}
+        imgs={[{ src: image1.src }, { src: image2.src }, { src: image3.src }, { src: image4.src }, { src: image5.src }]}
         isOpen={imgsViewer}
         onClose={closeImgsViewer}
         currImg={imgsViewerCurrent}
@@ -50,79 +44,85 @@ function ProductImages(): JSX.Element {
       />
 
       <MDBox
-        component="img"
+        component='img'
         src={currentImage}
-        alt="Product Image"
-        shadow="lg"
-        borderRadius="lg"
-        width="100%"
+        alt='Product Image'
+        shadow='lg'
+        borderRadius='lg'
+        width='100%'
         onClick={openImgsViewer}
       />
-      <MDBox mt={2} pt={1}>
-        <Stack direction="row" spacing={2}>
+      <MDBox
+        mt={2}
+        pt={1}
+      >
+        <Stack
+          direction='row'
+          spacing={2}
+        >
           <MDBox
-            component="img"
-            id="0"
+            component='img'
+            id='0'
             src={image1.src}
-            alt="small image 1"
-            borderRadius="lg"
-            shadow="md"
-            width="100%"
-            height="5rem"
-            minHeight="5rem"
-            sx={{ cursor: "pointer", objectFit: "cover" }}
+            alt='small image 1'
+            borderRadius='lg'
+            shadow='md'
+            width='100%'
+            height='5rem'
+            minHeight='5rem'
+            sx={{ cursor: 'pointer', objectFit: 'cover' }}
             onClick={handleSetCurrentImage}
           />
           <MDBox
-            component="img"
-            id="1"
+            component='img'
+            id='1'
             src={image2.src}
-            alt="small image 2"
-            borderRadius="lg"
-            shadow="md"
-            width="100%"
-            height="5rem"
-            minHeight="5rem"
-            sx={{ cursor: "pointer", objectFit: "cover" }}
+            alt='small image 2'
+            borderRadius='lg'
+            shadow='md'
+            width='100%'
+            height='5rem'
+            minHeight='5rem'
+            sx={{ cursor: 'pointer', objectFit: 'cover' }}
             onClick={handleSetCurrentImage}
           />
           <MDBox
-            component="img"
-            id="2"
+            component='img'
+            id='2'
             src={image3.src}
-            alt="small image 3"
-            borderRadius="lg"
-            shadow="md"
-            width="100%"
-            height="5rem"
-            minHeight="5rem"
-            sx={{ cursor: "pointer", objectFit: "cover" }}
+            alt='small image 3'
+            borderRadius='lg'
+            shadow='md'
+            width='100%'
+            height='5rem'
+            minHeight='5rem'
+            sx={{ cursor: 'pointer', objectFit: 'cover' }}
             onClick={handleSetCurrentImage}
           />
           <MDBox
-            component="img"
-            id="3"
+            component='img'
+            id='3'
             src={image4.src}
-            alt="small image 4"
-            borderRadius="lg"
-            shadow="md"
-            width="100%"
-            height="5rem"
-            minHeight="5rem"
-            sx={{ cursor: "pointer", objectFit: "cover" }}
+            alt='small image 4'
+            borderRadius='lg'
+            shadow='md'
+            width='100%'
+            height='5rem'
+            minHeight='5rem'
+            sx={{ cursor: 'pointer', objectFit: 'cover' }}
             onClick={handleSetCurrentImage}
           />
           <MDBox
-            component="img"
-            id="4"
+            component='img'
+            id='4'
             src={image5.src}
-            alt="small image 5"
-            borderRadius="lg"
-            shadow="md"
-            width="100%"
-            height="5rem"
-            minHeight="5rem"
-            sx={{ cursor: "pointer", objectFit: "cover" }}
+            alt='small image 5'
+            borderRadius='lg'
+            shadow='md'
+            width='100%'
+            height='5rem'
+            minHeight='5rem'
+            sx={{ cursor: 'pointer', objectFit: 'cover' }}
             onClick={handleSetCurrentImage}
           />
         </Stack>

@@ -4,15 +4,15 @@ import { useContext } from 'react'
 // ** Component Imports
 import { AbilityContext } from '~/layouts/components/acl/Can'
 
-const CanViewNavGroup = props => {
+const CanViewNavGroup = (props) => {
   // ** Props
   const { children, navGroup } = props
 
   // ** Hook
   const ability = useContext(AbilityContext)
 
-  const canViewMenuGroup = item => {
-    const hasAnyVisibleChild = item.children && item.children.some(i => ability && ability.can(i.action, i.subject))
+  const canViewMenuGroup = (item) => {
+    const hasAnyVisibleChild = item.children && item.children.some((i) => ability && ability.can(i.action, i.subject))
     if (!(item.action && item.subject)) {
       return hasAnyVisibleChild
     }

@@ -1,5 +1,4 @@
 // ** React Imports
-import { Fragment } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -35,7 +34,7 @@ const projectListDate = [
     progressColor: 'success',
     projectType: 'React Project',
     projectTitle: 'BGC eCommerce App',
-    img: '/images/icons/project-icons/react.png'
+    img: '/images/icons/project-icons/react.png',
   },
   {
     hours: '20:42',
@@ -44,7 +43,7 @@ const projectListDate = [
     progressColor: 'error',
     projectType: 'Figma Project',
     projectTitle: 'Falcon Logo Design',
-    img: '/images/icons/project-icons/figma.png'
+    img: '/images/icons/project-icons/figma.png',
   },
   {
     hours: '120:87',
@@ -53,7 +52,7 @@ const projectListDate = [
     progressColor: 'primary',
     projectType: 'VueJs Project',
     projectTitle: 'Dashboard Design',
-    img: '/images/icons/project-icons/vue.png'
+    img: '/images/icons/project-icons/vue.png',
   },
   {
     hours: '89:19',
@@ -62,7 +61,7 @@ const projectListDate = [
     progressColor: 'error',
     projectType: 'Xamarin Project',
     projectTitle: 'Foodista Mobile App',
-    img: '/images/icons/project-icons/xamarin.png'
+    img: '/images/icons/project-icons/xamarin.png',
   },
   {
     hours: '230:10',
@@ -71,7 +70,7 @@ const projectListDate = [
     progressColor: 'warning',
     projectType: 'Python Project',
     projectTitle: 'Dojo React Project',
-    img: '/images/icons/project-icons/python.png'
+    img: '/images/icons/project-icons/python.png',
   },
   {
     hours: '342:41',
@@ -80,7 +79,7 @@ const projectListDate = [
     progressColor: 'success',
     projectType: 'Sketch Project',
     projectTitle: 'Blockchain Website',
-    img: '/images/icons/project-icons/sketch.png'
+    img: '/images/icons/project-icons/sketch.png',
   },
   {
     hours: '12:45',
@@ -89,8 +88,8 @@ const projectListDate = [
     progressColor: 'success',
     projectType: 'HTML Project',
     projectTitle: 'Hoffman Website',
-    img: '/images/icons/project-icons/html5.png'
-  }
+    img: '/images/icons/project-icons/html5.png',
+  },
 ]
 
 // Styled Timeline component
@@ -100,12 +99,12 @@ const Timeline = styled(MuiTimeline)(({ theme }) => ({
   marginLeft: theme.spacing(0.75),
   '& .MuiTimelineItem-root': {
     '&:before': {
-      display: 'none'
+      display: 'none',
     },
     '&:last-child': {
-      minHeight: 60
-    }
-  }
+      minHeight: 60,
+    },
+  },
 }))
 
 // Styled component for images
@@ -113,21 +112,27 @@ const Img = styled('img')(({ theme }) => ({
   width: 32,
   height: 32,
   borderRadius: '50%',
-  marginRight: theme.spacing(3)
+  marginRight: theme.spacing(3),
 }))
 
 const UserViewOverview = ({ invoiceData }) => {
   return (
     <>
       <Card sx={{ mb: 6 }}>
-        <CardHeader title='Project List' titleTypographyProps={{ variant: 'h6' }} />
+        <CardHeader
+          title='Project List'
+          titleTypographyProps={{ variant: 'h6' }}
+        />
 
         <Divider sx={{ m: 0 }} />
 
         <TableContainer>
-          <Table size='small' sx={{ minWidth: 500 }}>
+          <Table
+            size='small'
+            sx={{ minWidth: 500 }}
+          >
             <TableHead
-              sx={{ backgroundColor: theme => (theme.palette.mode === 'light' ? 'grey.50' : 'background.default') }}
+              sx={{ backgroundColor: (theme) => (theme.palette.mode === 'light' ? 'grey.50' : 'background.default') }}
             >
               <TableRow>
                 <TableCell sx={{ height: '3.375rem' }}>Project</TableCell>
@@ -139,13 +144,23 @@ const UserViewOverview = ({ invoiceData }) => {
 
             <TableBody>
               {projectListDate.map((item, index) => (
-                <TableRow hover key={index} sx={{ '&:last-of-type td': { border: 0 } }}>
+                <TableRow
+                  hover
+                  key={index}
+                  sx={{ '&:last-of-type td': { border: 0 } }}
+                >
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Img src={item.img} alt={`project-${index + 1}`} />
+                      <Img
+                        src={item.img}
+                        alt={`project-${index + 1}`}
+                      />
                       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                         <Typography sx={{ fontWeight: 500, fontSize: '0.875rem' }}>{item.projectTitle}</Typography>
-                        <Typography variant='caption' sx={{ color: 'text.disabled' }}>
+                        <Typography
+                          variant='caption'
+                          sx={{ color: 'text.disabled' }}
+                        >
                           {item.projectType}
                         </Typography>
                       </Box>
@@ -170,7 +185,10 @@ const UserViewOverview = ({ invoiceData }) => {
       </Card>
 
       <Card sx={{ mb: 6 }}>
-        <CardHeader title='User Activity Timeline' titleTypographyProps={{ variant: 'h6' }} />
+        <CardHeader
+          title='User Activity Timeline'
+          titleTypographyProps={{ variant: 'h6' }}
+        />
         <CardContent>
           <Timeline>
             <TimelineItem>
@@ -185,10 +203,13 @@ const UserViewOverview = ({ invoiceData }) => {
                     display: 'flex',
                     flexWrap: 'wrap',
                     alignItems: 'center',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
                   }}
                 >
-                  <Typography variant='body2' sx={{ mr: 2, fontWeight: 600, color: 'text.primary' }}>
+                  <Typography
+                    variant='body2'
+                    sx={{ mr: 2, fontWeight: 600, color: 'text.primary' }}
+                  >
                     User login
                   </Typography>
                   <Typography variant='caption'>12 min ago</Typography>
@@ -209,21 +230,34 @@ const UserViewOverview = ({ invoiceData }) => {
                     display: 'flex',
                     flexWrap: 'wrap',
                     alignItems: 'center',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
                   }}
                 >
-                  <Typography variant='body2' sx={{ mr: 2, fontWeight: 600, color: 'text.primary' }}>
+                  <Typography
+                    variant='body2'
+                    sx={{ mr: 2, fontWeight: 600, color: 'text.primary' }}
+                  >
                     Meeting with John
                   </Typography>
                   <Typography variant='caption'>45 min ago</Typography>
                 </Box>
-                <Typography variant='body2' sx={{ mb: 2 }}>
+                <Typography
+                  variant='body2'
+                  sx={{ mb: 2 }}
+                >
                   React Project meeting with John @10:15am
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Avatar alt='Avatar' src='/images/avatars/2.png' sx={{ width: 40, height: 40, mr: 2 }} />
+                  <Avatar
+                    alt='Avatar'
+                    src='/images/avatars/2.png'
+                    sx={{ width: 40, height: 40, mr: 2 }}
+                  />
                   <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                    <Typography variant='body2' sx={{ fontWeight: 600, color: 'text.primary' }}>
+                    <Typography
+                      variant='body2'
+                      sx={{ fontWeight: 600, color: 'text.primary' }}
+                    >
                       Leona Watkins (Client)
                     </Typography>
                     <Typography variant='body2'>CEO of Watkins Group</Typography>
@@ -244,10 +278,13 @@ const UserViewOverview = ({ invoiceData }) => {
                     display: 'flex',
                     flexWrap: 'wrap',
                     alignItems: 'center',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
                   }}
                 >
-                  <Typography variant='body2' sx={{ mr: 2, fontWeight: 600, color: 'text.primary' }}>
+                  <Typography
+                    variant='body2'
+                    sx={{ mr: 2, fontWeight: 600, color: 'text.primary' }}
+                  >
                     Create a new react project for client
                   </Typography>
                   <Typography variant='caption'>2 day ago</Typography>
@@ -268,10 +305,13 @@ const UserViewOverview = ({ invoiceData }) => {
                     display: 'flex',
                     flexWrap: 'wrap',
                     alignItems: 'center',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
                   }}
                 >
-                  <Typography variant='body2' sx={{ mr: 2, fontWeight: 600, color: 'text.primary' }}>
+                  <Typography
+                    variant='body2'
+                    sx={{ mr: 2, fontWeight: 600, color: 'text.primary' }}
+                  >
                     Create invoices for client
                   </Typography>
                   <Typography variant='caption'>12 min ago</Typography>
@@ -279,9 +319,17 @@ const UserViewOverview = ({ invoiceData }) => {
                 <Typography variant='body2'>Create new invoices and send to Leona Watkins</Typography>
                 <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
                   <Box sx={{ width: 28, height: 'auto' }}>
-                    <img width={28} height={28} alt='invoice.pdf' src='/images/icons/file-icons/pdf.png' />
+                    <img
+                      width={28}
+                      height={28}
+                      alt='invoice.pdf'
+                      src='/images/icons/file-icons/pdf.png'
+                    />
                   </Box>
-                  <Typography variant='subtitle2' sx={{ ml: 2, fontWeight: 600 }}>
+                  <Typography
+                    variant='subtitle2'
+                    sx={{ ml: 2, fontWeight: 600 }}
+                  >
                     invoice.pdf
                   </Typography>
                 </Box>

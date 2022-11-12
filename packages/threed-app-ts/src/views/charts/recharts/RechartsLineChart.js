@@ -29,10 +29,10 @@ const data = [
   { pv: 100, name: '18/12' },
   { pv: 150, name: '19/12' },
   { pv: 100, name: '20/12' },
-  { pv: 50, name: '21/12' }
+  { pv: 50, name: '21/12' },
 ]
 
-const CustomTooltip = props => {
+const CustomTooltip = (props) => {
   // ** Props
   const { active, payload } = props
   if (active && payload) {
@@ -58,11 +58,14 @@ const RechartsLineChart = ({ direction }) => {
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],
           '& .MuiCardHeader-action': { mb: 0 },
-          '& .MuiCardHeader-content': { mb: [2, 0] }
+          '& .MuiCardHeader-content': { mb: [2, 0] },
         }}
         action={
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant='h6' sx={{ mr: 5 }}>
+            <Typography
+              variant='h6'
+              sx={{ mr: 5 }}
+            >
               $221,267
             </Typography>
             <CustomChip
@@ -82,12 +85,24 @@ const RechartsLineChart = ({ direction }) => {
       <CardContent>
         <Box sx={{ height: 350 }}>
           <ResponsiveContainer>
-            <LineChart height={350} data={data} style={{ direction }} margin={{ left: -20 }}>
+            <LineChart
+              height={350}
+              data={data}
+              style={{ direction }}
+              margin={{ left: -20 }}
+            >
               <CartesianGrid />
-              <XAxis dataKey='name' reversed={direction === 'rtl'} />
+              <XAxis
+                dataKey='name'
+                reversed={direction === 'rtl'}
+              />
               <YAxis orientation={direction === 'rtl' ? 'right' : 'left'} />
               <Tooltip content={CustomTooltip} />
-              <Line dataKey='pv' stroke='#ff9f43' strokeWidth={3} />
+              <Line
+                dataKey='pv'
+                stroke='#ff9f43'
+                strokeWidth={3}
+              />
             </LineChart>
           </ResponsiveContainer>
         </Box>

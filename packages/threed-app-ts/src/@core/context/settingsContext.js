@@ -92,7 +92,6 @@ export const SettingsProvider = ({ children, pageSettings }) => {
     }
   }, [settings.layout])
 
-  // eslint-disable-next-line react/jsx-no-constructed-context-values
   return <SettingsContext.Provider value={{ settings, saveSettings }}>{children}</SettingsContext.Provider>
 }
 

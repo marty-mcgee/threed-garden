@@ -2,10 +2,10 @@
 // RESOURCES
 
 // ** Next Imports
-import { Router, useRouter, withRouter, NextRouter } from 'next/router'
+import { Router, NextRouter } from 'next/router'
 // ** Next Types
-import type { NextPage, NextComponentType } from "next"
-import type { AppProps } from "next/app"
+import type { NextPage, NextComponentType } from 'next'
+import type { AppProps } from 'next/app'
 
 // ** React Imports
 import {
@@ -16,9 +16,7 @@ import {
   // JSXElementConstructor,
   // Key,
   useState,
-  useEffect,
-  useMemo,
-} from "react"
+} from 'react'
 
 // ** Redux Store Imports
 import { Provider as ReduxProvider } from 'react-redux'
@@ -73,14 +71,13 @@ import { createEmotionCache } from '~/@core/utils/create-emotion-cache'
 import '~/components/threed/styles/index.css'
 
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '~/@core/utils/console-colors'
+import { ccm4, ccm5 } from '~/@core/utils/console-colors'
 
 // ==============================================================
 // SCAFFOLD-ETH-TS IMPORTS
 import '~~/styles/tailwind.css'
 import '~~/styles/globals.css'
 
-import createCache from '@emotion/cache'
 // import { CacheProvider } from '@emotion/react'
 import { EthComponentsSettingsContext, IEthComponentsSettings } from 'eth-components/models'
 import { EthersAppContext } from 'eth-hooks/context'
@@ -111,16 +108,16 @@ interface MyComponentProps extends WithRouterProps {
 }
 
 type NextPageWithLayout = NextPage & {
-  getLayout?: (page: ReactElement) => ReactNode,
-  setConfig: any,
-  authGuard: boolean,
-  guestGuard: boolean,
-  acl: 'manage' | 'all' | 'acl-page' |'read' | 'create' | 'update' | 'delete' // any // aclAbilities
+  getLayout?: (page: ReactElement) => ReactNode
+  setConfig: any
+  authGuard: boolean
+  guestGuard: boolean
+  acl: 'manage' | 'all' | 'acl-page' | 'read' | 'create' | 'update' | 'delete' // any // aclAbilities
 }
 
 type AppPropsWithLayoutEmotion = AppProps & {
-  Component: NextPageWithLayout,
-  emotionCache?: EmotionCache,
+  Component: NextPageWithLayout
+  emotionCache?: EmotionCache
   router: NextRouter
 }
 // OR INTERFACE ??? no, because we are extending a TYPE, not an INTERFACE
@@ -131,9 +128,9 @@ type AppPropsWithLayoutEmotion = AppProps & {
 // }
 
 type MartyComponent = AppPropsWithLayoutEmotion & {
-  setConfig: any,
-  authGuard: boolean,
-  guestGuard: boolean,
+  setConfig: any
+  authGuard: boolean
+  guestGuard: boolean
   acl: any // aclAbilities
 }
 // OR INTERFACE ??? no, because we are extending a TYPE, not an INTERFACE
@@ -219,10 +216,11 @@ const ProviderWrapper: FC<{ children?: ReactNode }> = (props) => {
     <EthComponentsSettingsContext.Provider value={ethComponentsSettings}>
       <EthersAppContext disableDefaultQueryClientRoot={true}>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <ThemeSwitcherProvider themeMap={themes} defaultTheme={savedTheme ?? 'dark'}>
-            <ErrorBoundary FallbackComponent={ErrorFallback}>
-              {props.children}
-            </ErrorBoundary>
+          <ThemeSwitcherProvider
+            themeMap={themes}
+            defaultTheme={savedTheme ?? 'dark'}
+          >
+            <ErrorBoundary FallbackComponent={ErrorFallback}>{props.children}</ErrorBoundary>
           </ThemeSwitcherProvider>
         </ErrorBoundary>
       </EthersAppContext>
@@ -235,32 +233,34 @@ const ProviderWrapper: FC<{ children?: ReactNode }> = (props) => {
  * This component sets up all the providers, Suspense and Error handling
  * @returns
  */
- const EthApp: NextComponentType<AppContext, AppInitialProps, AppProps> = ({ Component, ...props }) => {
+const EthApp: NextComponentType<AppContext, AppInitialProps, AppProps> = (props) => {
+  //
   console.debug('loading eth app...')
+
+  const { Component, pageProps } = props
+
+  // Query Client
   const [queryClient] = useState(() => new QueryClient())
 
-  const { pageProps } = props
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   const dehydradedState = pageProps.dehydratedState as unknown
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       {/* <CacheProvider value={cache}> */}
-        <QueryClientProvider client={queryClient}>
-          <Hydrate state={dehydradedState}>
-            <ProviderWrapper>
-              <Suspense fallback={<div />}>
-                <Component {...props.pageProps} />
-              </Suspense>
-            </ProviderWrapper>
-          </Hydrate>
-        </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <Hydrate state={dehydradedState}>
+          <ProviderWrapper>
+            <Suspense fallback={<div />}>
+              <Component {...props.pageProps} />
+            </Suspense>
+          </ProviderWrapper>
+        </Hydrate>
+      </QueryClientProvider>
       {/* </CacheProvider> */}
     </ErrorBoundary>
   )
 }
-// EthApp.getInitialProps = appGetInitialProps
+EthApp.getInitialProps = appGetInitialProps
 // export const getInitialProps = appGetInitialProps
 
 // ==============================================================
@@ -284,7 +284,8 @@ const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmot
     <ApolloProvider client={client}>
       <ReduxProvider store={reduxStore}>
         <CacheProvider value={emotionCache}>
-          <Header />{/* <Header title={pageProps.title} /> */}
+          <Header />
+          {/* <Header title={pageProps.title} /> */}
           <AuthProvider>
             <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null })}>
               <SettingsConsumer>
@@ -299,13 +300,11 @@ const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmot
                           aclAbilities={aclAbilities}
                           guestGuard={guestGuard}
                         >
-                          {
-                            getLayout(
-                              <EthApp {...props}>
-                                <Component {...pageProps} />
-                              </EthApp>
-                            )
-                          }
+                          {getLayout(
+                            <EthApp {...props}>
+                              <Component {...pageProps} />
+                            </EthApp>
+                          )}
                         </AclGuard>
                       </Guard>
                     </WindowWrapper>

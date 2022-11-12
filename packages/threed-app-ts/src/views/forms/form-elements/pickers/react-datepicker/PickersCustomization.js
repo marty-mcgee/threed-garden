@@ -17,13 +17,16 @@ const PickersCustomization = () => {
   const [dateHighlight, setDateHighlight] = useState(new Date())
 
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap' }} className='demo-space-x'>
+    <Box
+      sx={{ display: 'flex', flexWrap: 'wrap' }}
+      className='demo-space-x'
+    >
       <Box>
         <DatePicker
           id='custom-format'
           selected={dateFormat}
           dateFormat='MMMM d, yyyy h:mm aa'
-          onChange={date => setDateFormat(date)}
+          onChange={(date) => setDateFormat(date)}
           customInput={<CustomInput label='Custom Date Format' />}
         />
       </Box>
@@ -31,7 +34,7 @@ const PickersCustomization = () => {
         <DatePicker
           id='highlight-dates'
           selected={dateHighlight}
-          onChange={date => setDateHighlight(date)}
+          onChange={(date) => setDateHighlight(date)}
           customInput={<CustomInput label='Highlight Dates' />}
           highlightDates={[subDays(new Date(), 7), addDays(new Date(), 7)]}
         />

@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Menu from '@mui/material/Menu'
@@ -31,7 +31,7 @@ const LanguageDropdown = ({ settings, saveSettings }) => {
     }
   }, [i18n.language, direction])
 
-  const handleLangDropdownOpen = event => {
+  const handleLangDropdownOpen = (event) => {
     setAnchorEl(event.currentTarget)
   }
 
@@ -39,7 +39,7 @@ const LanguageDropdown = ({ settings, saveSettings }) => {
     setAnchorEl(null)
   }
 
-  const handleLangItemClick = lang => {
+  const handleLangItemClick = (lang) => {
     i18n.changeLanguage(lang)
     handleLangDropdownClose()
   }

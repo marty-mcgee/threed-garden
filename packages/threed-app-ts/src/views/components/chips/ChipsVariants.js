@@ -5,7 +5,10 @@ const ChipsVariants = () => {
   return (
     <div className='demo-space-x'>
       <Chip label='Basic' />
-      <Chip label='Outlined' variant='outlined' />
+      <Chip
+        label='Outlined'
+        variant='outlined'
+      />
     </div>
   )
 }

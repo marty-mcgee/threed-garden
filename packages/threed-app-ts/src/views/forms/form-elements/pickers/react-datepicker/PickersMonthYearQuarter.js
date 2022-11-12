@@ -17,14 +17,17 @@ const PickersMonthYear = () => {
   const [quarter, setQuarter] = useState(new Date())
 
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap' }} className='demo-space-x'>
+    <Box
+      sx={{ display: 'flex', flexWrap: 'wrap' }}
+      className='demo-space-x'
+    >
       <Box>
         <DatePicker
           selected={month}
           id='month-picker'
           showMonthYearPicker
           dateFormat='MM/yyyy'
-          onChange={date => setMonth(date)}
+          onChange={(date) => setMonth(date)}
           customInput={<CustomInput label='Month Picker' />}
         />
       </Box>
@@ -34,7 +37,7 @@ const PickersMonthYear = () => {
           selected={year}
           id='year-picker'
           dateFormat='MM/yyyy'
-          onChange={date => setYear(date)}
+          onChange={(date) => setYear(date)}
           customInput={<CustomInput label='Year Picker' />}
         />
       </Box>
@@ -44,7 +47,7 @@ const PickersMonthYear = () => {
           id='quarter-picker'
           showQuarterYearPicker
           dateFormat='yyyy, QQQ'
-          onChange={date => setQuarter(date)}
+          onChange={(date) => setQuarter(date)}
           customInput={<CustomInput label='Quarter Picker' />}
         />
       </Box>

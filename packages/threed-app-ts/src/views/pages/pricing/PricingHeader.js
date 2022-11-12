@@ -4,7 +4,7 @@ import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import InputLabel from '@mui/material/InputLabel'
 
-const PricingHeader = props => {
+const PricingHeader = (props) => {
   // ** Props
   const { plan, handleChange } = props
 
@@ -24,7 +24,11 @@ const PricingHeader = props => {
         >
           Monthly
         </InputLabel>
-        <Switch id='pricing-switch' onChange={handleChange} checked={plan === 'annually'} />
+        <Switch
+          id='pricing-switch'
+          onChange={handleChange}
+          checked={plan === 'annually'}
+        />
         <InputLabel
           htmlFor='pricing-switch'
           sx={{ fontWeight: 600, cursor: 'pointer', fontSize: '0.875rem', color: 'text.secondary' }}

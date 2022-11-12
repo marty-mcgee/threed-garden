@@ -19,7 +19,7 @@ const Header = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   padding: theme.spacing(3, 4),
   justifyContent: 'space-between',
-  backgroundColor: theme.palette.background.default
+  backgroundColor: theme.palette.background.default,
 }))
 
 const SendInvoiceDrawer = ({ open, toggle }) => {
@@ -34,19 +34,49 @@ const SendInvoiceDrawer = ({ open, toggle }) => {
     >
       <Header>
         <Typography variant='h6'>Send Invoice</Typography>
-        <Close fontSize='small' onClick={toggle} sx={{ cursor: 'pointer' }} />
+        <Close
+          fontSize='small'
+          onClick={toggle}
+          sx={{ cursor: 'pointer' }}
+        />
       </Header>
       <Box sx={{ p: 5 }}>
-        <FormControl fullWidth sx={{ mb: 6 }}>
-          <TextField type='email' label='From' variant='outlined' defaultValue='shelbyComapny@email.com' />
+        <FormControl
+          fullWidth
+          sx={{ mb: 6 }}
+        >
+          <TextField
+            type='email'
+            label='From'
+            variant='outlined'
+            defaultValue='shelbyComapny@email.com'
+          />
         </FormControl>
-        <FormControl fullWidth sx={{ mb: 6 }}>
-          <TextField type='email' label='To' variant='outlined' defaultValue='qConsolidated@email.com' />
+        <FormControl
+          fullWidth
+          sx={{ mb: 6 }}
+        >
+          <TextField
+            type='email'
+            label='To'
+            variant='outlined'
+            defaultValue='qConsolidated@email.com'
+          />
         </FormControl>
-        <FormControl fullWidth sx={{ mb: 6 }}>
-          <TextField label='Subject' variant='outlined' defaultValue='Invoice of purchased Admin Templates' />
+        <FormControl
+          fullWidth
+          sx={{ mb: 6 }}
+        >
+          <TextField
+            label='Subject'
+            variant='outlined'
+            defaultValue='Invoice of purchased Admin Templates'
+          />
         </FormControl>
-        <FormControl fullWidth sx={{ mb: 6 }}>
+        <FormControl
+          fullWidth
+          sx={{ mb: 6 }}
+        >
           <TextField
             rows={10}
             multiline
@@ -73,10 +103,20 @@ We would appreciate payment of this invoice by 05/11/2019`}
           />
         </Box>
         <Box>
-          <Button size='large' variant='contained' onClick={toggle} sx={{ mr: 4 }}>
+          <Button
+            size='large'
+            variant='contained'
+            onClick={toggle}
+            sx={{ mr: 4 }}
+          >
             Send
           </Button>
-          <Button size='large' variant='outlined' color='secondary' onClick={toggle}>
+          <Button
+            size='large'
+            variant='outlined'
+            color='secondary'
+            onClick={toggle}
+          >
             Cancel
           </Button>
         </Box>

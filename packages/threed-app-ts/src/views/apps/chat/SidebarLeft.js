@@ -41,7 +41,7 @@ const ScrollWrapper = ({ children, hidden }) => {
   }
 }
 
-const SidebarLeft = props => {
+const SidebarLeft = (props) => {
   // ** Props
   const {
     store,
@@ -59,7 +59,7 @@ const SidebarLeft = props => {
     userProfileLeftOpen,
     formatDateToMonthShort,
     handleLeftSidebarToggle,
-    handleUserProfileLeftSidebarToggle
+    handleUserProfileLeftSidebarToggle,
   } = props
 
   // ** States
@@ -99,9 +99,9 @@ const SidebarLeft = props => {
     }
   }, [])
 
-  const hasActiveId = id => {
+  const hasActiveId = (id) => {
     if (store.chats !== null) {
-      const arr = store.chats.filter(i => i.id === id)
+      const arr = store.chats.filter((i) => i.id === id)
 
       return !!arr.length
     }
@@ -123,7 +123,11 @@ const SidebarLeft = props => {
           const activeCondition = active !== null && active.id === chat.id && active.type === 'chat'
 
           return (
-            <ListItem key={index} disablePadding sx={{ '&:not(:last-child)': { mb: 1.5 } }}>
+            <ListItem
+              key={index}
+              disablePadding
+              sx={{ '&:not(:last-child)': { mb: 1.5 } }}
+            >
               <ListItemButton
                 disableRipple
                 onClick={() => handleChatClick('chat', chat.id)}
@@ -134,9 +138,9 @@ const SidebarLeft = props => {
                   borderRadius: 1,
                   alignItems: 'flex-start',
                   ...(activeCondition && {
-                    backgroundImage: theme =>
-                      `linear-gradient(98deg, ${theme.palette.customColors.primaryGradient}, ${theme.palette.primary.main} 94%)`
-                  })
+                    backgroundImage: (theme) =>
+                      `linear-gradient(98deg, ${theme.palette.customColors.primaryGradient}, ${theme.palette.primary.main} 94%)`,
+                  }),
                 }}
               >
                 <ListItemAvatar sx={{ m: 0 }}>
@@ -144,7 +148,7 @@ const SidebarLeft = props => {
                     overlap='circular'
                     anchorOrigin={{
                       vertical: 'bottom',
-                      horizontal: 'right'
+                      horizontal: 'right',
                     }}
                     badgeContent={
                       <Box
@@ -155,9 +159,10 @@ const SidebarLeft = props => {
                           borderRadius: '50%',
                           color: `${statusObj[chat.status]}.main`,
                           backgroundColor: `${statusObj[chat.status]}.main`,
-                          boxShadow: theme =>
-                            `0 0 0 2px ${!activeCondition ? theme.palette.background.paper : theme.palette.common.white
-                            }`
+                          boxShadow: (theme) =>
+                            `0 0 0 2px ${
+                              !activeCondition ? theme.palette.background.paper : theme.palette.common.white
+                            }`,
                         }}
                       />
                     }
@@ -169,7 +174,7 @@ const SidebarLeft = props => {
                         sx={{
                           width: 38,
                           height: 38,
-                          border: theme => (activeCondition ? `2px solid ${theme.palette.common.white}` : '')
+                          border: (theme) => (activeCondition ? `2px solid ${theme.palette.common.white}` : ''),
                         }}
                       />
                     ) : (
@@ -180,7 +185,7 @@ const SidebarLeft = props => {
                           width: 38,
                           height: 38,
                           fontSize: '1rem',
-                          border: theme => (activeCondition ? `2px solid ${theme.palette.common.white}` : '')
+                          border: (theme) => (activeCondition ? `2px solid ${theme.palette.common.white}` : ''),
                         }}
                       >
                         {getInitials(chat.fullName)}
@@ -193,10 +198,13 @@ const SidebarLeft = props => {
                     my: 0,
                     ml: 4,
                     mr: 1.5,
-                    '& .MuiTypography-root': { ...(activeCondition ? { color: 'common.white' } : {}) }
+                    '& .MuiTypography-root': { ...(activeCondition ? { color: 'common.white' } : {}) },
                   }}
                   primary={
-                    <Typography noWrap sx={{ fontWeight: 500, fontSize: '0.875rem' }}>
+                    <Typography
+                      noWrap
+                      sx={{ fontWeight: 500, fontSize: '0.875rem' }}
+                    >
                       {chat.fullName}
                     </Typography>
                   }
@@ -204,7 +212,7 @@ const SidebarLeft = props => {
                     <Typography
                       noWrap
                       variant='body2'
-                      sx={{ color: !activeCondition ? theme => theme.palette.text.disabled : {} }}
+                      sx={{ color: !activeCondition ? (theme) => theme.palette.text.disabled : {} }}
                     >
                       {lastMessage ? lastMessage.message : null}
                     </Typography>
@@ -215,7 +223,7 @@ const SidebarLeft = props => {
                     display: 'flex',
                     alignItems: 'flex-end',
                     flexDirection: 'column',
-                    justifyContent: 'flex-start'
+                    justifyContent: 'flex-start',
                   }}
                 >
                   <Typography
@@ -233,7 +241,7 @@ const SidebarLeft = props => {
                         height: 18,
                         fontWeight: 600,
                         fontSize: '0.75rem',
-                        '& .MuiChip-label': { pt: 0.25, px: 1.655 }
+                        '& .MuiChip-label': { pt: 0.25, px: 1.655 },
                       }}
                     />
                   ) : null}
@@ -259,79 +267,83 @@ const SidebarLeft = props => {
 
         return arrToMap !== null
           ? arrToMap.map((contact, index) => {
-            const activeCondition =
-              active !== null && active.id === contact.id && active.type === 'contact' && !hasActiveId(contact.id)
+              const activeCondition =
+                active !== null && active.id === contact.id && active.type === 'contact' && !hasActiveId(contact.id)
 
-            return (
-              <ListItem key={index} disablePadding sx={{ '&:not(:last-child)': { mb: 1.5 } }}>
-                <ListItemButton
-                  disableRipple
-                  onClick={() => handleChatClick(hasActiveId(contact.id) ? 'chat' : 'contact', contact.id)}
-                  sx={{
-                    px: 3,
-                    py: 2.5,
-                    width: '100%',
-                    borderRadius: 1,
-                    ...(activeCondition && {
-                      backgroundImage: theme =>
-                        `linear-gradient(98deg, ${theme.palette.customColors.primaryGradient}, ${theme.palette.primary.main} 94%)`
-                    })
-                  }}
+              return (
+                <ListItem
+                  key={index}
+                  disablePadding
+                  sx={{ '&:not(:last-child)': { mb: 1.5 } }}
                 >
-                  <ListItemAvatar sx={{ m: 0 }}>
-                    {contact.avatar ? (
-                      <MuiAvatar
-                        alt={contact.fullName}
-                        src={contact.avatar}
-                        sx={{
-                          width: 38,
-                          height: 38,
-                          border: theme => (activeCondition ? `2px solid ${theme.palette.common.white}` : '')
-                        }}
-                      />
-                    ) : (
-                      <CustomAvatar
-                        color={contact.avatarColor}
-                        skin={activeCondition ? 'light-static' : 'light'}
-                        sx={{
-                          width: 38,
-                          height: 38,
-                          fontSize: '1rem',
-                          border: theme => (activeCondition ? `2px solid ${theme.palette.common.white}` : '')
-                        }}
-                      >
-                        {getInitials(contact.fullName)}
-                      </CustomAvatar>
-                    )}
-                  </ListItemAvatar>
-                  <ListItemText
-                    sx={{ my: 0, ml: 4, '& .MuiTypography-root': { color: activeCondition ? 'common.white' : '' } }}
-                    primary={
-                      <Typography sx={{ fontWeight: 500, fontSize: '0.875rem' }}>{contact.fullName}</Typography>
-                    }
-                    secondary={
-                      <Typography
-                        noWrap
-                        variant='body2'
-                        sx={{ color: !activeCondition ? theme => theme.palette.text.disabled : {} }}
-                      >
-                        {contact.about}
-                      </Typography>
-                    }
-                  />
-                </ListItemButton>
-              </ListItem>
-            )
-          })
+                  <ListItemButton
+                    disableRipple
+                    onClick={() => handleChatClick(hasActiveId(contact.id) ? 'chat' : 'contact', contact.id)}
+                    sx={{
+                      px: 3,
+                      py: 2.5,
+                      width: '100%',
+                      borderRadius: 1,
+                      ...(activeCondition && {
+                        backgroundImage: (theme) =>
+                          `linear-gradient(98deg, ${theme.palette.customColors.primaryGradient}, ${theme.palette.primary.main} 94%)`,
+                      }),
+                    }}
+                  >
+                    <ListItemAvatar sx={{ m: 0 }}>
+                      {contact.avatar ? (
+                        <MuiAvatar
+                          alt={contact.fullName}
+                          src={contact.avatar}
+                          sx={{
+                            width: 38,
+                            height: 38,
+                            border: (theme) => (activeCondition ? `2px solid ${theme.palette.common.white}` : ''),
+                          }}
+                        />
+                      ) : (
+                        <CustomAvatar
+                          color={contact.avatarColor}
+                          skin={activeCondition ? 'light-static' : 'light'}
+                          sx={{
+                            width: 38,
+                            height: 38,
+                            fontSize: '1rem',
+                            border: (theme) => (activeCondition ? `2px solid ${theme.palette.common.white}` : ''),
+                          }}
+                        >
+                          {getInitials(contact.fullName)}
+                        </CustomAvatar>
+                      )}
+                    </ListItemAvatar>
+                    <ListItemText
+                      sx={{ my: 0, ml: 4, '& .MuiTypography-root': { color: activeCondition ? 'common.white' : '' } }}
+                      primary={
+                        <Typography sx={{ fontWeight: 500, fontSize: '0.875rem' }}>{contact.fullName}</Typography>
+                      }
+                      secondary={
+                        <Typography
+                          noWrap
+                          variant='body2'
+                          sx={{ color: !activeCondition ? (theme) => theme.palette.text.disabled : {} }}
+                        >
+                          {contact.about}
+                        </Typography>
+                      }
+                    />
+                  </ListItemButton>
+                </ListItem>
+              )
+            })
           : null
       }
     }
   }
 
-  const handleFilter = e => {
+  const handleFilter = (e) => {
     setQuery(e.target.value)
     if (store.chats !== null && store.contacts !== null) {
-      const searchFilterFunction = contact => contact.fullName.toLowerCase().includes(e.target.value.toLowerCase())
+      const searchFilterFunction = (contact) => contact.fullName.toLowerCase().includes(e.target.value.toLowerCase())
       const filteredChatsArr = store.chats.filter(searchFilterFunction)
       const filteredContactsArr = store.contacts.filter(searchFilterFunction)
       setFilteredChat(filteredChatsArr)
@@ -347,7 +359,7 @@ const SidebarLeft = props => {
         variant={mdAbove ? 'permanent' : 'temporary'}
         ModalProps={{
           disablePortal: true,
-          keepMounted: true // Better open performance on mobile.
+          keepMounted: true, // Better open performance on mobile.
         }}
         sx={{
           zIndex: 7,
@@ -358,14 +370,14 @@ const SidebarLeft = props => {
             boxShadow: 'none',
             width: sidebarWidth,
             position: mdAbove ? 'static' : 'absolute',
-            borderTopLeftRadius: theme => theme.shape.borderRadius,
-            borderBottomLeftRadius: theme => theme.shape.borderRadius
+            borderTopLeftRadius: (theme) => theme.shape.borderRadius,
+            borderBottomLeftRadius: (theme) => theme.shape.borderRadius,
           },
           '& > .MuiBackdrop-root': {
             borderRadius: 1,
             position: 'absolute',
-            zIndex: theme => theme.zIndex.drawer - 1
-          }
+            zIndex: (theme) => theme.zIndex.drawer - 1,
+          },
         }}
       >
         <Box
@@ -374,7 +386,7 @@ const SidebarLeft = props => {
             px: 5,
             display: 'flex',
             alignItems: 'center',
-            borderBottom: theme => `1px solid ${theme.palette.divider}`
+            borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
           }}
         >
           {store && store.userProfile ? (
@@ -382,7 +394,7 @@ const SidebarLeft = props => {
               overlap='circular'
               anchorOrigin={{
                 vertical: 'bottom',
-                horizontal: 'right'
+                horizontal: 'right',
               }}
               sx={{ mr: 4 }}
               onClick={handleUserProfileLeftSidebarToggle}
@@ -395,7 +407,7 @@ const SidebarLeft = props => {
                     borderRadius: '50%',
                     color: `${statusObj[userStatus]}.main`,
                     backgroundColor: `${statusObj[userStatus]}.main`,
-                    boxShadow: theme => `0 0 0 2px ${theme.palette.background.paper}`
+                    boxShadow: (theme) => `0 0 0 2px ${theme.palette.background.paper}`,
                   }}
                 />
               }
@@ -416,14 +428,20 @@ const SidebarLeft = props => {
             sx={{ '& .MuiInputBase-root': { borderRadius: 5 } }}
             InputProps={{
               startAdornment: (
-                <InputAdornment position='start' sx={{ color: 'text.secondary' }}>
+                <InputAdornment
+                  position='start'
+                  sx={{ color: 'text.secondary' }}
+                >
                   <Magnify fontSize='small' />
                 </InputAdornment>
-              )
+              ),
             }}
           />
           {!mdAbove ? (
-            <IconButton sx={{ p: 1, ml: 1 }} onClick={handleLeftSidebarToggle}>
+            <IconButton
+              sx={{ p: 1, ml: 1 }}
+              onClick={handleLeftSidebarToggle}
+            >
               <Close sx={{ fontSize: '1.375rem' }} />
             </IconButton>
           ) : null}
@@ -431,12 +449,18 @@ const SidebarLeft = props => {
 
         <Box sx={{ height: `calc(100% - 4.0625rem)` }}>
           <ScrollWrapper hidden={hidden}>
-            <Box sx={{ p: theme => theme.spacing(7, 3, 3) }}>
-              <Typography variant='h6' sx={{ ml: 3, mb: 3, color: 'primary.main' }}>
+            <Box sx={{ p: (theme) => theme.spacing(7, 3, 3) }}>
+              <Typography
+                variant='h6'
+                sx={{ ml: 3, mb: 3, color: 'primary.main' }}
+              >
                 Chats
               </Typography>
               <List sx={{ mb: 4, p: 0 }}>{renderChats()}</List>
-              <Typography variant='h6' sx={{ ml: 3, mb: 3, color: 'primary.main' }}>
+              <Typography
+                variant='h6'
+                sx={{ ml: 3, mb: 3, color: 'primary.main' }}
+              >
                 Contacts
               </Typography>
               <List sx={{ p: 0 }}>{renderContacts()}</List>

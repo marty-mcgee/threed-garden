@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 
 // ** MUI Imports
 import List from '@mui/material/List'
@@ -29,7 +29,10 @@ const ListNested = () => {
 
   return (
     <>
-      <List component='nav' aria-label='main mailbox'>
+      <List
+        component='nav'
+        aria-label='main mailbox'
+      >
         <ListItem disablePadding>
           <ListItemButton onClick={handleClick}>
             <ListItemIcon>
@@ -39,8 +42,15 @@ const ListNested = () => {
             {open ? <ChevronUp /> : <ChevronDown />}
           </ListItemButton>
         </ListItem>
-        <Collapse in={open} timeout='auto' unmountOnExit>
-          <List component='div' disablePadding>
+        <Collapse
+          in={open}
+          timeout='auto'
+          unmountOnExit
+        >
+          <List
+            component='div'
+            disablePadding
+          >
             <ListItem disablePadding>
               <ListItemButton sx={{ pl: 8 }}>
                 <ListItemIcon sx={{ mr: 4 }}>
@@ -61,7 +71,10 @@ const ListNested = () => {
         </ListItem>
       </List>
       <Divider sx={{ m: 0 }} />
-      <List component='nav' aria-label='secondary mailbox'>
+      <List
+        component='nav'
+        aria-label='secondary mailbox'
+      >
         <ListItem disablePadding>
           <ListItemButton>
             <ListItemIcon>

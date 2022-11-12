@@ -1,5 +1,5 @@
 // @mui material components
-import { Theme } from "@mui/material/styles"
+import { Theme } from '@mui/material/styles'
 
 function menuItem(theme: Theme) {
   const { palette, borders, transitions } = theme
@@ -8,28 +8,28 @@ function menuItem(theme: Theme) {
   const { borderRadius } = borders
 
   return {
-    display: "flex",
-    alignItems: "center",
-    width: "100%",
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%',
     color: secondary.main,
     borderRadius: borderRadius.md,
-    transition: transitions.create("background-color", {
+    transition: transitions.create('background-color', {
       easing: transitions.easing.easeInOut,
       duration: transitions.duration.standard,
     }),
 
-    "& *": {
-      transition: "color 100ms linear",
+    '& *': {
+      transition: 'color 100ms linear',
     },
 
-    "&:not(:last-child)": {
+    '&:not(:last-child)': {
       mb: 1,
     },
 
-    "&:hover": {
+    '&:hover': {
       backgroundColor: light.main,
 
-      "& *": {
+      '& *': {
         color: dark.main,
       },
     },

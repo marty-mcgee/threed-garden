@@ -24,7 +24,7 @@ const Header = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   padding: theme.spacing(3, 4),
   justifyContent: 'space-between',
-  backgroundColor: theme.palette.background.default
+  backgroundColor: theme.palette.background.default,
 }))
 
 const schema = yup.object().shape({
@@ -32,7 +32,7 @@ const schema = yup.object().shape({
   email: yup.string().email().required(),
   company: yup.string().required(),
   contact: yup.string().min(10).max(10).required(),
-  address: yup.string().max(120).required()
+  address: yup.string().max(120).required(),
 })
 
 const AddNewCustomer = ({ open, toggle, setSelectedClient, clients, setClients }) => {
@@ -40,13 +40,13 @@ const AddNewCustomer = ({ open, toggle, setSelectedClient, clients, setClients }
     reset,
     control,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: { name: '', email: '', company: '', address: '', country: 'USA', contact: '' }
+    defaultValues: { name: '', email: '', company: '', address: '', country: 'USA', contact: '' },
   })
 
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     const { address, company, contact, country, email, name } = data
 
     const finalData = {
@@ -55,7 +55,7 @@ const AddNewCustomer = ({ open, toggle, setSelectedClient, clients, setClients }
       contact,
       company,
       address,
-      companyEmail: email
+      companyEmail: email,
     }
     if (clients !== undefined) {
       setClients([...clients, finalData])
@@ -81,10 +81,21 @@ const AddNewCustomer = ({ open, toggle, setSelectedClient, clients, setClients }
     >
       <Header>
         <Typography variant='h6'>Add New Customer</Typography>
-        <Close fontSize='small' onClick={toggle} sx={{ cursor: 'pointer' }} />
+        <Close
+          fontSize='small'
+          onClick={toggle}
+          sx={{ cursor: 'pointer' }}
+        />
       </Header>
-      <Box component='form' sx={{ p: 5 }} onSubmit={handleSubmit(onSubmit)}>
-        <FormControl fullWidth sx={{ mb: 6 }}>
+      <Box
+        component='form'
+        sx={{ p: 5 }}
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <FormControl
+          fullWidth
+          sx={{ mb: 6 }}
+        >
           <Controller
             name='name'
             control={control}
@@ -100,12 +111,18 @@ const AddNewCustomer = ({ open, toggle, setSelectedClient, clients, setClients }
             )}
           />
           {errors.name && (
-            <FormHelperText sx={{ color: 'error.main' }} id='invoice-name-error'>
+            <FormHelperText
+              sx={{ color: 'error.main' }}
+              id='invoice-name-error'
+            >
               {errors.name.message}
             </FormHelperText>
           )}
         </FormControl>
-        <FormControl fullWidth sx={{ mb: 6 }}>
+        <FormControl
+          fullWidth
+          sx={{ mb: 6 }}
+        >
           <Controller
             name='company'
             control={control}
@@ -121,12 +138,18 @@ const AddNewCustomer = ({ open, toggle, setSelectedClient, clients, setClients }
             )}
           />
           {errors.company && (
-            <FormHelperText sx={{ color: 'error.main' }} id='invoice-company-error'>
+            <FormHelperText
+              sx={{ color: 'error.main' }}
+              id='invoice-company-error'
+            >
               {errors.company.message}
             </FormHelperText>
           )}
         </FormControl>
-        <FormControl fullWidth sx={{ mb: 6 }}>
+        <FormControl
+          fullWidth
+          sx={{ mb: 6 }}
+        >
           <Controller
             name='email'
             control={control}
@@ -143,12 +166,18 @@ const AddNewCustomer = ({ open, toggle, setSelectedClient, clients, setClients }
             )}
           />
           {errors.email && (
-            <FormHelperText sx={{ color: 'error.main' }} id='invoice-email-error'>
+            <FormHelperText
+              sx={{ color: 'error.main' }}
+              id='invoice-email-error'
+            >
               {errors.email.message}
             </FormHelperText>
           )}
         </FormControl>
-        <FormControl fullWidth sx={{ mb: 6 }}>
+        <FormControl
+          fullWidth
+          sx={{ mb: 6 }}
+        >
           <Controller
             name='address'
             control={control}
@@ -167,12 +196,18 @@ const AddNewCustomer = ({ open, toggle, setSelectedClient, clients, setClients }
             )}
           />
           {errors.address && (
-            <FormHelperText sx={{ color: 'error.main' }} id='invoice-address-error'>
+            <FormHelperText
+              sx={{ color: 'error.main' }}
+              id='invoice-address-error'
+            >
               {errors.address.message}
             </FormHelperText>
           )}
         </FormControl>
-        <FormControl fullWidth sx={{ mb: 6 }}>
+        <FormControl
+          fullWidth
+          sx={{ mb: 6 }}
+        >
           <InputLabel id='invoice-country'>Country</InputLabel>
 
           <Controller
@@ -196,12 +231,18 @@ const AddNewCustomer = ({ open, toggle, setSelectedClient, clients, setClients }
             )}
           />
           {errors.country && (
-            <FormHelperText sx={{ color: 'error.main' }} id='invoice-country-error'>
+            <FormHelperText
+              sx={{ color: 'error.main' }}
+              id='invoice-country-error'
+            >
               {errors.country.message}
             </FormHelperText>
           )}
         </FormControl>
-        <FormControl fullWidth sx={{ mb: 6 }}>
+        <FormControl
+          fullWidth
+          sx={{ mb: 6 }}
+        >
           <Controller
             name='contact'
             control={control}
@@ -219,16 +260,29 @@ const AddNewCustomer = ({ open, toggle, setSelectedClient, clients, setClients }
             )}
           />
           {errors.contact && (
-            <FormHelperText sx={{ color: 'error.main' }} id='invoice-contact-error'>
+            <FormHelperText
+              sx={{ color: 'error.main' }}
+              id='invoice-contact-error'
+            >
               {errors.contact.message}
             </FormHelperText>
           )}
         </FormControl>
         <Box>
-          <Button size='large' type='submit' variant='contained' sx={{ mr: 4 }}>
+          <Button
+            size='large'
+            type='submit'
+            variant='contained'
+            sx={{ mr: 4 }}
+          >
             Add
           </Button>
-          <Button size='large' variant='outlined' color='secondary' onClick={handleDrawerClose}>
+          <Button
+            size='large'
+            variant='outlined'
+            color='secondary'
+            onClick={handleDrawerClose}
+          >
             Cancel
           </Button>
         </Box>

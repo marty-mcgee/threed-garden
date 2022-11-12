@@ -19,24 +19,35 @@ import * as source from '~/views/forms/form-elements/switch/SwitchesSourceCode'
 
 const Switches = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Basic Switches'
           code={{
             tsx: null,
-            jsx: source.SwitchesBasicJSXCode
+            jsx: source.SwitchesBasicJSXCode,
           }}
         >
           <SwitchesBasic />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Controlled and Uncontrolled'
           code={{
             tsx: null,
-            jsx: source.SwitchesControlledUncontrolledJSXCode
+            jsx: source.SwitchesControlledUncontrolledJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -46,12 +57,16 @@ const Switches = () => {
           <SwitchesControlledUncontrolled />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Label Placement'
           code={{
             tsx: null,
-            jsx: source.SwitchesLabelPlacementJSXCode
+            jsx: source.SwitchesLabelPlacementJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -61,12 +76,16 @@ const Switches = () => {
           <SwitchesLabelPlacement />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Colors'
           code={{
             tsx: null,
-            jsx: source.SwitchesColorsJSXCode
+            jsx: source.SwitchesColorsJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -75,12 +94,16 @@ const Switches = () => {
           <SwitchesColors />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Customized Switches'
           code={{
             tsx: null,
-            jsx: source.SwitchesCustomizedJSXCode
+            jsx: source.SwitchesCustomizedJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -89,12 +112,16 @@ const Switches = () => {
           <SwitchesCustomized />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Sizes'
           code={{
             tsx: null,
-            jsx: source.SwitchesSizesJSXCode
+            jsx: source.SwitchesSizesJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -103,12 +130,16 @@ const Switches = () => {
           <SwitchesSizes />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Standalone Switches'
           code={{
             tsx: null,
-            jsx: source.SwitchesStandaloneJSXCode
+            jsx: source.SwitchesStandaloneJSXCode,
           }}
         >
           <SwitchesStandalone />

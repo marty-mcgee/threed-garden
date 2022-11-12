@@ -24,13 +24,20 @@ import * as source from '~/views/forms/form-elements/text-field/TextFieldSourceC
 
 const TextFields = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Variants'
           code={{
             tsx: null,
-            jsx: source.TextFieldVariantJSXCode
+            jsx: source.TextFieldVariantJSXCode,
           }}
         >
           <Typography>
@@ -39,12 +46,15 @@ const TextFields = () => {
           <TextFieldVariant />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Form Props'
           code={{
             tsx: null,
-            jsx: source.TextFieldFormPropsJSXCode
+            jsx: source.TextFieldFormPropsJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -55,12 +65,16 @@ const TextFields = () => {
           <TextFieldFormProps />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Controlled and Uncontrolled'
           code={{
             tsx: null,
-            jsx: source.TextFieldControlledUncontrolledJSXCode
+            jsx: source.TextFieldControlledUncontrolledJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -70,12 +84,16 @@ const TextFields = () => {
           <TextFieldControlledUncontrolled />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Sizes'
           code={{
             tsx: null,
-            jsx: source.TextFieldSizesJSXCode
+            jsx: source.TextFieldSizesJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -84,12 +102,15 @@ const TextFields = () => {
           <TextFieldSizes />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Color'
           code={{
             tsx: null,
-            jsx: source.TextFieldColorJSXCode
+            jsx: source.TextFieldColorJSXCode,
           }}
         >
           <Typography>
@@ -99,24 +120,30 @@ const TextFields = () => {
           <TextFieldColor />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Icons'
           code={{
             tsx: null,
-            jsx: source.TextFieldIconsJSXCode
+            jsx: source.TextFieldIconsJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>There are multiple ways to display an icon with a text field.</Typography>
           <TextFieldIcons />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Input Adornment'
           code={{
             tsx: null,
-            jsx: source.TextFieldInputAdornmentJSXCode
+            jsx: source.TextFieldInputAdornmentJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -126,12 +153,15 @@ const TextFields = () => {
           <TextFieldInputAdornment />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Layout'
           code={{
             tsx: null,
-            jsx: source.TextFieldLayoutJSXCode
+            jsx: source.TextFieldLayoutJSXCode,
           }}
         >
           <Typography>
@@ -145,12 +175,15 @@ const TextFields = () => {
           <TextFieldLayout />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Components'
           code={{
             tsx: null,
-            jsx: source.TextFieldComponentsJSXCode
+            jsx: source.TextFieldComponentsJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -161,23 +194,31 @@ const TextFields = () => {
           <TextFieldComponents />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Inputs'
           code={{
             tsx: null,
-            jsx: source.TextFieldInputsJSXCode
+            jsx: source.TextFieldInputsJSXCode,
           }}
         >
           <TextFieldInputs />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Customized'
           code={{
             tsx: null,
-            jsx: source.TextFieldCustomizedJSXCode
+            jsx: source.TextFieldCustomizedJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -186,12 +227,15 @@ const TextFields = () => {
           <TextFieldCustomized />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Validation'
           code={{
             tsx: null,
-            jsx: source.TextFieldValidationJSXCode
+            jsx: source.TextFieldValidationJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>

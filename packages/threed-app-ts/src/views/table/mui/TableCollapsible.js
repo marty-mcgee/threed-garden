@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, Fragment } from 'react'
+import { useState } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -30,18 +30,18 @@ const createData = (name, calories, fat, carbs, protein, price) => {
       {
         date: '2020-01-05',
         customerId: '11091700',
-        amount: 3
+        amount: 3,
       },
       {
         date: '2020-01-02',
         customerId: 'Anonymous',
-        amount: 1
-      }
-    ]
+        amount: 1,
+      },
+    ],
   }
 }
 
-const Row = props => {
+const Row = (props) => {
   // ** Props
   const { row } = props
 
@@ -52,11 +52,18 @@ const Row = props => {
     <>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
         <TableCell>
-          <IconButton aria-label='expand row' size='small' onClick={() => setOpen(!open)}>
+          <IconButton
+            aria-label='expand row'
+            size='small'
+            onClick={() => setOpen(!open)}
+          >
             {open ? <ChevronUp /> : <ChevronDown />}
           </IconButton>
         </TableCell>
-        <TableCell component='th' scope='row'>
+        <TableCell
+          component='th'
+          scope='row'
+        >
           {row.name}
         </TableCell>
         <TableCell align='right'>{row.calories}</TableCell>
@@ -65,13 +72,27 @@ const Row = props => {
         <TableCell align='right'>{row.protein}</TableCell>
       </TableRow>
       <TableRow>
-        <TableCell colSpan={6} sx={{ py: '0 !important' }}>
-          <Collapse in={open} timeout='auto' unmountOnExit>
+        <TableCell
+          colSpan={6}
+          sx={{ py: '0 !important' }}
+        >
+          <Collapse
+            in={open}
+            timeout='auto'
+            unmountOnExit
+          >
             <Box sx={{ m: 2 }}>
-              <Typography variant='h6' gutterBottom component='div'>
+              <Typography
+                variant='h6'
+                gutterBottom
+                component='div'
+              >
                 History
               </Typography>
-              <Table size='small' aria-label='purchases'>
+              <Table
+                size='small'
+                aria-label='purchases'
+              >
                 <TableHead>
                   <TableRow>
                     <TableCell>Date</TableCell>
@@ -81,9 +102,12 @@ const Row = props => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.history.map(historyRow => (
+                  {row.history.map((historyRow) => (
                     <TableRow key={historyRow.date}>
-                      <TableCell component='th' scope='row'>
+                      <TableCell
+                        component='th'
+                        scope='row'
+                      >
                         {historyRow.date}
                       </TableCell>
                       <TableCell>{historyRow.customerId}</TableCell>
@@ -106,7 +130,7 @@ const rows = [
   createData('Ice cream sandwich', 237, 9.0, 37, 4.3, 4.99),
   createData('Eclair', 262, 16.0, 24, 6.0, 3.79),
   createData('Cupcake', 305, 3.7, 67, 4.3, 2.5),
-  createData('Gingerbread', 356, 16.0, 49, 3.9, 1.5)
+  createData('Gingerbread', 356, 16.0, 49, 3.9, 1.5),
 ]
 
 const TableCollapsible = () => {
@@ -124,8 +148,11 @@ const TableCollapsible = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map(row => (
-            <Row key={row.name} row={row} />
+          {rows.map((row) => (
+            <Row
+              key={row.name}
+              row={row}
+            />
           ))}
         </TableBody>
       </Table>

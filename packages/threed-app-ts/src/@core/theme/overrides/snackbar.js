@@ -4,10 +4,10 @@ const Snackbar = (theme, skin) => {
       styleOverrides: {
         root: {
           ...(skin === 'bordered' && { boxShadow: 'none' }),
-          backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[900] : theme.palette.grey[100]
-        }
-      }
-    }
+          backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[900] : theme.palette.grey[100],
+        },
+      },
+    },
   }
 }
 

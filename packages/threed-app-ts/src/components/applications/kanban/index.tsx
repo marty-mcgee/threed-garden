@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from 'react'
 
 // @asseinfo/react-kanban components
 // import Board from "@asseinfo/react-kanban"
@@ -6,34 +6,26 @@ import { useState } from "react"
 // import dynamic from "next/dynamic"
 
 // html-react-parser
-import parse from "html-react-parser"
 
 // uuid is a library for generating unique id
-import { v4 as uuidv4 } from "uuid"
 
 // @mui material components
-import Icon from "@mui/material/Icon"
-import { Theme } from "@mui/material/styles"
+import { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDButton from "~/components/mui/MDButton"
-import MDTypography from "~/components/mui/MDTypography"
-import MDInput from "~/components/mui/MDInput"
+import MDBox from '~/components/mui/MDBox'
 
 // ThreeD Garden examples components
-import DashboardLayout from "~/components/elements/LayoutContainers/DashboardLayout"
-import DashboardNavbar from "~/components/elements/Navbars/DashboardNavbar"
-import Footer from "~/components/elements/Footer"
+import DashboardLayout from '~/components/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '~/components/elements/Navbars/DashboardNavbar'
+import Footer from '~/components/elements/Footer'
 
 // Kanban application components
-import Header from "~/components/applications/kanban/components/Header"
 
 // Data
-import boards from "~/components/applications/kanban/data"
 
 // ThreeD Garden context
-import { useMaterialUIController } from "~/context"
+import { useMaterialUIController } from '~/context'
 
 // @asseinfo/react-kanban components
 // const Board = dynamic(() => import("@asseinfo/react-kanban"), { ssr: false })
@@ -42,42 +34,37 @@ function Kanban(): JSX.Element {
   const [controller] = useMaterialUIController()
   const { darkMode } = controller
 
-  const [newCardForm, setNewCardForm] = useState<string | number | boolean>(
-    false
-  )
-  const [formValue, setFormValue] = useState<string>("")
+  const [newCardForm, setNewCardForm] = useState<string | number | boolean>(false)
+  const [formValue, setFormValue] = useState<string>('')
 
-  const openNewCardForm = (
-    event: HTMLButtonElement | any,
-    id: string | number
-  ) => setNewCardForm(id)
+  const openNewCardForm = (event: HTMLButtonElement | any, id: string | number) => setNewCardForm(id)
   const closeNewCardForm = () => setNewCardForm(false)
-  const handeSetFormValue = ({ currentTarget }: any) =>
-    setFormValue(currentTarget.value)
+  const handeSetFormValue = ({ currentTarget }: any) => setFormValue(currentTarget.value)
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox py={1}>
-        <MDBox display="flex" justifyContent="flex-end" m={2}>
+        <MDBox
+          display='flex'
+          justifyContent='flex-end'
+          m={2}
+        >
           {/* <Header /> */}
         </MDBox>
         <MDBox
-          position="relative"
+          position='relative'
           my={4}
-          sx={({
-            palette: { light, background },
-            functions: { pxToRem },
-            borders: { borderRadius },
-          }: Theme | any) => ({
-            "& .react-kanban-column": {
+          sx={({ palette: { light, background }, functions: { pxToRem }, borders: { borderRadius } }: Theme | any) => ({
+            '& .react-kanban-column': {
               backgroundColor: darkMode ? background.card : light.main,
               width: pxToRem(450),
               margin: `0 ${pxToRem(10)}`,
               padding: pxToRem(20),
               borderRadius: borderRadius.lg,
             },
-          })}>
+          })}
+        >
           {/* <Board
             // initialBoard={boards}
             allowAddCard

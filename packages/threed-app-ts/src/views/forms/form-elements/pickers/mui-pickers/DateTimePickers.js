@@ -1,4 +1,3 @@
-/* eslint-disable import/no-duplicates */
 // ** React Imports
 import { useState } from 'react'
 
@@ -24,13 +23,16 @@ const DateTimePickers = () => {
   const { i18n } = useTranslation()
 
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap' }} className='demo-space-x'>
+    <Box
+      sx={{ display: 'flex', flexWrap: 'wrap' }}
+      className='demo-space-x'
+    >
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <DateTimePicker
           label='Basic'
           value={basicPicker}
-          onChange={newValue => setBasicPicker(newValue)}
-          renderInput={params => <TextField {...params} />}
+          onChange={(newValue) => setBasicPicker(newValue)}
+          renderInput={(params) => <TextField {...params} />}
         />
       </LocalizationProvider>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -38,8 +40,8 @@ const DateTimePickers = () => {
           disabled
           label='Disabled'
           value={basicPicker}
-          onChange={newValue => setBasicPicker(newValue)}
-          renderInput={params => <TextField {...params} />}
+          onChange={(newValue) => setBasicPicker(newValue)}
+          renderInput={(params) => <TextField {...params} />}
         />
       </LocalizationProvider>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -47,24 +49,27 @@ const DateTimePickers = () => {
           readOnly
           label='Readonly'
           value={basicPicker}
-          onChange={newValue => setBasicPicker(newValue)}
-          renderInput={params => <TextField {...params} />}
+          onChange={(newValue) => setBasicPicker(newValue)}
+          renderInput={(params) => <TextField {...params} />}
         />
       </LocalizationProvider>
-      <LocalizationProvider dateAdapter={AdapterDateFns} locale={langObj[i18n.language]}>
+      <LocalizationProvider
+        dateAdapter={AdapterDateFns}
+        locale={langObj[i18n.language]}
+      >
         <DateTimePicker
           label='Localization'
           value={basicPicker}
-          onChange={newValue => setBasicPicker(newValue)}
-          renderInput={params => <TextField {...params} />}
+          onChange={(newValue) => setBasicPicker(newValue)}
+          renderInput={(params) => <TextField {...params} />}
         />
       </LocalizationProvider>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <DateTimePicker
           value={basicPicker}
           label='Ignore date and time'
-          onChange={newValue => setBasicPicker(newValue)}
-          renderInput={params => <TextField {...params} />}
+          onChange={(newValue) => setBasicPicker(newValue)}
+          renderInput={(params) => <TextField {...params} />}
           minDateTime={new Date(`${new Date().getFullYear()}-01-01 12:00`)}
         />
       </LocalizationProvider>
@@ -72,8 +77,8 @@ const DateTimePickers = () => {
         <MobileDateTimePicker
           label='For mobile'
           value={basicPicker}
-          onChange={newValue => setBasicPicker(newValue)}
-          renderInput={params => <TextField {...params} />}
+          onChange={(newValue) => setBasicPicker(newValue)}
+          renderInput={(params) => <TextField {...params} />}
         />
       </LocalizationProvider>
     </Box>

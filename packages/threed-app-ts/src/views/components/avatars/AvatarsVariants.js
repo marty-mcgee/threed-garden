@@ -10,17 +10,30 @@ import CustomAvatar from '~/@core/components/mui/avatar'
 
 const AvatarsVariants = () => {
   return (
-    <Box className='demo-space-x' sx={{ display: 'flex' }}>
+    <Box
+      className='demo-space-x'
+      sx={{ display: 'flex' }}
+    >
       <CustomAvatar variant='square'>
         <BellOutline />
       </CustomAvatar>
-      <CustomAvatar color='success' variant='rounded'>
+      <CustomAvatar
+        color='success'
+        variant='rounded'
+      >
         <ContentSaveOutline />
       </CustomAvatar>
-      <CustomAvatar skin='light' variant='square'>
+      <CustomAvatar
+        skin='light'
+        variant='square'
+      >
         <BellOutline />
       </CustomAvatar>
-      <CustomAvatar skin='light' color='success' variant='rounded'>
+      <CustomAvatar
+        skin='light'
+        color='success'
+        variant='rounded'
+      >
         <ContentSaveOutline />
       </CustomAvatar>
     </Box>

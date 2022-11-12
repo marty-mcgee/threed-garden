@@ -11,22 +11,22 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell'
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     color: theme.palette.common.white,
-    backgroundColor: theme.palette.common.black
+    backgroundColor: theme.palette.common.black,
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 14
-  }
+    fontSize: 14,
+  },
 }))
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover
+    backgroundColor: theme.palette.action.hover,
   },
 
   // hide last border
   '&:last-of-type td, &:last-of-type th': {
-    border: 0
-  }
+    border: 0,
+  },
 }))
 
 const createData = (name, calories, fat, carbs, protein) => {
@@ -38,13 +38,16 @@ const rows = [
   createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
   createData('Eclair', 262, 16.0, 24, 6.0),
   createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9)
+  createData('Gingerbread', 356, 16.0, 49, 3.9),
 ]
 
 const TableCustomized = () => {
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 700 }} aria-label='customized table'>
+      <Table
+        sx={{ minWidth: 700 }}
+        aria-label='customized table'
+      >
         <TableHead>
           <TableRow>
             <StyledTableCell>Dessert (100g serving)</StyledTableCell>
@@ -55,9 +58,12 @@ const TableCustomized = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map(row => (
+          {rows.map((row) => (
             <StyledTableRow key={row.name}>
-              <StyledTableCell component='th' scope='row'>
+              <StyledTableCell
+                component='th'
+                scope='row'
+              >
                 {row.name}
               </StyledTableCell>
               <StyledTableCell align='right'>{row.calories}</StyledTableCell>

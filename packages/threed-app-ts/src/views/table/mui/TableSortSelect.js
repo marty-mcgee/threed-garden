@@ -40,7 +40,7 @@ const rows = [
   createData('Lollipop', 392, 0.2, 98, 0.0),
   createData('Marshmallow', 318, 0, 81, 2.0),
   createData('Nougat', 360, 19.0, 9, 37.0),
-  createData('Oreo', 437, 18.0, 63, 4.0)
+  createData('Oreo', 437, 18.0, 63, 4.0),
 ]
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -69,7 +69,7 @@ function stableSort(array, comparator) {
     return a[1] - b[1]
   })
 
-  return stabilizedThis.map(el => el[0])
+  return stabilizedThis.map((el) => el[0])
 }
 
 const headCells = [
@@ -77,38 +77,38 @@ const headCells = [
     id: 'name',
     numeric: false,
     disablePadding: true,
-    label: 'Dessert (100g serving)'
+    label: 'Dessert (100g serving)',
   },
   {
     id: 'calories',
     numeric: true,
     disablePadding: false,
-    label: 'Calories'
+    label: 'Calories',
   },
   {
     id: 'fat',
     numeric: true,
     disablePadding: false,
-    label: 'Fat (g)'
+    label: 'Fat (g)',
   },
   {
     id: 'carbs',
     numeric: true,
     disablePadding: false,
-    label: 'Carbs (g)'
+    label: 'Carbs (g)',
   },
   {
     id: 'protein',
     numeric: true,
     disablePadding: false,
-    label: 'Protein (g)'
-  }
+    label: 'Protein (g)',
+  },
 ]
 function EnhancedTableHead(props) {
   // ** Props
   const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props
 
-  const createSortHandler = property => event => {
+  const createSortHandler = (property) => (event) => {
     onRequestSort(event, property)
   }
 
@@ -123,7 +123,7 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
           />
         </TableCell>
-        {headCells.map(headCell => (
+        {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
             align={headCell.numeric ? 'right' : 'left'}
@@ -137,7 +137,10 @@ function EnhancedTableHead(props) {
             >
               {headCell.label}
               {orderBy === headCell.id ? (
-                <Box component='span' sx={visuallyHidden}>
+                <Box
+                  component='span'
+                  sx={visuallyHidden}
+                >
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </Box>
               ) : null}
@@ -149,7 +152,7 @@ function EnhancedTableHead(props) {
   )
 }
 
-const EnhancedTableToolbar = props => {
+const EnhancedTableToolbar = (props) => {
   // ** Prop
   const { numSelected } = props
 
@@ -159,16 +162,26 @@ const EnhancedTableToolbar = props => {
         pl: { sm: 5 },
         pr: { xs: 1, sm: 1 },
         ...(numSelected > 0 && {
-          bgcolor: theme => alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity)
-        })
+          bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+        }),
       }}
     >
       {numSelected > 0 ? (
-        <Typography sx={{ flex: '1 1 100%' }} color='inherit' variant='subtitle1' component='div'>
+        <Typography
+          sx={{ flex: '1 1 100%' }}
+          color='inherit'
+          variant='subtitle1'
+          component='div'
+        >
           {numSelected} selected
         </Typography>
       ) : (
-        <Typography sx={{ flex: '1 1 100%' }} variant='h6' id='tableTitle' component='div'>
+        <Typography
+          sx={{ flex: '1 1 100%' }}
+          variant='h6'
+          id='tableTitle'
+          component='div'
+        >
           Sorting & Selecting
         </Typography>
       )}
@@ -197,9 +210,9 @@ const EnhancedTable = () => {
     setOrderBy(property)
   }
 
-  const handleSelectAllClick = event => {
+  const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map(n => n.name)
+      const newSelecteds = rows.map((n) => n.name)
       setSelected(newSelecteds)
 
       return
@@ -226,11 +239,11 @@ const EnhancedTable = () => {
     setPage(newPage)
   }
 
-  const handleChangeRowsPerPage = event => {
+  const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(0)
   }
-  const isSelected = name => selected.indexOf(name) !== -1
+  const isSelected = (name) => selected.indexOf(name) !== -1
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0
@@ -240,7 +253,10 @@ const EnhancedTable = () => {
       <Paper sx={{ width: '100%' }}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle'>
+          <Table
+            sx={{ minWidth: 750 }}
+            aria-labelledby='tableTitle'
+          >
             <EnhancedTableHead
               order={order}
               orderBy={orderBy}
@@ -264,12 +280,20 @@ const EnhancedTable = () => {
                       role='checkbox'
                       selected={isItemSelected}
                       aria-checked={isItemSelected}
-                      onClick={event => handleClick(event, row.name)}
+                      onClick={(event) => handleClick(event, row.name)}
                     >
                       <TableCell padding='checkbox'>
-                        <Checkbox checked={isItemSelected} inputProps={{ 'aria-labelledby': labelId }} />
+                        <Checkbox
+                          checked={isItemSelected}
+                          inputProps={{ 'aria-labelledby': labelId }}
+                        />
                       </TableCell>
-                      <TableCell component='th' id={labelId} scope='row' padding='none'>
+                      <TableCell
+                        component='th'
+                        id={labelId}
+                        scope='row'
+                        padding='none'
+                      >
                         {row.name}
                       </TableCell>
                       <TableCell align='right'>{row.calories}</TableCell>
@@ -282,7 +306,7 @@ const EnhancedTable = () => {
               {emptyRows > 0 && (
                 <TableRow
                   sx={{
-                    height: 53 * emptyRows
+                    height: 53 * emptyRows,
                   }}
                 >
                   <TableCell colSpan={6} />

@@ -5,10 +5,10 @@ interface Types {
 }
 
 const pieChartData: Types = {
-  labels: ["Facebook", "Direct", "Organic", "Referral"],
+  labels: ['Facebook', 'Direct', 'Organic', 'Referral'],
   datasets: {
-    label: "Projects",
-    backgroundColors: ["info", "primary", "dark", "secondary", "primary"],
+    label: 'Projects',
+    backgroundColors: ['info', 'primary', 'dark', 'secondary', 'primary'],
     data: [15, 20, 12, 60],
   },
 }

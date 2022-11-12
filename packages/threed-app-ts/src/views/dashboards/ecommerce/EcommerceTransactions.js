@@ -24,7 +24,7 @@ const data = [
     avatarColor: 'error',
     subtitle: 'Received Money',
     imgSrc: '/images/cards/paypal.png',
-    trend: <ChevronUp sx={{ color: 'success.main' }} />
+    trend: <ChevronUp sx={{ color: 'success.main' }} />,
   },
   {
     imgWidth: 20,
@@ -35,7 +35,7 @@ const data = [
     avatarColor: 'success',
     subtitle: 'Digital Ocean',
     imgSrc: '/images/cards/credit-card.png',
-    trend: <ChevronDown sx={{ color: 'error.main' }} />
+    trend: <ChevronDown sx={{ color: 'error.main' }} />,
   },
   {
     imgWidth: 20,
@@ -46,7 +46,7 @@ const data = [
     subtitle: 'Netflix',
     avatarColor: 'warning',
     imgSrc: '/images/cards/atm-card.png',
-    trend: <ChevronDown sx={{ color: 'error.main' }} />
+    trend: <ChevronDown sx={{ color: 'error.main' }} />,
   },
   {
     imgWidth: 20,
@@ -57,7 +57,7 @@ const data = [
     subtitle: "Mac'D",
     avatarColor: 'primary',
     imgSrc: '/images/cards/wallet.png',
-    trend: <ChevronDown sx={{ color: 'error.main' }} />
+    trend: <ChevronDown sx={{ color: 'error.main' }} />,
   },
   {
     imgWidth: 20,
@@ -68,8 +68,8 @@ const data = [
     avatarColor: 'info',
     imgAlt: 'arrow-growth',
     imgSrc: '/images/cards/arrow-growth.png',
-    trend: <ChevronUp sx={{ color: 'success.main' }} />
-  }
+    trend: <ChevronUp sx={{ color: 'success.main' }} />,
+  },
 ]
 
 const EcommerceTransactions = () => {
@@ -79,7 +79,12 @@ const EcommerceTransactions = () => {
         title='Transactions'
         titleTypographyProps={{ sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' } }}
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }
@@ -92,11 +97,21 @@ const EcommerceTransactions = () => {
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                ...(index !== data.length - 1 ? { mb: 6 } : {})
+                ...(index !== data.length - 1 ? { mb: 6 } : {}),
               }}
             >
-              <CustomAvatar skin='light' sx={{ mr: 3 }} variant='rounded' color={item.avatarColor}>
-                <img alt={item.imgAlt} src={item.imgSrc} width={item.imgWidth} height={item.imgHeight} />
+              <CustomAvatar
+                skin='light'
+                sx={{ mr: 3 }}
+                variant='rounded'
+                color={item.avatarColor}
+              >
+                <img
+                  alt={item.imgAlt}
+                  src={item.imgSrc}
+                  width={item.imgWidth}
+                  height={item.imgHeight}
+                />
               </CustomAvatar>
               <Box
                 sx={{
@@ -104,7 +119,7 @@ const EcommerceTransactions = () => {
                   display: 'flex',
                   flexWrap: 'wrap',
                   alignItems: 'center',
-                  justifyContent: 'space-between'
+                  justifyContent: 'space-between',
                 }}
               >
                 <Box sx={{ mr: 2, display: 'flex', flexDirection: 'column' }}>

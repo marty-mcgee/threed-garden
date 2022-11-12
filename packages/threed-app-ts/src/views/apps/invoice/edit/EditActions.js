@@ -19,7 +19,7 @@ import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
 const OptionsWrapper = styled(Box)(() => ({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-between'
+  justifyContent: 'space-between',
 }))
 
 const EditActions = ({ id, toggleSendInvoiceDrawer, toggleAddPaymentDrawer }) => {
@@ -36,12 +36,26 @@ const EditActions = ({ id, toggleSendInvoiceDrawer, toggleAddPaymentDrawer }) =>
           >
             Send Invoice
           </Button>
-          <Link href={`/apps/invoice/preview/${id}`} passHref>
-            <Button fullWidth component='a' sx={{ mb: 3.5 }} color='secondary' variant='outlined'>
+          <Link
+            href={`/apps/invoice/preview/${id}`}
+            passHref
+          >
+            <Button
+              fullWidth
+              component='a'
+              sx={{ mb: 3.5 }}
+              color='secondary'
+              variant='outlined'
+            >
               Preview
             </Button>
           </Link>
-          <Button fullWidth color='secondary' variant='outlined' sx={{ mb: 3.5 }}>
+          <Button
+            fullWidth
+            color='secondary'
+            variant='outlined'
+            sx={{ mb: 3.5 }}
+          >
             Save
           </Button>
           <Button
@@ -56,7 +70,11 @@ const EditActions = ({ id, toggleSendInvoiceDrawer, toggleAddPaymentDrawer }) =>
         </CardContent>
       </Card>
 
-      <Select fullWidth defaultValue='Internet Banking' sx={{ mb: 4 }}>
+      <Select
+        fullWidth
+        defaultValue='Internet Banking'
+        sx={{ mb: 4 }}
+      >
         <MenuItem value='Internet Banking'>Internet Banking</MenuItem>
         <MenuItem value='Debit Card'>Debit Card</MenuItem>
         <MenuItem value='Credit Card'>Credit Card</MenuItem>
@@ -70,7 +88,10 @@ const EditActions = ({ id, toggleSendInvoiceDrawer, toggleAddPaymentDrawer }) =>
         >
           Payment Terms
         </InputLabel>
-        <Switch defaultChecked id='invoice-edit-payment-terms' />
+        <Switch
+          defaultChecked
+          id='invoice-edit-payment-terms'
+        />
       </OptionsWrapper>
       <OptionsWrapper sx={{ mb: 1 }}>
         <InputLabel

@@ -19,14 +19,29 @@ const ButtonToggleVertical = () => {
   }
 
   return (
-    <ToggleButtonGroup exclusive value={view} orientation='vertical' onChange={handleView} aria-label='text alignment'>
-      <ToggleButton value='left' aria-label='left aligned'>
+    <ToggleButtonGroup
+      exclusive
+      value={view}
+      orientation='vertical'
+      onChange={handleView}
+      aria-label='text alignment'
+    >
+      <ToggleButton
+        value='left'
+        aria-label='left aligned'
+      >
         <ViewList />
       </ToggleButton>
-      <ToggleButton value='center' aria-label='center aligned'>
+      <ToggleButton
+        value='center'
+        aria-label='center aligned'
+      >
         <ViewModule />
       </ToggleButton>
-      <ToggleButton value='right' aria-label='right aligned'>
+      <ToggleButton
+        value='right'
+        aria-label='right aligned'
+      >
         <ViewQuilt />
       </ToggleButton>
     </ToggleButtonGroup>

@@ -28,7 +28,7 @@ const defaultValues = {
   email: '',
   lastName: '',
   password: '',
-  firstName: ''
+  firstName: '',
 }
 
 const FormValidationAsync = () => {
@@ -37,27 +37,27 @@ const FormValidationAsync = () => {
 
   const [state, setState] = useState({
     password: '',
-    showPassword: false
+    showPassword: false,
   })
 
   // ** Hook
   const {
     control,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm({ defaultValues })
 
   const handleClickShowPassword = () => {
     setState({ ...state, showPassword: !state.showPassword })
   }
 
-  const handleMouseDownPassword = event => {
+  const handleMouseDownPassword = (event) => {
     event.preventDefault()
   }
 
   const onSubmit = async () => {
     setLoading(true)
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
     await sleep(2000)
     setLoading(false)
     toast.success('Form Submitted')
@@ -65,11 +65,20 @@ const FormValidationAsync = () => {
 
   return (
     <Card>
-      <CardHeader title='Async Submit' titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader
+        title='Async Submit'
+        titleTypographyProps={{ variant: 'h6' }}
+      />
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Grid container spacing={5}>
-            <Grid item xs={12}>
+          <Grid
+            container
+            spacing={5}
+          >
+            <Grid
+              item
+              xs={12}
+            >
               <FormControl fullWidth>
                 <Controller
                   name='firstName'
@@ -87,14 +96,20 @@ const FormValidationAsync = () => {
                   )}
                 />
                 {errors.firstName && (
-                  <FormHelperText sx={{ color: 'error.main' }} id='validation-async-first-name'>
+                  <FormHelperText
+                    sx={{ color: 'error.main' }}
+                    id='validation-async-first-name'
+                  >
                     This field is required
                   </FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <FormControl fullWidth>
                 <Controller
                   name='lastName'
@@ -112,14 +127,20 @@ const FormValidationAsync = () => {
                   )}
                 />
                 {errors.lastName && (
-                  <FormHelperText sx={{ color: 'error.main' }} id='validation-async-last-name'>
+                  <FormHelperText
+                    sx={{ color: 'error.main' }}
+                    id='validation-async-last-name'
+                  >
                     This field is required
                   </FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <FormControl fullWidth>
                 <Controller
                   name='email'
@@ -138,16 +159,25 @@ const FormValidationAsync = () => {
                   )}
                 />
                 {errors.email && (
-                  <FormHelperText sx={{ color: 'error.main' }} id='validation-async-email'>
+                  <FormHelperText
+                    sx={{ color: 'error.main' }}
+                    id='validation-async-email'
+                  >
                     This field is required
                   </FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <FormControl fullWidth>
-                <InputLabel htmlFor='validation-async-password' error={Boolean(errors.password)}>
+                <InputLabel
+                  htmlFor='validation-async-password'
+                  error={Boolean(errors.password)}
+                >
                   Password
                 </InputLabel>
                 <Controller
@@ -178,22 +208,32 @@ const FormValidationAsync = () => {
                   )}
                 />
                 {errors.password && (
-                  <FormHelperText sx={{ color: 'error.main' }} id='validation-async-password'>
+                  <FormHelperText
+                    sx={{ color: 'error.main' }}
+                    id='validation-async-password'
+                  >
                     This field is required
                   </FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={12}>
-              <Button size='large' type='submit' variant='contained'>
+            <Grid
+              item
+              xs={12}
+            >
+              <Button
+                size='large'
+                type='submit'
+                variant='contained'
+              >
                 {loading ? (
                   <CircularProgress
                     sx={{
                       color: 'common.white',
                       width: '20px !important',
                       height: '20px !important',
-                      mr: theme => theme.spacing(2)
+                      mr: (theme) => theme.spacing(2),
                     }}
                   />
                 ) : null}

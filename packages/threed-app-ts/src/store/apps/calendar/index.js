@@ -5,11 +5,11 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
 // ** Fetch Events
-export const fetchEvents = createAsyncThunk('appCalendar/fetchEvents', async calendars => {
+export const fetchEvents = createAsyncThunk('appCalendar/fetchEvents', async (calendars) => {
   const response = await axios.get('/apps/calendar/events', {
     params: {
-      calendars
-    }
+      calendars,
+    },
   })
 
   return response.data
@@ -19,8 +19,8 @@ export const fetchEvents = createAsyncThunk('appCalendar/fetchEvents', async cal
 export const addEvent = createAsyncThunk('appCalendar/addEvent', async (event, { dispatch }) => {
   const response = await axios.post('/apps/calendar/add-event', {
     data: {
-      event
-    }
+      event,
+    },
   })
   await dispatch(fetchEvents(['Personal', 'Business', 'Family', 'Holiday', 'ETC']))
 
@@ -31,8 +31,8 @@ export const addEvent = createAsyncThunk('appCalendar/addEvent', async (event, {
 export const updateEvent = createAsyncThunk('appCalendar/updateEvent', async (event, { dispatch }) => {
   const response = await axios.post('/apps/calendar/update-event', {
     data: {
-      event
-    }
+      event,
+    },
   })
   await dispatch(fetchEvents(['Personal', 'Business', 'Family', 'Holiday', 'ETC']))
 
@@ -42,7 +42,7 @@ export const updateEvent = createAsyncThunk('appCalendar/updateEvent', async (ev
 // ** Delete Event
 export const deleteEvent = createAsyncThunk('appCalendar/deleteEvent', async (id, { dispatch }) => {
   const response = await axios.delete('/apps/calendar/remove-event', {
-    params: { id }
+    params: { id },
   })
   await dispatch(fetchEvents(['Personal', 'Business', 'Family', 'Holiday', 'ETC']))
 
@@ -54,14 +54,14 @@ export const appCalendarSlice = createSlice({
   initialState: {
     events: [],
     selectedEvent: null,
-    selectedCalendars: ['Personal', 'Business', 'Family', 'Holiday', 'ETC']
+    selectedCalendars: ['Personal', 'Business', 'Family', 'Holiday', 'ETC'],
   },
   reducers: {
     handleSelectEvent: (state, action) => {
       state.selectedEvent = action.payload
     },
     handleCalendarsUpdate: (state, action) => {
-      const filterIndex = state.selectedCalendars.findIndex(i => i === action.payload)
+      const filterIndex = state.selectedCalendars.findIndex((i) => i === action.payload)
       if (state.selectedCalendars.includes(action.payload)) {
         state.selectedCalendars.splice(filterIndex, 1)
       } else {
@@ -78,13 +78,13 @@ export const appCalendarSlice = createSlice({
       } else {
         state.selectedCalendars = []
       }
-    }
+    },
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder.addCase(fetchEvents.fulfilled, (state, action) => {
       state.events = action.payload
     })
-  }
+  },
 })
 
 export const { handleSelectEvent, handleCalendarsUpdate, handleAllCalendars } = appCalendarSlice.actions

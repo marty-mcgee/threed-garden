@@ -16,19 +16,19 @@ import FooterIllustrations from '~/views/pages/misc/FooterIllustrations'
 // ** Styled Components
 const BoxWrapper = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down('md')]: {
-    width: '90vw'
-  }
+    width: '90vw',
+  },
 }))
 
 const Img = styled('img')(({ theme }) => ({
   marginTop: theme.spacing(9.75),
   marginBottom: theme.spacing(9.75),
   [theme.breakpoints.down('lg')]: {
-    height: 450
+    height: 450,
   },
   [theme.breakpoints.down('md')]: {
-    height: 400
-  }
+    height: 400,
+  },
 }))
 
 const TreeIllustration = styled('img')(({ theme }) => ({
@@ -37,8 +37,8 @@ const TreeIllustration = styled('img')(({ theme }) => ({
   position: 'absolute',
   [theme.breakpoints.down('lg')]: {
     left: 0,
-    bottom: 0
-  }
+    bottom: 0,
+  },
 }))
 
 const UnderMaintenance = () => {
@@ -46,24 +46,45 @@ const UnderMaintenance = () => {
     <Box className='content-center'>
       <Box sx={{ p: 5, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
         <BoxWrapper>
-          <Typography variant='h5' sx={{ mb: 1, fontSize: '1.5rem !important' }}>
+          <Typography
+            variant='h5'
+            sx={{ mb: 1, fontSize: '1.5rem !important' }}
+          >
             Under Maintenance! 🚧
           </Typography>
           <Typography variant='body2'>
             Sorry for the inconvenience but we&prime;re performing some maintenance at the moment
           </Typography>
         </BoxWrapper>
-        <Img height='487' alt='under-maintenance-illustration' src='/images/pages/misc-under-maintenance.png' />
-        <Link passHref href='/'>
-          <Button component='a' variant='contained' sx={{ px: 5.5 }}>
+        <Img
+          height='487'
+          alt='under-maintenance-illustration'
+          src='/images/pages/misc-under-maintenance.png'
+        />
+        <Link
+          passHref
+          href='/'
+        >
+          <Button
+            component='a'
+            variant='contained'
+            sx={{ px: 5.5 }}
+          >
             Back to Home
           </Button>
         </Link>
       </Box>
-      <FooterIllustrations image={<TreeIllustration alt='tree' src='/images/pages/tree-3.png' />} />
+      <FooterIllustrations
+        image={
+          <TreeIllustration
+            alt='tree'
+            src='/images/pages/tree-3.png'
+          />
+        }
+      />
     </Box>
   )
 }
-UnderMaintenance.getLayout = page => <BlankLayout>{page}</BlankLayout>
+UnderMaintenance.getLayout = (page) => <BlankLayout>{page}</BlankLayout>
 
 export default UnderMaintenance

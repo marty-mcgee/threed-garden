@@ -5,7 +5,7 @@ import Checkbox from '@mui/material/Checkbox'
 import Typography from '@mui/material/Typography'
 import FormControlLabel from '@mui/material/FormControlLabel'
 
-const SidebarLeft = props => {
+const SidebarLeft = (props) => {
   const {
     store,
     mdAbove,
@@ -17,7 +17,7 @@ const SidebarLeft = props => {
     handleAllCalendars,
     handleCalendarsUpdate,
     handleLeftSidebarToggle,
-    handleAddEventSidebarToggle
+    handleAddEventSidebarToggle,
   } = props
   const colorsArr = calendarsColor ? Object.entries(calendarsColor) : []
 
@@ -53,7 +53,7 @@ const SidebarLeft = props => {
           disablePortal: true,
           disableAutoFocus: true,
           disableScrollLock: true,
-          keepMounted: true // Better open performance on mobile.
+          keepMounted: true, // Better open performance on mobile.
         }}
         sx={{
           zIndex: 2,
@@ -65,21 +65,27 @@ const SidebarLeft = props => {
             width: leftSidebarWidth,
             borderTopRightRadius: 0,
             borderBottomRightRadius: 0,
-            p: theme => theme.spacing(5),
+            p: (theme) => theme.spacing(5),
             zIndex: mdAbove ? '2' : 'drawer',
-            position: mdAbove ? 'static' : 'absolute'
+            position: mdAbove ? 'static' : 'absolute',
           },
           '& .MuiBackdrop-root': {
             borderRadius: 1,
-            position: 'absolute'
-          }
+            position: 'absolute',
+          },
         }}
       >
-        <Button variant='contained' onClick={handleSidebarToggleSidebar}>
+        <Button
+          variant='contained'
+          onClick={handleSidebarToggleSidebar}
+        >
           Add Event
         </Button>
 
-        <Typography variant='caption' sx={{ mt: 7, mb: 2, textTransform: 'uppercase' }}>
+        <Typography
+          variant='caption'
+          sx={{ mt: 7, mb: 2, textTransform: 'uppercase' }}
+        >
           Calendars
         </Typography>
         <FormControlLabel
@@ -88,7 +94,7 @@ const SidebarLeft = props => {
             <Checkbox
               color='secondary'
               checked={store.selectedCalendars.length === colorsArr.length}
-              onChange={e => dispatch(handleAllCalendars(e.target.checked))}
+              onChange={(e) => dispatch(handleAllCalendars(e.target.checked))}
             />
           }
         />

@@ -19,12 +19,12 @@ const ToastThemed = () => {
       style: {
         padding: '16px',
         color: theme.palette.primary.main,
-        border: `1px solid ${theme.palette.primary.main}`
+        border: `1px solid ${theme.palette.primary.main}`,
       },
       iconTheme: {
         primary: theme.palette.primary.main,
-        secondary: theme.palette.primary.contrastText
-      }
+        secondary: theme.palette.primary.contrastText,
+      },
     })
   }
 
@@ -33,7 +33,11 @@ const ToastThemed = () => {
       <PaletteOutline sx={{ mb: 2, fontSize: '2rem' }} />
       <Typography sx={{ mb: 4, fontWeight: 600 }}>Themed</Typography>
       <Typography sx={{ mb: 3 }}>Customize the default styles the way you want.</Typography>
-      <Button sx={{ mb: 8 }} variant='contained' onClick={handleClick}>
+      <Button
+        sx={{ mb: 8 }}
+        variant='contained'
+        onClick={handleClick}
+      >
         Themed
       </Button>
     </Box>

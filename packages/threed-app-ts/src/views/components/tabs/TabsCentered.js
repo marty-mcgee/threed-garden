@@ -18,10 +18,23 @@ const TabsCentered = () => {
 
   return (
     <TabContext value={value}>
-      <TabList centered onChange={handleChange} aria-label='centered tabs example'>
-        <Tab value='1' label='Tab 1' />
-        <Tab value='2' label='Tab 2' />
-        <Tab value='3' label='Tab 3' />
+      <TabList
+        centered
+        onChange={handleChange}
+        aria-label='centered tabs example'
+      >
+        <Tab
+          value='1'
+          label='Tab 1'
+        />
+        <Tab
+          value='2'
+          label='Tab 2'
+        />
+        <Tab
+          value='3'
+          label='Tab 3'
+        />
       </TabList>
       <TabPanel value='1'>
         <Typography>

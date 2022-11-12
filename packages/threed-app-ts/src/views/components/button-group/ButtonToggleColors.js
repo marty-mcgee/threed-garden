@@ -15,37 +15,67 @@ const ButtonToggleColors = () => {
 
   return (
     <div className='demo-space-x'>
-      <ToggleButtonGroup exclusive color='primary' value={alignment} onChange={handleAlignment}>
+      <ToggleButtonGroup
+        exclusive
+        color='primary'
+        value={alignment}
+        onChange={handleAlignment}
+      >
         <ToggleButton value='web'>Web</ToggleButton>
         <ToggleButton value='android'>Android</ToggleButton>
         <ToggleButton value='ios'>iOS</ToggleButton>
       </ToggleButtonGroup>
 
-      <ToggleButtonGroup exclusive color='secondary' value={alignment} onChange={handleAlignment}>
+      <ToggleButtonGroup
+        exclusive
+        color='secondary'
+        value={alignment}
+        onChange={handleAlignment}
+      >
         <ToggleButton value='web'>Web</ToggleButton>
         <ToggleButton value='android'>Android</ToggleButton>
         <ToggleButton value='ios'>iOS</ToggleButton>
       </ToggleButtonGroup>
 
-      <ToggleButtonGroup exclusive color='success' value={alignment} onChange={handleAlignment}>
+      <ToggleButtonGroup
+        exclusive
+        color='success'
+        value={alignment}
+        onChange={handleAlignment}
+      >
         <ToggleButton value='web'>Web</ToggleButton>
         <ToggleButton value='android'>Android</ToggleButton>
         <ToggleButton value='ios'>iOS</ToggleButton>
       </ToggleButtonGroup>
 
-      <ToggleButtonGroup exclusive color='error' value={alignment} onChange={handleAlignment}>
+      <ToggleButtonGroup
+        exclusive
+        color='error'
+        value={alignment}
+        onChange={handleAlignment}
+      >
         <ToggleButton value='web'>Web</ToggleButton>
         <ToggleButton value='android'>Android</ToggleButton>
         <ToggleButton value='ios'>iOS</ToggleButton>
       </ToggleButtonGroup>
 
-      <ToggleButtonGroup exclusive color='warning' value={alignment} onChange={handleAlignment}>
+      <ToggleButtonGroup
+        exclusive
+        color='warning'
+        value={alignment}
+        onChange={handleAlignment}
+      >
         <ToggleButton value='web'>Web</ToggleButton>
         <ToggleButton value='android'>Android</ToggleButton>
         <ToggleButton value='ios'>iOS</ToggleButton>
       </ToggleButtonGroup>
 
-      <ToggleButtonGroup exclusive color='info' value={alignment} onChange={handleAlignment}>
+      <ToggleButtonGroup
+        exclusive
+        color='info'
+        value={alignment}
+        onChange={handleAlignment}
+      >
         <ToggleButton value='web'>Web</ToggleButton>
         <ToggleButton value='android'>Android</ToggleButton>
         <ToggleButton value='ios'>iOS</ToggleButton>

@@ -19,13 +19,22 @@ const Page: FC<TPageProps> = (props) => {
   }
 
   return (
-    <div className="App">
+    <div className='App'>
       <Head>
         <title>ThreeDGarden-ETH-TypeScript</title>
-        <meta name="description" content="Generated from ThreeDGarden-ETH-TypeScript" />
-        <link rel="icon" href="/favicon.ico" />
+        <meta
+          name='description'
+          content='Generated from ThreeDGarden-ETH-TypeScript'
+        />
+        <link
+          rel='icon'
+          href='/favicon.ico'
+        />
       </Head>
-      <MainPage pageName={urlPath} {...props}></MainPage>
+      <MainPage
+        pageName={urlPath}
+        {...props}
+      ></MainPage>
     </div>
   )
 }

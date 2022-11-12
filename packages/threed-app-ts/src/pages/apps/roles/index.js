@@ -11,7 +11,10 @@ import RoleCards from '~/views/apps/roles/RoleCards'
 
 const RolesComponent = () => {
   return (
-    <Grid container spacing={6}>
+    <Grid
+      container
+      spacing={6}
+    >
       <PageHeader
         title={<Typography variant='h5'>Roles List</Typography>}
         subtitle={
@@ -21,7 +24,11 @@ const RolesComponent = () => {
           </Typography>
         }
       />
-      <Grid item xs={12} sx={{ mb: 4 }}>
+      <Grid
+        item
+        xs={12}
+        sx={{ mb: 4 }}
+      >
         <RoleCards />
       </Grid>
       <PageHeader
@@ -32,7 +39,10 @@ const RolesComponent = () => {
           </Typography>
         }
       />
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <Table />
       </Grid>
     </Grid>

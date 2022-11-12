@@ -1,37 +1,20 @@
 // nextjs components
-import Link from "next/link"
+import Link from 'next/link'
 
 // @mui material components
-import Card from "@mui/material/Card"
-import Icon from "@mui/material/Icon"
+import Card from '@mui/material/Card'
+import Icon from '@mui/material/Icon'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
-import MDButton from "~/components/mui/MDButton"
+import MDBox from '~/components/mui/MDBox'
+import MDTypography from '~/components/mui/MDTypography'
+import MDButton from '~/components/mui/MDButton'
 
 // Declaring props types for DefaultPricingCard
 interface Props {
-  color?:
-  | "primary"
-  | "secondary"
-  | "info"
-  | "success"
-  | "warning"
-  | "error"
-  | "light"
-  | "dark"
-  | "white"
+  color?: 'primary' | 'secondary' | 'info' | 'success' | 'warning' | 'error' | 'light' | 'dark' | 'white'
   badge: {
-    color:
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "light"
-    | "dark"
+    color: 'primary' | 'secondary' | 'info' | 'success' | 'warning' | 'error' | 'light' | 'dark'
     label: string
   }
   price: {
@@ -44,132 +27,140 @@ interface Props {
     includes?: boolean
   }[]
   action: {
-    type: "external" | "internal"
+    type: 'external' | 'internal'
     route: string
     label: string
-    color:
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "light"
-    | "dark"
+    color: 'primary' | 'secondary' | 'info' | 'success' | 'warning' | 'error' | 'light' | 'dark'
   }
   shadow?: boolean
   [key: string]: any
 }
 
-function DefaultPricingCard({
-  color,
-  badge,
-  price,
-  specifications,
-  action,
-  shadow,
-}: Props): JSX.Element {
+function DefaultPricingCard({ color, badge, price, specifications, action, shadow }: Props): JSX.Element {
   const renderSpecifications = specifications.map(({ label, includes }) => (
-    <MDBox key={label} display="flex" alignItems="center" p={1}>
+    <MDBox
+      key={label}
+      display='flex'
+      alignItems='center'
+      p={1}
+    >
       <MDBox
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        width="1.5rem"
-        height="1.5rem"
+        display='flex'
+        justifyContent='center'
+        alignItems='center'
+        width='1.5rem'
+        height='1.5rem'
         mr={2}
-        mt={-0.125}>
+        mt={-0.125}
+      >
         <MDTypography
-          variant="body1"
-          color={color === "white" ? "text" : "white"}
-          sx={{ lineHeight: 0 }}>
-          <Icon>{includes ? "done" : "remove"}</Icon>
+          variant='body1'
+          color={color === 'white' ? 'text' : 'white'}
+          sx={{ lineHeight: 0 }}
+        >
+          <Icon>{includes ? 'done' : 'remove'}</Icon>
         </MDTypography>
       </MDBox>
       <MDTypography
-        variant="body2"
-        color={color === "white" ? "text" : "white"}
-        fontWeight="regular">
+        variant='body2'
+        color={color === 'white' ? 'text' : 'white'}
+        fontWeight='regular'
+      >
         {label}
       </MDTypography>
     </MDBox>
   ))
 
   return (
-    <Card
-      sx={{ boxShadow: ({ boxShadows: { lg } }) => (shadow ? lg : "none") }}>
+    <Card sx={{ boxShadow: ({ boxShadows: { lg } }) => (shadow ? lg : 'none') }}>
       <MDBox
         bgColor={color}
-        variant={color === "white" ? "contained" : "gradient"}
-        borderRadius="xl">
+        variant={color === 'white' ? 'contained' : 'gradient'}
+        borderRadius='xl'
+      >
         <MDBox
           bgColor={badge.color}
-          width="max-content"
+          width='max-content'
           px={4}
           pt={0}
           pb={0.5}
-          mx="auto"
+          mx='auto'
           mt={-1.375}
-          borderRadius="section"
-          lineHeight={1}>
+          borderRadius='section'
+          lineHeight={1}
+        >
           <MDTypography
-            variant="caption"
-            textTransform="uppercase"
-            fontWeight="medium"
-            color={badge.color === "light" ? "dark" : "white"}>
+            variant='caption'
+            textTransform='uppercase'
+            fontWeight='medium'
+            color={badge.color === 'light' ? 'dark' : 'white'}
+          >
             {badge.label}
           </MDTypography>
         </MDBox>
-        <MDBox pt={3} pb={2} px={2} textAlign="center">
+        <MDBox
+          pt={3}
+          pb={2}
+          px={2}
+          textAlign='center'
+        >
           <MDBox my={1}>
             <MDTypography
-              variant="h1"
-              color={color === "white" ? "dark" : "white"}>
+              variant='h1'
+              color={color === 'white' ? 'dark' : 'white'}
+            >
               <MDTypography
-                display="inline"
-                component="small"
-                variant="h5"
-                color="inherit"
-                verticalAlign="top">
+                display='inline'
+                component='small'
+                variant='h5'
+                color='inherit'
+                verticalAlign='top'
+              >
                 {price.currency}
               </MDTypography>
               {price.value}
               <MDTypography
-                display="inline"
-                component="small"
-                variant="h5"
-                color="inherit">
+                display='inline'
+                component='small'
+                variant='h5'
+                color='inherit'
+              >
                 /{price.type}
               </MDTypography>
             </MDTypography>
           </MDBox>
         </MDBox>
-        <MDBox pb={3} px={3}>
+        <MDBox
+          pb={3}
+          px={3}
+        >
           {renderSpecifications}
-          {action.type === "internal" ? (
+          {action.type === 'internal' ? (
             <MDBox mt={3}>
               <MDButton
                 component={Link}
                 href={action.route}
-                variant="gradient"
+                variant='gradient'
                 color={action.color}
-                fullWidth>
+                fullWidth
+              >
                 {action.label}&nbsp;
-                <Icon sx={{ fontWeight: "bold" }}>arrow_forward</Icon>
+                <Icon sx={{ fontWeight: 'bold' }}>arrow_forward</Icon>
               </MDButton>
             </MDBox>
           ) : (
             <MDBox mt={3}>
               <MDButton
-                component="a"
+                component='a'
                 href={action.route}
-                target="_blank"
-                rel="noreferrer"
-                variant="gradient"
+                target='_blank'
+                rel='noreferrer'
+                variant='gradient'
                 color={action.color}
-                fullWidth>
+                fullWidth
+              >
                 {action.label}&nbsp;
-                <Icon sx={{ fontWeight: "bold" }}>arrow_forward</Icon>
+                <Icon sx={{ fontWeight: 'bold' }}>arrow_forward</Icon>
               </MDButton>
             </MDBox>
           )}
@@ -181,7 +172,7 @@ function DefaultPricingCard({
 
 // Declaring default props for DefaultPricingCard
 DefaultPricingCard.defaultProps = {
-  color: "white",
+  color: 'white',
   shadow: true,
 }
 

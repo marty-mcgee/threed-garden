@@ -16,7 +16,11 @@ const PaginationControlled = () => {
   return (
     <div>
       <Typography sx={{ mb: 2 }}>Page: {page}</Typography>
-      <Pagination count={10} page={page} onChange={handleChange} />
+      <Pagination
+        count={10}
+        page={page}
+        onChange={handleChange}
+      />
     </div>
   )
 }

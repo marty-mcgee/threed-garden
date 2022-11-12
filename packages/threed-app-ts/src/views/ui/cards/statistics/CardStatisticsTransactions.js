@@ -22,33 +22,45 @@ const salesData = [
     stats: '245k',
     title: 'Sales',
     color: 'primary',
-    icon: <TrendingUp />
+    icon: <TrendingUp />,
   },
   {
     stats: '12.5k',
     title: 'Customers',
     color: 'success',
-    icon: <AccountOutline />
+    icon: <AccountOutline />,
   },
   {
     stats: '1.54k',
     color: 'warning',
     title: 'Products',
-    icon: <CellphoneLink />
+    icon: <CellphoneLink />,
   },
   {
     stats: '$88k',
     color: 'info',
     title: 'Revenue',
-    icon: <CurrencyUsd />
-  }
+    icon: <CurrencyUsd />,
+  },
 ]
 
 const renderStats = () => {
   return salesData.map((sale, index) => (
-    <Grid item xs={6} md={3} key={index}>
-      <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
-        <CustomAvatar variant='rounded' color={sale.color} sx={{ mr: 3, boxShadow: 3 }}>
+    <Grid
+      item
+      xs={6}
+      md={3}
+      key={index}
+    >
+      <Box
+        key={index}
+        sx={{ display: 'flex', alignItems: 'center' }}
+      >
+        <CustomAvatar
+          variant='rounded'
+          color={sale.color}
+          sx={{ mr: 3, boxShadow: 3 }}
+        >
           {sale.icon}
         </CustomAvatar>
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -67,7 +79,12 @@ const CardStatisticsTransactions = () => {
         title='Transactions'
         titleTypographyProps={{ sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' } }}
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }

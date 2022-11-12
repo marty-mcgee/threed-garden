@@ -1,5 +1,5 @@
 // ** React Imports
-import { FC, useEffect } from 'react'
+import { useEffect } from 'react'
 
 // ** Next Imports
 import type { NextPage } from 'next'
@@ -9,7 +9,6 @@ import { useRouter } from 'next/router'
 import Typography from '@mui/material/Typography'
 
 // ** Component Imports
-import Spinner from '~/@core/components/spinner'
 
 // ** Hook Imports
 import { useAuth } from '~/hooks/useAuth'
@@ -30,7 +29,6 @@ const getHomeRoute = (role: any) => {
 // Page
 // const Page: FC<TPageProps> = (props) => {
 const Page: NextPage<TPageProps> = (props) => {
-
   // ** Hooks
   const auth = useAuth()
   const router = useRouter()
@@ -42,28 +40,36 @@ const Page: NextPage<TPageProps> = (props) => {
       // redirect user to Home URL
       router.replace(homeRoute)
       console.debug('user AUTHORIZED', auth.user)
-    }
-    else {
+    } else {
       console.debug('user NOT AUTHORIZED', auth.user)
     }
   }, [])
 
   return (
     <>
-
       {/* <Spinner /> */}
 
-      <Typography component='h1' variant='h5' gutterBottom>
+      <Typography
+        component='h1'
+        variant='h5'
+        gutterBottom
+      >
         ThreeD Garden for FarmBot + Three
       </Typography>
-      <Typography component='h2' variant='h6' gutterBottom>
+      <Typography
+        component='h2'
+        variant='h6'
+        gutterBottom
+      >
         FarmBot + Three.js using React Three Fiber, MUI v5, NextJS + TypeScript
       </Typography>
 
       {/* SCAFFOLD-ETH-TYPESCRIPT */}
-      <MainPage pageName='main' {...props}></MainPage>
+      <MainPage
+        pageName='main'
+        {...props}
+      ></MainPage>
       {/* SCAFFOLD-ETH-TYPESCRIPT */}
-
     </>
   )
 }

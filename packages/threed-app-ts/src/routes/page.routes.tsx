@@ -21,236 +21,236 @@
 */
 
 // @mui material components
-import Icon from "@mui/material/Icon"
+import Icon from '@mui/material/Icon'
 
 const pageRoutes = [
   {
-    name: "pages",
+    name: 'pages',
     columns: 3,
     rowsPerColumn: 2,
     collapse: [
       {
-        name: "dashboards",
+        name: 'dashboards',
         icon: <Icon>dashboard</Icon>,
         collapse: [
           {
-            name: "analytics",
-            route: "/dashboards/analytics",
+            name: 'analytics',
+            route: '/dashboards/analytics',
           },
           {
-            name: "sales",
-            route: "/dashboards/sales",
+            name: 'sales',
+            route: '/dashboards/sales',
           },
         ],
       },
       {
-        name: "users",
+        name: 'users',
         icon: <Icon>people</Icon>,
         collapse: [
           {
-            name: "reports",
-            route: "/users/reports",
+            name: 'reports',
+            route: '/users/reports',
           },
         ],
       },
       {
-        name: "extra",
+        name: 'extra',
         icon: <Icon>queue_play_next</Icon>,
         collapse: [
           {
-            name: "pricing page",
-            route: "/pricing",
+            name: 'pricing page',
+            route: '/pricing',
           },
-          { name: "RTL", route: "/rtl" },
-          { name: "widgets", route: "/widgets" },
-          { name: "charts", route: "/charts" },
+          { name: 'RTL', route: '/rtl' },
+          { name: 'widgets', route: '/widgets' },
+          { name: 'charts', route: '/charts' },
           {
-            name: "notfications",
-            route: "/notifications",
+            name: 'notfications',
+            route: '/notifications',
           },
         ],
       },
       {
-        name: "projects",
+        name: 'projects',
         icon: <Icon>precision_manufacturing</Icon>,
         collapse: [
           {
-            name: "timeline",
-            route: "/projects/timeline",
+            name: 'timeline',
+            route: '/projects/timeline',
           },
         ],
       },
       {
-        name: "account",
+        name: 'account',
         icon: <Icon>account_balance</Icon>,
         collapse: [
           {
-            name: "settings",
-            route: "/account/setting",
+            name: 'settings',
+            route: '/account/setting',
           },
           {
-            name: "billing",
-            route: "/account/billing",
+            name: 'billing',
+            route: '/account/billing',
           },
           {
-            name: "invoice",
-            route: "/account/invoice",
+            name: 'invoice',
+            route: '/account/invoice',
           },
         ],
       },
       {
-        name: "profile",
+        name: 'profile',
         icon: <Icon>badge</Icon>,
         collapse: [
           {
-            name: "profile overview",
-            route: "/profile/profile-overview",
+            name: 'profile overview',
+            route: '/profile/profile-overview',
           },
           {
-            name: "all projects",
-            route: "/profile/all-projects",
+            name: 'all projects',
+            route: '/profile/all-projects',
           },
         ],
       },
     ],
   },
   {
-    name: "authenticaton",
+    name: 'authenticaton',
     collapse: [
       {
-        name: "sign in",
+        name: 'sign in',
         dropdown: true,
         icon: <Icon>login</Icon>,
         collapse: [
           {
-            name: "basic",
-            route: "/authentication/sign-in/basic",
+            name: 'basic',
+            route: '/authentication/sign-in/basic',
           },
           {
-            name: "cover",
-            route: "/authentication/sign-in/cover",
+            name: 'cover',
+            route: '/authentication/sign-in/cover',
           },
           {
-            name: "illustration",
-            route: "/authentication/sign-in/illustration",
+            name: 'illustration',
+            route: '/authentication/sign-in/illustration',
           },
         ],
       },
       {
-        name: "sign up",
+        name: 'sign up',
         dropdown: true,
         icon: <Icon>assignment</Icon>,
         collapse: [
           {
-            name: "cover",
-            route: "/authentication/sign-up/cover",
+            name: 'cover',
+            route: '/authentication/sign-up/cover',
           },
         ],
       },
       {
-        name: "reset password",
+        name: 'reset password',
         dropdown: true,
         icon: <Icon>restart_alt</Icon>,
         collapse: [
           {
-            name: "cover",
-            route: "/authentication/reset-password/cover",
+            name: 'cover',
+            route: '/authentication/reset-password/cover',
           },
         ],
       },
     ],
   },
   {
-    name: "applications",
+    name: 'applications',
     columns: 3,
     rowsPerColumn: 2,
     collapse: [
       {
-        name: "kanban",
-        route: "/applications/kanban",
+        name: 'kanban',
+        route: '/applications/kanban',
         icon: <Icon>widgets</Icon>,
       },
       {
-        name: "wizard",
-        route: "/applications/wizard",
+        name: 'wizard',
+        route: '/applications/wizard',
         icon: <Icon>import_contacts</Icon>,
       },
       {
-        name: "data tables",
-        route: "/applications/data-tables",
+        name: 'data tables',
+        route: '/applications/data-tables',
         icon: <Icon>backup_table</Icon>,
       },
       {
-        name: "calendar",
-        route: "/applications/calendar",
+        name: 'calendar',
+        route: '/applications/calendar',
         icon: <Icon>event</Icon>,
       },
     ],
   },
   {
-    name: "ecommerce",
+    name: 'ecommerce',
     columns: 2,
     rowsPerColumn: 1,
     collapse: [
       {
-        name: "orders",
+        name: 'orders',
         icon: <Icon>shopping_cart</Icon>,
         collapse: [
           {
-            name: "order list",
-            route: "/ecommerce/orders/order-list",
+            name: 'order list',
+            route: '/ecommerce/orders/order-list',
           },
           {
-            name: "order details",
-            route: "/ecommerce/orders/order-details",
+            name: 'order details',
+            route: '/ecommerce/orders/order-details',
           },
         ],
       },
       {
-        name: "products",
+        name: 'products',
         icon: <Icon>memory</Icon>,
         collapse: [
           {
-            name: "new product",
-            route: "/ecommerce/products/new-product",
+            name: 'new product',
+            route: '/ecommerce/products/new-product',
           },
           {
-            name: "edit product",
-            route: "/ecommerce/products/edit-product",
+            name: 'edit product',
+            route: '/ecommerce/products/edit-product',
           },
           {
-            name: "product page",
-            route: "/ecommerce/products/product-page",
+            name: 'product page',
+            route: '/ecommerce/products/product-page',
           },
         ],
       },
     ],
   },
   {
-    name: "docs",
+    name: 'docs',
     collapse: [
       {
-        name: "getting started",
-        href: "#react/quick-start/material-dashboard/",
-        description: "All about overview, quick start, license and contents",
+        name: 'getting started',
+        href: '#react/quick-start/material-dashboard/',
+        description: 'All about overview, quick start, license and contents',
         icon: <Icon>article</Icon>,
       },
       {
-        name: "foundation",
-        href: "#react/colors/material-dashboard/",
-        description: "See our colors, icons and typography",
+        name: 'foundation',
+        href: '#react/colors/material-dashboard/',
+        description: 'See our colors, icons and typography',
         icon: <Icon>grading</Icon>,
       },
       {
-        name: "components",
-        href: "#react/alerts/material-dashboard/",
-        description: "Explore our collection of fully designed components",
+        name: 'components',
+        href: '#react/alerts/material-dashboard/',
+        description: 'Explore our collection of fully designed components',
         icon: <Icon>apps</Icon>,
       },
       {
-        name: "plugins",
-        href: "#react/datepicker/material-dashboard/",
-        description: "Check how you can integrate our plugins",
+        name: 'plugins',
+        href: '#react/datepicker/material-dashboard/',
+        description: 'Check how you can integrate our plugins',
         icon: <Icon>extension</Icon>,
       },
     ],

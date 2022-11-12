@@ -11,7 +11,12 @@ const EditorControlled = () => {
   // ** State
   const [value, setValue] = useState(EditorState.createEmpty())
 
-  return <ReactDraftWysiwyg editorState={value} onEditorStateChange={data => setValue(data)} />
+  return (
+    <ReactDraftWysiwyg
+      editorState={value}
+      onEditorStateChange={(data) => setValue(data)}
+    />
+  )
 }
 
 export default EditorControlled

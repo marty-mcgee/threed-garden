@@ -10,13 +10,18 @@ import Select from '@mui/material/Select'
 // ** Icons Imports
 import ExportVariant from 'mdi-material-ui/ExportVariant'
 
-const TableHeader = props => {
+const TableHeader = (props) => {
   // ** Props
   const { plan, handlePlanChange, handleFilter, value } = props
 
   return (
     <Box sx={{ p: 5, pb: 3, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-      <Button sx={{ mr: 4, mb: 2 }} color='secondary' variant='outlined' startIcon={<ExportVariant />}>
+      <Button
+        sx={{ mr: 4, mb: 2 }}
+        color='secondary'
+        variant='outlined'
+        startIcon={<ExportVariant />}
+      >
         Export
       </Button>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -25,9 +30,12 @@ const TableHeader = props => {
           value={value}
           placeholder='Search User'
           sx={{ mr: 4, mb: 2 }}
-          onChange={e => handleFilter(e.target.value)}
+          onChange={(e) => handleFilter(e.target.value)}
         />
-        <FormControl size='small' sx={{ mb: 2 }}>
+        <FormControl
+          size='small'
+          sx={{ mb: 2 }}
+        >
           <InputLabel id='plan-select'>Select Plan</InputLabel>
           <Select
             size='small'

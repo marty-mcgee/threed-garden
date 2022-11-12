@@ -18,7 +18,7 @@ const CrmTotalSales = () => {
   const options = {
     chart: {
       parentHeightOffset: 0,
-      toolbar: { show: false }
+      toolbar: { show: false },
     },
     fill: {
       type: 'gradient',
@@ -27,13 +27,13 @@ const CrmTotalSales = () => {
         opacityFrom: 1,
         shadeIntensity: 0,
         type: 'horizontal',
-        stops: [0, 100, 100]
-      }
+        stops: [0, 100, 100],
+      },
     },
     stroke: {
       width: 5,
       curve: 'smooth',
-      lineCap: 'round'
+      lineCap: 'round',
     },
     legend: { show: false },
     colors: [theme.palette.success.main],
@@ -42,17 +42,17 @@ const CrmTotalSales = () => {
       padding: {
         left: 0,
         right: 0,
-        bottom: -10
-      }
+        bottom: -10,
+      },
     },
     xaxis: {
       axisTicks: { show: false },
       axisBorder: { show: false },
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
+      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
     },
     yaxis: {
-      labels: { show: false }
-    }
+      labels: { show: false },
+    },
   }
 
   return (
@@ -61,10 +61,15 @@ const CrmTotalSales = () => {
         title='Total Sales'
         subheader='$21,845'
         subheaderTypographyProps={{
-          sx: { mt: 1, fontWeight: 500, lineHeight: '2rem', color: 'text.primary', fontSize: '1.25rem !important' }
+          sx: { mt: 1, fontWeight: 500, lineHeight: '2rem', color: 'text.primary', fontSize: '1.25rem !important' },
         }}
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }
@@ -73,13 +78,13 @@ const CrmTotalSales = () => {
             fontSize: '1rem !important',
             fontWeight: '600 !important',
             lineHeight: '1.5rem !important',
-            letterSpacing: '0.15px !important'
-          }
+            letterSpacing: '0.15px !important',
+          },
         }}
       />
       <CardContent
         sx={{
-          '& .apexcharts-xaxis-label': { fontSize: '0.875rem' }
+          '& .apexcharts-xaxis-label': { fontSize: '0.875rem' },
         }}
       >
         <ReactApexcharts

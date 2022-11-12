@@ -8,15 +8,24 @@ import UserDropdown from '~/@core/layouts/components/shared-components/UserDropd
 import LanguageDropdown from '~/@core/layouts/components/shared-components/LanguageDropdown'
 import NotificationDropdown from '~/@core/layouts/components/shared-components/NotificationDropdown'
 
-const AppBarContent = props => {
+const AppBarContent = (props) => {
   // ** Props
   const { hidden, settings, saveSettings } = props
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <Autocomplete hidden={hidden} settings={settings} />
-      <LanguageDropdown settings={settings} saveSettings={saveSettings} />
-      <ModeToggler settings={settings} saveSettings={saveSettings} />
+      <Autocomplete
+        hidden={hidden}
+        settings={settings}
+      />
+      <LanguageDropdown
+        settings={settings}
+        saveSettings={saveSettings}
+      />
+      <ModeToggler
+        settings={settings}
+        saveSettings={saveSettings}
+      />
       <NotificationDropdown settings={settings} />
       <UserDropdown settings={settings} />
     </Box>

@@ -27,13 +27,13 @@ const CardWidgetsSalesOverview = () => {
 
   const options = {
     chart: {
-      sparkline: { enabled: true }
+      sparkline: { enabled: true },
     },
     colors: [
       theme.palette.primary.main,
       hexToRGBA(theme.palette.primary.main, 0.7),
       hexToRGBA(theme.palette.primary.main, 0.5),
-      theme.palette.customColors.bodyBg
+      theme.palette.customColors.bodyBg,
     ],
     stroke: { width: 0 },
     legend: { show: false },
@@ -41,11 +41,11 @@ const CardWidgetsSalesOverview = () => {
     labels: ['Apparel', 'Electronics', 'FMCG', 'Other Sales'],
     states: {
       hover: {
-        filter: { type: 'none' }
+        filter: { type: 'none' },
       },
       active: {
-        filter: { type: 'none' }
-      }
+        filter: { type: 'none' },
+      },
     },
     plotOptions: {
       pie: {
@@ -55,21 +55,21 @@ const CardWidgetsSalesOverview = () => {
           labels: {
             show: true,
             name: {
-              offsetY: 25
+              offsetY: 25,
             },
             value: {
               offsetY: -15,
-              formatter: value => `${value}k`
+              formatter: (value) => `${value}k`,
             },
             total: {
               show: true,
               label: 'Weekly Sales',
-              formatter: value => `${value.globals.seriesTotals.reduce((total, num) => total + num)}k`
-            }
-          }
-        }
-      }
-    }
+              formatter: (value) => `${value.globals.seriesTotals.reduce((total, num) => total + num)}k`,
+            },
+          },
+        },
+      },
+    },
   }
 
   return (
@@ -77,10 +77,15 @@ const CardWidgetsSalesOverview = () => {
       <CardHeader
         title='Sales Overview'
         titleTypographyProps={{
-          sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' }
+          sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' },
         }}
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }
@@ -91,22 +96,44 @@ const CardWidgetsSalesOverview = () => {
             lineHeight: '1.313rem',
             letterSpacing: '0.25px',
             fontSize: '0.875rem !important',
-            fill: `${theme.palette.text.secondary} !important`
+            fill: `${theme.palette.text.secondary} !important`,
           },
           '& .apexcharts-datalabel-value': {
             letterSpacing: 0,
             lineHeight: '2rem',
-            fontWeight: '500 !important'
-          }
+            fontWeight: '500 !important',
+          },
         }}
       >
-        <Grid container sx={{ my: [0, 4, 7.375] }}>
-          <Grid item xs={12} sm={6} sx={{ mb: [3, 0] }}>
-            <ReactApexcharts type='donut' height={220} series={[12, 25, 13, 50]} options={options} />
+        <Grid
+          container
+          sx={{ my: [0, 4, 7.375] }}
+        >
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            sx={{ mb: [3, 0] }}
+          >
+            <ReactApexcharts
+              type='donut'
+              height={220}
+              series={[12, 25, 13, 50]}
+              options={options}
+            />
           </Grid>
-          <Grid item xs={12} sm={6} sx={{ my: 'auto' }}>
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            sx={{ my: 'auto' }}
+          >
             <Box sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
-              <CustomAvatar skin='light' sx={{ mr: 3 }} variant='rounded'>
+              <CustomAvatar
+                skin='light'
+                sx={{ mr: 3 }}
+                variant='rounded'
+              >
                 <CurrencyUsd sx={{ color: 'primary.main' }} />
               </CustomAvatar>
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -116,28 +143,42 @@ const CardWidgetsSalesOverview = () => {
             </Box>
             <Divider sx={{ my: 4 }} />
             <Grid container>
-              <Grid item xs={6} sx={{ mb: 4 }}>
+              <Grid
+                item
+                xs={6}
+                sx={{ mb: 4 }}
+              >
                 <Box sx={{ mb: 1.5, display: 'flex', alignItems: 'center' }}>
                   <Circle sx={{ mr: 1.5, fontSize: '0.75rem', color: 'primary.main' }} />
                   <Typography variant='body2'>Apparel</Typography>
                 </Box>
                 <Typography sx={{ fontWeight: 600 }}>$12,150</Typography>
               </Grid>
-              <Grid item xs={6} sx={{ mb: 4 }}>
+              <Grid
+                item
+                xs={6}
+                sx={{ mb: 4 }}
+              >
                 <Box sx={{ mb: 1.5, display: 'flex', alignItems: 'center' }}>
                   <Circle sx={{ mr: 1.5, fontSize: '0.75rem', color: hexToRGBA(theme.palette.primary.main, 0.7) }} />
                   <Typography variant='body2'>Electronic</Typography>
                 </Box>
                 <Typography sx={{ fontWeight: 600 }}>$24,900</Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid
+                item
+                xs={6}
+              >
                 <Box sx={{ mb: 1.5, display: 'flex', alignItems: 'center' }}>
                   <Circle sx={{ mr: 1.5, fontSize: '0.75rem', color: hexToRGBA(theme.palette.primary.main, 0.5) }} />
                   <Typography variant='body2'>FMCG</Typography>
                 </Box>
                 <Typography sx={{ fontWeight: 600 }}>$12,750</Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid
+                item
+                xs={6}
+              >
                 <Box sx={{ mb: 1.5, display: 'flex', alignItems: 'center' }}>
                   <Circle sx={{ mr: 1.5, fontSize: '0.75rem', color: theme.palette.customColors.bodyBg }} />
                   <Typography variant='body2'>Other Sales</Typography>

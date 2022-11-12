@@ -1,6 +1,6 @@
-import type { NextPage } from "next"
+import type { NextPage } from 'next'
 
-import { Page } from "../../types/interfaces"
+import { Page } from '../../types/interfaces'
 
 // const PagePage: NextPage<{ pages: Page[] }> = ({ pages }) => (
 //   <div>

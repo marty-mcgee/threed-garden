@@ -21,7 +21,7 @@ const CardWidgetsTotalRevenue = () => {
 
   const options = {
     chart: {
-      sparkline: { enabled: true }
+      sparkline: { enabled: true },
     },
     labels: ['Returning', 'New Users', 'Referrals'],
     legend: { show: false },
@@ -29,42 +29,42 @@ const CardWidgetsTotalRevenue = () => {
     colors: [theme.palette.primary.main, theme.palette.success.main, theme.palette.warning.main],
     states: {
       hover: {
-        filter: { type: 'none' }
+        filter: { type: 'none' },
       },
       active: {
-        filter: { type: 'none' }
-      }
+        filter: { type: 'none' },
+      },
     },
     plotOptions: {
       radialBar: {
         hollow: {
-          size: '40%'
+          size: '40%',
         },
         track: {
           background: 'transparent',
-          margin: 10
+          margin: 10,
         },
         dataLabels: {
           name: {
-            offsetY: 28
+            offsetY: 28,
           },
           value: {
             fontSize: '2.125rem',
             offsetY: -12,
             formatter(value) {
               return `${value}k`
-            }
+            },
           },
           total: {
             show: true,
             label: `${new Date().getFullYear()}`,
             formatter(value) {
               return `${value.globals.seriesTotals.reduce((total, num) => total + num)}k`
-            }
-          }
-        }
-      }
-    }
+            },
+          },
+        },
+      },
+    },
   }
 
   return (
@@ -72,10 +72,15 @@ const CardWidgetsTotalRevenue = () => {
       <CardHeader
         title='Total Revenue'
         titleTypographyProps={{
-          sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' }
+          sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' },
         }}
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }
@@ -83,20 +88,25 @@ const CardWidgetsTotalRevenue = () => {
       <CardContent
         sx={{
           '& .apexcharts-radialbar>g>g:first-of-type .apexcharts-radialbar-area': {
-            stroke: 'transparent !important'
+            stroke: 'transparent !important',
           },
           '& .apexcharts-datalabel-label': {
             letterSpacing: '0.4px',
             fontSize: '0.75rem !important',
-            fill: `${theme.palette.text.secondary} !important`
+            fill: `${theme.palette.text.secondary} !important`,
           },
           '& .apexcharts-datalabel-value': {
             letterSpacing: '0.25px',
-            fontWeight: '500 !important'
-          }
+            fontWeight: '500 !important',
+          },
         }}
       >
-        <ReactApexcharts type='radialBar' height={243} series={[71, 78, 86]} options={options} />
+        <ReactApexcharts
+          type='radialBar'
+          height={243}
+          series={[71, 78, 86]}
+          options={options}
+        />
         <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-around' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center' }}>
             <Box sx={{ mb: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -105,7 +115,10 @@ const CardWidgetsTotalRevenue = () => {
             </Box>
             <Typography variant='caption'>Returning</Typography>
           </Box>
-          <Divider orientation='vertical' sx={{ m: 0, height: 'auto' }} />
+          <Divider
+            orientation='vertical'
+            sx={{ m: 0, height: 'auto' }}
+          />
           <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center' }}>
             <Box sx={{ mb: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Circle sx={{ mr: 1.25, fontSize: '0.75rem', color: 'success.main' }} />
@@ -113,7 +126,10 @@ const CardWidgetsTotalRevenue = () => {
             </Box>
             <Typography variant='caption'>New User</Typography>
           </Box>
-          <Divider orientation='vertical' sx={{ m: 0, height: 'auto' }} />
+          <Divider
+            orientation='vertical'
+            sx={{ m: 0, height: 'auto' }}
+          />
           <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center' }}>
             <Box sx={{ mb: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Circle sx={{ mr: 1.25, fontSize: '0.75rem', color: 'warning.main' }} />

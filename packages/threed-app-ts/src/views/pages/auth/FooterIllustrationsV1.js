@@ -1,5 +1,4 @@
 // ** React Imports
-import { Fragment } from 'react'
 
 // ** MUI Components
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -10,22 +9,22 @@ const MaskImg = styled('img')(() => ({
   bottom: 0,
   zIndex: -1,
   width: '100%',
-  position: 'absolute'
+  position: 'absolute',
 }))
 
 const Tree1Img = styled('img')(() => ({
   left: 0,
   bottom: 0,
-  position: 'absolute'
+  position: 'absolute',
 }))
 
 const Tree2Img = styled('img')(() => ({
   right: 0,
   bottom: 0,
-  position: 'absolute'
+  position: 'absolute',
 }))
 
-const FooterIllustrationsV1 = props => {
+const FooterIllustrationsV1 = (props) => {
   // ** Props
   const { image1, image2 } = props
 
@@ -37,9 +36,22 @@ const FooterIllustrationsV1 = props => {
   if (!hidden) {
     return (
       <>
-        {image1 || <Tree1Img alt='tree' src='/images/pages/auth-v1-tree.png' />}
-        <MaskImg alt='mask' src={`/images/pages/auth-v1-mask-${theme.palette.mode}.png`} />
-        {image2 || <Tree2Img alt='tree-2' src='/images/pages/auth-v1-tree-2.png' />}
+        {image1 || (
+          <Tree1Img
+            alt='tree'
+            src='/images/pages/auth-v1-tree.png'
+          />
+        )}
+        <MaskImg
+          alt='mask'
+          src={`/images/pages/auth-v1-mask-${theme.palette.mode}.png`}
+        />
+        {image2 || (
+          <Tree2Img
+            alt='tree-2'
+            src='/images/pages/auth-v1-tree-2.png'
+          />
+        )}
       </>
     )
   } else {

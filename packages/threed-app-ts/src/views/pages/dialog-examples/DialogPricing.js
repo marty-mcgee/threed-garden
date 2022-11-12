@@ -23,7 +23,12 @@ import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
 import PlanDetails from '~/@core/components/plan-details'
 
 const Transition = forwardRef(function Transition(props, ref) {
-  return <Fade ref={ref} {...props} />
+  return (
+    <Fade
+      ref={ref}
+      {...props}
+    />
+  )
 })
 
 const DialogPricing = ({ data }) => {
@@ -31,7 +36,7 @@ const DialogPricing = ({ data }) => {
   const [show, setShow] = useState(false)
   const [plan, setPlan] = useState('monthly')
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     if (e.target.checked) {
       setPlan('annually')
     } else {
@@ -40,10 +45,18 @@ const DialogPricing = ({ data }) => {
   }
 
   const renderPlan = () => {
-    return data?.pricingPlans.map(item => {
+    return data?.pricingPlans.map((item) => {
       return (
-        <Grid item xs={12} md={4} key={item.title.toLowerCase()}>
-          <PlanDetails plan={plan} data={item} />
+        <Grid
+          item
+          xs={12}
+          md={4}
+          key={item.title.toLowerCase()}
+        >
+          <PlanDetails
+            plan={plan}
+            data={item}
+          />
         </Grid>
       )
     })
@@ -53,11 +66,17 @@ const DialogPricing = ({ data }) => {
     <Card>
       <CardContent sx={{ textAlign: 'center' }}>
         <CurrencyUsd sx={{ mb: 2, fontSize: '2rem' }} />
-        <Typography variant='h6' sx={{ mb: 4 }}>
+        <Typography
+          variant='h6'
+          sx={{ mb: 4 }}
+        >
           Pricing
         </Typography>
         <Typography sx={{ mb: 3 }}>Elegant pricing options dialog popup example, easy to use in any page.</Typography>
-        <Button variant='contained' onClick={() => setShow(true)}>
+        <Button
+          variant='contained'
+          onClick={() => setShow(true)}
+        >
           Show
         </Button>
       </CardContent>
@@ -79,7 +98,10 @@ const DialogPricing = ({ data }) => {
             <Close />
           </IconButton>
           <Box sx={{ mb: 4, textAlign: 'center' }}>
-            <Typography variant='h5' sx={{ mb: 3 }}>
+            <Typography
+              variant='h5'
+              sx={{ mb: 3 }}
+            >
               Subscription Plan
             </Typography>
             <Typography variant='body2'>
@@ -94,7 +116,11 @@ const DialogPricing = ({ data }) => {
             >
               Monthly
             </InputLabel>
-            <Switch onChange={handleChange} id='modal-pricing-switch' checked={plan === 'annually'} />
+            <Switch
+              onChange={handleChange}
+              id='modal-pricing-switch'
+              checked={plan === 'annually'}
+            />
             <InputLabel
               htmlFor='modal-pricing-switch'
               sx={{ fontWeight: 600, cursor: 'pointer', fontSize: '0.875rem', color: 'text.secondary' }}
@@ -102,14 +128,23 @@ const DialogPricing = ({ data }) => {
               Annually
             </InputLabel>
           </Box>
-          <Grid container spacing={6}>
+          <Grid
+            container
+            spacing={6}
+          >
             {renderPlan()}
           </Grid>
           <Box sx={{ mt: 6, textAlign: 'center' }}>
-            <Typography variant='body2' sx={{ mb: 2.5 }}>
+            <Typography
+              variant='body2'
+              sx={{ mb: 2.5 }}
+            >
               Still Not Convinced? Start with a 14-day FREE trial!
             </Typography>
-            <Button variant='contained' onClick={() => setShow(false)}>
+            <Button
+              variant='contained'
+              onClick={() => setShow(false)}
+            >
               Start your trial
             </Button>
           </Box>

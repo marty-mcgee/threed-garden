@@ -13,22 +13,22 @@ import { useDropzone } from 'react-dropzone'
 // Styled component for the upload image inside the dropzone area
 const Img = styled('img')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
-    marginRight: theme.spacing(15.75)
+    marginRight: theme.spacing(15.75),
   },
   [theme.breakpoints.down('md')]: {
-    marginBottom: theme.spacing(4)
+    marginBottom: theme.spacing(4),
   },
   [theme.breakpoints.down('sm')]: {
-    width: 160
-  }
+    width: 160,
+  },
 }))
 
 // Styled component for the heading inside the dropzone area
 const HeadingTypography = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(5),
   [theme.breakpoints.down('sm')]: {
-    marginBottom: theme.spacing(4)
-  }
+    marginBottom: theme.spacing(4),
+  },
 }))
 
 const FileUploaderSingle = () => {
@@ -39,31 +39,45 @@ const FileUploaderSingle = () => {
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
     multiple: false,
     accept: {
-      'image/*': ['.png', '.jpg', '.jpeg', '.gif']
+      'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
     },
-    onDrop: acceptedFiles => {
-      setFiles(acceptedFiles.map(file => Object.assign(file)))
-    }
+    onDrop: (acceptedFiles) => {
+      setFiles(acceptedFiles.map((file) => Object.assign(file)))
+    },
   })
 
-  const handleLinkClick = event => {
+  const handleLinkClick = (event) => {
     event.preventDefault()
   }
 
-  const img = files.map(file => (
-    <img key={file.name} alt={file.name} className='single-file-image' src={URL.createObjectURL(file)} />
+  const img = files.map((file) => (
+    <img
+      key={file.name}
+      alt={file.name}
+      className='single-file-image'
+      src={URL.createObjectURL(file)}
+    />
   ))
 
   return (
-    <Box {...getRootProps({ className: 'dropzone' })} sx={acceptedFiles.length ? { height: 450 } : {}}>
+    <Box
+      {...getRootProps({ className: 'dropzone' })}
+      sx={acceptedFiles.length ? { height: 450 } : {}}
+    >
       <input {...getInputProps()} />
       <Box sx={{ display: 'flex', flexDirection: ['column', 'column', 'row'], alignItems: 'center' }}>
-        <Img alt='Upload img' src='/images/misc/upload.png' />
+        <Img
+          alt='Upload img'
+          src='/images/misc/upload.png'
+        />
         <Box sx={{ display: 'flex', flexDirection: 'column', textAlign: ['center', 'center', 'inherit'] }}>
           <HeadingTypography variant='h5'>Drop files here or click to upload.</HeadingTypography>
           <Typography color='textSecondary'>
             Drop files here or click{' '}
-            <Link href='/' onClick={handleLinkClick}>
+            <Link
+              href='/'
+              onClick={handleLinkClick}
+            >
               browse
             </Link>{' '}
             thorough your machine

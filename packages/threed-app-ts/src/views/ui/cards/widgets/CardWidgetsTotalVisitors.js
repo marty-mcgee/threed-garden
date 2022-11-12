@@ -23,22 +23,22 @@ const CardWidgetsTotalVisitors = () => {
       theme.palette.primary.main,
       hexToRGBA(theme.palette.primary.main, 0.7),
       hexToRGBA(theme.palette.primary.main, 0.5),
-      theme.palette.customColors.bodyBg
+      theme.palette.customColors.bodyBg,
     ],
     stroke: { width: 0 },
     dataLabels: { enabled: false },
     legend: {
       show: true,
-      position: 'bottom'
+      position: 'bottom',
     },
     labels: ['FR', 'UK', 'ESP', 'USA'],
     states: {
       hover: {
-        filter: { type: 'none' }
+        filter: { type: 'none' },
       },
       active: {
-        filter: { type: 'none' }
-      }
+        filter: { type: 'none' },
+      },
     },
     plotOptions: {
       pie: {
@@ -48,21 +48,21 @@ const CardWidgetsTotalVisitors = () => {
           labels: {
             show: true,
             name: {
-              offsetY: 25
+              offsetY: 25,
             },
             value: {
               offsetY: -15,
-              formatter: value => `${value}k`
+              formatter: (value) => `${value}k`,
             },
             total: {
               show: true,
               label: 'Weekly Visits',
-              formatter: value => `${value.globals.seriesTotals.reduce((total, num) => total + num)}k`
-            }
-          }
-        }
-      }
-    }
+              formatter: (value) => `${value.globals.seriesTotals.reduce((total, num) => total + num)}k`,
+            },
+          },
+        },
+      },
+    },
   }
 
   return (
@@ -70,10 +70,15 @@ const CardWidgetsTotalVisitors = () => {
       <CardHeader
         title='Total Visitors'
         titleTypographyProps={{
-          sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' }
+          sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' },
         }}
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }
@@ -84,16 +89,21 @@ const CardWidgetsTotalVisitors = () => {
             lineHeight: '1.313rem',
             letterSpacing: '0.25px',
             fontSize: '0.875rem !important',
-            fill: `${theme.palette.text.secondary} !important`
+            fill: `${theme.palette.text.secondary} !important`,
           },
           '& .apexcharts-datalabel-value': {
             letterSpacing: 0,
             lineHeight: '2rem',
-            fontWeight: '500 !important'
-          }
+            fontWeight: '500 !important',
+          },
         }}
       >
-        <ReactApexcharts type='donut' height={292} series={[12, 25, 13, 50]} options={options} />
+        <ReactApexcharts
+          type='donut'
+          height={292}
+          series={[12, 25, 13, 50]}
+          options={options}
+        />
       </CardContent>
     </Card>
   )

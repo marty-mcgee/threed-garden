@@ -12,7 +12,7 @@ const images = [
   '/images/banners/banner-7.jpg',
   '/images/banners/banner-8.jpg',
   '/images/banners/banner-9.jpg',
-  '/images/banners/banner-10.jpg'
+  '/images/banners/banner-10.jpg',
 ]
 
 const SwiperZoom = ({ direction }) => {
@@ -25,10 +25,10 @@ const SwiperZoom = ({ direction }) => {
     rtl: direction === 'rtl',
     detailsChanged(s) {
       setDetails(s.track.details)
-    }
+    },
   })
 
-  const scaleStyle = idx => {
+  const scaleStyle = (idx) => {
     if (!details) return {}
     const slide = details.slides[idx]
     const scale_size = 1
@@ -36,16 +36,29 @@ const SwiperZoom = ({ direction }) => {
 
     return {
       transform: `scale(${scale})`,
-      WebkitTransform: `scale(${scale})`
+      WebkitTransform: `scale(${scale})`,
     }
   }
 
   return (
-    <Box ref={sliderRef} className='keen-slider zoom-out' sx={{ height: [200, 250, 395] }}>
+    <Box
+      ref={sliderRef}
+      className='keen-slider zoom-out'
+      sx={{ height: [200, 250, 395] }}
+    >
       {images.map((src, idx) => (
-        <Box key={idx} className='keen-slider__slide zoom-out__slide'>
-          <Box className='slider-content-wrapper' sx={{ ...scaleStyle(idx) }}>
-            <img src={src} alt={`slider ${idx}`} />
+        <Box
+          key={idx}
+          className='keen-slider__slide zoom-out__slide'
+        >
+          <Box
+            className='slider-content-wrapper'
+            sx={{ ...scaleStyle(idx) }}
+          >
+            <img
+              src={src}
+              alt={`slider ${idx}`}
+            />
           </Box>
         </Box>
       ))}

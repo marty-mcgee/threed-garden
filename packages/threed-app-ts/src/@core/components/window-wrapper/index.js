@@ -8,14 +8,11 @@ const WindowWrapper = ({ children }) => {
   // ** State
   const [windowReadyFlag, setWindowReadyFlag] = useState(false)
   const router = useRouter()
-  useEffect(
-    () => {
-      if (typeof window !== 'undefined') {
-        setWindowReadyFlag(true)
-      }
-    },
-    [router.route]
-  )
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setWindowReadyFlag(true)
+    }
+  }, [router.route])
   if (windowReadyFlag) {
     return <>{children}</>
   } else {

@@ -17,11 +17,17 @@ import * as source from '~/views/forms/form-elements/pickers/mui-pickers/MuiPick
 
 const MUIPickers = () => {
   return (
-    <Grid container spacing={6}>
+    <Grid
+      container
+      spacing={6}
+    >
       <PageHeader
         title={
           <Typography variant='h5'>
-            <Link href='https://mui.com/material-ui/lab-date-and-time-pickers/' target='_blank'>
+            <Link
+              href='https://mui.com/material-ui/lab-date-and-time-pickers/'
+              target='_blank'
+            >
               MUI Pickers
             </Link>
           </Typography>
@@ -32,34 +38,43 @@ const MUIPickers = () => {
           </Typography>
         }
       />
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='MUI Date Pickers'
           code={{
             tsx: source.DatePickersTSXCode,
-            jsx: source.DatePickersJSXCode
+            jsx: source.DatePickersJSXCode,
           }}
         >
           <DatePickers />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='MUI Time Pickers'
           code={{
             tsx: source.TimePickersTSXCode,
-            jsx: source.TimePickersJSXCode
+            jsx: source.TimePickersJSXCode,
           }}
         >
           <TimePickers />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='MUI DateTime Pickers'
           code={{
             tsx: source.DateTimePickersTSXCode,
-            jsx: source.DateTimePickersJSXCode
+            jsx: source.DateTimePickersJSXCode,
           }}
         >
           <DateTimePickers />

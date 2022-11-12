@@ -17,37 +17,37 @@ const ApexLineChart = () => {
     chart: {
       parentHeightOffset: 0,
       zoom: { enabled: false },
-      toolbar: { show: false }
+      toolbar: { show: false },
     },
     markers: {
       strokeWidth: 7,
       strokeOpacity: 1,
       colors: ['#ff9f43'],
-      strokeColors: ['#fff']
+      strokeColors: ['#fff'],
     },
     dataLabels: {
-      enabled: false
+      enabled: false,
     },
     stroke: {
-      curve: 'straight'
+      curve: 'straight',
     },
     colors: ['#ff9f43'],
     grid: {
       xaxis: {
         lines: {
-          show: true
-        }
+          show: true,
+        },
       },
       padding: {
-        top: -10
-      }
+        top: -10,
+      },
     },
     tooltip: {
       custom(data) {
         return `<div class='bar-chart'>
           <span>${data.series[data.seriesIndex][data.dataPointIndex]}%</span>
         </div>`
-      }
+      },
     },
     xaxis: {
       categories: [
@@ -65,15 +65,15 @@ const ApexLineChart = () => {
         '18/12',
         '19/12',
         '20/12',
-        '21/12'
-      ]
-    }
+        '21/12',
+      ],
+    },
   }
 
   const series = [
     {
-      data: [280, 200, 220, 180, 270, 250, 70, 90, 200, 150, 160, 100, 150, 100, 50]
-    }
+      data: [280, 200, 220, 180, 270, 250, 70, 90, 200, 150, 160, 100, 150, 100, 50],
+    },
   ]
 
   return (
@@ -87,11 +87,14 @@ const ApexLineChart = () => {
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],
           '& .MuiCardHeader-action': { mb: 0 },
-          '& .MuiCardHeader-content': { mb: [2, 0] }
+          '& .MuiCardHeader-content': { mb: [2, 0] },
         }}
         action={
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant='h6' sx={{ mr: 5 }}>
+            <Typography
+              variant='h6'
+              sx={{ mr: 5 }}
+            >
               $221,267
             </Typography>
             <CustomChip
@@ -109,7 +112,12 @@ const ApexLineChart = () => {
         }
       />
       <CardContent>
-        <ReactApexcharts options={options} series={series} type='line' height={400} />
+        <ReactApexcharts
+          options={options}
+          series={series}
+          type='line'
+          height={400}
+        />
       </CardContent>
     </Card>
   )

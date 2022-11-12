@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** Next Imports
 import Anchor from 'next/link'
@@ -38,11 +38,11 @@ const StyledLink = styled('a')(({ theme }) => ({
   display: 'block',
   textDecoration: 'none',
   '&:not(:last-of-type)': {
-    marginBottom: theme.spacing(6)
+    marginBottom: theme.spacing(6),
   },
   '&:hover *': {
-    color: theme.palette.primary.main
-  }
+    color: theme.palette.primary.main,
+  },
 }))
 
 // Styled CardContent component
@@ -50,7 +50,7 @@ const StyledCardContent = styled(CardContent)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   padding: theme.spacing(3.75, 5.5),
-  backgroundColor: `rgba(${theme.palette.customColors.main}, 0.08)`
+  backgroundColor: `rgba(${theme.palette.customColors.main}, 0.08)`,
 }))
 
 const icons = {
@@ -59,7 +59,7 @@ const icons = {
   CogOutline,
   CurrencyUsd,
   LockOpenOutline,
-  InformationOutline
+  InformationOutline,
 }
 
 const KnowledgeBaseCategory = ({ apiData }) => {
@@ -70,7 +70,7 @@ const KnowledgeBaseCategory = ({ apiData }) => {
   const { category } = router.query
   useEffect(() => {
     if (searchTerm !== '') {
-      axios.get('/pages/knowledge-base/categories', { params: { q: searchTerm } }).then(response => {
+      axios.get('/pages/knowledge-base/categories', { params: { q: searchTerm } }).then((response) => {
         if (response.data && response.data.length) {
           setData(response.data)
         } else {
@@ -82,10 +82,14 @@ const KnowledgeBaseCategory = ({ apiData }) => {
     }
   }, [searchTerm, apiData])
 
-  const renderQuestions = item => {
+  const renderQuestions = (item) => {
     return item.questions.map((obj, index) => {
       return (
-        <Anchor passHref key={index} href={`/pages/knowledge-base/${category}/${obj.slug}`}>
+        <Anchor
+          passHref
+          key={index}
+          href={`/pages/knowledge-base/${category}/${obj.slug}`}
+        >
           <StyledLink>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <CircleOutline sx={{ mr: 2.25, fontSize: '0.875rem', color: 'text.secondary' }} />
@@ -104,7 +108,13 @@ const KnowledgeBaseCategory = ({ apiData }) => {
           const IconTag = icons[item.icon]
 
           return (
-            <Grid item xs={12} sm={6} md={4} key={index}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              md={4}
+              key={index}
+            >
               <Card>
                 <StyledCardContent>
                   <IconTag
@@ -112,7 +122,7 @@ const KnowledgeBaseCategory = ({ apiData }) => {
                   />
                   <Typography variant='h6'>{`${item.title} (${item.questions.length})`}</Typography>
                 </StyledCardContent>
-                <CardContent sx={{ p: theme => `${theme.spacing(6.75, 5.5, 7.5)} !important` }}>
+                <CardContent sx={{ p: (theme) => `${theme.spacing(6.75, 5.5, 7.5)} !important` }}>
                   {renderQuestions(item)}
                 </CardContent>
               </Card>
@@ -124,7 +134,10 @@ const KnowledgeBaseCategory = ({ apiData }) => {
       })
     } else {
       return (
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <InformationOutline sx={{ mr: 2 }} />
             <Typography variant='h6'>Data is not an array!</Typography>
@@ -143,9 +156,16 @@ const KnowledgeBaseCategory = ({ apiData }) => {
 
   return (
     <>
-      <KnowledgeBaseHeader searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      <KnowledgeBaseHeader
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
       {data !== null ? (
-        <Grid container spacing={6} className='match-height'>
+        <Grid
+          container
+          spacing={6}
+          className='match-height'
+        >
           {renderGrid()}
         </Grid>
       ) : (
@@ -159,13 +179,13 @@ export const getStaticPaths = async () => {
   const res = await axios.get('/pages/knowledge-base')
   const data = await res.data
 
-  const paths = data.map(item => ({
-    params: { category: `${item.category}` }
+  const paths = data.map((item) => ({
+    params: { category: `${item.category}` },
   }))
 
   return {
     paths,
-    fallback: false
+    fallback: false,
   }
 }
 
@@ -175,8 +195,8 @@ export const getStaticProps = async () => {
 
   return {
     props: {
-      apiData
-    }
+      apiData,
+    },
   }
 }
 

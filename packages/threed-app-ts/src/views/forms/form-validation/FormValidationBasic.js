@@ -43,43 +43,59 @@ const defaultValues = {
   password: '',
   textarea: '',
   firstName: '',
-  checkbox: false
+  checkbox: false,
 }
 
 const CustomInput = forwardRef(({ ...props }, ref) => {
-  return <TextField inputRef={ref} {...props} sx={{ width: '100%' }} />
+  return (
+    <TextField
+      inputRef={ref}
+      {...props}
+      sx={{ width: '100%' }}
+    />
+  )
 })
 
 const FormValidationBasic = () => {
   // ** States
   const [state, setState] = useState({
     password: '',
-    showPassword: false
+    showPassword: false,
   })
 
   // ** Hooks
   const {
     control,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm({ defaultValues })
 
   const handleClickShowPassword = () => {
     setState({ ...state, showPassword: !state.showPassword })
   }
 
-  const handleMouseDownPassword = event => {
+  const handleMouseDownPassword = (event) => {
     event.preventDefault()
   }
   const onSubmit = () => toast.success('Form Submitted')
 
   return (
     <Card>
-      <CardHeader title='Basic' titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader
+        title='Basic'
+        titleTypographyProps={{ variant: 'h6' }}
+      />
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Grid container spacing={5}>
-            <Grid item xs={12} sm={6}>
+          <Grid
+            container
+            spacing={5}
+          >
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <FormControl fullWidth>
                 <Controller
                   name='firstName'
@@ -97,14 +113,21 @@ const FormValidationBasic = () => {
                   )}
                 />
                 {errors.firstName && (
-                  <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-first-name'>
+                  <FormHelperText
+                    sx={{ color: 'error.main' }}
+                    id='validation-basic-first-name'
+                  >
                     This field is required
                   </FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <FormControl fullWidth>
                 <Controller
                   name='lastName'
@@ -122,14 +145,21 @@ const FormValidationBasic = () => {
                   )}
                 />
                 {errors.lastName && (
-                  <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-last-name'>
+                  <FormHelperText
+                    sx={{ color: 'error.main' }}
+                    id='validation-basic-last-name'
+                  >
                     This field is required
                   </FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <FormControl fullWidth>
                 <Controller
                   name='email'
@@ -148,16 +178,26 @@ const FormValidationBasic = () => {
                   )}
                 />
                 {errors.email && (
-                  <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-email'>
+                  <FormHelperText
+                    sx={{ color: 'error.main' }}
+                    id='validation-basic-email'
+                  >
                     This field is required
                   </FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <FormControl fullWidth>
-                <InputLabel htmlFor='validation-basic-password' error={Boolean(errors.password)}>
+                <InputLabel
+                  htmlFor='validation-basic-password'
+                  error={Boolean(errors.password)}
+                >
                   Password
                 </InputLabel>
                 <Controller
@@ -188,14 +228,21 @@ const FormValidationBasic = () => {
                   )}
                 />
                 {errors.password && (
-                  <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-password'>
+                  <FormHelperText
+                    sx={{ color: 'error.main' }}
+                    id='validation-basic-password'
+                  >
                     This field is required
                   </FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <Controller
                 name='dob'
                 control={control}
@@ -206,7 +253,7 @@ const FormValidationBasic = () => {
                       selected={value}
                       showYearDropdown
                       showMonthDropdown
-                      onChange={e => onChange(e)}
+                      onChange={(e) => onChange(e)}
                       placeholderText='MM/DD/YYYY'
                       customInput={
                         <CustomInput
@@ -222,13 +269,20 @@ const FormValidationBasic = () => {
                 )}
               />
               {errors.dob && (
-                <FormHelperText sx={{ mx: 3.5, color: 'error.main' }} id='validation-basic-dob'>
+                <FormHelperText
+                  sx={{ mx: 3.5, color: 'error.main' }}
+                  id='validation-basic-dob'
+                >
                   This field is required
                 </FormHelperText>
               )}
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+            >
               <FormControl fullWidth>
                 <InputLabel
                   id='validation-basic-select'
@@ -258,14 +312,20 @@ const FormValidationBasic = () => {
                   )}
                 />
                 {errors.select && (
-                  <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-select'>
+                  <FormHelperText
+                    sx={{ color: 'error.main' }}
+                    id='validation-basic-select'
+                  >
                     This field is required
                   </FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <FormControl fullWidth>
                 <Controller
                   name='textarea'
@@ -283,14 +343,20 @@ const FormValidationBasic = () => {
                   )}
                 />
                 {errors.textarea && (
-                  <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-textarea'>
+                  <FormHelperText
+                    sx={{ color: 'error.main' }}
+                    id='validation-basic-textarea'
+                  >
                     This field is required
                   </FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <FormControl error={Boolean(errors.radio)}>
                 <FormLabel>Gender</FormLabel>
                 <Controller
@@ -298,7 +364,12 @@ const FormValidationBasic = () => {
                   control={control}
                   rules={{ required: true }}
                   render={({ field }) => (
-                    <RadioGroup row {...field} aria-label='gender' name='validation-basic-radio'>
+                    <RadioGroup
+                      row
+                      {...field}
+                      aria-label='gender'
+                      name='validation-basic-radio'
+                    >
                       <FormControlLabel
                         value='female'
                         label='Female'
@@ -321,14 +392,20 @@ const FormValidationBasic = () => {
                   )}
                 />
                 {errors.radio && (
-                  <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-radio'>
+                  <FormHelperText
+                    sx={{ color: 'error.main' }}
+                    id='validation-basic-radio'
+                  >
                     This field is required
                   </FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <FormControl>
                 <Controller
                   name='checkbox'
@@ -349,15 +426,25 @@ const FormValidationBasic = () => {
                   )}
                 />
                 {errors.checkbox && (
-                  <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-checkbox'>
+                  <FormHelperText
+                    sx={{ color: 'error.main' }}
+                    id='validation-basic-checkbox'
+                  >
                     This field is required
                   </FormHelperText>
                 )}
               </FormControl>
             </Grid>
 
-            <Grid item xs={12}>
-              <Button size='large' type='submit' variant='contained'>
+            <Grid
+              item
+              xs={12}
+            >
+              <Button
+                size='large'
+                type='submit'
+                variant='contained'
+              >
                 Submit
               </Button>
             </Grid>

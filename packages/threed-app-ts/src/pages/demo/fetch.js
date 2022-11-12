@@ -7,9 +7,8 @@ function DataGrabber(props) {
   const [data, setData] = useState(null)
 
   useEffect(() => {
-
     // console.debug("objects", objects)
-    console.debug("objects", Object.keys(objects).length)
+    console.debug('objects', Object.keys(objects).length)
 
     try {
       Object.keys(objects).forEach((key) => {
@@ -30,17 +29,19 @@ function DataGrabber(props) {
             // const response = await fetch(`https://homeidea3d.seanwasere.com/objects/${key}.png`)
             // (B) RETURN AS BLOB
             .then((result) => {
-              if (result.status !== 200) { throw new Error("Bad server response"); }
-              return result.blob();
+              if (result.status !== 200) {
+                throw new Error('Bad server response')
+              }
+              return result.blob()
             })
             // (C) BLOB DATA
             .then((data) => {
               // (C1) FILE DATA IS "READY FOR USE"
-              console.log(data);
+              console.log(data)
 
               // (C2) TO "FORCE DOWNLOAD"
               const url = window.URL.createObjectURL(data)
-              const anchor = document.createElement("a")
+              const anchor = document.createElement('a')
               anchor.href = url
               // anchor.download = `${key}.obj`
               anchor.download = `${key}.mtl`
@@ -54,7 +55,9 @@ function DataGrabber(props) {
             })
 
             // (D) HANDLE ERRORS - OPTIONAL
-            .catch((error) => { console.log(error); });
+            .catch((error) => {
+              console.log(error)
+            })
         }
 
         // BE CAREFUL
@@ -70,7 +73,6 @@ function DataGrabber(props) {
   } else {
     return null
   }
-
 }
 
 export default DataGrabber

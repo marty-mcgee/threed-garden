@@ -1,12 +1,12 @@
 // @mui material components
-import Grid from "@mui/material/Grid"
+import Grid from '@mui/material/Grid'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
+import MDBox from '~/components/mui/MDBox'
+import MDTypography from '~/components/mui/MDTypography'
 
 // NewUser page components
-import FormField from "~/pages/users/new-user/components/FormField"
+import FormField from '~/pages/users/new-user/components/FormField'
 
 function Profile({ formData }: any): JSX.Element {
   const { formField, values } = formData
@@ -15,12 +15,21 @@ function Profile({ formData }: any): JSX.Element {
 
   return (
     <MDBox>
-      <MDTypography variant="h5" fontWeight="bold">
+      <MDTypography
+        variant='h5'
+        fontWeight='bold'
+      >
         Profile
       </MDTypography>
       <MDBox mt={1.625}>
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
+        <Grid
+          container
+          spacing={1}
+        >
+          <Grid
+            item
+            xs={12}
+          >
             <FormField
               type={publicEmail.type}
               label={publicEmail.label}
@@ -29,7 +38,10 @@ function Profile({ formData }: any): JSX.Element {
               placeholder={publicEmail.placeholder}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid
+            item
+            xs={12}
+          >
             <FormField
               type={bio.type}
               label={bio.label}

@@ -1,103 +1,141 @@
 // @mui material components
-import Card from "@mui/material/Card"
-import Grid from "@mui/material/Grid"
-import Icon from "@mui/material/Icon"
-import Tooltip from "@mui/material/Tooltip"
+import Card from '@mui/material/Card'
+import Grid from '@mui/material/Grid'
+import Icon from '@mui/material/Icon'
+import Tooltip from '@mui/material/Tooltip'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
-import MDButton from "~/components/mui/MDButton"
+import MDBox from '~/components/mui/MDBox'
+import MDTypography from '~/components/mui/MDTypography'
+import MDButton from '~/components/mui/MDButton'
 
 // Images
-import masterCardLogo from "~/assets/images/logos/mastercard.png"
-import visaLogo from "~/assets/images/logos/visa.png"
+import masterCardLogo from '~/assets/images/logos/mastercard.png'
+import visaLogo from '~/assets/images/logos/visa.png'
 
 // ThreeD Garden context
-import { useMaterialUIController } from "~/context"
+import { useMaterialUIController } from '~/context'
 
 function PaymentMethod(): JSX.Element {
   const [controller] = useMaterialUIController()
   const { darkMode } = controller
 
   return (
-    <Card id="delete-account">
+    <Card id='delete-account'>
       <MDBox
         pt={2}
         px={2}
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center">
-        <MDTypography variant="h6" fontWeight="medium">
+        display='flex'
+        justifyContent='space-between'
+        alignItems='center'
+      >
+        <MDTypography
+          variant='h6'
+          fontWeight='medium'
+        >
           Payment Method
         </MDTypography>
-        <MDButton variant="gradient" color="dark">
-          <Icon sx={{ fontWeight: "bold" }}>add</Icon>
+        <MDButton
+          variant='gradient'
+          color='dark'
+        >
+          <Icon sx={{ fontWeight: 'bold' }}>add</Icon>
           &nbsp;add new card
         </MDButton>
       </MDBox>
       <MDBox p={2}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+        <Grid
+          container
+          spacing={2}
+        >
+          <Grid
+            item
+            xs={12}
+            md={6}
+          >
             <MDBox
-              borderRadius="lg"
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
+              borderRadius='lg'
+              display='flex'
+              justifyContent='space-between'
+              alignItems='center'
               p={3}
               sx={{
-                border: ({ borders: { borderWidth, borderColor } }) =>
-                  `${borderWidth[1]} solid ${borderColor}`,
-              }}>
+                border: ({ borders: { borderWidth, borderColor } }) => `${borderWidth[1]} solid ${borderColor}`,
+              }}
+            >
               <MDBox
-                component="img"
+                component='img'
                 src={masterCardLogo.src}
-                alt="master card"
-                width="10%"
+                alt='master card'
+                width='10%'
                 mr={2}
               />
-              <MDTypography variant="h6" fontWeight="medium">
+              <MDTypography
+                variant='h6'
+                fontWeight='medium'
+              >
                 ****&nbsp;&nbsp;****&nbsp;&nbsp;****&nbsp;&nbsp;7852
               </MDTypography>
               <MDBox
-                ml="auto"
+                ml='auto'
                 lineHeight={0}
-                color={darkMode ? "white" : "dark"}>
-                <Tooltip title="Edit Card" placement="top">
-                  <Icon sx={{ cursor: "pointer" }} fontSize="small">
+                color={darkMode ? 'white' : 'dark'}
+              >
+                <Tooltip
+                  title='Edit Card'
+                  placement='top'
+                >
+                  <Icon
+                    sx={{ cursor: 'pointer' }}
+                    fontSize='small'
+                  >
                     edit
                   </Icon>
                 </Tooltip>
               </MDBox>
             </MDBox>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid
+            item
+            xs={12}
+            md={6}
+          >
             <MDBox
-              borderRadius="lg"
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
+              borderRadius='lg'
+              display='flex'
+              justifyContent='space-between'
+              alignItems='center'
               p={3}
               sx={{
-                border: ({ borders: { borderWidth, borderColor } }) =>
-                  `${borderWidth[1]} solid ${borderColor}`,
-              }}>
+                border: ({ borders: { borderWidth, borderColor } }) => `${borderWidth[1]} solid ${borderColor}`,
+              }}
+            >
               <MDBox
-                component="img"
+                component='img'
                 src={visaLogo.src}
-                alt="Visa"
-                width="10%"
+                alt='Visa'
+                width='10%'
                 mr={2}
               />
-              <MDTypography variant="h6" fontWeight="medium">
+              <MDTypography
+                variant='h6'
+                fontWeight='medium'
+              >
                 ****&nbsp;&nbsp;****&nbsp;&nbsp;****&nbsp;&nbsp;5248
               </MDTypography>
               <MDBox
-                ml="auto"
+                ml='auto'
                 lineHeight={0}
-                color={darkMode ? "white" : "dark"}>
-                <Tooltip title="Edit Card" placement="top">
-                  <Icon sx={{ cursor: "pointer" }} fontSize="small">
+                color={darkMode ? 'white' : 'dark'}
+              >
+                <Tooltip
+                  title='Edit Card'
+                  placement='top'
+                >
+                  <Icon
+                    sx={{ cursor: 'pointer' }}
+                    fontSize='small'
+                  >
                     edit
                   </Icon>
                 </Tooltip>

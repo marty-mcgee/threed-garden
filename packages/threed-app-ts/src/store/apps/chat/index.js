@@ -22,8 +22,8 @@ export const fetchChatsContacts = createAsyncThunk('appChat/fetchChatsContacts',
 export const selectChat = createAsyncThunk('appChat/selectChat', async (id, { dispatch }) => {
   const response = await axios.get('/apps/chat/get-chat', {
     params: {
-      id
-    }
+      id,
+    },
   })
   await dispatch(fetchChatsContacts())
 
@@ -34,8 +34,8 @@ export const selectChat = createAsyncThunk('appChat/selectChat', async (id, { di
 export const sendMsg = createAsyncThunk('appChat/sendMsg', async (obj, { dispatch }) => {
   const response = await axios.post('/apps/chat/send-msg', {
     data: {
-      obj
-    }
+      obj,
+    },
   })
   if (obj.contact) {
     await dispatch(selectChat(obj.contact.id))
@@ -51,14 +51,14 @@ export const appChatSlice = createSlice({
     chats: null,
     contacts: null,
     userProfile: null,
-    selectedChat: null
+    selectedChat: null,
   },
   reducers: {
-    removeSelectedChat: state => {
+    removeSelectedChat: (state) => {
       state.selectedChat = null
-    }
+    },
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder.addCase(fetchUserProfile.fulfilled, (state, action) => {
       state.userProfile = action.payload
     })
@@ -69,7 +69,7 @@ export const appChatSlice = createSlice({
     builder.addCase(selectChat.fulfilled, (state, action) => {
       state.selectedChat = action.payload
     })
-  }
+  },
 })
 
 export const { removeSelectedChat } = appChatSlice.actions

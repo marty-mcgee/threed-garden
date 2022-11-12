@@ -23,7 +23,7 @@ const data = [
     trendNumber: '25.8%',
     avatarColor: 'success',
     subtitle: 'United states of america',
-    trend: <ChevronUp sx={{ mr: 0.5, color: 'success.main' }} />
+    trend: <ChevronUp sx={{ mr: 0.5, color: 'success.main' }} />,
   },
   {
     sales: '645k',
@@ -33,7 +33,7 @@ const data = [
     trendNumber: '6.2%',
     avatarColor: 'error',
     subtitle: 'United Kingdom',
-    trend: <ChevronDown sx={{ mr: 0.5, color: 'error.main' }} />
+    trend: <ChevronDown sx={{ mr: 0.5, color: 'error.main' }} />,
   },
   {
     sales: '148k',
@@ -43,7 +43,7 @@ const data = [
     subtitle: 'India',
     trendNumber: '12.4%',
     avatarColor: 'warning',
-    trend: <ChevronUp sx={{ mr: 0.5, color: 'success.main' }} />
+    trend: <ChevronUp sx={{ mr: 0.5, color: 'success.main' }} />,
   },
   {
     sales: '86k',
@@ -53,7 +53,7 @@ const data = [
     subtitle: 'Japan',
     trendNumber: '11.9%',
     avatarColor: 'secondary',
-    trend: <ChevronDown sx={{ mr: 0.5, color: 'error.main' }} />
+    trend: <ChevronDown sx={{ mr: 0.5, color: 'error.main' }} />,
   },
   {
     sales: '42k',
@@ -63,7 +63,7 @@ const data = [
     subtitle: 'Korea',
     trendNumber: '16.2%',
     avatarColor: 'error',
-    trend: <ChevronUp sx={{ mr: 0.5, color: 'success.main' }} />
+    trend: <ChevronUp sx={{ mr: 0.5, color: 'success.main' }} />,
   },
   {
     sales: '8k',
@@ -73,8 +73,8 @@ const data = [
     subtitle: 'China',
     trendNumber: '14.8%',
     avatarColor: 'primary',
-    trend: <ChevronUp sx={{ mr: 0.5, color: 'success.main' }} />
-  }
+    trend: <ChevronUp sx={{ mr: 0.5, color: 'success.main' }} />,
+  },
 ]
 
 const CardSalesByCountries = () => {
@@ -84,7 +84,12 @@ const CardSalesByCountries = () => {
         title='Sales by Countries'
         titleTypographyProps={{ sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' } }}
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }
@@ -97,10 +102,14 @@ const CardSalesByCountries = () => {
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                mb: index !== data.length - 1 ? 5 : undefined
+                mb: index !== data.length - 1 ? 5 : undefined,
               }}
             >
-              <CustomAvatar skin='light' color={item.avatarColor} sx={{ mr: 3, fontSize: '1.125rem' }}>
+              <CustomAvatar
+                skin='light'
+                color={item.avatarColor}
+                sx={{ mr: 3, fontSize: '1.125rem' }}
+              >
                 {item.avatarText}
               </CustomAvatar>
 
@@ -110,7 +119,7 @@ const CardSalesByCountries = () => {
                   display: 'flex',
                   flexWrap: 'wrap',
                   alignItems: 'center',
-                  justifyContent: 'space-between'
+                  justifyContent: 'space-between',
                 }}
               >
                 <Box sx={{ mr: 2, display: 'flex', flexDirection: 'column' }}>

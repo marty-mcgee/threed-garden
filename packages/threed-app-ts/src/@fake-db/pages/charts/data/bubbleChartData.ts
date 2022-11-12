@@ -5,11 +5,11 @@ interface Types {
 }
 
 const bubbleChartData: Types = {
-  labels: ["0", "10", "20", "30", "40", "50", "60", "70", "80", "90"],
+  labels: ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90'],
   datasets: [
     {
-      label: "Dataset One",
-      color: "info",
+      label: 'Dataset One',
+      color: 'info',
       data: [
         { x: 100, y: 0, r: 10 },
         { x: 60, y: 30, r: 20 },
@@ -20,8 +20,8 @@ const bubbleChartData: Types = {
       ],
     },
     {
-      label: "Dataset Two",
-      color: "dark",
+      label: 'Dataset Two',
+      color: 'dark',
       data: [
         { x: 70, y: 40, r: 10 },
         { x: 30, y: 60, r: 20 },

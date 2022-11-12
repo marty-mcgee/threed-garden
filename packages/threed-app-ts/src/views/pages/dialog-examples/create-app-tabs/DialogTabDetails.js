@@ -18,14 +18,22 @@ import CustomAvatar from '~/@core/components/mui/avatar'
 const TabDetails = () => {
   const [value, setValue] = useState('ecommerce')
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     setValue(event.target.value)
   }
 
   return (
     <Box>
-      <TextField fullWidth sx={{ mb: 4 }} label='Application Name' placeholder='ThreeD Garden Admin' />
-      <Typography variant='h6' sx={{ mb: 4 }}>
+      <TextField
+        fullWidth
+        sx={{ mb: 4 }}
+        label='Application Name'
+        placeholder='ThreeD Garden Admin'
+      />
+      <Typography
+        variant='h6'
+        sx={{ mb: 4 }}
+      >
         Category
       </Typography>
       <Box sx={{ mb: 8 }}>
@@ -34,7 +42,12 @@ const TabDetails = () => {
           sx={{ mb: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <CustomAvatar skin='light' color='info' variant='rounded' sx={{ mr: 3, width: 48, height: 48 }}>
+            <CustomAvatar
+              skin='light'
+              color='info'
+              variant='rounded'
+              sx={{ mr: 3, width: 48, height: 48 }}
+            >
               <BriefcaseOutline />
             </CustomAvatar>
             <Box>
@@ -42,14 +55,23 @@ const TabDetails = () => {
               <Typography variant='caption'>Scales with any business</Typography>
             </Box>
           </Box>
-          <Radio value='crm' onChange={handleChange} checked={value === 'crm'} />
+          <Radio
+            value='crm'
+            onChange={handleChange}
+            checked={value === 'crm'}
+          />
         </Box>
         <Box
           onClick={() => setValue('ecommerce')}
           sx={{ mb: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <CustomAvatar skin='light' color='success' variant='rounded' sx={{ mr: 3, width: 48, height: 48 }}>
+            <CustomAvatar
+              skin='light'
+              color='success'
+              variant='rounded'
+              sx={{ mr: 3, width: 48, height: 48 }}
+            >
               <CartOutline />
             </CustomAvatar>
             <Box>
@@ -57,14 +79,23 @@ const TabDetails = () => {
               <Typography variant='caption'>Grow Your Business With App</Typography>
             </Box>
           </Box>
-          <Radio value='ecommerce' onChange={handleChange} checked={value === 'ecommerce'} />
+          <Radio
+            value='ecommerce'
+            onChange={handleChange}
+            checked={value === 'ecommerce'}
+          />
         </Box>
         <Box
           onClick={() => setValue('learning')}
           sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <CustomAvatar skin='light' color='error' variant='rounded' sx={{ mr: 3, width: 48, height: 48 }}>
+            <CustomAvatar
+              skin='light'
+              color='error'
+              variant='rounded'
+              sx={{ mr: 3, width: 48, height: 48 }}
+            >
               <LicenseIcon />
             </CustomAvatar>
             <Box>
@@ -72,7 +103,11 @@ const TabDetails = () => {
               <Typography variant='caption'>Start learning today</Typography>
             </Box>
           </Box>
-          <Radio value='learning' onChange={handleChange} checked={value === 'learning'} />
+          <Radio
+            value='learning'
+            onChange={handleChange}
+            checked={value === 'learning'}
+          />
         </Box>
       </Box>
     </Box>

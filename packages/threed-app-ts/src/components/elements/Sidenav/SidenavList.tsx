@@ -1,7 +1,7 @@
-import { ReactNode } from "react"
+import { ReactNode } from 'react'
 
 // @mui material components
-import List from "@mui/material/List"
+import List from '@mui/material/List'
 
 function SidenavList({ children }: { children: ReactNode }): JSX.Element {
   return (
@@ -9,7 +9,8 @@ function SidenavList({ children }: { children: ReactNode }): JSX.Element {
       sx={{
         px: 2,
         my: 0.3,
-      }}>
+      }}
+    >
       {children}
     </List>
   )

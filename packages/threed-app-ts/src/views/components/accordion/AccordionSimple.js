@@ -11,7 +11,11 @@ const AccordionSimple = () => {
   return (
     <div>
       <Accordion>
-        <AccordionSummary expandIcon={<ChevronDown />} aria-controls='panel-content-1' id='panel-header-1'>
+        <AccordionSummary
+          expandIcon={<ChevronDown />}
+          aria-controls='panel-content-1'
+          id='panel-header-1'
+        >
           <Typography>Accordion 1</Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -23,7 +27,11 @@ const AccordionSimple = () => {
       </Accordion>
 
       <Accordion>
-        <AccordionSummary expandIcon={<ChevronDown />} aria-controls='panel-content-2' id='panel-header-2'>
+        <AccordionSummary
+          expandIcon={<ChevronDown />}
+          aria-controls='panel-content-2'
+          id='panel-header-2'
+        >
           <Typography>Accordion 2</Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -35,7 +43,11 @@ const AccordionSimple = () => {
       </Accordion>
 
       <Accordion>
-        <AccordionSummary expandIcon={<ChevronDown />} aria-controls='panel-content-3' id='panel-header-3'>
+        <AccordionSummary
+          expandIcon={<ChevronDown />}
+          aria-controls='panel-content-3'
+          id='panel-header-3'
+        >
           <Typography>Accordion 3</Typography>
         </AccordionSummary>
         <AccordionDetails>

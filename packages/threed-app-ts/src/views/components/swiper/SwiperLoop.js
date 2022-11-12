@@ -8,22 +8,37 @@ const SwiperLoop = ({ direction }) => {
   // ** Hook
   const [ref] = useKeenSlider({
     loop: true,
-    rtl: direction === 'rtl'
+    rtl: direction === 'rtl',
   })
 
   return (
-    <Box ref={ref} className='keen-slider'>
+    <Box
+      ref={ref}
+      className='keen-slider'
+    >
       <Box className='keen-slider__slide'>
-        <img src='/images/banners/banner-7.jpg' alt='swiper 7' />
+        <img
+          src='/images/banners/banner-7.jpg'
+          alt='swiper 7'
+        />
       </Box>
       <Box className='keen-slider__slide'>
-        <img src='/images/banners/banner-8.jpg' alt='swiper 8' />
+        <img
+          src='/images/banners/banner-8.jpg'
+          alt='swiper 8'
+        />
       </Box>
       <Box className='keen-slider__slide'>
-        <img src='/images/banners/banner-9.jpg' alt='swiper 9' />
+        <img
+          src='/images/banners/banner-9.jpg'
+          alt='swiper 9'
+        />
       </Box>
       <Box className='keen-slider__slide'>
-        <img src='/images/banners/banner-10.jpg' alt='swiper 10' />
+        <img
+          src='/images/banners/banner-10.jpg'
+          alt='swiper 10'
+        />
       </Box>
     </Box>
   )

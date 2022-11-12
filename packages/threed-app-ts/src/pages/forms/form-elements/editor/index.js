@@ -23,36 +23,49 @@ import * as source from '~/views/forms/form-elements/editor/EditorSourceCode'
 const Editors = () => {
   return (
     <EditorWrapper>
-      <Grid container spacing={6} className='match-height'>
+      <Grid
+        container
+        spacing={6}
+        className='match-height'
+      >
         <PageHeader
           title={
             <Typography variant='h5'>
-              <Link href='https://jpuri.github.io/react-draft-wysiwyg/#/' target='_blank'>
+              <Link
+                href='https://jpuri.github.io/react-draft-wysiwyg/#/'
+                target='_blank'
+              >
                 React Draft Wysiwyg
               </Link>
             </Typography>
           }
           subtitle={<Typography variant='body2'>A Wysiwyg Built on ReactJS and DraftJS</Typography>}
         />
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             sx={{ overflow: 'visible' }}
             title='Controlled Wysiwyg Editor'
             code={{
               tsx: null,
-              jsx: source.EditorControlledJSXCode
+              jsx: source.EditorControlledJSXCode,
             }}
           >
             <EditorControlled />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             sx={{ overflow: 'visible' }}
             title='Uncontrolled Wysiwyg Editor'
             code={{
               tsx: null,
-              jsx: source.EditorUncontrolledJSXCode
+              jsx: source.EditorUncontrolledJSXCode,
             }}
           >
             <EditorUncontrolled />

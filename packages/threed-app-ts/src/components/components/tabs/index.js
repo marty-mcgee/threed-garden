@@ -22,25 +22,37 @@ import * as source from '~/views/components/tabs/TabsSourceCode'
 
 const Tabs = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12} md={6}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Default Tabs'
           code={{
             tsx: null,
-            jsx: source.TabsSimpleJSXCode
+            jsx: source.TabsSimpleJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>Tabs are managed with the help of a state.</Typography>
           <TabsSimple />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Color'
           code={{
             tsx: null,
-            jsx: source.TabsColorJSXCode
+            jsx: source.TabsColorJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -50,12 +62,16 @@ const Tabs = () => {
           <TabsColor />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Full Width Tabs'
           code={{
             tsx: null,
-            jsx: source.TabsFullWidthJSXCode
+            jsx: source.TabsFullWidthJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -64,12 +80,16 @@ const Tabs = () => {
           <TabsFullWidth />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Centered Tabs'
           code={{
             tsx: null,
-            jsx: source.TabsCenteredJSXCode
+            jsx: source.TabsCenteredJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -78,12 +98,16 @@ const Tabs = () => {
           <TabsCentered />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Icon Tabs'
           code={{
             tsx: null,
-            jsx: source.TabsIconJSXCode
+            jsx: source.TabsIconJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -92,12 +116,16 @@ const Tabs = () => {
           <TabsIcon />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Customized Tabs'
           code={{
             tsx: null,
-            jsx: source.TabsCustomizedJSXCode
+            jsx: source.TabsCustomizedJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -106,12 +134,16 @@ const Tabs = () => {
           <TabsCustomized />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Vertical Tabs'
           code={{
             tsx: null,
-            jsx: source.TabsVerticalJSXCode
+            jsx: source.TabsVerticalJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -120,12 +152,16 @@ const Tabs = () => {
           <TabsVertical />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Customized Vertical Tabs'
           code={{
             tsx: null,
-            jsx: source.TabsCustomizedVerticalJSXCode
+            jsx: source.TabsCustomizedVerticalJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -134,12 +170,16 @@ const Tabs = () => {
           <TabsCustomizedVertical />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Nav Tabs'
           code={{
             tsx: null,
-            jsx: source.TabsNavJSXCode
+            jsx: source.TabsNavJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -148,12 +188,16 @@ const Tabs = () => {
           <TabsNav />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Forced Scroll Buttons'
           code={{
             tsx: null,
-            jsx: source.TabsForcedScrollJSXCode
+            jsx: source.TabsForcedScrollJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>

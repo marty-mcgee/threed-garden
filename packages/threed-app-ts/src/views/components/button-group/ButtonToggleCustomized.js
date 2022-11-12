@@ -24,11 +24,11 @@ const ToggleButton = styled(MuiToggleButton)(({ theme }) => ({
   border: 'none !important',
   padding: theme.spacing(2),
   '&:not(:first-of-type)': {
-    borderRadius: `${theme.shape.borderRadius}px !important`
+    borderRadius: `${theme.shape.borderRadius}px !important`,
   },
   '&:first-of-type': {
-    borderRadius: `${theme.shape.borderRadius}px !important`
-  }
+    borderRadius: `${theme.shape.borderRadius}px !important`,
+  },
 }))
 
 const ButtonToggleCustomized = () => {
@@ -46,32 +46,71 @@ const ButtonToggleCustomized = () => {
 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-      <ToggleButtonGroup exclusive value={alignment} onChange={handleAlignment} aria-label='text alignment'>
-        <ToggleButton value='left' aria-label='left aligned'>
+      <ToggleButtonGroup
+        exclusive
+        value={alignment}
+        onChange={handleAlignment}
+        aria-label='text alignment'
+      >
+        <ToggleButton
+          value='left'
+          aria-label='left aligned'
+        >
           <FormatAlignLeft />
         </ToggleButton>
-        <ToggleButton value='center' aria-label='center aligned'>
+        <ToggleButton
+          value='center'
+          aria-label='center aligned'
+        >
           <FormatAlignCenter />
         </ToggleButton>
-        <ToggleButton value='right' aria-label='right aligned'>
+        <ToggleButton
+          value='right'
+          aria-label='right aligned'
+        >
           <FormatAlignRight />
         </ToggleButton>
-        <ToggleButton value='justify' aria-label='justified' disabled>
+        <ToggleButton
+          value='justify'
+          aria-label='justified'
+          disabled
+        >
           <FormatAlignJustify />
         </ToggleButton>
       </ToggleButtonGroup>
-      <Divider flexItem orientation='vertical' sx={{ m: 1 }} />
-      <ToggleButtonGroup value={formats} onChange={handleFormat} aria-label='text alignment'>
-        <ToggleButton value='bold' aria-label='bold'>
+      <Divider
+        flexItem
+        orientation='vertical'
+        sx={{ m: 1 }}
+      />
+      <ToggleButtonGroup
+        value={formats}
+        onChange={handleFormat}
+        aria-label='text alignment'
+      >
+        <ToggleButton
+          value='bold'
+          aria-label='bold'
+        >
           <FormatBold />
         </ToggleButton>
-        <ToggleButton value='italic' aria-label='italic'>
+        <ToggleButton
+          value='italic'
+          aria-label='italic'
+        >
           <FormatItalic />
         </ToggleButton>
-        <ToggleButton value='underlined' aria-label='underlined'>
+        <ToggleButton
+          value='underlined'
+          aria-label='underlined'
+        >
           <FormatUnderline />
         </ToggleButton>
-        <ToggleButton value='color' aria-label='color' disabled>
+        <ToggleButton
+          value='color'
+          aria-label='color'
+          disabled
+        >
           <FormatColorFill />
         </ToggleButton>
       </ToggleButtonGroup>

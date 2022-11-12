@@ -1,6 +1,6 @@
-import { Farmbot } from "farmbot"
+import { Farmbot } from 'farmbot'
 
-const SUPER_SECRET_TOKEN = "see .env file FARMBOT_JS_SUPER_SECRET_TOKEN"
+const SUPER_SECRET_TOKEN = 'see .env file FARMBOT_JS_SUPER_SECRET_TOKEN'
 
 const bot = new Farmbot({ token: SUPER_SECRET_TOKEN })
 
@@ -11,26 +11,22 @@ bot
     // bot.setConfig("MARTY", "HEY HEY HEY")
     // console.log(bot.getConfig("MARTY"))
     // return bot.getConfig("MARTY")
-    console.debug("[MM] HEY HEY HEY -- FARMBOT INITIATED.")
+    console.debug('[MM] HEY HEY HEY -- FARMBOT INITIATED.')
   })
   .then(() =>
-    bot.moveRelative(
-      {
-        x: 1,
-        y: 2,
-        z: 3,
-        speed: 100
-      }
-    )
+    bot.moveRelative({
+      x: 1,
+      y: 2,
+      z: 3,
+      speed: 100,
+    })
   )
 
-console.debug("bot", bot)
+console.debug('bot', bot)
 
 const FarmbotComponent = (): JSX.Element => {
-  const word = "HEY HEY HEY"
-  return (
-    <div>Farmbot: {word}</div>
-  )
+  const word = 'HEY HEY HEY'
+  return <div>Farmbot: {word}</div>
 }
 
 export default FarmbotComponent

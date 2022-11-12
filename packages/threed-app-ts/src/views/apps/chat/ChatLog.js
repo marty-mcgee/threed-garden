@@ -20,10 +20,10 @@ import CustomAvatar from '~/@core/components/mui/avatar'
 import { getInitials } from '~/@core/utils/get-initials'
 
 const PerfectScrollbar = styled(PerfectScrollbarComponent)(({ theme }) => ({
-  padding: theme.spacing(5)
+  padding: theme.spacing(5),
 }))
 
-const ChatLog = props => {
+const ChatLog = (props) => {
   // ** Props
   const { data, hidden } = props
 
@@ -54,14 +54,14 @@ const ChatLog = props => {
 
     let msgGroup = {
       senderId: chatMessageSenderId,
-      messages: []
+      messages: [],
     }
     chatLog.forEach((msg, index) => {
       if (chatMessageSenderId === msg.senderId) {
         msgGroup.messages.push({
           time: msg.time,
           msg: msg.message,
-          feedback: msg.feedback
+          feedback: msg.feedback,
         })
       } else {
         chatMessageSenderId = msg.senderId
@@ -72,9 +72,9 @@ const ChatLog = props => {
             {
               time: msg.time,
               msg: msg.message,
-              feedback: msg.feedback
-            }
-          ]
+              feedback: msg.feedback,
+            },
+          ],
         }
       }
       if (index === chatLog.length - 1) formattedChatLog.push(msgGroup)
@@ -111,7 +111,7 @@ const ChatLog = props => {
           sx={{
             display: 'flex',
             flexDirection: !isSender ? 'row' : 'row-reverse',
-            mb: index !== formattedChatData().length - 1 ? 4 : undefined
+            mb: index !== formattedChatData().length - 1 ? 4 : undefined,
           }}
         >
           <Box>
@@ -123,31 +123,37 @@ const ChatLog = props => {
                 height: '2rem',
                 fontSize: '0.875rem',
                 ml: isSender ? 3.5 : undefined,
-                mr: !isSender ? 3.5 : undefined
+                mr: !isSender ? 3.5 : undefined,
               }}
               {...(data.contact.avatar && !isSender
                 ? {
-                  src: data.contact.avatar,
-                  alt: data.contact.fullName
-                }
+                    src: data.contact.avatar,
+                    alt: data.contact.fullName,
+                  }
                 : {})}
               {...(isSender
                 ? {
-                  src: data.userContact.avatar,
-                  alt: data.userContact.fullName
-                }
+                    src: data.userContact.avatar,
+                    alt: data.userContact.fullName,
+                  }
                 : {})}
             >
               {data.contact.avatarColor ? getInitials(data.contact.fullName) : null}
             </CustomAvatar>
           </Box>
 
-          <Box className='chat-body' sx={{ maxWidth: ['calc(100% - 5.75rem)', '75%', '65%'] }}>
+          <Box
+            className='chat-body'
+            sx={{ maxWidth: ['calc(100% - 5.75rem)', '75%', '65%'] }}
+          >
             {item.messages.map((chat, index, { length }) => {
               const time = new Date(chat.time)
 
               return (
-                <Box key={index} sx={{ '&:not(:last-of-type)': { mb: 3.5 } }}>
+                <Box
+                  key={index}
+                  sx={{ '&:not(:last-of-type)': { mb: 3.5 } }}
+                >
                   <Box>
                     <Typography
                       sx={{
@@ -155,12 +161,12 @@ const ChatLog = props => {
                         borderRadius: 1,
                         width: 'fit-content',
                         fontSize: '0.875rem',
-                        p: theme => theme.spacing(3, 4),
+                        p: (theme) => theme.spacing(3, 4),
                         ml: isSender ? 'auto' : undefined,
                         borderTopLeftRadius: !isSender ? 0 : undefined,
                         borderTopRightRadius: isSender ? 0 : undefined,
                         color: isSender ? 'common.white' : 'text.primary',
-                        backgroundColor: isSender ? 'primary.main' : 'background.paper'
+                        backgroundColor: isSender ? 'primary.main' : 'background.paper',
                       }}
                     >
                       {chat.msg}
@@ -172,7 +178,7 @@ const ChatLog = props => {
                         mt: 1,
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: isSender ? 'flex-end' : 'flex-start'
+                        justifyContent: isSender ? 'flex-end' : 'flex-start',
                       }}
                     >
                       {renderMsgFeedback(isSender, chat.feedback)}
@@ -195,13 +201,19 @@ const ChatLog = props => {
   const ScrollWrapper = ({ children }) => {
     if (hidden) {
       return (
-        <Box ref={chatArea} sx={{ p: 5, height: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
+        <Box
+          ref={chatArea}
+          sx={{ p: 5, height: '100%', overflowY: 'auto', overflowX: 'hidden' }}
+        >
           {children}
         </Box>
       )
     } else {
       return (
-        <PerfectScrollbar ref={chatArea} options={{ wheelPropagation: false }}>
+        <PerfectScrollbar
+          ref={chatArea}
+          options={{ wheelPropagation: false }}
+        >
           {children}
         </PerfectScrollbar>
       )

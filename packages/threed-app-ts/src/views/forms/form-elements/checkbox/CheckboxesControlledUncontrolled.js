@@ -10,7 +10,7 @@ const CheckboxesControlledUncontrolled = () => {
   // ** State
   const [checked, setChecked] = useState(true)
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     setChecked(event.target.checked)
   }
 
@@ -18,9 +18,23 @@ const CheckboxesControlledUncontrolled = () => {
     <FormGroup row>
       <FormControlLabel
         label='Controlled'
-        control={<Checkbox checked={checked} onChange={handleChange} name='controlled' />}
+        control={
+          <Checkbox
+            checked={checked}
+            onChange={handleChange}
+            name='controlled'
+          />
+        }
       />
-      <FormControlLabel label='Uncontrolled' control={<Checkbox defaultChecked name='uncontrolled' />} />
+      <FormControlLabel
+        label='Uncontrolled'
+        control={
+          <Checkbox
+            defaultChecked
+            name='uncontrolled'
+          />
+        }
+      />
     </FormGroup>
   )
 }

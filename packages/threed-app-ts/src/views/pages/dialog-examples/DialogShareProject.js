@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, forwardRef, Fragment } from 'react'
+import { useState, forwardRef } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'

@@ -1,19 +1,19 @@
-import { useState } from "react"
+import { useState } from 'react'
 
 // nextjs components
-import Link from "next/link"
+import Link from 'next/link'
 
 // @mui material components
-import Collapse from "@mui/material/Collapse"
-import MuiLink from "@mui/material/Link"
-import { Theme } from "@mui/material/styles"
+import Collapse from '@mui/material/Collapse'
+import MuiLink from '@mui/material/Link'
+import { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
+import MDBox from '~/components/mui/MDBox'
+import MDTypography from '~/components/mui/MDTypography'
 
 // ThreeD Garden exampless
-import DefaultNavbarDropdown from "~/components/elements/Navbars/DefaultNavbar/DefaultNavbarDropdown"
+import DefaultNavbarDropdown from '~/components/elements/Navbars/DefaultNavbar/DefaultNavbarDropdown'
 
 // Declaring props types for DefaultNavbarMobile
 interface Props {
@@ -22,20 +22,12 @@ interface Props {
 }
 
 function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
-  const [collapse, setCollapse] = useState<string | boolean>("")
+  const [collapse, setCollapse] = useState<string | boolean>('')
 
-  const handleSetCollapse = (name: string) =>
-    collapse === name ? setCollapse(false) : setCollapse(name)
+  const handleSetCollapse = (name: string) => (collapse === name ? setCollapse(false) : setCollapse(name))
 
   const renderNavbarItems = routes.map(
-    ({
-      name,
-      icon,
-      collapse: routeCollapses,
-      href,
-      route,
-      collapse: navCollapse,
-    }: any) => (
+    ({ name, icon, collapse: routeCollapses, href, route, collapse: navCollapse }: any) => (
       <DefaultNavbarDropdown
         key={name}
         name={name}
@@ -44,21 +36,25 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
         onClick={() => handleSetCollapse(name)}
         href={href}
         route={route}
-        collapse={Boolean(navCollapse)}>
-        <MDBox
-          sx={{ height: "15rem", maxHeight: "15rem", overflowY: "scroll" }}>
+        collapse={Boolean(navCollapse)}
+      >
+        <MDBox sx={{ height: '15rem', maxHeight: '15rem', overflowY: 'scroll' }}>
           {routeCollapses &&
             routeCollapses.map((item: any) => (
-              <MDBox key={item.name} px={2}>
+              <MDBox
+                key={item.name}
+                px={2}
+              >
                 {item.collapse ? (
                   <>
                     <MDTypography
-                      display="block"
-                      variant="button"
-                      fontWeight="bold"
-                      textTransform="capitalize"
+                      display='block'
+                      variant='button'
+                      fontWeight='bold'
+                      textTransform='capitalize'
                       py={1}
-                      px={0.5}>
+                      px={0.5}
+                    >
                       {item.name}
                     </MDTypography>
                     {item.collapse.map((el: any) => (
@@ -69,32 +65,30 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
                         href={
                           el.href
                             ? el.href
-                            // : (e: any) => e.preventDefault()
-                            : el.route
+                            : // : (e: any) => e.preventDefault()
+                              el.route
                         }
-                        target={el.href ? "_blank" : ""}
-                        rel={el.href ? "noreferrer" : "noreferrer"}
-                        minWidth="11.25rem"
-                        display="block"
-                        variant="button"
-                        color="text"
-                        textTransform="capitalize"
-                        fontWeight="regular"
+                        target={el.href ? '_blank' : ''}
+                        rel={el.href ? 'noreferrer' : 'noreferrer'}
+                        minWidth='11.25rem'
+                        display='block'
+                        variant='button'
+                        color='text'
+                        textTransform='capitalize'
+                        fontWeight='regular'
                         py={0.625}
                         px={2}
-                        sx={({
-                          palette: { grey, dark },
-                          borders: { borderRadius },
-                        }: Theme) => ({
+                        sx={({ palette: { grey, dark }, borders: { borderRadius } }: Theme) => ({
                           borderRadius: borderRadius.md,
-                          cursor: "pointer",
-                          transition: "all 300ms linear",
+                          cursor: 'pointer',
+                          transition: 'all 300ms linear',
 
-                          "&:hover": {
+                          '&:hover': {
                             backgroundColor: grey[200],
                             color: dark.main,
                           },
-                        })}>
+                        })}
+                      >
                         {el.name}
                       </MDTypography>
                     ))}
@@ -102,49 +96,49 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
                 ) : (
                   <MDBox
                     key={item.key}
-                    display="block"
+                    display='block'
                     component={item.route ? Link : MuiLink}
                     // to={item.route ? item.route : ""}
                     href={
                       item.href
                         ? item.href
-                        // : (e: any) => e.preventDefault()
-                        : item.route
+                        : // : (e: any) => e.preventDefault()
+                          item.route
                     }
-                    target={item.href ? "_blank" : ""}
-                    rel={item.href ? "noreferrer" : "noreferrer"}
-                    sx={({
-                      palette: { grey, dark },
-                      borders: { borderRadius },
-                    }) => ({
+                    target={item.href ? '_blank' : ''}
+                    rel={item.href ? 'noreferrer' : 'noreferrer'}
+                    sx={({ palette: { grey, dark }, borders: { borderRadius } }) => ({
                       borderRadius: borderRadius.md,
-                      cursor: "pointer",
-                      transition: "all 300ms linear",
+                      cursor: 'pointer',
+                      transition: 'all 300ms linear',
                       py: 1,
                       px: 1.625,
 
-                      "&:hover": {
+                      '&:hover': {
                         backgroundColor: grey[200],
                         color: dark.main,
 
-                        "& *": {
+                        '& *': {
                           color: dark.main,
                         },
                       },
-                    })}>
+                    })}
+                  >
                     <MDTypography
-                      display="block"
-                      variant="button"
-                      fontWeight="bold"
-                      textTransform="capitalize">
+                      display='block'
+                      variant='button'
+                      fontWeight='bold'
+                      textTransform='capitalize'
+                    >
                       {item.name}
                     </MDTypography>
                     <MDTypography
-                      display="block"
-                      variant="button"
-                      color="text"
-                      fontWeight="regular"
-                      sx={{ transition: "all 300ms linear" }}>
+                      display='block'
+                      variant='button'
+                      color='text'
+                      fontWeight='regular'
+                      sx={{ transition: 'all 300ms linear' }}
+                    >
                       {item.description}
                     </MDTypography>
                   </MDBox>
@@ -157,8 +151,16 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
   )
 
   return (
-    <Collapse in={Boolean(open)} timeout="auto" unmountOnExit>
-      <MDBox width="calc(100% + 1.625rem)" my={2} ml={-2}>
+    <Collapse
+      in={Boolean(open)}
+      timeout='auto'
+      unmountOnExit
+    >
+      <MDBox
+        width='calc(100% + 1.625rem)'
+        my={2}
+        ml={-2}
+      >
         {renderNavbarItems}
       </MDBox>
     </Collapse>

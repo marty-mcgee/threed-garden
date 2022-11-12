@@ -20,8 +20,8 @@ const data = {
       end: nextDay,
       allDay: false,
       extendedProps: {
-        calendar: 'Business'
-      }
+        calendar: 'Business',
+      },
     },
     {
       id: 2,
@@ -31,8 +31,8 @@ const data = {
       end: new Date(date.getFullYear(), date.getMonth() + 1, -10),
       allDay: true,
       extendedProps: {
-        calendar: 'Business'
-      }
+        calendar: 'Business',
+      },
     },
     {
       id: 3,
@@ -42,8 +42,8 @@ const data = {
       start: new Date(date.getFullYear(), date.getMonth() + 1, -9),
       end: new Date(date.getFullYear(), date.getMonth() + 1, -7),
       extendedProps: {
-        calendar: 'Holiday'
-      }
+        calendar: 'Holiday',
+      },
     },
     {
       id: 4,
@@ -53,8 +53,8 @@ const data = {
       end: new Date(date.getFullYear(), date.getMonth() + 1, -10),
       allDay: true,
       extendedProps: {
-        calendar: 'Personal'
-      }
+        calendar: 'Personal',
+      },
     },
     {
       id: 5,
@@ -64,8 +64,8 @@ const data = {
       end: new Date(date.getFullYear(), date.getMonth() + 1, -12),
       allDay: true,
       extendedProps: {
-        calendar: 'ETC'
-      }
+        calendar: 'ETC',
+      },
     },
     {
       id: 6,
@@ -75,8 +75,8 @@ const data = {
       end: new Date(date.getFullYear(), date.getMonth() + 1, -12),
       allDay: true,
       extendedProps: {
-        calendar: 'Personal'
-      }
+        calendar: 'Personal',
+      },
     },
     {
       id: 7,
@@ -86,8 +86,8 @@ const data = {
       end: new Date(date.getFullYear(), date.getMonth() + 1, -12),
       allDay: true,
       extendedProps: {
-        calendar: 'Family'
-      }
+        calendar: 'Family',
+      },
     },
     {
       id: 8,
@@ -97,8 +97,8 @@ const data = {
       end: new Date(date.getFullYear(), date.getMonth() + 1, -12),
       allDay: true,
       extendedProps: {
-        calendar: 'Business'
-      }
+        calendar: 'Business',
+      },
     },
     {
       id: 9,
@@ -108,8 +108,8 @@ const data = {
       end: nextMonth,
       allDay: true,
       extendedProps: {
-        calendar: 'Business'
-      }
+        calendar: 'Business',
+      },
     },
     {
       id: 10,
@@ -119,26 +119,26 @@ const data = {
       end: prevMonth,
       allDay: true,
       extendedProps: {
-        calendar: 'Personal'
-      }
-    }
-  ]
+        calendar: 'Personal',
+      },
+    },
+  ],
 }
 
 // ------------------------------------------------
 // GET: Return calendar events
 // ------------------------------------------------
-mock.onGet('/apps/calendar/events').reply(config => {
+mock.onGet('/apps/calendar/events').reply((config) => {
   // Get requested calendars as Array
   const { calendars } = config.params
 
-  return [200, data.events.filter(event => calendars.includes(event.extendedProps.calendar))]
+  return [200, data.events.filter((event) => calendars.includes(event.extendedProps.calendar))]
 })
 
 // ------------------------------------------------
 // POST: Add new event
 // ------------------------------------------------
-mock.onPost('/apps/calendar/add-event').reply(config => {
+mock.onPost('/apps/calendar/add-event').reply((config) => {
   // Get event from post data
   const { event } = JSON.parse(config.data).data
   const { length } = data.events
@@ -155,12 +155,12 @@ mock.onPost('/apps/calendar/add-event').reply(config => {
 // ------------------------------------------------
 // POST: Update Event
 // ------------------------------------------------
-mock.onPost('/apps/calendar/update-event').reply(config => {
+mock.onPost('/apps/calendar/update-event').reply((config) => {
   const eventData = JSON.parse(config.data).data.event
 
   // Convert Id to number
   eventData.id = Number(eventData.id)
-  const event = data.events.find(ev => ev.id === Number(eventData.id))
+  const event = data.events.find((ev) => ev.id === Number(eventData.id))
   if (event) {
     Object.assign(event, eventData)
 
@@ -173,13 +173,13 @@ mock.onPost('/apps/calendar/update-event').reply(config => {
 // ------------------------------------------------
 // DELETE: Remove Event
 // ------------------------------------------------
-mock.onDelete('/apps/calendar/remove-event').reply(config => {
+mock.onDelete('/apps/calendar/remove-event').reply((config) => {
   // Get event id from URL
   const { id } = config.params
 
   // Convert Id to number
   const eventId = Number(id)
-  const eventIndex = data.events.findIndex(ev => ev.id === eventId)
+  const eventIndex = data.events.findIndex((ev) => ev.id === eventId)
   data.events.splice(eventIndex, 1)
 
   return [200]

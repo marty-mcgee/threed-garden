@@ -43,7 +43,7 @@ const Header = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   padding: theme.spacing(3, 4),
   justifyContent: 'space-between',
-  backgroundColor: theme.palette.background.default
+  backgroundColor: theme.palette.background.default,
 }))
 
 const schema = yup.object().shape({
@@ -53,16 +53,16 @@ const schema = yup.object().shape({
   contact: yup
     .number()
     .typeError('Contact Number field is required')
-    .min(10, obj => showErrors('Contact Number', obj.value.length, obj.min))
+    .min(10, (obj) => showErrors('Contact Number', obj.value.length, obj.min))
     .required(),
   fullName: yup
     .string()
-    .min(3, obj => showErrors('First Name', obj.value.length, obj.min))
+    .min(3, (obj) => showErrors('First Name', obj.value.length, obj.min))
     .required(),
   username: yup
     .string()
-    .min(3, obj => showErrors('Username', obj.value.length, obj.min))
-    .required()
+    .min(3, (obj) => showErrors('Username', obj.value.length, obj.min))
+    .required(),
 })
 
 const defaultValues = {
@@ -71,10 +71,10 @@ const defaultValues = {
   country: '',
   contact: '',
   fullName: '',
-  username: ''
+  username: '',
 }
 
-const SidebarAddUser = props => {
+const SidebarAddUser = (props) => {
   // ** Props
   const { open, toggle } = props
 
@@ -90,14 +90,14 @@ const SidebarAddUser = props => {
     control,
     setValue,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm({
     defaultValues,
     mode: 'onChange',
-    resolver: yupResolver(schema)
+    resolver: yupResolver(schema),
   })
 
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     dispatch(addUser({ ...data, role, currentPlan: plan }))
     toggle()
     reset()
@@ -122,11 +122,18 @@ const SidebarAddUser = props => {
     >
       <Header>
         <Typography variant='h6'>Add User</Typography>
-        <Close fontSize='small' onClick={handleClose} sx={{ cursor: 'pointer' }} />
+        <Close
+          fontSize='small'
+          onClick={handleClose}
+          sx={{ cursor: 'pointer' }}
+        />
       </Header>
       <Box sx={{ p: 5 }}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <FormControl fullWidth sx={{ mb: 6 }}>
+          <FormControl
+            fullWidth
+            sx={{ mb: 6 }}
+          >
             <Controller
               name='fullName'
               control={control}
@@ -143,7 +150,10 @@ const SidebarAddUser = props => {
             />
             {errors.fullName && <FormHelperText sx={{ color: 'error.main' }}>{errors.fullName.message}</FormHelperText>}
           </FormControl>
-          <FormControl fullWidth sx={{ mb: 6 }}>
+          <FormControl
+            fullWidth
+            sx={{ mb: 6 }}
+          >
             <Controller
               name='username'
               control={control}
@@ -160,7 +170,10 @@ const SidebarAddUser = props => {
             />
             {errors.username && <FormHelperText sx={{ color: 'error.main' }}>{errors.username.message}</FormHelperText>}
           </FormControl>
-          <FormControl fullWidth sx={{ mb: 6 }}>
+          <FormControl
+            fullWidth
+            sx={{ mb: 6 }}
+          >
             <Controller
               name='email'
               control={control}
@@ -178,7 +191,10 @@ const SidebarAddUser = props => {
             />
             {errors.email && <FormHelperText sx={{ color: 'error.main' }}>{errors.email.message}</FormHelperText>}
           </FormControl>
-          <FormControl fullWidth sx={{ mb: 6 }}>
+          <FormControl
+            fullWidth
+            sx={{ mb: 6 }}
+          >
             <Controller
               name='company'
               control={control}
@@ -195,7 +211,10 @@ const SidebarAddUser = props => {
             />
             {errors.company && <FormHelperText sx={{ color: 'error.main' }}>{errors.company.message}</FormHelperText>}
           </FormControl>
-          <FormControl fullWidth sx={{ mb: 6 }}>
+          <FormControl
+            fullWidth
+            sx={{ mb: 6 }}
+          >
             <Controller
               name='country'
               control={control}
@@ -212,7 +231,10 @@ const SidebarAddUser = props => {
             />
             {errors.country && <FormHelperText sx={{ color: 'error.main' }}>{errors.country.message}</FormHelperText>}
           </FormControl>
-          <FormControl fullWidth sx={{ mb: 6 }}>
+          <FormControl
+            fullWidth
+            sx={{ mb: 6 }}
+          >
             <Controller
               name='contact'
               control={control}
@@ -230,7 +252,10 @@ const SidebarAddUser = props => {
             />
             {errors.contact && <FormHelperText sx={{ color: 'error.main' }}>{errors.contact.message}</FormHelperText>}
           </FormControl>
-          <FormControl fullWidth sx={{ mb: 6 }}>
+          <FormControl
+            fullWidth
+            sx={{ mb: 6 }}
+          >
             <InputLabel id='role-select'>Select Role</InputLabel>
             <Select
               fullWidth
@@ -238,7 +263,7 @@ const SidebarAddUser = props => {
               id='select-role'
               label='Select Role'
               labelId='role-select'
-              onChange={e => setRole(e.target.value)}
+              onChange={(e) => setRole(e.target.value)}
               inputProps={{ placeholder: 'Select Role' }}
             >
               <MenuItem value='admin'>Admin</MenuItem>
@@ -248,7 +273,10 @@ const SidebarAddUser = props => {
               <MenuItem value='subscriber'>Subscriber</MenuItem>
             </Select>
           </FormControl>
-          <FormControl fullWidth sx={{ mb: 6 }}>
+          <FormControl
+            fullWidth
+            sx={{ mb: 6 }}
+          >
             <InputLabel id='plan-select'>Select Plan</InputLabel>
             <Select
               fullWidth
@@ -256,7 +284,7 @@ const SidebarAddUser = props => {
               id='select-plan'
               label='Select Plan'
               labelId='plan-select'
-              onChange={e => setPlan(e.target.value)}
+              onChange={(e) => setPlan(e.target.value)}
               inputProps={{ placeholder: 'Select Plan' }}
             >
               <MenuItem value='basic'>Basic</MenuItem>
@@ -266,10 +294,20 @@ const SidebarAddUser = props => {
             </Select>
           </FormControl>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Button size='large' type='submit' variant='contained' sx={{ mr: 3 }}>
+            <Button
+              size='large'
+              type='submit'
+              variant='contained'
+              sx={{ mr: 3 }}
+            >
               Submit
             </Button>
-            <Button size='large' variant='outlined' color='secondary' onClick={handleClose}>
+            <Button
+              size='large'
+              variant='outlined'
+              color='secondary'
+              onClick={handleClose}
+            >
               Cancel
             </Button>
           </Box>

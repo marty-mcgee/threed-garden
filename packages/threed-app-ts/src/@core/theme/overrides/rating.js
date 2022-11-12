@@ -1,12 +1,12 @@
-const Rating = theme => {
+const Rating = (theme) => {
   return {
     MuiRating: {
       styleOverrides: {
         root: {
-          color: theme.palette.warning.main
-        }
-      }
-    }
+          color: theme.palette.warning.main,
+        },
+      },
+    },
   }
 }
 

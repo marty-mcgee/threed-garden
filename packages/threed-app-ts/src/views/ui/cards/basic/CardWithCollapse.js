@@ -27,9 +27,15 @@ const CardWithCollapse = () => {
 
   return (
     <Card>
-      <CardMedia sx={{ height: '14.5625rem' }} image='/images/cards/paper-boat.png' />
+      <CardMedia
+        sx={{ height: '14.5625rem' }}
+        image='/images/cards/paper-boat.png'
+      />
       <CardContent>
-        <Typography variant='h6' sx={{ mb: 2 }}>
+        <Typography
+          variant='h6'
+          sx={{ mb: 2 }}
+        >
           Popular Uses Of The Internet
         </Typography>
         <Typography variant='body2'>
@@ -42,11 +48,14 @@ const CardWithCollapse = () => {
             width: '100%',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
           }}
         >
           <Button onClick={handleClick}>Details</Button>
-          <IconButton size='small' onClick={handleClick}>
+          <IconButton
+            size='small'
+            onClick={handleClick}
+          >
             {collapse ? <ChevronUp sx={{ fontSize: '1.875rem' }} /> : <ChevronDown sx={{ fontSize: '1.875rem' }} />}
           </IconButton>
         </Box>

@@ -23,7 +23,7 @@ const options = [
   'Sedna',
   'Titania',
   'Triton',
-  'Umbriel'
+  'Umbriel',
 ]
 const ITEM_HEIGHT = 48
 
@@ -31,7 +31,7 @@ const MenuMaxHeight = () => {
   // ** State
   const [anchorEl, setAnchorEl] = useState(null)
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
 
@@ -41,7 +41,12 @@ const MenuMaxHeight = () => {
 
   return (
     <div>
-      <IconButton aria-label='more' aria-controls='long-menu' aria-haspopup='true' onClick={handleClick}>
+      <IconButton
+        aria-label='more'
+        aria-controls='long-menu'
+        aria-haspopup='true'
+        onClick={handleClick}
+      >
         <DotsVertical />
       </IconButton>
       <Menu
@@ -52,12 +57,16 @@ const MenuMaxHeight = () => {
         open={Boolean(anchorEl)}
         PaperProps={{
           style: {
-            maxHeight: ITEM_HEIGHT * 4.5
-          }
+            maxHeight: ITEM_HEIGHT * 4.5,
+          },
         }}
       >
-        {options.map(option => (
-          <MenuItem key={option} selected={option === 'Pyxis'} onClick={handleClose}>
+        {options.map((option) => (
+          <MenuItem
+            key={option}
+            selected={option === 'Pyxis'}
+            onClick={handleClose}
+          >
             {option}
           </MenuItem>
         ))}

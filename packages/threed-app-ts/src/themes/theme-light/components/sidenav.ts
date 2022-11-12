@@ -1,9 +1,9 @@
 // ThreeD Garden Base Styles
-import colors from "~/themes/theme-light/base/colors"
-import borders from "~/themes/theme-light/base/borders"
+import colors from '~/themes/theme-light/base/colors'
+import borders from '~/themes/theme-light/base/borders'
 
 // ThreeD Garden Helper Functions
-import pxToRem from "~/themes/theme-light/functions/pxToRem"
+import pxToRem from '~/themes/theme-light/functions/pxToRem'
 
 const { background } = colors
 const { borderRadius } = borders
@@ -15,8 +15,8 @@ const sidenav: Types = {
   styleOverrides: {
     root: {
       width: pxToRem(240),
-      whiteSpace: "nowrap",
-      border: "none",
+      whiteSpace: 'nowrap',
+      border: 'none',
     },
 
     paper: {
@@ -25,11 +25,11 @@ const sidenav: Types = {
       height: `calc(100vh - ${pxToRem(0)})`,
       margin: pxToRem(0),
       borderRadius: 0, // borderRadius.xl,
-      border: "none",
+      border: 'none',
     },
 
     paperAnchorDockedLeft: {
-      borderRight: "none",
+      borderRight: 'none',
     },
   },
 }

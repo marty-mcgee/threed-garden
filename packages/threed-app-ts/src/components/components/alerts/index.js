@@ -18,13 +18,21 @@ import * as source from '~/views/components/alerts/AlertsSourceCode'
 
 const Alerts = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12} md={6}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Basic'
           code={{
             tsx: null,
-            jsx: source.AlertsBasicJSXCode
+            jsx: source.AlertsBasicJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -34,12 +42,16 @@ const Alerts = () => {
           <AlertsBasic />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Outlined'
           code={{
             tsx: null,
-            jsx: source.AlertsOutlinedJSXCode
+            jsx: source.AlertsOutlinedJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -48,12 +60,16 @@ const Alerts = () => {
           <AlertsOutlined />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Filled'
           code={{
             tsx: null,
-            jsx: source.AlertsFilledJSXCode
+            jsx: source.AlertsFilledJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -62,12 +78,16 @@ const Alerts = () => {
           <AlertsFilled />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Action'
           code={{
             tsx: null,
-            jsx: source.AlertsActionsJSXCode
+            jsx: source.AlertsActionsJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -78,12 +98,16 @@ const Alerts = () => {
           <AlertsActions />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Description'
           code={{
             tsx: null,
-            jsx: source.AlertsDescriptionJSXCode
+            jsx: source.AlertsDescriptionJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -92,12 +116,16 @@ const Alerts = () => {
           <AlertsDescription />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Dismissible'
           code={{
             tsx: null,
-            jsx: source.AlertsDismissibleJSXCode
+            jsx: source.AlertsDismissibleJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>

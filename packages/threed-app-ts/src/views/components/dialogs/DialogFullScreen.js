@@ -21,18 +21,29 @@ const DialogFullScreen = () => {
 
   return (
     <div>
-      <Button variant='outlined' onClick={handleClickOpen}>
+      <Button
+        variant='outlined'
+        onClick={handleClickOpen}
+      >
         Open dialog
       </Button>
-      <Dialog fullScreen onClose={handleClose} aria-labelledby='full-screen-dialog-title' open={open}>
+      <Dialog
+        fullScreen
+        onClose={handleClose}
+        aria-labelledby='full-screen-dialog-title'
+        open={open}
+      >
         <DialogTitle id='full-screen-dialog-title'>
-          <Typography variant='h6' component='span'>
+          <Typography
+            variant='h6'
+            component='span'
+          >
             Modal title
           </Typography>
           <IconButton
             aria-label='close'
             onClick={handleClose}
-            sx={{ top: 8, right: 10, position: 'absolute', color: theme => theme.palette.grey[500] }}
+            sx={{ top: 8, right: 10, position: 'absolute', color: (theme) => theme.palette.grey[500] }}
           >
             <Close />
           </IconButton>
@@ -52,7 +63,7 @@ const DialogFullScreen = () => {
             chocolate bar chocolate marzipan candy fruitcake jujubes.
           </Typography>
         </DialogContent>
-        <DialogActions sx={{ p: theme => `${theme.spacing(3)} !important` }}>
+        <DialogActions sx={{ p: (theme) => `${theme.spacing(3)} !important` }}>
           <Button onClick={handleClose}>Save changes</Button>
         </DialogActions>
       </Dialog>

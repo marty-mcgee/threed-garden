@@ -24,20 +24,28 @@ const GridContainer = styled(Grid)(({ theme }) => ({
   '& .demo-space-y > *': {
     marginBottom: theme.spacing(5.2),
     '&:last-of-type': {
-      marginBottom: 0
-    }
-  }
+      marginBottom: 0,
+    },
+  },
 }))
 
 const Pagination = () => {
   return (
-    <GridContainer container spacing={6} className='match-height'>
-      <Grid item xs={12} md={6}>
+    <GridContainer
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Simple Pagination'
           code={{
             tsx: null,
-            jsx: source.PaginationSimpleJSXCode
+            jsx: source.PaginationSimpleJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -47,12 +55,16 @@ const Pagination = () => {
           <PaginationSimple />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Outlined Pagination'
           code={{
             tsx: null,
-            jsx: source.PaginationOutlinedJSXCode
+            jsx: source.PaginationOutlinedJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -61,12 +73,16 @@ const Pagination = () => {
           <PaginationOutlined />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Disabled Pagination'
           code={{
             tsx: null,
-            jsx: source.PaginationDisabledJSXCode
+            jsx: source.PaginationDisabledJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -75,12 +91,16 @@ const Pagination = () => {
           <PaginationDisabled />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Rounded Pagination'
           code={{
             tsx: null,
-            jsx: source.PaginationRoundedJSXCode
+            jsx: source.PaginationRoundedJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -89,12 +109,16 @@ const Pagination = () => {
           <PaginationRounded />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Sizes'
           code={{
             tsx: null,
-            jsx: source.PaginationSizesJSXCode
+            jsx: source.PaginationSizesJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -103,12 +127,16 @@ const Pagination = () => {
           <PaginationSizes />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Buttons'
           code={{
             tsx: null,
-            jsx: source.PaginationButtonsJSXCode
+            jsx: source.PaginationButtonsJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -119,12 +147,15 @@ const Pagination = () => {
           <PaginationButtons />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Controlled Pagination'
           code={{
             tsx: null,
-            jsx: source.PaginationControlledJSXCode
+            jsx: source.PaginationControlledJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -133,12 +164,15 @@ const Pagination = () => {
           <PaginationControlled />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Pagination Ranges'
           code={{
             tsx: null,
-            jsx: source.PaginationRangesJSXCode
+            jsx: source.PaginationRangesJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>

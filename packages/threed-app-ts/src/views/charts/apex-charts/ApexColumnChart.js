@@ -22,7 +22,7 @@ import ReactApexcharts from '~/@core/components/react-apexcharts'
 const columnColors = {
   bg: '#f8d3ff',
   series1: '#826af9',
-  series2: '#d2b0ff'
+  series2: '#d2b0ff',
 }
 
 const ApexColumnChart = () => {
@@ -36,17 +36,17 @@ const ApexColumnChart = () => {
       stacked: true,
       parentHeightOffset: 0,
       toolbar: {
-        show: false
-      }
+        show: false,
+      },
     },
     plotOptions: {
       bar: {
         columnWidth: '15%',
         colors: {
           backgroundBarRadius: 10,
-          backgroundBarColors: [columnColors.bg, columnColors.bg, columnColors.bg, columnColors.bg, columnColors.bg]
-        }
-      }
+          backgroundBarColors: [columnColors.bg, columnColors.bg, columnColors.bg, columnColors.bg, columnColors.bg],
+        },
+      },
     },
     responsive: [
       {
@@ -54,48 +54,48 @@ const ApexColumnChart = () => {
         options: {
           plotOptions: {
             bar: {
-              columnWidth: '35%'
-            }
-          }
-        }
-      }
+              columnWidth: '35%',
+            },
+          },
+        },
+      },
     ],
     dataLabels: {
-      enabled: false
+      enabled: false,
     },
     legend: {
       position: 'top',
-      horizontalAlign: 'left'
+      horizontalAlign: 'left',
     },
     colors: [columnColors.series1, columnColors.series2],
     stroke: {
       show: true,
-      colors: ['transparent']
+      colors: ['transparent'],
     },
     grid: {
       xaxis: {
         lines: {
-          show: true
-        }
-      }
+          show: true,
+        },
+      },
     },
     xaxis: {
-      categories: ['7/12', '8/12', '9/12', '10/12', '11/12', '12/12', '13/12', '14/12', '15/12']
+      categories: ['7/12', '8/12', '9/12', '10/12', '11/12', '12/12', '13/12', '14/12', '15/12'],
     },
     fill: {
-      opacity: 1
-    }
+      opacity: 1,
+    },
   }
 
   const series = [
     {
       name: 'Apple',
-      data: [90, 120, 55, 100, 80, 125, 175, 70, 88]
+      data: [90, 120, 55, 100, 80, 125, 175, 70, 88],
     },
     {
       name: 'Samsung',
-      data: [85, 100, 30, 40, 95, 90, 30, 110, 62]
-    }
+      data: [85, 100, 30, 40, 95, 90, 30, 110, 62],
+    },
   ]
 
   const CustomInput = forwardRef((props, ref) => {
@@ -119,13 +119,13 @@ const ApexColumnChart = () => {
             <InputAdornment position='end'>
               <ChevronDown />
             </InputAdornment>
-          )
+          ),
         }}
       />
     )
   })
 
-  const handleOnChange = dates => {
+  const handleOnChange = (dates) => {
     const [start, end] = dates
     setStartDate(start)
     setEndDate(end)
@@ -140,7 +140,7 @@ const ApexColumnChart = () => {
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],
           '& .MuiCardHeader-action': { mb: 0 },
-          '& .MuiCardHeader-content': { mb: [2, 0] }
+          '& .MuiCardHeader-content': { mb: [2, 0] },
         }}
         action={
           <DatePicker
@@ -151,12 +151,22 @@ const ApexColumnChart = () => {
             startDate={startDate}
             onChange={handleOnChange}
             placeholderText='Click to select a date'
-            customInput={<CustomInput start={startDate} end={endDate} />}
+            customInput={
+              <CustomInput
+                start={startDate}
+                end={endDate}
+              />
+            }
           />
         }
       />
       <CardContent>
-        <ReactApexcharts options={options} series={series} type='bar' height={400} />
+        <ReactApexcharts
+          options={options}
+          series={series}
+          type='bar'
+          height={400}
+        />
       </CardContent>
     </Card>
   )

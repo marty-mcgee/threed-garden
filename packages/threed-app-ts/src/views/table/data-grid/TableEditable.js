@@ -12,21 +12,21 @@ const columns = [
     flex: 0.1,
     field: 'id',
     minWidth: 80,
-    headerName: 'ID'
+    headerName: 'ID',
   },
   {
     flex: 0.25,
     minWidth: 200,
     editable: true,
     field: 'full_name',
-    headerName: 'Name'
+    headerName: 'Name',
   },
   {
     flex: 0.25,
     minWidth: 230,
     field: 'email',
     editable: true,
-    headerName: 'Email'
+    headerName: 'Email',
   },
   {
     flex: 0.15,
@@ -34,14 +34,14 @@ const columns = [
     minWidth: 130,
     editable: true,
     field: 'start_date',
-    headerName: 'Date'
+    headerName: 'Date',
   },
   {
     flex: 0.15,
     minWidth: 120,
     editable: true,
     field: 'experience',
-    headerName: 'Experience'
+    headerName: 'Experience',
   },
   {
     flex: 0.1,
@@ -49,8 +49,8 @@ const columns = [
     minWidth: 80,
     type: 'number',
     editable: true,
-    headerName: 'Age'
-  }
+    headerName: 'Age',
+  },
 ]
 
 const TableEditable = () => {
@@ -58,7 +58,10 @@ const TableEditable = () => {
     <Card>
       <CardHeader title='Editable' />
       <Box sx={{ height: 500 }}>
-        <DataGrid columns={columns} rows={rows.slice(0, 10)} />
+        <DataGrid
+          columns={columns}
+          rows={rows.slice(0, 10)}
+        />
       </Box>
     </Card>
   )

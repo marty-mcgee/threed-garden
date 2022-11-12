@@ -19,12 +19,15 @@ const PickersIncludeExclude = () => {
   const [timeExclude, setTimeExclude] = useState(setHours(setMinutes(new Date(), 30), 16))
 
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap' }} className='demo-space-x'>
+    <Box
+      sx={{ display: 'flex', flexWrap: 'wrap' }}
+      className='demo-space-x'
+    >
       <Box>
         <DatePicker
           selected={date}
           id='include-dates'
-          onChange={date => setDate(date)}
+          onChange={(date) => setDate(date)}
           customInput={<CustomInput label='Include Dates' />}
           includeDates={[new Date(), addDays(new Date(), 1)]}
         />
@@ -33,7 +36,7 @@ const PickersIncludeExclude = () => {
         <DatePicker
           id='exclude-dates'
           selected={dateExclude}
-          onChange={date => setDateExclude(date)}
+          onChange={(date) => setDateExclude(date)}
           customInput={<CustomInput label='Exclude Dates' />}
           excludeDates={[subDays(new Date(), 1), subDays(new Date(), 2)]}
         />
@@ -44,13 +47,13 @@ const PickersIncludeExclude = () => {
           selected={time}
           id='include-time'
           dateFormat='MM/dd/yyyy h:mm aa'
-          onChange={date => setTime(date)}
+          onChange={(date) => setTime(date)}
           customInput={<CustomInput label='Include Time' />}
           includeTimes={[
             setHours(setMinutes(new Date(), 0), 17),
             setHours(setMinutes(new Date(), 30), 18),
             setHours(setMinutes(new Date(), 30), 19),
-            setHours(setMinutes(new Date(), 30), 17)
+            setHours(setMinutes(new Date(), 30), 17),
           ]}
         />
       </Box>
@@ -60,13 +63,13 @@ const PickersIncludeExclude = () => {
           id='exclude-time'
           selected={timeExclude}
           dateFormat='MM/dd/yyyy h:mm aa'
-          onChange={date => setTimeExclude(date)}
+          onChange={(date) => setTimeExclude(date)}
           customInput={<CustomInput label='Exclude Time' />}
           excludeTimes={[
             setHours(setMinutes(new Date(), 0), 17),
             setHours(setMinutes(new Date(), 30), 18),
             setHours(setMinutes(new Date(), 30), 19),
-            setHours(setMinutes(new Date(), 30), 17)
+            setHours(setMinutes(new Date(), 30), 17),
           ]}
         />
       </Box>

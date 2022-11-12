@@ -14,23 +14,23 @@ import EmoticonNeutralOutline from 'mdi-material-ui/EmoticonNeutralOutline'
 const customIcons = {
   1: {
     label: 'Very Dissatisfied',
-    icon: <EmoticonSadOutline />
+    icon: <EmoticonSadOutline />,
   },
   2: {
     label: 'Neutral',
-    icon: <EmoticonNeutralOutline />
+    icon: <EmoticonNeutralOutline />,
   },
   3: {
     label: 'Satisfied',
-    icon: <EmoticonHappyOutline />
+    icon: <EmoticonHappyOutline />,
   },
   4: {
     label: 'Very Satisfied',
-    icon: <EmoticonOutline />
-  }
+    icon: <EmoticonOutline />,
+  },
 }
 
-const IconContainer = props => {
+const IconContainer = (props) => {
   const { value } = props
 
   return <span {...props}>{customIcons[value].icon}</span>
@@ -41,7 +41,12 @@ const RatingsCustomized = () => {
     <div>
       <Box sx={{ mb: 3 }}>
         <Typography sx={{ fontWeight: 500 }}>Custom empty icon</Typography>
-        <Rating name='customized-empty' defaultValue={2} precision={0.5} emptyIcon={<Star />} />
+        <Rating
+          name='customized-empty'
+          defaultValue={2}
+          precision={0.5}
+          emptyIcon={<Star />}
+        />
       </Box>
       <Box sx={{ mb: 3 }}>
         <Typography sx={{ fontWeight: 500 }}>Custom icon and color</Typography>
@@ -56,11 +61,20 @@ const RatingsCustomized = () => {
       </Box>
       <Box sx={{ mb: 3 }}>
         <Typography sx={{ fontWeight: 500 }}>10 stars</Typography>
-        <Rating name='customized-10' defaultValue={7} max={10} />
+        <Rating
+          name='customized-10'
+          defaultValue={7}
+          max={10}
+        />
       </Box>
       <Box>
         <Typography sx={{ fontWeight: 500 }}>Custom icon set</Typography>
-        <Rating name='customized-icons' defaultValue={2} max={4} IconContainerComponent={IconContainer} />
+        <Rating
+          name='customized-icons'
+          defaultValue={2}
+          max={4}
+          IconContainerComponent={IconContainer}
+        />
       </Box>
     </div>
   )

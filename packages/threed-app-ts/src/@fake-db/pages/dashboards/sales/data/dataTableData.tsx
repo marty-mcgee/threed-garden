@@ -1,21 +1,21 @@
 // Sales dashboard components
-import ProductCell from "~/pages/dashboards/sales/components/ProductCell"
-import RefundsCell from "~/pages/dashboards/sales/components/RefundsCell"
-import DefaultCell from "~/pages/dashboards/sales/components/DefaultCell"
+import ProductCell from '~/pages/dashboards/sales/components/ProductCell'
+import RefundsCell from '~/pages/dashboards/sales/components/RefundsCell'
+import DefaultCell from '~/pages/dashboards/sales/components/DefaultCell'
 
 // Images
-import nikeV22 from "~/assets/images/ecommerce/blue-shoe.jpeg"
-import businessKit from "~/assets/images/ecommerce/black-mug.jpeg"
-import blackChair from "~/assets/images/ecommerce/black-chair.jpeg"
-import wirelessCharger from "~/assets/images/ecommerce/bang-sound.jpeg"
-import tripKit from "~/assets/images/ecommerce/photo-tools.jpeg"
+import nikeV22 from '~/assets/images/ecommerce/blue-shoe.jpeg'
+import businessKit from '~/assets/images/ecommerce/black-mug.jpeg'
+import blackChair from '~/assets/images/ecommerce/black-chair.jpeg'
+import wirelessCharger from '~/assets/images/ecommerce/bang-sound.jpeg'
+import tripKit from '~/assets/images/ecommerce/photo-tools.jpeg'
 
 const dataTableData = {
   columns: [
-    { Header: "product", accessor: "product", width: "55%" },
-    { Header: "value", accessor: "value" },
-    { Header: "ads spent", accessor: "adsSpent", align: "center" },
-    { Header: "refunds", accessor: "refunds", align: "center" },
+    { Header: 'product', accessor: 'product', width: '55%' },
+    { Header: 'value', accessor: 'value' },
+    { Header: 'ads spent', accessor: 'adsSpent', align: 'center' },
+    { Header: 'refunds', accessor: 'refunds', align: 'center' },
   ],
 
   rows: [
@@ -23,7 +23,7 @@ const dataTableData = {
       product: (
         <ProductCell
           image={nikeV22.src}
-          name="Nike v22 Running"
+          name='Nike v22 Running'
           orders={8.232}
         />
       ),
@@ -32,7 +32,7 @@ const dataTableData = {
       refunds: (
         <RefundsCell
           value={13}
-          icon={{ color: "success", name: "keyboard_arrow_up" }}
+          icon={{ color: 'success', name: 'keyboard_arrow_up' }}
         />
       ),
     },
@@ -40,7 +40,7 @@ const dataTableData = {
       product: (
         <ProductCell
           image={businessKit.src}
-          name="Business Kit (Mug + Notebook)"
+          name='Business Kit (Mug + Notebook)'
           orders={12.821}
         />
       ),
@@ -49,7 +49,7 @@ const dataTableData = {
       refunds: (
         <RefundsCell
           value={40}
-          icon={{ color: "error", name: "keyboard_arrow_down" }}
+          icon={{ color: 'error', name: 'keyboard_arrow_down' }}
         />
       ),
     },
@@ -57,7 +57,7 @@ const dataTableData = {
       product: (
         <ProductCell
           image={blackChair.src}
-          name="Black Chair"
+          name='Black Chair'
           orders={2.421}
         />
       ),
@@ -66,7 +66,7 @@ const dataTableData = {
       refunds: (
         <RefundsCell
           value={54}
-          icon={{ color: "success", name: "keyboard_arrow_up" }}
+          icon={{ color: 'success', name: 'keyboard_arrow_up' }}
         />
       ),
     },
@@ -74,7 +74,7 @@ const dataTableData = {
       product: (
         <ProductCell
           image={wirelessCharger.src}
-          name="Wireless Charger"
+          name='Wireless Charger'
           orders={5.921}
         />
       ),
@@ -83,7 +83,7 @@ const dataTableData = {
       refunds: (
         <RefundsCell
           value={5}
-          icon={{ color: "error", name: "keyboard_arrow_down" }}
+          icon={{ color: 'error', name: 'keyboard_arrow_down' }}
         />
       ),
     },
@@ -91,7 +91,7 @@ const dataTableData = {
       product: (
         <ProductCell
           image={tripKit.src}
-          name="Mountain Trip Kit (Camera + Backpack)"
+          name='Mountain Trip Kit (Camera + Backpack)'
           orders={921}
         />
       ),
@@ -100,7 +100,7 @@ const dataTableData = {
       refunds: (
         <RefundsCell
           value={121}
-          icon={{ color: "success", name: "keyboard_arrow_up" }}
+          icon={{ color: 'success', name: 'keyboard_arrow_up' }}
         />
       ),
     },

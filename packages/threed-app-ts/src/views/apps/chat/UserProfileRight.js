@@ -1,5 +1,4 @@
 // ** React Imports
-import { Fragment } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -32,7 +31,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar'
 import Sidebar from '~/@core/components/sidebar'
 import CustomAvatar from '~/@core/components/mui/avatar'
 
-const UserProfileRight = props => {
+const UserProfileRight = (props) => {
   const {
     store,
     hidden,
@@ -40,7 +39,7 @@ const UserProfileRight = props => {
     getInitials,
     sidebarWidth,
     userProfileRightOpen,
-    handleUserProfileRightSidebarToggle
+    handleUserProfileRightSidebarToggle,
   } = props
 
   const ScrollWrapper = ({ children }) => {
@@ -60,12 +59,12 @@ const UserProfileRight = props => {
         zIndex: 9,
         height: '100%',
         width: sidebarWidth,
-        borderTopRightRadius: theme => theme.shape.borderRadius,
-        borderBottomRightRadius: theme => theme.shape.borderRadius,
+        borderTopRightRadius: (theme) => theme.shape.borderRadius,
+        borderBottomRightRadius: (theme) => theme.shape.borderRadius,
         '& + .MuiBackdrop-root': {
           zIndex: 8,
-          borderRadius: 1
-        }
+          borderRadius: 1,
+        },
       }}
     >
       {store && store.selectedChat ? (
@@ -84,7 +83,7 @@ const UserProfileRight = props => {
                   overlap='circular'
                   anchorOrigin={{
                     vertical: 'bottom',
-                    horizontal: 'right'
+                    horizontal: 'right',
                   }}
                   badgeContent={
                     <Box
@@ -94,8 +93,8 @@ const UserProfileRight = props => {
                         height: 10,
                         borderRadius: '50%',
                         color: `${statusObj[store.selectedChat.contact.status]}.main`,
-                        boxShadow: theme => `0 0 0 2px ${theme.palette.background.paper}`,
-                        backgroundColor: `${statusObj[store.selectedChat.contact.status]}.main`
+                        boxShadow: (theme) => `0 0 0 2px ${theme.palette.background.paper}`,
+                        backgroundColor: `${statusObj[store.selectedChat.contact.status]}.main`,
                       }}
                     />
                   }
@@ -120,7 +119,10 @@ const UserProfileRight = props => {
               <Typography sx={{ mb: 0.5, fontWeight: 500, textAlign: 'center' }}>
                 {store.selectedChat.contact.fullName}
               </Typography>
-              <Typography variant='body2' sx={{ textAlign: 'center' }}>
+              <Typography
+                variant='body2'
+                sx={{ textAlign: 'center' }}
+              >
                 {store.selectedChat.contact.role}
               </Typography>
             </Box>
@@ -130,17 +132,26 @@ const UserProfileRight = props => {
             <ScrollWrapper>
               <Box sx={{ p: 5 }}>
                 <FormGroup sx={{ mb: 10.5 }}>
-                  <Typography variant='body2' sx={{ mb: 3.5, textTransform: 'uppercase' }}>
+                  <Typography
+                    variant='body2'
+                    sx={{ mb: 3.5, textTransform: 'uppercase' }}
+                  >
                     About
                   </Typography>
                   <Typography sx={{ fontSize: '0.875rem' }}>{store.selectedChat.contact.about}</Typography>
                 </FormGroup>
 
                 <Box sx={{ mb: 8.5 }}>
-                  <Typography variant='body2' sx={{ mb: 3.5, textTransform: 'uppercase' }}>
+                  <Typography
+                    variant='body2'
+                    sx={{ mb: 3.5, textTransform: 'uppercase' }}
+                  >
                     Personal Information
                   </Typography>
-                  <List dense sx={{ p: 0 }}>
+                  <List
+                    dense
+                    sx={{ p: 0 }}
+                  >
                     <ListItem sx={{ px: 2 }}>
                       <ListItemIcon sx={{ mr: 2, color: 'text.primary' }}>
                         <EmailOutline sx={{ fontSize: '1.375rem' }} />
@@ -166,10 +177,16 @@ const UserProfileRight = props => {
                 </Box>
 
                 <Box>
-                  <Typography variant='body2' sx={{ mb: 3.5, textTransform: 'uppercase' }}>
+                  <Typography
+                    variant='body2'
+                    sx={{ mb: 3.5, textTransform: 'uppercase' }}
+                  >
                     Options
                   </Typography>
-                  <List dense sx={{ p: 0 }}>
+                  <List
+                    dense
+                    sx={{ p: 0 }}
+                  >
                     <ListItem disablePadding>
                       <ListItemButton sx={{ px: 2 }}>
                         <ListItemIcon sx={{ mr: 2, color: 'text.primary' }}>

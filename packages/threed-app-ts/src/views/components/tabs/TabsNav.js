@@ -18,10 +18,31 @@ const TabsNav = () => {
 
   return (
     <TabContext value={value}>
-      <TabList onChange={handleChange} aria-label='nav tabs example'>
-        <Tab value='1' component='a' label='Tab 1' href='/drafts' onClick={e => e.preventDefault()} />
-        <Tab value='2' component='a' label='Tab 2' href='/trash' onClick={e => e.preventDefault()} />
-        <Tab value='3' component='a' label='Tab 3' href='/spam' onClick={e => e.preventDefault()} />
+      <TabList
+        onChange={handleChange}
+        aria-label='nav tabs example'
+      >
+        <Tab
+          value='1'
+          component='a'
+          label='Tab 1'
+          href='/drafts'
+          onClick={(e) => e.preventDefault()}
+        />
+        <Tab
+          value='2'
+          component='a'
+          label='Tab 2'
+          href='/trash'
+          onClick={(e) => e.preventDefault()}
+        />
+        <Tab
+          value='3'
+          component='a'
+          label='Tab 3'
+          href='/spam'
+          onClick={(e) => e.preventDefault()}
+        />
       </TabList>
       <TabPanel value='1'>
         <Typography>

@@ -43,14 +43,14 @@ const Sup = styled('sup')(({ theme }) => ({
   top: '0.2rem',
   left: '-0.6rem',
   position: 'absolute',
-  color: theme.palette.primary.main
+  color: theme.palette.primary.main,
 }))
 
 // ** Styled <sub> component
 const Sub = styled('sub')({
   fontWeight: 300,
   fontSize: '1rem',
-  alignSelf: 'flex-end'
+  alignSelf: 'flex-end',
 })
 
 const roleColors = {
@@ -58,13 +58,13 @@ const roleColors = {
   editor: 'info',
   author: 'warning',
   maintainer: 'success',
-  subscriber: 'primary'
+  subscriber: 'primary',
 }
 
 const statusColors = {
   active: 'success',
   pending: 'warning',
-  inactive: 'secondary'
+  inactive: 'secondary',
 }
 
 const UserViewLeft = ({ data }) => {
@@ -84,7 +84,12 @@ const UserViewLeft = ({ data }) => {
     if (data) {
       if (data.avatar.length) {
         return (
-          <CustomAvatar alt='User Image' src={data.avatar} variant='rounded' sx={{ width: 120, height: 120, mb: 4 }} />
+          <CustomAvatar
+            alt='User Image'
+            src={data.avatar}
+            variant='rounded'
+            sx={{ width: 120, height: 120, mb: 4 }}
+          />
         )
       } else {
         return (
@@ -104,12 +109,21 @@ const UserViewLeft = ({ data }) => {
   }
   if (data) {
     return (
-      <Grid container spacing={6}>
-        <Grid item xs={12}>
+      <Grid
+        container
+        spacing={6}
+      >
+        <Grid
+          item
+          xs={12}
+        >
           <Card>
             <CardContent sx={{ pt: 15, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
               {renderUserAvatar()}
-              <Typography variant='h6' sx={{ mb: 2 }}>
+              <Typography
+                variant='h6'
+                sx={{ mb: 2 }}
+              >
                 {data.fullName}
               </Typography>
               <CustomChip
@@ -123,7 +137,7 @@ const UserViewLeft = ({ data }) => {
                   fontWeight: 600,
                   borderRadius: '5px',
                   textTransform: 'capitalize',
-                  '& .MuiChip-label': { mt: -0.25 }
+                  '& .MuiChip-label': { mt: -0.25 },
                 }}
               />
             </CardContent>
@@ -131,22 +145,36 @@ const UserViewLeft = ({ data }) => {
             <CardContent sx={{ mt: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Box sx={{ mr: 8, display: 'flex', alignItems: 'center' }}>
-                  <CustomAvatar skin='light' variant='rounded' sx={{ mr: 3 }}>
+                  <CustomAvatar
+                    skin='light'
+                    variant='rounded'
+                    sx={{ mr: 3 }}
+                  >
                     <Check />
                   </CustomAvatar>
                   <Box>
-                    <Typography variant='h6' sx={{ lineHeight: 1.3 }}>
+                    <Typography
+                      variant='h6'
+                      sx={{ lineHeight: 1.3 }}
+                    >
                       1.23k
                     </Typography>
                     <Typography variant='body2'>Task Done</Typography>
                   </Box>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <CustomAvatar skin='light' variant='rounded' sx={{ mr: 3 }}>
+                  <CustomAvatar
+                    skin='light'
+                    variant='rounded'
+                    sx={{ mr: 3 }}
+                  >
                     <BriefcaseVariantOutline />
                   </CustomAvatar>
                   <Box>
-                    <Typography variant='h6' sx={{ lineHeight: 1.3 }}>
+                    <Typography
+                      variant='h6'
+                      sx={{ lineHeight: 1.3 }}
+                    >
                       568
                     </Typography>
                     <Typography variant='body2'>Project Done</Typography>
@@ -179,13 +207,16 @@ const UserViewLeft = ({ data }) => {
                       fontSize: '0.75rem',
                       fontWeight: 500,
                       borderRadius: '5px',
-                      textTransform: 'capitalize'
+                      textTransform: 'capitalize',
                     }}
                   />
                 </Box>
                 <Box sx={{ display: 'flex', mb: 2.7 }}>
                   <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Role:</Typography>
-                  <Typography variant='body2' sx={{ textTransform: 'capitalize' }}>
+                  <Typography
+                    variant='body2'
+                    sx={{ textTransform: 'capitalize' }}
+                  >
                     {data.role}
                   </Typography>
                 </Box>
@@ -209,10 +240,17 @@ const UserViewLeft = ({ data }) => {
             </CardContent>
 
             <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-              <Button variant='contained' sx={{ mr: 3 }} onClick={handleEditClickOpen}>
+              <Button
+                variant='contained'
+                sx={{ mr: 3 }}
+                onClick={handleEditClickOpen}
+              >
                 Edit
               </Button>
-              <Button color='error' variant='outlined'>
+              <Button
+                color='error'
+                variant='outlined'
+              >
                 Suspend
               </Button>
             </CardActions>
@@ -224,19 +262,41 @@ const UserViewLeft = ({ data }) => {
               sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 650, p: [2, 10] } }}
               aria-describedby='user-view-edit-description'
             >
-              <DialogTitle id='user-view-edit' sx={{ textAlign: 'center', fontSize: '1.5rem !important' }}>
+              <DialogTitle
+                id='user-view-edit'
+                sx={{ textAlign: 'center', fontSize: '1.5rem !important' }}
+              >
                 Edit User Information
               </DialogTitle>
               <DialogContent>
-                <DialogContentText variant='body2' id='user-view-edit-description' sx={{ textAlign: 'center', mb: 7 }}>
+                <DialogContentText
+                  variant='body2'
+                  id='user-view-edit-description'
+                  sx={{ textAlign: 'center', mb: 7 }}
+                >
                   Updating user details will receive a privacy audit.
                 </DialogContentText>
                 <form>
-                  <Grid container spacing={6}>
-                    <Grid item xs={12} sm={6}>
-                      <TextField fullWidth label='Full Name' defaultValue={data.fullName} />
+                  <Grid
+                    container
+                    spacing={6}
+                  >
+                    <Grid
+                      item
+                      xs={12}
+                      sm={6}
+                    >
+                      <TextField
+                        fullWidth
+                        label='Full Name'
+                        defaultValue={data.fullName}
+                      />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid
+                      item
+                      xs={12}
+                      sm={6}
+                    >
                       <TextField
                         fullWidth
                         label='Username'
@@ -244,10 +304,23 @@ const UserViewLeft = ({ data }) => {
                         InputProps={{ startAdornment: <InputAdornment position='start'>@</InputAdornment> }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextField fullWidth type='email' label='Billing Email' defaultValue={data.email} />
+                    <Grid
+                      item
+                      xs={12}
+                      sm={6}
+                    >
+                      <TextField
+                        fullWidth
+                        type='email'
+                        label='Billing Email'
+                        defaultValue={data.email}
+                      />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid
+                      item
+                      xs={12}
+                      sm={6}
+                    >
                       <FormControl fullWidth>
                         <InputLabel id='user-view-status-label'>Status</InputLabel>
                         <Select
@@ -262,13 +335,33 @@ const UserViewLeft = ({ data }) => {
                         </Select>
                       </FormControl>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextField fullWidth label='TAX ID' defaultValue='Tax-8894' />
+                    <Grid
+                      item
+                      xs={12}
+                      sm={6}
+                    >
+                      <TextField
+                        fullWidth
+                        label='TAX ID'
+                        defaultValue='Tax-8894'
+                      />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextField fullWidth label='Contact' defaultValue={`+1 ${data.contact}`} />
+                    <Grid
+                      item
+                      xs={12}
+                      sm={6}
+                    >
+                      <TextField
+                        fullWidth
+                        label='Contact'
+                        defaultValue={`+1 ${data.contact}`}
+                      />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid
+                      item
+                      xs={12}
+                      sm={6}
+                    >
                       <FormControl fullWidth>
                         <InputLabel id='user-view-language-label'>Language</InputLabel>
                         <Select
@@ -286,7 +379,11 @@ const UserViewLeft = ({ data }) => {
                         </Select>
                       </FormControl>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid
+                      item
+                      xs={12}
+                      sm={6}
+                    >
                       <FormControl fullWidth>
                         <InputLabel id='user-view-country-label'>Country</InputLabel>
                         <Select
@@ -304,7 +401,10 @@ const UserViewLeft = ({ data }) => {
                         </Select>
                       </FormControl>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid
+                      item
+                      xs={12}
+                    >
                       <FormControlLabel
                         label='Use as a billing address?'
                         control={<Switch defaultChecked />}
@@ -315,10 +415,18 @@ const UserViewLeft = ({ data }) => {
                 </form>
               </DialogContent>
               <DialogActions sx={{ justifyContent: 'center' }}>
-                <Button variant='contained' sx={{ mr: 1 }} onClick={handleEditClose}>
+                <Button
+                  variant='contained'
+                  sx={{ mr: 1 }}
+                  onClick={handleEditClose}
+                >
                   Submit
                 </Button>
-                <Button variant='outlined' color='secondary' onClick={handleEditClose}>
+                <Button
+                  variant='outlined'
+                  color='secondary'
+                  onClick={handleEditClose}
+                >
                   Discard
                 </Button>
               </DialogActions>
@@ -326,8 +434,11 @@ const UserViewLeft = ({ data }) => {
           </Card>
         </Grid>
 
-        <Grid item xs={12}>
-          <Card sx={{ boxShadow: 'none', border: theme => `2px solid ${theme.palette.primary.main}` }}>
+        <Grid
+          item
+          xs={12}
+        >
+          <Card sx={{ boxShadow: 'none', border: (theme) => `2px solid ${theme.palette.primary.main}` }}>
             <CardContent
               sx={{ display: 'flex', flexWrap: 'wrap', pb: '0 !important', justifyContent: 'space-between' }}
             >
@@ -347,7 +458,7 @@ const UserViewLeft = ({ data }) => {
                     lineHeight: 1,
                     fontWeight: 600,
                     color: 'primary.main',
-                    fontSize: '3rem !important'
+                    fontSize: '3rem !important',
                   }}
                 >
                   99
@@ -360,19 +471,28 @@ const UserViewLeft = ({ data }) => {
               <Box sx={{ mt: 4, mb: 5 }}>
                 <Box sx={{ display: 'flex', mb: 2.5, alignItems: 'center' }}>
                   <Circle sx={{ mr: 2, fontSize: '0.625rem', color: 'text.secondary' }} />
-                  <Typography component='span' sx={{ fontSize: '0.875rem' }}>
+                  <Typography
+                    component='span'
+                    sx={{ fontSize: '0.875rem' }}
+                  >
                     10 Users
                   </Typography>
                 </Box>
                 <Box sx={{ mt: 2.5, display: 'flex', mb: 2.5, alignItems: 'center' }}>
                   <Circle sx={{ mr: 2, fontSize: '0.625rem', color: 'text.secondary' }} />
-                  <Typography component='span' sx={{ fontSize: '0.875rem' }}>
+                  <Typography
+                    component='span'
+                    sx={{ fontSize: '0.875rem' }}
+                  >
                     Up to 10GB storage
                   </Typography>
                 </Box>
                 <Box sx={{ mt: 2.5, display: 'flex', mb: 2.5, alignItems: 'center' }}>
                   <Circle sx={{ mr: 2, fontSize: '0.625rem', color: 'text.secondary' }} />
-                  <Typography component='span' sx={{ fontSize: '0.875rem' }}>
+                  <Typography
+                    component='span'
+                    sx={{ fontSize: '0.875rem' }}
+                  >
                     Basic Support
                   </Typography>
                 </Box>
@@ -381,11 +501,22 @@ const UserViewLeft = ({ data }) => {
                 <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>Days</Typography>
                 <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>26 of 30 Days</Typography>
               </Box>
-              <LinearProgress value={86.66} variant='determinate' sx={{ height: 8, borderRadius: '5px' }} />
-              <Typography variant='body2' sx={{ mt: 2, mb: 4 }}>
+              <LinearProgress
+                value={86.66}
+                variant='determinate'
+                sx={{ height: 8, borderRadius: '5px' }}
+              />
+              <Typography
+                variant='body2'
+                sx={{ mt: 2, mb: 4 }}
+              >
                 4 days remaining
               </Typography>
-              <Button variant='contained' sx={{ width: '100%' }} onClick={handlePlansClickOpen}>
+              <Button
+                variant='contained'
+                sx={{ width: '100%' }}
+                onClick={handlePlansClickOpen}
+              >
                 Upgrade Plan
               </Button>
             </CardContent>
@@ -397,12 +528,19 @@ const UserViewLeft = ({ data }) => {
               aria-describedby='user-view-plans-description'
               sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 650, pt: 8, pb: 8 } }}
             >
-              <DialogTitle id='user-view-plans' sx={{ textAlign: 'center', fontSize: '1.5rem !important' }}>
+              <DialogTitle
+                id='user-view-plans'
+                sx={{ textAlign: 'center', fontSize: '1.5rem !important' }}
+              >
                 Upgrade Plan
               </DialogTitle>
 
               <DialogContent>
-                <DialogContentText variant='body2' sx={{ textAlign: 'center' }} id='user-view-plans-description'>
+                <DialogContentText
+                  variant='body2'
+                  sx={{ textAlign: 'center' }}
+                  id='user-view-plans-description'
+                >
                   Choose the best plan for the user.
                 </DialogContentText>
               </DialogContent>
@@ -415,10 +553,14 @@ const UserViewLeft = ({ data }) => {
                   pr: [6, 15],
                   alignItems: 'center',
                   flexWrap: ['wrap', 'nowrap'],
-                  pt: theme => `${theme.spacing(2)} !important`
+                  pt: (theme) => `${theme.spacing(2)} !important`,
                 }}
               >
-                <FormControl fullWidth size='small' sx={{ mr: [0, 3], mb: [3, 0] }}>
+                <FormControl
+                  fullWidth
+                  size='small'
+                  sx={{ mr: [0, 3], mb: [3, 0] }}
+                >
                   <InputLabel id='user-view-plans-select-label'>Choose Plan</InputLabel>
                   <Select
                     label='Choose Plan'
@@ -432,7 +574,10 @@ const UserViewLeft = ({ data }) => {
                     <MenuItem value='Company'>Company - $999/month</MenuItem>
                   </Select>
                 </FormControl>
-                <Button variant='contained' sx={{ minWidth: ['100%', 0] }}>
+                <Button
+                  variant='contained'
+                  sx={{ minWidth: ['100%', 0] }}
+                >
                   Upgrade
                 </Button>
               </DialogContent>
@@ -448,7 +593,7 @@ const UserViewLeft = ({ data }) => {
                     display: 'flex',
                     alignItems: 'center',
                     flexWrap: ['wrap', 'nowrap'],
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
                   }}
                 >
                   <Box sx={{ mr: 3, display: 'flex', ml: 2.4, position: 'relative' }}>
@@ -459,14 +604,18 @@ const UserViewLeft = ({ data }) => {
                         mb: -1.2,
                         lineHeight: 1,
                         color: 'primary.main',
-                        fontSize: '3rem !important'
+                        fontSize: '3rem !important',
                       }}
                     >
                       99
                     </Typography>
                     <Sub>/ month</Sub>
                   </Box>
-                  <Button color='error' variant='outlined' sx={{ mt: 2 }}>
+                  <Button
+                    color='error'
+                    variant='outlined'
+                    sx={{ mt: 2 }}
+                  >
                     Cancel Subscription
                   </Button>
                 </Box>

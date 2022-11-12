@@ -15,28 +15,28 @@ export const getStaticPaths = async () => {
   const res = await axios.get('/apps/invoice/invoices')
   const data = await res.data.allData
 
-  const paths = data.map(item => ({
-    params: { id: `${item.id}` }
+  const paths = data.map((item) => ({
+    params: { id: `${item.id}` },
   }))
 
   return {
     paths,
-    fallback: false
+    fallback: false,
   }
 }
 
 export const getStaticProps = ({ params }) => {
   return {
     props: {
-      id: params?.id
-    }
+      id: params?.id,
+    },
   }
 }
 
-InvoicePrint.getLayout = page => <BlankLayout>{page}</BlankLayout>
+InvoicePrint.getLayout = (page) => <BlankLayout>{page}</BlankLayout>
 InvoicePrint.setConfig = () => {
   return {
-    mode: 'light'
+    mode: 'light',
   }
 }
 

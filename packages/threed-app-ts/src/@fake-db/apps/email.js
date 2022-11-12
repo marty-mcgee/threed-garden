@@ -8,13 +8,13 @@ const data = {
       from: {
         email: 'tommys@mail.com',
         name: 'Tommy Sicilia',
-        avatar: '/images/avatars/1.png'
+        avatar: '/images/avatars/1.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@mail.com'
-        }
+          email: 'johndoe@mail.com',
+        },
       ],
       subject: 'How to Succeed with Your Shopify Store',
       cc: [],
@@ -26,34 +26,34 @@ const data = {
           fileName: 'log.txt',
           thumbnail: '/images/icons/file-icons/txt.png',
           url: '',
-          size: '5mb'
+          size: '5mb',
         },
         {
           fileName: 'performance.xls',
           thumbnail: '/images/icons/file-icons/xls.png',
           url: '',
-          size: '10mb'
-        }
+          size: '10mb',
+        },
       ],
       isStarred: false,
       labels: ['private'],
       time: 'Mon Dec 10 2018 07:46:00 GMT+0000 (GMT)',
       replies: [],
       folder: 'inbox',
-      isRead: true
+      isRead: true,
     },
     {
       id: 2,
       from: {
         email: 'tressag@mail.com',
         name: 'Tressa Gass',
-        avatar: '/images/avatars/6.png'
+        avatar: '/images/avatars/6.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@mail.com'
-        }
+          email: 'johndoe@mail.com',
+        },
       ],
       subject: 'Please find attached the latest Company Report',
       cc: ['vrushankbrahmshatriya@mail.com'],
@@ -65,28 +65,28 @@ const data = {
           fileName: 'company-report.pdf',
           thumbnail: '/images/icons/file-icons/pdf.png',
           url: '',
-          size: '32mb'
-        }
+          size: '32mb',
+        },
       ],
       isStarred: true,
       labels: ['company', 'private'],
       time: 'Mon Dec 10 2018 07:55:00 GMT+0000 (GMT)',
       replies: [],
       folder: 'inbox',
-      isRead: true
+      isRead: true,
     },
     {
       id: 3,
       from: {
         email: 'hettiem@mail.com',
         name: 'Hettie Mcerlean',
-        avatar: '/images/avatars/3.png'
+        avatar: '/images/avatars/3.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@mail.com'
-        }
+          email: 'johndoe@mail.com',
+        },
       ],
       subject: 'Your order has been delivered',
       cc: [],
@@ -99,20 +99,20 @@ const data = {
       time: 'Mon Dec 10 2018 08:35:00 GMT+0000 (GMT)',
       replies: [],
       folder: 'spam',
-      isRead: true
+      isRead: true,
     },
     {
       id: 4,
       from: {
         email: 'louettae@mail.com',
         name: 'Louetta Esses',
-        avatar: '/images/avatars/4.png'
+        avatar: '/images/avatars/4.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@mail.com'
-        }
+          email: 'johndoe@mail.com',
+        },
       ],
       subject: 'Update Can Change Your Personal Life',
       cc: [],
@@ -124,28 +124,28 @@ const data = {
           fileName: 'update.doc',
           thumbnail: '/images/icons/file-icons/doc.png',
           url: '',
-          size: '32mb'
-        }
+          size: '32mb',
+        },
       ],
       isStarred: false,
       labels: ['important'],
       time: 'Mon Dec 11 2018 09:04:10 GMT+0000 (GMT)',
       replies: [],
       folder: 'inbox',
-      isRead: true
+      isRead: true,
     },
     {
       id: 5,
       from: {
         email: 'bposvner0@zdnet.com',
         name: 'Bobbie Posvner',
-        avatar: '/images/avatars/8.png'
+        avatar: '/images/avatars/8.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@dot.gov'
-        }
+          email: 'johndoe@dot.gov',
+        },
       ],
       subject: 'Your opinion matters to us. Tell us how you feel!',
       cc: [],
@@ -158,20 +158,20 @@ const data = {
       time: 'Tue Dec 12 2018 11:55:00 GMT+0000 (GMT)',
       replies: [],
       folder: 'spam',
-      isRead: true
+      isRead: true,
     },
     {
       id: 6,
       from: {
         email: 'rgilder1@illinois.edu',
         name: 'Rebecca Gilder',
-        avatar: '/images/avatars/6.png'
+        avatar: '/images/avatars/6.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@google.co.uk'
-        }
+          email: 'johndoe@google.co.uk',
+        },
       ],
       subject: 'World Tourism Day Event Invitation',
       cc: [],
@@ -184,20 +184,20 @@ const data = {
       time: 'Thu Dec 13 2018 08:25:00 GMT+0000 (GMT)',
       replies: [],
       folder: 'trash',
-      isRead: true
+      isRead: true,
     },
     {
       id: 7,
       from: {
         email: 'swilby2@yandex.ru',
         name: 'Shawn Wilby',
-        avatar: '/images/avatars/1.png'
+        avatar: '/images/avatars/1.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@altervista.org'
-        }
+          email: 'johndoe@altervista.org',
+        },
       ],
       subject: 'Delivery Note',
       cc: [],
@@ -210,20 +210,20 @@ const data = {
       time: 'Fri Dec 14 2018 04:49:23 GMT+0000 (GMT)',
       replies: [],
       folder: 'draft',
-      isRead: true
+      isRead: true,
     },
     {
       id: 8,
       from: {
         email: 'wmannering3@mozilla.org',
         name: 'Waldemar Mannering',
-        avatar: '/images/avatars/5.png'
+        avatar: '/images/avatars/5.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@sciencedaily.com'
-        }
+          email: 'johndoe@sciencedaily.com',
+        },
       ],
       subject: 'Refer friends. Get rewards.',
       cc: [],
@@ -236,20 +236,20 @@ const data = {
       time: 'Tue Dec 15 2018 11:02:28 GMT+0000 (GMT)',
       replies: [],
       folder: 'inbox',
-      isRead: false
+      isRead: false,
     },
     {
       id: 9,
       from: {
         email: 'hfrostdyke4@scientificamerican.com',
         name: 'Heath Frostdyke',
-        avatar: '/images/avatars/1.png'
+        avatar: '/images/avatars/1.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@weibo.com'
-        }
+          email: 'johndoe@weibo.com',
+        },
       ],
       subject: 'Good Hair Day!',
       cc: [],
@@ -262,20 +262,20 @@ const data = {
       time: 'Tue Jan 01 2018 18:31:19 GMT+0000 (GMT)',
       replies: [],
       folder: 'trash',
-      isRead: false
+      isRead: false,
     },
     {
       id: 10,
       from: {
         email: 'pjentzsch5@tamu.edu',
         name: 'Paulita Jentzsch',
-        avatar: '/images/avatars/7.png'
+        avatar: '/images/avatars/7.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@skype.com'
-        }
+          email: 'johndoe@skype.com',
+        },
       ],
       subject: 'Travel to Europe',
       cc: [],
@@ -288,20 +288,20 @@ const data = {
       time: 'Tue Jan 03 2018 08:05:33 GMT+0000 (GMT)',
       replies: [],
       folder: 'draft',
-      isRead: false
+      isRead: false,
     },
     {
       id: 11,
       from: {
         email: 'lminghetti6@yale.edu',
         name: 'Lowell Minghetti',
-        avatar: '/images/avatars/4.png'
+        avatar: '/images/avatars/4.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@fda.gov'
-        }
+          email: 'johndoe@fda.gov',
+        },
       ],
       subject: 'Cyber Monday Sale!',
       cc: [],
@@ -313,28 +313,28 @@ const data = {
           fileName: 'ElementumLigula.js',
           thumbnail: '/images/icons/file-icons/js.png',
           url: '',
-          size: '29mb'
-        }
+          size: '29mb',
+        },
       ],
       isStarred: false,
       labels: ['company'],
       time: 'Tue Jan 03 2018 01:05:20 GMT+0000 (GMT)',
       replies: [],
       folder: 'trash',
-      isRead: true
+      isRead: true,
     },
     {
       id: 12,
       from: {
         email: 'efinessy7@sbwire.com',
         name: 'Eugenie Finessy',
-        avatar: '/images/avatars/2.png'
+        avatar: '/images/avatars/2.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@odnoklassniki.ru'
-        }
+          email: 'johndoe@odnoklassniki.ru',
+        },
       ],
       subject: "BOOK LOVER'S DAY",
       cc: [],
@@ -347,20 +347,20 @@ const data = {
       time: 'Tue Jan 04 2018 21:26:54 GMT+0000 (GMT)',
       replies: [],
       folder: 'sent',
-      isRead: true
+      isRead: true,
     },
     {
       id: 13,
       from: {
         email: 'tmckeurton8@163.com',
         name: 'Tadio McKeurton',
-        avatar: '/images/avatars/3.png'
+        avatar: '/images/avatars/3.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@nifty.com'
-        }
+          email: 'johndoe@nifty.com',
+        },
       ],
       subject: 'Handmade Goods',
       cc: [],
@@ -373,20 +373,20 @@ const data = {
       time: 'Tue Jan 05 2018 19:00:00 GMT+0000 (GMT)',
       replies: [],
       folder: 'draft',
-      isRead: true
+      isRead: true,
     },
     {
       id: 14,
       from: {
         email: 'ebegg9@wikia.com',
         name: 'Eb Begg',
-        avatar: '/images/avatars/8.png'
+        avatar: '/images/avatars/8.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@51.la'
-        }
+          email: 'johndoe@51.la',
+        },
       ],
       subject: 'App Update',
       cc: [],
@@ -399,20 +399,20 @@ const data = {
       time: 'Tue Jan 06 2018 23:12:13 GMT+0000 (GMT)',
       replies: [],
       folder: 'inbox',
-      isRead: true
+      isRead: true,
     },
     {
       id: 15,
       from: {
         email: 'mspata@sina.com.cn',
         name: 'Modestine Spat',
-        avatar: '/images/avatars/3.png'
+        avatar: '/images/avatars/3.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@oracle.com'
-        }
+          email: 'johndoe@oracle.com',
+        },
       ],
       subject: 'Password Reset',
       cc: [],
@@ -425,20 +425,20 @@ const data = {
       time: 'Tue Jan 07 2018 12:25:03 GMT+0000 (GMT)',
       replies: [],
       folder: 'inbox',
-      isRead: false
+      isRead: false,
     },
     {
       id: 16,
       from: {
         email: 'cprandob@rambler.ru',
         name: 'Chase Prando',
-        avatar: '/images/avatars/4.png'
+        avatar: '/images/avatars/4.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@vistaprint.com'
-        }
+          email: 'johndoe@vistaprint.com',
+        },
       ],
       subject: 'Course Update',
       cc: [],
@@ -451,20 +451,20 @@ const data = {
       time: 'Tue Jan 08 2018 00:36:40 GMT+0000 (GMT)',
       replies: [],
       folder: 'sent',
-      isRead: true
+      isRead: true,
     },
     {
       id: 17,
       from: {
         email: 'nbartlesc@merriam-webster.com',
         name: 'Normand Bartles',
-        avatar: '/images/avatars/8.png'
+        avatar: '/images/avatars/8.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@si.edu'
-        }
+          email: 'johndoe@si.edu',
+        },
       ],
       subject: 'Earth Hour',
       cc: [],
@@ -477,20 +477,20 @@ const data = {
       time: 'Tue Jan 09 2018 22:06:50 GMT+0000 (GMT)',
       replies: [],
       folder: 'spam',
-      isRead: true
+      isRead: true,
     },
     {
       id: 18,
       from: {
         email: 'rgennd@dedecms.com',
         name: 'Robin Genn',
-        avatar: '/images/avatars/6.png'
+        avatar: '/images/avatars/6.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@about.com'
-        }
+          email: 'johndoe@about.com',
+        },
       ],
       subject: "Happy Teacher's Day!",
       cc: [],
@@ -503,20 +503,20 @@ const data = {
       time: 'Tue Jan 10 2018 01:51:24 GMT+0000 (GMT)',
       replies: [],
       folder: 'spam',
-      isRead: true
+      isRead: true,
     },
     {
       id: 19,
       from: {
         email: 'eramelote@webeden.co.uk',
         name: 'Emmalynn Ramelot',
-        avatar: '/images/avatars/8.png'
+        avatar: '/images/avatars/8.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@tinypic.com'
-        }
+          email: 'johndoe@tinypic.com',
+        },
       ],
       subject: 'Newly Improved Product',
       cc: [],
@@ -529,20 +529,20 @@ const data = {
       time: 'Tue Jan 11 2018 14:25:46 GMT+0000 (GMT)',
       replies: [],
       folder: 'spam',
-      isRead: false
+      isRead: false,
     },
     {
       id: 20,
       from: {
         email: 'pcuzenf@mediafire.com',
         name: 'Penni Cuzen',
-        avatar: '/images/avatars/8.png'
+        avatar: '/images/avatars/8.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@google.es'
-        }
+          email: 'johndoe@google.es',
+        },
       ],
       subject: 'Meet your new banker.',
       cc: [],
@@ -554,8 +554,8 @@ const data = {
           fileName: 'bank-statement.pdf',
           thumbnail: '/images/icons/file-icons/pdf.png',
           url: '',
-          size: '4mb'
-        }
+          size: '4mb',
+        },
       ],
       isStarred: false,
       labels: ['private'],
@@ -566,13 +566,13 @@ const data = {
           from: {
             email: 'johndoe@mail.com',
             name: 'Marty McGee',
-            avatar: '/images/avatars/6.png'
+            avatar: '/images/avatars/6.png',
           },
           to: [
             {
               name: 'me',
-              email: 'hettiem@mail.com'
-            }
+              email: 'hettiem@mail.com',
+            },
           ],
           subject: 'It was the best sandcastle he had ever seen.',
           cc: [],
@@ -585,20 +585,20 @@ const data = {
           time: 'Mon Dec 15 2018 10:56:00 GMT+0000 (GMT)',
           replies: [],
           folder: 'inbox',
-          isRead: false
+          isRead: false,
         },
         {
           id: 41,
           from: {
             email: 'hettiem@mail.com',
             name: 'Hettie Mcerlean',
-            avatar: '/images/avatars/1.png'
+            avatar: '/images/avatars/1.png',
           },
           to: [
             {
               name: 'me',
-              email: 'johndoe@mail.com'
-            }
+              email: 'johndoe@mail.com',
+            },
           ],
           subject: 'I’m a living furnace.',
           cc: [],
@@ -611,24 +611,24 @@ const data = {
           time: 'Mon Dec 16 2018 11:25:00 GMT+0000 (GMT)',
           replies: [],
           folder: 'inbox',
-          isRead: false
-        }
+          isRead: false,
+        },
       ],
       folder: 'spam',
-      isRead: false
+      isRead: false,
     },
     {
       id: 21,
       from: {
         email: 'abaldersong@utexas.edu',
         name: 'Ardis Balderson',
-        avatar: '/images/avatars/2.png'
+        avatar: '/images/avatars/2.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@ow.ly'
-        }
+          email: 'johndoe@ow.ly',
+        },
       ],
       subject: 'Bank transfer initiated.',
       cc: [],
@@ -641,20 +641,20 @@ const data = {
       time: new Date(new Date().getTime() - 7 * 60 * 60 * 1000),
       replies: [],
       folder: 'inbox',
-      isRead: false
+      isRead: false,
     },
     {
       id: 22,
       from: {
         email: 'dmallallh@ask.com',
         name: 'Dagmar Mallall',
-        avatar: '/images/avatars/8.png'
+        avatar: '/images/avatars/8.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@furl.net'
-        }
+          email: 'johndoe@furl.net',
+        },
       ],
       subject: 'Accounting software',
       cc: [],
@@ -667,20 +667,20 @@ const data = {
       time: new Date(new Date().getTime() - 5 * 20 * 60 * 1000),
       replies: [],
       folder: 'draft',
-      isRead: false
+      isRead: false,
     },
     {
       id: 23,
       from: {
         email: 'nmacgaughyi@aol.com',
         name: 'Nada MacGaughy',
-        avatar: '/images/avatars/3.png'
+        avatar: '/images/avatars/3.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@cnet.com'
-        }
+          email: 'johndoe@cnet.com',
+        },
       ],
       subject: 'Labor Day Sale',
       cc: [],
@@ -693,20 +693,20 @@ const data = {
       time: new Date(new Date().getTime() - 2 * 60 * 60 * 1000),
       replies: [],
       folder: 'trash',
-      isRead: false
+      isRead: false,
     },
     {
       id: 24,
       from: {
         email: 'douldcottj@yellowpages.com',
         name: 'Dalila Ouldcott',
-        avatar: '/images/avatars/1.png'
+        avatar: '/images/avatars/1.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@github.io'
-        }
+          email: 'johndoe@github.io',
+        },
       ],
       subject: 'Order Feedback',
       cc: [],
@@ -718,8 +718,8 @@ const data = {
           fileName: 'example.doc',
           thumbnail: '/images/icons/file-icons/doc.png',
           url: '',
-          size: '21mb'
-        }
+          size: '21mb',
+        },
       ],
       isStarred: false,
       labels: ['personal'],
@@ -730,13 +730,13 @@ const data = {
           from: {
             email: 'johndoe@mail.com',
             name: 'Marty McGee',
-            avatar: '/images/avatars/1.png'
+            avatar: '/images/avatars/1.png',
           },
           to: [
             {
               name: 'me',
-              email: 'hettiem@mail.com'
-            }
+              email: 'hettiem@mail.com',
+            },
           ],
           subject: '🎯 Focused impactful open system',
           cc: [],
@@ -749,20 +749,20 @@ const data = {
           time: 'Mon Dec 10 2018 10:56:00 GMT+0000 (GMT)',
           replies: [],
           folder: 'inbox',
-          isRead: false
+          isRead: false,
         },
         {
           id: 26,
           from: {
             email: 'hettiem@mail.com',
             name: 'Hettie Mcerlean',
-            avatar: '/images/avatars/3.png'
+            avatar: '/images/avatars/3.png',
           },
           to: [
             {
               name: 'me',
-              email: 'johndoe@mail.com'
-            }
+              email: 'johndoe@mail.com',
+            },
           ],
           subject: 'Profound systemic alliance 🎉 🎊',
           cc: [],
@@ -775,24 +775,24 @@ const data = {
           time: 'Mon Dec 10 2018 11:25:00 GMT+0000 (GMT)',
           replies: [],
           folder: 'inbox',
-          isRead: false
-        }
+          isRead: false,
+        },
       ],
       folder: 'inbox',
-      isRead: true
+      isRead: true,
     },
     {
       id: 27,
       from: {
         email: 'lkubicek0@cdbaby.com',
         name: 'Lockwood Kubicek',
-        avatar: '/images/avatars/2.png'
+        avatar: '/images/avatars/2.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@github.io'
-        }
+          email: 'johndoe@github.io',
+        },
       ],
       subject: 'Finally Start Running',
       cc: [],
@@ -805,20 +805,20 @@ const data = {
       time: new Date(new Date().getTime() - 1 * 30 * 60 * 1000),
       replies: [],
       folder: 'inbox',
-      isRead: true
+      isRead: true,
     },
     {
       id: 28,
       from: {
         email: 'mosgarby1@accuweather.com',
         name: 'Milena Osgarby',
-        avatar: '/images/avatars/3.png'
+        avatar: '/images/avatars/3.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@github.io'
-        }
+          email: 'johndoe@github.io',
+        },
       ],
       subject: 'Eco Food',
       cc: [],
@@ -835,13 +835,13 @@ const data = {
           from: {
             email: 'johndoe@mail.com',
             name: 'Marty McGee',
-            avatar: '/images/avatars/6.png'
+            avatar: '/images/avatars/6.png',
           },
           to: [
             {
               name: 'me',
-              email: 'hettiem@mail.com'
-            }
+              email: 'hettiem@mail.com',
+            },
           ],
           subject: 'It was the best sandcastle he had ever seen.',
           cc: [],
@@ -854,20 +854,20 @@ const data = {
           time: 'Mon Dec 15 2018 10:56:00 GMT+0000 (GMT)',
           replies: [],
           folder: 'inbox',
-          isRead: false
+          isRead: false,
         },
         {
           id: 51,
           from: {
             email: 'hettiem@mail.com',
             name: 'Hettie Mcerlean',
-            avatar: '/images/avatars/1.png'
+            avatar: '/images/avatars/1.png',
           },
           to: [
             {
               name: 'me',
-              email: 'johndoe@mail.com'
-            }
+              email: 'johndoe@mail.com',
+            },
           ],
           subject: 'I’m a living furnace.',
           cc: [],
@@ -880,24 +880,24 @@ const data = {
           time: 'Mon Dec 16 2018 11:25:00 GMT+0000 (GMT)',
           replies: [],
           folder: 'inbox',
-          isRead: false
-        }
+          isRead: false,
+        },
       ],
       folder: 'inbox',
-      isRead: true
+      isRead: true,
     },
     {
       id: 29,
       from: {
         email: 'pBuffay@email.com',
         name: 'Pheoebe Buffay',
-        avatar: '/images/avatars/6.png'
+        avatar: '/images/avatars/6.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@github.io'
-        }
+          email: 'johndoe@github.io',
+        },
       ],
       subject: 'Personal Insurance',
       cc: [],
@@ -910,20 +910,20 @@ const data = {
       time: new Date(new Date().getTime() - 1 * 30 * 60 * 1000),
       replies: [],
       folder: 'inbox',
-      isRead: true
+      isRead: true,
     },
     {
       id: 30,
       from: {
         email: 'gabramow2@elegantthemes.com',
         name: 'Gabriel Abramow',
-        avatar: '/images/avatars/4.png'
+        avatar: '/images/avatars/4.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@github.io'
-        }
+          email: 'johndoe@github.io',
+        },
       ],
       subject: 'Forgot your password?',
       cc: [],
@@ -936,20 +936,20 @@ const data = {
       time: new Date(new Date().getTime() - 1 * 30 * 60 * 1000),
       replies: [],
       folder: 'inbox',
-      isRead: true
+      isRead: true,
     },
     {
       id: 31,
       from: {
         email: 'tolrenshaw3@twitpic.com',
         name: 'Temple Olrenshaw',
-        avatar: '/images/avatars/5.png'
+        avatar: '/images/avatars/5.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@github.io'
-        }
+          email: 'johndoe@github.io',
+        },
       ],
       subject: 'April Fools Day Movies',
       cc: [],
@@ -966,13 +966,13 @@ const data = {
           from: {
             email: 'johndoe@mail.com',
             name: 'Marty McGee',
-            avatar: '/images/avatars/1.png'
+            avatar: '/images/avatars/1.png',
           },
           to: [
             {
               name: 'me',
-              email: 'hettiem@mail.com'
-            }
+              email: 'hettiem@mail.com',
+            },
           ],
           subject: 'The underground bunker was filled with chips and candy.',
           cc: [],
@@ -985,20 +985,20 @@ const data = {
           time: 'Mon Jan 5 2019 10:56:00 GMT+0000 (GMT)',
           replies: [],
           folder: 'inbox',
-          isRead: false
+          isRead: false,
         },
         {
           id: 33,
           from: {
             email: 'hettiem@mail.com',
             name: 'Hettie Mcerlean',
-            avatar: '/images/avatars/1.png'
+            avatar: '/images/avatars/1.png',
           },
           to: [
             {
               name: 'me',
-              email: 'johndoe@mail.com'
-            }
+              email: 'johndoe@mail.com',
+            },
           ],
           subject: 'The truth is that you pay for your lifestyle in hours.',
           cc: [],
@@ -1011,24 +1011,24 @@ const data = {
           time: 'Mon Jan 8 2019 11:25:00 GMT+0000 (GMT)',
           replies: [],
           folder: 'inbox',
-          isRead: false
-        }
+          isRead: false,
+        },
       ],
       folder: 'inbox',
-      isRead: true
+      isRead: true,
     },
     {
       id: 66,
       from: {
         email: 'hidden@mail.com',
         name: 'Hidden Mail',
-        avatar: '/images/avatars/1.png'
+        avatar: '/images/avatars/1.png',
       },
       to: [
         {
           name: 'me',
-          email: 'johndoe@mail.com'
-        }
+          email: 'johndoe@mail.com',
+        },
       ],
       subject: 'Hidden Mail',
       cc: [],
@@ -1041,9 +1041,9 @@ const data = {
       time: 'Mon Dec 10 2018 07:46:00 GMT+0000 (GMT)',
       replies: [],
       folder: 'starred',
-      isRead: true
-    }
-  ]
+      isRead: true,
+    },
+  ],
 }
 let paramsFilteredMails = []
 
@@ -1055,7 +1055,7 @@ mock.onGet('/apps/email/allEmails').reply(() => {
 
 // ------------------------------------------------
 // GET: Return Emails
-mock.onGet('/apps/email/emails').reply(config => {
+mock.onGet('/apps/email/emails').reply((config) => {
   const { q = '', folder = 'inbox', label } = config.params
   const queryLowered = q.toLowerCase()
   function isInFolder(email) {
@@ -1066,7 +1066,7 @@ mock.onGet('/apps/email/emails').reply(config => {
   }
 
   const filteredData = data.emails.filter(
-    email =>
+    (email) =>
       (email.from.name.toLowerCase().includes(queryLowered) ||
         email.subject.toLowerCase().includes(queryLowered) ||
         email.message.toLowerCase().includes(queryLowered)) &&
@@ -1079,31 +1079,31 @@ mock.onGet('/apps/email/emails').reply(config => {
   // Email Meta
   // ------------------------------------------------
   const emailsMeta = {
-    inbox: data.emails.filter(email => !email.isRead && email.folder === 'inbox').length,
-    draft: data.emails.filter(email => email.folder === 'draft').length,
-    spam: data.emails.filter(email => !email.isRead && email.folder === 'spam').length
+    inbox: data.emails.filter((email) => !email.isRead && email.folder === 'inbox').length,
+    draft: data.emails.filter((email) => email.folder === 'draft').length,
+    spam: data.emails.filter((email) => !email.isRead && email.folder === 'spam').length,
   }
 
   return [
     200,
     {
       emails: filteredData,
-      emailsMeta
-    }
+      emailsMeta,
+    },
   ]
 })
 
 // ------------------------------------------------
 // POST: Update Emails Label
 // ------------------------------------------------
-mock.onPost('/apps/email/update-emails-label').reply(config => {
+mock.onPost('/apps/email/update-emails-label').reply((config) => {
   const { emailIds, label } = JSON.parse(config.data).data
   function updateMailLabels(email) {
     const labelIndex = email.labels.indexOf(label)
     if (labelIndex === -1) email.labels.push(label)
     else email.labels.splice(labelIndex, 1)
   }
-  data.emails.forEach(email => {
+  data.emails.forEach((email) => {
     if (emailIds.includes(email.id)) updateMailLabels(email)
   })
 
@@ -1113,12 +1113,12 @@ mock.onPost('/apps/email/update-emails-label').reply(config => {
 // ------------------------------------------------
 // GET: GET Single Email
 // ------------------------------------------------
-mock.onGet('/apps/email/get-email').reply(config => {
+mock.onGet('/apps/email/get-email').reply((config) => {
   const { id } = config.params
   const emailId = Number(id)
-  const mail = paramsFilteredMails.find(i => i.id === emailId)
+  const mail = paramsFilteredMails.find((i) => i.id === emailId)
   if (mail) {
-    const mailIndex = paramsFilteredMails.findIndex(i => i.id === mail.id)
+    const mailIndex = paramsFilteredMails.findIndex((i) => i.id === mail.id)
     mailIndex > 0 ? (mail.hasPreviousMail = true) : (mail.hasPreviousMail = false)
     mailIndex < paramsFilteredMails.length - 1 ? (mail.hasNextMail = true) : (mail.hasNextMail = false)
   }
@@ -1129,12 +1129,12 @@ mock.onGet('/apps/email/get-email').reply(config => {
 // ------------------------------------------------
 // POST: Update Email
 // ------------------------------------------------
-mock.onPost('/apps/email/update-emails').reply(config => {
+mock.onPost('/apps/email/update-emails').reply((config) => {
   const { emailIds, dataToUpdate } = JSON.parse(config.data).data
   function updateMailData(email) {
     Object.assign(email, dataToUpdate)
   }
-  data.emails.forEach(email => {
+  data.emails.forEach((email) => {
     if (emailIds.includes(email.id)) updateMailData(email)
   })
 
@@ -1144,13 +1144,13 @@ mock.onPost('/apps/email/update-emails').reply(config => {
 // ------------------------------------------------
 // GET: Paginate Existing Email
 // ------------------------------------------------
-mock.onGet('/apps/email/paginate-email').reply(config => {
+mock.onGet('/apps/email/paginate-email').reply((config) => {
   const { dir, emailId } = config.params
-  const currentEmailIndex = paramsFilteredMails.findIndex(e => e.id === emailId)
+  const currentEmailIndex = paramsFilteredMails.findIndex((e) => e.id === emailId)
   const newEmailIndex = dir === 'previous' ? currentEmailIndex - 1 : currentEmailIndex + 1
   const newEmail = paramsFilteredMails[newEmailIndex]
   if (newEmail) {
-    const mailIndex = paramsFilteredMails.findIndex(i => i.id === newEmail.id)
+    const mailIndex = paramsFilteredMails.findIndex((i) => i.id === newEmail.id)
     mailIndex > 0 ? (newEmail.hasPreviousMail = true) : (newEmail.hasPreviousMail = false)
     mailIndex < paramsFilteredMails.length - 1 ? (newEmail.hasNextMail = true) : (newEmail.hasNextMail = false)
   }

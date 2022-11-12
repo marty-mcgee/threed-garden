@@ -16,11 +16,20 @@ import MessageOutline from 'mdi-material-ui/MessageOutline'
 const FormLayoutsIcons = () => {
   return (
     <Card>
-      <CardHeader title='Basic with Icons' titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader
+        title='Basic with Icons'
+        titleTypographyProps={{ variant: 'h6' }}
+      />
       <CardContent>
-        <form onSubmit={e => e.preventDefault()}>
-          <Grid container spacing={5}>
-            <Grid item xs={12}>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <Grid
+            container
+            spacing={5}
+          >
+            <Grid
+              item
+              xs={12}
+            >
               <TextField
                 fullWidth
                 label='Full Name'
@@ -30,11 +39,14 @@ const FormLayoutsIcons = () => {
                     <InputAdornment position='start'>
                       <AccountOutline />
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <TextField
                 fullWidth
                 type='email'
@@ -46,11 +58,14 @@ const FormLayoutsIcons = () => {
                     <InputAdornment position='start'>
                       <EmailOutline />
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <TextField
                 fullWidth
                 type='number'
@@ -61,11 +76,14 @@ const FormLayoutsIcons = () => {
                     <InputAdornment position='start'>
                       <Phone />
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
               <TextField
                 fullWidth
                 multiline
@@ -78,12 +96,19 @@ const FormLayoutsIcons = () => {
                     <InputAdornment position='start'>
                       <MessageOutline />
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
-              <Button type='submit' variant='contained' size='large'>
+            <Grid
+              item
+              xs={12}
+            >
+              <Button
+                type='submit'
+                variant='contained'
+                size='large'
+              >
                 Submit
               </Button>
             </Grid>

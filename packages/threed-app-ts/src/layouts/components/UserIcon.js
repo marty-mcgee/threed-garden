@@ -1,4 +1,4 @@
-const UserIcon = props => {
+const UserIcon = (props) => {
   // ** Props
   const { icon, iconProps, componentType } = props
   const IconTag = icon
@@ -26,7 +26,12 @@ const UserIcon = props => {
   }
 
   // @ts-ignore
-  return <IconTag {...iconProps} style={{ ...styles }} />
+  return (
+    <IconTag
+      {...iconProps}
+      style={{ ...styles }}
+    />
+  )
 }
 
 export default UserIcon

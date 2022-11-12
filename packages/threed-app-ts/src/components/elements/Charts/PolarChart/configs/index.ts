@@ -1,6 +1,5 @@
-/* eslint-disable no-dupe-keys */
 // ThreeD Garden Base Styles
-import colors from "~/themes/theme-light/base/colors"
+import colors from '~/themes/theme-light/base/colors'
 
 const { gradients, dark } = colors
 
@@ -9,9 +8,7 @@ function configs(labels: any, datasets: any) {
 
   if (datasets.backgroundColors) {
     datasets.backgroundColors.forEach((color: string) =>
-      gradients[color]
-        ? backgroundColors.push(gradients[color].state)
-        : backgroundColors.push(dark.main)
+      gradients[color] ? backgroundColors.push(gradients[color].state) : backgroundColors.push(dark.main)
     )
   } else {
     backgroundColors.push(dark.main)

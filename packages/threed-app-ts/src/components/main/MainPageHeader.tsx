@@ -1,30 +1,30 @@
-import { getNetwork } from '@ethersproject/networks';
-import { Alert, PageHeader } from 'antd';
-import { Account } from 'eth-components/ant';
-import { EthComponentsSettingsContext } from 'eth-components/models';
-import { useGasPrice } from 'eth-hooks';
+import { getNetwork } from '@ethersproject/networks'
+import { Alert, PageHeader } from 'antd'
+import { Account } from 'eth-components/ant'
+import { EthComponentsSettingsContext } from 'eth-components/models'
+import { useGasPrice } from 'eth-hooks'
 import {
   useEthersAppContext,
   connectorErrorText,
   NoStaticJsonRPCProviderFoundError,
   CouldNotActivateError,
   UserClosedModalError,
-} from 'eth-hooks/context';
-import React, { FC, ReactElement, ReactNode, useCallback, useContext } from 'react';
+} from 'eth-hooks/context'
+import React, { FC, ReactElement, ReactNode, useCallback, useContext } from 'react'
 
-import { FaucetHintButton } from '~common/components';
-import { useAntNotification } from '~common/components/hooks';
-import { getNetworkInfo } from '~common/functions';
-import { IScaffoldAppProviders } from '~common/models';
-import { FAUCET_ENABLED } from '~~/config/nextjsApp.config';
-import { TAppProps } from '~~/models/TAppProps';
+import { FaucetHintButton } from '~common/components'
+import { useAntNotification } from '~common/components/hooks'
+import { getNetworkInfo } from '~common/functions'
+import { IScaffoldAppProviders } from '~common/models'
+import { FAUCET_ENABLED } from '~~/config/nextjsApp.config'
+import { TAppProps } from '~~/models/TAppProps'
 
 // displays a page header
 export interface IMainPageHeaderProps {
-  scaffoldAppProviders: IScaffoldAppProviders;
-  price: number;
-  children?: ReactNode;
-  appProps: TAppProps;
+  scaffoldAppProviders: IScaffoldAppProviders
+  price: number
+  children?: ReactNode
+  appProps: TAppProps
 }
 
 /**
@@ -34,16 +34,16 @@ export interface IMainPageHeaderProps {
  */
 export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
   // passed in by nextjs getInitalProps
-  const appProps: TAppProps = props.appProps;
+  const appProps: TAppProps = props.appProps
 
-  const settingsContext = useContext(EthComponentsSettingsContext);
-  const ethersAppContext = useEthersAppContext();
-  const selectedChainId = ethersAppContext.chainId;
+  const settingsContext = useContext(EthComponentsSettingsContext)
+  const ethersAppContext = useEthersAppContext()
+  const selectedChainId = ethersAppContext.chainId
 
-  const notification = useAntNotification();
+  const notification = useAntNotification()
 
   // 🔥 This hook will get the price of Gas from ⛽️ EtherGasStation
-  const [gasPrice] = useGasPrice(ethersAppContext.chainId, 'fast', getNetworkInfo(ethersAppContext.chainId));
+  const [gasPrice] = useGasPrice(ethersAppContext.chainId, 'fast', getNetworkInfo(ethersAppContext.chainId))
 
   /**
    * this shows the page header and other informaiton
@@ -52,7 +52,7 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
     <>
       <div>
         <PageHeader
-          title="🏭 Scaffold-Eth"
+          title='🏭 Scaffold-Eth'
           // subTitle={
           //   <span>
           //     v2.1 - [
@@ -71,7 +71,7 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
       </div>
       {props.children}
     </>
-  );
+  )
 
   const onLoginError = useCallback(
     (e: Error) => {
@@ -79,23 +79,23 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
         notification.info({
           message: connectorErrorText.UserClosedModalError,
           description: e.message,
-        });
+        })
       } else if (e instanceof NoStaticJsonRPCProviderFoundError) {
         notification.error({
           message: 'Login Error: ' + connectorErrorText.NoStaticJsonRPCProviderFoundError,
           description: e.message,
-        });
+        })
       } else if (e instanceof CouldNotActivateError) {
         notification.error({
           message: 'Login Error: ' + connectorErrorText.CouldNotActivateError,
           description: e.message,
-        });
+        })
       } else {
-        notification.error({ message: 'Login Error: ', description: e.message });
+        notification.error({ message: 'Login Error: ', description: e.message })
       }
     },
     [notification]
-  );
+  )
 
   /**
    * 👨‍💼 Your account is in the top right with a wallet at connect options
@@ -118,24 +118,29 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
       />
       {props.children}
     </div>
-  );
+  )
 
   /**
    * display the current network on the top left
    */
-  let networkDisplay: ReactElement | undefined;
+  let networkDisplay: ReactElement | undefined
   if (selectedChainId && selectedChainId !== props.scaffoldAppProviders.currentTargetNetwork.chainId) {
     const description = (
       <div>
         You have <b>{getNetwork(selectedChainId)?.name}</b> selected and you need to be on{' '}
         <b>{getNetwork(props.scaffoldAppProviders.currentTargetNetwork)?.name ?? 'UNKNOWN'}</b>.
       </div>
-    );
+    )
     networkDisplay = (
       <div style={{ zIndex: 2, position: 'absolute', right: 0, top: 90, padding: 16 }}>
-        <Alert message="⚠️ Wrong Network" description={description} type="error" closable={false} />
+        <Alert
+          message='⚠️ Wrong Network'
+          description={description}
+          type='error'
+          closable={false}
+        />
       </div>
-    );
+    )
   } else {
     networkDisplay = (
       <div
@@ -145,10 +150,11 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
           top: 84,
           padding: 10,
           color: props.scaffoldAppProviders.currentTargetNetwork.color,
-        }}>
+        }}
+      >
         {props.scaffoldAppProviders.currentTargetNetwork.name}
       </div>
-    );
+    )
   }
 
   return (
@@ -157,5 +163,5 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
       {networkDisplay}
       {right}
     </>
-  );
-};
+  )
+}

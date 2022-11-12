@@ -24,16 +24,27 @@ import * as source from '~/views/components/button-group/ButtonGroupSourceCode'
 
 const ButtonGroup = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+      >
         <Typography variant='h6'>Button Group</Typography>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Basic Button Group'
           code={{
             tsx: null,
-            jsx: source.ButtonGroupBasicJSXCode
+            jsx: source.ButtonGroupBasicJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -43,12 +54,16 @@ const ButtonGroup = () => {
           <ButtonGroupBasic />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Button Group Sizes'
           code={{
             tsx: null,
-            jsx: source.ButtonGroupSizesJSXCode
+            jsx: source.ButtonGroupSizesJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -58,12 +73,16 @@ const ButtonGroup = () => {
           <ButtonGroupSizes />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Vertical Button Group'
           code={{
             tsx: null,
-            jsx: source.ButtonGroupVerticalJSXCode
+            jsx: source.ButtonGroupVerticalJSXCode,
           }}
         >
           <Typography>
@@ -73,12 +92,16 @@ const ButtonGroup = () => {
           <ButtonGroupVertical />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Split Button'
           code={{
             tsx: null,
-            jsx: source.ButtonGroupSplitJSXCode
+            jsx: source.ButtonGroupSplitJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -88,12 +111,16 @@ const ButtonGroup = () => {
           <ButtonGroupSplit />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Button Group Colors'
           code={{
             tsx: null,
-            jsx: source.ButtonGroupColorsJSXCode
+            jsx: source.ButtonGroupColorsJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -102,15 +129,22 @@ const ButtonGroup = () => {
           <ButtonGroupColors />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <Typography variant='h6'>Toggle Button</Typography>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Simple Toggle Button'
           code={{
             tsx: null,
-            jsx: source.ButtonToggleSimpleJSXCode
+            jsx: source.ButtonToggleSimpleJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -120,12 +154,16 @@ const ButtonGroup = () => {
           <ButtonToggleSimple />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Multiple Toggle Button'
           code={{
             tsx: null,
-            jsx: source.ButtonToggleMultipleJSXCode
+            jsx: source.ButtonToggleMultipleJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -134,12 +172,16 @@ const ButtonGroup = () => {
           <ButtonToggleMultiple />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Toggle Button Sizes'
           code={{
             tsx: null,
-            jsx: source.ButtonToggleSizesJSXCode
+            jsx: source.ButtonToggleSizesJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -148,12 +190,16 @@ const ButtonGroup = () => {
           <ButtonToggleSizes />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Vertical Toggle Button'
           code={{
             tsx: null,
-            jsx: source.ButtonToggleVerticalJSXCode
+            jsx: source.ButtonToggleVerticalJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -162,12 +208,15 @@ const ButtonGroup = () => {
           <ButtonToggleVertical />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Enforce Value Set'
           code={{
             tsx: null,
-            jsx: source.ButtonToggleEnforceValueJSXCode
+            jsx: source.ButtonToggleEnforceValueJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -176,12 +225,15 @@ const ButtonGroup = () => {
           <ButtonToggleEnforceValue />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Customized Toggle Button'
           code={{
             tsx: null,
-            jsx: source.ButtonToggleCustomizedJSXCode
+            jsx: source.ButtonToggleCustomizedJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -190,12 +242,16 @@ const ButtonGroup = () => {
           <ButtonToggleCustomized />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Toggle Button Colors'
           code={{
             tsx: null,
-            jsx: source.ButtonToggleColorsJSXCode
+            jsx: source.ButtonToggleColorsJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>

@@ -1,5 +1,5 @@
 // ** React Imports
-import { useRef, useState, Fragment } from 'react'
+import { useRef, useState } from 'react'
 
 // ** MUI Imports
 import Grow from '@mui/material/Grow'
@@ -34,7 +34,7 @@ const ButtonGroupSplit = () => {
   }
 
   const handleToggle = () => {
-    setOpen(prevOpen => !prevOpen)
+    setOpen((prevOpen) => !prevOpen)
   }
 
   const handleClose = () => {
@@ -43,7 +43,11 @@ const ButtonGroupSplit = () => {
 
   return (
     <>
-      <ButtonGroup variant='contained' ref={anchorRef} aria-label='split button'>
+      <ButtonGroup
+        variant='contained'
+        ref={anchorRef}
+        aria-label='split button'
+      >
         <Button onClick={handleClick}>{options[selectedIndex]}</Button>
         <Button
           size='small'
@@ -56,7 +60,13 @@ const ButtonGroupSplit = () => {
           <MenuDown />
         </Button>
       </ButtonGroup>
-      <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+      <Popper
+        open={open}
+        anchorEl={anchorRef.current}
+        role={undefined}
+        transition
+        disablePortal
+      >
         {({ TransitionProps, placement }) => (
           <Grow
             {...TransitionProps}
@@ -70,7 +80,7 @@ const ButtonGroupSplit = () => {
                       key={option}
                       disabled={index === 2}
                       selected={index === selectedIndex}
-                      onClick={event => handleMenuItemClick(event, index)}
+                      onClick={(event) => handleMenuItemClick(event, index)}
                     >
                       {option}
                     </MenuItem>

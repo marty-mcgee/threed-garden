@@ -1,5 +1,5 @@
 // ThreeD Garden Base Styles
-import typography from "~/themes/theme-light/base/typography"
+import typography from '~/themes/theme-light/base/typography'
 
 function configs(labels: any, datasets: any) {
   return {
@@ -26,11 +26,11 @@ function configs(labels: any, datasets: any) {
           ticks: {
             display: true,
             padding: 10,
-            color: "#b2b9bf",
+            color: '#b2b9bf',
             font: {
               size: 11,
               family: typography.fontFamily,
-              style: "normal",
+              style: 'normal',
               lineHeight: 2,
             },
           },
@@ -45,12 +45,12 @@ function configs(labels: any, datasets: any) {
           },
           ticks: {
             display: true,
-            color: "#b2b9bf",
+            color: '#b2b9bf',
             padding: 10,
             font: {
               size: 11,
               family: typography.fontFamily,
-              style: "normal",
+              style: 'normal',
               lineHeight: 2,
             },
           },

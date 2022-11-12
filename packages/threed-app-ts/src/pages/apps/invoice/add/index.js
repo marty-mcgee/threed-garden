@@ -24,8 +24,16 @@ const InvoiceAdd = ({ apiClientData, invoiceNumber }) => {
 
   return (
     <>
-      <Grid container spacing={6}>
-        <Grid item xl={9} md={8} xs={12}>
+      <Grid
+        container
+        spacing={6}
+      >
+        <Grid
+          item
+          xl={9}
+          md={8}
+          xs={12}
+        >
           <AddCard
             clients={clients}
             invoiceNumber={invoiceNumber}
@@ -34,7 +42,12 @@ const InvoiceAdd = ({ apiClientData, invoiceNumber }) => {
             toggleAddCustomerDrawer={toggleAddCustomerDrawer}
           />
         </Grid>
-        <Grid item xl={3} md={4} xs={12}>
+        <Grid
+          item
+          xl={3}
+          md={4}
+          xs={12}
+        >
           <AddActions />
         </Grid>
       </Grid>
@@ -53,13 +66,13 @@ export const getStaticProps = async () => {
   const clientResponse = await axios.get('/apps/invoice/clients')
   const apiClientData = clientResponse.data
   const allInvoicesResponse = await axios.get('/apps/invoice/invoices', { params: { q: '', status: '' } })
-  const lastInvoiceNumber = Math.max(...allInvoicesResponse.data.allData.map(i => i.id))
+  const lastInvoiceNumber = Math.max(...allInvoicesResponse.data.allData.map((i) => i.id))
 
   return {
     props: {
       apiClientData,
-      invoiceNumber: lastInvoiceNumber + 1
-    }
+      invoiceNumber: lastInvoiceNumber + 1,
+    },
   }
 }
 

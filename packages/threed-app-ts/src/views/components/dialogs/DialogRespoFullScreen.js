@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 
 // ** MUI Imports
 import Button from '@mui/material/Button'
@@ -23,10 +23,18 @@ const DialogRespoFullScreen = () => {
 
   return (
     <>
-      <Button variant='outlined' onClick={handleClickOpen}>
+      <Button
+        variant='outlined'
+        onClick={handleClickOpen}
+      >
         Open responsive dialog
       </Button>
-      <Dialog fullScreen={fullScreen} open={open} onClose={handleClose} aria-labelledby='responsive-dialog-title'>
+      <Dialog
+        fullScreen={fullScreen}
+        open={open}
+        onClose={handleClose}
+        aria-labelledby='responsive-dialog-title'
+      >
         <DialogTitle id='responsive-dialog-title'>Use Google's location service?</DialogTitle>
         <DialogContent>
           <DialogContentText>

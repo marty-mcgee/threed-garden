@@ -5,20 +5,25 @@ import axios from 'axios'
 import UserViewPage from '~/views/apps/user/view/UserViewPage'
 
 const UserView = ({ id, invoiceData }) => {
-  return <UserViewPage id={id} invoiceData={invoiceData} />
+  return (
+    <UserViewPage
+      id={id}
+      invoiceData={invoiceData}
+    />
+  )
 }
 
 export const getStaticPaths = async () => {
   const res = await axios.get('/apps/users/list')
   const userDate = await res.data.allData
 
-  const paths = userDate.map(item => ({
-    params: { id: `${item.id}` }
+  const paths = userDate.map((item) => ({
+    params: { id: `${item.id}` },
   }))
 
   return {
     paths,
-    fallback: false
+    fallback: false,
   }
 }
 
@@ -29,8 +34,8 @@ export const getStaticProps = async ({ params }) => {
   return {
     props: {
       invoiceData,
-      id: params?.id
-    }
+      id: params?.id,
+    },
   }
 }
 

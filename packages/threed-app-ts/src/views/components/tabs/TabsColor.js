@@ -24,9 +24,19 @@ const TabsColor = () => {
         indicatorColor='secondary'
         aria-label='secondary tabs example'
       >
-        <Tab value='1' label='Tab 1' />
-        <Tab value='2' label='Tab 2' />
-        <Tab disabled value='3' label='Disabled' />
+        <Tab
+          value='1'
+          label='Tab 1'
+        />
+        <Tab
+          value='2'
+          label='Tab 2'
+        />
+        <Tab
+          disabled
+          value='3'
+          label='Disabled'
+        />
       </TabList>
       <TabPanel value='1'>
         <Typography>

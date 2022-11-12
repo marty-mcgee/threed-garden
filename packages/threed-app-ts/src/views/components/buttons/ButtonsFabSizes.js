@@ -1,5 +1,4 @@
 // ** React Imports
-import { Fragment } from 'react'
 
 // ** MUI Imports
 import Fab from '@mui/material/Fab'
@@ -12,26 +11,47 @@ const ButtonsFabSizes = () => {
   return (
     <>
       <div className='demo-space-x'>
-        <Fab color='primary' aria-label='add' size='small'>
+        <Fab
+          color='primary'
+          aria-label='add'
+          size='small'
+        >
           <Plus />
         </Fab>
-        <Fab color='primary' aria-label='add' size='medium'>
+        <Fab
+          color='primary'
+          aria-label='add'
+          size='medium'
+        >
           <Plus />
         </Fab>
-        <Fab color='primary' aria-label='add' size='large'>
+        <Fab
+          color='primary'
+          aria-label='add'
+          size='large'
+        >
           <Plus />
         </Fab>
       </div>
       <div className='demo-space-x'>
-        <Fab variant='extended' size='small'>
+        <Fab
+          variant='extended'
+          size='small'
+        >
           <NavigationOutline sx={{ mr: 1 }} />
           Navigate
         </Fab>
-        <Fab variant='extended' size='medium'>
+        <Fab
+          variant='extended'
+          size='medium'
+        >
           <NavigationOutline sx={{ mr: 1 }} />
           Navigate
         </Fab>
-        <Fab variant='extended' size='large'>
+        <Fab
+          variant='extended'
+          size='large'
+        >
           <NavigationOutline sx={{ mr: 1 }} />
           Navigate
         </Fab>

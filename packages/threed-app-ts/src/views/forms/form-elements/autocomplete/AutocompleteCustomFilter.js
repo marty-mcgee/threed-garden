@@ -7,7 +7,7 @@ import { top100Films } from '~/@fake-db/autocomplete'
 
 const filterOptions = createFilterOptions({
   matchFrom: 'start',
-  stringify: option => option.title
+  stringify: (option) => option.title,
 })
 
 const AutocompleteCustomFilter = () => {
@@ -16,8 +16,13 @@ const AutocompleteCustomFilter = () => {
       options={top100Films}
       filterOptions={filterOptions}
       id='autocomplete-custom-filter'
-      getOptionLabel={option => option.title}
-      renderInput={params => <TextField {...params} label='Custom filter' />}
+      getOptionLabel={(option) => option.title}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label='Custom filter'
+        />
+      )}
     />
   )
 }

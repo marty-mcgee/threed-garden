@@ -17,8 +17,8 @@ import InboxArrowDown from 'mdi-material-ui/InboxArrowDown'
 // Styled Menu component
 const Menu = styled(MuiMenu)(({ theme }) => ({
   '& .MuiMenu-paper': {
-    border: `1px solid ${theme.palette.divider}`
-  }
+    border: `1px solid ${theme.palette.divider}`,
+  },
 }))
 
 // Styled MenuItem component
@@ -26,16 +26,16 @@ const MenuItem = styled(MuiMenuItem)(({ theme }) => ({
   '&:focus': {
     backgroundColor: theme.palette.primary.main,
     '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
-      color: theme.palette.common.white
-    }
-  }
+      color: theme.palette.common.white,
+    },
+  },
 }))
 
 const MenuCustomized = () => {
   // ** State
   const [anchorEl, setAnchorEl] = useState(null)
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
 
@@ -45,7 +45,12 @@ const MenuCustomized = () => {
 
   return (
     <div>
-      <Button variant='outlined' aria-haspopup='true' onClick={handleClick} aria-controls='customized-menu'>
+      <Button
+        variant='outlined'
+        aria-haspopup='true'
+        onClick={handleClick}
+        aria-controls='customized-menu'
+      >
         Open Menu
       </Button>
       <Menu
@@ -57,11 +62,11 @@ const MenuCustomized = () => {
         open={Boolean(anchorEl)}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'center'
+          horizontal: 'center',
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'center'
+          horizontal: 'center',
         }}
       >
         <MenuItem>

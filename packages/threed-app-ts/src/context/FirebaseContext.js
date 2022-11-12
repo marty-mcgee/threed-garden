@@ -9,7 +9,7 @@ const authUserContext = createContext({
   loading: true,
   signOut: async () => Promise.resolve(),
   signInWithEmailAndPassword: async () => Promise.resolve(),
-  createUserWithEmailAndPassword: async () => Promise.resolve()
+  createUserWithEmailAndPassword: async () => Promise.resolve(),
 })
 
 export const FirebaseAuthProvider = ({ children }) => {

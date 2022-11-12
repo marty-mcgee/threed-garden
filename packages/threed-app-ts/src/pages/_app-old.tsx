@@ -11,7 +11,7 @@ import {
   FunctionComponent,
   // JSXElementConstructor,
   // Key
-} from "react"
+} from 'react'
 
 // old way. new way: do with TS interfaces
 // import PropTypes from "prop-types"
@@ -20,50 +20,39 @@ import {
 // import { Routes, Route, Navigate, useLocation } from "react-router-dom"
 
 // nextjs
-import type { NextPage } from "next"
-import type { AppProps } from "next/app"
+import type { NextPage } from 'next'
+import type { AppProps } from 'next/app'
 // import { AppProps } from "next/app"
-import Head from "next/head"
-import { useRouter, withRouter, NextRouter } from "next/router"
+import Head from 'next/head'
+import { useRouter, NextRouter } from 'next/router'
 
 // theme: mui
-import { ThemeProvider } from "@mui/material/styles"
-import CssBaseline from "@mui/material/CssBaseline"
-import Icon from "@mui/material/Icon"
+import { ThemeProvider } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
+import Icon from '@mui/material/Icon'
 // theme: mui: Material UI Context Provider
-import {
-  MaterialUIControllerProvider,
-  useMaterialUIController,
-  setMiniSidenav,
-  setOpenConfigurator,
-} from "~/context"
+import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '~/context'
 // theme: mui: emotion cache
-import { CacheProvider, EmotionCache } from "@emotion/react"
-import createEmotionCache from "~/themes/common/createEmotionCache"
-import createCache from "@emotion/cache"
+import { CacheProvider, EmotionCache } from '@emotion/react'
+import createEmotionCache from '~/themes/common/createEmotionCache'
+import createCache from '@emotion/cache'
 // theme: mui: custom
-import themeLight from "~/themes/theme-light"
-import themeLightRTL from "~/themes/theme-light/theme-rtl"
-import themeDark from "~/themes/theme-dark"
-import themeDarkRTL from "~/themes/theme-dark/theme-rtl"
-import rtlPlugin from "stylis-plugin-rtl"
+import themeLight from '~/themes/theme-light'
+import themeDark from '~/themes/theme-dark'
+import rtlPlugin from 'stylis-plugin-rtl'
 
 // images
-import favicon from "~/assets/images/logos/favicon.png"
-import appleIcon from "~/assets/images/logos/apple-icon.png"
-import brandLight from "~/assets/images/logos/logo-threedgarden.png"
-import brandDark from "~/assets/images/logos/logo-threedgarden-alt.png"
-import brandText from "~/assets/images/logos/logo-threedgarden-text.png"
+import favicon from '~/assets/images/logos/favicon.png'
+import appleIcon from '~/assets/images/logos/apple-icon.png'
+import brandLight from '~/assets/images/logos/logo-threedgarden.png'
+import brandDark from '~/assets/images/logos/logo-threedgarden-alt.png'
 
 // dashboard components
-import MDBox from "~/components/mui/MDBox"
+import MDBox from '~/components/mui/MDBox'
 
 // dashboard examples
-import Sidenav from "~/components/elements/Sidenav"
-import Configurator from "~/components/elements/Configurator"
 
 // dashboard routes
-import routes from "~/routes/routes"
 // import pageRoutes from "~/routes/page.routes"
 // const routes = pageRoutes
 
@@ -92,20 +81,20 @@ const clientSideEmotionCache = createEmotionCache() // using insertionPoint
 interface WithRouterProps {
   router: NextRouter
 }
-interface MyComponentProps extends WithRouterProps { }
+type MyComponentProps = WithRouterProps
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode
 }
 
 type AppPropsWithLayoutEmotion = AppProps & {
-  Component: NextPageWithLayout,
-  emotionCache?: EmotionCache,
+  Component: NextPageWithLayout
+  emotionCache?: EmotionCache
   router: NextRouter
 }
 // OR !!!
 interface IAppPropsWithLayoutEmotion extends AppProps {
-  Component: NextPageWithLayout,
+  Component: NextPageWithLayout
   emotionCache?: EmotionCache
 }
 // NOTE: ^throws error if using .babelrc
@@ -121,16 +110,8 @@ const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithL
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
 
   const [controller, dispatch] = useMaterialUIController()
-  const {
-    miniSidenav,
-    direction,
-    layout,
-    openConfigurator,
-    sidenavColor,
-    transparentSidenav,
-    whiteSidenav,
-    darkMode,
-  } = controller
+  const { miniSidenav, direction, layout, openConfigurator, sidenavColor, transparentSidenav, whiteSidenav, darkMode } =
+    controller
   const [onMouseEnter, setOnMouseEnter] = useState(false)
   const [rtlCache, setRtlCache] = useState(null)
   const { pathname } = useRouter()
@@ -141,7 +122,7 @@ const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithL
   // cache for the rtl
   useMemo(() => {
     const cacheRtl = createCache({
-      key: "rtl",
+      key: 'rtl',
       stylisPlugins: [rtlPlugin],
     })
     setRtlCache(cacheRtl)
@@ -167,21 +148,20 @@ const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithL
   }
 
   // change the openConfigurator state
-  const handleConfiguratorOpen = () =>
-    setOpenConfigurator(dispatch, !openConfigurator)
+  const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator)
 
   // ========================================================
   // useEffect
 
   // setting the dir attribute for the body element
   useEffect(() => {
-    document.body.setAttribute("dir", direction);
+    document.body.setAttribute('dir', direction)
   }, [direction])
 
   // setting page scroll to 0 when changing the route
   useEffect(() => {
-    document.documentElement.scrollTop = 0;
-    document.scrollingElement.scrollTop = 0;
+    document.documentElement.scrollTop = 0
+    document.scrollingElement.scrollTop = 0
   }, [pathname])
 
   // ========================================================
@@ -191,23 +171,26 @@ const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithL
 
   const configsButton = (
     <MDBox
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      width="3.25rem"
-      height="3.25rem"
-      bgColor="white"
-      shadow="sm"
-      borderRadius="50%"
-      position="fixed"
-      right="2rem"
-      bottom="2rem"
+      display='flex'
+      justifyContent='center'
+      alignItems='center'
+      width='3.25rem'
+      height='3.25rem'
+      bgColor='white'
+      shadow='sm'
+      borderRadius='50%'
+      position='fixed'
+      right='2rem'
+      bottom='2rem'
       zIndex={99}
-      color="dark"
-      sx={{ cursor: "pointer" }}
+      color='dark'
+      sx={{ cursor: 'pointer' }}
       onClick={handleConfiguratorOpen}
     >
-      <Icon fontSize="small" color="inherit">
+      <Icon
+        fontSize='small'
+        color='inherit'
+      >
         settings
       </Icon>
     </MDBox>
@@ -217,7 +200,6 @@ const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithL
   // RETURN TSX
   return (
     <ThemeProvider theme={darkMode ? themeDark : themeLight}>
-
       <CssBaseline />
 
       {/* PASS THE COMPONENT IN */}
@@ -243,7 +225,6 @@ const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithL
       )}
       */}
       {/* {configsButton} */}
-
     </ThemeProvider>
   )
 }
@@ -267,39 +248,114 @@ const WrappedApp: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPro
     <MaterialUIControllerProvider>
       <CacheProvider value={emotionCache}>
         <Head>
-          <meta name="viewport" content="initial-scale=1, width=device-width" />
-          <meta name="threed-garden" content="initial-scale=1, width=device-width" />
+          <meta
+            name='viewport'
+            content='initial-scale=1, width=device-width'
+          />
+          <meta
+            name='threed-garden'
+            content='initial-scale=1, width=device-width'
+          />
           <title>ThreeDGarden</title>
           {/* <link rel="manifest" href="/site.webmanifest" /> */}
 
-          <link rel="icon" href={favicon.src} />
-          <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
-          <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
-          <link rel="apple-touch-icon" sizes="76x76" href={appleIcon.src} />
-          <link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-touch-icon.png" />
-          <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5" />
-          <meta name="msapplication-TileColor" content="#da532c" />
+          <link
+            rel='icon'
+            href={favicon.src}
+          />
+          <link
+            rel='icon'
+            type='image/png'
+            sizes='32x32'
+            href='/favicon/favicon-32x32.png'
+          />
+          <link
+            rel='icon'
+            type='image/png'
+            sizes='16x16'
+            href='/favicon/favicon-16x16.png'
+          />
+          <link
+            rel='apple-touch-icon'
+            sizes='76x76'
+            href={appleIcon.src}
+          />
+          <link
+            rel='apple-touch-icon'
+            sizes='76x76'
+            href='/favicon/apple-touch-icon.png'
+          />
+          <link
+            rel='mask-icon'
+            href='/favicon/safari-pinned-tab.svg'
+            color='#5bbad5'
+          />
+          <meta
+            name='msapplication-TileColor'
+            content='#da532c'
+          />
 
-          <meta name="description" content="Create house and garden plans in 2D and 3D" />
-          <meta name="keywords"
-            content="Architecture, Planning, 3D Plan, Home Ideas, Floor Plan, Garden Planning, 3D Design Ideas, Building Plan" />
-          <meta name="author" content="Marty McGee" />
+          <meta
+            name='description'
+            content='Create house and garden plans in 2D and 3D'
+          />
+          <meta
+            name='keywords'
+            content='Architecture, Planning, 3D Plan, Home Ideas, Floor Plan, Garden Planning, 3D Design Ideas, Building Plan'
+          />
+          <meta
+            name='author'
+            content='Marty McGee'
+          />
 
-          <meta name="twitter:card" content="Create house and garden plans in 2D and 3D" />
-          <meta name="twitter:site" content="@companyjuice" />
-          <meta name="twitter:creator" content="@martymcgee" />
+          <meta
+            name='twitter:card'
+            content='Create house and garden plans in 2D and 3D'
+          />
+          <meta
+            name='twitter:site'
+            content='@companyjuice'
+          />
+          <meta
+            name='twitter:creator'
+            content='@martymcgee'
+          />
 
-          <meta property="og:title" content="ThreeDGarden" />
-          <meta property="og:type" content="website" />
-          <meta property="og:description" content="Design house, landscape, garden plans in 2D + 3D" />
-          <meta property="og:url" content="https://threedgarden.com" />
-          <meta property="og:image" content="https://threedgarden.com/api/thumb3dview" />
-          <meta property="og:image:width" content="600" />
-          <meta property="og:image:height" content="337" />
-
+          <meta
+            property='og:title'
+            content='ThreeDGarden'
+          />
+          <meta
+            property='og:type'
+            content='website'
+          />
+          <meta
+            property='og:description'
+            content='Design house, landscape, garden plans in 2D + 3D'
+          />
+          <meta
+            property='og:url'
+            content='https://threedgarden.com'
+          />
+          <meta
+            property='og:image'
+            content='https://threedgarden.com/api/thumb3dview'
+          />
+          <meta
+            property='og:image:width'
+            content='600'
+          />
+          <meta
+            property='og:image:height'
+            content='337'
+          />
         </Head>
 
-        <App Component={Component} pageProps={pageProps} router={router} />
+        <App
+          Component={Component}
+          pageProps={pageProps}
+          router={router}
+        />
       </CacheProvider>
     </MaterialUIControllerProvider>
   )

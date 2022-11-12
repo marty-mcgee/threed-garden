@@ -15,9 +15,15 @@ const ListSecondary = () => {
     <List>
       <ListItem>
         <ListItemAvatar>
-          <Avatar src='/images/avatars/2.png' alt='Caroline Black' />
+          <Avatar
+            src='/images/avatars/2.png'
+            alt='Caroline Black'
+          />
         </ListItemAvatar>
-        <ListItemText primary='Caroline Black' secondary='Sweet dessert brownie.' />
+        <ListItemText
+          primary='Caroline Black'
+          secondary='Sweet dessert brownie.'
+        />
         <ListItemSecondaryAction>
           <IconButton edge='end'>
             <Plus />
@@ -26,9 +32,15 @@ const ListSecondary = () => {
       </ListItem>
       <ListItem>
         <ListItemAvatar>
-          <Avatar src='/images/avatars/1.png' alt='Alfred Copeland' />
+          <Avatar
+            src='/images/avatars/1.png'
+            alt='Alfred Copeland'
+          />
         </ListItemAvatar>
-        <ListItemText primary='Alfred Copeland' secondary='Pudding pie tiramisu.' />
+        <ListItemText
+          primary='Alfred Copeland'
+          secondary='Pudding pie tiramisu.'
+        />
         <ListItemSecondaryAction>
           <IconButton edge='end'>
             <Plus />
@@ -37,9 +49,15 @@ const ListSecondary = () => {
       </ListItem>
       <ListItem>
         <ListItemAvatar>
-          <Avatar src='/images/avatars/8.png' alt='Celia Schneider' />
+          <Avatar
+            src='/images/avatars/8.png'
+            alt='Celia Schneider'
+          />
         </ListItemAvatar>
-        <ListItemText primary='Celia Schneider' secondary='Muffin pie chupa chups.' />
+        <ListItemText
+          primary='Celia Schneider'
+          secondary='Muffin pie chupa chups.'
+        />
         <ListItemSecondaryAction>
           <IconButton edge='end'>
             <Plus />

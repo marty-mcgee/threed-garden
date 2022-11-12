@@ -22,19 +22,31 @@ const icons = {
   TrendingUp,
   CurrencyUsd,
   TruckOutline,
-  BriefcaseVariantOutline
+  BriefcaseVariantOutline,
 }
 
 const CardStatsVertical = ({ data }) => {
   if (data) {
     return (
-      <Grid container spacing={6}>
+      <Grid
+        container
+        spacing={6}
+      >
         {data.map((item, index) => {
           const IconTag = icons[item.icon]
 
           return (
-            <Grid item xs={12} sm={4} lg={2} key={index}>
-              <CardStatisticsVertical {...item} icon={<IconTag />} />
+            <Grid
+              item
+              xs={12}
+              sm={4}
+              lg={2}
+              key={index}
+            >
+              <CardStatisticsVertical
+                {...item}
+                icon={<IconTag />}
+              />
             </Grid>
           )
         })}

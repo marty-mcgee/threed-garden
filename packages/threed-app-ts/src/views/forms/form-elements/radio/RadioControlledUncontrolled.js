@@ -12,24 +12,62 @@ const RadioControlledUncontrolled = () => {
   // ** State
   const [value, setValue] = useState('controlled-checked')
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     setValue(event.target.value)
   }
 
   return (
-    <Grid container spacing={6}>
-      <Grid item xs={12} sm={6}>
+    <Grid
+      container
+      spacing={6}
+    >
+      <Grid
+        item
+        xs={12}
+        sm={6}
+      >
         <Typography>Controlled</Typography>
-        <RadioGroup row aria-label='controlled' name='controlled' value={value} onChange={handleChange}>
-          <FormControlLabel value='controlled-checked' control={<Radio />} label='Checked' />
-          <FormControlLabel value='controlled-unchecked' control={<Radio />} label='Unchecked' />
+        <RadioGroup
+          row
+          aria-label='controlled'
+          name='controlled'
+          value={value}
+          onChange={handleChange}
+        >
+          <FormControlLabel
+            value='controlled-checked'
+            control={<Radio />}
+            label='Checked'
+          />
+          <FormControlLabel
+            value='controlled-unchecked'
+            control={<Radio />}
+            label='Unchecked'
+          />
         </RadioGroup>
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+      >
         <Typography>Uncontrolled</Typography>
-        <RadioGroup row aria-label='uncontrolled' name='uncontrolled' defaultValue='uncontrolled-checked'>
-          <FormControlLabel value='uncontrolled-checked' control={<Radio />} label='Checked' />
-          <FormControlLabel value='uncontrolled-unchecked' control={<Radio />} label='Unchecked' />
+        <RadioGroup
+          row
+          aria-label='uncontrolled'
+          name='uncontrolled'
+          defaultValue='uncontrolled-checked'
+        >
+          <FormControlLabel
+            value='uncontrolled-checked'
+            control={<Radio />}
+            label='Checked'
+          />
+          <FormControlLabel
+            value='uncontrolled-unchecked'
+            control={<Radio />}
+            label='Unchecked'
+          />
         </RadioGroup>
       </Grid>
     </Grid>

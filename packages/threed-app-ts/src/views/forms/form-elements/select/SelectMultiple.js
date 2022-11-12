@@ -19,9 +19,9 @@ const MenuProps = {
   PaperProps: {
     style: {
       width: 250,
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP
-    }
-  }
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+    },
+  },
 }
 
 const names = [
@@ -34,7 +34,7 @@ const names = [
   'Miriam Wagner',
   'Bradley Wilkerson',
   'Virginia Andrews',
-  'Kelly Snyder'
+  'Kelly Snyder',
 ]
 
 const SelectMultiple = () => {
@@ -42,11 +42,11 @@ const SelectMultiple = () => {
   const [personName, setPersonName] = useState([])
   const [personNameNative, setPersonNameNative] = useState([])
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     setPersonName(event.target.value)
   }
 
-  const handleChangeMultipleNative = event => {
+  const handleChangeMultipleNative = (event) => {
     const { options } = event.target
     const value = []
     for (let i = 0, l = options.length; i < l; i += 1) {
@@ -72,8 +72,11 @@ const SelectMultiple = () => {
             onChange={handleChange}
             labelId='demo-multiple-name-label'
           >
-            {names.map(name => (
-              <MenuItem key={name} value={name}>
+            {names.map((name) => (
+              <MenuItem
+                key={name}
+                value={name}
+              >
                 {name}
               </MenuItem>
             ))}
@@ -92,10 +95,13 @@ const SelectMultiple = () => {
             onChange={handleChange}
             id='demo-multiple-checkbox'
             labelId='demo-multiple-checkbox-label'
-            renderValue={selected => selected.join(', ')}
+            renderValue={(selected) => selected.join(', ')}
           >
-            {names.map(name => (
-              <MenuItem key={name} value={name}>
+            {names.map((name) => (
+              <MenuItem
+                key={name}
+                value={name}
+              >
                 <Checkbox checked={personName.indexOf(name) > -1} />
                 <ListItemText primary={name} />
               </MenuItem>
@@ -115,16 +121,23 @@ const SelectMultiple = () => {
             id='demo-multiple-chip'
             onChange={handleChange}
             labelId='demo-multiple-chip-label'
-            renderValue={selected => (
+            renderValue={(selected) => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                {selected.map(value => (
-                  <Chip key={value} label={value} sx={{ m: 0.75 }} />
+                {selected.map((value) => (
+                  <Chip
+                    key={value}
+                    label={value}
+                    sx={{ m: 0.75 }}
+                  />
                 ))}
               </Box>
             )}
           >
-            {names.map(name => (
-              <MenuItem key={name} value={name}>
+            {names.map((name) => (
+              <MenuItem
+                key={name}
+                value={name}
+              >
                 {name}
               </MenuItem>
             ))}
@@ -141,7 +154,7 @@ const SelectMultiple = () => {
             MenuProps={MenuProps}
             onChange={handleChange}
             inputProps={{ 'aria-label': 'Without label' }}
-            renderValue={selected => {
+            renderValue={(selected) => {
               if (selected.length === 0) {
                 return <em>Placeholder</em>
               }
@@ -149,11 +162,17 @@ const SelectMultiple = () => {
               return selected.join(', ')
             }}
           >
-            <MenuItem disabled value=''>
+            <MenuItem
+              disabled
+              value=''
+            >
               <em>Placeholder</em>
             </MenuItem>
-            {names.map(name => (
-              <MenuItem key={name} value={name}>
+            {names.map((name) => (
+              <MenuItem
+                key={name}
+                value={name}
+              >
                 {name}
               </MenuItem>
             ))}
@@ -163,7 +182,10 @@ const SelectMultiple = () => {
       <div>
         <Typography sx={{ mb: 2, fontWeight: 500 }}>Native</Typography>
         <FormControl fullWidth>
-          <InputLabel shrink htmlFor='select-multiple-native'>
+          <InputLabel
+            shrink
+            htmlFor='select-multiple-native'
+          >
             Native
           </InputLabel>
           <Select
@@ -174,8 +196,11 @@ const SelectMultiple = () => {
             onChange={handleChangeMultipleNative}
             inputProps={{ id: 'select-multiple-native' }}
           >
-            {names.map(name => (
-              <option key={name} value={name}>
+            {names.map((name) => (
+              <option
+                key={name}
+                value={name}
+              >
                 {name}
               </option>
             ))}

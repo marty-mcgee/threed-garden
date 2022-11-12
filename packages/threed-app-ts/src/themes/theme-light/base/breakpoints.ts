@@ -3,7 +3,7 @@
  * You can add new breakpoints, and customize built-in breakpoints here.
  */
 
- const breakpoints = {
+const breakpoints = {
   values: {
     xs: 0,
     sm: 576,

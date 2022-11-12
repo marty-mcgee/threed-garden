@@ -10,8 +10,8 @@ import Typography from '@mui/material/Typography'
 // ** Third Party Components
 import { useKeenSlider } from 'keen-slider/react'
 
-const MutationPlugin = slider => {
-  const observer = new MutationObserver(mutations => {
+const MutationPlugin = (slider) => {
+  const observer = new MutationObserver((mutations) => {
     mutations.forEach(() => {
       slider.update()
     })
@@ -37,33 +37,49 @@ const SwiperMutationObserver = ({ direction }) => {
       rtl: direction === 'rtl',
       slides: {
         perView: 3,
-        spacing: 16
+        spacing: 16,
       },
       breakpoints: {
         [`(max-width: ${theme.breakpoints.values.sm}px)`]: {
-          slides: { perView: 1, spacing: 16 }
-        }
-      }
+          slides: { perView: 1, spacing: 16 },
+        },
+      },
     },
     [MutationPlugin]
   )
 
   return (
     <>
-      <Box ref={ref} className='keen-slider'>
-        {slides.map(slide => {
+      <Box
+        ref={ref}
+        className='keen-slider'
+      >
+        {slides.map((slide) => {
           return (
-            <Box key={slide} className='keen-slider__slide default-slide'>
+            <Box
+              key={slide}
+              className='keen-slider__slide default-slide'
+            >
               <Typography variant='h1'>{slide}</Typography>
             </Box>
           )
         })}
       </Box>
-      <Box sx={{ mt: 4 }} className='demo-space-x'>
-        <Button variant='contained' onClick={() => setSlides([...slides, slides.length + 1])}>
+      <Box
+        sx={{ mt: 4 }}
+        className='demo-space-x'
+      >
+        <Button
+          variant='contained'
+          onClick={() => setSlides([...slides, slides.length + 1])}
+        >
           Add
         </Button>
-        <Button variant='contained' color='error' onClick={() => setSlides(slides.slice(0, -1))}>
+        <Button
+          variant='contained'
+          color='error'
+          onClick={() => setSlides(slides.slice(0, -1))}
+        >
           Remove
         </Button>
       </Box>

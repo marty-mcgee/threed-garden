@@ -25,12 +25,37 @@ const TabsForcedScroll = () => {
 
   return (
     <TabContext value={value}>
-      <TabList scrollButtons variant='scrollable' onChange={handleChange} aria-label='forced scroll tabs example'>
-        <Tab value='1' label='Tab 1' icon={<Phone />} />
-        <Tab value='2' label='Tab 2' icon={<HeartOutline />} />
-        <Tab value='3' label='Tab 3' icon={<ThumbUpOutline />} />
-        <Tab value='4' label='Tab 4' icon={<AccountCircleOutline />} />
-        <Tab value='5' label='Tab 5' icon={<ThumbDownOutline />} />
+      <TabList
+        scrollButtons
+        variant='scrollable'
+        onChange={handleChange}
+        aria-label='forced scroll tabs example'
+      >
+        <Tab
+          value='1'
+          label='Tab 1'
+          icon={<Phone />}
+        />
+        <Tab
+          value='2'
+          label='Tab 2'
+          icon={<HeartOutline />}
+        />
+        <Tab
+          value='3'
+          label='Tab 3'
+          icon={<ThumbUpOutline />}
+        />
+        <Tab
+          value='4'
+          label='Tab 4'
+          icon={<AccountCircleOutline />}
+        />
+        <Tab
+          value='5'
+          label='Tab 5'
+          icon={<ThumbDownOutline />}
+        />
       </TabList>
       <TabPanel value='1'>
         <Typography>

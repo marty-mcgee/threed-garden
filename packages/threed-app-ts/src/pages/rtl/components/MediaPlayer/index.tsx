@@ -1,15 +1,15 @@
 // @mui material components
-import Card from "@mui/material/Card"
-import Icon from "@mui/material/Icon"
-import { Theme } from "@mui/material/styles"
+import Card from '@mui/material/Card'
+import Icon from '@mui/material/Icon'
+import { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
-import MDButton from "~/components/mui/MDButton"
+import MDBox from '~/components/mui/MDBox'
+import MDTypography from '~/components/mui/MDTypography'
+import MDButton from '~/components/mui/MDButton'
 
 // Images
-import bgImage from "~/assets/images/any/bg-player.jpg"
+import bgImage from '~/assets/images/any/bg-player.jpg'
 
 function MediaPlayer(): JSX.Element {
   const mediaPlayerButtonStyles = ({ functions: { pxToRem } }: Theme) => ({
@@ -22,48 +22,68 @@ function MediaPlayer(): JSX.Element {
 
   return (
     <Card
-      sx={({
-        functions: { linearGradient, rgba },
-        palette: { gradients },
-      }) => ({
+      sx={({ functions: { linearGradient, rgba }, palette: { gradients } }) => ({
         backgroundImage: `${linearGradient(
           rgba(gradients.dark.main, 0.85),
           rgba(gradients.dark.state, 0.85)
         )}, url(${bgImage})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      })}>
-      <MDBox p={3} position="relative" lineHeight={0}>
-        <MDTypography variant="h5" color="white" fontWeight="medium">
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      })}
+    >
+      <MDBox
+        p={3}
+        position='relative'
+        lineHeight={0}
+      >
+        <MDTypography
+          variant='h5'
+          color='white'
+          fontWeight='medium'
+        >
           نوع من البلوز
         </MDTypography>
-        <MDTypography variant="button" color="white">
+        <MDTypography
+          variant='button'
+          color='white'
+        >
           ديفتونز
         </MDTypography>
-        <MDBox display="flex" mt={3} pt={1}>
-          <MDBox display="flex" alignItems="center" justifyContent="center">
+        <MDBox
+          display='flex'
+          mt={3}
+          pt={1}
+        >
+          <MDBox
+            display='flex'
+            alignItems='center'
+            justifyContent='center'
+          >
             <MDButton
-              variant="outlined"
-              size="large"
+              variant='outlined'
+              size='large'
               circular
               iconOnly
-              sx={mediaPlayerButtonStyles}>
+              sx={mediaPlayerButtonStyles}
+            >
               <Icon>skip_previous</Icon>
             </MDButton>
             <MDButton
-              variant="outlined"
-              size="large"
+              variant='outlined'
+              size='large'
               circular
               iconOnly
-              sx={mediaPlayerButtonStyles}>
+              sx={mediaPlayerButtonStyles}
+            >
               <Icon>play_arrow</Icon>
             </MDButton>
             <MDButton
-              variant="outlined"
-              size="large"
+              variant='outlined'
+              size='large'
               circular
               iconOnly
-              sx={mediaPlayerButtonStyles}>
+              sx={mediaPlayerButtonStyles}
+            >
               <Icon>skip_next</Icon>
             </MDButton>
           </MDBox>

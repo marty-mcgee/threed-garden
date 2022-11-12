@@ -10,8 +10,8 @@ import ReactApexcharts from '~/@core/components/react-apexcharts'
 const series = [
   {
     name: '2022',
-    data: [45, 85, 65, 50, 70]
-  }
+    data: [45, 85, 65, 50, 70],
+  },
 ]
 
 const CardStatsDistributedColumnChart = () => {
@@ -23,10 +23,10 @@ const CardStatsDistributedColumnChart = () => {
       type: 'bar',
       stacked: false,
       parentHeightOffset: 0,
-      toolbar: { show: false }
+      toolbar: { show: false },
     },
     tooltip: {
-      x: { show: false }
+      x: { show: false },
     },
     grid: {
       show: false,
@@ -34,8 +34,8 @@ const CardStatsDistributedColumnChart = () => {
         top: -10,
         left: -7,
         right: 0,
-        bottom: 5
-      }
+        bottom: 5,
+      },
     },
     legend: { show: false },
     dataLabels: { enabled: false },
@@ -44,7 +44,7 @@ const CardStatsDistributedColumnChart = () => {
       theme.palette.primary.main,
       theme.palette.error.main,
       theme.palette.primary.main,
-      theme.palette.primary.main
+      theme.palette.primary.main,
     ],
     plotOptions: {
       bar: {
@@ -61,25 +61,33 @@ const CardStatsDistributedColumnChart = () => {
             theme.palette.customColors.bodyBg,
             theme.palette.customColors.bodyBg,
             theme.palette.customColors.bodyBg,
-            theme.palette.customColors.bodyBg
-          ]
-        }
-      }
+            theme.palette.customColors.bodyBg,
+          ],
+        },
+      },
     },
     xaxis: {
       labels: { show: false },
       axisTicks: { show: false },
-      axisBorder: { show: false }
+      axisBorder: { show: false },
     },
-    yaxis: { show: false }
+    yaxis: { show: false },
   }
 
   return (
     <Card>
       <CardContent>
         <Typography variant='h6'>2,856</Typography>
-        <ReactApexcharts type='bar' height={98} options={options} series={series} />
-        <Typography variant='body2' sx={{ fontWeight: 600, textAlign: 'center', color: 'text.primary' }}>
+        <ReactApexcharts
+          type='bar'
+          height={98}
+          options={options}
+          series={series}
+        />
+        <Typography
+          variant='body2'
+          sx={{ fontWeight: 600, textAlign: 'center', color: 'text.primary' }}
+        >
           Sessions
         </Typography>
       </CardContent>

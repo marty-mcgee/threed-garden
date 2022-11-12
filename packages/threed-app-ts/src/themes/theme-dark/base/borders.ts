@@ -5,11 +5,11 @@
  */
 
 // ThreeD Garden Base Styles
-import colors from "~/themes/theme-dark/base/colors"
+import colors from '~/themes/theme-dark/base/colors'
 
 // ThreeD Garden Helper Functions
-import pxToRem from "~/themes/theme-dark/functions/pxToRem"
-import rgba from "~/themes/theme-dark/functions/rgba"
+import pxToRem from '~/themes/theme-dark/functions/pxToRem'
+import rgba from '~/themes/theme-dark/functions/rgba'
 
 const { white } = colors
 

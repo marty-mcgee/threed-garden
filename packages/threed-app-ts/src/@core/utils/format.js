@@ -6,7 +6,7 @@
  * @param {Object} formatting Intl object to format with
  */
 // ** Checks if the passed date is today
-const isToday = date => {
+const isToday = (date) => {
   const today = new Date()
 
   return (
@@ -66,7 +66,7 @@ export const formatCreditCardNumber = (value, Payment) => {
 }
 
 // Format expiration date in any credit card
-export const formatExpirationDate = value => {
+export const formatExpirationDate = (value) => {
   const finalValue = value
     .replace(/^([1-9]\/|[2-9])$/g, '0$1/') // 3 > 03/
     .replace(/^(0[1-9]|1[0-2])$/g, '$1/') // 11 > 11/

@@ -19,14 +19,14 @@ const CardWidgetsTotalVisits = () => {
 
   const options = {
     chart: {
-      sparkline: { enabled: true }
+      sparkline: { enabled: true },
     },
     labels: ['Cricket'],
     stroke: { lineCap: 'round' },
     grid: {
       padding: {
-        top: -10
-      }
+        top: -10,
+      },
     },
     colors: [theme.palette.info.main],
     fill: {
@@ -38,16 +38,16 @@ const CardWidgetsTotalVisits = () => {
         inverseColors: false,
         opacityFrom: 1,
         opacityTo: 0.1,
-        stops: [0, 90]
-      }
+        stops: [0, 90],
+      },
     },
     states: {
       hover: {
-        filter: { type: 'none' }
+        filter: { type: 'none' },
       },
       active: {
-        filter: { type: 'none' }
-      }
+        filter: { type: 'none' },
+      },
     },
     plotOptions: {
       radialBar: {
@@ -59,16 +59,16 @@ const CardWidgetsTotalVisits = () => {
           name: { offsetY: 26 },
           value: {
             offsetY: -14,
-            formatter: value => `${value}k`
+            formatter: (value) => `${value}k`,
           },
           total: {
             show: true,
             label: 'Growth',
-            fontSize: '14px'
-          }
-        }
-      }
-    }
+            fontSize: '14px',
+          },
+        },
+      },
+    },
   }
 
   return (
@@ -76,7 +76,12 @@ const CardWidgetsTotalVisits = () => {
       <CardHeader
         title='Total Visits'
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }
@@ -85,8 +90,8 @@ const CardWidgetsTotalVisits = () => {
             fontSize: '1rem !important',
             fontWeight: '600 !important',
             lineHeight: '1.5rem !important',
-            letterSpacing: '0.15px !important'
-          }
+            letterSpacing: '0.15px !important',
+          },
         }}
       />
       <CardContent
@@ -95,16 +100,24 @@ const CardWidgetsTotalVisits = () => {
           alignItems: 'center',
           flexDirection: 'column',
           '& .apexcharts-datalabel-label': {
-            fontSize: '0.875rem !important'
+            fontSize: '0.875rem !important',
           },
           '& .apexcharts-datalabel-value': {
             fontWeight: '500 !important',
-            fontSize: '1.5rem !important'
-          }
+            fontSize: '1.5rem !important',
+          },
         }}
       >
-        <ReactApexcharts type='radialBar' height={199} series={[78]} options={options} />
-        <Typography sx={{ mb: 2.5 }} variant='caption'>
+        <ReactApexcharts
+          type='radialBar'
+          height={199}
+          series={[78]}
+          options={options}
+        />
+        <Typography
+          sx={{ mb: 2.5 }}
+          variant='caption'
+        >
           42.2k New Visits
         </Typography>
         <CustomChip
@@ -116,7 +129,7 @@ const CardWidgetsTotalVisits = () => {
             fontSize: '0.75rem',
             fontWeight: 500,
             borderRadius: '10px',
-            '& .MuiChip-label': { px: 2, lineHeight: '20px' }
+            '& .MuiChip-label': { px: 2, lineHeight: '20px' },
           }}
         />
       </CardContent>

@@ -21,49 +21,43 @@
 */
 
 // layouts
-import Home from "~/pages/index"
 // import About from "~/pages/about"
-import Participate from "~/pages/participate"
-import Analytics from "~/pages/dashboards/analytics"
-import Sales from "~/pages/dashboards/sales"
-import ProfileOverview from "~/pages/profile/profile-overview"
-import AllProjects from "~/pages/profile/all-projects"
-import NewUser from "~/pages/users/new-user"
-import Settings from "~/components/account/settings"
-import Billing from "~/components/account/billing"
-import Invoice from "~/components/account/invoice"
-import Timeline from "~/pages/projects/timeline"
-import Pricing from "~/pages/pricing"
-import Widgets from "~/pages/widgets"
-import RTL from "~/pages/rtl"
-import Charts from "~/pages/charts"
-import Notifications from "~/pages/notifications"
-import Kanban from "~/components/applications/kanban"
-import Wizard from "~/components/applications/wizard"
-import DataTables from "~/components/applications/data-tables"
-import Calendar from "~/components/applications/calendar"
-import NewProduct from "~/pages/dashboards/ecommerce/products/new-product"
-import EditProduct from "~/pages/dashboards/ecommerce/products/edit-product"
-import ProductPage from "~/pages/dashboards/ecommerce/products/product-page"
-import OrderList from "~/pages/dashboards/ecommerce/orders/order-list"
-import OrderDetails from "~/pages/dashboards/ecommerce/orders/order-details"
-import SignInBasic from "~/pages/authentication/sign-in/basic"
-import SignInCover from "~/pages/authentication/sign-in/cover"
-import SignInIllustration from "~/pages/authentication/sign-in/illustration"
-import SignUpCover from "~/pages/authentication/sign-up/cover"
-import ResetCover from "~/pages/authentication/reset-password/cover"
+import Analytics from '~/pages/dashboards/analytics'
+import Sales from '~/pages/dashboards/sales'
+import ProfileOverview from '~/pages/profile/profile-overview'
+import AllProjects from '~/pages/profile/all-projects'
+import NewUser from '~/pages/users/new-user'
+import Settings from '~/components/account/settings'
+import Billing from '~/components/account/billing'
+import Invoice from '~/components/account/invoice'
+import Timeline from '~/pages/projects/timeline'
+import Pricing from '~/pages/pricing'
+import Widgets from '~/pages/widgets'
+import Charts from '~/pages/charts'
+import Notifications from '~/pages/notifications'
+import Kanban from '~/components/applications/kanban'
+import Wizard from '~/components/applications/wizard'
+import DataTables from '~/components/applications/data-tables'
+import Calendar from '~/components/applications/calendar'
+import NewProduct from '~/pages/dashboards/ecommerce/products/new-product'
+import EditProduct from '~/pages/dashboards/ecommerce/products/edit-product'
+import ProductPage from '~/pages/dashboards/ecommerce/products/product-page'
+import OrderList from '~/pages/dashboards/ecommerce/orders/order-list'
+import OrderDetails from '~/pages/dashboards/ecommerce/orders/order-details'
+import SignInBasic from '~/pages/authentication/sign-in/basic'
+import SignInCover from '~/pages/authentication/sign-in/cover'
+import SignInIllustration from '~/pages/authentication/sign-in/illustration'
+import SignUpCover from '~/pages/authentication/sign-up/cover'
+import ResetCover from '~/pages/authentication/reset-password/cover'
 
 // ThreeD Garden components
-import MDAvatar from "~/components/mui/MDAvatar"
 
 // @mui icons
-import Icon from "@mui/material/Icon"
-import AddHomeWorkIcon from "@mui/icons-material/AddHomeWork"
-import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings"
-import BadgeIcon from "@mui/icons-material/Badge"
+import Icon from '@mui/material/Icon'
+import AddHomeWorkIcon from '@mui/icons-material/AddHomeWork'
+import BadgeIcon from '@mui/icons-material/Badge'
 
 // Images
-import profilePicture from "~/assets/images/people/team-0.png"
 
 const routes = [
   // {
@@ -104,124 +98,124 @@ const routes = [
   //   icon: <Icon fontSize="medium">home</Icon>,
   // },
   {
-    type: "collapse",
+    type: 'collapse',
     noCollapse: true,
-    name: "About",
-    key: "about",
-    route: "/about",
+    name: 'About',
+    key: 'about',
+    route: '/about',
     // component: <About />,
-    icon: <AddHomeWorkIcon fontSize="medium" />,
+    icon: <AddHomeWorkIcon fontSize='medium' />,
   },
   {
-    type: "collapse",
+    type: 'collapse',
     noCollapse: true,
-    name: "Participate",
-    key: "participate",
-    route: "/participate",
+    name: 'Participate',
+    key: 'participate',
+    route: '/participate',
     // component: <Participate />,
-    icon: <Icon fontSize="medium">agriculture</Icon>,
+    icon: <Icon fontSize='medium'>agriculture</Icon>,
   },
 
-  { type: "divider", key: "divider-dashboards" },
+  { type: 'divider', key: 'divider-dashboards' },
   {
-    type: "collapse",
-    name: "Adventures",
-    key: "dashboards",
-    icon: <Icon fontSize="medium">dashboard</Icon>,
+    type: 'collapse',
+    name: 'Adventures',
+    key: 'dashboards',
+    icon: <Icon fontSize='medium'>dashboard</Icon>,
     collapse: [
       {
-        name: "Analytics",
-        key: "analytics",
-        route: "/dashboards/analytics",
+        name: 'Analytics',
+        key: 'analytics',
+        route: '/dashboards/analytics',
         component: <Analytics />,
       },
       {
-        name: "Sales",
-        key: "sales",
-        route: "/dashboards/sales",
+        name: 'Sales',
+        key: 'sales',
+        route: '/dashboards/sales',
         component: <Sales />,
       },
     ],
   },
 
-  { type: "divider", key: "divider-pages" },
+  { type: 'divider', key: 'divider-pages' },
   // { type: "title", title: "Pages", key: "title-pages" },
   {
-    type: "collapse",
-    name: "Pages",
-    key: "pages",
-    icon: <Icon fontSize="medium">pages</Icon>,
+    type: 'collapse',
+    name: 'Pages',
+    key: 'pages',
+    icon: <Icon fontSize='medium'>pages</Icon>,
     collapse: [
       {
-        name: "Profile",
-        key: "profile",
+        name: 'Profile',
+        key: 'profile',
         collapse: [
           {
-            name: "Profile Overview",
-            key: "profile-overview",
-            route: "/profile/profile-overview",
+            name: 'Profile Overview',
+            key: 'profile-overview',
+            route: '/profile/profile-overview',
             component: <ProfileOverview />,
           },
           {
-            name: "All Projects",
-            key: "all-projects",
-            route: "/profile/all-projects",
+            name: 'All Projects',
+            key: 'all-projects',
+            route: '/profile/all-projects',
             component: <AllProjects />,
           },
         ],
       },
       {
-        name: "Users",
-        key: "users",
+        name: 'Users',
+        key: 'users',
         collapse: [
           {
-            name: "New User",
-            key: "new-user",
-            route: "/users/new-user",
+            name: 'New User',
+            key: 'new-user',
+            route: '/users/new-user',
             component: <NewUser />,
           },
         ],
       },
       {
-        name: "Account",
-        key: "account",
+        name: 'Account',
+        key: 'account',
         collapse: [
           {
-            name: "Settings",
-            key: "settings",
-            route: "/account/settings",
+            name: 'Settings',
+            key: 'settings',
+            route: '/account/settings',
             component: <Settings />,
           },
           {
-            name: "Billing",
-            key: "billing",
-            route: "/account/billing",
+            name: 'Billing',
+            key: 'billing',
+            route: '/account/billing',
             component: <Billing />,
           },
           {
-            name: "Invoice",
-            key: "invoice",
-            route: "/account/invoice",
+            name: 'Invoice',
+            key: 'invoice',
+            route: '/account/invoice',
             component: <Invoice />,
           },
         ],
       },
       {
-        name: "Projects",
-        key: "projects",
+        name: 'Projects',
+        key: 'projects',
         collapse: [
           {
-            name: "Timeline",
-            key: "timeline",
-            route: "/projects/timeline",
+            name: 'Timeline',
+            key: 'timeline',
+            route: '/projects/timeline',
             component: <Timeline />,
           },
         ],
       },
       {
-        name: "Pricing",
-        key: "pricing",
-        route: "/pricing",
+        name: 'Pricing',
+        key: 'pricing',
+        route: '/pricing',
         component: <Pricing />,
       },
       // {
@@ -231,158 +225,157 @@ const routes = [
       //   component: <RTL />
       // },
       {
-        name: "Widgets",
-        key: "widgets",
-        route: "/widgets",
+        name: 'Widgets',
+        key: 'widgets',
+        route: '/widgets',
         component: <Widgets />,
       },
       {
-        name: "Charts",
-        key: "charts",
-        route: "/charts",
+        name: 'Charts',
+        key: 'charts',
+        route: '/charts',
         component: <Charts />,
       },
       {
-        name: "Notfications",
-        key: "notifications",
-        route: "/notifications",
+        name: 'Notfications',
+        key: 'notifications',
+        route: '/notifications',
         component: <Notifications />,
       },
     ],
   },
   {
-    type: "collapse",
-    name: "Applications",
-    key: "applications",
-    icon: <Icon fontSize="medium">apps</Icon>,
+    type: 'collapse',
+    name: 'Applications',
+    key: 'applications',
+    icon: <Icon fontSize='medium'>apps</Icon>,
     collapse: [
       {
-        name: "Kanban",
-        key: "kanban",
-        route: "/applications/kanban",
+        name: 'Kanban',
+        key: 'kanban',
+        route: '/applications/kanban',
         component: <Kanban />,
       },
       {
-        name: "Wizard",
-        key: "wizard",
-        route: "/applications/wizard",
+        name: 'Wizard',
+        key: 'wizard',
+        route: '/applications/wizard',
         component: <Wizard />,
       },
       {
-        name: "Data Tables",
-        key: "data-tables",
-        route: "/applications/data-tables",
+        name: 'Data Tables',
+        key: 'data-tables',
+        route: '/applications/data-tables',
         component: <DataTables />,
       },
       {
-        name: "Calendar",
-        key: "calendar",
-        route: "/applications/calendar",
+        name: 'Calendar',
+        key: 'calendar',
+        route: '/applications/calendar',
         component: <Calendar />,
       },
     ],
   },
   {
-    type: "collapse",
-    name: "Ecommerce",
-    key: "ecommerce",
-    icon: <Icon fontSize="medium">shopping_basket</Icon>,
+    type: 'collapse',
+    name: 'Ecommerce',
+    key: 'ecommerce',
+    icon: <Icon fontSize='medium'>shopping_basket</Icon>,
     collapse: [
       {
-        name: "Products",
-        key: "products",
+        name: 'Products',
+        key: 'products',
         collapse: [
           {
-            name: "New Product",
-            key: "new-product",
-            route: "/ecommerce/products/new-product",
+            name: 'New Product',
+            key: 'new-product',
+            route: '/ecommerce/products/new-product',
             component: <NewProduct />,
           },
           {
-            name: "Edit Product",
-            key: "edit-product",
-            route: "/ecommerce/products/edit-product",
+            name: 'Edit Product',
+            key: 'edit-product',
+            route: '/ecommerce/products/edit-product',
             component: <EditProduct />,
           },
           {
-            name: "Product Page",
-            key: "product-page",
-            route: "/ecommerce/products/product-page",
+            name: 'Product Page',
+            key: 'product-page',
+            route: '/ecommerce/products/product-page',
             component: <ProductPage />,
           },
         ],
       },
       {
-        name: "Orders",
-        key: "orders",
+        name: 'Orders',
+        key: 'orders',
         collapse: [
           {
-            name: "Order List",
-            key: "order-list",
-            route: "/ecommerce/orders/order-list",
+            name: 'Order List',
+            key: 'order-list',
+            route: '/ecommerce/orders/order-list',
             component: <OrderList />,
           },
           {
-            name: "Order Details",
-            key: "order-details",
-            route: "/ecommerce/orders/order-details",
+            name: 'Order Details',
+            key: 'order-details',
+            route: '/ecommerce/orders/order-details',
             component: <OrderDetails />,
           },
         ],
       },
-
     ],
   },
   {
-    type: "collapse",
-    name: "Authentication",
-    key: "authentication",
-    icon: <BadgeIcon fontSize="medium" />,
+    type: 'collapse',
+    name: 'Authentication',
+    key: 'authentication',
+    icon: <BadgeIcon fontSize='medium' />,
     collapse: [
       {
-        name: "Sign In",
-        key: "sign-in",
+        name: 'Sign In',
+        key: 'sign-in',
         collapse: [
           {
-            name: "Basic",
-            key: "basic",
-            route: "/authentication/sign-in/basic",
+            name: 'Basic',
+            key: 'basic',
+            route: '/authentication/sign-in/basic',
             component: <SignInBasic />,
           },
           {
-            name: "Cover",
-            key: "cover",
-            route: "/authentication/sign-in/cover",
+            name: 'Cover',
+            key: 'cover',
+            route: '/authentication/sign-in/cover',
             component: <SignInCover />,
           },
           {
-            name: "Illustration",
-            key: "illustration",
-            route: "/authentication/sign-in/illustration",
+            name: 'Illustration',
+            key: 'illustration',
+            route: '/authentication/sign-in/illustration',
             component: <SignInIllustration />,
           },
         ],
       },
       {
-        name: "Sign Up",
-        key: "sign-up",
+        name: 'Sign Up',
+        key: 'sign-up',
         collapse: [
           {
-            name: "Cover",
-            key: "cover",
-            route: "/authentication/sign-up/cover",
+            name: 'Cover',
+            key: 'cover',
+            route: '/authentication/sign-up/cover',
             component: <SignUpCover />,
           },
         ],
       },
       {
-        name: "Reset Password",
-        key: "reset-password",
+        name: 'Reset Password',
+        key: 'reset-password',
         collapse: [
           {
-            name: "Cover",
-            key: "cover",
-            route: "/authentication/reset-password/cover",
+            name: 'Cover',
+            key: 'cover',
+            route: '/authentication/reset-password/cover',
             component: <ResetCover />,
           },
         ],
@@ -390,64 +383,64 @@ const routes = [
     ],
   },
 
-  { type: "divider", key: "divider-docs" },
+  { type: 'divider', key: 'divider-docs' },
   // { type: "title", title: "Docs", key: "title-docs" },
   {
-    type: "collapse",
-    name: "Docs",
-    key: "docs",
-    icon: <Icon fontSize="medium">upcoming</Icon>,
+    type: 'collapse',
+    name: 'Docs',
+    key: 'docs',
+    icon: <Icon fontSize='medium'>upcoming</Icon>,
     collapse: [
       {
-        name: "Getting Started",
-        key: "getting-started",
+        name: 'Getting Started',
+        key: 'getting-started',
         collapse: [
           {
-            name: "Overview",
-            key: "overview",
-            href: "#react/overview/material-dashboard/",
+            name: 'Overview',
+            key: 'overview',
+            href: '#react/overview/material-dashboard/',
           },
           {
-            name: "License",
-            key: "license",
-            href: "#react/license/material-dashboard/",
+            name: 'License',
+            key: 'license',
+            href: '#react/license/material-dashboard/',
           },
           {
-            name: "Quick Start",
-            key: "quick-start",
-            href: "#react/quick-start/material-dashboard/",
+            name: 'Quick Start',
+            key: 'quick-start',
+            href: '#react/quick-start/material-dashboard/',
           },
           {
-            name: "Build Tools",
-            key: "build-tools",
-            href: "#react/build-tools/material-dashboard/",
+            name: 'Build Tools',
+            key: 'build-tools',
+            href: '#react/build-tools/material-dashboard/',
           },
         ],
       },
       {
-        name: "Foundation",
-        key: "foundation",
+        name: 'Foundation',
+        key: 'foundation',
         collapse: [
           {
-            name: "Functions",
-            key: "functions",
-            href: "#react/functions/material-dashboard/",
+            name: 'Functions',
+            key: 'functions',
+            href: '#react/functions/material-dashboard/',
           },
           {
-            name: "Routing System",
-            key: "routing-system",
-            href: "#react/routing-system/material-dashboard/",
+            name: 'Routing System',
+            key: 'routing-system',
+            href: '#react/routing-system/material-dashboard/',
           },
         ],
       },
     ],
   },
   {
-    type: "collapse",
-    name: "View Code",
-    key: "codebase",
-    href: "https://github.com/marty-mcgee/threed-garden/",
-    icon: <Icon fontSize="medium">receipt_long</Icon>,
+    type: 'collapse',
+    name: 'View Code',
+    key: 'codebase',
+    href: 'https://github.com/marty-mcgee/threed-garden/',
+    icon: <Icon fontSize='medium'>receipt_long</Icon>,
     noCollapse: true,
   },
 ]

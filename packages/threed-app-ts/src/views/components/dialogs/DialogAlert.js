@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 
 // ** MUI Imports
 import Button from '@mui/material/Button'
@@ -17,7 +17,10 @@ const DialogAlert = () => {
 
   return (
     <>
-      <Button variant='outlined' onClick={handleClickOpen}>
+      <Button
+        variant='outlined'
+        onClick={handleClickOpen}
+      >
         Open dialog
       </Button>
       <Dialog

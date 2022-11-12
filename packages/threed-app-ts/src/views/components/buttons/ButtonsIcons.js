@@ -10,13 +10,22 @@ const ButtonsIcons = () => {
       <IconButton aria-label='capture screenshot'>
         <CameraIris />
       </IconButton>
-      <IconButton aria-label='capture screenshot' color='primary'>
+      <IconButton
+        aria-label='capture screenshot'
+        color='primary'
+      >
         <CameraIris />
       </IconButton>
-      <IconButton aria-label='capture screenshot' color='secondary'>
+      <IconButton
+        aria-label='capture screenshot'
+        color='secondary'
+      >
         <CameraIris />
       </IconButton>
-      <IconButton aria-label='capture screenshot' disabled>
+      <IconButton
+        aria-label='capture screenshot'
+        disabled
+      >
         <CameraIris />
       </IconButton>
     </div>

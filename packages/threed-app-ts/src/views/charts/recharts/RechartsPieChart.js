@@ -15,11 +15,11 @@ const data = [
   { name: 'R&D', value: 50, color: '#00d4bd' },
   { name: 'Operational', value: 85, color: '#ffe700' },
   { name: 'Networking', value: 16, color: '#FFA1A1' },
-  { name: 'Hiring', value: 50, color: '#826bf8' }
+  { name: 'Hiring', value: 50, color: '#826bf8' },
 ]
 const RADIAN = Math.PI / 180
 
-const renderCustomizedLabel = props => {
+const renderCustomizedLabel = (props) => {
   // ** Props
   const { cx, cy, midAngle, innerRadius, outerRadius, percent } = props
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5
@@ -27,7 +27,13 @@ const renderCustomizedLabel = props => {
   const y = cy + radius * Math.sin(-midAngle * RADIAN)
 
   return (
-    <text x={x} y={y} fill='#fff' textAnchor='middle' dominantBaseline='central'>
+    <text
+      x={x}
+      y={y}
+      fill='#fff'
+      textAnchor='middle'
+      dominantBaseline='central'
+    >
       {`${(percent * 100).toFixed(0)}%`}
     </text>
   )
@@ -45,10 +51,22 @@ const RechartsPieChart = () => {
       <CardContent>
         <Box sx={{ height: 350 }}>
           <ResponsiveContainer>
-            <PieChart height={350} style={{ direction: 'ltr' }}>
-              <Pie data={data} innerRadius={80} dataKey='value' label={renderCustomizedLabel} labelLine={false}>
+            <PieChart
+              height={350}
+              style={{ direction: 'ltr' }}
+            >
+              <Pie
+                data={data}
+                innerRadius={80}
+                dataKey='value'
+                label={renderCustomizedLabel}
+                labelLine={false}
+              >
                 {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={entry.color}
+                  />
                 ))}
               </Pie>
               <Tooltip />

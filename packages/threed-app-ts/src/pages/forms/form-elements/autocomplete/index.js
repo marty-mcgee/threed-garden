@@ -28,13 +28,20 @@ import * as source from '~/views/forms/form-elements/autocomplete/AutocompleteSo
 
 const Autocomplete = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Variants'
           code={{
             tsx: null,
-            jsx: source.AutocompleteVariantsJSXCode
+            jsx: source.AutocompleteVariantsJSXCode,
           }}
         >
           <Typography>
@@ -45,12 +52,15 @@ const Autocomplete = () => {
           <AutocompleteVariants />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Controlled and Uncontrolled'
           code={{
             tsx: null,
-            jsx: source.AutocompleteControlledUncontrolledJSXCode
+            jsx: source.AutocompleteControlledUncontrolledJSXCode,
           }}
         >
           <Typography>
@@ -59,12 +69,15 @@ const Autocomplete = () => {
           <AutocompleteControlledUncontrolled />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Autocomplete Props'
           code={{
             tsx: null,
-            jsx: source.AutocompletePropsJSXCode
+            jsx: source.AutocompletePropsJSXCode,
           }}
         >
           <Typography>
@@ -73,24 +86,32 @@ const Autocomplete = () => {
           <AutocompleteProps />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Country Select'
           code={{
             tsx: null,
-            jsx: source.AutocompleteCountryJSXCode
+            jsx: source.AutocompleteCountryJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>Choose one of the countries.</Typography>
           <AutocompleteCountry />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Free Solo'
           code={{
             tsx: null,
-            jsx: source.AutocompleteFreeSoloJSXCode
+            jsx: source.AutocompleteFreeSoloJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -99,24 +120,32 @@ const Autocomplete = () => {
           <AutocompleteFreeSolo />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Creatable'
           code={{
             tsx: null,
-            jsx: source.AutocompleteCreatableJSXCode
+            jsx: source.AutocompleteCreatableJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>You can create an option other than from the list.</Typography>
           <AutocompleteCreatable />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Grouped'
           code={{
             tsx: null,
-            jsx: source.AutocompleteGroupedJSXCode
+            jsx: source.AutocompleteGroupedJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -125,12 +154,16 @@ const Autocomplete = () => {
           <AutocompleteGrouped />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Disabled Options'
           code={{
             tsx: null,
-            jsx: source.AutocompleteDisabledOptionsJSXCode
+            jsx: source.AutocompleteDisabledOptionsJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -139,24 +172,31 @@ const Autocomplete = () => {
           <AutocompleteDisabledOptions />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Asynchronous Request'
           code={{
             tsx: null,
-            jsx: source.AutocompleteAsynchronousRequestJSXCode
+            jsx: source.AutocompleteAsynchronousRequestJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>You can fetch the data with the help of APIs for the options.</Typography>
           <AutocompleteAsynchronousRequest />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Multiple Values'
           code={{
             tsx: null,
-            jsx: source.AutocompleteMultipleValuesJSXCode
+            jsx: source.AutocompleteMultipleValuesJSXCode,
           }}
         >
           <Typography>
@@ -165,24 +205,32 @@ const Autocomplete = () => {
           <AutocompleteMultipleValues />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Fixed Options'
           code={{
             tsx: null,
-            jsx: source.AutocompleteFixedOptionsJSXCode
+            jsx: source.AutocompleteFixedOptionsJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>You can fix an option in the input and add any other option as well.</Typography>
           <AutocompleteFixedOptions />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Checkboxes'
           code={{
             tsx: null,
-            jsx: source.AutocompleteCheckboxesJSXCode
+            jsx: source.AutocompleteCheckboxesJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -191,12 +239,16 @@ const Autocomplete = () => {
           <AutocompleteCheckboxes />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Limit Tags'
           code={{
             tsx: null,
-            jsx: source.AutocompleteLimitTagsJSXCode
+            jsx: source.AutocompleteLimitTagsJSXCode,
           }}
         >
           <Typography sx={{ mb: 6 }}>
@@ -205,12 +257,16 @@ const Autocomplete = () => {
           <AutocompleteLimitTags />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Small Size'
           code={{
             tsx: null,
-            jsx: source.AutocompleteSmallSizeJSXCode
+            jsx: source.AutocompleteSmallSizeJSXCode,
           }}
         >
           <Typography sx={{ mb: 5 }}>
@@ -219,12 +275,16 @@ const Autocomplete = () => {
           <AutocompleteSmallSize />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Custom Input'
           code={{
             tsx: null,
-            jsx: source.AutocompleteCustomInputJSXCode
+            jsx: source.AutocompleteCustomInputJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -233,12 +293,16 @@ const Autocomplete = () => {
           <AutocompleteCustomInput />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Custom Filter'
           code={{
             tsx: null,
-            jsx: source.AutocompleteCustomFilterJSXCode
+            jsx: source.AutocompleteCustomFilterJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>

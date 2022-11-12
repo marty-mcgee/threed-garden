@@ -21,7 +21,7 @@ import ReactApexcharts from '~/@core/components/react-apexcharts'
 
 const candlestickColors = {
   series1: '#28c76f',
-  series2: '#ea5455'
+  series2: '#ea5455',
 }
 
 const ApexCandlestickChart = () => {
@@ -33,38 +33,38 @@ const ApexCandlestickChart = () => {
     chart: {
       parentHeightOffset: 0,
       toolbar: {
-        show: false
-      }
+        show: false,
+      },
     },
     xaxis: {
-      type: 'datetime'
+      type: 'datetime',
     },
     yaxis: {
       tooltip: {
-        enabled: true
-      }
+        enabled: true,
+      },
     },
     grid: {
       xaxis: {
         lines: {
-          show: true
-        }
+          show: true,
+        },
       },
       padding: {
-        top: -10
-      }
+        top: -10,
+      },
     },
     plotOptions: {
       candlestick: {
         colors: {
           upward: candlestickColors.series1,
-          downward: candlestickColors.series2
-        }
+          downward: candlestickColors.series2,
+        },
       },
       bar: {
-        columnWidth: '40%'
-      }
-    }
+        columnWidth: '40%',
+      },
+    },
   }
 
   const series = [
@@ -72,62 +72,62 @@ const ApexCandlestickChart = () => {
       data: [
         {
           x: `7/12/${new Date().getFullYear()}`,
-          y: [150, 170, 50, 100]
+          y: [150, 170, 50, 100],
         },
         {
           x: `8/12/${new Date().getFullYear()}`,
-          y: [200, 400, 170, 330]
+          y: [200, 400, 170, 330],
         },
         {
           x: `9/12/${new Date().getFullYear()}`,
-          y: [330, 340, 250, 280]
+          y: [330, 340, 250, 280],
         },
         {
           x: `10/12/${new Date().getFullYear()}`,
-          y: [300, 330, 200, 320]
+          y: [300, 330, 200, 320],
         },
         {
           x: `11/12/${new Date().getFullYear()}`,
-          y: [320, 450, 280, 350]
+          y: [320, 450, 280, 350],
         },
         {
           x: `12/12/${new Date().getFullYear()}`,
-          y: [300, 350, 80, 250]
+          y: [300, 350, 80, 250],
         },
         {
           x: `13/12/${new Date().getFullYear()}`,
-          y: [200, 330, 170, 300]
+          y: [200, 330, 170, 300],
         },
         {
           x: `14/12/${new Date().getFullYear()}`,
-          y: [200, 220, 70, 130]
+          y: [200, 220, 70, 130],
         },
         {
           x: `15/12/${new Date().getFullYear()}`,
-          y: [220, 270, 180, 250]
+          y: [220, 270, 180, 250],
         },
         {
           x: `16/12/${new Date().getFullYear()}`,
-          y: [200, 250, 80, 100]
+          y: [200, 250, 80, 100],
         },
         {
           x: `17/12/${new Date().getFullYear()}`,
-          y: [150, 170, 50, 120]
+          y: [150, 170, 50, 120],
         },
         {
           x: `18/12/${new Date().getFullYear()}`,
-          y: [110, 450, 10, 420]
+          y: [110, 450, 10, 420],
         },
         {
           x: `19/12/${new Date().getFullYear()}`,
-          y: [400, 480, 300, 320]
+          y: [400, 480, 300, 320],
         },
         {
           x: `20/12/${new Date().getFullYear()}`,
-          y: [380, 480, 350, 450]
-        }
-      ]
-    }
+          y: [380, 480, 350, 450],
+        },
+      ],
+    },
   ]
 
   const CustomInput = forwardRef((props, ref) => {
@@ -151,13 +151,13 @@ const ApexCandlestickChart = () => {
             <InputAdornment position='end'>
               <ChevronDown />
             </InputAdornment>
-          )
+          ),
         }}
       />
     )
   })
 
-  const handleOnChange = dates => {
+  const handleOnChange = (dates) => {
     const [start, end] = dates
     setStartDate(start)
     setEndDate(end)
@@ -174,7 +174,7 @@ const ApexCandlestickChart = () => {
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],
           '& .MuiCardHeader-action': { mb: 0 },
-          '& .MuiCardHeader-content': { mb: [2, 0] }
+          '& .MuiCardHeader-content': { mb: [2, 0] },
         }}
         action={
           <DatePicker
@@ -185,12 +185,22 @@ const ApexCandlestickChart = () => {
             onChange={handleOnChange}
             id='apexchart-candlestick'
             placeholderText='Click to select a date'
-            customInput={<CustomInput start={startDate} end={endDate} />}
+            customInput={
+              <CustomInput
+                start={startDate}
+                end={endDate}
+              />
+            }
           />
         }
       />
       <CardContent>
-        <ReactApexcharts options={options} series={series} type='candlestick' height={400} />
+        <ReactApexcharts
+          options={options}
+          series={series}
+          type='candlestick'
+          height={400}
+        />
       </CardContent>
     </Card>
   )

@@ -14,7 +14,7 @@ import ReactApexcharts from '~/@core/components/react-apexcharts'
 const scatterColors = {
   series1: '#ff9f43',
   series2: '#7367f0',
-  series3: '#28c76f'
+  series3: '#28c76f',
 }
 
 const ApexScatterChart = () => {
@@ -29,23 +29,23 @@ const ApexScatterChart = () => {
     chart: {
       zoom: {
         enabled: true,
-        type: 'xy'
+        type: 'xy',
       },
       parentHeightOffset: 0,
       toolbar: {
-        show: false
-      }
+        show: false,
+      },
     },
     grid: {
       xaxis: {
         lines: {
-          show: true
-        }
-      }
+          show: true,
+        },
+      },
     },
     legend: {
       position: 'top',
-      horizontalAlign: 'left'
+      horizontalAlign: 'left',
     },
     colors: [scatterColors.series1, scatterColors.series2, scatterColors.series3],
     xaxis: {
@@ -53,9 +53,9 @@ const ApexScatterChart = () => {
       labels: {
         formatter(val) {
           return parseFloat(val).toFixed(1)
-        }
-      }
-    }
+        },
+      },
+    },
   }
 
   const series = [
@@ -73,8 +73,8 @@ const ApexScatterChart = () => {
         { x: 10.0, y: 190 },
         { x: 11.0, y: 220 },
         { x: 12.0, y: 170 },
-        { x: 13.0, y: 230 }
-      ]
+        { x: 13.0, y: 230 },
+      ],
     },
     {
       name: 'Vue',
@@ -91,8 +91,8 @@ const ApexScatterChart = () => {
         { x: 19.0, y: 280 },
         { x: 17.0, y: 280 },
         { x: 22.0, y: 300 },
-        { x: 18.0, y: 120 }
-      ]
+        { x: 18.0, y: 120 },
+      ],
     },
     {
       name: 'React',
@@ -107,9 +107,9 @@ const ApexScatterChart = () => {
         { x: 19.0, y: 400 },
         { x: 20.0, y: 200 },
         { x: 22.0, y: 90 },
-        { x: 20.0, y: 120 }
-      ]
-    }
+        { x: 20.0, y: 120 },
+      ],
+    },
   ]
 
   return (
@@ -121,10 +121,14 @@ const ApexScatterChart = () => {
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],
           '& .MuiCardHeader-action': { mb: 0 },
-          '& .MuiCardHeader-content': { mb: [2, 0] }
+          '& .MuiCardHeader-content': { mb: [2, 0] },
         }}
         action={
-          <ToggleButtonGroup exclusive value={active} onChange={handleActive}>
+          <ToggleButtonGroup
+            exclusive
+            value={active}
+            onChange={handleActive}
+          >
             <ToggleButton value='daily'>Daily</ToggleButton>
             <ToggleButton value='monthly'>Monthly</ToggleButton>
             <ToggleButton value='yearly'>Yearly</ToggleButton>
@@ -132,7 +136,12 @@ const ApexScatterChart = () => {
         }
       />
       <CardContent>
-        <ReactApexcharts options={options} series={series} type='scatter' height={400} />
+        <ReactApexcharts
+          options={options}
+          series={series}
+          type='scatter'
+          height={400}
+        />
       </CardContent>
     </Card>
   )

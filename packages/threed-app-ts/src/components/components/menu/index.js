@@ -19,13 +19,21 @@ import * as source from '~/views/components/menu/MenuSourceCode'
 
 const Menus = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12} md={6}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Simple Menu'
           code={{
             tsx: null,
-            jsx: source.MenuBasicJSXCode
+            jsx: source.MenuBasicJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -35,12 +43,16 @@ const Menus = () => {
           <MenuBasic />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Selected Menu'
           code={{
             tsx: null,
-            jsx: source.MenuSelectedJSXCode
+            jsx: source.MenuSelectedJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -50,12 +62,16 @@ const Menus = () => {
           <MenuSelected />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='MenuList Composition'
           code={{
             tsx: null,
-            jsx: source.MenuCompositionJSXCode
+            jsx: source.MenuCompositionJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -65,12 +81,16 @@ const Menus = () => {
           <MenuComposition />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Customized Menu'
           code={{
             tsx: null,
-            jsx: source.MenuCustomizedJSXCode
+            jsx: source.MenuCustomizedJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -79,12 +99,16 @@ const Menus = () => {
           <MenuCustomized />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Max Height Menu'
           code={{
             tsx: null,
-            jsx: source.MenuMaxHeightJSXCode
+            jsx: source.MenuMaxHeightJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -93,12 +117,16 @@ const Menus = () => {
           <MenuMaxHeight />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Change Transition'
           code={{
             tsx: null,
-            jsx: source.MenuTransitionJSXCode
+            jsx: source.MenuTransitionJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -107,12 +135,15 @@ const Menus = () => {
           <MenuTransition />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Context Menu'
           code={{
             tsx: null,
-            jsx: source.MenuContextJSXCode
+            jsx: source.MenuContextJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>

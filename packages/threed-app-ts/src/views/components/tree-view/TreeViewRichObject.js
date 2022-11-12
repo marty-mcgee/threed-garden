@@ -13,7 +13,7 @@ const data = {
   children: [
     {
       id: '1',
-      name: 'Child - 1'
+      name: 'Child - 1',
     },
     {
       id: '3',
@@ -21,17 +21,21 @@ const data = {
       children: [
         {
           id: '4',
-          name: 'Child - 4'
-        }
-      ]
-    }
-  ]
+          name: 'Child - 4',
+        },
+      ],
+    },
+  ],
 }
 
 const TreeViewRichObject = ({ direction }) => {
-  const renderTree = nodes => (
-    <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name}>
-      {Array.isArray(nodes.children) ? nodes.children.map(node => renderTree(node)) : null}
+  const renderTree = (nodes) => (
+    <TreeItem
+      key={nodes.id}
+      nodeId={nodes.id}
+      label={nodes.name}
+    >
+      {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
     </TreeItem>
   )
   const ExpandIcon = direction === 'rtl' ? <ChevronLeft /> : <ChevronRight />

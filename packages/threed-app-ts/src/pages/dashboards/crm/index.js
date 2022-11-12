@@ -30,7 +30,7 @@ const data = [
     trendNumber: '+38%',
     chipColor: 'primary',
     chipText: 'Year of 2022',
-    src: '/images/cards/pose_f9.png'
+    src: '/images/cards/pose_f9.png',
   },
   {
     stats: '24.5k',
@@ -39,46 +39,109 @@ const data = [
     trendNumber: '-22%',
     chipText: 'Last Week',
     chipColor: 'secondary',
-    src: '/images/cards/pose_m18.png'
-  }
+    src: '/images/cards/pose_m18.png',
+  },
 ]
 
 const CRMDashboard = () => {
   return (
     <ApexChartWrapper>
-      <Grid container spacing={6}>
-        <Grid item xs={12} sm={6} md={3} sx={{ pt: theme => `${theme.spacing(12.25)} !important` }}>
+      <Grid
+        container
+        spacing={6}
+      >
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={3}
+          sx={{ pt: (theme) => `${theme.spacing(12.25)} !important` }}
+        >
           <CardStatisticsCharacter data={data[0]} />
         </Grid>
-        <Grid item xs={12} sm={6} md={3} sx={{ pt: theme => `${theme.spacing(12.25)} !important` }}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={3}
+          sx={{ pt: (theme) => `${theme.spacing(12.25)} !important` }}
+        >
           <CardStatisticsCharacter data={data[1]} />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+        >
           <CrmStatisticsCard />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={3}
+        >
           <CrmTotalSales />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={3}
+        >
           <CrmRevenueReport />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+        >
           <CrmSalesOverview />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+        >
           <CrmActivityTimeline />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Grid container spacing={6}>
-            <Grid item xs={12} sm={8}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+        >
+          <Grid
+            container
+            spacing={6}
+          >
+            <Grid
+              item
+              xs={12}
+              sm={8}
+            >
               <CrmWeeklySales />
             </Grid>
-            <Grid item xs={12} sm={4}>
-              <Grid container spacing={6}>
-                <Grid item xs={6} sm={12}>
+            <Grid
+              item
+              xs={12}
+              sm={4}
+            >
+              <Grid
+                container
+                spacing={6}
+              >
+                <Grid
+                  item
+                  xs={6}
+                  sm={12}
+                >
                   <CrmTotalGrowth />
                 </Grid>
-                <Grid item xs={6} sm={12}>
+                <Grid
+                  item
+                  xs={6}
+                  sm={12}
+                >
                   <CardStatisticsVerticalComponent
                     stats='862'
                     trend='negative'
@@ -92,13 +155,28 @@ const CRMDashboard = () => {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} md={6} lg={4}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          lg={4}
+        >
           <CrmUpgradePlan />
         </Grid>
-        <Grid item xs={12} md={6} lg={4}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          lg={4}
+        >
           <CrmMeetingSchedule />
         </Grid>
-        <Grid item xs={12} md={6} lg={4}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          lg={4}
+        >
           <CrmDeveloperMeetup />
         </Grid>
       </Grid>

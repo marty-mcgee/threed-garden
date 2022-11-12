@@ -1,8 +1,8 @@
-import { ReactNode } from "react"
+import { ReactNode } from 'react'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
+import MDBox from '~/components/mui/MDBox'
+import MDTypography from '~/components/mui/MDTypography'
 
 // Declaring props types for TableCell
 interface Props {
@@ -13,16 +13,10 @@ interface Props {
   noBorder?: boolean
 }
 
-function TableCell({
-  width,
-  align,
-  padding,
-  noBorder,
-  children,
-}: Props): JSX.Element {
+function TableCell({ width, align, padding, noBorder, children }: Props): JSX.Element {
   return (
     <MDBox
-      component="th"
+      component='th'
       width={width}
       pt={padding[0]}
       pr={padding[1]}
@@ -32,8 +26,13 @@ function TableCell({
       sx={{
         border: ({ borders: { borderWidth }, palette: { light } }) =>
           noBorder ? 0 : `${borderWidth[1]} solid ${light.main}`,
-      }}>
-      <MDTypography component="div" variant="body2" color="text">
+      }}
+    >
+      <MDTypography
+        component='div'
+        variant='body2'
+        color='text'
+      >
         {children}
       </MDTypography>
     </MDBox>
@@ -42,8 +41,8 @@ function TableCell({
 
 // Declaring default props for TableCell
 TableCell.defaultProps = {
-  width: "auto",
-  align: "left",
+  width: 'auto',
+  align: 'left',
   padding: [],
   noBorder: false,
 }

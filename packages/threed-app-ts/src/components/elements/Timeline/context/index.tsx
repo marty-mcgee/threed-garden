@@ -1,9 +1,8 @@
-/* eslint-disable react/prop-types */
 /**
   This file is used for controlling the dark and light state of the TimelineList and TimelineItem.
 */
 
-import { createContext, useContext, ReactNode } from "react"
+import { createContext, useContext, ReactNode } from 'react'
 
 // The Timeline main context
 const Timeline = createContext<JSX.Element | boolean | null>(null)

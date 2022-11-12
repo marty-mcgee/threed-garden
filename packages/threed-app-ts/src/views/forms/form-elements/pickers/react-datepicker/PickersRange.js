@@ -16,13 +16,13 @@ const PickersRange = () => {
   const [endDateRange, setEndDateRange] = useState(null)
   const [startDateRange, setStartDateRange] = useState(new Date())
 
-  const handleOnChange = dates => {
+  const handleOnChange = (dates) => {
     const [start, end] = dates
     setStartDate(start)
     setEndDate(end)
   }
 
-  const handleOnChangeRange = dates => {
+  const handleOnChangeRange = (dates) => {
     const [start, end] = dates
     setStartDateRange(start)
     setEndDateRange(end)
@@ -33,11 +33,21 @@ const PickersRange = () => {
     const endDate = props.end !== null ? ` - ${format(props.end, 'MM/dd/yyyy')}` : null
     const value = `${startDate}${endDate !== null ? endDate : ''}`
 
-    return <TextField inputRef={ref} label={props.label || ''} {...props} value={value} />
+    return (
+      <TextField
+        inputRef={ref}
+        label={props.label || ''}
+        {...props}
+        value={value}
+      />
+    )
   })
 
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap' }} className='demo-space-x'>
+    <Box
+      sx={{ display: 'flex', flexWrap: 'wrap' }}
+      className='demo-space-x'
+    >
       <Box>
         <DatePicker
           selectsRange
@@ -47,7 +57,13 @@ const PickersRange = () => {
           id='date-range-picker'
           onChange={handleOnChange}
           shouldCloseOnSelect={false}
-          customInput={<CustomInput label='Date Range' start={startDate} end={endDate} />}
+          customInput={
+            <CustomInput
+              label='Date Range'
+              start={startDate}
+              end={endDate}
+            />
+          }
         />
       </Box>
       <Box>
@@ -60,7 +76,13 @@ const PickersRange = () => {
           shouldCloseOnSelect={false}
           id='date-range-picker-months'
           onChange={handleOnChangeRange}
-          customInput={<CustomInput label='Multiple Months' end={endDateRange} start={startDateRange} />}
+          customInput={
+            <CustomInput
+              label='Multiple Months'
+              end={endDateRange}
+              start={startDateRange}
+            />
+          }
         />
       </Box>
     </Box>

@@ -11,7 +11,7 @@ const MenuTransition = () => {
   // ** State
   const [anchorEl, setAnchorEl] = useState(null)
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
 
@@ -21,7 +21,12 @@ const MenuTransition = () => {
 
   return (
     <div>
-      <Button variant='outlined' aria-controls='fade-menu' aria-haspopup='true' onClick={handleClick}>
+      <Button
+        variant='outlined'
+        aria-controls='fade-menu'
+        aria-haspopup='true'
+        onClick={handleClick}
+      >
         Open with fade transition
       </Button>
       <Menu

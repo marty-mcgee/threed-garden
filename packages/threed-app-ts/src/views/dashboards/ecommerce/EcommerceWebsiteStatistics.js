@@ -27,29 +27,29 @@ const data = [
     title: 'Direct',
     color: 'success',
     trendNumber: '15%',
-    trend: <ChevronDown sx={{ color: 'error.main' }} />
+    trend: <ChevronDown sx={{ color: 'error.main' }} />,
   },
   {
     sales: '57,484',
     title: 'Organic',
     color: 'primary',
     trendNumber: '85%',
-    trend: <ChevronUp sx={{ color: 'success.main' }} />
+    trend: <ChevronUp sx={{ color: 'success.main' }} />,
   },
   {
     sales: '2,534',
     color: 'warning',
     title: 'Referral',
     trendNumber: '48%',
-    trend: <ChevronUp sx={{ color: 'success.main' }} />
+    trend: <ChevronUp sx={{ color: 'success.main' }} />,
   },
   {
     sales: '977',
     title: 'Mail',
     color: 'error',
     trendNumber: '36%',
-    trend: <ChevronDown sx={{ color: 'error.main' }} />
-  }
+    trend: <ChevronDown sx={{ color: 'error.main' }} />,
+  },
 ]
 
 const chartData = [
@@ -59,7 +59,7 @@ const chartData = [
   { value: 75 },
   { value: 40 },
   { value: 75 },
-  { value: 20 }
+  { value: 20 },
 ]
 
 const EcommerceWebsiteStatistics = () => {
@@ -72,7 +72,12 @@ const EcommerceWebsiteStatistics = () => {
         title='Website Statistics'
         titleTypographyProps={{ sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' } }}
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical sx={{ fontSize: '1.375rem' }} />
           </IconButton>
         }
@@ -85,8 +90,16 @@ const EcommerceWebsiteStatistics = () => {
           </Box>
           <Box sx={{ height: 75, width: '100%', maxWidth: '120px' }}>
             <ResponsiveContainer>
-              <BarChart height={100} data={chartData}>
-                <Bar dataKey='value' fill={theme.palette.primary.main} radius={4} barSize={5} />
+              <BarChart
+                height={100}
+                data={chartData}
+              >
+                <Bar
+                  dataKey='value'
+                  fill={theme.palette.primary.main}
+                  radius={4}
+                  barSize={5}
+                />
               </BarChart>
             </ResponsiveContainer>
           </Box>
@@ -94,18 +107,18 @@ const EcommerceWebsiteStatistics = () => {
         <TableContainer>
           <Table>
             <TableBody>
-              {data.map(row => {
+              {data.map((row) => {
                 return (
                   <TableRow
                     key={row.title}
                     sx={{
                       '&:last-of-type td': { border: 0, pb: 0 },
                       '& .MuiTableCell-root': {
-                        py: theme => `${theme.spacing(3.125)} !important`,
+                        py: (theme) => `${theme.spacing(3.125)} !important`,
                         '&:last-of-type': { pr: 0 },
-                        '&:first-of-type': { pl: 0 }
+                        '&:first-of-type': { pl: 0 },
                       },
-                      '&:first-of-type td': { borderTop: theme => `1px solid ${theme.palette.divider}` }
+                      '&:first-of-type td': { borderTop: (theme) => `1px solid ${theme.palette.divider}` },
                     }}
                   >
                     <TableCell>

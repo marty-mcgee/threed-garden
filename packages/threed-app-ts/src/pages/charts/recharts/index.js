@@ -31,33 +31,59 @@ const Recharts = () => {
   return (
     <RechartsWrapper>
       <DatePickerWrapper>
-        <Grid container spacing={6}>
+        <Grid
+          container
+          spacing={6}
+        >
           <PageHeader
             title={
               <Typography variant='h5'>
-                <Link href='https://github.com/recharts/recharts' target='_blank'>
+                <Link
+                  href='https://github.com/recharts/recharts'
+                  target='_blank'
+                >
                   Recharts
                 </Link>
               </Typography>
             }
             subtitle={<Typography variant='body2'>Redefined chart library built with React and D3</Typography>}
           />
-          <Grid item xs={12}>
+          <Grid
+            item
+            xs={12}
+          >
             <RechartsLineChart direction={settings.direction} />
           </Grid>
-          <Grid item xs={12}>
+          <Grid
+            item
+            xs={12}
+          >
             <RechartsAreaChart direction={settings.direction} />
           </Grid>
-          <Grid item xs={12}>
+          <Grid
+            item
+            xs={12}
+          >
             <RechartsScatterChart direction={settings.direction} />
           </Grid>
-          <Grid item xs={12}>
+          <Grid
+            item
+            xs={12}
+          >
             <RechartsBarChart direction={settings.direction} />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid
+            item
+            xs={12}
+            md={6}
+          >
             <RechartsRadarChart />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid
+            item
+            xs={12}
+            md={6}
+          >
             <RechartsPieChart />
           </Grid>
         </Grid>

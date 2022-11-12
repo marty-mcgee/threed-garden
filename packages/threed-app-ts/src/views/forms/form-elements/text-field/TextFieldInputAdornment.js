@@ -19,10 +19,10 @@ const TextFieldInputAdornment = () => {
   const [values, setValues] = useState({
     weight: '',
     password: '',
-    showPassword: false
+    showPassword: false,
   })
 
-  const handleChange = prop => event => {
+  const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value })
   }
 
@@ -30,17 +30,21 @@ const TextFieldInputAdornment = () => {
     setValues({ ...values, showPassword: !values.showPassword })
   }
 
-  const handleMouseDownPassword = event => {
+  const handleMouseDownPassword = (event) => {
     event.preventDefault()
   }
 
   return (
-    <form className='demo-space-x' noValidate autoComplete='off'>
+    <form
+      className='demo-space-x'
+      noValidate
+      autoComplete='off'
+    >
       <TextField
         id='icons-start-adornment'
         label='With normal TextField'
         InputProps={{
-          startAdornment: <InputAdornment position='start'>Kg</InputAdornment>
+          startAdornment: <InputAdornment position='start'>Kg</InputAdornment>,
         }}
       />
       <FormControl>
@@ -51,7 +55,7 @@ const TextFieldInputAdornment = () => {
           aria-describedby='icons-weight-helper-text'
           endAdornment={<InputAdornment position='end'>Kg</InputAdornment>}
           inputProps={{
-            'aria-label': 'weight'
+            'aria-label': 'weight',
           }}
         />
         <FormHelperText id='icons-weight-helper-text'>Weight</FormHelperText>

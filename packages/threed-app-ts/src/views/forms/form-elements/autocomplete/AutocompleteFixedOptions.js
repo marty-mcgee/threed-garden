@@ -21,10 +21,16 @@ const AutocompleteFixedOptions = () => {
       value={value}
       options={top100Films}
       id='autocomplete-fixed-option'
-      getOptionLabel={option => option.title}
-      renderInput={params => <TextField {...params} label='Fixed tag' placeholder='Favorites' />}
+      getOptionLabel={(option) => option.title}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label='Fixed tag'
+          placeholder='Favorites'
+        />
+      )}
       onChange={(event, newValue) => {
-        setValue([...fixedOptions, ...newValue.filter(option => fixedOptions.indexOf(option) === -1)])
+        setValue([...fixedOptions, ...newValue.filter((option) => fixedOptions.indexOf(option) === -1)])
       }}
       renderTags={(tagValue, getTagProps) =>
         tagValue.map((option, index) => (

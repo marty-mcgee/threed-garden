@@ -1,7 +1,6 @@
 // import { NextPage } from 'next'
-import type { NextPage } from "next"
-import { IPage, IProps, IBooleans, IValues, IStructures } from "~/types/interfaces" // "@threed/garden/cpt"
-import type { Page } from "~/types/interfaces"
+import type { NextPage } from 'next'
+import { IPage, IBooleans, IValues, IStructures } from '~/types/interfaces' // "@threed/garden/cpt"
 
 // examples
 const flags: IBooleans = { read: true, write: false, delete: false }
@@ -11,7 +10,7 @@ const userFile: IValues = { user: 1, username: 'One', file: 'types.txt' }
 const userContext: IStructures = {
   file: userFile,
   permissions: flags,
-  counts: { views: 3, writes: 1 } // => INumbers (lint: try to remove IValues from IStructures)
+  counts: { views: 3, writes: 1 }, // => INumbers (lint: try to remove IValues from IStructures)
 }
 // end examples
 
@@ -54,7 +53,7 @@ const PagePage: NextPage<IPage> = ({ userAgent }) => (
 
 PagePage.getInitialProps = async ({ req }) => {
   const userAgent = req ? req.headers['user-agent'] : navigator.userAgent
-  const title = { rendered: "HEY HEY HEY" }
+  const title = { rendered: 'HEY HEY HEY' }
   return { title, userAgent }
 }
 

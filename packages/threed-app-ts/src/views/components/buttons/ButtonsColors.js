@@ -1,5 +1,4 @@
 // ** React Imports
-import { Fragment } from 'react'
 
 // ** MUI Imports
 import Button from '@mui/material/Button'
@@ -14,30 +13,54 @@ const ButtonsColors = () => {
         <Button color='info'>Info</Button>
       </div>
       <div className='demo-space-x'>
-        <Button variant='outlined' color='success'>
+        <Button
+          variant='outlined'
+          color='success'
+        >
           Success
         </Button>
-        <Button variant='outlined' color='error'>
+        <Button
+          variant='outlined'
+          color='error'
+        >
           Error
         </Button>
-        <Button variant='outlined' color='warning'>
+        <Button
+          variant='outlined'
+          color='warning'
+        >
           Warning
         </Button>
-        <Button variant='outlined' color='info'>
+        <Button
+          variant='outlined'
+          color='info'
+        >
           Info
         </Button>
       </div>
       <div className='demo-space-x'>
-        <Button variant='contained' color='success'>
+        <Button
+          variant='contained'
+          color='success'
+        >
           Success
         </Button>
-        <Button variant='contained' color='error'>
+        <Button
+          variant='contained'
+          color='error'
+        >
           Error
         </Button>
-        <Button variant='contained' color='warning'>
+        <Button
+          variant='contained'
+          color='warning'
+        >
           Warning
         </Button>
-        <Button variant='contained' color='info'>
+        <Button
+          variant='contained'
+          color='info'
+        >
           Info
         </Button>
       </div>

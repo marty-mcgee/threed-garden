@@ -112,17 +112,24 @@ const icons = {
   AccountDetailsOutline,
   AccountArrowLeftOutline,
   AccountArrowRightOutline,
-  AccountBoxMultipleOutline
+  AccountBoxMultipleOutline,
 }
 
 const Icons = () => {
   const renderIconGrids = () => {
-    return Object.keys(icons).map(key => {
+    return Object.keys(icons).map((key) => {
       const IconTag = icons[key]
 
       return (
-        <Grid item key={key}>
-          <Tooltip arrow title={key} placement='top'>
+        <Grid
+          item
+          key={key}
+        >
+          <Tooltip
+            arrow
+            title={key}
+            placement='top'
+          >
             <Card>
               <CardContent sx={{ display: 'flex' }}>
                 <IconTag />
@@ -135,23 +142,39 @@ const Icons = () => {
   }
 
   return (
-    <Grid container spacing={6}>
+    <Grid
+      container
+      spacing={6}
+    >
       <PageHeader
         title={
           <Typography variant='h5'>
-            <Link href='https://materialdesignicons.com/' target='_blank'>
+            <Link
+              href='https://materialdesignicons.com/'
+              target='_blank'
+            >
               Material Design Icons
             </Link>
           </Typography>
         }
         subtitle={<Typography variant='body2'>Material Design Icons from the Community</Typography>}
       />
-      <Grid item xs={12}>
-        <Grid container spacing={6}>
+      <Grid
+        item
+        xs={12}
+      >
+        <Grid
+          container
+          spacing={6}
+        >
           {renderIconGrids()}
         </Grid>
       </Grid>
-      <Grid item xs={12} sx={{ textAlign: 'center' }}>
+      <Grid
+        item
+        xs={12}
+        sx={{ textAlign: 'center' }}
+      >
         <Button
           target='_blank'
           rel='noreferrer'

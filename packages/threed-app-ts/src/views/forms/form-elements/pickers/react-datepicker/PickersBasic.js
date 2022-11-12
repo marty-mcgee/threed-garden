@@ -15,12 +15,15 @@ const PickersBasic = () => {
   const [date, setDate] = useState(new Date())
 
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap' }} className='demo-space-x'>
+    <Box
+      sx={{ display: 'flex', flexWrap: 'wrap' }}
+      className='demo-space-x'
+    >
       <Box>
         <DatePicker
           selected={date}
           id='basic-input'
-          onChange={date => setDate(date)}
+          onChange={(date) => setDate(date)}
           placeholderText='Click to select a date'
           customInput={<CustomInput label='Basic' />}
         />
@@ -30,7 +33,7 @@ const PickersBasic = () => {
           disabled
           selected={date}
           id='disabled-input'
-          onChange={date => setDate(date)}
+          onChange={(date) => setDate(date)}
           placeholderText='Click to select a date'
           customInput={<CustomInput label='Disabled' />}
         />
@@ -40,9 +43,14 @@ const PickersBasic = () => {
           readOnly
           selected={date}
           id='read-only-input'
-          onChange={date => setDate(date)}
+          onChange={(date) => setDate(date)}
           placeholderText='Click to select a date'
-          customInput={<CustomInput readOnly label='Readonly' />}
+          customInput={
+            <CustomInput
+              readOnly
+              label='Readonly'
+            />
+          }
         />
       </Box>
     </Box>

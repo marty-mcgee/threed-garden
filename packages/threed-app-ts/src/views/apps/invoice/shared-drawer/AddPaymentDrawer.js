@@ -28,7 +28,12 @@ import DatePickerWrapper from '~/@core/styles/libs/react-datepicker'
 // import 'react-datepicker/dist/react-datepicker.css'
 
 const CustomInput = forwardRef(({ ...props }, ref) => {
-  return <TextField inputRef={ref} {...props} />
+  return (
+    <TextField
+      inputRef={ref}
+      {...props}
+    />
+  )
 })
 
 const Header = styled(Box)(({ theme }) => ({
@@ -36,7 +41,7 @@ const Header = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   padding: theme.spacing(3, 4),
   justifyContent: 'space-between',
-  backgroundColor: theme.palette.background.default
+  backgroundColor: theme.palette.background.default,
 }))
 
 const EditInvoiceDrawer = ({ open, toggle }) => {
@@ -54,12 +59,21 @@ const EditInvoiceDrawer = ({ open, toggle }) => {
     >
       <Header>
         <Typography variant='h6'>Add Payment</Typography>
-        <Close fontSize='small' onClick={toggle} sx={{ cursor: 'pointer' }} />
+        <Close
+          fontSize='small'
+          onClick={toggle}
+          sx={{ cursor: 'pointer' }}
+        />
       </Header>
       <Box sx={{ p: 5 }}>
         <Box sx={{ mb: 6 }}>
           <InputLabel htmlFor='invoice-balance'>Invoice Balance</InputLabel>
-          <TextField fullWidth id='invoice-balance' InputProps={{ disabled: true }} defaultValue='5000.00' />
+          <TextField
+            fullWidth
+            id='invoice-balance'
+            InputProps={{ disabled: true }}
+            defaultValue='5000.00'
+          />
         </Box>
         <Box sx={{ mb: 6 }}>
           <CleaveWrapper>
@@ -77,15 +91,22 @@ const EditInvoiceDrawer = ({ open, toggle }) => {
               selected={date}
               id='invoice-payment-date'
               customInput={<CustomInput />}
-              onChange={date => setDate(date)}
+              onChange={(date) => setDate(date)}
             />
           </DatePickerWrapper>
         </Box>
         <Box sx={{ mb: 6 }}>
           <InputLabel htmlFor='payment-method'>Payment Method</InputLabel>
           <FormControl fullWidth>
-            <Select labelId='payment-method' id='payment-method-select' defaultValue='select-method'>
-              <MenuItem value='select-method' disabled>
+            <Select
+              labelId='payment-method'
+              id='payment-method-select'
+              defaultValue='select-method'
+            >
+              <MenuItem
+                value='select-method'
+                disabled
+              >
                 Select Payment Method
               </MenuItem>
               <MenuItem value='Cash'>Cash</MenuItem>
@@ -109,10 +130,20 @@ const EditInvoiceDrawer = ({ open, toggle }) => {
         </Box>
 
         <Box>
-          <Button size='large' variant='contained' onClick={toggle} sx={{ mr: 4 }}>
+          <Button
+            size='large'
+            variant='contained'
+            onClick={toggle}
+            sx={{ mr: 4 }}
+          >
             Send
           </Button>
-          <Button size='large' variant='outlined' color='secondary' onClick={toggle}>
+          <Button
+            size='large'
+            variant='outlined'
+            color='secondary'
+            onClick={toggle}
+          >
             Cancel
           </Button>
         </Box>

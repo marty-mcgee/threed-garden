@@ -4,7 +4,7 @@ import MuiChip from '@mui/material/Chip'
 // ** Hooks Imports
 import useBgColor from '~/@core/hooks/useBgColor'
 
-const Chip = props => {
+const Chip = (props) => {
   // ** Props
   const { sx, skin, color } = props
 
@@ -17,7 +17,7 @@ const Chip = props => {
     success: { ...bgColors.successLight },
     error: { ...bgColors.errorLight },
     warning: { ...bgColors.warningLight },
-    info: { ...bgColors.infoLight }
+    info: { ...bgColors.infoLight },
   }
 
   return (

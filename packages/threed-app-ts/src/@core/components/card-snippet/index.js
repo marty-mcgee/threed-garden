@@ -27,7 +27,7 @@ import toast from 'react-hot-toast'
 // ** Hooks
 import useClipboard from '~/@core/hooks/useClipboard'
 
-const CardSnippet = props => {
+const CardSnippet = (props) => {
   // ** Props
   const { id, sx, code, title, children, className } = props
 
@@ -37,7 +37,7 @@ const CardSnippet = props => {
 
   // ** Hooks
   const clipboard = useClipboard()
-  const hidden = useMediaQuery(theme => theme.breakpoints.down('md'))
+  const hidden = useMediaQuery((theme) => theme.breakpoints.down('md'))
 
   // ** Highlight code on mount
   useEffect(() => {
@@ -57,7 +57,7 @@ const CardSnippet = props => {
   const handleClick = () => {
     clipboard.copy(codeToCopy())
     toast.success('The source code has been copied to your clipboard.', {
-      duration: 2000
+      duration: 2000,
     })
   }
 
@@ -81,12 +81,12 @@ const CardSnippet = props => {
         {...(hidden
           ? {}
           : {
-            action: (
-              <IconButton onClick={() => setShowCode(!showCode)}>
-                <CodeTags fontSize='small' />
-              </IconButton>
-            )
-          })}
+              action: (
+                <IconButton onClick={() => setShowCode(!showCode)}>
+                  <CodeTags fontSize='small' />
+                </IconButton>
+              ),
+            })}
       />
       <CardContent>{children}</CardContent>
       {hidden ? null : (
@@ -114,14 +114,17 @@ const CardSnippet = props => {
                 ) : null}
               </ToggleButtonGroup>
             </Box>
-            <Tooltip title='Copy the source' placement='top'>
+            <Tooltip
+              title='Copy the source'
+              placement='top'
+            >
               <IconButton
                 onClick={handleClick}
                 sx={{
                   top: '5rem',
                   right: '2.5625rem',
                   position: 'absolute',
-                  color: theme => theme.palette.grey[100]
+                  color: (theme) => theme.palette.grey[100],
                 }}
               >
                 <ContentCopy fontSize='small' />

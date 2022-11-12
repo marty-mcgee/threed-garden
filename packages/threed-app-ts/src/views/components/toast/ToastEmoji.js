@@ -15,7 +15,11 @@ const ToastEmoji = () => {
       <StickerEmoji sx={{ mb: 2, fontSize: '2rem' }} />
       <Typography sx={{ mb: 4, fontWeight: 600 }}>Emoji</Typography>
       <Typography sx={{ mb: 3 }}>Add any emoji instead of an icon</Typography>
-      <Button sx={{ mb: 8 }} variant='contained' onClick={() => toast('Good Job!', { icon: '👏' })}>
+      <Button
+        sx={{ mb: 8 }}
+        variant='contained'
+        onClick={() => toast('Good Job!', { icon: '👏' })}
+      >
         Emoji
       </Button>
     </Box>

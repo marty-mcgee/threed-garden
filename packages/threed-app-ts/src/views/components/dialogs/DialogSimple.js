@@ -29,24 +29,38 @@ const DialogSimple = () => {
   const handleClickOpen = () => setOpen(true)
   const handleDialogClose = () => setOpen(false)
 
-  const handleClose = value => {
+  const handleClose = (value) => {
     setOpen(false)
     setSelectedValue(value)
   }
 
   return (
     <div>
-      <Typography variant='subtitle1' sx={{ mb: 2 }}>
+      <Typography
+        variant='subtitle1'
+        sx={{ mb: 2 }}
+      >
         Selected: {selectedValue}
       </Typography>
-      <Button variant='outlined' onClick={handleClickOpen}>
+      <Button
+        variant='outlined'
+        onClick={handleClickOpen}
+      >
         Open simple dialog
       </Button>
-      <Dialog onClose={handleDialogClose} aria-labelledby='simple-dialog-title' open={open}>
+      <Dialog
+        onClose={handleDialogClose}
+        aria-labelledby='simple-dialog-title'
+        open={open}
+      >
         <DialogTitle id='simple-dialog-title'>Set backup account</DialogTitle>
         <List sx={{ pt: 0, px: '0 !important' }}>
-          {emails.map(email => (
-            <ListItem key={email} disablePadding onClick={() => handleClose(email)}>
+          {emails.map((email) => (
+            <ListItem
+              key={email}
+              disablePadding
+              onClick={() => handleClose(email)}
+            >
               <ListItemButton>
                 <ListItemAvatar>
                   <CustomAvatar skin='light'>
@@ -57,7 +71,10 @@ const DialogSimple = () => {
               </ListItemButton>
             </ListItem>
           ))}
-          <ListItem disablePadding onClick={() => handleClose('addAccount')}>
+          <ListItem
+            disablePadding
+            onClick={() => handleClose('addAccount')}
+          >
             <ListItemButton>
               <ListItemAvatar>
                 <MuiAvatar>

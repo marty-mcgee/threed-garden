@@ -17,11 +17,17 @@ import TableServerSide from '~/views/table/data-grid/TableServerSide'
 
 const DataGrid = () => {
   return (
-    <Grid container spacing={6}>
+    <Grid
+      container
+      spacing={6}
+    >
       <PageHeader
         title={
           <Typography variant='h5'>
-            <Link href='https://mui.com/x/react-data-grid/' target='_blank'>
+            <Link
+              href='https://mui.com/x/react-data-grid/'
+              target='_blank'
+            >
               Data Grid
             </Link>
           </Typography>
@@ -32,25 +38,46 @@ const DataGrid = () => {
           </Typography>
         }
       />
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <TableBasic />
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <TableEditable />
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <TableColumns />
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <TableBasicSort />
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <TableFilter />
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <TableSelection />
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <TableServerSide />
       </Grid>
     </Grid>

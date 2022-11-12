@@ -1,9 +1,9 @@
 // ThreeD Garden Base Styles
-import borders from "~/themes/theme-dark/base/borders"
-import colors from "~/themes/theme-dark/base/colors"
+import borders from '~/themes/theme-dark/base/borders'
+import colors from '~/themes/theme-dark/base/colors'
 
 // ThreeD Garden Helper Functions
-import pxToRem from "~/themes/theme-dark/functions/pxToRem"
+import pxToRem from '~/themes/theme-dark/functions/pxToRem'
 
 const { borderWidth } = borders
 const { light } = colors

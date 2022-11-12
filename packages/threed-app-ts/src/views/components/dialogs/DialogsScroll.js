@@ -17,7 +17,7 @@ const DialogsScroll = () => {
   // ** Ref
   const descriptionElementRef = useRef(null)
 
-  const handleClickOpen = scrollType => () => {
+  const handleClickOpen = (scrollType) => () => {
     setOpen(true)
     setScroll(scrollType)
   }
@@ -33,10 +33,16 @@ const DialogsScroll = () => {
 
   return (
     <div className='demo-space-x'>
-      <Button variant='outlined' onClick={handleClickOpen('paper')}>
+      <Button
+        variant='outlined'
+        onClick={handleClickOpen('paper')}
+      >
         scroll=paper
       </Button>
-      <Button variant='outlined' onClick={handleClickOpen('body')}>
+      <Button
+        variant='outlined'
+        onClick={handleClickOpen('body')}
+      >
         scroll=body
       </Button>
       <Dialog
@@ -48,7 +54,11 @@ const DialogsScroll = () => {
       >
         <DialogTitle id='scroll-dialog-title'>Subscribe</DialogTitle>
         <DialogContent dividers={scroll === 'paper'}>
-          <DialogContentText id='scroll-dialog-description' ref={descriptionElementRef} tabIndex={-1}>
+          <DialogContentText
+            id='scroll-dialog-description'
+            ref={descriptionElementRef}
+            tabIndex={-1}
+          >
             {[...new Array(50)].map(
               () => `Cotton candy sesame snaps toffee chupa chups caramels. Candy icing gummi bears pastry cake icing brownie
                 oat cake. Tootsie roll biscuit chupa chups apple pie muffin jelly-o caramels. Muffin chocolate bar sweet
@@ -56,7 +66,7 @@ const DialogsScroll = () => {
             )}
           </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{ p: theme => `${theme.spacing(2.5)} !important` }}>
+        <DialogActions sx={{ p: (theme) => `${theme.spacing(2.5)} !important` }}>
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={handleClose}>Subscribe</Button>
         </DialogActions>

@@ -31,11 +31,11 @@ const TabSecurity = () => {
     showNewPassword: false,
     confirmNewPassword: '',
     showCurrentPassword: false,
-    showConfirmNewPassword: false
+    showConfirmNewPassword: false,
   })
 
   // Handle Current Password
-  const handleCurrentPasswordChange = prop => event => {
+  const handleCurrentPasswordChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value })
   }
 
@@ -43,12 +43,12 @@ const TabSecurity = () => {
     setValues({ ...values, showCurrentPassword: !values.showCurrentPassword })
   }
 
-  const handleMouseDownCurrentPassword = event => {
+  const handleMouseDownCurrentPassword = (event) => {
     event.preventDefault()
   }
 
   // Handle New Password
-  const handleNewPasswordChange = prop => event => {
+  const handleNewPasswordChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value })
   }
 
@@ -56,12 +56,12 @@ const TabSecurity = () => {
     setValues({ ...values, showNewPassword: !values.showNewPassword })
   }
 
-  const handleMouseDownNewPassword = event => {
+  const handleMouseDownNewPassword = (event) => {
     event.preventDefault()
   }
 
   // Handle Confirm New Password
-  const handleConfirmNewPasswordChange = prop => event => {
+  const handleConfirmNewPasswordChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value })
   }
 
@@ -69,17 +69,31 @@ const TabSecurity = () => {
     setValues({ ...values, showConfirmNewPassword: !values.showConfirmNewPassword })
   }
 
-  const handleMouseDownConfirmNewPassword = event => {
+  const handleMouseDownConfirmNewPassword = (event) => {
     event.preventDefault()
   }
 
   return (
     <form>
       <CardContent sx={{ pb: 0 }}>
-        <Grid container spacing={5}>
-          <Grid item xs={12} sm={6}>
-            <Grid container spacing={5}>
-              <Grid item xs={12} sx={{ mt: 4.75 }}>
+        <Grid
+          container
+          spacing={5}
+        >
+          <Grid
+            item
+            xs={12}
+            sm={6}
+          >
+            <Grid
+              container
+              spacing={5}
+            >
+              <Grid
+                item
+                xs={12}
+                sx={{ mt: 4.75 }}
+              >
                 <FormControl fullWidth>
                   <InputLabel htmlFor='account-settings-current-password'>Current Password</InputLabel>
                   <OutlinedInput
@@ -104,7 +118,11 @@ const TabSecurity = () => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} sx={{ mt: 6 }}>
+              <Grid
+                item
+                xs={12}
+                sx={{ mt: 6 }}
+              >
                 <FormControl fullWidth>
                   <InputLabel htmlFor='account-settings-new-password'>New Password</InputLabel>
                   <OutlinedInput
@@ -129,7 +147,10 @@ const TabSecurity = () => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid
+                item
+                xs={12}
+              >
                 <FormControl fullWidth>
                   <InputLabel htmlFor='account-settings-confirm-new-password'>Confirm New Password</InputLabel>
                   <OutlinedInput
@@ -162,7 +183,12 @@ const TabSecurity = () => {
             xs={12}
             sx={{ display: 'flex', mt: [7.5, 2.5], alignItems: 'center', justifyContent: 'center' }}
           >
-            <img width={183} alt='avatar' height={256} src='/images/pages/pose-m-1.png' />
+            <img
+              width={183}
+              alt='avatar'
+              height={256}
+              src='/images/pages/pose-m-1.png'
+            />
           </Grid>
         </Grid>
       </CardContent>
@@ -182,10 +208,14 @@ const TabSecurity = () => {
               display: 'flex',
               textAlign: 'center',
               alignItems: 'center',
-              flexDirection: 'column'
+              flexDirection: 'column',
             }}
           >
-            <CustomAvatar skin='light' variant='rounded' sx={{ mb: 3.5, width: 48, height: 48 }}>
+            <CustomAvatar
+              skin='light'
+              variant='rounded'
+              sx={{ mb: 3.5, width: 48, height: 48 }}
+            >
               <LockOpenOutline sx={{ fontSize: '1.75rem' }} />
             </CustomAvatar>
             <Typography sx={{ fontWeight: 600, mb: 3.5 }}>Two factor authentication is not enabled yet.</Typography>
@@ -197,7 +227,10 @@ const TabSecurity = () => {
         </Box>
 
         <Box>
-          <Button variant='contained' sx={{ mr: 3.5 }}>
+          <Button
+            variant='contained'
+            sx={{ mr: 3.5 }}
+          >
             Save Changes
           </Button>
           <Button

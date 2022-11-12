@@ -24,7 +24,7 @@ const data = {
       avatarColor: 'primary',
       invoiceStatus: 'Paid',
       balance: '$724',
-      dueDate: `23 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `23 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 4988,
@@ -40,7 +40,7 @@ const data = {
       avatar: '/images/avatars/1.png',
       invoiceStatus: 'Downloaded',
       balance: 0,
-      dueDate: `15 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `15 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 4989,
@@ -56,7 +56,7 @@ const data = {
       avatar: '/images/avatars/2.png',
       invoiceStatus: 'Paid',
       balance: 0,
-      dueDate: `03 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `03 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 4990,
@@ -72,7 +72,7 @@ const data = {
       avatar: '/images/avatars/3.png',
       invoiceStatus: 'Sent',
       balance: 0,
-      dueDate: `11 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `11 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 4991,
@@ -88,7 +88,7 @@ const data = {
       avatar: '/images/avatars/4.png',
       invoiceStatus: 'Draft',
       balance: '$815',
-      dueDate: `30 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `30 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 4992,
@@ -105,7 +105,7 @@ const data = {
       avatarColor: 'secondary',
       invoiceStatus: 'Paid',
       balance: 0,
-      dueDate: `24 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `24 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 4993,
@@ -122,7 +122,7 @@ const data = {
       avatarColor: 'success',
       invoiceStatus: 'Draft',
       balance: '$407',
-      dueDate: `22 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `22 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 4994,
@@ -138,7 +138,7 @@ const data = {
       avatar: '/images/avatars/5.png',
       invoiceStatus: 'Paid',
       balance: '-$205',
-      dueDate: `10 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `10 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 4995,
@@ -154,7 +154,7 @@ const data = {
       avatar: '/images/avatars/6.png',
       invoiceStatus: 'Downloaded',
       balance: 0,
-      dueDate: `24 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `24 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 4996,
@@ -170,7 +170,7 @@ const data = {
       avatar: '/images/avatars/7.png',
       invoiceStatus: 'Downloaded',
       balance: '$305',
-      dueDate: `02 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `02 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 4997,
@@ -186,7 +186,7 @@ const data = {
       avatar: '/images/avatars/8.png',
       invoiceStatus: 'Partial Payment',
       balance: '$666',
-      dueDate: `18 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `18 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 4998,
@@ -202,7 +202,7 @@ const data = {
       avatar: '/images/avatars/1.png',
       invoiceStatus: 'Partial Payment',
       balance: 0,
-      dueDate: `17 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `17 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 4999,
@@ -218,7 +218,7 @@ const data = {
       avatar: '/images/avatars/2.png',
       invoiceStatus: 'Paid',
       balance: 0,
-      dueDate: `01 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `01 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5000,
@@ -234,7 +234,7 @@ const data = {
       avatar: '/images/avatars/3.png',
       invoiceStatus: 'Paid',
       balance: 0,
-      dueDate: `22 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `22 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5001,
@@ -250,7 +250,7 @@ const data = {
       avatar: '/images/avatars/4.png',
       invoiceStatus: 'Partial Payment',
       balance: '-$202',
-      dueDate: `02 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `02 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5002,
@@ -266,7 +266,7 @@ const data = {
       avatar: '/images/avatars/5.png',
       invoiceStatus: 'Downloaded',
       balance: '$731',
-      dueDate: `15 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `15 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5003,
@@ -283,7 +283,7 @@ const data = {
       avatarColor: 'warning',
       invoiceStatus: 'Sent',
       balance: '-$344',
-      dueDate: `17 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `17 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5004,
@@ -299,7 +299,7 @@ const data = {
       avatar: '/images/avatars/6.png',
       invoiceStatus: 'Partial Payment',
       balance: '-$253',
-      dueDate: `16 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `16 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5005,
@@ -316,7 +316,7 @@ const data = {
       avatarColor: 'error',
       invoiceStatus: 'Past Due',
       balance: 0,
-      dueDate: `01 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `01 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5006,
@@ -332,7 +332,7 @@ const data = {
       avatar: '/images/avatars/7.png',
       invoiceStatus: 'Downloaded',
       balance: '$883',
-      dueDate: `12 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `12 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5007,
@@ -348,7 +348,7 @@ const data = {
       avatar: '/images/avatars/8.png',
       invoiceStatus: 'Sent',
       balance: 0,
-      dueDate: `19 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `19 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5008,
@@ -364,7 +364,7 @@ const data = {
       avatar: '/images/avatars/1.png',
       invoiceStatus: 'Partial Payment',
       balance: 0,
-      dueDate: `30 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `30 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5009,
@@ -380,7 +380,7 @@ const data = {
       avatar: '/images/avatars/2.png',
       invoiceStatus: 'Paid',
       balance: 0,
-      dueDate: `10 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `10 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5010,
@@ -396,7 +396,7 @@ const data = {
       avatar: '/images/avatars/3.png',
       invoiceStatus: 'Downloaded',
       balance: 0,
-      dueDate: `08 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `08 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5011,
@@ -413,7 +413,7 @@ const data = {
       avatarColor: 'info',
       invoiceStatus: 'Draft',
       balance: 0,
-      dueDate: `01 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `01 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5012,
@@ -429,7 +429,7 @@ const data = {
       avatar: '/images/avatars/4.png',
       invoiceStatus: 'Partial Payment',
       balance: 0,
-      dueDate: `18 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `18 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5013,
@@ -445,7 +445,7 @@ const data = {
       avatar: '/images/avatars/5.png',
       invoiceStatus: 'Draft',
       balance: 0,
-      dueDate: `01 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `01 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5014,
@@ -462,7 +462,7 @@ const data = {
       avatarColor: 'primary',
       invoiceStatus: 'Downloaded',
       balance: 0,
-      dueDate: `23 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `23 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5015,
@@ -478,7 +478,7 @@ const data = {
       avatar: '/images/avatars/6.png',
       invoiceStatus: 'Draft',
       balance: 0,
-      dueDate: `01 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `01 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5016,
@@ -495,7 +495,7 @@ const data = {
       avatarColor: 'secondary',
       invoiceStatus: 'Paid',
       balance: '$951',
-      dueDate: `30 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `30 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5017,
@@ -511,7 +511,7 @@ const data = {
       avatar: '/images/avatars/7.png',
       invoiceStatus: 'Partial Payment',
       balance: '-$153',
-      dueDate: `25 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `25 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5018,
@@ -527,7 +527,7 @@ const data = {
       avatar: '/images/avatars/8.png',
       invoiceStatus: 'Draft',
       balance: 0,
-      dueDate: `10 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `10 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5019,
@@ -543,7 +543,7 @@ const data = {
       avatar: '/images/avatars/1.png',
       invoiceStatus: 'Partial Payment',
       balance: '-$459',
-      dueDate: `14 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `14 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5020,
@@ -559,7 +559,7 @@ const data = {
       avatar: '/images/avatars/2.png',
       invoiceStatus: 'Past Due',
       balance: 0,
-      dueDate: `28 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `28 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5021,
@@ -576,7 +576,7 @@ const data = {
       avatarColor: 'success',
       invoiceStatus: 'Sent',
       balance: 0,
-      dueDate: `06 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `06 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5022,
@@ -593,7 +593,7 @@ const data = {
       avatarColor: 'error',
       invoiceStatus: 'Sent',
       balance: 0,
-      dueDate: `09 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `09 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5023,
@@ -609,7 +609,7 @@ const data = {
       avatar: '/images/avatars/3.png',
       invoiceStatus: 'Draft',
       balance: 0,
-      dueDate: `23 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `23 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5024,
@@ -625,7 +625,7 @@ const data = {
       avatar: '/images/avatars/4.png',
       invoiceStatus: 'Partial Payment',
       balance: 0,
-      dueDate: `25 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `25 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5025,
@@ -642,7 +642,7 @@ const data = {
       avatarColor: 'warning',
       invoiceStatus: 'Downloaded',
       balance: 0,
-      dueDate: `07 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `07 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5026,
@@ -658,7 +658,7 @@ const data = {
       avatar: '/images/avatars/5.png',
       invoiceStatus: 'Draft',
       balance: 0,
-      dueDate: `22 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `22 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5027,
@@ -675,7 +675,7 @@ const data = {
       avatarColor: 'info',
       invoiceStatus: 'Sent',
       balance: 0,
-      dueDate: `04 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `04 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5028,
@@ -692,7 +692,7 @@ const data = {
       avatarColor: 'primary',
       invoiceStatus: 'Paid',
       balance: '$361',
-      dueDate: `02 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `02 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5029,
@@ -709,7 +709,7 @@ const data = {
       avatarColor: 'secondary',
       invoiceStatus: 'Paid',
       balance: 0,
-      dueDate: `25 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `25 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5030,
@@ -726,7 +726,7 @@ const data = {
       avatarColor: 'success',
       invoiceStatus: 'Draft',
       balance: 0,
-      dueDate: `06 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `06 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5031,
@@ -742,7 +742,7 @@ const data = {
       avatar: '/images/avatars/6.png',
       invoiceStatus: 'Partial Payment',
       balance: 0,
-      dueDate: `09 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `09 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5032,
@@ -759,7 +759,7 @@ const data = {
       avatarColor: 'error',
       invoiceStatus: 'Past Due',
       balance: 0,
-      dueDate: `22 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `22 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5033,
@@ -775,7 +775,7 @@ const data = {
       avatar: '/images/avatars/7.png',
       invoiceStatus: 'Partial Payment',
       balance: 0,
-      dueDate: `22 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `22 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5034,
@@ -792,7 +792,7 @@ const data = {
       avatarColor: 'warning',
       invoiceStatus: 'Paid',
       balance: 0,
-      dueDate: `22 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `22 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5035,
@@ -809,7 +809,7 @@ const data = {
       avatarColor: 'info',
       invoiceStatus: 'Draft',
       balance: '$762',
-      dueDate: `12 ${currentMonth} ${now.getFullYear()}`
+      dueDate: `12 ${currentMonth} ${now.getFullYear()}`,
     },
     {
       id: 5036,
@@ -825,25 +825,25 @@ const data = {
       avatar: '/images/avatars/8.png',
       invoiceStatus: 'Paid',
       balance: '-$205',
-      dueDate: `25 ${currentMonth} ${now.getFullYear()}`
-    }
-  ]
+      dueDate: `25 ${currentMonth} ${now.getFullYear()}`,
+    },
+  ],
 }
 
 // ------------------------------------------------
 // GET: Return Invoice List
 // ------------------------------------------------
-mock.onGet('/apps/invoice/invoices').reply(config => {
+mock.onGet('/apps/invoice/invoices').reply((config) => {
   const { q = '', status = '', dates = [] } = config.params ?? ''
   const queryLowered = q.toLowerCase()
 
-  const filteredData = data.invoices.filter(invoice => {
+  const filteredData = data.invoices.filter((invoice) => {
     if (dates.length) {
       const [start, end] = dates
       const filtered = []
       const range = getDateRange(start, end)
       const invoiceDate = new Date(invoice.issuedDate)
-      range.filter(date => {
+      range.filter((date) => {
         const rangeDate = new Date(date)
         if (
           invoiceDate.getFullYear() === rangeDate.getFullYear() &&
@@ -883,17 +883,17 @@ mock.onGet('/apps/invoice/invoices').reply(config => {
       params: config.params,
       allData: data.invoices,
       invoices: filteredData,
-      total: filteredData.length
-    }
+      total: filteredData.length,
+    },
   ]
 })
 
 // ------------------------------------------------
 // GET: Return Single Invoice
 // ------------------------------------------------
-mock.onGet('apps/invoice/single-invoice').reply(config => {
+mock.onGet('apps/invoice/single-invoice').reply((config) => {
   const { id } = config.params
-  const invoiceData = data.invoices.filter(invoice => invoice.id === parseInt(id, 10))
+  const invoiceData = data.invoices.filter((invoice) => invoice.id === parseInt(id, 10))
   if (invoiceData.length) {
     const responseData = {
       invoice: invoiceData[0],
@@ -902,8 +902,8 @@ mock.onGet('apps/invoice/single-invoice').reply(config => {
         bankName: 'American Bank',
         country: 'United States',
         iban: 'ETD95476213874685',
-        swiftCode: 'BR91905'
-      }
+        swiftCode: 'BR91905',
+      },
     }
 
     return [200, responseData]
@@ -916,7 +916,7 @@ mock.onGet('apps/invoice/single-invoice').reply(config => {
 // GET: Return Clients
 // ------------------------------------------------
 mock.onGet('/apps/invoice/clients').reply(() => {
-  const clients = data.invoices.map(invoice => {
+  const clients = data.invoices.map((invoice) => {
     const { address, company, companyEmail, country, contact, name } = invoice
 
     return {
@@ -925,7 +925,7 @@ mock.onGet('/apps/invoice/clients').reply(() => {
       company,
       country,
       contact,
-      companyEmail
+      companyEmail,
     }
   })
 
@@ -935,10 +935,10 @@ mock.onGet('/apps/invoice/clients').reply(() => {
 // ------------------------------------------------
 // DELETE: Deletes Invoice
 // ------------------------------------------------
-mock.onDelete('/apps/invoice/delete').reply(config => {
+mock.onDelete('/apps/invoice/delete').reply((config) => {
   // Get invoice id from URL
   const invoiceId = Number(config.data)
-  const invoiceIndex = data.invoices.findIndex(t => t.id === invoiceId)
+  const invoiceIndex = data.invoices.findIndex((t) => t.id === invoiceId)
   data.invoices.splice(invoiceIndex, 1)
 
   return [200]

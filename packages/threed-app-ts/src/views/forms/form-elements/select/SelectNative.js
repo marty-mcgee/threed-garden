@@ -14,10 +14,13 @@ const SelectNative = () => {
           defaultValue=''
           inputProps={{
             name: 'age',
-            id: 'outlined-age-native-simple'
+            id: 'outlined-age-native-simple',
           }}
         >
-          <option aria-label='None' value='' />
+          <option
+            aria-label='None'
+            value=''
+          />
           <option value={10}>Ten</option>
           <option value={20}>Twenty</option>
           <option value={30}>Thirty</option>
@@ -31,10 +34,13 @@ const SelectNative = () => {
           defaultValue=''
           inputProps={{
             name: 'age',
-            id: 'filled-age-native-simple'
+            id: 'filled-age-native-simple',
           }}
         >
-          <option aria-label='None' value='' />
+          <option
+            aria-label='None'
+            value=''
+          />
           <option value={10}>Ten</option>
           <option value={20}>Twenty</option>
           <option value={30}>Thirty</option>
@@ -48,10 +54,13 @@ const SelectNative = () => {
           defaultValue=''
           inputProps={{
             name: 'age',
-            id: 'age-native-simple'
+            id: 'age-native-simple',
           }}
         >
-          <option aria-label='None' value='' />
+          <option
+            aria-label='None'
+            value=''
+          />
           <option value={10}>Ten</option>
           <option value={20}>Twenty</option>
           <option value={30}>Thirty</option>

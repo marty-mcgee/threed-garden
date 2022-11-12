@@ -30,144 +30,186 @@ import * as source from '~/views/forms/form-elements/pickers/react-datepicker/Pi
 const ReactDatePicker = () => {
   return (
     <DatePickerWrapper>
-      <Grid container spacing={6}>
+      <Grid
+        container
+        spacing={6}
+      >
         <PageHeader
           subtitle={<Typography variant='body2'>A simple and reusable datepicker component for React</Typography>}
           title={
             <Typography variant='h5'>
-              <Link href='https://github.com/Hacker0x01/react-datepicker/' target='_blank'>
+              <Link
+                href='https://github.com/Hacker0x01/react-datepicker/'
+                target='_blank'
+              >
                 React DatePicker
               </Link>
             </Typography>
           }
         />
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Date Pickers'
             code={{
               tsx: source.PickersBasicTSXCode,
-              jsx: source.PickersBasicJSXCode
+              jsx: source.PickersBasicJSXCode,
             }}
           >
             <PickersBasic />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Time Pickers'
             code={{
               tsx: source.PickersTimeTSXCode,
-              jsx: source.PickersTimeJSXCode
+              jsx: source.PickersTimeJSXCode,
             }}
           >
             <PickersTime />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Min & Max Pickers'
             code={{
               tsx: source.PickersMinMaxTSXCode,
-              jsx: source.PickersMinMaxJSXCode
+              jsx: source.PickersMinMaxJSXCode,
             }}
           >
             <PickersMinMax />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Date Range Pickers'
             code={{
               tsx: source.PickersRangeTSXCode,
-              jsx: source.PickersRangeJSXCode
+              jsx: source.PickersRangeJSXCode,
             }}
           >
             <PickersRange />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Specific Range'
             code={{
               tsx: source.PickersSpecificRangeTSXCode,
-              jsx: source.PickersSpecificRangeJSXCode
+              jsx: source.PickersSpecificRangeJSXCode,
             }}
           >
             <PickersSpecificRange />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Callbacks'
             code={{
               tsx: source.PickersCallbacksTSXCode,
-              jsx: source.PickersCallbacksJSXCode
+              jsx: source.PickersCallbacksJSXCode,
             }}
           >
             <PickersCallbacks />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Customization'
             code={{
               tsx: source.PickersCustomizationTSXCode,
-              jsx: source.PickersCustomizationJSXCode
+              jsx: source.PickersCustomizationJSXCode,
             }}
           >
             <PickersCustomization />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Include Exclude'
             code={{
               tsx: source.PickersIncludeExcludeTSXCode,
-              jsx: source.PickersIncludeExcludeJSXCode
+              jsx: source.PickersIncludeExcludeJSXCode,
             }}
           >
             <PickersIncludeExclude />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Locale'
             code={{
               tsx: source.PickersLocaleTSXCode,
-              jsx: source.PickersLocaleJSXCode
+              jsx: source.PickersLocaleJSXCode,
             }}
           >
             <PickersLocale />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Month & Year Dropdowns'
             code={{
               tsx: source.PickersMonthYearDropdownsTSXCode,
-              jsx: source.PickersMonthYearDropdownsJSXCode
+              jsx: source.PickersMonthYearDropdownsJSXCode,
             }}
           >
             <PickersMonthYearDropdowns />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Month, Year & Quarter'
             code={{
               tsx: source.PickersMonthYearQuarterTSXCode,
-              jsx: source.PickersMonthYearQuarterJSXCode
+              jsx: source.PickersMonthYearQuarterJSXCode,
             }}
           >
             <PickersMonthYearQuarter />
           </CardSnippet>
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardSnippet
             title='Options'
             code={{
               tsx: source.PickersOptionsTSXCode,
-              jsx: source.PickersOptionsJSXCode
+              jsx: source.PickersOptionsJSXCode,
             }}
           >
             <PickersOptions />

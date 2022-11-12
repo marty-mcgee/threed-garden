@@ -1,30 +1,35 @@
 // @mui material components
-import Grid from "@mui/material/Grid"
+import Grid from '@mui/material/Grid'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
+import MDBox from '~/components/mui/MDBox'
+import MDTypography from '~/components/mui/MDTypography'
 
 // NewUser page components
-import FormField from "~/pages/users/new-user/components/FormField"
+import FormField from '~/pages/users/new-user/components/FormField'
 
 function Socials({ formData }: any): JSX.Element {
   const { formField, values, errors, touched } = formData
   const { twitter, facebook, instagram } = formField
-  const {
-    twitter: twitterV,
-    facebook: facebookV,
-    instagram: instagramV,
-  } = values
+  const { twitter: twitterV, facebook: facebookV, instagram: instagramV } = values
 
   return (
     <MDBox>
-      <MDTypography variant="h5" fontWeight="bold">
+      <MDTypography
+        variant='h5'
+        fontWeight='bold'
+      >
         Socials
       </MDTypography>
       <MDBox mt={1.625}>
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
+        <Grid
+          container
+          spacing={1}
+        >
+          <Grid
+            item
+            xs={12}
+          >
             <FormField
               type={twitter.type}
               label={twitter.label}
@@ -35,7 +40,10 @@ function Socials({ formData }: any): JSX.Element {
               success={twitterV.length > 0 && !errors.twitter}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid
+            item
+            xs={12}
+          >
             <FormField
               type={facebook.type}
               label={facebook.label}
@@ -44,7 +52,10 @@ function Socials({ formData }: any): JSX.Element {
               placeholder={facebook.placeholder}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid
+            item
+            xs={12}
+          >
             <FormField
               type={instagram.type}
               label={instagram.label}

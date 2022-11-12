@@ -1,26 +1,24 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from 'react'
 
 // react-router components
 // import { useLocation, Link } from "react-router-dom"
 // nextjs components
-import Link from "next/link"
-import { useRouter, NextRouter } from "next/router"
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 // @material-ui core components
-import AppBar from "@mui/material/AppBar"
-import Toolbar from "@mui/material/Toolbar"
-import IconButton from "@mui/material/IconButton"
-import Menu from "@mui/material/Menu"
-import Icon from "@mui/material/Icon"
+import AppBar from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
+import IconButton from '@mui/material/IconButton'
+import Menu from '@mui/material/Menu'
+import Icon from '@mui/material/Icon'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDInput from "~/components/mui/MDInput"
-import MDBadge from "~/components/mui/MDBadge"
+import MDBox from '~/components/mui/MDBox'
+import MDBadge from '~/components/mui/MDBadge'
 
 // ThreeD Garden examples components
-import Breadcrumbs from "~/components/elements/Breadcrumbs"
-import NotificationItem from "~/components/elements/Items/NotificationItem"
+import NotificationItem from '~/components/elements/Items/NotificationItem'
 
 // Custom styles for DashboardNavbar
 import {
@@ -29,16 +27,10 @@ import {
   navbarRow,
   navbarIconButton,
   navbarDesktopMenu,
-  navbarMobileMenu,
-} from "~/components/elements/Navbars/DashboardNavbar/styles"
+} from '~/components/elements/Navbars/DashboardNavbar/styles'
 
 // ThreeD Garden context
-import {
-  useMaterialUIController,
-  setTransparentNavbar,
-  setMiniSidenav,
-  setOpenConfigurator,
-} from "~/context"
+import { useMaterialUIController, setTransparentNavbar, setMiniSidenav, setOpenConfigurator } from '~/context'
 
 // Declaring prop types for DashboardNavbar
 interface Props {
@@ -48,49 +40,38 @@ interface Props {
 }
 
 function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
-  const [navbarType, setNavbarType] = useState<
-    "fixed" | "absolute" | "relative" | "static" | "sticky"
-  >()
+  const [navbarType, setNavbarType] = useState<'fixed' | 'absolute' | 'relative' | 'static' | 'sticky'>()
   const [controller, dispatch] = useMaterialUIController()
-  const {
-    miniSidenav,
-    transparentNavbar,
-    fixedNavbar,
-    openConfigurator,
-    darkMode,
-  } = controller
+  const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller
   const [openMenu, setOpenMenu] = useState<any>(false)
   // const route = useLocation().pathname.split("/").slice(1)
   const { pathname } = useRouter()
-  const route = pathname.split("/").slice(1)
+  const route = pathname.split('/').slice(1)
 
   useEffect(() => {
     // Setting the navbar type
     if (fixedNavbar) {
-      setNavbarType("sticky")
+      setNavbarType('sticky')
     } else {
-      setNavbarType("static")
+      setNavbarType('static')
     }
 
     // A function that sets the transparent state of the navbar.
     function handleTransparentNavbar() {
-      setTransparentNavbar(
-        dispatch,
-        (fixedNavbar && window.scrollY === 0) || !fixedNavbar
-      )
+      setTransparentNavbar(dispatch, (fixedNavbar && window.scrollY === 0) || !fixedNavbar)
     }
 
     /**
      The event listener that's calling the handleTransparentNavbar function when
      scrolling the window.
     */
-    window.addEventListener("scroll", handleTransparentNavbar)
+    window.addEventListener('scroll', handleTransparentNavbar)
 
     // Call the handleTransparentNavbar function to set the state with the initial value.
     handleTransparentNavbar()
 
     // Remove event listener on cleanup
-    return () => window.removeEventListener("scroll", handleTransparentNavbar)
+    return () => window.removeEventListener('scroll', handleTransparentNavbar)
   }, [dispatch, fixedNavbar])
 
   const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav)
@@ -104,8 +85,8 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
       anchorEl={openMenu}
       anchorReference={null}
       anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "left",
+        vertical: 'bottom',
+        horizontal: 'left',
       }}
       open={Boolean(openMenu)}
       onClose={handleCloseMenu}
@@ -113,27 +94,21 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
     >
       <NotificationItem
         icon={<Icon>email</Icon>}
-        title="Check Messages"
+        title='Check Messages'
       />
       <NotificationItem
         icon={<Icon>podcasts</Icon>}
-        title="Manage Sessions"
+        title='Manage Sessions'
       />
       <NotificationItem
         icon={<Icon>shopping_cart</Icon>}
-        title="Shopping Cart"
+        title='Shopping Cart'
       />
     </Menu>
   )
 
   // Styles for the navbar icons
-  const iconsStyle = ({
-    palette: { dark, white, text },
-    functions: { rgba },
-  }: {
-    palette: any
-    functions: any
-  }) => ({
+  const iconsStyle = ({ palette: { dark, white, text }, functions: { rgba } }: { palette: any; functions: any }) => ({
     color: () => {
       let colorValue = light || darkMode ? white.main : dark.main
 
@@ -147,26 +122,27 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
 
   return (
     <AppBar
-      position={absolute ? "absolute" : navbarType}
-      color="inherit"
-      sx={(theme) =>
-        navbar(theme, { transparentNavbar, absolute, light, darkMode })
-      }>
+      position={absolute ? 'absolute' : navbarType}
+      color='inherit'
+      sx={(theme) => navbar(theme, { transparentNavbar, absolute, light, darkMode })}
+    >
       <Toolbar sx={navbarContainer}>
         <MDBox
-          color="inherit"
+          color='inherit'
           mb={{ xs: 1, md: 0 }}
           sx={(theme) => navbarRow(theme, { isMini })}
         >
-
           <IconButton
             sx={navbarDesktopMenu}
             onClick={handleMiniSidenav}
-            size="small"
+            size='small'
             disableRipple
           >
-            <Icon fontSize="small" sx={iconsStyle}>
-              {miniSidenav ? "menu" : "menu_open"}
+            <Icon
+              fontSize='small'
+              sx={iconsStyle}
+            >
+              {miniSidenav ? 'menu' : 'menu_open'}
             </Icon>
           </IconButton>
 
@@ -176,7 +152,6 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
             route={route}
             light={light}
           /> */}
-
         </MDBox>
 
         {isMini ? null : (
@@ -186,7 +161,7 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
               <MDInput label="Search here" />
             </MDBox>
             */}
-            <MDBox color={light ? "white" : "inherit"}>
+            <MDBox color={light ? 'white' : 'inherit'}>
               {/* <IconButton
                 size="small"
                 disableRipple
@@ -198,25 +173,35 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
                 </Icon>
               </IconButton> */}
               <IconButton
-                size="small"
-                color="inherit"
+                size='small'
+                color='inherit'
                 sx={navbarIconButton}
-                onClick={handleOpenMenu}>
-                <MDBadge badgeContent={3} color="info" size="xxs" circular>
+                onClick={handleOpenMenu}
+              >
+                <MDBadge
+                  badgeContent={3}
+                  color='info'
+                  size='xxs'
+                  circular
+                >
                   <Icon sx={iconsStyle}>notifications</Icon>
                 </MDBadge>
               </IconButton>
               <IconButton
-                size="small"
+                size='small'
                 disableRipple
-                color="inherit"
+                color='inherit'
                 sx={navbarIconButton}
                 onClick={handleConfiguratorOpen}
               >
                 <Icon sx={iconsStyle}>settings</Icon>
               </IconButton>
-              <Link href="/authentication/sign-in/basic">
-                <IconButton sx={navbarIconButton} size="small" disableRipple>
+              <Link href='/authentication/sign-in/basic'>
+                <IconButton
+                  sx={navbarIconButton}
+                  size='small'
+                  disableRipple
+                >
                   <Icon sx={iconsStyle}>account_circle</Icon>
                 </IconButton>
               </Link>

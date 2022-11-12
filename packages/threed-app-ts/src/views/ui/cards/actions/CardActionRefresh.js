@@ -42,7 +42,11 @@ const CardActionRefresh = () => {
       <CardContent>
         <Typography variant='body2'>
           You can specifically add refresh action using <code>actionRefresh</code> prop Click on{' '}
-          <Refresh fontSize='small' sx={{ verticalAlign: 'bottom' }} /> icon to see it in action
+          <Refresh
+            fontSize='small'
+            sx={{ verticalAlign: 'bottom' }}
+          />{' '}
+          icon to see it in action
         </Typography>
       </CardContent>
 
@@ -50,8 +54,8 @@ const CardActionRefresh = () => {
         open={reload}
         sx={{
           position: 'absolute',
-          color: theme => theme.palette.common.white,
-          zIndex: theme => theme.zIndex.mobileStepper - 1
+          color: (theme) => theme.palette.common.white,
+          zIndex: (theme) => theme.zIndex.mobileStepper - 1,
         }}
       >
         <CircularProgress color='inherit' />

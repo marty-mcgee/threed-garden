@@ -23,16 +23,14 @@ const blankEvent = {
     calendar: '',
     guests: [],
     location: '',
-    description: ''
-  }
+    description: '',
+  },
 }
-
 
 // ==============================================================
 // FunctionComponent<FC><Props>
 
-const Calendar = props => {
-
+const Calendar = (props) => {
   // ** Props
   const {
     store,
@@ -44,7 +42,7 @@ const Calendar = props => {
     setCalendarApi,
     handleSelectEvent,
     handleLeftSidebarToggle,
-    handleAddEventSidebarToggle
+    handleAddEventSidebarToggle,
   } = props
 
   // ** Refs
@@ -59,7 +57,6 @@ const Calendar = props => {
 
   // [MM] HEY HEY HEY
   if (store) {
-
     // ** calendarOptions(Props)
     const calendarOptions = {
       events: store.events.length ? store.events : [],
@@ -67,7 +64,7 @@ const Calendar = props => {
       initialView: 'dayGridMonth',
       headerToolbar: {
         start: 'sidebarToggle, prev, next, title',
-        end: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+        end: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth',
       },
 
       /*
@@ -105,7 +102,7 @@ const Calendar = props => {
 
         return [
           // Background Color
-          `bg-${colorName}`
+          `bg-${colorName}`,
         ]
       },
       eventClick({ event: clickedEvent }) {
@@ -122,8 +119,8 @@ const Calendar = props => {
           text: <Menu />,
           click() {
             handleLeftSidebarToggle()
-          }
-        }
+          },
+        },
       },
       dateClick(info) {
         const ev = { ...blankEvent }
@@ -155,7 +152,7 @@ const Calendar = props => {
       ref: calendarRef,
 
       // Get direction from app state (store)
-      direction
+      direction,
     }
 
     // @ts-ignore

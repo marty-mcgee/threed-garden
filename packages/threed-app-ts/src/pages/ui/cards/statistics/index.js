@@ -23,38 +23,88 @@ import CardStatsBarChartWithNegativeValues from '~/views/ui/cards/statistics/Car
 const CardStatistics = ({ apiData }) => {
   return (
     <ApexChartWrapper>
-      <Grid container spacing={6}>
-        <Grid item xs={12}>
+      <Grid
+        container
+        spacing={6}
+      >
+        <Grid
+          item
+          xs={12}
+        >
           <CardStatisticsHorizontal data={apiData.statsHorizontal} />
         </Grid>
-        <Grid item xs={12} md={8}>
+        <Grid
+          item
+          xs={12}
+          md={8}
+        >
           <CardStatisticsTransactions />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid
+          item
+          xs={12}
+          md={4}
+        >
           <CardStatisticsTotalSales />
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardStatisticsVertical data={apiData.statsVertical} />
         </Grid>
-        <Grid item xs={12}>
+        <Grid
+          item
+          xs={12}
+        >
           <CardStatisticsCharacters data={apiData.statsCharacter} />
         </Grid>
-        <Grid item xs={12} sm={4} lg={2}>
+        <Grid
+          item
+          xs={12}
+          sm={4}
+          lg={2}
+        >
           <CardStatsLineChartWithShadow />
         </Grid>
-        <Grid item xs={12} sm={4} lg={2}>
+        <Grid
+          item
+          xs={12}
+          sm={4}
+          lg={2}
+        >
           <CardStatsBarChartWithNegativeValues />
         </Grid>
-        <Grid item xs={12} sm={4} lg={2}>
+        <Grid
+          item
+          xs={12}
+          sm={4}
+          lg={2}
+        >
           <CardStatsLineAreaChart />
         </Grid>
-        <Grid item xs={12} sm={4} lg={2}>
+        <Grid
+          item
+          xs={12}
+          sm={4}
+          lg={2}
+        >
           <CardStatsRadialBarChart />
         </Grid>
-        <Grid item xs={12} sm={4} lg={2}>
+        <Grid
+          item
+          xs={12}
+          sm={4}
+          lg={2}
+        >
           <CardStatsDistributedColumnChart />
         </Grid>
-        <Grid item xs={12} sm={4} lg={2}>
+        <Grid
+          item
+          xs={12}
+          sm={4}
+          lg={2}
+        >
           <CardStatsLineChart />
         </Grid>
       </Grid>
@@ -68,8 +118,8 @@ export const getStaticProps = async () => {
 
   return {
     props: {
-      apiData
-    }
+      apiData,
+    },
   }
 }
 

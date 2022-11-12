@@ -17,13 +17,16 @@ const PickersMinMax = () => {
   const [maxDate, setMaxDate] = useState(new Date())
 
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap' }} className='demo-space-x'>
+    <Box
+      sx={{ display: 'flex', flexWrap: 'wrap' }}
+      className='demo-space-x'
+    >
       <Box>
         <DatePicker
           id='min-date'
           selected={minDate}
           minDate={subDays(new Date(), 5)}
-          onChange={date => setMinDate(date)}
+          onChange={(date) => setMinDate(date)}
           customInput={<CustomInput label='Min Date' />}
         />
       </Box>
@@ -32,7 +35,7 @@ const PickersMinMax = () => {
           id='max-date'
           selected={maxDate}
           maxDate={addDays(new Date(), 5)}
-          onChange={date => setMaxDate(date)}
+          onChange={(date) => setMaxDate(date)}
           customInput={<CustomInput label='Max Date' />}
         />
       </Box>

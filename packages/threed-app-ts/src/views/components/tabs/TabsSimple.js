@@ -18,10 +18,23 @@ const TabsSimple = () => {
 
   return (
     <TabContext value={value}>
-      <TabList onChange={handleChange} aria-label='simple tabs example'>
-        <Tab value='1' label='Tab 1' />
-        <Tab value='2' label='Tab 2' />
-        <Tab disabled value='3' label='Disabled' />
+      <TabList
+        onChange={handleChange}
+        aria-label='simple tabs example'
+      >
+        <Tab
+          value='1'
+          label='Tab 1'
+        />
+        <Tab
+          value='2'
+          label='Tab 2'
+        />
+        <Tab
+          disabled
+          value='3'
+          label='Disabled'
+        />
       </TabList>
       <TabPanel value='1'>
         <Typography>

@@ -25,17 +25,17 @@ const MenuComposition = () => {
   const anchorRef = useRef(null)
 
   const handleToggle = () => {
-    setOpen(prevOpen => !prevOpen)
+    setOpen((prevOpen) => !prevOpen)
   }
 
-  const handleClose = event => {
+  const handleClose = (event) => {
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return
     }
     setOpen(false)
   }
 
-  const handleListKeyDown = event => {
+  const handleListKeyDown = (event) => {
     if (event.key === 'Tab') {
       event.preventDefault()
       setOpen(false)
@@ -63,7 +63,7 @@ const MenuComposition = () => {
         id='composition-button'
         aria-expanded={open ? 'true' : undefined}
         aria-controls={open ? 'composition-menu' : undefined}
-        sx={{ '& + div': { zIndex: theme => theme.zIndex.modal } }}
+        sx={{ '& + div': { zIndex: (theme) => theme.zIndex.modal } }}
       >
         Open Menu
       </Button>
@@ -80,10 +80,10 @@ const MenuComposition = () => {
               name: 'flip',
               options: {
                 enabled: true,
-                boundary: 'window'
-              }
-            }
-          ]
+                boundary: 'window',
+              },
+            },
+          ],
         }}
       >
         {({ TransitionProps, placement }) => (
@@ -93,10 +93,14 @@ const MenuComposition = () => {
           >
             <Paper
               elevation={skin === 'bordered' ? 0 : 6}
-              sx={skin === 'bordered' ? { border: theme => `1px solid ${theme.palette.divider}` } : {}}
+              sx={skin === 'bordered' ? { border: (theme) => `1px solid ${theme.palette.divider}` } : {}}
             >
               <ClickAwayListener onClickAway={() => setOpen(false)}>
-                <MenuList autoFocusItem={open} id='composition-menu' onKeyDown={handleListKeyDown}>
+                <MenuList
+                  autoFocusItem={open}
+                  id='composition-menu'
+                  onKeyDown={handleListKeyDown}
+                >
                   <MenuItem onClick={handleClose}>Profile</MenuItem>
                   <MenuItem onClick={handleClose}>My account</MenuItem>
                   <MenuItem onClick={handleClose}>Logout</MenuItem>

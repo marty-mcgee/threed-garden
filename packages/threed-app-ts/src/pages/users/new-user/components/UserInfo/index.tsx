@@ -1,17 +1,16 @@
 // @mui material components
-import Grid from "@mui/material/Grid"
+import Grid from '@mui/material/Grid'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
+import MDBox from '~/components/mui/MDBox'
+import MDTypography from '~/components/mui/MDTypography'
 
 // NewUser page components
-import FormField from "~/pages/users/new-user/components/FormField"
+import FormField from '~/pages/users/new-user/components/FormField'
 
 function UserInfo({ formData }: any): JSX.Element {
   const { formField, values, errors, touched } = formData
-  const { firstName, lastName, company, email, password, repeatPassword } =
-    formField
+  const { firstName, lastName, company, email, password, repeatPassword } = formField
   const {
     firstName: firstNameV,
     lastName: lastNameV,
@@ -24,14 +23,24 @@ function UserInfo({ formData }: any): JSX.Element {
   return (
     <MDBox>
       <MDBox lineHeight={0}>
-        <MDTypography variant="h5">About User</MDTypography>
-        <MDTypography variant="button" color="text">
+        <MDTypography variant='h5'>About User</MDTypography>
+        <MDTypography
+          variant='button'
+          color='text'
+        >
           Mandatory Information
         </MDTypography>
       </MDBox>
       <MDBox mt={1.625}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
+        <Grid
+          container
+          spacing={2}
+        >
+          <Grid
+            item
+            xs={12}
+            sm={6}
+          >
             <FormField
               type={firstName.type}
               label={firstName.label}
@@ -42,7 +51,11 @@ function UserInfo({ formData }: any): JSX.Element {
               success={firstNameV.length > 0 && !errors.firstName}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            item
+            xs={12}
+            sm={6}
+          >
             <FormField
               type={lastName.type}
               label={lastName.label}
@@ -54,8 +67,15 @@ function UserInfo({ formData }: any): JSX.Element {
             />
           </Grid>
         </Grid>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
+        <Grid
+          container
+          spacing={2}
+        >
+          <Grid
+            item
+            xs={12}
+            sm={6}
+          >
             <FormField
               type={company.type}
               label={company.label}
@@ -64,7 +84,11 @@ function UserInfo({ formData }: any): JSX.Element {
               placeholder={company.placeholder}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            item
+            xs={12}
+            sm={6}
+          >
             <FormField
               type={email.type}
               label={email.label}
@@ -76,8 +100,15 @@ function UserInfo({ formData }: any): JSX.Element {
             />
           </Grid>
         </Grid>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
+        <Grid
+          container
+          spacing={2}
+        >
+          <Grid
+            item
+            xs={12}
+            sm={6}
+          >
             <FormField
               type={password.type}
               label={password.label}
@@ -86,10 +117,14 @@ function UserInfo({ formData }: any): JSX.Element {
               placeholder={password.placeholder}
               error={errors.password && touched.password}
               success={passwordV.length > 0 && !errors.password}
-              inputProps={{ autoComplete: "" }}
+              inputProps={{ autoComplete: '' }}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            item
+            xs={12}
+            sm={6}
+          >
             <FormField
               type={repeatPassword.type}
               label={repeatPassword.label}
@@ -98,7 +133,7 @@ function UserInfo({ formData }: any): JSX.Element {
               placeholder={repeatPassword.placeholder}
               error={errors.repeatPassword && touched.repeatPassword}
               success={repeatPasswordV.length > 0 && !errors.repeatPassword}
-              inputProps={{ autoComplete: "" }}
+              inputProps={{ autoComplete: '' }}
             />
           </Grid>
         </Grid>

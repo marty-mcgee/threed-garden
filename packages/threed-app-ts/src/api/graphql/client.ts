@@ -1,6 +1,5 @@
 // ** Apollo Client State Management using Cache/Store (via GraphQL)
 import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from '@apollo/client'
-import { RestLink } from 'apollo-link-rest'
 
 const uri = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL
 const uri_rest = process.env.NEXT_PUBLIC_WP_REST_API_URL

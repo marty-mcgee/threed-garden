@@ -1,5 +1,5 @@
 // @mui material components
-import { Theme } from "@mui/material/styles"
+import { Theme } from '@mui/material/styles'
 
 export default function sidenavLogoLabel(theme: Theme, ownerState: any) {
   const { functions, transitions, typography, breakpoints } = theme
@@ -12,12 +12,12 @@ export default function sidenavLogoLabel(theme: Theme, ownerState: any) {
     ml: 1,
     fontWeight: fontWeightMedium,
     wordSpacing: pxToRem(-1),
-    transition: transitions.create("opacity", {
+    transition: transitions.create('opacity', {
       easing: transitions.easing.easeInOut,
       duration: transitions.duration.standard,
     }),
 
-    [breakpoints.up("xl")]: {
+    [breakpoints.up('xl')]: {
       opacity: miniSidenav ? 0 : 1,
     },
   }

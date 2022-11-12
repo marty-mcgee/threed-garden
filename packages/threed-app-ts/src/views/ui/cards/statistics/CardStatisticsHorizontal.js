@@ -18,19 +18,31 @@ const icons = {
   Poll,
   TrendingUp,
   CurrencyUsd,
-  AccountOutline
+  AccountOutline,
 }
 
 const CardStatsHorizontal = ({ data }) => {
   if (data) {
     return (
-      <Grid container spacing={6}>
+      <Grid
+        container
+        spacing={6}
+      >
         {data.map((item, index) => {
           const IconTag = icons[item.icon]
 
           return (
-            <Grid item xs={12} md={3} sm={6} key={index}>
-              <CardStatisticsHorizontal {...item} icon={<IconTag />} />
+            <Grid
+              item
+              xs={12}
+              md={3}
+              sm={6}
+              key={index}
+            >
+              <CardStatisticsHorizontal
+                {...item}
+                icon={<IconTag />}
+              />
             </Grid>
           )
         })}

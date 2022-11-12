@@ -4,11 +4,11 @@ import IconButton from '@mui/material/IconButton'
 import WeatherNight from 'mdi-material-ui/WeatherNight'
 import WeatherSunny from 'mdi-material-ui/WeatherSunny'
 
-const ModeToggler = props => {
+const ModeToggler = (props) => {
   // ** Props
   const { settings, saveSettings } = props
 
-  const handleModeChange = mode => {
+  const handleModeChange = (mode) => {
     saveSettings({ ...settings, mode })
   }
 
@@ -21,7 +21,11 @@ const ModeToggler = props => {
   }
 
   return (
-    <IconButton color='inherit' aria-haspopup='true' onClick={handleModeToggle}>
+    <IconButton
+      color='inherit'
+      aria-haspopup='true'
+      onClick={handleModeToggle}
+    >
       {settings.mode === 'dark' ? <WeatherSunny /> : <WeatherNight />}
     </IconButton>
   )

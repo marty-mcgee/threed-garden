@@ -18,22 +18,35 @@ const AutocompleteControlledUncontrolled = () => {
   }
 
   return (
-    <Box className='demo-space-x' sx={{ display: 'flex', flexWrap: 'wrap' }}>
+    <Box
+      className='demo-space-x'
+      sx={{ display: 'flex', flexWrap: 'wrap' }}
+    >
       <Autocomplete
         value={value}
         sx={{ width: 250 }}
         options={top100Films}
         onChange={handleChange}
         id='autocomplete-controlled'
-        getOptionLabel={option => option.title}
-        renderInput={params => <TextField {...params} label='Controlled' />}
+        getOptionLabel={(option) => option.title}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label='Controlled'
+          />
+        )}
       />
       <Autocomplete
         sx={{ width: 250 }}
         options={top100Films}
         id='autocomplete-uncontrolled'
-        getOptionLabel={option => option.title}
-        renderInput={params => <TextField {...params} label='Uncontrolled' />}
+        getOptionLabel={(option) => option.title}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label='Uncontrolled'
+          />
+        )}
       />
     </Box>
   )

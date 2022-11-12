@@ -1,5 +1,5 @@
 // ** React Imports
-import { useEffect, Fragment } from 'react'
+import { useEffect } from 'react'
 
 // ** Next Import
 import { useRouter } from 'next/router'

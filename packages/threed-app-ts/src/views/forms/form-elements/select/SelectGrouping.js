@@ -10,7 +10,11 @@ const SelectGrouping = () => {
     <div className='demo-space-x'>
       <FormControl>
         <InputLabel htmlFor='grouped-select'>Grouping</InputLabel>
-        <Select label='Grouping' defaultValue='' id='grouped-select'>
+        <Select
+          label='Grouping'
+          defaultValue=''
+          id='grouped-select'
+        >
           <MenuItem value=''>
             <em>None</em>
           </MenuItem>
@@ -24,8 +28,16 @@ const SelectGrouping = () => {
       </FormControl>
       <FormControl>
         <InputLabel htmlFor='grouped-native-select'>Grouping</InputLabel>
-        <Select native label='Grouping' defaultValue='' id='grouped-native-select'>
-          <option aria-label='None' value='' />
+        <Select
+          native
+          label='Grouping'
+          defaultValue=''
+          id='grouped-native-select'
+        >
+          <option
+            aria-label='None'
+            value=''
+          />
           <optgroup label='Category 1'>
             <option value={1}>Option 1</option>
             <option value={2}>Option 2</option>

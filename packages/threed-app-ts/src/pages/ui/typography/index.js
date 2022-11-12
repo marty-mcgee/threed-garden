@@ -7,11 +7,20 @@ import TypographyHeadings from '~/views/ui/typography/TypographyHeadings'
 
 const TypographyPage = () => {
   return (
-    <Grid container spacing={6}>
-      <Grid item xs={12}>
+    <Grid
+      container
+      spacing={6}
+    >
+      <Grid
+        item
+        xs={12}
+      >
         <TypographyHeadings />
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <TypographyTexts />
       </Grid>
     </Grid>

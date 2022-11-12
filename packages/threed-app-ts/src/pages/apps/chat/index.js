@@ -33,7 +33,7 @@ const AppChat = () => {
   const { settings } = useSettings()
   const dispatch = useDispatch()
   const hidden = useMediaQuery(theme.breakpoints.down('lg'))
-  const store = useSelector(state => state.chat)
+  const store = useSelector((state) => state.chat)
 
   // ** Vars
   const smAbove = useMediaQuery(theme.breakpoints.up('sm'))
@@ -45,7 +45,7 @@ const AppChat = () => {
     busy: 'error',
     away: 'warning',
     online: 'success',
-    offline: 'secondary'
+    offline: 'secondary',
   }
   useEffect(() => {
     dispatch(fetchUserProfile())
@@ -56,9 +56,10 @@ const AppChat = () => {
   const handleUserProfileRightSidebarToggle = () => setUserProfileRightOpen(!userProfileRightOpen)
 
   const calculateAppHeight = () => {
-    return `(${(appBar === 'hidden' ? 0 : theme.mixins.toolbar.minHeight) * (layout === 'horizontal' && !navHidden ? 2 : 1) +
+    return `(${
+      (appBar === 'hidden' ? 0 : theme.mixins.toolbar.minHeight) * (layout === 'horizontal' && !navHidden ? 2 : 1) +
       (footer === 'hidden' ? 0 : 56)
-      }px + ${theme.spacing(6)} * 2)`
+    }px + ${theme.spacing(6)} * 2)`
   }
 
   return (
@@ -73,7 +74,7 @@ const AppChat = () => {
         backgroundColor: 'background.paper',
         boxShadow: skin === 'bordered' ? 0 : 6,
         height: `calc(100vh - ${calculateAppHeight()})`,
-        ...(skin === 'bordered' && { border: `1px solid ${theme.palette.divider}` })
+        ...(skin === 'bordered' && { border: `1px solid ${theme.palette.divider}` }),
       }}
     >
       <SidebarLeft

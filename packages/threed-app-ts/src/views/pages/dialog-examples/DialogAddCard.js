@@ -35,7 +35,12 @@ import Close from 'mdi-material-ui/Close'
 import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
 
 const Transition = forwardRef(function Transition(props, ref) {
-  return <Fade ref={ref} {...props} />
+  return (
+    <Fade
+      ref={ref}
+      {...props}
+    />
+  )
 })
 
 const DialogAddCard = () => {
@@ -74,13 +79,19 @@ const DialogAddCard = () => {
     <Card>
       <CardContent sx={{ textAlign: 'center' }}>
         <CreditCardOutline sx={{ mb: 2, fontSize: '2rem' }} />
-        <Typography variant='h6' sx={{ mb: 4 }}>
+        <Typography
+          variant='h6'
+          sx={{ mb: 4 }}
+        >
           Add New Card
         </Typography>
         <Typography sx={{ mb: 3 }}>
           Quickly collect the credit card details, built in input mask and form validation support.
         </Typography>
-        <Button variant='contained' onClick={() => setShow(true)}>
+        <Button
+          variant='contained'
+          onClick={() => setShow(true)}
+        >
           Show
         </Button>
       </CardContent>
@@ -94,24 +105,46 @@ const DialogAddCard = () => {
         TransitionComponent={Transition}
       >
         <DialogContent sx={{ pb: 8, px: { xs: 8, sm: 15 }, pt: { xs: 8, sm: 12.5 }, position: 'relative' }}>
-          <IconButton size='small' onClick={handleClose} sx={{ position: 'absolute', right: '1rem', top: '1rem' }}>
+          <IconButton
+            size='small'
+            onClick={handleClose}
+            sx={{ position: 'absolute', right: '1rem', top: '1rem' }}
+          >
             <Close />
           </IconButton>
           <Box sx={{ mb: 4, textAlign: 'center' }}>
-            <Typography variant='h5' sx={{ mb: 3 }}>
+            <Typography
+              variant='h5'
+              sx={{ mb: 3 }}
+            >
               Add New Card
             </Typography>
             <Typography variant='body2'>Add card for future billing</Typography>
           </Box>
-          <Grid container spacing={6}>
-            <Grid item xs={12}>
+          <Grid
+            container
+            spacing={6}
+          >
+            <Grid
+              item
+              xs={12}
+            >
               <CardWrapper sx={{ '& .rccs': { m: '0 auto', display: { xs: 'none', sm: 'block' } } }}>
                 {/* <Cards cvc={cvc} focused={focus} expiry={expiry} name={name} number={cardNumber} /> */}
               </CardWrapper>
             </Grid>
-            <Grid item xs={12}>
-              <Grid container spacing={6}>
-                <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}
+            >
+              <Grid
+                container
+                spacing={6}
+              >
+                <Grid
+                  item
+                  xs={12}
+                >
                   <TextField
                     fullWidth
                     name='number'
@@ -121,10 +154,14 @@ const DialogAddCard = () => {
                     onBlur={handleBlur}
                     onChange={handleInputChange}
                     placeholder='0000 0000 0000 0000'
-                    onFocus={e => setFocus(e.target.name)}
+                    onFocus={(e) => setFocus(e.target.name)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                >
                   <TextField
                     fullWidth
                     name='name'
@@ -133,11 +170,15 @@ const DialogAddCard = () => {
                     onBlur={handleBlur}
                     label='Name on Card'
                     placeholder='Marty McGee'
-                    onChange={e => setName(e.target.value)}
-                    onFocus={e => setFocus(e.target.name)}
+                    onChange={(e) => setName(e.target.value)}
+                    onFocus={(e) => setFocus(e.target.name)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid
+                  item
+                  xs={12}
+                  sm={3}
+                >
                   <TextField
                     fullWidth
                     name='expiry'
@@ -147,10 +188,14 @@ const DialogAddCard = () => {
                     placeholder='MM/YY'
                     onChange={handleInputChange}
                     inputProps={{ maxLength: '5' }}
-                    onFocus={e => setFocus(e.target.name)}
+                    onFocus={(e) => setFocus(e.target.name)}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid
+                  item
+                  xs={12}
+                  sm={3}
+                >
                   <TextField
                     fullWidth
                     name='cvc'
@@ -159,11 +204,14 @@ const DialogAddCard = () => {
                     autoComplete='off'
                     onBlur={handleBlur}
                     onChange={handleInputChange}
-                    onFocus={e => setFocus(e.target.name)}
+                    onFocus={(e) => setFocus(e.target.name)}
                     placeholder={Payment.fns.cardType(cardNumber) === 'amex' ? '1234' : '123'}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid
+                  item
+                  xs={12}
+                >
                   <FormControlLabel
                     control={<Switch defaultChecked />}
                     label='Save Card for future billing?'
@@ -175,10 +223,18 @@ const DialogAddCard = () => {
           </Grid>
         </DialogContent>
         <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'center' }}>
-          <Button variant='contained' sx={{ mr: 1 }} onClick={handleClose}>
+          <Button
+            variant='contained'
+            sx={{ mr: 1 }}
+            onClick={handleClose}
+          >
             Submit
           </Button>
-          <Button variant='outlined' color='secondary' onClick={handleClose}>
+          <Button
+            variant='outlined'
+            color='secondary'
+            onClick={handleClose}
+          >
             Cancel
           </Button>
         </DialogActions>

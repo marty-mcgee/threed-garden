@@ -17,21 +17,38 @@ import DotsVertical from 'mdi-material-ui/DotsVertical'
 const CardCafe = () => {
   return (
     <Card>
-      <CardMedia sx={{ height: 168 }} image='/images/cards/cafe-badilico.png' />
+      <CardMedia
+        sx={{ height: 168 }}
+        image='/images/cards/cafe-badilico.png'
+      />
       <CardContent>
         <Box sx={{ mb: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant='h6'>Cafe Badilico</Typography>
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         </Box>
 
         <Box sx={{ mb: 5, display: 'flex', alignItems: 'center' }}>
-          <Rating readOnly sx={{ mr: 2.5 }} value={4.6} precision={0.1} name='cafe-ratings' />
+          <Rating
+            readOnly
+            sx={{ mr: 2.5 }}
+            value={4.6}
+            precision={0.1}
+            name='cafe-ratings'
+          />
           <Typography>4.6 Star (12.4k)</Typography>
         </Box>
 
-        <Typography variant='body2' sx={{ mb: 4 }}>
+        <Typography
+          variant='body2'
+          sx={{ mb: 4 }}
+        >
           Italian Cafe
         </Typography>
 

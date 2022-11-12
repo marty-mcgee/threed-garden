@@ -3,9 +3,9 @@
 // export type TAppConfig = Awaited<ReturnType<typeof loadAppConfig>>;
 
 export type TAppProps = {
-  config: never;
-};
+  config: never
+}
 
 export type TPageProps = {
-  appProps: TAppProps;
-};
+  appProps: TAppProps
+}

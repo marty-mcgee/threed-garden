@@ -20,24 +20,35 @@ import * as source from '~/views/forms/form-elements/checkbox/CheckboxesSourceCo
 
 const Checkboxes = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Basic Checkboxes'
           code={{
             tsx: null,
-            jsx: source.CheckboxesBasicJSXCode
+            jsx: source.CheckboxesBasicJSXCode,
           }}
         >
           <CheckboxesBasic />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Controlled and Uncontrolled'
           code={{
             tsx: null,
-            jsx: source.CheckboxesControlledUncontrolledJSXCode
+            jsx: source.CheckboxesControlledUncontrolledJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -47,12 +58,16 @@ const Checkboxes = () => {
           <CheckboxesControlledUncontrolled />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Colors'
           code={{
             tsx: null,
-            jsx: source.CheckboxesColorsJSXCode
+            jsx: source.CheckboxesColorsJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -61,12 +76,16 @@ const Checkboxes = () => {
           <CheckboxesColors />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Customized'
           code={{
             tsx: null,
-            jsx: source.CheckboxesCustomizedJSXCode
+            jsx: source.CheckboxesCustomizedJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -75,12 +94,16 @@ const Checkboxes = () => {
           <CheckboxesCustomized />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Custom Icons'
           code={{
             tsx: null,
-            jsx: source.CheckboxesCustomIconsJSXCode
+            jsx: source.CheckboxesCustomIconsJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>
@@ -90,12 +113,16 @@ const Checkboxes = () => {
           <CheckboxesCustomIcons />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Label Placement'
           code={{
             tsx: null,
-            jsx: source.CheckboxesLabelPlacementJSXCode
+            jsx: source.CheckboxesLabelPlacementJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>
@@ -105,12 +132,16 @@ const Checkboxes = () => {
           <CheckboxesLabelPlacement />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+      >
         <CardSnippet
           title='Show Error'
           code={{
             tsx: null,
-            jsx: source.CheckboxesShowErrorJSXCode
+            jsx: source.CheckboxesShowErrorJSXCode,
           }}
         >
           <Typography>
@@ -120,12 +151,15 @@ const Checkboxes = () => {
           <CheckboxesShowError />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Sizes'
           code={{
             tsx: null,
-            jsx: source.CheckboxesSizesJSXCode
+            jsx: source.CheckboxesSizesJSXCode,
           }}
         >
           <Typography sx={{ mb: 2 }}>

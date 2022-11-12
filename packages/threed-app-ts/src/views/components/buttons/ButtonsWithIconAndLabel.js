@@ -8,10 +8,17 @@ import DeleteOutline from 'mdi-material-ui/DeleteOutline'
 const ButtonsWithIconAndLabel = () => {
   return (
     <div className='demo-space-x'>
-      <Button variant='contained' endIcon={<Send />}>
+      <Button
+        variant='contained'
+        endIcon={<Send />}
+      >
         Send
       </Button>
-      <Button variant='contained' color='secondary' startIcon={<DeleteOutline />}>
+      <Button
+        variant='contained'
+        color='secondary'
+        startIcon={<DeleteOutline />}
+      >
         Delete
       </Button>
     </div>

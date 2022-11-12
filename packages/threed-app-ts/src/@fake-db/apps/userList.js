@@ -15,7 +15,7 @@ const data = {
       currentPlan: 'enterprise',
       status: 'inactive',
       avatar: '',
-      avatarColor: 'primary'
+      avatarColor: 'primary',
     },
     {
       id: 2,
@@ -28,7 +28,7 @@ const data = {
       email: 'hredmore1@imgur.com',
       currentPlan: 'team',
       status: 'pending',
-      avatar: '/images/avatars/3.png'
+      avatar: '/images/avatars/3.png',
     },
     {
       id: 3,
@@ -41,7 +41,7 @@ const data = {
       email: 'msicely2@who.int',
       currentPlan: 'enterprise',
       status: 'active',
-      avatar: '/images/avatars/1.png'
+      avatar: '/images/avatars/1.png',
     },
     {
       id: 4,
@@ -54,7 +54,7 @@ const data = {
       email: 'crisby3@wordpress.com',
       currentPlan: 'team',
       status: 'inactive',
-      avatar: '/images/avatars/3.png'
+      avatar: '/images/avatars/3.png',
     },
     {
       id: 5,
@@ -67,7 +67,7 @@ const data = {
       email: 'mhurran4@yahoo.co.jp',
       currentPlan: 'enterprise',
       status: 'pending',
-      avatar: '/images/avatars/1.png'
+      avatar: '/images/avatars/1.png',
     },
     {
       id: 6,
@@ -81,7 +81,7 @@ const data = {
       currentPlan: 'company',
       status: 'active',
       avatar: '',
-      avatarColor: 'error'
+      avatarColor: 'error',
     },
     {
       id: 7,
@@ -95,7 +95,7 @@ const data = {
       currentPlan: 'company',
       status: 'pending',
       avatar: '',
-      avatarColor: 'warning'
+      avatarColor: 'warning',
     },
     {
       id: 8,
@@ -108,7 +108,7 @@ const data = {
       email: 'kliger7@vinaora.com',
       currentPlan: 'enterprise',
       status: 'pending',
-      avatar: '/images/avatars/4.png'
+      avatar: '/images/avatars/4.png',
     },
     {
       id: 9,
@@ -121,7 +121,7 @@ const data = {
       email: 'fscotfurth8@dailymotion.com',
       currentPlan: 'team',
       status: 'pending',
-      avatar: '/images/avatars/2.png'
+      avatar: '/images/avatars/2.png',
     },
     {
       id: 10,
@@ -134,7 +134,7 @@ const data = {
       email: 'jbellany9@kickstarter.com',
       currentPlan: 'company',
       status: 'inactive',
-      avatar: '/images/avatars/5.png'
+      avatar: '/images/avatars/5.png',
     },
     {
       id: 11,
@@ -147,7 +147,7 @@ const data = {
       email: 'jwharltona@oakley.com',
       currentPlan: 'team',
       status: 'inactive',
-      avatar: '/images/avatars/4.png'
+      avatar: '/images/avatars/4.png',
     },
     {
       id: 12,
@@ -160,7 +160,7 @@ const data = {
       email: 'shallamb@hugedomains.com',
       currentPlan: 'team',
       status: 'pending',
-      avatar: '/images/avatars/5.png'
+      avatar: '/images/avatars/5.png',
     },
     {
       id: 13,
@@ -173,7 +173,7 @@ const data = {
       email: 'ypottiec@privacy.gov.au',
       currentPlan: 'basic',
       status: 'inactive',
-      avatar: '/images/avatars/7.png'
+      avatar: '/images/avatars/7.png',
     },
     {
       id: 14,
@@ -186,7 +186,7 @@ const data = {
       email: 'mkraused@stanford.edu',
       currentPlan: 'team',
       status: 'active',
-      avatar: '/images/avatars/6.png'
+      avatar: '/images/avatars/6.png',
     },
     {
       id: 15,
@@ -199,7 +199,7 @@ const data = {
       email: 'zmcclevertye@soundcloud.com',
       currentPlan: 'enterprise',
       status: 'active',
-      avatar: '/images/avatars/2.png'
+      avatar: '/images/avatars/2.png',
     },
     {
       id: 16,
@@ -212,7 +212,7 @@ const data = {
       email: 'bemblinf@wired.com',
       currentPlan: 'company',
       status: 'active',
-      avatar: '/images/avatars/6.png'
+      avatar: '/images/avatars/6.png',
     },
     {
       id: 17,
@@ -226,7 +226,7 @@ const data = {
       currentPlan: 'basic',
       status: 'active',
       avatar: '',
-      avatarColor: 'success'
+      avatarColor: 'success',
     },
     {
       id: 18,
@@ -239,7 +239,7 @@ const data = {
       email: 'bbinerh@mozilla.com',
       currentPlan: 'team',
       status: 'active',
-      avatar: '/images/avatars/7.png'
+      avatar: '/images/avatars/7.png',
     },
     {
       id: 19,
@@ -253,7 +253,7 @@ const data = {
       currentPlan: 'enterprise',
       status: 'active',
       avatar: '',
-      avatarColor: 'primary'
+      avatarColor: 'primary',
     },
     {
       id: 20,
@@ -266,7 +266,7 @@ const data = {
       email: 'wburlandj@uiuc.edu',
       currentPlan: 'team',
       status: 'inactive',
-      avatar: '/images/avatars/6.png'
+      avatar: '/images/avatars/6.png',
     },
     {
       id: 21,
@@ -279,7 +279,7 @@ const data = {
       email: 'irena.dubrovna@wayne.com',
       currentPlan: 'team',
       status: 'active',
-      avatar: '/images/avatars/1.png'
+      avatar: '/images/avatars/1.png',
     },
     {
       id: 22,
@@ -292,7 +292,7 @@ const data = {
       email: 'jlysterl@guardian.co.uk',
       currentPlan: 'company',
       status: 'inactive',
-      avatar: '/images/avatars/8.png'
+      avatar: '/images/avatars/8.png',
     },
     {
       id: 23,
@@ -305,7 +305,7 @@ const data = {
       email: 'kskitterelm@ainyx.com',
       currentPlan: 'basic',
       status: 'pending',
-      avatar: '/images/avatars/3.png'
+      avatar: '/images/avatars/3.png',
     },
     {
       id: 24,
@@ -318,7 +318,7 @@ const data = {
       email: 'chatherleighn@washington.edu',
       currentPlan: 'team',
       status: 'pending',
-      avatar: '/images/avatars/2.png'
+      avatar: '/images/avatars/2.png',
     },
     {
       id: 25,
@@ -332,7 +332,7 @@ const data = {
       currentPlan: 'enterprise',
       status: 'pending',
       avatar: '',
-      avatarColor: 'error'
+      avatarColor: 'error',
     },
     {
       id: 26,
@@ -345,7 +345,7 @@ const data = {
       email: 'hhassonp@bizjournals.com',
       currentPlan: 'basic',
       status: 'inactive',
-      avatar: '/images/avatars/4.png'
+      avatar: '/images/avatars/4.png',
     },
     {
       id: 27,
@@ -358,7 +358,7 @@ const data = {
       email: 'gjacombsq@jigsy.com',
       currentPlan: 'enterprise',
       status: 'active',
-      avatar: '/images/avatars/5.png'
+      avatar: '/images/avatars/5.png',
     },
     {
       id: 28,
@@ -372,7 +372,7 @@ const data = {
       currentPlan: 'team',
       status: 'active',
       avatar: '',
-      avatarColor: 'warning'
+      avatarColor: 'warning',
     },
     {
       id: 29,
@@ -385,7 +385,7 @@ const data = {
       email: 'cpinyons@behance.net',
       currentPlan: 'team',
       status: 'active',
-      avatar: '/images/avatars/7.png'
+      avatar: '/images/avatars/7.png',
     },
     {
       id: 30,
@@ -399,7 +399,7 @@ const data = {
       currentPlan: 'team',
       status: 'pending',
       avatar: '',
-      avatarColor: 'info'
+      avatarColor: 'info',
     },
     {
       id: 31,
@@ -412,7 +412,7 @@ const data = {
       email: 'gmeinekenu@hc360.com',
       currentPlan: 'basic',
       status: 'pending',
-      avatar: '/images/avatars/1.png'
+      avatar: '/images/avatars/1.png',
     },
     {
       id: 32,
@@ -425,7 +425,7 @@ const data = {
       email: 'rsnowballv@indiegogo.com',
       currentPlan: 'basic',
       status: 'pending',
-      avatar: '/images/avatars/5.png'
+      avatar: '/images/avatars/5.png',
     },
     {
       id: 33,
@@ -438,7 +438,7 @@ const data = {
       email: 'remerw@blogtalkradio.com',
       currentPlan: 'basic',
       status: 'active',
-      avatar: '/images/avatars/8.png'
+      avatar: '/images/avatars/8.png',
     },
     {
       id: 34,
@@ -451,7 +451,7 @@ const data = {
       email: 'ofibbensx@booking.com',
       currentPlan: 'company',
       status: 'active',
-      avatar: '/images/avatars/4.png'
+      avatar: '/images/avatars/4.png',
     },
     {
       id: 35,
@@ -465,7 +465,7 @@ const data = {
       currentPlan: 'company',
       status: 'pending',
       avatar: '',
-      avatarColor: 'error'
+      avatarColor: 'error',
     },
     {
       id: 36,
@@ -479,7 +479,7 @@ const data = {
       currentPlan: 'team',
       status: 'inactive',
       avatar: '',
-      avatarColor: 'success'
+      avatarColor: 'success',
     },
     {
       id: 37,
@@ -492,7 +492,7 @@ const data = {
       email: 'shebblethwaite10@arizona.edu',
       currentPlan: 'company',
       status: 'inactive',
-      avatar: '/images/avatars/1.png'
+      avatar: '/images/avatars/1.png',
     },
     {
       id: 38,
@@ -505,7 +505,7 @@ const data = {
       email: 'mpiccard11@vimeo.com',
       currentPlan: 'enterprise',
       status: 'inactive',
-      avatar: '/images/avatars/1.png'
+      avatar: '/images/avatars/1.png',
     },
     {
       id: 39,
@@ -519,7 +519,7 @@ const data = {
       currentPlan: 'team',
       status: 'pending',
       avatar: '',
-      avatarColor: 'primary'
+      avatarColor: 'primary',
     },
     {
       id: 40,
@@ -532,7 +532,7 @@ const data = {
       email: 'fdesporte13@omniture.com',
       currentPlan: 'company',
       status: 'active',
-      avatar: '/images/avatars/6.png'
+      avatar: '/images/avatars/6.png',
     },
     {
       id: 41,
@@ -546,7 +546,7 @@ const data = {
       currentPlan: 'team',
       status: 'pending',
       avatar: '',
-      avatarColor: 'info'
+      avatarColor: 'info',
     },
     {
       id: 42,
@@ -560,7 +560,7 @@ const data = {
       currentPlan: 'team',
       status: 'inactive',
       avatar: '',
-      avatarColor: 'warning'
+      avatarColor: 'warning',
     },
     {
       id: 43,
@@ -574,7 +574,7 @@ const data = {
       currentPlan: 'basic',
       status: 'inactive',
       avatar: '',
-      avatarColor: 'error'
+      avatarColor: 'error',
     },
     {
       id: 44,
@@ -588,7 +588,7 @@ const data = {
       currentPlan: 'team',
       status: 'active',
       avatar: '',
-      avatarColor: 'success'
+      avatarColor: 'success',
     },
     {
       id: 45,
@@ -601,7 +601,7 @@ const data = {
       email: 'cperot18@goo.ne.jp',
       currentPlan: 'team',
       status: 'pending',
-      avatar: '/images/avatars/3.png'
+      avatar: '/images/avatars/3.png',
     },
     {
       id: 46,
@@ -615,7 +615,7 @@ const data = {
       currentPlan: 'enterprise',
       status: 'pending',
       avatar: '',
-      avatarColor: 'primary'
+      avatarColor: 'primary',
     },
     {
       id: 47,
@@ -628,7 +628,7 @@ const data = {
       email: 'kcourtliff1a@bbc.co.uk',
       currentPlan: 'basic',
       status: 'active',
-      avatar: '/images/avatars/1.png'
+      avatar: '/images/avatars/1.png',
     },
     {
       id: 48,
@@ -642,7 +642,7 @@ const data = {
       currentPlan: 'basic',
       status: 'pending',
       avatar: '',
-      avatarColor: 'error'
+      avatarColor: 'error',
     },
     {
       id: 49,
@@ -656,7 +656,7 @@ const data = {
       currentPlan: 'team',
       status: 'inactive',
       avatar: '',
-      avatarColor: 'warning'
+      avatarColor: 'warning',
     },
     {
       id: 50,
@@ -669,13 +669,13 @@ const data = {
       email: 'bkrabbe1d@home.pl',
       currentPlan: 'company',
       status: 'active',
-      avatar: '/images/avatars/2.png'
-    }
-  ]
+      avatar: '/images/avatars/2.png',
+    },
+  ],
 }
 
 // POST: Add new user
-mock.onPost('/apps/users/add-user').reply(config => {
+mock.onPost('/apps/users/add-user').reply((config) => {
   // Get event from post data
   const user = JSON.parse(config.data).data
   const { length } = data.users
@@ -690,12 +690,12 @@ mock.onPost('/apps/users/add-user').reply(config => {
 })
 
 // GET: Updated DATA
-mock.onGet('/apps/users/list').reply(config => {
+mock.onGet('/apps/users/list').reply((config) => {
   const { q = '', role = null, status = null, currentPlan = null } = config.params ?? ''
   const queryLowered = q.toLowerCase()
 
   const filteredData = data.users.filter(
-    user =>
+    (user) =>
       (user.username.toLowerCase().includes(queryLowered) ||
         user.fullName.toLowerCase().includes(queryLowered) ||
         user.role.toLowerCase().includes(queryLowered) ||
@@ -713,15 +713,15 @@ mock.onGet('/apps/users/list').reply(config => {
       allData: data.users,
       users: filteredData,
       params: config.params,
-      total: filteredData.length
-    }
+      total: filteredData.length,
+    },
   ]
 })
 
 // GET: particular user data
-mock.onGet('/apps/user').reply(config => {
+mock.onGet('/apps/user').reply((config) => {
   const { id } = config.params
-  const userData = data.users.filter(user => user.id === parseInt(id, 10))
+  const userData = data.users.filter((user) => user.id === parseInt(id, 10))
   if (userData.length) {
     return [200, userData[0]]
   } else {
@@ -730,10 +730,10 @@ mock.onGet('/apps/user').reply(config => {
 })
 
 // DELETE: Deletes User
-mock.onDelete('/apps/users/delete').reply(config => {
+mock.onDelete('/apps/users/delete').reply((config) => {
   // Get user id from URL
   const userId = config.data
-  const userIndex = data.users.findIndex(t => t.id === userId)
+  const userIndex = data.users.findIndex((t) => t.id === userId)
   data.users.splice(userIndex, 1)
 
   return [200]

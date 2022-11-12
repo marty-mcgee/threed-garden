@@ -8,14 +8,14 @@ const cardStatsData = {
       trend: 'negative',
       trendNumber: '10.2%',
       title: 'New Customers',
-      icon: 'AccountOutline'
+      icon: 'AccountOutline',
     },
     {
       stats: '28.6K',
       color: 'success',
       icon: 'CurrencyUsd',
       trendNumber: '25.8%',
-      title: 'Total Revenue'
+      title: 'Total Revenue',
     },
     {
       color: 'info',
@@ -23,15 +23,15 @@ const cardStatsData = {
       trend: 'negative',
       icon: 'TrendingUp',
       trendNumber: '12.1%',
-      title: 'New Transactions'
+      title: 'New Transactions',
     },
     {
       icon: 'Poll',
       stats: '2,856',
       color: 'warning',
       trendNumber: '54.6%',
-      title: 'Total Profit'
-    }
+      title: 'Total Profit',
+    },
   ],
   statsVertical: [
     {
@@ -40,7 +40,7 @@ const cardStatsData = {
       trendNumber: '-18%',
       title: 'New Project',
       subtitle: 'Yearly Project',
-      icon: 'BriefcaseVariantOutline'
+      icon: 'BriefcaseVariantOutline',
     },
     {
       icon: 'Poll',
@@ -48,7 +48,7 @@ const cardStatsData = {
       color: 'secondary',
       trendNumber: '+42%',
       title: 'Total Profit',
-      subtitle: 'Weekly Profit'
+      subtitle: 'Weekly Profit',
     },
     {
       stats: '$95.2k',
@@ -56,7 +56,7 @@ const cardStatsData = {
       color: 'success',
       trendNumber: '+12%',
       icon: 'CurrencyUsd',
-      subtitle: 'Revenue Increase'
+      subtitle: 'Revenue Increase',
     },
     {
       color: 'error',
@@ -65,7 +65,7 @@ const cardStatsData = {
       title: 'Logistics',
       trendNumber: '-25%',
       icon: 'TruckOutline',
-      subtitle: 'Regional Logistics'
+      subtitle: 'Regional Logistics',
     },
     {
       stats: '268',
@@ -74,7 +74,7 @@ const cardStatsData = {
       color: 'warning',
       trend: 'negative',
       trendNumber: '-8%',
-      subtitle: 'System Bugs'
+      subtitle: 'System Bugs',
     },
     {
       stats: '1.2k',
@@ -82,8 +82,8 @@ const cardStatsData = {
       icon: 'TrendingUp',
       trendNumber: '+12%',
       title: 'Transactions',
-      subtitle: 'Daily Transactions'
-    }
+      subtitle: 'Daily Transactions',
+    },
   ],
   statsCharacter: [
     {
@@ -92,7 +92,7 @@ const cardStatsData = {
       trendNumber: '+38%',
       chipColor: 'primary',
       chipText: 'Year of 2022',
-      src: '/images/cards/pose_f9.png'
+      src: '/images/cards/pose_f9.png',
     },
     {
       stats: '24.5k',
@@ -101,7 +101,7 @@ const cardStatsData = {
       trendNumber: '-22%',
       chipText: 'Last Week',
       chipColor: 'secondary',
-      src: '/images/cards/pose_m18.png'
+      src: '/images/cards/pose_m18.png',
     },
     {
       stats: '2,856',
@@ -109,7 +109,7 @@ const cardStatsData = {
       title: 'Customers',
       trendNumber: '+59%',
       chipText: 'Last Quarter',
-      src: '/images/cards/pose_m1.png'
+      src: '/images/cards/pose_m1.png',
     },
     {
       stats: '42.5k',
@@ -117,9 +117,9 @@ const cardStatsData = {
       chipColor: 'warning',
       title: 'Total Orders',
       chipText: 'Last Month',
-      src: '/images/cards/pose_m35.png'
-    }
-  ]
+      src: '/images/cards/pose_m35.png',
+    },
+  ],
 }
 mock.onGet('/cards/statistics').reply(() => {
   return [200, cardStatsData]

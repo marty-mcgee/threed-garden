@@ -14,7 +14,7 @@ function configs(labels: string[], datasets: {}[]) {
       },
       interaction: {
         intersect: false,
-        mode: "index",
+        mode: 'index',
       },
       scales: {
         y: {

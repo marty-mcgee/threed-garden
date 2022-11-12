@@ -1,31 +1,25 @@
-import { useMemo, useEffect, useState } from "react"
+import { useMemo, useEffect, useState } from 'react'
 
 // react-table components
-import {
-  useTable,
-  usePagination,
-  useGlobalFilter,
-  useAsyncDebounce,
-  useSortBy,
-} from "react-table"
+import { useTable, usePagination, useGlobalFilter, useSortBy } from 'react-table'
 
 // @mui material components
-import Table from "@mui/material/Table"
-import TableBody from "@mui/material/TableBody"
-import TableContainer from "@mui/material/TableContainer"
-import TableRow from "@mui/material/TableRow"
-import Icon from "@mui/material/Icon"
-import Autocomplete from "@mui/material/Autocomplete"
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableContainer from '@mui/material/TableContainer'
+import TableRow from '@mui/material/TableRow'
+import Icon from '@mui/material/Icon'
+import Autocomplete from '@mui/material/Autocomplete'
 
 // ThreeD Garden components
-import MDBox from "~/components/mui/MDBox"
-import MDTypography from "~/components/mui/MDTypography"
-import MDInput from "~/components/mui/MDInput"
-import MDPagination from "~/components/mui/MDPagination"
+import MDBox from '~/components/mui/MDBox'
+import MDTypography from '~/components/mui/MDTypography'
+import MDInput from '~/components/mui/MDInput'
+import MDPagination from '~/components/mui/MDPagination'
 
 // ThreeD Garden examples components
-import DataTableHeadCell from "~/components/elements/Tables/DataTable/DataTableHeadCell"
-import DataTableBodyCell from "~/components/elements/Tables/DataTable/DataTableBodyCell"
+import DataTableHeadCell from '~/components/elements/Tables/DataTable/DataTableHeadCell'
+import DataTableBodyCell from '~/components/elements/Tables/DataTable/DataTableBodyCell'
 
 // UUID
 import { v4 as newUUID } from 'uuid'
@@ -33,11 +27,11 @@ import { v4 as newUUID } from 'uuid'
 // Declaring props types for DataTable
 interface Props {
   entriesPerPage?:
-  | false
-  | {
-    defaultValue: number
-    entries: number[]
-  }
+    | false
+    | {
+        defaultValue: number
+        entries: number[]
+      }
   canSearch?: boolean
   showTotalEntries?: boolean
   table: {
@@ -45,16 +39,8 @@ interface Props {
     rows: { [key: string]: any }[]
   }
   pagination?: {
-    variant: "contained" | "gradient"
-    color:
-    | "primary"
-    | "secondary"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "dark"
-    | "light"
+    variant: 'contained' | 'gradient'
+    color: 'primary' | 'secondary' | 'info' | 'success' | 'warning' | 'error' | 'dark' | 'light'
   }
   isSorted?: boolean
   noEndBorder?: boolean
@@ -73,12 +59,8 @@ function DataTable({
   let entries: any[]
 
   if (entriesPerPage) {
-    defaultValue = entriesPerPage.defaultValue
-      ? entriesPerPage.defaultValue
-      : "10"
-    entries = entriesPerPage.entries
-      ? entriesPerPage.entries
-      : ["10", "25", "50", "100"]
+    defaultValue = entriesPerPage.defaultValue ? entriesPerPage.defaultValue : '10'
+    entries = entriesPerPage.entries ? entriesPerPage.entries : ['10', '25', '50', '100']
   }
 
   const columns = useMemo<any>(() => table.columns, [table])
@@ -121,23 +103,21 @@ function DataTable({
       item
       key={option}
       onClick={() => gotoPage(Number(option))}
-      active={pageIndex === option}>
+      active={pageIndex === option}
+    >
       {option + 1}
     </MDPagination>
   ))
 
   // Handler for the input to set the pagination index
   const handleInputPagination = ({ target: { value } }: any) =>
-    value > pageOptions.length || value < 0
-      ? gotoPage(0)
-      : gotoPage(Number(value))
+    value > pageOptions.length || value < 0 ? gotoPage(0) : gotoPage(Number(value))
 
   // Customized page options starting from 1
   const customizedPageOptions = pageOptions.map((option: any) => option + 1)
 
   // Setting value for the pagination input
-  const handleInputPaginationValue = ({ target: value }: any) =>
-    gotoPage(Number(value.value - 1))
+  const handleInputPaginationValue = ({ target: value }: any) => gotoPage(Number(value.value - 1))
 
   // Search input value state
   const [search, setSearch] = useState(globalFilter)
@@ -152,9 +132,9 @@ function DataTable({
     let sortedValue
 
     if (isSorted && column.isSorted) {
-      sortedValue = column.isSortedDesc ? "desc" : "asce"
+      sortedValue = column.isSortedDesc ? 'desc' : 'asce'
     } else if (isSorted) {
-      sortedValue = "none"
+      sortedValue = 'none'
     } else {
       sortedValue = false
     }
@@ -163,8 +143,7 @@ function DataTable({
   }
 
   // Setting the entries starting point
-  const entriesStart =
-    pageIndex === 0 ? pageIndex + 1 : pageIndex * pageSize + 1
+  const entriesStart = pageIndex === 0 ? pageIndex + 1 : pageIndex * pageSize + 1
 
   // Setting the entries ending point
   let entriesEnd
@@ -178,15 +157,19 @@ function DataTable({
   }
 
   return (
-    <TableContainer sx={{ boxShadow: "none" }}>
+    <TableContainer sx={{ boxShadow: 'none' }}>
       {entriesPerPage || canSearch ? (
         <MDBox
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          p={3}>
+          display='flex'
+          justifyContent='space-between'
+          alignItems='center'
+          p={3}
+        >
           {entriesPerPage && (
-            <MDBox display="flex" alignItems="center">
+            <MDBox
+              display='flex'
+              alignItems='center'
+            >
               <Autocomplete
                 disableClearable
                 value={pageSize.toString()}
@@ -194,21 +177,27 @@ function DataTable({
                 onChange={(event, newValue) => {
                   setEntriesPerPage(parseInt(newValue, 10))
                 }}
-                size="small"
-                sx={{ width: "5rem" }}
+                size='small'
+                sx={{ width: '5rem' }}
                 renderInput={(params) => <MDInput {...params} />}
               />
-              <MDTypography variant="caption" color="secondary">
+              <MDTypography
+                variant='caption'
+                color='secondary'
+              >
                 &nbsp;&nbsp;entries per page
               </MDTypography>
             </MDBox>
           )}
           {canSearch && (
-            <MDBox width="12rem" ml="auto">
+            <MDBox
+              width='12rem'
+              ml='auto'
+            >
               <MDInput
-                placeholder="Search..."
+                placeholder='Search...'
                 value={search}
-                size="small"
+                size='small'
                 fullWidth
                 onChange={({ currentTarget }: any) => {
                   setSearch(search)
@@ -220,19 +209,21 @@ function DataTable({
         </MDBox>
       ) : null}
       <Table {...getTableProps()}>
-        <MDBox component="thead">
+        <MDBox component='thead'>
           {headerGroups.map((headerGroup: any) => (
-            <TableRow key={newUUID} {...headerGroup.getHeaderGroupProps()}>
+            <TableRow
+              key={newUUID}
+              {...headerGroup.getHeaderGroupProps()}
+            >
               {headerGroup.headers.map((column: any) => (
                 <DataTableHeadCell
                   key={newUUID}
-                  {...column.getHeaderProps(
-                    isSorted && column.getSortByToggleProps()
-                  )}
-                  width={column.width ? column.width : "auto"}
-                  align={column.align ? column.align : "left"}
-                  sorted={setSortedValue(column)}>
-                  {column.render("Header")}
+                  {...column.getHeaderProps(isSorted && column.getSortByToggleProps())}
+                  width={column.width ? column.width : 'auto'}
+                  align={column.align ? column.align : 'left'}
+                  sorted={setSortedValue(column)}
+                >
+                  {column.render('Header')}
                 </DataTableHeadCell>
               ))}
             </TableRow>
@@ -242,14 +233,18 @@ function DataTable({
           {page.map((row: any, key: any) => {
             prepareRow(row)
             return (
-              <TableRow key={newUUID} {...row.getRowProps()}>
+              <TableRow
+                key={newUUID}
+                {...row.getRowProps()}
+              >
                 {row.cells.map((cell: any) => (
                   <DataTableBodyCell
                     key={newUUID}
                     noBorder={noEndBorder && rows.length - 1 === key}
-                    align={cell.column.align ? cell.column.align : "left"}
-                    {...cell.getCellProps()}>
-                    {cell.render("Cell")}
+                    align={cell.column.align ? cell.column.align : 'left'}
+                    {...cell.getCellProps()}
+                  >
+                    {cell.render('Cell')}
                   </DataTableBodyCell>
                 ))}
               </TableRow>
@@ -259,35 +254,44 @@ function DataTable({
       </Table>
 
       <MDBox
-        display="flex"
-        flexDirection={{ xs: "column", sm: "row" }}
-        justifyContent="space-between"
-        alignItems={{ xs: "flex-start", sm: "center" }}
-        p={!showTotalEntries && pageOptions.length === 1 ? 0 : 3}>
+        display='flex'
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        justifyContent='space-between'
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        p={!showTotalEntries && pageOptions.length === 1 ? 0 : 3}
+      >
         {showTotalEntries && (
           <MDBox mb={{ xs: 3, sm: 0 }}>
             <MDTypography
-              variant="button"
-              color="secondary"
-              fontWeight="regular">
+              variant='button'
+              color='secondary'
+              fontWeight='regular'
+            >
               Showing {entriesStart} to {entriesEnd} of {rows.length} entries
             </MDTypography>
           </MDBox>
         )}
         {pageOptions.length > 1 && (
           <MDPagination
-            variant={pagination.variant ? pagination.variant : "gradient"}
-            color={pagination.color ? pagination.color : "info"}>
+            variant={pagination.variant ? pagination.variant : 'gradient'}
+            color={pagination.color ? pagination.color : 'info'}
+          >
             {canPreviousPage && (
-              <MDPagination item onClick={() => previousPage()}>
-                <Icon sx={{ fontWeight: "bold" }}>chevron_left</Icon>
+              <MDPagination
+                item
+                onClick={() => previousPage()}
+              >
+                <Icon sx={{ fontWeight: 'bold' }}>chevron_left</Icon>
               </MDPagination>
             )}
             {renderPagination.length > 6 ? (
-              <MDBox width="5rem" mx={1}>
+              <MDBox
+                width='5rem'
+                mx={1}
+              >
                 <MDInput
                   inputProps={{
-                    type: "number",
+                    type: 'number',
                     min: 1,
                     max: customizedPageOptions.length,
                   }}
@@ -302,8 +306,11 @@ function DataTable({
               renderPagination
             )}
             {canNextPage && (
-              <MDPagination item onClick={() => nextPage()}>
-                <Icon sx={{ fontWeight: "bold" }}>chevron_right</Icon>
+              <MDPagination
+                item
+                onClick={() => nextPage()}
+              >
+                <Icon sx={{ fontWeight: 'bold' }}>chevron_right</Icon>
               </MDPagination>
             )}
           </MDPagination>
@@ -315,10 +322,10 @@ function DataTable({
 
 // Declaring default props for DataTable
 DataTable.defaultProps = {
-  entriesPerPage: { defaultValue: 10, entries: ["5", "10", "15", "20", "25"] },
+  entriesPerPage: { defaultValue: 10, entries: ['5', '10', '15', '20', '25'] },
   canSearch: false,
   showTotalEntries: true,
-  pagination: { variant: "gradient", color: "info" },
+  pagination: { variant: 'gradient', color: 'info' },
   isSorted: true,
   noEndBorder: false,
 }

@@ -21,7 +21,7 @@ const EcommerceNewVisitors = () => {
   const options = {
     chart: {
       parentHeightOffset: 0,
-      toolbar: { show: false }
+      toolbar: { show: false },
     },
     grid: {
       show: false,
@@ -29,8 +29,8 @@ const EcommerceNewVisitors = () => {
         top: -5,
         left: -10,
         right: -7,
-        bottom: -12
-      }
+        bottom: -12,
+      },
     },
     plotOptions: {
       bar: {
@@ -38,8 +38,8 @@ const EcommerceNewVisitors = () => {
         distributed: true,
         columnWidth: '60%',
         endingShape: 'rounded',
-        startingShape: 'rounded'
-      }
+        startingShape: 'rounded',
+      },
     },
     legend: { show: false },
     dataLabels: { enabled: false },
@@ -50,24 +50,24 @@ const EcommerceNewVisitors = () => {
       hexToRGBA(theme.palette.primary.main, 0.1),
       theme.palette.primary.main,
       hexToRGBA(theme.palette.primary.main, 0.1),
-      hexToRGBA(theme.palette.primary.main, 0.1)
+      hexToRGBA(theme.palette.primary.main, 0.1),
     ],
     states: {
       hover: {
-        filter: { type: 'none' }
+        filter: { type: 'none' },
       },
       active: {
-        filter: { type: 'none' }
-      }
+        filter: { type: 'none' },
+      },
     },
     xaxis: {
       tickPlacement: 'on',
       labels: { show: false },
       axisTicks: { show: false },
       axisBorder: { show: false },
-      categories: ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+      categories: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
     },
-    yaxis: { show: false }
+    yaxis: { show: false },
   }
 
   return (
@@ -75,19 +75,32 @@ const EcommerceNewVisitors = () => {
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Box sx={{ mr: 2, display: 'flex', flexDirection: 'column' }}>
-            <Typography variant='h6' sx={{ mb: 7.5 }}>
+            <Typography
+              variant='h6'
+              sx={{ mb: 7.5 }}
+            >
               New Visitors
             </Typography>
-            <Typography component='p' variant='caption'>
+            <Typography
+              component='p'
+              variant='caption'
+            >
               48% new visitors
             </Typography>
-            <Typography component='p' variant='caption' sx={{ mb: 2.5 }}>
+            <Typography
+              component='p'
+              variant='caption'
+              sx={{ mb: 2.5 }}
+            >
               this week.
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant='h6'>12,480</Typography>
               <ChevronUp sx={{ color: 'success.main' }} />
-              <Typography variant='caption' sx={{ color: 'success.main' }}>
+              <Typography
+                variant='caption'
+                sx={{ color: 'success.main' }}
+              >
                 28
               </Typography>
             </Box>

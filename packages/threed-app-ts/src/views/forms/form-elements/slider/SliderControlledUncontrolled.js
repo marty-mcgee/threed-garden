@@ -12,9 +12,16 @@ const SliderControlledUncontrolled = () => {
   return (
     <div>
       <Typography sx={{ fontWeight: 500 }}>Controlled Slider</Typography>
-      <Slider value={value} aria-labelledby='controlled-slider' onChange={(event, newValue) => setValue(newValue)} />
+      <Slider
+        value={value}
+        aria-labelledby='controlled-slider'
+        onChange={(event, newValue) => setValue(newValue)}
+      />
       <Typography sx={{ fontWeight: 500 }}>Uncontrolled Slider</Typography>
-      <Slider defaultValue={30} aria-labelledby='uncontrolled-slider' />
+      <Slider
+        defaultValue={30}
+        aria-labelledby='uncontrolled-slider'
+      />
     </div>
   )
 }

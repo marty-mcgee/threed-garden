@@ -15,7 +15,12 @@ const ToastSuccess = () => {
       <CheckCircleOutline sx={{ mb: 2, fontSize: '2rem' }} />
       <Typography sx={{ mb: 4, fontWeight: 600 }}>Success</Typography>
       <Typography sx={{ mb: 3 }}>Creates a notification with an animated checkmark.</Typography>
-      <Button sx={{ mb: 8 }} color='success' variant='contained' onClick={() => toast.success('Successfully toasted!')}>
+      <Button
+        sx={{ mb: 8 }}
+        color='success'
+        variant='contained'
+        onClick={() => toast.success('Successfully toasted!')}
+      >
         Success
       </Button>
     </Box>

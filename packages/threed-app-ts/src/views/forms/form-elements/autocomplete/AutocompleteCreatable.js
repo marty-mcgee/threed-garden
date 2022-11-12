@@ -25,8 +25,13 @@ const AutocompleteCreatable = () => {
       options={top100Films}
       id='autocomplete-free-solo-with-text'
       renderOption={(props, option) => <li {...props}>{option.title}</li>}
-      renderInput={params => <TextField {...params} label='Free solo with text demo' />}
-      getOptionLabel={option => {
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label='Free solo with text demo'
+        />
+      )}
+      getOptionLabel={(option) => {
         if (typeof option === 'string') {
           return option
         }
@@ -39,11 +44,11 @@ const AutocompleteCreatable = () => {
       onChange={(event, newValue) => {
         if (typeof newValue === 'string') {
           setValue({
-            title: newValue
+            title: newValue,
           })
         } else if (newValue && newValue.inputValue) {
           setValue({
-            title: newValue.inputValue
+            title: newValue.inputValue,
           })
         } else {
           setValue(newValue)
@@ -52,11 +57,11 @@ const AutocompleteCreatable = () => {
       filterOptions={(options, params) => {
         const filtered = filter(options, params)
         const { inputValue } = params
-        const isExisting = options.some(option => inputValue === option.title)
+        const isExisting = options.some((option) => inputValue === option.title)
         if (inputValue !== '' && !isExisting) {
           filtered.push({
             inputValue,
-            title: `Add "${inputValue}"`
+            title: `Add "${inputValue}"`,
           })
         }
 

@@ -16,7 +16,10 @@ const PickersTime = () => {
   const [dateTime, setDateTime] = useState(new Date())
 
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap' }} className='demo-space-x'>
+    <Box
+      sx={{ display: 'flex', flexWrap: 'wrap' }}
+      className='demo-space-x'
+    >
       <Box>
         <DatePicker
           showTimeSelect
@@ -26,7 +29,7 @@ const PickersTime = () => {
           dateFormat='h:mm aa'
           id='time-only-picker'
           timeCaption='Time Picker'
-          onChange={date => setTime(date)}
+          onChange={(date) => setTime(date)}
           customInput={<CustomInput label='Time Only' />}
         />
       </Box>
@@ -39,7 +42,7 @@ const PickersTime = () => {
           id='date-time-picker'
           timeCaption='Time Picker'
           dateFormat='MM/dd/yyyy h:mm aa'
-          onChange={date => setDateTime(date)}
+          onChange={(date) => setDateTime(date)}
           customInput={<CustomInput label='Date & Time' />}
         />
       </Box>

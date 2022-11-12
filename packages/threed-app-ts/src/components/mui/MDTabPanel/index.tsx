@@ -8,7 +8,7 @@ interface TabPanelProps {
 }
 
 function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
+  const { children, value, index, ...other } = props
 
   return (
     <Box
@@ -19,13 +19,9 @@ function TabPanel(props: TabPanelProps) {
       sx={{ p: 3, overflow: 'scroll' }}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ p: 3, overflow: 'scroll' }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ p: 3, overflow: 'scroll' }}>{children}</Box>}
     </Box>
-  );
+  )
 }
 
 export default TabPanel
@@ -34,5 +30,5 @@ export function tabProps(index: number) {
   return {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,
-  };
+  }
 }

@@ -25,9 +25,12 @@ export default function CoverImage({ title, coverImage, slug }: Props) {
     />
   )
   return (
-    <div className="sm:mx-0">
+    <div className='sm:mx-0'>
       {slug ? (
-        <Link href={`/posts/${slug}`} title={title}>
+        <Link
+          href={`/posts/${slug}`}
+          title={title}
+        >
           {image}
         </Link>
       ) : (

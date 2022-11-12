@@ -36,25 +36,25 @@ const Toggler = styled(Box)(({ theme }) => ({
   transform: 'translateY(-50%)',
   backgroundColor: theme.palette.primary.main,
   borderTopLeftRadius: theme.shape.borderRadius,
-  borderBottomLeftRadius: theme.shape.borderRadius
+  borderBottomLeftRadius: theme.shape.borderRadius,
 }))
 
 const Drawer = styled(MuiDrawer)(({ theme }) => ({
   width: 400,
   zIndex: theme.zIndex.modal,
   '& .MuiFormControlLabel-root': {
-    marginRight: '0.6875rem'
+    marginRight: '0.6875rem',
   },
   '& .MuiDrawer-paper': {
     border: 0,
     width: 400,
     zIndex: theme.zIndex.modal,
-    boxShadow: theme.shadows[9]
-  }
+    boxShadow: theme.shadows[9],
+  },
 }))
 
 const CustomizerSpacing = styled('div')(({ theme }) => ({
-  padding: theme.spacing(5, 6)
+  padding: theme.spacing(5, 6),
 }))
 
 const ColorBox = styled(Box)(({ theme }) => ({
@@ -67,7 +67,7 @@ const ColorBox = styled(Box)(({ theme }) => ({
   margin: theme.spacing(0, 1.5),
   color: theme.palette.common.white,
   transition: 'box-shadow .25s ease',
-  borderRadius: theme.shape.borderRadius
+  borderRadius: theme.shape.borderRadius,
 }))
 
 const Customizer = () => {
@@ -90,7 +90,7 @@ const Customizer = () => {
     themeColor,
     navCollapsed,
     contentWidth,
-    verticalNavToggleType
+    verticalNavToggleType,
   } = settings
 
   const handleChange = (field, value) => {
@@ -99,19 +99,30 @@ const Customizer = () => {
 
   return (
     <div className='customizer'>
-      <Toggler className='customizer-toggler' onClick={() => setOpen(true)}>
+      <Toggler
+        className='customizer-toggler'
+        onClick={() => setOpen(true)}
+      >
         <CogOutline sx={{ height: 20, width: 20, color: 'common.white' }} />
       </Toggler>
-      <Drawer open={open} hideBackdrop anchor='right' variant='persistent'>
+      <Drawer
+        open={open}
+        hideBackdrop
+        anchor='right'
+        variant='persistent'
+      >
         <Box
           className='customizer-header'
           sx={{
             position: 'relative',
-            p: theme => theme.spacing(3.5, 5),
-            borderBottom: theme => `1px solid ${theme.palette.divider}`
+            p: (theme) => theme.spacing(3.5, 5),
+            borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
           }}
         >
-          <Typography variant='h6' sx={{ fontWeight: 600, textTransform: 'uppercase' }}>
+          <Typography
+            variant='h6'
+            sx={{ fontWeight: 600, textTransform: 'uppercase' }}
+          >
             Theme Customizer
           </Typography>
           <Typography sx={{ color: 'text.secondary' }}>Customize & Preview in Real Time</Typography>
@@ -122,7 +133,7 @@ const Customizer = () => {
               top: '50%',
               position: 'absolute',
               color: 'text.secondary',
-              transform: 'translateY(-50%)'
+              transform: 'translateY(-50%)',
             }}
           >
             <Close fontSize='small' />
@@ -143,13 +154,25 @@ const Customizer = () => {
               <RadioGroup
                 row
                 value={skin}
-                onChange={e => handleChange('skin', e.target.value)}
+                onChange={(e) => handleChange('skin', e.target.value)}
                 sx={{ '& .MuiFormControlLabel-label': { fontSize: '.875rem', color: 'text.secondary' } }}
               >
-                <FormControlLabel value='default' label='Default' control={<Radio />} />
-                <FormControlLabel value='bordered' label='Bordered' control={<Radio />} />
+                <FormControlLabel
+                  value='default'
+                  label='Default'
+                  control={<Radio />}
+                />
+                <FormControlLabel
+                  value='bordered'
+                  label='Bordered'
+                  control={<Radio />}
+                />
                 {layout === 'horizontal' ? null : (
-                  <FormControlLabel value='semi-dark' label='Semi Dark' control={<Radio />} />
+                  <FormControlLabel
+                    value='semi-dark'
+                    label='Semi Dark'
+                    control={<Radio />}
+                  />
                 )}
               </RadioGroup>
             </Box>
@@ -167,7 +190,7 @@ const Customizer = () => {
                   id='change-mode'
                   name='change-mode'
                   checked={mode === 'dark'}
-                  onChange={e => handleChange('mode', e.target.checked ? 'dark' : 'light')}
+                  onChange={(e) => handleChange('mode', e.target.checked ? 'dark' : 'light')}
                 />
                 <InputLabel
                   htmlFor='change-mode'
@@ -186,7 +209,7 @@ const Customizer = () => {
                   sx={{
                     ml: 0,
                     backgroundColor: '#4C9900', // '#9155FD',
-                    ...(themeColor === 'primary' ? { boxShadow: 9 } : { '&:hover': { boxShadow: 4 } })
+                    ...(themeColor === 'primary' ? { boxShadow: 9 } : { '&:hover': { boxShadow: 4 } }),
                   }}
                 >
                   {themeColor === 'primary' ? <Check fontSize='small' /> : null}
@@ -195,7 +218,7 @@ const Customizer = () => {
                   onClick={() => handleChange('themeColor', 'secondary')}
                   sx={{
                     backgroundColor: 'secondary.main',
-                    ...(themeColor === 'secondary' ? { boxShadow: 9 } : { '&:hover': { boxShadow: 4 } })
+                    ...(themeColor === 'secondary' ? { boxShadow: 9 } : { '&:hover': { boxShadow: 4 } }),
                   }}
                 >
                   {themeColor === 'secondary' ? <Check fontSize='small' /> : null}
@@ -204,7 +227,7 @@ const Customizer = () => {
                   onClick={() => handleChange('themeColor', 'success')}
                   sx={{
                     backgroundColor: 'success.main',
-                    ...(themeColor === 'success' ? { boxShadow: 9 } : { '&:hover': { boxShadow: 4 } })
+                    ...(themeColor === 'success' ? { boxShadow: 9 } : { '&:hover': { boxShadow: 4 } }),
                   }}
                 >
                   {themeColor === 'success' ? <Check fontSize='small' /> : null}
@@ -213,7 +236,7 @@ const Customizer = () => {
                   onClick={() => handleChange('themeColor', 'error')}
                   sx={{
                     backgroundColor: 'error.main',
-                    ...(themeColor === 'error' ? { boxShadow: 9 } : { '&:hover': { boxShadow: 4 } })
+                    ...(themeColor === 'error' ? { boxShadow: 9 } : { '&:hover': { boxShadow: 4 } }),
                   }}
                 >
                   {themeColor === 'error' ? <Check fontSize='small' /> : null}
@@ -222,7 +245,7 @@ const Customizer = () => {
                   onClick={() => handleChange('themeColor', 'warning')}
                   sx={{
                     backgroundColor: 'warning.main',
-                    ...(themeColor === 'warning' ? { boxShadow: 9 } : { '&:hover': { boxShadow: 4 } })
+                    ...(themeColor === 'warning' ? { boxShadow: 9 } : { '&:hover': { boxShadow: 4 } }),
                   }}
                 >
                   {themeColor === 'warning' ? <Check fontSize='small' /> : null}
@@ -232,7 +255,7 @@ const Customizer = () => {
                   sx={{
                     mr: 0,
                     backgroundColor: 'info.main',
-                    ...(themeColor === 'info' ? { boxShadow: 9 } : { '&:hover': { boxShadow: 4 } })
+                    ...(themeColor === 'info' ? { boxShadow: 9 } : { '&:hover': { boxShadow: 4 } }),
                   }}
                 >
                   {themeColor === 'info' ? <Check fontSize='small' /> : null}
@@ -257,11 +280,19 @@ const Customizer = () => {
               <RadioGroup
                 row
                 value={contentWidth}
-                onChange={e => handleChange('contentWidth', e.target.value)}
+                onChange={(e) => handleChange('contentWidth', e.target.value)}
                 sx={{ '& .MuiFormControlLabel-label': { fontSize: '.875rem', color: 'text.secondary' } }}
               >
-                <FormControlLabel value='full' label='Full' control={<Radio />} />
-                <FormControlLabel value='boxed' label='Boxed' control={<Radio />} />
+                <FormControlLabel
+                  value='full'
+                  label='Full'
+                  control={<Radio />}
+                />
+                <FormControlLabel
+                  value='boxed'
+                  label='Boxed'
+                  control={<Radio />}
+                />
               </RadioGroup>
             </Box>
 
@@ -270,13 +301,25 @@ const Customizer = () => {
               <RadioGroup
                 row
                 value={appBar}
-                onChange={e => handleChange('appBar', e.target.value)}
+                onChange={(e) => handleChange('appBar', e.target.value)}
                 sx={{ '& .MuiFormControlLabel-label': { fontSize: '.875rem', color: 'text.secondary' } }}
               >
-                <FormControlLabel value='fixed' label='Fixed' control={<Radio />} />
-                <FormControlLabel value='static' label='Static' control={<Radio />} />
+                <FormControlLabel
+                  value='fixed'
+                  label='Fixed'
+                  control={<Radio />}
+                />
+                <FormControlLabel
+                  value='static'
+                  label='Static'
+                  control={<Radio />}
+                />
                 {layout === 'horizontal' ? null : (
-                  <FormControlLabel value='hidden' label='Hidden' control={<Radio />} />
+                  <FormControlLabel
+                    value='hidden'
+                    label='Hidden'
+                    control={<Radio />}
+                  />
                 )}
               </RadioGroup>
             </Box>
@@ -286,12 +329,24 @@ const Customizer = () => {
               <RadioGroup
                 row
                 value={footer}
-                onChange={e => handleChange('footer', e.target.value)}
+                onChange={(e) => handleChange('footer', e.target.value)}
                 sx={{ '& .MuiFormControlLabel-label': { fontSize: '.875rem', color: 'text.secondary' } }}
               >
-                <FormControlLabel value='fixed' label='Fixed' control={<Radio />} />
-                <FormControlLabel value='static' label='Static' control={<Radio />} />
-                <FormControlLabel value='hidden' label='Hidden' control={<Radio />} />
+                <FormControlLabel
+                  value='fixed'
+                  label='Fixed'
+                  control={<Radio />}
+                />
+                <FormControlLabel
+                  value='static'
+                  label='Static'
+                  control={<Radio />}
+                />
+                <FormControlLabel
+                  value='hidden'
+                  label='Hidden'
+                  control={<Radio />}
+                />
               </RadioGroup>
             </Box>
 
@@ -300,7 +355,7 @@ const Customizer = () => {
               <Switch
                 name='appBarBlur'
                 checked={appBarBlur}
-                onChange={e => handleChange('appBarBlur', e.target.checked)}
+                onChange={(e) => handleChange('appBarBlur', e.target.checked)}
               />
             </Box>
 
@@ -309,7 +364,7 @@ const Customizer = () => {
               <Switch
                 name='direction'
                 checked={direction === 'rtl'}
-                onChange={e => handleChange('direction', e.target.checked ? 'rtl' : 'ltr')}
+                onChange={(e) => handleChange('direction', e.target.checked ? 'rtl' : 'ltr')}
               />
             </Box>
           </CustomizerSpacing>
@@ -330,17 +385,25 @@ const Customizer = () => {
               <RadioGroup
                 row
                 value={layout}
-                onChange={e => {
+                onChange={(e) => {
                   saveSettings({
                     ...settings,
                     layout: e.target.value,
-                    lastLayout: e.target.value
+                    lastLayout: e.target.value,
                   })
                 }}
                 sx={{ '& .MuiFormControlLabel-label': { fontSize: '.875rem', color: 'text.secondary' } }}
               >
-                <FormControlLabel value='vertical' label='Vertical' control={<Radio />} />
-                <FormControlLabel value='horizontal' label='Horizontal' control={<Radio />} />
+                <FormControlLabel
+                  value='vertical'
+                  label='Vertical'
+                  control={<Radio />}
+                />
+                <FormControlLabel
+                  value='horizontal'
+                  label='Horizontal'
+                  control={<Radio />}
+                />
               </RadioGroup>
             </Box>
 
@@ -350,11 +413,19 @@ const Customizer = () => {
                 <RadioGroup
                   row
                   value={verticalNavToggleType}
-                  onChange={e => handleChange('verticalNavToggleType', e.target.value)}
+                  onChange={(e) => handleChange('verticalNavToggleType', e.target.value)}
                   sx={{ '& .MuiFormControlLabel-label': { fontSize: '.875rem', color: 'text.secondary' } }}
                 >
-                  <FormControlLabel value='accordion' label='Accordion' control={<Radio />} />
-                  <FormControlLabel value='collapse' label='Collapse' control={<Radio />} />
+                  <FormControlLabel
+                    value='accordion'
+                    label='Accordion'
+                    control={<Radio />}
+                  />
+                  <FormControlLabel
+                    value='collapse'
+                    label='Collapse'
+                    control={<Radio />}
+                  />
                 </RadioGroup>
               </Box>
             )}
@@ -365,7 +436,7 @@ const Customizer = () => {
                 <Switch
                   name='navCollapsed'
                   checked={navCollapsed}
-                  onChange={e => handleChange('navCollapsed', e.target.checked)}
+                  onChange={(e) => handleChange('navCollapsed', e.target.checked)}
                 />
               </Box>
             )}
@@ -376,7 +447,7 @@ const Customizer = () => {
                 <Switch
                   name='navHidden'
                   checked={navHidden}
-                  onChange={e => handleChange('navHidden', e.target.checked)}
+                  onChange={(e) => handleChange('navHidden', e.target.checked)}
                 />
               </Box>
             )}

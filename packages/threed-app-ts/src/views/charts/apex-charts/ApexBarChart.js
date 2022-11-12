@@ -28,40 +28,40 @@ const ApexBarChart = () => {
     chart: {
       parentHeightOffset: 0,
       toolbar: {
-        show: false
-      }
+        show: false,
+      },
     },
     plotOptions: {
       bar: {
         borderRadius: 8,
         barHeight: '30%',
         horizontal: true,
-        startingShape: 'rounded'
-      }
+        startingShape: 'rounded',
+      },
     },
     grid: {
       xaxis: {
         lines: {
-          show: false
-        }
+          show: false,
+        },
       },
       padding: {
-        top: -10
-      }
+        top: -10,
+      },
     },
     colors: ['#00cfe8'],
     dataLabels: {
-      enabled: false
+      enabled: false,
     },
     xaxis: {
-      categories: ['MON, 11', 'THU, 14', 'FRI, 15', 'MON, 18', 'WED, 20', 'FRI, 21', 'MON, 23']
-    }
+      categories: ['MON, 11', 'THU, 14', 'FRI, 15', 'MON, 18', 'WED, 20', 'FRI, 21', 'MON, 23'],
+    },
   }
 
   const series = [
     {
-      data: [700, 350, 480, 600, 210, 550, 150]
-    }
+      data: [700, 350, 480, 600, 210, 550, 150],
+    },
   ]
 
   const CustomInput = forwardRef((props, ref) => {
@@ -85,13 +85,13 @@ const ApexBarChart = () => {
             <InputAdornment position='end'>
               <ChevronDown />
             </InputAdornment>
-          )
+          ),
         }}
       />
     )
   })
 
-  const handleOnChange = dates => {
+  const handleOnChange = (dates) => {
     const [start, end] = dates
     setStartDate(start)
     setEndDate(end)
@@ -108,7 +108,7 @@ const ApexBarChart = () => {
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],
           '& .MuiCardHeader-action': { mb: 0 },
-          '& .MuiCardHeader-content': { mb: [2, 0] }
+          '& .MuiCardHeader-content': { mb: [2, 0] },
         }}
         action={
           <DatePicker
@@ -119,12 +119,22 @@ const ApexBarChart = () => {
             startDate={startDate}
             onChange={handleOnChange}
             placeholderText='Click to select a date'
-            customInput={<CustomInput start={startDate} end={endDate} />}
+            customInput={
+              <CustomInput
+                start={startDate}
+                end={endDate}
+              />
+            }
           />
         }
       />
       <CardContent>
-        <ReactApexcharts options={options} series={series} type='bar' height={400} />
+        <ReactApexcharts
+          options={options}
+          series={series}
+          type='bar'
+          height={400}
+        />
       </CardContent>
     </Card>
   )

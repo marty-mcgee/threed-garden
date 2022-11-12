@@ -1,6 +1,6 @@
 // simple try:catch promise
 try {
-  console.debug("threed servers/apollo.js loaded")
+  console.debug('threed servers/apollo.js loaded')
 
   const doBootApollo = true
 
@@ -10,14 +10,14 @@ try {
 
     const typeDefs = gql`
       type Query {
-        word:  String
+        word: String
       }
     `
 
     const resolvers = {
       Query: {
-        word: () => "HEY HEY HEY"
-      }
+        word: () => 'HEY HEY HEY',
+      },
     }
 
     const schema = new ApolloServer({ typeDefs, resolvers })
@@ -26,8 +26,7 @@ try {
       console.debug(`schema ready at ${url}`)
     })
   }
-
 } catch (err) {
   // an error has occurred. no output is being attempted here.
-  console.debug("threed servers/apollo.js not loaded", err)
+  console.debug('threed servers/apollo.js not loaded', err)
 }

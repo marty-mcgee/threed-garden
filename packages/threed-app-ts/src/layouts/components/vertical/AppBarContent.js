@@ -12,23 +12,42 @@ import UserDropdown from '~/@core/layouts/components/shared-components/UserDropd
 import LanguageDropdown from '~/@core/layouts/components/shared-components/LanguageDropdown'
 import NotificationDropdown from '~/@core/layouts/components/shared-components/NotificationDropdown'
 
-const AppBarContent = props => {
+const AppBarContent = (props) => {
   // ** Props
   const { hidden, settings, saveSettings, toggleNavVisibility } = props
 
   return (
     <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-      <Box className='actions-left' sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
+      <Box
+        className='actions-left'
+        sx={{ mr: 2, display: 'flex', alignItems: 'center' }}
+      >
         {hidden ? (
-          <IconButton color='inherit' sx={{ ml: -2.75 }} onClick={toggleNavVisibility}>
+          <IconButton
+            color='inherit'
+            sx={{ ml: -2.75 }}
+            onClick={toggleNavVisibility}
+          >
             <MenuIcon />
           </IconButton>
         ) : null}
       </Box>
-      <Box className='actions-right' sx={{ display: 'flex', alignItems: 'center' }}>
-        <Autocomplete hidden={hidden} settings={settings} />
-        <LanguageDropdown settings={settings} saveSettings={saveSettings} />
-        <ModeToggler settings={settings} saveSettings={saveSettings} />
+      <Box
+        className='actions-right'
+        sx={{ display: 'flex', alignItems: 'center' }}
+      >
+        <Autocomplete
+          hidden={hidden}
+          settings={settings}
+        />
+        <LanguageDropdown
+          settings={settings}
+          saveSettings={saveSettings}
+        />
+        <ModeToggler
+          settings={settings}
+          saveSettings={saveSettings}
+        />
         <NotificationDropdown settings={settings} />
         <UserDropdown settings={settings} />
       </Box>

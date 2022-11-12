@@ -11,7 +11,7 @@ const SelectControlledUncontrolled = () => {
   // ** State
   const [value, setValue] = useState('')
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     setValue(event.target.value)
   }
 
@@ -36,7 +36,12 @@ const SelectControlledUncontrolled = () => {
       </FormControl>
       <FormControl>
         <InputLabel id='uncontrolled-select-label'>Uncontrolled</InputLabel>
-        <Select defaultValue='' label='Uncontrolled' id='uncontrolled-select' labelId='uncontrolled-select-label'>
+        <Select
+          defaultValue=''
+          label='Uncontrolled'
+          id='uncontrolled-select'
+          labelId='uncontrolled-select-label'
+        >
           <MenuItem value=''>
             <em>None</em>
           </MenuItem>

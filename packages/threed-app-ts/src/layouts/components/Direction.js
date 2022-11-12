@@ -12,10 +12,10 @@ const styleCache = () =>
   createCache({
     key: 'rtl',
     prepend: true,
-    stylisPlugins: [stylisRTLPlugin]
+    stylisPlugins: [stylisRTLPlugin],
   })
 
-const Direction = props => {
+const Direction = (props) => {
   const { children, direction } = props
   useEffect(() => {
     document.dir = direction

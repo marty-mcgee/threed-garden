@@ -14,13 +14,16 @@ const AccordionControlled = () => {
   // ** State
   const [expanded, setExpanded] = useState(false)
 
-  const handleChange = panel => (event, isExpanded) => {
+  const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false)
   }
 
   return (
     <div>
-      <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+      <Accordion
+        expanded={expanded === 'panel1'}
+        onChange={handleChange('panel1')}
+      >
         <AccordionSummary
           expandIcon={<ChevronDown />}
           id='controlled-panel-header-1'
@@ -36,7 +39,10 @@ const AccordionControlled = () => {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+      <Accordion
+        expanded={expanded === 'panel2'}
+        onChange={handleChange('panel2')}
+      >
         <AccordionSummary
           expandIcon={<ChevronDown />}
           id='controlled-panel-header-2'
@@ -52,7 +58,10 @@ const AccordionControlled = () => {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
+      <Accordion
+        expanded={expanded === 'panel3'}
+        onChange={handleChange('panel3')}
+      >
         <AccordionSummary
           expandIcon={<ChevronDown />}
           id='controlled-panel-header-3'

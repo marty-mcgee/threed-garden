@@ -39,42 +39,74 @@ import TableHeader from '~/views/apps/roles/TableHeader'
 
 // ** Vars
 const userRoleObj = {
-  admin: <Laptop fontSize='small' sx={{ mr: 3, color: 'error.main' }} />,
-  author: <CogOutline fontSize='small' sx={{ mr: 3, color: 'warning.main' }} />,
-  editor: <PencilOutline fontSize='small' sx={{ mr: 3, color: 'info.main' }} />,
-  maintainer: <ChartDonut fontSize='small' sx={{ mr: 3, color: 'success.main' }} />,
-  subscriber: <AccountOutline fontSize='small' sx={{ mr: 3, color: 'primary.main' }} />
+  admin: (
+    <Laptop
+      fontSize='small'
+      sx={{ mr: 3, color: 'error.main' }}
+    />
+  ),
+  author: (
+    <CogOutline
+      fontSize='small'
+      sx={{ mr: 3, color: 'warning.main' }}
+    />
+  ),
+  editor: (
+    <PencilOutline
+      fontSize='small'
+      sx={{ mr: 3, color: 'info.main' }}
+    />
+  ),
+  maintainer: (
+    <ChartDonut
+      fontSize='small'
+      sx={{ mr: 3, color: 'success.main' }}
+    />
+  ),
+  subscriber: (
+    <AccountOutline
+      fontSize='small'
+      sx={{ mr: 3, color: 'primary.main' }}
+    />
+  ),
 }
 
 const userStatusObj = {
   active: 'success',
   pending: 'warning',
-  inactive: 'secondary'
+  inactive: 'secondary',
 }
 
 // ** Styled component for the link for the avatar with image
 const AvatarWithImageLink = styled(Link)(({ theme }) => ({
-  marginRight: theme.spacing(3)
+  marginRight: theme.spacing(3),
 }))
 
 // ** Styled component for the link for the avatar without image
 const AvatarWithoutImageLink = styled(Link)(({ theme }) => ({
   textDecoration: 'none',
-  marginRight: theme.spacing(3)
+  marginRight: theme.spacing(3),
 }))
 
 // ** renders client column
-const renderClient = row => {
+const renderClient = (row) => {
   if (row.avatar.length) {
     return (
       <AvatarWithImageLink href={`/apps/user/view/${row.id}`}>
-        <CustomAvatar src={row.avatar} sx={{ mr: 3, width: 30, height: 30 }} />
+        <CustomAvatar
+          src={row.avatar}
+          sx={{ mr: 3, width: 30, height: 30 }}
+        />
       </AvatarWithImageLink>
     )
   } else {
     return (
       <AvatarWithoutImageLink href={`/apps/user/view/${row.id}`}>
-        <CustomAvatar skin='light' color={row.avatarColor} sx={{ mr: 3, width: 30, height: 30, fontSize: '.875rem' }}>
+        <CustomAvatar
+          skin='light'
+          color={row.avatarColor}
+          sx={{ mr: 3, width: 30, height: 30, fontSize: '.875rem' }}
+        >
           {getInitials(row.fullName ? row.fullName : 'Marty McGee')}
         </CustomAvatar>
       </AvatarWithoutImageLink>
@@ -95,7 +127,10 @@ const columns = [
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {renderClient(row)}
           <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-            <Link href={`/apps/user/view/${id}`} passHref>
+            <Link
+              href={`/apps/user/view/${id}`}
+              passHref
+            >
               <Typography
                 noWrap
                 component='a'
@@ -105,15 +140,23 @@ const columns = [
                 {fullName}
               </Typography>
             </Link>
-            <Link href={`/apps/user/view/${id}`} passHref>
-              <Typography noWrap component='a' variant='caption' sx={{ textDecoration: 'none' }}>
+            <Link
+              href={`/apps/user/view/${id}`}
+              passHref
+            >
+              <Typography
+                noWrap
+                component='a'
+                variant='caption'
+                sx={{ textDecoration: 'none' }}
+              >
                 @{username}
               </Typography>
             </Link>
           </Box>
         </Box>
       )
-    }
+    },
   },
   {
     flex: 0.2,
@@ -122,11 +165,14 @@ const columns = [
     headerName: 'Email',
     renderCell: ({ row }) => {
       return (
-        <Typography variant='body2' noWrap>
+        <Typography
+          variant='body2'
+          noWrap
+        >
           {row.email}
         </Typography>
       )
-    }
+    },
   },
   {
     flex: 0.15,
@@ -137,12 +183,15 @@ const columns = [
       return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {userRoleObj[row.role]}
-          <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
+          <Typography
+            noWrap
+            sx={{ color: 'text.secondary', textTransform: 'capitalize' }}
+          >
             {row.role}
           </Typography>
         </Box>
       )
-    }
+    },
   },
   {
     flex: 0.15,
@@ -151,11 +200,14 @@ const columns = [
     field: 'currentPlan',
     renderCell: ({ row }) => {
       return (
-        <Typography noWrap sx={{ textTransform: 'capitalize' }}>
+        <Typography
+          noWrap
+          sx={{ textTransform: 'capitalize' }}
+        >
           {row.currentPlan}
         </Typography>
       )
-    }
+    },
   },
   {
     flex: 0.1,
@@ -172,7 +224,7 @@ const columns = [
           sx={{ textTransform: 'capitalize' }}
         />
       )
-    }
+    },
   },
   {
     flex: 0.1,
@@ -181,13 +233,16 @@ const columns = [
     field: 'actions',
     headerName: 'Actions',
     renderCell: ({ row }) => (
-      <Link href={`/apps/user/view/${row.id}`} passHref>
+      <Link
+        href={`/apps/user/view/${row.id}`}
+        passHref
+      >
         <IconButton>
           <EyeOutline />
         </IconButton>
       </Link>
-    )
-  }
+    ),
+  },
 ]
 
 const UserList = () => {
@@ -198,31 +253,42 @@ const UserList = () => {
 
   // ** Hooks
   const dispatch = useDispatch()
-  const store = useSelector(state => state.user)
+  const store = useSelector((state) => state.user)
   useEffect(() => {
     dispatch(
       fetchData({
         role: '',
         q: value,
         status: '',
-        currentPlan: plan
+        currentPlan: plan,
       })
     )
   }, [dispatch, plan, value])
 
-  const handleFilter = useCallback(val => {
+  const handleFilter = useCallback((val) => {
     setValue(val)
   }, [])
 
-  const handlePlanChange = useCallback(e => {
+  const handlePlanChange = useCallback((e) => {
     setPlan(e.target.value)
   }, [])
 
   return (
-    <Grid container spacing={6}>
-      <Grid item xs={12}>
+    <Grid
+      container
+      spacing={6}
+    >
+      <Grid
+        item
+        xs={12}
+      >
         <Card>
-          <TableHeader plan={plan} value={value} handleFilter={handleFilter} handlePlanChange={handlePlanChange} />
+          <TableHeader
+            plan={plan}
+            value={value}
+            handleFilter={handleFilter}
+            handlePlanChange={handlePlanChange}
+          />
           <DataGrid
             autoHeight
             rows={store.data}
@@ -231,7 +297,7 @@ const UserList = () => {
             pageSize={pageSize}
             disableSelectionOnClick
             rowsPerPageOptions={[10, 25, 50]}
-            onPageSizeChange={newPageSize => setPageSize(newPageSize)}
+            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
           />
         </Card>
       </Grid>

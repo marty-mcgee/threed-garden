@@ -1,13 +1,13 @@
 // @mui material components
-import Fade from "@mui/material/Fade"
+import Fade from '@mui/material/Fade'
 
 // ThreeD Garden Base Styles
-import colors from "~/themes/theme-dark/base/colors"
-import typography from "~/themes/theme-dark/base/typography"
-import borders from "~/themes/theme-dark/base/borders"
+import colors from '~/themes/theme-dark/base/colors'
+import typography from '~/themes/theme-dark/base/typography'
+import borders from '~/themes/theme-dark/base/borders'
 
 // ThreeD Garden Helper Functions
-import pxToRem from "~/themes/theme-dark/functions/pxToRem"
+import pxToRem from '~/themes/theme-dark/functions/pxToRem'
 
 const { black, white } = colors
 const { size, fontWeightRegular } = typography
@@ -29,7 +29,7 @@ const tooltip: Types = {
       color: white.main,
       fontSize: size.sm,
       fontWeight: fontWeightRegular,
-      textAlign: "center",
+      textAlign: 'center',
       borderRadius: borderRadius.md,
       opacity: 0.7,
       padding: `${pxToRem(5)} ${pxToRem(8)} ${pxToRem(4)}`,

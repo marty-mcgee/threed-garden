@@ -3,10 +3,10 @@ const Autocomplete = (theme, skin) => {
     MuiAutocomplete: {
       styleOverrides: {
         paper: {
-          ...(skin === 'bordered' && { boxShadow: 'none', border: `1px solid ${theme.palette.divider}` })
-        }
-      }
-    }
+          ...(skin === 'bordered' && { boxShadow: 'none', border: `1px solid ${theme.palette.divider}` }),
+        },
+      },
+    },
   }
 }
 

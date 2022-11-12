@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, Fragment } from 'react'
+import { useState } from 'react'
 
 // ** MUI Imports
 import Menu from '@mui/material/Menu'
@@ -34,10 +34,10 @@ const ChatWrapperStartChat = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   flexDirection: 'column',
   justifyContent: 'center',
-  backgroundColor: theme.palette.action.hover
+  backgroundColor: theme.palette.action.hover,
 }))
 
-const ChatContent = props => {
+const ChatContent = (props) => {
   // ** Props
   const {
     store,
@@ -50,14 +50,14 @@ const ChatContent = props => {
     sidebarWidth,
     userProfileRightOpen,
     handleLeftSidebarToggle,
-    handleUserProfileRightSidebarToggle
+    handleUserProfileRightSidebarToggle,
   } = props
 
   // ** State
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
 
@@ -78,7 +78,7 @@ const ChatContent = props => {
         return (
           <ChatWrapperStartChat
             sx={{
-              ...(mdAbove ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 } : {})
+              ...(mdAbove ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 } : {}),
             }}
           >
             <MuiAvatar
@@ -90,7 +90,7 @@ const ChatContent = props => {
                 width: 110,
                 height: 110,
                 backgroundColor: 'background.paper',
-                boxShadow: theme => theme.shadows[3]
+                boxShadow: (theme) => theme.shadows[3],
               }}
             >
               <MessageOutline sx={{ fontSize: '3.125rem' }} />
@@ -102,8 +102,8 @@ const ChatContent = props => {
                 px: 6,
                 borderRadius: 5,
                 backgroundColor: 'background.paper',
-                boxShadow: theme => theme.shadows[3],
-                cursor: mdAbove ? 'default' : 'pointer'
+                boxShadow: (theme) => theme.shadows[3],
+                cursor: mdAbove ? 'default' : 'pointer',
               }}
             >
               <Typography sx={{ fontWeight: 500, fontSize: '1.125rem', lineHeight: 'normal' }}>
@@ -119,7 +119,7 @@ const ChatContent = props => {
               flexGrow: 1,
               width: '100%',
               height: '100%',
-              backgroundColor: theme => theme.palette.action.hover
+              backgroundColor: (theme) => theme.palette.action.hover,
             }}
           >
             <Box
@@ -129,12 +129,15 @@ const ChatContent = props => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                borderBottom: theme => `1px solid ${theme.palette.divider}`
+                borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 {mdAbove ? null : (
-                  <IconButton onClick={handleLeftSidebarToggle} sx={{ mr: 2 }}>
+                  <IconButton
+                    onClick={handleLeftSidebarToggle}
+                    sx={{ mr: 2 }}
+                  >
                     <MenuIcon />
                   </IconButton>
                 )}
@@ -146,7 +149,7 @@ const ChatContent = props => {
                     overlap='circular'
                     anchorOrigin={{
                       vertical: 'bottom',
-                      horizontal: 'right'
+                      horizontal: 'right',
                     }}
                     sx={{ mr: 3 }}
                     badgeContent={
@@ -157,8 +160,8 @@ const ChatContent = props => {
                           height: 8,
                           borderRadius: '50%',
                           color: `${statusObj[selectedChat.contact.status]}.main`,
-                          boxShadow: theme => `0 0 0 2px ${theme.palette.background.paper}`,
-                          backgroundColor: `${statusObj[selectedChat.contact.status]}.main`
+                          boxShadow: (theme) => `0 0 0 2px ${theme.palette.background.paper}`,
+                          backgroundColor: `${statusObj[selectedChat.contact.status]}.main`,
                         }}
                       />
                     }
@@ -183,7 +186,10 @@ const ChatContent = props => {
                     <Typography sx={{ fontWeight: 500, fontSize: '0.875rem' }}>
                       {selectedChat.contact.fullName}
                     </Typography>
-                    <Typography variant='caption' sx={{ color: 'text.disabled' }}>
+                    <Typography
+                      variant='caption'
+                      sx={{ color: 'text.disabled' }}
+                    >
                       {selectedChat.contact.role}
                     </Typography>
                   </Box>
@@ -193,18 +199,31 @@ const ChatContent = props => {
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 {mdAbove ? (
                   <>
-                    <IconButton size='small' sx={{ color: 'text.secondary' }}>
+                    <IconButton
+                      size='small'
+                      sx={{ color: 'text.secondary' }}
+                    >
                       <PhoneOutline sx={{ fontSize: '1.25rem' }} />
                     </IconButton>
-                    <IconButton size='small' sx={{ color: 'text.secondary' }}>
+                    <IconButton
+                      size='small'
+                      sx={{ color: 'text.secondary' }}
+                    >
                       <VideoOutline sx={{ fontSize: '1.5rem' }} />
                     </IconButton>
-                    <IconButton size='small' sx={{ color: 'text.secondary' }}>
+                    <IconButton
+                      size='small'
+                      sx={{ color: 'text.secondary' }}
+                    >
                       <Magnify sx={{ fontSize: '1.25rem' }} />
                     </IconButton>
                   </>
                 ) : null}
-                <IconButton size='small' onClick={handleClick} sx={{ color: 'text.secondary' }}>
+                <IconButton
+                  size='small'
+                  onClick={handleClick}
+                  sx={{ color: 'text.secondary' }}
+                >
                   <DotsVertical sx={{ fontSize: '1.25rem' }} />
                 </IconButton>
                 <Menu
@@ -214,11 +233,11 @@ const ChatContent = props => {
                   onClose={handleClose}
                   anchorOrigin={{
                     vertical: 'bottom',
-                    horizontal: 'right'
+                    horizontal: 'right',
                   }}
                   transformOrigin={{
                     vertical: 'top',
-                    horizontal: 'right'
+                    horizontal: 'right',
                   }}
                 >
                   <MenuItem onClick={handleClose}>View Contact</MenuItem>
@@ -231,10 +250,17 @@ const ChatContent = props => {
             </Box>
 
             {selectedChat && store.userProfile ? (
-              <ChatLog hidden={hidden} data={{ ...selectedChat, userContact: store.userProfile }} />
+              <ChatLog
+                hidden={hidden}
+                data={{ ...selectedChat, userContact: store.userProfile }}
+              />
             ) : null}
 
-            <SendMsgForm store={store} dispatch={dispatch} sendMsg={sendMsg} />
+            <SendMsgForm
+              store={store}
+              dispatch={dispatch}
+              sendMsg={sendMsg}
+            />
 
             <UserProfileRight
               store={store}

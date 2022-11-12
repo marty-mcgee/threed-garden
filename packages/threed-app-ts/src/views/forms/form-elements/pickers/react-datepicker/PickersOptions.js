@@ -18,14 +18,17 @@ const PickersOptions = () => {
   const [dateFilter, setDateFilter] = useState(new Date())
   const [dateWeekNum, setDateWeekNum] = useState(new Date())
 
-  const isWeekday = date => {
+  const isWeekday = (date) => {
     const day = new Date(date).getDay()
 
     return day !== 0 && day !== 6
   }
 
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap' }} className='demo-space-x'>
+    <Box
+      sx={{ display: 'flex', flexWrap: 'wrap' }}
+      className='demo-space-x'
+    >
       <Box>
         <DatePicker
           isClearable
@@ -34,7 +37,7 @@ const PickersOptions = () => {
           popperPlacement='top-start'
           portalId='react-datepicker-portal'
           customInput={<CustomInput label='Clear' />}
-          onChange={date => setDateClear(date)}
+          onChange={(date) => setDateClear(date)}
         />
       </Box>
       <Box>
@@ -44,7 +47,7 @@ const PickersOptions = () => {
           selected={dateWeekNum}
           popperPlacement='top-start'
           portalId='react-datepicker-portal'
-          onChange={date => setDateWeekNum(date)}
+          onChange={(date) => setDateWeekNum(date)}
           customInput={<CustomInput label='Week Numbers' />}
         />
       </Box>
@@ -55,7 +58,7 @@ const PickersOptions = () => {
           filterDate={isWeekday}
           popperPlacement='top-start'
           portalId='react-datepicker-portal'
-          onChange={date => setDateFilter(date)}
+          onChange={(date) => setDateFilter(date)}
           customInput={<CustomInput label='Filter Dates' />}
         />
       </Box>
@@ -66,7 +69,7 @@ const PickersOptions = () => {
           popperPlacement='top-start'
           portalId='react-datepicker-portal'
           openToDate={new Date('1993/09/28')}
-          onChange={date => setDateOpen(date)}
+          onChange={(date) => setDateOpen(date)}
           customInput={<CustomInput label='Open To Date' />}
         />
       </Box>
@@ -77,7 +80,7 @@ const PickersOptions = () => {
           id='picker-date-today-btn'
           popperPlacement='top-start'
           portalId='react-datepicker-portal'
-          onChange={date => setDateTodayBtn(date)}
+          onChange={(date) => setDateTodayBtn(date)}
           customInput={<CustomInput label='Date Today Button' />}
         />
       </Box>

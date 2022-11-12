@@ -14,12 +14,12 @@ import ReactApexcharts from '~/@core/components/react-apexcharts'
 const series = [
   {
     name: 'Income',
-    data: [70, 90, 90, 90, 80, 90]
+    data: [70, 90, 90, 90, 80, 90],
   },
   {
     name: 'Net Worth',
-    data: [120, 80, 100, 80, 100, 80]
-  }
+    data: [120, 80, 100, 80, 100, 80],
+  },
 ]
 
 const CardWidgetsPerformance = () => {
@@ -29,16 +29,16 @@ const CardWidgetsPerformance = () => {
   const options = {
     chart: {
       parentHeightOffset: 0,
-      toolbar: { show: false }
+      toolbar: { show: false },
     },
     colors: [theme.palette.primary.main, theme.palette.info.main],
     plotOptions: {
       radar: {
         size: 110,
         polygons: {
-          strokeColors: ['#ebe9f1', 'transparent', 'transparent', 'transparent', 'transparent', 'transparent']
-        }
-      }
+          strokeColors: ['#ebe9f1', 'transparent', 'transparent', 'transparent', 'transparent', 'transparent'],
+        },
+      },
     },
     fill: {
       type: 'gradient',
@@ -49,18 +49,18 @@ const CardWidgetsPerformance = () => {
         type: 'vertical',
         opacityFrom: 1,
         opacityTo: 0.9,
-        stops: [0, 100]
-      }
+        stops: [0, 100],
+      },
     },
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
     markers: {
-      size: 0
+      size: 0,
     },
     xaxis: {
-      labels: { show: true, style: { fontSize: '14px' } }
+      labels: { show: true, style: { fontSize: '14px' } },
     },
     yaxis: { show: false },
-    grid: { show: false }
+    grid: { show: false },
   }
 
   return (
@@ -68,16 +68,26 @@ const CardWidgetsPerformance = () => {
       <CardHeader
         title='Performance'
         titleTypographyProps={{
-          sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' }
+          sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' },
         }}
         action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
+          <IconButton
+            size='small'
+            aria-label='settings'
+            className='card-more-options'
+            sx={{ color: 'text.secondary' }}
+          >
             <DotsVertical />
           </IconButton>
         }
       />
       <CardContent>
-        <ReactApexcharts type='radar' height={305} series={series} options={options} />
+        <ReactApexcharts
+          type='radar'
+          height={305}
+          series={series}
+          options={options}
+        />
       </CardContent>
     </Card>
   )

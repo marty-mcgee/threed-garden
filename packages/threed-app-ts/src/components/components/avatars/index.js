@@ -19,13 +19,21 @@ import * as source from '~/views/components/avatars/AvatarsSourceCode'
 
 const Avatars = () => {
   return (
-    <Grid container spacing={6} className='match-height'>
-      <Grid item xs={12} sm={6}>
+    <Grid
+      container
+      spacing={6}
+      className='match-height'
+    >
+      <Grid
+        item
+        xs={12}
+        sm={6}
+      >
         <CardSnippet
           title='Image Avatars'
           code={{
             tsx: null,
-            jsx: source.AvatarsImageJSXCode
+            jsx: source.AvatarsImageJSXCode,
           }}
         >
           <Typography>
@@ -34,12 +42,16 @@ const Avatars = () => {
           <AvatarsImage />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+      >
         <CardSnippet
           title='Letter Avatars'
           code={{
             tsx: null,
-            jsx: source.AvatarsLetterJSXCode
+            jsx: source.AvatarsLetterJSXCode,
           }}
         >
           <Typography>
@@ -50,12 +62,16 @@ const Avatars = () => {
           <AvatarsLetter />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+      >
         <CardSnippet
           title='Sizes'
           code={{
             tsx: null,
-            jsx: source.AvatarsSizesJSXCode
+            jsx: source.AvatarsSizesJSXCode,
           }}
         >
           <Typography>
@@ -64,12 +80,16 @@ const Avatars = () => {
           <AvatarsSizes />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+      >
         <CardSnippet
           title='Icon Avatars'
           code={{
             tsx: null,
-            jsx: source.AvatarsIconJSXCode
+            jsx: source.AvatarsIconJSXCode,
           }}
         >
           <Typography>
@@ -78,12 +98,16 @@ const Avatars = () => {
           <AvatarsIcon />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+      >
         <CardSnippet
           title='Variants'
           code={{
             tsx: null,
-            jsx: source.AvatarsVariantsJSXCode
+            jsx: source.AvatarsVariantsJSXCode,
           }}
         >
           <Typography>
@@ -93,12 +117,16 @@ const Avatars = () => {
           <AvatarsVariants />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+      >
         <CardSnippet
           title='Avatars With Badge'
           code={{
             tsx: null,
-            jsx: source.AvatarsWithBadgeJSXCode
+            jsx: source.AvatarsWithBadgeJSXCode,
           }}
         >
           <Typography>
@@ -107,12 +135,15 @@ const Avatars = () => {
           <AvatarsWithBadge />
         </CardSnippet>
       </Grid>
-      <Grid item xs={12}>
+      <Grid
+        item
+        xs={12}
+      >
         <CardSnippet
           title='Grouped Avatars'
           code={{
             tsx: null,
-            jsx: source.AvatarsGroupedJSXCode
+            jsx: source.AvatarsGroupedJSXCode,
           }}
         >
           <Typography sx={{ mb: 4 }}>

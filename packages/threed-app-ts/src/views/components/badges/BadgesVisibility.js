@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, Fragment } from 'react'
+import { useState } from 'react'
 
 // ** MUI Imports
 import Badge from '@mui/material/Badge'
@@ -19,8 +19,8 @@ const Wrapper = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   '& > *': {
-    marginRight: `${theme.spacing(6)} !important`
-  }
+    marginRight: `${theme.spacing(6)} !important`,
+  },
 }))
 
 const BadgesVisibility = () => {
@@ -35,26 +35,51 @@ const BadgesVisibility = () => {
   return (
     <>
       <Wrapper className='demo-space-x'>
-        <Badge badgeContent={count} color='primary'>
-          <Avatar src='/images/avatars/1.png' alt='User Avatar' />
+        <Badge
+          badgeContent={count}
+          color='primary'
+        >
+          <Avatar
+            src='/images/avatars/1.png'
+            alt='User Avatar'
+          />
         </Badge>
         <ButtonGroup size='small'>
-          <Button aria-label='reduce' onClick={() => setCount(Math.max(count - 1, 0))}>
+          <Button
+            aria-label='reduce'
+            onClick={() => setCount(Math.max(count - 1, 0))}
+          >
             <Minus fontSize='small' />
           </Button>
-          <Button aria-label='increase' onClick={() => setCount(count + 1)}>
+          <Button
+            aria-label='increase'
+            onClick={() => setCount(count + 1)}
+          >
             <Plus fontSize='small' />
           </Button>
         </ButtonGroup>
       </Wrapper>
 
       <Wrapper className='demo-space-x'>
-        <Badge variant='dot' color='primary' invisible={invisible}>
-          <Avatar src='/images/avatars/1.png' alt='User Avatar' />
+        <Badge
+          variant='dot'
+          color='primary'
+          invisible={invisible}
+        >
+          <Avatar
+            src='/images/avatars/1.png'
+            alt='User Avatar'
+          />
         </Badge>
         <FormControlLabel
           label='Show Badge'
-          control={<Switch color='primary' checked={!invisible} onChange={handleBadgeVisibility} />}
+          control={
+            <Switch
+              color='primary'
+              checked={!invisible}
+              onChange={handleBadgeVisibility}
+            />
+          }
         />
       </Wrapper>
     </>
