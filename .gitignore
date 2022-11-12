@@ -88,13 +88,14 @@ _drafts
 # vscode
 *.code-workspace
 
-# demo
-public/demo/objects/*
-
 # custom
+packages/threed-garden
 @threed
 _sandbox
 garage
+
+# demo
+packages/threed-garden/public/demo/objects/*
 
 # scaffold-eth
 *.tsbuildinfo
