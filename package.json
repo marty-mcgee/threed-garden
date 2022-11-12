@@ -93,7 +93,7 @@
       "packages/threed-app-ts",
       "packages/subgraph",
       "packages/services/*",
-      "packages/*"
+      "packages/*/anyothers"
     ]
   },
   "packageManager": "yarn@3.2.1",
