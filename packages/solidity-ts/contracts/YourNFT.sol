@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-//learn more: https://docs.openzeppelin.com/contracts/3.x/erc721
+// learn more: https://docs.openzeppelin.com/contracts/3.x/erc721
 
 // GET LISTED ON OPENSEA: https://testnets.opensea.io/get-listed/step-two
 
@@ -36,7 +36,10 @@ contract YourNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   }
 
   function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+    //
     // DO SOMETHING
+    //
+
     return super.tokenURI(tokenId);
   }
 
