@@ -8,20 +8,19 @@ module.exports = {
 
   extends: [
     // '../common/.eslintrc.js',
-    // 'plugin:@typescript-eslint/recommended', // common
-    // 'plugin:react/recommended', // common
+    'plugin:@typescript-eslint/recommended', // common
+    'plugin:react/recommended', // common
     // 'airbnb', // needed ?
-    // 'prettier', // needed ?
-    // 'next', // or 'plugin:@next/next/recommended'
+    'plugin:prettier/recommended', // common
+    'plugin:@next/next/recommended', // this app
   ],
 
-  // plugins: [
-  //   // '@typescript-eslint',
-  //   'react',
-  //   'prettier',
-  //   // 'plugin:@next/next/recommended',
-  //   // '@next/next',
-  // ],
+  plugins: [
+    '@typescript-eslint', // common
+    'react', // common
+    'prettier', // common
+    'next', // this app
+  ],
 
   // parser: '@babel/eslint-parser',
   parser: '@typescript-eslint/parser',
