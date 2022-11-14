@@ -1,47 +1,59 @@
-import { ThreeDNFT__factory, ThreeDNFT } from 'generated/contract-types';
-import { task } from 'hardhat/config';
-import { create } from 'ipfs-http-client';
+import { ThreeDNFT__factory, ThreeDNFT, YourNFT__factory, YourNFT } from 'generated/contract-types'
+import { task } from 'hardhat/config'
+import { create } from 'ipfs-http-client'
 
-import { getHardhatSigners } from '~helpers/functions/accounts';
-import { sleep } from '~tasks/utils/hardhatUtils';
+import { getHardhatSigners } from '~helpers/functions/accounts'
+import { sleep } from '~tasks/utils/hardhatUtils'
 
 task('mint', 'Mints NFTs to the specified address')
   .addPositionalParam('toAddress', 'The address that will mint them')
   .addOptionalPositionalParam('contractAddress', 'The address of contract them')
   .setAction(async ({ toAddress, contractAddress }: { toAddress: string; contractAddress?: string }, hre) => {
+    //
     const ipfs = create({
       host: 'ipfs.infura.io',
       port: 5001,
       protocol: 'https',
-    });
+    })
 
     // // // // // // // // // // // // // // // // // //
 
-    console.log('\n\n 🎫 Minting to ' + toAddress + '...\n');
+    console.debug('\n\n 🎫 Minting to ' + toAddress + '...\n')
 
-    const { deployer } = await getHardhatSigners(hre);
-    let threedNFTContract: ThreeDNFT | undefined = undefined;
+    const { deployer } = await getHardhatSigners(hre)
+    let threedNFTContract: ThreeDNFT | undefined = undefined
+    let yourNFTContract: YourNFT | undefined = undefined
 
     if (contractAddress != null) {
       try {
-        threedNFTContract = ThreeDNFT__factory.connect(contractAddress, deployer);
+        threedNFTContract = ThreeDNFT__factory.connect(contractAddress, deployer)
+        yourNFTContract = YourNFT__factory.connect(contractAddress, deployer)
       } catch (e) {
-        console.log('Invalid contractAddress, creating new ThreeDNFT contract');
-        return;
+        console.debug('Invalid contractAddress, creating new ThreeDNFT or YourNFT contract', e)
+        return
       }
     }
 
     if (threedNFTContract == null) {
-      const factory = new ThreeDNFT__factory(deployer);
-      threedNFTContract = await factory.deploy();
-      console.log(`\n\n 🎫 ThreeDNFT contract deployed at ${threedNFTContract.address.toString()}\n`);
+      const factory = new ThreeDNFT__factory(deployer)
+      threedNFTContract = await factory.deploy()
+      console.debug(`\n\n 🎫 ThreeDNFT contract deployed at ${threedNFTContract.address.toString()}\n`)
+    }
+    if (yourNFTContract == null) {
+      const factory = new YourNFT__factory(deployer)
+      yourNFTContract = await factory.deploy()
+      console.debug(`\n\n 🎫 YourNFT contract deployed at ${yourNFTContract.address.toString()}\n`)
     }
 
     if (threedNFTContract == null) {
-      console.error('Could not get contract or create contract');
-      return;
+      console.error('Could not get threedNFTContract or create threedNFTContract')
+      return
     }
-    const delay = 1000;
+    if (yourNFTContract == null) {
+      console.error('Could not get yourNFTContract or create yourNFTContract')
+      return
+    }
+    const delay = 1000
 
     const buffalo = {
       description: "It's actually a bison?",
@@ -62,16 +74,16 @@ task('mint', 'Mints NFTs to the specified address')
           value: 42,
         },
       ],
-    };
-    console.log('Uploading buffalo...');
-    const uploaded = await ipfs.add(JSON.stringify(buffalo));
+    }
+    console.debug('Uploading buffalo...')
+    const uploaded = await ipfs.add(JSON.stringify(buffalo))
 
-    console.log('Minting buffalo with IPFS hash (' + uploaded.path + ')');
+    console.debug('Minting buffalo with IPFS hash (' + uploaded.path + ')')
     await threedNFTContract.mintItem(toAddress, uploaded.path, {
       gasLimit: 400000,
-    });
+    })
 
-    await sleep(delay);
+    await sleep(delay)
 
     const zebra = {
       description: 'What is it so worried about?',
@@ -92,16 +104,16 @@ task('mint', 'Mints NFTs to the specified address')
           value: 38,
         },
       ],
-    };
-    console.log('Uploading zebra...');
-    const uploadedzebra = await ipfs.add(JSON.stringify(zebra));
+    }
+    console.debug('Uploading zebra...')
+    const uploadedzebra = await ipfs.add(JSON.stringify(zebra))
 
-    console.log('Minting zebra with IPFS hash (' + uploadedzebra.path + ')');
+    console.debug('Minting zebra with IPFS hash (' + uploadedzebra.path + ')')
     await threedNFTContract.mintItem(toAddress, uploadedzebra.path, {
       gasLimit: 400000,
-    });
+    })
 
-    await sleep(delay);
+    await sleep(delay)
 
     const rhino = {
       description: 'What a horn!',
@@ -122,16 +134,16 @@ task('mint', 'Mints NFTs to the specified address')
           value: 22,
         },
       ],
-    };
-    console.log('Uploading rhino...');
-    const uploadedrhino = await ipfs.add(JSON.stringify(rhino));
+    }
+    console.debug('Uploading rhino...')
+    const uploadedrhino = await ipfs.add(JSON.stringify(rhino))
 
-    console.log('Minting rhino with IPFS hash (' + uploadedrhino.path + ')');
+    console.debug('Minting rhino with IPFS hash (' + uploadedrhino.path + ')')
     await threedNFTContract.mintItem(toAddress, uploadedrhino.path, {
       gasLimit: 400000,
-    });
+    })
 
-    await sleep(delay);
+    await sleep(delay)
 
     const fish = {
       description: 'Is that an underbyte?',
@@ -152,27 +164,27 @@ task('mint', 'Mints NFTs to the specified address')
           value: 15,
         },
       ],
-    };
-    console.log('Uploading fish...');
-    const uploadedfish = await ipfs.add(JSON.stringify(fish));
+    }
+    console.debug('Uploading fish...')
+    const uploadedfish = await ipfs.add(JSON.stringify(fish))
 
-    console.log('Minting fish with IPFS hash (' + uploadedfish.path + ')');
+    console.debug('Minting fish with IPFS hash (' + uploadedfish.path + ')')
     await threedNFTContract.mintItem(toAddress, uploadedfish.path, {
       gasLimit: 400000,
-    });
+    })
 
-    await sleep(delay);
+    await sleep(delay)
 
-    console.log('Transferring Ownership of YourCollectible to ' + toAddress + '...');
+    console.debug('Transferring Ownership of YourCollectible to ' + toAddress + '...')
 
-    await threedNFTContract.transferOwnership(toAddress, { gasLimit: 400000 });
+    await threedNFTContract.transferOwnership(toAddress, { gasLimit: 400000 })
 
-    await sleep(delay);
+    await sleep(delay)
 
     /*
 
 
-  console.log("Minting zebra...")
+  console.debug("Minting zebra...")
   await yourCollectible.mintItem("0xD75b0609ed51307E13bae0F9394b5f63A7f8b6A1","zebra.jpg")
 
   */
@@ -206,4 +218,4 @@ task('mint', 'Mints NFTs to the specified address')
    LibraryName: **LibraryAddress**
   });
   */
-  });
+  })

@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-//learn more: https://docs.openzeppelin.com/contracts/3.x/erc721
+// learn more: https://docs.openzeppelin.com/contracts/3.x/erc721
 
 // GET LISTED ON OPENSEA: https://testnets.opensea.io/get-listed/step-two
 
@@ -23,7 +23,11 @@ contract ThreeDNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     return "https://ipfs.io/ipfs/";
   }
 
-  function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal override(ERC721, ERC721Enumerable) {
+  function _beforeTokenTransfer(
+    address from,
+    address to,
+    uint256 tokenId
+  ) internal override(ERC721, ERC721Enumerable) {
     super._beforeTokenTransfer(from, to, tokenId);
   }
 
@@ -36,8 +40,12 @@ contract ThreeDNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   }
 
   function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+    //
     // DO SOMETHING
+    //
+
     return super.tokenURI(tokenId);
+    // return super.tokenURI("HEYHEYHEY");
   }
 
   function mintItem(address to, string memory tokenURI) public returns (uint256) {
@@ -46,6 +54,7 @@ contract ThreeDNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     uint256 id = _tokenIds.current();
     _mint(to, id);
     _setTokenURI(id, tokenURI);
+    // _setTokenURI(id, "HEYHEYHEY");
 
     return id;
   }

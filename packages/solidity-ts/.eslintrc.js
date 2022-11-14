@@ -30,12 +30,13 @@ module.exports = {
   ],
   plugins: ['prettier', '@typescript-eslint', 'unused-imports'],
   rules: {
-    'prettier/prettier': [
-      'warn',
-      {
-        endOfLine: 'auto',
-      },
-    ],
+    // 'prettier/prettier': [
+    //   'warn',
+    //   {
+    //     endOfLine: 'auto',
+    //   },
+    // ],
+    'prettier/prettier': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/no-empty-function': 'warn',
     'no-unused-vars': 'off',

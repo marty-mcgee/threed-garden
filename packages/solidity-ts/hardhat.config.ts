@@ -1,17 +1,17 @@
-import './helpers/hardhat-imports';
-import path from 'path';
+import './helpers/hardhat-imports'
+import path from 'path'
 
-import chalk from 'chalk';
-import glob from 'glob';
-import { removeConsoleLog } from 'hardhat-preprocessor';
-import type { HardhatUserConfig } from 'hardhat/config';
+import chalk from 'chalk'
+import glob from 'glob'
+import { removeConsoleLog } from 'hardhat-preprocessor'
+import type { HardhatUserConfig } from 'hardhat/config'
 
-import { getMnemonic } from './helpers/functions';
+import { getMnemonic } from './helpers/functions'
 
-import { hardhatNamedAccounts } from '~common/constants';
-import { getNetworks } from '~common/functions';
-import scaffoldConfig from '~common/scaffold.config';
-import { hardhatArtifactsDir, hardhatDeploymentsDir, typechainOutDir } from '~helpers/constants/toolkitPaths';
+import { hardhatNamedAccounts } from '~common/constants'
+import { getNetworks } from '~common/functions'
+import scaffoldConfig from '~common/scaffold.config'
+import { hardhatArtifactsDir, hardhatDeploymentsDir, typechainOutDir } from '~helpers/constants/toolkitPaths'
 
 // eslint-disable-next-line no-duplicate-imports
 /**
@@ -29,15 +29,15 @@ import { hardhatArtifactsDir, hardhatDeploymentsDir, typechainOutDir } from '~he
 if (process.env.BUILDING !== 'true') {
   try {
     glob.sync('./tasks/**/*.ts').forEach((file: string) => {
-      require(path.resolve(file));
-    });
+      require(path.resolve(file))
+    })
   } catch (e) {
-    console.log(chalk.yellow('--------------------------'));
-    console.warn(chalk.red('🙋 Make sure to compile hardhat first: `yarn compile`'));
-    console.log(chalk.yellow('...or run hardhat with process.env.BUILDING = true'));
-    console.log(chalk.yellow('If you do not compile hardhat, you cannot be able to load the tasks in the tasks folder'));
-    console.log(chalk.yellow('--------------------------'));
-    console.log(e);
+    console.log(chalk.yellow('--------------------------'))
+    console.warn(chalk.red('🙋 Make sure to compile hardhat first: `yarn compile`'))
+    console.log(chalk.yellow('...or run hardhat with process.env.BUILDING = true'))
+    console.log(chalk.yellow('If you do not compile hardhat, you cannot be able to load the tasks in the tasks folder'))
+    console.log(chalk.yellow('--------------------------'))
+    console.log(e)
   }
 }
 
@@ -56,18 +56,18 @@ const networks = {
       if there is no mnemonic, it will just use account 0 of the hardhat node to deploy
       (you can put in a mnemonic here to set the deployer locally)
     */
-    // accounts: {
-    //   mnemonic: getMnemonic(),
-    // },
+    accounts: {
+      mnemonic: getMnemonic(),
+    },
   },
-};
+}
 
 /**
  * See {@link hardhatNamedAccounts} to define named accounts
  */
 const namedAccounts = hardhatNamedAccounts as {
-  [name: string]: string | number | { [network: string]: null | number | string };
-};
+  [name: string]: string | number | { [network: string]: null | number | string }
+}
 
 export const config: HardhatUserConfig = {
   preprocess: {
@@ -137,5 +137,5 @@ export const config: HardhatUserConfig = {
     outDir: typechainOutDir,
     discriminateTypes: true,
   },
-};
-export default config;
+}
+export default config

@@ -1,3 +1,3 @@
-export * from './IScaffoldAppProviders';
-export * from './scaffoldConfigTypes';
-export * from './TScaffoldConfig';
+export * from './IScaffoldAppProviders'
+export * from './scaffoldConfigTypes'
+export * from './TScaffoldConfig'
