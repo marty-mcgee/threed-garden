@@ -46,19 +46,6 @@ export const appContractsConfig = () => {
               foundryDeployedContractsJson
             ),
 
-      YourNFT:
-        scaffoldConfig.build.solidityToolkit === 'hardhat'
-          ? createConnectorForHardhatContract(
-              'YourNFT',
-              toolkitContracts.YourNFT__factory,
-              hardhatDeployedContractsJson
-            )
-          : createConnectorForFoundryContract(
-              'YourNFT',
-              toolkitContracts.YourNFT__factory,
-              foundryDeployedContractsJson
-            ),
-
       ThreeDNFT:
         scaffoldConfig.build.solidityToolkit === 'hardhat'
           ? createConnectorForHardhatContract(

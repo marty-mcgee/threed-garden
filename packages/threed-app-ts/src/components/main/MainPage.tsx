@@ -93,7 +93,6 @@ export const MainPage: NextPage<IMainPageProps> = (props) => {
 
   // init contracts
   const yourContract = useAppContracts('YourContract', ethersAppContext.chainId)
-  const yourNFT = useAppContracts('YourNFT', ethersAppContext.chainId)
   const threedNFT = useAppContracts('ThreeDNFT', ethersAppContext.chainId)
   const mainnetDai = useAppContracts('DAI', networkDefinitions.mainnet.chainId)
 
@@ -137,17 +136,6 @@ export const MainPage: NextPage<IMainPageProps> = (props) => {
       ),
     },
     pages: [
-      {
-        name: 'YourNFT',
-        content: (
-          <GenericContract
-            contractName='YourNFT'
-            contract={yourNFT}
-            mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
-            blockExplorer={scaffoldAppProviders.currentTargetNetwork.blockExplorer}
-          ></GenericContract>
-        ),
-      },
       {
         name: 'ThreeDNFT',
         content: (
