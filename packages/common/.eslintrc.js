@@ -66,6 +66,7 @@ module.exports = {
     //     endOfLine: 'auto',
     //   },
     // ],
+    'prettier/prettier': 'off',
     '@typescript-eslint/ban-ts-comment': [
       'warn',
       {

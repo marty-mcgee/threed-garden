@@ -1,7 +1,7 @@
-import { EthersModalConnector } from 'eth-hooks/context';
-import { TCreateEthersModalConnector } from 'eth-hooks/models';
-import { useCallback } from 'react';
-import { ICoreOptions } from 'web3modal';
+import { EthersModalConnector } from 'eth-hooks/context'
+import { TCreateEthersModalConnector } from 'eth-hooks/models'
+import { useCallback } from 'react'
+import { ICoreOptions } from 'web3modal'
 
 export const useGetCreateLoginConnector = (
   currentTheme: string | undefined,
@@ -14,12 +14,12 @@ export const useGetCreateLoginConnector = (
           { ...web3Config, theme: currentTheme },
           { reloadOnNetworkChange: false, immutableProvider: false },
           id
-        );
-        return connector;
+        )
+        return connector
       }
     },
     [web3Config, currentTheme]
-  );
+  )
 
-  return createLoginConnector;
-};
+  return createLoginConnector
+}

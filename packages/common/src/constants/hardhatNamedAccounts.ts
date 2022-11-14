@@ -1,14 +1,14 @@
-import { TNetworkNamesList } from '~common/models/scaffoldConfigTypes';
+import { TNetworkNamesList } from '~common/models/scaffoldConfigTypes'
 
-type TChain = TNetworkNamesList | number;
-type TAccountName = 'deployer' | 'user1' | 'user2' | 'user3' | 'user4' | 'user5' | 'governance';
+type TChain = TNetworkNamesList | number
+type TAccountName = 'deployer' | 'user1' | 'user2' | 'user3' | 'user4' | 'user5' | 'governance'
 
 /**
  * The default account to use for hardhat.  For example 0 will take by default take the first account of hardhat
  */
 type TDefaultAccount = {
-  ['default']: number | string;
-};
+  ['default']: number | string
+}
 
 /**
  * Named accounts to be used by hardaht.  See docs: https://github.com/wighawag/hardhat-deploy#1-namedaccounts-ability-to-name-addresses
@@ -16,7 +16,7 @@ type TDefaultAccount = {
  * the values are account addresses, or account number in hardhat
  */
 export const hardhatNamedAccounts: {
-  [name in TAccountName]: Readonly<Partial<{ [network in TChain]: number | string }> & TDefaultAccount>;
+  [name in TAccountName]: Readonly<Partial<{ [network in TChain]: number | string }> & TDefaultAccount>
 } = {
   deployer: {
     default: 0, // here this will by default take the first account as deployer
@@ -42,4 +42,4 @@ export const hardhatNamedAccounts: {
   governance: {
     default: 10,
   },
-} as const;
+} as const

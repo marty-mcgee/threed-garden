@@ -1,5 +1,5 @@
-import { NetworkID } from '@dethcrypto/eth-sdk/dist/abi-management/networks';
-import { TExternalContractsAddressMap } from 'eth-hooks/models';
+import { NetworkID } from '@dethcrypto/eth-sdk/dist/abi-management/networks'
+import { TExternalContractsAddressMap } from 'eth-hooks/models'
 
 /**
  * ⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️
@@ -19,4 +19,4 @@ export const externalContractsAddressMap: TExternalContractsAddressMap = {
   // [NetworkID.POLYGON]: {
   //   DAI: '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
   // },
-};
+}

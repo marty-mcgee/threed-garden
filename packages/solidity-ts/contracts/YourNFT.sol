@@ -23,7 +23,11 @@ contract YourNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     return "https://ipfs.io/ipfs/";
   }
 
-  function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal override(ERC721, ERC721Enumerable) {
+  function _beforeTokenTransfer(
+    address from,
+    address to,
+    uint256 tokenId
+  ) internal override(ERC721, ERC721Enumerable) {
     super._beforeTokenTransfer(from, to, tokenId);
   }
 
@@ -41,6 +45,7 @@ contract YourNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     //
 
     return super.tokenURI(tokenId);
+    // return super.tokenURI("YOYOYO");
   }
 
   function mintItem(address to, string memory tokenURI) public returns (uint256) {
@@ -49,6 +54,7 @@ contract YourNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     uint256 id = _tokenIds.current();
     _mint(to, id);
     _setTokenURI(id, tokenURI);
+    // _setTokenURI(id, "YOYOYO");
 
     return id;
   }

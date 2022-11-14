@@ -25,7 +25,10 @@ export const getAccountData = async (mnemonic: string): Promise<{ address: strin
   return { address, wallet: Wallet.fromMnemonic(mnemonic, fullPath) };
 };
 
-export const createAddress = (from: string, initCode: string): { address: string; from: string; salt: Uint8Array; initCodeHash: string; initCode: string } => {
+export const createAddress = (
+  from: string,
+  initCode: string
+): { address: string; from: string; salt: Uint8Array; initCodeHash: string; initCode: string } => {
   const salt = randomBytes(32);
   const initCodeHash = keccak256(initCode);
 

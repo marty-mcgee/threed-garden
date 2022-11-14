@@ -18,7 +18,9 @@ export const getMnemonic = (path?: string): string => {
       .toString()
       .trim();
   } catch (e) {
-    console.log('☢️ WARNING: No mnemonic file created for a deploy account. Try `yarn generate` and then `yarn account`.');
+    console.log(
+      '☢️ WARNING: No mnemonic file created for a deploy account. Try `yarn generate` and then `yarn account`.'
+    );
   }
   return '';
 };
