@@ -84,7 +84,7 @@ export const MainPage: FC = () => {
 
   // init contracts
   const yourContract = useAppContracts('YourContract', ethersAppContext.chainId);
-  const yourNFT = useAppContracts('YourNFT', ethersAppContext.chainId);
+  const threedNFT = useAppContracts('ThreeDNFT', ethersAppContext.chainId);
   const mainnetDai = useAppContracts('DAI', networkDefinitions.mainnet.chainId);
 
   // keep track of a variable from the contract in the local React state:
@@ -134,11 +134,11 @@ export const MainPage: FC = () => {
     },
     pages: [
       {
-        name: 'YourNFT',
+        name: 'ThreeDNFT',
         content: (
           <GenericContract
-            contractName="YourNFT"
-            contract={yourNFT}
+            contractName="ThreeDNFT"
+            contract={threedNFT}
             mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
             blockExplorer={scaffoldAppProviders.currentTargetNetwork.blockExplorer}></GenericContract>
         ),
