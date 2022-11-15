@@ -1,7 +1,8 @@
 {
   "name": "truffle",
   "version": "1.0.0",
-  "description": "Truffle project with SimpleStorage contract",
+  "private": true,
+  "description": "Truffle project with SimpleStorage Contract + Tests + Training + Sandbox + Evaluation",
   "main": "truffle-config.js",
   "dependencies": {
     "@truffle/hdwallet-provider": "^2.0.10"
