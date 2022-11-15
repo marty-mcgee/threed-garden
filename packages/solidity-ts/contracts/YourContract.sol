@@ -14,6 +14,7 @@ contract YourContract {
 
   constructor() {
     // 🌱 what should we do on deploy?
+    console.log("HEY HEY HEY: YourContract constructor");
   }
 
   // this is an event for the function below
