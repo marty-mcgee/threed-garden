@@ -16,6 +16,7 @@ export const NetworkNamesList = [
   'avalanche',
   'testnetFantom',
   'fantom',
+  'ganache',
 ] as const
 
 export type TNetworkNamesList = typeof NetworkNamesList[number]

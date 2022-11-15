@@ -10,7 +10,7 @@ This is the typescript repo of scaffold-eth. Use scaffold-eth-typescript with:
 
 ## 🌱 Quick Start
 
-### 🌱 Fork or Clone the Repo
+### Fork or Clone the Repo
 
 - You can use the use the template link: [scaffold-eth-typescript template](https://github.com/scaffold-eth/scaffold-eth-typescript/generate)
 - You can clone the repo with git
@@ -18,7 +18,7 @@ This is the typescript repo of scaffold-eth. Use scaffold-eth-typescript with:
   git clone https://github.com/scaffold-eth/scaffold-eth-typescript.git
   ```
 
-### 🌱 Starting the App
+### Starting the App
 
 Running the app requires 3 separate executable processes/threads (so open 3 terminals)
 
@@ -58,13 +58,13 @@ Running the app requires 3 separate executable processes/threads (so open 3 term
 
 Scaffold uses `scaffold.config.json` as a configuration file located in `/packages/common/scaffold.config.json`. You can create the config file by running the command `yarn create-config`.
 
-### 🌱 Command Line Help
+### Command Line Help
 
 ```bash
 use `-h` with any command for help.  e.g. yarn set-react -h
 ```
 
-### 🌱 Configure React and Solidity toolkit
+### Configure React and Solidity toolkit
 
 You can change the configuration file to pick different frontends and solidity toolkits.
 
@@ -73,7 +73,7 @@ yarn set-react 'threed' or 'nextjs' or 'vite'
 yarn set-solidity 'hardhat' or 'foundry'
 ```
 
-### 🌱 Target Network
+### Target Network
 
 Set your `targetNetwork` in the config. This is the network the solidity toolkit is deploying against.
 
@@ -86,13 +86,13 @@ yarn set-network -h
 yarn set-network 'localhost' 'localhost, mainnet'
 ```
 
-### 🌱 More Commands
+### More Commands
 
 You can see all the other commands by using `yarn scaffold`
 
 ## 🌱 Solidity Tookits Details
 
-### 🌱 Hardhat
+### Hardhat
 
 Everything will be installed with `yarn install`.
 
@@ -102,7 +102,7 @@ You can use hardhat with right context using
 yarn hardhat
 ```
 
-### 🌱 Foundry
+### Foundry
 
 Make sure you install foundry
 
@@ -132,7 +132,7 @@ packages/vite-app-ts/
 packages/next-app-ts/
 ```
 
-### 🌱 More Info
+### More Info
 
 Other commands
 
@@ -185,7 +185,7 @@ Eth-hooks v4 & scaffold-eth-typescript overview
 - [Getting Started with eth-hooks and scaffold-eth-typescript](https://www.youtube.com/watch?v=a7W9nTX8qLk&t=3s)
 - [eth-hooks v4](https://www.youtube.com/watch?v=STxAdE8wQwY&t=86s)
 
-## 🌱 🏃💨 Speedrun Ethereum
+## 🌱 Speedrun Ethereum 🏃💨
 
 Register as a builder [here](https://speedrunethereum.com) and start on some of the challenges and build a portfolio.
 
@@ -208,7 +208,7 @@ Check out
 - [Vanilla JS active branches](https://github.com/scaffold-eth/scaffold-eth/branches/active)
 - Join/fund the 🏰 [BuidlGuidl](https://BuidlGuidl.com)!
 
-### 🙏🏽 Support us!
+## 🙏🏽 Support us!
 
 Please check out our [Gitcoin grant](https://gitcoin.co/grants/2851/scaffold-eth) too!
 

@@ -13,6 +13,9 @@ import { getNetworks } from '~common/functions'
 import scaffoldConfig from '~common/scaffold.config'
 import { hardhatArtifactsDir, hardhatDeploymentsDir, typechainOutDir } from '~helpers/constants/toolkitPaths'
 
+// [MM] HEY HEY HEY
+import '@nomiclabs/hardhat-ganache'
+
 // eslint-disable-next-line no-duplicate-imports
 /**
  * ⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️
@@ -59,6 +62,16 @@ const networks = {
     accounts: {
       mnemonic: getMnemonic(),
     },
+  },
+  ganache: {
+    url: 'http://localhost:8545',
+    /*
+      if there is no mnemonic, it will just use account 0 of the hardhat node to deploy
+      (you can put in a mnemonic here to set the deployer locally)
+    */
+    // accounts: {
+    //   mnemonic: getMnemonic(),
+    // },
   },
 }
 
