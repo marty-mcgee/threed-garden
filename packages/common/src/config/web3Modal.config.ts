@@ -150,7 +150,7 @@ export const getWeb3ModalConfig = async (
 
   return {
     cacheProvider: true,
-    theme: 'light',
+    theme: 'dark',
     providerOptions,
   }
 }

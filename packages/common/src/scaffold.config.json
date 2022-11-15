@@ -4,8 +4,8 @@
     "reactBuild": "threed"
   },
   "runtime": {
-    "availableNetworks": ["localhost"],
-    "targetNetwork": "localhost",
+    "availableNetworks": ["localhost", "ganache"],
+    "targetNetwork": "ganache",
     "networkConfig": {
       "rpcMainnetInfuraUrl": "https://mainnet.infura.io/v3"
     },

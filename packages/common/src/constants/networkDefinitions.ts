@@ -4,7 +4,7 @@ import { TNetworkNamesList } from '~common/models'
 
 const INFURA_ID = process.env.VITE_RPC_MAINNET_INFURA
 
-let hostname = 'localhost'
+let hostname = '127.0.0.1'
 if (typeof window !== 'undefined' && window != null) {
   hostname = window?.location?.hostname ?? 'localhost'
 }
@@ -152,5 +152,15 @@ export const networkDefinitions: Record<TNetworkNamesList, TNetworkDefinition> =
     rpcUrl: `https://rpc.testnet.fantom.network`,
     gasPrice: 1000000000,
     faucet: 'https://faucet.fantom.network/',
+  },
+  ganache: {
+    name: 'ganache',
+    color: '#196900',
+    chainId: 5777,
+    // blockExplorer: '',
+    rpcUrl: 'http://' + hostname + ':8545',
+
+    // gasLimit: 6000000000,
+    // defaultBalanceEther: 10,
   },
 } as const

@@ -1,4 +1,4 @@
-import { ThreeDNFT__factory, ThreeDNFT } from 'generated/contract-types'
+import { ThreeDNFT__factory, ThreeDNFT, YourNFT__factory, YourNFT } from 'generated/contract-types'
 import { task } from 'hardhat/config'
 import { create } from 'ipfs-http-client'
 
@@ -21,8 +21,11 @@ task('mint', 'Mints NFTs to the specified address')
     console.debug('\n\n 🎫 Minting to ' + toAddress + '...\n')
 
     const { deployer } = await getHardhatSigners(hre)
-    let threedNFTContract: ThreeDNFT | undefined = undefined
 
+    let threedNFTContract: ThreeDNFT | undefined = undefined
+    let yourNFTContract: YourNFT | undefined = undefined
+
+    // threedNFTContract
     if (contractAddress != null) {
       try {
         threedNFTContract = ThreeDNFT__factory.connect(contractAddress, deployer)
@@ -39,7 +42,28 @@ task('mint', 'Mints NFTs to the specified address')
     }
 
     if (threedNFTContract == null) {
-      console.error('Could not get threedNFTContract or create threedNFTContract')
+      console.error('Could not get or create threedNFTContract')
+      return
+    }
+
+    // yourNFTContract
+    if (contractAddress != null) {
+      try {
+        yourNFTContract = YourNFT__factory.connect(contractAddress, deployer)
+      } catch (e) {
+        console.debug('Invalid contractAddress, creating new YourNFT contract', e)
+        return
+      }
+    }
+
+    if (yourNFTContract == null) {
+      const factory = new YourNFT__factory(deployer)
+      yourNFTContract = await factory.deploy()
+      console.debug(`\n\n 🎫 YourNFT contract deployed at ${yourNFTContract.address.toString()}\n`)
+    }
+
+    if (yourNFTContract == null) {
+      console.error('Could not get or create yourNFTContract')
       return
     }
 
