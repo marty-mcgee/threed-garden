@@ -93,7 +93,9 @@
       "packages/threed-app-ts",
       "packages/subgraph",
       "packages/services/*",
-      "packages/*/anyothers"
+      "packages/*/anyothers",
+      "packages/truffle",
+      "packages/truffle-client"
     ]
   },
   "packageManager": "yarn@3.2.1",
