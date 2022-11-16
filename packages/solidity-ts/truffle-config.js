@@ -19,8 +19,8 @@
  */
 
 // require('dotenv').config();
-// const mnemonic = process.env["MNEMONIC"];
-// const infuraProjectId = process.env["INFURA_PROJECT_ID"];
+// const mnemonic = process.env['MNEMONIC'];
+// const infuraProjectId = process.env['INFURA_PROJECT_ID'];
 
 // const HDWalletProvider = require('@truffle/hdwallet-provider');
 
@@ -34,23 +34,32 @@ module.exports = {
    * run `develop` or `test`. You can ask a truffle command to use a specific
    * network from the command line, e.g
    *
-   * $ truffle test --network <network-name>
+   * $ truffle develop --network <network-name> ; (for example: localhost|ganache)
+   * $ truffle test --network <network-name> ; (for example: localhost|rinkeby)
    */
 
-  contracts_build_directory: "../truffle-client/src/generated/contracts",
+  contracts_directory: './contracts', // './allMyStuff/someStuff/theContractFolder', // default: './contracts'
+
+  contracts_build_directory: '../truffle-client/src/generated/contracts', // default: './build/contracts'
+  // contracts_build_directory: '../threed-app-ts/src/generated/contracts',
+
+  migrations_directory: '', // './allMyStuff/someStuff/theMigrationsFolder', // default: './migrations'
+
   networks: {
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
     // You should run a client (like ganache, geth, or parity) in a separate terminal
     // tab if you use this network and you must also set the `host`, `port` and `network_id`
     // options below to some value.
-    //
     development: {
-     host: "127.0.0.1",     // Localhost (default: none)
-     port: 8545,            // Standard Ethereum port (default: none)
-     network_id: "*",       // Any network (default: none)
+      host: '127.0.0.1', // Localhost (default: none)
+      port: 8545, // Standard Ethereum port (default: none)
+      network_id: '5777', // Any network '*' (default: none)
+      websockets: true, // Enable EventEmitter interface for web3 (default: false)
+      // from: '', // address to use for any transaction Truffle makes during migrations (default: first in list of accounts from ethereum network)
+      // chain_id: 5, // network client's chain id (5777? doubt it: chain_id != network_id)
     },
-    //
+
     // An additional network, but with some advanced options…
     // advanced: {
     //   port: 8777,             // Custom port
@@ -60,7 +69,7 @@ module.exports = {
     //   from: <address>,        // Account to send transactions from (default: accounts[0])
     //   websocket: true         // Enable EventEmitter interface for web3 (default: false)
     // },
-    //
+
     // Useful for deploying to a public network.
     // Note: It's important to wrap the provider as a function to ensure truffle uses a new provider every time.
     // goerli: {
@@ -72,13 +81,19 @@ module.exports = {
     //   timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
     //   skipDryRun: true     // Skip dry run before migrations? (default: false for public nets)
     // },
-    //
+
     // Useful for private networks
     // private: {
     //   provider: () => new HDWalletProvider(mnemonic, `https://network.io`),
     //   network_id: 2111,   // This network is yours, in the cloud.
     //   production: true    // Treats this network as if it was a public net. (default: false)
     // }
+  },
+
+  // for optional Truffle Dashboard
+  // https://trufflesuite.com/docs/truffle/how-to/use-the-truffle-dashboard/
+  dashboard: {
+    port: 24012, // default: 24012
   },
 
   // Set default mocha options here, use special reporters, etc.
@@ -89,16 +104,16 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: "0.8.14",      // Fetch exact version from solc-bin (default: truffle's version)
-      // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
+      version: '0.8.14', // Fetch exact version from solc-bin (default: truffle's version)
+      // docker: true,        // Use '0.5.1' you've installed locally with docker (default: false)
       // settings: {          // See the solidity docs for advice about optimization and evmVersion
       //  optimizer: {
       //    enabled: false,
       //    runs: 200
       //  },
-      //  evmVersion: "byzantium"
+      //  evmVersion: 'byzantium'
       // }
-    }
+    },
   },
 
   // Truffle DB is currently disabled by default; to enable it, change enabled:
@@ -113,12 +128,12 @@ module.exports = {
   //
   // db: {
   //   enabled: false,
-  //   host: "127.0.0.1",
+  //   host: '127.0.0.1',
   //   adapter: {
-  //     name: "sqlite",
+  //     name: 'sqlite',
   //     settings: {
-  //       directory: ".db"
+  //       directory: '.db'
   //     }
   //   }
   // }
-};
+}
