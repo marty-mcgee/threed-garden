@@ -15,6 +15,8 @@ import { hardhatArtifactsDir, hardhatDeploymentsDir, typechainOutDir } from '~he
 
 // [MM] HEY HEY HEY
 import '@nomiclabs/hardhat-ganache'
+// [MM] testing.. needed??
+import '@nomicfoundation/hardhat-toolbox'
 
 // eslint-disable-next-line no-duplicate-imports
 /**
