@@ -91,11 +91,10 @@
       "packages/vite-app-ts",
       "packages/nextjs-app-ts",
       "packages/threed-app-ts",
+      "packages/truffle-client",
       "packages/subgraph",
       "packages/services/*",
-      "packages/*/anyothers",
-      "packages/truffle",
-      "packages/truffle-client"
+      "packages/*/anyothers?"
     ]
   },
   "packageManager": "yarn@3.2.1",
