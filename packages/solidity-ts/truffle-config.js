@@ -22,7 +22,7 @@
 // const mnemonic = process.env['MNEMONIC'];
 // const infuraProjectId = process.env['INFURA_PROJECT_ID'];
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
+const HDWalletProvider = require('@truffle/hdwallet-provider')
 
 // [MM] Truffle project with SimpleStorage Contract + Tests + Training + Sandbox + Evaluation
 
@@ -58,6 +58,23 @@ module.exports = {
       websockets: true, // Enable EventEmitter interface for web3 (default: false)
       // from: '', // address to use for any transaction Truffle makes during migrations (default: first in list of accounts from ethereum network)
       // chain_id: 5, // network client's chain id (5777? doubt it: chain_id != network_id)
+      // provider: function () {
+      //   return new HDWalletProvider(mnemonic, 'http://127.0.0.1:8545/')
+      // },
+    },
+
+    ropsten: {
+      provider: function () {
+        return new HDWalletProvider(mnemonic, 'https://ropsten.infura.io/v3/YOUR-PROJECT-ID')
+      },
+      network_id: '3',
+    },
+
+    test: {
+      provider: function () {
+        return new HDWalletProvider(mnemonic, 'http://127.0.0.1:8545/')
+      },
+      network_id: '*',
     },
 
     // An additional network, but with some advanced options…
@@ -96,9 +113,28 @@ module.exports = {
     port: 24012, // default: 24012
   },
 
+  etherscan: {
+    apiKey: 'FYCRZWTQUBK4VDSSA5BACEMD9TAFHX3Z7U', // replace this with your API key if you have one
+  },
+
+  // optional: specify ipfs networks
+  environments: {
+    development: {
+      ipfs: {
+        address: 'http://localhost:5002',
+      },
+    },
+    production: {
+      ipfs: {
+        address: 'https://ipfs.infura.io:5001',
+      },
+    },
+  },
+
   // Set default mocha options here, use special reporters, etc.
   mocha: {
-    // timeout: 100000
+    // timeout: 100000,
+    useColors: true,
   },
 
   // Configure your compilers
