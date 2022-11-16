@@ -24,7 +24,8 @@
 
 const HDWalletProvider = require('@truffle/hdwallet-provider')
 
-// [MM] Truffle project with SimpleStorage Contract + Tests + Training + Sandbox + Evaluation
+// [MM] Truffle project with SimpleStorage + YourContractName
+// Contracts + Tests + Training + Sandbox + Evaluation
 
 module.exports = {
   /**
