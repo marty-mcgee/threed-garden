@@ -1,3 +1,6 @@
+// [MM] TRUFFLE project with SimpleStorage + YourContractName
+// Contracts + Tests + Training + Sandbox + Evaluation
+
 /**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
@@ -24,10 +27,19 @@
 
 const HDWalletProvider = require('@truffle/hdwallet-provider')
 
-// [MM] Truffle project with SimpleStorage + YourContractName
-// Contracts + Tests + Training + Sandbox + Evaluation
-
 module.exports = {
+  // location of solidity contract files (default: './contracts')
+  contracts_directory: './contracts',
+
+  // location to put built contracts (default: './build/contracts')
+  contracts_build_directory: '../common/src/generated/contracts',
+  // contracts_build_directory: '../truffle-client/src/generated/contracts',
+  // contracts_build_directory: './generated/contracts',
+
+  // location to deploy truffle migrations (default: './migrations')
+  migrations_directory: './deploy/truffle-deploy',
+  // migrations_directory: './migrations',
+
   /**
    * Networks define how you connect to your ethereum client and let you set the
    * defaults web3 uses to send transactions. If you don't specify one truffle
@@ -38,14 +50,6 @@ module.exports = {
    * $ truffle develop --network <network-name> ; (for example: localhost|ganache)
    * $ truffle test --network <network-name> ; (for example: localhost|rinkeby)
    */
-
-  contracts_directory: './contracts', // './allMyStuff/someStuff/theContractFolder', // default: './contracts'
-
-  contracts_build_directory: '../truffle-client/src/generated/contracts', // default: './build/contracts'
-  // contracts_build_directory: '../threed-app-ts/src/generated/contracts',
-
-  migrations_directory: './generated/truffle/migrations', // './allMyStuff/someStuff/theMigrationsFolder', // default: './migrations'
-
   networks: {
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
