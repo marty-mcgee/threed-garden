@@ -44,7 +44,7 @@ module.exports = {
   contracts_build_directory: '../truffle-client/src/generated/contracts', // default: './build/contracts'
   // contracts_build_directory: '../threed-app-ts/src/generated/contracts',
 
-  migrations_directory: '', // './allMyStuff/someStuff/theMigrationsFolder', // default: './migrations'
+  migrations_directory: './generated/truffle/migrations', // './allMyStuff/someStuff/theMigrationsFolder', // default: './migrations'
 
   networks: {
     // Useful for testing. The `development` name is special - truffle uses it by default
@@ -56,7 +56,7 @@ module.exports = {
       host: '127.0.0.1', // Localhost (default: none)
       port: 8545, // Standard Ethereum port (default: none)
       network_id: '5777', // Any network '*' (default: none)
-      websockets: true, // Enable EventEmitter interface for web3 (default: false)
+      // websockets: true, // Enable EventEmitter interface for web3 (default: false)
       // from: '', // address to use for any transaction Truffle makes during migrations (default: first in list of accounts from ethereum network)
       // chain_id: 5, // network client's chain id (5777? doubt it: chain_id != network_id)
       // provider: function () {
@@ -108,29 +108,29 @@ module.exports = {
     // }
   },
 
-  // for optional Truffle Dashboard
-  // https://trufflesuite.com/docs/truffle/how-to/use-the-truffle-dashboard/
-  dashboard: {
-    port: 24012, // default: 24012
-  },
+  // // for optional Truffle Dashboard
+  // // https://trufflesuite.com/docs/truffle/how-to/use-the-truffle-dashboard/
+  // dashboard: {
+  //   port: 24012, // default: 24012
+  // },
 
-  etherscan: {
-    apiKey: 'FYCRZWTQUBK4VDSSA5BACEMD9TAFHX3Z7U', // replace this with your API key if you have one
-  },
+  // etherscan: {
+  //   apiKey: 'FYCRZWTQUBK4VDSSA5BACEMD9TAFHX3Z7U', // replace this with your API key if you have one
+  // },
 
-  // optional: specify ipfs networks
-  environments: {
-    development: {
-      ipfs: {
-        address: 'http://localhost:5002',
-      },
-    },
-    production: {
-      ipfs: {
-        address: 'https://ipfs.infura.io:5001',
-      },
-    },
-  },
+  // // optional: specify ipfs networks
+  // environments: {
+  //   development: {
+  //     ipfs: {
+  //       address: 'http://localhost:5002',
+  //     },
+  //   },
+  //   production: {
+  //     ipfs: {
+  //       address: 'https://ipfs.infura.io:5001',
+  //     },
+  //   },
+  // },
 
   // Set default mocha options here, use special reporters, etc.
   mocha: {
