@@ -1,5 +1,13 @@
+// ==============================================================
+// RESOURCES
+
+import Box from '@mui/material/Box'
+import Alert from '@mui/material/Alert'
+import AppBar from '@mui/material/AppBar'
+// import { Alert, PageHeader } from 'antd'
+
 import { getNetwork } from '@ethersproject/networks'
-import { Alert, PageHeader } from 'antd'
+
 import { Account } from 'eth-components/ant'
 import { EthComponentsSettingsContext } from 'eth-components/models'
 import { useGasPrice } from 'eth-hooks'
@@ -51,8 +59,8 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
   const left = (
     <>
       <div>
-        <PageHeader
-          title='🏭 Scaffold-Eth'
+        <div
+          title='🌱 ThreeDGarden.Eth'
           // subTitle={
           //   <span>
           //     v2.1 - [
@@ -101,7 +109,7 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
    * 👨‍💼 Your account is in the top right with a wallet at connect options
    */
   const right = (
-    <div style={{ position: 'relative', textAlign: 'right', right: 0, top: 0, padding: 10, zIndex: 1 }}>
+    <div style={{ position: 'absolute', textAlign: 'right', right: 0, top: 100, padding: 10, zIndex: 1 }}>
       <Account
         createLoginConnector={props.scaffoldAppProviders.createLoginConnector}
         loginOnError={onLoginError}
@@ -132,13 +140,26 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
       </div>
     )
     networkDisplay = (
-      <div style={{ zIndex: 2, position: 'absolute', right: 0, top: 90, padding: 16 }}>
-        <Alert
+      <div
+        style={{
+          zIndex: 2,
+          position: 'absolute',
+          right: 0,
+          bottom: 0,
+          padding: 16
+        }}
+      >
+        {/* <Alert
           message='⚠️ Wrong Network'
           description={description}
           type='error'
           closable={false}
-        />
+        /> */}
+        <Alert
+          severity='error'
+        >
+          ⚠️ Wrong Network: {description}
+        </Alert>
       </div>
     )
   } else {
@@ -158,10 +179,10 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
   }
 
   return (
-    <>
-      {left}
-      {networkDisplay}
-      {right}
-    </>
+    <Box>
+      <Box>{left}</Box>
+      <Box>{networkDisplay}</Box>
+      <Box>{right}</Box>
+    </Box>
   )
 }

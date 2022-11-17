@@ -1,13 +1,32 @@
+// ==============================================================
+// RESOURCES
+/** =============================================================
+ * ⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️
+ * See: ./config/app.config.ts for configuration, such as TARGET_NETWORK
+ * See: ../common/src/config/appContracts.config.ts and ../common/src/config/externalContracts.config.ts
+ *      to configure your contracts
+ * See: pageList variable below to configure your pages
+ * See: ../common/src/config/web3Modal.config.ts to configure the web3 modal
+ * ⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️
+ * =========================================================== */
+
+// NextJS Imports
+import { NextPage } from 'next'
+
+// React Imports
+import { ReactElement } from 'react'
+
+// ETH -- CONTRACTS + HOOKS Imports
 import { GenericContract } from 'eth-components/ant/generic-contract'
 import { useContractReader, useBalance, useEthersAdaptorFromProviderOrSigners, useEventListener } from 'eth-hooks'
 import { useEthersAppContext } from 'eth-hooks/context'
 import { useDexEthPrice } from 'eth-hooks/dapps'
 import { asEthersAdaptor } from 'eth-hooks/functions'
-import { NextPage } from 'next'
-import { ReactElement } from 'react'
 
+// Component + Layout Imports
 import { MainPageFooter, MainPageHeader, createTabsAndPages, TContractPageList } from '.'
 
+// Types + Interfaces Imports
 import { useLoadAppContracts, useConnectAppContracts, useAppContracts } from '~common/components/context'
 import { useCreateAntNotificationHolder } from '~common/components/hooks/useAntNotification'
 import { useBurnerFallback } from '~common/components/hooks/useBurnerFallback'
@@ -22,16 +41,12 @@ import {
   INFURA_ID,
   BURNER_FALLBACK_ENABLED,
 } from '~~/config/nextjsApp.config'
+
+// Types + Interfaces Imports
 import { TAppProps } from '~~/models/TAppProps'
 
-/** ********************************
- * ⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️
- * See ./config/app.config.ts for configuration, such as TARGET_NETWORK
- * See ../common/src/config/appContracts.config.ts and ../common/src/config/externalContracts.config.ts to configure your contracts
- * See pageList variable below to configure your pages
- * See ../common/src/config/web3Modal.config.ts to configure the web3 modal
- * ⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️
- * ******************************** */
+// =============================================================
+// TYPES + INTERFACES
 
 interface IMainPageProps {
   pageName: string
@@ -39,11 +54,11 @@ interface IMainPageProps {
   appProps: TAppProps
 }
 
-/**
+/** =============================================================
  * The main component
- * @returns
+ * @returns JSX.Element
  */
-export const MainPage: NextPage<IMainPageProps> = (props) => {
+export const MainPage: NextPage<IMainPageProps> = (props): JSX.Element => {
   // passed in by nextjs getInitalProps
   const appProps: TAppProps = props.appProps
 
@@ -87,9 +102,9 @@ export const MainPage: NextPage<IMainPageProps> = (props) => {
   // 🏹🏹🏹 go here to see how to use hooks!
   useScaffoldHooksExamples(scaffoldAppProviders)
 
-  // -----------------------------
-  // These are the contracts!
-  // -----------------------------
+  // ----------------------------------------
+  // These are the Solidity contracts to use
+  // ----------------------------------------
 
   // init contracts
   const yourContract = useAppContracts('YourContract', ethersAppContext.chainId)
@@ -108,9 +123,6 @@ export const MainPage: NextPage<IMainPageProps> = (props) => {
   // 📟 Listen for broadcast events
   const [setPurposeEvents] = useEventListener(yourContract, 'SetPurpose', 0)
 
-  // -----------------------------
-  // .... 🎇 End of examples
-  // -----------------------------
   // 💵 This hook will get the price of ETH from 🦄 Uniswap:
   const [ethPrice] = useDexEthPrice(
     scaffoldAppProviders.mainnetAdaptor?.provider,
@@ -119,6 +131,10 @@ export const MainPage: NextPage<IMainPageProps> = (props) => {
 
   // 💰 this hook will get your balance
   const [yourCurrentBalance] = useBalance(ethersAppContext.account)
+
+  // -----------------------------
+  // 🎇
+  // -----------------------------
 
   // -----------------------------
   // 📃 App Page List
@@ -175,10 +191,9 @@ export const MainPage: NextPage<IMainPageProps> = (props) => {
   const { tabMenu, pages } = createTabsAndPages(pageList)
   const RouteNotFound = <h3 className='p-10 mt-10 text-xl'>Route Not Found </h3>
 
-  // -----------------------------
-  // 📃 Render the react components
-  // -----------------------------
-
+  // --------------------------------------------------------------------
+  // 📃 Render the react components as JSX and return to function caller
+  // --------------------------------------------------------------------
   return (
     <div>
       <MainPageHeader
@@ -197,3 +212,7 @@ export const MainPage: NextPage<IMainPageProps> = (props) => {
     </div>
   )
 }
+
+// ==============================================================
+// END MainPage<JSX.Element>.tsx
+// ==============================================================

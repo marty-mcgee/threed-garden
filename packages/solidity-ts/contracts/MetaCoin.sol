@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Tells the Solidity compiler to compile only from v0.8.13 to v0.9.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.0 <0.9.0;
 
 import "./ConvertLib.sol";
 
@@ -9,27 +8,27 @@ import "./ConvertLib.sol";
 // coin/token contracts.
 
 contract MetaCoin {
-	mapping (address => uint) balances;
+  mapping(address => uint256) balances;
 
-	event Transfer(address indexed _from, address indexed _to, uint256 _value);
+  event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
-	constructor() {
-		balances[tx.origin] = 10000;
-	}
+  constructor() {
+    balances[tx.origin] = 10000;
+  }
 
-	function sendCoin(address receiver, uint amount) public returns(bool sufficient) {
-		if (balances[msg.sender] < amount) return false;
-		balances[msg.sender] -= amount;
-		balances[receiver] += amount;
-		emit Transfer(msg.sender, receiver, amount);
-		return true;
-	}
+  function sendCoin(address receiver, uint256 amount) public returns (bool sufficient) {
+    if (balances[msg.sender] < amount) return false;
+    balances[msg.sender] -= amount;
+    balances[receiver] += amount;
+    emit Transfer(msg.sender, receiver, amount);
+    return true;
+  }
 
-	function getBalanceInEth(address addr) public view returns(uint){
-		return ConvertLib.convert(getBalance(addr),2);
-	}
+  function getBalanceInEth(address addr) public view returns (uint256) {
+    return ConvertLib.convert(getBalance(addr), 2);
+  }
 
-	function getBalance(address addr) public view returns(uint) {
-		return balances[addr];
-	}
+  function getBalance(address addr) public view returns (uint256) {
+    return balances[addr];
+  }
 }
