@@ -57,7 +57,7 @@ invariant.log('env:dev', isDev)
 
 /**
  * This constant is your target network that the app is pointed at
- * 🤚🏽  Set your target frontend network <--- select your target frontend network(localhost, rinkeby, xdai, mainnet)
+ * 🌱  Set your target frontend network <--- select your target frontend network(localhost, rinkeby, xdai, mainnet)
  */
 
 const AVAILABLE_NETWORKS = scaffoldConfig.runtime.availableNetworks
