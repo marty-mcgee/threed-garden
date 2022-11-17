@@ -1,4 +1,10 @@
-import { Row, Col, Button } from 'antd'
+// ==============================================================
+// RESOURCES
+
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
+// import { Row, Col, Button } from 'antd'
+
 import { Faucet, GasGauge } from 'eth-components/ant'
 import { useEthersAppContext } from 'eth-hooks/context'
 import React, { FC, ReactNode, Suspense } from 'react'
@@ -8,6 +14,8 @@ import { networkDefinitions } from '~common/constants'
 import { getNetworkInfo } from '~common/functions'
 import { IScaffoldAppProviders } from '~common/models'
 import { FAUCET_ENABLED } from '~~/config/nextjsApp.config'
+
+// Types + Interfaces Imports
 import { TAppProps } from '~~/models/TAppProps'
 
 export interface IMainPageFooterProps {
@@ -44,24 +52,24 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
         padding: 10,
       }}
     >
-      <Row
-        align='middle'
-        gutter={[4, 4]}
+      <Grid container
+        // align='middle'
+        // gutter={[4, 4]}
       >
-        <Col span={2}>
+        <Grid item>
           <Ramp
             price={props.price}
             address={ethersAppContext?.account ?? ''}
             networks={networkDefinitions}
           />
-        </Col>
+        </Grid>
 
-        <Col
-          span={2}
-          style={{
-            textAlign: 'center',
-            opacity: 0.8,
-          }}
+        <Grid item
+          // span={2}
+          // style={{
+          //   textAlign: 'center',
+          //   opacity: 0.8,
+          // }}
         >
           <GasGauge
             chainId={props.scaffoldAppProviders.currentTargetNetwork.chainId}
@@ -69,21 +77,21 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
             provider={ethersAppContext.provider}
             speed='average'
           />
-        </Col>
-        <Col
-          span={2}
-          style={{
-            textAlign: 'center',
-            opacity: 1,
-          }}
+        </Grid>
+        <Grid item
+          // span={2}
+          // style={{
+          //   textAlign: 'center',
+          //   opacity: 1,
+          // }}
         >
           <Button
             onClick={(): void => {
               // window.open('https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA');
               window.open('https://github.com/marty-mcgee/threed-garden/discussions')
             }}
-            size='large'
-            shape='round'
+            // size='large'
+            // shape='round'
           >
             <span
               style={{
@@ -96,14 +104,14 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
             </span>
             Support
           </Button>
-        </Col>
-      </Row>
+        </Grid>
+      </Grid>
 
-      <Row
-        align='middle'
-        gutter={[4, 4]}
+      <Grid container
+        // align='middle'
+        // gutter={[4, 4]}
       >
-        <Col span={24}>
+        <Grid item>
           {
             /*  if the local provider has a signer, let's show the faucet:  */
             faucetAvailable &&
@@ -118,8 +126,8 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
               <></>
             )
           }
-        </Col>
-      </Row>
+        </Grid>
+      </Grid>
     </div>
   )
 

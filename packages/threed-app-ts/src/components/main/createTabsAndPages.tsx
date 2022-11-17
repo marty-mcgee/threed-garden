@@ -1,4 +1,11 @@
-import { Menu } from 'antd'
+// ==============================================================
+// RESOURCES
+
+// import Menu from '@mui/material/Menu'
+import MenuList from '@mui/material/MenuList'
+import MenuItem from '@mui/material/MenuItem'
+// import { Menu } from 'antd'
+
 import Link from 'next/link'
 import React, { ReactElement } from 'react'
 
@@ -22,7 +29,9 @@ export type TContractPageList = {
 }
 
 /**
- * Helper function that creates pages with routes.  It also creates tabs (menu items) associated with those routes, so that you can click on them to navigate to the page.
+ * Helper function that creates pages with routes.
+ * It also creates tabs (menu items) associated with those routes,
+ * so that you can click on them to navigate to the page.
  * @param pageList
  * @param route
  * @param setRoute
@@ -32,21 +41,35 @@ export const createTabsAndPages = (
   pageList: TContractPageList
 ): { tabMenu: ReactElement; pages: Record<string, ReactElement> } => {
   const tabMenu = (
-    <Menu
-      style={{
-        textAlign: 'center',
-      }}
-      mode='horizontal'
+    <MenuList
+      // style={{
+      //   textAlign: 'center',
+      //   display: 'inline-block',
+      // }}
+      // mode='horizontal'
+      // open={true}
     >
-      <Menu.Item key='/'>
+      <MenuItem
+        key='/'
+        style={{
+          // textAlign: 'center',
+          display: 'inline-block',
+        }}
+      >
         <Link href='/'>{pageList.mainPage.name}</Link>
-      </Menu.Item>
+      </MenuItem>
       {pageList.pages.map(({ name }) => (
-        <Menu.Item key={name}>
+        <MenuItem
+          key={name}
+          style={{
+            // textAlign: 'center',
+            display: 'inline-block',
+          }}
+        >
           <Link href={'/' + name}>{name}</Link>
-        </Menu.Item>
+        </MenuItem>
       ))}
-    </Menu>
+    </MenuList>
   )
 
   const pages: Record<string, ReactElement> = {}
