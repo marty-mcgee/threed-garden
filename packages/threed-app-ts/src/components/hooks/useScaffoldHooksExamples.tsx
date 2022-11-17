@@ -19,7 +19,7 @@ import { networkDefinitions } from '~common/constants'
 import { getNetworkInfo } from '~common/functions'
 import { IScaffoldAppProviders } from '~common/models/IScaffoldAppProviders'
 
-const DEBUG = false
+const DEBUG = true
 
 /**
  * Logs to console current app state.  Shows you examples on how to use hooks!
@@ -79,20 +79,19 @@ export const useScaffoldHooksExamples = (scaffoldAppProviders: IScaffoldAppProvi
   // 📛 call ens
   // ---------------------
   // const [addressFromENS] = useResolveEnsName(scaffoldAppProviders.mainnetAdaptor?.provider, 'austingriffith.eth');
-  // console.log('🏷 Resolved austingriffith.eth as:', addressFromENS);
+  // console.debug('🏷 Resolved austingriffith.eth as:', addressFromENS);
 
   // ---------------------
   // 🔁 onBlock or on polling
   // ---------------------
   // This hook will let you invoke a callback on every block or with a polling time!
   // 🙋🏽‍♂️ on block is preffered!
-  useBlockNumber(scaffoldAppProviders.mainnetAdaptor?.provider, (blockNumber) =>
-    console.log(`⛓ A new mainnet block is here: ${blockNumber}`)
-  )
-
-  useBlockNumber(scaffoldAppProviders.localAdaptor?.provider, (blockNumber) =>
-    console.log(`⛓ A new local block is here: ${blockNumber}`)
-  )
+  // useBlockNumber(scaffoldAppProviders.mainnetAdaptor?.provider, (blockNumber) =>
+  //   console.debug(`⛓ A new mainnet block is here: ${blockNumber}`)
+  // )
+  // useBlockNumber(scaffoldAppProviders.localAdaptor?.provider, (blockNumber) =>
+  //   console.debug(`⛓ A new local block is here: ${blockNumber}`)
+  // )
 
   // ----------------------
   // ✍🏽 writing to contracts
@@ -129,16 +128,16 @@ export const useScaffoldHooksExamples = (scaffoldAppProviders: IScaffoldAppProvi
       currentChainId &&
       yourLocalBalance
     ) {
-      console.log('_____________________________________ 🏗 scaffold-eth _____________________________________')
-      console.log('🌎 mainnetProvider', scaffoldAppProviders.mainnetAdaptor)
-      console.log('🏠 localChainId', scaffoldAppProviders?.localAdaptor?.chainId)
-      console.log('👩‍💼 selected address:', ethersAppContext.account)
-      console.log('🕵🏻‍♂️ currentChainId:', currentChainId)
-      console.log('💵 yourLocalBalance', yourLocalBalance ? ethers.utils.formatEther(yourLocalBalance) : '...')
-      // console.log('💵 yourMainnetBalance', yourMainnetBalance ? ethers.utils.formatEther(yourMainnetBalance) : '...');
-      console.log('🌍 DAI contract on mainnet:', mainnetDai)
-      console.log('💵 yourMainnetDAIBalance', myMainnetDAIBalance ?? '...')
-      console.log('⛽ gasPrice', gasPrice)
+      console.debug('_____________________________________ 🏗 scaffold-eth _____________________________________')
+      console.debug('🌎 mainnetProvider', scaffoldAppProviders.mainnetAdaptor)
+      console.debug('🏠 localChainId', scaffoldAppProviders?.localAdaptor?.chainId)
+      console.debug('👩‍💼 selected address:', ethersAppContext.account)
+      console.debug('🕵🏻‍♂️ currentChainId:', currentChainId)
+      console.debug('💵 yourLocalBalance', yourLocalBalance ? ethers.utils.formatEther(yourLocalBalance) : '...')
+      // console.debug('💵 yourMainnetBalance', yourMainnetBalance ? ethers.utils.formatEther(yourMainnetBalance) : '...');
+      console.debug('🌍 DAI contract on mainnet:', mainnetDai)
+      console.debug('💵 yourMainnetDAIBalance', myMainnetDAIBalance ?? '...')
+      console.debug('⛽ gasPrice', gasPrice)
     }
   }, [scaffoldAppProviders.mainnetAdaptor, ethersAppContext.account, ethersAppContext.provider])
 }
