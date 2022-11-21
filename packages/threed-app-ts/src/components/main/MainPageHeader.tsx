@@ -109,7 +109,7 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
    * 👨‍💼 Your account is in the top right with a wallet at connect options
    */
   const right = (
-    <div style={{ position: 'absolute', textAlign: 'right', right: 0, top: 100, padding: 10, zIndex: 1 }}>
+    <div style={{ position: 'absolute', textAlign: 'right', right: 0, top: 64, paddingRight: 24, zIndex: 1 }}>
       <Account
         createLoginConnector={props.scaffoldAppProviders.createLoginConnector}
         loginOnError={onLoginError}
