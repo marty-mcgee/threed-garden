@@ -24,7 +24,7 @@ const MenuHeaderWrapper = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  paddingRight: theme.spacing(4.5),
+  paddingRight: theme.spacing(0.0),
   transition: 'padding .25s ease-in-out',
   minHeight: theme.mixins.toolbar.minHeight,
 }))
