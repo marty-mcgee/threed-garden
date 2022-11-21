@@ -144,7 +144,7 @@ export const MainPage: NextPage<IMainPageProps> = (props): JSX.Element => {
     mainPage: {
       name: 'Ethereum Home',
       content: (
-        <div><br/><h2>Ethereum Home Page</h2><br/></div>
+        <div><br/><h2>Your Current Home Page</h2><br/></div>
       ),
     },
     pages: [
