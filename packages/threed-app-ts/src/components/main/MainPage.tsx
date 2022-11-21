@@ -142,17 +142,23 @@ export const MainPage: NextPage<IMainPageProps> = (props): JSX.Element => {
   // This is the list of tabs and their contents
   const pageList: TContractPageList = {
     mainPage: {
-      name: 'YourContract',
+      name: 'Ethereum Home',
       content: (
-        <GenericContract
-          contractName='YourContract'
-          contract={yourContract}
-          mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
-          blockExplorer={scaffoldAppProviders.currentTargetNetwork.blockExplorer}
-        />
+        <div><br/><h2>Ethereum Home Page</h2><br/></div>
       ),
     },
     pages: [
+      {
+        name: 'YourContract',
+        content: (
+          <GenericContract
+            contractName='YourContract'
+            contract={yourContract}
+            mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
+            blockExplorer={scaffoldAppProviders.currentTargetNetwork.blockExplorer}
+          />
+        ),
+      },
       {
         name: 'ThreeDNFT',
         content: (

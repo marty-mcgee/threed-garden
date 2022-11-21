@@ -56,13 +56,13 @@ const Page: NextPage<TPageProps> = (props) => {
       >
         ThreeD Garden for FarmBot + Three
       </Typography>
-      <Typography
+      {/* <Typography
         component='h2'
         variant='h6'
         gutterBottom
       >
         FarmBot + Three.js using React Three Fiber, MUI v5, NextJS + TypeScript
-      </Typography>
+      </Typography> */}
 
       {/* SCAFFOLD-ETH-TYPESCRIPT */}
       <MainPage

@@ -49,7 +49,7 @@ export const createTabsAndPages = (
       // mode='horizontal'
       // open={true}
     >
-      <MenuItem
+      {/* <MenuItem
         key='/'
         style={{
           // textAlign: 'center',
@@ -57,7 +57,7 @@ export const createTabsAndPages = (
         }}
       >
         <Link href='/'>{pageList.mainPage.name}</Link>
-      </MenuItem>
+      </MenuItem> */}
       {pageList.pages.map(({ name }) => (
         <MenuItem
           key={name}
