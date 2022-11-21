@@ -20,10 +20,8 @@ import { TPageProps } from '~~/models/TAppProps'
 
 // Set Home URL based on User Role
 const getHomeRoute = (role: any) => {
-  // if (role === 'client') return '/acl'
-  // else return '/participate'
-  // return '/participate'
-  return '/' // this page
+  if (role === 'client') return '/acl'
+  else return '/participate' // '/' // this page
 }
 
 // Page
