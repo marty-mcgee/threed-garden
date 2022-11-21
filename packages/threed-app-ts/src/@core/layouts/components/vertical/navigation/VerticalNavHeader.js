@@ -1,6 +1,6 @@
 // ** Next Import
 import Link from 'next/link'
-import Image from 'next/future/image'
+import Image from 'next/image'
 
 // ** MUI Imports
 import { styled, useTheme } from '@mui/material/styles'
@@ -103,29 +103,14 @@ const VerticalNavHeader = (props) => {
     )
 
   return (
-    <MenuHeaderWrapper
-      className='nav-header'
-      sx={{ pl: menuHeaderPaddingLeft() }}
-    >
+    <MenuHeaderWrapper className='nav-header' sx={{ pl: menuHeaderPaddingLeft() }}>
       {userVerticalNavMenuBranding ? (
         userVerticalNavMenuBranding(props)
       ) : (
-        <Link
-          href='/'
-          passHref
-        >
+        <Link href='/' passHref>
           <StyledLink>
-            <Image
-              src={brandDark.src}
-              alt={themeConfig.templateName}
-              width={48}
-              height={48}
-              layout='raw'
-            />
-            <HeaderTitle
-              variant='h6'
-              sx={{ ...menuCollapsedStyles, ...(navCollapsed && !navHover ? {} : { ml: 3 }) }}
-            >
+            <Image src={brandDark.src} alt={themeConfig.templateName} width={48} height={48} layout='raw' />
+            <HeaderTitle variant='h6' sx={{ ...menuCollapsedStyles, ...(navCollapsed && !navHover ? {} : { ml: 3 }) }}>
               {themeConfig.templateName}
             </HeaderTitle>
           </StyledLink>
@@ -137,8 +122,7 @@ const VerticalNavHeader = (props) => {
           disableRipple
           disableFocusRipple
           onClick={toggleNavVisibility}
-          sx={{ p: 0, backgroundColor: 'transparent !important' }}
-        >
+          sx={{ p: 0, backgroundColor: 'transparent !important' }}>
           <Close fontSize='small' />
         </IconButton>
       ) : (
@@ -146,8 +130,7 @@ const VerticalNavHeader = (props) => {
           disableRipple
           disableFocusRipple
           onClick={() => saveSettings({ ...settings, navCollapsed: !navCollapsed })}
-          sx={{ p: 0, color: 'text.primary', backgroundColor: 'transparent !important' }}
-        >
+          sx={{ p: 0, color: 'text.primary', backgroundColor: 'transparent !important' }}>
           {navCollapsed ? MenuUnlockedIcon() : MenuLockedIcon()}
         </IconButton>
       )}
