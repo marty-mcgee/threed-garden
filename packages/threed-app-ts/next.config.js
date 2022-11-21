@@ -31,15 +31,12 @@ const nextConfig = {
   //
   reactStrictMode: false, // true causes components to load TWICE in dev only, not prod
 
-  trailingSlash: true,
+  // trailingSlash: true,
 
   experimental: {
     esmExternals: true, // helps with 3rd party modules trying to call non-module js
-    externalDir: true,
-    swcFileReading: true,
-    images: {
-      allowFutureImage: true, // for better img support, and use of layout='raw'
-    },
+    externalDir: true, // helps import file loader type for ErrorFallback.tsx boundary
+    swcFileReading: true, // rust for the web -- 'speedy web compiler' https://swc.rs
   },
 
   // https://github.com/vercel/next.js/issues/36221

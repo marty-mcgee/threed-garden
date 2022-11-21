@@ -17,7 +17,7 @@ import Tab from '@mui/material/Tab'
 import MDTabPanel, { tabProps } from '~/components/mui/MDTabPanel'
 
 // ** Next Imports
-import Image from 'next/future/image'
+import Image from 'next/image'
 
 // ** Store Imports
 import { modalAboutStore } from '~/stores/apollo'

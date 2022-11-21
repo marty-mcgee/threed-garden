@@ -26,7 +26,7 @@ import { ApolloConsumer } from '@apollo/client'
 import stores from '~/stores/apollo'
 
 // ** Next Imports
-import Image from 'next/future/image'
+import Image from 'next/image'
 // import dynamic from 'next/dynamic'
 
 // ** MUI Imports

@@ -14,7 +14,7 @@ import MuiButton from '@mui/material/Button'
 import MuiTabs from '@mui/material/Tabs'
 
 // ** Next Imports
-import Image from 'next/future/image'
+import Image from 'next/image'
 
 // ** Store Imports
 import { modalLoadingStore } from '~/stores/apollo'
