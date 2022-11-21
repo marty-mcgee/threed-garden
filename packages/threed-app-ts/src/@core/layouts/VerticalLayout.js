@@ -38,7 +38,7 @@ const MainContentWrapper = styled(Box)({
 const ContentWrapper = styled('main')(({ theme }) => ({
   flexGrow: 1,
   width: '100%',
-  padding: theme.spacing(6),
+  padding: theme.spacing(2), // number * 0.25rem (6 = 1.5rem)
   transition: 'padding .25s ease-in-out',
   [theme.breakpoints.down('sm')]: {
     paddingLeft: theme.spacing(4),
@@ -83,10 +83,7 @@ const VerticalLayout = (props) => {
           />
         )}
         <MainContentWrapper className='layout-content-wrapper'>
-          <AppBar
-            toggleNavVisibility={toggleNavVisibility}
-            {...props}
-          />
+          <AppBar toggleNavVisibility={toggleNavVisibility} {...props} />
 
           <ContentWrapper
             className='layout-page-content'
@@ -96,8 +93,7 @@ const VerticalLayout = (props) => {
                 '@media (min-width:1440px)': { maxWidth: 1440 },
                 '@media (min-width:1200px)': { maxWidth: '100%' },
               }),
-            }}
-          >
+            }}>
             {children}
           </ContentWrapper>
 
@@ -115,11 +111,7 @@ const VerticalLayout = (props) => {
         scrollToTop(props)
       ) : (
         <ScrollToTop className='mui-fixed'>
-          <Fab
-            color='primary'
-            size='small'
-            aria-label='scroll back to top'
-          >
+          <Fab color='primary' size='small' aria-label='scroll back to top'>
             <ArrowUp />
           </Fab>
         </ScrollToTop>
