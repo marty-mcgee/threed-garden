@@ -144,12 +144,12 @@ export const MainPage: NextPage<IMainPageProps> = (props): JSX.Element => {
     mainPage: {
       name: 'Ethereum Home',
       content: (
-        <div><br/><h2>Ethereum Home 'MainPage'</h2><br/></div>
+        <div><br/><h2>ThreeD Ethereum Home 'MainPage'</h2><br/></div>
       ),
     },
     pages: [
       {
-        name: 'YourContract',
+        name: 'Your Contract',
         content: (
           <GenericContract
             contractName='YourContract'
@@ -160,7 +160,7 @@ export const MainPage: NextPage<IMainPageProps> = (props): JSX.Element => {
         ),
       },
       {
-        name: 'ThreeDNFT',
+        name: 'ThreeD NFT',
         content: (
           <GenericContract
             contractName='ThreeDNFT'
@@ -171,7 +171,7 @@ export const MainPage: NextPage<IMainPageProps> = (props): JSX.Element => {
         ),
       },
       {
-        name: 'YourNFT',
+        name: 'Your NFT',
         content: (
           <GenericContract
             contractName='YourNFT'
@@ -182,7 +182,7 @@ export const MainPage: NextPage<IMainPageProps> = (props): JSX.Element => {
         ),
       },
       {
-        name: 'Mainnet-Dai',
+        name: 'Mainnet DAI',
         content: (
           <GenericContract
             contractName='Dai'
