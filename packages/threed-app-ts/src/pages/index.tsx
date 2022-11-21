@@ -27,6 +27,7 @@ const getHomeRoute = (role: any) => {
 // Page
 // const Page: FC<TPageProps> = (props) => {
 const Page: NextPage<TPageProps> = (props) => {
+  //
   // ** Hooks
   const auth = useAuth()
   const router = useRouter()
@@ -52,7 +53,7 @@ const Page: NextPage<TPageProps> = (props) => {
         variant='h5'
         gutterBottom
       >
-        ThreeD Garden for FarmBot + Three
+        ThreeD Garden for FarmBot + Three.js + Next.js
       </Typography>
       {/* <Typography
         component='h2'
