@@ -65,7 +65,7 @@ invariant.log('Available Networks', AVAILABLE_NETWORKS)
 AVAILABLE_NETWORKS.forEach((t) => {
   invariant(
     networkDefinitions[t] != null,
-    `Invalid available networks: ${t}.  Check scaffold.config.json and network definition in /packages/common/src/constants/networks.ts`
+    `Invalid available networks: ${t}. Check scaffold.config.json and network definition in /packages/common/src/constants/networks.ts`
   )
 })
 
