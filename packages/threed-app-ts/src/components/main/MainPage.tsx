@@ -144,7 +144,7 @@ export const MainPage: NextPage<IMainPageProps> = (props): JSX.Element => {
     mainPage: {
       name: 'Ethereum Home',
       content: (
-        <div><br/><h2>Your Current Home Page</h2><br/></div>
+        <div><br/><h2>Ethereum Home 'MainPage'</h2><br/></div>
       ),
     },
     pages: [
@@ -195,26 +195,32 @@ export const MainPage: NextPage<IMainPageProps> = (props): JSX.Element => {
     ],
   }
   const { tabMenu, pages } = createTabsAndPages(pageList)
-  const RouteNotFound = <h3 className='p-10 mt-10 text-xl'>Route Not Found </h3>
+  const RouteNotFound = <h3 className='p-10 mt-10 text-xl'>Route Not Found</h3>
 
   // --------------------------------------------------------------------
   // 📃 Render the react components as JSX and return to function caller
   // --------------------------------------------------------------------
   return (
-    <div>
+    <div id='ThreeD-ETH-MainPage'>
       <MainPageHeader
         scaffoldAppProviders={scaffoldAppProviders}
         price={ethPrice}
         appProps={appProps}
       />
-      {tabMenu}
-      {pages[props.pageName] ?? RouteNotFound}
+      <div id='ThreeD-ETH-tabMenu'>
+        {tabMenu}
+      </div>
+      <div id='ThreeD-ETH-pages.page'>
+        {pages[props.pageName] ?? RouteNotFound}
+      </div>
       <MainPageFooter
         scaffoldAppProviders={scaffoldAppProviders}
         price={ethPrice}
         appProps={appProps}
       />
-      <div className='absolute bg-slate-600'>{notificationHolder}</div>
+      <div id='ThreeD-ETH-notification' className='absolute bg-slate-600'>
+        {notificationHolder}
+      </div>
     </div>
   )
 }

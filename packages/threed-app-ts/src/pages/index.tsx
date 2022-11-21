@@ -15,7 +15,7 @@ import { useAuth } from '~/hooks/useAuth'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-import { MainPage } from '~~/components/main/MainPage'
+import { MainPage as ETHPage } from '~~/components/main/MainPage'
 import { TPageProps } from '~~/models/TAppProps'
 
 // Set Home URL based on User Role
@@ -65,10 +65,7 @@ const Page: NextPage<TPageProps> = (props) => {
       </Typography> */}
 
       {/* SCAFFOLD-ETH-TYPESCRIPT */}
-      <MainPage
-        pageName='main'
-        {...props}
-      ></MainPage>
+      <ETHPage pageName='main' {...props}></ETHPage>
       {/* SCAFFOLD-ETH-TYPESCRIPT */}
     </>
   )
