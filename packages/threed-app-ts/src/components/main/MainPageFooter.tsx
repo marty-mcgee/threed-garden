@@ -49,7 +49,7 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
         left: 0,
         bottom: 0,
         top: 60,
-        padding: 10,
+        paddingBottom: 16,
       }}
     >
       <Grid container
@@ -63,7 +63,6 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
             networks={networkDefinitions}
           />
         </Grid>
-
         <Grid item
           // span={2}
           // style={{
@@ -78,6 +77,48 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
             speed='average'
           />
         </Grid>
+      </Grid>
+      <Grid container
+        // align='middle'
+        // gutter={[4, 4]}
+      >
+        <Grid item>
+          {
+            /*  if the local provider has a signer, let's show the faucet:  */
+            faucetAvailable &&
+            props.scaffoldAppProviders?.mainnetAdaptor &&
+            props.scaffoldAppProviders?.localAdaptor ? (
+              <Faucet
+                localAdaptor={props.scaffoldAppProviders.localAdaptor}
+                price={props.price}
+                mainnetAdaptor={props.scaffoldAppProviders.mainnetAdaptor}
+              />
+            ) : (
+              <></>
+            )
+          }
+        </Grid>
+      </Grid>
+    </div>
+  )
+
+  // const right = <ThemeSwitcher />
+  // const right = <div />
+  const right = (
+    <div
+      style={{
+        position: 'relative',
+        textAlign: 'left',
+        left: 0,
+        bottom: 0,
+        top: 60,
+        paddingBottom: 16,
+      }}
+    >
+      <Grid container
+        // align='middle'
+        // gutter={[4, 4]}
+      >
         <Grid item
           // span={2}
           // style={{
@@ -105,39 +146,25 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
             Support
           </Button>
         </Grid>
-      </Grid>
-
-      <Grid container
-        // align='middle'
-        // gutter={[4, 4]}
-      >
-        <Grid item>
-          {
-            /*  if the local provider has a signer, let's show the faucet:  */
-            faucetAvailable &&
-            props.scaffoldAppProviders?.mainnetAdaptor &&
-            props.scaffoldAppProviders?.localAdaptor ? (
-              <Faucet
-                localAdaptor={props.scaffoldAppProviders.localAdaptor}
-                price={props.price}
-                mainnetAdaptor={props.scaffoldAppProviders.mainnetAdaptor}
-              />
-            ) : (
-              <></>
-            )
-          }
+        <Grid item
+          // span={2}
+          // style={{
+          //   textAlign: 'center',
+          //   opacity: 1,
+          // }}
+        >
+          <ThemeSwitcher />
         </Grid>
       </Grid>
     </div>
   )
 
-  const right = <ThemeSwitcher />
-  // const right = <div />;
-
   return (
     <>
-      {left}
-      <Suspense fallback={<div></div>}>{right}</Suspense>
+      <Suspense fallback={<div/>}>
+        {left}
+        {right}
+      </Suspense>
     </>
   )
 }
