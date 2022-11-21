@@ -35,7 +35,7 @@ import sidenavLogoLabel from '~/components/elements/Sidenav/styles/sidenav'
 // ThreeD Garden context
 import { useMaterialUIController, setMiniSidenav, setTransparentSidenav, setWhiteSidenav } from '~/context'
 
-import { StaticImageData } from 'next/future/image'
+import { StaticImageData } from 'next/image'
 // type StaticImageData = {
 //   src: string
 //   height: number

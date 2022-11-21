@@ -18,7 +18,7 @@ import Footer from '~/pages/authentication/components/Footer'
 import pageRoutes from '~/routes/page.routes'
 
 // for image typing
-import { StaticImageData } from 'next/future/image'
+import { StaticImageData } from 'next/image'
 
 // Declaring props types for CoverLayout
 interface Props {

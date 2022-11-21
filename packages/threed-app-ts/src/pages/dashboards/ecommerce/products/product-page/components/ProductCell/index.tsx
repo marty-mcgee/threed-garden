@@ -2,7 +2,7 @@
 import MDBox from '~/components/mui/MDBox'
 import MDTypography from '~/components/mui/MDTypography'
 import MDAvatar from '~/components/mui/MDAvatar'
-import { StaticImageData } from 'next/future/image'
+import { StaticImageData } from 'next/image'
 
 // Declaring props types for ProductCell
 interface Props {

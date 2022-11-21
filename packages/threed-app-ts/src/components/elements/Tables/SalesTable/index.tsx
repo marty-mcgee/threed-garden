@@ -14,7 +14,7 @@ import MDBox from '~/components/mui/MDBox'
 // ThreeD Garden examples components
 import SalesTableCell from '~/components/elements/Tables/SalesTable/SalesTableCell'
 
-import { StaticImageData } from 'next/future/image'
+import { StaticImageData } from 'next/image'
 
 // Declaring props types for SalesTable
 interface Props {
