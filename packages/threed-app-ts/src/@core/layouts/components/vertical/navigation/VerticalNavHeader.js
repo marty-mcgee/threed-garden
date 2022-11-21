@@ -37,11 +37,11 @@ const HeaderTitle = styled(Typography)(({ theme }) => ({
   transition: 'opacity .25s ease-in-out, margin .25s ease-in-out',
 }))
 
-const StyledLink = styled('a')({
-  display: 'flex',
-  alignItems: 'center',
-  textDecoration: 'none',
-})
+// const StyledLink = styled('a')({
+//   display: 'flex',
+//   alignItems: 'center',
+//   textDecoration: 'none',
+// })
 
 const VerticalNavHeader = (props) => {
   // ** Props
@@ -107,13 +107,13 @@ const VerticalNavHeader = (props) => {
       {userVerticalNavMenuBranding ? (
         userVerticalNavMenuBranding(props)
       ) : (
-        <Link href='/' passHref>
-          <StyledLink>
-            <Image src={brandDark.src} alt={themeConfig.templateName} width={48} height={48} layout='raw' />
-            <HeaderTitle variant='h6' sx={{ ...menuCollapsedStyles, ...(navCollapsed && !navHover ? {} : { ml: 3 }) }}>
-              {themeConfig.templateName}
-            </HeaderTitle>
-          </StyledLink>
+        <Link href='/' passHref style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          {/* <StyledLink> */}
+          <Image src={brandDark.src} alt={themeConfig.templateName} width={48} height={48} layout='raw' />
+          <HeaderTitle variant='h6' sx={{ ...menuCollapsedStyles, ...(navCollapsed && !navHover ? {} : { ml: 3 }) }}>
+            {themeConfig.templateName}
+          </HeaderTitle>
+          {/* </StyledLink> */}
         </Link>
       )}
 
