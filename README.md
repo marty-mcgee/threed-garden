@@ -1,8 +1,8 @@
 # 🥕 ThreeD Garden
 
-🌱 on Scaffold-Eth TypeScript
-
 🦁 Next.js 13 + React + MUI + Ant + Apollo + Zustand + GraphQL + WordPress + WooCommerce
+
+🦁 App structure based on Scaffold-Eth-TypeScript
 
 ## 🌱 Features
 
