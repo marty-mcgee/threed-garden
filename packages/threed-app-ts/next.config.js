@@ -1,5 +1,5 @@
 // ==============================================================
-// ** NEXT JS BUILD CONFIGURATION FILE
+// ** NEXT.JS 13 BUILD CONFIGURATION FILE
 
 if (!process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL) {
   throw new Error(`
@@ -29,18 +29,21 @@ const withTM = require('next-transpile-modules')([
  */
 const nextConfig = {
   //
-  reactStrictMode: false, // true causes components to load TWICE in dev only, not prod
+  reactStrictMode: true, // true causes components to load TWICE in dev only, not prod
 
-  // trailingSlash: true,
+  trailingSlash: true, // add a '/' to the final url address
 
   experimental: {
     esmExternals: true, // helps with 3rd party modules trying to call non-module js
     externalDir: true, // helps import file loader type for ErrorFallback.tsx boundary
     swcFileReading: true, // rust for the web -- 'speedy web compiler' https://swc.rs
+
+    // Next 13 app directory:
+    appDir: false, // true for Next 13 | false for Next 12
   },
 
   // https://github.com/vercel/next.js/issues/36221
-  // swcMinify: true,
+  swcMinify: true,
 
   productionBrowserSourceMaps: true,
 
