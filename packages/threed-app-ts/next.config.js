@@ -29,7 +29,7 @@ const withTM = require('next-transpile-modules')([
  */
 const nextConfig = {
   //
-  reactStrictMode: true, // true causes components to load TWICE in dev only, not prod
+  reactStrictMode: false, // true causes components to load TWICE in dev only, not prod
 
   trailingSlash: true, // add a '/' to the final url address
 

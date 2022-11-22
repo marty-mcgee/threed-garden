@@ -194,6 +194,7 @@ const Guard = ({ children, authGuard, guestGuard }: any) => {
  *
  * This file loads the app async.  It sets up context, error boundaries, styles, etc.
  */
+// console.debug('%c====================================', ccm5)
 console.debug('%c🌱 <EthApp>: initializing ...', ccm1)
 console.debug('%c====================================', ccm5)
 
@@ -236,7 +237,9 @@ const ProviderWrapper: FC<{ children?: ReactNode }> = (props) => {
  */
 const EthApp: NextComponentType<AppContext, AppInitialProps, AppProps> = (props) => {
   //
-  console.debug('%c🥕 <EthApp>: loading ...')
+  console.debug('%c====================================', ccm5)
+  console.debug('%c🥕 <EthApp>: loading ...', ccm1)
+  console.debug('%c====================================', ccm5)
 
   const { Component, pageProps } = props
 
