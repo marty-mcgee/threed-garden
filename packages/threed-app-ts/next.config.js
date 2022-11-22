@@ -39,11 +39,11 @@ const nextConfig = {
     swcFileReading: true, // rust for the web -- 'speedy web compiler' https://swc.rs
 
     // Next 13 app directory:
-    appDir: false, // true for Next 13 | false for Next 12
+    // appDir: false, // true for Next 13 | false for Next 12
   },
 
   // https://github.com/vercel/next.js/issues/36221
-  swcMinify: true,
+  // swcMinify: true,
 
   productionBrowserSourceMaps: true,
 
