@@ -20,6 +20,10 @@ import HorizontalAppBarContent from './components/horizontal/AppBarContent'
 import { useSettings } from '~/@core/hooks/useSettings'
 
 const UserLayout = ({ children }) => {
+  //
+  // [MM] HEY HEY HEY UserLayout USER LAYOUT
+  console.debug('🥕 USER LAYOUT 🥕')
+
   // ** Hooks
   const { settings, saveSettings } = useSettings()
 
@@ -47,11 +51,7 @@ const UserLayout = ({ children }) => {
             // horizontalNavItems: ServerSideHorizontalNavItems(),
             // ** AppBar Content
             horizontalAppBarContent: () => (
-              <HorizontalAppBarContent
-                hidden={hidden}
-                settings={settings}
-                saveSettings={saveSettings}
-              />
+              <HorizontalAppBarContent hidden={hidden} settings={settings} saveSettings={saveSettings} />
             ),
           }
         : {
@@ -69,11 +69,11 @@ const UserLayout = ({ children }) => {
                 toggleNavVisibility={props.toggleNavVisibility}
               />
             ),
-          })}
-    >
+          })}>
       {children}
     </Layout>
   )
 }
 
 export default UserLayout
+0
