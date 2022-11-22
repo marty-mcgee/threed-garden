@@ -22,7 +22,11 @@ import { useSettings } from '~/@core/hooks/useSettings'
 const UserLayout = ({ children }) => {
   //
   // [MM] HEY HEY HEY UserLayout USER LAYOUT
-  console.debug('🥕 USER LAYOUT 🥕')
+  console.debug('================================================')
+  console.debug('🦁 <UserLayout>')
+  console.debug('================================================')
+  console.debug('const heyheyhey = ', { heyheyhey: 'HEY HEY HEY' })
+  console.debug('================================================')
 
   // ** Hooks
   const { settings, saveSettings } = useSettings()

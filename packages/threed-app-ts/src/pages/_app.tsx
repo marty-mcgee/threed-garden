@@ -242,7 +242,7 @@ const ProviderWrapper: FC<{ children?: ReactNode }> = (props) => {
 const EthApp: NextComponentType<AppContext, AppInitialProps, AppProps> = (props) => {
   //
   console.debug('%c====================================', ccm5)
-  console.debug('%c🥕 <EthApp>: loading ...', ccm1)
+  console.debug('%c🌱 <EthApp>: loading ...', ccm1)
   console.debug('%c====================================', ccm5)
 
   const { Component, pageProps } = props
