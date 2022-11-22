@@ -71,7 +71,7 @@ import { createEmotionCache } from '~/@core/utils/create-emotion-cache'
 import '~/components/threed/styles/index.css'
 
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm4, ccm5 } from '~/@core/utils/console-colors'
+import { ccm1, ccm4, ccm5 } from '~/@core/utils/console-colors'
 
 // ==============================================================
 // SCAFFOLD-ETH-TS IMPORTS
@@ -93,9 +93,9 @@ import { appGetInitialProps } from '~~/functions/nextjs/appGetInitialProps'
 
 // ==============================================================
 // IMPORTS COMPLETE
-console.debug(`%c====================================`, ccm5)
-console.debug('%cThreeDGarden<FC,R3F>: {_app.tsx}', ccm4)
-console.debug(`%c====================================`, ccm5)
+console.debug('%c====================================', ccm5)
+console.debug('%c🥕 ThreeDGarden<FC,R3F>: {_app.tsx}', ccm4)
+console.debug('%c====================================', ccm5)
 
 // ==============================================================
 // TYPES + INTERFACES (TYPESCRIPT)
@@ -194,7 +194,8 @@ const Guard = ({ children, authGuard, guestGuard }: any) => {
  *
  * This file loads the app async.  It sets up context, error boundaries, styles, etc.
  */
-console.debug('init eth app...')
+console.debug('%c🌱 <EthApp>: initializing ...', ccm1)
+console.debug('%c====================================', ccm5)
 
 // setup themes for theme switcher
 const themes = {
@@ -235,7 +236,7 @@ const ProviderWrapper: FC<{ children?: ReactNode }> = (props) => {
  */
 const EthApp: NextComponentType<AppContext, AppInitialProps, AppProps> = (props) => {
   //
-  console.debug('loading eth app...')
+  console.debug('%c🥕 <EthApp>: loading ...')
 
   const { Component, pageProps } = props
 

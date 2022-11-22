@@ -21,16 +21,16 @@ export const load = (): TScaffoldConfig => {
     return config.data
   } else {
     console.debug(chalk.red('❌ Error! Invalid scaffold.config.json!'))
-    console.debug(chalk.yellow('🏁 Did you run `yarn create-config`?'))
+    console.debug(chalk.yellow('🧦 Did you run `yarn create-config`?'))
     console.debug(config.error)
     throw 'Error, Invalid Scaffold Config: scaffold.config.json'
   }
 }
 
 export const printConfig = (config: TScaffoldConfig): void => {
-  console.debug('----------------------------------------------------')
-  console.debug(chalk.green('✔️ Loaded scaffold.config.json:'))
-  console.debug(config)
-  console.debug('----------------------------------------------------')
+  console.debug('====================================================')
+  console.debug(chalk.green('🥕  Loaded scaffold.config.json:'))
+  console.debug(config) // ✔️🧜🥕
+  console.debug('====================================================')
   console.debug()
 }

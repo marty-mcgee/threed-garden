@@ -90,6 +90,7 @@
       "packages/solidity-ts",
       "packages/vite-app-ts",
       "packages/nextjs-app-ts",
+      "packages/next13-app-ts",
       "packages/threed-app-ts",
       "packages/truffle-client",
       "packages/subgraph",

@@ -27,7 +27,7 @@ import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5 } from '~/@core/utils/console-colors
 
 // ==========================================================
 // IMPORTS COMPLETE
-console.debug(`%cThreeDGarden<FC,R3F>: {stores}`, ccm4)
+console.debug(`%c🥕 ThreeDGarden<FC,R3F>: {stores}`, ccm4)
 console.debug(`%c====================================`, ccm5)
 
 // ==============================================================
