@@ -26,5 +26,7 @@
     "**/yarn-error.log": true,
     "**/yarn.lock": true
   },
-  "prettier.semi": false
+  "prettier.semi": false,
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }

@@ -105,7 +105,7 @@ import { ccm1, ccm2, ccm3, ccm4, ccm5 } from '~/@core/utils/console-colors'
 
 // ==========================================================
 // IMPORTS COMPLETE
-console.debug('%cThreeDGarden<FC,R3F>: {.tsx}', ccm4)
+console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm4)
 console.debug(`%c====================================`, ccm5)
 
 // ==========================================================
@@ -3443,7 +3443,7 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
   // ==========================================================
   // Component onMount hook
   useEffect(() => {
-    console.debug('%cThreeDGarden<FC,R3F>: onMount', ccm4, word)
+    console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm4, word)
     console.debug(`%c====================================`, ccm5)
 
     // begin here ?? yes
