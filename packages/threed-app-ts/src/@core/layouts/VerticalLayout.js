@@ -67,23 +67,26 @@ const VerticalLayout = (props) => {
   return (
     <>
       <VerticalLayoutWrapper className='layout-wrapper'>
-        {navHidden &&
-        themeConfig.layout === 'vertical' &&
-        !(navHidden && settings.lastLayout === 'horizontal') ? null : (
-          <Navigation
-            navWidth={navWidth}
-            navHover={navHover}
-            navVisible={navVisible}
-            setNavHover={setNavHover}
-            setNavVisible={setNavVisible}
-            collapsedNavWidth={collapsedNavWidth}
-            toggleNavVisibility={toggleNavVisibility}
-            navigationBorderWidth={navigationBorderWidth}
-            {...props}
-          />
-        )}
         <MainContentWrapper className='layout-content-wrapper'>
+          <div>[MM] HEY HEY HEY 1</div>
           <AppBar toggleNavVisibility={toggleNavVisibility} {...props} />
+          <div>[MM] HEY HEY HEY 2</div>
+
+          {navHidden &&
+          themeConfig.layout === 'vertical' &&
+          !(navHidden && settings.lastLayout === 'horizontal') ? null : (
+            <Navigation
+              navWidth={navWidth}
+              navHover={navHover}
+              navVisible={navVisible}
+              setNavHover={setNavHover}
+              setNavVisible={setNavVisible}
+              collapsedNavWidth={collapsedNavWidth}
+              toggleNavVisibility={toggleNavVisibility}
+              navigationBorderWidth={navigationBorderWidth}
+              {...props}
+            />
+          )}
 
           <ContentWrapper
             className='layout-page-content'
