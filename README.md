@@ -1,21 +1,25 @@
-# 🌱 ThreeD Garden 🌱 on Scaffold-Eth TypeScript 🌱
+# 🥕 ThreeD Garden
+
+🌱 on Scaffold-Eth TypeScript
+
+🦁 Next.js 13 + React + MUI + Ant + Apollo + Zustand + GraphQL + WordPress + WooCommerce
 
 ## 🌱 Features
 
 This is the typescript repo of scaffold-eth. Use scaffold-eth-typescript with:
 
-- A react frontend running with `nextjs` or `vite`.
-- Solidity toolkit of `hardhat` or `foundry`
+- A react frontend running with `threed` or `nextjs` or `vite`.
+- Solidity toolkit of `hardhat` or `foundry` (or `truffle` beta)
 - It has the a command line system that allows you to choose a **react frontend** or **solidity toolkit**
 
 ## 🌱 Quick Start
 
 ### Fork or Clone the Repo
 
-- You can use the use the template link: [scaffold-eth-typescript template](https://github.com/scaffold-eth/scaffold-eth-typescript/generate)
+- You can use the use the template link: [threedgarden-eth-typescript template](https://github.com/marty-mcgee/threed-garden/generate)
 - You can clone the repo with git
   ```bash
-  git clone https://github.com/scaffold-eth/scaffold-eth-typescript.git
+  git clone https://github.com/marty-mcgee/threed-garden.git
   ```
 
 ### Starting the App
