@@ -1,22 +1,29 @@
-// ** React Imports
-import { useEffect } from 'react'
-
 // ** Next Imports
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
+
+// ** React Imports
+import { useEffect } from 'react'
 
 // ** MUI Components
 import Typography from '@mui/material/Typography'
 
 // ** Component Imports
+// ThreeD Garden examples components
+import DashboardLayout from '~/components/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '~/components/elements/Navbars/DashboardNavbar'
 
 // ** Hook Imports
 import { useAuth } from '~/hooks/useAuth'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-import { MainPage as ETHPage } from '~~/components/main/MainPage'
+// import { MainPage as ETHPage } from '~~/components/main/MainPage'
 import { TPageProps } from '~~/models/TAppProps'
+
+import chalk from 'chalk'
+
+// ==============================================================
 
 // Set Home URL based on User Role
 const getHomeRoute = (role: any) => {
@@ -25,7 +32,7 @@ const getHomeRoute = (role: any) => {
   }
   else {
     return '/' // this page
-    return '/participate' // another page
+    // return '/participate' // another page
   }
 }
 
@@ -43,14 +50,16 @@ const Page: NextPage<TPageProps> = (props) => {
       const homeRoute = getHomeRoute(auth.user.role)
       // redirect user to Home URL
       router.replace(homeRoute)
-      console.debug('user AUTHORIZED', auth.user)
+      console.debug(chalk.green('user AUTHORIZED'), auth.user)
     } else {
-      console.debug('user NOT AUTHORIZED', auth.user)
+      console.debug(chalk.red('user NOT AUTHORIZED'), auth.user)
     }
   }, [])
 
   return (
-    <>
+    <DashboardLayout>
+      <DashboardNavbar />
+
       {/* <Spinner /> */}
 
       <Typography
@@ -69,9 +78,10 @@ const Page: NextPage<TPageProps> = (props) => {
       </Typography> */}
 
       {/* SCAFFOLD-ETH-TYPESCRIPT */}
-      <ETHPage pageName='main' {...props}></ETHPage>
+      {/* <ETHPage pageName='main' {...props}></ETHPage> */}
       {/* SCAFFOLD-ETH-TYPESCRIPT */}
-    </>
+
+    </DashboardLayout>
   )
 }
 

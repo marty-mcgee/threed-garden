@@ -51,8 +51,12 @@ import GuestGuard from '~/@core/components/auth/GuestGuard'
 import WindowWrapper from '~/@core/components/window-wrapper'
 
 // ** Layout + Metadata Components
-import UserLayout from '~/layouts/UserLayout'
-import Header from '~/@core/components/head'
+import UserLayout from '~/layouts/UserLayout' // this is your main layout !!!
+
+// ** Metadata Components
+import Header from '~/@core/components/head' // this is your SEO metadata !!!
+
+// ** Helper Components
 import Spinner from '~/@core/components/spinner'
 
 // ** Contexts
@@ -278,7 +282,7 @@ const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmot
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
 
   // Variables
-  const getLayout = Component.getLayout ?? ((page: any) => <UserLayout>{page}</UserLayout>)
+  // const getLayout = Component.getLayout ?? ((page: any) => <UserLayout>{page}</UserLayout>)
   const setConfig = Component.setConfig ?? undefined
   const authGuard = Component.authGuard ?? true
   const guestGuard = Component.guestGuard ?? false
@@ -304,11 +308,13 @@ const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmot
                           aclAbilities={aclAbilities}
                           guestGuard={guestGuard}
                         >
-                          {getLayout(
+                          {/* {getLayout( */}
+                          <UserLayout>
                             <EthApp {...props}>
                               <Component {...pageProps} />
                             </EthApp>
-                          )}
+                          </UserLayout>
+                          {/* )} */}
                         </AclGuard>
                       </Guard>
                     </WindowWrapper>
