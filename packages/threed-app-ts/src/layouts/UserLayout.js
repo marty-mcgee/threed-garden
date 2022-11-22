@@ -25,7 +25,7 @@ const UserLayout = ({ children }) => {
   console.debug('================================================')
   console.debug('🦁 <UserLayout>')
   console.debug('================================================')
-  console.debug('const heyheyhey = ', { heyheyhey: 'HEY HEY HEY' })
+  console.debug('🦁 const heyheyhey = ', { heyheyhey: 'HEY HEY HEY' })
   console.debug('================================================')
 
   // ** Hooks
