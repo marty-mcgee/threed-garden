@@ -57,32 +57,36 @@ const Page: NextPage<TPageProps> = (props) => {
   }, [])
 
   return (
-    <DashboardLayout>
-      <DashboardNavbar />
+    <>
+      {/* <DashboardLayout> */}
+        {/* <DashboardNavbar /> */}
 
-      {/* <Spinner /> */}
+        {/* <Spinner /> */}
 
-      <Typography
-        component='h1'
-        variant='h5'
-        gutterBottom
-      >
-        ThreeD Garden for FarmBot + Three.js + Next.js
-      </Typography>
-      {/* <Typography
-        component='h2'
-        variant='h6'
-        gutterBottom
-      >
-        FarmBot + Three.js using React Three Fiber, MUI v5, NextJS + TypeScript
-      </Typography> */}
+        <Typography
+          component='h1'
+          variant='h5'
+          gutterBottom
+        >
+          ThreeD Garden for FarmBot + Three.js + Next.js
+        </Typography>
+        {/* <Typography
+          component='h2'
+          variant='h6'
+          gutterBottom
+        >
+          FarmBot + Three.js using React Three Fiber, MUI v5, NextJS + TypeScript
+        </Typography> */}
 
-      {/* SCAFFOLD-ETH-TYPESCRIPT */}
-      {/* <ETHPage pageName='main' {...props}></ETHPage> */}
-      {/* SCAFFOLD-ETH-TYPESCRIPT */}
+        {/* SCAFFOLD-ETH-TYPESCRIPT */}
+        {/* <ETHPage pageName='main' {...props}></ETHPage> */}
+        {/* SCAFFOLD-ETH-TYPESCRIPT */}
 
-    </DashboardLayout>
+      {/* </DashboardLayout> */}
+    </>
   )
 }
+
+// Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>
 
 export default Page

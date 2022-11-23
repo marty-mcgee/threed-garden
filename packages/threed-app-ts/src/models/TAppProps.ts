@@ -8,4 +8,5 @@ export type TAppProps = {
 
 export type TPageProps = {
   appProps: TAppProps
+  getLayout: JSX.Element
 }

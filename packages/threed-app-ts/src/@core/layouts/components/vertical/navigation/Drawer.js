@@ -101,7 +101,13 @@ const Drawer = (props) => {
       className='layout-vertical-nav'
       variant={hidden ? 'temporary' : 'permanent'}
       {...(hidden ? { ...MobileDrawerProps } : { ...DesktopDrawerProps })}
-      PaperProps={{ sx: { width: navCollapsed && !navHover ? collapsedNavWidth : navWidth } }}
+      PaperProps={{
+        sx: {
+          width: navCollapsed && !navHover ? collapsedNavWidth : navWidth,
+          mt: 16,
+          backgroundColor: 'white',
+        },
+      }}
       sx={{
         width: navCollapsed ? collapsedNavWidth : navWidth,
         '& .MuiDrawer-paper': {
@@ -110,8 +116,7 @@ const Drawer = (props) => {
           ...(!hidden && navCollapsed && navHover ? { boxShadow: 9 } : {}),
           borderRight: navigationBorderWidth === 0 ? 0 : `${navigationBorderWidth}px solid ${theme.palette.divider}`,
         },
-      }}
-    >
+      }}>
       {children}
     </SwipeableDrawer>
   )

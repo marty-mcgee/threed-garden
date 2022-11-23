@@ -1,3 +1,6 @@
+// ==============================================================
+// RESOURCES
+
 import useMediaQuery from '@mui/material/useMediaQuery'
 
 // ** Layout Imports
@@ -19,14 +22,17 @@ import HorizontalAppBarContent from './components/horizontal/AppBarContent'
 // ** Hook Import
 import { useSettings } from '~/@core/hooks/useSettings'
 
+// ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
+import { ccm1, ccm4, ccm5 } from '~/@core/utils/console-colors'
+
+// FC
 const UserLayout = ({ children }) => {
   //
   // [MM] HEY HEY HEY UserLayout USER LAYOUT
-  console.debug('================================================')
+  // console.debug('%c====================================', ccm5)
   console.debug('🦁 <UserLayout>')
-  console.debug('================================================')
-  console.debug('🦁 const heyheyhey = ', { heyheyhey: 'HEY HEY HEY' })
-  console.debug('================================================')
+  // console.debug('🦁 const heyheyhey = ', { heyheyhey: 'HEY HEY HEY' })
+  // console.debug('%c====================================', ccm5)
 
   // ** Hooks
   const { settings, saveSettings } = useSettings()
@@ -80,4 +86,3 @@ const UserLayout = ({ children }) => {
 }
 
 export default UserLayout
-0
