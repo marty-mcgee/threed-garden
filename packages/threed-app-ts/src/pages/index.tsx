@@ -34,8 +34,9 @@ const getHomeRoute = (role: any) => {
     return '/acl' // authorized credentials list? (boundary)
   }
   else {
-    return '/' // this page (for testing. not ideal for production.)
+    // return '/' // this page (for testing. not ideal for production.)
     // return '/participate' // another page
+    return '/home' // another page
   }
 }
 
