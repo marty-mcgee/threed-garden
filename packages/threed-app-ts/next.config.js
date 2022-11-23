@@ -43,7 +43,7 @@ const nextConfig = {
   },
 
   // https://github.com/vercel/next.js/issues/36221
-  // swcMinify: true,
+  swcMinify: true,
 
   productionBrowserSourceMaps: true,
 
