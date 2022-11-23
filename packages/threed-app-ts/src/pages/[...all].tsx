@@ -22,7 +22,9 @@ const Page: FC<TPageProps> = (props) => {
       <ThreeDPage
         pageName={urlPath}
         {...props}
-      ></ThreeDPage>
+      >
+        <div>no children? except me? accept me? , the div</div>
+      </ThreeDPage>
     </div>
   )
 }
