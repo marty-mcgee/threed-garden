@@ -76,13 +76,10 @@ const Navigation = (props) => {
     if (beforeVerticalNavMenuContentPosition === 'static' || !beforeVerticalNavMenuContent) {
       container = hidden ? container.target : container
       if (shadowRef && container.scrollTop > 0) {
-        // @ts-ignore
         if (!shadowRef.current.classList.contains('d-block')) {
-          // @ts-ignore
           shadowRef.current.classList.add('d-block')
         }
       } else {
-        // @ts-ignore
         shadowRef.current.classList.remove('d-block')
       }
     }
@@ -124,12 +121,9 @@ const Navigation = (props) => {
         ? beforeVerticalNavMenuContent(props)
         : null}
       {(beforeVerticalNavMenuContentPosition === 'static' || !beforeVerticalNavMenuContent) && (
-        <StyledBoxForShadow
-          ref={shadowRef}
-          sx={{ background: shadowBgColor() }}
-        />
+        <StyledBoxForShadow ref={shadowRef} sx={{ background: shadowBgColor() }} />
       )}
-      <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+      <Box sx={{ position: 'relative', overflow: 'visible', border: '1px solid red' }}>
         <ScrollWrapper
           // containerRef={ref => handleInfiniteScroll(ref)}
           {...(hidden
@@ -140,8 +134,7 @@ const Navigation = (props) => {
             : {
                 options: { wheelPropagation: false },
                 onScrollY: (container) => scrollMenu(container),
-              })}
-        >
+              })}>
           {beforeVerticalNavMenuContent && beforeVerticalNavMenuContentPosition === 'static'
             ? beforeVerticalNavMenuContent(props)
             : null}
@@ -155,8 +148,7 @@ const Navigation = (props) => {
                 transition: 'padding .25s ease',
                 '& > :first-of-type': { mt: '0' },
                 pr: !navCollapsed || (navCollapsed && navHover) ? 4.5 : 1.25,
-              }}
-            >
+              }}>
               <VerticalNavItems
                 groupActive={groupActive}
                 setGroupActive={setGroupActive}

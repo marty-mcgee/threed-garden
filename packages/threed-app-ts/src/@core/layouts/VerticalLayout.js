@@ -66,31 +66,35 @@ const VerticalLayout = (props) => {
 
   return (
     <>
-      <VerticalLayoutWrapper className='layout-wrapper'>
-        <MainContentWrapper className='layout-content-wrapper'>
-          <div>[MM] HEY HEY HEY 1</div>
-          <AppBar toggleNavVisibility={toggleNavVisibility} {...props} />
-          <div>[MM] HEY HEY HEY 2</div>
+      <div style={{ border: '1px solid pink' }}>
+        <AppBar toggleNavVisibility={toggleNavVisibility} {...props} />
+      </div>
+      <VerticalLayoutWrapper className='layout-wrapper' style={{ border: '1px solid green' }}>
+        {/* LEFT NAVIGATION PANEL DRAWER */}
+        {navHidden &&
+        themeConfig.layout === 'vertical' &&
+        !(navHidden && settings.lastLayout === 'horizontal') ? null : (
+          <Navigation
+            navWidth={navWidth}
+            navHover={navHover}
+            navVisible={navVisible}
+            setNavHover={setNavHover}
+            setNavVisible={setNavVisible}
+            collapsedNavWidth={collapsedNavWidth}
+            toggleNavVisibility={toggleNavVisibility}
+            navigationBorderWidth={navigationBorderWidth}
+            {...props}
+          />
+        )}
 
-          {navHidden &&
-          themeConfig.layout === 'vertical' &&
-          !(navHidden && settings.lastLayout === 'horizontal') ? null : (
-            <Navigation
-              navWidth={navWidth}
-              navHover={navHover}
-              navVisible={navVisible}
-              setNavHover={setNavHover}
-              setNavVisible={setNavVisible}
-              collapsedNavWidth={collapsedNavWidth}
-              toggleNavVisibility={toggleNavVisibility}
-              navigationBorderWidth={navigationBorderWidth}
-              {...props}
-            />
-          )}
-
+        {/* MAIN CONTENT */}
+        <MainContentWrapper
+          className='layout-content-wrapper'
+          style={{ border: '1px solid blue', maxHeight: '80px !important' }}>
           <ContentWrapper
             className='layout-page-content'
             sx={{
+              border: '1px dashed red',
               ...(contentWidth === 'boxed' && {
                 mx: 'auto',
                 '@media (min-width:1440px)': { maxWidth: 1440 },
@@ -99,13 +103,15 @@ const VerticalLayout = (props) => {
             }}>
             {children}
           </ContentWrapper>
-
-          <Footer {...props} />
-
-          <DatePickerWrapper sx={{ zIndex: 11 }}>
-            <Box id='react-datepicker-portal'></Box>
-          </DatePickerWrapper>
         </MainContentWrapper>
+
+        {/* FOOTER CONTENT */}
+        <Footer {...props} />
+
+        {/* SHOW/HIDE MODALS */}
+        <DatePickerWrapper sx={{ zIndex: 11 }}>
+          <Box id='react-datepicker-portal'></Box>
+        </DatePickerWrapper>
       </VerticalLayoutWrapper>
 
       {disableCustomizer || hidden ? null : <Customizer />}

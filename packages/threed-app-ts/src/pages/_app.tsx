@@ -54,7 +54,7 @@ import WindowWrapper from '~/@core/components/window-wrapper'
 import UserLayout from '~/layouts/UserLayout' // this is your main layout !!!
 
 // ** Metadata Components
-import Header from '~/@core/components/head' // this is your SEO metadata !!!
+import HeadMeta from '~/@core/components/head' // this is your SEO metadata !!!
 
 // ** Helper Components
 import Spinner from '~/@core/components/spinner'
@@ -281,8 +281,8 @@ const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmot
   // destructure props for vars
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
 
-  // Variables
-  // const getLayout = Component.getLayout ?? ((page: any) => <UserLayout>{page}</UserLayout>)
+  // PageComponent.Properties
+  const getLayout = Component.getLayout ?? ((page: any) => <UserLayout>{page}</UserLayout>)
   const setConfig = Component.setConfig ?? undefined
   const authGuard = Component.authGuard ?? true
   const guestGuard = Component.guestGuard ?? false
@@ -292,8 +292,8 @@ const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmot
     <ApolloProvider client={client}>
       <ReduxProvider store={reduxStore}>
         <CacheProvider value={emotionCache}>
-          <Header />
-          {/* <Header title={pageProps.title} /> */}
+          <HeadMeta />
+          {/* <HeadMeta title={pageProps.title} /> */}
           <AuthProvider>
             <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null })}>
               <SettingsConsumer>
@@ -308,13 +308,13 @@ const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmot
                           aclAbilities={aclAbilities}
                           guestGuard={guestGuard}
                         >
-                          {/* {getLayout( */}
-                          <UserLayout>
+                          {getLayout(
+                          // <UserLayout>
                             <EthApp {...props}>
                               <Component {...pageProps} />
                             </EthApp>
-                          </UserLayout>
-                          {/* )} */}
+                          // </UserLayout>
+                          )}
                         </AclGuard>
                       </Guard>
                     </WindowWrapper>
