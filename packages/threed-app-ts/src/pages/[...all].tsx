@@ -1,8 +1,7 @@
-import Head from 'next/head'
 import { useRouter } from 'next/router'
 import React, { FC } from 'react'
 
-import { MainPage } from '~~/components/main/MainPage'
+import { MainPage as ThreeDPage } from '~~/components/main/MainPage'
 import { TPageProps } from '~~/models/TAppProps'
 
 const Page: FC<TPageProps> = (props) => {
@@ -20,21 +19,10 @@ const Page: FC<TPageProps> = (props) => {
 
   return (
     <div className='App'>
-      <Head>
-        <title>ThreeDGarden-ETH-TypeScript</title>
-        <meta
-          name='description'
-          content='Generated from ThreeDGarden-ETH-TypeScript'
-        />
-        <link
-          rel='icon'
-          href='/favicon.ico'
-        />
-      </Head>
-      <MainPage
+      <ThreeDPage
         pageName={urlPath}
         {...props}
-      ></MainPage>
+      ></ThreeDPage>
     </div>
   )
 }
