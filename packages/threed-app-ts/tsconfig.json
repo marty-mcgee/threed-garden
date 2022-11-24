@@ -1,26 +1,28 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "lib": ["dom", "dom.iterable", "esnext", "es2015.iterable"],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
     "module": "esnext",
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
     "jsxImportSource": "@emotion/react",
+    // rules
+    "allowSyntheticDefaultImports": true,
+    "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": false,
     "downlevelIteration": true,
     "incremental": true,
+    // directories + paths
     "rootDirs": [".", "../common/src"],
     "baseUrl": ".",
     "paths": {
@@ -32,20 +34,22 @@
       "-||-*": ["assets/*"] // threeds (-||-)
     },
     "typeRoots": ["node_modules/@types", "src/types"],
+    // plugins
     "plugins": [
       {
         "name": "next"
       }
     ]
   },
-  // "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx"]
-  "include": ["src", "../common/src", "app", ".next/types/**/*.ts"],
+  // "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx"] // NEXT 12
+  // "include": ["src", "../common/src", "app", ".next/types/**/*.ts"], // NEXT 12 + 13
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"], // NEXT 12 + 13
   "exclude": [
     "node_modules",
-    "**/node_modules",
+    // "**/node_modules",
     ".husky",
     "**/*.css",
-    "tailwind.config.js",
+    // "tailwind.config.js",
     "**/.yalc/**/*",
     ".yalc/**/*"
   ]

@@ -24,9 +24,8 @@ const withTM = require('next-transpile-modules')([
   'three',
 ])
 
-/**
- * @type {import("next").NextConfig}
- */
+// MODULE
+/** @type {import("next").NextConfig} */
 const nextConfig = {
   //
   reactStrictMode: false, // true causes components to load TWICE in dev only, not prod
