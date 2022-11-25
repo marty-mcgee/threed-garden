@@ -1,24 +1,36 @@
 // ==============================================================
-// RESOURCES
+// IMPORT RESOURCES
 
+// **
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 // import { Row, Col, Button } from 'antd'
 
+// **
 import { Faucet, GasGauge } from 'eth-components/ant'
+// **
 import { useEthersAppContext } from 'eth-hooks/context'
+// **
 import React, { FC, ReactNode, Suspense } from 'react'
 
+// **
 import { Ramp, getFaucetAvailable, ThemeSwitcher } from '~common/components'
+// **
 import { networkDefinitions } from '~common/constants'
+// **
 import { getNetworkInfo } from '~common/functions'
+// **
 import { IScaffoldAppProviders } from '~common/models'
+// **
 import { FAUCET_ENABLED } from '~~/config/nextjsApp.config'
 
-// Types + Interfaces Imports
+// ** Types + Interfaces Imports
 import { TAppProps } from '~~/models/TAppProps'
 
-export interface IMainPageFooterProps {
+// ==============================================================
+// EXPORT RESOURCES
+
+export interface IEthPageFooterProps {
   scaffoldAppProviders: IScaffoldAppProviders
   price: number
   children?: ReactNode
@@ -30,7 +42,7 @@ export interface IMainPageFooterProps {
  * @param props
  * @returns
  */
-export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
+export const EthPageFooter: FC<IEthPageFooterProps> = (props) => {
   // passed in by nextjs getInitalProps
   const appProps: TAppProps = props.appProps
 

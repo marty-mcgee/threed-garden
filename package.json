@@ -61,8 +61,8 @@
     "build:vite": "yarn workspace @scaffold-eth/vite-app build",
     "start:nextjs": "yarn workspace @scaffold-eth/nextjs-app dev",
     "build:nextjs": "yarn workspace @scaffold-eth/nextjs-app build",
-    "start:threed": "yarn workspace @scaffold-eth/threed-app dev",
-    "build:threed": "yarn workspace @scaffold-eth/threed-app build",
+    "start:threed": "yarn workspace @scaffold-eth/threed-app-ts dev",
+    "build:threed": "yarn workspace @scaffold-eth/threed-app-ts build",
     "______________7": "____ ___________________________________________________",
     "@__ ethereum helpers ": "echo @__ ethereum helper commands",
     "generate": "yarn workspace @scaffold-eth/solidity generate",
@@ -135,8 +135,8 @@
       "yarn workspace @scaffold-eth/nextjs-app format"
     ],
     "packages/threed-app-ts/src/**/*.{ts,tsx}": [
-      "yarn workspace @scaffold-eth/threed-app lint --fix",
-      "yarn workspace @scaffold-eth/threed-app format"
+      "yarn workspace @scaffold-eth/threed-app-ts lint --fix",
+      "yarn workspace @scaffold-eth/threed-app-ts format"
     ],
     "packages/common/src/**/*.{ts,tsx}": [
       "yarn workspace @scaffold-eth/common lint --fix",

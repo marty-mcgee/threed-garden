@@ -24,7 +24,7 @@ import { useDexEthPrice } from 'eth-hooks/dapps'
 import { asEthersAdaptor } from 'eth-hooks/functions'
 
 // Component + Layout Imports
-import { MainPageFooter, MainPageHeader, createTabsAndPages, TContractPageList } from '.'
+import { EthPageFooter, EthPageHeader, createTabsAndPages, TContractPageList } from '.'
 
 // Types + Interfaces Imports
 import { useLoadAppContracts, useConnectAppContracts, useAppContracts } from '~common/components/context'
@@ -48,7 +48,7 @@ import { TAppProps } from '~~/models/TAppProps'
 // =============================================================
 // TYPES + INTERFACES
 
-interface IMainPageProps {
+interface IEthPageProps {
   pageName: string
   children?: ReactElement
   appProps: TAppProps
@@ -58,9 +58,11 @@ interface IMainPageProps {
  * The main component
  * @returns JSX.Element
  */
-export const MainPage: NextPage<IMainPageProps> = (props): JSX.Element => {
+export const EthPage: NextPage<IEthPageProps> = (props): JSX.Element => {
   // passed in by nextjs getInitalProps
   const appProps: TAppProps = props.appProps
+
+  console.debug('props', props)
 
   const notificationHolder = useCreateAntNotificationHolder()
 
@@ -141,15 +143,15 @@ export const MainPage: NextPage<IMainPageProps> = (props): JSX.Element => {
   // -----------------------------
   // This is the list of tabs and their contents
   const pageList: TContractPageList = {
-    mainPage: {
+    ethHomePage: {
       name: 'Ethereum Home',
       content: (
-        <div><br/><h2>ThreeD Ethereum Home 'MainPage'</h2><br/></div>
+        <div><br/><h2>ThreeD Ethereum Home 'EthPage'</h2><br/></div>
       ),
     },
-    pages: [
+    ethPages: [
       {
-        name: 'Your Contract',
+        name: 'YourContract',
         content: (
           <GenericContract
             contractName='YourContract'
@@ -160,7 +162,7 @@ export const MainPage: NextPage<IMainPageProps> = (props): JSX.Element => {
         ),
       },
       {
-        name: 'ThreeD NFT',
+        name: 'ThreeDNFT',
         content: (
           <GenericContract
             contractName='ThreeDNFT'
@@ -171,7 +173,7 @@ export const MainPage: NextPage<IMainPageProps> = (props): JSX.Element => {
         ),
       },
       {
-        name: 'Your NFT',
+        name: 'YourNFT',
         content: (
           <GenericContract
             contractName='YourNFT'
@@ -182,10 +184,10 @@ export const MainPage: NextPage<IMainPageProps> = (props): JSX.Element => {
         ),
       },
       {
-        name: 'Mainnet DAI',
+        name: 'Mainnet-Dai',
         content: (
           <GenericContract
-            contractName='Dai'
+            contractName='DAI'
             contract={mainnetDai}
             mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
             blockExplorer={scaffoldAppProviders.currentTargetNetwork.blockExplorer}
@@ -201,19 +203,19 @@ export const MainPage: NextPage<IMainPageProps> = (props): JSX.Element => {
   // 📃 Render the react components as JSX and return to function caller
   // --------------------------------------------------------------------
   return (
-    <div id='ThreeD-ETH-MainPage'>
-      <MainPageHeader
+    <div id='ThreeD-EthPage'>
+      <EthPageHeader
         scaffoldAppProviders={scaffoldAppProviders}
         price={ethPrice}
         appProps={appProps}
       />
-      <div id='ThreeD-ETH-tabMenu'>
+      <div id='ThreeD-EthPage-tabMenu'>
         {tabMenu}
       </div>
-      <div id='ThreeD-ETH-pages.page'>
+      <div id='ThreeD-EthPage-pages.page'>
         {pages[props.pageName] ?? RouteNotFound}
       </div>
-      <MainPageFooter
+      <EthPageFooter
         scaffoldAppProviders={scaffoldAppProviders}
         price={ethPrice}
         appProps={appProps}
@@ -226,5 +228,5 @@ export const MainPage: NextPage<IMainPageProps> = (props): JSX.Element => {
 }
 
 // ==============================================================
-// END MainPage<JSX.Element>.tsx
+// END EthPage<JSX.Element>.tsx
 // ==============================================================

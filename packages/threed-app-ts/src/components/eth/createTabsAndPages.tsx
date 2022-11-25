@@ -21,11 +21,11 @@ export type TContractPageList = {
   /**
    * the default page to load on route '/'
    */
-  mainPage: TContractPage
+  ethHomePage: TContractPage
   /**
    * an array of all the other pages
    */
-  pages: TContractPage[]
+  ethPages: TContractPage[]
 }
 
 /**
@@ -56,9 +56,9 @@ export const createTabsAndPages = (
           display: 'inline-block',
         }}
       >
-        <Link href='/'>{pageList.mainPage.name}</Link>
+        <Link href='/'>{pageList.ethHomePage.name}</Link>
       </MenuItem> */}
-      {pageList.pages.map(({ name }) => (
+      {pageList.ethPages.map(({ name }) => (
         <MenuItem
           key={name}
           style={{
@@ -73,8 +73,8 @@ export const createTabsAndPages = (
   )
 
   const pages: Record<string, ReactElement> = {}
-  pageList.pages.map(({ name, content }) => (pages[name] = content))
-  pages['main'] = pageList.mainPage.content
+  pageList.ethPages.map(({ name, content }) => (pages[name] = content))
+  pages['ethHomePage'] = pageList.ethHomePage.content
 
   return { tabMenu, pages }
 }

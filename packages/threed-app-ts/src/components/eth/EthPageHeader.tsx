@@ -28,7 +28,7 @@ import { FAUCET_ENABLED } from '~~/config/nextjsApp.config'
 import { TAppProps } from '~~/models/TAppProps'
 
 // displays a page header
-export interface IMainPageHeaderProps {
+export interface IEthPageHeaderProps {
   scaffoldAppProviders: IScaffoldAppProviders
   price: number
   children?: ReactNode
@@ -40,7 +40,7 @@ export interface IMainPageHeaderProps {
  * @param props
  * @returns
  */
-export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
+export const EthPageHeader: FC<IEthPageHeaderProps> = (props) => {
   // passed in by nextjs getInitalProps
   const appProps: TAppProps = props.appProps
 

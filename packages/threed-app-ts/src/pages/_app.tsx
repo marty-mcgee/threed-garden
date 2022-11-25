@@ -95,6 +95,8 @@ import { ErrorBoundary, ErrorFallback } from '~common/components'
 import { BLOCKNATIVE_DAPPID } from '~~/config/nextjsApp.config'
 import { appGetInitialProps } from '~~/functions/nextjs/appGetInitialProps'
 
+import { EthPage as ETHPage } from '#/src/components/eth/EthPage'
+
 // ==============================================================
 // IMPORTS COMPLETE
 console.debug('%c====================================', ccm5)
@@ -194,7 +196,7 @@ const Guard = ({ children, authGuard, guestGuard }: any) => {
 // const cache = createCache({ key: 'next' })
 
 /**
- * 🌱 See ./MainPage.tsx for main app component!
+ * 🌱 See ./EthPage.tsx for main app component!
  *
  * This file loads the app async.  It sets up context, error boundaries, styles, etc.
  */
@@ -235,7 +237,7 @@ const ProviderWrapper: FC<{ children?: ReactNode }> = (props) => {
 }
 /**
  * ### Summary
- * The main app component is {@see MainPage} `src/components/main/MaingPage.tsx`
+ * The main app component is {@see EthPage} `src/components/main/MaingPage.tsx`
  * This component sets up all the providers, Suspense and Error handling
  * @returns
  */
@@ -259,7 +261,9 @@ const EthApp: NextComponentType<AppContext, AppInitialProps, AppProps> = (props)
         <Hydrate state={dehydradedState}>
           <ProviderWrapper>
             <Suspense fallback={<div />}>
-              <Component {...props.pageProps} />
+              <ETHPage pageName='threed' {...props}>
+                <Component {...props.pageProps} />
+              </ETHPage>
             </Suspense>
           </ProviderWrapper>
         </Hydrate>
@@ -268,7 +272,7 @@ const EthApp: NextComponentType<AppContext, AppInitialProps, AppProps> = (props)
     </ErrorBoundary>
   )
 }
-EthApp.getInitialProps = appGetInitialProps
+// EthApp.getInitialProps = appGetInitialProps
 // export const getInitialProps = appGetInitialProps
 
 // ==============================================================
