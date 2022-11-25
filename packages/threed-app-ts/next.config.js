@@ -30,7 +30,7 @@ const nextConfig = {
   //
   reactStrictMode: false, // true causes components to load TWICE in dev only, not prod
 
-  trailingSlash: true, // add a '/' to the final url address
+  trailingSlash: false, // add a '/' to the final url address
 
   experimental: {
     esmExternals: true, // helps with 3rd party modules trying to call non-module js
