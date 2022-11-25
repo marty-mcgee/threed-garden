@@ -1,6 +1,4 @@
-# README: SOLIDITY-TS
-
-## Coming Soon...
+# README: THREED: SOLIDITY-TS
 
 ====
 
