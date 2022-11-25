@@ -196,7 +196,9 @@ export const EthPage: NextPage<IEthPageProps> = (props): JSX.Element => {
       },
     ],
   }
+  // setup pages and tabs for those pages
   const { tabMenu, pages } = createTabsAndPages(pageList)
+  // set a variable to flag that Route Not Found from the expected URL Path Slug ;)
   const RouteNotFound = <h3 className='p-10 mt-10 text-xl'>Route Not Found</h3>
 
   // --------------------------------------------------------------------
