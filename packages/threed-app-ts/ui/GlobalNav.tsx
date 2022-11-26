@@ -1,7 +1,7 @@
 'use client';
 
 import { demos, type Item } from '#/lib/demos';
-import '#/styles/globals.css';
+// import '#/styles/globals.css'; moved to _app.tsx
 import { NextLogo } from '#/ui/NextLogo';
 import Link from 'next/link';
 import { useSelectedLayoutSegment } from 'next/navigation';
