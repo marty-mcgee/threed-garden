@@ -222,7 +222,7 @@ export const EthPage: NextPage<IEthPageProps> = (props): JSX.Element => {
         price={ethPrice}
         appProps={appProps}
       />
-      <div id='ThreeD-ETH-notification' className='absolute bg-slate-600'>
+      <div id='ThreeD-EthPage-notification' className='absolute bg-slate-600'>
         {notificationHolder}
       </div>
     </div>
