@@ -155,7 +155,7 @@
     "styled-components": "6.0.0-beta.2",
     "tailwindcss": "^3.2.4",
     "tailwindcss-elevation": "^1.0.1",
-    "three": "^0.145.0",
+    "three": "^0.146.0",
     "timers-browserify": "^2.0.12",
     "ts-invariant": "^0.10.3",
     "use-count-up": "3.0.1",
@@ -170,10 +170,7 @@
     "zustand": "^4.1.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.19.1",
-    "@babel/preset-env": "^7.1.6",
     "@emotion/types": "^0.7.0",
-    "@next/eslint-plugin-next": "^12.3.0",
     "@types/chroma-js": "^2.1.4",
     "@types/cors": "^2.8.12",
     "@types/dat.gui": "^0.7.7",
@@ -203,7 +200,7 @@
     "eslint": "^8.27.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
-    "eslint-config-next": "^13.0.3",
+    "eslint-config-next": "^13.0.5",
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-import-resolver-typescript": "^3.5.0",
@@ -229,7 +226,6 @@
     "surge": "^0.23.1",
     "typescript": "^4.8.4",
     "url-loader": "^4.1.1",
-    "webpack": ">=5.9.0 <6.0.0",
     "wordpress-plugin": "^0.1.8-alpha"
   },
   "optionalDependencies": {

@@ -7,8 +7,8 @@ const colors = require('tailwindcss/colors')
 module.exports = {
   content: [
     // NEXT 12
-    './src/pages/**/*.{js,ts,jsx,tsx}',
-    './src/components/**/*.{js,ts,jsx,tsx}',
+    // './src/pages/**/*.{js,ts,jsx,tsx}',
+    // './src/components/**/*.{js,ts,jsx,tsx}',
     // NEXT 13
     './app/**/*.{js,ts,jsx,tsx}',
     './pages/**/*.{js,ts,jsx,tsx}',
