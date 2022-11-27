@@ -27,9 +27,9 @@
     "baseUrl": ".",
     "paths": {
       "#/*": ["./*"], // preferable (next-13)
-      "~/*": ["src/*", "app/*"], // preferable (next, nuxt, supports npm @ confusion)
+      "~/*": ["src/*", "src/app/*"], // preferable (next, nuxt, supports npm @ confusion)
       "@/*": ["src/*"], // deprecated (npm @)
-      "~~/*": ["./src/*", "app/*"], // (eth)
+      "~~/*": ["./src/*", "src/app/*"], // (eth)
       "~common/*": ["../common/src/*"], // (eth~common)
       "-||-*": ["assets/*"] // threeds (-||-)
     },

@@ -80,7 +80,7 @@ import { ccm1, ccm4, ccm5 } from '~/@core/utils/console-colors'
 // ==============================================================
 // SCAFFOLD-ETH-TS IMPORTS
 import '~~/styles/tailwind.css'
-// import '~~/styles/globals.css'
+import '~~/styles/globals.css'
 
 // import { CacheProvider } from '@emotion/react'
 import { EthComponentsSettingsContext, IEthComponentsSettings } from 'eth-components/models'

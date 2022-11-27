@@ -28,9 +28,9 @@ const withTM = require('next-transpile-modules')([
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   //
-  reactStrictMode: false, // true causes components to load TWICE in dev only, not prod
+  reactStrictMode: true, // true causes components to load TWICE in dev only, not prod
 
-  trailingSlash: false, // add a '/' to the final url address
+  trailingSlash: true, // add a '/' to the final url address
 
   experimental: {
     esmExternals: true, // helps with 3rd party modules trying to call non-module js
@@ -38,7 +38,7 @@ const nextConfig = {
     swcFileReading: true, // rust for the web -- 'speedy web compiler' https://swc.rs
 
     // Next 13 app directory:
-    appDir: true, // true for Next 13 | false for Next 12
+    // appDir: true, // true for Next 13 | false for Next 12
   },
 
   // https://github.com/vercel/next.js/issues/36221
