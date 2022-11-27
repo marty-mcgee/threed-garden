@@ -28,9 +28,9 @@ const withTM = require('next-transpile-modules')([
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   //
-  reactStrictMode: true, // true causes components to load TWICE in dev only, not prod
+  reactStrictMode: false, // true: causes components to load TWICE in dev only, not active (moot) in production
 
-  trailingSlash: true, // add a '/' to the final url address
+  trailingSlash: false, // add a '/' to the final url address -- can cause url-based query string issues
 
   experimental: {
     esmExternals: true, // helps with 3rd party modules trying to call non-module js
