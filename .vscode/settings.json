@@ -18,7 +18,8 @@
     "**/obj": false,
     "yarn-error.log": true,
     "**/yarn-error.log": true,
-    "**/.yalc": true
+    "**/.yalc": true,
+    "*.code-workspace": true
   },
 
   "search.exclude": {
@@ -46,7 +47,7 @@
     "**/yarn.lock": true,
     "yarn.lock": true,
     "**/package-lock.json": true,
-    "**/pnpm-lock.yaml": true,
+    "**/pnpm-lock.yaml": true
   },
 
   "explorerExclude.backup": null,
