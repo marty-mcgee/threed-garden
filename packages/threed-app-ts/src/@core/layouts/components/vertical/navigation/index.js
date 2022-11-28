@@ -13,7 +13,7 @@ import themeConfig from '~/config/themeConfig'
 // ** Component Imports
 import Drawer from './Drawer'
 import VerticalNavItems from './VerticalNavItems'
-import VerticalNavHeader from './VerticalNavHeader'
+// import VerticalNavHeader from './VerticalNavHeader' // moved to @core\layouts\components\vertical\appBar\index.js
 
 // ** Util Import
 import { hexToRGBA } from '~/@core/utils/hex-to-rgba'
@@ -116,14 +116,14 @@ const Navigation = (props) => {
 
   return (
     <Drawer {...props}>
-      <VerticalNavHeader {...props} />
+      {/* <VerticalNavHeader {...props} /> */}
       {beforeVerticalNavMenuContent && beforeVerticalNavMenuContentPosition === 'fixed'
         ? beforeVerticalNavMenuContent(props)
         : null}
       {(beforeVerticalNavMenuContentPosition === 'static' || !beforeVerticalNavMenuContent) && (
         <StyledBoxForShadow ref={shadowRef} sx={{ background: shadowBgColor() }} />
       )}
-      <Box sx={{ position: 'relative', overflow: 'visible', border: '1px solid red' }}>
+      <Box sx={{ position: 'relative', overflow: 'visible', border: '0px solid red' }}>
         <ScrollWrapper
           // containerRef={ref => handleInfiniteScroll(ref)}
           {...(hidden
