@@ -72,7 +72,10 @@ const Page: NextPage<TPageProps> = (props) => {
           FarmBot + Three.js using React Three Fiber, MUI v5, NextJS + TypeScript
         </Typography>
         <Typography component='p' gutterBottom >
-          Index Page. This page should forward client to a Home Landing Page.
+          Index Page (/pages/index.tsx)
+        </Typography>
+        <Typography component='p' gutterBottom >
+          This page should call for action + handle response, or forward client, to a "Home" Landing Page.<br/>
           Shown here for TESTING PURPOSES ONLY.
         </Typography>
 
