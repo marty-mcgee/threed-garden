@@ -74,6 +74,7 @@ const VerticalNavHeader = (props) => {
       return (collapsedNavWidth - navigationBorderWidth - 30) / 14
       // return 6
     }
+    // return 0
   }
 
   const MenuLockedIcon = () =>

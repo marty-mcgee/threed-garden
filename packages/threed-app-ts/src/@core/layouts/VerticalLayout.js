@@ -25,13 +25,16 @@ import DatePickerWrapper from '~/@core/styles/libs/react-datepicker'
 const VerticalLayoutWrapper = styled('div')({
   height: '100%',
   display: 'flex',
+  // border: '1px solid pink',
+  overflow: 'scroll',
 })
 
 const MainContentWrapper = styled(Box)({
+  display: 'flex',
   flexGrow: 1,
   minWidth: 0,
-  display: 'flex',
-  minHeight: '100vh',
+  minHeight: '90vh',
+  maxHeight: 'calc(100vh - 64px)',
   flexDirection: 'column',
 })
 
@@ -66,10 +69,10 @@ const VerticalLayout = (props) => {
 
   return (
     <>
-      <div style={{ border: '1px solid pink' }}>
-        <AppBar toggleNavVisibility={toggleNavVisibility} {...props} />
-      </div>
-      <VerticalLayoutWrapper className='layout-wrapper' style={{ border: '1px solid green' }}>
+      {/* <div style={{ border: '1px solid pink' }}> */}
+      <AppBar toggleNavVisibility={toggleNavVisibility} {...props} />
+      {/* </div> */}
+      <VerticalLayoutWrapper className='layout-wrapper' style={{ border: '0px solid green' }}>
         {/* LEFT NAVIGATION PANEL DRAWER */}
         {navHidden &&
         themeConfig.layout === 'vertical' &&
@@ -90,11 +93,13 @@ const VerticalLayout = (props) => {
         {/* MAIN CONTENT */}
         <MainContentWrapper
           className='layout-content-wrapper'
-          style={{ border: '1px solid blue', maxHeight: '80px !important' }}>
+          style={{
+            border: '0px solid blue',
+          }}>
           <ContentWrapper
             className='layout-page-content'
             sx={{
-              border: '1px dashed red',
+              border: '0px dashed red',
               ...(contentWidth === 'boxed' && {
                 mx: 'auto',
                 '@media (min-width:1440px)': { maxWidth: 1440 },
@@ -103,10 +108,10 @@ const VerticalLayout = (props) => {
             }}>
             {children}
           </ContentWrapper>
-        </MainContentWrapper>
 
-        {/* FOOTER CONTENT */}
-        <Footer {...props} />
+          {/* FOOTER CONTENT */}
+          <Footer {...props} />
+        </MainContentWrapper>
 
         {/* SHOW/HIDE MODALS */}
         <DatePickerWrapper sx={{ zIndex: 11 }}>

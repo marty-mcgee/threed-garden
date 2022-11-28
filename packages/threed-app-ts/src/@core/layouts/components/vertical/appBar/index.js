@@ -4,14 +4,17 @@ import useScrollTrigger from '@mui/material/useScrollTrigger'
 import MuiAppBar from '@mui/material/AppBar'
 import MuiToolbar from '@mui/material/Toolbar'
 
-// ** Util Import
+// ** Component Imports
+import VerticalNavHeader from '~/@core/layouts/components/vertical/navigation/VerticalNavHeader'
+
+// ** Util Imports
 import { hexToRGBA } from '~/@core/utils/hex-to-rgba'
 
 const AppBar = styled(MuiAppBar)(({ theme }) => ({
   transition: 'none',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: theme.spacing(0, 6),
+  padding: theme.spacing(0, 2.5, 0, 2.5),
   backgroundColor: 'transparent',
   color: theme.palette.text.primary,
   minHeight: theme.mixins.toolbar.minHeight,
@@ -55,12 +58,7 @@ const LayoutAppBar = (props) => {
   }
 
   return (
-    <AppBar
-      elevation={0}
-      color='default'
-      className='layout-navbar'
-      position={appBar === 'fixed' ? 'sticky' : 'static'}
-    >
+    <AppBar elevation={0} color='default' className='layout-navbar' position={appBar === 'fixed' ? 'sticky' : 'static'}>
       <Toolbar
         className='navbar-content-container'
         sx={{
@@ -68,8 +66,10 @@ const LayoutAppBar = (props) => {
           ...(contentWidth === 'boxed' && {
             '@media (min-width:1440px)': { maxWidth: `calc(1440px - ${theme.spacing(6)} * 2)` },
           }),
-        }}
-      >
+        }}>
+        {/* LOGO + MENU DRAWER CONTROLS */}
+        <VerticalNavHeader {...props} />
+        {/* RIGHT-SIDE CONTROLS + USER ACCOUNT MENU */}
         {(userVerticalAppBarContent && userVerticalAppBarContent(props)) || null}
       </Toolbar>
     </AppBar>
