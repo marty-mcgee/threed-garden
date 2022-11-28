@@ -261,9 +261,9 @@ const EthApp: NextComponentType<AppContext, AppInitialProps, AppProps> = (props)
         <Hydrate state={dehydradedState}>
           <ProviderWrapper>
             <Suspense fallback={<div />}>
-              <ETHPage pageName='threed' {...props}>
-                <Component {...props.pageProps} />
-              </ETHPage>
+              {/* <ETHPage pageName='threed' {...props}> */}
+                <Component {...pageProps} />
+              {/* </ETHPage> */}
             </Suspense>
           </ProviderWrapper>
         </Hydrate>
@@ -296,8 +296,7 @@ const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmot
     <ApolloProvider client={client}>
       <ReduxProvider store={reduxStore}>
         <CacheProvider value={emotionCache}>
-          <HeadMeta />
-          {/* <HeadMeta title={pageProps.title} /> */}
+          <HeadMeta />{/* title={pageProps.title} */}
           <AuthProvider>
             <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null })}>
               <SettingsConsumer>
@@ -314,9 +313,9 @@ const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmot
                         >
                           {getLayout(
                           // <UserLayout>
-                            <EthApp {...props}>
+                            // <EthApp {...props}>
                               <Component {...pageProps} />
-                            </EthApp>
+                            // </EthApp>
                           // </UserLayout>
                           )}
                         </AclGuard>
