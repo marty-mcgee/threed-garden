@@ -317,9 +317,9 @@ const LoginPage = () => {
                   justifyContent: 'space-between',
                 }}>
                 <FormControlLabel control={<Checkbox />} label='Remember Me' />
-                <Link passHref href='/forgot-password'>
-                  <LinkStyled>Forgot Password?</LinkStyled>
-                </Link>
+                <LinkStyled passHref href='/forgot-password'>
+                  Forgot Password?
+                </LinkStyled>
               </Box>
               <Button fullWidth size='large' type='submit' variant='contained' sx={{ mb: 7 }}>
                 Login
@@ -329,9 +329,9 @@ const LoginPage = () => {
                   New on our platform?
                 </Typography>
                 <Typography variant='body2'>
-                  <Link passHref href='/register'>
-                    <LinkStyled>Create an Account</LinkStyled>
-                  </Link>
+                  <LinkStyled passHref href='/register'>
+                    Create an Account
+                  </LinkStyled>
                 </Typography>
               </Box>
               <Divider sx={{ my: 5 }}>or</Divider>

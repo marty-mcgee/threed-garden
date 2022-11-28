@@ -28,6 +28,7 @@ const MenuNavLink = styled(ListItemButton)(({ theme }) => ({
   borderTopRightRadius: 100,
   borderBottomRightRadius: 100,
   color: theme.palette.text.primary,
+  textDecoration: 'none',
   transition: 'padding-left .25s ease-in-out',
   '&.active': {
     '&, &:hover': {
@@ -100,14 +101,10 @@ const VerticalNavLink = ({
         disablePadding
         className='nav-link'
         disabled={item.disabled || false}
-        sx={{ mt: 1.5, px: '0 !important' }}
-      >
-        <Link
-          passHref
-          href={item.path === undefined ? '/' : `${item.path}`}
-        >
+        sx={{ mt: 1.5, px: '0 !important' }}>
+        <Link passHref href={item.path === undefined ? '/' : `${item.path}`}>
           <MenuNavLink
-            component={'a'}
+            component={'span'}
             className={isNavLinkActive() ? 'active' : ''}
             {...(item.openInNewTab ? { target: '_blank' } : null)}
             onClick={(e) => {
@@ -125,8 +122,7 @@ const VerticalNavLink = ({
               ...(item.disabled ? { pointerEvents: 'none' } : { cursor: 'pointer' }),
               pl: navCollapsed && !navHover ? (collapsedNavWidth - navigationBorderWidth - 24) / 8 : 5.5,
               pr: navCollapsed && !navHover ? ((collapsedNavWidth - navigationBorderWidth - 24) / 2 - 5) / 4 : 3.5,
-            }}
-          >
+            }}>
             {isSubToSub ? null : (
               <ListItemIcon
                 sx={{
@@ -134,8 +130,7 @@ const VerticalNavLink = ({
                   transition: 'margin .25s ease-in-out',
                   ...(navCollapsed && !navHover ? { mr: 0 } : { mr: 2.5 }),
                   ...(parent ? { ml: 1.25, mr: 3.75 } : {}), // This line should be after (navCollapsed && !navHover) condition for proper styling
-                }}
-              >
+                }}>
                 <UserIcon
                   icon={IconTag}
                   componentType='vertical-menu'
@@ -154,13 +149,11 @@ const VerticalNavLink = ({
               sx={{
                 ...(isSubToSub ? { ml: 9 } : {}),
                 ...(navCollapsed && !navHover ? { opacity: 0 } : { opacity: 1 }),
-              }}
-            >
+              }}>
               <Typography
                 {...((themeConfig.menuTextTruncate || (!themeConfig.menuTextTruncate && navCollapsed && !navHover)) && {
                   noWrap: true,
-                })}
-              >
+                })}>
                 <Translations text={item.title} />
               </Typography>
               {item.badgeContent ? (
