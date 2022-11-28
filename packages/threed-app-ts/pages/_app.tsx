@@ -1,5 +1,6 @@
 // ==============================================================
 // RESOURCES
+// ** FOR ENTIRE APP CONTEXTS
 
 // ** Next Imports
 import { Router, NextRouter } from 'next/router'
