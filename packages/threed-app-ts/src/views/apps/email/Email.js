@@ -26,7 +26,7 @@ import {
   updateMailLabel,
   handleSelectMail,
   handleSelectAllMail,
-} from '~/store/apps/email'
+} from '~/stores/redux/apps/email'
 
 // ** Variables
 const labelColors = {
@@ -86,8 +86,7 @@ const EmailAppLayout = ({ folder, label }) => {
         boxShadow: skin === 'bordered' ? 0 : 6,
         height: `calc(100vh - ${calculateAppHeight()})`,
         ...(skin === 'bordered' && { border: `1px solid ${theme.palette.divider}` }),
-      }}
-    >
+      }}>
       <SidebarLeft
         store={store}
         hidden={hidden}

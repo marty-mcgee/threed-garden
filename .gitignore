@@ -96,6 +96,7 @@ packages/*.zip
 packages/threed-garden
 # !packages/app-playground-main
 !packages/next13-app-ts
+packages/platforms-main
 
 # demo
 packages/threed-garden/public/demo/objects/*
