@@ -26,7 +26,7 @@ import Close from 'mdi-material-ui/Close'
 import { useDispatch } from 'react-redux'
 
 // ** Actions Imports
-import { addUser } from '~/store/apps/user'
+import { addUser } from '~/stores/redux/apps/user'
 
 const showErrors = (field, valueLen, min) => {
   if (valueLen === 0) {
@@ -118,22 +118,14 @@ const SidebarAddUser = (props) => {
       variant='temporary'
       onClose={handleClose}
       ModalProps={{ keepMounted: true }}
-      sx={{ '& .MuiDrawer-paper': { width: { xs: 300, sm: 400 } } }}
-    >
+      sx={{ '& .MuiDrawer-paper': { width: { xs: 300, sm: 400 } } }}>
       <Header>
         <Typography variant='h6'>Add User</Typography>
-        <Close
-          fontSize='small'
-          onClick={handleClose}
-          sx={{ cursor: 'pointer' }}
-        />
+        <Close fontSize='small' onClick={handleClose} sx={{ cursor: 'pointer' }} />
       </Header>
       <Box sx={{ p: 5 }}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <FormControl
-            fullWidth
-            sx={{ mb: 6 }}
-          >
+          <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
               name='fullName'
               control={control}
@@ -150,10 +142,7 @@ const SidebarAddUser = (props) => {
             />
             {errors.fullName && <FormHelperText sx={{ color: 'error.main' }}>{errors.fullName.message}</FormHelperText>}
           </FormControl>
-          <FormControl
-            fullWidth
-            sx={{ mb: 6 }}
-          >
+          <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
               name='username'
               control={control}
@@ -170,10 +159,7 @@ const SidebarAddUser = (props) => {
             />
             {errors.username && <FormHelperText sx={{ color: 'error.main' }}>{errors.username.message}</FormHelperText>}
           </FormControl>
-          <FormControl
-            fullWidth
-            sx={{ mb: 6 }}
-          >
+          <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
               name='email'
               control={control}
@@ -191,10 +177,7 @@ const SidebarAddUser = (props) => {
             />
             {errors.email && <FormHelperText sx={{ color: 'error.main' }}>{errors.email.message}</FormHelperText>}
           </FormControl>
-          <FormControl
-            fullWidth
-            sx={{ mb: 6 }}
-          >
+          <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
               name='company'
               control={control}
@@ -211,10 +194,7 @@ const SidebarAddUser = (props) => {
             />
             {errors.company && <FormHelperText sx={{ color: 'error.main' }}>{errors.company.message}</FormHelperText>}
           </FormControl>
-          <FormControl
-            fullWidth
-            sx={{ mb: 6 }}
-          >
+          <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
               name='country'
               control={control}
@@ -231,10 +211,7 @@ const SidebarAddUser = (props) => {
             />
             {errors.country && <FormHelperText sx={{ color: 'error.main' }}>{errors.country.message}</FormHelperText>}
           </FormControl>
-          <FormControl
-            fullWidth
-            sx={{ mb: 6 }}
-          >
+          <FormControl fullWidth sx={{ mb: 6 }}>
             <Controller
               name='contact'
               control={control}
@@ -252,10 +229,7 @@ const SidebarAddUser = (props) => {
             />
             {errors.contact && <FormHelperText sx={{ color: 'error.main' }}>{errors.contact.message}</FormHelperText>}
           </FormControl>
-          <FormControl
-            fullWidth
-            sx={{ mb: 6 }}
-          >
+          <FormControl fullWidth sx={{ mb: 6 }}>
             <InputLabel id='role-select'>Select Role</InputLabel>
             <Select
               fullWidth
@@ -264,8 +238,7 @@ const SidebarAddUser = (props) => {
               label='Select Role'
               labelId='role-select'
               onChange={(e) => setRole(e.target.value)}
-              inputProps={{ placeholder: 'Select Role' }}
-            >
+              inputProps={{ placeholder: 'Select Role' }}>
               <MenuItem value='admin'>Admin</MenuItem>
               <MenuItem value='author'>Author</MenuItem>
               <MenuItem value='editor'>Editor</MenuItem>
@@ -273,10 +246,7 @@ const SidebarAddUser = (props) => {
               <MenuItem value='subscriber'>Subscriber</MenuItem>
             </Select>
           </FormControl>
-          <FormControl
-            fullWidth
-            sx={{ mb: 6 }}
-          >
+          <FormControl fullWidth sx={{ mb: 6 }}>
             <InputLabel id='plan-select'>Select Plan</InputLabel>
             <Select
               fullWidth
@@ -285,8 +255,7 @@ const SidebarAddUser = (props) => {
               label='Select Plan'
               labelId='plan-select'
               onChange={(e) => setPlan(e.target.value)}
-              inputProps={{ placeholder: 'Select Plan' }}
-            >
+              inputProps={{ placeholder: 'Select Plan' }}>
               <MenuItem value='basic'>Basic</MenuItem>
               <MenuItem value='company'>Company</MenuItem>
               <MenuItem value='enterprise'>Enterprise</MenuItem>
@@ -294,20 +263,10 @@ const SidebarAddUser = (props) => {
             </Select>
           </FormControl>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Button
-              size='large'
-              type='submit'
-              variant='contained'
-              sx={{ mr: 3 }}
-            >
+            <Button size='large' type='submit' variant='contained' sx={{ mr: 3 }}>
               Submit
             </Button>
-            <Button
-              size='large'
-              variant='outlined'
-              color='secondary'
-              onClick={handleClose}
-            >
+            <Button size='large' variant='outlined' color='secondary' onClick={handleClose}>
               Cancel
             </Button>
           </Box>

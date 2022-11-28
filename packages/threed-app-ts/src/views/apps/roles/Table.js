@@ -32,43 +32,18 @@ import CustomAvatar from '~/@core/components/mui/avatar'
 import { getInitials } from '~/@core/utils/get-initials'
 
 // ** Actions Imports
-import { fetchData } from '~/store/apps/user'
+import { fetchData } from '~/stores/redux/apps/user'
 
 // ** Custom Components Imports
 import TableHeader from '~/views/apps/roles/TableHeader'
 
 // ** Vars
 const userRoleObj = {
-  admin: (
-    <Laptop
-      fontSize='small'
-      sx={{ mr: 3, color: 'error.main' }}
-    />
-  ),
-  author: (
-    <CogOutline
-      fontSize='small'
-      sx={{ mr: 3, color: 'warning.main' }}
-    />
-  ),
-  editor: (
-    <PencilOutline
-      fontSize='small'
-      sx={{ mr: 3, color: 'info.main' }}
-    />
-  ),
-  maintainer: (
-    <ChartDonut
-      fontSize='small'
-      sx={{ mr: 3, color: 'success.main' }}
-    />
-  ),
-  subscriber: (
-    <AccountOutline
-      fontSize='small'
-      sx={{ mr: 3, color: 'primary.main' }}
-    />
-  ),
+  admin: <Laptop fontSize='small' sx={{ mr: 3, color: 'error.main' }} />,
+  author: <CogOutline fontSize='small' sx={{ mr: 3, color: 'warning.main' }} />,
+  editor: <PencilOutline fontSize='small' sx={{ mr: 3, color: 'info.main' }} />,
+  maintainer: <ChartDonut fontSize='small' sx={{ mr: 3, color: 'success.main' }} />,
+  subscriber: <AccountOutline fontSize='small' sx={{ mr: 3, color: 'primary.main' }} />,
 }
 
 const userStatusObj = {
@@ -93,20 +68,13 @@ const renderClient = (row) => {
   if (row.avatar.length) {
     return (
       <AvatarWithImageLink href={`/apps/user/view/${row.id}`}>
-        <CustomAvatar
-          src={row.avatar}
-          sx={{ mr: 3, width: 30, height: 30 }}
-        />
+        <CustomAvatar src={row.avatar} sx={{ mr: 3, width: 30, height: 30 }} />
       </AvatarWithImageLink>
     )
   } else {
     return (
       <AvatarWithoutImageLink href={`/apps/user/view/${row.id}`}>
-        <CustomAvatar
-          skin='light'
-          color={row.avatarColor}
-          sx={{ mr: 3, width: 30, height: 30, fontSize: '.875rem' }}
-        >
+        <CustomAvatar skin='light' color={row.avatarColor} sx={{ mr: 3, width: 30, height: 30, fontSize: '.875rem' }}>
           {getInitials(row.fullName ? row.fullName : 'Marty McGee')}
         </CustomAvatar>
       </AvatarWithoutImageLink>
@@ -127,29 +95,17 @@ const columns = [
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {renderClient(row)}
           <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-            <Link
-              href={`/apps/user/view/${id}`}
-              passHref
-            >
+            <Link href={`/apps/user/view/${id}`} passHref>
               <Typography
                 noWrap
                 component='a'
                 variant='body2'
-                sx={{ fontWeight: 600, color: 'text.primary', textDecoration: 'none' }}
-              >
+                sx={{ fontWeight: 600, color: 'text.primary', textDecoration: 'none' }}>
                 {fullName}
               </Typography>
             </Link>
-            <Link
-              href={`/apps/user/view/${id}`}
-              passHref
-            >
-              <Typography
-                noWrap
-                component='a'
-                variant='caption'
-                sx={{ textDecoration: 'none' }}
-              >
+            <Link href={`/apps/user/view/${id}`} passHref>
+              <Typography noWrap component='a' variant='caption' sx={{ textDecoration: 'none' }}>
                 @{username}
               </Typography>
             </Link>
@@ -165,10 +121,7 @@ const columns = [
     headerName: 'Email',
     renderCell: ({ row }) => {
       return (
-        <Typography
-          variant='body2'
-          noWrap
-        >
+        <Typography variant='body2' noWrap>
           {row.email}
         </Typography>
       )
@@ -183,10 +136,7 @@ const columns = [
       return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {userRoleObj[row.role]}
-          <Typography
-            noWrap
-            sx={{ color: 'text.secondary', textTransform: 'capitalize' }}
-          >
+          <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
             {row.role}
           </Typography>
         </Box>
@@ -200,10 +150,7 @@ const columns = [
     field: 'currentPlan',
     renderCell: ({ row }) => {
       return (
-        <Typography
-          noWrap
-          sx={{ textTransform: 'capitalize' }}
-        >
+        <Typography noWrap sx={{ textTransform: 'capitalize' }}>
           {row.currentPlan}
         </Typography>
       )
@@ -233,10 +180,7 @@ const columns = [
     field: 'actions',
     headerName: 'Actions',
     renderCell: ({ row }) => (
-      <Link
-        href={`/apps/user/view/${row.id}`}
-        passHref
-      >
+      <Link href={`/apps/user/view/${row.id}`} passHref>
         <IconButton>
           <EyeOutline />
         </IconButton>
@@ -274,21 +218,10 @@ const UserList = () => {
   }, [])
 
   return (
-    <Grid
-      container
-      spacing={6}
-    >
-      <Grid
-        item
-        xs={12}
-      >
+    <Grid container spacing={6}>
+      <Grid item xs={12}>
         <Card>
-          <TableHeader
-            plan={plan}
-            value={value}
-            handleFilter={handleFilter}
-            handlePlanChange={handlePlanChange}
-          />
+          <TableHeader plan={plan} value={value} handleFilter={handleFilter} handlePlanChange={handlePlanChange} />
           <DataGrid
             autoHeight
             rows={store.data}

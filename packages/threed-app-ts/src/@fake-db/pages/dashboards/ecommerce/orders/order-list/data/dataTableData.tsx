@@ -1,8 +1,8 @@
 // ProductsList page components
-import IdCell from '~/pages/dashboards/ecommerce/orders/order-list/components/IdCell'
-import DefaultCell from '~/pages/dashboards/ecommerce/orders/order-list/components/DefaultCell'
-import StatusCell from '~/pages/dashboards/ecommerce/orders/order-list/components/StatusCell'
-import CustomerCell from '~/pages/dashboards/ecommerce/orders/order-list/components/CustomerCell'
+import IdCell from '#/pages/dashboards/ecommerce/orders/order-list/components/IdCell'
+import DefaultCell from '#/pages/dashboards/ecommerce/orders/order-list/components/DefaultCell'
+import StatusCell from '#/pages/dashboards/ecommerce/orders/order-list/components/StatusCell'
+import CustomerCell from '#/pages/dashboards/ecommerce/orders/order-list/components/CustomerCell'
 
 // Images
 import team1 from '~/assets/images/people/team-1.jpg'
