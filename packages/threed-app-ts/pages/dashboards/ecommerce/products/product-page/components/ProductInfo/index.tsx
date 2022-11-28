@@ -4,11 +4,11 @@ import Icon from '@mui/material/Icon'
 import Autocomplete from '@mui/material/Autocomplete'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
-import MDButton from '~/components/mui/MDButton'
-import MDBadge from '~/components/mui/MDBadge'
-import MDInput from '~/components/mui/MDInput'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
+import MDButton from '#/lib/mui/MDButton'
+import MDBadge from '#/lib/mui/MDBadge'
+import MDInput from '#/lib/mui/MDInput'
 
 function ProductInfo(): JSX.Element {
   return (

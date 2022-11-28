@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography'
 // import DashboardNavbar from '~/components/elements/Navbars/DashboardNavbar'
 
 // ** Hook Imports
-import { useAuth } from '~/hooks/useAuth'
+import { useAuth } from '#/app/hooks/useAuth'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'

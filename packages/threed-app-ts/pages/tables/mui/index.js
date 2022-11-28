@@ -6,112 +6,67 @@ import Typography from '@mui/material/Typography'
 import CardHeader from '@mui/material/CardHeader'
 
 // ** Custom Components Imports
-import PageHeader from '~/@core/components/page-header'
+import PageHeader from '#/ui/~core/components/page-header'
 
 // ** Demo Components Imports
-import TableBasic from '~/views/table/mui/TableBasic'
-import TableDense from '~/views/table/mui/TableDense'
-import TableSpanning from '~/views/table/mui/TableSpanning'
-import TableCustomized from '~/views/table/mui/TableCustomized'
-import TableSortSelect from '~/views/table/mui/TableSortSelect'
-import TableCollapsible from '~/views/table/mui/TableCollapsible'
-import TableStickyHeader from '~/views/table/mui/TableStickyHeader'
+import TableBasic from '#/ui/views/table/mui/TableBasic'
+import TableDense from '#/ui/views/table/mui/TableDense'
+import TableSpanning from '#/ui/views/table/mui/TableSpanning'
+import TableCustomized from '#/ui/views/table/mui/TableCustomized'
+import TableSortSelect from '#/ui/views/table/mui/TableSortSelect'
+import TableCollapsible from '#/ui/views/table/mui/TableCollapsible'
+import TableStickyHeader from '#/ui/views/table/mui/TableStickyHeader'
 
 const MUITable = () => {
   return (
-    <Grid
-      container
-      spacing={6}
-    >
+    <Grid container spacing={6}>
       <PageHeader
         title={
           <Typography variant='h5'>
-            <Link
-              href='https://mui.com/material-ui/react-table/'
-              target='_blank'
-            >
+            <Link href='https://mui.com/material-ui/react-table/' target='_blank'>
               MUI Tables
             </Link>
           </Typography>
         }
         subtitle={<Typography variant='body2'>Tables display sets of data. They can be fully customized</Typography>}
       />
-      <Grid
-        item
-        xs={12}
-      >
+      <Grid item xs={12}>
         <Card>
-          <CardHeader
-            title='Basic Table'
-            titleTypographyProps={{ variant: 'h6' }}
-          />
+          <CardHeader title='Basic Table' titleTypographyProps={{ variant: 'h6' }} />
           <TableBasic />
         </Card>
       </Grid>
-      <Grid
-        item
-        xs={12}
-      >
+      <Grid item xs={12}>
         <Card>
-          <CardHeader
-            title='Dense Table'
-            titleTypographyProps={{ variant: 'h6' }}
-          />
+          <CardHeader title='Dense Table' titleTypographyProps={{ variant: 'h6' }} />
           <TableDense />
         </Card>
       </Grid>
-      <Grid
-        item
-        xs={12}
-      >
+      <Grid item xs={12}>
         <Card>
-          <CardHeader
-            title='Sticky Header'
-            titleTypographyProps={{ variant: 'h6' }}
-          />
+          <CardHeader title='Sticky Header' titleTypographyProps={{ variant: 'h6' }} />
           <TableStickyHeader />
         </Card>
       </Grid>
-      <Grid
-        item
-        xs={12}
-      >
+      <Grid item xs={12}>
         <Card>
-          <CardHeader
-            title='Collapsible Table'
-            titleTypographyProps={{ variant: 'h6' }}
-          />
+          <CardHeader title='Collapsible Table' titleTypographyProps={{ variant: 'h6' }} />
           <TableCollapsible />
         </Card>
       </Grid>
-      <Grid
-        item
-        xs={12}
-      >
+      <Grid item xs={12}>
         <Card>
-          <CardHeader
-            title='Spanning Table'
-            titleTypographyProps={{ variant: 'h6' }}
-          />
+          <CardHeader title='Spanning Table' titleTypographyProps={{ variant: 'h6' }} />
           <TableSpanning />
         </Card>
       </Grid>
-      <Grid
-        item
-        xs={12}
-      >
+      <Grid item xs={12}>
         <Card>
-          <CardHeader
-            title='Customized Table'
-            titleTypographyProps={{ variant: 'h6' }}
-          />
+          <CardHeader title='Customized Table' titleTypographyProps={{ variant: 'h6' }} />
           <TableCustomized />
         </Card>
       </Grid>
-      <Grid
-        item
-        xs={12}
-      >
+      <Grid item xs={12}>
         <Card>
           <TableSortSelect />
         </Card>

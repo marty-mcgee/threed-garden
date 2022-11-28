@@ -13,9 +13,9 @@ import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
 import axios from 'axios'
 
 // ** Demo Imports
-import FaqHeader from '~/views/pages/faq/FaqHeader'
-import FaqFooter from '~/views/pages/faq/FaqFooter'
-import FaqAccordions from '~/views/pages/faq/FaqAccordions'
+import FaqHeader from '#/ui/views/pages/faq/FaqHeader'
+import FaqFooter from '#/ui/views/pages/faq/FaqFooter'
+import FaqAccordions from '#/ui/views/pages/faq/FaqAccordions'
 
 // Styled Box component
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -55,10 +55,7 @@ const FAQ = ({ apiData }) => {
 
   return (
     <>
-      <FaqHeader
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-      />
+      <FaqHeader searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <StyledBox>
         {data !== null ? <FaqAccordions data={data} /> : renderNoResult}
         <FaqFooter />

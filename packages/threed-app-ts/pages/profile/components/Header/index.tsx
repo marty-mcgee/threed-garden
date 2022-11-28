@@ -9,16 +9,16 @@ import Tab from '@mui/material/Tab'
 import Icon from '@mui/material/Icon'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
-import MDAvatar from '~/components/mui/MDAvatar'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
+import MDAvatar from '#/lib/mui/MDAvatar'
 
 // ThreeD Garden Base Styles
 import breakpoints from '~/themes/theme-light/base/breakpoints'
 
 // Images
-import profileImage from '~/assets/images/people/team-0.png'
-import backgroundImage from '~/assets/images/any/bg-profile-garden.jpg'
+import profileImage from '#/lib/assets/images/people/team-0.png'
+import backgroundImage from '#/lib/assets/images/any/bg-profile-garden.jpg'
 
 function Header({ children }: { children?: ReactNode }): JSX.Element {
   const [tabsOrientation, setTabsOrientation] = useState<'horizontal' | 'vertical'>('horizontal')

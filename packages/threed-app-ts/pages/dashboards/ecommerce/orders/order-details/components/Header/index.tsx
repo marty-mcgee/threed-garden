@@ -1,7 +1,7 @@
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
-import MDButton from '~/components/mui/MDButton'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
+import MDButton from '#/lib/mui/MDButton'
 
 function Header(): JSX.Element {
   return (

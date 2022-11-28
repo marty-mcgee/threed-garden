@@ -8,17 +8,17 @@ import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import DefaultNavbar from '~/components/elements/Navbars/DefaultNavbar'
+import DefaultNavbar from '#/lib/components/elements/Navbars/DefaultNavbar'
 
 // ThreeD Garden page layout routes
 import pageRoutes from '~/routes/page.routes'
 
 // Images
-import bgImage from '~/assets/images/any/bg-pricing.jpg'
+import bgImage from '#/lib/assets/images/any/bg-pricing.jpg'
 
 // Declaring props types for Header
 interface Props {

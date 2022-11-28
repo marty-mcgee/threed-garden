@@ -1,5 +1,5 @@
 // ** Layout Import
-import BlankLayout from '~/@core/layouts/BlankLayout'
+import BlankLayout from '#/ui/~core/layouts/BlankLayout'
 
 // ** Component Import
 import Error404 from '~/pages/404'

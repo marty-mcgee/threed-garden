@@ -32,13 +32,13 @@ import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import themeConfig from '~/config/themeConfig'
 
 // ** Layout Import
-import BlankLayout from '~/@core/layouts/BlankLayout'
+import BlankLayout from '#/ui/~core/layouts/BlankLayout'
 
 // ** Hooks
-import { useSettings } from '~/@core/hooks/useSettings'
+import { useSettings } from '#/ui/~core/hooks/useSettings'
 
 // ** Demo Imports
-import FooterIllustrationsV2 from '~/views/pages/auth/FooterIllustrationsV2'
+import FooterIllustrationsV2 from '#/ui/views/pages/auth/FooterIllustrationsV2'
 
 // ** Styled Components
 const RegisterIllustrationWrapper = styled(Box)(({ theme }) => ({
@@ -144,14 +144,7 @@ const RegisterV2 = () => {
               src={`/images/pages/${imageSource}-${theme.palette.mode}.png`}
             />
           </RegisterIllustrationWrapper>
-          <FooterIllustrationsV2
-            image={
-              <TreeIllustration
-                alt='tree'
-                src='/images/pages/tree-2.png'
-              />
-            }
-          />
+          <FooterIllustrationsV2 image={<TreeIllustration alt='tree' src='/images/pages/tree-2.png' />} />
         </Box>
       ) : null}
       <RightWrapper sx={skin === 'bordered' && !hidden ? { borderLeft: `1px solid ${theme.palette.divider}` } : {}}>
@@ -163,8 +156,7 @@ const RegisterV2 = () => {
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: 'background.paper',
-          }}
-        >
+          }}>
           <BoxWrapper>
             <Box
               sx={{
@@ -174,30 +166,17 @@ const RegisterV2 = () => {
                 position: 'absolute',
                 alignItems: 'center',
                 justifyContent: 'center',
-              }}
-            >
+              }}>
               <svg
                 width={35}
                 height={29}
                 version='1.1'
                 viewBox='0 0 30 23'
                 xmlns='http://www.w3.org/2000/svg'
-                xmlnsXlink='http://www.w3.org/1999/xlink'
-              >
-                <g
-                  stroke='none'
-                  strokeWidth='1'
-                  fill='none'
-                  fillRule='evenodd'
-                >
-                  <g
-                    id='Artboard'
-                    transform='translate(-95.000000, -51.000000)'
-                  >
-                    <g
-                      id='logo'
-                      transform='translate(95.000000, 50.000000)'
-                    >
+                xmlnsXlink='http://www.w3.org/1999/xlink'>
+                <g stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
+                  <g id='Artboard' transform='translate(-95.000000, -51.000000)'>
+                    <g id='logo' transform='translate(95.000000, 50.000000)'>
                       <path
                         id='Combined-Shape'
                         fill={theme.palette.primary.main}
@@ -254,8 +233,7 @@ const RegisterV2 = () => {
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   fontSize: '1.5rem !important',
-                }}
-              >
+                }}>
                 {themeConfig.templateName}
               </Typography>
             </Box>
@@ -263,22 +241,9 @@ const RegisterV2 = () => {
               <TypographyStyled variant='h5'>Adventure starts here 🚀</TypographyStyled>
               <Typography variant='body2'>Make your app management easy and fun!</Typography>
             </Box>
-            <form
-              noValidate
-              autoComplete='off'
-              onSubmit={handleSubmit}
-            >
-              <TextField
-                autoFocus
-                id='username'
-                label='Username'
-                sx={{ display: 'flex', mb: 4 }}
-              />
-              <TextField
-                type='email'
-                label='Email'
-                sx={{ display: 'flex', mb: 4 }}
-              />
+            <form noValidate autoComplete='off' onSubmit={handleSubmit}>
+              <TextField autoFocus id='username' label='Username' sx={{ display: 'flex', mb: 4 }} />
+              <TextField type='email' label='Email' sx={{ display: 'flex', mb: 4 }} />
               <FormControl fullWidth>
                 <InputLabel htmlFor='auth-register-v2-password'>Password</InputLabel>
                 <OutlinedInput
@@ -293,8 +258,7 @@ const RegisterV2 = () => {
                         edge='end'
                         onClick={handleClickShowPassword}
                         onMouseDown={handleMouseDownPassword}
-                        aria-label='toggle password visibility'
-                      >
+                        aria-label='toggle password visibility'>
                         {values.showPassword ? <EyeOutline fontSize='small' /> : <EyeOffOutline fontSize='small' />}
                       </IconButton>
                     </InputAdornment>
@@ -306,85 +270,46 @@ const RegisterV2 = () => {
                 label={
                   <>
                     <span>I agree to </span>
-                    <Link
-                      href='/'
-                      passHref
-                    >
+                    <Link href='/' passHref>
                       <LinkStyled onClick={(e) => e.preventDefault()}>privacy policy & terms</LinkStyled>
                     </Link>
                   </>
                 }
               />
-              <Button
-                fullWidth
-                size='large'
-                type='submit'
-                variant='contained'
-                sx={{ mb: 7 }}
-              >
+              <Button fullWidth size='large' type='submit' variant='contained' sx={{ mb: 7 }}>
                 Sign up
               </Button>
               <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <Typography
-                  variant='body2'
-                  sx={{ mr: 2 }}
-                >
+                <Typography variant='body2' sx={{ mr: 2 }}>
                   Already have an account?
                 </Typography>
                 <Typography variant='body2'>
-                  <Link
-                    passHref
-                    href='/pages/auth/login-v2'
-                  >
+                  <Link passHref href='/pages/auth/login-v2'>
                     <LinkStyled>Sign in instead</LinkStyled>
                   </Link>
                 </Typography>
               </Box>
               <Divider sx={{ my: 5 }}>or</Divider>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Link
-                  href='/'
-                  passHref
-                >
-                  <IconButton
-                    component='a'
-                    onClick={(e) => e.preventDefault()}
-                  >
+                <Link href='/' passHref>
+                  <IconButton component='a' onClick={(e) => e.preventDefault()}>
                     <Facebook sx={{ color: '#497ce2' }} />
                   </IconButton>
                 </Link>
-                <Link
-                  href='/'
-                  passHref
-                >
-                  <IconButton
-                    component='a'
-                    onClick={(e) => e.preventDefault()}
-                  >
+                <Link href='/' passHref>
+                  <IconButton component='a' onClick={(e) => e.preventDefault()}>
                     <Twitter sx={{ color: '#1da1f2' }} />
                   </IconButton>
                 </Link>
-                <Link
-                  href='/'
-                  passHref
-                >
-                  <IconButton
-                    component='a'
-                    onClick={(e) => e.preventDefault()}
-                  >
+                <Link href='/' passHref>
+                  <IconButton component='a' onClick={(e) => e.preventDefault()}>
                     <Github
                       sx={{ color: (theme) => (theme.palette.mode === 'light' ? '#272727' : theme.palette.grey[300]) }}
                     />
                   </IconButton>
                 </Link>
-                <Link
-                  href='/'
-                  passHref
-                >
-                  <IconButton
-                    component='a'
-                    onClick={(e) => e.preventDefault()}
-                  >
+                <Link href='/' passHref>
+                  <IconButton component='a' onClick={(e) => e.preventDefault()}>
                     <Google sx={{ color: '#db4437' }} />
                   </IconButton>
                 </Link>

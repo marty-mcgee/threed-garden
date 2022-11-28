@@ -2,15 +2,10 @@
 import axios from 'axios'
 
 // ** Demo Components Imports
-import UserViewPage from '~/views/apps/user/view/UserViewPage'
+import UserViewPage from '#/ui/views/apps/user/view/UserViewPage'
 
 const UserView = ({ id, invoiceData }) => {
-  return (
-    <UserViewPage
-      id={id}
-      invoiceData={invoiceData}
-    />
-  )
+  return <UserViewPage id={id} invoiceData={invoiceData} />
 }
 
 export const getStaticPaths = async () => {

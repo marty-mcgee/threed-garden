@@ -62,7 +62,7 @@ import AccountArrowRightOutline from 'mdi-material-ui/AccountArrowRightOutline'
 import AccountBoxMultipleOutline from 'mdi-material-ui/AccountBoxMultipleOutline'
 
 // ** Custom Components Imports
-import PageHeader from '~/@core/components/page-header'
+import PageHeader from '#/ui/~core/components/page-header'
 
 const icons = {
   Abacus,
@@ -121,15 +121,8 @@ const Icons = () => {
       const IconTag = icons[key]
 
       return (
-        <Grid
-          item
-          key={key}
-        >
-          <Tooltip
-            arrow
-            title={key}
-            placement='top'
-          >
+        <Grid item key={key}>
+          <Tooltip arrow title={key} placement='top'>
             <Card>
               <CardContent sx={{ display: 'flex' }}>
                 <IconTag />
@@ -142,46 +135,29 @@ const Icons = () => {
   }
 
   return (
-    <Grid
-      container
-      spacing={6}
-    >
+    <Grid container spacing={6}>
       <PageHeader
         title={
           <Typography variant='h5'>
-            <Link
-              href='https://materialdesignicons.com/'
-              target='_blank'
-            >
+            <Link href='https://materialdesignicons.com/' target='_blank'>
               Material Design Icons
             </Link>
           </Typography>
         }
         subtitle={<Typography variant='body2'>Material Design Icons from the Community</Typography>}
       />
-      <Grid
-        item
-        xs={12}
-      >
-        <Grid
-          container
-          spacing={6}
-        >
+      <Grid item xs={12}>
+        <Grid container spacing={6}>
           {renderIconGrids()}
         </Grid>
       </Grid>
-      <Grid
-        item
-        xs={12}
-        sx={{ textAlign: 'center' }}
-      >
+      <Grid item xs={12} sx={{ textAlign: 'center' }}>
         <Button
           target='_blank'
           rel='noreferrer'
           component={Link}
           variant='contained'
-          href='https://materialdesignicons.com/'
-        >
+          href='https://materialdesignicons.com/'>
           View All Material Design Icons
         </Button>
       </Grid>

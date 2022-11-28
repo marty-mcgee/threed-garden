@@ -15,16 +15,16 @@ import GitHubIcon from '@mui/icons-material/GitHub'
 import GoogleIcon from '@mui/icons-material/Google'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
-import MDInput from '~/components/mui/MDInput'
-import MDButton from '~/components/mui/MDButton'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
+import MDInput from '#/lib/mui/MDInput'
+import MDButton from '#/lib/mui/MDButton'
 
 // Authentication layout components
 import BasicLayout from '#/pages/authentication/components/BasicLayout'
 
 // Images
-import bgImage from '~/assets/images/any/bg-sign-in-basic.jpg'
+import bgImage from '#/lib/assets/images/any/bg-sign-in-basic.jpg'
 
 function Basic(): JSX.Element {
   const [rememberMe, setRememberMe] = useState<boolean>(false)

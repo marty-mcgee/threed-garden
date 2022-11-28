@@ -3,18 +3,15 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import PageHeader from '~/@core/components/page-header'
+import PageHeader from '#/ui/~core/components/page-header'
 
 // ** Demo Components Imports
-import Table from '~/views/apps/roles/Table'
-import RoleCards from '~/views/apps/roles/RoleCards'
+import Table from '#/ui/views/apps/roles/Table'
+import RoleCards from '#/ui/views/apps/roles/RoleCards'
 
 const RolesComponent = () => {
   return (
-    <Grid
-      container
-      spacing={6}
-    >
+    <Grid container spacing={6}>
       <PageHeader
         title={<Typography variant='h5'>Roles List</Typography>}
         subtitle={
@@ -24,11 +21,7 @@ const RolesComponent = () => {
           </Typography>
         }
       />
-      <Grid
-        item
-        xs={12}
-        sx={{ mb: 4 }}
-      >
+      <Grid item xs={12} sx={{ mb: 4 }}>
         <RoleCards />
       </Grid>
       <PageHeader
@@ -39,10 +32,7 @@ const RolesComponent = () => {
           </Typography>
         }
       />
-      <Grid
-        item
-        xs={12}
-      >
+      <Grid item xs={12}>
         <Table />
       </Grid>
     </Grid>

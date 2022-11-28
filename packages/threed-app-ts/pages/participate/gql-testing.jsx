@@ -7,18 +7,18 @@
 // ** Apollo Imports
 import { ApolloClient, InMemoryCache, useQuery, gql } from '@apollo/client'
 // ac3: reactive vars (store helper)
-import create from '~/api/graphql/createStore'
+import create from 'api/graphql/createStore'
 
 // ** GraphQL Imports
-// import GetScenes from '~/api/graphql/scripts/getScenes.gql'
-// import GetAllotments from '~/api/graphql/scripts/getAllotments.gql'
-// import GetBeds from '~/api/graphql/scripts/getBeds.gql'
-// import GetPlants from '~/api/graphql/scripts/getPlants.gql'
-// import GetPlantingPlans from '~/api/graphql/scripts/getPlantingPlans.gql'
-import GetProducts from '~/api/graphql/scripts/getProducts.gql'
+// import GetScenes from 'api/graphql/scripts/getScenes.gql'
+// import GetAllotments from 'api/graphql/scripts/getAllotments.gql'
+// import GetBeds from 'api/graphql/scripts/getBeds.gql'
+// import GetPlants from 'api/graphql/scripts/getPlants.gql'
+// import GetPlantingPlans from 'api/graphql/scripts/getPlantingPlans.gql'
+import GetProducts from 'api/graphql/scripts/getProducts.gql'
 
 // ** Component Imports
-import Spinner from '~/@core/components/spinner'
+import Spinner from '#/ui/~core/components/spinner'
 
 // ** UUID Imports
 import { v4 as newUUID } from 'uuid'
@@ -54,7 +54,7 @@ const product = (productName = 'PRODUCT 0', layerName = 'LAYER 0') => ({
   layers: [],
   activeLayer: {
     name: layerName,
-    data: {}
+    data: {},
   },
   // wp custom fields
   data: {}, // productStore.get("productDB")
@@ -78,7 +78,6 @@ export const productStore = create({
   productCountDB: 0, // example counter
   productsDB: [], // from db (mysql wordpress via graphql)
   productDB: {}, // pre-this product, ready to be mapped to 'this' product
-
 }) // productStore
 
 export const productActions = {
@@ -90,32 +89,28 @@ export const productActions = {
 const clientLocal = new ApolloClient({
   uri: uri,
   cache: new InMemoryCache({
-    typePolicies: productStore.getTypePolicies()
+    typePolicies: productStore.getTypePolicies(),
   }),
   connectToDevTools: true,
 })
 
 // : FunctionComponent
 const ProductTab = (client = clientLocal) => {
-
   const variables = {
     first: 10,
     last: null,
     after: null,
-    before: null
+    before: null,
   }
 
-  const {
-    loading, error, data,
-    fetchMore, refetch, networkStatus
-  } = useQuery(
-    PRODUCTS,
-    { variables },
-    { client }
-  )
+  const { loading, error, data, fetchMore, refetch, networkStatus } = useQuery(PRODUCTS, { variables }, { client })
 
   if (loading) {
-    return <div><Spinner /></div> // loading...
+    return (
+      <div>
+        <Spinner />
+      </div>
+    ) // loading...
   }
 
   if (error) {
@@ -125,7 +120,6 @@ const ProductTab = (client = clientLocal) => {
 
   // update query with new results
   const handleUpdateQuery = (previousResult, { fetchMoreResult }) => {
-
     // setDisableInfiniteScroll(true)
     if (!fetchMoreResult || !fetchMoreResult.products.edges.length) return previousResult
     fetchMoreResult.products.edges = [...previousResult.products.edges, ...fetchMoreResult.products.edges]
@@ -139,9 +133,9 @@ const ProductTab = (client = clientLocal) => {
         first: null,
         after: data?.products?.pageInfo?.endCursor || null,
         last: null,
-        before: null
+        before: null,
       },
-      updateQuery: handleUpdateQuery
+      updateQuery: handleUpdateQuery,
     })
   }
 
@@ -149,13 +143,7 @@ const ProductTab = (client = clientLocal) => {
 
   return (
     <div>
-      <ul>
-        {products && products.map((product) => (
-          <li key={product.node.id}>
-            {product.node.name}
-          </li>
-        ))}
-      </ul>
+      <ul>{products && products.map((product) => <li key={product.node.id}>{product.node.name}</li>)}</ul>
     </div>
   )
 }

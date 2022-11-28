@@ -2,13 +2,13 @@
 import Grid from '@mui/material/Grid'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
+import MDBox from '#/lib/mui/MDBox'
 
 // ThreeD Garden examples components
-import DefaultPricingCard from '~/components/elements/Cards/PricingCards/DefaultPricingCard'
+import DefaultPricingCard from '#/lib/components/elements/Cards/PricingCards/DefaultPricingCard'
 
 // ThreeD Garden context
-import { useMaterialUIController } from '~/context'
+import { useMaterialUIController } from '~/app/context'
 
 function PricingCards({ prices }: { prices: string[] }): JSX.Element {
   const [controller] = useMaterialUIController()

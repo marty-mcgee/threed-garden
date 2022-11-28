@@ -1,6 +1,6 @@
 // ThreeD Garden components
-import MDInput from '~/components/mui/MDInput'
-import MDBox from '~/components/mui/MDBox'
+import MDInput from '#/lib/mui/MDInput'
+import MDBox from '#/lib/mui/MDBox'
 
 // Declaring props types for FormField
 interface Props {

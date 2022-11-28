@@ -26,10 +26,10 @@ import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import themeConfig from '~/config/themeConfig'
 
 // ** Layout Import
-import BlankLayout from '~/@core/layouts/BlankLayout'
+import BlankLayout from '#/ui/~core/layouts/BlankLayout'
 
 // ** Demo Imports
-import FooterIllustrationsV1 from '~/views/pages/auth/FooterIllustrationsV1'
+import FooterIllustrationsV1 from '#/ui/views/pages/auth/FooterIllustrationsV1'
 
 // ** Styled Components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -97,22 +97,10 @@ const ResetPasswordV1 = () => {
               version='1.1'
               viewBox='0 0 30 23'
               xmlns='http://www.w3.org/2000/svg'
-              xmlnsXlink='http://www.w3.org/1999/xlink'
-            >
-              <g
-                stroke='none'
-                strokeWidth='1'
-                fill='none'
-                fillRule='evenodd'
-              >
-                <g
-                  id='Artboard'
-                  transform='translate(-95.000000, -51.000000)'
-                >
-                  <g
-                    id='logo'
-                    transform='translate(95.000000, 50.000000)'
-                  >
+              xmlnsXlink='http://www.w3.org/1999/xlink'>
+              <g stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
+                <g id='Artboard' transform='translate(-95.000000, -51.000000)'>
+                  <g id='logo' transform='translate(95.000000, 50.000000)'>
                     <path
                       id='Combined-Shape'
                       fill={theme.palette.primary.main}
@@ -169,25 +157,17 @@ const ResetPasswordV1 = () => {
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 fontSize: '1.5rem !important',
-              }}
-            >
+              }}>
               {themeConfig.templateName}
             </Typography>
           </Box>
           <Box sx={{ mb: 6 }}>
-            <Typography
-              variant='h5'
-              sx={{ fontWeight: 600, mb: 1.5 }}
-            >
+            <Typography variant='h5' sx={{ fontWeight: 600, mb: 1.5 }}>
               Reset Password 🔒
             </Typography>
             <Typography variant='body2'>Your new password must be different from previously used passwords</Typography>
           </Box>
-          <form
-            noValidate
-            autoComplete='off'
-            onSubmit={handleSubmit}
-          >
+          <form noValidate autoComplete='off' onSubmit={handleSubmit}>
             <FormControl sx={{ display: 'flex', mb: 4 }}>
               <InputLabel htmlFor='auth-reset-password-new-password'>New Password</InputLabel>
               <OutlinedInput
@@ -203,8 +183,7 @@ const ResetPasswordV1 = () => {
                       edge='end'
                       onClick={handleClickShowNewPassword}
                       aria-label='toggle password visibility'
-                      onMouseDown={handleMouseDownNewPassword}
-                    >
+                      onMouseDown={handleMouseDownNewPassword}>
                       {values.showNewPassword ? <EyeOutline /> : <EyeOffOutline />}
                     </IconButton>
                   </InputAdornment>
@@ -225,31 +204,18 @@ const ResetPasswordV1 = () => {
                       edge='end'
                       aria-label='toggle password visibility'
                       onClick={handleClickShowConfirmNewPassword}
-                      onMouseDown={handleMouseDownConfirmNewPassword}
-                    >
+                      onMouseDown={handleMouseDownConfirmNewPassword}>
                       {values.showConfirmNewPassword ? <EyeOutline /> : <EyeOffOutline />}
                     </IconButton>
                   </InputAdornment>
                 }
               />
             </FormControl>
-            <Button
-              fullWidth
-              size='large'
-              type='submit'
-              variant='contained'
-              sx={{ mb: 5.25 }}
-            >
+            <Button fullWidth size='large' type='submit' variant='contained' sx={{ mb: 5.25 }}>
               Set New Password
             </Button>
-            <Typography
-              variant='body2'
-              sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >
-              <Link
-                passHref
-                href='/pages/auth/login-v1'
-              >
+            <Typography variant='body2' sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Link passHref href='/pages/auth/login-v1'>
                 <LinkStyled>
                   <ChevronLeft />
                   <span>Back to login</span>

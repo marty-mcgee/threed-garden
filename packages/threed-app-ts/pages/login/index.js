@@ -37,22 +37,22 @@ import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Hooks
-import { useAuth } from '~/hooks/useAuth'
-import useBgColor from '~/@core/hooks/useBgColor'
-import { useSettings } from '~/@core/hooks/useSettings'
+import { useAuth } from '#/app/hooks/useAuth'
+import useBgColor from '#/ui/~core/hooks/useBgColor'
+import { useSettings } from '#/ui/~core/hooks/useSettings'
 
 // ** Configs
 import themeConfig from '~/config/themeConfig'
 
 // ** Layout Import
-import BlankLayout from '~/@core/layouts/BlankLayout'
+import BlankLayout from '#/ui/~core/layouts/BlankLayout'
 
 // ** Demo Imports
-import FooterIllustrationsV2 from '~/views/pages/auth/FooterIllustrationsV2'
-import FarmbotDemoSVG from '~/components/farmbot/FarmbotDemoSVG'
+import FooterIllustrationsV2 from '#/ui/views/pages/auth/FooterIllustrationsV2'
+import FarmbotDemoSVG from '#/lib/farmbot/FarmbotDemoSVG'
 
 // ** Image Imports
-import logo from '~/assets/images/logos/logo-threedgarden.png'
+import logo from '#/lib/assets/images/logos/logo-threedgarden.png'
 
 // ** Styled Components
 const SVGWrapper = styled(Box)(({ theme }) => {

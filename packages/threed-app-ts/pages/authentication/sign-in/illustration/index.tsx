@@ -7,16 +7,16 @@ import Link from 'next/link'
 import Switch from '@mui/material/Switch'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
-import MDInput from '~/components/mui/MDInput'
-import MDButton from '~/components/mui/MDButton'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
+import MDInput from '#/lib/mui/MDInput'
+import MDButton from '#/lib/mui/MDButton'
 
 // Authentication layout components
 import IllustrationLayout from '#/pages/authentication/components/IllustrationLayout'
 
 // Image
-import bgImage from '~/assets/images/illustrations/illustration-reset.jpg'
+import bgImage from '#/lib/assets/images/illustrations/illustration-reset.jpg'
 
 function Illustration(): JSX.Element {
   const [rememberMe, setRememberMe] = useState<boolean>(false)

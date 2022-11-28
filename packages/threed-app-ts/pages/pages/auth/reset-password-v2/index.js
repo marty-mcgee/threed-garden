@@ -25,13 +25,13 @@ import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import themeConfig from '~/config/themeConfig'
 
 // ** Layout Import
-import BlankLayout from '~/@core/layouts/BlankLayout'
+import BlankLayout from '#/ui/~core/layouts/BlankLayout'
 
 // ** Hooks
-import { useSettings } from '~/@core/hooks/useSettings'
+import { useSettings } from '#/ui/~core/hooks/useSettings'
 
 // ** Demo Imports
-import FooterIllustrationsV2 from '~/views/pages/auth/FooterIllustrationsV2'
+import FooterIllustrationsV2 from '#/ui/views/pages/auth/FooterIllustrationsV2'
 
 // ** Styled Components
 const ResetPasswordIllustrationWrapper = styled(Box)(({ theme }) => ({
@@ -150,14 +150,7 @@ const ResetPasswordV2 = () => {
               src={`/images/pages/${imageSource}-${theme.palette.mode}.png`}
             />
           </ResetPasswordIllustrationWrapper>
-          <FooterIllustrationsV2
-            image={
-              <TreeIllustration
-                alt='tree'
-                src='/images/pages/tree-3.png'
-              />
-            }
-          />
+          <FooterIllustrationsV2 image={<TreeIllustration alt='tree' src='/images/pages/tree-3.png' />} />
         </Box>
       ) : null}
       <RightWrapper sx={skin === 'bordered' && !hidden ? { borderLeft: `1px solid ${theme.palette.divider}` } : {}}>
@@ -169,8 +162,7 @@ const ResetPasswordV2 = () => {
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: 'background.paper',
-          }}
-        >
+          }}>
           <BoxWrapper>
             <Box
               sx={{
@@ -180,30 +172,17 @@ const ResetPasswordV2 = () => {
                 position: 'absolute',
                 alignItems: 'center',
                 justifyContent: 'center',
-              }}
-            >
+              }}>
               <svg
                 width={35}
                 height={29}
                 version='1.1'
                 viewBox='0 0 30 23'
                 xmlns='http://www.w3.org/2000/svg'
-                xmlnsXlink='http://www.w3.org/1999/xlink'
-              >
-                <g
-                  stroke='none'
-                  strokeWidth='1'
-                  fill='none'
-                  fillRule='evenodd'
-                >
-                  <g
-                    id='Artboard'
-                    transform='translate(-95.000000, -51.000000)'
-                  >
-                    <g
-                      id='logo'
-                      transform='translate(95.000000, 50.000000)'
-                    >
+                xmlnsXlink='http://www.w3.org/1999/xlink'>
+                <g stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
+                  <g id='Artboard' transform='translate(-95.000000, -51.000000)'>
+                    <g id='logo' transform='translate(95.000000, 50.000000)'>
                       <path
                         id='Combined-Shape'
                         fill={theme.palette.primary.main}
@@ -260,8 +239,7 @@ const ResetPasswordV2 = () => {
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   fontSize: '1.5rem !important',
-                }}
-              >
+                }}>
                 {themeConfig.templateName}
               </Typography>
             </Box>
@@ -271,11 +249,7 @@ const ResetPasswordV2 = () => {
                 Your new password must be different from previously used passwords
               </Typography>
             </Box>
-            <form
-              noValidate
-              autoComplete='off'
-              onSubmit={handleSubmit}
-            >
+            <form noValidate autoComplete='off' onSubmit={handleSubmit}>
               <FormControl sx={{ display: 'flex', mb: 4 }}>
                 <InputLabel htmlFor='auth-reset-password-v2-new-password'>New Password</InputLabel>
                 <OutlinedInput
@@ -291,8 +265,7 @@ const ResetPasswordV2 = () => {
                         edge='end'
                         onClick={handleClickShowNewPassword}
                         aria-label='toggle password visibility'
-                        onMouseDown={handleMouseDownNewPassword}
-                      >
+                        onMouseDown={handleMouseDownNewPassword}>
                         {values.showNewPassword ? <EyeOutline /> : <EyeOffOutline />}
                       </IconButton>
                     </InputAdornment>
@@ -313,31 +286,18 @@ const ResetPasswordV2 = () => {
                         edge='end'
                         aria-label='toggle password visibility'
                         onClick={handleClickShowConfirmNewPassword}
-                        onMouseDown={handleMouseDownConfirmNewPassword}
-                      >
+                        onMouseDown={handleMouseDownConfirmNewPassword}>
                         {values.showConfirmNewPassword ? <EyeOutline /> : <EyeOffOutline />}
                       </IconButton>
                     </InputAdornment>
                   }
                 />
               </FormControl>
-              <Button
-                fullWidth
-                size='large'
-                type='submit'
-                variant='contained'
-                sx={{ mb: 5.25 }}
-              >
+              <Button fullWidth size='large' type='submit' variant='contained' sx={{ mb: 5.25 }}>
                 Set New Password
               </Button>
-              <Typography
-                variant='body2'
-                sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <Link
-                  passHref
-                  href='/pages/auth/login-v2'
-                >
+              <Typography variant='body2' sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Link passHref href='/pages/auth/login-v2'>
                   <LinkStyled>
                     <ChevronLeft />
                     <span>Back to login</span>

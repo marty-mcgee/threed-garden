@@ -16,29 +16,20 @@ import Refresh from 'mdi-material-ui/Refresh'
 import ChevronUp from 'mdi-material-ui/ChevronUp'
 
 // Component Imports
-import CardActionAll from '~/views/ui/cards/actions/CardActionAll'
-import CardActionClose from '~/views/ui/cards/actions/CardActionClose'
-import CardActionRefresh from '~/views/ui/cards/actions/CardActionRefresh'
-import CardActionCollapse from '~/views/ui/cards/actions/CardActionCollapse'
+import CardActionAll from '#/ui/views/ui/cards/actions/CardActionAll'
+import CardActionClose from '#/ui/views/ui/cards/actions/CardActionClose'
+import CardActionRefresh from '#/ui/views/ui/cards/actions/CardActionRefresh'
+import CardActionCollapse from '#/ui/views/ui/cards/actions/CardActionCollapse'
 
 const CardActions = () => {
   return (
-    <Grid
-      container
-      spacing={6}
-    >
-      <Grid
-        item
-        xs={12}
-      >
+    <Grid container spacing={6}>
+      <Grid item xs={12}>
         <Card>
           <CardHeader title='Card Actions' />
           <CardContent>
             <TableContainer>
-              <Table
-                sx={{ minWidth: 650 }}
-                aria-label='Card Actions'
-              >
+              <Table sx={{ minWidth: 650 }} aria-label='Card Actions'>
                 <TableHead>
                   <TableRow>
                     <TableCell>Action</TableCell>
@@ -48,10 +39,7 @@ const CardActions = () => {
                 </TableHead>
                 <TableBody>
                   <TableRow>
-                    <TableCell
-                      component='th'
-                      scope='row'
-                    >
+                    <TableCell component='th' scope='row'>
                       Collapse
                     </TableCell>
                     <TableCell align='center'>
@@ -60,10 +48,7 @@ const CardActions = () => {
                     <TableCell>Collapse card content using collapse action.</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell
-                      component='th'
-                      scope='row'
-                    >
+                    <TableCell component='th' scope='row'>
                       Refresh Content
                     </TableCell>
                     <TableCell align='center'>
@@ -72,10 +57,7 @@ const CardActions = () => {
                     <TableCell>Refresh your card content using refresh action.</TableCell>
                   </TableRow>
                   <TableRow sx={{ '&:last-of-type td, &:last-of-type th': { border: 0 } }}>
-                    <TableCell
-                      component='th'
-                      scope='row'
-                    >
+                    <TableCell component='th' scope='row'>
                       Remove Card
                     </TableCell>
                     <TableCell align='center'>
@@ -90,32 +72,16 @@ const CardActions = () => {
         </Card>
       </Grid>
 
-      <Grid
-        item
-        xs={12}
-        md={6}
-      >
+      <Grid item xs={12} md={6}>
         <CardActionCollapse />
       </Grid>
-      <Grid
-        item
-        xs={12}
-        md={6}
-      >
+      <Grid item xs={12} md={6}>
         <CardActionRefresh />
       </Grid>
-      <Grid
-        item
-        xs={12}
-        md={6}
-      >
+      <Grid item xs={12} md={6}>
         <CardActionClose />
       </Grid>
-      <Grid
-        item
-        xs={12}
-        md={6}
-      >
+      <Grid item xs={12} md={6}>
         <CardActionAll />
       </Grid>
     </Grid>

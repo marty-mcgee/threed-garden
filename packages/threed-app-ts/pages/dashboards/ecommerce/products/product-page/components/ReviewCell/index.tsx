@@ -2,7 +2,7 @@
 import Icon from '@mui/material/Icon'
 
 // ThreeD Garden components
-import MDTypography from '~/components/mui/MDTypography'
+import MDTypography from '#/lib/mui/MDTypography'
 
 function ReviewCell({ rating }: { rating: number }): JSX.Element {
   const ratings: any = {

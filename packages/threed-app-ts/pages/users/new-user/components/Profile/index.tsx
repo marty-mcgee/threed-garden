@@ -2,8 +2,8 @@
 import Grid from '@mui/material/Grid'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
 
 // NewUser page components
 import FormField from '#/pages/users/new-user/components/FormField'

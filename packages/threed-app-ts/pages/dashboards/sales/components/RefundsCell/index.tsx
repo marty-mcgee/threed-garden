@@ -2,8 +2,8 @@
 import Icon from '@mui/material/Icon'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
 
 // Declaring props types for RefundsCell
 interface Props {

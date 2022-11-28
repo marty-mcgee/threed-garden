@@ -4,18 +4,18 @@ import { ReactNode } from 'react'
 import Grid from '@mui/material/Grid'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import DefaultNavbar from '~/components/elements/Navbars/DefaultNavbar'
-import PageLayout from '~/components/elements/LayoutContainers/PageLayout'
+import DefaultNavbar from '#/lib/components/elements/Navbars/DefaultNavbar'
+import PageLayout from '#/lib/components/elements/LayoutContainers/PageLayout'
 
 // ThreeD Garden page layout routes
 import pageRoutes from '~/routes/page.routes'
 
 // ThreeD Garden context
-import { useMaterialUIController } from '~/context'
+import { useMaterialUIController } from '~/app/context'
 
 // Declaring props types for IllustrationLayout
 interface Props {

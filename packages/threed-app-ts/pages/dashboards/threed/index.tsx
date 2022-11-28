@@ -4,29 +4,29 @@ import Tooltip from '@mui/material/Tooltip'
 import Icon from '@mui/material/Icon'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import DashboardLayout from '~/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '~/components/elements/Navbars/DashboardNavbar'
-import Footer from '~/components/elements/Footer'
-import ReportsBarChart from '~/components/elements/Charts/BarCharts/ReportsBarChart'
-import ReportsLineChart from '~/components/elements/Charts/LineCharts/ReportsLineChart'
-import ComplexStatisticsCard from '~/components/elements/Cards/StatisticsCards/ComplexStatisticsCard'
-import BookingCard from '~/components/elements/Cards/BookingCard'
+import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
+import Footer from '#/lib/components/elements/Footer'
+import ReportsBarChart from '#/lib/components/elements/Charts/BarCharts/ReportsBarChart'
+import ReportsLineChart from '#/lib/components/elements/Charts/LineCharts/ReportsLineChart'
+import ComplexStatisticsCard from '#/lib/components/elements/Cards/StatisticsCards/ComplexStatisticsCard'
+import BookingCard from '#/lib/components/elements/Cards/BookingCard'
 
 // Anaytics dashboard components
 import SalesByCountry from '#/pages/dashboards/threed/components/SalesByCountry'
 
 // Data
-import reportsBarChartData from '~/@fake-db/pages/dashboards/threed/data/reportsBarChartData'
-import reportsLineChartData from '~/@fake-db/pages/dashboards/threed/data/reportsLineChartData'
+import reportsBarChartData from 'api/@fake-db/pages/dashboards/threed/data/reportsBarChartData'
+import reportsLineChartData from 'api/@fake-db/pages/dashboards/threed/data/reportsLineChartData'
 
 // Images
-import booking1 from '~/assets/images/products/product-1-min.jpg'
-import booking2 from '~/assets/images/products/product-2-min.jpg'
-import booking3 from '~/assets/images/products/product-3-min.jpg'
+import booking1 from '#/lib/assets/images/products/product-1-min.jpg'
+import booking2 from '#/lib/assets/images/products/product-2-min.jpg'
+import booking3 from '#/lib/assets/images/products/product-3-min.jpg'
 
 function Analytics(): JSX.Element {
   const { sales, tasks } = reportsLineChartData

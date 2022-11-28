@@ -4,7 +4,7 @@
 import { useContext } from 'react'
 
 // ** Context Imports
-import { AbilityContext } from '~/layouts/components/acl/Can'
+import { AbilityContext } from '#/app/layouts/acl/Can'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
@@ -14,8 +14,8 @@ import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 
 // ** ThreeDGarden Imports
-import ThreeDGarden from '~/components/threed/ThreeDGarden'
-// const ThreeDGarden = dynamic(() => import('~/components/threed/ThreeDGarden'), {
+import ThreeDGarden from '#/lib/threed/ThreeDGarden'
+// const ThreeDGarden = dynamic(() => import('#/lib/threed/ThreeDGarden'), {
 //   ssr: false,
 // })
 

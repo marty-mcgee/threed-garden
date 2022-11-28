@@ -5,17 +5,17 @@ import Icon from '@mui/material/Icon'
 import Grid from '@mui/material/Grid'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
-import MDButton from '~/components/mui/MDButton'
-import MDBadgeDot from '~/components/mui/MDBadgeDot'
-import PieChart from '~/components/elements/Charts/PieChart'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
+import MDButton from '#/lib/mui/MDButton'
+import MDBadgeDot from '#/lib/mui/MDBadgeDot'
+import PieChart from '#/lib/components/elements/Charts/PieChart'
 
 // Data
-import channelChartData from '~/@fake-db/pages/dashboards/sales/components/ChannelsChart/data'
+import channelChartData from 'api/@fake-db/pages/dashboards/sales/components/ChannelsChart/data'
 
 // ThreeD Garden contexts
-import { useMaterialUIController } from '~/context'
+import { useMaterialUIController } from '~/app/context'
 
 function ChannelsChart(): JSX.Element {
   const [controller] = useMaterialUIController()

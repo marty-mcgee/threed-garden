@@ -9,13 +9,13 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Hooks
-import { useSettings } from '~/@core/hooks/useSettings'
+import { useSettings } from '#/ui/~core/hooks/useSettings'
 
 // ** FullCalendar & App Components Imports
-import Calendar from '~/views/apps/calendar/Calendar'
-import SidebarLeft from '~/views/apps/calendar/SidebarLeft'
-import CalendarWrapper from '~/@core/styles/libs/fullcalendar'
-import AddEventSidebar from '~/views/apps/calendar/AddEventSidebar'
+import Calendar from '#/ui/views/apps/calendar/Calendar'
+import SidebarLeft from '#/ui/views/apps/calendar/SidebarLeft'
+import CalendarWrapper from '#/ui/~core/styles/libs/fullcalendar'
+import AddEventSidebar from '#/ui/views/apps/calendar/AddEventSidebar'
 
 // ** Actions
 import {

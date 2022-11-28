@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 
 // ThreeD Garden components
-import MDTypography from '~/components/mui/MDTypography'
+import MDTypography from '#/lib/mui/MDTypography'
 
 function DefaultCell({ children }: { children: ReactNode }): JSX.Element {
   return (

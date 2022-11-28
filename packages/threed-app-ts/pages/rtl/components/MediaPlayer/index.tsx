@@ -4,12 +4,12 @@ import Icon from '@mui/material/Icon'
 import { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
-import MDButton from '~/components/mui/MDButton'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
+import MDButton from '#/lib/mui/MDButton'
 
 // Images
-import bgImage from '~/assets/images/any/bg-player.jpg'
+import bgImage from '#/lib/assets/images/any/bg-player.jpg'
 
 function MediaPlayer(): JSX.Element {
   const mediaPlayerButtonStyles = ({ functions: { pxToRem } }: Theme) => ({

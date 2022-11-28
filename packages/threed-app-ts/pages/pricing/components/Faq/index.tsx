@@ -3,8 +3,8 @@ import { useState } from 'react'
 // @mui material components
 import Grid from '@mui/material/Grid'
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
 
 // Pricing page components
 import FaqCollapse from '#/pages/pricing/components/FaqCollapse'

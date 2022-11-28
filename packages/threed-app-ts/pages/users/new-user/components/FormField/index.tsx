@@ -2,9 +2,9 @@
 import { ErrorMessage, Field } from 'formik'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
-import MDInput from '~/components/mui/MDInput'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
+import MDInput from '#/lib/mui/MDInput'
 
 // Declaring props types for FormField
 interface Props {

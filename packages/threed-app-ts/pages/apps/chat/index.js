@@ -11,15 +11,15 @@ import { useDispatch, useSelector } from 'react-redux'
 import { sendMsg, selectChat, fetchUserProfile, fetchChatsContacts, removeSelectedChat } from '~/stores/redux/apps/chat'
 
 // ** Hooks
-import { useSettings } from '~/@core/hooks/useSettings'
+import { useSettings } from '#/ui/~core/hooks/useSettings'
 
 // ** Utils Imports
-import { getInitials } from '~/@core/utils/get-initials'
-import { formatDateToMonthShort } from '~/@core/utils/format'
+import { getInitials } from '#/ui/~core/utils/get-initials'
+import { formatDateToMonthShort } from '#/ui/~core/utils/format'
 
 // ** Chat App Components Imports
-import SidebarLeft from '~/views/apps/chat/SidebarLeft'
-import ChatContent from '~/views/apps/chat/ChatContent'
+import SidebarLeft from '#/ui/views/apps/chat/SidebarLeft'
+import ChatContent from '#/ui/views/apps/chat/ChatContent'
 
 const AppChat = () => {
   // ** States

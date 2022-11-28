@@ -18,11 +18,11 @@ import BookmarkOutline from 'mdi-material-ui/BookmarkOutline'
 import InformationOutline from 'mdi-material-ui/InformationOutline'
 
 // ** Demo Tabs Imports
-import TabInfo from '~/views/pages/account-settings/TabInfo'
-import TabAccount from '~/views/pages/account-settings/TabAccount'
-// import TabBilling from '~/views/pages/account-settings/TabBilling'
-import TabSecurity from '~/views/pages/account-settings/TabSecurity'
-import TabNotifications from '~/views/pages/account-settings/TabNotifications'
+import TabInfo from '#/ui/views/pages/account-settings/TabInfo'
+import TabAccount from '#/ui/views/pages/account-settings/TabAccount'
+// import TabBilling from '#/ui/views/pages/account-settings/TabBilling'
+import TabSecurity from '#/ui/views/pages/account-settings/TabSecurity'
+import TabNotifications from '#/ui/views/pages/account-settings/TabNotifications'
 
 // ** Third Party Styles Imports
 // import 'react-datepicker/dist/react-datepicker.css'
@@ -59,8 +59,7 @@ const AccountSettings = () => {
         <TabList
           onChange={handleChange}
           aria-label='account-settings tabs'
-          sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
-        >
+          sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}>
           <Tab
             value='account'
             label={
@@ -108,34 +107,19 @@ const AccountSettings = () => {
           />
         </TabList>
 
-        <TabPanel
-          sx={{ p: 0 }}
-          value='account'
-        >
+        <TabPanel sx={{ p: 0 }} value='account'>
           <TabAccount />
         </TabPanel>
-        <TabPanel
-          sx={{ p: 0 }}
-          value='security'
-        >
+        <TabPanel sx={{ p: 0 }} value='security'>
           <TabSecurity />
         </TabPanel>
-        <TabPanel
-          sx={{ p: 0 }}
-          value='info'
-        >
+        <TabPanel sx={{ p: 0 }} value='info'>
           <TabInfo />
         </TabPanel>
-        <TabPanel
-          sx={{ p: 0 }}
-          value='billing'
-        >
+        <TabPanel sx={{ p: 0 }} value='billing'>
           {/* <TabBilling /> */}
         </TabPanel>
-        <TabPanel
-          sx={{ p: 0 }}
-          value='notifications'
-        >
+        <TabPanel sx={{ p: 0 }} value='notifications'>
           <TabNotifications />
         </TabPanel>
       </TabContext>

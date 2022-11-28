@@ -5,23 +5,23 @@ import Grid from '@mui/material/Grid'
 import BriefcaseVariantOutline from 'mdi-material-ui/BriefcaseVariantOutline'
 
 // ** Custom Components Imports
-import CardStatisticsCharacter from '~/@core/components/card-statistics/card-stats-with-image'
-import CardStatisticsVerticalComponent from '~/@core/components/card-statistics/card-stats-vertical'
+import CardStatisticsCharacter from '#/ui/~core/components/card-statistics/card-stats-with-image'
+import CardStatisticsVerticalComponent from '#/ui/~core/components/card-statistics/card-stats-vertical'
 
 // ** Styled Component Import
-import ApexChartWrapper from '~/@core/styles/libs/react-apexcharts'
+import ApexChartWrapper from '#/ui/~core/styles/libs/react-apexcharts'
 
 // ** Demo Components Imports
-import CrmTotalSales from '~/views/dashboards/crm/CrmTotalSales'
-import CrmWeeklySales from '~/views/dashboards/crm/CrmWeeklySales'
-import CrmTotalGrowth from '~/views/dashboards/crm/CrmTotalGrowth'
-import CrmUpgradePlan from '~/views/dashboards/crm/CrmUpgradePlan'
-import CrmRevenueReport from '~/views/dashboards/crm/CrmRevenueReport'
-import CrmSalesOverview from '~/views/dashboards/crm/CrmSalesOverview'
-import CrmStatisticsCard from '~/views/dashboards/crm/CrmStatisticsCard'
-import CrmMeetingSchedule from '~/views/dashboards/crm/CrmMeetingSchedule'
-import CrmDeveloperMeetup from '~/views/dashboards/crm/CrmDeveloperMeetup'
-import CrmActivityTimeline from '~/views/dashboards/crm/CrmActivityTimeline'
+import CrmTotalSales from '#/ui/views/dashboards/crm/CrmTotalSales'
+import CrmWeeklySales from '#/ui/views/dashboards/crm/CrmWeeklySales'
+import CrmTotalGrowth from '#/ui/views/dashboards/crm/CrmTotalGrowth'
+import CrmUpgradePlan from '#/ui/views/dashboards/crm/CrmUpgradePlan'
+import CrmRevenueReport from '#/ui/views/dashboards/crm/CrmRevenueReport'
+import CrmSalesOverview from '#/ui/views/dashboards/crm/CrmSalesOverview'
+import CrmStatisticsCard from '#/ui/views/dashboards/crm/CrmStatisticsCard'
+import CrmMeetingSchedule from '#/ui/views/dashboards/crm/CrmMeetingSchedule'
+import CrmDeveloperMeetup from '#/ui/views/dashboards/crm/CrmDeveloperMeetup'
+import CrmActivityTimeline from '#/ui/views/dashboards/crm/CrmActivityTimeline'
 
 const data = [
   {
@@ -46,102 +46,39 @@ const data = [
 const CRMDashboard = () => {
   return (
     <ApexChartWrapper>
-      <Grid
-        container
-        spacing={6}
-      >
-        <Grid
-          item
-          xs={12}
-          sm={6}
-          md={3}
-          sx={{ pt: (theme) => `${theme.spacing(12.25)} !important` }}
-        >
+      <Grid container spacing={6}>
+        <Grid item xs={12} sm={6} md={3} sx={{ pt: (theme) => `${theme.spacing(12.25)} !important` }}>
           <CardStatisticsCharacter data={data[0]} />
         </Grid>
-        <Grid
-          item
-          xs={12}
-          sm={6}
-          md={3}
-          sx={{ pt: (theme) => `${theme.spacing(12.25)} !important` }}
-        >
+        <Grid item xs={12} sm={6} md={3} sx={{ pt: (theme) => `${theme.spacing(12.25)} !important` }}>
           <CardStatisticsCharacter data={data[1]} />
         </Grid>
-        <Grid
-          item
-          xs={12}
-          md={6}
-        >
+        <Grid item xs={12} md={6}>
           <CrmStatisticsCard />
         </Grid>
-        <Grid
-          item
-          xs={12}
-          sm={6}
-          md={3}
-        >
+        <Grid item xs={12} sm={6} md={3}>
           <CrmTotalSales />
         </Grid>
-        <Grid
-          item
-          xs={12}
-          sm={6}
-          md={3}
-        >
+        <Grid item xs={12} sm={6} md={3}>
           <CrmRevenueReport />
         </Grid>
-        <Grid
-          item
-          xs={12}
-          md={6}
-        >
+        <Grid item xs={12} md={6}>
           <CrmSalesOverview />
         </Grid>
-        <Grid
-          item
-          xs={12}
-          md={6}
-        >
+        <Grid item xs={12} md={6}>
           <CrmActivityTimeline />
         </Grid>
-        <Grid
-          item
-          xs={12}
-          md={6}
-        >
-          <Grid
-            container
-            spacing={6}
-          >
-            <Grid
-              item
-              xs={12}
-              sm={8}
-            >
+        <Grid item xs={12} md={6}>
+          <Grid container spacing={6}>
+            <Grid item xs={12} sm={8}>
               <CrmWeeklySales />
             </Grid>
-            <Grid
-              item
-              xs={12}
-              sm={4}
-            >
-              <Grid
-                container
-                spacing={6}
-              >
-                <Grid
-                  item
-                  xs={6}
-                  sm={12}
-                >
+            <Grid item xs={12} sm={4}>
+              <Grid container spacing={6}>
+                <Grid item xs={6} sm={12}>
                   <CrmTotalGrowth />
                 </Grid>
-                <Grid
-                  item
-                  xs={6}
-                  sm={12}
-                >
+                <Grid item xs={6} sm={12}>
                   <CardStatisticsVerticalComponent
                     stats='862'
                     trend='negative'
@@ -155,28 +92,13 @@ const CRMDashboard = () => {
             </Grid>
           </Grid>
         </Grid>
-        <Grid
-          item
-          xs={12}
-          md={6}
-          lg={4}
-        >
+        <Grid item xs={12} md={6} lg={4}>
           <CrmUpgradePlan />
         </Grid>
-        <Grid
-          item
-          xs={12}
-          md={6}
-          lg={4}
-        >
+        <Grid item xs={12} md={6} lg={4}>
           <CrmMeetingSchedule />
         </Grid>
-        <Grid
-          item
-          xs={12}
-          md={6}
-          lg={4}
-        >
+        <Grid item xs={12} md={6} lg={4}>
           <CrmDeveloperMeetup />
         </Grid>
       </Grid>
