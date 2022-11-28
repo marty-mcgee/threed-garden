@@ -8,33 +8,33 @@ import TwitterIcon from '@mui/icons-material/Twitter'
 import InstagramIcon from '@mui/icons-material/Instagram'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import DashboardLayout from '~/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '~/components/elements/Navbars/DashboardNavbar'
-import Footer from '~/components/elements/Footer'
-import ProfileInfoCard from '~/components/elements/Cards/InfoCards/ProfileInfoCard'
-import ProfilesList from '~/components/elements/Lists/ProfilesList'
-import DefaultProjectCard from '~/components/elements/Cards/ProjectCards/DefaultProjectCard'
+import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
+import Footer from '#/lib/components/elements/Footer'
+import ProfileInfoCard from '#/lib/components/elements/Cards/InfoCards/ProfileInfoCard'
+import ProfilesList from '#/lib/components/elements/Lists/ProfilesList'
+import DefaultProjectCard from '#/lib/components/elements/Cards/ProjectCards/DefaultProjectCard'
 
 // Overview page components
 import Header from '#/pages/profile/components/Header'
 import PlatformSettings from '#/pages/profile/profile-overview/components/PlatformSettings'
 
 // Data
-import profilesListData from '~/@fake-db/pages/profile/profile-overview/data/profilesListData'
+import profilesListData from 'api/@fake-db/pages/profile/profile-overview/data/profilesListData'
 
 // Images
-import homeDecor1 from '~/assets/images/any/home-decor-1.jpg'
-import homeDecor2 from '~/assets/images/any/home-decor-2.jpg'
-import homeDecor3 from '~/assets/images/any/home-decor-3.jpg'
-import homeDecor4 from '~/assets/images/any/home-decor-4.jpg'
-import team1 from '~/assets/images/people/team-1.jpg'
-import team2 from '~/assets/images/people/team-2.jpg'
-import team3 from '~/assets/images/people/team-3.jpg'
-import team4 from '~/assets/images/people/team-4.jpg'
+import homeDecor1 from '#/lib/assets/images/any/home-decor-1.jpg'
+import homeDecor2 from '#/lib/assets/images/any/home-decor-2.jpg'
+import homeDecor3 from '#/lib/assets/images/any/home-decor-3.jpg'
+import homeDecor4 from '#/lib/assets/images/any/home-decor-4.jpg'
+import team1 from '#/lib/assets/images/people/team-1.jpg'
+import team2 from '#/lib/assets/images/people/team-2.jpg'
+import team3 from '#/lib/assets/images/people/team-3.jpg'
+import team4 from '#/lib/assets/images/people/team-4.jpg'
 
 function Overview(): JSX.Element {
   return (

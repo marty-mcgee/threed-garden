@@ -16,13 +16,13 @@ import ChevronLeft from 'mdi-material-ui/ChevronLeft'
 import themeConfig from '~/config/themeConfig'
 
 // ** Layout Import
-import BlankLayout from '~/@core/layouts/BlankLayout'
+import BlankLayout from '#/ui/~core/layouts/BlankLayout'
 
 // ** Hooks
-import { useSettings } from '~/@core/hooks/useSettings'
+import { useSettings } from '#/ui/~core/hooks/useSettings'
 
 // ** Demo Imports
-import FooterIllustrationsV2 from '~/views/pages/auth/FooterIllustrationsV2'
+import FooterIllustrationsV2 from '#/ui/views/pages/auth/FooterIllustrationsV2'
 
 // Styled Components
 const ForgotPasswordIllustrationWrapper = styled(Box)(({ theme }) => ({
@@ -109,8 +109,7 @@ const ForgotPassword = () => {
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: 'background.paper',
-          }}
-        >
+          }}>
           <BoxWrapper>
             <Box
               sx={{
@@ -120,30 +119,17 @@ const ForgotPassword = () => {
                 position: 'absolute',
                 alignItems: 'center',
                 justifyContent: 'center',
-              }}
-            >
+              }}>
               <svg
                 width={35}
                 height={29}
                 version='1.1'
                 viewBox='0 0 30 23'
                 xmlns='http://www.w3.org/2000/svg'
-                xmlnsXlink='http://www.w3.org/1999/xlink'
-              >
-                <g
-                  stroke='none'
-                  strokeWidth='1'
-                  fill='none'
-                  fillRule='evenodd'
-                >
-                  <g
-                    id='Artboard'
-                    transform='translate(-95.000000, -51.000000)'
-                  >
-                    <g
-                      id='logo'
-                      transform='translate(95.000000, 50.000000)'
-                    >
+                xmlnsXlink='http://www.w3.org/1999/xlink'>
+                <g stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
+                  <g id='Artboard' transform='translate(-95.000000, -51.000000)'>
+                    <g id='logo' transform='translate(95.000000, 50.000000)'>
                       <path
                         id='Combined-Shape'
                         fill={theme.palette.primary.main}
@@ -200,8 +186,7 @@ const ForgotPassword = () => {
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   fontSize: '1.5rem !important',
-                }}
-              >
+                }}>
                 {themeConfig.templateName}
               </Typography>
             </Box>
@@ -211,34 +196,13 @@ const ForgotPassword = () => {
                 Enter your email and we&prime;ll send you instructions to reset your password
               </Typography>
             </Box>
-            <form
-              noValidate
-              autoComplete='off'
-              onSubmit={handleSubmit}
-            >
-              <TextField
-                autoFocus
-                type='email'
-                label='Email'
-                sx={{ display: 'flex', mb: 4 }}
-              />
-              <Button
-                fullWidth
-                size='large'
-                type='submit'
-                variant='contained'
-                sx={{ mb: 5.25 }}
-              >
+            <form noValidate autoComplete='off' onSubmit={handleSubmit}>
+              <TextField autoFocus type='email' label='Email' sx={{ display: 'flex', mb: 4 }} />
+              <Button fullWidth size='large' type='submit' variant='contained' sx={{ mb: 5.25 }}>
                 Send reset link
               </Button>
-              <Typography
-                variant='body2'
-                sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <Link
-                  passHref
-                  href='/login'
-                >
+              <Typography variant='body2' sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Link passHref href='/login'>
                   <LinkStyled>
                     <ChevronLeft />
                     <span>Back to login</span>

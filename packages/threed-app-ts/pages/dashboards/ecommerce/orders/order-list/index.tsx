@@ -8,18 +8,18 @@ import MenuItem from '@mui/material/MenuItem'
 import Divider from '@mui/material/Divider'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
-import MDButton from '~/components/mui/MDButton'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
+import MDButton from '#/lib/mui/MDButton'
 
 // ThreeD Garden examples components
-import DashboardLayout from '~/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '~/components/elements/Navbars/DashboardNavbar'
-import Footer from '~/components/elements/Footer'
-import DataTable from '~/components/elements/Tables/DataTable'
+import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
+import Footer from '#/lib/components/elements/Footer'
+import DataTable from '#/lib/components/elements/Tables/DataTable'
 
 // Data
-import dataTableData from '~/@fake-db/pages/dashboards/ecommerce/orders/order-list/data/dataTableData'
+import dataTableData from 'api/@fake-db/pages/dashboards/ecommerce/orders/order-list/data/dataTableData'
 
 function OrderList(): JSX.Element {
   const [menu, setMenu] = useState(null)

@@ -8,14 +8,14 @@ import StepLabel from '@mui/material/StepLabel'
 import Card from '@mui/material/Card'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDButton from '~/components/mui/MDButton'
-import MDTypography from '~/components/mui/MDTypography'
+import MDBox from '#/lib/mui/MDBox'
+import MDButton from '#/lib/mui/MDButton'
+import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import DashboardLayout from '~/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '~/components/elements/Navbars/DashboardNavbar'
-import Footer from '~/components/elements/Footer'
+import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
+import Footer from '#/lib/components/elements/Footer'
 
 // NewProduct page components
 import ProductInfo from '#/pages/dashboards/ecommerce/products/new-product/components/ProductInfo'

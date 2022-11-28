@@ -38,14 +38,14 @@ import { useForm, Controller } from 'react-hook-form'
 import themeConfig from '~/config/themeConfig'
 
 // ** Layout Import
-import BlankLayout from '~/@core/layouts/BlankLayout'
+import BlankLayout from '#/ui/~core/layouts/BlankLayout'
 
 // ** Hooks
-import { useAuth } from '~/hooks/useAuth'
-import { useSettings } from '~/@core/hooks/useSettings'
+import { useAuth } from '#/app/hooks/useAuth'
+import { useSettings } from '#/ui/~core/hooks/useSettings'
 
 // ** Demo Imports
-import FooterIllustrationsV2 from '~/views/pages/auth/FooterIllustrationsV2'
+import FooterIllustrationsV2 from '#/ui/views/pages/auth/FooterIllustrationsV2'
 
 const defaultValues = {
   email: '',
@@ -166,14 +166,7 @@ const Register = () => {
               src={`/images/pages/${imageSource}-${theme.palette.mode}.png`}
             />
           </RegisterIllustrationWrapper>
-          <FooterIllustrationsV2
-            image={
-              <TreeIllustration
-                alt='tree'
-                src='/images/pages/tree-2.png'
-              />
-            }
-          />
+          <FooterIllustrationsV2 image={<TreeIllustration alt='tree' src='/images/pages/tree-2.png' />} />
         </Box>
       ) : null}
       <RightWrapper sx={skin === 'bordered' && !hidden ? { borderLeft: `1px solid ${theme.palette.divider}` } : {}}>
@@ -185,8 +178,7 @@ const Register = () => {
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: 'background.paper',
-          }}
-        >
+          }}>
           <BoxWrapper>
             <Box
               sx={{
@@ -196,30 +188,17 @@ const Register = () => {
                 position: 'absolute',
                 alignItems: 'center',
                 justifyContent: 'center',
-              }}
-            >
+              }}>
               <svg
                 width={35}
                 height={29}
                 version='1.1'
                 viewBox='0 0 30 23'
                 xmlns='http://www.w3.org/2000/svg'
-                xmlnsXlink='http://www.w3.org/1999/xlink'
-              >
-                <g
-                  stroke='none'
-                  strokeWidth='1'
-                  fill='none'
-                  fillRule='evenodd'
-                >
-                  <g
-                    id='Artboard'
-                    transform='translate(-95.000000, -51.000000)'
-                  >
-                    <g
-                      id='logo'
-                      transform='translate(95.000000, 50.000000)'
-                    >
+                xmlnsXlink='http://www.w3.org/1999/xlink'>
+                <g stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
+                  <g id='Artboard' transform='translate(-95.000000, -51.000000)'>
+                    <g id='logo' transform='translate(95.000000, 50.000000)'>
                       <path
                         id='Combined-Shape'
                         fill={theme.palette.primary.main}
@@ -276,8 +255,7 @@ const Register = () => {
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   fontSize: '1.5rem !important',
-                }}
-              >
+                }}>
                 {themeConfig.templateName}
               </Typography>
             </Box>
@@ -285,15 +263,8 @@ const Register = () => {
               <TypographyStyled variant='h5'>Adventure starts here 🚀</TypographyStyled>
               <Typography variant='body2'>Make your app management easy and fun!</Typography>
             </Box>
-            <form
-              noValidate
-              autoComplete='off'
-              onSubmit={handleSubmit(onSubmit)}
-            >
-              <FormControl
-                fullWidth
-                sx={{ mb: 4 }}
-              >
+            <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='username'
                   control={control}
@@ -314,10 +285,7 @@ const Register = () => {
                   <FormHelperText sx={{ color: 'error.main' }}>{errors.username.message}</FormHelperText>
                 )}
               </FormControl>
-              <FormControl
-                fullWidth
-                sx={{ mb: 4 }}
-              >
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='email'
                   control={control}
@@ -336,10 +304,7 @@ const Register = () => {
                 {errors.email && <FormHelperText sx={{ color: 'error.main' }}>{errors.email.message}</FormHelperText>}
               </FormControl>
               <FormControl fullWidth>
-                <InputLabel
-                  htmlFor='auth-login-v2-password'
-                  error={Boolean(errors.password)}
-                >
+                <InputLabel htmlFor='auth-login-v2-password' error={Boolean(errors.password)}>
                   Password
                 </InputLabel>
                 <Controller
@@ -360,8 +325,7 @@ const Register = () => {
                           <IconButton
                             edge='end'
                             onMouseDown={(e) => e.preventDefault()}
-                            onClick={() => setShowPassword(!showPassword)}
-                          >
+                            onClick={() => setShowPassword(!showPassword)}>
                             {showPassword ? <EyeOutline /> : <EyeOffOutline />}
                           </IconButton>
                         </InputAdornment>
@@ -374,10 +338,7 @@ const Register = () => {
                 )}
               </FormControl>
 
-              <FormControl
-                sx={{ mt: 1.5, mb: 4 }}
-                error={Boolean(errors.terms)}
-              >
+              <FormControl sx={{ mt: 1.5, mb: 4 }} error={Boolean(errors.terms)}>
                 <Controller
                   name='terms'
                   control={control}
@@ -401,14 +362,10 @@ const Register = () => {
                             <Typography
                               variant='body2'
                               component='span'
-                              sx={{ color: errors.terms ? 'error.main' : '' }}
-                            >
+                              sx={{ color: errors.terms ? 'error.main' : '' }}>
                               I agree to{' '}
                             </Typography>
-                            <Link
-                              href='/'
-                              passHref
-                            >
+                            <Link href='/' passHref>
                               <LinkStyled onClick={(e) => e.preventDefault()}>privacy policy & terms</LinkStyled>
                             </Link>
                           </>
@@ -421,76 +378,40 @@ const Register = () => {
                   <FormHelperText sx={{ mt: 0, color: 'error.main' }}>{errors.terms.message}</FormHelperText>
                 )}
               </FormControl>
-              <Button
-                fullWidth
-                size='large'
-                type='submit'
-                variant='contained'
-                sx={{ mb: 7 }}
-              >
+              <Button fullWidth size='large' type='submit' variant='contained' sx={{ mb: 7 }}>
                 Sign up
               </Button>
               <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <Typography
-                  variant='body2'
-                  sx={{ mr: 2 }}
-                >
+                <Typography variant='body2' sx={{ mr: 2 }}>
                   Already have an account?
                 </Typography>
                 <Typography variant='body2'>
-                  <Link
-                    href='/login'
-                    passHref
-                  >
+                  <Link href='/login' passHref>
                     <LinkStyled>Sign in instead</LinkStyled>
                   </Link>
                 </Typography>
               </Box>
               <Divider sx={{ my: 5 }}>or</Divider>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Link
-                  href='/'
-                  passHref
-                >
-                  <IconButton
-                    component='a'
-                    onClick={(e) => e.preventDefault()}
-                  >
+                <Link href='/' passHref>
+                  <IconButton component='a' onClick={(e) => e.preventDefault()}>
                     <Facebook sx={{ color: '#497ce2' }} />
                   </IconButton>
                 </Link>
-                <Link
-                  href='/'
-                  passHref
-                >
-                  <IconButton
-                    component='a'
-                    onClick={(e) => e.preventDefault()}
-                  >
+                <Link href='/' passHref>
+                  <IconButton component='a' onClick={(e) => e.preventDefault()}>
                     <Twitter sx={{ color: '#1da1f2' }} />
                   </IconButton>
                 </Link>
-                <Link
-                  href='/'
-                  passHref
-                >
-                  <IconButton
-                    component='a'
-                    onClick={(e) => e.preventDefault()}
-                  >
+                <Link href='/' passHref>
+                  <IconButton component='a' onClick={(e) => e.preventDefault()}>
                     <Github
                       sx={{ color: (theme) => (theme.palette.mode === 'light' ? '#272727' : theme.palette.grey[300]) }}
                     />
                   </IconButton>
                 </Link>
-                <Link
-                  href='/'
-                  passHref
-                >
-                  <IconButton
-                    component='a'
-                    onClick={(e) => e.preventDefault()}
-                  >
+                <Link href='/' passHref>
+                  <IconButton component='a' onClick={(e) => e.preventDefault()}>
                     <Google sx={{ color: '#db4437' }} />
                   </IconButton>
                 </Link>

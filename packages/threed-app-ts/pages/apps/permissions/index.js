@@ -31,9 +31,9 @@ import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Custom Components Imports
-import CustomChip from '~/@core/components/mui/chip'
-import PageHeader from '~/@core/components/page-header'
-import TableHeader from '~/views/apps/permissions/TableHeader'
+import CustomChip from '#/ui/~core/components/mui/chip'
+import PageHeader from '#/ui/~core/components/page-header'
+import TableHeader from '#/ui/views/apps/permissions/TableHeader'
 
 // ** Actions Imports
 import { fetchData } from '~/stores/redux/apps/permissions'

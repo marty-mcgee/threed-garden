@@ -2,14 +2,14 @@
 import Grid from '@mui/material/Grid'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
-import MDButton from '~/components/mui/MDButton'
-import MDAvatar from '~/components/mui/MDAvatar'
-import MDBadge from '~/components/mui/MDBadge'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
+import MDButton from '#/lib/mui/MDButton'
+import MDAvatar from '#/lib/mui/MDAvatar'
+import MDBadge from '#/lib/mui/MDBadge'
 
 // Images
-import orderImage from '~/assets/images/products/product-12.jpg'
+import orderImage from '#/lib/assets/images/products/product-12.jpg'
 
 function OrderInfo(): JSX.Element {
   return (

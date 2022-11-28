@@ -31,7 +31,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import Icon from '@mui/material/Icon'
 // theme: mui: Material UI Context Provider
-import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '~/context'
+import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '~/app/context'
 // theme: mui: emotion cache
 import { CacheProvider, EmotionCache } from '@emotion/react'
 import createEmotionCache from '~/themes/common/createEmotionCache'
@@ -42,13 +42,13 @@ import themeDark from '~/themes/theme-dark'
 import rtlPlugin from 'stylis-plugin-rtl'
 
 // images
-import favicon from '~/assets/images/logos/favicon.png'
-import appleIcon from '~/assets/images/logos/apple-icon.png'
-import brandLight from '~/assets/images/logos/logo-threedgarden.png'
-import brandDark from '~/assets/images/logos/logo-threedgarden-alt.png'
+import favicon from '#/lib/assets/images/logos/favicon.png'
+import appleIcon from '#/lib/assets/images/logos/apple-icon.png'
+import brandLight from '#/lib/assets/images/logos/logo-threedgarden.png'
+import brandDark from '#/lib/assets/images/logos/logo-threedgarden-alt.png'
 
 // dashboard components
-import MDBox from '~/components/mui/MDBox'
+import MDBox from '#/lib/mui/MDBox'
 
 // dashboard examples
 
@@ -59,7 +59,7 @@ import MDBox from '~/components/mui/MDBox'
 // NOT HERE PLEASE
 // // css
 // // DEMO
-// import "~/assets/demo/css/style.css"
+// import "#/lib/assets/demo/css/style.css"
 // // @fullcalendar styles (HERE ??)
 // import "@fullcalendar/common/main.css"
 // import "@fullcalendar/daygrid/main.css"
@@ -67,7 +67,7 @@ import MDBox from '~/components/mui/MDBox'
 
 // api: apollo: graphql
 // import { ApolloProvider } from "@apollo/client"
-// import { useApollo } from "~/lib/apollo/client"
+// import { useApollo } from "#/lib/apollo/client"
 
 // ========================================================
 
@@ -375,7 +375,7 @@ import { theme } from "@boilerplate/theme"
 import { ChakraProvider } from "@chakra-ui/react"
 
 import { ApolloProvider } from "@apollo/client"
-import { useApollo } from "~/lib/apollo/client"
+import { useApollo } from "#/lib/apollo/client"
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: React.ReactElement) => React.ReactNode
@@ -418,7 +418,7 @@ export default function BoilerplateApp(props: AppPropsWithLayout) {
 // import createEmotionCache from "~/themes/createEmotionCache"
 
 // // Material UI Context Provider
-// import { MaterialUIControllerProvider } from "~/context"
+// import { MaterialUIControllerProvider } from "~/app/context"
 
 // // Client-side cache, shared for the whole session of the user in the browser.
 // const clientSideEmotionCache = createEmotionCache()

@@ -128,7 +128,7 @@ const nextConfig = {
 
     config.module.rules.push({
       test: /\.(graphql|gql)$/,
-      include: [/src/],
+      include: [/api/],
       exclude: /node_modules/,
       use: [
         {

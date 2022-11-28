@@ -4,54 +4,36 @@ import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import PageHeader from '~/@core/components/page-header'
+import PageHeader from '#/ui/~core/components/page-header'
 
 // ** Demo Components Imports
-import FormValidationBasic from '~/views/forms/form-validation/FormValidationBasic'
-import FormValidationAsync from '~/views/forms/form-validation/FormValidationAsync'
-import FormValidationSchema from '~/views/forms/form-validation/FormValidationSchema'
+import FormValidationBasic from '#/ui/views/forms/form-validation/FormValidationBasic'
+import FormValidationAsync from '#/ui/views/forms/form-validation/FormValidationAsync'
+import FormValidationSchema from '#/ui/views/forms/form-validation/FormValidationSchema'
 
 // ** Third Party Styles Imports
 // import 'react-datepicker/dist/react-datepicker.css'
 
 const FormValidation = () => {
   return (
-    <Grid
-      container
-      spacing={6}
-      className='match-height'
-    >
+    <Grid container spacing={6} className='match-height'>
       <PageHeader
         title={
           <Typography variant='h5'>
-            <Link
-              href='https://github.com/react-hook-form/react-hook-form'
-              target='_blank'
-            >
+            <Link href='https://github.com/react-hook-form/react-hook-form' target='_blank'>
               React Hook Form
             </Link>
           </Typography>
         }
         subtitle={<Typography variant='body2'>React Hooks for forms validation (Web + React Native)</Typography>}
       />
-      <Grid
-        item
-        xs={12}
-      >
+      <Grid item xs={12}>
         <FormValidationBasic />
       </Grid>
-      <Grid
-        item
-        xs={12}
-        md={6}
-      >
+      <Grid item xs={12} md={6}>
         <FormValidationSchema />
       </Grid>
-      <Grid
-        item
-        xs={12}
-        md={6}
-      >
+      <Grid item xs={12} md={6}>
         <FormValidationAsync />
       </Grid>
     </Grid>

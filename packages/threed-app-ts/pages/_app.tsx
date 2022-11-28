@@ -30,53 +30,53 @@ import NProgress from 'nprogress'
 import { CacheProvider, EmotionCache } from '@emotion/react'
 
 // ** Config Imports
-import '~/config/i18n'
-import { defaultACLObj } from '~/config/acl'
-import themeConfig from '~/config/themeConfig'
+import '#/config/i18n'
+import { defaultACLObj } from '#/config/acl'
+import themeConfig from '#/config/themeConfig'
 
 // ** Fake-DB Import
-import '~/@fake-db'
+import 'api/@fake-db'
 
 // ** Apollo Client -- State Management using Cache/Store (via GraphQL)
 import { ApolloProvider } from '@apollo/client'
-import { client } from '~/api/graphql/client'
+import { client } from 'api/graphql/client'
 
 // ** Third Party Import
 import { Toaster } from 'react-hot-toast'
 
-// ** @core Components
-import AclGuard from '~/@core/components/auth/AclGuard'
-import ThemeComponent from '~/@core/theme/ThemeComponent'
-import AuthGuard from '~/@core/components/auth/AuthGuard'
-import GuestGuard from '~/@core/components/auth/GuestGuard'
-import WindowWrapper from '~/@core/components/window-wrapper'
+// ** ~core Components
+import AclGuard from '#/ui/~core/components/auth/AclGuard'
+import ThemeComponent from '#/ui/~core/theme/ThemeComponent'
+import AuthGuard from '#/ui/~core/components/auth/AuthGuard'
+import GuestGuard from '#/ui/~core/components/auth/GuestGuard'
+import WindowWrapper from '#/ui/~core/components/window-wrapper'
 
 // ** Layout + Metadata Components
-import UserLayout from '~/layouts/UserLayout' // this is your main layout !!!
+import UserLayout from '#/app/layouts/UserLayout' // this is your main layout !!!
 
 // ** Metadata Components
-import HeadMeta from '~/@core/components/head' // this is your SEO metadata !!!
+import HeadMeta from '#/ui/~core/components/head' // this is your SEO metadata !!!
 
 // ** Helper Components
-import Spinner from '~/@core/components/spinner'
+import Spinner from '#/ui/~core/components/spinner'
 
 // ** Contexts
-import { AuthProvider } from '~/context/AuthContext'
-import { SettingsConsumer, SettingsProvider } from '~/@core/context/settingsContext'
+import { AuthProvider } from '~/app/context/AuthContext'
+import { SettingsConsumer, SettingsProvider } from '#/ui/~core/context/settingsContext'
 
 // ** Styled Components
-import ReactHotToast from '~/@core/styles/libs/react-hot-toast'
+import ReactHotToast from '#/ui/~core/styles/libs/react-hot-toast'
 
 // ** Utils
-import { createEmotionCache } from '~/@core/utils/create-emotion-cache'
+import { createEmotionCache } from '#/ui/~core/utils/create-emotion-cache'
 
 // ** CSS Styles
 // import stylesGlobal from '~/styles/globals.module.css'
 // import stylesDemo from '~/styles/demo/demo.module.css'
-import '~/components/threed/styles/index.css'
+import '#/lib/threed/styles/index.css'
 
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm1, ccm4, ccm5 } from '~/@core/utils/console-colors'
+import { ccm1, ccm4, ccm5 } from '#/ui/~core/utils/console-colors'
 
 // ==============================================================
 // SCAFFOLD-ETH-TS IMPORTS
@@ -94,9 +94,9 @@ import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
 
 import { ErrorBoundary, ErrorFallback } from '~common/components'
 import { BLOCKNATIVE_DAPPID } from '~~/config/nextjsApp.config'
-import { appGetInitialProps } from '~~/functions/nextjs/appGetInitialProps'
+import { appGetInitialProps } from '#/lib/nextjs/appGetInitialProps'
 
-import { EthPage as ETHPage } from '#/src/components/eth/EthPage'
+import { EthPage as ETHPage } from '#/pages/eth/EthPage'
 
 // ==============================================================
 // IMPORTS COMPLETE

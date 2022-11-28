@@ -2,17 +2,17 @@
 import Grid from '@mui/material/Grid'
 
 // ThreeD Garden UI Dashboard PRO React components
-import MDBox from '~/components/mui/MDBox'
+import MDBox from '#/lib/mui/MDBox'
 
 // ThreeD Garden UI Dashboard PRO React example components
-import DashboardLayout from '~/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '~/components/elements/Navbars/DashboardNavbar'
-import Footer from '~/components/elements/Footer'
-import TimelineList from '~/components/elements/Timeline/TimelineList'
-import TimelineItem from '~/components/elements/Timeline/TimelineItem'
+import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
+import Footer from '#/lib/components/elements/Footer'
+import TimelineList from '#/lib/components/elements/Timeline/TimelineList'
+import TimelineItem from '#/lib/components/elements/Timeline/TimelineItem'
 
 // Data
-import timelineData from '~/@fake-db/pages/projects/timeline/data/timelineData'
+import timelineData from 'api/@fake-db/pages/projects/timeline/data/timelineData'
 
 function Timeline(): JSX.Element {
   const renderTimelineItems = timelineData.map(({ color, icon, title, dateTime, description, lastItem }) => (

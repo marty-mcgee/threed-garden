@@ -6,14 +6,14 @@ import Grid from '@mui/material/Grid'
 import Icon from '@mui/material/Icon'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import SalesTable from '~/components/elements/Tables/SalesTable'
+import SalesTable from '#/lib/components/elements/Tables/SalesTable'
 
 // Data
-import salesTableData from '~/@fake-db/pages/dashboards/analytics/components/SalesByCountry/data/salesTableData'
+import salesTableData from 'api/@fake-db/pages/dashboards/analytics/components/SalesByCountry/data/salesTableData'
 
 function SalesByCountry(): JSX.Element {
   useEffect(() => {

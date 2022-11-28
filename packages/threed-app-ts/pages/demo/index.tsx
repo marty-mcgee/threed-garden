@@ -5,11 +5,11 @@ import dynamic from 'next/dynamic'
 // ** MUI Components
 import Grid from '@mui/material/Grid'
 
-import FarmbotSVG from '~/assets/images/farmbot-demo.svg'
-import FarmbotDemoSVG from '~/components/farmbot/FarmbotDemoSVG'
+import FarmbotSVG from '#/lib/assets/images/farmbot-demo.svg'
+import FarmbotDemoSVG from '#/lib/farmbot/FarmbotDemoSVG'
 
-// import Demo from "~/components/threed/Demo"
-const DynamicCSRDemo = dynamic(() => import('~/components/threed/Demo'), {
+// import Demo from "#/lib/threed/Demo"
+const DynamicCSRDemo = dynamic(() => import('#/lib/threed/Demo'), {
   // loading: () => <p>...loading...</p>,
   ssr: false,
 })
@@ -79,7 +79,7 @@ const DemoPage: FunctionComponent = (props): JSX.Element => {
     // console.log("window.$", window.$)
 
     // const B3 = dynamic(() =>
-    //   require("~/components/threed/demo-b3.mm"),
+    //   require("#/lib/threed/demo-b3.mm"),
     //   {
     //     ssr: false
     //   }

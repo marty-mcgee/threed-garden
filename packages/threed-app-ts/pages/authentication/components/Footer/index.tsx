@@ -5,8 +5,8 @@ import Icon from '@mui/material/Icon'
 import { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden Base Styles
 import typography from '~/themes/theme-light/base/typography'

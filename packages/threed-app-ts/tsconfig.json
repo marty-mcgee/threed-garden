@@ -27,13 +27,13 @@
     "baseUrl": ".",
     "paths": {
       "#/*": ["./*"], // preferable (next-13)
-      "~/*": ["./*", "src/*"], // preferable (next, nuxt, supports npm @ confusion)
+      "~/*": ["./*"], // preferable (next, nuxt, supports npm @ confusion)
       "@/*": ["src/*"], // deprecated (npm @)
       "~~/*": ["./*"], // (eth)
       "~common/*": ["../common/src/*"], // (eth~common)
-      "-||-*": ["assets/*"] // threeds (-||-)
+      "-||-*": ["lib/assets/*"] // threeds (-||-)
     },
-    "typeRoots": ["node_modules/@types", "src/types"],
+    "typeRoots": ["node_modules/@types", "types"],
     // plugins
     "plugins": [
       {

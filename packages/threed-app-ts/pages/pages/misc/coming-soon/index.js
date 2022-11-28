@@ -6,10 +6,10 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 
 // ** Layout Import
-import BlankLayout from '~/@core/layouts/BlankLayout'
+import BlankLayout from '#/ui/~core/layouts/BlankLayout'
 
 // ** Demo Imports
-import FooterIllustrations from '~/views/pages/misc/FooterIllustrations'
+import FooterIllustrations from '#/ui/views/pages/misc/FooterIllustrations'
 
 // ** Styled Components
 const BoxWrapper = styled(Box)(({ theme }) => ({
@@ -41,43 +41,23 @@ const ComingSoon = () => {
       <Box sx={{ p: 5, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <BoxWrapper>
           <Box sx={{ mb: 5.75, textAlign: 'center' }}>
-            <Typography
-              variant='h5'
-              sx={{ mb: 1, fontSize: '1.5rem !important' }}
-            >
+            <Typography variant='h5' sx={{ mb: 1, fontSize: '1.5rem !important' }}>
               We are launching soon 🚀
             </Typography>
             <Typography variant='body2'>
               Our website is opening soon. Please register to get notified when it&prime;s ready!
             </Typography>
           </Box>
-          <form
-            noValidate
-            autoComplete='off'
-            onSubmit={handleSubmit}
-          >
+          <form noValidate autoComplete='off' onSubmit={handleSubmit}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <TextField
-                autoFocus
-                size='small'
-                type='email'
-                placeholder='Enter your email'
-              />
-              <Button
-                type='submit'
-                variant='contained'
-                sx={{ ml: 2.5, pl: 5.5, pr: 5.5 }}
-              >
+              <TextField autoFocus size='small' type='email' placeholder='Enter your email' />
+              <Button type='submit' variant='contained' sx={{ ml: 2.5, pl: 5.5, pr: 5.5 }}>
                 Notify
               </Button>
             </Box>
           </form>
         </BoxWrapper>
-        <Img
-          height='487'
-          alt='coming-soon-illustration'
-          src='/images/pages/misc-coming-soon.png'
-        />
+        <Img height='487' alt='coming-soon-illustration' src='/images/pages/misc-coming-soon.png' />
       </Box>
       <FooterIllustrations />
     </Box>

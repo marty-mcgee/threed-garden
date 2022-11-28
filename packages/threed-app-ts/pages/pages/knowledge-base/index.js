@@ -20,7 +20,7 @@ import InformationOutline from 'mdi-material-ui/InformationOutline'
 import axios from 'axios'
 
 // ** Demo Imports
-import KnowledgeBaseHeader from '~/views/pages/knowledge-base/KnowledgeBaseHeader'
+import KnowledgeBaseHeader from '#/ui/views/pages/knowledge-base/KnowledgeBaseHeader'
 
 // Styled Link component
 const StyledLink = styled('a')({
@@ -56,19 +56,9 @@ const KnowledgeBase = ({ apiData }) => {
   const renderGrid = () => {
     if (data !== null && Array.isArray(data)) {
       return data.map((item, index) => (
-        <Grid
-          item
-          xs={12}
-          sm={6}
-          md={4}
-          key={index}
-        >
+        <Grid item xs={12} sm={6} md={4} key={index}>
           <Card>
-            <Link
-              passHref
-              href={`/pages/knowledge-base/[category]`}
-              as={`/pages/knowledge-base/${item.category}`}
-            >
+            <Link passHref href={`/pages/knowledge-base/[category]`} as={`/pages/knowledge-base/${item.category}`}>
               <StyledLink>
                 <StyledBox>
                   <img
@@ -79,10 +69,7 @@ const KnowledgeBase = ({ apiData }) => {
                   />
                 </StyledBox>
                 <CardContent sx={{ textAlign: 'center' }}>
-                  <Typography
-                    variant='h6'
-                    sx={{ mb: 1.75 }}
-                  >
+                  <Typography variant='h6' sx={{ mb: 1.75 }}>
                     {item.title}
                   </Typography>
                   <Typography variant='body2'>{item.desc}</Typography>
@@ -94,10 +81,7 @@ const KnowledgeBase = ({ apiData }) => {
       ))
     } else {
       return (
-        <Grid
-          item
-          xs={12}
-        >
+        <Grid item xs={12}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <InformationOutline sx={{ mr: 2 }} />
             <Typography variant='h6'>Data is not an array!</Typography>
@@ -116,16 +100,9 @@ const KnowledgeBase = ({ apiData }) => {
 
   return (
     <>
-      <KnowledgeBaseHeader
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-      />
+      <KnowledgeBaseHeader searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       {data !== null ? (
-        <Grid
-          container
-          spacing={6}
-          className='match-height'
-        >
+        <Grid container spacing={6} className='match-height'>
           {renderGrid()}
         </Grid>
       ) : (

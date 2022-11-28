@@ -4,12 +4,12 @@ import Card from '@mui/material/Card'
 import Divider from '@mui/material/Divider'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
+import MDBox from '#/lib/mui/MDBox'
 
 // ThreeD Garden examples components
-import DashboardLayout from '~/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '~/components/elements/Navbars/DashboardNavbar'
-import Footer from '~/components/elements/Footer'
+import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
+import Footer from '#/lib/components/elements/Footer'
 
 // OrderDetails page components
 import Header from '#/pages/dashboards/ecommerce/orders/order-details/components/Header'

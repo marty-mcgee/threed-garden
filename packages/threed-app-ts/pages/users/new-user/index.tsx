@@ -11,13 +11,13 @@ import Step from '@mui/material/Step'
 import StepLabel from '@mui/material/StepLabel'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDButton from '~/components/mui/MDButton'
+import MDBox from '#/lib/mui/MDBox'
+import MDButton from '#/lib/mui/MDButton'
 
 // ThreeD Garden examples components
-import DashboardLayout from '~/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '~/components/elements/Navbars/DashboardNavbar'
-import Footer from '~/components/elements/Footer'
+import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
+import Footer from '#/lib/components/elements/Footer'
 
 // NewUser page components
 import UserInfo from '#/pages/users/new-user/components/UserInfo'
@@ -26,9 +26,9 @@ import Socials from '#/pages/users/new-user/components/Socials'
 import Profile from '#/pages/users/new-user/components/Profile'
 
 // NewUser layout schemas for form and form feilds
-import validations from '~/@fake-db/pages/users/new-user/schemas/validations'
-import form from '~/@fake-db/pages/users/new-user/schemas/form'
-import initialValues from '~/@fake-db/pages/users/new-user/schemas/initialValues'
+import validations from 'api/@fake-db/pages/users/new-user/schemas/validations'
+import form from 'api/@fake-db/pages/users/new-user/schemas/form'
+import initialValues from 'api/@fake-db/pages/users/new-user/schemas/initialValues'
 
 function getSteps(): string[] {
   return ['User Info', 'Address', 'Social', 'Profile']

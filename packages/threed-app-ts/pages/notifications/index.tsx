@@ -5,16 +5,16 @@ import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
-import MDAlert from '~/components/mui/MDAlert'
-import MDButton from '~/components/mui/MDButton'
-import MDSnackbar from '~/components/mui/MDSnackbar'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
+import MDAlert from '#/lib/mui/MDAlert'
+import MDButton from '#/lib/mui/MDButton'
+import MDSnackbar from '#/lib/mui/MDSnackbar'
 
 // ThreeD Garden examples components
-import DashboardLayout from '~/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '~/components/elements/Navbars/DashboardNavbar'
-import Footer from '~/components/elements/Footer'
+import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
+import Footer from '#/lib/components/elements/Footer'
 
 function Notifications(): JSX.Element {
   const [successSB, setSuccessSB] = useState<boolean>(false)

@@ -3,21 +3,21 @@ import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import DashboardLayout from '~/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '~/components/elements/Navbars/DashboardNavbar'
-import Footer from '~/components/elements/Footer'
-import DataTable from '~/components/elements/Tables/DataTable'
+import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
+import Footer from '#/lib/components/elements/Footer'
+import DataTable from '#/lib/components/elements/Tables/DataTable'
 
 // ProductPage page components
 import ProductImages from '#/pages/dashboards/ecommerce/products/product-page/components/ProductImages'
 import ProductInfo from '#/pages/dashboards/ecommerce/products/product-page/components/ProductInfo'
 
 // Data
-import dataTableData from '~/@fake-db/pages/dashboards/ecommerce/products/product-page/data/dataTableData'
+import dataTableData from 'api/@fake-db/pages/dashboards/ecommerce/products/product-page/data/dataTableData'
 
 function ProductPage(): JSX.Element {
   return (

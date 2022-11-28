@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import objects from '~/assets/demo/objects/objects-1'
+import objects from '#/lib/assets/demo/objects/objects-1'
 
 function DataGrabber(props) {
   const { id = 2 } = props

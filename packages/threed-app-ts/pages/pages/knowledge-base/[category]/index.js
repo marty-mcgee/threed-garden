@@ -31,7 +31,7 @@ import InformationOutline from 'mdi-material-ui/InformationOutline'
 import axios from 'axios'
 
 // ** Demo Import
-import KnowledgeBaseHeader from '~/views/pages/knowledge-base/KnowledgeBaseHeader'
+import KnowledgeBaseHeader from '#/ui/views/pages/knowledge-base/KnowledgeBaseHeader'
 
 // Styled Link component
 const StyledLink = styled('a')(({ theme }) => ({
@@ -85,11 +85,7 @@ const KnowledgeBaseCategory = ({ apiData }) => {
   const renderQuestions = (item) => {
     return item.questions.map((obj, index) => {
       return (
-        <Anchor
-          passHref
-          key={index}
-          href={`/pages/knowledge-base/${category}/${obj.slug}`}
-        >
+        <Anchor passHref key={index} href={`/pages/knowledge-base/${category}/${obj.slug}`}>
           <StyledLink>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <CircleOutline sx={{ mr: 2.25, fontSize: '0.875rem', color: 'text.secondary' }} />
@@ -108,13 +104,7 @@ const KnowledgeBaseCategory = ({ apiData }) => {
           const IconTag = icons[item.icon]
 
           return (
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
-              key={index}
-            >
+            <Grid item xs={12} sm={6} md={4} key={index}>
               <Card>
                 <StyledCardContent>
                   <IconTag
@@ -134,10 +124,7 @@ const KnowledgeBaseCategory = ({ apiData }) => {
       })
     } else {
       return (
-        <Grid
-          item
-          xs={12}
-        >
+        <Grid item xs={12}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <InformationOutline sx={{ mr: 2 }} />
             <Typography variant='h6'>Data is not an array!</Typography>
@@ -156,16 +143,9 @@ const KnowledgeBaseCategory = ({ apiData }) => {
 
   return (
     <>
-      <KnowledgeBaseHeader
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-      />
+      <KnowledgeBaseHeader searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       {data !== null ? (
-        <Grid
-          container
-          spacing={6}
-          className='match-height'
-        >
+        <Grid container spacing={6} className='match-height'>
           {renderGrid()}
         </Grid>
       ) : (

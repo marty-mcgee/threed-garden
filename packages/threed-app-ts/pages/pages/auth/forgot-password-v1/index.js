@@ -17,10 +17,10 @@ import ChevronLeft from 'mdi-material-ui/ChevronLeft'
 import themeConfig from '~/config/themeConfig'
 
 // ** Layout Import
-import BlankLayout from '~/@core/layouts/BlankLayout'
+import BlankLayout from '#/ui/~core/layouts/BlankLayout'
 
 // ** Demo Imports
-import FooterIllustrationsV1 from '~/views/pages/auth/FooterIllustrationsV1'
+import FooterIllustrationsV1 from '#/ui/views/pages/auth/FooterIllustrationsV1'
 
 // ** Styled Components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -55,22 +55,10 @@ const ForgotPasswordV1 = () => {
               version='1.1'
               viewBox='0 0 30 23'
               xmlns='http://www.w3.org/2000/svg'
-              xmlnsXlink='http://www.w3.org/1999/xlink'
-            >
-              <g
-                stroke='none'
-                strokeWidth='1'
-                fill='none'
-                fillRule='evenodd'
-              >
-                <g
-                  id='Artboard'
-                  transform='translate(-95.000000, -51.000000)'
-                >
-                  <g
-                    id='logo'
-                    transform='translate(95.000000, 50.000000)'
-                  >
+              xmlnsXlink='http://www.w3.org/1999/xlink'>
+              <g stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
+                <g id='Artboard' transform='translate(-95.000000, -51.000000)'>
+                  <g id='logo' transform='translate(95.000000, 50.000000)'>
                     <path
                       id='Combined-Shape'
                       fill={theme.palette.primary.main}
@@ -127,50 +115,25 @@ const ForgotPasswordV1 = () => {
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 fontSize: '1.5rem !important',
-              }}
-            >
+              }}>
               {themeConfig.templateName}
             </Typography>
           </Box>
           <Box sx={{ mb: 6 }}>
-            <Typography
-              variant='h5'
-              sx={{ fontWeight: 600, mb: 1.5 }}
-            >
+            <Typography variant='h5' sx={{ fontWeight: 600, mb: 1.5 }}>
               Forgot Password? 🔒
             </Typography>
             <Typography variant='body2'>
               Enter your email and we&prime;ll send you instructions to reset your password
             </Typography>
           </Box>
-          <form
-            noValidate
-            autoComplete='off'
-            onSubmit={handleSubmit}
-          >
-            <TextField
-              autoFocus
-              type='email'
-              label='Email'
-              sx={{ display: 'flex', mb: 4 }}
-            />
-            <Button
-              fullWidth
-              size='large'
-              type='submit'
-              variant='contained'
-              sx={{ mb: 5.25 }}
-            >
+          <form noValidate autoComplete='off' onSubmit={handleSubmit}>
+            <TextField autoFocus type='email' label='Email' sx={{ display: 'flex', mb: 4 }} />
+            <Button fullWidth size='large' type='submit' variant='contained' sx={{ mb: 5.25 }}>
               Send reset link
             </Button>
-            <Typography
-              variant='body2'
-              sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >
-              <Link
-                passHref
-                href='/pages/auth/login-v1'
-              >
+            <Typography variant='body2' sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Link passHref href='/pages/auth/login-v1'>
                 <LinkStyled>
                   <ChevronLeft />
                   <span>Back to login</span>

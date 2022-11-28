@@ -46,18 +46,18 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchData, deleteInvoice } from '~/stores/redux/apps/invoice'
 
 // ** Utils Import
-import { getInitials } from '~/@core/utils/get-initials'
+import { getInitials } from '#/ui/~core/utils/get-initials'
 
 // ** Custom Components Imports
-import CustomChip from '~/@core/components/mui/chip'
-import CustomAvatar from '~/@core/components/mui/avatar'
-import TableHeader from '~/views/apps/invoice/list/TableHeader'
+import CustomChip from '#/ui/~core/components/mui/chip'
+import CustomAvatar from '#/ui/~core/components/mui/avatar'
+import TableHeader from '#/ui/views/apps/invoice/list/TableHeader'
 
 // ** Third Party Styles Imports
 // import 'react-datepicker/dist/react-datepicker.css'
 
 // ** Styled Components
-import DatePickerWrapper from '~/@core/styles/libs/react-datepicker'
+import DatePickerWrapper from '#/ui/~core/styles/libs/react-datepicker'
 
 // ** Styled component for the link in the dataTable
 const StyledLink = styled('a')(({ theme }) => ({

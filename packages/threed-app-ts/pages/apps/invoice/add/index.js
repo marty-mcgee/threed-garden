@@ -8,9 +8,9 @@ import Grid from '@mui/material/Grid'
 import axios from 'axios'
 
 // ** Demo Components Imports
-import AddCard from '~/views/apps/invoice/add/AddCard'
-import AddActions from '~/views/apps/invoice/add/AddActions'
-import AddNewCustomers from '~/views/apps/invoice/add/AddNewCustomer'
+import AddCard from '#/ui/views/apps/invoice/add/AddCard'
+import AddActions from '#/ui/views/apps/invoice/add/AddActions'
+import AddNewCustomers from '#/ui/views/apps/invoice/add/AddNewCustomer'
 
 // ** Third Party Styles Imports
 // import 'react-datepicker/dist/react-datepicker.css'
@@ -24,16 +24,8 @@ const InvoiceAdd = ({ apiClientData, invoiceNumber }) => {
 
   return (
     <>
-      <Grid
-        container
-        spacing={6}
-      >
-        <Grid
-          item
-          xl={9}
-          md={8}
-          xs={12}
-        >
+      <Grid container spacing={6}>
+        <Grid item xl={9} md={8} xs={12}>
           <AddCard
             clients={clients}
             invoiceNumber={invoiceNumber}
@@ -42,12 +34,7 @@ const InvoiceAdd = ({ apiClientData, invoiceNumber }) => {
             toggleAddCustomerDrawer={toggleAddCustomerDrawer}
           />
         </Grid>
-        <Grid
-          item
-          xl={3}
-          md={4}
-          xs={12}
-        >
+        <Grid item xl={3} md={4} xs={12}>
           <AddActions />
         </Grid>
       </Grid>

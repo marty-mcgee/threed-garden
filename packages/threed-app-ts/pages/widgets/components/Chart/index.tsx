@@ -4,8 +4,8 @@ import { useRef, useEffect, useState, useMemo, ReactNode } from 'react'
 import Card from '@mui/material/Card'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden Helper Functions
 import gradientChartLine from '~/themes/theme-light/functions/gradientChartLine'

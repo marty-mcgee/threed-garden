@@ -2,7 +2,7 @@
 import axios from 'axios'
 
 // ** Demo Components Imports
-import Email from '~/views/apps/email/Email'
+import Email from '#/ui/views/apps/email/Email'
 
 const EmailApp = ({ label }) => {
   return <Email label={label} />

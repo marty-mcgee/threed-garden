@@ -1,12 +1,12 @@
 import Head from 'next/head'
 import { GetStaticProps } from 'next'
-import Container from '~/components/blog/container'
-import MoreStories from '~/components/blog/more-stories'
-import HeroPost from '~/components/blog/hero-post'
-import Intro from '~/components/blog/intro'
-import Layout from '~/components/blog/layout'
-import { getAllPostsForHome } from '#/lib/api'
-import { CMS_NAME } from '~/lib/constants'
+import Container from '#/lib/components/blog/container'
+import MoreStories from '#/lib/components/blog/more-stories'
+import HeroPost from '#/lib/components/blog/hero-post'
+import Intro from '#/lib/components/blog/intro'
+import Layout from '#/lib/components/blog/layout'
+import { getAllPostsForHome } from '#/api/api'
+import { CMS_NAME } from '#/lib/constants'
 
 export default function Index({ allPosts: { edges }, preview }: { allPosts: { edges: any }; preview: any }) {
   const heroPost = edges[0]?.node

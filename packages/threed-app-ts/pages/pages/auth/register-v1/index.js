@@ -33,10 +33,10 @@ import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import themeConfig from '~/config/themeConfig'
 
 // ** Layout Import
-import BlankLayout from '~/@core/layouts/BlankLayout'
+import BlankLayout from '#/ui/~core/layouts/BlankLayout'
 
 // ** Demo Imports
-import FooterIllustrationsV1 from '~/views/pages/auth/FooterIllustrationsV1'
+import FooterIllustrationsV1 from '#/ui/views/pages/auth/FooterIllustrationsV1'
 
 // ** Styled Components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -91,22 +91,10 @@ const RegisterV1 = () => {
               version='1.1'
               viewBox='0 0 30 23'
               xmlns='http://www.w3.org/2000/svg'
-              xmlnsXlink='http://www.w3.org/1999/xlink'
-            >
-              <g
-                stroke='none'
-                strokeWidth='1'
-                fill='none'
-                fillRule='evenodd'
-              >
-                <g
-                  id='Artboard'
-                  transform='translate(-95.000000, -51.000000)'
-                >
-                  <g
-                    id='logo'
-                    transform='translate(95.000000, 50.000000)'
-                  >
+              xmlnsXlink='http://www.w3.org/1999/xlink'>
+              <g stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
+                <g id='Artboard' transform='translate(-95.000000, -51.000000)'>
+                  <g id='logo' transform='translate(95.000000, 50.000000)'>
                     <path
                       id='Combined-Shape'
                       fill={theme.palette.primary.main}
@@ -163,38 +151,19 @@ const RegisterV1 = () => {
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 fontSize: '1.5rem !important',
-              }}
-            >
+              }}>
               {themeConfig.templateName}
             </Typography>
           </Box>
           <Box sx={{ mb: 6 }}>
-            <Typography
-              variant='h5'
-              sx={{ fontWeight: 600, mb: 1.5 }}
-            >
+            <Typography variant='h5' sx={{ fontWeight: 600, mb: 1.5 }}>
               Adventure starts here 🚀
             </Typography>
             <Typography variant='body2'>Make your app management easy and fun!</Typography>
           </Box>
-          <form
-            noValidate
-            autoComplete='off'
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <TextField
-              autoFocus
-              fullWidth
-              id='username'
-              label='Username'
-              sx={{ mb: 4 }}
-            />
-            <TextField
-              fullWidth
-              type='email'
-              label='Email'
-              sx={{ mb: 4 }}
-            />
+          <form noValidate autoComplete='off' onSubmit={(e) => e.preventDefault()}>
+            <TextField autoFocus fullWidth id='username' label='Username' sx={{ mb: 4 }} />
+            <TextField fullWidth type='email' label='Email' sx={{ mb: 4 }} />
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-register-password'>Password</InputLabel>
               <OutlinedInput
@@ -209,8 +178,7 @@ const RegisterV1 = () => {
                       edge='end'
                       onClick={handleClickShowPassword}
                       onMouseDown={handleMouseDownPassword}
-                      aria-label='toggle password visibility'
-                    >
+                      aria-label='toggle password visibility'>
                       {values.showPassword ? <EyeOutline fontSize='small' /> : <EyeOffOutline fontSize='small' />}
                     </IconButton>
                   </InputAdornment>
@@ -222,85 +190,46 @@ const RegisterV1 = () => {
               label={
                 <>
                   <span>I agree to </span>
-                  <Link
-                    href='/'
-                    passHref
-                  >
+                  <Link href='/' passHref>
                     <LinkStyled onClick={(e) => e.preventDefault()}>privacy policy & terms</LinkStyled>
                   </Link>
                 </>
               }
             />
-            <Button
-              fullWidth
-              size='large'
-              type='submit'
-              variant='contained'
-              sx={{ mb: 7 }}
-            >
+            <Button fullWidth size='large' type='submit' variant='contained' sx={{ mb: 7 }}>
               Sign up
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Typography
-                variant='body2'
-                sx={{ mr: 2 }}
-              >
+              <Typography variant='body2' sx={{ mr: 2 }}>
                 Already have an account?
               </Typography>
               <Typography variant='body2'>
-                <Link
-                  passHref
-                  href='/pages/auth/login-v1'
-                >
+                <Link passHref href='/pages/auth/login-v1'>
                   <LinkStyled>Sign in instead</LinkStyled>
                 </Link>
               </Typography>
             </Box>
             <Divider sx={{ my: 5 }}>or</Divider>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Link
-                href='/'
-                passHref
-              >
-                <IconButton
-                  component='a'
-                  onClick={(e) => e.preventDefault()}
-                >
+              <Link href='/' passHref>
+                <IconButton component='a' onClick={(e) => e.preventDefault()}>
                   <Facebook sx={{ color: '#497ce2' }} />
                 </IconButton>
               </Link>
-              <Link
-                href='/'
-                passHref
-              >
-                <IconButton
-                  component='a'
-                  onClick={(e) => e.preventDefault()}
-                >
+              <Link href='/' passHref>
+                <IconButton component='a' onClick={(e) => e.preventDefault()}>
                   <Twitter sx={{ color: '#1da1f2' }} />
                 </IconButton>
               </Link>
-              <Link
-                href='/'
-                passHref
-              >
-                <IconButton
-                  component='a'
-                  onClick={(e) => e.preventDefault()}
-                >
+              <Link href='/' passHref>
+                <IconButton component='a' onClick={(e) => e.preventDefault()}>
                   <Github
                     sx={{ color: (theme) => (theme.palette.mode === 'light' ? '#272727' : theme.palette.grey[300]) }}
                   />
                 </IconButton>
               </Link>
-              <Link
-                href='/'
-                passHref
-              >
-                <IconButton
-                  component='a'
-                  onClick={(e) => e.preventDefault()}
-                >
+              <Link href='/' passHref>
+                <IconButton component='a' onClick={(e) => e.preventDefault()}>
                   <Google sx={{ color: '#db4437' }} />
                 </IconButton>
               </Link>

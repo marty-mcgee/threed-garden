@@ -9,29 +9,29 @@ import Icon from '@mui/material/Icon'
 import Card from '@mui/material/Card'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDBadgeDot from '~/components/mui/MDBadgeDot'
-import MDButton from '~/components/mui/MDButton'
-import MDTypography from '~/components/mui/MDTypography'
+import MDBox from '#/lib/mui/MDBox'
+import MDBadgeDot from '#/lib/mui/MDBadgeDot'
+import MDButton from '#/lib/mui/MDButton'
+import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import DashboardLayout from '~/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '~/components/elements/Navbars/DashboardNavbar'
-import Footer from '~/components/elements/Footer'
-import DefaultStatisticsCard from '~/components/elements/Cards/StatisticsCards/DefaultStatisticsCard'
-import DefaultLineChart from '~/components/elements/Charts/LineCharts/DefaultLineChart'
-import HorizontalBarChart from '~/components/elements/Charts/BarCharts/HorizontalBarChart'
-import SalesTable from '~/components/elements/Tables/SalesTable'
-import DataTable from '~/components/elements/Tables/DataTable'
+import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
+import Footer from '#/lib/components/elements/Footer'
+import DefaultStatisticsCard from '#/lib/components/elements/Cards/StatisticsCards/DefaultStatisticsCard'
+import DefaultLineChart from '#/lib/components/elements/Charts/LineCharts/DefaultLineChart'
+import HorizontalBarChart from '#/lib/components/elements/Charts/BarCharts/HorizontalBarChart'
+import SalesTable from '#/lib/components/elements/Tables/SalesTable'
+import DataTable from '#/lib/components/elements/Tables/DataTable'
 
 // Sales dashboard components
 import ChannelsChart from '#/pages/dashboards/sales/components/ChannelsChart'
 
 // Data
-import defaultLineChartData from '~/@fake-db/pages/dashboards/sales/data/defaultLineChartData'
-import horizontalBarChartData from '~/@fake-db/pages/dashboards/sales/data/horizontalBarChartData'
-import salesTableData from '~/@fake-db/pages/dashboards/sales/data/salesTableData'
-import dataTableData from '~/@fake-db/pages/dashboards/sales/data/dataTableData'
+import defaultLineChartData from 'api/@fake-db/pages/dashboards/sales/data/defaultLineChartData'
+import horizontalBarChartData from 'api/@fake-db/pages/dashboards/sales/data/horizontalBarChartData'
+import salesTableData from 'api/@fake-db/pages/dashboards/sales/data/salesTableData'
+import dataTableData from 'api/@fake-db/pages/dashboards/sales/data/dataTableData'
 
 function Sales(): JSX.Element {
   // DefaultStatisticsCard state for the dropdown value

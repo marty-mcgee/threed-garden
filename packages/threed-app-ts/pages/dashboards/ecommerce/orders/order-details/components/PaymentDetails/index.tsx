@@ -3,15 +3,15 @@ import Icon from '@mui/material/Icon'
 import Tooltip from '@mui/material/Tooltip'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
-import MDButton from '~/components/mui/MDButton'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
+import MDButton from '#/lib/mui/MDButton'
 
 // ThreeD Garden Base Styles
 import borders from '~/themes/theme-light/base/borders'
 
 // Images
-import masterCardLogo from '~/assets/images/logos/mastercard.png'
+import masterCardLogo from '#/lib/assets/images/logos/mastercard.png'
 
 function PaymentDetails(): JSX.Element {
   const { borderWidth, borderColor } = borders

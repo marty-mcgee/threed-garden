@@ -32,13 +32,13 @@ import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import themeConfig from '~/config/themeConfig'
 
 // ** Layout Import
-import BlankLayoutWithAppBar from '~/@core/layouts/BlankLayoutWithAppBar'
+import BlankLayoutWithAppBar from '#/ui/~core/layouts/BlankLayoutWithAppBar'
 
 // ** Hooks
-import { useSettings } from '~/@core/hooks/useSettings'
+import { useSettings } from '#/ui/~core/hooks/useSettings'
 
 // ** Demo Imports
-import FooterIllustrationsV2 from '~/views/pages/auth/FooterIllustrationsV2'
+import FooterIllustrationsV2 from '#/ui/views/pages/auth/FooterIllustrationsV2'
 
 // ** Styled Components
 const LoginIllustrationWrapper = styled(Box)(({ theme }) => ({

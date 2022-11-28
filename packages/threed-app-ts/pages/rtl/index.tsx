@@ -5,21 +5,21 @@ import Grid from '@mui/material/Grid'
 import Icon from '@mui/material/Icon'
 
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import DashboardLayout from '~/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '~/components/elements/Navbars/DashboardNavbar'
-import Footer from '~/components/elements/Footer'
-import MiniStatisticsCard from '~/components/elements/Cards/StatisticsCards/MiniStatisticsCard'
-import ProgressLineChart from '~/components/elements/Charts/LineCharts/ProgressLineChart'
-import DefaultInfoCard from '~/components/elements/Cards/InfoCards/DefaultInfoCard'
-import MasterCard from '~/components/elements/Cards/MasterCard'
-import MiniInfoCard from '~/components/elements/Cards/InfoCards/MiniInfoCard'
-import ControllerCard from '~/components/elements/Cards/ControllerCard'
+import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
+import Footer from '#/lib/components/elements/Footer'
+import MiniStatisticsCard from '#/lib/components/elements/Cards/StatisticsCards/MiniStatisticsCard'
+import ProgressLineChart from '#/lib/components/elements/Charts/LineCharts/ProgressLineChart'
+import DefaultInfoCard from '#/lib/components/elements/Cards/InfoCards/DefaultInfoCard'
+import MasterCard from '#/lib/components/elements/Cards/MasterCard'
+import MiniInfoCard from '#/lib/components/elements/Cards/InfoCards/MiniInfoCard'
+import ControllerCard from '#/lib/components/elements/Cards/ControllerCard'
 // import Calendar from "~/components/elements/Calendar"
-import CategoriesList from '~/components/elements/Lists/CategoriesList'
+import CategoriesList from '#/lib/components/elements/Lists/CategoriesList'
 
 // RTL page components
 import Steps from '#/pages/rtl/components/Steps'
@@ -30,12 +30,12 @@ import UpcomingEvents from '#/pages/rtl/components/UpcomingEvents'
 import Chart from '#/pages/rtl/components/Chart'
 
 // Data
-import progressLineChartData from '~/@fake-db/pages/rtl/data/progressLineChartData'
-import categoriesListData from '~/@fake-db/pages/rtl/data/categoriesListData'
-import caloriesChartData from '~/@fake-db/pages/rtl/data/caloriesChartData'
+import progressLineChartData from 'api/@fake-db/pages/rtl/data/progressLineChartData'
+import categoriesListData from 'api/@fake-db/pages/rtl/data/categoriesListData'
+import caloriesChartData from 'api/@fake-db/pages/rtl/data/caloriesChartData'
 
 // ThreeD Garden contexts
-import { useMaterialUIController, setDirection } from '~/context'
+import { useMaterialUIController, setDirection } from '~/app/context'
 
 function RTL(): JSX.Element {
   const [, dispatch] = useMaterialUIController()

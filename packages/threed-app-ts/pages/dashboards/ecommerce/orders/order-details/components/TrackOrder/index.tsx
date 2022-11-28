@@ -1,9 +1,9 @@
 // ThreeD Garden components
-import MDBox from '~/components/mui/MDBox'
-import MDTypography from '~/components/mui/MDTypography'
+import MDBox from '#/lib/mui/MDBox'
+import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import TimelineItem from '~/components/elements/Timeline/TimelineItem'
+import TimelineItem from '#/lib/components/elements/Timeline/TimelineItem'
 
 function OrdersOverview(): JSX.Element {
   return (
