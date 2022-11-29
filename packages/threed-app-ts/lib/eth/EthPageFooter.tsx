@@ -25,7 +25,7 @@ import { IScaffoldAppProviders } from '~common/models'
 import { FAUCET_ENABLED } from '~~/config/nextjsApp.config'
 
 // ** Types + Interfaces Imports
-import { TAppProps } from '~~/models/TAppProps'
+import { TAppProps } from '~~/types/models/TAppProps'
 
 // ==============================================================
 // EXPORT RESOURCES
