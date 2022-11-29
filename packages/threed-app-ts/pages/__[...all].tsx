@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router'
 import React, { FC } from 'react'
 
-import { EthPage as ThreeDPage } from '#/pages/eth'
-import { TPageProps } from '~~/models/TAppProps'
+import EthPage from '~~/pages/eth'
+import { TPageProps } from '~~/types/models/TAppProps'
 
 const Page: FC<TPageProps> = (props) => {
   // -----------------------------
@@ -24,12 +24,12 @@ const Page: FC<TPageProps> = (props) => {
 
   return (
     // <div className='App'>
-      <ThreeDPage
+      <EthPage
         pageName={slug}
         {...props}
       >
         <div>no children? except me? accept me? the div</div>
-      </ThreeDPage>
+      </EthPage>
     // </div>
   )
 }
