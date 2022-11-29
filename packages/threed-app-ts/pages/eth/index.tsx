@@ -1,3 +1,4 @@
+// 'use client'
 // ==============================================================
 // RESOURCES
 /** =============================================================
@@ -58,7 +59,7 @@ interface IEthPageProps {
  * The main component
  * @returns JSX.Element
  */
-export const EthPage: NextPage<IEthPageProps> = (props): JSX.Element => {
+const EthPage: NextPage<IEthPageProps> = (props) => {
   // passed in by nextjs getInitalProps
   const appProps: TAppProps = props.appProps
 
@@ -228,6 +229,8 @@ export const EthPage: NextPage<IEthPageProps> = (props): JSX.Element => {
     </div>
   )
 }
+
+export default EthPage
 
 // ==============================================================
 // END EthPage<JSX.Element>.tsx

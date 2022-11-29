@@ -20,7 +20,7 @@ import { useAuth } from '#/app/hooks/useAuth'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-import { EthPage as ETHPage } from '#/app/eth/page'
+import { EthPage as ETHPage } from '#/pages/eth'
 import { TPageProps } from '~~/types/models/TAppProps'
 
 // import chalk from 'chalk'
