@@ -23,7 +23,7 @@ const Page: FC<TPageProps> = (props) => {
   }
 
   return (
-    // <div className='App'>
+    // <div className='App WholeApp WholeEthApp WholeNextApp WholeReactApp'>
       <EthPage
         pageName={slug}
         {...props}
