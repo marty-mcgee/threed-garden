@@ -21,7 +21,7 @@ import {
 
 // ** Redux Store Imports
 import { Provider as ReduxProvider } from 'react-redux'
-import { store as reduxStore } from '~/stores/redux' // redux
+import { store as reduxStore } from '~/stores/redux'
 
 // ** Loader Import
 import NProgress from 'nprogress'
@@ -35,11 +35,11 @@ import { defaultACLObj } from '#/config/acl'
 import themeConfig from '#/config/themeConfig'
 
 // ** Fake-DB Import
-import 'api/@fake-db'
+import '#/api/@fake-db'
 
 // ** Apollo Client -- State Management using Cache/Store (via GraphQL)
 import { ApolloProvider } from '@apollo/client'
-import { client } from 'api/graphql/client'
+import { client } from '#/api/graphql/client'
 
 // ** Third Party Import
 import { Toaster } from 'react-hot-toast'
@@ -94,7 +94,7 @@ import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
 
 import { ErrorBoundary, ErrorFallback } from '~common/components'
 import { BLOCKNATIVE_DAPPID } from '~~/config/nextjsApp.config'
-import { appGetInitialProps } from '#/lib/nextjs/appGetInitialProps'
+import { appGetInitialProps } from '~~/lib/nextjs/appGetInitialProps'
 
 import { EthPage as ETHPage } from '#/app/eth/page'
 
