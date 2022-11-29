@@ -96,7 +96,7 @@ import { ErrorBoundary, ErrorFallback } from '~common/components'
 import { BLOCKNATIVE_DAPPID } from '~~/config/nextjsApp.config'
 import { appGetInitialProps } from '#/lib/nextjs/appGetInitialProps'
 
-import { EthPage as ETHPage } from '#/pages/eth/EthPage'
+import { EthPage as ETHPage } from '#/app/eth/page'
 
 // ==============================================================
 // IMPORTS COMPLETE

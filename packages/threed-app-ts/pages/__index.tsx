@@ -18,10 +18,13 @@ import Typography from '@mui/material/Typography'
 // ** Hook Imports
 import { useAuth } from '#/app/hooks/useAuth'
 
+// ** Helper Components
+import Spinner from '#/ui/~core/components/spinner'
+
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
 // import { EthPage as ETHPage } from '~~/components/main/EthPage'
-import { TPageProps } from '~~/models/TAppProps'
+import { TPageProps } from '~~/types/models/TAppProps'
 
 // import chalk from 'chalk'
 
@@ -65,7 +68,7 @@ const Page: NextPage<TPageProps> = (props) => {
       {/* <DashboardLayout> */}
         {/* <DashboardNavbar /> */}
 
-        <Typography component='h1' variant='h5' gutterBottom >
+        {/* <Typography component='h1' variant='h5' gutterBottom >
           ThreeD Garden for FarmBot + Three.js + Next.js
         </Typography>
         <Typography component='h2' variant='h6' gutterBottom >
@@ -77,9 +80,9 @@ const Page: NextPage<TPageProps> = (props) => {
         <Typography component='p' gutterBottom >
           This page should call for action + handle response, or forward client, to a "Home" Landing Page.<br/>
           Shown here for TESTING PURPOSES ONLY.
-        </Typography>
+        </Typography> */}
 
-        {/* <Spinner /> */}
+        <Spinner />
 
         {/* SCAFFOLD-ETH-TYPESCRIPT */}
         {/* <ETHPage pageName='threed' {...props}></ETHPage> */}

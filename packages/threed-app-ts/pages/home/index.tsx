@@ -20,7 +20,7 @@ import { useAuth } from '#/app/hooks/useAuth'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-import { EthPage as ETHPage } from '~~/pages/eth/EthPage'
+import { EthPage as ETHPage } from '#/app/eth/page'
 import { TPageProps } from '~~/types/models/TAppProps'
 
 // import chalk from 'chalk'
@@ -72,11 +72,10 @@ const Page: NextPage<TPageProps> = (props) => {
           FarmBot + Three.js using React Three Fiber, MUI v5, NextJS + TypeScript
         </Typography>
         <Typography component='p' gutterBottom >
-          Index Page (/pages/index.tsx)
+          Home Page (/pages/home/index.tsx)
         </Typography>
         <Typography component='p' gutterBottom >
-          This page should call for action + handle response, or forward client, to a "Home" Landing Page.<br/>
-          Shown here for TESTING PURPOSES ONLY.
+          This is the "Home" Landing Page.<br/>
         </Typography>
 
         {/* <Spinner /> */}

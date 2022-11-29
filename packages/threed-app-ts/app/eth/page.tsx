@@ -23,8 +23,8 @@ import { useEthersAppContext } from 'eth-hooks/context'
 import { useDexEthPrice } from 'eth-hooks/dapps'
 import { asEthersAdaptor } from 'eth-hooks/functions'
 
-// Component + Layout Imports
-import { EthPageFooter, EthPageHeader, createTabsAndPages, TContractPageList } from '.'
+// Component + Layout (+ Type) Imports
+import { EthPageFooter, EthPageHeader, createTabsAndPages, TContractPageList } from '~~/lib/eth'
 
 // Types + Interfaces Imports
 import { useLoadAppContracts, useConnectAppContracts, useAppContracts } from '~common/components/context'
@@ -62,7 +62,7 @@ export const EthPage: NextPage<IEthPageProps> = (props): JSX.Element => {
   // passed in by nextjs getInitalProps
   const appProps: TAppProps = props.appProps
 
-  console.debug('props', props)
+  console.debug('EthPage props', props)
 
   const notificationHolder = useCreateAntNotificationHolder()
 

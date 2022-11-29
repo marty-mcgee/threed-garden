@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import React, { FC } from 'react'
 
-import { EthPage as ThreeDPage } from '#/pages/eth/EthPage'
+import { EthPage as ThreeDPage } from '#/app/eth/page'
 import { TPageProps } from '~~/models/TAppProps'
 
 const Page: FC<TPageProps> = (props) => {
