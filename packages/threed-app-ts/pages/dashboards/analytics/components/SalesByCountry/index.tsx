@@ -10,7 +10,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import SalesTable from '#/lib/components/elements/Tables/SalesTable'
+import SalesTable from '#/ui/elements/Tables/SalesTable'
 
 // Data
 import salesTableData from 'api/@fake-db/pages/dashboards/analytics/components/SalesByCountry/data/salesTableData'

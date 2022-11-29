@@ -10,7 +10,7 @@ import MDAvatar from '#/lib/mui/MDAvatar'
 import MDButton from '#/lib/mui/MDButton'
 
 // Wizard application components
-import FormField from '#/lib/components/applications/wizard/components/FormField'
+import FormField from '#/ui/applications/wizard/components/FormField'
 
 // Images
 import team2 from '#/lib/assets/images/people/team-2.jpg'

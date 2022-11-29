@@ -18,8 +18,8 @@ import MDInput from '#/lib/mui/MDInput'
 import MDPagination from '#/lib/mui/MDPagination'
 
 // ThreeD Garden examples components
-import DataTableHeadCell from '#/lib/components/elements/Tables/DataTable/DataTableHeadCell'
-import DataTableBodyCell from '#/lib/components/elements/Tables/DataTable/DataTableBodyCell'
+import DataTableHeadCell from '#/ui/elements/Tables/DataTable/DataTableHeadCell'
+import DataTableBodyCell from '#/ui/elements/Tables/DataTable/DataTableBodyCell'
 
 // UUID
 import { v4 as newUUID } from 'uuid'

@@ -6,7 +6,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import DefaultItem from '#/lib/components/elements/Items/DefaultItem'
+import DefaultItem from '#/ui/elements/Items/DefaultItem'
 
 function UpcomingEvents(): JSX.Element {
   return (

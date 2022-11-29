@@ -10,7 +10,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // custom styles for the NotificationItem
-import menuItem from '#/lib/components/elements/Items/NotificationItem/styles'
+import menuItem from '#/ui/elements/Items/NotificationItem/styles'
 
 // Declaring props types for NotificationItem
 interface Props extends MenuItemProps {

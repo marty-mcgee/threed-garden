@@ -13,10 +13,10 @@ import MDTypography from '#/lib/mui/MDTypography'
 import MDButton from '#/lib/mui/MDButton'
 
 // ThreeD Garden examples components
-import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
-import Footer from '#/lib/components/elements/Footer'
-import DataTable from '#/lib/components/elements/Tables/DataTable'
+import DashboardLayout from '#/ui/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/elements/Navbars/DashboardNavbar'
+import Footer from '#/ui/elements/Footer'
+import DataTable from '#/ui/elements/Tables/DataTable'
 
 // Data
 import dataTableData from 'api/@fake-db/pages/dashboards/ecommerce/orders/order-list/data/dataTableData'

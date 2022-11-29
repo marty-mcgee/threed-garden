@@ -8,8 +8,8 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import DefaultNavbar from '#/lib/components/elements/Navbars/DefaultNavbar'
-import PageLayout from '#/lib/components/elements/LayoutContainers/PageLayout'
+import DefaultNavbar from '#/ui/elements/Navbars/DefaultNavbar'
+import PageLayout from '#/ui/elements/LayoutContainers/PageLayout'
 
 // ThreeD Garden page layout routes
 import pageRoutes from '~/routes/page.routes'

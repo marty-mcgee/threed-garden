@@ -5,13 +5,13 @@ import Grid from '@mui/material/Grid'
 import MDBox from '#/lib/mui/MDBox'
 
 // ThreeD Garden components
-import MasterCard from '#/lib/components/elements/Cards/MasterCard'
-import DefaultInfoCard from '#/lib/components/elements/Cards/InfoCards/DefaultInfoCard'
+import MasterCard from '#/ui/elements/Cards/MasterCard'
+import DefaultInfoCard from '#/ui/elements/Cards/InfoCards/DefaultInfoCard'
 
 // Billing page components
 // import BaseLayout from "~/pages/account/components/BaseLayout"
-import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
+import DashboardLayout from '#/ui/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/elements/Navbars/DashboardNavbar'
 import PaymentMethod from '#/ui/account/billing/components/PaymentMethod'
 import Invoices from '#/ui/account/billing/components/Invoices'
 import BillingInformation from '#/ui/account/billing/components/BillingInformation'

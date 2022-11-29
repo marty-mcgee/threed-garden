@@ -12,7 +12,7 @@ import MDTypography from '#/lib/mui/MDTypography'
 import MDBox from '#/lib/mui/MDBox'
 
 // ThreeD Garden examples components
-import SalesTableCell from '#/lib/components/elements/Tables/SalesTable/SalesTableCell'
+import SalesTableCell from '#/ui/elements/Tables/SalesTable/SalesTableCell'
 
 import { StaticImageData } from 'next/image'
 

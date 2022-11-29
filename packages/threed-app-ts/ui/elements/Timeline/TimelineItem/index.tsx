@@ -8,10 +8,10 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // Timeline context
-import { useTimeline } from '#/lib/components/elements/Timeline/context'
+import { useTimeline } from '#/ui/elements/Timeline/context'
 
 // Custom styles for the TimelineItem
-import timelineItem from '#/lib/components/elements/Timeline/TimelineItem/styles'
+import timelineItem from '#/ui/elements/Timeline/TimelineItem/styles'
 
 // Declaring prop types for TimelineItem
 interface Props {

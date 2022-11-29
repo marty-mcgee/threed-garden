@@ -5,11 +5,11 @@ import Grid from '@mui/material/Grid'
 import MDBox from '#/lib/mui/MDBox'
 
 // ThreeD Garden UI Dashboard PRO React example components
-import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
-import Footer from '#/lib/components/elements/Footer'
-import TimelineList from '#/lib/components/elements/Timeline/TimelineList'
-import TimelineItem from '#/lib/components/elements/Timeline/TimelineItem'
+import DashboardLayout from '#/ui/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/elements/Navbars/DashboardNavbar'
+import Footer from '#/ui/elements/Footer'
+import TimelineList from '#/ui/elements/Timeline/TimelineList'
+import TimelineItem from '#/ui/elements/Timeline/TimelineItem'
 
 // Data
 import timelineData from 'api/@fake-db/pages/projects/timeline/data/timelineData'

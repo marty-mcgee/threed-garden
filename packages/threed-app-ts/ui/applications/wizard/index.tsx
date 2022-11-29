@@ -13,14 +13,14 @@ import MDTypography from '#/lib/mui/MDTypography'
 import MDButton from '#/lib/mui/MDButton'
 
 // ThreeD Garden examples components
-import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
-import Footer from '#/lib/components/elements/Footer'
+import DashboardLayout from '#/ui/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/elements/Navbars/DashboardNavbar'
+import Footer from '#/ui/elements/Footer'
 
 // Wizard page components
-import About from '#/lib/components/applications/wizard/components/About'
-import Account from '#/lib/components/applications/wizard/components/Account'
-import Address from '#/lib/components/applications/wizard/components/Address'
+import About from '#/ui/applications/wizard/components/About'
+import Account from '#/ui/applications/wizard/components/Account'
+import Address from '#/ui/applications/wizard/components/Address'
 
 function getSteps(): string[] {
   return ['About', 'Account', 'Address']

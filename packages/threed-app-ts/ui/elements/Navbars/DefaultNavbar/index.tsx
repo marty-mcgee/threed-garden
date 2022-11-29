@@ -19,8 +19,8 @@ import MDTypography from '#/lib/mui/MDTypography'
 import MDButton from '#/lib/mui/MDButton'
 
 // ThreeD Garden examples components
-import DefaultNavbarDropdown from '#/lib/components/elements/Navbars/DefaultNavbar/DefaultNavbarDropdown'
-import DefaultNavbarMobile from '#/lib/components/elements/Navbars/DefaultNavbar/DefaultNavbarMobile'
+import DefaultNavbarDropdown from '#/ui/elements/Navbars/DefaultNavbar/DefaultNavbarDropdown'
+import DefaultNavbarMobile from '#/ui/elements/Navbars/DefaultNavbar/DefaultNavbarMobile'
 
 // ThreeD Garden Base Styles
 import breakpoints from '~/themes/theme-light/base/breakpoints'

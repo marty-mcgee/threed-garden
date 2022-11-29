@@ -9,7 +9,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 import MDButton from '#/lib/mui/MDButton'
 import MDBadgeDot from '#/lib/mui/MDBadgeDot'
-import PieChart from '#/lib/components/elements/Charts/PieChart'
+import PieChart from '#/ui/elements/Charts/PieChart'
 
 // Data
 import channelChartData from 'api/@fake-db/pages/dashboards/sales/components/ChannelsChart/data'

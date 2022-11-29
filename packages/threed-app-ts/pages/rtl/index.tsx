@@ -9,17 +9,17 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
-import Footer from '#/lib/components/elements/Footer'
-import MiniStatisticsCard from '#/lib/components/elements/Cards/StatisticsCards/MiniStatisticsCard'
-import ProgressLineChart from '#/lib/components/elements/Charts/LineCharts/ProgressLineChart'
-import DefaultInfoCard from '#/lib/components/elements/Cards/InfoCards/DefaultInfoCard'
-import MasterCard from '#/lib/components/elements/Cards/MasterCard'
-import MiniInfoCard from '#/lib/components/elements/Cards/InfoCards/MiniInfoCard'
-import ControllerCard from '#/lib/components/elements/Cards/ControllerCard'
+import DashboardLayout from '#/ui/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/elements/Navbars/DashboardNavbar'
+import Footer from '#/ui/elements/Footer'
+import MiniStatisticsCard from '#/ui/elements/Cards/StatisticsCards/MiniStatisticsCard'
+import ProgressLineChart from '#/ui/elements/Charts/LineCharts/ProgressLineChart'
+import DefaultInfoCard from '#/ui/elements/Cards/InfoCards/DefaultInfoCard'
+import MasterCard from '#/ui/elements/Cards/MasterCard'
+import MiniInfoCard from '#/ui/elements/Cards/InfoCards/MiniInfoCard'
+import ControllerCard from '#/ui/elements/Cards/ControllerCard'
 // import Calendar from "~/components/elements/Calendar"
-import CategoriesList from '#/lib/components/elements/Lists/CategoriesList'
+import CategoriesList from '#/ui/elements/Lists/CategoriesList'
 
 // RTL page components
 import Steps from '#/pages/rtl/components/Steps'
