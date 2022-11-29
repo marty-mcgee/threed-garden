@@ -48,11 +48,10 @@ const defaults = {
 // ** COMPONENTS
 
 function ThreeD({ ...props }) {
-  console.debug('THREED: ThreeD(state, threedId, threed)', state, threedId, threed)
 
   const { state, threedId, threed } = props
 
-  console.debug('ThreeD to load: ', threed)
+  console.debug('THREED: ThreeD(state, threedId, threed)', state, threedId, threed)
 
   // map threed to THREED, to pass on to Model
   const THREED = {
