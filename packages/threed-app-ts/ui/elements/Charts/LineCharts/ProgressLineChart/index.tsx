@@ -10,7 +10,7 @@ import MDTypography from '#/lib/mui/MDTypography'
 import MDProgress from '#/lib/mui/MDProgress'
 
 // ProgressLineChart configurations
-import configs from '#/lib/components/elements/Charts/LineCharts/ProgressLineChart/config'
+import configs from '#/ui/elements/Charts/LineCharts/ProgressLineChart/config'
 
 // react-chartjs-2 components
 import { Line } from 'react-chartjs-2'

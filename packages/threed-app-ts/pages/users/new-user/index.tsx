@@ -15,9 +15,9 @@ import MDBox from '#/lib/mui/MDBox'
 import MDButton from '#/lib/mui/MDButton'
 
 // ThreeD Garden examples components
-import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
-import Footer from '#/lib/components/elements/Footer'
+import DashboardLayout from '#/ui/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/elements/Navbars/DashboardNavbar'
+import Footer from '#/ui/elements/Footer'
 
 // NewUser page components
 import UserInfo from '#/pages/users/new-user/components/UserInfo'

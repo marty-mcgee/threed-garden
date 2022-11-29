@@ -11,7 +11,7 @@ import { Theme } from '@mui/material/styles'
 import MDBox from '#/lib/mui/MDBox'
 
 // Custom styles for the SidenavItem
-import { item, itemContent, itemArrow } from '#/lib/components/elements/Sidenav/styles/sidenavItem'
+import { item, itemContent, itemArrow } from '#/ui/elements/Sidenav/styles/sidenavItem'
 
 // ThreeD Garden contexts
 import { useMaterialUIController } from '~/app/context'

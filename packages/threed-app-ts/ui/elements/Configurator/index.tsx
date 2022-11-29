@@ -21,7 +21,7 @@ import MDTypography from '#/lib/mui/MDTypography'
 import MDButton from '#/lib/mui/MDButton'
 
 // Custom styles for the Configurator
-import ConfiguratorRoot from '#/lib/components/elements/Configurator/ConfiguratorRoot'
+import ConfiguratorRoot from '#/ui/elements/Configurator/ConfiguratorRoot'
 
 // ThreeD Garden context
 import {

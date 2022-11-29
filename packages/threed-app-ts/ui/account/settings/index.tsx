@@ -6,8 +6,8 @@ import MDBox from '#/lib/mui/MDBox'
 
 // Settings page components
 // import BaseLayout from "~/pages/account/components/BaseLayout"
-import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
+import DashboardLayout from '#/ui/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/elements/Navbars/DashboardNavbar'
 import Sidenav from '#/ui/account/settings/components/Sidenav'
 import Header from '#/ui/account/settings/components/Header'
 import BasicInfo from '#/ui/account/settings/components/BasicInfo'

@@ -11,7 +11,7 @@ import MDTypography from '#/lib/mui/MDTypography'
 import { useMaterialUIController } from '~/app/context'
 
 // Timeline context
-import { TimelineProvider } from '#/lib/components/elements/Timeline/context'
+import { TimelineProvider } from '#/ui/elements/Timeline/context'
 
 // Declaring props types for TimelineList
 interface Props {

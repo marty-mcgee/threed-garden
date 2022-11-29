@@ -7,10 +7,10 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
-import Footer from '#/lib/components/elements/Footer'
-import DataTable from '#/lib/components/elements/Tables/DataTable'
+import DashboardLayout from '#/ui/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/elements/Navbars/DashboardNavbar'
+import Footer from '#/ui/elements/Footer'
+import DataTable from '#/ui/elements/Tables/DataTable'
 
 // ProductPage page components
 import ProductImages from '#/pages/dashboards/ecommerce/products/product-page/components/ProductImages'

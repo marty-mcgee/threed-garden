@@ -8,7 +8,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // custom styles for the DefaultItem
-import defaultItemIconBox from '#/lib/components/elements/Items/DefaultItem/styles'
+import defaultItemIconBox from '#/ui/elements/Items/DefaultItem/styles'
 
 // Declaring props types for DefaultItem
 interface Props {

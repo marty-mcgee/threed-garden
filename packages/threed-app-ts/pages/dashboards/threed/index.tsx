@@ -8,13 +8,13 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
-import Footer from '#/lib/components/elements/Footer'
-import ReportsBarChart from '#/lib/components/elements/Charts/BarCharts/ReportsBarChart'
-import ReportsLineChart from '#/lib/components/elements/Charts/LineCharts/ReportsLineChart'
-import ComplexStatisticsCard from '#/lib/components/elements/Cards/StatisticsCards/ComplexStatisticsCard'
-import BookingCard from '#/lib/components/elements/Cards/BookingCard'
+import DashboardLayout from '#/ui/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/elements/Navbars/DashboardNavbar'
+import Footer from '#/ui/elements/Footer'
+import ReportsBarChart from '#/ui/elements/Charts/BarCharts/ReportsBarChart'
+import ReportsLineChart from '#/ui/elements/Charts/LineCharts/ReportsLineChart'
+import ComplexStatisticsCard from '#/ui/elements/Cards/StatisticsCards/ComplexStatisticsCard'
+import BookingCard from '#/ui/elements/Cards/BookingCard'
 
 // Anaytics dashboard components
 import SalesByCountry from '#/pages/dashboards/threed/components/SalesByCountry'

@@ -1,3 +1,5 @@
-import { EthPage } from '.'
+// import { EthPage } from '.'
 
-export default EthPage
+// export default EthPage
+
+export default {}

@@ -12,7 +12,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // Custom styles for Calendar
-import CalendarRoot from '#/lib/components/elements/Calendar/CalendarRoot'
+import CalendarRoot from '#/ui/elements/Calendar/CalendarRoot'
 
 // ThreeD Garden context
 import { useMaterialUIController } from '~/app/context'

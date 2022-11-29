@@ -13,9 +13,9 @@ import MDBox from '#/lib/mui/MDBox'
 import breakpoints from '~/themes/theme-light/base/breakpoints'
 
 // ThreeD Garden examples components
-import DashboardLayout from '#/lib/components/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/lib/components/elements/Navbars/DashboardNavbar'
-import Footer from '#/lib/components/elements/Footer'
+import DashboardLayout from '#/ui/elements/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/elements/Navbars/DashboardNavbar'
+import Footer from '#/ui/elements/Footer'
 
 // Declaring props types for BaseLayout
 interface Props {

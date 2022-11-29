@@ -18,7 +18,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDBadge from '#/lib/mui/MDBadge'
 
 // ThreeD Garden examples components
-import NotificationItem from '#/lib/components/elements/Items/NotificationItem'
+import NotificationItem from '#/ui/elements/Items/NotificationItem'
 
 // Custom styles for DashboardNavbar
 import {
@@ -27,7 +27,7 @@ import {
   navbarRow,
   navbarIconButton,
   navbarDesktopMenu,
-} from '#/lib/components/elements/Navbars/DashboardNavbar/styles'
+} from '#/ui/elements/Navbars/DashboardNavbar/styles'
 
 // ThreeD Garden context
 import { useMaterialUIController, setTransparentNavbar, setMiniSidenav, setOpenConfigurator } from '~/app/context'
