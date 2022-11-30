@@ -13,25 +13,28 @@ import CalendarBlankOutline from 'mdi-material-ui/CalendarBlankOutline'
 const navigation = () => {
   const word = '[MM] HEY HEY HEY'
   return [
-    // {
-    //   title: 'Home Base',
-    //   icon: HomeOutline,
-    //   badgeContent: '', // 'new'
-    //   badgeColor: 'primary', // 'error'
-    //   children: [
-    //     {
-    //       title: 'Participate',
-    //       path: '/participate'
-    //     }
-    //   ]
-    // },
     {
-      title: 'Participate',
-      path: '/participate',
+      title: 'Home Base',
       icon: HomeOutline,
       badgeContent: 'demo', // 'new'
       badgeColor: 'primary', // 'error'
+      children: [
+        {
+          title: 'Participate',
+          path: '/participate',
+          icon: ChartDonut,
+          badgeContent: 'demo', // 'new'
+          badgeColor: 'primary', // 'error'
+        },
+      ],
     },
+    // {
+    //   title: 'Participate',
+    //   path: '/participate',
+    //   icon: HomeOutline,
+    //   badgeContent: 'demo', // 'new'
+    //   badgeColor: 'primary', // 'error'
+    // },
     {
       title: 'My Account',
       path: '/pages/account-settings',
