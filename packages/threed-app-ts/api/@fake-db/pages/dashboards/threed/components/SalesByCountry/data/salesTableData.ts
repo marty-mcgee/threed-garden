@@ -1,0 +1,29 @@
+// Countries flags
+import US from '#/lib/assets/images/icons/flags/US.png'
+import DE from '#/lib/assets/images/icons/flags/DE.png'
+import GB from '#/lib/assets/images/icons/flags/GB.png'
+import BR from '#/lib/assets/images/icons/flags/BR.png'
+
+const salesTableData = [
+  {
+    country: [US, 'United States'],
+    sales: 2500,
+    value: '$230,900',
+    bounce: '29.9%',
+  },
+  {
+    country: [DE, 'Germany'],
+    sales: '3.900',
+    value: '$440,000',
+    bounce: '40.22%',
+  },
+  {
+    country: [GB, 'Great Britain'],
+    sales: '1.400',
+    value: '$190,700',
+    bounce: '23.44%',
+  },
+  { country: [BR, 'Brasil'], sales: 562, value: '$143,960', bounce: '32.14%' },
+]
+
+export default salesTableData
