@@ -107,7 +107,7 @@ packages/threed-garden/public/demo/objects/*
 .yalc
 yalc.lock
 packages/vite-app-ts/dist
-packages/**/data
+# packages/**/data
 build
 dist
 **/generated/**/*
