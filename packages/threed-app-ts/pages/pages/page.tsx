@@ -1,3 +1,5 @@
+'use client'
+
 // import { NextPage } from 'next'
 import type { NextPage } from 'next'
 import { IPage, IBooleans, IValues, IStructures } from '~/types/interfaces' // "@threed/garden/cpt"
