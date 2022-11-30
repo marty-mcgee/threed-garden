@@ -6,8 +6,10 @@ import {
   useCursor,
   useGLTF,
   useFBX,
-  useOBJ,
+  // useOBJ, // not supported
 } from '@react-three/drei'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
+// import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/ui/~core/utils/console-colors'
@@ -98,7 +100,8 @@ function Model({ ...props }) {
       }
       // OBJ
       else if (model.isOBJ) {
-        const nodes = useOBJ(model.file)
+        // const nodes = useOBJ(model.file)
+        const nodes = new OBJLoader().load(model.file)
         console.debug('%cnodes: obj', ccm4, nodes)
         console.debug(`%c====================================`, ccm5)
         if (nodes) {

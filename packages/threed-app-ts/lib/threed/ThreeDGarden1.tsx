@@ -880,7 +880,7 @@ function loadFarmHouse() {
 
 function loadFarmHouseGLTF() {
   // loaders.loaderFBX.load( `${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
-  loaderGLTF.load(`${params.assetsPath}gltf/Residential House.glb`, function (object) {
+  loaders.loaderGLTF.load(`${params.assetsPath}gltf/Residential House.glb`, function (object) {
     let model = object.scene
     model.name = 'Farm House'
     model.position.set(0, 0, 100)
@@ -934,7 +934,7 @@ function loadCoop() {
 }
 
 function loadChicken() {
-  loaderGLTF.load(`${params.assetsPath}gltf/Chicken.glb`, function (object) {
+  loaders.loaderGLTF.load(`${params.assetsPath}gltf/Chicken.glb`, function (object) {
     let model = object.scene
     model.name = 'Chicken GLB'
     model.position.set(-3, 0, 0)
@@ -1120,7 +1120,7 @@ function loadChicken2() {
 
 // NOT USED or TESTED
 function loadChickenGLTF() {
-  loaderGLTF.load(`${params.assetsPath}gltf/Animals.glb`, function (object) {
+  loaders.loaderGLTF.load(`${params.assetsPath}gltf/Animals.glb`, function (object) {
     console.log('Animals object----------------')
     console.log(object)
 
@@ -1155,7 +1155,7 @@ function loadChickenGLTF() {
 
 // NOT USED or TESTED
 function loadChickGLTF() {
-  loaderGLTF.load(`${params.assetsPath}gltf/Chick.glb`, function (object) {
+  loaders.loaderGLTF.load(`${params.assetsPath}gltf/Chick.glb`, function (object) {
     let model = object.scene
     model.name = 'Chick GLB'
     model.position.set(3, 0, 0)
@@ -1224,7 +1224,7 @@ function loadHen() {
 
 function loadHenGLTF() {
   // loaders.loaderFBX.load( `${params.assetsPath}fbx/Building_Farm_House_02.fbx`, function (object) {
-  loaderGLTF.load(`${params.assetsPath}gltf/Hen_HP.glb`, function (object) {
+  loaders.loaderGLTF.load(`${params.assetsPath}gltf/Hen_HP.glb`, function (object) {
     let model = object.scene
     //model.name = "Hen"
     //model.position.set(10, 0, 0)
@@ -1280,7 +1280,7 @@ function loadKitchenSink() {
 }
 
 function loadChickenFree() {
-  loaderOBJ.load(`${params.assetsPath}obj/chicken_01.obj`, function (object) {
+  loaders.loaderOBJ.load(`${params.assetsPath}obj/chicken_01.obj`, function (object) {
     // params.farmhouse = object
     // params.colliders = []
     //object.rotation.y = 270 * (Math.PI/180) // 90 degrees in radians
