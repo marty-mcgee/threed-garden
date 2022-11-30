@@ -41,14 +41,13 @@ const defaults = {
   nodeNameDefault: 'Demo Farm: McGee Ranch',
 
   // rotation: 1.570796 radians = 90 degrees
-  nodeRotationDefault: [1.570796, 0, 0], // [1.570796, 0, 0],
+  nodeRotationDefault: [1.570796, 0, 0], // [0, 0, 0],
 }
 
 // ==============================================================
 // ** COMPONENTS
 
 function ThreeD({ ...props }) {
-
   const { state, threedId, threed } = props
 
   console.debug('THREED: ThreeD(state, threedId, threed)', state, threedId, threed)
