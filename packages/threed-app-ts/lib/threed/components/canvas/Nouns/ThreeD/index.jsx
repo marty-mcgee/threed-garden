@@ -9,6 +9,14 @@ import Model from '#/lib/threed/components/canvas/Nouns/Model'
 import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/ui/~core/utils/console-colors'
 
 // ==============================================================
+// ** NOTES
+
+// radian (symbol rad) is the standard unit of angular measure.
+// radian is determimed by the circumference of a circle that is equal in length to the radius of the circle.
+// 1.570796 radians = 90 degrees | -1.570796 = -90 degrees
+// in relation to the base unit of [angle] => (radians), 1 Quadrants (quad) is equal to 1.570796 radians, while 1 Radians (rad) = 1 radians.
+
+// ==============================================================
 // ** VARIABLES
 
 // Model interactive "modes" using TransformControls
@@ -16,11 +24,13 @@ import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/ui/~core/utils/conso
 
 // defaults
 const defaults = {
+  //
   // group settings
 
   // rotation: 1.570796 radians = 90 degrees
   groupRotationDefault: [-1.570796, 0, 0], // [0, 0, 0],
 
+  //
   // file settings
 
   // fbx | obj | gltf
@@ -35,6 +45,7 @@ const defaults = {
 
   fileNameDefault: 'NounTitleFromAPI.ext',
 
+  //
   // node settings
 
   // Table | Rocket003 | Headphones | DNA | Curly | Notebook | Roundcube001 | VR_Headset | Zeppelin
