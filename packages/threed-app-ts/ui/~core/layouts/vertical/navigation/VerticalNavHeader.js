@@ -37,11 +37,11 @@ const HeaderTitle = styled(Typography)(({ theme }) => ({
   transition: 'opacity .25s ease-in-out, margin .25s ease-in-out',
 }))
 
-// const StyledLink = styled('a')({
-//   display: 'flex',
-//   alignItems: 'center',
-//   textDecoration: 'none',
-// })
+const StyledLink = styled('a')({
+  display: 'flex',
+  alignItems: 'center',
+  textDecoration: 'none',
+})
 
 const VerticalNavHeader = (props) => {
   // ** Props
@@ -108,14 +108,12 @@ const VerticalNavHeader = (props) => {
       {userVerticalNavMenuBranding ? (
         userVerticalNavMenuBranding(props)
       ) : (
-        <Link href='/' passHref style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-          {/* <StyledLink> */}
+        <StyledLink href='/' passHref>
           <Image src={brandDark.src} alt={themeConfig.templateName} width={48} height={48} />
           <HeaderTitle variant='h6' sx={{ ...menuCollapsedStyles, ...(navCollapsed && !navHover ? {} : { ml: 3 }) }}>
             {themeConfig.templateName}
           </HeaderTitle>
-          {/* </StyledLink> */}
-        </Link>
+        </StyledLink>
       )}
 
       {hidden ? (
@@ -131,7 +129,7 @@ const VerticalNavHeader = (props) => {
           disableRipple
           disableFocusRipple
           onClick={() => saveSettings({ ...settings, navCollapsed: !navCollapsed })}
-          sx={{ p: 0, color: 'text.primary', backgroundColor: 'transparent !important' }}>
+          sx={{ p: 0, backgroundColor: 'transparent !important', color: 'text.primary' }}>
           {navCollapsed ? MenuUnlockedIcon() : MenuLockedIcon()}
         </IconButton>
       )}
