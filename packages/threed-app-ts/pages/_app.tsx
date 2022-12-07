@@ -59,6 +59,7 @@ import HeadMeta from '#/ui/~core/components/head' // this is your SEO metadata !
 
 // ** Helper Components
 import Spinner from '#/ui/~core/components/spinner'
+import { Loader } from '@react-three/drei'
 
 // ** Contexts
 import { AuthProvider } from '~/app/context/AuthContext'
@@ -319,6 +320,7 @@ const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmot
                             // </EthApp>
                           // </UserLayout>
                           )}
+                          <Loader />
                         </AclGuard>
                       </Guard>
                     </WindowWrapper>

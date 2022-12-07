@@ -69,10 +69,10 @@ const VerticalLayout = (props) => {
 
   return (
     <>
-      {/* <div style={{ border: '1px solid pink' }}> */}
-      <AppBar toggleNavVisibility={toggleNavVisibility} {...props} />
-      {/* </div> */}
-      <VerticalLayoutWrapper className='layout-wrapper' style={{ border: '0px solid green' }}>
+      <div style={{ border: '3px solid pink' }}>
+        <AppBar toggleNavVisibility={toggleNavVisibility} {...props} />
+      </div>
+      <VerticalLayoutWrapper className='layout-wrapper' style={{ border: '2px solid green' }}>
         {/* LEFT NAVIGATION PANEL DRAWER */}
         {navHidden &&
         themeConfig.layout === 'vertical' &&
