@@ -192,6 +192,15 @@ const Guard = ({ children, authGuard, guestGuard }: any) => {
 // ==============================================================
 // MAIN APP
 
+// provide basic React Provider context node with props.children
+// const ThreeDProvider: FC<{ children?: ReactNode }> = (props) => {
+const ThreeDProvider = (props: any) => {
+  // const { children } = props
+  return (
+    <div>{props.children}</div>
+  )
+}
+
 // ==============================================================
 // SCAFFOLD-ETH-TS APP "EthApp"
 
@@ -228,9 +237,10 @@ const ProviderWrapper: FC<{ children?: ReactNode }> = (props) => {
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           <ThemeSwitcherProvider
             themeMap={themes}
-            defaultTheme={savedTheme ?? 'dark'}
-          >
-            <ErrorBoundary FallbackComponent={ErrorFallback}>{props.children}</ErrorBoundary>
+            defaultTheme={savedTheme ?? 'dark'}>
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+              {props.children}
+            </ErrorBoundary>
           </ThemeSwitcherProvider>
         </ErrorBoundary>
       </EthersAppContext>
@@ -295,49 +305,54 @@ const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmot
   const aclAbilities = Component.acl ?? defaultACLObj
 
   return (
-    <ApolloProvider client={client}>
-      <ReduxProvider store={reduxStore}>
-        <CacheProvider value={emotionCache}>
-          <HeadMeta />{/* title={pageProps.title} */}
-          <AuthProvider>
-            <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null })}>
-              <SettingsConsumer>
-                {({ settings }) => (
-                  <ThemeComponent settings={settings}>
-                    <WindowWrapper>
-                      <Guard
-                        authGuard={authGuard}
-                        guestGuard={guestGuard}
-                      >
-                        <AclGuard
-                          aclAbilities={aclAbilities}
+    <ThreeDProvider>
+      <Loader />
+      <ApolloProvider client={client}>
+        <ReduxProvider store={reduxStore}>
+          <CacheProvider value={emotionCache}>
+            <HeadMeta />{/* title={pageProps.title} */}
+            <AuthProvider>
+              <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null })}>
+                <SettingsConsumer>
+                  {({ settings }) => (
+                    <ThemeComponent settings={settings}>
+                      <WindowWrapper>
+                        <Guard
+                          authGuard={authGuard}
                           guestGuard={guestGuard}
                         >
-                          {getLayout(
-                          // <UserLayout>
-                            // <EthApp {...props}>
-                              <Component {...pageProps} />
-                            // </EthApp>
-                          // </UserLayout>
-                          )}
-                          <Loader />
-                        </AclGuard>
-                      </Guard>
-                    </WindowWrapper>
-                    <ReactHotToast>
-                      <Toaster
-                        position={settings.toastPosition as ToastPosition}
-                        toastOptions={{ className: 'react-hot-toast' }}
-                      />
-                    </ReactHotToast>
-                  </ThemeComponent>
-                )}
-              </SettingsConsumer>
-            </SettingsProvider>
-          </AuthProvider>
-        </CacheProvider>
-      </ReduxProvider>
-    </ApolloProvider>
+                          <AclGuard
+                            aclAbilities={aclAbilities}
+                            guestGuard={guestGuard}
+                          >
+                            {getLayout(
+                              // <UserLayout>
+                                // <EthApp {...props}>
+                                <>
+                                  <Component {...pageProps} />
+                                  {/* <Loader /> */}
+                                </>
+                                // </EthApp>
+                              // </UserLayout>
+                            )}
+                          </AclGuard>
+                        </Guard>
+                      </WindowWrapper>
+                      <ReactHotToast>
+                        <Toaster
+                          position={settings.toastPosition as ToastPosition}
+                          toastOptions={{ className: 'react-hot-toast' }}
+                        />
+                      </ReactHotToast>
+                    </ThemeComponent>
+                  )}
+                </SettingsConsumer>
+              </SettingsProvider>
+            </AuthProvider>
+          </CacheProvider>
+        </ReduxProvider>
+      </ApolloProvider>
+    </ThreeDProvider>
   )
 }
 
