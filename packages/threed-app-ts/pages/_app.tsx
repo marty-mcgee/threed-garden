@@ -211,9 +211,6 @@ const ThreeDProvider = (props: any) => {
  *
  * This file loads the app async.  It sets up context, error boundaries, styles, etc.
  */
-// console.debug('%c====================================', ccm5)
-console.debug('%c🌱 <EthApp>: initializing ...', ccm1)
-console.debug('%c====================================', ccm5)
 
 // setup themes for theme switcher
 const themes = {
@@ -231,6 +228,11 @@ const ethComponentsSettings: IEthComponentsSettings = {
 }
 
 const ProviderWrapper: FC<{ children?: ReactNode }> = (props) => {
+
+  // console.debug('%c====================================', ccm5)
+  console.debug('%c🌱 <EthApp>: initializing ...', ccm1)
+  console.debug('%c====================================', ccm5)
+
   return (
     <EthComponentsSettingsContext.Provider value={ethComponentsSettings}>
       <EthersAppContext disableDefaultQueryClientRoot={true}>
@@ -292,7 +294,7 @@ const EthApp: NextComponentType<AppContext, AppInitialProps, AppProps> = (props)
 
 // const App = (props: any) => {
 // const App: FC<AppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => {
-const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmotion> = (props) => {
+const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmotion> = (props: any) => {
   //
   // destructure props for vars
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
@@ -306,7 +308,6 @@ const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmot
 
   return (
     <ThreeDProvider>
-      <Loader />
       <ApolloProvider client={client}>
         <ReduxProvider store={reduxStore}>
           <CacheProvider value={emotionCache}>
@@ -325,14 +326,12 @@ const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmot
                             aclAbilities={aclAbilities}
                             guestGuard={guestGuard}
                           >
+                            <Loader />
                             {getLayout(
                               // <UserLayout>
-                                // <EthApp {...props}>
-                                <>
+                                <EthApp {...props}>
                                   <Component {...pageProps} />
-                                  {/* <Loader /> */}
-                                </>
-                                // </EthApp>
+                                </EthApp>
                               // </UserLayout>
                             )}
                           </AclGuard>

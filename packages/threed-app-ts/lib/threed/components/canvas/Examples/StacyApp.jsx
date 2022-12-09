@@ -3,12 +3,12 @@ import React, { Suspense } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import Model from './Stacy'
 
-function Rig() {
-  return useFrame((state) => {
-    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, 1 + state.mouse.x / 4, 0.075)
-    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 1.5 + state.mouse.y / 4, 0.075)
-  })
-}
+// function Rig() {
+//   return useFrame((state) => {
+//     state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, 1 + state.mouse.x / 4, 0.075)
+//     state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 1.5 + state.mouse.y / 4, 0.075)
+//   })
+// }
 
 export default function App() {
   return (
@@ -24,7 +24,7 @@ export default function App() {
         <planeBufferGeometry args={[10, 10, 1, 1]} />
         <shadowMaterial transparent opacity={0.2} />
       </mesh>
-      <Rig />
+      {/* <Rig /> */}
     </>
   )
 }
