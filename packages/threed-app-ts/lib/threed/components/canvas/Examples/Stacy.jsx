@@ -41,7 +41,9 @@ export default function Model(props) {
   return (
     <group ref={ref} {...props} dispose={null}>
       <group rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
+        {/* actions */}
         <primitive object={nodes.mixamorigHips} />
+        {/* model */}
         <skinnedMesh
           castShadow
           receiveShadow
@@ -55,10 +57,11 @@ export default function Model(props) {
           <meshStandardMaterial map={texture} map-flipY={false} skinning />
         </skinnedMesh>
       </group>
-      <a.mesh receiveShadow position={[0, 1, -1]} scale={scale}>
+      {/* background circle */}
+      {/* <a.mesh receiveShadow position={[0, 1, -1]} scale={scale}>
         <circleGeometry args={[1, 64]} />
         <a.meshStandardMaterial color={color} />
-      </a.mesh>
+      </a.mesh> */}
     </group>
   )
 }
