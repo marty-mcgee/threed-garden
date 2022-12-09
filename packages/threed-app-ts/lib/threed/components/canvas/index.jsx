@@ -75,7 +75,7 @@ export default function ThreeDCanvas({ models, children }) {
       dpr={[1, 2]}
       shadows
       style={{
-        height: '480px',
+        height: '540px',
         width: '100%',
       }}>
       <Preload all />
