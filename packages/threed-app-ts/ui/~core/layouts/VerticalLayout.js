@@ -33,8 +33,8 @@ const MainContentWrapper = styled(Box)({
   display: 'flex',
   flexGrow: 1,
   minWidth: 0,
-  minHeight: '90vh',
-  maxHeight: 'calc(100vh - 64px)',
+  minHeight: 'calc(100vh - 64px - 0px)', // '100vh',
+  maxHeight: '100vh', // 'calc(100vh - 64px)',
   flexDirection: 'column',
 })
 
@@ -68,11 +68,11 @@ const VerticalLayout = (props) => {
   const toggleNavVisibility = () => setNavVisible(!navVisible)
 
   return (
-    <>
-      <div style={{ border: '3px solid pink' }}>
+    <div style={{ border: '0px solid green' }}>
+      <div style={{ border: '0px solid pink' }}>
         <AppBar toggleNavVisibility={toggleNavVisibility} {...props} />
       </div>
-      <VerticalLayoutWrapper className='layout-wrapper' style={{ border: '2px solid green' }}>
+      <VerticalLayoutWrapper className='layout-wrapper' style={{ border: '0px solid orange' }}>
         {/* LEFT NAVIGATION PANEL DRAWER */}
         {navHidden &&
         themeConfig.layout === 'vertical' &&
@@ -91,11 +91,7 @@ const VerticalLayout = (props) => {
         )}
 
         {/* MAIN CONTENT */}
-        <MainContentWrapper
-          className='layout-content-wrapper'
-          style={{
-            border: '0px solid blue',
-          }}>
+        <MainContentWrapper className='layout-content-wrapper' style={{ border: '0px solid blue' }}>
           <ContentWrapper
             className='layout-page-content'
             sx={{
@@ -130,7 +126,7 @@ const VerticalLayout = (props) => {
           </Fab>
         </ScrollToTop>
       )}
-    </>
+    </div>
   )
 }
 
