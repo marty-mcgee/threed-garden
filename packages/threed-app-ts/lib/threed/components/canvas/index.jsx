@@ -39,10 +39,10 @@ const state = proxy({ current: null, mode: 0 })
 const modes = ['translate', 'rotate', 'scale']
 
 // example working simple <Loader />
-function LoaderSimple() {
-  const { progress } = useProgress()
-  return <Html center>{Math.round(progress)} % loaded</Html>
-}
+// function LoaderSimple() {
+//   const { progress } = useProgress()
+//   return <Html center>{Math.round(progress)} % loaded</Html>
+// }
 
 // Controls
 function Controls() {

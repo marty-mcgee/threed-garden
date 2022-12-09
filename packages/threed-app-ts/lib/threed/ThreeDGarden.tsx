@@ -14,7 +14,8 @@ import {
   useState,
   // useCallback,
   // ReactNode,
-  FunctionComponent,
+  FC,
+  Suspense,
   MouseEventHandler,
   SyntheticEvent,
 } from 'react'
@@ -75,6 +76,7 @@ import ToolIconAddText from '@mui/icons-material/TextFields'
 // ** Three JS Libraries
 // import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
 // use tween at all ??
+import { Loader } from '@react-three/drei'
 
 // ** ThreeD R3F Imports
 // import { Canvas } from '@react-three/fiber'
@@ -219,7 +221,7 @@ const {
 // ==========================================================
 // Project
 
-const ProjectInfoPanel: FunctionComponent = (_type: string = 'project'): JSX.Element => {
+const ProjectInfoPanel: FC = (_type: string = 'project'): JSX.Element => {
   const projectCount = projectStore.store.useStore('count')
   const projects = projectStore.store.useStore('all')
   const project = projectStore.store.useStore('one')
@@ -240,7 +242,7 @@ const ProjectInfoPanel: FunctionComponent = (_type: string = 'project'): JSX.Ele
   )
 }
 
-const ProjectControlPanel: FunctionComponent = (_type: string = 'project'): JSX.Element => {
+const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
   const increaseCount = () => projectStore.update('count', projectStore.actions.increaseCount())
 
   const addNew = () => projectStore.actions.addNew()
@@ -272,7 +274,7 @@ const ProjectControlPanel: FunctionComponent = (_type: string = 'project'): JSX.
 // ==========================================================
 // Workspace
 
-const WorkspaceInfoPanel: FunctionComponent = (_type: string = 'workspace'): JSX.Element => {
+const WorkspaceInfoPanel: FC = (_type: string = 'workspace'): JSX.Element => {
   const workspaceCount = workspaceStore.store.useStore('count')
   const workspaces = workspaceStore.store.useStore('all')
   const workspace = workspaceStore.store.useStore('one')
@@ -293,7 +295,7 @@ const WorkspaceInfoPanel: FunctionComponent = (_type: string = 'workspace'): JSX
   )
 }
 
-const WorkspaceControlPanel: FunctionComponent = (_type: string = 'workspace'): JSX.Element => {
+const WorkspaceControlPanel: FC = (_type: string = 'workspace'): JSX.Element => {
   const increaseCount = () => workspaceStore.update('count', workspaceStore.actions.increaseCount())
 
   const addNew = () => workspaceStore.actions.addNew()
@@ -325,7 +327,7 @@ const WorkspaceControlPanel: FunctionComponent = (_type: string = 'workspace'): 
 // ==========================================================
 // Plan
 
-const PlanInfoPanel: FunctionComponent = (_type: string = 'plan'): JSX.Element => {
+const PlanInfoPanel: FC = (_type: string = 'plan'): JSX.Element => {
   const planCount = planStore.store.useStore('count')
   const plans = planStore.store.useStore('all')
   const plan = planStore.store.useStore('one')
@@ -346,7 +348,7 @@ const PlanInfoPanel: FunctionComponent = (_type: string = 'plan'): JSX.Element =
   )
 }
 
-const PlanControlPanel: FunctionComponent = (_type: string = 'plan'): JSX.Element => {
+const PlanControlPanel: FC = (_type: string = 'plan'): JSX.Element => {
   const increaseCount = () => planStore.update('count', planStore.actions.increaseCount())
 
   const addNew = () => planStore.actions.addNew()
@@ -378,7 +380,7 @@ const PlanControlPanel: FunctionComponent = (_type: string = 'plan'): JSX.Elemen
 // ==========================================================
 // ThreeD
 
-const ThreeDInfoPanel: FunctionComponent = (_type: string = 'threed'): JSX.Element => {
+const ThreeDInfoPanel: FC = (_type: string = 'threed'): JSX.Element => {
   const threedCount = threedStore.store.useStore('count')
   const threeds = threedStore.store.useStore('all')
   const threed = threedStore.store.useStore('one')
@@ -399,7 +401,7 @@ const ThreeDInfoPanel: FunctionComponent = (_type: string = 'threed'): JSX.Eleme
   )
 }
 
-const ThreeDControlPanel: FunctionComponent = (_type: string = 'threed'): JSX.Element => {
+const ThreeDControlPanel: FC = (_type: string = 'threed'): JSX.Element => {
   const increaseCount = () => threedStore.update('count', threedStore.actions.increaseCount())
 
   const addNew = () => threedStore.actions.addNew()
@@ -431,7 +433,7 @@ const ThreeDControlPanel: FunctionComponent = (_type: string = 'threed'): JSX.El
 // ==========================================================
 // File
 
-const FileInfoPanel: FunctionComponent = (_type: string = 'file'): JSX.Element => {
+const FileInfoPanel: FC = (_type: string = 'file'): JSX.Element => {
   const fileCount = fileStore.store.useStore('count')
   const files = fileStore.store.useStore('all')
   const file = fileStore.store.useStore('one')
@@ -452,7 +454,7 @@ const FileInfoPanel: FunctionComponent = (_type: string = 'file'): JSX.Element =
   )
 }
 
-const FileControlPanel: FunctionComponent = (_type: string = 'file'): JSX.Element => {
+const FileControlPanel: FC = (_type: string = 'file'): JSX.Element => {
   const increaseCount = () => fileStore.update('count', fileStore.actions.increaseCount())
 
   const addNew = () => fileStore.actions.addNew()
@@ -487,7 +489,7 @@ const FileControlPanel: FunctionComponent = (_type: string = 'file'): JSX.Elemen
 // ==========================================================
 // Scene
 
-const SceneInfoPanel: FunctionComponent = (_type: string = 'scene'): JSX.Element => {
+const SceneInfoPanel: FC = (_type: string = 'scene'): JSX.Element => {
   const sceneCount = sceneStore.store.useStore('count')
   const sceneCountDB = sceneStore.store.useStore('countDB')
   const scenes = sceneStore.store.useStore('all')
@@ -520,7 +522,7 @@ const SceneInfoPanel: FunctionComponent = (_type: string = 'scene'): JSX.Element
   )
 }
 
-const SceneControlPanel: FunctionComponent = (_type: string = 'scene'): JSX.Element => {
+const SceneControlPanel: FC = (_type: string = 'scene'): JSX.Element => {
   const increaseCount = () => sceneStore.store.update('count', sceneStore.actions.increaseCount())
   const decreaseCount = () => sceneStore.store.update('count', sceneStore.actions.decreaseCount())
 
@@ -564,7 +566,7 @@ const SceneControlPanel: FunctionComponent = (_type: string = 'scene'): JSX.Elem
 // ==========================================================
 // Allotment
 
-const AllotmentInfoPanel: FunctionComponent = (_type: string = 'allotment'): JSX.Element => {
+const AllotmentInfoPanel: FC = (_type: string = 'allotment'): JSX.Element => {
   const allotmentCount = allotmentStore.store.useStore('count')
   const allotments = allotmentStore.store.useStore('all')
   const allotment = allotmentStore.store.useStore('one')
@@ -585,7 +587,7 @@ const AllotmentInfoPanel: FunctionComponent = (_type: string = 'allotment'): JSX
   )
 }
 
-const AllotmentControlPanel: FunctionComponent = (_type: string = 'allotment'): JSX.Element => {
+const AllotmentControlPanel: FC = (_type: string = 'allotment'): JSX.Element => {
   const increaseCount = () => allotmentStore.update('count', allotmentStore.actions.increaseCount())
 
   const addNew = () => allotmentStore.actions.addNew()
@@ -617,7 +619,7 @@ const AllotmentControlPanel: FunctionComponent = (_type: string = 'allotment'): 
 // ==========================================================
 // Bed
 
-const BedInfoPanel: FunctionComponent = (_type: string = 'bed'): JSX.Element => {
+const BedInfoPanel: FC = (_type: string = 'bed'): JSX.Element => {
   const bedCount = bedStore.store.useStore('count')
   const beds = bedStore.store.useStore('all')
   const bed = bedStore.store.useStore('one')
@@ -638,7 +640,7 @@ const BedInfoPanel: FunctionComponent = (_type: string = 'bed'): JSX.Element => 
   )
 }
 
-const BedControlPanel: FunctionComponent = (_type: string = 'bed'): JSX.Element => {
+const BedControlPanel: FC = (_type: string = 'bed'): JSX.Element => {
   const increaseCount = () => bedStore.update('count', bedStore.actions.increaseCount())
 
   const addNew = () => bedStore.actions.addNew()
@@ -670,7 +672,7 @@ const BedControlPanel: FunctionComponent = (_type: string = 'bed'): JSX.Element 
 // ==========================================================
 // Plant
 
-const PlantInfoPanel: FunctionComponent = (_type: string = 'plant'): JSX.Element => {
+const PlantInfoPanel: FC = (_type: string = 'plant'): JSX.Element => {
   const plantCount = plantStore.store.useStore('count')
   const plants = plantStore.store.useStore('all')
   const plant = plantStore.store.useStore('one')
@@ -691,7 +693,7 @@ const PlantInfoPanel: FunctionComponent = (_type: string = 'plant'): JSX.Element
   )
 }
 
-const PlantControlPanel: FunctionComponent = (_type: string = 'plant'): JSX.Element => {
+const PlantControlPanel: FC = (_type: string = 'plant'): JSX.Element => {
   const increaseCount = () => plantStore.update('count', plantStore.actions.increaseCount())
 
   const addNew = () => plantStore.actions.addNew()
@@ -723,7 +725,7 @@ const PlantControlPanel: FunctionComponent = (_type: string = 'plant'): JSX.Elem
 // ==========================================================
 // PlantingPlan
 
-const PlantingPlanInfoPanel: FunctionComponent = (_type: string = 'planting_plan'): JSX.Element => {
+const PlantingPlanInfoPanel: FC = (_type: string = 'planting_plan'): JSX.Element => {
   const plantingPlanCount = plantingPlanStore.store.useStore('count')
   const plantingPlans = plantingPlanStore.store.useStore('all')
   const plantingPlan = plantingPlanStore.store.useStore('one')
@@ -744,7 +746,7 @@ const PlantingPlanInfoPanel: FunctionComponent = (_type: string = 'planting_plan
   )
 }
 
-const PlantingPlanControlPanel: FunctionComponent = (_type: string = 'planting_plan'): JSX.Element => {
+const PlantingPlanControlPanel: FC = (_type: string = 'planting_plan'): JSX.Element => {
   const increaseCount = () => plantingPlanStore.update('count', plantingPlanStore.actions.increaseCount())
 
   const addNew = () => plantingPlanStore.actions.addNew()
@@ -795,7 +797,7 @@ function BearControlPanel() {
 const { ModalAbout, ModalLoading, ModalModel3d, ModalShare } = modals
 
 // ** Main ToolBar
-const ToolBar: FunctionComponent = (): JSX.Element => {
+const ToolBar: FC = (): JSX.Element => {
   const word = `[MM] @ ${new Date().toISOString()}`
   // console.debug("ToolBar", word)
 
@@ -1899,7 +1901,7 @@ const ToolBar: FunctionComponent = (): JSX.Element => {
 }
 
 // ** Different Views
-const CatalogView: FunctionComponent = (): JSX.Element => {
+const CatalogView: FC = (): JSX.Element => {
   // console.debug("CatalogView")
   useEffect(() => {
     console.debug('CatalogView onMount')
@@ -1921,7 +1923,7 @@ const CatalogView: FunctionComponent = (): JSX.Element => {
   )
 }
 
-const PropertiesView: FunctionComponent = (): JSX.Element => {
+const PropertiesView: FC = (): JSX.Element => {
   // console.debug("PropertiesView")
   useEffect(() => {
     console.debug('PropertiesView onMount')
@@ -3159,7 +3161,7 @@ const PropertiesView: FunctionComponent = (): JSX.Element => {
   )
 }
 
-const PlanView: FunctionComponent = (): JSX.Element => {
+const PlanView: FC = (): JSX.Element => {
   // console.debug("PlanView")
   useEffect(() => {
     console.debug('PlanView onMount')
@@ -3216,7 +3218,7 @@ const PlanView: FunctionComponent = (): JSX.Element => {
   )
 }
 
-const TheBottom: FunctionComponent = (): JSX.Element => {
+const TheBottom: FC = (): JSX.Element => {
   const word = `[MM] @ ${new Date().toISOString()}`
 
   // console.debug("MyComponent")
@@ -3313,7 +3315,7 @@ const TheBottom: FunctionComponent = (): JSX.Element => {
 // ==========================================================
 
 // ** R3F Main Component
-const ReactThreeFiberView: FunctionComponent = (): JSX.Element => {
+const ReactThreeFiberView: FC = (): JSX.Element => {
   // component params
   const word = `[MM] @ ${new Date().toISOString()}`
 
@@ -3409,7 +3411,7 @@ const ReactThreeFiberView: FunctionComponent = (): JSX.Element => {
   )
 }
 
-const MyComponent: FunctionComponent = (): JSX.Element => {
+const MyComponent: FC = (): JSX.Element => {
   const word = `[MM] @ ${new Date().toISOString()}`
 
   // console.debug("MyComponent")
@@ -3423,7 +3425,7 @@ const MyComponent: FunctionComponent = (): JSX.Element => {
   return <div>...MyComponent [returns] JSX here...</div>
 }
 
-const ThreeDGarden: FunctionComponent = (): JSX.Element => {
+const ThreeDGarden: FC = (props: any): JSX.Element => {
   // ==========================================================
   // LOCAL VARS
 
@@ -3491,10 +3493,11 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
       id='threedgarden-div'
       style={{ width: '100%' }}
     >
+      <Loader />
+      {/* <Suspense fallback={null}> */}
       {/* <div ref={title}>ThreeDGarden: {word}</div> */}
       {/* <div ref={root}>Three root</div> */}
 
-      {/* jQuery Three Happy Messy */}
       <div id='threedgarden'>
         <ToolBar />
 
@@ -3505,134 +3508,68 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
         >
           {/* React Three Fiber - View */}
           <ReactThreeFiberView />
-          {/* <AppPage /> */}
 
+          {/* Tabs */}
           <Box sx={{ borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
             <Tabs
               value={tabInfoControl}
               onChange={handleChangeTabInfoControl}
               aria-label='Info Control Panel'
             >
-              <Tab
-                label='Projects'
-                {...tabProps(0)}
-              />
-              <Tab
-                label='Workspaces'
-                {...tabProps(1)}
-              />
-              <Tab
-                label='Plans'
-                {...tabProps(2)}
-              />
-              <Tab
-                label='ThreeDs'
-                {...tabProps(3)}
-              />
-              <Tab
-                label='Files'
-                {...tabProps(4)}
-              />
-              <Tab
-                label='Scenes'
-                {...tabProps(5)}
-              />
-              <Tab
-                label='Allotments'
-                {...tabProps(6)}
-              />
-              <Tab
-                label='Beds'
-                {...tabProps(7)}
-              />
-              <Tab
-                label='Plants'
-                {...tabProps(8)}
-              />
-              <Tab
-                label='Planting Plans'
-                {...tabProps(9)}
-              />
-              <Tab
-                label='Testing'
-                {...tabProps(10)}
-              />
+              <Tab label='Projects' {...tabProps(0)} />
+              <Tab label='Workspaces' {...tabProps(1)} />
+              <Tab label='Plans' {...tabProps(2)} />
+              <Tab label='ThreeDs' {...tabProps(3)} />
+              <Tab label='Files' {...tabProps(4)} />
+              <Tab label='Scenes' {...tabProps(5)} />
+              <Tab label='Allotments' {...tabProps(6)} />
+              <Tab label='Beds' {...tabProps(7)} />
+              <Tab label='Plants' {...tabProps(8)} />
+              <Tab label='Planting Plans' {...tabProps(9)} />
+              <Tab label='Testing' {...tabProps(10)} />
             </Tabs>
           </Box>
-          <MDTabPanel
-            value={tabInfoControl}
-            index={0}
-          >
+          <MDTabPanel value={tabInfoControl} index={0}>
             <ProjectControlPanel />
             <ProjectInfoPanel />
           </MDTabPanel>
-          <MDTabPanel
-            value={tabInfoControl}
-            index={1}
-          >
+          <MDTabPanel value={tabInfoControl} index={1}>
             <WorkspaceControlPanel />
             <WorkspaceInfoPanel />
           </MDTabPanel>
-          <MDTabPanel
-            value={tabInfoControl}
-            index={2}
-          >
+          <MDTabPanel value={tabInfoControl} index={2}>
             <PlanControlPanel />
             <PlanInfoPanel />
           </MDTabPanel>
-          <MDTabPanel
-            value={tabInfoControl}
-            index={3}
-          >
+          <MDTabPanel value={tabInfoControl} index={3}>
             <ThreeDControlPanel />
             <ThreeDInfoPanel />
           </MDTabPanel>
-          <MDTabPanel
-            value={tabInfoControl}
-            index={4}
-          >
+          <MDTabPanel value={tabInfoControl} index={4}>
             <FileControlPanel />
             <FileInfoPanel />
           </MDTabPanel>
-          <MDTabPanel
-            value={tabInfoControl}
-            index={5}
-          >
+          <MDTabPanel value={tabInfoControl} index={5}>
             <SceneControlPanel />
             <SceneInfoPanel />
           </MDTabPanel>
-          <MDTabPanel
-            value={tabInfoControl}
-            index={6}
-          >
+          <MDTabPanel value={tabInfoControl} index={6}>
             <AllotmentControlPanel />
             <AllotmentInfoPanel />
           </MDTabPanel>
-          <MDTabPanel
-            value={tabInfoControl}
-            index={7}
-          >
+          <MDTabPanel value={tabInfoControl} index={7}>
             <BedControlPanel />
             <BedInfoPanel />
           </MDTabPanel>
-          <MDTabPanel
-            value={tabInfoControl}
-            index={8}
-          >
+          <MDTabPanel value={tabInfoControl} index={8}>
             <PlantControlPanel />
             <PlantInfoPanel />
           </MDTabPanel>
-          <MDTabPanel
-            value={tabInfoControl}
-            index={9}
-          >
+          <MDTabPanel value={tabInfoControl} index={9}>
             <PlantingPlanControlPanel />
             <PlantingPlanInfoPanel />
           </MDTabPanel>
-          <MDTabPanel
-            value={tabInfoControl}
-            index={10}
-          >
+          <MDTabPanel value={tabInfoControl} index={10}>
             Testing Panel
             {/* <CharacterControlPanel /> */}
             {/* <CharacterInfoPanel /> */}
@@ -3662,6 +3599,7 @@ const ThreeDGarden: FunctionComponent = (): JSX.Element => {
         {/* <PlanView /> */}
         {/* <TheBottom /> */}
       </div>
+      {/* </Suspense> */}
     </div>
   )
 }
