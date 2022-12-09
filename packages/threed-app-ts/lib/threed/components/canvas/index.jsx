@@ -79,10 +79,12 @@ export default function ThreeDCanvas({ models, children }) {
         width: '100%',
       }}>
       <Preload all />
+
       {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
       {/* <Suspense fallback={<LoaderSimple />}> */}
       <Suspense fallback={null}>
         <Controls />
+
         <Environment preset='forest' background />
 
         <ambientLight intensity={0.5} />
