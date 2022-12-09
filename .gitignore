@@ -98,9 +98,6 @@ packages/threed-garden
 !packages/next13-app-ts
 packages/platforms-main
 
-# demo
-packages/threed-garden/public/demo/objects/*
-
 # scaffold-eth
 *.tsbuildinfo
 *.stackdump
