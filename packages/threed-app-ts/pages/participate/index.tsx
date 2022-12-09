@@ -26,7 +26,7 @@ const ParticipatePage = () => {
   return (
     <Grid
       container
-      spacing={6}
+      spacing={2}
     >
       {/* [MM] HEY HEY HEY */}
       <ThreeDGarden />

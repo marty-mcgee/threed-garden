@@ -34,7 +34,7 @@ const MainContentWrapper = styled(Box)({
   flexGrow: 1,
   minWidth: 0,
   minHeight: 'calc(100vh - 64px - 0px)', // '100vh',
-  maxHeight: '100vh', // 'calc(100vh - 64px)',
+  maxHeight: 'calc(100vh - 64px - 0px)', // '100vh',
   flexDirection: 'column',
 })
 
