@@ -23,9 +23,6 @@ import {
 import { Provider as ReduxProvider } from 'react-redux'
 import { store as reduxStore } from '~/stores/redux'
 
-// ** Loader Import
-import NProgress from 'nprogress'
-
 // ** Emotion Imports (CSS Caching, used by theme: mui)
 import { CacheProvider, EmotionCache } from '@emotion/react'
 
@@ -59,7 +56,9 @@ import HeadMeta from '#/ui/~core/components/head' // this is your SEO metadata !
 
 // ** Helper Components
 import Spinner from '#/ui/~core/components/spinner'
-import { Loader } from '@react-three/drei'
+
+// ** Loader Import
+import NProgress from 'nprogress'
 
 // ** Contexts
 import { AuthProvider } from '~/app/context/AuthContext'
@@ -227,7 +226,7 @@ const ethComponentsSettings: IEthComponentsSettings = {
   },
 }
 
-const ProviderWrapper: FC<{ children?: ReactNode }> = (props) => {
+const ProviderWrapper: FC<{ children?: ReactNode }> = (props: any) => {
 
   // console.debug('%c====================================', ccm5)
   console.debug('%c🌱 <EthApp>: initializing ...', ccm1)
@@ -255,7 +254,7 @@ const ProviderWrapper: FC<{ children?: ReactNode }> = (props) => {
  * This component sets up all the providers, Suspense and Error handling
  * @returns
  */
-const EthApp: NextComponentType<AppContext, AppInitialProps, AppProps> = (props) => {
+const EthApp: NextComponentType<AppContext, AppInitialProps, AppProps> = (props: any) => {
   //
   console.debug('%c====================================', ccm5)
   console.debug('%c🌱 <EthApp>: loading ...', ccm1)
@@ -326,7 +325,6 @@ const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmot
                             aclAbilities={aclAbilities}
                             guestGuard={guestGuard}
                           >
-                            <Loader />
                             {getLayout(
                               // <UserLayout>
                                 <EthApp {...props}>
