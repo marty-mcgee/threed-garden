@@ -11,7 +11,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 // import { useGLTF, OrbitControls, softShadows } from '@react-three/drei' // softShadows()
 import { OrbitControls, TransformControls, Preload, Environment, Html, useProgress } from '@react-three/drei'
 import { useGLTF, PresentationControls, ContactShadows } from '@react-three/drei'
-// import { Loader } from '@react-three/drei'
+import { Loader } from '@react-three/drei'
 
 // import AppPage from '#/lib/threed/pages/_app-page'
 // import BoxPage from '#/lib/threed/pages/box-page'
