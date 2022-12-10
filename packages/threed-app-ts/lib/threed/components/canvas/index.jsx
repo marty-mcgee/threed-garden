@@ -8,7 +8,7 @@ import { useRef } from 'react'
 
 import * as THREE from 'three'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-// import { useGLTF, OrbitControls, softShadows } from '@react-three/drei' // softShadows()
+// import { softShadows } from '@react-three/drei' // softShadows()
 import { OrbitControls, TransformControls, Preload, Environment, Html, useProgress } from '@react-three/drei'
 import { useGLTF, PresentationControls, ContactShadows } from '@react-three/drei'
 import { Loader } from '@react-three/drei'
@@ -24,7 +24,12 @@ import ThreeD from '#/lib/threed/components/canvas/Nouns/ThreeD'
 
 // ** ThreeD Object Example Imports
 // import StacyApp from '~/lib/threed/components/canvas/Examples/StacyApp'
-import Stacy from '~/lib/threed/components/canvas/Examples/Stacy'
+import Stacy from '~/lib/examples/Stacy/Stacy'
+// import Watch from '~/lib/examples/Watch/Watch'
+// import CoffeeCup from '~/lib/examples/CoffeeCup/CoffeeCup'
+// import JourneyLevel from '~/lib/examples/JourneyLevel/App'
+// import Shoes from '~/lib/examples/Shoes/App'
+import TransformModel from '~/lib/examples/TransformModel/App'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/ui/~core/utils/console-colors'
@@ -45,7 +50,7 @@ const modes = ['translate', 'rotate', 'scale']
 // }
 
 // Controls
-function Controls() {
+function ThreeDControls() {
   // Get 'snap' notified on changes to state + scene
   const snap = useSnapshot(state)
   const scene = useThree((state) => state.scene)
@@ -83,7 +88,7 @@ export default function ThreeDCanvas({ models, children }) {
       {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
       {/* <Suspense fallback={<LoaderSimple />}> */}
       <Suspense fallback={null}>
-        <Controls />
+        <ThreeDControls />
 
         <Environment preset='forest' background />
 
@@ -126,7 +131,7 @@ export default function ThreeDCanvas({ models, children }) {
           rotation={[0, 0.3, 0]}
           polar={[-Math.PI / 3, Math.PI / 3]}
           azimuth={[-Math.PI / 1.4, Math.PI / 2]}>
-          <Cup position={[1.25, 1, 3.25]} scale={2.5} />
+          <CoffeeCup position={[1.25, 1, 3.25]} scale={2.5} />
         </PresentationControls> */}
         {/* <PresentationControls
           // global
@@ -142,6 +147,16 @@ export default function ThreeDCanvas({ models, children }) {
         {/* Camera Action Rig */}
         {/* <ActionRig /> */}
 
+        {/* Transform Model using TransformControls */}
+        <TransformModel
+          name='Zeppelin'
+          state={state}
+          modes={modes}
+          position={[-20, 10, 10]}
+          rotation={[3, -1, 3]}
+          scale={0.005}
+        />
+
         {/* [MM] HEY HEY HEY */}
         {/* NEED TO SEND A THREED_SCENE TO A CANVAS, BUT THIS IS FINE FOR NOW */}
         <ThreeD state={state} threedId={1} threed={{}} />
@@ -153,44 +168,44 @@ export default function ThreeDCanvas({ models, children }) {
   )
 }
 
-function Watch(props) {
-  const ref = useRef()
-  const { nodes, materials } = useGLTF('objects/examples/watch-v1.glb')
-  useFrame((state) => {
-    const t = state.clock.getElapsedTime()
-    ref.current.rotation.x = -Math.PI / 1.75 + Math.cos(t / 4) / 8
-    ref.current.rotation.y = Math.sin(t / 4) / 8
-    ref.current.rotation.z = (1 + Math.sin(t / 1.5)) / 20
-    ref.current.position.y = (1 + Math.sin(t / 1.5)) / 10
-  })
-  return (
-    <group ref={ref} {...props} dispose={null}>
-      <mesh geometry={nodes.Object005_glass_0.geometry} material={materials.glass}>
-        <Html scale={100} rotation={[Math.PI / 2, 0, 0]} position={[180, -350, 50]} transform occlude>
-          <div className='annotation'>
-            <span style={{ fontSize: '1.5em' }}>🥕</span> 6,550
-          </div>
-        </Html>
-      </mesh>
-      <mesh castShadow receiveShadow geometry={nodes.Object006_watch_0.geometry} material={materials.watch} />
-    </group>
-  )
-}
+// function Watch(props) {
+//   const ref = useRef()
+//   const { nodes, materials } = useGLTF('objects/examples/watch-v1.glb')
+//   useFrame((state) => {
+//     const t = state.clock.getElapsedTime()
+//     ref.current.rotation.x = -Math.PI / 1.75 + Math.cos(t / 4) / 8
+//     ref.current.rotation.y = Math.sin(t / 4) / 8
+//     ref.current.rotation.z = (1 + Math.sin(t / 1.5)) / 20
+//     ref.current.position.y = (1 + Math.sin(t / 1.5)) / 10
+//   })
+//   return (
+//     <group ref={ref} {...props} dispose={null}>
+//       <mesh geometry={nodes.Object005_glass_0.geometry} material={materials.glass}>
+//         <Html scale={100} rotation={[Math.PI / 2, 0, 0]} position={[180, -350, 50]} transform occlude>
+//           <div className='annotation'>
+//             <span style={{ fontSize: '1.5em' }}>🥕</span> 6,550
+//           </div>
+//         </Html>
+//       </mesh>
+//       <mesh castShadow receiveShadow geometry={nodes.Object006_watch_0.geometry} material={materials.watch} />
+//     </group>
+//   )
+// }
 
-function Cup(props) {
-  const { nodes, materials } = useGLTF('objects/examples/coffee-transformed.glb')
-  console.debug('materials', materials)
-  return (
-    <mesh
-      receiveShadow
-      castShadow
-      geometry={nodes.coffee_cup_top_16oz.geometry}
-      material={materials['13 - Default']}
-      {...props}
-      dispose={null}
-    />
-  )
-}
+// function CoffeeCup(props) {
+//   const { nodes, materials } = useGLTF('objects/examples/coffee-transformed.glb')
+//   console.debug('materials', materials)
+//   return (
+//     <mesh
+//       receiveShadow
+//       castShadow
+//       geometry={nodes.coffee_cup_top_16oz.geometry}
+//       material={materials['13 - Default']}
+//       {...props}
+//       dispose={null}
+//     />
+//   )
+// }
 
 function ActionRig() {
   return useFrame((state) => {

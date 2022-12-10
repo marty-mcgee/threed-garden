@@ -76,7 +76,7 @@ import { createEmotionCache } from '#/ui/~core/utils/create-emotion-cache'
 import '#/lib/threed/styles/index.css'
 
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm1, ccm4, ccm5 } from '#/ui/~core/utils/console-colors'
+import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/ui/~core/utils/console-colors'
 
 // ==============================================================
 // SCAFFOLD-ETH-TS IMPORTS
@@ -96,7 +96,7 @@ import { ErrorBoundary, ErrorFallback } from '~common/components'
 import { BLOCKNATIVE_DAPPID } from '~~/config/nextjsApp.config'
 import { appGetInitialProps } from '~~/lib/nextjs/appGetInitialProps'
 
-import { EthPage as ETHPage } from '~~/pages/eth'
+import ETHPage from '~~/pages/eth'
 
 // ==============================================================
 // IMPORTS COMPLETE

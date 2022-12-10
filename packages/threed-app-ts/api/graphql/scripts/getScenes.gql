@@ -1,5 +1,5 @@
-query GetScenes ($first: Int, $last: Int, $after: String, $before: String) {
-  scenes (first: $first, last: $last, after: $after, before: $before) {
+query GetScenes($first: Int, $last: Int, $after: String, $before: String) {
+  scenes(first: $first, last: $last, after: $after, before: $before) {
     pageInfo {
       endCursor
       hasNextPage
@@ -171,6 +171,27 @@ query GetScenes ($first: Int, $last: Int, $after: String, $before: String) {
             sourceUrl
             title
             uri
+          }
+        }
+        scenePlaneThreed {
+          node {
+            files {
+              edges {
+                node {
+                  fileType
+                  fileId
+                  fileUrl
+                  fileIsUrl
+                  fileIsObject3d
+                  fileFile {
+                    node {
+                      link
+                      uri
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
