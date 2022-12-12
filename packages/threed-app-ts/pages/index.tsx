@@ -19,7 +19,7 @@ import Typography from '@mui/material/Typography'
 import { useAuth } from '#/app/hooks/useAuth'
 
 // ** Helper Components
-import Spinner from '#/ui/~core/components/spinner'
+import Spinner from '#/ui/components/spinner'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'

@@ -12,7 +12,7 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 // import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/ui/~core/utils/console-colors'
+import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/ui/utils/console-colors'
 
 // ** ThreeD Model -||-
 function Model({ ...props }) {
@@ -114,7 +114,7 @@ function Model({ ...props }) {
       else if (model.isGLTF) {
         // nodes[] is an array of all the meshes
         // file is cached/memoized; it only gets loaded and parsed once
-        // const file = '/objects/compressed-v002.glb'
+        // const file = '/objects/examples/compressed-v002.glb'
         const { nodes } = useGLTF(model.file)
         console.debug('%cnodes: gltf', ccm4, nodes)
         console.debug(`%c====================================`, ccm5)
@@ -154,8 +154,8 @@ function Model({ ...props }) {
   // ==============================================================
 
   // Feed hover state into useCursor, which sets document.body.style.cursor to pointer|auto
-  const [hovered, setHovered] = useState(false)
-  useCursor(hovered)
+  const [isHovered, setIsHovered] = useState(false)
+  useCursor(isHovered)
 
   // ==============================================================
   // ** RETURN JSX
@@ -180,8 +180,8 @@ function Model({ ...props }) {
           onContextMenu={(e) =>
             snap.current === model_name && (e.stopPropagation(), (state.mode = (snap.mode + 1) % modes.length))
           }
-          onPointerOver={(e) => (e.stopPropagation(), setHovered(true))}
-          onPointerOut={(e) => setHovered(false)}
+          onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
+          onPointerOut={(e) => setIsHovered(false)}
           geometry={model_geometry}
           material={model_material}
           material-color={snap.current === model_name ? '#ff7070' : '#ababab'}
@@ -213,8 +213,8 @@ function Model({ ...props }) {
         //   onContextMenu={(e) =>
         //     snap.current === model_name && (e.stopPropagation(), (state.mode = (snap.mode + 1) % modes.length))
         //   }
-        //   onPointerOver={(e) => (e.stopPropagation(), setHovered(true))}
-        //   onPointerOut={(e) => setHovered(false)}
+        //   onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
+        //   onPointerOut={(e) => setIsHovered(false)}
         //   geometry={model_geometry}
         //   material={model_material}
         //   material-color={snap.current === model_name ? '#ff7070' : '#ababab'}
@@ -234,16 +234,30 @@ function Model({ ...props }) {
     <mesh
       name={model.name}
       // Click sets the mesh as the new target
-      onClick={(e) => (e.stopPropagation(), (state.current = model.name))}
+      onClick={(e) => (
+        e.stopPropagation(),
+        (state.current = model.name),
+        console.debug('state.current', model.name),
+        console.debug('snap.current', snap.current)
+      )}
       // If a click happened but this mesh wasn't hit we null out the target,
       // This works because missed pointers fire before the actual hits
-      onPointerMissed={(e) => e.type === 'click' && (state.current = null)}
+      onPointerMissed={(e) => (
+        e.type === 'click',
+        (state.current = null),
+        console.debug('state.current', null),
+        console.debug('snap.current', snap.current)
+      )}
       // Right click cycles through the transform modes
       onContextMenu={(e) =>
-        snap.current === model.name && (e.stopPropagation(), (state.mode = (snap.mode + 1) % modes.length))
+        snap.current === model.name &&
+        (e.stopPropagation(),
+        (state.mode = (snap.mode + 1) % modes.length),
+        console.debug('state.mode', state.mode),
+        console.debug('snap.current', snap.current))
       }
-      onPointerOver={(e) => (e.stopPropagation(), setHovered(true))}
-      onPointerOut={(e) => setHovered(false)}
+      onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
+      onPointerOut={(e) => setIsHovered(false)}
       {...props}
       dispose={null}>
       <sphereGeometry args={[4, 96]} />

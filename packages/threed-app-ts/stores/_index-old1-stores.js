@@ -1,17 +1,17 @@
 // ** Apollo Client 3 -- Cache Store Imports
 import { ApolloClient, InMemoryCache, useQuery, gql } from '@apollo/client'
-import create from 'api/graphql/createStore'
+import create from '#/lib/api/graphql/createStore'
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
-import GetProjects from 'api/graphql/scripts/getProjects.gql'
-import GetPlans from 'api/graphql/scripts/getPlans.gql'
-import GetUIs from 'api/graphql/scripts/getUIs.gql'
-import GetThreeDs from 'api/graphql/scripts/getThreeDs.gql'
-import GetFiles from 'api/graphql/scripts/getFiles.gql'
-import GetScenes from 'api/graphql/scripts/getScenes.gql'
-import GetAllotments from 'api/graphql/scripts/getAllotments.gql'
-import GetBeds from 'api/graphql/scripts/getBeds.gql'
-import GetPlants from 'api/graphql/scripts/getPlants.gql'
-import GetPlantingPlans from 'api/graphql/scripts/getPlantingPlans.gql'
+import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
+import GetPlans from '#/lib/api/graphql/scripts/getPlans.gql'
+import GetUIs from '#/lib/api/graphql/scripts/getUIs.gql'
+import GetThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
+import GetFiles from '#/lib/api/graphql/scripts/getFiles.gql'
+import GetScenes from '#/lib/api/graphql/scripts/getScenes.gql'
+import GetAllotments from '#/lib/api/graphql/scripts/getAllotments.gql'
+import GetBeds from '#/lib/api/graphql/scripts/getBeds.gql'
+import GetPlants from '#/lib/api/graphql/scripts/getPlants.gql'
+import GetPlantingPlans from '#/lib/api/graphql/scripts/getPlantingPlans.gql'
 
 // ** React Imports (should not need in this script -- framework agnostic)
 // import React, { FunctionComponent, useState, useEffect, useRef, useMemo } from 'react'
@@ -20,7 +20,7 @@ import GetPlantingPlans from 'api/graphql/scripts/getPlantingPlans.gql'
 import { v4 as newUUID } from 'uuid'
 
 // [MM] COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5 } from '#/ui/~core/utils/console-colors'
+import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5 } from '#/ui/utils/console-colors'
 
 // ==========================================================
 // IMPORTS COMPLETE

@@ -6,10 +6,10 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 
 // ** Layout Import
-import BlankLayout from '#/ui/~core/layouts/BlankLayout'
+import BlankLayout from '#/ui/layouts/BlankLayout'
 
 // ** Demo Imports
-import FooterIllustrations from '#/ui/views/pages/misc/FooterIllustrations'
+import FooterIllustrations from '#/ui/pages/misc/FooterIllustrations'
 
 // ** Styled Components
 const BoxWrapper = styled(Box)(({ theme }) => ({

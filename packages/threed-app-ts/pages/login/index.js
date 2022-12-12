@@ -38,17 +38,17 @@ import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Hooks
 import { useAuth } from '#/app/hooks/useAuth'
-import useBgColor from '#/ui/~core/hooks/useBgColor'
-import { useSettings } from '#/ui/~core/hooks/useSettings'
+import useBgColor from '#/ui/hooks/useBgColor'
+import { useSettings } from '#/ui/hooks/useSettings'
 
 // ** Configs
 import themeConfig from '~/config/themeConfig'
 
 // ** Layout Import
-import BlankLayout from '#/ui/~core/layouts/BlankLayout'
+import BlankLayout from '#/ui/layouts/BlankLayout'
 
 // ** Demo Imports
-import FooterIllustrationsV2 from '#/ui/views/pages/auth/FooterIllustrationsV2'
+import FooterIllustrationsV2 from '#/ui/pages/auth/FooterIllustrationsV2'
 import FarmbotDemoSVG from '#/lib/farmbot/FarmbotDemoSVG'
 
 // ** Image Imports

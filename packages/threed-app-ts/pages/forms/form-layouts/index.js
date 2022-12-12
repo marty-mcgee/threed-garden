@@ -3,15 +3,15 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // ** Styled Component
-import DatePickerWrapper from '#/ui/~core/styles/libs/react-datepicker'
+import DatePickerWrapper from '#/ui/styles/react-datepicker'
 
 // ** Demo Components Imports
-import FormLayoutsTabs from '#/ui/views/forms/form-layouts/FormLayoutsTabs'
-import FormLayoutsBasic from '#/ui/views/forms/form-layouts/FormLayoutsBasic'
-import FormLayoutsIcons from '#/ui/views/forms/form-layouts/FormLayoutsIcons'
-import FormLayoutsSeparator from '#/ui/views/forms/form-layouts/FormLayoutsSeparator'
-import FormLayoutsAlignment from '#/ui/views/forms/form-layouts/FormLayoutsAlignment'
-// import FormLayoutsCollapsible from '#/ui/views/forms/form-layouts/FormLayoutsCollapsible'
+import FormLayoutsTabs from '#/ui/forms/form-layouts/FormLayoutsTabs'
+import FormLayoutsBasic from '#/ui/forms/form-layouts/FormLayoutsBasic'
+import FormLayoutsIcons from '#/ui/forms/form-layouts/FormLayoutsIcons'
+import FormLayoutsSeparator from '#/ui/forms/form-layouts/FormLayoutsSeparator'
+import FormLayoutsAlignment from '#/ui/forms/form-layouts/FormLayoutsAlignment'
+// import FormLayoutsCollapsible from '#/ui/forms/form-layouts/FormLayoutsCollapsible'
 
 // ** Third Party Styles Imports
 // import 'react-datepicker/dist/react-datepicker.css'

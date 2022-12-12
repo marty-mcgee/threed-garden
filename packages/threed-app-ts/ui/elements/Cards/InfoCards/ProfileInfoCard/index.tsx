@@ -12,8 +12,8 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden Base Styles
-import colors from '~/themes/theme-light/base/colors'
-import typography from '~/themes/theme-light/base/typography'
+import colors from '~/ui/themes/theme-light/base/colors'
+import typography from '~/ui/themes/theme-light/base/typography'
 
 // Declaring props types for ProfileInfoCard
 interface Props {

@@ -20,7 +20,7 @@ import {
 } from '#/ui/elements/Sidenav/styles/sidenavCollapse'
 
 // ThreeD Garden context
-import { useMaterialUIController } from '~/app/context'
+import { useMaterialUIController } from '~/ui/context'
 
 // Declaring props types for SidenavCollapse
 interface Props {

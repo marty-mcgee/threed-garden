@@ -2,19 +2,19 @@
 import Grid from '@mui/material/Grid'
 
 // ** Demo Components Imports
-import CardTeamMembers from '#/ui/views/ui/cards/advanced/CardTeamMembers'
-import CardPlanUpgrade from '#/ui/views/ui/cards/advanced/CardPlanUpgrade'
-import CardCafeBadilico from '#/ui/views/ui/cards/advanced/CardCafeBadilico'
-import CardTransactions from '#/ui/views/ui/cards/advanced/CardTransactions'
-import CardTotalEarnings from '#/ui/views/ui/cards/advanced/CardTotalEarings'
-import CardFinanceSummary from '#/ui/views/ui/cards/advanced/CardFinanceSummary'
-import CardDepositWithdraw from '#/ui/views/ui/cards/advanced/CardDepositWithdraw'
-import CardSocialAnalytics from '#/ui/views/ui/cards/advanced/CardSocialAnalytics'
-import CardMeetingSchedule from '#/ui/views/ui/cards/advanced/CardMeetingSchedule'
-import CardDeveloperMeetup from '#/ui/views/ui/cards/advanced/CardDeveloperMeetup'
-import CardSalesByCountries from '#/ui/views/ui/cards/advanced/CardSalesByCountries'
-import CardActivityTimeline from '#/ui/views/ui/cards/advanced/CardActivityTimeline'
-import CardWebsiteStatistics from '#/ui/views/ui/cards/advanced/CardWebsiteStatistics'
+import CardTeamMembers from '#/ui/components/cards/advanced/CardTeamMembers'
+import CardPlanUpgrade from '#/ui/components/cards/advanced/CardPlanUpgrade'
+import CardCafeBadilico from '#/ui/components/cards/advanced/CardCafeBadilico'
+import CardTransactions from '#/ui/components/cards/advanced/CardTransactions'
+import CardTotalEarnings from '#/ui/components/cards/advanced/CardTotalEarings'
+import CardFinanceSummary from '#/ui/components/cards/advanced/CardFinanceSummary'
+import CardDepositWithdraw from '#/ui/components/cards/advanced/CardDepositWithdraw'
+import CardSocialAnalytics from '#/ui/components/cards/advanced/CardSocialAnalytics'
+import CardMeetingSchedule from '#/ui/components/cards/advanced/CardMeetingSchedule'
+import CardDeveloperMeetup from '#/ui/components/cards/advanced/CardDeveloperMeetup'
+import CardSalesByCountries from '#/ui/components/cards/advanced/CardSalesByCountries'
+import CardActivityTimeline from '#/ui/components/cards/advanced/CardActivityTimeline'
+import CardWebsiteStatistics from '#/ui/components/cards/advanced/CardWebsiteStatistics'
 
 const CardsAdvanced = () => {
   return (

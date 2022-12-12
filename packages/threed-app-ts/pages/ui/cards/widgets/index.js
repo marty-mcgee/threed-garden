@@ -2,23 +2,23 @@
 import Grid from '@mui/material/Grid'
 
 // ** Styled Component Import
-import ApexChartWrapper from '#/ui/~core/styles/libs/react-apexcharts'
+import ApexChartWrapper from '#/ui/styles/react-apexcharts'
 
 // ** Demo Components Imports
-import CardWidgetsAnalytics from '#/ui/views/ui/cards/widgets/CardWidgetsAnalytics'
-import CardWidgetsSalesState from '#/ui/views/ui/cards/widgets/CardWidgetsSalesState'
-import CardWidgetsTotalSales from '#/ui/views/ui/cards/widgets/CardWidgetsTotalSales'
-import CardWidgetsWeeklySales from '#/ui/views/ui/cards/widgets/CardWidgetsWeeklySales'
-import CardWidgetsPerformance from '#/ui/views/ui/cards/widgets/CardWidgetsPerformance'
-import CardWidgetsTotalVisits from '#/ui/views/ui/cards/widgets/CardWidgetsTotalVisits'
-import CardWidgetsTotalRevenue from '#/ui/views/ui/cards/widgets/CardWidgetsTotalRevenue'
-import CardWidgetsTotalVisitors from '#/ui/views/ui/cards/widgets/CardWidgetsTotalVisitors'
-import CardWidgetsRevenueReport from '#/ui/views/ui/cards/widgets/CardWidgetsRevenueReport'
-import CardWidgetsSalesOverview from '#/ui/views/ui/cards/widgets/CardWidgetsSalesOverview'
-import CardWidgetsWeeklyOverview from '#/ui/views/ui/cards/widgets/CardWidgetsWeeklyOverview'
-import CardWidgetsActivityTimeline from '#/ui/views/ui/cards/widgets/CardWidgetsActivityTimeline'
-import CardWidgetsTotalProfitRadialBar from '#/ui/views/ui/cards/widgets/CardWidgetsTotalProfitRadialBar'
-import CardWidgetsTotalProfitStackedBar from '#/ui/views/ui/cards/widgets/CardWidgetsTotalProfitStackedBar'
+import CardWidgetsAnalytics from '#/ui/components/cards/widgets/CardWidgetsAnalytics'
+import CardWidgetsSalesState from '#/ui/components/cards/widgets/CardWidgetsSalesState'
+import CardWidgetsTotalSales from '#/ui/components/cards/widgets/CardWidgetsTotalSales'
+import CardWidgetsWeeklySales from '#/ui/components/cards/widgets/CardWidgetsWeeklySales'
+import CardWidgetsPerformance from '#/ui/components/cards/widgets/CardWidgetsPerformance'
+import CardWidgetsTotalVisits from '#/ui/components/cards/widgets/CardWidgetsTotalVisits'
+import CardWidgetsTotalRevenue from '#/ui/components/cards/widgets/CardWidgetsTotalRevenue'
+import CardWidgetsTotalVisitors from '#/ui/components/cards/widgets/CardWidgetsTotalVisitors'
+import CardWidgetsRevenueReport from '#/ui/components/cards/widgets/CardWidgetsRevenueReport'
+import CardWidgetsSalesOverview from '#/ui/components/cards/widgets/CardWidgetsSalesOverview'
+import CardWidgetsWeeklyOverview from '#/ui/components/cards/widgets/CardWidgetsWeeklyOverview'
+import CardWidgetsActivityTimeline from '#/ui/components/cards/widgets/CardWidgetsActivityTimeline'
+import CardWidgetsTotalProfitRadialBar from '#/ui/components/cards/widgets/CardWidgetsTotalProfitRadialBar'
+import CardWidgetsTotalProfitStackedBar from '#/ui/components/cards/widgets/CardWidgetsTotalProfitStackedBar'
 
 const CardWidgets = () => {
   return (

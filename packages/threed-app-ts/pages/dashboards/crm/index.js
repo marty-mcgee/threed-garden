@@ -5,23 +5,23 @@ import Grid from '@mui/material/Grid'
 import BriefcaseVariantOutline from 'mdi-material-ui/BriefcaseVariantOutline'
 
 // ** Custom Components Imports
-import CardStatisticsCharacter from '#/ui/~core/components/card-statistics/card-stats-with-image'
-import CardStatisticsVerticalComponent from '#/ui/~core/components/card-statistics/card-stats-vertical'
+import CardStatisticsCharacter from '#/ui/components/card-statistics/card-stats-with-image'
+import CardStatisticsVerticalComponent from '#/ui/components/card-statistics/card-stats-vertical'
 
 // ** Styled Component Import
-import ApexChartWrapper from '#/ui/~core/styles/libs/react-apexcharts'
+import ApexChartWrapper from '#/ui/styles/react-apexcharts'
 
 // ** Demo Components Imports
-import CrmTotalSales from '#/ui/views/dashboards/crm/CrmTotalSales'
-import CrmWeeklySales from '#/ui/views/dashboards/crm/CrmWeeklySales'
-import CrmTotalGrowth from '#/ui/views/dashboards/crm/CrmTotalGrowth'
-import CrmUpgradePlan from '#/ui/views/dashboards/crm/CrmUpgradePlan'
-import CrmRevenueReport from '#/ui/views/dashboards/crm/CrmRevenueReport'
-import CrmSalesOverview from '#/ui/views/dashboards/crm/CrmSalesOverview'
-import CrmStatisticsCard from '#/ui/views/dashboards/crm/CrmStatisticsCard'
-import CrmMeetingSchedule from '#/ui/views/dashboards/crm/CrmMeetingSchedule'
-import CrmDeveloperMeetup from '#/ui/views/dashboards/crm/CrmDeveloperMeetup'
-import CrmActivityTimeline from '#/ui/views/dashboards/crm/CrmActivityTimeline'
+import CrmTotalSales from '#/ui/dashboards/crm/CrmTotalSales'
+import CrmWeeklySales from '#/ui/dashboards/crm/CrmWeeklySales'
+import CrmTotalGrowth from '#/ui/dashboards/crm/CrmTotalGrowth'
+import CrmUpgradePlan from '#/ui/dashboards/crm/CrmUpgradePlan'
+import CrmRevenueReport from '#/ui/dashboards/crm/CrmRevenueReport'
+import CrmSalesOverview from '#/ui/dashboards/crm/CrmSalesOverview'
+import CrmStatisticsCard from '#/ui/dashboards/crm/CrmStatisticsCard'
+import CrmMeetingSchedule from '#/ui/dashboards/crm/CrmMeetingSchedule'
+import CrmDeveloperMeetup from '#/ui/dashboards/crm/CrmDeveloperMeetup'
+import CrmActivityTimeline from '#/ui/dashboards/crm/CrmActivityTimeline'
 
 const data = [
   {

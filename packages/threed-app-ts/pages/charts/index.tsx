@@ -20,16 +20,16 @@ import RadarChart from '#/ui/elements/Charts/RadarChart'
 import PolarChart from '#/ui/elements/Charts/PolarChart'
 
 // Data
-import defaultLineChartData from 'api/@fake-db/pages/charts/data/defaultLineChartData'
-import gradientLineChartData from 'api/@fake-db/pages/charts/data/gradientLineChartData'
-import verticalBarChartData from 'api/@fake-db/pages/charts/data/verticalBarChartData'
-import horizontalBarChartData from 'api/@fake-db/pages/charts/data/horizontalBarChartData'
-import mixedChartData from 'api/@fake-db/pages/charts/data/mixedChartData'
-import bubbleChartData from 'api/@fake-db/pages/charts/data/bubbleChartData'
-import defaultDoughnutChartData from 'api/@fake-db/pages/charts/data/defaultDoughnutChartData'
-import pieChartData from 'api/@fake-db/pages/charts/data/pieChartData'
-import radarChartData from 'api/@fake-db/pages/charts/data/radarChartData'
-import polarChartData from 'api/@fake-db/pages/charts/data/polarChartData'
+import defaultLineChartData from '#/lib/api/@fake-db/pages/charts/data/defaultLineChartData'
+import gradientLineChartData from '#/lib/api/@fake-db/pages/charts/data/gradientLineChartData'
+import verticalBarChartData from '#/lib/api/@fake-db/pages/charts/data/verticalBarChartData'
+import horizontalBarChartData from '#/lib/api/@fake-db/pages/charts/data/horizontalBarChartData'
+import mixedChartData from '#/lib/api/@fake-db/pages/charts/data/mixedChartData'
+import bubbleChartData from '#/lib/api/@fake-db/pages/charts/data/bubbleChartData'
+import defaultDoughnutChartData from '#/lib/api/@fake-db/pages/charts/data/defaultDoughnutChartData'
+import pieChartData from '#/lib/api/@fake-db/pages/charts/data/pieChartData'
+import radarChartData from '#/lib/api/@fake-db/pages/charts/data/radarChartData'
+import polarChartData from '#/lib/api/@fake-db/pages/charts/data/polarChartData'
 
 function Charts(): JSX.Element {
   return (

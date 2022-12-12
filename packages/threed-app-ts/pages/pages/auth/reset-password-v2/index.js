@@ -25,13 +25,13 @@ import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import themeConfig from '~/config/themeConfig'
 
 // ** Layout Import
-import BlankLayout from '#/ui/~core/layouts/BlankLayout'
+import BlankLayout from '#/ui/layouts/BlankLayout'
 
 // ** Hooks
-import { useSettings } from '#/ui/~core/hooks/useSettings'
+import { useSettings } from '#/ui/hooks/useSettings'
 
 // ** Demo Imports
-import FooterIllustrationsV2 from '#/ui/views/pages/auth/FooterIllustrationsV2'
+import FooterIllustrationsV2 from '#/ui/pages/auth/FooterIllustrationsV2'
 
 // ** Styled Components
 const ResetPasswordIllustrationWrapper = styled(Box)(({ theme }) => ({

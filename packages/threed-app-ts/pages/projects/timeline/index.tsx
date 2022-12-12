@@ -12,7 +12,7 @@ import TimelineList from '#/ui/elements/Timeline/TimelineList'
 import TimelineItem from '#/ui/elements/Timeline/TimelineItem'
 
 // Data
-import timelineData from 'api/@fake-db/pages/projects/timeline/data/timelineData'
+import timelineData from '#/lib/api/@fake-db/pages/projects/timeline/data/timelineData'
 
 function Timeline(): JSX.Element {
   const renderTimelineItems = timelineData.map(({ color, icon, title, dateTime, description, lastItem }) => (

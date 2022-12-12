@@ -32,43 +32,43 @@ import { defaultACLObj } from '#/config/acl'
 import themeConfig from '#/config/themeConfig'
 
 // ** Fake-DB Import
-import '#/api/@fake-db'
+import '#/lib/api/@fake-db'
 
 // ** Apollo Client -- State Management using Cache/Store (via GraphQL)
 import { ApolloProvider } from '@apollo/client'
-import { client } from '#/api/graphql/client'
+import { client } from '#/lib/api/graphql/client'
 
 // ** Third Party Import
 import { Toaster } from 'react-hot-toast'
 
-// ** ~core Components
-import AclGuard from '#/ui/~core/components/auth/AclGuard'
-import ThemeComponent from '#/ui/~core/theme/ThemeComponent'
-import AuthGuard from '#/ui/~core/components/auth/AuthGuard'
-import GuestGuard from '#/ui/~core/components/auth/GuestGuard'
-import WindowWrapper from '#/ui/~core/components/window-wrapper'
+// ** ~common Components
+import AclGuard from '#/ui/components/auth/AclGuard'
+import ThemeComponent from '#/ui/theme/ThemeComponent'
+import AuthGuard from '#/ui/components/auth/AuthGuard'
+import GuestGuard from '#/ui/components/auth/GuestGuard'
+import WindowWrapper from '#/ui/components/window-wrapper'
 
 // ** Layout + Metadata Components
-import UserLayout from '#/app/layouts/UserLayout' // this is your main layout !!!
+import UserLayout from '#/ui/layouts/UserLayout' // this is your main layout !!!
 
 // ** Metadata Components
-import HeadMeta from '#/ui/~core/components/head' // this is your SEO metadata !!!
+import HeadMeta from '#/ui/components/head' // this is your SEO metadata !!!
 
 // ** Helper Components
-import Spinner from '#/ui/~core/components/spinner'
+import Spinner from '#/ui/components/spinner'
 
 // ** Loader Import
 import NProgress from 'nprogress'
 
 // ** Contexts
-import { AuthProvider } from '~/app/context/AuthContext'
-import { SettingsConsumer, SettingsProvider } from '#/ui/~core/context/settingsContext'
+import { AuthProvider } from '~/ui/context/AuthContext'
+import { SettingsConsumer, SettingsProvider } from '#/ui/context/settingsContext'
 
 // ** Styled Components
-import ReactHotToast from '#/ui/~core/styles/libs/react-hot-toast'
+import ReactHotToast from '#/ui/styles/react-hot-toast'
 
 // ** Utils
-import { createEmotionCache } from '#/ui/~core/utils/create-emotion-cache'
+import { createEmotionCache } from '#/ui/utils/create-emotion-cache'
 
 // ** CSS Styles
 // import stylesGlobal from '~/styles/globals.module.css'
@@ -76,7 +76,7 @@ import { createEmotionCache } from '#/ui/~core/utils/create-emotion-cache'
 import '#/lib/threed/styles/index.css'
 
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/ui/~core/utils/console-colors'
+import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/ui/utils/console-colors'
 
 // ==============================================================
 // SCAFFOLD-ETH-TS IMPORTS
@@ -122,10 +122,13 @@ type NextPageWithLayout = NextPage & {
   acl: 'manage' | 'all' | 'acl-page' | 'read' | 'create' | 'update' | 'delete' // any // aclAbilities
 }
 
-type AppPropsWithLayoutEmotion = AppProps & {
+type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout
-  emotionCache?: EmotionCache
   router: NextRouter
+}
+
+type AppPropsWithLayoutEmotion = AppPropsWithLayout & {
+  emotionCache?: EmotionCache
 }
 // OR INTERFACE ??? no, because we are extending a TYPE, not an INTERFACE
 // interface IAppPropsWithLayoutEmotion extends AppProps {
@@ -134,7 +137,7 @@ type AppPropsWithLayoutEmotion = AppProps & {
 //   router: NextRouter
 // }
 
-type MartyComponent = AppPropsWithLayoutEmotion & {
+type MartyComponent = NextComponentType & {
   setConfig: any
   authGuard: boolean
   guestGuard: boolean
@@ -293,10 +296,12 @@ const EthApp: NextComponentType<AppContext, AppInitialProps, AppProps> = (props:
 
 // const App = (props: any) => {
 // const App: FC<AppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => {
-const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmotion> = (props: any) => {
+// const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmotion> = (props: any) => {
+const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayout> = (props: any) => {
   //
   // destructure props for vars
-  const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
+  // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
+  const { Component, pageProps } = props
 
   // PageComponent.Properties
   const getLayout = Component.getLayout ?? ((page: any) => <UserLayout>{page}</UserLayout>)
@@ -309,7 +314,7 @@ const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmot
     <ThreeDProvider>
       <ApolloProvider client={client}>
         <ReduxProvider store={reduxStore}>
-          <CacheProvider value={emotionCache}>
+          {/* <CacheProvider value={emotionCache}> */}
             <HeadMeta />{/* title={pageProps.title} */}
             <AuthProvider>
               <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null })}>
@@ -346,7 +351,7 @@ const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmot
                 </SettingsConsumer>
               </SettingsProvider>
             </AuthProvider>
-          </CacheProvider>
+          {/* </CacheProvider> */}
         </ReduxProvider>
       </ApolloProvider>
     </ThreeDProvider>

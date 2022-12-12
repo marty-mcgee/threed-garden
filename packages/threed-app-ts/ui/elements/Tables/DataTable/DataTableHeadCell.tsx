@@ -8,7 +8,7 @@ import { Theme } from '@mui/material/styles'
 import MDBox from '#/lib/mui/MDBox'
 
 // ThreeD Garden contexts
-import { useMaterialUIController } from '~/app/context'
+import { useMaterialUIController } from '~/ui/context'
 
 // Declaring props types for DataTableHeadCell
 interface Props {

@@ -20,8 +20,8 @@ import BookingCard from '#/ui/elements/Cards/BookingCard'
 import SalesByCountry from '#/pages/dashboards/analytics/components/SalesByCountry'
 
 // Data
-import reportsBarChartData from 'api/@fake-db/pages/dashboards/analytics/data/reportsBarChartData'
-import reportsLineChartData from 'api/@fake-db/pages/dashboards/analytics/data/reportsLineChartData'
+import reportsBarChartData from '#/lib/api/@fake-db/pages/dashboards/analytics/data/reportsBarChartData'
+import reportsLineChartData from '#/lib/api/@fake-db/pages/dashboards/analytics/data/reportsLineChartData'
 
 // Images
 import booking1 from '#/lib/assets/images/products/product-1-min.jpg'

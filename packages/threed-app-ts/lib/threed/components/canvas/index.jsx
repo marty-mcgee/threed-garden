@@ -32,7 +32,7 @@ import Stacy from '~/lib/examples/Stacy/Stacy'
 import TransformModel from '~/lib/examples/TransformModel/App'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/ui/~core/utils/console-colors'
+import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/ui/utils/console-colors'
 
 // ==============================================================
 // ** VARIABLES
@@ -149,7 +149,7 @@ export default function ThreeDCanvas({ models, children }) {
 
         {/* Transform Model using TransformControls */}
         <TransformModel
-          name='Zeppelin'
+          name='Zeppelin' // must match node name
           state={state}
           modes={modes}
           position={[-20, 10, 10]}

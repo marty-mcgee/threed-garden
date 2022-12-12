@@ -9,7 +9,7 @@ if (!process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL) {
 }
 
 const path = require('path')
-
+// import path from 'path'
 // import { resolve } from 'path'
 // const __dirname = path.resolve()
 
@@ -28,9 +28,9 @@ const withTM = require('next-transpile-modules')([
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   //
-  reactStrictMode: false, // true: causes components to load TWICE in dev only, not active (moot) in production
+  reactStrictMode: true, // true: causes components to load TWICE in dev only, not active (moot) in production
 
-  trailingSlash: false, // add a '/' to the final url address -- can cause url-based query string issues
+  trailingSlash: false, // true: add a '/' to the final url address -- can cause url-based query string issues
 
   experimental: {
     esmExternals: true, // helps with 3rd party modules trying to call non-module js
@@ -44,7 +44,7 @@ const nextConfig = {
   // https://github.com/vercel/next.js/issues/36221
   // swcMinify: true, // true throws error at ErrorBoundary
 
-  productionBrowserSourceMaps: true,
+  // productionBrowserSourceMaps: true,
 
   compiler: {
     emotion: true,
@@ -54,7 +54,7 @@ const nextConfig = {
   // https://stackoverflow.com/questions/65598753/cant-build-react-next-project-found-page-without-a-react-component-as-default
   // pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
 
-  // ** IMAGES
+  /** IMAGES (production use?)
   images: {
     domains: [
       process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL.match(/(?!(w+)\.)\w*(?:\w+\.)+\w+/)[0], // Valid WP Image domain.
@@ -74,6 +74,7 @@ const nextConfig = {
     // dangerouslyAllowSVG: true,
     // contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
+  */
 
   // ** REDIRECTS
   // async redirects() {
@@ -86,7 +87,7 @@ const nextConfig = {
   //   ]
   // },
 
-  // ** WEBPACK 5
+  /** WEBPACK 5
   webpack: (config, options) => {
     //
     // aliases
@@ -139,6 +140,7 @@ const nextConfig = {
 
     return config
   },
+  */
 
   // NOT NEEDED HERE: instead, use .env.local to safely load env variables as needed (NEXT_PUBLIC_)
   // env: {

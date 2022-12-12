@@ -3,10 +3,10 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // ** Demo Components Imports
-import StepperAlternativeLabel from '#/ui/views/forms/form-wizard/StepperAlternativeLabel'
-import StepperVerticalWithNumbers from '#/ui/views/forms/form-wizard/StepperVerticalWithNumbers'
-import StepperLinearWithValidation from '#/ui/views/forms/form-wizard/StepperLinearWithValidation'
-import StepperVerticalWithoutNumbers from '#/ui/views/forms/form-wizard/StepperVerticalWithoutNumbers'
+import StepperAlternativeLabel from '#/ui/forms/form-wizard/StepperAlternativeLabel'
+import StepperVerticalWithNumbers from '#/ui/forms/form-wizard/StepperVerticalWithNumbers'
+import StepperLinearWithValidation from '#/ui/forms/form-wizard/StepperLinearWithValidation'
+import StepperVerticalWithoutNumbers from '#/ui/forms/form-wizard/StepperVerticalWithoutNumbers'
 
 const FormWizard = () => {
   return (

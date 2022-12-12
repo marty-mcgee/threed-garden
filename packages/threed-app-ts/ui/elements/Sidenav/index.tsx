@@ -4,7 +4,7 @@ import { useEffect, useState, ReactNode } from 'react'
 // import { useLocation, NavLink } from "react-router-dom"
 import { useRouter } from 'next/router'
 import NextLink from "next/link"
-// import NextLink from '#/ui/~core/utils/NextLink'
+// import NextLink from '#/ui/utils/NextLink'
 
 // @mui material components
 import MuiLink from '@mui/material/Link'
@@ -33,7 +33,7 @@ import sidenavLogoLabel from '#/ui/elements/Sidenav/styles/sidenav'
 // } from "~/components/elements/Navbars/DashboardNavbar/styles"
 
 // ThreeD Garden context
-import { useMaterialUIController, setMiniSidenav, setTransparentSidenav, setWhiteSidenav } from '~/app/context'
+import { useMaterialUIController, setMiniSidenav, setTransparentSidenav, setWhiteSidenav } from '~/ui/context'
 
 import { StaticImageData } from 'next/image'
 // type StaticImageData = {

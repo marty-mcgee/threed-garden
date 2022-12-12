@@ -4,22 +4,22 @@ import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import PageHeader from '#/ui/~core/components/page-header'
+import PageHeader from '#/ui/components/page-header'
 
 // ** Hooks
-import { useSettings } from '#/ui/~core/hooks/useSettings'
+import { useSettings } from '#/ui/hooks/useSettings'
 
 // ** Styled Components
-import RechartsWrapper from '#/ui/~core/styles/libs/recharts'
-import DatePickerWrapper from '#/ui/~core/styles/libs/react-datepicker'
+import RechartsWrapper from '#/ui/styles/recharts'
+import DatePickerWrapper from '#/ui/styles/react-datepicker'
 
 // ** Demo Components Imports
-import RechartsBarChart from '#/ui/views/charts/recharts/RechartsBarChart'
-import RechartsPieChart from '#/ui/views/charts/recharts/RechartsPieChart'
-import RechartsLineChart from '#/ui/views/charts/recharts/RechartsLineChart'
-import RechartsAreaChart from '#/ui/views/charts/recharts/RechartsAreaChart'
-import RechartsRadarChart from '#/ui/views/charts/recharts/RechartsRadarChart'
-import RechartsScatterChart from '#/ui/views/charts/recharts/RechartsScatterChart'
+import RechartsBarChart from '#/ui/charts/recharts/RechartsBarChart'
+import RechartsPieChart from '#/ui/charts/recharts/RechartsPieChart'
+import RechartsLineChart from '#/ui/charts/recharts/RechartsLineChart'
+import RechartsAreaChart from '#/ui/charts/recharts/RechartsAreaChart'
+import RechartsRadarChart from '#/ui/charts/recharts/RechartsRadarChart'
+import RechartsScatterChart from '#/ui/charts/recharts/RechartsScatterChart'
 
 // ** Third Party Styles Imports
 // import 'react-datepicker/dist/react-datepicker.css'

@@ -26,9 +26,9 @@ import Socials from '#/pages/users/new-user/components/Socials'
 import Profile from '#/pages/users/new-user/components/Profile'
 
 // NewUser layout schemas for form and form feilds
-import validations from 'api/@fake-db/pages/users/new-user/schemas/validations'
-import form from 'api/@fake-db/pages/users/new-user/schemas/form'
-import initialValues from 'api/@fake-db/pages/users/new-user/schemas/initialValues'
+import validations from '#/lib/api/@fake-db/pages/users/new-user/schemas/validations'
+import form from '#/lib/api/@fake-db/pages/users/new-user/schemas/form'
+import initialValues from '#/lib/api/@fake-db/pages/users/new-user/schemas/initialValues'
 
 function getSteps(): string[] {
   return ['User Info', 'Address', 'Social', 'Profile']

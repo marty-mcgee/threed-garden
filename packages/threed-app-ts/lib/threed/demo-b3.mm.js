@@ -686,7 +686,7 @@ function showModel3dView() {
                     i = o.min.z + (o.max.z - o.min.z) / 2
                   t.children[a].translateX(-n), t.children[a].translateY(-l), t.children[a].translateZ(-i)
                 }
-                (t.position.x = 80),
+                ;(t.position.x = 80),
                   (t.position.y = -(t.userData.height / 2)),
                   (t.position.z = 0),
                   model3dScene.add(t),
@@ -2624,7 +2624,7 @@ function generateShareLink() {
     createThumbForHistory(),
       $.ajax({
         type: 'POST',
-        url: 'api/getsharelink',
+        url: '#/lib/api/getsharelink',
         data: JSON.stringify({ plan: plan }),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
@@ -3422,7 +3422,7 @@ function initPlanView() {
         else if (((mouseMode = 0), startedDrawingDimension))
           if (1 === dimensionPath.segments.length) dimensionPath.add(snapPoint)
           else {
-            (s = dimensionHelperPath.segments[1].point.subtract(dimensionHelperPath.segments[0].point)),
+            ;(s = dimensionHelperPath.segments[1].point.subtract(dimensionHelperPath.segments[0].point)),
               (I = dimensionHelperPath.segments[1].point.subtract(snapPoint)),
               (P = (I.angle - s.angle + 360) % 360),
               (b = (P / 180) * Math.PI),
@@ -3985,7 +3985,7 @@ function initPlanView() {
               (selectedItem.data.toolsRectangleInner = i),
               i.rotate(selectedItem.data.angle)
           }
-          (furnitureAngleProp.innerText = ((selectedItem.rotation + 360) % 360).toFixed(2)),
+          ;(furnitureAngleProp.innerText = ((selectedItem.rotation + 360) % 360).toFixed(2)),
             (plan.furniture[selectedItem.data.id].angle = selectedItem.rotation),
             (rotateIcon.position = selectedItem.data.toolsRectangleInner.segments[1].point),
             (resizeIcon.position = selectedItem.data.toolsRectangleInner.segments[3].point),
@@ -4055,7 +4055,7 @@ function initPlanView() {
                     clickableObjects[selectedItem.data.id].scale.z
                   ).toFixed(3))
               }
-              (rotateIcon.position = selectedItem.data.toolsRectangleInner.segments[1].point),
+              ;(rotateIcon.position = selectedItem.data.toolsRectangleInner.segments[1].point),
                 (resizeIcon.position = selectedItem.data.toolsRectangleInner.segments[3].point),
                 (heightIcon.position = selectedItem.data.toolsRectangleInner.segments[2].point),
                 (elevateIcon.position = selectedItem.data.toolsRectangleInner.segments[0].point)
@@ -4810,7 +4810,7 @@ function setToolMode(e) {
         document.getElementById('addTextTool').classList.remove('activeTool')
       break
     case 'walls':
-      (defaultCursor = 'crosshair'),
+      ;(defaultCursor = 'crosshair'),
         deselectAll(),
         recalcAllUnjoinedWallSegments(-1),
         recalcAllWallSegmentsOnOtherLevels(-1, project.activeLayer.data.id),
@@ -4823,7 +4823,7 @@ function setToolMode(e) {
         setPropertiesView('wallDefaults')
       break
     case 'floor':
-      (defaultCursor = 'crosshair'),
+      ;(defaultCursor = 'crosshair'),
         deselectAll(),
         document.getElementById('pointerTool').classList.remove('activeTool'),
         document.getElementById('addWallTool').classList.remove('activeTool'),
@@ -4835,7 +4835,7 @@ function setToolMode(e) {
         setPropertiesView('floorDefaults')
       break
     case 'roof':
-      (defaultCursor = 'crosshair'),
+      ;(defaultCursor = 'crosshair'),
         deselectAll(),
         document.getElementById('pointerTool').classList.remove('activeTool'),
         document.getElementById('addWallTool').classList.remove('activeTool'),
@@ -4847,7 +4847,7 @@ function setToolMode(e) {
         setPropertiesView('roofDefaults')
       break
     case 'dimension':
-      (defaultCursor = 'crosshair'),
+      ;(defaultCursor = 'crosshair'),
         deselectAll(),
         document.getElementById('pointerTool').classList.remove('activeTool'),
         document.getElementById('addWallTool').classList.remove('activeTool'),
@@ -4860,7 +4860,7 @@ function setToolMode(e) {
         setPropertiesView('dimensionDefaults')
       break
     case 'text':
-      (defaultCursor = 'crosshair'),
+      ;(defaultCursor = 'crosshair'),
         deselectAll(),
         document.getElementById('pointerTool').classList.remove('activeTool'),
         document.getElementById('addWallTool').classList.remove('activeTool'),
@@ -4871,7 +4871,7 @@ function setToolMode(e) {
         setPropertiesView('textnDefaults')
       break
     case 'background':
-      (defaultCursor = 'default'),
+      ;(defaultCursor = 'default'),
         document.getElementById('pointerTool').classList.remove('activeTool'),
         document.getElementById('addWallTool').classList.remove('activeTool'),
         document.getElementById('addFloorTool').classList.remove('activeTool'),
@@ -4895,7 +4895,7 @@ function setToolMode(e) {
         setPropertiesView('ground')
       break
     case 'defaults':
-      (defaultCursor = 'default'),
+      ;(defaultCursor = 'default'),
         deselectAll(),
         document.getElementById('pointerTool').classList.remove('activeTool'),
         document.getElementById('addWallTool').classList.remove('activeTool'),
@@ -5601,7 +5601,7 @@ function setPropertiesView(e) {
       document.getElementById('levelPropertiesView').style.display = 'block'
       break
     case 'ground':
-      (document.getElementById('groundPropertiesView').style.display = 'block'),
+      ;(document.getElementById('groundPropertiesView').style.display = 'block'),
         (document.getElementById('groundWidthProp').value = groundWidth),
         (document.getElementById('groundLengthProp').value = groundLength)
       break
@@ -5609,19 +5609,19 @@ function setPropertiesView(e) {
       document.getElementById('defaultsPropertiesView').style.display = 'block'
       break
     case 'wallDefaults':
-      (document.getElementById('defaultWallHeightProp').style.backgroundColor = '#4e4e4e'),
+      ;(document.getElementById('defaultWallHeightProp').style.backgroundColor = '#4e4e4e'),
         (document.getElementById('defaultWallHeightProp').value = defaultWallHeight),
         (document.getElementById('defaultWallThicknessProp').style.backgroundColor = '#4e4e4e'),
         (document.getElementById('defaultWallThicknessProp').value = defaultWallThickness),
         (document.getElementById('wallDefaultsPropertiesView').style.display = 'block')
       break
     case 'floorDefaults':
-      (document.getElementById('defaultFloorThicknessProp').style.backgroundColor = '#4e4e4e'),
+      ;(document.getElementById('defaultFloorThicknessProp').style.backgroundColor = '#4e4e4e'),
         (document.getElementById('defaultFloorThicknessProp').value = defaultFloorThickness),
         (document.getElementById('floorDefaultsPropertiesView').style.display = 'block')
       break
     case 'roofDefaults':
-      (document.getElementById('defaultRoofThicknessProp').style.backgroundColor = '#4e4e4e'),
+      ;(document.getElementById('defaultRoofThicknessProp').style.backgroundColor = '#4e4e4e'),
         (document.getElementById('defaultRoofThicknessProp').value = defaultRoofThickness),
         (document.getElementById('defaultRoofWidthProp').style.backgroundColor = '#4e4e4e'),
         (document.getElementById('defaultRoofWidthProp').value = defaultRoofWidth),

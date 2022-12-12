@@ -5,20 +5,20 @@ import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import PageHeader from '#/ui/~core/components/page-header'
+import PageHeader from '#/ui/components/page-header'
 
 // ** Styled Component
-import DatePickerWrapper from '#/ui/~core/styles/libs/react-datepicker'
+import DatePickerWrapper from '#/ui/styles/react-datepicker'
 
 // ** Demo Components Imports
-import ChartjsBarChart from '#/ui/views/charts/chartjs/ChartjsBarChart'
-import ChartjsLineChart from '#/ui/views/charts/chartjs/ChartjsLineChart'
-import ChartjsAreaChart from '#/ui/views/charts/chartjs/ChartjsAreaChart'
-import ChartjsRadarChart from '#/ui/views/charts/chartjs/ChartjsRadarChart'
-import ChartjsBubbleChart from '#/ui/views/charts/chartjs/ChartjsBubbleChart'
-import ChartjsScatterChart from '#/ui/views/charts/chartjs/ChartjsScatterChart'
-import ChartjsPolarAreaChart from '#/ui/views/charts/chartjs/ChartjsPolarAreaChart'
-import ChartjsHorizontalBarChart from '#/ui/views/charts/chartjs/ChartjsHorizontalBarChart'
+import ChartjsBarChart from '#/ui/charts/chartjs/ChartjsBarChart'
+import ChartjsLineChart from '#/ui/charts/chartjs/ChartjsLineChart'
+import ChartjsAreaChart from '#/ui/charts/chartjs/ChartjsAreaChart'
+import ChartjsRadarChart from '#/ui/charts/chartjs/ChartjsRadarChart'
+import ChartjsBubbleChart from '#/ui/charts/chartjs/ChartjsBubbleChart'
+import ChartjsScatterChart from '#/ui/charts/chartjs/ChartjsScatterChart'
+import ChartjsPolarAreaChart from '#/ui/charts/chartjs/ChartjsPolarAreaChart'
+import ChartjsHorizontalBarChart from '#/ui/charts/chartjs/ChartjsHorizontalBarChart'
 
 // ** Third Party Styles Imports
 import 'chart.js/auto'
