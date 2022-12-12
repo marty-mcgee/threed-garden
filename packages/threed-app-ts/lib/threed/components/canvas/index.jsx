@@ -8,10 +8,11 @@ import { useRef } from 'react'
 
 import * as THREE from 'three'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-// import { softShadows } from '@react-three/drei' // softShadows()
+import { softShadows } from '@react-three/drei' // softShadows()
 import { OrbitControls, TransformControls, Preload, Environment, Html, useProgress } from '@react-three/drei'
 import { useGLTF, PresentationControls, ContactShadows } from '@react-three/drei'
 import { Loader } from '@react-three/drei'
+import { GizmoHelper, GizmoViewcube, GizmoViewport, Center, PivotControls } from '@react-three/drei'
 
 // import AppPage from '#/lib/threed/pages/_app-page'
 // import BoxPage from '#/lib/threed/pages/box-page'
@@ -88,9 +89,18 @@ export default function ThreeDCanvas({ models, children }) {
       {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
       {/* <Suspense fallback={<LoaderSimple />}> */}
       <Suspense fallback={null}>
+        <Environment preset='forest' background />
+
         <ThreeDControls />
 
-        <Environment preset='forest' background />
+        <GizmoHelper alignment='top-right' margin={[100, 100]}>
+          <group scale={0.85}>
+            <GizmoViewcube />
+          </group>
+          <group scale={1.75} position={[-30, -30, -30]}>
+            <GizmoViewport labelColor='white' axisHeadScale={0.525} hideNegativeAxes />
+          </group>
+        </GizmoHelper>
 
         <ambientLight intensity={0.5} />
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} shadow-mapSize={[512, 512]} castShadow />
