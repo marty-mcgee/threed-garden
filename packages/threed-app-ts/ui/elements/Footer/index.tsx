@@ -7,7 +7,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden Base Styles
-import typography from '~/themes/theme-light/base/typography'
+import typography from '~/ui/themes/theme-light/base/typography'
 
 // Declaring props types for Footer
 interface Props {

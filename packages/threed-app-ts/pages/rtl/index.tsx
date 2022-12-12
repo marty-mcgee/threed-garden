@@ -30,12 +30,12 @@ import UpcomingEvents from '#/pages/rtl/components/UpcomingEvents'
 import Chart from '#/pages/rtl/components/Chart'
 
 // Data
-import progressLineChartData from 'api/@fake-db/pages/rtl/data/progressLineChartData'
-import categoriesListData from 'api/@fake-db/pages/rtl/data/categoriesListData'
-import caloriesChartData from 'api/@fake-db/pages/rtl/data/caloriesChartData'
+import progressLineChartData from '#/lib/api/@fake-db/pages/rtl/data/progressLineChartData'
+import categoriesListData from '#/lib/api/@fake-db/pages/rtl/data/categoriesListData'
+import caloriesChartData from '#/lib/api/@fake-db/pages/rtl/data/caloriesChartData'
 
 // ThreeD Garden contexts
-import { useMaterialUIController, setDirection } from '~/app/context'
+import { useMaterialUIController, setDirection } from '~/ui/context'
 
 function RTL(): JSX.Element {
   const [, dispatch] = useMaterialUIController()

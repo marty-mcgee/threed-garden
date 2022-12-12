@@ -41,7 +41,7 @@
       }
     ]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"], // NEXT 12 + 13
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/modules/calendar/page.jsx"], // NEXT 12 + 13
   "exclude": [
     "node_modules",
     ".husky",

@@ -4,18 +4,18 @@ import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import PageHeader from '#/ui/~core/components/page-header'
-import CardSnippet from '#/ui/~core/components/card-snippet'
+import PageHeader from '#/ui/components/page-header'
+import CardSnippet from '#/ui/components/card-snippet'
 
 // ** Styled Component Import
-import { EditorWrapper } from '#/ui/~core/styles/libs/react-draft-wysiwyg'
+import { EditorWrapper } from '#/ui/styles/react-draft-wysiwyg'
 
 // ** Demo Components Imports
-import EditorControlled from '#/ui/views/forms/form-elements/editor/EditorControlled'
-import EditorUncontrolled from '#/ui/views/forms/form-elements/editor/EditorUncontrolled'
+import EditorControlled from '#/ui/forms/form-elements/editor/EditorControlled'
+import EditorUncontrolled from '#/ui/forms/form-elements/editor/EditorUncontrolled'
 
 // ** Source code imports
-import * as source from '#/ui/views/forms/form-elements/editor/EditorSourceCode'
+import * as source from '#/ui/forms/form-elements/editor/EditorSourceCode'
 
 // ** Styles
 // import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'

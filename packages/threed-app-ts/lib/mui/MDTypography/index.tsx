@@ -7,7 +7,7 @@ import { TypographyProps } from '@mui/material'
 import MDTypographyRoot from '#/lib/mui/MDTypography/MDTypographyRoot'
 
 // ThreeD Garden contexts
-import { useMaterialUIController } from '~/app/context'
+import { useMaterialUIController } from '~/ui/context'
 
 // Declaring props types for MDTypography
 interface Props extends TypographyProps {

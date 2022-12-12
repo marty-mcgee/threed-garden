@@ -17,7 +17,7 @@ import ProductImages from '#/pages/dashboards/ecommerce/products/product-page/co
 import ProductInfo from '#/pages/dashboards/ecommerce/products/product-page/components/ProductInfo'
 
 // Data
-import dataTableData from 'api/@fake-db/pages/dashboards/ecommerce/products/product-page/data/dataTableData'
+import dataTableData from '#/lib/api/@fake-db/pages/dashboards/ecommerce/products/product-page/data/dataTableData'
 
 function ProductPage(): JSX.Element {
   return (

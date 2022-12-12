@@ -100,10 +100,10 @@ import modals from '#/lib/threed/components/modals'
 // import { v4 as newUUID } from 'uuid'
 
 // ** HELPFUL UTIL: DELETE OBJECT KEYS: RESET OBJECT TO {}
-import clearObject from '#/ui/~core/utils/clear-object'
+import clearObject from '#/ui/utils/clear-object'
 
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/ui/~core/utils/console-colors'
+import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/ui/utils/console-colors'
 
 // ==========================================================
 // IMPORTS COMPLETE

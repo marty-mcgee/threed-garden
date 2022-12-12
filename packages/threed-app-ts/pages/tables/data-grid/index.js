@@ -4,16 +4,16 @@ import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import PageHeader from '#/ui/~core/components/page-header'
+import PageHeader from '#/ui/components/page-header'
 
 // ** Demo Components Imports
-import TableBasic from '#/ui/views/table/data-grid/TableBasic'
-import TableFilter from '#/ui/views/table/data-grid/TableFilter'
-import TableColumns from '#/ui/views/table/data-grid/TableColumns'
-import TableEditable from '#/ui/views/table/data-grid/TableEditable'
-import TableBasicSort from '#/ui/views/table/data-grid/TableBasicSort'
-import TableSelection from '#/ui/views/table/data-grid/TableSelection'
-import TableServerSide from '#/ui/views/table/data-grid/TableServerSide'
+import TableBasic from '#/ui/table/data-grid/TableBasic'
+import TableFilter from '#/ui/table/data-grid/TableFilter'
+import TableColumns from '#/ui/table/data-grid/TableColumns'
+import TableEditable from '#/ui/table/data-grid/TableEditable'
+import TableBasicSort from '#/ui/table/data-grid/TableBasicSort'
+import TableSelection from '#/ui/table/data-grid/TableSelection'
+import TableServerSide from '#/ui/table/data-grid/TableServerSide'
 
 const DataGrid = () => {
   return (

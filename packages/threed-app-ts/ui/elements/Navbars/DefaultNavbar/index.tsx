@@ -23,10 +23,10 @@ import DefaultNavbarDropdown from '#/ui/elements/Navbars/DefaultNavbar/DefaultNa
 import DefaultNavbarMobile from '#/ui/elements/Navbars/DefaultNavbar/DefaultNavbarMobile'
 
 // ThreeD Garden Base Styles
-import breakpoints from '~/themes/theme-light/base/breakpoints'
+import breakpoints from '~/ui/themes/theme-light/base/breakpoints'
 
 // ThreeD Garden context
-import { useMaterialUIController } from '~/app/context'
+import { useMaterialUIController } from '~/ui/context'
 
 // Declaring props types for DefaultNavbar
 interface Props {

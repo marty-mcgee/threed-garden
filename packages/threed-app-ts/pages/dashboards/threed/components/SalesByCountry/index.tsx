@@ -13,7 +13,7 @@ import MDTypography from '#/lib/mui/MDTypography'
 import SalesTable from '#/ui/elements/Tables/SalesTable'
 
 // Data
-import salesTableData from 'api/@fake-db/pages/dashboards/analytics/components/SalesByCountry/data/salesTableData'
+import salesTableData from '#/lib/api/@fake-db/pages/dashboards/analytics/components/SalesByCountry/data/salesTableData'
 
 function SalesByCountry(): JSX.Element {
   useEffect(() => {

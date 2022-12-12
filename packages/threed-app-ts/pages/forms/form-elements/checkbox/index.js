@@ -3,20 +3,20 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import CardSnippet from '#/ui/~core/components/card-snippet'
+import CardSnippet from '#/ui/components/card-snippet'
 
 // ** Demo Components Imports
-import CheckboxesBasic from '#/ui/views/forms/form-elements/checkbox/CheckboxesBasic'
-import CheckboxesSizes from '#/ui/views/forms/form-elements/checkbox/CheckboxesSizes'
-import CheckboxesColors from '#/ui/views/forms/form-elements/checkbox/CheckboxesColors'
-import CheckboxesShowError from '#/ui/views/forms/form-elements/checkbox/CheckboxesShowError'
-import CheckboxesCustomized from '#/ui/views/forms/form-elements/checkbox/CheckboxesCustomized'
-import CheckboxesCustomIcons from '#/ui/views/forms/form-elements/checkbox/CheckboxesCustomIcons'
-import CheckboxesLabelPlacement from '#/ui/views/forms/form-elements/checkbox/CheckboxesLabelPlacement'
-import CheckboxesControlledUncontrolled from '#/ui/views/forms/form-elements/checkbox/CheckboxesControlledUncontrolled'
+import CheckboxesBasic from '#/ui/forms/form-elements/checkbox/CheckboxesBasic'
+import CheckboxesSizes from '#/ui/forms/form-elements/checkbox/CheckboxesSizes'
+import CheckboxesColors from '#/ui/forms/form-elements/checkbox/CheckboxesColors'
+import CheckboxesShowError from '#/ui/forms/form-elements/checkbox/CheckboxesShowError'
+import CheckboxesCustomized from '#/ui/forms/form-elements/checkbox/CheckboxesCustomized'
+import CheckboxesCustomIcons from '#/ui/forms/form-elements/checkbox/CheckboxesCustomIcons'
+import CheckboxesLabelPlacement from '#/ui/forms/form-elements/checkbox/CheckboxesLabelPlacement'
+import CheckboxesControlledUncontrolled from '#/ui/forms/form-elements/checkbox/CheckboxesControlledUncontrolled'
 
 // ** Source code imports
-import * as source from '#/ui/views/forms/form-elements/checkbox/CheckboxesSourceCode'
+import * as source from '#/ui/forms/form-elements/checkbox/CheckboxesSourceCode'
 
 const Checkboxes = () => {
   return (

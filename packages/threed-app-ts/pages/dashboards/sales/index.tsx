@@ -28,10 +28,10 @@ import DataTable from '#/ui/elements/Tables/DataTable'
 import ChannelsChart from '#/pages/dashboards/sales/components/ChannelsChart'
 
 // Data
-import defaultLineChartData from 'api/@fake-db/pages/dashboards/sales/data/defaultLineChartData'
-import horizontalBarChartData from 'api/@fake-db/pages/dashboards/sales/data/horizontalBarChartData'
-import salesTableData from 'api/@fake-db/pages/dashboards/sales/data/salesTableData'
-import dataTableData from 'api/@fake-db/pages/dashboards/sales/data/dataTableData'
+import defaultLineChartData from '#/lib/api/@fake-db/pages/dashboards/sales/data/defaultLineChartData'
+import horizontalBarChartData from '#/lib/api/@fake-db/pages/dashboards/sales/data/horizontalBarChartData'
+import salesTableData from '#/lib/api/@fake-db/pages/dashboards/sales/data/salesTableData'
+import dataTableData from '#/lib/api/@fake-db/pages/dashboards/sales/data/dataTableData'
 
 function Sales(): JSX.Element {
   // DefaultStatisticsCard state for the dropdown value

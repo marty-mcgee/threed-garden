@@ -6,7 +6,7 @@ import { ContactShadows, useCursor, useGLTF, useFBX, useOBJ } from '@react-three
 import Model from '#/lib/threed/components/canvas/Nouns/Model'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/ui/~core/utils/console-colors'
+import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/ui/utils/console-colors'
 
 // ==============================================================
 // ** NOTES

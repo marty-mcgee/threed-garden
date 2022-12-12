@@ -2,8 +2,8 @@
 import Grid from '@mui/material/Grid'
 
 // ** Demo Components Imports
-import MUIPickers from '#/ui/views/forms/form-elements/pickers/mui-pickers'
-import ReactDatePicker from '#/ui/views/forms/form-elements/pickers/react-datepicker'
+import MUIPickers from '#/ui/forms/form-elements/pickers/mui-pickers'
+import ReactDatePicker from '#/ui/forms/form-elements/pickers/react-datepicker'
 
 // ** Third Party Styles Imports
 // import 'react-datepicker/dist/react-datepicker.css'

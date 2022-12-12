@@ -1,5 +1,5 @@
 // ThreeD Garden Base Styles
-import colors from '~/themes/theme-light/base/colors'
+import colors from '~/ui/themes/theme-light/base/colors'
 
 const { gradients } = colors
 

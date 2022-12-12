@@ -4,17 +4,17 @@ import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import PageHeader from '#/ui/~core/components/page-header'
-import CardSnippet from '#/ui/~core/components/card-snippet'
+import PageHeader from '#/ui/components/page-header'
+import CardSnippet from '#/ui/components/card-snippet'
 
 // ** Styled Component
-import CleaveWrapper from '#/ui/~core/styles/libs/react-cleave'
+import CleaveWrapper from '#/ui/styles/react-cleave'
 
 // ** Example Import
-import InputMaskExamples from '#/ui/views/forms/form-elements/input-mask/InputMaskExamples'
+import InputMaskExamples from '#/ui/forms/form-elements/input-mask/InputMaskExamples'
 
 // ** Source code imports
-import * as source from '#/ui/views/forms/form-elements/input-mask/InputMaskSourceCode'
+import * as source from '#/ui/forms/form-elements/input-mask/InputMaskSourceCode'
 
 const InputMask = () => {
   return (

@@ -19,7 +19,7 @@ import Footer from '#/ui/elements/Footer'
 import DataTable from '#/ui/elements/Tables/DataTable'
 
 // Data
-import dataTableData from 'api/@fake-db/pages/dashboards/ecommerce/orders/order-list/data/dataTableData'
+import dataTableData from '#/lib/api/@fake-db/pages/dashboards/ecommerce/orders/order-list/data/dataTableData'
 
 function OrderList(): JSX.Element {
   const [menu, setMenu] = useState(null)

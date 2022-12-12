@@ -8,7 +8,7 @@ import MDTypography from '#/lib/mui/MDTypography'
 import MDButton from '#/lib/mui/MDButton'
 
 // ThreeD Garden Base Styles
-import borders from '~/themes/theme-light/base/borders'
+import borders from '~/ui/themes/theme-light/base/borders'
 
 // Images
 import masterCardLogo from '#/lib/assets/images/logos/mastercard.png'

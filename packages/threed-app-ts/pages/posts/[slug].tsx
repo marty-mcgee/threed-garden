@@ -11,7 +11,7 @@ import SectionSeparator from '#/ui/blog/section-separator'
 import Layout from '#/ui/blog/layout'
 import PostTitle from '#/ui/blog/post-title'
 import Tags from '#/ui/blog/tags'
-import { getAllPostsWithSlug, getPostAndMorePosts } from '#/api/api'
+import { getAllPostsWithSlug, getPostAndMorePosts } from '#/lib/api'
 import { CMS_NAME } from '#/lib/constants'
 
 export default function Post({ post, posts, preview }: { post: any; posts: any; preview: any }) {

@@ -24,7 +24,7 @@ import Header from '#/pages/profile/components/Header'
 import PlatformSettings from '#/pages/profile/profile-overview/components/PlatformSettings'
 
 // Data
-import profilesListData from 'api/@fake-db/pages/profile/profile-overview/data/profilesListData'
+import profilesListData from '#/lib/api/@fake-db/pages/profile/profile-overview/data/profilesListData'
 
 // Images
 import homeDecor1 from '#/lib/assets/images/any/home-decor-1.jpg'

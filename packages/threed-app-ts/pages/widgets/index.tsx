@@ -30,9 +30,9 @@ import UpcomingEvents from '#/pages/widgets/components/UpcomingEvents'
 import Chart from '#/pages/widgets/components/Chart'
 
 // Data
-import progressLineChartData from 'api/@fake-db/pages/widgets/data/progressLineChartData'
-import categoriesListData from 'api/@fake-db/pages/widgets/data/categoriesListData'
-import caloriesChartData from 'api/@fake-db/pages/widgets/data/caloriesChartData'
+import progressLineChartData from '#/lib/api/@fake-db/pages/widgets/data/progressLineChartData'
+import categoriesListData from '#/lib/api/@fake-db/pages/widgets/data/categoriesListData'
+import caloriesChartData from '#/lib/api/@fake-db/pages/widgets/data/caloriesChartData'
 
 function Widgets(): JSX.Element {
   const [lights, setLights] = useState<boolean>(false)

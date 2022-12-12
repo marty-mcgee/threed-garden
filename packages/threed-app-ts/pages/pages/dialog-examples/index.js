@@ -5,14 +5,14 @@ import Grid from '@mui/material/Grid'
 import axios from 'axios'
 
 // ** Demo Components Imports
-import DialogAddCard from '#/ui/views/pages/dialog-examples/DialogAddCard'
-import DialogPricing from '#/ui/views/pages/dialog-examples/DialogPricing'
-import DialogReferEarn from '#/ui/views/pages/dialog-examples/DialogReferEarn'
-import DialogCreateApp from '#/ui/views/pages/dialog-examples/DialogCreateApp'
-import DialogAddAddress from '#/ui/views/pages/dialog-examples/DialogAddAddress'
-import DialogShareProject from '#/ui/views/pages/dialog-examples/DialogShareProject'
-import DialogEditUserInfo from '#/ui/views/pages/dialog-examples/DialogEditUserInfo'
-import DialogAuthentication from '#/ui/views/pages/dialog-examples/DialogAuthentication'
+import DialogAddCard from '#/ui/pages/dialog-examples/DialogAddCard'
+import DialogPricing from '#/ui/pages/dialog-examples/DialogPricing'
+import DialogReferEarn from '#/ui/pages/dialog-examples/DialogReferEarn'
+import DialogCreateApp from '#/ui/pages/dialog-examples/DialogCreateApp'
+import DialogAddAddress from '#/ui/pages/dialog-examples/DialogAddAddress'
+import DialogShareProject from '#/ui/pages/dialog-examples/DialogShareProject'
+import DialogEditUserInfo from '#/ui/pages/dialog-examples/DialogEditUserInfo'
+import DialogAuthentication from '#/ui/pages/dialog-examples/DialogAuthentication'
 
 const DialogExamples = ({ apiPricingData }) => (
   <Grid container spacing={6} className='match-height'>

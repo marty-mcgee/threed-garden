@@ -1,5 +1,5 @@
 // ** Layout Import
-import BlankLayout from '#/ui/~core/layouts/BlankLayout'
+import BlankLayout from '#/ui/layouts/BlankLayout'
 
 // ** Component Import
 import Error500 from '~/pages/500'

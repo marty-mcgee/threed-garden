@@ -3,20 +3,20 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import CardSnippet from '#/ui/~core/components/card-snippet'
+import CardSnippet from '#/ui/components/card-snippet'
 
 // ** Demo Components Imports
-import RadioGroup from '#/ui/views/forms/form-elements/radio/RadioGroup'
-import RadioColor from '#/ui/views/forms/form-elements/radio/RadioColor'
-import RadioSizes from '#/ui/views/forms/form-elements/radio/RadioSizes'
-import RadioShowError from '#/ui/views/forms/form-elements/radio/RadioShowError'
-import RadioStandalone from '#/ui/views/forms/form-elements/radio/RadioStandalone'
-import RadioCustomized from '#/ui/views/forms/form-elements/radio/RadioCustomized'
-import RadioLabelPlacement from '#/ui/views/forms/form-elements/radio/RadioLabelPlacement'
-import RadioControlledUncontrolled from '#/ui/views/forms/form-elements/radio/RadioControlledUncontrolled'
+import RadioGroup from '#/ui/forms/form-elements/radio/RadioGroup'
+import RadioColor from '#/ui/forms/form-elements/radio/RadioColor'
+import RadioSizes from '#/ui/forms/form-elements/radio/RadioSizes'
+import RadioShowError from '#/ui/forms/form-elements/radio/RadioShowError'
+import RadioStandalone from '#/ui/forms/form-elements/radio/RadioStandalone'
+import RadioCustomized from '#/ui/forms/form-elements/radio/RadioCustomized'
+import RadioLabelPlacement from '#/ui/forms/form-elements/radio/RadioLabelPlacement'
+import RadioControlledUncontrolled from '#/ui/forms/form-elements/radio/RadioControlledUncontrolled'
 
 // ** Source code imports
-import * as source from '#/ui/views/forms/form-elements/radio/RadioSourceCode'
+import * as source from '#/ui/forms/form-elements/radio/RadioSourceCode'
 
 const Radios = () => {
   return (

@@ -6,22 +6,22 @@ import Poll from 'mdi-material-ui/Poll'
 import BriefcaseVariantOutline from 'mdi-material-ui/BriefcaseVariantOutline'
 
 // ** Custom Components Imports
-import CardStatisticsVerticalComponent from '#/ui/~core/components/card-statistics/card-stats-vertical'
+import CardStatisticsVerticalComponent from '#/ui/components/card-statistics/card-stats-vertical'
 
 // ** Styled Component Import
-import ApexChartWrapper from '#/ui/~core/styles/libs/react-apexcharts'
+import ApexChartWrapper from '#/ui/styles/react-apexcharts'
 
 // ** Demo Components Imports
-import AnalyticsTable from '#/ui/views/dashboards/analytics/AnalyticsTable'
-import AnalyticsTrophy from '#/ui/views/dashboards/analytics/AnalyticsTrophy'
-import AnalyticsSessions from '#/ui/views/dashboards/analytics/AnalyticsSessions'
-import AnalyticsTotalProfit from '#/ui/views/dashboards/analytics/AnalyticsTotalProfit'
-import AnalyticsPerformance from '#/ui/views/dashboards/analytics/AnalyticsPerformance'
-import AnalyticsTotalEarning from '#/ui/views/dashboards/analytics/AnalyticsTotalEarning'
-import AnalyticsStatisticsCard from '#/ui/views/dashboards/analytics/AnalyticsStatisticsCard'
-import AnalyticsWeeklyOverview from '#/ui/views/dashboards/analytics/AnalyticsWeeklyOverview'
-import AnalyticsDepositWithdraw from '#/ui/views/dashboards/analytics/AnalyticsDepositWithdraw'
-import AnalyticsSalesByCountries from '#/ui/views/dashboards/analytics/AnalyticsSalesByCountries'
+import AnalyticsTable from '#/ui/dashboards/analytics/AnalyticsTable'
+import AnalyticsTrophy from '#/ui/dashboards/analytics/AnalyticsTrophy'
+import AnalyticsSessions from '#/ui/dashboards/analytics/AnalyticsSessions'
+import AnalyticsTotalProfit from '#/ui/dashboards/analytics/AnalyticsTotalProfit'
+import AnalyticsPerformance from '#/ui/dashboards/analytics/AnalyticsPerformance'
+import AnalyticsTotalEarning from '#/ui/dashboards/analytics/AnalyticsTotalEarning'
+import AnalyticsStatisticsCard from '#/ui/dashboards/analytics/AnalyticsStatisticsCard'
+import AnalyticsWeeklyOverview from '#/ui/dashboards/analytics/AnalyticsWeeklyOverview'
+import AnalyticsDepositWithdraw from '#/ui/dashboards/analytics/AnalyticsDepositWithdraw'
+import AnalyticsSalesByCountries from '#/ui/dashboards/analytics/AnalyticsSalesByCountries'
 
 const AnalyticsDashboard = () => {
   return (

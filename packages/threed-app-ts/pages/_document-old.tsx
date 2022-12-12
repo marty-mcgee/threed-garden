@@ -4,8 +4,8 @@
 import { Children, Suspense } from 'react'
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 import createEmotionServer from '@emotion/server/create-instance'
-import theme from '~/themes/theme-dark'
-import createEmotionCache from '~/themes/common/createEmotionCache'
+import theme from '~/ui/themes/theme-dark'
+import createEmotionCache from '~/ui/themes/common/createEmotionCache'
 // import ThreeDLinks from "#/lib/threed/ThreeDLinks"
 import CircularProgress from '@mui/material/CircularProgress'
 
