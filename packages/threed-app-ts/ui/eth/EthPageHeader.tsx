@@ -24,7 +24,7 @@ import { FaucetHintButton } from '~common/components'
 import { useAntNotification } from '~common/components/hooks'
 import { getNetworkInfo } from '~common/functions'
 import { IScaffoldAppProviders } from '~common/models'
-import { FAUCET_ENABLED } from '~~/config/nextjsApp.config'
+import { FAUCET_ENABLED } from '#/lib/config/nextjsApp.config'
 import { TAppProps } from '~~/types/models/TAppProps'
 
 // displays a page header

@@ -1,14 +1,13 @@
 // ==============================================================
-// Index Page (Forwarding Page)
+// Home Page (main landing page for authorized user)
 
-'use client'
+// 'use client'
 
 // ** Next Imports
 import type { NextPage } from 'next'
-import { useRouter } from 'next/navigation'
 
 // ** React Imports
-import { useEffect } from 'react'
+// import { useEffect } from 'react'
 
 // ** MUI Components
 import Typography from '@mui/material/Typography'
@@ -17,50 +16,17 @@ import Typography from '@mui/material/Typography'
 // import DashboardLayout from '~/components/elements/LayoutContainers/DashboardLayout'
 // import DashboardNavbar from '~/components/elements/Navbars/DashboardNavbar'
 
-// ** Hook Imports
-import { useAuth } from '#/app/hooks/useAuth'
-
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-import { EthPage as ETHPage } from '#/pages/eth'
 import { TPageProps } from '~~/types/models/TAppProps'
 
-// import chalk from 'chalk'
-
 // ==============================================================
-
-// Set Home Forwarding (to First Page) URL, based on User Role
-const getHomeRoute = (role: any) => {
-  if (role === 'client') {
-    return '/acl' // authorized credentials list? (boundary)
-  }
-  else {
-    // return '/' // this page (for testing. not ideal for production.)
-    // return '/participate' // another page
-    return '/home' // another page
-  }
-}
 
 // Index Page (Forwarding Page)
 // const Page: FC<TPageProps> = (props) => {
 const Page: NextPage<TPageProps> = (props) => {
 // const Page = (props) => {
   //
-  // ** Hooks
-  const auth = useAuth()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (auth.user && auth.user.role) {
-      // get Home URL
-      const homeRoute = getHomeRoute(auth.user.role)
-      // redirect user to Home URL
-      router.replace(homeRoute)
-      console.debug('user AUTHORIZED', auth.user)
-    } else {
-      console.debug('user NOT AUTHORIZED', auth.user)
-    }
-  }, [])
 
   return (
     <>
@@ -74,7 +40,7 @@ const Page: NextPage<TPageProps> = (props) => {
           FarmBot + Three.js using React Three Fiber, MUI v5, NextJS + TypeScript
         </Typography>
         <Typography component='p' gutterBottom >
-          Home Page (/pages/home/index.tsx)
+          Home Page (/app/home/page.tsx)
         </Typography>
         <Typography component='p' gutterBottom >
           This is the "Home" Landing Page.<br/>

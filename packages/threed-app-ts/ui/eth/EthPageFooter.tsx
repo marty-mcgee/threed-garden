@@ -22,7 +22,7 @@ import { getNetworkInfo } from '~common/functions'
 // **
 import { IScaffoldAppProviders } from '~common/models'
 // **
-import { FAUCET_ENABLED } from '~~/config/nextjsApp.config'
+import { FAUCET_ENABLED } from '#/lib/config/nextjsApp.config'
 
 // ** Types + Interfaces Imports
 import { TAppProps } from '~~/types/models/TAppProps'

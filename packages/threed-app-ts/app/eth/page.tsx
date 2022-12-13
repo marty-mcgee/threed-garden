@@ -1,6 +1,6 @@
-// 'use client'
 // ==============================================================
 // RESOURCES
+
 /** =============================================================
  * ⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️
  * See: ./config/app.config.ts for configuration, such as TARGET_NETWORK
@@ -11,11 +11,16 @@
  * ⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️
  * =========================================================== */
 
+'use client'
+
 // NextJS Imports
 import { NextPage } from 'next'
 
 // React Imports
 import { ReactElement } from 'react'
+
+// Component + Layout (+ Type) Imports
+import { EthPageFooter, EthPageHeader, createTabsAndPages, TContractPageList } from '#/ui/eth'
 
 // ETH -- CONTRACTS + HOOKS Imports
 import { GenericContract } from 'eth-components/ant/generic-contract'
@@ -23,9 +28,6 @@ import { useContractReader, useBalance, useEthersAdaptorFromProviderOrSigners, u
 import { useEthersAppContext } from 'eth-hooks/context'
 import { useDexEthPrice } from 'eth-hooks/dapps'
 import { asEthersAdaptor } from 'eth-hooks/functions'
-
-// Component + Layout (+ Type) Imports
-import { EthPageFooter, EthPageHeader, createTabsAndPages, TContractPageList } from '~~/lib/eth'
 
 // Types + Interfaces Imports
 import { useLoadAppContracts, useConnectAppContracts, useAppContracts } from '~common/components/context'
@@ -41,7 +43,7 @@ import {
   MAINNET_PROVIDER,
   INFURA_ID,
   BURNER_FALLBACK_ENABLED,
-} from '~~/config/nextjsApp.config'
+} from '#/lib/config/nextjsApp.config'
 
 // Types + Interfaces Imports
 import { TAppProps } from '~~/types/models/TAppProps'

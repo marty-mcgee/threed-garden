@@ -32,7 +32,7 @@ import FileDocumentOutline from 'mdi-material-ui/FileDocumentOutline'
 import AccountMultipleOutline from 'mdi-material-ui/AccountMultipleOutline'
 
 // ** Configs Imports
-import themeConfig from '~/config/themeConfig'
+import themeConfig from '#/lib/config/themeConfig'
 
 // ** Hooks Imports
 import { useSettings } from '#/ui/hooks/useSettings'

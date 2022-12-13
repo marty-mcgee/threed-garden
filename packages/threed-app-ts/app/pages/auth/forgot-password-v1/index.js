@@ -14,7 +14,7 @@ import MuiCard from '@mui/material/Card'
 import ChevronLeft from 'mdi-material-ui/ChevronLeft'
 
 // ** Configs
-import themeConfig from '~/config/themeConfig'
+import themeConfig from '#/lib/config/themeConfig'
 
 // ** Layout Import
 import BlankLayout from '#/ui/layouts/BlankLayout'

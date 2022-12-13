@@ -13,10 +13,10 @@ import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 // ** Hook Imports
-import { useAuth } from '#/app/hooks/useAuth'
+import { useAuth } from '#/lib/auth/hooks/useAuth'
 
 // ** Demo Data Imports
-import { demos } from '#/lib/demos'
+import { demos } from '#/lib/data/demos'
 
 
 import LoginPage from '#/app/login/page'
@@ -26,6 +26,7 @@ import LoginPage from '#/app/login/page'
 // Set Home Forwarding (to First Page) URL, based on User Role
 const getHomeRoute = (role: any) => {
   if (role === 'client') {
+    return '/participate' // another page
     return '/acl' // authorized credentials list? (boundary)
   }
   else if (role === 'admin') {
@@ -34,7 +35,7 @@ const getHomeRoute = (role: any) => {
     return '/home' // another page
   }
   else {
-    return '/' // 'login'
+    return '/login' // 'login'
   }
 }
 

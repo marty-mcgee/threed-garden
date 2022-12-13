@@ -1,5 +1,5 @@
 // ** Theme Config Imports
-import themeConfig from '#/config/themeConfig'
+import themeConfig from '#/lib/config/themeConfig'
 
 const Button = (theme) => {
   return {

@@ -2,7 +2,7 @@ import {
   fetchCategoryBySlug,
   PageProps,
   type Category,
-} from '#/lib/getCategories';
+} from '#/lib/data/getCategories';
 import { SkeletonCard } from '#/ui/SkeletonCard';
 
 const fetchCategory = async (

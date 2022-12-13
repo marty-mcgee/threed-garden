@@ -9,7 +9,7 @@ import MuiToolbar from '@mui/material/Toolbar'
 import ArrowUp from 'mdi-material-ui/ArrowUp'
 
 // ** Theme Config Import
-import themeConfig from '#/config/themeConfig'
+import themeConfig from '#/lib/config/themeConfig'
 
 // ** Components
 import Customizer from '~/ui/components/customizer'

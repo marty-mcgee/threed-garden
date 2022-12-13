@@ -1,4 +1,4 @@
-import { fetchSubCategory, PageProps } from '#/lib/getCategories';
+import { fetchSubCategory, PageProps } from '#/lib/data/getCategories';
 import { SkeletonCard } from '#/ui/SkeletonCard';
 
 export default async function Page({ params }: PageProps) {

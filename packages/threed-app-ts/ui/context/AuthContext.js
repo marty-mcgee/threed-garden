@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 import axios from 'axios'
 
 // ** Config
-import authConfig from '~/config/auth'
+import authConfig from '#/lib/config/auth'
 
 // ** Defaults
 const defaultProvider = {

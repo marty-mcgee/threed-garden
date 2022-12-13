@@ -35,13 +35,13 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm, Controller } from 'react-hook-form'
 
 // ** Configs
-import themeConfig from '~/config/themeConfig'
+import themeConfig from '#/lib/config/themeConfig'
 
 // ** Layout Import
 import BlankLayout from '#/ui/layouts/BlankLayout'
 
 // ** Hooks
-import { useAuth } from '#/app/hooks/useAuth'
+import { useAuth } from '#/lib/auth/hooks/useAuth'
 import { useSettings } from '#/ui/hooks/useSettings'
 
 // ** Demo Imports

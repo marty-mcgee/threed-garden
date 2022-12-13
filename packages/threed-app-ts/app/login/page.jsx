@@ -39,19 +39,19 @@ import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Hooks
-import { useAuth } from '#/app/hooks/useAuth'
+import { useAuth } from '#/lib/auth/hooks/useAuth'
 import useBgColor from '#/ui/hooks/useBgColor'
 import { useSettings } from '#/ui/hooks/useSettings'
 
 // ** Configs
-import themeConfig from '~/config/themeConfig'
+import themeConfig from '#/lib/config/themeConfig'
 
 // ** Layout Import
 import BlankLayout from '#/ui/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV2 from '#/ui/pages/auth/FooterIllustrationsV2'
-import FarmbotDemoSVG from '#/lib/farmbot/FarmbotDemoSVG'
+// import FarmbotDemoSVG from '#/lib/farmbot/FarmbotDemoSVG'
 
 // ** Image Imports
 import logo from '#/lib/assets/images/logos/logo-threedgarden.png'
@@ -68,24 +68,24 @@ const SVGWrapper = styled(Box)(({ theme }) => {
   }
 })
 
-const LoginIllustrationWrapper = styled(Box)(({ theme }) => {
-  return {
-    padding: theme.spacing(20),
-    paddingRight: '0 !important',
-    [theme.breakpoints.down('lg')]: {
-      padding: theme.spacing(10),
-    },
-  }
-})
+// const LoginIllustrationWrapper = styled(Box)(({ theme }) => {
+//   return {
+//     padding: theme.spacing(20),
+//     paddingRight: '0 !important',
+//     [theme.breakpoints.down('lg')]: {
+//       padding: theme.spacing(10),
+//     },
+//   }
+// })
 
-const LoginIllustration = styled('img')(({ theme }) => {
-  return {
-    maxWidth: '48rem',
-    [theme.breakpoints.down('lg')]: {
-      maxWidth: '35rem',
-    },
-  }
-})
+// const LoginIllustration = styled('img')(({ theme }) => {
+//   return {
+//     maxWidth: '48rem',
+//     [theme.breakpoints.down('lg')]: {
+//       maxWidth: '35rem',
+//     },
+//   }
+// })
 
 const RightWrapper = styled(Box)(({ theme }) => {
   return {
@@ -190,7 +190,7 @@ const LoginPage = () => {
           }}>
           <SVGWrapper>
             <Box sx={{ height: 64 }} />
-            <FarmbotDemoSVG />
+            {/* <FarmbotDemoSVG /> */}
           </SVGWrapper>
           {/*
           <LoginIllustrationWrapper>

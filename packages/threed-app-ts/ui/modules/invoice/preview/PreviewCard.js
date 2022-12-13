@@ -24,7 +24,7 @@ import TableCell from '@mui/material/TableCell'
 import ReactToPdf from 'react-to-pdf'
 
 // ** Configs
-import themeConfig from '~/config/themeConfig'
+import themeConfig from '#/lib/config/themeConfig'
 
 const MUITableCell = styled(TableCell)(({ theme }) => ({
   borderBottom: 0,
@@ -55,12 +55,7 @@ const PreviewCard = ({ data }) => {
         <Box ref={PreviewRef}>
           <CardContent>
             <Grid container>
-              <Grid
-                item
-                sm={6}
-                xs={12}
-                sx={{ mb: { sm: 0, xs: 4 } }}
-              >
+              <Grid item sm={6} xs={12} sx={{ mb: { sm: 0, xs: 4 } }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                   <Box sx={{ mb: 6, display: 'flex', alignItems: 'center' }}>
                     <svg
@@ -69,22 +64,10 @@ const PreviewCard = ({ data }) => {
                       version='1.1'
                       viewBox='0 0 30 23'
                       xmlns='http://www.w3.org/2000/svg'
-                      xmlnsXlink='http://www.w3.org/1999/xlink'
-                    >
-                      <g
-                        stroke='none'
-                        strokeWidth='1'
-                        fill='none'
-                        fillRule='evenodd'
-                      >
-                        <g
-                          id='Artboard'
-                          transform='translate(-95.000000, -51.000000)'
-                        >
-                          <g
-                            id='logo'
-                            transform='translate(95.000000, 50.000000)'
-                          >
+                      xmlnsXlink='http://www.w3.org/1999/xlink'>
+                      <g stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
+                        <g id='Artboard' transform='translate(-95.000000, -51.000000)'>
+                          <g id='logo' transform='translate(95.000000, 50.000000)'>
                             <path
                               id='Combined-Shape'
                               fill={theme.palette.primary.main}
@@ -135,33 +118,22 @@ const PreviewCard = ({ data }) => {
                     </svg>
                     <Typography
                       variant='h6'
-                      sx={{ ml: 2.5, fontWeight: 600, lineHeight: 'normal', textTransform: 'uppercase' }}
-                    >
+                      sx={{ ml: 2.5, fontWeight: 600, lineHeight: 'normal', textTransform: 'uppercase' }}>
                       {themeConfig.templateName}
                     </Typography>
                   </Box>
                   <Box>
-                    <Typography
-                      variant='body2'
-                      sx={{ mb: 1 }}
-                    >
+                    <Typography variant='body2' sx={{ mb: 1 }}>
                       Office 149, 450 South Brand Brooklyn
                     </Typography>
-                    <Typography
-                      variant='body2'
-                      sx={{ mb: 1 }}
-                    >
+                    <Typography variant='body2' sx={{ mb: 1 }}>
                       San Diego County, CA 91905, USA
                     </Typography>
                     <Typography variant='body2'>+1 (123) 456 7891, +44 (876) 543 2198</Typography>
                   </Box>
                 </Box>
               </Grid>
-              <Grid
-                item
-                sm={6}
-                xs={12}
-              >
+              <Grid item sm={6} xs={12}>
                 <Box sx={{ display: 'flex', justifyContent: { xs: 'flex-start', sm: 'flex-end' } }}>
                   <Table sx={{ maxWidth: '200px' }}>
                     <TableBody>
@@ -178,10 +150,7 @@ const PreviewCard = ({ data }) => {
                           <Typography variant='body2'>Date Issued:</Typography>
                         </MUITableCell>
                         <MUITableCell>
-                          <Typography
-                            variant='body2'
-                            sx={{ fontWeight: 600 }}
-                          >
+                          <Typography variant='body2' sx={{ fontWeight: 600 }}>
                             {data.invoice.issuedDate}
                           </Typography>
                         </MUITableCell>
@@ -191,10 +160,7 @@ const PreviewCard = ({ data }) => {
                           <Typography variant='body2'>Date Due:</Typography>
                         </MUITableCell>
                         <MUITableCell>
-                          <Typography
-                            variant='body2'
-                            sx={{ fontWeight: 600 }}
-                          >
+                          <Typography variant='body2' sx={{ fontWeight: 600 }}>
                             {data.invoice.dueDate}
                           </Typography>
                         </MUITableCell>
@@ -210,60 +176,29 @@ const PreviewCard = ({ data }) => {
 
           <CardContent>
             <Grid container>
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                sx={{ mb: { lg: 0, xs: 4 } }}
-              >
-                <Typography
-                  variant='body2'
-                  sx={{ mb: 3.5, fontWeight: 600 }}
-                >
+              <Grid item xs={12} sm={6} sx={{ mb: { lg: 0, xs: 4 } }}>
+                <Typography variant='body2' sx={{ mb: 3.5, fontWeight: 600 }}>
                   Invoice To:
                 </Typography>
-                <Typography
-                  variant='body2'
-                  sx={{ mb: 2 }}
-                >
+                <Typography variant='body2' sx={{ mb: 2 }}>
                   {data.invoice.name}
                 </Typography>
-                <Typography
-                  variant='body2'
-                  sx={{ mb: 2 }}
-                >
+                <Typography variant='body2' sx={{ mb: 2 }}>
                   {data.invoice.company}
                 </Typography>
-                <Typography
-                  variant='body2'
-                  sx={{ mb: 2 }}
-                >
+                <Typography variant='body2' sx={{ mb: 2 }}>
                   {data.invoice.address}
                 </Typography>
-                <Typography
-                  variant='body2'
-                  sx={{ mb: 2 }}
-                >
+                <Typography variant='body2' sx={{ mb: 2 }}>
                   {data.invoice.contact}
                 </Typography>
-                <Typography
-                  variant='body2'
-                  sx={{ mb: 2 }}
-                >
+                <Typography variant='body2' sx={{ mb: 2 }}>
                   {data.invoice.companyEmail}
                 </Typography>
               </Grid>
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                sx={{ display: 'flex', justifyContent: ['flex-start', 'flex-end'] }}
-              >
+              <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: ['flex-start', 'flex-end'] }}>
                 <div>
-                  <Typography
-                    variant='body2'
-                    sx={{ mb: 3.5, fontWeight: 600 }}
-                  >
+                  <Typography variant='body2' sx={{ mb: 3.5, fontWeight: 600 }}>
                     Bill To:
                   </Typography>
                   <TableContainer>
@@ -345,18 +280,9 @@ const PreviewCard = ({ data }) => {
 
           <CardContent>
             <Grid container>
-              <Grid
-                item
-                xs={12}
-                sm={7}
-                lg={9}
-                sx={{ order: { sm: 1, xs: 2 } }}
-              >
+              <Grid item xs={12} sm={7} lg={9} sx={{ order: { sm: 1, xs: 2 } }}>
                 <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
-                  <Typography
-                    variant='body2'
-                    sx={{ mr: 2, fontWeight: 600 }}
-                  >
+                  <Typography variant='body2' sx={{ mr: 2, fontWeight: 600 }}>
                     Salesperson:
                   </Typography>
                   <Typography variant='body2'>Tommy Shelby</Typography>
@@ -364,47 +290,29 @@ const PreviewCard = ({ data }) => {
 
                 <Typography variant='body2'>Thanks for your business</Typography>
               </Grid>
-              <Grid
-                item
-                xs={12}
-                sm={5}
-                lg={3}
-                sx={{ mb: { sm: 0, xs: 4 }, order: { sm: 2, xs: 1 } }}
-              >
+              <Grid item xs={12} sm={5} lg={3} sx={{ mb: { sm: 0, xs: 4 }, order: { sm: 2, xs: 1 } }}>
                 <CalcWrapper>
                   <Typography variant='body2'>Subtotal:</Typography>
-                  <Typography
-                    variant='body2'
-                    sx={{ fontWeight: 600 }}
-                  >
+                  <Typography variant='body2' sx={{ fontWeight: 600 }}>
                     $1800
                   </Typography>
                 </CalcWrapper>
                 <CalcWrapper>
                   <Typography variant='body2'>Discount:</Typography>
-                  <Typography
-                    variant='body2'
-                    sx={{ fontWeight: 600 }}
-                  >
+                  <Typography variant='body2' sx={{ fontWeight: 600 }}>
                     $28
                   </Typography>
                 </CalcWrapper>
                 <CalcWrapper>
                   <Typography variant='body2'>Tax:</Typography>
-                  <Typography
-                    variant='body2'
-                    sx={{ fontWeight: 600 }}
-                  >
+                  <Typography variant='body2' sx={{ fontWeight: 600 }}>
                     21%
                   </Typography>
                 </CalcWrapper>
                 <Divider />
                 <CalcWrapper>
                   <Typography variant='body2'>Total:</Typography>
-                  <Typography
-                    variant='body2'
-                    sx={{ fontWeight: 600 }}
-                  >
+                  <Typography variant='body2' sx={{ fontWeight: 600 }}>
                     $1690
                   </Typography>
                 </CalcWrapper>
@@ -423,32 +331,16 @@ const PreviewCard = ({ data }) => {
         </Box>
         <CardContent>
           <Box sx={{ mt: 4, width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-            <Link
-              href={`/apps/invoice/print/${data.invoice.id}`}
-              passHref
-            >
-              <Button
-                sx={{ mr: 4 }}
-                target='_blank'
-                component='a'
-                variant='contained'
-              >
+            <Link href={`/apps/invoice/print/${data.invoice.id}`} passHref>
+              <Button sx={{ mr: 4 }} target='_blank' component='a' variant='contained'>
                 Print
               </Button>
             </Link>
 
-            <ReactToPdf
-              scale={0.845}
-              targetRef={PreviewRef}
-              filename={`invoice-${data.invoice.id}.pdf`}
-            >
+            <ReactToPdf scale={0.845} targetRef={PreviewRef} filename={`invoice-${data.invoice.id}.pdf`}>
               {({ toPdf }) => {
                 return (
-                  <Button
-                    variant='contained'
-                    color='success'
-                    onClick={toPdf}
-                  >
+                  <Button variant='contained' color='success' onClick={toPdf}>
                     Download
                   </Button>
                 )

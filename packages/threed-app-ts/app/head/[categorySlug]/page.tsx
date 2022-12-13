@@ -1,5 +1,5 @@
 import { HeadInfo } from '#/app/head/HeadInfo';
-import { fetchCategoryBySlug, type PageProps } from '#/lib/getCategories';
+import { fetchCategoryBySlug, type PageProps } from '#/lib/data/getCategories';
 
 export default async function Page({ params }: PageProps) {
   const category = await fetchCategoryBySlug(params.categorySlug);
