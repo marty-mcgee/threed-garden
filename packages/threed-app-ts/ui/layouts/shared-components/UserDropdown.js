@@ -24,7 +24,7 @@ import MessageOutline from 'mdi-material-ui/MessageOutline'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 
 // ** Context
-import { useAuth } from '#/app/hooks/useAuth'
+import { useAuth } from '#/lib/auth/hooks/useAuth'
 
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({

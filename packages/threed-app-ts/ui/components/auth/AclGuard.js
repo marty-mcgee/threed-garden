@@ -8,14 +8,14 @@ import { useRouter } from 'next/router'
 import { AbilityContext } from '#/ui/layouts/acl/Can'
 
 // ** Config Import
-import { buildAbilityFor } from '#/config/acl'
+import { buildAbilityFor } from '#/lib/config/acl'
 
 // ** Component Import
 import NotAuthorized from '#/pages/401'
 import BlankLayout from '~/ui/layouts/BlankLayout'
 
 // ** Hooks
-import { useAuth } from '#/app/hooks/useAuth'
+import { useAuth } from '#/lib/auth/hooks/useAuth'
 
 const AclGuard = (props) => {
   // ** Props

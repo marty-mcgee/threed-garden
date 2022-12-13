@@ -14,7 +14,7 @@ import CircleOutline from 'mdi-material-ui/Menu'
 import RecordCircleOutline from 'mdi-material-ui/MenuOpen'
 
 // ** Configs
-import themeConfig from '#/config/themeConfig'
+import themeConfig from '#/lib/config/themeConfig'
 
 // images
 import brandDark from '#/lib/assets/images/logos/logo-threedgarden-alt.png'

@@ -47,7 +47,7 @@ import CardBulletedSettingsOutline from 'mdi-material-ui/CardBulletedSettingsOut
 import axios from 'axios'
 
 // ** Configs Imports
-import themeConfig from '#/config/themeConfig'
+import themeConfig from '#/lib/config/themeConfig'
 
 // ** Custom Components Imports
 import UserIcon from '#/ui/layouts/UserIcon'

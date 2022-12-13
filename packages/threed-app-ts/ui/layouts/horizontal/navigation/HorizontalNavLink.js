@@ -18,7 +18,7 @@ import MuiListItem from '@mui/material/ListItem'
 import clsx from 'clsx'
 
 // ** Theme Config Import
-import themeConfig from '#/config/themeConfig'
+import themeConfig from '#/lib/config/themeConfig'
 
 // ** Custom Components Imports
 import UserIcon from '#/ui/layouts/UserIcon'

@@ -1,4 +1,4 @@
-import { fetchCategoryBySlug, PageProps } from '#/lib/getCategories';
+import { fetchCategoryBySlug, PageProps } from '#/lib/data/getCategories';
 import { ClickCounter } from '#/ui/ClickCounter';
 import { TabGroup } from '#/ui/TabGroup';
 

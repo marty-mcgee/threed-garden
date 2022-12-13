@@ -10,7 +10,7 @@ import Box from '@mui/material/Box'
 import ArrowUp from 'mdi-material-ui/ArrowUp'
 
 // ** Theme Config Import
-import themeConfig from '#/config/themeConfig'
+import themeConfig from '#/lib/config/themeConfig'
 
 // ** Components
 import AppBar from './vertical/appBar'

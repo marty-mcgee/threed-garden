@@ -1,4 +1,4 @@
-// import { loadAppConfig } from '~~/config/app.config';
+// import { loadAppConfig } from '~#/lib/config/app.config';
 
 // export type TAppConfig = Awaited<ReturnType<typeof loadAppConfig>>;
 

@@ -6,7 +6,7 @@ import HeroPost from '#/ui/blog/hero-post'
 import Intro from '#/ui/blog/intro'
 import Layout from '#/ui/blog/layout'
 import { getAllPostsForHome } from '#/lib/api'
-import { CMS_NAME } from '#/lib/constants'
+import { CMS_NAME } from '#/lib/data/constants'
 
 export default function Index({ allPosts: { edges }, preview }: { allPosts: { edges: any }; preview: any }) {
   const heroPost = edges[0]?.node

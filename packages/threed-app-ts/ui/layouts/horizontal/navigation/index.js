@@ -2,7 +2,7 @@
 import Box from '@mui/material/Box'
 
 // ** Config Import
-import themeConfig from '#/config/themeConfig'
+import themeConfig from '#/lib/config/themeConfig'
 
 // ** Utils
 // import { hexToRGBA } from '~/ui/utils/hex-to-rgba'

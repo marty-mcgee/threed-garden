@@ -1,4 +1,4 @@
-import { fetchCategories } from '#/lib/getCategories';
+import { fetchCategories } from '#/lib/data/getCategories';
 import { Boundary } from '#/ui/Boundary';
 import { TabGroup } from '#/ui/TabGroup';
 import { CounterProvider } from '#/app/context/CounterContext';

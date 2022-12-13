@@ -33,7 +33,7 @@ import axios from 'axios'
 import DatePicker from 'react-datepicker'
 
 // ** Configs
-import themeConfig from '~/config/themeConfig'
+import themeConfig from '#/lib/config/themeConfig'
 
 // ** Custom Component Imports
 import Repeater from '#/ui/components/repeater'

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import Firebase from '~/config/firebase'
+import Firebase from '#/lib/config/firebase'
 
 const formatAuthUser = (user) => {
   return {

@@ -27,9 +27,9 @@ import { store as reduxStore } from '~/stores/redux'
 // import { CacheProvider, EmotionCache } from '@emotion/react'
 
 // ** Config Imports
-// import '#/config/i18n' // NOT YET SUPPORTED IN NEXT 13
-import { defaultACLObj } from '#/config/acl'
-import themeConfig from '#/config/themeConfig'
+// import '#/lib/config/i18n' // NOT YET SUPPORTED IN NEXT 13
+import { defaultACLObj } from '#/lib/config/acl'
+import themeConfig from '#/lib/config/themeConfig'
 
 // ** Fake-DB Import
 import '#/lib/api/@fake-db'
@@ -93,10 +93,10 @@ import { ThemeSwitcherProvider } from 'react-css-theme-switcher'
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
 
 import { ErrorBoundary, ErrorFallback } from '~common/components'
-import { BLOCKNATIVE_DAPPID } from '~~/config/nextjsApp.config'
+import { BLOCKNATIVE_DAPPID } from '#/lib/config/nextjsApp.config'
 import { appGetInitialProps } from '~~/lib/nextjs/appGetInitialProps'
 
-import ETHPage from '#/pages/eth'
+import ETHPage from '#/app/eth/page'
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -139,6 +139,7 @@ type AppPropsWithLayout = AppProps & {
 
 type ThreeDComponent = NextComponentType & {
   heyheyhey: string
+  yoyoyo: []
 }
 // OR INTERFACE ??? no, because we are extending a TYPE, not an INTERFACE
 // interface ThreeDComponent extends NextComponentType {
@@ -193,7 +194,7 @@ const Guard = ({ children, authGuard, guestGuard }: any) => {
 const ThreeDProvider = (props: any) => {
   // const { children } = props
   return (
-    <div>{props.children}</div>
+    <main id="ThreeDProvider">{props.children}</main>
   )
 }
 

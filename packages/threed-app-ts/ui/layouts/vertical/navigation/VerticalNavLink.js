@@ -12,7 +12,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import ListItemButton from '@mui/material/ListItemButton'
 
 // ** Configs Import
-import themeConfig from '#/config/themeConfig'
+import themeConfig from '#/lib/config/themeConfig'
 
 // ** Custom Components Imports
 import UserIcon from '#/ui/layouts/UserIcon'

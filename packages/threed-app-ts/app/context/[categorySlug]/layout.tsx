@@ -1,4 +1,4 @@
-import { fetchCategoryBySlug, PageProps } from '#/lib/getCategories';
+import { fetchCategoryBySlug, PageProps } from '#/lib/data/getCategories';
 import { Boundary } from '#/ui/Boundary';
 import { TabGroup } from '#/ui/TabGroup';
 import { Counter } from '../ContextClickCounter';

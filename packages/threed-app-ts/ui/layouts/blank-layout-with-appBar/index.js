@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography'
 import { styled, useTheme } from '@mui/material/styles'
 
 // ** Configs
-import themeConfig from '~/config/themeConfig'
+import themeConfig from '#/lib/config/themeConfig'
 
 const StyledLink = styled('a')(({ theme }) => ({
   display: 'flex',
@@ -22,22 +22,14 @@ const BlankLayoutAppBar = () => {
   const theme = useTheme()
 
   return (
-    <AppBar
-      elevation={3}
-      color='default'
-      position='sticky'
-    >
+    <AppBar elevation={3} color='default' position='sticky'>
       <Toolbar
         sx={{
           justifyContent: 'space-between',
           p: (theme) => `${theme.spacing(0, 6)} !important`,
           minHeight: `${theme.mixins.toolbar.minHeight}px !important`,
-        }}
-      >
-        <Link
-          href='/'
-          passHref
-        >
+        }}>
+        <Link href='/' passHref>
           <StyledLink>
             <svg
               width={30}
@@ -45,22 +37,10 @@ const BlankLayoutAppBar = () => {
               version='1.1'
               viewBox='0 0 30 23'
               xmlns='http://www.w3.org/2000/svg'
-              xmlnsXlink='http://www.w3.org/1999/xlink'
-            >
-              <g
-                stroke='none'
-                strokeWidth='1'
-                fill='none'
-                fillRule='evenodd'
-              >
-                <g
-                  id='Artboard'
-                  transform='translate(-95.000000, -51.000000)'
-                >
-                  <g
-                    id='logo'
-                    transform='translate(95.000000, 50.000000)'
-                  >
+              xmlnsXlink='http://www.w3.org/1999/xlink'>
+              <g stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
+                <g id='Artboard' transform='translate(-95.000000, -51.000000)'>
+                  <g id='logo' transform='translate(95.000000, 50.000000)'>
                     <path
                       id='Combined-Shape'
                       fill={theme.palette.primary.main}
@@ -116,8 +96,7 @@ const BlankLayoutAppBar = () => {
                 fontWeight: 600,
                 lineHeight: 'normal',
                 textTransform: 'uppercase',
-              }}
-            >
+              }}>
               {themeConfig.templateName}
             </Typography>
           </StyledLink>
