@@ -18,7 +18,7 @@ import Typography from '@mui/material/Typography'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-import { TPageProps } from '~~/types/models/TAppProps'
+import { TPageProps } from '~#/lib/types/models/TAppProps'
 
 // ==============================================================
 

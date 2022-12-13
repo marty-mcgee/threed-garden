@@ -20,7 +20,7 @@ import MDTabPanel, { tabProps } from '#/lib/mui/MDTabPanel'
 import Image from 'next/image'
 
 // ** Store Imports
-import { modalAboutStore } from '~/stores/apollo'
+import { modalAboutStore } from '#/lib/stores/apollo'
 
 // ** CSS Styles Imports
 import stylesGarden from '#/lib/threed/styles/garden.module.css'

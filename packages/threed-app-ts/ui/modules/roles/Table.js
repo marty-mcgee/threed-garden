@@ -32,7 +32,7 @@ import CustomAvatar from '#/ui/components/mui/avatar'
 import { getInitials } from '#/ui/utils/get-initials'
 
 // ** Actions Imports
-import { fetchData } from '~/stores/redux/apps/user'
+import { fetchData } from '#/lib/stores/redux/apps/user'
 
 // ** Custom Components Imports
 import TableHeader from '#/ui/modules/roles/TableHeader'

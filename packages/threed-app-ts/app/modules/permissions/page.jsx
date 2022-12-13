@@ -36,7 +36,7 @@ import PageHeader from '#/ui/components/page-header'
 import TableHeader from '#/ui/modules/permissions/TableHeader'
 
 // ** Actions Imports
-import { fetchData } from '~/stores/redux/apps/permissions'
+import { fetchData } from '#/lib/stores/redux/apps/permissions'
 
 const colors = {
   support: 'info',

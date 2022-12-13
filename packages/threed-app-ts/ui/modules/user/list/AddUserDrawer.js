@@ -26,7 +26,7 @@ import Close from 'mdi-material-ui/Close'
 import { useDispatch } from 'react-redux'
 
 // ** Actions Imports
-import { addUser } from '~/stores/redux/apps/user'
+import { addUser } from '#/lib/stores/redux/apps/user'
 
 const showErrors = (field, valueLen, min) => {
   if (valueLen === 0) {

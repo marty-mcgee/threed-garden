@@ -2,7 +2,7 @@
 
 // import { NextPage } from 'next'
 import type { NextPage } from 'next'
-import { IPage, IBooleans, IValues, IStructures } from '~/types/interfaces' // "@threed/garden/cpt"
+import { IPage, IBooleans, IValues, IStructures } from '#/lib/types/interfaces' // "@threed/garden/cpt"
 
 // examples
 const flags: IBooleans = { read: true, write: false, delete: false }

@@ -26,7 +26,7 @@ import {
   updateMailLabel,
   handleSelectMail,
   handleSelectAllMail,
-} from '~/stores/redux/apps/email'
+} from '#/lib/stores/redux/apps/email'
 
 // ** Variables
 const labelColors = {
