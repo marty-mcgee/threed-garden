@@ -1,4 +1,4 @@
-import products from '#/src/lib/data/products';
+import products from '#/lib/data/products';
 import { ProductCard } from '#/ui/ProductCard';
 import { delay } from './delay';
 

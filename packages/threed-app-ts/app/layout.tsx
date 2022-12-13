@@ -1,4 +1,7 @@
-// import '#/styles/globals.css';
+/**
+ * EXAMPLE from app-playground
+ */
+import '#/styles/globals.css';
 import { AddressBar } from '#/ui/AddressBar';
 import { GlobalNav } from '#/ui/GlobalNav';
 import { VercelLogo } from '#/ui/VercelLogo';
