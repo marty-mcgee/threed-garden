@@ -1,4 +1,4 @@
-import { IProduct } from '#/src/lib/data/products';
+import { IProduct } from '#/lib/data/products';
 import { ProductCurrencySymbol } from '#/ui/ProductCurrencySymbol';
 import { ProductDeal } from '#/ui/ProductDeal';
 import { ProductLighteningDeal } from '#/ui/ProductLighteningDeal';

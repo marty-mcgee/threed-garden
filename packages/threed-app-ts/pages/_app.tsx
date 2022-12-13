@@ -24,10 +24,10 @@ import { Provider as ReduxProvider } from 'react-redux'
 import { store as reduxStore } from '~/stores/redux'
 
 // ** Emotion Imports (CSS Caching, used by theme: mui)
-import { CacheProvider, EmotionCache } from '@emotion/react'
+// import { CacheProvider, EmotionCache } from '@emotion/react'
 
 // ** Config Imports
-import '#/config/i18n'
+// import '#/config/i18n' // NOT YET SUPPORTED IN NEXT 13
 import { defaultACLObj } from '#/config/acl'
 import themeConfig from '#/config/themeConfig'
 
@@ -96,7 +96,7 @@ import { ErrorBoundary, ErrorFallback } from '~common/components'
 import { BLOCKNATIVE_DAPPID } from '~~/config/nextjsApp.config'
 import { appGetInitialProps } from '~~/lib/nextjs/appGetInitialProps'
 
-import ETHPage from '~~/pages/eth'
+import ETHPage from '#/pages/eth'
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -127,28 +127,22 @@ type AppPropsWithLayout = AppProps & {
   router: NextRouter
 }
 
-type AppPropsWithLayoutEmotion = AppPropsWithLayout & {
-  emotionCache?: EmotionCache
-}
-// OR INTERFACE ??? no, because we are extending a TYPE, not an INTERFACE
-// interface IAppPropsWithLayoutEmotion extends AppProps {
-//   Component: NextPageWithLayout,
-//   emotionCache?: EmotionCache,
-//   router: NextRouter
+// type AppPropsWithLayoutEmotion = AppPropsWithLayout & {
+//   emotionCache?: EmotionCache
 // }
+// // OR INTERFACE ??? no, because we are extending a TYPE, not an INTERFACE
+// // interface IAppPropsWithLayoutEmotion extends AppProps {
+// //   Component: NextPageWithLayout,
+// //   emotionCache?: EmotionCache,
+// //   router: NextRouter
+// // }
 
-type MartyComponent = NextComponentType & {
-  setConfig: any
-  authGuard: boolean
-  guestGuard: boolean
-  acl: any // aclAbilities
+type ThreeDComponent = NextComponentType & {
+  heyheyhey: string
 }
 // OR INTERFACE ??? no, because we are extending a TYPE, not an INTERFACE
-// interface MartyComponent extends NextComponentType {
-//   setConfig: any,
-//   authGuard: boolean,
-//   guestGuard: boolean,
-//   acl: any // aclAbilities
+// interface ThreeDComponent extends NextComponentType {
+//   heyheyhey: string
 // }
 
 // WORKAROUND -- for ToastPosition bug

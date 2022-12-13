@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import React, { FC } from 'react'
 
-import EthPage from '~~/pages/eth'
+import EthPage from '#/pages/eth'
 import { TPageProps } from '~~/types/models/TAppProps'
 
 const Page: FC<TPageProps> = (props) => {

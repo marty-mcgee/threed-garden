@@ -13,16 +13,16 @@ const path = require('path')
 // import { resolve } from 'path'
 // const __dirname = path.resolve()
 
-const withTM = require('next-transpile-modules')([
-  // '@babel/preset-react',
-  '@fullcalendar/common',
-  '@fullcalendar/daygrid',
-  '@fullcalendar/interaction',
-  '@fullcalendar/react',
-  '@fullcalendar/timegrid',
-  'react-github-btn',
-  'three',
-])
+// does not work with Next 13
+// const withTM = require('next-transpile-modules')([
+//   '@fullcalendar/common',
+//   '@fullcalendar/daygrid',
+//   '@fullcalendar/interaction',
+//   '@fullcalendar/react',
+//   '@fullcalendar/timegrid',
+//   'react-github-btn',
+//   'three',
+// ])
 
 // MODULE
 /** @type {import("next").NextConfig} */
@@ -30,25 +30,25 @@ const nextConfig = {
   //
   reactStrictMode: true, // true: causes components to load TWICE in dev only, not active (moot) in production
 
-  trailingSlash: false, // true: add a '/' to the final url address -- can cause url-based query string issues
+  // trailingSlash: false, // true: add a '/' to the final url address -- can cause url-based query string issues
 
   experimental: {
-    esmExternals: true, // helps with 3rd party modules trying to call non-module js
+    // esmExternals: true, // helps with 3rd party modules trying to call non-module js
     externalDir: true, // helps import file loader type for ErrorFallback.tsx boundary
-    swcFileReading: true, // rust for the web -- 'speedy web compiler' https://swc.rs
+    // swcFileReading: true, // rust for the web -- 'speedy web compiler' https://swc.rs
 
     // use Next 13 '/app' directory:
     appDir: true, // true for Next 13 | false for Next 12
   },
 
   // https://github.com/vercel/next.js/issues/36221
-  // swcMinify: true, // true throws error at ErrorBoundary
+  swcMinify: true, // true throws error at ErrorBoundary
 
   // productionBrowserSourceMaps: true,
 
-  compiler: {
-    emotion: true,
-  },
+  // compiler: {
+  //   emotion: true,
+  // },
 
   // [MM] ONLY USE THE NEXT /PAGES THAT YU WAN>
   // https://stackoverflow.com/questions/65598753/cant-build-react-next-project-found-page-without-a-react-component-as-default
@@ -87,7 +87,7 @@ const nextConfig = {
   //   ]
   // },
 
-  /** WEBPACK 5
+  // ** WEBPACK 5
   webpack: (config, options) => {
     //
     // aliases
@@ -97,8 +97,8 @@ const nextConfig = {
       'eth-hooks': path.resolve(__dirname, './node_modules/eth-hooks'),
       'eth-components': path.resolve(__dirname, './node_modules/eth-components'),
       'react-css-theme-switcher': path.resolve(__dirname, './node_modules/react-css-theme-switcher'),
-      react: path.resolve(__dirname, './node_modules/react'),
-      'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
+      // react: path.resolve(__dirname, './node_modules/react'),
+      // 'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
     }
 
     // doesn't work, but the thought is there
@@ -140,58 +140,13 @@ const nextConfig = {
 
     return config
   },
-  */
+  // */
 
   // NOT NEEDED HERE: instead, use .env.local to safely load env variables as needed (NEXT_PUBLIC_)
   // env: {
   //   customKey: process.env.HEY_HEY_HEY, // "HEY HEY HEY" | process.env.HEY_HEY_HEY
   // },
-
-  // cssModules: true, // doesn't work in Next 12+ because "already included"
 } // end nextConfig
 
-module.exports = withTM(nextConfig)
-
-// =============================================================
-// NOTES + EXAMPLES
-
-// NEXT 12
-// const { PHASE_DEVELOPMENT_SERVER } = require("next/constants")
-
-// module.exports = (phase, { defaultConfig }) => {
-//   if (phase === PHASE_DEVELOPMENT_SERVER) {
-//     return {
-//       /* development only config options here */
-//       env: {
-//         customKey: "my-value",
-//       },
-//     }
-//   }
-
-//   return {
-//     /* config options for all phases except development here */
-//       env: {
-//         customKey: "my-value-2",
-//       },
-//   }
-// }
-
-// MINIMUM REQUIRED
-// module.exports = {
-//   /* config options here */
-// }
-
-// NEXT 10
-// const withPlugins = require("next-compose-plugins");
-// const withImages = require("next-images");
-// const withSass = require("@zeit/next-sass");
-// const withCSS = require("@zeit/next-css");
-// const webpack = require("webpack");
-// const path = require("path");
-
-// module.exports = withPlugins([[withSass], [withImages], [withCSS]], {
-//   webpack(config, options) {
-//     config.resolve.modules.push(path.resolve("./"));
-//     return config;
-//   },
-// });
+// module.exports = withTM(nextConfig)
+module.exports = nextConfig

@@ -13,16 +13,16 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
-    "jsxImportSource": "@emotion/react",
-    // rules
+    // "jsxImportSource": "@emotion/react",
+    "incremental": true,
+    // ** rules
     "allowSyntheticDefaultImports": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": false,
     "downlevelIteration": true,
-    "incremental": true,
-    // directories + paths
+    // ** directories + paths
     "rootDirs": [".", "../common/src"],
     "baseUrl": ".",
     "paths": {
@@ -41,13 +41,6 @@
       }
     ]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/modules/calendar/page.jsx"], // NEXT 12 + 13
-  "exclude": [
-    "node_modules",
-    ".husky",
-    "**/*.css",
-    // "tailwind.config.js",
-    "**/.yalc/**/*",
-    ".yalc/**/*"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", ".husky", "**/*.css", "tailwind.config.js", "**/.yalc/**/*", ".yalc/**/*"]
 }

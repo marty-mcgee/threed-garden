@@ -1,4 +1,4 @@
-import { type IProduct } from '#/src/lib/data/products';
+import { type IProduct } from '#/lib/data/products';
 import { ExternalLink } from '#/ui/ExternalLink';
 import { ProductEstimatedArrival } from '#/ui/ProductEstimatedArrival';
 import { ProductLowStockWarning } from '#/ui/ProductLowStockWarning';

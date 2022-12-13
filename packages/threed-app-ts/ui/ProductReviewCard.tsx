@@ -1,4 +1,4 @@
-import { Review } from '#/src/lib/data/reviews';
+import { Review } from '#/lib/data/reviews';
 import { ProductRating } from '#/ui/ProductRating';
 
 export const ProductReviewCard = ({ review }: { review: Review }) => {

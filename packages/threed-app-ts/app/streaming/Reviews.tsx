@@ -1,4 +1,4 @@
-import reviews from '#/src/lib/data/reviews';
+import reviews from '#/lib/data/reviews';
 import { ProductReviewCard } from '#/ui/ProductReviewCard';
 import { delay } from './delay';
 

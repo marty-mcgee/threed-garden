@@ -1,9 +1,11 @@
 // ==============================================================
 // Index Page (Forwarding Page)
 
+'use client'
+
 // ** Next Imports
 import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 // ** React Imports
 import { useEffect } from 'react'
@@ -20,7 +22,7 @@ import { useAuth } from '#/app/hooks/useAuth'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-import { EthPage as ETHPage } from '~~/pages/eth'
+import { EthPage as ETHPage } from '#/pages/eth'
 import { TPageProps } from '~~/types/models/TAppProps'
 
 // import chalk from 'chalk'
