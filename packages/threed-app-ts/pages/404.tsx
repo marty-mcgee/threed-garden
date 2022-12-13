@@ -69,7 +69,7 @@ const Error404: any = () => {
           href='/'
         >
           <Button
-            component='a'
+            component='span'
             variant='contained'
             sx={{ px: 5.5 }}
           >

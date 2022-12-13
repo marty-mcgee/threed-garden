@@ -69,7 +69,7 @@ const Error403: any = () => {
           href='/'
         >
           <Button
-            component='a'
+            component='span'
             variant='contained'
             sx={{ px: 5.5 }}
           >
