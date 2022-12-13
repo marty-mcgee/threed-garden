@@ -838,7 +838,7 @@ import toast from 'react-hot-toast'
 import DatePicker from 'react-datepicker'
 
 // ** Types
-import { DateType } from '~/types/forms/reactDatepickerTypes'
+import { DateType } from '#/lib/types/forms/reactDatepickerTypes'
 
 // ** Custom Component Imports
 import CustomInput from './PickersCustomInput'
@@ -930,7 +930,7 @@ import DatePicker from 'react-datepicker'
 import setMinutes from 'date-fns/setMinutes'
 
 // ** Types
-import { DateType } from '~/types/forms/reactDatepickerTypes'
+import { DateType } from '#/lib/types/forms/reactDatepickerTypes'
 
 // ** Custom Component Imports
 import CustomInput from './PickersCustomInput'
@@ -1020,7 +1020,7 @@ import { useTranslation } from 'react-i18next'
 import DatePicker, { registerLocale } from 'react-datepicker'
 
 // ** Types
-import { DateType } from '~/types/forms/reactDatepickerTypes'
+import { DateType } from '#/lib/types/forms/reactDatepickerTypes'
 
 // ** Custom Component Imports
 import CustomInput from './PickersCustomInput'
@@ -1082,7 +1082,7 @@ import addDays from 'date-fns/addDays'
 import DatePicker from 'react-datepicker'
 
 // ** Types
-import { DateType } from '~/types/forms/reactDatepickerTypes'
+import { DateType } from '#/lib/types/forms/reactDatepickerTypes'
 
 // ** Custom Component Imports
 import CustomInput from './PickersCustomInput'
@@ -1133,7 +1133,7 @@ import Box from '@mui/material/Box'
 import DatePicker from 'react-datepicker'
 
 // ** Types
-import { DateType } from '~/types/forms/reactDatepickerTypes'
+import { DateType } from '#/lib/types/forms/reactDatepickerTypes'
 
 // ** Custom Component Imports
 import CustomInput from './PickersCustomInput'
@@ -1198,7 +1198,7 @@ import Box from '@mui/material/Box'
 import DatePicker from 'react-datepicker'
 
 // ** Types
-import { DateType } from '~/types/forms/reactDatepickerTypes'
+import { DateType } from '#/lib/types/forms/reactDatepickerTypes'
 
 // ** Custom Component Imports
 import CustomInput from './PickersCustomInput'
@@ -1285,7 +1285,7 @@ import Box from '@mui/material/Box'
 import DatePicker from 'react-datepicker'
 
 // ** Types
-import { DateType } from '~/types/forms/reactDatepickerTypes'
+import { DateType } from '#/lib/types/forms/reactDatepickerTypes'
 
 // ** Custom Component Imports
 import CustomInput from './PickersCustomInput'
@@ -1351,7 +1351,7 @@ import format from 'date-fns/format'
 import DatePicker from 'react-datepicker'
 
 // ** Types
-import { DateType } from '~/types/forms/reactDatepickerTypes'
+import { DateType } from '#/lib/types/forms/reactDatepickerTypes'
 
 interface PickerProps {
   label?: string
@@ -1446,7 +1446,7 @@ import DatePicker from 'react-datepicker'
 import setMinutes from 'date-fns/setMinutes'
 
 // ** Types
-import { DateType } from '~/types/forms/reactDatepickerTypes'
+import { DateType } from '#/lib/types/forms/reactDatepickerTypes'
 
 // ** Custom Component Imports
 import CustomInput from './PickersCustomInput'
@@ -1502,7 +1502,7 @@ import TextField from '@mui/material/TextField'
 import DatePicker from 'react-datepicker'
 
 // ** Types
-import { DateType } from '~/types/forms/reactDatepickerTypes'
+import { DateType } from '#/lib/types/forms/reactDatepickerTypes'
 
 // ** Custom Component Imports
 import CustomInput from './PickersCustomInput'
@@ -1586,7 +1586,7 @@ import addDays from 'date-fns/addDays'
 import DatePicker from 'react-datepicker'
 
 // ** Types
-import { DateType } from '~/types/forms/reactDatepickerTypes'
+import { DateType } from '#/lib/types/forms/reactDatepickerTypes'
 
 // ** Custom Component Imports
 import CustomInput from './PickersCustomInput'
@@ -1640,7 +1640,7 @@ import DatePicker from 'react-datepicker'
 import CustomInput from './PickersCustomInput'
 
 // ** Types
-import { DateType } from '~/types/forms/reactDatepickerTypes'
+import { DateType } from '#/lib/types/forms/reactDatepickerTypes'
 
 const PickersBasic = () => {
   // ** States

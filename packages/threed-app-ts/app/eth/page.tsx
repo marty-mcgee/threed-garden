@@ -46,7 +46,7 @@ import {
 } from '#/lib/config/nextjsApp.config'
 
 // Types + Interfaces Imports
-import { TAppProps } from '~~/types/models/TAppProps'
+import { TAppProps } from '~#/lib/types/models/TAppProps'
 
 // =============================================================
 // TYPES + INTERFACES

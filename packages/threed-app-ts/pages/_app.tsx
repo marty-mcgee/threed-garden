@@ -21,7 +21,7 @@ import {
 
 // ** Redux Store Imports
 import { Provider as ReduxProvider } from 'react-redux'
-import { store as reduxStore } from '~/stores/redux'
+import { store as reduxStore } from '#/lib/stores/redux'
 
 // ** Emotion Imports (CSS Caching, used by theme: mui)
 // import { CacheProvider, EmotionCache } from '@emotion/react'

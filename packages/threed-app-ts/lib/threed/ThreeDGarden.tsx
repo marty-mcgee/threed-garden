@@ -23,8 +23,8 @@ import {
 // ** Apollo Client 3 -- Cache Store Imports
 // state management (instead of React.useState, Redux, Zustand)
 import { ApolloConsumer } from '@apollo/client'
-// import { TestAC3Store } from '~/stores/old'
-import stores from '~/stores/apollo'
+// import { TestAC3Store } from '#/lib/stores/old'
+import stores from '#/lib/stores/apollo'
 
 // ** Next Imports
 import Image from 'next/image'

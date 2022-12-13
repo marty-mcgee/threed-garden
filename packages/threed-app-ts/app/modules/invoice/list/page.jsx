@@ -43,7 +43,7 @@ import DatePicker from 'react-datepicker'
 
 // ** Store & Actions Imports
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchData, deleteInvoice } from '~/stores/redux/apps/invoice'
+import { fetchData, deleteInvoice } from '#/lib/stores/redux/apps/invoice'
 
 // ** Utils Import
 import { getInitials } from '#/ui/utils/get-initials'

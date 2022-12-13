@@ -26,7 +26,7 @@ import {
   handleSelectEvent,
   handleAllCalendars,
   handleCalendarsUpdate,
-} from '~/stores/redux/apps/calendar'
+} from '#/lib/stores/redux/apps/calendar'
 
 // ** Third Party Styles Imports
 // import 'react-datepicker/dist/react-datepicker.css'
