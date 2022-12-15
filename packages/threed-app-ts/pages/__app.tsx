@@ -41,12 +41,14 @@ import { client } from '#/lib/api/graphql/client'
 // ** Third Party Import
 import { Toaster } from 'react-hot-toast'
 
-// ** ~common Components
+// ** ~CORE Components
 import AclGuard from '#/ui/components/auth/AclGuard'
-import ThemeComponent from '#/ui/theme/ThemeComponent'
 import AuthGuard from '#/ui/components/auth/AuthGuard'
 import GuestGuard from '#/ui/components/auth/GuestGuard'
+// ** ~CORE Wrapper
 import WindowWrapper from '#/ui/components/window-wrapper'
+// ** ~CORE mui
+import ThemeComponent from '#/ui/theme/ThemeComponent'
 
 // ** Layout + Metadata Components
 import UserLayout from '#/ui/layouts/UserLayout' // this is your main layout !!!
@@ -68,7 +70,7 @@ import { SettingsConsumer, SettingsProvider } from '#/ui/context/settingsContext
 import ReactHotToast from '#/ui/styles/react-hot-toast'
 
 // ** Utils
-import { createEmotionCache } from '#/ui/utils/create-emotion-cache'
+import { createEmotionCache } from '#/lib/utils/create-emotion-cache'
 
 // ** CSS Styles
 // import stylesGlobal from '~/styles/globals.module.css'
@@ -76,7 +78,7 @@ import { createEmotionCache } from '#/ui/utils/create-emotion-cache'
 import '#/lib/threed/styles/index.css'
 
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/ui/utils/console-colors'
+import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/lib/utils/console-colors'
 
 // ==============================================================
 // SCAFFOLD-ETH-TS IMPORTS

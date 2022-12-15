@@ -40,7 +40,7 @@ import CustomChip from '#/ui/components/mui/chip'
 import CustomAvatar from '#/ui/components/mui/avatar'
 
 // ** Utils Import
-import { getInitials } from '#/ui/utils/get-initials'
+import { getInitials } from '#/lib/utils/get-initials'
 
 // ** Actions Imports
 import { fetchData, deleteUser } from '#/lib/stores/redux/apps/user'
@@ -191,7 +191,7 @@ const columns = [
               </Typography>
             </Link>
             <Link href={`/apps/user/view/${id}`} passHref>
-              <Typography noWrap component='a' variant='caption' sx={{ textDecoration: 'none' }}>
+              <Typography noWrap component='span' variant='caption' sx={{ textDecoration: 'none' }}>
                 @{username}
               </Typography>
             </Link>

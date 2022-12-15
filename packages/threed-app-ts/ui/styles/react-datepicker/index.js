@@ -6,7 +6,7 @@ import Box from '@mui/material/Box'
 import { useSettings } from '~/ui/hooks/useSettings'
 
 // ** Util Import
-import { hexToRGBA } from '~/ui/utils/hex-to-rgba'
+import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
 
 const DatePickerWrapper = styled(Box)(({ theme }) => {
   // ** Hook

@@ -13,10 +13,10 @@ import themeConfig from '#/lib/config/themeConfig'
 // ** Component Imports
 import Drawer from './Drawer'
 import VerticalNavItems from './VerticalNavItems'
-// import VerticalNavHeader from './VerticalNavHeader' // moved to @core\layouts\components\vertical\appBar\index.js
+// import VerticalNavHeader from './VerticalNavHeader'
 
 // ** Util Import
-import { hexToRGBA } from '~/ui/utils/hex-to-rgba'
+import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
 
 const StyledBoxForShadow = styled(Box)(({ theme }) => ({
   top: 60,

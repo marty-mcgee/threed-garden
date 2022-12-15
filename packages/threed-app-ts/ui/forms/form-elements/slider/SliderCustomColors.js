@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography'
 import MuiSlider from '@mui/material/Slider'
 
 // ** Util Import
-import { hexToRGBA } from '#/ui/utils/hex-to-rgba'
+import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
 
 // Styled component for a success Slider
 const SliderSuccess = styled(MuiSlider)(({ theme }) => ({

@@ -20,7 +20,7 @@ import GetPlantingPlans from '#/lib/api/graphql/scripts/getPlantingPlans.gql'
 import { v4 as newUUID } from 'uuid'
 
 // [MM] COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5 } from '#/ui/utils/console-colors'
+import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5 } from '#/lib/utils/console-colors'
 
 // ==========================================================
 // IMPORTS COMPLETE

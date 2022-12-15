@@ -205,24 +205,24 @@ const LoginV1 = () => {
             <Divider sx={{ my: 5 }}>or</Divider>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Link href='/' passHref>
-                <IconButton component='a' onClick={(e) => e.preventDefault()}>
+                <IconButton component='span' onClick={(e) => e.preventDefault()}>
                   <Facebook sx={{ color: '#497ce2' }} />
                 </IconButton>
               </Link>
               <Link href='/' passHref>
-                <IconButton component='a' onClick={(e) => e.preventDefault()}>
+                <IconButton component='span' onClick={(e) => e.preventDefault()}>
                   <Twitter sx={{ color: '#1da1f2' }} />
                 </IconButton>
               </Link>
               <Link href='/' passHref>
-                <IconButton component='a' onClick={(e) => e.preventDefault()}>
+                <IconButton component='span' onClick={(e) => e.preventDefault()}>
                   <Github
                     sx={{ color: (theme) => (theme.palette.mode === 'light' ? '#272727' : theme.palette.grey[300]) }}
                   />
                 </IconButton>
               </Link>
               <Link href='/' passHref>
-                <IconButton component='a' onClick={(e) => e.preventDefault()}>
+                <IconButton component='span' onClick={(e) => e.preventDefault()}>
                   <Google sx={{ color: '#db4437' }} />
                 </IconButton>
               </Link>

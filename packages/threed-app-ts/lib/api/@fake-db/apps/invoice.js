@@ -2,7 +2,7 @@
 import mock from '#/lib/api/@fake-db/mock'
 
 // ** Utils Import
-import { getDateRange } from '#/ui/utils/get-daterange'
+import { getDateRange } from '#/lib/utils/get-daterange'
 
 const now = new Date()
 const currentMonth = now.toLocaleString('default', { month: 'short' })

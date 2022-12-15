@@ -37,7 +37,7 @@ import ReactDraftWysiwyg from '#/ui/components/react-draft-wysiwyg'
 import { EditorWrapper } from '#/ui/styles/react-draft-wysiwyg'
 
 // ** Utils Import
-import { getInitials } from '#/ui/utils/get-initials'
+import { getInitials } from '#/lib/utils/get-initials'
 
 // ** Styles
 // import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'

@@ -1,6 +1,234 @@
+// ==============================================================
+// RESOURCES
+// ** FOR ENTIRE APP CONTEXTS
+// _app.tsx -- from Next.js 12
+
+'use client'
+
+// ** Next
+// import { useRouter } from 'next/navigation'
+
+// ** React
+// import { useState, useEffect, ReactNode } from 'react'
+import type { ReactNode } from 'react'
+
+// ** Apollo Client -- State Management using Cache/Store (via GraphQL)
+import { ApolloProvider } from '@apollo/client'
+import { client } from '#/lib/api/graphql/client'
+
+// ** Redux Store
+import { Provider as ReduxProvider } from 'react-redux'
+import { store as reduxStore } from '#/lib/stores/redux'
+
+// ** Contexts for User Authorization + Settings
+import { AuthProvider } from '~/ui/context/AuthContext'
+
+// ** Contexts for Theme Settings + MUI Components
+import { SettingsProvider, SettingsConsumer } from '#/ui/context/settingsContext'
+import ThemeComponent from '#/ui/theme/ThemeComponent'
+
+// ** Config Imports
+// import '#/lib/config/i18n' // NOT YET SUPPORTED IN NEXT 13
+import { defaultACLObj } from '#/lib/config/acl'
+import themeConfig from '#/lib/config/themeConfig'
+
+// ** ~core Components
+// import WindowWrapper from '#/ui/components/window-wrapper'
+
+// ** CSS Styles
+import '#/styles/globals.css'
+// import stylesGlobal from '#/styles/globals.module.css'
+// import stylesDemo from '#/styles/demo/demo.module.css'
+import '#/lib/threed/styles/index.css'
+
+// ** Colorful Console Messages: Utility
+import ccm from '#/lib/utils/console-colors'
+
+// ==============================================================
+// IMPORTS COMPLETE
+console.debug('%c====================================', ccm.black)
+console.debug('%c🥕 ThreeDGarden<FC,R3F>: {_app.tsx}', ccm.green)
+console.debug('%c====================================', ccm.black)
+
+// ==============================================================
+// TYPES + INTERFACES (TYPESCRIPT)
+
+// interface WithRouterProps {
+//   router: NextRouter
+// }
+// interface MyComponentProps extends WithRouterProps {
+//   heyheyhey: string
+// }
+
+// ==============================================================
+// MAIN APP
+
+// provide basic React Provider context node with props.children
+// const ThreeDProvider: FC<{ children?: ReactNode }> = (props) => {
+const ThreeDProvider = ({ children }: { children: ReactNode }): JSX.Element => {
+  // const { children } = props
+
+  return (
+    <html>
+      <head />
+      <body>
+        <main id="ThreeDProvider">{children}</main>
+      </body>
+    </html>
+  )
+}
+
+// ==============================================================
+// ** ~CORE COMPONENTS (WRAPPERS/CONTEXTS)
+// I DON'T BELIEVE WE NEED THIS ANYMORE
+// const WindowWrapper = ({ children }: { children: ReactNode }): JSX.Element => {
+//   // ** State
+//   const [windowReadyFlag, setWindowReadyFlag] = useState(false)
+//   const router = useRouter()
+
+//   useEffect(() => {
+//     if (typeof window !== 'undefined') {
+//       setWindowReadyFlag(true)
+//     }
+//   }, [router])
+
+//   if (windowReadyFlag) {
+//     return <>{children}</>
+//   } else {
+//     return null
+//   }
+// }
+
+// ==============================================================
+// ** Construct App using Function Component (Functional Noun)
+
+// const App = (props: any) => {
+// const App: FC<AppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => {
+// const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmotion> = (props: any) => {
+// const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayout> = (props: any) => {
+const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
+  // //
+  // // destructure props for vars
+  // // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
+  // const { Component, pageProps } = props
+  const Component = {
+    getLayout: false,
+    setConfig: () => {},
+    authGuard: true,
+    guestGuard: false,
+    acl: defaultACLObj
+  }
+  // console.debug('%c🥕 props', ccm.white, props)
+  // console.debug('%c🥕 Component', ccm.black, Component)
+  // console.debug('%c🥕 pageProps', ccm.black, pageProps)
+
+  // // PageComponent.Properties
+  // const getLayout = Component.getLayout ?? ((page: any) => <UserLayout>{page}</UserLayout>)
+  const setConfig = Component.setConfig ?? false
+  const authGuard = Component.authGuard ?? true
+  const guestGuard = Component.guestGuard ?? false
+  const acl = Component.acl ?? defaultACLObj
+
+  return (
+    <ThreeDProvider>
+      <ApolloProvider client={client}>
+        <ReduxProvider store={reduxStore}>
+          <AuthProvider>
+            {/* <WindowWrapper> */}
+              {/* <Guard
+                authGuard={authGuard}
+                guestGuard={guestGuard}
+              > */}
+                {/* <AclGuard
+                  aclAbilities={acl}
+                  guestGuard={guestGuard}
+                > */}
+                  <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null })}>
+                  <SettingsConsumer>
+                    {({ settings }) => (
+                      <>
+                        <ThemeComponent settings={settings}>
+                          {children}
+                          {/* {getLayout(
+                            // <UserLayout>
+                              <EthApp {...props}>
+                                <Component {...pageProps} />
+                              </EthApp>
+                            // </UserLayout>
+                          )} */}
+                        </ThemeComponent>
+                        {/* <ReactHotToast>
+                          <Toaster
+                            position={settings.toastPosition as ToastPosition}
+                            toastOptions={{ className: 'react-hot-toast' }}
+                          />
+                        </ReactHotToast> */}
+                      </>
+                    )}
+                    </SettingsConsumer>
+                  </SettingsProvider>
+                {/* </AclGuard> */}
+              {/* </Guard> */}
+            {/* </WindowWrapper> */}
+          </AuthProvider>
+        </ReduxProvider>
+      </ApolloProvider>
+    </ThreeDProvider>
+  )
+  // return (
+  //   <ThreeDProvider>
+  //     <ApolloProvider client={client}>
+  //       <ReduxProvider store={reduxStore}>
+  //         {/* <CacheProvider value={emotionCache}> */}
+  //           <HeadMeta />{/* title={pageProps.title} */}
+  //           <AuthProvider>
+              // <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null })}>
+              //   <SettingsConsumer>
+              //     {({ settings }) => (
+              //       <ThemeComponent settings={settings}>
+                      // <WindowWrapper>
+                      //   <Guard
+                      //     authGuard={authGuard}
+                      //     guestGuard={guestGuard}
+                      //   >
+                      //     <AclGuard
+                      //       aclAbilities={aclAbilities}
+                      //       guestGuard={guestGuard}
+                      //     >
+                      //       {getLayout(
+                      //         // <UserLayout>
+                      //           <EthApp {...props}>
+                      //             <Component {...pageProps} />
+                      //           </EthApp>
+                      //         // </UserLayout>
+                      //       )}
+                      //     </AclGuard>
+                      //   </Guard>
+                      // </WindowWrapper>
+  //                     <ReactHotToast>
+  //                       <Toaster
+  //                         position={settings.toastPosition as ToastPosition}
+  //                         toastOptions={{ className: 'react-hot-toast' }}
+  //                       />
+  //                     </ReactHotToast>
+  //                   </ThemeComponent>
+  //                 )}
+  //               </SettingsConsumer>
+  //             </SettingsProvider>
+  //           </AuthProvider>
+  //         {/* </CacheProvider> */}
+  //       </ReduxProvider>
+  //     </ApolloProvider>
+  //   </ThreeDProvider>
+  // )
+}
+
+export default RootLayout
+
 /**
  * EXAMPLE from app-playground
  */
+/*
 import '#/styles/globals.css';
 import { AddressBar } from '#/ui/AddressBar';
 import { GlobalNav } from '#/ui/GlobalNav';
@@ -71,3 +299,4 @@ function Byline() {
     </div>
   );
 }
+*/

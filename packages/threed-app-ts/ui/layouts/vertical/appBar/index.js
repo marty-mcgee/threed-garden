@@ -8,7 +8,7 @@ import MuiToolbar from '@mui/material/Toolbar'
 import VerticalNavHeader from '~/ui/layouts/vertical/navigation/VerticalNavHeader'
 
 // ** Util Imports
-import { hexToRGBA } from '~/ui/utils/hex-to-rgba'
+import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
 
 const AppBar = styled(MuiAppBar)(({ theme }) => ({
   transition: 'none',

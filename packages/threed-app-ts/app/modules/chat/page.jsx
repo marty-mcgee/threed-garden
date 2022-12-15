@@ -20,8 +20,8 @@ import {
 import { useSettings } from '#/ui/hooks/useSettings'
 
 // ** Utils Imports
-import { getInitials } from '#/ui/utils/get-initials'
-import { formatDateToMonthShort } from '#/ui/utils/format'
+import { getInitials } from '#/lib/utils/get-initials'
+import { formatDateToMonthShort } from '#/lib/utils/format'
 
 // ** Chat App Components Imports
 import SidebarLeft from '#/ui/modules/chat/SidebarLeft'

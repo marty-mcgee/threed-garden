@@ -43,7 +43,7 @@ import Cards from 'react-credit-cards'
 import CustomChip from '#/ui/components/mui/chip'
 
 // ** Util Import
-import { formatCVC, formatExpirationDate, formatCreditCardNumber } from '#/ui/utils/format'
+import { formatCVC, formatExpirationDate, formatCreditCardNumber } from '#/lib/utils/format'
 
 // ** Styled Component Imports
 import CardWrapper from '#/ui/styles/react-credit-cards'

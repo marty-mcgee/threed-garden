@@ -1,3 +1,5 @@
+'use client'
+
 // ** React Imports
 import { useState, useEffect, forwardRef } from 'react'
 
@@ -46,7 +48,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchData, deleteInvoice } from '#/lib/stores/redux/apps/invoice'
 
 // ** Utils Import
-import { getInitials } from '#/ui/utils/get-initials'
+import { getInitials } from '#/lib/utils/get-initials'
 
 // ** Custom Components Imports
 import CustomChip from '#/ui/components/mui/chip'
@@ -312,7 +314,7 @@ const InvoiceList = () => {
           <Tooltip title='View'>
             <Box>
               <Link href={`/apps/invoice/preview/${row.id}`} passHref>
-                <IconButton size='small' component='a' sx={{ textDecoration: 'none' }}>
+                <IconButton size='small' component='span' sx={{ textDecoration: 'none' }}>
                   <EyeOutline fontSize='small' />
                 </IconButton>
               </Link>

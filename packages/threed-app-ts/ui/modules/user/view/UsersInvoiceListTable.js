@@ -179,7 +179,7 @@ const columns = [
         <Tooltip title='View'>
           <Box>
             <Link href={`/apps/invoice/preview/${row.id}`} passHref>
-              <IconButton size='small' component='a' sx={{ textDecoration: 'none' }}>
+              <IconButton size='small' component='span' sx={{ textDecoration: 'none' }}>
                 <EyeOutline fontSize='small' />
               </IconButton>
             </Link>

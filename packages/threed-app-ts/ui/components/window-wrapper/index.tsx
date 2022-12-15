@@ -1,10 +1,10 @@
 // ** React Imports
-import { useState, useEffect } from 'react'
+import { useState, useEffect, ReactNode } from 'react'
 
 // ** Next Import
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
-const WindowWrapper = ({ children }) => {
+const WindowWrapper = ({ children }: { children: ReactNode }): JSX.Element => {
   // ** State
   const [windowReadyFlag, setWindowReadyFlag] = useState(false)
   const router = useRouter()
@@ -12,7 +12,7 @@ const WindowWrapper = ({ children }) => {
     if (typeof window !== 'undefined') {
       setWindowReadyFlag(true)
     }
-  }, [router.route])
+  }, [router])
   if (windowReadyFlag) {
     return <>{children}</>
   } else {

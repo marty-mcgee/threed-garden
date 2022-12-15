@@ -1,5 +1,5 @@
 // ** Util Imports
-import { hexToRGBA } from '~/ui/utils/hex-to-rgba'
+import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
 
 const Chip = (theme) => {
   return {

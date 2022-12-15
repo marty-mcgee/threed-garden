@@ -126,7 +126,7 @@ const SidebarLeft = (props) => {
           <List component='div'>
             <Link href='/modules/email/inbox' passHref>
               <ListItemStyled
-                component='a'
+                component='span'
                 onClick={handleListItemClick}
                 sx={{
                   borderLeftColor: (theme) => (activeInboxCondition ? theme.palette.primary.main : 'transparent'),
@@ -149,7 +149,7 @@ const SidebarLeft = (props) => {
             </Link>
             <Link href='/modules/email/sent' passHref>
               <ListItemStyled
-                component='a'
+                component='span'
                 onClick={handleListItemClick}
                 sx={{
                   borderLeftColor: (theme) =>
@@ -172,7 +172,7 @@ const SidebarLeft = (props) => {
             </Link>
             <Link href='/modules/email/draft' passHref>
               <ListItemStyled
-                component='a'
+                component='span'
                 onClick={handleListItemClick}
                 sx={{
                   borderLeftColor: (theme) =>
@@ -196,7 +196,7 @@ const SidebarLeft = (props) => {
             </Link>
             <Link href='/modules/email/starred' passHref>
               <ListItemStyled
-                component='a'
+                component='span'
                 onClick={handleListItemClick}
                 sx={{
                   borderLeftColor: (theme) =>
@@ -219,7 +219,7 @@ const SidebarLeft = (props) => {
             </Link>
             <Link href='/modules/email/spam' passHref>
               <ListItemStyled
-                component='a'
+                component='span'
                 onClick={handleListItemClick}
                 sx={{
                   borderLeftColor: (theme) =>
@@ -243,7 +243,7 @@ const SidebarLeft = (props) => {
             </Link>
             <Link href='/modules/email/trash' passHref>
               <ListItemStyled
-                component='a'
+                component='span'
                 onClick={handleListItemClick}
                 sx={{
                   borderLeftColor: (theme) =>
@@ -274,7 +274,7 @@ const SidebarLeft = (props) => {
           <List component='div'>
             <Link href='/modules/email/label/personal' passHref>
               <ListItemStyled
-                component='a'
+                component='span'
                 onClick={handleListItemClick}
                 sx={{
                   borderLeftColor: (theme) =>
@@ -297,7 +297,7 @@ const SidebarLeft = (props) => {
             </Link>
             <Link href='/modules/email/label/company' passHref>
               <ListItemStyled
-                component='a'
+                component='span'
                 onClick={handleListItemClick}
                 sx={{
                   borderLeftColor: (theme) =>
@@ -320,7 +320,7 @@ const SidebarLeft = (props) => {
             </Link>
             <Link href='/modules/email/label/important' passHref>
               <ListItemStyled
-                component='a'
+                component='span'
                 onClick={handleListItemClick}
                 sx={{
                   borderLeftColor: (theme) =>
@@ -343,7 +343,7 @@ const SidebarLeft = (props) => {
             </Link>
             <Link href='/modules/email/label/private' passHref>
               <ListItemStyled
-                component='a'
+                component='span'
                 onClick={handleListItemClick}
                 sx={{
                   borderLeftColor: (theme) =>

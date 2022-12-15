@@ -19,7 +19,7 @@ import ScrollToTop from '~/ui/components/scroll-to-top'
 import AppBarContent from './horizontal/app-bar-content'
 
 // ** Util Import
-import { hexToRGBA } from '~/ui/utils/hex-to-rgba'
+import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
 
 // ** Styled Component
 import DatePickerWrapper from '~/ui/styles/react-datepicker'

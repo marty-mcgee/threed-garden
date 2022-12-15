@@ -17,7 +17,7 @@ import PerfectScrollbarComponent from 'react-perfect-scrollbar'
 import CustomAvatar from '#/ui/components/mui/avatar'
 
 // ** Utils Imports
-import { getInitials } from '#/ui/utils/get-initials'
+import { getInitials } from '#/lib/utils/get-initials'
 
 const PerfectScrollbar = styled(PerfectScrollbarComponent)(({ theme }) => ({
   padding: theme.spacing(5),

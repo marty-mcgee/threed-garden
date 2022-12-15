@@ -3,7 +3,7 @@ import { Fragment } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -26,7 +26,7 @@ import Translations from '#/ui/layouts/Translations'
 import CanViewNavLink from '#/ui/layouts/acl/CanViewNavLink'
 
 // ** Util Import
-import { hexToRGBA } from '~/ui/utils/hex-to-rgba'
+import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
 
 const ListItem = styled(MuiListItem)(({ theme }) => ({
   width: 'auto',

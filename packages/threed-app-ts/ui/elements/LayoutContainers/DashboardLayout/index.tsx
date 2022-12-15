@@ -2,7 +2,7 @@ import { useEffect, ReactNode } from 'react'
 
 // nextjs components
 // import { useLocation } from "react-router-dom"
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'

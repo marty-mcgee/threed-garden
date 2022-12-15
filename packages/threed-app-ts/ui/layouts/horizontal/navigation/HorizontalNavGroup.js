@@ -2,7 +2,7 @@
 import { useState, useEffect, Fragment } from 'react'
 
 // ** Next Import
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -35,7 +35,7 @@ import Translations from '#/ui/layouts/Translations'
 import CanViewNavGroup from '#/ui/layouts/acl/CanViewNavGroup'
 
 // ** Utils
-import { hexToRGBA } from '~/ui/utils/hex-to-rgba'
+import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
 import { hasActiveChild } from '~/ui/layouts/utils'
 
 // ** Styled Components

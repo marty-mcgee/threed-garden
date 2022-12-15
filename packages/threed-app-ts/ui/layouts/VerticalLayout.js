@@ -68,11 +68,9 @@ const VerticalLayout = (props) => {
   const toggleNavVisibility = () => setNavVisible(!navVisible)
 
   return (
-    <div style={{ border: '0px solid green' }}>
-      <div style={{ border: '0px solid pink' }}>
-        <AppBar toggleNavVisibility={toggleNavVisibility} {...props} />
-      </div>
-      <VerticalLayoutWrapper className='layout-wrapper' style={{ border: '0px solid orange' }}>
+    <div>
+      <AppBar toggleNavVisibility={toggleNavVisibility} {...props} />
+      <VerticalLayoutWrapper className='layout-wrapper'>
         {/* LEFT NAVIGATION PANEL DRAWER */}
         {navHidden &&
         themeConfig.layout === 'vertical' &&
@@ -91,7 +89,7 @@ const VerticalLayout = (props) => {
         )}
 
         {/* MAIN CONTENT */}
-        <MainContentWrapper className='layout-content-wrapper' style={{ border: '0px solid blue' }}>
+        <MainContentWrapper className='layout-content-wrapper'>
           <ContentWrapper
             className='layout-page-content'
             sx={{
