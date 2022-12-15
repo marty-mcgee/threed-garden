@@ -36,7 +36,7 @@ import CustomChip from '#/ui/components/mui/chip'
 import CustomAvatar from '#/ui/components/mui/avatar'
 
 // ** Utils Import
-import { getInitials } from '#/ui/utils/get-initials'
+import { getInitials } from '#/lib/utils/get-initials'
 
 // ** Styled <sup> component
 const Sup = styled('sup')(({ theme }) => ({

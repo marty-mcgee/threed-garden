@@ -14,7 +14,7 @@ import CustomAvatar from '#/ui/components/mui/avatar'
 import QuickSearchToolbar from '#/ui/table/data-grid/QuickSearchToolbar'
 
 // ** Utils Import
-import { getInitials } from '#/ui/utils/get-initials'
+import { getInitials } from '#/lib/utils/get-initials'
 
 // ** Data Import
 import { rows } from '#/lib/api/@fake-db/table/static-data'

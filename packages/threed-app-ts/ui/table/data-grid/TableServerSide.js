@@ -17,7 +17,7 @@ import CustomAvatar from '#/ui/components/mui/avatar'
 import ServerSideToolbar from '#/ui/table/data-grid/ServerSideToolbar'
 
 // ** Utils Import
-import { getInitials } from '#/ui/utils/get-initials'
+import { getInitials } from '#/lib/utils/get-initials'
 
 // ** renders client column
 const renderClient = (params) => {

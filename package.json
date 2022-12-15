@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.13.0-alpha.1",
+  "version": "0.13.0-alpha.2",
   "description": "ThreeD Garden: full web3 app running Three.js + React-Three-Fiber using Next.js 13 + 12 (also supports Vite + Vue), Farmbot Ruby/JS Web-App, as a standalone app or WordPress plugin. 'threed-garden' is a functioning, low-dependency app, a package supporting a monorepo of workspaces that utilize/depend on 'Three, WebGL, React, React Three Fiber, NextJS, TypeScript, + Apollo GraphQL', in active development.",
   "repository": {
     "type": "git",
@@ -92,6 +92,7 @@
       "packages/nextjs-app-ts",
       "packages/next13-app-tsX",
       "packages/threed-app-ts",
+      "packages/turbopack-appX",
       "packages/truffle-client",
       "packages/subgraph",
       "packages/services/*",

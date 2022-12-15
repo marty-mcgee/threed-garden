@@ -32,7 +32,7 @@ import ChevronDown from 'mdi-material-ui/ChevronDown'
 import CardWrapper from '#/ui/styles/react-credit-cards'
 
 // ** Util Import
-import { formatCVC, formatExpirationDate, formatCreditCardNumber } from '#/ui/utils/format'
+import { formatCVC, formatExpirationDate, formatCreditCardNumber } from '#/lib/utils/format'
 
 // ** Styles Import
 // import 'react-credit-cards/es/styles-compiled.css'

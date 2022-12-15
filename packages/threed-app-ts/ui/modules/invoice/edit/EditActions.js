@@ -42,7 +42,7 @@ const EditActions = ({ id, toggleSendInvoiceDrawer, toggleAddPaymentDrawer }) =>
           >
             <Button
               fullWidth
-              component='a'
+              component='span'
               sx={{ mb: 3.5 }}
               color='secondary'
               variant='outlined'

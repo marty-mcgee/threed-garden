@@ -12,7 +12,7 @@ import ChevronUp from 'mdi-material-ui/ChevronUp'
 import ReactApexcharts from '#/ui/components/react-apexcharts'
 
 // ** Util Import
-import { hexToRGBA } from '#/ui/utils/hex-to-rgba'
+import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
 
 const EcommerceNewVisitors = () => {
   // ** Hook

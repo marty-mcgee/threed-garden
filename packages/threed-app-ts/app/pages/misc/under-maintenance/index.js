@@ -55,7 +55,7 @@ const UnderMaintenance = () => {
         </BoxWrapper>
         <Img height='487' alt='under-maintenance-illustration' src='/images/pages/misc-under-maintenance.png' />
         <Link passHref href='/'>
-          <Button component='a' variant='contained' sx={{ px: 5.5 }}>
+          <Button component='span' variant='contained' sx={{ px: 5.5 }}>
             Back to Home
           </Button>
         </Link>

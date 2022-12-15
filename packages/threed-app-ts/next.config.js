@@ -28,14 +28,14 @@ const path = require('path')
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   //
-  reactStrictMode: true, // true: causes components to load TWICE in dev only, not active (moot) in production
+  reactStrictMode: false, // true: causes components to load TWICE in dev only, not active (moot) in production
 
   // trailingSlash: false, // true: add a '/' to the final url address -- can cause url-based query string issues
 
   experimental: {
-    // esmExternals: true, // helps with 3rd party modules trying to call non-module js
+    esmExternals: true, // helps with 3rd party modules trying to call non-module js
     externalDir: true, // helps import file loader type for ErrorFallback.tsx boundary
-    // swcFileReading: true, // rust for the web -- 'speedy web compiler' https://swc.rs
+    swcFileReading: true, // rust for the web -- 'speedy web compiler' https://swc.rs
 
     // use Next 13 '/app' directory:
     appDir: true, // true for Next 13 | false for Next 12
@@ -66,7 +66,7 @@ const nextConfig = {
   // https://stackoverflow.com/questions/65598753/cant-build-react-next-project-found-page-without-a-react-component-as-default
   // pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
 
-  /** IMAGES (production use?)
+  // ** IMAGES (production use?)
   images: {
     domains: [
       process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL.match(/(?!(w+)\.)\w*(?:\w+\.)+\w+/)[0], // Valid WP Image domain.
@@ -75,6 +75,14 @@ const nextConfig = {
       '2.gravatar.com',
       'secure.gravatar.com',
       'images.cdndomain.com',
+    ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 's3.amazonaws.com',
+        port: '443',
+        pathname: '/threedpublic/**',
+      },
     ],
     // loader: 'default',
     // // path: 'https://somedomain.com/mydirectory/',
@@ -86,7 +94,6 @@ const nextConfig = {
     // dangerouslyAllowSVG: true,
     // contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  */
 
   // ** REDIRECTS
   // async redirects() {

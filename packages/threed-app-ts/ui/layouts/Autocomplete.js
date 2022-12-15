@@ -3,7 +3,7 @@ import { useEffect, useCallback, useRef, useState } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -263,7 +263,7 @@ const NoResult = ({ value, setOpenDialog }) => {
         <ListItem sx={{ py: 2 }} disablePadding onClick={() => setOpenDialog(false)}>
           <Link passHref href='/dashboards/ecommerce/'>
             <Box
-              component='a'
+              component='span'
               sx={{
                 display: 'flex',
                 alignItems: 'center',
@@ -280,7 +280,7 @@ const NoResult = ({ value, setOpenDialog }) => {
         <ListItem sx={{ py: 2 }} disablePadding onClick={() => setOpenDialog(false)}>
           <Link passHref href='/modules/user/view/2/'>
             <Box
-              component='a'
+              component='span'
               sx={{
                 display: 'flex',
                 alignItems: 'center',
@@ -297,7 +297,7 @@ const NoResult = ({ value, setOpenDialog }) => {
         <ListItem sx={{ py: 2 }} disablePadding onClick={() => setOpenDialog(false)}>
           <Link passHref href='/pages/account-settings/'>
             <Box
-              component='a'
+              component='span'
               sx={{
                 display: 'flex',
                 alignItems: 'center',
@@ -329,7 +329,7 @@ const DefaultSuggestions = ({ setOpenDialog }) => {
               <ListItem key={index2} sx={{ py: 2 }} disablePadding>
                 <Link passHref href={suggestionItem.link}>
                   <Box
-                    component='a'
+                    component='span'
                     onClick={() => setOpenDialog(false)}
                     sx={{
                       display: 'flex',
@@ -368,17 +368,21 @@ const AutocompleteComponent = ({ hidden, settings }) => {
 
   // Get all data using API
   useEffect(() => {
-    axios
-      .get('/app-bar/search', {
-        params: { q: searchValue },
-      })
-      .then((response) => {
-        if (response.data && response.data.length) {
-          setOptions(response.data)
-        } else {
-          setOptions([])
-        }
-      })
+    try {
+      // axios
+      //   .get('/app-bar/search', {
+      //     params: { q: searchValue },
+      //   })
+      //   .then((response) => {
+      //     if (response.data && response.data.length) {
+      //       setOptions(response.data)
+      //     } else {
+      //       setOptions([])
+      //     }
+      //   })
+    } catch (err) {
+      console.debug('axios error getting "/app-bar/search"')
+    }
   }, [searchValue])
   useEffect(() => {
     setIsMounted(true)

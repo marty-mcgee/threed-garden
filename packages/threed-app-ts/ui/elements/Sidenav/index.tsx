@@ -2,9 +2,9 @@ import { useEffect, useState, ReactNode } from 'react'
 
 // nextjs components
 // import { useLocation, NavLink } from "react-router-dom"
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import NextLink from "next/link"
-// import NextLink from '#/ui/utils/NextLink'
+// import NextLink from '#/lib/utils/NextLink'
 
 // @mui material components
 import MuiLink from '@mui/material/Link'

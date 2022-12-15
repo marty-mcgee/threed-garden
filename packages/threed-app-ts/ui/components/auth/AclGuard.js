@@ -2,7 +2,7 @@
 import { useState } from 'react'
 
 // ** Next Imports
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 // ** Context Imports
 import { AbilityContext } from '#/ui/layouts/acl/Can'

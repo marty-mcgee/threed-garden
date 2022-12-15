@@ -33,7 +33,7 @@ import Stacy from '~/lib/examples/Stacy/Stacy'
 import TransformModel from '~/lib/examples/TransformModel/App'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/ui/utils/console-colors'
+import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/lib/utils/console-colors'
 
 // ==============================================================
 // ** VARIABLES

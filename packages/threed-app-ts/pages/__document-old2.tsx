@@ -12,7 +12,7 @@ import Document, { Html, Head, Main, NextScript } from 'next/document'
 import createEmotionServer from '@emotion/server/create-instance'
 
 // ** Utils Imports
-import { createEmotionCache } from '#/ui/utils/create-emotion-cache'
+import { createEmotionCache } from '#/lib/utils/create-emotion-cache'
 
 class CustomDocument extends Document {
   render() {

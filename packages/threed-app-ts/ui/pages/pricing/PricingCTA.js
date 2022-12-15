@@ -6,7 +6,7 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 
 // ** Util Import
-import { hexToRGBA } from '#/ui/utils/hex-to-rgba'
+import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
 
 // ** Styled Components
 const BoxWrapper = styled(Box)(({ theme }) => ({

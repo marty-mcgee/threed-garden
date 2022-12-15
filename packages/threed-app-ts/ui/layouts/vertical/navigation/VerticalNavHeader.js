@@ -81,7 +81,7 @@ const VerticalNavHeader = (props) => {
     userMenuLockedIcon || (
       <RecordCircleOutline
         sx={{
-          mr: '0.95rem',
+          // mr: '0.95rem',
           fontSize: '1.25rem',
           pointerEvents: 'none',
           ...menuCollapsedStyles,
@@ -94,7 +94,7 @@ const VerticalNavHeader = (props) => {
     userMenuUnlockedIcon || (
       <CircleOutline
         sx={{
-          mr: '1rem',
+          // mr: '1rem',
           fontSize: '1.25rem',
           pointerEvents: 'none',
           ...menuCollapsedStyles,
@@ -108,12 +108,24 @@ const VerticalNavHeader = (props) => {
       {userVerticalNavMenuBranding ? (
         userVerticalNavMenuBranding(props)
       ) : (
-        <StyledLink href='/' passHref>
-          <Image src={brandDark.src} alt={themeConfig.templateName} width={48} height={48} />
-          <HeaderTitle variant='h6' sx={{ ...menuCollapsedStyles, ...(navCollapsed && !navHover ? {} : { ml: 3 }) }}>
-            {themeConfig.templateName}
-          </HeaderTitle>
-        </StyledLink>
+        <>
+          <StyledLink href='/' passHref>
+            <Image src={brandDark.src} alt={themeConfig.templateName} width={48} height={48} />
+          </StyledLink>
+          <IconButton
+            disableRipple
+            disableFocusRipple
+            onClick={() => saveSettings({ ...settings, navCollapsed: !navCollapsed })}>
+            <HeaderTitle
+              variant='h6'
+              sx={{
+                // ...menuCollapsedStyles,
+                ...(navCollapsed && !navHover ? { ml: 1 } : { ml: 1 }),
+              }}>
+              {themeConfig.templateName}
+            </HeaderTitle>
+          </IconButton>
+        </>
       )}
 
       {hidden ? (
@@ -121,15 +133,16 @@ const VerticalNavHeader = (props) => {
           disableRipple
           disableFocusRipple
           onClick={toggleNavVisibility}
-          sx={{ p: 0, backgroundColor: 'transparent !important' }}>
-          <Close fontSize='small' />
+          sx={{ backgroundColor: 'transparent !important' }}>
+          {/* <Close fontSize='small' /> */}
+          {navCollapsed ? MenuUnlockedIcon() : MenuLockedIcon()}
         </IconButton>
       ) : (
         <IconButton
           disableRipple
           disableFocusRipple
           onClick={() => saveSettings({ ...settings, navCollapsed: !navCollapsed })}
-          sx={{ p: 0, backgroundColor: 'transparent !important', color: 'text.primary' }}>
+          sx={{ backgroundColor: 'transparent !important', color: 'text.primary' }}>
           {navCollapsed ? MenuUnlockedIcon() : MenuLockedIcon()}
         </IconButton>
       )}

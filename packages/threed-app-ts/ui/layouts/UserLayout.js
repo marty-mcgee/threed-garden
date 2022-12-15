@@ -3,36 +3,35 @@
 
 import useMediaQuery from '@mui/material/useMediaQuery'
 
-// ** Layout Imports
+// ** Layout
 // !Do not remove this Layout import
 import Layout from '#/ui/layouts/Layout'
 
-// ** Navigation Imports
+// ** Navigation
 import VerticalNavItems from '#/ui/routes/navigation/vertical'
 import HorizontalNavItems from '#/ui/routes/navigation/horizontal'
-
-// ** Component Import
 // Uncomment the below line (according to the layout type) when using server-side menu
 // import ServerSideVerticalNavItems from './vertical/ServerSideNavItems'
 // import ServerSideHorizontalNavItems from './horizontal/ServerSideNavItems'
 
+// ** Components
 import VerticalAppBarContent from './vertical/AppBarContent'
 import HorizontalAppBarContent from './horizontal/AppBarContent'
 
-// ** Hook Import
+// ** Hooks
 import { useSettings } from '#/ui/hooks/useSettings'
 
-// ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm1, ccm4, ccm5 } from '#/ui/utils/console-colors'
+// ** Utilities
+import ccm from '#/lib/utils/console-colors'
 
 // FC
 const UserLayout = ({ children }) => {
   //
   // [MM] HEY HEY HEY UserLayout USER LAYOUT
-  // console.debug('%c====================================', ccm5)
+  // console.debug('%c====================================', ccm.black)
   console.debug('🦁 <UserLayout>')
   // console.debug('🦁 const heyheyhey = ', { heyheyhey: 'HEY HEY HEY' })
-  // console.debug('%c====================================', ccm5)
+  // console.debug('%c====================================', ccm.black)
 
   // ** Hooks
   const { settings, saveSettings } = useSettings()
@@ -54,22 +53,24 @@ const UserLayout = ({ children }) => {
       saveSettings={saveSettings}
       {...(settings.layout === 'horizontal'
         ? {
+            // HORIZONTAL
             // ** Navigation Items
             horizontalNavItems: HorizontalNavItems(),
-
             // Uncomment the below line when using server-side menu in horizontal layout and comment the above line
             // horizontalNavItems: ServerSideHorizontalNavItems(),
+
             // ** AppBar Content
             horizontalAppBarContent: () => (
               <HorizontalAppBarContent hidden={hidden} settings={settings} saveSettings={saveSettings} />
             ),
           }
         : {
+            // VERTICAL
             // ** Navigation Items
             verticalNavItems: VerticalNavItems(),
-
             // Uncomment the below line when using server-side menu in vertical layout and comment the above line
             // verticalNavItems: ServerSideVerticalNavItems(),
+
             // ** AppBar Content
             verticalAppBarContent: (props) => (
               <VerticalAppBarContent

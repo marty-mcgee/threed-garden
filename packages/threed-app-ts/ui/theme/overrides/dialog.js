@@ -1,5 +1,5 @@
 // ** Util Import
-import { hexToRGBA } from '~/ui/utils/hex-to-rgba'
+import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
 
 const Dialog = (theme, skin) => {
   return {
