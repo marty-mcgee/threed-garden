@@ -3493,8 +3493,9 @@ const ThreeDGarden: FC = (props: any): JSX.Element => {
       id='threedgarden-div'
       style={{ width: '100%' }}
     >
-      <Loader />
-      {/* <Suspense fallback={null}> */}
+      {/* <Loader /> */}
+
+      <Suspense fallback={null}>
       {/* <div ref={title}>ThreeDGarden: {word}</div> */}
       {/* <div ref={root}>Three root</div> */}
 
@@ -3529,7 +3530,7 @@ const ThreeDGarden: FC = (props: any): JSX.Element => {
               <Tab label='Testing' {...tabProps(10)} />
             </Tabs>
           </Box>
-          <MDTabPanel value={tabInfoControl} index={0}>
+          {/* <MDTabPanel value={tabInfoControl} index={0}>
             <ProjectControlPanel />
             <ProjectInfoPanel />
           </MDTabPanel>
@@ -3568,7 +3569,7 @@ const ThreeDGarden: FC = (props: any): JSX.Element => {
           <MDTabPanel value={tabInfoControl} index={9}>
             <PlantingPlanControlPanel />
             <PlantingPlanInfoPanel />
-          </MDTabPanel>
+          </MDTabPanel> */}
           <MDTabPanel value={tabInfoControl} index={10}>
             Testing Panel
             {/* <CharacterControlPanel /> */}
@@ -3599,7 +3600,7 @@ const ThreeDGarden: FC = (props: any): JSX.Element => {
         {/* <PlanView /> */}
         {/* <TheBottom /> */}
       </div>
-      {/* </Suspense> */}
+      </Suspense>
     </div>
   )
 }

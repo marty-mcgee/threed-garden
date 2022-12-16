@@ -10,7 +10,7 @@ import CircleOutline from 'mdi-material-ui/Tree'
 const themeConfig = {
   // ** Layout Configs
   templateName: 'ThreeD Garden', // App Name
-  layout: 'vertical', // vertical | horizontal
+  layout: 'horizontal', // vertical | horizontal
   mode: 'dark', // light | dark
   direction: 'ltr', // ltr | rtl
   skin: 'default', // default | bordered | semi-dark, //! Note: semi-dark value will only work for Vertical Layout

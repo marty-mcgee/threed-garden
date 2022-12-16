@@ -30,7 +30,7 @@ import {
 } from '#/ui/elements/Navbars/DashboardNavbar/styles'
 
 // ThreeD Garden context
-import { useMaterialUIController, setTransparentNavbar, setMiniSidenav, setOpenConfigurator } from '~/ui/context'
+import { useMaterialUIController, setTransparentNavbar, setMiniSidenav, setOpenConfigurator } from '#/ui/context'
 
 // Declaring prop types for DashboardNavbar
 interface Props {
@@ -62,9 +62,9 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
     }
 
     /**
-     The event listener that's calling the handleTransparentNavbar function when
-     scrolling the window.
-    */
+     * The event listener that's calling the handleTransparentNavbar function when
+     * scrolling the window.
+     */
     window.addEventListener('scroll', handleTransparentNavbar)
 
     // Call the handleTransparentNavbar function to set the state with the initial value.

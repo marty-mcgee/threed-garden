@@ -1,8 +1,8 @@
 // ThreeD Garden Base Styles
-import breakpoints from '~/ui/themes/theme-dark/base/breakpoints'
+import breakpoints from '#/ui/themes/theme-dark/base/breakpoints'
 
 // ThreeD Garden Helper Functions
-import pxToRem from '~/ui/themes/theme-dark/functions/pxToRem'
+import pxToRem from '#/ui/themes/theme-dark/functions/pxToRem'
 
 // types
 type Types = any

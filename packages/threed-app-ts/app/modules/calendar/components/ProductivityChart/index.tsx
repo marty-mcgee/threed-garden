@@ -17,7 +17,7 @@ import MDTypography from '#/lib/mui/MDTypography'
 import configs from '#/app/modules/calendar/components/ProductivityChart/configs'
 
 // ThreeD Garden Base Styles
-import typography from '~/ui/themes/theme-light/base/typography'
+import typography from '#/ui/themes/theme-light/base/typography'
 
 function ProductivityChart(): JSX.Element {
   const { size } = typography

@@ -1,9 +1,9 @@
 // ThreeD Garden Base Styles
-import colors from '~/ui/themes/theme-dark/base/colors'
-import typography from '~/ui/themes/theme-dark/base/typography'
+import colors from '#/ui/themes/theme-dark/base/colors'
+import typography from '#/ui/themes/theme-dark/base/typography'
 
 // ThreeD Garden Helper Functions
-import pxToRem from '~/ui/themes/theme-dark/functions/pxToRem'
+import pxToRem from '#/ui/themes/theme-dark/functions/pxToRem'
 
 const { white, text, info, secondary } = colors
 const { size } = typography

@@ -3,7 +3,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden context
-import { useMaterialUIController } from '~/ui/context'
+import { useMaterialUIController } from '#/ui/context'
 
 function BillingInformation(): JSX.Element {
   const [controller] = useMaterialUIController()

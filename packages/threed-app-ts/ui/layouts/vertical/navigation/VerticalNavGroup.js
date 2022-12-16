@@ -25,13 +25,13 @@ import ChevronRight from 'mdi-material-ui/ChevronRight'
 import themeConfig from '#/lib/config/themeConfig'
 
 // ** Utils
-import { hasActiveChild, removeChildren } from '~/ui/layouts/utils'
+import { hasActiveChild, removeChildren } from '#/ui/layouts/common/utils'
 
 // ** Custom Components Imports
 import VerticalNavItems from './VerticalNavItems'
-import UserIcon from '#/ui/layouts/UserIcon'
-import Translations from '#/ui/layouts/Translations'
-import CanViewNavGroup from '#/ui/layouts/acl/CanViewNavGroup'
+import UserIcon from '#/ui/layouts/common/UserIcon'
+import Translations from '#/ui/layouts/common/Translations'
+import CanViewNavGroup from '#/lib/auth/acl/CanViewNavGroup'
 
 const MenuItemTextWrapper = styled(Box)(() => ({
   width: '100%',

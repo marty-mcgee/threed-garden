@@ -1,8 +1,8 @@
 // ThreeD Garden Base Styles
-import breakpoints from '~/ui/themes/theme-light/base/breakpoints'
+import breakpoints from '#/ui/themes/theme-light/base/breakpoints'
 
 // ThreeD Garden Helper Functions
-import pxToRem from '~/ui/themes/theme-light/functions/pxToRem'
+import pxToRem from '#/ui/themes/theme-light/functions/pxToRem'
 
 // types
 type Types = any

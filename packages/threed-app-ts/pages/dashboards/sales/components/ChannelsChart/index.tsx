@@ -15,7 +15,7 @@ import PieChart from '#/ui/elements/Charts/PieChart'
 import channelChartData from '#/lib/api/@fake-db/pages/dashboards/sales/components/ChannelsChart/data'
 
 // ThreeD Garden contexts
-import { useMaterialUIController } from '~/ui/context'
+import { useMaterialUIController } from '#/ui/context'
 
 function ChannelsChart(): JSX.Element {
   const [controller] = useMaterialUIController()

@@ -21,9 +21,9 @@ import clsx from 'clsx'
 import themeConfig from '#/lib/config/themeConfig'
 
 // ** Custom Components Imports
-import UserIcon from '#/ui/layouts/UserIcon'
-import Translations from '#/ui/layouts/Translations'
-import CanViewNavLink from '#/ui/layouts/acl/CanViewNavLink'
+import UserIcon from '#/ui/layouts/common/UserIcon'
+import Translations from '#/ui/layouts/common/Translations'
+import CanViewNavLink from '#/lib/auth/acl/CanViewNavLink'
 
 // ** Util Import
 import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
@@ -75,7 +75,7 @@ const HorizontalNavLink = (props) => {
       <Wrapper {...(!hasParent ? { component: 'div', sx: { py: settings.skin === 'bordered' ? 2.625 : 2.75 } } : {})}>
         <Link href={`${item.path}`} passHref>
           <ListItem
-            component={'a'}
+            component='span'
             disabled={item.disabled}
             className={clsx({ active: isNavLinkActive() })}
             target={item.openInNewTab ? '_blank' : undefined}

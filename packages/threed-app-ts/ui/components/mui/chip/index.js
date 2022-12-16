@@ -2,7 +2,7 @@
 import MuiChip from '@mui/material/Chip'
 
 // ** Hooks Imports
-import useBgColor from '~/ui/hooks/useBgColor'
+import useBgColor from '#/ui/hooks/useBgColor'
 
 const Chip = (props) => {
   // ** Props

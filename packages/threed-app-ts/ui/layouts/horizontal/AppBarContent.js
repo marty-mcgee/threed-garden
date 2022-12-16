@@ -2,11 +2,11 @@
 import Box from '@mui/material/Box'
 
 // ** Components
-import Autocomplete from '#/ui/layouts/Autocomplete'
-import ModeToggler from '#/ui/layouts/shared-components/ModeToggler'
-import UserDropdown from '#/ui/layouts/shared-components/UserDropdown'
-import LanguageDropdown from '#/ui/layouts/shared-components/LanguageDropdown'
-import NotificationDropdown from '#/ui/layouts/shared-components/NotificationDropdown'
+import Autocomplete from '#/ui/layouts/common/Autocomplete'
+import ModeToggler from '#/ui/layouts/common/ModeToggler'
+import UserDropdown from '#/ui/layouts/common/UserDropdown'
+import LanguageDropdown from '#/ui/layouts/common/LanguageDropdown'
+import NotificationDropdown from '#/ui/layouts/common/NotificationDropdown'
 
 const AppBarContent = (props) => {
   // ** Props

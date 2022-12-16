@@ -9,7 +9,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden components
-import borders from '~/ui/themes/theme-light/base/borders'
+import borders from '#/ui/themes/theme-light/base/borders'
 
 // Declaring props types for FaqCollapse
 interface Props {

@@ -7,7 +7,7 @@ import MDTypography from '#/lib/mui/MDTypography'
 import MDButton from '#/lib/mui/MDButton'
 
 // ThreeD Garden context
-import { useMaterialUIController } from '~/ui/context'
+import { useMaterialUIController } from '#/ui/context'
 
 // Declaring props types for Bill
 interface Props {

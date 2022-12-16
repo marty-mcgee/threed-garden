@@ -5,7 +5,7 @@ import MuiAppBar from '@mui/material/AppBar'
 import MuiToolbar from '@mui/material/Toolbar'
 
 // ** Component Imports
-import VerticalNavHeader from '~/ui/layouts/vertical/navigation/VerticalNavHeader'
+import VerticalNavHeader from '#/ui/layouts/vertical/navigation/VerticalNavHeader'
 
 // ** Util Imports
 import { hexToRGBA } from '#/lib/utils/hex-to-rgba'

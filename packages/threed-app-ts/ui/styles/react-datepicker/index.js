@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 
 // ** Hooks
-import { useSettings } from '~/ui/hooks/useSettings'
+import { useSettings } from '#/ui/hooks/useSettings'
 
 // ** Util Import
 import { hexToRGBA } from '#/lib/utils/hex-to-rgba'

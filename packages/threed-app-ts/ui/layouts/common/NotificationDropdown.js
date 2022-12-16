@@ -18,8 +18,8 @@ import BellOutline from 'mdi-material-ui/BellOutline'
 import PerfectScrollbarComponent from 'react-perfect-scrollbar'
 
 // ** Custom Components Imports
-import CustomChip from '~/ui/components/mui/chip'
-import CustomAvatar from '~/ui/components/mui/avatar'
+import CustomChip from '#/ui/components/mui/chip'
+import CustomAvatar from '#/ui/components/mui/avatar'
 
 // ** Styled Menu component
 const Menu = styled(MuiMenu)(({ theme }) => ({

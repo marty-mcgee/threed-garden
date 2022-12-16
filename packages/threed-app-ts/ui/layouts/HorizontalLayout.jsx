@@ -12,17 +12,17 @@ import ArrowUp from 'mdi-material-ui/ArrowUp'
 import themeConfig from '#/lib/config/themeConfig'
 
 // ** Components
-import Customizer from '~/ui/components/customizer'
-import Footer from './shared-components/footer'
+// import Customizer from '#/ui/components/customizer'
+import Footer from './footer'
 import Navigation from './horizontal/navigation'
-import ScrollToTop from '~/ui/components/scroll-to-top'
+import ScrollToTop from '#/ui/components/scroll-to-top'
 import AppBarContent from './horizontal/app-bar-content'
 
 // ** Util Import
 import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
 
 // ** Styled Component
-import DatePickerWrapper from '~/ui/styles/react-datepicker'
+import DatePickerWrapper from '#/ui/styles/react-datepicker'
 
 const HorizontalLayoutWrapper = styled('div')({
   display: 'flex',
@@ -141,7 +141,7 @@ const HorizontalLayout = (props) => {
         <Box id='react-datepicker-portal'></Box>
       </DatePickerWrapper>
 
-      {themeConfig.disableCustomizer || hidden ? null : <Customizer />}
+      {/* {themeConfig.disableCustomizer || hidden ? null : <Customizer />} */}
 
       {scrollToTop ? (
         scrollToTop(props)

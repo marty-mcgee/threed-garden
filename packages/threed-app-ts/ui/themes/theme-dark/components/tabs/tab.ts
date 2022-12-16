@@ -1,10 +1,10 @@
 // ThreeD Garden Base Styles
-import typography from '~/ui/themes/theme-dark/base/typography'
-import borders from '~/ui/themes/theme-dark/base/borders'
-import colors from '~/ui/themes/theme-dark/base/colors'
+import typography from '#/ui/themes/theme-dark/base/typography'
+import borders from '#/ui/themes/theme-dark/base/borders'
+import colors from '#/ui/themes/theme-dark/base/colors'
 
 // ThreeD Garden Helper Functions
-import pxToRem from '~/ui/themes/theme-dark/functions/pxToRem'
+import pxToRem from '#/ui/themes/theme-dark/functions/pxToRem'
 
 const { size, fontWeightRegular } = typography
 const { borderRadius } = borders

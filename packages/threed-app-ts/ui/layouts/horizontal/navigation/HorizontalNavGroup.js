@@ -30,13 +30,13 @@ import themeConfig from '#/lib/config/themeConfig'
 
 // ** Custom Components Imports
 import HorizontalNavItems from './HorizontalNavItems'
-import UserIcon from '#/ui/layouts/UserIcon'
-import Translations from '#/ui/layouts/Translations'
-import CanViewNavGroup from '#/ui/layouts/acl/CanViewNavGroup'
+import UserIcon from '#/ui/layouts/common/UserIcon'
+import Translations from '#/ui/layouts/common/Translations'
+import CanViewNavGroup from '#/lib/auth/acl/CanViewNavGroup'
 
 // ** Utils
 import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
-import { hasActiveChild } from '~/ui/layouts/utils'
+import { hasActiveChild } from '#/ui/layouts/common/utils'
 
 // ** Styled Components
 const ListItem = styled(MuiListItem)(({ theme }) => ({
@@ -108,12 +108,12 @@ const HorizontalNavGroup = (props) => {
       },
       {
         name: 'flip',
-        enabled: true,
-        options: {
-          // @ts-ignore
-          boundary: window,
-          fallbackPlacements: ['auto-start', 'right'],
-        },
+        enabled: false,
+        // enabled: true,
+        // options: {
+        //   boundary: window !== 'undefined' ? window : null,
+        //   fallbackPlacements: ['auto-start', 'right'],
+        // },
       },
     ],
   })
@@ -147,23 +147,24 @@ const HorizontalNavGroup = (props) => {
   const AnimationWrapper = horizontalMenuAnimation ? Fade : Fragment
 
   const childMenuGroupStyles = () => {
-    if (attributes && attributes.popper) {
-      if (direction === 'ltr') {
-        if (attributes.popper['data-popper-placement'] === 'right-start') {
-          return 'left'
-        }
-        if (attributes.popper['data-popper-placement'] === 'left-start') {
-          return 'right'
-        }
-      } else {
-        if (attributes.popper['data-popper-placement'] === 'right-start') {
-          return 'right'
-        }
-        if (attributes.popper['data-popper-placement'] === 'left-start') {
-          return 'left'
-        }
-      }
-    }
+    // if (attributes && attributes.popper) {
+    //   if (direction === 'ltr') {
+    //     if (attributes.popper['data-popper-placement'] === 'right-start') {
+    //       return 'left'
+    //     }
+    //     if (attributes.popper['data-popper-placement'] === 'left-start') {
+    //       return 'right'
+    //     }
+    //   } else {
+    //     if (attributes.popper['data-popper-placement'] === 'right-start') {
+    //       return 'right'
+    //     }
+    //     if (attributes.popper['data-popper-placement'] === 'left-start') {
+    //       return 'left'
+    //     }
+    //   }
+    // }
+    return 'left'
   }
 
   return (

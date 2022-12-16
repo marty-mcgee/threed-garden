@@ -1,9 +1,9 @@
 // ThreeD Garden Base Styles
-import typography from '~/ui/themes/theme-light/base/typography'
-import borders from '~/ui/themes/theme-light/base/borders'
+import typography from '#/ui/themes/theme-light/base/typography'
+import borders from '#/ui/themes/theme-light/base/borders'
 
 // ThreeD Garden Helper Functions
-import pxToRem from '~/ui/themes/theme-light/functions/pxToRem'
+import pxToRem from '#/ui/themes/theme-light/functions/pxToRem'
 
 const { fontWeightBold, size } = typography
 const { borderRadius } = borders

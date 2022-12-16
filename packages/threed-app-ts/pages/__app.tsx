@@ -63,7 +63,7 @@ import Spinner from '#/ui/components/spinner'
 import NProgress from 'nprogress'
 
 // ** Contexts
-import { AuthProvider } from '~/ui/context/AuthContext'
+import { AuthProvider } from '#/ui/context/AuthContext'
 import { SettingsConsumer, SettingsProvider } from '#/ui/context/settingsContext'
 
 // ** Styled Components

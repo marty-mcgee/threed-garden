@@ -8,7 +8,7 @@ import { ThemeProvider, createTheme, responsiveFontSizes } from '@mui/material/s
 import themeConfig from '#/lib/config/themeConfig'
 
 // ** Direction component for LTR or RTL
-import Direction from '#/ui/layouts/Direction'
+import Direction from '#/ui/layouts/common/Direction'
 
 // ** Theme Override Imports
 import overrides from './overrides'
@@ -16,7 +16,7 @@ import typography from './typography'
 
 // ** Theme
 import themeOptions from './ThemeOptions'
-import UserThemeOptions from '#/ui/layouts/UserThemeOptions'
+import UserThemeOptions from '#/ui/theme/UserThemeOptions'
 
 // ** Global Styles
 import GlobalStyling from './globalStyles'
