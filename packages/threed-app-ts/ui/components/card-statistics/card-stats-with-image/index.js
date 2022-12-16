@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 
 // ** Custom Components Imports
-import CustomChip from '~/ui/components/mui/chip'
+import CustomChip from '#/ui/components/mui/chip'
 
 // ** Styled component for the image
 const Img = styled('img')({

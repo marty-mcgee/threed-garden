@@ -5,8 +5,8 @@ import Typography from '@mui/material/Typography'
 import MuiListSubheader from '@mui/material/ListSubheader'
 
 // ** Custom Components Imports
-import Translations from '#/ui/layouts/Translations'
-import CanViewNavSectionTitle from '#/ui/layouts/acl/CanViewNavSectionTitle'
+import Translations from '#/ui/layouts/common/Translations'
+import CanViewNavSectionTitle from '#/lib/auth/acl/CanViewNavSectionTitle'
 
 // ** Styled Components
 const ListSubheader = styled((props) => <MuiListSubheader component='li' {...props} />)(({ theme }) => ({

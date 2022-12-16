@@ -35,7 +35,7 @@ import categoriesListData from '#/lib/api/@fake-db/pages/rtl/data/categoriesList
 import caloriesChartData from '#/lib/api/@fake-db/pages/rtl/data/caloriesChartData'
 
 // ThreeD Garden contexts
-import { useMaterialUIController, setDirection } from '~/ui/context'
+import { useMaterialUIController, setDirection } from '#/ui/context'
 
 function RTL(): JSX.Element {
   const [, dispatch] = useMaterialUIController()

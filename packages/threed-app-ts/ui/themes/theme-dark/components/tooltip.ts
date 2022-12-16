@@ -2,12 +2,12 @@
 import Fade from '@mui/material/Fade'
 
 // ThreeD Garden Base Styles
-import colors from '~/ui/themes/theme-dark/base/colors'
-import typography from '~/ui/themes/theme-dark/base/typography'
-import borders from '~/ui/themes/theme-dark/base/borders'
+import colors from '#/ui/themes/theme-dark/base/colors'
+import typography from '#/ui/themes/theme-dark/base/typography'
+import borders from '#/ui/themes/theme-dark/base/borders'
 
 // ThreeD Garden Helper Functions
-import pxToRem from '~/ui/themes/theme-dark/functions/pxToRem'
+import pxToRem from '#/ui/themes/theme-dark/functions/pxToRem'
 
 const { black, white } = colors
 const { size, fontWeightRegular } = typography

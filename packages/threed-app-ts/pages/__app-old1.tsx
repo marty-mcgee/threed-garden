@@ -31,14 +31,14 @@ import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import Icon from '@mui/material/Icon'
 // theme: mui: Material UI Context Provider
-import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '~/ui/context'
+import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '#/ui/context'
 // theme: mui: emotion cache
 import { CacheProvider, EmotionCache } from '@emotion/react'
-import createEmotionCache from '~/ui/themes/common/createEmotionCache'
+import createEmotionCache from '#/ui/theme/createEmotionCache'
 import createCache from '@emotion/cache'
 // theme: mui: custom
-import themeLight from '~/ui/themes/theme-light'
-import themeDark from '~/ui/themes/theme-dark'
+import themeLight from '#/ui/themes/theme-light'
+import themeDark from '#/ui/themes/theme-dark'
 import rtlPlugin from 'stylis-plugin-rtl'
 
 // images
@@ -414,11 +414,11 @@ export default function BoilerplateApp(props: AppPropsWithLayout) {
 // import { ThemeProvider } from "@mui/material/styles"
 // import CssBaseline from "@mui/material/CssBaseline"
 // import { CacheProvider, EmotionCache } from "@emotion/react"
-// import theme from "~/ui/themes/theme-dark"
-// import createEmotionCache from "~/ui/themes/createEmotionCache"
+// import theme from "#/ui/themes/theme-dark"
+// import createEmotionCache from "#/ui/themes/createEmotionCache"
 
 // // Material UI Context Provider
-// import { MaterialUIControllerProvider } from "~/ui/context"
+// import { MaterialUIControllerProvider } from "#/ui/context"
 
 // // Client-side cache, shared for the whole session of the user in the browser.
 // const clientSideEmotionCache = createEmotionCache()

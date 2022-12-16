@@ -21,7 +21,7 @@ import { Provider as ReduxProvider } from 'react-redux'
 import { store as reduxStore } from '#/lib/stores/redux'
 
 // ** Contexts for User Authorization + Settings
-import { AuthProvider } from '~/ui/context/AuthContext'
+import { AuthProvider } from '#/ui/context/AuthContext'
 
 // ** Contexts for Theme Settings + MUI Components
 import { SettingsProvider, SettingsConsumer } from '#/ui/context/settingsContext'
@@ -130,11 +130,12 @@ const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
   const acl = Component.acl ?? defaultACLObj
 
   return (
-    <ThreeDProvider>
+    // <ThreeDProvider>
       <ApolloProvider client={client}>
         <ReduxProvider store={reduxStore}>
           <AuthProvider>
             {/* <WindowWrapper> */}
+            <ThreeDProvider>
               {/* <Guard
                 authGuard={authGuard}
                 guestGuard={guestGuard}
@@ -169,58 +170,13 @@ const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
                   </SettingsProvider>
                 {/* </AclGuard> */}
               {/* </Guard> */}
+            </ThreeDProvider>
             {/* </WindowWrapper> */}
           </AuthProvider>
         </ReduxProvider>
       </ApolloProvider>
-    </ThreeDProvider>
+    // </ThreeDProvider>
   )
-  // return (
-  //   <ThreeDProvider>
-  //     <ApolloProvider client={client}>
-  //       <ReduxProvider store={reduxStore}>
-  //         {/* <CacheProvider value={emotionCache}> */}
-  //           <HeadMeta />{/* title={pageProps.title} */}
-  //           <AuthProvider>
-              // <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null })}>
-              //   <SettingsConsumer>
-              //     {({ settings }) => (
-              //       <ThemeComponent settings={settings}>
-                      // <WindowWrapper>
-                      //   <Guard
-                      //     authGuard={authGuard}
-                      //     guestGuard={guestGuard}
-                      //   >
-                      //     <AclGuard
-                      //       aclAbilities={aclAbilities}
-                      //       guestGuard={guestGuard}
-                      //     >
-                      //       {getLayout(
-                      //         // <UserLayout>
-                      //           <EthApp {...props}>
-                      //             <Component {...pageProps} />
-                      //           </EthApp>
-                      //         // </UserLayout>
-                      //       )}
-                      //     </AclGuard>
-                      //   </Guard>
-                      // </WindowWrapper>
-  //                     <ReactHotToast>
-  //                       <Toaster
-  //                         position={settings.toastPosition as ToastPosition}
-  //                         toastOptions={{ className: 'react-hot-toast' }}
-  //                       />
-  //                     </ReactHotToast>
-  //                   </ThemeComponent>
-  //                 )}
-  //               </SettingsConsumer>
-  //             </SettingsProvider>
-  //           </AuthProvider>
-  //         {/* </CacheProvider> */}
-  //       </ReduxProvider>
-  //     </ApolloProvider>
-  //   </ThreeDProvider>
-  // )
 }
 
 export default RootLayout

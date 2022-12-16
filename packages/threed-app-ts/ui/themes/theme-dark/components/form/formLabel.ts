@@ -1,5 +1,5 @@
 // ThreeD Garden Base Styles
-import colors from '~/ui/themes/theme-dark/base/colors'
+import colors from '#/ui/themes/theme-dark/base/colors'
 
 const { text } = colors
 

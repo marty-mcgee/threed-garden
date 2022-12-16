@@ -1,11 +1,11 @@
 // ThreeD Garden Base Styles
-import colors from '~/ui/themes/theme-dark/base/colors'
-import borders from '~/ui/themes/theme-dark/base/borders'
-import typography from '~/ui/themes/theme-dark/base/typography'
+import colors from '#/ui/themes/theme-dark/base/colors'
+import borders from '#/ui/themes/theme-dark/base/borders'
+import typography from '#/ui/themes/theme-dark/base/typography'
 
 // // ThreeD Garden UI Dashboard PRO helper functions
-import pxToRem from '~/ui/themes/theme-dark/functions/pxToRem'
-import rgba from '~/ui/themes/theme-dark/functions/rgba'
+import pxToRem from '#/ui/themes/theme-dark/functions/pxToRem'
+import rgba from '#/ui/themes/theme-dark/functions/rgba'
 
 const { inputBorderColor, info, grey, transparent, white } = colors
 const { borderRadius } = borders

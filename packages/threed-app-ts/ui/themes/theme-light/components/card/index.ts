@@ -1,10 +1,10 @@
 // ThreeD Garden Base Styles
-import colors from '~/ui/themes/theme-light/base/colors'
-import borders from '~/ui/themes/theme-light/base/borders'
-import boxShadows from '~/ui/themes/theme-light/base/boxShadows'
+import colors from '#/ui/themes/theme-light/base/colors'
+import borders from '#/ui/themes/theme-light/base/borders'
+import boxShadows from '#/ui/themes/theme-light/base/boxShadows'
 
 // ThreeD Garden Helper Function
-import rgba from '~/ui/themes/theme-light/functions/rgba'
+import rgba from '#/ui/themes/theme-light/functions/rgba'
 
 const { black, white } = colors
 const { borderWidth, borderRadius } = borders

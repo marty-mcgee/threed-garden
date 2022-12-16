@@ -45,10 +45,10 @@ const state = proxy({ current: null, mode: 0 })
 const modes = ['translate', 'rotate', 'scale']
 
 // example working simple <Loader />
-// function LoaderSimple() {
-//   const { progress } = useProgress()
-//   return <Html center>{Math.round(progress)} % loaded</Html>
-// }
+function LoaderSimple() {
+  const { progress } = useProgress()
+  return <Html center>{Math.round(progress)} % loaded</Html>
+}
 
 // Controls
 function ThreeDControls() {
@@ -59,9 +59,18 @@ function ThreeDControls() {
   return (
     <>
       {/* As of drei@7.13 transform-controls can refer to the target by children, or the object prop */}
-      {snap.current && <TransformControls object={scene.getObjectByName(snap.current)} mode={modes[snap.mode]} />}
+      {snap.current && (
+        <TransformControls
+          object={scene.getObjectByName(snap.current)}
+          mode={modes[snap.mode]}
+        />
+      )}
       {/* makeDefault makes the controls known to r3f, now transform-controls can auto-disable them when active */}
-      <OrbitControls makeDefault minPolarAngle={0} maxPolarAngle={Math.PI / 1.75} />
+      <OrbitControls
+        makeDefault
+        minPolarAngle={0}
+        maxPolarAngle={Math.PI / 1.75}
+      />
     </>
   )
 }
@@ -83,36 +92,76 @@ export default function ThreeDCanvas({ models, children }) {
       style={{
         height: '540px',
         width: '100%',
-      }}>
+      }}
+    >
       <Preload all />
 
       {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
-      {/* <Suspense fallback={<LoaderSimple />}> */}
-      <Suspense fallback={null}>
-        <Environment preset='forest' background />
+      {/* <Suspense fallback={null}> */}
+      <Suspense fallback={<LoaderSimple />}>
+        {/* <Environment preset='forest' background /> */}
 
         <ThreeDControls />
 
-        <GizmoHelper alignment='top-right' margin={[100, 100]}>
+        {/* */}
+        <GizmoHelper
+          alignment='top-right'
+          margin={[100, 100]}
+        >
           <group scale={0.85}>
             <GizmoViewcube />
           </group>
-          <group scale={1.75} position={[-30, -30, -30]}>
-            <GizmoViewport labelColor='white' axisHeadScale={0.525} hideNegativeAxes />
+          <group
+            scale={1.75}
+            position={[-30, -30, -30]}
+          >
+            <GizmoViewport
+              labelColor='white'
+              axisHeadScale={0.525}
+              hideNegativeAxes
+            />
           </group>
         </GizmoHelper>
 
         <ambientLight intensity={0.5} />
-        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} shadow-mapSize={[512, 512]} castShadow />
+        <spotLight
+          position={[10, 10, 10]}
+          angle={0.15}
+          penumbra={1}
+          shadow-mapSize={[512, 512]}
+          castShadow
+        />
 
-        <directionalLight castShadow position={[2.5, 5, 5]} intensity={1.5} shadow-mapSize={[1024, 1024]}>
-          <orthographicCamera attach='shadow-camera' args={[-5, 5, 5, -5, 1, 50]} />
+        <directionalLight
+          castShadow
+          position={[2.5, 5, 5]}
+          intensity={1.5}
+          shadow-mapSize={[1024, 1024]}
+        >
+          <orthographicCamera
+            attach='shadow-camera'
+            args={[-5, 5, 5, -5, 1, 50]}
+          />
         </directionalLight>
 
-        <pointLight position={[100, 100, 100]} intensity={0.8} />
-        <hemisphereLight color='#ffffff' groundColor='#b9b9b9' position={[-7, 25, 13]} intensity={0.85} />
+        <pointLight
+          position={[100, 100, 100]}
+          intensity={0.8}
+        />
+        <hemisphereLight
+          color='#ffffff'
+          groundColor='#b9b9b9'
+          position={[-7, 25, 13]}
+          intensity={0.85}
+        />
 
-        <ContactShadows position={[0, -1.4, 0]} opacity={0.75} scale={10} blur={2.5} far={4} />
+        <ContactShadows
+          position={[0, -1.4, 0]}
+          opacity={0.75}
+          scale={10}
+          blur={2.5}
+          far={4}
+        />
 
         <axesHelper args={[100]} />
         <gridHelper args={[100, 10]} />
@@ -151,28 +200,28 @@ export default function ThreeDCanvas({ models, children }) {
           polar={[-Math.PI / 3, Math.PI / 3]}
           azimuth={[-Math.PI / 1.4, Math.PI / 2]}> */}
         {/* <StacyApp position={[1.25, 1, 3.25]} scale={3.0} /> */}
-        <Stacy position={[1.25, 0.7, 3.25]} scale={5.0} />
+        {/* <Stacy position={[1.25, 0.7, 3.25]} scale={5.0} /> */}
         {/* </PresentationControls> */}
 
         {/* Camera Action Rig */}
         {/* <ActionRig /> */}
 
         {/* Transform Model using TransformControls */}
-        <TransformModel
+        {/* <TransformModel
           name='Zeppelin' // must match node name
           state={state}
           modes={modes}
           position={[-20, 10, 10]}
           rotation={[3, -1, 3]}
           scale={0.005}
-        />
+        /> */}
 
         {/* [MM] HEY HEY HEY */}
         {/* NEED TO SEND A THREED_SCENE TO A CANVAS, BUT THIS IS FINE FOR NOW */}
-        <ThreeD state={state} threedId={1} threed={{}} />
+        {/* <ThreeD state={state} threedId={1} threed={{}} /> */}
         {/* [MM] HEY HEY HEY */}
 
-        {children}
+        {/* {children} */}
       </Suspense>
     </Canvas>
   )

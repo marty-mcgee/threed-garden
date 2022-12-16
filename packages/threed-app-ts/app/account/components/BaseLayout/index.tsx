@@ -10,7 +10,7 @@ import Tab from '@mui/material/Tab'
 import MDBox from '#/lib/mui/MDBox'
 
 // ThreeD Garden Base Styles
-import breakpoints from '~/ui/themes/theme-light/base/breakpoints'
+import breakpoints from '#/ui/themes/theme-light/base/breakpoints'
 
 // ThreeD Garden examples components
 import DashboardLayout from '#/ui/elements/LayoutContainers/DashboardLayout'

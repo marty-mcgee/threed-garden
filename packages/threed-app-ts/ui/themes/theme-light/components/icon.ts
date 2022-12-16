@@ -1,5 +1,5 @@
 // ThreeD Garden Helper Functions
-import pxToRem from '~/ui/themes/theme-light/functions/pxToRem'
+import pxToRem from '#/ui/themes/theme-light/functions/pxToRem'
 
 // types
 type Types = any

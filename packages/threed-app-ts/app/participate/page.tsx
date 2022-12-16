@@ -1,10 +1,12 @@
+'use client'
+
 // ** Next Imports
 
 // ** React Imports
 import { useContext } from 'react'
 
 // ** Context Imports
-import { AbilityContext } from '#/ui/layouts/acl/Can'
+import { AbilityContext } from '#/lib/auth/acl/Can'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'

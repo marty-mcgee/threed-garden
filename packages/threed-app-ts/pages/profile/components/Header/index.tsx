@@ -14,7 +14,7 @@ import MDTypography from '#/lib/mui/MDTypography'
 import MDAvatar from '#/lib/mui/MDAvatar'
 
 // ThreeD Garden Base Styles
-import breakpoints from '~/ui/themes/theme-light/base/breakpoints'
+import breakpoints from '#/ui/themes/theme-light/base/breakpoints'
 
 // Images
 import profileImage from '#/lib/assets/images/people/team-0.png'

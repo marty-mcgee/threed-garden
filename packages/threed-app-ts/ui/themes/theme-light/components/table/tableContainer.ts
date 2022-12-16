@@ -1,7 +1,7 @@
 // ThreeD Garden Base Styles
-import colors from '~/ui/themes/theme-light/base/colors'
-import boxShadows from '~/ui/themes/theme-light/base/boxShadows'
-import borders from '~/ui/themes/theme-light/base/borders'
+import colors from '#/ui/themes/theme-light/base/colors'
+import boxShadows from '#/ui/themes/theme-light/base/boxShadows'
+import borders from '#/ui/themes/theme-light/base/borders'
 
 const { white } = colors
 const { md } = boxShadows

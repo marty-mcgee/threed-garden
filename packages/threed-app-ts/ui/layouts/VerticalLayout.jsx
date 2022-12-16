@@ -14,13 +14,13 @@ import themeConfig from '#/lib/config/themeConfig'
 
 // ** Components
 import AppBar from './vertical/appBar'
-import Customizer from '~/ui/components/customizer'
+import Customizer from '#/ui/components/customizer'
 import Navigation from './vertical/navigation'
-import Footer from './shared-components/footer'
-import ScrollToTop from '~/ui/components/scroll-to-top'
+import Footer from './footer'
+import ScrollToTop from '#/ui/components/scroll-to-top'
 
 // ** Styled Component
-import DatePickerWrapper from '~/ui/styles/react-datepicker'
+import DatePickerWrapper from '#/ui/styles/react-datepicker'
 
 const VerticalLayoutWrapper = styled('div')({
   height: '100%',

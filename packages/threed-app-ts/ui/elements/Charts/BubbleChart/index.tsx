@@ -12,7 +12,7 @@ import MDTypography from '#/lib/mui/MDTypography'
 import configs from '~/components/elements/Charts/BubbleChart/config'
 
 // ThreeD Garden Base Styles
-import colors from '~/ui/themes/theme-light/base/colors'
+import colors from '#/ui/themes/theme-light/base/colors'
 
 // react-chartjs-2 components
 import { Bubble } from 'react-chartjs-2'

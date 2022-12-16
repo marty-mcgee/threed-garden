@@ -50,7 +50,7 @@ import axios from 'axios'
 import themeConfig from '#/lib/config/themeConfig'
 
 // ** Custom Components Imports
-import UserIcon from '#/ui/layouts/UserIcon'
+import UserIcon from '#/ui/layouts/common/UserIcon'
 
 // ** API Icon Import with object
 import { autocompleteIconObj } from './autocompleteIconObj'

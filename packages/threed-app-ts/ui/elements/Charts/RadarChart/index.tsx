@@ -12,10 +12,10 @@ import MDTypography from '#/lib/mui/MDTypography'
 import configs from '~/components/elements/Charts/RadarChart/config'
 
 // ThreeD Garden Base Styles
-import colors from '~/ui/themes/theme-light/base/colors'
+import colors from '#/ui/themes/theme-light/base/colors'
 
 // ThreeD Garden Helper Functions
-import rgba from '~/ui/themes/theme-light/functions/rgba'
+import rgba from '#/ui/themes/theme-light/functions/rgba'
 
 // react-chartjs-2 components
 import { Radar } from 'react-chartjs-2'

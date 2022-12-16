@@ -5,10 +5,10 @@
  */
 
 // ThreeD Garden Base Styles
-import colors from '~/ui/themes/theme-light/base/colors'
+import colors from '#/ui/themes/theme-light/base/colors'
 
 // ThreeD Garden Helper Functions
-import pxToRem from '~/ui/themes/theme-light/functions/pxToRem'
+import pxToRem from '#/ui/themes/theme-light/functions/pxToRem'
 
 const { grey } = colors
 

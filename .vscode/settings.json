@@ -73,5 +73,7 @@
   },
   "solidity.defaultCompiler": "localNodeModule",
 
-  "mochaExplorer.configFile": "./packages/solidity-ts/.mocharc.json"
+  "mochaExplorer.configFile": "./packages/solidity-ts/.mocharc.json",
+  "prettier.enable": false,
+  "prettier.endOfLine": "auto"
 }

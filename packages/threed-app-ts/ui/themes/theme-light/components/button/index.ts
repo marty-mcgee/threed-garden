@@ -1,8 +1,8 @@
 // ThreeD Garden Button Styles
-import root from '~/ui/themes/theme-light/components/button/root'
-import contained from '~/ui/themes/theme-light/components/button/contained'
-import outlined from '~/ui/themes/theme-light/components/button/outlined'
-import text from '~/ui/themes/theme-light/components/button/text'
+import root from '#/ui/themes/theme-light/components/button/root'
+import contained from '#/ui/themes/theme-light/components/button/contained'
+import outlined from '#/ui/themes/theme-light/components/button/outlined'
+import text from '#/ui/themes/theme-light/components/button/text'
 
 // types
 type Types = any
