@@ -21,6 +21,19 @@ import type { NextPage } from 'next'
 // ** Helper Components
 import Spinner from '#/ui/components/spinner'
 
+// ** Colorful Console Messages: Utility
+import ccm from '#/lib/utils/console-colors'
+
+// ** Scaffold-ETH Imports
+// import React, { FC } from 'react'
+import { TPageProps } from '#/lib/types/models/TAppProps'
+
+// ==============================================================
+// IMPORTS COMPLETE
+console.debug('%c=======================================', ccm.black)
+console.debug('%c🥕 ThreeDGarden<FC,R3F>: {page.tsx}', ccm.green)
+console.debug('%c=======================================', ccm.black)
+
 // ==============================================================
 
 // Set Home Forwarding (to First Page) URL, based on User Role
@@ -44,7 +57,9 @@ import Spinner from '#/ui/components/spinner'
 // ==============================================================
 
 // export default function Page<NextPage>() {
-const Page: NextPage = (): JSX.Element => {
+const Page: NextPage<TPageProps> = (): JSX.Element => {
+
+  console.debug('%c🥕 Page', ccm.green)
 
   // ** Hooks
   // const auth = useAuth()

@@ -56,8 +56,11 @@ import FarmbotDemoSVG from '#/lib/farmbot/FarmbotDemoSVG'
 // ** Image Imports
 import logo from '#/lib/assets/images/logos/logo-threedgarden.png'
 
+// ** Colorful Console Messages: Utility
+import ccm from '#/lib/utils/console-colors'
+
 // ** Styled Components
-const SVGWrapper = styled(Box)(({ theme }) => {
+const SVGWrapper = styled(Box)(({ theme }: { theme: any }) => {
   return {
     width: '100%',
     padding: theme.spacing(10),
@@ -68,7 +71,7 @@ const SVGWrapper = styled(Box)(({ theme }) => {
   }
 })
 
-// const LoginIllustrationWrapper = styled(Box)(({ theme }) => {
+// const LoginIllustrationWrapper = styled(Box)(({ theme }: { theme: any }) => {
 //   return {
 //     padding: theme.spacing(20),
 //     paddingRight: '0 !important',
@@ -78,7 +81,7 @@ const SVGWrapper = styled(Box)(({ theme }) => {
 //   }
 // })
 
-// const LoginIllustration = styled('img')(({ theme }) => {
+// const LoginIllustration = styled('img')(({ theme }: { theme: any }) => {
 //   return {
 //     maxWidth: '48rem',
 //     [theme.breakpoints.down('lg')]: {
@@ -87,7 +90,7 @@ const SVGWrapper = styled(Box)(({ theme }) => {
 //   }
 // })
 
-const RightWrapper = styled(Box)(({ theme }) => {
+const RightWrapper = styled(Box)(({ theme }: { theme: any }) => {
   return {
     width: '100%',
     [theme.breakpoints.up('md')]: {
@@ -96,7 +99,7 @@ const RightWrapper = styled(Box)(({ theme }) => {
   }
 })
 
-const BoxWrapper = styled(Box)(({ theme }) => {
+const BoxWrapper = styled(Box)(({ theme }: { theme: any }) => {
   return {
     [theme.breakpoints.down('xl')]: {
       width: '100%',
@@ -107,7 +110,7 @@ const BoxWrapper = styled(Box)(({ theme }) => {
   }
 })
 
-const TypographyStyled = styled(Typography)(({ theme }) => {
+const TypographyStyled = styled(Typography)(({ theme }: { theme: any }) => {
   return {
     fontWeight: 600,
     marginBottom: theme.spacing(1.5),
@@ -115,7 +118,7 @@ const TypographyStyled = styled(Typography)(({ theme }) => {
   }
 })
 
-const LinkStyled = styled('a')(({ theme }) => {
+const LinkStyled = styled('a')(({ theme }: { theme: any }) => {
   return {
     fontSize: '0.875rem',
     textDecoration: 'none',
@@ -123,7 +126,7 @@ const LinkStyled = styled('a')(({ theme }) => {
   }
 })
 
-const FormControlLabel = styled(MuiFormControlLabel)(({ theme }) => {
+const FormControlLabel = styled(MuiFormControlLabel)(({ theme }: { theme: any }) => {
   return {
     '& .MuiFormControlLabel-label': {
       fontSize: '0.875rem',
@@ -143,6 +146,9 @@ const defaultValues = {
 }
 
 const LoginPage = () => {
+
+  console.debug('%c🥕 LoginPage', ccm.green)
+
   const [showPassword, setShowPassword] = useState(false)
 
   // ** Hooks
@@ -166,7 +172,7 @@ const LoginPage = () => {
     resolver: yupResolver(schema),
   })
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: any) => {
     const { email, password } = data
     auth.login({ email, password }, () => {
       setError('email', {
@@ -175,7 +181,8 @@ const LoginPage = () => {
       })
     })
   }
-  const imageSource = skin === 'bordered' ? 'auth-v2-login-illustration-bordered' : 'auth-v2-login-illustration'
+  const imageSource = skin === 'bordered' ?
+    'auth-v2-login-illustration-bordered' : 'auth-v2-login-illustration'
 
   return (
     <Box className='content-right'>
@@ -204,7 +211,9 @@ const LoginPage = () => {
           <FooterIllustrationsV2 />
         </Box>
       ) : null}
-      <RightWrapper sx={skin === 'bordered' && !hidden ? { borderLeft: `1px solid ${theme.palette.divider}` } : {}}>
+      <RightWrapper
+        sx={skin === 'bordered' && !hidden ? { borderLeft: `1px solid ${theme.palette.divider}` } : {}}
+      >
         <Box
           sx={{
             p: 12,
@@ -443,7 +452,7 @@ const LoginPage = () => {
     </Box>
   )
 }
-LoginPage.getLayout = (page) => <BlankLayout>{page}</BlankLayout>
+LoginPage.getLayout = (page: any) => <BlankLayout>{page}</BlankLayout>
 LoginPage.guestGuard = true
 
 export default LoginPage
