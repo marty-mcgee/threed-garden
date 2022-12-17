@@ -23,6 +23,9 @@ import { store as reduxStore } from '#/lib/stores/redux'
 // ** Contexts for User Authorization + Settings
 import { AuthProvider } from '#/ui/context/AuthContext'
 
+// ** User Authorization Hook
+import { useAuth } from '#/lib/auth/hooks/useAuth'
+
 // ** Contexts for Theme Settings + MUI Components
 import { SettingsProvider, SettingsConsumer } from '#/ui/context/settingsContext'
 import ThemeComponent from '#/ui/theme/ThemeComponent'
@@ -116,6 +119,9 @@ const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
   // //
   // console.debug('RootLayout.children', children)
 
+  // ** Hooks
+  const auth = useAuth()
+
   // // destructure props for vars
   // // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
   // const { Component, pageProps } = props
@@ -138,11 +144,10 @@ const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
     const { props } = children
 
     // authorized: UserLayout
-    if (props.childProp.segment !== ''
-     && props.childProp.segment !== 'auth'
-    ) {
+    // if (props.childProp.segment !== '' && props.childProp.segment !== 'auth') {
+    if (auth.user && auth.user.role) {
       return (
-        <div id='AppTemplate'>
+        <div id='ThreeDAppTemplate'>
           <UserLayout>
             {children}
           </UserLayout>
@@ -152,7 +157,7 @@ const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
     // default: BlankLayout
     else {
       return (
-        <div id='AppTemplate'>
+        <div id='ThreeDAppTemplate'>
           <BlankLayout>
             {children}
           </BlankLayout>
