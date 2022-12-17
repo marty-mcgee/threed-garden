@@ -40,7 +40,7 @@ import ccm from '#/lib/utils/console-colors'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-import { TPageProps } from '#/lib/types/models/TAppProps'
+import type { TPageProps } from '#/lib/types/models/TAppProps'
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -244,9 +244,9 @@ const ForgotPasswordPage: NextPage<TPageProps> = (): JSX.Element => {
                 Send reset link
               </Button>
               <Typography variant='body2' sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <LinkStyled passHref href='/auth/login'>
+                <LinkStyled href='/auth/login'>
                   <ChevronLeft />
-                  <span>Back to login</span>
+                  <span>Login now</span>
                 </LinkStyled>
               </Typography>
             </form>
