@@ -25,7 +25,7 @@ import { useAntNotification } from '~common/components/hooks'
 import { getNetworkInfo } from '~common/functions'
 import { IScaffoldAppProviders } from '~common/models'
 import { FAUCET_ENABLED } from '#/lib/config/nextjsApp.config'
-import { TAppProps } from '~#/lib/types/models/TAppProps'
+import { TAppProps } from '#/lib/types/models/TAppProps'
 
 // displays a page header
 export interface IEthPageHeaderProps {

@@ -1,7 +1,7 @@
 // ==============================================================
 // Home Page (main landing page for authorized user)
 
-// 'use client'
+'use client'
 
 // ** Next Imports
 import type { NextPage } from 'next'
@@ -18,7 +18,7 @@ import Typography from '@mui/material/Typography'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-import { TPageProps } from '~#/lib/types/models/TAppProps'
+import { TPageProps } from '#/lib/types/models/TAppProps'
 
 // ==============================================================
 
