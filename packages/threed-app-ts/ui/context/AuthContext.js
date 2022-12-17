@@ -94,7 +94,7 @@ const AuthProvider = ({ children }) => {
     setIsInitialized(false)
     window.localStorage.removeItem('userData')
     window.localStorage.removeItem(authConfig.storageTokenKeyName)
-    router.push('/login')
+    router.push('/auth/login')
   }
 
   const handleRegister = (params, errorCallback) => {

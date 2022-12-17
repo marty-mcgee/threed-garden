@@ -51,7 +51,7 @@ import BlankLayout from '#/ui/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV2 from '#/ui/pages/auth/FooterIllustrationsV2'
-// import FarmbotDemoSVG from '#/lib/farmbot/FarmbotDemoSVG'
+import FarmbotDemoSVG from '#/lib/farmbot/FarmbotDemoSVG'
 
 // ** Image Imports
 import logo from '#/lib/assets/images/logos/logo-threedgarden.png'
@@ -187,10 +187,11 @@ const LoginPage = () => {
             position: 'relative',
             alignItems: 'top',
             justifyContent: 'center',
-          }}>
+          }}
+        >
           <SVGWrapper>
             <Box sx={{ height: 64 }} />
-            {/* <FarmbotDemoSVG /> */}
+            <FarmbotDemoSVG />
           </SVGWrapper>
           {/*
           <LoginIllustrationWrapper>
@@ -212,7 +213,8 @@ const LoginPage = () => {
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: 'background.paper',
-          }}>
+          }}
+        >
           <BoxWrapper>
             <Box
               sx={{
@@ -222,9 +224,15 @@ const LoginPage = () => {
                 position: 'absolute',
                 alignItems: 'center',
                 justifyContent: 'center',
-              }}>
+              }}
+            >
               {/* App Logo */}
-              <Image src={logo} width={48} height={48} alt={themeConfig.templateName} />
+              <Image
+                src={logo}
+                width={48}
+                height={48}
+                alt={themeConfig.templateName}
+              />
               {/* App Name */}
               <Typography
                 variant='h6'
@@ -234,7 +242,8 @@ const LoginPage = () => {
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   fontSize: '1.5rem !important',
-                }}>
+                }}
+              >
                 {themeConfig.templateName}
               </Typography>
             </Box>
@@ -246,16 +255,32 @@ const LoginPage = () => {
               </TypographyStyled>
               <Typography variant='body2'>Please sign in to start your adventure...</Typography>
             </Box>
-            <Alert icon={false} sx={{ py: 3, mb: 6, ...bgClasses.primaryLight, '& .MuiAlert-message': { p: 0 } }}>
-              <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'primary.main' }}>
+            <Alert
+              icon={false}
+              sx={{ py: 3, mb: 6, ...bgClasses.primaryLight, '& .MuiAlert-message': { p: 0 } }}
+            >
+              <Typography
+                variant='caption'
+                sx={{ mb: 2, display: 'block', color: 'primary.main' }}
+              >
                 Admin: <strong>mcgee.marty@gmail.com</strong> <br /> Pass: <strong>admin</strong>
               </Typography>
-              <Typography variant='caption' sx={{ display: 'block', color: 'primary.main' }}>
+              <Typography
+                variant='caption'
+                sx={{ display: 'block', color: 'primary.main' }}
+              >
                 Client: <strong>marty@companyjuice.com</strong> <br /> Pass: <strong>client</strong>
               </Typography>
             </Alert>
-            <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
-              <FormControl fullWidth sx={{ mb: 4 }}>
+            <form
+              noValidate
+              autoComplete='off'
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              <FormControl
+                fullWidth
+                sx={{ mb: 4 }}
+              >
                 <Controller
                   name='email'
                   control={control}
@@ -275,7 +300,10 @@ const LoginPage = () => {
                 {errors.email && <FormHelperText sx={{ color: 'error.main' }}>{errors.email.message}</FormHelperText>}
               </FormControl>
               <FormControl fullWidth>
-                <InputLabel htmlFor='auth-login-v2-password' error={Boolean(errors.password)}>
+                <InputLabel
+                  htmlFor='auth-login-v2-password'
+                  error={Boolean(errors.password)}
+                >
                   Password
                 </InputLabel>
                 <Controller
@@ -296,7 +324,8 @@ const LoginPage = () => {
                           <IconButton
                             edge='end'
                             onMouseDown={(e) => e.preventDefault()}
-                            onClick={() => setShowPassword(!showPassword)}>
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
                             {showPassword ? <EyeOutline /> : <EyeOffOutline />}
                           </IconButton>
                         </InputAdornment>
@@ -305,7 +334,10 @@ const LoginPage = () => {
                   )}
                 />
                 {errors.password && (
-                  <FormHelperText sx={{ color: 'error.main' }} id=''>
+                  <FormHelperText
+                    sx={{ color: 'error.main' }}
+                    id=''
+                  >
                     {errors.password.message}
                   </FormHelperText>
                 )}
@@ -317,44 +349,87 @@ const LoginPage = () => {
                   alignItems: 'center',
                   flexWrap: 'wrap',
                   justifyContent: 'space-between',
-                }}>
-                <FormControlLabel control={<Checkbox />} label='Remember Me' />
-                <LinkStyled passHref href='/forgot-password'>
+                }}
+              >
+                <FormControlLabel
+                  control={<Checkbox />}
+                  label='Remember Me'
+                />
+                <LinkStyled
+                  passHref
+                  href='/auth/forgot-password'
+                >
                   Forgot Password?
                 </LinkStyled>
               </Box>
-              <Button fullWidth size='large' type='submit' variant='contained' sx={{ mb: 7 }}>
+              <Button
+                fullWidth
+                size='large'
+                type='submit'
+                variant='contained'
+                sx={{ mb: 7 }}
+              >
                 Login
               </Button>
               <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <Typography variant='body2' sx={{ mx: 2 }}>
+                <Typography
+                  variant='body2'
+                  sx={{ mx: 2 }}
+                >
                   New on our platform?
                 </Typography>
                 <Typography variant='body2'>
-                  <LinkStyled passHref href='/register'>
+                  <LinkStyled
+                    passHref
+                    href='/auth/register'
+                  >
                     Create an Account
                   </LinkStyled>
                 </Typography>
               </Box>
               <Divider sx={{ my: 5 }}>or</Divider>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Link href='/' passHref>
-                  <IconButton component='span' onClick={(e) => e.preventDefault()}>
+                <Link
+                  href='/'
+                  passHref
+                >
+                  <IconButton
+                    component='span'
+                    onClick={(e) => e.preventDefault()}
+                  >
                     <Facebook sx={{ color: '#497ce2' }} />
                   </IconButton>
                 </Link>
-                <Link href='/' passHref>
-                  <IconButton component='span' onClick={(e) => e.preventDefault()}>
+                <Link
+                  href='/'
+                  passHref
+                >
+                  <IconButton
+                    component='span'
+                    onClick={(e) => e.preventDefault()}
+                  >
                     <Google sx={{ color: '#db4437' }} />
                   </IconButton>
                 </Link>
-                <Link href='/' passHref>
-                  <IconButton component='span' onClick={(e) => e.preventDefault()}>
+                <Link
+                  href='/'
+                  passHref
+                >
+                  <IconButton
+                    component='span'
+                    onClick={(e) => e.preventDefault()}
+                  >
                     <Twitter sx={{ color: '#1da1f2' }} />
                   </IconButton>
                 </Link>
-                <Link href='/' passHref>
-                  <IconButton component='span' onClick={(e) => e.preventDefault()}>
+                <Link
+                  href='/'
+                  passHref
+                >
+                  <IconButton
+                    component='span'
+                    onClick={(e) => e.preventDefault()}
+                  >
                     <Github
                       sx={{ color: (theme) => (theme.palette.mode === 'light' ? '#272727' : theme.palette.grey[300]) }}
                     />

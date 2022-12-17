@@ -139,8 +139,7 @@ const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
 
     // authorized: UserLayout
     if (props.childProp.segment !== ''
-     && props.childProp.segment !== 'login'
-     && props.childProp.segment !== 'register'
+     && props.childProp.segment !== 'auth'
     ) {
       return (
         <div id='AppTemplate'>
