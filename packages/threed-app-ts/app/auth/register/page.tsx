@@ -278,7 +278,7 @@ const Register = () => {
                       onBlur={onBlur}
                       label='Username'
                       onChange={onChange}
-                      placeholder='johndoe'
+                      placeholder='marty'
                       error={Boolean(errors.username)}
                     />
                   )}
@@ -393,9 +393,9 @@ const Register = () => {
                   Already have an account?
                 </Typography>
                 <Typography variant='body2'>
-                  <Link href='/auth/login' passHref>
-                    <LinkStyled>Sign in instead</LinkStyled>
-                  </Link>
+                  <LinkStyled href='/auth/login' passHref>
+                    Sign in
+                  </LinkStyled>
                 </Typography>
               </Box>
               <Divider sx={{ my: 5 }}>or</Divider>
