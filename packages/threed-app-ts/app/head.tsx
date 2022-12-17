@@ -2,6 +2,8 @@
 // RESOURCES
 // this is your SEO metadata !!!
 
+'use client'
+
 // ** Metadata Components
 // import { DefaultTags } from '#/ui/DefaultTags';
 // import HeadMeta from '#/ui/components/head'

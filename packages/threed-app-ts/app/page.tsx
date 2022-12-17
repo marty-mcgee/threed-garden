@@ -53,16 +53,16 @@ export default function Page<NextPage>() {
     if (auth.user && auth.user.role) {
       // get Home URL
       const homeRoute = getHomeRoute(auth.user.role)
-      console.debug('user AUTHORIZED', auth.user, homeRoute)
+      console.debug('✅ user AUTHORIZED', auth.user, homeRoute)
       // redirect user to Home URL
       router.replace(homeRoute)
     }
     // user NOT AUTHORIZED!
     else {
       const homeRoute = getHomeRoute('unauthorized')
-      console.debug('user NOT AUTHORIZED', auth.user, homeRoute)
+      console.debug('❌ user NOT AUTHORIZED', auth.user, homeRoute)
       // redirect user to Home URL
-      // router.replace(homeRoute)
+      router.replace(homeRoute)
     }
   }, [])
 
