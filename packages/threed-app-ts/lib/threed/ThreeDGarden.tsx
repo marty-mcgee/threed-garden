@@ -3505,7 +3505,7 @@ const ThreeDGarden: FC = (props: any): JSX.Element => {
         {/* store access */}
         <div
           id='storeControlPanel'
-          style={{ padding: '1rem' }}
+          style={{ paddingLeft: '0.5rem' }}
         >
           {/* React Three Fiber - View */}
           <ReactThreeFiberView />

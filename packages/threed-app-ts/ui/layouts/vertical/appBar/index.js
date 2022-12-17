@@ -58,7 +58,12 @@ const LayoutAppBar = (props) => {
   }
 
   return (
-    <AppBar elevation={0} color='default' className='layout-navbar' position={appBar === 'fixed' ? 'sticky' : 'static'}>
+    <AppBar
+      elevation={0}
+      color='default'
+      className='layout-navbar'
+      position={appBar === 'fixed' ? 'sticky' : 'static'}
+    >
       <Toolbar
         className='navbar-content-container'
         sx={{
@@ -66,7 +71,8 @@ const LayoutAppBar = (props) => {
           ...(contentWidth === 'boxed' && {
             '@media (min-width:1440px)': { maxWidth: `calc(1440px - ${theme.spacing(6)} * 2)` },
           }),
-        }}>
+        }}
+      >
         {/* LOGO + MENU DRAWER CONTROLS */}
         <VerticalNavHeader {...props} />
         {/* RIGHT-SIDE CONTROLS + USER ACCOUNT MENU */}

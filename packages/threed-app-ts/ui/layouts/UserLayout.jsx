@@ -53,7 +53,8 @@ const UserLayout = ({ children }) => {
       saveSettings={saveSettings}
       {...(settings.layout === 'horizontal'
         ? {
-            // HORIZONTAL
+            // HORIZONTAL --------
+
             // ** Navigation Items
             horizontalNavItems: HorizontalNavItems(),
             // Uncomment the below line when using server-side menu in horizontal layout and comment the above line
@@ -61,11 +62,16 @@ const UserLayout = ({ children }) => {
 
             // ** AppBar Content
             horizontalAppBarContent: () => (
-              <HorizontalAppBarContent hidden={hidden} settings={settings} saveSettings={saveSettings} />
+              <HorizontalAppBarContent
+                hidden={hidden}
+                settings={settings}
+                saveSettings={saveSettings}
+              />
             ),
           }
         : {
-            // VERTICAL
+            // VERTICAL ||||||||||
+
             // ** Navigation Items
             verticalNavItems: VerticalNavItems(),
             // Uncomment the below line when using server-side menu in vertical layout and comment the above line
@@ -80,7 +86,8 @@ const UserLayout = ({ children }) => {
                 toggleNavVisibility={props.toggleNavVisibility}
               />
             ),
-          })}>
+          })}
+    >
       {children}
     </Layout>
   )

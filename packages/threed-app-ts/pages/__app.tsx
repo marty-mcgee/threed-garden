@@ -102,9 +102,9 @@ import ETHPage from '#/app/eth/page'
 
 // ==============================================================
 // IMPORTS COMPLETE
-console.debug('%c====================================', ccm5)
+console.debug('%c=======================================', ccm5)
 console.debug('%c🥕 ThreeDGarden<FC,R3F>: {_app.tsx}', ccm4)
-console.debug('%c====================================', ccm5)
+console.debug('%c=======================================', ccm5)
 
 // ==============================================================
 // TYPES + INTERFACES (TYPESCRIPT)

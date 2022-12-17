@@ -69,9 +69,12 @@ const VerticalLayout = (props) => {
 
   return (
     <div>
-      <AppBar toggleNavVisibility={toggleNavVisibility} {...props} />
+      <AppBar
+        toggleNavVisibility={toggleNavVisibility}
+        {...props}
+      />
       <VerticalLayoutWrapper className='layout-wrapper'>
-        {/* LEFT NAVIGATION PANEL DRAWER */}
+        {/* LEFT NAVIGATION PANEL DRAWER
         {navHidden &&
         themeConfig.layout === 'vertical' &&
         !(navHidden && settings.lastLayout === 'horizontal') ? null : (
@@ -87,7 +90,7 @@ const VerticalLayout = (props) => {
             {...props}
           />
         )}
-
+*/}
         {/* MAIN CONTENT */}
         <MainContentWrapper className='layout-content-wrapper'>
           <ContentWrapper
@@ -99,7 +102,8 @@ const VerticalLayout = (props) => {
                 '@media (min-width:1440px)': { maxWidth: 1440 },
                 '@media (min-width:1200px)': { maxWidth: '100%' },
               }),
-            }}>
+            }}
+          >
             {children}
           </ContentWrapper>
 
@@ -119,7 +123,11 @@ const VerticalLayout = (props) => {
         scrollToTop(props)
       ) : (
         <ScrollToTop className='mui-fixed'>
-          <Fab color='primary' size='small' aria-label='scroll back to top'>
+          <Fab
+            color='primary'
+            size='small'
+            aria-label='scroll back to top'
+          >
             <ArrowUp />
           </Fab>
         </ScrollToTop>

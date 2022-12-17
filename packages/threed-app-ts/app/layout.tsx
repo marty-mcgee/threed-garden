@@ -27,10 +27,14 @@ import { AuthProvider } from '#/ui/context/AuthContext'
 import { SettingsProvider, SettingsConsumer } from '#/ui/context/settingsContext'
 import ThemeComponent from '#/ui/theme/ThemeComponent'
 
-// ** Config Imports
+// ** Configs
 // import '#/lib/config/i18n' // NOT YET SUPPORTED IN NEXT 13
 import { defaultACLObj } from '#/lib/config/acl'
 import themeConfig from '#/lib/config/themeConfig'
+
+// ** Layouts
+import BlankLayout from '#/ui/layouts/BlankLayout' // this is your login layout
+import UserLayout from '#/ui/layouts/UserLayout' // this is your main layout
 
 // ** ~core Components
 // import WindowWrapper from '#/ui/components/window-wrapper'
@@ -46,9 +50,9 @@ import ccm from '#/lib/utils/console-colors'
 
 // ==============================================================
 // IMPORTS COMPLETE
-console.debug('%c====================================', ccm.black)
-console.debug('%c🥕 ThreeDGarden<FC,R3F>: {_app.tsx}', ccm.green)
-console.debug('%c====================================', ccm.black)
+console.debug('%c=======================================', ccm.black)
+console.debug('%c🥕 ThreeDGarden<FC,R3F>: {layout.tsx}', ccm.green)
+console.debug('%c=======================================', ccm.black)
 
 // ==============================================================
 // TYPES + INTERFACES (TYPESCRIPT)
@@ -69,10 +73,12 @@ const ThreeDProvider = ({ children }: { children: ReactNode }): JSX.Element => {
   // const { children } = props
 
   return (
-    <html>
+    <html lang="en">
       <head />
       <body>
-        <main id="ThreeDProvider">{children}</main>
+        <main id="ThreeDProvider">
+          {children}
+        </main>
       </body>
     </html>
   )
@@ -108,6 +114,8 @@ const ThreeDProvider = ({ children }: { children: ReactNode }): JSX.Element => {
 // const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayout> = (props: any) => {
 const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
   // //
+  // console.debug('RootLayout.children', children)
+
   // // destructure props for vars
   // // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
   // const { Component, pageProps } = props
@@ -122,20 +130,47 @@ const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
   // console.debug('%c🥕 Component', ccm.black, Component)
   // console.debug('%c🥕 pageProps', ccm.black, pageProps)
 
-  // // PageComponent.Properties
-  // const getLayout = Component.getLayout ?? ((page: any) => <UserLayout>{page}</UserLayout>)
+  // ** PageComponent.Properties
+  const getLayout = ({ children }: { children: any }): JSX.Element => {
+    //
+    console.debug('getLayout.children', children)
+
+    const { props } = children
+
+    // authorized: UserLayout
+    if (props.childProp.segment !== ''
+     && props.childProp.segment !== 'login'
+    ) {
+      return (
+        <div id='AppTemplate'>
+          <UserLayout>
+            {children}
+          </UserLayout>
+        </div>
+      )
+    }
+    // default: BlankLayout
+    else {
+      return (
+        <div id='AppTemplate'>
+          <BlankLayout>
+            {children}
+          </BlankLayout>
+        </div>
+      )
+    }
+  }
   const setConfig = Component.setConfig ?? false
   const authGuard = Component.authGuard ?? true
   const guestGuard = Component.guestGuard ?? false
   const acl = Component.acl ?? defaultACLObj
 
   return (
-    // <ThreeDProvider>
+    <ThreeDProvider>
       <ApolloProvider client={client}>
         <ReduxProvider store={reduxStore}>
           <AuthProvider>
             {/* <WindowWrapper> */}
-            <ThreeDProvider>
               {/* <Guard
                 authGuard={authGuard}
                 guestGuard={guestGuard}
@@ -149,14 +184,14 @@ const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
                     {({ settings }) => (
                       <>
                         <ThemeComponent settings={settings}>
-                          {children}
-                          {/* {getLayout(
+                          {getLayout(
                             // <UserLayout>
-                              <EthApp {...props}>
-                                <Component {...pageProps} />
-                              </EthApp>
+                              // <EthApp {...props}>
+                                // <Component {...pageProps} />
+                                {children}
+                              // </EthApp>
                             // </UserLayout>
-                          )} */}
+                          )}
                         </ThemeComponent>
                         {/* <ReactHotToast>
                           <Toaster
@@ -170,12 +205,11 @@ const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
                   </SettingsProvider>
                 {/* </AclGuard> */}
               {/* </Guard> */}
-            </ThreeDProvider>
             {/* </WindowWrapper> */}
           </AuthProvider>
         </ReduxProvider>
       </ApolloProvider>
-    // </ThreeDProvider>
+    </ThreeDProvider>
   )
 }
 

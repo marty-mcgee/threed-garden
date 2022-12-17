@@ -12,7 +12,7 @@ import ArrowUp from 'mdi-material-ui/ArrowUp'
 import themeConfig from '#/lib/config/themeConfig'
 
 // ** Components
-// import Customizer from '#/ui/components/customizer'
+import Customizer from '#/ui/components/customizer'
 import Footer from './footer'
 import Navigation from './horizontal/navigation'
 import ScrollToTop from '#/ui/components/scroll-to-top'
@@ -90,33 +90,45 @@ const HorizontalLayout = (props) => {
                 backgroundColor: (theme) => hexToRGBA(theme.palette.background.paper, 0.85),
               }
             : {}),
-        }}>
+        }}
+      >
         <Box
           className='layout-navbar'
           sx={{
             width: '100%',
             ...(navHidden ? {} : { borderBottom: (theme) => `1px solid ${theme.palette.divider}` }),
-          }}>
+          }}
+        >
           <Toolbar
             className='navbar-content-container'
             sx={{
               mx: 'auto',
               ...(contentWidth === 'boxed' && { '@media (min-width:1440px)': { maxWidth: 1440 } }),
               minHeight: (theme) => `${theme.mixins.toolbar.minHeight - 1}px !important`,
-            }}>
-            <AppBarContent {...props} hidden={hidden} settings={settings} saveSettings={saveSettings} />
+            }}
+          >
+            <AppBarContent
+              {...props}
+              hidden={hidden}
+              settings={settings}
+              saveSettings={saveSettings}
+            />
           </Toolbar>
         </Box>
 
         {navHidden ? null : (
-          <Box className='layout-horizontal-nav' sx={{ width: '100%' }}>
+          <Box
+            className='layout-horizontal-nav'
+            sx={{ width: '100%' }}
+          >
             <Toolbar
               className='horizontal-nav-content-container'
               sx={{
                 mx: 'auto',
                 ...(contentWidth === 'boxed' && { '@media (min-width:1440px)': { maxWidth: 1440 } }),
                 minHeight: (theme) => `${theme.mixins.toolbar.minHeight - (skin === 'bordered' ? 1 : 0)}px !important`,
-              }}>
+              }}
+            >
               {(userHorizontalNavMenuContent && userHorizontalNavMenuContent(props)) || <Navigation {...props} />}
             </Toolbar>
           </Box>
@@ -131,7 +143,8 @@ const HorizontalLayout = (props) => {
             '@media (min-width:1440px)': { maxWidth: 1440 },
             '@media (min-width:1200px)': { maxWidth: '100%' },
           }),
-        }}>
+        }}
+      >
         {children}
       </ContentWrapper>
 
@@ -141,13 +154,17 @@ const HorizontalLayout = (props) => {
         <Box id='react-datepicker-portal'></Box>
       </DatePickerWrapper>
 
-      {/* {themeConfig.disableCustomizer || hidden ? null : <Customizer />} */}
+      {themeConfig.disableCustomizer || hidden ? null : <Customizer />}
 
       {scrollToTop ? (
         scrollToTop(props)
       ) : (
         <ScrollToTop className='mui-fixed'>
-          <Fab color='primary' size='small' aria-label='scroll back to top'>
+          <Fab
+            color='primary'
+            size='small'
+            aria-label='scroll back to top'
+          >
             <ArrowUp />
           </Fab>
         </ScrollToTop>

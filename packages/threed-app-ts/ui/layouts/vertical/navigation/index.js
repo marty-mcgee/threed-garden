@@ -121,7 +121,10 @@ const Navigation = (props) => {
         ? beforeVerticalNavMenuContent(props)
         : null}
       {(beforeVerticalNavMenuContentPosition === 'static' || !beforeVerticalNavMenuContent) && (
-        <StyledBoxForShadow ref={shadowRef} sx={{ background: shadowBgColor() }} />
+        <StyledBoxForShadow
+          ref={shadowRef}
+          sx={{ background: shadowBgColor() }}
+        />
       )}
       <Box sx={{ position: 'relative', overflow: 'visible', border: '0px solid red' }}>
         <ScrollWrapper
@@ -134,7 +137,8 @@ const Navigation = (props) => {
             : {
                 options: { wheelPropagation: false },
                 onScrollY: (container) => scrollMenu(container),
-              })}>
+              })}
+        >
           {beforeVerticalNavMenuContent && beforeVerticalNavMenuContentPosition === 'static'
             ? beforeVerticalNavMenuContent(props)
             : null}
@@ -148,7 +152,8 @@ const Navigation = (props) => {
                 transition: 'padding .25s ease',
                 '& > :first-of-type': { mt: '0' },
                 pr: !navCollapsed || (navCollapsed && navHover) ? 4.5 : 1.25,
-              }}>
+              }}
+            >
               <VerticalNavItems
                 groupActive={groupActive}
                 setGroupActive={setGroupActive}
