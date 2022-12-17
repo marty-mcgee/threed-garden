@@ -197,10 +197,10 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
   // // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
   // const { Component, pageProps } = props
   const Component = {
-    getLayout: false,
+    getLayout: () => {},
     setConfig: () => {},
     authGuard: true,
-    guestGuard: false,
+    guestGuard: true,
     acl: defaultACLObj
   }
   // console.debug('%c🥕 props', ccm.white, props)

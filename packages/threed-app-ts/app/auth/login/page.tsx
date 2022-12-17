@@ -65,7 +65,7 @@ import ccm from '#/lib/utils/console-colors'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-import { TPageProps } from '#/lib/types/models/TAppProps'
+import type { TPageProps } from '#/lib/types/models/TAppProps'
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -413,7 +413,6 @@ const LoginPage: NextPage<TPageProps> = (): JSX.Element => {
                 </Typography>
                 <Typography variant='body2'>
                   <LinkStyled
-                    passHref
                     href='/auth/register'
                   >
                     Create an Account
@@ -424,7 +423,6 @@ const LoginPage: NextPage<TPageProps> = (): JSX.Element => {
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Link
                   href='/'
-                  passHref
                 >
                   <IconButton
                     component='span'
@@ -435,7 +433,6 @@ const LoginPage: NextPage<TPageProps> = (): JSX.Element => {
                 </Link>
                 <Link
                   href='/'
-                  passHref
                 >
                   <IconButton
                     component='span'
@@ -457,7 +454,6 @@ const LoginPage: NextPage<TPageProps> = (): JSX.Element => {
                 </Link>
                 <Link
                   href='/'
-                  passHref
                 >
                   <IconButton
                     component='span'

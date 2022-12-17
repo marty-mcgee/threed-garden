@@ -63,7 +63,7 @@ import ccm from '#/lib/utils/console-colors'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-import { TPageProps } from '#/lib/types/models/TAppProps'
+import type { TPageProps } from '#/lib/types/models/TAppProps'
 
 // ==============================================================
 // IMPORTS COMPLETE
