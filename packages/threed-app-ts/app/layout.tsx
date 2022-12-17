@@ -6,11 +6,11 @@
 'use client'
 
 // ** Next
-// import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 // ** React
-// import { useState, useEffect, ReactNode } from 'react'
 import type { ReactNode } from 'react'
+import { useEffect } from 'react'
 
 // ** Apollo Client -- State Management using Cache/Store (via GraphQL)
 import { ApolloProvider } from '@apollo/client'
@@ -109,6 +109,26 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
 // }
 
 // ==============================================================
+
+// Set Home Forwarding (to First Page) URL, based on User Role
+const getHomeRoute = (role: any) => {
+  if (role === 'client') {
+    // return '/home' // another page
+    return '/participate' // another page
+    return '/acl' // authorized credentials list? (boundary)
+  }
+  else if (role === 'admin') {
+    // return '/' // this page (for testing. not ideal for production.)
+    return '/home' // another page
+    return '/participate' // another page
+  }
+  else {
+    // return '/' // this page (for testing. not ideal for production.)
+    return '/auth/login'
+  }
+}
+
+// ==============================================================
 // ** Construct App using Function Component (Functional Noun)
 
 // const App = (props: any) => {
@@ -121,6 +141,25 @@ const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
 
   // ** Hooks
   const auth = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    // user AUTHORIZED?
+    if (auth.user && auth.user.role) {
+      // get Home URL
+      const homeRoute = getHomeRoute(auth.user.role)
+      console.debug('✅ user AUTHORIZED', auth.user, homeRoute)
+      // redirect user to Home URL
+      router.replace(homeRoute)
+    }
+    // user NOT AUTHORIZED!
+    else {
+      const homeRoute = getHomeRoute('unauthorized')
+      console.debug('❌ user NOT AUTHORIZED', auth.user, homeRoute)
+      // redirect user to Home URL
+      router.replace(homeRoute)
+    }
+  }, [])
 
   // // destructure props for vars
   // // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
