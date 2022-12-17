@@ -110,9 +110,9 @@ module.exports = {
   // plugins: [require('daisyui')],
   // plugins: [],
   plugins: [require('@tailwindcss/forms')],
-  daisyui: {
-    darkTheme: 'business',
-    themes: ['light', 'luxury', 'business', 'haloween'],
-    prefix: 'daisy',
-  },
+  // daisyui: {
+  //   darkTheme: 'business',
+  //   themes: ['light', 'luxury', 'business', 'haloween'],
+  //   prefix: 'daisy',
+  // },
 }
