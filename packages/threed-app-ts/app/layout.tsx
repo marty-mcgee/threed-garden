@@ -68,15 +68,15 @@ console.debug('%c=======================================', ccm.black)
 // MAIN APP
 
 // provide basic React Provider context node with props.children
-// const ThreeDProvider: FC<{ children?: ReactNode }> = (props) => {
-const ThreeDProvider = ({ children }: { children: ReactNode }): JSX.Element => {
+// const ThreeDAppProvider: FC<{ children?: ReactNode }> = (props) => {
+const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element => {
   // const { children } = props
 
   return (
     <html lang="en">
       <head />
       <body>
-        <main id="ThreeDProvider">
+        <main id="ThreeDAppProvider">
           {children}
         </main>
       </body>
@@ -166,7 +166,7 @@ const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
   const acl = Component.acl ?? defaultACLObj
 
   return (
-    <ThreeDProvider>
+    <ThreeDAppProvider>
       <ApolloProvider client={client}>
         <ReduxProvider store={reduxStore}>
           <AuthProvider>
@@ -209,7 +209,7 @@ const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
           </AuthProvider>
         </ReduxProvider>
       </ApolloProvider>
-    </ThreeDProvider>
+    </ThreeDAppProvider>
   )
 }
 
