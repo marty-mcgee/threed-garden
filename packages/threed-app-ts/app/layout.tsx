@@ -241,6 +241,7 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
   const guestGuard = Component.guestGuard ?? false
   const acl = Component.acl ?? defaultACLObj
 
+  // ** Return JSX
   return (
     <ThreeDAppProvider>
       <ApolloProvider client={client}>
