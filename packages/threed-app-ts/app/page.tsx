@@ -57,14 +57,15 @@ console.debug('%c=======================================', ccm.black)
 // ==============================================================
 
 // export default function Page<NextPage>() {
-const Page: NextPage<TPageProps> = (): JSX.Element => {
-
-  console.debug('%c🥕 Page', ccm.green)
+const AppPage: NextPage<TPageProps> = (): JSX.Element => {
+  // **
+  console.debug('%c🥕 AppPage', ccm.green)
 
   // ** Hooks
   // const auth = useAuth()
   // const router = useRouter()
 
+  // ** OnMount (+ optional return OnUnmount)
   // useEffect(() => {
   //   // user AUTHORIZED?
   //   if (auth.user && auth.user.role) {
@@ -81,8 +82,12 @@ const Page: NextPage<TPageProps> = (): JSX.Element => {
   //     // redirect user to Home URL
   //     router.replace(homeRoute)
   //   }
+  //   // return <></>
   // }, [])
 
+// ==============================================================
+
+  // ** Return JSX
   return <Spinner />
 
   // return (
@@ -126,4 +131,4 @@ const Page: NextPage<TPageProps> = (): JSX.Element => {
   // )
 }
 
-export default Page
+export default AppPage

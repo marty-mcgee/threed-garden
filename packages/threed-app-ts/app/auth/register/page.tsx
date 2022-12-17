@@ -1,10 +1,15 @@
+// ==============================================================
+// User Registration Page (for new users)
+
 'use client'
 
 // ** React Imports
 import { useState } from 'react'
 
 // ** Next Imports
+import type { NextPage } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 
 // ** MUI Components
 import Button from '@mui/material/Button'
@@ -48,6 +53,25 @@ import { useSettings } from '#/ui/hooks/useSettings'
 
 // ** Demo Imports
 import FooterIllustrationsV2 from '#/ui/pages/auth/FooterIllustrationsV2'
+import FarmbotDemoSVG from '#/lib/farmbot/FarmbotDemoSVG'
+
+// ** Image Imports
+import logo from '#/lib/assets/images/logos/logo-threedgarden.png'
+
+// ** Colorful Console Messages: Utility
+import ccm from '#/lib/utils/console-colors'
+
+// ** Scaffold-ETH Imports
+// import React, { FC } from 'react'
+import { TPageProps } from '#/lib/types/models/TAppProps'
+
+// ==============================================================
+// IMPORTS COMPLETE
+console.debug('%c=======================================', ccm.black)
+console.debug('%c🥕 ThreeDGarden<FC,R3F>: {register/page.tsx}', ccm.green)
+console.debug('%c=======================================', ccm.black)
+
+// ==============================================================
 
 const defaultValues = {
   email: '',
@@ -108,7 +132,12 @@ const LinkStyled = styled('a')(({ theme }: { theme: any }) => ({
   color: theme.palette.primary.main,
 }))
 
-const Register = () => {
+// ==============================================================
+
+const RegisterPage: NextPage<TPageProps> = (): JSX.Element => {
+  // **
+  console.debug('%c🥕 RegisterPage', ccm.green)
+
   // ** States
   const [showPassword, setShowPassword] = useState(false)
 
@@ -121,6 +150,7 @@ const Register = () => {
   // ** Vars
   const { skin } = settings
 
+  // ** Form Validations
   const schema = yup.object().shape({
     password: yup.string().min(5).required(),
     username: yup.string().min(3).required(),
@@ -128,6 +158,7 @@ const Register = () => {
     terms: yup.bool().oneOf([true], 'You must accept the privacy policy & terms'),
   })
 
+  // ** Forms
   const {
     control,
     setError,
@@ -139,6 +170,7 @@ const Register = () => {
     resolver: yupResolver(schema),
   })
 
+  // ** Handlers
   const onSubmit = (data: any) => {
     const { email, username, password } = data
     register({ email, username, password }, (err: any) => {
@@ -156,8 +188,11 @@ const Register = () => {
       }
     })
   }
+
+  // ** Styles
   const imageSource = skin === 'bordered' ? 'auth-v2-register-illustration-bordered' : 'auth-v2-register-illustration'
 
+  // ** Return JSX
   return (
     <Box className='content-right'>
       {!hidden ? (
@@ -191,7 +226,7 @@ const Register = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <svg
+              {/* <svg
                 width={35}
                 height={29}
                 version='1.1'
@@ -248,7 +283,15 @@ const Register = () => {
                     </g>
                   </g>
                 </g>
-              </svg>
+              </svg> */}
+              {/* App Logo */}
+              <Image
+                src={logo}
+                width={48}
+                height={48}
+                alt={themeConfig.templateName}
+              />
+              {/* App Name */}
               <Typography
                 variant='h6'
                 sx={{
@@ -430,7 +473,7 @@ const Register = () => {
     </Box>
   )
 }
-Register.getLayout = (page) => <BlankLayout>{page}</BlankLayout>
-Register.guestGuard = true
+RegisterPage.getLayout = (page: any) => <BlankLayout>{page}</BlankLayout>
+RegisterPage.guestGuard = true
 
-export default Register
+export default RegisterPage
