@@ -160,6 +160,10 @@ const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
       router.replace(homeRoute)
     }
   }, [])
+  console.debug('%c🥕 auth', ccm.orange, auth)
+  console.debug('%c🥕 router', ccm.orange, router)
+  console.debug('%c🥕 children', ccm.orange, children)
+  console.debug('%c=======================================', ccm.black)
 
   // // destructure props for vars
   // // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
@@ -178,7 +182,7 @@ const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
   // ** PageComponent.Properties
   const getLayout = ({ children }: { children: any }): JSX.Element => {
     //
-    console.debug('getLayout.children', children)
+    // console.debug('getLayout.children', children)
 
     const { props } = children
 
@@ -186,7 +190,7 @@ const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
     // if (props.childProp.segment !== '' && props.childProp.segment !== 'auth') {
     if (auth.user && auth.user.role) {
       return (
-        <div id='ThreeDAppTemplate'>
+        <div id='ThreeDAppLayout'>
           <UserLayout>
             {children}
           </UserLayout>
@@ -196,7 +200,7 @@ const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
     // default: BlankLayout
     else {
       return (
-        <div id='ThreeDAppTemplate'>
+        <div id='ThreeDAppLayout'>
           <BlankLayout>
             {children}
           </BlankLayout>

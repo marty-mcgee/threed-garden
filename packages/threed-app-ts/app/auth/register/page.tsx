@@ -57,7 +57,7 @@ const defaultValues = {
 }
 
 // ** Styled Components
-const RegisterIllustrationWrapper = styled(Box)(({ theme }) => ({
+const RegisterIllustrationWrapper = styled(Box)(({ theme }: { theme: any }) => ({
   padding: theme.spacing(20),
   paddingRight: '0 !important',
   [theme.breakpoints.down('lg')]: {
@@ -65,14 +65,14 @@ const RegisterIllustrationWrapper = styled(Box)(({ theme }) => ({
   },
 }))
 
-const RegisterIllustration = styled('img')(({ theme }) => ({
+const RegisterIllustration = styled('img')(({ theme }: { theme: any }) => ({
   maxWidth: '46rem',
   [theme.breakpoints.down('lg')]: {
     maxWidth: '35rem',
   },
 }))
 
-const TreeIllustration = styled('img')(({ theme }) => ({
+const TreeIllustration = styled('img')(({ theme }: { theme: any }) => ({
   bottom: 0,
   left: '1.875rem',
   position: 'absolute',
@@ -81,14 +81,14 @@ const TreeIllustration = styled('img')(({ theme }) => ({
   },
 }))
 
-const RightWrapper = styled(Box)(({ theme }) => ({
+const RightWrapper = styled(Box)(({ theme }: { theme: any }) => ({
   width: '100%',
   [theme.breakpoints.up('md')]: {
-    maxWidth: 450,
+    maxWidth: 400,
   },
 }))
 
-const BoxWrapper = styled(Box)(({ theme }) => ({
+const BoxWrapper = styled(Box)(({ theme }: { theme: any }) => ({
   [theme.breakpoints.down('xl')]: {
     width: '100%',
   },
@@ -97,13 +97,13 @@ const BoxWrapper = styled(Box)(({ theme }) => ({
   },
 }))
 
-const TypographyStyled = styled(Typography)(({ theme }) => ({
+const TypographyStyled = styled(Typography)(({ theme }: { theme: any }) => ({
   fontWeight: 600,
   marginBottom: theme.spacing(1.5),
   [theme.breakpoints.down('md')]: { mt: theme.spacing(8) },
 }))
 
-const LinkStyled = styled('a')(({ theme }) => ({
+const LinkStyled = styled('a')(({ theme }: { theme: any }) => ({
   textDecoration: 'none',
   color: theme.palette.primary.main,
 }))
@@ -139,9 +139,9 @@ const Register = () => {
     resolver: yupResolver(schema),
   })
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: any) => {
     const { email, username, password } = data
-    register({ email, username, password }, (err) => {
+    register({ email, username, password }, (err: any) => {
       if (err.email) {
         setError('email', {
           type: 'manual',
@@ -364,12 +364,17 @@ const Register = () => {
                             <Typography
                               variant='body2'
                               component='span'
-                              sx={{ color: errors.terms ? 'error.main' : '' }}>
+                              sx={{ color: errors.terms ? 'error.main' : '' }}
+                            >
                               I agree to{' '}
                             </Typography>
-                            <Link href='/' passHref>
-                              <LinkStyled onClick={(e) => e.preventDefault()}>privacy policy & terms</LinkStyled>
-                            </Link>
+                            <LinkStyled
+                              href='/'
+                              passHref
+                              onClick={(e: any) => e.preventDefault()}
+                            >
+                              privacy policy + terms
+                            </LinkStyled>
                           </>
                         }
                       />
