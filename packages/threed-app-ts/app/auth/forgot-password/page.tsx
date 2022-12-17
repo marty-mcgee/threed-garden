@@ -1,3 +1,5 @@
+'use client'
+
 // ** Next Imports
 import Link from 'next/link'
 
@@ -202,7 +204,7 @@ const ForgotPassword = () => {
                 Send reset link
               </Button>
               <Typography variant='body2' sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Link passHref href='/login'>
+                <Link passHref href='/auth/login'>
                   <LinkStyled>
                     <ChevronLeft />
                     <span>Back to login</span>

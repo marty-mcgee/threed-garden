@@ -388,7 +388,7 @@ const Register = () => {
                   Already have an account?
                 </Typography>
                 <Typography variant='body2'>
-                  <Link href='/login' passHref>
+                  <Link href='/auth/login' passHref>
                     <LinkStyled>Sign in instead</LinkStyled>
                   </Link>
                 </Typography>

@@ -25,6 +25,7 @@ import Spinner from '#/ui/components/spinner'
 // Set Home Forwarding (to First Page) URL, based on User Role
 const getHomeRoute = (role: any) => {
   if (role === 'client') {
+    // return '/home' // another page
     return '/participate' // another page
     return '/acl' // authorized credentials list? (boundary)
   }
@@ -35,7 +36,7 @@ const getHomeRoute = (role: any) => {
   }
   else {
     // return '/' // this page (for testing. not ideal for production.)
-    return '/login'
+    return '/auth/login'
   }
 }
 

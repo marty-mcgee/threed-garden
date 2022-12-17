@@ -11,8 +11,8 @@ const awsmobile = {
     domain: '',
     scope: ['phone', 'email', 'openid', 'profile', 'aws.cognito.signin.user.admin'],
     redirectSignIn: 'http://localhost:3000/',
-    redirectSignOut: 'http://localhost:3000/login/',
-    responseType: 'code'
+    redirectSignOut: 'http://localhost:3000/auth/login/',
+    responseType: 'code',
   },
   federationTarget: 'COGNITO_USER_POOLS',
   aws_cognito_username_attributes: ['EMAIL'],
@@ -22,9 +22,9 @@ const awsmobile = {
   aws_cognito_mfa_types: ['SMS'],
   aws_cognito_password_protection_settings: {
     passwordPolicyMinLength: 8,
-    passwordPolicyCharacters: []
+    passwordPolicyCharacters: [],
   },
-  aws_cognito_verification_mechanisms: ['EMAIL']
+  aws_cognito_verification_mechanisms: ['EMAIL'],
 }
 
 export default awsmobile
