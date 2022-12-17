@@ -1,9 +1,13 @@
+// ==============================================================
+// Login Page (default page for non-authorized users)
+
 'use client'
 
 // ** React Imports
 import { useState } from 'react'
 
 // ** Next Imports
+import type { NextPage } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -58,6 +62,18 @@ import logo from '#/lib/assets/images/logos/logo-threedgarden.png'
 
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
+
+// ** Scaffold-ETH Imports
+// import React, { FC } from 'react'
+import { TPageProps } from '#/lib/types/models/TAppProps'
+
+// ==============================================================
+// IMPORTS COMPLETE
+console.debug('%c=======================================', ccm.black)
+console.debug('%c🥕 ThreeDGarden<FC,R3F>: {login/page.tsx}', ccm.green)
+console.debug('%c=======================================', ccm.black)
+
+// ==============================================================
 
 // ** Styled Components
 const SVGWrapper = styled(Box)(({ theme }: { theme: any }) => {
@@ -145,10 +161,13 @@ const defaultValues = {
   email: 'mcgee.marty@gmail.com',
 }
 
-const LoginPage = () => {
+// ==============================================================
 
+const LoginPage: NextPage<TPageProps> = (): JSX.Element => {
+  // **
   console.debug('%c🥕 LoginPage', ccm.green)
 
+  // ** States
   const [showPassword, setShowPassword] = useState(false)
 
   // ** Hooks
@@ -161,6 +180,7 @@ const LoginPage = () => {
   // ** Vars
   const { skin } = settings
 
+  // ** Forms
   const {
     control,
     setError,
@@ -172,6 +192,7 @@ const LoginPage = () => {
     resolver: yupResolver(schema),
   })
 
+  // ** Handlers
   const onSubmit = (data: any) => {
     const { email, password } = data
     auth.login({ email, password }, () => {
@@ -181,9 +202,12 @@ const LoginPage = () => {
       })
     })
   }
+
+  // ** Styles
   const imageSource = skin === 'bordered' ?
     'auth-v2-login-illustration-bordered' : 'auth-v2-login-illustration'
 
+  // ** Return JSX
   return (
     <Box className='content-right'>
       {!hidden ? (

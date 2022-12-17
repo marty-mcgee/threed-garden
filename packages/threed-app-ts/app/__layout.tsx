@@ -26,11 +26,6 @@ import { AuthProvider } from '#/ui/context/AuthContext'
 // ** User Authorization Hook
 import { useAuth } from '#/lib/auth/hooks/useAuth'
 
-// ** User Authorization Guards/Boundaries (~CORE Components)
-import AclGuard from '#/ui/components/auth/AclGuard'
-import AuthGuard from '#/ui/components/auth/AuthGuard'
-import GuestGuard from '#/ui/components/auth/GuestGuard'
-
 // ** Contexts for Theme Settings + MUI Components
 import { SettingsProvider, SettingsConsumer } from '#/ui/context/settingsContext'
 import ThemeComponent from '#/ui/theme/ThemeComponent'
@@ -44,11 +39,8 @@ import themeConfig from '#/lib/config/themeConfig'
 import BlankLayout from '#/ui/layouts/BlankLayout' // this is your login layout
 import UserLayout from '#/ui/layouts/UserLayout' // this is your main layout
 
-// ** ~core Components (not needed anymore?)
+// ** ~core Components
 // import WindowWrapper from '#/ui/components/window-wrapper'
-
-// ** Helper Components
-import Spinner from '#/ui/components/spinner'
 
 // ** CSS Styles
 import '#/styles/globals.css'
@@ -117,20 +109,6 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
 // }
 
 // ==============================================================
-// ** Security Guard
-
-const Guard = ({ children, authGuard, guestGuard }: any) => {
-  if (guestGuard) {
-    return <GuestGuard fallback={<Spinner />}>{children}</GuestGuard>
-  } else if (!guestGuard && !authGuard) {
-    return <div>{children}</div>
-  } else {
-    return <AuthGuard fallback={<Spinner />}>{children}</AuthGuard>
-  }
-}
-
-// ==============================================================
-// ** Home Route
 
 // Set Home Forwarding (to First Page) URL, based on User Role
 const getHomeRoute = (role: any) => {
@@ -157,18 +135,14 @@ const getHomeRoute = (role: any) => {
 // const App: FC<AppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => {
 // const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmotion> = (props: any) => {
 // const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayout> = (props: any) => {
-const RootLayout = ({ children }: { children: any }): JSX.Element => {
-  // **
+const RootLayout = ({ children }: { children: ReactNode }): JSX.Element => {
+  // //
   // console.debug('RootLayout.children', children)
-
-  // ** Props.children.props
-  const { props } = children
 
   // ** Hooks
   const auth = useAuth()
   const router = useRouter()
 
-  // ** OnMount (+ optional return OnUnmount)
   useEffect(() => {
     // user AUTHORIZED?
     if (auth.user && auth.user.role) {
@@ -182,10 +156,8 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
     else {
       const homeRoute = getHomeRoute('unauthorized')
       console.debug('❌ user NOT AUTHORIZED', auth.user, homeRoute)
-      // redirect user to their Home URL
-      if (props.childProp.segment !== 'auth') {
-        router.replace(homeRoute)
-      }
+      // redirect user to Home URL
+      router.replace(homeRoute)
     }
   }, [])
   console.debug('%c🥕 auth', ccm.orange, auth)
@@ -212,7 +184,7 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
     //
     // console.debug('getLayout.children', children)
 
-    // const { props } = children
+    const { props } = children
 
     // authorized: UserLayout
     // if (props.childProp.segment !== '' && props.childProp.segment !== 'auth') {
@@ -261,10 +233,12 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
                       <>
                         <ThemeComponent settings={settings}>
                           {getLayout(
+                            // <UserLayout>
                               // <EthApp {...props}>
                                 // <Component {...pageProps} />
                                 {children}
                               // </EthApp>
+                            // </UserLayout>
                           )}
                         </ThemeComponent>
                         {/* <ReactHotToast>

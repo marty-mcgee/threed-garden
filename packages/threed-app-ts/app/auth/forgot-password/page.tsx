@@ -1,7 +1,12 @@
+// ==============================================================
+// User Request New Password Page (for existing users)
+
 'use client'
 
 // ** Next Imports
+import type { NextPage } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 
 // ** MUI Components
 import Button from '@mui/material/Button'
@@ -25,9 +30,28 @@ import { useSettings } from '#/ui/hooks/useSettings'
 
 // ** Demo Imports
 import FooterIllustrationsV2 from '#/ui/pages/auth/FooterIllustrationsV2'
+import FarmbotDemoSVG from '#/lib/farmbot/FarmbotDemoSVG'
+
+// ** Image Imports
+import logo from '#/lib/assets/images/logos/logo-threedgarden.png'
+
+// ** Colorful Console Messages: Utility
+import ccm from '#/lib/utils/console-colors'
+
+// ** Scaffold-ETH Imports
+// import React, { FC } from 'react'
+import { TPageProps } from '#/lib/types/models/TAppProps'
+
+// ==============================================================
+// IMPORTS COMPLETE
+console.debug('%c=======================================', ccm.black)
+console.debug('%c🥕 ThreeDGarden<FC,R3F>: {register/page.tsx}', ccm.green)
+console.debug('%c=======================================', ccm.black)
+
+// ==============================================================
 
 // Styled Components
-const ForgotPasswordIllustrationWrapper = styled(Box)(({ theme }) => ({
+const ForgotPasswordIllustrationWrapper = styled(Box)(({ theme }: { theme: any }) => ({
   padding: theme.spacing(20),
   paddingRight: '0 !important',
   [theme.breakpoints.down('lg')]: {
@@ -35,21 +59,21 @@ const ForgotPasswordIllustrationWrapper = styled(Box)(({ theme }) => ({
   },
 }))
 
-const ForgotPasswordIllustration = styled('img')(({ theme }) => ({
+const ForgotPasswordIllustration = styled('img')(({ theme }: { theme: any }) => ({
   maxWidth: '53.125rem',
   [theme.breakpoints.down('lg')]: {
     maxWidth: '35rem',
   },
 }))
 
-const RightWrapper = styled(Box)(({ theme }) => ({
+const RightWrapper = styled(Box)(({ theme }: { theme: any }) => ({
   width: '100%',
   [theme.breakpoints.up('md')]: {
-    maxWidth: 450,
+    maxWidth: 400,
   },
 }))
 
-const BoxWrapper = styled(Box)(({ theme }) => ({
+const BoxWrapper = styled(Box)(({ theme }: { theme: any }) => ({
   [theme.breakpoints.down('xl')]: {
     width: '100%',
   },
@@ -58,13 +82,13 @@ const BoxWrapper = styled(Box)(({ theme }) => ({
   },
 }))
 
-const TypographyStyled = styled(Typography)(({ theme }) => ({
+const TypographyStyled = styled(Typography)(({ theme }: { theme: any }) => ({
   fontWeight: 600,
   marginBottom: theme.spacing(1.5),
   [theme.breakpoints.down('md')]: { mt: theme.spacing(8) },
 }))
 
-const LinkStyled = styled('a')(({ theme }) => ({
+const LinkStyled = styled('a')(({ theme }: { theme: any }) => ({
   display: 'flex',
   fontSize: '0.875rem',
   alignItems: 'center',
@@ -73,7 +97,12 @@ const LinkStyled = styled('a')(({ theme }) => ({
   color: theme.palette.primary.main,
 }))
 
-const ForgotPassword = () => {
+// ==============================================================
+
+const ForgotPasswordPage: NextPage<TPageProps> = (): JSX.Element => {
+  // **
+  console.debug('%c🥕 ForgotPasswordPage', ccm.green)
+
   // ** Hooks
   const theme = useTheme()
   const { settings } = useSettings()
@@ -82,13 +111,16 @@ const ForgotPassword = () => {
   const { skin } = settings
   const hidden = useMediaQuery(theme.breakpoints.down('md'))
 
-  const handleSubmit = (e) => {
+  // ** Handlers
+  const handleSubmit = (e: any) => {
     e.preventDefault()
   }
 
+  // ** Styles
   const imageSource =
     skin === 'bordered' ? 'auth-v2-forgot-password-illustration-bordered' : 'auth-v2-forgot-password-illustration'
 
+  // ** Return JSX
   return (
     <Box className='content-right'>
       {!hidden ? (
@@ -122,7 +154,7 @@ const ForgotPassword = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <svg
+              {/* <svg
                 width={35}
                 height={29}
                 version='1.1'
@@ -179,7 +211,15 @@ const ForgotPassword = () => {
                     </g>
                   </g>
                 </g>
-              </svg>
+              </svg> */}
+              {/* App Logo */}
+              <Image
+                src={logo}
+                width={48}
+                height={48}
+                alt={themeConfig.templateName}
+              />
+              {/* App Name */}
               <Typography
                 variant='h6'
                 sx={{
@@ -204,12 +244,10 @@ const ForgotPassword = () => {
                 Send reset link
               </Button>
               <Typography variant='body2' sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Link passHref href='/auth/login'>
-                  <LinkStyled>
-                    <ChevronLeft />
-                    <span>Back to login</span>
-                  </LinkStyled>
-                </Link>
+                <LinkStyled passHref href='/auth/login'>
+                  <ChevronLeft />
+                  <span>Back to login</span>
+                </LinkStyled>
               </Typography>
             </form>
           </BoxWrapper>
@@ -218,7 +256,7 @@ const ForgotPassword = () => {
     </Box>
   )
 }
-ForgotPassword.getLayout = (page) => <BlankLayout>{page}</BlankLayout>
-ForgotPassword.guestGuard = true
+ForgotPasswordPage.getLayout = (page: any) => <BlankLayout>{page}</BlankLayout>
+ForgotPasswordPage.guestGuard = true
 
-export default ForgotPassword
+export default ForgotPasswordPage
