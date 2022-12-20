@@ -164,20 +164,35 @@ const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
 
 // Set Home Forwarding (to First Page) URL, based on User Role
 const getHomeRoute = (role: any) => {
+  // user: acl: client: default main app index page
   if (role === 'client') {
     // return '/home' // another page
     return '/participate' // another page
     return '/acl' // authorized credentials list? (boundary)
   }
+  // user: acl: admin: default main app index page
   else if (role === 'admin') {
     // return '/' // this page (for testing. not ideal for production.)
     return '/home' // another page
     return '/participate' // another page
   }
+  // user: acl: guest: default main app index page
   else {
+    // special route requests
     // return '/' // this page (for testing. not ideal for production.)
-    return '/auth/login'
+    if (! '/participate') {
+      return '/auth/login'
+    }
+    else if ('/participate') {
+      return '/participate'
+    }
+    // return 'whatever existing route is.. no return change'
+    return '/' // default default main app index page
   }
+
+  // user: acl: unauthorized: default main app index page
+  return '/' // default default default main app index page
+  return 'whatever existing route is.. no return change'
 }
 
 // ==============================================================
@@ -255,7 +270,7 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
         </div>
       )
     }
-    
+
     // default: BlankLayout
     else {
       return (
