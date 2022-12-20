@@ -260,12 +260,14 @@ const LoginPage: NextPage<TPageProps> = (): JSX.Element => {
               }}
             >
               {/* App Logo */}
-              <Image
-                src={logo}
-                width={48}
-                height={48}
-                alt={themeConfig.templateName}
-              />
+              <Link href='/'>
+                <Image
+                  src={logo}
+                  width={48}
+                  height={48}
+                  alt={themeConfig.templateName}
+                />
+              </Link>
               {/* App Name */}
               <Typography
                 variant='h6'

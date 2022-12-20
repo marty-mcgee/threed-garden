@@ -8,9 +8,9 @@ export type TAppProps = {
 
 export type TPageProps = {
   appProps: TAppProps
-  getLayout: Function | boolean
-  setConfig: Function | boolean
-  authGuard: boolean
-  guestGuard: boolean
+  getLayout: Function | Boolean
+  setConfig: Function | Boolean
+  authGuard: Boolean
+  guestGuard: Boolean
   acl: Object
 }
