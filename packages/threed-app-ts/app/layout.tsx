@@ -119,13 +119,43 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
 // ==============================================================
 // ** Security Guard
 
-const Guard = ({ children, authGuard, guestGuard }: any) => {
-  if (guestGuard) {
-    return <GuestGuard fallback={<Spinner />}>{children}</GuestGuard>
-  } else if (!guestGuard && !authGuard) {
-    return <div>{children}</div>
-  } else {
-    return <AuthGuard fallback={<Spinner />}>{children}</AuthGuard>
+const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
+  if (!guestGuard && !authGuard) {
+    console.debug('noGuard loading...')
+    console.debug('%c=======================================', ccm.black)
+    return (
+      <>{children}</>
+    )
+  }
+  else if (authGuard) {
+    console.debug('authGuard loading...')
+    console.debug('%c=======================================', ccm.black)
+    return (
+      <AuthGuard fallback={<Spinner />}>
+        {children}
+      </AuthGuard>
+    )
+  }
+  else if (guestGuard) {
+    console.debug('guestGuard loading...')
+    console.debug('%c=======================================', ccm.black)
+    return (
+      // <GuestGuard fallback={<Spinner />}>
+      //   {children}
+      // </GuestGuard>
+      <AuthGuard fallback={<Spinner />}>
+        {children}
+      </AuthGuard>
+    )
+  }
+  else {
+    console.debug('authGuard loading (by default)...')
+    console.debug('%c=======================================', ccm.black)
+    return (
+      <AuthGuard fallback={<Spinner />}>
+        {children}
+      </AuthGuard>
+    )
   }
 }
 
@@ -218,17 +248,18 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
     // if (props.childProp.segment !== '' && props.childProp.segment !== 'auth') {
     if (auth.user && auth.user.role) {
       return (
-        <div id='ThreeDAppLayout'>
+        <div id='ThreeDAppLayout-UserLayout'>
           <UserLayout>
             {children}
           </UserLayout>
         </div>
       )
     }
+    
     // default: BlankLayout
     else {
       return (
-        <div id='ThreeDAppLayout'>
+        <div id='ThreeDAppLayout-BlankLayout'>
           <BlankLayout>
             {children}
           </BlankLayout>
@@ -236,54 +267,52 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
       )
     }
   }
-  const setConfig = Component.setConfig ?? false
-  const authGuard = Component.authGuard ?? true
-  const guestGuard = Component.guestGuard ?? false
-  const acl = Component.acl ?? defaultACLObj
+  const { setConfig, authGuard, guestGuard, acl } = Component // .setConfig ?? false
+  // const authGuard = Component.authGuard ?? true
+  // const guestGuard = Component.guestGuard ?? false
+  // const acl = Component.acl ?? defaultACLObj
 
   // ** Return JSX
   return (
     <ThreeDAppProvider>
-      <ApolloProvider client={client}>
-        <ReduxProvider store={reduxStore}>
-          <AuthProvider>
-            {/* <WindowWrapper> */}
-              {/* <Guard
-                authGuard={authGuard}
-                guestGuard={guestGuard}
-              > */}
-                {/* <AclGuard
-                  aclAbilities={acl}
-                  guestGuard={guestGuard}
-                > */}
-                  <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null })}>
-                  <SettingsConsumer>
-                    {({ settings }) => (
-                      <>
-                        <ThemeComponent settings={settings}>
-                          {getLayout(
-                              // <EthApp {...props}>
-                                // <Component {...pageProps} />
-                                {children}
-                              // </EthApp>
-                          )}
-                        </ThemeComponent>
-                        {/* <ReactHotToast>
-                          <Toaster
-                            position={settings.toastPosition as ToastPosition}
-                            toastOptions={{ className: 'react-hot-toast' }}
-                          />
-                        </ReactHotToast> */}
-                      </>
-                    )}
-                    </SettingsConsumer>
-                  </SettingsProvider>
-                {/* </AclGuard> */}
-              {/* </Guard> */}
-            {/* </WindowWrapper> */}
-          </AuthProvider>
-        </ReduxProvider>
-      </ApolloProvider>
+      <AuthProvider>
+        <AuthConsumer
+          authGuard={authGuard}
+          guestGuard={guestGuard}
+        >
+          {/* <AclGuard
+            aclAbilities={acl}
+            guestGuard={guestGuard}
+          > */}
+            <ApolloProvider client={client}>
+              <ReduxProvider store={reduxStore}>
+                <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null })}>
+                <SettingsConsumer>
+                  {({ settings }) => (
+                    <>
+                      <ThemeComponent settings={settings}>
+                        {getLayout(
+                            // <EthApp {...props}>
+                              // <Component {...pageProps} />
+                              {children}
+                            // </EthApp>
+                        )}
+                      </ThemeComponent>
+                      {/* <ReactHotToast>
+                        <Toaster
+                          position={settings.toastPosition as ToastPosition}
+                          toastOptions={{ className: 'react-hot-toast' }}
+                        />
+                      </ReactHotToast> */}
+                    </>
+                  )}
+                  </SettingsConsumer>
+                </SettingsProvider>
+              </ReduxProvider>
+            </ApolloProvider>
+          {/* </AclGuard> */}
+        </AuthConsumer>
+      </AuthProvider>
     </ThreeDAppProvider>
   )
 }

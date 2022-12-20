@@ -66,14 +66,15 @@
     { "directory": "packages/commands", "changeProcessCWD": true }
   ],
 
+  "prettier.enable": true,
+  "prettier.endOfLine": "crlf",
+
   "solidity.packageDefaultDependenciesDirectory": "packages/solidity-ts/node_modules",
+  "solidity.defaultCompiler": "localNodeModule",
   "solidity.formatter": "prettier", // This is the default so it might be missing.
   "[solidity]": {
     "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
   },
-  "solidity.defaultCompiler": "localNodeModule",
 
-  "mochaExplorer.configFile": "./packages/solidity-ts/.mocharc.json",
-  "prettier.enable": false,
-  "prettier.endOfLine": "auto"
+  "mochaExplorer.configFile": "./packages/solidity-ts/.mocharc.json"
 }

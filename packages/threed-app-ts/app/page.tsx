@@ -6,14 +6,14 @@
 // ** Next Imports
 import type { NextPage } from 'next'
 // import Link from 'next/link'
-// import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 // ** React Imports
 // import type { ReactNode } from 'react'
-// import { useEffect } from 'react'
+import { useEffect } from 'react'
 
 // ** Hook Imports
-// import { useAuth } from '#/lib/auth/hooks/useAuth'
+import { useAuth } from '#/lib/auth/hooks/useAuth'
 
 // ** Demo Data Imports
 // import { demos } from '#/lib/data/demos'
@@ -37,22 +37,22 @@ console.debug('%c=======================================', ccm.black)
 // ==============================================================
 
 // Set Home Forwarding (to First Page) URL, based on User Role
-// const getHomeRoute = (role: any) => {
-//   if (role === 'client') {
-//     // return '/home' // another page
-//     return '/participate' // another page
-//     return '/acl' // authorized credentials list? (boundary)
-//   }
-//   else if (role === 'admin') {
-//     // return '/' // this page (for testing. not ideal for production.)
-//     return '/home' // another page
-//     return '/participate' // another page
-//   }
-//   else {
-//     // return '/' // this page (for testing. not ideal for production.)
-//     return '/auth/login'
-//   }
-// }
+const getHomeRoute = (role: any) => {
+  if (role === 'client') {
+    // return '/home' // another page
+    return '/participate' // another page
+    return '/acl' // authorized credentials list? (boundary)
+  }
+  else if (role === 'admin') {
+    // return '/' // this page (for testing. not ideal for production.)
+    return '/home' // another page
+    return '/participate' // another page
+  }
+  else {
+    // return '/' // this page (for testing. not ideal for production.)
+    return '/auth/login'
+  }
+}
 
 // ==============================================================
 
@@ -62,28 +62,28 @@ const AppPage: NextPage<TPageProps> = (): JSX.Element => {
   console.debug('%c🥕 AppPage', ccm.green)
 
   // ** Hooks
-  // const auth = useAuth()
-  // const router = useRouter()
+  const auth = useAuth()
+  const router = useRouter()
 
   // ** OnMount (+ optional return OnUnmount)
-  // useEffect(() => {
-  //   // user AUTHORIZED?
-  //   if (auth.user && auth.user.role) {
-  //     // get Home URL
-  //     const homeRoute = getHomeRoute(auth.user.role)
-  //     console.debug('✅ user AUTHORIZED', auth.user, homeRoute)
-  //     // redirect user to Home URL
-  //     router.replace(homeRoute)
-  //   }
-  //   // user NOT AUTHORIZED!
-  //   else {
-  //     const homeRoute = getHomeRoute('unauthorized')
-  //     console.debug('❌ user NOT AUTHORIZED', auth.user, homeRoute)
-  //     // redirect user to Home URL
-  //     router.replace(homeRoute)
-  //   }
-  //   // return <></>
-  // }, [])
+  useEffect(() => {
+    // user AUTHORIZED?
+    if (auth.user && auth.user.role) {
+      // get Home URL
+      const homeRoute = getHomeRoute(auth.user.role)
+      console.debug('✅ user AUTHORIZED', auth.user, homeRoute)
+      // redirect user to Home URL
+      router.replace(homeRoute)
+    }
+    // user NOT AUTHORIZED!
+    else {
+      const homeRoute = getHomeRoute('unauthorized')
+      console.debug('❌ user NOT AUTHORIZED', auth.user, homeRoute)
+      // redirect user to Home URL
+      router.replace(homeRoute)
+    }
+    // return <></>
+  }, [])
 
 // ==============================================================
 
