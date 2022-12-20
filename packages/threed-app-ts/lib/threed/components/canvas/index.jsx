@@ -13,6 +13,7 @@ import { OrbitControls, TransformControls, Preload, Environment, Html, useProgre
 import { useGLTF, PresentationControls, ContactShadows } from '@react-three/drei'
 import { Loader } from '@react-three/drei'
 import { GizmoHelper, GizmoViewcube, GizmoViewport, Center, PivotControls } from '@react-three/drei'
+import { Stage, BakeShadows } from '@react-three/drei'
 
 // import AppPage from '#/lib/threed/pages/_app-page'
 // import BoxPage from '#/lib/threed/pages/box-page'
@@ -31,9 +32,11 @@ import Stacy from '~/lib/examples/Stacy/Stacy'
 // import JourneyLevel from '~/lib/examples/JourneyLevel/App'
 // import Shoes from '~/lib/examples/Shoes/App'
 import TransformModel from '~/lib/examples/TransformModel/App'
+import Shoe from '~/lib/examples/Shoes/Shoe'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/lib/utils/console-colors'
+import ccm from '#/lib/utils/console-colors'
+console.debug('%c~ccm', ccm)
 
 // ==============================================================
 // ** VARIABLES
@@ -70,6 +73,7 @@ function ThreeDControls() {
         makeDefault
         minPolarAngle={0}
         maxPolarAngle={Math.PI / 1.75}
+        autoRotate
       />
     </>
   )
@@ -220,6 +224,13 @@ export default function ThreeDCanvas({ models, children }) {
         {/* NEED TO SEND A THREED_SCENE TO A CANVAS, BUT THIS IS FINE FOR NOW */}
         {/* <ThreeD state={state} threedId={1} threed={{}} /> */}
         {/* [MM] HEY HEY HEY */}
+
+        <Stage environment="forest" intensity={0.7}>
+          <Shoe color="tomato" position={[0, 0, 0]} />
+          <Shoe color="orange" scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
+        </Stage>
+
+        <BakeShadows />
 
         {/* {children} */}
       </Suspense>
