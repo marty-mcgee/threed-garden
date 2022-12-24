@@ -73,7 +73,7 @@ function ThreeDControls() {
         makeDefault
         minPolarAngle={0}
         maxPolarAngle={Math.PI / 1.75}
-        autoRotate
+        autoRotate={true}
       />
     </>
   )
