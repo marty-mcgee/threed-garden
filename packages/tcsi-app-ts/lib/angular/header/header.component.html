@@ -1,0 +1,436 @@
+<header>
+  <!-- LOGIN/REGISTER Modal -->
+  <div *ngIf="showRegister || showLogin || showOtp || showSetPassword" class="fade-in-div modal fade cous-modal-bg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content zoom-an">
+        <button (click)="closeLoginModal()" *ngIf="removeClosePopup" class="m-close-btn" type="button">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <div class="modal-body login-content">
+          <div class="container-fluid">
+            <div class="login-box">
+              <div class="row">
+                <div class="col-md-12">
+                  <app-error-page [errorMessage]="serverError"></app-error-page>
+                  <app-error-page [successMessage]="serverSuccess"></app-error-page>
+                  <div *ngIf="showLogin" class="user-login">
+                    <form [formGroup]="loginForm">
+                      <div class="login-h">
+                          <img alt="" class="login-logo" src="assets/img/logo.png">
+                        <p class="hint">Please login to continue</p>
+                      </div>
+
+                      <h6 class="input-txt">Explorer ID</h6>
+                      <div class="input-group mb-3 input-container">
+                        <img alt=""
+                             src="assets/img/user.png">
+                        <input class="form-control" formControlName="email" id="email" placeholder="User ID"
+                               type="email">
+                        <div *ngIf="loginForm.controls.email.dirty && !loginForm.controls.email.valid"
+                             class="error">
+                          <p *ngIf="loginForm.controls.email.errors?.required">Please enter email.</p>
+                          <p *ngIf="loginForm.controls.email.errors?.pattern">Invalid email format.</p>
+                        </div>
+                      </div>
+
+                      <h6 class="input-txt">Explorer Password</h6>
+                      <div class="input-group mb-3 input-container mar-o">
+                        <img alt=""
+                             src="assets/img/password.png">
+                        <input class="form-control" formControlName="password" id="password" placeholder="Password"
+                               [type]="showText ? 'text' : 'password'">
+                        <button class="btn show-hide-pass" (click)="showHidePass()"><img
+                          [src]="showText ? 'assets/img/hide-password.png' : 'assets/img/show-password.png'" alt="">
+                        </button>
+                        <div *ngIf="loginForm.controls.password.dirty && !loginForm.controls.password.valid"
+                             class="error mar-right">
+                          <p *ngIf="loginForm.controls.password.errors?.required">Please enter password.</p>
+                          <!--<p *ngIf="loginForm.controls.password.errors?.pattern && validpassword">Invalid
+                            password.</p>-->
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <div class="col-12 dis-cen mar">
+                          <div class="icheck-primary">
+                            <input class="check-b" id="remember" type="checkbox">
+                            <label for="remember">
+                              Remember Me
+                            </label>
+                          </div>
+                          <a (click)="openForgotPasswordModal()" class="forgot-txt ">change/forgot password</a>
+                        </div>
+
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center;">
+                          <button (click)="submitLogin()" class="btn login-btn">Sign In</button>
+                        </div>
+                      </div>
+
+                      <div class="n-user">
+                        <a (click)="openRegisterModal()" class="forgot-txt ">Don't have an account?Register</a>
+                      </div>
+                    </form>
+                  </div>
+                  <div *ngIf="showRegister" class="user-register">
+                    <form [formGroup]="registerForm">
+                      <div class="login-h">
+                          <img class="login-logo" src="assets/img/logo.png" alt="">
+
+                        <p class="hint">Please Enter your details to get register yourself</p>
+                      </div>
+
+                      <h6 class="input-txt">Name</h6>
+                      <div class="input-group mb-3 input-container">
+                        <img src="assets/img/user.png"
+                             alt="">
+                        <input type="text" class="form-control"
+                               placeholder="Name" formControlName="name" maxlength="50">
+                        <div class="error"
+                             *ngIf="registerForm.controls.name.dirty && !registerForm.controls.name.valid">
+                          <p *ngIf="registerForm.controls.name.errors?.required">Please enter name.</p>
+                          <p *ngIf="registerForm.controls.name.errors?.pattern">Name must contain alphabet only.</p>
+                        </div>
+                      </div>
+
+                      <h6 class="input-txt">Email</h6>
+                      <div class="input-group mb-3 input-container">
+                        <img src="assets/img/password.png"
+                             alt="">
+                        <input class="form-control" formControlName="email" maxlength="50" placeholder="Email"
+                               type="email">
+                        <div *ngIf="registerForm.controls.email.dirty && !registerForm.controls.email.valid"
+                             class="error">
+                          <p *ngIf="registerForm.controls.email.errors?.required">Please enter email.</p>
+                          <p *ngIf="registerForm.controls.email.errors?.pattern && validEmail">Invalid email format.</p>
+                        </div>
+                      </div>
+
+
+                      <h6 class="input-txt">Mobile <span class="inst-note">(optional)</span></h6>
+                      <div class="input-group mb-3 input-container">
+                        <img src="assets/img/mobile.png"
+                             alt="">
+                        <input class="form-control" formControlName="mobile" maxlength="10" placeholder="Mobile"
+                               type="mobile">
+                        <div class="error"
+                             *ngIf="registerForm.controls.mobile.dirty && !registerForm.controls.mobile.valid">
+                          <!--                          <p *ngIf="registerForm.controls.mobile.errors?.required">Please enter mobile no.</p>-->
+                          <p *ngIf="registerForm.controls.mobile.errors?.pattern && validMobile">Invalid mobile no.</p>
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <div style="text-align: center;" class="col-12">
+                          <button class="btn login-btn r-btn" (click)="submitRegister()">Register</button>
+                        </div>
+                      </div>
+
+                      <div class="n-user">
+                        <a class="forgot-txt " (click)="openLoginModal()">Already have an account?Login</a>
+                      </div>
+                    </form>
+                  </div>
+
+                  <div *ngIf="showOtp" class="user-otp-verification">
+                    <form [formGroup]="otpForm">
+                      <div class="login-h">
+                          <img alt="" class="login-logo" src="assets/img/logo.png">
+                        <p class="sub-txt">Otp</p>
+                        <p class="hint">We have send you the code on your registered email</p>
+                      </div>
+
+                      <div class="input-group mb-3 input-container">
+                        <input class="form-control text-center" formControlName="otp" maxlength="4"
+                               placeholder="enter otp">
+                      </div>
+                      <div *ngIf="otpForm.controls.otp.dirty && !otpForm.controls.otp.valid"
+                           class="error">
+                        <p *ngIf="otpForm.controls.otp.errors?.required">Please enter OTP.</p>
+                        <p *ngIf="otpForm.controls.otp.errors?.pattern && validOtp">Invalid OTP.</p>
+                      </div>
+
+                      <div class="row">
+                        <div class="col-12" style="text-align: center;margin: 8px 0;">
+                          <button (click)="verifyOtp()" class="btn login-btn">Verify OTP</button>
+                        </div>
+                      </div>
+
+                      <div *ngIf="showError !== ''"> {{showError}}</div>
+
+                      <div class="n-user">
+                        <a (click)="resendOtp()" class="forgot-txt ">Didnt recieved OTP?Resend</a>
+                      </div>
+                    </form>
+                  </div>
+
+                  <div *ngIf="showSetPassword" class="user-set-password">
+                    <form [formGroup]="setPasswordForm">
+                      <div class="login-h">
+                          <img alt="" class="login-logo" src="assets/img/logo.png">
+                        <p class="sub-txt">set Password</p>
+                        <p class="hint">create a new password for your profile</p>
+                      </div>
+
+                      <h6 class="input-txt">password <span class="inst-note">(password must contain atleast 8 characters, A-Z characters and 0-9 numbers)</span></h6>
+                      <div class="input-group mb-3 input-container">
+                        <img alt=""
+                             src="assets/img/password.png">
+                        <input class="form-control" formControlName="password" placeholder="Password"
+                               [type]="showText ? 'text' : 'password'">
+                        <button class="btn show-hide-pass" (click)="showHidePass()"><img
+                          [src]="showText ? 'assets/img/hide-password.png' : 'assets/img/show-password.png'" alt="">
+                        </button>
+                        <div *ngIf="setPasswordForm.controls.password.dirty && !setPasswordForm.controls.password.valid"
+                             class="error mar-right">
+                          <p *ngIf="setPasswordForm.controls.password.errors?.required">Please enter password.</p>
+                          <p *ngIf="setPasswordForm.controls.password.errors?.pattern && validpassword">Invalid
+                            password.</p>
+                        </div>
+                      </div>
+                      <h6 class="input-txt">confirm Password</h6>
+                      <div class="input-group mb-3 input-container">
+                        <img alt=""
+                             src="assets/img/password.png">
+                        <input class="form-control" formControlName="c_password" placeholder="Password"
+                               [type]="showTextConfirm ? 'text' : 'password'">
+                        <button class="btn show-hide-pass" (click)="showHidePassConfirm()"><img
+                          [src]="showTextConfirm ? 'assets/img/hide-password.png' : 'assets/img/show-password.png'"
+                          alt=""></button>
+                        <div
+                          *ngIf="setPasswordForm.controls.c_password.dirty && !setPasswordForm.controls.c_password.valid"
+                          class="error mar-right">
+                          <p *ngIf="setPasswordForm.controls.c_password.errors?.required">Please confirm password.</p>
+                          <p *ngIf="setPasswordForm.controls.c_password.errors?.pattern && validpassword">Invalid
+                            password.</p>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center;margin: 8px 0;">
+                          <button (click)="submitPassword()" class="btn login-btn">Set Password</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="showForgotPassword || showForgotSetPassword" class="modal fade-in-div fade cous-modal-bg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content zoom-an">
+        <button (click)="closeForgotPasswordModal()" *ngIf="removeClosePopup" class="m-close-btn" type="button">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <div class="modal-body login-content">
+          <div class="container-fluid">
+            <div class="login-box">
+              <div class="row">
+                <div class="col-md-12">
+                  <app-error-page [errorMessage]="serverError"></app-error-page>
+                  <app-error-page [successMessage]="serverSuccess"></app-error-page>
+                  <div *ngIf="showForgotPassword" class="forgot-password-step1">
+                    <form [formGroup]="forgotPasswordForm">
+                      <div class="login-h">
+                          <img alt="" class="login-logo" src="assets/img/logo.png">
+                        <p class="sub-txt">forgot password</p>
+                        <p class="hint">Enter your registered Explorer ID and we will send you the link to
+                          reset your password</p>
+                      </div>
+
+                      <div class="input-group mb-3 input-container">
+                        <img alt=""
+                             src="assets/img/user.png">
+                        <input class="form-control" formControlName="email"
+                               maxlength="50" placeholder="Explorer ID">
+                        <div *ngIf="forgotPasswordForm.controls.email.dirty && !forgotPasswordForm.controls.email.valid"
+                             class="error">
+                          <p *ngIf="forgotPasswordForm.controls.email.errors?.required">Please enter email.</p>
+                          <p *ngIf="forgotPasswordForm.controls.email.errors?.pattern">Invalid email format.</p>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center;margin: 8px 0;">
+                          <button (click)="submitForgotPassword()" class="btn login-btn">Continue</button>
+                        </div>
+                      </div>
+                      <div class="n-user">
+                        <a (click)="openLoginModal()" class="forgot-txt ">Back to login</a>
+                      </div>
+                    </form>
+                  </div>
+
+                  <div *ngIf="showForgotSetPassword" class="forgot-password-step2">
+                    <form [formGroup]="forgotSetPasswordForm">
+                      <div class="login-h">
+                          <img alt="" class="login-logo" src="assets/img/logo.png">
+                        <p class="sub-txt">forgot passowrd</p>
+                        <p class="hint">create a new password for your profile</p>
+                      </div>
+
+                      <h6 class="input-txt">new password <span class="inst-note">(password must contain atleast 8 characters, A-Z characters and 0-9 numbers)</span></h6>
+                      <div class="input-group mb-3 input-container">
+                        <img alt=""
+                             src="assets/img/password.png">
+                        <input class="form-control" formControlName="password" placeholder="Password"
+                               [type]="showText ? 'text' : 'password'">
+                        <button class="btn show-hide-pass" (click)="showHidePass()"><img
+                          [src]="showText ? 'assets/img/hide-password.png' : 'assets/img/show-password.png'" alt="">
+                        </button>
+                        <div
+                          *ngIf="forgotSetPasswordForm.controls.password.dirty && !forgotSetPasswordForm.controls.password.valid"
+                          class="error mar-right">
+                          <p *ngIf="forgotSetPasswordForm.controls.password.errors?.required">Please enter password.</p>
+                          <p *ngIf="forgotSetPasswordForm.controls.password.errors?.pattern && validpassword">Invalid
+                            password.</p>
+                        </div>
+                      </div>
+
+                      <h6 class="input-txt">confirm new Password</h6>
+                      <div class="input-group mb-3 input-container">
+                        <img alt=""
+                             src="assets/img/password.png">
+                        <input class="form-control" formControlName="c_password" placeholder="Password"
+                               [type]="showTextConfirm ? 'text' : 'password'">
+                        <button class="btn show-hide-pass" (click)="showHidePassConfirm()"><img
+                          [src]="showTextConfirm ? 'assets/img/hide-password.png' : 'assets/img/show-password.png'"
+                          alt=""></button>
+                        <div
+                          *ngIf="forgotSetPasswordForm.controls.c_password.dirty && !forgotSetPasswordForm.controls.c_password.valid"
+                          class="error mar-right">
+                          <p *ngIf="forgotSetPasswordForm.controls.c_password.errors?.required">Please enter
+                            password.</p>
+                          <p *ngIf="forgotSetPasswordForm.controls.c_password.errors?.pattern && validpassword">Invalid
+                            password.</p>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" style="text-align: center;margin: 8px 0;">
+                          <button (click)="submitSetForgotPassword()" class="btn login-btn">reset Password</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light main-navbar fixed-top">
+    <div class="container">
+
+      <a class="navbar-brand" href="">
+          <img src="assets/img/logo.png" class="logo-img" alt="LOGO">
+      </a>
+      <a class="btn m-cart-btn">
+          <img src="assets/img/search_icon.png">
+      </a>
+      <div class="search-bar-h">
+          <img src="assets/img/search_icon.png">
+        <input class="form-control input-style" placeholder="Search Topic, Story here..." type="text">
+      </div>
+      <button class="navbar-toggler" type="button" (click)="openMobileMenu()">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul *ngIf="isLoggedIn !== null" class="navbar-nav ml-auto">
+          <li [routerLinkActiveOptions]="{exact:true}" class="nav-item " routerLinkActive="active">
+              <a class="nav-link" routerLink="">Library <span
+              class="sr-only">(current)</span></a>
+          </li>
+            <li class="nav-item " routerLinkActive="active">
+                <a *ngIf="isLoggedIn && isAdmin" class="nav-link" routerLink="/add-story-group">Add
+                    Story Group</a>
+            </li>
+          <li class="nav-item " routerLinkActive="active">
+            <a *ngIf="isLoggedIn && isAdmin" class="nav-link" routerLink="/add-story">Add
+              Story</a>
+          </li>
+          <li class="nav-item " routerLinkActive="active">
+              <a *ngIf="isLoggedIn && isAdmin" class="nav-link" routerLink="/add-chapter">Add Chapter</a>
+          </li>
+            <!--<li class="nav-item " routerLinkActive="active">
+              <a *ngIf="isLoggedIn" class="nav-link" routerLink="/generate-sequence">Library</a>
+            </li>-->
+          <li class="nav-item " routerLinkActive="active">
+            <a *ngIf="isLoggedIn && isAdmin" class="nav-link" routerLink="/customers">explorer</a>
+          </li>
+          <li class="nav-item " routerLinkActive="active">
+            <button (click)="logout()" *ngIf="isLoggedIn" class="nav-link loginbtn">Logout</button>
+          </li>
+          <li class="nav-item " routerLinkActive="active">
+            <button (click)="openLoginModal()" *ngIf="!isLoggedIn" class="nav-link loginbtn">Login/Register</button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="mobile-menu fade-in-div" *ngIf="showMobileMenu">
+        <ul *ngIf="isLoggedIn !== null" class="m-menu leftTorightslide">
+          <li class="m-menu-item">
+            <a class="m-menu-link m-menu-lbl">Menu</a>
+            <div class="ml-auto close-menu" (click)="closeMobileMenu()">
+              <span aria-hidden="true">&times;</span>
+            </div>
+          </li>
+          <li class="m-menu-item " routerLinkActive="active">
+              <a class="m-menu-link" routerLink="">Library <span
+              class="sr-only">(current)</span></a>
+          </li>
+          <li class="m-menu-item" routerLinkActive="active">
+            <a *ngIf="isLoggedIn && isAdmin" class="m-menu-link" routerLink="/add-story">Add Story</a>
+          </li>
+          <li class="m-menu-item" routerLinkActive="active">
+              <a *ngIf="isLoggedIn && isAdmin" class="m-menu-link" routerLink="/add-chapter">Add Chapter</a>
+          </li>
+            <!--<li class="m-menu-item" routerLinkActive="active">
+              <a *ngIf="isLoggedIn" class="m-menu-link" routerLink="/generate-sequence">Library</a>
+            </li>-->
+          <li class="m-menu-item" routerLinkActive="active">
+            <a *ngIf="isLoggedIn && isAdmin" class="m-menu-link" routerLink="/customers">explorer</a>
+          </li>
+          <li class="m-menu-item" routerLinkActive="active">
+            <button (click)="logout()" *ngIf="isLoggedIn" class="m-menu-link loginbtn">Logout</button>
+          </li>
+          <li class="m-menu-item" routerLinkActive="active">
+            <button (click)="openLoginModal()" *ngIf="!isLoggedIn" class="m-menu-link loginbtn">Login/Register</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <!--&lt;!&ndash; Modal &ndash;&gt;
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>-->
+
+</header>
+<router-outlet></router-outlet>
