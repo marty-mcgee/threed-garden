@@ -98,6 +98,7 @@ packages/threed-garden
 !packages/next13-app-ts
 packages/platforms-main
 packages/tcsi-app-tsX
+packages/tcsi-app-ts*
 
 # scaffold-eth
 *.tsbuildinfo
