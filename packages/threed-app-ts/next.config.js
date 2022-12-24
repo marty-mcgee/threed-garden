@@ -40,21 +40,21 @@ const nextConfig = {
     // use Next 13 '/app' directory:
     appDir: true, // true for Next 13 | false for Next 12
 
-    serverComponentsExternalPackages: ['prisma', 'tailwindcss'],
-
-    transpilePackages: [
-      '@fullcalendar/common',
-      '@fullcalendar/daygrid',
-      '@fullcalendar/interaction',
-      '@fullcalendar/react',
-      '@fullcalendar/timegrid',
-      'react-github-btn',
-      'three',
-    ],
+    serverComponentsExternalPackages: ['axios', 'prisma', 'tailwindcss'],
   },
 
   // https://github.com/vercel/next.js/issues/36221
   swcMinify: true, // true throws error at ErrorBoundary
+
+  transpilePackages: [
+    '@fullcalendar/common',
+    '@fullcalendar/daygrid',
+    '@fullcalendar/interaction',
+    '@fullcalendar/react',
+    '@fullcalendar/timegrid',
+    'react-github-btn',
+    'three',
+  ],
 
   // productionBrowserSourceMaps: true,
 
