@@ -1,0 +1,367 @@
+<div class="main-content">
+  <div class="container">
+    <div class="content">
+      <div class="row">
+        <div class="col-md-5">
+          <div class="left-side-content">
+            <form [formGroup]="addChapterForm">
+              <div *ngIf="showEditDiv">
+                <div class="drop-down-wrapper">
+                  <select (change)="changeStory($event)" class="drop-down-option"
+                          formControlName="story_id">
+                    <option value="">select story title</option>
+                    <option *ngFor="let data of storyData" value="{{data.id}}">{{data.title}}
+                    </option>
+                  </select>
+                </div>
+                <div class="input-group file-input-container">
+                  <div class="upload-con">
+                    <img [src]="selectedImage !== null ? selectedImage : 'assets/img/tcsi logo_main.png'"
+                         alt=""
+                         class="up-img">
+                    <div class="upload-btn-overlay">
+                      <div class="upload-btn-wrapper">
+                        <button class="btn btn-up">+ upload Your Image
+                        </button>
+                        <input #fileUpload (change)="fileSelection($event)" id="fileUpload"
+                               name="fileUpload"
+                               type="file"/>
+                      </div>
+                      <button (click)="openImageModal()" class="btn view-pic">View image</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="title-dis-container">
+                  <div class="action-btn-bar">
+                    <div class="action-btn-right">
+                      <button class="btn editor-btn" title="Play"><img
+                        alt=""
+                        src="assets/img/play-red.png"></button>
+                      <button (click)="changeKeyExplorer()" class="btn editor-btn"
+                              title="key explorer">
+                        <img
+                          [src]="activeKeyExplorer ? 'assets/img/tcsi icon-red.png' : 'assets/img/key-explorer-inactive.png'"
+                          alt="">
+                      </button>
+                      <button (click)="selectedStoryId === 0 ? noDuplicate() : openDuplicateModal()"
+                              [title]="selectedChapterId === 0 ? 'Nothing to duplicate':'Duplicate chapter'"
+                              class="btn editor-btn">
+                        <img
+                          [src]="selectedChapterId === 0 ? 'assets/img/duplicate-inactive.png' : 'assets/img/duplicate-red.png'"
+                          alt=""></button>
+                      <div class="custom-control custom-switch add-story-toggle-btn"
+                           title="publish">
+                        <input class="custom-control-input" formControlName="status" id="customSwitch1"
+                               type="checkbox" value="1">
+                        <label class="custom-control-label" for="customSwitch1"></label>
+                      </div>
+                      <button (click)="saveChapter()" class="btn editor-btn" title="save chapter">
+                        <img
+                          alt="" src="assets/img/save-red.png"></button>
+                    </div>
+                    <div class="right-c">
+                      <div class="chap-time-txt">
+                        <span>## chapters</span>
+                        <span>00:00:00</span>
+                      </div>
+                      <div (click)="openCountViewModal()" class="view">
+                        <img alt="" src="assets/img/view.png">
+                        <p>1k</p>
+                      </div>
+                    </div>
+                  </div>
+                  <input class="form-control" formControlName="title"
+                         placeholder="create chapter title" value="STORY title 02: Lorem Ipsum">
+                  <textarea class="form-control" formControlName="description" placeholder="Description here..."
+                            rows="5"></textarea>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="col-md-7">
+          <div class="right-side">
+            <div class="right-side-content">
+              <div class="sec-heading">
+                <h3 class="page-heading">library</h3>
+                <div class="page-head-line"></div>
+              </div>
+
+              <div *ngFor="let data of storyGroupData;let i=index" class="story-grp">
+                <div class="sub-title-n">
+                  <h3 class="page-heading">{{data.title}}</h3>
+                  <button (click)="addChapter(data)" [disabled]="data.stories.length === 0 ? true: false"
+                          class="btn add-st-btn">+ Add chapter
+                  </button>
+                </div>
+                <div class="main-story-con">
+                  <div *ngIf="data.stories.length === 0" class="story-grp-container">
+                    <div class="story-img no-data">
+                      <img alt="" src="assets/img/script.png">
+                      <p>Story not created</p>
+                    </div>
+                  </div>
+                  <div *ngIf="data.stories.length > 0" class="story-grp-container">
+                    <div (click)="scrollLeft(i)" class="left-arrow">
+                      <img alt="" src="assets/img/left-arrow-sc.png">
+                    </div>
+                    <div #widgetsContent [ngClass]="data.id === selectedStoryGroupId ? 'active_1': ''"
+                         class="story-grp-content">
+                      <div (click)="editStory(d.id,data)" *ngFor="let d of data.stories"
+                           class="story-container">
+                        <div class="story-img">
+                          <img *ngIf="d.key_explorer" alt=""
+                               class="key-expo" src="assets/img/key-expo.png">
+                          <img alt="" src="{{replaceUrl(d.story_image)}}">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div (click)="scrollRight(i)" class="right-arrow">
+                      <img alt="" src="assets/img/right-arrow-sc.png">
+                    </div>
+
+                    <div *ngIf="data.id === selectedStoryGroupId && selectedStoryId !== 0">
+                      <div *ngIf="chapters.length === 0">
+                        <div class="story-img no-data">
+                          <img alt="" src="assets/img/script.png">
+                          <p>Chapter not created</p>
+                        </div>
+                      </div>
+                      <div *ngIf="chapters.length !== 0">
+                        <div *ngFor="let cd of chapters" class="chapter-body zoom-an">
+                          <div (click)="editChapter(cd)" [ngClass]="cd.id === selectedChapterId ? 'active_2' : ''"
+                               class="chapter-container-in ">
+                            <div class="chap-h">
+                              <div class="chapter-img">
+                                <img *ngIf="cd.key_explorer" alt=""
+                                     class="key-expo" src="assets/img/key-expo.png">
+                                <img alt="" src="{{replaceUrl(cd.chapter_image)}}">
+                              </div>
+                              <div class="chapter-content">
+                                <a class="chapter-info">
+                                  <div class="chapter-header">
+                                    <h4>{{cd.title}}</h4>
+                                    <div (click)="openCountViewModal()"
+                                         class="view-c">
+                                      <img alt="" src="assets/img/view.png">
+                                      <p>{{cd.chapterViewerCount === null ? 0 : cd.chapterViewerCount}}</p>
+                                    </div>
+
+                                  </div>
+                                  <p>{{cd.description}}</p>
+                                  <!--<p class="c-time">10 Mins</p>-->
+                                  <p class="c-time">{{secondsToTime(cd.audio_length)}}</p>
+                                </a>
+                              </div>
+                            </div>
+                            <div class="action-btn">
+                              <button (click)="editSequence(cd)" class="btn edit-btn">
+                                <img alt=""
+                                     src="assets/img/edit.png"></button>
+                              <button (click)="openDeleteCapModal(cd.id)"
+                                      class="btn delete-btn"><img
+                                alt=""
+                                src="assets/img/delete.png"></button>
+                            </div>
+                          </div>
+                          <!--<div class="chapter-container-in ">
+                              <div class="chap-h">
+                                  <div class="chapter-img">
+                                      <img class="key-expo"
+                                           src="assets/img/key-expo.png" alt="">
+                                      <img src="assets/img/story-two.jpg" alt="">
+                                  </div>
+                                  <div class="chapter-content">
+                                      <a class="chapter-info">
+                                          <div class="chapter-header">
+                                              <h4>Chapter Title</h4>
+                                              <div class="view-c"
+                                                   (click)="openCountViewModal()">
+                                                  <img src="assets/img/view.png" alt="">
+                                                  <p>500</p>
+                                              </div>
+                                              <img src="assets/img/tcsi-icon.png"
+                                                   alt="">
+
+                                          </div>
+                                          <p>Lorem ipsum dolor sit amet, consectetur
+                                              adipiscing elit, sed
+                                              do eiusmod tempor incididunt ut labore
+                                              et dolore magna aliqua. Ut enim ad minim veniam,
+                                              nostrud
+                                              exercitation ullamco laboris nisi ut aliquip
+                                          </p>
+                                          <p class="c-time">10 Mins</p>
+                                      </a>
+                                  </div>
+                              </div>
+
+                              <div class="action-btn">
+                                  <button class="btn edit-btn"><img
+                                          src="assets/img/edit.png"
+                                          alt=""></button>
+                                  <button class="btn delete-btn"><img
+                                          src="assets/img/delete.png"
+                                          alt=""></button>
+                              </div>
+                          </div>
+                          <div class="chapter-container-in ">
+                              <div class="chap-h">
+                                  <div class="chapter-img">
+                                      <img src="assets/img/story-three.jpg" alt="">
+                                  </div>
+                                  <div class="chapter-content">
+                                      <a class="chapter-info">
+                                          <h4>Chapter Title</h4>
+                                          <p>Lorem ipsum dolor sit amet, consectetur
+                                              adipiscing elit, sed
+                                              do eiusmod tempor incididunt ut labore
+                                              et dolore magna aliqua. Ut enim ad minim veniam,
+                                              nostrud
+                                              exercitation ullamco laboris nisi ut aliquip
+                                          </p>
+                                          <p class="c-time">10 Mins</p>
+                                      </a>
+                                  </div>
+                              </div>
+                              <a class="view-c">
+                                  <img src="assets/img/tcsi-icon.png" alt="">
+                                  <img src="assets/img/view.png" alt="">
+                                  <p>500</p>
+                              </a>
+                              <div class="action-btn">
+                                  <button class="btn edit-btn"><img
+                                          src="assets/img/edit.png"
+                                          alt=""></button>
+                                  <button class="btn delete-btn"><img
+                                          src="assets/img/delete.png"
+                                          alt=""></button>
+                              </div>
+                          </div>-->
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade fade-in-div cous-modal-bg" *ngIf="showCountViewModal">
+  <div class="modal-dialog modal-dialog-centered modal-md ">
+    <div class="modal-content zoom-an">
+      <button (click)="closeCountViewModal()" class="m-close-btn" type="button">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <div class="modal-body pad-0">
+        <div class="view-user-con">
+          <h3>Viewed by Users</h3>
+          <div class="view-user">
+            <div class="view-img">
+              <p>RB</p>
+            </div>
+            <div class="view-info">
+              <h5>name</h5>
+              <p>abcd@gmail.com</p>
+            </div>
+            <img alt="" src="assets/img/tcsi-icon.png">
+          </div>
+          <div class="view-user">
+            <div class="view-img">
+              <p>RB</p>
+            </div>
+            <div class="view-info">
+              <h5>name</h5>
+              <p>abcd@gmail.com</p>
+            </div>
+          </div>
+          <div class="view-user">
+            <div class="view-img">
+              <p>RB</p>
+            </div>
+            <div class="view-info">
+              <h5>name</h5>
+              <p>abcd@gmail.com</p>
+            </div>
+            <img alt="" src="assets/img/tcsi-icon.png">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade fade-in-div cous-modal-bg" *ngIf="showDuplicateModal">
+  <div class="modal-dialog modal-dialog-centered modal-md ">
+    <div class="modal-content zoom-an">
+      <div class="modal-body pad-0">
+        <form [formGroup]="duplicateChapterForm">
+          <div class="successful-msg-con">
+            <img alt="" src="assets/img/icon-park_caution.png">
+            <p>are you sure you want to duplicate the chapter ?</p>
+            <h6 class="input-txt-1">select story group</h6>
+            <div class="drop-down-wrapper mar-btm">
+              <select (change)="getStoryList($event)" class="drop-down-option"
+                      formControlName="story_group_id">
+                <option value="">select story group</option>
+                <option *ngFor="let data of storyGroupData"
+                        value="{{data.id}}">{{data.title}}
+                </option>
+              </select>
+            </div>
+            <h6 class="input-txt-1">select story</h6>
+            <div class="drop-down-wrapper mar-btm">
+              <select class="drop-down-option" formControlName="story_id">
+                <option value="">select story</option>
+                <option *ngFor="let d of storyListData"
+                        value="{{d.id}}">{{d.title}}
+                </option>
+              </select>
+            </div>
+            <button (click)="submitDuplicate()" class="btn submit-btn r-btn">duplicate</button>
+            <button (click)="closeDuplicateModal()" class="btn cancle-btn">cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showDeleteCapModal" class="modal fade fade-in-div cous-modal-bg">
+  <div class="modal-dialog modal-dialog-centered modal-md ">
+    <div class="modal-content zoom-an">
+      <div class="modal-body pad-0">
+        <div class="successful-msg-con">
+          <img alt="" src="assets/img/icon-park_caution.png">
+          <p>are you sure you want to delete this chapter ?</p>
+          <button (click)="deleteChapter()" class="btn submit-btn r-btn d-btn-b">Delete</button>
+          <button (click)="closeDeleteCapModal()" class="btn cancle-btn">cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showImageModal" class="modal fade fade-in-div cous-modal-bg">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content zoom-an">
+      <button (click)="closeImageModal()" class="m-close-btn" type="button">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <div class="modal-body pad-0">
+        <div class="image-view">
+          <img alt="" src="{{selectedImage}}">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
