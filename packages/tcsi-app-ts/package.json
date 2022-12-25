@@ -34,6 +34,7 @@
   },
   "optionalDependencies": {
     "@emotion/react": "11.10.5",
+    "@emotion/styled": "11.10.5",
     "@mui/icons-material": "5.10.2",
     "@mui/material": "5.10.2",
     "@mui/styled-engine": "5.10.2",
