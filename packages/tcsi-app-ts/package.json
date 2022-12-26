@@ -41,7 +41,10 @@
     "@mui/icons-material": "5.10.2",
     "@mui/material": "5.10.2",
     "@mui/styled-engine": "5.10.2",
+    "mdi-material-ui": "7.6.0",
+    "react-hook-form": "7.41.1",
     "tailwindcss": "3.2.4",
-    "use-count-up": "3.0.1"
+    "use-count-up": "3.0.1",
+    "yup": "0.32.11"
   }
 }
