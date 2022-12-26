@@ -3,19 +3,20 @@
 
 'use client'
 
-// ** Next Imports
+// ** Next
 import type { NextPage } from 'next'
 // import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
-// ** React Imports
+// ** React
 // import type { ReactNode } from 'react'
+// import React, { FC } from 'react'
 import { useEffect } from 'react'
 
-// ** Hook Imports
+// ** Hooks
 import { useAuth } from '#/lib/auth/hooks/useAuth'
 
-// ** Demo Data Imports
+// ** Demo Data
 // import { demos } from '#/lib/data/demos'
 
 // ** Helper Components
@@ -24,14 +25,13 @@ import Spinner from '#/ui/components/spinner'
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
 
-// ** Scaffold-ETH Imports
-// import React, { FC } from 'react'
+// ** Types
 import type { TPageProps } from '#/lib/types/TAppProps'
 
 // ==============================================================
 // IMPORTS COMPLETE
 console.debug('%c=======================================', ccm.black)
-console.debug('%c🥕 ThreeDGarden<FC,R3F>: {page.tsx}', ccm.green)
+console.debug('%c🥕 tCSi<T>: {page.tsx}', ccm.green)
 console.debug('%c=======================================', ccm.black)
 
 // ==============================================================
