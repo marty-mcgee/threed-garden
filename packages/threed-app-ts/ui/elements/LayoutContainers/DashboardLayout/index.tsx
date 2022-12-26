@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 import MDBox from '#/lib/mui/MDBox'
 
 // ThreeD Garden Material UI context as Controller
-import { useMaterialUIController, setLayout } from '#/ui/context'
+import { useMaterialUIController, setLayout } from '#/lib/contexts'
 
 function DashboardLayout({ children, stickyNavbar }: { children: ReactNode; stickyNavbar?: boolean }): JSX.Element {
   const [controller, dispatch] = useMaterialUIController()

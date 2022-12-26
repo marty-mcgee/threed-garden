@@ -26,7 +26,7 @@ import Spinner from '#/ui/components/spinner'
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
 // import { EthPage as ETHPage } from '~~/components/main/EthPage'
-import type { TPageProps } from '#/lib/types/models/TAppProps'
+import type { TPageProps } from '#/lib/types/TAppProps'
 
 // import chalk from 'chalk'
 

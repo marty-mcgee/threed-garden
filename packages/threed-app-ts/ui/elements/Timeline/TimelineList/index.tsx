@@ -8,7 +8,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden components
-import { useMaterialUIController } from '#/ui/context'
+import { useMaterialUIController } from '#/lib/contexts'
 
 // Timeline context
 import { TimelineProvider } from '#/ui/elements/Timeline/context'

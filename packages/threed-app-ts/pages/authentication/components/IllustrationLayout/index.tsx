@@ -15,7 +15,7 @@ import PageLayout from '#/ui/elements/LayoutContainers/PageLayout'
 import pageRoutes from '~/routes/page.routes'
 
 // ThreeD Garden context
-import { useMaterialUIController } from '#/ui/context'
+import { useMaterialUIController } from '#/lib/contexts'
 
 // Declaring props types for IllustrationLayout
 interface Props {

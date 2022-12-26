@@ -33,7 +33,7 @@ import {
   setFixedNavbar,
   setSidenavColor,
   setDarkMode,
-} from '#/ui/context'
+} from '#/lib/contexts'
 
 function Configurator(): JSX.Element {
   const [controller, dispatch] = useMaterialUIController()

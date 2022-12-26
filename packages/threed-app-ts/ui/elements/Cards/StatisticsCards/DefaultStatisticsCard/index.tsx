@@ -9,7 +9,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden contexts
-import { useMaterialUIController } from '#/ui/context'
+import { useMaterialUIController } from '#/lib/contexts'
 
 // Declaring prop types for DefaultStatisticsCard
 interface Props {

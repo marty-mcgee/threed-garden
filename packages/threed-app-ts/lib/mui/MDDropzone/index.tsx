@@ -13,7 +13,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDDropzoneRoot from '#/lib/mui/MDDropzone/MDDropzoneRoot'
 
 // ThreeD Garden context
-import { useMaterialUIController } from '#/ui/context'
+import { useMaterialUIController } from '#/lib/contexts'
 import Dropzone from 'dropzone'
 
 // Declaring props types for MDDropzone
