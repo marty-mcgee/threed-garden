@@ -18,14 +18,14 @@ import Typography from '@mui/material/Typography'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-import type { TPageProps } from '#/lib/types/models/TAppProps'
+import type { TPageProps } from '#/lib/types/TAppProps'
 
 // ==============================================================
 
 // Index Page (Forwarding Page)
+// const Page = (props) => {
 // const Page: FC<TPageProps> = (props) => {
 const Page: NextPage<TPageProps> = (props) => {
-// const Page = (props) => {
   //
 
   return (
@@ -34,10 +34,10 @@ const Page: NextPage<TPageProps> = (props) => {
         {/* <DashboardNavbar /> */}
 
         <Typography component='h1' variant='h5' gutterBottom >
-          ThreeD Garden for FarmBot + Three.js + Next.js
+          tCSi + Next.js 13
         </Typography>
         <Typography component='h2' variant='h6' gutterBottom >
-          FarmBot + Three.js using React Three Fiber, MUI v5, NextJS + TypeScript
+          the Creative Spirit incorporated
         </Typography>
         <Typography component='p' gutterBottom >
           Home Page (/app/home/page.tsx)
