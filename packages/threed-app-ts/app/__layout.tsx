@@ -21,13 +21,13 @@ import { Provider as ReduxProvider } from 'react-redux'
 import { store as reduxStore } from '#/lib/stores/redux'
 
 // ** Contexts for User Authorization + Settings
-import { AuthProvider } from '#/ui/context/AuthContext'
+import { AuthProvider } from '#/lib/contexts/AuthContext'
 
 // ** User Authorization Hook
 import { useAuth } from '#/lib/auth/hooks/useAuth'
 
 // ** Contexts for Theme Settings + MUI Components
-import { SettingsProvider, SettingsConsumer } from '#/ui/context/settingsContext'
+import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/settingsContext'
 import ThemeComponent from '#/ui/theme/ThemeComponent'
 
 // ** Configs

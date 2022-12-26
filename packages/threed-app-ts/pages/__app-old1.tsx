@@ -31,7 +31,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import Icon from '@mui/material/Icon'
 // theme: mui: Material UI Context Provider
-import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '#/ui/context'
+import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '#/lib/contexts'
 // theme: mui: emotion cache
 import { CacheProvider, EmotionCache } from '@emotion/react'
 import createEmotionCache from '#/ui/theme/createEmotionCache'
@@ -418,7 +418,7 @@ export default function BoilerplateApp(props: AppPropsWithLayout) {
 // import createEmotionCache from "#/ui/themes/createEmotionCache"
 
 // // Material UI Context Provider
-// import { MaterialUIControllerProvider } from "#/ui/context"
+// import { MaterialUIControllerProvider } from "#/lib/contexts"
 
 // // Client-side cache, shared for the whole session of the user in the browser.
 // const clientSideEmotionCache = createEmotionCache()

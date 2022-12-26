@@ -21,7 +21,7 @@ import logoAtlassian from '#/lib/assets/images/logos/small-logos/logo-atlassian.
 import logoAsana from '#/lib/assets/images/logos/small-logos/logo-asana.svg'
 
 // ThreeD Garden components
-import { useMaterialUIController } from '#/ui/context'
+import { useMaterialUIController } from '#/lib/contexts'
 
 function Accounts(): JSX.Element {
   const [controller] = useMaterialUIController()

@@ -7,7 +7,7 @@ import { ButtonProps } from '@mui/material'
 import MDButtonRoot from '#/lib/mui/MDButton/MDButtonRoot'
 
 // ThreeD Garden contexts
-import { useMaterialUIController } from '#/ui/context'
+import { useMaterialUIController } from '#/lib/contexts'
 
 // Declaring props types for MDButton
 interface Props extends Omit<ButtonProps, 'color' | 'variant'> {

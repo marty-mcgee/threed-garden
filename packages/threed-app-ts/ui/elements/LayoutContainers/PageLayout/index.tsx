@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 import MDBox from '#/lib/mui/MDBox'
 
 // ThreeD Garden context
-import { useMaterialUIController, setLayout } from '#/ui/context'
+import { useMaterialUIController, setLayout } from '#/lib/contexts'
 
 // Declaring props types for PageLayout
 interface Props {

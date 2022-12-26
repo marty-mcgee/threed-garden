@@ -63,8 +63,8 @@ import Spinner from '#/ui/components/spinner'
 import NProgress from 'nprogress'
 
 // ** Contexts
-import { AuthProvider } from '#/ui/context/AuthContext'
-import { SettingsConsumer, SettingsProvider } from '#/ui/context/settingsContext'
+import { AuthProvider } from '#/lib/contexts/AuthContext'
+import { SettingsConsumer, SettingsProvider } from '#/lib/contexts/settingsContext'
 
 // ** Styled Components
 import ReactHotToast from '#/ui/styles/react-hot-toast'

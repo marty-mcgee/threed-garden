@@ -8,7 +8,7 @@ import MDBox from '#/lib/mui/MDBox'
 import DefaultPricingCard from '#/ui/elements/Cards/PricingCards/DefaultPricingCard'
 
 // ThreeD Garden context
-import { useMaterialUIController } from '#/ui/context'
+import { useMaterialUIController } from '#/lib/contexts'
 
 function PricingCards({ prices }: { prices: string[] }): JSX.Element {
   const [controller] = useMaterialUIController()
