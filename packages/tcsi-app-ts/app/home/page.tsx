@@ -33,17 +33,18 @@ const Page: NextPage<TPageProps> = (props) => {
       {/* <DashboardLayout> */}
         {/* <DashboardNavbar /> */}
 
-        <Typography component='h1' variant='h5' gutterBottom >
+        <Typography component='h1' variant='h5' >
           tCSi + Next.js 13
         </Typography>
-        <Typography component='h2' variant='h6' gutterBottom >
+        <Typography component='h2' variant='h6' >
           the Creative Spirit incorporated
         </Typography>
-        <Typography component='p' gutterBottom >
+        <Typography component='p' >
           Home Page (/app/home/page.tsx)
         </Typography>
         <Typography component='p' gutterBottom >
-          This is the "Home" Landing Page.<br/>
+          This is the "Home" Landing Page.
+          <br/>
         </Typography>
 
         {/* <Spinner /> */}
