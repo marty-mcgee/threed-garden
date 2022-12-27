@@ -41,6 +41,6 @@
       }
     ]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "ui/components/spinner/index.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "ui/threeds/spinner/index.jsx"],
   "exclude": ["node_modules", ".husky", "**/*.css", "tailwind.config.js", "**/.yalc/**/*", ".yalc/**/*"]
 }
