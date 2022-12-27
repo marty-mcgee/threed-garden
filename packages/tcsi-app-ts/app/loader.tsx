@@ -1,7 +1,7 @@
 'use client'
 
 // ** Helper Components
-import Spinner from '#/ui/components/spinner'
+import Spinner from '#/ui/threeds/spinner'
 // import { Loader, useProgress } from '@react-three/drei'
 
 // example working simple <Loader />

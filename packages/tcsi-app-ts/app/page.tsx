@@ -20,7 +20,7 @@ import { useAuth } from '#/lib/auth/hooks/useAuth'
 // import { demos } from '#/lib/data/demos'
 
 // ** Helper Components
-import Spinner from '#/ui/components/spinner'
+import Spinner from '#/ui/threeds/spinner'
 
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
