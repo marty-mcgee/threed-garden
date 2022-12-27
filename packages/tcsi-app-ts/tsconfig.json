@@ -28,10 +28,18 @@
     "paths": {
       "#/*": ["./*"], // preferable (next-13)
       "~/*": ["./*"], // preferable (next, nuxt, supports npm @ confusion)
-      "@/*": ["src/*"], // deprecated (npm @)
+      // "@/*": ["src/*"], // deprecated (npm @)
       "~~/*": ["./*"], // (eth)
       "~common/*": ["../common/src/*"], // (eth~common)
-      "-||-*": ["lib/assets/*"] // threeds (-||-)
+      "-||-*": ["lib/assets/*"], // threeds (-||-)
+
+      "@/components/*": ["./ui/platforms/*"],
+      // "@/data/*": ["./data/*"],
+      // "@/layouts/*": ["./layouts/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/styles/*": ["./styles/*"],
+      "@/types": ["./lib/types/index"],
+      "@/types/*": ["./lib/types/*"]
     },
     "typeRoots": ["node_modules/@types", "lib/types"],
     // plugins

@@ -115,7 +115,7 @@ p {
 
 .wrapper {
   position: relative;
-  background-image: url(src/assets/bg-6.png);
+  background-image: url(public/tcsi/assets/bg-6.png);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: right top;
@@ -436,21 +436,21 @@ select {
         background: transparent;
         border-radius: 10px;
       }
-      
+
       /* Track */
       .story-grp-content::-webkit-scrollbar-track {
-        background: transparent; 
+        background: transparent;
       }
-       
+
       /* Handle */
       .story-grp-content::-webkit-scrollbar-thumb {
-        background: #888; 
+        background: #888;
         border-radius: 10px;
       }
-      
+
       /* Handle on hover */
       .story-grp-content::-webkit-scrollbar-thumb:hover {
-        background: #454364; 
+        background: #454364;
       }
 
 @media screen and (max-width: 1024px) {
@@ -597,7 +597,7 @@ body{
   // border-radius: 4.6px 4.6px 0px 0px;
 
 }
-.cke_chrome {
+.cke_hrome {
   border-radius: 10px !important;
   background-color: #EEEEEE !important;
 }
