@@ -1,0 +1,149 @@
+<section class="main-wrapper">
+  <form [formGroup]="pageForm">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="chap-part">
+            <div class="page-head">
+              <h2>story title : {{((pageData['chapter'])?.story)?.title}} </h2>
+            </div>
+            <div class="chapter-head-nav">
+              <!-- <button class="btn"><img src="assets/img/left-arrow.png" alt=""></button> -->
+              <h3>Chapter name: {{(pageData['chapter'])?.title}}</h3>
+              <!-- <button class="btn"><img src="assets/img/right-arrow.png" alt=""></button> -->
+            </div>
+            <button (click)="addNewPage()" class="btn genrate-btn">+ add new page</button>
+          </div>
+        </div>
+
+      </div>
+      <div class="row mtb">
+        <div class="col-md-5">
+          <h6 class="input-txt visibility-none">time in</h6>
+          <div class="drop-down-wrapper inp-height drop-dowm mx-w">
+            <select (change)="onPrevImageChange($event)" class="drop-down-option t-select"
+                    formControlName="img_same_as">
+              <option value="">current</option>
+              <option *ngFor="let data of previousSequences"
+                      value="{{data.sequence}}">{{'repeat————' + data.sequence}}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-1">
+          <div class="page-div">
+            <h6 class="input-txt">Page</h6>
+            <div class="input-group input-container-1 ">
+              <input class="form-control inp-height pad-0" placeholder="000" readonly type="number"
+                     value="{{pageData['sequence']}}">
+            </div>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="time-div">
+            <h6 class="input-txt">time in</h6>
+            <div class="input-group input-container-1 ">
+              <!--              <input type="number" value="00:00:00" placeholder="00:00:00" class="form-control inp-height pad-0">-->
+              <input class="form-control inp-height pad-0 t-center" formControlName="start_time_hh" maxlength="2"
+                     placeholder="hh" type="tel">
+              <input class="form-control inp-height pad-0 t-center" formControlName="start_time_mm" maxlength="2" placeholder="mm"
+                     type="tel">
+              <input class="form-control inp-height pad-0 t-center" formControlName="start_time_ss" maxlength="2" placeholder="ss"
+                     type="tel">
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <h6 class="input-txt visibility-none">time in</h6>
+          <div class="drop-down-wrapper inp-height drop-dowm mx-w">
+            <select (change)="onPrevDescChange($event)" class="drop-down-option t-select"
+                    formControlName="desc_same_as">
+              <option value="">current</option>
+              <option *ngFor="let data of previousSequences"
+                      value="{{data.sequence}}">{{'repeat————' + data.sequence}}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="container-main">
+        <div appResizable class="left-view">
+          <div class="story-img-main upload-con">
+
+            <!-- <input (change)="onFileChange($event)" formControlName="file" name="myfile" type="file"/> -->
+
+            <img *ngIf="selectedFileType === 1" alt="" src="{{selectedFile}}">
+
+            <video #videoElement *ngIf="selectedFileType === 2" [src]="selectedFile"
+                   preload="auto"></video>
+                   <div class="upload-btn-overlay">
+                    <div class="upload-btn-wrapper">
+                      <button class="btn btn-up">+ upload Your Image
+                      </button>
+                      <input (change)="onFileChange($event)" formControlName="file" name="myfile" type="file"/>
+                    </div>
+                    <!-- <button (click)="openImageModal()" class="btn view-pic">View image</button> -->
+                  </div>
+
+          </div>
+        </div>
+        <div appResizable class="right-view">
+          <!-- <div class="font-set-bar">
+            <button class="btn"><img alt="" src="assets/img/font-size.png"></button>
+          </div> -->
+          <!-- <div class="story-content">
+            <textarea class="form-control" cols="50" formControlName="description" id="" name=""
+                      rows="40">
+              {{pageData?.description}}
+            </textarea>
+          </div> -->
+           <div class="story-content-edit">
+            <ckeditor [config]="config" data="{{pageData['description']}}" formControlName="description"></ckeditor>
+        </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</section>
+
+
+<section class="audio-sec">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-10">
+        <div class="audio-up-load-c">
+
+          <div class="audio-c">
+            <span (click)="mute()" class="btn">
+              <img [src]="audioMute ? 'assets/img/audio-off.png' : 'assets/img/audio-on.png'" alt="" id="icon-vol-up">
+            </span>
+            <span (click)="backward()" class="btn">
+              <img alt="" src="assets/img/p-arrow-2.png">
+            </span>
+            <span (click)="paused ? play() : pause()" class="icon-align-middle btn">
+             <img *ngIf="paused" alt="" id="icon-play"
+                  src="assets/img/p-play.png">
+              <img *ngIf="!paused" alt="" id="icon-pause"
+                   src="assets/img/p-paused.png">
+            </span>
+            <span (click)="forward()" class="btn">
+              <img alt="" src="assets/img/p-arrow.png">
+            </span>
+
+            <audio #audioElement (canplaythrough)="setDuration($event)" class="wid-100"
+                   controls controlsList="nodownload noplaybackrate"
+                   src="{{selectedAudioFile}}">
+              <p>Your browser does not support HTML5 audio. Here is a <a href="{{selectedAudioFile}}">link</a> instead.
+              </p>
+            </audio>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-2">
+        <button (click)="submitPage()" class="btn save-btn">Save</button>
+        <button (click)="close()" class="btn close-btn">close</button>
+      </div>
+    </div>
+  </div>
+</section>
