@@ -1,0 +1,198 @@
+<section class="main-content">
+  <div class="container">
+    <div class="add-story-con">
+      <h2 class="add-story-header">chapter outline</h2>
+      <form [formGroup]="pageForm">
+        <div class="row">
+          <div class="col-md-5">
+            <h6 class="input-txt">Story title</h6>
+            <div class="drop-down-wrapper">
+              <select (change)="onChangeStory($event)" class="drop-down-option" formControlName="story_id">
+                <option value="">select story</option>
+                <option *ngFor="let data of storyData"
+                        value="{{data.id}}">{{data.title}}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-5">
+            <h6 class="input-txt">Chapter title</h6>
+            <div class="drop-down-wrapper">
+              <select (change)="onChangeChapter($event)" class="drop-down-option" formControlName="chapter_id">
+                <option value="">select chapter</option>
+                <option *ngFor="let data of chapterData"
+                        value="{{data.id}}">{{data.title}}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <h6 class="input-txt length-txt">Chapter length</h6>
+            <h6 class="input-txt cls-txt-blue">{{chapterLength}} Min</h6>
+          </div>
+        </div>
+
+        <div class="prev-data-table">
+          <table class="table" formArrayName="pages">
+            <thead class="pos-relative">
+            <tr>
+              <th>page</th>
+              <th>Time in</th>
+              <th>Image/video <span class="red-c">*</span></th>
+              <th>Text block</th>
+              <th class="pad-0">
+                <button (click)="addNewPage()" class="btn genrate-btn">+ add new page</button>
+              </th>
+            </tr>
+            </thead>
+            <tbody>
+            <!--<tr *ngFor="let field of fieldArray; let i = index">-->
+            <tr *ngFor="let page of pages().controls; let i=index" [formGroupName]="i">
+              <td>
+                {{i + 1}}
+                <input class="form-control pad-0" formControlName="page_id" type="hidden">
+              </td>
+              <td>
+                <div class="input-group input-container-1 no-wrap">
+                  <input class="form-control pad-0 time-in-w" formControlName="start_time_hh" maxlength="2"
+                         placeholder="hh"
+                         type="tel">
+                  <p class="p_txt_1">:</p>
+                  <input class="form-control pad-0 time-in-w" formControlName="start_time_mm" maxlength="2"
+                         placeholder="mm"
+                         type="tel">
+                  <p class="p_txt_1">:</p>
+                  <input class="form-control pad-0 time-in-w" formControlName="start_time_ss" maxlength="2"
+                         placeholder="ss"
+                         type="tel">
+                </div>
+              </td>
+              <td>
+                <div *ngIf="i!==0" class="drop-down-wrapper inp-height drop-dowm">
+                  <select (change)="onPrevImageChange($event, i)" class="drop-down-option t-select"
+                          formControlName="img_same_as">
+                    <option value="">current</option>
+                    <ng-container *ngFor="let d of sameAsPrevious">
+                      <option *ngIf="d <= i" value="{{d}}">{{'repeat————' + d}}</option>
+                    </ng-container>
+                  </select>
+                </div>
+                <div class="input-group input-container-1 choose-btn img-upload-c">
+                  <div *ngIf="pageForm.value.pages[i].file_view !== null" class="preview-img">
+                    <!--<img src="assets/img/story-three.jpg" alt="">-->
+                    <img *ngIf="pageForm.value.pages[i].file_type===1" alt=""
+                         src="{{pageForm.value.pages[i].file_view}}">
+                    <video *ngIf="pageForm.value.pages[i].file_type===2" [src]="pageForm.value.pages[i].file_view"
+                           controls height="100"></video>
+                    <button (click)="removeFile(i)" class="btn d-img">&times;</button>
+                  </div>
+                  <div *ngIf="pageForm.value.pages[i].file_view === null" class="upload-btn-wrapper">
+                    <button class="btn btn-up">Choose File
+                    </button>
+                    <input (change)="onFileChange($event, i)" formControlName="file" name="myfile" type="file"/>
+                  </div>
+                </div>
+                <div class="input-group input-container-1 mart-6">
+                  <input class="form-control inp-height" formControlName="embed_link" placeholder="embed link"
+                         type="text">
+                </div>
+              </td>
+              <td>
+                <div *ngIf="i!==0" class="drop-down-wrapper inp-height drop-dowm mx-w">
+                  <select (change)="onPrevDescChange($event, i)" class="drop-down-option t-select"
+                          formControlName="desc_same_as">
+                    <option value="">current</option>
+                    <ng-container *ngFor="let d of sameAsPrevious">
+                      <option *ngIf="d <= i" selected value="{{d}}">{{'repeat————' + d}}</option>
+                    </ng-container>
+                  </select>
+                </div>
+                <!-- <div class="input-group input-container-1 mb-0">
+                  <textarea class="form-control" cols="360" formControlName="description"
+                            placeholder="Description here..." rows="6"></textarea>
+                </div> -->
+                <ckeditor [config]="config" data="" formControlName="description"></ckeditor>
+                <div class="action-btn">
+                  <div class="radio-btn-grp">
+                    <div class="radio">
+                      <input checked formControlName="status" id="radio-{{i}}-1" type="radio" value="1">
+                      <label class="radio-label" for="radio-{{i}}-1">Publish</label>
+                    </div>
+
+                    <div class="radio">
+                      <input formControlName="status" id="radio-{{i}}-2" type="radio" value="0">
+                      <label class="radio-label" for="radio-{{i}}-2">Unpublish</label>
+                    </div>
+                  </div>
+                  <button (click)="editPage(i)" class="btn edit-btn"><img alt="" src="assets/img/save-s.png"></button>
+                  <button (click)="deletePage(i)" class="btn delete-btn">
+                    <img alt="" src="assets/img/delete.png">
+                  </button>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </form>
+
+      <!--{{pageForm.value | json}}-->
+
+      <img *ngIf="fileView !== null" alt="" class="up-img"
+           src="{{fileView}}">
+    </div>
+  </div>
+</section>
+
+<section class="audio-sec">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-10">
+        <div class="audio-up-load-c">
+          <h6 *ngIf="audioLength === 0" class="input-txt mb-5">Audio <span class="red-c">*</span><span class="note-txt">(please submit after uploading audio file.)</span>
+          </h6>
+          <div class="adio-in">
+            <div *ngIf="audioLength === 0" class="input-group input-container-1 choose-btn height-33">
+              <input #fileUpload (change)="audioFileSelection($event)" class="form-control"
+                     id="fileUpload" name="fileUpload"
+                     type="file">
+            </div>
+            <button (click)="updateChapterAudio()" *ngIf="audioLength === 0" class="btn submit-audio-btn">submit
+            </button>
+          </div>
+
+          <div class="audio-c">
+            <!--<audio *ngIf="audioLength !== 0" #domAudio (canplaythrough)="setDuration($event)" id="audio"
+                   style="display: none"></audio>-->
+            <span (click)="mute()" class="btn">
+              <img [src]="audioMute ? 'assets/img/audio-off.png' : 'assets/img/audio-on.png'" alt="" id="icon-vol-up">
+            </span>
+            <span (click)="backward()" class="btn">
+              <img alt="" src="assets/img/p-arrow-2.png">
+            </span>
+            <span (click)="paused ? play() : pause()" class="icon-align-middle btn">
+             <img *ngIf="paused" alt="" id="icon-play"
+                  src="assets/img/p-play.png">
+              <img *ngIf="!paused" alt="" id="icon-pause"
+                   src="assets/img/p-paused.png">
+            </span>
+            <span (click)="forward()" class="btn">
+              <img alt="" src="assets/img/p-arrow.png">
+            </span>
+
+            <audio #audioElement (canplaythrough)="setDuration($event)" class="wid-100"
+                   controls controlsList="nodownload noplaybackrate"
+                   src="{{selectedAudioFile}}">
+              <p>Your browser does not support HTML5 audio. Here is a <a href="{{selectedAudioFile}}">link</a> instead.
+              </p>
+            </audio>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <button (click)="submitPagesForm()" class="btn save-btn">Save</button>
+        <button (click)="close()" class="btn close-btn">close</button>
+      </div>
+    </div>
+  </div>
+</section>

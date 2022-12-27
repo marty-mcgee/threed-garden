@@ -1,0 +1,238 @@
+<div class="main-content">
+  <div class="container">
+      <div class="content">
+          <div class="row">
+              <div class="col-md-5">
+                  <div class="left-side-content">
+                      <div class="drop-down-wrapper">
+                          <select class="drop-down-option">
+                              <option value="">select story group</option>
+                              <option value="">story group 1</option>
+                              <option value="">story group 2</option>
+                          </select>
+
+                      </div>
+                      <div class="input-group file-input-container">
+                          <div class="upload-con">
+                              <img class="up-img" src="assets/img/story-one.png" alt="">
+                              <div class="upload-btn-overlay">
+                                  <div class="upload-btn-wrapper">
+                                      <button class="btn btn-up">+ Uplaod Your Image
+                                      </button>
+                                      <input type="file" name="myfile" />
+                                  </div>
+                                  <button class="btn view-pic">View image</button>
+                              </div>
+                          </div>
+
+
+                      </div>
+                      <div class="title-dis-container">
+                          <div class="action-btn-bar">
+                              <div class="action-btn-right">
+                                  <button title="Play" class="btn editor-btn"><img src="assets/img/play-red.png" alt="">
+                                  </button>
+                                  <button title="key explorer" class="btn editor-btn"><img
+                                          src="assets/img/tcsi-icon.png"
+                                          alt=""></button>
+                                  <button title="Duplicate story" (click)="openDuplicateModal()" class="btn editor-btn">
+                                      <img src="assets/img/duplicate-red.png"
+                                           alt=""></button>
+                                  <div title="publish" class="custom-control custom-switch add-story-toggle-btn">
+                                      <input type="checkbox" class="custom-control-input" id="customSwitch1" checked>
+                                      <label class="custom-control-label" for="customSwitch1"></label>
+                                  </div>
+                                  <button title="save story" class="btn editor-btn"><img src="assets/img/save-red.png"
+                                                                                         alt=""></button>
+                              </div>
+                              <div (click)="openCountViewModal()" class="view">
+                                  <img src="assets/img/view.png" alt="">
+                                  <p>1k</p>
+                              </div>
+                          </div>
+                          <input class="form-control" value="STORY title 02: Lorem Ipsum" placeholder="create story title">
+                          <textarea rows="5" class="form-control" placeholder="Description here...">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, nostrud exercitation ullamco laboris nisi ut aliquip
+                  </textarea>
+                      </div>
+
+
+
+                  </div>
+              </div>
+              <div class="col-md-7">
+                  <div class="right-side">
+                      <div class="right-side-content">
+                          <div class="sec-heading">
+                              <h3 class="page-heading">library</h3>
+                              <div class="page-head-line"></div>
+                          </div>
+                          <div class="story-grp">
+                              <div class="sub-title-n">
+                                  <h3 class="page-heading">story group title</h3>
+                              </div>
+                              <div class="main-story-con">
+                                  <div class="story-grp-container">
+                                      <div class="left-arrow">
+                                          <img src="assets/img/left-arrow-sc.png" alt="">
+                                      </div>
+                                      <div class="story-grp-content">
+
+                                          <div (click)="onclick()" class="story-container">
+                                              <div class="story-img">
+                                                  <img class="key-expo" src="assets/img/key-expo.png" alt="">
+                                                  <img src="assets/img/story-one.png" alt="">
+                                              </div>
+                                          </div>
+                                          <div class="story-container">
+                                              <div class="story-img">
+                                                  <img src="assets/img/story-two.jpg" alt="">
+                                              </div>
+                                          </div>
+                                          <div class="story-container">
+                                              <div class="story-img">
+                                                  <img src="assets/img/story-three.jpg" alt="">
+                                              </div>
+                                          </div>
+
+                                      </div>
+
+                                      <div class="right-arrow">
+                                          <img src="assets/img/right-arrow-sc.png" alt="">
+                                      </div>
+                                  </div>
+                                  <div class="chapter-body zoom-an" *ngIf="visible">
+                                      <div class="chapter-container-in ">
+                                          <div class="chap-h">
+                                              <div class="chapter-img">
+                                                  <img src="assets/img/story-one.png" alt="">
+                                              </div>
+                                              <div class="chapter-content">
+                                                  <a class="chapter-info">
+                                                      <div class="chapter-header">
+                                                          <h4>Chapter Title</h4>
+                                                          <div class="view-c" (click)="openCountViewModal()">
+                                                              <img src="assets/img/view.png" alt="">
+                                                              <p>500</p>
+                                                             </div>
+                                                          
+                                                      </div>
+                                                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                                                          do eiusmod tempor incididunt ut labore
+                                                          et dolore magna aliqua. Ut enim ad minim veniam, nostrud
+                                                          exercitation ullamco laboris nisi ut aliquip
+                                                      </p>
+                                                      <p class="c-time">10 Mins</p>
+                                                  </a>
+                                              </div>
+                                          </div>
+                                          <div class="action-btn">
+                                              <button class="btn edit-btn"><img src="assets/img/edit.png"
+                                                                                alt=""></button>
+                                              <button class="btn delete-btn"><img src="assets/img/delete.png"
+                                                                                  alt=""></button>
+                                          </div>
+                                      </div>
+                                      <div class="chapter-container-in ">
+                                          <div class="chap-h">
+                                              <div class="chapter-img">
+                                                  <img class="key-expo" src="assets/img/key-expo.png" alt="">
+                                                  <img src="assets/img/story-two.jpg" alt="">
+                                              </div>
+                                              <div class="chapter-content">
+                                                  <a class="chapter-info">
+                                                      <div class="chapter-header">
+                                                          <h4>Chapter Title</h4>
+                                                          <div class="view-c" (click)="openCountViewModal()">
+                                                              <img src="assets/img/view.png" alt="">
+                                                              <p>500</p>
+                                                             </div>
+                                                          <img src="assets/img/tcsi-icon.png" alt="">
+                                                          
+                                                      </div>
+                                                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                                                          do eiusmod tempor incididunt ut labore
+                                                          et dolore magna aliqua. Ut enim ad minim veniam, nostrud
+                                                          exercitation ullamco laboris nisi ut aliquip
+                                                      </p>
+                                                      <p class="c-time">10 Mins</p>
+                                                  </a>
+                                              </div>
+                                          </div>
+                                          
+                                          <div class="action-btn">
+                                              <button class="btn edit-btn"><img src="assets/img/edit.png"
+                                                                                alt=""></button>
+                                              <button class="btn delete-btn"><img src="assets/img/delete.png"
+                                                                                  alt=""></button>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade fade-in-div cous-modal-bg" *ngIf="showCountViewModal">
+  <div class="modal-dialog modal-dialog-centered modal-md ">
+      <div class="modal-content zoom-an">
+          <button type="button" class="m-close-btn" (click)="closeCountViewModal()">
+              <span aria-hidden="true">&times;</span>
+          </button>
+          <div class="modal-body pad-0">
+                <div class="view-user-con">
+                    <h3>Viewed by Users</h3>
+                    <div class="view-user">
+                        <div class="view-img">
+                            <p>RB</p>
+                        </div>
+                        <div class="view-info">
+                            <h5>name</h5>
+                            <p>abcd@gmail.com</p>
+                        </div>
+                        <img src="assets/img/tcsi-icon.png" alt="">
+                    </div>
+                    <div class="view-user">
+                        <div class="view-img">
+                            <p>RB</p>
+                        </div>
+                        <div class="view-info">
+                            <h5>name</h5>
+                            <p>abcd@gmail.com</p>
+                        </div>
+                    </div>
+                    <div class="view-user">
+                        <div class="view-img">
+                            <p>RB</p>
+                        </div>
+                        <div class="view-info">
+                            <h5>name</h5>
+                            <p>abcd@gmail.com</p>
+                        </div>
+                        <img src="assets/img/tcsi-icon.png" alt="">
+                    </div>
+                </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<div class="modal fade fade-in-div cous-modal-bg" *ngIf="showDuplicateModal">
+  <div class="modal-dialog modal-dialog-centered modal-md ">
+      <div class="modal-content zoom-an">
+          <div class="modal-body pad-0">
+              <div class="successful-msg-con">
+                  <img src="assets/img/icon-park_caution.png" alt="">
+               <p>are you sure you want to duplicate the story ?</p>
+               <button  class="btn submit-btn r-btn">duplicate</button>
+               <button  (click)="closeDuplicateModal()"  class="btn cancle-btn">Cancle</button>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
