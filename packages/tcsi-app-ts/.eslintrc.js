@@ -12,14 +12,15 @@ module.exports = {
     'plugin:react/recommended', // common
     // 'airbnb', // needed ?
     'plugin:prettier/recommended', // common
-    'plugin:@next/next/recommended', // this app
+    // 'plugin:@next/next/recommended', // this app
+    'next/core-web-vitals', // this app
   ],
 
   plugins: [
     '@typescript-eslint', // common
     'react', // common
     'prettier', // common
-    'next', // this app
+    // 'next', // this app
   ],
 
   // parser: '@babel/eslint-parser',
@@ -77,7 +78,7 @@ module.exports = {
 
   /**
    * [MM] HEY HEY HEY rules?
-   *
+   */
   rules: {
     'arrow-body-style': 'off',
     // ['error', 'as-needed', { requireReturnForObjectLiteral: true }], // 'as-needed' is default | 'always'
@@ -288,5 +289,5 @@ module.exports = {
 
     // 'rulename': 'off',
   },
-  */
+  /**/
 }
