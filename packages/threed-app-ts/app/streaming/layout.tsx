@@ -1,4 +1,4 @@
-import { NextLogo } from '#/ui/NextLogo';
+import { NextLogo } from '#/ui/playground/NextLogo';
 import { SearchIcon, ShoppingCartIcon } from '@heroicons/react/solid';
 import { cookies } from 'next/headers';
 import Image from 'next/image';

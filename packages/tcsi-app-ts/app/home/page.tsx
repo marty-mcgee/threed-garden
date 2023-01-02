@@ -1,10 +1,10 @@
 // ==============================================================
 // Home Page (main landing page for authorized user)
 
-'use client'
+// 'use client'
 
 // ** Next Imports
-import type { NextPage } from 'next'
+// import type { NextPage } from 'next'
 
 // ** React Imports
 // import { useEffect } from 'react'
@@ -18,14 +18,14 @@ import Typography from '@mui/material/Typography'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-import type { TPageProps } from '#/lib/types/TAppProps'
+// import type { TPageProps } from '#/lib/types/TAppProps'
 
 // ==============================================================
 
 // Index Page (Forwarding Page)
-// const Page = (props) => {
+const Page = () => {
 // const Page: FC<TPageProps> = (props) => {
-const Page: NextPage<TPageProps> = (props) => {
+// const Page: NextPage<TPageProps> = (props) => {
   //
 
   return (

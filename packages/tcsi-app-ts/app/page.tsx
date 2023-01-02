@@ -4,7 +4,7 @@
 'use client'
 
 // ** Next
-import type { NextPage } from 'next'
+// import type { NextPage } from 'next'
 // import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -26,7 +26,7 @@ import Spinner from '#/ui/threeds/spinner'
 import ccm from '#/lib/utils/console-colors'
 
 // ** Types
-import type { TPageProps } from '#/lib/types/TAppProps'
+// import type { TPageProps } from '#/lib/types/TAppProps'
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -57,7 +57,8 @@ const getHomeRoute = (role: any) => {
 // ==============================================================
 
 // export default function Page<NextPage>() {
-const AppPage: NextPage<TPageProps> = (): JSX.Element => {
+// const AppPage: NextPage<TPageProps> = (): JSX.Element => {
+const AppPage = (): JSX.Element => {
   // **
   console.debug('%c🥕 AppPage', ccm.green)
 
