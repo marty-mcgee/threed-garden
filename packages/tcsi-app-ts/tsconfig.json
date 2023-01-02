@@ -38,7 +38,7 @@
       // "@/layouts/*": ["./layouts/*"],
       "@/lib/*": ["./lib/*"],
       "@/styles/*": ["./styles/*"],
-      // "@/types": ["./lib/types/index"],
+      "@/types": ["./lib/types/index"],
       "@/types/*": ["./lib/types/*"]
     },
     "typeRoots": ["node_modules/@types", "lib/types"],
