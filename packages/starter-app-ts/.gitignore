@@ -19,9 +19,10 @@ build
 *.crt
 .npmrc
 
-# assets
+# misc
 public/demo
 public/demo/objects
+lib/angular8
 
 # logs
 npm-debug.log*
