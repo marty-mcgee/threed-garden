@@ -31,7 +31,7 @@ import ccm from '#/lib/utils/console-colors'
 // ==============================================================
 // IMPORTS COMPLETE
 console.debug('%c=======================================', ccm.black)
-console.debug('%c🥕 tCSi<T>: {page.tsx}', ccm.green)
+console.debug('%c🥕 ThreeDStarter<T>: {page.tsx}', ccm.green)
 console.debug('%c=======================================', ccm.black)
 
 // ==============================================================
