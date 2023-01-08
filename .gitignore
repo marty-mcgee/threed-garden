@@ -97,9 +97,8 @@ packages/threed-garden
 # !packages/app-playground-main
 !packages/next13-app-ts
 packages/platforms-main
-packages/tcsi-app-tsX
-!packages/tcsi-app-ts
-packages/tcsi-app-ts/lib/angular
+!packages/starter-app-ts
+packages/starter-app-ts/lib/angular8
 
 # scaffold-eth
 *.tsbuildinfo
@@ -108,8 +107,8 @@ packages/tcsi-app-ts/lib/angular
 yalc.lock
 packages/vite-app-ts/dist
 # packages/**/data
-build
-dist
+# build
+# dist
 **/generated/**/*
 
 # solidity
