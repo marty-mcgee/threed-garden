@@ -6,7 +6,7 @@
 
 // ** Metadata Components
 // import { DefaultTags } from '#/ui/DefaultTags';
-// import HeadMeta from '#/ui/components/head'
+// import HeadMeta from '#/ui/head'
 // import meta from './meta.json'
 
 const meta = {

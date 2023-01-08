@@ -40,7 +40,7 @@ import BlankLayout from '#/ui/layouts/BlankLayout' // this is your login layout
 import UserLayout from '#/ui/layouts/UserLayout' // this is your main layout
 
 // ** ~core Components
-// import WindowWrapper from '#/ui/components/window-wrapper'
+// import WindowWrapper from '#/ui/window-wrapper'
 
 // ** CSS Styles
 import '#/styles/globals.css'

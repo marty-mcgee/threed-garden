@@ -29,6 +29,7 @@ i18n
       escapeValue: false,
       formatSeparator: ',',
     },
+
   })
 
 export default i18n

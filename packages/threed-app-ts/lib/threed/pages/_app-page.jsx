@@ -2,8 +2,8 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import { setState } from '#/lib/threed/stores/store'
-import Header from '#/ui/components/head'
-import Dom from '#/ui/components/dom'
+import Header from '#/ui/head'
+import Dom from '#/ui/dom'
 // import '~/styles/index.css'
 
 // ==============================================================

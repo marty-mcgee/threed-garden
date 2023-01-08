@@ -1,4 +1,11 @@
+// ==============================================================
+// RESOURCES
+
 import { AbilityBuilder, Ability } from '@casl/ability'
+
+// ==============================================================
+// FUNCTIONS
+console.debug('🔑 acl config: loading...')
 
 export const AppAbility = Ability
 
@@ -9,11 +16,17 @@ export const AppAbility = Ability
  */
 const defineRulesFor = (role, subject) => {
   const { can, rules } = new AbilityBuilder(AppAbility)
+  // admin
   if (role === 'admin') {
     can('manage', 'all')
-  } else if (role === 'client') {
+  }
+  // client
+  else if (role === 'client') {
     can(['read'], 'acl-page')
-  } else {
+  }
+  // role not defined/authorized ?? use subject ??
+  else {
+    // crud the subject
     can(['read', 'create', 'update', 'delete'], subject)
   }
 
@@ -28,6 +41,7 @@ export const buildAbilityFor = (role, subject) => {
   })
 }
 
+// default is 'admin' privileges !!!
 export const defaultACLObj = {
   action: 'manage',
   subject: 'all',

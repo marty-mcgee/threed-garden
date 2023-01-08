@@ -44,7 +44,7 @@ import { Toaster } from 'react-hot-toast'
 // ** ~CORE Components
 import AclGuard from '#/ui/auth/AclGuard'
 import AuthGuard from '#/ui/auth/AuthGuard'
-import GuestGuard from '#/ui/components/auth/GuestGuard'
+import GuestGuard from '#/ui/auth/GuestGuard'
 // ** ~CORE Wrapper
 import WindowWrapper from '#/ui/window-wrapper'
 // ** ~CORE mui
@@ -54,7 +54,7 @@ import ThemeComponent from '#/ui/theme/ThemeComponent'
 import UserLayout from '#/ui/layouts/UserLayout' // this is your main layout !!!
 
 // ** Metadata Components
-import HeadMeta from '#/ui/components/head' // this is your SEO metadata !!!
+import HeadMeta from '#/ui/head' // this is your SEO metadata !!!
 
 // ** Helper Components
 import Spinner from '#/ui/components/spinner'
