@@ -1,6 +1,6 @@
 {
   "name": "@scaffold-eth/threed-app-ts",
-  "version": "0.9.11",
+  "version": "0.9.12",
   "description": "React + TypeScript + Three.js app using Material UI + Ant Design on Next.js 13, Apollo Client + Zustand, GraphQL + WordPress REST APIs, for ThreeD web development.. a part of the threed.ai code family.",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "contributors": [
@@ -153,7 +153,7 @@
     "styled-components": "6.0.0-beta.2",
     "tailwindcss": "^3.2.4",
     "tailwindcss-elevation": "^1.0.1",
-    "three": "^0.146.0",
+    "three": "^0.148.0",
     "timers-browserify": "^2.0.12",
     "ts-invariant": "^0.10.3",
     "use-count-up": "3.0.1",
@@ -161,11 +161,11 @@
     "usehooks-ts": "^2.6.0",
     "util": "^0.12.4",
     "uuid": "^8.3.2",
-    "valtio": "^1.7.4",
+    "valtio": "^1.8.2",
     "web-vitals": "^2.1.4",
-    "web3modal": "^1.9.9",
+    "web3modal": "^1.9.11",
     "webgl-detector": "^1.1.11",
-    "zustand": "^4.1.1"
+    "zustand": "^4.2.0"
   },
   "devDependencies": {
     "@emotion/types": "^0.7.0",
