@@ -34,10 +34,10 @@ const Page: NextPage<TPageProps> = (props) => {
         {/* <DashboardNavbar /> */}
 
         <Typography component='h1' variant='h5' gutterBottom >
-          ThreeD Garden for FarmBot + Three.js + Next.js
+          ThreeD Garden for FarmBot + Three.js on React + Next.js 13
         </Typography>
-        <Typography component='h2' variant='h6' gutterBottom >
-          FarmBot + Three.js using React Three Fiber, MUI v5, NextJS + TypeScript
+        <Typography component='h2' variant='h6' >
+          🌱 part of the threed.ai family
         </Typography>
         <Typography component='p' gutterBottom >
           Home Page (/app/home/page.tsx)

@@ -34,10 +34,10 @@ const Page = () => {
         {/* <DashboardNavbar /> */}
 
         <Typography component='h1' variant='h5' >
-          tCSi + Next.js 13
+          ThreeD Starter App on Next.js 13
         </Typography>
         <Typography component='h2' variant='h6' >
-          the Creative Spirit incorporated
+          🌱 part of the threed.ai family
         </Typography>
         <Typography component='p' >
           Home Page (/app/home/page.tsx)
