@@ -42,11 +42,11 @@ import { client } from '#/lib/api/graphql/client'
 import { Toaster } from 'react-hot-toast'
 
 // ** ~CORE Components
-import AclGuard from '#/ui/components/auth/AclGuard'
-import AuthGuard from '#/ui/components/auth/AuthGuard'
+import AclGuard from '#/ui/auth/AclGuard'
+import AuthGuard from '#/ui/auth/AuthGuard'
 import GuestGuard from '#/ui/components/auth/GuestGuard'
 // ** ~CORE Wrapper
-import WindowWrapper from '#/ui/components/window-wrapper'
+import WindowWrapper from '#/ui/window-wrapper'
 // ** ~CORE mui
 import ThemeComponent from '#/ui/theme/ThemeComponent'
 

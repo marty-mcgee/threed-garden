@@ -27,8 +27,8 @@ import { AuthProvider } from '#/lib/contexts/AuthContext'
 import { useAuth } from '#/lib/auth/hooks/useAuth'
 
 // ** User Authorization Guards/Boundaries (~CORE Components)
-import AclGuard from '#/ui/components/auth/AclGuard'
-import AuthGuard from '#/ui/components/auth/AuthGuard'
+import AclGuard from '#/ui/auth/AclGuard'
+import AuthGuard from '#/ui/auth/AuthGuard'
 import GuestGuard from '#/ui/components/auth/GuestGuard'
 
 // ** Contexts for Theme Settings + MUI Components

@@ -1,23 +1,31 @@
-// ** React Imports
+// ==============================================================
+// RESOURCES
+
+// ** React
 import { useState } from 'react'
 
-// ** Next Imports
-import { useRouter } from 'next/navigation'
+// ** Next
+import { useRouter, usePathname } from 'next/navigation'
 
-// ** Context Imports
+// ** Contexts
 import { AbilityContext } from '#/lib/auth/acl/Can'
 
-// ** Config Import
+// ** Configs
 import { buildAbilityFor } from '#/lib/config/acl'
 
-// ** Component Import
+// ** Components
 import NotAuthorized from '#/pages/401'
 import BlankLayout from '#/ui/layouts/BlankLayout'
 
 // ** Hooks
 import { useAuth } from '#/lib/auth/hooks/useAuth'
 
-const AclGuard = (props) => {
+// ==============================================================
+// FUNCTIONS
+console.debug('🔑 AclGuard: loading...')
+
+// ** Function Component <React.FC> (returns JSX) for JS Module Export
+const AclGuard = (props: any) => {
   // ** Props
   const { aclAbilities, children, guestGuard } = props
   const [ability, setAbility] = useState(undefined)
@@ -25,9 +33,12 @@ const AclGuard = (props) => {
   // ** Hooks
   const auth = useAuth()
   const router = useRouter()
+  const pathname = usePathname()
 
   // If guestGuard is true and user is not logged in or its an error page, render the page without checking access
-  if (guestGuard || router.route === '/404' || router.route === '/500' || router.route === '/') {
+  // if (guestGuard || router.route === '/404' || router.route === '/500' || router.route === '/') {
+  if (guestGuard || pathname === '/404' || pathname === '/500' || pathname === '/') {
+    console.debug('🔑 AclGuard: loaded')
     return <>{children}</>
   }
 
