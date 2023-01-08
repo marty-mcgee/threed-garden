@@ -14,7 +14,7 @@ import themeConfig from '#/lib/config/themeConfig'
 
 // ** Components
 import AppBar from './vertical/appBar'
-import Customizer from '#/ui/components/customizer'
+import Customizer from '#/ui/customizer'
 import Navigation from './vertical/navigation'
 import Footer from './footer'
 import ScrollToTop from '#/ui/components/scroll-to-top'

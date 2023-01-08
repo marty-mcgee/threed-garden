@@ -12,7 +12,7 @@ import ArrowUp from 'mdi-material-ui/ArrowUp'
 import themeConfig from '#/lib/config/themeConfig'
 
 // ** Components
-import Customizer from '#/ui/components/customizer'
+import Customizer from '#/ui/customizer'
 import Footer from './footer'
 import Navigation from './horizontal/navigation'
 import ScrollToTop from '#/ui/components/scroll-to-top'

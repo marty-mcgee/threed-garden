@@ -29,7 +29,7 @@ import { useAuth } from '#/lib/auth/hooks/useAuth'
 // ** User Authorization Guards/Boundaries (~CORE Components)
 import AclGuard from '#/ui/auth/AclGuard'
 import AuthGuard from '#/ui/auth/AuthGuard'
-import GuestGuard from '#/ui/components/auth/GuestGuard'
+import GuestGuard from '#/ui/auth/GuestGuard'
 
 // ** Contexts for Theme Settings + MUI Components
 import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/settingsContext'
@@ -45,7 +45,7 @@ import BlankLayout from '#/ui/layouts/BlankLayout' // this is your login layout
 import UserLayout from '#/ui/layouts/UserLayout' // this is your main layout
 
 // ** ~core Components (not needed anymore?)
-// import WindowWrapper from '#/ui/components/window-wrapper'
+// import WindowWrapper from '#/ui/window-wrapper'
 
 // ** Helper Components
 import Spinner from '#/ui/components/spinner'
