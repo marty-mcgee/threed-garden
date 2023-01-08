@@ -1,7 +1,7 @@
 // ==============================================================
 // RESOURCES
 
-'use client'
+// 'use client'
 
 // ** React
 import { useEffect } from 'react'
@@ -30,6 +30,7 @@ const AuthGuard = (props: any) => {
   const pathname = usePathname() // router.asPath is now usePathname()
 
   // if (!auth.loading) {
+    console.debug('🔱 AuthGuard: auth.loading?', auth.loading)
     console.debug('🔱 AuthGuard: auth', auth)
     console.debug('🔱 AuthGuard: router', router)
     console.debug('🔱 AuthGuard: pathname', pathname)
