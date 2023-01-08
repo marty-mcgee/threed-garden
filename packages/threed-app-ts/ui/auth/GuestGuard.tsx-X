@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 // ** Hooks Import
 import { useAuth } from '#/lib/auth/hooks/useAuth'
 
-const GuestGuard = (props) => {
+const GuestGuard = (props: any) => {
   const { children, fallback } = props
   const auth = useAuth()
   const router = useRouter()
