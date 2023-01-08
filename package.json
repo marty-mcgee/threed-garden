@@ -115,7 +115,6 @@
     "syncpack": "^8.2.4"
   },
   "devDependencies": {
-    "chalk": "^4.1.2",
     "commander": "^9.4.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.23.1",
