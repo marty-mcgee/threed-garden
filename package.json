@@ -90,11 +90,11 @@
       "packages/solidity-ts",
       "packages/vite-app-ts",
       "packages/nextjs-app-ts",
-      "packages/next13-app-tsX",
+      "packages/next13-app-ts-X",
       "packages/threed-app-ts",
-      "packages/turbopack-appX",
-      "packages/hardhat-appX",
-      "packages/hardhat-app-jsX",
+      "packages/turbopack-app-X",
+      "packages/hardhat-app-X",
+      "packages/hardhat-app-js-X",
       "packages/hardhat-app-ts",
       "packages/truffle-client",
       "packages/subgraph",
@@ -115,15 +115,8 @@
     "syncpack": "^8.2.4"
   },
   "devDependencies": {
-    "commander": "^9.4.0",
-    "cross-env": "^7.0.3",
     "eslint": "^8.23.1",
-    "husky": "^8.0.1",
-    "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
-    "prettier-plugin-solidity": "^1.0.0-dev.23",
-    "shx": "^0.3.4",
-    "syncpack": "^8.2.4",
     "ts-node": "^10.9.1"
   },
   "volta": {
