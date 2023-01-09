@@ -82,12 +82,12 @@ const AuthGuard = (props: any) => {
   // ** AuthGuard
   if (auth.loading || auth.user !== null) {
     // console.debug('🔱 <AuthGuard>: <Spinner />')
-    return null // fallback // <>AuthGuard: fallback</> // <Spinner /> // fallback
+    return null // fallback
   }
   // ** GuestGuard
   // if (auth.loading || (!auth.loading && auth.user !== null)) {
   //   console.debug('🔱 <GuestGuard>: <Spinner />')
-  //   return fallback // <>GuestGuard: fallback</> // <Spinner /> // fallback
+  //   return null // fallback
   // }
 
   // ** Return JSX
