@@ -15,7 +15,7 @@ const users = [
     role: 'admin',
     password: 'admin',
     fullName: 'Garden Master',
-    username: 'garden.master',
+    username: 'garden_master',
     email: 'mcgee.marty@gmail.com',
   },
   {
@@ -23,7 +23,7 @@ const users = [
     role: 'client',
     password: 'client',
     fullName: 'Marty McGee',
-    username: 'garden.apprentice',
+    username: 'garden_apprentice',
     email: 'marty@companyjuice.com',
   },
   {
@@ -31,7 +31,7 @@ const users = [
     role: 'client',
     password: 'client',
     fullName: 'McGee Home Garden',
-    username: 'garden.observer',
+    username: 'garden_observer',
     email: 'support@companyjuice.com',
   },
 ]
@@ -71,16 +71,17 @@ mock.onPost('/jwt/login').reply((request) => {
       accessToken =
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjY4MDUxMjA3fQ.bMvi7fa1KCN8L386wWKmU-945KsCJpmyS7tEum9oK48'
     }
-    console.debug('accessToken', accessToken)
+    console.debug('🦁 accessToken', accessToken)
 
     const response = {
       accessToken,
     }
 
     return [200, response]
-  } else {
+  }
+  else {
     error = {
-      email: ['email or Password is Invalid'],
+      email: ['email or password is invalid'],
     }
 
     return [400, { error }]
