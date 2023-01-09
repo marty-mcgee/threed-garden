@@ -55,19 +55,22 @@ const AuthGuard = (props: any) => {
       }
       else {
         // do nothing ?
-        router.replace('/auth/login')
+        // router.replace('/auth/login')
+        router.push('/auth/login')
       }
 
     }
     else if (window.localStorage.getItem('userData')) {
       // do nothing ?
       console.debug('%c⚜ GuestGuard: window.localStorage.getItem("userData"): locate to /', ccm.yellow)
-      router.replace('/')
+      // router.replace('/')
+      router.push('/')
     }
     else {
       console.debug('%c🔱 AuthGuard: auth.user is true ???', ccm.yellow, auth)
       // do nothing
       // router.replace('/auth/login')
+      // router.push('/auth/login')
     }
 
     // ** GuestGuard
