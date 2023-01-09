@@ -474,7 +474,7 @@ const LoginPage: NextPage<TPageProps> = (): JSX.Element => {
     </Box>
   )
 }
-LoginPage.getLayout = (page: any) => <BlankLayout>{page}</BlankLayout>
-LoginPage.guestGuard = true
+// LoginPage.getLayout = (page: any) => <BlankLayout>{page}</BlankLayout>
+// LoginPage.guestGuard = true
 
 export default LoginPage

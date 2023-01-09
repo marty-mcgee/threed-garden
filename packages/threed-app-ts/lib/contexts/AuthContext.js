@@ -1,7 +1,10 @@
-// ** React Imports
+// ==============================================================
+// RESOURCES
+
+// ** React
 import { createContext, useEffect, useState } from 'react'
 
-// ** Next Import
+// ** Next
 import { useRouter } from 'next/navigation'
 
 // ** Axios
@@ -10,6 +13,10 @@ import axios from 'axios'
 // ** Config
 import authConfig from '#/lib/config/auth'
 
+// ==============================================================
+// IMPORTS COMPLETE
+// console.debug('🔱🔑 AuthContext: loading...')
+
 // ** Defaults
 const defaultProvider = {
   user: null,
@@ -17,10 +24,10 @@ const defaultProvider = {
   setUser: () => null,
   setLoading: () => Boolean,
   isInitialized: false,
-  login: () => Promise.resolve(),
+  login: ({ email, password }, fn) => Promise.resolve(),
   logout: () => Promise.resolve(),
   setIsInitialized: () => Boolean,
-  register: () => Promise.resolve(),
+  register: ({ params, errorCallback }) => Promise.resolve(),
 }
 const AuthContext = createContext(defaultProvider)
 
@@ -32,12 +39,18 @@ const AuthProvider = ({ children }) => {
 
   // ** Hooks
   const router = useRouter()
+
   useEffect(() => {
     const initAuth = async () => {
+
       setIsInitialized(true)
+
       const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName)
+
       if (storedToken) {
+
         setLoading(true)
+
         await axios
           .get(authConfig.meEndpoint, {
             headers: {
@@ -55,6 +68,7 @@ const AuthProvider = ({ children }) => {
             setUser(null)
             setLoading(false)
           })
+
       } else {
         setLoading(false)
       }
@@ -63,11 +77,14 @@ const AuthProvider = ({ children }) => {
   }, [])
 
   const handleLogin = (params, errorCallback) => {
+
     axios
       .post(authConfig.loginEndpoint, params)
+
       .then(async (res) => {
         window.localStorage.setItem(authConfig.storageTokenKeyName, res.data.accessToken)
       })
+
       .then(() => {
         axios
           .get(authConfig.meEndpoint, {
@@ -83,6 +100,7 @@ const AuthProvider = ({ children }) => {
             router.replace(redirectURL)
           })
       })
+
       .catch((err) => {
         console.error('ERROR', err)
         if (errorCallback) errorCallback(err)
@@ -98,8 +116,10 @@ const AuthProvider = ({ children }) => {
   }
 
   const handleRegister = (params, errorCallback) => {
+
     axios
       .post(authConfig.registerEndpoint, params)
+
       .then((res) => {
         if (res.data.error) {
           if (errorCallback) errorCallback(res.data.error)
@@ -107,6 +127,7 @@ const AuthProvider = ({ children }) => {
           handleLogin({ email: params.email, password: params.password })
         }
       })
+
       .catch((err) => (errorCallback ? errorCallback(err) : null))
   }
 

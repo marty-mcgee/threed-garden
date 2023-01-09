@@ -4,7 +4,7 @@
 import { AbilityBuilder, Ability } from '@casl/ability'
 
 // ==============================================================
-// FUNCTIONS
+// IMPORTS COMPLETE
 console.debug('🔑 acl config: loading...')
 
 export const AppAbility = Ability
