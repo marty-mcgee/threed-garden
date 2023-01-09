@@ -97,12 +97,14 @@ const AuthProvider = ({ children }) => {
       })
 
       .then(() => {
+
         axios
           .get(authConfig.meEndpoint, {
             headers: {
               Authorization: window.localStorage.getItem(authConfig.storageTokenKeyName),
             },
           })
+
           .then(async (response) => {
             // const returnUrl = router.query.returnUrl // Next 12
             // const returnUrl = queryParams.returnUrl // Next 13
@@ -110,12 +112,14 @@ const AuthProvider = ({ children }) => {
             setUser({ ...response.data.userData })
             await window.localStorage.setItem('userData', JSON.stringify(response.data.userData))
             const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
-            router.replace(redirectURL)
+            // router.replace(redirectURL)
+            router.push(redirectURL)
           })
+
       })
 
       .catch((err) => {
-        console.error('📛 ERROR', err)
+        console.debug('%c📛 ERROR', ccm.red, err)
         if (errorCallback) errorCallback(err)
       })
   }
