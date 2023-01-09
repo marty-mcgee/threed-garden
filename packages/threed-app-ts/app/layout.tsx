@@ -29,7 +29,10 @@ import { useAuth } from '#/lib/auth/hooks/useAuth'
 // ** User Authorization Guards/Boundaries (~CORE Components)
 import AclGuard from '#/ui/auth/AclGuard'
 import AuthGuard from '#/ui/auth/AuthGuard'
-import GuestGuard from '#/ui/auth/GuestGuard'
+// import GuestGuard from '#/ui/auth/GuestGuard'
+
+// ** @Fake-DB (axios mock adapter)
+import '#/lib/api/@fake-db'
 
 // ** Contexts for Theme Settings + MUI Components
 import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/settingsContext'
@@ -121,14 +124,14 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
 
 const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
   if (!guestGuard && !authGuard) {
-    console.debug('noGuard loading...')
+    console.debug('%c📛 noGuard loading...', ccm.red)
     console.debug('%c=======================================', ccm.black)
     return (
       <>{children}</>
     )
   }
   else if (authGuard) {
-    console.debug('authGuard loading...')
+    console.debug('%c🔱 authGuard loading...', ccm.red)
     console.debug('%c=======================================', ccm.black)
     return (
       <AuthGuard fallback={<Spinner />}>
@@ -137,7 +140,7 @@ const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
     )
   }
   else if (guestGuard) {
-    console.debug('guestGuard loading...')
+    console.debug('%c⚜ guestGuard loading...', ccm.red)
     console.debug('%c=======================================', ccm.black)
     return (
       // <GuestGuard fallback={<Spinner />}>
@@ -149,7 +152,7 @@ const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
     )
   }
   else {
-    console.debug('authGuard loading (by default)...')
+    console.debug('%c🔱 authGuard loading (by default)...', ccm.red)
     console.debug('%c=======================================', ccm.black)
     return (
       <AuthGuard fallback={<Spinner />}>
@@ -167,7 +170,7 @@ const getHomeRoute = (role: any) => {
   // user: acl: client: default main app index page
   if (role === 'client') {
     // return '/home' // another page
-    return '/participate' // another page
+    // return '/participate' // another page
     return '/acl' // authorized credentials list? (boundary)
   }
   // user: acl: admin: default main app index page

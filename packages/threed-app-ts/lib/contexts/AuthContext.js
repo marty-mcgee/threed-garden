@@ -5,7 +5,7 @@
 import { createContext, useEffect, useState } from 'react'
 
 // ** Next
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams, useSearchParams } from 'next/navigation'
 
 // ** Axios
 import axios from 'axios'
@@ -13,9 +13,12 @@ import axios from 'axios'
 // ** Config
 import authConfig from '#/lib/config/auth'
 
+// ** Colorful Console Messages: Utility
+import ccm from '#/lib/utils/console-colors'
+
 // ==============================================================
 // IMPORTS COMPLETE
-// console.debug('🔱🔑 AuthContext: loading...')
+// console.debug('🐻🐺 AuthContext: loading...')
 
 // ** Defaults
 const defaultProvider = {
@@ -29,8 +32,11 @@ const defaultProvider = {
   setIsInitialized: () => Boolean,
   register: ({ params, errorCallback }) => Promise.resolve(),
 }
+
+// ** The Context
 const AuthContext = createContext(defaultProvider)
 
+// ** The Provider of the Context
 const AuthProvider = ({ children }) => {
   // ** States
   const [user, setUser] = useState(defaultProvider.user)
@@ -39,6 +45,8 @@ const AuthProvider = ({ children }) => {
 
   // ** Hooks
   const router = useRouter()
+  // const queryParams = useParams()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     const initAuth = async () => {
@@ -57,10 +65,12 @@ const AuthProvider = ({ children }) => {
               Authorization: storedToken,
             },
           })
+
           .then(async (response) => {
             setLoading(false)
             setUser({ ...response.data.userData })
           })
+
           .catch(() => {
             localStorage.removeItem('userData')
             localStorage.removeItem('refreshToken')
@@ -73,6 +83,7 @@ const AuthProvider = ({ children }) => {
         setLoading(false)
       }
     }
+    // run it
     initAuth()
   }, [])
 
@@ -93,7 +104,9 @@ const AuthProvider = ({ children }) => {
             },
           })
           .then(async (response) => {
-            const returnUrl = router.query.returnUrl
+            // const returnUrl = router.query.returnUrl // Next 12
+            // const returnUrl = queryParams.returnUrl // Next 13
+            const returnUrl = searchParams.get('returnUrl') // Next 13
             setUser({ ...response.data.userData })
             await window.localStorage.setItem('userData', JSON.stringify(response.data.userData))
             const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
@@ -102,7 +115,7 @@ const AuthProvider = ({ children }) => {
       })
 
       .catch((err) => {
-        console.error('ERROR', err)
+        console.error('📛 ERROR', err)
         if (errorCallback) errorCallback(err)
       })
   }
