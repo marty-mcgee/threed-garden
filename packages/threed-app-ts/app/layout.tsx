@@ -6,7 +6,7 @@
 'use client'
 
 // ** Next
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 // ** React
 import type { ReactNode } from 'react'
@@ -27,9 +27,9 @@ import { AuthProvider } from '#/lib/contexts/AuthContext'
 import { useAuth } from '#/lib/auth/hooks/useAuth'
 
 // ** User Authorization Guards/Boundaries (~CORE Components)
-import AclGuard from '#/ui/auth/AclGuard'
 import AuthGuard from '#/ui/auth/AuthGuard'
 // import GuestGuard from '#/ui/auth/GuestGuard'
+// import AclGuard from '#/ui/auth/AclGuard'
 
 // ** @Fake-DB (axios mock adapter)
 import '#/lib/api/@fake-db'
@@ -40,7 +40,7 @@ import ThemeComponent from '#/ui/theme/ThemeComponent'
 
 // ** Configs
 // import '#/lib/config/i18n' // NOT YET SUPPORTED IN NEXT 13
-import { defaultACLObj } from '#/lib/config/acl'
+// import { defaultACLObj } from '#/lib/config/acl'
 import themeConfig from '#/lib/config/themeConfig'
 
 // ** Layouts
@@ -64,9 +64,9 @@ import ccm from '#/lib/utils/console-colors'
 
 // ==============================================================
 // IMPORTS COMPLETE
-console.debug('%c=======================================', ccm.black)
+// console.debug('%c=======================================', ccm.black)
 console.debug('%c🥕 ThreeDGarden<FC,R3F>: {layout.tsx}', ccm.green)
-console.debug('%c=======================================', ccm.black)
+// console.debug('%c=======================================', ccm.black)
 
 // ==============================================================
 // TYPES + INTERFACES (TYPESCRIPT)
@@ -118,21 +118,23 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
 //     return null
 //   }
 // }
+// ==============================================================
+/** */
 
 // ==============================================================
 // ** Security Guard
 
 const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
   if (!guestGuard && !authGuard) {
-    console.debug('%c📛 noGuard loading...', ccm.red)
-    console.debug('%c=======================================', ccm.black)
+    // console.debug('%c📛 noGuard loading...', ccm.red)
+    // console.debug('%c=======================================', ccm.black)
     return (
       <>{children}</>
     )
   }
   else if (authGuard) {
-    console.debug('%c🔱 authGuard loading...', ccm.red)
-    console.debug('%c=======================================', ccm.black)
+    // console.debug('%c🔱 authGuard loading...', ccm.red)
+    // console.debug('%c=======================================', ccm.black)
     return (
       <AuthGuard fallback={<Spinner />}>
         {children}
@@ -140,8 +142,8 @@ const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
     )
   }
   else if (guestGuard) {
-    console.debug('%c⚜ guestGuard loading...', ccm.red)
-    console.debug('%c=======================================', ccm.black)
+    // console.debug('%c⚜ guestGuard loading...', ccm.red)
+    // console.debug('%c=======================================', ccm.black)
     return (
       // <GuestGuard fallback={<Spinner />}>
       //   {children}
@@ -152,8 +154,8 @@ const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
     )
   }
   else {
-    console.debug('%c🔱 authGuard loading (by default)...', ccm.red)
-    console.debug('%c=======================================', ccm.black)
+    // console.debug('%c🔱 authGuard loading (by default)...', ccm.red)
+    // console.debug('%c=======================================', ccm.black)
     return (
       <AuthGuard fallback={<Spinner />}>
         {children}
@@ -169,33 +171,32 @@ const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
 const getHomeRoute = (role: any) => {
   // user: acl: client: default main app index page
   if (role === 'client') {
-    // return '/home' // another page
-    // return '/participate' // another page
+    // return '/home'
+    // return '/participate'
     return '/acl' // authorized credentials list? (boundary)
   }
   // user: acl: admin: default main app index page
   else if (role === 'admin') {
     // return '/' // this page (for testing. not ideal for production.)
-    return '/home' // another page
-    return '/participate' // another page
+    return '/home'
+    return '/participate'
   }
   // user: acl: guest: default main app index page
   else {
     // special route requests
     // return '/' // this page (for testing. not ideal for production.)
-    if (! '/participate') {
+    // if (! '/participate') {
       return '/auth/login'
-    }
-    else if ('/participate') {
-      return '/participate'
-    }
-    // return 'whatever existing route is.. no return change'
-    return '/' // default default main app index page
+    // }
+    // else if ('/participate') {
+    //   return '/participate'
+    // }
   }
 
   // user: acl: unauthorized: default main app index page
-  return '/' // default default default main app index page
-  return 'whatever existing route is.. no return change'
+  // default default default main app index page
+  return '/auth/login'
+  return '/'
 }
 
 // ==============================================================
@@ -215,31 +216,44 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
   // ** Hooks
   const auth = useAuth()
   const router = useRouter()
+  const pathname = usePathname()
 
   // ** OnMount (+ optional return OnUnmount)
-  useEffect(() => {
+  // useEffect(() => {
+
     // user AUTHORIZED?
     if (auth.user && auth.user.role) {
       // get Home URL
       const homeRoute = getHomeRoute(auth.user.role)
-      console.debug('✅ user AUTHORIZED', auth.user, homeRoute)
+      // console.debug('%c=======================================', ccm.black)
+      console.debug('%c✅ user AUTHORIZED', ccm.lightgreen, auth.user, homeRoute)
+      // console.debug('%c=======================================', ccm.black)
+
       // redirect user to Home URL
-      router.replace(homeRoute)
+      // router.replace(homeRoute)
+      router.push(homeRoute)
     }
     // user NOT AUTHORIZED!
     else {
+      // get Home URL
       const homeRoute = getHomeRoute('unauthorized')
-      console.debug('❌ user NOT AUTHORIZED', auth.user, homeRoute)
+      // console.debug('%c=======================================', ccm.black)
+      console.debug('%c❌ user NOT AUTHORIZED', ccm.red, auth.user, homeRoute)
+      // console.debug('%c=======================================', ccm.black)
+
       // redirect user to their Home URL
-      if (props.childProp.segment !== 'auth') {
-        router.replace(homeRoute)
-      }
+      // if (props.childProp.segment !== 'auth') {
+        // router.replace(homeRoute)
+        // router.push(homeRoute)
+      // }
     }
-  }, [])
-  console.debug('%c🥕 auth', ccm.orange, auth)
-  console.debug('%c🥕 router', ccm.orange, router)
-  console.debug('%c🥕 children', ccm.orange, children)
-  console.debug('%c=======================================', ccm.black)
+
+  // }, [])
+
+  // console.debug('%c🥕 auth', ccm.orange, auth)
+  // console.debug('%c🥕 router', ccm.orange, router)
+  // console.debug('%c🥕 children', ccm.orange, children)
+  // console.debug('%c=======================================', ccm.black)
 
   // // destructure props for vars
   // // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
@@ -248,9 +262,14 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
     getLayout: () => {},
     setConfig: () => {},
     authGuard: true,
-    guestGuard: true,
-    acl: defaultACLObj
+    guestGuard: false,
+    // acl: defaultACLObj
+    acl: {
+      action: 'manage',
+      subject: 'all',
+    },
   }
+
   // console.debug('%c🥕 props', ccm.white, props)
   // console.debug('%c🥕 Component', ccm.black, Component)
   // console.debug('%c🥕 pageProps', ccm.black, pageProps)
@@ -304,26 +323,28 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
           > */}
             <ApolloProvider client={client}>
               <ReduxProvider store={reduxStore}>
-                <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null })}>
-                <SettingsConsumer>
-                  {({ settings }) => (
-                    <>
-                      <ThemeComponent settings={settings}>
-                        {getLayout(
-                            // <EthApp {...props}>
-                              // <Component {...pageProps} />
-                              {children}
-                            // </EthApp>
-                        )}
-                      </ThemeComponent>
-                      {/* <ReactHotToast>
-                        <Toaster
-                          position={settings.toastPosition as ToastPosition}
-                          toastOptions={{ className: 'react-hot-toast' }}
-                        />
-                      </ReactHotToast> */}
-                    </>
-                  )}
+                <SettingsProvider
+                  { ...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null }) }
+                >
+                  <SettingsConsumer>
+                    {({ settings }) => (
+                      <>
+                        <ThemeComponent settings={settings}>
+                          {getLayout(
+                              // <EthApp {...props}>
+                                // <Component {...pageProps} />
+                                {children}
+                              // </EthApp>
+                          )}
+                        </ThemeComponent>
+                        {/* <ReactHotToast>
+                          <Toaster
+                            position={settings.toastPosition as ToastPosition}
+                            toastOptions={{ className: 'react-hot-toast' }}
+                          />
+                        </ReactHotToast> */}
+                      </>
+                    )}
                   </SettingsConsumer>
                 </SettingsProvider>
               </ReduxProvider>

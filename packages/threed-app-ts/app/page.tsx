@@ -30,9 +30,9 @@ import type { TPageProps } from '#/lib/types/TAppProps'
 
 // ==============================================================
 // IMPORTS COMPLETE
-console.debug('%c=======================================', ccm.black)
+// console.debug('%c=======================================', ccm.black)
 console.debug('%c🥕 ThreeDGarden<FC,R3F>: {page.tsx}', ccm.green)
-console.debug('%c=======================================', ccm.black)
+// console.debug('%c=======================================', ccm.black)
 
 // ==============================================================
 
