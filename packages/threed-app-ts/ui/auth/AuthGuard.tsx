@@ -20,23 +20,23 @@ import ccm from '#/lib/utils/console-colors'
 
 // ==============================================================
 // FUNCTIONS
-console.debug('%c🔱 AuthGuard: loading...', ccm.yellow)
+// console.debug('%c🔱 AuthGuard: loading...', ccm.yellow)
 
 // ** Function Component <React.FC> (returns JSX) for JS Module Export
 const AuthGuard = (props: any) => {
 
   const { children, fallback } = props
-  console.debug('%c🔱 AuthGuard: props', ccm.yellow, props)
+  // console.debug('%c🔱 AuthGuard: props', ccm.yellow, props)
 
   const auth = useAuth()
   const router = useRouter()
   const pathname = usePathname() // router.asPath is now usePathname()
 
   // if (!auth.loading) {
-    console.debug('%c🔱 AuthGuard: auth.loading?', ccm.yellow, auth.loading)
-    console.debug('%c🔱 AuthGuard: auth', ccm.yellow, auth)
-    console.debug('%c🔱 AuthGuard: router', ccm.yellow, router)
-    console.debug('%c🔱 AuthGuard: pathname', ccm.yellow, pathname)
+    // console.debug('%c🔱 AuthGuard: auth.loading?', ccm.yellow, auth.loading)
+    // console.debug('%c🔱 AuthGuard: auth', ccm.yellow, auth)
+    // console.debug('%c🔱 AuthGuard: router', ccm.yellow, router)
+    // console.debug('%c🔱 AuthGuard: pathname', ccm.yellow, pathname)
   // }
 
   useEffect(() => {
@@ -56,15 +56,15 @@ const AuthGuard = (props: any) => {
       else {
         // do nothing ?
         // router.replace('/auth/login')
-        router.push('/auth/login')
+        // router.push('/auth/login')
       }
 
     }
     else if (window.localStorage.getItem('userData')) {
       // do nothing ?
-      console.debug('%c⚜ GuestGuard: window.localStorage.getItem("userData"): locate to /', ccm.yellow)
+      console.debug('%c🔱 AuthGuard: window.localStorage.getItem("userData"): locate to /', ccm.yellow)
       // router.replace('/')
-      router.push('/')
+      // router.push('/')
     }
     else {
       console.debug('%c🔱 AuthGuard: auth.user is true ???', ccm.yellow, auth)
@@ -83,12 +83,12 @@ const AuthGuard = (props: any) => {
     //   router.replace('/auth/login')
     // }
 
-  }, []) // originally [router.route]
+  }, [pathname]) // originally [router.route]
 
   // ** AuthGuard
   if (auth.loading || auth.user !== null) {
-    console.debug('%c🔱 <AuthGuard>: <Spinner />', ccm.yellow)
-    // return null // fallback
+    // console.debug('%c🔱 <AuthGuard>: <Spinner />', ccm.yellow)
+    return fallback // null // fallback
   }
   // ** GuestGuard
   // if (auth.loading || (!auth.loading && auth.user !== null)) {

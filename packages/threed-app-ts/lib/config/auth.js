@@ -1,11 +1,11 @@
 // ==============================================================
 // RESOURCES
 
-// none
+// none needed
 
 // ==============================================================
 // FUNCTIONS
-console.debug('🔱 auth config: loading...')
+// console.debug('🔱 auth config: loading...')
 
 export default {
   meEndpoint: '/auth/me',
