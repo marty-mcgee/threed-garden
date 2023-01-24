@@ -89,6 +89,7 @@ _drafts
 *.code-workspace
 
 # custom
+MARTY.md
 @threed
 _sandbox
 garage
