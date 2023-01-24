@@ -88,7 +88,7 @@ const AuthGuard = (props: any) => {
   // ** AuthGuard
   if (auth.loading || auth.user !== null) {
     // console.debug('%c🔱 <AuthGuard>: <Spinner />', ccm.yellow)
-    return fallback // null // fallback
+    // return fallback // null // fallback
   }
   // ** GuestGuard
   // if (auth.loading || (!auth.loading && auth.user !== null)) {
@@ -97,7 +97,7 @@ const AuthGuard = (props: any) => {
   // }
 
   // ** Return JSX
-  console.debug('%c🔱 AuthGuard: Return JSX', ccm.yellow)
+  console.debug('%c🔱 AuthGuard: return <jsx/>', ccm.green)
   return <>{children}</>
 }
 
