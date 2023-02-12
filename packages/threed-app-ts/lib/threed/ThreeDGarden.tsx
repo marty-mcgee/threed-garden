@@ -112,8 +112,39 @@ console.debug(`%c====================================`, ccm5)
 
 // ==========================================================
 // TS INTERFACES + TYPES
-// ==========================================================
-// none yet, but soon
+
+interface IPostData {
+  plugin_name: string
+  plugin_version: string
+  plugin_url: string
+  theme_uri: 'light' | 'dark'
+  rest_url: string
+  world_id: number | string
+  scene_id: number | string
+}
+
+interface IThreeDEnv {
+  pluginName: string
+  pluginVersion: string
+  pluginURL: string
+  themeURI: 'light' | 'dark'
+  restURL: string
+  worldID: number | string
+  sceneID: number | string
+}
+
+interface IPlayer {
+  action: string
+  actionTime: number | Date
+  object: Object3D
+  mixer: AnimationMixer
+  setAction: Function
+  getAction: Function
+  toggleAnimation: Function
+  move: Function
+  movePlayer: Function
+  playerControl: Function
+}
 
 type THeyHeyHey = {
   heyheyhey: string
