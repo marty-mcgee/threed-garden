@@ -66,45 +66,18 @@ interface IPlayer {
 }
 
 // ================================================================
-// SETUP BEGINS HERE
+// VARIABLES
+// INSTANTIATE COMMON VARIABLES
 
-// const toJSON = (proto: any) => {
-//   const jsoned = {}
-//   const toConvert = proto || this
-//   Object.getOwnPropertyNames(toConvert).forEach((prop) => {
-//     const val = toConvert[prop]
-//     // do not include these
-//     if (prop === 'toJSON' || prop === 'constructor') {
-//       return
-//     }
-//     if (typeof val === 'function') {
-//       jsoned[prop] = val.bind(jsoned)
-//       return
-//     }
-//     jsoned[prop] = val
-//   })
-
-//   const inherited = Object.getPrototypeOf(toConvert)
-//   if (inherited !== null) {
-//     Object.keys(toJSON(inherited)).forEach(key => {
-//       if (!!jsoned[key] || key === 'constructor' || key === 'toJSON')
-//         return
-//       if (typeof inherited[key] === 'function') {
-//         jsoned[key] = inherited[key].bind(jsoned)
-//         return
-//       }
-//       jsoned[key] = inherited[key]
-//     });
-//   }
-//   return jsoned
-// }
+const debug: boolean = false
+// const debugPhysics: boolean = false
 
 // PARAMETERS FROM PHP
 // console.log("window", window)
 // console.log(window.postdata)
 // const postdata = window?.postdata ? window.postdata : {}
 // const appVersion = process.env.npm_package_version
-const appVersion = require('../../../../../package.json').version
+const appVersion: string = require('../../../../../package.json').version
 // console.log("appVersion", appVersion)
 const postdata: IPostData = {
   plugin_name: 'ThreeD Garden',
@@ -126,12 +99,8 @@ const env: IThreeDEnv = {
   sceneID: postdata.scene_id,
 }
 
-console.log('pluginName', env.pluginName, env.pluginVersion)
-console.log('postdata', postdata)
-
-// INSTANTIATE COMMON VARIABLES
-const debug: boolean = false
-// const debugPhysics: boolean = false
+console.debug('pluginName', env.pluginName, env.pluginVersion)
+console.debug('postdata', postdata)
 
 // STATS
 // const stats = Stats()
