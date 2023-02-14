@@ -115,6 +115,7 @@ const debugAnimations: boolean = true
 
 // const appVersion = process.env.npm_package_version
 const appVersion: string = require('package.json').version
+// const appVersion: string = require('../../package.json').version
 
 if (debug) {
   console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm4)
