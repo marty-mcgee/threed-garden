@@ -1,11 +1,8 @@
-// @ts-nocheck
-/**
- * OR @ ts-ignore
- * OR @ ts-expect-error
- */
+// @ts-nocheck /* OR @ ts-ignore OR @ ts-expect-error */
 
-// ==============================================================
+// ==========================================================
 // RESOURCES
+// ==========================================================
 
 // ** React Imports
 import {
@@ -107,6 +104,7 @@ import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/lib/utils/console-co
 
 // ==========================================================
 // IMPORTS COMPLETE
+// ==========================================================
 
 // DEBUG PREFERENCES FOR THIS MODULE
 const debug: boolean = true
@@ -125,6 +123,7 @@ if (debug) {
 
 // ==========================================================
 // TS INTERFACES + TYPES
+// ==========================================================
 
 interface IPostData {
   plugin_name: string
@@ -179,8 +178,9 @@ interface IHeyHeyHeys {
   heyheyheys: Array<HEYHEYHEY>
 }
 
-// ================================================================
+// ==========================================================
 // VARIABLES
+// ==========================================================
 
 // PARAMETERS FROM SERVER (PHP)
 // console.log("window", window)
@@ -214,6 +214,7 @@ if (debug) {
 
 // ==========================================================
 // STYLES
+// ==========================================================
 
 const stylesModal = {
   position: 'absolute' as const,
