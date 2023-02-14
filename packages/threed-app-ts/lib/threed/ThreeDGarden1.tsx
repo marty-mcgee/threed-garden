@@ -72,7 +72,7 @@ interface IPlayer {
 const debug: boolean = false
 // const debugPhysics: boolean = false
 
-// PARAMETERS FROM PHP
+// PARAMETERS FROM SERVER (PHP)
 // console.log("window", window)
 // console.log(window.postdata)
 // const postdata = window?.postdata ? window.postdata : {}

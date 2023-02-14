@@ -107,8 +107,20 @@ import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/lib/utils/console-co
 
 // ==========================================================
 // IMPORTS COMPLETE
-console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm4)
-console.debug(`%c====================================`, ccm5)
+
+// DEBUG PREFERENCES FOR THIS MODULE
+const debug: boolean = true
+const debugPhysics: boolean = true
+const debugAnimations: boolean = true
+
+// const appVersion = process.env.npm_package_version
+const appVersion: string = require('package.json').version
+
+if (debug) {
+  console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm4)
+  console.debug("%c appVersion", ccm4, appVersion)
+  console.debug(`%c====================================`, ccm5)
+}
 
 // ==========================================================
 // TS INTERFACES + TYPES
@@ -164,6 +176,39 @@ interface IYoYoYos {
 interface IHeyHeyHeys {
   // array of types
   heyheyheys: Array<HEYHEYHEY>
+}
+
+// ================================================================
+// VARIABLES
+
+// PARAMETERS FROM SERVER (PHP)
+// console.log("window", window)
+// console.log(window.postdata)
+// const postdata = window?.postdata ? window.postdata : {}
+
+const postdata: IPostData = {
+  plugin_name: 'ThreeD Garden',
+  plugin_version: appVersion,
+  plugin_url: 'https://garden.university.local/',
+  theme_uri: 'dark',
+  rest_url: 'https://garden.university.local/wp-json/wp/v2/',
+  world_id: 1,
+  scene_id: 1,
+}
+
+const env: IThreeDEnv = {
+  pluginName: postdata.plugin_name,
+  pluginVersion: postdata.plugin_version,
+  pluginURL: postdata.plugin_url,
+  themeURI: postdata.theme_uri,
+  restURL: postdata.rest_url,
+  worldID: postdata.world_id,
+  sceneID: postdata.scene_id,
+}
+
+if (debug) {
+  console.debug('pluginName', env.pluginName, env.pluginVersion)
+  console.debug('postdata', postdata)
 }
 
 // ==========================================================
@@ -247,8 +292,10 @@ const {
 
 // ==========================================================
 // FUNCTIONAL NOUNS
-console.debug(`%c🥕 ThreeDGarden<FC,R3F>: {nouns()}`, ccm4)
-console.debug(`%c====================================`, ccm5)
+if (debug) {
+  console.debug(`%c🥕 ThreeDGarden<FC,R3F>: {nouns()}`, ccm4)
+  console.debug(`%c====================================`, ccm5)
+}
 // ==========================================================
 
 // ==========================================================
