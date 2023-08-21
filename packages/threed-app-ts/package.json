@@ -1,6 +1,6 @@
 {
   "name": "@scaffold-eth/threed-app-ts",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "description": "React + TypeScript + Three.js app using Material UI + Ant Design on Next.js 13, Apollo Client + Zustand, GraphQL + WordPress REST APIs, for ThreeD web development.. a part of the threed.ai code family.",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "contributors": [
@@ -100,8 +100,8 @@
     "@ramp-network/ramp-instant-sdk": "^3.2.0",
     "@react-spring/three": "^9.5.5",
     "@react-three/cannon": "^6.4.0",
-    "@react-three/drei": "^9.37.0",
-    "@react-three/fiber": "^8.8.10",
+    "@react-three/drei": "^9.80.4",
+    "@react-three/fiber": "^8.13.7",
     "@scaffold-eth/common": "0.0.0",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.3",
