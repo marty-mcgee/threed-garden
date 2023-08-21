@@ -225,7 +225,8 @@ export default function ThreeDCanvas({ models, children }) {
         {/* <ThreeD state={state} threedId={1} threed={{}} /> */}
         {/* [MM] HEY HEY HEY */}
 
-        <Stage environment="forest" intensity={0.7}>
+        {/* <Stage environment="forest" intensity={0.7}> */}
+        <Stage intensity={0.7}>
           <Shoe color="tomato" position={[0, 0, 0]} />
           <Shoe color="orange" scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
         </Stage>
