@@ -75,6 +75,9 @@ console.debug('%c=======================================', ccm.black)
 
 // ==============================================================
 
+// const appVersion = process.env.npm_package_version
+const appVersion: string = require('../../../../../package.json').version
+
 // ** Styled Components
 const SVGWrapper = styled(Box)(({ theme }: { theme: any }) => {
   return {
@@ -285,8 +288,7 @@ const LoginPage: NextPage<TPageProps> = (): JSX.Element => {
             <Box sx={{ mb: 6, mt: 1 }}>
               <TypographyStyled variant='h5'>
                 🌱 Welcome to
-                <br />
-                {themeConfig.templateName}
+                {themeConfig.templateName}                 {appVersion}
               </TypographyStyled>
               <Typography variant='body2'>Please sign in to start your adventure...</Typography>
             </Box>
