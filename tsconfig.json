@@ -12,10 +12,11 @@
     "incremental": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true
-    // "paths": {
-    //   "~common/*": ["./packages/common/src/*"]
-    // }
+    "noEmit": true,
+    "paths": {
+      "~~/*": ["./src/*"],
+      "~common/*": ["./packages/common/src/*"]
+    }
   },
   "ts-node": {
     "require": ["tsconfig-paths/register"]
