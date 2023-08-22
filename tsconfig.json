@@ -14,8 +14,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "paths": {
-      "~~/*": ["/packages/commands/src/*"],
-      "~common/*": ["/packages/common/src/*"]
+      "~~/*": ["../packages/commands/src/*"],
+      "~common/*": ["../packages/common/src/*"]
     }
   },
   "ts-node": {
