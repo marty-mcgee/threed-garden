@@ -30,7 +30,9 @@ export const createAddress = (
   initCode: string
 ): { address: string; from: string; salt: Uint8Array; initCodeHash: string; initCode: string } => {
   const salt = randomBytes(32);
-  const initCodeHash = keccak256(initCode);
+  // [MM]
+  // const initCodeHash = keccak256(initCode);
+  const initCodeHash = initCode;
 
   const address = ethers.utils.getCreate2Address(from, salt, initCodeHash);
   return { address, from, salt, initCodeHash, initCode };
