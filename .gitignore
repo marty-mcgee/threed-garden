@@ -100,6 +100,8 @@ packages/threed-garden
 packages/platforms-main
 !packages/starter-app-ts
 packages/starter-app-ts/lib/angular8
+design
+ssl
 
 # scaffold-eth
 *.tsbuildinfo
