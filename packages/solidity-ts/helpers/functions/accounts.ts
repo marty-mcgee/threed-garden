@@ -2,7 +2,7 @@ import { mnemonicToSeed } from 'bip39';
 import { privateToAddress } from 'ethereumjs-util';
 import { hdkey } from 'ethereumjs-wallet';
 import { ethers, Wallet } from 'ethers';
-import { keccak256, randomBytes } from 'ethers/lib/utils';
+import { randomBytes } from 'ethers/lib/utils'; // keccak256
 import type { SignerWithAddress } from 'hardhat-deploy-ethers/signers';
 
 import { debugLog } from '~helpers/debug';
