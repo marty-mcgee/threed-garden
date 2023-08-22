@@ -50,7 +50,7 @@
     "buffer": "^6.0.3",
     "eth-components": "3.6.0-beta04",
     "eth-hooks": "5.0.2-beta27",
-    "ethers": "^6.7.1",
+    "ethers": "^5.7.1",
     "fortmatic": "^2.4.0",
     "react": "^18.2.0",
     "react-css-theme-switcher": "^0.3.0",
