@@ -2,7 +2,7 @@ import { mnemonicToSeed } from 'bip39';
 import { privateToAddress } from 'ethereumjs-util';
 import { hdkey } from 'ethereumjs-wallet';
 import { ethers, Wallet } from 'ethers';
-import { randomBytes } from 'ethers/lib/utils'; // keccak256
+import { keccak256, randomBytes } from 'ethers/lib/utils';
 import type { SignerWithAddress } from 'hardhat-deploy-ethers/signers';
 
 import { debugLog } from '~helpers/debug';
@@ -25,14 +25,9 @@ export const getAccountData = async (mnemonic: string): Promise<{ address: strin
   return { address, wallet: Wallet.fromMnemonic(mnemonic, fullPath) };
 };
 
-export const createAddress = (
-  from: string,
-  initCode: string
-): { address: string; from: string; salt: Uint8Array; initCodeHash: string; initCode: string } => {
+export const createAddress = (from: string, initCode: string): { address: string; from: string; salt: Uint8Array; initCodeHash: string; initCode: string } => {
   const salt = randomBytes(32);
-  // [MM]
-  // const initCodeHash = keccak256(initCode);
-  const initCodeHash = initCode;
+  const initCodeHash = keccak256(initCode);
 
   const address = ethers.utils.getCreate2Address(from, salt, initCodeHash);
   return { address, from, salt, initCodeHash, initCode };

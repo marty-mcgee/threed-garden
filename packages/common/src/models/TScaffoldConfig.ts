@@ -1,6 +1,6 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
-import { solidityToolkits, NetworkNamesList, reactBuilds } from '~common/models'
+import { solidityToolkits, NetworkNamesList, reactBuilds } from '~common/models';
 
 export const scaffoldConfigSchema = z.object({
   build: z.object({
@@ -29,6 +29,6 @@ export const scaffoldConfigSchema = z.object({
       })
       .default({}),
   }),
-})
+});
 
-export type TScaffoldConfig = z.infer<typeof scaffoldConfigSchema>
+export type TScaffoldConfig = z.infer<typeof scaffoldConfigSchema>;

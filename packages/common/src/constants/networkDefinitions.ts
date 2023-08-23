@@ -1,22 +1,22 @@
-import { TNetworkInfo } from 'eth-hooks/models'
+import { TNetworkInfo } from 'eth-hooks/models';
 
-import { TNetworkNamesList } from '~common/models'
+import { TNetworkNamesList } from '~common/models';
 
-const INFURA_ID = process.env.VITE_RPC_MAINNET_INFURA
+const INFURA_ID = process.env.VITE_RPC_MAINNET_INFURA;
 
-let hostname = '127.0.0.1'
+let hostname = 'localhost';
 if (typeof window !== 'undefined' && window != null) {
-  hostname = window?.location?.hostname ?? 'localhost'
+  hostname = window?.location?.hostname ?? 'localhost';
 }
 
 export type TNetworkDefinition = TNetworkInfo & {
-  color: string
-}
+  color: string;
+};
 
 export const networkDefinitions: Record<TNetworkNamesList, TNetworkDefinition> = {
   localhost: {
     name: 'localhost',
-    color: '#777777',
+    color: '#666666',
     chainId: 31337,
     blockExplorer: '',
     rpcUrl: 'http://' + hostname + ':8545',
@@ -153,14 +153,4 @@ export const networkDefinitions: Record<TNetworkNamesList, TNetworkDefinition> =
     gasPrice: 1000000000,
     faucet: 'https://faucet.fantom.network/',
   },
-  ganache: {
-    name: 'ganache',
-    color: '#196900',
-    chainId: 5777,
-    // blockExplorer: '',
-    rpcUrl: 'http://' + hostname + ':8545',
-
-    // gasLimit: 6000000000,
-    // defaultBalanceEther: 10,
-  },
-} as const
+} as const;

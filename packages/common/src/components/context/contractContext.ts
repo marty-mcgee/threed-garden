@@ -1,6 +1,6 @@
-import { contractsContextFactory } from 'eth-hooks/context'
+import { contractsContextFactory } from 'eth-hooks/context';
 
-import { appContractsConfig } from '~common/config'
+import { appContractsConfig } from '~common/config';
 
 /**
  * This file initalises the contractContextFactory and exports the types
@@ -11,7 +11,7 @@ import { appContractsConfig } from '~common/config'
  * ### Summary
  * This type describes all your contracts, it is the return of {@link getappContractsConfig}
  */
-export type TAppConnectorList = ReturnType<typeof appContractsConfig>
+export type TAppConnectorList = ReturnType<typeof appContractsConfig>;
 
 /**
  * #### Summary
@@ -23,4 +23,4 @@ export type TAppConnectorList = ReturnType<typeof appContractsConfig>
  * - The type is your contract connect config.
  */
 export const { useAppContracts, useLoadAppContracts, useConnectAppContracts, useContractsAppStore } =
-  contractsContextFactory<keyof TAppConnectorList, TAppConnectorList>(appContractsConfig)
+  contractsContextFactory<keyof TAppConnectorList, TAppConnectorList>(appContractsConfig);

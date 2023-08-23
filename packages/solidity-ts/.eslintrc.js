@@ -30,22 +30,18 @@ module.exports = {
   ],
   plugins: ['prettier', '@typescript-eslint', 'unused-imports'],
   rules: {
-    // 'prettier/prettier': [
-    //   'warn',
-    //   {
-    //     endOfLine: 'auto',
-    //   },
-    // ],
-    'prettier/prettier': 'off',
+    'prettier/prettier': [
+      'warn',
+      {
+        endOfLine: 'auto',
+      },
+    ],
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/no-empty-function': 'warn',
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': 'warn',
     'unused-imports/no-unused-imports-ts': 'warn',
-    'unused-imports/no-unused-vars-ts': [
-      'error',
-      { vars: 'all', varsIgnorePattern: '^_', args: 'after-used', argsIgnorePattern: '^_' },
-    ],
+    'unused-imports/no-unused-vars-ts': ['error', { vars: 'all', varsIgnorePattern: '^_', args: 'after-used', argsIgnorePattern: '^_' }],
     '@typescript-eslint/no-use-before-define': ['error'],
     '@typescript-eslint/no-unsafe-member-access': 0,
     '@typescript-eslint/no-unsafe-assignment': 0,
@@ -111,4 +107,4 @@ module.exports = {
     },
   ],
   settings: {},
-}
+};

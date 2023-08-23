@@ -4,16 +4,16 @@ import {
   createConnectorForExternalContract,
   createConnectorForFoundryContract,
   createConnectorForHardhatContract,
-} from 'eth-hooks/context'
-import { invariant } from 'ts-invariant'
+} from 'eth-hooks/context';
+import { invariant } from 'ts-invariant';
 
-import { externalContractsAddressMap } from './externalContracts.config'
+import { externalContractsAddressMap } from './externalContracts.config';
 
-import * as toolkitContracts from '~common/generated/contract-types/'
-import * as externalContracts from '~common/generated/external-contracts/esm/types'
-import foundryDeployedContractsJson from '~common/generated/foundry_contracts.json'
-import hardhatDeployedContractsJson from '~common/generated/hardhat_contracts.json'
-import { scaffoldConfig } from '~common/scaffold.config'
+import * as toolkitContracts from '~common/generated/contract-types/';
+import * as externalContracts from '~common/generated/external-contracts/esm/types';
+import foundryDeployedContractsJson from '~common/generated/foundry_contracts.json';
+import hardhatDeployedContractsJson from '~common/generated/hardhat_contracts.json';
+import { scaffoldConfig } from '~common/scaffold.config';
 
 /**
  * ⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️
@@ -43,19 +43,6 @@ export const appContractsConfig = () => {
           : createConnectorForFoundryContract(
               'YourContract',
               toolkitContracts.YourContract__factory,
-              foundryDeployedContractsJson
-            ),
-
-      ThreeDNFT:
-        scaffoldConfig.build.solidityToolkit === 'hardhat'
-          ? createConnectorForHardhatContract(
-              'ThreeDNFT',
-              toolkitContracts.ThreeDNFT__factory,
-              hardhatDeployedContractsJson
-            )
-          : createConnectorForFoundryContract(
-              'ThreeDNFT',
-              toolkitContracts.ThreeDNFT__factory,
               foundryDeployedContractsJson
             ),
 
@@ -90,14 +77,14 @@ export const appContractsConfig = () => {
         toolkitContracts.YourContract__factory.abi
         // optional if you have a connect function:  externalContracts.YourContract__factory.connect
       ),
-    } as const
+    } as const;
 
-    return result
+    return result;
   } catch (e) {
     invariant.error(
       '❌ appContractsConfig: ERROR with loading contracts please run `yarn contracts:build or yarn contracts:rebuild`.  Then run `yarn deploy`!'
-    )
-    invariant.error(e)
-    throw e
+    );
+    invariant.error(e);
+    throw e;
   }
-}
+};

@@ -16,16 +16,15 @@ export const NetworkNamesList = [
   'avalanche',
   'testnetFantom',
   'fantom',
-  'ganache',
-] as const
+] as const;
 
-export type TNetworkNamesList = typeof NetworkNamesList[number]
+export type TNetworkNamesList = typeof NetworkNamesList[number];
 export type TNetworkNames = {
-  [key in TNetworkNamesList]: key
-}
+  [key in TNetworkNamesList]: key;
+};
 
-export const solidityToolkits = ['hardhat', 'foundry'] as const
-export type TSolidityToolkits = typeof solidityToolkits[number]
+export const solidityToolkits = ['hardhat', 'foundry'] as const;
+export type TSolidityToolkits = typeof solidityToolkits[number];
 
-export const reactBuilds = ['vite', 'nextjs', 'threed'] as const
-export type TReactBuilds = typeof reactBuilds[number]
+export const reactBuilds = ['vite', 'nextjs'] as const;
+export type TReactBuilds = typeof reactBuilds[number];
