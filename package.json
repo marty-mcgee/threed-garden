@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.13.1-beta.9",
+  "version": "0.13.1-beta.10",
   "description": "ThreeD Garden: full web3 app running Three.js + React-Three-Fiber using Next.js 13 + 12 (also supports Vite + Vue), Farmbot Ruby/JS Web-App, as a standalone app or WordPress plugin. 'threed-garden' is a functioning, low-dependency app, a package supporting a monorepo of workspaces that utilize/depend on 'Three, WebGL, React, React Three Fiber, NextJS, TypeScript, + Apollo GraphQL', in active development.",
   "repository": {
     "type": "git",
@@ -36,12 +36,11 @@
     "@___ front end": "echo @___ front end",
     "start-huh": "yarn --cwd packages/threed-app-ts start",
     "start-maybe": "yarn --cwd packages/commands scaffold start",
-    "start": "yarn --cwd packages/threed-app-ts dev",
-    "next": "yarn --cwd packages/threed-app-ts dev",
+    "start-nope": "yarn --cwd packages/threed-app-ts dev",
+    "next-maybe": "yarn --cwd packages/threed-app-ts dev",
     "dev-huh": "npm-run-all --parallel start next",
+    "start": "yarn scaffold start",
     "dev": "yarn scaffold start",
-    "start-original": "yarn scaffold start",
-    "dev-original": "yarn scaffold start",
     "build": "yarn scaffold build && next build",
     "serve": "yarn scaffold serve",
     "test": "yarn scaffold test",
