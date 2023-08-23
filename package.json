@@ -41,7 +41,7 @@
     "dev-huh": "npm-run-all --parallel start next",
     "start": "yarn scaffold start",
     "dev": "yarn scaffold start",
-    "build": "yarn scaffold build && next build",
+    "build": "yarn scaffold build",
     "serve": "yarn scaffold serve",
     "test": "yarn scaffold test",
     "______________3": "____ ___________________________________________________",
