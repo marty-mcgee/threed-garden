@@ -5,8 +5,8 @@
   "arrowParens": "always",
   "bracketSameLine": true,
   "tabWidth": 2,
-  "printWidth": 120,
-  "endOfLine": "crlf",
+  "printWidth": 160,
+  "endOfLine": "lf",
   "overrides": [
     {
       "files": "*.sol",

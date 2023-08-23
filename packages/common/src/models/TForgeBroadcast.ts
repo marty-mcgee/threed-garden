@@ -1,4 +1,4 @@
-import z from 'zod'
+import z from 'zod';
 
 export const forgeTransactionDataSchema = z.object({
   type: z.string(),
@@ -8,7 +8,7 @@ export const forgeTransactionDataSchema = z.object({
   data: z.string(),
   nonce: z.string(),
   accessList: z.array(z.string()),
-})
+});
 
 export const forgeTransactionSchema = z.object({
   hash: z.string(),
@@ -18,22 +18,22 @@ export const forgeTransactionSchema = z.object({
   function: z.string(),
   arguments: z.string(),
   transaction: forgeTransactionDataSchema,
-})
+});
 
 export const forgeBroadcastSchema = z.object({
   transactions: z.array(forgeTransactionSchema),
   chainId: z.string(),
-})
+});
 
 export const TForgeBoradcastCollection = z.record(
   z.number({ description: 'chainId' }),
   z.object({
     transactions: z.array(forgeTransactionSchema),
   })
-)
+);
 
-export type TForgeTransactionData = z.infer<typeof forgeTransactionDataSchema>
+export type TForgeTransactionData = z.infer<typeof forgeTransactionDataSchema>;
 
-export type TForgeTransaction = z.infer<typeof forgeTransactionSchema>
+export type TForgeTransaction = z.infer<typeof forgeTransactionSchema>;
 
-export type TForgeBroadcast = z.infer<typeof forgeBroadcastSchema>
+export type TForgeBroadcast = z.infer<typeof forgeBroadcastSchema>;

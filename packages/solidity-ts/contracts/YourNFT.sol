@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
+//SPDX-License-Identifier: MIT
 
 // import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 // GET LISTED ON OPENSEA: https://testnets.opensea.io/get-listed/step-two
 
-contract YourNFT is ERC721, ERC721URIStorage, Ownable {
+contract YourNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
 
@@ -26,20 +26,20 @@ contract YourNFT is ERC721, ERC721URIStorage, Ownable {
     address from,
     address to,
     uint256 tokenId
-  ) internal {
-    super._beforeTokenTransfer(from, to, tokenId, tokenId);
+  ) internal override(ERC721, ERC721Enumerable) {
+    super._beforeTokenTransfer(from, to, tokenId);
   }
 
   function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
     super._burn(tokenId);
   }
 
-  function supportsInterface(bytes4 interfaceId) public view override(ERC721) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721Enumerable) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 
   function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
-    // 🌱 DO SOMETHING
+    // DO SOMETHING
     return super.tokenURI(tokenId);
   }
 

@@ -1,11 +1,13 @@
 {
   "build": {
     "solidityToolkit": "hardhat",
-    "reactBuild": "threed"
+    "reactBuild": "nextjs"
   },
   "runtime": {
-    "availableNetworks": ["localhost", "ganache"],
-    "targetNetwork": "ganache",
+    "availableNetworks": [
+      "localhost"
+    ],
+    "targetNetwork": "localhost",
     "networkConfig": {
       "rpcMainnetInfuraUrl": "https://mainnet.infura.io/v3"
     },

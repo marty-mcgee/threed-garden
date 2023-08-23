@@ -60,13 +60,12 @@ module.exports = {
         additionalHooks: '(useRecoilCallback)',
       },
     ],
-    // 'prettier/prettier': [
-    //   'warn',
-    //   {
-    //     endOfLine: 'auto',
-    //   },
-    // ],
-    'prettier/prettier': 'off',
+    'prettier/prettier': [
+      'warn',
+      {
+        endOfLine: 'auto',
+      },
+    ],
     '@typescript-eslint/ban-ts-comment': [
       'warn',
       {
@@ -173,4 +172,4 @@ module.exports = {
     },
   },
   reportUnusedDisableDirectives: true,
-}
+};

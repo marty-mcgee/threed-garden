@@ -1,21 +1,21 @@
-import { ICoreOptions } from 'web3modal'
+import { ICoreOptions } from 'web3modal';
 
-import { networkDefinitions } from '~common/constants/networkDefinitions'
+import { networkDefinitions } from '~common/constants/networkDefinitions';
 
 export const customWeb3ModalProviders = {
   coinbaseKey: 'custom-walletlink',
   localhostKey: 'custom-localhost',
-} as const
+} as const;
 
 export const getWeb3ModalConfig = async (
   hasLocalProvider: boolean,
   config: { infuraId: string }
 ): Promise<Partial<ICoreOptions>> => {
-  const providerOptions: Record<string, any> = {}
+  const providerOptions: Record<string, any> = {};
 
   // === PORTIS
   try {
-    const Portis = (await import('@portis/web3')).default
+    const Portis = (await import('@portis/web3')).default;
     providerOptions.portis = {
       display: {
         logo: 'https://user-images.githubusercontent.com/9419140/128913641-d025bc0c-e059-42de-a57b-422f196867ce.png',
@@ -26,27 +26,27 @@ export const getWeb3ModalConfig = async (
       options: {
         id: '6255fb2b-58c8-433b-a2c9-62098c05ddc9',
       },
-    }
+    };
   } catch (e) {
-    console.log('Failed to load config for web3 connector Portis: ', e)
+    console.log('Failed to load config for web3 connector Portis: ', e);
   }
 
   // === FORTMATIC
   try {
-    const Fortmatic = (await import('fortmatic')).default
+    const Fortmatic = (await import('fortmatic')).default;
     providerOptions.fortmatic = {
       package: Fortmatic,
       options: {
         key: 'pk_live_5A7C91B2FC585A17',
       },
-    }
+    };
   } catch (e) {
-    console.log('Failed to load config for web3 connector Fortmatic: ', e)
+    console.log('Failed to load config for web3 connector Fortmatic: ', e);
   }
 
   // === COINBASE WALLETLINK
   try {
-    const { CoinbaseWalletSDK: WalletLink } = await import('@coinbase/wallet-sdk')
+    const { CoinbaseWalletSDK: WalletLink } = await import('@coinbase/wallet-sdk');
 
     // note: ⚠️ meta mask and coinbase wallets may clash.
     // you might need to check this: https://github.com/Web3Modal/web3modal/issues/316
@@ -54,9 +54,9 @@ export const getWeb3ModalConfig = async (
     // Coinbase walletLink init
     const walletLink = new WalletLink({
       appName: 'coinbase',
-    })
+    });
     // WalletLink provider
-    const walletLinkProvider = walletLink.makeWeb3Provider(`https://mainnet.infura.io/v3/${config.infuraId}`, 1)
+    const walletLinkProvider = walletLink.makeWeb3Provider(`https://mainnet.infura.io/v3/${config.infuraId}`, 1);
 
     const coinbaseWalletLink = {
       display: {
@@ -66,19 +66,19 @@ export const getWeb3ModalConfig = async (
       },
       package: walletLinkProvider,
       connector: async (provider: any, _options: any): Promise<any> => {
-        await provider.enable()
+        await provider.enable();
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        return provider
+        return provider;
       },
-    }
-    providerOptions[customWeb3ModalProviders.coinbaseKey] = coinbaseWalletLink
+    };
+    providerOptions[customWeb3ModalProviders.coinbaseKey] = coinbaseWalletLink;
   } catch (e) {
-    console.log('Failed to load config for web3 connector Coinbase WalletLink: ', e)
+    console.log('Failed to load config for web3 connector Coinbase WalletLink: ', e);
   }
 
   // === WALLETCONNECT
   try {
-    const WalletConnectProvider = (await import('@walletconnect/ethereum-provider')).default
+    const WalletConnectProvider = (await import('@walletconnect/ethereum-provider')).default;
     const walletConnectEthereum = {
       package: WalletConnectProvider,
       options: {
@@ -90,27 +90,27 @@ export const getWeb3ModalConfig = async (
           100: 'https://dai.poa.network',
         },
       },
-    }
-    providerOptions.walletconnect = walletConnectEthereum
+    };
+    providerOptions.walletconnect = walletConnectEthereum;
   } catch (e) {
-    console.log('Failed to load config for web3 connector WalletConnect: ', e)
+    console.log('Failed to load config for web3 connector WalletConnect: ', e);
   }
 
   // === AUTHEREUM
   try {
-    const Authereum = (await import('authereum')).default
+    const Authereum = (await import('authereum')).default;
     providerOptions.authereum = {
       package: Authereum,
-    }
+    };
   } catch (e) {
-    console.log('Failed to load config for web3 connector Authereum: ', e)
+    console.log('Failed to load config for web3 connector Authereum: ', e);
   }
 
   // === LOCALHOST STATIC
   try {
     if (hasLocalProvider) {
-      const { ConnectToStaticJsonRpcProvider } = await import('eth-hooks/context')
-      const { StaticJsonRpcProvider } = await import('@ethersproject/providers')
+      const { ConnectToStaticJsonRpcProvider } = await import('eth-hooks/context');
+      const { StaticJsonRpcProvider } = await import('@ethersproject/providers');
       const localhostStaticConnector = {
         display: {
           logo: 'https://avatars.githubusercontent.com/u/56928858?s=200&v=4',
@@ -125,11 +125,11 @@ export const getWeb3ModalConfig = async (
             [networkDefinitions.localhost.chainId]: networkDefinitions.localhost.rpcUrl,
           },
         },
-      }
-      providerOptions[customWeb3ModalProviders.localhostKey] = localhostStaticConnector
+      };
+      providerOptions[customWeb3ModalProviders.localhostKey] = localhostStaticConnector;
     }
   } catch (e) {
-    console.log('Failed to load config for Localhost Static Connector: ', e)
+    console.log('Failed to load config for Localhost Static Connector: ', e);
   }
 
   // network: 'mainnet', // Optional. If using WalletConnect on xDai, change network to "xdai" and add RPC info below for xDai chain.
@@ -150,7 +150,7 @@ export const getWeb3ModalConfig = async (
 
   return {
     cacheProvider: true,
-    theme: 'dark',
+    theme: 'light',
     providerOptions,
-  }
-}
+  };
+};
