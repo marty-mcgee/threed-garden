@@ -1,9 +1,10 @@
-# folders
-lib/
-node_modules/
+# legacy
 node_modules
 dist
 coverage
+# folders
+lib/
+node_modules/
 # files
 **/*.less
 **/*.css
