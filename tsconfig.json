@@ -13,10 +13,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    // "paths": {
-    //   "~~/*": ["./packages/commands/src/*"],
-    //   "~common/*": ["./packages/common/src/*"]
-    // }
+    "paths": {
+      "~~/*": ["./packages/commands/src/*"],
+      "~common/*": ["./packages/common/src/*"]
+    }
   },
   "include": ["packages/**/*.ts", "packages/**/*.tsx"],
   "exclude": [
