@@ -1,5 +1,5 @@
 // ==============================================================
-// IMPORT RESOURCES
+// RESOURCES
 
 // **
 import Button from '@mui/material/Button'

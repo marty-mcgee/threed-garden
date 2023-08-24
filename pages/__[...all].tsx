@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import React, { FC } from 'react'
 
-import EthPage from '#/app/eth/page'
+// import EthPage from '#/lib/eth/app/eth/page'
 import type { TPageProps } from '#/lib/types/TAppProps'
 
 const Page: FC<TPageProps> = (props) => {
@@ -23,14 +23,14 @@ const Page: FC<TPageProps> = (props) => {
   }
 
   return (
-    // <div className='App WholeApp WholeEthApp WholeNextApp WholeReactApp'>
-      <EthPage
+    <div className='App WholeApp WholeEthApp WholeNextApp WholeReactApp'>
+      {/* <EthPage
         pageName={slug}
         {...props}
       >
         <div>no children? except me? accept me? the div</div>
-      </EthPage>
-    // </div>
+      </EthPage> */}
+    </div>
   )
 }
 
