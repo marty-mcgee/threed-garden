@@ -20,7 +20,7 @@ import { NextPage } from 'next'
 import { ReactElement } from 'react'
 
 // Component + Layout (+ Type) Imports
-import { EthPageFooter, EthPageHeader, createTabsAndPages, TContractPageList } from '#/ui/eth'
+import { EthPageFooter, EthPageHeader, createTabsAndPages, TContractPageList } from '#/tests/eth/ui/eth'
 
 // ETH -- CONTRACTS + HOOKS Imports
 import { GenericContract } from 'eth-components/ant/generic-contract'
