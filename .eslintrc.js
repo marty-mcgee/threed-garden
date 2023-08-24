@@ -48,7 +48,7 @@ module.exports = {
     ],
   },
 
-  // ignorePatterns: ['*.js', '*.jsx', 'src/_testing', 'ThreeDGarden.tsx', 'ThreeDGarden1.tsx'], // ignoring here works ??
+  ignorePatterns: ['*.js', '*.jsx', 'src/_testing', 'ThreeDGarden.tsx', 'ThreeDGarden1.tsx'], // ignoring here works ??
 
   // overrides: [
   //   {
