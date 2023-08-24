@@ -53,7 +53,7 @@ import MDBox from '#/lib/mui/MDBox'
 // dashboard examples
 
 // dashboard routes
-// import pageRoutes from "~/routes/page.routes"
+// import pageRoutes from "~/ui/routes/page.routes"
 // const routes = pageRoutes
 
 // NOT HERE PLEASE

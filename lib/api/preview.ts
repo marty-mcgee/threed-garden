@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { getPreviewPost } from '#/lib/api'
+import { getPreviewPost } from '#/lib/api/api'
 
 export default async function preview(req: NextApiRequest, res: NextApiResponse) {
   const { secret, id, slug } = req.query

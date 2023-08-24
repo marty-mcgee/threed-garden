@@ -1,6 +1,6 @@
 import { fetchCategoryBySlug, PageProps } from '#/lib/data/getCategories';
-import { Boundary } from '#/ui/Boundary';
-import { TabGroup } from '#/ui/TabGroup';
+import { Boundary } from '#/ui/playground/Boundary';
+import { TabGroup } from '#/ui/playground/TabGroup';
 import { Counter } from '../ContextClickCounter';
 
 export default async function Layout({ children, params }: PageProps) {

@@ -15,7 +15,7 @@ import PageLayout from '#/ui/elements/LayoutContainers/PageLayout'
 import Footer from '#/pages/authentication/components/Footer'
 
 // ThreeD Garden page layout routes
-import pageRoutes from '~/routes/page.routes'
+import pageRoutes from '~/ui/routes/page.routes'
 
 // for image typing
 import { StaticImageData } from 'next/image'

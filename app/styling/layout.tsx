@@ -1,4 +1,4 @@
-import { TabGroup } from '#/ui/TabGroup';
+import { TabGroup } from '#/ui/playground/TabGroup';
 import React from 'react';
 
 const items = [

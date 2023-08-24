@@ -3,7 +3,7 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import CardSnippet from '#/ui/componentsippet'
+import CardSnippet from '#/ui/components/card-snippet'
 
 // ** Demo Components Imports
 import SliderBasic from '#/ui/forms/form-elements/slider/SliderBasic'

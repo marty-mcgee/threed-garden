@@ -11,7 +11,7 @@ import MDBox from '#/lib/mui/MDBox'
 import DashboardLayout from '#/ui/elements/LayoutContainers/DashboardLayout'
 import DashboardNavbar from '#/ui/elements/Navbars/DashboardNavbar'
 import Footer from '#/ui/elements/Footer'
-// import EventCalendar from "~/components/elements/Calendar"
+// import EventCalendar from "~/ui/elements/Calendar"
 
 // Calendar application components
 import Header from '#/app/modules/calendar/components/Header'

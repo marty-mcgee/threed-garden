@@ -12,7 +12,7 @@ import DefaultNavbar from '#/ui/elements/Navbars/DefaultNavbar'
 import PageLayout from '#/ui/elements/LayoutContainers/PageLayout'
 
 // ThreeD Garden page layout routes
-import pageRoutes from '~/routes/page.routes'
+import pageRoutes from '~/ui/routes/page.routes'
 
 // Authentication pages components
 import Footer from '#/pages/authentication/components/Footer'

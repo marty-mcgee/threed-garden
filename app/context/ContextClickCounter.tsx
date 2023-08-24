@@ -2,7 +2,7 @@
 
 import { useCounter } from './CounterContext';
 import React from 'react';
-import { Boundary } from '#/ui/Boundary';
+import { Boundary } from '#/ui/playground/Boundary';
 
 const ContextClickCounter = () => {
   const [count, setCount] = useCounter();

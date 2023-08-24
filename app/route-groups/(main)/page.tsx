@@ -1,4 +1,4 @@
-import { ExternalLink } from '#/ui/ExternalLink';
+import { ExternalLink } from '#/ui/playground/ExternalLink';
 
 export default function Page() {
   return (

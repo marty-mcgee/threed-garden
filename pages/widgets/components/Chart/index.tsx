@@ -11,7 +11,7 @@ import MDTypography from '#/lib/mui/MDTypography'
 import gradientChartLine from '#/ui/themes/theme-light/functions/gradientChartLine'
 
 // Chart configurations
-import configs from '~/pages/widgets/components/Chart/config'
+import configs from '#/pages/widgets/components/Chart/config'
 
 // ThreeD Garden Base Styles
 import colors from '#/ui/themes/theme-light/base/colors'

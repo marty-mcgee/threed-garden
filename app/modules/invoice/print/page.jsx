@@ -1,3 +1,5 @@
+'use client'
+
 // ** Layout Import
 import BlankLayout from '#/ui/layouts/BlankLayout'
 

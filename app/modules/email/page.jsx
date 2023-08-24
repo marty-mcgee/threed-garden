@@ -1,3 +1,5 @@
+'use client'
+
 // ** Demo Components Imports
 import Email from '#/ui/modules/email/Email'
 
