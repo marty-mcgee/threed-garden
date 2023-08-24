@@ -9,7 +9,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // HorizontalBarChart configurations
-import configs from '~/components/elements/Charts/BarCharts/HorizontalBarChart/config'
+import configs from '#/ui/elements/Charts/BarCharts/HorizontalBarChart/config'
 
 // ThreeD Garden Base Styles
 import colors from '#/ui/themes/theme-light/base/colors'

@@ -13,8 +13,8 @@ import type { NextPage } from 'next'
 import Typography from '@mui/material/Typography'
 
 // ** Component Imports
-// import DashboardLayout from '~/components/elements/LayoutContainers/DashboardLayout'
-// import DashboardNavbar from '~/components/elements/Navbars/DashboardNavbar'
+// import DashboardLayout from '~/ui/elements/LayoutContainers/DashboardLayout'
+// import DashboardNavbar from '~/ui/elements/Navbars/DashboardNavbar'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'

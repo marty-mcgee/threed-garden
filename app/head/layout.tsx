@@ -1,6 +1,6 @@
 import { fetchCategories } from '#/lib/data/getCategories';
-import { ClickCounter } from '#/ui/ClickCounter';
-import { TabGroup } from '#/ui/TabGroup';
+import { ClickCounter } from '#/ui/playground/ClickCounter';
+import { TabGroup } from '#/ui/playground/TabGroup';
 import React from 'react';
 
 export default async function Layout({

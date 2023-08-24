@@ -17,7 +17,7 @@ const meta = {
   description:
     'threed-garden demonstrates active development use of the threed-ai platform. threed-ai is a functioning, legit, low-dependency app, a package supporting a monorepo of workspaces that utilize/depend on ThreeJS, WebGL, React, TypeScript <Fiber>, GraphQL, in active development.',
   keywords:
-    'Architecture, Planning, 3D Plans, Home Ideas, Floor Plans, Garden Planning, 3D Design, Building Plans, Lanscaping Design, Landscaping, Design, 3D Design App, React 3D, ThreeD Garden',
+    'Architecture, Planning, 3D Plans, Home Ideas, Floor Plans, Garden Planning, 3D Design, Building Plans, Landscaping Design, Landscaping, Design, 3D Design App, React 3D, ThreeD Garden',
 }
 
 const HeadMeta = ({ title = meta.title }) => {

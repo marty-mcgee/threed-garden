@@ -30,7 +30,7 @@ import sidenavLogoLabel from '#/ui/elements/Sidenav/styles/sidenav'
 //   navbarIconButton,
 //   navbarDesktopMenu,
 //   navbarMobileMenu,
-// } from "~/components/elements/Navbars/DashboardNavbar/styles"
+// } from "~/ui/elements/Navbars/DashboardNavbar/styles"
 
 // ThreeD Garden context
 import { useMaterialUIController, setMiniSidenav, setTransparentSidenav, setWhiteSidenav } from '#/lib/contexts'

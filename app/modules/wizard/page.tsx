@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from 'react'
 
 // @mui material components

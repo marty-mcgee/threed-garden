@@ -12,7 +12,7 @@ import DefaultNavbar from '#/ui/elements/Navbars/DefaultNavbar'
 import PageLayout from '#/ui/elements/LayoutContainers/PageLayout'
 
 // ThreeD Garden page layout routes
-import pageRoutes from '~/routes/page.routes'
+import pageRoutes from '~/ui/routes/page.routes'
 
 // ThreeD Garden context
 import { useMaterialUIController } from '#/lib/contexts'

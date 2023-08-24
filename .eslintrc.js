@@ -19,7 +19,7 @@ module.exports = {
     '@typescript-eslint', // common
     'react', // common
     'prettier', // common
-    'next', // this app
+    // 'next', // this app -- no such package "eslint-plugin-next", only "eslint-config-next"
   ],
 
   // parser: '@babel/eslint-parser',

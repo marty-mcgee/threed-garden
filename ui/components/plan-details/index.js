@@ -8,7 +8,7 @@ import Box from '@mui/material/Box'
 import CircleOutline from 'mdi-material-ui/CircleOutline'
 
 // ** Util Import
-import { hexToRGBA } from '#/ui/utils/hex-to-rgba'
+import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
 
 // ** Custom Components Imports
 import CustomChip from '#/ui/components/mui/chip'

@@ -13,7 +13,7 @@ import ChevronDown from 'mdi-material-ui/ChevronDown'
 import DotsVertical from 'mdi-material-ui/DotsVertical'
 
 // ** Custom Components Imports
-import ReactApexcharts from '#/ui/componentspexcharts'
+import ReactApexcharts from '#/ui/components/react-apexcharts'
 
 const series = [
   {

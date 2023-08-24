@@ -1,10 +1,10 @@
 import { type IProduct } from '#/lib/data/products';
-import { ProductBestSeller } from '#/ui/ProductBestSeller';
-import { ProductEstimatedArrival } from '#/ui/ProductEstimatedArrival';
-import { ProductLowStockWarning } from '#/ui/ProductLowStockWarning';
-import { ProductPrice } from '#/ui/ProductPrice';
-import { ProductRating } from '#/ui/ProductRating';
-import { ProductUsedPrice } from '#/ui/ProductUsedPrice';
+import { ProductBestSeller } from '#/ui/playground/ProductBestSeller';
+import { ProductEstimatedArrival } from '#/ui/playground/ProductEstimatedArrival';
+import { ProductLowStockWarning } from '#/ui/playground/ProductLowStockWarning';
+import { ProductPrice } from '#/ui/playground/ProductPrice';
+import { ProductRating } from '#/ui/playground/ProductRating';
+import { ProductUsedPrice } from '#/ui/playground/ProductUsedPrice';
 import { dinero, type DineroSnapshot } from 'dinero.js';
 import Image from 'next/image';
 

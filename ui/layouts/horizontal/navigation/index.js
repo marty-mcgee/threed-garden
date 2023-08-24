@@ -5,7 +5,7 @@ import Box from '@mui/material/Box'
 import themeConfig from '#/lib/config/themeConfig'
 
 // ** Utils
-// import { hexToRGBA } from '#/ui/utils/hex-to-rgba'
+// import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
 // ** Menu Components
 import HorizontalNavItems from './HorizontalNavItems'
 

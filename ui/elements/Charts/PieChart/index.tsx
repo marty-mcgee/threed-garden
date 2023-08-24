@@ -9,7 +9,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // PieChart configurations
-import configs from '~/components/elements/Charts/PieChart/config'
+import configs from '~/ui/elements/Charts/PieChart/config'
 
 // react-chartjs-2 components
 import { Pie } from 'react-chartjs-2'

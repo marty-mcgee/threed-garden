@@ -15,7 +15,7 @@ import MDTypography from '#/lib/mui/MDTypography'
 import DefaultNavbar from '#/ui/elements/Navbars/DefaultNavbar'
 
 // ThreeD Garden page layout routes
-import pageRoutes from '~/routes/page.routes'
+import pageRoutes from '~/ui/routes/page.routes'
 
 // Images
 import bgImage from '#/lib/assets/images/any/bg-pricing.jpg'

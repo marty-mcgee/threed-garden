@@ -9,7 +9,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // DefaultLineChart configurations
-import configs from '~/components/elements/Charts/LineCharts/DefaultLineChart/config'
+import configs from '~/ui/elements/Charts/LineCharts/DefaultLineChart/config'
 
 // ThreeD Garden Base Styles
 import colors from '#/ui/themes/theme-light/base/colors'

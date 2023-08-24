@@ -1,6 +1,8 @@
 // ==============================================================
 // RESOURCES
 
+'use client'
+
 // ** React Imports
 // import { FunctionComponent } from 'react'
 
