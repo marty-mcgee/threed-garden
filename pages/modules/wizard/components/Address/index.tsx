@@ -6,7 +6,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // Wizard application components
-import FormField from '#/page/modules/wizard/components/FormField'
+import FormField from '#/pages/modules/wizard/components/FormField'
 
 function Address(): JSX.Element {
   return (
