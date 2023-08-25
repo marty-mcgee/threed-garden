@@ -51,7 +51,8 @@ const InvoiceAdd = ({ apiClientData, invoiceNumber }) => {
   )
 }
 
-export const getStaticProps = async () => {
+// export const getStaticProps = async () => {
+InvoiceAdd.getInitialProps = async () => {
   const clientResponse = await axios.get('/modules/invoice/clients')
   const apiClientData = clientResponse.data
   const allInvoicesResponse = await axios.get('/modules/invoice/invoices', { params: { q: '', status: '' } })
