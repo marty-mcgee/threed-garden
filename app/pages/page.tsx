@@ -2,7 +2,7 @@
 
 // import { NextPage } from 'next'
 import type { NextPage } from 'next'
-import { IPage, IBooleans, IValues, IStructures } from '#/lib/types/interfaces' // "@threed/garden/cpt"
+import { TPage, IPage, IBooleans, IValues, IStructures } from '#/lib/types/interfaces' // "@threed/garden/cpt"
 
 // examples
 const flags: IBooleans = { read: true, write: false, delete: false }
@@ -28,7 +28,7 @@ const userContext: IStructures = {
 // )
 
 // const PagePage: NextPage<IProps> = ({ userAgent }) => (
-const PagePage: NextPage<IPage> = ({ userAgent }) => (
+const PagePage: NextPage<TPage> = ({ userAgent }) => (
   <main>
     <div>[MM] Boilerplate Page</div>
     <div>Your user agent: {userAgent}</div>
