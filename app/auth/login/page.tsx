@@ -76,7 +76,7 @@ console.debug('%c=======================================', ccm.black)
 // ==============================================================
 
 // const appVersion = process.env.npm_package_version
-const appVersion: string = require('../../../../../package.json').version
+const appVersion: string = require('package.json').version
 
 // ** Styled Components
 const SVGWrapper = styled(Box)(({ theme }: { theme: any }) => {
