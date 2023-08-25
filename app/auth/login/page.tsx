@@ -65,7 +65,7 @@ import ccm from '#/lib/utils/console-colors'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-import type { TPageProps } from '#/lib/types/TAppProps'
+// import type { TPageProps } from '#/lib/types/TAppProps'
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -166,7 +166,8 @@ const defaultValues = {
 
 // ==============================================================
 
-const LoginPage: NextPage<TPageProps> = (): JSX.Element => {
+// const LoginPage: NextPage<TPageProps> = (): JSX.Element => {
+const LoginPage: NextPage = (): JSX.Element => {
   // **
   console.debug('%c🥕 LoginPage', ccm.green)
 

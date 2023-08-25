@@ -40,7 +40,7 @@ import ccm from '#/lib/utils/console-colors'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-import type { TPageProps } from '#/lib/types/TAppProps'
+// import type { TPageProps } from '#/lib/types/TAppProps'
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -99,7 +99,8 @@ const LinkStyled = styled('a')(({ theme }: { theme: any }) => ({
 
 // ==============================================================
 
-const ForgotPasswordPage: NextPage<TPageProps> = (): JSX.Element => {
+// const ForgotPasswordPage: NextPage<TPageProps> = (): JSX.Element => {
+const ForgotPasswordPage: NextPage = (): JSX.Element => {
   // **
   console.debug('%c🥕 ForgotPasswordPage', ccm.green)
 
