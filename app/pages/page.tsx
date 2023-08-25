@@ -28,7 +28,8 @@ const userContext: IStructures = {
 // )
 
 // const PagePage: NextPage<IProps> = ({ userAgent }) => (
-const PagePage: NextPage<TPage> = ({ userAgent }) => (
+// const PagePage: NextPage<TPage> = ({ userAgent }) => (
+const PagePage: NextPage = ({ userAgent }) => (
   <main>
     <div>[MM] Boilerplate Page</div>
     <div>Your user agent: {userAgent}</div>
