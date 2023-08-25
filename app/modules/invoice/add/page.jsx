@@ -1,5 +1,8 @@
 'use client'
 
+// ** Next
+// import type { NextPage } from 'next'
+
 // ** React Imports
 import { useState } from 'react'
 
@@ -17,6 +20,7 @@ import AddNewCustomers from '#/ui/modules/invoice/add/AddNewCustomer'
 // ** Third Party Styles Imports
 // import 'react-datepicker/dist/react-datepicker.css'
 
+// const InvoiceAdd: NextPage = ({ apiClientData, invoiceNumber }): JSX.Element => {
 const InvoiceAdd = ({ apiClientData, invoiceNumber }) => {
   // ** State
   const [addCustomerOpen, setAddCustomerOpen] = useState(false)

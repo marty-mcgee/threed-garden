@@ -2,22 +2,23 @@
 
 // export type TAppConfig = Awaited<ReturnType<typeof loadAppConfig>>;
 
-import type AppProps from 'next/app'
-/*
+// ************************************
+// import type AppProps from 'next/app'
+
 // export type TAppProps = {
 export type TAppProps = {
   config: never
 }
 
-// export type TPageProps = {
-export type TPageProps = AppProps & {
+export type TPageProps = {
+// export type TPageProps = AppProps & {
   // appProps: AppProps
   appProps: TAppProps
-  // getLayout: Function | Boolean
-  // setConfig: Function | Boolean
-  // authGuard: Boolean
-  // guestGuard: Boolean
-  // acl: Object
+  getLayout: Function | Boolean
+  setConfig: Function | Boolean
+  authGuard: Boolean
+  guestGuard: Boolean
+  acl: Object
 }
-*/
-export type TAppProps = AppProps
+
+// export type TAppProps = AppProps
