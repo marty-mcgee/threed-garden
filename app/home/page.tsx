@@ -18,14 +18,15 @@ import Typography from '@mui/material/Typography'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-import type { TPageProps } from '#/lib/types/TAppProps'
+// import type { TPageProps } from '#/lib/types/TAppProps'
 
 // ==============================================================
 
 // Index Page (Forwarding Page)
-// const Page: FC<TPageProps> = (props) => {
-const Page: NextPage<TPageProps> = (props) => {
 // const Page = (props) => {
+// const Page: FC<TPageProps> = (props) => {
+// const Page: NextPage<TPageProps> = (props) => {
+const Page: NextPage = (props) => {
   //
 
   return (
