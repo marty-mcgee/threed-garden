@@ -1,6 +1,6 @@
 {
   "name": "@scaffold-eth/threed-app-ts",
-  "version": "0.12.0-alpha.2",
+  "version": "0.12.0-alpha.3",
   "description": "React + TypeScript + Three.js app using Material UI + Ant Design on Next.js 13, Apollo Client + Zustand, GraphQL + WordPress REST APIs, for ThreeD web development.. a part of the threed.ai code family.",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "contributors": [

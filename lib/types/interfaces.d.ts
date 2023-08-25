@@ -1,10 +1,10 @@
-export type Page = {
+export type TPage = {
   title: {
     rendered: string
   }
 }
 
-type Rendered = {
+export type TRendered = {
   rendered: string
 }
 
