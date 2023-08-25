@@ -1,5 +1,3 @@
-'use client'
-
 // ** Third Party Imports
 import axios from 'axios'
 
