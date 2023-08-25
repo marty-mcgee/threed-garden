@@ -1,10 +1,6 @@
-# legacy
-node_modules
-dist
-coverage
 # folders
-lib/
-node_modules/
+.next/*
+lib/*
 # files
 **/*.less
 **/*.css
@@ -13,3 +9,6 @@ node_modules/
 **/*.png
 **/*.svg
 **/generated/**/*
+# testing mm (nope)
+# **/*.ts
+# **/*.tsx

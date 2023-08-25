@@ -57,7 +57,8 @@ const getHomeRoute = (role: any) => {
 // ==============================================================
 
 // export default function Page<NextPage>() {
-const AppPage: NextPage<TPageProps> = (): JSX.Element => {
+// const AppPage: NextPage<TPageProps> = (): JSX.Element => {
+const AppPage: NextPage = (): JSX.Element => {
   // **
   console.debug('%c🥕 AppPage', ccm.green)
 

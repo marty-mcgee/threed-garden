@@ -16,10 +16,10 @@ module.exports = {
   ],
 
   plugins: [
-    '@typescript-eslint', // common
-    'react', // common
-    'prettier', // common
-    // 'next', // this app -- no such package "eslint-plugin-next", only "eslint-config-next"
+    // '@typescript-eslint', // common
+    // 'react', // common
+    // 'prettier', // common
+    // 'next', // no such package "eslint-plugin-next", only "eslint-config-next"
   ],
 
   // parser: '@babel/eslint-parser',
@@ -45,6 +45,8 @@ module.exports = {
       'docs',
       './src/generated/*',
       'generated/*',
+      '.next/*',
+      '.next'
     ],
   },
 
