@@ -20,9 +20,9 @@ import DashboardNavbar from '#/ui/elements/Navbars/DashboardNavbar'
 import Footer from '#/ui/elements/Footer'
 
 // Wizard page components
-import About from '#/page/modules/wizard/components/About'
-import Account from '#/page/modules/wizard/components/Account'
-import Address from '#/page/modules/wizard/components/Address'
+import About from '#/pages/modules/wizard/components/About'
+import Account from '#/pages/modules/wizard/components/Account'
+import Address from '#/pages/modules/wizard/components/Address'
 
 function getSteps(): string[] {
   return ['About', 'Account', 'Address']

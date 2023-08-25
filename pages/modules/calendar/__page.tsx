@@ -14,9 +14,9 @@ import Footer from '#/ui/elements/Footer'
 // import EventCalendar from "~/ui/elements/Calendar"
 
 // Calendar application components
-import Header from '#/page/modules/calendar/components/Header'
-import NextEvents from '#/page/modules/calendar/components/NextEvents'
-import ProductivityChart from '#/page/modules/calendar/components/ProductivityChart'
+import Header from '#/pages/modules/calendar/components/Header'
+import NextEvents from '#/pages/modules/calendar/components/NextEvents'
+import ProductivityChart from '#/pages/modules/calendar/components/ProductivityChart'
 
 // JSX
 function Calendar() {

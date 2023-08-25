@@ -14,7 +14,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // Chart configurations
-import configs from '#/page/modules/calendar/components/ProductivityChart/config'
+import configs from '#/pages/modules/calendar/components/ProductivityChart/config'
 
 // ThreeD Garden Base Styles
 import typography from '#/ui/themes/theme-light/base/typography'

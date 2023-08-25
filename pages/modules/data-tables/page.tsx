@@ -14,7 +14,7 @@ import Footer from '#/ui/elements/Footer'
 import DataTable from '#/ui/elements/Tables/DataTable'
 
 // Data
-import dataTableData from '#/page/modules/data-tables/data/dataTableData'
+import dataTableData from '#/pages/modules/data-tables/data/dataTableData'
 
 function DataTables(): JSX.Element {
   return (
