@@ -63,7 +63,7 @@ import ccm from '#/lib/utils/console-colors'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-import type { TPageProps } from '#/lib/types/TAppProps'
+// import type { TPageProps } from '#/lib/types/TAppProps'
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -134,7 +134,8 @@ const LinkStyled = styled('a')(({ theme }: { theme: any }) => ({
 
 // ==============================================================
 
-const RegisterPage: NextPage<TPageProps> = (): JSX.Element => {
+// const RegisterPage: NextPage<TPageProps> = (): JSX.Element => {
+const RegisterPage: NextPage = (): JSX.Element => {
   // **
   console.debug('%c🥕 RegisterPage', ccm.green)
 
