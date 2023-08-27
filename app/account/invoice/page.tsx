@@ -1,12 +1,13 @@
 'use client'
 
 // @mui material components
+import type { Theme } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import Table from '@mui/material/Table'
 import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
-import { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -29,9 +30,27 @@ function Invoice(): JSX.Element {
   const [controller] = useMaterialUIController()
   const { darkMode } = controller
 
-  const borderBottom = {
-    borderBottom: ({ borders: { borderWidth }, palette: { light } }: Theme) => `${borderWidth[1]} solid ${light.main}`,
+  /* NEW GOOD WAY [MM] */
+  // ** Hooks
+  const theme = useTheme()
+  // const { settings } = useSettings()
+
+  // ** Vars
+  // const { skin } = settings
+  // const hidden = useMediaQuery(theme.breakpoints.down('md'))
+
+  // ** Handlers
+  const handleSubmit = (e: any) => {
+    e.preventDefault()
   }
+
+  // ** Styles
+  // const imageSource =
+  //  skin === 'bordered' ? 'auth-v2-forgot-password-illustration-bordered' : 'auth-v2-forgot-password-illustration'
+  /**/
+
+  const borderBottom = ({ borders: { borderWidth }, palette: { light } }: Theme) =>
+    `${borderWidth[1]} solid ${light.main}`
 
   return (
     <DashboardLayout stickyNavbar>
@@ -227,7 +246,7 @@ function Invoice(): JSX.Element {
                           py={1.5}
                           px={1}
                           textAlign='left'
-                          sx={borderBottom}
+                          sx={{borderBottom}}
                         >
                           <MDTypography
                             variant='h6'
@@ -243,7 +262,7 @@ function Invoice(): JSX.Element {
                           pl={3}
                           pr={1}
                           textAlign='left'
-                          sx={borderBottom}
+                          sx={{borderBottom}}
                         >
                           <MDTypography
                             variant='h6'
@@ -259,7 +278,7 @@ function Invoice(): JSX.Element {
                           pl={3}
                           pr={1}
                           textAlign='right'
-                          sx={borderBottom}
+                          sx={{borderBottom}}
                         >
                           <MDTypography
                             variant='h6'
@@ -275,7 +294,7 @@ function Invoice(): JSX.Element {
                           pl={3}
                           pr={1}
                           textAlign='right'
-                          sx={borderBottom}
+                          sx={{borderBottom}}
                         >
                           <MDTypography
                             variant='h6'
@@ -293,7 +312,7 @@ function Invoice(): JSX.Element {
                           component='td'
                           textAlign='left'
                           p={1}
-                          sx={borderBottom}
+                          sx={{borderBottom}}
                         >
                           <MDTypography
                             variant='body2'
@@ -309,7 +328,7 @@ function Invoice(): JSX.Element {
                           py={1}
                           pr={1}
                           pl={3}
-                          sx={borderBottom}
+                          sx={{borderBottom}}
                         >
                           <MDTypography
                             variant='body2'
@@ -325,7 +344,7 @@ function Invoice(): JSX.Element {
                           py={1}
                           pr={1}
                           pl={3}
-                          sx={borderBottom}
+                          sx={{borderBottom}}
                         >
                           <MDTypography
                             variant='body2'
@@ -341,7 +360,7 @@ function Invoice(): JSX.Element {
                           py={1}
                           pr={1}
                           pl={3}
-                          sx={borderBottom}
+                          sx={{borderBottom}}
                         >
                           <MDTypography
                             variant='body2'
@@ -357,7 +376,7 @@ function Invoice(): JSX.Element {
                           component='td'
                           textAlign='left'
                           p={1}
-                          sx={borderBottom}
+                          sx={{borderBottom}}
                         >
                           <MDTypography
                             variant='body2'
@@ -373,7 +392,7 @@ function Invoice(): JSX.Element {
                           py={1}
                           pr={1}
                           pl={3}
-                          sx={borderBottom}
+                          sx={{borderBottom}}
                         >
                           <MDTypography
                             variant='body2'
@@ -389,7 +408,7 @@ function Invoice(): JSX.Element {
                           py={1}
                           pr={1}
                           pl={3}
-                          sx={borderBottom}
+                          sx={{borderBottom}}
                         >
                           <MDTypography
                             variant='body2'
@@ -405,7 +424,7 @@ function Invoice(): JSX.Element {
                           py={1}
                           pr={1}
                           pl={3}
-                          sx={borderBottom}
+                          sx={{borderBottom}}
                         >
                           <MDTypography
                             variant='body2'
@@ -481,7 +500,7 @@ function Invoice(): JSX.Element {
                           component='td'
                           textAlign='left'
                           p={1}
-                          sx={borderBottom}
+                          sx={{borderBottom}}
                         />
                         <MDBox
                           component='td'
@@ -489,7 +508,7 @@ function Invoice(): JSX.Element {
                           py={1}
                           pr={1}
                           pl={3}
-                          sx={borderBottom}
+                          sx={{borderBottom}}
                         />
                         <MDBox
                           component='td'
@@ -497,7 +516,7 @@ function Invoice(): JSX.Element {
                           py={1}
                           pr={1}
                           pl={3}
-                          sx={borderBottom}
+                          sx={{borderBottom}}
                         >
                           <MDTypography variant='h5'>Total</MDTypography>
                         </MDBox>
@@ -507,7 +526,7 @@ function Invoice(): JSX.Element {
                           py={1}
                           pr={1}
                           pl={3}
-                          sx={borderBottom}
+                          sx={{borderBottom}}
                         >
                           <MDTypography variant='h5'>$ 398</MDTypography>
                         </MDBox>

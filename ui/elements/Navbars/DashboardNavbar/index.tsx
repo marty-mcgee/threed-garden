@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react'
 // import { useLocation, Link } from "react-router-dom"
 // nextjs components
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'
 
 // @material-ui core components
+import type { Theme } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
@@ -45,7 +47,9 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller
   const [openMenu, setOpenMenu] = useState<any>(false)
   // const route = useLocation().pathname.split("/").slice(1)
-  const { pathname } = useRouter()
+  // const { pathname } = useRouter()
+  const router = useRouter()
+  const { pathname } = router
   const route = pathname.split('/').slice(1)
 
   useEffect(() => {
@@ -108,12 +112,12 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
   )
 
   // Styles for the navbar icons
-  const iconsStyle = ({ palette: { dark, white, text }, functions: { rgba } }: { palette: any; functions: any }) => ({
+  const iconsStyle = ({ palette: { dark, white, text }, functions: { rgba } }: Theme) => ({
     color: () => {
       let colorValue = light || darkMode ? white.main : dark.main
 
       if (transparentNavbar && !light) {
-        colorValue = darkMode ? rgba(text.main, 0.6) : text.main
+        colorValue = darkMode ? rgba(text, 0.6) : text
       }
 
       return colorValue

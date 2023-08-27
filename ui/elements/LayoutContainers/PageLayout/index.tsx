@@ -2,7 +2,7 @@ import { useEffect, ReactNode } from 'react'
 
 // nextjs components
 // import { useLocation } from "react-router-dom"
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -19,11 +19,13 @@ interface Props {
 function PageLayout({ background, children }: Props): JSX.Element {
   const [, dispatch] = useMaterialUIController()
   // const { pathname } = useLocation()
-  const { pathname } = useRouter()
+  // const { pathname } = useRouter()
+  const router = useRouter()
 
   useEffect(() => {
     setLayout(dispatch, 'page')
-  }, [pathname])
+  // }, [pathname])
+  }, [router])
 
   return (
     <MDBox

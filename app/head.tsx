@@ -5,7 +5,7 @@
 'use client'
 
 // ** Metadata Components
-// import { DefaultTags } from '#/ui/DefaultTags';
+// import { DefaultTags } from '#/ui/playground/DefaultTags';
 // import HeadMeta from '#/ui/head'
 // import meta from './meta.json'
 

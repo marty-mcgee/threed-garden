@@ -2,7 +2,7 @@ import { useEffect, ReactNode } from 'react'
 
 // nextjs components
 // import { useLocation } from "react-router-dom"
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -14,11 +14,15 @@ function DashboardLayout({ children, stickyNavbar }: { children: ReactNode; stic
   const [controller, dispatch] = useMaterialUIController()
   const { miniSidenav } = controller
   // const { pathname } = useLocation()
-  const { pathname } = useRouter()
+  // const { pathname } = useRouter()
+  const router = useRouter()
+  const { pathname } = router
+  const route = pathname.split('/').slice(1)
 
   useEffect(() => {
     setLayout(dispatch, 'dashboard')
-  }, [pathname])
+  // }, [pathname])
+  }, [router])
 
   return (
     <MDBox

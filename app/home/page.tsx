@@ -4,7 +4,8 @@
 'use client'
 
 // ** Next Imports
-import type { NextPage } from 'next'
+// import type { NextPage } from 'next'
+import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 
 // ** React Imports
 // import { useEffect } from 'react'
@@ -12,8 +13,9 @@ import type { NextPage } from 'next'
 // ** MUI Components
 import Typography from '@mui/material/Typography'
 
-// ** Component Imports
-// import DashboardLayout from '~/ui/elements/LayoutContainers/DashboardLayout'
+// ** Layout Import
+// import BlankLayout from '#/ui/layouts/BlankLayout'
+import DashboardLayout from '~/ui/elements/LayoutContainers/DashboardLayout'
 // import DashboardNavbar from '~/ui/elements/Navbars/DashboardNavbar'
 
 // ** Scaffold-ETH Imports
@@ -26,7 +28,7 @@ import Typography from '@mui/material/Typography'
 // const Page = (props) => {
 // const Page: FC<TPageProps> = (props) => {
 // const Page: NextPage<TPageProps> = (props) => {
-const Page: NextPage = (props) => {
+const Page: TNextPageWithProps = (): JSX.Element => {
   //
 
   return (
@@ -58,6 +60,8 @@ const Page: NextPage = (props) => {
   )
 }
 
-// Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>
+Page.getLayout = (page: any) => <DashboardLayout>{page}</DashboardLayout>
+// Page.getLayout = (page: any) => <BlankLayout>{page}</BlankLayout>
+Page.guestGuard = true
 
 export default Page

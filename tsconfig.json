@@ -41,6 +41,6 @@
       }
     ]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/modules/invoice/add/page.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules", ".husky", "**/*.css", "tailwind.config.js", "**/.yalc/**/*", ".yalc/**/*"]
 }

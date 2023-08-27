@@ -10,7 +10,7 @@ const durations2 = 500
 // // // Daily Sales
 // #############################
 
-const dailySalesChart = {
+export const dailySalesChart = {
   data: {
     labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
     series: [[12, 17, 7, 17, 23, 18, 38]],
@@ -27,7 +27,7 @@ const dailySalesChart = {
   },
   // for animation
   animation: {
-    draw(data) {
+    draw(data: any) {
       if (data.type === 'line' || data.type === 'area') {
         data.element.animate({
           d: {
@@ -56,7 +56,7 @@ const dailySalesChart = {
 // // // Email Subscriptions
 // #############################
 
-const emailsSubscriptionChart = {
+export const emailsSubscriptionChart = {
   data: {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     series: [[542, 443, 320, 780, 553, 453, 326, 434, 568, 610, 756, 895]],
@@ -80,7 +80,7 @@ const emailsSubscriptionChart = {
       {
         seriesBarDistance: 5,
         axisX: {
-          labelInterpolationFnc(value) {
+          labelInterpolationFnc(value: any) {
             return value[0]
           },
         },
@@ -88,7 +88,7 @@ const emailsSubscriptionChart = {
     ],
   ],
   animation: {
-    draw(data) {
+    draw(data: any) {
       if (data.type === 'bar') {
         data.element.animate({
           opacity: {
@@ -108,7 +108,7 @@ const emailsSubscriptionChart = {
 // // // Completed Tasks
 // #############################
 
-const completedTasksChart = {
+export const completedTasksChart = {
   data: {
     labels: ['12am', '3pm', '6pm', '9pm', '12pm', '3am', '6am', '9am'],
     series: [[230, 750, 450, 300, 280, 240, 200, 190]],
@@ -124,7 +124,7 @@ const completedTasksChart = {
     },
   },
   animation: {
-    draw(data) {
+    draw(data: any) {
       if (data.type === 'line' || data.type === 'area') {
         data.element.animate({
           d: {
@@ -149,8 +149,8 @@ const completedTasksChart = {
   },
 }
 
-module.exports = {
-  dailySalesChart,
-  emailsSubscriptionChart,
-  completedTasksChart,
-}
+// module.exports = {
+//   dailySalesChart,
+//   emailsSubscriptionChart,
+//   completedTasksChart,
+// }

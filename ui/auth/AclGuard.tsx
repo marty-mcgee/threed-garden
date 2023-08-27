@@ -1,6 +1,8 @@
 // ==============================================================
 // RESOURCES
 
+'use client'
+
 // ** React
 import { useState } from 'react'
 

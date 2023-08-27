@@ -66,7 +66,7 @@ export const useThreeDStore = create((set, get, api) => ({
         _id: newUUID(),
         _ts: new Date().toISOString(),
         name: 'HEY HEY HEY 1',
-        layers: [],
+        layers: new Array,
         activeLayer: {
           name: 'level1-MM',
           data: {},
@@ -145,7 +145,7 @@ export const useProjectStore = create((set, get) => ({
       project: {
         _id: newUUID(),
         _ts: new Date().toISOString(),
-        layers: [],
+        layers: new Array,
         activeLayer: {
           name: 'level1-MM',
           data: {},

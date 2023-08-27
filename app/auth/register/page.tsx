@@ -7,7 +7,8 @@
 import { useState } from 'react'
 
 // ** Next Imports
-import type { NextPage } from 'next'
+// import type { NextPage } from 'next'
+import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -63,7 +64,7 @@ import ccm from '#/lib/utils/console-colors'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-// import type { TPageProps } from '#/lib/types/TAppProps'
+// import type { TPageProps } from '#/lib/types/TAppProps' // now TNextPageWithProps
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -135,7 +136,7 @@ const LinkStyled = styled('a')(({ theme }: { theme: any }) => ({
 // ==============================================================
 
 // const RegisterPage: NextPage<TPageProps> = (): JSX.Element => {
-const RegisterPage: NextPage = (): JSX.Element => {
+const RegisterPage: TNextPageWithProps = (): JSX.Element => {
   // **
   console.debug('%c🥕 RegisterPage', ccm.green)
 
@@ -314,7 +315,7 @@ const RegisterPage: NextPage = (): JSX.Element => {
                         <InputAdornment position='end'>
                           <IconButton
                             edge='end'
-                            onMouseDown={(e) => e.preventDefault()}
+                            onMouseDown={(e: any) => e.preventDefault()}
                             onClick={() => setShowPassword(!showPassword)}>
                             {showPassword ? <EyeOutline /> : <EyeOffOutline />}
                           </IconButton>
@@ -358,7 +359,6 @@ const RegisterPage: NextPage = (): JSX.Element => {
                             </Typography>
                             <LinkStyled
                               href='/'
-                              passHref
                               onClick={(e: any) => e.preventDefault()}
                             >
                               privacy policy + terms
@@ -381,31 +381,31 @@ const RegisterPage: NextPage = (): JSX.Element => {
                   Already have an account?
                 </Typography>
                 <Typography variant='body2'>
-                  <LinkStyled href='/auth/login' passHref>
+                  <LinkStyled href='/auth/login'>
                     Sign in
                   </LinkStyled>
                 </Typography>
               </Box>
               <Divider sx={{ my: 5 }}>or</Divider>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Link href='/' passHref>
+                <Link href='/'>
                   <IconButton component='span' onClick={(e) => e.preventDefault()}>
                     <Facebook sx={{ color: '#497ce2' }} />
                   </IconButton>
                 </Link>
-                <Link href='/' passHref>
+                <Link href='/'>
                   <IconButton component='span' onClick={(e) => e.preventDefault()}>
                     <Twitter sx={{ color: '#1da1f2' }} />
                   </IconButton>
                 </Link>
-                <Link href='/' passHref>
+                <Link href='/'>
                   <IconButton component='span' onClick={(e) => e.preventDefault()}>
                     <Github
-                      sx={{ color: (theme) => (theme.palette.mode === 'light' ? '#272727' : theme.palette.grey[300]) }}
+                      sx={{ color: (theme: any) => (theme.palette.mode === 'light' ? '#272727' : theme.palette.grey[300]) }}
                     />
                   </IconButton>
                 </Link>
-                <Link href='/' passHref>
+                <Link href='/'>
                   <IconButton component='span' onClick={(e) => e.preventDefault()}>
                     <Google sx={{ color: '#db4437' }} />
                   </IconButton>

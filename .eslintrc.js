@@ -15,12 +15,12 @@ module.exports = {
     'plugin:@next/next/recommended', // this app
   ],
 
-  plugins: [
-    // '@typescript-eslint', // common
-    // 'react', // common
-    // 'prettier', // common
-    // 'next', // no such package "eslint-plugin-next", only "eslint-config-next"
-  ],
+  // plugins: [
+  //   '@typescript-eslint', // common
+  //   'react', // common
+  //   'prettier', // common
+  //   '@next/next', // ?? no such package 'eslint-plugin-next', only 'eslint-config-next'
+  // ],
 
   // parser: '@babel/eslint-parser',
   parser: '@typescript-eslint/parser',
@@ -74,15 +74,25 @@ module.exports = {
     'import/resolver': {
       typescript: {},
     },
+    'react': {
+      // 'createClass': 'createReactClass', // Regex for Component Factory to use,
+      //                                    // default to 'createReactClass'
+      // 'pragma': 'React',  // Pragma to use, default to 'React'
+      // 'fragment': 'Fragment',  // Fragment to use (may be a property of <pragma>), default to 'Fragment'
+      'version': 'detect', // React version. 'detect' automatically picks the version you have installed.
+                           // You can also use `16.0`, `16.3`, etc, if you want to override the detected value.
+                           // It will default to 'latest' and warn if missing, and to 'detect' in the future
+      // 'flowVersion': '0.53' // Flow version
+    },
   },
 
   rules: {
     'arrow-body-style': 'off',
     // ['error', 'as-needed', { requireReturnForObjectLiteral: true }], // 'as-needed' is default | 'always'
 
-    // "react/no-unstable-nested-components": [
-    //   "off" | "warn" | "error",
-    //   { "allowAsProps": true | false }
+    // 'react/no-unstable-nested-components': [
+    //   'off' | 'warn' | 'error',
+    //   { 'allowAsProps': true | false }
     // ],
     'react/no-unstable-nested-components': 'off',
 
@@ -112,7 +122,7 @@ module.exports = {
 
     // add new line below import
     'import/newline-after-import': [
-      'error',
+      'warn',
       {
         count: 1,
       },

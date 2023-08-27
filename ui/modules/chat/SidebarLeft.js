@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 
 // ** Next Imports
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'

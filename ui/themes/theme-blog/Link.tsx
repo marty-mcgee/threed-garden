@@ -1,6 +1,6 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'
 import NextLink, { LinkProps as NextLinkProps } from 'next/link'
 import MuiLink, { LinkProps as MuiLinkProps } from '@mui/material/Link'
 import { styled } from '@mui/material/styles'

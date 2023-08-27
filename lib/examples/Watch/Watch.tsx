@@ -4,6 +4,7 @@ import { Html, useGLTF } from '@react-three/drei'
 
 export default function Watch(props: any) {
   const ref: any = useRef()
+  // @ts-expect-error
   const { nodes, materials } = useGLTF('objects/examples/watch-v1.glb')
   useFrame((state) => {
     const t = state.clock.getElapsedTime()

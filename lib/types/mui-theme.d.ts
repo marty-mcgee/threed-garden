@@ -1,34 +1,17 @@
-interface ColorsTypes {
-  main: string
-  focus: string
-}
+// in the file where you are creating the theme (invoking the function `createTheme()`)
+import { Theme } from '@mui/material/styles';
 
-interface GradientsTypes {
-  main: string
-  state: string
-}
-
-interface SocialMediaColorsTypes {
-  main: string
-  dark: string
-}
-
-interface BadgeColorsTypes {
-  background: string
-  text: string
-}
-
-interface DisplayTypes {
-  fontFamily: string
-  color: string
-  fontWeight: number
-  lineHeight: number
-  fontSize: string
-}
+// declare module '@mui/styles' {
+//   interface ThreedTheme extends Theme {}
+// }
 
 declare module '@mui/material/styles' {
+// declare module '@mui/styles' {
+
+  // interface ThreedTheme extends Theme {
   interface Theme {
-    boxShadows: {
+    palette?: Palette
+    boxShadows?: {
       xs: string
       sm: string
       md: string
@@ -54,17 +37,19 @@ declare module '@mui/material/styles' {
         indicator: string
       }
     }
-    borders: {
-      borderColor: string
-      borderWidth: {
+    borders?: {
+      borderColor?: string
+      borderWidth?: {
         [key: number | string]: number | string
       }
-      borderRadius: {
+      borderRadius?: {
         [key: number | string]: number | string
       }
     }
-    functions: any
+    transitions?: any
+    functions?: any
   }
+
   interface ThemeOptions {
     boxShadows: {
       xs: string
@@ -103,21 +88,22 @@ declare module '@mui/material/styles' {
     }
     functions: any
   }
+
   interface Palette {
-    background:
+    background?:
       | {
           default: string
           sidenav: string
           card: string
         }
       | any
-    white:
+    white?:
       | {
           main: string
           focus: string
         }
       | any
-    text:
+    text?:
       | {
           main: string
           focus: string
@@ -126,32 +112,32 @@ declare module '@mui/material/styles' {
           disabled?: string
         }
       | any
-    transparent:
+    transparent?:
       | {
           main: string
         }
       | any
-    black:
+    black?:
       | {
           light: string
           main: string
           focus: string
         }
       | any
-    primary: ColorsTypes | any
-    secondary: ColorsTypes | any
-    info: ColorsTypes | any
-    success: ColorsTypes | any
-    warning: ColorsTypes | any
-    error: ColorsTypes | any
-    light: ColorsTypes | any
-    dark: ColorsTypes | any
-    grey:
+    primary?: ColorsTypes | any
+    secondary?: ColorsTypes | any
+    info?: ColorsTypes | any
+    success?: ColorsTypes | any
+    warning?: ColorsTypes | any
+    error?: ColorsTypes | any
+    light?: ColorsTypes | any
+    dark?: ColorsTypes | any
+    grey?:
       | {
           [key: string | number]: string
         }
       | any
-    gradients:
+    gradients?:
       | {
           primary: GradientsTypes
           secondary: GradientsTypes
@@ -163,7 +149,7 @@ declare module '@mui/material/styles' {
           dark: GradientsTypes
         }
       | any
-    socialMediaColors:
+    socialMediaColors?:
       | {
           facebook: SocialMediaColorsTypes
           twitter: SocialMediaColorsTypes
@@ -179,7 +165,7 @@ declare module '@mui/material/styles' {
           tumblr: SocialMediaColorsTypes
         }
       | any
-    badgeColors:
+    badgeColors?:
       | {
           primary: BadgeColorsTypes
           secondary: BadgeColorsTypes
@@ -191,13 +177,13 @@ declare module '@mui/material/styles' {
           dark: BadgeColorsTypes
         }
       | any
-    coloredShadows:
+    coloredShadows?:
       | {
           [key: string]: string
         }
       | any
-    inputBorderColor: string
-    tabs:
+    inputBorderColor?: string
+    tabs?:
       | {
           indicator:
             | {
@@ -424,4 +410,32 @@ declare module '@mui/material/styles' {
       lg: number
     }
   }
+}
+
+interface ColorsTypes {
+  main: string
+  focus: string
+}
+
+interface GradientsTypes {
+  main: string
+  state: string
+}
+
+interface SocialMediaColorsTypes {
+  main: string
+  dark: string
+}
+
+interface BadgeColorsTypes {
+  background: string
+  text: string
+}
+
+interface DisplayTypes {
+  fontFamily: string
+  color: string
+  fontWeight: number
+  lineHeight: number
+  fontSize: string
 }
