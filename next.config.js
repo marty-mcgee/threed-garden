@@ -113,9 +113,9 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       apexcharts: path.resolve(__dirname, './node_modules/apexcharts-clevision'),
-      'eth-hooks': path.resolve(__dirname, './node_modules/eth-hooks'),
-      'eth-components': path.resolve(__dirname, './node_modules/eth-components'),
-      'react-css-theme-switcher': path.resolve(__dirname, './node_modules/react-css-theme-switcher'),
+      // 'eth-hooks': path.resolve(__dirname, './node_modules/eth-hooks'),
+      // 'eth-components': path.resolve(__dirname, './node_modules/eth-components'),
+      // 'react-css-theme-switcher': path.resolve(__dirname, './node_modules/react-css-theme-switcher'),
       // react: path.resolve(__dirname, './node_modules/react'),
       // 'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
     }
