@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import 'eth-components/ant/index.css';
+/* @import 'eth-components/ant/index.css'; */
 
 /* body {
   margin: 0;
