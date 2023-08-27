@@ -1,6 +1,6 @@
 {
   "name": "@scaffold-eth/threed-app-ts",
-  "version": "0.12.0-alpha.9",
+  "version": "0.12.0-alpha.10",
   "description": "React + TypeScript + Three.js app using Material UI + Ant Design on Next.js 13, Apollo Client + Zustand, GraphQL + WordPress REST APIs, for ThreeD web development.. a part of the threed.ai code family.",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "contributors": [
@@ -53,7 +53,7 @@
     "test:jest": "jest",
     "test:tsc": "tsc",
     "test:lint": "pnpm lint && pnpm test:run",
-    "___________________5": "____ scaffold-eth ______________________________________",
+    "___________________5": "____ next-scaffold-eth ______________________________________",
     "start": "next -p 7777",
     "dev": "next dev -p 7777",
     "build-with-ant": "yarn build:anttheme && next build",
@@ -71,9 +71,6 @@
     "dev:unlink": "yalc remove eth-hooks && yalc remove eth-components",
     "___________________X": "____ ___________________________________________________"
   },
-  "lint-staged": {
-    "*": "prettier --write --ignore-unknown"
-  },
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "@apollo/client": "^3.6.9",
@@ -82,17 +79,6 @@
     "@emotion/react": "^11.10.5",
     "@emotion/server": "^11.10.0",
     "@emotion/styled": "^11.10.5",
-    "@ethersproject/abi": "^5.7.0",
-    "@ethersproject/abstract-provider": "^5.7.0",
-    "@ethersproject/address": "^5.7.0",
-    "@ethersproject/bignumber": "^5.7.0",
-    "@ethersproject/bytes": "^5.7.0",
-    "@ethersproject/contracts": "^5.7.0",
-    "@ethersproject/networks": "^5.7.1",
-    "@ethersproject/providers": "^5.7.1",
-    "@ethersproject/signing-key": "^5.7.0",
-    "@ethersproject/solidity": "^5.7.0",
-    "@ethersproject/units": "^5.7.0",
     "@heroicons/react": "1.0.6",
     "@maticnetwork/maticjs": "^3.4.0",
     "@mui/icons-material": "5.14.6",
@@ -118,6 +104,7 @@
     "clsx": "^1.2.1",
     "cors": "^2.8.5",
     "dat.gui": "^0.7.9",
+    "dinero.js": "2.0.0-alpha.8",
     "events": "^3.3.0",
     "farmbot": "^15.3.3",
     "glsl-random": "^0.0.5",
