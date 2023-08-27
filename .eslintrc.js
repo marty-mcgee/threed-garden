@@ -19,6 +19,7 @@ module.exports = {
     // '@typescript-eslint', // common
     'react', // common
     // 'prettier', // common
+    'import',
     '@next/next', // ?? no such package 'eslint-plugin-next', only 'eslint-config-next'
   ],
 
