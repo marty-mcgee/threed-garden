@@ -15,12 +15,12 @@ module.exports = {
     'plugin:@next/next/recommended', // this app
   ],
 
-  // plugins: [
-  //   '@typescript-eslint', // common
-  //   'react', // common
-  //   'prettier', // common
-  //   '@next/next', // ?? no such package 'eslint-plugin-next', only 'eslint-config-next'
-  // ],
+  plugins: [
+    '@typescript-eslint', // common
+    'react', // common
+    'prettier', // common
+    '@next/next', // ?? no such package 'eslint-plugin-next', only 'eslint-config-next'
+  ],
 
   // parser: '@babel/eslint-parser',
   parser: '@typescript-eslint/parser',
