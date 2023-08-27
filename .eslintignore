@@ -1,6 +1,9 @@
 #--- folders
-# .next/*
-# lib/*
+.next/*
+lib/*
+lib
+./lib
+./lib/*
 #--- files
 **/*.less
 **/*.css
