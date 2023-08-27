@@ -121,12 +121,14 @@ module.exports = {
     // 'newline-before-return': 'error',
 
     // add new line below import
-    'import/newline-after-import': [
-      'warn',
-      {
-        count: 1,
-      },
-    ],
+    // 'import/newline-after-import': [
+    //   'warn',
+    //   {
+    //     count: 1,
+    //   },
+    // ],
+    'import/newline-after-import': 'off',
+    'import/no-extraneous-dependencies': 'off',
 
     // add new line after each var, const, let declaration
     // 'padding-line-between-statements': [
