@@ -23,7 +23,7 @@
     "strictNullChecks": false,
     "downlevelIteration": true,
     // ** directories + paths
-    "rootDirs": [".", "../common/src"],
+    // "rootDirs": [".", "../common/src"],
     "baseUrl": ".",
     "paths": {
       "#/*": ["./*"], // preferable (next-13)
