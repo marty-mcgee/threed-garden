@@ -8,7 +8,7 @@ module.exports = {
 
   extends: [
     // '../common/.eslintrc.js',
-    'plugin:@typescript-eslint/recommended', // common
+    // 'plugin:@typescript-eslint/recommended', // common
     'plugin:react/recommended', // common
     // 'airbnb', // needed ?
     // 'plugin:prettier/recommended', // common
@@ -16,9 +16,9 @@ module.exports = {
   ],
 
   plugins: [
-    '@typescript-eslint', // common
+    // '@typescript-eslint', // common
     'react', // common
-    'prettier', // common
+    // 'prettier', // common
     '@next/next', // ?? no such package 'eslint-plugin-next', only 'eslint-config-next'
   ],
 
