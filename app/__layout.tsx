@@ -6,7 +6,7 @@
 'use client'
 
 // ** Next
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'
 
 // ** React
 import type { ReactNode } from 'react'

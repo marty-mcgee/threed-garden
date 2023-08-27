@@ -7,11 +7,13 @@
 import { useState } from 'react'
 
 // ** Next Imports
-import type { NextPage } from 'next'
+// import type { NextPage } from 'next'
+import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 import Link from 'next/link'
 import Image from 'next/image'
 
 // ** MUI Components
+import { styled, useTheme } from '@mui/material/styles'
 import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -23,7 +25,6 @@ import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import OutlinedInput from '@mui/material/OutlinedInput'
-import { styled, useTheme } from '@mui/material/styles'
 import FormHelperText from '@mui/material/FormHelperText'
 import InputAdornment from '@mui/material/InputAdornment'
 import Typography from '@mui/material/Typography'
@@ -65,7 +66,7 @@ import ccm from '#/lib/utils/console-colors'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
-// import type { TPageProps } from '#/lib/types/TAppProps'
+// import type { TPageProps } from '#/lib/types/TAppProps' // now TNextPageWithProps
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -167,7 +168,7 @@ const defaultValues = {
 // ==============================================================
 
 // const LoginPage: NextPage<TPageProps> = (): JSX.Element => {
-const LoginPage: NextPage = (): JSX.Element => {
+const LoginPage: TNextPageWithProps = (): JSX.Element => {
   // **
   console.debug('%c🥕 LoginPage', ccm.green)
 
@@ -361,7 +362,7 @@ const LoginPage: NextPage = (): JSX.Element => {
                         <InputAdornment position='end'>
                           <IconButton
                             edge='end'
-                            onMouseDown={(e) => e.preventDefault()}
+                            onMouseDown={(e: any) => e.preventDefault()}
                             onClick={() => setShowPassword(!showPassword)}
                           >
                             {showPassword ? <EyeOutline /> : <EyeOffOutline />}
@@ -394,7 +395,6 @@ const LoginPage: NextPage = (): JSX.Element => {
                   label='Remember Me'
                 />
                 <LinkStyled
-                  passHref
                   href='/auth/forgot-password'
                 >
                   Forgot Password?
@@ -426,46 +426,37 @@ const LoginPage: NextPage = (): JSX.Element => {
               </Box>
               <Divider sx={{ my: 5 }}>or</Divider>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Link
-                  href='/'
-                >
+                <Link href='/'>
                   <IconButton
                     component='span'
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e: any) => e.preventDefault()}
                   >
                     <Facebook sx={{ color: '#497ce2' }} />
                   </IconButton>
                 </Link>
-                <Link
-                  href='/'
-                >
+                <Link href='/'>
                   <IconButton
                     component='span'
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e: any) => e.preventDefault()}
                   >
                     <Google sx={{ color: '#db4437' }} />
                   </IconButton>
                 </Link>
-                <Link
-                  href='/'
-                  passHref
-                >
+                <Link href='/'>
                   <IconButton
                     component='span'
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e: any) => e.preventDefault()}
                   >
                     <Twitter sx={{ color: '#1da1f2' }} />
                   </IconButton>
                 </Link>
-                <Link
-                  href='/'
-                >
+                <Link href='/'>
                   <IconButton
                     component='span'
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e: any) => e.preventDefault()}
                   >
                     <Github
-                      sx={{ color: (theme) => (theme.palette.mode === 'light' ? '#272727' : theme.palette.grey[300]) }}
+                      sx={{ color: (theme: any) => (theme.palette.mode === 'light' ? '#272727' : theme.palette.grey[300]) }}
                     />
                   </IconButton>
                 </Link>
@@ -477,7 +468,7 @@ const LoginPage: NextPage = (): JSX.Element => {
     </Box>
   )
 }
-// LoginPage.getLayout = (page: any) => <BlankLayout>{page}</BlankLayout>
-// LoginPage.guestGuard = true
+LoginPage.getLayout = (page: any) => <BlankLayout>{page}</BlankLayout>
+LoginPage.guestGuard = true
 
 export default LoginPage

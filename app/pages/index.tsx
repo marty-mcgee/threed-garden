@@ -3,7 +3,7 @@
 // import { NextPage, GetServerSideProps } from "next"
 import type { NextPage } from 'next'
 import { IPage, IBooleans, IValues, IStructures } from '#/lib/types/interfaces' // "@threed/garden/cpt"
-import type { Page } from '#/lib/types/interfaces'
+import type { TPage } from '#/lib/types/interfaces'
 
 import { GetServerSideProps } from 'next'
 import axios from 'axios'
@@ -48,7 +48,7 @@ const Pages: NextPage<{ pages: IPage[] }> = ({ pages }) => {
       <div>User Agent: {word} ???</div>
       {pages.map(
         (
-          page: Page // ooooo, interesting [MM] HEY HEY HEY
+          page: IPage // ooooo, interesting [MM] HEY HEY HEY
         ) => (
           <div
             key={Math.floor(100000 + Math.random() * 900000)}

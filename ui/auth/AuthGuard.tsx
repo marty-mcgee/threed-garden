@@ -1,7 +1,7 @@
 // ==============================================================
 // RESOURCES
 
-// 'use client'
+'use client'
 
 // ** React
 import { useEffect } from 'react'

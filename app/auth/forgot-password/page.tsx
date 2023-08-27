@@ -4,16 +4,17 @@
 'use client'
 
 // ** Next Imports
-import type { NextPage } from 'next'
+// import type { NextPage } from 'next'
+import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 import Link from 'next/link'
 import Image from 'next/image'
 
 // ** MUI Components
+import { styled, useTheme } from '@mui/material/styles'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Box from '@mui/material/Box'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
 // ** Icons Imports
@@ -99,8 +100,8 @@ const LinkStyled = styled('a')(({ theme }: { theme: any }) => ({
 
 // ==============================================================
 
-// const ForgotPasswordPage: NextPage<TPageProps> = (): JSX.Element => {
-const ForgotPasswordPage: NextPage = (): JSX.Element => {
+const ForgotPasswordPage: TNextPageWithProps = (): JSX.Element => {
+// const ForgotPasswordPage: NextPage = (): JSX.Element => {
   // **
   console.debug('%c🥕 ForgotPasswordPage', ccm.green)
 

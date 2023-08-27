@@ -1,12 +1,15 @@
 // ==============================================================
-// Index Page (Forwarding Page)
+// TITLE: Index Page (Forwarding Page)
 
 'use client'
+
+// ==============================================================
+// RESOURCES (to import)
 
 // ** Next
 import type { NextPage } from 'next'
 // import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'
 
 // ** React
 // import type { ReactNode } from 'react'

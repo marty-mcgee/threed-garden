@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { useTransition } from 'react';
 import { useCartCount } from './CartCountContext';
 
@@ -28,7 +28,7 @@ export function AddToCart({ initialCartCount }: { initialCartCount: number }) {
 
       // Refresh the current route and fetch new data from the server without
       // losing client-side browser or React state.
-      router.refresh();
+      router.reload();
 
       // We're working on more fine-grained data mutation and revalidation:
       // https://beta.nextjs.org/docs/data-fetching/mutating

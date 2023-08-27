@@ -202,7 +202,7 @@ const ForgotPasswordV2 = () => {
                 Send reset link
               </Button>
               <Typography variant='body2' sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Link passHref href='/pages/auth/login-v2'>
+                <Link href='/pages/auth/login-v2'>
                   <LinkStyled>
                     <ChevronLeft />
                     <span>Back to login</span>

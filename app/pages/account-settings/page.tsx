@@ -51,7 +51,7 @@ const AccountSettings = () => {
   // ** State
   const [value, setValue] = useState('account')
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (event: any, newValue: any) => {
     setValue(newValue)
   }
 
@@ -61,7 +61,7 @@ const AccountSettings = () => {
         <TabList
           onChange={handleChange}
           aria-label='account-settings tabs'
-          sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}>
+          sx={{ borderBottom: (theme: any) => `1px solid ${theme.palette.divider}` }}>
           <Tab
             value='account'
             label={

@@ -1,6 +1,8 @@
 import { ReactNode } from 'react'
 
 // @mui material components
+import type { Theme } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import Snackbar from '@mui/material/Snackbar'
 import IconButton from '@mui/material/IconButton'
 import Icon from '@mui/material/Icon'
@@ -81,8 +83,8 @@ function MDSnackbar({ color, icon, title, dateTime, content, close, bgWhite, ...
         borderRadius='md'
         p={1}
         sx={{
-          backgroundColor: ({ palette }: { palette: any }) =>
-            darkMode ? palette.background.card : palette[color] || palette.white.main,
+          backgroundColor: ({ palette }: Theme) =>
+            darkMode ? palette.background.default : palette[color] || palette.white.main,
         }}
       >
         <MDBox
@@ -146,8 +148,8 @@ function MDSnackbar({ color, icon, title, dateTime, content, close, bgWhite, ...
           p={1.5}
           sx={{
             fontSize: ({ typography: { size } }) => size.sm,
-            color: ({ palette }: { palette: any }) => {
-              let colorValue = bgWhite || color === 'light' ? palette.text.main : palette.white.main
+            color: ({ palette }: Theme) => {
+              let colorValue = bgWhite || color === 'light' ? palette.text.primary : palette.white.main
 
               if (darkMode) {
                 colorValue = color === 'light' ? 'inherit' : palette.white.main

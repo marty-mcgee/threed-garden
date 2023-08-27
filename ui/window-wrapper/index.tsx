@@ -2,7 +2,7 @@
 import { useState, useEffect, ReactNode } from 'react'
 
 // ** Next Import
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'
 
 const WindowWrapper = ({ children }: { children: ReactNode }): JSX.Element => {
   // ** State

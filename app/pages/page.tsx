@@ -1,14 +1,27 @@
 'use client'
 
 // import { NextPage } from 'next'
-import type { NextPage } from 'next'
+// import type { NextPage } from 'next'
+import type { TNextPageWithProps } from '#/lib/types/TAppProps'
+// OR ???
 import { TPage, IPage, IBooleans, IValues, IStructures } from '#/lib/types/interfaces' // "@threed/garden/cpt"
 
+// ** Layout Import
+import BlankLayout from '#/ui/layouts/BlankLayout'
+// import DashboardLayout from '~/ui/elements/LayoutContainers/DashboardLayout'
+// import DashboardNavbar from '~/ui/elements/Navbars/DashboardNavbar'
+
 // examples
-const flags: IBooleans = { read: true, write: false, delete: false }
-
-const userFile: IValues = { user: 1, username: 'One', file: 'types.txt' }
-
+const flags: IBooleans = {
+  read: true,
+  write: false,
+  delete: false
+}
+const userFile: IValues = {
+  user: 1,
+  username: 'One',
+  file: 'types.txt'
+}
 const userContext: IStructures = {
   file: userFile,
   permissions: flags,
@@ -16,7 +29,7 @@ const userContext: IStructures = {
 }
 // end examples
 
-// const Pages: NextPage<{ pages: Page[] }> = ({ pages }) => (
+// const Pages: TNextPageWithProps<{ pages: Page[] }> = ({ pages }) => (
 //   <main>
 //     {pages.map((page: Page) => (
 //       <>
@@ -27,14 +40,19 @@ const userContext: IStructures = {
 //   </main>
 // )
 
-// const PagePage: NextPage<IProps> = ({ userAgent }) => (
-// const PagePage: NextPage<TPage> = ({ userAgent }) => (
-const PagePage: NextPage = ({ userAgent }) => (
-  <main>
-    <div>[MM] Boilerplate Page</div>
-    <div>Your user agent: {userAgent}</div>
-  </main>
-)
+// const PagePage: TNextPageWithProps<IProps> = ({ userAgent }) => (
+// const PagePage: TNextPageWithProps<TPage> = ({ userAgent }) => (
+const PagePage: TNextPageWithProps = (props): JSX.Element => {
+  // const { userAgent } = props
+  const userAgent = 'HEY HEY HEY'
+  console.debug('PagePage props', props)
+  return (
+    <main>
+      <h1>[MM] PagePage: Boilerplate NextPage</h1>
+      <div>Your user agent: {userAgent}</div>
+    </main>
+  )
+}
 
 // export const getServerSideProps: GetServerSideProps = async () => {
 
@@ -59,6 +77,8 @@ PagePage.getInitialProps = async ({ req }) => {
   const title = { rendered: 'HEY HEY HEY' }
   return { title, userAgent }
 }
+// PagePage.getLayout = (page: any) => <DashboardLayout>{page}</DashboardLayout>
+PagePage.getLayout = (page: any) => <BlankLayout>{page}</BlankLayout>
+PagePage.guestGuard = true
 
-// export default Pages
 export default PagePage

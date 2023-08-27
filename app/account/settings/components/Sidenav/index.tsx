@@ -1,7 +1,20 @@
+// ==============================================================
+// TITLE: Sidenav
+
+'use client'
+
+// ==============================================================
+// RESOURCES (to import)
+
+// ** Next
+import type { NextPage } from 'next'
+
+// @mui material components
+// import type { Theme } from '@mui/styles'
+import { styled, useTheme } from '@mui/material/styles'
 // @mui material components
 import Card from '@mui/material/Card'
 import Icon from '@mui/material/Icon'
-import { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -10,7 +23,9 @@ import MDTypography from '#/lib/mui/MDTypography'
 // ThreeD Garden context
 import { useMaterialUIController } from '#/lib/contexts'
 
-function Sidenav(): JSX.Element {
+// function Sidenav(): JSX.Element {
+const Sidenav: NextPage = (): JSX.Element => {
+
   const [controller] = useMaterialUIController()
   const { darkMode } = controller
 
@@ -40,20 +55,20 @@ function Sidenav(): JSX.Element {
           variant='button'
           fontWeight='regular'
           textTransform='capitalize'
-          sx={({ borders: { borderRadius }, functions: { pxToRem }, palette: { light }, transitions }: Theme) => ({
-            display: 'flex',
-            alignItems: 'center',
-            borderRadius: borderRadius.md,
-            padding: `${pxToRem(10)} ${pxToRem(16)}`,
-            transition: transitions.create('background-color', {
-              easing: transitions.easing.easeInOut,
-              duration: transitions.duration.shorter,
-            }),
+          // sx={({ borders: { theme.borders.borderRadius }, functions: { theme.functions.pxToRem }, palette: { theme.palette.light }, transitions: { theme.transitions } }) => ({
+          //   display: 'flex',
+          //   alignItems: 'center',
+          //   borderRadius: borderRadius.md,
+          //   padding: `${pxToRem(10)} ${pxToRem(16)}`,
+          //   transition: transitions.create('background-color', {
+          //     easing: transitions.easing.easeInOut,
+          //     duration: transitions.duration.shorter,
+          //   }),
 
-            '&:hover': {
-              backgroundColor: light.main,
-            },
-          })}
+          //   '&:hover': {
+          //     backgroundColor: light.main,
+          //   },
+          // })}
         >
           <MDBox
             mr={1.5}
@@ -70,11 +85,8 @@ function Sidenav(): JSX.Element {
 
   return (
     <Card
-      sx={{
-        borderRadius: ({ borders: { borderRadius } }) => borderRadius.lg,
-        position: 'sticky',
-        top: '1%',
-      }}
+    // borderRadius: 1,
+    // sx={ ({ borders: { borderRadius } }: Theme ) => ({ borderRadius: borderRadius.md }) }
     >
       <MDBox
         component='ul'
