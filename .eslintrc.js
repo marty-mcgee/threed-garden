@@ -25,31 +25,31 @@ module.exports = {
 
   // parser: '@babel/eslint-parser',
   parser: '@typescript-eslint/parser',
-  parserOptions: {
-    requireConfigFile: false, // no babel config needed
-    project: './tsconfig.json',
-    tsconfigRootDir: '.',
-    ecmaVersion: 2020, // Allows for the parsing of modern ECMAScript features
-    sourceType: 'module', // Allows for the use of imports,
-    ecmaFeatures: {
-      jsx: true, // Allows for the parsing of JSX,
-      modules: true,
-      experimentalObjectRestSpread: true,
-    },
-    projectFolderIgnoreList: [
-      'node_modules/*',
-      'node_modules',
-      'dist',
-      'build',
-      '.yarn',
-      'build-utils',
-      'docs',
-      './src/generated/*',
-      'generated/*',
-      '.next/*',
-      '.next'
-    ],
-  },
+  // parserOptions: {
+  //   requireConfigFile: false, // no babel config needed
+  //   project: './tsconfig.json',
+  //   tsconfigRootDir: '.',
+  //   ecmaVersion: 2020, // Allows for the parsing of modern ECMAScript features
+  //   sourceType: 'module', // Allows for the use of imports,
+  //   ecmaFeatures: {
+  //     jsx: true, // Allows for the parsing of JSX,
+  //     modules: true,
+  //     experimentalObjectRestSpread: true,
+  //   },
+  //   projectFolderIgnoreList: [
+  //     'node_modules/*',
+  //     'node_modules',
+  //     'dist',
+  //     'build',
+  //     '.yarn',
+  //     'build-utils',
+  //     'docs',
+  //     './src/generated/*',
+  //     'generated/*',
+  //     '.next/*',
+  //     '.next'
+  //   ],
+  // },
 
   // ignorePatterns: ['*.js', '*.jsx', 'src/_testing', 'ThreeDGarden.tsx', 'ThreeDGarden1.tsx'], // ignoring here works ?? no
 
