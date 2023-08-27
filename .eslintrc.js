@@ -11,7 +11,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended', // common
     'plugin:react/recommended', // common
     // 'airbnb', // needed ?
-    'plugin:prettier/recommended', // common
+    // 'plugin:prettier/recommended', // common
     'plugin:@next/next/recommended', // this app
   ],
 
