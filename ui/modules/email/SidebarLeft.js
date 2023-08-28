@@ -124,7 +124,7 @@ const SidebarLeft = (props) => {
       <ScrollWrapper>
         <Box sx={{ pt: 0, overflowY: 'hidden' }}>
           <List component='div'>
-            <Link href='/modules/email/inbox' passHref>
+            <Link href='/ui/modules/email/inbox' passHref>
               <ListItemStyled
                 component='span'
                 onClick={handleListItemClick}
@@ -147,7 +147,7 @@ const SidebarLeft = (props) => {
                 {RenderBadge('inbox', 'primary')}
               </ListItemStyled>
             </Link>
-            <Link href='/modules/email/sent' passHref>
+            <Link href='/ui/modules/email/sent' passHref>
               <ListItemStyled
                 component='span'
                 onClick={handleListItemClick}
@@ -170,7 +170,7 @@ const SidebarLeft = (props) => {
                 />
               </ListItemStyled>
             </Link>
-            <Link href='/modules/email/draft' passHref>
+            <Link href='/ui/modules/email/draft' passHref>
               <ListItemStyled
                 component='span'
                 onClick={handleListItemClick}
@@ -194,7 +194,7 @@ const SidebarLeft = (props) => {
                 {RenderBadge('draft', 'warning')}
               </ListItemStyled>
             </Link>
-            <Link href='/modules/email/starred' passHref>
+            <Link href='/ui/modules/email/starred' passHref>
               <ListItemStyled
                 component='span'
                 onClick={handleListItemClick}
@@ -217,7 +217,7 @@ const SidebarLeft = (props) => {
                 />
               </ListItemStyled>
             </Link>
-            <Link href='/modules/email/spam' passHref>
+            <Link href='/ui/modules/email/spam' passHref>
               <ListItemStyled
                 component='span'
                 onClick={handleListItemClick}
@@ -241,7 +241,7 @@ const SidebarLeft = (props) => {
                 {RenderBadge('spam', 'error')}
               </ListItemStyled>
             </Link>
-            <Link href='/modules/email/trash' passHref>
+            <Link href='/ui/modules/email/trash' passHref>
               <ListItemStyled
                 component='span'
                 onClick={handleListItemClick}
@@ -272,7 +272,7 @@ const SidebarLeft = (props) => {
             Labels
           </Typography>
           <List component='div'>
-            <Link href='/modules/email/label/personal' passHref>
+            <Link href='/ui/modules/email/label/personal' passHref>
               <ListItemStyled
                 component='span'
                 onClick={handleListItemClick}
@@ -295,7 +295,7 @@ const SidebarLeft = (props) => {
                 />
               </ListItemStyled>
             </Link>
-            <Link href='/modules/email/label/company' passHref>
+            <Link href='/ui/modules/email/label/company' passHref>
               <ListItemStyled
                 component='span'
                 onClick={handleListItemClick}
@@ -318,7 +318,7 @@ const SidebarLeft = (props) => {
                 />
               </ListItemStyled>
             </Link>
-            <Link href='/modules/email/label/important' passHref>
+            <Link href='/ui/modules/email/label/important' passHref>
               <ListItemStyled
                 component='span'
                 onClick={handleListItemClick}
@@ -341,7 +341,7 @@ const SidebarLeft = (props) => {
                 />
               </ListItemStyled>
             </Link>
-            <Link href='/modules/email/label/private' passHref>
+            <Link href='/ui/modules/email/label/private' passHref>
               <ListItemStyled
                 component='span'
                 onClick={handleListItemClick}

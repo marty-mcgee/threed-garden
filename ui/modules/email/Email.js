@@ -1,3 +1,5 @@
+'use client'
+
 // ** React Imports
 import { useState, useEffect } from 'react'
 
@@ -26,7 +28,7 @@ import {
   updateMailLabel,
   handleSelectMail,
   handleSelectAllMail,
-} from '#/lib/stores/redux/apps/email'
+} from '#/lib/stores/redux/modules/email'
 
 // ** Variables
 const labelColors = {

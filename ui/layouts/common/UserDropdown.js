@@ -124,19 +124,19 @@ const UserDropdown = (props) => {
           </Box>
         </Box>
         <Divider sx={{ mt: 0, mb: 1 }} />
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose('/modules/user/view/12')}>
+        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose('/ui/modules/user/view/12')}>
           <Box sx={styles}>
             <AccountOutline sx={{ mr: 2 }} />
             Profile
           </Box>
         </MenuItem>
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose('/modules/email')}>
+        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose('/ui/modules/email')}>
           <Box sx={styles}>
             <EmailOutline sx={{ mr: 2 }} />
             Inbox
           </Box>
         </MenuItem>
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose('/modules/chat')}>
+        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose('/ui/modules/chat')}>
           <Box sx={styles}>
             <MessageOutline sx={{ mr: 2 }} />
             Chat

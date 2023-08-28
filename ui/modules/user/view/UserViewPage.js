@@ -1,3 +1,5 @@
+'use client'
+
 // ** React Imports
 import { useState, useEffect } from 'react'
 
@@ -21,7 +23,7 @@ const UserView = ({ id, invoiceData }) => {
   const [data, setData] = useState(null)
   useEffect(() => {
     axios
-      .get('/modules/user', { params: { id } })
+      .get('/ui/modules/user', { params: { id } })
       .then((response) => {
         setData(response.data)
         setError(false)
@@ -48,7 +50,7 @@ const UserView = ({ id, invoiceData }) => {
         <Grid item xs={12}>
           <Alert severity='error'>
             User with the id: {id} does not exist. Please check the list of users:{' '}
-            <Link href='/modules/user/list'>User List</Link>
+            <Link href='/ui/modules/user/list'>User List</Link>
           </Alert>
         </Grid>
       </Grid>

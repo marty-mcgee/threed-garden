@@ -11,7 +11,7 @@ const UserView = ({ id, invoiceData }) => {
 }
 
 export const getStaticPaths = async () => {
-  const res = await axios.get('/modules/users/list')
+  const res = await axios.get('/ui/modules/users/list')
   const userDate = await res.data.allData
 
   const paths = userDate.map((item) => ({
@@ -25,7 +25,7 @@ export const getStaticPaths = async () => {
 }
 
 export const getStaticProps = async ({ params }) => {
-  const res = await axios.get('/modules/invoice/invoices')
+  const res = await axios.get('/ui/modules/invoice/invoices')
   const invoiceData = res.data.allData
 
   return {

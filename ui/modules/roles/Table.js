@@ -1,3 +1,5 @@
+'use client'
+
 // ** React Imports
 import { useEffect, useCallback, useState } from 'react'
 
@@ -32,7 +34,7 @@ import CustomAvatar from '#/ui/components/mui/avatar'
 import { getInitials } from '#/lib/utils/get-initials'
 
 // ** Actions Imports
-import { fetchData } from '#/lib/stores/redux/apps/user'
+import { fetchData } from '#/lib/stores/redux/modules/user'
 
 // ** Custom Components Imports
 import TableHeader from '#/ui/modules/roles/TableHeader'
@@ -67,13 +69,13 @@ const AvatarWithoutImageLink = styled(Link)(({ theme }) => ({
 const renderClient = (row) => {
   if (row.avatar.length) {
     return (
-      <AvatarWithImageLink href={`/apps/user/view/${row.id}`}>
+      <AvatarWithImageLink href={`/ui/modules/user/view/${row.id}`}>
         <CustomAvatar src={row.avatar} sx={{ mr: 3, width: 30, height: 30 }} />
       </AvatarWithImageLink>
     )
   } else {
     return (
-      <AvatarWithoutImageLink href={`/apps/user/view/${row.id}`}>
+      <AvatarWithoutImageLink href={`/ui/modules/user/view/${row.id}`}>
         <CustomAvatar skin='light' color={row.avatarColor} sx={{ mr: 3, width: 30, height: 30, fontSize: '.875rem' }}>
           {getInitials(row.fullName ? row.fullName : 'Marty McGee')}
         </CustomAvatar>
@@ -95,7 +97,7 @@ const columns = [
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {renderClient(row)}
           <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-            <Link href={`/apps/user/view/${id}`} passHref>
+            <Link href={`/ui/modules/user/view/${id}`} passHref>
               <Typography
                 noWrap
                 component='span'
@@ -104,7 +106,7 @@ const columns = [
                 {fullName}
               </Typography>
             </Link>
-            <Link href={`/apps/user/view/${id}`} passHref>
+            <Link href={`/ui/modules/user/view/${id}`} passHref>
               <Typography noWrap component='span' variant='caption' sx={{ textDecoration: 'none' }}>
                 @{username}
               </Typography>
@@ -180,7 +182,7 @@ const columns = [
     field: 'actions',
     headerName: 'Actions',
     renderCell: ({ row }) => (
-      <Link href={`/apps/user/view/${row.id}`} passHref>
+      <Link href={`/ui/modules/user/view/${row.id}`} passHref>
         <IconButton>
           <EyeOutline />
         </IconButton>

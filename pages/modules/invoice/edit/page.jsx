@@ -1,5 +1,3 @@
-'use client'
-
 // ** Demo Components Imports
 import Edit from '#/ui/modules/invoice/edit/Edit'
 

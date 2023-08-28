@@ -1,3 +1,5 @@
+'use client'
+
 // ** React Imports
 import { useState, useEffect } from 'react'
 
@@ -25,7 +27,7 @@ const InvoicePreview = ({ id }) => {
   const [sendInvoiceOpen, setSendInvoiceOpen] = useState(false)
   useEffect(() => {
     axios
-      .get('/modules/invoice/single-invoice', { params: { id } })
+      .get('/ui/modules/invoice/single-invoice', { params: { id } })
       .then((res) => {
         setData(res.data)
         setError(false)
@@ -62,7 +64,7 @@ const InvoicePreview = ({ id }) => {
         <Grid item xs={12}>
           <Alert severity='error'>
             Invoice with the id: {id} does not exist. Please check the list of invoices:{' '}
-            <Link href='/modules/invoice/list'>Invoice List</Link>
+            <Link href='/ui/modules/invoice/list'>Invoice List</Link>
           </Alert>
         </Grid>
       </Grid>

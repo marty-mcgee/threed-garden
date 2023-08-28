@@ -57,9 +57,9 @@ const InvoiceAdd = ({ apiClientData, invoiceNumber }) => {
 
 // export const getStaticProps = async () => {
 InvoiceAdd.getInitialProps = async () => {
-  const clientResponse = await axios.get('/modules/invoice/clients')
+  const clientResponse = await axios.get('/ui/modules/invoice/clients')
   const apiClientData = clientResponse.data
-  const allInvoicesResponse = await axios.get('/modules/invoice/invoices', { params: { q: '', status: '' } })
+  const allInvoicesResponse = await axios.get('/ui/modules/invoice/invoices', { params: { q: '', status: '' } })
   const lastInvoiceNumber = Math.max(...allInvoicesResponse.data.allData.map((i) => i.id))
 
   return {

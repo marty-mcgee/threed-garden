@@ -13,7 +13,7 @@ const path = require('path')
 // import { resolve } from 'path'
 // const __dirname = path.resolve()
 
-// does not work with Next 13
+// does not work with Next 13, only use if Next 12 needed
 // const withTM = require('next-transpile-modules')([
 //   '@fullcalendar/common',
 //   '@fullcalendar/daygrid',
@@ -33,14 +33,14 @@ const nextConfig = {
   // trailingSlash: false, // true: add a '/' to the final url address -- can cause url-based query string issues
 
   experimental: {
-    esmExternals: true, // helps with 3rd party modules trying to call non-module js
-    externalDir: true, // helps import file loader type for ErrorFallback.tsx boundary
-    swcFileReading: true, // rust for the web -- 'speedy web compiler' https://swc.rs
-
     // use Next 13 '/app' directory:
     appDir: true, // true for Next 13 | false for Next 12
 
-    serverComponentsExternalPackages: ['axios', 'prisma', 'tailwindcss'],
+    esmExternals: true, // helps with 3rd party modules trying to call non-module js
+    // externalDir: true, // helps import file loader type for ErrorFallback.tsx boundary
+    // serverComponentsExternalPackages: ['axios', 'prisma', 'tailwindcss'],
+
+    swcFileReading: true, // rust for the web -- 'speedy web compiler' https://swc.rs
   },
 
   // https://github.com/vercel/next.js/issues/36221

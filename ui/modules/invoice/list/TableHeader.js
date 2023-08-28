@@ -46,7 +46,7 @@ const TableHeader = (props) => {
           onChange={(e) => handleFilter(e.target.value)}
         />
 
-        <Link href='/modules/invoice/add' passHref>
+        <Link href='/ui/modules/invoice/add' passHref>
           <Button sx={{ mb: 2 }} variant='contained'>
             Create Invoice
           </Button>
