@@ -1,3 +1,5 @@
+'use client'
+
 // ** React Imports
 import { useRef } from 'react'
 
@@ -331,7 +333,7 @@ const PreviewCard = ({ data }) => {
         </Box>
         <CardContent>
           <Box sx={{ mt: 4, width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-            <Link href={`/apps/invoice/print/${data.invoice.id}`} passHref>
+            <Link href={`/ui/modules/invoice/print/${data.invoice.id}`} passHref>
               <Button sx={{ mr: 4 }} target='_blank' component='span' variant='contained'>
                 Print
               </Button>

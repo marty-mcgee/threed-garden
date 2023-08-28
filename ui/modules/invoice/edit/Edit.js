@@ -1,3 +1,5 @@
+'use client'
+
 // ** React Imports
 import { useState, useEffect } from 'react'
 
@@ -26,16 +28,20 @@ const InvoiceEdit = ({ id }) => {
   const toggleSendInvoiceDrawer = () => setSendInvoiceOpen(!sendInvoiceOpen)
   const toggleAddPaymentDrawer = () => setAddPaymentOpen(!addPaymentOpen)
   useEffect(() => {
-    axios
-      .get('/modules/invoice/single-invoice', { params: { id } })
-      .then((res) => {
-        setData(res.data)
-        setError(false)
-      })
-      .catch(() => {
-        setData(null)
-        setError(true)
-      })
+    try {
+      axios
+        .get('/ui/modules/invoice/single-invoice', { params: { id } })
+        .then((res) => {
+          setData(res.data)
+          setError(false)
+        })
+        .catch(() => {
+          setData(null)
+          setError(true)
+        })
+    } catch (e) {
+      console.debug('[MM] HEY HEY HEY: e = ', e)
+    }
   }, [id])
   if (data) {
     return (
@@ -62,7 +68,7 @@ const InvoiceEdit = ({ id }) => {
         <Grid item xs={12}>
           <Alert severity='error'>
             Invoice with the id: {id} does not exist. Please check the list of invoices:{' '}
-            <Link href='/modules/invoice/list'>Invoice List</Link>
+            <Link href='/ui/modules/invoice/list'>Invoice List</Link>
           </Alert>
         </Grid>
       </Grid>

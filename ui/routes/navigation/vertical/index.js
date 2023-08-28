@@ -43,7 +43,7 @@ const navigation = () => {
     {
       title: 'Calendar',
       icon: CalendarBlankOutline,
-      path: '/modules/calendar',
+      path: '/ui/modules/calendar',
     },
     {
       title: 'Actions',
@@ -67,12 +67,12 @@ const navigation = () => {
     // {
     //   title: 'Email',
     //   icon: EmailOutline,
-    //   path: '/modules/email'
+    //   path: '/ui/modules/email'
     // },
     // {
     //   title: 'Chat',
     //   icon: MessageOutline,
-    //   path: '/modules/chat'
+    //   path: '/ui/modules/chat'
     // },
     // {
     //   title: 'Invoice',
@@ -80,19 +80,19 @@ const navigation = () => {
     //   children: [
     //     {
     //       title: 'List',
-    //       path: '/modules/invoice/list'
+    //       path: '/ui/modules/invoice/list'
     //     },
     //     {
     //       title: 'Preview',
-    //       path: '/modules/invoice/preview'
+    //       path: '/ui/modules/invoice/preview'
     //     },
     //     {
     //       title: 'Edit',
-    //       path: '/modules/invoice/edit'
+    //       path: '/ui/modules/invoice/edit'
     //     },
     //     {
     //       title: 'Add',
-    //       path: '/modules/invoice/add'
+    //       path: '/ui/modules/invoice/add'
     //     }
     //   ]
     // },
@@ -104,11 +104,11 @@ const navigation = () => {
       children: [
         {
           title: 'List Users (all)',
-          path: '/modules/user/list',
+          path: '/ui/modules/user/list',
         },
         {
           title: 'View User (id:1)',
-          path: '/modules/user/view',
+          path: '/ui/modules/user/view',
         },
         {
           title: 'User Roles',
@@ -116,11 +116,11 @@ const navigation = () => {
           children: [
             {
               title: 'Roles',
-              path: '/modules/roles',
+              path: '/ui/modules/roles',
             },
             {
               title: 'Permissions',
-              path: '/modules/permissions',
+              path: '/ui/modules/permissions',
             },
           ],
         },

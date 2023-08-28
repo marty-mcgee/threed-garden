@@ -76,7 +76,7 @@ const defaultSuggestionsData = [
       },
       {
         suggestion: 'User List',
-        link: '/modules/user/list/',
+        link: '/ui/modules/user/list/',
         icon: <AccountGroup fontSize='small' sx={{ mr: 2.5, color: 'text.primary' }} />,
       },
     ],
@@ -86,12 +86,12 @@ const defaultSuggestionsData = [
     suggestions: [
       {
         suggestion: 'Calendar',
-        link: '/modules/calendar/',
+        link: '/ui/modules/calendar/',
         icon: <CalendarBlank fontSize='small' sx={{ mr: 2.5, color: 'text.primary' }} />,
       },
       {
         suggestion: 'Invoice List',
-        link: '/modules/invoice/list/',
+        link: '/ui/modules/invoice/list/',
         icon: <FormatListNumbered fontSize='small' sx={{ mr: 2.5, color: 'text.primary' }} />,
       },
       {
@@ -278,7 +278,7 @@ const NoResult = ({ value, setOpenDialog }) => {
           </Link>
         </ListItem>
         <ListItem sx={{ py: 2 }} disablePadding onClick={() => setOpenDialog(false)}>
-          <Link passHref href='/modules/user/view/2/'>
+          <Link passHref href='/ui/modules/user/view/2/'>
             <Box
               component='span'
               sx={{

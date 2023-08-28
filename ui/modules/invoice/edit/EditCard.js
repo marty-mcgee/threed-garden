@@ -1,3 +1,5 @@
+'use client'
+
 // ** React Imports
 import { useEffect, useState, forwardRef } from 'react'
 
@@ -108,7 +110,7 @@ const EditCard = ({ data }) => {
   // ** Hook
   const theme = useTheme()
   useEffect(() => {
-    axios.get('/modules/invoice/clients').then((response) => {
+    axios.get('/ui/modules/invoice/clients').then((response) => {
       if (response.data && clients === undefined) {
         setClients(response.data)
         setSelected(response.data[0].name)

@@ -16,7 +16,7 @@ import {
   fetchUserProfile,
   fetchChatsContacts,
   removeSelectedChat,
-} from '#/lib/stores/redux/apps/chat'
+} from '#/lib/stores/redux/modules/chat'
 
 // ** Hooks
 import { useSettings } from '#/ui/hooks/useSettings'
