@@ -31,7 +31,7 @@
     "deploy": "next deploy",
     "export": "next export",
     "next:test": "next test",
-    "___________________5": "____ next-scaffold-eth ______________________________________",
+    "___________________5": "____ next-threed-scaffold-eth ______________________________________",
     "start": "next -p 7777",
     "dev": "next dev -p 7777",
     "build-with-ant": "yarn build:anttheme && next build",
