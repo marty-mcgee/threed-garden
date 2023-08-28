@@ -41,6 +41,6 @@
       }
     ]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "pages/__[...all].tsx-X", "pages/__app-old1.tsx-X", "pages/__index.tsx-X"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules", ".husky", "**/*.css", "tailwind.config.js", "**/.yalc/**/*", ".yalc/**/*"]
 }
