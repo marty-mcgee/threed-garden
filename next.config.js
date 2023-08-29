@@ -38,8 +38,8 @@ const nextConfig = {
 
     esmExternals: true, // helps with 3rd party modules trying to call non-module js
     externalDir: true, // helps import file loader type for ErrorFallback.tsx boundary
-    // serverComponentsExternalPackages: ['axios', 'prisma', 'tailwindcss'],
-    serverComponentsExternalPackages: ['axios'],
+    serverComponentsExternalPackages: ['axios', 'yup', 'prisma', 'tailwindcss'],
+    // serverComponentsExternalPackages: ['axios'],
 
     swcFileReading: true, // rust for the web -- 'speedy web compiler' https://swc.rs
   },
