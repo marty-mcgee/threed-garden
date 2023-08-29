@@ -37,8 +37,9 @@ const nextConfig = {
     appDir: true, // true for Next 13 | false for Next 12
 
     esmExternals: true, // helps with 3rd party modules trying to call non-module js
-    // externalDir: true, // helps import file loader type for ErrorFallback.tsx boundary
+    externalDir: true, // helps import file loader type for ErrorFallback.tsx boundary
     // serverComponentsExternalPackages: ['axios', 'prisma', 'tailwindcss'],
+    serverComponentsExternalPackages: ['axios'],
 
     swcFileReading: true, // rust for the web -- 'speedy web compiler' https://swc.rs
   },
