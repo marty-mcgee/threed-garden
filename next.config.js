@@ -37,8 +37,8 @@ const nextConfig = {
     appDir: true, // true for Next 13 | false for Next 12
 
     esmExternals: true, // helps with 3rd party modules trying to call non-module js
-    externalDir: true, // helps import file loader type for ErrorFallback.tsx boundary
-    serverComponentsExternalPackages: ['axios', 'yup', 'prisma', 'tailwindcss'],
+    // externalDir: true, // helps import file loader type for ErrorFallback.tsx boundary
+    // serverComponentsExternalPackages: ['axios', 'yup', 'prisma', 'tailwindcss'],
     // serverComponentsExternalPackages: ['axios'],
 
     swcFileReading: true, // rust for the web -- 'speedy web compiler' https://swc.rs
@@ -55,6 +55,7 @@ const nextConfig = {
     '@fullcalendar/timegrid',
     'react-github-btn',
     'three',
+    // 'yup',
   ],
 
   // productionBrowserSourceMaps: true,
@@ -117,7 +118,7 @@ const nextConfig = {
       // 'eth-hooks': path.resolve(__dirname, './node_modules/eth-hooks'),
       // 'eth-components': path.resolve(__dirname, './node_modules/eth-components'),
       // 'react-css-theme-switcher': path.resolve(__dirname, './node_modules/react-css-theme-switcher'),
-      // react: path.resolve(__dirname, './node_modules/react'),
+      // 'react': path.resolve(__dirname, './node_modules/react'),
       // 'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
     }
 
