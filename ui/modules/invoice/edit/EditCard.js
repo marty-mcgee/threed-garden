@@ -110,7 +110,7 @@ const EditCard = ({ data }) => {
   // ** Hook
   const theme = useTheme()
   useEffect(() => {
-    axios.get('/ui/modules/invoice/clients').then((response) => {
+    axios.get('/api/modules/invoice/clients').then((response) => {
       if (response.data && clients === undefined) {
         setClients(response.data)
         setSelected(response.data[0].name)
