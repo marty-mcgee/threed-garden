@@ -32,30 +32,39 @@ const nextConfig = {
 
   // trailingSlash: false, // true: add a '/' to the final url address -- can cause url-based query string issues
 
-  experimental: {
-    // use Next 13 '/app' directory:
-    appDir: true, // true for Next 13 | false for Next 12
+  // experimental: {
+  //   // use Next 13 '/app' directory:
+  //   appDir: true, // true for Next 13 | false for Next 12
 
-    esmExternals: true, // helps with 3rd party modules trying to call non-module js
-    // externalDir: true, // helps import file loader type for ErrorFallback.tsx boundary
-    // serverComponentsExternalPackages: ['axios', 'yup', 'prisma', 'tailwindcss'],
-    // serverComponentsExternalPackages: ['axios'],
+  //   esmExternals: true, // helps with 3rd party modules trying to call non-module js
+  //   // externalDir: true, // helps import file loader type for ErrorFallback.tsx boundary
+  //   // serverComponentsExternalPackages: ['axios', 'yup', 'prisma', 'tailwindcss'],
+  //   // serverComponentsExternalPackages: ['axios'],
 
-    swcFileReading: true, // rust for the web -- 'speedy web compiler' https://swc.rs
-  },
+  //   swcFileReading: true, // rust for the web -- 'speedy web compiler' https://swc.rs
+  // },
 
   // https://github.com/vercel/next.js/issues/36221
-  swcMinify: true, // true throws error at ErrorBoundary
+  // swcMinify: true, // true throws error at ErrorBoundary
 
   transpilePackages: [
-    '@fullcalendar/common',
-    '@fullcalendar/daygrid',
-    '@fullcalendar/interaction',
-    '@fullcalendar/react',
-    '@fullcalendar/timegrid',
-    'react-github-btn',
-    'three',
-    // 'yup',
+    // ORDER DOES NOT MATTER
+
+    // '@fullcalendar/common',
+    // '@fullcalendar/daygrid',
+    // '@fullcalendar/interaction',
+    // '@fullcalendar/react',
+    // '@fullcalendar/timegrid',
+
+    'axios',
+    'axios-mock-adapter',
+
+    // 'react-github-btn',
+
+    // 'three',
+
+    'yup',
+    '@hookform/resolvers',
   ],
 
   // productionBrowserSourceMaps: true,

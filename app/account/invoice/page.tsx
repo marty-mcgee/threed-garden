@@ -1,5 +1,9 @@
 'use client'
 
+// ** Next Imports
+// import type { NextPage } from 'next'
+import type { TNextPageWithProps } from '#/lib/types/TAppProps'
+
 // @mui material components
 import type { Theme } from '@mui/material/styles'
 import { styled, useTheme } from '@mui/material/styles'
@@ -26,7 +30,15 @@ import { useMaterialUIController } from '#/lib/contexts'
 import logo from '#/lib/assets/images/logos/logo-threedgarden-text.png'
 import logoDark from '#/lib/assets/images/logos/logo-threedgarden.png'
 
-function Invoice(): JSX.Element {
+// ** Colorful Console Messages: Utility
+import ccm from '#/lib/utils/console-colors'
+
+// function InvoicePage(): JSX.Element {
+const InvoicePage: TNextPageWithProps = (): JSX.Element => {
+// const InvoicePage: NextPage = (): JSX.Element => {
+  // **
+  console.debug('%c🥕 InvoicePage', ccm.green)
+
   const [controller] = useMaterialUIController()
   const { darkMode } = controller
 
@@ -613,4 +625,4 @@ function Invoice(): JSX.Element {
   )
 }
 
-export default Invoice
+export default InvoicePage
