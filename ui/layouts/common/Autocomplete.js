@@ -76,7 +76,7 @@ const defaultSuggestionsData = [
       },
       {
         suggestion: 'User List',
-        link: '/ui/modules/user/list/',
+        link: '/api/modules/user/list/',
         icon: <AccountGroup fontSize='small' sx={{ mr: 2.5, color: 'text.primary' }} />,
       },
     ],
@@ -86,12 +86,12 @@ const defaultSuggestionsData = [
     suggestions: [
       {
         suggestion: 'Calendar',
-        link: '/ui/modules/calendar/',
+        link: '/api/modules/calendar/',
         icon: <CalendarBlank fontSize='small' sx={{ mr: 2.5, color: 'text.primary' }} />,
       },
       {
         suggestion: 'Invoice List',
-        link: '/ui/modules/invoice/list/',
+        link: '/api/modules/invoice/list/',
         icon: <FormatListNumbered fontSize='small' sx={{ mr: 2.5, color: 'text.primary' }} />,
       },
       {
@@ -111,7 +111,7 @@ const defaultSuggestionsData = [
     suggestions: [
       {
         suggestion: 'Typography',
-        link: '/ui/typography/',
+        link: '/api/typography/',
         icon: <FormatTextVariantOutline fontSize='small' sx={{ mr: 2.5, color: 'text.primary' }} />,
       },
       {
@@ -126,7 +126,7 @@ const defaultSuggestionsData = [
       },
       {
         suggestion: 'Advanced Cards',
-        link: '/ui/cards/advanced/',
+        link: '/api/cards/advanced/',
         icon: <CardBulletedSettingsOutline fontSize='small' sx={{ mr: 2.5, color: 'text.primary' }} />,
       },
     ],
@@ -278,7 +278,7 @@ const NoResult = ({ value, setOpenDialog }) => {
           </Link>
         </ListItem>
         <ListItem sx={{ py: 2 }} disablePadding onClick={() => setOpenDialog(false)}>
-          <Link passHref href='/ui/modules/user/view/2/'>
+          <Link passHref href='/api/modules/user/view/2/'>
             <Box
               component='span'
               sx={{

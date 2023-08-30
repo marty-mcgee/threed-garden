@@ -23,7 +23,7 @@ const UserView = ({ id, invoiceData }) => {
   const [data, setData] = useState(null)
   useEffect(() => {
     axios
-      .get('/ui/modules/user', { params: { id } })
+      .get('/api/modules/user', { params: { id } })
       .then((response) => {
         setData(response.data)
         setError(false)
@@ -50,7 +50,7 @@ const UserView = ({ id, invoiceData }) => {
         <Grid item xs={12}>
           <Alert severity='error'>
             User with the id: {id} does not exist. Please check the list of users:{' '}
-            <Link href='/ui/modules/user/list'>User List</Link>
+            <Link href='/api/modules/user/list'>User List</Link>
           </Alert>
         </Grid>
       </Grid>

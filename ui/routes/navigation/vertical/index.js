@@ -43,7 +43,7 @@ const navigation = () => {
     {
       title: 'Calendar',
       icon: CalendarBlankOutline,
-      path: '/ui/modules/calendar',
+      path: '/api/modules/calendar',
     },
     {
       title: 'Actions',
@@ -67,12 +67,12 @@ const navigation = () => {
     // {
     //   title: 'Email',
     //   icon: EmailOutline,
-    //   path: '/ui/modules/email'
+    //   path: '/api/modules/email'
     // },
     // {
     //   title: 'Chat',
     //   icon: MessageOutline,
-    //   path: '/ui/modules/chat'
+    //   path: '/api/modules/chat'
     // },
     // {
     //   title: 'Invoice',
@@ -80,19 +80,19 @@ const navigation = () => {
     //   children: [
     //     {
     //       title: 'List',
-    //       path: '/ui/modules/invoice/list'
+    //       path: '/api/modules/invoice/list'
     //     },
     //     {
     //       title: 'Preview',
-    //       path: '/ui/modules/invoice/preview'
+    //       path: '/api/modules/invoice/preview'
     //     },
     //     {
     //       title: 'Edit',
-    //       path: '/ui/modules/invoice/edit'
+    //       path: '/api/modules/invoice/edit'
     //     },
     //     {
     //       title: 'Add',
-    //       path: '/ui/modules/invoice/add'
+    //       path: '/api/modules/invoice/add'
     //     }
     //   ]
     // },
@@ -104,11 +104,11 @@ const navigation = () => {
       children: [
         {
           title: 'List Users (all)',
-          path: '/ui/modules/user/list',
+          path: '/api/modules/user/list',
         },
         {
           title: 'View User (id:1)',
-          path: '/ui/modules/user/view',
+          path: '/api/modules/user/view',
         },
         {
           title: 'User Roles',
@@ -116,11 +116,11 @@ const navigation = () => {
           children: [
             {
               title: 'Roles',
-              path: '/ui/modules/roles',
+              path: '/api/modules/roles',
             },
             {
               title: 'Permissions',
-              path: '/ui/modules/permissions',
+              path: '/api/modules/permissions',
             },
           ],
         },
@@ -244,11 +244,11 @@ const navigation = () => {
     // {
     //   title: 'Typography',
     //   icon: FormatLetterCase,
-    //   path: '/ui/typography'
+    //   path: '/api/typography'
     // },
     // {
     //   title: 'Icons',
-    //   path: '/ui/icons',
+    //   path: '/api/icons',
     //   icon: GoogleCirclesExtended
     // },
     // {
@@ -257,27 +257,27 @@ const navigation = () => {
     //   children: [
     //     {
     //       title: 'Basic',
-    //       path: '/ui/cards/basic'
+    //       path: '/api/cards/basic'
     //     },
     //     {
     //       title: 'Statistics',
-    //       path: '/ui/cards/statistics'
+    //       path: '/api/cards/statistics'
     //     },
     //     {
     //       title: 'Advanced',
-    //       path: '/ui/cards/advanced'
+    //       path: '/api/cards/advanced'
     //     },
     //     {
     //       title: 'Gamification',
-    //       path: '/ui/cards/gamification'
+    //       path: '/api/cards/gamification'
     //     },
     //     {
     //       title: 'Actions',
-    //       path: '/ui/cards/actions'
+    //       path: '/api/cards/actions'
     //     },
     //     {
     //       title: 'Widgets',
-    //       path: '/ui/cards/widgets'
+    //       path: '/api/cards/widgets'
     //     }
     //   ]
     // },

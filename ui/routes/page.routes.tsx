@@ -167,22 +167,22 @@ const pageRoutes = [
     collapse: [
       {
         name: 'kanban',
-        route: '/ui/modules/kanban',
+        route: '/api/modules/kanban',
         icon: <Icon>widgets</Icon>,
       },
       {
         name: 'wizard',
-        route: '/ui/modules/wizard',
+        route: '/api/modules/wizard',
         icon: <Icon>import_contacts</Icon>,
       },
       {
         name: 'data tables',
-        route: '/ui/modules/data-tables',
+        route: '/api/modules/data-tables',
         icon: <Icon>backup_table</Icon>,
       },
       {
         name: 'calendar',
-        route: '/ui/modules/calendar',
+        route: '/api/modules/calendar',
         icon: <Icon>event</Icon>,
       },
     ],

@@ -11,7 +11,7 @@ const EmailApp = ({ label }) => {
 }
 
 export const getStaticPaths = async () => {
-  const res = await axios.get('/ui/modules/email/allEmails')
+  const res = await axios.get('/api/modules/email/allEmails')
   const data = await res.data.emails
 
   const paths = data.map((mail) => ({

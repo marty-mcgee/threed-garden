@@ -12,7 +12,7 @@ const UserView = ({ invoiceData }) => {
 
 // export const getStaticProps = async () => {
 UserView.getInitialProps = async () => {
-  const res = await axios.get('/ui/modules/invoice/invoices')
+  const res = await axios.get('/api/modules/invoice/invoices')
   const invoiceData = res.data.allData
 
   return {
