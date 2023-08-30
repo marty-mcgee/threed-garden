@@ -1,6 +1,6 @@
 {
   "name": "@threed/threed-app-ts",
-  "version": "0.12.0-alpha.15",
+  "version": "0.12.0-alpha.16",
   "description": "React + TypeScript + Three.js app using Material UI + Ant Design on Next.js 13, Apollo Client + Zustand, GraphQL + WordPress REST APIs, for ThreeD web development.. a part of the threed.ai code family.",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "contributors": [
@@ -164,9 +164,9 @@
     "@types/nprogress": "^0.2.0",
     "@types/pretty-time": "^1.1.2",
     "@types/qrcode.react": "^1.0.2",
-    "@types/react": "^18.0.25",
+    "@types/react": "18.0.25",
     "@types/react-blockies": "^1.4.1",
-    "@types/react-dom": "^18.0.6",
+    "@types/react-dom": "18.0.6",
     "@types/react-flatpickr": "^3.8.7",
     "@types/react-qr-reader": "^2.1.4",
     "@types/react-router-dom": "^5.3.3",
@@ -223,7 +223,7 @@
     "@fullcalendar/list": "5.11.3",
     "@fullcalendar/react": "5.11.2",
     "@fullcalendar/timegrid": "5.11.3",
-    "@hookform/resolvers": "2.8.0",
+    "@hookform/resolvers": "^2.9.11",
     "@mui/lab": "5.0.0-alpha.141",
     "@mui/system": "5.2.8",
     "@mui/utils": "5.10.9",
@@ -289,7 +289,7 @@
     "regenerator-runtime": "0.13.9",
     "stylis": "^4.1.1",
     "stylis-plugin-rtl": "github:marty-mcgee/stylis-plugin-rtl#main",
-    "yup": "1.2.0"
+    "yup": "^1.2.0"
   },
   "keywords": [
     "react",

@@ -12,16 +12,17 @@ module.exports = {
     'plugin:react/recommended', // common
     // 'airbnb', // needed ?
     // 'plugin:prettier/recommended', // common
+    'plugin:import/recommended',
     'plugin:@next/next/recommended', // this app
   ],
 
-  plugins: [
-    // '@typescript-eslint', // common
-    'react', // common
-    // 'prettier', // common
-    'import',
-    '@next/next', // ?? no such package 'eslint-plugin-next', only 'eslint-config-next'
-  ],
+  // plugins: [
+  //   // '@typescript-eslint', // common
+  //   'react', // common
+  //   // 'prettier', // common
+  //   'import',
+  //   '@next/next', // ?? no such package 'eslint-plugin-next', only 'eslint-config-next'
+  // ],
 
   // parser: '@babel/eslint-parser',
   parser: '@typescript-eslint/parser',
