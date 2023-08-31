@@ -35,6 +35,7 @@ import AuthGuard from '#/ui/auth/AuthGuard'
 import '#/lib/api/@fake-db'
 
 // ** Contexts for Theme Settings + MUI Components
+import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '#/lib/contexts'
 import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/settingsContext'
 import ThemeComponent from '#/ui/theme/ThemeComponent'
 
@@ -312,6 +313,8 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
   // ** Return JSX
   return (
     <ThreeDAppProvider>
+
+      <MaterialUIControllerProvider>
       <AuthProvider>
         <AuthConsumer
           authGuard={authGuard}
@@ -352,6 +355,7 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
           {/* </AclGuard> */}
         </AuthConsumer>
       </AuthProvider>
+      </MaterialUIControllerProvider>
     </ThreeDAppProvider>
   )
 }
