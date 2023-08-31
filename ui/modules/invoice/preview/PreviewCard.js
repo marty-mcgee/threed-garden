@@ -7,20 +7,20 @@ import { useRef } from 'react'
 import Link from 'next/link'
 
 // ** MUI Imports
+import { styled, useTheme } from '@mui/material/styles'
+import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
-import Table from '@mui/material/Table'
+import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
+import Table from '@mui/material/Table'
 import TableRow from '@mui/material/TableRow'
 import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
-import CardContent from '@mui/material/CardContent'
-import { styled, useTheme } from '@mui/material/styles'
 import TableContainer from '@mui/material/TableContainer'
 import TableCell from '@mui/material/TableCell'
+import Typography from '@mui/material/Typography'
 
 // ** Third Party Imports
 import ReactToPdf from 'react-to-pdf'
@@ -333,7 +333,7 @@ const PreviewCard = ({ data }) => {
         </Box>
         <CardContent>
           <Box sx={{ mt: 4, width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-            <Link href={`/ui/modules/invoice/print/${data.invoice.id}`} passHref>
+            <Link href={`/api/modules/invoice/print/${data.invoice.id}`} passHref>
               <Button sx={{ mr: 4 }} target='_blank' component='span' variant='contained'>
                 Print
               </Button>

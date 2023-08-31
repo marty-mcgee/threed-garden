@@ -14,7 +14,7 @@ import team3 from '#/lib/assets/images/people/team-3.jpg'
 import team4 from '#/lib/assets/images/people/team-4.jpg'
 import team5 from '#/lib/assets/images/people/team-5.jpg'
 
-const boards = {
+const kanbanBoards = {
   columns: [
     {
       id: uuidv4(),
@@ -154,4 +154,4 @@ const boards = {
   ],
 }
 
-export default boards
+export default kanbanBoards
