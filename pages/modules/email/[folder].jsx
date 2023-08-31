@@ -11,8 +11,13 @@ const EmailApp = ({ folder }) => {
 }
 
 export const getStaticPaths = async () => {
-  const res = await axios.get('/api/modules/email/allEmails')
-  const data = await res.data.emails
+  let data = []
+  try {
+    const res = await axios.get('/api/modules/email/allEmails')
+    data = await res.data.emails
+  } catch (e) {
+    data = []
+  }
 
   const paths = data.map((mail) => ({
     params: { folder: mail.folder },

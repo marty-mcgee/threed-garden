@@ -14,8 +14,13 @@ const InvoicePrint = ({ id }) => {
 }
 
 export const getStaticPaths = async () => {
-  const res = await axios.get('/api/modules/invoice/invoices')
-  const data = await res.data.allData
+  let data = []
+  try {
+    const res = await axios.get('/api/modules/invoice/invoices')
+    data = await res.data.allData
+  } catch (e) {
+    data = []
+  }
 
   const paths = data.map((item) => ({
     params: { id: `${item.id}` },

@@ -11,10 +11,15 @@ const UserView = ({ id, invoiceData }) => {
 }
 
 export const getStaticPaths = async () => {
-  const res = await axios.get('/api/modules/users/list')
-  const userDate = await res.data.allData
+  let data = []
+  try {
+    const res = await axios.get('/api/modules/users/list')
+    data = await res.data.allData
+  } catch (e) {
+    data = []
+  }
 
-  const paths = userDate.map((item) => ({
+  const paths = data.map((item) => ({
     params: { id: `${item.id}` },
   }))
 
@@ -25,12 +30,17 @@ export const getStaticPaths = async () => {
 }
 
 export const getStaticProps = async ({ params }) => {
-  const res = await axios.get('/api/modules/invoice/invoices')
-  const invoiceData = res.data.allData
+  let data = []
+  try {
+    const res = await axios.get('/api/modules/invoice/invoices')
+    data = await res.data.allData
+  } catch (e) {
+    data = []
+  }
 
   return {
     props: {
-      invoiceData,
+      invoiceData: data,
       id: params?.id,
     },
   }
