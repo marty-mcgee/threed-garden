@@ -69,13 +69,13 @@ const AvatarWithoutImageLink = styled(Link)(({ theme }) => ({
 const renderClient = (row) => {
   if (row.avatar.length) {
     return (
-      <AvatarWithImageLink href={`/ui/modules/user/view/${row.id}`}>
+      <AvatarWithImageLink href={`/api/modules/user/view/${row.id}`}>
         <CustomAvatar src={row.avatar} sx={{ mr: 3, width: 30, height: 30 }} />
       </AvatarWithImageLink>
     )
   } else {
     return (
-      <AvatarWithoutImageLink href={`/ui/modules/user/view/${row.id}`}>
+      <AvatarWithoutImageLink href={`/api/modules/user/view/${row.id}`}>
         <CustomAvatar skin='light' color={row.avatarColor} sx={{ mr: 3, width: 30, height: 30, fontSize: '.875rem' }}>
           {getInitials(row.fullName ? row.fullName : 'Marty McGee')}
         </CustomAvatar>
@@ -97,7 +97,7 @@ const columns = [
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {renderClient(row)}
           <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-            <Link href={`/ui/modules/user/view/${id}`} passHref>
+            <Link href={`/api/modules/user/view/${id}`} passHref>
               <Typography
                 noWrap
                 component='span'
@@ -106,7 +106,7 @@ const columns = [
                 {fullName}
               </Typography>
             </Link>
-            <Link href={`/ui/modules/user/view/${id}`} passHref>
+            <Link href={`/api/modules/user/view/${id}`} passHref>
               <Typography noWrap component='span' variant='caption' sx={{ textDecoration: 'none' }}>
                 @{username}
               </Typography>
@@ -182,7 +182,7 @@ const columns = [
     field: 'actions',
     headerName: 'Actions',
     renderCell: ({ row }) => (
-      <Link href={`/ui/modules/user/view/${row.id}`} passHref>
+      <Link href={`/api/modules/user/view/${row.id}`} passHref>
         <IconButton>
           <EyeOutline />
         </IconButton>

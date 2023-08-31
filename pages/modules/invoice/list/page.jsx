@@ -102,7 +102,7 @@ const RowOptions = ({ id }) => {
           <Download fontSize='small' sx={{ mr: 2 }} />
           Download
         </MenuItem>
-        <Link href={`/ui/modules/invoice/edit/${id}`} passHref>
+        <Link href={`/api/modules/invoice/edit/${id}`} passHref>
           <MenuItem>
             <PencilOutline fontSize='small' sx={{ mr: 2 }} />
             Edit
@@ -150,7 +150,7 @@ const defaultColumns = [
     minWidth: 80,
     headerName: '#',
     renderCell: ({ row }) => (
-      <Link href={`/ui/modules/invoice/preview/${row.id}`} passHref>
+      <Link href={`/api/modules/invoice/preview/${row.id}`} passHref>
         <StyledLink>{`#${row.id}`}</StyledLink>
       </Link>
     ),
@@ -313,7 +313,7 @@ const InvoiceList = () => {
           </Tooltip>
           <Tooltip title='View'>
             <Box>
-              <Link href={`/ui/modules/invoice/preview/${row.id}`} passHref>
+              <Link href={`/api/modules/invoice/preview/${row.id}`} passHref>
                 <IconButton size='small' component='span' sx={{ textDecoration: 'none' }}>
                   <EyeOutline fontSize='small' />
                 </IconButton>

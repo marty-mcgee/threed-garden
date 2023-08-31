@@ -1,8 +1,8 @@
 // ** MUI Imports
+import { ThemeProvider, createTheme, responsiveFontSizes } from '@mui/material/styles'
 import { deepmerge } from '@mui/utils'
 import CssBaseline from '@mui/material/CssBaseline'
 import GlobalStyles from '@mui/material/GlobalStyles'
-import { ThemeProvider, createTheme, responsiveFontSizes } from '@mui/material/styles'
 
 // ** Theme Config
 import themeConfig from '#/lib/config/themeConfig'

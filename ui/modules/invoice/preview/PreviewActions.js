@@ -24,7 +24,7 @@ const PreviewActions = ({ id, toggleSendInvoiceDrawer, toggleAddPaymentDrawer })
           Send Invoice
         </Button>
         <Link
-          href={`/ui/modules/invoice/edit/${id}`}
+          href={`/api/modules/invoice/edit/${id}`}
           passHref
         >
           <Button
