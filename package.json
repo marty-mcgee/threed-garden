@@ -33,7 +33,7 @@
     "next:test": "next test",
     "___________________5": "____ next-threed-scaffold-eth ______________________________________",
     "start": "next",
-    "dev": "next dev -p 80",
+    "dev": "next dev -p 7777",
     "build-with-ant": "yarn build:anttheme && next build",
     "build": "next build",
     "serve": "next start",
