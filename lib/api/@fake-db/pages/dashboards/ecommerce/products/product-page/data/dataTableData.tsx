@@ -3,9 +3,9 @@ import MDBox from '#/lib/mui/MDBox'
 import MDProgress from '#/lib/mui/MDProgress'
 
 // ProductPage page components
-import ProductCell from '#/pages/dashboards/ecommerce/products/product-page/components/ProductCell'
-import ReviewCell from '#/pages/dashboards/ecommerce/products/product-page/components/ReviewCell'
-import DefaultCell from '#/pages/dashboards/ecommerce/products/product-page/components/DefaultCell'
+import ProductCell from '#/pagesX/dashboards/ecommerce/products/product-page/components/ProductCell'
+import ReviewCell from '#/pagesX/dashboards/ecommerce/products/product-page/components/ReviewCell'
+import DefaultCell from '#/pagesX/dashboards/ecommerce/products/product-page/components/DefaultCell'
 
 // Images
 import blackChair from '#/lib/assets/images/ecommerce/black-chair.jpeg'
