@@ -326,12 +326,12 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
           > */}
             <ApolloProvider client={client}>
               <ReduxProvider store={reduxStore}>
-                {/* <SettingsProvider
+                <SettingsProvider
                   { ...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null }) }
-                > */}
-                  {/* <SettingsConsumer>
-                    {({ settings }) => ( */}
-                      <ThemeRegistry>
+                >
+                  <SettingsConsumer>
+                    {({ settings }) => (
+                      <ThemeRegistry settings={settings}>
                         {/* <ThemeComponent settings={settings}> */}
                           {getLayout(
                               // <EthApp {...props}>
@@ -340,16 +340,10 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
                               // </EthApp>
                           )}
                         {/* </ThemeComponent> */}
-                        {/* <ReactHotToast>
-                          <Toaster
-                            position={settings.toastPosition as ToastPosition}
-                            toastOptions={{ className: 'react-hot-toast' }}
-                          />
-                        </ReactHotToast> */}
                       </ThemeRegistry>
-                    {/* )}
-                  </SettingsConsumer> */}
-                {/* </SettingsProvider> */}
+                    )}
+                  </SettingsConsumer>
+                </SettingsProvider>
               </ReduxProvider>
             </ApolloProvider>
           {/* </AclGuard> */}
