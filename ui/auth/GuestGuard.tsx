@@ -2,7 +2,7 @@
 // import { useEffect } from 'react'
 
 // ** Next Imports
-// import { useRouter } from 'next/router'
+// import { useRouter } from 'next/navigation'
 
 // ** Hooks Import
 import { useAuth } from '#/lib/auth/hooks/useAuth'

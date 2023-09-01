@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 // import { useLocation, Link } from "react-router-dom"
 // nextjs components
 import Link from 'next/link'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 // @material-ui core components
 import type { Theme } from '@mui/material/styles'
