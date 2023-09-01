@@ -10,7 +10,7 @@ import { useRouter, usePathname } from 'next/navigation'
 
 // ** React
 import type { ReactNode } from 'react'
-import { useEffect } from 'react'
+// import { useEffect } from 'react'
 
 // ** Apollo Client -- State Management using Cache/Store (via GraphQL)
 import { ApolloProvider } from '@apollo/client'
@@ -35,7 +35,7 @@ import AuthGuard from '#/ui/auth/AuthGuard'
 import '#/lib/api/@fake-db'
 
 // ** Contexts for Theme Settings + MUI Components
-import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '#/lib/contexts'
+// import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '#/lib/contexts'
 import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/settingsContext'
 import ThemeComponent from '#/ui/theme/ThemeComponent'
 
@@ -313,8 +313,6 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
   // ** Return JSX
   return (
     <ThreeDAppProvider>
-
-      <MaterialUIControllerProvider>
       <AuthProvider>
         <AuthConsumer
           authGuard={authGuard}
@@ -325,21 +323,21 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
             guestGuard={guestGuard}
           > */}
             <ApolloProvider client={client}>
-              <ReduxProvider store={reduxStore}>
-                <SettingsProvider
+              {/* <ReduxProvider store={reduxStore}> */}
+                {/* <SettingsProvider
                   { ...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null }) }
-                >
-                  <SettingsConsumer>
-                    {({ settings }) => (
+                > */}
+                  {/* <SettingsConsumer>
+                    {({ settings }) => ( */}
                       <>
-                        <ThemeComponent settings={settings}>
+                        {/* <ThemeComponent settings={settings}> */}
                           {getLayout(
                               // <EthApp {...props}>
                                 // <Component {...pageProps} />
                                 {children}
                               // </EthApp>
                           )}
-                        </ThemeComponent>
+                        {/* </ThemeComponent> */}
                         {/* <ReactHotToast>
                           <Toaster
                             position={settings.toastPosition as ToastPosition}
@@ -347,15 +345,14 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
                           />
                         </ReactHotToast> */}
                       </>
-                    )}
-                  </SettingsConsumer>
-                </SettingsProvider>
-              </ReduxProvider>
+                    {/* )}
+                  </SettingsConsumer> */}
+                {/* </SettingsProvider> */}
+              {/* </ReduxProvider> */}
             </ApolloProvider>
           {/* </AclGuard> */}
         </AuthConsumer>
       </AuthProvider>
-      </MaterialUIControllerProvider>
     </ThreeDAppProvider>
   )
 }

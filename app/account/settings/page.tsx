@@ -7,7 +7,7 @@ import Grid from '@mui/material/Grid'
 import MDBox from '#/lib/mui/MDBox'
 
 // Settings page components
-// import BaseLayout from "~/pages/account/components/BaseLayout"
+// import BaseLayout from "~/pagesX/account/components/BaseLayout"
 import DashboardLayout from '#/ui/elements/LayoutContainers/DashboardLayout'
 import DashboardNavbar from '#/ui/elements/Navbars/DashboardNavbar'
 import Sidenav from '#/app/account/settings/components/Sidenav'

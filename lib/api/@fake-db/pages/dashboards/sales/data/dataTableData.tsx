@@ -1,7 +1,7 @@
 // Sales dashboard components
-import ProductCell from '#/pages/dashboards/sales/components/ProductCell'
-import RefundsCell from '#/pages/dashboards/sales/components/RefundsCell'
-import DefaultCell from '#/pages/dashboards/sales/components/DefaultCell'
+import ProductCell from '#/pagesX/dashboards/sales/components/ProductCell'
+import RefundsCell from '#/pagesX/dashboards/sales/components/RefundsCell'
+import DefaultCell from '#/pagesX/dashboards/sales/components/DefaultCell'
 
 // Images
 import nikeV22 from '#/lib/assets/images/ecommerce/blue-shoe.jpeg'
