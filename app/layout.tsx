@@ -300,9 +300,9 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
     else {
       return (
         <div id='ThreeDAppLayout-BlankLayout'>
-          <BlankLayout>
+          <UserLayout>
             {children}
-          </BlankLayout>
+          </UserLayout>
         </div>
       )
     }
