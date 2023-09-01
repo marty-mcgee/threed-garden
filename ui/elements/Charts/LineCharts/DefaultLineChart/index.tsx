@@ -12,7 +12,7 @@ import MDTypography from '#/lib/mui/MDTypography'
 import configs from '~/ui/elements/Charts/LineCharts/DefaultLineChart/config'
 
 // ThreeD Garden Base Styles
-import colors from '#/ui/themes/theme-light/base/colors'
+import colors from '#/ui/theme/themes/theme-light/base/colors'
 
 // react-chartjs-2 components
 import { Line } from 'react-chartjs-2'

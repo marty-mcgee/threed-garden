@@ -38,6 +38,7 @@ import '#/lib/api/@fake-db'
 // import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '#/lib/contexts'
 import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/settingsContext'
 import ThemeComponent from '#/ui/theme/ThemeComponent'
+import ThemeRegistry from '#/ui/theme/ThemeRegistry'
 
 // ** Configs
 // import '#/lib/config/i18n' // NOT YET SUPPORTED IN NEXT 13
@@ -167,7 +168,7 @@ const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
 
 // ==============================================================
 // ** Home Route
-
+/*
 // Set Home Forwarding (to First Page) URL, based on User Role
 const getHomeRoute = (role: any) => {
   // user: acl: client: default main app index page
@@ -199,7 +200,7 @@ const getHomeRoute = (role: any) => {
   return '/auth/login'
   return '/'
 }
-
+*/
 // ==============================================================
 // ** Construct App using Function Component (Functional Noun)
 
@@ -212,10 +213,11 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
   // console.debug('RootLayout.children', children)
 
   // ** Props.children.props
-  const { props } = children
+  // const { props } = children
 
   // ** Hooks
   const auth = useAuth()
+  /*
   const router = useRouter()
   const pathname = usePathname()
 
@@ -250,7 +252,7 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
     }
 
   // }, [])
-
+  */
   // console.debug('%c🥕 auth', ccm.orange, auth)
   // console.debug('%c🥕 router', ccm.orange, router)
   // console.debug('%c🥕 children', ccm.orange, children)
@@ -271,7 +273,7 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
     },
   }
 
-  // console.debug('%c🥕 props', ccm.white, props)
+  // console.debug('%c🥕 props', ccm.orange, props)
   // console.debug('%c🥕 Component', ccm.black, Component)
   // console.debug('%c🥕 pageProps', ccm.black, pageProps)
 
@@ -323,13 +325,13 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
             guestGuard={guestGuard}
           > */}
             <ApolloProvider client={client}>
-              {/* <ReduxProvider store={reduxStore}> */}
+              <ReduxProvider store={reduxStore}>
                 {/* <SettingsProvider
                   { ...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null }) }
                 > */}
                   {/* <SettingsConsumer>
                     {({ settings }) => ( */}
-                      <>
+                      <ThemeRegistry>
                         {/* <ThemeComponent settings={settings}> */}
                           {getLayout(
                               // <EthApp {...props}>
@@ -344,11 +346,11 @@ const RootLayout = ({ children }: { children: any }): JSX.Element => {
                             toastOptions={{ className: 'react-hot-toast' }}
                           />
                         </ReactHotToast> */}
-                      </>
+                      </ThemeRegistry>
                     {/* )}
                   </SettingsConsumer> */}
                 {/* </SettingsProvider> */}
-              {/* </ReduxProvider> */}
+              </ReduxProvider>
             </ApolloProvider>
           {/* </AclGuard> */}
         </AuthConsumer>

@@ -1,5 +1,5 @@
 // ThreeD Garden Base Styles
-import typography from '#/ui/themes/theme-light/base/typography'
+import typography from '#/ui/theme/themes/theme-light/base/typography'
 
 function configs(labels: any, datasets: any) {
   return {
