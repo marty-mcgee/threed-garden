@@ -10,13 +10,13 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden Helper Functions
-import gradientChartLine from '#/ui/themes/theme-light/functions/gradientChartLine'
+import gradientChartLine from '#/ui/theme/themes/theme-light/functions/gradientChartLine'
 
 // Chart configurations
 import configs from '#/pagesX/widgets/components/Chart/config'
 
 // ThreeD Garden Base Styles
-import colors from '#/ui/themes/theme-light/base/colors'
+import colors from '#/ui/theme/themes/theme-light/base/colors'
 
 // react-chartjs-2 components
 import { Line } from 'react-chartjs-2'

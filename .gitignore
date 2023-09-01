@@ -31,9 +31,9 @@ yarn-debug.log*
 yarn-error.log*
 
 # lock files
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
 
 # vs code
 *.code-workspace

@@ -9,7 +9,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden Base Styles
-import typography from '#/ui/themes/theme-light/base/typography'
+import typography from '#/ui/theme/themes/theme-light/base/typography'
 
 function Footer({ light }: { light?: boolean }): JSX.Element {
   const { size } = typography

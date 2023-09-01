@@ -23,7 +23,7 @@ import DefaultNavbarDropdown from '#/ui/elements/Navbars/DefaultNavbar/DefaultNa
 import DefaultNavbarMobile from '#/ui/elements/Navbars/DefaultNavbar/DefaultNavbarMobile'
 
 // ThreeD Garden Base Styles
-import breakpoints from '#/ui/themes/theme-light/base/breakpoints'
+import breakpoints from '#/ui/theme/themes/theme-light/base/breakpoints'
 
 // ThreeD Garden context
 import { useMaterialUIController } from '#/lib/contexts'
