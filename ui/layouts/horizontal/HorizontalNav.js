@@ -9,7 +9,7 @@ import themeConfig from '#/lib/config/themeConfig'
 // ** Menu Components
 import HorizontalNavItems from './HorizontalNavItems'
 
-const Navigation = (props) => {
+const HorizontalNavigation = (props) => {
   return (
     <Box
       className='menu-content'
@@ -28,4 +28,4 @@ const Navigation = (props) => {
   )
 }
 
-export default Navigation
+export default HorizontalNavigation

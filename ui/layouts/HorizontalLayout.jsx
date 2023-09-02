@@ -13,10 +13,10 @@ import themeConfig from '#/lib/config/themeConfig'
 
 // ** Components
 import Customizer from '#/ui/customizer'
-import Footer from './footer'
-import Navigation from './horizontal/navigation'
+import Footer from './footer/Footer'
+import Navigation from './horizontal/HorizontalNav'
 import ScrollToTop from '#/ui/components/scroll-to-top'
-import AppBarContent from './horizontal/app-bar-content'
+import AppBarContent from './horizontal/AppBar'
 
 // ** Util Import
 import { hexToRGBA } from '#/lib/utils/hex-to-rgba'

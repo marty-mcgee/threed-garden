@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react'
 import VerticalLayout from './VerticalLayout'
 import HorizontalLayout from './HorizontalLayout'
 
-const Layout = (props) => {
+const MainLayout = (props) => {
   // ** Props
   const { hidden, children, settings, saveSettings } = props
 
@@ -35,4 +35,4 @@ const Layout = (props) => {
   return <VerticalLayout {...props}>{children}</VerticalLayout>
 }
 
-export default Layout
+export default MainLayout

@@ -1,9 +1,10 @@
-'use client';
-import * as React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import NextAppDirEmotionCacheProvider from './EmotionCache';
-import theme from './theme';
+'use client'
+import * as React from 'react'
+import { ThemeProvider } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
+import NextAppDirEmotionCacheProvider from './EmotionCache'
+// import theme from './themes/theme'
+import theme from '#/ui/theme/themes/theme-dark'
 
 export default function ThemeRegistry({ settings, children }: { settings: any, children: React.ReactNode }) {
   return (
@@ -14,5 +15,5 @@ export default function ThemeRegistry({ settings, children }: { settings: any, c
         {children}
       </ThemeProvider>
     </NextAppDirEmotionCacheProvider>
-  );
+  )
 }

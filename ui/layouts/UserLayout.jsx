@@ -3,9 +3,9 @@
 
 import useMediaQuery from '@mui/material/useMediaQuery'
 
-// ** Layout
+// ** Main Layout
 // !Do not remove this Layout import
-import Layout from '#/ui/layouts/Layout'
+import MainLayout from '#/ui/layouts/MainLayout'
 
 // ** Navigation
 import VerticalNavItems from '#/ui/routes/navigation/vertical'
@@ -47,7 +47,7 @@ const UserLayout = ({ children }) => {
   const hidden = useMediaQuery((theme) => theme.breakpoints.down('lg'))
 
   return (
-    <Layout
+    <MainLayout
       hidden={hidden}
       settings={settings}
       saveSettings={saveSettings}
@@ -89,7 +89,7 @@ const UserLayout = ({ children }) => {
           })}
     >
       {children}
-    </Layout>
+    </MainLayout>
   )
 }
 

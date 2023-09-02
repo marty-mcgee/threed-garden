@@ -11,9 +11,9 @@ import PerfectScrollbar from 'react-perfect-scrollbar'
 import themeConfig from '#/lib/config/themeConfig'
 
 // ** Component Imports
-import Drawer from './Drawer'
+import VerticalNavDrawer from './VerticalNavDrawer'
 import VerticalNavItems from './VerticalNavItems'
-// import VerticalNavHeader from './VerticalNavHeader'
+import VerticalNavHeader from './VerticalNavHeader'
 
 // ** Util Import
 import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
@@ -32,7 +32,7 @@ const StyledBoxForShadow = styled(Box)(({ theme }) => ({
   },
 }))
 
-const Navigation = (props) => {
+const VerticalNavigation = (props) => {
   // ** Props
   const {
     hidden,
@@ -115,8 +115,8 @@ const Navigation = (props) => {
   const ScrollWrapper = hidden ? Box : PerfectScrollbar
 
   return (
-    <Drawer {...props}>
-      {/* <VerticalNavHeader {...props} /> */}
+    <VerticalNavDrawer {...props}>
+      <VerticalNavHeader {...props} />
       {beforeVerticalNavMenuContent && beforeVerticalNavMenuContentPosition === 'fixed'
         ? beforeVerticalNavMenuContent(props)
         : null}
@@ -171,8 +171,8 @@ const Navigation = (props) => {
       {afterVerticalNavMenuContent && afterVerticalNavMenuContentPosition === 'fixed'
         ? afterVerticalNavMenuContent(props)
         : null}
-    </Drawer>
+    </VerticalNavDrawer>
   )
 }
 
-export default Navigation
+export default VerticalNavigation

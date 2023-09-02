@@ -20,7 +20,7 @@ import Translations from '#/ui/layouts/common/Translations'
 import CanViewNavLink from '#/lib/auth/acl/CanViewNavLink'
 
 // ** Utils
-import { handleURLQueries } from '#/ui/layouts/common/utils'
+import { handleURLQueries } from '#/ui/layouts/common/Utils'
 
 // ** Styled Components
 const MenuNavLink = styled(ListItemButton)(({ theme }) => ({

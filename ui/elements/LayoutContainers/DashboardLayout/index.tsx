@@ -33,14 +33,14 @@ function DashboardLayout({ children, stickyNavbar }: { children: ReactNode; stic
         position: 'relative',
 
         [breakpoints.up('xl')]: {
-          marginLeft: miniSidenav ? pxToRem(80) : pxToRem(250),
+          marginLeft: miniSidenav ? pxToRem(80) : pxToRem(240),
           transition: transitions.create(['margin-left', 'margin-right'], {
             easing: transitions.easing.easeInOut,
             duration: transitions.duration.standard,
           }),
         },
         [breakpoints.down('xl')]: {
-          marginLeft: miniSidenav ? pxToRem(80) : pxToRem(250),
+          marginLeft: miniSidenav ? pxToRem(80) : pxToRem(240),
           transition: transitions.create(['margin-left', 'margin-right'], {
             easing: transitions.easing.easeInOut,
             duration: transitions.duration.standard,

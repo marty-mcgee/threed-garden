@@ -25,7 +25,7 @@ import ChevronRight from 'mdi-material-ui/ChevronRight'
 import themeConfig from '#/lib/config/themeConfig'
 
 // ** Utils
-import { hasActiveChild, removeChildren } from '#/ui/layouts/common/utils'
+import { hasActiveChild, removeChildren } from '#/ui/layouts/common/Utils'
 
 // ** Custom Components Imports
 import VerticalNavItems from './VerticalNavItems'
