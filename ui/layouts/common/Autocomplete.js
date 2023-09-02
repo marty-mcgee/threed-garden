@@ -53,7 +53,7 @@ import themeConfig from '#/lib/config/themeConfig'
 import UserIcon from '#/ui/layouts/common/UserIcon'
 
 // ** API Icon Import with object
-import { autocompleteIconObj } from './AutocompleteIconObj'
+import { autocompleteIconObj } from './autocompleteIconObj'
 
 const defaultSuggestionsData = [
   {
