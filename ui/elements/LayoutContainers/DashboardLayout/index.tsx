@@ -2,7 +2,7 @@ import { useEffect, ReactNode } from 'react'
 
 // nextjs components
 // import { useLocation } from "react-router-dom"
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -16,7 +16,7 @@ function DashboardLayout({ children, stickyNavbar }: { children: ReactNode; stic
   // const { pathname } = useLocation()
   // const { pathname } = useRouter()
   const router = useRouter()
-  const { pathname } = router
+  const pathname = usePathname()
   const route = pathname.split('/').slice(1)
 
   useEffect(() => {

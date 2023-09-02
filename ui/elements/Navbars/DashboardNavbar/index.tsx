@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 // import { useLocation, Link } from "react-router-dom"
 // nextjs components
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 // @material-ui core components
 import type { Theme } from '@mui/material/styles'
@@ -49,7 +49,7 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
   // const route = useLocation().pathname.split("/").slice(1)
   // const { pathname } = useRouter()
   const router = useRouter()
-  const { pathname } = router
+  const pathname = usePathname()
   const route = pathname.split('/').slice(1)
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import { useEffect, useState, ReactNode } from 'react'
 
 // nextjs components
 // import { useLocation, NavLink } from "react-router-dom"
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import NextLink from "next/link"
 // import NextLink from '#/lib/utils/NextLink'
 
@@ -71,8 +71,9 @@ function Sidenav({ color, brandLogo, brandName, light, routes, ...rest }: Props)
   const [controller, dispatch] = useMaterialUIController()
   const { miniSidenav, transparentSidenav, transparentNavbar, whiteSidenav, darkMode } = controller
   // const route = useLocation()
-  const route = useRouter()
-  const { pathname } = route
+  const router = useRouter()
+  const pathname = usePathname()
+  const route = pathname.split('/').slice(1)
   const collapseName = pathname.split('/').slice(1)[0]
   const items = pathname.split('/').slice(1)
   const itemParentName = items[1]
@@ -122,7 +123,7 @@ function Sidenav({ color, brandLogo, brandName, light, routes, ...rest }: Props)
     }
 
     /**
-     The event listener that's calling the handleMiniSidenav function when resizing the window.
+      The event listener that's calling the handleMiniSidenav function when resizing the window.
     */
     window.addEventListener('resize', handleMiniSidenav)
 
