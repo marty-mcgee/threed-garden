@@ -3,7 +3,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import MuiSwipeableDrawer from '@mui/material/SwipeableDrawer'
 
 const SwipeableDrawer = styled(MuiSwipeableDrawer)({
-  overflowX: 'hidden',
+  overflowX: 'scroll', // hidden | scroll
   transition: 'width .25s ease-in-out',
   '& ul': {
     listStyle: 'none',
@@ -15,7 +15,7 @@ const SwipeableDrawer = styled(MuiSwipeableDrawer)({
   '& .MuiDrawer-paper': {
     left: 'unset',
     right: 'unset',
-    overflowX: 'hidden',
+    overflowX: 'scroll', // hidden | scroll
     transition: 'width .25s ease-in-out, box-shadow .25s ease-in-out',
   },
 })

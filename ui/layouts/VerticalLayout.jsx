@@ -13,10 +13,10 @@ import ArrowUp from 'mdi-material-ui/ArrowUp'
 import themeConfig from '#/lib/config/themeConfig'
 
 // ** Components
-import AppBar from './vertical/appBar'
+import AppBar from './vertical/AppBar'
 import Customizer from '#/ui/customizer'
-import Navigation from './vertical/navigation'
-import Footer from './footer'
+import Navigation from './vertical/VerticalNav'
+import Footer from './footer/Footer'
 import ScrollToTop from '#/ui/components/scroll-to-top'
 
 // ** Styled Component
@@ -24,15 +24,15 @@ import DatePickerWrapper from '#/ui/styles/react-datepicker'
 
 const VerticalLayoutWrapper = styled('div')({
   height: '100%',
-  display: 'flex',
-  flexGrow: 1,
+  // display: 'flex',
+  // flexGrow: 1,
   // border: '1px solid pink',
   overflow: 'scroll',
 })
 
 const MainContentWrapper = styled(Box)({
-  display: 'flex',
-  flexGrow: 1,
+  // display: 'flex',
+  // flexGrow: 1,
   minWidth: 0,
   minHeight: 'calc(100vh - 64px - 0px)', // '100vh',
   maxHeight: 'calc(100vh - 64px - 0px)', // '100vh',
@@ -40,7 +40,7 @@ const MainContentWrapper = styled(Box)({
 })
 
 const ContentWrapper = styled('main')(({ theme }) => ({
-  flexGrow: 1,
+  // flexGrow: 1,
   width: '100%',
   padding: theme.spacing(2), // number * 0.25rem (6 = 1.5rem = 24px, 4 = 1.0rem = 16px, ...)
   transition: 'padding .25s ease-in-out',
@@ -81,7 +81,7 @@ const VerticalLayout = (props) => {
           <ContentWrapper
             className='layout-page-content'
             sx={{
-              display: 'flex',
+              // display: 'flex',
               padding: '0px',
               border: '0px dashed red',
               ...(contentWidth === 'boxed' && {

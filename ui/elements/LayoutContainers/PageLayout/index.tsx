@@ -17,7 +17,7 @@ interface Props {
 }
 
 function PageLayout({ background, children }: Props): JSX.Element {
-  const [, dispatch] = useMaterialUIController()
+  const [dispatch] = useMaterialUIController()
   // const { pathname } = useLocation()
   // const { pathname } = useRouter()
   const router = useRouter()

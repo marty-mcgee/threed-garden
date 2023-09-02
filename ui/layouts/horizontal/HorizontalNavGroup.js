@@ -36,7 +36,7 @@ import CanViewNavGroup from '#/lib/auth/acl/CanViewNavGroup'
 
 // ** Utils
 import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
-import { hasActiveChild } from '#/ui/layouts/common/utils'
+import { hasActiveChild } from '#/ui/layouts/common/Utils'
 
 // ** Styled Components
 const ListItem = styled(MuiListItem)(({ theme }) => ({
