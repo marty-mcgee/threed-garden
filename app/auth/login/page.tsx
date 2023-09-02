@@ -38,7 +38,7 @@ import Facebook from 'mdi-material-ui/Facebook'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 
-// ** Form Importsinit eth app...
+// ** Form Imports
 import * as yup from 'yup'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -112,7 +112,8 @@ const SVGWrapper = styled(Box)(({ theme }: { theme: any }) => {
 
 const RightWrapper = styled(Box)(({ theme }: { theme: any }) => {
   return {
-    width: '100%',
+    display: 'flex',
+    // width: '100%',
     [theme.breakpoints.up('md')]: {
       maxWidth: 400,
     },
@@ -121,8 +122,9 @@ const RightWrapper = styled(Box)(({ theme }: { theme: any }) => {
 
 const BoxWrapper = styled(Box)(({ theme }: { theme: any }) => {
   return {
+    display: 'flex',
     [theme.breakpoints.down('xl')]: {
-      width: '100%',
+      // width: '100%',
     },
     [theme.breakpoints.down('md')]: {
       maxWidth: 400,
@@ -218,8 +220,8 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
       {!hidden ? (
         <Box
           sx={{
-            flex: 1,
             display: 'flex',
+            flex: 1,
             position: 'relative',
             alignItems: 'top',
             justifyContent: 'center',
@@ -248,6 +250,7 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
             p: 12,
             height: '100%',
             display: 'flex',
+            flex: 1,
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: 'background.paper',

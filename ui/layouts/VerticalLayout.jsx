@@ -25,6 +25,7 @@ import DatePickerWrapper from '#/ui/styles/react-datepicker'
 const VerticalLayoutWrapper = styled('div')({
   height: '100%',
   display: 'flex',
+  flexGrow: 1,
   // border: '1px solid pink',
   overflow: 'scroll',
 })
@@ -74,28 +75,14 @@ const VerticalLayout = (props) => {
         {...props}
       />
       <VerticalLayoutWrapper className='layout-wrapper'>
-        {/* LEFT NAVIGATION PANEL DRAWER
-        {navHidden &&
-        themeConfig.layout === 'vertical' &&
-        !(navHidden && settings.lastLayout === 'horizontal') ? null : (
-          <Navigation
-            navWidth={navWidth}
-            navHover={navHover}
-            navVisible={navVisible}
-            setNavHover={setNavHover}
-            setNavVisible={setNavVisible}
-            collapsedNavWidth={collapsedNavWidth}
-            toggleNavVisibility={toggleNavVisibility}
-            navigationBorderWidth={navigationBorderWidth}
-            {...props}
-          />
-        )}
-*/}
+
         {/* MAIN CONTENT */}
         <MainContentWrapper className='layout-content-wrapper'>
           <ContentWrapper
             className='layout-page-content'
             sx={{
+              display: 'flex',
+              padding: '0px',
               border: '0px dashed red',
               ...(contentWidth === 'boxed' && {
                 mx: 'auto',
@@ -104,6 +91,22 @@ const VerticalLayout = (props) => {
               }),
             }}
           >
+          {/* LEFT NAVIGATION PANEL DRAWER */}
+          {navHidden &&
+          themeConfig.layout === 'vertical' &&
+          !(navHidden && settings.lastLayout === 'horizontal') ? null : (
+            <Navigation
+              navWidth={navWidth}
+              navHover={navHover}
+              navVisible={navVisible}
+              setNavHover={setNavHover}
+              setNavVisible={setNavVisible}
+              collapsedNavWidth={collapsedNavWidth}
+              toggleNavVisibility={toggleNavVisibility}
+              navigationBorderWidth={navigationBorderWidth}
+              {...props}
+            />
+          )}
             {children}
           </ContentWrapper>
 

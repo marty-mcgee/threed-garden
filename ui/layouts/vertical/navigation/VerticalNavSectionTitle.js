@@ -55,9 +55,9 @@ const VerticalNavSectionTitle = (props) => {
     } else {
       return {
         color: theme.palette.text.disabled,
-        '& .MuiDivider-root:before, & .MuiDivider-root:after, & hr': {
-          borderColor: `rgba(${theme.palette.customColors.main}, ${navCollapsed && !navHover ? 0.3 : 0.12})`,
-        },
+        // '& .MuiDivider-root:before, & .MuiDivider-root:after, & hr': {
+        //   borderColor: `rgba(${theme.palette.customColors.main}, ${navCollapsed && !navHover ? 0.3 : 0.12})`,
+        // },
       }
     }
   }
