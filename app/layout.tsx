@@ -51,9 +51,9 @@ import UserLayout from '#/ui/layouts/UserLayout' // this is your main layout
 import Spinner from '#/ui/components/spinner'
 
 // ** CSS Styles
-import '#/styles/globals.css'
-// import stylesGlobal from '#/styles/globals.module.css'
-// import stylesDemo from '#/styles/demo/demo.module.css'
+import '#/ui/styles/globals.css'
+// import stylesGlobal from '#/ui/styles/globals.module.css'
+// import stylesDemo from '#/ui/styles/demo/demo.module.css'
 import '#/lib/threed/styles/index.css'
 
 // ** Colorful Console Messages: Utility
