@@ -52,7 +52,7 @@ import { useSettings } from '#/ui/hooks/useSettings'
 import themeConfig from '#/lib/config/themeConfig'
 
 // ** Layout Import
-import BlankLayout from '#/ui/layouts/BlankLayout'
+// import BlankLayout from '#/ui/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV2 from '#/ui/pages/auth/FooterIllustrationsV2'
@@ -112,8 +112,8 @@ const SVGWrapper = styled(Box)(({ theme }: { theme: any }) => {
 
 const RightWrapper = styled(Box)(({ theme }: { theme: any }) => {
   return {
-    display: 'flex',
-    // width: '100%',
+    // display: 'flex',
+    width: '100%',
     [theme.breakpoints.up('md')]: {
       maxWidth: 400,
     },
@@ -122,9 +122,9 @@ const RightWrapper = styled(Box)(({ theme }: { theme: any }) => {
 
 const BoxWrapper = styled(Box)(({ theme }: { theme: any }) => {
   return {
-    display: 'flex',
+    // display: 'flex',
     [theme.breakpoints.down('xl')]: {
-      // width: '100%',
+      width: '100%',
     },
     [theme.breakpoints.down('md')]: {
       maxWidth: 400,
@@ -243,18 +243,18 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
         </Box>
       ) : null}
       <RightWrapper
-        sx={skin === 'bordered' && !hidden ? { borderLeft: `1px solid ${theme.palette.divider}` } : {}}
+        sx={skin === 'bordered' && !hidden ? { borderLeft: `1px solid ${theme.palette.divider}` } : { borderLeft: `3px solid blue` }}
       >
         <Box
-          sx={{
-            p: 12,
-            height: '100%',
-            display: 'flex',
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'background.paper',
-          }}
+          // sx={{
+          //   p: 8,
+          //   height: '100%',
+          //   // display: 'flex',
+          //   // flex: 1,
+          //   alignItems: 'center',
+          //   justifyContent: 'center',
+          //   backgroundColor: 'background.paper',
+          // }}
         >
           <BoxWrapper>
             <Box
@@ -335,7 +335,7 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.email)}
-                      placeholder='mcgee.marty@gmail.com'
+                      placeholder=''
                     />
                   )}
                 />
@@ -471,7 +471,7 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
     </Box>
   )
 }
-LoginPage.getLayout = (page: any) => <BlankLayout>{page}</BlankLayout>
+LoginPage.getLayout = (page: any) => <>{page}</>
 LoginPage.guestGuard = true
 
 export default LoginPage

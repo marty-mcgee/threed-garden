@@ -35,12 +35,13 @@ const BlankLayoutWithAppBar = (props) => {
     <BlankLayoutWithAppBarWrapper>
       <AppBar />
       <Box
-        className='app-content'
+        id='app-content'
         sx={{
           overflowX: 'hidden',
           position: 'relative',
           minHeight: (theme) => `calc(100vh - ${theme.spacing(theme.mixins.toolbar.minHeight / 4)})`,
-        }}>
+        }}
+      >
         {children}
       </Box>
     </BlankLayoutWithAppBarWrapper>

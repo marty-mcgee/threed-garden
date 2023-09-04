@@ -110,11 +110,16 @@ const Drawer = (props) => {
       }}
       sx={{
         width: navCollapsed ? collapsedNavWidth : navWidth,
+        flexShrink: 0,
         '& .MuiDrawer-paper': {
           ...drawerColor(),
           ...drawerBgColor(),
           ...(!hidden && navCollapsed && navHover ? { boxShadow: 9 } : {}),
-          borderRight: navigationBorderWidth === 0 ? 0 : `${navigationBorderWidth}px solid ${theme.palette.divider}`,
+          borderRight: navigationBorderWidth === 0 ? 0 : `${navigationBorderWidth}px solid grey`, // ${theme.palette.divider}`,
+          // boxSizing: 'border-box',
+          // top: ['48px', '56px', '64px'],
+          // height: 'auto',
+          // bottom: 0,
         },
       }}>
       {children}

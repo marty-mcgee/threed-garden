@@ -103,11 +103,11 @@ const VerticalNavigation = (props) => {
         0.3
       )} 75%,transparent)`
     } else {
-      return `linear-gradient(${theme.palette.background.default} 5%,${hexToRGBA(
-        theme.palette.background.default,
+      return `linear-gradient(${theme.palette.background.paper} 5%,${hexToRGBA(
+        theme.palette.background.paper,
         0.85
       )} 30%,${hexToRGBA(theme.palette.background.default, 0.5)} 65%,${hexToRGBA(
-        theme.palette.background.default,
+        theme.palette.background.paper,
         0.3
       )} 75%,transparent)`
     }
@@ -116,7 +116,7 @@ const VerticalNavigation = (props) => {
 
   return (
     <VerticalNavDrawer {...props}>
-      <VerticalNavHeader {...props} />
+      {/* <VerticalNavHeader {...props} /> */}
       {beforeVerticalNavMenuContent && beforeVerticalNavMenuContentPosition === 'fixed'
         ? beforeVerticalNavMenuContent(props)
         : null}
@@ -126,7 +126,7 @@ const VerticalNavigation = (props) => {
           sx={{ background: shadowBgColor() }}
         />
       )}
-      <Box sx={{ position: 'relative', overflow: 'visible', border: '0px solid red' }}>
+      <Box sx={{ position: 'relative', overflow: 'visible', border: '3px solid red' }}>
         <ScrollWrapper
           // containerRef={ref => handleInfiniteScroll(ref)}
           {...(hidden

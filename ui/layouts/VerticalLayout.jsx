@@ -26,22 +26,26 @@ const VerticalLayoutWrapper = styled('div')({
   height: '100%',
   // display: 'flex',
   // flexGrow: 1,
-  // border: '1px solid pink',
+  border: '3px solid pink', // is working here
   overflow: 'scroll',
 })
 
 const MainContentWrapper = styled(Box)({
+  border: '3px dashed blue', // is working here
   // display: 'flex',
   // flexGrow: 1,
   minWidth: 0,
   minHeight: 'calc(100vh - 64px - 0px)', // '100vh',
-  maxHeight: 'calc(100vh - 64px - 0px)', // '100vh',
+  // maxHeight: 'calc(100vh - 64px - 0px)', // '100vh',
   flexDirection: 'column',
 })
 
 const ContentWrapper = styled('main')(({ theme }) => ({
+  border: '3px dashed green', // not working here
   // flexGrow: 1,
-  width: '100%',
+  // width: '100%',
+  minHeight: 'calc(100vh - 64px - 0px)', // '100vh',
+  // maxHeight: 'calc(100vh - 64px - 0px)', // '100vh',
   padding: theme.spacing(2), // number * 0.25rem (6 = 1.5rem = 24px, 4 = 1.0rem = 16px, ...)
   transition: 'padding .25s ease-in-out',
   [theme.breakpoints.down('sm')]: {
@@ -58,7 +62,7 @@ const VerticalLayout = (props) => {
   const { skin, navHidden, contentWidth } = settings
   const { navigationSize, disableCustomizer, collapsedNavigationSize } = themeConfig
   const navWidth = navigationSize
-  const navigationBorderWidth = skin === 'bordered' ? 1 : 0
+  const navigationBorderWidth = skin === 'bordered' ? 1 : 3
   const collapsedNavWidth = collapsedNavigationSize
 
   // ** States
@@ -69,11 +73,43 @@ const VerticalLayout = (props) => {
   const toggleNavVisibility = () => setNavVisible(!navVisible)
 
   return (
-    <div>
+    <>
       <AppBar
         toggleNavVisibility={toggleNavVisibility}
+        sx={{
+          border: '3px dashed lightblue', // not working here
+          // ...(contentWidth === 'boxed' && {
+          //   mx: 'auto',
+          //   '@media (min-width:1440px)': { maxWidth: 1440 },
+          //   '@media (min-width:1200px)': { maxWidth: '100%' },
+          // }),
+        }}
         {...props}
       />
+      {/* LEFT NAVIGATION PANEL DRAWER */}
+      {navHidden &&
+      themeConfig.layout === 'vertical' &&
+      !(navHidden && settings.lastLayout === 'horizontal') ? null : (
+        <Navigation
+          navWidth={navWidth}
+          navHover={navHover}
+          navVisible={navVisible}
+          setNavHover={setNavHover}
+          setNavVisible={setNavVisible}
+          collapsedNavWidth={collapsedNavWidth}
+          toggleNavVisibility={toggleNavVisibility}
+          navigationBorderWidth={navigationBorderWidth}
+          sx={{
+            border: '1px dashed orange', // not working here
+            // ...(contentWidth === 'boxed' && {
+            //   mx: 'auto',
+            //   '@media (min-width:1440px)': { maxWidth: 1440 },
+            //   '@media (min-width:1200px)': { maxWidth: '100%' },
+            // }),
+          }}
+          {...props}
+        />
+      )}
       <VerticalLayoutWrapper className='layout-wrapper'>
 
         {/* MAIN CONTENT */}
@@ -81,9 +117,10 @@ const VerticalLayout = (props) => {
           <ContentWrapper
             className='layout-page-content'
             sx={{
-              // display: 'flex',
+              display: 'flex',
+              flexShrink: '0',
               padding: '0px',
-              border: '0px dashed red',
+              border: '2px dashed red', // is working here
               ...(contentWidth === 'boxed' && {
                 mx: 'auto',
                 '@media (min-width:1440px)': { maxWidth: 1440 },
@@ -91,27 +128,16 @@ const VerticalLayout = (props) => {
               }),
             }}
           >
-          {/* LEFT NAVIGATION PANEL DRAWER */}
-          {navHidden &&
-          themeConfig.layout === 'vertical' &&
-          !(navHidden && settings.lastLayout === 'horizontal') ? null : (
-            <Navigation
-              navWidth={navWidth}
-              navHover={navHover}
-              navVisible={navVisible}
-              setNavHover={setNavHover}
-              setNavVisible={setNavVisible}
-              collapsedNavWidth={collapsedNavWidth}
-              toggleNavVisibility={toggleNavVisibility}
-              navigationBorderWidth={navigationBorderWidth}
-              {...props}
-            />
-          )}
             {children}
           </ContentWrapper>
 
           {/* FOOTER CONTENT */}
-          <Footer {...props} />
+          <Footer
+            sx={{
+              border: '1px dashed yellow', // not working here
+            }}
+            {...props}
+          />
         </MainContentWrapper>
 
         {/* SHOW/HIDE MODALS */}
@@ -135,7 +161,7 @@ const VerticalLayout = (props) => {
           </Fab>
         </ScrollToTop>
       )}
-    </div>
+    </>
   )
 }
 

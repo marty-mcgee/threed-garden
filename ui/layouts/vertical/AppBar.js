@@ -46,6 +46,7 @@ const LayoutAppBar = (props) => {
 
   const appBarFixedStyles = () => {
     return {
+      border: '3px dashed orange !important', // not working here
       px: `${theme.spacing(5)} !important`,
       ...(appBarBlur && { backdropFilter: 'blur(8px)' }),
       boxShadow: theme.shadows[skin === 'bordered' ? 0 : 3],

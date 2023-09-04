@@ -49,7 +49,7 @@ const Footer = (props) => {
               ? { border: `1px solid ${theme.palette.divider}`, borderBottomWidth: 0 }
               : {
                   boxShadow: `0 -4px 8px -2px rgba(${
-                    theme.palette.mode === 'light' ? theme.palette.customColors.main : '19, 17, 32'
+                    theme.palette.mode === 'light' ? theme.palette.customColors?.main : '19, 17, 32'
                   }, ${theme.palette.mode === 'light' ? 0.2 : 0.42})`,
                 }),
           }),
