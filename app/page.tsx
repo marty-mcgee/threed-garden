@@ -7,7 +7,8 @@
 // RESOURCES (to import)
 
 // ** Next
-import type { NextPage } from 'next'
+// import type { NextPage } from 'next'
+import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -61,7 +62,8 @@ const getHomeRoute = (role: any) => {
 
 // export default function Page<NextPage>() {
 // const AppPage: NextPage<TPageProps> = (): JSX.Element => {
-const AppPage: NextPage = (): JSX.Element => {
+// const AppPage: NextPage = (): JSX.Element => {
+const AppPage: TNextPageWithProps = (): JSX.Element => {
   // **
   console.debug('%c🥕 AppPage', ccm.green)
 
@@ -94,5 +96,8 @@ const AppPage: NextPage = (): JSX.Element => {
   // ** Return JSX
   return <Spinner />
 }
+AppPage.getLayout = (page: any) => {page} // <BlankLayout>{page}</BlankLayout>
+AppPage.authGuard = false
+AppPage.guestGuard = false
 
 export default AppPage

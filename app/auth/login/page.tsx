@@ -52,7 +52,7 @@ import { useSettings } from '#/ui/hooks/useSettings'
 import themeConfig from '#/lib/config/themeConfig'
 
 // ** Layout Import
-// import BlankLayout from '#/ui/layouts/BlankLayout'
+import BlankLayout from '#/ui/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV2 from '#/ui/pages/auth/FooterIllustrationsV2'
@@ -83,6 +83,8 @@ const appVersion: string = require('package.json').version
 const SVGWrapper = styled(Box)(({ theme }: { theme: any }) => {
   return {
     width: '100%',
+    marginTop: '64px',
+    marginBottom: '64px',
     padding: theme.spacing(10),
     // paddingRight: '0 !important',
     [theme.breakpoints.down('lg')]: {
@@ -216,19 +218,56 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
 
   // ** Return JSX
   return (
+    <>
     <Box className='content-right'>
-      {!hidden ? (
-        <Box
+
+      {/* APP LOGO + TITLE BOX */}
+      <Box
+        sx={{
+          top: 4,
+          left: 16,
+          display: 'flex',
+          position: 'absolute',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {/* App Logo */}
+        <Link href='/'>
+          <Image
+            src={logo}
+            width={48}
+            height={48}
+            alt={themeConfig.templateName}
+          />
+        </Link>
+        {/* App Name */}
+        <Typography
+          variant='h6'
           sx={{
-            display: 'flex',
-            flex: 1,
-            position: 'relative',
-            alignItems: 'top',
-            justifyContent: 'center',
+            ml: 3,
+            lineHeight: 1,
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            fontSize: '1.5rem !important',
           }}
         >
+          {themeConfig.templateName}
+        </Typography>
+      </Box>
+
+      {!hidden ? (
+        <Box
+          // sx={{
+          //   display: 'flex',
+          //   flex: 1,
+          //   position: 'relative',
+          //   alignItems: 'top',
+          //   justifyContent: 'center',
+          // }}
+        >
           <SVGWrapper>
-            <Box sx={{ height: 64 }} />
+            {/* <Box sx={{ height: 64 }} /> */}
             <FarmbotDemoSVG />
           </SVGWrapper>
           {/*
@@ -242,58 +281,33 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
           <FooterIllustrationsV2 />
         </Box>
       ) : null}
-      <RightWrapper
-        sx={skin === 'bordered' && !hidden ? { borderLeft: `1px solid ${theme.palette.divider}` } : { borderLeft: `3px solid blue` }}
-      >
+      {/* <RightWrapper
+        sx={
+          skin === 'bordered' && !hidden ? {
+            borderLeft: `1px solid ${theme.palette.divider}`
+          } :
+          {
+            borderLeft: `3px solid #111111`
+          }
+        }
+      > */}
         <Box
-          // sx={{
-          //   p: 8,
-          //   height: '100%',
-          //   // display: 'flex',
-          //   // flex: 1,
-          //   alignItems: 'center',
-          //   justifyContent: 'center',
-          //   backgroundColor: 'background.paper',
-          // }}
+          sx={{
+            p: 8,
+            height: '100%',
+            // display: 'flex',
+            // flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#A0A000', // 'olive', // '#97B553', // 'green', // 'background.paper',
+          }}
         >
           <BoxWrapper>
-            <Box
-              sx={{
-                top: 30,
-                left: 40,
-                display: 'flex',
-                position: 'absolute',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              {/* App Logo */}
-              <Link href='/'>
-                <Image
-                  src={logo}
-                  width={48}
-                  height={48}
-                  alt={themeConfig.templateName}
-                />
-              </Link>
-              {/* App Name */}
-              <Typography
-                variant='h6'
-                sx={{
-                  ml: 3,
-                  lineHeight: 1,
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  fontSize: '1.5rem !important',
-                }}
-              >
-                {themeConfig.templateName}
-              </Typography>
-            </Box>
             <Box sx={{ mb: 6, mt: 1 }}>
               <TypographyStyled variant='h5'>
                 🌱 Welcome to
-                {themeConfig.templateName}                 {appVersion}
+                {themeConfig.templateName}
+                {appVersion}
               </TypographyStyled>
               <Typography variant='body2'>Please sign in to start your adventure...</Typography>
             </Box>
@@ -467,11 +481,13 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
             </form>
           </BoxWrapper>
         </Box>
-      </RightWrapper>
+      {/* </RightWrapper> */}
     </Box>
+    </>
   )
 }
-LoginPage.getLayout = (page: any) => <>{page}</>
+LoginPage.getLayout = (page: any) => {page} // <BlankLayout>{page}</BlankLayout>
+LoginPage.authGuard = false
 LoginPage.guestGuard = true
 
 export default LoginPage
