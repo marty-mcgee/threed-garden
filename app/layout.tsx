@@ -45,7 +45,8 @@ import { defaultACLObj } from '#/lib/config/acl'
 
 // ** Layouts
 import BlankLayout from '#/ui/layouts/BlankLayout' // this is your login layout
-import UserLayout from '#/ui/layouts/UserLayout' // this is your main layout
+import UserLayout from '#/ui/layouts/UserLayout' // this is your user-authorized layout
+import MainLayout from '#/ui/layouts/MainLayout' // this is your default layout
 
 // ** Helper Components
 import Spinner from '#/ui/components/spinner'
@@ -89,40 +90,40 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
 
 const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
   if (!guestGuard && !authGuard) {
-    // console.debug('%c📛 noGuard loading...', ccm.red)
+    console.debug('%c📛 noGuard loading...', ccm.red)
     // console.debug('%c=======================================', ccm.black)
     return (
       <>{children}</>
     )
   }
   else if (authGuard) {
-    // console.debug('%c🔱 authGuard loading...', ccm.red)
+    console.debug('%c🔱 authGuard loading...', ccm.red)
     // console.debug('%c=======================================', ccm.black)
     return (
-      <AuthGuard fallback={<Spinner />}>
-        {children}
-      </AuthGuard>
+      // <AuthGuard fallback={<Spinner />}>
+      <>{children}</>
+      // </AuthGuard>
     )
   }
   else if (guestGuard) {
-    // console.debug('%c⚜ guestGuard loading...', ccm.red)
+    console.debug('%c⚜ guestGuard loading...', ccm.red)
     // console.debug('%c=======================================', ccm.black)
     return (
       // <GuestGuard fallback={<Spinner />}>
-      //   {children}
+      //   <>{children}</>
       // </GuestGuard>
-      <AuthGuard fallback={<Spinner />}>
-        {children}
-      </AuthGuard>
+      // <AuthGuard fallback={<Spinner />}>
+        <>{children}</>
+      // </AuthGuard>
     )
   }
   else {
-    // console.debug('%c🔱 authGuard loading (by default)...', ccm.red)
+    console.debug('%c🔱 authGuard loading (by default)...', ccm.red)
     // console.debug('%c=======================================', ccm.black)
     return (
-      <AuthGuard fallback={<Spinner />}>
-        {children}
-      </AuthGuard>
+      // <AuthGuard fallback={<Spinner />}>
+        <>{children}</>
+      // </AuthGuard>
     )
   }
 }
@@ -215,12 +216,15 @@ const AppLayout = ({ children }: { children: any }): JSX.Element => {
                   <SettingsConsumer>
                     {({ settings }) => (
                       <ThemeRegistry settings={settings}>
-                        {getLayout(
-                          // <EthApp {...props}>
-                            // <Component {...pageProps} />
-                            {children}
-                          // </EthApp>
-                        )}
+                        {children}
+                        {/* {
+                          getLayout(
+                            // <EthApp {...props}>
+                              // <Component {...pageProps} />
+                              {children}
+                            // </EthApp>
+                          )
+                        } */}
                       </ThemeRegistry>
                     )}
                   </SettingsConsumer>

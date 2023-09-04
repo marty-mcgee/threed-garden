@@ -15,7 +15,7 @@ import Typography from '@mui/material/Typography'
 
 // ** Layout Import
 // import BlankLayout from '#/ui/layouts/BlankLayout'
-import DashboardLayout from '~/ui/elements/LayoutContainers/DashboardLayout'
+// import DashboardLayout from '~/ui/elements/LayoutContainers/DashboardLayout'
 // import DashboardNavbar from '~/ui/elements/Navbars/DashboardNavbar'
 
 // ** Scaffold-ETH Imports
@@ -24,11 +24,11 @@ import DashboardLayout from '~/ui/elements/LayoutContainers/DashboardLayout'
 
 // ==============================================================
 
-// Index Page (Forwarding Page)
-// const Page = (props) => {
-// const Page: FC<TPageProps> = (props) => {
-// const Page: NextPage<TPageProps> = (props) => {
-const Page: TNextPageWithProps = (): JSX.Element => {
+// Home Page (Landing Page)
+// const HomePage = (props) => {
+// const HomePage: FC<TPageProps> = (props) => {
+// const HomePage: NextPage<TPageProps> = (props) => {
+const HomePage: TNextPageWithProps = (): JSX.Element => {
   //
 
   return (
@@ -59,9 +59,10 @@ const Page: TNextPageWithProps = (): JSX.Element => {
     </>
   )
 }
+HomePage.getLayout = (page: any) => {page}
+// HomePage.getLayout = (page: any) => <DashboardLayout>{page}</DashboardLayout>
+// HomePage.getLayout = (page: any) => <BlankLayout>{page}</BlankLayout>
+HomePage.authGuard = true
+HomePage.guestGuard = true
 
-Page.getLayout = (page: any) => <DashboardLayout>{page}</DashboardLayout>
-// Page.getLayout = (page: any) => <BlankLayout>{page}</BlankLayout>
-Page.guestGuard = true
-
-export default Page
+export default HomePage
