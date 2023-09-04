@@ -5,7 +5,7 @@
 'use client'
 
 // ** Next
-import { useRouter, usePathname } from 'next/navigation'
+// import { useRouter, usePathname } from 'next/navigation'
 
 // ** React
 import type { ReactNode } from 'react'
@@ -41,7 +41,7 @@ import ThemeRegistry from '#/ui/theme/ThemeRegistry'
 // ** Configs
 import '#/lib/config/i18n' // NOT YET SUPPORTED IN NEXT 13
 import { defaultACLObj } from '#/lib/config/acl'
-import themeConfig from '#/lib/config/themeConfig'
+// import themeConfig from '#/lib/config/themeConfig'
 
 // ** Layouts
 import BlankLayout from '#/ui/layouts/BlankLayout' // this is your login layout
@@ -128,41 +128,6 @@ const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
 }
 
 // ==============================================================
-// ** Home Route
-/*
-// Set Home Forwarding (to First Page) URL, based on User Role
-const getHomeRoute = (role: any) => {
-  // user: acl: client: default main app index page
-  if (role === 'client') {
-    // return '/home'
-    // return '/participate'
-    return '/acl' // authorized credentials list? (boundary)
-  }
-  // user: acl: admin: default main app index page
-  else if (role === 'admin') {
-    // return '/' // this page (for testing. not ideal for production.)
-    return '/home'
-    return '/participate'
-  }
-  // user: acl: guest: default main app index page
-  else {
-    // special route requests
-    // return '/' // this page (for testing. not ideal for production.)
-    // if (! '/participate') {
-      return '/auth/login'
-    // }
-    // else if ('/participate') {
-    //   return '/participate'
-    // }
-  }
-
-  // user: acl: unauthorized: default main app index page
-  // default default default main app index page
-  return '/auth/login'
-  return '/'
-}
-*/
-// ==============================================================
 // ** Construct App using Function Component (Functional Noun)
 
 // const App = (props: any) => {
@@ -178,42 +143,7 @@ const AppLayout = ({ children }: { children: any }): JSX.Element => {
 
   // ** Hooks
   const auth = useAuth()
-  /*
-  const router = useRouter()
-  const pathname = usePathname()
 
-  // ** OnMount (+ optional return OnUnmount)
-  // useEffect(() => {
-
-    // user AUTHORIZED?
-    if (auth.user && auth.user.role) {
-      // get Home URL
-      const homeRoute = getHomeRoute(auth.user.role)
-      // console.debug('%c=======================================', ccm.black)
-      console.debug('%c✅ user AUTHORIZED', ccm.lightgreen, auth.user, homeRoute)
-      // console.debug('%c=======================================', ccm.black)
-
-      // redirect user to Home URL
-      // router.replace(homeRoute)
-      router.push(homeRoute)
-    }
-    // user NOT AUTHORIZED!
-    else {
-      // get Home URL
-      const homeRoute = getHomeRoute('unauthorized')
-      // console.debug('%c=======================================', ccm.black)
-      console.debug('%c❌ user NOT AUTHORIZED', ccm.red, auth.user, homeRoute)
-      // console.debug('%c=======================================', ccm.black)
-
-      // redirect user to their Home URL
-      // if (props.childProp.segment !== 'auth') {
-        // router.replace(homeRoute)
-        // router.push(homeRoute)
-      // }
-    }
-
-  // }, [])
-  */
   // console.debug('%c🥕 auth', ccm.orange, auth)
   // console.debug('%c🥕 router', ccm.orange, router)
   // console.debug('%c🥕 children', ccm.orange, children)
