@@ -6,7 +6,7 @@ import { ThemeProvider, createTheme, responsiveFontSizes } from '@mui/material/s
 import CssBaseline from '@mui/material/CssBaseline'
 // ** Global Styles
 import GlobalStyles from '@mui/material/GlobalStyles'
-import GlobalStyling from '#/ui/theme/GlobalStyles'
+import GlobalStyling from '#/ui/theme/GlobalStyling'
 
 // ** Theme
 import themeConfig from '#/lib/config/themeConfig'
