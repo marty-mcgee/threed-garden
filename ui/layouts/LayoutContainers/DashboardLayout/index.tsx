@@ -4,6 +4,8 @@ import { useEffect, ReactNode } from 'react'
 // import { useLocation } from "react-router-dom"
 import { useRouter, usePathname } from 'next/navigation'
 
+import DashboardNavbar from '~/ui/layouts/Navbars/DashboardNavbar'
+
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
 
@@ -48,6 +50,7 @@ function DashboardLayout({ children, stickyNavbar }: { children: ReactNode; stic
         },
       })}
     >
+      <DashboardNavbar></DashboardNavbar>
       {children}
     </MDBox>
   )

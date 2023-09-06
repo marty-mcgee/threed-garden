@@ -20,8 +20,8 @@ import MDButton from '#/lib/mui/MDButton'
 
 // Invoice page components
 // import BaseLayout from "~/pagesX/account/components/BaseLayout"
-import DashboardLayout from '#/ui/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/ui/elements/Navbars/DashboardNavbar'
+import DashboardLayout from '#/ui/layouts/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/layouts/Navbars/DashboardNavbar'
 
 // ThreeD Garden context
 import { useMaterialUIController } from '#/lib/contexts'

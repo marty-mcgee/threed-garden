@@ -13,9 +13,9 @@ import MDBox from '#/lib/mui/MDBox'
 import breakpoints from '#/ui/theme/themes/theme-light/base/breakpoints'
 
 // ThreeD Garden examples components
-import DashboardLayout from '#/ui/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/ui/elements/Navbars/DashboardNavbar'
-import Footer from '#/ui/elements/Footer'
+import DashboardLayout from '#/ui/layouts/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/layouts/Navbars/DashboardNavbar'
+import Footer from '#/ui/layouts/footer'
 
 // Declaring props types for BaseLayout
 interface Props {
@@ -36,7 +36,7 @@ function BaseLayout({ stickyNavbar, children }: Props): JSX.Element {
     }
 
     /**
-     The event listener that's calling the handleTabsOrientation function when resizing the window.
+      The event listener that's calling the handleTabsOrientation function when resizing the window.
     */
     window.addEventListener('resize', handleTabsOrientation)
 

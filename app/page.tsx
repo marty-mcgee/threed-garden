@@ -10,7 +10,7 @@
 // import type { NextPage } from 'next'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 // ** React
 // import type { ReactNode } from 'react'
@@ -63,13 +63,14 @@ const getHomeRoute = (role: any) => {
 // export default function Page<NextPage>() {
 // const AppPage: NextPage<TPageProps> = (): JSX.Element => {
 // const AppPage: NextPage = (): JSX.Element => {
-const AppPage: TNextPageWithProps = (): JSX.Element => {
+const AppPage: TNextPageWithProps = (props: any): JSX.Element => {
   // **
-  console.debug('%c🥕 AppPage', ccm.green)
+  console.debug('%c🥕 AppPage props', ccm.green, props)
 
   // ** Hooks
   const auth = useAuth()
   const router = useRouter()
+  const pathname = usePathname()
 
   // ** OnMount (+ optional return OnUnmount)
   useEffect(() => {
@@ -78,15 +79,15 @@ const AppPage: TNextPageWithProps = (): JSX.Element => {
       // get Home URL
       const homeRoute = getHomeRoute(auth.user.role)
       console.debug('✅ user AUTHORIZED', auth.user, homeRoute)
-      // redirect user to Home URL
-      router.replace(homeRoute)
+      // redirect authorized user to Home URL
+      // router.replace(homeRoute)
     }
     // user NOT AUTHORIZED!
     else {
       const homeRoute = getHomeRoute('unauthorized')
       console.debug('❌ user NOT AUTHORIZED', auth.user, homeRoute)
-      // redirect user to Home URL
-      router.replace(homeRoute)
+      // redirect un-authorized guest to Home URL
+      // router.replace(homeRoute)
     }
     // return <></>
   }, [])
@@ -99,5 +100,9 @@ const AppPage: TNextPageWithProps = (): JSX.Element => {
 AppPage.getLayout = (page: any) => {page} // <BlankLayout>{page}</BlankLayout>
 AppPage.authGuard = false
 AppPage.guestGuard = false
+
+// AppPage.getInitialProps = () => {
+
+// }
 
 export default AppPage

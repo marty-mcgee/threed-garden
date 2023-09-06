@@ -17,7 +17,7 @@ import {
   collapseIcon,
   collapseText,
   collapseArrow,
-} from '#/ui/elements/Sidenav/styles/sidenavCollapse'
+} from '#/ui/layouts/Sidenav/styles/sidenavCollapse'
 
 // ThreeD Garden context
 import { useMaterialUIController } from '#/lib/contexts'
