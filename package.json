@@ -1,6 +1,6 @@
 {
   "name": "@threed/threed-app-ts",
-  "version": "0.12.0-alpha.31",
+  "version": "0.12.0-alpha.32",
   "description": "React + TypeScript + Three.js app using Material UI for Next.js 13, Apollo Client + Zustand, GraphQL + WordPress REST APIs, for ThreeD web development.. a part of the threed.ai code family.",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
@@ -14,6 +14,8 @@
   "homepage": "https://threedgarden.com",
   "scripts": {
     "___________________2": "____ active next scripts _______________________________",
+    "b": "yarn build",
+    "s": "yarn start",
     "start": "next -p 7777",
     "dev": "next dev -p 7777 --turbo",
     "build": "next build",

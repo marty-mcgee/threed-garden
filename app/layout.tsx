@@ -51,10 +51,11 @@ import UserLayout from '#/ui/layouts/UserLayout' // this is your user-authorized
 import Spinner from '#/ui/components/spinner'
 
 // ** CSS Styles
-import '#/ui/styles/globals.css'
+// import '#/ui/styles/globals.css'
 // import stylesGlobal from '#/ui/styles/globals.module.css'
 // import stylesDemo from '#/ui/styles/demo/demo.module.css'
-import '#/lib/threed/styles/index.css'
+// import '#/lib/threed/styles/index.css'
+import '#/lib/threed/styles/garden.module.css'
 
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
@@ -154,10 +155,10 @@ const AppLayout = (props: any): JSX.Element => {
 
   // Props.children
   const { children } = props
-  console.debug('🥕 AppLayout.props.children', children)
+  // console.debug('🥕 PROPS: AppLayout.props.children', children)
 
   // ** Props.children.props
-  // const { props } = children
+  // const props2 = children.props
 
   // ** Hooks
   const auth = useAuth()
@@ -172,16 +173,16 @@ const AppLayout = (props: any): JSX.Element => {
   // console.debug('%c🥕 children', ccm.orange, children)
   // console.debug('%c=======================================', ccm.black)
 
-  console.debug('%c🥕 AppLayout.props', ccm.orange, props)
-  console.debug('%c🥕 AppLayout.Component', ccm.black, Component)
-  console.debug('%c🥕 AppLayout.pageProps', ccm.black, pageProps)
+  console.debug('%c🥕 PROPS: AppLayout.props', ccm.orange, props)
+  // console.debug('%c🥕 PROPS: AppLayout.Component', ccm.black, Component)
+  // console.debug('%c🥕 PROPS: AppLayout.pageProps', ccm.black, pageProps)
 
   // ** PageComponent.Properties
   const getAppLayout = (props: any): JSX.Element => {
     //
     const { children } = props
-    console.debug('getAppLayout.props', props)
-    console.debug('getAppLayout.props.children', children)
+    // console.debug('🥕 PROPS: getAppLayout.props', props)
+    // console.debug('🥕 PROPS: getAppLayout.props.children', children)
 
     // const { props2 } = children
 

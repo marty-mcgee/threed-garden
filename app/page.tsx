@@ -45,12 +45,12 @@ const getHomeRoute = (role: any) => {
   if (role === 'client') {
     // return '/home' // another page
     return '/participate' // another page
-    return '/acl' // authorized credentials list? (boundary)
+    // return '/acl' // authorized credentials list? (boundary)
   }
   else if (role === 'admin') {
     // return '/' // this page (for testing. not ideal for production.)
     return '/home' // another page
-    return '/participate' // another page
+    // return '/participate' // another page
   }
   else {
     // return '/' // this page (for testing. not ideal for production.)
@@ -65,7 +65,7 @@ const getHomeRoute = (role: any) => {
 // const AppPage: NextPage = (): JSX.Element => {
 const AppPage: TNextPageWithProps = (props: any): JSX.Element => {
   // **
-  console.debug('%c🥕 AppPage props', ccm.green, props)
+  console.debug('%c🥕 PROPS: AppPage.props', ccm.green, props)
 
   // ** Hooks
   const auth = useAuth()
@@ -78,14 +78,14 @@ const AppPage: TNextPageWithProps = (props: any): JSX.Element => {
     if (auth.user && auth.user.role) {
       // get Home URL
       const homeRoute = getHomeRoute(auth.user.role)
-      console.debug('✅ user AUTHORIZED', auth.user, homeRoute)
+      console.debug('✅ user AUTHORIZED', auth.user, 'go to:', homeRoute)
       // redirect authorized user to Home URL
-      // router.replace(homeRoute)
+      router.replace(homeRoute)
     }
     // user NOT AUTHORIZED!
     else {
       const homeRoute = getHomeRoute('unauthorized')
-      console.debug('❌ user NOT AUTHORIZED', auth.user, homeRoute)
+      console.debug('❌ user NOT AUTHORIZED', auth.user, 'go to:', homeRoute)
       // redirect un-authorized guest to Home URL
       // router.replace(homeRoute)
     }

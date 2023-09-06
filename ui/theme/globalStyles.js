@@ -2,6 +2,9 @@
 import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
 
 const GlobalStyles = (theme, settings) => {
+  // **
+  console.debug('CSS: GlobalStyles Loaded ------')
+
   // ** Vars
   const { skin } = settings
 
