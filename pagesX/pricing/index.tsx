@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Container from '@mui/material/Container'
 
 // ThreeD Garden examples components
-import PageLayout from '#/ui/elements/LayoutContainers/PageLayout'
+import PageLayout from '#/ui/layouts/LayoutContainers/PageLayout'
 
 // Pricing page components
 import Header from '#/pagesX/pricing/components/Header'

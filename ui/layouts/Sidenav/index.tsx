@@ -16,11 +16,11 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // Custom styles for the Sidenav
-import SidenavCollapse from '#/ui/elements/Sidenav/SidenavCollapse'
-import SidenavItem from '#/ui/elements/Sidenav/SidenavItem'
-import SidenavList from '#/ui/elements/Sidenav/SidenavList'
-import SidenavRoot from '#/ui/elements/Sidenav/SidenavRoot'
-import sidenavLogoLabel from '#/ui/elements/Sidenav/styles/sidenav'
+import SidenavCollapse from '#/ui/layouts/Sidenav/SidenavCollapse'
+import SidenavItem from '#/ui/layouts/Sidenav/SidenavItem'
+import SidenavList from '#/ui/layouts/Sidenav/SidenavList'
+import SidenavRoot from '#/ui/layouts/Sidenav/SidenavRoot'
+import sidenavLogoLabel from '#/ui/layouts/Sidenav/styles/sidenav'
 
 // Custom styles for DashboardNavbar
 // import {
@@ -30,7 +30,7 @@ import sidenavLogoLabel from '#/ui/elements/Sidenav/styles/sidenav'
 //   navbarIconButton,
 //   navbarDesktopMenu,
 //   navbarMobileMenu,
-// } from "~/ui/elements/Navbars/DashboardNavbar/styles"
+// } from "~/ui/layouts/Navbars/DashboardNavbar/styles"
 
 // ThreeD Garden context
 import { useMaterialUIController, setMiniSidenav, setTransparentSidenav, setWhiteSidenav } from '#/lib/contexts'

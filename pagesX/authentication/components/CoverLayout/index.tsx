@@ -8,8 +8,8 @@ import { Theme } from '@mui/material/styles'
 import MDBox from '#/lib/mui/MDBox'
 
 // ThreeD Garden examples components
-import DefaultNavbar from '#/ui/elements/Navbars/DefaultNavbar'
-import PageLayout from '#/ui/elements/LayoutContainers/PageLayout'
+import DefaultNavbar from '#/ui/layouts/Navbars/DefaultNavbar'
+import PageLayout from '#/ui/layouts/LayoutContainers/PageLayout'
 
 // Authentication layout components
 import Footer from '#/pagesX/authentication/components/Footer'

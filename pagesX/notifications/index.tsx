@@ -12,9 +12,9 @@ import MDButton from '#/lib/mui/MDButton'
 import MDSnackbar from '#/lib/mui/MDSnackbar'
 
 // ThreeD Garden examples components
-import DashboardLayout from '#/ui/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/ui/elements/Navbars/DashboardNavbar'
-import Footer from '#/ui/elements/Footer'
+import DashboardLayout from '#/ui/layouts/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/layouts/Navbars/DashboardNavbar'
+import Footer from '#/ui/layouts/footer'
 
 function Notifications(): JSX.Element {
   const [successSB, setSuccessSB] = useState<boolean>(false)

@@ -8,8 +8,8 @@ import { TPage, IPage, IBooleans, IValues, IStructures } from '#/lib/types/inter
 
 // ** Layout Import
 // import BlankLayout from '#/ui/layouts/BlankLayout'
-import DashboardLayout from '~/ui/elements/LayoutContainers/DashboardLayout'
-// import DashboardNavbar from '~/ui/elements/Navbars/DashboardNavbar'
+import DashboardLayout from '~/ui/layouts/LayoutContainers/DashboardLayout'
+// import DashboardNavbar from '~/ui/layouts/Navbars/DashboardNavbar'
 
 // examples
 const flags: IBooleans = {

@@ -44,9 +44,8 @@ import { defaultACLObj } from '#/lib/config/acl'
 // import themeConfig from '#/lib/config/themeConfig'
 
 // ** Layouts
-import BlankLayout from '#/ui/layouts/BlankLayout' // this is your login layout
-import UserLayout from '#/ui/layouts/UserLayout' // this is your user-authorized layout
-import MainLayout from '#/ui/layouts/MainLayout' // this is your default layout
+import BlankLayout from '#/ui/layouts/BlankLayout' // this is your default and login layout
+import UserLayout from '#/ui/layouts/UserLayout' // this is your user-authorized (dashboard) layout
 
 // ** Helper Components
 import Spinner from '#/ui/components/spinner'
@@ -135,9 +134,27 @@ const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
 // const App: FC<AppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => {
 // const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmotion> = (props: any) => {
 // const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayout> = (props: any) => {
-const AppLayout = ({ children }: { children: any }): JSX.Element => {
+const AppLayout = (props: any): JSX.Element => {
   // **
-  // console.debug('AppLayout.children', children)
+
+  // // destructure props for vars
+  // // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
+  const { Component, pageProps } = props
+  // const Component = {
+  //   getLayout: () => {},
+  //   setConfig: () => {},
+  //   authGuard: true,
+  //   guestGuard: false,
+  //   // acl: defaultACLObj
+  //   acl: {
+  //     action: 'manage',
+  //     subject: 'all',
+  //   },
+  // }
+
+  // Props.children
+  const { children } = props
+  console.debug('🥕 AppLayout.props.children', children)
 
   // ** Props.children.props
   // const { props } = children
@@ -145,64 +162,49 @@ const AppLayout = ({ children }: { children: any }): JSX.Element => {
   // ** Hooks
   const auth = useAuth()
 
+  // const { authGuard, guestGuard, acl } = Component // getLayout, setConfig,
+  const authGuard = Component?.authGuard ?? false
+  const guestGuard = Component?.guestGuard ?? false
+  // const acl = Component.acl ?? defaultACLObj
+
   // console.debug('%c🥕 auth', ccm.orange, auth)
   // console.debug('%c🥕 router', ccm.orange, router)
   // console.debug('%c🥕 children', ccm.orange, children)
   // console.debug('%c=======================================', ccm.black)
 
-  // // destructure props for vars
-  // // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
-  // const { Component, pageProps } = props
-  const Component = {
-    getLayout: () => {},
-    setConfig: () => {},
-    authGuard: true,
-    guestGuard: false,
-    // acl: defaultACLObj
-    acl: {
-      action: 'manage',
-      subject: 'all',
-    },
-  }
-
-  // console.debug('%c🥕 props', ccm.orange, props)
-  // console.debug('%c🥕 Component', ccm.black, Component)
-  // console.debug('%c🥕 pageProps', ccm.black, pageProps)
+  console.debug('%c🥕 AppLayout.props', ccm.orange, props)
+  console.debug('%c🥕 AppLayout.Component', ccm.black, Component)
+  console.debug('%c🥕 AppLayout.pageProps', ccm.black, pageProps)
 
   // ** PageComponent.Properties
-  const getLayout = ({ children }: { children: any }): JSX.Element => {
+  const getAppLayout = (props: any): JSX.Element => {
     //
-    // console.debug('getLayout.children', children)
+    const { children } = props
+    console.debug('getAppLayout.props', props)
+    console.debug('getAppLayout.props.children', children)
 
-    const { props } = children
+    // const { props2 } = children
 
     // authorized: UserLayout
     if ((auth.user && auth.user.role) ||
-      (props.childProp.segment !== '' && props.childProp.segment !== 'auth')) {
+      (  children.props.childProp.segment !== ''
+      && children.props.childProp.segment !== 'auth'  )) {
       return (
-        <div id='ThreeDAppLayout-UserLayout'>
-          <UserLayout>
-            {children}
-          </UserLayout>
-        </div>
+        <UserLayout key='ThreeDAppLayout-UserLayout'>
+          {children}
+        </UserLayout>
       )
     }
 
     // default: BlankLayout
     else {
       return (
-        <div id='ThreeDAppLayout-BlankLayout'>
-          <BlankLayout>
-            {children}
-          </BlankLayout>
-        </div>
+        <BlankLayout key='ThreeDAppLayout-BlankLayout'>
+          {children}
+        </BlankLayout>
       )
     }
   }
-  const { setConfig, authGuard, guestGuard, acl } = Component // .setConfig ?? false
-  // const authGuard = Component.authGuard ?? true
-  // const guestGuard = Component.guestGuard ?? false
-  // const acl = Component.acl ?? defaultACLObj
 
   // ** Return JSX
   return (
@@ -212,19 +214,20 @@ const AppLayout = ({ children }: { children: any }): JSX.Element => {
           {/* <AclGuard aclAbilities={acl} guestGuard={guestGuard}> */}
             <ApolloProvider client={client}>
               <ReduxProvider store={reduxStore}>
-                <SettingsProvider { ...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null }) }>
+                {/* <SettingsProvider { ...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null }) }> */}
+                <SettingsProvider { ...({ pageSettings: null }) }>
                   <SettingsConsumer>
                     {({ settings }) => (
                       <ThemeRegistry settings={settings}>
-                        {children}
-                        {/* {
-                          getLayout(
+                        {/* {children} */}
+                        {
+                          getAppLayout(
                             // <EthApp {...props}>
                               // <Component {...pageProps} />
                               {children}
                             // </EthApp>
                           )
-                        } */}
+                        }
                       </ThemeRegistry>
                     )}
                   </SettingsConsumer>
@@ -237,5 +240,11 @@ const AppLayout = ({ children }: { children: any }): JSX.Element => {
     </ThreeDAppProvider>
   )
 }
+
+AppLayout.getLayout = 'HEY HEY HEY'
+AppLayout.setConfig = 'true'
+AppLayout.authGuard = false
+AppLayout.guestGuard = true
+AppLayout.acl = {}
 
 export default AppLayout

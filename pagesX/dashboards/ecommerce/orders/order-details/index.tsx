@@ -7,9 +7,9 @@ import Divider from '@mui/material/Divider'
 import MDBox from '#/lib/mui/MDBox'
 
 // ThreeD Garden examples components
-import DashboardLayout from '#/ui/elements/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/ui/elements/Navbars/DashboardNavbar'
-import Footer from '#/ui/elements/Footer'
+import DashboardLayout from '#/ui/layouts/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/layouts/Navbars/DashboardNavbar'
+import Footer from '#/ui/layouts/footer'
 
 // OrderDetails page components
 import Header from '#/pagesX/dashboards/ecommerce/orders/order-details/components/Header'
