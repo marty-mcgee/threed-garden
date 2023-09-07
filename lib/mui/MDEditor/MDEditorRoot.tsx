@@ -1,7 +1,7 @@
 // @mui material components
 import { styled, Theme } from '@mui/material/styles'
 
-export default styled('div')(({ theme, ownerState }: { theme?: Theme | any; ownerState: any }) => {
+export default styled('div')(({ theme, ownerState }: { theme?: ThreedTheme | any; ownerState: any }) => {
   const { palette, borders, typography } = theme
   const { darkMode } = ownerState
 

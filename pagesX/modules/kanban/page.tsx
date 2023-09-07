@@ -57,7 +57,7 @@ function Kanban(): JSX.Element {
         <MDBox
           position='relative'
           my={4}
-          sx={({ palette: { light, background }, functions: { pxToRem }, borders: { borderRadius } }: Theme | any) => ({
+          sx={({ palette: { light, background }, functions: { pxToRem }, borders: { borderRadius } }: ThreedTheme | any) => ({
             '& .react-kanban-column': {
               backgroundColor: darkMode ? background.card : light.main,
               width: pxToRem(450),

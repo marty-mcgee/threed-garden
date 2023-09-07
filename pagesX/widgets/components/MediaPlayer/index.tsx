@@ -12,7 +12,7 @@ import MDButton from '#/lib/mui/MDButton'
 import bgImage from '#/lib/assets/images/any/bg-player.jpg'
 
 function MediaPlayer(): JSX.Element {
-  const mediaPlayerButtonStyles = ({ functions: { pxToRem } }: Theme) => ({
+  const mediaPlayerButtonStyles = ({ functions: { pxToRem } }: ThreedTheme) => ({
     width: pxToRem(46),
     height: pxToRem(46),
     minWidth: pxToRem(46),

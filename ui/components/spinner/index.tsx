@@ -9,6 +9,9 @@ import CircularProgress from '@mui/material/CircularProgress'
 // ** Image Imports
 // import logo from '#/lib/assets/images/logos/logo-threedgarden.png'
 
+// const spinnerColor = '#96C02E' // ThreeD Light Green
+const spinnerColor = '#4C9900' // ThreeD Green
+
 const FallbackSpinner = () => {
   // ** Hook
   // const theme = useTheme()
@@ -23,7 +26,7 @@ const FallbackSpinner = () => {
         justifyContent: 'center',
         flexDirection: 'column',
       }}>
-      <CircularProgress disableShrink sx={{ mt: 0, color: '#96C02E' }} />
+      <CircularProgress disableShrink sx={{ mt: 0, color: spinnerColor }} />
       <Box>Thinking...</Box>
     </Box>
   )

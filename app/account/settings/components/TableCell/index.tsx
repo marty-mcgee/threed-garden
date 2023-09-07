@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 
 // @mui material components
-import type { Theme } from '@mui/material/styles'
+import type { ThreedTheme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -27,7 +27,7 @@ function TableCell({ width, align, padding, noBorder, children }: Props): JSX.El
       pl={padding[3]}
       textAlign={align}
       sx={{
-        border: ({ borders: { borderWidth }, palette: { light } }: Theme) =>
+        border: ({ borders: { borderWidth }, palette: { light } }: ThreedTheme) =>
           noBorder ? 0 : `${borderWidth[1]} solid ${light.main}`,
       }}
     >

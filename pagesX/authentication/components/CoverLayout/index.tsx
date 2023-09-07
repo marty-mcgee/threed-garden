@@ -50,7 +50,7 @@ function CoverLayout({ coverHeight, image, children }: Props): JSX.Element {
         pt={6}
         pb={28}
         sx={{
-          backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }: Theme) =>
+          backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }: ThreedTheme) =>
             image &&
             `${linearGradient(rgba(gradients.dark.main, 0.4), rgba(gradients.dark.state, 0.4))}, url(${image})`,
           backgroundSize: 'cover',

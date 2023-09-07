@@ -1,6 +1,6 @@
 {
   "name": "@threed/threed-app-ts",
-  "version": "0.12.0-alpha.33",
+  "version": "0.12.0-alpha.34",
   "description": "React + TypeScript + Three.js app using Material UI for Next.js 13, Apollo Client + Zustand, GraphQL + WordPress REST APIs, for ThreeD web development.. a part of the threed.ai code family.",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
@@ -48,7 +48,7 @@
     "___________________4": "____ testing, testing __________________________________",
     "test:jest": "jest",
     "test:tsc": "tsc",
-    "test:lint": "pnpm lint && pnpm test:run",
+    "test:lint": "yarn lint && yarn test",
     "___________________X": "____ ___________________________________________________"
   },
   "dependencies": {

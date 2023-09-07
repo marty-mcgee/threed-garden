@@ -1,7 +1,7 @@
 // @mui material components
 import { Theme } from '@mui/material/styles'
 
-export default function sidenavLogoLabel(theme: Theme, ownerState: any) {
+export default function sidenavLogoLabel(theme: ThreedTheme, ownerState: any) {
   const { functions, transitions, typography, breakpoints } = theme
   const { miniSidenav } = ownerState
 

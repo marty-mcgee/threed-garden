@@ -19,7 +19,7 @@ import VerticalAppBarContent from './vertical/AppBarContent'
 import HorizontalAppBarContent from './horizontal/AppBarContent'
 
 // ** Hooks
-import { useSettings } from '#/ui/hooks/useSettings'
+import { useSettings } from '#/lib/hooks/useSettings'
 
 // ** Utilities
 import ccm from '#/lib/utils/console-colors'

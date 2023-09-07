@@ -35,7 +35,7 @@ import themeConfig from '#/lib/config/themeConfig'
 import BlankLayoutWithAppBar from '#/ui/layouts/BlankLayoutWithAppBar'
 
 // ** Hooks
-import { useSettings } from '#/ui/hooks/useSettings'
+import { useSettings } from '#/lib/hooks/useSettings'
 
 // ** Demo Imports
 import FooterIllustrationsV2 from '#/ui/pages/auth/FooterIllustrationsV2'
@@ -147,7 +147,7 @@ const LoginWithAppBar = () => {
           }}>
           <BoxWrapper>
             <Box sx={{ mb: 6 }}>
-              <TypographyStyled variant='h5'>Welcome to {themeConfig.templateName}! 👋🏻</TypographyStyled>
+              <TypographyStyled variant='h5'>Welcome to {themeConfig.title}! 👋🏻</TypographyStyled>
               <Typography variant='body2'>Please sign-in to your account and start the adventure</Typography>
             </Box>
             <form noValidate autoComplete='off' onSubmit={handleSubmit}>

@@ -34,7 +34,7 @@ import ArrowCollapseVertical from 'mdi-material-ui/ArrowCollapseVertical'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 
 // ** Hooks
-import { useSettings } from '#/ui/hooks/useSettings'
+import { useSettings } from '#/lib/hooks/useSettings'
 
 // ** Custom Components Imports
 import Sidebar from '#/ui/components/sidebar'

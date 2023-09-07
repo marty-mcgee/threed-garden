@@ -1,15 +1,11 @@
 // in the file where you are creating the theme (invoking the function `createTheme()`)
-import { Theme } from '@mui/material/styles';
-
-// declare module '@mui/styles' {
-//   interface ThreedTheme extends Theme {}
-// }
+import { Theme } from '@mui/material/styles'
 
 declare module '@mui/material/styles' {
 // declare module '@mui/styles' {
 
-  // interface ThreedTheme extends Theme {
-  interface Theme {
+  interface ThreedTheme extends Theme {
+  // interface Theme {
     palette?: Palette
     boxShadows?: {
       xs: string
@@ -50,8 +46,8 @@ declare module '@mui/material/styles' {
     functions?: any
   }
 
-  interface ThemeOptions {
-    boxShadows: {
+  interface ThreedThemeOptions extends ThemeOptions {
+    boxShadows?: {
       xs: string
       sm: string
       md: string
@@ -77,7 +73,7 @@ declare module '@mui/material/styles' {
         indicator: string
       }
     }
-    borders: {
+    borders?: {
       borderColor: string
       borderWidth: {
         [key: number | string]: number | string
@@ -86,10 +82,11 @@ declare module '@mui/material/styles' {
         [key: number | string]: number | string
       }
     }
-    functions: any
+    functions?: any
+    shadows?: any
   }
 
-  interface Palette {
+  interface ThreedPalette extends Palette {
     background?:
       | {
           default: string
@@ -194,21 +191,21 @@ declare module '@mui/material/styles' {
       | any
   }
 
-  interface PaletteOptions {
-    background:
+  interface ThreedPaletteOptions extends PaletteOptions {
+    background?:
       | {
           default: string
           sidenav?: string
           card?: string
         }
       | any
-    white:
+    white?:
       | {
           main: string
           focus: string
         }
       | any
-    text:
+    text?:
       | {
           main: string
           focus: string
@@ -217,32 +214,32 @@ declare module '@mui/material/styles' {
           disabled?: string
         }
       | any
-    transparent:
+    transparent?:
       | {
           main: string
         }
       | any
-    black:
+    black?:
       | {
           light: string
           main: string
           focus: string
         }
       | any
-    primary: ColorsTypes | any
-    secondary: ColorsTypes | any
-    info: ColorsTypes | any
-    success: ColorsTypes | any
-    warning: ColorsTypes | any
-    error: ColorsTypes | any
-    light: ColorsTypes | any
-    dark: ColorsTypes | any
-    grey:
+    primary?: ColorsTypes | any
+    secondary?: ColorsTypes | any
+    info?: ColorsTypes | any
+    success?: ColorsTypes | any
+    warning?: ColorsTypes | any
+    error?: ColorsTypes | any
+    light?: ColorsTypes | any
+    dark?: ColorsTypes | any
+    grey?:
       | {
           [key: string | number]: string
         }
       | any
-    gradients:
+    gradients?:
       | {
           primary: GradientsTypes
           secondary: GradientsTypes
@@ -254,7 +251,7 @@ declare module '@mui/material/styles' {
           dark: GradientsTypes
         }
       | any
-    socialMediaColors:
+    socialMediaColors?:
       | {
           facebook: SocialMediaColorsTypes
           twitter: SocialMediaColorsTypes
@@ -270,7 +267,7 @@ declare module '@mui/material/styles' {
           tumblr: SocialMediaColorsTypes
         }
       | any
-    badgeColors:
+    badgeColors?:
       | {
           primary: BadgeColorsTypes
           secondary: BadgeColorsTypes
@@ -282,13 +279,13 @@ declare module '@mui/material/styles' {
           dark: BadgeColorsTypes
         }
       | any
-    coloredShadows:
+    coloredShadows?:
       | {
           [key: string]: string
         }
       | any
-    inputBorderColor: string
-    tabs:
+    inputBorderColor?: string
+    tabs?:
       | {
           indicator:
             | {
@@ -299,7 +296,7 @@ declare module '@mui/material/styles' {
       | any
   }
 
-  interface TypographyVariants {
+  interface ThreedTypographyVariants extends TypographyVariants {
     fontFamily: string
     fontWeightLighter: number
     fontWeightLight: number

@@ -1,13 +1,15 @@
 // @mui material components
+import type { ThreedTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
-import { styled, Theme } from '@mui/material'
 
-export default styled(Box)(({ theme, ownerState }: { theme?: Theme; ownerState: any }) => {
+export default styled(Box)(({ theme, ownerState }: { theme?: ThreedTheme; ownerState: any }) => {
   const { palette, typography, borders, functions } = theme
   const { color } = ownerState
 
   const { white, gradients } = palette
-  const { size, fontWeightMedium } = typography
+  // const { size, fontWeightMedium } = typography
+  const { fontWeightMedium } = typography
   const { borderRadius } = borders
   const { pxToRem, linearGradient } = functions
 
@@ -27,7 +29,7 @@ export default styled(Box)(({ theme, ownerState }: { theme?: Theme; ownerState: 
     padding: pxToRem(16),
     marginBottom: pxToRem(16),
     borderRadius: borderRadius.md,
-    fontSize: size.md,
+    // fontSize: size.md,
     fontWeight: fontWeightMedium,
   }
 })

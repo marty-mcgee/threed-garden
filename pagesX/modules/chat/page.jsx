@@ -19,7 +19,7 @@ import {
 } from '#/lib/stores/redux/modules/chat'
 
 // ** Hooks
-import { useSettings } from '#/ui/hooks/useSettings'
+import { useSettings } from '#/lib/hooks/useSettings'
 
 // ** Utils Imports
 import { getInitials } from '#/lib/utils/get-initials'

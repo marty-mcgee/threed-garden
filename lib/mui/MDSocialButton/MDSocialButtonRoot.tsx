@@ -2,7 +2,7 @@
 import { Button } from '@mui/material'
 import { styled, Theme } from '@mui/material/styles'
 
-export default styled(Button)(({ theme, ownerState }: { theme?: Theme; ownerState: any }) => {
+export default styled(Button)(({ theme, ownerState }: { theme?: ThreedTheme; ownerState: any }) => {
   const { palette, functions } = theme
   const { color, size, iconOnly, circular } = ownerState
 

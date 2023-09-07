@@ -2,25 +2,35 @@
 import { deepmerge } from '@mui/utils'
 
 // ** User Theme Options
-import UserThemeOptions from '#/ui/theme/UserThemeOptions'
+// import ThemeOptionsUser from '#/ui/theme/ThemeOptionsUser'
 
 // ** Theme Override Imports
-import palette from './palette'
-import spacing from './spacing'
-import shadows from './shadows'
-import breakpoints from './breakpoints'
+import palette from '#/ui/theme/common/palette'
+import spacing from '#/ui/theme/common/spacing'
+import shadows from '#/ui/theme/common/shadows'
+import breakpoints from '#/ui/theme/common/breakpoints'
 
 const themeOptions = (settings) => {
   // ** Vars
   const { skin, mode, direction, themeColor } = settings
+  // ** DEBUG
+  // console.debug('settings', settings)
+  // console.debug('settings.skin', skin)
+  // console.debug('settings.mode', mode)
+  // console.debug('settings.direction', direction)
+  // console.debug('settings.themeColor', themeColor)
 
-  // ** Create New object before removing user component overrides and typography objects from userThemeOptions
-  const userThemeConfig = Object.assign({}, UserThemeOptions())
-  const userFontFamily = userThemeConfig.typography?.fontFamily
+  // return settings
 
-  // ** Remove component overrides and typography objects from userThemeOptions
-  delete userThemeConfig.components
-  delete userThemeConfig.typography
+
+  // // ** User Theme Options ??
+  // // ** Create New object before removing user component overrides and typography objects from ThemeOptionsUser
+  // const userThemeConfig = Object.assign({}, ThemeOptionsUser())
+  // const userFontFamily = userThemeConfig.typography?.fontFamily
+
+  // // ** Remove component overrides and typography objects from ThemeOptionsUser
+  // delete userThemeConfig.components
+  // delete userThemeConfig.typography
 
   const mergedThemeConfig = deepmerge(
     {
@@ -28,7 +38,7 @@ const themeOptions = (settings) => {
       palette: palette(mode, skin, themeColor),
       typography: {
         fontFamily:
-          userFontFamily ||
+          // userFontFamily ||
           [
             'Inter',
             'sans-serif',
@@ -55,8 +65,12 @@ const themeOptions = (settings) => {
           minHeight: 64,
         },
       },
+      // missing requirements
+      // boxShadows: {},
+      // borders: {},
+      // functions: {},
     },
-    userThemeConfig
+    // userThemeConfig
   )
 
   return deepmerge(mergedThemeConfig, {
@@ -66,6 +80,7 @@ const themeOptions = (settings) => {
       },
     },
   })
+  // return mergedThemeConfig
 }
 
 export default themeOptions

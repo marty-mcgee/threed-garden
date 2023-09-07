@@ -67,7 +67,7 @@ function Footer({ light }: { light?: boolean }): JSX.Element {
           </MDBox>
           <MDBox
             component='ul'
-            sx={({ breakpoints }: Theme) => ({
+            sx={({ breakpoints }: ThreedTheme) => ({
               display: 'flex',
               flexWrap: 'wrap',
               alignItems: 'center',

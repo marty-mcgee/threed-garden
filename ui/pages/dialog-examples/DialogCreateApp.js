@@ -28,7 +28,7 @@ import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
 import FileDocumentOutline from 'mdi-material-ui/FileDocumentOutline'
 
 // ** Hook Imports
-import { useSettings } from '#/ui/hooks/useSettings'
+import { useSettings } from '#/lib/hooks/useSettings'
 
 // ** Tab Content Imports
 import DialogTabDetails from '#/ui/pages/dialog-examples/create-app-tabs/DialogTabDetails'

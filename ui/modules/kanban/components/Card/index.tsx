@@ -35,7 +35,7 @@ function Card({ image, badge, content, progress, attachedFiles, members }: Props
         alt={imageAlt}
         size='xs'
         sx={{
-          border: ({ borders: { borderWidth }, palette: { white } }: Theme) => `${borderWidth[2]} solid ${white.main}`,
+          border: ({ borders: { borderWidth }, palette: { white } }: ThreedTheme) => `${borderWidth[2]} solid ${white.main}`,
           cursor: 'pointer',
           position: 'relative',
           ml: -1,

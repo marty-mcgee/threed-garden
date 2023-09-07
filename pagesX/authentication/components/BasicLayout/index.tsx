@@ -42,7 +42,7 @@ function BasicLayout({ image, children }: Props): JSX.Element {
         width='100%'
         minHeight='100vh'
         sx={{
-          backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }: Theme) =>
+          backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }: ThreedTheme) =>
             image &&
             `${linearGradient(rgba(gradients.dark.main, 0.6), rgba(gradients.dark.state, 0.6))}, url(${image})`,
           backgroundSize: 'cover',

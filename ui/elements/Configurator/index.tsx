@@ -88,7 +88,7 @@ function Configurator(): JSX.Element {
     functions: { pxToRem },
     palette: { white, dark, background },
     borders: { borderWidth },
-  }: Theme | any) => ({
+  }: ThreedTheme | any) => ({
     height: pxToRem(39),
     background: darkMode ? background.sidenav : white.main,
     color: darkMode ? white.main : dark.main,
@@ -105,7 +105,7 @@ function Configurator(): JSX.Element {
   const sidenavTypeActiveButtonStyles = ({
     functions: { pxToRem, linearGradient },
     palette: { white, gradients, background },
-  }: Theme | any) => ({
+  }: ThreedTheme | any) => ({
     height: pxToRem(39),
     background: darkMode ? white.main : linearGradient(gradients.dark.main, gradients.dark.state),
     color: darkMode ? background.sidenav : white.main,
@@ -168,7 +168,7 @@ function Configurator(): JSX.Element {
             {sidenavColors.map((color) => (
               <IconButton
                 key={color}
-                sx={({ borders: { borderWidth }, palette: { white, dark, background }, transitions }: Theme | any) => ({
+                sx={({ borders: { borderWidth }, palette: { white, dark, background }, transitions }: ThreedTheme | any) => ({
                   width: '24px',
                   height: '24px',
                   padding: 0,

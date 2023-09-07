@@ -35,7 +35,7 @@ import AccountMultipleOutline from 'mdi-material-ui/AccountMultipleOutline'
 import themeConfig from '#/lib/config/themeConfig'
 
 // ** Hooks Imports
-import { useSettings } from '#/ui/hooks/useSettings'
+import { useSettings } from '#/lib/hooks/useSettings'
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Fade ref={ref} {...props} />
@@ -236,7 +236,7 @@ const DialogShareProject = () => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <AccountMultipleOutline sx={{ mr: 2 }} />
               <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>
-                {`Public to ${themeConfig.templateName} - ThemeSelection`}
+                {`Public to ${themeConfig.title} - ThemeSelection`}
               </Typography>
             </Box>
             <Button>

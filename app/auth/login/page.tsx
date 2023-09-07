@@ -45,8 +45,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Hooks
 import { useAuth } from '#/lib/auth/hooks/useAuth'
-import useBgColor from '#/ui/hooks/useBgColor'
-import { useSettings } from '#/ui/hooks/useSettings'
+import useBgColor from '#/lib/hooks/useBgColor'
+import { useSettings } from '#/lib/hooks/useSettings'
 
 // ** Configs
 import themeConfig from '#/lib/config/themeConfig'
@@ -238,7 +238,7 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
             src={logo}
             width={48}
             height={48}
-            alt={themeConfig.templateName}
+            alt={themeConfig.title}
           />
         </Link>
         {/* App Name */}
@@ -252,7 +252,7 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
             fontSize: '1.5rem !important',
           }}
         >
-          {themeConfig.templateName}
+          {themeConfig.title}
         </Typography>
       </Box>
 
@@ -306,7 +306,7 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
             <Box sx={{ mb: 6, mt: 1 }}>
               <TypographyStyled variant='h5'>
                 🌱 Welcome to
-                {themeConfig.templateName}
+                {themeConfig.title}
                 {appVersion}
               </TypographyStyled>
               <Typography variant='body2'>Please sign in to start your adventure...</Typography>

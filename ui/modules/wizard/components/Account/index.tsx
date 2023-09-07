@@ -24,7 +24,7 @@ function Account(): JSX.Element {
     borders: { borderWidth },
     palette: { transparent, info },
     typography: { size },
-  }: Theme) => ({
+  }: ThreedTheme) => ({
     width: pxToRem(164),
     height: pxToRem(130),
     borderWidth: borderWidth[2],

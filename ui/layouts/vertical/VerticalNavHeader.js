@@ -110,7 +110,7 @@ const VerticalNavHeader = (props) => {
       ) : (
         <>
           <StyledLink href='/' passHref>
-            <Image src={brandDark.src} alt={themeConfig.templateName} width={48} height={48} />
+            <Image src={brandDark.src} alt={themeConfig.title} width={48} height={48} />
           </StyledLink>
           <IconButton
             disableRipple
@@ -122,7 +122,7 @@ const VerticalNavHeader = (props) => {
                 // ...menuCollapsedStyles,
                 ...(navCollapsed && !navHover ? { ml: 1 } : { ml: 1 }),
               }}>
-              {themeConfig.templateName}
+              {themeConfig.title}
             </HeaderTitle>
           </IconButton>
         </>
