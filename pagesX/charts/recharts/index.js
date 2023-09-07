@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import PageHeader from '#/ui/components/page-header'
 
 // ** Hooks
-import { useSettings } from '#/ui/hooks/useSettings'
+import { useSettings } from '#/lib/hooks/useSettings'
 
 // ** Styled Components
 import RechartsWrapper from '#/ui/styles/recharts'

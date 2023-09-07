@@ -97,7 +97,7 @@ const BlankLayoutAppBar = () => {
                 lineHeight: 'normal',
                 textTransform: 'uppercase',
               }}>
-              {themeConfig.templateName}
+              {themeConfig.title}
             </Typography>
           </StyledLink>
         </Link>

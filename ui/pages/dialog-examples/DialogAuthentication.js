@@ -25,8 +25,8 @@ import ChevronRight from 'mdi-material-ui/ChevronRight'
 import MessageOutline from 'mdi-material-ui/MessageOutline'
 
 // ** Hooks
-import useBgColor from '#/ui/hooks/useBgColor'
-import { useSettings } from '#/ui/hooks/useSettings'
+import useBgColor from '#/lib/hooks/useBgColor'
+import { useSettings } from '#/lib/hooks/useSettings'
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Fade ref={ref} {...props} />

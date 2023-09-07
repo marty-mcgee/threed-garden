@@ -4,7 +4,7 @@ import { styled, Theme } from '@mui/material/styles'
 // ThreeD Garden components
 import MDButton from '#/lib/mui/MDButton'
 
-export default styled(MDButton)(({ theme, ownerState }: { theme?: Theme; ownerState: any }) => {
+export default styled(MDButton)(({ theme, ownerState }: { theme?: ThreedTheme; ownerState: any }) => {
   const { borders, functions, typography, palette } = theme
   const { variant, paginationSize, active } = ownerState
 

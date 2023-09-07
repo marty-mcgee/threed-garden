@@ -120,6 +120,18 @@ const DefaultPalette = (mode, skin, themeColor) => {
       disabledBackground: `rgba(${mainColor}, 0.18)`,
       focus: `rgba(${mainColor}, 0.12)`,
     },
+    // missing type requirements for ThemeOptions.palette.PaletteOptions
+    // transparent: {},
+    // white: {},
+    // black: {},
+    // light: {},
+    // dark: {},
+    // gradients: {},
+    // socialMediaColors: {},
+    // badgeColors: {},
+    // coloredShadows: {},
+    // inputBorderColor: '',
+    // tabs: {},
   }
 }
 

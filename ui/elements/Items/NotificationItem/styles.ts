@@ -1,7 +1,7 @@
 // @mui material components
 import { Theme } from '@mui/material/styles'
 
-function menuItem(theme: Theme) {
+function menuItem(theme: ThreedTheme) {
   const { palette, borders, transitions } = theme
 
   const { secondary, light, dark } = palette

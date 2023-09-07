@@ -11,7 +11,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Hooks
-import { useSettings } from '#/ui/hooks/useSettings'
+import { useSettings } from '#/lib/hooks/useSettings'
 
 // ** FullCalendar & App Components Imports
 import Calendar from '#/ui/modules/calendar/Calendar'

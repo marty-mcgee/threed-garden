@@ -1,7 +1,7 @@
 // @mui material components
 import { Theme } from '@mui/material/styles'
 
-function navbar(theme: Theme | any, ownerState: any) {
+function navbar(theme: ThreedTheme | any, ownerState: any) {
   const { palette, boxShadows, functions, transitions, breakpoints, borders } = theme
   const { transparentNavbar, absolute, light, darkMode } = ownerState
 
@@ -61,7 +61,7 @@ function navbar(theme: Theme | any, ownerState: any) {
   }
 }
 
-const navbarContainer = ({ breakpoints }: Theme): any => ({
+const navbarContainer = ({ breakpoints }: ThreedTheme): any => ({
   flexDirection: 'column',
   alignItems: 'flex-start',
   justifyContent: 'space-between',
@@ -78,7 +78,7 @@ const navbarContainer = ({ breakpoints }: Theme): any => ({
   },
 })
 
-const navbarRow = ({ breakpoints }: Theme, { isMini }: any) => ({
+const navbarRow = ({ breakpoints }: ThreedTheme, { isMini }: any) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
@@ -95,7 +95,7 @@ const navbarRow = ({ breakpoints }: Theme, { isMini }: any) => ({
   },
 })
 
-const navbarIconButton = ({ typography: { size }, breakpoints }: Theme) => ({
+const navbarIconButton = ({ typography: { size }, breakpoints }: ThreedTheme) => ({
   px: 1,
 
   '& .material-icons, .material-icons-round': {
@@ -113,7 +113,7 @@ const navbarIconButton = ({ typography: { size }, breakpoints }: Theme) => ({
   },
 })
 
-const navbarDesktopMenu = ({ breakpoints }: Theme) => ({
+const navbarDesktopMenu = ({ breakpoints }: ThreedTheme) => ({
   display: 'none !important',
   cursor: 'pointer',
   mt: 0.5,
@@ -125,7 +125,7 @@ const navbarDesktopMenu = ({ breakpoints }: Theme) => ({
   },
 })
 
-const navbarMobileMenu = ({ breakpoints }: Theme) => ({
+const navbarMobileMenu = ({ breakpoints }: ThreedTheme) => ({
   display: 'inline-block',
   lineHeight: 0,
 

@@ -28,7 +28,7 @@ function DataTableHeadCell({ width, children, sorted, align, ...rest }: Props): 
       width={width}
       py={1.5}
       px={3}
-      sx={({ palette: { light }, borders: { borderWidth } }: Theme) => ({
+      sx={({ palette: { light }, borders: { borderWidth } }: ThreedTheme) => ({
         borderBottom: `${borderWidth[1]} solid ${light.main}`,
       })}
     >
@@ -38,7 +38,7 @@ function DataTableHeadCell({ width, children, sorted, align, ...rest }: Props): 
         textAlign={align}
         color={darkMode ? 'white' : 'secondary'}
         opacity={0.7}
-        sx={({ typography: { size, fontWeightBold } }: Theme) => ({
+        sx={({ typography: { size, fontWeightBold } }: ThreedTheme) => ({
           fontSize: size.xxs,
           fontWeight: fontWeightBold,
           textTransform: 'uppercase',

@@ -78,7 +78,7 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
                         fontWeight='regular'
                         py={0.625}
                         px={2}
-                        sx={({ palette: { grey, dark }, borders: { borderRadius } }: Theme) => ({
+                        sx={({ palette: { grey, dark }, borders: { borderRadius } }: ThreedTheme) => ({
                           borderRadius: borderRadius.md,
                           cursor: 'pointer',
                           transition: 'all 300ms linear',

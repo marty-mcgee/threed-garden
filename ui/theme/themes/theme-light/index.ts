@@ -1,5 +1,5 @@
 // @mui material components
-import { createTheme } from '@mui/material'
+import { createTheme } from '@mui/material/styles'
 
 // ThreeD Garden Base Styles
 import colors from '#/ui/theme/themes/theme-light/base/colors'

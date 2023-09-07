@@ -2,7 +2,7 @@
 import Icon from '@mui/material/Icon'
 import { styled, Theme } from '@mui/material/styles'
 
-export default styled(Icon)(({ theme, ownerState }: { theme?: Theme; ownerState: any }) => {
+export default styled(Icon)(({ theme, ownerState }: { theme?: ThreedTheme; ownerState: any }) => {
   const { palette, functions, typography } = theme
   const { color, bgWhite } = ownerState
 

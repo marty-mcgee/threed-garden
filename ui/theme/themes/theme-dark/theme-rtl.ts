@@ -1,6 +1,7 @@
 // @mui material components
+import type { ThreedTheme } from '@mui/material/styles' // need this here ??
 import { createTheme } from '@mui/material/styles'
-// import Fade from "@mui/material/Fade";
+// import Fade from "@mui/material/Fade"
 
 // ThreeD Garden Base Styles
 import colors from '#/ui/theme/themes/theme-dark/base/colors'

@@ -10,7 +10,7 @@
 import type { NextPage } from 'next'
 
 // @mui material components
-import type { Theme } from '@mui/material/styles'
+import type { ThreedTheme } from '@mui/material/styles'
 import { styled, useTheme } from '@mui/material/styles'
 // @mui material components
 import Card from '@mui/material/Card'
@@ -73,7 +73,7 @@ function PaymentMethod(): JSX.Element {
               justifyContent='space-between'
               alignItems='center'
               p={3}
-              sx={{ border: ({ borders: { borderWidth, borderColor } }: Theme) => `${borderWidth[1]} solid ${borderColor}` }}
+              sx={{ border: ({ borders: { borderWidth, borderColor } }: ThreedTheme) => `${borderWidth[1]} solid ${borderColor}` }}
             >
               <MDBox
                 component='img'

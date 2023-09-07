@@ -25,7 +25,7 @@ import Prism from 'prismjs'
 import toast from 'react-hot-toast'
 
 // ** Hooks
-import useClipboard from '#/ui/hooks/useClipboard'
+import useClipboard from '#/lib/hooks/useClipboard'
 
 const CardSnippet = (props) => {
   // ** Props

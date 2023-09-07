@@ -158,7 +158,7 @@ const ResetPasswordV1 = () => {
                 textTransform: 'uppercase',
                 fontSize: '1.5rem !important',
               }}>
-              {themeConfig.templateName}
+              {themeConfig.title}
             </Typography>
           </Box>
           <Box sx={{ mb: 6 }}>

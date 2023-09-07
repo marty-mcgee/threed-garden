@@ -121,7 +121,7 @@ const PreviewCard = ({ data }) => {
                     <Typography
                       variant='h6'
                       sx={{ ml: 2.5, fontWeight: 600, lineHeight: 'normal', textTransform: 'uppercase' }}>
-                      {themeConfig.templateName}
+                      {themeConfig.title}
                     </Typography>
                   </Box>
                   <Box>

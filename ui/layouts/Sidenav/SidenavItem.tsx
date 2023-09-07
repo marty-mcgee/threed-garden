@@ -47,7 +47,7 @@ function SidenavItem({ color, name, active, nested, children, open, ...rest }: P
         }
       >
         <MDBox
-          sx={(theme: Theme): any =>
+          sx={(theme: ThreedTheme): any =>
             itemContent(theme, {
               active,
               miniSidenav,

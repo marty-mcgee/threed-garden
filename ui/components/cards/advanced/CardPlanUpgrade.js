@@ -19,7 +19,7 @@ import ArrowRight from 'mdi-material-ui/ArrowRight'
 import DotsVertical from 'mdi-material-ui/DotsVertical'
 
 // ** Hooks Imports
-import useBgColor from '#/ui/hooks/useBgColor'
+import useBgColor from '#/lib/hooks/useBgColor'
 
 const CardPlanUpgrade = () => {
   // ** States

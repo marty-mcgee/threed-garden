@@ -23,7 +23,7 @@ import Close from 'mdi-material-ui/Close'
 import CogOutline from 'mdi-material-ui/CogOutline'
 
 // ** Hook Import
-import { useSettings } from '#/ui/hooks/useSettings'
+import { useSettings } from '#/lib/hooks/useSettings'
 
 const Toggler = styled(Box)(({ theme }) => ({
   right: 0,

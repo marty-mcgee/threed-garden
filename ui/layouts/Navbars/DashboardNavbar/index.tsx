@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 
 // @material-ui core components
-import type { Theme } from '@mui/material/styles'
+import type { ThreedTheme } from '@mui/material/styles'
 import { styled, useTheme } from '@mui/material/styles'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
@@ -112,7 +112,7 @@ function DashboardNavbar({ absolute, light, isMini }: Props): JSX.Element {
   )
 
   // Styles for the navbar icons
-  const iconsStyle = ({ palette: { dark, white, text }, functions: { rgba } }: Theme) => ({
+  const iconsStyle = ({ palette: { dark, white, text }, functions: { rgba } }: ThreedTheme) => ({
     color: () => {
       let colorValue = light || darkMode ? white.main : dark.main
 

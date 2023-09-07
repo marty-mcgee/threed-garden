@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 
 // ** Hook Import
-import { useSettings } from '#/ui/hooks/useSettings'
+import { useSettings } from '#/lib/hooks/useSettings'
 
 const ReactHotToast = styled(Box)(({ theme }) => {
   // ** Hook & Var

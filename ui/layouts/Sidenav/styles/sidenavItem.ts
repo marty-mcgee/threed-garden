@@ -1,7 +1,7 @@
 // @mui material components
 import { Theme } from '@mui/material/styles'
 
-function item(theme: Theme | any, ownerState: any) {
+function item(theme: ThreedTheme | any, ownerState: any) {
   const { palette, borders, functions, transitions } = theme
   const { active, nested, color, transparentSidenav, whiteSidenav, darkMode } = ownerState
   const { transparent, white, grey } = palette
@@ -47,7 +47,7 @@ function item(theme: Theme | any, ownerState: any) {
   }
 }
 
-function itemContent(theme: Theme, ownerState: any) {
+function itemContent(theme: ThreedTheme, ownerState: any) {
   const { palette, typography, transitions, functions } = theme
   const { miniSidenav, name, active, nested, transparentSidenav, whiteSidenav, darkMode } = ownerState
 
@@ -101,7 +101,7 @@ function itemContent(theme: Theme, ownerState: any) {
   }
 }
 
-function itemArrow(theme: Theme, ownerState: any) {
+function itemArrow(theme: ThreedTheme, ownerState: any) {
   const { palette, typography, transitions, breakpoints, functions } = theme
   const { noCollapse, transparentSidenav, whiteSidenav, miniSidenav, open, active, nested, darkMode } = ownerState
 

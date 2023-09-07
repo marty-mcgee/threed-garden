@@ -1,7 +1,7 @@
 // @mui material components
 import { Theme } from '@mui/material/styles'
 
-function defaultItemIconBox(theme: Theme, ownerState: any) {
+function defaultItemIconBox(theme: ThreedTheme, ownerState: any) {
   const { functions, palette, borders } = theme
   const { color } = ownerState
 

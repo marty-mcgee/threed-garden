@@ -20,7 +20,7 @@ import team5 from '#/lib/assets/images/people/team-5.jpg'
 
 function Header(): JSX.Element {
   const avatarStyles: { [key: string]: any } = {
-    border: ({ borders: { borderWidth }, palette: { white } }: Theme) => `${borderWidth[2]} solid ${white.main}`,
+    border: ({ borders: { borderWidth }, palette: { white } }: ThreedTheme) => `${borderWidth[2]} solid ${white.main}`,
     cursor: 'pointer',
     position: 'relative',
     ml: -1.5,

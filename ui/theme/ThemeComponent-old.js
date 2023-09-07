@@ -1,5 +1,5 @@
 /*
-  NOT IN USE !!!
+  NOT IN USE, but works !!!
 */
 
 // ** MUI Imports
@@ -10,18 +10,18 @@ import GlobalStyles from '@mui/material/GlobalStyles'
 
 // ** Theme
 import themeConfig from '#/lib/config/themeConfig'
-import themeOptions from './ThemeOptions'
-import UserThemeOptions from '#/ui/theme/UserThemeOptions'
+import themeOptions from '#/ui/theme/ThemeOptions'
+import ThemeOptionsUser from '#/ui/theme/ThemeOptionsUser'
 
 // ** Global Styles
-import GlobalStyling from './GlobalStyles'
+import GlobalStyling from '#/ui/theme/common/GlobalStyling'
 
 // ** Direction component for LTR or RTL
 import Direction from '#/ui/layouts/common/Direction'
 
 // ** Theme Override Imports
-import overrides from './overrides'
-import typography from './typography'
+import overrides from '#/ui/theme/common/overrides'
+import typography from '#/ui/theme/common/typography'
 
 const ThemeComponent = (props) => {
   // ** Props
@@ -35,10 +35,10 @@ const ThemeComponent = (props) => {
 
   // ** Deep Merge Component overrides of core and user
   const mergeComponentOverrides = (theme, settings) =>
-    deepmerge({ ...overrides(theme, settings) }, UserThemeOptions()?.components)
+    deepmerge({ ...overrides(theme, settings) }, ThemeOptionsUser()?.components)
 
   // ** Deep Merge Typography of core and user
-  const mergeTypography = (theme) => deepmerge(typography(theme), UserThemeOptions()?.typography)
+  const mergeTypography = (theme) => deepmerge(typography(theme), ThemeOptionsUser()?.typography)
 
   // ** Continue theme creation and pass merged component overrides to CreateTheme function
   theme = createTheme(theme, {

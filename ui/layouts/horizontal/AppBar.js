@@ -98,7 +98,7 @@ const AppBarContent = (props) => {
               lineHeight: 'normal',
               textTransform: 'uppercase',
             }}>
-            {themeConfig.templateName}
+            {themeConfig.title}
           </Typography>
         </StyledLink>
       )}

@@ -28,7 +28,7 @@ import themeConfig from '#/lib/config/themeConfig'
 import BlankLayout from '#/ui/layouts/BlankLayout'
 
 // ** Hooks
-import { useSettings } from '#/ui/hooks/useSettings'
+import { useSettings } from '#/lib/hooks/useSettings'
 
 // ** Demo Imports
 import FooterIllustrationsV2 from '#/ui/pages/auth/FooterIllustrationsV2'
@@ -240,7 +240,7 @@ const ResetPasswordV2 = () => {
                   textTransform: 'uppercase',
                   fontSize: '1.5rem !important',
                 }}>
-                {themeConfig.templateName}
+                {themeConfig.title}
               </Typography>
             </Box>
             <Box sx={{ mb: 6 }}>

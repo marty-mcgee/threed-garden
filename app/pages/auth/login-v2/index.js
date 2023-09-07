@@ -35,7 +35,7 @@ import themeConfig from '#/lib/config/themeConfig'
 import BlankLayout from '#/ui/layouts/BlankLayout'
 
 // ** Hooks
-import { useSettings } from '#/ui/hooks/useSettings'
+import { useSettings } from '#/lib/hooks/useSettings'
 
 // ** Demo Imports
 import FooterIllustrationsV2 from '#/ui/pages/auth/FooterIllustrationsV2'
@@ -223,11 +223,11 @@ const LoginV2 = () => {
                   textTransform: 'uppercase',
                   fontSize: '1.5rem !important',
                 }}>
-                {themeConfig.templateName}
+                {themeConfig.title}
               </Typography>
             </Box>
             <Box sx={{ mb: 6 }}>
-              <TypographyStyled variant='h5'>Welcome to {themeConfig.templateName}! 👋🏻</TypographyStyled>
+              <TypographyStyled variant='h5'>Welcome to {themeConfig.title}! 👋🏻</TypographyStyled>
               <Typography variant='body2'>Please sign-in to your account and start the adventure</Typography>
             </Box>
             <form noValidate autoComplete='off' onSubmit={handleSubmit}>

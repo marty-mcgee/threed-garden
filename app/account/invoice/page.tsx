@@ -5,7 +5,7 @@
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 
 // @mui material components
-import type { Theme } from '@mui/material/styles'
+import type { ThreedTheme } from '@mui/material/styles'
 import { styled, useTheme } from '@mui/material/styles'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
@@ -61,7 +61,7 @@ const InvoicePage: TNextPageWithProps = (): JSX.Element => {
   //  skin === 'bordered' ? 'auth-v2-forgot-password-illustration-bordered' : 'auth-v2-forgot-password-illustration'
   /**/
 
-  const borderBottom = ({ borders: { borderWidth }, palette: { light } }: Theme) =>
+  const borderBottom = ({ borders: { borderWidth }, palette: { light } }: ThreedTheme) =>
     `${borderWidth[1]} solid ${light.main}`
 
   return (

@@ -27,7 +27,7 @@ import HomeOutline from 'mdi-material-ui/HomeOutline'
 import BriefcaseOutline from 'mdi-material-ui/BriefcaseOutline'
 
 // ** Hooks
-import useBgColor from '#/ui/hooks/useBgColor'
+import useBgColor from '#/lib/hooks/useBgColor'
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Fade ref={ref} {...props} />
