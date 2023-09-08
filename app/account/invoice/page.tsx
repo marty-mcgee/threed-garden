@@ -5,7 +5,7 @@
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 
 // @mui material components
-import type { ThreedTheme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 import { styled, useTheme } from '@mui/material/styles'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'

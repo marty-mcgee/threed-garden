@@ -1,5 +1,5 @@
 // @mui material components
-import type { ThreedTheme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 

@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 
 // @mui material components
 import Icon from '@mui/material/Icon'
-import { Theme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'

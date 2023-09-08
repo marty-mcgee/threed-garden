@@ -1,5 +1,6 @@
 // @mui material components
-import { styled, Theme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDButton from '#/lib/mui/MDButton'
@@ -10,7 +11,8 @@ export default styled(MDButton)(({ theme, ownerState }: { theme?: ThreedTheme; o
 
   const { borderColor } = borders
   const { pxToRem } = functions
-  const { fontWeightRegular, size: fontSize } = typography
+  // const { fontWeightRegular, size: fontSize } = typography
+  const { fontWeightRegular } = typography
   const { light } = palette
 
   // width, height, minWidth and minHeight values
@@ -27,7 +29,7 @@ export default styled(MDButton)(({ theme, ownerState }: { theme?: ThreedTheme; o
     margin: `0 ${pxToRem(2)}`,
     pointerEvents: active ? 'none' : 'auto',
     fontWeight: fontWeightRegular,
-    fontSize: fontSize.sm,
+    // fontSize: fontSize.sm,
     width: sizeValue,
     minWidth: sizeValue,
     height: sizeValue,

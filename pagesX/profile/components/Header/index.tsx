@@ -1,6 +1,7 @@
 import { useState, useEffect, ReactNode } from 'react'
 
 // @mui material components
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
 import AppBar from '@mui/material/AppBar'
@@ -33,7 +34,7 @@ function Header({ children }: { children?: ReactNode }): JSX.Element {
     }
 
     /**
-     The event listener that's calling the handleTabsOrientation function when resizing the window.
+      The event listener that's calling the handleTabsOrientation function when resizing the window.
     */
     window.addEventListener('resize', handleTabsOrientation)
 
@@ -58,7 +59,7 @@ function Header({ children }: { children?: ReactNode }): JSX.Element {
         minHeight='18.75rem'
         borderRadius='xl'
         sx={{
-          backgroundImage: ({ functions: { rgba, linearGradient }, palette: { gradients } }) =>
+          backgroundImage: ({ functions: { rgba, linearGradient }, palette: { gradients } }: ThreedTheme) =>
             `${linearGradient(rgba(gradients.info.main, 0.05), rgba(gradients.info.state, 0.1))}, url(${
               backgroundImage.src
             })`,

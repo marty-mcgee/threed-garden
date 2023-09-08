@@ -1,6 +1,7 @@
 // @mui material components
 import { Button } from '@mui/material'
-import { styled, Theme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 
 export default styled(Button)(({ theme, ownerState }: { theme?: ThreedTheme; ownerState: any }) => {
   const { palette, functions } = theme

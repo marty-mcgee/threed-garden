@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 
 // @mui material components
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import AppBar from '@mui/material/AppBar'
@@ -49,7 +50,7 @@ function Header({ tabValue, tabHandler, children }: Props): JSX.Element {
         m={2}
         pt={2}
         sx={{
-          backgroundImage: ({ functions: { linearGradient, rgba }, palette: { black } }) =>
+          backgroundImage: ({ functions: { linearGradient, rgba }, palette: { black } }: ThreedTheme) =>
             `${linearGradient(rgba(black.main, 0.25), rgba(black.main, 0.25))}, url(${bgImage.src})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',

@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 
 // @material-ui core components
-import type { ThreedTheme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 import { styled, useTheme } from '@mui/material/styles'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'

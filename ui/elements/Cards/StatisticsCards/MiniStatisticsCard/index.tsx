@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 
 // @mui material components
-import type { ThreedTheme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 import { styled, useTheme } from '@mui/material/styles'
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'

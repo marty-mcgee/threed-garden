@@ -2,6 +2,7 @@
 import Link from 'next/link'
 
 // @mui material components
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 import Card from '@mui/material/Card'
 import Icon from '@mui/material/Icon'
 
@@ -72,7 +73,7 @@ function DefaultPricingCard({ color, badge, price, specifications, action, shado
   ))
 
   return (
-    <Card sx={{ boxShadow: ({ boxShadows: { lg } }) => (shadow ? lg : 'none') }}>
+    <Card sx={{ boxShadow: ({ boxShadows: { lg } }: ThreedTheme) => (shadow ? lg : 'none') }}>
       <MDBox
         bgColor={color}
         variant={color === 'white' ? 'contained' : 'gradient'}

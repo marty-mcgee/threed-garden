@@ -4,6 +4,9 @@ import { useEffect, ReactNode } from 'react'
 // import { useLocation } from "react-router-dom"
 import { useRouter, usePathname } from 'next/navigation'
 
+// @mui material components
+import type { Theme, ThreedTheme } from '@mui/material/styles'
+
 import DashboardNavbar from '~/ui/layouts/Navbars/DashboardNavbar'
 
 // ThreeD Garden components
@@ -28,8 +31,8 @@ function DashboardLayout({ children, stickyNavbar }: { children: ReactNode; stic
 
   return (
     <MDBox
-      sx={({ breakpoints, transitions, functions: { pxToRem } }) => ({
-        // p: 10,
+      sx={({ breakpoints, transitions, functions: { pxToRem } }: ThreedTheme) => ({
+        p: 3,
         mr: 1,
         my: 0,
         position: 'relative',
@@ -50,8 +53,9 @@ function DashboardLayout({ children, stickyNavbar }: { children: ReactNode; stic
         },
       })}
     >
-      <DashboardNavbar></DashboardNavbar>
-      {children}
+      <DashboardNavbar>
+        {children}
+      </DashboardNavbar>
     </MDBox>
   )
 }

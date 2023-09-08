@@ -1,7 +1,7 @@
 // @mui material components
 import Card from '@mui/material/Card'
 import Icon from '@mui/material/Icon'
-import { Theme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -22,7 +22,7 @@ function MediaPlayer(): JSX.Element {
 
   return (
     <Card
-      sx={({ functions: { linearGradient, rgba }, palette: { gradients } }) => ({
+      sx={({ functions: { linearGradient, rgba }, palette: { gradients } }: ThreedTheme) => ({
         backgroundImage: `${linearGradient(
           rgba(gradients.dark.main, 0.85),
           rgba(gradients.dark.state, 0.85)

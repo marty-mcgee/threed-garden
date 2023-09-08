@@ -1,8 +1,8 @@
 import { ReactNode } from 'react'
 
 // @mui material components
-import type { ThreedTheme } from '@mui/material/styles'
-import { styled, useTheme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
+// import { styled, useTheme } from '@mui/material/styles'
 import Snackbar from '@mui/material/Snackbar'
 import IconButton from '@mui/material/IconButton'
 import Icon from '@mui/material/Icon'
@@ -127,7 +127,7 @@ function MDSnackbar({ color, icon, title, dateTime, content, close, bgWhite, ...
             </MDTypography>
             <Icon
               sx={{
-                color: ({ palette: { dark, white } }) =>
+                color: ({ palette: { dark, white } }: ThreedTheme) =>
                   (bgWhite && !darkMode) || color === 'light' ? dark.main : white.main,
                 fontWeight: ({ typography: { fontWeightBold } }) => fontWeightBold,
                 cursor: 'pointer',
