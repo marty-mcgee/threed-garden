@@ -11,7 +11,7 @@ import Grid from '@mui/material/Grid'
 import Divider from '@mui/material/Divider'
 import MuiLink from '@mui/material/Link'
 import Container from '@mui/material/Container'
-import { Theme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'

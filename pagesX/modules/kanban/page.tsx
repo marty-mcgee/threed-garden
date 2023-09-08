@@ -12,7 +12,7 @@ import { useState } from 'react'
 // uuid is a library for generating unique id
 
 // @mui material components
-import { Theme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'

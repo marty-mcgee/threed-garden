@@ -1,4 +1,5 @@
 // @mui material components
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 import Card from '@mui/material/Card'
 import Icon from '@mui/material/Icon'
 
@@ -34,7 +35,7 @@ function MasterCard({ color, number, holder, expires }: Props): JSX.Element {
 
   return (
     <Card
-      sx={({ palette: { gradients }, functions: { linearGradient }, boxShadows: { xl } }) => ({
+      sx={({ palette: { gradients }, functions: { linearGradient }, boxShadows: { xl } }: ThreedTheme) => ({
         background: gradients[color]
           ? linearGradient(gradients[color].main, gradients[color].state)
           : linearGradient(gradients.dark.main, gradients.dark.state),

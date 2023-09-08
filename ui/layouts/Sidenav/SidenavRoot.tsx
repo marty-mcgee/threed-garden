@@ -1,6 +1,7 @@
 // @mui material components
 import Drawer from '@mui/material/Drawer'
-import { styled, Theme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 
 export default styled(Drawer)(({ theme, ownerState }: { theme?: ThreedTheme | any; ownerState: any }) => {
   const { palette, boxShadows, transitions, breakpoints, functions } = theme

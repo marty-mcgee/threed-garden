@@ -1,5 +1,5 @@
 // @mui material components
-import { Theme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 
 function menuItem(theme: ThreedTheme) {
   const { palette, borders, transitions } = theme

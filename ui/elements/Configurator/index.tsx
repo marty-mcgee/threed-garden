@@ -9,7 +9,7 @@ import Switch from '@mui/material/Switch'
 import IconButton from '@mui/material/IconButton'
 import Link from '@mui/material/Link'
 import Icon from '@mui/material/Icon'
-import { Theme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 
 // @mui icons
 import TwitterIcon from '@mui/icons-material/Twitter'
@@ -140,7 +140,7 @@ function Configurator(): JSX.Element {
         </MDBox>
 
         <Icon
-          sx={({ typography: { size }, palette: { dark, white } }) => ({
+          sx={({ typography: { size }, palette: { dark, white } }: ThreedTheme) => ({
             fontSize: `${size.lg} !important`,
             color: darkMode ? white.main : dark.main,
             stroke: 'currentColor',
@@ -168,7 +168,7 @@ function Configurator(): JSX.Element {
             {sidenavColors.map((color) => (
               <IconButton
                 key={color}
-                sx={({ borders: { borderWidth }, palette: { white, dark, background }, transitions }: ThreedTheme | any) => ({
+                sx={({ borders: { borderWidth }, palette: { white, dark, background }, transitions }: ThreedTheme) => ({
                   width: '24px',
                   height: '24px',
                   padding: 0,
@@ -186,7 +186,7 @@ function Configurator(): JSX.Element {
                     easing: transitions.easing.sharp,
                     duration: transitions.duration.shorter,
                   }),
-                  backgroundImage: ({ functions: { linearGradient }, palette: { gradients } }) =>
+                  backgroundImage: ({ functions: { linearGradient }, palette: { gradients } }: ThreedTheme) =>
                     linearGradient(gradients[color].main, gradients[color].state),
 
                   '&:not(:last-child)': {

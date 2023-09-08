@@ -2,7 +2,7 @@
 import Divider from '@mui/material/Divider'
 import Icon from '@mui/material/Icon'
 import Tooltip from '@mui/material/Tooltip'
-import { Theme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'

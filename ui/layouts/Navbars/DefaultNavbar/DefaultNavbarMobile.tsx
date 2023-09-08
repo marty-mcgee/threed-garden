@@ -4,9 +4,9 @@ import { useState } from 'react'
 import Link from 'next/link'
 
 // @mui material components
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 import Collapse from '@mui/material/Collapse'
 import MuiLink from '@mui/material/Link'
-import { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -107,7 +107,7 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
                     }
                     target={item.href ? '_blank' : ''}
                     rel={item.href ? 'noreferrer' : 'noreferrer'}
-                    sx={({ palette: { grey, dark }, borders: { borderRadius } }) => ({
+                    sx={({ palette: { grey, dark }, borders: { borderRadius } }: ThreedTheme) => ({
                       borderRadius: borderRadius.md,
                       cursor: 'pointer',
                       transition: 'all 300ms linear',

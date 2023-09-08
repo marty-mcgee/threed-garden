@@ -29,11 +29,11 @@ function Breadcrumbs({ icon, title, route, light }: Props): JSX.Element {
     <MDBox mr={{ xs: 0, xl: 8 }}>
       <MuiBreadcrumbs
         separator='>'
-        sx={{
-          '& .MuiBreadcrumbs-separator': {
-            color: ({ palette: { white, grey } }) => (light ? white.main : grey[600]),
-          },
-        }}
+        // sx={{
+        //   '& .MuiBreadcrumbs-separator': {
+        //     color: ({ palette: { white, grey } }) => (light ? white.main : grey[600]),
+        //   },
+        // }}
       >
         <Link href='/'>
           <MDTypography

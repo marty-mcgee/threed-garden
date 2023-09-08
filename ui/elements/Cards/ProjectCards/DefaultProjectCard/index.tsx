@@ -2,6 +2,7 @@
 import Link from 'next/link'
 
 // @mui material components
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import Tooltip from '@mui/material/Tooltip'
@@ -42,7 +43,7 @@ function DefaultProjectCard({ image, label, title, description, action, authors 
         src={media}
         alt={name}
         size='xs'
-        sx={({ borders: { borderWidth }, palette: { white } }) => ({
+        sx={({ borders: { borderWidth }, palette: { white } }: ThreedTheme) => ({
           border: `${borderWidth[2]} solid ${white.main}`,
           cursor: 'pointer',
           position: 'relative',
@@ -79,7 +80,7 @@ function DefaultProjectCard({ image, label, title, description, action, authors 
           sx={{
             maxWidth: '100%',
             margin: 0,
-            boxShadow: ({ boxShadows: { md } }) => md,
+            boxShadow: ({ boxShadows: { md } }: ThreedTheme) => md,
             objectFit: 'cover',
             objectPosition: 'center',
           }}

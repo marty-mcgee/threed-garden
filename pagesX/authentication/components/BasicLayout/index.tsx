@@ -1,8 +1,8 @@
 import { ReactNode } from 'react'
 
 // @mui material components
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 import Grid from '@mui/material/Grid'
-import { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'

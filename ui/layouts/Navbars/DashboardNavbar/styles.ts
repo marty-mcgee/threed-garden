@@ -1,5 +1,5 @@
 // @mui material components
-import { Theme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 
 function navbar(theme: ThreedTheme | any, ownerState: any) {
   const { palette, boxShadows, functions, transitions, breakpoints, borders } = theme

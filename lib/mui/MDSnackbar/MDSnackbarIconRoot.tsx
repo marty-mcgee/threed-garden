@@ -1,6 +1,7 @@
 // @mui material components
 import Icon from '@mui/material/Icon'
-import { styled, Theme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 
 export default styled(Icon)(({ theme, ownerState }: { theme?: ThreedTheme; ownerState: any }) => {
   const { palette, functions, typography } = theme
@@ -8,7 +9,7 @@ export default styled(Icon)(({ theme, ownerState }: { theme?: ThreedTheme; owner
 
   const { white, transparent, gradients } = palette
   const { pxToRem, linearGradient } = functions
-  const { size } = typography
+  // const { size } = typography
 
   // backgroundImage value
   let backgroundImageValue
@@ -26,7 +27,7 @@ export default styled(Icon)(({ theme, ownerState }: { theme?: ThreedTheme; owner
     WebkitTextFillColor: bgWhite || color === 'light' ? transparent.main : white.main,
     WebkitBackgroundClip: 'text',
     marginRight: pxToRem(8),
-    fontSize: size.lg,
+    // fontSize: size.lg,
     transform: `translateY(${pxToRem(-2)})`,
   }
 })

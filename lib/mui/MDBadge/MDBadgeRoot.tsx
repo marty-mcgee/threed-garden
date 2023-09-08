@@ -1,13 +1,15 @@
 // @mui material components
 import Badge from '@mui/material/Badge'
-import { styled, Theme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 
 export default styled(Badge)(({ theme, ownerState }: { theme?: ThreedTheme; ownerState: any }) => {
   const { palette, typography, borders, functions } = theme
   const { color, circular, border, size, indicator, variant, container, children } = ownerState
 
   const { white, dark, gradients, badgeColors } = palette
-  const { size: fontSize, fontWeightBold } = typography
+  // const { size: fontSize, fontWeightBold } = typography
+  const { fontWeightBold } = typography
   const { borderRadius, borderWidth } = borders
   const { pxToRem, linearGradient } = functions
 
@@ -22,7 +24,7 @@ export default styled(Badge)(({ theme, ownerState }: { theme?: ThreedTheme; owne
   }
 
   // fontSize value
-  const fontSizeValue = size === 'xs' ? fontSize.xxs : fontSize.xs
+  // const fontSizeValue = size === 'xs' ? fontSize.xxs : fontSize.xs
 
   // border value
   const borderValue = border ? `${borderWidth[3]} solid ${white.main}` : 'none'
@@ -100,7 +102,7 @@ export default styled(Badge)(({ theme, ownerState }: { theme?: ThreedTheme; owne
     '& .MuiBadge-badge': {
       height: 'auto',
       padding: paddings[size], // paddings.xs | paddings.none
-      fontSize: fontSizeValue,
+      // fontSize: fontSizeValue,
       fontWeight: fontWeightBold,
       textTransform: 'uppercase',
       lineHeight: 1,

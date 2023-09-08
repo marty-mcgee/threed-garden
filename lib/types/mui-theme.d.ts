@@ -1,5 +1,5 @@
 // in the file where you are creating the theme (invoking the function `createTheme()`)
-import { Theme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 
 declare module '@mui/material/styles' {
 // declare module '@mui/styles' {
@@ -44,6 +44,7 @@ declare module '@mui/material/styles' {
     }
     transitions?: any
     functions?: any
+    size?: any
   }
 
   interface ThreedThemeOptions extends ThemeOptions {
@@ -296,7 +297,7 @@ declare module '@mui/material/styles' {
       | any
   }
 
-  interface ThreedTypographyVariants extends TypographyVariants {
+  interface TypographyVariants { // NOT ThreedTypographyVariants extends TypographyVariants
     fontFamily: string
     fontWeightLighter: number
     fontWeightLight: number

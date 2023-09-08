@@ -1,5 +1,5 @@
 // @mui material components
-import { Theme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 
 function collapseItem(theme: ThreedTheme, ownerState: any) {
   const { palette, transitions, breakpoints, boxShadows, borders, functions } = theme

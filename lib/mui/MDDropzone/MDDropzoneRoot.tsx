@@ -1,5 +1,6 @@
 // @mui material components
-import { styled, Theme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 
 export default styled('form')(({ theme, ownerState }: { theme?: ThreedTheme | any; ownerState: any }) => {
   const { palette, typography, borders, functions } = theme

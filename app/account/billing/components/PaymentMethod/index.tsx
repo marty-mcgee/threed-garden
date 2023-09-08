@@ -10,7 +10,7 @@
 import type { NextPage } from 'next'
 
 // @mui material components
-import type { ThreedTheme } from '@mui/material/styles'
+import type { Theme, ThreedTheme } from '@mui/material/styles'
 import { styled, useTheme } from '@mui/material/styles'
 // @mui material components
 import Card from '@mui/material/Card'
