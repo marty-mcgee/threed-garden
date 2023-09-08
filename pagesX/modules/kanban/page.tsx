@@ -12,7 +12,7 @@ import { useState } from 'react'
 // uuid is a library for generating unique id
 
 // @mui material components
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -57,7 +57,7 @@ function Kanban(): JSX.Element {
         <MDBox
           position='relative'
           my={4}
-          sx={({ palette: { light, background }, functions: { pxToRem }, borders: { borderRadius } }: ThreedTheme | any) => ({
+          sx={({ palette: { light, background }, functions: { pxToRem }, borders: { borderRadius } }: Theme | any) => ({
             '& .react-kanban-column': {
               backgroundColor: darkMode ? background.card : light.main,
               width: pxToRem(450),

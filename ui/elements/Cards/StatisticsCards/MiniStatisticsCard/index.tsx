@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 
 // @mui material components
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 import { styled, useTheme } from '@mui/material/styles'
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
@@ -43,7 +43,7 @@ function MiniStatisticsCard({ bgColor, title, count, percentage, icon, direction
       <MDBox
         bgColor={bgColor}
         variant='gradient'
-        sx={({ palette: { background } }: ThreedTheme) => ({
+        sx={({ palette: { background } }: Theme) => ({
           background: darkMode && background.default,
         })}
       >

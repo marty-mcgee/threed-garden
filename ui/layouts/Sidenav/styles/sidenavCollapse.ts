@@ -1,7 +1,7 @@
 // @mui material components
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 
-function collapseItem(theme: ThreedTheme, ownerState: any) {
+function collapseItem(theme: Theme, ownerState: any) {
   const { palette, transitions, breakpoints, boxShadows, borders, functions } = theme
   const { active, transparentSidenav, whiteSidenav, darkMode } = ownerState
 
@@ -50,7 +50,7 @@ function collapseItem(theme: ThreedTheme, ownerState: any) {
   }
 }
 
-function collapseIconBox(theme: ThreedTheme, ownerState: any) {
+function collapseIconBox(theme: Theme, ownerState: any) {
   const { palette, transitions, borders, functions } = theme
   const { transparentSidenav, whiteSidenav, darkMode } = ownerState
 
@@ -76,7 +76,7 @@ function collapseIconBox(theme: ThreedTheme, ownerState: any) {
   }
 }
 
-const collapseIcon = ({ palette: { white, gradients } }: ThreedTheme, { active }: any) => ({
+const collapseIcon = ({ palette: { white, gradients } }: Theme, { active }: any) => ({
   color: active ? white.main : gradients.dark.state,
 })
 
@@ -108,7 +108,7 @@ function collapseText(theme: any, ownerState: any) {
   }
 }
 
-function collapseArrow(theme: ThreedTheme, ownerState: any) {
+function collapseArrow(theme: Theme, ownerState: any) {
   const { palette, typography, transitions, breakpoints, functions } = theme
   const { noCollapse, transparentSidenav, whiteSidenav, miniSidenav, open, active, darkMode } = ownerState
 

@@ -1,7 +1,7 @@
 // @mui material components
 import Card from '@mui/material/Card'
 import Icon from '@mui/material/Icon'
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -12,7 +12,7 @@ import MDButton from '#/lib/mui/MDButton'
 import bgImage from '#/lib/assets/images/any/bg-player.jpg'
 
 function MediaPlayer(): JSX.Element {
-  const mediaPlayerButtonStyles = ({ functions: { pxToRem } }: ThreedTheme) => ({
+  const mediaPlayerButtonStyles = ({ functions: { pxToRem } }: Theme) => ({
     width: pxToRem(46),
     height: pxToRem(46),
     minWidth: pxToRem(46),
@@ -22,7 +22,7 @@ function MediaPlayer(): JSX.Element {
 
   return (
     <Card
-      sx={({ functions: { linearGradient, rgba }, palette: { gradients } }: ThreedTheme) => ({
+      sx={({ functions: { linearGradient, rgba }, palette: { gradients } }: Theme) => ({
         backgroundImage: `${linearGradient(
           rgba(gradients.dark.main, 0.85),
           rgba(gradients.dark.state, 0.85)

@@ -2,7 +2,7 @@
 import Container from '@mui/material/Container'
 import Link from '@mui/material/Link'
 import Icon from '@mui/material/Icon'
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -67,7 +67,7 @@ function Footer({ light }: { light?: boolean }): JSX.Element {
           </MDBox>
           <MDBox
             component='ul'
-            sx={({ breakpoints }: ThreedTheme) => ({
+            sx={({ breakpoints }: Theme) => ({
               display: 'flex',
               flexWrap: 'wrap',
               alignItems: 'center',

@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 
 // @mui material components
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 import Card from '@mui/material/Card'
 import Divider from '@mui/material/Divider'
 import Icon from '@mui/material/Icon'
@@ -37,7 +37,7 @@ function ComplexProjectCard({ color, image, title, dateTime, description, member
         src={member}
         alt='member profile'
         size='xs'
-        sx={({ borders: { borderWidth }, palette: { white } }: ThreedTheme) => ({
+        sx={({ borders: { borderWidth }, palette: { white } }: Theme) => ({
           border: `${borderWidth[2]} solid ${white.main}`,
           cursor: 'pointer',
           position: 'relative',
@@ -70,7 +70,7 @@ function ComplexProjectCard({ color, image, title, dateTime, description, member
             sx={{
               p: 1,
               mt: -6,
-              borderRadius: ({ borders: { borderRadius } }: ThreedTheme) => borderRadius.xl,
+              borderRadius: ({ borders: { borderRadius } }: Theme) => borderRadius.xl,
             }}
           />
           <MDBox

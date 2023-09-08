@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 
 // @mui material components
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 import { styled, useTheme } from '@mui/material/styles'
 import Card from '@mui/material/Card'
 import Switch from '@mui/material/Switch'
@@ -38,7 +38,7 @@ function ControllerCard({ color, state, icon, title, description, onChange }: Pr
         display='flex'
         flexDirection='column'
         justifyContent='space-between'
-        sx={({ palette: { background } }: ThreedTheme) => ({
+        sx={({ palette: { background } }: Theme) => ({
           background: darkMode && !state && background.default,
         })}
       >

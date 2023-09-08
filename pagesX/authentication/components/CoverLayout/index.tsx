@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 
 // @mui material components
 import Grid from '@mui/material/Grid'
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -50,7 +50,7 @@ function CoverLayout({ coverHeight, image, children }: Props): JSX.Element {
         pt={6}
         pb={28}
         sx={{
-          backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }: ThreedTheme) =>
+          backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }: Theme) =>
             image &&
             `${linearGradient(rgba(gradients.dark.main, 0.4), rgba(gradients.dark.state, 0.4))}, url(${image})`,
           backgroundSize: 'cover',

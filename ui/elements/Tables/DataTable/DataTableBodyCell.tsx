@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 
 // @mui material components
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -20,7 +20,7 @@ function DataTableBodyCell({ noBorder, align, children }: Props): JSX.Element {
       textAlign={align}
       py={1.5}
       px={3}
-      sx={({ palette: { light }, typography: { size }, borders: { borderWidth } }: ThreedTheme) => ({
+      sx={({ palette: { light }, typography: { size }, borders: { borderWidth } }: Theme) => ({
         fontSize: size.sm,
         borderBottom: noBorder ? 'none' : `${borderWidth[1]} solid ${light.main}`,
       })}

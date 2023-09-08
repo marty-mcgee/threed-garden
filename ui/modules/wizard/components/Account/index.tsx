@@ -3,7 +3,7 @@ import { useState } from 'react'
 // @mui material components
 import Grid from '@mui/material/Grid'
 import Icon from '@mui/material/Icon'
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -24,7 +24,7 @@ function Account(): JSX.Element {
     borders: { borderWidth },
     palette: { transparent, info },
     typography: { size },
-  }: ThreedTheme) => ({
+  }: Theme) => ({
     width: pxToRem(164),
     height: pxToRem(130),
     borderWidth: borderWidth[2],

@@ -1,5 +1,5 @@
 // @mui material components
-import type { Theme, ThreedTheme } from '@mui/material/styles' // need this here ??
+import type { Theme } from '@mui/material/styles' // need this here ??
 import { createTheme } from '@mui/material/styles'
 // import Fade from "@mui/material/Fade"
 

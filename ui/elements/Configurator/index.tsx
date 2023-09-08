@@ -9,7 +9,7 @@ import Switch from '@mui/material/Switch'
 import IconButton from '@mui/material/IconButton'
 import Link from '@mui/material/Link'
 import Icon from '@mui/material/Icon'
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 
 // @mui icons
 import TwitterIcon from '@mui/icons-material/Twitter'
@@ -88,7 +88,7 @@ function Configurator(): JSX.Element {
     functions: { pxToRem },
     palette: { white, dark, background },
     borders: { borderWidth },
-  }: ThreedTheme | any) => ({
+  }: Theme | any) => ({
     height: pxToRem(39),
     background: darkMode ? background.sidenav : white.main,
     color: darkMode ? white.main : dark.main,
@@ -105,7 +105,7 @@ function Configurator(): JSX.Element {
   const sidenavTypeActiveButtonStyles = ({
     functions: { pxToRem, linearGradient },
     palette: { white, gradients, background },
-  }: ThreedTheme | any) => ({
+  }: Theme | any) => ({
     height: pxToRem(39),
     background: darkMode ? white.main : linearGradient(gradients.dark.main, gradients.dark.state),
     color: darkMode ? background.sidenav : white.main,
@@ -140,7 +140,7 @@ function Configurator(): JSX.Element {
         </MDBox>
 
         <Icon
-          sx={({ typography: { size }, palette: { dark, white } }: ThreedTheme) => ({
+          sx={({ typography: { size }, palette: { dark, white } }: Theme) => ({
             fontSize: `${size.lg} !important`,
             color: darkMode ? white.main : dark.main,
             stroke: 'currentColor',
@@ -168,11 +168,11 @@ function Configurator(): JSX.Element {
             {sidenavColors.map((color) => (
               <IconButton
                 key={color}
-                sx={({ borders: { borderWidth }, palette: { white, dark, background }, transitions }: ThreedTheme) => ({
+                sx={({ borders: { borderWidth }, palette: { white, dark, background }, transitions }: Theme) => ({
                   width: '24px',
                   height: '24px',
                   padding: 0,
-                  border: `${borderWidth[1]} solid ${darkMode ? background.sidenav : white.main}`,
+                  border: `${borderWidth[1]} solid ${darkMode ? background.paper : white.main}`,
                   borderColor: () => {
                     let borderColorValue = sidenavColor === color && dark.main
 
@@ -186,7 +186,7 @@ function Configurator(): JSX.Element {
                     easing: transitions.easing.sharp,
                     duration: transitions.duration.shorter,
                   }),
-                  backgroundImage: ({ functions: { linearGradient }, palette: { gradients } }: ThreedTheme) =>
+                  backgroundImage: ({ functions: { linearGradient }, palette: { gradients } }: Theme) =>
                     linearGradient(gradients[color].main, gradients[color].state),
 
                   '&:not(:last-child)': {

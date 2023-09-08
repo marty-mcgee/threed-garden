@@ -1,9 +1,9 @@
 // @mui material components
 import Avatar from '@mui/material/Avatar'
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 import { styled } from '@mui/material/styles'
 
-export default styled(Avatar)(({ theme, ownerState }: { theme?: ThreedTheme | any; ownerState: any }) => {
+export default styled(Avatar)(({ theme, ownerState }: { theme?: Theme | any; ownerState: any }) => {
   const { palette, functions, typography, boxShadows } = theme
   const { shadow, bgColor, size } = ownerState
 

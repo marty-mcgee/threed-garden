@@ -1,7 +1,7 @@
 // @mui material components
 import Divider from '@mui/material/Divider'
 import Icon from '@mui/material/Icon'
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -18,7 +18,7 @@ import team5 from '#/lib/assets/images/people/team-5.jpg'
 
 function Header(): JSX.Element {
   const avatarStyles: { [key: string]: any } = {
-    border: ({ borders: { borderWidth }, palette: { white } }: ThreedTheme) => `${borderWidth[2]} solid ${white.main}`,
+    border: ({ borders: { borderWidth }, palette: { white } }: Theme) => `${borderWidth[2]} solid ${white.main}`,
     cursor: 'pointer',
     position: 'relative',
     ml: -1.5,

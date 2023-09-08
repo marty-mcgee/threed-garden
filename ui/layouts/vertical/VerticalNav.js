@@ -11,9 +11,9 @@ import PerfectScrollbar from 'react-perfect-scrollbar'
 import themeConfig from '#/lib/config/themeConfig'
 
 // ** Component Imports
-import VerticalNavDrawer from './VerticalNavDrawer'
-import VerticalNavItems from './VerticalNavItems'
-import VerticalNavHeader from './VerticalNavHeader'
+import VerticalNavDrawer from '#/ui/layouts/vertical/VerticalNavDrawer'
+import VerticalNavItems from '#/ui/layouts/vertical/VerticalNavItems'
+import VerticalNavHeader from '#/ui/layouts/vertical/VerticalNavHeader'
 
 // ** Util Import
 import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
@@ -116,7 +116,7 @@ const VerticalNavigation = (props) => {
 
   return (
     <VerticalNavDrawer {...props}>
-      {/* <VerticalNavHeader {...props} /> */}
+      <VerticalNavHeader {...props} />
       {beforeVerticalNavMenuContent && beforeVerticalNavMenuContentPosition === 'fixed'
         ? beforeVerticalNavMenuContent(props)
         : null}

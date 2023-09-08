@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 
 // @mui material components
 import Icon from '@mui/material/Icon'
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -28,7 +28,7 @@ function DataTableHeadCell({ width, children, sorted, align, ...rest }: Props): 
       width={width}
       py={1.5}
       px={3}
-      sx={({ palette: { light }, borders: { borderWidth } }: ThreedTheme) => ({
+      sx={({ palette: { light }, borders: { borderWidth } }: Theme) => ({
         borderBottom: `${borderWidth[1]} solid ${light.main}`,
       })}
     >
@@ -38,7 +38,7 @@ function DataTableHeadCell({ width, children, sorted, align, ...rest }: Props): 
         textAlign={align}
         color={darkMode ? 'white' : 'secondary'}
         opacity={0.7}
-        sx={({ typography: { size, fontWeightBold } }: ThreedTheme) => ({
+        sx={({ typography: { size, fontWeightBold } }: Theme) => ({
           fontSize: size.xxs,
           fontWeight: fontWeightBold,
           textTransform: 'uppercase',

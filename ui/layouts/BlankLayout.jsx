@@ -29,13 +29,14 @@ const BlankLayout = ({ children }) => {
     <BlankLayoutWrapper className='layout-wrapper'>
       <Box
         id='app-content'
-        // sx={{ minHeight: '100vh', overflowX: 'hidden', position: 'relative' }}
-        sx={{
-          overflowX: 'hidden',
-          position: 'relative',
-          minHeight: (theme) => `calc(100vh - ${theme.spacing(theme.mixins.toolbar.minHeight / 4)})`,
-        }}
+        sx={{ minHeight: '100vh', overflowX: 'hidden', position: 'relative' }}
+        // sx={{
+        //   overflowX: 'hidden',
+        //   position: 'relative',
+        //   minHeight: (theme) => `calc(100vh - ${theme.spacing(theme.mixins.toolbar.minHeight / 4)})`,
+        // }}
       >
+        <>BlankLayout</>
         {children}
       </Box>
     </BlankLayoutWrapper>
