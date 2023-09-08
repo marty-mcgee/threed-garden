@@ -62,7 +62,7 @@ const VerticalLayout = (props) => {
   const { skin, navHidden, contentWidth } = settings
   const { navigationSize, disableCustomizer, collapsedNavigationSize } = themeConfig
   const navWidth = navigationSize
-  const navigationBorderWidth = skin === 'bordered' ? 1 : 3
+  const navigationBorderWidth = skin === 'bordered' ? 1 : 7
   const collapsedNavWidth = collapsedNavigationSize
 
   // ** States
@@ -86,6 +86,7 @@ const VerticalLayout = (props) => {
         }}
         {...props}
       />
+
       {/* LEFT NAVIGATION PANEL DRAWER */}
       {navHidden &&
       themeConfig.layout === 'vertical' &&
@@ -110,6 +111,8 @@ const VerticalLayout = (props) => {
           {...props}
         />
       )}
+
+      {/* MAIN CONTENT WRAPPER */}
       <VerticalLayoutWrapper className='layout-wrapper'>
 
         {/* MAIN CONTENT */}
