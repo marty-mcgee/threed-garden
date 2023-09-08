@@ -19,6 +19,7 @@ const AppBarContent = (props) => {
   return (
     <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
       <Box className='actions-left' sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
+        {/* THREED GARDEN
         {hidden ? (
           <IconButton color='inherit' sx={{ ml: -2.75 }} onClick={toggleNavVisibility}>
             <MenuIcon />
@@ -28,7 +29,7 @@ const AppBarContent = (props) => {
           <IconButton color='inherit' sx={{ ml: 2.75 }} onClick={toggleNavVisibility}>
             <MenuIcon />
           </IconButton>
-        )}
+        )} */}
       </Box>
       <Box className='actions-right' sx={{ display: 'flex', alignItems: 'center' }}>
         <Autocomplete hidden={hidden} settings={settings} />

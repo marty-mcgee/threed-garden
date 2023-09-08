@@ -24,7 +24,7 @@ import DatePickerWrapper from '#/ui/styles/react-datepicker'
 
 const VerticalLayoutWrapper = styled('div')({
   height: '100%',
-  // display: 'flex',
+  display: 'flex',
   // flexGrow: 1,
   border: '3px solid pink', // is working here
   overflow: 'scroll',
@@ -89,8 +89,10 @@ const VerticalLayout = (props) => {
 
       {/* LEFT NAVIGATION PANEL DRAWER */}
       {navHidden &&
-      themeConfig.layout === 'vertical' &&
-      !(navHidden && settings.lastLayout === 'horizontal') ? null : (
+        themeConfig.layout === 'vertical' &&
+        !(navHidden && settings.lastLayout === 'horizontal')
+      ? null
+      : (
         <Navigation
           navWidth={navWidth}
           navHover={navHover}

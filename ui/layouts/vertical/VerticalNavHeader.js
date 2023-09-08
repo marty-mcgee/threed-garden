@@ -61,7 +61,7 @@ const VerticalNavHeader = (props) => {
   // ** Hooks & Vars
   const theme = useTheme()
   const { navCollapsed } = settings
-  const menuCollapsedStyles = navCollapsed && !navHover ? { opacity: 0 } : { opacity: 1 }
+  const menuCollapsedStyles = navCollapsed && !navHover ? { opacity: 0.5 } : { opacity: 1.0 }
 
   const menuHeaderPaddingLeft = () => {
     if (navCollapsed && !navHover) {
@@ -82,6 +82,7 @@ const VerticalNavHeader = (props) => {
       <RecordCircleOutline
         sx={{
           // mr: '0.95rem',
+          // color: 'green',
           fontSize: '1.25rem',
           pointerEvents: 'none',
           ...menuCollapsedStyles,
@@ -95,6 +96,7 @@ const VerticalNavHeader = (props) => {
       <CircleOutline
         sx={{
           // mr: '1rem',
+          // color: 'red',
           fontSize: '1.25rem',
           pointerEvents: 'none',
           ...menuCollapsedStyles,
