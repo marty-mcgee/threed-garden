@@ -3,7 +3,7 @@ import * as React from 'react'
 import NextAppDirEmotionCacheProvider from '#/ui/theme/EmotionCache'
 
 // ** MUI Themes
-import type { Theme, ThreedTheme } from '@mui/material/styles' // need this here ??
+// import type { Theme } from '@mui/material/styles'
 import { ThemeProvider, createTheme, useTheme, responsiveFontSizes } from '@mui/material/styles' // createTheme (in each theme index)
 import CssBaseline from '@mui/material/CssBaseline'
 // ** Global Styles
@@ -18,29 +18,26 @@ import themeBasic from '#/ui/theme/themes/theme-basic'
 import themeDark from '#/ui/theme/themes/theme-dark'
 import themeLight from '#/ui/theme/themes/theme-light'
 
-// ** set the app theme
-const theTheme = themeDark // themeBasic | themeDark | themeLight
-
-export default function ThemeRegistry({ settings, children }: { settings: any, children: React.ReactNode }, theTheme: Theme) {
+export default function ThemeRegistry({ settings, children }: { settings: any, children: React.ReactNode }) {
+  // ** set the app theme
+  let activeTheme = themeDark // themeBasic | themeDark | themeLight
   // **
-  console.debug('THEME: theTheme', useTheme())
+  console.debug('THEME: activeTheme', activeTheme)
   console.debug('PROPS: ThemeRegistry.settings == themeConfig', settings)
-  // ** Props
-  // const { settings, children } = props
 
   // ** Merged ThemeOptions of Core and User
   const coreThemeConfig = themeOptions(settings)
   console.debug('THEME OPTIONS: as coreThemeConfig:', coreThemeConfig)
 
   // ** Pass ThemeOptions to CreateTheme Function to create partial theme without component overrides
-  // let theTheme = createTheme(coreThemeConfig) // themeDark, settings+options
-  // let theTheme = useTheme()
+  // activeTheme = createTheme(coreThemeConfig) // themeDark, settings+options
+  activeTheme = useTheme()
 
   return (
     <NextAppDirEmotionCacheProvider options={{ key: 'threed-mui-emotion' }}>
-      <ThemeProvider theme={useTheme()}>
+      <ThemeProvider theme={activeTheme}>
         <CssBaseline />
-        <GlobalStyles styles={() => GlobalStyling(useTheme(), settings)} />
+        <GlobalStyles styles={() => GlobalStyling(activeTheme, settings)} />
         {children}
       </ThemeProvider>
     </NextAppDirEmotionCacheProvider>

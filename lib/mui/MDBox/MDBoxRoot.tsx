@@ -1,9 +1,9 @@
 // @mui material components
 import Box from '@mui/material/Box'
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 import { styled } from '@mui/material/styles'
 
-export default styled(Box)(({ theme, ownerState }: { theme?: ThreedTheme | any; ownerState: any }) => {
+export default styled(Box)(({ theme, ownerState }: { theme?: Theme | any; ownerState: any }) => {
   const { palette, functions, borders, boxShadows } = theme
   const { variant, bgColor, color, opacity, borderRadius, shadow, coloredShadow } = ownerState
 

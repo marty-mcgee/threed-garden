@@ -5,7 +5,7 @@ import Collapse from '@mui/material/Collapse'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Icon from '@mui/material/Icon'
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -47,7 +47,7 @@ function SidenavItem({ color, name, active, nested, children, open, ...rest }: P
         }
       >
         <MDBox
-          sx={(theme: ThreedTheme): any =>
+          sx={(theme: Theme): any =>
             itemContent(theme, {
               active,
               miniSidenav,

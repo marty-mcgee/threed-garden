@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 
 // @mui material components
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 import Grid from '@mui/material/Grid'
 
 // ThreeD Garden components
@@ -42,7 +42,7 @@ function BasicLayout({ image, children }: Props): JSX.Element {
         width='100%'
         minHeight='100vh'
         sx={{
-          backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }: ThreedTheme) =>
+          backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }: Theme) =>
             image &&
             `${linearGradient(rgba(gradients.dark.main, 0.6), rgba(gradients.dark.state, 0.6))}, url(${image})`,
           backgroundSize: 'cover',

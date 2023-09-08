@@ -49,10 +49,10 @@ import useBgColor from '#/lib/hooks/useBgColor'
 import { useSettings } from '#/lib/hooks/useSettings'
 
 // ** Configs
-import themeConfig from '#/lib/config/themeConfig'
+import appConfig from '#/lib/config/appConfig'
 
 // ** Layout Import
-import BlankLayout from '#/ui/layouts/BlankLayout'
+// import BlankLayout from '#/ui/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV2 from '#/ui/pages/auth/FooterIllustrationsV2'
@@ -238,7 +238,7 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
             src={logo}
             width={48}
             height={48}
-            alt={themeConfig.title}
+            alt={appConfig.title}
           />
         </Link>
         {/* App Name */}
@@ -252,7 +252,7 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
             fontSize: '1.5rem !important',
           }}
         >
-          {themeConfig.title}
+          {appConfig.title}
         </Typography>
       </Box>
 
@@ -306,7 +306,7 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
             <Box sx={{ mb: 6, mt: 1 }}>
               <TypographyStyled variant='h5'>
                 🌱 Welcome to
-                {themeConfig.title}
+                {appConfig.title}
                 {appVersion}
               </TypographyStyled>
               <Typography variant='body2'>Please sign in to start your adventure...</Typography>

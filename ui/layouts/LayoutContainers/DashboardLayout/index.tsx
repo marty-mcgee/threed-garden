@@ -5,7 +5,7 @@ import { useEffect, ReactNode } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 
 // @mui material components
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 
 import DashboardNavbar from '~/ui/layouts/Navbars/DashboardNavbar'
 
@@ -31,7 +31,7 @@ function DashboardLayout({ children, stickyNavbar }: { children: ReactNode; stic
 
   return (
     <MDBox
-      sx={({ breakpoints, transitions, functions: { pxToRem } }: ThreedTheme) => ({
+      sx={({ breakpoints, transitions, functions: { pxToRem } }: Theme) => ({
         p: 3,
         mr: 1,
         my: 0,

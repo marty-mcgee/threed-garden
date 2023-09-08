@@ -11,7 +11,7 @@ import Grid from '@mui/material/Grid'
 import Divider from '@mui/material/Divider'
 import MuiLink from '@mui/material/Link'
 import Container from '@mui/material/Container'
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -210,7 +210,7 @@ function DefaultNavbar({ routes, brand, transparent, light, action }: Props): JS
                           fontWeight='regular'
                           py={0.625}
                           px={2}
-                          sx={({ palette: { grey, dark }, borders: { borderRadius } }: ThreedTheme) => ({
+                          sx={({ palette: { grey, dark }, borders: { borderRadius } }: Theme) => ({
                             borderRadius: borderRadius.md,
                             cursor: 'pointer',
                             transition: 'all 300ms linear',
@@ -274,7 +274,7 @@ function DefaultNavbar({ routes, brand, transparent, light, action }: Props): JS
             fontWeight={item.description ? 'bold' : 'regular'}
             py={item.description ? 1 : 0.625}
             px={2}
-            sx={({ palette: { grey, dark }, borders: { borderRadius } }: ThreedTheme) => ({
+            sx={({ palette: { grey, dark }, borders: { borderRadius } }: Theme) => ({
               borderRadius: borderRadius.md,
               cursor: 'pointer',
               transition: 'all 300ms linear',
@@ -394,7 +394,7 @@ function DefaultNavbar({ routes, brand, transparent, light, action }: Props): JS
           {...TransitionProps}
           sx={{
             transformOrigin: 'left top',
-            background: ({ palette: { white } }: ThreedTheme) => white.main,
+            background: ({ palette: { white } }: Theme) => white.main,
           }}
         >
           <MDBox borderRadius='lg'>
@@ -459,7 +459,7 @@ function DefaultNavbar({ routes, brand, transparent, light, action }: Props): JS
                     fontWeight={item.description ? 'bold' : 'regular'}
                     py={item.description ? 1 : 0.625}
                     px={2}
-                    sx={({ palette: { grey, dark }, borders: { borderRadius } }: ThreedTheme) => ({
+                    sx={({ palette: { grey, dark }, borders: { borderRadius } }: Theme) => ({
                       borderRadius: borderRadius.md,
                       cursor: 'pointer',
                       transition: 'all 300ms linear',
@@ -535,7 +535,7 @@ function DefaultNavbar({ routes, brand, transparent, light, action }: Props): JS
           {...TransitionProps}
           sx={{
             transformOrigin: 'left top',
-            background: ({ palette: { white } }: ThreedTheme) => white.main,
+            background: ({ palette: { white } }: Theme) => white.main,
           }}
         >
           <MDBox

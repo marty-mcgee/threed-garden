@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 
 // @mui material components
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 import Collapse from '@mui/material/Collapse'
 import MuiLink from '@mui/material/Link'
 
@@ -78,7 +78,7 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
                         fontWeight='regular'
                         py={0.625}
                         px={2}
-                        sx={({ palette: { grey, dark }, borders: { borderRadius } }: ThreedTheme) => ({
+                        sx={({ palette: { grey, dark }, borders: { borderRadius } }: Theme) => ({
                           borderRadius: borderRadius.md,
                           cursor: 'pointer',
                           transition: 'all 300ms linear',
@@ -107,7 +107,7 @@ function DefaultNavbarMobile({ routes, open }: Props): JSX.Element {
                     }
                     target={item.href ? '_blank' : ''}
                     rel={item.href ? 'noreferrer' : 'noreferrer'}
-                    sx={({ palette: { grey, dark }, borders: { borderRadius } }: ThreedTheme) => ({
+                    sx={({ palette: { grey, dark }, borders: { borderRadius } }: Theme) => ({
                       borderRadius: borderRadius.md,
                       cursor: 'pointer',
                       transition: 'all 300ms linear',

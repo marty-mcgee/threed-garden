@@ -86,7 +86,7 @@ const Sidenav: NextPage = (): JSX.Element => {
   return (
     <Card
     // borderRadius: 1,
-    // sx={ ({ borders: { borderRadius } }: ThreedTheme ) => ({ borderRadius: borderRadius.md }) }
+    // sx={ ({ borders: { borderRadius } }: Theme ) => ({ borderRadius: borderRadius.md }) }
     >
       <MDBox
         component='ul'

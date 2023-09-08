@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 
 // @mui material components
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 // import { styled, useTheme } from '@mui/material/styles'
 import Snackbar from '@mui/material/Snackbar'
 import IconButton from '@mui/material/IconButton'
@@ -83,7 +83,7 @@ function MDSnackbar({ color, icon, title, dateTime, content, close, bgWhite, ...
         borderRadius='md'
         p={1}
         sx={{
-          backgroundColor: ({ palette }: ThreedTheme) =>
+          backgroundColor: ({ palette }: Theme) =>
             darkMode ? palette.background.default : palette[color] || palette.white.main,
         }}
       >
@@ -127,7 +127,7 @@ function MDSnackbar({ color, icon, title, dateTime, content, close, bgWhite, ...
             </MDTypography>
             <Icon
               sx={{
-                color: ({ palette: { dark, white } }: ThreedTheme) =>
+                color: ({ palette: { dark, white } }: Theme) =>
                   (bgWhite && !darkMode) || color === 'light' ? dark.main : white.main,
                 fontWeight: ({ typography: { fontWeightBold } }) => fontWeightBold,
                 cursor: 'pointer',
@@ -148,7 +148,7 @@ function MDSnackbar({ color, icon, title, dateTime, content, close, bgWhite, ...
           p={1.5}
           sx={{
             fontSize: ({ typography: { size } }) => size.sm,
-            color: ({ palette }: ThreedTheme) => {
+            color: ({ palette }: Theme) => {
               let colorValue = bgWhite || color === 'light' ? palette.text.primary : palette.white.main
 
               if (darkMode) {

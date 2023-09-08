@@ -66,9 +66,9 @@ const themeOptions = (settings) => {
         },
       },
       // missing requirements
-      // boxShadows: {},
-      // borders: {},
-      // functions: {},
+      boxShadows: {},
+      borders: {},
+      functions: {},
     },
     // userThemeConfig
   )

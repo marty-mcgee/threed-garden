@@ -1,7 +1,7 @@
 // @mui material components
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 
-function timelineItem(theme: ThreedTheme, ownerState: any) {
+function timelineItem(theme: Theme, ownerState: any) {
   const { borders } = theme
   const { lastItem, isDark } = ownerState
 

@@ -1,8 +1,8 @@
 // @mui material components
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 import { styled } from '@mui/material/styles'
 
-export default styled('span')(({ theme }: { theme: ThreedTheme }) => {
+export default styled('span')(({ theme }: { theme: Theme }) => {
   const { palette, typography } = theme
 
   const { white } = palette

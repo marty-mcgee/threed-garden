@@ -1,11 +1,15 @@
+// ** Extend MUI Theme (Module Augmentation)
+import { Theme } from '@mui/material/styles'
 // in the file where you are creating the theme (invoking the function `createTheme()`)
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+// import type { Theme, ThreedTheme OR Theme as ThreedTheme } from '@mui/threed/styles'
 
 declare module '@mui/material/styles' {
-// declare module '@mui/styles' {
+// declare module '@mui/threed/styles' {
 
-  interface ThreedTheme extends Theme {
-  // interface Theme {
+  // interface ThreedTheme extends MuiTheme {}
+  // interface MuiTheme {
+  // interface ThreedTheme extends Theme {
+  interface Theme {
     palette?: Palette
     boxShadows?: {
       xs: string
@@ -47,7 +51,9 @@ declare module '@mui/material/styles' {
     size?: any
   }
 
-  interface ThreedThemeOptions extends ThemeOptions {
+  // interface ThreedThemeOptions extends ThemeOptions {
+  interface ThemeOptions {
+  // interface MuiThemeOptions {
     boxShadows?: {
       xs: string
       sm: string
@@ -87,7 +93,8 @@ declare module '@mui/material/styles' {
     shadows?: any
   }
 
-  interface ThreedPalette extends Palette {
+  // interface ThreedPalette extends Palette {
+  interface Palette {
     background?:
       | {
           default: string
@@ -192,7 +199,8 @@ declare module '@mui/material/styles' {
       | any
   }
 
-  interface ThreedPaletteOptions extends PaletteOptions {
+  // interface ThreedPalette extends Palette {
+  interface Palette {
     background?:
       | {
           default: string
@@ -297,7 +305,8 @@ declare module '@mui/material/styles' {
       | any
   }
 
-  interface TypographyVariants { // NOT ThreedTypographyVariants extends TypographyVariants
+  // interface ThreedTypographyVariants extends TypographyVariants {
+  interface TypographyVariants {
     fontFamily: string
     fontWeightLighter: number
     fontWeightLight: number

@@ -1,9 +1,9 @@
 // @mui material components
-import type { Theme, ThreedTheme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 import { styled } from '@mui/material/styles'
 import LinearProgress from '@mui/material/LinearProgress'
 
-export default styled(LinearProgress)(({ theme, ownerState }: { theme?: ThreedTheme | any; ownerState: any }) => {
+export default styled(LinearProgress)(({ theme, ownerState }: { theme?: Theme | any; ownerState: any }) => {
   const { palette, functions } = theme
   const { color, value, variant } = ownerState
 
