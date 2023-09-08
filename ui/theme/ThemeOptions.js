@@ -54,7 +54,7 @@ const themeOptions = (settings) => {
             '"Segoe UI Symbol"',
           ].join(','),
       },
-      shadows: shadows(mode),
+      // shadows: shadows(mode),
       ...spacing,
       breakpoints: breakpoints(),
       shape: {
@@ -66,9 +66,9 @@ const themeOptions = (settings) => {
         },
       },
       // missing requirements
-      boxShadows: {},
-      borders: {},
-      functions: {},
+      // boxShadows: {},
+      // borders: {},
+      // functions: {},
     },
     // userThemeConfig
   )
