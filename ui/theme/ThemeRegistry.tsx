@@ -1,7 +1,5 @@
 'use client'
 import * as React from 'react'
-import NextAppDirEmotionCacheProvider from '#/ui/theme/EmotionCache'
-
 // ** MUI Themes
 // import type { Theme } from '@mui/material/styles'
 import { ThemeProvider, createTheme, useTheme, responsiveFontSizes } from '@mui/material/styles' // createTheme (in each theme index)
@@ -10,6 +8,7 @@ import CssBaseline from '@mui/material/CssBaseline'
 import GlobalStyles from '@mui/material/GlobalStyles'
 import GlobalStyling from '#/ui/theme/common/GlobalStyling'
 // ** Custom Theme
+import NextAppDirEmotionCacheProvider from '#/ui/theme/EmotionCache'
 // import themeConfig from '#/lib/config/themeConfig' // returned as prop {settings}
 import themeOptions from '#/ui/theme/ThemeOptions'
 // import ThemeOptionsUser from '#/ui/theme/ThemeOptionsUser'
@@ -20,9 +19,9 @@ import themeLight from '#/ui/theme/themes/theme-light'
 
 export default function ThemeRegistry({ settings, children }: { settings: any, children: React.ReactNode }) {
   // ** set the app theme
-  let activeTheme = themeDark // themeBasic | themeDark | themeLight
+  let activeTheme1 = themeDark // themeBasic | themeDark | themeLight
   // **
-  console.debug('THEME: activeTheme', activeTheme)
+  console.debug('THEME: activeTheme1', activeTheme1)
   console.debug('PROPS: ThemeRegistry.settings == themeConfig', settings)
 
   // ** Merged ThemeOptions of Core and User
@@ -30,8 +29,10 @@ export default function ThemeRegistry({ settings, children }: { settings: any, c
   console.debug('THEME OPTIONS: as coreThemeConfig:', coreThemeConfig)
 
   // ** Pass ThemeOptions to CreateTheme Function to create partial theme without component overrides
-  // activeTheme = createTheme(coreThemeConfig) // themeDark, settings+options
-  activeTheme = useTheme()
+  let activeTheme2 = createTheme(coreThemeConfig) // themeDark, settings+options
+  console.debug('THEME: activeTheme2', activeTheme2)
+  // const activeTheme = useTheme()
+  const activeTheme = activeTheme2
 
   return (
     <NextAppDirEmotionCacheProvider options={{ key: 'threed-mui-emotion' }}>
