@@ -116,7 +116,7 @@ const VerticalNavigation = (props) => {
 
   return (
     <VerticalNavDrawer {...props}>
-      <VerticalNavHeader {...props} />
+      {/* <VerticalNavHeader {...props} /> */}
       {beforeVerticalNavMenuContent && beforeVerticalNavMenuContentPosition === 'fixed'
         ? beforeVerticalNavMenuContent(props)
         : null}
