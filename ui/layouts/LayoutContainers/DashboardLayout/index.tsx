@@ -26,8 +26,8 @@ function DashboardLayout({ children, stickyNavbar }: { children: ReactNode; stic
 
   useEffect(() => {
     setLayout(dispatch, 'dashboard')
-  // }, [pathname])
-  }, [router])
+  // }, [router])
+  }, [pathname])
 
   return (
     <MDBox

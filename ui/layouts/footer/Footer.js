@@ -34,7 +34,7 @@ const Footer = (props) => {
       <Box
         className='footer-content-container'
         sx={{
-          border: '2px dashed yellow', // is working here
+          border: '2px dashed #222222', // is working here
           py: 4,
           px: [4, 4],
           width: '100%',

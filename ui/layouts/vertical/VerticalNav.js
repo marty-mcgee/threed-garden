@@ -126,7 +126,12 @@ const VerticalNavigation = (props) => {
           sx={{ background: shadowBgColor() }}
         />
       )}
-      <Box sx={{ position: 'relative', overflow: 'visible', border: '3px solid red' }}>
+      <Box sx={{
+        minHeight: '50vh',
+        position: 'relative',
+        overflow: 'visible',
+        border: '3px solid #111111',
+      }}>
         <ScrollWrapper
           // containerRef={ref => handleInfiniteScroll(ref)}
           {...(hidden
