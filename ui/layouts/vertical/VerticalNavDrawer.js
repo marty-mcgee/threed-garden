@@ -32,7 +32,7 @@ const Drawer = (props) => {
     setNavHover,
     setNavVisible,
     collapsedNavWidth,
-    navigationBorderWidth,
+    navBorderWidth,
   } = props
 
   // ** Hook
@@ -115,7 +115,7 @@ const Drawer = (props) => {
           ...drawerColor(),
           ...drawerBgColor(),
           ...(!hidden && navCollapsed && navHover ? { boxShadow: 9 } : {}),
-          borderRight: navigationBorderWidth === 0 ? 0 : `${navigationBorderWidth}px solid grey`, // ${theme.palette.divider}`,
+          borderRight: navBorderWidth === 0 ? 0 : `${navBorderWidth}px solid grey`, // ${theme.palette.divider}`,
           // boxSizing: 'border-box',
           // top: ['48px', '56px', '64px'],
           // height: 'auto',

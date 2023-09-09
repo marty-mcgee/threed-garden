@@ -14,7 +14,7 @@ import CircleOutline from 'mdi-material-ui/Menu'
 import RecordCircleOutline from 'mdi-material-ui/MenuOpen'
 
 // ** Configs
-import themeConfig from '#/lib/config/themeConfig'
+import appConfig from '#/lib/config/appConfig'
 
 // images
 import brandDark from '#/lib/assets/images/logos/logo-threedgarden-alt.png'
@@ -52,14 +52,14 @@ const VerticalNavHeader = (props) => {
     saveSettings,
     collapsedNavWidth,
     toggleNavVisibility,
-    navigationBorderWidth,
+    navBorderWidth,
     menuLockedIcon: userMenuLockedIcon,
     menuUnlockedIcon: userMenuUnlockedIcon,
     verticalNavMenuBranding: userVerticalNavMenuBranding,
   } = props
 
   // ** Hooks & Vars
-  const theme = useTheme()
+  // const theme = useTheme()
   const { navCollapsed } = settings
   const menuCollapsedStyles = navCollapsed && !navHover ? { opacity: 0.5 } : { opacity: 1.0 }
 
@@ -68,10 +68,10 @@ const VerticalNavHeader = (props) => {
       if (userVerticalNavMenuBranding) {
         return 0
       } else {
-        return (collapsedNavWidth - navigationBorderWidth - 30) / 14
+        return (collapsedNavWidth - navBorderWidth - 30) / 14
       }
     } else {
-      return (collapsedNavWidth - navigationBorderWidth - 30) / 14
+      return (collapsedNavWidth - navBorderWidth - 30) / 14
       // return 6
     }
     // return 0
@@ -93,7 +93,7 @@ const VerticalNavHeader = (props) => {
 
   const MenuUnlockedIcon = () =>
     userMenuUnlockedIcon || (
-      <CircleOutline
+      <RecordCircleOutline
         sx={{
           // mr: '1rem',
           // color: 'red',
@@ -111,8 +111,8 @@ const VerticalNavHeader = (props) => {
         userVerticalNavMenuBranding(props)
       ) : (
         <>
-          <StyledLink href='/' passHref>
-            <Image src={brandDark.src} alt={themeConfig.title} width={48} height={48} />
+          <StyledLink href='/'>
+            <Image src={brandDark.src} alt={appConfig.title} width={48} height={48} />
           </StyledLink>
           <IconButton
             disableRipple
@@ -124,22 +124,21 @@ const VerticalNavHeader = (props) => {
                 // ...menuCollapsedStyles,
                 ...(navCollapsed && !navHover ? { ml: 1 } : { ml: 1 }),
               }}>
-              {themeConfig.title}
+              {appConfig.title}
             </HeaderTitle>
           </IconButton>
         </>
       )}
 
-      {hidden ? (
+      {/* {hidden ? (
         <IconButton
           disableRipple
           disableFocusRipple
           onClick={toggleNavVisibility}
           sx={{ backgroundColor: 'transparent !important' }}>
-          {/* <Close fontSize='small' /> */}
           {navCollapsed ? MenuUnlockedIcon() : MenuLockedIcon()}
         </IconButton>
-      ) : (
+      ) : ( */}
         <IconButton
           disableRipple
           disableFocusRipple
@@ -147,7 +146,7 @@ const VerticalNavHeader = (props) => {
           sx={{ backgroundColor: 'transparent !important', color: 'text.primary' }}>
           {navCollapsed ? MenuUnlockedIcon() : MenuLockedIcon()}
         </IconButton>
-      )}
+      {/* )} */}
     </MenuHeaderWrapper>
   )
 }

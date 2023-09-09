@@ -59,7 +59,7 @@ const VerticalNavLink = ({
   isSubToSub,
   collapsedNavWidth,
   toggleNavVisibility,
-  navigationBorderWidth,
+  navBorderWidth,
 }) => {
   // ** Hooks
   const theme = useTheme()
@@ -120,8 +120,8 @@ const VerticalNavLink = ({
               py: 2.25,
               ...conditionalBgColor(),
               ...(item.disabled ? { pointerEvents: 'none' } : { cursor: 'pointer' }),
-              pl: navCollapsed && !navHover ? (collapsedNavWidth - navigationBorderWidth - 24) / 8 : 5.5,
-              pr: navCollapsed && !navHover ? ((collapsedNavWidth - navigationBorderWidth - 24) / 2 - 5) / 4 : 3.5,
+              pl: navCollapsed && !navHover ? (collapsedNavWidth - navBorderWidth - 24) / 8 : 5.5,
+              pr: navCollapsed && !navHover ? ((collapsedNavWidth - navBorderWidth - 24) / 2 - 5) / 4 : 3.5,
             }}>
             {isSubToSub ? null : (
               <ListItemIcon

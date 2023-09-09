@@ -29,7 +29,7 @@ const TypographyHeaderText = styled(Typography)(({ theme }) => ({
 
 const VerticalNavSectionTitle = (props) => {
   // ** Props
-  const { item, navHover, settings, collapsedNavWidth, navigationBorderWidth } = props
+  const { item, navHover, settings, collapsedNavWidth, navBorderWidth } = props
 
   // ** Hook
   const theme = useTheme()
@@ -71,8 +71,8 @@ const VerticalNavSectionTitle = (props) => {
           ...(navCollapsed && !navHover
             ? {
                 py: 3.5,
-                pr: (collapsedNavWidth - navigationBorderWidth - 24) / 8 - 1,
-                pl: (collapsedNavWidth - navigationBorderWidth - 24) / 8 + 0.25,
+                pr: (collapsedNavWidth - navBorderWidth - 24) / 8 - 1,
+                pl: (collapsedNavWidth - navBorderWidth - 24) / 8 + 0.25,
               }
             : { px: 0, py: 1.75 }),
         }}>

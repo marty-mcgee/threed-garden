@@ -62,12 +62,16 @@ const VerticalLayout = (props) => {
   const { skin, navHidden, contentWidth } = settings
   const { navigationSize, disableCustomizer, collapsedNavigationSize } = themeConfig
   const navWidth = navigationSize
-  const navigationBorderWidth = skin === 'bordered' ? 1 : 7
+  const navBorderWidth = skin === 'bordered' ? 1 : 2
   const collapsedNavWidth = collapsedNavigationSize
+  const totalNavWidthExpanded = navWidth + navBorderWidth
+  const totalNavWidthCollapsed = collapsedNavWidth + navBorderWidth
+  console.debug('totalNavWidthExpanded, totalNavWidthCollapsed', totalNavWidthExpanded, totalNavWidthCollapsed)
+  console.debug('contentWidth', contentWidth)
 
   // ** States
   const [navHover, setNavHover] = useState(false)
-  const [navVisible, setNavVisible] = useState(false)
+  const [navVisible, setNavVisible] = useState(true)
 
   // ** Toggle Functions
   const toggleNavVisibility = () => setNavVisible(!navVisible)
@@ -87,35 +91,30 @@ const VerticalLayout = (props) => {
         {...props}
       />
 
-      {/* LEFT NAVIGATION PANEL DRAWER */}
-      {navHidden &&
-        themeConfig.layout === 'vertical' &&
-        !(navHidden && settings.lastLayout === 'horizontal')
-      ? null
-      : (
-        <Navigation
-          navWidth={navWidth}
-          navHover={navHover}
-          navVisible={navVisible}
-          setNavHover={setNavHover}
-          setNavVisible={setNavVisible}
-          collapsedNavWidth={collapsedNavWidth}
-          toggleNavVisibility={toggleNavVisibility}
-          navigationBorderWidth={navigationBorderWidth}
-          sx={{
-            border: '1px dashed orange', // not working here
-            // ...(contentWidth === 'boxed' && {
-            //   mx: 'auto',
-            //   '@media (min-width:1440px)': { maxWidth: 1440 },
-            //   '@media (min-width:1200px)': { maxWidth: '100%' },
-            // }),
-          }}
-          {...props}
-        />
-      )}
-
-      {/* MAIN CONTENT WRAPPER */}
+      {/* NAVIGATION + MAIN CONTENT WRAPPER */}
       <VerticalLayoutWrapper className='layout-wrapper'>
+
+        {/* LEFT NAVIGATION PANEL DRAWER */}
+        {navHidden &&
+          themeConfig.layout === 'vertical' &&
+          !(navHidden && settings.lastLayout === 'horizontal')
+        ? null
+        : (
+          <Navigation
+            navWidth={navWidth}
+            navHover={navHover}
+            navVisible={navVisible}
+            setNavHover={setNavHover}
+            setNavVisible={setNavVisible}
+            collapsedNavWidth={collapsedNavWidth}
+            toggleNavVisibility={toggleNavVisibility}
+            navBorderWidth={navBorderWidth}
+            sx={{
+              border: '1px dashed orange', // not working here
+            }}
+            {...props}
+          />
+        )}
 
         {/* MAIN CONTENT */}
         <MainContentWrapper className='layout-content-wrapper'>
@@ -123,8 +122,8 @@ const VerticalLayout = (props) => {
             className='layout-page-content'
             sx={{
               display: 'flex',
-              flexShrink: '0',
-              padding: '0px',
+              // flexShrink: '1',
+              padding: '0',
               border: '2px dashed red', // is working here
               ...(contentWidth === 'boxed' && {
                 mx: 'auto',

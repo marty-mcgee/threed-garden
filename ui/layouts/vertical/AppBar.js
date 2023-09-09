@@ -1,8 +1,8 @@
 // ** MUI Imports
 import { styled, useTheme } from '@mui/material/styles'
 import useScrollTrigger from '@mui/material/useScrollTrigger'
-import MuiAppBar from '@mui/material/AppBar'
-import MuiToolbar from '@mui/material/Toolbar'
+import AppBar from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
 
 // ** Component Imports
 import VerticalNavHeader from '#/ui/layouts/vertical/VerticalNavHeader'
@@ -10,21 +10,23 @@ import VerticalNavHeader from '#/ui/layouts/vertical/VerticalNavHeader'
 // ** Util Imports
 import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
 
-const AppBar = styled(MuiAppBar)(({ theme }) => ({
+const ThreedAppBar = styled(AppBar)(({ theme }) => ({
+  // border: '3px dashed pink', // is working here
   transition: 'none',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: theme.spacing(0, 2.5, 0, 2.5),
+  padding: theme.spacing(0.0, 2.5, 0.0, 1.7),
   backgroundColor: 'transparent',
   color: theme.palette.text.primary,
   minHeight: theme.mixins.toolbar.minHeight,
   [theme.breakpoints.down('sm')]: {
-    paddingLeft: theme.spacing(4),
-    paddingRight: theme.spacing(4),
+    paddingLeft: theme.spacing(1.0),
+    paddingRight: theme.spacing(1.0),
   },
 }))
 
-const Toolbar = styled(MuiToolbar)(({ theme }) => ({
+const ThreedToolbar = styled(Toolbar)(({ theme }) => ({
+  // border: '3px dashed yellow', // is working here
   width: '100%',
   borderBottomLeftRadius: 10,
   borderBottomRightRadius: 10,
@@ -59,13 +61,13 @@ const LayoutAppBar = (props) => {
   }
 
   return (
-    <AppBar
+    <ThreedAppBar
       elevation={0}
       color='default'
       className='layout-navbar'
       position={appBar === 'fixed' ? 'sticky' : 'static'}
     >
-      <Toolbar
+      <ThreedToolbar
         className='navbar-content-container'
         sx={{
           ...(appBar === 'fixed' && scrollTrigger && { ...appBarFixedStyles() }),
@@ -78,8 +80,8 @@ const LayoutAppBar = (props) => {
         <VerticalNavHeader {...props} />
         {/* RIGHT-SIDE CONTROLS + USER ACCOUNT MENU */}
         {(userVerticalAppBarContent && userVerticalAppBarContent(props)) || null}
-      </Toolbar>
-    </AppBar>
+      </ThreedToolbar>
+    </ThreedAppBar>
   )
 }
 
