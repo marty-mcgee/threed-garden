@@ -31,7 +31,7 @@ const VerticalLayoutWrapper = styled('div')({
 })
 
 const MainContentWrapper = styled(Box)({
-  border: '3px dashed blue', // is working here
+  border: '3px dashed #222222', // is working here
   // display: 'flex',
   // flexGrow: 1,
   minWidth: 0,
