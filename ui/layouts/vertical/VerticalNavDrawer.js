@@ -1,8 +1,8 @@
 // ** MUI Imports
 import { styled, useTheme } from '@mui/material/styles'
-import MuiSwipeableDrawer from '@mui/material/SwipeableDrawer'
+import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 
-const SwipeableDrawer = styled(MuiSwipeableDrawer)({
+const ThreedSwipeableDrawer = styled(SwipeableDrawer)({
   overflowX: 'scroll', // hidden | scroll
   transition: 'width .25s ease-in-out',
   '& ul': {
@@ -85,9 +85,13 @@ const Drawer = (props) => {
 
   // Drawer Props for Desktop screens
   const DesktopDrawerProps = {
-    open: true,
-    onOpen: () => null,
-    onClose: () => null,
+    // open: true,
+    // onOpen: () => null,
+    // onClose: () => null,
+    open: navVisible,
+    onOpen: () => setNavVisible(true),
+    onClose: () => setNavVisible(false),
+    // hover effects
     onMouseEnter: () => {
       setNavHover(true)
     },
@@ -97,20 +101,21 @@ const Drawer = (props) => {
   }
 
   return (
-    <SwipeableDrawer
+    <ThreedSwipeableDrawer
       className='layout-vertical-nav'
-      variant={hidden ? 'temporary' : 'permanent'}
+      variant={hidden ? 'permanent' : 'permanent'} // temporary
       {...(hidden ? { ...MobileDrawerProps } : { ...DesktopDrawerProps })}
       PaperProps={{
         sx: {
           width: navCollapsed && !navHover ? collapsedNavWidth : navWidth,
           mt: 16,
-          backgroundColor: 'white',
+          // backgroundColor: 'yellow',
         },
       }}
       sx={{
+        // border: '2px solid grey',
         width: navCollapsed ? collapsedNavWidth : navWidth,
-        flexShrink: 0,
+        // flexShrink: 0,
         '& .MuiDrawer-paper': {
           ...drawerColor(),
           ...drawerBgColor(),
@@ -123,7 +128,7 @@ const Drawer = (props) => {
         },
       }}>
       {children}
-    </SwipeableDrawer>
+    </ThreedSwipeableDrawer>
   )
 }
 

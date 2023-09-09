@@ -28,8 +28,8 @@ const ThreedAppBar = styled(AppBar)(({ theme }) => ({
 const ThreedToolbar = styled(Toolbar)(({ theme }) => ({
   // border: '3px dashed yellow', // is working here
   width: '100%',
-  borderBottomLeftRadius: 10,
-  borderBottomRightRadius: 10,
+  borderBottomLeftRadius: 0,
+  borderBottomRightRadius: 0,
   padding: `${theme.spacing(0)} !important`,
   minHeight: `${theme.mixins.toolbar.minHeight}px !important`,
   transition: 'padding .25s ease-in-out, box-shadow .25s ease-in-out, backdrop-filter .25s ease-in-out',
@@ -48,8 +48,8 @@ const LayoutAppBar = (props) => {
 
   const appBarFixedStyles = () => {
     return {
-      border: '3px dashed orange !important', // is working here (scroll down to activate)
-      px: `${theme.spacing(5)} !important`,
+      // border: '2px dashed orange', // is working here (scroll down to activate)
+      // px: `${theme.spacing(2)} !important`,
       ...(appBarBlur && { backdropFilter: 'blur(8px)' }),
       boxShadow: theme.shadows[skin === 'bordered' ? 0 : 3],
       backgroundColor: hexToRGBA(theme.palette.background.paper, appBarBlur ? 0.85 : 1),

@@ -23,6 +23,7 @@ const Footer = (props) => {
       component='footer'
       className='layout-footer'
       sx={{
+        // border: '1px dashed yellow', // is working here
         zIndex: 10,
         display: 'flex',
         alignItems: 'center',
@@ -33,11 +34,12 @@ const Footer = (props) => {
       <Box
         className='footer-content-container'
         sx={{
+          border: '2px dashed yellow', // is working here
           py: 4,
-          px: [4, 6],
+          px: [4, 4],
           width: '100%',
-          borderTopLeftRadius: 14,
-          borderTopRightRadius: 14,
+          // borderTopLeftRadius: 14,
+          // borderTopRightRadius: 14,
           ...(contentWidth === 'boxed' && { '@media (min-width:1440px)': { maxWidth: 1440 } }),
           ...(footer === 'fixed' && {
             backgroundColor: theme.palette.background.paper,

@@ -23,10 +23,10 @@ import ScrollToTop from '#/ui/components/scroll-to-top'
 import DatePickerWrapper from '#/ui/styles/react-datepicker'
 
 const VerticalLayoutWrapper = styled('div')({
-  height: '100%',
+  minHeight: 'calc(100vh - 128px - 0px)', // '100vh',
   display: 'flex',
   // flexGrow: 1,
-  border: '3px solid pink', // is working here
+  // border: '3px solid pink', // is working here
   overflow: 'scroll',
 })
 
@@ -35,18 +35,18 @@ const MainContentWrapper = styled(Box)({
   // display: 'flex',
   // flexGrow: 1,
   minWidth: 0,
-  minHeight: 'calc(100vh - 64px - 0px)', // '100vh',
-  // maxHeight: 'calc(100vh - 64px - 0px)', // '100vh',
+  minHeight: 'calc(100vh - 128px - 0px)', // '100vh',
+  // maxHeight: 'calc(100vh - 128px - 0px)', // '100vh',
   flexDirection: 'column',
 })
 
 const ContentWrapper = styled('main')(({ theme }) => ({
-  border: '3px dashed green', // not working here
+  // border: '3px dashed green', // not working here
   // flexGrow: 1,
   // width: '100%',
-  minHeight: 'calc(100vh - 64px - 0px)', // '100vh',
-  // maxHeight: 'calc(100vh - 64px - 0px)', // '100vh',
-  padding: theme.spacing(2), // number * 0.25rem (6 = 1.5rem = 24px, 4 = 1.0rem = 16px, ...)
+  minHeight: 'calc(100vh - 128px - 0px)', // '100vh',
+  // maxHeight: 'calc(100vh - 128px - 0px)', // '100vh',
+  padding: theme.spacing(4), // number * 0.25rem (6 = 1.5rem = 24px, 4 = 1.0rem = 16px, ...)
   transition: 'padding .25s ease-in-out',
   [theme.breakpoints.down('sm')]: {
     paddingLeft: theme.spacing(1),
@@ -62,16 +62,17 @@ const VerticalLayout = (props) => {
   const { skin, navHidden, contentWidth } = settings
   const { navigationSize, disableCustomizer, collapsedNavigationSize } = themeConfig
   const navWidth = navigationSize
-  const navBorderWidth = skin === 'bordered' ? 1 : 2
+  const navBorderWidth = skin === 'bordered' ? 1 : 0
   const collapsedNavWidth = collapsedNavigationSize
-  const totalNavWidthExpanded = navWidth + navBorderWidth
-  const totalNavWidthCollapsed = collapsedNavWidth + navBorderWidth
-  console.debug('totalNavWidthExpanded, totalNavWidthCollapsed', totalNavWidthExpanded, totalNavWidthCollapsed)
-  console.debug('contentWidth', contentWidth)
+
+  // const totalNavWidthExpanded = navWidth + navBorderWidth
+  // const totalNavWidthCollapsed = collapsedNavWidth + navBorderWidth
+  // console.debug('totalNavWidthExpanded, totalNavWidthCollapsed', totalNavWidthExpanded, totalNavWidthCollapsed)
+  // console.debug('contentWidth', contentWidth)
 
   // ** States
   const [navHover, setNavHover] = useState(false)
-  const [navVisible, setNavVisible] = useState(true)
+  const [navVisible, setNavVisible] = useState(false)
 
   // ** Toggle Functions
   const toggleNavVisibility = () => setNavVisible(!navVisible)
@@ -80,14 +81,6 @@ const VerticalLayout = (props) => {
     <>
       <AppBar
         toggleNavVisibility={toggleNavVisibility}
-        sx={{
-          border: '3px dashed lightblue', // not working here
-          // ...(contentWidth === 'boxed' && {
-          //   mx: 'auto',
-          //   '@media (min-width:1440px)': { maxWidth: 1440 },
-          //   '@media (min-width:1200px)': { maxWidth: '100%' },
-          // }),
-        }}
         {...props}
       />
 
@@ -110,7 +103,8 @@ const VerticalLayout = (props) => {
             toggleNavVisibility={toggleNavVisibility}
             navBorderWidth={navBorderWidth}
             sx={{
-              border: '1px dashed orange', // not working here
+              // border: '1px dashed orange', // not working here
+              // height: '80vh', // not working here
             }}
             {...props}
           />
@@ -124,7 +118,8 @@ const VerticalLayout = (props) => {
               display: 'flex',
               // flexShrink: '1',
               padding: '0',
-              border: '2px dashed red', // is working here
+              // border: '2px dashed red', // is working here
+              // height: '80vh', // not working here
               ...(contentWidth === 'boxed' && {
                 mx: 'auto',
                 '@media (min-width:1440px)': { maxWidth: 1440 },
@@ -136,12 +131,7 @@ const VerticalLayout = (props) => {
           </ContentWrapper>
 
           {/* FOOTER CONTENT */}
-          <Footer
-            sx={{
-              border: '1px dashed yellow', // not working here
-            }}
-            {...props}
-          />
+          <Footer {...props} />
         </MainContentWrapper>
 
         {/* SHOW/HIDE MODALS */}
