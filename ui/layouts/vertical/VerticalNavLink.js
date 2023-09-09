@@ -3,12 +3,12 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 // ** MUI Imports
+import { styled, useTheme } from '@mui/material/styles'
 import Chip from '@mui/material/Chip'
 import ListItem from '@mui/material/ListItem'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import { styled, useTheme } from '@mui/material/styles'
 import ListItemButton from '@mui/material/ListItemButton'
 
 // ** Configs Import
@@ -96,13 +96,12 @@ const VerticalNavLink = ({
   }
 
   return (
-    <CanViewNavLink navLink={item}>
+    // <CanViewNavLink navLink={item}>
       <ListItem
         disablePadding
         className='nav-link'
-        disabled={item.disabled || false}
         sx={{ mt: 1.5, px: '0 !important' }}>
-        <Link passHref href={item.path === undefined ? '/' : `${item.path}`}>
+        <Link href={item.path === undefined ? '/' : `${item.path}`}>
           <MenuNavLink
             component={'span'}
             className={isNavLinkActive() ? 'active' : ''}
@@ -172,7 +171,7 @@ const VerticalNavLink = ({
           </MenuNavLink>
         </Link>
       </ListItem>
-    </CanViewNavLink>
+    // </CanViewNavLink>
   )
 }
 

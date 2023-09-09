@@ -54,7 +54,13 @@ const Drawer = (props) => {
           color: `rgba(${theme.palette.customColors.light}, 0.87)`,
         },
       }
-    } else return {}
+    } else {
+      return {
+        '& .MuiTypography-root, & .MuiSvgIcon-root': {
+          color: `rgba(${theme.palette.customColors.dark}, 0.50)`,
+        },
+      }
+    }
   }
 
   const drawerBgColor = () => {
@@ -120,7 +126,7 @@ const Drawer = (props) => {
           ...drawerColor(),
           ...drawerBgColor(),
           ...(!hidden && navCollapsed && navHover ? { boxShadow: 9 } : {}),
-          borderRight: navBorderWidth === 0 ? 0 : `${navBorderWidth}px solid grey`, // ${theme.palette.divider}`,
+          borderRight: navBorderWidth === 0 ? 0 : `${navBorderWidth}px solid ${theme.palette.divider}`,
           // boxSizing: 'border-box',
           // top: ['48px', '56px', '64px'],
           // height: 'auto',
