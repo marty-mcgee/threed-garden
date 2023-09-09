@@ -36,9 +36,9 @@ const BlankLayout = ({ children }) => {
         //   minHeight: (theme) => `calc(100vh - ${theme.spacing(theme.mixins.toolbar.minHeight / 4)})`,
         // }}
       >
-        <>BlankLayout</>
         {children}
       </Box>
+      <>BlankLayout</>
     </BlankLayoutWrapper>
   )
 }

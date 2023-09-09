@@ -65,7 +65,7 @@ const VerticalNavGroup = (props) => {
     collapsedNavWidth,
     currentActiveGroup,
     setCurrentActiveGroup,
-    navigationBorderWidth,
+    navBorderWidth,
   } = props
 
   // ** Hooks & Vars
@@ -233,8 +233,8 @@ const VerticalNavGroup = (props) => {
               borderTopRightRadius: 100,
               borderBottomRightRadius: 100,
               transition: 'padding-left .25s ease-in-out',
-              pl: navCollapsed && !navHover ? (collapsedNavWidth - navigationBorderWidth - 24) / 8 : 5.5,
-              pr: navCollapsed && !navHover ? ((collapsedNavWidth - navigationBorderWidth - 24) / 2 - 5) / 4 : 3.5,
+              pl: navCollapsed && !navHover ? (collapsedNavWidth - navBorderWidth - 24) / 8 : 5.5,
+              pr: navCollapsed && !navHover ? ((collapsedNavWidth - navBorderWidth - 24) / 2 - 5) / 4 : 3.5,
             }}>
             {isSubToSub ? null : (
               <ListItemIcon
