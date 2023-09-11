@@ -5,7 +5,7 @@ import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 
 // ** Component Imports
-import VerticalNavHeader from '#/ui/layouts/vertical/VerticalNavHeader'
+import AppBarHeader from '#/ui/layouts/vertical/AppBarHeader'
 
 // ** Util Imports
 import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
@@ -49,7 +49,7 @@ const LayoutAppBar = (props) => {
   const appBarFixedStyles = () => {
     return {
       // border: '2px dashed orange', // is working here (scroll down to activate)
-      // px: `${theme.spacing(2)} !important`,
+      // px: `${theme.spacing(8)} !important`,
       ...(appBarBlur && { backdropFilter: 'blur(8px)' }),
       boxShadow: theme.shadows[skin === 'bordered' ? 0 : 3],
       backgroundColor: hexToRGBA(theme.palette.background.paper, appBarBlur ? 0.85 : 1),
@@ -77,7 +77,7 @@ const LayoutAppBar = (props) => {
         }}
       >
         {/* LOGO + MENU DRAWER CONTROLS */}
-        <VerticalNavHeader {...props} />
+        <AppBarHeader {...props} />
         {/* RIGHT-SIDE CONTROLS + USER ACCOUNT MENU */}
         {(userVerticalAppBarContent && userVerticalAppBarContent(props)) || null}
       </ThreedToolbar>

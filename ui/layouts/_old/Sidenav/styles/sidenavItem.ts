@@ -61,7 +61,7 @@ function itemContent(theme: Theme, ownerState: any) {
     justifyContent: 'space-between',
     width: '100%',
     padding: `${pxToRem(0)} ${pxToRem(0)}`,
-    marginLeft: pxToRem(42), // "[MM] HEY HEY HEY"
+    marginLeft: pxToRem(16), // "[MM] HEY HEY HEY"
     userSelect: 'none',
     position: 'relative',
     borderRadius: '50%',

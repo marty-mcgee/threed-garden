@@ -18,8 +18,8 @@ import type { Theme } from '@mui/material/styles'
 import MDBox from '#/lib/mui/MDBox'
 
 // ThreeD Garden examples components
-import DashboardLayout from '#/ui/layouts/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/ui/layouts/Navbars/DashboardNavbar'
+import DashboardLayout from '#/ui/layouts/_old/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/layouts/_old/Navbars/DashboardNavbar'
 import Footer from '#/ui/layouts/footer'
 
 // Kanban application components

@@ -7,7 +7,7 @@ import { useRouter, usePathname } from 'next/navigation'
 // @mui material components
 import type { Theme } from '@mui/material/styles'
 
-import DashboardNavbar from '~/ui/layouts/Navbars/DashboardNavbar'
+import DashboardNavbar from '~/ui/layouts/_old/Navbars/DashboardNavbar'
 
 // ThreeD Garden components
 import MDBox from '#/lib/mui/MDBox'
@@ -53,7 +53,9 @@ function DashboardLayout({ children, stickyNavbar }: { children: ReactNode; stic
         },
       })}
     >
+      <>DashboardLayout</>
       <DashboardNavbar>
+        <>DashboardNavbar</>
         {children}
       </DashboardNavbar>
     </MDBox>

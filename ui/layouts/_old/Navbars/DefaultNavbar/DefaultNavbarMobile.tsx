@@ -13,7 +13,7 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden exampless
-import DefaultNavbarDropdown from '#/ui/layouts/Navbars/DefaultNavbar/DefaultNavbarDropdown'
+import DefaultNavbarDropdown from '#/ui/layouts/_old/Navbars/DefaultNavbar/DefaultNavbarDropdown'
 
 // Declaring props types for DefaultNavbarMobile
 interface Props {

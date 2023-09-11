@@ -76,8 +76,10 @@ const debug: boolean = false
 // console.log("window", window)
 // console.log(window.postdata)
 // const postdata = window?.postdata ? window.postdata : {}
+const appVersion = 'v0.12.0'
+// const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
 // const appVersion = process.env.npm_package_version
-const appVersion: string = require('package.json').version
+// const appVersion: string = require('package.json').version
 // console.log("appVersion", appVersion)
 const postdata: IPostData = {
   plugin_name: 'ThreeD Garden',

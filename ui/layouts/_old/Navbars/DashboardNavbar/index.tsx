@@ -29,7 +29,7 @@ import {
   navbarRow,
   navbarIconButton,
   navbarDesktopMenu,
-} from '#/ui/layouts/Navbars/DashboardNavbar/styles'
+} from '#/ui/layouts/_old/Navbars/DashboardNavbar/styles'
 
 // ThreeD Garden context
 import { useMaterialUIController, setTransparentNavbar, setMiniSidenav, setOpenConfigurator } from '#/lib/contexts'

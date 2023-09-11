@@ -15,8 +15,8 @@ import MDButton from '#/lib/mui/MDButton'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import DashboardLayout from '#/ui/layouts/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/ui/layouts/Navbars/DashboardNavbar'
+import DashboardLayout from '#/ui/layouts/_old/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/layouts/_old/Navbars/DashboardNavbar'
 import Footer from '#/ui/layouts/footer'
 import DefaultStatisticsCard from '#/ui/elements/Cards/StatisticsCards/DefaultStatisticsCard'
 import DefaultLineChart from '#/ui/elements/Charts/LineCharts/DefaultLineChart'

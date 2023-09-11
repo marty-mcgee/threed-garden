@@ -6,6 +6,9 @@
 
 // ** Next
 // import { useRouter, usePathname } from 'next/navigation'
+import type { GetServerSideProps, GetStaticProps } from 'next'
+import { AppProps } from 'next/app'
+import { NextPageContext } from 'next'
 
 // ** React
 import type { ReactNode } from 'react'
@@ -27,25 +30,24 @@ import { useAuth } from '#/lib/auth/hooks/useAuth'
 
 // ** User Authorization Guards/Boundaries (~CORE Components)
 import AuthGuard from '#/ui/auth/AuthGuard'
-// import GuestGuard from '#/ui/auth/GuestGuard'
-// import AclGuard from '#/ui/auth/AclGuard'
+import GuestGuard from '#/ui/auth/GuestGuard'
+import AclGuard from '#/ui/auth/AclGuard'
 
 // ** @Fake-DB (axios mock adapter)
 import '#/lib/api/@fake-db'
 
 // ** Contexts for Theme Settings + MUI Components
-// import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '#/lib/contexts'
 import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/settingsContext'
 import ThemeRegistry from '#/ui/theme/ThemeRegistry'
 
 // ** Configs
 import '#/lib/config/i18n' // NOT YET SUPPORTED IN NEXT 13
-import { defaultACLObj } from '#/lib/config/acl'
+import { aclObjectDefault } from '#/lib/config/acl' // default has 'admin' privileges !!!
 // import themeConfig from '#/lib/config/themeConfig'
 
 // ** Layouts
 import BlankLayout from '#/ui/layouts/BlankLayout' // this is your default and login layout
-import UserLayout from '#/ui/layouts/UserLayout' // this is your user-authorized (dashboard) layout
+import UserLayout from '#/ui/layouts/UserLayout' // this is your user-authorized (new dashboard) layout
 
 // ** Helper Components
 import Spinner from '#/ui/components/spinner'
@@ -55,7 +57,7 @@ import Spinner from '#/ui/components/spinner'
 // import stylesGlobal from '#/ui/styles/globals.module.css'
 // import stylesDemo from '#/ui/styles/demo/demo.module.css'
 // import '#/lib/threed/styles/index.css'
-import '#/lib/threed/styles/garden.module.css'
+// import '#/lib/threed/styles/garden.module.css'
 
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
@@ -78,7 +80,7 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
       <head />
       <body>
         <main id="ThreeDAppProvider">
-          {children}
+          <>{children}</>
         </main>
       </body>
     </html>
@@ -90,19 +92,21 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
 
 const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
   if (!guestGuard && !authGuard) {
-    console.debug('%c📛 noGuard loading...', ccm.red)
+    console.debug('%c📛 noGuard loading :(', ccm.red)
     // console.debug('%c=======================================', ccm.black)
     return (
-      <>{children}</>
+      <AuthGuard fallback={<Spinner />}>
+        <>{children}</>
+      </AuthGuard>
     )
   }
   else if (authGuard) {
     console.debug('%c🔱 authGuard loading...', ccm.red)
     // console.debug('%c=======================================', ccm.black)
     return (
-      // <AuthGuard fallback={<Spinner />}>
-      <>{children}</>
-      // </AuthGuard>
+      <AuthGuard fallback={<Spinner />}>
+        <>{children}</>
+      </AuthGuard>
     )
   }
   else if (guestGuard) {
@@ -112,70 +116,84 @@ const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
       // <GuestGuard fallback={<Spinner />}>
       //   <>{children}</>
       // </GuestGuard>
-      // <AuthGuard fallback={<Spinner />}>
+      <AuthGuard fallback={<Spinner />}>
         <>{children}</>
-      // </AuthGuard>
+      </AuthGuard>
     )
   }
   else {
-    console.debug('%c🔱 authGuard loading (by default)...', ccm.red)
+    console.debug('%c🔱 authGuard loading by default :(', ccm.red)
     // console.debug('%c=======================================', ccm.black)
     return (
-      // <AuthGuard fallback={<Spinner />}>
+      <AuthGuard fallback={<Spinner />}>
         <>{children}</>
-      // </AuthGuard>
+      </AuthGuard>
     )
   }
 }
 
 // ==============================================================
 // ** Construct App using Function Component (Functional Noun)
-
+// **
+// EXAMPLE: simple
+// function MyApp({ Component, pageProps }: AppProps) {
+//   return <Component {...pageProps} />
+// }
+// export default MyApp
+// **
+// EXAMPLES: testing
 // const App = (props: any) => {
 // const App: FC<AppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => {
 // const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmotion> = (props: any) => {
 // const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayout> = (props: any) => {
-const AppLayout = (props: any): JSX.Element => {
+const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.Element => {
   // **
 
   // // destructure props for vars
   // // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
-  const { Component, pageProps } = props
+  // const { Component, pageProps } = props
+  // console.debug('🥕 PROPS: AppLayout.props', props)
+  console.debug('🥕 PROPS: AppLayout.props.children', children)
+  console.debug('🥕 PROPS: AppLayout.props.Component', Component)
+  console.debug('🥕 PROPS: AppLayout.props.pageProps', pageProps)
+  // EXAMPLE: props.Component ??
   // const Component = {
   //   getLayout: () => {},
   //   setConfig: () => {},
   //   authGuard: true,
   //   guestGuard: false,
-  //   // acl: defaultACLObj
+  //   // default acl is 'admin' privileges !!!
+  //   // acl: aclObjectDefault
   //   acl: {
   //     action: 'manage',
   //     subject: 'all',
   //   },
   // }
 
-  // Props.children
-  const { children } = props
+  // ** Props.children
+  // const { children } = props
   // console.debug('🥕 PROPS: AppLayout.props.children', children)
-
   // ** Props.children.props
   // const props2 = children.props
+  // console.debug('🥕 PROPS: AppLayout.props.children.props', props2)
 
   // ** Hooks
   const auth = useAuth()
+  console.debug('%c🔑 auth', ccm.orange, auth)
 
   // const { authGuard, guestGuard, acl } = Component // getLayout, setConfig,
-  const authGuard = Component?.authGuard ?? false
-  const guestGuard = Component?.guestGuard ?? false
-  // const acl = Component.acl ?? defaultACLObj
+  let authGuard = true
+  let guestGuard = true
+  let acl = aclObjectDefault // admin priveleges by default, currently
+  // const authGuard = Component?.authGuard ?? false
+  // const guestGuard = Component?.guestGuard ?? false
+  // const acl = Component?.acl ?? aclObjectDefault
 
-  // console.debug('%c🥕 auth', ccm.orange, auth)
-  // console.debug('%c🥕 router', ccm.orange, router)
-  // console.debug('%c🥕 children', ccm.orange, children)
-  // console.debug('%c=======================================', ccm.black)
-
-  console.debug('%c🥕 PROPS: AppLayout.props', ccm.orange, props)
+  // console.debug('%c🥕 PROPS: AppLayout.props', ccm.orange, props)
   // console.debug('%c🥕 PROPS: AppLayout.Component', ccm.black, Component)
   // console.debug('%c🥕 PROPS: AppLayout.pageProps', ccm.black, pageProps)
+
+  // console.debug('%c=======================================', ccm.black)
 
   // ** PageComponent.Properties
   const getAppLayout = (props: any): JSX.Element => {
@@ -183,8 +201,7 @@ const AppLayout = (props: any): JSX.Element => {
     const { children } = props
     // console.debug('🥕 PROPS: getAppLayout.props', props)
     // console.debug('🥕 PROPS: getAppLayout.props.children', children)
-
-    // const { props2 } = children
+    // console.debug('%c=======================================', ccm.black)
 
     // authorized: UserLayout
     if ((auth.user && auth.user.role) ||
@@ -192,7 +209,9 @@ const AppLayout = (props: any): JSX.Element => {
       && children.props.childProp.segment !== 'auth'  )) {
       return (
         <UserLayout key='ThreeDAppLayout-UserLayout'>
-          {children}
+
+            <>{children}</>
+
         </UserLayout>
       )
     }
@@ -201,7 +220,9 @@ const AppLayout = (props: any): JSX.Element => {
     else {
       return (
         <BlankLayout key='ThreeDAppLayout-BlankLayout'>
-          {children}
+
+            <>{children}</>
+
         </BlankLayout>
       )
     }
@@ -220,7 +241,6 @@ const AppLayout = (props: any): JSX.Element => {
                   <SettingsConsumer>
                     {({ settings }) => (
                       <ThemeRegistry settings={settings}>
-                        {/* {children} */}
                         {
                           getAppLayout(
                             // <EthApp {...props}>
@@ -242,10 +262,47 @@ const AppLayout = (props: any): JSX.Element => {
   )
 }
 
-AppLayout.getLayout = 'HEY HEY HEY'
-AppLayout.setConfig = 'true'
-AppLayout.authGuard = false
-AppLayout.guestGuard = true
-AppLayout.acl = {}
+/* not working, for some reason
+AppLayout.getInitialProps = async (ctx: NextPageContext) => {
+//   const res = await fetch('https://api.github.com/repos/vercel/next.js')
+//   const json = await res.json()
+//   return { stars: json.stargazers_count }
+// }
+// export async function getServerSideProps() {
+// export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
+// export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
+  // const allPosts = await getAllPostsForHome(preview)
+  // console.debug('getServerSideProps on AppLayout')
+  console.debug('getInitialProps on AppLayout')
+  return {
+    props: {
+      Component: {
+        getLayout: 'HEY HEY HEY',
+        setConfig: 'true',
+        authGuard: false,
+        guestGuard: true,
+        acl: aclObjectDefault, // acl, {},
+      },
+    },
+    revalidate: 10,
+  }
+}
+*/
+
+// deprecated
+// AppLayout.defaultProps = {
+//   Component: {
+//     getLayout: 'YO YO YO',
+//     setConfig: 'true',
+//     authGuard: false,
+//     guestGuard: true,
+//     acl: aclObjectDefault, // acl, {},
+//   },
+//   getLayout: 'HEY HEY HEY',
+//   setConfig: 'true',
+//   authGuard: false,
+//   guestGuard: true,
+//   acl: aclObjectDefault, // acl, {},
+// }
 
 export default AppLayout

@@ -10,8 +10,8 @@ declare module '@mui/material/styles' {
   // interface MuiTheme {
   // interface ThreedTheme extends Theme {
   interface Theme {
-    palette?: Palette
-    boxShadows?: {
+    palette: Palette
+    boxShadows: {
       xs: string
       sm: string
       md: string
@@ -37,50 +37,7 @@ declare module '@mui/material/styles' {
         indicator: string
       }
     }
-    borders?: {
-      borderColor?: string
-      borderWidth?: {
-        [key: number | string]: number | string
-      }
-      borderRadius?: {
-        [key: number | string]: number | string
-      }
-    }
-    transitions?: any
-    functions?: any
-    size?: any
-  }
-
-  // interface ThreedThemeOptions extends ThemeOptions {
-  interface ThemeOptions {
-  // interface MuiThemeOptions {
-    boxShadows?: {
-      xs: string
-      sm: string
-      md: string
-      lg: string
-      xl: string
-      xxl: string
-      inset: string
-      colored: {
-        primary: string
-        secondary: string
-        info: string
-        success: string
-        warning: string
-        error: string
-        light: string
-        dark: string
-      }
-      navbarBoxShadow: string
-      sliderBoxShadow: {
-        thumb: string
-      }
-      tabsBoxShadow: {
-        indicator: string
-      }
-    }
-    borders?: {
+    borders: {
       borderColor: string
       borderWidth: {
         [key: number | string]: number | string
@@ -89,60 +46,103 @@ declare module '@mui/material/styles' {
         [key: number | string]: number | string
       }
     }
-    functions?: any
-    shadows?: any
+    transitions: any
+    functions: any
+    size: any
+  }
+
+  // interface ThreedThemeOptions extends ThemeOptions {
+  interface ThemeOptions {
+  // interface MuiThemeOptions {
+    boxShadows: {
+      xs: string
+      sm: string
+      md: string
+      lg: string
+      xl: string
+      xxl: string
+      inset: string
+      colored: {
+        primary: string
+        secondary: string
+        info: string
+        success: string
+        warning: string
+        error: string
+        light: string
+        dark: string
+      }
+      navbarBoxShadow: string
+      sliderBoxShadow: {
+        thumb: string
+      }
+      tabsBoxShadow: {
+        indicator: string
+      }
+    }
+    // borders: {
+    //   borderColor: string
+    //   borderWidth: {
+    //     [key: number | string]: number | string
+    //   }
+    //   borderRadius: {
+    //     [key: number | string]: number | string
+    //   }
+    // }
+    // functions: any
+    // shadows: any
   }
 
   // interface ThreedPalette extends Palette {
   interface Palette {
-    background?:
+    background:
       | {
           default: string
           sidenav: string
           card: string
         }
       | any
-    white?:
+    white:
       | {
           main: string
           focus: string
         }
       | any
-    text?:
+    text:
       | {
           main: string
           focus: string
-          primary?: string
-          secondary?: string
-          disabled?: string
+          primary: string
+          secondary: string
+          disabled: string
         }
       | any
-    transparent?:
+    transparent:
       | {
           main: string
         }
       | any
-    black?:
+    black:
       | {
           light: string
           main: string
           focus: string
         }
       | any
-    primary?: ColorsTypes | any
-    secondary?: ColorsTypes | any
-    info?: ColorsTypes | any
-    success?: ColorsTypes | any
-    warning?: ColorsTypes | any
-    error?: ColorsTypes | any
-    light?: ColorsTypes | any
-    dark?: ColorsTypes | any
-    grey?:
+    primary: ColorsTypes | any
+    secondary: ColorsTypes | any
+    info: ColorsTypes | any
+    success: ColorsTypes | any
+    warning: ColorsTypes | any
+    error: ColorsTypes | any
+    light: ColorsTypes | any
+    dark: ColorsTypes | any
+    grey:
       | {
           [key: string | number]: string
         }
       | any
-    gradients?:
+    gradients:
       | {
           primary: GradientsTypes
           secondary: GradientsTypes
@@ -154,7 +154,7 @@ declare module '@mui/material/styles' {
           dark: GradientsTypes
         }
       | any
-    socialMediaColors?:
+    socialMediaColors:
       | {
           facebook: SocialMediaColorsTypes
           twitter: SocialMediaColorsTypes
@@ -170,7 +170,7 @@ declare module '@mui/material/styles' {
           tumblr: SocialMediaColorsTypes
         }
       | any
-    badgeColors?:
+    badgeColors:
       | {
           primary: BadgeColorsTypes
           secondary: BadgeColorsTypes
@@ -182,13 +182,13 @@ declare module '@mui/material/styles' {
           dark: BadgeColorsTypes
         }
       | any
-    coloredShadows?:
+    coloredShadows:
       | {
           [key: string]: string
         }
       | any
-    inputBorderColor?: string
-    tabs?:
+    inputBorderColor: string
+    tabs:
       | {
           indicator:
             | {
@@ -201,54 +201,54 @@ declare module '@mui/material/styles' {
 
   // interface ThreedPalette extends Palette {
   interface Palette {
-    background?:
+    background:
       | {
           default: string
-          sidenav?: string
-          card?: string
+          sidenav: string
+          card: string
         }
       | any
-    white?:
+    white:
       | {
           main: string
           focus: string
         }
       | any
-    text?:
+    text:
       | {
           main: string
           focus: string
-          primary?: string
-          secondary?: string
-          disabled?: string
+          primary: string
+          secondary: string
+          disabled: string
         }
       | any
-    transparent?:
+    transparent:
       | {
           main: string
         }
       | any
-    black?:
+    black:
       | {
           light: string
           main: string
           focus: string
         }
       | any
-    primary?: ColorsTypes | any
-    secondary?: ColorsTypes | any
-    info?: ColorsTypes | any
-    success?: ColorsTypes | any
-    warning?: ColorsTypes | any
-    error?: ColorsTypes | any
-    light?: ColorsTypes | any
-    dark?: ColorsTypes | any
-    grey?:
+    primary: ColorsTypes | any
+    secondary: ColorsTypes | any
+    info: ColorsTypes | any
+    success: ColorsTypes | any
+    warning: ColorsTypes | any
+    error: ColorsTypes | any
+    light: ColorsTypes | any
+    dark: ColorsTypes | any
+    grey:
       | {
           [key: string | number]: string
         }
       | any
-    gradients?:
+    gradients:
       | {
           primary: GradientsTypes
           secondary: GradientsTypes
@@ -260,7 +260,7 @@ declare module '@mui/material/styles' {
           dark: GradientsTypes
         }
       | any
-    socialMediaColors?:
+    socialMediaColors:
       | {
           facebook: SocialMediaColorsTypes
           twitter: SocialMediaColorsTypes
@@ -276,7 +276,7 @@ declare module '@mui/material/styles' {
           tumblr: SocialMediaColorsTypes
         }
       | any
-    badgeColors?:
+    badgeColors:
       | {
           primary: BadgeColorsTypes
           secondary: BadgeColorsTypes
@@ -288,13 +288,13 @@ declare module '@mui/material/styles' {
           dark: BadgeColorsTypes
         }
       | any
-    coloredShadows?:
+    coloredShadows:
       | {
           [key: string]: string
         }
       | any
-    inputBorderColor?: string
-    tabs?:
+    inputBorderColor: string
+    tabs:
       | {
           indicator:
             | {

@@ -20,17 +20,11 @@ import { useEffect } from 'react'
 // ** Hooks
 import { useAuth } from '#/lib/auth/hooks/useAuth'
 
-// ** Demo Data
-// import { demos } from '#/lib/data/demos'
-
 // ** Helper Components
 import Spinner from '#/ui/components/spinner'
 
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
-
-// ** Types
-// import type { TPageProps } from '#/lib/types/TAppProps'
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -65,7 +59,7 @@ const getHomeRoute = (role: any) => {
 // const AppPage: NextPage = (): JSX.Element => {
 const AppPage: TNextPageWithProps = (props: any): JSX.Element => {
   // **
-  console.debug('%c🥕 PROPS: AppPage.props', ccm.green, props)
+  // console.debug('%c🥕 PROPS: AppPage.props', ccm.green, props)
 
   // ** Hooks
   const auth = useAuth()
@@ -73,7 +67,7 @@ const AppPage: TNextPageWithProps = (props: any): JSX.Element => {
   const pathname = usePathname()
 
   // ** OnMount (+ optional return OnUnmount)
-  useEffect(() => {
+  // useEffect(() => {
     // user AUTHORIZED?
     if (auth.user && auth.user.role) {
       // get Home URL
@@ -90,19 +84,98 @@ const AppPage: TNextPageWithProps = (props: any): JSX.Element => {
       // router.replace(homeRoute)
     }
     // return <></>
-  }, [])
+  // }, [])
 
 // ==============================================================
 
   // ** Return JSX
   return <Spinner />
 }
-AppPage.getLayout = (page: any) => {page} // <BlankLayout>{page}</BlankLayout>
-AppPage.authGuard = false
-AppPage.guestGuard = false
+// AppPage.getLayout = (page: any) => {page} // <BlankLayout>{page}</BlankLayout>
+// AppPage.setConfig = () => true
+// AppPage.authGuard = false
+// AppPage.guestGuard = false
+// AppPage.acl = {}
 
-// AppPage.getInitialProps = () => {
-
+/*
+AppPage.getInitialProps = async (ctx: NextPageContext) => {
+//   const res = await fetch('https://api.github.com/repos/vercel/next.js')
+//   const json = await res.json()
+//   return { stars: json.stargazers_count }
 // }
+// export async function getServerSideProps() {
+// export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
+// export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
+  // const allPosts = await getAllPostsForHome(preview)
+  // console.debug('getServerSideProps on AppLayout')
+  console.debug('getInitialProps on AppPage', ctx)
+  return {
+    props: {
+      // Component: {
+        getLayout: 'YO YO YO',
+        setConfig: 'true',
+        authGuard: false,
+        guestGuard: true,
+        acl: {}, // aclObjectDefault, // acl, {},
+        auth: {},
+      // },
+    },
+    revalidate: 10,
+    testTestTest: true,
+    context: ctx,
+  }
+}
+*/
+// export async function getServerSideProps() {
+// // export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
+// // export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
+//   // const allPosts = await getAllPostsForHome(preview)
+//   console.debug('getServerSideProps on AppPage')
+//   return {
+//     props: {
+//       Component: {
+//         getLayout: 'HEY HEY HEY',
+//         setConfig: 'true',
+//         authGuard: false,
+//         guestGuard: true,
+//         acl: {}, // aclObjectDefault, // acl,
+//       }
+//     },
+//     revalidate: 10,
+//   }
+// }
+
+/*
+// export async function getStaticProps() {
+export async function getServerSideProps() {
+  // let req = httpMocks.createRequest()
+  // let res = httpMocks.createResponse()
+  // async function callMids(req, res, index, ...mids) {
+  //   index = index || 0
+  //   if (index <= mids.length - 1)
+  //     await mids[index](req, res, () => callMids(req, res, ++index, ...mids))
+  // }
+  // await callMids(
+  //   req,
+  //   res,
+  //   null,
+  //   dbConnectMid,
+  //   logger,
+  //   newsController.sendAllNews
+  // )
+  return {
+    // props: { news: res._getJSONData() },
+    props: {
+    //   // Component: {
+    //     // getLayout: 'HEY HEY HEY',
+    //     // setConfig: 'true',
+    //     // authGuard: false,
+    //     // guestGuard: true,
+    //     // acl: {}, // aclObjectDefault, // acl,
+    //   // }
+    }
+  }
+}
+*/
 
 export default AppPage

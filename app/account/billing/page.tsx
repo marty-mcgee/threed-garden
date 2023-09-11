@@ -12,8 +12,8 @@ import DefaultInfoCard from '#/ui/elements/Cards/InfoCards/DefaultInfoCard'
 
 // Billing page components
 // import BaseLayout from "~/pagesX/account/components/BaseLayout"
-import DashboardLayout from '#/ui/layouts/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/ui/layouts/Navbars/DashboardNavbar'
+import DashboardLayout from '#/ui/layouts/_old/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/layouts/_old/Navbars/DashboardNavbar'
 import PaymentMethod from '#/app/account/billing/components/PaymentMethod'
 import Invoices from '#/app/account/billing/components/Invoices'
 import BillingInformation from '#/app/account/billing/components/BillingInformation'

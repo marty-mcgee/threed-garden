@@ -16,8 +16,6 @@ import Typography from '@mui/material/Typography'
 // ** Layout Import
 // import BlankLayout from '#/ui/layouts/BlankLayout'
 // import UserLayout from '#/ui/layouts/UserLayout'
-// import DashboardLayout from '~/ui/layouts/LayoutContainers/DashboardLayout'
-// import DashboardNavbar from '~/ui/layouts/Navbars/DashboardNavbar'
 
 // ** Scaffold-ETH Imports
 // import React, { FC } from 'react'
@@ -55,7 +53,7 @@ const HomePage: TNextPageWithProps = (): JSX.Element => {
 // HomePage.getLayout = (page: any) => {page}
 // HomePage.getLayout = (page: any) => <UserLayout>{page}</UserLayout>
 // HomePage.getLayout = (page: any) => <BlankLayout>{page}</BlankLayout>
-HomePage.authGuard = true
-HomePage.guestGuard = true
+// HomePage.authGuard = true
+// HomePage.guestGuard = true
 
 export default HomePage

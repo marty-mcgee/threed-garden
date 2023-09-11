@@ -2,7 +2,13 @@
 import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 
-// Styled component for Blank Layout component
+// ** Hooks
+import { useSettings } from '#/lib/hooks/useSettings'
+
+// ** Utilities
+import ccm from '#/lib/utils/console-colors'
+
+// Styled component for BlankLayout component
 const BlankLayoutWrapper = styled(Box)(({ theme }) => ({
   height: '100vh',
 
@@ -24,7 +30,17 @@ const BlankLayoutWrapper = styled(Box)(({ theme }) => ({
   },
 }))
 
+// FC
 const BlankLayout = ({ children }) => {
+  //
+  // [MM] HEY HEY HEY BlankLayout BLANK LAYOUT
+  // console.debug('%c====================================', ccm.black)
+  console.debug('🦁 <BlankLayout>')
+  // console.debug('🦁 const heyheyhey = ', { heyheyhey: 'HEY HEY HEY' })
+  // console.debug('%c====================================', ccm.black)
+
+  // ** Hooks
+  const { settings, saveSettings } = useSettings()
   return (
     <BlankLayoutWrapper className='layout-wrapper'>
       <Box

@@ -5,8 +5,8 @@ import Grid from '@mui/material/Grid'
 import MDBox from '#/lib/mui/MDBox'
 
 // ThreeD Garden examples components
-import DashboardLayout from '#/ui/layouts/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/ui/layouts/Navbars/DashboardNavbar'
+import DashboardLayout from '#/ui/layouts/_old/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/layouts/_old/Navbars/DashboardNavbar'
 import Footer from '#/ui/layouts/footer'
 import DefaultLineChart from '#/ui/elements/Charts/LineCharts/DefaultLineChart'
 import GradientLineChart from '#/ui/elements/Charts/LineCharts/GradientLineChart'
