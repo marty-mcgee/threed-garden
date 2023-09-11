@@ -109,30 +109,33 @@ const Drawer = (props) => {
   return (
     <ThreedSwipeableDrawer
       className='layout-vertical-nav'
-      variant={hidden ? 'permanent' : 'permanent'} // temporary
-      {...(hidden ? { ...MobileDrawerProps } : { ...DesktopDrawerProps })}
+      // variant={hidden ? 'temporary' : 'permanent'} // temporary | permanent
+      // {...(hidden ? { ...MobileDrawerProps } : { ...DesktopDrawerProps })}
+      variant='permanent' // temporary | permanent
+      {...({ ...DesktopDrawerProps })}
       PaperProps={{
         sx: {
           width: navCollapsed && !navHover ? collapsedNavWidth : navWidth,
           mt: 16,
-          // backgroundColor: 'yellow',
+          // mb: 16,
+          // backgroundColor: '#111111',
         },
       }}
       sx={{
         // border: '2px solid grey',
         width: navCollapsed ? collapsedNavWidth : navWidth,
-        // flexShrink: 0,
         '& .MuiDrawer-paper': {
           ...drawerColor(),
           ...drawerBgColor(),
-          ...(!hidden && navCollapsed && navHover ? { boxShadow: 9 } : {}),
-          borderRight: navBorderWidth === 0 ? 0 : `${navBorderWidth}px solid ${theme.palette.divider}`,
+          // ...(!hidden && navCollapsed && navHover ? { boxShadow: 9 } : {}),
+          // borderRight: navBorderWidth === 0 ? 0 : `${navBorderWidth}px solid ${theme.palette.divider}`,
           // boxSizing: 'border-box',
           // top: ['48px', '56px', '64px'],
           // height: 'auto',
           // bottom: 0,
         },
-      }}>
+      }}
+    >
       {children}
     </ThreedSwipeableDrawer>
   )

@@ -9,7 +9,7 @@ import { createContext, ReactNode, useContext, useMemo, useReducer } from 'react
 const MaterialUI = createContext<any>(null)
 
 // Setting custom name for the context which is visible on react dev tools
-MaterialUI.displayName = 'MaterialUIContext'
+MaterialUI.displayName = 'MaterialUI Context'
 
 // types
 interface StateTypes {

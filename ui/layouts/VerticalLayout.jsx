@@ -23,21 +23,23 @@ import ScrollToTop from '#/ui/components/scroll-to-top'
 import DatePickerWrapper from '#/ui/styles/react-datepicker'
 
 const VerticalLayoutWrapper = styled('div')({
-  minHeight: 'calc(100vh - 128px - 0px)', // '100vh',
-  display: 'flex',
-  // flexGrow: 1,
-  // border: '3px solid pink', // is working here
+  display: 'flex', // [MM] THIS IS IMPORTANT !!! flex :)
+  flexGrow: 1,
+  flexShrink: 1,
+  // flexDirection: 'row|column',
   overflow: 'scroll',
+  minHeight: 'calc(100vh - 128px - 0px)', // '100vh',
+  // border: '3px solid pink', // is working here
 })
 
 const MainContentWrapper = styled(Box)({
   border: '3px dashed #222222', // is working here
   // display: 'flex',
   // flexGrow: 1,
-  minWidth: 0,
+  // minWidth: 0,
   minHeight: 'calc(100vh - 128px - 0px)', // '100vh',
   // maxHeight: 'calc(100vh - 128px - 0px)', // '100vh',
-  flexDirection: 'column',
+  // flexDirection: 'row|column',
 })
 
 const ContentWrapper = styled('main')(({ theme }) => ({
@@ -46,12 +48,14 @@ const ContentWrapper = styled('main')(({ theme }) => ({
   // width: '100%',
   minHeight: 'calc(100vh - 128px - 0px)', // '100vh',
   // maxHeight: 'calc(100vh - 128px - 0px)', // '100vh',
-  padding: theme.spacing(4), // number * 0.25rem (6 = 1.5rem = 24px, 4 = 1.0rem = 16px, ...)
-  transition: 'padding .25s ease-in-out',
-  [theme.breakpoints.down('sm')]: {
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1), // number * 0.25rem (6 = 1.5rem = 24px, 1 = 0.25rem = 4px, ...)
-  },
+
+  // padding: theme.spacing(4), // number * 0.25rem (6 = 1.5rem = 24px, 4 = 1.0rem = 16px, ...)
+  // transition: 'padding .25s ease-in-out',
+  // [theme.breakpoints.down('sm')]: {
+  //   paddingLeft: theme.spacing(1),
+  //   paddingRight: theme.spacing(1), // number * 0.25rem (6 = 1.5rem = 24px, 1 = 0.25rem = 4px, ...)
+  // },
+
 }))
 
 const VerticalLayout = (props) => {

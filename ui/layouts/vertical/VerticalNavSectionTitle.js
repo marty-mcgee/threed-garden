@@ -10,21 +10,21 @@ import CanViewNavSectionTitle from '#/lib/auth/acl/CanViewNavSectionTitle'
 
 // ** Styled Components
 const ListSubheader = styled((props) => <MuiListSubheader component='li' {...props} />)(({ theme }) => ({
-  lineHeight: 1,
-  display: 'flex',
-  position: 'static',
-  marginTop: theme.spacing(7),
-  marginBottom: theme.spacing(2),
-  backgroundColor: 'transparent',
+  // lineHeight: 1,
+  // display: 'flex',
+  // position: 'static',
+  // marginTop: theme.spacing(7),
+  // marginBottom: theme.spacing(2),
+  // backgroundColor: 'transparent',
 }))
 
 const TypographyHeaderText = styled(Typography)(({ theme }) => ({
-  fontSize: '0.75rem',
-  lineHeight: 'normal',
-  letterSpacing: '0.21px',
-  textTransform: 'uppercase',
-  color: theme.palette.text.disabled,
-  fontWeight: theme.typography.fontWeightMedium,
+  // fontSize: '0.75rem',
+  // lineHeight: 'normal',
+  // letterSpacing: '0.21px',
+  // textTransform: 'uppercase',
+  // color: theme.palette.text.disabled,
+  // fontWeight: theme.typography.fontWeightMedium,
 }))
 
 const VerticalNavSectionTitle = (props) => {
@@ -66,34 +66,36 @@ const VerticalNavSectionTitle = (props) => {
     <CanViewNavSectionTitle navTitle={item}>
       <ListSubheader
         className='nav-section-title'
-        sx={{
-          ...conditionalStyling(),
-          ...(navCollapsed && !navHover
-            ? {
-                py: 3.5,
-                pr: (collapsedNavWidth - navBorderWidth - 24) / 8 - 1,
-                pl: (collapsedNavWidth - navBorderWidth - 24) / 8 + 0.25,
-              }
-            : { px: 0, py: 1.75 }),
-        }}>
+        // sx={{
+        //   ...conditionalStyling(),
+        //   ...(navCollapsed && !navHover
+        //     ? {
+        //         py: 3.5,
+        //         pr: (collapsedNavWidth - navBorderWidth - 24) / 8 - 1,
+        //         pl: (collapsedNavWidth - navBorderWidth - 24) / 8 + 0.25,
+        //       }
+        //     : { px: 0, py: 1.75 }),
+        // }}
+      >
         <Divider
           textAlign='left'
-          sx={{
-            m: 0,
-            lineHeight: 'normal',
-            ...(navCollapsed && !navHover
-              ? { width: 22 }
-              : {
-                  width: '100%',
-                  textTransform: 'uppercase',
-                  '&:before, &:after': { top: 7, transform: 'none' },
-                  '& .MuiDivider-wrapper': { px: 2.5, fontSize: '0.75rem', letterSpacing: '0.21px' },
-                }),
-          }}>
+          // sx={{
+          //   m: 0,
+          //   lineHeight: 'normal',
+          //   ...(navCollapsed && !navHover
+          //     ? { width: 22 }
+          //     : {
+          //         width: '100%',
+          //         textTransform: 'uppercase',
+          //         '&:before, &:after': { top: 7, transform: 'none' },
+          //         '& .MuiDivider-wrapper': { px: 2.5, fontSize: '0.75rem', letterSpacing: '0.21px' },
+          //       }),
+          // }}
+        >
           {navCollapsed && !navHover ? null : (
-            <TypographyHeaderText noWrap>
+            // <TypographyHeaderText noWrap>
               <Translations text={item.sectionTitle} />
-            </TypographyHeaderText>
+            // </TypographyHeaderText>
           )}
         </Divider>
       </ListSubheader>

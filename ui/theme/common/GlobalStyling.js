@@ -30,6 +30,9 @@ const GlobalStyles = (theme, settings) => {
       backgroundColor: hexToRGBA(theme.palette.background.paper, 0.85),
       width: '30px',
     },
+    'a': {
+      textDecoration: 'none !important',
+    },
     '.demo-space-x > *': {
       marginTop: '1rem !important',
       marginRight: '1rem !important',

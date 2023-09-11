@@ -13,7 +13,6 @@ import themeConfig from '#/lib/config/themeConfig'
 // ** Component Imports
 import VerticalNavDrawer from '#/ui/layouts/vertical/VerticalNavDrawer'
 import VerticalNavItems from '#/ui/layouts/vertical/VerticalNavItems'
-import VerticalNavHeader from '#/ui/layouts/vertical/VerticalNavHeader'
 
 // ** Util Import
 import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
@@ -116,7 +115,6 @@ const VerticalNavigation = (props) => {
 
   return (
     <VerticalNavDrawer {...props}>
-      {/* <VerticalNavHeader {...props} /> */}
       {beforeVerticalNavMenuContent && beforeVerticalNavMenuContentPosition === 'fixed'
         ? beforeVerticalNavMenuContent(props)
         : null}
@@ -127,7 +125,7 @@ const VerticalNavigation = (props) => {
         />
       )}
       <Box sx={{
-        minHeight: '50vh',
+        minHeight: '70vh',
         position: 'relative',
         overflow: 'visible',
         border: '3px solid #111111',
@@ -137,7 +135,7 @@ const VerticalNavigation = (props) => {
           {...(hidden
             ? {
                 onScroll: (container) => scrollMenu(container),
-                sx: { height: '100%', overflowY: 'auto', overflowX: 'hidden' },
+                sx: { height: '100%', overflowY: 'auto', overflowX: 'scroll' },
               }
             : {
                 options: { wheelPropagation: false },

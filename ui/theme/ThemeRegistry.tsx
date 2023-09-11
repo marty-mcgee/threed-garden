@@ -9,6 +9,7 @@ import GlobalStyles from '@mui/material/GlobalStyles'
 import GlobalStyling from '#/ui/theme/common/GlobalStyling'
 // ** Custom Theme
 import NextAppDirEmotionCacheProvider from '#/ui/theme/EmotionCache'
+import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '#/lib/contexts'
 // import themeConfig from '#/lib/config/themeConfig' // returned as props {settings}
 import themeOptions from '#/ui/theme/ThemeOptions'
 // import ThemeOptionsUser from '#/ui/theme/ThemeOptionsUser'
@@ -36,9 +37,11 @@ export default function ThemeRegistry({ settings, children }: { settings: any, c
   return (
     <NextAppDirEmotionCacheProvider options={{ key: 'threed-mui-emotion' }}>
       <ThemeProvider theme={activeTheme}>
-        <CssBaseline />
-        <GlobalStyles styles={() => GlobalStyling(activeTheme, settings)} />
-        {children}
+        <MaterialUIControllerProvider>
+          <CssBaseline />
+          <GlobalStyles styles={() => GlobalStyling(activeTheme, settings)} />
+          {children}
+        </MaterialUIControllerProvider>
       </ThemeProvider>
     </NextAppDirEmotionCacheProvider>
   )

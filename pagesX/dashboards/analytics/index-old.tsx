@@ -8,8 +8,8 @@ import MDBox from '#/lib/mui/MDBox'
 import MDTypography from '#/lib/mui/MDTypography'
 
 // ThreeD Garden examples components
-import DashboardLayout from '#/ui/layouts/LayoutContainers/DashboardLayout'
-import DashboardNavbar from '#/ui/layouts/Navbars/DashboardNavbar'
+import DashboardLayout from '#/ui/layouts/_old/LayoutContainers/DashboardLayout'
+import DashboardNavbar from '#/ui/layouts/_old/Navbars/DashboardNavbar'
 import Footer from '#/ui/layouts/footer'
 import ReportsBarChart from '#/ui/elements/Charts/BarCharts/ReportsBarChart'
 import ReportsLineChart from '#/ui/elements/Charts/LineCharts/ReportsLineChart'

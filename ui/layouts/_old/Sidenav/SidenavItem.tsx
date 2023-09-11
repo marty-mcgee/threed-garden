@@ -11,7 +11,7 @@ import type { Theme } from '@mui/material/styles'
 import MDBox from '#/lib/mui/MDBox'
 
 // Custom styles for the SidenavItem
-import { item, itemContent, itemArrow } from '#/ui/layouts/Sidenav/styles/sidenavItem'
+import { item, itemContent, itemArrow } from '#/ui/layouts/_old/Sidenav/styles/sidenavItem'
 
 // ThreeD Garden contexts
 import { useMaterialUIController } from '#/lib/contexts'
@@ -95,11 +95,11 @@ function SidenavItem({ color, name, active, nested, children, open, ...rest }: P
 
 // Declaring default props for SidenavItem
 SidenavItem.defaultProps = {
-  color: 'info',
-  active: false,
+  color: 'dark',
+  active: true,
   nested: false,
   children: false,
-  open: false,
+  open: true,
 }
 
 export default SidenavItem

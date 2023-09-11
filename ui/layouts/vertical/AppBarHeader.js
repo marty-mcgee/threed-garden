@@ -24,7 +24,7 @@ const MenuHeaderWrapper = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  paddingRight: theme.spacing(0.0),
+  paddingRight: theme.spacing(1),
   transition: 'padding .25s ease-in-out',
   minHeight: theme.mixins.toolbar.minHeight,
 }))
@@ -43,7 +43,7 @@ const StyledLink = styled('a')({
   textDecoration: 'none',
 })
 
-const VerticalNavHeader = (props) => {
+const AppBarHeader = (props) => {
   // ** Props
   const {
     hidden,
@@ -82,7 +82,7 @@ const VerticalNavHeader = (props) => {
       <RecordCircleOutline
         sx={{
           // mr: '0.95rem',
-          // color: 'green',
+          color: 'green',
           fontSize: '1.25rem',
           pointerEvents: 'none',
           ...menuCollapsedStyles,
@@ -96,7 +96,7 @@ const VerticalNavHeader = (props) => {
       <RecordCircleOutline
         sx={{
           // mr: '1rem',
-          // color: 'red',
+          color: 'darkgrey',
           fontSize: '1.25rem',
           pointerEvents: 'none',
           ...menuCollapsedStyles,
@@ -121,9 +121,10 @@ const VerticalNavHeader = (props) => {
             <HeaderTitle
               variant='h6'
               sx={{
-                // ...menuCollapsedStyles,
-                ...(navCollapsed && !navHover ? { ml: 1 } : { ml: 1 }),
-              }}>
+                ...menuCollapsedStyles,
+                ...(navCollapsed && !navHover ? { ml: 0.5 } : { ml: 0.5 }),
+              }}
+            >
               {appConfig.title}
             </HeaderTitle>
           </IconButton>
@@ -151,4 +152,4 @@ const VerticalNavHeader = (props) => {
   )
 }
 
-export default VerticalNavHeader
+export default AppBarHeader

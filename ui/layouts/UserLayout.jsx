@@ -4,7 +4,6 @@
 import useMediaQuery from '@mui/material/useMediaQuery'
 
 // ** Main Layout
-// !Do not remove this Layout import
 import MainLayout from '#/ui/layouts/MainLayout'
 
 // ** Navigation
