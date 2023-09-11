@@ -10,8 +10,8 @@ declare module '@mui/material/styles' {
   // interface MuiTheme {
   // interface ThreedTheme extends Theme {
   interface Theme {
-    palette: Palette
-    boxShadows: {
+    palette?: Palette
+    boxShadows?: {
       xs: string
       sm: string
       md: string
@@ -37,7 +37,7 @@ declare module '@mui/material/styles' {
         indicator: string
       }
     }
-    borders: {
+    borders?: {
       borderColor: string
       borderWidth: {
         [key: number | string]: number | string
@@ -46,15 +46,15 @@ declare module '@mui/material/styles' {
         [key: number | string]: number | string
       }
     }
-    transitions: any
-    functions: any
-    size: any
+    transitions?: any
+    functions?: any
+    size?: any
   }
 
   // interface ThreedThemeOptions extends ThemeOptions {
   interface ThemeOptions {
   // interface MuiThemeOptions {
-    boxShadows: {
+    boxShadows?: {
       xs: string
       sm: string
       md: string
@@ -80,17 +80,17 @@ declare module '@mui/material/styles' {
         indicator: string
       }
     }
-    // borders: {
-    //   borderColor: string
-    //   borderWidth: {
-    //     [key: number | string]: number | string
-    //   }
-    //   borderRadius: {
-    //     [key: number | string]: number | string
-    //   }
-    // }
-    // functions: any
-    // shadows: any
+    borders?: {
+      borderColor: string
+      borderWidth: {
+        [key: number | string]: number | string
+      }
+      borderRadius: {
+        [key: number | string]: number | string
+      }
+    }
+    functions?: any
+    shadows?: any
   }
 
   // interface ThreedPalette extends Palette {

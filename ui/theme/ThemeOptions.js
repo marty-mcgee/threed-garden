@@ -65,7 +65,7 @@ const themeOptions = (settings) => {
           minHeight: 64,
         },
       },
-      // missing requirements
+      // ?? missing requirements to pass TS
       // boxShadows: {},
       // borders: {},
       // functions: {},
