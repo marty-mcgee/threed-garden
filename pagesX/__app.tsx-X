@@ -64,7 +64,7 @@ import NProgress from 'nprogress'
 
 // ** Contexts
 import { AuthProvider } from '#/lib/contexts/AuthContext'
-import { SettingsConsumer, SettingsProvider } from '#/lib/contexts/SettingsContext'
+import { SettingsConsumer, SettingsProvider } from '#/lib/contexts/settings/SettingsContext'
 
 // ** Styled Components
 import ReactHotToast from '#/ui/styles/react-hot-toast'
