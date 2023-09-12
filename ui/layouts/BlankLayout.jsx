@@ -24,28 +24,29 @@ const BlankLayoutWrapper = styled(Box)(({ theme }) => ({
   // For V2 Blank layout pages
   '& .content-right': {
     display: 'flex',
-    overflowX: 'hidden',
-    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+    // overflowX: 'hidden',
+    // position: 'relative',
     minHeight: `calc(100vh - ${theme.spacing(theme.mixins.toolbar.minHeight / 4)})`,
   },
 }))
 
 // FC
 const BlankLayout = ({ children }) => {
-  //
-  // [MM] HEY HEY HEY BlankLayout BLANK LAYOUT
+  // **
   // console.debug('%c====================================', ccm.black)
   console.debug('🦁 <BlankLayout>')
-  // console.debug('🦁 const heyheyhey = ', { heyheyhey: 'HEY HEY HEY' })
   // console.debug('%c====================================', ccm.black)
 
   // ** Hooks
   const { settings, saveSettings } = useSettings()
+
   return (
     <BlankLayoutWrapper className='layout-wrapper'>
       <Box
-        id='app-content'
-        sx={{ minHeight: '100vh', overflowX: 'hidden', position: 'relative' }}
+        // id='app-content'
+        sx={{ minHeight: '100vh', overflowX: 'scroll', position: 'relative' }}
         // sx={{
         //   overflowX: 'hidden',
         //   position: 'relative',
@@ -54,7 +55,7 @@ const BlankLayout = ({ children }) => {
       >
         {children}
       </Box>
-      <>BlankLayout</>
+      {/* <>BlankLayout</> */}
     </BlankLayoutWrapper>
   )
 }
