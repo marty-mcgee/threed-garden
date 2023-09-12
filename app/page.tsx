@@ -81,7 +81,7 @@ const AppPage: TNextPageWithProps = (props: any): JSX.Element => {
       const homeRoute = getHomeRoute('unauthorized')
       console.debug('❌ user NOT AUTHORIZED', auth.user, 'go to:', homeRoute)
       // redirect un-authorized guest to Home URL
-      // router.replace(homeRoute)
+      router.replace(homeRoute)
     }
     // return <></>
   // }, [])

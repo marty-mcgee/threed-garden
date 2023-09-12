@@ -28,7 +28,7 @@ import masterCardLogo from '#/lib/assets/images/logos/mastercard.png'
 import visaLogo from '#/lib/assets/images/logos/visa.png'
 
 // ThreeD Garden context
-import { useMaterialUIController } from '#/lib/contexts'
+import { useMaterialUIController } from '#/lib/contexts/MaterialUIContext'
 
 function PaymentMethod(): JSX.Element {
   const [controller] = useMaterialUIController()

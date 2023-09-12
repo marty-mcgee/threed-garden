@@ -24,7 +24,7 @@ import DashboardLayout from '#/ui/layouts/_old/LayoutContainers/DashboardLayout'
 import DashboardNavbar from '#/ui/layouts/_old/Navbars/DashboardNavbar'
 
 // ThreeD Garden context
-import { useMaterialUIController } from '#/lib/contexts'
+import { useMaterialUIController } from '#/lib/contexts/MaterialUIContext'
 
 // Images
 import logo from '#/lib/assets/images/logos/logo-threedgarden-text.png'

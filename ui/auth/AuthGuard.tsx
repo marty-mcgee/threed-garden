@@ -1,10 +1,9 @@
+'use client'
 // ==============================================================
 // RESOURCES
 
-'use client'
-
 // ** React
-import { useEffect } from 'react'
+// import { useEffect } from 'react'
 
 // ** Next
 import { useRouter, usePathname } from 'next/navigation'
@@ -20,7 +19,7 @@ import ccm from '#/lib/utils/console-colors'
 
 // ==============================================================
 // FUNCTIONS
-// console.debug('%c🔱 AuthGuard: loading...', ccm.yellow)
+console.debug('%c🔱 AuthGuard: loading...', ccm.orange)
 
 // ** Function Component <React.FC> (returns JSX) for JS Module Export
 const AuthGuard = (props: any) => {
@@ -31,7 +30,7 @@ const AuthGuard = (props: any) => {
   const auth = useAuth()
   const router = useRouter()
   const pathname = usePathname() // router.asPath is now usePathname()
-
+  const localStorageUserData = (typeof window !== 'undefined') ? window.localStorage.getItem('userData') : null
   // if (!auth.loading) {
     // console.debug('%c🔱 AuthGuard: auth.loading?', ccm.yellow, auth.loading)
     // console.debug('%c🔱 AuthGuard: auth', ccm.yellow, auth)
@@ -39,11 +38,11 @@ const AuthGuard = (props: any) => {
     // console.debug('%c🔱 AuthGuard: pathname', ccm.yellow, pathname)
   // }
 
-  useEffect(() => {
+  // useEffect(() => {
 
     // ** AuthGuard
-    if (auth.user === null && !window.localStorage.getItem('userData')) {
-      console.debug('%c🔱 AuthGuard: auth.user === null', ccm.yellow)
+    if (auth.user === null && !localStorageUserData) {
+      console.debug('%c🔱 AuthGuard: auth.user === null, no localStorageUserData', ccm.yellow)
 
       // if (router.asPath !== '/') {
       if (pathname !== '/') {
@@ -60,45 +59,44 @@ const AuthGuard = (props: any) => {
       }
 
     }
-    else if (window.localStorage.getItem('userData')) {
+    else if (auth.user === null && localStorageUserData) {
       // do nothing ?
-      console.debug('%c🔱 AuthGuard: window.localStorage.getItem("userData"): locate to /', ccm.yellow)
+      // console.debug('%c🔱 AuthGuard: localStorageUserData exists (load? locate to?)', ccm.yellow, localStorageUserData)
       // router.replace('/')
       // router.push('/')
     }
     else {
-      console.debug('%c🔱 AuthGuard: auth.user is true ???', ccm.yellow, auth)
+      console.debug('%c🔱 AuthGuard: auth.user is', ccm.green, auth.user.role)
       // do nothing
       // router.replace('/auth/login')
       // router.push('/auth/login')
     }
 
     // ** GuestGuard
-    // if (window.localStorage.getItem('userData')) {
-    //   console.debug('%c⚜ GuestGuard: window.localStorage.getItem("userData"): locate to /')
+    // if (localStorageUserData) {
+    //   console.debug('%c⚜ GuestGuard: localStorageUserData: locate to /')
     //   router.replace('/')
     // }
     // else {
-    //   console.debug('%c⚜ GuestGuard window.localStorage.getItem("userData")?: locate to /auth/login', auth)
+    //   console.debug('%c⚜ GuestGuard localStorageUserData?: locate to /auth/login', auth)
     //   router.replace('/auth/login')
     // }
 
-  }, [pathname]) // originally [router.route]
+  // }, [pathname]) // originally [router.route]
 
   // ** AuthGuard
-  if (auth.loading || auth.user !== null) {
-    // console.debug('%c🔱 <AuthGuard>: <Spinner />', ccm.yellow)
-    // return fallback // null // fallback
-  }
-  // ** GuestGuard
   // if (auth.loading || (!auth.loading && auth.user !== null)) {
-  //   console.debug('%c⚜ <GuestGuard>: <Spinner />', ccm.yellow)
-  //   return null // fallback
+  //   console.debug('%c🔱 <AuthGuard>: <Spinner />', ccm.yellow)
+  //   // return fallback // null // fallback
   // }
 
   // ** Return JSX
-  console.debug('%c🔱 AuthGuard: return <jsx/>', ccm.green)
-  return <>{children}</>
+  // console.debug('%c🔱 AuthGuard: return <jsx/>', ccm.green)
+  if (auth.user !== null && auth.user.role !== null) {
+    return <>{children}</>
+  }
+  // else
+  return <Spinner />
 }
 
 export default AuthGuard

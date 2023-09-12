@@ -14,7 +14,7 @@ import MDBox from '#/lib/mui/MDBox'
 import { item, itemContent, itemArrow } from '#/ui/layouts/_old/Sidenav/styles/sidenavItem'
 
 // ThreeD Garden contexts
-import { useMaterialUIController } from '#/lib/contexts'
+import { useMaterialUIController } from '#/lib/contexts/MaterialUIContext'
 
 // Declaring props types for SidenavCollapse
 interface Props {

@@ -14,7 +14,7 @@ import themeOptions from '#/ui/theme/ThemeOptions'
 import ThemeOptionsUser from '#/ui/theme/ThemeOptionsUser'
 
 // ** Global Styles
-import GlobalStyling from '#/ui/theme/common/GlobalStyling'
+import GlobalStyling from '#/ui/theme/GlobalStyling'
 
 // ** Direction component for LTR or RTL
 import Direction from '#/ui/layouts/common/Direction'

@@ -33,7 +33,7 @@ import sidenavLogoLabel from '#/ui/layouts/_old/Sidenav/styles/sidenav'
 // } from "~/ui/layouts/_old/Navbars/DashboardNavbar/styles"
 
 // ThreeD Garden context
-import { useMaterialUIController, setMiniSidenav, setTransparentSidenav, setWhiteSidenav } from '#/lib/contexts'
+import { useMaterialUIController, setMiniSidenav, setTransparentSidenav, setWhiteSidenav } from '#/lib/contexts/MaterialUIContext'
 
 import { StaticImageData } from 'next/image'
 // type StaticImageData = {

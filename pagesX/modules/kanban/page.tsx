@@ -27,7 +27,7 @@ import Footer from '#/ui/layouts/footer'
 // Data
 
 // ThreeD Garden context
-import { useMaterialUIController } from '#/lib/contexts'
+import { useMaterialUIController } from '#/lib/contexts/MaterialUIContext'
 
 // @asseinfo/react-kanban components
 // const Board = dynamic(() => import("@asseinfo/react-kanban"), { ssr: false })

@@ -32,7 +32,7 @@ import {
 } from '#/ui/layouts/_old/Navbars/DashboardNavbar/styles'
 
 // ThreeD Garden context
-import { useMaterialUIController, setTransparentNavbar, setMiniSidenav, setOpenConfigurator } from '#/lib/contexts'
+import { useMaterialUIController, setTransparentNavbar, setMiniSidenav, setOpenConfigurator } from '#/lib/contexts/MaterialUIContext'
 
 // Declaring prop types for DashboardNavbar
 interface Props {

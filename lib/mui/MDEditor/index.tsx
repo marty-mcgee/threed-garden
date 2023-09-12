@@ -13,7 +13,7 @@ import dynamic from 'next/dynamic'
 import MDEditorRoot from '#/lib/mui/MDEditor/MDEditorRoot'
 
 // ThreeD Garden context
-import { useMaterialUIController } from '#/lib/contexts'
+import { useMaterialUIController } from '#/lib/contexts/MaterialUIContext'
 
 // declaring types for the MDEditor
 interface Props {
