@@ -36,7 +36,7 @@ import AuthGuard from '#/ui/auth/AuthGuard'
 import '#/lib/api/@fake-db'
 
 // ** Contexts for Theme Settings + MUI Components
-import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/SettingsContext'
+import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/settings/SettingsContext'
 import ThemeRegistry from '#/ui/theme/ThemeRegistry'
 
 // ** Configs
