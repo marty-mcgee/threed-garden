@@ -15,7 +15,7 @@ import MDTypography from '#/lib/mui/MDTypography'
 import CalendarRoot from '#/ui/elements/Calendar/CalendarRoot'
 
 // ThreeD Garden context
-import { useMaterialUIController } from '#/lib/contexts'
+import { useMaterialUIController } from '#/lib/contexts/MaterialUIContext'
 
 // Declaring props types for the Calender
 interface Props {

@@ -16,7 +16,7 @@ import { AbilityContext } from '#/lib/auth/acl/Can'
 import { buildAbilityFor } from '#/lib/config/acl'
 
 // ** Components
-import NotAuthorized from '#/pagesX/401'
+import NotAuthorized from '#/pages/401'
 import BlankLayout from '#/ui/layouts/BlankLayout'
 
 // ** Hooks

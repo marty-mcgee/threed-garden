@@ -6,10 +6,10 @@ import { ThemeProvider, createTheme, useTheme, responsiveFontSizes } from '@mui/
 import CssBaseline from '@mui/material/CssBaseline'
 // ** Global Styles
 import GlobalStyles from '@mui/material/GlobalStyles'
-import GlobalStyling from '#/ui/theme/common/GlobalStyling'
+import GlobalStyling from '#/ui/theme/GlobalStyling'
 // ** Custom Theme
 import NextAppDirEmotionCacheProvider from '#/ui/theme/EmotionCache'
-import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '#/lib/contexts'
+import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '#/lib/contexts/MaterialUIContext'
 // import themeConfig from '#/lib/config/themeConfig' // returned as props {settings}
 import themeOptions from '#/ui/theme/ThemeOptions'
 // import ThemeOptionsUser from '#/ui/theme/ThemeOptionsUser'

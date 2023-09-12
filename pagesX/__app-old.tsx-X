@@ -31,7 +31,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import Icon from '@mui/material/Icon'
 // theme: mui: Material UI Context Provider
-import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '#/lib/contexts'
+import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '#/lib/contexts/MaterialUIContext'
 // theme: mui: emotion cache
 import { CacheProvider, EmotionCache } from '@emotion/react'
 import createEmotionCache from '#/ui/theme/createEmotionCache'

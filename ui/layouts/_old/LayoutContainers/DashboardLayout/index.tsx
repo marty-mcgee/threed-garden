@@ -13,7 +13,7 @@ import DashboardNavbar from '~/ui/layouts/_old/Navbars/DashboardNavbar'
 import MDBox from '#/lib/mui/MDBox'
 
 // ThreeD Garden Material UI context as Controller
-import { useMaterialUIController, setLayout } from '#/lib/contexts'
+import { useMaterialUIController, setLayout } from '#/lib/contexts/MaterialUIContext'
 
 function DashboardLayout({ children, stickyNavbar }: { children: ReactNode; stickyNavbar?: boolean }): JSX.Element {
   const [controller, dispatch] = useMaterialUIController()
@@ -53,9 +53,9 @@ function DashboardLayout({ children, stickyNavbar }: { children: ReactNode; stic
         },
       })}
     >
-      <>DashboardLayout</>
+      {/* <>DashboardLayout</> */}
       <DashboardNavbar>
-        <>DashboardNavbar</>
+        {/* <>DashboardNavbar</> */}
         {children}
       </DashboardNavbar>
     </MDBox>

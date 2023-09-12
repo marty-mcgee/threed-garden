@@ -18,7 +18,7 @@ import MDTypography from '#/lib/mui/MDTypography'
 import MDSnackbarIconRoot from '#/lib/mui/MDSnackbar/MDSnackbarIconRoot'
 
 // ThreeD Garden context
-import { useMaterialUIController } from '#/lib/contexts'
+import { useMaterialUIController } from '#/lib/contexts/MaterialUIContext'
 
 // Declaring props types for MDSnackbar
 interface Props extends SnackbarProps {

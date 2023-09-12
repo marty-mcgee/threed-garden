@@ -26,7 +26,7 @@ import DefaultNavbarMobile from '#/ui/layouts/_old/Navbars/DefaultNavbar/Default
 import breakpoints from '#/ui/theme/themes/theme-light/base/breakpoints'
 
 // ThreeD Garden context
-import { useMaterialUIController } from '#/lib/contexts'
+import { useMaterialUIController } from '#/lib/contexts/MaterialUIContext'
 
 // Declaring props types for DefaultNavbar
 interface Props {

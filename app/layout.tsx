@@ -1,8 +1,7 @@
+'use client'
 // ==============================================================
 // RESOURCES
 // ** FOR ENTIRE APP CONTEXTS
-
-'use client'
 
 // ** Next
 // import { useRouter, usePathname } from 'next/navigation'
@@ -30,19 +29,19 @@ import { useAuth } from '#/lib/auth/hooks/useAuth'
 
 // ** User Authorization Guards/Boundaries (~CORE Components)
 import AuthGuard from '#/ui/auth/AuthGuard'
-import GuestGuard from '#/ui/auth/GuestGuard'
-import AclGuard from '#/ui/auth/AclGuard'
+// import GuestGuard from '#/ui/auth/GuestGuard'
+// import AclGuard from '#/ui/auth/AclGuard'
 
 // ** @Fake-DB (axios mock adapter)
 import '#/lib/api/@fake-db'
 
 // ** Contexts for Theme Settings + MUI Components
-import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/settingsContext'
+import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/SettingsContext'
 import ThemeRegistry from '#/ui/theme/ThemeRegistry'
 
 // ** Configs
-import '#/lib/config/i18n' // NOT YET SUPPORTED IN NEXT 13
-import { aclObjectDefault } from '#/lib/config/acl' // default has 'admin' privileges !!!
+// import '#/lib/config/i18n' // NOT YET SUPPORTED IN NEXT 13
+// import { aclObjectDefault } from '#/lib/config/acl' // default has 'admin' privileges !!!
 // import themeConfig from '#/lib/config/themeConfig'
 
 // ** Layouts
@@ -65,7 +64,7 @@ import ccm from '#/lib/utils/console-colors'
 // ==============================================================
 // IMPORTS COMPLETE
 // console.debug('%c=======================================', ccm.black)
-console.debug('%c🥕 ThreeDGarden<FC,R3F>: {layout.tsx}', ccm.green)
+console.debug('%c🥕 ThreeDGarden<FC,R3F>: {layout.tsx}', ccm.lightgreen)
 // console.debug('%c=======================================', ccm.black)
 
 // ==============================================================
@@ -92,7 +91,7 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
 
 const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
   if (!guestGuard && !authGuard) {
-    console.debug('%c📛 noGuard loading :(', ccm.red)
+    console.debug('%c📛 NoGuard loading... :(', ccm.red)
     // console.debug('%c=======================================', ccm.black)
     return (
       <AuthGuard fallback={<Spinner />}>
@@ -101,7 +100,7 @@ const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
     )
   }
   else if (authGuard) {
-    console.debug('%c🔱 authGuard loading...', ccm.red)
+    // console.debug('%c🔱 AuthGuard loading...', ccm.red)
     // console.debug('%c=======================================', ccm.black)
     return (
       <AuthGuard fallback={<Spinner />}>
@@ -110,7 +109,7 @@ const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
     )
   }
   else if (guestGuard) {
-    console.debug('%c⚜ guestGuard loading...', ccm.red)
+    console.debug('%c⚜ GuestGuard loading... :(', ccm.red)
     // console.debug('%c=======================================', ccm.black)
     return (
       // <GuestGuard fallback={<Spinner />}>
@@ -122,7 +121,7 @@ const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
     )
   }
   else {
-    console.debug('%c🔱 authGuard loading by default :(', ccm.red)
+    console.debug('%c🔱 AuthGuard loading BY DEFAULT... :(', ccm.red)
     // console.debug('%c=======================================', ccm.black)
     return (
       <AuthGuard fallback={<Spinner />}>
@@ -153,9 +152,9 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
   // // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
   // const { Component, pageProps } = props
   // console.debug('🥕 PROPS: AppLayout.props', props)
-  console.debug('🥕 PROPS: AppLayout.props.children', children)
-  console.debug('🥕 PROPS: AppLayout.props.Component', Component)
-  console.debug('🥕 PROPS: AppLayout.props.pageProps', pageProps)
+  // console.debug('🥕 PROPS: AppLayout.props.children', children)
+  // console.debug('🥕 PROPS: AppLayout.props.Component', Component)
+  // console.debug('🥕 PROPS: AppLayout.props.pageProps', pageProps)
   // EXAMPLE: props.Component ??
   // const Component = {
   //   getLayout: () => {},
@@ -179,12 +178,12 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
 
   // ** Hooks
   const auth = useAuth()
-  console.debug('%c🔑 auth', ccm.orange, auth)
+  // console.debug('%c🔑 auth', ccm.orange, auth)
 
   // const { authGuard, guestGuard, acl } = Component // getLayout, setConfig,
   let authGuard = true
   let guestGuard = true
-  let acl = aclObjectDefault // admin priveleges by default, currently
+  let acl = {} // aclObjectDefault // admin priveleges by default, currently
   // const authGuard = Component?.authGuard ?? false
   // const guestGuard = Component?.guestGuard ?? false
   // const acl = Component?.acl ?? aclObjectDefault
@@ -196,9 +195,9 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
   // console.debug('%c=======================================', ccm.black)
 
   // ** PageComponent.Properties
-  const getAppLayout = (props: any): JSX.Element => {
+  const getAppLayout = ({ children }: any): JSX.Element => {
     //
-    const { children } = props
+    // const { children } = props
     // console.debug('🥕 PROPS: getAppLayout.props', props)
     // console.debug('🥕 PROPS: getAppLayout.props.children', children)
     // console.debug('%c=======================================', ccm.black)
@@ -243,10 +242,7 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
                       <ThemeRegistry settings={settings}>
                         {
                           getAppLayout(
-                            // <EthApp {...props}>
-                              // <Component {...pageProps} />
-                              {children}
-                            // </EthApp>
+                            {children}
                           )
                         }
                       </ThemeRegistry>
