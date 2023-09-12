@@ -96,7 +96,8 @@ const AuthGuard = (props: any) => {
     return <>{children}</>
   }
   // else
-  return <Spinner />
+  // return null // <Spinner />
+  return <>{children}</>
 }
 
 export default AuthGuard
