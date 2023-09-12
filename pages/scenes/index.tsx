@@ -16,13 +16,13 @@ export const getServerSideProps: GetServerSideProps = async () => {
   let res = { data: [{ title: { rendered: 'HEY HEY HEY' } }] }
 
   try {
-    res = await axios.get<IScene[]>(`${process.env.WP_REST_API_URL}/scene`)
+    res = await axios.get<IScene[]>(`${process.env.NEXT_PUBLIC_WP_REST_API_URL}/threed_scene`)
   } catch (e: any) {
-    res.data = [{ title: { rendered: 'HEY HEY HEY' } }]
-    console.log('catch e', e)
+    res.data = [{ title: { rendered: 'YO YO YO' } }]
+    console.debug('catch e', e)
   }
 
-  console.log('res.data', res.data)
+  console.debug('res.data', res.data)
 
   return {
     props: { scenes: res.data },
