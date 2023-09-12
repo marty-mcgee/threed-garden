@@ -195,7 +195,7 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
   // console.debug('%c=======================================', ccm.black)
 
   // ** PageComponent.Properties
-  const getAppLayout = ({ children }: any): JSX.Element => {
+  const getAppLayout = ({ children }: any): ReactNode => {
     //
     // const { children } = props
     // console.debug('🥕 PROPS: getAppLayout.props', props)

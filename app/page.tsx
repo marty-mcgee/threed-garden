@@ -7,7 +7,7 @@
 // RESOURCES (to import)
 
 // ** Next
-// import type { NextPage } from 'next'
+import type { NextPage, NextPageContext } from 'next'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
@@ -58,6 +58,7 @@ const getHomeRoute = (role: any) => {
 // const AppPage: NextPage<TPageProps> = (): JSX.Element => {
 // const AppPage: NextPage = (): JSX.Element => {
 const AppPage: TNextPageWithProps = (props: any): JSX.Element => {
+// const AppPage: NextPage = (props) => {
   // **
   // console.debug('%c🥕 PROPS: AppPage.props', ccm.green, props)
 
@@ -97,35 +98,36 @@ const AppPage: TNextPageWithProps = (props: any): JSX.Element => {
 // AppPage.guestGuard = false
 // AppPage.acl = {}
 
-/*
-AppPage.getInitialProps = async (ctx: NextPageContext) => {
+/**/
+// export const getServerSideProps = async (ctx: NextPageContext) => {
 //   const res = await fetch('https://api.github.com/repos/vercel/next.js')
 //   const json = await res.json()
 //   return { stars: json.stargazers_count }
 // }
-// export async function getServerSideProps() {
+// export async function getStaticProps() {
+async function getServerSideProps() {
 // export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
 // export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
   // const allPosts = await getAllPostsForHome(preview)
   // console.debug('getServerSideProps on AppLayout')
-  console.debug('getInitialProps on AppPage', ctx)
+  // console.debug('getInitialProps on AppPage', ctx)
   return {
     props: {
       // Component: {
         getLayout: 'YO YO YO',
         setConfig: 'true',
         authGuard: false,
-        guestGuard: true,
+        // guestGuard: true,
         acl: {}, // aclObjectDefault, // acl, {},
         auth: {},
       // },
     },
-    revalidate: 10,
-    testTestTest: true,
-    context: ctx,
+    // revalidate: 10,
+    // testTestTest: true,
+    // context: ctx,
   }
 }
-*/
+/**/
 // export async function getServerSideProps() {
 // // export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
 // // export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
@@ -177,5 +179,7 @@ export async function getServerSideProps() {
   }
 }
 */
-
+// export {
+//   getServerSideProps
+// }
 export default AppPage
