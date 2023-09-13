@@ -85,8 +85,8 @@ const appVersion = 'v0.12.0'
 const SVGWrapper = styled(Box)(({ theme }: { theme: any }) => {
   return {
     width: '100%',
-    marginTop: '64px',
-    marginBottom: '64px',
+    marginTop: 64,
+    marginBottom: 64,
     padding: theme.spacing(10),
     // paddingRight: '0 !important',
     [theme.breakpoints.down('lg')]: {
@@ -117,7 +117,8 @@ const SVGWrapper = styled(Box)(({ theme }: { theme: any }) => {
 const RightWrapper = styled(Box)(({ theme }: { theme: any }) => {
   return {
     // display: 'flex',
-    width: '100%',
+    // width: '100%',
+    maxWidth: 400,
     [theme.breakpoints.up('md')]: {
       maxWidth: 400,
     },
@@ -127,6 +128,7 @@ const RightWrapper = styled(Box)(({ theme }: { theme: any }) => {
 const BoxWrapper = styled(Box)(({ theme }: { theme: any }) => {
   return {
     // display: 'flex',
+    // alignItems: 'center',
     [theme.breakpoints.down('xl')]: {
       width: '100%',
     },
@@ -221,7 +223,12 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
   // ** Return JSX
   return (
     <>
-    <Box className='content-right'>
+    <Box
+      className='content-right'
+      sx={{
+        height: '100vh'
+      }}
+    >
 
       {/* APP LOGO + TITLE BOX */}
       <Box
@@ -260,13 +267,12 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
 
       {!hidden ? (
         <Box
-          // sx={{
-          //   display: 'flex',
-          //   flex: 1,
-          //   position: 'relative',
-          //   alignItems: 'top',
-          //   justifyContent: 'center',
-          // }}
+          sx={{
+            display: 'flex',
+            flex: 1,
+            // alignItems: 'center',
+            // justifyContent: 'center',
+          }}
         >
           <SVGWrapper>
             {/* <Box sx={{ height: 64 }} /> */}
@@ -283,7 +289,7 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
           <FooterIllustrationsV2 />
         </Box>
       ) : null}
-      {/* <RightWrapper
+      <RightWrapper
         sx={
           skin === 'bordered' && !hidden ? {
             borderLeft: `1px solid ${theme.palette.divider}`
@@ -292,7 +298,7 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
             borderLeft: `3px solid #111111`
           }
         }
-      > */}
+      >
         <Box
           sx={{
             p: 8,
@@ -305,7 +311,7 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
           }}
         >
           <BoxWrapper>
-            <Box sx={{ mb: 6, mt: 1 }}>
+            <Box sx={{ mb: 6, mt: 1, alignItems: 'center' }}>
               <TypographyStyled variant='h5'>
                 🌱 Welcome to
                 {appConfig.title}
@@ -483,7 +489,7 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
             </form>
           </BoxWrapper>
         </Box>
-      {/* </RightWrapper> */}
+      </RightWrapper>
     </Box>
     </>
   )
