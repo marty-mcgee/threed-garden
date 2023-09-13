@@ -115,15 +115,17 @@ const VerticalLayout = (props) => {
         )}
 
         {/* MAIN CONTENT */}
-        <MainContentWrapper className='layout-content-wrapper'>
+        <MainContentWrapper
+          className='layout-content-wrapper'
+          sx={{
+            width: '100%',
+          }}
+        >
           <ContentWrapper
             className='layout-page-content'
             sx={{
-              display: 'flex',
-              // flexShrink: '1',
-              padding: '0',
-              // border: '2px dashed red', // is working here
-              // height: '80vh', // not working here
+              // border: '2px dashed orange', // is working here
+              padding: 0,
               ...(contentWidth === 'boxed' && {
                 mx: 'auto',
                 '@media (min-width:1440px)': { maxWidth: 1440 },
