@@ -24,12 +24,12 @@ const TreeImg = styled('img')(({ theme }) => ({
 }))
 
 const TreeImg2 = styled('img')(({ theme }) => ({
-  right: '-3.0rem',
-  bottom: '6.0rem',
+  right: '18.0rem',
+  bottom: '5.0rem',
   height: '16.0rem',
   position: 'absolute',
   [theme.breakpoints.down('lg')]: {
-    right: '-4.0rem',
+    right: '18.0rem',
     bottom: '3.0rem',
   },
 }))
