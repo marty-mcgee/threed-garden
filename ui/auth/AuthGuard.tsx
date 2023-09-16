@@ -3,7 +3,7 @@
 // RESOURCES
 
 // ** React
-// import { useEffect } from 'react'
+import { useEffect } from 'react'
 
 // ** Next
 import { useRouter, usePathname } from 'next/navigation'
@@ -19,7 +19,7 @@ import ccm from '#/lib/utils/console-colors'
 
 // ==============================================================
 // FUNCTIONS
-console.debug('%c🔱 AuthGuard: loading...', ccm.orange)
+// console.debug('%c🔱 AuthGuard: loading...', ccm.orange)
 
 // ** Function Component <React.FC> (returns JSX) for JS Module Export
 const AuthGuard = (props: any) => {
@@ -38,11 +38,11 @@ const AuthGuard = (props: any) => {
     // console.debug('%c🔱 AuthGuard: pathname', ccm.yellow, pathname)
   // }
 
-  // useEffect(() => {
+  useEffect(() => {
 
     // ** AuthGuard
     if (auth.user === null && !localStorageUserData) {
-      console.debug('%c🔱 AuthGuard: auth.user === null, no localStorageUserData', ccm.yellow)
+      console.debug('%c🔱 AuthGuard: auth.user === null, no localStorageUserData', ccm.red)
 
       // if (router.asPath !== '/') {
       if (pathname !== '/') {
@@ -82,7 +82,7 @@ const AuthGuard = (props: any) => {
     //   router.replace('/auth/login')
     // }
 
-  // }, [pathname]) // originally [router.route]
+  }, [pathname]) // originally [router.route]
 
   // ** AuthGuard
   // if (auth.loading || (!auth.loading && auth.user !== null)) {

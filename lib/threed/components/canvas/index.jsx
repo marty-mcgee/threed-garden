@@ -196,40 +196,47 @@ export default function ThreeDCanvas({ models, children }) {
           azimuth={[-Math.PI / 1.4, Math.PI / 2]}>
           <CoffeeCup position={[1.25, 1, 3.25]} scale={2.5} />
         </PresentationControls> */}
-        {/* <PresentationControls
+        <PresentationControls
           // global
           config={{ mass: 2, tension: 500 }}
           snap={{ mass: 4, tension: 1500 }}
           rotation={[0, 0.3, 0]}
           polar={[-Math.PI / 3, Math.PI / 3]}
-          azimuth={[-Math.PI / 1.4, Math.PI / 2]}> */}
-        {/* <StacyApp position={[1.25, 1, 3.25]} scale={3.0} /> */}
-        {/* <Stacy position={[1.25, 0.7, 3.25]} scale={5.0} /> */}
-        {/* </PresentationControls> */}
+          azimuth={[-Math.PI / 1.4, Math.PI / 2]}
+        >
+          {/* <StacyApp position={[1.25, 1, 3.25]} scale={3.0} /> */}
+          <Stacy position={[1.25, 0.7, 3.25]} scale={5.0} />
+        </PresentationControls>
 
         {/* Camera Action Rig */}
-        {/* <ActionRig /> */}
+        {/*
+          <ActionRig />
+        */}
 
         {/* Transform Model using TransformControls */}
-        {/* <TransformModel
+        {/*
+        <TransformModel
           name='Zeppelin' // must match node name
           state={state}
           modes={modes}
           position={[-20, 10, 10]}
           rotation={[3, -1, 3]}
           scale={0.005}
-        /> */}
+        />
+        */}
 
         {/* [MM] HEY HEY HEY */}
         {/* NEED TO SEND A THREED_SCENE TO A CANVAS, BUT THIS IS FINE FOR NOW */}
-        {/* <ThreeD state={state} threedId={1} threed={{}} /> */}
+        <ThreeD state={state} threedId={1} threed={{}} />
         {/* [MM] HEY HEY HEY */}
 
         {/* <Stage environment="forest" intensity={0.7}> */}
-        <Stage intensity={0.7}>
+
+        {/* SHOE + SHOES */}
+        {/* <Stage intensity={0.7}>
           <Shoe color="tomato" position={[0, 0, 0]} />
           <Shoe color="orange" scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
-        </Stage>
+        </Stage> */}
 
         <BakeShadows />
 

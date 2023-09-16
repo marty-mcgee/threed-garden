@@ -129,9 +129,9 @@ const VerticalNavLink = ({
               ...(item.disabled ? { pointerEvents: 'none' } : { cursor: 'pointer' }),
               // pl: navCollapsed && !navHover ? (collapsedNavWidth - navBorderWidth - 24) / 8 : 2.9,
               // pr: navCollapsed && !navHover ? ((collapsedNavWidth - navBorderWidth - 24) / 2 - 5) / 4 : 3.5,
-              display: 'inline-flex',
-              minWidth: 240,
-              width: '100%',
+              // display: 'inline-flex',
+              // minWidth: 240,
+              // width: '100%',
             }}
           >
             {isSubToSub ? null : (

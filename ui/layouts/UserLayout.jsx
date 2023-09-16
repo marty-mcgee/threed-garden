@@ -7,8 +7,8 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import MainLayout from '#/ui/layouts/MainLayout'
 
 // ** Navigation
-import VerticalNavItems from '#/ui/routes/navigation/vertical'
-import HorizontalNavItems from '#/ui/routes/navigation/horizontal'
+import VerticalNavItems from '#/lib/routes/navigation/vertical'
+import HorizontalNavItems from '#/lib/routes/navigation/horizontal'
 // Uncomment the below line (according to the layout type) when using server-side menu
 // import ServerSideVerticalNavItems from './vertical/ServerSideNavItems'
 // import ServerSideHorizontalNavItems from './horizontal/ServerSideNavItems'

@@ -1,6 +1,8 @@
 'use client'
 
 // ** Next Imports
+// import type { NextPage } from 'next'
+import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 
 // ** React Imports
 import { useContext } from 'react'

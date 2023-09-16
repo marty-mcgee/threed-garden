@@ -68,24 +68,26 @@ const AppPage: TNextPageWithProps = (props: any): JSX.Element => {
   const pathname = usePathname()
 
   // ** OnMount (+ optional return OnUnmount)
-  // useEffect(() => {
+  useEffect(() => {
     // user AUTHORIZED?
     if (auth.user && auth.user.role) {
       // get Home URL
       const homeRoute = getHomeRoute(auth.user.role)
       console.debug('✅ user AUTHORIZED', auth.user, 'go to:', homeRoute)
       // redirect authorized user to Home URL
-      router.replace(homeRoute)
+      // router.replace(homeRoute)
+      router.push(homeRoute)
     }
     // user NOT AUTHORIZED!
     else {
       const homeRoute = getHomeRoute('unauthorized')
       console.debug('❌ user NOT AUTHORIZED', auth.user, 'go to:', homeRoute)
       // redirect un-authorized guest to Home URL
-      router.replace(homeRoute)
+      // router.replace(homeRoute)
+      router.push(homeRoute)
     }
-    // return <></>
-  // }, [])
+    // return <><Spinner /></>
+  }, [])
 
 // ==============================================================
 
