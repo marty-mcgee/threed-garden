@@ -77,6 +77,7 @@ const UserDropdown = (props) => {
   const handleLogout = () => {
     logout()
     handleDropdownClose()
+    router.push('/auth/login')
   }
 
   return (

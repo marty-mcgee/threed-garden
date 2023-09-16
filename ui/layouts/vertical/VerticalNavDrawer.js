@@ -3,19 +3,19 @@ import { styled, useTheme } from '@mui/material/styles'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 
 const ThreedSwipeableDrawer = styled(SwipeableDrawer)({
-  overflowX: 'scroll', // hidden | scroll
-  transition: 'width .25s ease-in-out',
-  '& ul': {
-    listStyle: 'none',
-  },
+  // overflowX: 'hidden', // hidden | scroll
+  // transition: 'width .25s ease-in-out',
+  // '& ul': {
+  //   listStyle: 'none',
+  // },
   '& .MuiListItem-gutters': {
-    paddingLeft: 4,
-    paddingRight: 4,
+    paddingLeft: 0,
+    paddingRight: 0,
   },
   '& .MuiDrawer-paper': {
-    left: 'unset',
-    right: 'unset',
-    overflowX: 'scroll', // hidden | scroll
+    // left: 'unset',
+    // right: 'unset',
+    // overflowX: 'hidden', // hidden | scroll
     transition: 'width .25s ease-in-out, box-shadow .25s ease-in-out',
   },
 })
@@ -103,6 +103,9 @@ const Drawer = (props) => {
     },
     onMouseLeave: () => {
       setNavHover(false)
+    },
+    ModalProps: {
+      keepMounted: true, // Better open performance on mobile.
     },
   }
 

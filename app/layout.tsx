@@ -100,7 +100,7 @@ const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
     )
   }
   else if (authGuard) {
-    // console.debug('%c🔱 AuthGuard loading...', ccm.red)
+    console.debug('%c🔱 AuthGuard loading...', ccm.red)
     // console.debug('%c=======================================', ccm.black)
     return (
       <AuthGuard fallback={<Spinner />}>
@@ -178,7 +178,7 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
 
   // ** Hooks
   const auth = useAuth()
-  // console.debug('%c🔑 auth', ccm.orange, auth)
+  console.debug('%c🔑 auth', ccm.orange, auth)
 
   // const { authGuard, guestGuard, acl } = Component // getLayout, setConfig,
   let authGuard = true
@@ -231,7 +231,8 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
   return (
     <ThreeDAppProvider>
       <AuthProvider>
-        <AuthConsumer authGuard={authGuard} guestGuard={guestGuard}>
+        {/* <AuthConsumer authGuard={authGuard} guestGuard={guestGuard}> */}
+          <AuthGuard fallback={<Spinner />}>
           {/* <AclGuard aclAbilities={acl} guestGuard={guestGuard}> */}
             <ApolloProvider client={client}>
               <ReduxProvider store={reduxStore}>
@@ -240,10 +241,25 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
                   <SettingsConsumer>
                     {({ settings }) => (
                       <ThemeRegistry settings={settings}>
+                        {/* not working as expected
                         {
-                          getAppLayout(
+                            getAppLayout(
+                              {children}
+                            )
+                        } */}
+                        {/* try this approach instead... */}
+                        {
+                          (auth.user && auth.user.role) ?
+                          <UserLayout>
                             {children}
-                          )
+                          </UserLayout>
+                        :
+                          // <BlankLayout>
+                          //   {children}
+                          // </BlankLayout>
+                          <UserLayout>
+                            {children}
+                          </UserLayout>
                         }
                       </ThemeRegistry>
                     )}
@@ -252,7 +268,8 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
               </ReduxProvider>
             </ApolloProvider>
           {/* </AclGuard> */}
-        </AuthConsumer>
+          </AuthGuard>
+        {/* </AuthConsumer> */}
       </AuthProvider>
     </ThreeDAppProvider>
   )

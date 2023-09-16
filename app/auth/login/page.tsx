@@ -9,7 +9,8 @@ import { useState } from 'react'
 // ** Next Imports
 // import type { NextPage } from 'next'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link' // useRouter instead for Internal Links
 import Image from 'next/image'
 
 // ** MUI Components
@@ -59,14 +60,10 @@ import FooterIllustrationsV2 from '#/ui/pages/auth/FooterIllustrationsV2'
 import FarmbotDemoSVG from '#/lib/farmbot/FarmbotDemoSVG'
 
 // ** Image Imports
-import logo from '#/lib/assets/images/logos/logo-threedgarden.png'
+import appLogo from '#/lib/assets/images/logos/logo-threedgarden.png'
 
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
-
-// ** Scaffold-ETH Imports
-// import React, { FC } from 'react'
-// import type { TPageProps } from '#/lib/types/TAppProps' // now TNextPageWithProps
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -82,6 +79,19 @@ const appVersion = 'v0.12.0'
 // const appVersion: string = require('package.json').version
 
 // ** Styled Components
+const ContentWrapper = styled(Box)(({ theme }: { theme: any }) => {
+  return {
+    height: '100vh',
+    display: 'flex',
+    // [theme.breakpoints.down('xl')]: {
+    //   width: '100%',
+    // },
+    // [theme.breakpoints.down('md')]: {
+    //   maxWidth: 400,
+    // },
+  }
+})
+
 const SVGWrapper = styled(Box)(({ theme }: { theme: any }) => {
   return {
     width: '100%',
@@ -95,45 +105,18 @@ const SVGWrapper = styled(Box)(({ theme }: { theme: any }) => {
   }
 })
 
-// const LoginIllustrationWrapper = styled(Box)(({ theme }: { theme: any }) => {
-//   return {
-//     padding: theme.spacing(20),
-//     paddingRight: '0 !important',
-//     [theme.breakpoints.down('lg')]: {
-//       padding: theme.spacing(10),
-//     },
-//   }
-// })
-
-// const LoginIllustration = styled('img')(({ theme }: { theme: any }) => {
-//   return {
-//     maxWidth: '48rem',
-//     [theme.breakpoints.down('lg')]: {
-//       maxWidth: '35rem',
-//     },
-//   }
-// })
-
 const RightWrapper = styled(Box)(({ theme }: { theme: any }) => {
   return {
+    padding: 48,
+    height: '100%',
     // display: 'flex',
-    // width: '100%',
-    maxWidth: 400,
+    // flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#90A000', // 'olive', // '#97B553', // 'green', // 'background.paper',
+    maxWidth: 360,
     [theme.breakpoints.up('md')]: {
-      maxWidth: 400,
-    },
-  }
-})
-
-const BoxWrapper = styled(Box)(({ theme }: { theme: any }) => {
-  return {
-    // display: 'flex',
-    // alignItems: 'center',
-    [theme.breakpoints.down('xl')]: {
-      width: '100%',
-    },
-    [theme.breakpoints.down('md')]: {
-      maxWidth: 400,
+      maxWidth: 420,
     },
   }
 })
@@ -180,6 +163,9 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
   // **
   console.debug('%c🥕 LoginPage', ccm.green)
 
+  // useRouter for Internal Links
+  const router = useRouter()
+
   // ** States
   const [showPassword, setShowPassword] = useState(false)
 
@@ -222,19 +208,15 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
 
   // ** Return JSX
   return (
-    <>
-    <Box
+    <ContentWrapper
       className='content-right'
-      sx={{
-        height: '100vh'
-      }}
     >
 
       {/* APP LOGO + TITLE BOX */}
       <Box
         sx={{
-          top: 4,
-          left: 16,
+          top: 8,
+          left: 8,
           display: 'flex',
           position: 'absolute',
           alignItems: 'center',
@@ -242,14 +224,17 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
         }}
       >
         {/* App Logo */}
-        <Link href='/'>
+        {/* <Link href='/'> */}
           <Image
-            src={logo}
+            src={appLogo}
             width={48}
             height={48}
             alt={appConfig.title}
+            onClick={() => router.push('/home')}
+            // onClick={() => router.push('/dashboard')}
+            // onClick={() => router.push('/')}
           />
-        </Link>
+        {/* </Link> */}
         {/* App Name */}
         <Typography
           variant='h6'
@@ -265,7 +250,7 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
         </Typography>
       </Box>
 
-      {!hidden ? (
+      {/* {!hidden ? ( */}
         <Box
           sx={{
             display: 'flex',
@@ -288,214 +273,189 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
           */}
           <FooterIllustrationsV2 />
         </Box>
-      ) : null}
-      <RightWrapper
-        sx={
-          skin === 'bordered' && !hidden ? {
-            borderLeft: `1px solid ${theme.palette.divider}`
-          } :
-          {
-            borderLeft: `3px solid #111111`
-          }
-        }
-      >
-        <Box
-          sx={{
-            p: 8,
-            height: '100%',
-            // display: 'flex',
-            // flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#A0A000', // 'olive', // '#97B553', // 'green', // 'background.paper',
-          }}
-        >
-          <BoxWrapper>
-            <Box sx={{ mb: 6, mt: 1, alignItems: 'center' }}>
-              <TypographyStyled variant='h5'>
-                🌱 Welcome to
-                {appConfig.title}
-                {appVersion}
-              </TypographyStyled>
-              <Typography variant='body2'>Please sign in to start your adventure...</Typography>
-            </Box>
-            <Alert
-              icon={false}
-              sx={{ py: 3, mb: 6, ...bgClasses.primaryLight, '& .MuiAlert-message': { p: 0 } }}
-            >
-              <Typography
-                variant='caption'
-                sx={{ mb: 2, display: 'block', color: 'primary.main' }}
-              >
-                Admin: <strong>mcgee.marty@gmail.com</strong> <br /> Pass: <strong>admin</strong>
-              </Typography>
-              <Typography
-                variant='caption'
-                sx={{ display: 'block', color: 'primary.main' }}
-              >
-                Client: <strong>marty@companyjuice.com</strong> <br /> Pass: <strong>client</strong>
-              </Typography>
-            </Alert>
-            <form
-              noValidate
-              autoComplete='off'
-              onSubmit={handleSubmit(onSubmit)}
-            >
-              <FormControl
-                fullWidth
-                sx={{ mb: 4 }}
-              >
-                <Controller
-                  name='email'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange, onBlur } }) => (
-                    <TextField
-                      autoFocus
-                      label='Email'
-                      value={value}
-                      onBlur={onBlur}
-                      onChange={onChange}
-                      error={Boolean(errors.email)}
-                      placeholder=''
-                    />
-                  )}
-                />
-                {errors.email && <FormHelperText sx={{ color: 'error.main' }}>{errors.email.message}</FormHelperText>}
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel
-                  htmlFor='auth-login-v2-password'
-                  error={Boolean(errors.password)}
-                >
-                  Password
-                </InputLabel>
-                <Controller
-                  name='password'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange, onBlur } }) => (
-                    <OutlinedInput
-                      value={value}
-                      onBlur={onBlur}
-                      label='Password'
-                      onChange={onChange}
-                      id='auth-login-v2-password'
-                      error={Boolean(errors.password)}
-                      type={showPassword ? 'text' : 'password'}
-                      endAdornment={
-                        <InputAdornment position='end'>
-                          <IconButton
-                            edge='end'
-                            onMouseDown={(e: any) => e.preventDefault()}
-                            onClick={() => setShowPassword(!showPassword)}
-                          >
-                            {showPassword ? <EyeOutline /> : <EyeOffOutline />}
-                          </IconButton>
-                        </InputAdornment>
-                      }
-                    />
-                  )}
-                />
-                {errors.password && (
-                  <FormHelperText
-                    sx={{ color: 'error.main' }}
-                    id=''
-                  >
-                    {errors.password.message}
-                  </FormHelperText>
-                )}
-              </FormControl>
-              <Box
-                sx={{
-                  mb: 4,
-                  display: 'flex',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <FormControlLabel
-                  control={<Checkbox />}
-                  label='Remember Me'
-                />
-                <LinkStyled
-                  href='/auth/forgot-password'
-                >
-                  Forgot Password?
-                </LinkStyled>
-              </Box>
-              <Button
-                fullWidth
-                size='large'
-                type='submit'
-                variant='contained'
-                sx={{ mb: 7 }}
-              >
-                Login
-              </Button>
-              <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <Typography
-                  variant='body2'
-                  sx={{ mx: 2 }}
-                >
-                  New on our platform?
-                </Typography>
-                <Typography variant='body2'>
-                  <LinkStyled
-                    href='/auth/register'
-                  >
-                    Create an Account
-                  </LinkStyled>
-                </Typography>
-              </Box>
-              <Divider sx={{ my: 5 }}>or</Divider>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Link href='/'>
-                  <IconButton
-                    component='span'
-                    onClick={(e: any) => e.preventDefault()}
-                  >
-                    <Facebook sx={{ color: '#497ce2' }} />
-                  </IconButton>
-                </Link>
-                <Link href='/'>
-                  <IconButton
-                    component='span'
-                    onClick={(e: any) => e.preventDefault()}
-                  >
-                    <Google sx={{ color: '#db4437' }} />
-                  </IconButton>
-                </Link>
-                <Link href='/'>
-                  <IconButton
-                    component='span'
-                    onClick={(e: any) => e.preventDefault()}
-                  >
-                    <Twitter sx={{ color: '#1da1f2' }} />
-                  </IconButton>
-                </Link>
-                <Link href='/'>
-                  <IconButton
-                    component='span'
-                    onClick={(e: any) => e.preventDefault()}
-                  >
-                    <Github
-                      sx={{ color: (theme: any) => (theme.palette.mode === 'light' ? '#272727' : theme.palette.grey[300]) }}
-                    />
-                  </IconButton>
-                </Link>
-              </Box>
-            </form>
-          </BoxWrapper>
+      {/* ) : null} */}
+
+      <RightWrapper>
+        <Box sx={{ mb: 6, mt: 1, alignItems: 'center' }}>
+          <TypographyStyled variant='h5'>
+            🌱 Welcome to<br/>{appConfig.title} {appVersion}
+          </TypographyStyled>
+          <Typography variant='body2'>Please sign in to start your adventure...</Typography>
         </Box>
+        <Alert
+          icon={false}
+          sx={{ py: 3, mb: 6, ...bgClasses.primaryLight, '& .MuiAlert-message': { p: 0 } }}
+        >
+          <Typography
+            variant='caption'
+            sx={{ mb: 2, display: 'block', color: 'primary.main' }}
+          >
+            Admin: <strong>mcgee.marty@gmail.com</strong> <br /> Pass: <strong>admin</strong>
+          </Typography>
+          <Typography
+            variant='caption'
+            sx={{ display: 'block', color: 'primary.main' }}
+          >
+            Client: <strong>marty@companyjuice.com</strong> <br /> Pass: <strong>client</strong>
+          </Typography>
+        </Alert>
+        <form
+          noValidate
+          autoComplete='off'
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <FormControl
+            fullWidth
+            sx={{ mb: 4 }}
+          >
+            <Controller
+              name='email'
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { value, onChange, onBlur } }) => (
+                <TextField
+                  autoFocus
+                  label='Email'
+                  value={value}
+                  onBlur={onBlur}
+                  onChange={onChange}
+                  error={Boolean(errors.email)}
+                  placeholder=''
+                />
+              )}
+            />
+            {errors.email && <FormHelperText sx={{ color: 'error.main' }}>{errors.email.message}</FormHelperText>}
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel
+              htmlFor='auth-login-v2-password'
+              error={Boolean(errors.password)}
+            >
+              Password
+            </InputLabel>
+            <Controller
+              name='password'
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { value, onChange, onBlur } }) => (
+                <OutlinedInput
+                  value={value}
+                  onBlur={onBlur}
+                  label='Password'
+                  onChange={onChange}
+                  id='auth-login-v2-password'
+                  error={Boolean(errors.password)}
+                  type={showPassword ? 'text' : 'password'}
+                  endAdornment={
+                    <InputAdornment position='end'>
+                      <IconButton
+                        edge='end'
+                        onMouseDown={(e: any) => e.preventDefault()}
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <EyeOutline /> : <EyeOffOutline />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+              )}
+            />
+            {errors.password && (
+              <FormHelperText
+                sx={{ color: 'error.main' }}
+                id=''
+              >
+                {errors.password.message}
+              </FormHelperText>
+            )}
+          </FormControl>
+          <Box
+            sx={{
+              mb: 4,
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+            }}
+          >
+            <FormControlLabel
+              control={<Checkbox />}
+              label='Remember Me'
+            />
+            <LinkStyled
+              href='/auth/forgot-password'
+            >
+              Forgot Password?
+            </LinkStyled>
+          </Box>
+          <Button
+            fullWidth
+            size='large'
+            type='submit'
+            variant='contained'
+            sx={{ mb: 7 }}
+          >
+            Login
+          </Button>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <Typography
+              variant='body2'
+              sx={{ mx: 2 }}
+            >
+              New on our platform?
+            </Typography>
+            <Typography variant='body2'>
+              <LinkStyled
+                href='/auth/register'
+              >
+                Create an Account
+              </LinkStyled>
+            </Typography>
+          </Box>
+          <Divider sx={{ my: 5 }}>or</Divider>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Link href='/'>
+              <IconButton
+                component='span'
+                onClick={(e: any) => e.preventDefault()}
+              >
+                <Facebook sx={{ color: '#497ce2' }} />
+              </IconButton>
+            </Link>
+            <Link href='/'>
+              <IconButton
+                component='span'
+                onClick={(e: any) => e.preventDefault()}
+              >
+                <Google sx={{ color: '#db4437' }} />
+              </IconButton>
+            </Link>
+            <Link href='/'>
+              <IconButton
+                component='span'
+                onClick={(e: any) => e.preventDefault()}
+              >
+                <Twitter sx={{ color: '#1da1f2' }} />
+              </IconButton>
+            </Link>
+            <Link href='/'>
+              <IconButton
+                component='span'
+                onClick={(e: any) => e.preventDefault()}
+              >
+                <Github
+                  sx={{ color: (theme: any) => (theme.palette.mode === 'light' ? '#272727' : theme.palette.grey[300]) }}
+                />
+              </IconButton>
+            </Link>
+          </Box>
+        </form>
       </RightWrapper>
-    </Box>
-    </>
+    </ContentWrapper>
   )
 }
-LoginPage.getLayout = (page: any) => {page} // <BlankLayout>{page}</BlankLayout>
-LoginPage.authGuard = false
-LoginPage.guestGuard = true
+// LoginPage.getLayout = (page: any) => {page} // <BlankLayout>{page}</BlankLayout>
+// LoginPage.authGuard = false
+// LoginPage.guestGuard = true
 
 export default LoginPage

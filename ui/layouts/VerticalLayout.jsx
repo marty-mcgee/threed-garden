@@ -24,11 +24,9 @@ import DatePickerWrapper from '#/ui/styles/react-datepicker'
 
 const VerticalLayoutWrapper = styled('div')({
   display: 'flex', // [MM] THIS IS IMPORTANT !!! flex :)
-  flexGrow: 1,
-  flexShrink: 1,
-  // flexDirection: 'row|column',
-  overflow: 'scroll',
-  minHeight: 'calc(100vh - 128px - 0px)', // '100vh',
+  flexDirection: 'row', // [MM] THIS IS IMPORTANT !!! flex :)
+  // overflow: 'scroll',
+  // minHeight: 'calc(100vh - 128px - 0px)', // '100vh',
   // border: '3px solid pink', // is working here
 })
 
@@ -37,7 +35,7 @@ const MainContentWrapper = styled(Box)({
   // display: 'flex',
   // flexGrow: 1,
   // minWidth: 0,
-  minHeight: 'calc(100vh - 128px - 0px)', // '100vh',
+  // minHeight: 'calc(100vh - 128px - 0px)', // '100vh',
   // maxHeight: 'calc(100vh - 128px - 0px)', // '100vh',
   // flexDirection: 'row|column',
 })

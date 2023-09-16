@@ -1,5 +1,6 @@
 // ** Next Import
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+// import Link from 'next/link' // useRouter instead
 import Image from 'next/image'
 
 // ** MUI Imports
@@ -16,8 +17,8 @@ import RecordCircleOutline from 'mdi-material-ui/MenuOpen'
 // ** Configs
 import appConfig from '#/lib/config/appConfig'
 
-// images
-import brandDark from '#/lib/assets/images/logos/logo-threedgarden-alt.png'
+// ** Assets: Images
+import appLogo from '#/lib/assets/images/logos/logo-threedgarden-alt.png'
 
 // ** Styled Components
 const MenuHeaderWrapper = styled(Box)(({ theme }) => ({
@@ -44,6 +45,10 @@ const StyledLink = styled('a')({
 })
 
 const AppBarHeader = (props) => {
+
+  // useRouter for Internal Links
+  const router = useRouter()
+
   // ** Props
   const {
     hidden,
@@ -106,14 +111,27 @@ const AppBarHeader = (props) => {
     )
 
   return (
-    <MenuHeaderWrapper className='nav-header' sx={{ pl: menuHeaderPaddingLeft() }}>
+    <MenuHeaderWrapper
+      className='nav-header'
+      // sx={{
+      //   pl: menuHeaderPaddingLeft()
+      // }}
+    >
       {userVerticalNavMenuBranding ? (
         userVerticalNavMenuBranding(props)
       ) : (
         <>
-          <StyledLink href='/'>
-            <Image src={brandDark.src} alt={appConfig.title} width={48} height={48} />
-          </StyledLink>
+          {/* <StyledLink href='/'> */}
+            <Image
+              src={appLogo}
+              width={48}
+              height={48}
+              alt={appConfig.title}
+              // onClick={() => router.push('/home')}
+              // onClick={() => router.push('/dashboard')}
+              onClick={() => router.push('/')}
+            />
+          {/* </StyledLink> */}
           <IconButton
             disableRipple
             disableFocusRipple

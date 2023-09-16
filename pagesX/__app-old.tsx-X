@@ -44,8 +44,8 @@ import rtlPlugin from 'stylis-plugin-rtl'
 // images
 import favicon from '#/lib/assets/images/logos/favicon.png'
 import appleIcon from '#/lib/assets/images/logos/apple-icon.png'
-import brandLight from '#/lib/assets/images/logos/logo-threedgarden.png'
-import brandDark from '#/lib/assets/images/logos/logo-threedgarden-alt.png'
+import appLogoLight from '#/lib/assets/images/logos/logo-threedgarden.png'
+import appLogoDark from '#/lib/assets/images/logos/logo-threedgarden-alt.png'
 
 // dashboard components
 import MDBox from '#/lib/mui/MDBox'
@@ -53,7 +53,7 @@ import MDBox from '#/lib/mui/MDBox'
 // dashboard examples
 
 // dashboard routes
-// import pageRoutes from "~/ui/routes/page.routes"
+// import pageRoutes from "~/lib/routes/page.routes"
 // const routes = pageRoutes
 
 // NOT HERE PLEASE
@@ -167,7 +167,7 @@ const App: FunctionComponent<IAppPropsWithLayoutEmotion> = (props: AppPropsWithL
   // ========================================================
   // components
 
-  const brandIcon = (transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandLight
+  const brandIcon = (transparentSidenav && !darkMode) || whiteSidenav ? appLogoDark : appLogoLight
 
   const configsButton = (
     <MDBox

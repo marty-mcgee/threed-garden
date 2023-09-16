@@ -2,9 +2,9 @@
 import { useRef, useState } from 'react'
 
 // ** MUI Import
+import { styled, useTheme } from '@mui/material/styles'
 import List from '@mui/material/List'
 import Box from '@mui/material/Box'
-import { styled, useTheme } from '@mui/material/styles'
 
 // ** Third Party Components
 import PerfectScrollbar from 'react-perfect-scrollbar'
@@ -151,10 +151,10 @@ const VerticalNavigation = (props) => {
             <List
               className='nav-items'
               sx={{
-                pt: 0,
+                // pt: 0,
                 transition: 'padding .25s ease',
-                '& > :first-of-type': { mt: '0' },
-                pr: !navCollapsed || (navCollapsed && navHover) ? 4.5 : 1.25,
+                // '& > :first-of-type': { mt: '0' },
+                // pr: !navCollapsed || (navCollapsed && navHover) ? 4.5 : 1.25,
               }}
             >
               <VerticalNavItems
