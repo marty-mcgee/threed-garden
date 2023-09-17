@@ -111,7 +111,7 @@ const VerticalNavigation = (props) => {
       )} 75%,transparent)`
     }
   }
-  const ScrollWrapper = hidden ? Box : PerfectScrollbar
+  const ScrollWrapper = hidden ? Box : Box // PerfectScrollbar
 
   return (
     <VerticalNavDrawer {...props}>
@@ -124,18 +124,20 @@ const VerticalNavigation = (props) => {
           sx={{ background: shadowBgColor() }}
         />
       )}
-      <Box sx={{
-        minHeight: '70vh',
-        position: 'relative',
-        overflow: 'visible',
-        border: '3px solid #111111',
-      }}>
+      <Box
+        sx={{
+          minHeight: '70vh',
+          position: 'relative',
+          overflow: 'hidden',
+          border: '3px solid #111111',
+        }}
+      >
         <ScrollWrapper
-          // containerRef={ref => handleInfiniteScroll(ref)}
+          containerRef={ref => handleInfiniteScroll(ref)}
           {...(hidden
             ? {
                 onScroll: (container) => scrollMenu(container),
-                sx: { height: '100%', overflowY: 'auto', overflowX: 'scroll' },
+                sx: { height: '100%', overflowY: 'auto', overflowX: 'hidden' },
               }
             : {
                 options: { wheelPropagation: false },
