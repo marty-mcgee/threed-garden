@@ -10,12 +10,14 @@ React + TypeScript + ThreeJS app using Material UI v5 on NextJS v12, Apollo Clie
 
 ## For Developers
 
-- requires pnpm: `npm install -G pnpm`
+- currently requires yarn: `npm install -G yarn`
+- (you can instead, of course, use pnpm or npm easily)
 
-1. install: `pnpm i`
-2. run: `pnpm dev`
-3. build: `pnpm build`
-4. deploy: `pnpm deploy`
+1. install: `yarn install`
+2. run: `yarn dev`
+3. build: `yarn build`
+3. start: `yarn start`
+4. deploy: `yarn deploy`
 
 ====
 
