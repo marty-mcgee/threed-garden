@@ -1,10 +1,10 @@
-# folders
-lib/
-node_modules/
-node_modules
-dist
-coverage
-# files
+#--- folders
+.next/*
+lib/*
+lib
+./lib
+./lib/*
+#--- files
 **/*.less
 **/*.css
 **/*.scss
@@ -12,3 +12,9 @@ coverage
 **/*.png
 **/*.svg
 **/generated/**/*
+#--- testing mm
+#--- (nope)
+# **/*.ts
+# **/*.tsx
+# *.ts
+# *.tsx
