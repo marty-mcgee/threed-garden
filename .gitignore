@@ -1,137 +1,66 @@
-# See https://help.github.com/articles/ignoring-files/
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# node dependencies, yarn, etc
-**/node_modules
-node_modules
-package-lock.json
-pnpm-lock.yaml
-.pnpm
-!yarn.lock
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-.pnp
+# dependencies
+/node_modules
+/.pnp
 .pnp.js
-.pnp.*
-.eslintcache
 
-# os junk
-__MACOSX
+# testing
+/coverage
+
+# production
+/build
+
+# misc
 .DS_Store
-desktop.ini
-Thumbs.db
-
-# env
 .env
-.env.local
-
-# sensitive policy breakers
-*.cert
-*.crt
+# .env.*
 *.pem
+*.crt
 .npmrc
 
-# output for production
-build
-dist
-dist-ssr
-*.local
+# assets
+public/demo
+public/demo/objects
+
+.env.local
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# lock files
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# vs code
+*.code-workspace
 
 # next
 .next
 /.next/
 /out/
 next-env.d.ts
-**/.vercel/**/*
-**/.next/**/*
-**/out/**/*
 
-# assets | static
-assets/*
-!assets/garage
-!assets/libraries
-!assets/media
-!assets/sfx
-assets/threeds/objects
-
-# logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# editor dirs | files
-.idea
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-.netlify
-
-# testing
-coverage
-
-# temp | scratchpad | testing
-temp*
-_drafts
-
-# vscode
-*.code-workspace
-
-# custom
-MARTY.md
-@threed
-_sandbox
-garage
-packages/*.zip
-packages/threed-garden
-# !packages/app-playground-main
-!packages/next13-app-ts
-packages/platforms-main
-!packages/starter-app-ts
-packages/starter-app-ts/lib/angular8
-design
-ssl
-
-# scaffold-eth
+# typescript
 *.tsbuildinfo
-*.stackdump
-.yalc
-yalc.lock
-packages/vite-app-ts/dist
-# packages/**/data
-# build
-# dist
-**/generated/**/*
 
-# solidity
-packages/solidity-ts/cache
-packages/solidity-ts/generated
-packages/common/src/generated
-cache
-artifacts
-tenderly.yaml
-
-# secrets / env
-**/.env.*.local
-**/*.secret
-**/aws.json
-!packages/solidity-ts/mnemonics/README.md
-**/mnemonics/*.secret
-**/mnemonics/*.txt
-
-#subgraph
-packages/subgraph/config/config.json
-packages/subgraph/subgraph.yaml
-packages/subgraph/generated
-packages/subgraph/abis/*
+#amplify-do-not-edit-begin
+/amplify
+amplify/\#current-cloud-backend
+amplify/.config/local-*
+amplify/logs
+amplify/mock-data
+amplify/backend/amplify-meta.json
+amplify/backend/.temp
+awsconfiguration.json
+amplifyconfiguration.json
+amplifyconfiguration.dart
+amplify-build-config.json
+amplify-gradle-config.json
+amplifytools.xcconfig
+.secret-*
+**.sample
+#amplify-do-not-edit-end
