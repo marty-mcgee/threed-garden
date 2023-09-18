@@ -1,6 +1,6 @@
 # [🌱 React Garden TypeScript Material UI App](https://github.com/marty-mcgee/react-garden)
 
-React + TypeScript + ThreeJS app using Material UI v5 on NextJS v12, Apollo Client v3, GraphQL + WordPress REST APIs, for ThreeD web development.. a "Design Dashboard" for developing Three JS components + apps.
+React + TypeScript + ThreeJS app using Material UI v5 on NextJS v13.4, Apollo Server+Client v3, GraphQL, WordPress REST API, for ThreeD web development.. a "Design Dashboard" for developing Three-Dimensional JavaScript Objects, Components, + ETH apps (dapps).
 
 ## Live Demo
 
@@ -10,14 +10,14 @@ React + TypeScript + ThreeJS app using Material UI v5 on NextJS v12, Apollo Clie
 
 ## For Developers
 
-- currently requires yarn: `npm install -G yarn`
+- app currently requires yarn: `npm install -G yarn`
 - (you can instead, of course, use pnpm or npm easily)
 
-1. install: `yarn install`
-2. run: `yarn dev`
-3. build: `yarn build`
-3. start: `yarn start`
-4. deploy: `yarn deploy`
+1. install app: `yarn install`
+2. run in local dev env: `yarn dev`
+3. build for production: `yarn build`
+4. start in production env: `yarn start`
+4. deploy to preset location: `yarn deploy`
 
 ====
 
