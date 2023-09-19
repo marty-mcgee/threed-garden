@@ -65,6 +65,7 @@ import ToolIconAddText from '@mui/icons-material/TextFields'
 // import * as THREE from 'three'
 // ** Three JS Controls
 // ** Three JS Loaders
+import { Loader } from '@react-three/drei'
 // -- use React Three Fiber R3F hooks: useFBX, useOBJ, etc --
 // import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 // import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -73,7 +74,6 @@ import ToolIconAddText from '@mui/icons-material/TextFields'
 // ** Three JS Libraries
 // import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
 // use tween at all ??
-import { Loader } from '@react-three/drei'
 
 // ** ThreeD R3F Imports
 // import { Canvas } from '@react-three/fiber'
@@ -111,7 +111,7 @@ const debug: boolean = true
 const debugPhysics: boolean = true
 const debugAnimations: boolean = true
 
-const appVersion = 'v0.12.0'
+const appVersion = 'v0.12.0-a'
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
 // const appVersion = process.env.npm_package_version
 // const appVersion: string = require('package.json').version
