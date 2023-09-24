@@ -23,7 +23,7 @@ import ThreeDGarden from '#/lib/threed/ThreeDGarden'
 //   ssr: false,
 // })
 
-const ParticipatePage = () => {
+const ParticipatePage: TNextPageWithProps = () => {
   // ** Hooks
   const ability = useContext(AbilityContext)
 

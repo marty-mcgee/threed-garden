@@ -239,7 +239,7 @@ const LoginPage: TNextPageWithProps = (): JSX.Element => {
         <Typography
           variant='h6'
           sx={{
-            ml: 3,
+            ml: 2,
             lineHeight: 1,
             fontWeight: 600,
             textTransform: 'uppercase',
