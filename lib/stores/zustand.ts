@@ -1,6 +1,6 @@
 // ** Zustand + Zustood + Immer Imports
 // state management (instead of React.useState or Redux)
-import create from 'zustand'
+import { create } from 'zustand'
 import shallow from 'zustand/shallow'
 import { createStore } from '@udecode/zustood'
 

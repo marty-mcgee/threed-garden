@@ -7,7 +7,7 @@ import { IScene } from '#/lib/types/interfaces'
 const ScenesPage: NextPage<{ scenes: IScene[] }> = ({ scenes }) => (
   <div>
     {scenes.map((scene: IScene) => (
-      <div key={scene.title.rendered}>{scene.title.rendered}</div>
+      <div key={scene.title.rendered}>🦉 {scene.title.rendered}</div>
     ))}
   </div>
 )

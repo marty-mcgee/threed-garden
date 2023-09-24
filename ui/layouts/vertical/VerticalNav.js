@@ -133,7 +133,7 @@ const VerticalNavigation = (props) => {
         }}
       >
         <ScrollWrapper
-          containerRef={ref => handleInfiniteScroll(ref)}
+          // containerRef={ref => handleInfiniteScroll(ref)}
           {...(hidden
             ? {
                 onScroll: (container) => scrollMenu(container),
@@ -141,7 +141,7 @@ const VerticalNavigation = (props) => {
               }
             : {
                 options: { wheelPropagation: false },
-                onScrollY: (container) => scrollMenu(container),
+                onScroll: (container) => scrollMenu(container),
               })}
         >
           {beforeVerticalNavMenuContent && beforeVerticalNavMenuContentPosition === 'static'
