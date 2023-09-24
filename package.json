@@ -1,5 +1,5 @@
 {
-  "name": "@threed/threed-app-ts",
+  "name": "threed-garden",
   "version": "0.15.0-alpha.0",
   "description": "React + TypeScript + Three.js app using Material UI for Next.js 13, Apollo Client + Zustand, GraphQL + WordPress REST APIs, for ThreeD web development.. a part of the threed.ai code family.",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
