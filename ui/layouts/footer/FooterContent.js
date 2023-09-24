@@ -30,13 +30,13 @@ const FooterContent = () => {
             target='_blank'
             href='https://companyjuice.com/terms-conditions/'
           >
-            License
+            🦇 License
           </Link>
           <Link
             target='_blank'
             href='https://github.com/marty-mcgee/threed-garden/discussions/'
           >
-            Support
+            🦉 Support
           </Link>
         </Box>
       )}
