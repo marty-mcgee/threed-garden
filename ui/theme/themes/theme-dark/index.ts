@@ -58,7 +58,7 @@ import formLabel from '#/ui/theme/themes/theme-dark/components/form/formLabel'
 import checkbox from '#/ui/theme/themes/theme-dark/components/form/checkbox'
 import radio from '#/ui/theme/themes/theme-dark/components/form/radio'
 import autocomplete from '#/ui/theme/themes/theme-dark/components/form/autocomplete'
-import flatpickr from '#/ui/theme/themes/theme-dark/components/flatpickr'
+// import flatpickr from '#/ui/theme/themes/theme-dark/components/flatpickr'
 import container from '#/ui/theme/themes/theme-dark/components/container'
 import popover from '#/ui/theme/themes/theme-dark/components/popover'
 import buttonBase from '#/ui/theme/themes/theme-dark/components/buttonBase'
@@ -89,7 +89,7 @@ export default createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         ...globals,
-        ...flatpickr,
+        // ...flatpickr,
         ...container,
       },
     },
