@@ -7,7 +7,7 @@ import { Suspense, useState } from 'react'
 import { useRef } from 'react'
 
 import * as THREE from 'three'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { Canvas, extend, useFrame, useThree } from '@react-three/fiber'
 import { softShadows } from '@react-three/drei' // softShadows()
 import { OrbitControls, TransformControls, Preload, Environment, Html, useProgress } from '@react-three/drei'
 import { useGLTF, PresentationControls, ContactShadows } from '@react-three/drei'
@@ -17,26 +17,26 @@ import { Stage, BakeShadows } from '@react-three/drei'
 
 // import AppPage from '#/lib/threed/pages/_app-page'
 // import BoxPage from '#/lib/threed/pages/box-page'
-import BoxComponent from '#/lib/threed/components/canvas/Box'
+import BoxComponent from '#/lib/threed/components/box'
 // import ShaderPage from '#/lib/threed/pages/shader-page'
-import ShaderComponent from '#/lib/threed/components/canvas/Shader'
+import ShaderComponent from '#/lib/threed/components/shader'
 
 // ** ThreeD Imports
-import ThreeD from '#/lib/threed/components/canvas/Nouns/ThreeD'
+import ThreeD from '#/lib/threed/components/nouns/ThreeD'
 
 // ** ThreeD Object Example Imports
-// import StacyApp from '~/lib/threed/components/canvas/Examples/StacyApp'
-import Stacy from '~/lib/examples/Stacy/Stacy'
-// import Watch from '~/lib/examples/Watch/Watch'
-// import CoffeeCup from '~/lib/examples/CoffeeCup/CoffeeCup'
-// import JourneyLevel from '~/lib/examples/JourneyLevel/App'
-// import Shoes from '~/lib/examples/Shoes/App'
-import TransformModel from '~/lib/examples/TransformModel/App'
-import Shoe from '~/lib/examples/Shoes/Shoe'
+// import StacyApp from '~/lib/threed/components/examples/Stacy/StacyApp'
+import Stacy from '~/lib/threed/components/examples/Stacy/Stacy'
+// import Watch from '~/lib/threed/components/examples/Watch/Watch'
+// import CoffeeCup from '~/lib/threed/components/examples/CoffeeCup/CoffeeCup'
+// import JourneyLevel from '~/lib/threed/components/examples/JourneyLevel/App'
+// import Shoes from '~/lib/threed/components/examples/Shoes/App'
+import TransformModel from '~/lib/threed/components/examples/TransformModel/App'
+import Shoe from '~/lib/threed/components/examples/Shoes/Shoe'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
-console.debug('%c~ccm', ccm)
+// console.debug('%c~ccm', ccm)
 
 // ==============================================================
 // ** VARIABLES
