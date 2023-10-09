@@ -23,16 +23,15 @@ import ShaderComponent from '#/lib/threed/components/shader'
 
 // ** ThreeD Imports
 import ThreeD from '#/lib/threed/components/nouns/ThreeD'
-
-// ** ThreeD Object Example Imports
+import Character from '~/lib/threed/components/nouns/Character'
 // import StacyApp from '~/lib/threed/components/examples/Stacy/StacyApp'
-import Stacy from '~/lib/threed/components/examples/Stacy/Stacy'
+// import Stacy from '~/lib/threed/components/examples/Stacy/Stacy'
 // import Watch from '~/lib/threed/components/examples/Watch/Watch'
 // import CoffeeCup from '~/lib/threed/components/examples/CoffeeCup/CoffeeCup'
 // import JourneyLevel from '~/lib/threed/components/examples/JourneyLevel/App'
 // import Shoes from '~/lib/threed/components/examples/Shoes/App'
-import TransformModel from '~/lib/threed/components/examples/TransformModel/App'
-import Shoe from '~/lib/threed/components/examples/Shoes/Shoe'
+// import TransformModel from '~/lib/threed/components/examples/TransformModel/App'
+// import Shoe from '~/lib/threed/components/examples/Shoes/Shoe'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
@@ -205,7 +204,16 @@ export default function ThreeDCanvas({ models, children }) {
           azimuth={[-Math.PI / 1.4, Math.PI / 2]}
         >
           {/* <StacyApp position={[1.25, 1, 3.25]} scale={3.0} /> */}
-          <Stacy position={[1.25, 0.7, 3.25]} scale={5.0} />
+          {/* <Stacy position={[1.25, 0.7, 3.25]} scale={5.0} /> */}
+          <Character
+            type='gardener'
+            state={state}
+            threedId={2}
+            threed={{}}
+            position={[1.25, 0.7, 3.25]}
+            rotation={[0, 90, 0]}
+            scale={5.0}
+          />
         </PresentationControls>
 
         {/* Camera Action Rig */}

@@ -39,8 +39,8 @@ const defaults = {
   // set a default file to load for Model (for testing)
   // fileUrlDefault: '/objects/examples/compressed.glb' | '/objects/examples/compressed-v002.glb' |
   fileUrlDefault:
-    'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx',
-  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_01.fbx',
+  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx',
+  'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_01.fbx',
   // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/FBX/SM_Prop_Bed_01.fbx',
 
   fileNameDefault: 'NounTitleFromAPI.ext',
@@ -49,7 +49,7 @@ const defaults = {
   // node settings
 
   // Table | Rocket003 | Headphones | DNA | Curly | Notebook | Roundcube001 | VR_Headset | Zeppelin
-  nodeNameDefault: 'Demo Farm: McGee Ranch',
+  nodeNameDefault: 'Demo Character: Male Farmer',
 
   // rotation: 1.570796 radians = 90 degrees
   nodeRotationDefault: [1.570796, 0, 0], // [0, 0, 0],
@@ -58,10 +58,10 @@ const defaults = {
 // ==============================================================
 // ** COMPONENTS
 
-function ThreeD({ ...props }) {
+function Character({ ...props }) {
   const { state, threedId, threed } = props
 
-  console.debug('THREED: ThreeD(state, threedId, threed)', state, threedId, threed)
+  console.debug('THREED: Character(state, threedId, threed)', state, threedId, threed)
 
   // map threed to THREED, to pass on to Model
   const THREED = {
@@ -142,4 +142,4 @@ function ThreeD({ ...props }) {
   )
 }
 
-export default ThreeD
+export default Character
