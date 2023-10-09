@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.15.0-alpha.2",
+  "version": "0.15.0-alpha.3",
   "description": "React + TypeScript + Three.js app using Material UI for Next.js 13, Apollo Client + Zustand, GraphQL + WordPress REST APIs, for ThreeD web development.. a part of the threed.ai code family.",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
@@ -209,6 +209,7 @@
     "regenerator-runtime": "0.13.9",
     "stylis": "^4.1.1",
     "stylis-plugin-rtl": "github:marty-mcgee/stylis-plugin-rtl#main",
+    "tailwindcss": "^3.3.3",
     "yup": "^1.2.0"
   },
   "keywords": [
