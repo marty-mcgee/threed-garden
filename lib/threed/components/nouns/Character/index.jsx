@@ -28,7 +28,8 @@ const defaults = {
   // group settings
 
   // rotation: 1.570796 radians = 90 degrees
-  groupRotationDefault: [-1.570796, 0, 0], // [0, 0, 0],
+  // groupRotationDefault: [-1.570796, 0, 0],
+  groupRotationDefault: [0, 0, 0],
 
   //
   // file settings
@@ -41,6 +42,7 @@ const defaults = {
   fileUrlDefault:
   // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx',
   'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_01.fbx',
+  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_Old_01.fbx',
   // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/FBX/SM_Prop_Bed_01.fbx',
 
   fileNameDefault: 'NounTitleFromAPI.ext',
@@ -49,10 +51,11 @@ const defaults = {
   // node settings
 
   // Table | Rocket003 | Headphones | DNA | Curly | Notebook | Roundcube001 | VR_Headset | Zeppelin
-  nodeNameDefault: 'Demo Character: Male Farmer',
+  nodeNameDefault: 'Demo Character: Synty Polygon Farmer',
 
   // rotation: 1.570796 radians = 90 degrees
-  nodeRotationDefault: [1.570796, 0, 0], // [0, 0, 0],
+  // nodeRotationDefault: [1.570796, 0, 0],
+  nodeRotationDefault: [0, 0, 0],
 }
 
 // ==============================================================
