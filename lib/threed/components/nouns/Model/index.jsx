@@ -158,12 +158,12 @@ function Model({ ...props }) {
   useCursor(isHovered)
 
   // ==============================================================
-  // ANIMATIONS (FOR ALL MODELS)
+  // ANIMATIONS (FOR ALL MODELS !!!)
 
-  useFrame(({ clock }) => {
-    const a = clock.getElapsedTime()
-    model.ref.current.rotation.x = a
-  })
+  // useFrame(({ clock }) => {
+  //   const a = clock.getElapsedTime()
+  //   model.ref.current.rotation.x = a
+  // })
 
   // ==============================================================
   // ** RETURN JSX
