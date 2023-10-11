@@ -8,7 +8,7 @@ import Dom from '#/ui/dom'
 
 // ==============================================================
 // CUSTOM IMPORT (SSR true|false)
-const LCanvas = dynamic(() => import('#/lib/threed/components/canvas/canvas'), {
+const LCanvas = dynamic(() => import('#/lib/threed/components/canvas'), {
   ssr: true,
 })
 

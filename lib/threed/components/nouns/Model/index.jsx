@@ -1,6 +1,6 @@
 import { proxy, useSnapshot } from 'valtio'
-import { useState } from 'react'
-import { useThree } from '@react-three/fiber'
+import { useState, useRef } from 'react'
+import { useThree, useFrame } from '@react-three/fiber'
 import {
   // ContactShadows,
   useCursor,
@@ -12,12 +12,11 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 // import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/lib/utils/console-colors'
+import ccm from '#/lib/utils/console-colors'
 
 // ** ThreeD Model -||-
 function Model({ ...props }) {
-  // {...props} OR (props, {}) ???
-  //
+  // **
   // deconstruct arguments from props
   const { state, threed, name, file, doReturnOne, doReturnEach, doReturnAll } = props
   const modes = ['translate', 'rotate', 'scale']
@@ -30,6 +29,7 @@ function Model({ ...props }) {
 
   // this model = threed_threed.model -||-
   const model = {
+    ref: useRef(),
     state: state, // for funzees
     name: name,
     file: file ? file : '',
@@ -84,14 +84,14 @@ function Model({ ...props }) {
 
   // fetch the file (GLTF, FBX, OBJ, etc)
   if (model.isSupported) {
-    console.debug('%cmodel.isSupported: true', ccm1)
-    console.debug(`%c====================================`, ccm5)
+    console.debug('%cmodel.isSupported: true', ccm.green)
+    console.debug(`%c====================================`, ccm.black)
     if (model.isObject3D) {
       // FBX
       if (model.isFBX) {
         const nodes = useFBX(model.file)
-        console.debug('%cnodes: fbx', ccm4, nodes)
-        console.debug(`%c====================================`, ccm5)
+        console.debug('%cnodes: fbx', ccm.blue, nodes)
+        console.debug(`%c====================================`, ccm.black)
         if (nodes) {
           model.nodes = nodes
           model.isReady = true
@@ -102,8 +102,8 @@ function Model({ ...props }) {
       else if (model.isOBJ) {
         // const nodes = useOBJ(model.file)
         const nodes = new OBJLoader().load(model.file)
-        console.debug('%cnodes: obj', ccm4, nodes)
-        console.debug(`%c====================================`, ccm5)
+        console.debug('%cnodes: obj', ccm.blue, nodes)
+        console.debug(`%c====================================`, ccm.black)
         if (nodes) {
           model.nodes = nodes
           model.isReady = true
@@ -116,8 +116,8 @@ function Model({ ...props }) {
         // file is cached/memoized; it only gets loaded and parsed once
         // const file = '/objects/examples/compressed-v002.glb'
         const { nodes } = useGLTF(model.file)
-        console.debug('%cnodes: gltf', ccm4, nodes)
-        console.debug(`%c====================================`, ccm5)
+        console.debug('%cnodes: gltf', ccm.blue, nodes)
+        console.debug(`%c====================================`, ccm.black)
         if (nodes) {
           // FILTER (LOOP OVER) NODES {Object.keys}
           // to get the single node you are asking for
@@ -143,13 +143,13 @@ function Model({ ...props }) {
         }
       }
     }
-    // console.debug(`%c====================================`, ccm5)
+    // console.debug(`%c====================================`, ccm.black)
   } else {
-    console.debug('%cmodel.isSupported: false', ccm2)
-    console.debug(`%c====================================`, ccm5)
+    console.debug('%cmodel.isSupported: false', ccm.yellow)
+    console.debug(`%c====================================`, ccm.black)
   }
-  console.debug('%cmodel', ccm1, model)
-  console.debug(`%c====================================`, ccm5)
+  console.debug('%cmodel', ccm.green, model)
+  console.debug(`%c====================================`, ccm.black)
 
   // ==============================================================
 
@@ -158,11 +158,19 @@ function Model({ ...props }) {
   useCursor(isHovered)
 
   // ==============================================================
+  // ANIMATIONS (FOR ALL MODELS)
+
+  useFrame(({ clock }) => {
+    const a = clock.getElapsedTime()
+    model.ref.current.rotation.x = a
+  })
+
+  // ==============================================================
   // ** RETURN JSX
 
   if (model.isReady) {
-    // console.debug(`%cdraw([nodes]): ${model.type}`, ccm4, model.nodes)
-    // console.debug(`%c====================================`, ccm5)
+    // console.debug(`%cdraw([nodes]): ${model.type}`, ccm.blue, model.nodes)
+    // console.debug(`%c====================================`, ccm.black)
     // return GLTF node
     if (model.isGLTF) {
       const model_name = model.nodes[model.name].name
@@ -171,6 +179,7 @@ function Model({ ...props }) {
       return (
         <mesh
           name={model_name}
+          ref={model.ref}
           // Click sets the mesh as the new target
           onClick={(e) => (e.stopPropagation(), (state.current = model_name))}
           // If a click happened but this mesh wasn't hit we null out the target,
@@ -197,6 +206,8 @@ function Model({ ...props }) {
       const model_material = model.nodes.material
       return (
         <primitive
+          name={model_name}
+          ref={model.ref}
           object={model.nodes}
           position={model.group_position}
           rotation={model.group_rotation}
@@ -204,6 +215,7 @@ function Model({ ...props }) {
         />
         // <mesh
         //   name={model_name}
+        //   ref={model.ref}
         //   // Click sets the mesh as the new target
         //   onClick={(e) => (e.stopPropagation(), (state.current = model_name))}
         //   // If a click happened but this mesh wasn't hit we null out the target,
@@ -225,14 +237,20 @@ function Model({ ...props }) {
     }
     // return OBJ node
     else if (model.isOBJ) {
-      return <mesh></mesh>
+      return (
+        <mesh
+          ref={model.ref}
+        />
+      )
     }
   }
-  // default return 'error sphere' mesh object, with original model.name and props
+  // DEFAULT RETURN
+  // 'error sphere' mesh object, with original model.name and props
   // else {
   return (
     <mesh
       name={model.name}
+      ref={model.ref}
       // Click sets the mesh as the new target
       onClick={(e) => (
         e.stopPropagation(),

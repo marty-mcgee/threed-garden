@@ -1,3 +1,6 @@
+# import { gql, useQuery } from '@apollo/client'
+
+# const GetPlans = gql`
 query GetPlans ($first: Int, $last: Int, $after: String, $before: String) {
   plans (first: $first, last: $last, after: $after, before: $before) {
     pageInfo {
@@ -43,3 +46,4 @@ query GetPlans ($first: Int, $last: Int, $after: String, $before: String) {
   #   nodes
   # }
 }
+# `

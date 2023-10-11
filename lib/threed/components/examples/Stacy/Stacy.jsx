@@ -24,7 +24,7 @@ export default function Model(props) {
   // Animate the selection halo
   const { color, scale } = useSpring({
     scale: hovered ? [1.15, 1.15, 1] : [1, 1, 1],
-    color: hovered ? 'hotpink' : 'aquamarine',
+    color: hovered ? '#ff6d6d' : '#569AFF',
   })
 
   // Change cursor on hover-state
