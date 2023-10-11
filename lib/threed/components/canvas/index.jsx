@@ -3,8 +3,7 @@
 
 import { proxy, useSnapshot } from 'valtio'
 
-import { Suspense, useState } from 'react'
-import { useRef } from 'react'
+import { Suspense, useState, useRef } from 'react'
 
 import * as THREE from 'three'
 import { Canvas, extend, useFrame, useThree } from '@react-three/fiber'
@@ -79,6 +78,7 @@ function ThreeDControls() {
 }
 
 export default function ThreeDCanvas({ models, children }) {
+  // **
   // inject models inside Suspense groups
   if (models) {
     console.debug('models', models)
@@ -87,8 +87,14 @@ export default function ThreeDCanvas({ models, children }) {
     }
   }
 
+  // create React references
+  const refCanvas = useRef()
+  const refThreeD = useRef()
+  const refCharacter = useRef()
+
   return (
     <Canvas
+      ref={refCanvas}
       camera={{ position: [-10, 10, 100], fov: 50 }}
       dpr={[1, 2]}
       shadows
@@ -207,6 +213,7 @@ export default function ThreeDCanvas({ models, children }) {
           {/* <Stacy position={[1.25, 0.7, 3.25]} scale={5.0} /> */}
           <Character
             type='gardener'
+            ref={refCharacter}
             state={state}
             threedId={2}
             threed={{}}
@@ -235,7 +242,7 @@ export default function ThreeDCanvas({ models, children }) {
 
         {/* [MM] HEY HEY HEY */}
         {/* NEED TO SEND A THREED_SCENE TO A CANVAS, BUT THIS IS FINE FOR NOW */}
-        <ThreeD state={state} threedId={1} threed={{}} />
+        <ThreeD ref={refThreeD} state={state} threedId={1} threed={{}} />
         {/* [MM] HEY HEY HEY */}
 
         {/* <Stage environment="forest" intensity={0.7}> */}
@@ -293,6 +300,7 @@ export default function ThreeDCanvas({ models, children }) {
 //   )
 // }
 
+// EXAMPLE ANIMATION using hook 'useFrame' (with 'useRef' references)
 function ActionRig() {
   return useFrame((state) => {
     state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, 1 + state.mouse.x / 4, 0.075)

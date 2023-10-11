@@ -1,6 +1,6 @@
 import { proxy, useSnapshot } from 'valtio'
-import { useState } from 'react'
-import { useThree } from '@react-three/fiber'
+import { useState, useRef } from 'react'
+import { useThree, useFrame } from '@react-three/fiber'
 import { ContactShadows, useCursor, useGLTF, useFBX, useOBJ } from '@react-three/drei'
 
 import Model from '#/lib/threed/components/nouns/Model'
@@ -64,14 +64,16 @@ const defaults = {
 // ** COMPONENTS
 
 function Character({ ...props }) {
-  const { state, threedId, threed } = props
 
-  console.debug('THREED: Character(state, threedId, threed)', state, threedId, threed)
+  const { ref, state, threedId, threed } = props
+
+  console.debug('THREED: Character(ref, state, threedId, threed)', ref, state, threedId, threed)
 
   // map threed to THREED, to pass on to Model
   const THREED = {
     // === threed
-    name: 'THREED YAY -- HEY HEY HEY',
+    name: 'THREED -- CHARACTER LOADED',
+    ref: useRef(),
     // { data: 'gql/rest wp endpoint {threed_threed}' }
     group: {
       group_id: 0,
@@ -101,16 +103,26 @@ function Character({ ...props }) {
   }
   console.debug('THREED ready for Group of Models: ', THREED)
 
+  // ==============================================================
+  // ANIMATIONS (FOR ALL CHARACTERS)
+
+  useFrame(({ clock }) => {
+    const a = clock.getElapsedTime()
+    THREED.ref.current.rotation.x = a
+  })
+
   // return R3F JSX
   return (
     <>
       <group
         position={THREED.group.group_position}
         rotation={THREED.group.group_rotation}
-        scale={THREED.group.group_scale}>
+        scale={THREED.group.group_scale}
+      >
         <Model
           state={state}
           threed={THREED}
+          ref={THREED.ref}
           file={THREED.files[0].file_url}
           name={THREED.files[0].nodes[0].node_name}
           position={THREED.files[0].nodes[0].node_position}
