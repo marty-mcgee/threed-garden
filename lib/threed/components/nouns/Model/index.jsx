@@ -18,7 +18,7 @@ import ccm from '#/lib/utils/console-colors'
 function Model({ ...props }) {
   // **
   // deconstruct arguments from props
-  const { ref, state, threed, name, file, doReturnOne, doReturnEach, doReturnAll } = props
+  const { state, threed, name, file, doReturnOne, doReturnEach, doReturnAll } = props
   const modes = ['translate', 'rotate', 'scale']
 
   // Ties this component to the state model

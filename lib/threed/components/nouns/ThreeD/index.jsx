@@ -62,7 +62,7 @@ function ThreeD({ ...props }) {
   // **
   // deconstruct arguments from props
   // const { ref, state, threed, name, file, doReturnOne, doReturnEach, doReturnAll } = props
-  const { ref, state, threedId, threed } = props
+  const { state, threedId, threed } = props
 
   console.debug('THREED: ThreeD(state, threedId, threed)', state, threedId, threed)
 

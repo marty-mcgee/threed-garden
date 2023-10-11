@@ -65,9 +65,9 @@ const defaults = {
 
 function Character({ ...props }) {
 
-  const { ref, state, threedId, threed } = props
+  const { state, threedId, threed } = props
 
-  console.debug('THREED: Character(ref, state, threedId, threed)', ref, state, threedId, threed)
+  console.debug('THREED: Character(state, threedId, threed)', state, threedId, threed)
 
   // map threed to THREED, to pass on to Model
   const THREED = {
@@ -104,7 +104,7 @@ function Character({ ...props }) {
   console.debug('THREED ready for Group of Models: ', THREED)
 
   // ==============================================================
-  // ANIMATIONS (FOR ALL CHARACTERS)
+  // ANIMATIONS (FOR ALL CHARACTERS !!!)
 
   useFrame(({ clock }) => {
     const a = clock.getElapsedTime()
@@ -122,7 +122,6 @@ function Character({ ...props }) {
         <Model
           state={state}
           threed={THREED}
-          ref={THREED.ref}
           file={THREED.files[0].file_url}
           name={THREED.files[0].nodes[0].node_name}
           position={THREED.files[0].nodes[0].node_position}
