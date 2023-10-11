@@ -106,10 +106,10 @@ function Character({ ...props }) {
   // ==============================================================
   // ANIMATIONS (FOR ALL CHARACTERS !!!)
 
-  useFrame(({ clock }) => {
-    const a = clock.getElapsedTime()
-    THREED.ref.current.rotation.x = a
-  })
+  // useFrame(({ clock }) => {
+  //   const a = clock.getElapsedTime()
+  //   THREED.ref.current.rotation.x = a
+  // })
 
   // return R3F JSX
   return (
