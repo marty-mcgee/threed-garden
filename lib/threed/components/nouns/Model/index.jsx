@@ -1,6 +1,6 @@
 import { proxy, useSnapshot } from 'valtio'
-import { useState } from 'react'
-import { useThree } from '@react-three/fiber'
+import { useState, useRef } from 'react'
+import { useThree, useFrame } from '@react-three/fiber'
 import {
   // ContactShadows,
   useCursor,
@@ -16,10 +16,9 @@ import ccm from '#/lib/utils/console-colors'
 
 // ** ThreeD Model -||-
 function Model({ ...props }) {
-  // {...props} OR (props, {}) ???
-  //
+  // **
   // deconstruct arguments from props
-  const { state, threed, name, file, doReturnOne, doReturnEach, doReturnAll } = props
+  const { ref, state, threed, name, file, doReturnOne, doReturnEach, doReturnAll } = props
   const modes = ['translate', 'rotate', 'scale']
 
   // Ties this component to the state model
@@ -30,6 +29,7 @@ function Model({ ...props }) {
 
   // this model = threed_threed.model -||-
   const model = {
+    ref: useRef(),
     state: state, // for funzees
     name: name,
     file: file ? file : '',
@@ -158,6 +158,14 @@ function Model({ ...props }) {
   useCursor(isHovered)
 
   // ==============================================================
+  // ANIMATIONS (FOR ALL MODELS)
+
+  useFrame(({ clock }) => {
+    const a = clock.getElapsedTime()
+    model.ref.current.rotation.x = a
+  })
+
+  // ==============================================================
   // ** RETURN JSX
 
   if (model.isReady) {
@@ -171,6 +179,7 @@ function Model({ ...props }) {
       return (
         <mesh
           name={model_name}
+          ref={model.ref}
           // Click sets the mesh as the new target
           onClick={(e) => (e.stopPropagation(), (state.current = model_name))}
           // If a click happened but this mesh wasn't hit we null out the target,
@@ -197,6 +206,8 @@ function Model({ ...props }) {
       const model_material = model.nodes.material
       return (
         <primitive
+          name={model_name}
+          ref={model.ref}
           object={model.nodes}
           position={model.group_position}
           rotation={model.group_rotation}
@@ -204,6 +215,7 @@ function Model({ ...props }) {
         />
         // <mesh
         //   name={model_name}
+        //   ref={model.ref}
         //   // Click sets the mesh as the new target
         //   onClick={(e) => (e.stopPropagation(), (state.current = model_name))}
         //   // If a click happened but this mesh wasn't hit we null out the target,
@@ -225,14 +237,20 @@ function Model({ ...props }) {
     }
     // return OBJ node
     else if (model.isOBJ) {
-      return <mesh></mesh>
+      return (
+        <mesh
+          ref={model.ref}
+        />
+      )
     }
   }
-  // default return 'error sphere' mesh object, with original model.name and props
+  // DEFAULT RETURN
+  // 'error sphere' mesh object, with original model.name and props
   // else {
   return (
     <mesh
       name={model.name}
+      ref={model.ref}
       // Click sets the mesh as the new target
       onClick={(e) => (
         e.stopPropagation(),

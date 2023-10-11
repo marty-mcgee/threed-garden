@@ -178,7 +178,8 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
 
   // ** Hooks
   const auth = useAuth()
-  console.debug('%c🔑 auth', ccm.orange, auth)
+  // console.debug('%c🔑 auth', ccm.orange, auth)
+  // console.debug('%c🔑 auth.user', ccm.orange, auth.user)
 
   // const { authGuard, guestGuard, acl } = Component // getLayout, setConfig,
   let authGuard = true
