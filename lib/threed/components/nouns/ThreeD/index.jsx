@@ -1,12 +1,12 @@
 import { proxy, useSnapshot } from 'valtio'
-import { useState } from 'react'
-import { useThree } from '@react-three/fiber'
+import { useState, useRef } from 'react'
+import { useThree, useFrame } from '@react-three/fiber'
 import { ContactShadows, useCursor, useGLTF, useFBX, useOBJ } from '@react-three/drei'
 
-import Model from '#/lib/threed/components/canvas/Nouns/Model'
+import Model from '#/lib/threed/components/nouns/Model'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/lib/utils/console-colors'
+import ccm from '#/lib/utils/console-colors'
 
 // ==============================================================
 // ** NOTES
@@ -59,6 +59,9 @@ const defaults = {
 // ** COMPONENTS
 
 function ThreeD({ ...props }) {
+  // **
+  // deconstruct arguments from props
+  // const { ref, state, threed, name, file, doReturnOne, doReturnEach, doReturnAll } = props
   const { state, threedId, threed } = props
 
   console.debug('THREED: ThreeD(state, threedId, threed)', state, threedId, threed)

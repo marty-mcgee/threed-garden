@@ -22,6 +22,7 @@
 # assets
 public/demo
 public/demo/objects
+public/objects
 
 .env.local
 

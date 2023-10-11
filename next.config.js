@@ -61,7 +61,7 @@ const nextConfig = {
 
     // 'react-github-btn',
 
-    // 'three',
+    'three',
 
     'yup',
     '@hookform/resolvers',

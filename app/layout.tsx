@@ -178,7 +178,8 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
 
   // ** Hooks
   const auth = useAuth()
-  console.debug('%c🔑 auth', ccm.orange, auth)
+  // console.debug('%c🔑 auth', ccm.orange, auth)
+  // console.debug('%c🔑 auth.user', ccm.orange, auth.user)
 
   // const { authGuard, guestGuard, acl } = Component // getLayout, setConfig,
   let authGuard = true
@@ -208,9 +209,7 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
       && children.props.childProp.segment !== 'auth'  )) {
       return (
         <UserLayout key='ThreeDAppLayout-UserLayout'>
-
-            <>{children}</>
-
+          <>{children}</>
         </UserLayout>
       )
     }
@@ -219,9 +218,7 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
     else {
       return (
         <BlankLayout key='ThreeDAppLayout-BlankLayout'>
-
-            <>{children}</>
-
+          <>{children}</>
         </BlankLayout>
       )
     }

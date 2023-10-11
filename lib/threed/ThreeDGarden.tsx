@@ -78,8 +78,8 @@ import { Loader } from '@react-three/drei'
 // ** ThreeD R3F Imports
 // import { Canvas } from '@react-three/fiber'
 import ThreeDCanvas from '#/lib/threed/components/canvas'
-// import BoxComponent from '#/lib/threed/components/canvas/Box'
-// import ShaderComponent from '#/lib/threed/components/canvas/Shader'
+// import BoxComponent from '#/lib/threed/components/box'
+// import ShaderComponent from '#/lib/threed/components/shader'
 
 // ** Modal Imports
 import modals from '#/lib/threed/components/modals'

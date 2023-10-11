@@ -3,11 +3,10 @@
 
 import { proxy, useSnapshot } from 'valtio'
 
-import { Suspense, useState } from 'react'
-import { useRef } from 'react'
+import { Suspense, useState, useRef } from 'react'
 
 import * as THREE from 'three'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { Canvas, extend, useFrame, useThree } from '@react-three/fiber'
 import { softShadows } from '@react-three/drei' // softShadows()
 import { OrbitControls, TransformControls, Preload, Environment, Html, useProgress } from '@react-three/drei'
 import { useGLTF, PresentationControls, ContactShadows } from '@react-three/drei'
@@ -17,26 +16,25 @@ import { Stage, BakeShadows } from '@react-three/drei'
 
 // import AppPage from '#/lib/threed/pages/_app-page'
 // import BoxPage from '#/lib/threed/pages/box-page'
-import BoxComponent from '#/lib/threed/components/canvas/Box'
+import BoxComponent from '#/lib/threed/components/box'
 // import ShaderPage from '#/lib/threed/pages/shader-page'
-import ShaderComponent from '#/lib/threed/components/canvas/Shader'
+import ShaderComponent from '#/lib/threed/components/shader'
 
 // ** ThreeD Imports
-import ThreeD from '#/lib/threed/components/canvas/Nouns/ThreeD'
-
-// ** ThreeD Object Example Imports
-// import StacyApp from '~/lib/threed/components/canvas/Examples/StacyApp'
-import Stacy from '~/lib/examples/Stacy/Stacy'
-// import Watch from '~/lib/examples/Watch/Watch'
-// import CoffeeCup from '~/lib/examples/CoffeeCup/CoffeeCup'
-// import JourneyLevel from '~/lib/examples/JourneyLevel/App'
-// import Shoes from '~/lib/examples/Shoes/App'
-import TransformModel from '~/lib/examples/TransformModel/App'
-import Shoe from '~/lib/examples/Shoes/Shoe'
+import ThreeD from '#/lib/threed/components/nouns/ThreeD'
+import Character from '~/lib/threed/components/nouns/Character'
+// import StacyApp from '~/lib/threed/components/examples/Stacy/StacyApp'
+// import Stacy from '~/lib/threed/components/examples/Stacy/Stacy'
+// import Watch from '~/lib/threed/components/examples/Watch/Watch'
+// import CoffeeCup from '~/lib/threed/components/examples/CoffeeCup/CoffeeCup'
+// import JourneyLevel from '~/lib/threed/components/examples/JourneyLevel/App'
+// import Shoes from '~/lib/threed/components/examples/Shoes/App'
+// import TransformModel from '~/lib/threed/components/examples/TransformModel/App'
+// import Shoe from '~/lib/threed/components/examples/Shoes/Shoe'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
-console.debug('%c~ccm', ccm)
+// console.debug('%c~ccm', ccm)
 
 // ==============================================================
 // ** VARIABLES
@@ -80,6 +78,7 @@ function ThreeDControls() {
 }
 
 export default function ThreeDCanvas({ models, children }) {
+  // **
   // inject models inside Suspense groups
   if (models) {
     console.debug('models', models)
@@ -88,8 +87,14 @@ export default function ThreeDCanvas({ models, children }) {
     }
   }
 
+  // create React references
+  const refCanvas = useRef()
+  const refThreeD = useRef()
+  const refCharacter = useRef()
+
   return (
     <Canvas
+      ref={refCanvas}
       camera={{ position: [-10, 10, 100], fov: 50 }}
       dpr={[1, 2]}
       shadows
@@ -205,7 +210,17 @@ export default function ThreeDCanvas({ models, children }) {
           azimuth={[-Math.PI / 1.4, Math.PI / 2]}
         >
           {/* <StacyApp position={[1.25, 1, 3.25]} scale={3.0} /> */}
-          <Stacy position={[1.25, 0.7, 3.25]} scale={5.0} />
+          {/* <Stacy position={[1.25, 0.7, 3.25]} scale={5.0} /> */}
+          <Character
+            type='gardener'
+            ref={refCharacter}
+            state={state}
+            threedId={2}
+            threed={{}}
+            position={[1.25, 0.7, 3.25]}
+            rotation={[0, 90, 0]}
+            scale={5.0}
+          />
         </PresentationControls>
 
         {/* Camera Action Rig */}
@@ -227,7 +242,7 @@ export default function ThreeDCanvas({ models, children }) {
 
         {/* [MM] HEY HEY HEY */}
         {/* NEED TO SEND A THREED_SCENE TO A CANVAS, BUT THIS IS FINE FOR NOW */}
-        <ThreeD state={state} threedId={1} threed={{}} />
+        <ThreeD ref={refThreeD} state={state} threedId={1} threed={{}} />
         {/* [MM] HEY HEY HEY */}
 
         {/* <Stage environment="forest" intensity={0.7}> */}
@@ -285,6 +300,7 @@ export default function ThreeDCanvas({ models, children }) {
 //   )
 // }
 
+// EXAMPLE ANIMATION using hook 'useFrame' (with 'useRef' references)
 function ActionRig() {
   return useFrame((state) => {
     state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, 1 + state.mouse.x / 4, 0.075)
