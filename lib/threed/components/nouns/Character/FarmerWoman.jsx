@@ -15,10 +15,10 @@ export default function Model(props) {
       <group>
         <group name="RootNode">
           <skinnedMesh
-            name="SK_Chr_Scarecrow_01"
-            geometry={nodes.SK_Chr_Scarecrow_01.geometry}
+            name="SK_Chr_Farmer_Female_01"
+            geometry={nodes.SK_Chr_Farmer_Female_01.geometry}
             material={materials.lambert2}
-            skeleton={nodes.SK_Chr_Scarecrow_01.skeleton}
+            skeleton={nodes.SK_Chr_Farmer_Female_01.skeleton}
           />
           <group name="Root">
             <group

@@ -1,7 +1,7 @@
 import React, { useRef } from "react"
 import { useGLTF, useAnimations } from "@react-three/drei"
 
-const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Scarecrow_01.glb'
+const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_Old_01.glb'
 const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_A.png'
 
 export default function Model(props) {
@@ -15,10 +15,10 @@ export default function Model(props) {
       <group>
         <group name="RootNode">
           <skinnedMesh
-            name="SK_Chr_Scarecrow_01"
-            geometry={nodes.SK_Chr_Scarecrow_01.geometry}
+            name="SK_Chr_Farmer_Male_Old_01"
+            geometry={nodes.SK_Chr_Farmer_Male_Old_01.geometry}
             material={materials.lambert2}
-            skeleton={nodes.SK_Chr_Scarecrow_01.skeleton}
+            skeleton={nodes.SK_Chr_Farmer_Male_Old_01.skeleton}
           />
           <group name="Root">
             <group
