@@ -4,6 +4,7 @@ import { useThree, useFrame } from '@react-three/fiber'
 import { ContactShadows, useCursor, useGLTF, useFBX, useOBJ } from '@react-three/drei'
 
 import Model from '#/lib/threed/components/nouns/Model'
+import Character1 from '#/lib/threed/components/nouns/Character/FarmerScarecrow'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
@@ -63,7 +64,7 @@ const defaults = {
 // ==============================================================
 // ** COMPONENTS
 
-function Character({ ...props }) {
+const Character = (props) => {
 
   const { state, threedId, threed } = props
 
@@ -72,8 +73,8 @@ function Character({ ...props }) {
   // map threed to THREED, to pass on to Model
   const THREED = {
     // === threed
-    name: 'THREED -- CHARACTER LOADED',
-    ref: useRef(),
+    name: 'THREED CHARACTER',
+    // ref: useRef(null),
     // { data: 'gql/rest wp endpoint {threed_threed}' }
     group: {
       group_id: 0,
@@ -108,7 +109,7 @@ function Character({ ...props }) {
 
   // useFrame(({ clock }) => {
   //   const a = clock.getElapsedTime()
-  //   THREED.ref.current.rotation.x = a
+  //   // THREED.ref.current.rotation.x = a
   // })
 
   // return R3F JSX
@@ -119,7 +120,8 @@ function Character({ ...props }) {
         rotation={THREED.group.group_rotation}
         scale={THREED.group.group_scale}
       >
-        <Model
+        {/* <Model
+          // ref={THREED.ref}
           state={state}
           threed={THREED}
           file={THREED.files[0].file_url}
@@ -130,7 +132,8 @@ function Character({ ...props }) {
           doReturnOne={true}
           doReturnEach={false}
           doReturnAll={false}
-        />
+        /> */}
+        <Character1 />
         <ContactShadows
           rotation-x={Math.PI / 2}
           position={[0, -35, 0]}

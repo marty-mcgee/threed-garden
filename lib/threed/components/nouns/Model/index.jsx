@@ -1,5 +1,5 @@
 import { proxy, useSnapshot } from 'valtio'
-import { useState, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
 import {
   // ContactShadows,
@@ -7,18 +7,25 @@ import {
   useGLTF,
   useFBX,
   // useOBJ, // not supported
+  useAnimations,
+  useTexture
 } from '@react-three/drei'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 // import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
+import { a, useSpring } from '@react-spring/three'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
 // ** ThreeD Model -||-
-function Model({ ...props }) {
+const Model = (props) => {
+
   // **
   // deconstruct arguments from props
   const { state, threed, name, file, doReturnOne, doReturnEach, doReturnAll } = props
+  console.debug('Model props', props)
+
+  // ** set available action modes
   const modes = ['translate', 'rotate', 'scale']
 
   // Ties this component to the state model
@@ -29,7 +36,7 @@ function Model({ ...props }) {
 
   // this model = threed_threed.model -||-
   const model = {
-    ref: useRef(),
+    ref: useRef(null),
     state: state, // for funzees
     name: name,
     file: file ? file : '',
@@ -52,6 +59,12 @@ function Model({ ...props }) {
     isSupported: false,
     // file nodes
     nodes: {},
+    // animations
+    ani: {
+      ref: null,
+      actions: [],
+      names: [],
+    },
     doReturnOne: doReturnOne ? true : false,
     doReturnAll: doReturnAll ? true : false,
     doReturnEach: doReturnEach ? true : false,
@@ -89,13 +102,23 @@ function Model({ ...props }) {
     if (model.isObject3D) {
       // FBX
       if (model.isFBX) {
-        const nodes = useFBX(model.file)
-        console.debug('%cnodes: fbx', ccm.blue, nodes)
+        // const { nodes, animations } = useFBX(model.file)
+        const fbx = useFBX(model.file)
+        console.debug('%cnodes: fbx', ccm.blue, fbx)
         console.debug(`%c====================================`, ccm.black)
-        if (nodes) {
-          model.nodes = nodes
+        if (fbx) {
+          model.nodes = fbx
           model.isReady = true
           // console.debug('RETURN ONLY NODE AS NODES: true')
+        }
+        if (fbx.animations) {
+          console.debug('FBX animations', fbx.animations)
+          // Extract animation actions
+          const { ref, actions, names } = useAnimations(fbx.animations)
+          console.debug('FBX useAnimations', ref, actions, names)
+          model.ani.ref = ref
+          model.ani.actions = actions
+          model.ani.names = names
         }
       }
       // OBJ
@@ -156,6 +179,34 @@ function Model({ ...props }) {
   // Feed hover state into useCursor, which sets document.body.style.cursor to pointer|auto
   const [isHovered, setIsHovered] = useState(false)
   useCursor(isHovered)
+  const [index, setIndex] = useState(0)
+
+  // Animate the selection halo
+  const { color, scale } = useSpring({
+    scale: isHovered ? [1.15, 1.15, 1] : [1, 1, 1],
+    color: isHovered ? '#ff6d6d' : '#569AFF',
+  })
+
+  // Change cursor on hover-state
+  useEffect(() => void (document.body.style.cursor = isHovered ? 'pointer' : 'auto'), [isHovered])
+
+  // Change animation when the index changes
+  useEffect(() => {
+    if (model.ani.actions != undefined
+      && model.ani.names != undefined
+      && model.ani.actions[model.ani.names[index]] != undefined
+    )
+      // Reset and fade in animation after an index has been changed
+      model.ani.actions[model.ani.names[index]].reset().fadeIn(0.5).play()
+
+      // In the clean-up phase, fade it out
+      // (page route may have changed)
+      if (model.ani.actions[model.ani.names[index]]) {
+        return () => model.ani.actions[model.ani.names[index]].fadeOut(0.5)
+      }
+
+    return undefined
+  }, [index, model.ani.actions, model.ani.names])
 
   // ==============================================================
   // ANIMATIONS (FOR ALL MODELS !!!)
@@ -205,34 +256,21 @@ function Model({ ...props }) {
       const model_geometry = model.nodes.geometry
       const model_material = model.nodes.material
       return (
-        <primitive
-          name={model_name}
-          ref={model.ref}
-          object={model.nodes}
+        <group
+          ref={model.ani.ref}
+          {...props}
+          dispose={null}
           position={model.group_position}
           rotation={model.group_rotation}
           scale={model.group_scale}
-        />
-        // <mesh
-        //   name={model_name}
-        //   ref={model.ref}
-        //   // Click sets the mesh as the new target
-        //   onClick={(e) => (e.stopPropagation(), (state.current = model_name))}
-        //   // If a click happened but this mesh wasn't hit we null out the target,
-        //   // This works because missed pointers fire before the actual hits
-        //   onPointerMissed={(e) => e.type === 'click' && (state.current = null)}
-        //   // Right click cycles through the transform modes
-        //   onContextMenu={(e) =>
-        //     snap.current === model_name && (e.stopPropagation(), (state.mode = (snap.mode + 1) % modes.length))
-        //   }
-        //   onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
-        //   onPointerOut={(e) => setIsHovered(false)}
-        //   geometry={model_geometry}
-        //   material={model_material}
-        //   material-color={snap.current === model_name ? '#ff7070' : '#ababab'}
-        //   {...props}
-        //   dispose={null}
-        // />
+        >
+          <primitive
+            name={model_name}
+            // ref={model.ref}
+            ref={model.ani.ref}
+            object={model.nodes}
+          />
+        </group>
       )
     }
     // return OBJ node

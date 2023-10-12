@@ -4,6 +4,7 @@ import { useThree, useFrame } from '@react-three/fiber'
 import { ContactShadows, useCursor, useGLTF, useFBX, useOBJ } from '@react-three/drei'
 
 import Model from '#/lib/threed/components/nouns/Model'
+// import Scene from '#/lib/threed/components/nouns/Scene/FarmDemo'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
@@ -58,7 +59,7 @@ const defaults = {
 // ==============================================================
 // ** COMPONENTS
 
-function ThreeD({ ...props }) {
+const ThreeD = (props) => {
   // **
   // deconstruct arguments from props
   // const { ref, state, threed, name, file, doReturnOne, doReturnEach, doReturnAll } = props
@@ -118,6 +119,7 @@ function ThreeD({ ...props }) {
           doReturnEach={false}
           doReturnAll={false}
         />
+        {/* <Scene /> */}
         <ContactShadows
           rotation-x={Math.PI / 2}
           position={[0, -35, 0]}
