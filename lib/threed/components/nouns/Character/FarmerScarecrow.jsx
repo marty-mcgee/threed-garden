@@ -1,11 +1,10 @@
 import React, { useRef } from "react"
 import { useGLTF, useAnimations } from "@react-three/drei"
 
+const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Scarecrow_01.glb'
+const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_A.png'
+
 export default function Model(props) {
-
-  const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Scarecrow_01.glb'
-  const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_A.png'
-
   const group = useRef()
   const { nodes, materials, animations } = useGLTF(file)
   const { actions } = useAnimations(animations, group)
