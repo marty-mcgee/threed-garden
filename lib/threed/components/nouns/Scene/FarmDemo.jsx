@@ -2,6 +2,7 @@ import React, { useRef } from "react"
 import { useGLTF } from "@react-three/drei"
 
 const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb'
+const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_A.png'
 
 export default function Model(props) {
   const { nodes, materials } = useGLTF(file)
