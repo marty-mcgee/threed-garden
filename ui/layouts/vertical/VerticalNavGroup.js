@@ -2,7 +2,7 @@
 import { useEffect } from 'react'
 
 // ** Next Import
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 // ** MUI Imports
 import Chip from '@mui/material/Chip'
@@ -63,16 +63,17 @@ const VerticalNavGroup = (props) => {
     isSubToSub,
     groupActive,
     setGroupActive,
-    // collapsedNavWidth,
     currentActiveGroup,
-    // setCurrentActiveGroup,
-    // navBorderWidth,
+    setCurrentActiveGroup,
+    collapsedNavWidth,
+    navBorderWidth,
   } = props
 
   // ** Hooks & Vars
   const theme = useTheme()
   // const router = useRouter()
   // const currentURL = router.pathname
+  const pathname = usePathname()
   const { skin, direction, navCollapsed, verticalNavToggleType } = settings
 
   // ** Accordion menu group open toggle
@@ -130,36 +131,36 @@ const VerticalNavGroup = (props) => {
     }
   }
 
-  // useEffect(() => {
-  //   if (hasActiveChild(item, currentURL)) {
-  //     if (!groupActive.includes(item.title)) groupActive.push(item.title)
-  //   } else {
-  //     const index = groupActive.indexOf(item.title)
-  //     if (index > -1) groupActive.splice(index, 1)
-  //   }
-  //   setGroupActive([...groupActive])
-  //   setCurrentActiveGroup([...groupActive])
+  useEffect(() => {
+    if (hasActiveChild(item, pathname)) {
+      if (!groupActive.includes(item.title)) groupActive.push(item.title)
+    } else {
+      const index = groupActive.indexOf(item.title)
+      if (index > -1) groupActive.splice(index, 1)
+    }
+    setGroupActive([...groupActive])
+    setCurrentActiveGroup([...groupActive])
 
-  //   // Empty Active Group When Menu is collapsed and not hovered, to fix issue route change
-  //   if (navCollapsed && !navHover) {
-  //     setGroupActive([])
-  //   }
-  // }, [router.asPath])
+    // Empty Active Group When Menu is collapsed and not hovered, to fix issue route change
+    if (navCollapsed && !navHover) {
+      setGroupActive([])
+    }
+  }, [pathname])
 
-  // useEffect(() => {
-  //   if (navCollapsed && !navHover) {
-  //     setGroupActive([])
-  //   }
-  //   if ((navCollapsed && navHover) || (groupActive.length === 0 && !navCollapsed)) {
-  //     setGroupActive([...currentActiveGroup])
-  //   }
-  // }, [navCollapsed, navHover])
+  useEffect(() => {
+    if (navCollapsed && !navHover) {
+      setGroupActive([])
+    }
+    if ((navCollapsed && navHover) || (groupActive.length === 0 && !navCollapsed)) {
+      setGroupActive([...currentActiveGroup])
+    }
+  }, [navCollapsed, navHover])
 
-  // useEffect(() => {
-  //   if (groupActive.length === 0 && !navCollapsed) {
-  //     setGroupActive([])
-  //   }
-  // }, [navHover])
+  useEffect(() => {
+    if (groupActive.length === 0 && !navCollapsed) {
+      setGroupActive([])
+    }
+  }, [navHover])
 
   const IconTag = parent && !item.icon ? themeConfig.navSubItemIcon : item.icon
   const menuGroupCollapsedStyles = navCollapsed && !navHover ? { opacity: 0 } : { opacity: 1 }
@@ -232,9 +233,9 @@ const VerticalNavGroup = (props) => {
           // }}
         >
           <ListItemButton
-            // className={clsx({
-            //   'Mui-selected': groupActive.includes(item.title) || currentActiveGroup.includes(item.title),
-            // })}
+            className={clsx({
+              'Mui-selected': groupActive.includes(item.title) || currentActiveGroup.includes(item.title),
+            })}
             sx={{
               // py: 2.25,
               // ...conditionalBgColor(),
@@ -242,11 +243,11 @@ const VerticalNavGroup = (props) => {
               borderBottomRightRadius: 100,
               transition: 'padding-left .25s ease-in-out',
               ...(item.disabled ? { pointerEvents: 'none' } : { cursor: 'pointer' }),
-              // pl: navCollapsed && !navHover ? (collapsedNavWidth - navBorderWidth - 24) / 8 : 2.9,
-              // pr: navCollapsed && !navHover ? ((collapsedNavWidth - navBorderWidth - 24) / 2 - 5) / 4 : 3.5,
-              display: 'inline-flex',
-              minWidth: 240,
-              width: '100%',
+              pl: navCollapsed && !navHover ? (collapsedNavWidth - navBorderWidth - 24) / 8 : 2.9,
+              pr: navCollapsed && !navHover ? ((collapsedNavWidth - navBorderWidth - 24) / 2 - 5) / 4 : 3.5,
+              // display: 'inline-flex',
+              // minWidth: 240,
+              // width: '100%',
             }}
           >
             {isSubToSub ? null : (
@@ -255,9 +256,9 @@ const VerticalNavGroup = (props) => {
                   minWidth: 40,
                   color: 'text.primary',
                   transition: 'margin .25s ease-in-out',
-                  // ...(parent && navCollapsed && !navHover ? {} : { mr: 2.5 }),
-                  // ...(navCollapsed && !navHover ? { mr: 0 } : {}),
-                  // ...(parent && item.children ? { ml: 1.25, mr: 3.75 } : {}),
+                  ...(parent && navCollapsed && !navHover ? {} : { mr: 2.5 }),
+                  ...(navCollapsed && !navHover ? { mr: 0 } : {}),
+                  ...(parent && item.children ? { ml: 1.25, mr: 3.75 } : {}),
                 }}
               >
                 <UserIcon
@@ -274,11 +275,11 @@ const VerticalNavGroup = (props) => {
               }}
             >
               {/* <Typography
-                // {
-                //   ...((themeConfig.menuTextTruncate || (!themeConfig.menuTextTruncate && navCollapsed && !navHover)) && {
-                //     noWrap: true,
-                //   })
-                // }
+                {
+                  ...((themeConfig.menuTextTruncate || (!themeConfig.menuTextTruncate && navCollapsed && !navHover)) && {
+                    noWrap: true,
+                  })
+                }
               > */}
                 <Translations text={item.title} />
               {/* </Typography> */}

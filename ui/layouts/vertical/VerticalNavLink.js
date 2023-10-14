@@ -53,13 +53,13 @@ const MenuItemTextMetaWrapper = styled(Box)({
 const VerticalNavLink = ({
   item,
   parent,
-  // navHover,
   settings,
   navVisible,
   isSubToSub,
-  // collapsedNavWidth,
   toggleNavVisibility,
-  // navBorderWidth,
+  collapsedNavWidth,
+  navBorderWidth,
+  navHover,
 }) => {
   // ** Hooks
   const theme = useTheme()
@@ -140,9 +140,9 @@ const VerticalNavLink = ({
                   minWidth: 40,
                   color: 'text.primary',
                   transition: 'margin .25s ease-in-out',
-                  // ...(navCollapsed && !navHover ? { mr: 0.5 } : { mr: 0.5 }),
+                  ...(navCollapsed && !navHover ? { mr: 0.5 } : { mr: 0.5 }),
                   // This line should be after (navCollapsed && !navHover) condition for proper styling
-                  // ...(parent ? { ml: 1.00, mr: 3.50 } : { ml: 1.00, mr: 3.50 }),
+                  ...(parent ? { ml: 1.00, mr: 3.50 } : { ml: 1.00, mr: 3.50 }),
                 }}
               >
                 <UserIcon

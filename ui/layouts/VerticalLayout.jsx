@@ -104,10 +104,6 @@ const VerticalLayout = (props) => {
             collapsedNavWidth={collapsedNavWidth}
             toggleNavVisibility={toggleNavVisibility}
             navBorderWidth={navBorderWidth}
-            sx={{
-              // border: '1px dashed orange', // not working here
-              // height: '80vh', // not working here
-            }}
             {...props}
           />
         )}
@@ -116,7 +112,7 @@ const VerticalLayout = (props) => {
         <MainContentWrapper
           className='layout-content-wrapper'
           sx={{
-            width: '100%',
+            width: '100vw',
           }}
         >
           <ContentWrapper
