@@ -10,15 +10,15 @@
 import type { NextPage, NextPageContext } from 'next'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // import Link from 'next/link'
-import { useRouter, usePathname } from 'next/navigation'
+// import { useRouter, usePathname } from 'next/navigation'
 
 // ** React
 // import type { ReactNode } from 'react'
 // import React, { FC } from 'react'
-import { useEffect } from 'react'
+// import { useEffect } from 'react'
 
 // ** Hooks
-import { useAuth } from '#/lib/auth/hooks/useAuth'
+// import { useAuth } from '#/lib/auth/hooks/useAuth'
 
 // ** Helper Components
 import Spinner from '#/ui/components/spinner'
@@ -34,23 +34,23 @@ console.debug('%c🥕 ThreeDGarden<FC,R3F>: {page.tsx}', ccm.green)
 
 // ==============================================================
 
-// Set Home Forwarding (to First Page) URL, based on User Role
-const getHomeRoute = (role: any) => {
-  if (role === 'client') {
-    // return '/home' // another page
-    return '/participate' // another page
-    // return '/acl' // authorized credentials list? (boundary)
-  }
-  else if (role === 'admin') {
-    // return '/' // this page (for testing. not ideal for production.)
-    return '/home' // another page
-    // return '/participate' // another page
-  }
-  else {
-    // return '/' // this page (for testing. not ideal for production.)
-    return '/auth/login'
-  }
-}
+// // Set Home Forwarding (to First Page) URL, based on User Role
+// const getHomeRoute = (role: any) => {
+//   if (role === 'client') {
+//     // return '/home' // another page
+//     return '/participate' // another page
+//     // return '/acl' // authorized credentials list? (boundary)
+//   }
+//   else if (role === 'admin') {
+//     // return '/' // this page (for testing. not ideal for production.)
+//     return '/home' // another page
+//     // return '/participate' // another page
+//   }
+//   else {
+//     // return '/' // this page (for testing. not ideal for production.)
+//     return '/auth/login'
+//   }
+// }
 
 // ==============================================================
 
@@ -62,32 +62,32 @@ const AppPage: TNextPageWithProps = (props: any): JSX.Element => {
   // **
   // console.debug('%c🥕 PROPS: AppPage.props', ccm.green, props)
 
-  // ** Hooks
-  const auth = useAuth()
-  const router = useRouter()
-  const pathname = usePathname()
+  // // ** Hooks
+  // const auth = useAuth()
+  // const router = useRouter()
+  // const pathname = usePathname()
 
-  // ** OnMount (+ optional return OnUnmount)
-  useEffect(() => {
-    // user AUTHORIZED?
-    if (auth.user && auth.user.role) {
-      // get Home URL
-      const homeRoute = getHomeRoute(auth.user.role)
-      console.debug('✅ user AUTHORIZED', auth.user, 'go to:', homeRoute)
-      // redirect authorized user to Home URL
-      // router.replace(homeRoute)
-      router.push(homeRoute)
-    }
-    // user NOT AUTHORIZED!
-    else {
-      const homeRoute = getHomeRoute('unauthorized')
-      console.debug('❌ user NOT AUTHORIZED', auth.user, 'go to:', homeRoute)
-      // redirect un-authorized guest to Home URL
-      // router.replace(homeRoute)
-      router.push(homeRoute)
-    }
-    // return <><Spinner /></>
-  }, [])
+  // // ** OnMount (+ optional return OnUnmount)
+  // useEffect(() => {
+  //   // user AUTHORIZED?
+  //   if (auth.user && auth.user.role) {
+  //     // get Home URL
+  //     const homeRoute = getHomeRoute(auth.user.role)
+  //     console.debug('✅ user AUTHORIZED', auth.user, 'go to:', homeRoute)
+  //     // redirect authorized user to Home URL
+  //     // router.replace(homeRoute)
+  //     router.push(homeRoute)
+  //   }
+  //   // user NOT AUTHORIZED!
+  //   else {
+  //     const homeRoute = getHomeRoute('unauthorized')
+  //     console.debug('❌ user NOT AUTHORIZED', auth.user, 'go to:', homeRoute)
+  //     // redirect un-authorized guest to Home URL
+  //     // router.replace(homeRoute)
+  //     router.push(homeRoute)
+  //   }
+  //   // return <><Spinner /></>
+  // }, [])
 
 // ==============================================================
 
