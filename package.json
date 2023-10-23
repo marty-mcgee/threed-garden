@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.15.0-alpha.17",
+  "version": "0.15.0-alpha.18",
   "description": "React + TypeScript + Three.js app using Material UI for Next.js 13, Apollo + Zustand, GraphQL + WordPress REST APIs, for ThreeD web development.. a part of the threed.ai code family.",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
@@ -77,7 +77,7 @@
     "graphql": "^16.8.1",
     "graphql-tag": "^2.12.6",
     "mdi-material-ui": "7.1.0",
-    "next": "13.5.4",
+    "next": "13.5.6",
     "path": "^0.12.7",
     "pretty-time": "^1.1.0",
     "process": "^0.11.10",
