@@ -107,11 +107,13 @@ const VerticalNavLink = ({
         //   mb: 1.5,
         // }}
       >
-        <Link href={item.path === undefined ? '/' : `${item.path}`}>
+        <Link
+          href={item.path === undefined ? '/' : `${item.path}`}
+          {...(item.openInNewTab ? { target: '_blank' } : null)}
+        >
           <MenuNavLink
             component={'span'}
             className={isNavLinkActive() ? 'active' : ''}
-            {...(item.openInNewTab ? { target: '_blank' } : null)}
             onClick={(e) => {
               if (item.path === undefined) {
                 e.preventDefault()
@@ -123,12 +125,12 @@ const VerticalNavLink = ({
             }}
             sx={{
               // py: 2.25,
-              // ...conditionalBgColor(),
+              ...conditionalBgColor(),
               borderTopRightRadius: 100,
               borderBottomRightRadius: 100,
               ...(item.disabled ? { pointerEvents: 'none' } : { cursor: 'pointer' }),
-              // pl: navCollapsed && !navHover ? (collapsedNavWidth - navBorderWidth - 24) / 8 : 2.9,
-              // pr: navCollapsed && !navHover ? ((collapsedNavWidth - navBorderWidth - 24) / 2 - 5) / 4 : 3.5,
+              pl: navCollapsed && !navHover ? (collapsedNavWidth - navBorderWidth - 24) / 8 : 2.9,
+              pr: navCollapsed && !navHover ? ((collapsedNavWidth - navBorderWidth - 24) / 2 - 5) / 4 : 3.5,
               // display: 'inline-flex',
               // minWidth: 240,
               // width: '100%',
