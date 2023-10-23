@@ -7,12 +7,12 @@
 
 // ** Next
 // import { useRouter, usePathname } from 'next/navigation'
-import type { GetServerSideProps, GetStaticProps } from 'next'
+// import type { GetServerSideProps, GetStaticProps } from 'next'
 import { AppProps } from 'next/app'
 // import { NextPageContext } from 'next'
 
 // ** React
-import type { ReactNode } from 'react'
+// import type { ReactNode } from 'react'
 // import { useEffect } from 'react'
 
 // ** Apollo Client -- State Management using Cache/Store (via GraphQL)
@@ -23,16 +23,16 @@ import { client } from '#/lib/api/graphql/client'
 import { Provider as ReduxProvider } from 'react-redux'
 import { store as reduxStore } from '#/lib/stores/redux'
 
-// ** Contexts for User Authorization + Settings
-import { AuthProvider } from '#/lib/contexts/AuthContext'
+// // ** Contexts for User Authorization + Settings
+// import { AuthProvider } from '#/lib/contexts/AuthContext'
 
-// // ** User Authorization Hook
-// import { useAuth } from '#/lib/auth/hooks/useAuth'
+// // // ** User Authorization Hook
+// // import { useAuth } from '#/lib/auth/hooks/useAuth'
 
-// ** User Authorization Guards/Boundaries (~CORE Components)
-import AuthGuard from '#/ui/auth/AuthGuard'
-// import GuestGuard from '#/ui/auth/GuestGuard'
-// import AclGuard from '#/ui/auth/AclGuard'
+// // ** User Authorization Guards/Boundaries (~CORE Components)
+// import AuthGuard from '#/ui/auth/AuthGuard'
+// // import GuestGuard from '#/ui/auth/GuestGuard'
+// // import AclGuard from '#/ui/auth/AclGuard'
 
 // ** @Fake-DB (axios mock adapter)
 import '#/lib/api/@fake-db'
@@ -51,7 +51,7 @@ import ThemeRegistry from '#/ui/theme/ThemeRegistry'
 // import UserLayout from '#/ui/layouts/UserLayout' // this is your user-authorized (new dashboard) layout
 
 // ** Helper Components
-import Spinner from '#/ui/components/spinner'
+// import Spinner from '#/ui/components/spinner'
 
 // ** CSS Styles
 // import '#/ui/styles/globals.css'
@@ -70,27 +70,8 @@ console.debug('%c🥕 ThreeDGarden<FC,R3F>: {layout.tsx}', ccm.lightgreen)
 // console.debug('%c=======================================', ccm.black)
 
 // ==============================================================
-// MAIN APP
-
-// provide basic React Provider context node with props.children
-// const ThreeDAppProvider: FC<{ children?: ReactNode }> = (props) => {
-const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element => {
-  // const { children } = props
-  return (
-    <html lang="en">
-      <head />
-      <body>
-        <main id="ThreeDAppProvider">
-          {children}
-        </main>
-      </body>
-    </html>
-  )
-}
-
-// ==============================================================
-// ** Security Guard
-
+// ** Security Guard MOVED TO TEMPLATE.TSX
+/*
 const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
   if (!guestGuard && !authGuard) {
     console.debug('%c📛 NoGuard loading... :(', ccm.red)
@@ -131,6 +112,26 @@ const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
       </AuthGuard>
     )
   }
+}
+*/
+
+// ==============================================================
+// MAIN APP TEMPLATE WRAPPER
+
+// provide basic React Provider context node with props.children
+// const ThreeDAppProvider: FC<{ children?: ReactNode }> = (props) => {
+const ThreeDAppProvider = ({ children }: { children: any }): JSX.Element => {
+  // const { children } = props
+  return (
+    <html lang="en">
+      <head />
+      <body>
+        <main id="ThreeDAppProvider">
+          {children}
+        </main>
+      </body>
+    </html>
+  )
 }
 
 // ==============================================================
@@ -229,10 +230,11 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
 
   // ** Return JSX
   return (
+    <>
     <ThreeDAppProvider>
-      <AuthProvider>
+      {/* <AuthProvider> */}
         {/* <AuthConsumer authGuard={authGuard} guestGuard={guestGuard}> */}
-          <AuthGuard fallback={<Spinner />}>
+          {/* <AuthGuard fallback={<Spinner />}> */}
           {/* <AclGuard aclAbilities={acl} guestGuard={guestGuard}> */}
             <ApolloProvider client={client}>
               <ReduxProvider store={reduxStore}>
@@ -274,10 +276,11 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
               </ReduxProvider>
             </ApolloProvider>
           {/* </AclGuard> */}
-          </AuthGuard>
+          {/* </AuthGuard> */}
         {/* </AuthConsumer> */}
-      </AuthProvider>
+      {/* </AuthProvider> */}
     </ThreeDAppProvider>
+    </>
   )
 }
 

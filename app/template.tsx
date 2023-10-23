@@ -13,7 +13,12 @@
 import { AppProps } from 'next/app'
 
 // // ** Contexts for User Authorization + Settings
-// import { AuthProvider } from '#/lib/contexts/AuthContext'
+import { AuthProvider } from '#/lib/contexts/AuthContext'
+
+// ** User Authorization Guards/Boundaries (~CORE Components)
+import AuthConsumer from '#/ui/auth/AuthConsumer'
+// import GuestGuard from '#/ui/auth/GuestGuard'
+// import AclGuard from '#/ui/auth/AclGuard'
 
 // ** User Authorization Hook *** [MM] CUSTOM CODE HOOK
 import { useAuth } from '#/lib/auth/hooks/useAuth'
@@ -35,17 +40,29 @@ console.debug('%c🥕 ThreeDGarden<FC,R3F>: {template.tsx}', ccm.green)
 console.debug('%c=======================================', ccm.black)
 
 // ==============================================================
+// MAIN APP TEMPLATE WRAPPER
+
+// provide basic React Provider context node with props.children
+// const ThreeDAppProvider: FC<{ children?: ReactNode }> = (props) => {
+const ThreeDAppProvider = ({ children }: { children: any }): JSX.Element => {
+  // const { children } = props
+  return (
+    <html lang="en">
+      <head />
+      <body>
+        <main id="ThreeDAppProvider">
+          {children}
+        </main>
+      </body>
+    </html>
+  )
+}
+
+// ==============================================================
 // MAIN APP TEMPLATE
 
 // const AppTemplate = ({ children }: { children: ReactNode }): JSX.Element => {
 const AppTemplate = ({ children }: any, { Component, pageProps }: AppProps): JSX.Element => {
-
-  // ** Props.children
-  // const { children } = props
-  // console.debug('🥕 PROPS: AppTemplate.props.children', children)
-  // ** Props.children.props
-  // const props2 = children.props
-  // console.debug('🥕 PROPS: AppTemplate.props.children.props', props2)
 
   // ** Hooks
   const auth = useAuth()
@@ -67,34 +84,31 @@ const AppTemplate = ({ children }: any, { Component, pageProps }: AppProps): JSX
   // console.debug('%c=======================================', ccm.black)
 
   // authorized: UserLayout
-  if (!auth.loading
-    && auth.user != null) {
+  if (auth.user != null) { // !auth.loading &&
     // ** USER USER USER
-    console.debug('USER USER USER')
+    console.debug('AUTHORIZED USER USER USER')
     return (
-      <UserLayout key='ThreeDAppTemplate-UserLayout'>
-        {children}
-      </UserLayout>
+      <AuthProvider>
+        <AuthConsumer>
+          <ThreeDAppProvider>
+            <UserLayout key='ThreeDAppTemplate-UserLayout'>
+              {children}
+            </UserLayout>
+          </ThreeDAppProvider>
+        </AuthConsumer>
+      </AuthProvider>
     )
   }
 
-  // default: BlankLayout
+  // LOADING...
   else if (auth.loading) {
-    // ** BLANK BLANK BLANK
     console.debug('LOADING LOADING LOADING')
-    return <Spinner />
-    // return (
-    //   <BlankLayout key='ThreeDAppTemplate-BlankLayout'>
-    //     {children}
-    //   </BlankLayout>
-    // )
+    // return <Spinner />
   }
 
   // ** default return
-  // ** IMPOSSIBLE IMPOSSIBLE IMPOSSIBLE
-  console.debug('ATTEMPT ATTEMPT ATTEMPT')
-  // return <Spinner />
-  // console.debug('BLANK BLANK BLANK')
+  // console.debug('ATTEMPT ATTEMPT ATTEMPT')
+  console.debug('BLANK BLANK BLANK')
   return (
     <BlankLayout key='ThreeDAppTemplate-BlankLayout'>
       {children}
