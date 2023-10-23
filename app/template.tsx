@@ -46,7 +46,7 @@ const AppTemplate = ({ children }: any, { Component, pageProps }: AppProps): JSX
 
   // ** Hooks
   const auth = useAuth()
-  // console.debug('%c🔑 auth', ccm.orange, auth)
+  console.debug('%c🔑 auth', ccm.orange, auth)
   // console.debug('%c🔑 auth.user', ccm.orange, auth.user)
 
   // const { authGuard, guestGuard, acl } = Component // getLayout, setConfig,
@@ -64,31 +64,40 @@ const AppTemplate = ({ children }: any, { Component, pageProps }: AppProps): JSX
   // console.debug('%c=======================================', ccm.black)
 
   // authorized: UserLayout
-  if (auth.user && auth.user.role) {
+  if (!auth.loading
+    && auth.user != null) {
+    // ** USER USER USER
+    console.debug('USER USER USER')
     return (
       <UserLayout key='ThreeDAppTemplate-UserLayout'>
-        <>{children}</>
+        {children}
       </UserLayout>
     )
   }
 
   // default: BlankLayout
-  else {
-    return (
-      <BlankLayout key='ThreeDAppTemplate-BlankLayout'>
-        <>{children}</>
-      </BlankLayout>
-    )
+  else if (auth.loading) {
+    // ** BLANK BLANK BLANK
+    console.debug('LOADING LOADING LOADING')
+    // return (
+    //   <BlankLayout key='ThreeDAppTemplate-BlankLayout'>
+    //     {children}
+    //   </BlankLayout>
+    // )
   }
 
-  return (
-    <div id='AppTemplate'>
-      {/* <h6>YO YO YO</h6> */}
-      <BlankLayout>
-        {children}
-      </BlankLayout>
-    </div>
-  )
+  // ** default return
+  // ** IMPOSSIBLE IMPOSSIBLE IMPOSSIBLE
+  console.debug('ATTEMPT ATTEMPT ATTEMPT')
+  // console.debug('BLANK BLANK BLANK')
+  // return (
+  //   <div id='AppTemplate'>
+  //     {/* <h6>YO YO YO</h6> */}
+  //     <BlankLayout>
+  //       {children}
+  //     </BlankLayout>
+  //   </div>
+  // )
 }
 
 export default AppTemplate
