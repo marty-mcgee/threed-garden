@@ -5,9 +5,17 @@ const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/syn
 const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_A.png'
 
 export default function Model(props) {
+  // **
   const group = useRef()
   const { nodes, materials, animations } = useGLTF(file)
   const { actions } = useAnimations(animations, group)
+  console.debug('=====================================')
+  console.debug('nodes', nodes)
+  console.debug('materials', materials)
+  console.debug('animations', animations)
+  console.debug('actions', actions)
+  console.debug('=====================================')
+
   return (
     <group ref={group} {...props} dispose={null}>
       <group>
