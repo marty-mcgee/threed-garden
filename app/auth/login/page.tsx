@@ -73,7 +73,7 @@ console.debug('%c=======================================', ccm.black)
 
 // ==============================================================
 
-const appVersion = 'v0.12.0'
+const appVersion = 'v0.15.0'
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
 // const appVersion = process.env.npm_package_version
 // const appVersion: string = require('package.json').version
