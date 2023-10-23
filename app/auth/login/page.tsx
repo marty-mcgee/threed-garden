@@ -113,7 +113,7 @@ const RightWrapper = styled(Box)(({ theme }: { theme: any }) => {
     // flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#90A000', // 'olive', // '#97B553', // 'green', // 'background.paper',
+    // backgroundColor: '#90A000', // 'olive', // '#97B553', // 'green', // 'background.paper',
     maxWidth: 360,
     [theme.breakpoints.up('md')]: {
       maxWidth: 420,

@@ -22,6 +22,9 @@ import { useAuth } from '#/lib/auth/hooks/useAuth'
 import BlankLayout from '#/ui/layouts/BlankLayout' // this is your login layout
 import UserLayout from '#/ui/layouts/UserLayout' // this is your main layout
 
+// ** Helper Components
+import Spinner from '#/ui/components/spinner'
+
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
 
@@ -79,6 +82,7 @@ const AppTemplate = ({ children }: any, { Component, pageProps }: AppProps): JSX
   else if (auth.loading) {
     // ** BLANK BLANK BLANK
     console.debug('LOADING LOADING LOADING')
+    return <Spinner />
     // return (
     //   <BlankLayout key='ThreeDAppTemplate-BlankLayout'>
     //     {children}
@@ -89,15 +93,13 @@ const AppTemplate = ({ children }: any, { Component, pageProps }: AppProps): JSX
   // ** default return
   // ** IMPOSSIBLE IMPOSSIBLE IMPOSSIBLE
   console.debug('ATTEMPT ATTEMPT ATTEMPT')
+  // return <Spinner />
   // console.debug('BLANK BLANK BLANK')
-  // return (
-  //   <div id='AppTemplate'>
-  //     {/* <h6>YO YO YO</h6> */}
-  //     <BlankLayout>
-  //       {children}
-  //     </BlankLayout>
-  //   </div>
-  // )
+  return (
+    <BlankLayout key='ThreeDAppTemplate-BlankLayout'>
+      {children}
+    </BlankLayout>
+  )
 }
 
 export default AppTemplate
