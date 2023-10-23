@@ -224,13 +224,15 @@ const VerticalNavGroup = (props) => {
     // <CanViewNavGroup navGroup={item}>
       <>
         <ListItem
-          // disablePadding
+          disablePadding
           className='nav-group'
           onClick={handleGroupClick}
-          // sx={{
-          //   mt: 1.5,
-          //   mb: 1.5,
-          // }}
+          sx={{
+            // mt: 1.5,
+            // mb: 1.5,
+            display: 'inherit', // [MM] IMPORTANT !!
+            // flexStart: 1,
+          }}
         >
           <ListItemButton
             className={clsx({
