@@ -47,8 +47,8 @@ import ThemeRegistry from '#/ui/theme/ThemeRegistry'
 // import themeConfig from '#/lib/config/themeConfig'
 
 // ** Layouts MOVED TO TEMPLATE.TSX
-import BlankLayout from '#/ui/layouts/BlankLayout' // this is your default and login layout
-import UserLayout from '#/ui/layouts/UserLayout' // this is your user-authorized (new dashboard) layout
+// import BlankLayout from '#/ui/layouts/BlankLayout' // this is your default and login layout
+// import UserLayout from '#/ui/layouts/UserLayout' // this is your user-authorized (new dashboard) layout
 
 // ** Helper Components
 import Spinner from '#/ui/components/spinner'
@@ -81,7 +81,7 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
       <head />
       <body>
         <main id="ThreeDAppProvider">
-          <>{children}</>
+          {children}
         </main>
       </body>
     </html>
