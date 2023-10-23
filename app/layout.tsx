@@ -251,12 +251,12 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
                             {children}
                           </UserLayout>
                         :
-                          // <BlankLayout>
-                          //   {children}
-                          // </BlankLayout>
-                          <UserLayout>
+                          <BlankLayout>
                             {children}
-                          </UserLayout>
+                          </BlankLayout>
+                          // <UserLayout>
+                          //   {children}
+                          // </UserLayout>
                         }
                       </ThemeRegistry>
                     )}
