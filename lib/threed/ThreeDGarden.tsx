@@ -111,7 +111,7 @@ const debug: boolean = true
 const debugPhysics: boolean = true
 const debugAnimations: boolean = true
 
-const appVersion = 'v0.12.0-a'
+const appVersion = 'v0.15.0-a'
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
 // const appVersion = process.env.npm_package_version
 // const appVersion: string = require('package.json').version

@@ -1,13 +1,15 @@
-'use client'
 // ==============================================================
 // RESOURCES
-// ** FOR ENTIRE APP CONTEXTS
+// ** DEFAULT APP LAYOUT -- TEMPLATE CHILD
+// ?? FOR ENTIRE APP CONTEXTS ??
+
+'use client'
 
 // ** Next
 // import { useRouter, usePathname } from 'next/navigation'
 import type { GetServerSideProps, GetStaticProps } from 'next'
 import { AppProps } from 'next/app'
-import { NextPageContext } from 'next'
+// import { NextPageContext } from 'next'
 
 // ** React
 import type { ReactNode } from 'react'
@@ -24,8 +26,8 @@ import { store as reduxStore } from '#/lib/stores/redux'
 // ** Contexts for User Authorization + Settings
 import { AuthProvider } from '#/lib/contexts/AuthContext'
 
-// ** User Authorization Hook
-import { useAuth } from '#/lib/auth/hooks/useAuth'
+// // ** User Authorization Hook
+// import { useAuth } from '#/lib/auth/hooks/useAuth'
 
 // ** User Authorization Guards/Boundaries (~CORE Components)
 import AuthGuard from '#/ui/auth/AuthGuard'
@@ -44,7 +46,7 @@ import ThemeRegistry from '#/ui/theme/ThemeRegistry'
 // import { aclObjectDefault } from '#/lib/config/acl' // default has 'admin' privileges !!!
 // import themeConfig from '#/lib/config/themeConfig'
 
-// ** Layouts
+// ** Layouts MOVED TO TEMPLATE.TSX
 import BlankLayout from '#/ui/layouts/BlankLayout' // this is your default and login layout
 import UserLayout from '#/ui/layouts/UserLayout' // this is your user-authorized (new dashboard) layout
 
@@ -176,18 +178,18 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
   // const props2 = children.props
   // console.debug('🥕 PROPS: AppLayout.props.children.props', props2)
 
-  // ** Hooks
-  const auth = useAuth()
-  // console.debug('%c🔑 auth', ccm.orange, auth)
-  // console.debug('%c🔑 auth.user', ccm.orange, auth.user)
+  // // ** Hooks
+  // const auth = useAuth()
+  // // console.debug('%c🔑 auth', ccm.orange, auth)
+  // // console.debug('%c🔑 auth.user', ccm.orange, auth.user)
 
-  // const { authGuard, guestGuard, acl } = Component // getLayout, setConfig,
-  let authGuard = true
-  let guestGuard = true
-  let acl = {} // aclObjectDefault // admin priveleges by default, currently
-  // const authGuard = Component?.authGuard ?? false
-  // const guestGuard = Component?.guestGuard ?? false
-  // const acl = Component?.acl ?? aclObjectDefault
+  // // const { authGuard, guestGuard, acl } = Component // getLayout, setConfig,
+  // let authGuard = true
+  // let guestGuard = true
+  // let acl = {} // aclObjectDefault // admin priveleges by default, currently
+  // // const authGuard = Component?.authGuard ?? false
+  // // const guestGuard = Component?.guestGuard ?? false
+  // // const acl = Component?.acl ?? aclObjectDefault
 
   // console.debug('%c🥕 PROPS: AppLayout.props', ccm.orange, props)
   // console.debug('%c🥕 PROPS: AppLayout.Component', ccm.black, Component)
@@ -195,7 +197,7 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
 
   // console.debug('%c=======================================', ccm.black)
 
-  // ** PageComponent.Properties
+  /* ** PageComponent.Properties MOVED TO TEMPLATE.TSX
   const getAppLayout = ({ children }: any): ReactNode => {
     //
     // const { children } = props
@@ -223,6 +225,7 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
       )
     }
   }
+  */
 
   // ** Return JSX
   return (
@@ -238,13 +241,14 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
                   <SettingsConsumer>
                     {({ settings }) => (
                       <ThemeRegistry settings={settings}>
-                        {/* not working as expected
+                        {/* not working as expected *** MOVED TO TEMPLATE.TSX ***
                         {
-                            getAppLayout(
-                              {children}
-                            )
+                          getAppLayout(
+                            {children}
+                          )
                         } */}
                         {/* try this approach instead... */}
+                        {/* nope.. *** MOVED TO TEMPLATE.TSX :) ***
                         {
                           (auth.user && auth.user.role) ?
                           <UserLayout>
@@ -258,6 +262,11 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
                           //   {children}
                           // </UserLayout>
                         }
+                        */}
+                        {/* JUST children PLEASE ***
+                            WRAP with TEMPLATE.TSX ***
+                        */}
+                        {children}
                       </ThemeRegistry>
                     )}
                   </SettingsConsumer>
