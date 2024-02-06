@@ -6,14 +6,14 @@
 'use client'
 
 // ** Next
-// import { useRouter, usePathname } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 // import type { GetServerSideProps, GetStaticProps } from 'next'
 import { AppProps } from 'next/app'
 // import { NextPageContext } from 'next'
 
 // ** React
-// import type { ReactNode } from 'react'
-// import { useEffect } from 'react'
+import type { ReactNode } from 'react'
+import { useEffect } from 'react'
 
 // ** Apollo Client -- State Management using Cache/Store (via GraphQL)
 import { ApolloProvider } from '@apollo/client'
@@ -24,15 +24,15 @@ import { Provider as ReduxProvider } from 'react-redux'
 import { store as reduxStore } from '#/lib/stores/redux'
 
 // // ** Contexts for User Authorization + Settings
-// import { AuthProvider } from '#/lib/contexts/AuthContext'
+import { AuthProvider } from '#/lib/contexts/AuthContext'
 
-// // // ** User Authorization Hook
-// // import { useAuth } from '#/lib/auth/hooks/useAuth'
+// ** User Authorization Hook
+import { useAuth } from '#/lib/auth/hooks/useAuth'
 
-// // ** User Authorization Guards/Boundaries (~CORE Components)
-// import AuthGuard from '#/ui/auth/AuthGuard'
-// // import GuestGuard from '#/ui/auth/GuestGuard'
-// // import AclGuard from '#/ui/auth/AclGuard'
+// ** User Authorization Guards/Boundaries (~CORE Components)
+import AuthGuard from '#/ui/auth/AuthGuard'
+// import GuestGuard from '#/ui/auth/GuestGuard'
+// import AclGuard from '#/ui/auth/AclGuard'
 
 // ** @Fake-DB (axios mock adapter)
 import '#/lib/api/@fake-db'
@@ -68,6 +68,26 @@ import ccm from '#/lib/utils/console-colors'
 // console.debug('%c=======================================', ccm.black)
 console.debug('%c🥕 ThreeDGarden<FC,R3F>: {layout.tsx}', ccm.lightgreen)
 // console.debug('%c=======================================', ccm.black)
+
+// ==============================================================
+
+// // Set Home Forwarding (to First Page) URL, based on User Role
+// const getHomeRoute = (role: any) => {
+//   if (role === 'client') {
+//     // return '/home' // another page
+//     return '/participate' // another page
+//     // return '/acl' // authorized credentials list? (boundary)
+//   }
+//   else if (role === 'admin') {
+//     // return '/' // this page (for testing. not ideal for production.)
+//     return '/home' // another page
+//     // return '/participate' // another page
+//   }
+//   else {
+//     // return '/' // this page (for testing. not ideal for production.)
+//     return '/auth/login'
+//   }
+// }
 
 // ==============================================================
 // ** Security Guard MOVED TO TEMPLATE.TSX
@@ -120,7 +140,7 @@ const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
 
 // provide basic React Provider context node with props.children
 // const ThreeDAppProvider: FC<{ children?: ReactNode }> = (props) => {
-const ThreeDAppProvider = ({ children }: { children: any }): JSX.Element => {
+const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element => {
   // const { children } = props
   return (
     <html lang="en">
@@ -148,13 +168,16 @@ const ThreeDAppProvider = ({ children }: { children: any }): JSX.Element => {
 // const App: FC<AppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => {
 // const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmotion> = (props: any) => {
 // const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayout> = (props: any) => {
-const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.Element => {
+const AppLayout = (
+  { children }: { children: ReactNode },
+  { Component, pageProps }: AppProps)
+  : JSX.Element => {
+
   // **
 
   // // destructure props for vars
   // // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
   // const { Component, pageProps } = props
-  // console.debug('🥕 PROPS: AppLayout.props', props)
   // console.debug('🥕 PROPS: AppLayout.props.children', children)
   // console.debug('🥕 PROPS: AppLayout.props.Component', Component)
   // console.debug('🥕 PROPS: AppLayout.props.pageProps', pageProps)
@@ -228,13 +251,39 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
   }
   */
 
+  // // ** Hooks
+  // const auth = useAuth()
+  // const router = useRouter()
+  // // const pathname = usePathname()
+
+  // // ** OnMount (+ optional return OnUnmount)
+  // useEffect(() => {
+  //   // user AUTHORIZED?
+  //   if (auth.user && auth.user.role) {
+  //     // get Home URL
+  //     const homeRoute = getHomeRoute(auth.user.role)
+  //     console.debug('✅ user AUTHORIZED', auth.user, 'go to:', homeRoute)
+  //     // redirect authorized user to Home URL
+  //     // router.replace(homeRoute)
+  //     router.push(homeRoute)
+  //   }
+  //   // user NOT AUTHORIZED!
+  //   else {
+  //     const homeRoute = getHomeRoute('unauthorized')
+  //     console.debug('❌ user NOT AUTHORIZED', auth.user, 'go to:', homeRoute)
+  //     // redirect un-authorized guest to Home URL
+  //     // router.replace(homeRoute)
+  //     router.push(homeRoute)
+  //   }
+  //   // return <><Spinner /></>
+  // }, [router])
+
   // ** Return JSX
   return (
-    <>
     <ThreeDAppProvider>
-      {/* <AuthProvider> */}
+      <AuthProvider>
         {/* <AuthConsumer authGuard={authGuard} guestGuard={guestGuard}> */}
-          {/* <AuthGuard fallback={<Spinner />}> */}
+        <AuthGuard>
           {/* <AclGuard aclAbilities={acl} guestGuard={guestGuard}> */}
             <ApolloProvider client={client}>
               <ReduxProvider store={reduxStore}>
@@ -243,31 +292,6 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
                   <SettingsConsumer>
                     {({ settings }) => (
                       <ThemeRegistry settings={settings}>
-                        {/* not working as expected *** MOVED TO TEMPLATE.TSX ***
-                        {
-                          getAppLayout(
-                            {children}
-                          )
-                        } */}
-                        {/* try this approach instead... */}
-                        {/* nope.. *** MOVED TO TEMPLATE.TSX :) ***
-                        {
-                          (auth.user && auth.user.role) ?
-                          <UserLayout>
-                            {children}
-                          </UserLayout>
-                        :
-                          <BlankLayout>
-                            {children}
-                          </BlankLayout>
-                          // <UserLayout>
-                          //   {children}
-                          // </UserLayout>
-                        }
-                        */}
-                        {/* JUST children PLEASE ***
-                            WRAP with TEMPLATE.TSX ***
-                        */}
                         {children}
                       </ThemeRegistry>
                     )}
@@ -276,11 +300,10 @@ const AppLayout = ({ children }: any, { Component, pageProps }: AppProps): JSX.E
               </ReduxProvider>
             </ApolloProvider>
           {/* </AclGuard> */}
-          {/* </AuthGuard> */}
+        </AuthGuard>
         {/* </AuthConsumer> */}
-      {/* </AuthProvider> */}
+      </AuthProvider>
     </ThreeDAppProvider>
-    </>
   )
 }
 

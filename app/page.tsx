@@ -10,12 +10,12 @@
 import type { NextPage, NextPageContext } from 'next'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // import Link from 'next/link'
-// import { useRouter, usePathname } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 // ** React
 // import type { ReactNode } from 'react'
 // import React, { FC } from 'react'
-// import { useEffect } from 'react'
+import { useEffect } from 'react'
 
 // ** Hooks
 // import { useAuth } from '#/lib/auth/hooks/useAuth'
@@ -64,11 +64,12 @@ const AppPage: TNextPageWithProps = (props: any): JSX.Element => {
 
   // // ** Hooks
   // const auth = useAuth()
-  // const router = useRouter()
+  const router = useRouter()
   // const pathname = usePathname()
 
-  // // ** OnMount (+ optional return OnUnmount)
-  // useEffect(() => {
+  // ** OnMount (+ optional return OnUnmount)
+  useEffect(() => {
+    router.push('/participate')
   //   // user AUTHORIZED?
   //   if (auth.user && auth.user.role) {
   //     // get Home URL
@@ -87,11 +88,12 @@ const AppPage: TNextPageWithProps = (props: any): JSX.Element => {
   //     router.push(homeRoute)
   //   }
   //   // return <><Spinner /></>
-  // }, [])
+  }, [])
 
 // ==============================================================
 
   // ** Return JSX
+  // return <h1>HEY HEY HEY: page:app</h1>
   return <Spinner />
 }
 // AppPage.getLayout = (page: any) => {page} // <BlankLayout>{page}</BlankLayout>
