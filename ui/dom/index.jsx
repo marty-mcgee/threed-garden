@@ -1,7 +1,7 @@
 import { setState } from '#/lib/threed/stores/store'
 import { useEffect, useRef } from 'react'
 
-const Dom = ({ children }) => {
+const DocumentObjectModel = ({ children }) => {
   const ref = useRef(null)
   useEffect(() => {
     setState({ dom: ref })
@@ -14,4 +14,4 @@ const Dom = ({ children }) => {
   )
 }
 
-export default Dom
+export default DocumentObjectModel
