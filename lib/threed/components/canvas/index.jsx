@@ -256,7 +256,7 @@ export default function ThreeDCanvas({ models, children }) {
 
 // function Watch(props) {
 //   const ref = useRef()
-//   const { nodes, materials } = useGLTF('objects/examples/watch-v1.glb')
+//   const { nodes, materials } = useGLTF('/objects/examples/watch-v1.glb')
 //   useFrame((state) => {
 //     const t = state.clock.getElapsedTime()
 //     ref.current.rotation.x = -Math.PI / 1.75 + Math.cos(t / 4) / 8
@@ -279,7 +279,7 @@ export default function ThreeDCanvas({ models, children }) {
 // }
 
 // function CoffeeCup(props) {
-//   const { nodes, materials } = useGLTF('objects/examples/coffee-transformed.glb')
+//   const { nodes, materials } = useGLTF('/objects/examples/coffee-transformed.glb')
 //   console.debug('materials', materials)
 //   return (
 //     <mesh

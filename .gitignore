@@ -12,6 +12,7 @@
 /build
 
 # misc
+desktop.ini
 .DS_Store
 .env
 # .env.*
