@@ -3,34 +3,35 @@
 // ** DEFAULT APP LAYOUT -- TEMPLATE CHILD
 // ?? FOR ENTIRE APP CONTEXTS ??
 
-'use client'
+// 'use client'
 
 // ** Next
-import { useRouter, usePathname } from 'next/navigation'
+// import { useRouter, usePathname } from 'next/navigation'
 // import type { GetServerSideProps, GetStaticProps } from 'next'
 import { AppProps } from 'next/app'
-// import { NextPageContext } from 'next'
+import { NextPageContext } from 'next'
 
 // ** React
 import type { ReactNode } from 'react'
-import { useEffect } from 'react'
+// import { useEffect } from 'react'
 
 // ** Apollo Client -- State Management using Cache/Store (via GraphQL)
-import { ApolloProvider } from '@apollo/client'
-import { client } from '#/lib/api/graphql/client'
+// import { ApolloProvider } from '@apollo/client'
+// import { client } from '#/lib/api/graphql/client'
 
 // ** Redux Store
-import { Provider as ReduxProvider } from 'react-redux'
-import { store as reduxStore } from '#/lib/stores/redux'
+// import { Provider as ReduxProvider } from 'react-redux'
+// import { store as reduxStore } from '#/lib/stores/redux'
 
 // // ** Contexts for User Authorization + Settings
-import { AuthProvider } from '#/lib/contexts/AuthContext'
+// import { AuthProvider } from '#/lib/contexts/AuthContext'
 
 // ** User Authorization Hook
-import { useAuth } from '#/lib/auth/hooks/useAuth'
+// import { useAuth } from '#/lib/auth/hooks/useAuth'
 
 // ** User Authorization Guards/Boundaries (~CORE Components)
-import AuthGuard from '#/ui/auth/AuthGuard'
+// import ObjectStateReference from '#/ui/dom'
+// import AuthGuard from '#/ui/auth/AuthGuard'
 // import GuestGuard from '#/ui/auth/GuestGuard'
 // import AclGuard from '#/ui/auth/AclGuard'
 
@@ -62,6 +63,14 @@ import ThemeRegistry from '#/ui/theme/ThemeRegistry'
 
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
+
+import "./globals.css"
+// import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import Footer from "@/components/footer"
+import Header from "@/components/header"
+
+const inter = Inter({ subsets: ["latin"] })
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -142,13 +151,27 @@ const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
 // const ThreeDAppProvider: FC<{ children?: ReactNode }> = (props) => {
 const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element => {
   // const { children } = props
+  // return (
+  //   <html lang="en">
+  //     <head />
+  //     <body>
+  //       <main id="ThreeDAppProvider">
+  //         {children}
+  //       </main>
+  //     </body>
+  //   </html>
+  // )
   return (
     <html lang="en">
       <head />
-      <body>
-        <main id="ThreeDAppProvider">
-          {children}
-        </main>
+      <body className={inter.className}>
+        <div className="flex flex-col justify-between w-full h-full min-h-screen">
+          <Header />
+          <main id="ThreeDAppProvider" className="flex-auto w-full max-w-3xl px-4 py-4 mx-auto sm:px-6 md:py-6">
+            {children}
+          </main>
+          <Footer />
+        </div>
       </body>
     </html>
   )
@@ -168,10 +191,13 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
 // const App: FC<AppPropsWithLayoutEmotion> = (props: AppPropsWithLayoutEmotion) => {
 // const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmotion> = (props: any) => {
 // const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayout> = (props: any) => {
-const AppLayout = (
-  { children }: { children: ReactNode },
-  { Component, pageProps }: AppProps)
-  : JSX.Element => {
+
+// const AppLayout = (
+//   { children }: { children: ReactNode },
+//   { Component, pageProps }: AppProps)
+//   : JSX.Element => {
+
+const AppLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
 
   // **
 
@@ -281,31 +307,40 @@ const AppLayout = (
   // ** Return JSX
   return (
     <ThreeDAppProvider>
-      <AuthProvider>
-        {/* <AuthConsumer authGuard={authGuard} guestGuard={guestGuard}> */}
-        <AuthGuard>
-          {/* <AclGuard aclAbilities={acl} guestGuard={guestGuard}> */}
-            <ApolloProvider client={client}>
-              <ReduxProvider store={reduxStore}>
-                {/* <SettingsProvider { ...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null }) }> */}
-                <SettingsProvider { ...({ pageSettings: null }) }>
-                  <SettingsConsumer>
-                    {({ settings }) => (
-                      <ThemeRegistry settings={settings}>
-                        {children}
-                      </ThemeRegistry>
-                    )}
-                  </SettingsConsumer>
-                </SettingsProvider>
-              </ReduxProvider>
-            </ApolloProvider>
-          {/* </AclGuard> */}
-        </AuthGuard>
-        {/* </AuthConsumer> */}
-      </AuthProvider>
+      {/* <ObjectStateReference> */}
+        {/* <AuthProvider> */}
+          {/* <AuthConsumer authGuard={authGuard} guestGuard={guestGuard}> */}
+          {/* <AuthGuard> */}
+            {/* <AclGuard aclAbilities={acl} guestGuard={guestGuard}> */}
+              {/* <ApolloProvider client={client}> */}
+                {/* <ReduxProvider store={reduxStore}> */}
+                  {/* <SettingsProvider { ...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null }) }> */}
+                  {/* <SettingsProvider { ...({ pageSettings: null }) }> */}
+                    {/* <SettingsConsumer> */}
+                      {/* {({ settings }) => ( */}
+                        {/* <ThemeRegistry settings={settings}> */}
+                        <ThemeRegistry settings={{}}>
+                          {/* <UserLayout key='ThreeDAppLayout-UserLayout'> */}
+
+                            <>{children}</>
+
+                          {/* </UserLayout> */}
+                        </ThemeRegistry>
+                      {/* )} */}
+                    {/* </SettingsConsumer> */}
+                  {/* </SettingsProvider> */}
+                {/* </ReduxProvider> */}
+              {/* </ApolloProvider> */}
+            {/* </AclGuard> */}
+          {/* </AuthGuard> */}
+          {/* </AuthConsumer> */}
+        {/* </AuthProvider> */}
+      {/* </ObjectStateReference> */}
     </ThreeDAppProvider>
   )
 }
+
+export default AppLayout
 
 /* not working, for some reason
 AppLayout.getInitialProps = async (ctx: NextPageContext) => {
@@ -326,7 +361,7 @@ AppLayout.getInitialProps = async (ctx: NextPageContext) => {
         setConfig: 'true',
         authGuard: false,
         guestGuard: true,
-        acl: aclObjectDefault, // acl, {},
+        acl: {}, // aclObjectDefault, acl, {},
       },
     },
     revalidate: 10,
@@ -349,5 +384,3 @@ AppLayout.getInitialProps = async (ctx: NextPageContext) => {
 //   guestGuard: true,
 //   acl: aclObjectDefault, // acl, {},
 // }
-
-export default AppLayout
