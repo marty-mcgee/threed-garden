@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.15.0-alpha.24",
+  "version": "0.15.0-alpha.25",
   "description": "React + TypeScript + Three.js app using Material UI for Next.js 13, Apollo + Zustand, GraphQL + WordPress REST APIs, for ThreeD web development.. a part of the threed.ai code family.",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
@@ -123,7 +123,7 @@
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "5.35.1",
     "@typescript-eslint/parser": "5.35.1",
-    "autoprefixer": "^10.4.13",
+    "autoprefixer": "^10.4.15",
     "cross-env": "^7.0.3",
     "eslint": "^8.30.0",
     "eslint-config-next": "^13.1.1",

@@ -1,3 +1,5 @@
+'use client'
+
 import { useQuery, gql } from "@apollo/client"
 
 // string

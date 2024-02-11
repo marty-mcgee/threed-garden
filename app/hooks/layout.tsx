@@ -1,7 +1,7 @@
 import { fetchCategories } from '#/lib/data/getCategories';
 import { Boundary } from '#/ui/playground/Boundary';
 import { ClickCounter } from '#/ui/playground/ClickCounter';
-import HooksClient from '#/ui/playground/HooksClient';
+// import HooksClient from '#/ui/playground/HooksClient';
 import HooksServer from '#/ui/playground/HooksServer';
 import { TabGroup } from '#/ui/playground/TabGroup';
 import React from 'react';
@@ -35,7 +35,8 @@ export default async function Layout({
       </div>
 
       <Boundary labels={['Client Component Hooks']}>
-        <HooksClient />
+        {/* <HooksClient /> */}
+        <h2>HooksClient</h2>
       </Boundary>
       <Boundary labels={['Server Component Hooks']}>
         <HooksServer />
