@@ -1,7 +1,11 @@
+// 'use client'
+
 import { setState } from '#/lib/threed/stores/store'
 import { useEffect, useRef } from 'react'
 
-const DocumentObjectModel = ({ children }) => {
+const ObjectStateReference = ({ children }) => {
+  // ** HEY HEY HEY
+  console.debug('OBJECT STATE REFERENCE (dom/wrapper useRef)')
   const ref = useRef(null)
   useEffect(() => {
     setState({ dom: ref })
@@ -14,4 +18,4 @@ const DocumentObjectModel = ({ children }) => {
   )
 }
 
-export default DocumentObjectModel
+export default ObjectStateReference
