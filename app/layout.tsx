@@ -167,7 +167,7 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
       <body className={inter.className}>
         <div className="flex flex-col justify-between w-full h-full min-h-screen">
           <Header />
-          <main id="ThreeDAppProvider" className="flex-auto w-full max-w-3xl px-4 py-4 mx-auto sm:px-6 md:py-6">
+          <main id="ThreeDAppProvider" className="flex-auto w-full px-2 py-2 mx-auto sm:px-4 md:py-4">
             {children}
           </main>
           <Footer />
