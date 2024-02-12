@@ -6,6 +6,10 @@
 // ==============================================================
 // RESOURCES (to import)
 
+import CustomLink from "@/components/custom-link"
+import SessionData from "@/components/session-data"
+import { auth } from "auth"
+
 // ** Next
 import type { NextPage, NextPageContext } from 'next'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
@@ -57,10 +61,19 @@ console.debug('%c🥕 ThreeDGarden<FC,R3F>: {page.tsx}', ccm.green)
 // export default function Page<NextPage>() {
 // const AppPage: NextPage<TPageProps> = (): JSX.Element => {
 // const AppPage: NextPage = (): JSX.Element => {
-const AppPage: TNextPageWithProps = (props: any): JSX.Element => {
+const AppPage: TNextPageWithProps = async (props: any): Promise<JSX.Element> => {
 // const AppPage: NextPage = (props) => {
   // **
   // console.debug('%c🥕 PROPS: AppPage.props', ccm.green, props)
+
+  const session = await auth()
+
+  if (session) {
+    if (session.user) {
+      console.debug('NEXT-AUTH session.user', session.user)
+    }
+    console.debug('NEXT-AUTH session', session)
+  }
 
   // // ** Hooks
   // const auth = useAuth()
@@ -95,7 +108,24 @@ const AppPage: TNextPageWithProps = (props: any): JSX.Element => {
   // ** Return JSX
   // return <h1>HEY HEY HEY: page:app</h1>
   // return <Spinner />
-  return <><Spinner /><h1>HEY HEY HEY: page:app</h1></>
+  return (
+    <>
+      <h1>🌱 Welcome to ThreeD Garden</h1>
+      <h2>app:page</h2>
+      <p>
+        This page is server-rendered as a{" "}
+        <CustomLink href="https://nextjs.org/docs/app/building-your-application/rendering/server-components">
+          React Server Component
+        </CustomLink>
+        . It gets the session data on the server using{" "}
+        <CustomLink href="https://nextjs.authjs.dev#auth">
+          <code>auth()</code>
+        </CustomLink>{" "}
+        method.
+      </p>
+      <SessionData session={session} />
+    </>
+  )
 }
 // AppPage.getLayout = (page: any) => {page} // <BlankLayout>{page}</BlankLayout>
 // AppPage.setConfig = () => true

@@ -18,16 +18,33 @@ import { Button } from "./ui/button"
 
 export function MainNav() {
   return (
-    <div className="flex items-center space-x-2 lg:space-x-6">
+    <div className="flex items-center space-x-1 lg:space-x-1">
       <CustomLink href="/">
-        <Button className="p-0">
+        {/* <Button className="p-0">
           <Image src="/favicon/apple-icon.png" alt="Home" width="48" height="48" />
-        </Button>
+        </Button> */}
+        <Image src="/favicon/apple-icon.png" alt="Home" width="48" height="48" />
       </CustomLink>
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
-            <NavigationMenuTrigger>Server Side</NavigationMenuTrigger>
+            <NavigationMenuTrigger>Participate</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                <ListItem href="/home" title="Home">
+                  Go to the home page.
+                </ListItem>
+                <ListItem href="/participate" title="Participate">
+                  Use the ThreeD Garden interface.
+                </ListItem>
+                <ListItem href="/page" title="About Page">
+                  Read more about this project's pages.
+                </ListItem>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Server</NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                 <ListItem href="/server-example" title="RSC Example">
@@ -47,7 +64,7 @@ export function MainNav() {
               href="/client-example"
               className={navigationMenuTriggerStyle()}
             >
-              Client Side
+              Client
             </NavigationMenuLink>
           </NavigationMenuItem>
         </NavigationMenuList>
