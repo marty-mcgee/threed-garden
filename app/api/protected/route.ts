@@ -5,14 +5,14 @@ export const GET = auth((req) => {
   const res = Response.toString()
 
   if (req.auth) {
-    // return Response.json({ data: "Protected data" })
+    return Response.json({ data: "Protected data" })
     // return Response
     // return req
     // return
     return JSON.parse(res)
   }
 
-  // return Response.json({ message: "Not authenticated" }, { status: 401 })
+  return Response.json({ message: "Not authenticated" }, { status: 401 })
   // return Response
   // return req
   // return
