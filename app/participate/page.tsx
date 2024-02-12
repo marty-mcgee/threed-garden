@@ -1,11 +1,15 @@
-'use client'
+// 'use client'
+
+import { auth } from "auth"
+import ClientExample from "@/components/client-example"
+import { SessionProvider } from "next-auth/react"
 
 // ** Next Imports
 // import type { NextPage } from 'next'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 
 // ** React Imports
-import { useContext } from 'react'
+// import { useContext } from 'react'
 
 // ** Context Imports
 import { AbilityContext } from '#/lib/auth/acl/Can'
@@ -25,7 +29,7 @@ import ThreeDGarden from '#/lib/threed/ThreeDGarden'
 
 const ParticipatePage: TNextPageWithProps = () => {
   // ** Hooks
-  const ability = useContext(AbilityContext)
+  // const ability = useContext(AbilityContext)
 
   return (
     <Grid
@@ -49,7 +53,7 @@ const ParticipatePage: TNextPageWithProps = () => {
           </CardContent>
         </Card>
       </Grid>
-      {ability?.can('read', 'analytics') && (
+      {/* {ability?.can('read', 'analytics') && ( */}
         <Grid
           item
           md={6}
@@ -63,7 +67,7 @@ const ParticipatePage: TNextPageWithProps = () => {
             </CardContent>
           </Card>
         </Grid>
-      )}
+      {/* )} */}
     </Grid>
   )
 }
