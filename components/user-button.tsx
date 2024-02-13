@@ -15,10 +15,10 @@ export default async function UserButton() {
   if (!session?.user) return <SignIn />
   return (
     <>
-      <div>{session.user.name}</div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className="relative w-4 h-4 rounded-full">
+          <Button className="relative rounded-full">
+            <div className="mr-2">{session.user.name}</div>
             <Avatar className="w-12 h-12">
               {session.user.image && (
                 <AvatarImage
