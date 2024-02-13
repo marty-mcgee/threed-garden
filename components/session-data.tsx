@@ -7,15 +7,15 @@ export default function SessionData({ session }: { session: Session | null }) {
         <h2 className="text-xl font-bold">Current Session Data</h2>
         {Object.keys(session.user).length > 3 ? (
           <p>
-            In this example, the whole session object is passed to the page,
+            {/* In this example, the whole session object is passed to the page,
             including the raw user object. Our recommendation is to{" "}
             <em>only pass the necessary fields</em> to the page, as the raw user
-            object may contain sensitive information.
+            object may contain sensitive information. */}
           </p>
         ) : (
           <p>
-            In this example, only some fields in the user object is passed to
-            the page to avoid exposing sensitive information.
+            {/* In this example, only some fields in the user object is passed to
+            the page to avoid exposing sensitive information. */}
           </p>
         )}
         <pre>{JSON.stringify(session, null, 2)}</pre>
