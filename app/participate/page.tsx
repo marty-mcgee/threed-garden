@@ -1,7 +1,7 @@
 // 'use client'
 
 import { auth } from "auth"
-import ClientExample from "@/components/client-example"
+// import ClientExample from "@/components/client-example"
 import { SessionProvider } from "next-auth/react"
 
 // ** Next Imports
@@ -23,11 +23,12 @@ import CardContent from '@mui/material/CardContent'
 
 // ** ThreeDGarden Imports
 import ThreeDGarden from '#/lib/threed/ThreeDGarden'
-// const ThreeDGarden = dynamic(() => import('#/lib/threed/ThreeDGarden'), {
-//   ssr: false,
-// })
 
-const ParticipatePage: TNextPageWithProps = () => {
+const ParticipatePage: TNextPageWithProps = async () => {
+
+  const session = await auth()
+  console.debug('Participate page: session', session)
+
   // ** Hooks
   // const ability = useContext(AbilityContext)
 

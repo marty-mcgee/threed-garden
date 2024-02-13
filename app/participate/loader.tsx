@@ -1,4 +1,4 @@
-'use client'
+// 'use client'
 
 // ** Helper Components
 import Spinner from '#/ui/components/spinner'
@@ -13,6 +13,6 @@ import Spinner from '#/ui/components/spinner'
 export default function Loader() {
   // return <Loader />
   // return <LoaderSimple />
-  // return <Spinner />
+  return <Spinner />
   return <div>Loading...</div>
 }

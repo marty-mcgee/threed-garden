@@ -194,9 +194,9 @@ interface IHeyHeyHeys {
 const postdata: IPostData = {
   plugin_name: 'ThreeD Garden',
   plugin_version: appVersion,
-  plugin_url: 'https://threed.design.local/',
+  plugin_url: 'https://threed.design/',
   theme_uri: 'dark',
-  rest_url: 'https://threed.design.local/wp-json/wp/v2/',
+  rest_url: 'https://threed.design/wp-json/wp/v2/',
   world_id: 1,
   scene_id: 1,
 }
