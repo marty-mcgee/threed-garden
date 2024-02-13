@@ -111,7 +111,7 @@ const AppPage: TNextPageWithProps = async (props: any): Promise<JSX.Element> => 
   return (
     <>
       <h1>🌱 Welcome {session?.user?.name} to ThreeD Garden</h1>
-      <h2>app:page</h2>
+      <h2>threed:next14:app:page</h2>
       {/* <p>
         This page is server-rendered as a{" "}
         <CustomLink href="https://nextjs.org/docs/app/building-your-application/rendering/server-components">
