@@ -47,7 +47,7 @@ import ThemeRegistry from '#/ui/theme/ThemeRegistry'
 // import { aclObjectDefault } from '#/lib/config/acl' // default has 'admin' privileges !!!
 // import themeConfig from '#/lib/config/themeConfig'
 
-// ** Layouts
+// ** Layouts MOVED TO TEMPLATE.TSX
 // import BlankLayout from '#/ui/layouts/BlankLayout' // this is your default and login layout
 // import UserLayout from '#/ui/layouts/UserLayout' // this is your user-authorized (new dashboard) layout
 
@@ -79,12 +79,88 @@ console.debug('%c🥕 ThreeDGarden<FC,R3F>: {layout.tsx}', ccm.lightgreen)
 // console.debug('%c=======================================', ccm.black)
 
 // ==============================================================
+
+// // Set Home Forwarding (to First Page) URL, based on User Role
+// const getHomeRoute = (role: any) => {
+//   if (role === 'client') {
+//     // return '/home' // another page
+//     return '/participate' // another page
+//     // return '/acl' // authorized credentials list? (boundary)
+//   }
+//   else if (role === 'admin') {
+//     // return '/' // this page (for testing. not ideal for production.)
+//     return '/home' // another page
+//     // return '/participate' // another page
+//   }
+//   else {
+//     // return '/' // this page (for testing. not ideal for production.)
+//     return '/auth/login'
+//   }
+// }
+
+// ==============================================================
+// ** Security Guard MOVED TO TEMPLATE.TSX
+/*
+const AuthConsumer = ({ children, authGuard, guestGuard }: any) => {
+  if (!guestGuard && !authGuard) {
+    console.debug('%c📛 NoGuard loading... :(', ccm.red)
+    // console.debug('%c=======================================', ccm.black)
+    return (
+      <AuthGuard fallback={<Spinner />}>
+        <>{children}</>
+      </AuthGuard>
+    )
+  }
+  else if (authGuard) {
+    console.debug('%c🔱 AuthGuard loading...', ccm.red)
+    // console.debug('%c=======================================', ccm.black)
+    return (
+      <AuthGuard fallback={<Spinner />}>
+        <>{children}</>
+      </AuthGuard>
+    )
+  }
+  else if (guestGuard) {
+    console.debug('%c⚜ GuestGuard loading... :(', ccm.red)
+    // console.debug('%c=======================================', ccm.black)
+    return (
+      // <GuestGuard fallback={<Spinner />}>
+      //   <>{children}</>
+      // </GuestGuard>
+      <AuthGuard fallback={<Spinner />}>
+        <>{children}</>
+      </AuthGuard>
+    )
+  }
+  else {
+    console.debug('%c🔱 AuthGuard loading BY DEFAULT... :(', ccm.red)
+    // console.debug('%c=======================================', ccm.black)
+    return (
+      <AuthGuard fallback={<Spinner />}>
+        <>{children}</>
+      </AuthGuard>
+    )
+  }
+}
+*/
+
+// ==============================================================
 // MAIN APP TEMPLATE WRAPPER
 
 // provide basic React Provider context node with props.children
 // const ThreeDAppProvider: FC<{ children?: ReactNode }> = (props) => {
 const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element => {
   // const { children } = props
+  // return (
+  //   <html lang="en">
+  //     <head />
+  //     <body>
+  //       <main id="ThreeDAppProvider">
+  //         {children}
+  //       </main>
+  //     </body>
+  //   </html>
+  // )
   return (
     <html lang="en">
       <head />
@@ -200,6 +276,33 @@ const AppLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
     }
   }
   */
+
+  // // ** Hooks
+  // const auth = useAuth()
+  // const router = useRouter()
+  // // const pathname = usePathname()
+
+  // // ** OnMount (+ optional return OnUnmount)
+  // useEffect(() => {
+  //   // user AUTHORIZED?
+  //   if (auth.user && auth.user.role) {
+  //     // get Home URL
+  //     const homeRoute = getHomeRoute(auth.user.role)
+  //     console.debug('✅ user AUTHORIZED', auth.user, 'go to:', homeRoute)
+  //     // redirect authorized user to Home URL
+  //     // router.replace(homeRoute)
+  //     router.push(homeRoute)
+  //   }
+  //   // user NOT AUTHORIZED!
+  //   else {
+  //     const homeRoute = getHomeRoute('unauthorized')
+  //     console.debug('❌ user NOT AUTHORIZED', auth.user, 'go to:', homeRoute)
+  //     // redirect un-authorized guest to Home URL
+  //     // router.replace(homeRoute)
+  //     router.push(homeRoute)
+  //   }
+  //   // return <><Spinner /></>
+  // }, [router])
 
   // ** Return JSX
   return (
