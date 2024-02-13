@@ -110,9 +110,9 @@ const AppPage: TNextPageWithProps = async (props: any): Promise<JSX.Element> => 
   // return <Spinner />
   return (
     <>
-      <h1>🌱 Welcome to ThreeD Garden</h1>
+      <h1>🌱 Welcome {session?.user?.name} to ThreeD Garden</h1>
       <h2>app:page</h2>
-      <p>
+      {/* <p>
         This page is server-rendered as a{" "}
         <CustomLink href="https://nextjs.org/docs/app/building-your-application/rendering/server-components">
           React Server Component
@@ -122,7 +122,7 @@ const AppPage: TNextPageWithProps = async (props: any): Promise<JSX.Element> => 
           <code>auth()</code>
         </CustomLink>{" "}
         method.
-      </p>
+      </p> */}
       <SessionData session={session} />
     </>
   )
