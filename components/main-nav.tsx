@@ -19,7 +19,7 @@ import React from "react"
 export function MainNav() {
   return (
     <div className="flex items-center space-x-0 lg:space-x-0">
-      <CustomLink href="/" className="mt-2">
+      <CustomLink href="/" className="mt-1">
         {/* <Button className="p-0">
           <Image src="/favicon/apple-icon.png" alt="Home" width="48" height="48" />
         </Button> */}
