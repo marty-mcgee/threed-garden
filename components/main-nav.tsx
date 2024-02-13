@@ -25,6 +25,7 @@ export function MainNav() {
         </Button> */}
         <Image src="/favicon/apple-icon.png" alt="Home" width="48" height="48" />
       </CustomLink>
+      <h3 className="pl-2"><strong>THREED GARDEN</strong></h3>
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
