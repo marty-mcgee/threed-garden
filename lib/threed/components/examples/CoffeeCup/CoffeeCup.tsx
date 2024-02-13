@@ -2,6 +2,7 @@ import { useGLTF } from '@react-three/drei'
 
 export default function Cup(props: any) {
   // @ ts-expect-error
+  // @ts-ignore
   const { nodes, materials } = useGLTF('objects/examples/coffee-transformed.glb')
   console.debug('nodes, materials', nodes, materials)
 
