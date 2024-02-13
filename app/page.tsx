@@ -70,9 +70,9 @@ const AppPage: TNextPageWithProps = async (props: any): Promise<JSX.Element> => 
 
   if (session) {
     if (session.user) {
-      console.debug('NEXT-AUTH session.user', session.user)
+      // console.debug('NEXT-AUTH session.user', session.user)
     }
-    console.debug('NEXT-AUTH session', session)
+    // console.debug('NEXT-AUTH session', session)
   }
 
   // // ** Hooks
