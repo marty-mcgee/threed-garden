@@ -10,7 +10,7 @@ export default function Cup(props: any) {
     <mesh
       receiveShadow
       castShadow
-      geometry={nodes.coffee_cup_top_16oz.geometry}
+      // geometry={nodes.coffee_cup_top_16oz.geometry}
       material={materials['13 - Default']}
       {...props}
       dispose={null}
