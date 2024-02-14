@@ -75,7 +75,7 @@ import ToolIconAddText from '@mui/icons-material/TextFields'
 // import * as THREE from 'three'
 // ** Three JS Controls
 // ** Three JS Loaders
-import { Loader } from '@react-three/drei'
+// import { Loader } from '@react-three/drei'
 // -- use React Three Fiber R3F hooks: useFBX, useOBJ, etc --
 // import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 // import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -351,14 +351,14 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <ApolloConsumer>
+      {/* <ApolloConsumer>
         {(client) => (
           <>
             <Button onClick={() => saveToDB(client)}>save to db</Button>
             <Button onClick={() => loadFromDB(client)}>load from db</Button>
           </>
         )}
-      </ApolloConsumer>
+      </ApolloConsumer> */}
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
     </Box>
@@ -404,14 +404,14 @@ const WorkspaceControlPanel: FC = (_type: string = 'workspace'): JSX.Element => 
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <ApolloConsumer>
+      {/* <ApolloConsumer>
         {(client) => (
           <>
             <Button onClick={() => saveToDB(client)}>save to db</Button>
             <Button onClick={() => loadFromDB(client)}>load from db</Button>
           </>
         )}
-      </ApolloConsumer>
+      </ApolloConsumer> */}
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
     </Box>
@@ -457,14 +457,14 @@ const PlanControlPanel: FC = (_type: string = 'plan'): JSX.Element => {
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <ApolloConsumer>
+      {/* <ApolloConsumer>
         {(client) => (
           <>
             <Button onClick={() => saveToDB(client)}>save to db</Button>
             <Button onClick={() => loadFromDB(client)}>load from db</Button>
           </>
         )}
-      </ApolloConsumer>
+      </ApolloConsumer> */}
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
     </Box>
@@ -510,14 +510,14 @@ const ThreeDControlPanel: FC = (_type: string = 'threed'): JSX.Element => {
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <ApolloConsumer>
+      {/* <ApolloConsumer>
         {(client) => (
           <>
             <Button onClick={() => saveToDB(client)}>save to db</Button>
             <Button onClick={() => loadFromDB(client)}>load from db</Button>
           </>
         )}
-      </ApolloConsumer>
+      </ApolloConsumer> */}
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
     </Box>
@@ -563,14 +563,14 @@ const FileControlPanel: FC = (_type: string = 'file'): JSX.Element => {
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <ApolloConsumer>
+      {/* <ApolloConsumer>
         {(client) => (
           <>
             <Button onClick={() => saveToDB(client)}>save to db</Button>
             <Button onClick={() => loadFromDB(client)}>load from db</Button>
           </>
         )}
-      </ApolloConsumer>
+      </ApolloConsumer> */}
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
     </Box>
@@ -640,14 +640,14 @@ const SceneControlPanel: FC = (_type: string = 'scene'): JSX.Element => {
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <ApolloConsumer>
+      {/* <ApolloConsumer>
         {(client) => (
           <>
             <Button onClick={() => saveToDB(client)}>save to db</Button>
             <Button onClick={() => loadFromDB(client)}>load from db</Button>
           </>
         )}
-      </ApolloConsumer>
+      </ApolloConsumer> */}
       <Button onClick={removeAll}>remove all</Button>
       <Button onClick={getState}>state</Button>
       <Button onClick={loadToWorkspace}>load</Button>
@@ -696,14 +696,14 @@ const AllotmentControlPanel: FC = (_type: string = 'allotment'): JSX.Element => 
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <ApolloConsumer>
+      {/* <ApolloConsumer>
         {(client) => (
           <>
             <Button onClick={() => saveToDB(client)}>save to db</Button>
             <Button onClick={() => loadFromDB(client)}>load from db</Button>
           </>
         )}
-      </ApolloConsumer>
+      </ApolloConsumer> */}
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>add to count</Button> */}
     </Box>
@@ -749,14 +749,14 @@ const BedControlPanel: FC = (_type: string = 'bed'): JSX.Element => {
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <ApolloConsumer>
+      {/* <ApolloConsumer>
         {(client) => (
           <>
             <Button onClick={() => saveToDB(client)}>save to db</Button>
             <Button onClick={() => loadFromDB(client)}>load from db</Button>
           </>
         )}
-      </ApolloConsumer>
+      </ApolloConsumer> */}
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>add to count</Button> */}
     </Box>
@@ -802,14 +802,14 @@ const PlantControlPanel: FC = (_type: string = 'plant'): JSX.Element => {
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <ApolloConsumer>
+      {/* <ApolloConsumer>
         {(client) => (
           <>
             <Button onClick={() => saveToDB(client)}>save to db</Button>
             <Button onClick={() => loadFromDB(client)}>load from db</Button>
           </>
         )}
-      </ApolloConsumer>
+      </ApolloConsumer> */}
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>add to count</Button> */}
     </Box>
@@ -855,14 +855,14 @@ const PlantingPlanControlPanel: FC = (_type: string = 'planting_plan'): JSX.Elem
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <ApolloConsumer>
+      {/* <ApolloConsumer>
         {(client) => (
           <>
             <Button onClick={() => saveToDB(client)}>save to db</Button>
             <Button onClick={() => loadFromDB(client)}>load from db</Button>
           </>
         )}
-      </ApolloConsumer>
+      </ApolloConsumer> */}
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>add to count</Button> */}
     </Box>
@@ -3636,7 +3636,7 @@ const ThreeDGarden = (): JSX.Element => {
                 <ProjectControlPanel />
                 <ProjectInfoPanel />
               </MDTabPanel>
-              {/* <MDTabPanel value={tabInfoControl} index={1}>
+              <MDTabPanel value={tabInfoControl} index={1}>
                 <WorkspaceControlPanel />
                 <WorkspaceInfoPanel />
               </MDTabPanel>
@@ -3671,7 +3671,7 @@ const ThreeDGarden = (): JSX.Element => {
               <MDTabPanel value={tabInfoControl} index={9}>
                 <PlantingPlanControlPanel />
                 <PlantingPlanInfoPanel />
-              </MDTabPanel> */}
+              </MDTabPanel>
               <MDTabPanel value={tabInfoControl} index={10}>
                 Testing Panel
                 {/* <CharacterControlPanel /> */}
