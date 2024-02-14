@@ -100,8 +100,8 @@ export default function ThreeDCanvas({ models, children }) {
       <Preload all />
 
       {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
-      {/* <Suspense fallback={null}> */}
-      <Suspense fallback={<LoaderSimple />}>
+      <Suspense fallback={null}>
+      {/* <Suspense fallback={<LoaderSimple />}> */}
         {/* <Environment preset='forest' background /> */}
 
         <ThreeDControls />

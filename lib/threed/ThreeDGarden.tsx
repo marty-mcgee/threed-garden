@@ -3511,7 +3511,9 @@ const MyComponent: FC = (): JSX.Element => {
   return <div>...MyComponent [returns] JSX here...</div>
 }
 
-const ThreeDGarden: FC = (props: any): JSX.Element => {
+const ThreeDGarden = ({ session }: { session: Session | null }): JSX.Element => {
+  // **
+  // console.debug('ThreeDGarden page: session', session)
   // ==========================================================
   // LOCAL VARS
 
@@ -3579,7 +3581,7 @@ const ThreeDGarden: FC = (props: any): JSX.Element => {
       id='threedgarden-div'
       style={{ width: '100%' }}
     >
-      {/* <Loader /> */}
+      <Loader />
 
       <Suspense fallback={null}>
       {/* <div ref={title}>ThreeDGarden: {word}</div> */}

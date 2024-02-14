@@ -1,8 +1,7 @@
 // 'use client'
 
 import { auth } from "auth"
-// import ClientExample from "@/components/client-example"
-import { SessionProvider } from "next-auth/react"
+import SessionData from "@/components/session-data"
 
 // ** Next Imports
 // import type { NextPage } from 'next'
@@ -27,7 +26,16 @@ import ThreeDGarden from '#/lib/threed/ThreeDGarden'
 const ParticipatePage: TNextPageWithProps = async () => {
 
   const session = await auth()
-  console.debug('Participate page: session', session)
+  // console.debug('Participate page: session', session)
+  // filter out sensitive data before passing to client.
+  if (session?.user) {
+    session.user = {
+      name: session.user.name,
+      email: session.user.email,
+      image: session.user.image,
+      // project_id: 1,
+    }
+  }
 
   // ** Hooks
   // const ability = useContext(AbilityContext)
@@ -38,7 +46,7 @@ const ParticipatePage: TNextPageWithProps = async () => {
       spacing={2}
     >
       {/* [MM] HEY HEY HEY */}
-      <ThreeDGarden />
+      <ThreeDGarden session={{session}} />
       {/* [MM] HEY HEY HEY */}
 
       <Grid
