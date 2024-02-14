@@ -75,7 +75,7 @@ const inter = Inter({ subsets: ["latin"] })
 // ==============================================================
 // IMPORTS COMPLETE
 // console.debug('%c=======================================', ccm.black)
-console.debug('%c🥕 ThreeDGarden<FC,R3F>: {layout.tsx}', ccm.lightgreen)
+// console.debug('%c🥕 ThreeDGarden<FC,R3F>: {layout.tsx}', ccm.lightgreen)
 // console.debug('%c=======================================', ccm.black)
 
 // ==============================================================

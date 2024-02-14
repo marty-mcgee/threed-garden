@@ -1,7 +1,9 @@
 // 'use client'
+'use server'
 
 import { auth } from "auth"
 import SessionData from "@/components/session-data"
+import { SessionProvider } from "next-auth/react"
 
 // ** Next Imports
 // import type { NextPage } from 'next'
@@ -46,7 +48,10 @@ const ParticipatePage: TNextPageWithProps = async () => {
       spacing={2}
     >
       {/* [MM] HEY HEY HEY */}
-      <ThreeDGarden session={{session}} />
+      <SessionProvider session={session}>
+        <ThreeDGarden />
+        {/* <ThreeDGarden session={session} /> */}
+      </SessionProvider>
       {/* [MM] HEY HEY HEY */}
 
       <Grid
@@ -59,6 +64,9 @@ const ParticipatePage: TNextPageWithProps = async () => {
           <CardContent>
             <Typography sx={{ mb: 4 }}>No user role 'ability' is required to view this card</Typography>
             <Typography sx={{ color: 'primary.main' }}>This card is visible to both 'user' and 'admin'</Typography>
+            <Typography sx={{ color: 'primary.main' }}>
+              <SessionData session={session} />
+            </Typography>
           </CardContent>
         </Card>
       </Grid>
@@ -72,7 +80,10 @@ const ParticipatePage: TNextPageWithProps = async () => {
             <CardHeader title='Restricted Content' />
             <CardContent>
               <Typography sx={{ mb: 4 }}>User with "analytics: read" ability can view this card</Typography>
-              <Typography sx={{ color: 'error.main' }}>This card is visible to 'admin' only</Typography>
+              <Typography sx={{ color: 'warning.main' }}>This card is visible to 'admin' only</Typography>
+              <Typography sx={{ color: 'warning.main' }}>
+                <SessionData session={session} />
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
