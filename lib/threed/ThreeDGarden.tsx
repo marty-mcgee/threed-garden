@@ -7,7 +7,7 @@
 // ==========================================================
 
 // ** Next Imports
-import { SessionProvider } from "next-auth/react"
+// import { SessionProvider } from "next-auth/react"
 import { useSession } from "next-auth/react"
 // hint: const { data: session, status } = useSession()
 
@@ -3588,7 +3588,6 @@ const ThreeDGarden = (): JSX.Element => {
   // ==========================================================
   // FC returns JSX
   return (
-    <SessionProvider session={session}>
     <ApolloProvider client={client}>
       {/* <ApolloConsumer> */}
         {/* <div
@@ -3707,7 +3706,6 @@ const ThreeDGarden = (): JSX.Element => {
         {/* </div> */}
       {/* </ApolloConsumer> */}
     </ApolloProvider>
-    </SessionProvider>
   )
 }
 
