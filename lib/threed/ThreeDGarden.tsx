@@ -6,6 +6,11 @@
 // RESOURCES
 // ==========================================================
 
+// ** Next Imports
+import { SessionProvider } from "next-auth/react"
+import { useSession } from "next-auth/react"
+// hint: const { data: session, status } = useSession()
+
 // ** React Imports
 import {
   useEffect,
@@ -19,6 +24,9 @@ import {
   SyntheticEvent,
 } from 'react'
 
+// // ** Apollo Client 3 -- State Management using Cache/Store (via GraphQL)
+import { ApolloProvider } from '@apollo/client'
+import { client } from '#/lib/api/graphql/client'
 // ** Apollo Client 3 -- Cache Store Imports
 // state management (instead of React.useState, Redux, Zustand)
 import { ApolloConsumer } from '@apollo/client'
@@ -3511,9 +3519,12 @@ const MyComponent: FC = (): JSX.Element => {
   return <div>...MyComponent [returns] JSX here...</div>
 }
 
-const ThreeDGarden = ({ session }: { session: Session | null }): JSX.Element => {
+// const ThreeDGarden = ({ session }: { session: Session | null }): JSX.Element => {
+// const ThreeDGarden = ({...props}): JSX.Element => {
+const ThreeDGarden = (): JSX.Element => {
   // **
   // console.debug('ThreeDGarden page: session', session)
+  const { data: session, status } = useSession()
   // ==========================================================
   // LOCAL VARS
 
@@ -3577,119 +3588,126 @@ const ThreeDGarden = ({ session }: { session: Session | null }): JSX.Element => 
   // ==========================================================
   // FC returns JSX
   return (
-    <div
-      id='threedgarden-div'
-      style={{ width: '100%' }}
-    >
-      <Loader />
+    <SessionProvider session={session}>
+    <ApolloProvider client={client}>
+      {/* <ApolloConsumer> */}
+        {/* <div
+          id='threedgarden-div'
+          style={{ width: '100%' }}
+        > */}
+        {/* <Loader /> */}
 
-      <Suspense fallback={null}>
-      {/* <div ref={title}>ThreeDGarden: {word}</div> */}
-      {/* <div ref={root}>Three root</div> */}
+        <Suspense fallback={null}>
 
-      <div id='threedgarden'>
-        <ToolBar />
+        {/* <div ref={title}>ThreeDGarden: {word}</div> */}
+        {/* <div ref={root}>Three root</div> */}
 
-        {/* store access */}
-        <div
-          id='storeControlPanel'
-          style={{ paddingLeft: '0.5rem' }}
-        >
-          {/* React Three Fiber - View */}
-          <ReactThreeFiberView />
+          <div id='threedgarden'>
+            <ToolBar />
 
-          {/* Tabs */}
-          <Box sx={{ borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs
-              value={tabInfoControl}
-              onChange={handleChangeTabInfoControl}
-              aria-label='Info Control Panel'
+            {/* store access */}
+            <div
+              id='storeControlPanel'
+              style={{ paddingLeft: '0.5rem' }}
             >
-              <Tab label='Projects' {...tabProps(0)} />
-              <Tab label='Workspaces' {...tabProps(1)} />
-              <Tab label='Plans' {...tabProps(2)} />
-              <Tab label='ThreeDs' {...tabProps(3)} />
-              <Tab label='Files' {...tabProps(4)} />
-              <Tab label='Scenes' {...tabProps(5)} />
-              <Tab label='Allotments' {...tabProps(6)} />
-              <Tab label='Beds' {...tabProps(7)} />
-              <Tab label='Plants' {...tabProps(8)} />
-              <Tab label='Planting Plans' {...tabProps(9)} />
-              <Tab label='Testing' {...tabProps(10)} />
-            </Tabs>
-          </Box>
-          {/* <MDTabPanel value={tabInfoControl} index={0}>
-            <ProjectControlPanel />
-            <ProjectInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={1}>
-            <WorkspaceControlPanel />
-            <WorkspaceInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={2}>
-            <PlanControlPanel />
-            <PlanInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={3}>
-            <ThreeDControlPanel />
-            <ThreeDInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={4}>
-            <FileControlPanel />
-            <FileInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={5}>
-            <SceneControlPanel />
-            <SceneInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={6}>
-            <AllotmentControlPanel />
-            <AllotmentInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={7}>
-            <BedControlPanel />
-            <BedInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={8}>
-            <PlantControlPanel />
-            <PlantInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={9}>
-            <PlantingPlanControlPanel />
-            <PlantingPlanInfoPanel />
-          </MDTabPanel> */}
-          <MDTabPanel value={tabInfoControl} index={10}>
-            Testing Panel
-            {/* <CharacterControlPanel /> */}
-            {/* <CharacterInfoPanel /> */}
-            {/* <hr /> */}
-            {/* <GardenerControlPanel /> */}
-            {/* <GardenerInfoPanel /> */}
-            {/* <hr /> */}
-            {/* <ChickenControlPanel /> */}
-            {/* <ChickenInfoPanel /> */}
-            {/* <hr /> */}
-            {/* <BearControlPanel /> */}
-            {/* <BearInfoPanel /> */}
-            {/* <hr /> */}
-            {/* <FurnitureControlPanel /> */}
-            {/* <FurnitureInfoPanel /> */}
-            {/* <hr /> */}
-          </MDTabPanel>
-        </div>
+              {/* React Three Fiber - View */}
+              <ReactThreeFiberView />
 
-        <ModalAbout />
-        <ModalModel3d />
-        <ModalLoading />
-        <ModalShare />
+              {/* Tabs */}
+              <Box sx={{ borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
+                <Tabs
+                  value={tabInfoControl}
+                  onChange={handleChangeTabInfoControl}
+                  aria-label='Info Control Panel'
+                >
+                  <Tab label='Projects' {...tabProps(0)} />
+                  <Tab label='Workspaces' {...tabProps(1)} />
+                  <Tab label='Plans' {...tabProps(2)} />
+                  <Tab label='ThreeDs' {...tabProps(3)} />
+                  <Tab label='Files' {...tabProps(4)} />
+                  <Tab label='Scenes' {...tabProps(5)} />
+                  <Tab label='Allotments' {...tabProps(6)} />
+                  <Tab label='Beds' {...tabProps(7)} />
+                  <Tab label='Plants' {...tabProps(8)} />
+                  <Tab label='Planting Plans' {...tabProps(9)} />
+                  <Tab label='Testing' {...tabProps(10)} />
+                </Tabs>
+              </Box>
+              <MDTabPanel value={tabInfoControl} index={0}>
+                <ProjectControlPanel />
+                <ProjectInfoPanel />
+              </MDTabPanel>
+              {/* <MDTabPanel value={tabInfoControl} index={1}>
+                <WorkspaceControlPanel />
+                <WorkspaceInfoPanel />
+              </MDTabPanel>
+              <MDTabPanel value={tabInfoControl} index={2}>
+                <PlanControlPanel />
+                <PlanInfoPanel />
+              </MDTabPanel>
+              <MDTabPanel value={tabInfoControl} index={3}>
+                <ThreeDControlPanel />
+                <ThreeDInfoPanel />
+              </MDTabPanel>
+              <MDTabPanel value={tabInfoControl} index={4}>
+                <FileControlPanel />
+                <FileInfoPanel />
+              </MDTabPanel>
+              <MDTabPanel value={tabInfoControl} index={5}>
+                <SceneControlPanel />
+                <SceneInfoPanel />
+              </MDTabPanel>
+              <MDTabPanel value={tabInfoControl} index={6}>
+                <AllotmentControlPanel />
+                <AllotmentInfoPanel />
+              </MDTabPanel>
+              <MDTabPanel value={tabInfoControl} index={7}>
+                <BedControlPanel />
+                <BedInfoPanel />
+              </MDTabPanel>
+              <MDTabPanel value={tabInfoControl} index={8}>
+                <PlantControlPanel />
+                <PlantInfoPanel />
+              </MDTabPanel>
+              <MDTabPanel value={tabInfoControl} index={9}>
+                <PlantingPlanControlPanel />
+                <PlantingPlanInfoPanel />
+              </MDTabPanel> */}
+              <MDTabPanel value={tabInfoControl} index={10}>
+                Testing Panel
+                {/* <CharacterControlPanel /> */}
+                {/* <CharacterInfoPanel /> */}
+                {/* <hr /> */}
+                {/* <GardenerControlPanel /> */}
+                {/* <GardenerInfoPanel /> */}
+                {/* <hr /> */}
+                {/* <ChickenControlPanel /> */}
+                {/* <ChickenInfoPanel /> */}
+                {/* <hr /> */}
+                {/* <BearControlPanel /> */}
+                {/* <BearInfoPanel /> */}
+                {/* <hr /> */}
+                {/* <FurnitureControlPanel /> */}
+                {/* <FurnitureInfoPanel /> */}
+                {/* <hr /> */}
+              </MDTabPanel>
+            </div>
 
-        {/* <CatalogView /> */}
-        {/* <PropertiesView /> */}
-        {/* <PlanView /> */}
-        {/* <TheBottom /> */}
-      </div>
-      </Suspense>
-    </div>
+            <ModalAbout />
+            <ModalModel3d />
+            <ModalLoading />
+            <ModalShare />
+
+            {/* <CatalogView /> */}
+            {/* <PropertiesView /> */}
+            {/* <PlanView /> */}
+            {/* <TheBottom /> */}
+          </div>
+          </Suspense>
+        {/* </div> */}
+      {/* </ApolloConsumer> */}
+    </ApolloProvider>
+    </SessionProvider>
   )
 }
 
