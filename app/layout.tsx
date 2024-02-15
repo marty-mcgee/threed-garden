@@ -1,9 +1,9 @@
+// 'use client'
+
 // ==============================================================
 // RESOURCES
 // ** DEFAULT APP LAYOUT -- TEMPLATE CHILD
 // ?? FOR ENTIRE APP CONTEXTS ??
-
-// 'use client'
 
 // ** Next
 // import { useRouter, usePathname } from 'next/navigation'
