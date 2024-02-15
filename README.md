@@ -1,10 +1,10 @@
-# [🌱 React Garden TypeScript Material UI App](https://github.com/marty-mcgee/react-garden)
+# [🥕 ThreeD Garden: React TypeScript MUI Tailwind App](https://github.com/marty-mcgee/threed-garden/)
 
-React + TypeScript + ThreeJS app using Material UI v5 on NextJS v13.4, Apollo Server+Client v3, GraphQL, WordPress REST API, for ThreeD web development.. a "Design Dashboard" for developing Three-Dimensional JavaScript Objects, Components, + ETH apps (dapps).
+React + TypeScript + ThreeJS app using Material UI v5 on NextJS v14, Zustand + Valtio, Apollo Server+Client v3, GraphQL, WordPress REST API, for ThreeD web development.. a "Design Dashboard" for developing Three-Dimensional JavaScript Objects, Components, + ETH apps (dapps).
 
 ## Live Demo
 
-[threedgarden.com](https://threedgarden.com/)
+🌱 [threedgarden.com](https://threedgarden.com/)
 
 ====
 
@@ -21,7 +21,7 @@ React + TypeScript + ThreeJS app using Material UI v5 on NextJS v13.4, Apollo Se
 
 ====
 
-## FUNCTIONAL NOUNS 🌱 🤖 🍅
+## FUNCTIONAL NOUNS 🌱 🤖 🍅 🥕
 
 - Noun | as root JS Object | interface INoun | wp_type threed_noun
 
