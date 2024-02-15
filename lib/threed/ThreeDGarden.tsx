@@ -1,5 +1,4 @@
 // @ts-nocheck /* OR @ ts-ignore OR @ ts-expect-error */
-
 'use client'
 
 // ==========================================================
@@ -25,11 +24,11 @@ import {
 } from 'react'
 
 // // ** Apollo Client 3 -- State Management using Cache/Store (via GraphQL)
-import { ApolloProvider } from '@apollo/client'
-import { client } from '#/lib/api/graphql/client'
-// ** Apollo Client 3 -- Cache Store Imports
-// state management (instead of React.useState, Redux, Zustand)
-import { ApolloConsumer } from '@apollo/client'
+// import { ApolloProvider } from '@apollo/client'
+// import { client } from '#/lib/api/graphql/client'
+// // ** Apollo Client 3 -- Cache Store Imports
+// // state management (instead of React.useState, Redux, Zustand)
+// import { ApolloConsumer } from '@apollo/client'
 // import { TestAC3Store } from '#/lib/stores/old'
 import stores from '#/lib/stores/apollo'
 
@@ -75,7 +74,7 @@ import ToolIconAddText from '@mui/icons-material/TextFields'
 // import * as THREE from 'three'
 // ** Three JS Controls
 // ** Three JS Loaders
-// import { Loader } from '@react-three/drei'
+import { Loader } from '@react-three/drei'
 // -- use React Three Fiber R3F hooks: useFBX, useOBJ, etc --
 // import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 // import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -3524,7 +3523,7 @@ const MyComponent: FC = (): JSX.Element => {
 const ThreeDGarden = (): JSX.Element => {
   // **
   // console.debug('ThreeDGarden page: session', session)
-  const { data: session, status } = useSession()
+  // const { data: session, status } = useSession()
   // ==========================================================
   // LOCAL VARS
 
@@ -3588,13 +3587,15 @@ const ThreeDGarden = (): JSX.Element => {
   // ==========================================================
   // FC returns JSX
   return (
-    <ApolloProvider client={client}>
+    <div
+      id='threedgarden-div'
+      style={{ width: '100%' }}
+    >
+
+    <Loader />
+
+    {/* <ApolloProvider client={client}> */}
       {/* <ApolloConsumer> */}
-        {/* <div
-          id='threedgarden-div'
-          style={{ width: '100%' }}
-        > */}
-        {/* <Loader /> */}
 
         <Suspense fallback={null}>
 
@@ -3632,11 +3633,11 @@ const ThreeDGarden = (): JSX.Element => {
                   <Tab label='Testing' {...tabProps(10)} />
                 </Tabs>
               </Box>
-              <MDTabPanel value={tabInfoControl} index={0}>
+              {/* <MDTabPanel value={tabInfoControl} index={0}>
                 <ProjectControlPanel />
                 <ProjectInfoPanel />
-              </MDTabPanel>
-              <MDTabPanel value={tabInfoControl} index={1}>
+              </MDTabPanel> */}
+              {/* <MDTabPanel value={tabInfoControl} index={1}>
                 <WorkspaceControlPanel />
                 <WorkspaceInfoPanel />
               </MDTabPanel>
@@ -3671,7 +3672,7 @@ const ThreeDGarden = (): JSX.Element => {
               <MDTabPanel value={tabInfoControl} index={9}>
                 <PlantingPlanControlPanel />
                 <PlantingPlanInfoPanel />
-              </MDTabPanel>
+              </MDTabPanel> */}
               <MDTabPanel value={tabInfoControl} index={10}>
                 Testing Panel
                 {/* <CharacterControlPanel /> */}
@@ -3703,9 +3704,9 @@ const ThreeDGarden = (): JSX.Element => {
             {/* <TheBottom /> */}
           </div>
           </Suspense>
-        {/* </div> */}
       {/* </ApolloConsumer> */}
-    </ApolloProvider>
+    {/* </ApolloProvider> */}
+    </div>
   )
 }
 
