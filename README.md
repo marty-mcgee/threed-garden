@@ -1,6 +1,6 @@
-# [🥕 ThreeD Garden: React TypeScript MUI Tailwind App](https://github.com/marty-mcgee/threed-garden/)
+# [🥕 ThreeD Garden: React TypeScript Web3 App](https://github.com/marty-mcgee/threed-garden/)
 
-React + TypeScript + ThreeJS app using Material UI v5 on NextJS v14, Zustand + Valtio, Apollo Server+Client v3, GraphQL, WordPress REST API, for ThreeD web development.. a "Design Dashboard" for developing Three-Dimensional JavaScript Objects, Components, + ETH apps (dapps).
+React 18 + TypeScript 5 + Three.JS app using MUI 5 on NextJS 14+, Zustand + Valtio, Apollo Server+Client v3, GraphQL, WordPress REST API, for ThreeD web3 development.. for developing Three-Dimensional JavaScript Objects, Components, + ETH apps (dapps).. a part of the threed.ai code family.
 
 ## Live Demo
 
