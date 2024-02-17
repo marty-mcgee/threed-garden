@@ -40,8 +40,9 @@ const defaults = {
   // set a default file to load for Model (for testing)
   // fileUrlDefault: '/objects/examples/compressed.glb' | '/objects/examples/compressed-v002.glb' |
   fileUrlDefault:
-  // '/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx',
-  'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx',
+  // '/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb',
+  '/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx',
+  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx',
   // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_01.fbx',
   // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/FBX/SM_Prop_Bed_01.fbx',
 
@@ -66,7 +67,7 @@ const ThreeD = (props) => {
   // const { ref, state, threed, name, file, doReturnOne, doReturnEach, doReturnAll } = props
   const { state, threedId, threed } = props
 
-  console.debug('THREED: ThreeD(state, threedId, threed)', state, threedId, threed)
+  // console.debug('THREED: ThreeD(state, threedId, threed)', state, threedId, threed)
 
   // map threed to THREED, to pass on to Model
   const THREED = {
