@@ -47,7 +47,7 @@ const defaults = {
   // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_01.fbx',
   // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/FBX/SM_Prop_Bed_01.fbx',
 
-  fileNameDefault: 'NounTitleFromAPI.ext',
+  fileNameDefault: 'ThreeDNounTitleFromAPI.ext',
 
   //
   // node settings
@@ -56,7 +56,8 @@ const defaults = {
   nodeNameDefault: 'Demo Farm: McGee Ranch',
 
   // rotation: 1.570796 radians = 90 degrees
-  nodeRotationDefault: [1.570796, 0, 0], // [0, 0, 0],
+  // nodeRotationDefault: [1.570796, 0, 0], // [0, 0, 0],
+  nodeRotationDefault: [0, 0, 0], // [1.570796, 0, 0] | [0, 0, 0]
 }
 
 // ==============================================================
