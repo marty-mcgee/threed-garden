@@ -20,10 +20,7 @@ export function MainNav() {
   return (
     <div className="flex items-center space-x-0 lg:space-x-0">
       <CustomLink href="/" className="mt-1">
-        {/* <Button className="p-0">
-          <Image src="/favicon/apple-icon.png" alt="Home" width="48" height="48" />
-        </Button> */}
-        <Image src="/favicon/apple-icon.png" alt="Home" width="48" height="48" />
+        <Image src="/favicon/apple-icon.png"priority={true} alt="Home" width="48" height="48" />
       </CustomLink>
       <h3 className="pl-2"><strong>THREED GARDEN</strong></h3>
       <NavigationMenu>

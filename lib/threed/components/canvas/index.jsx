@@ -81,9 +81,9 @@ export default function ThreeDCanvas({ models, children }) {
   // **
   // inject models inside Suspense groups
   if (models) {
-    console.debug('models', models)
+    // console.debug('models', models)
     if (models.length) {
-      console.debug('models.length', models.length)
+      // console.debug('models.length', models.length)
     }
   }
 
@@ -95,6 +95,9 @@ export default function ThreeDCanvas({ models, children }) {
       style={{
         height: '540px',
         width: '100%',
+      }}
+      scene={{
+        background: new THREE.Color(0x3333333),
       }}
     >
       <Preload all />

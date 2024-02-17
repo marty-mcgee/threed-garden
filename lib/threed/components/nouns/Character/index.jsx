@@ -102,7 +102,7 @@ const Character = (props) => {
       },
     ],
   }
-  console.debug('THREED ready for Group of Models: ', THREED)
+  console.debug('CHARACTER ready for Group of Models: ', THREED)
 
   // ==============================================================
   // ANIMATIONS (FOR ALL CHARACTERS !!!)

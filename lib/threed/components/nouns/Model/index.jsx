@@ -1,6 +1,6 @@
 import { proxy, useSnapshot } from 'valtio'
 import { useEffect, useState, useRef } from 'react'
-import { useThree, useFrame } from '@react-three/fiber'
+import { useThree, useFrame, useLoader } from '@react-three/fiber'
 import {
   // ContactShadows,
   useCursor,
@@ -10,6 +10,9 @@ import {
   useAnimations,
   useTexture
 } from '@react-three/drei'
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { TGALoader } from 'three/examples/jsm/loaders/TGALoader'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 // import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { a, useSpring } from '@react-spring/three'
@@ -23,7 +26,7 @@ const Model = (props) => {
   // **
   // deconstruct arguments from props
   const { state, threed, name, file, doReturnOne, doReturnEach, doReturnAll } = props
-  console.debug('Model props', props)
+  // console.debug('Model props', props)
 
   // ** set available action modes
   const modes = ['translate', 'rotate', 'scale']
@@ -97,25 +100,28 @@ const Model = (props) => {
 
   // fetch the file (GLTF, FBX, OBJ, etc)
   if (model.isSupported) {
-    console.debug('%cmodel.isSupported: true', ccm.green)
-    console.debug(`%c====================================`, ccm.black)
+    // console.debug('%cmodel.isSupported: true', ccm.green)
+    // console.debug(`%c====================================`, ccm.black)
     if (model.isObject3D) {
       // FBX
       if (model.isFBX) {
         // const { nodes, animations } = useFBX(model.file)
-        const fbx = useFBX(model.file)
-        console.debug('%cnodes: fbx', ccm.blue, fbx)
-        console.debug(`%c====================================`, ccm.black)
+        // const fbx = useFBX(model.file)
+        const fbx = useLoader(FBXLoader, model.file, loader => {
+          loader.manager.addHandler(/\.tga$/i, new TGALoader())
+        })
+        // console.debug('%cnodes: fbx', ccm.blue, fbx)
+        // console.debug(`%c====================================`, ccm.black)
         if (fbx) {
           model.nodes = fbx
           model.isReady = true
           // console.debug('RETURN ONLY NODE AS NODES: true')
         }
         if (fbx.animations) {
-          console.debug('FBX animations', fbx.animations)
+          // console.debug('FBX animations', fbx.animations)
           // Extract animation actions
           const { ref, actions, names } = useAnimations(fbx.animations)
-          console.debug('FBX useAnimations', ref, actions, names)
+          // console.debug('FBX useAnimations', ref, actions, names)
           model.ani.ref = ref
           model.ani.actions = actions
           model.ani.names = names
@@ -125,8 +131,8 @@ const Model = (props) => {
       else if (model.isOBJ) {
         // const nodes = useOBJ(model.file)
         const nodes = new OBJLoader().load(model.file)
-        console.debug('%cnodes: obj', ccm.blue, nodes)
-        console.debug(`%c====================================`, ccm.black)
+        // console.debug('%cnodes: obj', ccm.blue, nodes)
+        // console.debug(`%c====================================`, ccm.black)
         if (nodes) {
           model.nodes = nodes
           model.isReady = true
@@ -138,18 +144,28 @@ const Model = (props) => {
         // nodes[] is an array of all the meshes
         // file is cached/memoized; it only gets loaded and parsed once
         // const file = '/objects/examples/compressed-v002.glb'
-        const { nodes } = useGLTF(model.file)
-        console.debug('%cnodes: gltf', ccm.blue, nodes)
-        console.debug(`%c====================================`, ccm.black)
+        // const { nodes } = useGLTF(model.file)
+        const { nodes } = useLoader(GLTFLoader, model.file, loader => {
+          loader.manager.addHandler(/\.tga$/i, new TGALoader())
+        })
+        console.debug('%cNODES: gltf', ccm.blue, nodes)
+        console.debug(`%c====================================`, ccm.blue)
         if (nodes) {
           // FILTER (LOOP OVER) NODES {Object.keys}
           // to get the single node you are asking for
           if (model.doReturnAll) {
             model.nodes = nodes
-            // console.debug('RETURN ALL NODES: true')
+            console.debug('RETURN ALL NODES: true')
+          }
+          else if (nodes.RootNode) {
+            // model.nodes[model.name] = nodes.RootNode.children
+            model.nodes = nodes.RootNode.children
+            console.debug('RETURN RootNode CHILDREN NODES: true')
+            console.debug(model.nodes[model.name])
           }
           // OR RETURN ALL NODES, OR QUERY A LIST OF NODES you want...
-          else {
+          // else
+          else if (model.nodes[model.name]) {
             // for one node key requested...
             model.nodes[model.name] = nodes[model.name]
             // console.debug('RETURN ONE NODE: true', model.nodes[model.name])
@@ -169,10 +185,10 @@ const Model = (props) => {
     // console.debug(`%c====================================`, ccm.black)
   } else {
     console.debug('%cmodel.isSupported: false', ccm.yellow)
-    console.debug(`%c====================================`, ccm.black)
+    console.debug(`%c====================================`, ccm.yellow)
   }
-  console.debug('%cmodel', ccm.green, model)
-  console.debug(`%c====================================`, ccm.black)
+  // console.debug('%cmodel', ccm.green, model)
+  // console.debug(`%c====================================`, ccm.black)
 
   // ==============================================================
 
@@ -220,16 +236,17 @@ const Model = (props) => {
   // ** RETURN JSX
 
   if (model.isReady) {
-    // console.debug(`%cdraw([nodes]): ${model.type}`, ccm.blue, model.nodes)
-    // console.debug(`%c====================================`, ccm.black)
+    console.debug(`%cDRAW MODEL([nodes]): ${model.type}`, ccm.blue, model.nodes)
+    console.debug(`%c====================================`, ccm.blue)
     // return GLTF node
     if (model.isGLTF) {
-      const model_name = model.nodes[model.name].name
-      const model_geometry = model.nodes[model.name].geometry
-      const model_material = model.nodes[model.name].material
+      const model_name = model.name ? model.name : 'model.name HMM HMM HMM'
+      // NEED LOOP OVER NODE ARRAY TO RETURN MULTIPLE MESHES ([4420])
+      const model_geometry = model.nodes[0].geometry
+      const model_material = model.nodes[0].material
       return (
         <mesh
-          name={model_name}
+          name={model.name}
           ref={model.ref}
           // Click sets the mesh as the new target
           onClick={(e) => (e.stopPropagation(), (state.current = model_name))}
@@ -238,7 +255,7 @@ const Model = (props) => {
           onPointerMissed={(e) => e.type === 'click' && (state.current = null)}
           // Right click cycles through the transform modes
           onContextMenu={(e) =>
-            snap.current === model_name && (e.stopPropagation(), (state.mode = (snap.mode + 1) % modes.length))
+            snap.current === model.name && (e.stopPropagation(), (state.mode = (snap.mode + 1) % modes.length))
           }
           onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
           onPointerOut={(e) => setIsHovered(false)}

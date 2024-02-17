@@ -116,11 +116,11 @@ import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/lib/utils/console-co
 // ==========================================================
 
 // DEBUG PREFERENCES FOR THIS MODULE
-const debug: boolean = true
+const debug: boolean = false
 const debugPhysics: boolean = true
 const debugAnimations: boolean = true
 
-const appVersion = 'v0.15.0-a'
+const appVersion = 'v0.15.0-b'
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
 // const appVersion = process.env.npm_package_version
 // const appVersion: string = require('package.json').version
@@ -3543,8 +3543,8 @@ const ThreeDGarden = (): JSX.Element => {
   // ==========================================================
   // Component onMount hook
   useEffect(() => {
-    console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm4, word)
-    console.debug(`%c====================================`, ccm5)
+    // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm4, word)
+    // console.debug(`%c====================================`, ccm5)
 
     // begin here ?? yes
     // bootManager()...
