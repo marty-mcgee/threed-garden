@@ -184,7 +184,7 @@ const Model = (props) => {
     }
     // console.debug(`%c====================================`, ccm.black)
   } else {
-    console.debug('%cmodel.isSupported: false', ccm.yellow)
+    console.debug('%cMODEL.isSupported: false', ccm.yellow)
     console.debug(`%c====================================`, ccm.yellow)
   }
   // console.debug('%cmodel', ccm.green, model)

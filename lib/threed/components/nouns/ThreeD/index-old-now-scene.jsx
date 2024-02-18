@@ -4,9 +4,7 @@ import { useThree, useFrame } from '@react-three/fiber'
 import { ContactShadows, useCursor, useGLTF, useFBX, useOBJ } from '@react-three/drei'
 
 import Model from '#/lib/threed/components/nouns/Model'
-import Character1 from '#/lib/threed/components/nouns/Character/FarmerScarecrow'
-import Character2 from '#/lib/threed/components/nouns/Character/FarmerMan'
-import Character3 from '#/lib/threed/components/nouns/Character/FarmerOldMan'
+// import Scene from '#/lib/threed/components/nouns/Scene/FarmDemo'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
@@ -31,8 +29,7 @@ const defaults = {
   // group settings
 
   // rotation: 1.570796 radians = 90 degrees
-  // groupRotationDefault: [-1.570796, 0, 0],
-  groupRotationDefault: [0, 0, 0],
+  groupRotationDefault: [-1.570796, 0, 0], // [0, 0, 0],
 
   //
   // file settings
@@ -43,40 +40,41 @@ const defaults = {
   // set a default file to load for Model (for testing)
   // fileUrlDefault: '/objects/examples/compressed.glb' | '/objects/examples/compressed-v002.glb' |
   fileUrlDefault:
-  'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Scarecrow_01.fbx',
-  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Female_01.fbx',
+  // '/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb',
+  'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb',
+  // '/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx',
+  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx',
   // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_01.fbx',
-  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_Old_01.fbx',
-  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmboy_01.fbx',
-  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmgirl_01.fbx',
+  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/FBX/SM_Prop_Bed_01.fbx',
 
-  fileNameDefault: 'NounTitleFromAPI.ext',
+  fileNameDefault: 'ThreeDNounTitleFromAPI.ext',
 
   //
   // node settings
 
   // Table | Rocket003 | Headphones | DNA | Curly | Notebook | Roundcube001 | VR_Headset | Zeppelin
-  nodeNameDefault: 'Demo Character: Synty Polygon Farmer',
+  nodeNameDefault: 'Demo Farm: McGee Ranch',
 
   // rotation: 1.570796 radians = 90 degrees
-  // nodeRotationDefault: [1.570796, 0, 0],
-  nodeRotationDefault: [0, 0, 0],
+  // nodeRotationDefault: [1.570796, 0, 0], // [0, 0, 0],
+  nodeRotationDefault: [0, 0, 0], // [1.570796, 0, 0] | [0, 0, 0]
 }
 
 // ==============================================================
 // ** COMPONENTS
 
-const Character = (props) => {
-
+const ThreeD = (props) => {
+  // **
+  // deconstruct arguments from props
+  // const { ref, state, threed, name, file, doReturnOne, doReturnEach, doReturnAll } = props
   const { state, threedId, threed } = props
 
-  console.debug('THREED: Character(state, threedId, threed)', state, threedId, threed)
+  // console.debug('THREED: ThreeD(state, threedId, threed)', state, threedId, threed)
 
   // map threed to THREED, to pass on to Model
   const THREED = {
     // === threed
-    name: 'THREED CHARACTER',
-    // ref: useRef(null),
+    name: 'THREED YAY -- HEY HEY HEY',
     // { data: 'gql/rest wp endpoint {threed_threed}' }
     group: {
       group_id: 0,
@@ -104,15 +102,7 @@ const Character = (props) => {
       },
     ],
   }
-  console.debug('CHARACTER ready for Group of Models: ', THREED)
-
-  // ==============================================================
-  // ANIMATIONS (FOR ALL CHARACTERS !!!)
-
-  // useFrame(({ clock }) => {
-  //   const a = clock.getElapsedTime()
-  //   // THREED.ref.current.rotation.x = a
-  // })
+  console.debug('THREED ready for Group of Models: ', THREED)
 
   // return R3F JSX
   return (
@@ -120,10 +110,8 @@ const Character = (props) => {
       <group
         position={THREED.group.group_position}
         rotation={THREED.group.group_rotation}
-        scale={THREED.group.group_scale}
-      >
-        {/* <Model
-          // ref={THREED.ref}
+        scale={THREED.group.group_scale}>
+        <Model
           state={state}
           threed={THREED}
           file={THREED.files[0].file_url}
@@ -134,10 +122,8 @@ const Character = (props) => {
           doReturnOne={true}
           doReturnEach={false}
           doReturnAll={false}
-        /> */}
-        <Character1 />
-        <Character2 />
-        <Character3 />
+        />
+        {/* <Scene /> */}
         <ContactShadows
           rotation-x={Math.PI / 2}
           position={[0, -35, 0]}
@@ -165,4 +151,4 @@ const Character = (props) => {
   )
 }
 
-export default Character
+export default ThreeD

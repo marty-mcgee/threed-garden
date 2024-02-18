@@ -1,7 +1,7 @@
-import ThreeD from '#/lib/threed/components/nouns/ThreeD'
+import ThreeDObject from '#/lib/threed/components/nouns/ThreeD'
 
-const ThreeDs = () => {
-  // hey hey hey
-  return <ThreeD /> // <div>ThreeDs</div>
+const ThreeDObjects = () => {
+  // **
+  return <ThreeDObject />
 }
-export default ThreeDs
+export default ThreeDObjects
