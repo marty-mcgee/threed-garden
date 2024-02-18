@@ -3408,7 +3408,7 @@ const TheBottom: FC = (): JSX.Element => {
 // ==========================================================
 
 // ** R3F Main Component
-const ReactThreeFiberView: FC = (): JSX.Element => {
+const ThreeDViewCanvas: FC = (): JSX.Element => {
   // component params
   const word = `[MM] @ ${new Date().toISOString()}`
 
@@ -3416,14 +3416,14 @@ const ReactThreeFiberView: FC = (): JSX.Element => {
   // in this case: sceneStore SCENE! THE SCENE !! FOR R3F boogie !!
   const store = sceneStore // <-- HEY HEY HEY [MM]
 
-  console.debug('%cReactThreeFiberView {store}', ccm1, store)
+  console.debug('%cThreeDView {store}', ccm1, store)
   console.debug(`%c====================================`, ccm5)
   // return <Box sx={{ p: 5, textAlign: 'center' }}>r3f: testing... {word}</Box>
   // throw new Error(`r3f: testing... "${word}"`)
 
   const noun = store.store.useStore('one')
   const noun_title = noun.data?.title ? noun.data.title : 'NOTHING YET SIR'
-  console.debug('%cReactThreeFiberView {noun}', ccm1, noun)
+  console.debug('%cThreeDView {noun}', ccm1, noun)
 
   const loadNoun = (noun) => {
     // load this noun into r3f canvas
@@ -3432,11 +3432,11 @@ const ReactThreeFiberView: FC = (): JSX.Element => {
   }
 
   useEffect(() => {
-    // console.debug('ReactThreeFiberView onMount')
-    console.debug(`%c====================================`, ccm5)
+    // console.debug('ThreeDViewCanvas onMount')
+    // console.debug(`%c====================================`, ccm5)
     return () => {
-      // console.debug('ReactThreeFiberView onUnmount')
-      console.debug(`%c====================================`, ccm5)
+      // console.debug('ThreeDViewCanvas onUnmount')
+      // console.debug(`%c====================================`, ccm5)
     }
   }, [])
 
@@ -3444,7 +3444,7 @@ const ReactThreeFiberView: FC = (): JSX.Element => {
   return (
     <Grid
       container
-      id='ReactThreeFiberView'
+      id='ThreeDViewCanvas'
       spacing={0}
       sx={{ border: '0px solid orange' }}
     >
@@ -3610,8 +3610,9 @@ const ThreeDGarden = (): JSX.Element => {
               id='storeControlPanel'
               style={{ paddingLeft: '0.5rem' }}
             >
-              {/* React Three Fiber - View */}
-              <ReactThreeFiberView />
+              {/* R3F ThreeD View */}
+              <ThreeDViewCanvas />
+              {/* R3F ThreeD View */}
 
               {/* Tabs */}
               <Box sx={{ borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
@@ -3621,16 +3622,16 @@ const ThreeDGarden = (): JSX.Element => {
                   aria-label='Info Control Panel'
                 >
                   <Tab label='Projects' {...tabProps(0)} />
-                  <Tab label='Workspaces' {...tabProps(1)} />
+                  {/* <Tab label='Workspaces' {...tabProps(1)} /> */}
                   <Tab label='Plans' {...tabProps(2)} />
-                  <Tab label='ThreeDs' {...tabProps(3)} />
                   <Tab label='Files' {...tabProps(4)} />
+                  <Tab label='ThreeDs' {...tabProps(3)} />
                   <Tab label='Scenes' {...tabProps(5)} />
                   <Tab label='Allotments' {...tabProps(6)} />
                   <Tab label='Beds' {...tabProps(7)} />
                   <Tab label='Plants' {...tabProps(8)} />
                   <Tab label='Planting Plans' {...tabProps(9)} />
-                  <Tab label='Testing' {...tabProps(10)} />
+                  <Tab label='Tests' {...tabProps(10)} />
                 </Tabs>
               </Box>
               {/* <MDTabPanel value={tabInfoControl} index={0}>

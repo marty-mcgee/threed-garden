@@ -106,7 +106,7 @@ export default function ThreeDCanvas({ scene, models, children }) {
       // scene={scene}
       scene={{
         // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
-        background: new THREE.Color(0x171717),
+        background: new THREE.Color(0x111111),
       }}
     >
       <Preload all />
