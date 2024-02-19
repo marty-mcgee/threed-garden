@@ -70,11 +70,14 @@ import ToolIconAddRoof from '@mui/icons-material/Roofing'
 import ToolIconAddRuler from '@mui/icons-material/Straighten'
 import ToolIconAddText from '@mui/icons-material/TextFields'
 
+// ** Helper Components
+import Spinner from '#/ui/components/spinner'
+
 // ** Three JS Imports (not here, use R3F)
 // import * as THREE from 'three'
 // ** Three JS Controls
 // ** Three JS Loaders
-import { Loader } from '@react-three/drei'
+import { Loader, Html } from '@react-three/drei'
 // -- use React Three Fiber R3F hooks: useFBX, useOBJ, etc --
 // import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 // import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -3463,7 +3466,7 @@ const ThreeDViewCanvas: FC = (): JSX.Element => {
         id='actions[loadNoun()]'
         md={7}
         xs={12}
-        style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-8px' }}
+        style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-4px' }}
       >
         <Button onClick={() => loadNoun('world')}>load world</Button>
         <Button onClick={() => loadNoun('scene')}>load scene</Button>
@@ -3589,18 +3592,22 @@ const ThreeDGarden = (): JSX.Element => {
   // ==========================================================
   // FC returns JSX
   return (
-    <div
-      id='threedgarden-div'
-      style={{ width: '100%' }}
-    >
+    <div id='threedgarden-wrapper' style={{'width': '100%'}}>
 
-    <Loader />
+    <Loader
+      // containerStyles={...container} // Flex layout styles
+      // innerStyles={...inner} // Inner container styles
+      // barStyles={...bar} // Loading-bar styles
+      // dataStyles={...data} // Text styles
+      dataInterpolation={(p) => `Building Interface ${p.toFixed(0)}%`} // Text
+      initialState={(active) => active} // Initial black out state
+    />
 
     {/* <ApolloProvider client={client}> */}
       {/* <ApolloConsumer> */}
 
         {/* <Suspense fallback={null}> */}
-        {/* <Suspense fallback={<Loader />}> */}
+        {/* <Suspense fallback={<Html center><Loader /></Html>}> */}
 
           {/* <Loader /> */}
 
@@ -3611,14 +3618,12 @@ const ThreeDGarden = (): JSX.Element => {
 
             <ToolBar />
 
+            {/* R3F ThreeD View */}
+            <ThreeDViewCanvas />
+            {/* R3F ThreeD View */}
+
             {/* store access */}
-            <div
-              id='storeControlPanel'
-              style={{ paddingLeft: '0.5rem' }}
-            >
-              {/* R3F ThreeD View */}
-              <ThreeDViewCanvas />
-              {/* R3F ThreeD View */}
+            <div id='storeControlPanel'>
 
               {/* Tabs */}
               <Box sx={{ borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
