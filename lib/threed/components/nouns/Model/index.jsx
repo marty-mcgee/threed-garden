@@ -30,7 +30,7 @@ const Model = (props) => {
 
   // **
   // deconstruct arguments from props
-  const { state, threed, name, file, doReturnOne, doReturnEach, doReturnAll } = props
+  const { id, state, threed, name, file, doReturnOne, doReturnEach, doReturnAll } = props
   // console.debug('Model props', props)
 
   // ** set available action modes
