@@ -3,8 +3,8 @@ import { useState, useRef } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
 import { ContactShadows, useCursor, useGLTF, useFBX, useOBJ } from '@react-three/drei'
 
-// import Model from '#/lib/threed/components/nouns/Model'
-import Scene from '#/lib/threed/components/nouns/Scene/FarmDemo'
+import Model from '#/lib/threed/components/nouns/Model'
+import Demo from '#/lib/threed/components/nouns/Scene/FarmDemo'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
@@ -111,6 +111,7 @@ const ThreeDScene = (props) => {
         position={THREEDSCENE.group.group_position}
         rotation={THREEDSCENE.group.group_rotation}
         scale={THREEDSCENE.group.group_scale}>
+
         <Model
           state={state}
           threed={THREEDSCENE}
@@ -124,7 +125,7 @@ const ThreeDScene = (props) => {
           doReturnAll={false}
         />
 
-        <Scene />
+        {/* <Demo /> */}
 
         <ContactShadows
           rotation-x={Math.PI / 2}

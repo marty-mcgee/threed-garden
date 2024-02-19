@@ -109,7 +109,7 @@ export default function ThreeDCanvas({ scene, models, children }) {
       // scene={scene}
       scene={{
         // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
-        background: new THREE.Color(0x111111),
+        background: new THREE.Color(0x222222),
       }}
     >
       <Preload all />
@@ -226,7 +226,7 @@ export default function ThreeDCanvas({ scene, models, children }) {
         >
           {/* <StacyApp position={[1.25, 1, 3.25]} scale={3.0} /> */}
           {/* <Stacy position={[1.25, 0.7, 3.25]} scale={5.0} /> */}
-          <Character
+          {/* <Character
             type='gardener'
             state={state}
             threedId={2}
@@ -234,7 +234,9 @@ export default function ThreeDCanvas({ scene, models, children }) {
             position={[1.25, 0.7, 3.25]}
             rotation={[0, 90, 0]}
             scale={5.0}
-          />
+          /> */}
+          <>{children}</>
+
         </PresentationControls>
 
         {/* Camera Action Rig */}
