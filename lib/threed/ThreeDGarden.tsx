@@ -3411,7 +3411,7 @@ const TheBottom: FC = (): JSX.Element => {
 // ==========================================================
 
 // ** R3F Main Component
-const ThreeDViewCanvas: FC = (): JSX.Element => {
+const ThreeDCanvasView: FC = (): JSX.Element => {
   // component params
   const word = `[MM] @ ${new Date().toISOString()}`
 
@@ -3435,10 +3435,10 @@ const ThreeDViewCanvas: FC = (): JSX.Element => {
   }
 
   useEffect(() => {
-    // console.debug('ThreeDViewCanvas onMount')
+    // console.debug('ThreeDCanvasView onMount')
     // console.debug(`%c====================================`, ccm5)
     return () => {
-      // console.debug('ThreeDViewCanvas onUnmount')
+      // console.debug('ThreeDCanvasView onUnmount')
       // console.debug(`%c====================================`, ccm5)
     }
   }, [])
@@ -3447,7 +3447,7 @@ const ThreeDViewCanvas: FC = (): JSX.Element => {
   return (
     <Grid
       container
-      id='ThreeDViewCanvas'
+      id='ThreeDCanvasView'
       spacing={0}
       sx={{ border: '0px solid orange' }}
     >
@@ -3618,9 +3618,9 @@ const ThreeDGarden = (): JSX.Element => {
 
             <ToolBar />
 
-            {/* R3F ThreeD View */}
-            <ThreeDViewCanvas />
-            {/* R3F ThreeD View */}
+            {/* R3F ThreeD Canvas View */}
+            <ThreeDCanvasView />
+            {/* R3F ThreeD Canvas View */}
 
             {/* store access */}
             <div id='storeControlPanel'>
