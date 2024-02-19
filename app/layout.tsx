@@ -5,6 +5,10 @@
 // ** DEFAULT APP LAYOUT -- TEMPLATE CHILD
 // ?? FOR ENTIRE APP CONTEXTS ??
 
+import { auth } from "auth"
+import ClientExample from "@/components/client-example"
+import { SessionProvider } from "next-auth/react"
+
 // ** Next
 // import { useRouter, usePathname } from 'next/navigation'
 // import type { GetServerSideProps, GetStaticProps } from 'next'
@@ -121,9 +125,20 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
 //   { Component, pageProps }: AppProps)
 //   : JSX.Element => {
 
-const AppLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
+// const AppLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
+const AppLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Element> => {
 
   // **
+  const session = await auth()
+  if (session?.user) {
+    // @ ts-expect-error TODO: Look into https://react.dev/reference/react/experimental_taintObjectReference
+    // filter out sensitive data before passing to client.
+    session.user = {
+      name: session.user.name,
+      email: session.user.email,
+      image: session.user.image,
+    }
+  }
 
   // // destructure props for vars
   // // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
@@ -218,9 +233,9 @@ const AppLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                         {/* <ThemeRegistry settings={settings}> */}
                         <ThemeRegistry settings={{}}>
                           {/* <UserLayout key='ThreeDAppLayout-UserLayout'> */}
-
+                          <SessionProvider session={session}>
                             <>{children}</>
-
+                          </SessionProvider>
                           {/* </UserLayout> */}
                         </ThemeRegistry>
                       {/* )} */}

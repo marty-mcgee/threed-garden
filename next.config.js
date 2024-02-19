@@ -1,5 +1,5 @@
 // ==============================================================
-// ** NEXT.JS 13 BUILD CONFIGURATION FILE
+// ** NEXT.JS 14 BUILD CONFIGURATION FILE
 
 if (!process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL) {
   throw new Error(`
@@ -50,21 +50,21 @@ const nextConfig = {
   transpilePackages: [
     // ORDER DOES NOT MATTER
 
+    // 'three',
+
+    'axios',
+    'axios-mock-adapter',
+
+    'yup',
+    '@hookform/resolvers',
+
     // '@fullcalendar/common',
     // '@fullcalendar/daygrid',
     // '@fullcalendar/interaction',
     // '@fullcalendar/react',
     // '@fullcalendar/timegrid',
 
-    'axios',
-    'axios-mock-adapter',
-
     // 'react-github-btn',
-
-    'three',
-
-    'yup',
-    '@hookform/resolvers',
   ],
 
   // productionBrowserSourceMaps: true,
@@ -79,14 +79,14 @@ const nextConfig = {
 
   // ** IMAGES (production use?)
   images: {
-    domains: [
-      process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL.match(/(?!(w+)\.)\w*(?:\w+\.)+\w+/)[0], // Valid WP Image domain.
-      '0.gravatar.com',
-      '1.gravatar.com',
-      '2.gravatar.com',
-      'secure.gravatar.com',
-      'images.cdndomain.com',
-    ],
+    // domains: [
+    //   process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL.match(/(?!(w+)\.)\w*(?:\w+\.)+\w+/)[0], // Valid WP Image domain.
+    //   '0.gravatar.com',
+    //   '1.gravatar.com',
+    //   '2.gravatar.com',
+    //   'secure.gravatar.com',
+    //   'images.cdndomain.com',
+    // ],
     remotePatterns: [
       {
         protocol: 'https',

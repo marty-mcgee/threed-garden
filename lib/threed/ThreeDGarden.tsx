@@ -3599,10 +3599,13 @@ const ThreeDGarden = (): JSX.Element => {
 
         <Suspense fallback={null}>
 
+          {/* <Loader /> */}
+
         {/* <div ref={title}>ThreeDGarden: {word}</div> */}
         {/* <div ref={root}>Three root</div> */}
 
           <div id='threedgarden'>
+
             <ToolBar />
 
             {/* store access */}

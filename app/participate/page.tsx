@@ -5,9 +5,11 @@
 // RESOURCES
 // ==========================================================
 
+// ??? ProgressEvent error
+import dynamic from 'next/dynamic'
+
 // ** AUTH GUARD
 import { auth } from "auth"
-import ClientExample from "@/components/client-example"
 import { SessionProvider } from "next-auth/react"
 
 // ** Next Imports
@@ -16,9 +18,8 @@ import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 
 // ** React Imports
 // import { useContext } from 'react'
-
 // ** Context Imports
-import { AbilityContext } from '#/lib/auth/acl/Can'
+// import { AbilityContext } from '#/lib/auth/acl/Can'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
@@ -52,11 +53,12 @@ const ParticipatePage: TNextPageWithProps = async () => {
       container
       spacing={2}
     >
+
       {/* [MM] HEY HEY HEY */}
-      <SessionProvider session={session}>
+      {/* <SessionProvider session={session}> */}
         <ThreeDGarden />
         {/* <ThreeDGarden session={session} /> */}
-      </SessionProvider>
+      {/* </SessionProvider> */}
       {/* [MM] HEY HEY HEY */}
 
       <Grid
@@ -107,4 +109,8 @@ ParticipatePage.acl = {
   subject: 'participate-page',
 }
 
-export default ParticipatePage
+// export default ParticipatePage
+const ParticipatePageUseClient = dynamic(() => Promise.resolve(ParticipatePage), {
+  ssr: false
+})
+export default ParticipatePageUseClient

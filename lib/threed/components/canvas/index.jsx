@@ -10,7 +10,7 @@ import { Canvas, extend, useFrame, useThree } from '@react-three/fiber'
 import { softShadows } from '@react-three/drei' // softShadows()
 import { OrbitControls, TransformControls, Preload, Environment, Html, useProgress } from '@react-three/drei'
 import { useGLTF, PresentationControls, ContactShadows } from '@react-three/drei'
-import { Loader } from '@react-three/drei'
+// import { Loader } from '@react-three/drei'
 import { GizmoHelper, GizmoViewcube, GizmoViewport, Center, PivotControls } from '@react-three/drei'
 import { Stage, BakeShadows } from '@react-three/drei'
 
