@@ -109,7 +109,7 @@ export default function ThreeDCanvas({ scene, models, children }) {
       // scene={scene}
       scene={{
         // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
-        background: new THREE.Color(0x171717),
+        background: new THREE.Color(0x111111),
       }}
     >
       <Preload all />
@@ -120,7 +120,10 @@ export default function ThreeDCanvas({ scene, models, children }) {
       {/* <Suspense fallback={<Html center><Loader /></Html>}> */}
       <Suspense fallback={<Html center><Spinner /></Html>}>
 
-        {/* <Environment preset='forest' background /> */}
+        {/* <Environment
+          preset='night'
+          background={'only'}
+        /> */}
 
         <ThreeDControls />
 

@@ -3600,7 +3600,7 @@ const ThreeDGarden = (): JSX.Element => {
       // barStyles={...bar} // Loading-bar styles
       // dataStyles={...data} // Text styles
       dataInterpolation={(p) => `Building Interface ${p.toFixed(0)}%`} // Text
-      initialState={(active) => active} // Initial black out state
+      initialState={(active = true) => active} // Initial black out state
     />
 
     {/* <ApolloProvider client={client}> */}
