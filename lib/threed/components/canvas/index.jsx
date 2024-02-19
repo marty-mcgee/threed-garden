@@ -8,8 +8,10 @@ import { Suspense, useState, useRef } from 'react'
 // ** Helper Components
 import Spinner from '#/ui/components/spinner'
 
+// THREE JS * ALL
 import * as THREE from 'three'
-import { Canvas, extend, useFrame, useThree } from '@react-three/fiber'
+// R3F + HELPERS
+import { Canvas, useFrame, useThree, extend } from '@react-three/fiber'
 import { softShadows } from '@react-three/drei' // softShadows()
 import { OrbitControls, TransformControls, Preload, Environment, Html, useProgress } from '@react-three/drei'
 import { useGLTF, PresentationControls, ContactShadows } from '@react-three/drei'
@@ -17,15 +19,11 @@ import { GizmoHelper, GizmoViewcube, GizmoViewport, Center, PivotControls } from
 import { Stage, BakeShadows } from '@react-three/drei'
 // import { Loader } from '@react-three/drei'
 
-// import AppPage from '#/lib/threed/pages/_app-page'
-// import BoxPage from '#/lib/threed/pages/box-page'
-import BoxComponent from '#/lib/threed/components/box'
-// import ShaderPage from '#/lib/threed/pages/shader-page'
-import ShaderComponent from '#/lib/threed/components/shader'
-
 // ** ThreeD Imports
-import ThreeD from '#/lib/threed/components/nouns/ThreeD'
-import Character from '~/lib/threed/components/nouns/Character'
+import ThreeDScene from '#/lib/threed/components/nouns/Scene'
+// import ThreeDThreeD from '#/lib/threed/components/nouns/ThreeD'
+import ThreeDCharacter from '~/lib/threed/components/nouns/Character'
+// ThreeD EXAMPLES
 // import StacyApp from '~/lib/threed/components/examples/Stacy/StacyApp'
 // import Stacy from '~/lib/threed/components/examples/Stacy/Stacy'
 // import Watch from '~/lib/threed/components/examples/Watch/Watch'
@@ -106,7 +104,7 @@ export default function ThreeDCanvas({ scene, models, children }) {
         height: '540px',
         width: '100%',
       }}
-      // scene={scene}
+      // scene={Scene}
       scene={{
         // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
         background: new THREE.Color(0x222222),
@@ -224,9 +222,12 @@ export default function ThreeDCanvas({ scene, models, children }) {
           polar={[-Math.PI / 3, Math.PI / 3]}
           azimuth={[-Math.PI / 1.4, Math.PI / 2]}
         >
+
+          {/* <>{children}</> */}
+          <ThreeDScene />
           {/* <StacyApp position={[1.25, 1, 3.25]} scale={3.0} /> */}
           {/* <Stacy position={[1.25, 0.7, 3.25]} scale={5.0} /> */}
-          {/* <Character
+          <ThreeDCharacter
             type='gardener'
             state={state}
             threedId={2}
@@ -234,8 +235,7 @@ export default function ThreeDCanvas({ scene, models, children }) {
             position={[1.25, 0.7, 3.25]}
             rotation={[0, 90, 0]}
             scale={5.0}
-          /> */}
-          <>{children}</>
+          />
 
         </PresentationControls>
 
@@ -258,7 +258,7 @@ export default function ThreeDCanvas({ scene, models, children }) {
 
         {/* [MM] HEY HEY HEY */}
         {/* NEED TO SEND A THREED_SCENE TO A CANVAS, BUT THIS IS FINE FOR NOW */}
-        <ThreeD state={state} threedId={1} threed={{}} />
+        {/* <ThreeDThreeD state={state} threedId={1} threed={{}} /> */}
         {/* [MM] HEY HEY HEY */}
 
         {/* <Stage environment="forest" intensity={0.7}> */}
