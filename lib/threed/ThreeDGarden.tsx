@@ -3482,7 +3482,9 @@ const ThreeDViewCanvas: FC = (): JSX.Element => {
           xs={12}
           sx={{ border: '1px solid darkgreen' }}
         >
+          {/*  */}
           <ThreeDCanvas />
+          {/*  */}
         </Grid>
         {/* <Grid item id='camera[1]'
           md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
@@ -3597,7 +3599,8 @@ const ThreeDGarden = (): JSX.Element => {
     {/* <ApolloProvider client={client}> */}
       {/* <ApolloConsumer> */}
 
-        <Suspense fallback={null}>
+        {/* <Suspense fallback={null}> */}
+        {/* <Suspense fallback={<Loader />}> */}
 
           {/* <Loader /> */}
 
@@ -3707,7 +3710,7 @@ const ThreeDGarden = (): JSX.Element => {
             {/* <PlanView /> */}
             {/* <TheBottom /> */}
           </div>
-          </Suspense>
+          {/* </Suspense> */}
       {/* </ApolloConsumer> */}
     {/* </ApolloProvider> */}
     </div>
