@@ -28,7 +28,7 @@ const FallbackSpinner = () => {
       }}
     >
       <CircularProgress disableShrink sx={{ mt: 0, color: spinnerColor }} />
-      <Box>Building ThreeD Interface...</Box>
+      {/* <Box>Building ThreeD Interface...</Box> */}
     </Box>
   )
 }

@@ -5,14 +5,17 @@ import { proxy, useSnapshot } from 'valtio'
 
 import { Suspense, useState, useRef } from 'react'
 
+// ** Helper Components
+import Spinner from '#/ui/components/spinner'
+
 import * as THREE from 'three'
 import { Canvas, extend, useFrame, useThree } from '@react-three/fiber'
 import { softShadows } from '@react-three/drei' // softShadows()
 import { OrbitControls, TransformControls, Preload, Environment, Html, useProgress } from '@react-three/drei'
 import { useGLTF, PresentationControls, ContactShadows } from '@react-three/drei'
-// import { Loader } from '@react-three/drei'
 import { GizmoHelper, GizmoViewcube, GizmoViewport, Center, PivotControls } from '@react-three/drei'
 import { Stage, BakeShadows } from '@react-three/drei'
+// import { Loader } from '@react-three/drei'
 
 // import AppPage from '#/lib/threed/pages/_app-page'
 // import BoxPage from '#/lib/threed/pages/box-page'
@@ -112,8 +115,11 @@ export default function ThreeDCanvas({ scene, models, children }) {
       <Preload all />
 
       {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
-      <Suspense fallback={null}>
+      {/* <Suspense fallback={null}> */}
       {/* <Suspense fallback={<LoaderSimple />}> */}
+      {/* <Suspense fallback={<Html center><Loader /></Html>}> */}
+      <Suspense fallback={<Html center><Spinner /></Html>}>
+
         {/* <Environment preset='forest' background /> */}
 
         <ThreeDControls />
