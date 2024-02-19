@@ -3411,7 +3411,7 @@ const TheBottom: FC = (): JSX.Element => {
 // ==========================================================
 
 // ** R3F Main Component
-const ThreeDCanvasView: FC = (): JSX.Element => {
+const ThreeDCanvasViewer = (): JSX.Element => {
   // component params
   const word = `[MM] @ ${new Date().toISOString()}`
 
@@ -3419,14 +3419,14 @@ const ThreeDCanvasView: FC = (): JSX.Element => {
   // in this case: sceneStore SCENE! THE SCENE !! FOR R3F boogie !!
   const store = sceneStore // <-- HEY HEY HEY [MM]
 
-  console.debug('%cThreeDView {store}', ccm1, store)
-  console.debug(`%c====================================`, ccm5)
+  // console.debug('%cThreeDCanvasViewer {store}', ccm1, store)
+  // console.debug(`%c====================================`, ccm5)
   // return <Box sx={{ p: 5, textAlign: 'center' }}>r3f: testing... {word}</Box>
   // throw new Error(`r3f: testing... "${word}"`)
 
   const noun = store.store.useStore('one')
   const noun_title = noun.data?.title ? noun.data.title : 'NOTHING YET SIR'
-  console.debug('%cThreeDView {noun}', ccm1, noun)
+  console.debug('%cThreeDCanvasViewer {noun}', ccm1, noun)
 
   const loadNoun = (noun) => {
     // load this noun into r3f canvas
@@ -3434,20 +3434,20 @@ const ThreeDCanvasView: FC = (): JSX.Element => {
     return <Box>true</Box> // true
   }
 
-  useEffect(() => {
-    // console.debug('ThreeDCanvasView onMount')
-    // console.debug(`%c====================================`, ccm5)
-    return () => {
-      // console.debug('ThreeDCanvasView onUnmount')
-      // console.debug(`%c====================================`, ccm5)
-    }
-  }, [])
+  // useEffect(() => {
+  //   // console.debug('ThreeDCanvasViewer onMount')
+  //   // console.debug(`%c====================================`, ccm5)
+  //   return () => {
+  //     // console.debug('ThreeDCanvasViewer onUnmount')
+  //     // console.debug(`%c====================================`, ccm5)
+  //   }
+  // }, [])
 
   // console.debug(`%c====================================`, ccm5)
   return (
     <Grid
       container
-      id='ThreeDCanvasView'
+      id='ThreeDCanvasViewer'
       spacing={0}
       sx={{ border: '0px solid orange' }}
     >
@@ -3456,6 +3456,7 @@ const ThreeDCanvasView: FC = (): JSX.Element => {
         id='metadata'
         md={5}
         xs={12}
+        sx={{ paddingLeft: '0.5rem' }}
       >
         <Typography>
           {noun._type} title: {noun_title}
@@ -3545,49 +3546,49 @@ const ThreeDGarden = (): JSX.Element => {
     localStorage.setItem('threed_tabInfoControl', newValue)
   }
 
-  // ==========================================================
-  // Component onMount hook
-  useEffect(() => {
-    // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm4, word)
-    // console.debug(`%c====================================`, ccm5)
+  // // ==========================================================
+  // // Component onMount hook
+  // useEffect(() => {
+  //   // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm4, word)
+  //   // console.debug(`%c====================================`, ccm5)
 
-    // begin here ?? yes
-    // bootManager()...
+  //   // begin here ?? yes
+  //   // bootManager()...
 
-    // ==========================================================
-    // set open tab
-    const openTab: number = Number(localStorage.getItem('threed_tabInfoControl'))
-    setTabInfoControl(openTab ? openTab : 0)
+  //   // ==========================================================
+  //   // set open tab
+  //   const openTab: number = Number(localStorage.getItem('threed_tabInfoControl'))
+  //   setTabInfoControl(openTab ? openTab : 0)
 
-    // ==========================================================
-    // LOAD HISTORIES FROM DISK ??
-    // ** AND/OR **
-    // DO THIS STUFF WHEN ASKED BY AN EVENT/REQUEST
+  //   // ==========================================================
+  //   // LOAD HISTORIES FROM DISK ??
+  //   // ** AND/OR **
+  //   // DO THIS STUFF WHEN ASKED BY AN EVENT/REQUEST
 
-    // ** PROJECT HISTORY
-    // projectStore.actions.loadFromDisk()
-    // projectStore.actions.loadFromDB()
+  //   // ** PROJECT HISTORY
+  //   // projectStore.actions.loadFromDisk()
+  //   // projectStore.actions.loadFromDB()
 
-    // ** WORKSPACE HISTORY
-    // workspaceStore.actions.loadFromDisk()
-    // workspaceStore.actions.loadFromDB()
+  //   // ** WORKSPACE HISTORY
+  //   // workspaceStore.actions.loadFromDisk()
+  //   // workspaceStore.actions.loadFromDB()
 
-    // ** PLAN HISTORY
-    // planStore.actions.loadFromDisk()
-    // planStore.actions.loadFromDB()
+  //   // ** PLAN HISTORY
+  //   // planStore.actions.loadFromDisk()
+  //   // planStore.actions.loadFromDB()
 
-    // ** THREED HISTORY
-    // threedStore.actions.loadFromDisk()
-    // threedStore.actions.loadFromDB()
+  //   // ** THREED HISTORY
+  //   // threedStore.actions.loadFromDisk()
+  //   // threedStore.actions.loadFromDB()
 
-    // ** SCENE HISTORY
-    // sceneStore.actions.loadFromDisk()
-    // sceneStore.actions.loadFromDB()
+  //   // ** SCENE HISTORY
+  //   // sceneStore.actions.loadFromDisk()
+  //   // sceneStore.actions.loadFromDB()
 
-    return () => {
-      // console.debug('ThreeDGarden onUnmount', word)
-    }
-  }, [])
+  //   return () => {
+  //     // console.debug('ThreeDGarden onUnmount', word)
+  //   }
+  // }, [])
 
   // ==========================================================
   // FC returns JSX
@@ -3619,7 +3620,7 @@ const ThreeDGarden = (): JSX.Element => {
             <ToolBar />
 
             {/* R3F ThreeD Canvas View */}
-            <ThreeDCanvasView />
+            <ThreeDCanvasViewer />
             {/* R3F ThreeD Canvas View */}
 
             {/* store access */}
