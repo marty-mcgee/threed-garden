@@ -11,7 +11,7 @@ const ThreeDModels = (props) => {
   let jsx
 
   for (let Model; Model = 1; Model++) {
-    jsx += <ThreeDModel />
+    jsx += <ThreeDModel id={1} />
   }
 
   return <>{jsx}</>
@@ -20,7 +20,7 @@ const ThreeDModels = (props) => {
 // ** ThreeD -- Group of Model[s] -||-
 // const Model = (props) => {
 // function ThreeD({ state, threedId, threed, ...props }) {
-const ThreeD = ({ state, threedId, threed, type, position, rotation, scale }) => {
+const ThreeD = ({ id, state, threedId, threed, type, position, rotation, scale }) => {
   // return <></> // <div>ThreeD</div>
 
   {/* MODEL -- Monaco Watch
