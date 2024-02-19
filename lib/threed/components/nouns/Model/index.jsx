@@ -1,6 +1,9 @@
 import { proxy, useSnapshot } from 'valtio'
+
 import { useEffect, useState, useRef } from 'react'
+
 import { useThree, useFrame, useLoader } from '@react-three/fiber'
+
 import {
   // ContactShadows,
   useCursor,
@@ -10,11 +13,13 @@ import {
   useAnimations,
   useTexture
 } from '@react-three/drei'
+
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { TGALoader } from 'three/examples/jsm/loaders/TGALoader'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 // import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
+
 import { a, useSpring } from '@react-spring/three'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)

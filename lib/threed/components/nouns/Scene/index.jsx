@@ -4,7 +4,6 @@ import { useThree, useFrame } from '@react-three/fiber'
 import { ContactShadows, useCursor, useGLTF, useFBX, useOBJ } from '@react-three/drei'
 
 import ThreeD from '#/lib/threed/components/nouns/ThreeD'
-// import Models from '#/lib/threed/components/nouns/Model'
 // import Demo from '#/lib/threed/components/nouns/Scene/FarmDemo'
 // <Demo />
 
@@ -86,23 +85,23 @@ const ThreeDScene = (props) => {
     },
     // { data: 'gql/rest wp endpoint {threed_threed}' }
     // { data: 'gql/rest wp endpoint {threed_file}' }
-    files: [
-      {
-        file_type: defaults.fileTypeDefault,
-        file_loader: 'fbx|obj|gltf',
-        file_url: defaults.fileUrlDefault,
-        file_name: defaults.fileNameDefault,
-        // { data: 'gql/rest wp endpoint {threed_threed}' }
-        nodes: [
-          {
-            node_name: defaults.nodeNameDefault,
-            node_position: [0, 0, 0],
-            node_rotation: defaults.nodeRotationDefault,
-            node_scale: 1.0, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
-          },
-        ],
-      },
-    ],
+    // files: [
+    //   {
+    //     file_type: defaults.fileTypeDefault,
+    //     file_loader: 'fbx|obj|gltf',
+    //     file_url: defaults.fileUrlDefault,
+    //     file_name: defaults.fileNameDefault,
+    //     // { data: 'gql/rest wp endpoint {threed_threed}' }
+    //     nodes: [
+    //       {
+    //         node_name: defaults.nodeNameDefault,
+    //         node_position: [0, 0, 0],
+    //         node_rotation: defaults.nodeRotationDefault,
+    //         node_scale: 1.0, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
+    //       },
+    //     ],
+    //   },
+    // ],
   }
   console.debug('THREEDSCENE ready for Group of Models: ', THREEDSCENE)
 
@@ -114,29 +113,9 @@ const ThreeDScene = (props) => {
         rotation={THREEDSCENE.group.group_rotation}
         scale={THREEDSCENE.group.group_scale}>
 
-        {/* <Models
-          state={state}
-          threed={THREEDSCENE}
-          file={THREEDSCENE.files[0].file_url}
-          name={THREEDSCENE.files[0].nodes[0].node_name}
-          position={THREEDSCENE.files[0].nodes[0].node_position}
-          rotation={THREEDSCENE.files[0].nodes[0].node_rotation}
-          scale={THREEDSCENE.files[0].nodes[0].node_scale}
-          doReturnOne={true}
-          doReturnEach={false}
-          doReturnAll={false}
-        /> */}
         <ThreeD
           state={state}
           threed={THREEDSCENE}
-          file={THREEDSCENE.files[0].file_url}
-          name={THREEDSCENE.files[0].nodes[0].node_name}
-          position={THREEDSCENE.files[0].nodes[0].node_position}
-          rotation={THREEDSCENE.files[0].nodes[0].node_rotation}
-          scale={THREEDSCENE.files[0].nodes[0].node_scale}
-          doReturnOne={true}
-          doReturnEach={false}
-          doReturnAll={false}
         />
 
         <ContactShadows
