@@ -3,8 +3,10 @@ import { useState, useRef } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
 import { ContactShadows, useCursor, useGLTF, useFBX, useOBJ } from '@react-three/drei'
 
-import Model from '#/lib/threed/components/nouns/Model'
-import Demo from '#/lib/threed/components/nouns/Scene/FarmDemo'
+import ThreeD from '#/lib/threed/components/nouns/ThreeD'
+// import Models from '#/lib/threed/components/nouns/Model'
+// import Demo from '#/lib/threed/components/nouns/Scene/FarmDemo'
+// <Demo />
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
@@ -112,7 +114,19 @@ const ThreeDScene = (props) => {
         rotation={THREEDSCENE.group.group_rotation}
         scale={THREEDSCENE.group.group_scale}>
 
-        <Model
+        {/* <Models
+          state={state}
+          threed={THREEDSCENE}
+          file={THREEDSCENE.files[0].file_url}
+          name={THREEDSCENE.files[0].nodes[0].node_name}
+          position={THREEDSCENE.files[0].nodes[0].node_position}
+          rotation={THREEDSCENE.files[0].nodes[0].node_rotation}
+          scale={THREEDSCENE.files[0].nodes[0].node_scale}
+          doReturnOne={true}
+          doReturnEach={false}
+          doReturnAll={false}
+        /> */}
+        <ThreeD
           state={state}
           threed={THREEDSCENE}
           file={THREEDSCENE.files[0].file_url}
@@ -124,8 +138,6 @@ const ThreeDScene = (props) => {
           doReturnEach={false}
           doReturnAll={false}
         />
-
-        {/* <Demo /> */}
 
         <ContactShadows
           rotation-x={Math.PI / 2}
