@@ -3628,59 +3628,54 @@ const ThreeDGarden = (): JSX.Element => {
                   aria-label='Info Control Panel'
                 >
                   <Tab label='Projects' {...tabProps(0)} />
-                  {/* <Tab label='Workspaces' {...tabProps(1)} /> */}
-                  <Tab label='Plans' {...tabProps(2)} />
-                  <Tab label='Files' {...tabProps(4)} />
+                  <Tab label='Plans' {...tabProps(1)} />
+                  <Tab label='Files' {...tabProps(2)} />
                   <Tab label='ThreeDs' {...tabProps(3)} />
-                  <Tab label='Scenes' {...tabProps(5)} />
-                  <Tab label='Allotments' {...tabProps(6)} />
-                  <Tab label='Beds' {...tabProps(7)} />
-                  <Tab label='Plants' {...tabProps(8)} />
-                  <Tab label='Planting Plans' {...tabProps(9)} />
-                  <Tab label='Tests' {...tabProps(10)} />
+                  <Tab label='Scenes' {...tabProps(4)} />
+                  <Tab label='Allotments' {...tabProps(5)} />
+                  <Tab label='Beds' {...tabProps(6)} />
+                  <Tab label='Plants' {...tabProps(7)} />
+                  <Tab label='Planting Plans' {...tabProps(8)} />
+                  <Tab label='Tests' {...tabProps(9)} />
                 </Tabs>
               </Box>
-              {/* <MDTabPanel value={tabInfoControl} index={0}>
+              <MDTabPanel value={tabInfoControl} index={0}>
                 <ProjectControlPanel />
                 <ProjectInfoPanel />
-              </MDTabPanel> */}
-              {/* <MDTabPanel value={tabInfoControl} index={1}>
-                <WorkspaceControlPanel />
-                <WorkspaceInfoPanel />
               </MDTabPanel>
-              <MDTabPanel value={tabInfoControl} index={2}>
+              <MDTabPanel value={tabInfoControl} index={1}>
                 <PlanControlPanel />
                 <PlanInfoPanel />
+              </MDTabPanel>
+              <MDTabPanel value={tabInfoControl} index={2}>
+                <FileControlPanel />
+                <FileInfoPanel />
               </MDTabPanel>
               <MDTabPanel value={tabInfoControl} index={3}>
                 <ThreeDControlPanel />
                 <ThreeDInfoPanel />
               </MDTabPanel>
               <MDTabPanel value={tabInfoControl} index={4}>
-                <FileControlPanel />
-                <FileInfoPanel />
-              </MDTabPanel>
-              <MDTabPanel value={tabInfoControl} index={5}>
                 <SceneControlPanel />
                 <SceneInfoPanel />
               </MDTabPanel>
-              <MDTabPanel value={tabInfoControl} index={6}>
+              <MDTabPanel value={tabInfoControl} index={5}>
                 <AllotmentControlPanel />
                 <AllotmentInfoPanel />
               </MDTabPanel>
-              <MDTabPanel value={tabInfoControl} index={7}>
+              <MDTabPanel value={tabInfoControl} index={6}>
                 <BedControlPanel />
                 <BedInfoPanel />
               </MDTabPanel>
-              <MDTabPanel value={tabInfoControl} index={8}>
+              <MDTabPanel value={tabInfoControl} index={7}>
                 <PlantControlPanel />
                 <PlantInfoPanel />
               </MDTabPanel>
-              <MDTabPanel value={tabInfoControl} index={9}>
+              <MDTabPanel value={tabInfoControl} index={8}>
                 <PlantingPlanControlPanel />
                 <PlantingPlanInfoPanel />
-              </MDTabPanel> */}
-              <MDTabPanel value={tabInfoControl} index={10}>
+              </MDTabPanel>
+              <MDTabPanel value={tabInfoControl} index={9}>
                 Testing Panel
                 {/* <CharacterControlPanel /> */}
                 {/* <CharacterInfoPanel /> */}
