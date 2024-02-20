@@ -444,7 +444,7 @@ function nounStore(this: INounStore, _type = 'noun') {
 
             this.store.update('countDB', this.store.get('all').length)
             console.debug(`%cloadFromDB countDB`, ccm.orange, this.store.get('countDB'))
-            console.debug(`%c====================================`, ccm5)
+            console.debug(`%c====================================`, ccm.green)
 
             // save to disk
             this.actions.saveToDisk()
