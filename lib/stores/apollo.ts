@@ -465,7 +465,7 @@ function nounStore(this: INounStore, _type = 'noun') {
     },
 
     // load 'this' noun into React Three Fiber view
-    loadToWorkspace: (noun: Object, _type: string, _id: string, _r3fCanvas: string) => {
+    loadToParticipant: (noun: Object, _type: string, _id: string, _r3fCanvas: string) => {
       try {
         const nounAlt = this.store.get('one')
         console.debug(`%cload {noun}`, ccm.orange, noun)
@@ -577,7 +577,6 @@ export const allotmentStore = new (nounStore as any)('allotment')
 export const bedStore = new (nounStore as any)('bed')
 export const plantStore = new (nounStore as any)('plant')
 export const plantingPlanStore = new (nounStore as any)('plantingPlan')
-export const bearStore = new (nounStore as any)('bear')
 export { modalStore }
 // export const modalStore = new (modalStore as any)()
 export const modalAboutStore = new (modalStore as any)('modalAbout')
@@ -598,7 +597,6 @@ const stores = {
   bedStore,
   plantStore,
   plantingPlanStore,
-  bearStore,
   modalStore,
   modalAboutStore,
   modalModel3dStore,
