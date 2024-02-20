@@ -3,6 +3,7 @@ import { useState, useRef } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
 import { ContactShadows, useCursor, useGLTF, useFBX, useOBJ } from '@react-three/drei'
 
+import ThreeDModel from '#/lib/threed/components/nouns/Model'
 import Character1 from '#/lib/threed/components/nouns/Character/FarmerScarecrow'
 import Character2 from '#/lib/threed/components/nouns/Character/FarmerMan'
 import Character3 from '#/lib/threed/components/nouns/Character/FarmerOldMan'
@@ -68,9 +69,9 @@ const defaults = {
 
 const Character = (props) => {
 
-  const { state, threedId, threed } = props
+  const { state } = props
 
-  console.debug('THREEDCHARACTER: Character(state, threedId, threed)', state, threedId, threed)
+  console.debug('THREEDCHARACTER: state', state)
 
   // map threed to THREEDCHARACTER, to pass on to Model
   const THREEDCHARACTER = {
@@ -122,19 +123,19 @@ const Character = (props) => {
         rotation={THREEDCHARACTER.group.group_rotation}
         scale={THREEDCHARACTER.group.group_scale}
       >
-        {/* <Model
+        <ThreeDModel
           // ref={THREEDCHARACTER.ref}
           state={state}
-          threed={THREEDCHARACTER}
-          file={THREEDCHARACTER.files[0].file_url}
-          name={THREEDCHARACTER.files[0].nodes[0].node_name}
-          position={THREEDCHARACTER.files[0].nodes[0].node_position}
-          rotation={THREEDCHARACTER.files[0].nodes[0].node_rotation}
-          scale={THREEDCHARACTER.files[0].nodes[0].node_scale}
-          doReturnOne={true}
-          doReturnEach={false}
-          doReturnAll={false}
-        /> */}
+          // threed={THREEDCHARACTER}
+          // file={THREEDCHARACTER.files[0].file_url}
+          // name={THREEDCHARACTER.files[0].nodes[0].node_name}
+          // position={THREEDCHARACTER.files[0].nodes[0].node_position}
+          // rotation={THREEDCHARACTER.files[0].nodes[0].node_rotation}
+          // scale={THREEDCHARACTER.files[0].nodes[0].node_scale}
+          // doReturnOne={true}
+          // doReturnEach={false}
+          // doReturnAll={false}
+        />
 
         {/* CHARACTER[S] */}
         <Character1 />

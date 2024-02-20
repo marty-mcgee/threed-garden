@@ -26,12 +26,13 @@ import { a, useSpring } from '@react-spring/three'
 import ccm from '#/lib/utils/console-colors'
 
 // ** ThreeD Model -||-
-const Model = (props) => {
+const Model = ({ threedid, state, threed, name, file }) => {
 
   // **
   // deconstruct arguments from props
-  const { id, state, threed, name, file, doReturnOne, doReturnEach, doReturnAll } = props
+  // const { threedid, state, threed, name, file } = props
   // console.debug('Model props', props)
+  console.debug('Model props.threed', threed)
 
   // ** set available action modes
   const modes = ['translate', 'rotate', 'scale']
@@ -73,9 +74,9 @@ const Model = (props) => {
       actions: [],
       names: [],
     },
-    doReturnOne: doReturnOne ? true : false,
-    doReturnAll: doReturnAll ? true : false,
-    doReturnEach: doReturnEach ? true : false,
+    // doReturnOne: doReturnOne ? true : false,
+    // doReturnAll: doReturnAll ? true : false,
+    // doReturnEach: doReturnEach ? true : false,
     // attributes
     group_position: threed.group.position,
     group_rotation: threed.group.rotation,
@@ -189,8 +190,8 @@ const Model = (props) => {
     }
     // console.debug(`%c====================================`, ccm.black)
   } else {
-    console.debug('%cMODEL.isSupported: false', ccm.yellow)
-    console.debug(`%c====================================`, ccm.yellow)
+    console.debug('%cMODEL.isSupported: false', ccm.red)
+    // console.debug(`%c====================================`, ccm.yellow)
   }
   // console.debug('%cmodel', ccm.green, model)
   // console.debug(`%c====================================`, ccm.black)
@@ -336,7 +337,7 @@ const Model = (props) => {
       }
       onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
       onPointerOut={(e) => setIsHovered(false)}
-      {...props}
+      // {...props}
       dispose={null}>
       <sphereGeometry args={[4, 96]} />
       <meshPhysicalMaterial
