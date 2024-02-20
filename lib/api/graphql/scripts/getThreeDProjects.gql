@@ -131,21 +131,39 @@ query ThreeDProjectsQuery {
             nodes {
               threedId
               title
+              content
               uri
+              version
+              modified
+              template {
+                templateName
+              }
             }
           }
           threedsActive {
             nodes {
               threedId
               title
+              content
               uri
+              version
+              modified
+              template {
+                templateName
+              }
             }
           }
           threedsInactive {
             nodes {
               threedId
               title
+              content
               uri
+              version
+              modified
+              template {
+                templateName
+              }
             }
           }
         }
