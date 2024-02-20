@@ -7,7 +7,7 @@ import create, { StoreApi } from '#/lib/api/graphql/createStore'
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
 import GetNouns from '#/lib/api/graphql/scripts/getNouns.gql'
 import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
-import GetThreeDProjects from '#/lib/api/graphql/scripts/GetThreeDProjects.gql'
+import GetThreeDProjects from '#/lib/api/graphql/scripts/getThreeDProjects.gql'
 import GetPlans from '#/lib/api/graphql/scripts/getPlans.gql'
 import GetParticipants from '#/lib/api/graphql/scripts/getParticipants.gql'
 import GetThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
