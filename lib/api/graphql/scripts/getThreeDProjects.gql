@@ -1,0 +1,155 @@
+query ThreeDProjectsQuery {
+  projects {
+    nodes {
+      projectId
+      title
+      content
+      uri
+      version
+      modified
+      template {
+        templateName
+      }
+      scenes {
+        nodes {
+          sceneId
+          title
+          content
+          uri
+          version
+          modified
+          template {
+            templateName
+          }
+          sceneBgColor
+          sceneBgImage {
+            node {
+              title
+              mediaType
+              mediaItemUrl
+              mediaItemId
+              mediaDetails {
+                file
+              }
+            }
+            cursor
+          }
+          scenePlaneWidthX
+          scenePlaneHeightY
+          scenePlaneLengthZ
+          scenePlaneTextureRepeatX
+          scenePlaneTextureRepeatY
+          scenePlaneTextureRepeatZ
+          sceneBgImagePz {
+            node {
+              title
+              mediaType
+              mediaItemUrl
+              mediaItemId
+              mediaDetails {
+                file
+              }
+            }
+            cursor
+          }
+          sceneBgImagePy {
+            node {
+              title
+              mediaType
+              mediaItemUrl
+              mediaItemId
+              mediaDetails {
+                file
+              }
+            }
+            cursor
+          }
+          sceneBgImagePx {
+            node {
+              title
+              mediaType
+              mediaItemUrl
+              mediaItemId
+              mediaDetails {
+                file
+              }
+            }
+            cursor
+          }
+          sceneBgImageNz {
+            node {
+              title
+              mediaType
+              mediaItemUrl
+              mediaItemId
+              mediaDetails {
+                file
+              }
+            }
+            cursor
+          }
+          sceneBgImageNy {
+            node {
+              title
+              mediaType
+              mediaItemUrl
+              mediaItemId
+              mediaDetails {
+                file
+              }
+            }
+            cursor
+          }
+          sceneBgImageNx {
+            node {
+              sourceUrl
+              uri
+              title
+              mediaType
+              mediaItemUrl
+              mediaItemId
+              mediaDetails {
+                file
+              }
+            }
+            cursor
+          }
+        }
+      }
+      plans {
+        nodes {
+          planId
+          title
+          content
+          uri
+          version
+          modified
+          template {
+            templateName
+          }
+          threeds {
+            nodes {
+              threedId
+              title
+              uri
+            }
+          }
+          threedsActive {
+            nodes {
+              threedId
+              title
+              uri
+            }
+          }
+          threedsInactive {
+            nodes {
+              threedId
+              title
+              uri
+            }
+          }
+        }
+      }
+    }
+  }
+}

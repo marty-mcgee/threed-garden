@@ -114,7 +114,7 @@ const ThreeDScene = (props) => {
         scale={THREEDSCENE.group.group_scale}>
 
         <ThreeD
-          id={1}
+          threedid={1}
           state={state}
           threed={THREEDSCENE}
         />

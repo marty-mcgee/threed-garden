@@ -101,7 +101,7 @@ export default function ThreeDCanvas({ scene, models, children }) {
       dpr={[1, 2]}
       shadows
       style={{
-        height: '540px',
+        height: '480px',
         width: '100%',
       }}
       // scene={Scene}
@@ -205,11 +205,6 @@ export default function ThreeDCanvas({ scene, models, children }) {
         />
         */}
 
-        {/* [MM] HEY HEY HEY */}
-        {/* NEED TO SEND A THREED_SCENE OF MODEL[S] TO A CANVAS */}
-        <ThreeDScene state={state} />
-        {/* [MM] HEY HEY HEY */}
-
         {/* <Stage environment="forest" intensity={0.7}> */}
 
         {/* SHOE + SHOES */}
@@ -218,9 +213,14 @@ export default function ThreeDCanvas({ scene, models, children }) {
           <Shoe color="orange" scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
         </Stage> */}
 
-        <BakeShadows />
+        {/* [MM] HEY HEY HEY */}
+        {/* NEED TO SEND A THREED_SCENE OF MODEL[S] TO A CANVAS */}
+        {/* <ThreeDScene state={state} /> */}
+        {/* [MM] HEY HEY HEY */}
 
         {/* {children} */}
+
+        <BakeShadows />
       </Suspense>
     </Canvas>
   )
