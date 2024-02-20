@@ -284,7 +284,7 @@ const Button = styled(MuiButton)(({ theme }) => ({
 const {
   nounStore,
   projectStore,
-  workspaceStore,
+  participantStore,
   planStore,
   threedStore,
   fileStore,
@@ -368,38 +368,38 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
 }
 
 // ==========================================================
-// Workspace
+// Participant
 
-const WorkspaceInfoPanel: FC = (_type: string = 'workspace'): JSX.Element => {
-  const workspaceCount = workspaceStore.store.useStore('count')
-  const workspaces = workspaceStore.store.useStore('all')
-  const workspace = workspaceStore.store.useStore('one')
-  const workspacesDB = workspaceStore.store.useStore('allDB')
-  const workspaceDB = workspaceStore.store.useStore('oneDB')
+const ParticipantInfoPanel: FC = (_type: string = 'participant'): JSX.Element => {
+  const participantCount = participantStore.store.useStore('count')
+  const participants = participantStore.store.useStore('all')
+  const participant = participantStore.store.useStore('one')
+  const participantsDB = participantStore.store.useStore('allDB')
+  const participantDB = participantStore.store.useStore('oneDB')
 
   return (
     <Box>
-      {/* <Typography>{workspaceCount} workspaces around here ...</Typography> */}
-      <Typography>workspaces: {workspaces.length}</Typography>
-      <Typography>workspacesDB: {workspacesDB.length}</Typography>
-      <Typography>workspace._id: {workspace._id}</Typography>
-      <Typography>workspace._ts: {workspace._ts}</Typography>
-      <Typography>workspace._name: {workspace._name}</Typography>
-      <Typography>workspace.layer._name: {workspace.layer?._name}</Typography>
-      <Typography>workspace.data.title: {workspace.data?.title}</Typography>
+      {/* <Typography>{participantCount} participants around here ...</Typography> */}
+      <Typography>participants: {participants.length}</Typography>
+      <Typography>participantsDB: {participantsDB.length}</Typography>
+      <Typography>participant._id: {participant._id}</Typography>
+      <Typography>participant._ts: {participant._ts}</Typography>
+      <Typography>participant._name: {participant._name}</Typography>
+      <Typography>participant.layer._name: {participant.layer?._name}</Typography>
+      <Typography>participant.data.title: {participant.data?.title}</Typography>
     </Box>
   )
 }
 
-const WorkspaceControlPanel: FC = (_type: string = 'workspace'): JSX.Element => {
-  const increaseCount = () => workspaceStore.update('count', workspaceStore.actions.increaseCount())
+const ParticipantControlPanel: FC = (_type: string = 'participant'): JSX.Element => {
+  const increaseCount = () => participantStore.update('count', participantStore.actions.increaseCount())
 
-  const addNew = () => workspaceStore.actions.addNew()
-  const saveToDisk = () => workspaceStore.actions.saveToDisk()
-  const loadFromDisk = () => workspaceStore.actions.loadFromDisk()
-  const loadFromDB = (client) => workspaceStore.actions.loadFromDB(client)
-  const saveToDB = (client) => workspaceStore.actions.saveToDB(client)
-  const removeAll = () => workspaceStore.actions.removeAll()
+  const addNew = () => participantStore.actions.addNew()
+  const saveToDisk = () => participantStore.actions.saveToDisk()
+  const loadFromDisk = () => participantStore.actions.loadFromDisk()
+  const loadFromDB = (client) => participantStore.actions.loadFromDB(client)
+  const saveToDB = (client) => participantStore.actions.saveToDB(client)
+  const removeAll = () => participantStore.actions.removeAll()
 
   return (
     <Box>
@@ -622,9 +622,9 @@ const SceneControlPanel: FC = (_type: string = 'scene'): JSX.Element => {
   const increaseCount = () => sceneStore.store.update('count', sceneStore.actions.increaseCount())
   const decreaseCount = () => sceneStore.store.update('count', sceneStore.actions.decreaseCount())
 
-  const loadToWorkspace = () => {
-    const scene = sceneStore.actions.loadToWorkspace()
-    console.debug('%cSceneControlPanel: loadToWorkspace {scene}', ccm3, scene)
+  const loadToParticipant = () => {
+    const scene = sceneStore.actions.loadToParticipant()
+    console.debug('%cSceneControlPanel: loadToParticipant {scene}', ccm3, scene)
     console.debug(`%c====================================`, ccm5)
     // return scene // ???
     return true
@@ -652,7 +652,7 @@ const SceneControlPanel: FC = (_type: string = 'scene'): JSX.Element => {
       </ApolloConsumer> */}
       <Button onClick={removeAll}>remove all</Button>
       <Button onClick={getState}>state</Button>
-      <Button onClick={loadToWorkspace}>load</Button>
+      <Button onClick={loadToParticipant}>load</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
     </Box>
@@ -3430,7 +3430,7 @@ const ThreeDCanvasViewer = (): JSX.Element => {
 
   const loadNoun = (noun) => {
     // load this noun into r3f canvas
-    store.actions.loadToWorkspace(noun, 'r3fCanvas')
+    store.actions.loadToParticipant(noun, 'r3fCanvas')
     return <Box>true</Box> // true
   }
 
@@ -3569,9 +3569,9 @@ const ThreeDGarden = (): JSX.Element => {
   //   // projectStore.actions.loadFromDisk()
   //   // projectStore.actions.loadFromDB()
 
-  //   // ** WORKSPACE HISTORY
-  //   // workspaceStore.actions.loadFromDisk()
-  //   // workspaceStore.actions.loadFromDB()
+  //   // ** PARTICIPANT HISTORY
+  //   // participantStore.actions.loadFromDisk()
+  //   // participantStore.actions.loadFromDB()
 
   //   // ** PLAN HISTORY
   //   // planStore.actions.loadFromDisk()

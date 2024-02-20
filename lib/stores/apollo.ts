@@ -9,7 +9,7 @@ import GetNouns from '#/lib/api/graphql/scripts/getNouns.gql'
 import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
 import GetThreeDProjects from '#/lib/api/graphql/scripts/GetThreeDProjects.gql'
 import GetPlans from '#/lib/api/graphql/scripts/getPlans.gql'
-import GetWorkspaces from '#/lib/api/graphql/scripts/getWorkspaces.gql'
+import GetParticipants from '#/lib/api/graphql/scripts/getParticipants.gql'
 import GetThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
 import GetFiles from '#/lib/api/graphql/scripts/getFiles.gql'
 import GetScenes from '#/lib/api/graphql/scripts/getScenes.gql'
@@ -28,7 +28,7 @@ import ccm from '#/lib/utils/console-colors'
 
 // ==========================================================
 // IMPORTS COMPLETE
-console.debug(`%c🥕 ThreeDGarden<FC,R3F>: {stores}`, ccm.yellow)
+console.debug(`%c🥕 ThreeDGarden<FC,R3F>: Apollo {stores}`, ccm.blue)
 console.debug(`%c====================================`, ccm.blue)
 
 // ==============================================================
@@ -62,7 +62,7 @@ interface INounStore {
   // store.store
   nounStore: (_type?: string) => boolean
   projectStore: StoreApi<any>
-  workspaceStore: StoreApi<any>
+  participantStore: StoreApi<any>
   planStore: StoreApi<any>
   threedStore: StoreApi<any>
   fileStore: StoreApi<any>
@@ -71,7 +71,7 @@ interface INounStore {
   bedStore: StoreApi<any>
   plantStore: StoreApi<any>
   plantingPlanStore: StoreApi<any>
-  bearStore: StoreApi<any>
+  // bearStore: StoreApi<any>
   modalStore: (_type?: string) => void
   modalAboutStore: StoreApi<any>
   modalModel3dStore: StoreApi<any>
@@ -123,7 +123,7 @@ function nounStore(this: INounStore, _type = 'noun') {
     _type: this._type,
     count: 0, // example counter (for fun/learning)
     all: [], // all of this nouns historical + current records (all scenes, all projects)
-    one: new (noun as any)(this._type), // {}, // the current workspace noun, aka 'this one noun'
+    one: new (noun as any)(this._type), // {}, // the current noun, aka 'this one noun'
 
     // track current noun + noun history
     // current: ^this one noun,
@@ -314,10 +314,11 @@ function nounStore(this: INounStore, _type = 'noun') {
             QUERY = GetNouns
             break
           case 'project':
-            QUERY = GetProjects
+            // QUERY = GetProjects
+            QUERY = GetThreeDProjects
             break
-          case 'workspace':
-            QUERY = GetWorkspaces
+          case 'participants':
+            QUERY = GetParticipants
             break
           case 'plan':
             QUERY = GetPlans
@@ -567,7 +568,7 @@ function modalStore(this: any, _type = 'modal') {
 export { nounStore }
 // export const nounStore = new (nounStore as any)('noun')
 export const projectStore = new (nounStore as any)('project')
-export const workspaceStore = new (nounStore as any)('workspace')
+export const participantStore = new (nounStore as any)('participant')
 export const planStore = new (nounStore as any)('plan')
 export const threedStore = new (nounStore as any)('threed')
 export const fileStore = new (nounStore as any)('file')
@@ -588,7 +589,7 @@ export const modalStoreNoun = new (nounStore as any)('modal')
 const stores = {
   nounStore,
   projectStore,
-  workspaceStore,
+  participantStore,
   planStore,
   threedStore,
   fileStore,

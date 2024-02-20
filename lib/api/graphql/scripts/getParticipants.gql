@@ -1,5 +1,5 @@
-query GetWorkspaces ($first: Int, $last: Int, $after: String, $before: String) {
-  workspaces (first: $first, last: $last, after: $after, before: $before) {
+query GetParticipants ($first: Int, $last: Int, $after: String, $before: String) {
+  participants (first: $first, last: $last, after: $after, before: $before) {
     pageInfo {
       endCursor
       hasNextPage
@@ -35,7 +35,7 @@ query GetWorkspaces ($first: Int, $last: Int, $after: String, $before: String) {
         title
         uri
         # custom fields
-        workspaceId
+        participantId
       }
     }
   }
