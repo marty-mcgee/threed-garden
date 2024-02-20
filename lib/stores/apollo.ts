@@ -7,6 +7,7 @@ import create, { StoreApi } from '#/lib/api/graphql/createStore'
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
 import GetNouns from '#/lib/api/graphql/scripts/getNouns.gql'
 import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
+import GetThreeDProjects from '#/lib/api/graphql/scripts/GetThreeDProjects.gql'
 import GetPlans from '#/lib/api/graphql/scripts/getPlans.gql'
 import GetWorkspaces from '#/lib/api/graphql/scripts/getWorkspaces.gql'
 import GetThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
@@ -21,14 +22,14 @@ import GetPlantingPlans from '#/lib/api/graphql/scripts/getPlantingPlans.gql'
 import { v4 as newUUID } from 'uuid'
 
 // [MM] COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5 } from '#/lib/utils/console-colors'
-// console.debug(`%cSUCCESS!!`, ccm1)
-// console.debug(`%cWHOOPSIES`, ccm2)
+import ccm from '#/lib/utils/console-colors'
+// console.debug(`%cSUCCESS!!`, ccm.orange)
+// console.debug(`%cWHOOPSIES`, ccm.red)
 
 // ==========================================================
 // IMPORTS COMPLETE
-console.debug(`%c🥕 ThreeDGarden<FC,R3F>: {stores}`, ccm4)
-console.debug(`%c====================================`, ccm5)
+console.debug(`%c🥕 ThreeDGarden<FC,R3F>: {stores}`, ccm.yellow)
+console.debug(`%c====================================`, ccm.blue)
 
 // ==============================================================
 // ==============================================================
@@ -168,13 +169,13 @@ function nounStore(this: INounStore, _type = 'noun') {
       this.store.update('allDB', [])
       this.store.update('oneDB', {})
       this.store.update('countDB', 0)
-      console.debug(`%cremoveAll [${this._type}]`, ccm2, true)
+      console.debug(`%cremoveAll [${this._type}]`, ccm.red, true)
     },
 
     // add a new current 'this' noun
     addNew: () => {
       // console.debug(`this`, this)
-      console.debug(`%caddNew [${this._type}] (before)`, ccm1, this.store.get('all'))
+      console.debug(`%caddNew [${this._type}] (before)`, ccm.orange, this.store.get('all'))
       // throw new Error(`[MM] testing... this`)
 
       // create a new one
@@ -189,13 +190,13 @@ function nounStore(this: INounStore, _type = 'noun') {
       else {
         // nounHistory (save existing before mutating, if not empty)
         this.store.update('all', [this.store.get('one'), ...this.store.get('all')])
-        console.debug(`%caddNew [${this._type}] (during)`, ccm1, this.store.get('all'))
+        console.debug(`%caddNew [${this._type}] (during)`, ccm.orange, this.store.get('all'))
 
         // count
         // this.store.update('count', this.store.get('count') + 1) // manual
         this.store.update('count', this.store.get('all').length) // automatic
-        // console.debug(`%caddNew {count}`, ccm3, this.store.get('count'))
-        // console.debug(`%caddNew [${this._type}]`, ccm3, this.store.get('all').length)
+        // console.debug(`%caddNew {count}`, ccm.green, this.store.get('count'))
+        // console.debug(`%caddNew [${this._type}]`, ccm.green, this.store.get('all').length)
 
         // nounCurrent (overwrite this one -- mutate)
         this.store.update('one', {
@@ -210,24 +211,24 @@ function nounStore(this: INounStore, _type = 'noun') {
           },
         })
       }
-      console.debug(`%caddNew {${this._type}} (added)`, ccm1, this.store.get('one'))
+      console.debug(`%caddNew {${this._type}} (added)`, ccm.orange, this.store.get('one'))
 
       // nounHistory (save recently mutated new one and all old ones)
       this.store.update('all', [this.store.get('one'), ...this.store.get('all')])
-      console.debug(`%caddNew [${this._type}] (after)`, ccm1, this.store.get('all'))
+      console.debug(`%caddNew [${this._type}] (after)`, ccm.orange, this.store.get('all'))
 
       // count (for fun/learning)
       // this.store.update('count', this.store.get('count') + 1) // manual
       this.store.update('count', this.store.get('all').length) // automatic
-      console.debug(`%caddNew {count}`, ccm3, this.store.get('count'))
-      // console.debug(`%caddNew {${this._type}}`, ccm3, this.store.get('all').length)
+      console.debug(`%caddNew {count}`, ccm.green, this.store.get('count'))
+      // console.debug(`%caddNew {${this._type}}`, ccm.green, this.store.get('all').length)
 
       // saveToDisk
       this.actions.saveToDisk()
       // loadFromDisk
       // this.actions.loadFromDisk()
 
-      console.debug(`%caddNew [${this._type}] (final)`, ccm1, this.store.get('one'))
+      console.debug(`%caddNew [${this._type}] (final)`, ccm.orange, this.store.get('one'))
     },
 
     save: () => {
@@ -247,10 +248,10 @@ function nounStore(this: INounStore, _type = 'noun') {
             payload: this.store.get('all'),
           })
         )
-        console.debug(`%csaveToDisk [${this._type}]`, ccm1, this.store.get('all'))
+        console.debug(`%csaveToDisk [${this._type}]`, ccm.orange, this.store.get('all'))
         return true
       } catch (err) {
-        console.debug(`%csaveToDisk [${this._type}] err`, ccm2, err)
+        console.debug(`%csaveToDisk [${this._type}] err`, ccm.red, err)
         return false
       }
     },
@@ -260,29 +261,29 @@ function nounStore(this: INounStore, _type = 'noun') {
       try {
         const query = JSON.parse(localStorage.getItem(this._storageItem))
         if (query) {
-          console.debug(`%cloadFromDisk [${this._type}] QUERY?`, ccm3, query)
+          console.debug(`%cloadFromDisk [${this._type}] QUERY?`, ccm.green, query)
           const { payload } = query
-          console.debug(`%cloadFromDisk [${this._type}] QUERY.PAYLOAD?`, ccm3, payload)
+          console.debug(`%cloadFromDisk [${this._type}] QUERY.PAYLOAD?`, ccm.green, payload)
 
           if (payload.length) {
-            // console.debug(`%cloadFromDisk [${this._type}]`, ccm3, true, payload)
+            // console.debug(`%cloadFromDisk [${this._type}]`, ccm.green, true, payload)
 
             this.store.update('all', [...payload]) // payload should have .data{}
-            console.debug(`%cloadFromDisk [${this._type}s] (after)`, ccm3, this.store.get('all'))
+            console.debug(`%cloadFromDisk [${this._type}s] (after)`, ccm.green, this.store.get('all'))
 
             this.store.update('one', this.store.get('all')[0])
-            console.debug(`%cloadFromDisk {${this._type}} (after)`, ccm3, this.store.get('one'))
+            console.debug(`%cloadFromDisk {${this._type}} (after)`, ccm.green, this.store.get('one'))
 
             return true
           } else {
-            console.debug(`%cloadFromDisk [${this._type}] EMPTY QUERY.PAYLOAD?`, ccm3, query)
+            console.debug(`%cloadFromDisk [${this._type}] EMPTY QUERY.PAYLOAD?`, ccm.green, query)
           }
         } else {
-          console.debug(`%cloadFromDisk [${this._type}] NOTHING TO LOAD`, ccm3, query)
+          console.debug(`%cloadFromDisk [${this._type}] NOTHING TO LOAD`, ccm.green, query)
         }
         return false
       } catch (err) {
-        console.debug(`%cloadFromDisk [${this._type}] err`, ccm2, err)
+        console.debug(`%cloadFromDisk [${this._type}] err`, ccm.red, err)
         return false
       }
     },
@@ -290,12 +291,12 @@ function nounStore(this: INounStore, _type = 'noun') {
     // save data to db via graphql mutation
     saveToDB: async (client: any) => {
       try {
-        console.debug(`%csaveToDB [${this._type}] client`, ccm2, client)
+        console.debug(`%csaveToDB [${this._type}] client`, ccm.red, client)
 
-        console.debug(`%csaveToDB [${this._type}]`, ccm2, false)
+        console.debug(`%csaveToDB [${this._type}]`, ccm.red, false)
         return false
       } catch (err) {
-        console.debug(`%csaveToDB [${this._type}]: err`, ccm3, err)
+        console.debug(`%csaveToDB [${this._type}]: err`, ccm.green, err)
         return false
       }
     },
@@ -304,7 +305,7 @@ function nounStore(this: INounStore, _type = 'noun') {
     loadFromDB: async (client: any) => {
       try {
         // const _this = this
-        console.debug(`%cloadFromDB this`, ccm0, this)
+        console.debug(`%cloadFromDB this`, ccm.yellow, this)
 
         // .gql
         let QUERY = GetNouns
@@ -386,7 +387,7 @@ function nounStore(this: INounStore, _type = 'noun') {
         }
 
         if (data) {
-          console.debug(`%cloadFromDB [${this._type}]: DATA RETURNED`, ccm0, data, loading, error)
+          console.debug(`%cloadFromDB [${this._type}]: DATA RETURNED`, ccm.yellow, data, loading, error)
 
           if (data[this._plural]?.edges?.length) {
             // const payload = data[this._plural].edges
@@ -409,16 +410,16 @@ function nounStore(this: INounStore, _type = 'noun') {
               one.data = node
               return one
             })
-            console.debug(`%cloadFromDB [${this._type}]`, ccm3, all)
+            console.debug(`%cloadFromDB [${this._type}]`, ccm.green, all)
 
             // set state from db
             this.store.update('all', [...all]) // nodes
             const nouns = this.store.get('all')
-            console.debug(`%cloadFromDB [${this._type}] (after)`, ccm3, nouns)
+            console.debug(`%cloadFromDB [${this._type}] (after)`, ccm.green, nouns)
 
             this.store.update('oneDB', nouns[nouns.length - 1]) // node (use last one)
             const nounDB = this.store.get('oneDB')
-            console.debug(`%cloadFromDB [${this._type}] {oneDB}`, ccm1, nounDB)
+            console.debug(`%cloadFromDB [${this._type}] {oneDB}`, ccm.orange, nounDB)
 
             // save to disk here ??? no
             // this.actions.saveToDisk()
@@ -438,10 +439,10 @@ function nounStore(this: INounStore, _type = 'noun') {
                 data: {},
               },
             })
-            console.debug(`%cloadFromDB [${this._type}] {one} (after)`, ccm1, this.store.get('one'))
+            console.debug(`%cloadFromDB [${this._type}] {one} (after)`, ccm.orange, this.store.get('one'))
 
             this.store.update('countDB', this.store.get('all').length)
-            console.debug(`%cloadFromDB countDB`, ccm1, this.store.get('countDB'))
+            console.debug(`%cloadFromDB countDB`, ccm.orange, this.store.get('countDB'))
             console.debug(`%c====================================`, ccm5)
 
             // save to disk
@@ -449,15 +450,15 @@ function nounStore(this: INounStore, _type = 'noun') {
 
             return true
           } else {
-            console.debug(`%cloadFromDB [${this._type}]: data.${this._plural}.edges.length = 0`, ccm3, data)
+            console.debug(`%cloadFromDB [${this._type}]: data.${this._plural}.edges.length = 0`, ccm.green, data)
             return false
           }
         }
 
-        console.debug(`%cloadFromDB [${this._type}]: OTHER ERROR`, ccm3, data)
+        console.debug(`%cloadFromDB [${this._type}]: OTHER ERROR`, ccm.green, data)
         return false
       } catch (err) {
-        console.debug(`%cloadFromDB [${this._type}]: err`, ccm3, err)
+        console.debug(`%cloadFromDB [${this._type}]: err`, ccm.green, err)
         return false
       }
     },
@@ -466,8 +467,8 @@ function nounStore(this: INounStore, _type = 'noun') {
     loadToWorkspace: (noun: Object, _type: string, _id: string, _r3fCanvas: string) => {
       try {
         const nounAlt = this.store.get('one')
-        console.debug(`%cload {noun}`, ccm1, noun)
-        console.debug(`%cload {nounAlt}`, ccm1, nounAlt)
+        console.debug(`%cload {noun}`, ccm.orange, noun)
+        console.debug(`%cload {nounAlt}`, ccm.orange, nounAlt)
 
         if (noun) {
           return true // <div>...noun as r3f component...</div>
@@ -475,7 +476,7 @@ function nounStore(this: INounStore, _type = 'noun') {
 
         return false
       } catch (err) {
-        console.debug(`%cload {noun}: err`, ccm3, err)
+        console.debug(`%cload {noun}: err`, ccm.green, err)
         return false
       }
     },
