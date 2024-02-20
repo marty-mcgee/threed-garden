@@ -112,7 +112,7 @@ import modals from '#/lib/threed/components/modals'
 import clearObject from '#/lib/utils/clear-object'
 
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/lib/utils/console-colors'
+import ccm, { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/lib/utils/console-colors'
 
 // ==========================================================
 // IMPORTS COMPLETE
