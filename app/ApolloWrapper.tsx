@@ -9,8 +9,8 @@ import {
   SSRMultipartLink,
 } from '@apollo/experimental-nextjs-app-support/ssr'
 
-import { setVerbosity } from 'ts-invariant'
-setVerbosity('debug')
+// import { setVerbosity } from 'ts-invariant'
+// setVerbosity('debug')
 
 const uri = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL
 const uri_rest = process.env.NEXT_PUBLIC_WP_REST_API_URL
