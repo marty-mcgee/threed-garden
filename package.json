@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.15.0-beta.13",
+  "version": "0.15.0-beta.15",
   "description": "React 18 + TypeScript 5 + Three.JS app using MUI 5 on NextJS 14+, Zustand + Valtio, Apollo Server+Client v3, GraphQL, WordPress REST API, for ThreeD web3 development.. for developing Three-Dimensional JavaScript Objects, Components, + ETH apps (dapps).. a part of the threed.ai code family.",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
@@ -43,7 +43,8 @@
     "___________________X": "____ ___________________________________________________"
   },
   "dependencies": {
-    "@apollo/client": "^3.9.4",
+    "@apollo/client": "^3.9.5",
+    "@apollo/experimental-nextjs-app-support": "^0.8.0",
     "@apollo/react-hooks": "^4.0.0",
     "@auth0/auth0-react": "1.10.1",
     "@emotion/cache": "^11.11.0",

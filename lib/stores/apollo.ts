@@ -6,13 +6,12 @@ import create, { StoreApi } from '#/lib/api/graphql/createStore'
 
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
 import GetNouns from '#/lib/api/graphql/scripts/getNouns.gql'
-import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
-import GetThreeDProjects from '#/lib/api/graphql/scripts/getThreeDProjects.gql'
-import GetPlans from '#/lib/api/graphql/scripts/getPlans.gql'
 import GetParticipants from '#/lib/api/graphql/scripts/getParticipants.gql'
+import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
+import GetScenes from '#/lib/api/graphql/scripts/getScenes.gql'
+import GetPlans from '#/lib/api/graphql/scripts/getPlans.gql'
 import GetThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
 import GetFiles from '#/lib/api/graphql/scripts/getFiles.gql'
-import GetScenes from '#/lib/api/graphql/scripts/getScenes.gql'
 import GetAllotments from '#/lib/api/graphql/scripts/getAllotments.gql'
 import GetBeds from '#/lib/api/graphql/scripts/getBeds.gql'
 import GetPlants from '#/lib/api/graphql/scripts/getPlants.gql'
@@ -29,7 +28,7 @@ import ccm from '#/lib/utils/console-colors'
 // ==========================================================
 // IMPORTS COMPLETE
 console.debug(`%c🥕 ThreeDGarden<FC,R3F>: Apollo {stores}`, ccm.blue)
-console.debug(`%c====================================`, ccm.blue)
+// console.debug(`%c====================================`, ccm.blue)
 
 // ==============================================================
 // ==============================================================
@@ -314,8 +313,7 @@ function nounStore(this: INounStore, _type = 'noun') {
             QUERY = GetNouns
             break
           case 'project':
-            // QUERY = GetProjects
-            QUERY = GetThreeDProjects
+            QUERY = GetProjects
             break
           case 'participants':
             QUERY = GetParticipants
@@ -372,7 +370,7 @@ function nounStore(this: INounStore, _type = 'noun') {
           query: QUERY,
           variables: { parameters },
         })
-        // console.debug(`%cloadFromDB [${this._type}]: QUERY RETURNED`, query)
+        console.debug(`%cloadFromDB [${this._type}]: QUERY RETURNED`, query, ccm.blue)
 
         const { data, loading, error } = query
         // console.debug(`%cloadFromDB [${this._type}]: DATA RETURNED`, data, loading, error)
@@ -465,7 +463,7 @@ function nounStore(this: INounStore, _type = 'noun') {
     },
 
     // load 'this' noun into React Three Fiber view
-    loadToParticipant: (noun: Object, _type: string, _id: string, _r3fCanvas: string) => {
+    loadToScene: (noun: Object, _type: string, _id: string, _r3fCanvas: string) => {
       try {
         const nounAlt = this.store.get('one')
         console.debug(`%cload {noun}`, ccm.orange, noun)
@@ -589,10 +587,10 @@ const stores = {
   nounStore,
   projectStore,
   participantStore,
+  sceneStore,
   planStore,
   threedStore,
   fileStore,
-  sceneStore,
   allotmentStore,
   bedStore,
   plantStore,
@@ -605,4 +603,24 @@ const stores = {
   modalStoreNoun,
 }
 
+// ** GraphQL Queries + Mutations (here, locally-specific data needs)
+const queries = {
+  GetNouns,
+  GetProjects,
+  GetParticipants,
+  GetScenes,
+  GetPlans,
+  GetThreeDs,
+  GetFiles,
+  GetAllotments,
+  GetBeds,
+  GetPlants,
+  GetPlantingPlans,
+}
+const mutations = {
+  UpdateProjects: 'HEY HEY HEY UpdateProjects',
+  UpdatePlans: 'HEY HEY HEY UpdatePlans',
+}
+
 export default stores
+export { stores, queries, mutations }

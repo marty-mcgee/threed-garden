@@ -10,7 +10,7 @@ import dynamic from 'next/dynamic'
 
 // ** AUTH GUARD
 import { auth } from "auth"
-import { SessionProvider } from "next-auth/react"
+// import { SessionProvider } from "next-auth/react"
 
 // ** Next Imports
 // import type { NextPage } from 'next'
@@ -18,8 +18,9 @@ import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 
 // ** React Imports
 // import { useContext } from 'react'
-// ** Context Imports
-// import { AbilityContext } from '#/lib/auth/acl/Can'
+import { Suspense } from 'react'
+// ** Helper Components
+import Spinner from '#/ui/components/spinner'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
@@ -41,12 +42,14 @@ const ParticipatePage: TNextPageWithProps = async () => {
       name: session.user.name,
       email: session.user.email,
       image: session.user.image,
-      // project_id: 1,
     }
   }
 
-  // ** Hooks
-  // const ability = useContext(AbilityContext)
+  // // const { data, loading, error } = useSuspenseQuery(queries.GetProjects)
+  // const { data, loading, error } = useQuery(queries.GetProjects)
+  // if (data) {
+  //   console.debug('%cQUERY: GetProjects', ccm.orange, data, loading, error)
+  // }
 
   return (
     <Grid
@@ -56,8 +59,13 @@ const ParticipatePage: TNextPageWithProps = async () => {
 
       {/* [MM] HEY HEY HEY */}
       {/* <SessionProvider session={session}> */}
-        <ThreeDGarden />
-        {/* <ThreeDGarden session={session} /> */}
+      {/* <ApolloProvider client={client}> */}
+      {/* <Suspense fallback={null}> */}
+      {/* <Suspense fallback={<Spinner />}> */}
+        <ThreeDGarden/>
+        {/* <ThreeDGarden session={session} stores={stores} /> */}
+      {/* </Suspense> */}
+      {/* </ApolloProvider> */}
       {/* </SessionProvider> */}
       {/* [MM] HEY HEY HEY */}
 

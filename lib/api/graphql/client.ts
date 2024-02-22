@@ -1,7 +1,8 @@
-'use client'
+// 'use client'
 
 // ** Apollo Client State Management using Cache/Store (via GraphQL)
 import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from '@apollo/client'
+import { registerApolloClient } from "@apollo/experimental-nextjs-app-support/rsc"
 
 const uri = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL
 const uri_rest = process.env.NEXT_PUBLIC_WP_REST_API_URL
@@ -33,6 +34,21 @@ const httpLink1 = new HttpLink({
 //   },
 // })
 
+// FOR SERVER + CLIENT COMPONENTS
+export const { getClient } = registerApolloClient(() => {
+  return new ApolloClient({
+    cache: new InMemoryCache(),
+    link: new HttpLink({
+      // this needs to be an absolute url, as relative urls cannot be used in SSR
+      uri: uri, // "http://example.com/api/graphql",
+      // you can disable result caching here if you want to
+      // (this does not work if you are rendering your page with `export const dynamic = "force-static"`)
+      // fetchOptions: { cache: "no-store" },
+    }),
+  })
+})
+
+// FOR CLIENT COMPONENTS ONLY
 export const client = new ApolloClient({
   cache: new InMemoryCache({
     // typePolicies: ac3Store.getTypePolicies()
@@ -43,12 +59,6 @@ export const client = new ApolloClient({
   // link: ApolloLink.from([httpLink2]),
   connectToDevTools: true,
 })
-
-// export const clientExample = new ApolloClient({
-//   cache: new InMemoryCache(),
-//   // link: ApolloLink.from([httpLink1, httpLink2]),
-//   link: ApolloLink.from([restLink2, httpLink2]),
-// })
 
 // console.debug("APOLLO CLIENT HTTP", client)
 

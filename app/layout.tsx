@@ -5,9 +5,9 @@
 // ** DEFAULT APP LAYOUT -- TEMPLATE CHILD
 // ?? FOR ENTIRE APP CONTEXTS ??
 
-import { auth } from "auth"
-import ClientExample from "@/components/client-example"
-import { SessionProvider } from "next-auth/react"
+import { auth } from 'auth'
+// import ClientExample from '@/components/client-example'
+import { SessionProvider } from 'next-auth/react'
 
 // ** Next
 // import { useRouter, usePathname } from 'next/navigation'
@@ -20,8 +20,11 @@ import type { ReactNode } from 'react'
 // import { useEffect } from 'react'
 
 // ** Apollo Client -- State Management using Cache/Store (via GraphQL)
+import { ApolloWrapper } from './ApolloWrapper'
 // import { ApolloProvider } from '@apollo/client'
 // import { client } from '#/lib/api/graphql/client'
+// import { getClient } from '#/lib/api/graphql/client'
+// import { stores, queries, mutations } from '#/lib/stores/apollo'
 
 // ** Redux Store
 // import { Provider as ReduxProvider } from 'react-redux'
@@ -43,7 +46,7 @@ import type { ReactNode } from 'react'
 import '#/lib/api/@fake-db'
 
 // ** Contexts for Theme Settings + MUI Components
-import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/settings/SettingsContext'
+// import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/settings/SettingsContext'
 import ThemeRegistry from '#/ui/theme/ThemeRegistry'
 
 // ** Configs
@@ -68,13 +71,13 @@ import ThemeRegistry from '#/ui/theme/ThemeRegistry'
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
 
-import "./globals.css"
-// import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import Footer from "@/components/footer"
-import Header from "@/components/header"
+import './globals.css'
+// import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import Footer from '@/components/footer'
+import Header from '@/components/header'
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ['latin'] })
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -90,16 +93,10 @@ const inter = Inter({ subsets: ["latin"] })
 const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element => {
   // const { children } = props
   return (
-    <html lang="en">
+    <html lang='en'>
       <head />
       <body className={inter.className}>
-        <div id="ThreeDAppProvider" className="flex flex-col justify-between w-full h-full min-h-screen">
-          <Header />
-          <main className="flex-auto w-full px-0 py-2 mx-auto sm:px-4 md:py-4">
-            {children}
-          </main>
-          <Footer />
-        </div>
+        {children}
       </body>
     </html>
   )
@@ -139,6 +136,9 @@ const AppLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Ele
       image: session.user.image,
     }
   }
+
+  // const { data } = await getClient().query({ query: queries.GetProjects })
+  // console.debug('🥕 QUERY: AppLayout.getClient.data', data)
 
   // // destructure props for vars
   // // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
@@ -234,7 +234,16 @@ const AppLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Ele
                         <ThemeRegistry settings={{}}>
                           {/* <UserLayout key='ThreeDAppLayout-UserLayout'> */}
                           <SessionProvider session={session}>
-                            <>{children}</>
+                            {/* <>{children}</> */}
+                            <ApolloWrapper>
+                              <div id='ThreeDAppProvider' className='flex flex-col justify-between w-full h-full min-h-screen'>
+                                <Header />
+                                <main className='flex-auto w-full px-0 py-2 mx-auto sm:px-4 md:py-4'>
+                                  {children}
+                                </main>
+                                <Footer />
+                              </div>
+                            </ApolloWrapper>
                           </SessionProvider>
                           {/* </UserLayout> */}
                         </ThemeRegistry>
