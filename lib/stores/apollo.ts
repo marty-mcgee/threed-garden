@@ -307,7 +307,7 @@ function nounStore(this: INounStore, _type = 'noun') {
         console.debug(`%cloadFromDB this`, ccm.yellow, this)
 
         // .gql
-        let QUERY = GetNouns
+        let QUERY = GetProjects
         switch (this._type) {
           case 'noun':
             QUERY = GetNouns

@@ -1,4 +1,4 @@
-// 'use client'
+'use client'
 // 'use server'
 
 // ==========================================================
@@ -6,11 +6,21 @@
 // ==========================================================
 
 // ??? ProgressEvent error
-import dynamic from 'next/dynamic'
+// import dynamic from 'next/dynamic'
 
 // ** AUTH GUARD
-import { auth } from "auth"
+// import { auth } from "auth"
 // import { SessionProvider } from "next-auth/react"
+import { useSession } from 'next-auth/react'
+
+import {
+  useQuery,
+  useSuspenseQuery,
+  useBackgroundQuery,
+  useReadQuery,
+  useFragment
+} from '@apollo/experimental-nextjs-app-support/ssr'
+import { stores, queries, mutations } from '#/lib/stores/apollo'
 
 // ** Next Imports
 // import type { NextPage } from 'next'
@@ -32,29 +42,42 @@ import CardContent from '@mui/material/CardContent'
 // ** ThreeDGarden Imports
 import ThreeDGarden from '#/lib/threed/ThreeDGarden'
 
-const ParticipatePage: TNextPageWithProps = async () => {
+// ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
+import ccm from '#/lib/utils/console-colors'
 
-  const session = await auth()
-  // console.debug('Participate page: session', session)
+// const ParticipatePage: TNextPageWithProps = async () => {
+const ParticipatePage: TNextPageWithProps = () => {
+
+  // const session = await auth()
+  // const session = {
+  //   user: {
+  //     name: 'session.user.name',
+  //     email: 'session.user.email',
+  //     image: 'session.user.image',
+  //   }
+  // }
+  const { data: session, status } = useSession()
   // filter out sensitive data before passing to client.
-  if (session?.user) {
-    session.user = {
-      name: session.user.name,
-      email: session.user.email,
-      image: session.user.image,
-    }
+  if (session) {
+    // console.debug('Participate page: session', session, status)
+    // if (session?.user) {
+    //   session.user = {
+    //     name: session.user.name,
+    //     email: session.user.email,
+    //     image: session.user.image,
+    //   }
+    // }
   }
 
-  // // const { data, loading, error } = useSuspenseQuery(queries.GetProjects)
-  // const { data, loading, error } = useQuery(queries.GetProjects)
-  // if (data) {
-  //   console.debug('%cQUERY: GetProjects', ccm.orange, data, loading, error)
-  // }
+  const { data, loading, error } = useQuery(queries.GetProjects)
+  if (data) {
+    console.debug('%cQUERY: GetProjects', ccm.orange, data, loading, error)
+  }
 
   return (
     <Grid
       container
-      spacing={2}
+      spacing={1}
     >
 
       {/* [MM] HEY HEY HEY */}
@@ -62,7 +85,7 @@ const ParticipatePage: TNextPageWithProps = async () => {
       {/* <ApolloProvider client={client}> */}
       {/* <Suspense fallback={null}> */}
       {/* <Suspense fallback={<Spinner />}> */}
-        <ThreeDGarden/>
+        <ThreeDGarden threedData={data} />
         {/* <ThreeDGarden session={session} stores={stores} /> */}
       {/* </Suspense> */}
       {/* </ApolloProvider> */}
@@ -78,8 +101,8 @@ const ParticipatePage: TNextPageWithProps = async () => {
           <CardHeader title='Public Content' />
           <CardContent>
             <Typography sx={{ mb: 4 }}>No user role 'ability' is required to view this card</Typography>
-            <Typography sx={{ color: 'primary.main' }}>This card is visible to both 'user' and 'admin'</Typography>
-            <Typography sx={{ color: 'primary.main' }}>
+            <Typography sx={{ color: 'info.main' }}>This card is visible to both 'public users' and 'authorized users'</Typography>
+            <Typography sx={{ color: 'info.main' }}>
               {/* <SessionData session={session} /> */}
               {session?.user?.name}<br/>
               {session?.user?.email}<br/>
@@ -98,8 +121,8 @@ const ParticipatePage: TNextPageWithProps = async () => {
             <CardHeader title='Restricted/User Content' />
             <CardContent>
               <Typography sx={{ mb: 4 }}>User with "analytics: read" ability can view this card</Typography>
-              <Typography sx={{ color: 'warning.main' }}>This card is visible to 'admin' only</Typography>
-              <Typography sx={{ color: 'warning.main' }}>
+              <Typography sx={{ color: 'primary.main' }}>This card is visible to 'authorized users' only</Typography>
+              <Typography sx={{ color: 'primary.main' }}>
                 {/* <SessionData session={session} /> */}
                 {session?.user?.name}<br/>
                 {session?.user?.email}<br/>
@@ -117,8 +140,23 @@ ParticipatePage.acl = {
   subject: 'participate-page',
 }
 
-// export default ParticipatePage
-const ParticipatePageUseClient = dynamic(() => Promise.resolve(ParticipatePage), {
-  ssr: false
-})
-export default ParticipatePageUseClient
+// export async function getStaticProps() {
+//   // const client = createApolloClient();
+//   // const { data, loading, error } = useSuspenseQuery(queries.GetProjects)
+//   const { data, loading, error } = useQuery(queries.GetProjects)
+//   if (data) {
+//     console.debug('%cQUERY: GetProjects', ccm.orange, data, loading, error)
+//   }
+
+//   return {
+//     props: {
+//       projects: data
+//     },
+//   };
+// }
+
+export default ParticipatePage
+// const ParticipatePageUseClient = dynamic(() => Promise.resolve(ParticipatePage), {
+//   ssr: false
+// })
+// export default ParticipatePageUseClient
