@@ -30,7 +30,14 @@ import {
 // // state management (instead of React.useState, Redux, Zustand)
 // import { ApolloConsumer } from '@apollo/client'
 // import { TestAC3Store } from '#/lib/stores/old'
-import stores from '#/lib/stores/apollo'
+import {
+  useQuery,
+  useSuspenseQuery,
+  useBackgroundQuery,
+  useReadQuery,
+  useFragment
+} from '@apollo/experimental-nextjs-app-support/ssr'
+import { stores, queries, mutations } from '#/lib/stores/apollo'
 
 // ** Next Imports
 import Image from 'next/image'
@@ -112,7 +119,7 @@ import modals from '#/lib/threed/components/modals'
 import clearObject from '#/lib/utils/clear-object'
 
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
-import ccm, { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5, ccm6 } from '#/lib/utils/console-colors'
+import ccm from '#/lib/utils/console-colors'
 
 // ==========================================================
 // IMPORTS COMPLETE
@@ -130,9 +137,9 @@ const appVersion = 'v0.15.0-b'
 // const appVersion: string = require('../../package.json').version
 
 if (debug) {
-  console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm4)
-  console.debug("%c appVersion", ccm4, appVersion)
-  console.debug(`%c====================================`, ccm5)
+  console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm.blue)
+  console.debug("%c appVersion", ccm.blue, appVersion)
+  console.debug(`%c====================================`, ccm.black)
 }
 
 // ==========================================================
@@ -301,16 +308,16 @@ const {
   modalShareStore,
   modalStoreNoun,
 } = stores
-// console.debug('%cstores available', ccm3, stores)
-// console.debug(`%c====================================`, ccm5)
-// console.debug('%csceneStore', ccm2, sceneStore)
-// console.debug(`%c====================================`, ccm5)
+// console.debug('%cstores available', ccm.orange, stores)
+// console.debug(`%c====================================`, ccm.black)
+// console.debug('%csceneStore', ccm.orange, sceneStore)
+// console.debug(`%c====================================`, ccm.black)
 
 // ==========================================================
 // FUNCTIONAL NOUNS
 if (debug) {
-  console.debug(`%c🥕 ThreeDGarden<FC,R3F>: {nouns()}`, ccm4)
-  console.debug(`%c====================================`, ccm5)
+  console.debug(`%c🥕 ThreeDGarden<FC,R3F>: {nouns()}`, ccm.blue)
+  console.debug(`%c====================================`, ccm.black)
 }
 // ==========================================================
 
@@ -624,8 +631,8 @@ const SceneControlPanel: FC = (_type: string = 'scene'): JSX.Element => {
 
   const loadToParticipant = () => {
     const scene = sceneStore.actions.loadToParticipant()
-    console.debug('%cSceneControlPanel: loadToParticipant {scene}', ccm3, scene)
-    console.debug(`%c====================================`, ccm5)
+    console.debug('%cSceneControlPanel: loadToParticipant {scene}', ccm.orange, scene)
+    console.debug(`%c====================================`, ccm.black)
     // return scene // ???
     return true
   }
@@ -1162,7 +1169,7 @@ const ToolBar: FC = (): JSX.Element => {
       //   (plan.azimuth = azimuth),
       //   (plan.inclination = inclination)
 
-      // console.debug("%cresetPlan success", ccm1)
+      // console.debug("%cresetPlan success", ccm.yellow)
     } catch (e) {
       console.log('resetPlan : 11 : ' + e)
     }
@@ -1400,7 +1407,7 @@ const ToolBar: FC = (): JSX.Element => {
     try {
       let t = f.target
       let o = new FileReader()
-      // console.debug("%cFileReader", ccm1, o)
+      // console.debug("%cFileReader", ccm.yellow, o)
       o.onload = function () {
         let g = o.result
         // resetPlan()
@@ -1416,9 +1423,9 @@ const ToolBar: FC = (): JSX.Element => {
       // hideMouseIndicators()
       o.readAsText(t.files[0])
 
-      console.debug('%cFileReader', ccm1, o)
+      console.debug('%cFileReader', ccm.yellow, o)
     } catch (e) {
-      console.log('%cloadFileAsText : ' + e, ccm2)
+      console.log('%cloadFileAsText : ' + e, ccm.orange)
     }
   }
 
@@ -1456,12 +1463,12 @@ const ToolBar: FC = (): JSX.Element => {
   }
 
   const doAddNewLevel = (level) => {
-    console.debug('%caddNewLevel called', ccm1, level)
+    console.debug('%caddNewLevel called', ccm.yellow, level)
     return !1
   }
 
   const doSetLevel = (level) => {
-    console.debug('%csetLevel called', ccm1, level)
+    console.debug('%csetLevel called', ccm.yellow, level)
     return !1
   }
 
@@ -3417,16 +3424,18 @@ const ThreeDCanvasViewer = (): JSX.Element => {
 
   // IMPORTANT: WHICH STORE ??
   // in this case: sceneStore SCENE! THE SCENE !! FOR R3F boogie !!
-  const store = sceneStore // <-- HEY HEY HEY [MM]
+  // const store = sceneStore // <-- HEY HEY HEY [MM]
+  // ORRRRRRR..... projectStore, which contains a scene(store)
+  const store = projectStore
 
-  // console.debug('%cThreeDCanvasViewer {store}', ccm1, store)
-  // console.debug(`%c====================================`, ccm5)
+  // console.debug('%cThreeDCanvasViewer {store}', ccm.yellow, store)
+  // console.debug(`%c====================================`, ccm.black)
   // return <Box sx={{ p: 5, textAlign: 'center' }}>r3f: testing... {word}</Box>
   // throw new Error(`r3f: testing... "${word}"`)
 
   const noun = store.store.useStore('one')
   const noun_title = noun.data?.title ? noun.data.title : 'NOTHING YET SIR'
-  console.debug('%cThreeDCanvasViewer {noun}', ccm1, noun)
+  console.debug('%cThreeDCanvasViewer {noun(default): projectStore(default)}', ccm.blue, noun)
 
   const loadNoun = (noun) => {
     // load this noun into r3f canvas
@@ -3434,16 +3443,7 @@ const ThreeDCanvasViewer = (): JSX.Element => {
     return <Box>true</Box> // true
   }
 
-  // useEffect(() => {
-  //   // console.debug('ThreeDCanvasViewer onMount')
-  //   // console.debug(`%c====================================`, ccm5)
-  //   return () => {
-  //     // console.debug('ThreeDCanvasViewer onUnmount')
-  //     // console.debug(`%c====================================`, ccm5)
-  //   }
-  // }, [])
-
-  // console.debug(`%c====================================`, ccm5)
+  // console.debug(`%c====================================`, ccm.black)
   return (
     <Grid
       container
@@ -3539,6 +3539,19 @@ const ThreeDGarden = (): JSX.Element => {
   // const scene = new THREE.Scene()
 
   // ==========================================================
+  // ** Hooks
+  // const ability = useContext(AbilityContext)
+
+  // ==========================================================
+  // Get Data Stream[s], starting with Project[s]
+
+  // const { data, loading, error } = useSuspenseQuery(queries.GetProjects)
+  const { data, loading, error } = useQuery(queries.GetProjects)
+  if (data) {
+    console.debug('%cQUERY: GetProjects', ccm.orange, data, loading, error)
+  }
+
+  // ==========================================================
   // Tabs
   const [tabInfoControl, setTabInfoControl] = useState(0)
   const handleChangeTabInfoControl = (event: SyntheticEvent, newValue: number) => {
@@ -3549,8 +3562,8 @@ const ThreeDGarden = (): JSX.Element => {
   // // ==========================================================
   // // Component onMount hook
   // useEffect(() => {
-  //   // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm4, word)
-  //   // console.debug(`%c====================================`, ccm5)
+  //   // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
+  //   // console.debug(`%c====================================`, ccm.black)
 
   //   // begin here ?? yes
   //   // bootManager()...

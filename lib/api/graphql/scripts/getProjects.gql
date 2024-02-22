@@ -1,45 +1,239 @@
-query GetProjects ($first: Int, $last: Int, $after: String, $before: String) {
-  projects (first: $first, last: $last, after: $after, before: $before) {
-    pageInfo {
-      endCursor
-      hasNextPage
-      hasPreviousPage
-      startCursor
-    }
-    edges {
-      cursor
-      node {
-        content
-        contentTypeName
-        # databaseId
-        # date
-        # dateGmt
-        # desiredSlug
-        # enclosure
-        # guid
-        id
-        # isContentNode
-        # isPreview
-        # isRestricted
-        # isTermNode
-        link
-        # modified
-        # modifiedGmt
-        # previewRevisionDatabaseId
-        # previewRevisionId
-        slug
-        status
-        # template {
-        #   templateName
-        # }
-        title
-        uri
-        # custom fields
-        projectId
+query GetProjects {
+  projects {
+    nodes {
+      projectId
+      title
+      content
+      uri
+      version
+      modified
+      # template {
+      #   templateName
+      # }
+      scenes {
+        nodes {
+          sceneId
+          title
+          content
+          uri
+          version
+          modified
+          # template {
+          #   templateName
+          # }
+          sceneBgColor
+          sceneBgImage {
+            node {
+              title
+              mediaType
+              mediaItemUrl
+              mediaItemId
+              mediaDetails {
+                file
+              }
+            }
+            # cursor
+          }
+          scenePlaneWidthX
+          scenePlaneHeightY
+          scenePlaneLengthZ
+          scenePlaneTextureRepeatX
+          scenePlaneTextureRepeatY
+          scenePlaneTextureRepeatZ
+          sceneBgImagePz {
+            node {
+              title
+              mediaType
+              mediaItemUrl
+              mediaItemId
+              mediaDetails {
+                file
+              }
+            }
+            # cursor
+          }
+          sceneBgImagePy {
+            node {
+              title
+              mediaType
+              mediaItemUrl
+              mediaItemId
+              mediaDetails {
+                file
+              }
+            }
+            # cursor
+          }
+          sceneBgImagePx {
+            node {
+              title
+              mediaType
+              mediaItemUrl
+              mediaItemId
+              mediaDetails {
+                file
+              }
+            }
+            # cursor
+          }
+          sceneBgImageNz {
+            node {
+              title
+              mediaType
+              mediaItemUrl
+              mediaItemId
+              mediaDetails {
+                file
+              }
+            }
+            # cursor
+          }
+          sceneBgImageNy {
+            node {
+              title
+              mediaType
+              mediaItemUrl
+              mediaItemId
+              mediaDetails {
+                file
+              }
+            }
+            # cursor
+          }
+          sceneBgImageNx {
+            node {
+              sourceUrl
+              uri
+              title
+              mediaType
+              mediaItemUrl
+              mediaItemId
+              mediaDetails {
+                file
+              }
+            }
+            # cursor
+          }
+        }
+      }
+      plans {
+        nodes {
+          planId
+          title
+          content
+          uri
+          version
+          modified
+          # template {
+          #   templateName
+          # }
+          threeds {
+            nodes {
+              threedId
+              title
+              content
+              uri
+              version
+              modified
+              # template {
+              #   templateName
+              # }
+              files {
+                nodes {
+                  fileId
+                  title
+                  fileType
+                  isObject3d
+                  isUrl
+                  url
+                  uri
+                  modified
+                  file {
+                    node {
+                      title
+                      sourceUrl
+                      mediaItemId
+                      mediaItemUrl
+                      mediaType
+                      uri
+                    }
+                  }
+                }
+              }
+            }
+          }
+          threedsActive {
+            nodes {
+              threedId
+              title
+              content
+              uri
+              version
+              modified
+              # template {
+              #   templateName
+              # }
+              files {
+                nodes {
+                  fileId
+                  title
+                  fileType
+                  isObject3d
+                  isUrl
+                  url
+                  uri
+                  modified
+                  file {
+                    node {
+                      title
+                      sourceUrl
+                      mediaItemId
+                      mediaItemUrl
+                      mediaType
+                      uri
+                    }
+                  }
+                }
+              }
+            }
+          }
+          threedsInactive {
+            nodes {
+              threedId
+              title
+              content
+              uri
+              version
+              modified
+              # template {
+              #   templateName
+              # }
+              files {
+                nodes {
+                  fileId
+                  title
+                  fileType
+                  isObject3d
+                  isUrl
+                  url
+                  uri
+                  modified
+                  file {
+                    node {
+                      title
+                      sourceUrl
+                      mediaItemId
+                      mediaItemUrl
+                      mediaType
+                      uri
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
-  # files {
-  #   nodes
-  # }
 }
