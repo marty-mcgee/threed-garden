@@ -5,6 +5,9 @@
 // RESOURCES
 // ==========================================================
 
+// ??? ProgressEvent error
+import dynamic from 'next/dynamic'
+
 // ** Next Imports
 // import { SessionProvider } from "next-auth/react"
 import { useSession } from "next-auth/react"
@@ -204,8 +207,8 @@ interface IHeyHeyHeys {
 // ==========================================================
 
 // PARAMETERS FROM SERVER (PHP)
-// console.log("window", window)
-// console.log(window.postdata)
+// console.debug("window", window)
+// console.debug(window.postdata)
 // const postdata = window?.postdata ? window.postdata : {}
 
 const postdata: IPostData = {
@@ -368,6 +371,8 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
           </>
         )}
       </ApolloConsumer> */}
+      <Button onClick={() => saveToDB()}>save to db</Button>
+      <Button onClick={() => loadFromDB()}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
     </Box>
@@ -900,7 +905,11 @@ function BearControlPanel() {
 const { ModalAbout, ModalLoading, ModalModel3d, ModalShare } = modals
 
 // ** Main ToolBar
-const ToolBar: FC = (): JSX.Element => {
+const ToolBar: FC = ({data}): JSX.Element => {
+
+  // **
+  console.debug('ToolBar data', data)
+
   const word = `[MM] @ ${new Date().toISOString()}`
   // console.debug("ToolBar", word)
 
@@ -981,7 +990,7 @@ const ToolBar: FC = (): JSX.Element => {
       }),
         (textIdCounter = 0)
     } catch (e) {
-      console.log('resetPlan : 1 : ' + e)
+      console.debug('resetPlan : 1 : ' + e)
     }
     try {
       Object.keys(Dimensions).forEach(function (e) {
@@ -990,7 +999,7 @@ const ToolBar: FC = (): JSX.Element => {
       }),
         (dimensionIdCounter = 0)
     } catch (e) {
-      console.log('resetPlan : 2 : ' + e)
+      console.debug('resetPlan : 2 : ' + e)
     }
     try {
       Object.keys(Furniture).forEach(function (e) {
@@ -1001,7 +1010,7 @@ const ToolBar: FC = (): JSX.Element => {
           delete Furniture[e])
       })
     } catch (e) {
-      console.log('resetPlan : 3 : ' + e)
+      console.debug('resetPlan : 3 : ' + e)
     }
     try {
       Object.keys(Floors).forEach(function (e) {
@@ -1014,7 +1023,7 @@ const ToolBar: FC = (): JSX.Element => {
         }),
         (floorIdCounter = 0)
     } catch (e) {
-      console.log('resetPlan : 4 : ' + e)
+      console.debug('resetPlan : 4 : ' + e)
     }
     try {
       Object.keys(Walls).forEach(function (e) {
@@ -1023,7 +1032,7 @@ const ToolBar: FC = (): JSX.Element => {
       })
       for (let e in wallsRectangles) wallsRectangles[e].remove()
     } catch (e) {
-      console.log('resetPlan : 5 : ' + e)
+      console.debug('resetPlan : 5 : ' + e)
     }
     try {
       Object.keys(wallsRectangles3d).forEach(function (e) {
@@ -1031,7 +1040,7 @@ const ToolBar: FC = (): JSX.Element => {
         'object' === typeof t && scene.remove(wallsRectangles3d[e])
       })
     } catch (e) {
-      console.log('resetPlan : 6 : ' + e)
+      console.debug('resetPlan : 6 : ' + e)
     }
     try {
       Object.keys(Roofs).forEach(function (e) {
@@ -1039,28 +1048,28 @@ const ToolBar: FC = (): JSX.Element => {
       })
       for (let t in roofsRectangles) roofsRectangles[t].remove()
     } catch (e) {
-      console.log('resetPlan : 5.1 : ' + e)
+      console.debug('resetPlan : 5.1 : ' + e)
     }
     try {
       Object.keys(roofsRectangles3d).forEach(function (e) {
         'object' === typeof roofsRectangles3d[e] && scene.remove(roofsRectangles3d[e])
       })
     } catch (e) {
-      console.log('resetPlan : 6.1 : ' + e)
+      console.debug('resetPlan : 6.1 : ' + e)
     }
     try {
       Object.keys(maskObjectsApplied).forEach(function (e) {
         'object' === typeof maskObjectsApplied[e] && scene.remove(maskObjectsApplied[e])
       })
     } catch (e) {
-      console.log('resetPlan : 6.5 : ' + e)
+      console.debug('resetPlan : 6.5 : ' + e)
     }
     try {
       Object.keys(maskObjectsAppliedRoof).forEach(function (e) {
         'object' === typeof maskObjectsAppliedRoof[e] && scene.remove(maskObjectsAppliedRoof[e])
       })
     } catch (e) {
-      console.log('resetPlan : 6.6 : ' + e)
+      console.debug('resetPlan : 6.6 : ' + e)
     }
     try {
       Object.keys(clickableObjects).forEach(function (e) {
@@ -1070,7 +1079,7 @@ const ToolBar: FC = (): JSX.Element => {
           (scene.remove(clickableObjects[e]), delete clickableObjects[e])
       })
     } catch (e) {
-      console.log('resetPlan : 7 : ' + e)
+      console.debug('resetPlan : 7 : ' + e)
     }
     try {
       Object.keys(maskObjects).forEach(function (e) {
@@ -1079,7 +1088,7 @@ const ToolBar: FC = (): JSX.Element => {
       }),
         (clickableObjectsCounter = 0)
     } catch (e) {
-      console.log('resetPlan : 8 : ' + e)
+      console.debug('resetPlan : 8 : ' + e)
     }
     try {
       backgroundRaster &&
@@ -1089,7 +1098,7 @@ const ToolBar: FC = (): JSX.Element => {
         (backgroundRaster = null),
         clearFileInput(document.getElementById('backgroundImageFile')))
     } catch (e) {
-      console.log('resetPlan : 9 : ' + e)
+      console.debug('resetPlan : 9 : ' + e)
     }
     try {
       Object.keys(verticalGuides).forEach(function (e) {
@@ -1100,7 +1109,7 @@ const ToolBar: FC = (): JSX.Element => {
         }),
         (guideCounter = 0)
     } catch (e) {
-      console.log('resetPlan : 10 : ' + e)
+      console.debug('resetPlan : 10 : ' + e)
     }
     try {
       furnitureToLoadCount = 0
@@ -1171,7 +1180,7 @@ const ToolBar: FC = (): JSX.Element => {
 
       // console.debug("%cresetPlan success", ccm.yellow)
     } catch (e) {
-      console.log('resetPlan : 11 : ' + e)
+      console.debug('resetPlan : 11 : ' + e)
     }
     try {
       otherLayerWallsRasters &&
@@ -1187,12 +1196,12 @@ const ToolBar: FC = (): JSX.Element => {
           }),
           (otherLayerFurnitureRasters = []))
     } catch (e) {
-      console.log('resetPlan : 12 : ' + e)
+      console.debug('resetPlan : 12 : ' + e)
     }
     try {
       levelButtons || doAddNewLevel('0'), doSetLevel('0')
     } catch (e) {
-      console.log('resetPlan : 13 : ' + e)
+      console.debug('resetPlan : 13 : ' + e)
     }
     try {
       Object.keys(levelButtons).forEach(function (e) {
@@ -1202,7 +1211,7 @@ const ToolBar: FC = (): JSX.Element => {
           project.layers['level' + e].remove())
       })
     } catch (e) {
-      console.log('resetPlan : 14 : ' + e)
+      console.debug('resetPlan : 14 : ' + e)
     }
     try {
       project.layers.forEach(function (e: { data: { id: any }; remove: () => any }) {
@@ -1212,7 +1221,7 @@ const ToolBar: FC = (): JSX.Element => {
       project.layer._name = 'level0'
       project.layer.data = { id: '0', height: 0 }
     } catch (e) {
-      console.log('resetPlan : 15 : ' + e)
+      console.debug('resetPlan : 15 : ' + e)
     }
 
     try {
@@ -1241,7 +1250,7 @@ const ToolBar: FC = (): JSX.Element => {
       // deselectAll()
       // render()
     } catch (e) {
-      console.log('resetPlan : 16 : ' + e)
+      console.debug('resetPlan : 16 : ' + e)
     }
   }
 
@@ -1425,7 +1434,7 @@ const ToolBar: FC = (): JSX.Element => {
 
       console.debug('%cFileReader', ccm.yellow, o)
     } catch (e) {
-      console.log('%cloadFileAsText : ' + e, ccm.orange)
+      console.debug('%cloadFileAsText : ' + e, ccm.orange)
     }
   }
 
@@ -1433,7 +1442,7 @@ const ToolBar: FC = (): JSX.Element => {
     try {
       $('#ModalShare').show()
     } catch (e) {
-      console.log('doOpenShareDialog : ' + e)
+      console.debug('doOpenShareDialog : ' + e)
     }
   }
 
@@ -1458,7 +1467,7 @@ const ToolBar: FC = (): JSX.Element => {
         : t.msRequestFullscreen && t.msRequestFullscreen()
     } catch (e) {
       // alert(e)
-      console.log('doOpenFullscreen : ' + e)
+      console.debug('doOpenFullscreen : ' + e)
     }
   }
 
@@ -3418,7 +3427,13 @@ const TheBottom: FC = (): JSX.Element => {
 // ==========================================================
 
 // ** R3F Main Component
-const ThreeDCanvasViewer = (): JSX.Element => {
+const ThreeDCanvasViewer = ({data}): JSX.Element => {
+
+  // **
+  if (data) {
+    console.debug('%cPROPS: GetProjects.data', ccm.orange, data)
+  }
+
   // component params
   const word = `[MM] @ ${new Date().toISOString()}`
 
@@ -3428,14 +3443,14 @@ const ThreeDCanvasViewer = (): JSX.Element => {
   // ORRRRRRR..... projectStore, which contains a scene(store)
   const store = projectStore
 
-  // console.debug('%cThreeDCanvasViewer {store}', ccm.yellow, store)
+  console.debug('%cThreeDCanvasViewer {store}', ccm.yellow, store)
   // console.debug(`%c====================================`, ccm.black)
-  // return <Box sx={{ p: 5, textAlign: 'center' }}>r3f: testing... {word}</Box>
-  // throw new Error(`r3f: testing... "${word}"`)
+
+  console.debug('%cUPDATE STORE HERE !!!!', ccm.red)
 
   const noun = store.store.useStore('one')
   const noun_title = noun.data?.title ? noun.data.title : 'NOTHING YET SIR'
-  console.debug('%cThreeDCanvasViewer {noun(default): projectStore(default)}', ccm.blue, noun)
+  console.debug('%cThreeDCanvasViewer {noun}', ccm.blue, noun)
 
   const loadNoun = (noun) => {
     // load this noun into r3f canvas
@@ -3526,29 +3541,38 @@ const MyComponent: FC = (): JSX.Element => {
 
 // const ThreeDGarden = ({ session }: { session: Session | null }): JSX.Element => {
 // const ThreeDGarden = ({...props}): JSX.Element => {
-const ThreeDGarden = (): JSX.Element => {
+const ThreeDGarden = ({threedData}): JSX.Element => {
   // **
-  // console.debug('ThreeDGarden page: session', session)
-  // const { data: session, status } = useSession()
+  if (threedData) {
+    console.debug('%cPROPS: GetProjects', ccm.green, threedData)
+    console.debug('%cUPDATE STORES(?)...', ccm.green)
+  }
+  const { data: session, status } = useSession()
+  console.debug('ThreeDGarden page: session', session)
   // ==========================================================
   // LOCAL VARS
 
   const word: string = `[MM] @ ${new Date().toISOString()}`
-  // const title = useRef()
-  // const root = useRef()
-  // const scene = new THREE.Scene()
 
   // ==========================================================
   // ** Hooks
   // const ability = useContext(AbilityContext)
 
   // ==========================================================
-  // Get Data Stream[s], starting with Project[s]
-
+  // ** Get Data Stream[s], starting with Project[s]
   // const { data, loading, error } = useSuspenseQuery(queries.GetProjects)
   const { data, loading, error } = useQuery(queries.GetProjects)
+  if (loading) {
+    // console.debug('%cQUERY: GetProjects loading', ccm.yellow, data, loading, error)
+    // console.debug('%cUPDATE STORES(?)...', ccm.orange)
+  }
+  if (error) {
+    console.debug('%cQUERY: GetProjects error', ccm.red, data, loading, error)
+    // console.debug('%cUPDATE STORES(?)...', ccm.orange)
+  }
   if (data) {
-    console.debug('%cQUERY: GetProjects', ccm.orange, data, loading, error)
+    console.debug('%cQUERY: GetProjects data', ccm.orange, data, loading, error)
+    console.debug('%cUPDATE STORES(?)...', ccm.orange)
   }
 
   // ==========================================================
@@ -3630,10 +3654,10 @@ const ThreeDGarden = (): JSX.Element => {
 
           <div id='threedgarden'>
 
-            <ToolBar />
+            <ToolBar data={data} />
 
             {/* R3F ThreeD Canvas View */}
-            <ThreeDCanvasViewer />
+            <ThreeDCanvasViewer data={data} />
             {/* R3F ThreeD Canvas View */}
 
             {/* store access */}
@@ -3731,4 +3755,8 @@ const ThreeDGarden = (): JSX.Element => {
   )
 }
 
-export default ThreeDGarden
+// export default ThreeDGarden
+const ThreeDGardenUseClient = dynamic(() => Promise.resolve(ThreeDGarden), {
+  ssr: false
+})
+export default ThreeDGardenUseClient
