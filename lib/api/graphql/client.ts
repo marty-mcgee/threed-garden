@@ -1,8 +1,8 @@
 // 'use client'
 
-DON"T USE THIS COMPONENT !!!!!!
-INSTEAD, USE THIS, IN CLIENT COMPONENTS
-import { useApolloClient } from '@apollo/client'
+// DON"T USE THIS COMPONENT !!!!!!
+// INSTEAD, USE THIS, IN CLIENT COMPONENTS
+// import { useApolloClient } from '@apollo/client'
 
 
 // ** Apollo Client State Management using Cache/Store (via GraphQL)
