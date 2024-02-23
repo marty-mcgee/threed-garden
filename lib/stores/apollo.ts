@@ -27,7 +27,7 @@ import ccm from '#/lib/utils/console-colors'
 
 // ==========================================================
 // IMPORTS COMPLETE
-console.debug(`%c🥕 ThreeDGarden<FC,R3F>: Apollo {stores}`, ccm.blue)
+// console.debug(`%c🥕 ThreeDGarden<FC,R3F>: Apollo {stores}`, ccm.blue)
 // console.debug(`%c====================================`, ccm.blue)
 
 // ==============================================================
@@ -370,13 +370,13 @@ function nounStore(this: INounStore, _type = 'noun') {
           query: QUERY,
           variables: { parameters },
         })
-        console.debug(`%cloadFromDB [${this._type}]: QUERY RETURNED`, query, ccm.blue)
+        console.debug(`%cloadFromDB [${this._type}]: QUERY RETURNED`, ccm.blue, query)
 
         const { data, loading, error } = query
         // console.debug(`%cloadFromDB [${this._type}]: DATA RETURNED`, data, loading, error)
 
         if (loading) {
-          console.debug(`%cloadFromDB [${this._type}]: DATA LOADING`, loading)
+          // console.debug(`%cloadFromDB [${this._type}]: DATA LOADING`, loading)
           return false // <div>loading...</div>
         }
 
@@ -449,7 +449,7 @@ function nounStore(this: INounStore, _type = 'noun') {
 
             return true
           } else {
-            console.debug(`%cloadFromDB [${this._type}]: data.${this._plural}.edges.length = 0`, ccm.green, data)
+            console.debug(`%cloadFromDB [${this._type}]: data.${this._plural}.length = 0`, ccm.green, data)
             return false
           }
         }

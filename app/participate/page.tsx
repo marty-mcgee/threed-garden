@@ -1,4 +1,4 @@
-'use client'
+// 'use client'
 // 'use server'
 
 // ==========================================================
@@ -6,21 +6,22 @@
 // ==========================================================
 
 // ??? ProgressEvent error
-// import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic'
 
 // ** AUTH GUARD
-// import { auth } from "auth"
+import { auth } from "auth"
 // import { SessionProvider } from "next-auth/react"
-import { useSession } from 'next-auth/react'
+// import { useSession } from 'next-auth/react'
 
-import {
-  useQuery,
-  useSuspenseQuery,
-  useBackgroundQuery,
-  useReadQuery,
-  useFragment
-} from '@apollo/experimental-nextjs-app-support/ssr'
-import { stores, queries, mutations } from '#/lib/stores/apollo'
+// import { useApolloClient } from '@apollo/client'
+// import {
+//   useQuery,
+//   useSuspenseQuery,
+//   useBackgroundQuery,
+//   useReadQuery,
+//   useFragment
+// } from '@apollo/experimental-nextjs-app-support/ssr'
+// import { stores, queries, mutations } from '#/lib/stores/apollo'
 
 // ** Next Imports
 // import type { NextPage } from 'next'
@@ -45,18 +46,11 @@ import ThreeDGarden from '#/lib/threed/ThreeDGarden'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
-// const ParticipatePage: TNextPageWithProps = async () => {
-const ParticipatePage: TNextPageWithProps = () => {
+const ParticipatePage: TNextPageWithProps = async () => {
+// const ParticipatePage: TNextPageWithProps = () => {
 
-  // const session = await auth()
-  // const session = {
-  //   user: {
-  //     name: 'session.user.name',
-  //     email: 'session.user.email',
-  //     image: 'session.user.image',
-  //   }
-  // }
-  const { data: session, status } = useSession()
+  const session = await auth()
+  // const { data: session, status } = useSession()
   // filter out sensitive data before passing to client.
   if (session) {
     // console.debug('Participate page: session', session, status)
@@ -69,10 +63,10 @@ const ParticipatePage: TNextPageWithProps = () => {
     // }
   }
 
-  const { data, loading, error } = useQuery(queries.GetProjects)
-  if (data) {
-    console.debug('%cQUERY: GetProjects', ccm.orange, data, loading, error)
-  }
+  // const { data, loading, error } = useQuery(queries.GetProjects)
+  // if (data) {
+  //   console.debug('%cQUERY: GetProjects', ccm.orange, data, loading, error)
+  // }
 
   return (
     <Grid
@@ -85,7 +79,8 @@ const ParticipatePage: TNextPageWithProps = () => {
       {/* <ApolloProvider client={client}> */}
       {/* <Suspense fallback={null}> */}
       {/* <Suspense fallback={<Spinner />}> */}
-        <ThreeDGarden threedData={data} />
+        <ThreeDGarden />
+        {/* <ThreeDGarden threedData={data} /> */}
         {/* <ThreeDGarden session={session} stores={stores} /> */}
       {/* </Suspense> */}
       {/* </ApolloProvider> */}
@@ -155,8 +150,8 @@ ParticipatePage.acl = {
 //   };
 // }
 
-export default ParticipatePage
-// const ParticipatePageUseClient = dynamic(() => Promise.resolve(ParticipatePage), {
-//   ssr: false
-// })
-// export default ParticipatePageUseClient
+// export default ParticipatePage
+const ParticipatePageUseClient = dynamic(() => Promise.resolve(ParticipatePage), {
+  ssr: false
+})
+export default ParticipatePageUseClient

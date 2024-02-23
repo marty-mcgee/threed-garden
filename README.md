@@ -1,6 +1,6 @@
-# [🥕 ThreeD Garden: Latest React TypeScript Web3 App](https://github.com/marty-mcgee/threed-garden/)
+# [🥕 ThreeD Garden: 3D Object Environment using React TypeScript Web3](https://github.com/marty-mcgee/threed-garden/)
 
-React 18 + TypeScript 5 + Three.JS app using MUI 5 on NextJS 14+, Zustand + Valtio, Apollo Server+Client v3, GraphQL, WordPress REST API, for ThreeD web3 development.. for developing Three-Dimensional JavaScript Objects, Components, + ETH apps (dapps).. a part of the threed.ai code family.
+React 18 + TypeScript 5 + Three.JS app using MUI 5 on NextJS 14+, Zustand + Valtio, Apollo Client v3, GraphQL, WordPress REST API, for ThreeD web3 development.. for developing Three-Dimensional JavaScript Objects, Components, + ETH apps (dapps).. a part of the threed.ai code family.
 
 ## Live Demo
 
@@ -14,7 +14,7 @@ React 18 + TypeScript 5 + Three.JS app using MUI 5 on NextJS 14+, Zustand + Valt
 - (you can instead, of course, use pnpm or npm easily)
 
 1. install app: `yarn install`
-2. run in local dev env: `yarn dev`
+2. run in local env: `yarn dev`
 3. build for production: `yarn build`
 4. start in production env: `yarn start`
 4. deploy to preset location: `yarn deploy`
@@ -27,19 +27,11 @@ React 18 + TypeScript 5 + Three.JS app using MUI 5 on NextJS 14+, Zustand + Valt
 
 ---
 
+- Project | as JS Object | interface IProject | wp_type threed_project
+- Scene | extends THREE.Scene | interface IScene | wp_type threed_scene
+- Plan | as JS Object | interface IPlan | wp_type threed_plan
 - ThreeD | as root JS Object | interface IThreeD | wp_type threed_threed
 - File | as JS Object | interface IFile | wp_type threed_file
-- Project | as JS Object | interface IProject | wp_type threed_project
-- Workspace | as JS Object | interface IWorkspace | wp_type threed_workspace
-- Plan | as JS Object | interface IPlan | wp_type threed_plan
-
----
-
-- Edit | Actions | Relationships | interface IEdit | wp_type threed_edit
-- View | as JS Object | Settings | interface IView | wp_type threed_view
-
----
-
 - Participant | as JS Object | interface IParticipant | wp_type threed_participant
 - Character | as JS Object | interface ICharacter | wp_type threed_character
 
@@ -47,12 +39,10 @@ React 18 + TypeScript 5 + Three.JS app using MUI 5 on NextJS 14+, Zustand + Valt
 
 - Simulation | as JS Object | interface ISimulation | wp_type threed_simulation
 - Game | extends Simulation | interface IGame | wp_type threed_game
-- Demo | extends Simulation | interface IGame | wp_type threed_demo
 
 ---
 
 - World | as JS Object | interface IWorld | wp_type threed_world
-- Scene | extends THREE.Scene | interface IScene | wp_type threed_scene
 - Structure | extends THREE.Object3D | interface IStructure | wp_type threed_structure
 - Farm | extends THREE.Group | interface IFarm | wp_type threed_farm
 - Garden | extends THREE.Group | interface IGarden | wp_type threed_garden
@@ -66,12 +56,6 @@ React 18 + TypeScript 5 + Three.JS app using MUI 5 on NextJS 14+, Zustand + Valt
 - SoilPlan | Actions | Relationships | interface ISoilPlan | wp_type threed_soil_plan
 - PlantingPlan | Actions | Relationships | interface IPlantingPlan | wp_type threed_planting_plan
 - BuildingPlan | Actions | Relationships | interface IBuildingPlan | wp_type threed_building_plan
-
----
-
-- Bear | extends Character | interface IBear | wp_type threed_bear
-- Chicken | extends Character | interface IChicken | wp_type threed_chicken
-- Gardener | extends Character | interface IGardener | wp_type threed_gardener
 
 ---
 

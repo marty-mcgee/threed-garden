@@ -6,18 +6,15 @@
 // ?? FOR ENTIRE APP CONTEXTS ??
 
 import { auth } from 'auth'
-// import ClientExample from '@/components/client-example'
 import { SessionProvider } from 'next-auth/react'
 
 // ** Next
-// import { useRouter, usePathname } from 'next/navigation'
 // import type { GetServerSideProps, GetStaticProps } from 'next'
 import { AppProps } from 'next/app'
 import { NextPageContext } from 'next'
 
 // ** React
 import type { ReactNode } from 'react'
-// import { useEffect } from 'react'
 
 // ** Apollo Client -- State Management using Cache/Store (via GraphQL)
 import { ApolloWrapper } from './ApolloWrapper'
@@ -236,6 +233,7 @@ const AppLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Ele
                           <SessionProvider session={session}>
                             {/* <>{children}</> */}
                             <ApolloWrapper>
+                            {/* <ApolloProvider client={client}> */}
                               <div id='ThreeDAppProvider' className='flex flex-col justify-between w-full h-full min-h-screen'>
                                 <Header />
                                 <main className='flex-auto w-full px-0 py-2 mx-auto sm:px-4 md:py-4'>
@@ -243,6 +241,7 @@ const AppLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Ele
                                 </main>
                                 <Footer />
                               </div>
+                            {/* </ApolloProvider> */}
                             </ApolloWrapper>
                           </SessionProvider>
                           {/* </UserLayout> */}
