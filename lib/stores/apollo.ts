@@ -449,7 +449,7 @@ function nounStore(this: INounStore, _type = 'noun') {
 
             return true
           } else {
-            console.debug(`%cloadFromDB [${this._type}]: data.${this._plural}.length = 0`, ccm.green, data)
+            // console.debug(`%cloadFromDB [${this._type}]`, ccm.green, data)
             return false
           }
         }

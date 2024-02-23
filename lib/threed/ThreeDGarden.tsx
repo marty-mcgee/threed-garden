@@ -3440,7 +3440,7 @@ const ThreeDCanvasViewer = ({threedData}): JSX.Element => {
     word: word,
   }
   if (threedData) {
-    console.debug('%cPROPS: GetProjects.data', ccm.orange, threedData)
+    console.debug('%cPROPS: GetProjects.data', ccm.blue, threedData)
     data = threedData
   }
   else {
