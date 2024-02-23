@@ -238,7 +238,7 @@ const AppLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Ele
                             {/* <ApolloProvider client={client}> */}
                               <div id='ThreeDAppProvider' className='flex flex-col justify-between w-full h-full min-h-screen'>
                                 <Header />
-                                <main className='flex-auto w-full px-0 py-2 mx-auto sm:px-4 md:py-4'>
+                                <main className='flex-auto w-full px-2 py-1 mx-auto'>
                                   {children}
                                 </main>
                                 <Footer />
