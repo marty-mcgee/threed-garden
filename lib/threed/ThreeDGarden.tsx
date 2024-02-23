@@ -6,10 +6,9 @@
 // ==========================================================
 
 // ??? ProgressEvent error
-import dynamic from 'next/dynamic'
+// import dynamic from 'next/dynamic'
 
 // ** Next Imports
-// import { SessionProvider } from "next-auth/react"
 import { useSession } from "next-auth/react"
 // hint: const { data: session, status } = useSession()
 
@@ -28,19 +27,22 @@ import {
 
 // // ** Apollo Client 3 -- State Management using Cache/Store (via GraphQL)
 // import { ApolloProvider } from '@apollo/client'
-// import { client } from '#/lib/api/graphql/client'
+// import { client } from '#/lib/api/graphql/client' // server-side-only
+// import { getClient } from '#/lib/api/graphql/client' // server-side-only
 // // ** Apollo Client 3 -- Cache Store Imports
 // // state management (instead of React.useState, Redux, Zustand)
 // import { ApolloConsumer } from '@apollo/client'
 // import { TestAC3Store } from '#/lib/stores/old'
-import {
-  useQuery,
-  useSuspenseQuery,
-  useBackgroundQuery,
-  useReadQuery,
-  useFragment
-} from '@apollo/experimental-nextjs-app-support/ssr'
-import { stores, queries, mutations } from '#/lib/stores/apollo'
+import { useApolloClient } from '@apollo/client'
+// import {
+//   useQuery,
+//   useSuspenseQuery,
+//   useBackgroundQuery,
+//   useReadQuery,
+//   useFragment
+// } from '@apollo/experimental-nextjs-app-support/ssr'
+// import { stores, queries, mutations } from '#/lib/stores/apollo'
+import stores from '#/lib/stores/apollo'
 
 // ** Next Imports
 import Image from 'next/image'
@@ -905,10 +907,9 @@ function BearControlPanel() {
 const { ModalAbout, ModalLoading, ModalModel3d, ModalShare } = modals
 
 // ** Main ToolBar
-const ToolBar: FC = ({data}): JSX.Element => {
+const ToolBar: FC = (): JSX.Element => {
 
   // **
-  console.debug('ToolBar data', data)
 
   const word = `[MM] @ ${new Date().toISOString()}`
   // console.debug("ToolBar", word)
@@ -3427,28 +3428,34 @@ const TheBottom: FC = (): JSX.Element => {
 // ==========================================================
 
 // ** R3F Main Component
-const ThreeDCanvasViewer = ({data}): JSX.Element => {
+const ThreeDCanvasViewer = ({threedData}): JSX.Element => {
 
   // **
-  if (data) {
-    console.debug('%cPROPS: GetProjects.data', ccm.orange, data)
-  }
-
   // component params
   const word = `[MM] @ ${new Date().toISOString()}`
+
+  let data = {
+    store: projectStore,
+    session: {},
+    word: word,
+  }
+  if (threedData) {
+    console.debug('%cPROPS: GetProjects.data', ccm.orange, threedData)
+    data = threedData
+  }
+  else {
+  }
 
   // IMPORTANT: WHICH STORE ??
   // in this case: sceneStore SCENE! THE SCENE !! FOR R3F boogie !!
   // const store = sceneStore // <-- HEY HEY HEY [MM]
   // ORRRRRRR..... projectStore, which contains a scene(store)
-  const store = projectStore
+  // const store = projectStore
 
-  console.debug('%cThreeDCanvasViewer {store}', ccm.yellow, store)
+  console.debug('%cThreeDCanvasViewer {store}', ccm.yellow, data.store)
   // console.debug(`%c====================================`, ccm.black)
 
-  console.debug('%cUPDATE STORE HERE !!!!', ccm.red)
-
-  const noun = store.store.useStore('one')
+  const noun = data.store.store.useStore('one')
   const noun_title = noun.data?.title ? noun.data.title : 'NOTHING YET SIR'
   console.debug('%cThreeDCanvasViewer {noun}', ccm.blue, noun)
 
@@ -3464,7 +3471,7 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
       container
       id='ThreeDCanvasViewer'
       spacing={0}
-      sx={{ border: '0px solid orange' }}
+      sx={{ border: '1px solid orange' }}
     >
       <Grid
         item
@@ -3484,7 +3491,7 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
         xs={12}
         style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-4px' }}
       >
-        <Button onClick={() => loadNoun('world')}>load world</Button>
+        <Button onClick={() => loadNoun('project')}>load project</Button>
         <Button onClick={() => loadNoun('scene')}>load scene</Button>
         <Button onClick={() => loadNoun('character')}>load character</Button>
         <Button onClick={() => loadNoun('farmbot')}>load farmbot</Button>
@@ -3541,39 +3548,63 @@ const MyComponent: FC = (): JSX.Element => {
 
 // const ThreeDGarden = ({ session }: { session: Session | null }): JSX.Element => {
 // const ThreeDGarden = ({...props}): JSX.Element => {
-const ThreeDGarden = ({threedData}): JSX.Element => {
+// const ThreeDGarden = ({threedData}): JSX.Element => {
+const ThreeDGarden = (): JSX.Element => {
   // **
-  if (threedData) {
-    console.debug('%cPROPS: GetProjects', ccm.green, threedData)
-    console.debug('%cUPDATE STORES(?)...', ccm.green)
-  }
-  const { data: session, status } = useSession()
-  console.debug('ThreeDGarden page: session', session)
+  // if (threedData) {
+  //   // console.clear()
+  //   console.debug('%cPROPS: GetProjects', ccm.green, threedData)
+  //   console.debug('%cUPDATE STORES(?)...', ccm.green)
+  // }
   // ==========================================================
   // LOCAL VARS
 
   const word: string = `[MM] @ ${new Date().toISOString()}`
+  const data = {
+    session: {},
+    store: {},
+    word: word,
+  }
 
   // ==========================================================
   // ** Hooks
+
   // const ability = useContext(AbilityContext)
 
-  // ==========================================================
-  // ** Get Data Stream[s], starting with Project[s]
-  // const { data, loading, error } = useSuspenseQuery(queries.GetProjects)
-  const { data, loading, error } = useQuery(queries.GetProjects)
-  if (loading) {
-    // console.debug('%cQUERY: GetProjects loading', ccm.yellow, data, loading, error)
-    // console.debug('%cUPDATE STORES(?)...', ccm.orange)
+  // USE SESSION
+  const { data: session, status } = useSession()
+  if (session) {
+    data.session = session
+    // console.debug('%cSESSION: useSession', ccm.orange, session)
   }
-  if (error) {
-    console.debug('%cQUERY: GetProjects error', ccm.red, data, loading, error)
-    // console.debug('%cUPDATE STORES(?)...', ccm.orange)
+
+  // USE STORE
+
+  const store = projectStore.store.useStore('allDB')
+  if (store) {
+    data.store = store
+    // console.debug('%cSTORE: projectStore.store.useStore', ccm.orange, store)
+    const client = useApolloClient()
+    const dataFromDB = projectStore.actions.loadFromDB(client)
   }
-  if (data) {
-    console.debug('%cQUERY: GetProjects data', ccm.orange, data, loading, error)
-    console.debug('%cUPDATE STORES(?)...', ccm.orange)
-  }
+
+  // // ==========================================================
+  // // ** Get Data Stream[s], starting with Project[s]
+  // // const { data, loading, error } = useSuspenseQuery(queries.GetProjects)
+  // const { data, loading, error } = useQuery(queries.GetProjects)
+  // if (loading) {
+  //   // console.debug('%cQUERY: GetProjects loading', ccm.yellow, data, loading, error)
+  //   // console.debug('%cUPDATE STORES(?)...', ccm.orange)
+  // }
+  // if (error) {
+  //   console.debug('%cQUERY: GetProjects error', ccm.red, data, loading, error)
+  //   // console.debug('%cUPDATE STORES(?)...', ccm.orange)
+  // }
+  // if (data) {
+  //   console.debug('%cQUERY: GetProjects data', ccm.orange, data, loading, error)
+  //   console.debug('%cUPDATE STORES(?)...', ccm.orange)
+  // }
+  // // console.clear()
 
   // ==========================================================
   // Tabs
@@ -3654,7 +3685,7 @@ const ThreeDGarden = ({threedData}): JSX.Element => {
 
           <div id='threedgarden'>
 
-            <ToolBar data={data} />
+            <ToolBar />
 
             {/* R3F ThreeD Canvas View */}
             <ThreeDCanvasViewer data={data} />
@@ -3755,8 +3786,8 @@ const ThreeDGarden = ({threedData}): JSX.Element => {
   )
 }
 
-// export default ThreeDGarden
-const ThreeDGardenUseClient = dynamic(() => Promise.resolve(ThreeDGarden), {
-  ssr: false
-})
-export default ThreeDGardenUseClient
+export default ThreeDGarden
+// const ThreeDGardenUseClient = dynamic(() => Promise.resolve(ThreeDGarden), {
+//   ssr: false
+// })
+// export default ThreeDGardenUseClient
