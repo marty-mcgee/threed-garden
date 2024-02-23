@@ -386,11 +386,12 @@ function nounStore(this: INounStore, _type = 'noun') {
         }
 
         if (data) {
-          console.debug(`%cloadFromDB [${this._type}]: DATA RETURNED`, ccm.yellow, data, loading, error)
+          // console.debug(`%cloadFromDB [${this._type}]: DATA RETURNED`, ccm.yellow, data, loading, error)
 
+          let payload
           if (data[this._plural]?.edges?.length) {
             // const payload = data[this._plural].edges
-            const payload = data[this._plural].edges.map(
+            payload = data[this._plural].edges.map(
               (node: Object): Object =>
                 // nounId, id, uri, slug, title
                 // <div key={node.nounId}>
@@ -402,6 +403,22 @@ function nounStore(this: INounStore, _type = 'noun') {
                 // </div>
                 node
             )
+          } else if (data[this._plural]?.nodes?.length) {
+            // const payload = data[this._plural].nodes
+            payload = data[this._plural].nodes.map(
+              (node: Object): Object =>
+                // nounId, id, uri, slug, title
+                // <div key={node.nounId}>
+                //   wp nounId: {node.nounId}<br />
+                //   gql id: {node.id}<br />
+                //   uri: {node.uri}<br />
+                //   slug: {node.slug}<br />
+                //   title: {node.title}<br />
+                // </div>
+                node
+            )
+          }
+          if (payload.length) {
 
             // map over payload to set this.data{}
             const all = payload.map((node: Object): Object => {
