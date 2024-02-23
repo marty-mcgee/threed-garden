@@ -1,5 +1,6 @@
 // 'use client'
 // 'use server'
+// ^ this file needs NO pragma
 
 // ==========================================================
 // RESOURCES
@@ -12,16 +13,6 @@ import dynamic from 'next/dynamic'
 import { auth } from "auth"
 // import { SessionProvider } from "next-auth/react"
 // import { useSession } from 'next-auth/react'
-
-// import { useApolloClient } from '@apollo/client'
-// import {
-//   useQuery,
-//   useSuspenseQuery,
-//   useBackgroundQuery,
-//   useReadQuery,
-//   useFragment
-// } from '@apollo/experimental-nextjs-app-support/ssr'
-// import { stores, queries, mutations } from '#/lib/stores/apollo'
 
 // ** Next Imports
 // import type { NextPage } from 'next'
@@ -107,6 +98,7 @@ const ParticipatePage: TNextPageWithProps = async () => {
         </Card>
       </Grid>
       {/* {ability?.can('read', 'analytics') && ( */}
+      { session?.user && (
         <Grid
           item
           md={6}
@@ -126,6 +118,7 @@ const ParticipatePage: TNextPageWithProps = async () => {
             </CardContent>
           </Card>
         </Grid>
+      )}
       {/* )} */}
     </Grid>
   )

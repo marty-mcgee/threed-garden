@@ -1,4 +1,6 @@
 // 'use client'
+// 'use server'
+// ^ this file needs NO pragma
 
 // ==============================================================
 // RESOURCES
@@ -124,15 +126,15 @@ const AppLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Ele
 
   // **
   const session = await auth()
-  if (session?.user) {
-    // @ ts-expect-error TODO: Look into https://react.dev/reference/react/experimental_taintObjectReference
-    // filter out sensitive data before passing to client.
-    session.user = {
-      name: session.user.name,
-      email: session.user.email,
-      image: session.user.image,
-    }
-  }
+  // if (session?.user) {
+  //   // @ ts-expect-error TODO: Look into https://react.dev/reference/react/experimental_taintObjectReference
+  //   // filter out sensitive data before passing to client.
+  //   session.user = {
+  //     name: session.user.name,
+  //     email: session.user.email,
+  //     image: session.user.image,
+  //   }
+  // }
 
   // const { data } = await getClient().query({ query: queries.GetProjects })
   // console.debug('🥕 QUERY: AppLayout.getClient.data', data)
