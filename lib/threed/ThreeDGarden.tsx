@@ -3432,7 +3432,7 @@ const TheBottom: FC = (): JSX.Element => {
 // ==========================================================
 
 // ** R3F Main Component
-const ThreeDCanvasViewer = ({threedData}): JSX.Element => {
+const ThreeDCanvasViewer = (): JSX.Element => {
 
   // **
   // component params
@@ -3444,13 +3444,13 @@ const ThreeDCanvasViewer = ({threedData}): JSX.Element => {
     actions: {},
     word: word,
   }
-  if (threedData) {
-    console.debug('%cPROPS: data = threedData', ccm.blue, threedData)
-    data = threedData
-  }
-  else {
-    console.debug('%cPROPS: data = default data', ccm.blue, data)
-  }
+  // if (threedData) {
+  //   console.debug('%cPROPS: data = threedData', ccm.green, threedData)
+  //   // data = threedData
+  // }
+  // else {
+  //   console.debug('%cPROPS: data = default data', ccm.blue, data)
+  // }
 
   // IMPORTANT: WHICH STORE ??
   // in this case: sceneStore SCENE! THE SCENE !! FOR R3F boogie !!
@@ -3588,6 +3588,7 @@ const ThreeDGarden = (): JSX.Element => {
     store: {
       store: {},
       actions: {},
+      dataToUse: {},
     },
     word: word,
   }
@@ -3606,20 +3607,24 @@ const ThreeDGarden = (): JSX.Element => {
 
   // USE STORE
   const store = projectStore
-  const theStore = store.store.useStore('allDB')
-  data.store = theStore
-  data.store.actions = store.actions
+  data.store = store
+  // data.store.store = theStore
+  // data.store.actions = store.actions
+  const getStore = store.store.useStore('allDB')
   // console.debug('%cSTORE: projectStore.store.useStore', ccm.orange, store)
 
   // USE CLIENT
   const client = useApolloClient()
   data.client = client
 
-  // GET DATA
-  const dataFromDB = data.store.actions.loadFromDB(client)
-  if (dataFromDB) {
-    console.debug('%cSTORE: dataFromDB', ccm.red, dataFromDB)
-  }
+  // GET DATA TO USE
+  // const dataToUse = {}
+  data.store.dataToUse = getStore
+  // const dataFromDB = data.store.actions.loadFromDB(client)
+  // if (dataFromDB) {
+  //   console.debug('%cSTORE: dataFromDB', ccm.red, dataFromDB)
+  // }
+  // const dataToUse = dataFromDB
 
   /* // ==========================================================
   // // ** Get Data Stream[s], starting with Project[s]
@@ -3702,7 +3707,7 @@ const ThreeDGarden = (): JSX.Element => {
       // innerStyles={...inner} // Inner container styles
       // barStyles={...bar} // Loading-bar styles
       // dataStyles={...data} // Text styles
-      dataInterpolation={(p) => `Building Interface ${p.toFixed(0)}%`} // Text
+      dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
       initialState={(active = true) => active} // Initial black out state
     />
 
@@ -3716,7 +3721,8 @@ const ThreeDGarden = (): JSX.Element => {
         <ToolBar />
 
         {/* R3F ThreeD Canvas View */}
-        <ThreeDCanvasViewer data={data} />
+        <ThreeDCanvasViewer />
+        {/* <ThreeDCanvasViewer threedData={dataToUse} /> */}
         {/* R3F ThreeD Canvas View */}
 
         {/* store access */}
