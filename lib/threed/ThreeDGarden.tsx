@@ -352,7 +352,7 @@ const ProjectInfoPanel: FC = (_type: string = 'project'): JSX.Element => {
 }
 
 const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
-  const increaseCount = () => projectStore.update('count', projectStore.actions.increaseCount())
+  // const increaseCount = () => projectStore.update('count', projectStore.actions.increaseCount())
 
   const addNew = () => projectStore.actions.addNew()
   const saveToDisk = () => projectStore.actions.saveToDisk()
@@ -361,11 +361,16 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
   const saveToDB = (client) => projectStore.actions.saveToDB(client)
   const removeAll = () => projectStore.actions.removeAll()
 
+  const client = useApolloClient()
+
   return (
     <Box>
+      {/* <Button onClick={increaseCount}>+</Button> */}
       <Button onClick={addNew}>add new</Button>
+
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
+
       {/* <ApolloConsumer>
         {(client) => (
           <>
@@ -374,10 +379,10 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
           </>
         )}
       </ApolloConsumer> */}
-      <Button onClick={() => saveToDB()}>save to db</Button>
-      <Button onClick={() => loadFromDB()}>load from db</Button>
+      <Button onClick={() => saveToDB(client)}>save to db</Button>
+      <Button onClick={() => loadFromDB(client)}>load from db</Button>
+
       <Button onClick={removeAll}>remove all</Button>
-      {/* <Button onClick={increaseCount}>+</Button> */}
     </Box>
   )
 }
@@ -637,9 +642,9 @@ const SceneControlPanel: FC = (_type: string = 'scene'): JSX.Element => {
   const increaseCount = () => sceneStore.store.update('count', sceneStore.actions.increaseCount())
   const decreaseCount = () => sceneStore.store.update('count', sceneStore.actions.decreaseCount())
 
-  const loadToParticipant = () => {
-    const scene = sceneStore.actions.loadToParticipant()
-    console.debug('%cSceneControlPanel: loadToParticipant {scene}', ccm.orange, scene)
+  const loadToProject = () => {
+    const scene = sceneStore.actions.loadToProject()
+    console.debug('%cSceneControlPanel: loadToProject {scene}', ccm.orange, scene)
     console.debug(`%c====================================`, ccm.black)
     // return scene // ???
     return true
@@ -667,7 +672,7 @@ const SceneControlPanel: FC = (_type: string = 'scene'): JSX.Element => {
       </ApolloConsumer> */}
       <Button onClick={removeAll}>remove all</Button>
       <Button onClick={getState}>state</Button>
-      <Button onClick={loadToParticipant}>load</Button>
+      <Button onClick={loadToProject}>load</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
     </Box>
@@ -3436,15 +3441,17 @@ const ThreeDCanvasViewer = ({threedData}): JSX.Element => {
   const word = `[MM] @ ${new Date().toISOString()}`
 
   let data = {
-    store: projectStore,
     session: {},
+    store: projectStore,
+    actions: {},
     word: word,
   }
   if (threedData) {
-    console.debug('%cPROPS: GetProjects.data', ccm.blue, threedData)
+    console.debug('%cPROPS: data = threedData', ccm.blue, threedData)
     data = threedData
   }
   else {
+    console.debug('%cPROPS: data = default data', ccm.blue, data)
   }
 
   // IMPORTANT: WHICH STORE ??
@@ -3462,7 +3469,7 @@ const ThreeDCanvasViewer = ({threedData}): JSX.Element => {
 
   const loadNoun = (noun) => {
     // load this noun into r3f canvas
-    store.actions.loadToParticipant(noun, 'r3fCanvas')
+    data.store.actions.loadToProject(noun, 'r3fCanvas')
     return <Box>true</Box> // true
   }
 
@@ -3562,8 +3569,21 @@ const ThreeDGarden = (): JSX.Element => {
 
   const word: string = `[MM] @ ${new Date().toISOString()}`
   const data = {
-    session: {},
-    store: {},
+    session: {
+      user: {
+        name: '',
+        email: '',
+        image: '',
+      },
+      expiration: '',
+    },
+    client: {
+      name: 'hey'
+    },
+    store: {
+      store: {},
+      actions: {},
+    },
     word: word,
   }
 
@@ -3580,13 +3600,16 @@ const ThreeDGarden = (): JSX.Element => {
   }
 
   // USE STORE
-
-  const store = projectStore.store.useStore('allDB')
-  if (store) {
-    data.store = store
-    // console.debug('%cSTORE: projectStore.store.useStore', ccm.orange, store)
-    const client = useApolloClient()
-    const dataFromDB = projectStore.actions.loadFromDB(client)
+  const store = projectStore
+  const theStore = store.store.useStore('allDB')
+  data.store = theStore
+  data.store.actions = store.actions
+  // console.debug('%cSTORE: projectStore.store.useStore', ccm.orange, store)
+  const client = useApolloClient()
+  data.client = client
+  const dataFromDB = data.store.actions.loadFromDB(client)
+  if (dataFromDB) {
+    console.debug('%cSTORE: dataFromDB', ccm.red, dataFromDB)
   }
 
   // // ==========================================================
