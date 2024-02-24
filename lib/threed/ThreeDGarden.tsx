@@ -28,8 +28,8 @@ import {
 
 // // ** Apollo Client 3 -- State Management using Cache/Store (via GraphQL)
 // import { ApolloProvider } from '@apollo/client'
-// import { client } from '#/lib/api/graphql/client' // server-side-only
-// import { getClient } from '#/lib/api/graphql/client' // server-side-only
+// import { client } from '#/lib/api/graphql/__client' // server-side-only
+// import { getClient } from '#/lib/api/graphql/__client' // server-side-only
 // // ** Apollo Client 3 -- Cache Store Imports
 // // state management (instead of React.useState, Redux, Zustand)
 // import { ApolloConsumer } from '@apollo/client'
@@ -3530,7 +3530,9 @@ const ThreeDGarden = (): JSX.Element => {
   // GET DATA TO USE
   // const dataToUse = {}
   // data.store.dataToUse = getStore()
-  const dataFromDB = data.store.actions.loadFromDB(data.client)
+  if ( 1 === 0 || debug ) {
+    const dataFromDB = data.store.actions.loadFromDB(data.client)
+  }
   // if (dataFromDB) {
   //   console.debug('%cSTORE: dataFromDB', ccm.red, dataFromDB)
   // }

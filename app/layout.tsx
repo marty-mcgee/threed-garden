@@ -19,10 +19,10 @@ import { NextPageContext } from 'next'
 import type { ReactNode } from 'react'
 
 // ** Apollo Client -- State Management using Cache/Store (via GraphQL)
-import { ApolloWrapper } from './ApolloWrapper'
-// import { ApolloProvider } from '@apollo/client'
-// import { client } from '#/lib/api/graphql/client'
-// import { getClient } from '#/lib/api/graphql/client'
+import { ApolloClientWrapper } from '../lib/api/graphql/ApolloClientWrapper'
+// import { ApolloProvider } from '@apollo/__client'
+// import { client } from '#/lib/api/graphql/__client'
+// import { getClient } from '#/lib/api/graphql/__client'
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
 
 // ** Redux Store
@@ -234,7 +234,7 @@ const AppLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Ele
                           {/* <UserLayout key='ThreeDAppLayout-UserLayout'> */}
                           <SessionProvider session={session}>
                             {/* <>{children}</> */}
-                            <ApolloWrapper>
+                            <ApolloClientWrapper>
                             {/* <ApolloProvider client={client}> */}
                               <div id='ThreeDAppProvider' className='flex flex-col justify-between w-full h-full min-h-screen'>
                                 <Header />
@@ -244,7 +244,7 @@ const AppLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Ele
                                 <Footer />
                               </div>
                             {/* </ApolloProvider> */}
-                            </ApolloWrapper>
+                            </ApolloClientWrapper>
                           </SessionProvider>
                           {/* </UserLayout> */}
                         </ThemeRegistry>
