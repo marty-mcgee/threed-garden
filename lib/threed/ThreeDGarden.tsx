@@ -3537,6 +3537,7 @@ const ThreeDGarden = (): JSX.Element => {
   //   console.debug('%cSTORE: dataFromDB', ccm.red, dataFromDB)
   // }
   // const dataToUse = dataFromDB
+  const loadProject = () => data.store.actions.loadFromDisk()
 
   /* // ==========================================================
   // // ** Get Data Stream[s], starting with Project[s]
@@ -3565,54 +3566,63 @@ const ThreeDGarden = (): JSX.Element => {
     localStorage.setItem('threed_tabInfoControl', newValue)
   }
 
-  // // ==========================================================
-  // // Component onMount hook
-  // useEffect(() => {
-  //   // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
-  //   // console.debug(`%c====================================`, ccm.black)
+  // ==========================================================
+  // Component onMount hook
+  useEffect(() => {
+    // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
+    // console.debug(`%c====================================`, ccm.black)
 
-  //   // begin here ?? yes
-  //   // bootManager()...
+    // ==========================================================
+    // set open tab
+    const openTab: number = Number(localStorage.getItem('threed_tabInfoControl'))
+    setTabInfoControl(openTab ? openTab : 0)
 
-  //   // ==========================================================
-  //   // set open tab
-  //   const openTab: number = Number(localStorage.getItem('threed_tabInfoControl'))
-  //   setTabInfoControl(openTab ? openTab : 0)
+    // ==========================================================
+    // begin here ?? yes
+    // bootManager()...
+    loadProject()
 
-  //   // ==========================================================
-  //   // LOAD HISTORIES FROM DISK ??
-  //   // ** AND/OR **
-  //   // DO THIS STUFF WHEN ASKED BY AN EVENT/REQUEST
+    // ==========================================================
+    // LOAD HISTORIES FROM DISK ??
+    // ** AND/OR **
+    // DO THIS STUFF WHEN ASKED BY AN EVENT/REQUEST
 
-  //   // ** PROJECT HISTORY
-  //   // projectStore.actions.loadFromDisk()
-  //   // projectStore.actions.loadFromDB()
+    // ** PROJECT HISTORY
+    // data.store.actions.loadFromDisk()
+    // data.store.actions.loadFromDB(data.client)
 
-  //   // ** PARTICIPANT HISTORY
-  //   // participantStore.actions.loadFromDisk()
-  //   // participantStore.actions.loadFromDB()
+    // ** SCENE HISTORY
+    // sceneStore.store.actions.loadFromDisk()
+    // sceneStore.store.actions.loadFromDB(data.client)
 
-  //   // ** PLAN HISTORY
-  //   // planStore.actions.loadFromDisk()
-  //   // planStore.actions.loadFromDB()
+    // ** PARTICIPANT HISTORY
+    // participantStore.store.actions.loadFromDisk()
+    // participantStore.store.actions.loadFromDB(data.client)
 
-  //   // ** THREED HISTORY
-  //   // threedStore.actions.loadFromDisk()
-  //   // threedStore.actions.loadFromDB()
+    // ** PLAN HISTORY
+    // planStore.store.actions.loadFromDisk()
+    // planStore.store.actions.loadFromDB(data.client)
 
-  //   // ** SCENE HISTORY
-  //   // sceneStore.actions.loadFromDisk()
-  //   // sceneStore.actions.loadFromDB()
+    // ** THREED HISTORY
+    // threedStore.store.actions.loadFromDisk()
+    // threedStore.store.actions.loadFromDB(data.client)
 
-  //   return () => {
-  //     // console.debug('ThreeDGarden onUnmount', word)
-  //   }
-  // }, [])
+    // ** FILE HISTORY
+    // fileStore.store.actions.loadFromDisk()
+    // fileStore.store.actions.loadFromDB(data.client)
+
+    return () => {
+      console.debug('ThreeDGarden onUnmount', word)
+    }
+  }, [])
 
   // ==========================================================
   // FC returns JSX
   return (
-    <div id='threedgarden-wrapper' style={{'width': '100%'}}>
+    <div
+      id='threedgarden-wrapper'
+      // style={{'width': '100%'}}
+    >
 
     <Loader
       // containerStyles={...container} // Flex layout styles
