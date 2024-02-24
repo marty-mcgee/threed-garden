@@ -14,7 +14,7 @@ import {
 
 const uri = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL
 const uri_rest = process.env.NEXT_PUBLIC_WP_REST_API_URL
-console.debug('🦆 Apollo Wrapper loaded 🦆')
+// console.debug('🦆 Apollo Wrapper loaded 🦆')
 // console.debug('🦆 - URI', uri)
 // console.debug('🦆 - URI_REST', uri_rest)
 
@@ -51,7 +51,7 @@ function makeClient() {
 }
 
 // you need to create a component to wrap your app in
-export function ApolloWrapper({ children }: React.PropsWithChildren) {
+export function ApolloClientWrapper({ children }: React.PropsWithChildren) {
   return (
     <ApolloNextAppProvider makeClient={makeClient}>
       {children}
