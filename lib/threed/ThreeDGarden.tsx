@@ -3441,7 +3441,7 @@ const ThreeDCanvasViewer = (): JSX.Element => {
   let data = {
     session: {},
     store: projectStore,
-    actions: {},
+    noun: {}, // dataToUse
     word: word,
   }
   // if (threedData) {
@@ -3458,16 +3458,16 @@ const ThreeDCanvasViewer = (): JSX.Element => {
   // ORRRRRRR..... projectStore, which contains a scene(store)
   // const store = projectStore
 
-  console.debug('%cThreeDCanvasViewer {store}', ccm.yellow, data.store)
+  // console.debug('%cThreeDCanvasViewer {store}', ccm.yellow, data.store)
   // console.debug(`%c====================================`, ccm.black)
 
-  const noun = data.store.store.useStore('one')
-  const noun_title = noun.data?.title ? noun.data.title : 'NOTHING YET SIR'
-  console.debug('%cThreeDCanvasViewer {noun}', ccm.blue, noun)
+  const nounDataToUse = data.store.store.useStore('one')
+  const nounDataToUse_title = nounDataToUse.data?.title ? nounDataToUse.data.title : 'NOTHING YET SIR'
+  // console.debug('%cThreeDCanvasViewer {nounDataToUse}', ccm.blue, nounDataToUse)
 
-  const loadNoun = (noun) => {
-    // load this noun into r3f canvas
-    data.store.actions.loadToProject(noun, 'r3fCanvas')
+  const loadNounDataToUse = (nounDataToUse) => {
+    // load this nounDataToUse into r3f canvas
+    data.store.actions.loadToProject(nounDataToUse, 'r3fCanvas')
     return <Box>true</Box> // true
   }
 
@@ -3476,7 +3476,7 @@ const ThreeDCanvasViewer = (): JSX.Element => {
     <Grid
       container
       id='ThreeDCanvasViewer'
-      spacing={0}
+      // spacing={0}
       // sx={{ border: '1px solid orange' }}
     >
       <Grid
@@ -3493,21 +3493,21 @@ const ThreeDCanvasViewer = (): JSX.Element => {
         // style={{ display: 'flex', justifyContent: 'flex-start' }}
       >
         <Typography>
-          {/* {noun._type} title:  */}
-          {noun_title}
+          {/* {nounDataToUse._type} title:  */}
+          {nounDataToUse_title}
         </Typography>
       </Grid>
       <Grid
         item
-        id='actions[loadNoun()]'
+        id='actions[loadNounDataToUse()]'
         md={7}
         xs={12}
         style={{ display: 'flex', justifyContent: 'flex-end' }}
       >
-        <Button onClick={() => loadNoun('project')}>load project</Button>
-        <Button onClick={() => loadNoun('scene')}>load scene</Button>
-        <Button onClick={() => loadNoun('character')}>load character</Button>
-        <Button onClick={() => loadNoun('farmbot')}>load farmbot</Button>
+        <Button onClick={() => loadNounDataToUse('project')}>load project</Button>
+        <Button onClick={() => loadNounDataToUse('scene')}>load scene</Button>
+        <Button onClick={() => loadNounDataToUse('character')}>load character</Button>
+        <Button onClick={() => loadNounDataToUse('farmbot')}>load farmbot</Button>
       </Grid>
       <Grid
         container
@@ -3606,11 +3606,9 @@ const ThreeDGarden = (): JSX.Element => {
   }
 
   // USE STORE
-  const store = projectStore
-  data.store = store
-  // data.store.store = theStore
-  // data.store.actions = store.actions
-  const getStore = store.store.useStore('allDB')
+  const theNounStore = projectStore
+  data.store = theNounStore
+  const getStore = () => data.store.store.useStore('allDB')
   // console.debug('%cSTORE: projectStore.store.useStore', ccm.orange, store)
 
   // USE CLIENT
@@ -3619,7 +3617,7 @@ const ThreeDGarden = (): JSX.Element => {
 
   // GET DATA TO USE
   // const dataToUse = {}
-  data.store.dataToUse = getStore
+  data.store.dataToUse = getStore()
   // const dataFromDB = data.store.actions.loadFromDB(client)
   // if (dataFromDB) {
   //   console.debug('%cSTORE: dataFromDB', ccm.red, dataFromDB)
