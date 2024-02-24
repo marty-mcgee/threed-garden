@@ -418,7 +418,7 @@ const ParticipantControlPanel: FC = (_type: string = 'participant'): JSX.Element
       <Button onClick={saveToDB}>save to db</Button>
       <Button onClick={loadFromDB}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
-      {/* <Button onClick={increaseCount}>+</Button> */}
+      <Button onClick={increaseCount}>+</Button>
     </Box>
   )
 }
@@ -467,7 +467,7 @@ const PlanControlPanel: FC = (_type: string = 'plan'): JSX.Element => {
       <Button onClick={saveToDB}>save to db</Button>
       <Button onClick={loadFromDB}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
-      {/* <Button onClick={increaseCount}>+</Button> */}
+      <Button onClick={increaseCount}>+</Button>
     </Box>
   )
 }
@@ -516,7 +516,7 @@ const ThreeDControlPanel: FC = (_type: string = 'threed'): JSX.Element => {
       <Button onClick={saveToDB}>save to db</Button>
       <Button onClick={loadFromDB}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
-      {/* <Button onClick={increaseCount}>+</Button> */}
+      <Button onClick={increaseCount}>+</Button>
     </Box>
   )
 }
@@ -565,7 +565,7 @@ const FileControlPanel: FC = (_type: string = 'file'): JSX.Element => {
       <Button onClick={saveToDB}>save to db</Button>
       <Button onClick={loadFromDB}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
-      {/* <Button onClick={increaseCount}>+</Button> */}
+      <Button onClick={increaseCount}>+</Button>
     </Box>
   )
 }
