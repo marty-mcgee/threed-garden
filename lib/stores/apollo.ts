@@ -223,7 +223,7 @@ function nounStore(this: INounStore, _type = 'noun') {
       // console.debug(`%caddNew {${this._type}}`, ccm.green, this.store.get('all').length)
 
       // saveToDisk
-      this.actions.saveToDisk()
+      // this.actions.saveToDisk()
       // loadFromDisk
       // this.actions.loadFromDisk()
 

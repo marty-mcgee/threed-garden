@@ -22,7 +22,7 @@ import {
   // ReactNode,
   FC,
   Suspense,
-  MouseEventHandler,
+  PointerEventHandler,
   SyntheticEvent,
 } from 'react'
 
@@ -259,7 +259,7 @@ const AppBar = styled(MuiAppBar)(({ theme }) => ({
   // transition: 'none',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: theme.spacing(0, 6),
+  padding: theme.spacing(0, 0),
   backgroundColor: 'transparent',
   color: theme.palette.text.primary,
   minHeight: `42px !important`,
@@ -350,37 +350,26 @@ const ProjectInfoPanel: FC = (_type: string = 'project'): JSX.Element => {
 }
 
 const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
-  // const increaseCount = () => projectStore.update('count', projectStore.actions.increaseCount())
+
+  const client = useApolloClient()
 
   const addNew = () => projectStore.actions.addNew()
   const saveToDisk = () => projectStore.actions.saveToDisk()
   const loadFromDisk = () => projectStore.actions.loadFromDisk()
-  const loadFromDB = (client) => projectStore.actions.loadFromDB(client)
-  const saveToDB = (client) => projectStore.actions.saveToDB(client)
+  const loadFromDB = () => projectStore.actions.loadFromDB(client)
+  const saveToDB = () => projectStore.actions.saveToDB(client)
   const removeAll = () => projectStore.actions.removeAll()
-
-  const client = useApolloClient()
+  // const increaseCount = () => projectStore.update('count', projectStore.actions.increaseCount())
 
   return (
     <Box>
-      {/* <Button onClick={increaseCount}>+</Button> */}
       <Button onClick={addNew}>add new</Button>
-
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-
-      {/* <ApolloConsumer>
-        {(client) => (
-          <>
-            <Button onClick={() => saveToDB(client)}>save to db</Button>
-            <Button onClick={() => loadFromDB(client)}>load from db</Button>
-          </>
-        )}
-      </ApolloConsumer> */}
-      <Button onClick={() => saveToDB(client)}>save to db</Button>
-      <Button onClick={() => loadFromDB(client)}>load from db</Button>
-
+      <Button onClick={() => saveToDB()}>save to db</Button>
+      <Button onClick={() => loadFromDB()}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
+      {/* <Button onClick={increaseCount}>+</Button> */}
     </Box>
   )
 }
@@ -419,19 +408,15 @@ const ParticipantControlPanel: FC = (_type: string = 'participant'): JSX.Element
   const saveToDB = (client) => participantStore.actions.saveToDB(client)
   const removeAll = () => participantStore.actions.removeAll()
 
+  const client = useApolloClient()
+
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      {/* <ApolloConsumer>
-        {(client) => (
-          <>
-            <Button onClick={() => saveToDB(client)}>save to db</Button>
-            <Button onClick={() => loadFromDB(client)}>load from db</Button>
-          </>
-        )}
-      </ApolloConsumer> */}
+      <Button onClick={() => saveToDB(client)}>save to db</Button>
+      <Button onClick={() => loadFromDB(client)}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
     </Box>
@@ -472,19 +457,15 @@ const PlanControlPanel: FC = (_type: string = 'plan'): JSX.Element => {
   const saveToDB = (client) => planStore.actions.saveToDB(client)
   const removeAll = () => planStore.actions.removeAll()
 
+  const client = useApolloClient()
+
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      {/* <ApolloConsumer>
-        {(client) => (
-          <>
-            <Button onClick={() => saveToDB(client)}>save to db</Button>
-            <Button onClick={() => loadFromDB(client)}>load from db</Button>
-          </>
-        )}
-      </ApolloConsumer> */}
+      <Button onClick={() => saveToDB(client)}>save to db</Button>
+      <Button onClick={() => loadFromDB(client)}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
     </Box>
@@ -525,19 +506,15 @@ const ThreeDControlPanel: FC = (_type: string = 'threed'): JSX.Element => {
   const saveToDB = (client) => threedStore.actions.saveToDB(client)
   const removeAll = () => threedStore.actions.removeAll()
 
+  const client = useApolloClient()
+
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      {/* <ApolloConsumer>
-        {(client) => (
-          <>
-            <Button onClick={() => saveToDB(client)}>save to db</Button>
-            <Button onClick={() => loadFromDB(client)}>load from db</Button>
-          </>
-        )}
-      </ApolloConsumer> */}
+      <Button onClick={() => saveToDB(client)}>save to db</Button>
+      <Button onClick={() => loadFromDB(client)}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
     </Box>
@@ -578,19 +555,15 @@ const FileControlPanel: FC = (_type: string = 'file'): JSX.Element => {
   const saveToDB = (client) => fileStore.actions.saveToDB(client)
   const removeAll = () => fileStore.actions.removeAll()
 
+  const client = useApolloClient()
+
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      {/* <ApolloConsumer>
-        {(client) => (
-          <>
-            <Button onClick={() => saveToDB(client)}>save to db</Button>
-            <Button onClick={() => loadFromDB(client)}>load from db</Button>
-          </>
-        )}
-      </ApolloConsumer> */}
+      <Button onClick={() => saveToDB(client)}>save to db</Button>
+      <Button onClick={() => loadFromDB(client)}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
     </Box>
@@ -655,19 +628,15 @@ const SceneControlPanel: FC = (_type: string = 'scene'): JSX.Element => {
   const removeAll = () => sceneStore.actions.removeAll()
   const getState = () => sceneStore.actions.getState()
 
+  const client = useApolloClient()
+
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      {/* <ApolloConsumer>
-        {(client) => (
-          <>
-            <Button onClick={() => saveToDB(client)}>save to db</Button>
-            <Button onClick={() => loadFromDB(client)}>load from db</Button>
-          </>
-        )}
-      </ApolloConsumer> */}
+      <Button onClick={() => saveToDB(client)}>save to db</Button>
+      <Button onClick={() => loadFromDB(client)}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       <Button onClick={getState}>state</Button>
       <Button onClick={loadToProject}>load</Button>
@@ -711,19 +680,15 @@ const AllotmentControlPanel: FC = (_type: string = 'allotment'): JSX.Element => 
   const saveToDB = (client) => allotmentStore.actions.saveToDB(client)
   const removeAll = () => allotmentStore.actions.removeAll()
 
+  const client = useApolloClient()
+
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      {/* <ApolloConsumer>
-        {(client) => (
-          <>
-            <Button onClick={() => saveToDB(client)}>save to db</Button>
-            <Button onClick={() => loadFromDB(client)}>load from db</Button>
-          </>
-        )}
-      </ApolloConsumer> */}
+      <Button onClick={() => saveToDB(client)}>save to db</Button>
+      <Button onClick={() => loadFromDB(client)}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>add to count</Button> */}
     </Box>
@@ -764,19 +729,15 @@ const BedControlPanel: FC = (_type: string = 'bed'): JSX.Element => {
   const saveToDB = (client) => bedStore.actions.saveToDB(client)
   const removeAll = () => bedStore.actions.removeAll()
 
+  const client = useApolloClient()
+
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      {/* <ApolloConsumer>
-        {(client) => (
-          <>
-            <Button onClick={() => saveToDB(client)}>save to db</Button>
-            <Button onClick={() => loadFromDB(client)}>load from db</Button>
-          </>
-        )}
-      </ApolloConsumer> */}
+      <Button onClick={() => saveToDB(client)}>save to db</Button>
+      <Button onClick={() => loadFromDB(client)}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>add to count</Button> */}
     </Box>
@@ -817,19 +778,15 @@ const PlantControlPanel: FC = (_type: string = 'plant'): JSX.Element => {
   const saveToDB = (client) => plantStore.actions.saveToDB(client)
   const removeAll = () => plantStore.actions.removeAll()
 
+  const client = useApolloClient()
+
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      {/* <ApolloConsumer>
-        {(client) => (
-          <>
-            <Button onClick={() => saveToDB(client)}>save to db</Button>
-            <Button onClick={() => loadFromDB(client)}>load from db</Button>
-          </>
-        )}
-      </ApolloConsumer> */}
+      <Button onClick={() => saveToDB(client)}>save to db</Button>
+      <Button onClick={() => loadFromDB(client)}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>add to count</Button> */}
     </Box>
@@ -870,19 +827,15 @@ const PlantingPlanControlPanel: FC = (_type: string = 'planting_plan'): JSX.Elem
   const saveToDB = (client) => plantingPlanStore.actions.saveToDB(client)
   const removeAll = () => plantingPlanStore.actions.removeAll()
 
+  const client = useApolloClient()
+
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      {/* <ApolloConsumer>
-        {(client) => (
-          <>
-            <Button onClick={() => saveToDB(client)}>save to db</Button>
-            <Button onClick={() => loadFromDB(client)}>load from db</Button>
-          </>
-        )}
-      </ApolloConsumer> */}
+      <Button onClick={() => saveToDB(client)}>save to db</Button>
+      <Button onClick={() => loadFromDB(client)}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>add to count</Button> */}
     </Box>
@@ -911,9 +864,9 @@ function BearControlPanel() {
 const { ModalAbout, ModalLoading, ModalModel3d, ModalShare } = modals
 
 // ** Main ToolBar
-const ToolBar: FC = (): JSX.Element => {
-
+const ToolBar: FC = ({data}): JSX.Element => {
   // **
+  // console.debug("ToolBar props.data", data)
 
   const word = `[MM] @ ${new Date().toISOString()}`
   // console.debug("ToolBar", word)
@@ -926,43 +879,43 @@ const ToolBar: FC = (): JSX.Element => {
   const [anchorElLayers, setAnchorElLayers] = useState<null | HTMLElement>(null)
   const [anchorElTools, setAnchorElTools] = useState<null | HTMLElement>(null)
 
-  // const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
+  // const handleOpenNavMenu = (event: PointerEvent<HTMLElement>) => {
   //   setAnchorElNav(event.currentTarget)
   // }
   // const handleCloseNavMenu = () => {
   //   setAnchorElNav(null)
   // }
-  const handleOpenActionsMenu = (event: MouseEvent<HTMLElement>) => {
+  const handleOpenActionsMenu = (event: PointerEvent<HTMLElement>) => {
     setAnchorElActions(event.currentTarget)
   }
   const handleCloseActionsMenu = () => {
     setAnchorElActions(null)
   }
-  const handleOpenFilesMenu = (event: MouseEvent<HTMLElement>) => {
+  const handleOpenFilesMenu = (event: PointerEvent<HTMLElement>) => {
     setAnchorElFiles(event.currentTarget)
   }
   const handleCloseFilesMenu = () => {
     setAnchorElFiles(null)
   }
-  const handleOpenEditsMenu = (event: MouseEvent<HTMLElement>) => {
+  const handleOpenEditsMenu = (event: PointerEvent<HTMLElement>) => {
     setAnchorElEdits(event.currentTarget)
   }
   const handleCloseEditsMenu = () => {
     setAnchorElEdits(null)
   }
-  const handleOpenViewsMenu = (event: MouseEvent<HTMLElement>) => {
+  const handleOpenViewsMenu = (event: PointerEvent<HTMLElement>) => {
     setAnchorElViews(event.currentTarget)
   }
   const handleCloseViewsMenu = () => {
     setAnchorElViews(null)
   }
-  const handleOpenLayersMenu = (event: MouseEvent<HTMLElement>) => {
+  const handleOpenLayersMenu = (event: PointerEvent<HTMLElement>) => {
     setAnchorElLayers(event.currentTarget)
   }
   const handleCloseLayersMenu = () => {
     setAnchorElLayers(null)
   }
-  const handleOpenToolsMenu = (event: MouseEvent<HTMLElement>) => {
+  const handleOpenToolsMenu = (event: PointerEvent<HTMLElement>) => {
     setAnchorElTools(event.currentTarget)
   }
   const handleCloseToolsMenu = () => {
@@ -1389,7 +1342,7 @@ const ToolBar: FC = (): JSX.Element => {
     }
   }
 
-  const doLoadFile: MouseEventHandler<HTMLAnchorElement> = (): any => {
+  const doLoadFile: PointerEventHandler<HTMLAnchorElement> = (): any => {
     // alert("[MM] doLoadFile")
     try {
       const loaded = { ts: new Date().toISOString() }
@@ -1403,7 +1356,7 @@ const ToolBar: FC = (): JSX.Element => {
     }
   }
 
-  const doSaveFile: MouseEventHandler<HTMLAnchorElement> = (): any => {
+  const doSaveFile: PointerEventHandler<HTMLAnchorElement> = (): any => {
     // alert("[MM] doSaveFile")
     try {
       const saved = { ts: new Date().toISOString() }
@@ -1486,7 +1439,7 @@ const ToolBar: FC = (): JSX.Element => {
     return !1
   }
 
-  const doUndo: MouseEventHandler<HTMLAnchorElement> = (): any => {
+  const doUndo: PointerEventHandler<HTMLAnchorElement> = (): any => {
     // alert("[MM] doUndo")
     try {
       const undid = { ts: new Date().toISOString() }
@@ -1500,7 +1453,7 @@ const ToolBar: FC = (): JSX.Element => {
     }
   }
 
-  const doRedo: MouseEventHandler<HTMLAnchorElement> = (): any => {
+  const doRedo: PointerEventHandler<HTMLAnchorElement> = (): any => {
     // alert("[MM] doRedo")
     try {
       const redid = { ts: new Date().toISOString() }
@@ -1516,14 +1469,14 @@ const ToolBar: FC = (): JSX.Element => {
 
   // ============================================================
 
-  // Component onMount hook
-  useEffect(() => {
-    const word = 'YO YO YO'
-    // console.debug("ToolBar onMount", word)
-    return () => {
-      // console.debug("ToolBar onUnmount", word)
-    }
-  }, [])
+  // // Component onMount hook
+  // useEffect(() => {
+  //   const word = 'YO YO YO'
+  //   // console.debug("ToolBar onMount", word)
+  //   return () => {
+  //     // console.debug("ToolBar onUnmount", word)
+  //   }
+  // }, [])
 
   const pages = ['Products', 'Pricing', 'Blog']
   const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
@@ -1531,15 +1484,22 @@ const ToolBar: FC = (): JSX.Element => {
   return (
     <AppBar
       id='appBar'
-      position='static'
+      // position='static'
     >
-      <Container maxWidth='xl'>
-        <Toolbar disableGutters>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+      <Container
+        maxWidth='xl'
+        // sx={{ paddingLeft: 0, paddingRight: 0 }}
+      >
+        <Toolbar
+          disableGutters
+        >
+          <Box
+            sx={{ flexGrow: 1 }} // , display: { xs: 'none', md: 'flex' }
+          >
             <Button
               key='Actions'
               onClick={handleOpenActionsMenu}
-              sx={{ color: '#FFFFFF', p: 0, ml: 2, mr: 3 }}
+              sx={{ color: '#FFFFFF', p: 0, ml: 0, mr: 2 }}
             >
               Actions
             </Button>
@@ -1910,7 +1870,9 @@ const ToolBar: FC = (): JSX.Element => {
             </Menu>
           </Box>
 
-          <Box sx={{ flexGrow: 0, display: { xs: 'none', md: 'flex' } }}>
+          <Box
+            sx={{ flexGrow: 0 }} // , display: { xs: 'none', md: 'flex' }
+          >
             {/* <Button color="inherit">-||- TOOL MODES -||-</Button> */}
             <Tooltip title='Pointer Tool'>
               <IconButton
@@ -3432,33 +3394,11 @@ const TheBottom: FC = (): JSX.Element => {
 // ==========================================================
 
 // ** R3F Main Component
-const ThreeDCanvasViewer = (): JSX.Element => {
+const ThreeDCanvasViewer = ({data}): JSX.Element => {
 
   // **
-  // component params
-  const word = `[MM] @ ${new Date().toISOString()}`
-
-  let data = {
-    session: {},
-    store: projectStore,
-    noun: {}, // dataToUse
-    word: word,
-  }
-  // if (threedData) {
-  //   console.debug('%cPROPS: data = threedData', ccm.green, threedData)
-  //   // data = threedData
-  // }
-  // else {
-  //   console.debug('%cPROPS: data = default data', ccm.blue, data)
-  // }
-
-  // IMPORTANT: WHICH STORE ??
-  // in this case: sceneStore SCENE! THE SCENE !! FOR R3F boogie !!
-  // const store = sceneStore // <-- HEY HEY HEY [MM]
-  // ORRRRRRR..... projectStore, which contains a scene(store)
-  // const store = projectStore
-
-  // console.debug('%cThreeDCanvasViewer {store}', ccm.yellow, data.store)
+  // const word = `[MM] @ ${new Date().toISOString()}`
+  // console.debug('%cThreeDCanvasViewer {data.store}', ccm.yellow, data.store)
   // console.debug(`%c====================================`, ccm.black)
 
   const nounDataToUse = data.store.store.useStore('one')
@@ -3477,7 +3417,7 @@ const ThreeDCanvasViewer = (): JSX.Element => {
       container
       id='ThreeDCanvasViewer'
       // spacing={0}
-      // sx={{ border: '1px solid orange' }}
+      sx={{ border: '1px solid darkgreen' }}
     >
       <Grid
         item
@@ -3485,8 +3425,8 @@ const ThreeDCanvasViewer = (): JSX.Element => {
         md={5}
         xs={12}
         sx={{
-          paddingTop: '0.48rem',
-          paddingLeft: '0.6rem',
+          paddingTop: '0.5rem',
+          paddingLeft: '0.7rem',
           display: 'flex',
           justifyContent: 'flex-start'
         }}
@@ -3519,7 +3459,7 @@ const ThreeDCanvasViewer = (): JSX.Element => {
           id='camera[0]'
           md={12}
           xs={12}
-          sx={{ border: '1px solid darkgreen' }}
+          sx={{ borderTop: '1px solid darkgreen' }}
         >
           {/*  */}
           <ThreeDCanvas />
@@ -3564,61 +3504,33 @@ const MyComponent: FC = (): JSX.Element => {
 // const ThreeDGarden = ({threedData}): JSX.Element => {
 const ThreeDGarden = (): JSX.Element => {
   // **
-  // if (threedData) {
-  //   // console.clear()
-  //   console.debug('%cPROPS: GetProjects', ccm.green, threedData)
-  //   console.debug('%cUPDATE STORES(?)...', ccm.green)
-  // }
   // ==========================================================
-  // LOCAL VARS
+  // ** LOCAL VARS
 
   const word: string = `[MM] @ ${new Date().toISOString()}`
-  const data = {
-    session: {
-      user: {
-        name: '',
-        email: '',
-        image: '',
-      },
-      expiration: '',
-    },
-    client: {
-      name: 'hey'
-    },
-    store: {
-      store: {},
-      actions: {},
-      dataToUse: {},
-    },
-    word: word,
-  }
 
   // ==========================================================
   // ** Hooks
 
-  // const ability = useContext(AbilityContext)
-
   // USE SESSION
   const { data: session, status } = useSession()
-  if (session) {
-    data.session = session
-    // console.debug('%cSESSION: useSession', ccm.orange, session)
-  }
-
-  // USE STORE
-  const theNounStore = projectStore
-  data.store = theNounStore
-  const getStore = () => data.store.store.useStore('allDB')
-  // console.debug('%cSTORE: projectStore.store.useStore', ccm.orange, store)
-
-  // USE CLIENT
+    // USE STORE
   const client = useApolloClient()
-  data.client = client
-
+  // const ability = useContext(AbilityContext)
+  const data = {
+    status: status,
+    session: session,
+    abilities: {},
+    client: client,
+    store: projectStore, // default
+    word: word,
+  }
+  // USE STORE
+  const getStore = () => data.store.store.useStore('allDB')
   // GET DATA TO USE
   // const dataToUse = {}
-  data.store.dataToUse = getStore()
-  // const dataFromDB = data.store.actions.loadFromDB(client)
+  // data.store.dataToUse = getStore()
+  const dataFromDB = data.store.actions.loadFromDB(data.client)
   // if (dataFromDB) {
   //   console.debug('%cSTORE: dataFromDB', ccm.red, dataFromDB)
   // }
@@ -3716,11 +3628,11 @@ const ThreeDGarden = (): JSX.Element => {
 
       <div id='threedgarden'>
 
-        <ToolBar />
+        <ToolBar data={data} />
 
         {/* R3F ThreeD Canvas View */}
-        <ThreeDCanvasViewer />
-        {/* <ThreeDCanvasViewer threedData={dataToUse} /> */}
+        {/* <ThreeDCanvasViewer /> */}
+        <ThreeDCanvasViewer data={data} />
         {/* R3F ThreeD Canvas View */}
 
         {/* store access */}
