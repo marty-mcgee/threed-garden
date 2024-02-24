@@ -3537,7 +3537,7 @@ const ThreeDGarden = (): JSX.Element => {
   //   console.debug('%cSTORE: dataFromDB', ccm.red, dataFromDB)
   // }
   // const dataToUse = dataFromDB
-  const loadProject = () => data.store.actions.loadFromDisk()
+  const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDisk()
 
   /* // ==========================================================
   // // ** Get Data Stream[s], starting with Project[s]
@@ -3573,14 +3573,9 @@ const ThreeDGarden = (): JSX.Element => {
     // console.debug(`%c====================================`, ccm.black)
 
     // ==========================================================
-    // set open tab
-    const openTab: number = Number(localStorage.getItem('threed_tabInfoControl'))
-    setTabInfoControl(openTab ? openTab : 0)
-
-    // ==========================================================
     // begin here ?? yes
     // bootManager()...
-    loadProject()
+    loadProjectFromChosenDataSource()
 
     // ==========================================================
     // LOAD HISTORIES FROM DISK ??
@@ -3611,6 +3606,12 @@ const ThreeDGarden = (): JSX.Element => {
     // fileStore.store.actions.loadFromDisk()
     // fileStore.store.actions.loadFromDB(data.client)
 
+    // ==========================================================
+    // set open tab
+    const openTab: number = Number(localStorage.getItem('threed_tabInfoControl'))
+    setTabInfoControl(openTab ? openTab : 0)
+
+    // ==========================================================
     return () => {
       console.debug('ThreeDGarden onUnmount', word)
     }

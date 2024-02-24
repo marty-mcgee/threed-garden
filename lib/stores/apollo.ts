@@ -194,8 +194,8 @@ function nounStore(this: INounStore, _type = 'noun') {
         // count
         // this.store.update('count', this.store.get('count') + 1) // manual
         this.store.update('count', this.store.get('all').length) // automatic
-        // console.debug(`%caddNew {count}`, ccm.green, this.store.get('count'))
-        // console.debug(`%caddNew [${this._type}]`, ccm.green, this.store.get('all').length)
+        // console.debug(`%caddNew {count}`, ccm.blue, this.store.get('count'))
+        // console.debug(`%caddNew [${this._type}]`, ccm.blue, this.store.get('all').length)
 
         // nounCurrent (overwrite this one -- mutate)
         this.store.update('one', {
@@ -219,8 +219,8 @@ function nounStore(this: INounStore, _type = 'noun') {
       // count (for fun/learning)
       // this.store.update('count', this.store.get('count') + 1) // manual
       this.store.update('count', this.store.get('all').length) // automatic
-      console.debug(`%caddNew {count}`, ccm.green, this.store.get('count'))
-      // console.debug(`%caddNew {${this._type}}`, ccm.green, this.store.get('all').length)
+      console.debug(`%caddNew {count}`, ccm.blue, this.store.get('count'))
+      // console.debug(`%caddNew {${this._type}}`, ccm.blue, this.store.get('all').length)
 
       // saveToDisk
       // this.actions.saveToDisk()
@@ -260,25 +260,25 @@ function nounStore(this: INounStore, _type = 'noun') {
       try {
         const query = JSON.parse(localStorage.getItem(this._storageItem))
         if (query) {
-          console.debug(`%cloadFromDisk [${this._type}] QUERY?`, ccm.green, query)
+          console.debug(`%cloadFromDisk [${this._type}] QUERY?`, ccm.blue, query)
           const { payload } = query
-          console.debug(`%cloadFromDisk [${this._type}] QUERY.PAYLOAD?`, ccm.green, payload)
+          console.debug(`%cloadFromDisk [${this._type}] QUERY.PAYLOAD?`, ccm.blue, payload)
 
           if (payload.length) {
-            // console.debug(`%cloadFromDisk [${this._type}]`, ccm.green, true, payload)
+            // console.debug(`%cloadFromDisk [${this._type}]`, ccm.blue, true, payload)
 
             this.store.update('all', [...payload]) // payload should have .data{}
-            console.debug(`%cloadFromDisk [${this._type}s] (after)`, ccm.green, this.store.get('all'))
+            console.debug(`%cloadFromDisk [${this._type}s] (after)`, ccm.blue, this.store.get('all'))
 
             this.store.update('one', this.store.get('all')[0])
-            console.debug(`%cloadFromDisk {${this._type}} (after)`, ccm.green, this.store.get('one'))
+            console.debug(`%cloadFromDisk {${this._type}} (after)`, ccm.blue, this.store.get('one'))
 
             return true
           } else {
-            console.debug(`%cloadFromDisk [${this._type}] EMPTY QUERY.PAYLOAD?`, ccm.green, query)
+            console.debug(`%cloadFromDisk [${this._type}] EMPTY QUERY.PAYLOAD?`, ccm.blue, query)
           }
         } else {
-          console.debug(`%cloadFromDisk [${this._type}] NOTHING TO LOAD`, ccm.green, query)
+          console.debug(`%cloadFromDisk [${this._type}] NOTHING TO LOAD`, ccm.blue, query)
         }
         return false
       } catch (err) {
@@ -295,7 +295,7 @@ function nounStore(this: INounStore, _type = 'noun') {
         console.debug(`%csaveToDB [${this._type}]`, ccm.red, false)
         return false
       } catch (err) {
-        console.debug(`%csaveToDB [${this._type}]: err`, ccm.green, err)
+        console.debug(`%csaveToDB [${this._type}]: err`, ccm.blue, err)
         return false
       }
     },
@@ -426,12 +426,12 @@ function nounStore(this: INounStore, _type = 'noun') {
               one.data = node
               return one
             })
-            console.debug(`%cloadFromDB [${this._type}]`, ccm.green, all)
+            console.debug(`%cloadFromDB [${this._type}]`, ccm.blue, all)
 
             // set state from db
             this.store.update('all', [...all]) // nodes
             const nouns = this.store.get('all')
-            console.debug(`%cloadFromDB [${this._type}] (after)`, ccm.green, nouns)
+            console.debug(`%cloadFromDB [${this._type}] (after)`, ccm.blue, nouns)
 
             this.store.update('oneDB', nouns[nouns.length - 1]) // node (use last one)
             const nounDB = this.store.get('oneDB')
@@ -459,22 +459,22 @@ function nounStore(this: INounStore, _type = 'noun') {
 
             this.store.update('countDB', this.store.get('all').length)
             console.debug(`%cloadFromDB countDB`, ccm.orange, this.store.get('countDB'))
-            console.debug(`%c====================================`, ccm.green)
+            console.debug(`%c====================================`, ccm.blue)
 
             // save to disk
             this.actions.saveToDisk()
 
             return true
           } else {
-            // console.debug(`%cloadFromDB [${this._type}]`, ccm.green, data)
+            // console.debug(`%cloadFromDB [${this._type}]`, ccm.blue, data)
             return false
           }
         }
 
-        console.debug(`%cloadFromDB [${this._type}]: OTHER ERROR`, ccm.green, data)
+        console.debug(`%cloadFromDB [${this._type}]: OTHER ERROR`, ccm.blue, data)
         return false
       } catch (err) {
-        console.debug(`%cloadFromDB [${this._type}]: err`, ccm.green, err)
+        console.debug(`%cloadFromDB [${this._type}]: err`, ccm.blue, err)
         return false
       }
     },
@@ -492,7 +492,7 @@ function nounStore(this: INounStore, _type = 'noun') {
 
         return false
       } catch (err) {
-        console.debug(`%cload {noun}: err`, ccm.green, err)
+        console.debug(`%cload {noun}: err`, ccm.blue, err)
         return false
       }
     },
