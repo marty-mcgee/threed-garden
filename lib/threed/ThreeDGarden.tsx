@@ -337,7 +337,7 @@ const ProjectInfoPanel: FC = (_type: string = 'project'): JSX.Element => {
 
   return (
     <Box>
-      {/* <Typography>{projectCount} projects around here ...</Typography> */}
+      <Typography>{projectCount} projects around here ...</Typography>
       <Typography>projects: {projects.length}</Typography>
       <Typography>projectsDB: {projectsDB.length}</Typography>
       <Typography>project._id: {project._id}</Typography>
@@ -359,17 +359,17 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
   const loadFromDB = () => projectStore.actions.loadFromDB(client)
   const saveToDB = () => projectStore.actions.saveToDB(client)
   const removeAll = () => projectStore.actions.removeAll()
-  // const increaseCount = () => projectStore.update('count', projectStore.actions.increaseCount())
+  const increaseCount = () => projectStore.store.update('count', projectStore.actions.increaseCount())
 
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={() => saveToDB()}>save to db</Button>
-      <Button onClick={() => loadFromDB()}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDB}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
-      {/* <Button onClick={increaseCount}>+</Button> */}
+      <Button onClick={increaseCount}>+</Button>
     </Box>
   )
 }
@@ -399,24 +399,24 @@ const ParticipantInfoPanel: FC = (_type: string = 'participant'): JSX.Element =>
 }
 
 const ParticipantControlPanel: FC = (_type: string = 'participant'): JSX.Element => {
-  const increaseCount = () => participantStore.update('count', participantStore.actions.increaseCount())
+
+  const client = useApolloClient()
 
   const addNew = () => participantStore.actions.addNew()
   const saveToDisk = () => participantStore.actions.saveToDisk()
   const loadFromDisk = () => participantStore.actions.loadFromDisk()
-  const loadFromDB = (client) => participantStore.actions.loadFromDB(client)
-  const saveToDB = (client) => participantStore.actions.saveToDB(client)
+  const loadFromDB = () => participantStore.actions.loadFromDB(client)
+  const saveToDB = () => participantStore.actions.saveToDB(client)
   const removeAll = () => participantStore.actions.removeAll()
-
-  const client = useApolloClient()
+  const increaseCount = () => participantStore.store.update('count', participantStore.actions.increaseCount())
 
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={() => saveToDB(client)}>save to db</Button>
-      <Button onClick={() => loadFromDB(client)}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDB}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
     </Box>
@@ -448,24 +448,24 @@ const PlanInfoPanel: FC = (_type: string = 'plan'): JSX.Element => {
 }
 
 const PlanControlPanel: FC = (_type: string = 'plan'): JSX.Element => {
-  const increaseCount = () => planStore.update('count', planStore.actions.increaseCount())
+
+  const client = useApolloClient()
 
   const addNew = () => planStore.actions.addNew()
   const saveToDisk = () => planStore.actions.saveToDisk()
   const loadFromDisk = () => planStore.actions.loadFromDisk()
-  const loadFromDB = (client) => planStore.actions.loadFromDB(client)
-  const saveToDB = (client) => planStore.actions.saveToDB(client)
+  const loadFromDB = () => planStore.actions.loadFromDB(client)
+  const saveToDB = () => planStore.actions.saveToDB(client)
   const removeAll = () => planStore.actions.removeAll()
-
-  const client = useApolloClient()
+  const increaseCount = () => planStore.store.update('count', planStore.actions.increaseCount())
 
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={() => saveToDB(client)}>save to db</Button>
-      <Button onClick={() => loadFromDB(client)}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDB}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
     </Box>
@@ -497,24 +497,24 @@ const ThreeDInfoPanel: FC = (_type: string = 'threed'): JSX.Element => {
 }
 
 const ThreeDControlPanel: FC = (_type: string = 'threed'): JSX.Element => {
-  const increaseCount = () => threedStore.update('count', threedStore.actions.increaseCount())
+
+  const client = useApolloClient()
 
   const addNew = () => threedStore.actions.addNew()
   const saveToDisk = () => threedStore.actions.saveToDisk()
   const loadFromDisk = () => threedStore.actions.loadFromDisk()
-  const loadFromDB = (client) => threedStore.actions.loadFromDB(client)
-  const saveToDB = (client) => threedStore.actions.saveToDB(client)
+  const loadFromDB = () => threedStore.actions.loadFromDB(client)
+  const saveToDB = () => threedStore.actions.saveToDB(client)
   const removeAll = () => threedStore.actions.removeAll()
-
-  const client = useApolloClient()
+  const increaseCount = () => threedStore.store.update('count', threedStore.actions.increaseCount())
 
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={() => saveToDB(client)}>save to db</Button>
-      <Button onClick={() => loadFromDB(client)}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDB}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
     </Box>
@@ -546,24 +546,24 @@ const FileInfoPanel: FC = (_type: string = 'file'): JSX.Element => {
 }
 
 const FileControlPanel: FC = (_type: string = 'file'): JSX.Element => {
-  const increaseCount = () => fileStore.update('count', fileStore.actions.increaseCount())
+
+  const client = useApolloClient()
 
   const addNew = () => fileStore.actions.addNew()
   const saveToDisk = () => fileStore.actions.saveToDisk()
   const loadFromDisk = () => fileStore.actions.loadFromDisk()
-  const loadFromDB = (client) => fileStore.actions.loadFromDB(client)
-  const saveToDB = (client) => fileStore.actions.saveToDB(client)
+  const loadFromDB = () => fileStore.actions.loadFromDB(client)
+  const saveToDB = () => fileStore.actions.saveToDB(client)
   const removeAll = () => fileStore.actions.removeAll()
-
-  const client = useApolloClient()
+  const increaseCount = () => fileStore.store.update('count', fileStore.actions.increaseCount())
 
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={() => saveToDB(client)}>save to db</Button>
-      <Button onClick={() => loadFromDB(client)}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDB}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>+</Button> */}
     </Box>
@@ -610,8 +610,8 @@ const SceneInfoPanel: FC = (_type: string = 'scene'): JSX.Element => {
 }
 
 const SceneControlPanel: FC = (_type: string = 'scene'): JSX.Element => {
-  const increaseCount = () => sceneStore.store.update('count', sceneStore.actions.increaseCount())
-  const decreaseCount = () => sceneStore.store.update('count', sceneStore.actions.decreaseCount())
+
+  const client = useApolloClient()
 
   const loadToProject = () => {
     const scene = sceneStore.actions.loadToProject()
@@ -623,20 +623,20 @@ const SceneControlPanel: FC = (_type: string = 'scene'): JSX.Element => {
   const addNew = () => sceneStore.actions.addNew()
   const saveToDisk = () => sceneStore.actions.saveToDisk()
   const loadFromDisk = () => sceneStore.actions.loadFromDisk()
-  const loadFromDB = (client) => sceneStore.actions.loadFromDB(client)
-  const saveToDB = (client) => sceneStore.actions.saveToDB(client)
+  const loadFromDB = () => sceneStore.actions.loadFromDB(client)
+  const saveToDB = () => sceneStore.actions.saveToDB(client)
   const removeAll = () => sceneStore.actions.removeAll()
   const getState = () => sceneStore.actions.getState()
-
-  const client = useApolloClient()
+  const increaseCount = () => sceneStore.store.update('count', sceneStore.actions.increaseCount())
+  const decreaseCount = () => sceneStore.store.update('count', sceneStore.actions.decreaseCount())
 
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={() => saveToDB(client)}>save to db</Button>
-      <Button onClick={() => loadFromDB(client)}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDB}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       <Button onClick={getState}>state</Button>
       <Button onClick={loadToProject}>load</Button>
@@ -671,24 +671,24 @@ const AllotmentInfoPanel: FC = (_type: string = 'allotment'): JSX.Element => {
 }
 
 const AllotmentControlPanel: FC = (_type: string = 'allotment'): JSX.Element => {
-  const increaseCount = () => allotmentStore.update('count', allotmentStore.actions.increaseCount())
+
+  const client = useApolloClient()
 
   const addNew = () => allotmentStore.actions.addNew()
   const saveToDisk = () => allotmentStore.actions.saveToDisk()
   const loadFromDisk = () => allotmentStore.actions.loadFromDisk()
-  const loadFromDB = (client) => allotmentStore.actions.loadFromDB(client)
-  const saveToDB = (client) => allotmentStore.actions.saveToDB(client)
+  const loadFromDB = () => allotmentStore.actions.loadFromDB(client)
+  const saveToDB = () => allotmentStore.actions.saveToDB(client)
   const removeAll = () => allotmentStore.actions.removeAll()
-
-  const client = useApolloClient()
+  const increaseCount = () => allotmentStore.store.update('count', allotmentStore.actions.increaseCount())
 
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={() => saveToDB(client)}>save to db</Button>
-      <Button onClick={() => loadFromDB(client)}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDB}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>add to count</Button> */}
     </Box>
@@ -720,24 +720,24 @@ const BedInfoPanel: FC = (_type: string = 'bed'): JSX.Element => {
 }
 
 const BedControlPanel: FC = (_type: string = 'bed'): JSX.Element => {
-  const increaseCount = () => bedStore.update('count', bedStore.actions.increaseCount())
+
+  const client = useApolloClient()
 
   const addNew = () => bedStore.actions.addNew()
   const saveToDisk = () => bedStore.actions.saveToDisk()
   const loadFromDisk = () => bedStore.actions.loadFromDisk()
-  const loadFromDB = (client) => bedStore.actions.loadFromDB(client)
-  const saveToDB = (client) => bedStore.actions.saveToDB(client)
+  const loadFromDB = () => bedStore.actions.loadFromDB(client)
+  const saveToDB = () => bedStore.actions.saveToDB(client)
   const removeAll = () => bedStore.actions.removeAll()
-
-  const client = useApolloClient()
+  const increaseCount = () => bedStore.store.update('count', bedStore.actions.increaseCount())
 
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={() => saveToDB(client)}>save to db</Button>
-      <Button onClick={() => loadFromDB(client)}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDB}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>add to count</Button> */}
     </Box>
@@ -769,24 +769,24 @@ const PlantInfoPanel: FC = (_type: string = 'plant'): JSX.Element => {
 }
 
 const PlantControlPanel: FC = (_type: string = 'plant'): JSX.Element => {
-  const increaseCount = () => plantStore.update('count', plantStore.actions.increaseCount())
+
+  const client = useApolloClient()
 
   const addNew = () => plantStore.actions.addNew()
   const saveToDisk = () => plantStore.actions.saveToDisk()
   const loadFromDisk = () => plantStore.actions.loadFromDisk()
-  const loadFromDB = (client) => plantStore.actions.loadFromDB(client)
-  const saveToDB = (client) => plantStore.actions.saveToDB(client)
+  const loadFromDB = () => plantStore.actions.loadFromDB(client)
+  const saveToDB = () => plantStore.actions.saveToDB(client)
   const removeAll = () => plantStore.actions.removeAll()
-
-  const client = useApolloClient()
+  const increaseCount = () => plantStore.store.update('count', plantStore.actions.increaseCount())
 
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={() => saveToDB(client)}>save to db</Button>
-      <Button onClick={() => loadFromDB(client)}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDB}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>add to count</Button> */}
     </Box>
@@ -818,24 +818,24 @@ const PlantingPlanInfoPanel: FC = (_type: string = 'planting_plan'): JSX.Element
 }
 
 const PlantingPlanControlPanel: FC = (_type: string = 'planting_plan'): JSX.Element => {
-  const increaseCount = () => plantingPlanStore.update('count', plantingPlanStore.actions.increaseCount())
+
+  const client = useApolloClient()
 
   const addNew = () => plantingPlanStore.actions.addNew()
   const saveToDisk = () => plantingPlanStore.actions.saveToDisk()
   const loadFromDisk = () => plantingPlanStore.actions.loadFromDisk()
-  const loadFromDB = (client) => plantingPlanStore.actions.loadFromDB(client)
-  const saveToDB = (client) => plantingPlanStore.actions.saveToDB(client)
+  const loadFromDB = () => plantingPlanStore.actions.loadFromDB(client)
+  const saveToDB = () => plantingPlanStore.actions.saveToDB(client)
   const removeAll = () => plantingPlanStore.actions.removeAll()
-
-  const client = useApolloClient()
+  const increaseCount = () => plantingPlanStore.store.update('count', plantingPlanStore.actions.increaseCount())
 
   return (
     <Box>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={() => saveToDB(client)}>save to db</Button>
-      <Button onClick={() => loadFromDB(client)}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDB}>load from db</Button>
       <Button onClick={removeAll}>remove all</Button>
       {/* <Button onClick={increaseCount}>add to count</Button> */}
     </Box>
@@ -845,15 +845,15 @@ const PlantingPlanControlPanel: FC = (_type: string = 'planting_plan'): JSX.Elem
 // ==========================================================
 // Bear (zustand)
 
-function BearInfoPanel() {
-  const bears = bearStore((state: any) => state.bears)
-  return <Box>{bears} bears around here ...</Box>
-}
+// function BearInfoPanel() {
+//   const bears = bearStore((state: any) => state.bears)
+//   return <Box>{bears} bears around here ...</Box>
+// }
 
-function BearControlPanel() {
-  const increaseBearCount = bearActions((state: any) => state.increaseBearCount)
-  return <Button onClick={increaseBearCount}>add a bear</Button>
-}
+// function BearControlPanel() {
+//   const increaseBearCount = bearActions((state: any) => state.increaseBearCount)
+//   return <Button onClick={increaseBearCount}>add a bear</Button>
+// }
 
 // ==========================================================
 // ==========================================================
