@@ -1,6 +1,6 @@
 # [🥕 ThreeD Garden: 3D Object Environment using NextJS React TypeScript Web3 ThreeJS R3Fiber](https://github.com/marty-mcgee/threed-garden/)
 
-React 18 + TypeScript 5 + Three.JS app using MUI 5 on NextJS 14+, Zustand + Valtio, Apollo Client v3, GraphQL, WordPress REST API, for ThreeD web3 development.. for developing Three-Dimensional JavaScript Objects, Components, + ETH apps (dapps).. a part of the threed.ai code family.
+React 18 + TypeScript 5 + Three.JS app using MUI 5 on NextJS 14+, Zustand + Valtio, Apollo Client, GraphQL, WordPress REST API, for ThreeD web3 development.. for developing Three-Dimensional JavaScript Objects, Components, + ETH apps (dapps).
 
 ## Live Demo
 
