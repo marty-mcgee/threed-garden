@@ -336,7 +336,7 @@ const ProjectInfoPanel: FC = (_type: string = 'project'): JSX.Element => {
   const projectDB = projectStore.store.useStore('oneDB')
 
   return (
-    <Box>
+    <Box sx={{ px: 2 }}>
       <Typography>{projectCount} projects around here ...</Typography>
       <Typography>projects: {projects.length}</Typography>
       <Typography>projectsDB: {projectsDB.length}</Typography>
@@ -392,7 +392,7 @@ const ParticipantInfoPanel: FC = (_type: string = 'participant'): JSX.Element =>
   const participantDB = participantStore.store.useStore('oneDB')
 
   return (
-    <Box>
+    <Box sx={{ px: 2 }}>
       <Typography>{participantCount} participants around here ...</Typography>
       <Typography>participants: {participants.length}</Typography>
       <Typography>participantsDB: {participantsDB.length}</Typography>
@@ -443,7 +443,7 @@ const PlanInfoPanel: FC = (_type: string = 'plan'): JSX.Element => {
   const planDB = planStore.store.useStore('oneDB')
 
   return (
-    <Box>
+    <Box sx={{ px: 2 }}>
       <Typography>{planCount} plans around here ...</Typography>
       <Typography>plans: {plans.length}</Typography>
       <Typography>plansDB: {plansDB.length}</Typography>
@@ -494,7 +494,7 @@ const ThreeDInfoPanel: FC = (_type: string = 'threed'): JSX.Element => {
   const threedDB = threedStore.store.useStore('oneDB')
 
   return (
-    <Box>
+    <Box sx={{ px: 2 }}>
       <Typography>{threedCount} threeds around here ...</Typography>
       <Typography>threeds: {threeds.length}</Typography>
       <Typography>threedsDB: {threedsDB.length}</Typography>
@@ -545,7 +545,7 @@ const FileInfoPanel: FC = (_type: string = 'file'): JSX.Element => {
   const fileDB = fileStore.store.useStore('oneDB')
 
   return (
-    <Box>
+    <Box sx={{ px: 2 }}>
       <Typography>{fileCount} files around here ...</Typography>
       <Typography>files: {files.length}</Typography>
       <Typography>filesDB: {filesDB.length}</Typography>
@@ -600,7 +600,7 @@ const SceneInfoPanel: FC = (_type: string = 'scene'): JSX.Element => {
   const sceneDB = sceneStore.store.useStore('oneDB')
 
   return (
-    <Box>
+    <Box sx={{ px: 2 }}>
       {/* <Typography variant='h6'>_type: {JSON.stringify(_type)}</Typography> */}
       {/* <hr /> */}
       <Typography>count: {sceneCount}</Typography>
@@ -667,7 +667,7 @@ const AllotmentInfoPanel: FC = (_type: string = 'allotment'): JSX.Element => {
   const allotmentDB = allotmentStore.store.useStore('oneDB')
 
   return (
-    <Box>
+    <Box sx={{ px: 2 }}>
       <Typography>{allotmentCount} allotments around here ...</Typography>
       <Typography>allotments: {allotments.length}</Typography>
       <Typography>allotmentsDB: {allotmentsDB.length}</Typography>
@@ -718,7 +718,7 @@ const BedInfoPanel: FC = (_type: string = 'bed'): JSX.Element => {
   const bedDB = bedStore.store.useStore('oneDB')
 
   return (
-    <Box>
+    <Box sx={{ px: 2 }}>
       <Typography>{bedCount} beds around here ...</Typography>
       <Typography>beds: {beds.length}</Typography>
       <Typography>bedsDB: {bedsDB.length}</Typography>
@@ -769,7 +769,7 @@ const PlantInfoPanel: FC = (_type: string = 'plant'): JSX.Element => {
   const plantDB = plantStore.store.useStore('oneDB')
 
   return (
-    <Box>
+    <Box sx={{ px: 2 }}>
       <Typography>{plantCount} plants around here ...</Typography>
       <Typography>plants: {plants.length}</Typography>
       <Typography>plantsDB: {plantsDB.length}</Typography>
@@ -820,7 +820,7 @@ const PlantingPlanInfoPanel: FC = (_type: string = 'planting_plan'): JSX.Element
   const plantingPlanDB = plantingPlanStore.store.useStore('oneDB')
 
   return (
-    <Box>
+    <Box sx={{ px: 2 }}>
       <Typography>{plantingPlanCount} plantingPlans around here ...</Typography>
       <Typography>plantingPlans: {plantingPlans.length}</Typography>
       <Typography>plantingPlansDB: {plantingPlansDB.length}</Typography>
@@ -3661,60 +3661,64 @@ const ThreeDGarden = (): JSX.Element => {
               <Tab label='Tests' {...tabProps(9)} />
             </Tabs>
           </Box>
-          <MDTabPanel value={tabInfoControl} index={0}>
-            <ProjectControlPanel />
-            <ProjectInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={1}>
-            <PlanControlPanel />
-            <PlanInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={2}>
-            <FileControlPanel />
-            <FileInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={3}>
-            <ThreeDControlPanel />
-            <ThreeDInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={4}>
-            <SceneControlPanel />
-            <SceneInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={5}>
-            <AllotmentControlPanel />
-            <AllotmentInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={6}>
-            <BedControlPanel />
-            <BedInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={7}>
-            <PlantControlPanel />
-            <PlantInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={8}>
-            <PlantingPlanControlPanel />
-            <PlantingPlanInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={9}>
-            Testing Panel
-            {/* <CharacterControlPanel /> */}
-            {/* <CharacterInfoPanel /> */}
-            {/* <hr /> */}
-            {/* <GardenerControlPanel /> */}
-            {/* <GardenerInfoPanel /> */}
-            {/* <hr /> */}
-            {/* <ChickenControlPanel /> */}
-            {/* <ChickenInfoPanel /> */}
-            {/* <hr /> */}
-            {/* <BearControlPanel /> */}
-            {/* <BearInfoPanel /> */}
-            {/* <hr /> */}
-            {/* <FurnitureControlPanel /> */}
-            {/* <FurnitureInfoPanel /> */}
-            {/* <hr /> */}
-          </MDTabPanel>
+          <Box sx={{ p: 2, borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
+            <MDTabPanel value={tabInfoControl} index={0}>
+              <ProjectControlPanel />
+              <ProjectInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={1}>
+              <PlanControlPanel />
+              <PlanInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={2}>
+              <FileControlPanel />
+              <FileInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={3}>
+              <ThreeDControlPanel />
+              <ThreeDInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={4}>
+              <SceneControlPanel />
+              <SceneInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={5}>
+              <AllotmentControlPanel />
+              <AllotmentInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={6}>
+              <BedControlPanel />
+              <BedInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={7}>
+              <PlantControlPanel />
+              <PlantInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={8}>
+              <PlantingPlanControlPanel />
+              <PlantingPlanInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={9}>
+              <Box sx={{ p: 2}}>
+                <>Testing Panel</>
+                {/* <CharacterControlPanel /> */}
+                {/* <CharacterInfoPanel /> */}
+                {/* <hr /> */}
+                {/* <GardenerControlPanel /> */}
+                {/* <GardenerInfoPanel /> */}
+                {/* <hr /> */}
+                {/* <ChickenControlPanel /> */}
+                {/* <ChickenInfoPanel /> */}
+                {/* <hr /> */}
+                {/* <BearControlPanel /> */}
+                {/* <BearInfoPanel /> */}
+                {/* <hr /> */}
+                {/* <FurnitureControlPanel /> */}
+                {/* <FurnitureInfoPanel /> */}
+                {/* <hr /> */}
+              </Box>
+            </MDTabPanel>
+          </Box>
         </div>
 
         <ModalAbout />
