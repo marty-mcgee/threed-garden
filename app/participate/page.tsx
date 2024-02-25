@@ -86,10 +86,8 @@ const ParticipatePage: TNextPageWithProps = async () => {
         <Card>
           <CardHeader title='Public Content' />
           <CardContent>
-            <Typography sx={{ mb: 4 }}>No user role 'ability' is required to view this card</Typography>
             <Typography sx={{ color: 'primary.main' }}>This card is visible to both 'public users' and 'authorized users'</Typography>
             <Typography sx={{ color: 'secondary.main' }}>
-              {/* <SessionData session={session} /> */}
               {session?.user?.name}<br/>
               {session?.user?.email}<br/>
               {session?.user?.image}<br/>
@@ -107,10 +105,8 @@ const ParticipatePage: TNextPageWithProps = async () => {
           <Card>
             <CardHeader title='Restricted/User Content' />
             <CardContent>
-              <Typography sx={{ mb: 4 }}>User with "analytics: read" ability can view this card</Typography>
-              <Typography sx={{ color: 'primary.main' }}>This card is visible to 'authorized users' only</Typography>
-              <Typography sx={{ color: 'info.main' }}>
-                {/* <SessionData session={session} /> */}
+              <Typography sx={{ color: 'warning.main' }}>This card is visible to 'authorized users' only</Typography>
+              <Typography sx={{ color: 'secondary.main' }}>
                 {session?.user?.name}<br/>
                 {session?.user?.email}<br/>
                 {session?.user?.image}<br/>

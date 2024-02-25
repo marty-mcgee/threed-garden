@@ -360,16 +360,18 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
   const saveToDB = () => projectStore.actions.saveToDB(client)
   const removeAll = () => projectStore.actions.removeAll()
   const increaseCount = () => projectStore.store.update('count', projectStore.actions.increaseCount())
+  const decreaseCount = () => projectStore.store.update('count', projectStore.actions.decreaseCount())
 
   return (
     <Box>
-      <Button onClick={addNew}>add new</Button>
-      <Button onClick={saveToDisk}>save to disk</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={saveToDB}>save to db</Button>
       <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={saveToDisk}>save to disk</Button>
+      <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
+      <Button onClick={decreaseCount}>-</Button>
     </Box>
   )
 }
@@ -386,7 +388,7 @@ const ParticipantInfoPanel: FC = (_type: string = 'participant'): JSX.Element =>
 
   return (
     <Box>
-      {/* <Typography>{participantCount} participants around here ...</Typography> */}
+      <Typography>{participantCount} participants around here ...</Typography>
       <Typography>participants: {participants.length}</Typography>
       <Typography>participantsDB: {participantsDB.length}</Typography>
       <Typography>participant._id: {participant._id}</Typography>
@@ -409,16 +411,18 @@ const ParticipantControlPanel: FC = (_type: string = 'participant'): JSX.Element
   const saveToDB = () => participantStore.actions.saveToDB(client)
   const removeAll = () => participantStore.actions.removeAll()
   const increaseCount = () => participantStore.store.update('count', participantStore.actions.increaseCount())
+  const decreaseCount = () => participantStore.store.update('count', participantStore.actions.decreaseCount())
 
   return (
     <Box>
-      <Button onClick={addNew}>add new</Button>
-      <Button onClick={saveToDisk}>save to disk</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={saveToDB}>save to db</Button>
       <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={saveToDisk}>save to disk</Button>
+      <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
+      <Button onClick={decreaseCount}>-</Button>
     </Box>
   )
 }
@@ -435,7 +439,7 @@ const PlanInfoPanel: FC = (_type: string = 'plan'): JSX.Element => {
 
   return (
     <Box>
-      {/* <Typography>{planCount} plans around here ...</Typography> */}
+      <Typography>{planCount} plans around here ...</Typography>
       <Typography>plans: {plans.length}</Typography>
       <Typography>plansDB: {plansDB.length}</Typography>
       <Typography>plan._id: {plan._id}</Typography>
@@ -458,16 +462,18 @@ const PlanControlPanel: FC = (_type: string = 'plan'): JSX.Element => {
   const saveToDB = () => planStore.actions.saveToDB(client)
   const removeAll = () => planStore.actions.removeAll()
   const increaseCount = () => planStore.store.update('count', planStore.actions.increaseCount())
+  const decreaseCount = () => planStore.store.update('count', planStore.actions.decreaseCount())
 
   return (
     <Box>
-      <Button onClick={addNew}>add new</Button>
-      <Button onClick={saveToDisk}>save to disk</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={saveToDB}>save to db</Button>
       <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={saveToDisk}>save to disk</Button>
+      <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
+      <Button onClick={decreaseCount}>-</Button>
     </Box>
   )
 }
@@ -484,7 +490,7 @@ const ThreeDInfoPanel: FC = (_type: string = 'threed'): JSX.Element => {
 
   return (
     <Box>
-      {/* <Typography>{threedCount} threeds around here ...</Typography> */}
+      <Typography>{threedCount} threeds around here ...</Typography>
       <Typography>threeds: {threeds.length}</Typography>
       <Typography>threedsDB: {threedsDB.length}</Typography>
       <Typography>threed._id: {threed._id}</Typography>
@@ -507,16 +513,18 @@ const ThreeDControlPanel: FC = (_type: string = 'threed'): JSX.Element => {
   const saveToDB = () => threedStore.actions.saveToDB(client)
   const removeAll = () => threedStore.actions.removeAll()
   const increaseCount = () => threedStore.store.update('count', threedStore.actions.increaseCount())
+  const decreaseCount = () => threedStore.store.update('count', threedStore.actions.decreaseCount())
 
   return (
     <Box>
-      <Button onClick={addNew}>add new</Button>
-      <Button onClick={saveToDisk}>save to disk</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={saveToDB}>save to db</Button>
       <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={saveToDisk}>save to disk</Button>
+      <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
+      <Button onClick={decreaseCount}>-</Button>
     </Box>
   )
 }
@@ -533,7 +541,7 @@ const FileInfoPanel: FC = (_type: string = 'file'): JSX.Element => {
 
   return (
     <Box>
-      {/* <Typography>{fileCount} files around here ...</Typography> */}
+      <Typography>{fileCount} files around here ...</Typography>
       <Typography>files: {files.length}</Typography>
       <Typography>filesDB: {filesDB.length}</Typography>
       <Typography>file._id: {file._id}</Typography>
@@ -556,16 +564,18 @@ const FileControlPanel: FC = (_type: string = 'file'): JSX.Element => {
   const saveToDB = () => fileStore.actions.saveToDB(client)
   const removeAll = () => fileStore.actions.removeAll()
   const increaseCount = () => fileStore.store.update('count', fileStore.actions.increaseCount())
+  const decreaseCount = () => fileStore.store.update('count', fileStore.actions.decreaseCount())
 
   return (
     <Box>
-      <Button onClick={addNew}>add new</Button>
-      <Button onClick={saveToDisk}>save to disk</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={saveToDB}>save to db</Button>
       <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={saveToDisk}>save to disk</Button>
+      <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
+      <Button onClick={decreaseCount}>-</Button>
     </Box>
   )
 }
@@ -632,16 +642,17 @@ const SceneControlPanel: FC = (_type: string = 'scene'): JSX.Element => {
 
   return (
     <Box>
-      <Button onClick={addNew}>add new</Button>
-      <Button onClick={saveToDisk}>save to disk</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={saveToDB}>save to db</Button>
       <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={saveToDisk}>save to disk</Button>
+      <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll}>remove all</Button>
-      <Button onClick={getState}>state</Button>
-      <Button onClick={loadToProject}>load</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
+
+      <Button onClick={getState}>state</Button>
+      <Button onClick={loadToProject}>load</Button>
     </Box>
   )
 }
@@ -658,7 +669,7 @@ const AllotmentInfoPanel: FC = (_type: string = 'allotment'): JSX.Element => {
 
   return (
     <Box>
-      {/* <Typography>{allotmentCount} allotments around here ...</Typography> */}
+      <Typography>{allotmentCount} allotments around here ...</Typography>
       <Typography>allotments: {allotments.length}</Typography>
       <Typography>allotmentsDB: {allotmentsDB.length}</Typography>
       <Typography>allotment._id: {allotment._id}</Typography>
@@ -681,16 +692,18 @@ const AllotmentControlPanel: FC = (_type: string = 'allotment'): JSX.Element => 
   const saveToDB = () => allotmentStore.actions.saveToDB(client)
   const removeAll = () => allotmentStore.actions.removeAll()
   const increaseCount = () => allotmentStore.store.update('count', allotmentStore.actions.increaseCount())
+  const decreaseCount = () => allotmentStore.store.update('count', allotmentStore.actions.decreaseCount())
 
   return (
     <Box>
-      <Button onClick={addNew}>add new</Button>
-      <Button onClick={saveToDisk}>save to disk</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={saveToDB}>save to db</Button>
       <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={saveToDisk}>save to disk</Button>
+      <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll}>remove all</Button>
-      {/* <Button onClick={increaseCount}>add to count</Button> */}
+      <Button onClick={increaseCount}>+</Button>
+      <Button onClick={decreaseCount}>-</Button>
     </Box>
   )
 }
@@ -707,7 +720,7 @@ const BedInfoPanel: FC = (_type: string = 'bed'): JSX.Element => {
 
   return (
     <Box>
-      {/* <Typography>{bedCount} beds around here ...</Typography> */}
+      <Typography>{bedCount} beds around here ...</Typography>
       <Typography>beds: {beds.length}</Typography>
       <Typography>bedsDB: {bedsDB.length}</Typography>
       <Typography>bed._id: {bed._id}</Typography>
@@ -730,16 +743,18 @@ const BedControlPanel: FC = (_type: string = 'bed'): JSX.Element => {
   const saveToDB = () => bedStore.actions.saveToDB(client)
   const removeAll = () => bedStore.actions.removeAll()
   const increaseCount = () => bedStore.store.update('count', bedStore.actions.increaseCount())
+  const decreaseCount = () => bedStore.store.update('count', bedStore.actions.decreaseCount())
 
   return (
     <Box>
-      <Button onClick={addNew}>add new</Button>
-      <Button onClick={saveToDisk}>save to disk</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={saveToDB}>save to db</Button>
       <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={saveToDisk}>save to disk</Button>
+      <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll}>remove all</Button>
-      {/* <Button onClick={increaseCount}>add to count</Button> */}
+      <Button onClick={increaseCount}>+</Button>
+      <Button onClick={decreaseCount}>-</Button>
     </Box>
   )
 }
@@ -756,7 +771,7 @@ const PlantInfoPanel: FC = (_type: string = 'plant'): JSX.Element => {
 
   return (
     <Box>
-      {/* <Typography>{plantCount} plants around here ...</Typography> */}
+      <Typography>{plantCount} plants around here ...</Typography>
       <Typography>plants: {plants.length}</Typography>
       <Typography>plantsDB: {plantsDB.length}</Typography>
       <Typography>plant._id: {plant._id}</Typography>
@@ -779,16 +794,18 @@ const PlantControlPanel: FC = (_type: string = 'plant'): JSX.Element => {
   const saveToDB = () => plantStore.actions.saveToDB(client)
   const removeAll = () => plantStore.actions.removeAll()
   const increaseCount = () => plantStore.store.update('count', plantStore.actions.increaseCount())
+  const decreaseCount = () => plantStore.store.update('count', plantStore.actions.decreaseCount())
 
   return (
     <Box>
-      <Button onClick={addNew}>add new</Button>
-      <Button onClick={saveToDisk}>save to disk</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={saveToDB}>save to db</Button>
       <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={saveToDisk}>save to disk</Button>
+      <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll}>remove all</Button>
-      {/* <Button onClick={increaseCount}>add to count</Button> */}
+      <Button onClick={increaseCount}>+</Button>
+      <Button onClick={decreaseCount}>-</Button>
     </Box>
   )
 }
@@ -805,7 +822,7 @@ const PlantingPlanInfoPanel: FC = (_type: string = 'planting_plan'): JSX.Element
 
   return (
     <Box>
-      {/* <Typography>{plantingPlanCount} plantingPlans around here ...</Typography> */}
+      <Typography>{plantingPlanCount} plantingPlans around here ...</Typography>
       <Typography>plantingPlans: {plantingPlans.length}</Typography>
       <Typography>plantingPlansDB: {plantingPlansDB.length}</Typography>
       <Typography>plantingPlan._id: {plantingPlan._id}</Typography>
@@ -828,16 +845,18 @@ const PlantingPlanControlPanel: FC = (_type: string = 'planting_plan'): JSX.Elem
   const saveToDB = () => plantingPlanStore.actions.saveToDB(client)
   const removeAll = () => plantingPlanStore.actions.removeAll()
   const increaseCount = () => plantingPlanStore.store.update('count', plantingPlanStore.actions.increaseCount())
+  const decreaseCount = () => plantingPlanStore.store.update('count', plantingPlanStore.actions.decreaseCount())
 
   return (
     <Box>
-      <Button onClick={addNew}>add new</Button>
-      <Button onClick={saveToDisk}>save to disk</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
-      <Button onClick={saveToDB}>save to db</Button>
       <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={saveToDisk}>save to disk</Button>
+      <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll}>remove all</Button>
-      {/* <Button onClick={increaseCount}>add to count</Button> */}
+      <Button onClick={increaseCount}>+</Button>
+      <Button onClick={decreaseCount}>-</Button>
     </Box>
   )
 }
@@ -3526,37 +3545,10 @@ const ThreeDGarden = (): JSX.Element => {
     word: word,
   }
   // USE STORE
-  const getStore = () => data.store.store.useStore('allDB')
-  // GET DATA TO USE
-  // const dataToUse = {}
-  // data.store.dataToUse = getStore()
-  if ( 1 === 0 || debug ) {
-    const dataFromDB = data.store.actions.loadFromDB(data.client)
-  }
-  // if (dataFromDB) {
-  //   console.debug('%cSTORE: dataFromDB', ccm.red, dataFromDB)
-  // }
-  // const dataToUse = dataFromDB
-  const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDisk()
-
-  /* // ==========================================================
-  // // ** Get Data Stream[s], starting with Project[s]
-  // // const { data, loading, error } = useSuspenseQuery(queries.GetProjects)
-  // const { data, loading, error } = useQuery(queries.GetProjects)
-  // if (loading) {
-  //   // console.debug('%cQUERY: GetProjects loading', ccm.yellow, data, loading, error)
-  //   // console.debug('%cUPDATE STORES(?)...', ccm.orange)
-  // }
-  // if (error) {
-  //   console.debug('%cQUERY: GetProjects error', ccm.red, data, loading, error)
-  //   // console.debug('%cUPDATE STORES(?)...', ccm.orange)
-  // }
-  // if (data) {
-  //   console.debug('%cQUERY: GetProjects data', ccm.orange, data, loading, error)
-  //   console.debug('%cUPDATE STORES(?)...', ccm.orange)
-  // }
-  // // console.clear()
-  */
+  // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDisk()
+  // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDB()
+  // const loadProjectFromChosenDataSource = () => data.store.store.useStore('allDB')
+  const loadProjectFromChosenDataSource = data.store.store.useStore('allDB')
 
   // ==========================================================
   // Tabs
@@ -3575,7 +3567,7 @@ const ThreeDGarden = (): JSX.Element => {
     // ==========================================================
     // begin here ?? yes
     // bootManager()...
-    loadProjectFromChosenDataSource()
+    // loadProjectFromChosenDataSource()
 
     // ==========================================================
     // LOAD HISTORIES FROM DISK ??
@@ -3587,24 +3579,24 @@ const ThreeDGarden = (): JSX.Element => {
     // data.store.actions.loadFromDB(data.client)
 
     // ** SCENE HISTORY
-    // sceneStore.store.actions.loadFromDisk()
-    // sceneStore.store.actions.loadFromDB(data.client)
+    // sceneStore.actions.loadFromDisk()
+    // sceneStore.actions.loadFromDB(data.client)
 
     // ** PARTICIPANT HISTORY
-    // participantStore.store.actions.loadFromDisk()
-    // participantStore.store.actions.loadFromDB(data.client)
+    // participantStore.actions.loadFromDisk()
+    // participantStore.actions.loadFromDB(data.client)
 
     // ** PLAN HISTORY
-    // planStore.store.actions.loadFromDisk()
-    // planStore.store.actions.loadFromDB(data.client)
+    // planStore.actions.loadFromDisk()
+    // planStore.actions.loadFromDB(data.client)
 
     // ** THREED HISTORY
-    // threedStore.store.actions.loadFromDisk()
-    // threedStore.store.actions.loadFromDB(data.client)
+    // threedStore.actions.loadFromDisk()
+    // threedStore.actions.loadFromDB(data.client)
 
     // ** FILE HISTORY
-    // fileStore.store.actions.loadFromDisk()
-    // fileStore.store.actions.loadFromDB(data.client)
+    // fileStore.actions.loadFromDisk()
+    // fileStore.actions.loadFromDB(data.client)
 
     // ==========================================================
     // set open tab
