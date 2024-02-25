@@ -480,7 +480,7 @@ function nounStore(this: INounStore, _type = 'noun') {
     },
 
     // load 'this' noun into React Three Fiber view
-    loadToScene: (noun: Object, _type: string, _id: string, _r3fCanvas: string) => {
+    loadToProject: (noun: Object, _type: string, _id: string, _r3fCanvas: string) => {
       try {
         const nounAlt = this.store.get('one')
         console.debug(`%cload {noun}`, ccm.orange, noun)
