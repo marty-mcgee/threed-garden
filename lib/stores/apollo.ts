@@ -120,7 +120,6 @@ function nounStore(this: INounStore, _type = 'noun') {
     _id: newUUID(),
     _ts: new Date().toISOString(),
     _type: this._type,
-    count: 0, // example counter (for fun/learning)
     all: [], // all of this nouns historical + current records (all scenes, all projects)
     one: new (noun as any)(this._type), // {}, // the current noun, aka 'this one noun'
 
@@ -129,6 +128,7 @@ function nounStore(this: INounStore, _type = 'noun') {
     history: [], // from local storage
 
     // track payloads from db
+    count: 0, // example counter (for fun/learning)
     countDB: 0, // example counter (for fun/learning)
     allDB: [], // from db (mysql wordpress via graphql)
     oneDB: {}, // pre-this noun, ready to be mapped to 'this' noun
@@ -164,9 +164,9 @@ function nounStore(this: INounStore, _type = 'noun') {
       localStorage.removeItem(this._storageItem)
       this.store.update('all', [])
       this.store.update('one', {})
-      this.store.update('count', 0)
       this.store.update('allDB', [])
       this.store.update('oneDB', {})
+      this.store.update('count', 0)
       this.store.update('countDB', 0)
       console.debug(`%cremoveAll [${this._type}]`, ccm.red, true)
     },
@@ -264,7 +264,7 @@ function nounStore(this: INounStore, _type = 'noun') {
           const { payload } = query
           console.debug(`%cloadFromDisk [${this._type}] QUERY.PAYLOAD?`, ccm.blue, payload)
 
-          if (payload.length) {
+          if (payload) {
             // console.debug(`%cloadFromDisk [${this._type}]`, ccm.blue, true, payload)
 
             this.store.update('all', [...payload]) // payload should have .data{}
@@ -370,7 +370,7 @@ function nounStore(this: INounStore, _type = 'noun') {
           query: QUERY,
           variables: { parameters },
         })
-        console.debug(`%cloadFromDB [${this._type}]: QUERY RETURNED`, ccm.blue, query)
+        // console.debug(`%cloadFromDB [${this._type}]: QUERY RETURNED`, ccm.blue, query)
 
         const { data, loading, error } = query
         // console.debug(`%cloadFromDB [${this._type}]: DATA RETURNED`, data, loading, error)
@@ -426,12 +426,12 @@ function nounStore(this: INounStore, _type = 'noun') {
               one.data = node
               return one
             })
-            console.debug(`%cloadFromDB [${this._type}]`, ccm.blue, all)
+            // console.debug(`%cloadFromDB [${this._type}]`, ccm.blue, all)
 
             // set state from db
             this.store.update('all', [...all]) // nodes
             const nouns = this.store.get('all')
-            console.debug(`%cloadFromDB [${this._type}] (after)`, ccm.blue, nouns)
+            console.debug(`%cloadFromDB [${this._type}] (all)`, ccm.blue, nouns)
 
             this.store.update('oneDB', nouns[nouns.length - 1]) // node (use last one)
             const nounDB = this.store.get('oneDB')
@@ -458,23 +458,23 @@ function nounStore(this: INounStore, _type = 'noun') {
             console.debug(`%cloadFromDB [${this._type}] {one} (after)`, ccm.orange, this.store.get('one'))
 
             this.store.update('countDB', this.store.get('all').length)
-            console.debug(`%cloadFromDB countDB`, ccm.orange, this.store.get('countDB'))
+            // console.debug(`%cloadFromDB countDB`, ccm.orange, this.store.get('countDB'))
             console.debug(`%c====================================`, ccm.blue)
 
-            // save to disk
+            // save to disk ?? yes
             this.actions.saveToDisk()
 
             return true
           } else {
-            // console.debug(`%cloadFromDB [${this._type}]`, ccm.blue, data)
+            console.debug(`%cloadFromDB [${this._type}] NO PAYLOAD`, ccm.red, data)
             return false
           }
         }
 
-        console.debug(`%cloadFromDB [${this._type}]: OTHER ERROR`, ccm.blue, data)
+        console.debug(`%cloadFromDB [${this._type}]: OTHER ERROR`, ccm.red, data)
         return false
       } catch (err) {
-        console.debug(`%cloadFromDB [${this._type}]: err`, ccm.blue, err)
+        console.debug(`%cloadFromDB [${this._type}]: ERR`, ccm.red, err)
         return false
       }
     },

@@ -361,6 +361,8 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
   const removeAll = () => projectStore.actions.removeAll()
   const increaseCount = () => projectStore.store.update('count', projectStore.actions.increaseCount())
   const decreaseCount = () => projectStore.store.update('count', projectStore.actions.decreaseCount())
+  const getState = () => projectStore.actions.getState()
+  const loadToProject = () => projectStore.actions.loadToProject()
 
   return (
     <Box>
@@ -372,6 +374,9 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
       <Button onClick={removeAll}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
+      {/*  */}
+      <Button onClick={getState}>state</Button>
+      <Button onClick={loadToProject}>load</Button>
     </Box>
   )
 }
@@ -596,8 +601,8 @@ const SceneInfoPanel: FC = (_type: string = 'scene'): JSX.Element => {
 
   return (
     <Box>
-      <Typography variant='h6'>_type: {JSON.stringify(_type)}</Typography>
-      <hr />
+      {/* <Typography variant='h6'>_type: {JSON.stringify(_type)}</Typography> */}
+      {/* <hr /> */}
       <Typography>count: {sceneCount}</Typography>
       <Typography>countDB: {sceneCountDB}</Typography>
       <hr />
@@ -623,22 +628,16 @@ const SceneControlPanel: FC = (_type: string = 'scene'): JSX.Element => {
 
   const client = useApolloClient()
 
-  const loadToProject = () => {
-    const scene = sceneStore.actions.loadToProject()
-    console.debug('%cSceneControlPanel: loadToProject {scene}', ccm.orange, scene)
-    console.debug(`%c====================================`, ccm.black)
-    // return scene // ???
-    return true
-  }
   const addNew = () => sceneStore.actions.addNew()
   const saveToDisk = () => sceneStore.actions.saveToDisk()
   const loadFromDisk = () => sceneStore.actions.loadFromDisk()
   const loadFromDB = () => sceneStore.actions.loadFromDB(client)
   const saveToDB = () => sceneStore.actions.saveToDB(client)
   const removeAll = () => sceneStore.actions.removeAll()
-  const getState = () => sceneStore.actions.getState()
   const increaseCount = () => sceneStore.store.update('count', sceneStore.actions.increaseCount())
   const decreaseCount = () => sceneStore.store.update('count', sceneStore.actions.decreaseCount())
+  const getState = () => sceneStore.actions.getState()
+  const loadToProject = () => sceneStore.actions.loadToProject()
 
   return (
     <Box>
@@ -650,7 +649,7 @@ const SceneControlPanel: FC = (_type: string = 'scene'): JSX.Element => {
       <Button onClick={removeAll}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
-
+      {/*  */}
       <Button onClick={getState}>state</Button>
       <Button onClick={loadToProject}>load</Button>
     </Box>
