@@ -1,7 +1,7 @@
 {
   "name": "threed-garden",
   "version": "0.15.0-beta.27",
-  "description": "React 18, TypeScript 5, Three.js app using MUI 5 on Next.js 14, Apollo Client, GraphQL, WordPress REST API, for ThreeD web3 development.. for developing Three-Dimensional JavaScript Objects, Components, + ETH apps (dapps).. a part of the threed.ai code family.",
+  "description": "React 18, TypeScript 5, Three.js app using MUI 5 on Next.js 14, Apollo Client, GraphQL, WordPress REST API, for ThreeD web3 development.. for developing Three-Dimensional JavaScript Objects, Components, ETH apps (dapps).",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
   "repository": {
