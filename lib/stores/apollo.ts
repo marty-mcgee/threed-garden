@@ -530,14 +530,19 @@ function nounStore(this: INounStore, _type = 'noun') {
     },
 
     // load 'this' noun into React Three Fiber view
-    loadToProject: (noun: Object, _type: string, _id: string, _r3fCanvas: string) => {
+    loadToCanvas: (noun: Object, _type: string, _id: string, _r3fCanvas: string) => {
       try {
-        const nounAlt = this.store.get('one')
+        const loadThisJSObjectToThreeDCanvas = this.store.get('one')
         console.debug(`%cload {noun}`, ccm.orange, noun)
-        console.debug(`%cload {nounAlt}`, ccm.orange, nounAlt)
+        console.debug(`%cload {loadThisJSObjectToThreeDCanvas}`, ccm.orange, loadThisJSObjectToThreeDCanvas)
 
         if (noun) {
           return true // <div>...noun as r3f component...</div>
+        }
+        if (loadThisJSObjectToThreeDCanvas) {
+          // send 'this' to '_r3fCanvas'
+          console.debug('_r3fCanvas to receive JS Object: loadThisJSObjectToThreeDCanvas')
+          return true // <>true</>
         }
 
         return false
