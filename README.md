@@ -23,11 +23,11 @@
 
 ====
 
-## FUNCTIONAL NOUNS 🌱 🤖 🍅 🥕
+## FUNCTIONAL NOUNS : ACTIONS : GROUPS == NOUNS + ACTIONS + METADATA 🌱 🤖 🍅 🥕
 
 - Noun | as root JS Object | interface INoun | wp_type threed_noun
 
----
+--- Nouns
 
 - Project | as JS Object | interface IProject | wp_type threed_project
 - Scene | extends THREE.Scene | interface IScene | wp_type threed_scene
@@ -37,12 +37,12 @@
 - Participant | as JS Object | interface IParticipant | wp_type threed_participant
 - Character | as JS Object | interface ICharacter | wp_type threed_character
 
----
+--- Actions
 
 - Simulation | as JS Object | interface ISimulation | wp_type threed_simulation
 - Game | extends Simulation | interface IGame | wp_type threed_game
 
----
+--- Groups
 
 - World | as JS Object | interface IWorld | wp_type threed_world
 - Structure | extends THREE.Object3D | interface IStructure | wp_type threed_structure
@@ -59,7 +59,7 @@
 - PlantingPlan | Actions | Relationships | interface IPlantingPlan | wp_type threed_planting_plan
 - BuildingPlan | Actions | Relationships | interface IBuildingPlan | wp_type threed_building_plan
 
----
+--- Helpers
 
 - Tool | as JS Object | extends ThreeD? | interface ITool
 - PlaneTool | extends Tool | interface IPlane
