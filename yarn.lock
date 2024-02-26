@@ -8977,7 +8977,7 @@ uuid@^9.0.1:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.1.tgz#e188d4c8853cc722220392c424cd637f32293f30"
   integrity sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==
 
-valtio@^1.8.2:
+valtio@^1.13.1:
   version "1.13.1"
   resolved "https://registry.yarnpkg.com/valtio/-/valtio-1.13.1.tgz#6709fb21a331519dbc9ceba725ce33e4c7029ae2"
   integrity sha512-zowA+lrJPnj6YfIMrVzLKlpBJ/mrIJtMoStPoVLfFMQzvmqdB/JAFNBsxRJ707Oso0lyRgxRfaq4QbE9Uz0tYg==

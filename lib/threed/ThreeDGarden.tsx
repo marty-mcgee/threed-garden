@@ -3547,7 +3547,9 @@ const ThreeDGarden = (): JSX.Element => {
   // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDisk()
   // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDB()
   // const loadProjectFromChosenDataSource = () => data.store.store.useStore('allDB')
-  const loadProjectFromChosenDataSource = data.store.store.useStore('allDB')
+  // const loadProjectFromChosenDataSource = () => data.store.store.useStore('allDB')
+  // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDataSource(data.client)
+  data.store.actions.loadFromDataSource(data.client)
 
   // ==========================================================
   // Tabs

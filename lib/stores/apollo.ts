@@ -89,13 +89,15 @@ function noun(this: INoun, _type: string = 'noun') {
   this._id = newUUID()
   this._ts = new Date().toISOString()
   this._type = _type.toLowerCase()
-  this._name = _type.toUpperCase() + ' 0'
+  this._name = _type.toUpperCase() + ' NAME (default)'
   // wp custom fields
-  this.data = {}
+  this.data = {
+    title: 'NOT A THING, SIR',
+  }
   // layers/levels
   this.layers = []
   this.layer = {
-    _name: 'LAYER 0',
+    _name: 'LAYER[0]',
     data: {},
   }
 }
@@ -168,6 +170,7 @@ function nounStore(this: INounStore, _type = 'noun') {
       this.store.update('oneDB', {})
       this.store.update('count', 0)
       this.store.update('countDB', 0)
+      console.clear()
       console.debug(`%cremoveAll [${this._type}]`, ccm.red, true)
     },
 
@@ -181,8 +184,8 @@ function nounStore(this: INounStore, _type = 'noun') {
       if (Object.keys(this.store.get('one')).length === 0) {
         try {
           this.store.update('one', new (noun as any)(this._type))
-        } catch (err) {
-          console.error(`%caddNew {${this._type}} err`, err)
+        } catch (ERROR) {
+          console.error(`%caddNew {${this._type}} ERROR`, ERROR)
         }
       }
       // save + update old one
@@ -202,10 +205,13 @@ function nounStore(this: INounStore, _type = 'noun') {
           _id: newUUID(),
           _ts: new Date().toISOString(),
           _type: _type.toLowerCase(),
-          _name: _type.toUpperCase() + ' 1',
+          _name: _type.toUpperCase() + ' NAME (default modified)',
+          data: {
+            title: 'WE AINT FOUND SHIT',
+          },
           layers: [],
           layer: {
-            _name: 'LAYER 0',
+            _name: 'LAYER[0]',
             data: {},
           },
         })
@@ -249,8 +255,8 @@ function nounStore(this: INounStore, _type = 'noun') {
         )
         console.debug(`%csaveToDisk [${this._type}]`, ccm.orange, this.store.get('all'))
         return true
-      } catch (err) {
-        console.debug(`%csaveToDisk [${this._type}] err`, ccm.red, err)
+      } catch (ERROR) {
+        console.debug(`%csaveToDisk [${this._type}] ERROR`, ccm.red, ERROR)
         return false
       }
     },
@@ -260,9 +266,9 @@ function nounStore(this: INounStore, _type = 'noun') {
       try {
         const query = JSON.parse(localStorage.getItem(this._storageItem))
         if (query) {
-          console.debug(`%cloadFromDisk [${this._type}] QUERY?`, ccm.blue, query)
+          // console.debug(`%cloadFromDisk [${this._type}] QUERY?`, ccm.blue, query)
           const { payload } = query
-          console.debug(`%cloadFromDisk [${this._type}] QUERY.PAYLOAD?`, ccm.blue, payload)
+          // console.debug(`%cloadFromDisk [${this._type}] QUERY.PAYLOAD?`, ccm.blue, payload)
 
           if (payload) {
             // console.debug(`%cloadFromDisk [${this._type}]`, ccm.blue, true, payload)
@@ -270,32 +276,51 @@ function nounStore(this: INounStore, _type = 'noun') {
             this.store.update('all', [...payload]) // payload should have .data{}
             console.debug(`%cloadFromDisk [${this._type}s] (after)`, ccm.blue, this.store.get('all'))
 
-            this.store.update('one', this.store.get('all')[0])
+            const thisStoreUseOne = this.store.get('all')[0]
+            this.store.update('one', thisStoreUseOne)
             console.debug(`%cloadFromDisk {${this._type}} (after)`, ccm.blue, this.store.get('one'))
+
+            // update metadata for the store to use
+            // this.store.update('one._name', thisStoreUseOne.data.title) // ideally
+            this.store.update('one', {
+              _id: thisStoreUseOne._id, // .data.projectId (TODO: get wp_post.id and not wp_type.projectId)
+              _ts: thisStoreUseOne.data.modified,
+              _type: _type.toLowerCase(),
+              _name: _type.toUpperCase() + ' NAME: ' + thisStoreUseOne.data.title,
+              // wp custom fields
+              data: thisStoreUseOne.data,
+              // layers/levels
+              layers: thisStoreUseOne.layers,
+              layer: {
+                _name: thisStoreUseOne.layer._name,
+                data: thisStoreUseOne.layer.data,
+              },
+            })
 
             return true
           } else {
-            console.debug(`%cloadFromDisk [${this._type}] EMPTY QUERY.PAYLOAD?`, ccm.blue, query)
+            console.debug(`%cloadFromDisk [${this._type}] EMPTY QUERY.PAYLOAD?`, ccm.orange, query)
           }
         } else {
-          console.debug(`%cloadFromDisk [${this._type}] NOTHING TO LOAD`, ccm.blue, query)
+          console.debug(`%cloadFromDisk [${this._type}] NOTHING TO LOAD`, ccm.orange, query)
         }
         return false
-      } catch (err) {
-        console.debug(`%cloadFromDisk [${this._type}] err`, ccm.red, err)
+      } catch (ERROR) {
+        console.debug(`%cloadFromDisk [${this._type}] ERROR`, ccm.red, ERROR)
         return false
       }
     },
 
+    // TODO: SAVE TO DB VIA GRAPHQL
     // save data to db via graphql mutation
     saveToDB: async (client: any) => {
       try {
         console.debug(`%csaveToDB [${this._type}] client`, ccm.red, client)
+        // TODO: SAVE TO DB VIA GRAPHQL
 
-        console.debug(`%csaveToDB [${this._type}]`, ccm.red, false)
-        return false
-      } catch (err) {
-        console.debug(`%csaveToDB [${this._type}]: err`, ccm.blue, err)
+        return true // OR false, if unsuccessful
+      } catch (ERROR) {
+        console.debug(`%csaveToDB [${this._type}]: ERROR`, ccm.red, ERROR)
         return false
       }
     },
@@ -307,7 +332,7 @@ function nounStore(this: INounStore, _type = 'noun') {
         console.debug(`%cloadFromDB this`, ccm.yellow, this)
 
         // .gql
-        let QUERY = GetProjects
+        let QUERY = GetProjects // default
         switch (this._type) {
           case 'noun':
             QUERY = GetNouns
@@ -389,6 +414,7 @@ function nounStore(this: INounStore, _type = 'noun') {
           // console.debug(`%cloadFromDB [${this._type}]: DATA RETURNED`, ccm.yellow, data, loading, error)
 
           let payload
+          let nodes = payload
           if (data[this._plural]?.edges?.length) {
             // const payload = data[this._plural].edges
             payload = data[this._plural].edges.map(
@@ -445,13 +471,14 @@ function nounStore(this: INounStore, _type = 'noun') {
               _id: newUUID(),
               _ts: new Date().toISOString(),
               _type: _type.toLowerCase(),
-              _name: _type.toUpperCase() + ': ' + nounDB.data.title,
+              // _name: nounDB.data.title,
+              _name: _type.toUpperCase() + ' NAME: ' + nounDB.data.title,
               // wp custom fields
               data: nounDB.data,
               // layers/levels
               layers: [],
               layer: {
-                _name: 'LAYER 0',
+                _name: 'LAYER[0]',
                 data: {},
               },
             })
@@ -473,10 +500,33 @@ function nounStore(this: INounStore, _type = 'noun') {
 
         console.debug(`%cloadFromDB [${this._type}]: OTHER ERROR`, ccm.red, data)
         return false
-      } catch (err) {
-        console.debug(`%cloadFromDB [${this._type}]: ERR`, ccm.red, err)
+      } catch (ERROR) {
+        console.debug(`%cloadFromDB [${this._type}]: ERROR`, ccm.red, ERROR)
         return false
       }
+    },
+
+    // load from data source: DB or DISK ??
+    // check DISK first, then DB
+    loadFromDataSource: (client: any) => {
+      const responseData = {
+        isLoadedFromDisk: false,
+        isLoadedFromDB: false,
+      }
+      responseData.isLoadedFromDisk = this.actions.loadFromDisk(client)
+      if (responseData.isLoadedFromDisk) {
+        console.debug('loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', responseData)
+        return responseData
+      } else {
+        responseData.isLoadedFromDB = this.actions.loadFromDB(client)
+        if (responseData.isLoadedFromDB) {
+          console.debug('loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', responseData)
+          return responseData
+        }
+      }
+      // default
+      console.debug('loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', responseData)
+      return responseData
     },
 
     // load 'this' noun into React Three Fiber view
@@ -491,8 +541,8 @@ function nounStore(this: INounStore, _type = 'noun') {
         }
 
         return false
-      } catch (err) {
-        console.debug(`%cload {noun}: err`, ccm.blue, err)
+      } catch (ERROR) {
+        console.debug(`%cload {noun}: ERROR`, ccm.blue, ERROR)
         return false
       }
     },
@@ -510,13 +560,13 @@ function modal(this: any, _type = 'modal') {
   this._id = newUUID()
   this._ts = new Date().toISOString()
   this._type = _type.toLowerCase()
-  this._name = _type.toUpperCase() + ' 0'
+  this._name = _type.toUpperCase() + ' NAME (default)'
   // wp custom fields
   this.data = {}
   // layers/levels
   this.layers = []
   this.layer = {
-    _name: 'LAYER 0',
+    _name: 'LAYER[0]',
     data: {},
   }
 }
