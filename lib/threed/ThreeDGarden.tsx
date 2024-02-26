@@ -362,21 +362,21 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
   const increaseCount = () => projectStore.store.update('count', projectStore.actions.increaseCount())
   const decreaseCount = () => projectStore.store.update('count', projectStore.actions.decreaseCount())
   const getState = () => projectStore.actions.getState()
-  const loadToProject = () => projectStore.actions.loadToProject()
+  const loadToCanvas = () => projectStore.actions.loadToCanvas()
 
   return (
     <Box>
-      <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={loadFromDB} style={{color: 'orange'}}>load from db</Button>
       <Button onClick={saveToDB}>save to db</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
       {/*  */}
-      <Button onClick={getState}>state</Button>
-      <Button onClick={loadToProject}>load</Button>
+      <Button onClick={getState}>get state</Button>
+      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
     </Box>
   )
 }
@@ -637,7 +637,7 @@ const SceneControlPanel: FC = (_type: string = 'scene'): JSX.Element => {
   const increaseCount = () => sceneStore.store.update('count', sceneStore.actions.increaseCount())
   const decreaseCount = () => sceneStore.store.update('count', sceneStore.actions.decreaseCount())
   const getState = () => sceneStore.actions.getState()
-  const loadToProject = () => sceneStore.actions.loadToProject()
+  const loadToCanvas = () => sceneStore.actions.loadToCanvas()
 
   return (
     <Box>
@@ -650,8 +650,8 @@ const SceneControlPanel: FC = (_type: string = 'scene'): JSX.Element => {
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
       {/*  */}
-      <Button onClick={getState}>state</Button>
-      <Button onClick={loadToProject}>load</Button>
+      <Button onClick={getState}>get state</Button>
+      <Button onClick={loadToCanvas}>load to canvas</Button>
     </Box>
   )
 }
@@ -3425,7 +3425,7 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
 
   const loadNounDataToUse = (nounDataToUse) => {
     // load this nounDataToUse into r3f canvas
-    data.store.actions.loadToProject(nounDataToUse, 'r3fCanvas')
+    data.store.actions.loadToCanvas(nounDataToUse, 'r3fCanvas')
     return <Box>true</Box> // true
   }
 
@@ -3544,12 +3544,14 @@ const ThreeDGarden = (): JSX.Element => {
     word: word,
   }
   // USE STORE
+  // bootManager()
   // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDisk()
   // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDB()
   // const loadProjectFromChosenDataSource = () => data.store.store.useStore('allDB')
   // const loadProjectFromChosenDataSource = () => data.store.store.useStore('allDB')
   // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDataSource(data.client)
-  data.store.actions.loadFromDataSource(data.client)
+
+  // WORKING: data.store.actions.loadFromDataSource(data.client)
 
   // ==========================================================
   // Tabs
