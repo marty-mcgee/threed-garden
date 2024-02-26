@@ -3465,7 +3465,7 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
 
   const loadNounDataToUse = (nounDataToUse) => {
     // load this nounDataToUse into r3f canvas
-    data.store.actions.loadToCanvas(nounDataToUse, 'r3fCanvas')
+    // data.store.actions.loadToCanvas(nounDataToUse, 'r3fCanvas')
     return <Box>true</Box> // true
   }
 
