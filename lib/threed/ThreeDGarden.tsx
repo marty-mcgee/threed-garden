@@ -417,17 +417,22 @@ const ParticipantControlPanel: FC = (_type: string = 'participant'): JSX.Element
   const removeAll = () => participantStore.actions.removeAll()
   const increaseCount = () => participantStore.store.update('count', participantStore.actions.increaseCount())
   const decreaseCount = () => participantStore.store.update('count', participantStore.actions.decreaseCount())
+  const getState = () => participantStore.actions.getState()
+  const loadToCanvas = () => participantStore.actions.loadToCanvas()
 
   return (
     <Box>
-      <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={loadFromDB} style={{color: 'orange'}}>load from db</Button>
       <Button onClick={saveToDB}>save to db</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
+      {/*  */}
+      <Button onClick={getState}>get state</Button>
+      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
     </Box>
   )
 }
@@ -468,17 +473,22 @@ const PlanControlPanel: FC = (_type: string = 'plan'): JSX.Element => {
   const removeAll = () => planStore.actions.removeAll()
   const increaseCount = () => planStore.store.update('count', planStore.actions.increaseCount())
   const decreaseCount = () => planStore.store.update('count', planStore.actions.decreaseCount())
+  const getState = () => planStore.actions.getState()
+  const loadToCanvas = () => planStore.actions.loadToCanvas()
 
   return (
     <Box>
-      <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={loadFromDB} style={{color: 'orange'}}>load from db</Button>
       <Button onClick={saveToDB}>save to db</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
+      {/*  */}
+      <Button onClick={getState}>get state</Button>
+      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
     </Box>
   )
 }
@@ -519,17 +529,22 @@ const ThreeDControlPanel: FC = (_type: string = 'threed'): JSX.Element => {
   const removeAll = () => threedStore.actions.removeAll()
   const increaseCount = () => threedStore.store.update('count', threedStore.actions.increaseCount())
   const decreaseCount = () => threedStore.store.update('count', threedStore.actions.decreaseCount())
+  const getState = () => threedStore.actions.getState()
+  const loadToCanvas = () => threedStore.actions.loadToCanvas()
 
   return (
     <Box>
-      <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={loadFromDB} style={{color: 'orange'}}>load from db</Button>
       <Button onClick={saveToDB}>save to db</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
+      {/*  */}
+      <Button onClick={getState}>get state</Button>
+      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
     </Box>
   )
 }
@@ -570,17 +585,22 @@ const FileControlPanel: FC = (_type: string = 'file'): JSX.Element => {
   const removeAll = () => fileStore.actions.removeAll()
   const increaseCount = () => fileStore.store.update('count', fileStore.actions.increaseCount())
   const decreaseCount = () => fileStore.store.update('count', fileStore.actions.decreaseCount())
+  const getState = () => fileStore.actions.getState()
+  const loadToCanvas = () => fileStore.actions.loadToCanvas()
 
   return (
     <Box>
-      <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={loadFromDB} style={{color: 'orange'}}>load from db</Button>
       <Button onClick={saveToDB}>save to db</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
+      {/*  */}
+      <Button onClick={getState}>get state</Button>
+      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
     </Box>
   )
 }
@@ -692,17 +712,22 @@ const AllotmentControlPanel: FC = (_type: string = 'allotment'): JSX.Element => 
   const removeAll = () => allotmentStore.actions.removeAll()
   const increaseCount = () => allotmentStore.store.update('count', allotmentStore.actions.increaseCount())
   const decreaseCount = () => allotmentStore.store.update('count', allotmentStore.actions.decreaseCount())
+  const getState = () => allotmentStore.actions.getState()
+  const loadToCanvas = () => allotmentStore.actions.loadToCanvas()
 
   return (
     <Box>
-      <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={loadFromDB} style={{color: 'orange'}}>load from db</Button>
       <Button onClick={saveToDB}>save to db</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
+      {/*  */}
+      <Button onClick={getState}>get state</Button>
+      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
     </Box>
   )
 }
@@ -743,17 +768,22 @@ const BedControlPanel: FC = (_type: string = 'bed'): JSX.Element => {
   const removeAll = () => bedStore.actions.removeAll()
   const increaseCount = () => bedStore.store.update('count', bedStore.actions.increaseCount())
   const decreaseCount = () => bedStore.store.update('count', bedStore.actions.decreaseCount())
+  const getState = () => bedStore.actions.getState()
+  const loadToCanvas = () => bedStore.actions.loadToCanvas()
 
   return (
     <Box>
-      <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={loadFromDB} style={{color: 'orange'}}>load from db</Button>
       <Button onClick={saveToDB}>save to db</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
+      {/*  */}
+      <Button onClick={getState}>get state</Button>
+      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
     </Box>
   )
 }
@@ -794,17 +824,22 @@ const PlantControlPanel: FC = (_type: string = 'plant'): JSX.Element => {
   const removeAll = () => plantStore.actions.removeAll()
   const increaseCount = () => plantStore.store.update('count', plantStore.actions.increaseCount())
   const decreaseCount = () => plantStore.store.update('count', plantStore.actions.decreaseCount())
+  const getState = () => plantStore.actions.getState()
+  const loadToCanvas = () => plantStore.actions.loadToCanvas()
 
   return (
     <Box>
-      <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={loadFromDB} style={{color: 'orange'}}>load from db</Button>
       <Button onClick={saveToDB}>save to db</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
+      {/*  */}
+      <Button onClick={getState}>get state</Button>
+      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
     </Box>
   )
 }
@@ -845,17 +880,22 @@ const PlantingPlanControlPanel: FC = (_type: string = 'planting_plan'): JSX.Elem
   const removeAll = () => plantingPlanStore.actions.removeAll()
   const increaseCount = () => plantingPlanStore.store.update('count', plantingPlanStore.actions.increaseCount())
   const decreaseCount = () => plantingPlanStore.store.update('count', plantingPlanStore.actions.decreaseCount())
+  const getState = () => plantingPlanStore.actions.getState()
+  const loadToCanvas = () => plantingPlanStore.actions.loadToCanvas()
 
   return (
     <Box>
-      <Button onClick={loadFromDB}>load from db</Button>
+      <Button onClick={loadFromDB} style={{color: 'orange'}}>load from db</Button>
       <Button onClick={saveToDB}>save to db</Button>
-      <Button onClick={loadFromDisk}>load from disk</Button>
+      <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
+      {/*  */}
+      <Button onClick={getState}>get state</Button>
+      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
     </Box>
   )
 }
