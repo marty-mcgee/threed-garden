@@ -19,7 +19,7 @@ import { NextPageContext } from 'next'
 import type { ReactNode } from 'react'
 
 // ** Apollo Client -- State Management using Cache/Store (via GraphQL)
-import { ApolloClientWrapper } from '../lib/api/graphql/ApolloClientWrapper'
+import { ApolloClientWrapper } from '#/lib/api/graphql/ApolloClientWrapper'
 // import { ApolloProvider } from '@apollo/__client'
 // import { client } from '#/lib/api/graphql/__client'
 // import { getClient } from '#/lib/api/graphql/__client'
