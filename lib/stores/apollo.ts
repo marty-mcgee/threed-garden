@@ -281,23 +281,27 @@ function nounStore(this: INounStore, _type = 'noun') {
             console.debug(`%cloadFromDisk {${this._type}} (after)`, ccm.blue, this.store.get('one'))
 
             // update metadata for the store to use
-            // this.store.update('one._name', thisStoreUseOne.data.title) // ideally
-            this.store.update('one', {
-              _id: thisStoreUseOne._id, // .data.projectId (TODO: get wp_post.id and not wp_type.projectId)
-              _ts: thisStoreUseOne.data.modified,
-              _type: _type.toLowerCase(),
-              _name: _type.toUpperCase() + ' NAME: ' + thisStoreUseOne.data.title,
-              // wp custom fields
-              data: thisStoreUseOne.data,
-              // layers/levels
-              layers: thisStoreUseOne.layers,
-              layer: {
-                _name: thisStoreUseOne.layer._name,
-                data: thisStoreUseOne.layer.data,
-              },
-            })
+            if (thisStoreUseOne) {
+              // this.store.update('one._name', thisStoreUseOne.data.title) // ideally
+              this.store.update('one', {
+                _id: thisStoreUseOne._id, // .data.projectId (TODO: get wp_post.id and not wp_type.projectId)
+                _ts: thisStoreUseOne.data.modified,
+                _type: _type.toLowerCase(),
+                _name: _type.toUpperCase() + ' NAME: ' + thisStoreUseOne.data.title,
+                // wp custom fields
+                data: thisStoreUseOne.data,
+                // layers/levels
+                layers: thisStoreUseOne.layers,
+                layer: {
+                  _name: thisStoreUseOne.layer._name,
+                  data: thisStoreUseOne.layer.data,
+                },
+              })
 
-            return true
+              return true
+            }
+
+            return false
           } else {
             console.debug(`%cloadFromDisk [${this._type}] EMPTY QUERY.PAYLOAD?`, ccm.orange, query)
           }
@@ -537,14 +541,16 @@ function nounStore(this: INounStore, _type = 'noun') {
         console.debug(`%cload {loadThisJSObjectToThreeDCanvas}`, ccm.orange, loadThisJSObjectToThreeDCanvas)
 
         if (noun) {
+          console.debug('%c_r3fCanvas to receive JS Object: noun', ccm.green)
           return true // <div>...noun as r3f component...</div>
         }
         if (loadThisJSObjectToThreeDCanvas) {
           // send 'this' to '_r3fCanvas'
-          console.debug('_r3fCanvas to receive JS Object: loadThisJSObjectToThreeDCanvas')
+          console.debug('%c_r3fCanvas to receive JS Object: loadThisJSObjectToThreeDCanvas', ccm.green)
           return true // <>true</>
         }
 
+        console.debug('_r3fCanvas to receive NOTHING')
         return false
       } catch (ERROR) {
         console.debug(`%cload {noun}: ERROR`, ccm.blue, ERROR)
