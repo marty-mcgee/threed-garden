@@ -48,7 +48,7 @@ const Model = ({ threedid, state, threed, name, file }) => {
     ref: useRef(null),
     state: state, // for funzees
     name: name,
-    file: file ? file : '',
+    file: file ?? '',
     // file type?
     type: 'threed', // fbx | gltf | obj | threed
     // 3D
@@ -66,7 +66,7 @@ const Model = ({ threedid, state, threed, name, file }) => {
     isWEBP: false,
     // is type Supported?
     isSupported: false,
-    // file nodes
+    // object nodes
     nodes: {},
     // animations
     ani: {
@@ -78,11 +78,11 @@ const Model = ({ threedid, state, threed, name, file }) => {
     // doReturnAll: doReturnAll ? true : false,
     // doReturnEach: doReturnEach ? true : false,
     // attributes
-    group_position: threed.group.position,
-    group_rotation: threed.group.rotation,
-    group_scale: threed.group.scale,
+    group_position: threed?.group.position ?? 0,
+    group_rotation: threed?.group.rotation ?? 0,
+    group_scale: threed?.group.scale ?? 0,
     // is Ready to go?
-    isReady: false,
+    isReadyForCanvas: false,
   }
 
   // ** decide file type from file extension (and other qualifiers)
@@ -120,7 +120,7 @@ const Model = ({ threedid, state, threed, name, file }) => {
         // console.debug(`%c====================================`, ccm.black)
         if (fbx) {
           model.nodes = fbx
-          model.isReady = true
+          model.isReadyForCanvas = true
           // console.debug('RETURN ONLY NODE AS NODES: true')
         }
         if (fbx.animations) {
@@ -141,7 +141,7 @@ const Model = ({ threedid, state, threed, name, file }) => {
         // console.debug(`%c====================================`, ccm.black)
         if (nodes) {
           model.nodes = nodes
-          model.isReady = true
+          model.isReadyForCanvas = true
           // console.debug('RETURN ONLY NODE AS NODES: true')
         }
       }
@@ -154,7 +154,7 @@ const Model = ({ threedid, state, threed, name, file }) => {
         const { nodes } = useLoader(GLTFLoader, model.file, loader => {
           loader.manager.addHandler(/\.tga$/i, new TGALoader())
         })
-        console.debug('%cNODES: gltf', ccm.blue, nodes)
+        console.debug('%cNODES: gltf 🥕 GLB NODES 🌱', ccm.blue, nodes)
         console.debug(`%c====================================`, ccm.blue)
         if (nodes) {
           // FILTER (LOOP OVER) NODES {Object.keys}
@@ -184,7 +184,7 @@ const Model = ({ threedid, state, threed, name, file }) => {
             //   console.debug('RETURN EACH NODE by KEY: ', index, value)
             // })
           }
-          model.isReady = true
+          model.isReadyForCanvas = true
         }
       }
     }
@@ -241,7 +241,7 @@ const Model = ({ threedid, state, threed, name, file }) => {
   // ==============================================================
   // ** RETURN JSX
 
-  if (model.isReady) {
+  if (model.isReadyForCanvas) {
     console.debug(`%cDRAW MODEL([nodes]): ${model.type}`, ccm.blue, model.nodes)
     console.debug(`%c====================================`, ccm.blue)
     // return GLTF node

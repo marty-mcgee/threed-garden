@@ -41,8 +41,9 @@ const defaults = {
   // set a default file to load for Model (for testing)
   // fileUrlDefault: '/objects/examples/compressed.glb' | '/objects/examples/compressed-v002.glb' |
   fileUrlDefault:
+  'https://threed.design/wp-content/uploads/2022/09/idahomeadow_01-scaled-1.jpg',
   // '/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb',
-  'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb',
+  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb',
   // '/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx',
   // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx',
   // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_01.fbx',
@@ -68,14 +69,14 @@ const ThreeDScene = (props) => {
   // **
   // deconstruct arguments from props
   // const { ref, state, threed, name, file, doReturnOne, doReturnEach, doReturnAll } = props
-  const { state, sceneId, scene } = props
+  const { state, models, _name, sceneId, scene } = props
 
   // console.debug('THREEDSCENE: Scene(state, threedId, threed)', state, threedId, threed)
 
   // map threed to THREEDSCENE, to pass on to Model
   const THREEDSCENE = {
     // === threed scene
-    name: 'THREEDSCENE YAY -- HEY HEY HEY',
+    name: 'THREEDSCENE YAY -- HEY HEY HEY', // _name
     // { data: 'gql/rest wp endpoint {threed_threed}' }
     group: {
       group_id: 0,
@@ -83,25 +84,24 @@ const ThreeDScene = (props) => {
       group_rotation: defaults.groupRotationDefault,
       group_scale: 0.05, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
     },
-    // { data: 'gql/rest wp endpoint {threed_threed}' }
     // { data: 'gql/rest wp endpoint {threed_file}' }
-    // files: [
-    //   {
-    //     file_type: defaults.fileTypeDefault,
-    //     file_loader: 'fbx|obj|gltf',
-    //     file_url: defaults.fileUrlDefault,
-    //     file_name: defaults.fileNameDefault,
-    //     // { data: 'gql/rest wp endpoint {threed_threed}' }
-    //     nodes: [
-    //       {
-    //         node_name: defaults.nodeNameDefault,
-    //         node_position: [0, 0, 0],
-    //         node_rotation: defaults.nodeRotationDefault,
-    //         node_scale: 1.0, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
-    //       },
-    //     ],
-    //   },
-    // ],
+    files: [
+      {
+        file_type: defaults.fileTypeDefault,
+        file_loader: 'fbx|obj|gltf',
+        file_url: defaults.fileUrlDefault,
+        file_name: defaults.fileNameDefault,
+        // { data: 'gql/rest wp endpoint {threed_threed}' }
+        nodes: [
+          {
+            node_name: defaults.nodeNameDefault,
+            node_position: [0, 0, 0],
+            node_rotation: defaults.nodeRotationDefault,
+            node_scale: 1.0, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
+          },
+        ],
+      },
+    ],
   }
   console.debug('THREEDSCENE ready for Group of Models: ', THREEDSCENE)
 
@@ -113,11 +113,13 @@ const ThreeDScene = (props) => {
         rotation={THREEDSCENE.group.group_rotation}
         scale={THREEDSCENE.group.group_scale}>
 
-        <ThreeD
+        {/* <ThreeD
           threedid={1}
           state={state}
           threed={THREEDSCENE}
-        />
+        /> */}
+
+        {children}
 
         <ContactShadows
           rotation-x={Math.PI / 2}

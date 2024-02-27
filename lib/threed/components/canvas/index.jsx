@@ -21,6 +21,8 @@ import { softShadows } from '@react-three/drei' // softShadows()
 // import { Loader } from '@react-three/drei'
 
 // ** ThreeD Imports
+import ThreeDPlan from '#/lib/threed/components/nouns/Plan'
+// import ThreeD from '#/lib/threed/components/nouns/ThreeD'
 import ThreeDScene from '#/lib/threed/components/nouns/Scene'
 // ThreeD EXAMPLES
 // import ThreeDCharacter from '~/lib/threed/components/nouns/Character'
@@ -78,8 +80,15 @@ function ThreeDControls() {
   )
 }
 
-export default function ThreeDCanvas({ scene, models, children }) {
+export default function ThreeDCanvas({ nounDataToUse, scene, models, files, children }) {
   // **
+  // THE NOUNS (to use)
+  if (nounDataToUse) {
+    console.debug('nounDataToUse', nounDataToUse)
+    if (nounDataToUse.length) {
+      console.debug('nounDataToUse.length', nounDataToUse.length)
+    }
+  }
   // THE SCENE
   if (scene) {
     // console.debug('scene', scene)
@@ -87,6 +96,7 @@ export default function ThreeDCanvas({ scene, models, children }) {
       // console.debug('scene.length', scene.length)
     }
   }
+  // THE MODELS
   // inject models inside Suspense groups
   if (models) {
     // console.debug('models', models)
@@ -214,8 +224,13 @@ export default function ThreeDCanvas({ scene, models, children }) {
         </Stage> */}
 
         {/* [MM] HEY HEY HEY */}
-        {/* NEED TO SEND A THREED_SCENE OF MODEL[S] TO A CANVAS */}
-        {/* <ThreeDScene state={state} /> */}
+
+        {/* NEED TO LOAD THREEDSCENE FILES TO A CANVAS */}
+        {/* <ThreeDScene state={state} files={files} /> */}
+
+        {/* NEED TO SEND THREEDS OF MODEL[S] TO A CANVAS */}
+        {/* <ThreeDPlan state={state} models={models} /> */}
+
         {/* [MM] HEY HEY HEY */}
 
         {/* {children} */}

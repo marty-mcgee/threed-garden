@@ -371,12 +371,12 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
       <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
       {/*  */}
       <Button onClick={getState}>get state</Button>
-      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
+      <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
     </Box>
   )
 }
@@ -427,12 +427,12 @@ const ParticipantControlPanel: FC = (_type: string = 'participant'): JSX.Element
       <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
       {/*  */}
       <Button onClick={getState}>get state</Button>
-      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
+      <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
     </Box>
   )
 }
@@ -483,12 +483,12 @@ const PlanControlPanel: FC = (_type: string = 'plan'): JSX.Element => {
       <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
       {/*  */}
       <Button onClick={getState}>get state</Button>
-      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
+      <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
     </Box>
   )
 }
@@ -539,12 +539,12 @@ const ThreeDControlPanel: FC = (_type: string = 'threed'): JSX.Element => {
       <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
       {/*  */}
       <Button onClick={getState}>get state</Button>
-      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
+      <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
     </Box>
   )
 }
@@ -595,12 +595,12 @@ const FileControlPanel: FC = (_type: string = 'file'): JSX.Element => {
       <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
       {/*  */}
       <Button onClick={getState}>get state</Button>
-      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
+      <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
     </Box>
   )
 }
@@ -722,12 +722,12 @@ const AllotmentControlPanel: FC = (_type: string = 'allotment'): JSX.Element => 
       <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
       {/*  */}
       <Button onClick={getState}>get state</Button>
-      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
+      <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
     </Box>
   )
 }
@@ -778,12 +778,12 @@ const BedControlPanel: FC = (_type: string = 'bed'): JSX.Element => {
       <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
       {/*  */}
       <Button onClick={getState}>get state</Button>
-      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
+      <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
     </Box>
   )
 }
@@ -834,12 +834,12 @@ const PlantControlPanel: FC = (_type: string = 'plant'): JSX.Element => {
       <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
       {/*  */}
       <Button onClick={getState}>get state</Button>
-      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
+      <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
     </Box>
   )
 }
@@ -890,12 +890,12 @@ const PlantingPlanControlPanel: FC = (_type: string = 'planting_plan'): JSX.Elem
       <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
-      <Button onClick={removeAll} style={{color: 'red'}}>remove all</Button>
+      <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
       {/*  */}
       <Button onClick={getState}>get state</Button>
-      <Button onClick={loadToCanvas} style={{color: 'orange'}}>load to canvas</Button>
+      <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
     </Box>
   )
 }
@@ -3519,24 +3519,35 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
           xs={12}
           sx={{ borderTop: '1px solid darkgreen' }}
         >
-          {/*  */}
-          <ThreeDCanvas />
-          {/*  */}
+          {/* THREED HEY HEY HEY */}
+          <ThreeDCanvas
+            _id={1}
+            nounDataToUse={nounDataToUse}
+          />
         </Grid>
         {/* <Grid item id='camera[1]'
           md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
         >
-          <ThreeDCanvas />
+          <ThreeDCanvas
+            _id={2}
+            nounDataToUse={nounDataToUse}
+          />
         </Grid> */}
         {/* <Grid item id='camera[2]'
           md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
         >
-          <ThreeDCanvas />
+          <ThreeDCanvas
+            _id={3}
+            nounDataToUse={nounDataToUse}
+          />
         </Grid> */}
         {/* <Grid item id='camera[3]'
           md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
         >
-          <ThreeDCanvas />
+          <ThreeDCanvas
+            _id={4}
+            nounDataToUse={nounDataToUse}
+          />
         </Grid> */}
       </Grid>
     </Grid>
