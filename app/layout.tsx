@@ -241,7 +241,7 @@ const AppLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Ele
                                 <main className='flex-auto w-full px-2 py-1 mx-auto'>
                                   {children}
                                 </main>
-                                <Footer version='1' />
+                                <Footer />
                               </div>
                             {/* </ApolloProvider> */}
                             </ApolloClientWrapper>
