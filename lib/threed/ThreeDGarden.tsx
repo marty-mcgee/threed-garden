@@ -88,7 +88,7 @@ import ToolIconAddText from '@mui/icons-material/TextFields'
 // import * as THREE from 'three'
 // ** Three JS Controls
 // ** Three JS Loaders
-// import { Loader } from '@react-three/drei'
+import { Loader } from '@react-three/drei'
 import { Html } from '@react-three/drei'
 // -- use React Three Fiber R3F hooks: useFBX, useOBJ, etc --
 // import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
@@ -3664,22 +3664,26 @@ const ThreeDGarden = (): JSX.Element => {
   // ==========================================================
   // FC returns JSX
   return (
-    <div
-      id='threedgarden-wrapper'
-      // style={{'width': '100%'}}
-    >
-
-    {/* <Loader
-      // containerStyles={...container} // Flex layout styles
-      // innerStyles={...inner} // Inner container styles
-      // barStyles={...bar} // Loading-bar styles
-      // dataStyles={...data} // Text styles
-      dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
-      initialState={(active = true) => active} // Initial black out state
-    /> */}
-
+    <>
     {/* <Suspense fallback={null}> */}
-    {/* <Suspense fallback={<Html center><Loader /></Html>}> */}
+    {/* <Suspense fallback={
+      <Html center>
+        <Loader />
+      </Html>
+    }> */}
+      <div
+        id='threedgarden-wrapper'
+        // style={{'width': '100%'}}
+      >
+
+      <Loader
+        // containerStyles={...container} // Flex layout styles
+        // innerStyles={...inner} // Inner container styles
+        // barStyles={...bar} // Loading-bar styles
+        // dataStyles={...data} // Text styles
+        dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
+        initialState={(active = true) => active} // Initial black out state
+      />
 
       {/* <Loader /> */}
 
@@ -3784,8 +3788,9 @@ const ThreeDGarden = (): JSX.Element => {
         {/* <PlanView /> */}
         {/* <TheBottom /> */}
       </div>
-      {/* </Suspense> */}
     </div>
+    {/* </Suspense> */}
+  </>
   )
 }
 
