@@ -343,8 +343,9 @@ const ProjectInfoPanel: FC = (_type: string = 'project'): JSX.Element => {
       <Typography>project._id: {project._id}</Typography>
       <Typography>project._ts: {project._ts}</Typography>
       <Typography>project._name: {project._name}</Typography>
-      <Typography>project.layer._name: {project.layer?._name}</Typography>
       <Typography>project.data.title: {project.data?.title}</Typography>
+      <Typography>project.data.scenes: {project.data?.scenes?.nodes.length}</Typography>
+      <Typography>project.data.plans: {project.data?.plans?.nodes.length}</Typography>
     </Box>
   )
 }
@@ -399,7 +400,6 @@ const ParticipantInfoPanel: FC = (_type: string = 'participant'): JSX.Element =>
       <Typography>participant._id: {participant._id}</Typography>
       <Typography>participant._ts: {participant._ts}</Typography>
       <Typography>participant._name: {participant._name}</Typography>
-      <Typography>participant.layer._name: {participant.layer?._name}</Typography>
       <Typography>participant.data.title: {participant.data?.title}</Typography>
     </Box>
   )
@@ -455,7 +455,6 @@ const PlanInfoPanel: FC = (_type: string = 'plan'): JSX.Element => {
       <Typography>plan._id: {plan._id}</Typography>
       <Typography>plan._ts: {plan._ts}</Typography>
       <Typography>plan._name: {plan._name}</Typography>
-      <Typography>plan.layer._name: {plan.layer?._name}</Typography>
       <Typography>plan.data.title: {plan.data?.title}</Typography>
     </Box>
   )
@@ -511,7 +510,6 @@ const ThreeDInfoPanel: FC = (_type: string = 'threed'): JSX.Element => {
       <Typography>threed._id: {threed._id}</Typography>
       <Typography>threed._ts: {threed._ts}</Typography>
       <Typography>threed._name: {threed._name}</Typography>
-      <Typography>threed.layer._name: {threed.layer?._name}</Typography>
       <Typography>threed.data.title: {threed.data?.title}</Typography>
     </Box>
   )
@@ -567,7 +565,6 @@ const FileInfoPanel: FC = (_type: string = 'file'): JSX.Element => {
       <Typography>file._id: {file._id}</Typography>
       <Typography>file._ts: {file._ts}</Typography>
       <Typography>file._name: {file._name}</Typography>
-      <Typography>file.layer._name: {file.layer?._name}</Typography>
       <Typography>file.data.title: {file.data?.title}</Typography>
     </Box>
   )
@@ -630,14 +627,12 @@ const SceneInfoPanel: FC = (_type: string = 'scene'): JSX.Element => {
       <Typography>one._id: {scene._id}</Typography>
       <Typography>one._ts: {scene._ts}</Typography>
       <Typography>one._name: {scene._name}</Typography>
-      <Typography>one.layer._name: {scene.layer?._name}</Typography>
       <Typography>one.data.title: {scene.data?.title}</Typography>
       <hr />
       <Typography>allDB.length: {scenesDB.length}</Typography>
       <Typography>oneDB._id: {sceneDB._id}</Typography>
       <Typography>oneDB._ts: {sceneDB._ts}</Typography>
       <Typography>oneDB._name: {sceneDB._name}</Typography>
-      <Typography>oneDB.layer._name: {sceneDB.layer?._name}</Typography>
       <Typography>oneDB.data.title: {sceneDB.data?.title}</Typography>
       <hr />
     </Box>
@@ -694,7 +689,6 @@ const AllotmentInfoPanel: FC = (_type: string = 'allotment'): JSX.Element => {
       <Typography>allotment._id: {allotment._id}</Typography>
       <Typography>allotment._ts: {allotment._ts}</Typography>
       <Typography>allotment._name: {allotment._name}</Typography>
-      <Typography>allotment.layer._name: {allotment.layer?._name}</Typography>
       <Typography>allotment.data.title: {allotment.data?.title}</Typography>
     </Box>
   )
@@ -750,7 +744,6 @@ const BedInfoPanel: FC = (_type: string = 'bed'): JSX.Element => {
       <Typography>bed._id: {bed._id}</Typography>
       <Typography>bed._ts: {bed._ts}</Typography>
       <Typography>bed._name: {bed._name}</Typography>
-      <Typography>bed.layer._name: {bed.layer?._name}</Typography>
       <Typography>bed.data.title: {bed.data?.title}</Typography>
     </Box>
   )
@@ -806,7 +799,6 @@ const PlantInfoPanel: FC = (_type: string = 'plant'): JSX.Element => {
       <Typography>plant._id: {plant._id}</Typography>
       <Typography>plant._ts: {plant._ts}</Typography>
       <Typography>plant._name: {plant._name}</Typography>
-      <Typography>plant.layer._name: {plant.layer?._name}</Typography>
       <Typography>plant.data.title: {plant.data?.title}</Typography>
     </Box>
   )
@@ -862,7 +854,6 @@ const PlantingPlanInfoPanel: FC = (_type: string = 'planting_plan'): JSX.Element
       <Typography>plantingPlan._id: {plantingPlan._id}</Typography>
       <Typography>plantingPlan._ts: {plantingPlan._ts}</Typography>
       <Typography>plantingPlan._name: {plantingPlan._name}</Typography>
-      <Typography>plantingPlan.layer._name: {plantingPlan.layer?._name}</Typography>
       <Typography>plantingPlan.data.title: {plantingPlan.data?.title}</Typography>
     </Box>
   )
@@ -1234,8 +1225,7 @@ const ToolBar: FC = ({data}): JSX.Element => {
         '0' !== e.data.id && e.remove()
       })
 
-      project.layer._name = 'level0'
-      project.layer.data = { id: '0', height: 0 }
+      project.layers[0].data = { id: '0', _name: 'level0', height: 0 }
     } catch (e) {
       console.debug('resetPlan : 15 : ' + e)
     }
@@ -1302,7 +1292,7 @@ const ToolBar: FC = ({data}): JSX.Element => {
           (defaultCursor = 'crosshair'),
             deselectAll(),
             recalcAllUnjoinedWallSegments(-1),
-            recalcAllWallSegmentsOnOtherLevels(-1, project.layer.data.id),
+            recalcAllWallSegmentsOnOtherLevels(-1, project.layers[0].data.id),
             document.getElementById('pointerTool').classList.remove('activeTool'),
             document.getElementById('addWallTool').classList.add('activeTool'),
             document.getElementById('addFloorTool').classList.remove('activeTool'),

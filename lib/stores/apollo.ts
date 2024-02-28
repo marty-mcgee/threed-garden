@@ -42,8 +42,13 @@ interface INoun {
   _type: string
   _name: string
   data: Object
-  layers: Object[]
-  layer: Object
+  layers: [
+    {
+      _id: string
+      _name: string
+      data: Object
+    }
+  ]
 }
 
 // [all]
@@ -95,11 +100,13 @@ function noun(this: INoun, _type: string = 'noun') {
     title: 'NOT A THING, SIR',
   }
   // layers/levels
-  this.layers = []
-  this.layer = {
-    _name: 'LAYER[0]',
-    data: {},
-  }
+  this.layers = [
+    {
+      _id: newUUID(),
+      _name: 'LAYER[0]',
+      data: {},
+    }
+  ]
 }
 
 // ==============================================================
@@ -191,8 +198,8 @@ function nounStore(this: INounStore, _type = 'noun') {
       // save + update old one
       else {
         // nounHistory (save existing before mutating, if not empty)
-        this.store.update('all', [this.store.get('one'), ...this.store.get('all')])
-        console.debug(`%caddNew [${this._type}] (during)`, ccm.orange, this.store.get('all'))
+        this.store.update('history', [this.store.get('one'), ...this.store.get('history')])
+        console.debug(`%caddNew [${this._type}] (save history)`, ccm.orange, this.store.get('all'))
 
         // count
         // this.store.update('count', this.store.get('count') + 1) // manual
@@ -209,18 +216,20 @@ function nounStore(this: INounStore, _type = 'noun') {
           data: {
             title: 'WE AINT FOUND SHIT',
           },
-          layers: [],
-          layer: {
-            _name: 'LAYER[0]',
-            data: {},
-          },
+          layers: [
+            {
+              _id: newUUID(),
+              _name: 'LAYER[0]',
+              data: {},
+            }
+          ],
         })
       }
       console.debug(`%caddNew {${this._type}} (added)`, ccm.orange, this.store.get('one'))
 
       // nounHistory (save recently mutated new one and all old ones)
       this.store.update('all', [this.store.get('one'), ...this.store.get('all')])
-      console.debug(`%caddNew [${this._type}] (after)`, ccm.orange, this.store.get('all'))
+      console.debug(`%caddNew [${this._type}] (all updated)`, ccm.orange, this.store.get('all'))
 
       // count (for fun/learning)
       // this.store.update('count', this.store.get('count') + 1) // manual
@@ -233,7 +242,7 @@ function nounStore(this: INounStore, _type = 'noun') {
       // loadFromDisk
       // this.actions.loadFromDisk()
 
-      console.debug(`%caddNew [${this._type}] (final)`, ccm.orange, this.store.get('one'))
+      console.debug(`%caddNew [${this._type}] (final)`, ccm.green, this.store.get('one'))
     },
 
     save: () => {
@@ -292,10 +301,6 @@ function nounStore(this: INounStore, _type = 'noun') {
                 data: thisStoreUseOne.data,
                 // layers/levels
                 layers: thisStoreUseOne.layers,
-                layer: {
-                  _name: thisStoreUseOne.layer._name,
-                  data: thisStoreUseOne.layer.data,
-                },
               })
 
               return true
@@ -480,11 +485,13 @@ function nounStore(this: INounStore, _type = 'noun') {
               // wp custom fields
               data: nounDB.data,
               // layers/levels
-              layers: [],
-              layer: {
-                _name: 'LAYER[0]',
-                data: {},
-              },
+              layers: [
+                {
+                  _id: newUUID(),
+                  _name: 'LAYER[0]',
+                  data: {},
+                }
+              ],
             })
             console.debug(`%cloadFromDB [${this._type}] {one} (after)`, ccm.orange, this.store.get('one'))
 
@@ -533,27 +540,30 @@ function nounStore(this: INounStore, _type = 'noun') {
       return responseData
     },
 
-    // load 'this' noun into React Three Fiber view
-    loadToCanvas: (noun: Object, _type: string, _id: string, _r3fCanvas: string) => {
+    // load 'this' threed into React Three Fiber view
+    loadToCanvas: (loadThisThreeDToThreeDCanvas: Object, _type: string, _id: string, _r3fCanvas: string) => {
       try {
-        const loadThisJSObjectToThreeDCanvas = this.store.get('one')
-        console.debug(`%cload {noun}`, ccm.orange, noun)
-        console.debug(`%cload {loadThisJSObjectToThreeDCanvas}`, ccm.orange, loadThisJSObjectToThreeDCanvas)
 
-        if (noun) {
-          console.debug('%c_r3fCanvas to receive JS Object: noun', ccm.green)
-          return true // <div>...noun as r3f component...</div>
-        }
-        if (loadThisJSObjectToThreeDCanvas) {
+        if (loadThisThreeDToThreeDCanvas) {
           // send 'this' to '_r3fCanvas'
-          console.debug('%c_r3fCanvas to receive JS Object: loadThisJSObjectToThreeDCanvas', ccm.green)
+          console.debug('%c_r3fCanvas to receive JS Object: loadThisThreeDToThreeDCanvas', ccm.green)
+          return true // <div>...plan of threeds as r3f component...</div>
+        }
+
+        const loadThisPlanOfThreeDsToThreeDCanvas = this.store.get('one')
+        // console.debug(`%cload {loadThisThreeDToThreeDCanvas}`, ccm.orange, loadThisThreeDToThreeDCanvas)
+        // console.debug(`%cload {loadThisPlanOfThreeDsToThreeDCanvas}`, ccm.orange, loadThisPlanOfThreeDsToThreeDCanvas)
+
+        if (loadThisPlanOfThreeDsToThreeDCanvas) {
+          // send 'this' to '_r3fCanvas'
+          console.debug('%c_r3fCanvas to receive JS Object: loadThisPlanOfThreeDsToThreeDCanvas', ccm.green)
           return true // <>true</>
         }
 
-        console.debug('_r3fCanvas to receive NOTHING')
+        console.debug('%c_r3fCanvas to receive NOTHING', ccm.red)
         return false
       } catch (ERROR) {
-        console.debug(`%cload {noun}: ERROR`, ccm.blue, ERROR)
+        console.debug(`%cload {noun}: ERROR`, ccm.red, ERROR)
         return false
       }
     },
@@ -575,11 +585,13 @@ function modal(this: any, _type = 'modal') {
   // wp custom fields
   this.data = {}
   // layers/levels
-  this.layers = []
-  this.layer = {
-    _name: 'LAYER[0]',
-    data: {},
-  }
+  this.layers = [
+    {
+      _id: newUUID(),
+      _name: 'LAYER[0]',
+      data: {},
+    }
+  ]
 }
 
 // ==============================================================
