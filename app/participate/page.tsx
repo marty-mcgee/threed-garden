@@ -119,10 +119,10 @@ const ParticipatePage: TNextPageWithProps = async () => {
     </Grid>
   )
 }
-ParticipatePage.acl = {
-  action: 'read',
-  subject: 'participate-page',
-}
+// ParticipatePage.acl = {
+//   action: 'read',
+//   subject: 'participate-page',
+// }
 
 // export async function getStaticProps() {
 //   // const client = createApolloClient();

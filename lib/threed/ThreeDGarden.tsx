@@ -86,24 +86,19 @@ import ToolIconAddText from '@mui/icons-material/TextFields'
 
 // ** Three JS Imports (not here, use R3F)
 // import * as THREE from 'three'
-// ** Three JS Controls
-// ** Three JS Loaders
+// ** Three JS Loader
 import { Loader } from '@react-three/drei'
+// ** Three JS Controls
 import { Html } from '@react-three/drei'
+// ** Three JS Loaders
 // -- use React Three Fiber R3F hooks: useFBX, useOBJ, etc --
 // import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 // import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 // import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
-// ** Three JS Objects
-// ** Three JS Libraries
-// import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
-// use tween at all ??
 
 // ** ThreeD R3F Imports
 // import { Canvas } from '@react-three/fiber'
 import ThreeDCanvas from '#/lib/threed/components/canvas'
-// import BoxComponent from '#/lib/threed/components/box'
-// import ShaderComponent from '#/lib/threed/components/shader'
 
 // ** Modal Imports
 import modals from '#/lib/threed/components/modals'

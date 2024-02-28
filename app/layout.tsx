@@ -17,6 +17,7 @@ import { NextPageContext } from 'next'
 
 // ** React
 import type { ReactNode } from 'react'
+import { Suspense } from 'react'
 
 // ** Apollo Client -- State Management using Cache/Store (via GraphQL)
 import { ApolloClientWrapper } from '#/lib/api/graphql/ApolloClientWrapper'
@@ -58,7 +59,7 @@ import ThemeRegistry from '#/ui/theme/ThemeRegistry'
 // import UserLayout from '#/ui/layouts/UserLayout' // this is your user-authorized (new dashboard) layout
 
 // ** Helper Components
-// import Spinner from '#/ui/components/spinner'
+import Spinner from '#/ui/components/spinner'
 
 // ** CSS Styles
 // import '#/ui/styles/globals.css'
@@ -236,6 +237,8 @@ const AppLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Ele
                             {/* <>{children}</> */}
                             <ApolloClientWrapper>
                             {/* <ApolloProvider client={client}> */}
+
+                            <Suspense fallback={<Spinner />}>
                               <div id='ThreeDAppProvider' className='flex flex-col justify-between w-full h-full min-h-screen'>
                                 <Header />
                                 <main className='flex-auto w-full px-2 py-1 mx-auto'>
@@ -243,6 +246,9 @@ const AppLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Ele
                                 </main>
                                 <Footer />
                               </div>
+                            </Suspense>
+
+
                             {/* </ApolloProvider> */}
                             </ApolloClientWrapper>
                           </SessionProvider>
@@ -264,7 +270,7 @@ const AppLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Ele
 
 export default AppLayout
 
-/* not working, for some reason
+/* not working, no longer supported in Next 14 SSR
 AppLayout.getInitialProps = async (ctx: NextPageContext) => {
 //   const res = await fetch('https://api.github.com/repos/vercel/next.js')
 //   const json = await res.json()
@@ -291,7 +297,7 @@ AppLayout.getInitialProps = async (ctx: NextPageContext) => {
 }
 */
 
-// deprecated
+// deprecated OLD NEXT 10
 // AppLayout.defaultProps = {
 //   Component: {
 //     getLayout: 'YO YO YO',
