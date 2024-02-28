@@ -540,23 +540,28 @@ function nounStore(this: INounStore, _type = 'noun') {
       return responseData
     },
 
-    // load 'this' threed into React Three Fiber view
-    loadToCanvas: (loadThisThreeDToThreeDCanvas: Object, _type: string, _id: string, _r3fCanvas: string) => {
+    // load 'this' THREED[S] into React Three Fiber view
+    loadToCanvas: (threeds: Object[] = [], _type: string = '', _id: string = '1', _r3fCanvas: string = '#_r3fcanvas') => {
       try {
 
-        if (loadThisThreeDToThreeDCanvas) {
+        let loadThis_ThreeD_SingleArrayToThreeDCanvas = threeds[0]
+        let loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas = threeds
+
+        if (loadThis_ThreeD_SingleArrayToThreeDCanvas) {
           // send 'this' to '_r3fCanvas'
-          console.debug('%c_r3fCanvas to receive JS Object: loadThisThreeDToThreeDCanvas', ccm.green)
+
+          console.debug('%c_r3fCanvas to receive JS Object: loadThis_ThreeD_SingleArrayToThreeDCanvas', ccm.green)
           return true // <div>...plan of threeds as r3f component...</div>
         }
 
-        const loadThisPlanOfThreeDsToThreeDCanvas = this.store.get('one')
-        // console.debug(`%cload {loadThisThreeDToThreeDCanvas}`, ccm.orange, loadThisThreeDToThreeDCanvas)
-        // console.debug(`%cload {loadThisPlanOfThreeDsToThreeDCanvas}`, ccm.orange, loadThisPlanOfThreeDsToThreeDCanvas)
+        loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas = this.store.get('one').plans
+        // console.debug(`%cload {loadThis_ThreeD_SingleArrayToThreeDCanvas}`, ccm.orange, loadThis_ThreeD_SingleArrayToThreeDCanvas)
+        // console.debug(`%cload {loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas}`, ccm.orange, loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas)
 
-        if (loadThisPlanOfThreeDsToThreeDCanvas) {
+        if (loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas) {
           // send 'this' to '_r3fCanvas'
-          console.debug('%c_r3fCanvas to receive JS Object: loadThisPlanOfThreeDsToThreeDCanvas', ccm.green)
+          
+          console.debug('%c_r3fCanvas to receive JS Object: loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas', ccm.green)
           return true // <>true</>
         }
 
