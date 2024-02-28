@@ -1,7 +1,7 @@
 // 'use client'
 
 // ** Helper Components
-import Spinner from '#/ui/components/spinner'
+// import Spinner from '#/ui/components/spinner'
 // import { Loader, useProgress } from '@react-three/drei'
 
 // example working simple <Loader />
@@ -10,9 +10,10 @@ import Spinner from '#/ui/components/spinner'
 //   return <span>{Math.round(progress)} % loaded</span>
 // }
 
-export default function Loader() {
+export default function Loading() {
+  console.debug('PARTICIPATE PAGE LOADER LOADING !!!!')
   // return <Loader />
   // return <LoaderSimple />
-  return <Spinner />
-  // return <div>Loading...</div>
+  // return <Spinner />
+  return <>Loading...</>
 }
