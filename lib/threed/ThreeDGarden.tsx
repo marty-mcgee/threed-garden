@@ -82,13 +82,14 @@ import ToolIconAddRuler from '@mui/icons-material/Straighten'
 import ToolIconAddText from '@mui/icons-material/TextFields'
 
 // ** Helper Components
-import Spinner from '#/ui/components/spinner'
+// import Spinner from '#/ui/components/spinner'
 
 // ** Three JS Imports (not here, use R3F)
 // import * as THREE from 'three'
 // ** Three JS Controls
 // ** Three JS Loaders
-import { Loader, Html } from '@react-three/drei'
+// import { Loader } from '@react-three/drei'
+import { Html } from '@react-three/drei'
 // -- use React Three Fiber R3F hooks: useFBX, useOBJ, etc --
 // import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 // import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -363,7 +364,12 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
   const increaseCount = () => projectStore.store.update('count', projectStore.actions.increaseCount())
   const decreaseCount = () => projectStore.store.update('count', projectStore.actions.decreaseCount())
   const getState = () => projectStore.actions.getState()
-  const loadToCanvas = () => projectStore.actions.loadToCanvas(projectStore.get('threeds'))
+  const loadToCanvas = () => projectStore.actions.loadToCanvas(
+    projectStore.store.get('one').data.plans.nodes, // plans of threeds[]
+    'project', // _type
+    '2', // _id
+    'default_r3fCanvas' // _r3fCanvas id to write changes to
+  )
 
   return (
     <Box>
@@ -3663,14 +3669,14 @@ const ThreeDGarden = (): JSX.Element => {
       // style={{'width': '100%'}}
     >
 
-    <Loader
+    {/* <Loader
       // containerStyles={...container} // Flex layout styles
       // innerStyles={...inner} // Inner container styles
       // barStyles={...bar} // Loading-bar styles
       // dataStyles={...data} // Text styles
       dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
       initialState={(active = true) => active} // Initial black out state
-    />
+    /> */}
 
     {/* <Suspense fallback={null}> */}
     {/* <Suspense fallback={<Html center><Loader /></Html>}> */}

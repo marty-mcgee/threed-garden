@@ -544,6 +544,8 @@ function nounStore(this: INounStore, _type = 'noun') {
     loadToCanvas: (threeds: Object[] = [], _type: string = '', _id: string = '1', _r3fCanvas: string = '#_r3fcanvas') => {
       try {
 
+        console.debug('%cloadToCanvas threeds[]', ccm.green, threeds)
+
         let loadThis_ThreeD_SingleArrayToThreeDCanvas = threeds[0]
         let loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas = threeds
 
@@ -560,7 +562,7 @@ function nounStore(this: INounStore, _type = 'noun') {
 
         if (loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas) {
           // send 'this' to '_r3fCanvas'
-          
+
           console.debug('%c_r3fCanvas to receive JS Object: loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas', ccm.green)
           return true // <>true</>
         }
