@@ -363,7 +363,7 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
   const increaseCount = () => projectStore.store.update('count', projectStore.actions.increaseCount())
   const decreaseCount = () => projectStore.store.update('count', projectStore.actions.decreaseCount())
   const getState = () => projectStore.actions.getState()
-  const loadToCanvas = () => projectStore.actions.loadToCanvas()
+  const loadToCanvas = () => projectStore.actions.loadToCanvas(projectStore.get('threeds'))
 
   return (
     <Box>
@@ -3592,7 +3592,9 @@ const ThreeDGarden = (): JSX.Element => {
   // const loadProjectFromChosenDataSource = () => data.store.store.useStore('allDB')
   // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDataSource(data.client)
 
-  // WORKING: data.store.actions.loadFromDataSource(data.client)
+  // WORKING:
+  // LOAD DEFAULT DATA ON START + REFRESH
+  data.store.actions.loadFromDataSource(data.client)
 
   // ==========================================================
   // Tabs
