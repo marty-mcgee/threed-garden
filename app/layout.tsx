@@ -46,7 +46,7 @@ import { ApolloClientWrapper } from '#/lib/api/graphql/ApolloClientWrapper'
 import '#/lib/api/@fake-db'
 
 // ** Contexts for Theme Settings + MUI Components
-// import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/settings/SettingsContext'
+import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/settings/SettingsContext'
 import ThemeRegistry from '#/ui/theme/ThemeRegistry'
 
 // ** Configs
@@ -228,17 +228,18 @@ const AppLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Ele
                 {/* <ReduxProvider store={reduxStore}> */}
                   {/* <SettingsProvider { ...(setConfig ? { pageSettings: setConfig() } : { pageSettings: null }) }> */}
                   {/* <SettingsProvider { ...({ pageSettings: null }) }> */}
+                  <SettingsProvider pageSettings={{}}>
                     {/* <SettingsConsumer> */}
                       {/* {({ settings }) => ( */}
-                        {/* <ThemeRegistry settings={settings}> */}
                         <ThemeRegistry settings={{}}>
+                        {/* <ThemeRegistry settings={{}}> */}
                           {/* <UserLayout key='ThreeDAppLayout-UserLayout'> */}
                           <SessionProvider session={session}>
                             {/* <>{children}</> */}
                             <ApolloClientWrapper>
                             {/* <ApolloProvider client={client}> */}
 
-                            <Suspense fallback={<Spinner />}>
+                            {/* <Suspense fallback={<Spinner />}> */}
                               <div id='ThreeDAppProvider' className='flex flex-col justify-between w-full h-full min-h-screen'>
                                 <Header />
                                 <main className='flex-auto w-full px-2 py-1 mx-auto'>
@@ -246,8 +247,7 @@ const AppLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Ele
                                 </main>
                                 <Footer />
                               </div>
-                            </Suspense>
-
+                            {/* </Suspense> */}
 
                             {/* </ApolloProvider> */}
                             </ApolloClientWrapper>
@@ -256,7 +256,7 @@ const AppLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Ele
                         </ThemeRegistry>
                       {/* )} */}
                     {/* </SettingsConsumer> */}
-                  {/* </SettingsProvider> */}
+                  </SettingsProvider>
                 {/* </ReduxProvider> */}
               {/* </ApolloProvider> */}
             {/* </AclGuard> */}

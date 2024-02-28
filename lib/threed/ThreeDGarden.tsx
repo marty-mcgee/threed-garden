@@ -212,10 +212,10 @@ const postdata: IPostData = {
   plugin_name: 'ThreeD Garden',
   plugin_version: appVersion,
   plugin_url: 'https://threed.design/',
-  theme_uri: 'dark',
+  theme_uri: 'dark', // dark | light
   rest_url: 'https://threed.design/wp-json/wp/v2/',
-  world_id: 1,
-  scene_id: 1,
+  world_id: 1, // default
+  scene_id: 1, // default
 }
 
 const env: IThreeDEnv = {
@@ -258,7 +258,7 @@ const AppBar = styled(MuiAppBar)(({ theme }) => ({
   padding: theme.spacing(0, 0),
   backgroundColor: 'transparent',
   color: theme.palette.text.primary,
-  minHeight: `42px !important`,
+  minHeight: `32px !important`,
   // [theme.breakpoints.down('sm')]: {
   //   paddingLeft: theme.spacing(4),
   //   paddingRight: theme.spacing(4)
@@ -270,7 +270,7 @@ const Toolbar = styled(MuiToolbar)(({ theme }) => ({
   // borderBottomLeftRadius: 10,
   // borderBottomRightRadius: 10,
   // padding: `${theme.spacing(0)} !important`,
-  minHeight: `42px !important`,
+  minHeight: `32px !important`,
   // transition: 'padding .25s ease-in-out, box-shadow .25s ease-in-out, backdrop-filter .25s ease-in-out'
 }))
 
@@ -281,7 +281,7 @@ const Tabs = styled(MuiTabs)(({ theme }) => ({
 const Button = styled(MuiButton)(({ theme }) => ({
   marginRight: `0.25rem !important`,
   padding: `0.5rem 0.5rem !important`,
-  minWidth: `1.8rem !important`,
+  minWidth: `2.0rem !important`,
 }))
 
 // ==========================================================
@@ -3450,13 +3450,19 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
   // console.debug('%cThreeDCanvasViewer {data.store}', ccm.yellow, data.store)
   // console.debug(`%c====================================`, ccm.black)
 
-  const nounDataToUse = data.store.store.useStore('one')
-  const nounDataToUse_title = nounDataToUse.data?.title ? nounDataToUse.data.title : 'NOTHING YET SIR'
-  // console.debug('%cThreeDCanvasViewer {nounDataToUse}', ccm.blue, nounDataToUse)
+  const nounDataToLoad = data.store.store.useStore('one')
+  const nounDataToLoad_title = nounDataToLoad.data?.title ? nounDataToLoad.data.title : 'NOTHING YET SIR'
+  // console.debug('%cThreeDCanvasViewer {nounDataToLoad}', ccm.blue, nounDataToLoad)
 
-  const loadNounDataToUse = (nounDataToUse) => {
-    // load this nounDataToUse into r3f canvas
-    // data.store.actions.loadToCanvas(nounDataToUse, 'r3fCanvas')
+  // const threeds = new Array()
+  const threeds = [{...nounDataToLoad}]
+  console.debug('%cThreeDCanvasViewer {threeds}', ccm.orange, threeds)
+  const threedsToLoad = threeds[0].data.plans.nodes[0].threedsActive.nodes
+  console.debug('%cThreeDCanvasViewer {threedsToLoad}', ccm.red, threedsToLoad)
+
+  const loadNounDataToLoad = (nounDataToLoad) => {
+    // load this nounDataToLoad into r3f canvas
+    // data.store.actions.loadToCanvas(nounDataToLoad, 'r3fCanvas')
     return <Box>true</Box> // true
   }
 
@@ -3482,21 +3488,21 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
         // style={{ display: 'flex', justifyContent: 'flex-start' }}
       >
         <Typography>
-          {/* {nounDataToUse._type} title:  */}
-          {nounDataToUse_title}
+          {/* {nounDataToLoad._type} title:  */}
+          {nounDataToLoad_title}
         </Typography>
       </Grid>
       <Grid
         item
-        id='actions[loadNounDataToUse()]'
+        id='actions[loadNounDataToLoad()]'
         md={7}
         xs={12}
         style={{ display: 'flex', justifyContent: 'flex-end' }}
       >
-        <Button onClick={() => loadNounDataToUse('project')}>load project</Button>
-        <Button onClick={() => loadNounDataToUse('scene')}>load scene</Button>
-        <Button onClick={() => loadNounDataToUse('character')}>load character</Button>
-        <Button onClick={() => loadNounDataToUse('farmbot')}>load farmbot</Button>
+        <Button onClick={() => loadNounDataToLoad('project')}>load project</Button>
+        <Button onClick={() => loadNounDataToLoad('scene')}>load scene</Button>
+        <Button onClick={() => loadNounDataToLoad('character')}>load character</Button>
+        <Button onClick={() => loadNounDataToLoad('farmbot')}>load farmbot</Button>
       </Grid>
       <Grid
         container
@@ -3510,18 +3516,24 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
           xs={12}
           sx={{ borderTop: '1px solid darkgreen' }}
         >
+
+
+
           {/* THREED HEY HEY HEY */}
           <ThreeDCanvas
-            _id={1}
-            nounDataToUse={nounDataToUse}
+            _id={3000}
+            threeds={threeds}
           />
+
+
+
         </Grid>
         {/* <Grid item id='camera[1]'
           md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
         >
           <ThreeDCanvas
             _id={2}
-            nounDataToUse={nounDataToUse}
+            nounDataToLoad={nounDataToLoad}
           />
         </Grid> */}
         {/* <Grid item id='camera[2]'
@@ -3529,7 +3541,7 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
         >
           <ThreeDCanvas
             _id={3}
-            nounDataToUse={nounDataToUse}
+            nounDataToLoad={nounDataToLoad}
           />
         </Grid> */}
         {/* <Grid item id='camera[3]'
@@ -3537,7 +3549,7 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
         >
           <ThreeDCanvas
             _id={4}
-            nounDataToUse={nounDataToUse}
+            nounDataToLoad={nounDataToLoad}
           />
         </Grid> */}
       </Grid>
