@@ -80,28 +80,20 @@ function ThreeDControls() {
   )
 }
 
-export default function ThreeDCanvas({ nounDataToUse, scene, models, files, children }) {
+export default function ThreeDCanvas({ scene, threeds, children }) {
   // **
-  // THE NOUNS (to use)
-  if (nounDataToUse) {
-    console.debug('nounDataToUse', nounDataToUse)
-    if (nounDataToUse.length) {
-      console.debug('nounDataToUse.length', nounDataToUse.length)
-    }
-  }
-  // THE SCENE
+
   if (scene) {
-    // console.debug('scene', scene)
+    console.debug('%c scene to load to ThreeDCanvas', ccm.yellow, scene)
     if (scene.length) {
       // console.debug('scene.length', scene.length)
     }
   }
-  // THE MODELS
-  // inject models inside Suspense groups
-  if (models) {
-    // console.debug('models', models)
-    if (models.length) {
-      // console.debug('models.length', models.length)
+  // THE THREEDS ==== // THE NOUNS (to use)
+  if (threeds) {
+    console.debug('%c threeds to load to ThreeDCanvas', ccm.yellow, threeds)
+    if (threeds.length) {
+      // console.debug('threeds.length', threeds.length)
     }
   }
 
