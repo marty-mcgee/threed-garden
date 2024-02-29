@@ -3457,9 +3457,9 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
 
   // const threeds = new Array()
   const threeds = [{...nounDataToLoad}]
-  console.debug('%cThreeDCanvasViewer {threeds}', ccm.orange, threeds)
+  if (debug) console.debug('%cThreeDCanvasViewer {threeds}', ccm.orange, threeds)
   const threedsToLoad = threeds[0]?.data?.plans?.nodes[0]?.threedsActive?.nodes
-  console.debug('%cThreeDCanvasViewer {threedsToLoad}', ccm.red, threedsToLoad)
+  if (debug) console.debug('%cThreeDCanvasViewer {threedsToLoad}', ccm.red, threedsToLoad)
 
   const loadNounDataToLoad = (nounDataToLoad) => {
     // load this nounDataToLoad into r3f canvas
