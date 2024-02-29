@@ -291,7 +291,7 @@ function nounStore(this: INounStore, _type = 'noun') {
             console.debug(`%cloadFromDisk {${this._type}} (after)`, ccm.blue, this.store.get('one'))
 
             // update metadata for the store to use
-            if (thisStoreUseOne) {
+            if (thisStoreUseOne.data) {
               // this.store.update('one._name', thisStoreUseOne.data.title) // ideally
               this.store.update('one', {
                 _id: thisStoreUseOne._id, // .data.projectId (TODO: get wp_post.id and not wp_type.projectId)
