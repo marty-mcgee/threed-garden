@@ -129,7 +129,7 @@ function nounStore(this: INounStore, _type = 'noun') {
     _id: newUUID(),
     _ts: new Date().toISOString(),
     _type: this._type,
-    all: [], // all of this nouns historical + current records (all scenes, all projects)
+    all: [], // all of this nouns historical + current records (all scenes; all projects; all plans;)
     one: new (noun as any)(this._type), // {}, // the current noun, aka 'this one noun'
 
     // track current noun + noun history
