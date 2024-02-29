@@ -360,12 +360,7 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
   const increaseCount = () => projectStore.store.update('count', projectStore.actions.increaseCount())
   const decreaseCount = () => projectStore.store.update('count', projectStore.actions.decreaseCount())
   const getState = () => projectStore.actions.getState()
-  const loadToCanvas = () => projectStore.actions.loadToCanvas(
-    projectStore.store.get('one').data.plans.nodes, // plans of threeds[]
-    'project', // _type
-    '2', // _id
-    'default_r3fCanvas' // _r3fCanvas id to write changes to
-  )
+  const loadToCanvas = () => projectStore.actions.loadToCanvas()
 
   return (
     <Box>
