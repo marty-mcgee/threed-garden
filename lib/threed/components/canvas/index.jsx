@@ -42,6 +42,8 @@ import ccm from '#/lib/utils/console-colors'
 // ==============================================================
 // ** VARIABLES
 
+const debug = false // false | true // ts: boolean
+
 // Reactive state model (using valtio)
 const state = proxy({ current: null, mode: 0 })
 
@@ -84,16 +86,16 @@ export default function ThreeDCanvas({ scene, threeds, children }) {
   // **
 
   if (scene) {
-    console.debug('%c scene to load to ThreeDCanvas', ccm.yellow, scene)
+    if (debug) console.debug('%c scene to load to ThreeDCanvas', ccm.yellow, scene)
     if (scene.length) {
-      // console.debug('scene.length', scene.length)
+      // if (debug) console.debug('scene.length', scene.length)
     }
   }
   // THE THREEDS ==== // THE NOUNS (to use)
   if (threeds) {
-    console.debug('%c threeds to load to ThreeDCanvas', ccm.yellow, threeds)
+    if (debug) console.debug('%c threeds to load to ThreeDCanvas', ccm.yellow, threeds)
     if (threeds.length) {
-      // console.debug('threeds.length', threeds.length)
+      // if (debug) console.debug('threeds.length', threeds.length)
     }
   }
 

@@ -30,6 +30,9 @@ import ccm from '#/lib/utils/console-colors'
 // console.debug(`%c🥕 ThreeDGarden<FC,R3F>: Apollo {stores}`, ccm.blue)
 // console.debug(`%c====================================`, ccm.blue)
 
+// ** TESTING
+const debug: boolean = false // false | true
+
 // ==============================================================
 // ==============================================================
 // ==============================================================
@@ -178,7 +181,7 @@ function nounStore(this: INounStore, _type = 'noun') {
       this.store.update('count', 0)
       this.store.update('countDB', 0)
       console.clear()
-      console.debug(`%cremoveAll [${this._type}]`, ccm.red, true)
+      console.debug(`%c X removeAll [${this._type}]`, ccm.red, true)
     },
 
     // add a new current 'this' noun
@@ -199,7 +202,7 @@ function nounStore(this: INounStore, _type = 'noun') {
       else {
         // nounHistory (save existing before mutating, if not empty)
         this.store.update('history', [this.store.get('one'), ...this.store.get('history')])
-        console.debug(`%caddNew [${this._type}] (save history)`, ccm.orange, this.store.get('all'))
+        if (debug) console.debug(`%caddNew [${this._type}] (save history)`, ccm.orange, this.store.get('all'))
 
         // count
         // this.store.update('count', this.store.get('count') + 1) // manual
@@ -225,16 +228,16 @@ function nounStore(this: INounStore, _type = 'noun') {
           ],
         })
       }
-      console.debug(`%caddNew {${this._type}} (added)`, ccm.orange, this.store.get('one'))
+      if (debug) console.debug(`%caddNew {${this._type}} (added)`, ccm.orange, this.store.get('one'))
 
       // nounHistory (save recently mutated new one and all old ones)
       this.store.update('all', [this.store.get('one'), ...this.store.get('all')])
-      console.debug(`%caddNew [${this._type}] (all updated)`, ccm.orange, this.store.get('all'))
+      if (debug) console.debug(`%caddNew [${this._type}] (all updated)`, ccm.orange, this.store.get('all'))
 
       // count (for fun/learning)
       // this.store.update('count', this.store.get('count') + 1) // manual
       this.store.update('count', this.store.get('all').length) // automatic
-      console.debug(`%caddNew {count}`, ccm.blue, this.store.get('count'))
+      if (debug) console.debug(`%caddNew {count}`, ccm.blue, this.store.get('count'))
       // console.debug(`%caddNew {${this._type}}`, ccm.blue, this.store.get('all').length)
 
       // saveToDisk
@@ -242,7 +245,7 @@ function nounStore(this: INounStore, _type = 'noun') {
       // loadFromDisk
       // this.actions.loadFromDisk()
 
-      console.debug(`%caddNew [${this._type}] (final)`, ccm.green, this.store.get('one'))
+      if (debug) console.debug(`%caddNew [${this._type}] (final)`, ccm.green, this.store.get('one'))
     },
 
     save: () => {
@@ -262,10 +265,10 @@ function nounStore(this: INounStore, _type = 'noun') {
             payload: this.store.get('all'),
           })
         )
-        console.debug(`%csaveToDisk [${this._type}]`, ccm.orange, this.store.get('all'))
+        if (debug) console.debug(`%csaveToDisk [${this._type}]`, ccm.orange, this.store.get('all'))
         return true
       } catch (ERROR) {
-        console.debug(`%csaveToDisk [${this._type}] ERROR`, ccm.red, ERROR)
+        if (debug) console.debug(`%csaveToDisk [${this._type}] ERROR`, ccm.red, ERROR)
         return false
       }
     },
@@ -275,20 +278,20 @@ function nounStore(this: INounStore, _type = 'noun') {
       try {
         const query = JSON.parse(localStorage.getItem(this._storageItem))
         if (query) {
-          // console.debug(`%cloadFromDisk [${this._type}] QUERY?`, ccm.blue, query)
+          // if (debug) console.debug(`%cloadFromDisk [${this._type}] QUERY?`, ccm.blue, query)
           const { payload } = query
-          // console.debug(`%cloadFromDisk [${this._type}] QUERY.PAYLOAD?`, ccm.blue, payload)
+          // if (debug) console.debug(`%cloadFromDisk [${this._type}] QUERY.PAYLOAD?`, ccm.blue, payload)
 
           if (payload) {
             // console.debug(`%cloadFromDisk [${this._type}]`, ccm.blue, true, payload)
 
             this.store.update('all', [...payload]) // payload should have .data{}
-            console.debug(`%cloadFromDisk [${this._type}s] (after)`, ccm.blue, this.store.get('all'))
+            if (debug) console.debug(`%cloadFromDisk [${this._type}s] (after)`, ccm.blue, this.store.get('all'))
 
             // TODO : WHICH DB RECORD DO YOU WANT TO USE ???
             // default is the first one [0]
             const thisStoreUseOne = this.store.get('all')[0]
-            console.debug(`%cloadFromDisk {${this._type}} (after)`, ccm.blue, this.store.get('one'))
+            if (debug) console.debug(`%cloadFromDisk {${this._type}} (after)`, ccm.blue, this.store.get('one'))
 
             // update metadata for the store to use
             if (thisStoreUseOne.data) {
@@ -340,7 +343,7 @@ function nounStore(this: INounStore, _type = 'noun') {
     loadFromDB: async (client: any) => {
       try {
         // const _this = this
-        console.debug(`%cloadFromDB this`, ccm.yellow, this)
+        if (debug) console.debug(`%cloadFromDB this`, ccm.yellow, this)
 
         // .gql
         let QUERY = GetProjects // default
@@ -469,11 +472,11 @@ function nounStore(this: INounStore, _type = 'noun') {
             // this.store.update('all', [...all]) // nodes
             this.store.update('all', ([this.store.get('all'), ...all])) // nodes, past + present
             const nouns = this.store.get('all')
-            console.debug(`%cloadFromDB [${this._type}] (all)`, ccm.blue, nouns)
+            if (debug) console.debug(`%cloadFromDB [${this._type}] (all)`, ccm.blue, nouns)
 
             this.store.update('oneDB', nouns[nouns.length - 1]) // node (use last one)
             const nounDB = this.store.get('oneDB')
-            console.debug(`%cloadFromDB [${this._type}] {oneDB}`, ccm.orange, nounDB)
+            if (debug) console.debug(`%cloadFromDB [${this._type}] {oneDB}`, ccm.orange, nounDB)
 
             // save to disk here ??? no
             // this.actions.saveToDisk()
@@ -496,7 +499,7 @@ function nounStore(this: INounStore, _type = 'noun') {
                 }
               ],
             })
-            console.debug(`%cloadFromDB [${this._type}] {one} (after)`, ccm.orange, this.store.get('one'))
+            if (debug) console.debug(`%cloadFromDB [${this._type}] {one} (after)`, ccm.orange, this.store.get('one'))
 
             this.store.update('countDB', this.store.get('all').length)
             // console.debug(`%cloadFromDB countDB`, ccm.orange, this.store.get('countDB'))
@@ -529,17 +532,17 @@ function nounStore(this: INounStore, _type = 'noun') {
       }
       responseData.isLoadedFromDisk = this.actions.loadFromDisk(client)
       if (responseData.isLoadedFromDisk) {
-        console.debug('loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', responseData)
+        if (debug) console.debug('loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', responseData)
         return responseData
       } else {
         responseData.isLoadedFromDB = this.actions.loadFromDB(client)
         if (responseData.isLoadedFromDB) {
-          console.debug('loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', responseData)
+          if (debug) console.debug('loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', responseData)
           return responseData
         }
       }
       // default
-      console.debug('loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', responseData)
+      if (debug) console.debug('loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', responseData)
       return responseData
     },
 
@@ -547,7 +550,7 @@ function nounStore(this: INounStore, _type = 'noun') {
     loadToCanvas: (threeds: Object[] = [], _type: string = '', _id: string = '1', _r3fCanvas: string = '#_r3fcanvas') => {
       try {
 
-        console.debug('%cloadToCanvas threeds[]', ccm.green, threeds)
+        if (debug) console.debug('%cloadToCanvas threeds[]', ccm.green, threeds)
 
         let loadThis_ThreeD_SingleArrayToThreeDCanvas = threeds[0]
         let loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas = threeds
@@ -555,7 +558,7 @@ function nounStore(this: INounStore, _type = 'noun') {
         if (loadThis_ThreeD_SingleArrayToThreeDCanvas) {
           // send 'this' to '_r3fCanvas'
 
-          console.debug('%c_r3fCanvas to receive JS Object: loadThis_ThreeD_SingleArrayToThreeDCanvas', ccm.green)
+          if (debug) console.debug('%c_r3fCanvas to receive JS Object: loadThis_ThreeD_SingleArrayToThreeDCanvas', ccm.green)
           return true // <div>...plan of threeds as r3f component...</div>
         }
 
@@ -566,14 +569,14 @@ function nounStore(this: INounStore, _type = 'noun') {
         if (loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas) {
           // send 'this' to '_r3fCanvas'
 
-          console.debug('%c_r3fCanvas to receive JS Object: loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas', ccm.green)
+          if (debug) console.debug('%c_r3fCanvas to receive JS Object: loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas', ccm.green)
           return true // <>true</>
         }
 
-        console.debug('%c_r3fCanvas to receive NOTHING', ccm.red)
+        if (debug) console.debug('%c_r3fCanvas to receive NOTHING', ccm.red)
         return false
       } catch (ERROR) {
-        console.debug(`%cload {noun}: ERROR`, ccm.red, ERROR)
+        if (debug) console.debug(`%cload {noun}: ERROR`, ccm.red, ERROR)
         return false
       }
     },
