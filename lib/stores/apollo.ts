@@ -285,8 +285,9 @@ function nounStore(this: INounStore, _type = 'noun') {
             this.store.update('all', [...payload]) // payload should have .data{}
             console.debug(`%cloadFromDisk [${this._type}s] (after)`, ccm.blue, this.store.get('all'))
 
+            // TODO : WHICH DB RECORD DO YOU WANT TO USE ???
+            // default is the first one [0]
             const thisStoreUseOne = this.store.get('all')[0]
-            this.store.update('one', thisStoreUseOne)
             console.debug(`%cloadFromDisk {${this._type}} (after)`, ccm.blue, this.store.get('one'))
 
             // update metadata for the store to use
@@ -296,7 +297,7 @@ function nounStore(this: INounStore, _type = 'noun') {
                 _id: thisStoreUseOne._id, // .data.projectId (TODO: get wp_post.id and not wp_type.projectId)
                 _ts: thisStoreUseOne.data.modified,
                 _type: _type.toLowerCase(),
-                _name: _type.toUpperCase() + ' NAME: ' + thisStoreUseOne.data.title,
+                _name: thisStoreUseOne.data.title,
                 // wp custom fields
                 data: thisStoreUseOne.data,
                 // layers/levels

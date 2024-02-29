@@ -325,23 +325,24 @@ if (debug) {
 // Project
 
 const ProjectInfoPanel: FC = (_type: string = 'project'): JSX.Element => {
+  // **
   const projectCount = projectStore.store.useStore('count')
   const projects = projectStore.store.useStore('all')
   const project = projectStore.store.useStore('one')
-  const projectsDB = projectStore.store.useStore('allDB')
-  const projectDB = projectStore.store.useStore('oneDB')
+  // const projectsDB = projectStore.store.useStore('allDB')
+  // const projectDB = projectStore.store.useStore('oneDB')
 
   return (
     <Box sx={{ px: 2 }}>
-      <Typography>{projectCount} projects around here ...</Typography>
-      <Typography>projects: {projects.length}</Typography>
-      <Typography>projectsDB: {projectsDB.length}</Typography>
+      <Typography></Typography>
+      <Typography>projects.length: {projects.length} | count: {projectCount}</Typography>
+      {/* <Typography>projectsDB: {projectsDB.length}</Typography> */}
       <Typography>project._id: {project._id}</Typography>
       <Typography>project._ts: {project._ts}</Typography>
       <Typography>project._name: {project._name}</Typography>
       <Typography>project.data.title: {project.data?.title}</Typography>
-      <Typography>project.data.scenes: {project.data?.scenes?.nodes.length}</Typography>
-      <Typography>project.data.plans: {project.data?.plans?.nodes.length}</Typography>
+      <Typography>project.data.scenes.length: {project.data?.scenes?.nodes.length}</Typography>
+      <Typography>project.data.plans.length: {project.data?.plans?.nodes.length}</Typography>
     </Box>
   )
 }
@@ -3457,7 +3458,7 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
   // const threeds = new Array()
   const threeds = [{...nounDataToLoad}]
   console.debug('%cThreeDCanvasViewer {threeds}', ccm.orange, threeds)
-  const threedsToLoad = threeds[0].data.plans.nodes[0].threedsActive.nodes
+  const threedsToLoad = threeds[0]?.data?.plans?.nodes[0]?.threedsActive?.nodes
   console.debug('%cThreeDCanvasViewer {threedsToLoad}', ccm.red, threedsToLoad)
 
   const loadNounDataToLoad = (nounDataToLoad) => {
@@ -3522,7 +3523,7 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
           {/* THREED HEY HEY HEY */}
           <ThreeDCanvas
             _id={3000}
-            threeds={threeds}
+            threeds={threedsToLoad}
           />
 
 
