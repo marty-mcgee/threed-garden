@@ -341,8 +341,8 @@ const ProjectInfoPanel: FC = (_type: string = 'project'): JSX.Element => {
       <Typography>project._ts: {project._ts}</Typography>
       <Typography>project._name: {project._name}</Typography>
       <Typography>project.data.title: {project.data?.title}</Typography>
-      <Typography>project.data.scenes.length: {project.data?.scenes?.nodes.length}</Typography>
-      <Typography>project.data.plans.length: {project.data?.plans?.nodes.length}</Typography>
+      <Typography>project.data.scene[s]: {project.data?.scenes?.nodes[0].title}</Typography>
+      <Typography>project.data.plan[s]: {project.data?.plans?.nodes[0].title}</Typography>
     </Box>
   )
 }

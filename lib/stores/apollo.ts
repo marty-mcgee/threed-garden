@@ -466,7 +466,8 @@ function nounStore(this: INounStore, _type = 'noun') {
             // console.debug(`%cloadFromDB [${this._type}]`, ccm.blue, all)
 
             // set state from db
-            this.store.update('all', [...all]) // nodes
+            // this.store.update('all', [...all]) // nodes
+            this.store.update('all', ([this.store.get('all'), ...all])) // nodes, past + present
             const nouns = this.store.get('all')
             console.debug(`%cloadFromDB [${this._type}] (all)`, ccm.blue, nouns)
 
@@ -482,8 +483,8 @@ function nounStore(this: INounStore, _type = 'noun') {
               _id: newUUID(),
               _ts: new Date().toISOString(),
               _type: _type.toLowerCase(),
-              // _name: nounDB.data.title,
-              _name: _type.toUpperCase() + ' NAME: ' + nounDB.data.title,
+              _name: nounDB.data.title,
+              // _name: _type.toUpperCase() + ' NAME: ' + nounDB.data.title,
               // wp custom fields
               data: nounDB.data,
               // layers/levels
