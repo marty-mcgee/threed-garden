@@ -238,7 +238,7 @@ function nounStore(this: INounStore, _type = 'noun') {
       // console.debug(`%caddNew {${this._type}}`, ccm.blue, this.store.get('all').length)
 
       // saveToDisk
-      // this.actions.saveToDisk()
+      this.actions.saveToDisk()
       // loadFromDisk
       // this.actions.loadFromDisk()
 
@@ -307,13 +307,14 @@ function nounStore(this: INounStore, _type = 'noun') {
               return true
             }
 
-            return false
           } else {
             console.debug(`%cloadFromDisk [${this._type}] EMPTY QUERY.PAYLOAD?`, ccm.orange, query)
           }
         } else {
           console.debug(`%cloadFromDisk [${this._type}] NOTHING TO LOAD`, ccm.orange, query)
         }
+
+        // if everything in this logic fails, return false as default
         return false
       } catch (ERROR) {
         console.debug(`%cloadFromDisk [${this._type}] ERROR`, ccm.red, ERROR)
