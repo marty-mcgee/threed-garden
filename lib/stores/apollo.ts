@@ -559,9 +559,10 @@ function nounStore(this: INounStore, _type = 'noun') {
       try {
 
         if (threeds.length) {
-          // send 'this' to '_r3fCanvas'
+          // send 'this' to '#_r3fCanvas'
 
-          if (debug || DEBUG) console.debug('%c #_r3fCanvas to receive JS Object: threeds', ccm.green, threeds)
+          if (debug || DEBUG)
+            console.debug('%c #_r3fCanvas to receive JS Object: threeds', ccm.green, threeds)
           return true // <div>...plan of threeds as r3f component...</div>
         }
 
@@ -574,22 +575,30 @@ function nounStore(this: INounStore, _type = 'noun') {
                 load_PlanOfThreeDs_ToThreeDCanvas = this.store.get('one').data?.plans?.nodes[0]?.threedsActive?.nodes // plans[] of threeds[]
               }
             } catch (ERROR) {
-              if (debug || DEBUG) console.debug(`%c load_PlanOfThreeDs_ToThreeDCanvas: ERROR`, ccm.red, ERROR)
+              if (debug || DEBUG)
+                console.debug(`%c load_PlanOfThreeDs_ToThreeDCanvas: ERROR`, ccm.red, ERROR)
             }
 
             if (load_PlanOfThreeDs_ToThreeDCanvas && load_PlanOfThreeDs_ToThreeDCanvas.length) {
               // send 'this' to '_r3fCanvas'
 
-              if (debug || DEBUG) console.debug('%c #_r3fCanvas to receive JS Object: load_PlanOfThreeDs_ToThreeDCanvas', ccm.green, load_PlanOfThreeDs_ToThreeDCanvas)
+              if (debug || DEBUG)
+                console.debug(
+                  '%c #_r3fCanvas to receive JS Object: load_PlanOfThreeDs_ToThreeDCanvas',
+                  ccm.green,
+                  load_PlanOfThreeDs_ToThreeDCanvas
+                )
               return true
             }
           }
         }
 
-        if (debug || DEBUG) console.debug('%c #_r3fCanvas to receive NOTHING', ccm.red)
+        if (debug || DEBUG)
+          console.debug('%c #_r3fCanvas to receive NOTHING', ccm.red)
         return false
       } catch (ERROR) {
-        if (debug || DEBUG) console.debug(`%c load {noun}: ERROR`, ccm.red, ERROR)
+        if (debug || DEBUG)
+          console.debug(`%c load {noun}: ERROR`, ccm.red, ERROR)
         return false
       }
     },
