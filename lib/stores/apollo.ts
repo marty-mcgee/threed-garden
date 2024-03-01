@@ -551,9 +551,9 @@ function nounStore(this: INounStore, _type = 'noun') {
     // load 'this' THREED[S] into React Three Fiber view
     loadToCanvas: (
       threeds: Object[] = [],
-      _type: string = '',
+      _type: string = 'project',
       _requestType: string = 'plansOfThreeds',
-      _id: string = '1',
+      _id: string = '3333',
       _r3fCanvas: string = '#_r3fcanvas'
     ) => {
       try {
@@ -561,30 +561,32 @@ function nounStore(this: INounStore, _type = 'noun') {
         if (threeds.length) {
           // send 'this' to '_r3fCanvas'
 
-          if (debug || DEBUG) console.debug('%c _r3fCanvas to receive JS Object: threeds', ccm.green, threeds)
+          if (debug || DEBUG) console.debug('%c #_r3fCanvas to receive JS Object: threeds', ccm.green, threeds)
           return true // <div>...plan of threeds as r3f component...</div>
         }
 
-        if (_requestType == 'plansOfThreeDs') {
-          // const load_PlanOfThreeDs_ToThreeDCanvas = this.store.get('one').plans
-          let load_PlanOfThreeDs_ToThreeDCanvas = []
-          try {
-            if (this.store.get('one')) {
-              load_PlanOfThreeDs_ToThreeDCanvas = this.store.get('one').data?.plans?.nodes[0]?.threedsActive?.nodes // plans[] of threeds[]
+        if (_type == 'project') {
+          if (_requestType == 'plansOfThreeDs') {
+            // const load_PlanOfThreeDs_ToThreeDCanvas = this.store.get('one').plans
+            let load_PlanOfThreeDs_ToThreeDCanvas = []
+            try {
+              if (this.store.get('one')) {
+                load_PlanOfThreeDs_ToThreeDCanvas = this.store.get('one').data?.plans?.nodes[0]?.threedsActive?.nodes // plans[] of threeds[]
+              }
+            } catch (ERROR) {
+              if (debug || DEBUG) console.debug(`%c load_PlanOfThreeDs_ToThreeDCanvas: ERROR`, ccm.red, ERROR)
             }
-          } catch (ERROR) {
-            if (debug || DEBUG) console.debug(`%c load_PlanOfThreeDs_ToThreeDCanvas: ERROR`, ccm.red, ERROR)
-          }
 
-          if (load_PlanOfThreeDs_ToThreeDCanvas && load_PlanOfThreeDs_ToThreeDCanvas.length) {
-            // send 'this' to '_r3fCanvas'
+            if (load_PlanOfThreeDs_ToThreeDCanvas && load_PlanOfThreeDs_ToThreeDCanvas.length) {
+              // send 'this' to '_r3fCanvas'
 
-            if (debug || DEBUG) console.debug('%c _r3fCanvas to receive JS Object: load_PlanOfThreeDs_ToThreeDCanvas', ccm.green, load_PlanOfThreeDs_ToThreeDCanvas)
-            return true
+              if (debug || DEBUG) console.debug('%c #_r3fCanvas to receive JS Object: load_PlanOfThreeDs_ToThreeDCanvas', ccm.green, load_PlanOfThreeDs_ToThreeDCanvas)
+              return true
+            }
           }
         }
 
-        if (debug || DEBUG) console.debug('%c_r3fCanvas to receive NOTHING', ccm.red)
+        if (debug || DEBUG) console.debug('%c #_r3fCanvas to receive NOTHING', ccm.red)
         return false
       } catch (ERROR) {
         if (debug || DEBUG) console.debug(`%c load {noun}: ERROR`, ccm.red, ERROR)
