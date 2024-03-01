@@ -360,14 +360,18 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
   const increaseCount = () => projectStore.store.update('count', projectStore.actions.increaseCount())
   const decreaseCount = () => projectStore.store.update('count', projectStore.actions.decreaseCount())
   const getState = () => projectStore.actions.getState()
-  const loadToCanvas = () => projectStore.actions.loadToCanvas(
-    // projectStore.store.get('one').data.plans.nodes[0].threedsActive.nodes, // plans[] of threeds[]
-    [],
-    'project', // _type
-    'plansOfThreeDs', // _requestType
-    '3333', // _id
-    '_r3fCanvas' // _r3fCanvas id to write changes to
-  )
+  const loadToCanvas = () => {
+    return (
+      projectStore.actions.loadToCanvas(
+        client,
+        [], // projectStore.store.get('one').data.plans.nodes[0].threedsActive.nodes, // plans[] of threeds[]
+        'project', // _type
+        'plansOfThreeDs', // _requestType
+        '3333', // _id
+        '_r3fCanvas' // _r3fCanvas id to write changes to
+      )
+    )
+  }
 
   return (
     <Box>
@@ -379,7 +383,6 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
       <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
       <Button onClick={increaseCount}>+</Button>
       <Button onClick={decreaseCount}>-</Button>
-      {/*  */}
       <Button onClick={getState}>get state</Button>
       <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
     </Box>

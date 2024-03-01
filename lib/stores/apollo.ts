@@ -550,12 +550,16 @@ function nounStore(this: INounStore, _type = 'noun') {
 
     // load 'this' THREED[S] into React Three Fiber view
     loadToCanvas: (
+      client: Object = {},
       threeds: Object[] = [],
       _type: string = 'project',
       _requestType: string = 'plansOfThreeds',
       _id: string = '3333',
       _r3fCanvas: string = '#_r3fcanvas'
     ) => {
+      // **
+      let objectArrayToReturn = []
+      // **
       try {
 
         if (threeds.length) {
@@ -563,7 +567,9 @@ function nounStore(this: INounStore, _type = 'noun') {
 
           if (debug || DEBUG)
             console.debug('%c #_r3fCanvas to receive JS Object: threeds', ccm.green, threeds)
-          return true // <div>...plan of threeds as r3f component...</div>
+          // return true // <div>...plan of threeds as r3f component...</div>
+          objectArrayToReturn = threeds
+          return objectArrayToReturn
         }
 
         if (_type == 'project') {
@@ -588,14 +594,19 @@ function nounStore(this: INounStore, _type = 'noun') {
                   ccm.green,
                   load_PlanOfThreeDs_ToThreeDCanvas
                 )
+
+              objectArrayToReturn = load_PlanOfThreeDs_ToThreeDCanvas
+              return objectArrayToReturn
               return true
             }
           }
         }
 
+        // **
         if (debug || DEBUG)
           console.debug('%c #_r3fCanvas to receive NOTHING', ccm.red)
         return false
+      // **
       } catch (ERROR) {
         if (debug || DEBUG)
           console.debug(`%c load {noun}: ERROR`, ccm.red, ERROR)
