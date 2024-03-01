@@ -361,15 +361,19 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
   const decreaseCount = () => projectStore.store.update('count', projectStore.actions.decreaseCount())
   const getState = () => projectStore.actions.getState()
   const loadToCanvas = () => {
+
+    let objectArrayBeingReturned = []
+    objectArrayBeingReturned = projectStore.actions.loadToCanvas(
+      client,
+      [], // projectStore.store.get('one').data.plans.nodes[0].threedsActive.nodes, // plans[] of threeds[]
+      'project', // _type
+      'plansOfThreeDs', // _requestType
+      '3333', // _id
+      '_r3fCanvas' // _r3fCanvas id to write changes to
+    )
+
     return (
-      projectStore.actions.loadToCanvas(
-        client,
-        [], // projectStore.store.get('one').data.plans.nodes[0].threedsActive.nodes, // plans[] of threeds[]
-        'project', // _type
-        'plansOfThreeDs', // _requestType
-        '3333', // _id
-        '_r3fCanvas' // _r3fCanvas id to write changes to
-      )
+      objectArrayBeingReturned
     )
   }
 
