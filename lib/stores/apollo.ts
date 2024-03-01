@@ -182,6 +182,7 @@ function nounStore(this: INounStore, _type = 'noun') {
       this.store.update('countDB', 0)
       console.clear()
       console.debug(`%c X removeAll [${this._type}]`, ccm.red, true)
+      console.debug(`%c get one [${this._type}]`, ccm.red, this.store.get('one'))
     },
 
     // add a new current 'this' noun
@@ -502,10 +503,10 @@ function nounStore(this: INounStore, _type = 'noun') {
             if (debug) console.debug(`%cloadFromDB [${this._type}] {one} (after)`, ccm.orange, this.store.get('one'))
 
             this.store.update('countDB', this.store.get('all').length)
-            // console.debug(`%cloadFromDB countDB`, ccm.orange, this.store.get('countDB'))
-            console.debug(`%c====================================`, ccm.blue)
+            // if (debug) console.debug(`%cloadFromDB countDB`, ccm.orange, this.store.get('countDB'))
+            if (debug) console.debug(`%c====================================`, ccm.black)
 
-            // save to disk ?? yes
+            // save to disk here ?? yes
             this.actions.saveToDisk()
 
             return true
@@ -547,36 +548,45 @@ function nounStore(this: INounStore, _type = 'noun') {
     },
 
     // load 'this' THREED[S] into React Three Fiber view
-    loadToCanvas: (threeds: Object[] = [], _type: string = '', _id: string = '1', _r3fCanvas: string = '#_r3fcanvas') => {
+    loadToCanvas: (
+      threeds: Object[] = [],
+      _type: string = '',
+      _requestType: string = 'plansOfThreeds',
+      _id: string = '1',
+      _r3fCanvas: string = '#_r3fcanvas'
+    ) => {
       try {
 
-        if (debug) console.debug('%cloadToCanvas threeds[]', ccm.green, threeds)
-
-        let loadThis_ThreeD_SingleArrayToThreeDCanvas = threeds[0]
-        let loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas = threeds
-
-        if (loadThis_ThreeD_SingleArrayToThreeDCanvas) {
+        if (threeds.length) {
           // send 'this' to '_r3fCanvas'
 
-          if (debug) console.debug('%c_r3fCanvas to receive JS Object: loadThis_ThreeD_SingleArrayToThreeDCanvas', ccm.green)
+          if (debug || 1==1) console.debug('%c _r3fCanvas to receive JS Object: threeds', ccm.green, threeds)
           return true // <div>...plan of threeds as r3f component...</div>
         }
 
-        loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas = this.store.get('one').plans
-        // console.debug(`%cload {loadThis_ThreeD_SingleArrayToThreeDCanvas}`, ccm.orange, loadThis_ThreeD_SingleArrayToThreeDCanvas)
-        // console.debug(`%cload {loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas}`, ccm.orange, loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas)
+        if (_requestType == 'plansOfThreeDs') {
+          // const load_PlanOfThreeDs_ToThreeDCanvas = this.store.get('one').plans
+          let load_PlanOfThreeDs_ToThreeDCanvas = []
+          try {
+            if (this.store.get('one')) {
+              load_PlanOfThreeDs_ToThreeDCanvas = this.store.get('one').data?.plans?.nodes[0]?.threedsActive?.nodes // plans[] of threeds[]
+            }
+          } catch (ERROR) {
+            if (debug || 1==1) console.debug(`%c load_PlanOfThreeDs_ToThreeDCanvas: ERROR`, ccm.red, ERROR)
+          }
 
-        if (loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas) {
-          // send 'this' to '_r3fCanvas'
+          if (load_PlanOfThreeDs_ToThreeDCanvas && load_PlanOfThreeDs_ToThreeDCanvas.length) {
+            // send 'this' to '_r3fCanvas'
 
-          if (debug) console.debug('%c_r3fCanvas to receive JS Object: loadThis_PlanOfThreeDs_PluralArrayToThreeDCanvas', ccm.green)
-          return true // <>true</>
+            if (debug || 1==1) console.debug('%c _r3fCanvas to receive JS Object: load_PlanOfThreeDs_ToThreeDCanvas', ccm.green, load_PlanOfThreeDs_ToThreeDCanvas)
+            return true
+          }
         }
 
-        if (debug) console.debug('%c_r3fCanvas to receive NOTHING', ccm.red)
+        if (debug || 1==1) console.debug('%c_r3fCanvas to receive NOTHING', ccm.red)
         return false
       } catch (ERROR) {
-        if (debug) console.debug(`%cload {noun}: ERROR`, ccm.red, ERROR)
+        if (debug || 1==1) console.debug(`%c load {noun}: ERROR`, ccm.red, ERROR)
         return false
       }
     },
