@@ -130,6 +130,8 @@ export default function ThreeDCanvas({ scene, threeds }) {
 
         <ThreeDControls />
 
+        <BakeShadows />
+
         {/* */}
         <GizmoHelper
           alignment='top-right'
@@ -226,17 +228,15 @@ export default function ThreeDCanvas({ scene, threeds }) {
         {/* NEED TO SEND THREEDS OF MODEL[S] TO A CANVAS */}
         {/* <ThreeDPlan state={state} models={models} /> */}
         <ThreeDModel
-          state={state}
-          nodes={threeds}
-          name='HEY HEY HEY'
-          file={null}
+          name='HEY HEY HEY' // todo: set appropriately
+          state={state} // still for funzees
+          nodes={threeds} // YES, use this
+          // file={threeds[0].nodes.file.url} // K.I.S.S.
         />
 
         {/* [MM] HEY HEY HEY */}
 
         {/* {children} */}
-
-        <BakeShadows />
       </Suspense>
     </Canvas>
   )
