@@ -21,9 +21,10 @@ import { softShadows } from '@react-three/drei' // softShadows()
 // import { Loader } from '@react-three/drei'
 
 // ** ThreeD Imports
-import ThreeDPlan from '#/lib/threed/components/nouns/Plan'
+// import ThreeDScene from '#/lib/threed/components/nouns/Scene'
+// import ThreeDPlan from '#/lib/threed/components/nouns/Plan'
 // import ThreeD from '#/lib/threed/components/nouns/ThreeD'
-import ThreeDScene from '#/lib/threed/components/nouns/Scene'
+import ThreeDModel from '#/lib/threed/components/nouns/Model'
 // ThreeD EXAMPLES
 // import ThreeDCharacter from '~/lib/threed/components/nouns/Character'
 // import StacyApp from '~/lib/threed/components/examples/Stacy/StacyApp'
@@ -82,7 +83,7 @@ function ThreeDControls() {
   )
 }
 
-export default function ThreeDCanvas({ scene, threeds, children }) {
+export default function ThreeDCanvas({ scene, threeds }) {
   // **
 
   if (scene) {
@@ -224,6 +225,12 @@ export default function ThreeDCanvas({ scene, threeds, children }) {
 
         {/* NEED TO SEND THREEDS OF MODEL[S] TO A CANVAS */}
         {/* <ThreeDPlan state={state} models={models} /> */}
+        <ThreeDModel
+          state={state}
+          nodes={threeds}
+          name='HEY HEY HEY'
+          file={null}
+        />
 
         {/* [MM] HEY HEY HEY */}
 

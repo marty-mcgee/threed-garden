@@ -26,29 +26,23 @@ import { a, useSpring } from '@react-spring/three'
 import ccm from '#/lib/utils/console-colors'
 
 // ** ThreeD Model -||-
-const Model = ({ threedid, state, threed, name, file }) => {
+const Model = ({ state, nodes, name, file }) => {
 
   // **
-  // deconstruct arguments from props
-  // const { threedid, state, threed, name, file } = props
-  // console.debug('Model props', props)
-  console.debug('Model props.threed', threed)
-
-  // ** set available action modes
-  const modes = ['translate', 'rotate', 'scale']
+  console.debug('Model props.state', state)
+  console.debug('Model props.threeds.nodes', nodes)
+  console.debug('Model props.name', name)
+  console.debug('Model props.file', file)
 
   // Ties this component to the state model
   const snap = useSnapshot(state)
-
-  // const doReturnAll = false // from function argument
-  // console.debug('doReturnAll', doReturnAll)
 
   // this model = threed_threed.model -||-
   const model = {
     ref: useRef(null),
     state: state, // for funzees
     name: name,
-    file: file ?? '',
+    file: file,
     // file type?
     type: 'threed', // fbx | gltf | obj | threed
     // 3D
@@ -78,15 +72,18 @@ const Model = ({ threedid, state, threed, name, file }) => {
     // doReturnAll: doReturnAll ? true : false,
     // doReturnEach: doReturnEach ? true : false,
     // attributes
-    group_position: threed?.group.position ?? 0,
-    group_rotation: threed?.group.rotation ?? 0,
-    group_scale: threed?.group.scale ?? 0,
+    group_position: nodes?.group?.position ?? 0,
+    group_rotation: nodes?.group?.rotation ?? 0,
+    group_scale: nodes?.group?.scale ?? 0,
     // is Ready to go?
     isReadyForCanvas: false,
   }
 
+  // ** set available action modes
+  const modes = ['translate', 'rotate', 'scale']
+
   // ** decide file type from file extension (and other qualifiers)
-  const fileExt = model.file.split('.').pop()
+  const fileExt = model.file?.split('.').pop()
   // console.debug('fileExt', fileExt)
   model.type = fileExt
   // const testExt = /\.(glb|gltf|fbx|obj|mtl|gif|jpe?g|tiff?|png|webp|bmp)$/i.test(model.file)
