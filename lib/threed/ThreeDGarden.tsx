@@ -366,7 +366,7 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
     'project', // _type
     'plansOfThreeDs', // _requestType
     '3333', // _id
-    'default_r3fCanvas' // _r3fCanvas id to write changes to
+    '_r3fCanvas' // _r3fCanvas id to write changes to
   )
 
   return (
