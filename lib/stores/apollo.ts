@@ -563,7 +563,7 @@ function nounStore(this: INounStore, _type = 'noun') {
       try {
 
         if (threeds.length) {
-          // send 'this' to '#_r3fCanvas'
+          // send 'threeds' to '#_r3fCanvas'
 
           if (debug || DEBUG)
             console.debug('%c #_r3fCanvas to receive JS Object: threeds', ccm.green, threeds)
@@ -586,7 +586,7 @@ function nounStore(this: INounStore, _type = 'noun') {
             }
 
             if (load_PlanOfThreeDs_ToThreeDCanvas && load_PlanOfThreeDs_ToThreeDCanvas.length) {
-              // send 'this' to '_r3fCanvas'
+              // send 'threeds' to '_r3fCanvas'
 
               if (debug || DEBUG)
                 console.debug(
@@ -605,11 +605,13 @@ function nounStore(this: INounStore, _type = 'noun') {
         // **
         if (debug || DEBUG)
           console.debug('%c #_r3fCanvas to receive NOTHING', ccm.red)
+        return []
         return false
       // **
       } catch (ERROR) {
         if (debug || DEBUG)
           console.debug(`%c load {noun}: ERROR`, ccm.red, ERROR)
+        return []
         return false
       }
     },
