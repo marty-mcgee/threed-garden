@@ -26,22 +26,22 @@ import { a, useSpring } from '@react-spring/three'
 import ccm from '#/lib/utils/console-colors'
 
 // ** ThreeD Model -||-
-const Model = ({ state, nodes, name, file }) => {
+const Model = ({ name = 'GLBs', state = {}, nodes = [], file = [], }) => {
 
   // **
-  console.debug('Model props.state', state)
-  console.debug('Model props.threeds.nodes', nodes)
   console.debug('Model props.name', name)
-  console.debug('Model props.file', file)
+  // console.debug('Model props.state', state)
+  console.debug('Model props.threeds.nodes', nodes)
 
   // Ties this component to the state model
   const snap = useSnapshot(state)
 
-  // this model = threed_threed.model -||-
+  // this model = threed_model -||-
   const model = {
     ref: useRef(null),
     state: state, // for funzees
     name: name,
+    // file: nodes.files[0]?.nodes[0]?.url,
     file: file,
     // file type?
     type: 'threed', // fbx | gltf | obj | threed
@@ -83,7 +83,8 @@ const Model = ({ state, nodes, name, file }) => {
   const modes = ['translate', 'rotate', 'scale']
 
   // ** decide file type from file extension (and other qualifiers)
-  const fileExt = model.file?.split('.').pop()
+  // const fileExt = model.file?.split('.').pop()
+  const fileExt = 'glb'
   // console.debug('fileExt', fileExt)
   model.type = fileExt
   // const testExt = /\.(glb|gltf|fbx|obj|mtl|gif|jpe?g|tiff?|png|webp|bmp)$/i.test(model.file)
