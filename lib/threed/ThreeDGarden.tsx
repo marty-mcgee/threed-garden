@@ -126,9 +126,10 @@ import ccm from '#/lib/utils/console-colors'
 // ==========================================================
 
 // DEBUG PREFERENCES FOR THIS MODULE
-const debug: boolean = false
+const debug: boolean = true
 const debugPhysics: boolean = true
 const debugAnimations: boolean = true
+const DEBUG: boolean = true
 
 const appVersion = 'v0.15.0-b'
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
@@ -3485,8 +3486,8 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
 
   const loadNounData = (nounDataToLoad) => {
     // load this nounDataToLoad into r3f canvas
-    // data.store.actions.loadToCanvas(nounDataToLoad, 'r3fCanvas')
-    return <Box>true</Box> // true
+    data.store.actions.loadToCanvas(nounDataToLoad, '_r3fCanvas')
+    // return <Box>true</Box> // true
   }
 
   // console.debug(`%c====================================`, ccm.black)
