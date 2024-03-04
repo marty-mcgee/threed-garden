@@ -287,7 +287,7 @@ function nounStore(this: INounStore, _type = 'noun') {
           if (payload) {
             // console.debug(`%cloadFromDisk [${this._type}]`, ccm.blue, true, payload)
 
-            this.store.update('all', [...payload]) // payload should have .data{}
+            this.store.update('all', payload) // payload should have .data{}
             if (debug) console.debug(`%cloadFromDisk [${this._type}s] (after)`, ccm.blue, this.store.get('all'))
 
             // TODO : WHICH DB RECORD DO YOU WANT TO USE ???
