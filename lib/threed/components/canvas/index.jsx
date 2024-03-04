@@ -274,10 +274,10 @@ export default function ThreeDCanvas({ _id, nodes }) {
 //   )
 // }
 
-// EXAMPLE ANIMATION using hook 'useFrame' (with 'useRef' references)
-function ActionRig() {
-  return useFrame((state) => {
-    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, 1 + state.mouse.x / 4, 0.075)
-    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 1.5 + state.mouse.y / 4, 0.075)
-  })
-}
+// // EXAMPLE ANIMATION using hook 'useFrame' (with 'useRef' references)
+// function ActionRig() {
+//   return useFrame((state) => {
+//     state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, 1 + state.mouse.x / 4, 0.075)
+//     state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 1.5 + state.mouse.y / 4, 0.075)
+//   })
+// }
