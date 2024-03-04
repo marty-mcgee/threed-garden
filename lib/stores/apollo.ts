@@ -551,51 +551,51 @@ function nounStore(this: INounStore, _type = 'noun') {
     // load 'this' THREED[S] into React Three Fiber view
     loadToCanvas: (
       client: Object = {},
-      threeds: Object[] = [],
-      _type: string = 'project',
-      _requestType: string = 'plansOfThreeds',
-      _id: string = '3333',
-      _r3fCanvas: string = '#_r3fcanvas'
+      nodes: Object[] = [], // hmmmm -- nodes?
+      _type: string = 'project', // main type for query
+      _requestType: string = 'plansOfThreeds', // sub-type for query
+      _id: string = '3333', // some id
+      _r3fCanvas: string = '#_r3fcanvas' // target canvas
     ) => {
       // **
       let objectArrayToReturn = []
       // **
       try {
 
-        if (threeds.length) {
-          // send 'threeds' to '#_r3fCanvas'
+        if (nodes.length) {
+          // send 'nodes' to '#_r3fCanvas'
 
           if (debug || DEBUG)
-            console.debug('%c #_r3fCanvas to receive JS Object: threeds', ccm.green, threeds)
-          // return true // <div>...plan of threeds as r3f component...</div>
-          objectArrayToReturn = threeds
+            console.debug('%c #_r3fCanvas to receive JS Object: nodes', ccm.green, nodes)
+          // return true // <div>...plan of nodes as r3f component...</div>
+          objectArrayToReturn = nodes
           return objectArrayToReturn
         }
 
         if (_type == 'project') {
           if (_requestType == 'plansOfThreeDs') {
-            // const load_PlanOfThreeDs_ToThreeDCanvas = this.store.get('one').plans
-            let load_PlanOfThreeDs_ToThreeDCanvas = []
+            // const load_PlanOfThreeDNodes_ToThreeDCanvas = this.store.get('one').plans
+            let load_PlanOfThreeDNodes_ToThreeDCanvas = []
             try {
               if (this.store.get('one')) {
-                load_PlanOfThreeDs_ToThreeDCanvas = this.store.get('one').data?.plans?.nodes[0]?.threedsActive?.nodes // plans[] of threeds[]
+                load_PlanOfThreeDNodes_ToThreeDCanvas = this.store.get('one').data?.plans?.nodes[0]?.threedsActive?.nodes // plans[] of threeds[]
               }
             } catch (ERROR) {
               if (debug || DEBUG)
-                console.debug(`%c load_PlanOfThreeDs_ToThreeDCanvas: ERROR`, ccm.red, ERROR)
+                console.debug(`%c load_PlanOfThreeDNodes_ToThreeDCanvas: ERROR`, ccm.red, ERROR)
             }
 
-            if (load_PlanOfThreeDs_ToThreeDCanvas && load_PlanOfThreeDs_ToThreeDCanvas.length) {
+            if (load_PlanOfThreeDNodes_ToThreeDCanvas && load_PlanOfThreeDNodes_ToThreeDCanvas.length) {
               // send 'threeds' to '_r3fCanvas'
 
               if (debug || DEBUG)
                 console.debug(
-                  '%c #_r3fCanvas to receive JS Object: load_PlanOfThreeDs_ToThreeDCanvas',
+                  '%c #_r3fCanvas to receive JS Object: load_PlanOfThreeDNodes_ToThreeDCanvas',
                   ccm.green,
-                  load_PlanOfThreeDs_ToThreeDCanvas
+                  load_PlanOfThreeDNodes_ToThreeDCanvas
                 )
 
-              objectArrayToReturn = load_PlanOfThreeDs_ToThreeDCanvas
+              objectArrayToReturn = load_PlanOfThreeDNodes_ToThreeDCanvas
               return objectArrayToReturn
               return true
             }

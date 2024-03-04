@@ -1,6 +1,6 @@
 import { useGLTF } from '@react-three/drei'
 
-export default function Cup(props: any) {
+export default function Cup(props) {
   // @ ts-expect-error
   // @ts-ignore
   const { nodes, materials } = useGLTF('objects/examples/coffee-transformed.glb')
@@ -10,7 +10,7 @@ export default function Cup(props: any) {
     <mesh
       receiveShadow
       castShadow
-      // geometry={nodes.coffee_cup_top_16oz.geometry}
+      geometry={nodes.coffee_cup_top_16oz.geometry}
       material={materials['13 - Default']}
       {...props}
       dispose={null}
