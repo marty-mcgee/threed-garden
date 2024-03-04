@@ -13,7 +13,7 @@ import * as THREE from 'three'
 // R3F
 import { Canvas, useFrame, useThree, extend } from '@react-three/fiber'
 // R3F HELPERS
-import { OrbitControls, TransformControls, Preload, Environment, Html, useProgress } from '@react-three/drei'
+import { OrbitControls, TransformControls, Preload, Environment, Html, useProgress, useGLTF } from '@react-three/drei'
 import { ContactShadows } from '@react-three/drei'
 import { GizmoHelper, GizmoViewcube, GizmoViewport, Center, PivotControls } from '@react-three/drei'
 import { Stage, BakeShadows } from '@react-three/drei'
@@ -21,12 +21,12 @@ import { softShadows } from '@react-three/drei' // softShadows()
 // import { Loader } from '@react-three/drei'
 
 // ** ThreeD Imports
-// import ThreeDScene from '#/lib/threed/components/nouns/Scene'
-// import ThreeDPlan from '#/lib/threed/components/nouns/Plan'
+// import Scene from '#/lib/threed/components/nouns/Scene'
+// import Plan from '#/lib/threed/components/nouns/Plan'
 // import ThreeD from '#/lib/threed/components/nouns/ThreeD'
-import ThreeDModel from '#/lib/threed/components/nouns/Model'
+import ThreeDModels from '#/lib/threed/components/nouns/Model'
 // ThreeD EXAMPLES
-// import ThreeDCharacter from '~/lib/threed/components/nouns/Character'
+// import Character from '~/lib/threed/components/nouns/Character'
 // import StacyApp from '~/lib/threed/components/examples/Stacy/StacyApp'
 // import Stacy from '~/lib/threed/components/examples/Stacy/Stacy'
 // import Watch from '~/lib/threed/components/examples/Watch/Watch'
@@ -44,9 +44,7 @@ import ccm from '#/lib/utils/console-colors'
 // ** VARIABLES
 
 const debug = false // false | true // ts: boolean
-
-// Reactive state model (using valtio)
-const state = proxy({ current: null, mode: 0 })
+const DEBUG = true // false | true // ts: boolean
 
 // Model interactive "modes" using TransformControls
 const modes = ['translate', 'rotate', 'scale']
@@ -57,51 +55,36 @@ function LoaderSimple() {
   return <Html center>{Math.round(progress)} % loaded</Html>
 }
 
-// Controls
-function ThreeDControls() {
-  // Get 'snap' notified on changes to state + scene
-  const snap = useSnapshot(state)
-  const scene = useThree((state) => state.scene)
-
-  return (
-    <>
-      {/* As of drei@7.13 transform-controls can refer to the target by children, or the object prop */}
-      {snap.current && (
-        <TransformControls
-          object={scene.getObjectByName(snap.current)}
-          mode={modes[snap.mode]}
-        />
-      )}
-      {/* makeDefault makes the controls known to r3f, now transform-controls can auto-disable them when active */}
-      <OrbitControls
-        makeDefault
-        minPolarAngle={0}
-        maxPolarAngle={Math.PI / 1.75}
-        autoRotate={false}
-      />
-    </>
-  )
-}
-
-export default function ThreeDCanvas({ scene, threeds }) {
+// export default function ThreeDCanvas({ sceneState, threeds, nodes }) {
+export default function ThreeDCanvas({ _id, nodes }) {
   // **
+  const nodesToModelAndLoad = nodes
+  // console.debug('%c nodesToModelAndLoad', ccm.orange, nodesToModelAndLoad)
 
-  if (scene) {
-    if (debug) console.debug('%c scene to load to ThreeDCanvas', ccm.yellow, scene)
-    if (scene.length) {
-      // if (debug) console.debug('scene.length', scene.length)
-    }
-  }
-  // THE THREEDS ==== // THE NOUNS (to use)
-  if (threeds) {
-    if (debug) console.debug('%c threeds to load to ThreeDCanvas', ccm.yellow, threeds)
-    if (threeds.length) {
-      // if (debug) console.debug('threeds.length', threeds.length)
-    }
-  }
+  // if (sceneState) {
+  //   if (debug) console.debug('%c sceneState to load to ThreeDCanvas', ccm.yellow, sceneState)
+  //   if (sceneState.length) {
+  //     // if (debug) console.debug('sceneState.length', sceneState.length)
+  //   }
+  // }
+  // // THE THREEDS ==== // THE NOUNS (to use)
+  // if (threeds) {
+  //   if (debug) console.debug('%c threeds to load to ThreeDCanvas', ccm.yellow, threeds)
+  //   if (threeds.length) {
+  //     // if (debug) console.debug('threeds.length', threeds.length)
+  //   }
+  // }
+  // // THE NODES ==== // THE NOUNS.NODES (to use)
+  // if (nodes) {
+  //   if (debug) console.debug('%c nodes to load to ThreeDCanvas', ccm.yellow, nodes)
+  //   if (nodes.length) {
+  //     // if (debug) console.debug('nodes.length', nodes.length)
+  //   }
+  // }
 
   return (
     <Canvas
+      // id={_id}
       camera={{ position: [-10, 10, 50], fov: 50 }}
       dpr={[1, 2]}
       shadows
@@ -109,7 +92,7 @@ export default function ThreeDCanvas({ scene, threeds }) {
         height: '480px',
         width: '100%',
       }}
-      // scene={Scene}
+      // scene={sceneState.stuff}
       scene={{
         // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
         background: new THREE.Color(0x222222),
@@ -128,7 +111,33 @@ export default function ThreeDCanvas({ scene, threeds }) {
           background={'only'}
         /> */}
 
-        <ThreeDControls />
+        {/* [MM] HEY HEY HEY */}
+
+        {/* <ThreeDControls /> */}
+        {/* makeDefault makes the controls known to r3f, now transform-controls can auto-disable them when active */}
+        <OrbitControls
+          makeDefault
+          minPolarAngle={0}
+          maxPolarAngle={Math.PI / 1.75}
+          autoRotate={false}
+        />
+
+        {/* NEED TO LOAD THREEDSCENE FILES TO A CANVAS */}
+        {/* <ThreeDScene state={state} files={files} /> */}
+
+        {/* NEED TO SEND THREEDS OF MODEL[S] TO A CANVAS */}
+        {/* <ThreeDPlan state={state} models={models} /> */}
+        {/* <ThreeDModel
+          name='HEY HEY HEY -- LOAD STATES TO CANVAS' // todo: set appropriately
+          modelState={modelState} // funzees in action -- communication points
+          sceneState={sceneState} // funzees in action -- communication points
+          storeState={storeState} // funzees in action -- communication points
+          nodes={nodes} // YES, use this (load these nodes to canvas, as one model/many models)
+          // file={nodes[0].nodes.file.url} // K.I.S.S.
+        /> */}
+        <ThreeDModels nodes={nodesToModelAndLoad} />
+        {/* <CoffeeCup /> */}
+        {/* [MM] HEY HEY HEY */}
 
         <BakeShadows />
 
@@ -219,22 +228,6 @@ export default function ThreeDCanvas({ scene, threeds }) {
           <Shoe color="tomato" position={[0, 0, 0]} />
           <Shoe color="orange" scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
         </Stage> */}
-
-        {/* [MM] HEY HEY HEY */}
-
-        {/* NEED TO LOAD THREEDSCENE FILES TO A CANVAS */}
-        {/* <ThreeDScene state={state} files={files} /> */}
-
-        {/* NEED TO SEND THREEDS OF MODEL[S] TO A CANVAS */}
-        {/* <ThreeDPlan state={state} models={models} /> */}
-        <ThreeDModel
-          name='HEY HEY HEY' // todo: set appropriately
-          state={state} // still for funzees
-          nodes={threeds} // YES, use this
-          // file={threeds[0].nodes.file.url} // K.I.S.S.
-        />
-
-        {/* [MM] HEY HEY HEY */}
 
         {/* {children} */}
       </Suspense>

@@ -86,10 +86,10 @@ import ToolIconAddText from '@mui/icons-material/TextFields'
 
 // ** Three JS Imports (not here, use R3F)
 // import * as THREE from 'three'
-// ** Three JS Loader
+// ** Three JS Loading Progress
 import { Loader } from '@react-three/drei'
 // ** Three JS Controls
-import { Html } from '@react-three/drei'
+import { Html, useProgress } from '@react-three/drei'
 // ** Three JS Loaders
 // -- use React Three Fiber R3F hooks: useFBX, useOBJ, etc --
 // import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
@@ -321,6 +321,13 @@ if (debug) {
 }
 // ==========================================================
 
+
+function LoaderSimple() {
+  const { progress } = useProgress()
+  return <Html center>{progress} % loaded</Html>
+}
+
+
 // ==========================================================
 // Project
 
@@ -360,20 +367,24 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
   const increaseCount = () => projectStore.store.update('count', projectStore.actions.increaseCount())
   const decreaseCount = () => projectStore.store.update('count', projectStore.actions.decreaseCount())
   const getState = () => projectStore.actions.getState()
+  // **
   const loadToCanvas = () => {
 
-    let objectArrayBeingReturned = []
-    objectArrayBeingReturned = projectStore.actions.loadToCanvas(
+    // LOAD APOLLO STORE STATE TO VALTIO STATE ????
+
+    let nodesToCreateOnCanvas = []
+    nodesToCreateOnCanvas = projectStore.actions.loadToCanvas(
       client,
-      [], // projectStore.store.get('one').data.plans.nodes[0].threedsActive.nodes, // plans[] of threeds[]
+      // [],
+      projectStore.store.get('one').data.plans.nodes[0].threedsActive.nodes, // plans[] of threeds[]
       'project', // _type
-      'plansOfThreeDs', // _requestType
+      'plansOfThreeDNodes', // _requestType
       '3333', // _id
       '_r3fCanvas' // _r3fCanvas id to write changes to
     )
 
     return (
-      objectArrayBeingReturned
+      nodesToCreateOnCanvas
     )
   }
 
@@ -3465,12 +3476,14 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
   // console.debug('%cThreeDCanvasViewer {nounDataToLoad}', ccm.blue, nounDataToLoad)
 
   // const threeds = new Array()
-  const threeds = [{...nounDataToLoad}]
-  if (debug) console.debug('%cThreeDCanvasViewer {threeds}', ccm.orange, threeds)
-  const threedsToLoad = threeds[0]?.data?.plans?.nodes[0]?.threedsActive?.nodes
-  if (debug) console.debug('%cThreeDCanvasViewer {threedsToLoad}', ccm.red, threedsToLoad)
+  const nouns = [{...nounDataToLoad}]
+  if (debug) console.debug('%cThreeDCanvasViewer {nouns}', ccm.orange, nouns)
+  const nounsToLoad = nouns[0]?.data?.plans?.nodes[0]?.threedsActive?.nodes
+  if (debug) console.debug('%cThreeDCanvasViewer {nounsToLoad}', ccm.red, nounsToLoad)
 
-  const loadNounDataToLoad = (nounDataToLoad) => {
+  const nodesToModelAndLoad = nounsToLoad ? nounsToLoad : []
+
+  const loadNounData = (nounDataToLoad) => {
     // load this nounDataToLoad into r3f canvas
     // data.store.actions.loadToCanvas(nounDataToLoad, 'r3fCanvas')
     return <Box>true</Box> // true
@@ -3504,15 +3517,15 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
       </Grid>
       <Grid
         item
-        id='actions[loadNounDataToLoad()]'
+        id='actions[loadNounData()]'
         md={7}
         xs={12}
         style={{ display: 'flex', justifyContent: 'flex-end' }}
       >
-        <Button onClick={() => loadNounDataToLoad('project')}>load project</Button>
-        <Button onClick={() => loadNounDataToLoad('scene')}>load scene</Button>
-        <Button onClick={() => loadNounDataToLoad('character')}>load character</Button>
-        <Button onClick={() => loadNounDataToLoad('farmbot')}>load farmbot</Button>
+        <Button onClick={() => loadNounData('project')}>load project</Button>
+        <Button onClick={() => loadNounData('scene')}>load scene</Button>
+        <Button onClick={() => loadNounData('character')}>load character</Button>
+        <Button onClick={() => loadNounData('farmbot')}>load farmbot</Button>
       </Grid>
       <Grid
         container
@@ -3527,15 +3540,12 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
           sx={{ borderTop: '1px solid darkgreen' }}
         >
 
-
-
           {/* THREED HEY HEY HEY */}
           <ThreeDCanvas
-            _id={3000}
-            threeds={threedsToLoad}
+            _id={'_r3fCanvas'}
+            nodes={nodesToModelAndLoad}
           />
-
-
+          {/* THREED HEY HEY HEY */}
 
         </Grid>
         {/* <Grid item id='camera[1]'
@@ -3682,15 +3692,9 @@ const ThreeDGarden = (): JSX.Element => {
   // FC returns JSX
   return (
     <>
-    {/* <Suspense fallback={null}> */}
-    {/* <Suspense fallback={
-      <Html center>
-        <Loader />
-      </Html>
-    }> */}
       <div
         id='threedgarden-wrapper'
-        // style={{'width': '100%'}}
+        style={{width: '100%'}}
       >
 
       <Loader
@@ -3701,8 +3705,6 @@ const ThreeDGarden = (): JSX.Element => {
         dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
         initialState={(active = true) => active} // Initial black out state
       />
-
-      {/* <Loader /> */}
 
       <div id='threedgarden'>
 
@@ -3778,17 +3780,14 @@ const ThreeDGarden = (): JSX.Element => {
                 {/* <CharacterControlPanel /> */}
                 {/* <CharacterInfoPanel /> */}
                 {/* <hr /> */}
-                {/* <GardenerControlPanel /> */}
-                {/* <GardenerInfoPanel /> */}
+                {/* <FurnitureControlPanel /> */}
+                {/* <FurnitureInfoPanel /> */}
                 {/* <hr /> */}
                 {/* <ChickenControlPanel /> */}
                 {/* <ChickenInfoPanel /> */}
                 {/* <hr /> */}
                 {/* <BearControlPanel /> */}
                 {/* <BearInfoPanel /> */}
-                {/* <hr /> */}
-                {/* <FurnitureControlPanel /> */}
-                {/* <FurnitureInfoPanel /> */}
                 {/* <hr /> */}
               </Box>
             </MDTabPanel>
@@ -3806,7 +3805,6 @@ const ThreeDGarden = (): JSX.Element => {
         {/* <TheBottom /> */}
       </div>
     </div>
-    {/* </Suspense> */}
   </>
   )
 }

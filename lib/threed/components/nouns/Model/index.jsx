@@ -2,8 +2,12 @@ import { proxy, useSnapshot } from 'valtio'
 
 import { useEffect, useState, useRef } from 'react'
 
-import { useThree, useFrame, useLoader } from '@react-three/fiber'
-
+// ** R3-Fiber + R3-Drei
+import {
+  useThree,
+  // useFrame,
+  useLoader
+} from '@react-three/fiber'
 import {
   // ContactShadows,
   useCursor,
@@ -13,38 +17,84 @@ import {
   useAnimations,
   useTexture
 } from '@react-three/drei'
-
+// Three Loaders
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { TGALoader } from 'three/examples/jsm/loaders/TGALoader'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 // import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 
-import { a, useSpring } from '@react-spring/three'
+// React Spring (for actions)
+// import { a, useSpring } from '@react-spring/three'
+
+// ** EXAMPLES
+// import CoffeeCup from '~/lib/threed/components/examples/CoffeeCup/CoffeeCup'
+
+// ** UUID Imports
+import { v4 as newUUID } from 'uuid'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
+// ==============================================================
+// ** VARIABLES
+
+const debug = false // false | true // ts: boolean
+const DEBUG = true // false | true // ts: boolean
+
+// ==============================================================
+
 // ** ThreeD Model -||-
-const Model = ({ name = 'GLBs', state = {}, nodes = [], file = [], }) => {
+const Model = ({
+  name = 'GLBs',
+  node = {
+    file: null
+  },
+  // modelState = {},
+  // sceneState = {},
+  // storeState = {},
+}) => {
+// const Model = ({modelState = {}}) => {
 
   // **
   console.debug('Model props.name', name)
-  // console.debug('Model props.state', state)
-  console.debug('Model props.threeds.nodes', nodes)
+  // console.debug('Model props.modelState', modelState)
+  // console.debug('Model props.sceneState', sceneState)
+  // console.debug('Model props.storeState', storeState)
+  console.debug('Model props.node', node)
 
-  // Ties this component to the state model
-  const snap = useSnapshot(state)
+  // return <><CoffeeCup /></>
+
+  // get Reactive state on each model (using valtio)
+  const modelState = proxy({ current: null, mode: 0 })
+
+  // Ties this component to the model state
+  const snap = useSnapshot(modelState)
+
+  // set a default file to load for Model (for testing)
+  // fileUrlDefault: '/objects/examples/compressed.glb' | '/objects/examples/compressed-v002.glb' |
+  const fileUrlDefault =
+  // '/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb'
+  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb'
+  // '/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx'
+  'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx'
+  // '/objects/examples/coffee-transformed.glb'
 
   // this model = threed_model -||-
   const model = {
     ref: useRef(null),
-    state: state, // for funzees
     name: name,
+    // object nodes
+    nodes: [],
+    // state: modelState, // for funzees
+    // sceneState: sceneState, // for funzees
+    // storeState: storeState, // for funzees
     // file: nodes.files[0]?.nodes[0]?.url,
-    file: file,
+    // file: file,
+    // file: fileUrlDefault,
+    file: node.url ? node.url : fileUrlDefault,
     // file type?
-    type: 'threed', // fbx | gltf | obj | threed
+    type: 'threed_node', // fbx | gltf | obj | threed | threed_node
     // 3D
     isObject3D: false,
     isGLTF: false,
@@ -60,8 +110,6 @@ const Model = ({ name = 'GLBs', state = {}, nodes = [], file = [], }) => {
     isWEBP: false,
     // is type Supported?
     isSupported: false,
-    // object nodes
-    nodes: {},
     // animations
     ani: {
       ref: null,
@@ -72,9 +120,9 @@ const Model = ({ name = 'GLBs', state = {}, nodes = [], file = [], }) => {
     // doReturnAll: doReturnAll ? true : false,
     // doReturnEach: doReturnEach ? true : false,
     // attributes
-    group_position: nodes?.group?.position ?? 0,
-    group_rotation: nodes?.group?.rotation ?? 0,
-    group_scale: nodes?.group?.scale ?? 0,
+    group_position: 0, // nodes?.group?.position ?? 0,
+    group_rotation: 0, // nodes?.group?.rotation ?? 0,
+    group_scale: 0, // nodes?.group?.scale ?? 0,
     // is Ready to go?
     isReadyForCanvas: false,
   }
@@ -104,8 +152,8 @@ const Model = ({ name = 'GLBs', state = {}, nodes = [], file = [], }) => {
 
   // fetch the file (GLTF, FBX, OBJ, etc)
   if (model.isSupported) {
-    // console.debug('%cmodel.isSupported: true', ccm.green)
-    // console.debug(`%c====================================`, ccm.black)
+    console.debug('%cmodel.isSupported: true', ccm.green)
+    console.debug(`%c====================================`, ccm.black)
     if (model.isObject3D) {
       // FBX
       if (model.isFBX) {
@@ -114,8 +162,8 @@ const Model = ({ name = 'GLBs', state = {}, nodes = [], file = [], }) => {
         const fbx = useLoader(FBXLoader, model.file, loader => {
           loader.manager.addHandler(/\.tga$/i, new TGALoader())
         })
-        // console.debug('%cnodes: fbx', ccm.blue, fbx)
-        // console.debug(`%c====================================`, ccm.black)
+        console.debug('%c NODES: fbx', ccm.green, fbx)
+        console.debug(`%c====================================`, ccm.black)
         if (fbx) {
           model.nodes = fbx
           model.isReadyForCanvas = true
@@ -135,7 +183,7 @@ const Model = ({ name = 'GLBs', state = {}, nodes = [], file = [], }) => {
       else if (model.isOBJ) {
         // const nodes = useOBJ(model.file)
         const nodes = new OBJLoader().load(model.file)
-        // console.debug('%cnodes: obj', ccm.blue, nodes)
+        console.debug('%c NODES: obj', ccm.green, nodes)
         // console.debug(`%c====================================`, ccm.black)
         if (nodes) {
           model.nodes = nodes
@@ -152,27 +200,29 @@ const Model = ({ name = 'GLBs', state = {}, nodes = [], file = [], }) => {
         const { nodes } = useLoader(GLTFLoader, model.file, loader => {
           loader.manager.addHandler(/\.tga$/i, new TGALoader())
         })
-        console.debug('%cNODES: gltf 🥕 GLB NODES 🌱', ccm.blue, nodes)
-        console.debug(`%c====================================`, ccm.blue)
+        console.debug('%c NODES: gltf 🥕 GLB NODES 🌱', ccm.green, nodes)
+        console.debug(`%c====================================`, ccm.black)
         if (nodes) {
           // FILTER (LOOP OVER) NODES {Object.keys}
           // to get the single node you are asking for
           if (model.doReturnAll) {
             model.nodes = nodes
-            console.debug('RETURN ALL NODES: true')
+            console.debug('%c RETURN ALL NODES: true', ccm.red, model.nodes)
+            console.debug(`%c====================================`, ccm.black)
           }
           else if (nodes.RootNode) {
             // model.nodes[model.name] = nodes.RootNode.children
             model.nodes = nodes.RootNode.children
-            console.debug('RETURN RootNode CHILDREN NODES: true')
-            console.debug(model.nodes[model.name])
+            console.debug('%c RETURN RootNode CHILDREN NODES: true', ccm.red)
+            console.debug(`%c====================================`, ccm.black)
           }
           // OR RETURN ALL NODES, OR QUERY A LIST OF NODES you want...
           // else
           else if (model.nodes[model.name]) {
             // for one node key requested...
             model.nodes[model.name] = nodes[model.name]
-            // console.debug('RETURN ONE NODE: true', model.nodes[model.name])
+            console.debug('%c RETURN ONE NODE: true', ccm.red, model.nodes[model.name])
+            console.debug(`%c====================================`, ccm.black)
 
             // OR...
             // console.debug('OR: ')
@@ -201,11 +251,11 @@ const Model = ({ name = 'GLBs', state = {}, nodes = [], file = [], }) => {
   useCursor(isHovered)
   const [index, setIndex] = useState(0)
 
-  // Animate the selection halo
-  const { color, scale } = useSpring({
-    scale: isHovered ? [1.15, 1.15, 1] : [1, 1, 1],
-    color: isHovered ? '#ff6d6d' : '#569AFF',
-  })
+  // // Animate the selection halo
+  // const { color, scale } = useSpring({
+  //   scale: isHovered ? [1.15, 1.15, 1] : [1, 1, 1],
+  //   color: isHovered ? '#ff6d6d' : '#569AFF',
+  // })
 
   // Change cursor on hover-state
   useEffect(() => void (document.body.style.cursor = isHovered ? 'pointer' : 'auto'), [isHovered])
@@ -222,7 +272,7 @@ const Model = ({ name = 'GLBs', state = {}, nodes = [], file = [], }) => {
       // In the clean-up phase, fade it out
       // (page route may have changed)
       if (model.ani.actions[model.ani.names[index]]) {
-        return () => model.ani.actions[model.ani.names[index]].fadeOut(0.5)
+        return () => { try { model.ani.actions[model.ani.names[index]].fadeOut(0.5) } catch (ERROR) {} }
       }
 
     return undefined
@@ -253,20 +303,20 @@ const Model = ({ name = 'GLBs', state = {}, nodes = [], file = [], }) => {
           name={model.name}
           ref={model.ref}
           // Click sets the mesh as the new target
-          onClick={(e) => (e.stopPropagation(), (state.current = model_name))}
+          onClick={(e) => (e.stopPropagation(), (modelState.current = model_name))}
           // If a click happened but this mesh wasn't hit we null out the target,
           // This works because missed pointers fire before the actual hits
-          onPointerMissed={(e) => e.type === 'click' && (state.current = null)}
+          onPointerMissed={(e) => e.type === 'click' && (modelState.current = null)}
           // Right click cycles through the transform modes
           onContextMenu={(e) =>
-            snap.current === model.name && (e.stopPropagation(), (state.mode = (snap.mode + 1) % modes.length))
+            snap.current === model.name && (e.stopPropagation(), (modelState.mode = (snap.mode + 1) % modes.length))
           }
           onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
           onPointerOut={(e) => setIsHovered(false)}
           geometry={model_geometry}
           material={model_material}
           material-color={snap.current === model_name ? '#ff7070' : '#ababab'}
-          {...props}
+          // {...props}
           dispose={null}
         />
       )
@@ -279,7 +329,7 @@ const Model = ({ name = 'GLBs', state = {}, nodes = [], file = [], }) => {
       return (
         <group
           ref={model.ani.ref}
-          {...props}
+          // {...props}
           dispose={null}
           position={model.group_position}
           rotation={model.group_rotation}
@@ -313,24 +363,24 @@ const Model = ({ name = 'GLBs', state = {}, nodes = [], file = [], }) => {
       // Click sets the mesh as the new target
       onClick={(e) => (
         e.stopPropagation(),
-        (state.current = model.name),
-        console.debug('state.current', model.name),
+        (modelState.current = model.name),
+        console.debug('modelState.current', model.name),
         console.debug('snap.current', snap.current)
       )}
       // If a click happened but this mesh wasn't hit we null out the target,
       // This works because missed pointers fire before the actual hits
       onPointerMissed={(e) => (
         e.type === 'click',
-        (state.current = null),
-        console.debug('state.current', null),
+        (modelState.current = null),
+        console.debug('modelState.current', null),
         console.debug('snap.current', snap.current)
       )}
       // Right click cycles through the transform modes
       onContextMenu={(e) =>
         snap.current === model.name &&
         (e.stopPropagation(),
-        (state.mode = (snap.mode + 1) % modes.length),
-        console.debug('state.mode', state.mode),
+        (modelState.mode = (snap.mode + 1) % modes.length),
+        console.debug('modelState.mode', modelState.mode),
         console.debug('snap.current', snap.current))
       }
       onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
@@ -346,4 +396,143 @@ const Model = ({ name = 'GLBs', state = {}, nodes = [], file = [], }) => {
   // }
 }
 
-export default Model
+// Controls
+function ThreeDControls() {
+  // **
+
+  // get Reactive state on each model (using valtio)
+  const modelState = proxy({ current: null, mode: 0 })
+  // get Apollo Stores state
+  const storeState = undefined
+  const sceneState = useThree((sceneState) => sceneState.scene)
+  if (sceneState) {
+    if (debug || DEBUG) console.debug('%c sceneState to load to ThreeDCanvas', ccm.yellow, sceneState)
+    if (sceneState.length) {
+      // if (debug) console.debug('sceneState.length', sceneState.length)
+    }
+  }
+
+  // Get 'snap' notified on changes to modelState + sceneState
+  const snap = useSnapshot(modelState)
+
+  return (
+    <>
+      {/* As of drei@7.13 transform-controls can refer to the target by children, or the object prop */}
+      {snap.current && (
+        <TransformControls
+          object={sceneState.getObjectByName(snap.current)}
+          mode={modes[snap.mode]}
+        />
+      )}
+    </>
+  )
+}
+
+// ==============================================================
+// EXAMPLE -- LOOP OVER ARRAY OF NODES TO CREATE INDIVIDUAL MODELS
+// **
+// interface personType {
+//   name: string
+// }
+// export const Elements = (props: { persons: Array<personType> }) => {
+//   return (
+//     <>
+//       {props.persons.map((person: personType) => <h1>{person.name}</h1>)}
+//     </>
+//   )
+// }
+// export default const Test = () => {
+//   var personsArray: personType[] = []
+//   return (<Elements persons={personsArray} />)
+// }
+
+// ==============================================================
+// **
+export default function ThreeDModels({ nodes }) {
+  // **
+  // const nodesToModelAndLoad = nodes
+  console.debug('%cnodes', ccm.red, nodes)
+  // **
+
+  // get Reactive state on each model (using valtio)
+  // const modelState = proxy({ current: null, mode: 0 })
+  // get Apollo Stores state
+  // const storeState = undefined
+  // const sceneState = useThree((sceneState) => sceneState.scene)
+  // if (sceneState) {
+  //   if (debug || DEBUG) console.debug('%c sceneState to load to ThreeDCanvas', ccm.yellow, sceneState)
+  //   if (sceneState.length) {
+  //     // if (debug) console.debug('sceneState.length', sceneState.length)
+  //   }
+  // }
+
+  // **
+  // Get 'snap' notified on changes to modelState + sceneState
+  // const snap = useSnapshot(modelState)
+  // DEFAULTS
+  const name = 'YO YO YO -- LOAD NODE TO CANVAS' // todo: set appropriately
+  // const modelState = {modelState} // funzees in action -- communication points
+  // const sceneState = {sceneState} // funzees in action -- communication points
+  // const storeState = {storeState} // funzees in action -- communication points
+
+  // return <CoffeeCup />
+  return (
+    <>
+      {/* <CoffeeCup /> */}
+
+      {nodes.map((node) => {
+        return (
+          node.files.nodes.map((file) => {
+            return (
+              // <>
+              //   <CoffeeCup
+              //     key={newUUID()}
+              //   />
+              //   {/* <ThreeDControls /> */}
+              // </>
+              <group
+                key={newUUID()}
+              >
+                <Model
+                  key={newUUID()}
+                  name={file.title}
+                  node={file}
+                  // makeDefault
+                  // minPolarAngle={0}
+                  // maxPolarAngle={Math.PI / 1.75}
+                  // autoRotate={false}
+                />
+              </group>
+            )
+          })
+        )
+      })}
+
+    </>
+  )
+}
+
+
+/*
+        {nodes.map((node) => {
+          console.debug('%c node', ccm.orange, node)
+          {(<CoffeeCup />)}
+          {node.files.nodes.map((file) => {
+            console.debug('%c  file', ccm.yellow, file)
+            {(
+              <>
+              <Model
+                name={file.title}
+                node={file}
+                // makeDefault
+                // minPolarAngle={0}
+                // maxPolarAngle={Math.PI / 1.75}
+                // autoRotate={false}
+              />
+              <ThreeDControls />
+              </>
+            )}
+
+          })}
+        })}
+*/
