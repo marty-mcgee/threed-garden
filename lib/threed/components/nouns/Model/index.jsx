@@ -207,7 +207,7 @@ const Model = ({
           // to get the single node you are asking for
           if (model.doReturnAll) {
             model.nodes = nodes
-            console.debug('%c RETURN ALL NODES: true', ccm.red, model.nodes)
+            console.debug('%c RETURN ALL NODES: true', ccm.yellow, model.nodes)
             console.debug(`%c====================================`, ccm.black)
           }
           else if (nodes.RootNode) {
@@ -221,7 +221,7 @@ const Model = ({
           else if (model.nodes[model.name]) {
             // for one node key requested...
             model.nodes[model.name] = nodes[model.name]
-            console.debug('%c RETURN ONE NODE: true', ccm.red, model.nodes[model.name])
+            console.debug('%c RETURN ONE NODE: true', ccm.orange, model.nodes[model.name])
             console.debug(`%c====================================`, ccm.black)
 
             // OR...
