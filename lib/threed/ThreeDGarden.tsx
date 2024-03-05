@@ -259,8 +259,8 @@ const stylesModal = {
 const AppBar = styled(MuiAppBar)(({ theme }) => ({
   position: 'static',
   // transition: 'none',
-  alignItems: 'center',
-  justifyContent: 'center',
+  // alignItems: 'center',
+  // justifyContent: 'center',
   padding: theme.spacing(0, 0),
   backgroundColor: 'transparent',
   color: theme.palette.text.primary,
@@ -1562,10 +1562,10 @@ const ToolBar: FC = ({data}): JSX.Element => {
       id='appBar'
       // position='static'
     >
-      <Container
+      {/* <Container
         maxWidth='xl'
         // sx={{ paddingLeft: 0, paddingRight: 0 }}
-      >
+      > */}
         <Toolbar
           disableGutters
         >
@@ -2050,7 +2050,7 @@ const ToolBar: FC = ({data}): JSX.Element => {
             </Tooltip>
           </Box>
         </Toolbar>
-      </Container>
+      {/* </Container> */}
     </AppBar>
   )
 }
