@@ -20,11 +20,11 @@ export function MainNav() {
   return (
     <div className='flex items-center space-x-0 lg:space-x-0'>
       <CustomLink href='/'>
-        <Image src='/favicon/apple-icon.png'priority={true} alt='Home' width='48' height='48' />
+        <Image src='/favicon/apple-icon.png' priority={true} alt='Home' width='48' height='48' />
       </CustomLink>
       <h3 className='pl-2'>
         <CustomLink href='/participate' style={{color: '#DDDDDD'}}>
-          <strong>THREED GARDEN</strong>
+          THREED GARDEN
         </CustomLink>
       </h3>
       <NavigationMenu>

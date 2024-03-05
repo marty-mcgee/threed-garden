@@ -545,7 +545,7 @@ function nounStore(this: INounStore, _type = 'noun') {
       } else {
         responseData.isLoadedFromDB = this.actions.loadFromDB(client)
         if (responseData.isLoadedFromDB) {
-          if (debug) console.debug('%c loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', ccm.white, responseData)
+          if (debug) console.debug('%c loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDB', ccm.white, responseData)
           return responseData
         }
       }
