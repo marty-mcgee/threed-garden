@@ -940,13 +940,13 @@ const PlantingPlanControlPanel: FC = (_type: string = 'planting_plan'): JSX.Elem
 // ** Modal Windows
 const { ModalAbout, ModalLoading, ModalModel3d, ModalShare } = modals
 
-// ** Main ToolBar
-const ToolBar: FC = ({data}): JSX.Element => {
+// ** Main ThreeDToolbar
+const ThreeDToolbar: FC = ({data}): JSX.Element => {
   // **
-  // console.debug("ToolBar props.data", data)
+  // console.debug("ThreeDToolbar props.data", data)
 
   const word = `[MM] @ ${new Date().toISOString()}`
-  // console.debug("ToolBar", word)
+  // console.debug("ThreeDToolbar", word)
 
   // const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
   const [anchorElActions, setAnchorElActions] = useState<null | HTMLElement>(null)
@@ -1548,9 +1548,9 @@ const ToolBar: FC = ({data}): JSX.Element => {
   // // Component onMount hook
   // useEffect(() => {
   //   const word = 'YO YO YO'
-  //   // console.debug("ToolBar onMount", word)
+  //   // console.debug("ThreeDToolbar onMount", word)
   //   return () => {
-  //     // console.debug("ToolBar onUnmount", word)
+  //     // console.debug("ThreeDToolbar onUnmount", word)
   //   }
   // }, [])
 
@@ -3648,6 +3648,11 @@ const ThreeDGarden = (): JSX.Element => {
     // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
     // console.debug(`%c====================================`, ccm.black)
 
+    // ==========================================================
+    // begin here ?? yes
+    // bootManager()...
+    // loadProjectFromChosenDataSource()
+
     // USE STORE
     // bootManager()
     // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDisk()
@@ -3662,40 +3667,6 @@ const ThreeDGarden = (): JSX.Element => {
       console.debug('%c🌱 doLoadFromDataSourceOnStart', ccm.darkgreen)
       data.store.actions.loadFromDataSource(data.client)
     }
-
-    // ==========================================================
-    // begin here ?? yes
-    // bootManager()...
-    // loadProjectFromChosenDataSource()
-
-    // ==========================================================
-    // LOAD HISTORIES FROM DISK ??
-    // ** AND/OR **
-    // DO THIS STUFF WHEN ASKED BY AN EVENT/REQUEST
-
-    // ** PROJECT HISTORY
-    // data.store.actions.loadFromDisk()
-    // data.store.actions.loadFromDB(data.client)
-
-    // ** SCENE HISTORY
-    // sceneStore.actions.loadFromDisk()
-    // sceneStore.actions.loadFromDB(data.client)
-
-    // ** PARTICIPANT HISTORY
-    // participantStore.actions.loadFromDisk()
-    // participantStore.actions.loadFromDB(data.client)
-
-    // ** PLAN HISTORY
-    // planStore.actions.loadFromDisk()
-    // planStore.actions.loadFromDB(data.client)
-
-    // ** THREED HISTORY
-    // threedStore.actions.loadFromDisk()
-    // threedStore.actions.loadFromDB(data.client)
-
-    // ** FILE HISTORY
-    // fileStore.actions.loadFromDisk()
-    // fileStore.actions.loadFromDB(data.client)
 
     // ==========================================================
     // set open tab
@@ -3729,7 +3700,7 @@ const ThreeDGarden = (): JSX.Element => {
 
       <div id='threedgarden'>
 
-        <ToolBar data={data} />
+        <ThreeDToolbar data={data} />
 
         {/* R3F ThreeD Canvas View */}
         {/* <ThreeDCanvasViewer /> */}
