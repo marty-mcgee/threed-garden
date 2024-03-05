@@ -191,7 +191,7 @@ function nounStore(this: INounStore, _type = 'noun') {
     // add a new current 'this' noun
     addNew: () => {
       // console.debug(`this`, this)
-      console.debug(`%caddNew [${this._type}] (before)`, ccm.orange, this.store.get('all'))
+      console.debug(`%c🌱 addNew [${this._type}] (before)`, ccm.orange, this.store.get('all'))
       // throw new Error(`[MM] testing... this`)
 
       // create a new one
@@ -540,12 +540,12 @@ function nounStore(this: INounStore, _type = 'noun') {
       }
       responseData.isLoadedFromDisk = this.actions.loadFromDisk(client)
       if (responseData.isLoadedFromDisk) {
-        if (debug) console.debug('loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', responseData)
+        if (debug) console.debug('%c loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', ccm.white, responseData)
         return responseData
       } else {
         responseData.isLoadedFromDB = this.actions.loadFromDB(client)
         if (responseData.isLoadedFromDB) {
-          if (debug) console.debug('loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', responseData)
+          if (debug) console.debug('%c loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', ccm.white, responseData)
           return responseData
         }
       }

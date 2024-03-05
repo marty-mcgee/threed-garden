@@ -142,9 +142,9 @@ const appVersion = 'v0.15.0-b'
 const doLoadFromDataSourceOnStart: boolean = true
 
 if (debug) {
-  console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm.blue)
-  console.debug("%c appVersion", ccm.blue, appVersion)
-  console.debug(`%c====================================`, ccm.black)
+  console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm.green)
+  console.debug("%c🌱 appVersion", ccm.darkgreen, appVersion)
+  console.debug(`%c====================================`, ccm.darkgreen)
 }
 
 // ==========================================================
@@ -234,8 +234,9 @@ const env: IThreeDEnv = {
 }
 
 if (debug) {
-  console.debug('pluginName', env.pluginName, env.pluginVersion)
-  console.debug('postdata', postdata)
+  console.debug('%c🌱 api plugin:', ccm.darkgreen, env.pluginName, env.pluginVersion, postdata)
+  // console.debug('postdata', postdata)
+  console.debug(`%c====================================`, ccm.darkgreen)
 }
 
 // ==========================================================
