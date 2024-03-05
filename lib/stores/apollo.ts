@@ -31,7 +31,7 @@ import ccm from '#/lib/utils/console-colors'
 // console.debug(`%c====================================`, ccm.blue)
 
 // ** TESTING
-const debug: boolean = false // false | true
+const debug: boolean = true // false | true
 const DEBUG: boolean = true // 1 == 0 | 1 == 1
 
 // ==============================================================
@@ -65,6 +65,7 @@ interface INounStore {
   _type: string
   _plural: string
   _storageItem: string
+  _storageItemHistory: string
   // store
   store: any
   // store.store
@@ -101,7 +102,7 @@ function noun(this: INoun, _type: string = 'noun') {
   this._name = _type.toUpperCase() + ' NAME (default)'
   // wp custom fields
   this.data = {
-    title: 'NOT A THING, SIR',
+    title: 'NOTHING YET, SIR',
   }
   // layers/levels
   this.layers = [
@@ -123,7 +124,8 @@ function nounStore(this: INounStore, _type = 'noun') {
   // store params
   this._type = _type.toLowerCase()
   this._plural = _type + 's'
-  this._storageItem = 'threed_' + _type + 'History'
+  this._storageItem = 'threed_' + _type
+  this._storageItemHistory = 'threed_' + _type + 'History'
 
   // ==============================================================
   // ** Noun Store .store
@@ -176,12 +178,12 @@ function nounStore(this: INounStore, _type = 'noun') {
     removeAll: (): void => {
       localStorage.removeItem(this._storageItem)
       this.store.update('all', [])
-      this.store.update('one', {})
+      this.store.update('one', new (noun as any)(this._type))
       this.store.update('allDB', [])
       this.store.update('oneDB', {})
       this.store.update('count', 0)
       this.store.update('countDB', 0)
-      console.clear()
+      // console.clear()
       console.debug(`%c X removeAll [${this._type}]`, ccm.red, true)
       console.debug(`%c get one [${this._type}]`, ccm.red, this.store.get('one'))
     },
@@ -193,24 +195,22 @@ function nounStore(this: INounStore, _type = 'noun') {
       // throw new Error(`[MM] testing... this`)
 
       // create a new one
-      if (Object.keys(this.store.get('one')).length === 0) {
-        try {
-          this.store.update('one', new (noun as any)(this._type))
-        } catch (ERROR) {
-          console.error(`%caddNew {${this._type}} ERROR`, ERROR)
-        }
-      }
-      // save + update old one
-      else {
-        // nounHistory (save existing before mutating, if not empty)
-        this.store.update('history', [this.store.get('one'), ...this.store.get('history')])
-        if (debug) console.debug(`%caddNew [${this._type}] (save history)`, ccm.orange, this.store.get('all'))
+      // if (Object.keys(this.store.get('one')).length === 0) {
+      //   try {
+      //     this.store.update('one', new (noun as any)(this._type))
+      //   } catch (ERROR) {
+      //     console.error(`%caddNew {${this._type}} ERROR`, ERROR)
+      //   }
+      // }
+      // // save + update old one
+      // else {
+        // // noun history (save existing before mutating, if not empty)
+        // this.store.update('history', [this.store.get('one'), ...this.store.get('history')])
+        // if (debug) console.debug(`%caddNew [${this._type}] (save history)`, ccm.orange, this.store.get('history'))
 
         // count
-        // this.store.update('count', this.store.get('count') + 1) // manual
-        this.store.update('count', this.store.get('all').length) // automatic
-        // console.debug(`%caddNew {count}`, ccm.blue, this.store.get('count'))
-        // console.debug(`%caddNew [${this._type}]`, ccm.blue, this.store.get('all').length)
+        this.store.update('count', this.store.get('count') + 1) // manual
+        this.store.update('countDB', this.store.get('allDB').length) // automatic
 
         // nounCurrent (overwrite this one -- mutate)
         this.store.update('one', {
@@ -219,7 +219,7 @@ function nounStore(this: INounStore, _type = 'noun') {
           _type: _type.toLowerCase(),
           _name: _type.toUpperCase() + ' NAME (default modified)',
           data: {
-            title: 'WE AINT FOUND SHIT',
+            title: 'NOT A THING, SIR', // 'WE AINT FOUND SHIT',
           },
           layers: [
             {
@@ -229,25 +229,19 @@ function nounStore(this: INounStore, _type = 'noun') {
             }
           ],
         })
-      }
+      // }
       if (debug) console.debug(`%caddNew {${this._type}} (added)`, ccm.orange, this.store.get('one'))
 
-      // nounHistory (save recently mutated new one and all old ones)
-      this.store.update('all', [this.store.get('one'), ...this.store.get('all')])
-      if (debug) console.debug(`%caddNew [${this._type}] (all updated)`, ccm.orange, this.store.get('all'))
-
-      // count (for fun/learning)
-      // this.store.update('count', this.store.get('count') + 1) // manual
-      this.store.update('count', this.store.get('all').length) // automatic
-      if (debug) console.debug(`%caddNew {count}`, ccm.blue, this.store.get('count'))
-      // console.debug(`%caddNew {${this._type}}`, ccm.blue, this.store.get('all').length)
+      // noun history (save existing before mutating, if not empty)
+      this.store.update('history', [this.store.get('one'), ...this.store.get('history')])
+      if (debug) console.debug(`%caddNew [${this._type}] (save history)`, ccm.orange, this.store.get('history'))
 
       // saveToDisk
       this.actions.saveToDisk()
       // loadFromDisk
       // this.actions.loadFromDisk()
 
-      if (debug) console.debug(`%caddNew [${this._type}] (final)`, ccm.green, this.store.get('one'))
+      // if (debug) console.debug(`%caddNew [${this._type}] (final)`, ccm.green, this.store.get('one'))
     },
 
     save: () => {
@@ -267,6 +261,13 @@ function nounStore(this: INounStore, _type = 'noun') {
             payload: this.store.get('all'),
           })
         )
+        localStorage.setItem(
+          this._storageItemHistory,
+          JSON.stringify({
+            subject: this._plural,
+            payload: this.store.get('history'),
+          })
+        )
         if (debug) console.debug(`%csaveToDisk [${this._type}]`, ccm.orange, this.store.get('all'))
         return true
       } catch (ERROR) {
@@ -277,52 +278,57 @@ function nounStore(this: INounStore, _type = 'noun') {
 
     // get data from browser local storage
     loadFromDisk: () => {
-      try {
-        const query = JSON.parse(localStorage.getItem(this._storageItem))
-        if (query) {
-          // if (debug) console.debug(`%cloadFromDisk [${this._type}] QUERY?`, ccm.blue, query)
-          const { payload } = query
-          // if (debug) console.debug(`%cloadFromDisk [${this._type}] QUERY.PAYLOAD?`, ccm.blue, payload)
+      if (typeof window !== 'undefined') {
+        try {
+          const query = JSON.parse(localStorage.getItem(this._storageItem))
+          if (query) {
+            // if (debug) console.debug(`%cloadFromDisk [${this._type}] QUERY?`, ccm.blue, query)
+            const { payload } = query
+            // if (debug) console.debug(`%cloadFromDisk [${this._type}] QUERY.PAYLOAD?`, ccm.blue, payload)
 
-          if (payload) {
-            // console.debug(`%cloadFromDisk [${this._type}]`, ccm.blue, true, payload)
+            if (payload) {
+              console.debug(`%cloadFromDisk [${this._type}] payload`, ccm.darkgreen, true, payload)
 
-            this.store.update('all', payload) // payload should have .data{}
-            if (debug) console.debug(`%cloadFromDisk [${this._type}s] (after)`, ccm.blue, this.store.get('all'))
+              this.store.update('all', payload) // payload should have .data{}
+              if (debug) console.debug(`%cloadFromDisk [${this._type}s] (after)`, ccm.blue, this.store.get('all'))
 
-            // TODO : WHICH DB RECORD DO YOU WANT TO USE ???
-            // default is the first one [0]
-            const thisStoreUseOne = this.store.get('all')[0]
-            if (debug) console.debug(`%cloadFromDisk {${this._type}} (after)`, ccm.blue, this.store.get('one'))
+              // TODO : WHICH DB RECORD DO YOU WANT TO USE ???
+              // default is the first one [0]
+              const thisStoreUseOne = this.store.get('all')[0]
+              if (debug) console.debug(`%cloadFromDisk {${this._type}} (after)`, ccm.blue, thisStoreUseOne)
 
-            // update metadata for the store to use
-            if (thisStoreUseOne.data) {
-              // this.store.update('one._name', thisStoreUseOne.data.title) // ideally
-              this.store.update('one', {
-                _id: thisStoreUseOne._id, // .data.projectId (TODO: get wp_post.id and not wp_type.projectId)
-                _ts: thisStoreUseOne.data.modified,
-                _type: _type.toLowerCase(),
-                _name: thisStoreUseOne.data.title,
-                // wp custom fields
-                data: thisStoreUseOne.data,
-                // layers/levels
-                layers: thisStoreUseOne.layers,
-              })
+              // update metadata for the store to use
+              if (thisStoreUseOne.data) {
+                // this.store.update('one._name', thisStoreUseOne.data.title) // ideally
+                this.store.update('one', {
+                  _id: thisStoreUseOne._id, // .data.projectId (TODO: get wp_post.id and not wp_type.projectId)
+                  _ts: thisStoreUseOne._ts, // thisStoreUseOne.data.modified,
+                  _type: thisStoreUseOne._type,
+                  _name: thisStoreUseOne._name, // .data.title,
+                  // wp custom fields
+                  data: thisStoreUseOne.data,
+                  // layers/levels
+                  layers: thisStoreUseOne.layers,
+                })
 
-              return true
+                return true
+              }
+
+            } else {
+              console.debug(`%cloadFromDisk [${this._type}] EMPTY QUERY.PAYLOAD?`, ccm.orange, query)
             }
-
           } else {
-            console.debug(`%cloadFromDisk [${this._type}] EMPTY QUERY.PAYLOAD?`, ccm.orange, query)
+            console.debug(`%cloadFromDisk [${this._type}] NOTHING TO LOAD`, ccm.orange, query)
           }
-        } else {
-          console.debug(`%cloadFromDisk [${this._type}] NOTHING TO LOAD`, ccm.orange, query)
-        }
 
-        // if everything in this logic fails, return false as default
-        return false
-      } catch (ERROR) {
-        console.debug(`%cloadFromDisk [${this._type}] ERROR`, ccm.red, ERROR)
+          // if everything in this logic fails, return false as default
+          return false
+        } catch (ERROR) {
+          console.debug(`%cloadFromDisk [${this._type}] ERROR`, ccm.red, ERROR)
+          return false
+        }
+      } else {
+        console.debug(`%cloadFromDisk [${this._type}] ERROR`, ccm.red)
         return false
       }
     },
@@ -463,18 +469,22 @@ function nounStore(this: INounStore, _type = 'noun') {
           if (payload.length) {
 
             // map over payload to set this.data{}
-            const all = payload.map((node: Object): Object => {
+            const allPayload = payload.map((node: Object): Object[] => {
               const one = new (noun as any)(this._type)
               one.data = node
               return one
             })
             // console.debug(`%cloadFromDB [${this._type}]`, ccm.blue, all)
 
+            // save to disk here ?? yes
+            this.actions.saveToDisk()
+
             // set state from db
-            // this.store.update('all', [...all]) // nodes
-            this.store.update('all', ([this.store.get('all'), ...all])) // nodes, past + present
+            this.store.update('all', ([...allPayload, ...this.store.get('all')])) // merge all nodes, past + present
             const nouns = this.store.get('all')
             if (debug) console.debug(`%cloadFromDB [${this._type}] (all)`, ccm.blue, nouns)
+
+            this.store.update('history', ([...nouns, ...this.store.get('history')])) // merge all nodes, past + present
 
             this.store.update('oneDB', nouns[nouns.length - 1]) // node (use last one)
             const nounDB = this.store.get('oneDB')
@@ -485,24 +495,20 @@ function nounStore(this: INounStore, _type = 'noun') {
 
             // nounCurrent (overwrite -- mutate)
             this.store.update('one', {
-              _id: newUUID(),
-              _ts: new Date().toISOString(),
-              _type: _type.toLowerCase(),
-              _name: nounDB.data.title,
+              _id: nounDB._id, // newUUID(),
+              _ts: nounDB._ts, // new Date().toISOString(),
+              _type: nounDB._type,
+              // _name: nounDB.data.title,
               // _name: _type.toUpperCase() + ' NAME: ' + nounDB.data.title,
+              _name: nounDB._name,
               // wp custom fields
               data: nounDB.data,
               // layers/levels
-              layers: [
-                {
-                  _id: newUUID(),
-                  _name: 'LAYER[0]',
-                  data: {},
-                }
-              ],
+              layers: nounDB.layers,
             })
             if (debug) console.debug(`%cloadFromDB [${this._type}] {one} (after)`, ccm.orange, this.store.get('one'))
 
+            this.store.update('count', this.store.get('all').length)
             this.store.update('countDB', this.store.get('all').length)
             // if (debug) console.debug(`%cloadFromDB countDB`, ccm.orange, this.store.get('countDB'))
             if (debug) console.debug(`%c====================================`, ccm.black)
@@ -650,7 +656,8 @@ function modalStore(this: any, _type = 'modal') {
   // store params
   this._type = _type.toLowerCase()
   this._plural = _type + 's'
-  this._storageItem = 'threed_' + _type + 'History'
+  this._storageItem = 'threed_' + _type
+  this._storageItemHistory = 'threed_' + _type + 'History'
 
   // ==============================================================
   // ** Modal Store .store

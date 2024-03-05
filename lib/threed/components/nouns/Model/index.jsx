@@ -15,7 +15,8 @@ import {
   useFBX,
   // useOBJ, // not supported
   useAnimations,
-  useTexture
+  useTexture,
+  Loader
 } from '@react-three/drei'
 // Three Loaders
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
@@ -28,7 +29,7 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 // import { a, useSpring } from '@react-spring/three'
 
 // ** EXAMPLES
-// import CoffeeCup from '~/lib/threed/components/examples/CoffeeCup/CoffeeCup'
+import CoffeeCup from '~/lib/threed/components/examples/CoffeeCup/CoffeeCup'
 
 // ** UUID Imports
 import { v4 as newUUID } from 'uuid'
@@ -132,7 +133,7 @@ const Model = ({
 
   // ** decide file type from file extension (and other qualifiers)
   // const fileExt = model.file?.split('.').pop()
-  const fileExt = 'glb'
+  const fileExt = 'tbd'
   // console.debug('fileExt', fileExt)
   model.type = fileExt
   // const testExt = /\.(glb|gltf|fbx|obj|mtl|gif|jpe?g|tiff?|png|webp|bmp)$/i.test(model.file)
@@ -152,21 +153,21 @@ const Model = ({
 
   // fetch the file (GLTF, FBX, OBJ, etc)
   if (model.isSupported) {
-    console.debug('%cmodel.isSupported: true', ccm.green)
-    console.debug(`%c====================================`, ccm.black)
+    // console.debug('%cmodel.isSupported: true', ccm.green)
+    console.debug(`%c======================================`, ccm.black)
     if (model.isObject3D) {
       // FBX
       if (model.isFBX) {
+        model.type = 'fbx'
         // const { nodes, animations } = useFBX(model.file)
         // const fbx = useFBX(model.file)
         const fbx = useLoader(FBXLoader, model.file, loader => {
           loader.manager.addHandler(/\.tga$/i, new TGALoader())
         })
-        console.debug('%c NODES: fbx', ccm.green, fbx)
-        console.debug(`%c====================================`, ccm.black)
+        console.debug('%c NODES: fbx', ccm.darkgreen, [{...fbx}])
+        console.debug(`%c======================================`, ccm.darkgreen)
         if (fbx) {
-          model.nodes = fbx
-          model.isReadyForCanvas = true
+          model.nodes = [{...fbx}]
           // console.debug('RETURN ONLY NODE AS NODES: true')
         }
         if (fbx.animations) {
@@ -181,18 +182,19 @@ const Model = ({
       }
       // OBJ
       else if (model.isOBJ) {
+        model.type = 'obj'
         // const nodes = useOBJ(model.file)
         const nodes = new OBJLoader().load(model.file)
-        console.debug('%c NODES: obj', ccm.green, nodes)
-        // console.debug(`%c====================================`, ccm.black)
+        console.debug('%c NODES: obj', ccm.darkgreen, nodes)
+        console.debug(`%c======================================`, ccm.darkgreen)
         if (nodes) {
           model.nodes = nodes
-          model.isReadyForCanvas = true
           // console.debug('RETURN ONLY NODE AS NODES: true')
         }
       }
       // GLTF
-      else if (model.isGLTF) {
+      else if (model.isGLTF && 1 == 0) {
+        model.type = 'gltf'
         // nodes[] is an array of all the meshes
         // file is cached/memoized; it only gets loaded and parsed once
         // const file = '/objects/examples/compressed-v002.glb'
@@ -200,21 +202,22 @@ const Model = ({
         const { nodes } = useLoader(GLTFLoader, model.file, loader => {
           loader.manager.addHandler(/\.tga$/i, new TGALoader())
         })
-        console.debug('%c NODES: gltf 🥕 GLB NODES 🌱', ccm.green, nodes)
-        console.debug(`%c====================================`, ccm.black)
+        console.debug('%c NODES: gltf 🥕 GLB NODES 🌱', ccm.darkgreen, nodes)
+        console.debug(`%c======================================`, ccm.darkgreen)
         if (nodes) {
           // FILTER (LOOP OVER) NODES {Object.keys}
           // to get the single node you are asking for
-          if (model.doReturnAll) {
-            model.nodes = nodes
-            console.debug('%c RETURN ALL NODES: true', ccm.yellow, model.nodes)
-            console.debug(`%c====================================`, ccm.black)
-          }
-          else if (nodes.RootNode) {
+          // if (model.doReturnAll) {
+          //   model.nodes = nodes
+          //   console.debug('%c RETURN ALL NODES: true', ccm.yellow, model.nodes)
+          //   console.debug(`%c======================================`, ccm.yellow)
+          // }
+          // else
+          if (nodes.RootNode) {
             // model.nodes[model.name] = nodes.RootNode.children
             model.nodes = nodes.RootNode.children
-            console.debug('%c RETURN RootNode CHILDREN NODES: true', ccm.red)
-            console.debug(`%c====================================`, ccm.black)
+            console.debug('%c RETURN RootNode CHILDREN NODES: true', ccm.darkgreen)
+            console.debug(`%c======================================`, ccm.darkgreen)
           }
           // OR RETURN ALL NODES, OR QUERY A LIST OF NODES you want...
           // else
@@ -222,7 +225,7 @@ const Model = ({
             // for one node key requested...
             model.nodes[model.name] = nodes[model.name]
             console.debug('%c RETURN ONE NODE: true', ccm.orange, model.nodes[model.name])
-            console.debug(`%c====================================`, ccm.black)
+            console.debug(`%c======================================`, ccm.orange)
 
             // OR...
             // console.debug('OR: ')
@@ -232,17 +235,28 @@ const Model = ({
             //   console.debug('RETURN EACH NODE by KEY: ', index, value)
             // })
           }
-          model.isReadyForCanvas = true
+          else {
+            model.nodes = nodes
+            console.debug('%c RETURN ALL NODES: default', ccm.red)
+            console.debug(`%c======================================`, ccm.red)
+          }
         }
       }
+
+      // finally
+      if (model.nodes.length) {
+        model.isReadyForCanvas = true
+        console.debug('%c MODEL IS READY FOR CANVAS', ccm.darkgreen)
+        console.debug(`%c======================================`, ccm.darkgreen)
+      }
     }
-    // console.debug(`%c====================================`, ccm.black)
+    // console.debug(`%c======================================`, ccm.black)
   } else {
-    console.debug('%cMODEL.isSupported: false', ccm.red)
-    // console.debug(`%c====================================`, ccm.yellow)
+    console.debug('%c MODEL.isSupported: false', ccm.red)
+    console.debug(`%c======================================`, ccm.red)
   }
   // console.debug('%cmodel', ccm.green, model)
-  // console.debug(`%c====================================`, ccm.black)
+  // console.debug(`%c======================================`, ccm.black)
 
   // ==============================================================
 
@@ -257,26 +271,26 @@ const Model = ({
   //   color: isHovered ? '#ff6d6d' : '#569AFF',
   // })
 
-  // Change cursor on hover-state
-  useEffect(() => void (document.body.style.cursor = isHovered ? 'pointer' : 'auto'), [isHovered])
+  // // Change cursor on hover-state
+  // useEffect(() => void (document.body.style.cursor = isHovered ? 'pointer' : 'auto'), [isHovered])
 
-  // Change animation when the index changes
-  useEffect(() => {
-    if (model.ani.actions != undefined
-      && model.ani.names != undefined
-      && model.ani.actions[model.ani.names[index]] != undefined
-    )
-      // Reset and fade in animation after an index has been changed
-      model.ani.actions[model.ani.names[index]].reset().fadeIn(0.5).play()
+  // // Change animation when the index changes
+  // useEffect(() => {
+  //   if (model.ani.actions != undefined
+  //     && model.ani.names != undefined
+  //     && model.ani.actions[model.ani.names[index]] != undefined
+  //   )
+  //     // Reset and fade in animation after an index has been changed
+  //     model.ani.actions[model.ani.names[index]].reset().fadeIn(0.5).play()
 
-      // In the clean-up phase, fade it out
-      // (page route may have changed)
-      if (model.ani.actions[model.ani.names[index]]) {
-        return () => { try { model.ani.actions[model.ani.names[index]].fadeOut(0.5) } catch (ERROR) {} }
-      }
+  //     // In the clean-up phase, fade it out
+  //     // (page route may have changed)
+  //     if (model.ani.actions[model.ani.names[index]]) {
+  //       return () => { try { model.ani.actions[model.ani.names[index]].fadeOut(0.5) } catch (ERROR) {} }
+  //     }
 
-    return undefined
-  }, [index, model.ani.actions, model.ani.names])
+  //   return undefined
+  // }, [index, model.ani.actions, model.ani.names])
 
   // ==============================================================
   // ANIMATIONS (FOR ALL MODELS !!!)
@@ -290,8 +304,9 @@ const Model = ({
   // ** RETURN JSX
 
   if (model.isReadyForCanvas) {
+    console.debug(`%c======================================`, ccm.blue)
     console.debug(`%cDRAW MODEL([nodes]): ${model.type}`, ccm.blue, model.nodes)
-    console.debug(`%c====================================`, ccm.blue)
+    console.debug(`%c======================================`, ccm.blue)
     // return GLTF node
     if (model.isGLTF) {
       const model_name = model.name ? model.name : 'model.name HMM HMM HMM'
@@ -451,7 +466,7 @@ function ThreeDControls() {
 export default function ThreeDModels({ nodes }) {
   // **
   // const nodesToModelAndLoad = nodes
-  console.debug('%cnodes', ccm.red, nodes)
+  console.debug('%c🌱 nodes[]', ccm.blue, nodes)
   // **
 
   // get Reactive state on each model (using valtio)
@@ -484,12 +499,6 @@ export default function ThreeDModels({ nodes }) {
         return (
           node.files.nodes.map((file) => {
             return (
-              // <>
-              //   <CoffeeCup
-              //     key={newUUID()}
-              //   />
-              //   {/* <ThreeDControls /> */}
-              // </>
               <group
                 key={newUUID()}
               >
@@ -497,11 +506,11 @@ export default function ThreeDModels({ nodes }) {
                   key={newUUID()}
                   name={file.title}
                   node={file}
-                  // makeDefault
-                  // minPolarAngle={0}
-                  // maxPolarAngle={Math.PI / 1.75}
-                  // autoRotate={false}
                 />
+                {/* <CoffeeCup
+                  key={newUUID()}
+                /> */}
+                {/* <ThreeDControls /> */}
               </group>
             )
           })

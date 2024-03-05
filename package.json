@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.15.0-beta.42",
+  "version": "0.15.0-beta.43",
   "description": "3D Dev Environment using React 18, TypeScript 5, Three.js React-Three-Fiber on Next.js 14, Valtio, Apollo Client, GraphQL, WordPress REST API, MUI 5 + Tailwind. ThreeD Web3 Interface + Infrastructure for developing Three-Dimensional JavaScript Objects, Server+Client Components, ETH apps (dapps), Real-World Contracts + more..",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
@@ -43,7 +43,7 @@
     "___________________X": "____ ___________________________________________________"
   },
   "dependencies": {
-    "@apollo/client": "^3.9.5",
+    "@apollo/client": "latest",
     "@apollo/experimental-nextjs-app-support": "^0.8.0",
     "@apollo/react-hooks": "^4.0.0",
     "@auth0/auth0-react": "1.10.1",
@@ -74,6 +74,7 @@
     "glslify-loader": "^2.0.0",
     "graphql": "^16.8.1",
     "graphql-tag": "^2.12.6",
+    "leva": "^0.9.35",
     "mdi-material-ui": "7.8.0",
     "next": "^14.1.1",
     "next-auth": "beta",
