@@ -58,11 +58,11 @@ const Model = ({
 // const Model = ({modelState = {}}) => {
 
   // **
-  console.debug('Model props.name', name)
+  console.debug('%c🖊️ Model props.name', ccm.darkgreen, name)
   // console.debug('Model props.modelState', modelState)
   // console.debug('Model props.sceneState', sceneState)
   // console.debug('Model props.storeState', storeState)
-  console.debug('Model props.node', node)
+  console.debug('%c🖊️ Model props.node', ccm.darkgreen, node)
 
   // return <><CoffeeCup /></>
 
@@ -154,7 +154,7 @@ const Model = ({
   // fetch the file (GLTF, FBX, OBJ, etc)
   if (model.isSupported) {
     // console.debug('%cmodel.isSupported: true', ccm.green)
-    console.debug(`%c======================================`, ccm.black)
+    console.debug(`%c======================================`, ccm.darkgreen)
     if (model.isObject3D) {
       // FBX
       if (model.isFBX) {
