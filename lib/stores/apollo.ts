@@ -268,10 +268,10 @@ function nounStore(this: INounStore, _type = 'noun') {
             payload: this.store.get('history'),
           })
         )
-        if (debug) console.debug(`%csaveToDisk [${this._type}]`, ccm.orange, this.store.get('all'))
+        if (debug) console.debug(`%c💾 saveToDisk [${this._type}]`, ccm.orange, this.store.get('all'))
         return true
       } catch (ERROR) {
-        if (debug) console.debug(`%csaveToDisk [${this._type}] ERROR`, ccm.red, ERROR)
+        if (debug) console.debug(`%c💾 saveToDisk [${this._type}] ERROR`, ccm.red, ERROR)
         return false
       }
     },
@@ -282,20 +282,20 @@ function nounStore(this: INounStore, _type = 'noun') {
         try {
           const query = JSON.parse(localStorage.getItem(this._storageItem))
           if (query) {
-            // if (debug) console.debug(`%cloadFromDisk [${this._type}] QUERY?`, ccm.blue, query)
+            // if (debug) console.debug(`%c💾 loadFromDisk [${this._type}] QUERY?`, ccm.blue, query)
             const { payload } = query
-            // if (debug) console.debug(`%cloadFromDisk [${this._type}] QUERY.PAYLOAD?`, ccm.blue, payload)
+            // if (debug) console.debug(`%c💾 loadFromDisk [${this._type}] QUERY.PAYLOAD?`, ccm.blue, payload)
 
             if (payload) {
-              console.debug(`%cloadFromDisk [${this._type}] payload`, ccm.darkgreen, true, payload)
+              console.debug(`%c💾 loadFromDisk [${this._type}] payload`, ccm.darkgreen, true, payload)
 
               this.store.update('all', payload) // payload should have .data{}
-              if (debug) console.debug(`%cloadFromDisk [${this._type}s] (after)`, ccm.blue, this.store.get('all'))
+              if (debug) console.debug(`%c💾 loadFromDisk [${this._type}s] (after)`, ccm.blue, this.store.get('all'))
 
               // TODO : WHICH DB RECORD DO YOU WANT TO USE ???
               // default is the first one [0]
               const thisStoreUseOne = this.store.get('all')[0]
-              if (debug) console.debug(`%cloadFromDisk {${this._type}} (after)`, ccm.blue, thisStoreUseOne)
+              if (debug) console.debug(`%c💾 loadFromDisk {${this._type}} (after)`, ccm.blue, thisStoreUseOne)
 
               // update metadata for the store to use
               if (thisStoreUseOne.data) {
@@ -315,20 +315,20 @@ function nounStore(this: INounStore, _type = 'noun') {
               }
 
             } else {
-              console.debug(`%cloadFromDisk [${this._type}] EMPTY QUERY.PAYLOAD?`, ccm.orange, query)
+              console.debug(`%c💾 loadFromDisk [${this._type}] EMPTY QUERY.PAYLOAD?`, ccm.orange, query)
             }
           } else {
-            console.debug(`%cloadFromDisk [${this._type}] NOTHING TO LOAD`, ccm.orange, query)
+            console.debug(`%c💾 loadFromDisk [${this._type}] NOTHING TO LOAD`, ccm.orange, query)
           }
 
           // if everything in this logic fails, return false as default
           return false
         } catch (ERROR) {
-          console.debug(`%cloadFromDisk [${this._type}] ERROR`, ccm.red, ERROR)
+          console.debug(`%c💾 loadFromDisk [${this._type}] ERROR`, ccm.red, ERROR)
           return false
         }
       } else {
-        console.debug(`%cloadFromDisk [${this._type}] ERROR`, ccm.red)
+        console.debug(`%c💾 loadFromDisk [${this._type}] ERROR`, ccm.red)
         return false
       }
     },
@@ -337,12 +337,12 @@ function nounStore(this: INounStore, _type = 'noun') {
     // save data to db via graphql mutation
     saveToDB: async (client: any) => {
       try {
-        console.debug(`%csaveToDB [${this._type}] client`, ccm.red, client)
+        console.debug(`%c🌩️ saveToDB [${this._type}] client`, ccm.red, client)
         // TODO: SAVE TO DB VIA GRAPHQL
 
         return true // OR false, if unsuccessful
       } catch (ERROR) {
-        console.debug(`%csaveToDB [${this._type}]: ERROR`, ccm.red, ERROR)
+        console.debug(`%c🌩️ saveToDB [${this._type}]: ERROR`, ccm.red, ERROR)
         return false
       }
     },
@@ -351,7 +351,7 @@ function nounStore(this: INounStore, _type = 'noun') {
     loadFromDB: async (client: any) => {
       try {
         // const _this = this
-        if (debug) console.debug(`%cloadFromDB this`, ccm.yellow, this)
+        if (debug) console.debug(`%c🌩️ loadFromDB this`, ccm.yellow, this)
 
         // .gql
         let QUERY = GetProjects // default
@@ -410,30 +410,30 @@ function nounStore(this: INounStore, _type = 'noun') {
         //   refetch,
         //   networkStatus
         // } = useQuery(QUERY, { parameters }, { client })
-        // console.debug(`%cloadFromDB [${this._type}]: DATA RETURNED`, data, loading, error)
+        // console.debug(`%c🌩️ loadFromDB [${this._type}]: DATA RETURNED`, data, loading, error)
 
         // using query directly
         const query = await client.query({
           query: QUERY,
           variables: { parameters },
         })
-        // console.debug(`%cloadFromDB [${this._type}]: QUERY RETURNED`, ccm.blue, query)
+        // console.debug(`%c🌩️ loadFromDB [${this._type}]: QUERY RETURNED`, ccm.blue, query)
 
         const { data, loading, error } = query
-        // console.debug(`%cloadFromDB [${this._type}]: DATA RETURNED`, data, loading, error)
+        // console.debug(`%c🌩️ loadFromDB [${this._type}]: DATA RETURNED`, data, loading, error)
 
         if (loading) {
-          // console.debug(`%cloadFromDB [${this._type}]: DATA LOADING`, loading)
+          // console.debug(`%c🌩️ loadFromDB [${this._type}]: DATA LOADING`, loading)
           return false // <div>loading...</div>
         }
 
         if (error) {
-          console.debug(`%cloadFromDB [${this._type}]: DATA RETURNED with error`, error)
+          console.debug(`%c🌩️ loadFromDB [${this._type}]: DATA RETURNED with error`, error)
           return false // <div>{JSON.stringify(error.message)}</div>
         }
 
         if (data) {
-          // console.debug(`%cloadFromDB [${this._type}]: DATA RETURNED`, ccm.yellow, data, loading, error)
+          // console.debug(`%c🌩️ loadFromDB [${this._type}]: DATA RETURNED`, ccm.yellow, data, loading, error)
 
           let payload
           let nodes = payload
@@ -474,7 +474,7 @@ function nounStore(this: INounStore, _type = 'noun') {
               one.data = node
               return one
             })
-            // console.debug(`%cloadFromDB [${this._type}]`, ccm.blue, all)
+            // console.debug(`%c🌩️ loadFromDB [${this._type}]`, ccm.blue, all)
 
             // save to disk here ?? yes
             this.actions.saveToDisk()
@@ -482,13 +482,13 @@ function nounStore(this: INounStore, _type = 'noun') {
             // set state from db
             this.store.update('all', ([...allPayload, ...this.store.get('all')])) // merge all nodes, past + present
             const nouns = this.store.get('all')
-            if (debug) console.debug(`%cloadFromDB [${this._type}] (all)`, ccm.blue, nouns)
+            if (debug) console.debug(`%c🌩️ loadFromDB [${this._type}] (all)`, ccm.blue, nouns)
 
             this.store.update('history', ([...nouns, ...this.store.get('history')])) // merge all nodes, past + present
 
             this.store.update('oneDB', nouns[nouns.length - 1]) // node (use last one)
             const nounDB = this.store.get('oneDB')
-            if (debug) console.debug(`%cloadFromDB [${this._type}] {oneDB}`, ccm.orange, nounDB)
+            if (debug) console.debug(`%c🌩️ loadFromDB [${this._type}] {oneDB}`, ccm.orange, nounDB)
 
             // save to disk here ??? no
             // this.actions.saveToDisk()
@@ -506,11 +506,11 @@ function nounStore(this: INounStore, _type = 'noun') {
               // layers/levels
               layers: nounDB.layers,
             })
-            if (debug) console.debug(`%cloadFromDB [${this._type}] {one} (after)`, ccm.orange, this.store.get('one'))
+            if (debug) console.debug(`%c🌩️ loadFromDB [${this._type}] {one} (after)`, ccm.orange, this.store.get('one'))
 
             this.store.update('count', this.store.get('all').length)
             this.store.update('countDB', this.store.get('all').length)
-            // if (debug) console.debug(`%cloadFromDB countDB`, ccm.orange, this.store.get('countDB'))
+            // if (debug) console.debug(`%c🌩️ loadFromDB countDB`, ccm.orange, this.store.get('countDB'))
             if (debug) console.debug(`%c====================================`, ccm.black)
 
             // save to disk here ?? yes
@@ -518,15 +518,15 @@ function nounStore(this: INounStore, _type = 'noun') {
 
             return true
           } else {
-            console.debug(`%cloadFromDB [${this._type}] NO PAYLOAD`, ccm.red, data)
+            console.debug(`%c🌩️ loadFromDB [${this._type}] NO PAYLOAD`, ccm.red, data)
             return false
           }
         }
 
-        console.debug(`%cloadFromDB [${this._type}]: OTHER ERROR`, ccm.red, data)
+        console.debug(`%c🌩️ loadFromDB [${this._type}]: OTHER ERROR`, ccm.red, data)
         return false
       } catch (ERROR) {
-        console.debug(`%cloadFromDB [${this._type}]: ERROR`, ccm.red, ERROR)
+        console.debug(`%c🌩️ loadFromDB [${this._type}]: ERROR`, ccm.red, ERROR)
         return false
       }
     },

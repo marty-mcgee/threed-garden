@@ -246,13 +246,13 @@ const Model = ({
       // finally
       if (model.nodes.length) {
         model.isReadyForCanvas = true
-        console.debug('%c MODEL IS READY FOR CANVAS', ccm.darkgreen)
+        console.debug('%c📐 THREED MODEL IS READY FOR CANVAS ✔️', ccm.darkgreen)
         console.debug(`%c======================================`, ccm.darkgreen)
       }
     }
     // console.debug(`%c======================================`, ccm.black)
   } else {
-    console.debug('%c MODEL.isSupported: false', ccm.red)
+    console.debug('%c📐 MODEL.isSupported: false ✖️', ccm.red)
     console.debug(`%c======================================`, ccm.red)
   }
   // console.debug('%cmodel', ccm.green, model)
@@ -305,7 +305,7 @@ const Model = ({
 
   if (model.isReadyForCanvas) {
     console.debug(`%c======================================`, ccm.blue)
-    console.debug(`%c🌱 DRAW MODEL([nodes]): ${model.type}`, ccm.blue, model.nodes)
+    console.debug(`%c📐 DRAW MODEL([nodes]): ${model.type}`, ccm.blue, model.nodes)
     console.debug(`%c======================================`, ccm.blue)
     // return GLTF node
     if (model.isGLTF) {
