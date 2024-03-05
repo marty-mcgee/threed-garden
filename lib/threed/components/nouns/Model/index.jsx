@@ -164,7 +164,7 @@ const Model = ({
         const fbx = useLoader(FBXLoader, model.file, loader => {
           loader.manager.addHandler(/\.tga$/i, new TGALoader())
         })
-        console.debug('%c NODES: fbx', ccm.darkgreen, [{...fbx}])
+        console.debug('%c🌱 NODES: fbx', ccm.darkgreen, [{...fbx}])
         console.debug(`%c======================================`, ccm.darkgreen)
         if (fbx) {
           model.nodes = [{...fbx}]
@@ -185,7 +185,7 @@ const Model = ({
         model.type = 'obj'
         // const nodes = useOBJ(model.file)
         const nodes = new OBJLoader().load(model.file)
-        console.debug('%c NODES: obj', ccm.darkgreen, nodes)
+        console.debug('%c🌱 NODES: obj', ccm.darkgreen, nodes)
         console.debug(`%c======================================`, ccm.darkgreen)
         if (nodes) {
           model.nodes = nodes
@@ -202,7 +202,7 @@ const Model = ({
         const { nodes } = useLoader(GLTFLoader, model.file, loader => {
           loader.manager.addHandler(/\.tga$/i, new TGALoader())
         })
-        console.debug('%c NODES: gltf 🥕 GLB NODES 🌱', ccm.darkgreen, nodes)
+        console.debug('%c🌱 NODES: gltf 🥕 GLB NODES 🌱', ccm.darkgreen, nodes)
         console.debug(`%c======================================`, ccm.darkgreen)
         if (nodes) {
           // FILTER (LOOP OVER) NODES {Object.keys}
@@ -305,7 +305,7 @@ const Model = ({
 
   if (model.isReadyForCanvas) {
     console.debug(`%c======================================`, ccm.blue)
-    console.debug(`%cDRAW MODEL([nodes]): ${model.type}`, ccm.blue, model.nodes)
+    console.debug(`%c🌱 DRAW MODEL([nodes]): ${model.type}`, ccm.blue, model.nodes)
     console.debug(`%c======================================`, ccm.blue)
     // return GLTF node
     if (model.isGLTF) {
