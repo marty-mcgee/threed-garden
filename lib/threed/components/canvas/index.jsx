@@ -95,7 +95,7 @@ export default function ThreeDCanvas({ _id, nodes }) {
       // scene={sceneState.stuff}
       scene={{
         // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
-        background: new THREE.Color(0x222222),
+        background: new THREE.Color(0x131313),
       }}
     >
       <Preload all />
@@ -135,7 +135,9 @@ export default function ThreeDCanvas({ _id, nodes }) {
           nodes={nodes} // YES, use this (load these nodes to canvas, as one model/many models)
           // file={nodes[0].nodes.file.url} // K.I.S.S.
         /> */}
-        <ThreeDModels nodes={nodesToModelAndLoad} />
+        {nodesToModelAndLoad.length && (
+          <ThreeDModels nodes={nodesToModelAndLoad} />
+        )}
         {/* <CoffeeCup /> */}
         {/* [MM] HEY HEY HEY */}
 

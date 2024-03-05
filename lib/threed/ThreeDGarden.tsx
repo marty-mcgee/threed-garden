@@ -82,7 +82,7 @@ import ToolIconAddRuler from '@mui/icons-material/Straighten'
 import ToolIconAddText from '@mui/icons-material/TextFields'
 
 // ** Helper Components
-// import Spinner from '#/ui/components/spinner'
+import Spinner from '#/ui/components/spinner'
 
 // ** Three JS Imports (not here, use R3F)
 // import * as THREE from 'three'
@@ -95,6 +95,8 @@ import { Html, useProgress } from '@react-three/drei'
 // import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 // import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 // import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
+// data gui
+import { Leva } from 'leva'
 
 // ** ThreeD R3F Imports
 // import { Canvas } from '@react-three/fiber'
@@ -136,6 +138,8 @@ const appVersion = 'v0.15.0-b'
 // const appVersion = process.env.npm_package_version
 // const appVersion: string = require('package.json').version
 // const appVersion: string = require('../../package.json').version
+
+const doLoadFromDataSourceOnStart: boolean = true
 
 if (debug) {
   console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm.blue)
@@ -3476,17 +3480,24 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
   const nounDataToLoad_title = nounDataToLoad.data?.title ? nounDataToLoad.data.title : 'NOTHING YET SIR'
   // console.debug('%cThreeDCanvasViewer {nounDataToLoad}', ccm.blue, nounDataToLoad)
 
-  // const threeds = new Array()
-  const nouns = [{...nounDataToLoad}]
-  if (debug) console.debug('%cThreeDCanvasViewer {nouns}', ccm.orange, nouns)
-  const nounsToLoad = nouns[0]?.data?.plans?.nodes[0]?.threedsActive?.nodes
-  if (debug) console.debug('%cThreeDCanvasViewer {nounsToLoad}', ccm.red, nounsToLoad)
+  let nouns = []
+  let nounsToLoad = []
+  let nodesToModelAndLoad = []
+  if (nounDataToLoad) {
+    nouns = [{...nounDataToLoad}]
+    if (debug) console.debug('%cThreeDCanvasViewer {nouns}', ccm.orange, nouns)
+    if (nouns.length) {
+      nounsToLoad = nouns[0].data?.plans?.nodes[0]?.threedsActive?.nodes
+      if (nounsToLoad) {
+        nodesToModelAndLoad = nounsToLoad
+        if (debug) console.debug('%cThreeDCanvasViewer {nounsToLoad}', ccm.orange, nounsToLoad)
+      }
+    }
+  }
 
-  const nodesToModelAndLoad = nounsToLoad ? nounsToLoad : []
-
-  const loadNounData = (nounDataToLoad) => {
-    // load this nounDataToLoad into r3f canvas
-    data.store.actions.loadToCanvas(nounDataToLoad, '_r3fCanvas')
+  const loadNounData = (nodesToModelAndLoad) => {
+    // load this nodesToModelAndLoad into r3f canvas
+    data.store.actions.loadToCanvas(nodesToModelAndLoad, '_r3fCanvas')
     // return <Box>true</Box> // true
   }
 
@@ -3542,10 +3553,13 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
         >
 
           {/* THREED HEY HEY HEY */}
-          <ThreeDCanvas
-            _id={'_r3fCanvas'}
-            nodes={nodesToModelAndLoad}
-          />
+            <Leva collapsed />
+            {/* {nodesToModelAndLoad.length && ( */}
+              <ThreeDCanvas
+                _id={'_r3fCanvas'}
+                nodes={nodesToModelAndLoad}
+              />
+            {/* )} */}
           {/* THREED HEY HEY HEY */}
 
         </Grid>
@@ -3618,17 +3632,6 @@ const ThreeDGarden = (): JSX.Element => {
     store: projectStore, // default
     word: word,
   }
-  // USE STORE
-  // bootManager()
-  // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDisk()
-  // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDB()
-  // const loadProjectFromChosenDataSource = () => data.store.store.useStore('allDB')
-  // const loadProjectFromChosenDataSource = () => data.store.store.useStore('allDB')
-  // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDataSource(data.client)
-
-  // WORKING:
-  // LOAD DEFAULT DATA ON START + REFRESH
-  data.store.actions.loadFromDataSource(data.client)
 
   // ==========================================================
   // Tabs
@@ -3643,6 +3646,21 @@ const ThreeDGarden = (): JSX.Element => {
   useEffect(() => {
     // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
     // console.debug(`%c====================================`, ccm.black)
+
+    // USE STORE
+    // bootManager()
+    // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDisk()
+    // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDB()
+    // const loadProjectFromChosenDataSource = () => data.store.store.useStore('allDB')
+    // const loadProjectFromChosenDataSource = () => data.store.store.useStore('allDB')
+    // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDataSource(data.client)
+
+    // WORKING:
+    // LOAD DEFAULT DATA ON START + REFRESH
+    if (doLoadFromDataSourceOnStart) {
+      console.debug('%c🌱 doLoadFromDataSourceOnStart', ccm.darkgreen)
+      data.store.actions.loadFromDataSource(data.client)
+    }
 
     // ==========================================================
     // begin here ?? yes
@@ -3693,19 +3711,20 @@ const ThreeDGarden = (): JSX.Element => {
   // FC returns JSX
   return (
     <>
-      <div
-        id='threedgarden-wrapper'
-        style={{width: '100%'}}
-      >
 
-      <Loader
+      {/* <Loader
         // containerStyles={...container} // Flex layout styles
         // innerStyles={...inner} // Inner container styles
         // barStyles={...bar} // Loading-bar styles
         // dataStyles={...data} // Text styles
         dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
         initialState={(active = true) => active} // Initial black out state
-      />
+      /> */}
+
+      <div
+        id='threedgarden-wrapper'
+        style={{width: '100%'}}
+      >
 
       <div id='threedgarden'>
 
