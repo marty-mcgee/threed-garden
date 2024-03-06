@@ -502,15 +502,15 @@ export default function ThreeDModels({ nodes }) {
               <group
                 key={newUUID()}
               >
+                <ThreeDControls />
+                <CoffeeCup
+                  key={newUUID()}
+                />
                 <Model
                   key={newUUID()}
                   name={file.title}
                   node={file}
                 />
-                {/* <CoffeeCup
-                  key={newUUID()}
-                /> */}
-                {/* <ThreeDControls /> */}
               </group>
             )
           })
