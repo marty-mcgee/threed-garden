@@ -465,7 +465,6 @@ function ThreeDControls() {
 // **
 export default function ThreeDModels({ nodes }) {
   // **
-  // const nodesToModelAndLoad = nodes
   console.debug('%c🌱 nodes[]', ccm.blue, nodes)
   // **
 
