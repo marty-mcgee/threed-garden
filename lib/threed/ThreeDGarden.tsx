@@ -3477,30 +3477,32 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
   // console.debug('%cThreeDCanvasViewer {data.store}', ccm.yellow, data.store)
   // console.debug(`%c====================================`, ccm.black)
 
-  const nounDataToLoad = data.store.store.useStore('one')
-  const nounDataToLoad_title = nounDataToLoad.data?.title ? nounDataToLoad.data.title : 'NOTHING YET SIR'
-  // console.debug('%cThreeDCanvasViewer {nounDataToLoad}', ccm.blue, nounDataToLoad)
-
-  let nouns = []
-  let nounsToLoad = []
+  let nounDataToLoad_title = 'NOPE NOPE NOPE'
   let nodesToModelAndLoad = []
-  if (nounDataToLoad) {
-    nouns = [{...nounDataToLoad}]
-    if (debug) console.debug('%cThreeDCanvasViewer {nouns}', ccm.orange, nouns)
-    if (nouns.length) {
-      nounsToLoad = nouns[0].data?.plans?.nodes[0]?.threedsActive?.nodes
-      if (nounsToLoad) {
-        nodesToModelAndLoad = nounsToLoad
-        if (debug) console.debug('%cThreeDCanvasViewer {nounsToLoad}', ccm.orange, nounsToLoad)
-      }
-    }
-  }
+  // const nounDataToLoad = data.store.store.useStore('one')
+  // const nounDataToLoad_title = nounDataToLoad.data?.title ? nounDataToLoad.data.title : 'NOTHING YET SIR'
+  // // console.debug('%cThreeDCanvasViewer {nounDataToLoad}', ccm.blue, nounDataToLoad)
 
-  const loadNounData = (nodesToModelAndLoad) => {
-    // load this nodesToModelAndLoad into r3f canvas
-    data.store.actions.loadToCanvas(nodesToModelAndLoad, '_r3fCanvas')
-    // return <Box>true</Box> // true
-  }
+  // let nouns = []
+  // let nounsToLoad = []
+  // let nodesToModelAndLoad = []
+  // if (nounDataToLoad) {
+  //   nouns = [{...nounDataToLoad}]
+  //   if (debug) console.debug('%cThreeDCanvasViewer {nouns}', ccm.orange, nouns)
+  //   if (nouns.length) {
+  //     nounsToLoad = nouns[0].data?.plans?.nodes[0]?.threedsActive?.nodes
+  //     if (nounsToLoad) {
+  //       nodesToModelAndLoad = nounsToLoad
+  //       if (debug) console.debug('%cThreeDCanvasViewer {nounsToLoad}', ccm.orange, nounsToLoad)
+  //     }
+  //   }
+  // }
+
+  // const loadNounData = (nodesToModelAndLoad) => {
+  //   // load this nodesToModelAndLoad into r3f canvas
+  //   data.store.actions.loadToCanvas(nodesToModelAndLoad, '_r3fCanvas')
+  //   // return <Box>true</Box> // true
+  // }
 
   // console.debug(`%c====================================`, ccm.black)
   return (
