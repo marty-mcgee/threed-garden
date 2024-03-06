@@ -97,10 +97,10 @@ export default function ThreeDCanvas({ _id, nodes }) {
       {/* <Suspense fallback={<Html center><Loader /></Html>}> */}
       {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
 
-        {/* <Environment
+        <Environment
           preset='night'
           background={'only'}
-        /> */}
+        />
 
         {/* [MM] HEY HEY HEY */}
 
@@ -113,7 +113,7 @@ export default function ThreeDCanvas({ _id, nodes }) {
           maxDistance={2048}
           // minZoom={10}
           // maxZoom={20}
-          minPolarAngle={0}
+          minPolarAngle={-1.75}
           maxPolarAngle={Math.PI / 1.75}
           autoRotate={true}
         />
