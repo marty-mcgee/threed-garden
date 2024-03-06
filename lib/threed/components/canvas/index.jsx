@@ -3,7 +3,8 @@
 
 import { proxy, useSnapshot } from 'valtio'
 
-import { Suspense, useState, useRef } from 'react'
+import { Suspense, useState, useRef, useTransition } from 'react'
+import { useControls } from 'leva'
 
 // ** Helper Components
 import Spinner from '#/ui/components/spinner'
@@ -58,6 +59,25 @@ function LoaderSimple() {
   return <Html center>{Math.round(progress)} % loaded</Html>
 }
 
+function Env() {
+  const [preset, setPreset] = useState('sunset')
+  // You can use the "inTransition" boolean to react to the loading in-between state,
+  // For instance by showing a message
+  const [inTransition, startTransition] = useTransition()
+  const { blur } = useControls({
+    blur: { value: 0.65, min: 0, max: 1 },
+    preset: {
+      value: preset,
+      options: ['sunset', 'dawn', 'night', 'warehouse', 'forest', 'apartment', 'studio', 'city', 'park', 'lobby'],
+      // If onChange is present the value will not be reactive, see https://github.com/pmndrs/leva/blob/main/docs/advanced/controlled-inputs.md#onchange
+      // Instead we transition the preset value, which will prevents the suspense bound from triggering its fallback
+      // That way we can hang onto the current environment until the new one has finished loading ...
+      onChange: (value) => startTransition(() => setPreset(value))
+    }
+  })
+  return <Environment preset={preset} background blur={blur} />
+}
+
 // export default function ThreeDCanvas({ sceneState, threeds, nodes }) {
 export default function ThreeDCanvas({ _id, nodes }) {
   // **
@@ -97,10 +117,11 @@ export default function ThreeDCanvas({ _id, nodes }) {
       {/* <Suspense fallback={<Html center><Loader /></Html>}> */}
       {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
 
-        <Environment
-          preset='night'
+        {/* <Environment
+          preset='dawn'
           background={'only'}
-        />
+        /> */}
+        <Env />
 
         {/* [MM] HEY HEY HEY */}
 
