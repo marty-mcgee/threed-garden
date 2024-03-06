@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from 'react'
 // ** R3-Fiber + R3-Drei
 import {
   useThree,
-  // useFrame,
+  useFrame,
   useLoader
 } from '@react-three/fiber'
 import {
@@ -324,7 +324,7 @@ const Model = ({
 
   // useFrame(({ clock }) => {
   //   const a = clock.getElapsedTime()
-  //   model.ref.current.rotation.x = a
+  //   model.ref.current.rotation.z = a
   // })
 
   // ==============================================================
