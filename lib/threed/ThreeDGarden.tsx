@@ -3556,7 +3556,7 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
         >
 
           {/* THREED HEY HEY HEY */}
-            {nodesToModelAndLoad.length && (
+            {nodesToModelAndLoad && (
               <ThreeDCanvas
                 _id={'_r3fCanvas'}
                 nodes={nodesToModelAndLoad}

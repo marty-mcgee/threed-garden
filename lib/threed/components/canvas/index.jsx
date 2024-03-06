@@ -82,7 +82,9 @@ export default function ThreeDCanvas({ _id, nodes }) {
   //   }
   // }
 
+  // return <></>
   return (
+    <>
     <Canvas
       // id={_id}
       camera={{ position: [-10, 10, 50], fov: 50 }}
@@ -98,13 +100,13 @@ export default function ThreeDCanvas({ _id, nodes }) {
         background: new THREE.Color(0x131313),
       }}
     >
-      <Preload all />
+      {/* <Preload all /> */}
 
       {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
       {/* <Suspense fallback={null}> */}
       {/* <Suspense fallback={<LoaderSimple />}> */}
       {/* <Suspense fallback={<Html center><Loader /></Html>}> */}
-      <Suspense fallback={<Html center><Spinner /></Html>}>
+      {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
 
         {/* <Environment
           preset='night'
@@ -232,8 +234,9 @@ export default function ThreeDCanvas({ _id, nodes }) {
         </Stage> */}
 
         {/* {children} */}
-      </Suspense>
+      {/* </Suspense> */}
     </Canvas>
+    </>
   )
 }
 
