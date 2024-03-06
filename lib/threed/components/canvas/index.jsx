@@ -36,6 +36,9 @@ import ThreeDModels from '#/lib/threed/components/nouns/Model'
 // import TransformModel from '~/lib/threed/components/examples/TransformModel/App'
 // import Shoe from '~/lib/threed/components/examples/Shoes/Shoe'
 
+// ** UUID Imports
+import { v4 as newUUID } from 'uuid'
+
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 // console.debug('%c~ccm', ccm)
@@ -62,11 +65,19 @@ export default function ThreeDCanvas({ _id, nodes }) {
   // const nodesToModelAndLoad = nodes
   // console.debug('%c nodesToModelAndLoad', ccm.orange, nodesToModelAndLoad)
 
+  // map threed to THREED, to pass on to Model
+  const group = {
+    group_id: newUUID(),
+    group_position: [0, 0, 0],
+    group_rotation: [-1.570796, 0, 0], // [0, 0, 0], // rotation: 1.570796 radians = 90 degrees
+    group_scale: 0.05, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
+  }
+
   return (
     <Canvas
       // id={_id}
       camera={{ position: [-10, 10, 50], fov: 50 }}
-      dpr={[1, 2]}
+      // dpr={[1, 2]}
       shadows
       style={{
         height: '480px',
@@ -99,12 +110,12 @@ export default function ThreeDCanvas({ _id, nodes }) {
         <OrbitControls
           makeDefault
           minDistance={0.5}
-          maxDistance={120}
+          maxDistance={2048}
           // minZoom={10}
           // maxZoom={20}
           minPolarAngle={0}
           maxPolarAngle={Math.PI / 1.75}
-          autoRotate={false}
+          autoRotate={true}
         />
 
         {/* NEED TO LOAD THREEDSCENE FILES TO A CANVAS */}
@@ -121,7 +132,10 @@ export default function ThreeDCanvas({ _id, nodes }) {
           // file={nodes[0].nodes.file.url} // K.I.S.S.
         /> */}
         {nodes && (
-          <ThreeDModels nodes={nodes} />
+          <ThreeDModels
+            nodes={nodes}
+            group={group}
+          />
         )}
         {/* <CoffeeCup /> */}
         {/* [MM] HEY HEY HEY */}
@@ -131,9 +145,9 @@ export default function ThreeDCanvas({ _id, nodes }) {
         {/* */}
         <GizmoHelper
           alignment='top-right'
-          margin={[100, 100]}
+          margin={[64, 64]}
         >
-          <group scale={0.85}>
+          <group scale={1.00}>
             <GizmoViewcube />
           </group>
           <group

@@ -48,8 +48,25 @@ const DEBUG = true // false | true // ts: boolean
 // ** ThreeD Model -||-
 const Model = ({
   name = 'GLBs',
-  node = {
-    file: null
+  nodes = [
+    {
+      __typename: "File",
+      file: null,
+      fileId: 0,
+      fileType: "tbd",
+      isObject3d: true,
+      isUrl: true,
+      modified: "",
+      title: "",
+      uri: "",
+      url: "",
+    },
+  ],
+  group = {
+    group_id: newUUID(),
+    group_position: [0, 0, 0],
+    group_rotation: [-1.570796, 0, 0], // [0, 0, 0], // rotation: 1.570796 radians = 90 degrees
+    group_scale: 0.05, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
   },
   // modelState = {},
   // sceneState = {},
@@ -62,7 +79,7 @@ const Model = ({
   // console.debug('Model props.modelState', modelState)
   // console.debug('Model props.sceneState', sceneState)
   // console.debug('Model props.storeState', storeState)
-  console.debug('%c🖊️ Model props.node', ccm.darkgreen, node)
+  console.debug('%c🖊️ Model props.nodes', ccm.darkgreen, nodes)
 
   // return <><CoffeeCup /></>
 
@@ -86,14 +103,15 @@ const Model = ({
     ref: useRef(null),
     name: name,
     // object nodes
-    nodes: [],
+    // node: node, // for single nodes, like FBX
+    nodes: nodes.length ? nodes : [],
     // state: modelState, // for funzees
     // sceneState: sceneState, // for funzees
     // storeState: storeState, // for funzees
     // file: nodes.files[0]?.nodes[0]?.url,
     // file: file,
     // file: fileUrlDefault,
-    file: node.url ? node.url : fileUrlDefault,
+    file: nodes[0].url ? nodes[0].url : fileUrlDefault,
     // file type?
     type: 'threed_node', // fbx | gltf | obj | threed | threed_node
     // 3D
@@ -111,25 +129,22 @@ const Model = ({
     isWEBP: false,
     // is type Supported?
     isSupported: false,
+    // group attributes
+    group_position: group.group_position ? group.group_position : 0,
+    group_rotation: group.group_rotation ? group.group_rotation : 0,
+    group_scale: group.group_scale ? group.group_scale : 0,
     // animations
     ani: {
       ref: null,
       actions: [],
       names: [],
     },
-    // doReturnOne: doReturnOne ? true : false,
-    // doReturnAll: doReturnAll ? true : false,
-    // doReturnEach: doReturnEach ? true : false,
-    // attributes
-    group_position: 0, // nodes?.group?.position ?? 0,
-    group_rotation: 0, // nodes?.group?.rotation ?? 0,
-    group_scale: 0, // nodes?.group?.scale ?? 0,
     // is Ready to go?
     isReadyForCanvas: false,
   }
 
   // ** set available action modes
-  const modes = ['translate', 'rotate', 'scale']
+  const actionModes = ['translate', 'rotate', 'scale']
 
   // ** decide file type from file extension (and other qualifiers)
   // const fileExt = model.file?.split('.').pop()
@@ -164,17 +179,18 @@ const Model = ({
         const fbx = useLoader(FBXLoader, model.file, loader => {
           loader.manager.addHandler(/\.tga$/i, new TGALoader())
         })
-        console.debug('%c🌱 NODES: fbx', ccm.darkgreen, [{...fbx}])
+        console.debug('%c🌱 NODES: fbx', ccm.darkgreen, fbx)
         console.debug(`%c======================================`, ccm.darkgreen)
         if (fbx) {
-          model.nodes = [{...fbx}]
-          // console.debug('RETURN ONLY NODE AS NODES: true')
+          // model.node = fbx
+          model.nodes = fbx
+          console.debug('RETURN ONLY NODE AS NODES: true', model.nodes)
         }
         if (fbx.animations) {
-          // console.debug('FBX animations', fbx.animations)
+          console.debug('FBX animations', fbx.animations)
           // Extract animation actions
           const { ref, actions, names } = useAnimations(fbx.animations)
-          // console.debug('FBX useAnimations', ref, actions, names)
+          console.debug('FBX useAnimations', ref, actions, names)
           model.ani.ref = ref
           model.ani.actions = actions
           model.ani.names = names
@@ -193,7 +209,7 @@ const Model = ({
         }
       }
       // GLTF
-      else if (model.isGLTF && 1 == 0) {
+      else if (model.isGLTF) {
         model.type = 'gltf'
         // nodes[] is an array of all the meshes
         // file is cached/memoized; it only gets loaded and parsed once
@@ -244,10 +260,20 @@ const Model = ({
       }
 
       // finally
-      if (model.nodes.length) {
+      if (model.nodes.length && model.isGLTF) {
         model.isReadyForCanvas = true
-        console.debug('%c📐 THREED MODEL IS READY FOR CANVAS ✔️', ccm.darkgreen)
+        console.debug('%c📐 THREED MODEL IS READY FOR CANVAS ✔️', ccm.green, model)
         console.debug(`%c======================================`, ccm.darkgreen)
+      }
+      else if (model.nodes && model.isFBX) {
+        model.isReadyForCanvas = true
+        console.debug('%c📐 THREED MODEL IS READY FOR CANVAS ✔️', ccm.green, model)
+        console.debug(`%c======================================`, ccm.darkgreen)
+      }
+      else {
+        model.isReadyForCanvas = false
+        console.debug('%c📐 THREED MODEL IS NOT READY FOR CANVAS ✖️', ccm.darkred, model)
+        console.debug(`%c======================================`, ccm.darkred)
       }
     }
     // console.debug(`%c======================================`, ccm.black)
@@ -272,25 +298,26 @@ const Model = ({
   // })
 
   // // Change cursor on hover-state
-  // useEffect(() => void (document.body.style.cursor = isHovered ? 'pointer' : 'auto'), [isHovered])
+  useEffect(
+    () => void (document.body.style.cursor = isHovered ? 'pointer' : 'auto'), [isHovered])
 
-  // // Change animation when the index changes
-  // useEffect(() => {
-  //   if (model.ani.actions != undefined
-  //     && model.ani.names != undefined
-  //     && model.ani.actions[model.ani.names[index]] != undefined
-  //   )
-  //     // Reset and fade in animation after an index has been changed
-  //     model.ani.actions[model.ani.names[index]].reset().fadeIn(0.5).play()
+  // Change animation when the index changes
+  useEffect(() => {
+    if (model.ani.actions != undefined
+      && model.ani.names != undefined
+      && model.ani.actions[model.ani.names[index]] != undefined
+    )
+      // Reset and fade in animation after an index has been changed
+      model.ani.actions[model.ani.names[index]].reset().fadeIn(0.5).play()
 
-  //     // In the clean-up phase, fade it out
-  //     // (page route may have changed)
-  //     if (model.ani.actions[model.ani.names[index]]) {
-  //       return () => { try { model.ani.actions[model.ani.names[index]].fadeOut(0.5) } catch (ERROR) {} }
-  //     }
+      // In the clean-up phase, fade it out
+      // (page route may have changed)
+      if (model.ani.actions[model.ani.names[index]]) {
+        return () => { try { model.ani.actions[model.ani.names[index]].fadeOut(0.5) } catch (ERROR) {} }
+      }
 
-  //   return undefined
-  // }, [index, model.ani.actions, model.ani.names])
+    return undefined
+  }, [index, model.ani.actions, model.ani.names])
 
   // ==============================================================
   // ANIMATIONS (FOR ALL MODELS !!!)
@@ -322,9 +349,9 @@ const Model = ({
           // If a click happened but this mesh wasn't hit we null out the target,
           // This works because missed pointers fire before the actual hits
           onPointerMissed={(e) => e.type === 'click' && (modelState.current = null)}
-          // Right click cycles through the transform modes
+          // Right click cycles through the transform actionModes
           onContextMenu={(e) =>
-            snap.current === model.name && (e.stopPropagation(), (modelState.mode = (snap.mode + 1) % modes.length))
+            snap.current === model.name && (e.stopPropagation(), (modelState.mode = (snap.mode + 1) % actionModes.length))
           }
           onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
           onPointerOut={(e) => setIsHovered(false)}
@@ -339,21 +366,22 @@ const Model = ({
     // return FBX node
     else if (model.isFBX) {
       const model_name = model.name ? model.name : 'no name'
-      const model_geometry = model.nodes.geometry
-      const model_material = model.nodes.material
+      // const model_geometry = model.nodes.geometry
+      // const model_material = model.nodes.material
       return (
         <group
-          ref={model.ani.ref}
-          // {...props}
+          ref={model.ref}
+          // ref={model.ani.ref}
           dispose={null}
           position={model.group_position}
           rotation={model.group_rotation}
           scale={model.group_scale}
+          // scale={0.005}
         >
           <primitive
             name={model_name}
             // ref={model.ref}
-            ref={model.ani.ref}
+            // ref={model.ani.ref}
             object={model.nodes}
           />
         </group>
@@ -390,17 +418,16 @@ const Model = ({
         console.debug('modelState.current', null),
         console.debug('snap.current', snap.current)
       )}
-      // Right click cycles through the transform modes
+      // Right click cycles through the transform actionModes
       onContextMenu={(e) =>
         snap.current === model.name &&
         (e.stopPropagation(),
-        (modelState.mode = (snap.mode + 1) % modes.length),
+        (modelState.mode = (snap.mode + 1) % actionModes.length),
         console.debug('modelState.mode', modelState.mode),
         console.debug('snap.current', snap.current))
       }
       onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
       onPointerOut={(e) => setIsHovered(false)}
-      // {...props}
       dispose={null}>
       <sphereGeometry args={[4, 96]} />
       <meshPhysicalMaterial
@@ -436,7 +463,7 @@ function ThreeDControls() {
       {snap.current && (
         <TransformControls
           object={sceneState.getObjectByName(snap.current)}
-          mode={modes[snap.mode]}
+          mode={actionModes[snap.mode]}
         />
       )}
     </>
@@ -500,16 +527,17 @@ export default function ThreeDModels({ nodes }) {
             return (
               <group
                 key={newUUID()}
+                // key={file.fileId}
               >
-                <ThreeDControls />
                 <CoffeeCup
-                  key={newUUID()}
+                  // key={newUUID()}
                 />
                 <Model
-                  key={newUUID()}
+                  // key={file.fileId}
                   name={file.title}
                   node={file}
                 />
+                <ThreeDControls />
               </group>
             )
           })

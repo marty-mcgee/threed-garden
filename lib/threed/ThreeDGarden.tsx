@@ -3683,7 +3683,10 @@ const ThreeDGarden = (): JSX.Element => {
   // ==========================================================
   // FC returns JSX
   return (
-    <>
+    <div
+      id='threedgarden'
+      style={{width: '100%'}}
+    >
 
       {/* <Loader
         // containerStyles={...container} // Flex layout styles
@@ -3694,111 +3697,103 @@ const ThreeDGarden = (): JSX.Element => {
         initialState={(active = true) => active} // Initial black out state
       /> */}
 
-      <div
-        id='threedgarden-wrapper'
-        style={{width: '100%'}}
-      >
-        <div id='threedgarden'>
+      <ThreeDToolbar data={data} />
 
-          <ThreeDToolbar data={data} />
+      <Leva collapsed={false} hidden={false} />
 
-          <Leva collapsed={false} />
+      {/* R3F ThreeD Canvas View */}
+      <ThreeDCanvasViewer data={data} />
+      {/* R3F ThreeD Canvas View */}
 
-          {/* R3F ThreeD Canvas View */}
-          <ThreeDCanvasViewer data={data} />
-          {/* R3F ThreeD Canvas View */}
+      {/* store access */}
+      <div id='storeControlPanel'>
 
-          {/* store access */}
-          <div id='storeControlPanel'>
-
-            {/* Tabs */}
-            <Box sx={{ borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
-              <Tabs
-                value={tabInfoControl}
-                onChange={handleChangeTabInfoControl}
-                aria-label='Info Control Panel'
-              >
-                <Tab label='Projects' {...tabProps(0)} />
-                <Tab label='Plans' {...tabProps(1)} />
-                <Tab label='Files' {...tabProps(2)} />
-                <Tab label='ThreeDs' {...tabProps(3)} />
-                <Tab label='Scenes' {...tabProps(4)} />
-                <Tab label='Allotments' {...tabProps(5)} />
-                <Tab label='Beds' {...tabProps(6)} />
-                <Tab label='Plants' {...tabProps(7)} />
-                <Tab label='Planting Plans' {...tabProps(8)} />
-                <Tab label='Tests' {...tabProps(9)} />
-              </Tabs>
+        {/* Tabs */}
+        <Box sx={{ borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs
+            value={tabInfoControl}
+            onChange={handleChangeTabInfoControl}
+            aria-label='Info Control Panel'
+          >
+            <Tab label='Projects' {...tabProps(0)} />
+            <Tab label='Plans' {...tabProps(1)} />
+            <Tab label='Files' {...tabProps(2)} />
+            <Tab label='ThreeDs' {...tabProps(3)} />
+            <Tab label='Scenes' {...tabProps(4)} />
+            <Tab label='Allotments' {...tabProps(5)} />
+            <Tab label='Beds' {...tabProps(6)} />
+            <Tab label='Plants' {...tabProps(7)} />
+            <Tab label='Planting Plans' {...tabProps(8)} />
+            <Tab label='Tests' {...tabProps(9)} />
+          </Tabs>
+        </Box>
+        <Box sx={{ p: 2, borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
+          <MDTabPanel value={tabInfoControl} index={0}>
+            <ProjectControlPanel />
+            <ProjectInfoPanel />
+          </MDTabPanel>
+          <MDTabPanel value={tabInfoControl} index={1}>
+            <PlanControlPanel />
+            <PlanInfoPanel />
+          </MDTabPanel>
+          <MDTabPanel value={tabInfoControl} index={2}>
+            <FileControlPanel />
+            <FileInfoPanel />
+          </MDTabPanel>
+          <MDTabPanel value={tabInfoControl} index={3}>
+            <ThreeDControlPanel />
+            <ThreeDInfoPanel />
+          </MDTabPanel>
+          <MDTabPanel value={tabInfoControl} index={4}>
+            <SceneControlPanel />
+            <SceneInfoPanel />
+          </MDTabPanel>
+          <MDTabPanel value={tabInfoControl} index={5}>
+            <AllotmentControlPanel />
+            <AllotmentInfoPanel />
+          </MDTabPanel>
+          <MDTabPanel value={tabInfoControl} index={6}>
+            <BedControlPanel />
+            <BedInfoPanel />
+          </MDTabPanel>
+          <MDTabPanel value={tabInfoControl} index={7}>
+            <PlantControlPanel />
+            <PlantInfoPanel />
+          </MDTabPanel>
+          <MDTabPanel value={tabInfoControl} index={8}>
+            <PlantingPlanControlPanel />
+            <PlantingPlanInfoPanel />
+          </MDTabPanel>
+          <MDTabPanel value={tabInfoControl} index={9}>
+            <Box sx={{ p: 2}}>
+              <>Testing Panel</>
+              {/* <CharacterControlPanel /> */}
+              {/* <CharacterInfoPanel /> */}
+              {/* <hr /> */}
+              {/* <FurnitureControlPanel /> */}
+              {/* <FurnitureInfoPanel /> */}
+              {/* <hr /> */}
+              {/* <ChickenControlPanel /> */}
+              {/* <ChickenInfoPanel /> */}
+              {/* <hr /> */}
+              {/* <BearControlPanel /> */}
+              {/* <BearInfoPanel /> */}
+              {/* <hr /> */}
             </Box>
-            <Box sx={{ p: 2, borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
-              <MDTabPanel value={tabInfoControl} index={0}>
-                <ProjectControlPanel />
-                <ProjectInfoPanel />
-              </MDTabPanel>
-              <MDTabPanel value={tabInfoControl} index={1}>
-                <PlanControlPanel />
-                <PlanInfoPanel />
-              </MDTabPanel>
-              <MDTabPanel value={tabInfoControl} index={2}>
-                <FileControlPanel />
-                <FileInfoPanel />
-              </MDTabPanel>
-              <MDTabPanel value={tabInfoControl} index={3}>
-                <ThreeDControlPanel />
-                <ThreeDInfoPanel />
-              </MDTabPanel>
-              <MDTabPanel value={tabInfoControl} index={4}>
-                <SceneControlPanel />
-                <SceneInfoPanel />
-              </MDTabPanel>
-              <MDTabPanel value={tabInfoControl} index={5}>
-                <AllotmentControlPanel />
-                <AllotmentInfoPanel />
-              </MDTabPanel>
-              <MDTabPanel value={tabInfoControl} index={6}>
-                <BedControlPanel />
-                <BedInfoPanel />
-              </MDTabPanel>
-              <MDTabPanel value={tabInfoControl} index={7}>
-                <PlantControlPanel />
-                <PlantInfoPanel />
-              </MDTabPanel>
-              <MDTabPanel value={tabInfoControl} index={8}>
-                <PlantingPlanControlPanel />
-                <PlantingPlanInfoPanel />
-              </MDTabPanel>
-              <MDTabPanel value={tabInfoControl} index={9}>
-                <Box sx={{ p: 2}}>
-                  <>Testing Panel</>
-                  {/* <CharacterControlPanel /> */}
-                  {/* <CharacterInfoPanel /> */}
-                  {/* <hr /> */}
-                  {/* <FurnitureControlPanel /> */}
-                  {/* <FurnitureInfoPanel /> */}
-                  {/* <hr /> */}
-                  {/* <ChickenControlPanel /> */}
-                  {/* <ChickenInfoPanel /> */}
-                  {/* <hr /> */}
-                  {/* <BearControlPanel /> */}
-                  {/* <BearInfoPanel /> */}
-                  {/* <hr /> */}
-                </Box>
-              </MDTabPanel>
-            </Box>
-          </div>
-
-          <ModalAbout />
-          <ModalModel3d />
-          <ModalLoading />
-          <ModalShare />
-
-          {/* <CatalogView /> */}
-          {/* <PropertiesView /> */}
-          {/* <PlanView /> */}
-          {/* <TheBottom /> */}
-        </div>
+          </MDTabPanel>
+        </Box>
       </div>
-    </>
+
+      <ModalAbout />
+      <ModalModel3d />
+      <ModalLoading />
+      <ModalShare />
+
+      {/* <CatalogView /> */}
+      {/* <PropertiesView /> */}
+      {/* <PlanView /> */}
+      {/* <TheBottom /> */}
+    </div>
   )
 }
 
