@@ -3477,7 +3477,7 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
   // console.debug('%cThreeDCanvasViewer {data.store}', ccm.yellow, data.store)
   // console.debug(`%c====================================`, ccm.black)
 
-  let nounDataToLoad_title = 'NOPE NOPE NOPE'
+  let nounDataToLoad_title = 'NOTHING YET, SIR: NOPE NOPE NOPE'
   let nodesToModelAndLoad = []
   // const nounDataToLoad = data.store.store.useStore('one')
   // const nounDataToLoad_title = nounDataToLoad.data?.title ? nounDataToLoad.data.title : 'NOTHING YET SIR'
