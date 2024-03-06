@@ -124,8 +124,8 @@ function nounStore(this: INounStore, _type = 'noun') {
   // store params
   this._type = _type.toLowerCase()
   this._plural = _type + 's'
-  this._storageItem = 'threed_' + _type
-  this._storageItemHistory = 'threed_' + _type + 'History'
+  this._storageItem = 'threed_' + this._type
+  this._storageItemHistory = 'threed_' + this._type + 'History'
 
   // ==============================================================
   // ** Noun Store .store
@@ -656,8 +656,8 @@ function modalStore(this: any, _type = 'modal') {
   // store params
   this._type = _type.toLowerCase()
   this._plural = _type + 's'
-  this._storageItem = 'threed_' + _type
-  this._storageItemHistory = 'threed_' + _type + 'History'
+  this._storageItem = 'threed_' + this._type
+  this._storageItemHistory = 'threed_' + this._type + 'History'
 
   // ==============================================================
   // ** Modal Store .store

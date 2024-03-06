@@ -3477,32 +3477,32 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
   // console.debug('%cThreeDCanvasViewer {data.store}', ccm.yellow, data.store)
   // console.debug(`%c====================================`, ccm.black)
 
-  let nounDataToLoad_title = 'NOTHING YET, SIR: NOPE NOPE NOPE'
-  let nodesToModelAndLoad = []
-  // const nounDataToLoad = data.store.store.useStore('one')
-  // const nounDataToLoad_title = nounDataToLoad.data?.title ? nounDataToLoad.data.title : 'NOTHING YET SIR'
-  // // console.debug('%cThreeDCanvasViewer {nounDataToLoad}', ccm.blue, nounDataToLoad)
+  // const noun = data.store.store.get('one')
+  const noun = data.store.store.useStore('one')
 
-  // let nouns = []
-  // let nounsToLoad = []
-  // let nodesToModelAndLoad = []
-  // if (nounDataToLoad) {
-  //   nouns = [{...nounDataToLoad}]
-  //   if (debug) console.debug('%cThreeDCanvasViewer {nouns}', ccm.orange, nouns)
-  //   if (nouns.length) {
-  //     nounsToLoad = nouns[0].data?.plans?.nodes[0]?.threedsActive?.nodes
-  //     if (nounsToLoad) {
-  //       nodesToModelAndLoad = nounsToLoad
-  //       if (debug) console.debug('%cThreeDCanvasViewer {nounsToLoad}', ccm.orange, nounsToLoad)
-  //     }
-  //   }
-  // }
+  let nouns = []
+  let nounsToLoad = []
+  let noun_title = noun?.data?.title ? noun.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
+  let nodes = [] // nodes[] to load to canvas
+  if (noun) {
+    nouns = [{...noun}]
+    if (debug) console.debug('%cThreeDCanvasViewer {nouns}', ccm.orange, nouns)
+    if (nouns.length) {
+      nounsToLoad = nouns[0].data?.plans?.nodes[0]?.threedsActive?.nodes
+      noun_title = noun?.data?.title ? noun.data.title : noun_title
+      console.debug('%cThreeDCanvasViewer {noun}', ccm.blue, noun, noun_title)
+      if (nounsToLoad) {
+        nodes = nounsToLoad
+        if (debug) console.debug('%cThreeDCanvasViewer {nounsToLoad}', ccm.orange, nounsToLoad)
+      }
+    }
+  }
 
-  // const loadNounData = (nodesToModelAndLoad) => {
-  //   // load this nodesToModelAndLoad into r3f canvas
-  //   data.store.actions.loadToCanvas(nodesToModelAndLoad, '_r3fCanvas')
-  //   // return <Box>true</Box> // true
-  // }
+  const loadNounData = (nodes) => {
+    // load these nodes into r3f canvas
+    data.store.actions.loadToCanvas(nodes, '_r3fCanvas')
+    // return <Box>true</Box> // true
+  }
 
   // console.debug(`%c====================================`, ccm.black)
   return (
@@ -3526,8 +3526,8 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
         // style={{ display: 'flex', justifyContent: 'flex-start' }}
       >
         <Typography>
-          {/* {nounDataToLoad._type} title:  */}
-          {nounDataToLoad_title}
+          {/* {noun._type} title:  */}
+          {noun_title}
         </Typography>
       </Grid>
       <Grid
@@ -3556,10 +3556,10 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
         >
 
           {/* THREED HEY HEY HEY */}
-            {nodesToModelAndLoad && (
+            {nodes && (
               <ThreeDCanvas
                 _id={'_r3fCanvas'}
-                nodes={nodesToModelAndLoad}
+                nodes={nodes}
               />
             )}
           {/* THREED HEY HEY HEY */}
@@ -3570,7 +3570,7 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
         >
           <ThreeDCanvas
             _id={2}
-            nounDataToLoad={nounDataToLoad}
+            nodes={nodes}
           />
         </Grid> */}
         {/* <Grid item id='camera[2]'
@@ -3578,7 +3578,7 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
         >
           <ThreeDCanvas
             _id={3}
-            nounDataToLoad={nounDataToLoad}
+            nodes={nodes}
           />
         </Grid> */}
         {/* <Grid item id='camera[3]'
@@ -3586,7 +3586,7 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
         >
           <ThreeDCanvas
             _id={4}
-            nounDataToLoad={nounDataToLoad}
+            nodes={nodes}
           />
         </Grid> */}
       </Grid>
@@ -3702,10 +3702,9 @@ const ThreeDGarden = (): JSX.Element => {
 
           <ThreeDToolbar data={data} />
 
-          <Leva collapsed />
+          <Leva collapsed={false} />
 
           {/* R3F ThreeD Canvas View */}
-          {/* <ThreeDCanvasViewer /> */}
           <ThreeDCanvasViewer data={data} />
           {/* R3F ThreeD Canvas View */}
 

@@ -58,33 +58,11 @@ function LoaderSimple() {
 // export default function ThreeDCanvas({ sceneState, threeds, nodes }) {
 export default function ThreeDCanvas({ _id, nodes }) {
   // **
-  const nodesToModelAndLoad = nodes
+  console.debug('%c props._id, props.nodes', ccm.orange, _id, nodes)
+  // const nodesToModelAndLoad = nodes
   // console.debug('%c nodesToModelAndLoad', ccm.orange, nodesToModelAndLoad)
 
-  // if (sceneState) {
-  //   if (debug) console.debug('%c sceneState to load to ThreeDCanvas', ccm.yellow, sceneState)
-  //   if (sceneState.length) {
-  //     // if (debug) console.debug('sceneState.length', sceneState.length)
-  //   }
-  // }
-  // // THE THREEDS ==== // THE NOUNS (to use)
-  // if (threeds) {
-  //   if (debug) console.debug('%c threeds to load to ThreeDCanvas', ccm.yellow, threeds)
-  //   if (threeds.length) {
-  //     // if (debug) console.debug('threeds.length', threeds.length)
-  //   }
-  // }
-  // // THE NODES ==== // THE NOUNS.NODES (to use)
-  // if (nodes) {
-  //   if (debug) console.debug('%c nodes to load to ThreeDCanvas', ccm.yellow, nodes)
-  //   if (nodes.length) {
-  //     // if (debug) console.debug('nodes.length', nodes.length)
-  //   }
-  // }
-
-  // return <></>
   return (
-    <>
     <Canvas
       // id={_id}
       camera={{ position: [-10, 10, 50], fov: 50 }}
@@ -115,10 +93,15 @@ export default function ThreeDCanvas({ _id, nodes }) {
 
         {/* [MM] HEY HEY HEY */}
 
+        {/* makeDefault makes the controls known to r3f,
+            now transform-controls can auto-disable them when active */}
         {/* <ThreeDControls /> */}
-        {/* makeDefault makes the controls known to r3f, now transform-controls can auto-disable them when active */}
         <OrbitControls
           makeDefault
+          minDistance={0.5}
+          maxDistance={120}
+          // minZoom={10}
+          // maxZoom={20}
           minPolarAngle={0}
           maxPolarAngle={Math.PI / 1.75}
           autoRotate={false}
@@ -137,8 +120,8 @@ export default function ThreeDCanvas({ _id, nodes }) {
           nodes={nodes} // YES, use this (load these nodes to canvas, as one model/many models)
           // file={nodes[0].nodes.file.url} // K.I.S.S.
         /> */}
-        {nodesToModelAndLoad.length && (
-          <ThreeDModels nodes={nodesToModelAndLoad} />
+        {nodes && (
+          <ThreeDModels nodes={nodes} />
         )}
         {/* <CoffeeCup /> */}
         {/* [MM] HEY HEY HEY */}
@@ -236,7 +219,6 @@ export default function ThreeDCanvas({ _id, nodes }) {
         {/* {children} */}
       {/* </Suspense> */}
     </Canvas>
-    </>
   )
 }
 
