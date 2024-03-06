@@ -90,12 +90,12 @@ const ParticipatePage: TNextPageWithProps = async () => {
             // avatar={session?.user?.image}
           />
           <CardContent>
-            <Typography sx={{ color: 'primary.main' }}>This card is visible to both 'public users' and 'authorized users'</Typography>
+            <Typography sx={{ color: 'primary.main', paddingBottom: '8px' }}>This card is visible to both 'public users' and 'authorized users'</Typography>
             { session?.user && (
             <Typography sx={{ color: 'secondary.main' }}>
+              <img src={session.user.image} width='20px' /><br/>
               name: {session.user.name}<br/>
               email: {session.user.email ? 'hidden' : ''}<br/>
-              avatar: {session.user.image}<br/>
             </Typography>
             )}
           </CardContent>
@@ -114,11 +114,11 @@ const ParticipatePage: TNextPageWithProps = async () => {
               // avatar={session.user.image}
             />
             <CardContent>
-              <Typography sx={{ color: 'warning.main' }}>This card is visible to 'authorized users' only</Typography>
+              <Typography sx={{ color: 'warning.main', paddingBottom: '8px' }}>This card is visible to 'authorized users' only</Typography>
               <Typography sx={{ color: 'secondary.main' }}>
+                <img src={session.user.image} width='20px' /><br/>
                 name: {session.user.name}<br/>
                 email: {session.user.email}<br/>
-                avatar: {session.user.image}<br/>
               </Typography>
             </CardContent>
           </Card>

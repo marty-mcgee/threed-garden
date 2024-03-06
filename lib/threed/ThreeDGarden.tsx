@@ -3544,25 +3544,24 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
       </Grid>
       <Grid
         container
-        id='cameras[{camera}]'
+        id='_r3f_cameras'
         spacing={0}
       >
         <Grid
           item
-          id='camera[0]'
+          id='_r3f_camera_1'
           md={12}
           xs={12}
           sx={{ borderTop: '1px solid darkgreen' }}
         >
 
           {/* THREED HEY HEY HEY */}
-            <Leva collapsed />
-            {/* {nodesToModelAndLoad.length && ( */}
+            {nodesToModelAndLoad.length && (
               <ThreeDCanvas
                 _id={'_r3fCanvas'}
                 nodes={nodesToModelAndLoad}
               />
-            {/* )} */}
+            )}
           {/* THREED HEY HEY HEY */}
 
         </Grid>
@@ -3702,6 +3701,8 @@ const ThreeDGarden = (): JSX.Element => {
         <div id='threedgarden'>
 
           <ThreeDToolbar data={data} />
+
+          <Leva collapsed />
 
           {/* R3F ThreeD Canvas View */}
           {/* <ThreeDCanvasViewer /> */}
