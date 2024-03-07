@@ -51,7 +51,7 @@ const debug = false // false | true // ts: boolean
 const DEBUG = true // false | true // ts: boolean
 
 // Model interactive "modes" using TransformControls
-const modes = ['translate', 'rotate', 'scale']
+const actionModes = ['translate', 'rotate', 'scale']
 
 // example working simple <Loader />
 function LoaderSimple() {
@@ -60,12 +60,12 @@ function LoaderSimple() {
 }
 
 function Env() {
-  const [preset, setPreset] = useState('sunset')
+  const [preset, setPreset] = useState('park')
   // You can use the "inTransition" boolean to react to the loading in-between state,
   // For instance by showing a message
   const [inTransition, startTransition] = useTransition()
   const { blur } = useControls({
-    blur: { value: 0.65, min: 0, max: 1 },
+    blur: { value: 0.17, min: 0.00, max: 1.00 },
     preset: {
       value: preset,
       options: ['sunset', 'dawn', 'night', 'warehouse', 'forest', 'apartment', 'studio', 'city', 'park', 'lobby'],
@@ -77,6 +77,89 @@ function Env() {
   })
   return <Environment preset={preset} background blur={blur} />
 }
+
+function LevaControls() {
+
+  const OFFSET_X = 20;
+  const LAMPS_NB = 10;
+  const LAMPS_SPEED = 0.8;
+  const TREES_NB = 16;
+  const TREES_SPEED = 0.4;
+  const FAR_TREES_NB = 12;
+  const FAR_TREES_SPEED = 0.08;
+  const ROCKS_NB = 6;
+  const ROCKS_SPEED = 0.5;
+  const RANDOMIZER_STRENGTH_SCALE = 0.42;
+  const RANDOMIZER_STRENGTH_POSITION = 1;
+
+  const {
+    lampsNb,
+    treesNb,
+    farTreesNb,
+    rocksNb,
+    lampsSpeed,
+    treesSpeed,
+    farTreesSpeed,
+    rocksSpeed,
+  } = useControls({
+    lampsNb: {
+      value: LAMPS_NB,
+      min: 1,
+      max: 100,
+      step: 1,
+    },
+    lampsSpeed: {
+      value: LAMPS_SPEED,
+      min: 0.1,
+      max: 2,
+      step: 0.05,
+    },
+    treesNb: {
+      value: TREES_NB,
+      min: 1,
+      max: 100,
+      step: 1,
+    },
+    treesSpeed: {
+      value: TREES_SPEED,
+      min: 0.1,
+      max: 2,
+      step: 0.05,
+    },
+    farTreesNb: {
+      value: FAR_TREES_NB,
+      min: 1,
+      max: 100,
+      step: 1,
+    },
+    farTreesSpeed: {
+      value: FAR_TREES_SPEED,
+      min: 0.1,
+      max: 2,
+      step: 0.01,
+    },
+    rocksNb: {
+      value: ROCKS_NB,
+      min: 1,
+      max: 100,
+      step: 1,
+    },
+    rocksSpeed: {
+      value: ROCKS_SPEED,
+      min: 0.1,
+      max: 2,
+      step: 0.05,
+    },
+  });
+}
+
+// const controls = new OrbitControls(camera, renderer.domElement)
+// camera.lookAt(0.5, 0.5, 0.5)
+// controls.target.set(.5, .5, .5)
+// controls.update()
+// controls.addEventListener('change', () => console.log("Controls Change"))
+// controls.addEventListener('start', () => console.log("Controls Start Event"))
+// controls.addEventListener('end', () => console.log("Controls End Event"))
 
 // export default function ThreeDCanvas({ sceneState, threeds, nodes }) {
 export default function ThreeDCanvas({ _id, nodes }) {
@@ -97,7 +180,7 @@ export default function ThreeDCanvas({ _id, nodes }) {
     <Canvas
       // id={_id}
       camera={{ position: [-10, 10, 50], fov: 50 }}
-      // dpr={[1, 2]}
+      dpr={[1, 2]}
       shadows
       style={{
         height: '480px',
@@ -117,13 +200,15 @@ export default function ThreeDCanvas({ _id, nodes }) {
       {/* <Suspense fallback={<Html center><Loader /></Html>}> */}
       {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
 
+        {/* [MM] HEY HEY HEY */}
+
         {/* <Environment
           preset='dawn'
           background={'only'}
         /> */}
         <Env />
 
-        {/* [MM] HEY HEY HEY */}
+        <LevaControls />
 
         {/* makeDefault makes the controls known to r3f,
             now transform-controls can auto-disable them when active */}
@@ -131,12 +216,24 @@ export default function ThreeDCanvas({ _id, nodes }) {
         <OrbitControls
           makeDefault
           minDistance={0.5}
-          maxDistance={2048}
+          maxDistance={1600}
           // minZoom={10}
           // maxZoom={20}
+          // minAzimuthAngle={-Math.PI / 4}
+          // maxAzimuthAngle={Math.PI / 4}
           minPolarAngle={-1.75}
           maxPolarAngle={Math.PI / 1.75}
-          autoRotate={true}
+          enableZoom={true}
+          zoomToCursor={true} // default is false
+          zoomSpeed={1.0} // default is 1.0
+          enableRotate={true}
+          autoRotate={true} // default is false
+          autoRotateSpeed={1.0} // default is 2.0
+          rotateSpeed={1.0} // default is 1.0
+          enableDamping={true} // slows down rotation after mouse release
+          dampingFactor={0.01} // default is 0.05
+          enablePan={true}
+          screenSpacePanning={true}
         />
 
         {/* NEED TO LOAD THREEDSCENE FILES TO A CANVAS */}
@@ -236,7 +333,7 @@ export default function ThreeDCanvas({ _id, nodes }) {
         <TransformModel
           name='Zeppelin' // must match node name
           state={state}
-          modes={modes}
+          modes={actionModes}
           position={[-20, 10, 10]}
           rotation={[3, -1, 3]}
           scale={0.005}
