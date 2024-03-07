@@ -87,6 +87,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-query": "^3.39.2",
+    "react-use": "^17.5.0",
     "regexp-to-ast": "^0.5.0",
     "scheduler": "^0.19.0",
     "sharp": "^0.32.6",
