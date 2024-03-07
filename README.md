@@ -1,6 +1,6 @@
 # [🥕 ThreeD Garden: 3D Object Environment using NextJS React TypeScript Web3 ThreeJS R3Fiber](https://github.com/marty-mcgee/threed-garden/)
 
-3D Dev Environment using React 18, TypeScript 5, Three.js React-Three-Fiber on Next.js 14, Valtio, Apollo Client, GraphQL, WordPress REST API, MUI 5 + Tailwind. ThreeD Web3 Interface + Infrastructure for developing Three-Dimensional JavaScript Objects, Server+Client Components, ETH apps (dapps), Real-World Contracts + more..
+3D Dev Environment using React 18, TypeScript 5, Three.js React-Three-Fiber, on Next.js 14, Apollo Client, GraphQL, WordPress REST API, MUI 5 + Tailwind. ThreeD Web3 Interface for Three-Dimensional JavaScript Objects with React Server + Client Components, ETH apps (dapps), Real-World Contracts + more..
 
 ## Live Demo
 

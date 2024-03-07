@@ -3536,8 +3536,8 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
         md={4}
         xs={12}
         sx={{
-          paddingTop: '0.5rem',
-          paddingLeft: '0.7rem',
+          // paddingTop: '0.5rem',
+          // paddingLeft: '0.7rem',
           display: 'flex',
           justifyContent: 'flex-start'
         }}
@@ -3546,7 +3546,7 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
         <Leva
           // theme={myTheme} // you can pass a custom theme (see the styling section)
           fill={true} // default = false,  true makes the pane fill the parent dom node it's rendered in
-          flat={false} // default = false,  true removes border radius and shadow
+          flat={true} // default = false,  true removes border radius and shadow
           // oneLineLabels={false} // default = false, alternative layout for labels, with labels and fields on separate rows
           hideTitleBar={false} // default = false, hides the GUI header
           collapsed={true} // default = false, when true the GUI is collpased
