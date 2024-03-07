@@ -92,6 +92,7 @@ import { Loader } from '@react-three/drei'
 import { Html, useProgress } from '@react-three/drei'
 // ** Leva GUI
 import { Leva, useControls, folder, button, monitor } from 'leva'
+import { useFullscreen } from 'react-use'
 
 // ** ThreeD R3F Imports
 // import { Canvas } from '@react-three/fiber'
@@ -3507,9 +3508,14 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
       filter: { value: false, render: (get) => get('Panel.showTitleBar') },
       oneLineLabels: false,
     }),
-    { color: 'royalblue' }
+    { color: 'green' }
   )
+  useFullscreen({ current: document.documentElement }, fullScreen, {
+    onClose: () => set({ fullScreen: false }),
+  })
 
+
+  // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
   const loadNounData = (nodes) => {
     // load these nodes into r3f canvas
     data.store.actions.loadToCanvas(nodes, '_r3fCanvas')
@@ -3617,7 +3623,7 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
   )
 }
 
-const MyLevaComponent: FC = ({ projectName }): JSX.Element => {
+const MyLevaComponent: FC = ({ projectName, setProjectName }): JSX.Element => {
   // **
   const word = `[MM] @ ${new Date().toISOString()}`
   // **
@@ -3634,14 +3640,15 @@ const MyLevaComponent: FC = ({ projectName }): JSX.Element => {
   }, [projectName, set])
 
   // console.debug("MyComponent")
-  // useEffect(() => {
+  useEffect(() => {
+    setProjectName(projectName)
   //   console.debug('MyComponent onMount')
   //   return () => {
   //     console.debug('MyComponent onUnmount')
   //   }
-  // }, [])
+  }, [projectName])
 
-  return <>{Id} </>
+  return <>{Id}: {projectName} </>
 }
 
 // const ThreeDGarden = ({ session }: { session: Session | null }): JSX.Element => {
@@ -3670,8 +3677,10 @@ const ThreeDGarden = (): JSX.Element => {
     store: projectStore, // default
     word: word,
   }
+ // 'GUI CONTROL PANEL' + 'THREED PROJECT' NAME
+ // -- IN REACT STATE (NOT APOLLO OR VALTIO)
+  const [projectName, setProjectName] = useState(data.store.store.get('one').data.title) // _name
 
-  const [projectName, setProjectName] = useState('GUI CONTROL PANEL')
   const onClickSetProjectName = (projectName) => {
     setProjectName(projectName)
   }
@@ -3743,6 +3752,7 @@ const ThreeDGarden = (): JSX.Element => {
         <ThreeDToolbar data={data} projectName={projectName} />
 
         {/* R3F ThreeD Canvas View */}
+        {/* <ThreeDCanvasViewer data={data} projectName={projectName} setProjectName={setProjectName} /> */}
         <ThreeDCanvasViewer data={data} projectName={projectName} />
         {/* R3F ThreeD Canvas View */}
 
@@ -3809,7 +3819,7 @@ const ThreeDGarden = (): JSX.Element => {
               <Box sx={{ p: 2}}>
                 <>Testing Panel</>
                 <Box sx={{ p: 2}}>
-                  <MyLevaComponent projectName={projectName} />
+                  <MyLevaComponent projectName={projectName} setProjectName={setProjectName} />
                   <input type="button" onClick={(e) => onClickSetProjectName("TEST")} value="TEST" />
                   <input type="button" onClick={(e) => onClickSetProjectName("PROJECT MMMM")} value="DEFAULT" />
                 </Box>
