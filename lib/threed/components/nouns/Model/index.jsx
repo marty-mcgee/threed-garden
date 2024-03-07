@@ -6,17 +6,17 @@ import { useEffect, useState, useRef } from 'react'
 import {
   useThree,
   useFrame,
-  useLoader
+  useLoader,
 } from '@react-three/fiber'
 import {
-  // ContactShadows,
+  Loader,
   useCursor,
   useGLTF,
   useFBX,
   // useOBJ, // not supported
   useAnimations,
   useTexture,
-  Loader
+  // ContactShadows,
 } from '@react-three/drei'
 // Three Loaders
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
@@ -24,12 +24,13 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { TGALoader } from 'three/examples/jsm/loaders/TGALoader'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 // import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
+// import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 
 // React Spring (for actions)
-// import { a, useSpring } from '@react-spring/three'
+// import { useSpring, a } from '@react-spring/three'
 
 // ** EXAMPLES
-import CoffeeCup from '~/lib/threed/components/examples/CoffeeCup/CoffeeCup'
+// import CoffeeCup from '~/lib/threed/components/examples/CoffeeCup/CoffeeCup'
 
 // ** UUID Imports
 import { v4 as newUUID } from 'uuid'
@@ -64,8 +65,9 @@ const Model = ({
   ],
   group = {
     group_id: newUUID(),
+    // NOTE: 1.570796 radians = 90 degrees
     group_position: [0, 0, 0],
-    group_rotation: [-1.570796, 0, 0], // [0, 0, 0], // rotation: 1.570796 radians = 90 degrees
+    group_rotation: [-1.570796, 0, 0], // [0, 0, 0],
     group_scale: 0.05, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
   },
   // modelState = {},
@@ -81,7 +83,11 @@ const Model = ({
   // console.debug('Model props.storeState', storeState)
   console.debug('%c🖊️ Model props.nodes', ccm.darkgreen, nodes)
 
+  // ** for testing only
   // return <><CoffeeCup /></>
+
+  // ** set available action modes
+  const actionModes = ['translate', 'rotate', 'scale']
 
   // get Reactive state on each model (using valtio)
   const modelState = proxy({ current: null, mode: 0 })
@@ -92,11 +98,12 @@ const Model = ({
   // set a default file to load for Model (for testing)
   // fileUrlDefault: '/objects/examples/compressed.glb' | '/objects/examples/compressed-v002.glb' |
   const fileUrlDefault =
-  // '/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb'
-  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb'
-  // '/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx'
-  'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx'
-  // '/objects/examples/coffee-transformed.glb'
+    // '/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb'
+    // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb'
+    // '/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx'
+    // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx'
+    '/objects/examples/coffee-transformed.glb'
+  const fileUrl = nodes[0].url ? nodes[0].url : fileUrlDefault
 
   // this model = threed_model -||-
   const model = {
@@ -111,24 +118,34 @@ const Model = ({
     // file: nodes.files[0]?.nodes[0]?.url,
     // file: file,
     // file: fileUrlDefault,
-    file: nodes[0].url ? nodes[0].url : fileUrlDefault,
+    file: fileUrl,
     // file type?
-    type: 'threed_node', // fbx | gltf | obj | threed | threed_node
-    // 3D
-    isObject3D: false,
-    isGLTF: false,
-    isFBX: false,
-    isOBJ: false,
-    isMTL: false, // meta file for OBJ
-    // 2D
-    isImage: false,
-    isPNG: false,
-    isJPG: false,
-    isGIF: false,
-    isSVG: false,
-    isWEBP: false,
-    // is type Supported?
-    isSupported: false,
+    type: 'tbd', // fbx | gltf | obj | threed | threed_node
+    // ** decide file type from file extension (and other qualifiers)
+    // const testExt = /\.(glb|gltf|fbx|obj|mtl|gif|jpe?g|tiff?|png|webp|bmp)$/i.test(fileUrl)
+    // console.debug('testExt', testExt)
+    is: {
+      // is Ready to go?
+      isReadyForCanvas: false,
+      // file type is.isSupported?
+      isSupported: /\.(glb|gltf|fbx|obj|mtl|gif|jpe?g|png|webp)$/i.test(fileUrl),
+      // 3D Objects
+      isObject3D: /\.(glb|gltf|fbx|obj)$/i.test(fileUrl),
+      isGLTF: /\.(glb|gltf)$/i.test(fileUrl),
+      isFBX: /\.(fbx)$/i.test(fileUrl),
+      isOBJ: /\.(obj)$/i.test(fileUrl),
+      isMTL: /\.(mtl)$/i.test(fileUrl), // meta file for OBJ
+      // 2D Files
+      isImage: /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(fileUrl),
+      isPNG: /\.(png)$/i.test(fileUrl),
+      isJPG: /\.(jpe?g)$/i.test(fileUrl),
+      isGIF: /\.(gif)$/i.test(fileUrl),
+      isSVG: /\.(svg)$/i.test(fileUrl),
+      isWEBP: /\.(webp)$/i.test(fileUrl),
+      // ThreeD Nodes
+      isThreeD: false,
+      isThreeDNode: false,
+    },
     // group attributes
     group_position: group.group_position ? group.group_position : 0,
     group_rotation: group.group_rotation ? group.group_rotation : 0,
@@ -139,40 +156,15 @@ const Model = ({
       actions: [],
       names: [],
     },
-    // is Ready to go?
-    isReadyForCanvas: false,
   }
 
-  // ** set available action modes
-  const actionModes = ['translate', 'rotate', 'scale']
-
-  // ** decide file type from file extension (and other qualifiers)
-  // const fileExt = model.file?.split('.').pop()
-  const fileExt = 'tbd'
-  // console.debug('fileExt', fileExt)
-  model.type = fileExt
-  // const testExt = /\.(glb|gltf|fbx|obj|mtl|gif|jpe?g|tiff?|png|webp|bmp)$/i.test(model.file)
-  // console.debug('testExt', testExt)
-  model.isObject3D = /\.(glb|gltf|fbx|obj)$/i.test(model.file)
-  model.isGLTF = /\.(glb|gltf)$/i.test(model.file)
-  model.isFBX = /\.(fbx)$/i.test(model.file)
-  model.isOBJ = /\.(obj)$/i.test(model.file)
-  model.isMTL = /\.(mtl)$/i.test(model.file)
-  model.isImage = /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(model.file)
-  model.isPNG = /\.(png)$/i.test(model.file)
-  model.isJPG = /\.(jpe?g)$/i.test(model.file)
-  model.isGIF = /\.(gif)$/i.test(model.file)
-  model.isSVG = /\.(svg)$/i.test(model.file)
-  model.isWEBP = /\.(webp)$/i.test(model.file)
-  model.isSupported = /\.(glb|gltf|fbx|obj|mtl|gif|jpe?g|png|webp)$/i.test(model.file)
-
   // fetch the file (GLTF, FBX, OBJ, etc)
-  if (model.isSupported) {
+  if (model.is.isSupported) {
     // console.debug('%cmodel.isSupported: true', ccm.green)
     console.debug(`%c======================================`, ccm.darkgreen)
-    if (model.isObject3D) {
+    if (model.is.isObject3D) {
       // FBX
-      if (model.isFBX) {
+      if (model.is.isFBX) {
         model.type = 'fbx'
         // const { nodes, animations } = useFBX(model.file)
         // const fbx = useFBX(model.file)
@@ -197,7 +189,7 @@ const Model = ({
         }
       }
       // OBJ
-      else if (model.isOBJ) {
+      else if (model.is.isOBJ) {
         model.type = 'obj'
         // const nodes = useOBJ(model.file)
         const nodes = new OBJLoader().load(model.file)
@@ -209,15 +201,15 @@ const Model = ({
         }
       }
       // GLTF
-      else if (model.isGLTF) {
+      else if (model.is.isGLTF) {
         model.type = 'gltf'
         // nodes[] is an array of all the meshes
         // file is cached/memoized; it only gets loaded and parsed once
         // const file = '/objects/examples/compressed-v002.glb'
         // const { nodes } = useGLTF(model.file)
-        const { nodes } = useLoader(GLTFLoader, model.file, loader => {
-          loader.manager.addHandler(/\.tga$/i, new TGALoader())
-        })
+        // let nodes = []
+        const nodes = useGLTF(model.file)
+
         console.debug('%c🌱 NODES: gltf 🥕 GLB NODES 🌱', ccm.darkgreen, nodes)
         console.debug(`%c======================================`, ccm.darkgreen)
         if (nodes) {
@@ -260,18 +252,18 @@ const Model = ({
       }
 
       // finally
-      if (model.nodes.length && model.isGLTF) {
-        model.isReadyForCanvas = true
+      if (model.nodes.length && model.is.isGLTF) {
+        model.is.isReadyForCanvas = true
         console.debug('%c📐 THREED MODEL IS READY FOR CANVAS ✔️', ccm.green, model)
         console.debug(`%c======================================`, ccm.darkgreen)
       }
-      else if (model.nodes && model.isFBX) {
-        model.isReadyForCanvas = true
+      else if (model.nodes && model.is.isFBX) {
+        model.is.isReadyForCanvas = true
         console.debug('%c📐 THREED MODEL IS READY FOR CANVAS ✔️', ccm.green, model)
         console.debug(`%c======================================`, ccm.darkgreen)
       }
       else {
-        model.isReadyForCanvas = false
+        model.is.isReadyForCanvas = false
         console.debug('%c📐 THREED MODEL IS NOT READY FOR CANVAS ✖️', ccm.darkred, model)
         console.debug(`%c======================================`, ccm.darkred)
       }
@@ -330,12 +322,12 @@ const Model = ({
   // ==============================================================
   // ** RETURN JSX
 
-  if (model.isReadyForCanvas) {
+  if (model.is.isReadyForCanvas) {
     console.debug(`%c======================================`, ccm.blue)
     console.debug(`%c📐 DRAW MODEL([nodes]): ${model.type}`, ccm.blue, model.nodes)
     console.debug(`%c======================================`, ccm.blue)
     // return GLTF node
-    if (model.isGLTF) {
+    if (model.is.isGLTF) {
       const model_name = model.name ? model.name : 'model.name HMM HMM HMM'
       // NEED LOOP OVER NODE ARRAY TO RETURN MULTIPLE MESHES ([4420])
       const model_geometry = model.nodes[0].geometry
@@ -364,7 +356,7 @@ const Model = ({
       )
     }
     // return FBX node
-    else if (model.isFBX) {
+    else if (model.is.isFBX) {
       const model_name = model.name ? model.name : 'no name'
       // const model_geometry = model.nodes.geometry
       // const model_material = model.nodes.material
@@ -388,7 +380,7 @@ const Model = ({
       )
     }
     // return OBJ node
-    else if (model.isOBJ) {
+    else if (model.is.isOBJ) {
       return (
         <mesh
           ref={model.ref}
@@ -398,50 +390,49 @@ const Model = ({
   }
   // DEFAULT RETURN
   // 'error sphere' mesh object, with original model.name and props
-  // else {
-  return (
-    <mesh
-      name={model.name}
-      ref={model.ref}
-      // Click sets the mesh as the new target
-      onClick={(e) => (
-        e.stopPropagation(),
-        (modelState.current = model.name),
-        console.debug('modelState.current', model.name),
-        console.debug('snap.current', snap.current)
-      )}
-      // If a click happened but this mesh wasn't hit we null out the target,
-      // This works because missed pointers fire before the actual hits
-      onPointerMissed={(e) => (
-        e.type === 'click',
-        (modelState.current = null),
-        console.debug('modelState.current', null),
-        console.debug('snap.current', snap.current)
-      )}
-      // Right click cycles through the transform actionModes
-      onContextMenu={(e) =>
-        snap.current === model.name &&
-        (e.stopPropagation(),
-        (modelState.mode = (snap.mode + 1) % actionModes.length),
-        console.debug('modelState.mode', modelState.mode),
-        console.debug('snap.current', snap.current))
-      }
-      onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
-      onPointerOut={(e) => setIsHovered(false)}
-      dispose={null}>
-      <sphereGeometry args={[4, 96]} />
-      <meshPhysicalMaterial
-        color={model.isGLTF ? 'darkRed' : model.isOBJ ? 'darkOrange' : model.isFBX ? 'darkGreen' : 'darkPink'}
-      />
-    </mesh>
-  )
-  // }
+  else {
+    return (
+      <mesh
+        name={model.name}
+        ref={model.ref}
+        // Click sets the mesh as the new target
+        onClick={(e) => (
+          e.stopPropagation(),
+          (modelState.current = model.name),
+          console.debug('modelState.current', model.name),
+          console.debug('snap.current', snap.current)
+        )}
+        // If a click happened but this mesh wasn't hit we null out the target,
+        // This works because missed pointers fire before the actual hits
+        onPointerMissed={(e) => (
+          e.type === 'click',
+          (modelState.current = null),
+          console.debug('modelState.current', null),
+          console.debug('snap.current', snap.current)
+        )}
+        // Right click cycles through the transform actionModes
+        onContextMenu={(e) =>
+          snap.current === model.name &&
+          (e.stopPropagation(),
+          (modelState.mode = (snap.mode + 1) % actionModes.length),
+          console.debug('modelState.mode', modelState.mode),
+          console.debug('snap.current', snap.current))
+        }
+        onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
+        onPointerOut={(e) => setIsHovered(false)}
+        dispose={null}>
+        <sphereGeometry args={[4, 96]} />
+        <meshPhysicalMaterial
+          color={model.is.isGLTF ? 'darkRed' : model.is.isOBJ ? 'darkOrange' : model.is.isFBX ? 'darkGreen' : 'darkPink'}
+        />
+      </mesh>
+    )
+  }
 }
 
 // Controls
 function ThreeDControls() {
   // **
-
   // get Reactive state on each model (using valtio)
   const modelState = proxy({ current: null, mode: 0 })
   // get Apollo Stores state
@@ -529,9 +520,9 @@ export default function ThreeDModels({ nodes }) {
                 key={newUUID()}
                 // key={file.fileId}
               >
-                <CoffeeCup
+                {/* <CoffeeCup
                   // key={newUUID()}
-                />
+                /> */}
                 <Model
                   // key={file.fileId}
                   name={file.title}

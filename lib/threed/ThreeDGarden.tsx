@@ -90,13 +90,8 @@ import Spinner from '#/ui/components/spinner'
 import { Loader } from '@react-three/drei'
 // ** Three JS Controls
 import { Html, useProgress } from '@react-three/drei'
-// ** Three JS Loaders
-// -- use React Three Fiber R3F hooks: useFBX, useOBJ, etc --
-// import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
-// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-// import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
-// data gui
-import { Leva } from 'leva'
+// ** Leva GUI
+import { Leva, useControls, folder, button, monitor } from 'leva'
 
 // ** ThreeD R3F Imports
 // import { Canvas } from '@react-three/fiber'
@@ -114,8 +109,8 @@ import modals from '#/lib/threed/components/modals'
 // ** jQuery Imports (DEPRECATED -- no no no, never again)
 // import * as $ from 'jquery'
 
-// ** UUID (DEPRECATED -- use THREE math util UUID generator)
-// import { v4 as newUUID } from 'uuid'
+// ** UUID Generator
+import { v4 as newUUID } from 'uuid'
 
 // ** HELPFUL UTIL: DELETE OBJECT KEYS: RESET OBJECT TO {}
 import clearObject from '#/lib/utils/clear-object'
@@ -3470,12 +3465,15 @@ const TheBottom: FC = (): JSX.Element => {
 // ==========================================================
 
 // ** R3F Main Component
-const ThreeDCanvasViewer = ({data}): JSX.Element => {
+const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
 
   // **
   // const word = `[MM] @ ${new Date().toISOString()}`
   // console.debug('%cThreeDCanvasViewer {data.store}', ccm.yellow, data.store)
   // console.debug(`%c====================================`, ccm.black)
+
+  // ==========================================================
+  // ** Hooks
 
   // const noun = data.store.store.get('one')
   const noun = data.store.store.useStore('one')
@@ -3498,6 +3496,20 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
     }
   }
 
+  // ** LEVA GUI CONTROL PANEL
+  const [{ showTitleBar, title, drag, filter, fullScreen, oneLineLabels }, set] = useControls(
+    'Panel',
+    () => ({
+      showTitleBar: true,
+      fullScreen: false,
+      drag: { value: true, render: (get) => get('Panel.showTitleBar') },
+      title: { value: projectName, render: (get) => get('Panel.showTitleBar') },
+      filter: { value: false, render: (get) => get('Panel.showTitleBar') },
+      oneLineLabels: false,
+    }),
+    { color: 'royalblue' }
+  )
+
   const loadNounData = (nodes) => {
     // load these nodes into r3f canvas
     data.store.actions.loadToCanvas(nodes, '_r3fCanvas')
@@ -3515,7 +3527,7 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
       <Grid
         item
         id='metadata'
-        md={5}
+        md={4}
         xs={12}
         sx={{
           paddingTop: '0.5rem',
@@ -3525,15 +3537,26 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
         }}
         // style={{ display: 'flex', justifyContent: 'flex-start' }}
       >
-        <Typography>
+        <Leva
+          // theme={myTheme} // you can pass a custom theme (see the styling section)
+          fill={true} // default = false,  true makes the pane fill the parent dom node it's rendered in
+          flat={false} // default = false,  true removes border radius and shadow
+          // oneLineLabels={false} // default = false, alternative layout for labels, with labels and fields on separate rows
+          hideTitleBar={false} // default = false, hides the GUI header
+          collapsed={true} // default = false, when true the GUI is collpased
+          hidden={false} // default = false, when true the GUI is hidden
+          titleBar={showTitleBar && { drag, title, filter }}
+          oneLineLabels={oneLineLabels}
+        />
+        {/* <Typography> */}
           {/* {noun._type} title:  */}
-          {noun_title}
-        </Typography>
+          {/* {noun_title} */}
+        {/* </Typography> */}
       </Grid>
       <Grid
         item
         id='actions[loadNounData()]'
-        md={7}
+        md={8}
         xs={12}
         style={{ display: 'flex', justifyContent: 'flex-end' }}
       >
@@ -3594,18 +3617,31 @@ const ThreeDCanvasViewer = ({data}): JSX.Element => {
   )
 }
 
-const MyComponent: FC = (): JSX.Element => {
+const MyLevaComponent: FC = ({ projectName }): JSX.Element => {
+  // **
   const word = `[MM] @ ${new Date().toISOString()}`
+  // **
+  var [{ Id }, set] = useControls(
+    () => (
+      {
+        Id: projectName
+      }
+    )
+  )
+
+  useEffect(() => {
+    set({ Id: projectName })
+  }, [projectName, set])
 
   // console.debug("MyComponent")
-  useEffect(() => {
-    console.debug('MyComponent onMount')
-    return () => {
-      console.debug('MyComponent onUnmount')
-    }
-  }, [])
+  // useEffect(() => {
+  //   console.debug('MyComponent onMount')
+  //   return () => {
+  //     console.debug('MyComponent onUnmount')
+  //   }
+  // }, [])
 
-  return <div>...MyComponent [returns] JSX here...</div>
+  return <>{Id} </>
 }
 
 // const ThreeDGarden = ({ session }: { session: Session | null }): JSX.Element => {
@@ -3633,6 +3669,11 @@ const ThreeDGarden = (): JSX.Element => {
     client: client,
     store: projectStore, // default
     word: word,
+  }
+
+  const [projectName, setProjectName] = useState('GUI CONTROL PANEL')
+  const onClickSetProjectName = (projectName) => {
+    setProjectName(projectName)
   }
 
   // ==========================================================
@@ -3687,112 +3728,120 @@ const ThreeDGarden = (): JSX.Element => {
       id='threedgarden'
       style={{width: '100%'}}
     >
+      <Suspense fallback={
+        <Loader
+          // containerStyles={...container} // Flex layout styles
+          // innerStyles={...inner} // Inner container styles
+          // barStyles={...bar} // Loading-bar styles
+          // dataStyles={...data} // Text styles
+          dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
+          initialState={(active = true) => active} // Initial black out state
+        />
+      }>
+        {/* SUSPENSEFUL... */}
 
-      {/* <Loader
-        // containerStyles={...container} // Flex layout styles
-        // innerStyles={...inner} // Inner container styles
-        // barStyles={...bar} // Loading-bar styles
-        // dataStyles={...data} // Text styles
-        dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
-        initialState={(active = true) => active} // Initial black out state
-      /> */}
+        <ThreeDToolbar data={data} projectName={projectName} />
 
-      <ThreeDToolbar data={data} />
+        {/* R3F ThreeD Canvas View */}
+        <ThreeDCanvasViewer data={data} projectName={projectName} />
+        {/* R3F ThreeD Canvas View */}
 
-      <Leva collapsed={false} hidden={false} />
+        {/* store access */}
+        <div id='storeControlPanel'>
 
-      {/* R3F ThreeD Canvas View */}
-      <ThreeDCanvasViewer data={data} />
-      {/* R3F ThreeD Canvas View */}
+          {/* Tabs */}
+          <Box sx={{ borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs
+              value={tabInfoControl}
+              onChange={handleChangeTabInfoControl}
+              aria-label='Info Control Panel'
+            >
+              <Tab label='Projects' {...tabProps(0)} />
+              <Tab label='Plans' {...tabProps(1)} />
+              <Tab label='Files' {...tabProps(2)} />
+              <Tab label='ThreeDs' {...tabProps(3)} />
+              <Tab label='Scenes' {...tabProps(4)} />
+              <Tab label='Allotments' {...tabProps(5)} />
+              <Tab label='Beds' {...tabProps(6)} />
+              <Tab label='Plants' {...tabProps(7)} />
+              <Tab label='Planting Plans' {...tabProps(8)} />
+              <Tab label='Tests' {...tabProps(9)} />
+            </Tabs>
+          </Box>
+          <Box sx={{ p: 2, borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
+            <MDTabPanel value={tabInfoControl} index={0}>
+              <ProjectControlPanel />
+              <ProjectInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={1}>
+              <PlanControlPanel />
+              <PlanInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={2}>
+              <FileControlPanel />
+              <FileInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={3}>
+              <ThreeDControlPanel />
+              <ThreeDInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={4}>
+              <SceneControlPanel />
+              <SceneInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={5}>
+              <AllotmentControlPanel />
+              <AllotmentInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={6}>
+              <BedControlPanel />
+              <BedInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={7}>
+              <PlantControlPanel />
+              <PlantInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={8}>
+              <PlantingPlanControlPanel />
+              <PlantingPlanInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={9}>
+              <Box sx={{ p: 2}}>
+                <>Testing Panel</>
+                <Box sx={{ p: 2}}>
+                  <MyLevaComponent projectName={projectName} />
+                  <input type="button" onClick={(e) => onClickSetProjectName("TEST")} value="TEST" />
+                  <input type="button" onClick={(e) => onClickSetProjectName("PROJECT MMMM")} value="DEFAULT" />
+                </Box>
+                {/* <CharacterControlPanel /> */}
+                {/* <CharacterInfoPanel /> */}
+                {/* <hr /> */}
+                {/* <FurnitureControlPanel /> */}
+                {/* <FurnitureInfoPanel /> */}
+                {/* <hr /> */}
+                {/* <ChickenControlPanel /> */}
+                {/* <ChickenInfoPanel /> */}
+                {/* <hr /> */}
+                {/* <BearControlPanel /> */}
+                {/* <BearInfoPanel /> */}
+                {/* <hr /> */}
+              </Box>
+            </MDTabPanel>
+          </Box>
+        </div>
 
-      {/* store access */}
-      <div id='storeControlPanel'>
+        <ModalAbout />
+        <ModalModel3d />
+        <ModalLoading />
+        <ModalShare />
 
-        {/* Tabs */}
-        <Box sx={{ borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs
-            value={tabInfoControl}
-            onChange={handleChangeTabInfoControl}
-            aria-label='Info Control Panel'
-          >
-            <Tab label='Projects' {...tabProps(0)} />
-            <Tab label='Plans' {...tabProps(1)} />
-            <Tab label='Files' {...tabProps(2)} />
-            <Tab label='ThreeDs' {...tabProps(3)} />
-            <Tab label='Scenes' {...tabProps(4)} />
-            <Tab label='Allotments' {...tabProps(5)} />
-            <Tab label='Beds' {...tabProps(6)} />
-            <Tab label='Plants' {...tabProps(7)} />
-            <Tab label='Planting Plans' {...tabProps(8)} />
-            <Tab label='Tests' {...tabProps(9)} />
-          </Tabs>
-        </Box>
-        <Box sx={{ p: 2, borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
-          <MDTabPanel value={tabInfoControl} index={0}>
-            <ProjectControlPanel />
-            <ProjectInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={1}>
-            <PlanControlPanel />
-            <PlanInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={2}>
-            <FileControlPanel />
-            <FileInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={3}>
-            <ThreeDControlPanel />
-            <ThreeDInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={4}>
-            <SceneControlPanel />
-            <SceneInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={5}>
-            <AllotmentControlPanel />
-            <AllotmentInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={6}>
-            <BedControlPanel />
-            <BedInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={7}>
-            <PlantControlPanel />
-            <PlantInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={8}>
-            <PlantingPlanControlPanel />
-            <PlantingPlanInfoPanel />
-          </MDTabPanel>
-          <MDTabPanel value={tabInfoControl} index={9}>
-            <Box sx={{ p: 2}}>
-              <>Testing Panel</>
-              {/* <CharacterControlPanel /> */}
-              {/* <CharacterInfoPanel /> */}
-              {/* <hr /> */}
-              {/* <FurnitureControlPanel /> */}
-              {/* <FurnitureInfoPanel /> */}
-              {/* <hr /> */}
-              {/* <ChickenControlPanel /> */}
-              {/* <ChickenInfoPanel /> */}
-              {/* <hr /> */}
-              {/* <BearControlPanel /> */}
-              {/* <BearInfoPanel /> */}
-              {/* <hr /> */}
-            </Box>
-          </MDTabPanel>
-        </Box>
-      </div>
+        {/* <CatalogView /> */}
+        {/* <PropertiesView /> */}
+        {/* <PlanView /> */}
+        {/* <TheBottom /> */}
 
-      <ModalAbout />
-      <ModalModel3d />
-      <ModalLoading />
-      <ModalShare />
-
-      {/* <CatalogView /> */}
-      {/* <PropertiesView /> */}
-      {/* <PlanView /> */}
-      {/* <TheBottom /> */}
+        {/* ...SUSPENSEFUL */}
+      </Suspense>
     </div>
   )
 }
