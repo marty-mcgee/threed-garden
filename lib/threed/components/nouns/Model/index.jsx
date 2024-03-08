@@ -20,11 +20,11 @@ import {
 } from '@react-three/drei'
 // Three Loaders
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { TGALoader } from 'three/examples/jsm/loaders/TGALoader'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+// import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 // import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
-// import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 
 // React Spring (for actions)
 // import { useSpring, a } from '@react-spring/three'
@@ -45,11 +45,9 @@ const debug = false // false | true // ts: boolean
 const DEBUG = true // false | true // ts: boolean
 
 // ==============================================================
-
-// ** ThreeD Model -||-
-const Model = ({
-  name = 'GLBs',
-  nodes = [
+let modelObject = {
+  name: 'GLBs',
+  nodes: [
     {
       __typename: "File",
       file: null,
@@ -63,27 +61,28 @@ const Model = ({
       url: "",
     },
   ],
-  group = {
+  group: {
     group_id: newUUID(),
     // NOTE: 1.570796 radians = 90 degrees
     group_position: [0, 0, 0],
     group_rotation: [-1.570796, 0, 0], // [0, 0, 0],
     group_scale: 0.05, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
   },
-  // modelState = {},
-  // sceneState = {},
-  // storeState = {},
-}) => {
-// const Model = ({modelState = {}}) => {
+}
+
+// ** ThreeD Model -||-
+// const Model = (props) => {
+const Model = ({modelObject, modelState = {}}) => {
 
   // **
-  console.debug('%c🖊️ Model props.name', ccm.darkgreen, name)
-  // console.debug('Model props.modelState', modelState)
+  console.debug('%c🖊️ Model props.modelObject', ccm.darkgreen, modelObject)
+  console.debug('%c🖊️ Model props.modelObject.name', ccm.darkgreen, modelObject.name)
+  console.debug('Model props.modelState', modelState)
   // console.debug('Model props.sceneState', sceneState)
   // console.debug('Model props.storeState', storeState)
-  console.debug('%c🖊️ Model props.nodes', ccm.darkgreen, nodes)
 
   // ** for testing only
+  // ** return 1 ThreeD Object in JSX
   // return <><CoffeeCup /></>
 
   // ** set available action modes
