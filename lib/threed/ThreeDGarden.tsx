@@ -3543,6 +3543,13 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
         }}
         // style={{ display: 'flex', justifyContent: 'flex-start' }}
       >
+        <div
+          style={{
+            position: 'absolute',
+            backgroundColor: 'darkgray',
+            zIndex: 9999
+          }}
+        >
         <Leva
           // theme={myTheme} // you can pass a custom theme (see the styling section)
           fill={true} // default = false,  true makes the pane fill the parent dom node it's rendered in
@@ -3554,6 +3561,7 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
           titleBar={showTitleBar && { drag, title, filter }}
           oneLineLabels={oneLineLabels}
         />
+        </div>
         {/* <Typography> */}
           {/* {noun._type} title:  */}
           {/* {noun_title} */}
