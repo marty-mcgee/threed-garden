@@ -171,7 +171,7 @@ const Model = ({
         const fbx = useLoader(FBXLoader, model.file, loader => {
           loader.manager.addHandler(/\.tga$/i, new TGALoader())
         })
-        console.debug('%c🌱 NODES: fbx', ccm.darkgreen, fbx)
+        console.debug('%c🌱 FBX NODES: fbx', ccm.darkgreen, fbx)
         console.debug(`%c======================================`, ccm.darkgreen)
         if (fbx) {
           // model.node = fbx
@@ -193,7 +193,7 @@ const Model = ({
         model.type = 'obj'
         // const nodes = useOBJ(model.file)
         const nodes = new OBJLoader().load(model.file)
-        console.debug('%c🌱 NODES: obj', ccm.darkgreen, nodes)
+        console.debug('%c🌱 OBJ NODES: obj', ccm.darkgreen, nodes)
         console.debug(`%c======================================`, ccm.darkgreen)
         if (nodes) {
           model.nodes = nodes
@@ -210,7 +210,7 @@ const Model = ({
         // let nodes = []
         const nodes = useGLTF(model.file)
 
-        console.debug('%c🌱 NODES: gltf: GLB NODES', ccm.darkgreen, nodes)
+        console.debug('%c🌱 GLB NODES: gltf', ccm.darkgreen, nodes)
         console.debug(`%c======================================`, ccm.darkgreen)
         if (nodes) {
           // FILTER (LOOP OVER) NODES {Object.keys}
@@ -245,7 +245,7 @@ const Model = ({
           }
           else {
             model.nodes = nodes
-            console.debug('%c RETURN ALL NODES: default', ccm.red)
+            console.debug('%c RETURN ALL/BLANK NODES: default', ccm.red)
             console.debug(`%c======================================`, ccm.red)
           }
         }
@@ -254,23 +254,23 @@ const Model = ({
       // finally
       if (model.nodes.length && model.is.isGLTF) {
         model.is.isReadyForCanvas = true
-        console.debug('%c📐 THREED MODEL IS READY FOR CANVAS ✔️', ccm.green, model)
+        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.green, model)
         console.debug(`%c======================================`, ccm.darkgreen)
       }
       else if (model.nodes && model.is.isFBX) {
         model.is.isReadyForCanvas = true
-        console.debug('%c📐 THREED MODEL IS READY FOR CANVAS ✔️', ccm.green, model)
+        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.green, model)
         console.debug(`%c======================================`, ccm.darkgreen)
       }
       else {
         model.is.isReadyForCanvas = false
-        console.debug('%c📐 THREED MODEL IS NOT READY FOR CANVAS ✖️', ccm.darkred, model)
+        console.debug('%c✖️📐 THREED MODEL IS NOT READY FOR CANVAS', ccm.darkred, model)
         console.debug(`%c======================================`, ccm.darkred)
       }
     }
     // console.debug(`%c======================================`, ccm.black)
   } else {
-    console.debug('%c📐 MODEL.isSupported: false ✖️', ccm.red)
+    console.debug('%c✖️📐 MODEL.is.isSupported: false', ccm.red)
     console.debug(`%c======================================`, ccm.red)
   }
   // console.debug('%cmodel', ccm.green, model)
