@@ -540,12 +540,12 @@ function nounStore(this: INounStore, _type = 'noun') {
       }
       responseData.isLoadedFromDisk = this.actions.loadFromDisk(client)
       if (responseData.isLoadedFromDisk) {
-        if (debug) console.debug('%c loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', ccm.white, responseData)
+        if (debug) console.debug('%c loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', ccm.darkgreen)
         return responseData
       } else {
         responseData.isLoadedFromDB = this.actions.loadFromDB(client)
         if (responseData.isLoadedFromDB) {
-          if (debug) console.debug('%c loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDB', ccm.white, responseData)
+          if (debug) console.debug('%c loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDB', ccm.darkgreen)
           return responseData
         }
       }
