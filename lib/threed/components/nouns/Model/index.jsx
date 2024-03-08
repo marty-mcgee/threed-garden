@@ -210,7 +210,7 @@ const Model = ({
         // let nodes = []
         const nodes = useGLTF(model.file)
 
-        console.debug('%c🌱 NODES: gltf 🥕 GLB NODES 🌱', ccm.darkgreen, nodes)
+        console.debug('%c🌱 NODES: gltf: GLB NODES', ccm.darkgreen, nodes)
         console.debug(`%c======================================`, ccm.darkgreen)
         if (nodes) {
           // FILTER (LOOP OVER) NODES {Object.keys}
