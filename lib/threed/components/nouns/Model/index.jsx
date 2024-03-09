@@ -45,22 +45,21 @@ const debug = false // false | true // ts: boolean
 const DEBUG = true // false | true // ts: boolean
 
 // ==============================================================
-let modelObject = {
-  name: 'GLBs',
-  nodes: [
-    {
-      __typename: "File",
-      file: null,
-      fileId: 0,
-      fileType: "tbd",
-      isObject3d: true,
-      isUrl: true,
-      modified: "",
-      title: "",
-      uri: "",
-      url: "",
-    },
-  ],
+let IModel = {
+  name: 'GLB FILE NODES TO LOAD',
+  file: {
+    __typename: "File",
+    file: null,
+    fileId: 0,
+    fileType: "tbd",
+    isObject3d: false,
+    isUrl: false,
+    modified: "",
+    title: "",
+    uri: "",
+    url: "",
+  },
+  nodes: [],
   group: {
     group_id: newUUID(),
     // NOTE: 1.570796 radians = 90 degrees
@@ -72,15 +71,10 @@ let modelObject = {
 
 // ** ThreeD Model -||-
 // const Model = (props) => {
-const Model = ({modelObject, modelState = {}}) => {
+// const Model = ({modelObject = modelDefault}) => {
+const Model = ({name, file, group}) => {
 
   // **
-  console.debug('%c🖊️ Model props.modelObject', ccm.darkgreen, modelObject)
-  console.debug('%c🖊️ Model props.modelObject.name', ccm.darkgreen, modelObject.name)
-  console.debug('Model props.modelState', modelState)
-  // console.debug('Model props.sceneState', sceneState)
-  // console.debug('Model props.storeState', storeState)
-
   // ** for testing only
   // ** return 1 ThreeD Object in JSX
   // return <><CoffeeCup /></>
@@ -89,10 +83,19 @@ const Model = ({modelObject, modelState = {}}) => {
   const actionModes = ['translate', 'rotate', 'scale']
 
   // get Reactive state on each model (using valtio)
-  const modelState = proxy({ current: null, mode: 0 })
+  // const modelVState = proxy({ current: null, mode: 0 })
+  const modelVState = proxy({ current: null, mode: 0 })
 
   // Ties this component to the model state
-  const snap = useSnapshot(modelState)
+  const snap = useSnapshot(modelVState)
+
+  // **
+  console.debug('%c🖊️ Model props.name', ccm.darkgreen, name)
+  console.debug('%c🖊️ Model props.file', ccm.darkgreen, file)
+  console.debug('%c🖊️ Model modelVState', ccm.darkgreen, modelVState)
+  console.debug('%c🖊️ Model snap', ccm.darkgreen, snap)
+  // console.debug('Model props.sceneState', sceneState)
+  // console.debug('Model props.storeState', storeState)
 
   // set a default file to load for Model (for testing)
   // fileUrlDefault: '/objects/examples/compressed.glb' | '/objects/examples/compressed-v002.glb' |
@@ -102,16 +105,16 @@ const Model = ({modelObject, modelState = {}}) => {
     // '/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx'
     // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx'
     '/objects/examples/coffee-transformed.glb'
-  const fileUrl = nodes[0].url ? nodes[0].url : fileUrlDefault
+  const fileUrl = file?.isUrl ? file.url : fileUrlDefault
 
   // this model = threed_model -||-
   const model = {
     ref: useRef(null),
     name: name,
-    // object nodes
-    // node: node, // for single nodes, like FBX
-    nodes: nodes.length ? nodes : [],
-    // state: modelState, // for funzees
+    file: file ? file : IModel.file,
+    nodes: IModel.nodes,
+    group: group ? group : IModel.group,
+    state: modelVState, // for funzees
     // sceneState: sceneState, // for funzees
     // storeState: storeState, // for funzees
     // file: nodes.files[0]?.nodes[0]?.url,
@@ -145,10 +148,6 @@ const Model = ({modelObject, modelState = {}}) => {
       isThreeD: false,
       isThreeDNode: false,
     },
-    // group attributes
-    group_position: group.group_position ? group.group_position : 0,
-    group_rotation: group.group_rotation ? group.group_rotation : 0,
-    group_scale: group.group_scale ? group.group_scale : 0,
     // animations
     ani: {
       ref: null,
@@ -313,17 +312,18 @@ const Model = ({modelObject, modelState = {}}) => {
   // ==============================================================
   // ANIMATIONS (FOR ALL MODELS !!!)
 
-  // useFrame(({ clock }) => {
-  //   const a = clock.getElapsedTime()
-  //   model.ref.current.rotation.z = a
-  // })
+  useFrame(({ clock }) => {
+    const ThreeDClock = clock
+    // const a = clock.getElapsedTime()
+    // model.ref.current.rotation.z = a
+  })
 
   // ==============================================================
   // ** RETURN JSX
 
   if (model.is.isReadyForCanvas) {
     console.debug(`%c======================================`, ccm.blue)
-    console.debug(`%c📐 DRAW MODEL([nodes]): ${model.type}`, ccm.blue, model.nodes)
+    console.debug(`%ccheck📐 DRAW MODEL([nodes]): ${model.type}`, ccm.blue, model.nodes)
     console.debug(`%c======================================`, ccm.blue)
     // return GLTF node
     if (model.is.isGLTF) {
@@ -336,13 +336,13 @@ const Model = ({modelObject, modelState = {}}) => {
           name={model.name}
           ref={model.ref}
           // Click sets the mesh as the new target
-          onClick={(e) => (e.stopPropagation(), (modelState.current = model_name))}
+          onClick={(e) => (e.stopPropagation(), (modelVState.current = model_name))}
           // If a click happened but this mesh wasn't hit we null out the target,
           // This works because missed pointers fire before the actual hits
-          onPointerMissed={(e) => e.type === 'click' && (modelState.current = null)}
+          onPointerMissed={(e) => e.type === 'click' && (modelVState.current = null)}
           // Right click cycles through the transform actionModes
           onContextMenu={(e) =>
-            snap.current === model.name && (e.stopPropagation(), (modelState.mode = (snap.mode + 1) % actionModes.length))
+            snap.current === model.name && (e.stopPropagation(), (modelVState.mode = (snap.mode + 1) % actionModes.length))
           }
           onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
           onPointerOut={(e) => setIsHovered(false)}
@@ -397,24 +397,24 @@ const Model = ({modelObject, modelState = {}}) => {
         // Click sets the mesh as the new target
         onClick={(e) => (
           e.stopPropagation(),
-          (modelState.current = model.name),
-          console.debug('modelState.current', model.name),
+          (modelVState.current = model.name),
+          console.debug('modelVState.current', model.name),
           console.debug('snap.current', snap.current)
         )}
         // If a click happened but this mesh wasn't hit we null out the target,
         // This works because missed pointers fire before the actual hits
         onPointerMissed={(e) => (
           e.type === 'click',
-          (modelState.current = null),
-          console.debug('modelState.current', null),
+          (modelVState.current = null),
+          console.debug('modelVState.current', null),
           console.debug('snap.current', snap.current)
         )}
         // Right click cycles through the transform actionModes
         onContextMenu={(e) =>
           snap.current === model.name &&
           (e.stopPropagation(),
-          (modelState.mode = (snap.mode + 1) % actionModes.length),
-          console.debug('modelState.mode', modelState.mode),
+          (modelVState.mode = (snap.mode + 1) % actionModes.length),
+          console.debug('modelVState.mode', modelVState.mode),
           console.debug('snap.current', snap.current))
         }
         onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
@@ -433,9 +433,9 @@ const Model = ({modelObject, modelState = {}}) => {
 function ThreeDControls() {
   // **
   // get Reactive state on each model (using valtio)
-  const modelState = proxy({ current: null, mode: 0 })
+  const modelVState = proxy({ current: null, mode: 0 })
   // get Apollo Stores state
-  const storeState = undefined
+  // const storeState = undefined
   const sceneState = useThree((sceneState) => sceneState.scene)
   if (sceneState) {
     if (debug || DEBUG) console.debug('%c sceneState to load to ThreeDCanvas', ccm.yellow, sceneState)
@@ -444,8 +444,8 @@ function ThreeDControls() {
     }
   }
 
-  // Get 'snap' notified on changes to modelState + sceneState
-  const snap = useSnapshot(modelState)
+  // Get 'snap' notified on changes to modelVState + sceneState
+  const snap = useSnapshot(modelVState)
 
   return (
     <>
@@ -486,7 +486,7 @@ export default function ThreeDModels({ nodes }) {
   // **
 
   // get Reactive state on each model (using valtio)
-  // const modelState = proxy({ current: null, mode: 0 })
+  // const modelVState = proxy({ current: null, mode: 0 })
   // get Apollo Stores state
   // const storeState = undefined
   // const sceneState = useThree((sceneState) => sceneState.scene)
@@ -498,11 +498,10 @@ export default function ThreeDModels({ nodes }) {
   // }
 
   // **
-  // Get 'snap' notified on changes to modelState + sceneState
-  // const snap = useSnapshot(modelState)
+  // Get 'snap' notified on changes to modelVState + sceneState
+  // const snap = useSnapshot(modelVState)
   // DEFAULTS
-  const name = 'YO YO YO -- LOAD NODE TO CANVAS' // todo: set appropriately
-  // const modelState = {modelState} // funzees in action -- communication points
+  // const modelVState = {modelVState} // funzees in action -- communication points
   // const sceneState = {sceneState} // funzees in action -- communication points
   // const storeState = {storeState} // funzees in action -- communication points
 
@@ -523,9 +522,10 @@ export default function ThreeDModels({ nodes }) {
                   // key={newUUID()}
                 /> */}
                 <Model
-                  // key={file.fileId}
+                  // // key={file.fileId}
                   name={file.title}
-                  node={file}
+                  file={file}
+                  group={IModel.group}
                 />
                 <ThreeDControls />
               </group>
