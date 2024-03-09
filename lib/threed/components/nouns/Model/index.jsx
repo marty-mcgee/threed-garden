@@ -78,9 +78,10 @@ let ThreeD = {
 
 // ** ThreeD Model -||-
 const Model = ({
-  name =  ThreeD.name,
-  group = ThreeD.group,
-  file =  ThreeD.file
+  threed =  ThreeD,
+  name =    ThreeD.name,
+  group =   ThreeD.group,
+  file =    ThreeD.file
 }) => {
 
   // **
