@@ -25,7 +25,7 @@ bot
 console.debug('bot', bot)
 
 const FarmbotComponent = (): JSX.Element => {
-  const word = 'HEY HEY HEY'
+  const word = '[MM] FARMBOT HEY HEY HEY'
   return <div>Farmbot: {word}</div>
 }
 
