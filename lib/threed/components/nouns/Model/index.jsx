@@ -525,6 +525,7 @@ export default function ThreeDModels({ nodes }) {
                 <Model
                   // key={file.fileId}
                   key={newUUID()}
+                  threed={ThreeD}
                   name={file.title}
                   file={file}
                   group={ThreeD.group}
@@ -538,28 +539,3 @@ export default function ThreeDModels({ nodes }) {
     </>
   )
 }
-
-
-/*
-        {nodes.map((node) => {
-          console.debug('%c node', ccm.orange, node)
-          {(<CoffeeCup />)}
-          {node.files.nodes.map((file) => {
-            console.debug('%c  file', ccm.yellow, file)
-            {(
-              <>
-              <Model
-                name={file.title}
-                node={file}
-                // makeDefault
-                // minPolarAngle={0}
-                // maxPolarAngle={Math.PI / 1.75}
-                // autoRotate={false}
-              />
-              <ThreeDControls />
-              </>
-            )}
-
-          })}
-        })}
-*/
