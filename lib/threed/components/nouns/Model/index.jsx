@@ -510,25 +510,25 @@ export default function ThreeDModels({ nodes }) {
   return (
     <>
       <CoffeeCup />
-      {/* LOOP OVER NODES FOR EACH FILE = MODEL */}
+      {/* THREED: LOOP OVER NODES FOR EACH FILE = MODEL */}
       {nodes.map((node) => {
         return (
           // {/* GROUP FILES/MODELS */}
           <group
-            // key={ThreeD.group.group_id}
-            key={newUUID()}
+            key={ThreeD.group.group_id}
+            // key={newUUID()}
           >
             {/* <CoffeeCup /> */}
             {/* <ThreeDControls /> */}
             {node.files.nodes.map((file) => {
               return (
-                <Model
+                <Model // == ThreeD{}
                   // key={file.fileId}
                   key={newUUID()}
                   threed={ThreeD}
-                  name={file.title}
-                  file={file}
-                  group={ThreeD.group}
+                  // name={file.title}
+                  // group={ThreeD.group}
+                  // file={file}
                 />
               )
             }
