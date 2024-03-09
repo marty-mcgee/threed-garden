@@ -253,15 +253,15 @@ export default function ThreeDCanvas({ _id, nodes }) {
           // file={nodes[0].nodes.file.url} // K.I.S.S.
         /> */}
         {/* WORKING !!! */}
-        {/* {nodes && (
+        {nodes && (
           <ThreeDModels
             nodes={nodes}
             group={group}
           />
-        )} */}
+        )}
         {/* // ** LOOP COMPONENTS = NODES[_n] */}
         {/* <group position={[0, 0, 0]} ref={ref}> */}
-          {[...Array(nodes)].map((_n, index) => (
+          {/* {[...Array(nodes)].map((_n, index) => (
             <ThreeDModels
               key={index}
               nodes={_n}
@@ -274,7 +274,7 @@ export default function ThreeDCanvas({ _id, nodes }) {
             // >
             //   <LampPost scale={[0.5, 0.5, 0.5]} />
             // </MovingItem>
-          ))}
+          ))} */}
         {/* </group> */}
 
         {/* <CoffeeCup /> */}

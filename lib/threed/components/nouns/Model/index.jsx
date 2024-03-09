@@ -30,7 +30,7 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 // import { useSpring, a } from '@react-spring/three'
 
 // ** EXAMPLES
-// import CoffeeCup from '~/lib/threed/components/examples/CoffeeCup/CoffeeCup'
+import CoffeeCup from '~/lib/threed/components/examples/CoffeeCup/CoffeeCup'
 
 // ** UUID Imports
 import { v4 as newUUID } from 'uuid'
@@ -45,8 +45,16 @@ const debug = false // false | true // ts: boolean
 const DEBUG = true // false | true // ts: boolean
 
 // ==============================================================
-let IModel = {
-  name: 'GLB FILE NODES TO LOAD',
+// ** ThreeD == Group of > Files of > Nodes of > 3DObjects
+let ThreeD = {
+  name: 'GLB FILE NODES (GROUP) TO LOAD',
+  group: {
+    group_id: newUUID(),
+    // NOTE: 1.570796 radians = 90 degrees
+    group_position: [0, 0, 0],
+    group_rotation: [0, 0, 0], // [-1.570796, 0, 0],
+    group_scale: 0.05, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
+  },
   file: {
     __typename: "File",
     file: null,
@@ -59,28 +67,26 @@ let IModel = {
     uri: "",
     url: "",
   },
-  nodes: [],
-  group: {
-    group_id: newUUID(),
-    // NOTE: 1.570796 radians = 90 degrees
-    group_position: [0, 0, 0],
-    group_rotation: [-1.570796, 0, 0], // [0, 0, 0],
-    group_scale: 0.05, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
-  },
+  fileUrl: '',
+  nodes: [], // nodes of files
+  actionModes: [ // available action modes
+    'translate',
+    'rotate',
+    'scale'
+  ]
 }
 
 // ** ThreeD Model -||-
-// const Model = (props) => {
-// const Model = ({modelObject = modelDefault}) => {
-const Model = ({name, file, group}) => {
+const Model = ({
+  name =  ThreeD.name,
+  group = ThreeD.group,
+  file =  ThreeD.file
+}) => {
 
   // **
   // ** for testing only
   // ** return 1 ThreeD Object in JSX
   // return <><CoffeeCup /></>
-
-  // ** set available action modes
-  const actionModes = ['translate', 'rotate', 'scale']
 
   // get Reactive state on each model (using valtio)
   // const modelVState = proxy({ current: null, mode: 0 })
@@ -111,9 +117,9 @@ const Model = ({name, file, group}) => {
   const model = {
     ref: useRef(null),
     name: name,
-    file: file ? file : IModel.file,
-    nodes: IModel.nodes,
-    group: group ? group : IModel.group,
+    file: file ? file : ThreeD.file,
+    nodes: ThreeD.nodes,
+    group: group ? group : ThreeD.group,
     state: modelVState, // for funzees
     // sceneState: sceneState, // for funzees
     // storeState: storeState, // for funzees
@@ -300,55 +306,69 @@ const Model = ({name, file, group}) => {
 
   if (model.is.isReadyForCanvas) {
     console.debug(`%c======================================`, ccm.blue)
-    console.debug(`%ccheck📐 DRAW MODEL([nodes]): ${model.type}`, ccm.blue, model.nodes)
+    console.debug(`%c✔️📐 DRAW MODEL ${model.type}`, ccm.orange, model)
+    console.debug(`%c✔️📐 DRAW MODEL([nodes]): ${model.type}`, ccm.blue, model.nodes)
     console.debug(`%c======================================`, ccm.blue)
     // return GLTF node
     if (model.is.isGLTF) {
-      const model_name = model.name ? model.name : 'model.name HMM HMM HMM'
-      // NEED LOOP OVER NODE ARRAY TO RETURN MULTIPLE MESHES ([4420])
-      const model_geometry = model.nodes[0].geometry
-      const model_material = model.nodes[0].material
       return (
-        <mesh
+        // LOOP OVER NODE ARRAY TO RETURN MULTIPLE MESHES ([4420])
+        <group
           key={newUUID()}
-          name={model.name}
           ref={model.ref}
-          // Click sets the mesh as the new target
-          onClick={(e) => (e.stopPropagation(), (modelVState.current = model_name))}
-          // If a click happened but this mesh wasn't hit we null out the target,
-          // This works because missed pointers fire before the actual hits
-          onPointerMissed={(e) => e.type === 'click' && (modelVState.current = null)}
-          // Right click cycles through the transform actionModes
-          onContextMenu={(e) =>
-            snap.current === model.name && (e.stopPropagation(), (modelVState.mode = (snap.mode + 1) % actionModes.length))
-          }
-          onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
-          onPointerOut={(e) => setIsHovered(false)}
-          geometry={model_geometry}
-          material={model_material}
-          material-color={snap.current === model_name ? '#ff7070' : '#ababab'}
-          // {...props}
+          // ref={model.ani.ref}
+          position={model.group.group_position}
+          rotation={model.group.group_rotation}
+          scale={model.group.group_scale}
           dispose={null}
-        />
+        >
+          {[...Array(model.nodes)].map((_node, index) => (
+            <mesh
+              key={index} // newUUID()
+              name={_node.name}
+              // ref={_node.ref}
+              // // Click sets the mesh as the new target
+              // onClick={(e) => (e.stopPropagation(), (modelVState.current = _node.name))}
+              // // If a click happened but this mesh wasn't hit we null out the target,
+              // // This works because missed pointers fire before the actual hits
+              // onPointerMissed={(e) => e.type === 'click' && (modelVState.current = null)}
+              // // Right click cycles through the transform ThreeD.actionModes
+              // onContextMenu={(e) =>
+              //   snap.current === _node.name && (e.stopPropagation(), (modelVState.mode = (snap.mode + 1) % ThreeD.actionModes.length))
+              // }
+              // onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
+              // onPointerOut={(e) => setIsHovered(false)}
+              geometry={_node.geometry}
+              material={_node.material}
+              material-color={snap.current === _node.name ? '#ff7070' : '#ababab'}
+              // {...props}
+              dispose={null}
+            />
+            // <MovingItem
+            //   key={index}
+            //   speed={lampsSpeed}
+            //   position={[-OFFSET_X + (index / lampsNb) * OFFSET_X * 2, 0, -1.5]}
+            // >
+            //   <LampPost scale={[0.5, 0.5, 0.5]} />
+            // </MovingItem>
+          ))}
+        </group>
       )
     }
     // return FBX node
     else if (model.is.isFBX) {
-      const model_name = model.name ? model.name : 'no name'
-      // const model_geometry = model.nodes.geometry
-      // const model_material = model.nodes.material
       return (
         <group
           key={newUUID()}
           ref={model.ref}
           // ref={model.ani.ref}
+          position={model.group.group_position}
+          rotation={model.group.group_rotation}
+          scale={model.group.group_scale}
           dispose={null}
-          position={model.group_position}
-          rotation={model.group_rotation}
-          scale={model.group_scale}
         >
           <primitive
-            name={model_name}
+            name={model.name ? model.name : 'no name'}
             // ref={model.ref}
             // ref={model.ani.ref}
             object={model.nodes}
@@ -389,11 +409,11 @@ const Model = ({name, file, group}) => {
           console.debug('modelVState.current', null),
           console.debug('snap.current', snap.current)
         )}
-        // Right click cycles through the transform actionModes
+        // Right click cycles through the transform ThreeD.actionModes
         onContextMenu={(e) =>
           snap.current === model.name &&
           (e.stopPropagation(),
-          (modelVState.mode = (snap.mode + 1) % actionModes.length),
+          (modelVState.mode = (snap.mode + 1) % ThreeD.actionModes.length),
           console.debug('modelVState.mode', modelVState.mode),
           console.debug('snap.current', snap.current))
         }
@@ -433,7 +453,7 @@ function ThreeDControls() {
       {snap.current && (
         <TransformControls
           object={sceneState.getObjectByName(snap.current)}
-          mode={actionModes[snap.mode]}
+          mode={ThreeD.actionModes[snap.mode]}
         />
       )}
     </>
@@ -488,13 +508,13 @@ export default function ThreeDModels({ nodes }) {
   // return <CoffeeCup />
   return (
     <>
-      {/* <CoffeeCup /> */}
+      <CoffeeCup />
       {/* LOOP OVER NODES FOR EACH FILE = MODEL */}
       {nodes.map((node) => {
         return (
           // {/* GROUP FILES/MODELS */}
           <group
-            // key={IModel.group.group_id}
+            // key={ThreeD.group.group_id}
             key={newUUID()}
           >
             {/* <CoffeeCup /> */}
@@ -506,7 +526,7 @@ export default function ThreeDModels({ nodes }) {
                   key={newUUID()}
                   name={file.title}
                   file={file}
-                  group={IModel.group}
+                  group={ThreeD.group}
                 />
               )
             }
