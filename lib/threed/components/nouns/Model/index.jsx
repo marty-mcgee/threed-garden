@@ -509,31 +509,31 @@ export default function ThreeDModels({ nodes }) {
   return (
     <>
       {/* <CoffeeCup /> */}
-
+      {/* LOOP OVER NODES FOR EACH FILE = MODEL */}
       {nodes.map((node) => {
         return (
-          node.files.nodes.map((file) => {
-            return (
-              <group
-                key={newUUID()}
-                // key={file.fileId}
-              >
-                {/* <CoffeeCup
-                  // key={newUUID()}
-                /> */}
-                <Model
-                  // // key={file.fileId}
-                  name={file.title}
-                  file={file}
-                  group={IModel.group}
-                />
-                <ThreeDControls />
-              </group>
-            )
-          })
+          // {/* GROUP FILES/MODELS */}
+          <group
+            key={IModel.group.group_id}
+          >
+            {node.files.nodes.map((file) => {
+              return (
+                <>
+                  {/* <CoffeeCup /> */}
+                  <Model
+                    key={file.fileId}
+                    name={file.title}
+                    file={file}
+                    group={IModel.group}
+                  />
+                  {/* <ThreeDControls /> */}
+                </>
+              )
+            }
+          )}
+          </group>
         )
       })}
-
     </>
   )
 }
