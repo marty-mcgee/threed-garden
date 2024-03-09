@@ -78,10 +78,10 @@ let ThreeD = {
 
 // ** ThreeD Model -||-
 const Model = ({
-  threed =  ThreeD,
-  name =    ThreeD.name,
-  group =   ThreeD.group,
-  file =    ThreeD.file
+  threed = ThreeD,
+  // name =    ThreeD.name,
+  // group =   ThreeD.group,
+  // file =    ThreeD.file
 }) => {
 
   // **
@@ -117,10 +117,11 @@ const Model = ({
   // this model = threed_model -||-
   const model = {
     ref: useRef(null),
-    name: name,
-    file: file ? file : ThreeD.file,
-    nodes: ThreeD.nodes,
-    group: group ? group : ThreeD.group,
+    name:   ThreeD.name,
+    file:   ThreeD.file,
+    nodes:  ThreeD.nodes,
+    group:  ThreeD.group,
+
     state: modelVState, // for funzees
     // sceneState: sceneState, // for funzees
     // storeState: storeState, // for funzees
@@ -515,15 +516,15 @@ export default function ThreeDModels({ nodes }) {
         return (
           // {/* GROUP FILES/MODELS */}
           <group
-            key={ThreeD.group.group_id}
-            // key={newUUID()}
+            // key={ThreeD.group.group_id} // no, duplicate
+            key={newUUID()}
           >
             {/* <CoffeeCup /> */}
             {/* <ThreeDControls /> */}
             {node.files.nodes.map((file) => {
               return (
                 <Model // == ThreeD{}
-                  // key={file.fileId}
+                  // key={file.fileId} // no, duplicate
                   key={newUUID()}
                   threed={ThreeD}
                   // name={file.title}

@@ -941,7 +941,7 @@ const ThreeDToolbar: FC = ({data}): JSX.Element => {
   // **
   // console.debug("ThreeDToolbar props.data", data)
 
-  const word = `[MM] @ ${new Date().toISOString()}`
+  const word = `[MM] ThreeDToolbar @ ${new Date().toISOString()}`
   // console.debug("ThreeDToolbar", word)
 
   // const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
@@ -3370,7 +3370,7 @@ const PlanView: FC = (): JSX.Element => {
 }
 
 const TheBottom: FC = (): JSX.Element => {
-  const word = `[MM] @ ${new Date().toISOString()}`
+  const word = `[MM] TheBottom @ ${new Date().toISOString()}`
 
   // console.debug("MyComponent")
   useEffect(() => {
@@ -3469,9 +3469,13 @@ const TheBottom: FC = (): JSX.Element => {
 const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
 
   // **
-  // const word = `[MM] @ ${new Date().toISOString()}`
-  // console.debug('%cThreeDCanvasViewer {data.store}', ccm.yellow, data.store)
-  // console.debug(`%c====================================`, ccm.black)
+  const word = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
+  console.debug(`%c========================================================================`, ccm.yellow)
+  console.debug('%cThreeDCanvasViewer word', ccm.yellow, word)
+  console.debug('%cThreeDCanvasViewer {prop.projectName}', ccm.yellow, projectName)
+  console.debug('%cThreeDCanvasViewer {prop.data}', ccm.yellow, data)
+  console.debug('%cThreeDCanvasViewer {prop.data.store}', ccm.yellow, data.store)
+  console.debug(`%c========================================================================`, ccm.yellow)
 
   // ==========================================================
   // ** Hooks
@@ -3633,7 +3637,7 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
 
 const MyLevaComponent: FC = ({ projectName, setProjectName }): JSX.Element => {
   // **
-  const word = `[MM] @ ${new Date().toISOString()}`
+  const word = `[MM] MyLevaComponent @ ${new Date().toISOString()}`
   // **
   var [{ Id }, set] = useControls(
     () => (
@@ -3667,7 +3671,7 @@ const ThreeDGarden = (): JSX.Element => {
   // ==========================================================
   // ** LOCAL VARS
 
-  const word: string = `[MM] @ ${new Date().toISOString()}`
+  const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
 
   // ==========================================================
   // ** Hooks
