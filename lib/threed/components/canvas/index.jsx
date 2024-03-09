@@ -42,7 +42,7 @@ import { v4 as newUUID } from 'uuid'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
-// console.debug('%c~ccm', ccm)
+// console.debug('%c ccm', ccm)
 
 // ==============================================================
 // ** VARIABLES
@@ -54,12 +54,12 @@ const DEBUG = true // false | true // ts: boolean
 const actionModes = ['translate', 'rotate', 'scale']
 
 // example working simple <Loader />
-function LoaderSimple() {
+function ThreeDLoaderSimple() {
   const { progress } = useProgress()
-  return <Html center>{Math.round(progress)} % loaded</Html>
+  return <Html center>THREED GUI LOADING... {Math.round(progress)} %</Html>
 }
 
-function Env() {
+function ThreeDEnvironment() {
   const [preset, setPreset] = useState('park')
   // You can use the "inTransition" boolean to react to the loading in-between state,
   // For instance by showing a message
@@ -78,7 +78,7 @@ function Env() {
   return <Environment preset={preset} background blur={blur} />
 }
 
-function LevaControls() {
+function ThreeDLevaControls() {
 
   const OFFSET_X = 20;
   const LAMPS_NB = 10;
@@ -196,7 +196,7 @@ export default function ThreeDCanvas({ _id, nodes }) {
 
       {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
       {/* <Suspense fallback={null}> */}
-      {/* <Suspense fallback={<LoaderSimple />}> */}
+      {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
       {/* <Suspense fallback={<Html center><Loader /></Html>}> */}
       {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
 
@@ -206,9 +206,9 @@ export default function ThreeDCanvas({ _id, nodes }) {
           preset='dawn'
           background={'only'}
         /> */}
-        <Env />
+        <ThreeDEnvironment />
 
-        <LevaControls />
+        <ThreeDLevaControls />
 
         {/* makeDefault makes the controls known to r3f,
             now transform-controls can auto-disable them when active */}
@@ -236,6 +236,9 @@ export default function ThreeDCanvas({ _id, nodes }) {
           screenSpacePanning={true}
         />
 
+        {/* THREED STAGE */}
+        {/* <Stage environment="forest" intensity={0.7}> */}
+
         {/* NEED TO LOAD THREEDSCENE FILES TO A CANVAS */}
         {/* <ThreeDScene state={state} files={files} /> */}
 
@@ -249,16 +252,33 @@ export default function ThreeDCanvas({ _id, nodes }) {
           nodes={nodes} // YES, use this (load these nodes to canvas, as one model/many models)
           // file={nodes[0].nodes.file.url} // K.I.S.S.
         /> */}
-        {nodes && (
+        {/* WORKING !!! */}
+        {/* {nodes && (
           <ThreeDModels
             nodes={nodes}
             group={group}
           />
-        )}
+        )} */}
+        {/* // ** LOOP COMPONENTS = NODES[_n] */}
+        {/* <group position={[0, 0, 0]} ref={ref}> */}
+          {[...Array(nodes)].map((_n, index) => (
+            <ThreeDModels
+              key={index}
+              nodes={_n}
+              group={group}
+            />
+            // <MovingItem
+            //   key={index}
+            //   speed={lampsSpeed}
+            //   position={[-OFFSET_X + (index / lampsNb) * OFFSET_X * 2, 0, -1.5]}
+            // >
+            //   <LampPost scale={[0.5, 0.5, 0.5]} />
+            // </MovingItem>
+          ))}
+        {/* </group> */}
+
         {/* <CoffeeCup /> */}
         {/* [MM] HEY HEY HEY */}
-
-        <BakeShadows />
 
         {/* */}
         <GizmoHelper
@@ -323,6 +343,9 @@ export default function ThreeDCanvas({ _id, nodes }) {
         <axesHelper args={[100]} />
         <gridHelper args={[100, 10]} />
 
+        {/* EFFECTS */}
+        <BakeShadows />
+
         {/* Camera Action Rig */}
         {/*
           <ActionRig />
@@ -339,8 +362,6 @@ export default function ThreeDCanvas({ _id, nodes }) {
           scale={0.005}
         />
         */}
-
-        {/* <Stage environment="forest" intensity={0.7}> */}
 
         {/* SHOE + SHOES */}
         {/* <Stage intensity={0.7}>
