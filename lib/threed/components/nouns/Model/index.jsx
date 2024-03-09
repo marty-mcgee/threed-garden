@@ -203,43 +203,20 @@ const Model = ({name, file, group}) => {
         model.type = 'gltf'
         // nodes[] is an array of all the meshes
         // file is cached/memoized; it only gets loaded and parsed once
-        // const file = '/objects/examples/compressed-v002.glb'
-        // const { nodes } = useGLTF(model.file)
-        // let nodes = []
-        const nodes = useGLTF(model.file)
+        const { nodes } = useGLTF(model.file)
 
         console.debug('%c🌱 GLB NODES: gltf', ccm.darkgreen, nodes)
         console.debug(`%c======================================`, ccm.darkgreen)
         if (nodes) {
-          // FILTER (LOOP OVER) NODES {Object.keys}
-          // to get the single node you are asking for
-          // if (model.doReturnAll) {
-          //   model.nodes = nodes
-          //   console.debug('%c RETURN ALL NODES: true', ccm.yellow, model.nodes)
-          //   console.debug(`%c======================================`, ccm.yellow)
-          // }
-          // else
           if (nodes.RootNode) {
-            // model.nodes[model.name] = nodes.RootNode.children
             model.nodes = nodes.RootNode.children
             console.debug('%c RETURN RootNode CHILDREN NODES: true', ccm.darkgreen)
             console.debug(`%c======================================`, ccm.darkgreen)
           }
-          // OR RETURN ALL NODES, OR QUERY A LIST OF NODES you want...
-          // else
           else if (model.nodes[model.name]) {
-            // for one node key requested...
             model.nodes[model.name] = nodes[model.name]
             console.debug('%c RETURN ONE NODE: true', ccm.orange, model.nodes[model.name])
             console.debug(`%c======================================`, ccm.orange)
-
-            // OR...
-            // console.debug('OR: ')
-            // console.debug('RETURN EACH NODE: true')
-            // // for each node key requested...
-            // Object.keys(nodes).forEach((value, index, array) => {
-            //   console.debug('RETURN EACH NODE by KEY: ', index, value)
-            // })
           }
           else {
             model.nodes = nodes
@@ -333,6 +310,7 @@ const Model = ({name, file, group}) => {
       const model_material = model.nodes[0].material
       return (
         <mesh
+          key={newUUID()}
           name={model.name}
           ref={model.ref}
           // Click sets the mesh as the new target
@@ -361,13 +339,13 @@ const Model = ({name, file, group}) => {
       // const model_material = model.nodes.material
       return (
         <group
+          key={newUUID()}
           ref={model.ref}
           // ref={model.ani.ref}
           dispose={null}
           position={model.group_position}
           rotation={model.group_rotation}
           scale={model.group_scale}
-          // scale={0.005}
         >
           <primitive
             name={model_name}
@@ -382,6 +360,7 @@ const Model = ({name, file, group}) => {
     else if (model.is.isOBJ) {
       return (
         <mesh
+          key={newUUID()}
           ref={model.ref}
         />
       )
@@ -392,6 +371,7 @@ const Model = ({name, file, group}) => {
   else {
     return (
       <mesh
+        key={newUUID()}
         name={model.name}
         ref={model.ref}
         // Click sets the mesh as the new target
@@ -514,20 +494,20 @@ export default function ThreeDModels({ nodes }) {
         return (
           // {/* GROUP FILES/MODELS */}
           <group
-            key={IModel.group.group_id}
+            // key={IModel.group.group_id}
+            key={newUUID()}
           >
+            {/* <CoffeeCup /> */}
+            {/* <ThreeDControls /> */}
             {node.files.nodes.map((file) => {
               return (
-                <>
-                  {/* <CoffeeCup /> */}
-                  <Model
-                    key={file.fileId}
-                    name={file.title}
-                    file={file}
-                    group={IModel.group}
-                  />
-                  {/* <ThreeDControls /> */}
-                </>
+                <Model
+                  // key={file.fileId}
+                  key={newUUID()}
+                  name={file.title}
+                  file={file}
+                  group={IModel.group}
+                />
               )
             }
           )}
