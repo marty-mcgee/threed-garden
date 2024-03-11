@@ -7,12 +7,15 @@
 🌱 [threedgarden.com](https://threedgarden.com)
 🥕 [Demo: Participate](https://threedgarden.com/participate)
 
-🤖 ["name": "threed-garden",](https://www.npmjs.com/package/threed-garden)
-🤖 ["version": "0.15.0-beta.52",](https://www.npmjs.com/package/threed-garden?activeTab=versions)
-
 ====
 
 ## For Developers
+
+🤖 ["name": "threed-garden",](https://www.npmjs.com/package/threed-garden)
+🤖 ["version": "0.15.0-beta.52",](https://www.npmjs.com/package/threed-garden?activeTab=versions)
+🤖 ["code": "0.15.0-beta.52",](https://www.npmjs.com/package/threed-garden?activeTab=code)
+
+### Install + Run
 
 - app currently requires yarn: `npm install -G yarn`
 - (you can instead, of course, use pnpm or npm easily)
