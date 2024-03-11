@@ -156,15 +156,15 @@ const Model = ({
 
   // this model = threed_model -||-
   const model = {
-    ref: useRef(null),
+    ref:    useRef(null),
     name:   threed.name,
     file:   fileUrl, // threed.file,
     group:  threed.group,
     nodes:  threed.nodes,
 
-    state: modelVState, // for funzees
-    // sceneState: sceneState, // for funzees
-    // storeState: storeState, // for funzees
+    // state:  modelVState, // for funzees ??
+    // sceneState: sceneState, // for funzees ??
+    // storeState: storeState, // for funzees ??
 
     // file type?
     type: 'tbd', // fbx | gltf | obj | threed | threed_node
@@ -249,47 +249,54 @@ const Model = ({
         // nodes[] is an array of all the meshes
         // file is cached/memoized; it only gets loaded and parsed once
         const gltf = useGLTF(model.file)
-        console.debug('%c🌱 GLB NODES: gltf', ccm.darkgreen, gltf)
+        console.debug('%c🌱 GLB NODES: gltf', ccm.greenAlert, gltf)
         console.debug(`%c======================================`, ccm.darkgreen)
         if (gltf) {
           if (gltf.RootNode) {
             model.nodes = gltf.RootNode.children
-            // console.debug('%c RETURN RootNode CHILDREN NODES: true', ccm.darkgreen)
-            // console.debug(`%c======================================`, ccm.darkgreen)
+            console.debug('%c📐 RETURN RootNode CHILDREN NODES: true', ccm.orangeAlert, model.nodes)
+            console.debug(`%c======================================`, ccm.orange)
           }
           else if (model.nodes[model.name]) {
             model.nodes[model.name] = gltf[model.name]
-            // console.debug('%c RETURN ONE NODE: true', ccm.orange, model.nodes[model.name])
-            // console.debug(`%c======================================`, ccm.orange)
+            console.debug('%c📐 RETURN ONE NODE: true', ccm.orangeAlert, model.nodes[model.name])
+            console.debug(`%c======================================`, ccm.orange)
+          }
+          else if (gltf.nodes) {
+            let gltfAsArray = new Array()
+            gltfAsArray.push(gltf.nodes)
+            model.nodes = gltfAsArray
+            console.debug('%c📐 RETURN ALL GLTF NODES: default', ccm.orangeAlert, model.nodes)
+            console.debug(`%c======================================`, ccm.orange)
           }
           else {
-            model.nodes = gltf
-            // console.debug('%c RETURN ALL/BLANK NODES: default', ccm.red)
-            // console.debug(`%c======================================`, ccm.red)
+            model.nodes = gltf.nodes // []
+            console.debug('%c📐 RETURN ALL/BLANK NODES: default', ccm.redAlert, model.nodes)
+            console.debug(`%c======================================`, ccm.red)
           }
         }
       }
 
-      // finally
-      if (model.nodes.length && model.is.isGLTF) {
+      // finally, decide if ready for _r3f canvas
+      if (model.nodes && model.is.isFBX) {
         model.is.isReadyForCanvas = true
-        console.debug('%c✔️ THREED MODEL IS READY FOR CANVAS', ccm.green, model)
+        console.debug('%c✔️ THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model)
         console.debug(`%c===========================================================`, ccm.darkgreen)
       }
-      else if (model.nodes && model.is.isFBX) {
+      else if (model.nodes.length && model.is.isGLTF) {
         model.is.isReadyForCanvas = true
-        console.debug('%c✔️ THREED MODEL IS READY FOR CANVAS', ccm.green, model)
+        console.debug('%c✔️ THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model)
         console.debug(`%c===========================================================`, ccm.darkgreen)
       }
       else {
         model.is.isReadyForCanvas = false
-        console.debug('%c✖️ THREED MODEL IS NOT READY FOR CANVAS', ccm.red, model)
+        console.debug('%c✖️ THREED MODEL IS NOT READY FOR CANVAS', ccm.redAlert, model)
         console.debug(`%c===========================================================`, ccm.red)
       }
     }
     // console.debug(`%c======================================`, ccm.black)
   } else {
-    console.debug('%c✖️ MODEL.is.isSupported: false', ccm.red)
+    console.debug('%c✖️ MODEL.is.isSupported: false', ccm.redAlert)
     console.debug(`%c===========================================================`, ccm.red)
   }
   // console.debug('%cmodel', ccm.green, model)
@@ -347,8 +354,29 @@ const Model = ({
     console.debug(`%c✔️📐 DRAW MODEL ${model.type}`, ccm.blue, model)
     console.debug(`%c✔️📐 DRAW MODEL.nodes: ${model.type}`, ccm.blue, model.nodes)
     console.debug(`%c===========================================================`, ccm.blue)
+    // return FBX node
+    if (model.is.isFBX) {
+      return (
+        <group
+          key={newUUID()}
+          ref={model.ref}
+          // ref={model.ani.ref}
+          position={model.group.group_position}
+          rotation={model.group.group_rotation}
+          scale={model.group.group_scale}
+          dispose={null}
+        >
+          <primitive
+            name={model.name ? model.name : 'no name'}
+            // ref={model.ref}
+            // ref={model.ani.ref}
+            object={model.nodes}
+          />
+        </group>
+      )
+    }
     // return GLTF node
-    if (model.is.isGLTF) {
+    else if (model.is.isGLTF) {
       return (
         // LOOP OVER NODE ARRAY TO RETURN MULTIPLE MESHES ([4420])
         <group
@@ -390,27 +418,6 @@ const Model = ({
             //   <LampPost scale={[0.5, 0.5, 0.5]} />
             // </MovingItem>
           ))}
-        </group>
-      )
-    }
-    // return FBX node
-    else if (model.is.isFBX) {
-      return (
-        <group
-          key={newUUID()}
-          ref={model.ref}
-          // ref={model.ani.ref}
-          position={model.group.group_position}
-          rotation={model.group.group_rotation}
-          scale={model.group.group_scale}
-          dispose={null}
-        >
-          <primitive
-            name={model.name ? model.name : 'no name'}
-            // ref={model.ref}
-            // ref={model.ani.ref}
-            object={model.nodes}
-          />
         </group>
       )
     }
@@ -532,8 +539,8 @@ export default function ThreeDModels({ threeds }) {
       {/* <ThreeDControls /> */}
       {/* THREED: LOOP OVER NODES FOR EACH FILE = MODEL */}
       {threeds.map((_threed, index) => {
-        console.debug('_threed', _threed)
-        console.debug(`%c======================================`, ccm.red)
+        // console.debug('_threed', index + ': ', _threed)
+        // console.debug(`%c======================================`, ccm.red)
         return (
           <group
             // key={ThreeD.group.group_id} // no, duplicates
@@ -545,8 +552,8 @@ export default function ThreeDModels({ threeds }) {
             // scale={ThreeD.group.group_scale}
           >
           {_threed.files.nodes.map((_file, index) => {
-            console.debug('_file', _file)
-            console.debug(`%c======================================`, ccm.red)
+            // console.debug('_file', index + ': ', _file)
+            // console.debug(`%c======================================`, ccm.red)
 
             const threed = new ThreeD()
             threed.name = _file.title

@@ -135,12 +135,12 @@ const appVersion = 'v0.15.0-b'
 // const appVersion: string = require('package.json').version
 // const appVersion: string = require('../../package.json').version
 
-const doLoadFromDataSourceOnStart: boolean = true
+const doLoadFromDataSourceOnStart: boolean = false // true | false (default)
 
 if (debug) {
   console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm.green)
   console.debug("%c🌱 appVersion", ccm.darkgreen, appVersion)
-  console.debug(`%c====================================`, ccm.darkgreen)
+  // console.debug(`%c====================================`, ccm.black)
 }
 
 // ==========================================================
@@ -318,7 +318,7 @@ const {
 // ==========================================================
 // FUNCTIONAL NOUNS
 if (debug) {
-  console.debug(`%c🥕 ThreeDGarden<FC,R3F>: {nouns()}`, ccm.blue)
+  // console.debug(`%c🥕 ThreeDGarden<FC,R3F>: {nouns()}`, ccm.blue)
   console.debug(`%c====================================`, ccm.black)
 }
 // ==========================================================
