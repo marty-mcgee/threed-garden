@@ -398,8 +398,8 @@ const ProjectControlPanel: FC = (_type: string = 'project'): JSX.Element => {
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
-      <Button onClick={increaseCount}>+</Button>
-      <Button onClick={decreaseCount}>-</Button>
+      {/* <Button onClick={increaseCount}>+</Button> */}
+      {/* <Button onClick={decreaseCount}>-</Button> */}
       <Button onClick={getState}>get state</Button>
       <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
     </Box>
@@ -452,8 +452,8 @@ const ParticipantControlPanel: FC = (_type: string = 'participant'): JSX.Element
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
-      <Button onClick={increaseCount}>+</Button>
-      <Button onClick={decreaseCount}>-</Button>
+      {/* <Button onClick={increaseCount}>+</Button> */}
+      {/* <Button onClick={decreaseCount}>-</Button> */}
       {/*  */}
       <Button onClick={getState}>get state</Button>
       <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
@@ -507,8 +507,8 @@ const PlanControlPanel: FC = (_type: string = 'plan'): JSX.Element => {
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
-      <Button onClick={increaseCount}>+</Button>
-      <Button onClick={decreaseCount}>-</Button>
+      {/* <Button onClick={increaseCount}>+</Button> */}
+      {/* <Button onClick={decreaseCount}>-</Button> */}
       {/*  */}
       <Button onClick={getState}>get state</Button>
       <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
@@ -562,8 +562,8 @@ const ThreeDControlPanel: FC = (_type: string = 'threed'): JSX.Element => {
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
-      <Button onClick={increaseCount}>+</Button>
-      <Button onClick={decreaseCount}>-</Button>
+      {/* <Button onClick={increaseCount}>+</Button> */}
+      {/* <Button onClick={decreaseCount}>-</Button> */}
       {/*  */}
       <Button onClick={getState}>get state</Button>
       <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
@@ -617,8 +617,8 @@ const FileControlPanel: FC = (_type: string = 'file'): JSX.Element => {
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
-      <Button onClick={increaseCount}>+</Button>
-      <Button onClick={decreaseCount}>-</Button>
+      {/* <Button onClick={increaseCount}>+</Button> */}
+      {/* <Button onClick={decreaseCount}>-</Button> */}
       {/*  */}
       <Button onClick={getState}>get state</Button>
       <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
@@ -642,23 +642,11 @@ const SceneInfoPanel: FC = (_type: string = 'scene'): JSX.Element => {
 
   return (
     <Box sx={{ px: 2 }}>
-      {/* <Typography variant='h6'>_type: {JSON.stringify(_type)}</Typography> */}
-      {/* <hr /> */}
-      <Typography>count: {sceneCount}</Typography>
-      <Typography>countDB: {sceneCountDB}</Typography>
-      <hr />
       <Typography>all.length: {scenes.length}</Typography>
       <Typography>one._id: {scene._id}</Typography>
       <Typography>one._ts: {scene._ts}</Typography>
       <Typography>one._name: {scene._name}</Typography>
       <Typography>one.data.title: {scene.data?.title}</Typography>
-      <hr />
-      <Typography>allDB.length: {scenesDB.length}</Typography>
-      <Typography>oneDB._id: {sceneDB._id}</Typography>
-      <Typography>oneDB._ts: {sceneDB._ts}</Typography>
-      <Typography>oneDB._name: {sceneDB._name}</Typography>
-      <Typography>oneDB.data.title: {sceneDB.data?.title}</Typography>
-      <hr />
     </Box>
   )
 }
@@ -686,8 +674,8 @@ const SceneControlPanel: FC = (_type: string = 'scene'): JSX.Element => {
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll}>remove all</Button>
-      <Button onClick={increaseCount}>+</Button>
-      <Button onClick={decreaseCount}>-</Button>
+      {/* <Button onClick={increaseCount}>+</Button> */}
+      {/* <Button onClick={decreaseCount}>-</Button> */}
       {/*  */}
       <Button onClick={getState}>get state</Button>
       <Button onClick={loadToCanvas}>load to canvas</Button>
@@ -741,8 +729,8 @@ const AllotmentControlPanel: FC = (_type: string = 'allotment'): JSX.Element => 
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
-      <Button onClick={increaseCount}>+</Button>
-      <Button onClick={decreaseCount}>-</Button>
+      {/* <Button onClick={increaseCount}>+</Button> */}
+      {/* <Button onClick={decreaseCount}>-</Button> */}
       {/*  */}
       <Button onClick={getState}>get state</Button>
       <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
@@ -796,8 +784,8 @@ const BedControlPanel: FC = (_type: string = 'bed'): JSX.Element => {
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
-      <Button onClick={increaseCount}>+</Button>
-      <Button onClick={decreaseCount}>-</Button>
+      {/* <Button onClick={increaseCount}>+</Button> */}
+      {/* <Button onClick={decreaseCount}>-</Button> */}
       {/*  */}
       <Button onClick={getState}>get state</Button>
       <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
@@ -851,8 +839,8 @@ const PlantControlPanel: FC = (_type: string = 'plant'): JSX.Element => {
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
-      <Button onClick={increaseCount}>+</Button>
-      <Button onClick={decreaseCount}>-</Button>
+      {/* <Button onClick={increaseCount}>+</Button> */}
+      {/* <Button onClick={decreaseCount}>-</Button> */}
       {/*  */}
       <Button onClick={getState}>get state</Button>
       <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
@@ -906,8 +894,8 @@ const PlantingPlanControlPanel: FC = (_type: string = 'planting_plan'): JSX.Elem
       <Button onClick={saveToDisk}>save to disk</Button>
       <Button onClick={addNew}>add new</Button>
       <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
-      <Button onClick={increaseCount}>+</Button>
-      <Button onClick={decreaseCount}>-</Button>
+      {/* <Button onClick={increaseCount}>+</Button> */}
+      {/* <Button onClick={decreaseCount}>-</Button> */}
       {/*  */}
       <Button onClick={getState}>get state</Button>
       <Button onClick={loadToCanvas} style={{color: 'blue'}}>load to canvas</Button>
@@ -3470,35 +3458,31 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
 
   // **
   const word = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
-  console.debug(`%c========================================================================`, ccm.yellow)
-  console.debug('%cThreeDCanvasViewer word', ccm.yellow, word)
-  console.debug('%cThreeDCanvasViewer {prop.projectName}', ccm.yellow, projectName)
-  console.debug('%cThreeDCanvasViewer {prop.data}', ccm.yellow, data)
-  console.debug('%cThreeDCanvasViewer {prop.data.store}', ccm.yellow, data.store)
-  console.debug(`%c========================================================================`, ccm.yellow)
+  // console.debug(`%c=======================================================`, ccm.black)
+  // console.debug('%c🥕 ThreeDCanvasViewer word', ccm.orange, word)
+  console.debug('%c🥕 ThreeDCanvasViewer {prop.projectName}', ccm.orange, projectName)
+  console.debug('%c🥕 ThreeDCanvasViewer {prop.data}', ccm.orange, data)
+  // console.debug('%c🥕 ThreeDCanvasViewer {prop.data.store}', ccm.orange, data.store)
+  // console.debug(`%c=======================================================`, ccm.black)
 
   // ==========================================================
   // ** Hooks
 
   // const noun = data.store.store.get('one')
   const noun = data.store.store.useStore('one')
-
-  let nouns = []
-  let nounsToLoad = []
+  if (debug) console.debug('%c🥕 ThreeDCanvasViewer {noun}', ccm.orange, noun)
   let noun_title = noun?.data?.title ? noun.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
-  let nodes = [] // nodes[] to load to canvas
+  let nodesToLoad = []
+  let threeds = [] // threeds are nodes[] to load to canvas
   if (noun) {
-    nouns = [{...noun}]
-    if (debug) console.debug('%cThreeDCanvasViewer {nouns}', ccm.orange, nouns)
-    if (nouns.length) {
-      nounsToLoad = nouns[0].data?.plans?.nodes[0]?.threedsActive?.nodes
-      noun_title = noun?.data?.title ? noun.data.title : noun_title
-      console.debug('%cThreeDCanvasViewer {noun}', ccm.blue, noun, noun_title)
-      if (nounsToLoad) {
-        nodes = nounsToLoad
-        if (debug) console.debug('%cThreeDCanvasViewer {nounsToLoad}', ccm.orange, nounsToLoad)
+    // if (nouns.length) {
+      nodesToLoad = noun.data?.plans?.nodes[0]?.threedsActive?.nodes
+      console.debug('%c🥕 ThreeDCanvasViewer {noun}', ccm.orange, noun, noun_title)
+      if (nodesToLoad) {
+        threeds = nodesToLoad
+        if (debug) console.debug('%c🥕 ThreeDCanvasViewer {nodesToLoad}', ccm.orange, threeds)
       }
-    }
+    // }
   }
 
   // ** LEVA GUI CONTROL PANEL
@@ -3520,9 +3504,9 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
 
 
   // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
-  const loadNounData = (nodes) => {
-    // load these nodes into r3f canvas
-    data.store.actions.loadToCanvas(nodes, '_r3fCanvas')
+  const loadNounData = (threeds) => {
+    // load these threeds into r3f canvas
+    data.store.actions.loadToCanvas(threeds, '_r3fCanvas')
     // return <Box>true</Box> // true
   }
 
@@ -3585,7 +3569,7 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
       </Grid>
       <Grid
         container
-        id='_r3f_cameras'
+        id='_r3fCameras'
         spacing={0}
       >
         <Grid
@@ -3597,10 +3581,10 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
         >
 
           {/* THREED HEY HEY HEY */}
-            {nodes && (
+            {threeds && (
               <ThreeDCanvas
                 _id={'_r3fCanvas'}
-                nodes={nodes}
+                threeds={threeds}
               />
             )}
           {/* THREED HEY HEY HEY */}
@@ -3611,7 +3595,7 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
         >
           <ThreeDCanvas
             _id={2}
-            nodes={nodes}
+            threeds={threeds}
           />
         </Grid> */}
         {/* <Grid item id='camera[2]'
@@ -3619,7 +3603,7 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
         >
           <ThreeDCanvas
             _id={3}
-            nodes={nodes}
+            threeds={threeds}
           />
         </Grid> */}
         {/* <Grid item id='camera[3]'
@@ -3627,7 +3611,7 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
         >
           <ThreeDCanvas
             _id={4}
-            nodes={nodes}
+            threeds={threeds}
           />
         </Grid> */}
       </Grid>

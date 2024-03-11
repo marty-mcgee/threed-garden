@@ -101,7 +101,7 @@ Pages.guestGuard = true
 
 export default Pages
 
-// ============================================================================================
+// ===========================================================================
 // examples
 const flags: IBooleans = { read: true, write: false, delete: false }
 
@@ -113,4 +113,4 @@ const userContext: IStructures = {
   counts: { views: 3, writes: 1 }, // => INumbers (lint: try to remove IValues from IStructures)
 }
 // end examples
-// ============================================================================================
+// ===========================================================================
