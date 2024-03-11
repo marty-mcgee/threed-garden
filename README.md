@@ -17,6 +17,9 @@
 
 ### Install + Run
 
+#### npm i threed-garden
+#### git clone https://github.com/marty-mcgee/threed-garden.git
+
 - app currently requires yarn: `npm install -G yarn`
 - (you can instead, of course, use pnpm or npm easily)
 
