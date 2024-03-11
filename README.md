@@ -4,11 +4,11 @@
 
 ## Live Demo
 
-  "name": "threed-garden",
-  "version": "0.15.0-beta.52",
-
 🌱 [threedgarden.com](https://threedgarden.com)
 🥕 [Demo: Participate](https://threedgarden.com/participate)
+
+🤖 ["name": "threed-garden",](https://www.npmjs.com/package/threed-garden)
+🤖 ["version": "0.15.0-beta.52",](https://www.npmjs.com/package/threed-garden?activeTab=versions)
 
 ====
 
