@@ -12,8 +12,8 @@
 ## For Developers
 
 🤖 ["name": "threed-garden",](https://www.npmjs.com/package/threed-garden)
-🤖 ["version": "0.15.0-beta.52",](https://www.npmjs.com/package/threed-garden?activeTab=versions)
-🤖 ["code": "0.15.0-beta.52",](https://www.npmjs.com/package/threed-garden?activeTab=code)
+🤖 ["version": "0.15.0-beta.x",](https://www.npmjs.com/package/threed-garden?activeTab=versions)
+🤖 ["code": "0.15.0-beta.x",](https://www.npmjs.com/package/threed-garden?activeTab=code)
 
 ### Install + Run
 
