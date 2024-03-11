@@ -30,7 +30,7 @@ import TWEEN from '@tweenjs/tween.js'
 // import FarmBot from "#/lib/farmbot/FarmBot"
 // console.log("FarmBot", FarmBot)
 
-// ================================================================
+// ========================================================
 // TS
 interface IPostData {
   plugin_name: string
@@ -65,7 +65,7 @@ interface IPlayer {
   playerControl: Function
 }
 
-// ================================================================
+// ========================================================
 // VARIABLES
 // INSTANTIATE COMMON VARIABLES
 
@@ -131,7 +131,7 @@ console.debug('postdata', postdata)
 // const guiFolderAnnotations = gui.addFolder("Annotations")
 // const guiFolderPlayer = gui.addFolder("Character")
 
-// =====================================================================
+// =============================================================
 // THREE.JS ENVIRONMENT
 
 let scene: Scene
@@ -314,14 +314,14 @@ const player: IPlayer = {
   },
 }
 
-// =====================================================================
+// =============================================================
 // MESSAGES (to client)
 const messages = {
   text: ['Welcome to your ThreeD Garden', 'GO GROW!'],
   index: 0,
 }
 
-// =====================================================================
+// =============================================================
 // PARAMS (props)
 
 const params = {
@@ -421,7 +421,7 @@ const API_URL_PLANTS = `${env.restURL}plant/?_embed&per_page=100`
 
 const API_URLS = [API_URL_SCENES, API_URL_ALLOTMENTS, API_URL_BEDS, API_URL_PLANTING_PLANS, API_URL_PLANTS]
 
-// ================================================================
+// ========================================================
 // LOGIC BEGINS HERE
 
 // three.js
@@ -515,10 +515,10 @@ const bootManager = () => {
   return <div>BEGIN BOOT PROCESS</div>
 }
 
-// ==================================================================
+// ==========================================================
 // LOADERS
 
-// ==================================================================
+// ==========================================================
 // FUNCTIONS
 
 // render scene + camera

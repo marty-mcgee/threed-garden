@@ -47,7 +47,7 @@ import ccm from '#/lib/utils/console-colors'
 // ==============================================================
 // ** VARIABLES
 
-const debug = false // false | true // ts: boolean
+const debug = true // false | true // ts: boolean
 const DEBUG = true // false | true // ts: boolean
 
 // Model interactive "modes" using TransformControls
@@ -161,21 +161,10 @@ function ThreeDLevaControls() {
 // controls.addEventListener('start', () => console.log("Controls Start Event"))
 // controls.addEventListener('end', () => console.log("Controls End Event"))
 
-// export default function ThreeDCanvas({ sceneState, threeds, nodes }) {
-export default function ThreeDCanvas({ _id, nodes }) {
+export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
-  console.debug('%c props._id, props.nodes', ccm.orange, _id, nodes)
-  // const nodesToModelAndLoad = nodes
-  // console.debug('%c nodesToModelAndLoad', ccm.orange, nodesToModelAndLoad)
-
-  // map threed to THREED, to pass on to Model
-  const group = {
-    group_id: newUUID(),
-    group_position: [0, 0, 0],
-    group_rotation: [-1.570796, 0, 0], // [0, 0, 0], // rotation: 1.570796 radians = 90 degrees
-    group_scale: 0.05, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
-  }
-
+  // if (debug) console.debug('%c props._id, props.threeds', ccm.red, _id, threeds)
+  // **
   return (
     <Canvas
       // id={_id}
@@ -200,8 +189,6 @@ export default function ThreeDCanvas({ _id, nodes }) {
       {/* <Suspense fallback={<Html center><Loader /></Html>}> */}
       {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
 
-        {/* [MM] HEY HEY HEY */}
-
         {/* <Environment
           preset='dawn'
           background={'only'}
@@ -216,7 +203,7 @@ export default function ThreeDCanvas({ _id, nodes }) {
         <OrbitControls
           makeDefault
           minDistance={0.5}
-          maxDistance={1600}
+          maxDistance={1024}
           // minZoom={10}
           // maxZoom={20}
           // minAzimuthAngle={-Math.PI / 4}
@@ -224,7 +211,7 @@ export default function ThreeDCanvas({ _id, nodes }) {
           minPolarAngle={-1.75}
           maxPolarAngle={Math.PI / 1.75}
           enableZoom={true}
-          zoomToCursor={true} // default is false
+          zoomToCursor={false} // default is false
           zoomSpeed={1.0} // default is 1.0
           enableRotate={true}
           autoRotate={true} // default is false
@@ -244,43 +231,14 @@ export default function ThreeDCanvas({ _id, nodes }) {
 
         {/* NEED TO SEND THREEDS OF MODEL[S] TO A CANVAS */}
         {/* <ThreeDPlan state={state} models={models} /> */}
-        {/* <ThreeDModel
-          name='HEY HEY HEY -- LOAD STATES TO CANVAS' // todo: set appropriately
-          modelState={modelState} // funzees in action -- communication points
-          sceneState={sceneState} // funzees in action -- communication points
-          storeState={storeState} // funzees in action -- communication points
-          nodes={nodes} // YES, use this (load these nodes to canvas, as one model/many models)
-          // file={nodes[0].nodes.file.url} // K.I.S.S.
-        /> */}
-        {/* WORKING !!! */}
-        {nodes && (
+        {/* THREED MODELS: WORKING !!! */}
+        {threeds && (
           <ThreeDModels
-            nodes={nodes}
-            group={group}
+            threeds={threeds}
           />
         )}
-        {/* // ** LOOP COMPONENTS = NODES[_n] */}
-        {/* <group position={[0, 0, 0]} ref={ref}> */}
-          {/* {[...Array(nodes)].map((_n, index) => (
-            <ThreeDModels
-              key={index}
-              nodes={_n}
-              group={group}
-            />
-            // <MovingItem
-            //   key={index}
-            //   speed={lampsSpeed}
-            //   position={[-OFFSET_X + (index / lampsNb) * OFFSET_X * 2, 0, -1.5]}
-            // >
-            //   <LampPost scale={[0.5, 0.5, 0.5]} />
-            // </MovingItem>
-          ))} */}
-        {/* </group> */}
 
-        {/* <CoffeeCup /> */}
-        {/* [MM] HEY HEY HEY */}
-
-        {/* */}
+        {/* GIZMO HELPER */}
         <GizmoHelper
           alignment='top-right'
           margin={[64, 64]}
