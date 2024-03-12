@@ -269,14 +269,23 @@ const Model = ({
             //   console.debug(`key: ${key}, value: ${value}`)
             //   gltfAsArray.push([key: value])
             // }
+            let objParent = gltf
             let obj = gltf.nodes // gltf | gltf.nodes
-            let objKeys = Object.keys(obj)
-            let gltfAsArray = objKeys.map((key) => {
-              let kvpair = {}
-              kvpair[key] = obj[key]
-              return kvpair
+            let objKeys = new Array()
+            let gltfAsArray = new Array()
+            let objCount = 22 // maximum to return
+            objKeys = Object.keys(obj) // returns all keys [5446]
+            // console.debug('%c📐 objKeys', ccm.orangeAlert, objKeys)
+            let objectAsArray = objKeys.slice(0,objCount).map((key, index) => {
+              // let kvpair = {}
+              // // kvpair[key] = obj[key]
+              // kvpair[index] = obj[key]
+              // return kvpair
+              return obj[key] // just the value of the object at this key
             })
+            gltfAsArray = objectAsArray
             model.nodes = gltfAsArray
+            console.debug('%c📐 gltfAsArray', ccm.orangeAlert, gltfAsArray)
             // model.nodes = gltf.nodes
             // model.nodes = gltf
             console.debug('%c📐 RETURN ALL GLTF NODES: default', ccm.orangeAlert, model.nodes)
@@ -391,7 +400,7 @@ const Model = ({
     // return GLTF node
     else if (model.is.isGLTF) {
       return (
-        // LOOP OVER NODE ARRAY TO RETURN MULTIPLE MESHES ([4420])
+        // LOOP OVER NODE ARRAY TO RETURN MULTIPLE MESHES ([5446])
         <group
           key={newUUID()}
           ref={model.ref}
@@ -403,30 +412,32 @@ const Model = ({
         >
           {model.nodes.map((_model_node, index) => (
             <group
-              key={index + '-' + _model_node.name}
+              key={index}
             >
-              {/* {console.debug(index, _model_node)} */}
-              <mesh
-                // key={index} // newUUID()
-                name={_model_node.name}
-                // ref={_model_node.ref}
-                // // Click sets the mesh as the new target
-                // onClick={(e) => (e.stopPropagation(), (modelVState.current = _model_node.name))}
-                // // If a click happened but this mesh wasn't hit we null out the target,
-                // // This works because missed pointers fire before the actual hits
-                // onPointerMissed={(e) => e.type === 'click' && (modelVState.current = null)}
-                // // Right click cycles through the transform ThreeD.actionModes
-                // onContextMenu={(e) =>
-                //   snap.current === _model_node.name && (e.stopPropagation(), (modelVState.mode = (snap.mode + 1) % ThreeD.actionModes.length))
-                // }
-                // onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
-                // onPointerOut={(e) => setIsHovered(false)}
-                geometry={_model_node.geometry}
-                material={_model_node.material}
-                material-color={snap.current === _model_node.name ? '#ff7070' : '#ababab'}
-                // {...props}
-                dispose={null}
-              />
+              {console.debug(index, _model_node)}
+              {_model_node && (
+                <mesh
+                  key={newUUID()} // index
+                  // name={_model_node.name}
+                  // ref={_model_node.ref}
+                  // // Click sets the mesh as the new target
+                  // onClick={(e) => (e.stopPropagation(), (modelVState.current = _model_node.name))}
+                  // // If a click happened but this mesh wasn't hit we null out the target,
+                  // // This works because missed pointers fire before the actual hits
+                  // onPointerMissed={(e) => e.type === 'click' && (modelVState.current = null)}
+                  // // Right click cycles through the transform ThreeD.actionModes
+                  // onContextMenu={(e) =>
+                  //   snap.current === _model_node.name && (e.stopPropagation(), (modelVState.mode = (snap.mode + 1) % ThreeD.actionModes.length))
+                  // }
+                  // onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
+                  // onPointerOut={(e) => setIsHovered(false)}
+                  geometry={_model_node.geometry}
+                  material={_model_node.material}
+                  material-color={snap.current === _model_node.name ? '#ff7070' : '#ababab'}
+                  // {...props}
+                  dispose={null}
+                />
+              )}
               {/* // <MovingItem
               //   key={index}
               //   speed={lampsSpeed}
