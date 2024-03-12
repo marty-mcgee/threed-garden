@@ -405,11 +405,14 @@ const Model = ({
           key={newUUID()}
           ref={model.ref}
           // ref={model.ani.ref}
-          position={model.group.group_position}
-          rotation={model.group.group_rotation}
+          // position={model.group.group_position}
+          position={[10, 0, 10]}
+          // rotation={model.group.group_rotation}
+          rotation={[-1.570796, 0 , 0]}
           scale={model.group.group_scale}
           dispose={null}
         >
+          {console.debug(model.nodes)}
           {model.nodes.map((_model_node, index) => (
             <group
               key={index}
