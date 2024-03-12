@@ -263,9 +263,22 @@ const Model = ({
             console.debug(`%c======================================`, ccm.orange)
           }
           else if (gltf.nodes) {
-            let gltfAsArray = new Array()
-            gltfAsArray.push(gltf.nodes)
+            // let gltfAsArray = new Array()
+            // gltfAsArray.push([...Array(gltf.nodes)])
+            // for (const [key, value] of Object.entries(gltf.nodes))  {
+            //   console.debug(`key: ${key}, value: ${value}`)
+            //   gltfAsArray.push([key: value])
+            // }
+            let obj = gltf.nodes // gltf | gltf.nodes
+            let objKeys = Object.keys(obj)
+            let gltfAsArray = objKeys.map((key) => {
+              let kvpair = {}
+              kvpair[key] = obj[key]
+              return kvpair
+            })
             model.nodes = gltfAsArray
+            // model.nodes = gltf.nodes
+            // model.nodes = gltf
             console.debug('%c📐 RETURN ALL GLTF NODES: default', ccm.orangeAlert, model.nodes)
             console.debug(`%c======================================`, ccm.orange)
           }
@@ -280,23 +293,23 @@ const Model = ({
       // finally, decide if ready for _r3f canvas
       if (model.nodes && model.is.isFBX) {
         model.is.isReadyForCanvas = true
-        console.debug('%c✔️ THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model)
+        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model)
         console.debug(`%c===========================================================`, ccm.darkgreen)
       }
       else if (model.nodes.length && model.is.isGLTF) {
         model.is.isReadyForCanvas = true
-        console.debug('%c✔️ THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model)
+        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model)
         console.debug(`%c===========================================================`, ccm.darkgreen)
       }
       else {
         model.is.isReadyForCanvas = false
-        console.debug('%c✖️ THREED MODEL IS NOT READY FOR CANVAS', ccm.redAlert, model)
+        console.debug('%c✖️📐 THREED MODEL IS NOT READY FOR CANVAS', ccm.redAlert, model)
         console.debug(`%c===========================================================`, ccm.red)
       }
     }
     // console.debug(`%c======================================`, ccm.black)
   } else {
-    console.debug('%c✖️ MODEL.is.isSupported: false', ccm.redAlert)
+    console.debug('%c✖️📐 MODEL.is.isSupported: false', ccm.redAlert)
     console.debug(`%c===========================================================`, ccm.red)
   }
   // console.debug('%cmodel', ccm.green, model)
@@ -351,7 +364,7 @@ const Model = ({
 
   if (model.is.isReadyForCanvas) {
     // console.debug(`%c===========================================================`, ccm.blue)
-    console.debug(`%c✔️📐 DRAW MODEL ${model.type}`, ccm.blue, model)
+    console.debug(`%c✔️📐 DRAW MODEL ${model.type}`, ccm.blue) // , model
     console.debug(`%c✔️📐 DRAW MODEL.nodes: ${model.type}`, ccm.blue, model.nodes)
     console.debug(`%c===========================================================`, ccm.blue)
     // return FBX node
@@ -389,34 +402,39 @@ const Model = ({
           dispose={null}
         >
           {model.nodes.map((_model_node, index) => (
-            <mesh
-              key={index} // newUUID()
-              name={_model_node.name}
-              // ref={_model_node.ref}
-              // // Click sets the mesh as the new target
-              // onClick={(e) => (e.stopPropagation(), (modelVState.current = _model_node.name))}
-              // // If a click happened but this mesh wasn't hit we null out the target,
-              // // This works because missed pointers fire before the actual hits
-              // onPointerMissed={(e) => e.type === 'click' && (modelVState.current = null)}
-              // // Right click cycles through the transform ThreeD.actionModes
-              // onContextMenu={(e) =>
-              //   snap.current === _model_node.name && (e.stopPropagation(), (modelVState.mode = (snap.mode + 1) % ThreeD.actionModes.length))
-              // }
-              // onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
-              // onPointerOut={(e) => setIsHovered(false)}
-              geometry={_model_node.geometry}
-              material={_model_node.material}
-              material-color={snap.current === _model_node.name ? '#ff7070' : '#ababab'}
-              // {...props}
-              dispose={null}
-            />
-            // <MovingItem
-            //   key={index}
-            //   speed={lampsSpeed}
-            //   position={[-OFFSET_X + (index / lampsNb) * OFFSET_X * 2, 0, -1.5]}
-            // >
-            //   <LampPost scale={[0.5, 0.5, 0.5]} />
-            // </MovingItem>
+            <group
+              key={index + '-' + _model_node.name}
+            >
+              {/* {console.debug(index, _model_node)} */}
+              <mesh
+                // key={index} // newUUID()
+                name={_model_node.name}
+                // ref={_model_node.ref}
+                // // Click sets the mesh as the new target
+                // onClick={(e) => (e.stopPropagation(), (modelVState.current = _model_node.name))}
+                // // If a click happened but this mesh wasn't hit we null out the target,
+                // // This works because missed pointers fire before the actual hits
+                // onPointerMissed={(e) => e.type === 'click' && (modelVState.current = null)}
+                // // Right click cycles through the transform ThreeD.actionModes
+                // onContextMenu={(e) =>
+                //   snap.current === _model_node.name && (e.stopPropagation(), (modelVState.mode = (snap.mode + 1) % ThreeD.actionModes.length))
+                // }
+                // onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
+                // onPointerOut={(e) => setIsHovered(false)}
+                geometry={_model_node.geometry}
+                material={_model_node.material}
+                material-color={snap.current === _model_node.name ? '#ff7070' : '#ababab'}
+                // {...props}
+                dispose={null}
+              />
+              {/* // <MovingItem
+              //   key={index}
+              //   speed={lampsSpeed}
+              //   position={[-OFFSET_X + (index / lampsNb) * OFFSET_X * 2, 0, -1.5]}
+              // >
+              //   <LampPost scale={[0.5, 0.5, 0.5]} />
+              // </MovingItem> */}
+            </group>
           ))}
         </group>
       )
