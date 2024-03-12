@@ -14,12 +14,17 @@ import * as THREE from 'three'
 // R3F
 import { Canvas, useFrame, useThree, extend } from '@react-three/fiber'
 // R3F HELPERS
-import { OrbitControls, TransformControls, Preload, Environment, Html, useProgress, useGLTF } from '@react-three/drei'
-import { ContactShadows } from '@react-three/drei'
-import { GizmoHelper, GizmoViewcube, GizmoViewport, Center, PivotControls } from '@react-three/drei'
-import { Stage, BakeShadows } from '@react-three/drei'
-import { softShadows } from '@react-three/drei' // softShadows()
-// import { Loader } from '@react-three/drei'
+import {
+  Preload, Environment, Stage,
+  Html, Center,
+  useGLTF,
+  OrbitControls, TransformControls, PivotControls,
+  GizmoHelper, GizmoViewcube, GizmoViewport,
+  ContactShadows,
+  BakeShadows,
+  softShadows, // softShadows()
+  Loader, useProgress,
+} from '@react-three/drei'
 
 // ** ThreeD Imports
 // import Scene from '#/lib/threed/components/nouns/Scene'
@@ -189,17 +194,27 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
       {/* <Suspense fallback={<Html center><Loader /></Html>}> */}
       {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
 
-        {/* <Environment
-          preset='dawn'
-          background={'only'}
-        /> */}
+        {/* THREED STAGE + ENVIRONMENT */}
+        {/* <Stage environment="forest" intensity={0.7}></Stage> */}
         <ThreeDEnvironment />
 
+        {/* THREED SCENE FILES TO CANVAS */}
+        {/* <ThreeDScene /> */}
+
+        {/* THREED MODELS: WORKING !!! */}
+        {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
+        {threeds && (
+          <ThreeDModels
+            threeds={threeds}
+          />
+        )}
+
+        {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
         <ThreeDLevaControls />
+        {/* <ThreeDControls /> */}
 
         {/* makeDefault makes the controls known to r3f,
             now transform-controls can auto-disable them when active */}
-        {/* <ThreeDControls /> */}
         <OrbitControls
           makeDefault
           minDistance={0.5}
@@ -222,21 +237,6 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           enablePan={true}
           screenSpacePanning={true}
         />
-
-        {/* THREED STAGE */}
-        {/* <Stage environment="forest" intensity={0.7}> */}
-
-        {/* NEED TO LOAD THREEDSCENE FILES TO A CANVAS */}
-        {/* <ThreeDScene state={state} files={files} /> */}
-
-        {/* NEED TO SEND THREEDS OF MODEL[S] TO A CANVAS */}
-        {/* <ThreeDPlan state={state} models={models} /> */}
-        {/* THREED MODELS: WORKING !!! */}
-        {threeds && (
-          <ThreeDModels
-            threeds={threeds}
-          />
-        )}
 
         {/* GIZMO HELPER */}
         <GizmoHelper
