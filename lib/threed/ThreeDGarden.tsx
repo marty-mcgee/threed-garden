@@ -3460,9 +3460,9 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
   const word = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
   // console.debug(`%c=======================================================`, ccm.black)
   // console.debug('%c🥕 ThreeDCanvasViewer word', ccm.orange, word)
-  console.debug('%c🥕 ThreeDCanvasViewer {prop.projectName}', ccm.orange, projectName)
-  console.debug('%c🥕 ThreeDCanvasViewer {prop.data}', ccm.orange, data)
-  // console.debug('%c🥕 ThreeDCanvasViewer {prop.data.store}', ccm.orange, data.store)
+  console.debug('%c🥕 ThreeDCanvasViewer {props.projectName}', ccm.orange, projectName)
+  console.debug('%c🥕 ThreeDCanvasViewer {props.data}', ccm.orange, data)
+  // console.debug('%c🥕 ThreeDCanvasViewer {props.data.store}', ccm.orange, data.store)
   // console.debug(`%c=======================================================`, ccm.black)
 
   // ==========================================================
@@ -3470,19 +3470,16 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
 
   // const noun = data.store.store.get('one')
   const noun = data.store.store.useStore('one')
-  if (debug) console.debug('%c🥕 ThreeDCanvasViewer {noun}', ccm.orange, noun)
   let noun_title = noun?.data?.title ? noun.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
+  console.debug('%c🥕 ThreeDCanvasViewer {noun}', ccm.orange, noun, noun_title)
   let nodesToLoad = []
   let threeds = [] // threeds are nodes[] to load to canvas
   if (noun) {
-    // if (nouns.length) {
-      nodesToLoad = noun.data?.plans?.nodes[0]?.threedsActive?.nodes
-      console.debug('%c🥕 ThreeDCanvasViewer {noun}', ccm.orange, noun, noun_title)
-      if (nodesToLoad) {
-        threeds = nodesToLoad
-        if (debug) console.debug('%c🥕 ThreeDCanvasViewer {nodesToLoad}', ccm.orange, threeds)
-      }
-    // }
+    nodesToLoad = noun.data?.plans?.nodes[0]?.threedsActive?.nodes
+    if (nodesToLoad) {
+      threeds = nodesToLoad
+      if (debug) console.debug('%c🥕 ThreeDCanvasViewer [nodesToLoad] as threeds', ccm.orange, threeds)
+    }
   }
 
   // ** LEVA GUI CONTROL PANEL
@@ -3515,7 +3512,6 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
     <Grid
       container
       id='ThreeDCanvasViewer'
-      // spacing={0}
       sx={{ border: '1px solid darkgreen' }}
     >
       <Grid
@@ -3524,32 +3520,28 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
         md={4}
         xs={12}
         sx={{
-          // paddingTop: '0.5rem',
-          // paddingLeft: '0.7rem',
           display: 'flex',
           justifyContent: 'flex-start'
         }}
-        // style={{ display: 'flex', justifyContent: 'flex-start' }}
       >
-        <div
+        <Grid
           style={{
             position: 'absolute',
             backgroundColor: 'darkgray',
             zIndex: 9999
           }}
         >
-        <Leva
-          // theme={myTheme} // you can pass a custom theme (see the styling section)
-          fill={true} // default = false,  true makes the pane fill the parent dom node it's rendered in
-          flat={true} // default = false,  true removes border radius and shadow
-          // oneLineLabels={false} // default = false, alternative layout for labels, with labels and fields on separate rows
-          hideTitleBar={false} // default = false, hides the GUI header
-          collapsed={true} // default = false, when true the GUI is collpased
-          hidden={false} // default = false, when true the GUI is hidden
-          titleBar={showTitleBar && { drag, title, filter }}
-          oneLineLabels={oneLineLabels}
-        />
-        </div>
+          <Leva
+            // theme={myTheme} // you can pass a custom theme (see the styling section)
+            fill={true} // default = false,  true makes the pane fill the parent dom node it's rendered in
+            flat={true} // default = false,  true removes border radius and shadow
+            hideTitleBar={false} // default = false, hides the GUI header
+            collapsed={true} // default = false, when true the GUI is collpased
+            hidden={false} // default = false, when true the GUI is hidden
+            titleBar={showTitleBar && { drag, title, filter }}
+            oneLineLabels={oneLineLabels} // default = false, alternate layout with labels + fields on separate rows
+          />
+        </Grid>
         {/* <Typography> */}
           {/* {noun._type} title:  */}
           {/* {noun_title} */}
@@ -3570,7 +3562,6 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
       <Grid
         container
         id='_r3fCameras'
-        spacing={0}
       >
         <Grid
           item
@@ -3581,12 +3572,15 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
         >
 
           {/* THREED HEY HEY HEY */}
-            {threeds && (
+            {/* {threeds.length ? ( */}
               <ThreeDCanvas
                 _id={'_r3fCanvas'}
                 threeds={threeds}
               />
-            )}
+            {/* ) : (
+              <Spinner />
+            )
+            } */}
           {/* THREED HEY HEY HEY */}
 
         </Grid>
