@@ -203,7 +203,7 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
 
         {/* THREED MODELS: WORKING !!! */}
         {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
-        {threeds && (
+        {threeds.length && (
           <ThreeDModels
             threeds={threeds}
           />

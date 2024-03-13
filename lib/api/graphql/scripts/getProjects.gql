@@ -131,35 +131,46 @@ query GetProjects {
             nodes {
               threedId
               title
-              content
-              uri
-              version
-              modified
-              # template {
-              #   templateName
+              # content
+              # uri
+              # version
+              # modified
+              # # custom fields
+              # positionX
+              # positionY
+              # positionZ
+              # rotationX
+              # rotationY
+              # rotationZ
+              # scaleX
+              # scaleY
+              # scaleZ
+              # # template {
+              # #   templateName
+              # # }
+              # # children
+              # files {
+              #   nodes {
+              #     fileId
+              #     title
+              #     fileType
+              #     isObject3d
+              #     isUrl
+              #     url
+              #     uri
+              #     modified
+              #     file {
+              #       node {
+              #         title
+              #         sourceUrl
+              #         mediaItemId
+              #         mediaItemUrl
+              #         mediaType
+              #         uri
+              #       }
+              #     }
+              #   }
               # }
-              files {
-                nodes {
-                  fileId
-                  title
-                  fileType
-                  isObject3d
-                  isUrl
-                  url
-                  uri
-                  modified
-                  file {
-                    node {
-                      title
-                      sourceUrl
-                      mediaItemId
-                      mediaItemUrl
-                      mediaType
-                      uri
-                    }
-                  }
-                }
-              }
             }
           }
           threedsActive {
@@ -170,9 +181,20 @@ query GetProjects {
               uri
               version
               modified
+              # custom fields
+              positionX
+              positionY
+              positionZ
+              rotationX
+              rotationY
+              rotationZ
+              scaleX
+              scaleY
+              scaleZ
               # template {
               #   templateName
               # }
+              # children
               files {
                 nodes {
                   fileId
@@ -201,35 +223,46 @@ query GetProjects {
             nodes {
               threedId
               title
-              content
-              uri
-              version
-              modified
-              # template {
-              #   templateName
+              # content
+              # uri
+              # version
+              # modified
+              # # custom fields
+              # positionX
+              # positionY
+              # positionZ
+              # rotationX
+              # rotationY
+              # rotationZ
+              # scaleX
+              # scaleY
+              # scaleZ
+              # # template {
+              # #   templateName
+              # # }
+              # # children
+              # files {
+              #   nodes {
+              #     fileId
+              #     title
+              #     fileType
+              #     isObject3d
+              #     isUrl
+              #     url
+              #     uri
+              #     modified
+              #     file {
+              #       node {
+              #         title
+              #         sourceUrl
+              #         mediaItemId
+              #         mediaItemUrl
+              #         mediaType
+              #         uri
+              #       }
+              #     }
+              #   }
               # }
-              files {
-                nodes {
-                  fileId
-                  title
-                  fileType
-                  isObject3d
-                  isUrl
-                  url
-                  uri
-                  modified
-                  file {
-                    node {
-                      title
-                      sourceUrl
-                      mediaItemId
-                      mediaItemUrl
-                      mediaType
-                      uri
-                    }
-                  }
-                }
-              }
             }
           }
         }
