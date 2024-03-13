@@ -3638,7 +3638,7 @@ const MyLevaComponent: FC = ({ projectName, setProjectName }): JSX.Element => {
   //   }
   }, [projectName])
 
-  return <>{Id}: {projectName} </>
+  return <div>{Id}: {projectName}</div>
 }
 
 // const ThreeDGarden = ({ session }: { session: Session | null }): JSX.Element => {
@@ -3807,7 +3807,9 @@ const ThreeDGarden = (): JSX.Element => {
             </MDTabPanel>
             <MDTabPanel value={tabInfoControl} index={9}>
               <Box sx={{ p: 2}}>
-                <>Testing Panel</>
+                <Box>
+                  Testing Panel
+                </Box>
                 <Box sx={{ p: 2}}>
                   <MyLevaComponent projectName={projectName} setProjectName={setProjectName} />
                   <input type="button" onClick={(e) => onClickSetProjectName("TEST")} value="TEST" />
