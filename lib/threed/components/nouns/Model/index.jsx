@@ -423,53 +423,37 @@ const Model = ({
       return (
         // LOOP OVER NODE ARRAY TO RETURN MULTIPLE MESHES ([5446])
         <group
-          key={newUUID()}
+          key={model.group.group_id} // newUUID()
           ref={model.ref}
           // ref={model.ani.ref}
-          // position={model.group.group_position}
-          position={[10, 0, 10]}
-          // rotation={model.group.group_rotation}
-          rotation={[-1.570796, 0 , 0]}
+          position={model.group.group_position}
+          rotation={model.group.group_rotation}
           scale={model.group.group_scale}
           dispose={null}
         >
           {console.debug(model.nodes)}
           {model.nodes.map((_model_node, index) => (
-            <group
-              key={index}
-            >
-              {/* {console.debug(index, _model_node)} */}
-              {_model_node && (
-                <mesh
-                  key={newUUID()} // index
-                  // name={_model_node.name}
-                  // ref={_model_node.ref}
-                  // // Click sets the mesh as the new target
-                  // onClick={(e) => (e.stopPropagation(), (modelVState.current = _model_node.name))}
-                  // // If a click happened but this mesh wasn't hit we null out the target,
-                  // // This works because missed pointers fire before the actual hits
-                  // onPointerMissed={(e) => e.type === 'click' && (modelVState.current = null)}
-                  // // Right click cycles through the transform ThreeD.actionModes
-                  // onContextMenu={(e) =>
-                  //   snap.current === _model_node.name && (e.stopPropagation(), (modelVState.mode = (snap.mode + 1) % ThreeD.actionModes.length))
-                  // }
-                  // onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
-                  // onPointerOut={(e) => setIsHovered(false)}
-                  geometry={_model_node.geometry}
-                  material={_model_node.material}
-                  // material-color={snap.current === _model_node.name ? '#ff7070' : '#ababab'}
-                  // {...props}
-                  dispose={null}
-                />
-              )}
-              {/* // <MovingItem
-              //   key={index}
-              //   speed={lampsSpeed}
-              //   position={[-OFFSET_X + (index / lampsNb) * OFFSET_X * 2, 0, -1.5]}
-              // >
-              //   <LampPost scale={[0.5, 0.5, 0.5]} />
-              // </MovingItem> */}
-            </group>
+            <mesh
+              key={model.group.group_id + '-' + index} // newUUID() | index
+              // name={_model_node.name}
+              // ref={_model_node.ref}
+              // // Click sets the mesh as the new target
+              // onClick={(e) => (e.stopPropagation(), (modelVState.current = _model_node.name))}
+              // // If a click happened but this mesh wasn't hit we null out the target,
+              // // This works because missed pointers fire before the actual hits
+              // onPointerMissed={(e) => e.type === 'click' && (modelVState.current = null)}
+              // // Right click cycles through the transform ThreeD.actionModes
+              // onContextMenu={(e) =>
+              //   snap.current === _model_node.name && (e.stopPropagation(), (modelVState.mode = (snap.mode + 1) % ThreeD.actionModes.length))
+              // }
+              // onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
+              // onPointerOut={(e) => setIsHovered(false)}
+              geometry={_model_node.geometry}
+              material={_model_node.material}
+              // material-color={snap.current === _model_node.name ? '#ff7070' : '#ababab'}
+              // {...props}
+              dispose={null}
+            />
           ))}
         </group>
       )
@@ -546,7 +530,7 @@ function ThreeDControls() {
   const snap = useSnapshot(modelVState)
 
   return (
-    <>
+    <group>
       {/* As of drei@7.13 transform-controls can refer to the target by children, or the object prop */}
       {snap.current && (
         <TransformControls
@@ -554,7 +538,7 @@ function ThreeDControls() {
           mode={ThreeD.actionModes[snap.mode]}
         />
       )}
-    </>
+    </group>
   )
 }
 
@@ -587,12 +571,12 @@ export default function ThreeDModels({ threeds }) {
 
   // return <CoffeeCup />
   return (
-    <>
+    <group>
       {/* <CoffeeCup /> */}
       {/* <ThreeDControls /> */}
       {/* THREED: LOOP OVER NODES FOR EACH FILE = MODEL */}
       {threeds.map((_threed, index) => {
-        console.debug('_threed', index + ': ', _threed)
+        // console.debug('_threed', index + ': ', _threed)
         // console.debug(`%c======================================`, ccm.red)
         const threed = new ThreeD()
         threed.name = _threed.title
@@ -632,6 +616,6 @@ export default function ThreeDModels({ threeds }) {
           </group>
         )
       })}
-    </>
+    </group>
   )
 }
