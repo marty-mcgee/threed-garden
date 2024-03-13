@@ -47,6 +47,7 @@ const DEBUG = true // false | true // ts: boolean
 // ** ThreeD == Group of > Files of > Nodes of > 3DObjects
 let Interface_ThreeD = {
   name: 'THREED DEFAULT: FILE (GROUP OF) NODES TO RENDER',
+  data: {}, // original data records from db/api
   group: {
     group_id: newUUID(),
     // NOTE: 1.570796 radians = 90 degrees
@@ -81,6 +82,7 @@ let Interface_ThreeD = {
 function ThreeD(_type = 'ThreeD') {
   // object params
   this.name = 'ThreeD: Default FILE (GROUP OF) NODES TO RENDER'
+  this.data = {} // original data records from db/api
   this.group = {
     group_id: newUUID(),
     // NOTE: 1.570796 radians = 90 degrees
@@ -124,10 +126,10 @@ const Model = ({
 
   // get Reactive state on each model (using valtio)
   // const modelVState = proxy({ current: null, mode: 0 })
-  const modelVState = proxy({ current: null, mode: 0 })
+  // const modelVState = proxy({ current: null, mode: 0 })
 
   // Ties this component to the model state
-  const snap = useSnapshot(modelVState)
+  // const snap = useSnapshot(modelVState)
 
   // **
   console.debug(`%c====================================`, ccm.black)
@@ -156,11 +158,29 @@ const Model = ({
 
   // this model = threed_model -||-
   const model = {
-    ref:    useRef(null),
-    name:   threed.name,
-    file:   fileUrl, // threed.file,
-    group:  threed.group,
-    nodes:  threed.nodes,
+    ref:        useRef(null),
+    name:       threed.name,
+    file:       fileUrl,                // threed.file.url,
+    group:      threed.group,
+    nodes:      threed.nodes,
+    //** custom fields
+    __typename: threed.data.__typename, // 'Threed'
+    content:    threed.data.content,
+    files:      threed.data.files,
+    threedId:   threed.data.threedId,
+    title:      threed.data.title,      // 'ThreeD Demo: McGee Ranch (FBX)',
+    uri:        threed.data.uri,        // '/threed-threed/threed-demo-mcgee-ranch-fbx/',
+    version:    threed.data.version,    // '0.0.2',
+    modified:   threed.data.positionX,  // '2024-03-13T04:18:47',
+    positionX:  threed.data.positionX,
+    positionY:  threed.data.positionY,
+    positionZ:  threed.data.positionZ,
+    rotationX:  threed.data.rotationX,
+    rotationY:  threed.data.rotationY,
+    rotationZ:  threed.data.rotationZ,
+    scaleX:     threed.data.scaleX,
+    scaleY:     threed.data.scaleY,
+    scaleZ:     threed.data.scaleZ,
 
     // state:  modelVState, // for funzees ??
     // sceneState: sceneState, // for funzees ??
@@ -273,7 +293,7 @@ const Model = ({
             let obj = gltf.nodes // gltf | gltf.nodes
             let objKeys = new Array()
             let gltfAsArray = new Array()
-            let objCount = 22 // maximum to return
+            let objCount = 48 // maximum to return
             objKeys = Object.keys(obj) // returns all keys [5446]
             // console.debug('%c📐 objKeys', ccm.orangeAlert, objKeys)
             let objectAsArray = objKeys.slice(0,objCount).map((key, index) => {
@@ -386,6 +406,7 @@ const Model = ({
           position={model.group.group_position}
           rotation={model.group.group_rotation}
           scale={model.group.group_scale}
+          // rotationX
           dispose={null}
         >
           <primitive
@@ -417,7 +438,7 @@ const Model = ({
             <group
               key={index}
             >
-              {console.debug(index, _model_node)}
+              {/* {console.debug(index, _model_node)} */}
               {_model_node && (
                 <mesh
                   key={newUUID()} // index
@@ -436,7 +457,7 @@ const Model = ({
                   // onPointerOut={(e) => setIsHovered(false)}
                   geometry={_model_node.geometry}
                   material={_model_node.material}
-                  material-color={snap.current === _model_node.name ? '#ff7070' : '#ababab'}
+                  // material-color={snap.current === _model_node.name ? '#ff7070' : '#ababab'}
                   // {...props}
                   dispose={null}
                 />
@@ -471,31 +492,31 @@ const Model = ({
         key={newUUID()}
         name={model.name}
         ref={model.ref}
-        // Click sets the mesh as the new target
-        onClick={(e) => (
-          e.stopPropagation(),
-          (modelVState.current = model.name),
-          console.debug('modelVState.current', model.name),
-          console.debug('snap.current', snap.current)
-        )}
-        // If a click happened but this mesh wasn't hit we null out the target,
-        // This works because missed pointers fire before the actual hits
-        onPointerMissed={(e) => (
-          e.type === 'click',
-          (modelVState.current = null),
-          console.debug('modelVState.current', null),
-          console.debug('snap.current', snap.current)
-        )}
-        // Right click cycles through the transform ThreeD.actionModes
-        onContextMenu={(e) =>
-          snap.current === model.name &&
-          (e.stopPropagation(),
-          (modelVState.mode = (snap.mode + 1) % ThreeD.actionModes.length),
-          console.debug('modelVState.mode', modelVState.mode),
-          console.debug('snap.current', snap.current))
-        }
-        onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
-        onPointerOut={(e) => setIsHovered(false)}
+        // // Click sets the mesh as the new target
+        // onClick={(e) => (
+        //   e.stopPropagation(),
+        //   (modelVState.current = model.name),
+        //   console.debug('modelVState.current', model.name),
+        //   console.debug('snap.current', snap.current)
+        // )}
+        // // If a click happened but this mesh wasn't hit we null out the target,
+        // // This works because missed pointers fire before the actual hits
+        // onPointerMissed={(e) => (
+        //   e.type === 'click',
+        //   (modelVState.current = null),
+        //   console.debug('modelVState.current', null),
+        //   console.debug('snap.current', snap.current)
+        // )}
+        // // Right click cycles through the transform ThreeD.actionModes
+        // onContextMenu={(e) =>
+        //   snap.current === model.name &&
+        //   (e.stopPropagation(),
+        //   (modelVState.mode = (snap.mode + 1) % ThreeD.actionModes.length),
+        //   console.debug('modelVState.mode', modelVState.mode),
+        //   console.debug('snap.current', snap.current))
+        // }
+        // onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
+        // onPointerOut={(e) => setIsHovered(false)}
         dispose={null}>
         <sphereGeometry args={[4, 96]} />
         <meshPhysicalMaterial
@@ -571,8 +592,15 @@ export default function ThreeDModels({ threeds }) {
       {/* <ThreeDControls /> */}
       {/* THREED: LOOP OVER NODES FOR EACH FILE = MODEL */}
       {threeds.map((_threed, index) => {
-        // console.debug('_threed', index + ': ', _threed)
+        console.debug('_threed', index + ': ', _threed)
         // console.debug(`%c======================================`, ccm.red)
+        const threed = new ThreeD()
+        threed.name = _threed.title
+        threed.data = _threed
+        // threed.group = threed.group
+        threed.group.group_position = [_threed.positionX, _threed.positionY, _threed.positionZ]
+        threed.group.group_rotation = [_threed.rotationX, _threed.rotationY, _threed.rotationZ]
+        threed.group.group_scale = [_threed.scaleX, _threed.scaleY, _threed.scaleZ]
         return (
           <group
             // key={ThreeD.group.group_id} // no, duplicates
@@ -587,10 +615,10 @@ export default function ThreeDModels({ threeds }) {
             // console.debug('_file', index + ': ', _file)
             // console.debug(`%c======================================`, ccm.red)
 
-            const threed = new ThreeD()
-            threed.name = _file.title
+            // const threed = new ThreeD()
+            // threed.name = _file.title
             threed.file = _file
-            threed.group = threed.group
+            // threed.group = threed.group
 
             return (
               <Model
