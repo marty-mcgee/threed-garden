@@ -354,7 +354,7 @@ function nounStore(this: INounStore, _type = 'noun') {
     loadFromDB: async (client: any) => {
       try {
         // const _this = this
-        if (debug) console.clear()
+        // if (debug) console.clear()
         if (debug) console.debug(`%c=======================================================`, ccm.black)
         if (debug) console.debug(`%c🌩️ loadFromDB this`, ccm.blue, this)
         if (debug) console.debug(`%c=======================================================`, ccm.black)

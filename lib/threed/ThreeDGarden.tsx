@@ -135,7 +135,7 @@ const appVersion = 'v0.15.0-b'
 // const appVersion: string = require('package.json').version
 // const appVersion: string = require('../../package.json').version
 
-const doLoadFromDataSourceOnStart: boolean = false // true | false (default)
+const doLoadFromDataSourceOnStart: boolean = true // true | false (default)
 
 if (debug) {
   console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm.green)
