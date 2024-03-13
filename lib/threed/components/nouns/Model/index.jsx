@@ -420,6 +420,7 @@ const Model = ({
     }
     // return GLTF node
     else if (model.is.isGLTF) {
+      console.debug(model.nodes)
       return (
         // LOOP OVER NODE ARRAY TO RETURN MULTIPLE MESHES ([5446])
         <group
@@ -431,7 +432,6 @@ const Model = ({
           scale={model.group.group_scale}
           dispose={null}
         >
-          {console.debug(model.nodes)}
           {model.nodes.map((_model_node, index) => (
             <mesh
               key={model.group.group_id + '-' + index} // newUUID() | index
@@ -501,7 +501,8 @@ const Model = ({
         // }
         // onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
         // onPointerOut={(e) => setIsHovered(false)}
-        dispose={null}>
+        dispose={null}
+      >
         <sphereGeometry args={[4, 96]} />
         <meshPhysicalMaterial
           color={model.is.isGLTF ? 'darkRed' : model.is.isOBJ ? 'darkOrange' : model.is.isFBX ? 'darkGreen' : 'darkPink'}
