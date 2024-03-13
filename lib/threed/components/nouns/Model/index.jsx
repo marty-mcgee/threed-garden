@@ -420,7 +420,7 @@ const Model = ({
     }
     // return GLTF node
     else if (model.is.isGLTF) {
-      console.debug(model.nodes)
+      console.debug('model.nodes', model.nodes)
       return (
         // LOOP OVER NODE ARRAY TO RETURN MULTIPLE MESHES ([5446])
         <group
