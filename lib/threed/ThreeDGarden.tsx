@@ -3728,14 +3728,15 @@ const ThreeDGarden = (): JSX.Element => {
       style={{width: '100%'}}
     >
       <Suspense fallback={
-        <Loader
-          // containerStyles={...container} // Flex layout styles
-          // innerStyles={...inner} // Inner container styles
-          // barStyles={...bar} // Loading-bar styles
-          // dataStyles={...data} // Text styles
-          dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
-          initialState={(active = true) => active} // Initial black out state
-        />
+        // <Loader
+        //   // containerStyles={...container} // Flex layout styles
+        //   // innerStyles={...inner} // Inner container styles
+        //   // barStyles={...bar} // Loading-bar styles
+        //   // dataStyles={...data} // Text styles
+        //   dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
+        //   initialState={(active = true) => active} // Initial black out state
+        // />
+        <Spinner />
       }>
         {/* SUSPENSEFUL... */}
 

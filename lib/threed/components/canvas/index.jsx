@@ -179,24 +179,29 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
       style={{
         height: '480px',
         width: '100%',
-      }}
-      // scene={sceneState.stuff}
-      scene={{
-        // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
         background: new THREE.Color(0x131313),
       }}
+      // scene={sceneState.stuff}
+      // scene={{
+      //   // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
+      //   background: new THREE.Color(0x131313),
+      // }}
     >
-      {/* <Preload all /> */}
 
       {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
       {/* <Suspense fallback={null}> */}
       {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
-      {/* <Suspense fallback={<Html center><Loader /></Html>}> */}
+      <Suspense fallback={<Html center><Loader /></Html>}>
       {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
+
+        {/* <Preload all /> */}
 
         {/* THREED STAGE + ENVIRONMENT */}
         {/* <Stage environment="forest" intensity={0.7}></Stage> */}
         <ThreeDEnvironment />
+
+        <axesHelper args={[1024]} />
+        <gridHelper args={[1024, 16]} />
 
         {/* THREED SCENE FILES TO CANVAS */}
         {/* <ThreeDScene /> */}
@@ -290,6 +295,7 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           intensity={0.85}
         />
 
+        {/* EFFECTS */}
         <ContactShadows
           position={[0, -1.4, 0]}
           opacity={0.75}
@@ -297,11 +303,6 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           blur={2.5}
           far={4}
         />
-
-        <axesHelper args={[100]} />
-        <gridHelper args={[100, 10]} />
-
-        {/* EFFECTS */}
         <BakeShadows />
 
         {/* Camera Action Rig */}
@@ -328,7 +329,7 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
         </Stage> */}
 
         {/* {children} */}
-      {/* </Suspense> */}
+      </Suspense>
     </Canvas>
   )
 }
