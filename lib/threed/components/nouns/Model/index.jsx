@@ -414,6 +414,7 @@ const Model = ({
             // ref={model.ref}
             // ref={model.ani.ref}
             object={model.nodes}
+            dispose={null}
           />
         </group>
       )
@@ -464,6 +465,7 @@ const Model = ({
         <mesh
           key={newUUID()}
           ref={model.ref}
+          dispose={null}
         />
       )
     }
@@ -543,25 +545,26 @@ function ThreeDControls() {
   )
 }
 
-// ==============================================================
+// ===============================================================
 // EXAMPLE -- LOOP OVER ARRAY OF NODES TO CREATE INDIVIDUAL MODELS
 // **
-// interface personType {
+// interface IThreeD {
 //   name: string
+//   threedId: number
 // }
-// export const Elements = (props: { persons: Array<personType> }) => {
+// export const Elements = (props: { threeds: Array<IThreeD> }) => {
 //   return (
 //     <>
-//       {props.persons.map((person: personType) => <h1>{person.name}</h1>)}
+//       {props.threeds.map((_threed: IThreeD) => <h1>{_threed.name} | {_threed.threedId}</h1>)}
 //     </>
 //   )
 // }
-// export default const Test = () => {
-//   var personsArray: personType[] = []
-//   return (<Elements persons={personsArray} />)
+// export default const ElementCaller = () => {
+//   var threedsArray: IThreeD[] = []
+//   return (<Elements threeds={threedsArray} />)
 // }
 
-// ==============================================================
+// ===============================================================
 // **
 export default function ThreeDModels({ threeds }) {
   // **
@@ -588,13 +591,13 @@ export default function ThreeDModels({ threeds }) {
         threed.group.group_scale = [_threed.scaleX, _threed.scaleY, _threed.scaleZ]
         return (
           <group
-            // key={ThreeD.group.group_id} // no, duplicates
             // key={newUUID()}
-            key={index}
+            // key={index}
+            key={threed.group.group_id} // no duplicates
             // ref={ref}
-            // position={ThreeD.group.group_position}
-            // rotation={ThreeD.group.group_rotation}
-            // scale={ThreeD.group.group_scale}
+            // position={threed.group.group_position}
+            // rotation={threed.group.group_rotation}
+            // scale={threed.group.group_scale}
           >
           {_threed.files.nodes.map((_file, index) => {
             // console.debug('_file', index + ': ', _file)
