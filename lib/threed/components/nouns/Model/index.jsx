@@ -295,24 +295,24 @@ const Model = ({
             let objParent = gltf
             let obj = gltf // gltf | gltf.nodes
             model.nodes = obj
-            let objNodes = gltf.nodes // gltf | gltf.nodes
-            let objKeys = new Array()
-            let gltfAsArray = new Array()
-            let objCount = 48 // maximum to return
-            objKeys = Object.keys(obj) // returns all keys [5446]
-            // console.debug('%c📐 objKeys', ccm.orangeAlert, objKeys)
-            let objectAsArray = objKeys.slice(0, objCount).map((key, index) => {
-              // let kvpair = {}
-              // // kvpair[key] = obj[key]
-              // kvpair[index] = obj[key]
-              // return kvpair
-              return obj[key] // just the value of the object at this key
-            })
-            gltfAsArray = objectAsArray
-            // model.nodes = gltfAsArray
-            // console.debug('%c📐 gltfAsArray', ccm.orangeAlert, gltfAsArray)
-            // model.nodes = gltf.nodes
-            // model.nodes = gltf
+            // let objNodes = gltf.nodes // gltf | gltf.nodes
+            // let objKeys = new Array()
+            // let gltfAsArray = new Array()
+            // let objCount = 48 // maximum to return
+            // objKeys = Object.keys(obj) // returns all keys [5446]
+            // // console.debug('%c📐 objKeys', ccm.orangeAlert, objKeys)
+            // let objectAsArray = objKeys.slice(0, objCount).map((key, index) => {
+            //   // let kvpair = {}
+            //   // // kvpair[key] = obj[key]
+            //   // kvpair[index] = obj[key]
+            //   // return kvpair
+            //   return obj[key] // just the value of the object at this key
+            // })
+            // gltfAsArray = objectAsArray
+            // // model.nodes = gltfAsArray
+            // // console.debug('%c📐 gltfAsArray', ccm.orangeAlert, gltfAsArray)
+            // // model.nodes = gltf.nodes
+            // // model.nodes = gltf
             console.debug('%c📐 RETURN ALL GLTF NODES: default', ccm.orangeAlert, model.nodes)
             console.debug(`%c======================================`, ccm.orange)
           }
@@ -516,9 +516,10 @@ const Model = ({
         // }
         // onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
         // onPointerOut={(e) => setIsHovered(false)}
+        position={[-4, 0, 4]} // put in front of center:center, for easier viewing
         dispose={null}
       >
-        <sphereGeometry args={[4, 96]} />
+        <sphereGeometry args={[3, 96]} />
         <meshPhysicalMaterial
           color={model.is.isGLTF ? 'darkRed' : model.is.isOBJ ? 'darkOrange' : model.is.isFBX ? 'darkGreen' : 'darkPink'}
         />
