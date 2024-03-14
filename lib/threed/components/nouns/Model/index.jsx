@@ -429,7 +429,7 @@ const Model = ({
       console.debug('GLTF: model.nodes', model.name, model.nodes)
       console.debug('GLTF: model.nodes.scene', model.name, model.nodes.scene)
       return (
-        // LOOP OVER NODE ARRAY TO RETURN MULTIPLE MESHES ([5446])
+        // LOOP OVER NODE ARRAY TO RETURN MULTIPLE MESHES ([5000])
         <group
           key={model.group.group_id} // newUUID()
           ref={model.ref}
