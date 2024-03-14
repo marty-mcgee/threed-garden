@@ -179,7 +179,6 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
       style={{
         height: '480px',
         width: '100%',
-        background: new THREE.Color(0x131313),
       }}
       // scene={sceneState.stuff}
       // scene={{
