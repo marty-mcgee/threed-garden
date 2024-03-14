@@ -53,7 +53,7 @@ let Interface_ThreeD = {
     // NOTE: 1.570796 radians = 90 degrees
     group_position: [0, 0, 0],
     group_rotation: [0, 0, 0], // [-1.570796, 0, 0],
-    group_scale: 0.05, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
+    group_scale: 1.0, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
   },
   file: {
     __typename: 'File',
@@ -88,7 +88,7 @@ function ThreeD(_type = 'ThreeD') {
     // NOTE: 1.570796 radians = 90 degrees
     group_position: [0, 0, 0],
     group_rotation: [0, 0, 0], // [-1.570796, 0, 0],
-    group_scale: 0.05, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
+    group_scale: 1.0, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
   }
   this.file = {
     __typename: 'File',
@@ -133,7 +133,7 @@ const Model = ({
 
   // **
   console.debug(`%c====================================`, ccm.black)
-  console.debug('%c🖊️ Model props.threed', ccm.red, threed)
+  console.debug('%c🖊️ Model props.threed', ccm.red, threed.name, threed)
   // console.debug('%c🖊️ Model props.threed.name', ccm.red, threed.name)
   // console.debug('%c🖊️ Model props.threed.group', ccm.red, threed.group)
   // console.debug('%c🖊️ Model props.threed.file', ccm.red, threed.file)
@@ -223,7 +223,7 @@ const Model = ({
 
   // fetch the file (GLTF, FBX, OBJ, etc)
   if (model.is.isSupported) {
-    console.debug('%cmodel.is.isSupported: true', ccm.green, model)
+    console.debug('%cmodel.is.isSupported: true', ccm.green, model.name, model)
     console.debug(`%c======================================`, ccm.darkgreen)
     if (model.is.isObject3D) {
       // FBX
@@ -234,7 +234,7 @@ const Model = ({
         const fbx = useLoader(FBXLoader, model.file, loader => {
           loader.manager.addHandler(/\.tga$/i, new TGALoader())
         })
-        console.debug('%c🌱 FBX NODES: fbx', ccm.darkgreen, fbx)
+        console.debug('%c🌱 FBX NODES: fbx', ccm.darkgreen, model.name, fbx)
         console.debug(`%c======================================`, ccm.darkgreen)
         if (fbx) {
           // model.node = fbx
@@ -272,17 +272,17 @@ const Model = ({
         const gltf = useLoader(GLTFLoader, model.file) // , loader => {
           // loader.manager.addHandler(/\.tga$/i, new TGALoader())
         // })
-        console.debug('%c🌱 GLB NODES: gltf', ccm.greenAlert, gltf)
+        console.debug('%c🌱 GLB NODES: gltf', ccm.greenAlert, model.name, gltf)
         console.debug(`%c======================================`, ccm.darkgreen)
         if (gltf) {
           if (gltf.RootNode) {
             model.nodes = gltf.RootNode.children
-            console.debug('%c📐 RETURN RootNode CHILDREN NODES: true', ccm.orangeAlert, model.nodes)
+            console.debug('%c📐 RETURN RootNode CHILDREN NODES: true', ccm.orangeAlert, model.name, model.nodes)
             console.debug(`%c======================================`, ccm.orange)
           }
           else if (model.nodes[model.name]) {
             model.nodes[model.name] = gltf[model.name]
-            console.debug('%c📐 RETURN ONE NODE: true', ccm.orangeAlert, model.nodes[model.name])
+            console.debug('%c📐 RETURN ONE NODE: true', ccm.orangeAlert, model.name, model.nodes[model.name])
             console.debug(`%c======================================`, ccm.orange)
           }
           else if (gltf.nodes) {
@@ -313,12 +313,12 @@ const Model = ({
             // // console.debug('%c📐 gltfAsArray', ccm.orangeAlert, gltfAsArray)
             // // model.nodes = gltf.nodes
             // // model.nodes = gltf
-            console.debug('%c📐 RETURN ALL GLTF NODES: default', ccm.orangeAlert, model.nodes)
+            console.debug('%c📐 RETURN ALL GLTF NODES: default', ccm.orangeAlert, model.name, model.nodes)
             console.debug(`%c======================================`, ccm.orange)
           }
           else {
             model.nodes = gltf.nodes // []
-            console.debug('%c📐 RETURN ALL/BLANK NODES: default', ccm.redAlert, model.nodes)
+            console.debug('%c📐 RETURN ALL/BLANK NODES: default', ccm.redAlert, model.name, model.nodes)
             console.debug(`%c======================================`, ccm.red)
           }
         }
@@ -327,23 +327,23 @@ const Model = ({
       // finally, decide if ready for _r3f canvas
       if (model.nodes && model.is.isFBX) {
         model.is.isReadyForCanvas = true
-        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model)
+        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model.name, model)
         console.debug(`%c===========================================================`, ccm.darkgreen)
       }
-      else if (model.nodes.length && model.is.isGLTF) {
+      else if (model.nodes && model.is.isGLTF) {
         model.is.isReadyForCanvas = true
-        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model)
+        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model.name, model)
         console.debug(`%c===========================================================`, ccm.darkgreen)
       }
       else {
         model.is.isReadyForCanvas = false
-        console.debug('%c✖️📐 THREED MODEL IS NOT READY FOR CANVAS', ccm.redAlert, model)
+        console.debug('%c✖️📐 THREED MODEL IS NOT READY FOR CANVAS', ccm.redAlert, model.name, model)
         console.debug(`%c===========================================================`, ccm.red)
       }
     }
     // console.debug(`%c======================================`, ccm.black)
   } else {
-    console.debug('%c✖️📐 MODEL.is.isSupported: false', ccm.redAlert)
+    console.debug('%c✖️📐 MODEL.is.isSupported: false', ccm.redAlert, model.name)
     console.debug(`%c===========================================================`, ccm.red)
   }
   // console.debug('%cmodel', ccm.green, model)
@@ -398,8 +398,8 @@ const Model = ({
 
   if (model.is.isReadyForCanvas) {
     // console.debug(`%c===========================================================`, ccm.blue)
-    console.debug(`%c✔️📐 DRAW MODEL ${model.type}`, ccm.blue) // , model
-    console.debug(`%c✔️📐 DRAW MODEL.nodes: ${model.type}`, ccm.blue, model.nodes)
+    console.debug(`%c✔️📐 DRAW MODEL ${model.type}`, ccm.blue, model.name) // , model
+    console.debug(`%c✔️📐 DRAW MODEL.nodes: ${model.type}`, ccm.blue, model.name, model.nodes)
     console.debug(`%c===========================================================`, ccm.blue)
     // return FBX node
     if (model.is.isFBX) {
@@ -426,7 +426,8 @@ const Model = ({
     }
     // return GLTF node
     else if (model.is.isGLTF) {
-      console.debug('model.nodes', model.nodes)
+      console.debug('GLTF: model.nodes', model.name, model.nodes)
+      console.debug('GLTF: model.nodes.scene', model.name, model.nodes.scene)
       return (
         // LOOP OVER NODE ARRAY TO RETURN MULTIPLE MESHES ([5446])
         <group
@@ -443,8 +444,12 @@ const Model = ({
             return <primitive object={gltf.scene} scale={0.4} />;
           }; */}
           <primitive
-            object={model.nodes} // gltf.scene
-            scale={1.0}
+            name={model.name ? model.name : 'no name'}
+            // ref={model.ref}
+            // ref={model.ani.ref}
+            object={model.nodes.scene} // gltf.scene
+            dispose={null}
+            // scale={1.0}
           />
           {/* {model.nodes.map((_model_node, index) => (
             <mesh
