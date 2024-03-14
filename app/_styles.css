@@ -1,0 +1,17 @@
+#ThreeDAppProvider {
+  font-family: sans-serif;
+  /* text-align: center; */
+  height: 100vh;
+  width: 100vw;
+}
+
+body {
+  padding: 4px 0;
+  margin: 0;
+}
+
+/* OVERRIDES !important */
+
+.MuiCardHeader-title {
+  line-height: 0.7 !important;
+}
