@@ -268,7 +268,10 @@ const Model = ({
         model.type = 'gltf'
         // nodes[] is an array of all the meshes
         // file is cached/memoized; it only gets loaded and parsed once
-        const gltf = useGLTF(model.file)
+        // const gltf = useGLTF(model.file)
+        const gltf = useLoader(GLTFLoader, model.file) // , loader => {
+          // loader.manager.addHandler(/\.tga$/i, new TGALoader())
+        // })
         console.debug('%c🌱 GLB NODES: gltf', ccm.greenAlert, gltf)
         console.debug(`%c======================================`, ccm.darkgreen)
         if (gltf) {
@@ -290,13 +293,15 @@ const Model = ({
             //   gltfAsArray.push([key: value])
             // }
             let objParent = gltf
-            let obj = gltf.nodes // gltf | gltf.nodes
+            let obj = gltf // gltf | gltf.nodes
+            model.nodes = obj
+            let objNodes = gltf.nodes // gltf | gltf.nodes
             let objKeys = new Array()
             let gltfAsArray = new Array()
             let objCount = 48 // maximum to return
             objKeys = Object.keys(obj) // returns all keys [5446]
             // console.debug('%c📐 objKeys', ccm.orangeAlert, objKeys)
-            let objectAsArray = objKeys.slice(0,objCount).map((key, index) => {
+            let objectAsArray = objKeys.slice(0, objCount).map((key, index) => {
               // let kvpair = {}
               // // kvpair[key] = obj[key]
               // kvpair[index] = obj[key]
@@ -304,8 +309,8 @@ const Model = ({
               return obj[key] // just the value of the object at this key
             })
             gltfAsArray = objectAsArray
-            model.nodes = gltfAsArray
-            console.debug('%c📐 gltfAsArray', ccm.orangeAlert, gltfAsArray)
+            // model.nodes = gltfAsArray
+            // console.debug('%c📐 gltfAsArray', ccm.orangeAlert, gltfAsArray)
             // model.nodes = gltf.nodes
             // model.nodes = gltf
             console.debug('%c📐 RETURN ALL GLTF NODES: default', ccm.orangeAlert, model.nodes)
@@ -433,7 +438,15 @@ const Model = ({
           scale={model.group.group_scale}
           dispose={null}
         >
-          {model.nodes.map((_model_node, index) => (
+          {/* const Model = () => {
+            const gltf = useLoader(GLTFLoader, "./bomb.gltf");
+            return <primitive object={gltf.scene} scale={0.4} />;
+          }; */}
+          <primitive
+            object={model.nodes} // gltf.scene
+            scale={1.0}
+          />
+          {/* {model.nodes.map((_model_node, index) => (
             <mesh
               key={model.group.group_id + '-' + index} // newUUID() | index
               // name={_model_node.name}
@@ -455,7 +468,7 @@ const Model = ({
               // {...props}
               dispose={null}
             />
-          ))}
+          ))} */}
         </group>
       )
     }
