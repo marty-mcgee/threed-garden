@@ -60,7 +60,7 @@ const actionModes = ['translate', 'rotate', 'scale']
 
 // example working simple <Loader />
 function ThreeDLoaderSimple() {
-  const { progress } = useProgress()
+  const { active, progress, errors, item, loaded, total } = useProgress()
   return <Html center>THREED GUI LOADING... {Math.round(progress)} %</Html>
 }
 
