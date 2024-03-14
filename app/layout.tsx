@@ -60,6 +60,8 @@ import ThemeRegistry from '#/ui/theme/ThemeRegistry'
 
 // ** Helper Components
 import Spinner from '#/ui/components/spinner'
+// ** Colorful Console Messages: Utility
+import ccm from '#/lib/utils/console-colors'
 
 // ** CSS Styles
 // import '#/ui/styles/globals.css'
@@ -67,16 +69,14 @@ import Spinner from '#/ui/components/spinner'
 // import stylesDemo from '#/ui/styles/demo/demo.module.css'
 // import '#/lib/threed/styles/index.css'
 // import '#/lib/threed/styles/garden.module.css'
-
-// ** Colorful Console Messages: Utility
-import ccm from '#/lib/utils/console-colors'
-
-import './globals.css'
-// import type { Metadata } from 'next'
+import './_styles.css'  // basic css
+import './_globals.css' // tailwind css
 import { Inter } from 'next/font/google'
-import Footer from '@/components/footer'
+// import type { Metadata } from 'next'
 import Header from '@/components/header'
+import Footer from '@/components/footer'
 
+// ** set google font 'inter'national css
 const inter = Inter({ subsets: ['latin'] })
 
 // ==============================================================
