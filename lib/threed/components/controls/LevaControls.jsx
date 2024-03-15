@@ -38,7 +38,21 @@ function Controls() {
     }, 30)
   }, [])
 
-  useControls({
+  const {
+    doAutoRotate,
+    doAutoLoadData,
+    projectName,
+    refMonitor,
+  } = useControls({
+    doAutoRotate: {
+      value: DO_AUTO_ROTATE,
+    },
+    doAutoLoadData: {
+      value: DO_AUTO_LOAD_DATA,
+    },
+    projectName: {
+      value: PROJECT_NAME,
+    },
     // number: { value: 10, step: 0.25 },
     // image: { image: undefined },
     // colorObj: { r: 1, g: 2, b: 3 },
@@ -83,10 +97,10 @@ function Controls() {
     // ),
   })
   // **
-  const {
-    doAutoRotate,
-    doAutoLoadData,
-    projectName,
+  // const {
+    // doAutoRotate,
+    // doAutoLoadData,
+    // projectName,
     // **
     // lampsNb,
     // treesNb,
@@ -96,16 +110,16 @@ function Controls() {
     // treesSpeed,
     // farTreesSpeed,
     // rocksSpeed,
-  } = useControls({
-    doAutoRotate: {
-      value: DO_AUTO_ROTATE,
-    },
-    doAutoLoadData: {
-      value: DO_AUTO_LOAD_DATA,
-    },
-    projectName: {
-      value: PROJECT_NAME,
-    },
+  // } = useControls({
+    // doAutoRotate: {
+    //   value: DO_AUTO_ROTATE,
+    // },
+    // doAutoLoadData: {
+    //   value: DO_AUTO_LOAD_DATA,
+    // },
+    // projectName: {
+    //   value: PROJECT_NAME,
+    // },
     // **
     // lampsNb: {
     //   value: LAMPS_NB,
@@ -155,7 +169,7 @@ function Controls() {
     //   max: 2,
     //   step: 0.05,
     // },
-  })
+  // })
 
   return null
 }
