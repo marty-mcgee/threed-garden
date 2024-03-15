@@ -22,6 +22,62 @@ function Controls() {
   const ROCKS_SPEED = 0.5
   const RANDOMIZER_STRENGTH_SCALE = 0.42
   const RANDOMIZER_STRENGTH_POSITION = 1
+
+  // **
+  const ref = useRef(4)
+  useEffect(() => {
+    let x = 0
+    setInterval(() => {
+      x += 0.1
+      const t = Date.now()
+      ref.current = 2 * noise.simplex2(3 * x + t, x) + (3 * Math.sin(x)) / x
+    }, 30)
+  }, [])
+
+  useControls({
+    // number: { value: 10, step: 0.25 },
+    image: { image: undefined },
+    // colorObj: { r: 1, g: 2, b: 3 },
+    // select: { options: ['x', 'y', ['x', 'y']] },
+    // interval: { min: -100, max: 100, value: [10, 15] },
+    refMonitor: monitor(ref, { graph: true, interval: 30 }),
+    showFolders: false,
+    folders: folder(
+      {
+        // color2: '#fff',
+        color: {
+          value: '#ff005b',
+          render: (get) => get('showFolders'),
+        },
+        folder2: folder(
+          {
+            'Hey Button': button(() => console.log('HEY HEY HEY')),
+            folder3: folder(
+              {
+                spring: spring(),
+                pos2d: { value: { x: 3, y: 4 } },
+                pos2dArr: { value: [100, 200], x: { max: 300 } },
+                pos3d: { value: { x: 0.3, k: 0.1, z: 0.5 }, j: { min: 0 } },
+                pos3dArr: [Math.PI / 2, 20, 4],
+              },
+              {
+                collapsed: true,
+                render: (get) => get('showFolders'),
+              },
+            ),
+          },
+          {
+            collapsed: true,
+            render: (get) => get('showFolders'),
+          },
+        ),
+      },
+      {
+        collapsed: true,
+        render: (get) => get('showFolders'),
+      },
+    ),
+  })
   // **
   const {
     doAutoRotate,
@@ -97,51 +153,6 @@ function Controls() {
     // },
   })
 
-  // **
-  const ref = useRef(4)
-  useEffect(() => {
-    let x = 0
-    setInterval(() => {
-      x += 0.1
-      const t = Date.now()
-      ref.current = 2 * noise.simplex2(3 * x + t, x) + (3 * Math.sin(x)) / x
-    }, 30)
-  }, [])
-
-  useControls({
-    number: { value: 10, step: 0.25 },
-    image: { image: undefined },
-    select: { options: ['x', 'y', ['x', 'y']] },
-    interval: { min: -100, max: 100, value: [10, 15] },
-    boolean: true,
-    refMonitor: monitor(ref, { graph: true, interval: 30 }),
-    folder2: folder(
-      {
-        color2: '#fff',
-        color: {
-          value: '#ff005b',
-          render: (get) => get('boolean'),
-        },
-        folder3: folder(
-          {
-            'Hello Button': button(() => console.log('hello')),
-            folder4: folder({
-              spring: spring(),
-              pos2d: { value: { x: 3, y: 4 } },
-              pos2dArr: { value: [100, 200], x: { max: 300 } },
-              pos3d: { value: { x: 0.3, k: 0.1, z: 0.5 }, j: { min: 0 } },
-              pos3dArr: [Math.PI / 2, 20, 4],
-            }),
-          },
-          { collapsed: false }
-        ),
-      },
-      { collapsed: true },
-      { render: (get) => get('boolean') }
-    ),
-    colorObj: { r: 1, g: 2, b: 3 },
-  })
-
   return null
 }
 
@@ -199,7 +210,7 @@ export default function ThreeDLevaControls({ data, projectName}) {
   const fontSizes = useControls(
     {
       fontSizes: folder({
-        root: '15px',
+        root: '14px',
       }),
     },
     { store: fontSizesStore }
@@ -208,7 +219,7 @@ export default function ThreeDLevaControls({ data, projectName}) {
   const sizes = useControls(
     {
       sizes: folder({
-        rootWidth: '280px',
+        rootWidth: '360px',
         controlWidth: '160px',
         scrubberWidth: '8px',
         scrubberHeight: '16px',
@@ -258,20 +269,20 @@ export default function ThreeDLevaControls({ data, projectName}) {
     'Panel',
     () => ({
       showTitleBar: true,
-      fullScreen: false,
-      drag: { value: true, render: (get) => get('Panel.showTitleBar') },
       title: { value: projectName, render: (get) => get('Panel.showTitleBar') },
+      drag: { value: false, render: (get) => get('Panel.showTitleBar') },
       filter: { value: false, render: (get) => get('Panel.showTitleBar') },
-      oneLineLabels: false,
+      // fullScreen: false,
+      // oneLineLabels: false,
     }),
     { color: 'green' }
   )
-  useFullscreen({ current: document.documentElement }, fullScreen, {
-    onClose: () => set({ fullScreen: false }),
-  })
+  // useFullscreen({ current: document.documentElement }, fullScreen, {
+  //   onClose: () => set({ fullScreen: false }),
+  // })
 
   return (
-    <div style={{ backgroundColor: 'darkgray', minHeight: '0vh' }}>
+    <div style={{ backgroundColor: 'transparent', minHeight: '0vh' }}>
       <Leva
         theme={theme} // you can pass a custom theme (see the styling section)
         fill={true} // default = false,  true makes the pane fill the parent dom node it's rendered in
@@ -280,9 +291,9 @@ export default function ThreeDLevaControls({ data, projectName}) {
         collapsed={true} // default = false, when true the GUI is collpased
         hidden={false} // default = false, when true the GUI is hidden
         titleBar={showTitleBar && { drag, title, filter }}
-        oneLineLabels={oneLineLabels} // default = false, alternate layout with labels + fields on separate rows
+        // oneLineLabels={oneLineLabels} // default = false, alternate layout with labels + fields on separate rows
       />
-      <div
+      {/* <div
         style={{
           display: 'grid',
           width: 300,
@@ -291,7 +302,7 @@ export default function ThreeDLevaControls({ data, projectName}) {
           marginRight: 0,
           float: 'left',
           background: '#181C20',
-        }}>
+        }}> */}
         {/* <LevaPanel fill flat titleBar={false} store={colorsStore} /> */}
         {/* <LevaPanel fill flat titleBar={false} store={radiiStore} /> */}
         {/* <LevaPanel fill flat titleBar={false} store={spaceStore} /> */}
@@ -299,7 +310,7 @@ export default function ThreeDLevaControls({ data, projectName}) {
         {/* <LevaPanel fill flat titleBar={false} store={sizesStore} /> */}
         {/* <LevaPanel fill flat titleBar={false} store={borderWidthsStore} /> */}
         {/* <LevaPanel fill flat titleBar={false} store={fontWeightsStore} /> */}
-      </div>
+      {/* </div> */}
       {/* <pre>{JSON.stringify(theme, null, '  ')}</pre> */}
       <Controls />
     </div>

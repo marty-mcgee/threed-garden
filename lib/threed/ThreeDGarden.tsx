@@ -3506,11 +3506,15 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
         <Grid
           style={{
             position: 'absolute',
-            zIndex: 10
+            zIndex: 10,
+            minWidth: '360px',
           }}
         >
           {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-          <ThreeDLevaControls data={data} projectName={projectName} />
+          <ThreeDLevaControls
+            data={data}
+            projectName={projectName}
+          />
         </Grid>
         {/* <Typography> */}
           {/* {noun._type} title:  */}
@@ -3541,24 +3545,19 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
           sx={{ borderTop: '1px solid darkgreen' }}
         >
 
-          {/* THREED HEY HEY HEY */}
-            {/* {threeds.length ? ( */}
-              <ThreeDCanvas
-                _id={'_r3fCanvas'}
-                threeds={threeds}
-              />
-            {/* ) : (
-              <Spinner />
-            )
-            } */}
-          {/* THREED HEY HEY HEY */}
+          {/* THREED CANVAS */}
+          <ThreeDCanvas
+            _id={'_r3fCanvas'}
+            threeds={threeds}
+          />
+          {/* THREED CANVAS */}
 
         </Grid>
         {/* <Grid item id='camera[1]'
           md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
         >
           <ThreeDCanvas
-            _id={2}
+            _id={'_r3fCanvas2'}
             threeds={threeds}
           />
         </Grid> */}
@@ -3566,7 +3565,7 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
           md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
         >
           <ThreeDCanvas
-            _id={3}
+            _id={'_r3fCanvas3'}
             threeds={threeds}
           />
         </Grid> */}
@@ -3574,7 +3573,7 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
           md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
         >
           <ThreeDCanvas
-            _id={4}
+            _id={'_r3fCanvas4'}
             threeds={threeds}
           />
         </Grid> */}
@@ -3601,32 +3600,46 @@ const ThreeDGarden = (): JSX.Element => {
     // USE STORE
   const client = useApolloClient()
   // const ability = useContext(AbilityContext)
+
+  // ==========================================================
+  // PRIMARY USER 'DATA' OBJECT
+  //
   const data = {
     status: status,
     session: session,
-    abilities: {},
+    abilities: ['read', 'write', 'delete'],
     client: client,
     store: projectStore, // default
     word: word,
   }
- // 'GUI CONTROL PANEL' + 'THREED PROJECT' NAME
- // -- IN REACT STATE (NOT APOLLO OR VALTIO)
-  const [projectName, setProjectName] = useState(data.store.store.get('one').data.title) // _name
 
+  // ==========================================================
+  // 'GUI CONTROL PANEL' + 'THREED PROJECT' NAME
+  //
+  const [projectName, setProjectName] = useState(data.store.store.get('one').data.title)
+  const [doAutoLoadData, setDoAutoLoadData] = useState(data.store.store.get('one').doAutoLoadData)
+  // **
   const onClickSetProjectName = (projectName) => {
     setProjectName(projectName)
+    localStorage.setItem('threed_projectName', projectName)
+  }
+  const onClickSetDoAutoLoadData = (bool) => {
+    setDoAutoLoadData(bool)
+    localStorage.setItem('threed_doAutoLoadData', bool)
   }
 
   // ==========================================================
   // Tabs
+  //
   const [tabInfoControl, setTabInfoControl] = useState(0)
-  const handleChangeTabInfoControl = (event: SyntheticEvent, newValue: number) => {
+  const onChangeTabInfoControl = (event: SyntheticEvent, newValue: number) => {
     setTabInfoControl(newValue)
     localStorage.setItem('threed_tabInfoControl', newValue)
   }
 
   // ==========================================================
   // Component onMount hook
+  //
   useEffect(() => {
     // **
     // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
@@ -3678,13 +3691,13 @@ const ThreeDGarden = (): JSX.Element => {
           <Box sx={{ borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
             <Tabs
               value={tabInfoControl}
-              onChange={handleChangeTabInfoControl}
+              onChange={onChangeTabInfoControl}
               aria-label='Info Control Panel'
             >
               <Tab label='Projects' {...tabProps(0)} />
               <Tab label='Plans' {...tabProps(1)} />
-              <Tab label='Files' {...tabProps(2)} />
-              <Tab label='ThreeDs' {...tabProps(3)} />
+              <Tab label='ThreeDs' {...tabProps(2)} />
+              <Tab label='Files' {...tabProps(3)} />
               <Tab label='Scenes' {...tabProps(4)} />
               <Tab label='Allotments' {...tabProps(5)} />
               <Tab label='Beds' {...tabProps(6)} />
@@ -3703,12 +3716,12 @@ const ThreeDGarden = (): JSX.Element => {
               <PlanInfoPanel />
             </MDTabPanel>
             <MDTabPanel value={tabInfoControl} index={2}>
-              <FileControlPanel />
-              <FileInfoPanel />
-            </MDTabPanel>
-            <MDTabPanel value={tabInfoControl} index={3}>
               <ThreeDControlPanel />
               <ThreeDInfoPanel />
+            </MDTabPanel>
+            <MDTabPanel value={tabInfoControl} index={3}>
+              <FileControlPanel />
+              <FileInfoPanel />
             </MDTabPanel>
             <MDTabPanel value={tabInfoControl} index={4}>
               <SceneControlPanel />
