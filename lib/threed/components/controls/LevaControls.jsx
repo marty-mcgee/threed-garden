@@ -1,5 +1,9 @@
 import { useEffect, useRef } from 'react'
-import { useControls, useCreateStore, folder, Leva, LevaPanel, monitor, button } from 'leva'
+import {
+  Leva, LevaPanel,
+  useControls, useCreateStore,
+  folder, monitor, button
+} from 'leva'
 import { useFullscreen } from 'react-use'
 import { spring } from '@leva-ui/plugin-spring'
 import { Noise } from 'noisejs'
@@ -265,13 +269,14 @@ export function ThreeDLevaControls({ data, projectName}) {
   const theme = { colors, radii, space, fontSizes, sizes, borderWidths, fontWeights }
 
   // ** LEVA GUI CONTROL PANEL
-  const [{ showTitleBar, title, drag, filter, fullScreen, oneLineLabels }, set] = useControls(
+  const [{ showTitleBar, title, drag, filter, position, fullScreen, oneLineLabels }, set] = useControls(
     'ThreeD Control Panel',
     () => ({
       showTitleBar: true,
       title: { value: projectName, render: (get) => get('Panel.showTitleBar') },
       drag: { value: false, render: (get) => get('Panel.showTitleBar') },
       filter: { value: false, render: (get) => get('Panel.showTitleBar') },
+      position: { value: { x: 0, y: 0 }, render: (get) => get('Panel.showTitleBar') },
       // fullScreen: false,
       // oneLineLabels: false,
     }),
@@ -290,8 +295,10 @@ export function ThreeDLevaControls({ data, projectName}) {
         hideTitleBar={false} // default = false, hides the GUI header
         collapsed={true} // default = false, when true the GUI is collpased
         hidden={false} // default = false, when true the GUI is hidden
-        titleBar={showTitleBar && { drag, title, filter }}
+        neverHide={true} // default = true
+        titleBar={showTitleBar && { drag, title, filter, position }}
         // oneLineLabels={oneLineLabels} // default = false, alternate layout with labels + fields on separate rows
+        hideCopyButton={true} // default = false
       />
       {/* <div
         style={{
