@@ -87,16 +87,13 @@ import Spinner from '#/ui/components/spinner'
 // ** Three JS Imports (not here, use R3F)
 // import * as THREE from 'three'
 // ** Three JS Loading Progress
-import { Loader } from '@react-three/drei'
-// ** Three JS Controls
-import { Html, useProgress } from '@react-three/drei'
-// ** Leva GUI
-import { Leva, useControls, folder, button, monitor } from 'leva'
-import { useFullscreen } from 'react-use'
+import { Html, Loader, useProgress } from '@react-three/drei'
 
-// ** ThreeD R3F Imports
+// ** ThreeD Imports
 // import { Canvas } from '@react-three/fiber'
 import ThreeDCanvas from '#/lib/threed/components/canvas'
+// ** Leva GUI
+import ThreeDLevaControls, { ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
 
 // ** Modal Imports
 import modals from '#/lib/threed/components/modals'
@@ -135,7 +132,7 @@ const appVersion = 'v0.15.0-b'
 // const appVersion: string = require('package.json').version
 // const appVersion: string = require('../../package.json').version
 
-const doLoadFromDataSourceOnStart: boolean = true // true | false (default)
+const doAutoLoadData: boolean = true // true | false (default)
 
 if (debug) {
   console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm.green)
@@ -3482,24 +3479,6 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
     }
   }
 
-  // ** LEVA GUI CONTROL PANEL
-  const [{ showTitleBar, title, drag, filter, fullScreen, oneLineLabels }, set] = useControls(
-    'Panel',
-    () => ({
-      showTitleBar: true,
-      fullScreen: false,
-      drag: { value: true, render: (get) => get('Panel.showTitleBar') },
-      title: { value: projectName, render: (get) => get('Panel.showTitleBar') },
-      filter: { value: false, render: (get) => get('Panel.showTitleBar') },
-      oneLineLabels: false,
-    }),
-    { color: 'green' }
-  )
-  useFullscreen({ current: document.documentElement }, fullScreen, {
-    onClose: () => set({ fullScreen: false }),
-  })
-
-
   // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
   const loadNounData = (threeds) => {
     // load these threeds into r3f canvas
@@ -3527,20 +3506,11 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
         <Grid
           style={{
             position: 'absolute',
-            backgroundColor: 'darkgray',
-            zIndex: 9999
+            zIndex: 10
           }}
         >
-          <Leva
-            // theme={myTheme} // you can pass a custom theme (see the styling section)
-            fill={true} // default = false,  true makes the pane fill the parent dom node it's rendered in
-            flat={true} // default = false,  true removes border radius and shadow
-            hideTitleBar={false} // default = false, hides the GUI header
-            collapsed={true} // default = false, when true the GUI is collpased
-            hidden={false} // default = false, when true the GUI is hidden
-            titleBar={showTitleBar && { drag, title, filter }}
-            oneLineLabels={oneLineLabels} // default = false, alternate layout with labels + fields on separate rows
-          />
+          {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+          <ThreeDLevaControls data={data} projectName={projectName} />
         </Grid>
         {/* <Typography> */}
           {/* {noun._type} title:  */}
@@ -3613,34 +3583,6 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
   )
 }
 
-const MyLevaComponent: FC = ({ projectName, setProjectName }): JSX.Element => {
-  // **
-  const word = `[MM] MyLevaComponent @ ${new Date().toISOString()}`
-  // **
-  var [{ Id }, set] = useControls(
-    () => (
-      {
-        Id: projectName
-      }
-    )
-  )
-
-  useEffect(() => {
-    set({ Id: projectName })
-  }, [projectName, set])
-
-  // console.debug("MyComponent")
-  useEffect(() => {
-    setProjectName(projectName)
-  //   console.debug('MyComponent onMount')
-  //   return () => {
-  //     console.debug('MyComponent onUnmount')
-  //   }
-  }, [projectName])
-
-  return <div>{Id}: {projectName}</div>
-}
-
 // const ThreeDGarden = ({ session }: { session: Session | null }): JSX.Element => {
 // const ThreeDGarden = ({...props}): JSX.Element => {
 // const ThreeDGarden = ({threedData}): JSX.Element => {
@@ -3686,26 +3628,17 @@ const ThreeDGarden = (): JSX.Element => {
   // ==========================================================
   // Component onMount hook
   useEffect(() => {
+    // **
     // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
     // console.debug(`%c====================================`, ccm.black)
-
     // ==========================================================
     // begin here ?? yes
     // bootManager()...
-    // loadProjectFromChosenDataSource()
-
     // USE STORE
-    // bootManager()
-    // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDisk()
-    // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDB()
-    // const loadProjectFromChosenDataSource = () => data.store.store.useStore('allDB')
-    // const loadProjectFromChosenDataSource = () => data.store.store.useStore('allDB')
-    // const loadProjectFromChosenDataSource = () => data.store.actions.loadFromDataSource(data.client)
-
     // WORKING:
     // LOAD DEFAULT DATA ON START + REFRESH
-    if (doLoadFromDataSourceOnStart) {
-      console.debug('%c🌱 doLoadFromDataSourceOnStart', ccm.darkgreen)
+    if (doAutoLoadData) {
+      console.debug('%c🌱 doAutoLoadData', ccm.darkgreen)
       data.store.actions.loadFromDataSource(data.client)
     }
 
@@ -3727,27 +3660,18 @@ const ThreeDGarden = (): JSX.Element => {
       id='threedgarden'
       style={{width: '100%'}}
     >
+      {/* SUSPENSEFUL... */}
       <Suspense fallback={
-        // <Loader
-        //   // containerStyles={...container} // Flex layout styles
-        //   // innerStyles={...inner} // Inner container styles
-        //   // barStyles={...bar} // Loading-bar styles
-        //   // dataStyles={...data} // Text styles
-        //   dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
-        //   initialState={(active = true) => active} // Initial black out state
-        // />
         <Spinner />
       }>
-        {/* SUSPENSEFUL... */}
 
         <ThreeDToolbar data={data} projectName={projectName} />
 
-        {/* R3F ThreeD Canvas View */}
+        {/* THREED CANVAS VIEWER */}
         {/* <ThreeDCanvasViewer data={data} projectName={projectName} setProjectName={setProjectName} /> */}
         <ThreeDCanvasViewer data={data} projectName={projectName} />
-        {/* R3F ThreeD Canvas View */}
 
-        {/* store access */}
+        {/* STORE ACCESS (apollo, valtio, leva) */}
         <div id='storeControlPanel'>
 
           {/* Tabs */}
@@ -3812,7 +3736,7 @@ const ThreeDGarden = (): JSX.Element => {
                   Testing Panel
                 </Box>
                 <Box sx={{ p: 2}}>
-                  <MyLevaComponent projectName={projectName} setProjectName={setProjectName} />
+                  <ThreeDLevaComponent projectName={projectName} setProjectName={setProjectName} />
                   <input type="button" onClick={(e) => onClickSetProjectName("TEST")} value="TEST" />
                   <input type="button" onClick={(e) => onClickSetProjectName("PROJECT MMMM")} value="DEFAULT" />
                 </Box>

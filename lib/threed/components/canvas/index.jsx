@@ -70,92 +70,18 @@ function ThreeDEnvironment() {
   // For instance by showing a message
   const [inTransition, startTransition] = useTransition()
   const { blur } = useControls({
-    blur: { value: 0.17, min: 0.00, max: 1.00 },
+    blur: { value: 0.00, min: 0.00, max: 1.00 },
     preset: {
       value: preset,
       options: ['sunset', 'dawn', 'night', 'warehouse', 'forest', 'apartment', 'studio', 'city', 'park', 'lobby'],
-      // If onChange is present the value will not be reactive, see https://github.com/pmndrs/leva/blob/main/docs/advanced/controlled-inputs.md#onchange
+      // If onChange is present the value will not be reactive,
+      // see https://github.com/pmndrs/leva/blob/main/docs/advanced/controlled-inputs.md#onchange
       // Instead we transition the preset value, which will prevents the suspense bound from triggering its fallback
       // That way we can hang onto the current environment until the new one has finished loading ...
       onChange: (value) => startTransition(() => setPreset(value))
     }
   })
   return <Environment preset={preset} background blur={blur} />
-}
-
-function ThreeDLevaControls() {
-
-  const OFFSET_X = 20;
-  const LAMPS_NB = 10;
-  const LAMPS_SPEED = 0.8;
-  const TREES_NB = 16;
-  const TREES_SPEED = 0.4;
-  const FAR_TREES_NB = 12;
-  const FAR_TREES_SPEED = 0.08;
-  const ROCKS_NB = 6;
-  const ROCKS_SPEED = 0.5;
-  const RANDOMIZER_STRENGTH_SCALE = 0.42;
-  const RANDOMIZER_STRENGTH_POSITION = 1;
-
-  const {
-    lampsNb,
-    treesNb,
-    farTreesNb,
-    rocksNb,
-    lampsSpeed,
-    treesSpeed,
-    farTreesSpeed,
-    rocksSpeed,
-  } = useControls({
-    lampsNb: {
-      value: LAMPS_NB,
-      min: 1,
-      max: 100,
-      step: 1,
-    },
-    lampsSpeed: {
-      value: LAMPS_SPEED,
-      min: 0.1,
-      max: 2,
-      step: 0.05,
-    },
-    treesNb: {
-      value: TREES_NB,
-      min: 1,
-      max: 100,
-      step: 1,
-    },
-    treesSpeed: {
-      value: TREES_SPEED,
-      min: 0.1,
-      max: 2,
-      step: 0.05,
-    },
-    farTreesNb: {
-      value: FAR_TREES_NB,
-      min: 1,
-      max: 100,
-      step: 1,
-    },
-    farTreesSpeed: {
-      value: FAR_TREES_SPEED,
-      min: 0.1,
-      max: 2,
-      step: 0.01,
-    },
-    rocksNb: {
-      value: ROCKS_NB,
-      min: 1,
-      max: 100,
-      step: 1,
-    },
-    rocksSpeed: {
-      value: ROCKS_SPEED,
-      min: 0.1,
-      max: 2,
-      step: 0.05,
-    },
-  });
 }
 
 // const controls = new OrbitControls(camera, renderer.domElement)
@@ -187,11 +113,23 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
       // }}
     >
 
+      {/* SUSPENSEFUL... */}
       {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
       {/* <Suspense fallback={null}> */}
       {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
-      <Suspense fallback={<Html center><Loader /></Html>}>
       {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
+      <Suspense fallback={
+        <Html center>
+          <Loader
+            // containerStyles={...container} // Flex layout styles
+            // innerStyles={...inner} // Inner container styles
+            // barStyles={...bar} // Loading-bar styles
+            // dataStyles={...data} // Text styles
+            dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
+            initialState={(active = true) => active} // Initial black out state
+          />
+        </Html>
+      }>
 
         {/* <Preload all /> */}
 
@@ -212,9 +150,6 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
             threeds={threeds}
           />
         )}
-
-        {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-        <ThreeDLevaControls />
         {/* <ThreeDControls /> */}
 
         {/* makeDefault makes the controls known to r3f,
