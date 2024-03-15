@@ -93,7 +93,7 @@ import { Html, Loader, useProgress } from '@react-three/drei'
 // import { Canvas } from '@react-three/fiber'
 import ThreeDCanvas from '#/lib/threed/components/canvas'
 // ** Leva GUI
-import ThreeDLevaControls, { ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
+import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
 
 // ** Modal Imports
 import modals from '#/lib/threed/components/modals'
@@ -3599,15 +3599,16 @@ const ThreeDGarden = (): JSX.Element => {
   const { data: session, status } = useSession()
     // USE STORE
   const client = useApolloClient()
-  // const ability = useContext(AbilityContext)
+  // const abilities = useContext(AbilityContext)
+  const abilities = ['read', 'write', 'delete']
 
   // ==========================================================
   // PRIMARY USER 'DATA' OBJECT
   //
   const data = {
     status: status,
+    abilities: abilities,
     session: session,
-    abilities: ['read', 'write', 'delete'],
     client: client,
     store: projectStore, // default
     word: word,
@@ -3618,6 +3619,7 @@ const ThreeDGarden = (): JSX.Element => {
   //
   const [projectName, setProjectName] = useState(data.store.store.get('one').data.title)
   const [doAutoLoadData, setDoAutoLoadData] = useState(data.store.store.get('one').doAutoLoadData)
+  const [doAutoRotate, setDoAutoRotate] = useState(data.store.store.get('one').doAutoRotate)
   // **
   const onClickSetProjectName = (projectName) => {
     setProjectName(projectName)

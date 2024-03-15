@@ -156,7 +156,7 @@ function Controls() {
   return null
 }
 
-export default function ThreeDLevaControls({ data, projectName}) {
+export function ThreeDLevaControls({ data, projectName}) {
   // **
   const colorsStore = useCreateStore()
   const radiiStore = useCreateStore()
@@ -344,3 +344,5 @@ export const ThreeDLevaComponent = ({ projectName, setProjectName }) => {
 
   return <div>{Id}: {projectName}</div>
 }
+
+export default ThreeDLevaControls

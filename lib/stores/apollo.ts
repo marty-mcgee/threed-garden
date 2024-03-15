@@ -7,11 +7,12 @@ import create, { StoreApi } from '#/lib/api/graphql/createStore'
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
 import GetNouns from '#/lib/api/graphql/scripts/getNouns.gql'
 import GetParticipants from '#/lib/api/graphql/scripts/getParticipants.gql'
+import GetSettings from '#/lib/api/graphql/scripts/getSettings.gql'
 import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
-import GetScenes from '#/lib/api/graphql/scripts/getScenes.gql'
 import GetPlans from '#/lib/api/graphql/scripts/getPlans.gql'
 import GetThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
 import GetFiles from '#/lib/api/graphql/scripts/getFiles.gql'
+import GetScenes from '#/lib/api/graphql/scripts/getScenes.gql'
 import GetAllotments from '#/lib/api/graphql/scripts/getAllotments.gql'
 import GetBeds from '#/lib/api/graphql/scripts/getBeds.gql'
 import GetPlants from '#/lib/api/graphql/scripts/getPlants.gql'
@@ -72,6 +73,7 @@ interface INounStore {
   nounStore: (_type?: string) => boolean
   projectStore: StoreApi<any>
   participantStore: StoreApi<any>
+  settingsStore: StoreApi<any>
   planStore: StoreApi<any>
   threedStore: StoreApi<any>
   fileStore: StoreApi<any>
@@ -718,6 +720,7 @@ export { nounStore }
 // export const nounStore = new (nounStore as any)('noun')
 export const projectStore = new (nounStore as any)('project')
 export const participantStore = new (nounStore as any)('participant')
+export const settingsStore = new (nounStore as any)('settings')
 export const planStore = new (nounStore as any)('plan')
 export const threedStore = new (nounStore as any)('threed')
 export const fileStore = new (nounStore as any)('file')
@@ -738,10 +741,11 @@ const stores = {
   nounStore,
   projectStore,
   participantStore,
-  sceneStore,
+  settingsStore,
   planStore,
   threedStore,
   fileStore,
+  sceneStore,
   allotmentStore,
   bedStore,
   plantStore,
@@ -759,10 +763,11 @@ const queries = {
   GetNouns,
   GetProjects,
   GetParticipants,
-  GetScenes,
+  GetSettings,
   GetPlans,
   GetThreeDs,
   GetFiles,
+  GetScenes,
   GetAllotments,
   GetBeds,
   GetPlants,

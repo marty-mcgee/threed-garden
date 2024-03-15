@@ -10,6 +10,16 @@ query GetProjects {
       # template {
       #   templateName
       # }
+      settings {
+        nodes {
+          settingsId
+          doAutoLoadData
+          doAutoRotate
+          projectName
+          # owner
+          version
+        }
+      }
       scenes {
         nodes {
           sceneId
