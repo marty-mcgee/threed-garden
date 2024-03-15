@@ -70,7 +70,7 @@ function ThreeDEnvironment() {
   // For instance by showing a message
   const [inTransition, startTransition] = useTransition()
   const { blur } = useControls({
-    blur: { value: 0.08, min: 0.00, max: 1.00 },
+    blur: { value: 0.09, min: 0.00, max: 1.00 },
     preset: {
       value: envPreset,
       options: ['sunset', 'dawn', 'night', 'warehouse', 'forest', 'apartment', 'studio', 'city', 'park', 'lobby'],

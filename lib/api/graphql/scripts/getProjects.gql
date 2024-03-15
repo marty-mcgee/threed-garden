@@ -12,12 +12,32 @@ query GetProjects {
       # }
       settings {
         nodes {
-          settingsId
+          # settingsId
+          # THREED SETTINGS
           doAutoLoadData
           doAutoRotate
           projectName
           # owner
           version
+          # from wp built-in (THREED + WP)
+          discussionSettingsDefaultPingStatus
+          discussionSettingsDefaultCommentStatus
+          generalSettingsDateFormat
+          generalSettingsDescription
+          generalSettingsEmail
+          generalSettingsLanguage
+          generalSettingsStartOfWeek
+          generalSettingsTimeFormat
+          generalSettingsTimezone
+          generalSettingsTitle
+          generalSettingsUrl
+          readingSettingsPageForPosts
+          readingSettingsPageOnFront
+          readingSettingsPostsPerPage
+          readingSettingsShowOnFront
+          writingSettingsDefaultCategory
+          writingSettingsDefaultPostFormat
+          writingSettingsUseSmilies
         }
       }
       scenes {

@@ -38,7 +38,7 @@ query GetSettings ($first: Int, $last: Int, $after: String, $before: String) {
         title
         uri
         # custom fields
-        settingsId
+        # settingsId
       }
     }
   }

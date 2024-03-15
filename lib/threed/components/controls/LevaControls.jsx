@@ -11,17 +11,17 @@ function Controls() {
   const DO_AUTO_ROTATE = true
   const DO_AUTO_LOAD_DATA = true
   const PROJECT_NAME = 'PROJECT ALOHA'
-  const OFFSET_X = 20
-  const LAMPS_NB = 10
-  const LAMPS_SPEED = 0.8
-  const TREES_NB = 16
-  const TREES_SPEED = 0.4
-  const FAR_TREES_NB = 12
-  const FAR_TREES_SPEED = 0.08
-  const ROCKS_NB = 6
-  const ROCKS_SPEED = 0.5
-  const RANDOMIZER_STRENGTH_SCALE = 0.42
-  const RANDOMIZER_STRENGTH_POSITION = 1
+  // const OFFSET_X = 20
+  // const LAMPS_NB = 10
+  // const LAMPS_SPEED = 0.8
+  // const TREES_NB = 16
+  // const TREES_SPEED = 0.4
+  // const FAR_TREES_NB = 12
+  // const FAR_TREES_SPEED = 0.08
+  // const ROCKS_NB = 6
+  // const ROCKS_SPEED = 0.5
+  // const RANDOMIZER_STRENGTH_SCALE = 0.42
+  // const RANDOMIZER_STRENGTH_POSITION = 1
 
   // **
   const ref = useRef(4)
@@ -36,47 +36,47 @@ function Controls() {
 
   useControls({
     // number: { value: 10, step: 0.25 },
-    image: { image: undefined },
+    // image: { image: undefined },
     // colorObj: { r: 1, g: 2, b: 3 },
     // select: { options: ['x', 'y', ['x', 'y']] },
     // interval: { min: -100, max: 100, value: [10, 15] },
     refMonitor: monitor(ref, { graph: true, interval: 30 }),
-    showFolders: false,
-    folders: folder(
-      {
-        // color2: '#fff',
-        color: {
-          value: '#ff005b',
-          render: (get) => get('showFolders'),
-        },
-        folder2: folder(
-          {
-            'Hey Button': button(() => console.log('HEY HEY HEY')),
-            folder3: folder(
-              {
-                spring: spring(),
-                pos2d: { value: { x: 3, y: 4 } },
-                pos2dArr: { value: [100, 200], x: { max: 300 } },
-                pos3d: { value: { x: 0.3, k: 0.1, z: 0.5 }, j: { min: 0 } },
-                pos3dArr: [Math.PI / 2, 20, 4],
-              },
-              {
-                collapsed: true,
-                render: (get) => get('showFolders'),
-              },
-            ),
-          },
-          {
-            collapsed: true,
-            render: (get) => get('showFolders'),
-          },
-        ),
-      },
-      {
-        collapsed: true,
-        render: (get) => get('showFolders'),
-      },
-    ),
+    // showFolders: false,
+    // folders: folder(
+    //   {
+    //     // color2: '#fff',
+    //     color: {
+    //       value: '#ff005b',
+    //       render: (get) => get('showFolders'),
+    //     },
+    //     folder2: folder(
+    //       {
+    //         'Hey Button': button(() => console.log('HEY HEY HEY')),
+    //         folder3: folder(
+    //           {
+    //             spring: spring(),
+    //             pos2d: { value: { x: 3, y: 4 } },
+    //             pos2dArr: { value: [100, 200], x: { max: 300 } },
+    //             pos3d: { value: { x: 0.3, k: 0.1, z: 0.5 }, j: { min: 0 } },
+    //             pos3dArr: [Math.PI / 2, 20, 4],
+    //           },
+    //           {
+    //             collapsed: true,
+    //             render: (get) => get('showFolders'),
+    //           },
+    //         ),
+    //       },
+    //       {
+    //         collapsed: true,
+    //         render: (get) => get('showFolders'),
+    //       },
+    //     ),
+    //   },
+    //   {
+    //     collapsed: true,
+    //     render: (get) => get('showFolders'),
+    //   },
+    // ),
   })
   // **
   const {
@@ -266,7 +266,7 @@ export function ThreeDLevaControls({ data, projectName}) {
 
   // ** LEVA GUI CONTROL PANEL
   const [{ showTitleBar, title, drag, filter, fullScreen, oneLineLabels }, set] = useControls(
-    'Panel',
+    'ThreeD Control Panel',
     () => ({
       showTitleBar: true,
       title: { value: projectName, render: (get) => get('Panel.showTitleBar') },
@@ -321,16 +321,16 @@ export const ThreeDLevaComponent = ({ projectName, setProjectName }) => {
   // **
   const word = `[MM] ThreeDLevaComponent @ ${new Date().toISOString()}`
   // **
-  var [{ Id }, set] = useControls(
+  var [{ projectNameLevaComponent }, set] = useControls(
     () => (
       {
-        Id: projectName
+        projectNameLevaComponent: projectName
       }
     )
   )
 
   useEffect(() => {
-    set({ Id: projectName })
+    set({ projectNameLevaComponent: projectName })
   }, [projectName, set])
 
   // console.debug("MyComponent")
@@ -342,7 +342,7 @@ export const ThreeDLevaComponent = ({ projectName, setProjectName }) => {
   //   }
   }, [projectName])
 
-  return <div>{Id}: {projectName}</div>
+  return <div>{projectNameLevaComponent}: {projectName}</div>
 }
 
 export default ThreeDLevaControls
