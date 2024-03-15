@@ -3631,10 +3631,10 @@ const ThreeDGarden = (): JSX.Element => {
   // ==========================================================
   // Tabs
   //
-  const [tabInfoControl, setTabInfoControl] = useState(0)
-  const onChangeTabInfoControl = (event: SyntheticEvent, newValue: number) => {
-    setTabInfoControl(newValue)
-    localStorage.setItem('threed_tabInfoControl', newValue)
+  const [tabControlValue, setTabControlValue] = useState(0)
+  const onChangeTabControlValue = (event: SyntheticEvent, newValue: number) => {
+    setTabControlValue(newValue)
+    localStorage.setItem('threed_tabControlValue', newValue)
   }
 
   // ==========================================================
@@ -3657,8 +3657,8 @@ const ThreeDGarden = (): JSX.Element => {
 
     // ==========================================================
     // set open tab
-    const openTab: number = Number(localStorage.getItem('threed_tabInfoControl'))
-    setTabInfoControl(openTab ? openTab : 0)
+    const openTab: number = Number(localStorage.getItem('threed_tabControlValue'))
+    setTabControlValue(openTab ? openTab : 0)
 
     // ==========================================================
     return () => {
@@ -3690,8 +3690,8 @@ const ThreeDGarden = (): JSX.Element => {
           {/* Tabs */}
           <Box sx={{ borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
             <Tabs
-              value={tabInfoControl}
-              onChange={onChangeTabInfoControl}
+              value={tabControlValue}
+              onChange={onChangeTabControlValue}
               aria-label='Info Control Panel'
             >
               <Tab label='Projects' {...tabProps(0)} />
@@ -3707,43 +3707,43 @@ const ThreeDGarden = (): JSX.Element => {
             </Tabs>
           </Box>
           <Box sx={{ p: 2, borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
-            <MDTabPanel value={tabInfoControl} index={0}>
+            <MDTabPanel value={tabControlValue} index={0}>
               <ProjectControlPanel />
               <ProjectInfoPanel />
             </MDTabPanel>
-            <MDTabPanel value={tabInfoControl} index={1}>
+            <MDTabPanel value={tabControlValue} index={1}>
               <PlanControlPanel />
               <PlanInfoPanel />
             </MDTabPanel>
-            <MDTabPanel value={tabInfoControl} index={2}>
+            <MDTabPanel value={tabControlValue} index={2}>
               <ThreeDControlPanel />
               <ThreeDInfoPanel />
             </MDTabPanel>
-            <MDTabPanel value={tabInfoControl} index={3}>
+            <MDTabPanel value={tabControlValue} index={3}>
               <FileControlPanel />
               <FileInfoPanel />
             </MDTabPanel>
-            <MDTabPanel value={tabInfoControl} index={4}>
+            <MDTabPanel value={tabControlValue} index={4}>
               <SceneControlPanel />
               <SceneInfoPanel />
             </MDTabPanel>
-            <MDTabPanel value={tabInfoControl} index={5}>
+            <MDTabPanel value={tabControlValue} index={5}>
               <AllotmentControlPanel />
               <AllotmentInfoPanel />
             </MDTabPanel>
-            <MDTabPanel value={tabInfoControl} index={6}>
+            <MDTabPanel value={tabControlValue} index={6}>
               <BedControlPanel />
               <BedInfoPanel />
             </MDTabPanel>
-            <MDTabPanel value={tabInfoControl} index={7}>
+            <MDTabPanel value={tabControlValue} index={7}>
               <PlantControlPanel />
               <PlantInfoPanel />
             </MDTabPanel>
-            <MDTabPanel value={tabInfoControl} index={8}>
+            <MDTabPanel value={tabControlValue} index={8}>
               <PlantingPlanControlPanel />
               <PlantingPlanInfoPanel />
             </MDTabPanel>
-            <MDTabPanel value={tabInfoControl} index={9}>
+            <MDTabPanel value={tabControlValue} index={9}>
               <Box sx={{ p: 2}}>
                 <Box>
                   Testing Panel
