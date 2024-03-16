@@ -7,9 +7,6 @@ query GetProjects {
       link
       version
       modified
-      # template {
-      #   templateName
-      # }
       preferences {
         node {
           preferencesId
@@ -17,7 +14,7 @@ query GetProjects {
           content
           link
           modified
-          # THREED SETTINGS
+          # custom fields
           doAutoLoadData
           doAutoRotate
           projectName
@@ -33,9 +30,7 @@ query GetProjects {
           link
           version
           modified
-          # template {
-          #   templateName
-          # }
+          # custom fields
           sceneBgColor
           sceneBgImage {
             node {
@@ -47,7 +42,6 @@ query GetProjects {
                 file
               }
             }
-            # cursor
           }
           scenePlaneWidthX
           scenePlaneHeightY
@@ -65,7 +59,6 @@ query GetProjects {
                 file
               }
             }
-            # cursor
           }
           sceneBgImagePy {
             node {
@@ -77,7 +70,6 @@ query GetProjects {
                 file
               }
             }
-            # cursor
           }
           sceneBgImagePx {
             node {
@@ -89,7 +81,6 @@ query GetProjects {
                 file
               }
             }
-            # cursor
           }
           sceneBgImageNz {
             node {
@@ -101,7 +92,6 @@ query GetProjects {
                 file
               }
             }
-            # cursor
           }
           sceneBgImageNy {
             node {
@@ -113,7 +103,6 @@ query GetProjects {
                 file
               }
             }
-            # cursor
           }
           sceneBgImageNx {
             node {
@@ -127,7 +116,6 @@ query GetProjects {
                 file
               }
             }
-            # cursor
           }
         }
       }
@@ -139,9 +127,7 @@ query GetProjects {
           link
           version
           modified
-          # template {
-          #   templateName
-          # }
+          # custom fields
           threeds {
             nodes {
               threedId
@@ -160,9 +146,6 @@ query GetProjects {
               # scaleX
               # scaleY
               # scaleZ
-              # # template {
-              # #   templateName
-              # # }
               # # children
               # files {
               #   nodes {
@@ -206,9 +189,6 @@ query GetProjects {
               scaleX
               scaleY
               scaleZ
-              # template {
-              #   templateName
-              # }
               # children
               files {
                 nodes {
@@ -252,9 +232,6 @@ query GetProjects {
               # scaleX
               # scaleY
               # scaleZ
-              # # template {
-              # #   templateName
-              # # }
               # # children
               # files {
               #   nodes {
