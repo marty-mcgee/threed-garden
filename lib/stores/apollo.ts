@@ -7,7 +7,7 @@ import create, { StoreApi } from '#/lib/api/graphql/createStore'
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
 import GetNouns from '#/lib/api/graphql/scripts/getNouns.gql'
 import GetParticipants from '#/lib/api/graphql/scripts/getParticipants.gql'
-import GetSettings from '#/lib/api/graphql/scripts/getSettings.gql'
+import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
 import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
 import GetPlans from '#/lib/api/graphql/scripts/getPlans.gql'
 import GetThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
@@ -73,7 +73,7 @@ interface INounStore {
   nounStore: (_type?: string) => boolean
   projectStore: StoreApi<any>
   participantStore: StoreApi<any>
-  settingsStore: StoreApi<any>
+  preferencesStore: StoreApi<any>
   planStore: StoreApi<any>
   threedStore: StoreApi<any>
   fileStore: StoreApi<any>
@@ -720,7 +720,7 @@ export { nounStore }
 // export const nounStore = new (nounStore as any)('noun')
 export const projectStore = new (nounStore as any)('project')
 export const participantStore = new (nounStore as any)('participant')
-export const settingsStore = new (nounStore as any)('settings')
+export const preferencesStore = new (nounStore as any)('preferences')
 export const planStore = new (nounStore as any)('plan')
 export const threedStore = new (nounStore as any)('threed')
 export const fileStore = new (nounStore as any)('file')
@@ -741,7 +741,7 @@ const stores = {
   nounStore,
   projectStore,
   participantStore,
-  settingsStore,
+  preferencesStore,
   planStore,
   threedStore,
   fileStore,
@@ -763,7 +763,7 @@ const queries = {
   GetNouns,
   GetProjects,
   GetParticipants,
-  GetSettings,
+  GetPreferences,
   GetPlans,
   GetThreeDs,
   GetFiles,
