@@ -326,28 +326,40 @@ export const ThreeDLevaComponent = ({ projectName, setProjectName }) => {
   // **
   const word = `[MM] ThreeDLevaComponent @ ${new Date().toISOString()}`
   // **
-  var [{ projectNameLevaComponent }, set] = useControls(
+  var [{ projectNameFromLeva }, set] = useControls(
     () => (
       {
-        projectNameLevaComponent: projectName
+        // projectNameFromLeva: projectName,
+        doAutoLoadData: doAutoLoadData,
+        doAutoRotate: doAutoRotate,
+        projectName: projectName,
+        // projectNameCurrent: projectNameCurrent,
+        // projectNamePrevious: projectNamePrevious,
+        word: word,
       }
     )
   )
 
+  // ** onMount (on component loaded)
   useEffect(() => {
-    set({ projectNameLevaComponent: projectName })
-  }, [projectName, set])
-
-  // console.debug("MyComponent")
-  useEffect(() => {
+    // leva set store (from react state)
+    set({ projectNameFromLeva: projectName })
+    // react set state
     setProjectName(projectName)
-  //   console.debug('MyComponent onMount')
-  //   return () => {
-  //     console.debug('MyComponent onUnmount')
-  //   }
-  }, [projectName])
+    // **
+  }, [projectName, set])
+  // }, [projectName])
 
-  return <div>{projectNameLevaComponent}: {projectName}</div>
+  // // console.debug("MyComponent")
+  // useEffect(() => {
+  //   setProjectName(projectName)
+  // //   console.debug('MyComponent onMount')
+  // //   return () => {
+  // //     console.debug('MyComponent onUnmount')
+  // //   }
+  // }, [projectName])
+
+  return <div>{projectNameFromLeva}: {projectName}</div>
 }
 
 export default ThreeDLevaControls
