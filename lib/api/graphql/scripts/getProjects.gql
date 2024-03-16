@@ -4,40 +4,25 @@ query GetProjects {
       projectId
       title
       content
-      uri
+      link
       version
       modified
       # template {
       #   templateName
       # }
-      settings {
-        nodes {
-          # settingsId
+      preferences {
+        node {
+          preferencesId
+          title
+          content
+          link
+          modified
           # THREED SETTINGS
           doAutoLoadData
           doAutoRotate
           projectName
           # owner
           version
-          # from wp built-in (THREED + WP)
-          # discussionSettingsDefaultPingStatus
-          # discussionSettingsDefaultCommentStatus
-          # generalSettingsDateFormat
-          # generalSettingsDescription
-          # generalSettingsEmail
-          # generalSettingsLanguage
-          # generalSettingsStartOfWeek
-          # generalSettingsTimeFormat
-          # generalSettingsTimezone
-          # generalSettingsTitle
-          # generalSettingsUrl
-          # readingSettingsPageForPosts
-          # readingSettingsPageOnFront
-          # readingSettingsPostsPerPage
-          # readingSettingsShowOnFront
-          # writingSettingsDefaultCategory
-          # writingSettingsDefaultPostFormat
-          # writingSettingsUseSmilies
         }
       }
       scenes {
@@ -45,7 +30,7 @@ query GetProjects {
           sceneId
           title
           content
-          uri
+          link
           version
           modified
           # template {
@@ -133,7 +118,7 @@ query GetProjects {
           sceneBgImageNx {
             node {
               sourceUrl
-              uri
+              link
               title
               mediaType
               mediaItemUrl
@@ -151,7 +136,7 @@ query GetProjects {
           planId
           title
           content
-          uri
+          link
           version
           modified
           # template {
@@ -162,7 +147,7 @@ query GetProjects {
               threedId
               title
               # content
-              # uri
+              # link
               # version
               # modified
               # # custom fields
@@ -187,7 +172,7 @@ query GetProjects {
               #     isObject3d
               #     isUrl
               #     url
-              #     uri
+              #     link
               #     modified
               #     file {
               #       node {
@@ -196,7 +181,7 @@ query GetProjects {
               #         mediaItemId
               #         mediaItemUrl
               #         mediaType
-              #         uri
+              #         link
               #       }
               #     }
               #   }
@@ -208,7 +193,7 @@ query GetProjects {
               threedId
               title
               content
-              uri
+              link
               version
               modified
               # custom fields
@@ -233,7 +218,7 @@ query GetProjects {
                   isObject3d
                   isUrl
                   url
-                  uri
+                  link
                   modified
                   file {
                     node {
@@ -242,7 +227,7 @@ query GetProjects {
                       mediaItemId
                       mediaItemUrl
                       mediaType
-                      uri
+                      link
                     }
                   }
                 }
@@ -254,7 +239,7 @@ query GetProjects {
               threedId
               title
               # content
-              # uri
+              # link
               # version
               # modified
               # # custom fields
@@ -279,7 +264,7 @@ query GetProjects {
               #     isObject3d
               #     isUrl
               #     url
-              #     uri
+              #     link
               #     modified
               #     file {
               #       node {
@@ -288,7 +273,7 @@ query GetProjects {
               #         mediaItemId
               #         mediaItemUrl
               #         mediaType
-              #         uri
+              #         link
               #       }
               #     }
               #   }
