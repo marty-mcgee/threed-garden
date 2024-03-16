@@ -18,6 +18,8 @@ query GetProjects {
           doAutoLoadData
           doAutoRotate
           projectName
+          projectNameCurrent
+          projectNamePrevious
           # owner
           version
         }
