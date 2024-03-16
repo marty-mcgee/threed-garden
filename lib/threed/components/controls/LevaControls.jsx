@@ -43,6 +43,15 @@ function Controls() {
     doAutoLoadData,
     projectName,
     refMonitor,
+    // **
+    // lampsNb,
+    // treesNb,
+    // farTreesNb,
+    // rocksNb,
+    // lampsSpeed,
+    // treesSpeed,
+    // farTreesSpeed,
+    // rocksSpeed,
   } = useControls({
     doAutoRotate: {
       value: DO_AUTO_ROTATE,
@@ -95,31 +104,6 @@ function Controls() {
     //     render: (get) => get('showFolders'),
     //   },
     // ),
-  })
-  // **
-  // const {
-    // doAutoRotate,
-    // doAutoLoadData,
-    // projectName,
-    // **
-    // lampsNb,
-    // treesNb,
-    // farTreesNb,
-    // rocksNb,
-    // lampsSpeed,
-    // treesSpeed,
-    // farTreesSpeed,
-    // rocksSpeed,
-  // } = useControls({
-    // doAutoRotate: {
-    //   value: DO_AUTO_ROTATE,
-    // },
-    // doAutoLoadData: {
-    //   value: DO_AUTO_LOAD_DATA,
-    // },
-    // projectName: {
-    //   value: PROJECT_NAME,
-    // },
     // **
     // lampsNb: {
     //   value: LAMPS_NB,
@@ -169,7 +153,7 @@ function Controls() {
     //   max: 2,
     //   step: 0.05,
     // },
-  // })
+  })
 
   return null
 }
