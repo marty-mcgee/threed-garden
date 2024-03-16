@@ -3051,11 +3051,6 @@ const ThreeDGarden = (): JSX.Element => {
       data.store.actions.loadFromDataSource(data.client)
     }
 
-    // // ==========================================================
-    // // set open tab
-    // const openTab: number = Number(localStorage.getItem('threed_tabControlValue'))
-    // setTabControlValue(openTab ? openTab : 0)
-
     // ==========================================================
     return () => {
       console.debug('ThreeDGarden onUnmount', word)
