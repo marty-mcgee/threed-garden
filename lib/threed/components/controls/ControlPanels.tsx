@@ -29,6 +29,8 @@ import Tab from '@mui/material/Tab'
 import MDTabPanel, { tabProps } from '#/lib/mui/MDTabPanel'
 import Typography from '@mui/material/Typography'
 
+// ==========================================================
+
 const Tabs = styled(MuiTabs)(({ theme }) => ({
   overflow: `scroll !important`,
 }))
@@ -44,9 +46,10 @@ const Button = styled(MuiButton)(({ theme }) => ({
 // ==========================================================
 
 const {
-  nounStore,
+  // nounStore,
   projectStore,
   participantStore,
+  preferencesStore,
   planStore,
   threedStore,
   fileStore,
@@ -56,19 +59,24 @@ const {
   plantStore,
   plantingPlanStore,
   // bearStore,
-  modalStore,
-  modalAboutStore,
-  modalModel3dStore,
-  modalLoadingStore,
-  modalShareStore,
-  modalStoreNoun,
+  // modalStore,
+  // modalAboutStore,
+  // modalModel3dStore,
+  // modalLoadingStore,
+  // modalShareStore,
+  // modalStoreNoun,
 } = stores
 // console.debug('%cstores available', ccm.orange, stores)
 // console.debug(`%c====================================`, ccm.black)
 
 // **
 export const ThreeDControlPanels = (
-  { projectName, setProjectName }: { projectName: string, setProjectName: Function }
+  { projectName,
+    setProjectName
+  }: {
+    projectName: string,
+    setProjectName: Function
+  }
 ): ReactNode => {
 
   // ==========================================================
@@ -112,7 +120,7 @@ export const ThreeDControlPanels = (
           <Tab label='Allotments' {...tabProps(5)} />
           <Tab label='Beds' {...tabProps(6)} />
           <Tab label='Plants' {...tabProps(7)} />
-          <Tab label='Planting Plans' {...tabProps(8)} />
+          <Tab label='Schedules' {...tabProps(8)} />
           <Tab label='Tests' {...tabProps(9)} />
         </Tabs>
       </Box>
@@ -189,11 +197,30 @@ export const ThreeDControlPanels = (
 
 const ProjectInfoPanel = (): JSX.Element => {
   // **
+  const client = useApolloClient()
+  // **
   const projectCount = projectStore.store.useStore('count')
   const projects = projectStore.store.useStore('all')
   const project = projectStore.store.useStore('one')
   // const projectsDB = projectStore.store.useStore('allDB')
   // const projectDB = projectStore.store.useStore('oneDB')
+
+  let projectName = project._name
+      projectName = project.data?.title
+  const doModifyProjectName = preferencesStore.actions.setProjectName(projectName)
+  console.debug('doModifyProjectName', doModifyProjectName)
+
+  // const preferences = preferencesStore.store.useStore('one')
+  // console.debug('preferences', preferences)
+  const preferences = {
+    doAutoLoadData: false,
+    doAutoRotate: false,
+    projectName: 'nada',
+  }
+  preferences.doAutoLoadData = preferencesStore.store.useStore('doAutoLoadData')
+  preferences.doAutoRotate = preferencesStore.store.useStore('doAutoRotate')
+  preferences.projectName = preferencesStore.store.useStore('projectName')
+  console.debug('preferences', preferences)
 
   return (
     <Box sx={{ px: 2 }}>
@@ -202,6 +229,7 @@ const ProjectInfoPanel = (): JSX.Element => {
       {/* <Typography>projectsDB: {projectsDB.length}</Typography> */}
       <Typography>project._id: {project._id}</Typography>
       <Typography>project._ts: {project._ts}</Typography>
+      <Typography><strong>projectName: {projectName}</strong></Typography>
       <Typography>project._name: {project._name}</Typography>
       <Typography>project.data.title: {project.data?.title}</Typography>
       <Typography>project.data.scene[s]: {project.data?.scenes?.nodes[0].title}</Typography>

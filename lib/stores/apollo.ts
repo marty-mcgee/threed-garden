@@ -5,9 +5,9 @@
 import create, { StoreApi } from '#/lib/api/graphql/createStore'
 
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
+import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
 import GetNouns from '#/lib/api/graphql/scripts/getNouns.gql'
 import GetParticipants from '#/lib/api/graphql/scripts/getParticipants.gql'
-import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
 import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
 import GetPlans from '#/lib/api/graphql/scripts/getPlans.gql'
 import GetThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
@@ -61,7 +61,7 @@ interface INouns {
   nouns: Array<INoun>
 }
 
-interface INounStore {
+interface IStore extends StoreApi<any> {
   // params
   _type: string
   _plural: string
@@ -69,26 +69,26 @@ interface INounStore {
   _storageItemHistory: string
   // store
   store: any
-  // store.store
-  nounStore: (_type?: string) => boolean
-  projectStore: StoreApi<any>
-  participantStore: StoreApi<any>
-  preferencesStore: StoreApi<any>
-  planStore: StoreApi<any>
-  threedStore: StoreApi<any>
-  fileStore: StoreApi<any>
-  sceneStore: StoreApi<any>
-  allotmentStore: StoreApi<any>
-  bedStore: StoreApi<any>
-  plantStore: StoreApi<any>
-  plantingPlanStore: StoreApi<any>
-  // bearStore: StoreApi<any>
-  modalStore: (_type?: string) => void
-  modalAboutStore: StoreApi<any>
-  modalModel3dStore: StoreApi<any>
-  modalLoadingStore: StoreApi<any>
-  modalShareStore: StoreApi<any>
-  modalStoreNoun: StoreApi<any>
+  // // store.store
+  // nounStore: (_type?: string) => boolean
+  // projectStore: StoreApi<any>
+  // participantStore: StoreApi<any>
+  // preferencesStore: StoreApi<any>
+  // planStore: StoreApi<any>
+  // threedStore: StoreApi<any>
+  // fileStore: StoreApi<any>
+  // sceneStore: StoreApi<any>
+  // allotmentStore: StoreApi<any>
+  // bedStore: StoreApi<any>
+  // plantStore: StoreApi<any>
+  // plantingPlanStore: StoreApi<any>
+  // // bearStore: StoreApi<any>
+  // modalStore: (_type?: string) => void
+  // modalAboutStore: StoreApi<any>
+  // modalModel3dStore: StoreApi<any>
+  // modalLoadingStore: StoreApi<any>
+  // modalShareStore: StoreApi<any>
+  // modalStoreNoun: StoreApi<any>
   // store.actions
   actions: any
 }
@@ -122,7 +122,7 @@ function noun(this: INoun, _type: string = 'noun') {
 // ** Noun Store -- Constructor Function
 // -- returns new (nounStore as any)
 
-function nounStore(this: INounStore, _type = 'noun') {
+function nounStore(this: IStore, _type = 'noun') {
   // store params
   this._type = _type.toLowerCase()
   this._plural = _type + 's'
@@ -569,7 +569,7 @@ function nounStore(this: INounStore, _type = 'noun') {
       _type: string = 'project', // main type for query
       _requestType: string = 'plansOfThreeds', // sub-type for query
       _id: string = '3333', // some id
-      _r3fCanvas: string = '#_r3fcanvas' // target canvas
+      _r3fCanvas: string = '_r3fcanvas1' // target canvas #_r3fCanvasX
     ) => {
       // **
       let objectArrayToReturn = []
@@ -633,12 +633,14 @@ function nounStore(this: INounStore, _type = 'noun') {
 } // nounStore
 
 // ==============================================================
+
 // ==============================================================
+
 // ==============================================================
 // ** Modal Object -- Constructor Function
 // -- returns new modal
 
-function modal(this: any, _type = 'modal') {
+function modal(this: INoun, _type = 'modal') {
   // object params
   this._id = newUUID()
   this._ts = new Date().toISOString()
@@ -660,7 +662,7 @@ function modal(this: any, _type = 'modal') {
 // ** Modal Store -- Constructor Function
 // -- returns new (modalStore as any)
 
-function modalStore(this: any, _type = 'modal') {
+function modalStore(this: IStore, _type = 'modal') {
   // store params
   this._type = _type.toLowerCase()
   this._plural = _type + 's'
@@ -712,15 +714,94 @@ function modalStore(this: any, _type = 'modal') {
 } // modalStore
 
 // ==============================================================
-// ==============================================================
-// ==============================================================
-// ** Construct Noun Stores + Export as Group of Stores
 
+// ==============================================================
+
+// ==============================================================
+// ** Preferences Store -- Constructor Function
+// -- returns new (preferencesStore as any)
+
+function preferenceStore(this: IStore, _type = 'preferences') {
+  // store params
+  this._type = _type.toLowerCase()
+  this._plural = _type // + 's'
+  this._storageItem = 'threed_' + this._type
+  this._storageItemHistory = 'threed_' + this._type + 'History'
+
+  // ==============================================================
+  // ** Preferences Store .store
+
+  this.store = create({
+    doAutoLoadData: false,
+    doAutoRotate: false,
+    projectName: 'APOLLO PREFERENCES STORE: projectName'
+  })
+
+  // ==============================================================
+  // ** Preferences Store .actions
+
+  this.actions = {
+    setDoAutoLoadData: (e: boolean = false) => {
+      // this.store.update('doAutoLoadData', !this.store.get('doAutoLoadData'))
+      this.store.update('doAutoLoadData', e)
+      localStorage.setItem(
+        this._storageItem,
+        JSON.stringify({
+          subject: 'doAutoLoadData',
+          payload: this.store.get('doAutoLoadData'),
+        })
+      )
+      return this.store.get('doAutoLoadData')
+    },
+    setDoAutoRotate: (e: boolean = false) => {
+      // this.store.update('doAutoRotate', !this.store.get('doAutoRotate'))
+      this.store.update('doAutoRotate', e)
+      localStorage.setItem(
+        this._storageItem,
+        JSON.stringify({
+          subject: 'doAutoRotate',
+          payload: this.store.get('doAutoRotate'),
+        })
+      )
+      return this.store.get('doAutoLoadData')
+    },
+    setProjectName: (e: string = 'nope') => {
+      this.store.update('projectName', e)
+      localStorage.setItem(
+        this._storageItem,
+        JSON.stringify({
+          subject: 'projectName',
+          payload: this.store.get('projectName'),
+        })
+      )
+      // const doModifyProjectName = client.cache.modify({
+      //   id: client.cache.identify(preferencesStore),
+      //   fields: {
+      //     name(projectName) {
+      //       return projectName.toUpperCase()
+      //     },
+      //   },
+      //   /* broadcast: false // Include this to prevent automatic query refresh */
+      // })
+      return this.store.get('projectName')
+    },
+  } // preferencesActions
+} // preferencesStore
+
+// ==============================================================
+
+// ==============================================================
+
+// ==============================================================
+// ** Construct Stores + Export as Group of Stores
+
+// export { preferencesStore }
+// export const preferencesStore = new (nounStore as any)('preferences')
+export const preferencesStore = new (preferenceStore as any)('preferences')
 export { nounStore }
 // export const nounStore = new (nounStore as any)('noun')
 export const projectStore = new (nounStore as any)('project')
 export const participantStore = new (nounStore as any)('participant')
-export const preferencesStore = new (nounStore as any)('preferences')
 export const planStore = new (nounStore as any)('plan')
 export const threedStore = new (nounStore as any)('threed')
 export const fileStore = new (nounStore as any)('file')
@@ -738,10 +819,10 @@ export const modalShareStore = new (modalStore as any)('modalShare')
 export const modalStoreNoun = new (nounStore as any)('modal')
 
 const stores = {
+  preferencesStore,
   nounStore,
   projectStore,
   participantStore,
-  preferencesStore,
   planStore,
   threedStore,
   fileStore,
@@ -760,10 +841,10 @@ const stores = {
 
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
 const queries = {
+  GetPreferences,
   GetNouns,
   GetProjects,
   GetParticipants,
-  GetPreferences,
   GetPlans,
   GetThreeDs,
   GetFiles,

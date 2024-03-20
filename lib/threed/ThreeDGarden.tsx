@@ -216,6 +216,7 @@ const Button = styled(MuiButton)(({ theme }) => ({
 // ==========================================================
 
 const {
+  preferencesStore,
   // nounStore,
   projectStore,
   // participantStore,
@@ -317,8 +318,8 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
         >
           {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
           <ThreeDLevaControls
-            data={data}
-            projectName={projectName}
+            // data={data}
+            // projectName={projectName}
           />
           {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
         </Grid>
@@ -423,22 +424,25 @@ const ThreeDGarden = (): JSX.Element => {
   // ==========================================================
   // 'GUI CONTROL PANEL' + 'THREED PROJECT' NAME
   //
-  const [projectName, setProjectName] = useState(data.store.store.get('one').data.title)
-  const [doAutoLoadData, setDoAutoLoadData] = useState(data.store.store.get('one').doAutoLoadData)
-  const [doAutoRotate, setDoAutoRotate] = useState(data.store.store.get('one').doAutoRotate)
+  // const [projectName, setProjectName] = useState(data.store.store.get('one').data.title)
+  // const [doAutoLoadData, setDoAutoLoadData] = useState(data.store.store.get('one').doAutoLoadData)
+  // const [doAutoRotate, setDoAutoRotate] = useState(data.store.store.get('one').doAutoRotate)
   // **
-  const onClickSetProjectName = (projectName) => {
-    setProjectName(projectName)
-    localStorage.setItem('threed_projectName', projectName)
-  }
-  const onClickSetDoAutoLoadData = (bool) => {
-    setDoAutoLoadData(bool)
-    localStorage.setItem('threed_doAutoLoadData', bool)
-  }
+  // const onClickSetProjectName = (projectName) => {
+  //   setProjectName(projectName)
+  //   localStorage.setItem('threed_projectName', projectName)
+  // }
+  // const onClickSetDoAutoLoadData = (bool) => {
+  //   setDoAutoLoadData(bool)
+  //   localStorage.setItem('threed_doAutoLoadData', bool)
+  // }
 
   // ==========================================================
   // Component onMount hook
   //
+
+  const loadNow = preferencesStore.store.useStore('doAutoLoadData')
+
   useEffect(() => {
     // **
     // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
@@ -449,8 +453,10 @@ const ThreeDGarden = (): JSX.Element => {
     // USE STORE
     // WORKING:
     // LOAD DEFAULT DATA ON START + REFRESH
-    if (doAutoLoadData) {
-      console.debug('%c🌱 doAutoLoadData', ccm.darkgreen)
+
+    console.log('%c🌱 loadNow', ccm.darkgreen, loadNow)
+    if (loadNow) {
+      console.log('%c🌱 doAutoLoadData', ccm.darkgreen)
       data.store.actions.loadFromDataSource(data.client)
     }
 
@@ -471,14 +477,14 @@ const ThreeDGarden = (): JSX.Element => {
       <Suspense fallback={<Spinner />}>
 
         {/* THREED TOOLBAR */}
-        <ThreeDToolbar data={data} projectName={projectName} />
+        <ThreeDToolbar data={data} />
 
         {/* THREED CANVAS VIEWER */}
         {/* <ThreeDCanvasViewer data={data} projectName={projectName} setProjectName={setProjectName} /> */}
-        <ThreeDCanvasViewer data={data} projectName={projectName} />
+        <ThreeDCanvasViewer data={data} />
 
         {/* THREED CONTROL PANELS -- STORE ACCESS (apollo, valtio, leva) */}
-        <ThreeDControlPanels data={data} projectName={projectName} tabs={tabProps} />
+        <ThreeDControlPanels tabs={tabProps} />
 
         {/* THREED MODALS */}
         <ModalAbout />
