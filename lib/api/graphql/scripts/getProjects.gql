@@ -259,6 +259,58 @@ query GetProjects {
               # }
             }
           }
+          # custom fields (from v2 demo)
+          # _id: newUUID(),
+          # _ts: new Date().toISOString(),
+          # levels: [{ id: 0, height: 0 }] as Object[],
+          # // levels[0]: { id: 0, height: 0 },
+          # floors: [] as Object[],
+          # roofs: [] as Object[],
+          # walls: [] as Object[],
+          # dimensions: [] as Object[],
+          # texts: [] as Object[],
+          # furniture: [] as Object[],
+
+          # verticalGuides: [] as Object[],
+          # horizontalGuides: [] as Object[],
+
+          # furnitureAddedKey: null as any,
+          # furnitureDirtyKey: null as any,
+          # furnitureDeletedKey: null as any,
+          # wallAddedKey: null as any,
+          # wallDirtyKey: null as any,
+          # wallDeletedKey: null as any,
+          # roofAddedKey: null as any,
+          # roofDirtyKey: null as any,
+          # roofDeletedKey: null as any,
+          # floorAddedKey: null as any,
+          # floorDirtyKey: null as any,
+          # floorDeletedKey: null as any,
+          # dimensionAddedKey: null as any,
+          # dimensionEditedKey: null as any,
+          # dimensionDeletedKey: null as any,
+          # textAddedKey: null as any,
+          # textEditedKey: null as any,
+          # textDeletedKey: null as any,
+
+          # // wallDiffuse: wallMaterial.color.getHexString(),
+          # // wallOpacity: wallMaterial.opacity,
+          # // wallSpecular: wallMaterial.specular.getHexString(),
+          # // roofDiffuse: roofMaterial.color.getHexString(),
+          # // roofOpacity: roofMaterial.opacity,
+          # // roofSpecular: roofMaterial.specular.getHexString(),
+          # // floorDiffuse: floorMaterial.color.getHexString(),
+          # // floorOpacity: floorMaterial.opacity,
+          # // floorSpecular: floorMaterial.specular.getHexString(),
+          # // groundDiffuse: groundMaterial.color.getHexString(),
+          # // groundOpacity: groundMaterial.opacity,
+          # // groundSpecular: groundMaterial.specular.getHexString(),
+
+          # depthWrite: 'checked', // document.getElementById("depthWriteMode").checked,
+          # sortObjects: 'checked', // document.getElementById("sortObjectsMode").checked,
+
+          # // azimuth: azimuth,
+          # // inclination: inclination
         }
       }
     }
