@@ -1,10 +1,21 @@
+// @ts-nocheck /* OR @ ts-ignore OR @ ts-expect-error */
+
+// ==========================================================
+// RESOURCES
+// ==========================================================
+
 import {
   FC,
   useEffect,
 } from 'react'
 
+// ==========================================================
+// ** Provide Different ThreeD|TwoD Views
+// **
 
-// ** Different Views
+// ==========================================================
+// ** CATALOG VIEW
+// **
 const CatalogView: FC = (): JSX.Element => {
   // console.debug("CatalogView")
   useEffect(() => {
@@ -27,6 +38,9 @@ const CatalogView: FC = (): JSX.Element => {
   )
 }
 
+// ==========================================================
+// ** PROPERTIES VIEW
+// **
 const PropertiesView: FC = (): JSX.Element => {
   // console.debug("PropertiesView")
   useEffect(() => {
@@ -1265,6 +1279,9 @@ const PropertiesView: FC = (): JSX.Element => {
   )
 }
 
+// ==========================================================
+// ** PLAN VIEW
+// **
 const PlanView: FC = (): JSX.Element => {
   // console.debug("PlanView")
   useEffect(() => {
@@ -1322,6 +1339,9 @@ const PlanView: FC = (): JSX.Element => {
   )
 }
 
+// ==========================================================
+// ** THEBOTTOM VIEW
+// **
 const TheBottom: FC = (): JSX.Element => {
   const word = `[MM] TheBottom @ ${new Date().toISOString()}`
 
@@ -1414,4 +1434,11 @@ const TheBottom: FC = (): JSX.Element => {
       />
     </Box>
   )
+}
+
+export default {
+  CatalogView,
+  PropertiesView,
+  PlanView,
+  TheBottom,
 }
