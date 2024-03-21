@@ -1,6 +1,8 @@
 // ==============================================================
 // ** RESOURCES
+// ==============================================================
 
+import { preferencesStore } from '#/lib/stores/apollo'
 import { proxy, useSnapshot } from 'valtio'
 
 import { Suspense, useState, useRef, useTransition } from 'react'
@@ -17,7 +19,7 @@ import { Canvas, useFrame, useThree, extend } from '@react-three/fiber'
 import {
   Preload, Environment, Stage,
   Html, Center,
-  useGLTF,
+  useGLTF, useFBX,
   OrbitControls, TransformControls, PivotControls,
   GizmoHelper, GizmoViewcube, GizmoViewport,
   ContactShadows,
@@ -27,9 +29,9 @@ import {
 } from '@react-three/drei'
 
 // ** ThreeD Imports
-// import Scene from '#/lib/threed/components/nouns/Scene'
-// import Plan from '#/lib/threed/components/nouns/Plan'
-// import ThreeD from '#/lib/threed/components/nouns/ThreeD'
+// import ThreeDScenes from '#/lib/threed/components/nouns/Scene'
+// import ThreeDPlans from '#/lib/threed/components/nouns/Plan'
+// import ThreeDThreeDs from '#/lib/threed/components/nouns/ThreeD'
 import ThreeDModels from '#/lib/threed/components/nouns/Model'
 // ThreeD EXAMPLES
 // import Character from '~/lib/threed/components/nouns/Character'
@@ -121,6 +123,10 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
   // if (debug) console.debug('%c props._id, props.threeds', ccm.red, _id, threeds)
   // **
+  // const projectName = preferencesStore.store.useStore('projectName')
+  // const doAutoLoadData = preferencesStore.store.useStore('doAutoLoadData')
+  const doAutoRotate = preferencesStore.store.useStore('doAutoRotate')
+  // **
   return (
     <Canvas
       // id={_id}
@@ -193,7 +199,7 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           zoomToCursor={false} // default is false
           zoomSpeed={1.0} // default is 1.0
           enableRotate={true}
-          autoRotate={true} // default is false
+          autoRotate={doAutoRotate} // default is false
           autoRotateSpeed={1.0} // default is 2.0
           rotateSpeed={1.0} // default is 1.0
           enableDamping={true} // slows down rotation after mouse release

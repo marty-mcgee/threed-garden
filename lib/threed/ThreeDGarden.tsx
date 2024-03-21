@@ -2,9 +2,9 @@
 'use client'
 // ^ this file needs the 'use client' pragma
 
-// ==========================================================
-// RESOURCES
-// ==========================================================
+// ==============================================================
+// ** RESOURCES
+// ==============================================================
 
 // ** Next Imports
 import { useSession } from "next-auth/react"
@@ -41,6 +41,7 @@ import { useApolloClient } from '@apollo/client'
 // } from '@apollo/experimental-nextjs-app-support/ssr'
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
 import stores from '#/lib/stores/apollo'
+// import { preferencesStore } from '#/lib/stores/apollo'
 
 // ** Next Imports
 // import Image from 'next/image'
@@ -447,7 +448,11 @@ const ThreeDGarden = (): JSX.Element => {
   // Component onMount hook
   //
 
-  const loadNow = preferencesStore.store.useStore('doAutoLoadData')
+  // **
+  // const projectName = preferencesStore.store.useStore('projectName')
+  const doAutoLoadData = preferencesStore.store.useStore('doAutoLoadData')
+  // const doAutoRotate = preferencesStore.store.useStore('doAutoRotate')
+  // **
 
   useEffect(() => {
     // **
@@ -460,8 +465,8 @@ const ThreeDGarden = (): JSX.Element => {
     // WORKING:
     // LOAD DEFAULT DATA ON START + REFRESH
 
-    console.log('%c🌱 loadNow', ccm.darkgreen, loadNow)
-    if (loadNow) {
+    console.log('%c🌱 doAutoLoadData', ccm.darkgreen, doAutoLoadData)
+    if (doAutoLoadData) {
       console.log('%c🌱 doAutoLoadData', ccm.darkgreen)
       threeddata.store.actions.loadFromDataSource(threeddata.client)
     }
