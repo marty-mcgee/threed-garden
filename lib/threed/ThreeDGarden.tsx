@@ -407,12 +407,12 @@ const ThreeDGarden = (): JSX.Element => {
   // USE SESSION
   // const { data: session, status } = useSession()
   // const { data, status } = useSession()
-  const { data, data: session, status } = useSession()
-  console.debug('useSession()', useSession())
-  console.debug('useSession().data', data)
+  const { data: session, status } = useSession()
+  // console.debug('useSession()', useSession())
+  // console.debug('useSession().data', data)
     // USE STORE
   const client = useApolloClient()
-  console.debug('useApolloClient()', client)
+  // console.debug('useApolloClient()', client)
   // const abilities = useContext(AbilityContext)
   const abilities = ['read', 'write', 'delete']
 

@@ -223,7 +223,7 @@ const Model = ({
 
   // fetch the file (GLTF, FBX, OBJ, etc)
   if (model.is.isSupported) {
-    console.debug('%cmodel.is.isSupported: true', ccm.green, model.name, model)
+    console.debug('%c🌱 model.is.isSupported: true', ccm.greenAlert, model.name, model)
     console.debug(`%c======================================`, ccm.darkgreen)
     if (model.is.isObject3D) {
       // FBX
@@ -234,7 +234,7 @@ const Model = ({
         const fbx = useLoader(FBXLoader, model.file, loader => {
           loader.manager.addHandler(/\.tga$/i, new TGALoader())
         })
-        console.debug('%c🌱 FBX NODES: fbx', ccm.darkgreen, model.name, fbx)
+        console.debug('%c📐 FBX NODES: fbx', ccm.greenAlert, model.name, fbx)
         console.debug(`%c======================================`, ccm.darkgreen)
         if (fbx) {
           // model.node = fbx
@@ -256,8 +256,8 @@ const Model = ({
         model.type = 'obj'
         // const nodes = useOBJ(model.file)
         const obj = new OBJLoader().load(model.file)
-        console.debug('%c🌱 OBJ NODES: obj', ccm.darkgreen, obj)
-        console.debug(`%c======================================`, ccm.darkgreen)
+        console.debug('%c🌱 OBJ NODES: obj', ccm.orange, obj)
+        console.debug(`%c======================================`, ccm.orange)
         if (obj) {
           model.nodes = obj
           // console.debug('RETURN ONLY NODE AS NODES: true')
@@ -272,7 +272,7 @@ const Model = ({
         const gltf = useLoader(GLTFLoader, model.file) // , loader => {
           // loader.manager.addHandler(/\.tga$/i, new TGALoader())
         // })
-        console.debug('%c🌱 GLB NODES: gltf', ccm.greenAlert, model.name, gltf)
+        // console.debug('%c📐 GLB NODES: gltf', ccm.greenAlert, model.name, gltf)
         console.debug(`%c======================================`, ccm.darkgreen)
         if (gltf) {
           if (gltf.RootNode) {
@@ -313,8 +313,8 @@ const Model = ({
             // // console.debug('%c📐 gltfAsArray', ccm.orangeAlert, gltfAsArray)
             // // model.nodes = gltf.nodes
             // // model.nodes = gltf
-            console.debug('%c📐 RETURN ALL GLTF NODES: default', ccm.orangeAlert, model.name, model.nodes)
-            console.debug(`%c======================================`, ccm.orange)
+            console.debug('%c📐 RETURN ALL GLTF NODES: default', ccm.greenAlert, model.name, model.nodes)
+            console.debug(`%c======================================`, ccm.darkgreen)
           }
           else {
             model.nodes = gltf.nodes // []
@@ -398,7 +398,7 @@ const Model = ({
 
   if (model.is.isReadyForCanvas) {
     // console.debug(`%c===========================================================`, ccm.blue)
-    console.debug(`%c✔️📐 DRAW MODEL ${model.type}`, ccm.blue, model.name) // , model
+    // console.debug(`%c✔️📐 DRAW MODEL ${model.type}`, ccm.blue, model.name) // , model
     console.debug(`%c✔️📐 DRAW MODEL.nodes: ${model.type}`, ccm.blue, model.name, model.nodes)
     console.debug(`%c===========================================================`, ccm.blue)
     // return FBX node
@@ -426,8 +426,8 @@ const Model = ({
     }
     // return GLTF node
     else if (model.is.isGLTF) {
-      console.debug('GLTF: model.nodes', model.name, model.nodes)
-      console.debug('GLTF: model.nodes.scene', model.name, model.nodes.scene)
+      // console.debug('GLTF: model.nodes', model.name, model.nodes)
+      // console.debug('GLTF: model.nodes.scene', model.name, model.nodes.scene)
       return (
         // LOOP OVER NODE ARRAY TO RETURN MULTIPLE MESHES ([5000])
         <group

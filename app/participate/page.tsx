@@ -78,10 +78,12 @@ const ParticipatePage: TNextPageWithProps = async () => {
       {/* </SessionProvider> */}
       {/* [MM] HEY HEY HEY */}
 
+      {/* {ability?.can('read', 'analytics') && ( */}
       <Grid
         item
         md={6}
         xs={12}
+        sx={{ display: 'none' }}
       >
         <Card>
           <CardHeader
@@ -101,7 +103,6 @@ const ParticipatePage: TNextPageWithProps = async () => {
           </CardContent>
         </Card>
       </Grid>
-      {/* {ability?.can('read', 'analytics') && ( */}
       { session?.user && (
         <Grid
           item
@@ -124,8 +125,8 @@ const ParticipatePage: TNextPageWithProps = async () => {
           </Card>
         </Grid>
       )}
-      {/* )} */}
     </Grid>
+    // )}
   )
 }
 // ParticipatePage.acl = {
