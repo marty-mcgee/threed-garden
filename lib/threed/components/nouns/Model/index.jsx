@@ -273,40 +273,41 @@ const Model = ({
           // loader.manager.addHandler(/\.tga$/i, new TGALoader())
         // })
         // console.debug('%c📐 GLB NODES: gltf', ccm.greenAlert, model.name, gltf)
-        console.debug(`%c======================================`, ccm.darkgreen)
+        // console.debug(`%c======================================`, ccm.darkgreen)
         if (gltf) {
-          if (gltf.RootNode) {
-            model.nodes = gltf.RootNode.children
-            console.debug('%c📐 RETURN RootNode CHILDREN NODES: true', ccm.orangeAlert, model.name, model.nodes)
-            console.debug(`%c======================================`, ccm.orange)
-          }
-          else if (model.nodes[model.name]) {
-            model.nodes[model.name] = gltf[model.name]
-            console.debug('%c📐 RETURN ONE NODE: true', ccm.orangeAlert, model.name, model.nodes[model.name])
-            console.debug(`%c======================================`, ccm.orange)
-          }
-          else if (gltf.nodes) {
+          // if (gltf.nodes?.RootNode) {
+          //   model.nodes = gltf.nodes.RootNode.children
+          //   console.debug('%c📐 RETURN RootNode CHILDREN NODES: true', ccm.orangeAlert, model.name, model.nodes)
+          //   console.debug(`%c======================================`, ccm.orange)
+          // }
+          // else if (model.nodes[model.name]) {
+          //   model.nodes[model.name] = gltf[model.name]
+          //   console.debug('%c📐 RETURN ONE NODE: true', ccm.orangeAlert, model.name, model.nodes[model.name])
+          //   console.debug(`%c======================================`, ccm.orange)
+          // }
+          // else
+          if (gltf.nodes) {
             // let gltfAsArray = new Array()
             // gltfAsArray.push([...Array(gltf.nodes)])
             // for (const [key, value] of Object.entries(gltf.nodes))  {
             //   console.debug(`key: ${key}, value: ${value}`)
             //   gltfAsArray.push([key: value])
             // }
-            let objParent = gltf
-            let obj = gltf // gltf | gltf.nodes
-            model.nodes = obj
-            // let objNodes = gltf.nodes // gltf | gltf.nodes
-            // let objKeys = new Array()
+            // let gltfObjectParent = gltf
+            let gltfObject = gltf // gltf | gltf.nodes
+            model.nodes = gltfObject
+            // let gltfObjectNodes = gltf.nodes // gltf | gltf.nodes
+            // let gltfObjectKeys = new Array()
             // let gltfAsArray = new Array()
-            // let objCount = 48 // maximum to return
-            // objKeys = Object.keys(obj) // returns all keys [5446]
-            // // console.debug('%c📐 objKeys', ccm.orangeAlert, objKeys)
-            // let objectAsArray = objKeys.slice(0, objCount).map((key, index) => {
+            // let gltfObjectCount = 48 // maximum to return
+            // gltfObjectKeys = Object.keys(gltfObject) // returns all keys [5446]
+            // // console.debug('%c📐 gltfObjectKeys', ccm.orangeAlert, gltfObjectKeys)
+            // let gltfObjectectAsArray = gltfObjectKeys.slice(0, gltfObjectCount).map((key, index) => {
             //   // let kvpair = {}
-            //   // // kvpair[key] = obj[key]
-            //   // kvpair[index] = obj[key]
+            //   // // kvpair[key] = gltfObject[key]
+            //   // kvpair[index] = gltfObject[key]
             //   // return kvpair
-            //   return obj[key] // just the value of the object at this key
+            //   return gltfObject[key] // the value of the object at this key
             // })
             // gltfAsArray = objectAsArray
             // // model.nodes = gltfAsArray

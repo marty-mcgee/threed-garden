@@ -220,15 +220,18 @@ function ThreeDPreferences() {
 
   useEffect(() => {
     setUserPreferences({ doAutoLoadData: doAutoLoadDataApollo})
+    preferencesStore.store.update('doAutoLoadData', doAutoLoadDataApollo)
   }, [doAutoLoadDataApollo])
 
   useEffect(() => {
     setUserPreferences({ doAutoRotate: doAutoRotateApollo})
+    preferencesStore.store.update('doAutoRotate', doAutoRotateApollo)
   }, [doAutoRotateApollo])
 
   useEffect(() => {
     // set({ title: projectName})
     setProjectPreferences({ projectName: projectNameApollo})
+    preferencesStore.store.update('projectName', projectNameApollo)
   }, [projectNameApollo])
 }
 
