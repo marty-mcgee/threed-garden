@@ -72,6 +72,25 @@ function ThreeDPreferences() {
   const [{
     doAutoRotate,
     doAutoLoadData,
+  }, setUserPreferences] = useControls(
+    'User Preferences',
+    () => ({
+      doAutoLoadData: {
+        label: 'Auto Load Data?',
+        value: doAutoLoadDataApollo,
+      },
+      doAutoRotate: {
+        label: 'Auto Rotate?',
+        value: doAutoRotateApollo,
+      },
+    }),
+    {
+      color: 'darkgreen',
+      collapsed: false,
+    },
+  )
+
+  const [{
     projectName,
     // refMonitor,
     // **
@@ -83,21 +102,21 @@ function ThreeDPreferences() {
     // treesSpeed,
     // farTreesSpeed,
     // rocksSpeed,
-  }, set] = useControls(
+  }, setProjectPreferences] = useControls(
     'Project Preferences',
     () => ({
       projectName: {
         label: 'Project Name',
         value: projectNameApollo,
       },
-      doAutoLoadData: {
-        label: 'Auto Load Data?',
-        value: doAutoLoadDataApollo,
-      },
-      doAutoRotate: {
-        label: 'Auto Rotate?',
-        value: doAutoRotateApollo,
-      },
+      // doAutoLoadData: {
+      //   label: 'Auto Load Data?',
+      //   value: doAutoLoadDataApollo,
+      // },
+      // doAutoRotate: {
+      //   label: 'Auto Rotate?',
+      //   value: doAutoRotateApollo,
+      // },
 
       /** EXAMPLES
       number: { value: 10, step: 0.25 },
@@ -194,22 +213,22 @@ function ThreeDPreferences() {
       */
     }),
     {
-      color: 'orange',
-      collapsed: true,
+      color: 'darkgreen',
+      collapsed: false,
     },
   )
 
   useEffect(() => {
-    set({ doAutoLoadData: doAutoLoadDataApollo})
+    setUserPreferences({ doAutoLoadData: doAutoLoadDataApollo})
   }, [doAutoLoadDataApollo])
 
   useEffect(() => {
-    set({ doAutoRotate: doAutoRotateApollo})
+    setUserPreferences({ doAutoRotate: doAutoRotateApollo})
   }, [doAutoRotateApollo])
 
   useEffect(() => {
     // set({ title: projectName})
-    set({ projectName: projectNameApollo})
+    setProjectPreferences({ projectName: projectNameApollo})
   }, [projectNameApollo])
 }
 
@@ -367,8 +386,8 @@ export function ThreeDLevaControls() {
       refMonitor: { value: monitor(refMon, { graph: true, interval: 60 }), render: (get) => get('Panel.showTitleBar') },
     }),
     {
-      color: 'green',
-      collapsed: true,
+      color: 'darkgreen',
+      collapsed: false,
     },
   )
 
@@ -387,7 +406,7 @@ export function ThreeDLevaControls() {
         titleBar={showTitleBar && { drag, title, filter, position }} // TITLE | PROJECT_NAME
         hideTitleBar={false} // default = false. true hides the GUI header
         theme={theme} // you can pass a custom theme (see the styling section)
-        collapsed={true} // default = false. true makes the GUI collpased
+        collapsed={false} // default = false. true makes the GUI collpased
         fill={true} // default = false. true makes the pane fill the parent dom node it's rendered in
         flat={true} // default = false. true removes border radius and shadow
         hidden={false} // default = false. true hides the GUI
