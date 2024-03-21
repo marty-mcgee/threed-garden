@@ -699,8 +699,8 @@ const ThreeDToolbar: FC = ({data}): JSX.Element => {
   //   }
   // }, [])
 
-  const pages = ['Products', 'Pricing', 'Blog']
-  const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
+  // const pages = ['Products', 'Pricing', 'Blog']
+  // const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
   return (
     <AppBar
