@@ -15,11 +15,9 @@ query GetProjects {
           link
           modified
           # custom fields
+          projectName
           doAutoLoadData
           doAutoRotate
-          projectName
-          projectNameCurrent
-          projectNamePrevious
           # owner
           version
         }

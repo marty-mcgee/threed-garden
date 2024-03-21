@@ -427,11 +427,9 @@ export const ThreeDLevaComponent = ({ projectName, setProjectName }) => {
   //   () => (
   //     {
   //       // projectNameFromLeva: projectName,
+  //       projectName: projectName,
   //       doAutoLoadData: doAutoLoadData,
   //       doAutoRotate: doAutoRotate,
-  //       projectName: projectName,
-  //       // projectNameCurrent: projectNameCurrent,
-  //       // projectNamePrevious: projectNamePrevious,
   //       word: word,
   //     }
   //   )
