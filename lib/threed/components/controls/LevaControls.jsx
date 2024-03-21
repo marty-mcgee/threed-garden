@@ -193,7 +193,10 @@ function ThreeDPreferences() {
       },
       */
     }),
-    { color: 'orange' }
+    {
+      color: 'orange',
+      collapsed: true,
+    },
   )
 
   useEffect(() => {

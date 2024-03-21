@@ -72,11 +72,15 @@ function ThreeDEnvironment() {
 
   const { blur } = useControls(
     'Scene Preferences',
-    () => ({
+    // () => (
+      {
       preset: {
         label: 'Environment',
         value: envPreset,
-        options: ['sunset', 'dawn', 'night', 'warehouse', 'forest', 'apartment', 'studio', 'city', 'park', 'lobby'],
+        options: [
+          'park', 'sunset', 'dawn', 'night', 'forest',
+          'studio', 'warehouse', 'apartment', 'lobby', 'city'
+        ],
         // If onChange is present the value will not be reactive,
         // see https://github.com/pmndrs/leva/blob/main/docs/advanced/controlled-inputs.md#onchange
         // Instead we transition the preset value, which will prevents the suspense bound from triggering its fallback
@@ -84,15 +88,16 @@ function ThreeDEnvironment() {
         onChange: (value) => startTransition(() => setEnvPreset(value))
       },
       blur: {
-        label: 'BG Blur',
+        label: 'Blur BG',
         value: 0.09,
         min: 0.00,
-        max: 1.00,
+        max: 0.20,
       },
-    }),
+    },
+    // ),
     {
       color: 'green',
-      collapsed: false,
+      collapsed: true,
     },
   )
   return (

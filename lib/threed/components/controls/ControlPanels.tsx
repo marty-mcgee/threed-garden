@@ -166,11 +166,11 @@ export const ThreeDControlPanels = (
             <Box>
               Testing Panel
             </Box>
-            <Box sx={{ p: 2}}>
+            {/* <Box sx={{ p: 2}}>
               <ThreeDLevaComponent projectName={projectName} setProjectName={setProjectName} />
               <input type='button' onClick={(e) => setProjectName('TEST')} value='TEST' />
               <input type='button' onClick={(e) => setProjectName('PROJECT MMMM')} value='DEFAULT' />
-            </Box>
+            </Box> */}
             <Box>
               {/* <CharacterControlPanel /> */}
               {/* <CharacterInfoPanel /> */}
@@ -208,7 +208,7 @@ const ProjectInfoPanel = (): JSX.Element => {
   let projectName = project._name
       projectName = project.data?.title
   const doModifyProjectName = preferencesStore.actions.setProjectName(projectName)
-  console.debug('doModifyProjectName', doModifyProjectName)
+  console.log('doModifyProjectName', doModifyProjectName)
 
   // const preferences = preferencesStore.store.useStore('one')
   // console.debug('preferences', preferences)
@@ -220,7 +220,7 @@ const ProjectInfoPanel = (): JSX.Element => {
   preferences.doAutoLoadData = preferencesStore.store.useStore('doAutoLoadData')
   preferences.doAutoRotate = preferencesStore.store.useStore('doAutoRotate')
   preferences.projectName = preferencesStore.store.useStore('projectName')
-  console.debug('preferences', preferences)
+  console.log('preferences', preferences)
 
   return (
     <Box sx={{ px: 2 }}>

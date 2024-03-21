@@ -6,12 +6,9 @@
 // RESOURCES
 // ==========================================================
 
-// ??? ProgressEvent error
-// import dynamic from 'next/dynamic'
-
 // ** Next Imports
 import { useSession } from "next-auth/react"
-// hint: const { data: session, status } = useSession()
+// hint: const { data, data: session, status } = useSession()
 
 // ** React Imports
 import {
@@ -245,14 +242,19 @@ const {
 // ==========================================================
 if (debug) {
   // console.debug(`%c🥕 ThreeDGarden<FC,R3F>: {nouns()}`, ccm.blue)
-  console.debug(`%c====================================`, ccm.black)
+  // console.debug(`%c====================================`, ccm.black)
 }
 
 // ==========================================================
 // COMPONENTS
 
 // ** Modal Windows
-const { ModalAbout, ModalLoading, ModalModel3d, ModalShare } = modals
+const {
+  ModalAbout,
+  ModalLoading,
+  ModalModel3d,
+  ModalShare
+} = modals
 
 // ** Views
 // const { CatalogView, PlanView, PropertiesView, TheBottom } = views
@@ -260,19 +262,18 @@ const { ModalAbout, ModalLoading, ModalModel3d, ModalShare } = modals
 // ==========================================================
 
 // ** R3F Main Component
-const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
+const ThreeDCanvasViewer = ({ threeddata }): JSX.Element => {
 
   // **
   const word = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
   // console.debug(`%c=======================================================`, ccm.black)
-  console.debug('%c🥕 ThreeDCanvasViewer {props.projectName}', ccm.orange, projectName)
-  console.debug('%c🥕 ThreeDCanvasViewer {props.data}', ccm.orange, data)
+  console.debug('%c🥕 ThreeDCanvasViewer {props.threeddata}', ccm.orange, threeddata)
   // console.debug(`%c=======================================================`, ccm.black)
 
   // ==========================================================
 
-  // const noun = data.store.store.get('one')
-  const noun = data.store.store.useStore('one')
+  // const noun = threeddata.store.store.get('one')
+  const noun = threeddata.store.store.useStore('one')
   let noun_title = noun?.data?.title ? noun.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
   console.debug('%c🥕 ThreeDCanvasViewer {noun}', ccm.orange, noun, noun_title)
   let nodesToLoad = []
@@ -288,7 +289,7 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
   // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
   const loadNounData = (threeds) => {
     // load these threeds into r3f canvas
-    data.store.actions.loadToCanvas(threeds, '_r3fCanvas')
+    threeddata.store.actions.loadToCanvas(threeds, '_r3fCanvas')
     // return <Box>true</Box> // true
   }
 
@@ -318,7 +319,7 @@ const ThreeDCanvasViewer = ({ data, projectName }): JSX.Element => {
         >
           {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
           <ThreeDLevaControls
-            // data={data}
+            // threeddata={threeddata}
             // projectName={projectName}
           />
           {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
@@ -403,16 +404,21 @@ const ThreeDGarden = (): JSX.Element => {
   // ** Hooks
 
   // USE SESSION
-  const { data: session, status } = useSession()
+  // const { data: session, status } = useSession()
+  // const { data, status } = useSession()
+  const { data, data: session, status } = useSession()
+  console.debug('useSession()', useSession())
+  console.debug('useSession().data', data)
     // USE STORE
   const client = useApolloClient()
+  console.debug('useApolloClient()', client)
   // const abilities = useContext(AbilityContext)
   const abilities = ['read', 'write', 'delete']
 
   // ==========================================================
   // PRIMARY USER 'DATA' OBJECT
   //
-  const data = {
+  const threeddata = {
     status: status,
     abilities: abilities,
     session: session,
@@ -424,9 +430,9 @@ const ThreeDGarden = (): JSX.Element => {
   // ==========================================================
   // 'GUI CONTROL PANEL' + 'THREED PROJECT' NAME
   //
-  // const [projectName, setProjectName] = useState(data.store.store.get('one').data.title)
-  // const [doAutoLoadData, setDoAutoLoadData] = useState(data.store.store.get('one').doAutoLoadData)
-  // const [doAutoRotate, setDoAutoRotate] = useState(data.store.store.get('one').doAutoRotate)
+  // const [projectName, setProjectName] = useState(threeddata.store.store.get('one').threeddata.title)
+  // const [doAutoLoadData, setDoAutoLoadData] = useState(threeddata.store.store.get('one').doAutoLoadData)
+  // const [doAutoRotate, setDoAutoRotate] = useState(threeddata.store.store.get('one').doAutoRotate)
   // **
   // const onClickSetProjectName = (projectName) => {
   //   setProjectName(projectName)
@@ -457,7 +463,7 @@ const ThreeDGarden = (): JSX.Element => {
     console.log('%c🌱 loadNow', ccm.darkgreen, loadNow)
     if (loadNow) {
       console.log('%c🌱 doAutoLoadData', ccm.darkgreen)
-      data.store.actions.loadFromDataSource(data.client)
+      threeddata.store.actions.loadFromDataSource(threeddata.client)
     }
 
     // ==========================================================
@@ -477,20 +483,20 @@ const ThreeDGarden = (): JSX.Element => {
       <Suspense fallback={<Spinner />}>
 
         {/* THREED TOOLBAR */}
-        <ThreeDToolbar data={data} />
+        <ThreeDToolbar threeddata={threeddata} />
 
         {/* THREED CANVAS VIEWER */}
-        {/* <ThreeDCanvasViewer data={data} projectName={projectName} setProjectName={setProjectName} /> */}
-        <ThreeDCanvasViewer data={data} />
+        {/* <ThreeDCanvasViewer threeddata={threeddata} projectName={projectName} setProjectName={setProjectName} /> */}
+        <ThreeDCanvasViewer threeddata={threeddata} />
 
         {/* THREED CONTROL PANELS -- STORE ACCESS (apollo, valtio, leva) */}
         <ThreeDControlPanels tabs={tabProps} />
 
         {/* THREED MODALS */}
-        <ModalAbout />
-        <ModalModel3d />
-        <ModalLoading />
-        <ModalShare />
+        {/* <ModalAbout /> */}
+        {/* <ModalModel3d /> */}
+        {/* <ModalLoading /> */}
+        {/* <ModalShare /> */}
 
         {/* THREED VIEWS */}
         {/* <CatalogView /> */}
@@ -505,7 +511,3 @@ const ThreeDGarden = (): JSX.Element => {
 }
 
 export default ThreeDGarden
-// const ThreeDGardenUseClient = dynamic(() => Promise.resolve(ThreeDGarden), {
-//   ssr: false
-// })
-// export default ThreeDGardenUseClient
