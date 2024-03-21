@@ -1,3 +1,9 @@
+import {
+  FC,
+  useEffect,
+} from 'react'
+
+
 // ** Different Views
 const CatalogView: FC = (): JSX.Element => {
   // console.debug("CatalogView")
