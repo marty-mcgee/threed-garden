@@ -451,31 +451,36 @@ const ThreeDGarden = (): JSX.Element => {
   // **
   // const projectName = preferencesStore.store.useStore('projectName')
   const doAutoLoadData = preferencesStore.store.useStore('doAutoLoadData')
+  console.log('%c🌱 doAutoLoadData', ccm.darkgreen, doAutoLoadData)
+  if (doAutoLoadData) {
+    console.log('%c🌱 doAutoLoadData', ccm.darkgreen)
+    threeddata.store.actions.loadFromDataSource(threeddata.client)
+  }
   // const doAutoRotate = preferencesStore.store.useStore('doAutoRotate')
   // **
 
-  useEffect(() => {
-    // **
-    // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
-    // console.debug(`%c====================================`, ccm.black)
-    // ==========================================================
-    // begin here ?? yes
-    // bootManager()...
-    // USE STORE
-    // WORKING:
-    // LOAD DEFAULT DATA ON START + REFRESH
+  // useEffect(() => {
+  //   // **
+  //   // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
+  //   // console.debug(`%c====================================`, ccm.black)
+  //   // ==========================================================
+  //   // begin here ?? yes
+  //   // bootManager()...
+  //   // USE STORE
+  //   // WORKING:
+  //   // LOAD DEFAULT DATA ON START + REFRESH
 
-    console.log('%c🌱 doAutoLoadData', ccm.darkgreen, doAutoLoadData)
-    if (doAutoLoadData) {
-      console.log('%c🌱 doAutoLoadData', ccm.darkgreen)
-      threeddata.store.actions.loadFromDataSource(threeddata.client)
-    }
+  //   // console.log('%c🌱 doAutoLoadData', ccm.darkgreen, doAutoLoadData)
+  //   // if (doAutoLoadData) {
+  //   //   console.log('%c🌱 doAutoLoadData', ccm.darkgreen)
+  //   //   threeddata.store.actions.loadFromDataSource(threeddata.client)
+  //   // }
 
-    // ==========================================================
-    return () => {
-      console.debug('ThreeDGarden onUnmount', word)
-    }
-  }, [])
+  //   // ==========================================================
+  //   return () => {
+  //     console.debug('ThreeDGarden onUnmount', word)
+  //   }
+  // }, [])
 
   // ==========================================================
   // FC returns JSX

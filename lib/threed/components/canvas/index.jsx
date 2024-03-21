@@ -98,8 +98,8 @@ function ThreeDEnvironment() {
     },
     // ),
     {
-      color: 'green',
-      collapsed: true,
+      color: 'darkgreen',
+      collapsed: false,
     },
   )
   return (
