@@ -248,7 +248,7 @@ export const preferencesVar = makeVar(
   }
 )
 // Output ReactiveVar
-console.debug('preferencesVar()', preferencesVar())
+console.log('SET SET SET SET SET SET preferencesVar()', preferencesVar())
 
 // ==========================================================
 // FUNCTIONAL NOUNS
