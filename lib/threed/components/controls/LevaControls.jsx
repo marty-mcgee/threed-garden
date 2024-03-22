@@ -48,26 +48,11 @@ const {
 function ThreeDPreferences() {
   // **
   const doAutoLoadDataApollo = preferencesStore.store.useStore('doAutoLoadData')
-  console.log('ThreeDLevaControls doAutoLoadDataApollo', doAutoLoadDataApollo)
+  // console.log('ThreeDLevaControls doAutoLoadDataApollo', doAutoLoadDataApollo)
   const doAutoRotateApollo = preferencesStore.store.useStore('doAutoRotate')
-  console.log('ThreeDLevaControls doAutoRotateApollo', doAutoRotateApollo)
+  // console.log('ThreeDLevaControls doAutoRotateApollo', doAutoRotateApollo)
   const projectNameApollo = preferencesStore.store.useStore('projectName')
-  console.log('ThreeDLevaControls projectNameApollo', projectNameApollo)
-  // **
-  // const DO_AUTO_ROTATE = true
-  // const DO_AUTO_LOAD_DATA = true
-  // const PROJECT_NAME = 'PROJECT ALOHA'
-  // const OFFSET_X = 20
-  // const LAMPS_NB = 10
-  // const LAMPS_SPEED = 0.8
-  // const TREES_NB = 16
-  // const TREES_SPEED = 0.4
-  // const FAR_TREES_NB = 12
-  // const FAR_TREES_SPEED = 0.08
-  // const ROCKS_NB = 6
-  // const ROCKS_SPEED = 0.5
-  // const RANDOMIZER_STRENGTH_SCALE = 0.42
-  // const RANDOMIZER_STRENGTH_POSITION = 1
+  // console.log('ThreeDLevaControls projectNameApollo', projectNameApollo)
 
   const [{
     doAutoRotate,
@@ -93,15 +78,6 @@ function ThreeDPreferences() {
   const [{
     projectName,
     // refMonitor,
-    // **
-    // lampsNb,
-    // treesNb,
-    // farTreesNb,
-    // rocksNb,
-    // lampsSpeed,
-    // treesSpeed,
-    // farTreesSpeed,
-    // rocksSpeed,
   }, setProjectPreferences] = useControls(
     'Project Preferences',
     () => ({
@@ -109,15 +85,6 @@ function ThreeDPreferences() {
         label: 'Project Name',
         value: projectNameApollo,
       },
-      // doAutoLoadData: {
-      //   label: 'Auto Load Data?',
-      //   value: doAutoLoadDataApollo,
-      // },
-      // doAutoRotate: {
-      //   label: 'Auto Rotate?',
-      //   value: doAutoRotateApollo,
-      // },
-
       /** EXAMPLES
       number: { value: 10, step: 0.25 },
       image: { image: undefined },
@@ -161,55 +128,6 @@ function ThreeDPreferences() {
           render: (get) => get('showFolders'),
         },
       ),
-      // **
-      lampsNb: {
-        value: LAMPS_NB,
-        min: 1,
-        max: 100,
-        step: 1,
-      },
-      lampsSpeed: {
-        value: LAMPS_SPEED,
-        min: 0.1,
-        max: 2,
-        step: 0.05,
-      },
-      treesNb: {
-        value: TREES_NB,
-        min: 1,
-        max: 100,
-        step: 1,
-      },
-      treesSpeed: {
-        value: TREES_SPEED,
-        min: 0.1,
-        max: 2,
-        step: 0.05,
-      },
-      farTreesNb: {
-        value: FAR_TREES_NB,
-        min: 1,
-        max: 100,
-        step: 1,
-      },
-      farTreesSpeed: {
-        value: FAR_TREES_SPEED,
-        min: 0.1,
-        max: 2,
-        step: 0.01,
-      },
-      rocksNb: {
-        value: ROCKS_NB,
-        min: 1,
-        max: 100,
-        step: 1,
-      },
-      rocksSpeed: {
-        value: ROCKS_SPEED,
-        min: 0.1,
-        max: 2,
-        step: 0.05,
-      },
       */
     }),
     {

@@ -3,6 +3,8 @@
 // ==============================================================
 
 import { preferencesStore } from '#/lib/stores/apollo'
+import { makeVar, useReactiveVar } from '@apollo/client'
+import { preferencesVar } from '#/lib/threed/ThreeDGarden'
 import { proxy, useSnapshot } from 'valtio'
 
 import { Suspense, useState, useRef, useTransition } from 'react'
@@ -57,7 +59,7 @@ import ccm from '#/lib/utils/console-colors'
 const debug = true // false | true // ts: boolean
 const DEBUG = true // false | true // ts: boolean
 
-// Model interactive "modes" using TransformControls
+// Model interactive 'modes' using TransformControls
 const actionModes = ['translate', 'rotate', 'scale']
 
 // example working simple <Loader />
@@ -68,7 +70,7 @@ function ThreeDLoaderSimple() {
 
 function ThreeDEnvironment() {
   const [envPreset, setEnvPreset] = useState('park')
-  // You can use the "inTransition" boolean to react to the loading in-between state,
+  // You can use the 'inTransition' boolean to react to the loading in-between state,
   // For instance by showing a message
   const [inTransition, startTransition] = useTransition()
 
@@ -115,9 +117,9 @@ function ThreeDEnvironment() {
 // camera.lookAt(0.5, 0.5, 0.5)
 // controls.target.set(.5, .5, .5)
 // controls.update()
-// controls.addEventListener('change', () => console.log("Controls Change"))
-// controls.addEventListener('start', () => console.log("Controls Start Event"))
-// controls.addEventListener('end', () => console.log("Controls End Event"))
+// controls.addEventListener('change', () => console.log('Controls Change'))
+// controls.addEventListener('start', () => console.log('Controls Start Event'))
+// controls.addEventListener('end', () => console.log('Controls End Event'))
 
 export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
@@ -125,7 +127,9 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
   // const projectName = preferencesStore.store.useStore('projectName')
   // const doAutoLoadData = preferencesStore.store.useStore('doAutoLoadData')
-  const doAutoRotate = preferencesStore.store.useStore('doAutoRotate')
+  // const doAutoRotate = preferencesStore.store.useStore('doAutoRotate')
+  const preferences = useReactiveVar(preferencesVar)
+  const doAutoRotate = useReactiveVar(preferencesVar).doAutoRotate
   // **
   return (
     <Canvas
@@ -165,7 +169,7 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
         {/* <Preload all /> */}
 
         {/* THREED STAGE + ENVIRONMENT */}
-        {/* <Stage environment="forest" intensity={0.7}></Stage> */}
+        {/* <Stage environment='forest' intensity={0.7}></Stage> */}
         <ThreeDEnvironment />
 
         <axesHelper args={[1024]} />
@@ -199,7 +203,7 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           zoomToCursor={false} // default is false
           zoomSpeed={1.0} // default is 1.0
           enableRotate={true}
-          autoRotate={doAutoRotate} // default is false
+          autoRotate={preferences.doAutoRotate} // default is false
           autoRotateSpeed={1.0} // default is 2.0
           rotateSpeed={1.0} // default is 1.0
           enableDamping={true} // slows down rotation after mouse release
@@ -289,8 +293,8 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
 
         {/* SHOE + SHOES */}
         {/* <Stage intensity={0.7}>
-          <Shoe color="tomato" position={[0, 0, 0]} />
-          <Shoe color="orange" scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
+          <Shoe color='tomato' position={[0, 0, 0]} />
+          <Shoe color='orange' scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
         </Stage> */}
 
         {/* {children} */}
