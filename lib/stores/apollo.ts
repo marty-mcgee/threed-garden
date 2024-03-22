@@ -3,6 +3,8 @@
 
 // ** Apollo Client 3 -- Cache Store Imports
 import create, { StoreApi } from '#/lib/api/graphql/createStore'
+import { makeVar, useReactiveVar, useApolloClient } from '@apollo/client'
+import { preferencesVar } from '#/lib/threed/ThreeDGarden'
 
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
 import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
@@ -272,11 +274,12 @@ function nounStore(this: IStore, _type = 'noun') {
           })
         )
         // if (debug) console.debug(`%c=======================================================`, ccm.black)
-        if (debug) console.debug(`%c💾 saveToDisk [${this._type}]`, ccm.darkgreen, this.store.get('all'))
+        if (debug) console.debug(`%c💾 saveToDisk [${this._type}]`, ccm.greenAlert, this.store.get('all'))
         if (debug) console.debug(`%c=======================================================`, ccm.black)
         return true
       } catch (ERROR) {
-        if (debug) console.debug(`%c💾 saveToDisk [${this._type}] ERROR`, ccm.red, ERROR)
+        if (debug) console.debug(`%c💾 saveToDisk [${this._type}] ERROR`, ccm.redAlert, ERROR)
+        if (debug) console.debug(`%c=======================================================`, ccm.red)
         return false
       }
     },
@@ -342,12 +345,12 @@ function nounStore(this: IStore, _type = 'noun') {
     // save data to db via graphql mutation
     saveToDB: async (client: any) => {
       try {
-        if (debug) console.debug(`%c🌩️ saveToDB [${this._type}] client`, ccm.red, client)
+        if (debug) console.debug(`%c🌩️ saveToDB [${this._type}] client`, ccm.orangeAlert, client)
         // TODO: SAVE TO DB VIA GRAPHQL
 
         return true // OR false, if unsuccessful
       } catch (ERROR) {
-        if (debug) console.debug(`%c🌩️ saveToDB [${this._type}]: ERROR`, ccm.red, ERROR)
+        if (debug) console.debug(`%c🌩️ saveToDB [${this._type}]: ERROR`, ccm.redAlert, ERROR)
         return false
       }
     },
@@ -358,12 +361,15 @@ function nounStore(this: IStore, _type = 'noun') {
         // const _this = this
         // if (debug) console.clear()
         if (debug) console.debug(`%c=======================================================`, ccm.black)
-        if (debug) console.debug(`%c🌩️ loadFromDB this`, ccm.blue, this)
+        if (debug) console.debug(`%c🌩️ loadFromDB this ${this._type}`, ccm.blue, this)
         if (debug) console.debug(`%c=======================================================`, ccm.black)
 
         // .gql
-        let QUERY = GetProjects // default
+        let QUERY = null // default? GetProjects
         switch (this._type) {
+          case 'preferences':
+            QUERY = GetPreferences
+            break
           case 'noun':
             QUERY = GetNouns
             break
@@ -526,15 +532,15 @@ function nounStore(this: IStore, _type = 'noun') {
 
             return true
           } else {
-            console.debug(`%c🌩️ loadFromDB [${this._type}] NO PAYLOAD`, ccm.red, data)
+            console.debug(`%c🌩️ loadFromDB [${this._type}] NO PAYLOAD`, ccm.redAlert, data)
             return false
           }
         }
 
-        console.debug(`%c🌩️ loadFromDB [${this._type}]: OTHER ERROR`, ccm.red, data)
+        console.debug(`%c🌩️ loadFromDB [${this._type}]: OTHER ERROR`, ccm.redAlert, data)
         return false
       } catch (ERROR) {
-        console.debug(`%c🌩️ loadFromDB [${this._type}]: ERROR`, ccm.red, ERROR)
+        console.debug(`%c🌩️ loadFromDB [${this._type}]: ERROR`, ccm.redAlert, ERROR)
         return false
       }
     },
@@ -577,10 +583,10 @@ function nounStore(this: IStore, _type = 'noun') {
       try {
 
         if (nodes.length) {
-          // send 'nodes' to '#_r3fCanvas'
+          // send 'nodes' to '#_r3fCanvas1'
 
           if (debug || DEBUG)
-            console.debug('%c #_r3fCanvas to receive JS Object: nodes', ccm.green, nodes)
+            console.debug('%c #_r3fCanvas1 to receive JS Object: nodes', ccm.greenAlert, nodes)
           // return true // <div>...plan of nodes as r3f component...</div>
           objectArrayToReturn = nodes
           return objectArrayToReturn
@@ -731,10 +737,28 @@ function preferenceStore(this: IStore, _type = 'preferences') {
   // ==============================================================
   // ** Preferences Store .store
 
+  // **
+  // const preferences = useReactiveVar(preferencesVar)
+  // const doAutoLoadDataApollo = preferencesStore.store.useStore('doAutoLoadData')
+  // const doAutoLoadDataApollo = preferences.doAutoLoadData
+  // const doAutoLoadDataApollo = this.store.get('doAutoLoadData')
+  const doAutoLoadDataApollo: boolean = false
+  // console.log('ThreeDLevaControls doAutoLoadDataApollo', doAutoLoadDataApollo)
+  // const doAutoRotateApollo = preferencesStore.store.useStore('doAutoRotate')
+  // const doAutoRotateApollo = preferences.doAutoRotate
+  // const doAutoRotateApollo = this.store.get('doAutoRotate')
+  const doAutoRotateApollo: boolean = false
+  // console.log('ThreeDLevaControls doAutoRotateApollo', doAutoRotateApollo)
+  // const projectNameApollo = preferencesStore.store.useStore('projectName')
+  // const projectNameApollo = preferences.projectName
+  // const projectNameApollo = this.store.get('projectName')
+  const projectNameApollo: string = ''
+  // console.log('ThreeDLevaControls projectNameApollo', projectNameApollo)
+
   this.store = create({
-    doAutoLoadData: false,
-    doAutoRotate: false,
-    projectName: 'APOLLO PREFERENCES STORE: projectName'
+    doAutoLoadData: doAutoLoadDataApollo, // true | false,
+    doAutoRotate: doAutoRotateApollo, // true | false,
+    projectName: projectNameApollo, // string | 'APOLLO PREFERENCES STORE: projectName'
   })
 
   // ==============================================================

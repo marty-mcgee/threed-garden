@@ -1,8 +1,8 @@
 # import { gql, useQuery } from '@apollo/client'
 
-# const GetSettings = gql`
-query GetSettings ($first: Int, $last: Int, $after: String, $before: String) {
-  settings (first: $first, last: $last, after: $after, before: $before) {
+# const GetPreferences = gql`
+query GetPreferences ($first: Int, $last: Int, $after: String, $before: String) {
+  preferences (first: $first, last: $last, after: $after, before: $before) {
     pageInfo {
       endCursor
       hasNextPage
@@ -26,19 +26,23 @@ query GetSettings ($first: Int, $last: Int, $after: String, $before: String) {
         # isRestricted
         # isTermNode
         link
-        # modified
+        modified
         # modifiedGmt
         # previewRevisionDatabaseId
         # previewRevisionId
-        slug
+        # slug
         status
-        # template {
-        #   templateName
-        # }
         title
-        uri
         # custom fields
-        # settingsId
+        # user prefs
+        doAutoLoadData
+        doAutoRotate
+        # project prefs
+        projectName
+        # scene prefs
+        # ...
+        owner
+        version
       }
     }
   }
