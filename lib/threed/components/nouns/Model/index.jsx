@@ -406,7 +406,7 @@ const Model = ({
     if (model.is.isFBX) {
       return (
         <group
-          key={newUUID()}
+          key={model.group.group_id} // newUUID()
           ref={model.ref}
           // ref={model.ani.ref}
           position={model.group.group_position}
@@ -419,6 +419,7 @@ const Model = ({
             name={model.name ? model.name : 'no name'}
             // ref={model.ref}
             // ref={model.ani.ref}
+            // ref={model.ani.actions}
             object={model.nodes}
             dispose={null}
           />

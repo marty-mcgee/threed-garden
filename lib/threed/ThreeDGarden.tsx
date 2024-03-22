@@ -42,6 +42,7 @@ import { useApolloClient } from '@apollo/client'
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
 import stores from '#/lib/stores/apollo'
 // import { preferencesStore } from '#/lib/stores/apollo'
+import { makeVar, useReactiveVar } from '@apollo/client'
 
 // ** Next Imports
 // import Image from 'next/image'
@@ -238,6 +239,17 @@ const {
 // console.debug('%csceneStore', ccm.orange, sceneStore)
 // console.debug(`%c====================================`, ccm.black)
 
+// ** USE REACTIVE VARS (APOLLO LOCAL STATE)
+export const preferencesVar = makeVar(
+  {
+    doAutoLoadData: true,
+    doAutoRotate: true,
+    projectName: '',
+  }
+)
+// Output ReactiveVar
+console.debug('preferencesVar()', preferencesVar())
+
 // ==========================================================
 // FUNCTIONAL NOUNS
 // ==========================================================
@@ -263,24 +275,24 @@ const {
 // ==========================================================
 
 // ** R3F Main Component
-const ThreeDCanvasViewer = ({ threeddata }): JSX.Element => {
+const ThreeDCanvasViewer = (): JSX.Element => {
 
   // **
   const word = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
   // console.debug(`%c=======================================================`, ccm.black)
-  console.debug('%c🥕 ThreeDCanvasViewer {props.threeddata}', ccm.orange, threeddata)
+  // console.debug('%c🥕 ThreeDCanvasViewer {props.threeddata}', ccm.orange, threeddata)
   // console.debug(`%c=======================================================`, ccm.black)
 
   // ==========================================================
 
-  // const noun = threeddata.store.store.get('one')
-  const noun = threeddata.store.store.useStore('one')
-  let noun_title = noun?.data?.title ? noun.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
-  console.debug('%c🥕 ThreeDCanvasViewer {noun}', ccm.orange, noun, noun_title)
+  // const project = projectStore.store.get('one')
+  const project = projectStore.store.useStore('one')
+  let project_title = project?.data?.title ? project.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
+  console.debug('%c🥕 ThreeDCanvasViewer {project}', ccm.orange, project, project_title)
   let nodesToLoad = []
   let threeds = [] // threeds are nodes[] to load to canvas
-  if (noun) {
-    nodesToLoad = noun.data?.plans?.nodes[0]?.threedsActive?.nodes
+  if (project) {
+    nodesToLoad = project.data?.plans?.nodes[0]?.threedsActive?.nodes
     if (nodesToLoad) {
       threeds = nodesToLoad
       if (debug) console.debug('%c🥕 ThreeDCanvasViewer [nodesToLoad] as threeds', ccm.orange, threeds)
@@ -290,7 +302,7 @@ const ThreeDCanvasViewer = ({ threeddata }): JSX.Element => {
   // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
   const loadNounData = (threeds) => {
     // load these threeds into r3f canvas
-    threeddata.store.actions.loadToCanvas(threeds, '_r3fCanvas')
+    projectStore.actions.loadToCanvas(threeds, '_r3fCanvas')
     // return <Box>true</Box> // true
   }
 
@@ -319,15 +331,11 @@ const ThreeDCanvasViewer = ({ threeddata }): JSX.Element => {
           }}
         >
           {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-          <ThreeDLevaControls
-            // threeddata={threeddata}
-            // projectName={projectName}
-          />
+          <ThreeDLevaControls />
           {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
         </Grid>
         {/* <Typography> */}
-          {/* {noun._type} title:  */}
-          {/* {noun_title} */}
+          {/* {project_title} */}
         {/* </Typography> */}
       </Grid>
       <Grid
@@ -404,36 +412,49 @@ const ThreeDGarden = (): JSX.Element => {
   // ==========================================================
   // ** Hooks
 
-  // USE SESSION
+  // ** USE SESSION
   // const { data: session, status } = useSession()
   // const { data, status } = useSession()
   const { data: session, status } = useSession()
   // console.debug('useSession()', useSession())
   // console.debug('useSession().data', data)
-    // USE STORE
+  // ** USE CLIENT
   const client = useApolloClient()
   // console.debug('useApolloClient()', client)
+  // // ** USE REACTIVE VARS (APOLLO LOCAL STATE)
+  // export const preferencesVar = makeVar(
+  //   {
+  //     doAutoLoadData: true,
+  //     doAutoRotate: true,
+  //     projectName: '',
+  //   }
+  // )
+
+  // Output ReactiveVar
+  // console.debug('preferencesVar()', preferencesVar())
+  // ** USE CONTEXT
   // const abilities = useContext(AbilityContext)
   const abilities = ['read', 'write', 'delete']
 
   // ==========================================================
-  // PRIMARY USER 'DATA' OBJECT
+  // FOR REFERENCE: EXAMPLE PRIMARY USER 'DATA' OBJECT
   //
-  const threeddata = {
-    status: status,
-    abilities: abilities,
-    session: session,
-    client: client,
-    store: projectStore, // default
-    word: word,
-  }
+  // const threeddata = {
+  //   status: status,
+  //   abilities: abilities,
+  //   session: session,
+  //   client: client,
+  //   preferences: preferencesVar(),
+  //   store: projectStore, // default
+  //   word: word,
+  // }
 
   // ==========================================================
   // 'GUI CONTROL PANEL' + 'THREED PROJECT' NAME
   //
-  // const [projectName, setProjectName] = useState(threeddata.store.store.get('one').threeddata.title)
-  // const [doAutoLoadData, setDoAutoLoadData] = useState(threeddata.store.store.get('one').doAutoLoadData)
-  // const [doAutoRotate, setDoAutoRotate] = useState(threeddata.store.store.get('one').doAutoRotate)
+  // const [projectName, setProjectName] = useState(projectStore.store.get('one').data.title)
+  // const [doAutoLoadData, setDoAutoLoadData] = useState(preferencesStore.store.get('one').doAutoLoadData)
+  // const [doAutoRotate, setDoAutoRotate] = useState(preferencesStore.store.get('one').doAutoRotate)
   // **
   // const onClickSetProjectName = (projectName) => {
   //   setProjectName(projectName)
@@ -452,9 +473,10 @@ const ThreeDGarden = (): JSX.Element => {
   // const projectName = preferencesStore.store.useStore('projectName')
   const doAutoLoadData = preferencesStore.store.useStore('doAutoLoadData')
   console.log('%c🌱 doAutoLoadData', ccm.darkgreen, doAutoLoadData)
-  if (doAutoLoadData) {
-    console.log('%c🌱 doAutoLoadData', ccm.darkgreen)
-    threeddata.store.actions.loadFromDataSource(threeddata.client)
+  const preferences = useReactiveVar(preferencesVar)
+  if (preferences.doAutoLoadData) {
+    console.log('%c🌱 preferences.doAutoLoadData', ccm.darkgreen)
+    projectStore.actions.loadFromDataSource(client)
   }
   // const doAutoRotate = preferencesStore.store.useStore('doAutoRotate')
   // **
@@ -473,7 +495,7 @@ const ThreeDGarden = (): JSX.Element => {
   //   // console.log('%c🌱 doAutoLoadData', ccm.darkgreen, doAutoLoadData)
   //   // if (doAutoLoadData) {
   //   //   console.log('%c🌱 doAutoLoadData', ccm.darkgreen)
-  //   //   threeddata.store.actions.loadFromDataSource(threeddata.client)
+  //   //   projectStore.actions.loadFromDataSource(client)
   //   // }
 
   //   // ==========================================================
@@ -493,11 +515,11 @@ const ThreeDGarden = (): JSX.Element => {
       <Suspense fallback={<Spinner />}>
 
         {/* THREED TOOLBAR */}
-        <ThreeDToolbar threeddata={threeddata} />
+        <ThreeDToolbar />
 
         {/* THREED CANVAS VIEWER */}
         {/* <ThreeDCanvasViewer threeddata={threeddata} projectName={projectName} setProjectName={setProjectName} /> */}
-        <ThreeDCanvasViewer threeddata={threeddata} />
+        <ThreeDCanvasViewer />
 
         {/* THREED CONTROL PANELS -- STORE ACCESS (apollo, valtio, leva) */}
         <ThreeDControlPanels tabs={tabProps} />
