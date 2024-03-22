@@ -14,6 +14,10 @@ import stores from '#/lib/stores/apollo'
 import { makeVar, useReactiveVar, useApolloClient } from '@apollo/client'
 import { preferencesVar } from '#/lib/threed/ThreeDGarden'
 
+// ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
+import ccm from '#/lib/utils/console-colors'
+
+// ** WAVEFORM SUPPORT
 const noise = new Noise(Math.random())
 
 // ==========================================================
@@ -49,8 +53,8 @@ const {
 function ThreeDPreferences() {
   // **
   const preferences = useReactiveVar(preferencesVar)
-  console.log('SET SET SET SET SET SET BEFORE USE OF: preferences preferencesVar', preferences)
-  console.debug('SET SET SET SET SET SET BEFORE USE OF: preferences preferencesVar', preferences)
+  console.log('%c SET SET SET SET SET SET BEFORE USE OF: preferences preferencesVar', ccm.yellow, preferences)
+  console.debug('%c SET SET SET SET SET SET BEFORE USE OF: preferences preferencesVar', ccm.yellow, preferences)
 
   const doAutoLoadDataApollo = preferencesStore.store.useStore('doAutoLoadData')
   // const doAutoLoadDataApollo = useReactiveVar(preferencesVar).doAutoLoadData
