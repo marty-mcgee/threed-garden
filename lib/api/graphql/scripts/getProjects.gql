@@ -7,21 +7,22 @@ query GetProjects {
       link
       version
       modified
-      preferences {
-        node {
-          preferencesId
-          title
-          content
-          link
-          modified
-          # custom fields
-          projectName
-          doAutoLoadData
-          doAutoRotate
-          # owner
-          version
-        }
-      }
+      # ** RELATIONSHIPS
+      # preferences {
+      #   node {
+      #     preferencesId
+      #     title
+      #     content
+      #     link
+      #     modified
+      #     # custom fields
+      #     projectName
+      #     doAutoLoadData
+      #     doAutoRotate
+      #     # owner
+      #     version
+      #   }
+      # }
       scenes {
         nodes {
           sceneId

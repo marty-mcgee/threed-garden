@@ -242,9 +242,9 @@ const {
 // ** USE REACTIVE VARS (APOLLO LOCAL STATE)
 export const preferencesVar = makeVar(
   {
-    doAutoLoadData: true,
-    doAutoRotate: true,
-    projectName: '',
+    doAutoLoadData: false, // true | false
+    doAutoRotate: false, // true | false
+    projectName: 'HEY HEY HEY: preferencesVar.projectName DEFAULT', // string: 'default'
   }
 )
 // Output ReactiveVar

@@ -9,9 +9,10 @@ import { spring } from '@leva-ui/plugin-spring'
 import { Noise } from 'noisejs'
 
 // ** APOLLO Imports
-import { useApolloClient } from '@apollo/client'
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
 import stores from '#/lib/stores/apollo'
+import { makeVar, useReactiveVar, useApolloClient } from '@apollo/client'
+import { preferencesVar } from '#/lib/threed/ThreeDGarden'
 
 const noise = new Noise(Math.random())
 
@@ -47,12 +48,32 @@ const {
 
 function ThreeDPreferences() {
   // **
+  const preferences = useReactiveVar(preferencesVar)
+
   const doAutoLoadDataApollo = preferencesStore.store.useStore('doAutoLoadData')
-  // console.log('ThreeDLevaControls doAutoLoadDataApollo', doAutoLoadDataApollo)
+  // const doAutoLoadDataApollo = useReactiveVar(preferencesVar).doAutoLoadData
+  console.log('ThreeDLevaControls doAutoLoadDataApollo', doAutoLoadDataApollo)
+  const doAutoLoadDataLeva = preferences.doAutoLoadData
+  console.log('ThreeDLevaControls doAutoLoadDataLeva', doAutoLoadDataLeva)
+  const doAutoLoadDataThreeD = useReactiveVar(preferencesVar).doAutoLoadData === doAutoLoadDataApollo === doAutoLoadDataLeva
+  console.log('ThreeDLevaControls doAutoLoadDataThreeD', doAutoLoadDataThreeD)
+
   const doAutoRotateApollo = preferencesStore.store.useStore('doAutoRotate')
-  // console.log('ThreeDLevaControls doAutoRotateApollo', doAutoRotateApollo)
+  // const doAutoRotateApollo = preferences.doAutoRotate
+  console.log('ThreeDLevaControls doAutoRotateApollo', doAutoRotateApollo)
+  const doAutoRotateLeva = preferences.doAutoRotate
+  console.log('ThreeDLevaControls doAutoRotateLeva', doAutoRotateLeva)
+  const doAutoRotateThreeD = useReactiveVar(preferencesVar).doAutoRotate === doAutoRotateApollo === doAutoRotateLeva
+  console.log('ThreeDLevaControls doAutoRotateThreeD', doAutoRotateThreeD)
+
+
   const projectNameApollo = preferencesStore.store.useStore('projectName')
-  // console.log('ThreeDLevaControls projectNameApollo', projectNameApollo)
+  // const projectNameApollo = preferences.projectName
+  console.log('ThreeDLevaControls projectNameApollo', projectNameApollo)
+  const projectNameLeva = preferences.projectName
+  console.log('ThreeDLevaControls projectNameLeva', projectNameLeva)
+  const projectNameThreeD = useReactiveVar(preferencesVar).projectName === projectNameApollo === projectNameLeva
+  console.log('ThreeDLevaControls projectNameThreeD', projectNameThreeD)
 
   const [{
     doAutoRotate,
