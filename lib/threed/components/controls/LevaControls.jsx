@@ -49,31 +49,33 @@ const {
 function ThreeDPreferences() {
   // **
   const preferences = useReactiveVar(preferencesVar)
+  console.log('SET SET SET SET SET SET BEFORE USE OF: preferences preferencesVar', preferences)
+  console.debug('SET SET SET SET SET SET BEFORE USE OF: preferences preferencesVar', preferences)
 
   const doAutoLoadDataApollo = preferencesStore.store.useStore('doAutoLoadData')
   // const doAutoLoadDataApollo = useReactiveVar(preferencesVar).doAutoLoadData
-  console.log('ThreeDLevaControls doAutoLoadDataApollo', doAutoLoadDataApollo)
+  console.log('ThreeDLevaControls preferencesVar doAutoLoadDataApollo', doAutoLoadDataApollo)
   const doAutoLoadDataLeva = preferences.doAutoLoadData
-  console.log('ThreeDLevaControls doAutoLoadDataLeva', doAutoLoadDataLeva)
+  console.log('ThreeDLevaControls preferencesVar doAutoLoadDataLeva', doAutoLoadDataLeva)
   const doAutoLoadDataThreeD = useReactiveVar(preferencesVar).doAutoLoadData === doAutoLoadDataApollo === doAutoLoadDataLeva
-  console.log('ThreeDLevaControls doAutoLoadDataThreeD', doAutoLoadDataThreeD)
+  console.log('ThreeDLevaControls preferencesVar doAutoLoadDataThreeD', doAutoLoadDataThreeD)
 
   const doAutoRotateApollo = preferencesStore.store.useStore('doAutoRotate')
   // const doAutoRotateApollo = preferences.doAutoRotate
-  console.log('ThreeDLevaControls doAutoRotateApollo', doAutoRotateApollo)
+  console.log('ThreeDLevaControls preferencesVar doAutoRotateApollo', doAutoRotateApollo)
   const doAutoRotateLeva = preferences.doAutoRotate
-  console.log('ThreeDLevaControls doAutoRotateLeva', doAutoRotateLeva)
+  console.log('ThreeDLevaControls preferencesVar doAutoRotateLeva', doAutoRotateLeva)
   const doAutoRotateThreeD = useReactiveVar(preferencesVar).doAutoRotate === doAutoRotateApollo === doAutoRotateLeva
-  console.log('ThreeDLevaControls doAutoRotateThreeD', doAutoRotateThreeD)
+  console.log('ThreeDLevaControls preferencesVar doAutoRotateThreeD', doAutoRotateThreeD)
 
 
   const projectNameApollo = preferencesStore.store.useStore('projectName')
   // const projectNameApollo = preferences.projectName
-  console.log('ThreeDLevaControls projectNameApollo', projectNameApollo)
+  console.log('ThreeDLevaControls preferencesVar projectNameApollo', projectNameApollo)
   const projectNameLeva = preferences.projectName
-  console.log('ThreeDLevaControls projectNameLeva', projectNameLeva)
+  console.log('ThreeDLevaControls preferencesVar projectNameLeva', projectNameLeva)
   const projectNameThreeD = useReactiveVar(preferencesVar).projectName === projectNameApollo === projectNameLeva
-  console.log('ThreeDLevaControls projectNameThreeD', projectNameThreeD)
+  console.log('ThreeDLevaControls preferencesVar projectNameThreeD', projectNameThreeD)
 
   const [{
     doAutoRotate,
