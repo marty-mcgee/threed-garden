@@ -168,7 +168,7 @@ function ThreeDPreferences() {
 
   useEffect(() => {
     setUserPreferences({ doAutoLoadData: doAutoLoadDataApollo})
-    preferencesStore.store.update('doAutoLoadData', doAutoLoadDataApollo)
+    preferencesStore.store.update('doAutoLoadData', doAutoLoadData)
   }, [doAutoLoadDataApollo])
 
   useEffect(() => {
@@ -181,6 +181,22 @@ function ThreeDPreferences() {
     setProjectPreferences({ projectName: projectNameApollo})
     preferencesStore.store.update('projectName', projectNameApollo)
   }, [projectNameApollo])
+
+  // useEffect(() => {
+  //   setUserPreferences({ doAutoLoadData: doAutoLoadData})
+  //   preferencesStore.store.update('doAutoLoadData', doAutoLoadData)
+  // }, [doAutoLoadData])
+
+  // useEffect(() => {
+  //   setUserPreferences({ doAutoRotate: doAutoRotateApollo})
+  //   preferencesStore.store.update('doAutoRotate', doAutoRotate)
+  // }, [doAutoRotate])
+
+  // useEffect(() => {
+  //   // set({ title: projectName})
+  //   setProjectPreferences({ projectName: projectName})
+  //   preferencesStore.store.update('projectName', projectName)
+  // }, [projectName])
 }
 
 // ==========================================================
