@@ -1,6 +1,6 @@
 # [🥕 ThreeD Garden: 3D Object Environment w NextJS React TypeScript Web3 ThreeJS Poimandres React-Three w Valtio Leva Control UI w Apollo Stores w MUI + Tailwind CSS](https://github.com/marty-mcgee/threed-garden/)
 
-3D Dev Environment using React 18, TypeScript 5, Three.js React-Three-Fiber, on Next.js 14, Apollo Client, GraphQL, WordPress REST API, MUI 5 + Tailwind. ThreeD Web3 Interface for Three-Dimensional JavaScript Objects with React Server + Client Components, Web3 Contracts + more..
+3D Dev Environment w React 18, TypeScript 5, Three.js React-Three-Fiber, on Next.js 14, Apollo Client, GraphQL, WordPress REST API, MUI 5 + Tailwind. ThreeD Web3 Interface for Three-Dimensional JavaScript Objects with React Server + Client Components, Web3 Contracts + more..
 
 ## Live Demo
 
