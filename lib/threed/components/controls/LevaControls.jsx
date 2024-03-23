@@ -59,18 +59,18 @@ function ThreeDPreferences() {
   const doAutoLoadDataApollo = preferencesStore.store.useStore('doAutoLoadData')
   // const doAutoLoadDataApollo = useReactiveVar(preferencesVar).doAutoLoadData
   // const doAutoLoadDataApollo = preferences.doAutoLoadData
-  console.log('ThreeDLevaControls preferencesVar doAutoLoadDataApollo', doAutoLoadDataApollo)
+  // console.log('ThreeDLevaControls preferencesVar doAutoLoadDataApollo', doAutoLoadDataApollo)
   const doAutoLoadDataLeva = preferences.doAutoLoadData
-  console.log('ThreeDLevaControls preferencesVar doAutoLoadDataLeva', doAutoLoadDataLeva)
+  // console.log('ThreeDLevaControls preferencesVar doAutoLoadDataLeva', doAutoLoadDataLeva)
   const doAutoLoadDataThreeD = useReactiveVar(preferencesVar).doAutoLoadData === doAutoLoadDataApollo === doAutoLoadDataLeva
   console.log('ThreeDLevaControls preferencesVar doAutoLoadDataThreeD', doAutoLoadDataThreeD)
 
   const doAutoRotateApollo = preferencesStore.store.useStore('doAutoRotate')
   // const doAutoRotateApollo = useReactiveVar(preferencesVar).doAutoRotate
   // const doAutoRotateApollo = preferences.doAutoRotate
-  console.log('ThreeDLevaControls preferencesVar doAutoRotateApollo', doAutoRotateApollo)
+  // console.log('ThreeDLevaControls preferencesVar doAutoRotateApollo', doAutoRotateApollo)
   const doAutoRotateLeva = preferences.doAutoRotate
-  console.log('ThreeDLevaControls preferencesVar doAutoRotateLeva', doAutoRotateLeva)
+  // console.log('ThreeDLevaControls preferencesVar doAutoRotateLeva', doAutoRotateLeva)
   const doAutoRotateThreeD = useReactiveVar(preferencesVar).doAutoRotate === doAutoRotateApollo === doAutoRotateLeva
   console.log('ThreeDLevaControls preferencesVar doAutoRotateThreeD', doAutoRotateThreeD)
 
@@ -78,9 +78,9 @@ function ThreeDPreferences() {
   const projectNameApollo = preferencesStore.store.useStore('projectName')
   // const projectNameApollo = useReactiveVar(preferencesVar).projectName
   // const projectNameApollo = preferences.projectName
-  console.log('ThreeDLevaControls preferencesVar projectNameApollo', projectNameApollo)
+  // console.log('ThreeDLevaControls preferencesVar projectNameApollo', projectNameApollo)
   const projectNameLeva = preferences.projectName
-  console.log('ThreeDLevaControls preferencesVar projectNameLeva', projectNameLeva)
+  // console.log('ThreeDLevaControls preferencesVar projectNameLeva', projectNameLeva)
   const projectNameThreeD = useReactiveVar(preferencesVar).projectName ?? projectNameApollo ?? projectNameLeva
   console.log('ThreeDLevaControls preferencesVar projectNameThreeD', projectNameThreeD)
 
