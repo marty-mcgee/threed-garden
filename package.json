@@ -227,14 +227,17 @@
     "yup": "^1.2.0"
   },
   "keywords": [
-    "react-three-fiber",
+    "webgl",
     "three",
+    "pmndrs",
+    "react-three-fiber",
+    "react-three-drei",
     "threed",
+    "threedgarden",
     "threed.design",
     "threed-garden",
-    "threedgarden",
     "threed.ai",
-    "functional components",
-    "functional nouns"
+    "farmbot",
+    "web3"
   ]
 }
