@@ -1,8 +1,6 @@
 // ** "apollo-reactive-store": "0.0.4"
 import { makeVar, ReactiveVar, useReactiveVar } from '@apollo/client'
 
-// [MM] COLORFUL CONSOLE MESSAGES (ccm)
-
 type State<T> = Record<string | symbol, T>
 type Store<T> = Record<string | symbol, ReactiveVar<T>>
 
@@ -27,7 +25,12 @@ export interface StoreApi<Value> {
   reset(): void
 }
 
-export default function create<Value>(initialState: State<Value>, options = { debug: false }): StoreApi<Value> {
+export default function create<Value> (
+  initialState: State<Value>,
+  options = { debug: false }
+): StoreApi<Value> {
+
+  // ** CREATE STORE SINGLETON
   const createStore = () => {
     return Object.keys(initialState).reduce<Store<Value>>((sum, key) => {
       return {
@@ -36,6 +39,8 @@ export default function create<Value>(initialState: State<Value>, options = { de
       }
     }, {})
   }
+
+  // ** CREATE AN INSTANCE OF STORE
   let store = createStore()
 
   // DEBUGGING
