@@ -1,49 +1,22 @@
 # import { gql, useQuery } from '@apollo/client'
 
 # const GetPreferences = gql`
-query GetPreferences ($first: Int, $last: Int, $after: String, $before: String) {
-  preferences (first: $first, last: $last, after: $after, before: $before) {
-    pageInfo {
-      endCursor
-      hasNextPage
-      hasPreviousPage
-      startCursor
-    }
-    edges {
-      cursor
-      node {
-        content
-        contentTypeName
-        # databaseId
-        # date
-        # dateGmt
-        # desiredSlug
-        # enclosure
-        # guid
-        id
-        # isContentNode
-        # isPreview
-        # isRestricted
-        # isTermNode
-        link
-        modified
-        # modifiedGmt
-        # previewRevisionDatabaseId
-        # previewRevisionId
-        # slug
-        status
-        title
-        # custom fields
-        # user prefs
-        doAutoLoadData
-        doAutoRotate
-        # project prefs
-        projectName
-        # scene prefs
-        # ...
-        owner
-        version
-      }
+query GetPreferences ($owner: Int, $last: Int, $after: String, $before: String) {
+  preferencess (first: $owner, last: $last, after: $after, before: $before) {
+    nodes {
+      preferencesId
+      title
+      content
+      status
+      link
+      modified
+      # custom fields
+      doAutoLoadData
+      doAutoRotate
+      preferencesId
+      projectName
+      version
+      # owner
     }
   }
   # files {

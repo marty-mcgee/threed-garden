@@ -69,29 +69,13 @@ interface IStore extends StoreApi<any> {
   _plural: string
   _storageItem: string
   _storageItemHistory: string
-  // store
+  // store .store
   store: any
-  // // store.store
-  // nounStore: (_type?: string) => boolean
-  // projectStore: StoreApi<any>
-  // participantStore: StoreApi<any>
-  // preferencesStore: StoreApi<any>
-  // planStore: StoreApi<any>
-  // threedStore: StoreApi<any>
-  // fileStore: StoreApi<any>
-  // sceneStore: StoreApi<any>
-  // allotmentStore: StoreApi<any>
-  // bedStore: StoreApi<any>
-  // plantStore: StoreApi<any>
-  // plantingPlanStore: StoreApi<any>
-  // // bearStore: StoreApi<any>
-  // modalStore: (_type?: string) => void
-  // modalAboutStore: StoreApi<any>
-  // modalModel3dStore: StoreApi<any>
-  // modalLoadingStore: StoreApi<any>
-  // modalShareStore: StoreApi<any>
-  // modalStoreNoun: StoreApi<any>
-  // store.actions
+  // store .actions
+  actions: any
+}
+
+interface IStorePreferences extends IStore {
   actions: any
 }
 
@@ -107,6 +91,10 @@ function noun(this: INoun, _type: string = 'noun') {
   // wp custom fields
   this.data = {
     title: 'NOTHING YET, SIR',
+    // custom fields (to be overwritten from db)
+    // doAutoLoadData: true | false
+    // doAutoRotate: true | false
+    // projectName: ''
   }
   // layers/levels
   this.layers = [
@@ -727,7 +715,7 @@ function modalStore(this: IStore, _type = 'modal') {
 // ** Preferences Store -- Constructor Function
 // -- returns new (preferencesStore as any)
 
-function preferenceStore(this: IStore, _type = 'preferences') {
+function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
   // store params
   this._type = _type.toLowerCase()
   this._plural = _type // + 's'
@@ -819,17 +807,19 @@ function preferenceStore(this: IStore, _type = 'preferences') {
 // ==============================================================
 // ** Construct Stores + Export as Group of Stores
 
-// export { preferencesStore }
-// export const preferencesStore = new (nounStore as any)('preferences')
-export const preferencesStore = new (preferenceStore as any)('preferences')
 export { nounStore }
 // export const nounStore = new (nounStore as any)('noun')
+// export { preferencesStore }
+export const preferencesStoreNoun = new (nounStore as any)('preferences')
+// EXTEND nounStore to become preferencesStoreCustom
+export const preferencesStore = new (preferenceStoreCustom as any)('preferences')
+// regular nouns
 export const projectStore = new (nounStore as any)('project')
+export const sceneStore = new (nounStore as any)('scene')
 export const participantStore = new (nounStore as any)('participant')
 export const planStore = new (nounStore as any)('plan')
 export const threedStore = new (nounStore as any)('threed')
 export const fileStore = new (nounStore as any)('file')
-export const sceneStore = new (nounStore as any)('scene')
 export const allotmentStore = new (nounStore as any)('allotment')
 export const bedStore = new (nounStore as any)('bed')
 export const plantStore = new (nounStore as any)('plant')
@@ -842,15 +832,16 @@ export const modalLoadingStore = new (modalStore as any)('modalLoading')
 export const modalShareStore = new (modalStore as any)('modalShare')
 export const modalStoreNoun = new (nounStore as any)('modal')
 
-const stores = {
-  preferencesStore,
+export const stores = {
   nounStore,
+  preferencesStoreNoun,
+  preferencesStore,
   projectStore,
+  sceneStore,
   participantStore,
   planStore,
   threedStore,
   fileStore,
-  sceneStore,
   allotmentStore,
   bedStore,
   plantStore,
@@ -864,9 +855,9 @@ const stores = {
 }
 
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
-const queries = {
-  GetPreferences,
+export const queries = {
   GetNouns,
+  GetPreferences,
   GetProjects,
   GetParticipants,
   GetPlans,
@@ -878,10 +869,11 @@ const queries = {
   GetPlants,
   GetPlantingPlans,
 }
-const mutations = {
+export const mutations = {
+  UpdatePreferences: 'HEY HEY HEY UpdatePreferences',
   UpdateProjects: 'HEY HEY HEY UpdateProjects',
   UpdatePlans: 'HEY HEY HEY UpdatePlans',
 }
 
+// export { stores, queries, mutations }
 export default stores
-export { stores, queries, mutations }

@@ -211,10 +211,11 @@ const Button = styled(MuiButton)(({ theme }) => ({
 }))
 
 // ==========================================================
-// FUNCTIONAL STORES
+// FUNCTIONAL STORES + NOUNS
 // ==========================================================
 
 const {
+  preferencesStoreNoun,
   preferencesStore,
   // nounStore,
   projectStore,
@@ -239,6 +240,10 @@ const {
 // console.debug('%csceneStore', ccm.orange, sceneStore)
 // console.debug(`%c====================================`, ccm.black)
 
+// ** GET PREFERENCES
+const preferencesDB = preferencesStoreNoun.actions.loadFromDB()
+console.log('%c preferencesDB', ccm.yellow, preferencesDB)
+
 // ** USE REACTIVE VARS (APOLLO LOCAL STATE)
 export const preferencesVar = makeVar(
   {
@@ -248,15 +253,7 @@ export const preferencesVar = makeVar(
   }
 )
 // Output ReactiveVar
-console.log('%c SET SET SET SET SET SET preferencesVar()', ccm.yellow, preferencesVar())
-
-// ==========================================================
-// FUNCTIONAL NOUNS
-// ==========================================================
-if (debug) {
-  // console.debug(`%c🥕 ThreeDGarden<FC,R3F>: {nouns()}`, ccm.blue)
-  // console.debug(`%c====================================`, ccm.black)
-}
+console.log('%c SET SET SET SET SET SET preferencesVar() = preferencesDB', ccm.yellow, preferencesVar())
 
 // ==========================================================
 // COMPONENTS
