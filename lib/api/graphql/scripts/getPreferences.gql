@@ -13,7 +13,6 @@ query GetPreferences ($owner: Int, $last: Int, $after: String, $before: String) 
       # custom fields
       doAutoLoadData
       doAutoRotate
-      preferencesId
       projectName
       version
       # owner
