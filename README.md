@@ -5,18 +5,16 @@
 ## Live Demo
 
 🌱 [threedgarden.com](https://threedgarden.com)
-===
+
 🥕 [Demo: Participate](https://threedgarden.com/participate)
-===
 
 ## For Developers
 
 🤖 ["name": "threed-garden",](https://www.npmjs.com/package/threed-garden)
-===
+
 🤖 ["version": "0.15.0-beta.x",](https://www.npmjs.com/package/threed-garden?activeTab=versions)
-===
+
 🤖 ["code": "0.15.0-beta.x",](https://www.npmjs.com/package/threed-garden?activeTab=code)
-===
 
 ### Install + Run
 
