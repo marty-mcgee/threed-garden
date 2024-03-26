@@ -215,9 +215,8 @@ const Button = styled(MuiButton)(({ theme }) => ({
 // ==========================================================
 
 const {
-  preferencesStoreNoun,
-  preferencesStore,
   // nounStore,
+  preferencesStore,
   projectStore,
   // participantStore,
   // planStore,
@@ -240,20 +239,16 @@ const {
 // console.debug('%csceneStore', ccm.orange, sceneStore)
 // console.debug(`%c====================================`, ccm.black)
 
-// ** GET PREFERENCES
-const preferencesDB = preferencesStoreNoun.actions.loadFromDB()
-console.log('%c preferencesDB', ccm.yellow, preferencesDB)
-
-// ** USE REACTIVE VARS (APOLLO LOCAL STATE)
-export const preferencesVar = makeVar(
-  {
-    doAutoLoadData: false, // true | false
-    doAutoRotate: false, // true | false
-    projectName: 'HEY HEY HEY: preferencesVar.projectName DEFAULT', // string: 'default'
-  }
-)
-// Output ReactiveVar
-console.log('%c SET SET SET SET SET SET preferencesVar() = preferencesDB', ccm.yellow, preferencesVar())
+// // ** USE REACTIVE VARS (APOLLO LOCAL STATE)
+// export const preferencesVar = makeVar(
+//   {
+//     doAutoLoadData: false, // true | false
+//     doAutoRotate: false, // true | false
+//     projectName: 'HEY HEY HEY: preferencesVar.projectName DEFAULT', // string: 'default'
+//   }
+// )
+// // Output ReactiveVar
+// console.log('%c SET SET SET SET SET SET preferencesVar() = preferencesDB', ccm.yellow, preferencesVar())
 
 // ==========================================================
 // COMPONENTS
@@ -415,9 +410,15 @@ const ThreeDGarden = (): JSX.Element => {
   const { data: session, status } = useSession()
   // console.debug('useSession()', useSession())
   // console.debug('useSession().data', data)
+
   // ** USE CLIENT
   const client = useApolloClient()
   // console.debug('useApolloClient()', client)
+
+  // ** GET PREFERENCES
+  // const preferencesDB = preferencesStore.actions.loadFromDB(client)
+  // console.log('%c preferencesDB', ccm.yellow, preferencesDB)
+
   // // ** USE REACTIVE VARS (APOLLO LOCAL STATE)
   // export const preferencesVar = makeVar(
   //   {
@@ -464,42 +465,35 @@ const ThreeDGarden = (): JSX.Element => {
 
   // ==========================================================
   // Component onMount hook
-  //
-
   // **
-  // const projectName = preferencesStore.store.useStore('projectName')
-  const doAutoLoadData = preferencesStore.store.useStore('doAutoLoadData')
-  console.log('%c🌱 doAutoLoadData', ccm.darkgreen, doAutoLoadData)
-  const preferences = useReactiveVar(preferencesVar)
-  if (preferences.doAutoLoadData) {
-    console.log('%c🌱 preferences.doAutoLoadData', ccm.darkgreen)
-    projectStore.actions.loadFromDataSource(client)
-  }
-  // const doAutoRotate = preferencesStore.store.useStore('doAutoRotate')
-  // **
+  useEffect(() => {
+    // **
+    // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
+    // console.debug(`%c====================================`, ccm.black)
+    // ==========================================================
+    // begin here ?? yes
+    // bootManager()...
+    // USE STORE
+    // WORKING:
+    // LOAD DEFAULT DATA ON START + REFRESH
 
-  // useEffect(() => {
-  //   // **
-  //   // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
-  //   // console.debug(`%c====================================`, ccm.black)
-  //   // ==========================================================
-  //   // begin here ?? yes
-  //   // bootManager()...
-  //   // USE STORE
-  //   // WORKING:
-  //   // LOAD DEFAULT DATA ON START + REFRESH
+    // **
+    preferencesStore.actions.loadFromDataSource(client)
+    // const getDoAutoLoadData = preferencesStore.store.useStore('one')
+    // const doAutoLoadData = getDoAutoLoadData.data.doAutoLoadData
+    // console.log('%c🌱 doAutoLoadData', ccm.darkgreen, doAutoLoadData)
+    // if (doAutoLoadData) {
+    //   console.log('%c🌱 doAutoLoadData', ccm.darkgreen)
+    //   projectStore.actions.loadFromDataSource(client)
+    // }
+    // const doAutoRotate = preferencesStore.store.useStore('doAutoRotate')
+    // **
 
-  //   // console.log('%c🌱 doAutoLoadData', ccm.darkgreen, doAutoLoadData)
-  //   // if (doAutoLoadData) {
-  //   //   console.log('%c🌱 doAutoLoadData', ccm.darkgreen)
-  //   //   projectStore.actions.loadFromDataSource(client)
-  //   // }
-
-  //   // ==========================================================
-  //   return () => {
-  //     console.debug('ThreeDGarden onUnmount', word)
-  //   }
-  // }, [])
+    // ==========================================================
+    return () => {
+      console.debug('ThreeDGarden onUnmount', word)
+    }
+  }, [])
 
   // ==========================================================
   // FC returns JSX

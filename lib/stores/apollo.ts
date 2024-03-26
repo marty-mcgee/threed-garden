@@ -542,17 +542,17 @@ function nounStore(this: IStore, _type = 'noun') {
       }
       responseData.isLoadedFromDisk = this.actions.loadFromDisk(client)
       if (responseData.isLoadedFromDisk) {
-        if (debug) console.debug('%c loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', ccm.darkgreen)
+        if (debug) console.debug(`%c ${this._type} loadFromDataSource isLoadedFromDisk`, ccm.darkgreen)
         return responseData
       } else {
         responseData.isLoadedFromDB = this.actions.loadFromDB(client)
         if (responseData.isLoadedFromDB) {
-          if (debug) console.debug('%c loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDB', ccm.darkgreen)
+          if (debug) console.debug(`%c ${this._type} loadFromDataSource isLoadedFromDB`, ccm.darkgreen)
           return responseData
         }
       }
       // default
-      if (debug) console.debug('loadProjectFromChosenDataSource loadFromDataSource isLoadedFromDisk', responseData)
+      if (debug) console.debug(`%c ${this._type} loadFromDataSource isLoadedFromDisk`, ccm.redAlert, responseData)
       return responseData
     },
 
@@ -810,9 +810,9 @@ function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
 export { nounStore }
 // export const nounStore = new (nounStore as any)('noun')
 // export { preferencesStore }
-export const preferencesStoreNoun = new (nounStore as any)('preferences')
+export const preferencesStore = new (nounStore as any)('preferences')
 // EXTEND nounStore to become preferencesStoreCustom
-export const preferencesStore = new (preferenceStoreCustom as any)('preferences')
+// export const preferencesStore = new (preferenceStoreCustom as any)('preferences')
 // regular nouns
 export const projectStore = new (nounStore as any)('project')
 export const sceneStore = new (nounStore as any)('scene')
@@ -834,7 +834,6 @@ export const modalStoreNoun = new (nounStore as any)('modal')
 
 export const stores = {
   nounStore,
-  preferencesStoreNoun,
   preferencesStore,
   projectStore,
   sceneStore,
