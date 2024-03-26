@@ -3,18 +3,18 @@
 
 // ** Apollo Client 3 -- Cache Store Imports
 import create, { StoreApi } from '#/lib/api/graphql/createStore'
-import { makeVar, useReactiveVar, useApolloClient } from '@apollo/client'
-import { preferencesVar } from '#/lib/threed/ThreeDGarden'
+// import { makeVar, useReactiveVar, useApolloClient } from '@apollo/client'
+// import { preferencesVar } from '#/lib/threed/ThreeDGarden'
 
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
-import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
 import GetNouns from '#/lib/api/graphql/scripts/getNouns.gql'
-import GetParticipants from '#/lib/api/graphql/scripts/getParticipants.gql'
+import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
 import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
+import GetScenes from '#/lib/api/graphql/scripts/getScenes.gql'
+import GetParticipants from '#/lib/api/graphql/scripts/getParticipants.gql'
 import GetPlans from '#/lib/api/graphql/scripts/getPlans.gql'
 import GetThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
 import GetFiles from '#/lib/api/graphql/scripts/getFiles.gql'
-import GetScenes from '#/lib/api/graphql/scripts/getScenes.gql'
 import GetAllotments from '#/lib/api/graphql/scripts/getAllotments.gql'
 import GetBeds from '#/lib/api/graphql/scripts/getBeds.gql'
 import GetPlants from '#/lib/api/graphql/scripts/getPlants.gql'
@@ -858,11 +858,11 @@ export const queries = {
   GetNouns,
   GetPreferences,
   GetProjects,
+  GetScenes,
   GetParticipants,
   GetPlans,
   GetThreeDs,
   GetFiles,
-  GetScenes,
   GetAllotments,
   GetBeds,
   GetPlants,
