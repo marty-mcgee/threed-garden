@@ -26,9 +26,9 @@ const noise = new Noise(Math.random())
 
 const {
   // // nounStore,
+  preferencesStore,
   // projectStore,
   // participantStore,
-  preferencesStore,
   // planStore,
   // threedStore,
   // fileStore,
@@ -52,66 +52,50 @@ const {
 
 function ThreeDPreferences() {
   // **
-  const preferences = useReactiveVar(preferencesVar)
-  console.log('%c SET SET SET SET SET SET BEFORE USE OF: preferences preferencesVar', ccm.yellow, preferences)
-  console.debug('%c SET SET SET SET SET SET BEFORE USE OF: preferences preferencesVar', ccm.yellow, preferences)
+  // const preferences = useReactiveVar(preferencesVar)
+  // console.log('%c SET SET SET SET SET SET BEFORE USE OF: preferences preferencesVar', ccm.yellow, preferences)
+  // console.debug('%c SET SET SET SET SET SET BEFORE USE OF: preferences preferencesVar', ccm.yellow, preferences)
 
-  const doAutoLoadDataApollo = preferencesStore.store.useStore('doAutoLoadData')
-  // const doAutoLoadDataApollo = useReactiveVar(preferencesVar).doAutoLoadData
-  // const doAutoLoadDataApollo = preferences.doAutoLoadData
-  // console.log('ThreeDLevaControls preferencesVar doAutoLoadDataApollo', doAutoLoadDataApollo)
-  const doAutoLoadDataLeva = preferences.doAutoLoadData
-  // console.log('ThreeDLevaControls preferencesVar doAutoLoadDataLeva', doAutoLoadDataLeva)
-  const doAutoLoadDataThreeD = useReactiveVar(preferencesVar).doAutoLoadData === doAutoLoadDataApollo === doAutoLoadDataLeva
-  console.log('ThreeDLevaControls preferencesVar doAutoLoadDataThreeD', doAutoLoadDataThreeD)
+  const preferences = preferencesStore.store.useStore('one')
+  console.log('ThreeDLevaControls preferences', preferences)
 
-  const doAutoRotateApollo = preferencesStore.store.useStore('doAutoRotate')
-  // const doAutoRotateApollo = useReactiveVar(preferencesVar).doAutoRotate
-  // const doAutoRotateApollo = preferences.doAutoRotate
-  // console.log('ThreeDLevaControls preferencesVar doAutoRotateApollo', doAutoRotateApollo)
-  const doAutoRotateLeva = preferences.doAutoRotate
-  // console.log('ThreeDLevaControls preferencesVar doAutoRotateLeva', doAutoRotateLeva)
-  const doAutoRotateThreeD = useReactiveVar(preferencesVar).doAutoRotate === doAutoRotateApollo === doAutoRotateLeva
-  console.log('ThreeDLevaControls preferencesVar doAutoRotateThreeD', doAutoRotateThreeD)
+  const doAutoLoadDataApollo = preferences.data?.doAutoLoadData ? preferences.data.doAutoLoadData : false
+  // // const doAutoLoadDataApollo = useReactiveVar(preferencesVar).doAutoLoadData
+  // // const doAutoLoadDataApollo = preferences.doAutoLoadData
+  console.log('ThreeDLevaControls preferences(Var) doAutoLoadDataApollo', doAutoLoadDataApollo)
+  // const doAutoLoadDataLeva = preferences.doAutoLoadData
+  // // console.log('ThreeDLevaControls preferencesVar doAutoLoadDataLeva', doAutoLoadDataLeva)
+  let doAutoLoadDataThreeD = doAutoLoadDataApollo
+  // const doAutoLoadDataThreeD = useReactiveVar(preferencesVar).doAutoLoadData === doAutoLoadDataApollo === doAutoLoadDataLeva
+  // console.log('ThreeDLevaControls preferencesVar doAutoLoadDataThreeD', doAutoLoadDataThreeD)
 
+  const doAutoRotateApollo = preferences.data?.doAutoRotate ? preferences.data.doAutoRotate : false
+  // const doAutoRotateApollo = getPreferences.store.useStore('doAutoRotate')
+  // // const doAutoRotateApollo = useReactiveVar(preferencesVar).doAutoRotate
+  // // const doAutoRotateApollo = preferences.doAutoRotate
+  console.log('ThreeDLevaControls preferences(Var) doAutoRotateApollo', doAutoRotateApollo)
+  // const doAutoRotateLeva = preferences.doAutoRotate
+  // // console.log('ThreeDLevaControls preferencesVar doAutoRotateLeva', doAutoRotateLeva)
+  // const doAutoRotateThreeD = useReactiveVar(preferencesVar).doAutoRotate === doAutoRotateApollo === doAutoRotateLeva
+  // console.log('ThreeDLevaControls preferencesVar doAutoRotateThreeD', doAutoRotateThreeD)
 
-  const projectNameApollo = preferencesStore.store.useStore('projectName')
-  // const projectNameApollo = useReactiveVar(preferencesVar).projectName
-  // const projectNameApollo = preferences.projectName
-  // console.log('ThreeDLevaControls preferencesVar projectNameApollo', projectNameApollo)
-  const projectNameLeva = preferences.projectName
-  // console.log('ThreeDLevaControls preferencesVar projectNameLeva', projectNameLeva)
-  const projectNameThreeD = useReactiveVar(preferencesVar).projectName ?? projectNameApollo ?? projectNameLeva
-  console.log('ThreeDLevaControls preferencesVar projectNameThreeD', projectNameThreeD)
-
-  const [{
-    doAutoRotate,
-    doAutoLoadData,
-  }, setUserPreferences] = useControls(
-    'User Preferences',
-    () => ({
-      doAutoLoadData: {
-        label: 'Auto Load Data?',
-        value: doAutoLoadDataApollo,
-      },
-      doAutoRotate: {
-        label: 'Auto Rotate?',
-        value: doAutoRotateApollo,
-      },
-    }),
-    {
-      color: 'darkgreen',
-      collapsed: false,
-    },
-  )
+  const projectNameApollo = preferences.data?.projectName ? preferences.data.projectName : 'blank'
+  // const projectNameApollo = preferencesStore.store.useStore('projectName')
+  // // const projectNameApollo = useReactiveVar(preferencesVar).projectName
+  // // const projectNameApollo = preferences.projectName
+  console.log('ThreeDLevaControls preferences(Var) projectNameApollo', projectNameApollo)
+  // const projectNameLeva = preferences.projectName
+  // // console.log('ThreeDLevaControls preferencesVar projectNameLeva', projectNameLeva)
+  // const projectNameThreeD = useReactiveVar(preferencesVar).projectName ?? projectNameApollo ?? projectNameLeva
+  // console.log('ThreeDLevaControls preferencesVar projectNameThreeD', projectNameThreeD)
 
   const [{
-    projectName,
-    // refMonitor,
-  }, setProjectPreferences] = useControls(
+    projectNameLeva,
+    // refMonitorLeva,
+  }, setProjectPreferencesLeva] = useControls(
     'Project Preferences',
     () => ({
-      projectName: {
+      projectNameLeva: {
         label: 'Project Name',
         value: projectNameApollo,
       },
@@ -166,24 +150,56 @@ function ThreeDPreferences() {
     },
   )
 
+  const [{
+    doAutoLoadDataLeva,
+    doAutoRotateLeva,
+  }, setUserPreferencesLeva] = useControls(
+    'User Preferences',
+    () => ({
+      doAutoLoadDataLeva: {
+        label: 'Auto Load Data?',
+        value: doAutoLoadDataApollo,
+      },
+      doAutoRotateLeva: {
+        label: 'Auto Rotate?',
+        value: doAutoRotateApollo,
+      },
+    }),
+    {
+      color: 'darkgreen',
+      collapsed: false,
+    },
+  )
+
   useEffect(() => {
-    setUserPreferences({ doAutoLoadData: doAutoLoadDataApollo})
-    preferencesStore.store.update('doAutoLoadData', doAutoLoadData)
+    setUserPreferencesLeva({ doAutoLoadDataLeva: doAutoLoadDataApollo })
   }, [doAutoLoadDataApollo])
+  useEffect(() => {
+    // preferencesStore.store.update('data.doAutoLoadData', doAutoLoadDataLeva)
+    doAutoLoadDataThreeD = doAutoLoadDataLeva
+    console.log('UPDATE PREFERENCES STORE data.doAutoLoadData = doAutoLoadDataLeva', doAutoLoadDataLeva)
+  }, [doAutoLoadDataLeva])
+  useEffect(() => {
+    console.log('READ FROM MASTER THREED: doAutoLoadDataThreeD', doAutoLoadDataThreeD)
+  }, [doAutoLoadDataThreeD])
 
   useEffect(() => {
-    setUserPreferences({ doAutoRotate: doAutoRotateApollo})
-    preferencesStore.store.update('doAutoRotate', doAutoRotateApollo)
-  }, [doAutoRotateApollo])
+    setUserPreferencesLeva({ doAutoRotateLeva: doAutoRotateApollo })
+    // preferencesStore.store.update('data.doAutoRotate', doAutoRotateApollo)
+    }, [doAutoRotateApollo])
+  // }, [doAutoRotateLeva])
 
   useEffect(() => {
-    // set({ title: projectName})
-    setProjectPreferences({ projectName: projectNameApollo})
-    preferencesStore.store.update('projectName', projectNameApollo)
-  }, [projectNameApollo])
+    // set({ Id: projectName})
+    setProjectPreferencesLeva({ projectNameLeva: projectNameApollo })
+    // preferencesStore.store.update('data.projectName', projectNameApollo)
+    }, [projectNameApollo])
+  // }, [projectNameLeva])
+
+  // **
 
   // useEffect(() => {
-  //   setUserPreferences({ doAutoLoadData: doAutoLoadData})
+  //   setUserPreferencesLeva({ doAutoLoadData: doAutoLoadData})
   //   preferencesStore.store.update('doAutoLoadData', doAutoLoadData)
   // }, [doAutoLoadData])
 
@@ -203,7 +219,8 @@ function ThreeDPreferences() {
 
 export function ThreeDLevaControls() {
   // **
-  const projectName = preferencesStore.store.useStore('projectName')
+  const preferences = preferencesStore.store.useStore('one')
+  const projectName = preferences.data.projectName ? preferences.data.projectName : 'also blank'
   console.log('ThreeDLevaControls projectName', projectName)
   // **
   const colorsStore = useCreateStore()
@@ -268,7 +285,7 @@ export function ThreeDLevaControls() {
     {
       sizes: folder({
         rootWidth: '360px',
-        controlWidth: '200px',
+        controlWidth: '60%',
         numberInputMinWidth: '48px',
         scrubberWidth: '8px',
         scrubberHeight: '16px',
@@ -339,7 +356,7 @@ export function ThreeDLevaControls() {
     oneLineLabels,
     // **
     refMonitor
-  }, set] = useControls(
+  }, setControlPanelLeva] = useControls(
     'Control Panel',
     () => ({
       showTitleBar: { value: true, render: (get) => get('Panel.showTitleBar') },
@@ -359,7 +376,7 @@ export function ThreeDLevaControls() {
   )
 
   useEffect(() => {
-    set({ title: projectName})
+    setControlPanelLeva({ title: projectName})
     // set({ projectName: projectName})
   }, [projectName])
 

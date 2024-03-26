@@ -112,56 +112,61 @@ export const ThreeDControlPanels = (
           onChange={onChangeTabControlValue}
           aria-label='Info Control Panel'
         >
-          <Tab label='Projects' {...tabProps(0)} />
-          <Tab label='Plans' {...tabProps(1)} />
-          <Tab label='ThreeDs' {...tabProps(2)} />
-          <Tab label='Files' {...tabProps(3)} />
-          <Tab label='Scenes' {...tabProps(4)} />
-          <Tab label='Allotments' {...tabProps(5)} />
-          <Tab label='Beds' {...tabProps(6)} />
-          <Tab label='Plants' {...tabProps(7)} />
-          <Tab label='Schedules' {...tabProps(8)} />
-          <Tab label='Tests' {...tabProps(9)} />
+          <Tab label='Preferences' {...tabProps(0)} />
+          <Tab label='Projects' {...tabProps(1)} />
+          <Tab label='Plans' {...tabProps(2)} />
+          <Tab label='ThreeDs' {...tabProps(3)} />
+          <Tab label='Files' {...tabProps(4)} />
+          <Tab label='Scenes' {...tabProps(5)} />
+          <Tab label='Allotments' {...tabProps(6)} />
+          <Tab label='Beds' {...tabProps(7)} />
+          <Tab label='Plants' {...tabProps(8)} />
+          <Tab label='Schedules' {...tabProps(9)} />
+          <Tab label='Tests' {...tabProps(10)} />
         </Tabs>
       </Box>
       <Box sx={{ p: 2, borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
         <MDTabPanel value={tabControlValue} index={0}>
+          <PreferencesControlPanel />
+          <PreferencesInfoPanel />
+        </MDTabPanel>
+        <MDTabPanel value={tabControlValue} index={1}>
           <ProjectControlPanel />
           <ProjectInfoPanel />
         </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={1}>
+        <MDTabPanel value={tabControlValue} index={2}>
           <PlanControlPanel />
           <PlanInfoPanel />
         </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={2}>
+        <MDTabPanel value={tabControlValue} index={3}>
           <ThreeDControlPanel />
           <ThreeDInfoPanel />
         </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={3}>
+        <MDTabPanel value={tabControlValue} index={4}>
           <FileControlPanel />
           <FileInfoPanel />
         </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={4}>
+        <MDTabPanel value={tabControlValue} index={5}>
           <SceneControlPanel />
           <SceneInfoPanel />
         </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={5}>
+        <MDTabPanel value={tabControlValue} index={6}>
           <AllotmentControlPanel />
           <AllotmentInfoPanel />
         </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={6}>
+        <MDTabPanel value={tabControlValue} index={7}>
           <BedControlPanel />
           <BedInfoPanel />
         </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={7}>
+        <MDTabPanel value={tabControlValue} index={8}>
           <PlantControlPanel />
           <PlantInfoPanel />
         </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={8}>
+        <MDTabPanel value={tabControlValue} index={9}>
           <PlantingPlanControlPanel />
           <PlantingPlanInfoPanel />
         </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={9}>
+        <MDTabPanel value={tabControlValue} index={10}>
           <Box sx={{ p: 2}}>
             <Box>
               Testing Panel
@@ -193,6 +198,64 @@ export const ThreeDControlPanels = (
 }
 
 // ==========================================================
+// Preferences
+
+const PreferencesInfoPanel = (): JSX.Element => {
+  // **
+  const client = useApolloClient()
+  // **
+  const preferencesCount = preferencesStore.store.useStore('count')
+  const preferencess = preferencesStore.store.useStore('all')
+  const preferences = preferencesStore.store.useStore('one')
+  // const preferencessDB = preferencesStore.store.useStore('allDB')
+  // const preferencesDB = preferencesStore.store.useStore('oneDB')
+
+  return (
+    <Box sx={{ px: 2 }}>
+      <Typography></Typography>
+      <Typography>preferencess.length: {preferencess.length} | count: {preferencesCount}</Typography>
+      {/* <Typography>preferencessDB: {preferencessDB.length}</Typography> */}
+      <Typography>preferences._id: {preferences._id}</Typography>
+      <Typography>preferences._ts: {preferences._ts}</Typography>
+      <Typography>preferences._name: {preferences._name}</Typography>
+      <Typography>preferences.data.title: {preferences.data?.title}</Typography>
+      <Typography>preferences.data.doAutoLoadData: {preferences.data?.doAutoLoadData}</Typography>
+      <Typography>preferences.data.doAutoRotate: {preferences.data?.doAutoRotate}</Typography>
+      <Typography>preferences.data.projectName: {preferences.data?.projectName}</Typography>
+    </Box>
+  )
+}
+
+const PreferencesControlPanel = (): JSX.Element => {
+
+  const client = useApolloClient()
+
+  const addNew = () => preferencesStore.actions.addNew()
+  const saveToDisk = () => preferencesStore.actions.saveToDisk()
+  const loadFromDisk = () => preferencesStore.actions.loadFromDisk()
+  const loadFromDB = () => preferencesStore.actions.loadFromDB(client)
+  const saveToDB = () => preferencesStore.actions.saveToDB(client)
+  const removeAll = () => preferencesStore.actions.removeAll()
+  const increaseCount = () => preferencesStore.store.update('count', preferencesStore.actions.increaseCount())
+  const decreaseCount = () => preferencesStore.store.update('count', preferencesStore.actions.decreaseCount())
+  const getState = () => preferencesStore.actions.getState()
+
+  return (
+    <Box>
+      <Button onClick={loadFromDB} style={{color: 'orange'}}>load from db</Button>
+      <Button onClick={saveToDB}>save to db</Button>
+      <Button onClick={loadFromDisk} style={{color: 'orange'}}>load from disk</Button>
+      <Button onClick={saveToDisk}>save to disk</Button>
+      <Button onClick={addNew}>add new</Button>
+      <Button onClick={removeAll} style={{color: 'darkred'}}>remove all</Button>
+      {/* <Button onClick={increaseCount}>+</Button> */}
+      {/* <Button onClick={decreaseCount}>-</Button> */}
+      <Button onClick={getState}>get state</Button>
+    </Box>
+  )
+}
+
+// ==========================================================
 // Project
 
 const ProjectInfoPanel = (): JSX.Element => {
@@ -205,22 +268,13 @@ const ProjectInfoPanel = (): JSX.Element => {
   // const projectsDB = projectStore.store.useStore('allDB')
   // const projectDB = projectStore.store.useStore('oneDB')
 
+  const preferences = preferencesStore.store.useStore('one')
+  // console.debug('preferences', preferences)
   let projectName = project._name
       projectName = project.data?.title
-  const doModifyProjectName = preferencesStore.actions.setProjectName(projectName)
-  console.log('doModifyProjectName', doModifyProjectName)
-
-  // const preferences = preferencesStore.store.useStore('one')
-  // console.debug('preferences', preferences)
-  const preferences = {
-    doAutoLoadData: false,
-    doAutoRotate: false,
-    projectName: 'nada',
-  }
-  preferences.doAutoLoadData = preferencesStore.store.useStore('doAutoLoadData')
-  preferences.doAutoRotate = preferencesStore.store.useStore('doAutoRotate')
-  preferences.projectName = preferencesStore.store.useStore('projectName')
-  console.log('preferences', preferences)
+      projectName = preferences.data.projectName
+  const doAutoLoadData = preferences.data.doAutoLoadData
+  const doAutoRotate = preferences.data.doAutoRotate
 
   return (
     <Box sx={{ px: 2 }}>

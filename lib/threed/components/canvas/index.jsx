@@ -77,7 +77,7 @@ function ThreeDEnvironment() {
   const { blur } = useControls(
     'Scene Preferences',
     // () => (
-      {
+    {
       preset: {
         label: 'Environment',
         value: envPreset,
@@ -101,7 +101,7 @@ function ThreeDEnvironment() {
     // ),
     {
       color: 'darkgreen',
-      collapsed: false,
+      collapsed: true,
     },
   )
   return (
@@ -123,13 +123,12 @@ function ThreeDEnvironment() {
 
 export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
-  // if (debug) console.debug('%c props._id, props.threeds', ccm.red, _id, threeds)
+  if (debug) console.debug('%c props._id, props.threeds', ccm.red, _id, threeds)
   // **
-  // const projectName = preferencesStore.store.useStore('projectName')
-  // const doAutoLoadData = preferencesStore.store.useStore('doAutoLoadData')
-  // const doAutoRotate = preferencesStore.store.useStore('doAutoRotate')
-  const preferences = useReactiveVar(preferencesVar)
-  const doAutoRotate = useReactiveVar(preferencesVar).doAutoRotate
+  const preferences = preferencesStore.store.useStore('one')
+  const doAutoLoadData = preferences.data.doAutoLoadData
+  const doAutoRotate = preferences.data.doAutoRotate
+  const projectName = preferences.data.projectName
   // **
   return (
     <Canvas
@@ -203,7 +202,7 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           zoomToCursor={false} // default is false
           zoomSpeed={1.0} // default is 1.0
           enableRotate={true}
-          autoRotate={preferences.doAutoRotate} // default is false
+          autoRotate={doAutoRotate} // default is false
           autoRotateSpeed={1.0} // default is 2.0
           rotateSpeed={1.0} // default is 1.0
           enableDamping={true} // slows down rotation after mouse release
