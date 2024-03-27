@@ -2,9 +2,8 @@
 // ** RESOURCES
 // ==============================================================
 
-import { preferencesStore } from '#/lib/stores/apollo'
-import { makeVar, useReactiveVar } from '@apollo/client'
-import { preferencesDataVar } from '#/lib/stores/apollo'
+import { useReactiveVar } from '@apollo/client'
+import { preferencesDataVar, preferencesStore } from '#/lib/stores/apollo'
 import { proxy, useSnapshot } from 'valtio'
 
 import { Suspense, useState, useRef, useTransition } from 'react'
@@ -62,11 +61,11 @@ const DEBUG = true // false | true // ts: boolean
 // Model interactive 'modes' using TransformControls
 const actionModes = ['translate', 'rotate', 'scale']
 
-// example working simple <Loader />
-function ThreeDLoaderSimple() {
-  const { active, progress, errors, item, loaded, total } = useProgress()
-  return <Html center>THREED GUI LOADING... {Math.round(progress)} %</Html>
-}
+// // example working simple <Loader />
+// function ThreeDLoaderSimple() {
+//   const { active, progress, errors, item, loaded, total } = useProgress()
+//   return <Html center>THREED GUI LOADING... {Math.round(progress)} %</Html>
+// }
 
 function ThreeDEnvironment() {
   const [envPreset, setEnvPreset] = useState('park')
@@ -76,29 +75,29 @@ function ThreeDEnvironment() {
 
   const { blur } = useControls(
     'Scene Preferences',
-    // () => (
-    {
-      preset: {
-        label: 'Environment',
-        value: envPreset,
-        options: [
-          'park', 'sunset', 'dawn', 'night', 'forest',
-          'studio', 'warehouse', 'apartment', 'lobby', 'city'
-        ],
-        // If onChange is present the value will not be reactive,
-        // see https://github.com/pmndrs/leva/blob/main/docs/advanced/controlled-inputs.md#onchange
-        // Instead we transition the preset value, which will prevents the suspense bound from triggering its fallback
-        // That way we can hang onto the current environment until the new one has finished loading ...
-        onChange: (value) => startTransition(() => setEnvPreset(value))
-      },
-      blur: {
-        label: 'Blur BG',
-        value: 0.09,
-        min: 0.00,
-        max: 0.20,
-      },
-    },
-    // ),
+    () => (
+      {
+        preset: {
+          label: 'Environment',
+          value: envPreset,
+          options: [
+            'park', 'sunset', 'dawn', 'night', 'forest',
+            'studio', 'warehouse', 'apartment', 'lobby', 'city'
+          ],
+          // If onChange is present the value will not be reactive,
+          // see https://github.com/pmndrs/leva/blob/main/docs/advanced/controlled-inputs.md#onchange
+          // Instead we transition the preset value, which will prevents the suspense bound from triggering its fallback
+          // That way we can hang onto the current environment until the new one has finished loading ...
+          onChange: (value) => startTransition(() => setEnvPreset(value))
+        },
+        blur: {
+          label: 'Blur BG',
+          value: 0.09,
+          min: 0.00,
+          max: 0.20,
+        },
+      }
+    ),
     {
       color: 'darkgreen',
       collapsed: true,
@@ -129,6 +128,10 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // const projectName = preferences.data.projectName ? preferences.data.projectName : 'blank'
   // const doAutoLoadData = preferences.data.doAutoLoadData ? preferences.data.doAutoLoadData : false
   // const doAutoRotate = preferences.data.doAutoRotate ? preferences.data.doAutoRotate : false
+
+  const prefs = useReactiveVar(preferencesDataVar)
+  // console.log('%c🌱 preferencesDataVar => prefs{}', ccm.green, prefs)
+
   // **
   return (
     <Canvas
@@ -202,7 +205,7 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           zoomToCursor={false} // default is false
           zoomSpeed={1.0} // default is 1.0
           enableRotate={true}
-          autoRotate={preferencesDataVar().doAutoRotate} // default is false
+          autoRotate={prefs.doAutoRotate} // default is false
           autoRotateSpeed={1.0} // default is 2.0
           rotateSpeed={1.0} // default is 1.0
           enableDamping={true} // slows down rotation after mouse release
