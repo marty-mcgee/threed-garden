@@ -10,8 +10,8 @@
 import dynamic from 'next/dynamic'
 
 // ** AUTH GUARD
-import { auth } from "auth"
-// import { SessionProvider } from "next-auth/react"
+import { auth } from 'auth'
+// import { SessionProvider } from 'next-auth/react'
 // import { useSession } from 'next-auth/react'
 
 // ** Next Imports
