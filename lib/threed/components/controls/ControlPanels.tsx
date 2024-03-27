@@ -212,7 +212,7 @@ const PreferencesInfoPanel = (): JSX.Element => {
 
   return (
     <Box sx={{ px: 2 }}>
-      <Typography>preferencess.length: {preferencess.length} | count: {preferencesCount}</Typography>
+      <Typography>preferences[s].length: {preferencess.length} | count: {preferencesCount}</Typography>
       <Typography>preferences._id: {preferences._id}</Typography>
       <Typography>preferences._ts: {preferences._ts}</Typography>
       <Typography>preferences._name: {preferences._name}</Typography>
