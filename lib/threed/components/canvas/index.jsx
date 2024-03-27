@@ -4,7 +4,7 @@
 
 import { preferencesStore } from '#/lib/stores/apollo'
 import { makeVar, useReactiveVar } from '@apollo/client'
-import { preferencesVar } from '#/lib/threed/ThreeDGarden'
+import { preferencesDataVar } from '#/lib/stores/apollo'
 import { proxy, useSnapshot } from 'valtio'
 
 import { Suspense, useState, useRef, useTransition } from 'react'

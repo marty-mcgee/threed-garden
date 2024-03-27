@@ -2,9 +2,8 @@
 // RESOURCES
 
 // ** Apollo Client 3 -- Cache Store Imports
+import { makeVar } from '@apollo/client'
 import create, { StoreApi } from '#/lib/api/graphql/createStore'
-// import { makeVar, useReactiveVar, useApolloClient } from '@apollo/client'
-// import { preferencesVar } from '#/lib/threed/ThreeDGarden'
 
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
 import GetNouns from '#/lib/api/graphql/scripts/getNouns.gql'
@@ -235,6 +234,10 @@ function nounStore(this: IStore, _type = 'noun') {
       // this.actions.loadFromDisk()
 
       // if (debug) console.debug(`%caddNew [${this._type}] (final)`, ccm.green, this.store.get('one'))
+    },
+
+    updateData: () => {
+      // this.store.update('one', ...this.store.get('one').data)
     },
 
     save: () => {
@@ -726,7 +729,7 @@ function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
   // ** Preferences Store .store
 
   // **
-  // const preferences = useReactiveVar(preferencesVar)
+  // const preferences = useReactiveVar(preferencesDataVar)
   // const doAutoLoadDataApollo = preferencesStore.store.useStore('doAutoLoadData')
   // const doAutoLoadDataApollo = preferences.doAutoLoadData
   // const doAutoLoadDataApollo = this.store.get('doAutoLoadData')
@@ -799,6 +802,21 @@ function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
     },
   } // preferencesActions
 } // preferencesStore
+
+// ==============================================================
+
+// ** CREATE REACTIVE VARS (APOLLO LOCAL STATE)
+export const preferencesDataVar = makeVar(
+  {
+    doAutoLoadData: false,
+    doAutoRotate: false,
+    projectName: 'preferencesDataVar.projectName default',
+  }
+)
+console.debug('Apollo Stores ReactiveVar preferencesDataVar()', preferencesDataVar())
+// console.debug('Apollo Stores ReactiveVar preferencesDataVar().doAutoLoadData', preferencesDataVar().doAutoLoadData)
+// console.debug('Apollo Stores ReactiveVar preferencesDataVar().doAutoRotate', preferencesDataVar().doAutoRotate)
+// console.debug('Apollo Stores ReactiveVar preferencesDataVar().projectName', preferencesDataVar().projectName)
 
 // ==============================================================
 
