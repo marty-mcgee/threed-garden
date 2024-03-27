@@ -92,7 +92,7 @@ function ThreeDEnvironment() {
         },
         blur: {
           label: 'Blur BG',
-          value: 0.09,
+          value: 0.00,
           min: 0.00,
           max: 0.20,
         },
