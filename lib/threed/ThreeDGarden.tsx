@@ -426,18 +426,31 @@ const ThreeDGarden = (): JSX.Element => {
   //   word: word,
   // }
 
+  // ** const getPreferencesData =
+  // preferencesStore.actions.loadFromDB(client)
   // **
-  const getPreferencesData = preferencesStore.actions.loadFromDataSource(client)
-  // **
-  const getDoAutoLoadData = preferencesStore.store.useStore('one')
-  const doAutoLoadData = getDoAutoLoadData.data.doAutoLoadData
-  console.log('%c🌱 doAutoLoadData', ccm.darkgreen, doAutoLoadData)
+  // ** USE STORE (APOLLO CLIENT)
+  const preferencesStoreData = preferencesStore.store.useStore('one').data
+  console.log('%c🌱 preferencesStoreData', ccm.darkgreen, preferencesStoreData)
+  console.log('%c🌱 preferencesStoreData.doAutoLoadData', ccm.darkgreen, preferencesStoreData.doAutoLoadData)
+  console.log('%c🌱 preferencesStoreData.doAutoRotate', ccm.darkgreen, preferencesStoreData.doAutoRotate)
+  console.log('%c🌱 preferencesStoreData.projectName', ccm.darkgreen, preferencesStoreData.projectName)
   // ** USE REACTIVE VARS (APOLLO LOCAL STATE)
-  // const updatePreferencesData = useReactiveVar(preferencesDataVar)
-  if (doAutoLoadData) {
+  const prefs = useReactiveVar(preferencesDataVar)
+  console.log('%c🌱 preferencesDataVar prefs', ccm.darkgreen, prefs)
+  console.log('%c🌱 preferencesDataVar prefs.doAutoLoadData', ccm.darkgreen, prefs.doAutoLoadData)
+  console.log('%c🌱 preferencesDataVar prefs.doAutoRotate', ccm.darkgreen, prefs.doAutoRotate)
+  console.log('%c🌱 preferencesDataVar prefs.projectName', ccm.darkgreen, prefs.projectName)
+  // ** ALTERNATE WAY OF ACCESSING SAME DATA
+  // console.log('%c🌱 preferencesDataVar().doAutoLoadData', ccm.darkgreen, preferencesDataVar().doAutoLoadData)
+  // console.log('%c🌱 preferencesDataVar().doAutoRotate', ccm.darkgreen, preferencesDataVar().doAutoRotate)
+  // console.log('%c🌱 preferencesDataVar().projectName', ccm.darkgreen, preferencesDataVar().projectName)
+  // **
+  if (prefs.doAutoRotate) {
     console.log('%c🌱 doAutoLoadData', ccm.darkgreen)
     projectStore.actions.loadFromDataSource(client)
   }
+  console.log('%c====================================', ccm.darkgreen)
 
   // ==========================================================
   // Component onMount hook

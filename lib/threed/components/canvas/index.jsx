@@ -125,10 +125,10 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
   if (debug) console.debug('%c props._id, props.threeds', ccm.red, _id, threeds)
   // **
-  const preferences = preferencesStore.store.useStore('one')
+  // const preferences = preferencesStore.store.useStore('one')
   // const projectName = preferences.data.projectName ? preferences.data.projectName : 'blank'
   // const doAutoLoadData = preferences.data.doAutoLoadData ? preferences.data.doAutoLoadData : false
-  const doAutoRotate = preferences.data.doAutoRotate ? preferences.data.doAutoRotate : false
+  // const doAutoRotate = preferences.data.doAutoRotate ? preferences.data.doAutoRotate : false
   // **
   return (
     <Canvas
@@ -202,7 +202,7 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           zoomToCursor={false} // default is false
           zoomSpeed={1.0} // default is 1.0
           enableRotate={true}
-          autoRotate={doAutoRotate} // default is false
+          autoRotate={preferencesDataVar().doAutoRotate} // default is false
           autoRotateSpeed={1.0} // default is 2.0
           rotateSpeed={1.0} // default is 1.0
           enableDamping={true} // slows down rotation after mouse release
