@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.15.0-beta.66",
+  "version": "0.15.0-beta.67",
   "description": "3D Dev Environment w React 18, TypeScript 5, Three.js, React-Three (pmndrs), on Next.js 14, Apollo Client, GraphQL, WordPress REST API, MUI 5 + Tailwind. ThreeD Web3 Interface for Three-Dimensional JavaScript Objects with React Server + Client Components, Web3 Contracts +...",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
@@ -66,7 +66,6 @@
     "@react-three/fiber": "^8.15.19",
     "@react-three/postprocessing": "^2.16.2",
     "@tweenjs/tween.js": "^18.6.4",
-    "@udecode/zustood": "^2.0.0",
     "buffer": "^6.0.3",
     "classnames": "^2.3.1",
     "clsx": "^2.1.0",
@@ -100,10 +99,7 @@
     "usehooks-ts": "^2.6.0",
     "util": "^0.12.4",
     "uuid": "^8.3.2",
-    "valtio": "^1.13.2",
-    "web-vitals": "^2.1.4",
-    "webgl-detector": "^1.1.11",
-    "zustand": "^4.2.2"
+    "valtio": "^1.13.2"
   },
   "devDependencies": {
     "@emotion/types": "^0.7.0",
