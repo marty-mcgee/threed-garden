@@ -126,9 +126,9 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   if (debug) console.debug('%c props._id, props.threeds', ccm.red, _id, threeds)
   // **
   const preferences = preferencesStore.store.useStore('one')
-  const doAutoLoadData = preferences.data.doAutoLoadData
-  const doAutoRotate = preferences.data.doAutoRotate
-  const projectName = preferences.data.projectName
+  // const projectName = preferences.data.projectName ? preferences.data.projectName : 'blank'
+  // const doAutoLoadData = preferences.data.doAutoLoadData ? preferences.data.doAutoLoadData : false
+  const doAutoRotate = preferences.data.doAutoRotate ? preferences.data.doAutoRotate : false
   // **
   return (
     <Canvas

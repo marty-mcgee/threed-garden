@@ -76,6 +76,7 @@ function ThreeDPreferences() {
   console.log('ThreeDLevaControls preferences(Var) doAutoRotateApollo', doAutoRotateApollo)
   // const doAutoRotateLeva = preferences.doAutoRotate
   // // console.log('ThreeDLevaControls preferencesVar doAutoRotateLeva', doAutoRotateLeva)
+  let doAutoRotateThreeD = doAutoRotateApollo
   // const doAutoRotateThreeD = useReactiveVar(preferencesVar).doAutoRotate === doAutoRotateApollo === doAutoRotateLeva
   // console.log('ThreeDLevaControls preferencesVar doAutoRotateThreeD', doAutoRotateThreeD)
 
@@ -86,6 +87,7 @@ function ThreeDPreferences() {
   console.log('ThreeDLevaControls preferences(Var) projectNameApollo', projectNameApollo)
   // const projectNameLeva = preferences.projectName
   // // console.log('ThreeDLevaControls preferencesVar projectNameLeva', projectNameLeva)
+  let projectNameThreeD = projectNameApollo
   // const projectNameThreeD = useReactiveVar(preferencesVar).projectName ?? projectNameApollo ?? projectNameLeva
   // console.log('ThreeDLevaControls preferencesVar projectNameThreeD', projectNameThreeD)
 
@@ -185,34 +187,29 @@ function ThreeDPreferences() {
 
   useEffect(() => {
     setUserPreferencesLeva({ doAutoRotateLeva: doAutoRotateApollo })
-    // preferencesStore.store.update('data.doAutoRotate', doAutoRotateApollo)
     }, [doAutoRotateApollo])
-  // }, [doAutoRotateLeva])
+  useEffect(() => {
+    // preferencesStore.store.update('data.doAutoRotate', doAutoRotateLeva)
+    doAutoRotateThreeD = doAutoRotateLeva
+    console.log('UPDATE PREFERENCES STORE data.doAutoRotate = doAutoRotateLeva', doAutoRotateLeva)
+  }, [doAutoRotateLeva])
+  useEffect(() => {
+    console.log('READ FROM MASTER THREED: doAutoRotateThreeD', doAutoRotateThreeD)
+  }, [doAutoRotateThreeD])
 
   useEffect(() => {
     // set({ Id: projectName})
     setProjectPreferencesLeva({ projectNameLeva: projectNameApollo })
     // preferencesStore.store.update('data.projectName', projectNameApollo)
     }, [projectNameApollo])
-  // }, [projectNameLeva])
-
-  // **
-
-  // useEffect(() => {
-  //   setUserPreferencesLeva({ doAutoLoadData: doAutoLoadData})
-  //   preferencesStore.store.update('doAutoLoadData', doAutoLoadData)
-  // }, [doAutoLoadData])
-
-  // useEffect(() => {
-  //   setUserPreferences({ doAutoRotate: doAutoRotateApollo})
-  //   preferencesStore.store.update('doAutoRotate', doAutoRotate)
-  // }, [doAutoRotate])
-
-  // useEffect(() => {
-  //   // set({ title: projectName})
-  //   setProjectPreferences({ projectName: projectName})
-  //   preferencesStore.store.update('projectName', projectName)
-  // }, [projectName])
+  useEffect(() => {
+    // preferencesStore.store.update('data.projectName', projectNameLeva)
+    projectNameThreeD = projectNameLeva
+    console.log('UPDATE PREFERENCES STORE data.projectName = projectNameLeva', projectNameLeva)
+  }, [projectNameLeva])
+  useEffect(() => {
+    console.log('READ FROM MASTER THREED: projectNameThreeD', projectNameThreeD)
+  }, [projectNameThreeD])
 }
 
 // ==========================================================
