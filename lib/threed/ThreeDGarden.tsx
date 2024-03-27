@@ -41,8 +41,9 @@ import { useApolloClient } from '@apollo/client'
 // } from '@apollo/experimental-nextjs-app-support/ssr'
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
 import stores from '#/lib/stores/apollo'
+import { preferencesDataVar } from '#/lib/stores/apollo'
 // import { preferencesStore } from '#/lib/stores/apollo'
-import { makeVar, useReactiveVar } from '@apollo/client'
+import { useReactiveVar } from '@apollo/client'
 
 // ** Next Imports
 // import Image from 'next/image'
@@ -239,17 +240,6 @@ const {
 // console.debug('%csceneStore', ccm.orange, sceneStore)
 // console.debug(`%c====================================`, ccm.black)
 
-// // ** USE REACTIVE VARS (APOLLO LOCAL STATE)
-// export const preferencesVar = makeVar(
-//   {
-//     doAutoLoadData: false, // true | false
-//     doAutoRotate: false, // true | false
-//     projectName: 'HEY HEY HEY: preferencesVar.projectName DEFAULT', // string: 'default'
-//   }
-// )
-// // Output ReactiveVar
-// console.log('%c SET SET SET SET SET SET preferencesVar() = preferencesDB', ccm.yellow, preferencesVar())
-
 // ==========================================================
 // COMPONENTS
 
@@ -419,17 +409,6 @@ const ThreeDGarden = (): JSX.Element => {
   // const preferencesDB = preferencesStore.actions.loadFromDB(client)
   // console.log('%c preferencesDB', ccm.yellow, preferencesDB)
 
-  // // ** USE REACTIVE VARS (APOLLO LOCAL STATE)
-  // export const preferencesVar = makeVar(
-  //   {
-  //     doAutoLoadData: true,
-  //     doAutoRotate: true,
-  //     projectName: '',
-  //   }
-  // )
-
-  // Output ReactiveVar
-  // console.debug('preferencesVar()', preferencesVar())
   // ** USE CONTEXT
   // const abilities = useContext(AbilityContext)
   const abilities = ['read', 'write', 'delete']
@@ -442,13 +421,61 @@ const ThreeDGarden = (): JSX.Element => {
   //   abilities: abilities,
   //   session: session,
   //   client: client,
-  //   preferences: preferencesVar(),
+  //   preferences: preferencesDataVar(),
   //   store: projectStore, // default
   //   word: word,
   // }
 
+  // **
+  const getPreferencesData = preferencesStore.actions.loadFromDataSource(client)
+  // **
+  const getDoAutoLoadData = preferencesStore.store.useStore('one')
+  const doAutoLoadData = getDoAutoLoadData.data.doAutoLoadData
+  console.log('%c🌱 doAutoLoadData', ccm.darkgreen, doAutoLoadData)
+  // ** USE REACTIVE VARS (APOLLO LOCAL STATE)
+  // const updatePreferencesData = useReactiveVar(preferencesDataVar)
+  if (doAutoLoadData) {
+    console.log('%c🌱 doAutoLoadData', ccm.darkgreen)
+    projectStore.actions.loadFromDataSource(client)
+  }
+
   // ==========================================================
-  // 'GUI CONTROL PANEL' + 'THREED PROJECT' NAME
+  // Component onMount hook
+  // **
+  useEffect(() => {
+    // **
+    // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
+    // console.debug(`%c====================================`, ccm.black)
+    // ==========================================================
+    // begin here ?? yes
+    // bootManager()
+    // USE STORE
+    // WORKING:
+    // LOAD DEFAULT DATA ON START + REFRESH
+  // // **
+  // preferencesStore.actions.loadFromDataSource(client)
+  // // **
+  // const getDoAutoLoadData = preferencesStore.store.useStore('one')
+  // const doAutoLoadData = getDoAutoLoadData.data.doAutoLoadData
+  // console.log('%c🌱 doAutoLoadData', ccm.darkgreen, doAutoLoadData)
+  // // ** USE REACTIVE VARS (APOLLO LOCAL STATE)
+  // // const updatePreferencesData = useReactiveVar(preferencesDataVar)
+  // if (doAutoLoadData) {
+  //   console.log('%c🌱 doAutoLoadData', ccm.darkgreen)
+  //   projectStore.actions.loadFromDataSource(client)
+  // }
+    // **
+    // const doAutoRotate = preferencesStore.store.useStore('one')
+    // **
+
+    // ==========================================================
+    return () => {
+      console.debug('ThreeDGarden onUnmount', word)
+    }
+  }, [])
+
+  // ==========================================================
+  // TESTING: 'GUI CONTROL PANEL' + 'THREED PROJECT' NAME
   //
   // const [projectName, setProjectName] = useState(projectStore.store.get('one').data.title)
   // const [doAutoLoadData, setDoAutoLoadData] = useState(preferencesStore.store.get('one').doAutoLoadData)
@@ -462,38 +489,6 @@ const ThreeDGarden = (): JSX.Element => {
   //   setDoAutoLoadData(bool)
   //   localStorage.setItem('threed_doAutoLoadData', bool)
   // }
-
-  // ==========================================================
-  // Component onMount hook
-  // **
-  useEffect(() => {
-    // **
-    // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
-    // console.debug(`%c====================================`, ccm.black)
-    // ==========================================================
-    // begin here ?? yes
-    // bootManager()...
-    // USE STORE
-    // WORKING:
-    // LOAD DEFAULT DATA ON START + REFRESH
-
-    // **
-    preferencesStore.actions.loadFromDataSource(client)
-    // const getDoAutoLoadData = preferencesStore.store.useStore('one')
-    // const doAutoLoadData = getDoAutoLoadData.data.doAutoLoadData
-    // console.log('%c🌱 doAutoLoadData', ccm.darkgreen, doAutoLoadData)
-    // if (doAutoLoadData) {
-    //   console.log('%c🌱 doAutoLoadData', ccm.darkgreen)
-    //   projectStore.actions.loadFromDataSource(client)
-    // }
-    // const doAutoRotate = preferencesStore.store.useStore('doAutoRotate')
-    // **
-
-    // ==========================================================
-    return () => {
-      console.debug('ThreeDGarden onUnmount', word)
-    }
-  }, [])
 
   // ==========================================================
   // FC returns JSX
