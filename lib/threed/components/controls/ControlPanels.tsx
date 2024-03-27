@@ -13,7 +13,8 @@ import {
 } from 'react'
 
 // ** APOLLO Imports
-import { useApolloClient } from '@apollo/client'
+import { useReactiveVar, useApolloClient } from '@apollo/client'
+import { preferencesDataVar } from '#/lib/stores/apollo'
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
 import stores from '#/lib/stores/apollo'
 
@@ -110,7 +111,7 @@ export const ThreeDControlPanels = (
         <Tabs
           value={tabControlValue}
           onChange={onChangeTabControlValue}
-          aria-label='Info Control Panel'
+          aria-label='ThreeD Control Panel'
         >
           <Tab label='Preferences' {...tabProps(0)} />
           <Tab label='Projects' {...tabProps(1)} />
@@ -259,6 +260,7 @@ const PreferencesControlPanel = (): JSX.Element => {
 const ProjectInfoPanel = (): JSX.Element => {
   // **
   const client = useApolloClient()
+  const prefs = useReactiveVar(preferencesDataVar)
   // **
   const projectCount = projectStore.store.useStore('count')
   const projects = projectStore.store.useStore('all')
@@ -271,6 +273,7 @@ const ProjectInfoPanel = (): JSX.Element => {
   let projectName = project._name
       projectName = project.data?.title
       projectName = preferences.data.projectName
+      projectName = prefs.projectName
   const doAutoLoadData = preferences.data.doAutoLoadData
   const doAutoRotate = preferences.data.doAutoRotate
 
@@ -280,7 +283,7 @@ const ProjectInfoPanel = (): JSX.Element => {
       {/* <Typography>projectsDB: {projectsDB.length}</Typography> */}
       <Typography>project._id: {project._id}</Typography>
       <Typography>project._ts: {project._ts}</Typography>
-      <Typography><strong>projectName: {projectName}</strong></Typography>
+      <Typography><strong>prefs.projectName: {projectName}</strong></Typography>
       <Typography>project._name: {project._name}</Typography>
       <Typography>project.data.title: {project.data?.title}</Typography>
       <Typography>project.data.scene[s]: {project.data?.scenes?.nodes[0].title}</Typography>
