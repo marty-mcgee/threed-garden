@@ -50,10 +50,10 @@ const noise = new Noise(Math.random())
 
 // ==========================================================
 
-function ThreeDPreferences() {
+export function ThreeDLevaControls() {
   // **
   const prefs = useReactiveVar(preferencesDataVar)
-
+  // **
   const [{
     projectNameLeva,
     // refMonitorLeva,
@@ -64,50 +64,49 @@ function ThreeDPreferences() {
         label: 'Project Name',
         value: prefs.projectName,
       },
-      /** EXAMPLES
-      number: { value: 10, step: 0.25 },
-      image: { image: undefined },
-      colorObj: { r: 1, g: 2, b: 3 },
-      select: { options: ['x', 'y', ['x', 'y']] },
-      interval: { min: -100, max: 100, value: [10, 15] },
-      refMonitor: monitor(ref, { graph: true, interval: 60 }),
-      showFolders: false,
-      folders: folder(
-        {
-          // color2: '#fff',
-          color: {
-            value: '#ff005b',
-            render: (get) => get('showFolders'),
-          },
-          folder2: folder(
-            {
-              'Hey Button': button(() => console.log('HEY HEY HEY')),
-              folder3: folder(
-                {
-                  spring: spring(),
-                  pos2d: { value: { x: 3, y: 4 } },
-                  pos2dArr: { value: [100, 200], x: { max: 300 } },
-                  pos3d: { value: { x: 0.3, k: 0.1, z: 0.5 }, j: { min: 0 } },
-                  pos3dArr: [Math.PI / 2, 20, 4],
-                },
-                {
-                  collapsed: true,
-                  render: (get) => get('showFolders'),
-                },
-              ),
-            },
-            {
-              collapsed: true,
-              render: (get) => get('showFolders'),
-            },
-          ),
-        },
-        {
-          collapsed: true,
-          render: (get) => get('showFolders'),
-        },
-      ),
-      */
+      // ** EXAMPLES
+      // number: { value: 10, step: 0.25 },
+      // image: { image: undefined },
+      // colorObj: { r: 1, g: 2, b: 3 },
+      // select: { options: ['x', 'y', ['x', 'y']] },
+      // interval: { min: -100, max: 100, value: [10, 15] },
+      // refMonitor: monitor(ref, { graph: true, interval: 60 }),
+      // showFolders: false,
+      // folders: folder(
+      //   {
+      //     // color2: '#fff',
+      //     color: {
+      //       value: '#ff005b',
+      //       render: (get) => get('showFolders'),
+      //     },
+      //     folder2: folder(
+      //       {
+      //         'Hey Button': button(() => console.debug('HEY HEY HEY')),
+      //         folder3: folder(
+      //           {
+      //             spring: spring(),
+      //             pos2d: { value: { x: 3, y: 4 } },
+      //             pos2dArr: { value: [100, 200], x: { max: 300 } },
+      //             pos3d: { value: { x: 0.3, k: 0.1, z: 0.5 }, j: { min: 0 } },
+      //             pos3dArr: [Math.PI / 2, 20, 4],
+      //           },
+      //           {
+      //             collapsed: true,
+      //             render: (get) => get('showFolders'),
+      //           },
+      //         ),
+      //       },
+      //       {
+      //         collapsed: true,
+      //         render: (get) => get('showFolders'),
+      //       },
+      //     ),
+      //   },
+      //   {
+      //     collapsed: true,
+      //     render: (get) => get('showFolders'),
+      //   },
+      // ),
     }),
     {
       color: 'darkgreen',
@@ -136,28 +135,6 @@ function ThreeDPreferences() {
     },
   )
 
-  useEffect(() => {
-    setUserPreferencesLeva({ doAutoLoadDataLeva: prefs.doAutoLoadData })
-    console.log('READ FROM MASTER REACTIVE VAR: prefs.doAutoLoadData', prefs.doAutoLoadData)
-  }, [prefs.doAutoLoadData])
-
-  useEffect(() => {
-    setUserPreferencesLeva({ doAutoRotateLeva: prefs.doAutoRotate })
-    console.log('READ FROM MASTER REACTIVE VAR: prefs.doAutoRotate', prefs.doAutoRotate)
-  }, [prefs.doAutoRotate])
-
-  useEffect(() => {
-    // set({ Id: projectName})
-    setProjectPreferencesLeva({ projectNameLeva: prefs.projectName })
-    console.log('READ FROM MASTER REACTIVE VAR: prefs.projectName', prefs.projectName)
-  }, [prefs.projectName])
-
-} // end: ThreeDPreferences()
-// ==========================================================
-
-export function ThreeDLevaControls() {
-  // **
-  const prefs = useReactiveVar(preferencesDataVar)
   // **
   const colorsStore = useCreateStore()
   const radiiStore = useCreateStore()
@@ -267,7 +244,6 @@ export function ThreeDLevaControls() {
 
   const theme = { colors, radii, space, fontSizes, sizes, borderWidths, fontWeights }
 
-
   // **
   const refMon = useRef(4) // 4 ?
   // **
@@ -279,7 +255,6 @@ export function ThreeDLevaControls() {
       refMon.current = 2 * noise.simplex2(3 * x + t, x) + (3 * Math.sin(x)) / x
     }, 30)
   }, [])
-
 
   // ** LEVA GUI CONTROL PANEL
   const [{
@@ -311,9 +286,39 @@ export function ThreeDLevaControls() {
     },
   )
 
+  // ==========================================================
   useEffect(() => {
+    setUserPreferencesLeva({ doAutoLoadDataLeva: prefs.doAutoLoadData })
+    console.debug('READ FROM MASTER REACTIVE VAR: prefs.doAutoLoadData', prefs.doAutoLoadData)
+  }, [prefs.doAutoLoadData])
+  // **
+  useEffect(() => {
+    // setUserPreferencesLeva({ doAutoLoadDataLeva: doAutoLoadDataLeva})
+    // set preferencesDataVar(data)
+  }, [doAutoLoadDataLeva])
+  // ==========================================================
+  useEffect(() => {
+    setUserPreferencesLeva({ doAutoRotateLeva: prefs.doAutoRotate })
+    console.debug('READ FROM MASTER REACTIVE VAR: prefs.doAutoRotate', prefs.doAutoRotate)
+  }, [prefs.doAutoRotate])
+  // **
+  useEffect(() => {
+    // setUserPreferencesLeva({ doAutoRotateLeva: doAutoRotateLeva})
+    // set preferencesDataVar(data)
+  }, [doAutoRotateLeva])
+  // ==========================================================
+  useEffect(() => {
+    // set({ Id: projectName})
     setControlPanelLeva({ title: prefs.projectName})
+    setProjectPreferencesLeva({ projectNameLeva: prefs.projectName })
+    console.debug('READ FROM MASTER REACTIVE VAR: prefs.projectName', prefs.projectName)
   }, [prefs.projectName])
+  // **
+  useEffect(() => {
+    setControlPanelLeva({ title: projectNameLeva})
+    // set preferencesDataVar(data)
+  }, [projectNameLeva])
+  // ==========================================================
 
   // useFullscreen({ current: document.documentElement }, fullScreen, {
   //   onClose: () => setControlPanelLeva({ fullScreen: false }),
@@ -333,7 +338,6 @@ export function ThreeDLevaControls() {
         oneLineLabels={false} // default = false. true makes labels + fields on separate rows
         hideCopyButton={true} // default = false. true hides the onHover copy button
       />
-      <ThreeDPreferences />
       {/* <div
         style={{
           display: 'grid',

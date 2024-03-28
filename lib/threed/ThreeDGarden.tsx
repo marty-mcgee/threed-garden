@@ -407,7 +407,7 @@ const ThreeDGarden = (): JSX.Element => {
 
   // ** GET PREFERENCES
   // const preferencesDB = preferencesStore.actions.loadFromDB(client)
-  // console.log('%c preferencesDB', ccm.yellow, preferencesDB)
+  // console.debug('%c preferencesDB', ccm.yellow, preferencesDB)
 
   // ** USE CONTEXT
   // const abilities = useContext(AbilityContext)
@@ -431,26 +431,20 @@ const ThreeDGarden = (): JSX.Element => {
   // **
   // ** USE STORE (APOLLO CLIENT)
   const preferencesStoreData = preferencesStore.store.useStore('one').data
-  console.log('%c🌱 preferencesStoreData', ccm.darkgreen, preferencesStoreData)
-  // console.log('%c🌱 preferencesStoreData.doAutoLoadData', ccm.darkgreen, preferencesStoreData.doAutoLoadData)
-  // console.log('%c🌱 preferencesStoreData.doAutoRotate', ccm.darkgreen, preferencesStoreData.doAutoRotate)
-  // console.log('%c🌱 preferencesStoreData.projectName', ccm.darkgreen, preferencesStoreData.projectName)
+  console.debug('%c🌱 preferencesStoreData', ccm.darkgreen, preferencesStoreData)
+  // ** SET REACTIVE VARS FROM DATA SOURCE
+  if (preferencesStoreData.projectName) {
+    preferencesDataVar(preferencesStoreData)
+  }
   // ** USE REACTIVE VARS (APOLLO LOCAL STATE)
   const prefs = useReactiveVar(preferencesDataVar)
-  console.log('%c🌱 preferencesDataVar => prefs{}', ccm.green, prefs)
-  // console.log('%c🌱 preferencesDataVar => prefs.doAutoLoadData', ccm.darkgreen, prefs.doAutoLoadData)
-  // console.log('%c🌱 preferencesDataVar => prefs.doAutoRotate', ccm.darkgreen, prefs.doAutoRotate)
-  // console.log('%c🌱 preferencesDataVar => prefs.projectName', ccm.darkgreen, prefs.projectName)
-  // ** ALTERNATE WAY OF ACCESSING SAME DATA
-  // console.log('%c🌱 preferencesDataVar().doAutoLoadData', ccm.darkgreen, preferencesDataVar().doAutoLoadData)
-  // console.log('%c🌱 preferencesDataVar().doAutoRotate', ccm.darkgreen, preferencesDataVar().doAutoRotate)
-  // console.log('%c🌱 preferencesDataVar().projectName', ccm.darkgreen, preferencesDataVar().projectName)
-  // **
-  if (prefs.doAutoRotate) {
-    console.log('%c🌱 doAutoLoadData', ccm.darkgreen)
+  console.debug('%c🌱 preferencesDataVar as {prefs}', ccm.green, prefs)
+  // ** AUTO LOAD PROJECT FROM DATA SOURCE?
+  if (prefs.doAutoLoadData) {
+    console.debug('%c🌱 prefs.doAutoLoadData', ccm.darkgreen, prefs.doAutoLoadData)
     projectStore.actions.loadFromDataSource(client)
   }
-  console.log('%c====================================', ccm.darkgreen)
+  console.debug('%c====================================', ccm.darkgreen)
 
   // ==========================================================
   // Component onMount hook
@@ -465,16 +459,17 @@ const ThreeDGarden = (): JSX.Element => {
     // USE STORE
     // WORKING:
     // LOAD DEFAULT DATA ON START + REFRESH
+  preferencesStore.actions.loadFromDB(client)
   // // **
   // preferencesStore.actions.loadFromDataSource(client)
   // // **
   // const getDoAutoLoadData = preferencesStore.store.useStore('one')
   // const doAutoLoadData = getDoAutoLoadData.data.doAutoLoadData
-  // console.log('%c🌱 doAutoLoadData', ccm.darkgreen, doAutoLoadData)
+  // console.debug('%c🌱 doAutoLoadData', ccm.darkgreen, doAutoLoadData)
   // // ** USE REACTIVE VARS (APOLLO LOCAL STATE)
   // // const updatePreferencesData = useReactiveVar(preferencesDataVar)
   // if (doAutoLoadData) {
-  //   console.log('%c🌱 doAutoLoadData', ccm.darkgreen)
+  //   console.debug('%c🌱 doAutoLoadData', ccm.darkgreen)
   //   projectStore.actions.loadFromDataSource(client)
   // }
     // **

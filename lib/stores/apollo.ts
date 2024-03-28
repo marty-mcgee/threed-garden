@@ -734,17 +734,17 @@ function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
   // const doAutoLoadDataApollo = preferences.doAutoLoadData
   // const doAutoLoadDataApollo = this.store.get('doAutoLoadData')
   const doAutoLoadDataApollo: boolean = false
-  // console.log('ThreeDLevaControls doAutoLoadDataApollo', doAutoLoadDataApollo)
+  // console.debug('ThreeDLevaControls doAutoLoadDataApollo', doAutoLoadDataApollo)
   // const doAutoRotateApollo = preferencesStore.store.useStore('doAutoRotate')
   // const doAutoRotateApollo = preferences.doAutoRotate
   // const doAutoRotateApollo = this.store.get('doAutoRotate')
   const doAutoRotateApollo: boolean = false
-  // console.log('ThreeDLevaControls doAutoRotateApollo', doAutoRotateApollo)
+  // console.debug('ThreeDLevaControls doAutoRotateApollo', doAutoRotateApollo)
   // const projectNameApollo = preferencesStore.store.useStore('projectName')
   // const projectNameApollo = preferences.projectName
   // const projectNameApollo = this.store.get('projectName')
   const projectNameApollo: string = ''
-  // console.log('ThreeDLevaControls projectNameApollo', projectNameApollo)
+  // console.debug('ThreeDLevaControls projectNameApollo', projectNameApollo)
 
   this.store = create({
     doAutoLoadData: doAutoLoadDataApollo, // true | false,
@@ -810,10 +810,10 @@ export const preferencesDataVar = makeVar(
   {
     doAutoLoadData: false,
     doAutoRotate: false,
-    projectName: 'preferencesDataVar.projectName default',
+    projectName: 'blank default',
   }
 )
-console.debug('Apollo Stores ReactiveVar preferencesDataVar()', preferencesDataVar())
+// console.debug('Apollo Stores ReactiveVar preferencesDataVar()', preferencesDataVar())
 // console.debug('Apollo Stores ReactiveVar preferencesDataVar().doAutoLoadData', preferencesDataVar().doAutoLoadData)
 // console.debug('Apollo Stores ReactiveVar preferencesDataVar().doAutoRotate', preferencesDataVar().doAutoRotate)
 // console.debug('Apollo Stores ReactiveVar preferencesDataVar().projectName', preferencesDataVar().projectName)
