@@ -19,15 +19,16 @@ const FallbackSpinner = () => {
   return (
     <Box
       sx={{
-        height: '100vh',
-        width: '100vw',
+        // height: '100vh',
+        // width: '100vw',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'column',
-      }}>
+      }}
+    >
       <CircularProgress disableShrink sx={{ mt: 0, color: spinnerColor }} />
-      <Box>Thinking...</Box>
+      {/* <Box>Building ThreeD Interface...</Box> */}
     </Box>
   )
 }

@@ -12,6 +12,7 @@
 /build
 
 # misc
+desktop.ini
 .DS_Store
 .env
 # .env.*
@@ -22,7 +23,15 @@
 # assets
 public/demo
 public/demo/objects
-public/objects
+public/objects/**
+# !public/objects/threeds
+# public/objects/threeds/*
+# !public/objects/threeds/characters
+# !public/objects/threeds/synty
+public/objects/threeds/synty/_old
+public/objects/threeds/synty/simple/*
+!public/objects/threeds/synty/polygon/*
+
 
 .env.local
 

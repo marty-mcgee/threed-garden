@@ -3,7 +3,10 @@ import { useState, useRef } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
 import { ContactShadows, useCursor, useGLTF, useFBX, useOBJ } from '@react-three/drei'
 
-import Model from '#/lib/threed/components/nouns/Model'
+import ThreeDModel from '#/lib/threed/components/nouns/Model'
+import Character1 from '#/lib/threed/components/nouns/Character/FarmerScarecrow'
+import Character2 from '#/lib/threed/components/nouns/Character/FarmerMan'
+import Character3 from '#/lib/threed/components/nouns/Character/FarmerOldMan'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
@@ -35,17 +38,18 @@ const defaults = {
   // file settings
 
   // fbx | obj | gltf
-  fileTypeDefault: 'ext', // ext[ension],
+  fileTypeDefault: 'fbx', // ext[ension],
 
   // set a default file to load for Model (for testing)
   // fileUrlDefault: '/objects/examples/compressed.glb' | '/objects/examples/compressed-v002.glb' |
-  fileUrlDefault:
+  fileUrlDefault: [
   'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Scarecrow_01.fbx',
-  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Female_01.fbx',
-  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_01.fbx',
-  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_Old_01.fbx',
-  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmboy_01.fbx',
-  // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmgirl_01.fbx',
+  'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Female_01.fbx',
+  'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_01.fbx',
+  'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_Old_01.fbx',
+  'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmboy_01.fbx',
+  'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmgirl_01.fbx',
+  ],
 
   fileNameDefault: 'NounTitleFromAPI.ext',
 
@@ -63,17 +67,17 @@ const defaults = {
 // ==============================================================
 // ** COMPONENTS
 
-function Character({ ...props }) {
+const Character = (props) => {
 
-  const { state, threedId, threed } = props
+  const { state } = props
 
-  console.debug('THREED: Character(state, threedId, threed)', state, threedId, threed)
+  console.debug('THREEDCHARACTER: state', state)
 
-  // map threed to THREED, to pass on to Model
-  const THREED = {
+  // map threed to THREEDCHARACTER, to pass on to Model
+  const THREEDCHARACTER = {
     // === threed
-    name: 'THREED -- CHARACTER LOADED',
-    ref: useRef(),
+    name: 'THREEDCHARACTER[S]',
+    // ref: useRef(null),
     // { data: 'gql/rest wp endpoint {threed_threed}' }
     group: {
       group_id: 0,
@@ -101,36 +105,44 @@ function Character({ ...props }) {
       },
     ],
   }
-  console.debug('THREED ready for Group of Models: ', THREED)
+  console.debug('THREEDCHARACTER ready for Group of Models: ', THREEDCHARACTER)
 
   // ==============================================================
   // ANIMATIONS (FOR ALL CHARACTERS !!!)
 
-  useFrame(({ clock }) => {
-    const a = clock.getElapsedTime()
-    THREED.ref.current.rotation.x = a
-  })
+  // useFrame(({ clock }) => {
+  //   const a = clock.getElapsedTime()
+  //   // THREEDCHARACTER.ref.current.rotation.x = a
+  // })
 
   // return R3F JSX
   return (
     <>
       <group
-        position={THREED.group.group_position}
-        rotation={THREED.group.group_rotation}
-        scale={THREED.group.group_scale}
+        position={THREEDCHARACTER.group.group_position}
+        rotation={THREEDCHARACTER.group.group_rotation}
+        scale={THREEDCHARACTER.group.group_scale}
       >
-        <Model
+        <ThreeDModel
+          // ref={THREEDCHARACTER.ref}
           state={state}
-          threed={THREED}
-          file={THREED.files[0].file_url}
-          name={THREED.files[0].nodes[0].node_name}
-          position={THREED.files[0].nodes[0].node_position}
-          rotation={THREED.files[0].nodes[0].node_rotation}
-          scale={THREED.files[0].nodes[0].node_scale}
-          doReturnOne={true}
-          doReturnEach={false}
-          doReturnAll={false}
+          // threed={THREEDCHARACTER}
+          // file={THREEDCHARACTER.files[0].file_url}
+          // name={THREEDCHARACTER.files[0].nodes[0].node_name}
+          // position={THREEDCHARACTER.files[0].nodes[0].node_position}
+          // rotation={THREEDCHARACTER.files[0].nodes[0].node_rotation}
+          // scale={THREEDCHARACTER.files[0].nodes[0].node_scale}
+          // doReturnOne={true}
+          // doReturnEach={false}
+          // doReturnAll={false}
         />
+
+        {/* CHARACTER[S] */}
+        <Character1 />
+          <Character2 />
+            <Character3 />
+        {/* CHARACTER[S] */}
+
         <ContactShadows
           rotation-x={Math.PI / 2}
           position={[0, -35, 0]}

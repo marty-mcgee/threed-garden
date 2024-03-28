@@ -73,7 +73,7 @@ console.debug('%c=======================================', ccm.black)
 
 // ==============================================================
 
-const appVersion = 'v0.12.0'
+const appVersion = 'v0.15.0'
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
 // const appVersion = process.env.npm_package_version
 // const appVersion: string = require('package.json').version
@@ -113,7 +113,7 @@ const RightWrapper = styled(Box)(({ theme }: { theme: any }) => {
     // flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#90A000', // 'olive', // '#97B553', // 'green', // 'background.paper',
+    // backgroundColor: '#90A000', // 'olive', // '#97B553', // 'green', // 'background.paper',
     maxWidth: 360,
     [theme.breakpoints.up('md')]: {
       maxWidth: 420,

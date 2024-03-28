@@ -16,10 +16,10 @@ function TabPanel(props: TabPanelProps) {
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
-      sx={{ p: 3, overflow: 'scroll' }}
+      sx={{ overflow: 'scroll' }}
       {...other}
     >
-      {value === index && <Box sx={{ p: 3, overflow: 'scroll' }}>{children}</Box>}
+      {value === index && <Box sx={{ overflow: 'scroll' }}>{children}</Box>}
     </Box>
   )
 }

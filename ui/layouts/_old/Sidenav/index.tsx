@@ -98,7 +98,7 @@ function Sidenav({ color, brandLogo, brandName, light, routes, ...rest }: Props)
     textColor = 'inherit'
   }
 
-  // ===============================================================
+  // =======================================================
   // [MM] HEY HEY HEY -- VERY IMPORTANT SECTION HERE
 
   // [MM] SIMPLE CLOSE SIDENAV / COLLAPSE

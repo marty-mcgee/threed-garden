@@ -1,3 +1,4 @@
+'use client'
 import { Boundary } from '#/ui/playground/Boundary';
 import React from 'react';
 

@@ -1,28 +1,41 @@
 // ==============================================================
 // ** RESOURCES
+// ==============================================================
 
+import { useReactiveVar } from '@apollo/client'
+import { preferencesDataVar, preferencesStore } from '#/lib/stores/apollo'
 import { proxy, useSnapshot } from 'valtio'
 
-import { Suspense, useState, useRef } from 'react'
+import { Suspense, useState, useRef, useTransition } from 'react'
+import { useControls } from 'leva'
 
+// ** Helper Components
+import Spinner from '#/ui/components/spinner'
+
+// THREE JS * ALL
 import * as THREE from 'three'
-import { Canvas, extend, useFrame, useThree } from '@react-three/fiber'
-import { softShadows } from '@react-three/drei' // softShadows()
-import { OrbitControls, TransformControls, Preload, Environment, Html, useProgress } from '@react-three/drei'
-import { useGLTF, PresentationControls, ContactShadows } from '@react-three/drei'
-import { Loader } from '@react-three/drei'
-import { GizmoHelper, GizmoViewcube, GizmoViewport, Center, PivotControls } from '@react-three/drei'
-import { Stage, BakeShadows } from '@react-three/drei'
-
-// import AppPage from '#/lib/threed/pages/_app-page'
-// import BoxPage from '#/lib/threed/pages/box-page'
-import BoxComponent from '#/lib/threed/components/box'
-// import ShaderPage from '#/lib/threed/pages/shader-page'
-import ShaderComponent from '#/lib/threed/components/shader'
+// R3F
+import { Canvas, useFrame, useThree, extend } from '@react-three/fiber'
+// R3F HELPERS
+import {
+  Preload, Environment, Stage,
+  Html, Center,
+  useGLTF, useFBX,
+  OrbitControls, TransformControls, PivotControls,
+  GizmoHelper, GizmoViewcube, GizmoViewport,
+  ContactShadows,
+  BakeShadows,
+  softShadows, // softShadows()
+  Loader, useProgress,
+} from '@react-three/drei'
 
 // ** ThreeD Imports
-import ThreeD from '#/lib/threed/components/nouns/ThreeD'
-import Character from '~/lib/threed/components/nouns/Character'
+// import ThreeDScenes from '#/lib/threed/components/nouns/Scene'
+// import ThreeDPlans from '#/lib/threed/components/nouns/Plan'
+// import ThreeDThreeDs from '#/lib/threed/components/nouns/ThreeD'
+import ThreeDModels from '#/lib/threed/components/nouns/Model'
+// ThreeD EXAMPLES
+// import Character from '~/lib/threed/components/nouns/Character'
 // import StacyApp from '~/lib/threed/components/examples/Stacy/StacyApp'
 // import Stacy from '~/lib/threed/components/examples/Stacy/Stacy'
 // import Watch from '~/lib/threed/components/examples/Watch/Watch'
@@ -32,92 +45,181 @@ import Character from '~/lib/threed/components/nouns/Character'
 // import TransformModel from '~/lib/threed/components/examples/TransformModel/App'
 // import Shoe from '~/lib/threed/components/examples/Shoes/Shoe'
 
+// ** UUID Imports
+import { v4 as newUUID } from 'uuid'
+
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
-// console.debug('%c~ccm', ccm)
+// console.debug('%c ccm', ccm)
 
 // ==============================================================
 // ** VARIABLES
 
-// Reactive state model (using valtio)
-const state = proxy({ current: null, mode: 0 })
+const debug = true // false | true // ts: boolean
+const DEBUG = true // false | true // ts: boolean
 
-// Model interactive "modes" using TransformControls
-const modes = ['translate', 'rotate', 'scale']
+// Model interactive 'modes' using TransformControls
+const actionModes = ['translate', 'rotate', 'scale']
 
-// example working simple <Loader />
-function LoaderSimple() {
-  const { progress } = useProgress()
-  return <Html center>{Math.round(progress)} % loaded</Html>
-}
+// // example working simple <Loader />
+// function ThreeDLoaderSimple() {
+//   const { active, progress, errors, item, loaded, total } = useProgress()
+//   return <Html center>THREED GUI LOADING... {Math.round(progress)} %</Html>
+// }
 
-// Controls
-function ThreeDControls() {
-  // Get 'snap' notified on changes to state + scene
-  const snap = useSnapshot(state)
-  const scene = useThree((state) => state.scene)
+function ThreeDEnvironment() {
+  const [envPreset, setEnvPreset] = useState('park')
+  // You can use the 'inTransition' boolean to react to the loading in-between state,
+  // For instance by showing a message
+  const [inTransition, startTransition] = useTransition()
 
+  const { blur } = useControls(
+    'Scene Preferences',
+    () => (
+      {
+        preset: {
+          label: 'Environment',
+          value: envPreset,
+          options: [
+            'park', 'sunset', 'dawn', 'night', 'forest',
+            'studio', 'warehouse', 'apartment', 'lobby', 'city'
+          ],
+          // If onChange is present the value will not be reactive,
+          // see https://github.com/pmndrs/leva/blob/main/docs/advanced/controlled-inputs.md#onchange
+          // Instead we transition the preset value, which will prevents the suspense bound from triggering its fallback
+          // That way we can hang onto the current environment until the new one has finished loading ...
+          onChange: (value) => startTransition(() => setEnvPreset(value))
+        },
+        blur: {
+          label: 'Blur BG',
+          value: 0.00,
+          min: 0.00,
+          max: 0.20,
+        },
+      }
+    ),
+    {
+      color: 'darkgreen',
+      collapsed: true,
+    },
+  )
   return (
-    <>
-      {/* As of drei@7.13 transform-controls can refer to the target by children, or the object prop */}
-      {snap.current && (
-        <TransformControls
-          object={scene.getObjectByName(snap.current)}
-          mode={modes[snap.mode]}
-        />
-      )}
-      {/* makeDefault makes the controls known to r3f, now transform-controls can auto-disable them when active */}
-      <OrbitControls
-        makeDefault
-        minPolarAngle={0}
-        maxPolarAngle={Math.PI / 1.75}
-        autoRotate={false}
-      />
-    </>
+    <Environment
+      preset={envPreset}
+      blur={blur}
+      background
+    />
   )
 }
 
-export default function ThreeDCanvas({ models, children }) {
+// const controls = new OrbitControls(camera, renderer.domElement)
+// camera.lookAt(0.5, 0.5, 0.5)
+// controls.target.set(.5, .5, .5)
+// controls.update()
+// controls.addEventListener('change', () => console.debug('Controls Change'))
+// controls.addEventListener('start', () => console.debug('Controls Start Event'))
+// controls.addEventListener('end', () => console.debug('Controls End Event'))
+
+export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
-  // inject models inside Suspense groups
-  if (models) {
-    console.debug('models', models)
-    if (models.length) {
-      console.debug('models.length', models.length)
-    }
-  }
+  if (debug) console.debug('%c props._id, props.threeds', ccm.red, _id, threeds)
+  // **
+  // const preferences = preferencesStore.store.useStore('one')
+  // const projectName = preferences.data.projectName ? preferences.data.projectName : 'blank'
+  // const doAutoLoadData = preferences.data.doAutoLoadData ? preferences.data.doAutoLoadData : false
+  // const doAutoRotate = preferences.data.doAutoRotate ? preferences.data.doAutoRotate : false
 
-  // create React references
-  const refCanvas = useRef()
-  const refThreeD = useRef()
-  const refCharacter = useRef()
+  const prefs = useReactiveVar(preferencesDataVar)
+  // console.debug('%c🌱 preferencesDataVar as {prefs}', ccm.green, prefs)
 
+  // **
   return (
     <Canvas
-      ref={refCanvas}
-      camera={{ position: [-10, 10, 100], fov: 50 }}
+      // id={_id}
+      camera={{ position: [-10, 10, 50], fov: 50 }}
       dpr={[1, 2]}
       shadows
       style={{
-        height: '540px',
+        height: '480px',
         width: '100%',
       }}
+      // scene={sceneState.stuff}
+      // scene={{
+      //   // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
+      //   background: new THREE.Color(0x131313),
+      // }}
     >
-      <Preload all />
 
+      {/* SUSPENSEFUL... */}
       {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
       {/* <Suspense fallback={null}> */}
-      <Suspense fallback={<LoaderSimple />}>
-        {/* <Environment preset='forest' background /> */}
+      {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
+      {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
+      <Suspense fallback={
+        <Html center>
+          <Loader
+            // containerStyles={...container} // Flex layout styles
+            // innerStyles={...inner} // Inner container styles
+            // barStyles={...bar} // Loading-bar styles
+            // dataStyles={...data} // Text styles
+            dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
+            initialState={(active = true) => active} // Initial black out state
+          />
+        </Html>
+      }>
 
-        <ThreeDControls />
+        {/* <Preload all /> */}
 
-        {/* */}
+        {/* THREED STAGE + ENVIRONMENT */}
+        {/* <Stage environment='forest' intensity={0.7}></Stage> */}
+        <ThreeDEnvironment />
+
+        <axesHelper args={[1024]} />
+        <gridHelper args={[1024, 16]} />
+
+        {/* THREED SCENE FILES TO CANVAS */}
+        {/* <ThreeDScene /> */}
+
+        {/* THREED MODELS: WORKING !!! */}
+        {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
+        {threeds.length && (
+          <ThreeDModels
+            threeds={threeds}
+          />
+        )}
+        {/* <ThreeDControls /> */}
+
+        {/* makeDefault makes the controls known to r3f,
+            now transform-controls can auto-disable them when active */}
+        <OrbitControls
+          makeDefault
+          minDistance={0.5}
+          maxDistance={1024}
+          // minZoom={10}
+          // maxZoom={20}
+          // minAzimuthAngle={-Math.PI / 4}
+          // maxAzimuthAngle={Math.PI / 4}
+          minPolarAngle={-1.75}
+          maxPolarAngle={Math.PI / 1.75}
+          enableZoom={true}
+          zoomToCursor={false} // default is false
+          zoomSpeed={1.0} // default is 1.0
+          enableRotate={true}
+          autoRotate={prefs.doAutoRotate} // default is false
+          autoRotateSpeed={1.0} // default is 2.0
+          rotateSpeed={1.0} // default is 1.0
+          enableDamping={true} // slows down rotation after mouse release
+          dampingFactor={0.01} // default is 0.05
+          enablePan={true}
+          screenSpacePanning={true}
+        />
+
+        {/* GIZMO HELPER */}
         <GizmoHelper
           alignment='top-right'
-          margin={[100, 100]}
+          margin={[64, 64]}
         >
-          <group scale={0.85}>
+          <group scale={1.00}>
             <GizmoViewcube />
           </group>
           <group
@@ -164,6 +266,7 @@ export default function ThreeDCanvas({ models, children }) {
           intensity={0.85}
         />
 
+        {/* EFFECTS */}
         <ContactShadows
           position={[0, -1.4, 0]}
           opacity={0.75}
@@ -171,57 +274,7 @@ export default function ThreeDCanvas({ models, children }) {
           blur={2.5}
           far={4}
         />
-
-        <axesHelper args={[100]} />
-        <gridHelper args={[100, 10]} />
-
-        {/* MODEL -- Monaco Watch
-          auto-generated by: https://github.com/pmndrs/gltfjsx
-          author: ar-watches (https://sketchfab.com/ar-watches)
-          license: CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
-          source: https://sketchfab.com/3d-models/tag-heuer-monaco-x-gulf-watch-31ba7140fb3146b2af3cbdc13022421c
-          title: Tag Heuer Monaco X GULF Watch
-        */}
-        {/* <PresentationControls
-          // global
-          config={{ mass: 2, tension: 500 }}
-          snap={{ mass: 4, tension: 1500 }}
-          rotation={[0, 0.3, 0]}
-          polar={[-Math.PI / 3, Math.PI / 3]}
-          azimuth={[-Math.PI / 1.4, Math.PI / 2]}>
-          <Watch rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} scale={0.005} />
-        </PresentationControls> */}
-        {/* MODEL -- Monaco Watch */}
-        {/* <PresentationControls
-          global
-          config={{ mass: 2, tension: 500 }}
-          snap={{ mass: 4, tension: 1500 }}
-          rotation={[0, 0.3, 0]}
-          polar={[-Math.PI / 3, Math.PI / 3]}
-          azimuth={[-Math.PI / 1.4, Math.PI / 2]}>
-          <CoffeeCup position={[1.25, 1, 3.25]} scale={2.5} />
-        </PresentationControls> */}
-        <PresentationControls
-          // global
-          config={{ mass: 2, tension: 500 }}
-          snap={{ mass: 4, tension: 1500 }}
-          rotation={[0, 0.3, 0]}
-          polar={[-Math.PI / 3, Math.PI / 3]}
-          azimuth={[-Math.PI / 1.4, Math.PI / 2]}
-        >
-          {/* <StacyApp position={[1.25, 1, 3.25]} scale={3.0} /> */}
-          {/* <Stacy position={[1.25, 0.7, 3.25]} scale={5.0} /> */}
-          <Character
-            type='gardener'
-            ref={refCharacter}
-            state={state}
-            threedId={2}
-            threed={{}}
-            position={[1.25, 0.7, 3.25]}
-            rotation={[0, 90, 0]}
-            scale={5.0}
-          />
-        </PresentationControls>
+        <BakeShadows />
 
         {/* Camera Action Rig */}
         {/*
@@ -233,27 +286,18 @@ export default function ThreeDCanvas({ models, children }) {
         <TransformModel
           name='Zeppelin' // must match node name
           state={state}
-          modes={modes}
+          modes={actionModes}
           position={[-20, 10, 10]}
           rotation={[3, -1, 3]}
           scale={0.005}
         />
         */}
 
-        {/* [MM] HEY HEY HEY */}
-        {/* NEED TO SEND A THREED_SCENE TO A CANVAS, BUT THIS IS FINE FOR NOW */}
-        <ThreeD ref={refThreeD} state={state} threedId={1} threed={{}} />
-        {/* [MM] HEY HEY HEY */}
-
-        {/* <Stage environment="forest" intensity={0.7}> */}
-
         {/* SHOE + SHOES */}
         {/* <Stage intensity={0.7}>
-          <Shoe color="tomato" position={[0, 0, 0]} />
-          <Shoe color="orange" scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
+          <Shoe color='tomato' position={[0, 0, 0]} />
+          <Shoe color='orange' scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
         </Stage> */}
-
-        <BakeShadows />
 
         {/* {children} */}
       </Suspense>
@@ -263,7 +307,7 @@ export default function ThreeDCanvas({ models, children }) {
 
 // function Watch(props) {
 //   const ref = useRef()
-//   const { nodes, materials } = useGLTF('objects/examples/watch-v1.glb')
+//   const { nodes, materials } = useGLTF('/objects/examples/watch-v1.glb')
 //   useFrame((state) => {
 //     const t = state.clock.getElapsedTime()
 //     ref.current.rotation.x = -Math.PI / 1.75 + Math.cos(t / 4) / 8
@@ -286,7 +330,7 @@ export default function ThreeDCanvas({ models, children }) {
 // }
 
 // function CoffeeCup(props) {
-//   const { nodes, materials } = useGLTF('objects/examples/coffee-transformed.glb')
+//   const { nodes, materials } = useGLTF('/objects/examples/coffee-transformed.glb')
 //   console.debug('materials', materials)
 //   return (
 //     <mesh
@@ -300,10 +344,10 @@ export default function ThreeDCanvas({ models, children }) {
 //   )
 // }
 
-// EXAMPLE ANIMATION using hook 'useFrame' (with 'useRef' references)
-function ActionRig() {
-  return useFrame((state) => {
-    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, 1 + state.mouse.x / 4, 0.075)
-    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 1.5 + state.mouse.y / 4, 0.075)
-  })
-}
+// // EXAMPLE ANIMATION using hook 'useFrame' (with 'useRef' references)
+// function ActionRig() {
+//   return useFrame((state) => {
+//     state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, 1 + state.mouse.x / 4, 0.075)
+//     state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 1.5 + state.mouse.y / 4, 0.075)
+//   })
+// }

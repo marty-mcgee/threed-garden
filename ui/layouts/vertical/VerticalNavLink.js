@@ -53,13 +53,13 @@ const MenuItemTextMetaWrapper = styled(Box)({
 const VerticalNavLink = ({
   item,
   parent,
-  // navHover,
   settings,
   navVisible,
   isSubToSub,
-  // collapsedNavWidth,
   toggleNavVisibility,
-  // navBorderWidth,
+  collapsedNavWidth,
+  navBorderWidth,
+  navHover,
 }) => {
   // ** Hooks
   const theme = useTheme()
@@ -107,11 +107,13 @@ const VerticalNavLink = ({
         //   mb: 1.5,
         // }}
       >
-        <Link href={item.path === undefined ? '/' : `${item.path}`}>
+        <Link
+          href={item.path === undefined ? '/' : `${item.path}`}
+          {...(item.openInNewTab ? { target: '_blank' } : null)}
+        >
           <MenuNavLink
             component={'span'}
             className={isNavLinkActive() ? 'active' : ''}
-            {...(item.openInNewTab ? { target: '_blank' } : null)}
             onClick={(e) => {
               if (item.path === undefined) {
                 e.preventDefault()
@@ -123,12 +125,12 @@ const VerticalNavLink = ({
             }}
             sx={{
               // py: 2.25,
-              // ...conditionalBgColor(),
+              ...conditionalBgColor(),
               borderTopRightRadius: 100,
               borderBottomRightRadius: 100,
               ...(item.disabled ? { pointerEvents: 'none' } : { cursor: 'pointer' }),
-              // pl: navCollapsed && !navHover ? (collapsedNavWidth - navBorderWidth - 24) / 8 : 2.9,
-              // pr: navCollapsed && !navHover ? ((collapsedNavWidth - navBorderWidth - 24) / 2 - 5) / 4 : 3.5,
+              pl: navCollapsed && !navHover ? (collapsedNavWidth - navBorderWidth - 24) / 8 : 2.9,
+              pr: navCollapsed && !navHover ? ((collapsedNavWidth - navBorderWidth - 24) / 2 - 5) / 4 : 3.5,
               // display: 'inline-flex',
               // minWidth: 240,
               // width: '100%',
@@ -140,9 +142,9 @@ const VerticalNavLink = ({
                   minWidth: 40,
                   color: 'text.primary',
                   transition: 'margin .25s ease-in-out',
-                  // ...(navCollapsed && !navHover ? { mr: 0.5 } : { mr: 0.5 }),
+                  ...(navCollapsed && !navHover ? { mr: 0.5 } : { mr: 0.5 }),
                   // This line should be after (navCollapsed && !navHover) condition for proper styling
-                  // ...(parent ? { ml: 1.00, mr: 3.50 } : { ml: 1.00, mr: 3.50 }),
+                  ...(parent ? { ml: 1.00, mr: 3.50 } : { ml: 1.00, mr: 3.50 }),
                 }}
               >
                 <UserIcon

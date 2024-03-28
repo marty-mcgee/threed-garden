@@ -173,27 +173,27 @@ query GetScenes($first: Int, $last: Int, $after: String, $before: String) {
             uri
           }
         }
-        scenePlaneThreed {
-          node {
-            files {
-              edges {
-                node {
-                  fileType
-                  fileId
-                  fileUrl
-                  fileIsUrl
-                  fileIsObject3d
-                  fileFile {
-                    node {
-                      link
-                      uri
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+        # scenePlaneThreed {
+        #   node {
+        #     files {
+        #       edges {
+        #         node {
+        #           fileType
+        #           fileId
+        #           fileUrl
+        #           fileIsUrl
+        #           fileIsObject3d
+        #           fileFile {
+        #             node {
+        #               link
+        #               uri
+        #             }
+        #           }
+        #         }
+        #       }
+        #     }
+        #   }
+        # }
       }
     }
   }
