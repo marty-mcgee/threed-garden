@@ -116,9 +116,9 @@ function ThreeDEnvironment() {
 // camera.lookAt(0.5, 0.5, 0.5)
 // controls.target.set(.5, .5, .5)
 // controls.update()
-// controls.addEventListener('change', () => console.log('Controls Change'))
-// controls.addEventListener('start', () => console.log('Controls Start Event'))
-// controls.addEventListener('end', () => console.log('Controls End Event'))
+// controls.addEventListener('change', () => console.debug('Controls Change'))
+// controls.addEventListener('start', () => console.debug('Controls Start Event'))
+// controls.addEventListener('end', () => console.debug('Controls End Event'))
 
 export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
@@ -130,7 +130,7 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // const doAutoRotate = preferences.data.doAutoRotate ? preferences.data.doAutoRotate : false
 
   const prefs = useReactiveVar(preferencesDataVar)
-  // console.log('%c🌱 preferencesDataVar => prefs{}', ccm.green, prefs)
+  // console.debug('%c🌱 preferencesDataVar as {prefs}', ccm.green, prefs)
 
   // **
   return (
