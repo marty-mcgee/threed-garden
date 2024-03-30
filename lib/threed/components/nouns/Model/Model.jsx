@@ -45,7 +45,9 @@ const DEBUG = true // false | true // ts: boolean
 
 // ==============================================================
 // ** ThreeD == Group of > Files of > Nodes of > 3DObjects
-let Interface_ThreeD = {
+// interface IThreeD {
+// ** TODO
+let IThreeD = {
   name: 'THREED DEFAULT: FILE (GROUP OF) NODES TO RENDER',
   data: {}, // original data records from db/api
   group: {
@@ -79,6 +81,7 @@ let Interface_ThreeD = {
 // ** ThreeD Object -- Constructor Function
 // -- returns new ThreeD
 // function ThreeD(this: IThreeD, _type: string = 'ThreeD') {
+// ** TODO: interface IThreeD
 function ThreeD(_type = 'ThreeD') {
   // object params
   this.name = 'ThreeD: Default FILE (GROUP OF) NODES TO RENDER'

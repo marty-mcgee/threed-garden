@@ -267,15 +267,9 @@ const ProjectInfoPanel = (): JSX.Element => {
   const project = projectStore.store.useStore('one')
   // const projectsDB = projectStore.store.useStore('allDB')
   // const projectDB = projectStore.store.useStore('oneDB')
-
-  const preferences = preferencesStore.store.useStore('one')
-  // console.debug('preferences', preferences)
   let projectName = project._name
       projectName = project.data?.title
-      projectName = preferences.data.projectName
       projectName = prefs.projectName
-  const doAutoLoadData = preferences.data.doAutoLoadData
-  const doAutoRotate = preferences.data.doAutoRotate
 
   return (
     <Box sx={{ px: 2 }}>

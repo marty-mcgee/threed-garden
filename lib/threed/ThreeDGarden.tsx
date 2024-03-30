@@ -67,7 +67,7 @@ import { Html, Loader, useProgress } from '@react-three/drei'
 
 // ** ThreeD Imports
 // import { Canvas } from '@react-three/fiber'
-import ThreeDCanvas from '#/lib/threed/components/canvas'
+import ThreeDCanvas from '#/lib/threed/components/canvas/Canvas'
 // ** Leva GUI
 import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
 // ** Control + Info Panels (Store Access)
@@ -76,7 +76,7 @@ import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
 import ThreeDToolbar from '#/lib/threed/components/tools/Toolbar'
 
 // ** Modal Imports
-import modals from '#/lib/threed/components/modals'
+import modals from '#/lib/threed/components/modals/Modals'
 
 // ** View Imports
 // import views from '#/lib/threed/components/views'
@@ -99,10 +99,8 @@ import ccm from '#/lib/utils/console-colors'
 
 // DEBUG PREFERENCES FOR THIS MODULE
 const debug: boolean = true
-const debugPhysics: boolean = true
-const debugAnimations: boolean = true
 const DEBUG: boolean = true
-// const doAutoLoadData: boolean = true // true | false (default)
+const debug_meta: boolean = false
 
 const appVersion = 'v0.15.0-b'
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
@@ -110,10 +108,10 @@ const appVersion = 'v0.15.0-b'
 // const appVersion: string = require('package.json').version
 // const appVersion: string = require('../../package.json').version
 
-if (debug) {
+if (debug && DEBUG && debug_meta) {
   console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm.green)
   console.debug("%c🌱 appVersion", ccm.darkgreen, appVersion)
-  // console.debug(`%c====================================`, ccm.black)
+  console.debug(`%c====================================`, ccm.darkgreen)
 }
 
 // ==========================================================
@@ -309,7 +307,7 @@ const ThreeDCanvasViewer = (): JSX.Element => {
           style={{
             position: 'absolute',
             zIndex: 10,
-            minWidth: '360px',
+            minWidth: '416px',
           }}
         >
           {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
@@ -426,61 +424,73 @@ const ThreeDGarden = (): JSX.Element => {
   //   word: word,
   // }
 
-  // ** const getPreferencesData =
-  // preferencesStore.actions.loadFromDB(client)
-  // **
-  // ** USE STORE (APOLLO CLIENT)
-  const preferencesStoreData = preferencesStore.store.useStore('one').data
-  console.debug('%c🌱 preferencesStoreData', ccm.darkgreen, preferencesStoreData)
-  // ** SET REACTIVE VARS FROM DATA SOURCE
-  if (preferencesStoreData.projectName) {
-    preferencesDataVar(preferencesStoreData)
-  }
-  // ** USE REACTIVE VARS (APOLLO LOCAL STATE)
-  const prefs = useReactiveVar(preferencesDataVar)
-  console.debug('%c🌱 preferencesDataVar as {prefs}', ccm.green, prefs)
-  // ** AUTO LOAD PROJECT FROM DATA SOURCE?
-  if (prefs.doAutoLoadData) {
-    console.debug('%c🌱 prefs.doAutoLoadData', ccm.darkgreen, prefs.doAutoLoadData)
-    projectStore.actions.loadFromDataSource(client)
-  }
-  console.debug('%c====================================', ccm.darkgreen)
+
+  // USE REACT STATE
+  const [isPrefsLoaded, setIsPrefsLoaded] = useState(false)
+
+  // useEffect(() => {
+    // ** USE STORE (APOLLO CLIENT)
+    if (!isPrefsLoaded) {
+      // preferencesStore.actions.loadFromDB(client)
+      const isPrefsLoadedFromDataSouce = preferencesStore.actions.loadFromDataSource(client)
+      if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert)
+      // ** SET REACTIVE VARS FROM DATA SOURCE
+      if (isPrefsLoadedFromDataSouce) {
+        const preferencesStoreData = preferencesStore.store.useStore('one').data
+        if (DEBUG) console.debug('%c🌱 preferencesStoreData', ccm.darkgreen, preferencesStoreData)
+        // ** TODO
+        if (preferencesStoreData.projectName) {
+          preferencesDataVar(preferencesStoreData)
+          if (DEBUG) console.debug('%c🌱 SET APOLLO REACTIVE VAR preferencesDataVar', ccm.yellowAlert)
+          const set = async () => setIsPrefsLoaded(true)
+          if (DEBUG) console.debug('%c🌱 SET REACT STATE setIsPrefsLoaded', ccm.yellowAlert, isPrefsLoaded)
+          if (DEBUG) console.debug('%c====================================', ccm.yellowAlert)
+        }
+      }
+    }
+  // }, [])
+  console.debug('%c====================================', ccm.greenAlert)
 
   // ==========================================================
   // Component onMount hook
   // **
   useEffect(() => {
-    // **
-    // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
-    // console.debug(`%c====================================`, ccm.black)
-    // ==========================================================
-    // begin here ?? yes
-    // bootManager()
-    // USE STORE
-    // WORKING:
-    // LOAD DEFAULT DATA ON START + REFRESH
-  preferencesStore.actions.loadFromDB(client)
-  // // **
-  // preferencesStore.actions.loadFromDataSource(client)
-  // // **
-  // const getDoAutoLoadData = preferencesStore.store.useStore('one')
-  // const doAutoLoadData = getDoAutoLoadData.data.doAutoLoadData
-  // console.debug('%c🌱 doAutoLoadData', ccm.darkgreen, doAutoLoadData)
-  // // ** USE REACTIVE VARS (APOLLO LOCAL STATE)
-  // // const updatePreferencesData = useReactiveVar(preferencesDataVar)
-  // if (doAutoLoadData) {
-  //   console.debug('%c🌱 doAutoLoadData', ccm.darkgreen)
-  //   projectStore.actions.loadFromDataSource(client)
-  // }
-    // **
-    // const doAutoRotate = preferencesStore.store.useStore('one')
-    // **
+  //   // **
+  //   // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
+  //   // console.debug(`%c====================================`, ccm.black)
+  //   // **
+  //   // begin here ?? yes
+  //   // bootManager()
+  //   // ==========================================================
+  //   // USE STORE: LOAD DEFAULT DATA ON START + REFRESH
+  //   // if (!isPrefsLoaded) {
+  //   //   // preferencesStore.actions.loadFromDB(client)
+  //   //   preferencesStore.actions.loadFromDataSource(client)
+  //   //   console.debug('%c preferences loading...', ccm.greenAlert)
+  //   // }
 
-    // ==========================================================
-    return () => {
-      console.debug('ThreeDGarden onUnmount', word)
-    }
+      // // ** USE REACTIVE VARS (APOLLO LOCAL STATE)
+      // const prefs = useReactiveVar(preferencesDataVar)
+      // console.debug('%c🌱 preferencesDataVar as {prefs}', ccm.green, prefs)
+      // // ** AUTO LOAD PROJECT FROM DATA SOURCE?
+      // if (prefs.doAutoLoadData) {
+      //   console.debug('%c🌱 prefs.doAutoLoadData', ccm.darkgreen, prefs.doAutoLoadData)
+      //   const isProjectLoadedFromDataSouce = projectStore.actions.loadFromDataSource(client)
+      //   console.debug('%c project loading...', ccm.orangeAlert)
+      //   if (isProjectLoadedFromDataSouce) {
+      //     console.debug('%c🥕 isProjectLoadedFromDataSouce', ccm.redAlert, isProjectLoadedFromDataSouce)
+      //     // ** TODO
+      //     // ** do more tasks here ??
+      //   }
+      // }
+      // console.debug('%c====================================', ccm.darkgreen)
+
+  //   // ==========================================================
+  //   // return () => {
+  //   //   console.debug('ThreeDGarden onUnmount', word)
+  //   // }
   }, [])
+  console.debug('%c====================================', ccm.yellowAlert)
 
   // ==========================================================
   // TESTING: 'GUI CONTROL PANEL' + 'THREED PROJECT' NAME

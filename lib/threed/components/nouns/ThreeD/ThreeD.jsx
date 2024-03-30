@@ -1,5 +1,5 @@
-import ThreeDCharacter from '~/lib/threed/components/nouns/Character'
-import ThreeDModel from '#/lib/threed/components/nouns/Model'
+import ThreeDCharacter from '~/lib/threed/components/nouns/Character/Character'
+import ThreeDModel from '#/lib/threed/components/nouns/Model/Model'
 import ThreeDCoffeeCup from '#/lib/threed/components/examples/CoffeeCup/CoffeeCup'
 
 import { PresentationControls } from '@react-three/drei'

@@ -808,9 +808,9 @@ function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
 // ** CREATE REACTIVE VARS (APOLLO LOCAL STATE)
 export const preferencesDataVar = makeVar(
   {
-    doAutoLoadData: false,
-    doAutoRotate: false,
-    projectName: 'blank default',
+    doAutoLoadData: false, // boolean: true | false
+    doAutoRotate: false, // boolean: true | false
+    projectName: 'blank', // string: ''
   }
 )
 // console.debug('Apollo Stores ReactiveVar preferencesDataVar()', preferencesDataVar())
