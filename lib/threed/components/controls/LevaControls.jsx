@@ -197,7 +197,7 @@ export function ThreeDLevaControls() {
   const sizes = useControls(
     {
       sizes: folder({
-        rootWidth: '360px',
+        rootWidth: '100%',
         controlWidth: '60%',
         numberInputMinWidth: '48px',
         scrubberWidth: '8px',
@@ -289,34 +289,44 @@ export function ThreeDLevaControls() {
   // ==========================================================
   useEffect(() => {
     setUserPreferencesLeva({ doAutoLoadDataLeva: prefs.doAutoLoadData })
-    console.debug('READ FROM MASTER REACTIVE VAR: prefs.doAutoLoadData', prefs.doAutoLoadData)
+    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoLoadData', ccm.greenAlert, prefs.doAutoLoadData)
   }, [prefs.doAutoLoadData])
   // **
   useEffect(() => {
-    // setUserPreferencesLeva({ doAutoLoadDataLeva: doAutoLoadDataLeva})
-    // set preferencesDataVar(data)
+    let newData = {...preferencesDataVar()}
+    newData.doAutoLoadData = doAutoLoadDataLeva
+    console.debug('%c doAutoLoadDataLeva newData', ccm.greenAlert, newData)
+    preferencesDataVar(newData)
+    console.debug('%c doAutoLoadDataLeva preferencesDataVar', ccm.greenAlert, preferencesDataVar())
   }, [doAutoLoadDataLeva])
   // ==========================================================
   useEffect(() => {
     setUserPreferencesLeva({ doAutoRotateLeva: prefs.doAutoRotate })
-    console.debug('READ FROM MASTER REACTIVE VAR: prefs.doAutoRotate', prefs.doAutoRotate)
+    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoRotate', ccm.greenAlert, prefs.doAutoRotate)
   }, [prefs.doAutoRotate])
   // **
   useEffect(() => {
-    // setUserPreferencesLeva({ doAutoRotateLeva: doAutoRotateLeva})
-    // set preferencesDataVar(data)
+    let newData = {...preferencesDataVar()}
+    newData.doAutoRotate = doAutoRotateLeva
+    console.debug('%c doAutoRotateLeva newData', ccm.greenAlert, newData)
+    preferencesDataVar(newData)
+    console.debug('%c doAutoRotateLeva preferencesDataVar', ccm.greenAlert, preferencesDataVar())
   }, [doAutoRotateLeva])
   // ==========================================================
   useEffect(() => {
     // set({ Id: projectName})
     setControlPanelLeva({ title: prefs.projectName})
     setProjectPreferencesLeva({ projectNameLeva: prefs.projectName })
-    console.debug('READ FROM MASTER REACTIVE VAR: prefs.projectName', prefs.projectName)
+    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.projectName', ccm.greenAlert, prefs.projectName)
   }, [prefs.projectName])
   // **
   useEffect(() => {
     setControlPanelLeva({ title: projectNameLeva})
-    // set preferencesDataVar(data)
+    let newData = {...preferencesDataVar()}
+    newData.projectName = projectNameLeva
+    console.debug('%c projectNameLeva newData', ccm.greenAlert, newData)
+    preferencesDataVar(newData)
+    console.debug('%c projectNameLeva preferencesDataVar', ccm.greenAlert, preferencesDataVar())
   }, [projectNameLeva])
   // ==========================================================
 

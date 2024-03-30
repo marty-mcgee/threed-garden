@@ -30,12 +30,12 @@ import {
 } from '@react-three/drei'
 
 // ** ThreeD Imports
-// import ThreeDScenes from '#/lib/threed/components/nouns/Scene'
-// import ThreeDPlans from '#/lib/threed/components/nouns/Plan'
-// import ThreeDThreeDs from '#/lib/threed/components/nouns/ThreeD'
-import ThreeDModels from '#/lib/threed/components/nouns/Model'
+// import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene'
+// import ThreeDPlans from '#/lib/threed/components/nouns/Plan/Plan'
+// import ThreeDThreeDs from '#/lib/threed/components/nouns/ThreeD/ThreeD'
+import ThreeDModels from '#/lib/threed/components/nouns/Model/Model'
 // ThreeD EXAMPLES
-// import Character from '~/lib/threed/components/nouns/Character'
+// import Character from '~/lib/threed/components/nouns/Character/Character'
 // import StacyApp from '~/lib/threed/components/examples/Stacy/StacyApp'
 // import Stacy from '~/lib/threed/components/examples/Stacy/Stacy'
 // import Watch from '~/lib/threed/components/examples/Watch/Watch'
