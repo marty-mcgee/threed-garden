@@ -27,7 +27,7 @@ export interface StoreApi<Value> {
 
 export default function create<Value> (
   initialState: State<Value>,
-  options = { debug: false }
+  options = { debug: true }
 ): StoreApi<Value> {
 
   // ** CREATE STORE SINGLETON

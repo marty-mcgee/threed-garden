@@ -256,7 +256,7 @@ const ThreeDCanvasViewer = (): JSX.Element => {
 
   // **
   const word = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
-  console.debug(`%c=======================================================`, ccm.orange)
+  // console.debug(`%c=======================================================`, ccm.orange)
   console.debug('%c🥕 ThreeDCanvasViewer ', ccm.orange)
   // console.debug(`%c=======================================================`, ccm.black)
 
@@ -293,7 +293,7 @@ const ThreeDCanvasViewer = (): JSX.Element => {
     // return <Box>true</Box> // true
   }
 
-  // console.debug(`%c====================================`, ccm.black)
+  console.debug(`%c=======================================================`, ccm.orange)
   return (
     <Grid
       container
@@ -498,7 +498,7 @@ const ThreeDGarden = (): JSX.Element => {
   //   //   console.debug('ThreeDGarden onUnmount', word)
   //   // }
   // }, [])
-  if (debug_meta) console.debug('%c====================================', ccm.yellowAlert)
+  if (debug_meta) console.debug('%c=======================================================', ccm.yellowAlert)
 
   // ==========================================================
   // TESTING: 'GUI CONTROL PANEL' + 'THREED PROJECT' NAME
@@ -524,7 +524,7 @@ const ThreeDGarden = (): JSX.Element => {
       style={{width: '100%'}}
     >
       {/* SUSPENSEFUL... */}
-      <Suspense fallback={<Spinner />}>
+      {/* <Suspense fallback={<Spinner />}> */}
 
         {/* THREED TOOLBAR */}
         <ThreeDToolbar />
@@ -548,7 +548,7 @@ const ThreeDGarden = (): JSX.Element => {
         {/* <PlanView /> */}
         {/* <TheBottom /> */}
 
-      </Suspense>
+      {/* </Suspense> */}
       {/* ...SUSPENSEFUL */}
     </Box>
   )
