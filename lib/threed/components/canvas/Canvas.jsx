@@ -3,7 +3,7 @@
 // ==============================================================
 
 import { useReactiveVar } from '@apollo/client'
-import { preferencesDataVar, preferencesStore } from '#/lib/stores/apollo'
+import { isPreferencesSetVar, preferencesDataVar, preferencesStore } from '#/lib/stores/apollo'
 import { proxy, useSnapshot } from 'valtio'
 
 import { Suspense, useState, useRef, useTransition } from 'react'
@@ -132,6 +132,9 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   const prefs = useReactiveVar(preferencesDataVar)
   // console.debug('%c🌱 preferencesDataVar as {prefs}', ccm.green, prefs)
 
+  if (!isPreferencesSetVar) {
+    return <Spinner />
+  }
   // **
   return (
     <Canvas

@@ -806,6 +806,7 @@ function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
 // ==============================================================
 
 // ** CREATE REACTIVE VARS (APOLLO LOCAL STATE)
+export const isPreferencesSetVar = makeVar(false) // boolean: true | false
 export const preferencesDataVar = makeVar(
   {
     doAutoLoadData: false, // boolean: true | false

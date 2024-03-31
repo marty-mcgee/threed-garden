@@ -51,6 +51,7 @@ const noise = new Noise(Math.random())
 // ==========================================================
 
 export function ThreeDLevaControls() {
+  return <></>
   // **
   const prefs = useReactiveVar(preferencesDataVar)
   // **
@@ -244,17 +245,17 @@ export function ThreeDLevaControls() {
 
   const theme = { colors, radii, space, fontSizes, sizes, borderWidths, fontWeights }
 
-  // **
-  const refMon = useRef(4) // 4 ?
-  // **
-  useEffect(() => {
-    let x = 0
-    setInterval(() => {
-      x += 0.1
-      const t = Date.now()
-      refMon.current = 2 * noise.simplex2(3 * x + t, x) + (3 * Math.sin(x)) / x
-    }, 30)
-  }, [])
+  // // **
+  // const refMon = useRef(4) // 4 ?
+  // // **
+  // useEffect(() => {
+  //   let x = 0
+  //   setInterval(() => {
+  //     x += 0.1
+  //     const t = Date.now()
+  //     refMon.current = 2 * noise.simplex2(3 * x + t, x) + (3 * Math.sin(x)) / x
+  //   }, 30)
+  // }, [])
 
   // ** LEVA GUI CONTROL PANEL
   const [{
@@ -278,7 +279,7 @@ export function ThreeDLevaControls() {
       // fullScreen: false,
       // oneLineLabels: false,
       // **
-      refMonitor: { value: monitor(refMon, { graph: true, interval: 60 }), render: (get) => get('Panel.showTitleBar') },
+      // refMonitor: { value: monitor(refMon, { graph: true, interval: 60 }), render: (get) => get('Panel.showTitleBar') },
     }),
     {
       color: 'darkgreen',
@@ -287,6 +288,9 @@ export function ThreeDLevaControls() {
   )
 
   // ==========================================================
+  // ==========================================================
+  // ==========================================================
+  // ** doAutoLoadData
   useEffect(() => {
     setUserPreferencesLeva({ doAutoLoadDataLeva: prefs.doAutoLoadData })
     console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoLoadData', ccm.greenAlert, prefs.doAutoLoadData)
@@ -294,12 +298,16 @@ export function ThreeDLevaControls() {
   // **
   useEffect(() => {
     let newData = {...preferencesDataVar()}
+    console.debug('%c doAutoLoadDataLeva newData', ccm.green, newData)
     newData.doAutoLoadData = doAutoLoadDataLeva
-    console.debug('%c doAutoLoadDataLeva newData', ccm.greenAlert, newData)
+    console.debug('%c doAutoLoadDataLeva newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
-    console.debug('%c doAutoLoadDataLeva preferencesDataVar', ccm.greenAlert, preferencesDataVar())
+    console.debug('%c doAutoLoadDataLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
   }, [doAutoLoadDataLeva])
   // ==========================================================
+  // ==========================================================
+  // ==========================================================
+  // ** doAutoRotate
   useEffect(() => {
     setUserPreferencesLeva({ doAutoRotateLeva: prefs.doAutoRotate })
     console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoRotate', ccm.greenAlert, prefs.doAutoRotate)
@@ -307,12 +315,16 @@ export function ThreeDLevaControls() {
   // **
   useEffect(() => {
     let newData = {...preferencesDataVar()}
+    console.debug('%c doAutoRotateLeva newData', ccm.green, newData)
     newData.doAutoRotate = doAutoRotateLeva
-    console.debug('%c doAutoRotateLeva newData', ccm.greenAlert, newData)
+    console.debug('%c doAutoRotateLeva newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
-    console.debug('%c doAutoRotateLeva preferencesDataVar', ccm.greenAlert, preferencesDataVar())
+    console.debug('%c doAutoRotateLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
   }, [doAutoRotateLeva])
   // ==========================================================
+  // ==========================================================
+  // ==========================================================
+  // ** projectName
   useEffect(() => {
     // set({ Id: projectName})
     setControlPanelLeva({ title: prefs.projectName})
@@ -324,15 +336,22 @@ export function ThreeDLevaControls() {
     setControlPanelLeva({ title: projectNameLeva})
     let newData = {...preferencesDataVar()}
     newData.projectName = projectNameLeva
-    console.debug('%c projectNameLeva newData', ccm.greenAlert, newData)
+    console.debug('%c projectNameLeva newData', ccm.green, newData)
     preferencesDataVar(newData)
-    console.debug('%c projectNameLeva preferencesDataVar', ccm.greenAlert, preferencesDataVar())
+    console.debug('%c projectNameLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
   }, [projectNameLeva])
+  // ==========================================================
+  // ==========================================================
+  // ==========================================================
+
+
   // ==========================================================
 
   // useFullscreen({ current: document.documentElement }, fullScreen, {
   //   onClose: () => setControlPanelLeva({ fullScreen: false }),
   // })
+
+  // ==========================================================
 
   return (
     <div style={{ backgroundColor: 'transparent', minHeight: '0vh' }}>

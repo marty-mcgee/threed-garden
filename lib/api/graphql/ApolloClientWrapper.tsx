@@ -12,10 +12,15 @@ import {
 // import { setVerbosity } from 'ts-invariant'
 // setVerbosity('debug')
 
+// [MM] COLORFUL CONSOLE MESSAGES (ccm)
+import ccm from '#/lib/utils/console-colors'
+console.debug(`%c TEST SUCCESS!!`, ccm.orange)
+console.debug(`%c TEST WHOOPSIES`, ccm.red)
+
 const uri = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL
 const uri_rest = process.env.NEXT_PUBLIC_WP_REST_API_URL
 console.clear()
-console.debug('🥕 ThreeD Garden 🌱 ... 🦆 loaded 🍄')
+console.debug('%c🥕 ThreeD Garden 🌱 ... 🦆 loaded 🍄', ccm.gray)
 // console.debug('🦆 Apollo Wrapper loaded 🦆')
 // console.debug('🦆 - URI', uri)
 // console.debug('🦆 - URI_REST', uri_rest)

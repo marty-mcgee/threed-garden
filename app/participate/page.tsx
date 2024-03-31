@@ -7,22 +7,30 @@
 // ==========================================================
 
 // ??? ProgressEvent error
-import dynamic from 'next/dynamic'
+// import dynamic from 'next/dynamic'
 
 // ** AUTH GUARD
 import { auth } from 'auth'
 // import { SessionProvider } from 'next-auth/react'
 // import { useSession } from 'next-auth/react'
 
-// ** Next Imports
+// ** NEXT Imports
 // import type { NextPage } from 'next'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 
-// ** React Imports
-// import { useContext } from 'react'
-// import { Suspense } from 'react'
+// ** APOLLO Imports
+import { preferencesDataVar } from '#/lib/stores/apollo'
+// import { useReactiveVar } from '@apollo/client'
+
+// ** REACT Imports ??
+import {
+  Suspense,
+  // useEffect,
+  // useContext,
+} from 'react'
+
 // ** Helper Components
-// import Spinner from '#/ui/components/spinner'
+import Spinner from '#/ui/components/spinner'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
@@ -39,6 +47,9 @@ import ccm from '#/lib/utils/console-colors'
 
 const ParticipatePage: TNextPageWithProps = async () => {
 // const ParticipatePage: TNextPageWithProps = () => {
+
+  // USE PREFERENCES (APOLLO CLIENT)
+  const prefs = preferencesDataVar()
 
   const session = await auth()
   // const { data: session, status } = useSession()
@@ -69,11 +80,11 @@ const ParticipatePage: TNextPageWithProps = async () => {
       {/* <SessionProvider session={session}> */}
       {/* <ApolloProvider client={client}> */}
       {/* <Suspense fallback={null}> */}
-      {/* <Suspense fallback={<Spinner />}> */}
+      <Suspense fallback={<Spinner />}>
         <ThreeDGarden />
         {/* <ThreeDGarden threedData={data} /> */}
         {/* <ThreeDGarden session={session} stores={stores} /> */}
-      {/* </Suspense> */}
+      </Suspense>
       {/* </ApolloProvider> */}
       {/* </SessionProvider> */}
       {/* [MM] HEY HEY HEY */}
@@ -149,8 +160,8 @@ const ParticipatePage: TNextPageWithProps = async () => {
 //   };
 // }
 
-// export default ParticipatePage
-const ParticipatePageUseClient = dynamic(() => Promise.resolve(ParticipatePage), {
-  ssr: false
-})
-export default ParticipatePageUseClient
+export default ParticipatePage
+// const ParticipatePageUseClient = dynamic(() => Promise.resolve(ParticipatePage), {
+//   ssr: false
+// })
+// export default ParticipatePageUseClient
