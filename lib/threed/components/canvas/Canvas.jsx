@@ -25,9 +25,15 @@ import {
   GizmoHelper, GizmoViewcube, GizmoViewport,
   ContactShadows,
   BakeShadows,
-  softShadows, // softShadows()
+  // softShadows, // softShadows()
   Loader, useProgress,
 } from '@react-three/drei'
+
+// ** ThreeD r3f Canvas Imports
+// import { Canvas } from '@react-three/fiber'
+// import { ThreeDCanvasViewer } from '#/lib/threed/components/canvas/Canvas'
+// import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
+// import { ThreeDEnvironment } from '#/lib/threed/components/canvas/Canvas'
 
 // ** ThreeD Imports
 // import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene'
@@ -67,7 +73,7 @@ const actionModes = ['translate', 'rotate', 'scale']
 //   return <Html center>THREED GUI LOADING... {Math.round(progress)} %</Html>
 // }
 
-function ThreeDEnvironment() {
+export function ThreeDEnvironment() {
   const [envPreset, setEnvPreset] = useState('park')
   // You can use the 'inTransition' boolean to react to the loading in-between state,
   // For instance by showing a message
@@ -120,7 +126,7 @@ function ThreeDEnvironment() {
 // controls.addEventListener('start', () => console.debug('Controls Start Event'))
 // controls.addEventListener('end', () => console.debug('Controls End Event'))
 
-export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
+export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
   if (debug) console.debug('%c props._id, props.threeds', ccm.red, _id, threeds)
   if (debug) console.debug(`%c=======================================================`, ccm.red)
@@ -133,9 +139,9 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   const prefs = useReactiveVar(preferencesDataVar)
   // console.debug('%c🌱 preferencesDataVar as {prefs}', ccm.green, prefs)
 
-  if (!isPreferencesSetVar) {
-    return <Spinner />
-  }
+  // if (!isPreferencesSetVar) {
+  //   return <Spinner />
+  // }
   // **
   return (
     <Canvas
@@ -287,21 +293,23 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
 
         {/* Transform Model using TransformControls */}
         {/*
-        <TransformModel
-          name='Zeppelin' // must match node name
-          state={state}
-          modes={actionModes}
-          position={[-20, 10, 10]}
-          rotation={[3, -1, 3]}
-          scale={0.005}
-        />
+            <TransformModel
+              name='Zeppelin' // must match node name
+              state={state}
+              modes={actionModes}
+              position={[-20, 10, 10]}
+              rotation={[3, -1, 3]}
+              scale={0.005}
+            />
         */}
 
         {/* SHOE + SHOES */}
-        {/* <Stage intensity={0.7}>
-          <Shoe color='tomato' position={[0, 0, 0]} />
-          <Shoe color='orange' scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
-        </Stage> */}
+        {/*
+          <Stage intensity={0.7}>
+            <Shoe color='tomato' position={[0, 0, 0]} />
+            <Shoe color='orange' scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
+          </Stage>
+        */}
 
         {/* {children} */}
       </Suspense>
@@ -309,6 +317,10 @@ export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   )
 }
 
+export default ThreeDCanvas
+
+// ** NOTES
+// **
 // function Watch(props) {
 //   const ref = useRef()
 //   const { nodes, materials } = useGLTF('/objects/examples/watch-v1.glb')

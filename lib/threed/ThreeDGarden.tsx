@@ -62,14 +62,19 @@ import Spinner from '#/ui/components/spinner'
 // ** Three JS Loading Progress
 import { Html, Loader, useProgress } from '@react-three/drei'
 
-// ** ThreeD Imports
+// ** ThreeD r3f Canvas Imports
 // import { Canvas } from '@react-three/fiber'
-import ThreeDCanvas from '#/lib/threed/components/canvas/Canvas'
-// ** Leva GUI
+// import { ThreeDCanvasViewer } from '#/lib/threed/components/canvas/Canvas'
+import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
+// import { ThreeDEnvironment } from '#/lib/threed/components/canvas/Canvas'
+
+// ** ThreeD using Leva GUI
 import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
-// ** Control + Info Panels (Store Access)
+
+// ** ThreeD using Apollo + React to View Control + Info Panels (Apollo Store/ReactiveVar/State Access)
 import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
-// ** Toolbar
+
+// ** ThreeD Toolbar
 import ThreeDToolbar from '#/lib/threed/components/tools/Toolbar'
 
 // ** Modal Imports
@@ -251,11 +256,12 @@ const {
 
 // ==========================================================
 
-// ** R3F Main Component
-const ThreeDCanvasViewer = (): JSX.Element => {
+// ** R3F Canvas Component
+// const { ThreeDCanvasViewer } = ThreeDCanvas
+const ThreeDCanvasViewer = () => {
 
   // **
-  const word = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
+  const word: string = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
   // console.debug(`%c=======================================================`, ccm.orange)
   console.debug('%c🥕 ThreeDCanvasViewer ', ccm.orange)
   // console.debug(`%c=======================================================`, ccm.black)
