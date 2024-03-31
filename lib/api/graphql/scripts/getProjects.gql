@@ -16,9 +16,11 @@ query GetProjects {
       #     link
       #     modified
       #     # custom fields
-      #     projectName
       #     doAutoLoadData
       #     doAutoRotate
+      #     projectName
+      #     environmentPreset
+      #     environmentBGBlur
       #     # owner
       #     version
       #   }

@@ -14,16 +14,17 @@ import {
 
 // [MM] COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
-console.debug(`%c TEST SUCCESS!!`, ccm.orange)
-console.debug(`%c TEST WHOOPSIES`, ccm.red)
+// console.debug(`%c CCM TEST SUCCESS!!`, ccm.orange)
+// console.debug(`%c CCM TEST WHOOPSIES`, ccm.red)
 
 const uri = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL
-const uri_rest = process.env.NEXT_PUBLIC_WP_REST_API_URL
-console.clear()
-console.debug('%c🥕 ThreeD Garden 🌱 ... 🦆 loaded 🍄', ccm.gray)
+// const uri_rest = process.env.NEXT_PUBLIC_WP_REST_API_URL
+// console.clear()
+console.debug('%c🥕 ThreeD Garden 🌱 ... 🦆 apollo loaded 🍄 ', ccm.lightgray)
 // console.debug('🦆 Apollo Wrapper loaded 🦆')
-// console.debug('🦆 - URI', uri)
+console.debug('%c🦆 - URI ', ccm.lightgray, uri)
 // console.debug('🦆 - URI_REST', uri_rest)
+console.debug('%c=======================================================', ccm.green)
 
 // have a function to create a client for you
 function makeClient() {

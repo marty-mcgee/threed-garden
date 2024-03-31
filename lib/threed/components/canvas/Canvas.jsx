@@ -123,6 +123,7 @@ function ThreeDEnvironment() {
 export default function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
   if (debug) console.debug('%c props._id, props.threeds', ccm.red, _id, threeds)
+  if (debug) console.debug(`%c=======================================================`, ccm.red)
   // **
   // const preferences = preferencesStore.store.useStore('one')
   // const projectName = preferences.data.projectName ? preferences.data.projectName : 'blank'

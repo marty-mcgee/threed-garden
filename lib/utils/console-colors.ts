@@ -2,6 +2,7 @@
 const ccm = {
   white: 'color: white; font-size: 14px;',
   gray: 'color: gray; font-size: 14px;',
+  lightgray: 'color: lightgray; font-size: 14px;',
   darkgray: 'color: darkgray; font-size: 14px;',
   red: 'color: red; font-size: 14px;',
   redAlert: 'color: white; font-size: 14px; font-weight: bold; background-color: red;',
