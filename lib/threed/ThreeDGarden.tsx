@@ -7,8 +7,9 @@
 // ==============================================================
 
 // ** Next Imports
-import { useSession } from "next-auth/react"
-// hint: const { data, data: session, status } = useSession()
+import { useSession } from "next-auth/react" // hint: const { data, data: session, status } = useSession()
+// import Image from 'next/image'
+// import dynamic from 'next/dynamic'
 
 // ** React Imports
 import {
@@ -17,7 +18,7 @@ import {
   useState,
   // useCallback,
   // ReactNode,
-  FC,
+  // FC,
   Suspense,
   PointerEventHandler,
   SyntheticEvent,
@@ -31,7 +32,6 @@ import {
 // // state management (instead of React.useState, Redux, Zustand)
 // import { ApolloConsumer } from '@apollo/client'
 // import { TestAC3Store } from '#/lib/stores/old'
-import { useApolloClient } from '@apollo/client'
 // import {
 //   useQuery,
 //   useSuspenseQuery,
@@ -40,14 +40,11 @@ import { useApolloClient } from '@apollo/client'
 //   useFragment
 // } from '@apollo/experimental-nextjs-app-support/ssr'
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
-import stores from '#/lib/stores/apollo'
-import { preferencesDataVar } from '#/lib/stores/apollo'
-// import { preferencesStore } from '#/lib/stores/apollo'
-import { useReactiveVar } from '@apollo/client'
-
-// ** Next Imports
-// import Image from 'next/image'
-// import dynamic from 'next/dynamic'
+// import stores from '#/lib/stores/apollo'
+import { preferencesStore, projectStore } from '#/lib/stores/apollo'
+import { useApolloClient } from '@apollo/client'
+// import { useReactiveVar } from '@apollo/client'
+import { isPreferencesSetVar, preferencesDataVar } from '#/lib/stores/apollo'
 
 // ** MUI Imports
 import { styled } from '@mui/material/styles'
@@ -180,9 +177,9 @@ const env: IThreeDEnv = {
   sceneID: postdata.scene_id,
 }
 
-if (debug) {
+if (debug_meta) {
   console.debug('%c🌱 api plugin:', ccm.darkgreen, env.pluginName, env.pluginVersion, postdata)
-  // console.debug('postdata', postdata)
+  console.debug('postdata', postdata)
   console.debug(`%c====================================`, ccm.darkgreen)
 }
 
@@ -213,26 +210,26 @@ const Button = styled(MuiButton)(({ theme }) => ({
 // FUNCTIONAL STORES + NOUNS
 // ==========================================================
 
-const {
-  // nounStore,
-  preferencesStore,
-  projectStore,
-  // participantStore,
-  // planStore,
-  // threedStore,
-  // fileStore,
-  // sceneStore,
-  // allotmentStore,
-  // bedStore,
-  // plantStore,
-  // plantingPlanStore,
-  // modalStore,
-  // modalAboutStore,
-  // modalModel3dStore,
-  // modalLoadingStore,
-  // modalShareStore,
-  // modalStoreNoun,
-} = stores
+// const {
+//   // nounStore,
+//   preferencesStore,
+//   projectStore,
+//   // participantStore,
+//   // planStore,
+//   // threedStore,
+//   // fileStore,
+//   // sceneStore,
+//   // allotmentStore,
+//   // bedStore,
+//   // plantStore,
+//   // plantingPlanStore,
+//   // modalStore,
+//   // modalAboutStore,
+//   // modalModel3dStore,
+//   // modalLoadingStore,
+//   // modalShareStore,
+//   // modalStoreNoun,
+// } = stores
 // console.debug('%cstores available', ccm.orange, stores)
 // console.debug(`%c====================================`, ccm.black)
 // console.debug('%csceneStore', ccm.orange, sceneStore)
@@ -259,24 +256,34 @@ const ThreeDCanvasViewer = (): JSX.Element => {
 
   // **
   const word = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
-  // console.debug(`%c=======================================================`, ccm.black)
-  // console.debug('%c🥕 ThreeDCanvasViewer {props.threeddata}', ccm.orange, threeddata)
+  console.debug(`%c=======================================================`, ccm.orange)
+  console.debug('%c🥕 ThreeDCanvasViewer ', ccm.orange)
   // console.debug(`%c=======================================================`, ccm.black)
 
   // ==========================================================
 
-  // const project = projectStore.store.get('one')
-  const project = projectStore.store.useStore('one')
-  let project_title = project?.data?.title ? project.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
-  console.debug('%c🥕 ThreeDCanvasViewer {project}', ccm.orange, project, project_title)
-  let nodesToLoad = []
   let threeds = [] // threeds are nodes[] to load to canvas
-  if (project) {
-    nodesToLoad = project.data?.plans?.nodes[0]?.threedsActive?.nodes
-    if (nodesToLoad) {
-      threeds = nodesToLoad
-      if (debug) console.debug('%c🥕 ThreeDCanvasViewer [nodesToLoad] as threeds', ccm.orange, threeds)
+
+  if (isPreferencesSetVar) {
+    // const project = projectStore.store.get('one')
+    const project = projectStore.store.useStore('one')
+    if (DEBUG || debug_meta) console.debug('%c🥕 ThreeDCanvasViewer {project} ', ccm.orange, project)
+    if (project) {
+      let project_title = project?.data?.title ? project.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
+      if (DEBUG || debug_meta) console.debug('%c🥕 ThreeDCanvasViewer {project}.project_title ', ccm.orange, project_title)
+      if (project.data?.plans) {
+        let nodesToLoad = []
+            nodesToLoad = project.data.plans.nodes[0]?.threedsActive?.nodes
+        if (DEBUG || debug_meta) console.debug('%c🥕 ThreeDCanvasViewer {project}.[nodesToLoad] ', ccm.orange, nodesToLoad)
+        if (nodesToLoad) {
+          threeds = nodesToLoad
+          if (DEBUG || debug_meta) console.debug('%c🥕 ThreeDCanvasViewer [nodesToLoad] as [threeds] ', ccm.orange, threeds)
+        }
+      }
     }
+  }
+  else {
+    if (DEBUG || debug_meta) console.debug('%c🥕 ThreeDCanvasViewer isPreferencesSetVar ', ccm.redAlert, isPreferencesSetVar)
   }
 
   // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
@@ -426,35 +433,36 @@ const ThreeDGarden = (): JSX.Element => {
 
 
   // USE REACT STATE
-  const [isPrefsLoaded, setIsPrefsLoaded] = useState(false)
+  // const [isPrefsLoaded, setIsPrefsLoaded] = useState(false)
 
-  // useEffect(() => {
-    // ** USE STORE (APOLLO CLIENT)
-    if (!isPrefsLoaded) {
-      // preferencesStore.actions.loadFromDB(client)
-      const isPrefsLoadedFromDataSouce = preferencesStore.actions.loadFromDataSource(client)
-      if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert)
-      // ** SET REACTIVE VARS FROM DATA SOURCE
-      if (isPrefsLoadedFromDataSouce) {
-        const preferencesStoreData = preferencesStore.store.useStore('one').data
-        if (DEBUG) console.debug('%c🌱 preferencesStoreData', ccm.darkgreen, preferencesStoreData)
-        // ** TODO
-        if (preferencesStoreData.projectName) {
-          preferencesDataVar(preferencesStoreData)
-          if (DEBUG) console.debug('%c🌱 SET APOLLO REACTIVE VAR preferencesDataVar', ccm.yellowAlert)
-          const set = async () => setIsPrefsLoaded(true)
-          if (DEBUG) console.debug('%c🌱 SET REACT STATE setIsPrefsLoaded', ccm.yellowAlert, isPrefsLoaded)
-          if (DEBUG) console.debug('%c====================================', ccm.yellowAlert)
-        }
-      }
-    }
-  // }, [])
-  console.debug('%c====================================', ccm.greenAlert)
+  // // useEffect(() => {
+  //   // ** USE STORE (APOLLO CLIENT)
+  //   if (!isPreferencesSetVar) {
+  //     // preferencesStore.actions.loadFromDB(client)
+  //     const isPrefsLoadedFromDataSouce = preferencesStore.actions.loadFromDataSource(client)
+  //     if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert, isPrefsLoadedFromDataSouce)
+  //     // ** SET REACTIVE VARS FROM DATA SOURCE
+  //     if (isPrefsLoadedFromDataSouce) {
+  //       const preferencesStoreData = preferencesStore.store.useStore('one').data
+  //       if (DEBUG) console.debug('%c🌱 preferencesStoreData', ccm.darkgreen, preferencesStoreData)
+  //       // ** TODO
+  //       if (preferencesStoreData.projectName) {
+  //         preferencesDataVar(preferencesStoreData)
+  //         if (DEBUG) console.debug('%c🌱 SET APOLLO REACTIVE VAR preferencesDataVar', ccm.yellowAlert)
+  //         // const set = async () => setIsPrefsLoaded(true)
+  //         isPreferencesSetVar(true)
+  //         if (DEBUG) console.debug('%c🌱 SET REACT STATE setIsPrefsLoaded', ccm.yellowAlert, isPreferencesSetVar)
+  //         if (DEBUG) console.debug('%c====================================', ccm.yellowAlert)
+  //       }
+  //     }
+  //   }
+  // // }, [])
+  // if (debug_meta) console.debug('%c====================================', ccm.greenAlert)
 
   // ==========================================================
   // Component onMount hook
   // **
-  useEffect(() => {
+  // useEffect(() => {
   //   // **
   //   // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
   //   // console.debug(`%c====================================`, ccm.black)
@@ -489,8 +497,8 @@ const ThreeDGarden = (): JSX.Element => {
   //   // return () => {
   //   //   console.debug('ThreeDGarden onUnmount', word)
   //   // }
-  }, [])
-  console.debug('%c====================================', ccm.yellowAlert)
+  // }, [])
+  if (debug_meta) console.debug('%c====================================', ccm.yellowAlert)
 
   // ==========================================================
   // TESTING: 'GUI CONTROL PANEL' + 'THREED PROJECT' NAME

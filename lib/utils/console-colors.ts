@@ -1,6 +1,8 @@
 // [MM] COLORFUL CONSOLE MESSAGES (ccm)
 const ccm = {
   white: 'color: white; font-size: 14px;',
+  gray: 'color: gray; font-size: 14px;',
+  darkgray: 'color: darkgray; font-size: 14px;',
   red: 'color: red; font-size: 14px;',
   redAlert: 'color: white; font-size: 14px; font-weight: bold; background-color: red;',
   darkred: 'color: darkred; font-size: 14px;',
