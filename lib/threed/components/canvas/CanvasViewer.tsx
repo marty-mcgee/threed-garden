@@ -1,4 +1,4 @@
-'use client'
+// 'use client'
 // ==========================================================
 
 import { useApolloClient } from '@apollo/client'
@@ -21,9 +21,6 @@ import MuiButton from '@mui/material/Button'
 // import { ThreeDCanvasViewer } from '#/lib/threed/components/canvas/Canvas'
 import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
 // import { ThreeDEnvironment } from '#/lib/threed/components/canvas/Canvas'
-
-// ** ThreeD using Leva GUI
-import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
 
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
@@ -144,7 +141,7 @@ export const ThreeDCanvasViewer = () => {
           }}
         >
           {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-          <ThreeDLevaControls />
+          {/* <ThreeDLevaControls /> */}
           {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
         </Grid>
         {/* <Typography> */}
