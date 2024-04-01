@@ -522,40 +522,42 @@ const ThreeDGarden = (): JSX.Element => {
   // ==========================================================
   // FC returns JSX
   return (
-    <Box
-      id='threedgarden'
-      style={{width: '100%'}}
-    >
-      {/* SUSPENSEFUL... */}
-      {/* <Suspense> */}
-      {/* <Suspense fallback={null}> */}
-      {/* <Suspense fallback={<Spinner />}> */}
+    <Suspense fallback={<Spinner />}>
+      <Box
+        id='threedgarden'
+        style={{width: '100%'}}
+      >
+        {/* SUSPENSEFUL... */}
+        {/* <Suspense> */}
+        {/* <Suspense fallback={null}> */}
+        {/* <Suspense fallback={<Spinner />}> */}
 
-        {/* THREED TOOLBAR */}
-        {/* <ThreeDToolbar /> */}
+          {/* THREED TOOLBAR */}
+          {/* <ThreeDToolbar /> */}
 
-        {/* THREED CANVAS VIEWER */}
-        {/* <ThreeDCanvasViewer threeddata={threeddata} projectName={projectName} setProjectName={setProjectName} /> */}
-        {/* <ThreeDCanvasViewer /> */}
+          {/* THREED CANVAS VIEWER */}
+          {/* <ThreeDCanvasViewer threeddata={threeddata} projectName={projectName} setProjectName={setProjectName} /> */}
+          {/* <ThreeDCanvasViewer /> */}
 
-        {/* THREED CONTROL PANELS -- STORE ACCESS (apollo, valtio, leva) */}
-        {/* <ThreeDControlPanels tabs={tabProps} /> */}
+          {/* THREED CONTROL PANELS -- STORE ACCESS (apollo, valtio, leva) */}
+          {/* <ThreeDControlPanels tabs={tabProps} /> */}
 
-        {/* THREED MODALS */}
-        {/* <ModalAbout /> */}
-        {/* <ModalModel3d /> */}
-        {/* <ModalLoading /> */}
-        {/* <ModalShare /> */}
+          {/* THREED MODALS */}
+          {/* <ModalAbout /> */}
+          {/* <ModalModel3d /> */}
+          {/* <ModalLoading /> */}
+          {/* <ModalShare /> */}
 
-        {/* THREED VIEWS */}
-        {/* <CatalogView /> */}
-        {/* <PropertiesView /> */}
-        {/* <PlanView /> */}
-        {/* <TheBottom /> */}
+          {/* THREED VIEWS */}
+          {/* <CatalogView /> */}
+          {/* <PropertiesView /> */}
+          {/* <PlanView /> */}
+          {/* <TheBottom /> */}
 
-      {/* </Suspense> */}
-      {/* ...SUSPENSEFUL */}
-    </Box>
+        {/* </Suspense> */}
+        {/* ...SUSPENSEFUL */}
+      </Box>
+    </Suspense>
   )
 }
 
