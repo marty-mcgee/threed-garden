@@ -225,6 +225,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           zoomSpeed={1.0} // default is 1.0
           enableRotate={true}
           // autoRotate={prefs.doAutoRotate} // default is false
+          autoRotate={preferencesDataVar().doAutoRotate} // default is false
           autoRotateSpeed={1.0} // default is 2.0
           rotateSpeed={1.0} // default is 1.0
           enableDamping={true} // slows down rotation after mouse release
