@@ -70,7 +70,7 @@ import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
 // import { ThreeDEnvironment } from '#/lib/threed/components/canvas/Canvas'
 
 // ** ThreeD using Leva GUI
-// import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
+import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
 
 // ** ThreeD using Apollo + React to View Control + Info Panels (Apollo Store/ReactiveVar/State Access)
 import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
@@ -536,6 +536,18 @@ const ThreeDGarden = (): JSX.Element => {
           <ThreeDCanvasViewer />
 
           {/* THREED CONTROL PANELS -- STORE ACCESS (apollo, valtio, leva) */}
+          {/* <Grid
+            style={{
+              position: 'absolute',
+              zIndex: 10,
+              minWidth: '416px',
+            }}
+          > */}
+            {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+            <ThreeDLevaControls />
+            {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+          {/* </Grid> */}
+
           {/* <ThreeDControlPanels tabs={tabProps} /> */}
 
           {/* THREED MODALS */}
