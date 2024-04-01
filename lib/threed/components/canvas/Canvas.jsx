@@ -2,7 +2,7 @@
 // ** RESOURCES
 // ==============================================================
 
-import { useReactiveVar } from '@apollo/client'
+// import { useReactiveVar } from '@apollo/client'
 import { isPreferencesSetVar, preferencesDataVar, preferencesStore } from '#/lib/stores/apollo'
 import { proxy, useSnapshot } from 'valtio'
 
@@ -52,7 +52,7 @@ import ThreeDModels from '#/lib/threed/components/nouns/Model/Model'
 // import Shoe from '~/lib/threed/components/examples/Shoes/Shoe'
 
 // ** UUID Imports
-import { v4 as newUUID } from 'uuid'
+// import { v4 as newUUID } from 'uuid'
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
@@ -63,6 +63,7 @@ import ccm from '#/lib/utils/console-colors'
 
 const debug = true // false | true // ts: boolean
 const DEBUG = true // false | true // ts: boolean
+const debug_deep = false // false | true // ts: boolean
 
 // Model interactive 'modes' using TransformControls
 const actionModes = ['translate', 'rotate', 'scale']
@@ -74,45 +75,52 @@ const actionModes = ['translate', 'rotate', 'scale']
 // }
 
 export function ThreeDEnvironment() {
-  const [envPreset, setEnvPreset] = useState('park')
-  // You can use the 'inTransition' boolean to react to the loading in-between state,
-  // For instance by showing a message
-  const [inTransition, startTransition] = useTransition()
+  // const [envPreset, setEnvPreset] = useState('park')
+  // // You can use the 'inTransition' boolean to react to the loading in-between state,
+  // // For instance by showing a message
+  // const [inTransition, startTransition] = useTransition()
 
-  const { blur } = useControls(
-    'Scene Preferences',
-    () => (
-      {
-        preset: {
-          label: 'Environment',
-          value: envPreset,
-          options: [
-            'park', 'sunset', 'dawn', 'night', 'forest',
-            'studio', 'warehouse', 'apartment', 'lobby', 'city'
-          ],
-          // If onChange is present the value will not be reactive,
-          // see https://github.com/pmndrs/leva/blob/main/docs/advanced/controlled-inputs.md#onchange
-          // Instead we transition the preset value, which will prevents the suspense bound from triggering its fallback
-          // That way we can hang onto the current environment until the new one has finished loading ...
-          onChange: (value) => startTransition(() => setEnvPreset(value))
-        },
-        blur: {
-          label: 'Blur BG',
-          value: 0.00,
-          min: 0.00,
-          max: 0.20,
-        },
-      }
-    ),
-    {
-      color: 'darkgreen',
-      collapsed: true,
-    },
-  )
+  // const { blur } = useControls(
+  //   'Scene Preferences',
+  //   () => (
+  //     {
+  //       preset: {
+  //         label: 'Environment',
+  //         value: envPreset,
+  //         options: [
+  //           'park', 'sunset', 'dawn', 'night', 'forest',
+  //           'studio', 'warehouse', 'apartment', 'lobby', 'city'
+  //         ],
+  //         // If onChange is present the value will not be reactive,
+  //         // see https://github.com/pmndrs/leva/blob/main/docs/advanced/controlled-inputs.md#onchange
+  //         // Instead we transition the preset value, which will prevents the suspense bound from triggering its fallback
+  //         // That way we can hang onto the current environment until the new one has finished loading ...
+  //         onChange: (value) => startTransition(() => setEnvPreset(value))
+  //       },
+  //       blur: {
+  //         label: 'Blur BG',
+  //         value: 0.00,
+  //         min: 0.00,
+  //         max: 0.20,
+  //       },
+  //     }
+  //   ),
+  //   {
+  //     color: 'darkgreen',
+  //     collapsed: true,
+  //   },
+  // )
+  // return (
+  //   <Environment
+  //     preset={envPreset}
+  //     blur={blur}
+  //     background
+  //   />
+  // )
   return (
     <Environment
-      preset={envPreset}
-      blur={blur}
+      preset={'park'}
+      blur={0.00}
       background
     />
   )
@@ -136,7 +144,8 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // const doAutoLoadData = preferences.data.doAutoLoadData ? preferences.data.doAutoLoadData : false
   // const doAutoRotate = preferences.data.doAutoRotate ? preferences.data.doAutoRotate : false
 
-  const prefs = useReactiveVar(preferencesDataVar)
+  // // const prefs = useReactiveVar(preferencesDataVar)
+  // const prefs = preferencesDataVar()
   // console.debug('%c🌱 preferencesDataVar as {prefs}', ccm.green, prefs)
 
   // if (!isPreferencesSetVar) {
@@ -215,7 +224,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           zoomToCursor={false} // default is false
           zoomSpeed={1.0} // default is 1.0
           enableRotate={true}
-          autoRotate={prefs.doAutoRotate} // default is false
+          // autoRotate={prefs.doAutoRotate} // default is false
           autoRotateSpeed={1.0} // default is 2.0
           rotateSpeed={1.0} // default is 1.0
           enableDamping={true} // slows down rotation after mouse release

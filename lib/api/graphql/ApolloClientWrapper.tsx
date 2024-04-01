@@ -17,20 +17,20 @@ import ccm from '#/lib/utils/console-colors'
 // console.debug(`%c CCM TEST SUCCESS!!`, ccm.orange)
 // console.debug(`%c CCM TEST WHOOPSIES`, ccm.red)
 
-const uri = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL
-// const uri_rest = process.env.NEXT_PUBLIC_WP_REST_API_URL
-// console.clear()
-console.debug('%c🥕 ThreeD Garden 🌱 ... 🦆 apollo loaded 🍄 ', ccm.lightgray)
-// console.debug('🦆 Apollo Wrapper loaded 🦆')
-console.debug('%c🦆 - URI ', ccm.lightgray, uri)
-// console.debug('🦆 - URI_REST', uri_rest)
+const uri_gql = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL  // 'https://threed.design/graphql'
+const uri_rest = process.env.NEXT_PUBLIC_WP_REST_API_URL  // 'https://threed.design/wp-json/wp/v2'
+console.clear()
+console.debug('%c🥕 ThreeD Garden 🌱 ... 🦆 apollo loaded 🍄', ccm.lightgray)
+console.debug('%c🦆 - GQL API', ccm.darkgreen, uri_gql)
+// console.debug('%c🦆 - REST API', ccm.darkgreen, uri_rest)
 console.debug('%c=======================================================', ccm.green)
 
 // have a function to create a client for you
 function makeClient() {
   const httpLink = new HttpLink({
     // this needs to be an absolute url, as relative urls cannot be used in SSR
-    uri: uri, // 'https://threed.design/graphql',
+    uri: uri_gql,
+    // uri: uri_rest,
     // you can disable result caching here if you want to
     // (this does not work if you are rendering your page with `export const dynamic = 'force-static'`)
     fetchOptions: { cache: 'no-store' },

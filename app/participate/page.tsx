@@ -19,7 +19,7 @@ import { auth } from 'auth'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 
 // ** APOLLO Imports
-import { preferencesDataVar } from '#/lib/stores/apollo'
+import { isPreferencesSetVar, preferencesDataVar } from '#/lib/stores/apollo'
 // import { useReactiveVar } from '@apollo/client'
 
 // ** REACT Imports ??
@@ -49,7 +49,7 @@ const ParticipatePage: TNextPageWithProps = async () => {
 // const ParticipatePage: TNextPageWithProps = () => {
 
   // USE PREFERENCES (APOLLO CLIENT)
-  const prefs = preferencesDataVar()
+  // const prefs = preferencesDataVar()
 
   const session = await auth()
   // const { data: session, status } = useSession()
@@ -94,7 +94,7 @@ const ParticipatePage: TNextPageWithProps = async () => {
         item
         md={6}
         xs={12}
-        sx={{ display: 'none' }}
+        // sx={{ display: 'none' }}
       >
         <Card>
           <CardHeader
