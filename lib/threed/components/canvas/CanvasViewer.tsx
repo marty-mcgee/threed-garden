@@ -5,7 +5,9 @@ import { useApolloClient } from '@apollo/client'
 import {
   isPreferencesSetVar,
   preferencesDataVar,
-  preferencesStore
+  preferencesStore,
+  projectStore,
+  // ...stores
 } from '#/lib/stores/apollo'
 
 // ** MUI Imports
@@ -109,12 +111,13 @@ export const ThreeDCanvasViewer = () => {
 
   }
 
+  // ** TODO !!!
   // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
-  const loadNounData = (threeds) => {
-    // load these threeds into r3f canvas
-    projectStore.actions.loadToCanvas(threeds, '_r3fCanvas')
-    // return <Box>true</Box> // true
-  }
+  // const loadNounData = (threeds: [] = []) => {
+  //   // load these threeds into r3f canvas
+  //   projectStore.actions.loadToCanvas(threeds, '_r3fCanvas')
+  //   // return <Box>true</Box> // true
+  // }
 
   console.debug(`%c=======================================================`, ccm.orange)
   return (
@@ -155,10 +158,10 @@ export const ThreeDCanvasViewer = () => {
         xs={12}
         style={{ display: 'flex', justifyContent: 'flex-end' }}
       >
-        <Button onClick={() => loadNounData('project')}>load project</Button>
-        <Button onClick={() => loadNounData('scene')}>load scene</Button>
-        <Button onClick={() => loadNounData('character')}>load character</Button>
-        <Button onClick={() => loadNounData('farmbot')}>load farmbot</Button>
+        {/* <Button onClick={() => loadNounData(new Array())}>load project</Button>
+        <Button onClick={() => loadNounData(['scene'])}>load scene</Button>
+        <Button onClick={() => loadNounData(['character'])}>load character</Button>
+        <Button onClick={() => loadNounData(['farmbot'])}>load farmbot</Button> */}
       </Grid>
       <Grid
         container
