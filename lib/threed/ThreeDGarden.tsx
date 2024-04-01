@@ -536,8 +536,7 @@ const ThreeDGarden = (): JSX.Element => {
           {/* <ThreeDToolbar /> */}
 
           {/* THREED CANVAS VIEWER */}
-          {/* <ThreeDCanvasViewer threeddata={threeddata} projectName={projectName} setProjectName={setProjectName} /> */}
-          {/* <ThreeDCanvasViewer /> */}
+          <ThreeDCanvasViewer />
 
           {/* THREED CONTROL PANELS -- STORE ACCESS (apollo, valtio, leva) */}
           {/* <ThreeDControlPanels tabs={tabProps} /> */}
