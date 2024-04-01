@@ -532,9 +532,6 @@ const ThreeDGarden = (): JSX.Element => {
         {/* <Suspense fallback={null}> */}
         {/* <Suspense fallback={<Spinner />}> */}
 
-          {/* THREED TOOLBAR */}
-          {/* <ThreeDToolbar /> */}
-
           {/* THREED CANVAS VIEWER */}
           <ThreeDCanvasViewer />
 
@@ -552,6 +549,9 @@ const ThreeDGarden = (): JSX.Element => {
           {/* <PropertiesView /> */}
           {/* <PlanView /> */}
           {/* <TheBottom /> */}
+
+          {/* THREED TOOLBAR */}
+          {/* <ThreeDToolbar /> */}
 
         {/* </Suspense> */}
         {/* ...SUSPENSEFUL */}

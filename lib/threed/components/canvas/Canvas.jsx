@@ -2,8 +2,15 @@
 // ** RESOURCES
 // ==============================================================
 
+// ** APOLLO
 // import { useReactiveVar } from '@apollo/client'
-import { isPreferencesSetVar, preferencesDataVar, preferencesStore } from '#/lib/stores/apollo'
+import {
+  isPreferencesSetVar,
+  preferencesDataVar,
+  preferencesStore,
+  projectStore,
+} from '#/lib/stores/apollo'
+// ** VALTIO ??
 import { proxy, useSnapshot } from 'valtio'
 
 import { Suspense, useState, useRef, useTransition } from 'react'
@@ -148,9 +155,10 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // const prefs = preferencesDataVar()
   // console.debug('%c🌱 preferencesDataVar as {prefs}', ccm.green, prefs)
 
-  // if (!isPreferencesSetVar) {
-  //   return <Spinner />
-  // }
+  // **
+  if (!isPreferencesSetVar()) {
+    return <Spinner />
+  }
   // **
   return (
     <Canvas
