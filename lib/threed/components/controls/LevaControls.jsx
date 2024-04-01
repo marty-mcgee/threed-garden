@@ -21,37 +21,9 @@ import ccm from '#/lib/utils/console-colors'
 const noise = new Noise(Math.random())
 
 // ==========================================================
-// FUNCTIONAL STORES
-// ==========================================================
-
-// const {
-//   // // nounStore,
-//   preferencesStore,
-//   // projectStore,
-//   // participantStore,
-//   // planStore,
-//   // threedStore,
-//   // fileStore,
-//   // sceneStore,
-//   // allotmentStore,
-//   // bedStore,
-//   // plantStore,
-//   // plantingPlanStore,
-//   // // bearStore,
-//   // // modalStore,
-//   // // modalAboutStore,
-//   // // modalModel3dStore,
-//   // // modalLoadingStore,
-//   // // modalShareStore,
-//   // // modalStoreNoun,
-// } = stores
-// console.debug('%cstores available', ccm.orange, stores)
-// console.debug(`%c====================================`, ccm.black)
-
-// ==========================================================
 
 export function ThreeDLevaControls() {
-  return <></>
+  // return <></>
   // **
   const prefs = useReactiveVar(preferencesDataVar)
   // **
@@ -296,14 +268,14 @@ export function ThreeDLevaControls() {
     console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoLoadData', ccm.greenAlert, prefs.doAutoLoadData)
   }, [prefs.doAutoLoadData])
   // **
-  useEffect(() => {
-    let newData = {...preferencesDataVar()}
-    console.debug('%c doAutoLoadDataLeva newData', ccm.green, newData)
-    newData.doAutoLoadData = doAutoLoadDataLeva
-    console.debug('%c doAutoLoadDataLeva newData UPDATED', ccm.green, newData)
-    preferencesDataVar(newData)
-    console.debug('%c doAutoLoadDataLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-  }, [doAutoLoadDataLeva])
+  // useEffect(() => {
+  //   let newData = {...preferencesDataVar()}
+  //   console.debug('%c doAutoLoadDataLeva newData', ccm.green, newData)
+  //   newData.doAutoLoadData = doAutoLoadDataLeva
+  //   console.debug('%c doAutoLoadDataLeva newData UPDATED', ccm.green, newData)
+  //   preferencesDataVar(newData)
+  //   console.debug('%c doAutoLoadDataLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+  // }, [doAutoLoadDataLeva])
   // ==========================================================
   // ==========================================================
   // ==========================================================
@@ -313,14 +285,14 @@ export function ThreeDLevaControls() {
     console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoRotate', ccm.greenAlert, prefs.doAutoRotate)
   }, [prefs.doAutoRotate])
   // **
-  useEffect(() => {
-    let newData = {...preferencesDataVar()}
-    console.debug('%c doAutoRotateLeva newData', ccm.green, newData)
-    newData.doAutoRotate = doAutoRotateLeva
-    console.debug('%c doAutoRotateLeva newData UPDATED', ccm.green, newData)
-    preferencesDataVar(newData)
-    console.debug('%c doAutoRotateLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-  }, [doAutoRotateLeva])
+  // useEffect(() => {
+  //   let newData = {...preferencesDataVar()}
+  //   console.debug('%c doAutoRotateLeva newData', ccm.green, newData)
+  //   newData.doAutoRotate = doAutoRotateLeva
+  //   console.debug('%c doAutoRotateLeva newData UPDATED', ccm.green, newData)
+  //   preferencesDataVar(newData)
+  //   console.debug('%c doAutoRotateLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+  // }, [doAutoRotateLeva])
   // ==========================================================
   // ==========================================================
   // ==========================================================
@@ -332,14 +304,14 @@ export function ThreeDLevaControls() {
     console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.projectName', ccm.greenAlert, prefs.projectName)
   }, [prefs.projectName])
   // **
-  useEffect(() => {
-    setControlPanelLeva({ title: projectNameLeva})
-    let newData = {...preferencesDataVar()}
-    newData.projectName = projectNameLeva
-    console.debug('%c projectNameLeva newData', ccm.green, newData)
-    preferencesDataVar(newData)
-    console.debug('%c projectNameLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-  }, [projectNameLeva])
+  // useEffect(() => {
+  //   setControlPanelLeva({ title: projectNameLeva})
+  //   let newData = {...preferencesDataVar()}
+  //   newData.projectName = projectNameLeva
+  //   console.debug('%c projectNameLeva newData', ccm.green, newData)
+  //   preferencesDataVar(newData)
+  //   console.debug('%c projectNameLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+  // }, [projectNameLeva])
   // ==========================================================
   // ==========================================================
   // ==========================================================

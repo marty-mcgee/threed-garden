@@ -1,3 +1,5 @@
+// 'use client' // no! should be ssr friendly
+
 // ==========================================================
 // RESOURCES
 
@@ -133,11 +135,11 @@ function nounStore(this: IStore, _type = 'noun') {
     // current: ^this one noun,
     history: [], // from local storage
 
-    // track payloads from db
+    // track payloads from db ??
     count: 0, // example counter (for fun/learning)
-    countDB: 0, // example counter (for fun/learning)
-    allDB: [], // from db (mysql wordpress via graphql)
-    oneDB: {}, // pre-this noun, ready to be mapped to 'this' noun
+    // countDB: 0, // example counter (for fun/learning)
+    // allDB: [], // from db (mysql wordpress via graphql)
+    // oneDB: {}, // pre-this noun, ready to be mapped to 'this' noun
   })
 
   // ==============================================================
@@ -171,11 +173,12 @@ function nounStore(this: IStore, _type = 'noun') {
       localStorage.removeItem(this._storageItemHistory)
       this.store.update('all', [])
       this.store.update('one', new (noun as any)(this._type))
-      this.store.update('allDB', [])
-      this.store.update('oneDB', {})
+      this.store.update('history', [])
+      // this.store.update('allDB', [])
+      // this.store.update('oneDB', {})
       this.store.update('count', 0)
-      this.store.update('countDB', 0)
-      if (debug) console.clear()
+      // this.store.update('countDB', 0)
+      // if (debug) console.clear()
       if (debug) console.debug(`%c X removeAll [${this._type}]`, ccm.red, true)
       if (debug) console.debug(`%c get one [${this._type}]`, ccm.red, this.store.get('one'))
     },
@@ -202,7 +205,7 @@ function nounStore(this: IStore, _type = 'noun') {
 
         // count
         this.store.update('count', this.store.get('count') + 1) // manual
-        this.store.update('countDB', this.store.get('allDB').length) // automatic
+        // this.store.update('countDB', this.store.get('allDB').length) // automatic
 
         // nounCurrent (overwrite this one -- mutate)
         this.store.update('one', {
@@ -249,28 +252,34 @@ function nounStore(this: IStore, _type = 'noun') {
 
     // save data to browser local storage
     saveToDisk: () => {
-      try {
-        localStorage.setItem(
-          this._storageItem,
-          JSON.stringify({
-            subject: this._plural,
-            payload: this.store.get('all'),
-          })
-        )
-        localStorage.setItem(
-          this._storageItemHistory,
-          JSON.stringify({
-            subject: this._plural,
-            payload: this.store.get('history'),
-          })
-        )
-        // if (debug) console.debug(`%c=======================================================`, ccm.black)
-        if (debug) console.debug(`%c💾 saveToDisk [${this._type}]`, ccm.greenAlert, this.store.get('all'))
-        if (debug) console.debug(`%c=======================================================`, ccm.black)
-        return true
-      } catch (ERROR) {
-        if (debug) console.debug(`%c💾 saveToDisk [${this._type}] ERROR`, ccm.redAlert, ERROR)
-        if (debug) console.debug(`%c=======================================================`, ccm.red)
+      if (typeof window != 'undefined') {
+        try {
+          localStorage.setItem(
+            this._storageItem,
+            JSON.stringify({
+              subject: this._plural,
+              payload: this.store.get('all'),
+            })
+          )
+          localStorage.setItem(
+            this._storageItemHistory,
+            JSON.stringify({
+              subject: this._plural,
+              payload: this.store.get('history'),
+            })
+          )
+          // if (debug) console.debug(`%c=======================================================`, ccm.black)
+          if (debug) console.debug(`%c💾 saveToDisk [${this._type}]`, ccm.greenAlert, this.store.get('all'))
+          if (debug) console.debug(`%c=======================================================`, ccm.black)
+          return true
+        } catch (ERROR) {
+          if (debug) console.debug(`%c💾 saveToDisk [${this._type}] ERROR`, ccm.redAlert, ERROR)
+          if (debug) console.debug(`%c=======================================================`, ccm.red)
+          return false
+        }
+      }
+      // typeof window === 'undefined'
+      else {
         return false
       }
     },
@@ -348,7 +357,7 @@ function nounStore(this: IStore, _type = 'noun') {
 
     // get data from db via graphql query
     loadFromDB: async (client: any) => {
-      try {
+      // try {
         // const _this = this
         // if (debug) console.clear()
         if (debug) console.debug(`%c=======================================================`, ccm.black)
@@ -481,7 +490,7 @@ function nounStore(this: IStore, _type = 'noun') {
             })
             // console.debug(`%c🌩️ loadFromDB [${this._type}]`, ccm.blue, all)
 
-            // save to disk here ?? yes
+            // save to disk here ?? yes (if window.localStorage)
             this.actions.saveToDisk()
 
             // set state from db
@@ -491,34 +500,35 @@ function nounStore(this: IStore, _type = 'noun') {
 
             this.store.update('history', ([...nouns, ...this.store.get('history')])) // merge all nodes, past + present
 
-            this.store.update('oneDB', nouns[nouns.length - 1]) // node (use last one)
-            const nounDB = this.store.get('oneDB')
-            // if (debug) console.debug(`%c🌩️ loadFromDB [${this._type}] {oneDB}`, ccm.blue, nounDB)
+            // // nounCurrent (overwrite -- mutate)
+            this.store.update('one', nouns[nouns.length - 1]) // node (use last one)
+            // const nounDB = this.store.get('one')
+            // if (debug) console.debug(`%c🌩️ loadFromDB [${this._type}] {one}`, ccm.blue, nounDB)
 
             // save to disk here ??? no
             // this.actions.saveToDisk()
 
-            // nounCurrent (overwrite -- mutate)
-            this.store.update('one', {
-              _id: nounDB._id, // newUUID(),
-              _ts: nounDB._ts, // new Date().toISOString(),
-              _type: nounDB._type,
-              // _name: nounDB.data.title,
-              // _name: _type.toUpperCase() + ' NAME: ' + nounDB.data.title,
-              _name: nounDB._name,
-              // wp custom fields
-              data: nounDB.data,
-              // layers/levels
-              layers: nounDB.layers,
-            })
+            // // nounCurrent (overwrite -- mutate)
+            // this.store.update('one', {
+            //   _id: nounDB._id, // newUUID(),
+            //   _ts: nounDB._ts, // new Date().toISOString(),
+            //   _type: nounDB._type,
+            //   // _name: nounDB.data.title,
+            //   // _name: _type.toUpperCase() + ' NAME: ' + nounDB.data.title,
+            //   _name: nounDB._name,
+            //   // wp custom fields
+            //   data: nounDB.data,
+            //   // layers/levels
+            //   layers: nounDB.layers,
+            // })
             if (debug) console.debug(`%c🌩️ loadFromDB [${this._type}] {one} (after)`, ccm.blue, this.store.get('one'))
 
             this.store.update('count', this.store.get('all').length)
-            this.store.update('countDB', this.store.get('all').length)
+            // this.store.update('countDB', this.store.get('all').length)
             // if (debug) console.debug(`%c🌩️ loadFromDB countDB`, ccm.blue, this.store.get('countDB'))
-        if (debug) console.debug(`%c=======================================================`, ccm.black)
+            if (debug) console.debug(`%c=======================================================`, ccm.black)
 
-            // save to disk here ?? yes
+            // save to disk here ?? yes (if window.localStorage)
             this.actions.saveToDisk()
 
             return true
@@ -530,10 +540,10 @@ function nounStore(this: IStore, _type = 'noun') {
 
         console.debug(`%c🌩️ loadFromDB [${this._type}]: OTHER ERROR`, ccm.redAlert, data)
         return false
-      } catch (ERROR) {
-        console.debug(`%c🌩️ loadFromDB [${this._type}]: ERROR`, ccm.redAlert, ERROR)
-        return false
-      }
+      // } catch (ERROR) {
+      //   console.debug(`%c🌩️ loadFromDB [${this._type}]: ERROR`, ccm.redAlert, ERROR)
+      //   return false
+      // }
     },
 
     // load from data source: DB or DISK ??
@@ -555,7 +565,7 @@ function nounStore(this: IStore, _type = 'noun') {
         }
       }
       // default
-      if (debug) console.debug(`%c ${this._type} loadFromDataSource isLoadedFromDisk`, ccm.redAlert, responseData)
+      if (debug) console.debug(`%c ${this._type} loadFromDataSource isLoadedFrom Nowhere`, ccm.redAlert, responseData)
       return responseData
     },
 
@@ -809,9 +819,17 @@ function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
 export const isPreferencesSetVar = makeVar(false) // boolean: true | false
 export const preferencesDataVar = makeVar(
   {
+    // user prefs
+    ownerId: 1,
+    version: '0.0.0',
     doAutoLoadData: false, // boolean: true | false
     doAutoRotate: false, // boolean: true | false
-    projectName: 'blank', // string: ''
+    // project prefs
+    projectName: '', // string: ''
+    // scene prefs
+    environmentPreset: 'park',
+    environmentBgBlur: 0.00,
+
   }
 )
 // console.debug('Apollo Stores ReactiveVar preferencesDataVar()', preferencesDataVar())

@@ -1,5 +1,8 @@
-query GetProjects {
-  projects {
+# import { gql, useQuery } from '@apollo/client'
+
+# const GetProjects = gql`
+query GetProjects ($first: Int, $last: Int, $after: String, $before: String) {
+  projects (first: $first, last: $last, after: $after, before: $before) {
     nodes {
       projectId
       title
@@ -20,7 +23,7 @@ query GetProjects {
       #     doAutoRotate
       #     projectName
       #     environmentPreset
-      #     environmentBGBlur
+      #     environmentBgBlur
       #     # owner
       #     version
       #   }

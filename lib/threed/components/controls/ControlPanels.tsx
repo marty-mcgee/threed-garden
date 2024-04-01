@@ -203,25 +203,30 @@ export const ThreeDControlPanels = (
 
 const PreferencesInfoPanel = (): JSX.Element => {
   // **
-  const prefs = useReactiveVar(preferencesDataVar)
+  // const prefs = useReactiveVar(preferencesDataVar)
   // **
   const preferencesCount = preferencesStore.store.useStore('count')
   const preferencess = preferencesStore.store.useStore('all')
   const preferences = preferencesStore.store.useStore('one')
+  console.debug('preferences info panel ##', preferencesCount)
+  console.debug('preferences info panel []', preferencess)
+  console.debug('preferences info panel {}', preferences)
   // const preferencessDB = preferencesStore.store.useStore('allDB')
   // const preferencesDB = preferencesStore.store.useStore('oneDB')
 
   return (
     <Box sx={{ px: 2 }}>
       <Typography>preferences[s].length: {preferencess.length} | count: {preferencesCount}</Typography>
-      <Typography>preferences._id: {preferences._id}</Typography>
-      <Typography>preferences._ts: {preferences._ts}</Typography>
-      <Typography>preferences._name: {preferences._name}</Typography>
-      <Typography><strong>prefs.projectName: {prefs.projectName}</strong></Typography>
-      <Typography>preferences.data.title: {preferences.data.title}</Typography>
-      <Typography>preferences.data.doAutoLoadData: {preferences.data.doAutoLoadData?.toString()}</Typography>
-      <Typography>preferences.data.doAutoRotate: {preferences.data.doAutoRotate?.toString()}</Typography>
-      <Typography>preferences.data.projectName: {preferences.data.projectName?.toString()}</Typography>
+      { preferences?._id && (
+        <Typography>preferences._id: {preferences._id}</Typography>
+      )}
+        {/* <Typography>preferences._ts: {preferences._ts}</Typography> */}
+        {/* <Typography>preferences._name: {preferences._name}</Typography> */}
+        {/* <Typography><strong>prefs.projectName: {prefs.projectName}</strong></Typography> */}
+        {/* <Typography>preferences.data.title: {preferences.data.title}</Typography> */}
+        {/* <Typography>preferences.data.doAutoLoadData: {preferences.data?.doAutoLoadData?.toString()}</Typography>
+        <Typography>preferences.data.doAutoRotate: {preferences.data?.doAutoRotate?.toString()}</Typography>
+        <Typography>preferences.data.projectName: {preferences.data?.projectName?.toString()}</Typography> */}
     </Box>
   )
 }
