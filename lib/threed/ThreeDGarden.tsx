@@ -500,7 +500,7 @@ const ThreeDGarden = (): JSX.Element => {
   //   //   console.debug('ThreeDGarden onUnmount', word)
   //   // }
   // }, [])
-  if (DEBUG || debug_deep) console.debug('%c ThreeDGarden mounting...', ccm.yellowAlert)
+  if (DEBUG || debug_deep) console.debug('%c ThreeDGarden mounting...', ccm.yellowAlert, word)
   if (DEBUG || debug_deep) console.debug('%c=======================================================', ccm.yellowAlert)
 
   // ==========================================================
@@ -532,7 +532,7 @@ const ThreeDGarden = (): JSX.Element => {
       {/* <Suspense fallback={<Spinner />}> */}
 
         {/* THREED TOOLBAR */}
-        <ThreeDToolbar />
+        {/* <ThreeDToolbar /> */}
 
         {/* THREED CANVAS VIEWER */}
         {/* <ThreeDCanvasViewer threeddata={threeddata} projectName={projectName} setProjectName={setProjectName} /> */}
