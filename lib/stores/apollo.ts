@@ -494,11 +494,12 @@ function nounStore(this: IStore, _type = 'noun') {
             this.actions.saveToDisk()
 
             // set state from db
-            this.store.update('all', ([...allPayload, ...this.store.get('all')])) // merge all nodes, past + present
+            // this.store.update('all', ([...allPayload, ...this.store.get('all')])) // merge all nodes, past + present
+            this.store.update('all', ([...allPayload])) // merge all nodes, past + present
             const nouns = this.store.get('all')
             if (debug) console.debug(`%c🌩️ loadFromDB [${this._type}] (all)`, ccm.blue, nouns)
 
-            this.store.update('history', ([...nouns, ...this.store.get('history')])) // merge all nodes, past + present
+            // this.store.update('history', ([...nouns, ...this.store.get('history')])) // merge all nodes, past + present
 
             // // nounCurrent (overwrite -- mutate)
             this.store.update('one', nouns[nouns.length - 1]) // node (use last one)

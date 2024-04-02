@@ -1,4 +1,4 @@
-// 'use client'
+'use client'
 // ==========================================================
 
 import { useApolloClient } from '@apollo/client'
@@ -22,6 +22,8 @@ import MuiButton from '@mui/material/Button'
 import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
 // import { ThreeDEnvironment } from '#/lib/threed/components/canvas/Canvas'
 
+// ** Helper Components
+import Spinner from '#/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
@@ -47,6 +49,8 @@ const Button = styled(MuiButton)(({ theme }) => ({
 // ** export default
 export const ThreeDCanvasViewer = () => {
 
+  // return <Spinner />
+
   // **
   const word: string = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
   // console.debug(`%c=======================================================`, ccm.orange)
@@ -58,6 +62,8 @@ export const ThreeDCanvasViewer = () => {
 
   // ** DECIDE WHETHER TO USE CANVAS, DEPENDING ON AVAILABLE threeds[nodes]
   let threeds: [] = [] // threeds are nodes[] to load to canvas
+
+  return <Spinner />
 
   if (isPreferencesSetVar()) {
     if (debug || DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer isPreferencesSetVar() ', ccm.greenAlert, isPreferencesSetVar())
@@ -81,7 +87,7 @@ export const ThreeDCanvasViewer = () => {
   else {
     if (debug || DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer isPreferencesSetVar() ', ccm.orangeAlert, isPreferencesSetVar(), 'begin querying preferences')
 
-    const isPrefsLoadedFromDataSouce = preferencesStore.actions.loadFromDB(client)
+    const isPrefsLoadedFromDataSouce = false // preferencesStore.actions.loadFromDB(client)
     // const isPrefsLoadedFromDataSouce = preferencesStore.actions.loadFromDataSource(client)
     if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert, isPrefsLoadedFromDataSouce)
     // ** SET REACTIVE VARS FROM DATA SOURCE

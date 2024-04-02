@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useRef } from 'react'
 import {
   Leva, LevaPanel,
@@ -25,7 +27,8 @@ const noise = new Noise(Math.random())
 export function ThreeDLevaControls() {
   // return <></>
   // **
-  const prefs = useReactiveVar(preferencesDataVar)
+  // const prefs = useReactiveVar(preferencesDataVar)
+  const prefs = preferencesDataVar()
   // **
   const [{
     projectNameLeva,
@@ -268,14 +271,14 @@ export function ThreeDLevaControls() {
     console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoLoadData', ccm.greenAlert, prefs.doAutoLoadData)
   }, [prefs.doAutoLoadData])
   // **
-  // useEffect(() => {
-  //   let newData = {...preferencesDataVar()}
-  //   console.debug('%c doAutoLoadDataLeva newData', ccm.green, newData)
-  //   newData.doAutoLoadData = doAutoLoadDataLeva
-  //   console.debug('%c doAutoLoadDataLeva newData UPDATED', ccm.green, newData)
-  //   preferencesDataVar(newData)
-  //   console.debug('%c doAutoLoadDataLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-  // }, [doAutoLoadDataLeva])
+  useEffect(() => {
+    let newData = {...prefs}
+    console.debug('%c doAutoLoadDataLeva newData', ccm.green, newData)
+    newData.doAutoLoadData = doAutoLoadDataLeva
+    console.debug('%c doAutoLoadDataLeva newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    console.debug('%c doAutoLoadDataLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+  }, [doAutoLoadDataLeva])
   // ==========================================================
   // ==========================================================
   // ==========================================================

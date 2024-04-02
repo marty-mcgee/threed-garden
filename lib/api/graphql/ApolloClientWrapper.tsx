@@ -1,7 +1,11 @@
 'use client'
 // ^ this file needs the 'use client' pragma
 
-import { ApolloLink, HttpLink } from '@apollo/client'
+import {
+  ApolloLink,
+  HttpLink,
+  // getApolloContext
+} from '@apollo/client'
 import {
   ApolloNextAppProvider,
   NextSSRInMemoryCache,
@@ -18,8 +22,8 @@ import ccm from '#/lib/utils/console-colors'
 // console.debug(`%c CCM TEST WHOOPSIES`, ccm.red)
 
 const uri_gql = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL  // 'https://threed.design/graphql'
-const uri_rest = process.env.NEXT_PUBLIC_WP_REST_API_URL  // 'https://threed.design/wp-json/wp/v2'
-console.clear()
+const uri_rest = process.env.NEXT_PUBLIC_WP_REST_API_URL    // 'https://threed.design/wp-json/wp/v2'
+// console.clear()
 console.debug('%c🥕 ThreeD Garden 🌱 ... 🦆 apollo loaded 🍄', ccm.lightgray)
 console.debug('%c🦆 - GQL API', ccm.darkgreen, uri_gql)
 // console.debug('%c🦆 - REST API', ccm.darkgreen, uri_rest)
@@ -27,6 +31,7 @@ console.debug('%c=======================================================', ccm.g
 
 // have a function to create a client for you
 function makeClient() {
+  // **
   const httpLink = new HttpLink({
     // this needs to be an absolute url, as relative urls cannot be used in SSR
     uri: uri_gql,
@@ -40,6 +45,7 @@ function makeClient() {
     // const { data } = useSuspenseQuery(MY_QUERY, { context: { fetchOptions: { cache: 'force-cache' }}})
   })
 
+  // **
   return new NextSSRApolloClient({
     // use the `NextSSRInMemoryCache`, not the normal `InMemoryCache`
     cache: new NextSSRInMemoryCache(),
@@ -61,7 +67,10 @@ function makeClient() {
 
 // you need to create a component to wrap your app in
 export function ApolloClientWrapper({ children }: React.PropsWithChildren) {
+  // ** makeClient()
+  console.debug('%c🦆 ApolloClientWrapper makeClient()', ccm.greenAlert, makeClient())
   return (
+    // <ApolloNextAppProvider makeClient={makeClient} apolloContext={apolloContext}>
     <ApolloNextAppProvider makeClient={makeClient}>
       {children}
     </ApolloNextAppProvider>
