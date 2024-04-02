@@ -6,9 +6,6 @@
 // RESOURCES
 // ==========================================================
 
-// ??? ProgressEvent error
-// import dynamic from 'next/dynamic'
-
 // ** AUTH GUARD
 import { auth } from 'auth'
 // import { SessionProvider } from 'next-auth/react'
@@ -17,20 +14,29 @@ import { auth } from 'auth'
 // ** NEXT Imports
 // import type { NextPage } from 'next'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
+// ??? ProgressEvent error
+// import dynamic from 'next/dynamic'
 
 // ** APOLLO Imports
-import { isPreferencesSetVar, preferencesDataVar } from '#/lib/stores/apollo'
-// import { useReactiveVar } from '@apollo/client'
-
-// ** REACT Imports ??
 import {
-  Suspense,
-  // useEffect,
-  // useContext,
-} from 'react'
-
-// ** Helper Components
-import Spinner from '#/ui/components/spinner'
+  // ApolloLink,
+  // HttpLink,
+  getApolloContext
+} from '@apollo/client'
+import {
+  queries, // ??
+  preferencesStore,
+  projectStore,
+} from '#/lib/stores/apollo'
+// import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
+// import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
+// import {
+//   useQuery,
+//   useSuspenseQuery,
+//   useBackgroundQuery,
+//   useReadQuery,
+//   useFragment
+// } from '@apollo/experimental-nextjs-app-support/ssr'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
@@ -39,9 +45,12 @@ import CardHeader from '@mui/material/CardHeader'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 
+// ** MAIN COMPONENTS
 // ** ThreeDGarden Imports
 import ThreeDGarden from '#/lib/threed/ThreeDGarden'
 
+// ** Helper Components
+import Spinner from '#/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
@@ -65,9 +74,32 @@ const ParticipatePage: TNextPageWithProps = async () => {
     // }
   }
 
+
+  // // // ** getApolloContext()
+  // const apolloContext = getApolloContext()
+  // console.debug('%c🦆 page:Participate getApolloContext()', ccm.green, apolloContext)
+
+  // const loadPreferencesMM = () => preferencesStore.actions.loadFromDB(apolloContext.Provider().client)
+  // console.debug('%c PAGE:PARTICIPATE => APOLLO STORE: loadPreferencesMM()', ccm.redAlert, loadPreferencesMM())
+
+
+
+
+
+  // const { data, loading, error } = useQuery(queries.GetPreferences)
+  // if (data) {
+  //   console.debug('%c APOLLO STORE QUERIES: GetPreferences', ccm.redAlert, data, loading, error)
+  // }
+
   // const { data, loading, error } = useQuery(queries.GetProjects)
   // if (data) {
-  //   console.debug('%cQUERY: GetProjects', ccm.orange, data, loading, error)
+  //   console.debug('%c APOLLO STORE QUERIES: GetProjects', ccm.orange, data, loading, error)
+  // }
+
+  // if (!isPreferencesSetVar()) {
+  //   await preferencesStore.actions.loadFromDB(client)
+  //   isPreferencesSetVar(true)
+  //   // return <Spinner />
   // }
 
   return (
@@ -75,18 +107,8 @@ const ParticipatePage: TNextPageWithProps = async () => {
       container
       spacing={1}
     >
-
       {/* [MM] HEY HEY HEY */}
-      {/* <SessionProvider session={session}> */}
-      {/* <ApolloProvider client={client}> */}
-      {/* <Suspense fallback={null}> */}
-      <Suspense fallback={<Spinner />}>
-        <ThreeDGarden />
-        {/* <ThreeDGarden threedData={data} /> */}
-        {/* <ThreeDGarden session={session} stores={stores} /> */}
-      </Suspense>
-      {/* </ApolloProvider> */}
-      {/* </SessionProvider> */}
+      <ThreeDGarden />
       {/* [MM] HEY HEY HEY */}
 
       {/* {ability?.can('read', 'analytics') && ( */}

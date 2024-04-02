@@ -9,7 +9,7 @@
 // ** Next Imports
 import { useSession } from "next-auth/react" // hint: const { data, data: session, status } = useSession()
 // import Image from 'next/image'
-// import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic'
 
 // ** React Imports
 import {
@@ -24,13 +24,12 @@ import {
   SyntheticEvent,
 } from 'react'
 
-// // ** Apollo Client 3 -- State Management using Cache/Store (via GraphQL)
+// ** APOLLO Imports
+// ** Apollo Client 3 -- State Management using Cache/Store (via GraphQL)
 // import { ApolloProvider } from '@apollo/client'
+// import { ApolloConsumer } from '@apollo/client'
 // import { client } from '#/lib/api/graphql/__client' // server-side-only
 // import { getClient } from '#/lib/api/graphql/__client' // server-side-only
-// // ** Apollo Client 3 -- Cache Store Imports
-// // state management (instead of React.useState, Redux, Zustand)
-// import { ApolloConsumer } from '@apollo/client'
 // import { TestAC3Store } from '#/lib/stores/old'
 // import {
 //   useQuery,
@@ -41,10 +40,16 @@ import {
 // } from '@apollo/experimental-nextjs-app-support/ssr'
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
 // import stores from '#/lib/stores/apollo'
-// import { preferencesStore, projectStore } from '#/lib/stores/apollo'
-// import { useApolloClient } from '@apollo/client'
+import { useApolloClient } from '@apollo/client'
+import { getApolloClient, getApolloContext } from '@apollo/client'
 // import { useReactiveVar } from '@apollo/client'
-// import { isPreferencesSetVar, preferencesDataVar } from '#/lib/stores/apollo'
+import {
+  // stores,
+  preferencesStore,
+  projectStore,
+  isPreferencesSetVar,
+  preferencesDataVar,
+} from '#/lib/stores/apollo'
 
 // ** MUI Imports
 // import { styled } from '@mui/material/styles'
@@ -53,9 +58,6 @@ import Box from '@mui/material/Box'
 // import MuiButton from '@mui/material/Button'
 // import Grid from '@mui/material/Grid'
 import MDTabPanel, { tabProps } from '#/lib/mui/MDTabPanel'
-
-// ** Helper Components
-import Spinner from '#/ui/components/spinner'
 
 // ** Three JS Imports (not here, use R3F)
 // import * as THREE from 'three'
@@ -93,6 +95,8 @@ import ThreeDModals from '#/lib/threed/components/modals/Modals'
 // ** jQuery Imports (DEPRECATED -- no no no, never again)
 // import * as $ from 'jquery'
 
+// ** Helper Components
+import Spinner from '#/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
@@ -111,7 +115,7 @@ const appVersion = 'v0.15.0-b'
 // const appVersion: string = require('package.json').version
 // const appVersion: string = require('../../package.json').version
 
-if (debug && DEBUG && debug_deep) {
+if ((debug || DEBUG) && debug_deep) {
   console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm.green)
   console.debug("%c🌱 appVersion", ccm.darkgreen, appVersion)
   console.debug(`%c====================================`, ccm.darkgreen)
@@ -426,6 +430,15 @@ const ThreeDGarden = (): JSX.Element => {
 
   const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
 
+  // // ** getApolloContext()
+  const apolloContext = getApolloContext()
+  console.debug('%c🦆 page:Participate getApolloContext()', ccm.green, apolloContext)
+
+  // const loadPreferencesMM = () => preferencesStore.actions.loadFromDB(apolloContext.Provider().client)
+  let loadPreferencesMM = preferencesStore.store.get('one')
+  // console.debug('%c PAGE:PARTICIPATE => APOLLO STORE: loadPreferencesMM()', ccm.redAlert, loadPreferencesMM())
+  console.debug('%c PAGE:PARTICIPATE => APOLLO STORE: loadPreferencesMM get one preferences', ccm.redAlert, loadPreferencesMM)
+
   // ==========================================================
   // ** Hooks
 
@@ -441,6 +454,32 @@ const ThreeDGarden = (): JSX.Element => {
   // console.debug('useApolloClient()', client)
 
   // ** GET PREFERENCES
+  if (!isPreferencesSetVar()) {
+    // const ThreeDGarden_UseClient = dynamic(() => {
+    //   const client = useApolloClient()
+    //   console.debug('%c ThreeDGarden_UseClient client', ccm.redAlert, client)
+    //   return Promise.resolve(preferencesStore.actions.loadFromDB(client))
+    // }, {
+    //   ssr: false
+    // })
+    // console.debug('%c ThreeDGarden_UseClient', ccm.redAlert, ThreeDGarden_UseClient)
+
+    // const preferencesFromDataSource = preferencesStore.actions.loadFromDB(client)
+    // if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert, preferencesFromDataSource)
+    // preferencesDataVar(preferencesFromDataSource.data)
+    // isPreferencesSetVar(true)
+    // if (preferencesDataVar().doAutoLoadData) {
+    //   const projectsFromDataSource = projectStore.actions.loadFromDataSource(client)
+    //   if (DEBUG) console.debug('%c projects loading...', ccm.orangeAlert)
+    //   //   if (projectsFromDataSource) {
+    //   //     console.debug('%c🥕 projectsFromDataSource', ccm.redAlert, projectsFromDataSource)
+    //   //     // ** TODO
+    //   //     // ** do more tasks here ??
+    //   //   }
+    // }
+
+    // return <Spinner />
+  }
   // const preferencesDB = preferencesStore.actions.loadFromDB(client)
   // console.debug('%c preferencesDB', ccm.yellow, preferencesDB)
 
@@ -519,10 +558,11 @@ const ThreeDGarden = (): JSX.Element => {
   //   localStorage.setItem('threed_doAutoLoadData', bool)
   // }
 
+
   // ==========================================================
   // FC returns JSX
   return (
-    <Suspense fallback={<Spinner />}>
+    // <Suspense fallback={<Spinner />}>
       <Box
         id='threedgarden'
         style={{width: '100%'}}
@@ -532,6 +572,8 @@ const ThreeDGarden = (): JSX.Element => {
         {/* <Suspense fallback={null}> */}
         {/* <Suspense fallback={<Spinner />}> */}
 
+        { isPreferencesSetVar() && preferencesDataVar() && (
+          <>
           {/* THREED CANVAS VIEWER */}
           <ThreeDCanvasViewer />
 
@@ -549,6 +591,7 @@ const ThreeDGarden = (): JSX.Element => {
           {/* </Grid> */}
 
           {/* <ThreeDControlPanels tabs={tabProps} /> */}
+          <ThreeDControlPanels />
 
           {/* THREED MODALS */}
           {/* <ModalAbout /> */}
@@ -564,12 +607,17 @@ const ThreeDGarden = (): JSX.Element => {
 
           {/* THREED TOOLBAR */}
           {/* <ThreeDToolbar /> */}
-
+          </>
+        )}
         {/* </Suspense> */}
         {/* ...SUSPENSEFUL */}
       </Box>
-    </Suspense>
+    // </Suspense>
   )
 }
 
 export default ThreeDGarden
+// const ThreeDGarden_UseClient = dynamic(() => Promise.resolve(ThreeDGarden), {
+//   ssr: false
+// })
+// export default ThreeDGarden_UseClient

@@ -1,3 +1,5 @@
+'use client'
+
 // ==============================================================
 // ** RESOURCES
 // ==============================================================
@@ -152,13 +154,13 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // const doAutoRotate = preferences.data.doAutoRotate ? preferences.data.doAutoRotate : false
 
   // // const prefs = useReactiveVar(preferencesDataVar)
-  // const prefs = preferencesDataVar()
+  const prefs = preferencesDataVar()
   // console.debug('%c🌱 preferencesDataVar as {prefs}', ccm.green, prefs)
 
   // **
-  if (!isPreferencesSetVar()) {
-    return <Spinner />
-  }
+  // if (!isPreferencesSetVar()) {
+  //   return <Spinner />
+  // }
   // **
   return (
     <Canvas
@@ -232,8 +234,8 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           zoomToCursor={false} // default is false
           zoomSpeed={1.0} // default is 1.0
           enableRotate={true}
-          // autoRotate={prefs.doAutoRotate} // default is false
-          autoRotate={preferencesDataVar().doAutoRotate} // default is false
+          autoRotate={prefs?.doAutoRotate} // default is false
+          // autoRotate={preferencesDataVar().doAutoRotate} // default is false
           autoRotateSpeed={1.0} // default is 2.0
           rotateSpeed={1.0} // default is 1.0
           enableDamping={true} // slows down rotation after mouse release
