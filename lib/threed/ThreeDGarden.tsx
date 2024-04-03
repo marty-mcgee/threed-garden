@@ -538,7 +538,7 @@ const ThreeDGarden = (): JSX.Element => {
 
   // ==========================================================
 
-  if (DEBUG || debug_deep) console.debug('%c🌱 ThreeDGarden mounting...', ccm.yellowAlert, word, isPreferencesSetVar())
+  if (DEBUG || debug_deep) console.debug('%c🌱 ThreeDGarden mounting...', ccm.yellowAlert, word)
   if (DEBUG || debug_deep) console.debug('%c=======================================================', ccm.yellowAlert)
 
   // ==========================================================
