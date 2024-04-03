@@ -548,7 +548,10 @@ const ThreeDGarden = (): JSX.Element => {
       id='threed_garden'
       style={{width: '100%'}}
     >
-      { !isPrefsLoaded && (<></>)}
+
+      { !isPrefsLoaded && (
+        <><Spinner /></>
+      )}
 
       { isPrefsLoaded && (
         <Grid
