@@ -18,7 +18,7 @@ import {
 
 // [MM] COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
-// console.debug(`%c CCM TEST SUCCESS!!`, ccm.orange)
+// console.debug(`%c CCM TEST SUCCESS!!`, ccm.greenAlert)
 // console.debug(`%c CCM TEST WHOOPSIES`, ccm.red)
 
 const uri_gql = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL  // 'https://threed.design/graphql'
