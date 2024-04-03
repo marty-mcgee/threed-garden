@@ -222,12 +222,12 @@ const PreferencesInfoPanel = (): JSX.Element => {
         <Typography>preferences._id: {preferences._id}</Typography>
       )}
         {/* <Typography>preferences._ts: {preferences._ts}</Typography> */}
-        {/* <Typography>preferences._name: {preferences._name}</Typography> */}
-        {/* <Typography><strong>prefs.projectName: {prefs.projectName}</strong></Typography> */}
-        {/* <Typography>preferences.data.title: {preferences.data.title}</Typography> */}
-        {/* <Typography>preferences.data.doAutoLoadData: {preferences.data?.doAutoLoadData?.toString()}</Typography>
+        <Typography>preferences._name: {preferences._name}</Typography>
+        <Typography>preferences.data.title: {preferences.data.title}</Typography>
+        <Typography>preferences.data.doAutoLoadData: {preferences.data?.doAutoLoadData?.toString()}</Typography>
         <Typography>preferences.data.doAutoRotate: {preferences.data?.doAutoRotate?.toString()}</Typography>
-        <Typography>preferences.data.projectName: {preferences.data?.projectName?.toString()}</Typography> */}
+        <Typography>preferences.data.projectName: {preferences.data?.projectName?.toString()}</Typography>
+        <Typography><strong>preferencesDataVar().projectName: {preferencesDataVar().projectName}</strong></Typography>
     </Box>
   )
 }
@@ -282,12 +282,12 @@ const ProjectInfoPanel = (): JSX.Element => {
       <Typography>projects.length: {projects.length} | count: {projectCount}</Typography>
       {/* <Typography>projectsDB: {projectsDB.length}</Typography> */}
       <Typography>project._id: {project._id}</Typography>
-      <Typography>project._ts: {project._ts}</Typography>
+      {/* <Typography>project._ts: {project._ts}</Typography> */}
       <Typography>project._name: {project._name}</Typography>
-      <Typography><strong>prefs.projectName: {projectName}</strong></Typography>
       <Typography>project.data.title: {project.data?.title}</Typography>
       <Typography>project.data.scene[s]: {project.data?.scenes?.nodes[0].title}</Typography>
       <Typography>project.data.plan[s]: {project.data?.plans?.nodes[0].title}</Typography>
+      <Typography><strong>prefs.projectName: {projectName}</strong></Typography>
     </Box>
   )
 }
