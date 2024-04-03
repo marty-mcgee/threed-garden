@@ -276,14 +276,14 @@ export function ThreeDLevaControls() {
     console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoLoadData', ccm.greenAlert, prefs.doAutoLoadData)
   }, [prefs.doAutoLoadData])
   // **
-  useEffect(() => {
-    let newData = {...prefs}
-    console.debug('%c doAutoLoadDataLeva newData', ccm.green, newData)
-    newData.doAutoLoadData = doAutoLoadDataLeva
-    console.debug('%c doAutoLoadDataLeva newData UPDATED', ccm.green, newData)
-    preferencesDataVar(newData)
-    console.debug('%c doAutoLoadDataLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-  }, [doAutoLoadDataLeva])
+  // useEffect(() => {
+  //   let newData = {...prefs}
+  //   console.debug('%c doAutoLoadDataLeva newData', ccm.green, newData)
+  //   newData.doAutoLoadData = doAutoLoadDataLeva
+  //   console.debug('%c doAutoLoadDataLeva newData UPDATED', ccm.green, newData)
+  //   preferencesDataVar(newData)
+  //   console.debug('%c doAutoLoadDataLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+  // }, [doAutoLoadDataLeva])
   // ==========================================================
   // ==========================================================
   // ==========================================================

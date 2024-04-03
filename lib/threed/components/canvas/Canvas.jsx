@@ -80,48 +80,48 @@ const actionModes = ['translate', 'rotate', 'scale']
 // }
 
 export function ThreeDEnvironment() {
-  // const [envPreset, setEnvPreset] = useState('park')
-  // // You can use the 'inTransition' boolean to react to the loading in-between state,
-  // // For instance by showing a message
-  // const [inTransition, startTransition] = useTransition()
+  const [envPreset, setEnvPreset] = useState('park')
+  // You can use the 'inTransition' boolean to react to the loading in-between state,
+  // For instance by showing a message
+  const [inTransition, startTransition] = useTransition()
 
-  // const { blur } = useControls(
-  //   'Scene Preferences',
-  //   () => (
-  //     {
-  //       preset: {
-  //         label: 'Environment',
-  //         value: envPreset,
-  //         options: [
-  //           'park', 'sunset', 'dawn', 'night', 'forest',
-  //           'studio', 'warehouse', 'apartment', 'lobby', 'city'
-  //         ],
-  //         // If onChange is present the value will not be reactive,
-  //         // see https://github.com/pmndrs/leva/blob/main/docs/advanced/controlled-inputs.md#onchange
-  //         // Instead we transition the preset value, which will prevents the suspense bound from triggering its fallback
-  //         // That way we can hang onto the current environment until the new one has finished loading ...
-  //         onChange: (value) => startTransition(() => setEnvPreset(value))
-  //       },
-  //       blur: {
-  //         label: 'Blur BG',
-  //         value: 0.00,
-  //         min: 0.00,
-  //         max: 0.20,
-  //       },
-  //     }
-  //   ),
-  //   {
-  //     color: 'darkgreen',
-  //     collapsed: true,
-  //   },
-  // )
-  // return (
-  //   <Environment
-  //     preset={envPreset}
-  //     blur={blur}
-  //     background
-  //   />
-  // )
+  const { blur } = useControls(
+    'Scene Preferences',
+    () => (
+      {
+        preset: {
+          label: 'Environment',
+          value: envPreset,
+          options: [
+            'park', 'sunset', 'dawn', 'night', 'forest',
+            'studio', 'warehouse', 'apartment', 'lobby', 'city'
+          ],
+          // If onChange is present the value will not be reactive,
+          // see https://github.com/pmndrs/leva/blob/main/docs/advanced/controlled-inputs.md#onchange
+          // Instead we transition the preset value, which will prevents the suspense bound from triggering its fallback
+          // That way we can hang onto the current environment until the new one has finished loading ...
+          onChange: (value) => startTransition(() => setEnvPreset(value))
+        },
+        blur: {
+          label: 'Blur BG',
+          value: 0.00,
+          min: 0.00,
+          max: 0.20,
+        },
+      }
+    ),
+    {
+      color: 'darkgreen',
+      collapsed: true,
+    },
+  )
+  return (
+    <Environment
+      preset={envPreset}
+      blur={blur}
+      background
+    />
+  )
   return (
     <Environment
       preset={'park'}
