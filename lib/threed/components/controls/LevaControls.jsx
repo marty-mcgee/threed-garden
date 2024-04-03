@@ -15,8 +15,8 @@ import { Noise } from 'noisejs'
 // ** APOLLO Imports
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
 // import stores from '#/lib/stores/apollo'
-import { useReactiveVar } from '@apollo/client'
-import { preferencesDataVar } from '#/lib/stores/apollo'
+// import { useReactiveVar } from '@apollo/client'
+import { isPreferencesSetVar, preferencesDataVar } from '#/lib/stores/apollo'
 
 // ** HELPER Components
 import Spinner from '#/ui/components/spinner'
@@ -268,6 +268,7 @@ export function ThreeDLevaControls() {
 
   // ==========================================================
   // ==========================================================
+  isPreferencesSetVar() ??
   // ==========================================================
   // ** doAutoLoadData
   useEffect(() => {
