@@ -1,5 +1,6 @@
 'use client'
 // ==========================================================
+// RESOURCES
 
 import { useApolloClient } from '@apollo/client'
 import {
@@ -15,14 +16,14 @@ import { styled } from '@mui/material/styles'
 import Grid from '@mui/material/Grid'
 import MuiButton from '@mui/material/Button'
 
-// ** ThreeD r3f Canvas Imports
+// ** THREED r3f Canvas Imports
 // import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
 // import { Canvas } from '@react-three/fiber'
 // import { ThreeDCanvasViewer } from '#/lib/threed/components/canvas/Canvas'
 import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
 // import { ThreeDEnvironment } from '#/lib/threed/components/canvas/Canvas'
 
-// ** Helper Components
+// ** HELPER Components
 import Spinner from '#/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'

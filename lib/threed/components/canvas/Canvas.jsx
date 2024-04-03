@@ -1,10 +1,8 @@
 'use client'
-
 // ==============================================================
 // ** RESOURCES
-// ==============================================================
 
-// ** APOLLO
+// ** APOLLO Imports
 // import { useReactiveVar } from '@apollo/client'
 import {
   isPreferencesSetVar,
@@ -17,9 +15,6 @@ import { proxy, useSnapshot } from 'valtio'
 
 import { Suspense, useState, useRef, useTransition } from 'react'
 import { useControls } from 'leva'
-
-// ** Helper Components
-import Spinner from '#/ui/components/spinner'
 
 // THREE JS * ALL
 import * as THREE from 'three'
@@ -60,9 +55,10 @@ import ThreeDModels from '#/lib/threed/components/nouns/Model/Model'
 // import TransformModel from '~/lib/threed/components/examples/TransformModel/App'
 // import Shoe from '~/lib/threed/components/examples/Shoes/Shoe'
 
+// ** HELPER Components
+import Spinner from '#/ui/components/spinner'
 // ** UUID Imports
 // import { v4 as newUUID } from 'uuid'
-
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 // console.debug('%c ccm', ccm)
