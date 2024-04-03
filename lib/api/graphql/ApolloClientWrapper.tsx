@@ -13,8 +13,8 @@ import {
   SSRMultipartLink,
 } from '@apollo/experimental-nextjs-app-support/ssr'
 
-// import { setVerbosity } from 'ts-invariant'
-// setVerbosity('debug')
+import { setVerbosity } from 'ts-invariant'
+setVerbosity('debug')
 
 // [MM] COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
@@ -23,7 +23,7 @@ import ccm from '#/lib/utils/console-colors'
 
 const uri_gql = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL  // 'https://threed.design/graphql'
 const uri_rest = process.env.NEXT_PUBLIC_WP_REST_API_URL    // 'https://threed.design/wp-json/wp/v2'
-// console.clear()
+console.clear()
 console.debug('%c🥕 ThreeD Garden 🌱 ... 🦆 apollo loaded 🍄', ccm.lightgray)
 console.debug('%c🦆 - GQL API', ccm.darkgreen, uri_gql)
 // console.debug('%c🦆 - REST API', ccm.darkgreen, uri_rest)
@@ -68,9 +68,12 @@ function makeClient() {
 // you need to create a component to wrap your app in
 export function ApolloClientWrapper({ children }: React.PropsWithChildren) {
   // ** makeClient()
-  console.debug('%c🦆 ApolloClientWrapper makeClient()', ccm.greenAlert, makeClient())
+  // const madeClient = makeClient()
+  // console.debug('%c🦆 ApolloClientWrapper makeClient() => madeClient', ccm.greenAlert, madeClient) // NextSSRApolloClient
+  // console.debug('%c🦆 ApolloClientWrapper madeClient.cache', ccm.greenAlert, madeClient.cache) // NextSSRApolloClient.cache
+  // console.debug('%c🦆 ApolloClientWrapper madeClient.query', ccm.greenAlert, madeClient.query) // NextSSRApolloClient.query GetPreferences
+  // **
   return (
-    // <ApolloNextAppProvider makeClient={makeClient} apolloContext={apolloContext}>
     <ApolloNextAppProvider makeClient={makeClient}>
       {children}
     </ApolloNextAppProvider>

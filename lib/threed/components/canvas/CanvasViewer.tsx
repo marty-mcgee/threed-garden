@@ -63,7 +63,7 @@ export const ThreeDCanvasViewer = () => {
   // ** DECIDE WHETHER TO USE CANVAS, DEPENDING ON AVAILABLE threeds[nodes]
   let threeds: [] = [] // threeds are nodes[] to load to canvas
 
-  return <Spinner />
+  // return <Spinner />
 
   if (isPreferencesSetVar()) {
     if (debug || DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer isPreferencesSetVar() ', ccm.greenAlert, isPreferencesSetVar())
@@ -74,7 +74,7 @@ export const ThreeDCanvasViewer = () => {
       let project_title = project?.data?.title ? project.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
       if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.project_title ', ccm.orange, project_title)
       if (project.data?.plans) {
-        let nodesToLoad = []
+        let nodesToLoad: [] = []
             nodesToLoad = project.data.plans.nodes[0]?.threedsActive?.nodes
         if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.[nodesToLoad] ', ccm.orange, nodesToLoad)
         if (nodesToLoad) {
