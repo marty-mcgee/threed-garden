@@ -548,10 +548,7 @@ const ThreeDGarden = (): JSX.Element => {
       id='threed_garden'
       style={{width: '100%'}}
     >
-      {/* SUSPENSEFUL... */}
-      {/* <Suspense> */}
-      {/* <Suspense fallback={null}> */}
-      {/* <Suspense fallback={<Spinner />}> */}
+      { !isPrefsLoaded && (<></>)}
 
       { isPrefsLoaded && (
         <Grid
@@ -612,6 +609,17 @@ const ThreeDGarden = (): JSX.Element => {
           </Grid>
           <Grid
             item
+            id='threed_toolbar'
+            md={12}
+            xs={12}
+            sx={{ borderTop: '1px solid darkgreen' }}
+          >
+            {/* THREED TOOLBAR */}
+            <ThreeDToolbar />
+            {/* THREED TOOLBAR */}
+          </Grid>
+          <Grid
+            item
             id='threed_control_panels'
             md={12}
             xs={12}
@@ -622,25 +630,36 @@ const ThreeDGarden = (): JSX.Element => {
             <ThreeDControlPanels />
             {/* THREED CANVAS VIEWER */}
           </Grid>
-
-          {/* THREED MODALS */}
-          {/* <ModalAbout /> */}
-          {/* <ModalModel3d /> */}
-          {/* <ModalLoading /> */}
-          {/* <ModalShare /> */}
-
-          {/* THREED VIEWS */}
-          {/* <CatalogView /> */}
-          {/* <PropertiesView /> */}
-          {/* <PlanView /> */}
-          {/* <TheBottom /> */}
-
-          {/* THREED TOOLBAR */}
-          {/* <ThreeDToolbar /> */}
+          <Grid
+            item
+            id='threed_views'
+            md={12}
+            xs={12}
+            sx={{ borderTop: '1px solid darkgreen' }}
+          >
+            {/* THREED VIEWS */}
+            {/* <CatalogView /> */}
+            {/* <PropertiesView /> */}
+            {/* <PlanView /> */}
+            {/* <TheBottom /> */}
+            {/* THREED VIEWS */}
+          </Grid>
+          <Grid
+            item
+            id='threed_modals'
+            md={12}
+            xs={12}
+            sx={{ borderTop: '1px solid darkgreen' }}
+          >
+            {/* THREED MODALS */}
+            {/* <ModalAbout /> */}
+            {/* <ModalModel3d /> */}
+            {/* <ModalLoading /> */}
+            {/* <ModalShare /> */}
+            {/* THREED MODALS */}
+          </Grid>
         </Grid>
       )}
-      {/* </Suspense> */}
-      {/* ...SUSPENSEFUL */}
     </Box>
   )
 }
