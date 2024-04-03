@@ -8,7 +8,7 @@
 
 // ** AUTH GUARD
 import { auth } from 'auth'
-// import { SessionProvider } from 'next-auth/react'
+import { SessionProvider } from 'next-auth/react'
 // import { useSession } from 'next-auth/react'
 
 // ** NEXT Imports
@@ -16,27 +16,6 @@ import { auth } from 'auth'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // ??? ProgressEvent error
 // import dynamic from 'next/dynamic'
-
-// ** APOLLO Imports
-import {
-  // ApolloLink,
-  // HttpLink,
-  getApolloContext
-} from '@apollo/client'
-import {
-  queries, // ??
-  preferencesStore,
-  projectStore,
-} from '#/lib/stores/apollo'
-// import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
-// import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
-// import {
-//   useQuery,
-//   useSuspenseQuery,
-//   useBackgroundQuery,
-//   useReadQuery,
-//   useFragment
-// } from '@apollo/experimental-nextjs-app-support/ssr'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
@@ -74,41 +53,15 @@ const ParticipatePage: TNextPageWithProps = async () => {
     // }
   }
 
-
-  // // // ** getApolloContext()
-  // const apolloContext = getApolloContext()
-  // console.debug('%c🦆 page:Participate getApolloContext()', ccm.green, apolloContext)
-
-  // const loadPreferencesMM = () => preferencesStore.actions.loadFromDB(apolloContext.Provider().client)
-  // console.debug('%c PAGE:PARTICIPATE => APOLLO STORE: loadPreferencesMM()', ccm.redAlert, loadPreferencesMM())
-
-
-
-
-
-  // const { data, loading, error } = useQuery(queries.GetPreferences)
-  // if (data) {
-  //   console.debug('%c APOLLO STORE QUERIES: GetPreferences', ccm.redAlert, data, loading, error)
-  // }
-
-  // const { data, loading, error } = useQuery(queries.GetProjects)
-  // if (data) {
-  //   console.debug('%c APOLLO STORE QUERIES: GetProjects', ccm.orange, data, loading, error)
-  // }
-
-  // if (!isPreferencesSetVar()) {
-  //   await preferencesStore.actions.loadFromDB(client)
-  //   isPreferencesSetVar(true)
-  //   // return <Spinner />
-  // }
-
   return (
     <Grid
       container
       spacing={1}
     >
       {/* [MM] HEY HEY HEY */}
-      <ThreeDGarden />
+      <SessionProvider session={session}>
+        <ThreeDGarden />
+      </SessionProvider>
       {/* [MM] HEY HEY HEY */}
 
       {/* {ability?.can('read', 'analytics') && ( */}
@@ -125,7 +78,7 @@ const ParticipatePage: TNextPageWithProps = async () => {
             // avatar={session?.user?.image}
           />
           <CardContent>
-            <Typography sx={{ color: 'primary.main', paddingBottom: '8px' }}>This card is visible to both 'public users' and 'authorized users'</Typography>
+            <Typography sx={{ color: 'primary.main', paddingBottom: '8px' }}>This card is visible to both 'public' and 'authorized' users</Typography>
             { session?.user && (
             <Typography sx={{ color: 'secondary.main' }}>
               <img src={session.user.image} width='20px' /><br/>
@@ -136,7 +89,6 @@ const ParticipatePage: TNextPageWithProps = async () => {
           </CardContent>
         </Card>
       </Grid>
-      { session?.user && (
         <Grid
           item
           md={6}
@@ -149,41 +101,19 @@ const ParticipatePage: TNextPageWithProps = async () => {
             />
             <CardContent>
               <Typography sx={{ color: 'warning.main', paddingBottom: '8px' }}>This card is visible to 'authorized users' only</Typography>
+              { session?.user && (
               <Typography sx={{ color: 'secondary.main' }}>
                 <img src={session.user.image} width='20px' /><br/>
                 name: {session.user.name}<br/>
                 email: {session.user.email}<br/>
               </Typography>
+              )}
             </CardContent>
           </Card>
         </Grid>
-      )}
     </Grid>
     // )}
   )
 }
-// ParticipatePage.acl = {
-//   action: 'read',
-//   subject: 'participate-page',
-// }
-
-// export async function getStaticProps() {
-//   // const client = createApolloClient();
-//   // const { data, loading, error } = useSuspenseQuery(queries.GetProjects)
-//   const { data, loading, error } = useQuery(queries.GetProjects)
-//   if (data) {
-//     console.debug('%cQUERY: GetProjects', ccm.orange, data, loading, error)
-//   }
-
-//   return {
-//     props: {
-//       projects: data
-//     },
-//   };
-// }
 
 export default ParticipatePage
-// const ParticipatePageUseClient = dynamic(() => Promise.resolve(ParticipatePage), {
-//   ssr: false
-// })
-// export default ParticipatePageUseClient

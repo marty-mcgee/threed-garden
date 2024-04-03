@@ -7,9 +7,11 @@
 // ==============================================================
 
 // ** Next Imports
-import { useSession } from "next-auth/react" // hint: const { data, data: session, status } = useSession()
+// import dynamic from 'next/dynamic'
 // import Image from 'next/image'
-import dynamic from 'next/dynamic'
+
+// ** NEXT AUTH Imports
+import { useSession } from "next-auth/react" // hint: const { data, data: session, status } = useSession()
 
 // ** React Imports
 import {
@@ -31,25 +33,35 @@ import {
 // import { client } from '#/lib/api/graphql/__client' // server-side-only
 // import { getClient } from '#/lib/api/graphql/__client' // server-side-only
 // import { TestAC3Store } from '#/lib/stores/old'
-// import {
-//   useQuery,
-//   useSuspenseQuery,
-//   useBackgroundQuery,
-//   useReadQuery,
-//   useFragment
-// } from '@apollo/experimental-nextjs-app-support/ssr'
+import {
+  useQuery,
+  useSuspenseQuery,
+  useBackgroundQuery,
+  useReadQuery,
+  useFragment
+} from '@apollo/experimental-nextjs-app-support/ssr'
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
 // import stores from '#/lib/stores/apollo'
 import { useApolloClient } from '@apollo/client'
-import { getApolloClient, getApolloContext } from '@apollo/client'
+// import { getApolloClient, getApolloContext } from '@apollo/client'
 // import { useReactiveVar } from '@apollo/client'
 import {
   // stores,
   preferencesStore,
   projectStore,
+  // queries,
+  // mutations,
+  // reactive vars:
   isPreferencesSetVar,
   preferencesDataVar,
 } from '#/lib/stores/apollo'
+// import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
+// import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
+import {
+  // ApolloLink,
+  // HttpLink,
+  getApolloContext
+} from '@apollo/client'
 
 // ** MUI Imports
 // import { styled } from '@mui/material/styles'
@@ -213,32 +225,6 @@ const stylesModal = {
 // ==========================================================
 // FUNCTIONAL STORES + NOUNS
 // ==========================================================
-
-// const {
-//   // nounStore,
-//   preferencesStore,
-//   projectStore,
-//   // participantStore,
-//   // planStore,
-//   // threedStore,
-//   // fileStore,
-//   // sceneStore,
-//   // allotmentStore,
-//   // bedStore,
-//   // plantStore,
-//   // plantingPlanStore,
-//   // modalStore,
-//   // modalAboutStore,
-//   // modalModel3dStore,
-//   // modalLoadingStore,
-//   // modalShareStore,
-//   // modalStoreNoun,
-// } = stores
-// console.debug('%cstores available', ccm.orange, stores)
-// console.debug(`%c====================================`, ccm.black)
-// console.debug('%csceneStore', ccm.orange, sceneStore)
-// console.debug(`%c====================================`, ccm.black)
-
 // ==========================================================
 // COMPONENTS
 
@@ -430,117 +416,101 @@ const ThreeDGarden = (): JSX.Element => {
 
   const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
 
-  // // ** getApolloContext()
-  const apolloContext = getApolloContext()
-  console.debug('%c🦆 page:Participate getApolloContext()', ccm.green, apolloContext)
-
-  // const loadPreferencesMM = () => preferencesStore.actions.loadFromDB(apolloContext.Provider().client)
-  let loadPreferencesMM = preferencesStore.store.get('one')
-  // console.debug('%c PAGE:PARTICIPATE => APOLLO STORE: loadPreferencesMM()', ccm.redAlert, loadPreferencesMM())
-  console.debug('%c PAGE:PARTICIPATE => APOLLO STORE: loadPreferencesMM get one preferences', ccm.redAlert, loadPreferencesMM)
+  // return <Spinner />
 
   // ==========================================================
-  // ** Hooks
+  // ** HOOKS (client-side only)
 
+  // ==========================================================
   // ** USE SESSION
-  // const { data: session, status } = useSession()
+  const { data: session, status } = useSession()
   // const { data, status } = useSession()
-  // const { data: session, status } = useSession()
-  // console.debug('useSession()', useSession())
   // console.debug('useSession().data', data)
 
+  // ==========================================================
   // ** USE CLIENT
-  // const client = useApolloClient()
+  const client = useApolloClient()
   // console.debug('useApolloClient()', client)
 
-  // ** GET PREFERENCES
-  if (!isPreferencesSetVar()) {
-    // const ThreeDGarden_UseClient = dynamic(() => {
-    //   const client = useApolloClient()
-    //   console.debug('%c ThreeDGarden_UseClient client', ccm.redAlert, client)
-    //   return Promise.resolve(preferencesStore.actions.loadFromDB(client))
-    // }, {
-    //   ssr: false
-    // })
-    // console.debug('%c ThreeDGarden_UseClient', ccm.redAlert, ThreeDGarden_UseClient)
-
-    // const preferencesFromDataSource = preferencesStore.actions.loadFromDB(client)
-    // if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert, preferencesFromDataSource)
-    // preferencesDataVar(preferencesFromDataSource.data)
-    // isPreferencesSetVar(true)
-    // if (preferencesDataVar().doAutoLoadData) {
-    //   const projectsFromDataSource = projectStore.actions.loadFromDataSource(client)
-    //   if (DEBUG) console.debug('%c projects loading...', ccm.orangeAlert)
-    //   //   if (projectsFromDataSource) {
-    //   //     console.debug('%c🥕 projectsFromDataSource', ccm.redAlert, projectsFromDataSource)
-    //   //     // ** TODO
-    //   //     // ** do more tasks here ??
-    //   //   }
-    // }
-
-    // return <Spinner />
-  }
-  // const preferencesDB = preferencesStore.actions.loadFromDB(client)
-  // console.debug('%c preferencesDB', ccm.yellow, preferencesDB)
-
-  // ** USE CONTEXT
-  // const abilities = useContext(AbilityContext)
-  // const abilities = ['read', 'write', 'delete']
-
-  // ==========================================================
-  // FOR REFERENCE: EXAMPLE PRIMARY USER 'DATA' OBJECT
-  //
-  // const threeddata = {
-  //   status: status,
-  //   abilities: abilities,
-  //   session: session,
-  //   client: client,
-  //   preferences: preferencesDataVar(),
-  //   store: projectStore, // default
-  //   word: word,
+  // // ** GET PREFERENCES
+  const [isPrefsLoaded, setIsPrefsLoaded] = useState(isPreferencesSetVar())
+  // if (!isPreferencesSetVar()) {
+  //   // **
+  //   const preferencesFromDataSource = preferencesStore.actions.loadFromDB(client)
+  //   if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert, typeof preferencesFromDataSource)
   // }
-
   // ==========================================================
   // Component onMount hook
   // **
-  // useEffect(() => {
-  //   // **
-  //   // console.debug('%c🥕 ThreeDGarden<FC,R3F>: onMount', ccm.blue, word)
-  //   // console.debug(`%c====================================`, ccm.black)
-  //   // **
-  //   // begin here ?? yes
-  //   // bootManager()
-  //   // ==========================================================
-  //   // USE STORE: LOAD DEFAULT DATA ON START + REFRESH
-  //   // if (!isPrefsLoaded) {
-  //   //   // preferencesStore.actions.loadFromDB(client)
-  //   //   preferencesStore.actions.loadFromDataSource(client)
-  //   //   console.debug('%c preferences loading...', ccm.greenAlert)
-  //   // }
+  useEffect(() => {
 
-      // // ** USE REACTIVE VARS (APOLLO LOCAL STATE)
-      // const prefs = useReactiveVar(preferencesDataVar)
-      // console.debug('%c🌱 preferencesDataVar as {prefs}', ccm.green, prefs)
-      // // ** AUTO LOAD PROJECT FROM DATA SOURCE?
-      // if (prefs.doAutoLoadData) {
-      //   console.debug('%c🌱 prefs.doAutoLoadData', ccm.darkgreen, prefs.doAutoLoadData)
-      //   const isProjectLoadedFromDataSouce = projectStore.actions.loadFromDataSource(client)
-      //   console.debug('%c project loading...', ccm.orangeAlert)
-      //   if (isProjectLoadedFromDataSouce) {
-      //     console.debug('%c🥕 isProjectLoadedFromDataSouce', ccm.redAlert, isProjectLoadedFromDataSouce)
-      //     // ** TODO
-      //     // ** do more tasks here ??
-      //   }
-      // }
-      // console.debug('%c====================================', ccm.darkgreen)
+    // ** GET PREFERENCES
+    const fetchData = async () => {
+      try {
+        // ** GET PREFERENCES
+        if (!isPrefsLoaded) {
+          // **
+          const preferencesFromDataSource = await preferencesStore.actions.loadFromDB(client)
+          if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert, typeof preferencesFromDataSource)
+        }
+        const loadPreferencesMM = await preferencesStore.store.get('one')
+        // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: get one preferences => loadPreferencesMM', ccm.redAlert, loadPreferencesMM)
+        preferencesDataVar(loadPreferencesMM.data)
+        console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
+        isPreferencesSetVar(true)
+        setIsPrefsLoaded(isPreferencesSetVar())
+        // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
 
-  //   // ==========================================================
-  //   // return () => {
-  //   //   console.debug('ThreeDGarden onUnmount', word)
-  //   // }
-  // }, [])
-  if (DEBUG || debug_deep) console.debug('%c ThreeDGarden mounting...', ccm.yellowAlert, word)
-  if (DEBUG || debug_deep) console.debug('%c=======================================================', ccm.yellowAlert)
+    if (!isPrefsLoaded) {
+      fetchData()
+      if (DEBUG) console.debug('%c fetching data...', ccm.greenAlert)
+    } else {
+      console.debug('%c🦆 ThreeDGarden => APOLLO STORE: preferencesDataVar()', ccm.redAlert, preferencesDataVar())
+    }
+
+    //   const preferencesFromDataSource = preferencesStore.actions.loadFromDB(client)
+    //   if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert, typeof preferencesFromDataSource)
+    //   // preferencesDataVar(preferencesFromDataSource.data)
+    //   // isPreferencesSetVar(true)
+    //   // if (preferencesDataVar().doAutoLoadData) {
+    //   //   const projectsFromDataSource = projectStore.actions.loadFromDataSource(client)
+    //   //   if (DEBUG) console.debug('%c projects loading...', ccm.orangeAlert)
+    //   //   //   if (projectsFromDataSource) {
+    //   //   //     console.debug('%c🥕 projectsFromDataSource', ccm.redAlert, projectsFromDataSource)
+    //   //   //     // ** TODO
+    //   //   //     // ** do more tasks here ??
+    //   //   //   }
+    //   // }
+
+    //   // return <Spinner />
+    // }
+
+    // // ** getApolloContext()
+    // const apolloContext = getApolloContext()
+    // console.debug('%c🦆 ThreeDGarden getApolloContext()', ccm.greenAlert, apolloContext)
+
+    // ** USE QUERIES -- HEY HEY HEY
+    // client.query:
+    // **
+    // const { data, loading, error } = useQuery(queries.GetPreferences)
+    // if (data) {
+    //   console.debug('%c APOLLO STORE QUERIES: GetPreferences', ccm.redAlert, data, loading, error)
+    // }
+    // const { data, loading, error } = useQuery(queries.GetProjects)
+    // if (data) {
+    //   console.debug('%c APOLLO STORE QUERIES: GetProjects', ccm.orange, data, loading, error)
+    // }
+
+  }, []) // useEffect
+
+  // ==========================================================
+  // ** USE CONTEXT
+  // const abilities = useContext(AbilityContext)
+  // const abilities = ['read', 'write', 'delete']
 
   // ==========================================================
   // TESTING: 'GUI CONTROL PANEL' + 'THREED PROJECT' NAME
@@ -558,61 +528,63 @@ const ThreeDGarden = (): JSX.Element => {
   //   localStorage.setItem('threed_doAutoLoadData', bool)
   // }
 
+  // ==========================================================
+
+  if (DEBUG || debug_deep) console.debug('%c ThreeDGarden mounting...', ccm.yellowAlert, word, isPreferencesSetVar())
+  if (DEBUG || debug_deep) console.debug('%c=======================================================', ccm.yellowAlert)
 
   // ==========================================================
-  // FC returns JSX
+  // ** React returns JSX
   return (
-    // <Suspense fallback={<Spinner />}>
-      <Box
-        id='threedgarden'
-        style={{width: '100%'}}
-      >
-        {/* SUSPENSEFUL... */}
-        {/* <Suspense> */}
-        {/* <Suspense fallback={null}> */}
-        {/* <Suspense fallback={<Spinner />}> */}
+    <Box
+      id='threedgarden'
+      style={{width: '100%'}}
+    >
+      {/* SUSPENSEFUL... */}
+      {/* <Suspense> */}
+      {/* <Suspense fallback={null}> */}
+      {/* <Suspense fallback={<Spinner />}> */}
 
-        { isPreferencesSetVar() && preferencesDataVar() && (
-          <>
-          {/* THREED CANVAS VIEWER */}
-          <ThreeDCanvasViewer />
+      { isPrefsLoaded && (
+        <>
+        {/* THREED CANVAS VIEWER */}
+        <ThreeDCanvasViewer />
 
-          {/* THREED CONTROL PANELS -- STORE ACCESS (apollo, valtio, leva) */}
-          {/* <Grid
-            style={{
-              position: 'absolute',
-              zIndex: 10,
-              minWidth: '416px',
-            }}
-          > */}
-            {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-            <ThreeDLevaControls />
-            {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-          {/* </Grid> */}
+        {/* THREED CONTROL PANELS -- STORE ACCESS (apollo, valtio, leva) */}
+        {/* <Grid
+          style={{
+            position: 'absolute',
+            zIndex: 10,
+            minWidth: '416px',
+          }}
+        > */}
+          {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+          <ThreeDLevaControls />
+          {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+        {/* </Grid> */}
 
-          {/* <ThreeDControlPanels tabs={tabProps} /> */}
-          <ThreeDControlPanels />
+        {/* <ThreeDControlPanels tabs={tabProps} /> */}
+        <ThreeDControlPanels />
 
-          {/* THREED MODALS */}
-          {/* <ModalAbout /> */}
-          {/* <ModalModel3d /> */}
-          {/* <ModalLoading /> */}
-          {/* <ModalShare /> */}
+        {/* THREED MODALS */}
+        {/* <ModalAbout /> */}
+        {/* <ModalModel3d /> */}
+        {/* <ModalLoading /> */}
+        {/* <ModalShare /> */}
 
-          {/* THREED VIEWS */}
-          {/* <CatalogView /> */}
-          {/* <PropertiesView /> */}
-          {/* <PlanView /> */}
-          {/* <TheBottom /> */}
+        {/* THREED VIEWS */}
+        {/* <CatalogView /> */}
+        {/* <PropertiesView /> */}
+        {/* <PlanView /> */}
+        {/* <TheBottom /> */}
 
-          {/* THREED TOOLBAR */}
-          {/* <ThreeDToolbar /> */}
-          </>
-        )}
-        {/* </Suspense> */}
-        {/* ...SUSPENSEFUL */}
-      </Box>
-    // </Suspense>
+        {/* THREED TOOLBAR */}
+        {/* <ThreeDToolbar /> */}
+        </>
+      )}
+      {/* </Suspense> */}
+      {/* ...SUSPENSEFUL */}
+    </Box>
   )
 }
 
