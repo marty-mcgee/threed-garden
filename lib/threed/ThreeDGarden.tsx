@@ -94,7 +94,7 @@ import ThreeDToolbar from '#/lib/threed/components/tools/Toolbar'
 import ThreeDModals from '#/lib/threed/components/modals/Modals'
 
 // ** View Imports
-// import views from '#/lib/threed/components/views'
+import ThreeDViews from '#/lib/threed/components/views/Views'
 
 // ** CSS Styles Imports
 // import stylesDemo from '~/styles/demo/demo.module.css'
@@ -226,16 +226,21 @@ const stylesModal = {
 // ==========================================================
 // COMPONENTS
 
-// ** Modal Windows
-// const {
-//   ModalAbout,
-//   ModalLoading,
-//   ModalModel3d,
-//   ModalShare
-// } = ThreeDModals
+// ** HTML Modal Windows
+const {
+  ModalAbout,
+  ModalLoading,
+  ModalModel3d,
+  ModalShare
+} = ThreeDModals
 
 // ** Views
-// const { CatalogView, PlanView, PropertiesView, TheBottom } = views
+const {
+  CatalogView,
+  PlanView,
+  PropertiesView,
+  TheBottom
+} = ThreeDViews
 
 // ==========================================================
 
@@ -655,7 +660,7 @@ const ThreeDGarden = (): JSX.Element => {
             sx={{ borderTop: '1px solid darkgreen' }}
           >
             {/* THREED MODALS */}
-            {/* <ModalAbout /> */}
+            <ModalAbout />
             {/* <ModalModel3d /> */}
             {/* <ModalLoading /> */}
             {/* <ModalShare /> */}
