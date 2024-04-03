@@ -58,61 +58,59 @@ export const ThreeDCanvasViewer = () => {
   // console.debug(`%c=======================================================`, ccm.black)
 
   // ** USE CLIENT
-  const client = useApolloClient()
+  // const client = useApolloClient()
 
   // ** DECIDE WHETHER TO USE CANVAS, DEPENDING ON AVAILABLE threeds[nodes]
   let threeds: [] = [] // threeds are nodes[] to load to canvas
 
   // return <Spinner />
 
-  if (isPreferencesSetVar()) {
-    if (debug || DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer isPreferencesSetVar() ', ccm.greenAlert, isPreferencesSetVar())
-    // const project = projectStore.store.get('one')
-    const project = projectStore.store.useStore('one')
-    if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project} ', ccm.orange, project)
-    if (project) {
-      let project_title = project?.data?.title ? project.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
-      if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.project_title ', ccm.orange, project_title)
-      if (project.data?.plans) {
-        let nodesToLoad: [] = []
-            nodesToLoad = project.data.plans.nodes[0]?.threedsActive?.nodes
-        if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.[nodesToLoad] ', ccm.orange, nodesToLoad)
-        if (nodesToLoad) {
-          threeds = nodesToLoad
-          if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer [nodesToLoad] as [threeds] ', ccm.orange, threeds)
-        }
-      }
-    }
-  }
-  else {
-    if (debug || DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer isPreferencesSetVar() ', ccm.orangeAlert, isPreferencesSetVar(), 'begin querying preferences')
+  // if (isPreferencesSetVar()) {
+  //   if (debug || DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer isPreferencesSetVar() ', ccm.greenAlert, isPreferencesSetVar())
+  //   // const project = projectStore.store.get('one')
+  //   const project = projectStore.store.useStore('one')
+  //   if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project} ', ccm.orange, project)
+  //   if (project) {
+  //     let project_title = project?.data?.title ? project.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
+  //     if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.project_title ', ccm.orange, project_title)
+  //     if (project.data?.plans) {
+  //       let nodesToLoad: [] = []
+  //           nodesToLoad = project.data.plans.nodes[0]?.threedsActive?.nodes
+  //       if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.[nodesToLoad] ', ccm.orange, nodesToLoad)
+  //       if (nodesToLoad) {
+  //         threeds = nodesToLoad
+  //         if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer [nodesToLoad] as [threeds] ', ccm.orange, threeds)
+  //       }
+  //     }
+  //   }
+  // }
 
-    const isPrefsLoadedFromDataSouce = false // preferencesStore.actions.loadFromDB(client)
-    // const isPrefsLoadedFromDataSouce = preferencesStore.actions.loadFromDataSource(client)
-    if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert, isPrefsLoadedFromDataSouce)
-    // ** SET REACTIVE VARS FROM DATA SOURCE
-    if (isPrefsLoadedFromDataSouce) {
-      const preferencesStoreData = preferencesStore.store.useStore('one').data
-      if (DEBUG) console.debug('%c🌱 preferencesStoreData', ccm.darkgreen, preferencesStoreData)
-      // ** TODO !!!
-      if (preferencesStoreData.projectName) { // HACK !!! for apollo error: mappedpath[s]
+  // else {
+  //   if (debug || DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer isPreferencesSetVar() ', ccm.orangeAlert, isPreferencesSetVar(), 'begin querying preferences')
+  //   const isPrefsLoadedFromDataSouce = false // preferencesStore.actions.loadFromDB(client)
+  //   // const isPrefsLoadedFromDataSouce = preferencesStore.actions.loadFromDataSource(client)
+  //   if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert, isPrefsLoadedFromDataSouce)
+  //   // ** SET REACTIVE VARS FROM DATA SOURCE
+  //   if (isPrefsLoadedFromDataSouce) {
+  //     const preferencesStoreData = preferencesStore.store.useStore('one').data
+  //     if (DEBUG) console.debug('%c🌱 preferencesStoreData', ccm.darkgreen, preferencesStoreData)
+  //     // ** TODO !!!
+  //     if (preferencesStoreData.projectName) { // HACK !!! for apollo error: mappedpath[s]
 
-        if (DEBUG) console.debug('%c====================================', ccm.yellowAlert)
-        if (DEBUG) console.debug('%c🌱 TODO: SET preferencesDataVar to ', ccm.yellowAlert, preferencesStoreData)
-        const preferencesDataVarNew = preferencesDataVar(preferencesStoreData)
-        if (DEBUG) console.debug('%c🌱 DONE: SET preferencesDataVar', ccm.yellowAlert, preferencesDataVarNew)
+  //       if (DEBUG) console.debug('%c====================================', ccm.yellowAlert)
+  //       if (DEBUG) console.debug('%c🌱 TODO: SET preferencesDataVar to ', ccm.yellowAlert, preferencesStoreData)
+  //       const preferencesDataVarNew = preferencesDataVar(preferencesStoreData)
+  //       if (DEBUG) console.debug('%c🌱 DONE: SET preferencesDataVar', ccm.yellowAlert, preferencesDataVarNew)
 
-        if (DEBUG) console.debug('%c====================================', ccm.yellowAlert)
-        if (DEBUG) console.debug('%c🌱 TODO: SET isPreferencesSetVar()', ccm.yellowAlert, isPreferencesSetVar())
-        isPreferencesSetVar(true)
-        if (DEBUG) console.debug('%c🌱 DONE: SET isPreferencesSetVar()', ccm.yellowAlert, isPreferencesSetVar())
+  //       if (DEBUG) console.debug('%c====================================', ccm.yellowAlert)
+  //       if (DEBUG) console.debug('%c🌱 TODO: SET isPreferencesSetVar()', ccm.yellowAlert, isPreferencesSetVar())
+  //       isPreferencesSetVar(true)
+  //       if (DEBUG) console.debug('%c🌱 DONE: SET isPreferencesSetVar()', ccm.yellowAlert, isPreferencesSetVar())
 
-        if (DEBUG) console.debug('%c====================================', ccm.yellowAlert)
-      }
-    }
-
-
-  }
+  //       if (DEBUG) console.debug('%c====================================', ccm.yellowAlert)
+  //     }
+  //   }
+  // }
 
   // ** TODO !!!
   // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
@@ -126,91 +124,48 @@ export const ThreeDCanvasViewer = () => {
   return (
     <Grid
       container
-      id='ThreeDCanvasViewer'
-      sx={{ border: '1px solid darkgreen' }}
+      id='_r3fCameras'
     >
       <Grid
         item
-        id='metadata'
-        md={4}
+        id='_r3f_camera_1'
+        md={12}
         xs={12}
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-start'
-        }}
+        sx={{ borderTop: '1px solid darkgreen' }}
       >
-        <Grid
-          style={{
-            position: 'absolute',
-            zIndex: 10,
-            minWidth: '416px',
-          }}
-        >
-          {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-          {/* <ThreeDLevaControls /> */}
-          {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-        </Grid>
-        {/* <Typography> */}
-          {/* {project_title} */}
-        {/* </Typography> */}
-      </Grid>
-      <Grid
-        item
-        id='actions[loadNounData(noun)]'
-        md={8}
-        xs={12}
-        style={{ display: 'flex', justifyContent: 'flex-end' }}
-      >
-        {/* <Button onClick={() => loadNounData(new Array())}>load project</Button>
-        <Button onClick={() => loadNounData(['scene'])}>load scene</Button>
-        <Button onClick={() => loadNounData(['character'])}>load character</Button>
-        <Button onClick={() => loadNounData(['farmbot'])}>load farmbot</Button> */}
-      </Grid>
-      <Grid
-        container
-        id='_r3fCameras'
-      >
-        <Grid
-          item
-          id='_r3f_camera_1'
-          md={12}
-          xs={12}
-          sx={{ borderTop: '1px solid darkgreen' }}
-        >
 
-          {/* THREED CANVAS */}
-          <ThreeDCanvas
-            _id={'_r3fCanvas'}
-            threeds={threeds}
-          />
-          {/* THREED CANVAS */}
+        {/* THREED CANVAS */}
+        <ThreeDCanvas
+          _id={'_r3fCanvas'}
+          threeds={threeds}
+        />
+        {/* THREED CANVAS */}
 
-        </Grid>
-        {/* <Grid item id='_r3f_camera_2'
-          md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
-        >
-          <ThreeDCanvas
-            _id={'_r3fCanvas2'}
-            threeds={threeds}
-          />
-        </Grid> */}
-        {/* <Grid item id='_r3f_camera_3'
-          md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
-        >
-          <ThreeDCanvas
-            _id={'_r3fCanvas3'}
-            threeds={threeds}
-          />
-        </Grid> */}
-        {/* <Grid item id='_r3f_camera_4'
-          md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
-        >
-          <ThreeDCanvas
-            _id={'_r3fCanvas4'}
-            threeds={threeds}
-          />
-        </Grid> */}
       </Grid>
+      {/* <Grid item id='_r3f_camera_2'
+        md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
+      >
+        <ThreeDCanvas
+          _id={'_r3fCanvas2'}
+          threeds={threeds}
+        />
+      </Grid> */}
+      {/* <Grid item id='_r3f_camera_3'
+        md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
+      >
+        <ThreeDCanvas
+          _id={'_r3fCanvas3'}
+          threeds={threeds}
+        />
+      </Grid> */}
+      {/* <Grid item id='_r3f_camera_4'
+        md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
+      >
+        <ThreeDCanvas
+          _id={'_r3fCanvas4'}
+          threeds={threeds}
+        />
+      </Grid> */}
     </Grid>
   )
 }

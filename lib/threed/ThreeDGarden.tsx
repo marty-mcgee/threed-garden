@@ -57,19 +57,19 @@ import {
 } from '#/lib/stores/apollo'
 // import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
 // import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
-import {
-  // ApolloLink,
-  // HttpLink,
-  getApolloContext
-} from '@apollo/client'
+// import {
+//   // ApolloLink,
+//   // HttpLink,
+//   getApolloContext
+// } from '@apollo/client'
 
 // ** MUI Imports
 // import { styled } from '@mui/material/styles'
 // mui: ui
 import Box from '@mui/material/Box'
 // import MuiButton from '@mui/material/Button'
-// import Grid from '@mui/material/Grid'
-import MDTabPanel, { tabProps } from '#/lib/mui/MDTabPanel'
+import Grid from '@mui/material/Grid'
+// import MDTabPanel, { tabProps } from '#/lib/mui/MDTabPanel'
 
 // ** Three JS Imports (not here, use R3F)
 // import * as THREE from 'three'
@@ -530,14 +530,14 @@ const ThreeDGarden = (): JSX.Element => {
 
   // ==========================================================
 
-  if (DEBUG || debug_deep) console.debug('%c ThreeDGarden mounting...', ccm.yellowAlert, word, isPreferencesSetVar())
+  if (DEBUG || debug_deep) console.debug('%c🌱 ThreeDGarden mounting...', ccm.yellowAlert, word, isPreferencesSetVar())
   if (DEBUG || debug_deep) console.debug('%c=======================================================', ccm.yellowAlert)
 
   // ==========================================================
   // ** React returns JSX
   return (
     <Box
-      id='threedgarden'
+      id='threed_garden'
       style={{width: '100%'}}
     >
       {/* SUSPENSEFUL... */}
@@ -546,41 +546,90 @@ const ThreeDGarden = (): JSX.Element => {
       {/* <Suspense fallback={<Spinner />}> */}
 
       { isPrefsLoaded && (
-        <>
-        {/* THREED CANVAS VIEWER */}
-        <ThreeDCanvasViewer />
+        <Grid
+          container
+          id='threed_grid'
+          sx={{ border: '1px solid darkgreen' }}
+        >
+          <Grid
+            item
+            id='threed_controls'
+            md={4}
+            xs={12}
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-start'
+            }}
+          >
+            {/* THREED CONTROL PANELS -- STORE ACCESS (apollo, valtio, leva) */}
+            <Grid
+              item
+              id='leva_controls'
+              style={{
+                position: 'absolute',
+                zIndex: 10,
+                minWidth: '416px',
+              }}
+            >
+              {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+              <ThreeDLevaControls />
+              {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+              {/* <Typography> */}
+              {/* {project_title} */}
+              {/* </Typography> */}
+            </Grid>
+            <Grid
+              item
+              id='threed_actions[loadNounData(noun)]'
+              md={8}
+              xs={12}
+              style={{ display: 'flex', justifyContent: 'flex-end' }}
+            >
+              {/* <Button onClick={() => loadNounData(new Array())}>load project</Button>
+              <Button onClick={() => loadNounData(['scene'])}>load scene</Button>
+              <Button onClick={() => loadNounData(['character'])}>load character</Button>
+              <Button onClick={() => loadNounData(['farmbot'])}>load farmbot</Button> */}
+            </Grid>
+          </Grid>
+          <Grid
+            item
+            id='threed_canvas_viewer'
+            md={12}
+            xs={12}
+            sx={{ borderTop: '1px solid darkgreen' }}
+          >
+            {/* THREED CANVAS VIEWER */}
+            <ThreeDCanvasViewer />
+            {/* THREED CANVAS VIEWER */}
+          </Grid>
+          <Grid
+            item
+            id='threed_control_panels'
+            md={12}
+            xs={12}
+            sx={{ borderTop: '1px solid darkgreen' }}
+          >
+            {/* THREED CANVAS VIEWER */}
+            {/* <ThreeDControlPanels tabs={tabProps} /> */}
+            <ThreeDControlPanels />
+            {/* THREED CANVAS VIEWER */}
+          </Grid>
 
-        {/* THREED CONTROL PANELS -- STORE ACCESS (apollo, valtio, leva) */}
-        {/* <Grid
-          style={{
-            position: 'absolute',
-            zIndex: 10,
-            minWidth: '416px',
-          }}
-        > */}
-          {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-          <ThreeDLevaControls />
-          {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-        {/* </Grid> */}
+          {/* THREED MODALS */}
+          {/* <ModalAbout /> */}
+          {/* <ModalModel3d /> */}
+          {/* <ModalLoading /> */}
+          {/* <ModalShare /> */}
 
-        {/* <ThreeDControlPanels tabs={tabProps} /> */}
-        <ThreeDControlPanels />
+          {/* THREED VIEWS */}
+          {/* <CatalogView /> */}
+          {/* <PropertiesView /> */}
+          {/* <PlanView /> */}
+          {/* <TheBottom /> */}
 
-        {/* THREED MODALS */}
-        {/* <ModalAbout /> */}
-        {/* <ModalModel3d /> */}
-        {/* <ModalLoading /> */}
-        {/* <ModalShare /> */}
-
-        {/* THREED VIEWS */}
-        {/* <CatalogView /> */}
-        {/* <PropertiesView /> */}
-        {/* <PlanView /> */}
-        {/* <TheBottom /> */}
-
-        {/* THREED TOOLBAR */}
-        {/* <ThreeDToolbar /> */}
-        </>
+          {/* THREED TOOLBAR */}
+          {/* <ThreeDToolbar /> */}
+        </Grid>
       )}
       {/* </Suspense> */}
       {/* ...SUSPENSEFUL */}
