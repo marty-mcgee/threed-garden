@@ -30,9 +30,15 @@ import {
 // ** Apollo Client 3 -- State Management using Cache/Store (via GraphQL)
 // import { ApolloProvider } from '@apollo/client'
 // import { ApolloConsumer } from '@apollo/client'
-// import { client } from '#/lib/api/graphql/__client' // server-side-only
-// import { getClient } from '#/lib/api/graphql/__client' // server-side-only
-// import { TestAC3Store } from '#/lib/stores/old'
+import { useApolloClient } from '@apollo/client'
+// import { getApolloClient, getApolloContext } from '@apollo/client'
+// import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
+// import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
+// import {
+//   // ApolloLink,
+//   // HttpLink,
+//   getApolloContext
+// } from '@apollo/client'
 import {
   useQuery,
   useSuspenseQuery,
@@ -40,10 +46,8 @@ import {
   useReadQuery,
   useFragment
 } from '@apollo/experimental-nextjs-app-support/ssr'
-// import { stores, queries, mutations } from '#/lib/stores/apollo'
 // import stores from '#/lib/stores/apollo'
-import { useApolloClient } from '@apollo/client'
-// import { getApolloClient, getApolloContext } from '@apollo/client'
+// import { stores, queries, mutations } from '#/lib/stores/apollo'
 // import { useReactiveVar } from '@apollo/client'
 import {
   // stores,
@@ -55,13 +59,6 @@ import {
   isPreferencesSetVar,
   preferencesDataVar,
 } from '#/lib/stores/apollo'
-// import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
-// import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
-// import {
-//   // ApolloLink,
-//   // HttpLink,
-//   getApolloContext
-// } from '@apollo/client'
 
 // ** MUI Imports
 // import { styled } from '@mui/material/styles'
