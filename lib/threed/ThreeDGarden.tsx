@@ -64,6 +64,7 @@ import {
 // import { styled } from '@mui/material/styles'
 // mui: ui
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 // import MuiButton from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 // import MDTabPanel, { tabProps } from '#/lib/mui/MDTabPanel'
@@ -525,6 +526,16 @@ const ThreeDGarden = (): JSX.Element => {
   //   localStorage.setItem('threed_doAutoLoadData', bool)
   // }
 
+  // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
+  const loadNounData = (_type = 'project', threeds = []) => {
+    // load these threeds into r3f canvas
+    if (DEBUG || debug_deep) console.debug('%c🌱 ThreeDGarden loadNounData()', ccm.yellowAlert, _type, threeds)
+    if (_type === 'project') {
+      projectStore.actions.loadToCanvas(threeds, '_r3fCanvas')
+    }
+    // return <Box>true</Box> // true
+  }
+
   // ==========================================================
 
   if (DEBUG || debug_deep) console.debug('%c🌱 ThreeDGarden mounting...', ccm.yellowAlert, word, isPreferencesSetVar())
@@ -575,18 +586,18 @@ const ThreeDGarden = (): JSX.Element => {
               {/* {project_title} */}
               {/* </Typography> */}
             </Grid>
-            <Grid
-              item
-              id='threed_actions[loadNounData(noun)]'
-              md={8}
-              xs={12}
-              style={{ display: 'flex', justifyContent: 'flex-end' }}
-            >
-              {/* <Button onClick={() => loadNounData(new Array())}>load project</Button>
-              <Button onClick={() => loadNounData(['scene'])}>load scene</Button>
-              <Button onClick={() => loadNounData(['character'])}>load character</Button>
-              <Button onClick={() => loadNounData(['farmbot'])}>load farmbot</Button> */}
-            </Grid>
+          </Grid>
+          <Grid
+            item
+            id='threed_actions'
+            md={8}
+            xs={12}
+            style={{ display: 'flex', justifyContent: 'flex-end' }}
+          >
+            <Button onClick={() => loadNounData('project', [])}>load project</Button>
+            <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
+            <Button onClick={() => loadNounData('character', [])}>load character</Button>
+            <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
           </Grid>
           <Grid
             item
