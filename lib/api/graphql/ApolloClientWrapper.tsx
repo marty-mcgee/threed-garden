@@ -13,8 +13,8 @@ import {
   SSRMultipartLink,
 } from '@apollo/experimental-nextjs-app-support/ssr'
 
-import { setVerbosity } from 'ts-invariant'
-setVerbosity('debug')
+// import { setVerbosity } from 'ts-invariant'
+// setVerbosity('debug')
 
 // [MM] COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
