@@ -356,14 +356,14 @@ const ParticipantInfoPanel = (): JSX.Element => {
   const participantCount = participantStore.store.useStore('count')
   const participants = participantStore.store.useStore('all')
   const participant = participantStore.store.useStore('one')
-  const participantsDB = participantStore.store.useStore('allDB')
-  const participantDB = participantStore.store.useStore('oneDB')
+  // const participantsDB = participantStore.store.useStore('allDB')
+  // const participantDB = participantStore.store.useStore('oneDB')
 
   return (
     <Box sx={{ px: 2 }}>
       <Typography>{participantCount} participants around here ...</Typography>
       <Typography>participants: {participants.length}</Typography>
-      <Typography>participantsDB: {participantsDB.length}</Typography>
+      {/* <Typography>participantsDB: {participantsDB.length}</Typography> */}
       <Typography>participant._id: {participant._id}</Typography>
       <Typography>participant._ts: {participant._ts}</Typography>
       <Typography>participant._name: {participant._name}</Typography>
@@ -411,14 +411,14 @@ const PlanInfoPanel = (): JSX.Element => {
   const planCount = planStore.store.useStore('count')
   const plans = planStore.store.useStore('all')
   const plan = planStore.store.useStore('one')
-  const plansDB = planStore.store.useStore('allDB')
-  const planDB = planStore.store.useStore('oneDB')
+  // const plansDB = planStore.store.useStore('allDB')
+  // const planDB = planStore.store.useStore('oneDB')
 
   return (
     <Box sx={{ px: 2 }}>
       <Typography>{planCount} plans around here ...</Typography>
       <Typography>plans: {plans.length}</Typography>
-      <Typography>plansDB: {plansDB.length}</Typography>
+      {/* <Typography>plansDB: {plansDB.length}</Typography> */}
       <Typography>plan._id: {plan._id}</Typography>
       <Typography>plan._ts: {plan._ts}</Typography>
       <Typography>plan._name: {plan._name}</Typography>
@@ -466,14 +466,14 @@ const ThreeDInfoPanel = (): JSX.Element => {
   const threedCount = threedStore.store.useStore('count')
   const threeds = threedStore.store.useStore('all')
   const threed = threedStore.store.useStore('one')
-  const threedsDB = threedStore.store.useStore('allDB')
-  const threedDB = threedStore.store.useStore('oneDB')
+  // const threedsDB = threedStore.store.useStore('allDB')
+  // const threedDB = threedStore.store.useStore('oneDB')
 
   return (
     <Box sx={{ px: 2 }}>
       <Typography>{threedCount} threeds around here ...</Typography>
       <Typography>threeds: {threeds.length}</Typography>
-      <Typography>threedsDB: {threedsDB.length}</Typography>
+      {/* <Typography>threedsDB: {threedsDB.length}</Typography> */}
       <Typography>threed._id: {threed._id}</Typography>
       <Typography>threed._ts: {threed._ts}</Typography>
       <Typography>threed._name: {threed._name}</Typography>
@@ -521,14 +521,14 @@ const FileInfoPanel = (): JSX.Element => {
   const fileCount = fileStore.store.useStore('count')
   const files = fileStore.store.useStore('all')
   const file = fileStore.store.useStore('one')
-  const filesDB = fileStore.store.useStore('allDB')
-  const fileDB = fileStore.store.useStore('oneDB')
+  // const filesDB = fileStore.store.useStore('allDB')
+  // const fileDB = fileStore.store.useStore('oneDB')
 
   return (
     <Box sx={{ px: 2 }}>
       <Typography>{fileCount} files around here ...</Typography>
       <Typography>files: {files.length}</Typography>
-      <Typography>filesDB: {filesDB.length}</Typography>
+      {/* <Typography>filesDB: {filesDB.length}</Typography> */}
       <Typography>file._id: {file._id}</Typography>
       <Typography>file._ts: {file._ts}</Typography>
       <Typography>file._name: {file._name}</Typography>
@@ -577,11 +577,11 @@ const FileControlPanel = (): JSX.Element => {
 
 const SceneInfoPanel = (): JSX.Element => {
   const sceneCount = sceneStore.store.useStore('count')
-  const sceneCountDB = sceneStore.store.useStore('countDB')
+  // const sceneCountDB = sceneStore.store.useStore('countDB')
   const scenes = sceneStore.store.useStore('all')
   const scene = sceneStore.store.useStore('one')
-  const scenesDB = sceneStore.store.useStore('allDB')
-  const sceneDB = sceneStore.store.useStore('oneDB')
+  // const scenesDB = sceneStore.store.useStore('allDB')
+  // const sceneDB = sceneStore.store.useStore('oneDB')
 
   return (
     <Box sx={{ px: 2 }}>
@@ -633,14 +633,14 @@ const AllotmentInfoPanel = (): JSX.Element => {
   const allotmentCount = allotmentStore.store.useStore('count')
   const allotments = allotmentStore.store.useStore('all')
   const allotment = allotmentStore.store.useStore('one')
-  const allotmentsDB = allotmentStore.store.useStore('allDB')
-  const allotmentDB = allotmentStore.store.useStore('oneDB')
+  // const allotmentsDB = allotmentStore.store.useStore('allDB')
+  // const allotmentDB = allotmentStore.store.useStore('oneDB')
 
   return (
     <Box sx={{ px: 2 }}>
       <Typography>{allotmentCount} allotments around here ...</Typography>
       <Typography>allotments: {allotments.length}</Typography>
-      <Typography>allotmentsDB: {allotmentsDB.length}</Typography>
+      {/* <Typography>allotmentsDB: {allotmentsDB.length}</Typography> */}
       <Typography>allotment._id: {allotment._id}</Typography>
       <Typography>allotment._ts: {allotment._ts}</Typography>
       <Typography>allotment._name: {allotment._name}</Typography>
@@ -688,14 +688,15 @@ const BedInfoPanel = (): JSX.Element => {
   const bedCount = bedStore.store.useStore('count')
   const beds = bedStore.store.useStore('all')
   const bed = bedStore.store.useStore('one')
-  const bedsDB = bedStore.store.useStore('allDB')
-  const bedDB = bedStore.store.useStore('oneDB')
+  // const bedsDB = bedStore.store.useStore('allDB')
+  // const bedDB = bedStore.store.useStore('oneDB')
 
   return (
     <Box sx={{ px: 2 }}>
       <Typography>{bedCount} beds around here ...</Typography>
       <Typography>beds: {beds.length}</Typography>
-      <Typography>bedsDB: {bedsDB.length}</Typography><Typography>bed._id: {bed._id}</Typography>
+      {/* <Typography>bedsDB: {bedsDB.length}</Typography> */}
+      <Typography>bed._id: {bed._id}</Typography>
       <Typography>bed._ts: {bed._ts}</Typography>
       <Typography>bed._name: {bed._name}</Typography>
       <Typography>bed.data.title: {bed.data?.title}</Typography>
@@ -742,14 +743,14 @@ const PlantInfoPanel = (): JSX.Element => {
   const plantCount = plantStore.store.useStore('count')
   const plants = plantStore.store.useStore('all')
   const plant = plantStore.store.useStore('one')
-  const plantsDB = plantStore.store.useStore('allDB')
-  const plantDB = plantStore.store.useStore('oneDB')
+  // const plantsDB = plantStore.store.useStore('allDB')
+  // const plantDB = plantStore.store.useStore('oneDB')
 
   return (
     <Box sx={{ px: 2 }}>
       <Typography>{plantCount} plants around here ...</Typography>
       <Typography>plants: {plants.length}</Typography>
-      <Typography>plantsDB: {plantsDB.length}</Typography>
+      {/* <Typography>plantsDB: {plantsDB.length}</Typography> */}
       <Typography>plant._id: {plant._id}</Typography>
       <Typography>plant._ts: {plant._ts}</Typography>
       <Typography>plant._name: {plant._name}</Typography>
@@ -797,14 +798,14 @@ const PlantingPlanInfoPanel = (): JSX.Element => {
   const plantingPlanCount = plantingPlanStore.store.useStore('count')
   const plantingPlans = plantingPlanStore.store.useStore('all')
   const plantingPlan = plantingPlanStore.store.useStore('one')
-  const plantingPlansDB = plantingPlanStore.store.useStore('allDB')
-  const plantingPlanDB = plantingPlanStore.store.useStore('oneDB')
+  // const plantingPlansDB = plantingPlanStore.store.useStore('allDB')
+  // const plantingPlanDB = plantingPlanStore.store.useStore('oneDB')
 
   return (
     <Box sx={{ px: 2 }}>
       <Typography>{plantingPlanCount} plantingPlans around here ...</Typography>
       <Typography>plantingPlans: {plantingPlans.length}</Typography>
-      <Typography>plantingPlansDB: {plantingPlansDB.length}</Typography>
+      {/* <Typography>plantingPlansDB: {plantingPlansDB.length}</Typography> */}
       <Typography>plantingPlan._id: {plantingPlan._id}</Typography>
       <Typography>plantingPlan._ts: {plantingPlan._ts}</Typography>
       <Typography>plantingPlan._name: {plantingPlan._name}</Typography>

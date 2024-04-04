@@ -63,6 +63,7 @@ import {
 // ** MUI Imports
 // import { styled } from '@mui/material/styles'
 // mui: ui
+import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 // import MuiButton from '@mui/material/Button'
@@ -353,6 +354,8 @@ const ThreeDGarden = (): JSX.Element => {
   if (DEBUG || debug_deep) console.debug('%c🌱 ThreeDGarden mounting...', ccm.yellowAlert, word)
   if (DEBUG || debug_deep) console.debug('%c=======================================================', ccm.yellowAlert)
 
+  let project_title = 'NOT EVEN CLOSE'
+
   // ==========================================================
   // ** React returns JSX
   return (
@@ -391,12 +394,10 @@ const ThreeDGarden = (): JSX.Element => {
                 minWidth: '416px',
               }}
             >
+              <Typography>{project_title}</Typography>
               {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
               <ThreeDLevaControls />
               {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-              {/* <Typography> */}
-              {/* {project_title} */}
-              {/* </Typography> */}
             </Grid>
           </Grid>
           <Grid
