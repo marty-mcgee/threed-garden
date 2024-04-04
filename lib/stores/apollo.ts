@@ -531,6 +531,11 @@ function nounStore(this: IStore, _type = 'noun') {
             // save to disk here ?? yes (if window.localStorage)
             this.actions.saveToDisk()
 
+            // count
+            this.store.update('count', this.store.get('count') + 1) // manual
+            // this.store.update('countDB', this.store.get('allDB').length) // automatic
+
+
             return true
           } else {
             console.debug(`%c🌩️ loadFromDB [${this._type}] NO PAYLOAD`, ccm.redAlert, data)
