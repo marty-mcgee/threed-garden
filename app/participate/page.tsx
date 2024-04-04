@@ -36,14 +36,11 @@ import ccm from '#/lib/utils/console-colors'
 const ParticipatePage: TNextPageWithProps = async () => {
 // const ParticipatePage: TNextPageWithProps = () => {
 
-  // USE PREFERENCES (APOLLO CLIENT)
-  // const prefs = preferencesDataVar()
-
   const session = await auth()
   // const { data: session, status } = useSession()
   // filter out sensitive data before passing to client.
   if (session) {
-    // console.debug('Participate page: session', session, status)
+    // console.debug('%c Participate page: session', ccm.greenAlert, session)
     // if (session?.user) {
     //   session.user = {
     //     name: session.user.name,
@@ -51,6 +48,9 @@ const ParticipatePage: TNextPageWithProps = async () => {
     //     image: session.user.image,
     //   }
     // }
+  }
+  else {
+    console.debug('%c Participate page: NO session', ccm.redAlert)
   }
 
   return (

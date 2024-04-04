@@ -268,7 +268,7 @@ export function ThreeDLevaControls() {
 
   // ==========================================================
   // ==========================================================
-  isPreferencesSetVar() ??
+  // isPreferencesSetVar() ??
   // ==========================================================
   // ** doAutoLoadData
   useEffect(() => {
@@ -312,14 +312,14 @@ export function ThreeDLevaControls() {
     console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.projectName', ccm.greenAlert, prefs.projectName)
   }, [prefs.projectName])
   // **
-  // useEffect(() => {
-  //   setControlPanelLeva({ title: projectNameLeva})
-  //   let newData = {...preferencesDataVar()}
-  //   newData.projectName = projectNameLeva
-  //   console.debug('%c projectNameLeva newData', ccm.green, newData)
-  //   preferencesDataVar(newData)
-  //   console.debug('%c projectNameLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-  // }, [projectNameLeva])
+  useEffect(() => {
+    setControlPanelLeva({ title: projectNameLeva})
+    let newData = {...preferencesDataVar()}
+    newData.projectName = projectNameLeva
+    console.debug('%c projectNameLeva newData', ccm.green, newData)
+    preferencesDataVar(newData)
+    console.debug('%c projectNameLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+  }, [projectNameLeva])
   // ==========================================================
   // ==========================================================
   // ==========================================================

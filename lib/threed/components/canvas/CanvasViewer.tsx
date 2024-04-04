@@ -66,60 +66,24 @@ export const ThreeDCanvasViewer = () => {
 
   // return <Spinner />
 
-  // if (isPreferencesSetVar()) {
-  //   if (debug || DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer isPreferencesSetVar() ', ccm.greenAlert, isPreferencesSetVar())
-  //   // const project = projectStore.store.get('one')
-  //   const project = projectStore.store.useStore('one')
-  //   if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project} ', ccm.orange, project)
-  //   if (project) {
-  //     let project_title = project?.data?.title ? project.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
-  //     if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.project_title ', ccm.orange, project_title)
-  //     if (project.data?.plans) {
-  //       let nodesToLoad: [] = []
-  //           nodesToLoad = project.data.plans.nodes[0]?.threedsActive?.nodes
-  //       if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.[nodesToLoad] ', ccm.orange, nodesToLoad)
-  //       if (nodesToLoad) {
-  //         threeds = nodesToLoad
-  //         if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer [nodesToLoad] as [threeds] ', ccm.orange, threeds)
-  //       }
-  //     }
-  //   }
-  // }
-
-  // else {
-  //   if (debug || DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer isPreferencesSetVar() ', ccm.orangeAlert, isPreferencesSetVar(), 'begin querying preferences')
-  //   const isPrefsLoadedFromDataSouce = false // preferencesStore.actions.loadFromDB(client)
-  //   // const isPrefsLoadedFromDataSouce = preferencesStore.actions.loadFromDataSource(client)
-  //   if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert, isPrefsLoadedFromDataSouce)
-  //   // ** SET REACTIVE VARS FROM DATA SOURCE
-  //   if (isPrefsLoadedFromDataSouce) {
-  //     const preferencesStoreData = preferencesStore.store.useStore('one').data
-  //     if (DEBUG) console.debug('%c🌱 preferencesStoreData', ccm.darkgreen, preferencesStoreData)
-  //     // ** TODO !!!
-  //     if (preferencesStoreData.projectName) { // HACK !!! for apollo error: mappedpath[s]
-
-  //       if (DEBUG) console.debug('%c====================================', ccm.yellowAlert)
-  //       if (DEBUG) console.debug('%c🌱 TODO: SET preferencesDataVar to ', ccm.yellowAlert, preferencesStoreData)
-  //       const preferencesDataVarNew = preferencesDataVar(preferencesStoreData)
-  //       if (DEBUG) console.debug('%c🌱 DONE: SET preferencesDataVar', ccm.yellowAlert, preferencesDataVarNew)
-
-  //       if (DEBUG) console.debug('%c====================================', ccm.yellowAlert)
-  //       if (DEBUG) console.debug('%c🌱 TODO: SET isPreferencesSetVar()', ccm.yellowAlert, isPreferencesSetVar())
-  //       isPreferencesSetVar(true)
-  //       if (DEBUG) console.debug('%c🌱 DONE: SET isPreferencesSetVar()', ccm.yellowAlert, isPreferencesSetVar())
-
-  //       if (DEBUG) console.debug('%c====================================', ccm.yellowAlert)
-  //     }
-  //   }
-  // }
-
-  // ** TODO !!!
-  // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
-  // const loadNounData = (threeds: [] = []) => {
-  //   // load these threeds into r3f canvas
-  //   projectStore.actions.loadToCanvas(threeds, '_r3fCanvas')
-  //   // return <Box>true</Box> // true
-  // }
+  if (preferencesDataVar().doAutoLoadData) {
+    // const project = projectStore.store.get('one')
+    const project = projectStore.store.useStore('one')
+    if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project} ', ccm.orange, project)
+    if (project) {
+      let project_title = project?.data?.title ? project.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
+      if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.project_title ', ccm.orange, project_title)
+      if (project.data?.plans) {
+        let nodesToLoad: [] = []
+            nodesToLoad = project.data.plans.nodes[0]?.threedsActive?.nodes
+        if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.[nodesToLoad] ', ccm.orange, nodesToLoad)
+        if (nodesToLoad) {
+          threeds = nodesToLoad
+          if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer [nodesToLoad] as [threeds] ', ccm.orange, threeds)
+        }
+      }
+    }
+  }
 
   console.debug(`%c=======================================================`, ccm.orange)
   return (
