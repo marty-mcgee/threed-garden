@@ -78,6 +78,7 @@ export const ThreeDCanvasViewer = () => {
             nodesToLoad = project.data.plans.nodes[0]?.threedsActive?.nodes
         if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.[nodesToLoad] ', ccm.orange, nodesToLoad)
         if (nodesToLoad) {
+          // ** SET threeds[]
           threeds = nodesToLoad
           if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer [nodesToLoad] as [threeds] ', ccm.orange, threeds)
         }

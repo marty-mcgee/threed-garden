@@ -1,6 +1,16 @@
+// ==============================================================
+// ** RESOURCES
+
+// ** VALTIO (State) Imports
 import { proxy, useSnapshot } from 'valtio'
 
-import { useEffect, useState, useRef } from 'react'
+// ** REACT Imports
+import {
+  useEffect,
+  useState,
+  useRef,
+  Suspense
+} from 'react'
 
 // ** R3-Fiber + R3-Drei
 import {
@@ -31,9 +41,9 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 // ** EXAMPLES
 import CoffeeCup from '~/lib/threed/components/examples/CoffeeCup/CoffeeCup'
 
+// HELPERS
 // ** UUID Imports
 import { v4 as newUUID } from 'uuid'
-
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
@@ -603,6 +613,7 @@ export default function ThreeDModels({ threeds }) {
       {/* <CoffeeCup /> */}
       {/* <ThreeDControls /> */}
       {/* THREED: LOOP OVER NODES FOR EACH FILE = MODEL */}
+      <Suspense fallback={null}>
       {threeds.map((_threed, index) => {
         // console.debug('_threed', index + ': ', _threed)
         // console.debug(`%c======================================`, ccm.red)
@@ -644,6 +655,7 @@ export default function ThreeDModels({ threeds }) {
           </group>
         )
       })}
+      </Suspense>
     </group>
   )
 }
