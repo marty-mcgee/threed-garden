@@ -365,7 +365,9 @@ const ThreeDGarden = (): JSX.Element => {
     >
 
       { !isPrefsLoaded && (
-        <><Spinner /></>
+        <>
+          <Spinner />
+        </>
       )}
 
       { isPrefsLoaded && (

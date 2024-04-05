@@ -73,11 +73,11 @@ const debug_deep = false // false | true // ts: boolean
 // Model interactive 'modes' using TransformControls
 const actionModes = ['translate', 'rotate', 'scale']
 
-// // example working simple <Loader />
-// function ThreeDLoaderSimple() {
-//   const { active, progress, errors, item, loaded, total } = useProgress()
-//   return <Html center>THREED GUI LOADING... {Math.round(progress)} %</Html>
-// }
+// example working simple <Loader />
+function ThreeDLoaderSimple() {
+  const { active, progress, errors, item, loaded, total } = useProgress()
+  return <Html center>THREED GUI LOADING... {Math.round(progress)} %</Html>
+}
 
 export function ThreeDEnvironment() {
   const [envPreset, setEnvPreset] = useState('park')
@@ -115,17 +115,13 @@ export function ThreeDEnvironment() {
       collapsed: false,
     },
   )
+
+  // useEffect()
+
   return (
     <Environment
       preset={envPreset}
       blur={blur}
-      background
-    />
-  )
-  return (
-    <Environment
-      preset={'park'}
-      blur={0.00}
       background
     />
   )
