@@ -31,8 +31,8 @@ const noise = new Noise(Math.random())
 export function ThreeDLevaControls() {
   // return <></>
   // **
-  const prefs = preferencesDataVar() // NO ??
-  // const prefs = useReactiveVar(preferencesDataVar) // NO ??
+  // const prefs = preferencesDataVar() // NO ??
+  const prefs = useReactiveVar(preferencesDataVar) // NO ??
   console.debug('%c prefs', ccm.redAlert, prefs)
 
   // ** EXAMPLES
