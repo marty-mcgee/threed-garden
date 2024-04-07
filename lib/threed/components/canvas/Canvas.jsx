@@ -83,7 +83,6 @@ export function ThreeDEnvironment() {
 
   const prefs = useReactiveVar(preferencesDataVar)
 
-
   const [envPreset, setEnvPreset] = useState(prefs.environmentPreset) // 'park'
   // You can use the 'inTransition' boolean to react to the loading in-between state,
   // For instance by showing a message
