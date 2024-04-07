@@ -31,6 +31,7 @@ import {
 // import { ApolloProvider } from '@apollo/client'
 // import { ApolloConsumer } from '@apollo/client'
 import { useApolloClient } from '@apollo/client'
+import { useReactiveVar } from '@apollo/client'
 // import { getApolloClient, getApolloContext } from '@apollo/client'
 // import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
 // import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
@@ -48,7 +49,6 @@ import {
 } from '@apollo/experimental-nextjs-app-support/ssr'
 // import stores from '#/lib/stores/apollo'
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
-// import { useReactiveVar } from '@apollo/client'
 import {
   // stores,
   preferencesStore,
@@ -273,6 +273,11 @@ const ThreeDGarden = (): JSX.Element => {
   // ** USE CLIENT
   const client = useApolloClient()
   // console.debug('useApolloClient()', client)
+
+  // **
+  // const prefs = preferencesDataVar() // NO ??
+  const prefs = useReactiveVar(preferencesDataVar) // YES ??
+  console.debug('%c ThreeDGarden prefs', ccm.orangeAlert, prefs)
 
   // // ** GET PREFERENCES
   const [isPrefsLoaded, setIsPrefsLoaded] = useState(isPreferencesSetVar())

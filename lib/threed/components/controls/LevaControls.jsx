@@ -32,7 +32,7 @@ export function ThreeDLevaControls() {
   // return <></>
   // **
   // const prefs = preferencesDataVar() // NO ??
-  const prefs = useReactiveVar(preferencesDataVar) // NO ??
+  const prefs = useReactiveVar(preferencesDataVar) // YES ??
   console.debug('%c prefs', ccm.orangeAlert, prefs)
 
   // ** EXAMPLES
@@ -328,6 +328,7 @@ export function ThreeDLevaControls() {
   // **
   useEffect(() => {
     try {
+
       let newData = {...preferencesDataVar()}
       newData.projectName = projectNameLeva
       console.debug('%c projectNameLeva newData', ccm.redAlert, projectNameLeva)
@@ -340,6 +341,7 @@ export function ThreeDLevaControls() {
       else {
         console.debug('%c ERROR: projectNameLeva: UNDEFINED', ccm.redAlert, projectNameLeva)
       }
+
     } catch (ERR) {
       console.debug('%c ERROR: setControlPanelLeva title: projectNameLeva', ccm.redAlert, projectNameLeva)
     }
