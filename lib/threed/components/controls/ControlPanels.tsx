@@ -224,6 +224,7 @@ const PreferencesInfoPanel = (): JSX.Element => {
 
   return (
     <Box sx={{ px: 2 }}>
+      <Typography><strong>preferencesDataVar().projectName: {preferencesDataVar().projectName}</strong></Typography>
       <Typography>preferences[s].length: {preferencess.length} | count: {preferencesCount}</Typography>
       { preferences?._id && (
         <Typography>preferences._id: {preferences._id}</Typography>
@@ -234,7 +235,6 @@ const PreferencesInfoPanel = (): JSX.Element => {
         <Typography>preferences.data.doAutoLoadData: {preferences.data?.doAutoLoadData?.toString()}</Typography>
         <Typography>preferences.data.doAutoRotate: {preferences.data?.doAutoRotate?.toString()}</Typography>
         <Typography>preferences.data.projectName: {preferences.data?.projectName?.toString()}</Typography>
-        <Typography><strong>preferencesDataVar().projectName: {preferencesDataVar().projectName}</strong></Typography>
     </Box>
   )
 }
@@ -286,6 +286,7 @@ const ProjectInfoPanel = (): JSX.Element => {
 
   return (
     <Box sx={{ px: 2 }}>
+      <Typography><strong>prefs.projectName: {projectName}</strong></Typography>
       <Typography>projects.length: {projects.length} | count: {projectCount}</Typography>
       {/* <Typography>projectsDB: {projectsDB.length}</Typography> */}
       <Typography>project._id: {project._id}</Typography>
@@ -294,7 +295,6 @@ const ProjectInfoPanel = (): JSX.Element => {
       <Typography>project.data.title: {project.data?.title}</Typography>
       <Typography>project.data.scene[s]: {project.data?.scenes?.nodes[0].title}</Typography>
       <Typography>project.data.plan[s]: {project.data?.plans?.nodes[0].title}</Typography>
-      <Typography><strong>prefs.projectName: {projectName}</strong></Typography>
     </Box>
   )
 }

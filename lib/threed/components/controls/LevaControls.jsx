@@ -33,7 +33,7 @@ export function ThreeDLevaControls() {
   // **
   // const prefs = preferencesDataVar() // NO ??
   const prefs = useReactiveVar(preferencesDataVar) // NO ??
-  console.debug('%c prefs', ccm.redAlert, prefs)
+  console.debug('%c prefs', ccm.orangeAlert, prefs)
 
   // ** EXAMPLES
   // number: { value: 10, step: 0.25 },
