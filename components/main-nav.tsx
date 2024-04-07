@@ -22,7 +22,7 @@ export function MainNav() {
       <CustomLink href='/'>
         <Image src='/favicon/apple-icon.png' priority={true} alt='Home' width='48' height='48' />
       </CustomLink>
-      <h3 className='pl-2'>
+      <h3 className='pl-2' style={{paddingBottom: '2px'}}>
         <CustomLink href='/participate' style={{color: '#DDDDDD'}}>
           THREED GARDEN
         </CustomLink>

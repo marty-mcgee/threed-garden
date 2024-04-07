@@ -15,7 +15,7 @@ import { Noise } from 'noisejs'
 // ** APOLLO Imports
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
 // import stores from '#/lib/stores/apollo'
-// import { useReactiveVar } from '@apollo/client'
+import { useReactiveVar } from '@apollo/client'
 import { isPreferencesSetVar, preferencesDataVar } from '#/lib/stores/apollo'
 
 // ** HELPER Components
@@ -31,89 +31,56 @@ const noise = new Noise(Math.random())
 export function ThreeDLevaControls() {
   // return <></>
   // **
-  // const prefs = useReactiveVar(preferencesDataVar)
-  const prefs = preferencesDataVar()
-  // **
-  const [{
-    projectNameLeva,
-    // refMonitorLeva,
-  }, setProjectPreferencesLeva] = useControls(
-    'Project Preferences',
-    () => ({
-      projectNameLeva: {
-        label: 'Project Name',
-        value: prefs.projectName,
-      },
-      // ** EXAMPLES
-      // number: { value: 10, step: 0.25 },
-      // image: { image: undefined },
-      // colorObj: { r: 1, g: 2, b: 3 },
-      // select: { options: ['x', 'y', ['x', 'y']] },
-      // interval: { min: -100, max: 100, value: [10, 15] },
-      // refMonitor: monitor(ref, { graph: true, interval: 60 }),
-      // showFolders: false,
-      // folders: folder(
-      //   {
-      //     // color2: '#fff',
-      //     color: {
-      //       value: '#ff005b',
-      //       render: (get) => get('showFolders'),
-      //     },
-      //     folder2: folder(
-      //       {
-      //         'Hey Button': button(() => console.debug('HEY HEY HEY')),
-      //         folder3: folder(
-      //           {
-      //             spring: spring(),
-      //             pos2d: { value: { x: 3, y: 4 } },
-      //             pos2dArr: { value: [100, 200], x: { max: 300 } },
-      //             pos3d: { value: { x: 0.3, k: 0.1, z: 0.5 }, j: { min: 0 } },
-      //             pos3dArr: [Math.PI / 2, 20, 4],
-      //           },
-      //           {
-      //             collapsed: true,
-      //             render: (get) => get('showFolders'),
-      //           },
-      //         ),
-      //       },
-      //       {
-      //         collapsed: true,
-      //         render: (get) => get('showFolders'),
-      //       },
-      //     ),
-      //   },
-      //   {
-      //     collapsed: true,
-      //     render: (get) => get('showFolders'),
-      //   },
-      // ),
-    }),
-    {
-      color: 'darkgreen',
-      collapsed: false,
-    },
-  )
+  const prefs = preferencesDataVar() // NO ??
+  // const prefs = useReactiveVar(preferencesDataVar) // NO ??
+  console.debug('%c prefs', ccm.redAlert, prefs)
 
-  const [{
-    doAutoLoadDataLeva,
-    doAutoRotateLeva,
-  }, setUserPreferencesLeva] = useControls(
-    'User Preferences',
-    () => ({
-      doAutoLoadDataLeva: {
-        label: 'Auto Load Data?',
-        value: prefs.doAutoLoadData,
-      },
-      doAutoRotateLeva: {
-        label: 'Auto Rotate?',
-        value: prefs.doAutoRotate,
-      },
-    }),
-    {
-      color: 'darkgreen',
-      collapsed: false,
-    },
-  )
+  // ** EXAMPLES
+  // number: { value: 10, step: 0.25 },
+  // image: { image: undefined },
+  // colorObj: { r: 1, g: 2, b: 3 },
+  // select: { options: ['x', 'y', ['x', 'y']] },
+  // interval: { min: -100, max: 100, value: [10, 15] },
+  // refMonitor: monitor(ref, { graph: true, interval: 60 }),
+  // showFolders: false,
+  // folders: folder(
+  //   {
+  //     // color2: '#fff',
+  //     color: {
+  //       value: '#ff005b',
+  //       render: (get) => get('showFolders'),
+  //     },
+  //     folder2: folder(
+  //       {
+  //         'Hey Button': button(() => console.debug('HEY HEY HEY')),
+  //         folder3: folder(
+  //           {
+  //             spring: spring(),
+  //             pos2d: { value: { x: 3, y: 4 } },
+  //             pos2dArr: { value: [100, 200], x: { max: 300 } },
+  //             pos3d: { value: { x: 0.3, k: 0.1, z: 0.5 }, j: { min: 0 } },
+  //             pos3dArr: [Math.PI / 2, 20, 4],
+  //           },
+  //           {
+  //             collapsed: true,
+  //             render: (get) => get('showFolders'),
+  //           },
+  //         ),
+  //       },
+  //       {
+  //         collapsed: true,
+  //         render: (get) => get('showFolders'),
+  //       },
+  //     ),
+  //   },
+  //   {
+  //     collapsed: true,
+  //     render: (get) => get('showFolders'),
+  //   },
+  // ),
+
+  // **
+
 
   // **
   const colorsStore = useCreateStore()
@@ -263,6 +230,47 @@ export function ThreeDLevaControls() {
     {
       color: 'darkgreen',
       collapsed: false,
+      order: -2,
+    },
+  )
+
+  const [{
+    doAutoLoadDataLeva,
+    doAutoRotateLeva,
+  }, setUserPreferencesLeva] = useControls(
+    'User Preferences',
+    () => ({
+      doAutoLoadDataLeva: {
+        label: 'Auto Load Data?',
+        value: prefs.doAutoLoadData,
+      },
+      doAutoRotateLeva: {
+        label: 'Auto Rotate?',
+        value: prefs.doAutoRotate,
+      },
+    }),
+    {
+      color: 'darkgreen',
+      collapsed: false,
+      order: 0,
+    },
+  )
+
+  const [{
+    projectNameLeva,
+    // refMonitorLeva,
+  }, setProjectPreferencesLeva] = useControls(
+    'Project Preferences',
+    () => ({
+      projectNameLeva: {
+        label: 'Project Name',
+        value: prefs.projectName,
+      },
+    }),
+    {
+      color: 'darkgreen',
+      collapsed: false,
+      order: -1,
     },
   )
 
@@ -272,34 +280,38 @@ export function ThreeDLevaControls() {
   // ==========================================================
   // ** doAutoLoadData
   useEffect(() => {
-    setUserPreferencesLeva({ doAutoLoadDataLeva: prefs.doAutoLoadData })
+    if (prefs.doAutoLoadData != undefined) {
+      setUserPreferencesLeva({ doAutoLoadDataLeva: prefs.doAutoLoadData })
+    }
     console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoLoadData', ccm.greenAlert, prefs.doAutoLoadData)
   }, [prefs.doAutoLoadData])
   // **
-  // useEffect(() => {
-  //   let newData = {...prefs}
-  //   console.debug('%c doAutoLoadDataLeva newData', ccm.green, newData)
-  //   newData.doAutoLoadData = doAutoLoadDataLeva
-  //   console.debug('%c doAutoLoadDataLeva newData UPDATED', ccm.green, newData)
-  //   preferencesDataVar(newData)
-  //   console.debug('%c doAutoLoadDataLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-  // }, [doAutoLoadDataLeva])
+  useEffect(() => {
+    let newData = {...prefs}
+    // console.debug('%c doAutoLoadDataLeva newData', ccm.green, newData)
+    newData.doAutoLoadData = doAutoLoadDataLeva
+    // console.debug('%c doAutoLoadDataLeva newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c doAutoLoadDataLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+  }, [doAutoLoadDataLeva])
   // ==========================================================
   // ==========================================================
   // ==========================================================
   // ** doAutoRotate
   useEffect(() => {
-    setUserPreferencesLeva({ doAutoRotateLeva: prefs.doAutoRotate })
+    if (prefs.doAutoRotateLeva != undefined) {
+      setUserPreferencesLeva({ doAutoRotateLeva: prefs.doAutoRotate })
+    }
     console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoRotate', ccm.greenAlert, prefs.doAutoRotate)
   }, [prefs.doAutoRotate])
   // **
   useEffect(() => {
     let newData = {...preferencesDataVar()}
-    console.debug('%c doAutoRotateLeva newData', ccm.green, newData)
+    // console.debug('%c doAutoRotateLeva newData', ccm.green, newData)
     newData.doAutoRotate = doAutoRotateLeva
-    console.debug('%c doAutoRotateLeva newData UPDATED', ccm.green, newData)
+    // console.debug('%c doAutoRotateLeva newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
-    console.debug('%c doAutoRotateLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // console.debug('%c doAutoRotateLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
   }, [doAutoRotateLeva])
   // ==========================================================
   // ==========================================================
@@ -307,18 +319,30 @@ export function ThreeDLevaControls() {
   // ** projectName
   useEffect(() => {
     // set({ Id: projectName})
-    setControlPanelLeva({ title: prefs.projectName})
-    setProjectPreferencesLeva({ projectNameLeva: prefs.projectName })
+    // if (prefs.projectName != undefined) {
+      setControlPanelLeva({ title: prefs.projectName})
+      setProjectPreferencesLeva({ projectNameLeva: prefs.projectName })
+    // }
     console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.projectName', ccm.greenAlert, prefs.projectName)
   }, [prefs.projectName])
   // **
   useEffect(() => {
-    setControlPanelLeva({ title: projectNameLeva})
-    let newData = {...preferencesDataVar()}
-    newData.projectName = projectNameLeva
-    console.debug('%c projectNameLeva newData', ccm.green, newData)
-    preferencesDataVar(newData)
-    console.debug('%c projectNameLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    try {
+      let newData = {...preferencesDataVar()}
+      newData.projectName = projectNameLeva
+      console.debug('%c projectNameLeva newData', ccm.redAlert, projectNameLeva)
+      preferencesDataVar(newData)
+      // console.debug('%c projectNameLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+
+      if (projectNameLeva != undefined) {
+        setControlPanelLeva({ title: projectNameLeva})
+      }
+      else {
+        console.debug('%c ERROR: projectNameLeva: UNDEFINED', ccm.redAlert, projectNameLeva)
+      }
+    } catch (ERR) {
+      console.debug('%c ERROR: setControlPanelLeva title: projectNameLeva', ccm.redAlert, projectNameLeva)
+    }
   }, [projectNameLeva])
   // ==========================================================
   // ==========================================================

@@ -106,6 +106,9 @@ import ThreeDViews from '#/lib/threed/components/views/Views'
 // ** jQuery Imports (DEPRECATED -- no no no, never again)
 // import * as $ from 'jquery'
 
+// ** FARMBOT Imports
+import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
+
 // ** Helper Components
 import Spinner from '#/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
@@ -396,7 +399,7 @@ const ThreeDGarden = (): JSX.Element => {
                 minWidth: '416px',
               }}
             >
-              <Typography>{project_title}</Typography>
+              {/* <Typography>{project_title}</Typography> */}
               {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
               <ThreeDLevaControls />
               {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
@@ -475,6 +478,17 @@ const ThreeDGarden = (): JSX.Element => {
             {/* <ModalLoading /> */}
             {/* <ModalShare /> */}
             {/* THREED MODALS */}
+          </Grid>
+          <Grid
+            item
+            id='threed_farmbot'
+            md={12}
+            xs={12}
+            sx={{ borderTop: '1px solid darkgreen', padding: '16px' }}
+          >
+            {/* THREED FARMBOT */}
+            {/* <ThreeDFarmBot /> */}
+            {/* THREED FARMBOT */}
           </Grid>
         </Grid>
       )}
