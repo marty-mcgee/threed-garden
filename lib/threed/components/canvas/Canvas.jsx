@@ -80,7 +80,11 @@ function ThreeDLoaderSimple() {
 }
 
 export function ThreeDEnvironment() {
-  const [envPreset, setEnvPreset] = useState('park')
+
+  const prefs = useReactiveVar(preferencesDataVar)
+
+
+  const [envPreset, setEnvPreset] = useState(prefs.environmentPreset) // 'park'
   // You can use the 'inTransition' boolean to react to the loading in-between state,
   // For instance by showing a message
   const [inTransition, startTransition] = useTransition()
@@ -103,8 +107,8 @@ export function ThreeDEnvironment() {
           onChange: (value) => startTransition(() => setEnvPreset(value))
         },
         blur: {
-          label: 'Blur BG',
-          value: 0.00,
+          label: 'Bg Blur',
+          value: prefs.environmentBgBlur, // 0.00,
           min: 0.00,
           max: 0.20,
         },
