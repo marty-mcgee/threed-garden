@@ -36,6 +36,7 @@ import ccm from '#/lib/utils/console-colors'
 // ** TESTING
 const debug: boolean = true // false | true
 const DEBUG: boolean = true // 1 == 0 | 1 == 1
+const debug_deep: boolean = false // false | true
 
 // ==============================================================
 // ==============================================================
@@ -92,9 +93,11 @@ function noun(this: INoun, _type: string = 'noun') {
   this.data = {
     title: 'NOTHING YET, SIR',
     // custom fields (to be overwritten from db)
-    // doAutoLoadData: true | false
-    // doAutoRotate: true | false
-    // projectName: ''
+    doAutoLoadData: false, // true | false
+    doAutoRotate: false, // true | false
+    projectName: 'blank', // 'string'
+    environmentPreset: 'sunset', // park | forest | warehouse | studio ...
+    environmentBgBlur: 0.00, // 0.00 to 1.00 // Background Blur
   }
   // layers/levels
   this.layers = [

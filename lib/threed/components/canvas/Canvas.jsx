@@ -3,7 +3,7 @@
 // ** RESOURCES
 
 // ** APOLLO Imports
-// import { useReactiveVar } from '@apollo/client'
+import { useReactiveVar } from '@apollo/client'
 import {
   isPreferencesSetVar,
   preferencesDataVar,
@@ -139,6 +139,10 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
   if (debug) console.debug('%c📐 ThreeDCanvas props.threeds', ccm.red, threeds)
   if (debug) console.debug(`%c=======================================================`, ccm.red)
+
+  // ** HOOKS
+  const prefs = useReactiveVar(preferencesDataVar)
+
   // **
   return (
     <Canvas
@@ -212,8 +216,8 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           zoomToCursor={false} // default is false
           zoomSpeed={1.0} // default is 1.0
           enableRotate={true}
-          // autoRotate={prefs.doAutoRotate} // default is false
-          autoRotate={preferencesDataVar().doAutoRotate} // default is false
+          autoRotate={prefs.doAutoRotate} // default is false
+          // autoRotate={preferencesDataVar().doAutoRotate} // default is false
           autoRotateSpeed={1.0} // default is 2.0
           rotateSpeed={1.0} // default is 1.0
           enableDamping={true} // slows down rotation after mouse release
