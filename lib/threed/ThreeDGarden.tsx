@@ -489,10 +489,10 @@ const ThreeDGarden = (): JSX.Element => {
             id='threed_farmbot'
             md={12}
             xs={12}
-            sx={{ borderTop: '1px solid darkgreen', padding: '16px' }}
+            // sx={{ borderTop: '1px solid darkgreen', padding: '16px' }}
           >
             {/* THREED FARMBOT */}
-            <ThreeDFarmBot />
+            {/* <ThreeDFarmBot /> */}
             {/* THREED FARMBOT */}
           </Grid>
         </Grid>
