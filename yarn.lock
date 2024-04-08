@@ -44,10 +44,18 @@
     lodash "^4.17.15"
     rc-util "^5.9.4"
 
-"@apollo/client@^3.9.5":
-  version "3.9.8"
-  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.9.8.tgz#d038ce72e26e75ab3624669664d79bc1dc842b15"
-  integrity sha512-ausPftEb2xAUkZqz+VkSSIhNxKraShJXdV2/NJ7JbHAAciGsFlapGtZ++b7lF0/+3Jp/p34g/i6dvO8b4WjQig==
+"@apollo/client-react-streaming@0.10.0":
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/@apollo/client-react-streaming/-/client-react-streaming-0.10.0.tgz#1f9a818c679b41791ca02105f16525c93412994c"
+  integrity sha512-iZ2jYghRS71xFv6O3Js5Ojrrmk4SnIEKwPRKIswQyAtqjHrfvUTyXCDzxrhPcGQe/y7su/XcE7Xp0kOp7yTnlg==
+  dependencies:
+    superjson "^1.12.2 || ^2.0.0"
+    ts-invariant "^0.10.3"
+
+"@apollo/client@^3.9.10":
+  version "3.9.10"
+  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.9.10.tgz#f381f67f3559cb5f5b66ce9183f84f49616acbe4"
+  integrity sha512-w8i/Lk1P0vvWZF0Xb00XPonn79/0rgRJ1vopBlVudVuy9QP29/NZXK0rI2xJIN6VrKuEqJZaVGJC+7k23I2sfA==
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.1"
     "@wry/caches" "^1.0.0"
@@ -84,14 +92,12 @@
     tslib "^2.3.0"
     zen-observable-ts "^1.2.5"
 
-"@apollo/experimental-nextjs-app-support@^0.8.0":
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/@apollo/experimental-nextjs-app-support/-/experimental-nextjs-app-support-0.8.0.tgz#7c6627195d1895bd7698b29174afe85dc9013ddf"
-  integrity sha512-uyNIkOkew0T6ukC8ycbWBeTu8gtDSD5i+NVGEHU0DIEQaToFHObYcvIxaQ/8hvWzgvnpNU/KMsApfGXA9Xkpyw==
+"@apollo/experimental-nextjs-app-support@^0.10.0":
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/@apollo/experimental-nextjs-app-support/-/experimental-nextjs-app-support-0.10.0.tgz#2fe52e6bc18de87c17bfc2bc78ec63acf8260c8f"
+  integrity sha512-S3mfZRnAAAaKwA8RNckS4TWYLX5utpmRTwG3WGFtpooYx8QQG8xft0p0a9eTQ53Jrw3nSMJc/wOOsT/5noMCQg==
   dependencies:
-    server-only "^0.0.1"
-    superjson "^1.12.2 || ^2.0.0"
-    ts-invariant "^0.10.3"
+    "@apollo/client-react-streaming" "0.10.0"
 
 "@apollo/react-hooks@^4.0.0":
   version "4.0.0"
@@ -5151,10 +5157,10 @@ extend@^3.0.2:
   resolved "https://registry.yarnpkg.com/extend/-/extend-3.0.2.tgz#f8b1136b4071fbd8eb140aff858b1019ec2915fa"
   integrity sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==
 
-farmbot@^15.8.7:
-  version "15.8.7"
-  resolved "https://registry.yarnpkg.com/farmbot/-/farmbot-15.8.7.tgz#a40aa53c43cd23fe4a4a9916a16171ef9b8a0ca5"
-  integrity sha512-i5rLLRacEGxq0gKxnY5sBXzeuoQBr+lqZeuWro17xxSdomUoTqVufcxLIiRU393tOttDz7c5oI549vuKS2jTZQ==
+farmbot@^15.8.8:
+  version "15.8.8"
+  resolved "https://registry.yarnpkg.com/farmbot/-/farmbot-15.8.8.tgz#7dc42255b53e1971a10ad97a90d9f4220cf798eb"
+  integrity sha512-jAQufxxdDsn2iwUdV9HvqoDXizjS6v9rdGO8B8mJmUR8gpH3DpiXfjdq618sQccLKK7MhUe64WSPIZHclE1dmQ==
   dependencies:
     mqtt "5.1.4"
 
@@ -8590,11 +8596,6 @@ semver@^7.3.5, semver@^7.3.7, semver@^7.5.4:
   dependencies:
     lru-cache "^6.0.0"
 
-server-only@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/server-only/-/server-only-0.0.1.tgz#0f366bb6afb618c37c9255a314535dc412cd1c9e"
-  integrity sha512-qepMx2JxAa5jjfzxG79yPPq+8BuFToHd1hm7kI+Z4zAq1ftQiP7HcxMhDDItrbtwVeLg/cY2JnKnrcFkmiswNA==
-
 set-blocking@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/set-blocking/-/set-blocking-2.0.0.tgz#045f9782d011ae9a6803ddd382b24392b3d890f7"
@@ -9334,10 +9335,10 @@ three-stdlib@^2.29.4:
     fflate "^0.6.9"
     potpack "^1.0.1"
 
-three@^0.161.0:
-  version "0.161.0"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.161.0.tgz#38aafaa82fe5467fde2e33933515d1b6beb17d91"
-  integrity sha512-LC28VFtjbOyEu5b93K0bNRLw1rQlMJ85lilKsYj6dgTu+7i17W+JCCEbvrpmNHF1F3NAUqDSWq50UD7w9H2xQw==
+three@^0.163.0:
+  version "0.163.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.163.0.tgz#cbfefbfd64a1353ab7cc8bf0fc396ddca1875a49"
+  integrity sha512-HlMgCb2TF/dTLRtknBnjUTsR8FsDqBY43itYop2+Zg822I+Kd0Ua2vs8CvfBVefXkBdNDrLMoRTGCIIpfCuDew==
 
 throttle-debounce@^3.0.1:
   version "3.0.1"
