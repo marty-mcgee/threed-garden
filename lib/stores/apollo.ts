@@ -98,6 +98,7 @@ function noun(this: INoun, _type: string = 'noun') {
     projectName: 'blank', // 'string'
     environmentPreset: 'sunset', // park | forest | warehouse | studio ...
     environmentBgBlur: 0.00, // 0.00 to 1.00 // Background Blur
+    doAnimateCharacter: false, // true | false
   }
   // layers/levels
   this.layers = [

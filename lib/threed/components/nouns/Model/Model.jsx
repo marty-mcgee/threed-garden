@@ -184,7 +184,7 @@ const Model = ({
     title:      threed.data.title,      // 'ThreeD Demo: McGee Ranch (FBX)',
     uri:        threed.data.uri,        // '/threed-threed/threed-demo-mcgee-ranch-fbx/',
     version:    threed.data.version,    // '0.0.2',
-    modified:   threed.data.positionX,  // '2024-03-13T04:18:47',
+    modified:   threed.data.modified,   // '2024-03-13T04:18:47',
     positionX:  threed.data.positionX,
     positionY:  threed.data.positionY,
     positionZ:  threed.data.positionZ,

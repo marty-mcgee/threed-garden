@@ -16,6 +16,7 @@ query GetPreferences {
       projectName
       environmentPreset
       environmentBgBlur
+      doAnimateCharacter
       version
       # owner
     }
