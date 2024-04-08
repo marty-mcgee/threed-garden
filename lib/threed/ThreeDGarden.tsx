@@ -492,7 +492,7 @@ const ThreeDGarden = (): JSX.Element => {
             sx={{ borderTop: '1px solid darkgreen', padding: '16px' }}
           >
             {/* THREED FARMBOT */}
-            {/* <ThreeDFarmBot /> */}
+            <ThreeDFarmBot />
             {/* THREED FARMBOT */}
           </Grid>
         </Grid>

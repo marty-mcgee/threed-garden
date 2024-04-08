@@ -35,15 +35,6 @@ if ((debug || DEBUG) && debug_deep) {
   console.log(`%c====================================`, ccm.darkgreen)
 }
 
-
-const fetcher = (url: string) => fetch(
-  url // + '?user.email=mcgee.marty@gmail.com&user.password=pursueB@8'
-)
-.then(
-  (res) => res.json()
-)
-
-
 // ** FARMBOT KEY
 const getFarmbotToken = () => {
 
@@ -83,9 +74,12 @@ const getFarmbotToken = () => {
     }
   }
   let MY_THREED_TOKEN = 'NADA LADA' // data.token.encoded
+  MY_THREED_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJ1bmtub3duIiwic3ViIjoxNTI2NywiaWF0IjoxNzEyNTc2MzU2LCJqdGkiOiJmNzNjZTAxZS00NWY5LTQ4NzUtYTRiMC0xOWJhM2E0OTZiM2EiLCJpc3MiOiIvL215LmZhcm0uYm90OjQ0MyIsImV4cCI6MTcxNzc2MDM1NiwibXF0dCI6ImNsZXZlci1vY3RvcHVzLnJtcS5jbG91ZGFtcXAuY29tIiwiYm90IjoiZGV2aWNlXzE1Mjk3Iiwidmhvc3QiOiJ4aWNvbmZ1bSIsIm1xdHRfd3MiOiJ3c3M6Ly9jbGV2ZXItb2N0b3B1cy5ybXEuY2xvdWRhbXFwLmNvbTo0NDMvd3MvbXF0dCJ9.ZLYoVODi7OmwTkbCBopuNcznXvmvTqMtvpl-JScH-IGT4EKQqUC-SZ8Un-u402ws4z4RIBAxovcQqsTuSqGo9Ai3jWUFaA4VQHg0EQGwWcKFtyNUzrKPeIKpzxXVQGlspBBm0QuZgHPNqQDzx_zaMdD6KbVAISoADaKPW5fIHe9qq4_y8-7m5lfIQKBL2AQkwPPKYBEX7TviX_YX3YpMyBauhBc1eKtcChGRwEBm7HkuYPLl5yRory_NzsN0C3VYgPvx9GnXaLwCxT7w9YTKkTfETXTviFoUP6GRwFS_zaM95yi89ocjAfYkR9tHtYfXVeRKQa0BRyZ_wZWJuoc68A'
 
-  fetch(
-    // '/api/users',
+  return MY_THREED_TOKEN
+
+  const fetcher = (url: string) => fetch(
+    // url // + '?user.email=mcgee.marty@gmail.com&user.password=pursueB@8'
     'https://my.farm.bot/api/tokens',
     {
       method: 'POST',
@@ -96,32 +90,47 @@ const getFarmbotToken = () => {
       body: JSON.stringify(data)
     }
   )
-  .then(response => {
-    console.log('YO YO YO ', response)
-    response.json()
-    // @ts-ignore
-    // MY_THREED_TOKEN = response['token']['encoded']
-  })
-  .then(data => {
-    console.log('HEY HEY HEY ', data)
-    // MY_THREED_TOKEN = data?.token?.encoded
-  })
-  .catch(error => console.error(error))
+  .then(
+    (res) => res.json()
+  )
 
-  // // ** next.js 'swr' (desired option)
-  // // const { data, error, isLoading } = useSWR('/api/user', fetcher)
-  // const { data: swrData, error: swrError, isLoading: swrIsLoading } = useSWR(
-  //   // 'https://api.github.com/repos/vercel/swr',
+  // fetch(
   //   'https://my.farm.bot/api/tokens',
-  //   fetcher
+  //   {
+  //     method: 'POST',
+  //     headers: {
+  //       // 'Content-Type': 'application/x-www-form-urlencoded'
+  //       'Content-Type': 'application/json'
+  //     },
+  //     body: JSON.stringify(data)
+  //   }
   // )
+  // .then(response => {
+  //   console.log('YO YO YO ', response)
+  //   response.json()
+  //   // @ ts-ignore
+  //   // MY_THREED_TOKEN = response['token']['encoded']
+  // })
+  // .then(data => {
+  //   console.log('HEY HEY HEY ', data)
+  //   // MY_THREED_TOKEN = data?.token?.encoded
+  // })
+  // .catch(error => console.error(error))
 
-  // if (swrError) return 'Farmbot Token: An error has occurred.'
-  // if (swrIsLoading) return 'Farmbot Token: Loading...'
+  // ** next.js 'swr' (desired option)
+  // const { data, error, isLoading } = useSWR('/api/user', fetcher)
+  const { data: swrData, error: swrError, isLoading: swrIsLoading } = useSWR(
+    // 'https://api.github.com/repos/vercel/swr',
+    'https://my.farm.bot/api/tokens',
+    fetcher
+  )
 
-  // console.debug('Farmbot Token: returned data', swrData)
-  // const MY_THREED_TOKEN = swrData.token.encoded
-  // // const MY_THREED_TOKEN = 'NADA LADA'
+  if (swrError) return 'Farmbot Token: An error has occurred.'
+  if (swrIsLoading) return 'Farmbot Token: Loading...'
+
+  console.debug('Farmbot Token: returned data', swrData)
+  MY_THREED_TOKEN = swrData.token.encoded
+  // const MY_THREED_TOKEN = 'NADA LADA'
   // console.debug('Farmbot Token: returned data.token.encoded', MY_THREED_TOKEN)
 
   return MY_THREED_TOKEN
@@ -134,7 +143,7 @@ const FarmbotComponent = (): JSX.Element => {
   // return <>Farmbot: {word}</>
   // **
   const SUPER_SECRET_TOKEN = getFarmbotToken()
-  console.debug('Farmbot Token: SUPER_SECRET_TOKEN', SUPER_SECRET_TOKEN)
+  // console.debug('Farmbot Token: SUPER_SECRET_TOKEN', SUPER_SECRET_TOKEN)
   // **
   // return <>Farmbot: {SUPER_SECRET_TOKEN}</>
   // **
@@ -158,10 +167,10 @@ const FarmbotComponent = (): JSX.Element => {
       //   })
       // )
 
-    console.debug('%c [MM] THREED GARDEN: threedBot', ccm.green, threedBot)
+    // console.debug('%c [MM] THREED GARDEN: threedBot', ccm.green, threedBot)
     return <>Farmbot: {word}</>
   } catch (ERR) {
-    console.debug('%c [MM] THREED GARDEN: ERR', ccm.green, ERR)
+    // console.debug('%c [MM] THREED GARDEN: ERR', ccm.green, ERR)
     return <>Farmbot ERR: {word}</>
   }
 }
