@@ -1,6 +1,6 @@
-# [🥕 ThreeD Garden: 3D Object Environment w NextJS React TypeScript Web3 ThreeJS Poimandres React-Three w Valtio Leva Control UI w Apollo Stores w MUI + Tailwind CSS](https://github.com/marty-mcgee/threed-garden/)
+# [🥕 ThreeD Garden: 3D Object Environment w Next.JS React TypeScript Web3 ThreeJS Poimandres React-Three w Apollo State + Leva Control UI w Apollo Stores w MUI + Tailwind CSS](https://github.com/marty-mcgee/threed-garden/)
 
-3D Dev Environment w React 18, TypeScript 5, Three.js, React-Three (pmndrs), on Next.js 14, Apollo Client, GraphQL, WordPress REST API, MUI 5 + Tailwind. ThreeD Web3 Interface for Three-Dimensional JavaScript Objects with React Server + Client Components, Web3 Contracts +...
+3D Dev Environment w React, TypeScript, Three.js, React-Three (poimandres), on Next.js, Apollo Client, GraphQL, WordPress REST API, MUI + Tailwind. ThreeD Web3 Interface for Three-Dimensional JavaScript Objects with React Server + Client Components, Web3 Contracts ...
 
 ## Live Demo
 
@@ -12,9 +12,9 @@
 
 🤖 ["name": "threed-garden",](https://www.npmjs.com/package/threed-garden)
 
-🤖 ["version": "0.15.0-beta.x",](https://www.npmjs.com/package/threed-garden?activeTab=versions)
+🤖 ["version": "0.15.0-canary.x",](https://www.npmjs.com/package/threed-garden?activeTab=versions)
 
-🤖 ["code": "0.15.0-beta.x",](https://www.npmjs.com/package/threed-garden?activeTab=code)
+🤖 ["code": "0.15.0-canary.x",](https://www.npmjs.com/package/threed-garden?activeTab=code)
 
 ### Install + Run
 
