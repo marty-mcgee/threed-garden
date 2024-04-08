@@ -13,11 +13,11 @@ import {
 // ** VALTIO ??
 import { proxy, useSnapshot } from 'valtio'
 
-import { Suspense, useState, useRef, useTransition } from 'react'
+import { Suspense, useState, useEffect, useRef, useTransition } from 'react'
 import { useControls } from 'leva'
 
 // THREE JS * ALL
-import * as THREE from 'three'
+// import * as THREE from 'three'
 // R3F
 import { Canvas, useFrame, useThree, extend } from '@react-three/fiber'
 // R3F HELPERS
@@ -83,18 +83,18 @@ export function ThreeDEnvironment() {
 
   const prefs = useReactiveVar(preferencesDataVar)
 
-  const [envPreset, setEnvPreset] = useState(prefs.environmentPreset) // 'park'
+  // const [envPreset, setEnvPreset] = useState(prefs.environmentPreset) // 'park'
   // You can use the 'inTransition' boolean to react to the loading in-between state,
   // For instance by showing a message
   const [inTransition, startTransition] = useTransition()
 
-  const { blur } = useControls(
+  const [{ preset, blur }, setScenePreferencesLeva] = useControls(
     'Scene Preferences',
     () => (
       {
         preset: {
           label: 'Environment',
-          value: envPreset,
+          value: prefs.environmentPreset, // envPreset,
           options: [
             'park', 'sunset', 'dawn', 'night', 'forest',
             'studio', 'warehouse', 'apartment', 'lobby', 'city'
@@ -103,7 +103,7 @@ export function ThreeDEnvironment() {
           // see https://github.com/pmndrs/leva/blob/main/docs/advanced/controlled-inputs.md#onchange
           // Instead we transition the preset value, which will prevents the suspense bound from triggering its fallback
           // That way we can hang onto the current environment until the new one has finished loading ...
-          onChange: (value) => startTransition(() => setEnvPreset(value))
+          // onChange: (value) => startTransition(() => setEnvPreset(value))
         },
         blur: {
           label: 'Bg Blur',
@@ -119,12 +119,46 @@ export function ThreeDEnvironment() {
     },
   )
 
-  // useEffect()
+  // ==========================================================
+  // ** environmentPreset
+  useEffect(() => {
+    if (prefs.environmentPreset != undefined) {
+      setScenePreferencesLeva({ preset: prefs.environmentPreset })
+    }
+    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.environmentPreset', ccm.greenAlert, prefs.environmentPreset)
+  }, [prefs.environmentPreset])
+  // **
+  useEffect(() => {
+    let newData = {...prefs}
+    // console.debug('%c preset newData', ccm.green, newData)
+    newData.environmentPreset = preset
+    // console.debug('%c preset newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+  }, [preset])
+  // ==========================================================
+  // ** environmentBgBlur
+  useEffect(() => {
+    if (prefs.environmentBgBlur != undefined) {
+      setScenePreferencesLeva({ preset: prefs.environmentBgBlur })
+    }
+    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.greenAlert, prefs.environmentBgBlur)
+  }, [prefs.environmentBgBlur])
+  // **
+  useEffect(() => {
+    let newData = {...prefs}
+    // console.debug('%c blur newData', ccm.green, newData)
+    newData.environmentBgBlur = blur
+    // console.debug('%c blur newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c blur preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+  }, [blur])
+  // ==========================================================
 
   return (
     <Environment
-      preset={envPreset}
-      blur={blur}
+      preset={prefs.environmentPreset}
+      blur={prefs.environmentBgBlur}
       background
     />
   )
