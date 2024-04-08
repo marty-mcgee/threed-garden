@@ -70,7 +70,7 @@ const getFarmbotToken = () => {
   const data = {
     user: {
       email: 'mcgee.marty@gmail.com',
-      password: 'pursueB@8',
+      password: 'XXXxxxXXX',
     }
   }
   let MY_THREED_TOKEN = 'NADA LADA' // data.token.encoded
