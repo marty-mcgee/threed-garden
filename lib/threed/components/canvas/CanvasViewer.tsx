@@ -72,7 +72,7 @@ export const ThreeDCanvasViewer = () => {
 
   let project = projectStore.store.get('one')
   if (prefs.doAutoLoadData) {
-    if (DEBUG || debug_deep) console.debug('%c🥕 TRYING... ThreeDCanvasViewer {project} ', ccm.orange)
+    // if (DEBUG || debug_deep) console.debug('%c🥕 TRYING... ThreeDCanvasViewer {project} ', ccm.orange)
     try {
       // const project = projectStore.store.get('one')
       // const project = projectStore.store.useStore('one') // causes an error, but may still be the way to go
@@ -81,13 +81,13 @@ export const ThreeDCanvasViewer = () => {
       // if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project} ', ccm.orange, project())
       if (project) {
         let project_title = project?.data?.title ? project.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
-        if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.project_title ', ccm.orange, project_title)
+        // if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.project_title ', ccm.orange, project_title)
         if (project.data.plans) {
           let nodesToLoad: [] = []
           // ** [MM] HEY HEY HEY
               nodesToLoad = project.data.plans.nodes[0].threedsActive.nodes
           // ** [MM] HEY HEY HEY
-          if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.[nodesToLoad] ', ccm.orange, nodesToLoad)
+          // if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.[nodesToLoad] ', ccm.orange, nodesToLoad)
           // ** [MM] HEY HEY HEY
           if (nodesToLoad) {
             // ** SET threeds[]
