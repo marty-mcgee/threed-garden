@@ -294,8 +294,14 @@ const ThreeDGarden = (): JSX.Element => {
         if (!isPrefsLoaded) {
           // **
           const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
-          if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert, preferencesFromDataSource)
+          // const preferencesFromDataSource = async () => await preferencesStore.actions.loadFromDataSource(client)
+          // preferencesFromDataSource()
+          if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert)
+          if (preferencesFromDataSource) {
+            if (DEBUG) console.debug('%c preferencesFromDataSource', ccm.greenAlert, preferencesFromDataSource)
+          }
         }
+
         const loadPreferencesMM = await preferencesStore.store.get('one')
         // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: get one preferences => loadPreferencesMM', ccm.redAlert, loadPreferencesMM)
         preferencesDataVar(loadPreferencesMM.data)
@@ -359,8 +365,8 @@ const ThreeDGarden = (): JSX.Element => {
 
   // ==========================================================
 
-  if (DEBUG || debug_deep) console.debug('%c🌱 ThreeDGarden mounting...', ccm.yellowAlert, word)
-  if (DEBUG || debug_deep) console.debug('%c=======================================================', ccm.yellowAlert)
+  if (DEBUG || debug_deep) console.debug('%c🌱 ThreeDGarden mounting...', ccm.yellow, word)
+  if (DEBUG || debug_deep) console.debug('%c=======================================================', ccm.yellow)
 
   let project_title = 'NOT EVEN CLOSE'
 

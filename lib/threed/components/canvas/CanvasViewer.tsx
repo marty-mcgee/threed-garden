@@ -2,7 +2,7 @@
 // ==========================================================
 // RESOURCES
 
-import { useApolloClient } from '@apollo/client'
+import { useApolloClient, useReactiveVar } from '@apollo/client'
 import {
   isPreferencesSetVar,
   preferencesDataVar,
@@ -65,8 +65,12 @@ export const ThreeDCanvasViewer = () => {
   let threeds: [] = [] // threeds are nodes[] to load to canvas
 
   // return <Spinner />
+  // **
+  // const prefs = preferencesDataVar() // NO ??
+  const prefs = useReactiveVar(preferencesDataVar) // YES ??
+  console.debug('%c ThreeDGarden prefs', ccm.orangeAlert, prefs)
 
-  if (preferencesDataVar().doAutoLoadData) {
+  if (prefs.doAutoLoadData) {
     // const project = projectStore.store.get('one')
     const project = projectStore.store.useStore('one')
     if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project} ', ccm.orange, project)

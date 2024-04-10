@@ -96,7 +96,7 @@ function noun(this: INoun, _type: string = 'noun') {
     doAutoLoadData: false, // true | false
     doAutoRotate: false, // true | false
     projectName: 'blank', // 'string'
-    environmentPreset: 'sunset', // park | forest | warehouse | studio ...
+    environmentPreset: 'park', // park | forest | sunset | warehouse | studio ...
     environmentBgBlur: 0.00, // 0.00 to 1.00 // Background Blur
     doAnimateCharacter: false, // true | false
   }
@@ -557,17 +557,17 @@ function nounStore(this: IStore, _type = 'noun') {
 
     // load from data source: DB or DISK ??
     // check DISK first, then DB
-    loadFromDataSource: (client: any) => {
+    loadFromDataSource: async (client: any) => {
       const responseData = {
         isLoadedFromDisk: false,
         isLoadedFromDB: false,
       }
-      responseData.isLoadedFromDisk = this.actions.loadFromDisk(client)
+      responseData.isLoadedFromDisk = await this.actions.loadFromDisk(client)
       if (responseData.isLoadedFromDisk) {
         if (debug) console.debug(`%c ${this._type} loadFromDataSource isLoadedFromDisk`, ccm.darkgreen)
         return responseData
       } else {
-        responseData.isLoadedFromDB = this.actions.loadFromDB(client)
+        responseData.isLoadedFromDB = await this.actions.loadFromDB(client)
         if (responseData.isLoadedFromDB) {
           if (debug) console.debug(`%c ${this._type} loadFromDataSource isLoadedFromDB`, ccm.darkgreen)
           return responseData
@@ -834,10 +834,10 @@ export const preferencesDataVar = makeVar(
     doAutoLoadData: false, // boolean: true | false
     doAutoRotate: false, // boolean: true | false
     // project prefs
-    projectName: '', // string: ''
+    projectName: 'client should never see this string', // string: ''
     // scene prefs
-    environmentPreset: 'park',
-    environmentBgBlur: 0.00,
+    environmentPreset: 'warehouse', // default (client should never see this)
+    environmentBgBlur: 0.20, // default (maximum blur)
 
   }
 )

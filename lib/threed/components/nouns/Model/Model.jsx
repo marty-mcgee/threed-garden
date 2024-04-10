@@ -247,7 +247,7 @@ const Model = ({
         const fbx = useLoader(FBXLoader, model.file, loader => {
           loader.manager.addHandler(/\.tga$/i, new TGALoader())
         })
-        console.debug('%c📐 FBX NODES: fbx', ccm.greenAlert, model.name, fbx)
+        console.debug('%c📐 FBX NODES: fbx', ccm.green, model.name, fbx)
         console.debug(`%c======================================`, ccm.darkgreen)
         if (fbx) {
           // model.node = fbx
@@ -327,7 +327,7 @@ const Model = ({
             // // console.debug('%c📐 gltfAsArray', ccm.orangeAlert, gltfAsArray)
             // // model.nodes = gltf.nodes
             // // model.nodes = gltf
-            console.debug('%c📐 RETURN ALL GLTF NODES: default', ccm.greenAlert, model.name, model.nodes)
+            console.debug('%c📐 RETURN ALL GLTF NODES: default', ccm.green, model.name, model.nodes)
             console.debug(`%c======================================`, ccm.darkgreen)
           }
           else {
@@ -341,12 +341,12 @@ const Model = ({
       // finally, decide if ready for _r3f canvas
       if (model.nodes && model.is.isFBX) {
         model.is.isReadyForCanvas = true
-        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model.name, model)
+        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.green, model.name, model)
         console.debug(`%c===========================================================`, ccm.darkgreen)
       }
       else if (model.nodes && model.is.isGLTF) {
         model.is.isReadyForCanvas = true
-        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model.name, model)
+        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.green, model.name, model)
         console.debug(`%c===========================================================`, ccm.darkgreen)
       }
       else {
@@ -364,22 +364,31 @@ const Model = ({
   // console.debug(`%c======================================`, ccm.black)
 
   // ==============================================================
+  // ==============================================================
+  // ==============================================================
+  // ** HOVER STATE
 
-  // Feed hover state into useCursor, which sets document.body.style.cursor to pointer|auto
-  const [isHovered, setIsHovered] = useState(false)
-  useCursor(isHovered)
-  const [index, setIndex] = useState(0)
+  // // Feed hover state into useCursor, which sets document.body.style.cursor to pointer|auto
+  // const [isHovered, setIsHovered] = useState(false)
+  // useCursor(isHovered)
+  // const [index, setIndex] = useState(0)
 
-  // // Animate the selection halo
-  // const { color, scale } = useSpring({
-  //   scale: isHovered ? [1.15, 1.15, 1] : [1, 1, 1],
-  //   color: isHovered ? '#ff6d6d' : '#569AFF',
-  // })
+  // // // Animate the selection halo
+  // // const { color, scale } = useSpring({
+  // //   scale: isHovered ? [1.15, 1.15, 1] : [1, 1, 1],
+  // //   color: isHovered ? '#ff6d6d' : '#569AFF',
+  // // })
 
-  // // Change cursor on hover-state
-  useEffect(
-    () => void (document.body.style.cursor = isHovered ? 'pointer' : 'auto'), [isHovered])
+  // // // Change cursor on hover-state
+  // useEffect(
+  //   () => void (document.body.style.cursor = isHovered ? 'pointer' : 'auto'), [isHovered])
 
+  // ==============================================================
+  // ==============================================================
+  // ==============================================================
+  // ** ANIMATIONS
+
+  let index = 0 // testing
   // Change animation when the index changes
   useEffect(() => {
     if (model.ani.actions != undefined
@@ -387,12 +396,22 @@ const Model = ({
       && model.ani.actions[model.ani.names[index]] != undefined
     )
       // Reset and fade in animation after an index has been changed
-      model.ani.actions[model.ani.names[index]].reset().fadeIn(0.5).play()
+      model.ani.actions[model.ani.names[index]]
+        .reset()
+        .fadeIn(0.5)
+        .play()
 
       // In the clean-up phase, fade it out
       // (page route may have changed)
       if (model.ani.actions[model.ani.names[index]]) {
-        return () => { try { model.ani.actions[model.ani.names[index]].fadeOut(0.5) } catch (ERROR) {} }
+        return () => {
+          try {
+            model.ani.actions[model.ani.names[index]]
+              .fadeOut(0.5)
+          } catch (ERROR) {
+
+          }
+        }
       }
 
     return undefined
@@ -401,11 +420,11 @@ const Model = ({
   // ==============================================================
   // ANIMATIONS (FOR ALL MODELS !!!)
 
-  useFrame(({ clock }) => {
-    const ThreeDClock = clock
-    // const a = clock.getElapsedTime()
-    // model.ref.current.rotation.z = a
-  })
+  // useFrame(({ clock }) => {
+  //   const ThreeDClock = clock
+  //   // const a = clock.getElapsedTime()
+  //   // model.ref.current.rotation.z = a
+  // })
 
   // ==============================================================
   // ** RETURN JSX

@@ -211,7 +211,7 @@ export const ThreeDControlPanels = (
 
 const PreferencesInfoPanel = (): JSX.Element => {
   // **
-  // const prefs = useReactiveVar(preferencesDataVar)
+  const prefs = useReactiveVar(preferencesDataVar)
   // **
   const preferencesCount = preferencesStore.store.useStore('count')
   const preferencess = preferencesStore.store.useStore('all')
@@ -224,7 +224,7 @@ const PreferencesInfoPanel = (): JSX.Element => {
 
   return (
     <Box sx={{ px: 2 }}>
-      <Typography><strong>preferencesDataVar().projectName: {preferencesDataVar().projectName}</strong></Typography>
+      <Typography><strong>prefs.projectName: {prefs.projectName}</strong></Typography>
       <Typography>preferences[s].length: {preferencess.length} | count: {preferencesCount}</Typography>
       { preferences?._id && (
         <Typography>preferences._id: {preferences._id}</Typography>
