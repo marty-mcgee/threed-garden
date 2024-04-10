@@ -275,14 +275,14 @@ export function ThreeDLevaControls() {
   )
 
   // ==========================================================
-  // ==========================================================
   // isPreferencesSetVar() ??
+
   // ==========================================================
   // ** doAutoLoadData
   useEffect(() => {
-    if (prefs.doAutoLoadData != undefined) {
+    // if (prefs.doAutoLoadData != undefined) {
       setUserPreferencesLeva({ doAutoLoadDataLeva: prefs.doAutoLoadData })
-    }
+    // }
     console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoLoadData', ccm.greenAlert, prefs.doAutoLoadData)
   }, [prefs.doAutoLoadData])
   // **
@@ -295,13 +295,13 @@ export function ThreeDLevaControls() {
     // console.debug('%c doAutoLoadDataLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
   }, [doAutoLoadDataLeva])
   // ==========================================================
-  // ==========================================================
+
   // ==========================================================
   // ** doAutoRotate
   useEffect(() => {
-    if (prefs.doAutoRotateLeva != undefined) {
+    // if (prefs.doAutoRotateLeva != undefined) {
       setUserPreferencesLeva({ doAutoRotateLeva: prefs.doAutoRotate })
-    }
+    // }
     console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoRotate', ccm.greenAlert, prefs.doAutoRotate)
   }, [prefs.doAutoRotate])
   // **
@@ -314,7 +314,7 @@ export function ThreeDLevaControls() {
     // console.debug('%c doAutoRotateLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
   }, [doAutoRotateLeva])
   // ==========================================================
-  // ==========================================================
+
   // ==========================================================
   // ** projectName
   useEffect(() => {
@@ -347,9 +347,6 @@ export function ThreeDLevaControls() {
     }
   }, [projectNameLeva])
   // ==========================================================
-  // ==========================================================
-  // ==========================================================
-
 
   // ==========================================================
 

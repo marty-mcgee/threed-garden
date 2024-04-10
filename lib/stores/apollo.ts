@@ -454,6 +454,7 @@ function nounStore(this: IStore, _type = 'noun') {
 
           let payload
           let nodes = payload
+          // ** EDGES or NODES ??
           if (data[this._plural]?.edges?.length) {
             // const payload = data[this._plural].edges
             payload = data[this._plural].edges.map(
@@ -527,18 +528,16 @@ function nounStore(this: IStore, _type = 'noun') {
             // })
             if (debug) console.debug(`%c🌩️ loadFromDB [${this._type}] {one} (after)`, ccm.blue, this.store.get('one'))
 
-            this.store.update('count', this.store.get('all').length)
-            // this.store.update('countDB', this.store.get('all').length)
-            // if (debug) console.debug(`%c🌩️ loadFromDB countDB`, ccm.blue, this.store.get('countDB'))
-            if (debug) console.debug(`%c=======================================================`, ccm.black)
-
             // save to disk here ?? yes (if window.localStorage)
             this.actions.saveToDisk()
 
             // count
-            this.store.update('count', this.store.get('count') + 1) // manual
+            // this.store.update('count', this.store.get('count') + 1) // manual
             // this.store.update('countDB', this.store.get('allDB').length) // automatic
-
+            this.store.update('count', this.store.get('all').length)
+            // this.store.update('countDB', this.store.get('all').length)
+            // if (debug) console.debug(`%c🌩️ loadFromDB countDB`, ccm.blue, this.store.get('countDB'))
+            if (debug) console.debug(`%c=======================================================`, ccm.black)
 
             return true
           } else {
@@ -797,7 +796,7 @@ function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
           payload: this.store.get('doAutoRotate'),
         })
       )
-      return this.store.get('doAutoLoadData')
+      return this.store.get('doAutoRotate')
     },
     setProjectName: (e: string = 'nope') => {
       this.store.update('projectName', e)
