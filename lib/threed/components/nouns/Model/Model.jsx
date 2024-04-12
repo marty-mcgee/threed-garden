@@ -474,11 +474,12 @@ const Model = ({
   // ==============================================================
   // ANIMATIONS (FOR ALL MODELS !!!)
 
-  // useFrame(({ clock }) => {
-  //   const ThreeDClock = clock
-  //   // const a = clock.getElapsedTime()
-  //   // model.ref.current.rotation.z = a
-  // })
+  const getThreeDClock = useFrame(({ clock }) => {
+    const ThreeDClock = clock
+    // const a = clock.getElapsedTime()
+    // model.ref.current.rotation.z = a
+    return ThreeDClock
+  })
 
   // ==============================================================
   // ** RETURN JSX
@@ -573,7 +574,9 @@ const Model = ({
       return (
         <mesh
           key={newUUID()}
-          ref={model.ref}
+          // ref={model.ref}
+          // ref={model.ani.ref}
+          ref={model.ani.ref ? model.ani.ref : model.ref}
           dispose={null}
         />
       )
@@ -586,7 +589,9 @@ const Model = ({
       <mesh
         key={newUUID()}
         name={model.name}
-        ref={model.ref}
+        // ref={model.ref}
+        // ref={model.ani.ref}
+        ref={model.ani.ref ? model.ani.ref : model.ref}
         // // Click sets the mesh as the new target
         // onClick={(e) => (
         //   e.stopPropagation(),
@@ -654,6 +659,285 @@ function ThreeDControls() {
     </group>
   )
 }
+
+
+// ** OLD JOYSTICK + ANIMATIONS ************************
+
+// let joystick = new JoyStick({
+//   onMove: playerControl,
+//   game: container
+// })
+
+/** ANIMATE + RENDER (continuous rendering) ******************************************** */
+
+// let animate = function () {
+
+//   const dt = getThreeDClock.getDelta()
+//   // watchPointer(camera, plane.children)
+//   // controls.update()
+//   // TWEEN.update()
+
+//   requestAnimationFrame(animate)
+
+//   if ( params.ANIMATE ) {
+//     // plane.rotation.x += 0.002
+//     // plane.rotation.y += 0.002
+//     plane.rotation.z -= 0.0007
+//   }
+
+//   /** PLAYER CHARACTER */
+//   if ( player.mixer !== undefined ) {
+//     player.mixer.update(dt)
+//   }
+
+//   if ( player.action == "Walking" ) {
+//     const elapsedTime = Date.now() - player.actionTime
+//     if ( elapsedTime > 2000 && player.move.forward > 0.7 ){
+//       setAction("Running")
+//     }
+//   }
+
+//   if ( player.move !== undefined ) {
+//     movePlayer(dt)
+//   }
+
+//   if ( player.cameras != undefined && player.cameras.active != undefined ) {
+//     camera.position.lerp( player.cameras.active.getWorldPosition(new THREE.Vector3()), 0.05 )
+//     const pos = player.object.position.clone()
+//     pos.y += 200
+//     camera.lookAt(pos)
+//   }
+
+//       if (directionalLight != undefined){
+//           // directionalLight.position.x = player.object.position.x
+//           // directionalLight.position.y = player.object.position.y + 200
+//           // directionalLight.position.z = player.object.position.z + 100
+//           // directionalLight.target = player.object
+//       }
+
+//   renderer.render(scene, camera)
+// }
+
+// animate()
+
+
+// let loadNextAnim = function (loader) {
+//   let anim = anims.pop()
+//   // console.debug("-----------------------")
+//   // console.debug("anim-------------------")
+//   // console.debug(anim)
+//   // console.debug("-----------------------")
+//   loader.load( `${params.assetsPath}fbx/anims2/${anim}.fbx`, function(object) {
+//     // console.debug("-----------------------")
+//     // console.debug("object-----------------")
+//     // console.debug(object)
+//     // console.debug("-----------------------")
+//     animations[anim] = object.animations[0]
+//     if (anims.length > 0){
+//       // console.debug("-----------------------")
+//       // console.debug("anims.length-----------")
+//       // console.debug(anims.length)
+//       // console.debug("-----------------------")
+//       // console.debug("-----------------------")
+//       // console.debug("getAction()-----------")
+//       // console.debug(getAction())
+//       // console.debug("-----------------------")
+//       // console.debug("player.action----------")
+//       // console.debug(player.action)
+//       // console.debug("-----------------------")
+//       loadNextAnim(loader)
+//     }
+//     else {
+//       // console.debug("-----------------------")
+//       // console.debug("anims.length = 0-------")
+//       // console.debug(anims.length)
+//       // console.debug("-----------------------")
+//       anims = []
+//       setAction("Idle")
+//       animate()
+//     }
+//   })
+// }
+
+// //return scene
+// // }
+
+// function setAction(name) {
+// const action = player.mixer.clipAction( animations[name] )
+// action.time = 0
+// console.debug("-----------------------")
+// console.debug("animations-----------------")
+// console.debug(animations)
+// console.debug("-----------------------")
+// player.mixer.stopAllAction()
+// player.action = name
+// player.actionTime = Date.now()
+// // console.debug("-----------------------")
+// // console.debug("player-----------------")
+// // console.debug(player)
+// // console.debug("-----------------------")
+
+// action.fadeIn(0.5)
+// action.play()
+// }
+
+// function getAction() {
+// if (player === undefined || player.action === undefined) {
+//   return "doesn't exist yet"
+// }
+// return player.action
+// }
+
+// function toggleAnimation() {
+// if ( player.action == "Idle" ) {
+//   setAction("Pointing Gesture")
+// }
+// else {
+//   setAction("Idle")
+// }
+// }
+
+// function movePlayer1(dt) {
+// // console.debug("-------------------------")
+// // console.debug("player.move.forward------")
+// // console.debug(player.move.forward)
+// // console.debug("-------------------------")
+// if ( player.move.forward > 0 ) {
+//   const speed = ( player.action == "Running" ) ? 24 : 8
+//   player.object.translateZ( dt * speed )
+// }
+// else if ( player.move.forward < 0 ) {
+//   player.object.translateZ( -dt * 2)
+// }
+// player.object.rotateY( player.move.turn * dt )
+// }
+
+// function movePlayer(dt){
+// const pos = player.object.position.clone()
+// pos.y += 60
+// let dir = new THREE.Vector3()
+// player.object.getWorldDirection(dir)
+// if (player.move.forward<0) dir.negate()
+// let raycaster = new THREE.Raycaster(pos, dir)
+// let blocked = false
+// const colliders = params.colliders
+
+// // if (colliders!==undefined){
+// // 	const intersect = raycaster.intersectObjects(colliders)
+// // 	if (intersect.length>0){
+// // 		if (intersect[0].distance<50) blocked = true
+// // 	}
+// // }
+
+// if (!blocked){
+//   if (player.move.forward>0){
+//     const speed = (player.action=="Running") ? 24 : 8
+//     player.object.translateZ(dt*speed)
+//   }
+//   else if ( player.move.forward < 0 ) {
+//     player.object.translateZ(-dt*2)
+//   }
+// }
+
+// /*
+// if (colliders!==undefined){
+//   //cast left
+//   dir.set(-1,0,0)
+//   dir.applyMatrix4(player.object.matrix)
+//   dir.normalize()
+//   raycaster = new THREE.Raycaster(pos, dir)
+
+//   let intersect = raycaster.intersectObjects(colliders)
+//   if (intersect.length>0){
+//     if (intersect[0].distance<50) player.object.translateX(100-intersect[0].distance)
+//   }
+
+//   //cast right
+//   dir.set(1,0,0)
+//   dir.applyMatrix4(player.object.matrix)
+//   dir.normalize()
+//   raycaster = new THREE.Raycaster(pos, dir)
+
+//   intersect = raycaster.intersectObjects(colliders)
+//   if (intersect.length>0){
+//     if (intersect[0].distance<50) player.object.translateX(intersect[0].distance-100)
+//   }
+
+//   //cast down
+//   dir.set(0,-1,0)
+//   pos.y += 200
+//   raycaster = new THREE.Raycaster(pos, dir)
+//   const gravity = 30
+
+//   intersect = raycaster.intersectObjects(colliders)
+//   if (intersect.length>0){
+//     const targetY = pos.y - intersect[0].distance
+//     if (targetY > player.object.position.y){
+//       //Going up
+//       player.object.position.y = 0.8 * player.object.position.y + 0.2 * targetY
+//       player.velocityY = 0
+//     }else if (targetY < player.object.position.y){
+//       //Falling
+//       if (player.velocityY==undefined) player.velocityY = 0
+//       player.velocityY += dt * gravity
+//       player.object.position.y -= player.velocityY
+//       if (player.object.position.y < targetY){
+//         player.velocityY = 0
+//         player.object.position.y = targetY
+//       }
+//     }
+//   }else if (player.object.position.y>0){
+//     if (player.velocityY==undefined) player.velocityY = 0
+//     player.velocityY += dt * gravity
+//     player.object.position.y -= player.velocityY
+//     if (player.object.position.y < 0){
+//       player.velocityY = 0
+//       player.object.position.y = 0
+//     }
+//   }
+// }
+// */
+
+// player.object.rotateY(player.move.turn*dt)
+// }
+
+
+// function playerControl(forward, turn) {
+
+// turn = -turn
+
+// if ( forward > 0.2 ) {
+//       if ( player.action != "Walking" && player.action != "Running" ) {
+//     setAction("Walking")
+//   }
+// }
+// else if ( forward < -0.2 ) {
+//       if ( player.action != "Walking Backwards" ) {
+//     setAction("Walking Backwards")
+//   }
+// }
+// else {
+//       forward = 0
+//       if ( Math.abs(turn) > 0.05 ) {
+//           if ( player.action != "Left Turn" ) {
+//       setAction("Left Turn")
+//     }
+//   }
+//   else if ( player.action != "Idle" ) {
+//           setAction("Idle")
+//   }
+//   // else {
+//   // 	setAction("Idle")
+//   // }
+//   }
+
+//   // if ( forward == 0 && turn == 0 ) {
+//   //     player.move = {}
+// // }
+// // else {
+//       player.move = { forward, turn }
+//   // }
+// }
 
 // ===============================================================
 // EXAMPLE -- LOOP OVER ARRAY OF NODES TO CREATE INDIVIDUAL MODELS
