@@ -10,28 +10,56 @@ import {
   preferencesStore,
   projectStore,
 } from '#/lib/stores/apollo'
+
 // ** VALTIO ??
 import { proxy, useSnapshot } from 'valtio'
 
-import { Suspense, useState, useEffect, useRef, useTransition } from 'react'
+import {
+  Suspense,
+  useState,
+  useEffect,
+  useRef,
+  useTransition
+} from 'react'
+
+// ** LEVA CONTROLS Imports
 import { useControls } from 'leva'
 
 // THREE JS * ALL
 // import * as THREE from 'three'
 // R3F
-import { Canvas, useFrame, useThree, extend } from '@react-three/fiber'
+import {
+  Canvas,
+  useFrame,
+  useThree,
+  extend
+} from '@react-three/fiber'
+
 // R3F HELPERS
 import {
-  Preload, Environment, Stage,
-  Html, Center,
-  useGLTF, useFBX,
+  Environment, Stage,
+  KeyboardControls,
   OrbitControls, TransformControls, PivotControls,
   GizmoHelper, GizmoViewcube, GizmoViewport,
-  ContactShadows,
-  BakeShadows,
+  ContactShadows, BakeShadows,
   // softShadows, // softShadows()
   Loader, useProgress,
+  Preload,
+  Html, Center,
+  useGLTF, useFBX,
 } from '@react-three/drei'
+
+// ** JOYSTICK Imports
+// import { Canvas } from '@react-three/fiber'
+import { Physics } from '@react-three/rapier'
+// import { Environment, KeyboardControls } from '@react-three/drei'
+import { Perf } from 'r3f-perf'
+// import { Suspense } from 'react'
+import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from 'ecctrl'
+// Components
+import Lights from './Lights'
+import Map from './Map'
+import CharacterModel from './CharacterModel'
 
 // ** ThreeD r3f Canvas Imports
 // import { Canvas } from '@react-three/fiber'
@@ -180,41 +208,73 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // ** HOOKS
   const prefs = useReactiveVar(preferencesDataVar)
 
+
+  /**
+   * Keyboard control preset
+   */
+  const keyboardMap = [
+    { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
+    { name: 'backward', keys: ['ArrowDown', 'KeyS'] },
+    { name: 'leftward', keys: ['ArrowLeft', 'KeyA'] },
+    { name: 'rightward', keys: ['ArrowRight', 'KeyD'] },
+    { name: 'jump', keys: ['Space'] },
+    { name: 'run', keys: ['Shift'] },
+    { name: 'action1', keys: ['1'] },
+    { name: 'action2', keys: ['2'] },
+    { name: 'action3', keys: ['3'] },
+    { name: 'action4', keys: ['KeyF'] }
+  ]
+
+  /**
+   * Character url preset
+   */
+  const characterURL = './Demon.glb'
+
+  /**
+   * Character animation set preset
+   */
+  const animationSet = {
+    idle: 'CharacterArmature|Idle',
+    walk: 'CharacterArmature|Walk',
+    run: 'CharacterArmature|Run',
+    jump: 'CharacterArmature|Jump',
+    jumpIdle: 'CharacterArmature|Jump_Idle',
+    jumpLand: 'CharacterArmature|Jump_Land',
+    fall: 'CharacterArmature|Duck', // This is for falling from high sky
+    action1: 'CharacterArmature|Wave',
+    action2: 'CharacterArmature|Death',
+    action3: 'CharacterArmature|HitReact',
+    action4: 'CharacterArmature|Punch'
+  }
+
+
+
   // **
   return (
-    <Canvas
-      // id={_id}
-      camera={{ position: [-10, 10, 50], fov: 50 }}
-      dpr={[1, 2]}
-      shadows
-      style={{
-        height: '480px',
-        width: '100%',
-      }}
-      // scene={sceneState.stuff}
-      // scene={{
-      //   // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
-      //   background: new THREE.Color(0x131313),
-      // }}
-    >
-
-      {/* SUSPENSEFUL... */}
-      {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
-      {/* <Suspense fallback={null}> */}
-      {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
-      {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
-      <Suspense fallback={
-        <Html center>
-          <Loader
-            // containerStyles={...container} // Flex layout styles
-            // innerStyles={...inner} // Inner container styles
-            // barStyles={...bar} // Loading-bar styles
-            // dataStyles={...data} // Text styles
-            dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
-            initialState={(active = true) => active} // Initial black out state
-          />
-        </Html>
-      }>
+    <>
+      <EcctrlJoystick buttonNumber={5} />
+      <Canvas
+        // id={_id}
+        camera={{ position: [-10, 10, 50], fov: 50 }}
+        dpr={[1, 2]}
+        shadows
+        style={{
+          height: '480px',
+          width: '100%',
+        }}
+        // ** SCENE
+        // scene={sceneState.stuff}
+        // scene={{
+        //   // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
+        //   background: new THREE.Color(0x131313),
+        // }}
+        // ** JOYSTICK
+        // onPointerDown={(e) => {
+        //   if (e.pointerType === "mouse") {
+        //     e.target.requestPointerLock();
+        //   }
+        // }}
+      >
 
         {/* <Preload all /> */}
 
@@ -222,137 +282,140 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
         {/* <Stage environment='forest' intensity={0.7}></Stage> */}
         <ThreeDEnvironment />
 
-        <axesHelper args={[1024]} />
-        <gridHelper args={[1024, 16]} />
+        {/* JOYSTICK */}
+        <Perf position="top-left" minimal />
+        {/* <Environment background files="/night.hdr" /> */}
+        <Lights />
 
-        {/* THREED SCENE FILES TO CANVAS */}
-        {/* <ThreeDScene /> */}
+        {/* SUSPENSEFUL... */}
+        {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
+        {/* <Suspense fallback={null}> */}
+        {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
+        {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
+        <Suspense fallback={
+          <Html center>
+            <Loader
+              // containerStyles={...container} // Flex layout styles
+              // innerStyles={...inner} // Inner container styles
+              // barStyles={...bar} // Loading-bar styles
+              // dataStyles={...data} // Text styles
+              dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
+              initialState={(active = true) => active} // Initial black out state
+            />
+          </Html>
+        }>
+          {/* THREED CHARACTER: JOYSTICK */}
+          <Physics timeStep="vary">
+            <KeyboardControls map={keyboardMap}>
+              <Ecctrl debug animated>
+                <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
+                  <CharacterModel />
+                </EcctrlAnimation>
+              </Ecctrl>
+            </KeyboardControls>
+            <Map />
+          </Physics>
 
-        {/* THREED MODELS: WORKING !!! */}
-        {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
-        {threeds.length && (
-          <ThreeDModels
-            threeds={threeds}
+          <axesHelper args={[1024]} />
+          <gridHelper args={[1024, 16]} />
+
+          {/* THREED SCENE FILES TO CANVAS */}
+          {/* <ThreeDScene /> */}
+
+          {/* THREED MODELS: WORKING !!! */}
+          {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
+          {threeds.length && (
+            <ThreeDModels
+              threeds={threeds}
+            />
+          )}
+          {/* <ThreeDControls /> */}
+
+          {/* makeDefault makes the controls known to r3f,
+              now transform-controls can auto-disable them when active */}
+          <OrbitControls
+            makeDefault
+            minDistance={0.5}
+            maxDistance={1024}
+            // minZoom={10}
+            // maxZoom={20}
+            // minAzimuthAngle={-Math.PI / 4}
+            // maxAzimuthAngle={Math.PI / 4}
+            minPolarAngle={-1.75}
+            maxPolarAngle={Math.PI / 1.75}
+            enableZoom={true}
+            zoomToCursor={false} // default is false
+            zoomSpeed={1.0} // default is 1.0
+            enableRotate={true}
+            autoRotate={prefs.doAutoRotate} // default is false
+            // autoRotate={preferencesDataVar().doAutoRotate} // default is false
+            autoRotateSpeed={1.0} // default is 2.0
+            rotateSpeed={1.0} // default is 1.0
+            enableDamping={true} // slows down rotation after mouse release
+            dampingFactor={0.04} // default is 0.05
+            enablePan={true}
+            screenSpacePanning={true}
           />
-        )}
-        {/* <ThreeDControls /> */}
 
-        {/* makeDefault makes the controls known to r3f,
-            now transform-controls can auto-disable them when active */}
-        <OrbitControls
-          makeDefault
-          minDistance={0.5}
-          maxDistance={1024}
-          // minZoom={10}
-          // maxZoom={20}
-          // minAzimuthAngle={-Math.PI / 4}
-          // maxAzimuthAngle={Math.PI / 4}
-          minPolarAngle={-1.75}
-          maxPolarAngle={Math.PI / 1.75}
-          enableZoom={true}
-          zoomToCursor={false} // default is false
-          zoomSpeed={1.0} // default is 1.0
-          enableRotate={true}
-          autoRotate={prefs.doAutoRotate} // default is false
-          // autoRotate={preferencesDataVar().doAutoRotate} // default is false
-          autoRotateSpeed={1.0} // default is 2.0
-          rotateSpeed={1.0} // default is 1.0
-          enableDamping={true} // slows down rotation after mouse release
-          dampingFactor={0.04} // default is 0.05
-          enablePan={true}
-          screenSpacePanning={true}
-        />
-
-        {/* GIZMO HELPER */}
-        <GizmoHelper
-          alignment='top-right'
-          margin={[64, 64]}
-        >
-          <group scale={1.00}>
-            <GizmoViewcube />
-          </group>
-          <group
-            scale={1.75}
-            position={[-30, -30, -30]}
+          {/* GIZMO HELPER */}
+          <GizmoHelper
+            alignment='top-right'
+            margin={[64, 64]}
           >
-            <GizmoViewport
-              labelColor='white'
-              axisHeadScale={0.525}
-              hideNegativeAxes
-            />
-          </group>
-        </GizmoHelper>
+            <group scale={1.00}>
+              <GizmoViewcube />
+            </group>
+            <group
+              scale={1.75}
+              position={[-30, -30, -30]}
+            >
+              <GizmoViewport
+                labelColor='white'
+                axisHeadScale={0.525}
+                hideNegativeAxes
+              />
+            </group>
+          </GizmoHelper>
 
-        <ambientLight intensity={0.5} />
-        <spotLight
-          position={[10, 10, 10]}
-          angle={0.15}
-          penumbra={1}
-          shadow-mapSize={[512, 512]}
-          castShadow
-        />
-
-        <directionalLight
-          castShadow
-          position={[2.5, 5, 5]}
-          intensity={1.5}
-          shadow-mapSize={[1024, 1024]}
-        >
-          <orthographicCamera
-            attach='shadow-camera'
-            args={[-5, 5, 5, -5, 1, 50]}
+          {/* EFFECTS */}
+          <ContactShadows
+            position={[0, -1.4, 0]}
+            opacity={0.75}
+            scale={10}
+            blur={2.5}
+            far={4}
           />
-        </directionalLight>
+          <BakeShadows />
 
-        <pointLight
-          position={[100, 100, 100]}
-          intensity={0.8}
-        />
-        <hemisphereLight
-          color='#ffffff'
-          groundColor='#b9b9b9'
-          position={[-7, 25, 13]}
-          intensity={0.85}
-        />
+          {/* Camera Action Rig */}
+          {/*
+            <ActionRig />
+          */}
 
-        {/* EFFECTS */}
-        <ContactShadows
-          position={[0, -1.4, 0]}
-          opacity={0.75}
-          scale={10}
-          blur={2.5}
-          far={4}
-        />
-        <BakeShadows />
+          {/* Transform Model using TransformControls */}
+          {/*
+              <TransformModel
+                name='Zeppelin' // must match node name
+                state={state}
+                modes={actionModes}
+                position={[-20, 10, 10]}
+                rotation={[3, -1, 3]}
+                scale={0.005}
+              />
+          */}
 
-        {/* Camera Action Rig */}
-        {/*
-          <ActionRig />
-        */}
+          {/* SHOE + SHOES */}
+          {/*
+            <Stage intensity={0.7}>
+              <Shoe color='tomato' position={[0, 0, 0]} />
+              <Shoe color='orange' scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
+            </Stage>
+          */}
 
-        {/* Transform Model using TransformControls */}
-        {/*
-            <TransformModel
-              name='Zeppelin' // must match node name
-              state={state}
-              modes={actionModes}
-              position={[-20, 10, 10]}
-              rotation={[3, -1, 3]}
-              scale={0.005}
-            />
-        */}
-
-        {/* SHOE + SHOES */}
-        {/*
-          <Stage intensity={0.7}>
-            <Shoe color='tomato' position={[0, 0, 0]} />
-            <Shoe color='orange' scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
-          </Stage>
-        */}
-
-        {/* {children} */}
-      </Suspense>
-    </Canvas>
+          {/* {children} */}
+        </Suspense>
+      </Canvas>
+    </>
   )
 }
 
