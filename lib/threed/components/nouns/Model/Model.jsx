@@ -62,9 +62,9 @@ let IThreeD = {
   data: {}, // original data records from db/api
   group: {
     group_id: newUUID(),
-    // NOTE: 1.570796 radians = 90 degrees
+    // NOTE: 1.570796 radians = Math.PI / 2 = 90 degrees
     group_position: [0, 0, 0],
-    group_rotation: [0, 0, 0], // [-1.570796, 0, 0],
+    group_rotation: [0, 0, 0], // [-Math.PI / 2, 0, 0],
     group_scale: 1.0, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
   },
   file: {
@@ -98,9 +98,9 @@ function ThreeD(_type = 'ThreeD') {
   this.data = {} // original data records from db/api
   this.group = {
     group_id: newUUID(),
-    // NOTE: 1.570796 radians = 90 degrees
+    // NOTE: 1.570796 radians = Math.PI / 2 = 90 degrees
     group_position: [0, 0, 0],
-    group_rotation: [0, 0, 0], // [-1.570796, 0, 0],
+    group_rotation: [0, 0, 0], // [-Math.PI / 2, 0, 0],
     group_scale: 1.0, // 0.01 | 0.05 | 0.5 | 1.0 | 5.0 | 50.0 | 100.0
   }
   this.file = {
@@ -228,9 +228,11 @@ const Model = ({
     },
     // animations
     ani: {
-      ref: null,
+      ref: null, // useRef(null),
       actions: [],
       names: [],
+      clips: [],
+      mixer: {},
     },
   }
 
@@ -239,7 +241,7 @@ const Model = ({
     console.debug('%c🌱 model.is.isSupported: true', ccm.greenAlert, model.name, model)
     console.debug(`%c======================================`, ccm.darkgreen)
     if (model.is.isObject3D) {
-      // FBX
+      // ** FBX
       if (model.is.isFBX) {
         model.type = 'fbx'
         // const { nodes, animations } = useFBX(model.file)
@@ -250,21 +252,26 @@ const Model = ({
         console.debug('%c📐 FBX NODES: fbx', ccm.green, model.name, fbx)
         console.debug(`%c======================================`, ccm.darkgreen)
         if (fbx) {
+          // ** NODES
           // model.node = fbx
           model.nodes = fbx
           // console.debug('RETURN ONLY NODE AS NODES: true', model.nodes)
-        }
-        if (fbx.animations) {
-          // console.debug('FBX animations', fbx.animations)
-          // Extract animation actions
-          const { ref, actions, names } = useAnimations(fbx.animations)
-          // console.debug('FBX useAnimations', ref, actions, names)
-          model.ani.ref = ref
-          model.ani.actions = actions
-          model.ani.names = names
+
+          // ** ANIMATIONS
+          if (fbx.animations) {
+            // console.info('FBX animations', fbx.animations)
+            // Extract animation actions
+            const { ref, mixer, actions, names, clips } = useAnimations(fbx.animations)
+            // console.debug('FBX useAnimations', ref, mixer, actions, names, clips)
+            model.ani.ref = ref
+            model.ani.mixer = mixer
+            model.ani.actions = actions
+            model.ani.names = names
+            model.ani.clips = clips
+          }
         }
       }
-      // OBJ
+      // ** OBJ
       else if (model.is.isOBJ) {
         model.type = 'obj'
         // const nodes = useOBJ(model.file)
@@ -276,7 +283,7 @@ const Model = ({
           // console.debug('RETURN ONLY NODE AS NODES: true')
         }
       }
-      // GLTF
+      // ** GLTF
       else if (model.is.isGLTF) {
         model.type = 'gltf'
         // nodes[] is an array of all the meshes
@@ -288,6 +295,7 @@ const Model = ({
         // console.debug('%c📐 GLB NODES: gltf', ccm.greenAlert, model.name, gltf)
         // console.debug(`%c======================================`, ccm.darkgreen)
         if (gltf) {
+          // ** NODES
           // if (gltf.nodes?.RootNode) {
           //   model.nodes = gltf.nodes.RootNode.children
           //   console.debug('%c📐 RETURN RootNode CHILDREN NODES: true', ccm.orangeAlert, model.name, model.nodes)
@@ -335,6 +343,19 @@ const Model = ({
             console.debug('%c📐 RETURN ALL/BLANK NODES: default', ccm.redAlert, model.name, model.nodes)
             console.debug(`%c======================================`, ccm.red)
           }
+
+          // ** ANIMATIONS
+          if (gltf.animations) {
+            // console.info('GLTF animations', gltf.animations)
+            // Extract animation actions
+            const { ref, mixer, actions, names, clips } = useAnimations(gltf.animations)
+            // console.debug('GLTF useAnimations', ref, mixer, actions, names, clips)
+            model.ani.ref = ref
+            model.ani.mixer = mixer
+            model.ani.actions = actions
+            model.ani.names = names
+            model.ani.clips = clips
+          }
         }
       }
 
@@ -360,26 +381,28 @@ const Model = ({
     console.debug('%c✖️📐 MODEL.is.isSupported: false', ccm.redAlert, model.name)
     console.debug(`%c===========================================================`, ccm.red)
   }
-  // console.debug('%cmodel', ccm.green, model)
-  // console.debug(`%c======================================`, ccm.black)
+  console.debug('%cmodel', ccm.greenAlert, model)
+  console.debug(`%c======================================`, ccm.greenAlert)
+
+  const [index, setIndex] = useState(0)
+  console.debug(`%c======================================`, ccm.greenAlert)
 
   // ==============================================================
   // ==============================================================
   // ==============================================================
-  // ** HOVER STATE
+  // ** HOVER STATE (w support for ANIMAATIONS ...)
 
-  // // Feed hover state into useCursor, which sets document.body.style.cursor to pointer|auto
+  // Feed hover state into useCursor, which sets document.body.style.cursor to pointer|auto
   // const [isHovered, setIsHovered] = useState(false)
   // useCursor(isHovered)
-  // const [index, setIndex] = useState(0)
 
-  // // // Animate the selection halo
-  // // const { color, scale } = useSpring({
-  // //   scale: isHovered ? [1.15, 1.15, 1] : [1, 1, 1],
-  // //   color: isHovered ? '#ff6d6d' : '#569AFF',
-  // // })
+  // // Animate the selection halo
+  // const { color, scale } = useSpring({
+  //   scale: isHovered ? [1.15, 1.15, 1] : [1, 1, 1],
+  //   color: isHovered ? '#ff6d6d' : '#569AFF',
+  // })
 
-  // // // Change cursor on hover-state
+  // // Change cursor on hover-state
   // useEffect(
   //   () => void (document.body.style.cursor = isHovered ? 'pointer' : 'auto'), [isHovered])
 
@@ -388,34 +411,65 @@ const Model = ({
   // ==============================================================
   // ** ANIMATIONS
 
-  let index = 0 // testing
+  // let index = 0 // testing
+  // console.info('index', index)
+
   // Change animation when the index changes
   useEffect(() => {
     if (model.ani.actions != undefined
       && model.ani.names != undefined
-      && model.ani.actions[model.ani.names[index]] != undefined
-    )
-      // Reset and fade in animation after an index has been changed
-      model.ani.actions[model.ani.names[index]]
-        .reset()
-        .fadeIn(0.5)
-        .play()
+      && model.ani.names[index] != undefined
+      // && model.ani.actions[model.ani.names[index]] != undefined
+    ) {
+      console.info('index', index)
+      console.info('model', model)
+      // console.info('model.ani', model.ani)
+      // console.info('model.ani.actions', model.ani.actions)
+      // console.info('model.ani.names', model.ani.names)
+      // console.info('model.ani.names[index]', model.ani.names[index])
+      // console.info('model.ani.actions[model.ani.names[index]]', model.ani.actions[model.ani.names[index]])
+      // console.info('model.ani.actions["Take 001"]', model.ani.actions["Take 001"]))
+      console.info('Object.values(model.ani.actions)', Object.values(model.ani.actions))
+      console.info('Object.keys(model.ani.actions)', Object.keys(model.ani.actions))
+      // console.info('Object.keys(model.ani.actions)[index]', Object.keys(model.ani.actions)[index])
+      let theAnimation = Object.keys(model.ani.actions)[index]
+      // if (model.ani.actions[model.ani.names[index]]) {
+        // console.info('model.ani.actions[model.ani.names[index]]', model.ani.actions[model.ani.names[index]])
+      if (theAnimation) {
+        console.info('Object.keys(model.ani.actions)[index] EXISTS', theAnimation)
+        console.info('model.ani.actions[theAnimation]', model.ani.actions[theAnimation])
 
-      // In the clean-up phase, fade it out
-      // (page route may have changed)
-      if (model.ani.actions[model.ani.names[index]]) {
-        return () => {
-          try {
-            model.ani.actions[model.ani.names[index]]
-              .fadeOut(0.5)
-          } catch (ERROR) {
+        try {
+          // model.ani.actions[model.ani.names[index]]
+          // model.ani.actions[Object.keys(model.ani.actions)[index]]
+          // model.ani.actions[theAnimation]
+          // theAnimation
+          // ** Reset and fade in animation after an index has been changed
+          //   .reset()
+          //   .fadeIn(0.5)
+          // Play the animation
+          //   .play()
 
-          }
+        } catch (ERROR) {
+          console.error('ERROR: theAnimation.play()', ERROR)
         }
-      }
 
-    return undefined
-  }, [index, model.ani.actions, model.ani.names])
+        // In the clean-up phase, fade it out
+        // (page route may have changed)
+        // return () => {
+        //   try {
+        //     model.ani.actions[model.ani.names[index]]
+        //       .fadeOut(0.5)
+        //   } catch (ERROR) {
+        //     console.error('ERROR: model.ani.actions[model.ani.names[index]]', ERROR)
+        //   }
+        // }
+      }
+    }
+    // return undefined
+  // }, [index, model.ani.actions, model.ani.names])
+  }, [index])
+  // }, [])
 
   // ==============================================================
   // ANIMATIONS (FOR ALL MODELS !!!)
@@ -439,8 +493,9 @@ const Model = ({
       return (
         <group
           key={model.group.group_id} // newUUID()
-          ref={model.ref}
+          // ref={model.ref}
           // ref={model.ani.ref}
+          ref={model.ani.ref ? model.ani.ref : model.ref}
           position={model.group.group_position}
           rotation={model.group.group_rotation}
           scale={model.group.group_scale}
@@ -451,7 +506,7 @@ const Model = ({
             name={model.name ? model.name : 'no name'}
             // ref={model.ref}
             // ref={model.ani.ref}
-            // ref={model.ani.actions}
+            // ref={model.ani.ref ? model.ani.ref : model.ref}
             object={model.nodes}
             dispose={null}
           />
@@ -466,8 +521,9 @@ const Model = ({
         // LOOP OVER NODE ARRAY TO RETURN MULTIPLE MESHES ([5000])
         <group
           key={model.group.group_id} // newUUID()
-          ref={model.ref}
+          // ref={model.ref}
           // ref={model.ani.ref}
+          ref={model.ani.ref ? model.ani.ref : model.ref}
           position={model.group.group_position}
           rotation={model.group.group_rotation}
           scale={model.group.group_scale}
@@ -481,6 +537,7 @@ const Model = ({
             name={model.name ? model.name : 'no name'}
             // ref={model.ref}
             // ref={model.ani.ref}
+            // ref={model.ani.ref ? model.ani.ref : model.ref}
             object={model.nodes.scene} // gltf.scene
             dispose={null}
             // scale={1.0}

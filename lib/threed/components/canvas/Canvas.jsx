@@ -258,7 +258,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           autoRotateSpeed={1.0} // default is 2.0
           rotateSpeed={1.0} // default is 1.0
           enableDamping={true} // slows down rotation after mouse release
-          dampingFactor={0.01} // default is 0.05
+          dampingFactor={0.04} // default is 0.05
           enablePan={true}
           screenSpacePanning={true}
         />
