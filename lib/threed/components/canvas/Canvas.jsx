@@ -26,7 +26,7 @@ import {
 import { useControls } from 'leva'
 
 // THREE JS * ALL
-// import * as THREE from 'three'
+import * as THREE from 'three'
 // R3F
 import {
   Canvas,
@@ -229,6 +229,16 @@ export function ThreeDEnvironment() {
 // controls.addEventListener('start', () => console.debug('Controls Start Event'))
 // controls.addEventListener('end', () => console.debug('Controls End Event'))
 
+// EXAMPLE ANIMATION using hook 'useFrame' (with 'useRef' references)
+function ActionRig() {
+  return useFrame((state) => {
+    // state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, 1 + state.mouse.x / 4, 0.01)
+    // state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 1.5 + state.mouse.y / 4, 0.01)
+  })
+}
+
+
+
 export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
   if (debug) console.debug('%c📐 ThreeDCanvas props.threeds', ccm.red, threeds)
@@ -278,13 +288,15 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
 
 
 
+
+
   // **
   return (
     <>
       {/* <EcctrlJoystick buttonNumber={5} /> */}
       <Canvas
         // id={_id}
-        camera={{ position: [-8, 8, 64], fov: 80 }}
+        camera={{ position: [-16, 16, 16], fov: 80 }}
         dpr={[1, 2]}
         shadows
         style={{
@@ -346,9 +358,6 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
             <Map />
           </Physics>
 
-          <axesHelper args={[1024]} />
-          <gridHelper args={[1024, 16]} />
-
           {/* THREED SCENE FILES TO CANVAS */}
           {/* <ThreeDScene /> */}
 
@@ -407,6 +416,9 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
             </group>
           </GizmoHelper>
 
+          <axesHelper args={[1024]} />
+          <gridHelper args={[1024, 16]} />
+
           {/* EFFECTS */}
           <ContactShadows
             position={[0, -1.4, 0]}
@@ -418,9 +430,9 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           <BakeShadows />
 
           {/* Camera Action Rig */}
-          {/*
+
             <ActionRig />
-          */}
+
 
           {/* Transform Model using TransformControls */}
           {/*
