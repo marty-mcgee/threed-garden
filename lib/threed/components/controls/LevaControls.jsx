@@ -9,7 +9,7 @@ import {
   folder, monitor, button
 } from 'leva'
 import { useFullscreen } from 'react-use'
-import { spring } from '@leva-ui/plugin-spring'
+// import { spring } from '@leva-ui/plugin-spring'
 import { Noise } from 'noisejs'
 
 // ** APOLLO Imports
