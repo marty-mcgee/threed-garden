@@ -58,7 +58,7 @@ import { Perf } from 'r3f-perf'
 // import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from '#/lib/ecctrl/src/Ecctrl'
 // Components
 import Lights from './Lights'
-// import Map from './Map'
+import Map from './Map'
 // import CharacterModel from './CharacterModel'
 
 // ** ThreeD r3f Canvas Imports
@@ -342,7 +342,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
                 {/* </EcctrlAnimation> */}
               {/* </Ecctrl> */}
             </KeyboardControls>
-            {/* <Map /> */}
+            <Map />
           </Physics>
 
           <axesHelper args={[1024]} />
