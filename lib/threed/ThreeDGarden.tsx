@@ -265,7 +265,7 @@ const ThreeDGarden = (): JSX.Element => {
 
   // ==========================================================
   // ** USE SESSION
-  const { data: session, status } = useSession()
+  // const { data: session, status } = useSession()
   // const { data, status } = useSession()
   // console.debug('useSession().data', data)
 
@@ -318,6 +318,7 @@ const ThreeDGarden = (): JSX.Element => {
           //     // ** do more tasks here ??
           //   }
         }
+
       } catch (error) {
         console.error('Error fetching data:', error);
       }

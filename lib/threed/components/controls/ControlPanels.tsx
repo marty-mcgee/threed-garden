@@ -216,9 +216,9 @@ const PreferencesInfoPanel = (): JSX.Element => {
   const preferencesCount = preferencesStore.store.useStore('count')
   const preferencess = preferencesStore.store.useStore('all')
   const preferences = preferencesStore.store.useStore('one')
-  console.debug('preferences info panel ##', preferencesCount)
-  console.debug('preferences info panel []', preferencess)
-  console.debug('preferences info panel {}', preferences)
+  // console.debug('preferences info panel ##', preferencesCount)
+  // console.debug('preferences info panel []', preferencess)
+  // console.debug('preferences info panel {}', preferences)
   // const preferencessDB = preferencesStore.store.useStore('allDB')
   // const preferencesDB = preferencesStore.store.useStore('oneDB')
 

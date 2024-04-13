@@ -55,11 +55,11 @@ import { Physics } from '@react-three/rapier'
 // import { Environment, KeyboardControls } from '@react-three/drei'
 import { Perf } from 'r3f-perf'
 // import { Suspense } from 'react'
-import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from 'ecctrl'
+// import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from '#/lib/ecctrl/src/Ecctrl'
 // Components
 import Lights from './Lights'
-import Map from './Map'
-import CharacterModel from './CharacterModel'
+// import Map from './Map'
+// import CharacterModel from './CharacterModel'
 
 // ** ThreeD r3f Canvas Imports
 // import { Canvas } from '@react-three/fiber'
@@ -91,6 +91,12 @@ import Spinner from '#/ui/components/spinner'
 import ccm from '#/lib/utils/console-colors'
 // console.debug('%c ccm', ccm)
 
+// ** SPRING FIX
+import { Globals } from '@react-spring/shared'
+Globals.assign({
+  frameLoop: 'always',
+})
+
 // ==============================================================
 // ** VARIABLES
 
@@ -109,7 +115,8 @@ function ThreeDLoaderSimple() {
 
 export function ThreeDEnvironment() {
 
-  const prefs = useReactiveVar(preferencesDataVar)
+  // ** HOOKS
+  let prefs = useReactiveVar(preferencesDataVar)
 
   // const [envPreset, setEnvPreset] = useState(prefs.environmentPreset) // 'park'
   // You can use the 'inTransition' boolean to react to the loading in-between state,
@@ -123,6 +130,19 @@ export function ThreeDEnvironment() {
         preset: {
           label: 'Environment',
           value: prefs.environmentPreset, // envPreset,
+          // const presetsObj = {
+          //   apartment: 'lebombo_1k.hdr',
+          //   city: 'potsdamer_platz_1k.hdr',
+          //   dawn: 'kiara_1_dawn_1k.hdr',
+          //   forest: 'forest_slope_1k.hdr',
+          //   lobby: 'st_fagans_interior_1k.hdr',
+          //   night: 'dikhololo_night_1k.hdr',
+          //   park: 'rooitou_park_1k.hdr',
+          //   studio: 'studio_small_03_1k.hdr',
+          //   sunset: 'venice_sunset_1k.hdr',
+          //   warehouse: 'empty_warehouse_01_1k.hdr'
+          // };
+          // export { presetsObj };
           options: [
             'park', 'sunset', 'dawn', 'night', 'forest',
             'studio', 'warehouse', 'apartment', 'lobby', 'city'
@@ -149,12 +169,7 @@ export function ThreeDEnvironment() {
 
   // ==========================================================
   // ** environmentPreset
-  useEffect(() => {
-    if (prefs.environmentPreset != undefined) {
-      setScenePreferencesLeva({ preset: prefs.environmentPreset })
-    }
-    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.environmentPreset', ccm.greenAlert, prefs.environmentPreset)
-  }, [prefs.environmentPreset])
+
   // **
   useEffect(() => {
     let newData = {...prefs}
@@ -162,24 +177,36 @@ export function ThreeDEnvironment() {
     newData.environmentPreset = preset
     // console.debug('%c preset newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
-    // console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.environmentPreset', ccm.yellowAlert, prefs.environmentPreset)
   }, [preset])
+
+  // **
+  useEffect(() => {
+    // if (prefs.environmentPreset != undefined) {
+      setScenePreferencesLeva({ preset: prefs.environmentPreset })
+    // }
+    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.environmentPreset', ccm.greenAlert, prefs.environmentPreset)
+  }, [prefs.environmentPreset])
+
   // ==========================================================
   // ** environmentBgBlur
   useEffect(() => {
-    if (prefs.environmentBgBlur != undefined) {
-      setScenePreferencesLeva({ preset: prefs.environmentBgBlur })
-    }
+    // if (prefs.environmentBgBlur != undefined) {
+      setScenePreferencesLeva({ blur: prefs.environmentBgBlur })
+    // }
     console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.greenAlert, prefs.environmentBgBlur)
   }, [prefs.environmentBgBlur])
+
   // **
   useEffect(() => {
     let newData = {...prefs}
     // console.debug('%c blur newData', ccm.green, newData)
-    newData.environmentBgBlur = blur
+    newData.environmentBgBlur = Math.round((blur + Number.EPSILON) * 100) / 100 // rounds to 2 decimal places
     // console.debug('%c blur newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
-    // console.debug('%c blur preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    console.debug('%c blur preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.yellowAlert, prefs.environmentBgBlur)
   }, [blur])
   // ==========================================================
 
@@ -187,6 +214,7 @@ export function ThreeDEnvironment() {
     <Environment
       preset={prefs.environmentPreset}
       blur={prefs.environmentBgBlur}
+      // blur={preferencesDataVar().environmentBgBlur}
       background
     />
   )
@@ -252,10 +280,10 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
   return (
     <>
-      <EcctrlJoystick buttonNumber={5} />
+      {/* <EcctrlJoystick buttonNumber={5} /> */}
       <Canvas
         // id={_id}
-        camera={{ position: [-10, 10, 50], fov: 50 }}
+        camera={{ position: [-8, 8, 64], fov: 80 }}
         dpr={[1, 2]}
         shadows
         style={{
@@ -276,17 +304,6 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
         // }}
       >
 
-        {/* <Preload all /> */}
-
-        {/* THREED STAGE + ENVIRONMENT */}
-        {/* <Stage environment='forest' intensity={0.7}></Stage> */}
-        <ThreeDEnvironment />
-
-        {/* JOYSTICK */}
-        <Perf position="top-left" minimal />
-        {/* <Environment background files="/night.hdr" /> */}
-        <Lights />
-
         {/* SUSPENSEFUL... */}
         {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
         {/* <Suspense fallback={null}> */}
@@ -304,16 +321,28 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
             />
           </Html>
         }>
+
+          {/* <Preload all /> */}
+
+          {/* THREED STAGE + ENVIRONMENT */}
+          {/* <Stage environment='forest' intensity={0.7}></Stage> */}
+          <ThreeDEnvironment />
+
+          {/* JOYSTICK */}
+          {/* <Perf position="top-left" minimal /> */}
+          {/* <Environment background files="/night.hdr" /> */}
+          <Lights />
+
           {/* THREED CHARACTER: JOYSTICK */}
           <Physics timeStep="vary">
             <KeyboardControls map={keyboardMap}>
-              <Ecctrl debug animated>
-                <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
-                  <CharacterModel />
-                </EcctrlAnimation>
-              </Ecctrl>
+              {/* <Ecctrl debug animated> */}
+                {/* <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}> */}
+                  {/* <CharacterModel /> */}
+                {/* </EcctrlAnimation> */}
+              {/* </Ecctrl> */}
             </KeyboardControls>
-            <Map />
+            {/* <Map /> */}
           </Physics>
 
           <axesHelper args={[1024]} />

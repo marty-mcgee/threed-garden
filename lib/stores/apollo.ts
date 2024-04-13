@@ -836,7 +836,7 @@ export const preferencesDataVar = makeVar(
     projectName: 'client should never see this string', // string: ''
     // scene prefs
     environmentPreset: 'warehouse', // default (client should never see this)
-    environmentBgBlur: 0.20, // default (maximum blur)
+    environmentBgBlur: 0.20, // default (our chosen maximum blur)
 
   }
 )
