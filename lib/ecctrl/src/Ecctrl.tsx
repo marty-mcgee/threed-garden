@@ -1,3 +1,5 @@
+'use client'
+
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import {
@@ -27,6 +29,12 @@ export { useFollowCam } from "./hooks/useFollowCam";
 export { useGame } from "./stores/useGame";
 export { EcctrlJoystick } from "../src/EcctrlJoystick";
 export { useJoystickControls } from "./stores/useJoystickControls";
+
+// ** SPRING FIX
+import { Globals } from '@react-spring/shared'
+Globals.assign({
+  frameLoop: 'always',
+})
 
 // Retrieve current moving direction of the character
 const getMovingDirection = (forward: boolean,
@@ -134,7 +142,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
     if (mode === "CameraBasedMovement") setCameraBased(true)
   }
 
-  /** 
+  /**
    * Body collider setup
    */
   const modelFacingVec = useMemo(() => new THREE.Vector3(), []);
@@ -802,7 +810,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
       // Rotate character to moving direction
       modelEuler.y = (crossVector.y > 0 ? -1 : 1) * pointToPoint.angleTo(vectorZ);
       // Once character close to the target point (distance<0.3),
-      // Or character close to the wall (bodySensor intersects) 
+      // Or character close to the wall (bodySensor intersects)
       // stop moving
       if (characterRef.current) {
         if (pointToPoint.length() > 0.3 && !isBodyHitWall) {
@@ -1093,7 +1101,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
       rayCast,
       rayLength,
       true,
-      // this exclude sensor 
+      // this exclude sensor
       16,
       null,
       null,
@@ -1222,7 +1230,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
       slopeRayCast,
       slopeRayLength,
       true,
-      // this exclude sensor 
+      // this exclude sensor
       16,
       null,
       null,
@@ -1471,7 +1479,7 @@ export interface EcctrlProps extends RigidBodyProps {
   accDeltaTime?: number;
   rejectVelMult?: number;
   moveImpulsePointY?: number;
-  camFollowMult?: number;
+  camFollowMult?: numbr;
   fallingGravityScale?: number;
   fallingMaxVel?: number;
   wakeUpDelay?: number;

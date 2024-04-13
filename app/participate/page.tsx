@@ -15,7 +15,7 @@ import { SessionProvider } from 'next-auth/react'
 // import type { NextPage } from 'next'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // ??? ProgressEvent error
-// import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
@@ -116,4 +116,8 @@ const ParticipatePage: TNextPageWithProps = async () => {
   )
 }
 
-export default ParticipatePage
+// export default ParticipatePage
+const ParticipatePage_UseClient = dynamic(() => Promise.resolve(ParticipatePage), {
+  ssr: false
+})
+export default ParticipatePage_UseClient
