@@ -55,7 +55,8 @@ import { Physics } from '@react-three/rapier'
 // import { Environment, KeyboardControls } from '@react-three/drei'
 import { Perf } from 'r3f-perf'
 // import { Suspense } from 'react'
-// import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from '#/lib/ecctrl/src/Ecctrl'
+import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
+// import { EcctrlAnimation, EcctrlJoystick } from '#/lib/ecctrl/src/Ecctrl'
 // Components
 import Lights from './Lights'
 import Map from './Map'
@@ -91,11 +92,11 @@ import Spinner from '#/ui/components/spinner'
 import ccm from '#/lib/utils/console-colors'
 // console.debug('%c ccm', ccm)
 
-// ** SPRING FIX
-import { Globals } from '@react-spring/shared'
-Globals.assign({
-  frameLoop: 'always',
-})
+// // ** SPRING FIX
+// import { Globals } from '@react-spring/shared'
+// Globals.assign({
+//   frameLoop: 'always',
+// })
 
 // ==============================================================
 // ** VARIABLES
@@ -339,7 +340,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
 
           {/* THREED STAGE + ENVIRONMENT */}
           {/* <Stage environment='forest' intensity={0.7}></Stage> */}
-          <ThreeDEnvironment />
+          {/* <ThreeDEnvironment /> */}
 
           {/* JOYSTICK */}
           {/* <Perf position="top-left" minimal /> */}
@@ -347,27 +348,33 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           <Lights />
 
           {/* THREED CHARACTER: JOYSTICK */}
-          <Physics timeStep="vary">
-            <KeyboardControls map={keyboardMap}>
-              {/* <Ecctrl debug animated> */}
-                {/* <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}> */}
-                  <CharacterModel />
-                {/* </EcctrlAnimation> */}
-              {/* </Ecctrl> */}
-            </KeyboardControls>
-            <Map />
-          </Physics>
+            <Physics timeStep="vary">
+              <KeyboardControls map={keyboardMap}>
+                <group name="ThreeDCharacterIntro"
+                  // rotation={[-Math.PI / 2, 0, 0]}
+                  scale={2}
+                  position={[0, 8, -60]}
+                >
+                  <Map />
+                </group>
+                <Ecctrl debug animated>
+                  {/* <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}> */}
+                    <CharacterModel />
+                  {/* </EcctrlAnimation> */}
+                </Ecctrl>
+              </KeyboardControls>
+            </Physics>
 
           {/* THREED SCENE FILES TO CANVAS */}
           {/* <ThreeDScene /> */}
 
           {/* THREED MODELS: WORKING !!! */}
           {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
-          {threeds.length && (
+          {/* {threeds.length && ( */}
             <ThreeDModels
               threeds={threeds}
             />
-          )}
+          {/* )} */}
           {/* <ThreeDControls /> */}
 
           {/* makeDefault makes the controls known to r3f,
@@ -429,10 +436,8 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           />
           <BakeShadows />
 
-          {/* Camera Action Rig */}
-
-            <ActionRig />
-
+          {/* Camera + Animation Action Rig */}
+          {/* <ActionRig /> */}
 
           {/* Transform Model using TransformControls */}
           {/*

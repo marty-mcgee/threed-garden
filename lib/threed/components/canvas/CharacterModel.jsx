@@ -17,9 +17,9 @@ export default function CharacterModel(props) {
       <group name="RootNode">
         <group name="CharacterArmature"
           rotation={[-Math.PI / 2, 0, 0]}
-          scale={50}
+          scale={80}
           // position={[0, -0.85, 0]}
-          position={[0, 1.8, 0]}
+          position={[0, 0.00, 0]}
         >
           <primitive
             object={nodes.Root}

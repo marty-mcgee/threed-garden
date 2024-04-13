@@ -4,6 +4,12 @@ import React, { useEffect, useState, forwardRef, useMemo, type ReactNode, useCal
 import { useSpring, animated } from '@react-spring/three'
 import { useJoystickControls } from "./stores/useJoystickControls";
 
+// ** SPRING FIX
+import { Globals } from '@react-spring/shared'
+Globals.assign({
+  frameLoop: 'always',
+})
+
 const JoystickComponents = (props: EcctrlJoystickProps) => {
     /**
      * Preset values/components
