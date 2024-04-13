@@ -19,7 +19,7 @@ export default function CharacterModel(props) {
           rotation={[-Math.PI / 2, 0, 0]}
           scale={50}
           // position={[0, -0.85, 0]}
-          position={[0, 0.00, 0]}
+          position={[0, 1.8, 0]}
         >
           <primitive
             object={nodes.Root}

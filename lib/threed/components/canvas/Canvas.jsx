@@ -59,7 +59,7 @@ import { Perf } from 'r3f-perf'
 // Components
 import Lights from './Lights'
 import Map from './Map'
-// import CharacterModel from './CharacterModel'
+import CharacterModel from './CharacterModel'
 
 // ** ThreeD r3f Canvas Imports
 // import { Canvas } from '@react-three/fiber'
@@ -169,7 +169,6 @@ export function ThreeDEnvironment() {
 
   // ==========================================================
   // ** environmentPreset
-
   // **
   useEffect(() => {
     let newData = {...prefs}
@@ -191,6 +190,7 @@ export function ThreeDEnvironment() {
 
   // ==========================================================
   // ** environmentBgBlur
+  // **
   useEffect(() => {
     // if (prefs.environmentBgBlur != undefined) {
       setScenePreferencesLeva({ blur: prefs.environmentBgBlur })
@@ -208,6 +208,7 @@ export function ThreeDEnvironment() {
     console.debug('%c blur preferencesDataVar', ccm.darkgreen, preferencesDataVar())
     console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.yellowAlert, prefs.environmentBgBlur)
   }, [blur])
+
   // ==========================================================
 
   return (
@@ -338,7 +339,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
             <KeyboardControls map={keyboardMap}>
               {/* <Ecctrl debug animated> */}
                 {/* <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}> */}
-                  {/* <CharacterModel /> */}
+                  <CharacterModel />
                 {/* </EcctrlAnimation> */}
               {/* </Ecctrl> */}
             </KeyboardControls>
