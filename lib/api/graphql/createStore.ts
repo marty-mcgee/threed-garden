@@ -1,3 +1,5 @@
+// 🫙 Store is a Jar, with States inside
+
 // ** "apollo-reactive-store": "0.0.4"
 import { makeVar, ReactiveVar, useReactiveVar } from '@apollo/client'
 
@@ -82,16 +84,16 @@ export default function create<Value> (
       // })
 
       // console.debug(`${initialState._type}Store current state {fields}`, fields)
-      // console.debug('%c====================================', ccm5)
+      // console.debug('%c🫙====================================', ccm5)
     }
   }
 
   const debug = (key: string, value: Updater<Value>): void => {
     if (options.debug) {
+      // console.debug(`%c🫙===================================================`, ccm.blueAlert)
       // console.debug(`store update(key) "${key}" with value: ${JSON.stringify(value)}`)
-      // console.debug(`%c ==========================`, ccm.darkgrayAlert)
-      console.debug(`%c store update(key) "${key}"`, ccm.blueAlert, value)
-      console.debug(`%c===================================================`, ccm.blueAlert)
+      console.debug(`%c🫙 store update(key) "${key}"`, ccm.blueAlert, value)
+      // console.debug(`%c🫙===================================================`, ccm.blueAlert)
     }
   }
 
@@ -110,9 +112,9 @@ export default function create<Value> (
         throw new Error(`store getState(): "${JSON.stringify(store)}" is invalid`, store)
       }
 
-      // console.debug(`%c ==========================`, ccm.darkgrayAlert)
-      console.debug(`%c store getState(): {fields}`, ccm.blueAlert, fields)
-      console.debug(`%c===================================================`, ccm.blueAlert)
+      // console.debug(`%c🫙===================================================`, ccm.blueAlert)
+      console.debug(`%c🫙 store getState(): {fields}`, ccm.blueAlert, fields)
+      // console.debug(`%c🫙===================================================`, ccm.blueAlert)
       return fields
     },
     get(key: string) {

@@ -298,7 +298,7 @@ function nounStore(this: IStore, _type = 'noun') {
             // if (debug) console.debug(`%c💾 loadFromDisk [${this._type}] QUERY.PAYLOAD?`, ccm.blue, payload)
 
             if (payload) {
-              if (debug) console.debug(`%c💾 loadFromDisk [${this._type}] payload`, ccm.darkgreen, true, payload)
+              if (debug) console.debug(`%c💾 loadFromDisk [${this._type}] payload`, ccm.blue, true, payload)
 
               this.store.update('all', payload) // payload should have .data{}
               if (debug) console.debug(`%c💾 loadFromDisk [${this._type}s] (after)`, ccm.blue, this.store.get('all'))
@@ -329,7 +329,7 @@ function nounStore(this: IStore, _type = 'noun') {
               if (debug) console.debug(`%c💾 loadFromDisk [${this._type}] EMPTY QUERY.PAYLOAD?`, ccm.orange, query)
             }
           } else {
-            if (debug) console.debug(`%c💾 loadFromDisk [${this._type}] NOTHING TO LOAD`, ccm.orange, query)
+            if (debug) console.debug(`%c💾 loadFromDisk [${this._type}] NOTHING TO LOAD`, ccm.blue, query)
           }
 
           // if everything in this logic fails, return false as default
@@ -363,9 +363,9 @@ function nounStore(this: IStore, _type = 'noun') {
       // try {
         // const _this = this
         // if (debug) console.clear()
-        if (debug) console.debug(`%c=======================================================`, ccm.black)
-        if (debug) console.debug(`%c🌩️ loadFromDB this ${this._type}`, ccm.blue, this)
-        if (debug) console.debug(`%c=======================================================`, ccm.black)
+        // if (debug) console.debug(`%c=======================================================`, ccm.black)
+        if (debug) console.debug(`%c🌩️ loadFromDB this ${this._type}`, ccm.blueAlert, this)
+        // if (debug) console.debug(`%c=======================================================`, ccm.black)
 
         // .gql
         let QUERY = null // default? GetProjects
@@ -537,7 +537,7 @@ function nounStore(this: IStore, _type = 'noun') {
             this.store.update('count', this.store.get('all').length)
             // this.store.update('countDB', this.store.get('all').length)
             // if (debug) console.debug(`%c🌩️ loadFromDB countDB`, ccm.blue, this.store.get('countDB'))
-            if (debug) console.debug(`%c=======================================================`, ccm.black)
+            // if (debug) console.debug(`%c=======================================================`, ccm.black)
 
             return true
           } else {
@@ -563,12 +563,12 @@ function nounStore(this: IStore, _type = 'noun') {
       }
       responseData.isLoadedFromDisk = await this.actions.loadFromDisk(client)
       if (responseData.isLoadedFromDisk) {
-        if (debug) console.debug(`%c ${this._type} loadFromDataSource isLoadedFromDisk`, ccm.darkgreen)
+        if (debug) console.debug(`%c ${this._type} loadFromDataSource isLoadedFromDisk`, ccm.blue, 'Local Disk')
         return responseData
       } else {
         responseData.isLoadedFromDB = await this.actions.loadFromDB(client)
         if (responseData.isLoadedFromDB) {
-          if (debug) console.debug(`%c ${this._type} loadFromDataSource isLoadedFromDB`, ccm.darkgreen)
+          if (debug) console.debug(`%c ${this._type} loadFromDataSource isLoadedFromDB`, ccm.blue, 'API => DB')
           return responseData
         }
       }
@@ -595,7 +595,7 @@ function nounStore(this: IStore, _type = 'noun') {
           // send 'nodes' to '#_r3fCanvas1'
 
           if (debug || DEBUG)
-            console.debug('%c #_r3fCanvas1 to receive JS Object: nodes', ccm.greenAlert, nodes)
+            console.debug('%c #_r3fCanvas1 to receive JS Object: nodes', ccm.redAlert, nodes)
           // return true // <div>...plan of nodes as r3f component...</div>
           objectArrayToReturn = nodes
           return objectArrayToReturn
@@ -611,7 +611,7 @@ function nounStore(this: IStore, _type = 'noun') {
               }
             } catch (ERROR) {
               if (debug || DEBUG)
-                console.debug(`%c load_PlanOfThreeDNodes_ToThreeDCanvas: ERROR`, ccm.red, ERROR)
+                console.debug(`%c load_PlanOfThreeDNodes_ToThreeDCanvas: ERROR`, ccm.redAlert, ERROR)
             }
 
             if (load_PlanOfThreeDNodes_ToThreeDCanvas && load_PlanOfThreeDNodes_ToThreeDCanvas.length) {
@@ -633,13 +633,13 @@ function nounStore(this: IStore, _type = 'noun') {
 
         // **
         if (debug || DEBUG)
-          console.debug('%c #_r3fCanvas to receive NOTHING', ccm.red)
+          console.debug('%c #_r3fCanvas to receive NOTHING', ccm.redAlert)
         return []
         return false
       // **
       } catch (ERROR) {
         if (debug || DEBUG)
-          console.debug(`%c load {noun}: ERROR`, ccm.red, ERROR)
+          console.debug(`%c load {noun}: ERROR`, ccm.redAlert, ERROR)
         return []
         return false
       }

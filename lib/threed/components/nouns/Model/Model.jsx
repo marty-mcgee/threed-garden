@@ -962,9 +962,9 @@ function ThreeDControls() {
 // **
 export default function ThreeDModels({ threeds }) {
   // **
-  console.debug(`%c======================================`, ccm.red)
-  console.debug('%c🌱 threeds[]', ccm.red, threeds)
-  console.debug(`%c======================================`, ccm.red)
+  // console.debug(`%c======================================`, ccm.red)
+  console.debug('%c🌱 threeds[]', ccm.darkredAlert, threeds)
+  // console.debug(`%c======================================`, ccm.red)
   // **
 
   // return <CoffeeCup />
