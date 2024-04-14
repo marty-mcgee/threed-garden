@@ -1,31 +1,28 @@
+* {
+  box-sizing: border-box;
+}
+
 html,
 body,
 #root {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
-  background: rgb(253, 228, 255);
-  background: linear-gradient(
-    0deg,
-    rgba(253, 228, 255, 1) 0%,
-    rgba(124, 156, 254, 1) 100%
-  );
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-user-drag: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  touch-action: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  position: fixed;
+  overflow: hidden;
 }
 
 .controlKeys {
   position: absolute;
-  width: 20rem;
+  width: 15rem;
   left: 50%;
-  margin-left: -10rem;
-  bottom: 13%;
+  margin-left: -7.5rem;
+  bottom: 10%;
   user-select: none;
   -moz-user-select: none;
   -webkit-user-drag: none;
