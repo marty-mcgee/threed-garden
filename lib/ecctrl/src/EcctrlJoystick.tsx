@@ -1,14 +1,24 @@
+// 'use client'
+
+// ==============================================================
+// ** RESOURCES
+
 import * as THREE from "three"
 import { Canvas, type ThreeElements } from "@react-three/fiber";
 import React, { useEffect, useState, forwardRef, useMemo, type ReactNode, useCallback, Suspense } from "react";
 import { useSpring, animated } from '@react-spring/three'
 import { useJoystickControls } from "./stores/useJoystickControls";
 
-// ** SPRING FIX
-import { Globals } from '@react-spring/shared'
-Globals.assign({
-  frameLoop: 'always',
-})
+// // ** SPRING FIX
+// ** Next Imports
+// import dynamic from 'next/dynamic'
+// import { Globals } from '@react-spring/shared'
+// Globals.assign({
+//   frameLoop: 'always',
+// })
+// const DynamicComponent = dynamic(() =>
+//   import('../components/hello').then((mod) => mod.Hello)
+// )
 
 const JoystickComponents = (props: EcctrlJoystickProps) => {
     /**

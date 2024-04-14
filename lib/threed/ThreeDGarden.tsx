@@ -1,19 +1,17 @@
 // @ts-nocheck /* OR @ ts-ignore OR @ ts-expect-error */
 'use client'
 // ^ this file needs the 'use client' pragma
-
 // ==============================================================
 // ** RESOURCES
-// ==============================================================
 
-// ** Next Imports
-import dynamic from 'next/dynamic'
+// ** NEXT Imports
+// import dynamic from 'next/dynamic'
 // import Image from 'next/image'
 
 // ** NEXT AUTH Imports
 import { useSession } from "next-auth/react" // hint: const { data, data: session, status } = useSession()
 
-// ** React Imports
+// ** REACT Imports
 import {
   useEffect,
   // useRef,
@@ -70,7 +68,7 @@ import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 // import MDTabPanel, { tabProps } from '#/lib/mui/MDTabPanel'
 
-// ** Three JS Imports (not here, use R3F)
+// ** THREE JS Imports (not here, use R3F)
 // import * as THREE from 'three'
 // ** Three JS Loading Progress
 import { Html, Loader, useProgress } from '@react-three/drei'
@@ -109,7 +107,7 @@ import ThreeDViews from '#/lib/threed/components/views/Views'
 // ** FARMBOT Imports
 import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
 
-// ** Helper Components
+// ** HELPER Components
 import Spinner from '#/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
@@ -123,7 +121,7 @@ const debug: boolean = true
 const DEBUG: boolean = true
 const debug_deep: boolean = false
 
-const appVersion = 'v0.15.0-b'
+const appVersion = 'v0.15.1-a'
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
 // const appVersion = process.env.npm_package_version
 // const appVersion: string = require('package.json').version
@@ -280,7 +278,7 @@ const ThreeDGarden = (): JSX.Element => {
   console.debug('%c ThreeDGarden prefs', ccm.orangeAlert, prefs)
 
   // // ** GET PREFERENCES
-  const [isPrefsLoaded, setIsPrefsLoaded] = useState(isPreferencesSetVar())
+  const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
 
   // ==========================================================
   // Component onMount hook
@@ -303,6 +301,7 @@ const ThreeDGarden = (): JSX.Element => {
         }
 
         const loadPreferencesMM = await preferencesStore.store.get('one')
+        // const loadPreferencesMM = await preferencesStore.store.useStore('one')
         // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: get one preferences => loadPreferencesMM', ccm.redAlert, loadPreferencesMM)
         preferencesDataVar(loadPreferencesMM.data)
         console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
@@ -508,8 +507,8 @@ const ThreeDGarden = (): JSX.Element => {
   )
 }
 
-// export default ThreeDGarden
-const ThreeDGarden_UseClient = dynamic(() => Promise.resolve(ThreeDGarden), {
-  ssr: false
-})
-export default ThreeDGarden_UseClient
+export default ThreeDGarden
+// const ThreeDGarden_UseClient = dynamic(() => Promise.resolve(ThreeDGarden), {
+//   ssr: false
+// })
+// export default ThreeDGarden_UseClient

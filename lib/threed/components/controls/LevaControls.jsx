@@ -33,7 +33,7 @@ export function ThreeDLevaControls() {
   // **
   // const prefs = preferencesDataVar() // NO ??
   const prefs = useReactiveVar(preferencesDataVar) // YES ??
-  console.debug('%c prefs', ccm.orangeAlert, prefs)
+  // console.debug('%c prefs', ccm.orangeAlert, prefs)
 
   // ** EXAMPLES
   // number: { value: 10, step: 0.25 },
@@ -279,12 +279,7 @@ export function ThreeDLevaControls() {
 
   // ==========================================================
   // ** doAutoLoadData
-  useEffect(() => {
-    // if (prefs.doAutoLoadData != undefined) {
-      setUserPreferencesLeva({ doAutoLoadDataLeva: prefs.doAutoLoadData })
-    // }
-    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoLoadData', ccm.greenAlert, prefs.doAutoLoadData)
-  }, [prefs.doAutoLoadData])
+
   // **
   useEffect(() => {
     let newData = {...prefs}
@@ -294,16 +289,19 @@ export function ThreeDLevaControls() {
     preferencesDataVar(newData)
     // console.debug('%c doAutoLoadDataLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
   }, [doAutoLoadDataLeva])
+
+  useEffect(() => {
+    // if (prefs.doAutoLoadData != undefined) {
+      setUserPreferencesLeva({ doAutoLoadDataLeva: prefs.doAutoLoadData })
+    // }
+    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoLoadData', ccm.greenAlert, prefs.doAutoLoadData)
+  }, [prefs.doAutoLoadData])
+
   // ==========================================================
 
   // ==========================================================
   // ** doAutoRotate
-  useEffect(() => {
-    // if (prefs.doAutoRotateLeva != undefined) {
-      setUserPreferencesLeva({ doAutoRotateLeva: prefs.doAutoRotate })
-    // }
-    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoRotate', ccm.greenAlert, prefs.doAutoRotate)
-  }, [prefs.doAutoRotate])
+
   // **
   useEffect(() => {
     let newData = {...preferencesDataVar()}
@@ -313,6 +311,15 @@ export function ThreeDLevaControls() {
     preferencesDataVar(newData)
     // console.debug('%c doAutoRotateLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
   }, [doAutoRotateLeva])
+
+  // **
+  useEffect(() => {
+    // if (prefs.doAutoRotateLeva != undefined) {
+      setUserPreferencesLeva({ doAutoRotateLeva: prefs.doAutoRotate })
+    // }
+    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoRotate', ccm.greenAlert, prefs.doAutoRotate)
+  }, [prefs.doAutoRotate])
+
   // ==========================================================
 
   // ==========================================================
