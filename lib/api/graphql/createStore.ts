@@ -1,6 +1,11 @@
 // ** "apollo-reactive-store": "0.0.4"
 import { makeVar, ReactiveVar, useReactiveVar } from '@apollo/client'
 
+// ** Helper Components
+import Spinner from '#/ui/components/spinner'
+// ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
+import ccm from '#/lib/utils/console-colors'
+
 type State<T> = Record<string | symbol, T>
 type Store<T> = Record<string | symbol, ReactiveVar<T>>
 
@@ -83,7 +88,10 @@ export default function create<Value> (
 
   const debug = (key: string, value: Updater<Value>): void => {
     if (options.debug) {
-      console.debug(`store update(key) "${key}" with value: ${JSON.stringify(value)}`)
+      // console.debug(`store update(key) "${key}" with value: ${JSON.stringify(value)}`)
+      // console.debug(`%c ==========================`, ccm.darkgrayAlert)
+      console.debug(`%c store update(key) "${key}"`, ccm.blueAlert, value)
+      console.debug(`%c===================================================`, ccm.blueAlert)
     }
   }
 
@@ -102,7 +110,9 @@ export default function create<Value> (
         throw new Error(`store getState(): "${JSON.stringify(store)}" is invalid`, store)
       }
 
-      console.debug(`store getState(): {fields}`, fields)
+      // console.debug(`%c ==========================`, ccm.darkgrayAlert)
+      console.debug(`%c store getState(): {fields}`, ccm.blueAlert, fields)
+      console.debug(`%c===================================================`, ccm.blueAlert)
       return fields
     },
     get(key: string) {

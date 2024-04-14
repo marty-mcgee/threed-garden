@@ -68,7 +68,7 @@ export const ThreeDCanvasViewer = () => {
   // **
   // const prefs = preferencesDataVar() // NO ??
   const prefs = useReactiveVar(preferencesDataVar) // YES ??
-  console.debug('%c ThreeDGarden prefs', ccm.orangeAlert, prefs)
+  // console.debug('%c ThreeDGarden prefs', ccm.orangeAlert, prefs)
 
   let project = projectStore.store.get('one')
   if (prefs.doAutoLoadData) {

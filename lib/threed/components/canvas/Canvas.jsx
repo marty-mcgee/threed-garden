@@ -55,18 +55,16 @@ import { Physics } from '@react-three/rapier'
 // import { Environment, KeyboardControls } from '@react-three/drei'
 import { Perf } from 'r3f-perf'
 // import { Suspense } from 'react'
+// import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from '#/lib/ecctrl/src/Ecctrl'
 import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
-// import { EcctrlAnimation, EcctrlJoystick } from '#/lib/ecctrl/src/Ecctrl'
+// import { EcctrlAnimation } from '#/lib/ecctrl/src/Ecctrl'
+import { EcctrlAnimation } from '#/lib/ecctrl/src/EcctrlAnimation'
+// import { EcctrlJoystick } from '#/lib/ecctrl/src/Ecctrl'
+import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 // Components
 import Lights from './Lights'
 import Map from './Map'
 import CharacterModel from './CharacterModel'
-
-// ** ThreeD r3f Canvas Imports
-// import { Canvas } from '@react-three/fiber'
-// import { ThreeDCanvasViewer } from '#/lib/threed/components/canvas/Canvas'
-// import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
-// import { ThreeDEnvironment } from '#/lib/threed/components/canvas/Canvas'
 
 // ** ThreeD Imports
 // import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene'
@@ -91,12 +89,6 @@ import Spinner from '#/ui/components/spinner'
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 // console.debug('%c ccm', ccm)
-
-// // ** SPRING FIX
-// import { Globals } from '@react-spring/shared'
-// Globals.assign({
-//   frameLoop: 'always',
-// })
 
 // ==============================================================
 // ** VARIABLES
@@ -177,7 +169,7 @@ export function ThreeDEnvironment() {
     newData.environmentPreset = preset
     // console.debug('%c preset newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
-    console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
     console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.environmentPreset', ccm.yellowAlert, prefs.environmentPreset)
   }, [preset])
 
@@ -193,22 +185,23 @@ export function ThreeDEnvironment() {
   // ** environmentBgBlur
   // **
   useEffect(() => {
-    // if (prefs.environmentBgBlur != undefined) {
-      setScenePreferencesLeva({ blur: prefs.environmentBgBlur })
-    // }
-    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.greenAlert, prefs.environmentBgBlur)
-  }, [prefs.environmentBgBlur])
-
-  // **
-  useEffect(() => {
     let newData = {...prefs}
     // console.debug('%c blur newData', ccm.green, newData)
     newData.environmentBgBlur = Math.round((blur + Number.EPSILON) * 100) / 100 // rounds to 2 decimal places
     // console.debug('%c blur newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
-    console.debug('%c blur preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.yellowAlert, prefs.environmentBgBlur)
+    // console.debug('%c blur preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // setScenePreferencesLeva({ blur: blur })
+    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.yellowAlert, preferencesDataVar().environmentBgBlur)
   }, [blur])
+
+  // **
+  useEffect(() => {
+    // if (prefs.environmentBgBlur != undefined) {
+      setScenePreferencesLeva({ blur: prefs.environmentBgBlur })
+    // }
+    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.greenAlert, prefs.environmentBgBlur)
+  }, [prefs.environmentBgBlur])
 
   // ==========================================================
 
@@ -231,19 +224,19 @@ export function ThreeDEnvironment() {
 // controls.addEventListener('end', () => console.debug('Controls End Event'))
 
 // EXAMPLE ANIMATION using hook 'useFrame' (with 'useRef' references)
-function ActionRig() {
-  return useFrame((state) => {
-    // state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, 1 + state.mouse.x / 4, 0.01)
-    // state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 1.5 + state.mouse.y / 4, 0.01)
-  })
-}
+// function ActionRig() {
+//   return useFrame((state) => {
+//     // state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, 1 + state.mouse.x / 4, 0.01)
+//     // state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 1.5 + state.mouse.y / 4, 0.01)
+//   })
+// }
 
 
 
 export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
-  if (debug) console.debug('%c📐 ThreeDCanvas props.threeds', ccm.red, threeds)
-  if (debug) console.debug(`%c=======================================================`, ccm.red)
+  if (debug) console.debug('%c📐 ThreeDCanvas props.threeds', ccm.darkred, threeds)
+  if (debug) console.debug(`%c=======================================================`, ccm.darkred)
 
   // ** HOOKS
   const prefs = useReactiveVar(preferencesDataVar)
@@ -280,7 +273,8 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
     jump: 'CharacterArmature|Jump',
     jumpIdle: 'CharacterArmature|Jump_Idle',
     jumpLand: 'CharacterArmature|Jump_Land',
-    fall: 'CharacterArmature|Duck', // This is for falling from high sky
+    // fall: 'CharacterArmature|Duck', // This is for falling from high sky
+    fall: 'CharacterArmature|Climbing', // This is for falling from high sky
     action1: 'CharacterArmature|Wave',
     action2: 'CharacterArmature|Death',
     action3: 'CharacterArmature|HitReact',
@@ -294,7 +288,9 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
   return (
     <>
-      {/* <EcctrlJoystick buttonNumber={5} /> */}
+      <EcctrlJoystick
+        buttonNumber={5}
+      />
       <Canvas
         // id={_id}
         camera={{ position: [-16, 16, 16], fov: 80 }}
@@ -312,11 +308,19 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
         // }}
         // ** JOYSTICK
         // onPointerDown={(e) => {
-        //   if (e.pointerType === "mouse") {
+        //   if (e.pointerType === 'mouse') {
         //     e.target.requestPointerLock();
         //   }
         // }}
       >
+
+        {/* <Preload all /> */}
+
+        {/* THREED ENVIRONMENT */}
+        {/* <Stage environment='forest' intensity={0.7}></Stage> */}
+        <ThreeDEnvironment />
+        <Lights />
+        {/* <Perf position='top-left' minimal /> */}
 
         {/* SUSPENSEFUL... */}
         {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
@@ -336,35 +340,42 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           </Html>
         }>
 
-          {/* <Preload all /> */}
-
-          {/* THREED STAGE + ENVIRONMENT */}
-          {/* <Stage environment='forest' intensity={0.7}></Stage> */}
-          {/* <ThreeDEnvironment /> */}
-
-          {/* JOYSTICK */}
-          {/* <Perf position="top-left" minimal /> */}
-          {/* <Environment background files="/night.hdr" /> */}
-          <Lights />
-
-          {/* THREED CHARACTER: JOYSTICK */}
-            <Physics timeStep="vary">
-              <KeyboardControls map={keyboardMap}>
-                <group name="ThreeDCharacterIntro"
+          {/* THREED CHARACTER: JOYSTICK
+            <Physics
+              debug={true}
+              timeStep='vary'
+            >
+              <KeyboardControls
+                map={keyboardMap}
+              >
+                <group name='ThreeDCharacterMap'
                   // rotation={[-Math.PI / 2, 0, 0]}
                   scale={2}
                   position={[0, 8, -60]}
                 >
                   <Map />
                 </group>
-                <Ecctrl debug animated>
-                  {/* <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}> */}
-                    <CharacterModel />
-                  {/* </EcctrlAnimation> */}
-                </Ecctrl>
+                <group name='ThreeDCharacterAnimatedModel'
+                  // rotation={[-Math.PI / 2, 0, 0]}
+                  scale={2}
+                  position={[0, 0, 8]}
+                >
+                  <Ecctrl
+                    debug={true}
+                    mode='PointToMove'
+                    animated={false}
+                  >
+                    <EcctrlAnimation
+                      characterURL={characterURL}
+                      animationSet={animationSet}
+                    >
+                      <CharacterModel />
+                    </EcctrlAnimation>
+                  </Ecctrl>
+                </group>
               </KeyboardControls>
             </Physics>
-
+          */}
           {/* THREED SCENE FILES TO CANVAS */}
           {/* <ThreeDScene /> */}
 
