@@ -275,7 +275,7 @@ const ThreeDGarden = (): JSX.Element => {
   // **
   // const prefs = preferencesDataVar() // NO ??
   const prefs = useReactiveVar(preferencesDataVar) // YES ??
-  console.debug('%c ThreeDGarden prefs', ccm.orangeAlert, prefs)
+  console.debug('%c⚙️ ThreeDGarden prefs', ccm.orangeAlert, prefs)
 
   // // ** GET PREFERENCES
   const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
@@ -325,7 +325,7 @@ const ThreeDGarden = (): JSX.Element => {
 
     if (!isPrefsLoaded) {
       fetchData()
-      if (DEBUG) console.debug('%c fetching data...', ccm.greenAlert)
+      if (DEBUG) console.debug('%c fetching data ...', ccm.blue)
     } else {
       console.debug('%c🦆 ThreeDGarden => APOLLO STORE: preferencesDataVar()', ccm.redAlert, preferencesDataVar())
     }
@@ -365,8 +365,8 @@ const ThreeDGarden = (): JSX.Element => {
 
   // ==========================================================
 
-  if (DEBUG || debug_deep) console.debug('%c🌱 ThreeDGarden mounting...', ccm.yellow, word)
-  if (DEBUG || debug_deep) console.debug('%c=======================================================', ccm.yellow)
+  if (DEBUG || debug_deep) console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreenAlert, word)
+  // if (DEBUG || debug_deep) console.debug('%c=======================================================', ccm.darkgreenAlert)
 
   let project_title = 'NOT EVEN CLOSE'
 

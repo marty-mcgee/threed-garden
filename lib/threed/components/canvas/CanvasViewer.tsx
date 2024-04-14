@@ -55,7 +55,7 @@ export const ThreeDCanvasViewer = () => {
   // **
   const word: string = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
   // console.debug(`%c=======================================================`, ccm.orange)
-  console.debug('%c🥕 ThreeDCanvasViewer ', ccm.orange)
+  console.debug('%c🥕 ThreeDCanvasViewer ...', ccm.darkredAlert)
   // console.debug(`%c=======================================================`, ccm.black)
 
   // ** USE CLIENT
@@ -65,10 +65,10 @@ export const ThreeDCanvasViewer = () => {
   let threeds: [] = [] // threeds are nodes[] to load to canvas
 
   // return <Spinner />
-  // **
+  // ** ⚙️ PREFERENCES
   // const prefs = preferencesDataVar() // NO ??
   const prefs = useReactiveVar(preferencesDataVar) // YES ??
-  // console.debug('%c ThreeDGarden prefs', ccm.orangeAlert, prefs)
+  // console.debug('%c⚙️ ThreeDGarden prefs', ccm.orangeAlert, prefs)
 
   let project = projectStore.store.get('one')
   if (prefs.doAutoLoadData) {
@@ -104,7 +104,7 @@ export const ThreeDCanvasViewer = () => {
     }
   }
 
-  console.debug(`%c=======================================================`, ccm.orange)
+  // console.debug(`%c=======================================================`, ccm.orange)
   return (
     <Grid
       container

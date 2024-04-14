@@ -235,8 +235,8 @@ export function ThreeDEnvironment() {
 
 export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
-  if (debug) console.debug('%c📐 ThreeDCanvas props.threeds', ccm.darkred, threeds)
-  if (debug) console.debug(`%c=======================================================`, ccm.darkred)
+  if (debug) console.debug('%c📐 ThreeDCanvas props.threeds', ccm.darkredAlert, threeds)
+  // if (debug) console.debug(`%c=======================================================`, ccm.darkred)
 
   // ** HOOKS
   const prefs = useReactiveVar(preferencesDataVar)
