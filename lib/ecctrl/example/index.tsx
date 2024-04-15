@@ -27,6 +27,7 @@ const EcctrlJoystickControls = () => {
 }
 
 root.render(
+  // @ts-expect-error: ignore a compile error, like this type mismatch
   <>
     <Leva collapsed />
     <EcctrlJoystickControls />

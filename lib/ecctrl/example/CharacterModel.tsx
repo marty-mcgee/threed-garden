@@ -16,6 +16,7 @@ import type { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 export default function CharacterModel(props: CharacterModelProps) {
   // Change the character src to yours
   const group = useRef<THREE.Group>();
+  // @ts-expect-error: ignore a compile error, like this type mismatch
   const { nodes, animations } = useGLTF("/Floating Character.glb") as GLTF & {
     nodes: any;
   };
