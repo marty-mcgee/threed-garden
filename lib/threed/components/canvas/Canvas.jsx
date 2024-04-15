@@ -50,21 +50,15 @@ import {
 } from '@react-three/drei'
 
 // ** JOYSTICK Imports
-// import { Canvas } from '@react-three/fiber'
 import { Physics } from '@react-three/rapier'
-// import { Environment, KeyboardControls } from '@react-three/drei'
 import { Perf } from 'r3f-perf'
-// import { Suspense } from 'react'
-// import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from '#/lib/ecctrl/src/Ecctrl'
 import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
-// import { EcctrlAnimation } from '#/lib/ecctrl/src/Ecctrl'
 import { EcctrlAnimation } from '#/lib/ecctrl/src/EcctrlAnimation'
-// import { EcctrlJoystick } from '#/lib/ecctrl/src/Ecctrl'
 import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 // Components
 import Lights from './Lights'
-// import Map from './Map'
-// import CharacterModel from './CharacterModel'
+import Map from './Map'
+import CharacterModel from './CharacterModel'
 
 // ** ThreeD Imports
 // import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene'
@@ -340,7 +334,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           </Html>
         }>
 
-          {/* THREED CHARACTER: JOYSTICK
+          {/* THREED CHARACTER: JOYSTICK */}
             <Physics
               debug={true}
               timeStep='vary'
@@ -375,7 +369,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
                 </group>
               </KeyboardControls>
             </Physics>
-          */}
+
           {/* THREED SCENE FILES TO CANVAS */}
           {/* <ThreeDScene /> */}
 
