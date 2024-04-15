@@ -1,4 +1,4 @@
-// 'use client'
+'use client'
 // ==========================================================
 // RESOURCES
 
@@ -27,8 +27,8 @@ import Spinner from '#/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
-// const ParticipatePage: TNextPageWithProps = () => {
-const ParticipatePage: TNextPageWithProps = async () => {
+const ParticipatePage: TNextPageWithProps = () => {
+// const ParticipatePage: TNextPageWithProps = async () => {
 
   // const session = await auth()
   // const { data: session, status } = useSession()
