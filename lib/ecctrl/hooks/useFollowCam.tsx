@@ -275,7 +275,7 @@ export type UseFollowCamProps = {
   camInitDis?: number;
   camMaxDis?: number;
   camMinDis?: number;
-  camInitDir?: { x: number, y: number};
+  camInitDir?: { x: number, y: number };
   camMoveSpeed?: number;
   camZoomSpeed?: number;
   camCollisionOffset?: number;

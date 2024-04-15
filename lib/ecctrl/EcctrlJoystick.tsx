@@ -1,24 +1,8 @@
-// 'use client'
-
-// ==============================================================
-// ** RESOURCES
-
 import * as THREE from "three"
 import { Canvas, type ThreeElements } from "@react-three/fiber";
 import React, { useEffect, useState, forwardRef, useMemo, type ReactNode, useCallback, Suspense } from "react";
 import { useSpring, animated } from '@react-spring/three'
 import { useJoystickControls } from "./stores/useJoystickControls";
-
-// // ** SPRING FIX
-// ** Next Imports
-// import dynamic from 'next/dynamic'
-// import { Globals } from '@react-spring/shared'
-// Globals.assign({
-//   frameLoop: 'always',
-// })
-// const DynamicComponent = dynamic(() =>
-//   import('../components/hello').then((mod) => mod.Hello)
-// )
 
 const JoystickComponents = (props: EcctrlJoystickProps) => {
     /**
@@ -424,7 +408,7 @@ export type EcctrlJoystickProps = {
     buttonGroup1Position?: [x: number, y: number, z: number];
     buttonGroup2Position?: [x: number, y: number, z: number];
     buttonGroup3Position?: [x: number, y: number, z: number];
-    buttonGroup4Position?: [x: number, y: number, z: number];
+    buttonGroup4Position?: [x: number, y:number, z: number];
     buttonGroup5Position?: [x: number, y: number, z: number];
     buttonLargeBaseProps?: ThreeElements['mesh'];
     buttonSmallBaseProps?: ThreeElements['mesh'];
