@@ -1,7 +1,7 @@
 import { Grid, KeyboardControls } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 import { Physics } from "@react-three/rapier";
-import Ecctrl from "../src/Ecctrl";
+import Ecctrl from "#/lib/ecctrl/src/Ecctrl";
 import Floor from "./Floor";
 import Lights from "./Lights";
 import Steps from "./Steps";
@@ -12,7 +12,7 @@ import FloatingPlatform from "./FloatingPlatform";
 import DynamicPlatforms from "./DynamicPlatforms";
 import ShotCube from "./ShotCube";
 import { useControls } from "leva";
-import CharacterModel from "./CharacterModel";
+import CharacterModel from "#/lib/threed/components/nouns/Character/CharacterModelFloating";
 import React, { useEffect, useState } from "react";
 
 export default function Experience() {
