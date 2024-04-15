@@ -1,12 +1,3 @@
-'use client'
-
-// ==============================================================
-// ** RESOURCES
-// ==============================================================
-
-// ** Next Imports
-// import dynamic from 'next/dynamic'
-
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import {
@@ -36,12 +27,6 @@ export { useFollowCam } from "./hooks/useFollowCam";
 export { useGame } from "./stores/useGame";
 export { EcctrlJoystick } from "./EcctrlJoystick";
 export { useJoystickControls } from "./stores/useJoystickControls";
-
-// ** SPRING FIX
-// import { Globals } from '@react-spring/shared'
-// Globals.assign({
-//   frameLoop: 'always',
-// })
 
 // Retrieve current moving direction of the character
 const getMovingDirection = (forward: boolean,
@@ -1448,11 +1433,6 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
 }
 
 export default forwardRef(Ecctrl);
-// export default Ecctrl
-// const Ecctrl_UseClient = dynamic(() => Promise.resolve(Ecctrl), {
-//   ssr: false
-// })
-// export default forwardRef(Ecctrl_UseClient)
 
 export interface EcctrlProps extends RigidBodyProps {
   children?: ReactNode;

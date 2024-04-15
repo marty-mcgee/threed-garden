@@ -52,9 +52,9 @@ import {
 // ** JOYSTICK Imports
 import { Physics } from '@react-three/rapier'
 import { Perf } from 'r3f-perf'
-import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
-import { EcctrlAnimation } from '#/lib/ecctrl/src/EcctrlAnimation'
-import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
+import Ecctrl from '#/lib/ecctrl/Ecctrl'
+import { EcctrlAnimation } from '#/lib/ecctrl/EcctrlAnimation'
+import { EcctrlJoystick } from '#/lib/ecctrl/EcctrlJoystick'
 // Components
 import Lights from './Lights'
 import Map from './Map'
