@@ -59,6 +59,7 @@ import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 import Lights from './Lights'
 import Map from './Map'
 import CharacterModel from './CharacterModel'
+import Experience from '#/lib/ecctrl/example/Experience'
 
 // ** ThreeD Imports
 // import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene'
@@ -334,7 +335,9 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           </Html>
         }>
 
-          {/* THREED CHARACTER: JOYSTICK */}
+
+          <Experience />
+          {/* THREED CHARACTER: JOYSTICK
             <Physics
               debug={true}
               timeStep='vary'
@@ -369,6 +372,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
                 </group>
               </KeyboardControls>
             </Physics>
+          */}
 
           {/* THREED SCENE FILES TO CANVAS */}
           {/* <ThreeDScene /> */}
