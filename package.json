@@ -59,7 +59,6 @@
     "@mui/system": "^5.15.12",
     "@mui/utils": "^5.15.12",
     "@mui/x-data-grid": "^6.19.6",
-    "@react-spring/core": "^9.7.3",
     "@react-spring/three": "^9.7.3",
     "@react-spring/web": "^9.7.3",
     "@react-three/cannon": "^6.6.0",
