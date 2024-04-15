@@ -5,7 +5,7 @@
 // ** AUTH GUARD
 // import { auth } from 'auth'
 // import { SessionProvider } from 'next-auth/react'
-// import { useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 
 // ** NEXT Imports
 // import type { NextPage } from 'next'
@@ -29,9 +29,9 @@ import ccm from '#/lib/utils/console-colors'
 
 const ParticipatePage: TNextPageWithProps = () => {
 // const ParticipatePage: TNextPageWithProps = async () => {
-
+  // **
   // const session = await auth()
-  // const { data: session, status } = useSession()
+  const { data: session, status } = useSession()
   // filter out sensitive data before passing to client.
   // if (session) {
     // console.debug('%c Participate page: session', ccm.greenAlert, session)
@@ -46,13 +46,13 @@ const ParticipatePage: TNextPageWithProps = () => {
   // else {
   //   console.debug('%c Participate page: NO session', ccm.redAlert)
   // }
-  let session = {
-    user: {
-      name: 'Marty',
-      email: 'mcgee.marty@gmail.com',
-      image: './ThreeD-Garden-Logo-Circle-Carrot.png'
-    }
-  }
+  // let session = {
+  //   user: {
+  //     name: 'Marty',
+  //     email: 'mcgee.marty@gmail.com',
+  //     image: './ThreeD-Garden-Logo-Circle-Carrot.png'
+  //   }
+  // }
 
   return (
     <Grid
@@ -60,7 +60,7 @@ const ParticipatePage: TNextPageWithProps = () => {
       spacing={1}
     >
       {/* [MM] HEY HEY HEY */}
-      {/* <ThreeDGarden /> */}
+      <ThreeDGarden />
       {/* [MM] HEY HEY HEY */}
 
       {/* {ability?.can('read', 'analytics') && ( */}
