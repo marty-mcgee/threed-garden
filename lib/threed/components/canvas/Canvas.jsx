@@ -50,14 +50,17 @@ import {
 } from '@react-three/drei'
 
 // ** JOYSTICK Imports
+// import { Canvas } from '@react-three/fiber'
 import { Physics } from '@react-three/rapier'
+// import { Environment, KeyboardControls } from '@react-three/drei'
 import { Perf } from 'r3f-perf'
-// // import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from '#/lib/ecctrl/src/Ecctrl'
-// import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
-// // import { EcctrlAnimation } from '#/lib/ecctrl/src/Ecctrl'
-// import { EcctrlAnimation } from '#/lib/ecctrl/src/EcctrlAnimation'
-// // import { EcctrlJoystick } from '#/lib/ecctrl/src/Ecctrl'
-// import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
+// import { Suspense } from 'react'
+// import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from '#/lib/ecctrl/src/Ecctrl'
+import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
+// import { EcctrlAnimation } from '#/lib/ecctrl/src/Ecctrl'
+import { EcctrlAnimation } from '#/lib/ecctrl/src/EcctrlAnimation'
+// import { EcctrlJoystick } from '#/lib/ecctrl/src/Ecctrl'
+import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 // Components
 import Lights from './Lights'
 // import Map from './Map'
@@ -285,9 +288,9 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
   return (
     <>
-      {/* <EcctrlJoystick
+      <EcctrlJoystick
         buttonNumber={5}
-      /> */}
+      />
       <Canvas
         // id={_id}
         camera={{ position: [-16, 16, 16], fov: 80 }}

@@ -60,7 +60,7 @@ const ParticipatePage: TNextPageWithProps = async () => {
       spacing={1}
     >
       {/* [MM] HEY HEY HEY */}
-      <ThreeDGarden />
+      {/* <ThreeDGarden /> */}
       {/* [MM] HEY HEY HEY */}
 
       {/* {ability?.can('read', 'analytics') && ( */}
