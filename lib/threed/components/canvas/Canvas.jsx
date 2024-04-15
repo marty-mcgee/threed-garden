@@ -49,19 +49,20 @@ import {
   useGLTF, useFBX,
 } from '@react-three/drei'
 
-// ** JOYSTICK Imports
-import { Physics } from '@react-three/rapier'
-import { Perf } from 'r3f-perf'
-import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
-import { EcctrlAnimation } from '#/lib/ecctrl/src/EcctrlAnimation'
+// ** ThreeD Experience Imports
+// import { Physics } from '@react-three/rapier'
+// import { Perf } from 'r3f-perf'
+// import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
+// import { EcctrlAnimation } from '#/lib/ecctrl/src/EcctrlAnimation'
 import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 // Components
-import Lights from './Lights'
-import Map from './Map'
-import CharacterModel from './CharacterModel'
-import Experience from '#/lib/ecctrl/example/Experience'
+// import Lights from './Lights'
+// import Map from './Map'
+// import CharacterModel from './CharacterModel'
+// import Experience from '#/lib/ecctrl/example/Experience'
+import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
 
-// ** ThreeD Imports
+// ** ThreeD Noun Imports
 // import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene'
 // import ThreeDPlans from '#/lib/threed/components/nouns/Plan/Plan'
 // import ThreeDThreeDs from '#/lib/threed/components/nouns/ThreeD/ThreeD'
@@ -228,6 +229,25 @@ export function ThreeDEnvironment() {
 
 
 
+const EcctrlJoystickControls = () => {
+  const [isTouchScreen, setIsTouchScreen] = useState(false)
+  useEffect(() => {
+    // Check if using a touch control device, show/hide joystick
+    if (('ontouchstart' in window) ||
+      (navigator.maxTouchPoints > 0)) {
+      setIsTouchScreen(true)
+    } else {
+      setIsTouchScreen(false)
+    }
+  }, [])
+  return (
+    <>
+      {isTouchScreen && <EcctrlJoystick buttonNumber={5} />}
+    </>
+  )
+}
+
+
 export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
   if (debug) console.debug('%c📐 ThreeDCanvas props.threeds', ccm.darkredAlert, threeds)
@@ -236,56 +256,12 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // ** HOOKS
   const prefs = useReactiveVar(preferencesDataVar)
 
-
-  /**
-   * Keyboard control preset
-   */
-  const keyboardMap = [
-    { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
-    { name: 'backward', keys: ['ArrowDown', 'KeyS'] },
-    { name: 'leftward', keys: ['ArrowLeft', 'KeyA'] },
-    { name: 'rightward', keys: ['ArrowRight', 'KeyD'] },
-    { name: 'jump', keys: ['Space'] },
-    { name: 'run', keys: ['Shift'] },
-    { name: 'action1', keys: ['1'] },
-    { name: 'action2', keys: ['2'] },
-    { name: 'action3', keys: ['3'] },
-    { name: 'action4', keys: ['KeyF'] }
-  ]
-
-  /**
-   * Character url preset
-   */
-  const characterURL = './Demon.glb'
-
-  /**
-   * Character animation set preset
-   */
-  const animationSet = {
-    idle: 'CharacterArmature|Idle',
-    walk: 'CharacterArmature|Walk',
-    run: 'CharacterArmature|Run',
-    jump: 'CharacterArmature|Jump',
-    jumpIdle: 'CharacterArmature|Jump_Idle',
-    jumpLand: 'CharacterArmature|Jump_Land',
-    // fall: 'CharacterArmature|Duck', // This is for falling from high sky
-    fall: 'CharacterArmature|Climbing', // This is for falling from high sky
-    action1: 'CharacterArmature|Wave',
-    action2: 'CharacterArmature|Death',
-    action3: 'CharacterArmature|HitReact',
-    action4: 'CharacterArmature|Punch'
-  }
-
-
-
-
-
   // **
   return (
     <>
-      <EcctrlJoystick
-        buttonNumber={5}
-      />
+
+      <EcctrlJoystickControls />
+
       <Canvas
         // id={_id}
         camera={{ position: [-16, 16, 16], fov: 80 }}
@@ -311,12 +287,6 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
 
         {/* <Preload all /> */}
 
-        {/* THREED ENVIRONMENT */}
-        {/* <Stage environment='forest' intensity={0.7}></Stage> */}
-        <ThreeDEnvironment />
-        <Lights />
-        {/* <Perf position='top-left' minimal /> */}
-
         {/* SUSPENSEFUL... */}
         {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
         {/* <Suspense fallback={null}> */}
@@ -335,8 +305,16 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           </Html>
         }>
 
+          {/* THREED ENVIRONMENT */}
+          {/* <Stage environment='forest' intensity={0.7}></Stage> */}
+          <ThreeDEnvironment />
+          {/* <Lights /> */}
+          {/* <Perf position='top-left' minimal /> */}
 
-          <Experience />
+          {/* THREED EXPERIENCE */}
+          <ThreeDExperience />
+          {/* <Experience /> */}
+
           {/* THREED CHARACTER: JOYSTICK
             <Physics
               debug={true}
