@@ -74,15 +74,19 @@ export default function Experience() {
         <KeyboardControls map={keyboardMap}>
           {/* Character Control */}
           <Ecctrl
-            debug
-            animated
-            followLight
+            debug={false}
+
+            animated={false}
+            followLight={false}
+
             springK={2}
             dampingC={0.2}
+
             autoBalanceSpringK={1.2}
             autoBalanceDampingC={0.04}
             autoBalanceSpringOnY={0.7}
             autoBalanceDampingOnY={0.05}
+
             disableFollowCam={disableFollowCam}
           >
             {/* Replace your model here */}
