@@ -63,7 +63,7 @@ export default function Experience() {
         args={[300, 300]}
         sectionColor={"lightgray"}
         cellColor={"gray"}
-        position={[0, -0.99, 0]}
+        position={[0, 2.99, 0]}
         userData={{ camExcludeCollision: true }} // this won't be collide by camera ray
       />
 
