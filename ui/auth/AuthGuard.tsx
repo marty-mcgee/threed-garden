@@ -1,6 +1,9 @@
-'use client'
 // ==============================================================
 // RESOURCES
+// ** Security Guard
+// ** FOR ALL APP CONTEXTS !!!
+
+'use client'
 
 // ** React
 import { useEffect } from 'react'
@@ -8,10 +11,10 @@ import { useEffect } from 'react'
 // ** Next
 import { useRouter, usePathname } from 'next/navigation'
 
-// ** Hooks
+// ** Hook into Context for User Authorization
 import { useAuth } from '#/lib/auth/hooks/useAuth'
 
-// ** Components
+// ** Helper Components
 import Spinner from '#/ui/components/spinner'
 
 // ** Colorful Console Messages: Utility
@@ -22,25 +25,33 @@ import ccm from '#/lib/utils/console-colors'
 // console.debug('%c🔱 AuthGuard: loading...', ccm.orange)
 
 // ** Function Component <React.FC> (returns JSX) for JS Module Export
-const AuthGuard = (props: any) => {
+const AuthGuard = ({ children }: any) => {
 
-  const { children, fallback } = props
+  // const { children, fallback } = props
   // console.debug('%c🔱 AuthGuard: props', ccm.yellow, props)
 
   const auth = useAuth()
+
   const router = useRouter()
   const pathname = usePathname() // router.asPath is now usePathname()
-  const localStorageUserData = (typeof window !== 'undefined') ? window.localStorage.getItem('userData') : null
-  // if (!auth.loading) {
-    // console.debug('%c🔱 AuthGuard: auth.loading?', ccm.yellow, auth.loading)
-    // console.debug('%c🔱 AuthGuard: auth', ccm.yellow, auth)
-    // console.debug('%c🔱 AuthGuard: router', ccm.yellow, router)
-    // console.debug('%c🔱 AuthGuard: pathname', ccm.yellow, pathname)
-  // }
+
+  const localStorageUserData = (typeof window !== 'undefined')
+    ? window.localStorage.getItem('userData')
+    : null
+  // console.debug('%c🔱 AuthGuard: auth', ccm.yellow, auth)
+  // console.debug('%c🔱 AuthGuard: router', ccm.yellow, router)
+  // console.debug('%c🔱 AuthGuard: pathname', ccm.yellow, pathname)
 
   useEffect(() => {
 
     // ** AuthGuard
+    if (auth.user) {
+      // console.debug('%c🔱 AuthGuard: auth.user is', ccm.green, auth.user.role)
+      // router.push('/auth/login')
+      router.push('/home')
+      return
+    }
+    /*
     if (auth.user === null && !localStorageUserData) {
       console.debug('%c🔱 AuthGuard: auth.user === null, no localStorageUserData', ccm.red)
 
@@ -51,6 +62,7 @@ const AuthGuard = (props: any) => {
         //   pathname: '/auth/login',
         //   query: { returnUrl: router.asPath },
         // })
+        // router.push('/auth/login')
       }
       else {
         // do nothing ?
@@ -58,20 +70,22 @@ const AuthGuard = (props: any) => {
         // router.push('/auth/login')
       }
 
+      // router.push('/auth/login')
+
     }
     else if (auth.user === null && localStorageUserData) {
       // do nothing ?
-      // console.debug('%c🔱 AuthGuard: localStorageUserData exists (load? locate to?)', ccm.yellow, localStorageUserData)
+      console.debug('%c🔱 AuthGuard: localStorageUserData exists (load? locate to?)', ccm.yellow, localStorageUserData)
       // router.replace('/')
       // router.push('/')
+      return <>{children}</>
     }
     else {
-      console.debug('%c🔱 AuthGuard: auth.user is', ccm.green, auth.user.role)
-      // do nothing
+      // do nothing ?
       // router.replace('/auth/login')
       // router.push('/auth/login')
     }
-
+    */
     // ** GuestGuard
     // if (localStorageUserData) {
     //   console.debug('%c⚜ GuestGuard: localStorageUserData: locate to /')
@@ -82,7 +96,7 @@ const AuthGuard = (props: any) => {
     //   router.replace('/auth/login')
     // }
 
-  }, [pathname]) // originally [router.route]
+  }, []) // originally [router.route]
 
   // ** AuthGuard
   // if (auth.loading || (!auth.loading && auth.user !== null)) {
@@ -92,11 +106,18 @@ const AuthGuard = (props: any) => {
 
   // ** Return JSX
   // console.debug('%c🔱 AuthGuard: return <jsx/>', ccm.green)
-  if (auth.user !== null && auth.user.role !== null) {
-    return <>{children}</>
-  }
+  // if (auth.user !== null && auth.user.role !== null) {
+  //   return <>{children}</>
+  // }
+  // else {
+  //   return <>HEY HEY HEY</>
+  // }
   // else
-  // return null // <Spinner />
+
+  // router.push('/auth/login')
+  // return null
+  // return <h1>HEY HEY HEY: AuthGuard</h1>
+  // return <Spinner />
   return <>{children}</>
 }
 

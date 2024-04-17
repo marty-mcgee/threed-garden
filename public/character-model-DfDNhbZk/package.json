@@ -1,0 +1,27 @@
+{
+  "name": "ecctrl-w-o-animations",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "main": "src/index.js",
+  "dependencies": {
+    "@react-three/drei": "9.88.0",
+    "@react-three/fiber": "8.14.5",
+    "@react-three/rapier": "1.1.1",
+    "@use-gesture/core": "10.2.24",
+    "ecctrl": "1.0.60",
+    "leva": "0.9.34",
+    "r3f-perf": "7.1.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "three": "0.151.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": [">0.2%", "not dead", "not ie <= 11", "not op_mini all"]
+}

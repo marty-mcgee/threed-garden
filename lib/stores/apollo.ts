@@ -1,17 +1,20 @@
+// 'use client' // no! should be ssr friendly
 // ==========================================================
 // RESOURCES
 
 // ** Apollo Client 3 -- Cache Store Imports
+import { makeVar } from '@apollo/client'
 import create, { StoreApi } from '#/lib/api/graphql/createStore'
 
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
 import GetNouns from '#/lib/api/graphql/scripts/getNouns.gql'
+import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
 import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
+import GetScenes from '#/lib/api/graphql/scripts/getScenes.gql'
+import GetParticipants from '#/lib/api/graphql/scripts/getParticipants.gql'
 import GetPlans from '#/lib/api/graphql/scripts/getPlans.gql'
-import GetWorkspaces from '#/lib/api/graphql/scripts/getWorkspaces.gql'
 import GetThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
 import GetFiles from '#/lib/api/graphql/scripts/getFiles.gql'
-import GetScenes from '#/lib/api/graphql/scripts/getScenes.gql'
 import GetAllotments from '#/lib/api/graphql/scripts/getAllotments.gql'
 import GetBeds from '#/lib/api/graphql/scripts/getBeds.gql'
 import GetPlants from '#/lib/api/graphql/scripts/getPlants.gql'
@@ -21,14 +24,19 @@ import GetPlantingPlans from '#/lib/api/graphql/scripts/getPlantingPlans.gql'
 import { v4 as newUUID } from 'uuid'
 
 // [MM] COLORFUL CONSOLE MESSAGES (ccm)
-import { ccm0, ccm1, ccm2, ccm3, ccm4, ccm5 } from '#/lib/utils/console-colors'
-// console.debug(`%cSUCCESS!!`, ccm1)
-// console.debug(`%cWHOOPSIES`, ccm2)
+import ccm from '#/lib/utils/console-colors'
+// console.debug(`%cSUCCESS!!`, ccm.orange)
+// console.debug(`%cWHOOPSIES`, ccm.red)
 
 // ==========================================================
 // IMPORTS COMPLETE
-console.debug(`%c🥕 ThreeDGarden<FC,R3F>: {stores}`, ccm4)
-console.debug(`%c====================================`, ccm5)
+// console.debug(`%c🥕 ThreeDGarden<FC,R3F>: Apollo {stores}`, ccm.blue)
+// console.debug(`%c====================================`, ccm.blue)
+
+// ** TESTING
+const debug: boolean = true // false | true
+const DEBUG: boolean = true // 1 == 0 | 1 == 1
+const debug_deep: boolean = false // false | true
 
 // ==============================================================
 // ==============================================================
@@ -42,8 +50,13 @@ interface INoun {
   _type: string
   _name: string
   data: Object
-  layers: Object[]
-  layer: Object
+  layers: [
+    {
+      _id: string
+      _name: string
+      data: Object
+    }
+  ]
 }
 
 // [all]
@@ -51,33 +64,19 @@ interface INouns {
   nouns: Array<INoun>
 }
 
-interface INounStore {
+interface IStore extends StoreApi<any> {
   // params
   _type: string
   _plural: string
   _storageItem: string
-  // store
+  _storageItemHistory: string
+  // store .store
   store: any
-  // store.store
-  nounStore: (_type?: string) => boolean
-  projectStore: StoreApi<any>
-  workspaceStore: StoreApi<any>
-  planStore: StoreApi<any>
-  threedStore: StoreApi<any>
-  fileStore: StoreApi<any>
-  sceneStore: StoreApi<any>
-  allotmentStore: StoreApi<any>
-  bedStore: StoreApi<any>
-  plantStore: StoreApi<any>
-  plantingPlanStore: StoreApi<any>
-  bearStore: StoreApi<any>
-  modalStore: (_type?: string) => void
-  modalAboutStore: StoreApi<any>
-  modalModel3dStore: StoreApi<any>
-  modalLoadingStore: StoreApi<any>
-  modalShareStore: StoreApi<any>
-  modalStoreNoun: StoreApi<any>
-  // store.actions
+  // store .actions
+  actions: any
+}
+
+interface IStorePreferences extends IStore {
   actions: any
 }
 
@@ -89,15 +88,26 @@ function noun(this: INoun, _type: string = 'noun') {
   this._id = newUUID()
   this._ts = new Date().toISOString()
   this._type = _type.toLowerCase()
-  this._name = _type.toUpperCase() + ' 0'
+  this._name = _type.toUpperCase() + ' NAME (default)'
   // wp custom fields
-  this.data = {}
-  // layers/levels
-  this.layers = []
-  this.layer = {
-    _name: 'LAYER 0',
-    data: {},
+  this.data = {
+    title: 'NOTHING YET, SIR',
+    // custom fields (to be overwritten from db)
+    doAutoLoadData: false, // true | false
+    doAutoRotate: false, // true | false
+    projectName: 'blank', // 'string'
+    environmentPreset: 'park', // park | forest | sunset | warehouse | studio ...
+    environmentBgBlur: 0.00, // 0.00 to 1.00 // Background Blur
+    doAnimateCharacter: false, // true | false
   }
+  // layers/levels
+  this.layers = [
+    {
+      _id: newUUID(),
+      _name: 'LAYER[0]',
+      data: {},
+    }
+  ]
 }
 
 // ==============================================================
@@ -106,11 +116,12 @@ function noun(this: INoun, _type: string = 'noun') {
 // ** Noun Store -- Constructor Function
 // -- returns new (nounStore as any)
 
-function nounStore(this: INounStore, _type = 'noun') {
+function nounStore(this: IStore, _type = 'noun') {
   // store params
   this._type = _type.toLowerCase()
   this._plural = _type + 's'
-  this._storageItem = 'threed_' + _type + 'History'
+  this._storageItem = 'threed_' + this._type
+  this._storageItemHistory = 'threed_' + this._type + 'History'
 
   // ==============================================================
   // ** Noun Store .store
@@ -120,18 +131,18 @@ function nounStore(this: INounStore, _type = 'noun') {
     _id: newUUID(),
     _ts: new Date().toISOString(),
     _type: this._type,
-    count: 0, // example counter (for fun/learning)
-    all: [], // all of this nouns historical + current records (all scenes, all projects)
-    one: new (noun as any)(this._type), // {}, // the current workspace noun, aka 'this one noun'
+    all: [], // all of this nouns historical + current records (all scenes; all projects; all plans;)
+    one: new (noun as any)(this._type), // {}, // the current noun, aka 'this one noun'
 
     // track current noun + noun history
     // current: ^this one noun,
     history: [], // from local storage
 
-    // track payloads from db
-    countDB: 0, // example counter (for fun/learning)
-    allDB: [], // from db (mysql wordpress via graphql)
-    oneDB: {}, // pre-this noun, ready to be mapped to 'this' noun
+    // track payloads from db ??
+    count: 0, // example counter (for fun/learning)
+    // countDB: 0, // example counter (for fun/learning)
+    // allDB: [], // from db (mysql wordpress via graphql)
+    // oneDB: {}, // pre-this noun, ready to be mapped to 'this' noun
   })
 
   // ==============================================================
@@ -162,72 +173,77 @@ function nounStore(this: INounStore, _type = 'noun') {
 
     removeAll: (): void => {
       localStorage.removeItem(this._storageItem)
+      localStorage.removeItem(this._storageItemHistory)
       this.store.update('all', [])
-      this.store.update('one', {})
+      this.store.update('one', new (noun as any)(this._type))
+      this.store.update('history', [])
+      // this.store.update('allDB', [])
+      // this.store.update('oneDB', {})
       this.store.update('count', 0)
-      this.store.update('allDB', [])
-      this.store.update('oneDB', {})
-      this.store.update('countDB', 0)
-      console.debug(`%cremoveAll [${this._type}]`, ccm2, true)
+      // this.store.update('countDB', 0)
+      // if (debug) console.clear()
+      if (debug) console.debug(`%c X removeAll [${this._type}]`, ccm.red, true)
+      if (debug) console.debug(`%c get one [${this._type}]`, ccm.red, this.store.get('one'))
     },
 
     // add a new current 'this' noun
     addNew: () => {
       // console.debug(`this`, this)
-      console.debug(`%caddNew [${this._type}] (before)`, ccm1, this.store.get('all'))
+      if (debug) console.debug(`%c🌱 addNew [${this._type}] (before)`, ccm.orange, this.store.get('all'))
       // throw new Error(`[MM] testing... this`)
 
       // create a new one
-      if (Object.keys(this.store.get('one')).length === 0) {
-        try {
-          this.store.update('one', new (noun as any)(this._type))
-        } catch (err) {
-          console.error(`%caddNew {${this._type}} err`, err)
-        }
-      }
-      // save + update old one
-      else {
-        // nounHistory (save existing before mutating, if not empty)
-        this.store.update('all', [this.store.get('one'), ...this.store.get('all')])
-        console.debug(`%caddNew [${this._type}] (during)`, ccm1, this.store.get('all'))
+      // if (Object.keys(this.store.get('one')).length === 0) {
+      //   try {
+      //     this.store.update('one', new (noun as any)(this._type))
+      //   } catch (ERROR) {
+      //     console.error(`%caddNew {${this._type}} ERROR`, ERROR)
+      //   }
+      // }
+      // // save + update old one
+      // else {
+        // // noun history (save existing before mutating, if not empty)
+        // this.store.update('history', [this.store.get('one'), ...this.store.get('history')])
+        // if (debug) console.debug(`%caddNew [${this._type}] (save history)`, ccm.orange, this.store.get('history'))
 
         // count
-        // this.store.update('count', this.store.get('count') + 1) // manual
-        this.store.update('count', this.store.get('all').length) // automatic
-        // console.debug(`%caddNew {count}`, ccm3, this.store.get('count'))
-        // console.debug(`%caddNew [${this._type}]`, ccm3, this.store.get('all').length)
+        this.store.update('count', this.store.get('count') + 1) // manual
+        // this.store.update('countDB', this.store.get('allDB').length) // automatic
 
         // nounCurrent (overwrite this one -- mutate)
         this.store.update('one', {
           _id: newUUID(),
           _ts: new Date().toISOString(),
           _type: _type.toLowerCase(),
-          _name: _type.toUpperCase() + ' 1',
-          layers: [],
-          layer: {
-            _name: 'LAYER 0',
-            data: {},
+          _name: _type.toUpperCase() + ' NAME (default modified)',
+          data: {
+            title: 'NOT A THING, SIR', // 'WE AINT FOUND SHIT',
           },
+          layers: [
+            {
+              _id: newUUID(),
+              _name: 'LAYER[0]',
+              data: {},
+            }
+          ],
         })
-      }
-      console.debug(`%caddNew {${this._type}} (added)`, ccm1, this.store.get('one'))
+      // }
+      if (debug) console.debug(`%caddNew {${this._type}} (added)`, ccm.orange, this.store.get('one'))
 
-      // nounHistory (save recently mutated new one and all old ones)
-      this.store.update('all', [this.store.get('one'), ...this.store.get('all')])
-      console.debug(`%caddNew [${this._type}] (after)`, ccm1, this.store.get('all'))
-
-      // count (for fun/learning)
-      // this.store.update('count', this.store.get('count') + 1) // manual
-      this.store.update('count', this.store.get('all').length) // automatic
-      console.debug(`%caddNew {count}`, ccm3, this.store.get('count'))
-      // console.debug(`%caddNew {${this._type}}`, ccm3, this.store.get('all').length)
+      // noun history (save existing before mutating, if not empty)
+      this.store.update('history', [this.store.get('one'), ...this.store.get('history')])
+      if (debug) console.debug(`%caddNew [${this._type}] (save history)`, ccm.orange, this.store.get('history'))
 
       // saveToDisk
       this.actions.saveToDisk()
       // loadFromDisk
       // this.actions.loadFromDisk()
 
-      console.debug(`%caddNew [${this._type}] (final)`, ccm1, this.store.get('one'))
+      // if (debug) console.debug(`%caddNew [${this._type}] (final)`, ccm.green, this.store.get('one'))
+    },
+
+    updateData: () => {
+      // this.store.update('one', ...this.store.get('one').data)
     },
 
     save: () => {
@@ -239,84 +255,132 @@ function nounStore(this: INounStore, _type = 'noun') {
 
     // save data to browser local storage
     saveToDisk: () => {
-      try {
-        localStorage.setItem(
-          this._storageItem,
-          JSON.stringify({
-            subject: this._plural,
-            payload: this.store.get('all'),
-          })
-        )
-        console.debug(`%csaveToDisk [${this._type}]`, ccm1, this.store.get('all'))
-        return true
-      } catch (err) {
-        console.debug(`%csaveToDisk [${this._type}] err`, ccm2, err)
+      if (typeof window != 'undefined') {
+        try {
+          localStorage.setItem(
+            this._storageItem,
+            JSON.stringify({
+              subject: this._plural,
+              payload: this.store.get('all'),
+            })
+          )
+          localStorage.setItem(
+            this._storageItemHistory,
+            JSON.stringify({
+              subject: this._plural,
+              payload: this.store.get('history'),
+            })
+          )
+          // if (debug) console.debug(`%c=======================================================`, ccm.black)
+          if (debug) console.debug(`%c💾 saveToDisk [${this._type}]`, ccm.greenAlert, this.store.get('all'))
+          if (debug) console.debug(`%c=======================================================`, ccm.black)
+          return true
+        } catch (ERROR) {
+          if (debug) console.debug(`%c💾 saveToDisk [${this._type}] ERROR`, ccm.redAlert, ERROR)
+          if (debug) console.debug(`%c=======================================================`, ccm.red)
+          return false
+        }
+      }
+      // typeof window === 'undefined'
+      else {
         return false
       }
     },
 
     // get data from browser local storage
     loadFromDisk: () => {
-      try {
-        const query = JSON.parse(localStorage.getItem(this._storageItem))
-        if (query) {
-          console.debug(`%cloadFromDisk [${this._type}] QUERY?`, ccm3, query)
-          const { payload } = query
-          console.debug(`%cloadFromDisk [${this._type}] QUERY.PAYLOAD?`, ccm3, payload)
+      if (typeof window !== 'undefined') {
+        try {
+          const query = JSON.parse(localStorage.getItem(this._storageItem))
+          if (query) {
+            // if (debug) console.debug(`%c💾 loadFromDisk [${this._type}] QUERY?`, ccm.blue, query)
+            const { payload } = query
+            // if (debug) console.debug(`%c💾 loadFromDisk [${this._type}] QUERY.PAYLOAD?`, ccm.blue, payload)
 
-          if (payload.length) {
-            // console.debug(`%cloadFromDisk [${this._type}]`, ccm3, true, payload)
+            if (payload) {
+              if (debug) console.debug(`%c💾 loadFromDisk [${this._type}] payload`, ccm.blue, true, payload)
 
-            this.store.update('all', [...payload]) // payload should have .data{}
-            console.debug(`%cloadFromDisk [${this._type}s] (after)`, ccm3, this.store.get('all'))
+              this.store.update('all', payload) // payload should have .data{}
+              if (debug) console.debug(`%c💾 loadFromDisk [${this._type}s] (after)`, ccm.blue, this.store.get('all'))
 
-            this.store.update('one', this.store.get('all')[0])
-            console.debug(`%cloadFromDisk {${this._type}} (after)`, ccm3, this.store.get('one'))
+              // TODO : WHICH DB RECORD DO YOU WANT TO USE ???
+              // default is the first one [0]
+              const thisStoreUseOne = this.store.get('all')[0]
+              if (debug) console.debug(`%c💾 loadFromDisk {${this._type}} (after)`, ccm.blue, thisStoreUseOne)
 
-            return true
+              // update metadata for the store to use
+              if (thisStoreUseOne.data) {
+                // this.store.update('one._name', thisStoreUseOne.data.title) // ideally
+                this.store.update('one', {
+                  _id: thisStoreUseOne._id, // .data.projectId (TODO: get wp_post.id and not wp_type.projectId)
+                  _ts: thisStoreUseOne._ts, // thisStoreUseOne.data.modified,
+                  _type: thisStoreUseOne._type,
+                  _name: thisStoreUseOne._name, // .data.title,
+                  // wp custom fields
+                  data: thisStoreUseOne.data,
+                  // layers/levels
+                  layers: thisStoreUseOne.layers,
+                })
+
+                return true
+              }
+
+            } else {
+              if (debug) console.debug(`%c💾 loadFromDisk [${this._type}] EMPTY QUERY.PAYLOAD?`, ccm.orange, query)
+            }
           } else {
-            console.debug(`%cloadFromDisk [${this._type}] EMPTY QUERY.PAYLOAD?`, ccm3, query)
+            if (debug) console.debug(`%c💾 loadFromDisk [${this._type}] NOTHING TO LOAD`, ccm.blue, query)
           }
-        } else {
-          console.debug(`%cloadFromDisk [${this._type}] NOTHING TO LOAD`, ccm3, query)
+
+          // if everything in this logic fails, return false as default
+          return false
+        } catch (ERROR) {
+          if (debug) console.debug(`%c💾 loadFromDisk [${this._type}] ERROR`, ccm.red, ERROR)
+          return false
         }
-        return false
-      } catch (err) {
-        console.debug(`%cloadFromDisk [${this._type}] err`, ccm2, err)
+      } else {
+        if (debug) console.debug(`%c💾 loadFromDisk [${this._type}] ERROR`, ccm.red)
         return false
       }
     },
 
+    // TODO: SAVE TO DB VIA GRAPHQL
     // save data to db via graphql mutation
     saveToDB: async (client: any) => {
       try {
-        console.debug(`%csaveToDB [${this._type}] client`, ccm2, client)
+        if (debug) console.debug(`%c🌩️ saveToDB [${this._type}] client`, ccm.orangeAlert, client)
+        // TODO: SAVE TO DB VIA GRAPHQL
 
-        console.debug(`%csaveToDB [${this._type}]`, ccm2, false)
-        return false
-      } catch (err) {
-        console.debug(`%csaveToDB [${this._type}]: err`, ccm3, err)
+        return true // OR false, if unsuccessful
+      } catch (ERROR) {
+        if (debug) console.debug(`%c🌩️ saveToDB [${this._type}]: ERROR`, ccm.redAlert, ERROR)
         return false
       }
     },
 
     // get data from db via graphql query
     loadFromDB: async (client: any) => {
-      try {
+      // try {
         // const _this = this
-        console.debug(`%cloadFromDB this`, ccm0, this)
+        // if (debug) console.clear()
+        // if (debug) console.debug(`%c=======================================================`, ccm.black)
+        if (debug) console.debug(`%c🌩️ loadFromDB this ${this._type}`, ccm.blueAlert, this)
+        // if (debug) console.debug(`%c=======================================================`, ccm.black)
 
         // .gql
-        let QUERY = GetNouns
+        let QUERY = null // default? GetProjects
         switch (this._type) {
+          case 'preferences':
+            QUERY = GetPreferences
+            break
           case 'noun':
             QUERY = GetNouns
             break
           case 'project':
             QUERY = GetProjects
             break
-          case 'workspace':
-            QUERY = GetWorkspaces
+          case 'participants':
+            QUERY = GetParticipants
             break
           case 'plan':
             QUERY = GetPlans
@@ -363,34 +427,37 @@ function nounStore(this: INounStore, _type = 'noun') {
         //   refetch,
         //   networkStatus
         // } = useQuery(QUERY, { parameters }, { client })
-        // console.debug(`%cloadFromDB [${this._type}]: DATA RETURNED`, data, loading, error)
+        // console.debug(`%c🌩️ loadFromDB [${this._type}]: DATA RETURNED`, data, loading, error)
 
         // using query directly
         const query = await client.query({
           query: QUERY,
           variables: { parameters },
         })
-        // console.debug(`%cloadFromDB [${this._type}]: QUERY RETURNED`, query)
+        // console.debug(`%c🌩️ loadFromDB [${this._type}]: QUERY RETURNED`, ccm.blue, query)
 
         const { data, loading, error } = query
-        // console.debug(`%cloadFromDB [${this._type}]: DATA RETURNED`, data, loading, error)
+        // console.debug(`%c🌩️ loadFromDB [${this._type}]: DATA RETURNED`, data, loading, error)
 
         if (loading) {
-          console.debug(`%cloadFromDB [${this._type}]: DATA LOADING`, loading)
+          // console.debug(`%c🌩️ loadFromDB [${this._type}]: DATA LOADING`, loading)
           return false // <div>loading...</div>
         }
 
         if (error) {
-          console.debug(`%cloadFromDB [${this._type}]: DATA RETURNED with error`, error)
+          if (debug) console.debug(`%c🌩️ loadFromDB [${this._type}]: DATA RETURNED with error`, ccm.red, error)
           return false // <div>{JSON.stringify(error.message)}</div>
         }
 
         if (data) {
-          console.debug(`%cloadFromDB [${this._type}]: DATA RETURNED`, ccm0, data, loading, error)
+          // console.debug(`%c🌩️ loadFromDB [${this._type}]: DATA RETURNED`, ccm.yellow, data, loading, error)
 
+          let payload
+          let nodes = payload
+          // ** EDGES or NODES ??
           if (data[this._plural]?.edges?.length) {
             // const payload = data[this._plural].edges
-            const payload = data[this._plural].edges.map(
+            payload = data[this._plural].edges.map(
               (node: Object): Object =>
                 // nounId, id, uri, slug, title
                 // <div key={node.nounId}>
@@ -402,80 +469,178 @@ function nounStore(this: INounStore, _type = 'noun') {
                 // </div>
                 node
             )
+          } else if (data[this._plural]?.nodes?.length) {
+            // const payload = data[this._plural].nodes
+            payload = data[this._plural].nodes.map(
+              (node: Object): Object =>
+                // nounId, id, uri, slug, title
+                // <div key={node.nounId}>
+                //   wp nounId: {node.nounId}<br />
+                //   gql id: {node.id}<br />
+                //   uri: {node.uri}<br />
+                //   slug: {node.slug}<br />
+                //   title: {node.title}<br />
+                // </div>
+                node
+            )
+          }
+          if (payload.length) {
 
             // map over payload to set this.data{}
-            const all = payload.map((node: Object): Object => {
+            const allPayload = payload.map((node: Object): Object[] => {
               const one = new (noun as any)(this._type)
               one.data = node
               return one
             })
-            console.debug(`%cloadFromDB [${this._type}]`, ccm3, all)
+            // console.debug(`%c🌩️ loadFromDB [${this._type}]`, ccm.blue, all)
+
+            // save to disk here ?? yes (if window.localStorage)
+            this.actions.saveToDisk()
 
             // set state from db
-            this.store.update('all', [...all]) // nodes
+            // this.store.update('all', ([...allPayload, ...this.store.get('all')])) // merge all nodes, past + present
+            this.store.update('all', ([...allPayload])) // merge all nodes, past + present
             const nouns = this.store.get('all')
-            console.debug(`%cloadFromDB [${this._type}] (after)`, ccm3, nouns)
+            if (debug) console.debug(`%c🌩️ loadFromDB [${this._type}] (all)`, ccm.blue, nouns)
 
-            this.store.update('oneDB', nouns[nouns.length - 1]) // node (use last one)
-            const nounDB = this.store.get('oneDB')
-            console.debug(`%cloadFromDB [${this._type}] {oneDB}`, ccm1, nounDB)
+            // this.store.update('history', ([...nouns, ...this.store.get('history')])) // merge all nodes, past + present
+
+            // // nounCurrent (overwrite -- mutate)
+            this.store.update('one', nouns[nouns.length - 1]) // node (use last one)
+            // const nounDB = this.store.get('one')
+            // if (debug) console.debug(`%c🌩️ loadFromDB [${this._type}] {one}`, ccm.blue, nounDB)
 
             // save to disk here ??? no
             // this.actions.saveToDisk()
 
-            // nounCurrent (overwrite -- mutate)
-            this.store.update('one', {
-              _id: newUUID(),
-              _ts: new Date().toISOString(),
-              _type: _type.toLowerCase(),
-              _name: _type.toUpperCase() + ': ' + nounDB.data.title,
-              // wp custom fields
-              data: nounDB.data,
-              // layers/levels
-              layers: [],
-              layer: {
-                _name: 'LAYER 0',
-                data: {},
-              },
-            })
-            console.debug(`%cloadFromDB [${this._type}] {one} (after)`, ccm1, this.store.get('one'))
+            // // nounCurrent (overwrite -- mutate)
+            // this.store.update('one', {
+            //   _id: nounDB._id, // newUUID(),
+            //   _ts: nounDB._ts, // new Date().toISOString(),
+            //   _type: nounDB._type,
+            //   // _name: nounDB.data.title,
+            //   // _name: _type.toUpperCase() + ' NAME: ' + nounDB.data.title,
+            //   _name: nounDB._name,
+            //   // wp custom fields
+            //   data: nounDB.data,
+            //   // layers/levels
+            //   layers: nounDB.layers,
+            // })
+            if (debug) console.debug(`%c🌩️ loadFromDB [${this._type}] {one} (after)`, ccm.blue, this.store.get('one'))
 
-            this.store.update('countDB', this.store.get('all').length)
-            console.debug(`%cloadFromDB countDB`, ccm1, this.store.get('countDB'))
-            console.debug(`%c====================================`, ccm5)
-
-            // save to disk
+            // save to disk here ?? yes (if window.localStorage)
             this.actions.saveToDisk()
+
+            // count
+            // this.store.update('count', this.store.get('count') + 1) // manual
+            // this.store.update('countDB', this.store.get('allDB').length) // automatic
+            this.store.update('count', this.store.get('all').length)
+            // this.store.update('countDB', this.store.get('all').length)
+            // if (debug) console.debug(`%c🌩️ loadFromDB countDB`, ccm.blue, this.store.get('countDB'))
+            // if (debug) console.debug(`%c=======================================================`, ccm.black)
 
             return true
           } else {
-            console.debug(`%cloadFromDB [${this._type}]: data.${this._plural}.edges.length = 0`, ccm3, data)
+            console.debug(`%c🌩️ loadFromDB [${this._type}] NO PAYLOAD`, ccm.redAlert, data)
             return false
           }
         }
 
-        console.debug(`%cloadFromDB [${this._type}]: OTHER ERROR`, ccm3, data)
+        console.debug(`%c🌩️ loadFromDB [${this._type}]: OTHER ERROR`, ccm.redAlert, data)
         return false
-      } catch (err) {
-        console.debug(`%cloadFromDB [${this._type}]: err`, ccm3, err)
-        return false
-      }
+      // } catch (ERROR) {
+      //   console.debug(`%c🌩️ loadFromDB [${this._type}]: ERROR`, ccm.redAlert, ERROR)
+      //   return false
+      // }
     },
 
-    // load 'this' noun into React Three Fiber view
-    loadToWorkspace: (noun: Object, _type: string, _id: string, _r3fCanvas: string) => {
-      try {
-        const nounAlt = this.store.get('one')
-        console.debug(`%cload {noun}`, ccm1, noun)
-        console.debug(`%cload {nounAlt}`, ccm1, nounAlt)
+    // load from data source: DB or DISK ??
+    // check DISK first, then DB
+    loadFromDataSource: async (client: any) => {
+      const responseData = {
+        isLoadedFromDisk: false,
+        isLoadedFromDB: false,
+      }
+      responseData.isLoadedFromDisk = await this.actions.loadFromDisk(client)
+      if (responseData.isLoadedFromDisk) {
+        if (debug) console.debug(`%c ${this._type} loadFromDataSource isLoadedFromDisk`, ccm.blue, 'Local Disk')
+        return responseData
+      } else {
+        responseData.isLoadedFromDB = await this.actions.loadFromDB(client)
+        if (responseData.isLoadedFromDB) {
+          if (debug) console.debug(`%c ${this._type} loadFromDataSource isLoadedFromDB`, ccm.blue, 'API => DB')
+          return responseData
+        }
+      }
+      // default
+      if (debug) console.debug(`%c ${this._type} loadFromDataSource isLoadedFrom Nowhere`, ccm.redAlert, responseData)
+      return responseData
+    },
 
-        if (noun) {
-          return true // <div>...noun as r3f component...</div>
+    // load 'this' THREED[S] into React Three Fiber view
+    loadToCanvas: (
+      client: Object = {},
+      nodes: Object[] = [], // hmmmm -- nodes?
+      _type: string = 'project', // main type for query
+      _requestType: string = 'plansOfThreeds', // sub-type for query
+      _id: string = '3333', // some id
+      _r3fCanvas: string = '_r3fcanvas1' // target canvas #_r3fCanvasX
+    ) => {
+      // **
+      let objectArrayToReturn = []
+      // **
+      try {
+
+        if (nodes.length) {
+          // send 'nodes' to '#_r3fCanvas1'
+
+          if (debug || DEBUG)
+            console.debug('%c #_r3fCanvas1 to receive JS Object: nodes', ccm.redAlert, nodes)
+          // return true // <div>...plan of nodes as r3f component...</div>
+          objectArrayToReturn = nodes
+          return objectArrayToReturn
         }
 
+        if (_type == 'project') {
+          if (_requestType == 'plansOfThreeDs') {
+            // const load_PlanOfThreeDNodes_ToThreeDCanvas = this.store.get('one').plans
+            let load_PlanOfThreeDNodes_ToThreeDCanvas = []
+            try {
+              if (this.store.get('one')) {
+                load_PlanOfThreeDNodes_ToThreeDCanvas = this.store.get('one').data?.plans?.nodes[0]?.threedsActive?.nodes // plans[] of threeds[]
+              }
+            } catch (ERROR) {
+              if (debug || DEBUG)
+                console.debug(`%c load_PlanOfThreeDNodes_ToThreeDCanvas: ERROR`, ccm.redAlert, ERROR)
+            }
+
+            if (load_PlanOfThreeDNodes_ToThreeDCanvas && load_PlanOfThreeDNodes_ToThreeDCanvas.length) {
+              // send 'threeds' to '_r3fCanvas'
+
+              if (debug || DEBUG)
+                console.debug(
+                  '%c #_r3fCanvas to receive JS Object: load_PlanOfThreeDNodes_ToThreeDCanvas',
+                  ccm.green,
+                  load_PlanOfThreeDNodes_ToThreeDCanvas
+                )
+
+              objectArrayToReturn = load_PlanOfThreeDNodes_ToThreeDCanvas
+              return objectArrayToReturn
+              return true
+            }
+          }
+        }
+
+        // **
+        if (debug || DEBUG)
+          console.debug('%c #_r3fCanvas to receive NOTHING', ccm.redAlert)
+        return []
         return false
-      } catch (err) {
-        console.debug(`%cload {noun}: err`, ccm3, err)
+      // **
+      } catch (ERROR) {
+        if (debug || DEBUG)
+          console.debug(`%c load {noun}: ERROR`, ccm.redAlert, ERROR)
+        return []
         return false
       }
     },
@@ -483,36 +648,41 @@ function nounStore(this: INounStore, _type = 'noun') {
 } // nounStore
 
 // ==============================================================
+
 // ==============================================================
+
 // ==============================================================
 // ** Modal Object -- Constructor Function
 // -- returns new modal
 
-function modal(this: any, _type = 'modal') {
+function modal(this: INoun, _type = 'modal') {
   // object params
   this._id = newUUID()
   this._ts = new Date().toISOString()
   this._type = _type.toLowerCase()
-  this._name = _type.toUpperCase() + ' 0'
+  this._name = _type.toUpperCase() + ' NAME (default)'
   // wp custom fields
   this.data = {}
   // layers/levels
-  this.layers = []
-  this.layer = {
-    _name: 'LAYER 0',
-    data: {},
-  }
+  this.layers = [
+    {
+      _id: newUUID(),
+      _name: 'LAYER[0]',
+      data: {},
+    }
+  ]
 }
 
 // ==============================================================
 // ** Modal Store -- Constructor Function
 // -- returns new (modalStore as any)
 
-function modalStore(this: any, _type = 'modal') {
+function modalStore(this: IStore, _type = 'modal') {
   // store params
   this._type = _type.toLowerCase()
   this._plural = _type + 's'
-  this._storageItem = 'threed_' + _type + 'History'
+  this._storageItem = 'threed_' + this._type
+  this._storageItemHistory = 'threed_' + this._type + 'History'
 
   // ==============================================================
   // ** Modal Store .store
@@ -559,23 +729,146 @@ function modalStore(this: any, _type = 'modal') {
 } // modalStore
 
 // ==============================================================
+
 // ==============================================================
+
 // ==============================================================
-// ** Construct Noun Stores + Export as Group of Stores
+// ** Preferences Store -- Constructor Function
+// -- returns new (preferencesStore as any)
+
+function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
+  // store params
+  this._type = _type.toLowerCase()
+  this._plural = _type // + 's'
+  this._storageItem = 'threed_' + this._type
+  this._storageItemHistory = 'threed_' + this._type + 'History'
+
+  // ==============================================================
+  // ** Preferences Store .store
+
+  // **
+  // const preferences = useReactiveVar(preferencesDataVar)
+  // const doAutoLoadDataApollo = preferencesStore.store.useStore('doAutoLoadData')
+  // const doAutoLoadDataApollo = preferences.doAutoLoadData
+  // const doAutoLoadDataApollo = this.store.get('doAutoLoadData')
+  const doAutoLoadDataApollo: boolean = false
+  // console.debug('ThreeDLevaControls doAutoLoadDataApollo', doAutoLoadDataApollo)
+  // const doAutoRotateApollo = preferencesStore.store.useStore('doAutoRotate')
+  // const doAutoRotateApollo = preferences.doAutoRotate
+  // const doAutoRotateApollo = this.store.get('doAutoRotate')
+  const doAutoRotateApollo: boolean = false
+  // console.debug('ThreeDLevaControls doAutoRotateApollo', doAutoRotateApollo)
+  // const projectNameApollo = preferencesStore.store.useStore('projectName')
+  // const projectNameApollo = preferences.projectName
+  // const projectNameApollo = this.store.get('projectName')
+  const projectNameApollo: string = ''
+  // console.debug('ThreeDLevaControls projectNameApollo', projectNameApollo)
+
+  this.store = create({
+    doAutoLoadData: doAutoLoadDataApollo, // true | false,
+    doAutoRotate: doAutoRotateApollo, // true | false,
+    projectName: projectNameApollo, // string | 'APOLLO PREFERENCES STORE: projectName'
+  })
+
+  // ==============================================================
+  // ** Preferences Store .actions
+
+  this.actions = {
+    setDoAutoLoadData: (e: boolean = false) => {
+      // this.store.update('doAutoLoadData', !this.store.get('doAutoLoadData'))
+      this.store.update('doAutoLoadData', e)
+      localStorage.setItem(
+        this._storageItem,
+        JSON.stringify({
+          subject: 'doAutoLoadData',
+          payload: this.store.get('doAutoLoadData'),
+        })
+      )
+      return this.store.get('doAutoLoadData')
+    },
+    setDoAutoRotate: (e: boolean = false) => {
+      // this.store.update('doAutoRotate', !this.store.get('doAutoRotate'))
+      this.store.update('doAutoRotate', e)
+      localStorage.setItem(
+        this._storageItem,
+        JSON.stringify({
+          subject: 'doAutoRotate',
+          payload: this.store.get('doAutoRotate'),
+        })
+      )
+      return this.store.get('doAutoRotate')
+    },
+    setProjectName: (e: string = 'nope') => {
+      this.store.update('projectName', e)
+      localStorage.setItem(
+        this._storageItem,
+        JSON.stringify({
+          subject: 'projectName',
+          payload: this.store.get('projectName'),
+        })
+      )
+      // const doModifyProjectName = client.cache.modify({
+      //   id: client.cache.identify(preferencesStore),
+      //   fields: {
+      //     name(projectName) {
+      //       return projectName.toUpperCase()
+      //     },
+      //   },
+      //   /* broadcast: false // Include this to prevent automatic query refresh */
+      // })
+      return this.store.get('projectName')
+    },
+  } // preferencesActions
+} // preferencesStore
+
+// ==============================================================
+
+// ** CREATE REACTIVE VARS (APOLLO LOCAL STATE)
+export const isPreferencesSetVar = makeVar(false) // boolean: true | false
+export const preferencesDataVar = makeVar(
+  {
+    // user prefs
+    ownerId: 1,
+    version: '0.0.0',
+    doAutoLoadData: false, // boolean: true | false
+    doAutoRotate: false, // boolean: true | false
+    // project prefs
+    projectName: 'client should never see this string', // string: ''
+    // scene prefs
+    environmentPreset: 'warehouse', // default (client should never see this)
+    environmentBgBlur: 0.20, // default (our chosen maximum blur)
+
+  }
+)
+// console.debug('Apollo Stores ReactiveVar preferencesDataVar()', preferencesDataVar())
+// console.debug('Apollo Stores ReactiveVar preferencesDataVar().doAutoLoadData', preferencesDataVar().doAutoLoadData)
+// console.debug('Apollo Stores ReactiveVar preferencesDataVar().doAutoRotate', preferencesDataVar().doAutoRotate)
+// console.debug('Apollo Stores ReactiveVar preferencesDataVar().projectName', preferencesDataVar().projectName)
+
+// ==============================================================
+
+// ==============================================================
+
+// ==============================================================
+// ** Construct Stores + Export as Group of Stores
 
 export { nounStore }
 // export const nounStore = new (nounStore as any)('noun')
+// export { preferencesStore }
+export const preferencesStore = new (nounStore as any)('preferences')
+// EXTEND nounStore to become preferencesStoreCustom
+// export const preferencesStore = new (preferenceStoreCustom as any)('preferences')
+// regular nouns
 export const projectStore = new (nounStore as any)('project')
-export const workspaceStore = new (nounStore as any)('workspace')
+export const sceneStore = new (nounStore as any)('scene')
+export const participantStore = new (nounStore as any)('participant')
 export const planStore = new (nounStore as any)('plan')
 export const threedStore = new (nounStore as any)('threed')
 export const fileStore = new (nounStore as any)('file')
-export const sceneStore = new (nounStore as any)('scene')
 export const allotmentStore = new (nounStore as any)('allotment')
 export const bedStore = new (nounStore as any)('bed')
 export const plantStore = new (nounStore as any)('plant')
 export const plantingPlanStore = new (nounStore as any)('plantingPlan')
-export const bearStore = new (nounStore as any)('bear')
 export { modalStore }
 // export const modalStore = new (modalStore as any)()
 export const modalAboutStore = new (modalStore as any)('modalAbout')
@@ -584,19 +877,19 @@ export const modalLoadingStore = new (modalStore as any)('modalLoading')
 export const modalShareStore = new (modalStore as any)('modalShare')
 export const modalStoreNoun = new (nounStore as any)('modal')
 
-const stores = {
+export const stores = {
   nounStore,
+  preferencesStore,
   projectStore,
-  workspaceStore,
+  sceneStore,
+  participantStore,
   planStore,
   threedStore,
   fileStore,
-  sceneStore,
   allotmentStore,
   bedStore,
   plantStore,
   plantingPlanStore,
-  bearStore,
   modalStore,
   modalAboutStore,
   modalModel3dStore,
@@ -605,4 +898,26 @@ const stores = {
   modalStoreNoun,
 }
 
+// ** GraphQL Queries + Mutations (here, locally-specific data needs)
+export const queries = {
+  GetNouns,
+  GetPreferences,
+  GetProjects,
+  GetScenes,
+  GetParticipants,
+  GetPlans,
+  GetThreeDs,
+  GetFiles,
+  GetAllotments,
+  GetBeds,
+  GetPlants,
+  GetPlantingPlans,
+}
+export const mutations = {
+  UpdatePreferences: 'HEY HEY HEY UpdatePreferences',
+  UpdateProjects: 'HEY HEY HEY UpdateProjects',
+  UpdatePlans: 'HEY HEY HEY UpdatePlans',
+}
+
+// export { stores, queries, mutations }
 export default stores

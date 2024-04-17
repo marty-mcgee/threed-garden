@@ -4,7 +4,8 @@ import { Html, useGLTF } from '@react-three/drei'
 
 export default function Watch(props: any) {
   const ref: any = useRef()
-  // @ts-expect-error
+  // @ ts-expect-error
+  // @ts-ignore
   const { nodes, materials } = useGLTF('objects/examples/watch-v1.glb')
   useFrame((state) => {
     const t = state.clock.getElapsedTime()
@@ -15,6 +16,8 @@ export default function Watch(props: any) {
   })
   return (
     <group ref={ref} {...props} dispose={null}>
+      {/* // @ ts-expect-error
+          // @ts-ignore */}
       <mesh geometry={nodes.Object005_glass_0.geometry} material={materials.glass}>
         <Html scale={100} rotation={[Math.PI / 2, 0, 0]} position={[180, -350, 50]} transform occlude>
           <div className='annotation'>
@@ -22,6 +25,8 @@ export default function Watch(props: any) {
           </div>
         </Html>
       </mesh>
+      {/* // @ ts-expect-error
+          // @ts-ignore */}
       <mesh castShadow receiveShadow geometry={nodes.Object006_watch_0.geometry} material={materials.watch} />
     </group>
   )

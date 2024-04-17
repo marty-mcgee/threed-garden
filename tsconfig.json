@@ -3,6 +3,7 @@
     "target": "esnext",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
+    // "checkJs": false,
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -28,10 +29,12 @@
     "paths": {
       "#/*": ["./*"], // preferable (next-13)
       "~/*": ["./*"], // preferable (next, nuxt, supports npm @ confusion)
-      "@/*": ["src/*"], // deprecated (npm @)
+      // "@/*": ["src/*"], // deprecated (npm @)
       "~~/*": ["./*"], // (eth)
       "~common/*": ["../common/src/*"], // (eth~common)
-      "-||-*": ["lib/assets/*"] // threeds (-||-)
+      "-||-*": ["lib/assets/*"], // threeds (-||-)
+      "@/*": ["./*"], // next-auth
+      "auth": ["./auth"] // next-auth
     },
     "typeRoots": ["node_modules/@types", "lib/types"],
     // plugins

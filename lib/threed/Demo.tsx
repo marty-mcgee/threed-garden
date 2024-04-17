@@ -12,7 +12,7 @@ const B3MM3 = require('#/lib/threed/demo-b3.mm')
 
 // <script type="text/javascript" data-cfasync="false">
 const Demo: FunctionComponent = (props): JSX.Element => {
-  const word = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
+  const word = `[MM] DEMO: HEY HEY HEY @ ${new Date().toISOString()}`
 
   // const fragment = null // grenade?
   const readOnly = false // really?

@@ -1,58 +1,59 @@
-# [🌱 React Garden TypeScript Material UI App](https://github.com/marty-mcgee/react-garden)
+# [🥕 ThreeD Garden: 3D Object Environment w Next.JS React TypeScript Web3 ThreeJS Poimandres React-Three w Apollo State + Leva Control UI w Apollo Stores w MUI + Tailwind CSS](https://github.com/marty-mcgee/threed-garden/)
 
-React + TypeScript + ThreeJS app using Material UI v5 on NextJS v13.4, Apollo Server+Client v3, GraphQL, WordPress REST API, for ThreeD web development.. a "Design Dashboard" for developing Three-Dimensional JavaScript Objects, Components, + ETH apps (dapps).
+3D Dev Environment w React, TypeScript, Three.js, React-Three (poimandres), on Next.js, Apollo Client, GraphQL, WordPress REST API, MUI + Tailwind. ThreeD Web3 Interface for Three-Dimensional JavaScript Objects with React Server + Client Components, Web3 Contracts ...
 
 ## Live Demo
 
-[threedgarden.com](https://threedgarden.com/)
+🌱 [threedgarden.com](https://threedgarden.com)
 
-====
+🥕 [Demo: Participate](https://threedgarden.com/participate)
 
 ## For Developers
+
+🤖 ["name": "threed-garden",](https://www.npmjs.com/package/threed-garden)
+
+🤖 ["version": "0.15.1-beta.x",](https://www.npmjs.com/package/threed-garden?activeTab=versions)
+
+🤖 ["code": "0.15.1-beta.x",](https://www.npmjs.com/package/threed-garden?activeTab=code)
+
+### Install + Run
+
+#### npm i threed-garden
+#### git clone https://github.com/marty-mcgee/threed-garden.git
 
 - app currently requires yarn: `npm install -G yarn`
 - (you can instead, of course, use pnpm or npm easily)
 
 1. install app: `yarn install`
-2. run in local dev env: `yarn dev`
+2. run in local env: `yarn dev`
 3. build for production: `yarn build`
 4. start in production env: `yarn start`
 4. deploy to preset location: `yarn deploy`
 
 ====
 
-## FUNCTIONAL NOUNS 🌱 🤖 🍅
+## FUNCTIONAL NOUNS : ACTIONS : GROUPS == NOUNS + ACTIONS + METADATA 🌱 🤖 🍅 🥕
 
 - Noun | as root JS Object | interface INoun | wp_type threed_noun
 
----
+--- Nouns
 
+- Project | as JS Object | interface IProject | wp_type threed_project
+- Scene | extends THREE.Scene | interface IScene | wp_type threed_scene
+- Plan | as JS Object | interface IPlan | wp_type threed_plan
 - ThreeD | as root JS Object | interface IThreeD | wp_type threed_threed
 - File | as JS Object | interface IFile | wp_type threed_file
-- Project | as JS Object | interface IProject | wp_type threed_project
-- Workspace | as JS Object | interface IWorkspace | wp_type threed_workspace
-- Plan | as JS Object | interface IPlan | wp_type threed_plan
-
----
-
-- Edit | Actions | Relationships | interface IEdit | wp_type threed_edit
-- View | as JS Object | Settings | interface IView | wp_type threed_view
-
----
-
 - Participant | as JS Object | interface IParticipant | wp_type threed_participant
 - Character | as JS Object | interface ICharacter | wp_type threed_character
 
----
+--- Actions
 
 - Simulation | as JS Object | interface ISimulation | wp_type threed_simulation
 - Game | extends Simulation | interface IGame | wp_type threed_game
-- Demo | extends Simulation | interface IGame | wp_type threed_demo
 
----
+--- Groups
 
 - World | as JS Object | interface IWorld | wp_type threed_world
-- Scene | extends THREE.Scene | interface IScene | wp_type threed_scene
 - Structure | extends THREE.Object3D | interface IStructure | wp_type threed_structure
 - Farm | extends THREE.Group | interface IFarm | wp_type threed_farm
 - Garden | extends THREE.Group | interface IGarden | wp_type threed_garden
@@ -67,13 +68,7 @@ React + TypeScript + ThreeJS app using Material UI v5 on NextJS v13.4, Apollo Se
 - PlantingPlan | Actions | Relationships | interface IPlantingPlan | wp_type threed_planting_plan
 - BuildingPlan | Actions | Relationships | interface IBuildingPlan | wp_type threed_building_plan
 
----
-
-- Bear | extends Character | interface IBear | wp_type threed_bear
-- Chicken | extends Character | interface IChicken | wp_type threed_chicken
-- Gardener | extends Character | interface IGardener | wp_type threed_gardener
-
----
+--- Helpers
 
 - Tool | as JS Object | extends ThreeD? | interface ITool
 - PlaneTool | extends Tool | interface IPlane

@@ -1,0 +1,25 @@
+# import { gql, useQuery } from '@apollo/client'
+
+# const GetPreferences = gql`
+query GetPreferences {
+  preferencess {
+    nodes {
+      preferencesId
+      title
+      content
+      status
+      link
+      modified
+      # custom fields
+      doAutoLoadData
+      doAutoRotate
+      projectName
+      environmentPreset
+      environmentBgBlur
+      doAnimateCharacter
+      version
+      # owner
+    }
+  }
+}
+# `

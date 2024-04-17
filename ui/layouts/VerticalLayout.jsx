@@ -23,8 +23,8 @@ import ScrollToTop from '#/ui/components/scroll-to-top'
 import DatePickerWrapper from '#/ui/styles/react-datepicker'
 
 const VerticalLayoutWrapper = styled('div')({
-  display: 'flex', // [MM] THIS IS IMPORTANT !!! flex :)
-  flexDirection: 'row', // [MM] THIS IS IMPORTANT !!! flex :)
+  // display: 'flex', // [MM] THIS IS IMPORTANT !!! flex :)
+  // flexDirection: 'row', // [MM] THIS IS IMPORTANT !!! flex :)
   // overflow: 'scroll',
   // minHeight: 'calc(100vh - 128px - 0px)', // '100vh',
   // border: '3px solid pink', // is working here
@@ -104,10 +104,6 @@ const VerticalLayout = (props) => {
             collapsedNavWidth={collapsedNavWidth}
             toggleNavVisibility={toggleNavVisibility}
             navBorderWidth={navBorderWidth}
-            sx={{
-              // border: '1px dashed orange', // not working here
-              // height: '80vh', // not working here
-            }}
             {...props}
           />
         )}
@@ -116,13 +112,13 @@ const VerticalLayout = (props) => {
         <MainContentWrapper
           className='layout-content-wrapper'
           sx={{
-            width: '100%',
+            width: '100vw',
           }}
         >
           <ContentWrapper
             className='layout-page-content'
             sx={{
-              // border: '2px dashed orange', // is working here
+              border: '2px dashed orange', // is working here
               padding: 0,
               ...(contentWidth === 'boxed' && {
                 mx: 'auto',

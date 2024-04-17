@@ -1,10 +1,14 @@
 // ==============================================================
 // TITLE: Index Page (Forwarding Page)
 
-'use client'
+// 'use client'
 
 // ==============================================================
 // RESOURCES (to import)
+
+import CustomLink from "@/components/custom-link"
+import SessionData from "@/components/session-data"
+import { auth } from "auth"
 
 // ** Next
 import type { NextPage, NextPageContext } from 'next'
@@ -15,10 +19,10 @@ import { useRouter, usePathname } from 'next/navigation'
 // ** React
 // import type { ReactNode } from 'react'
 // import React, { FC } from 'react'
-import { useEffect } from 'react'
+// import { useEffect } from 'react'
 
 // ** Hooks
-import { useAuth } from '#/lib/auth/hooks/useAuth'
+// import { useAuth } from '#/lib/auth/hooks/useAuth'
 
 // ** Helper Components
 import Spinner from '#/ui/components/spinner'
@@ -34,65 +38,94 @@ console.debug('%c🥕 ThreeDGarden<FC,R3F>: {page.tsx}', ccm.green)
 
 // ==============================================================
 
-// Set Home Forwarding (to First Page) URL, based on User Role
-const getHomeRoute = (role: any) => {
-  if (role === 'client') {
-    // return '/home' // another page
-    return '/participate' // another page
-    // return '/acl' // authorized credentials list? (boundary)
-  }
-  else if (role === 'admin') {
-    // return '/' // this page (for testing. not ideal for production.)
-    return '/home' // another page
-    // return '/participate' // another page
-  }
-  else {
-    // return '/' // this page (for testing. not ideal for production.)
-    return '/auth/login'
-  }
-}
+// // Set Home Forwarding (to First Page) URL, based on User Role
+// const getHomeRoute = (role: any) => {
+//   if (role === 'client') {
+//     // return '/home' // another page
+//     return '/participate' // another page
+//     // return '/acl' // authorized credentials list? (boundary)
+//   }
+//   else if (role === 'admin') {
+//     // return '/' // this page (for testing. not ideal for production.)
+//     return '/home' // another page
+//     // return '/participate' // another page
+//   }
+//   else {
+//     // return '/' // this page (for testing. not ideal for production.)
+//     return '/auth/login'
+//   }
+// }
 
 // ==============================================================
 
 // export default function Page<NextPage>() {
 // const AppPage: NextPage<TPageProps> = (): JSX.Element => {
 // const AppPage: NextPage = (): JSX.Element => {
-const AppPage: TNextPageWithProps = (props: any): JSX.Element => {
+const AppPage: TNextPageWithProps = async (props: any): Promise<JSX.Element> => {
 // const AppPage: NextPage = (props) => {
   // **
   // console.debug('%c🥕 PROPS: AppPage.props', ccm.green, props)
 
-  // ** Hooks
-  const auth = useAuth()
-  const router = useRouter()
-  const pathname = usePathname()
+  const session = await auth()
+
+  if (session) {
+    if (session.user) {
+      // console.debug('NEXT-AUTH session.user', session.user)
+    }
+    // console.debug('NEXT-AUTH session', session)
+  }
+
+  // // ** Hooks
+  // const auth = useAuth()
+  //const router = useRouter()
+  // const pathname = usePathname()
 
   // ** OnMount (+ optional return OnUnmount)
-  useEffect(() => {
-    // user AUTHORIZED?
-    if (auth.user && auth.user.role) {
-      // get Home URL
-      const homeRoute = getHomeRoute(auth.user.role)
-      console.debug('✅ user AUTHORIZED', auth.user, 'go to:', homeRoute)
-      // redirect authorized user to Home URL
-      // router.replace(homeRoute)
-      router.push(homeRoute)
-    }
-    // user NOT AUTHORIZED!
-    else {
-      const homeRoute = getHomeRoute('unauthorized')
-      console.debug('❌ user NOT AUTHORIZED', auth.user, 'go to:', homeRoute)
-      // redirect un-authorized guest to Home URL
-      // router.replace(homeRoute)
-      router.push(homeRoute)
-    }
-    // return <><Spinner /></>
-  }, [])
+  //useEffect(() => {
+    //router.push('/participate')
+  //   // user AUTHORIZED?
+  //   if (auth.user && auth.user.role) {
+  //     // get Home URL
+  //     const homeRoute = getHomeRoute(auth.user.role)
+  //     console.debug('✅ user AUTHORIZED', auth.user, 'go to:', homeRoute)
+  //     // redirect authorized user to Home URL
+  //     // router.replace(homeRoute)
+  //     router.push(homeRoute)
+  //   }
+  //   // user NOT AUTHORIZED!
+  //   else {
+  //     const homeRoute = getHomeRoute('unauthorized')
+  //     console.debug('❌ user NOT AUTHORIZED', auth.user, 'go to:', homeRoute)
+  //     // redirect un-authorized guest to Home URL
+  //     // router.replace(homeRoute)
+  //     router.push(homeRoute)
+  //   }
+  //   // return <><Spinner /></>
+  //}, [])
 
 // ==============================================================
 
   // ** Return JSX
-  return <Spinner />
+  // return <h1>HEY HEY HEY: page:app</h1>
+  // return <Spinner />
+  return (
+    <>
+      <h1>🥕 Welcome {session?.user?.name} to ThreeD Garden</h1>
+      <h2>🌱 threed : next14 : app : page</h2>
+      {/* <p>
+        This page is server-rendered as a{" "}
+        <CustomLink href="https://nextjs.org/docs/app/building-your-application/rendering/server-components">
+          React Server Component
+        </CustomLink>
+        . It gets the session data on the server using{" "}
+        <CustomLink href="https://nextjs.authjs.dev#auth">
+          <code>auth()</code>
+        </CustomLink>{" "}
+        method.
+      </p> */}
+      <SessionData session={session} />
+    </>
+  )
 }
 // AppPage.getLayout = (page: any) => {page} // <BlankLayout>{page}</BlankLayout>
 // AppPage.setConfig = () => true
