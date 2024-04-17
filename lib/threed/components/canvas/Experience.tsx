@@ -29,12 +29,31 @@ export default function Experience() {
   }, []);
 
   /**
-   * Debug settings
+   * World Preferences
    */
-  const { physics, disableFollowCam } = useControls("World Settings", {
-    physics: false,
-    disableFollowCam: false,
-  });
+  const [{
+    physics,
+    disableFollowCam,
+  }, setWorldPreferencesLeva] = useControls(
+    'World Preferences',
+    () => ({
+      // worldPhysics
+      physics: {
+        label: 'Physics Debugger?',
+        value: false, // prefs.worldPhysics,
+      },
+      // worldDisableFollowCam
+      disableFollowCam: {
+        label: 'Disable Follow?',
+        value: false, // prefs.worldDisableFollowCam,
+      },
+    }),
+    {
+      color: 'darkgreen',
+      collapsed: false,
+      order: 10,
+    },
+  )
 
   /**
    * Keyboard control preset
@@ -59,24 +78,32 @@ export default function Experience() {
         // minimal
       /> */}
 
-      <Grid
-        args={[300, 300]}
-        sectionColor={"lightgray"}
-        cellColor={"gray"}
-        position={[0, 2.99, 0]}
-        userData={{ camExcludeCollision: true }} // this won't be collide by camera ray
-      />
+      {/* <Grid
+        args={[480, 480]}
+        sectionColor={"darkgray"}
+        cellColor={"black"}
+        position={[0, 0, 0]}
+        userData={{ camExcludeCollision: true }} // this won't collide by camera ray
+      /> */}
 
       <Lights />
 
-      <Physics debug={physics} timeStep="vary" paused={pausedPhysics}>
+      <Physics
+        debug={physics}
+        timeStep="vary"
+        paused={pausedPhysics}
+      >
+
         {/* Keyboard preset */}
-        <KeyboardControls map={keyboardMap}>
+        <KeyboardControls
+          map={keyboardMap}
+        >
           {/* Character Control */}
           <Ecctrl
-            debug={false}
+            debug={true}
 
-            animated={false}
+            animated={true}
+
             followLight={false}
 
             springK={2}

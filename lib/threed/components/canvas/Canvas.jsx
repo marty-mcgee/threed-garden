@@ -166,7 +166,7 @@ export function ThreeDEnvironment() {
     // console.debug('%c preset newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
     // console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.environmentPreset', ccm.yellowAlert, prefs.environmentPreset)
+    console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.environmentPreset', ccm.yellowAlert, prefs.environmentPreset)
   }, [preset])
 
   // **
@@ -174,7 +174,7 @@ export function ThreeDEnvironment() {
     // if (prefs.environmentPreset != undefined) {
       setScenePreferencesLeva({ preset: prefs.environmentPreset })
     // }
-    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.environmentPreset', ccm.greenAlert, prefs.environmentPreset)
+    console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.environmentPreset', ccm.greenAlert, prefs.environmentPreset)
   }, [prefs.environmentPreset])
 
   // ==========================================================
@@ -188,7 +188,7 @@ export function ThreeDEnvironment() {
     preferencesDataVar(newData)
     // console.debug('%c blur preferencesDataVar', ccm.darkgreen, preferencesDataVar())
     // setScenePreferencesLeva({ blur: blur })
-    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.yellowAlert, preferencesDataVar().environmentBgBlur)
+    console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.yellowAlert, preferencesDataVar().environmentBgBlur)
   }, [blur])
 
   // **
@@ -196,7 +196,7 @@ export function ThreeDEnvironment() {
     // if (prefs.environmentBgBlur != undefined) {
       setScenePreferencesLeva({ blur: prefs.environmentBgBlur })
     // }
-    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.greenAlert, prefs.environmentBgBlur)
+    console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.greenAlert, prefs.environmentBgBlur)
   }, [prefs.environmentBgBlur])
 
   // ==========================================================
@@ -250,7 +250,7 @@ const EcctrlJoystickControls = () => {
 
 export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
-  if (debug) console.debug('%c📐 ThreeDCanvas props.threeds', ccm.darkredAlert, threeds)
+  // if (debug) console.debug('%c📐 ThreeDCanvas props.threeds', ccm.darkredAlert, threeds)
   // if (debug) console.debug(`%c=======================================================`, ccm.darkred)
 
   // ** HOOKS
@@ -268,7 +268,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
         dpr={[1, 2]}
         shadows
         style={{
-          height: '480px',
+          height: '50vh',
           width: '100%',
         }}
         // ** SCENE
@@ -314,43 +314,6 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           {/* THREED EXPERIENCE */}
           <ThreeDExperience />
           {/* <Experience /> */}
-
-          {/* THREED CHARACTER: JOYSTICK
-            <Physics
-              debug={true}
-              timeStep='vary'
-            >
-              <KeyboardControls
-                map={keyboardMap}
-              >
-                <group name='ThreeDCharacterMap'
-                  // rotation={[-Math.PI / 2, 0, 0]}
-                  scale={2}
-                  position={[0, 8, -60]}
-                >
-                  <Map />
-                </group>
-                <group name='ThreeDCharacterAnimatedModel'
-                  // rotation={[-Math.PI / 2, 0, 0]}
-                  scale={2}
-                  position={[0, 0, 8]}
-                >
-                  <Ecctrl
-                    debug={true}
-                    mode='PointToMove'
-                    animated={false}
-                  >
-                    <EcctrlAnimation
-                      characterURL={characterURL}
-                      animationSet={animationSet}
-                    >
-                      <CharacterModel />
-                    </EcctrlAnimation>
-                  </Ecctrl>
-                </group>
-              </KeyboardControls>
-            </Physics>
-          */}
 
           {/* THREED SCENE FILES TO CANVAS */}
           {/* <ThreeDScene /> */}

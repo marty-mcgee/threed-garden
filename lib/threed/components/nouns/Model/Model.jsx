@@ -963,11 +963,16 @@ function ThreeDControls() {
 export default function ThreeDModels({ threeds }) {
   // **
   // console.debug(`%c======================================`, ccm.red)
-  console.debug('%c🌱 threeds[]', ccm.darkredAlert, threeds)
+  // console.debug('%c🌱 threeds[]', ccm.darkredAlert, threeds)
   // console.debug(`%c======================================`, ccm.red)
   // **
 
   // return <CoffeeCup />
+  if (!threeds.length) {
+    return <></>
+  }
+
+  console.debug('%c🌱 threeds[]', ccm.darkredAlert, threeds)
   return (
     <group>
       {/* <CoffeeCup /> */}

@@ -94,9 +94,9 @@ export function ThreeDLevaControls() {
   const colors = useControls(
     {
       colors: folder({
-        elevation1: '#09090D',
-        elevation2: '#181C20',
-        elevation3: '#373C4B',
+        elevation1: 'rgba(0,0,0,0.0)', // '#09090D',
+        elevation2: 'rgba(0,0,0,0.8)', // '#181C20',
+        elevation3: 'rgba(0,0,0,0.0)', // '#373C4B',
         accent1: '#0066DC',
         accent2: '#007BFF',
         accent3: '#3C93FF',
@@ -158,7 +158,7 @@ export function ThreeDLevaControls() {
         colorPickerWidth: '200px',
         colorPickerHeight: '100px',
         monitorHeight: '64px',
-        titleBarHeight: '40px',
+        titleBarHeight: '36px',
       }),
     },
     { store: sizesStore }
@@ -283,18 +283,18 @@ export function ThreeDLevaControls() {
   // **
   useEffect(() => {
     let newData = {...prefs}
-    // console.debug('%c doAutoLoadDataLeva newData', ccm.green, newData)
+    // console.debug('%c⚙️ doAutoLoadDataLeva newData', ccm.green, newData)
     newData.doAutoLoadData = doAutoLoadDataLeva
-    // console.debug('%c doAutoLoadDataLeva newData UPDATED', ccm.green, newData)
+    // console.debug('%c⚙️ doAutoLoadDataLeva newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
-    // console.debug('%c doAutoLoadDataLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // console.debug('%c⚙️ doAutoLoadDataLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
   }, [doAutoLoadDataLeva])
 
   useEffect(() => {
     // if (prefs.doAutoLoadData != undefined) {
       setUserPreferencesLeva({ doAutoLoadDataLeva: prefs.doAutoLoadData })
     // }
-    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoLoadData', ccm.greenAlert, prefs.doAutoLoadData)
+    console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doAutoLoadData', ccm.greenAlert, prefs.doAutoLoadData)
   }, [prefs.doAutoLoadData])
 
   // ==========================================================
@@ -305,11 +305,11 @@ export function ThreeDLevaControls() {
   // **
   useEffect(() => {
     let newData = {...preferencesDataVar()}
-    // console.debug('%c doAutoRotateLeva newData', ccm.green, newData)
+    // console.debug('%c⚙️ doAutoRotateLeva newData', ccm.green, newData)
     newData.doAutoRotate = doAutoRotateLeva
-    // console.debug('%c doAutoRotateLeva newData UPDATED', ccm.green, newData)
+    // console.debug('%c⚙️ doAutoRotateLeva newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
-    // console.debug('%c doAutoRotateLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // console.debug('%c⚙️ doAutoRotateLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
   }, [doAutoRotateLeva])
 
   // **
@@ -317,7 +317,7 @@ export function ThreeDLevaControls() {
     // if (prefs.doAutoRotateLeva != undefined) {
       setUserPreferencesLeva({ doAutoRotateLeva: prefs.doAutoRotate })
     // }
-    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.doAutoRotate', ccm.greenAlert, prefs.doAutoRotate)
+    console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doAutoRotate', ccm.greenAlert, prefs.doAutoRotate)
   }, [prefs.doAutoRotate])
 
   // ==========================================================
@@ -330,7 +330,7 @@ export function ThreeDLevaControls() {
       setControlPanelLeva({ title: prefs.projectName})
       setProjectPreferencesLeva({ projectNameLeva: prefs.projectName })
     // }
-    console.debug('%c READ FROM MASTER REACTIVE VAR: prefs.projectName', ccm.greenAlert, prefs.projectName)
+    console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.projectName', ccm.greenAlert, prefs.projectName)
   }, [prefs.projectName])
   // **
   useEffect(() => {
@@ -338,19 +338,19 @@ export function ThreeDLevaControls() {
 
       let newData = {...preferencesDataVar()}
       newData.projectName = projectNameLeva
-      console.debug('%c projectNameLeva newData', ccm.redAlert, projectNameLeva)
+      // console.debug('%c⚙️ projectNameLeva newData', ccm.redAlert, projectNameLeva)
       preferencesDataVar(newData)
-      // console.debug('%c projectNameLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+      // console.debug('%c⚙️ projectNameLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
 
       if (projectNameLeva != undefined) {
         setControlPanelLeva({ title: projectNameLeva})
       }
       else {
-        console.debug('%c ERROR: projectNameLeva: UNDEFINED', ccm.redAlert, projectNameLeva)
+        console.debug('%c⚙️ ERROR: projectNameLeva: UNDEFINED', ccm.redAlert, projectNameLeva)
       }
 
     } catch (ERR) {
-      console.debug('%c ERROR: setControlPanelLeva title: projectNameLeva', ccm.redAlert, projectNameLeva)
+      console.debug('%c⚙️ ERROR: setControlPanelLeva title: projectNameLeva', ccm.redAlert, projectNameLeva)
     }
   }, [projectNameLeva])
   // ==========================================================
