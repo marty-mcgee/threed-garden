@@ -1,7 +1,7 @@
 // @ts-nocheck /* OR @ ts-ignore OR @ ts-expect-error */
-'use client'
+// 'use client'
 // ==============================================================
-// ** RESOURCES
+// RESOURCES
 
 // ** REACT Imports
 import {

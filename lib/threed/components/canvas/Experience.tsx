@@ -1,32 +1,39 @@
-import { Grid, KeyboardControls } from "@react-three/drei";
-import { Perf } from "r3f-perf";
-import { Physics } from "@react-three/rapier";
-import Ecctrl from "#/lib/ecctrl/src/Ecctrl";
-import Floor from "./Floor";
-import Lights from "./Lights";
-import Steps from "./Steps";
-import Slopes from "./Slopes";
-import RoughPlane from "./RoughPlane";
-import RigidObjects from "./RigidObjects";
-import FloatingPlatform from "./FloatingPlatform";
-import DynamicPlatforms from "./DynamicPlatforms";
-import ShotCube from "./ShotCube";
-import { useControls } from "leva";
-import CharacterModel from "#/lib/threed/components/nouns/Character/CharacterModelFloating";
-import React, { useEffect, useState } from "react";
+// 'use client'
+// ==========================================================
+// RESOURCES
+
+import React, { useEffect, useState } from 'react'
+import { Grid, KeyboardControls } from '@react-three/drei'
+import { useControls } from 'leva'
+import { Perf } from 'r3f-perf'
+import { Physics } from '@react-three/rapier'
+import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
+import Floor from './Floor'
+import Lights from './Lights'
+import Steps from './Steps'
+import Slopes from './Slopes'
+import RoughPlane from './RoughPlane'
+import RigidObjects from './RigidObjects'
+import FloatingPlatform from './FloatingPlatform'
+import DynamicPlatforms from './DynamicPlatforms'
+import ShotCube from './ShotCube'
+import Map from './Map'
+import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
+import CharacterModel1 from '#/lib/threed/components/nouns/Character/CharacterModelFloating'
+import CharacterModel2 from '#/lib/threed/components/nouns/Character/Character'
 
 export default function Experience() {
   /**
    * Delay physics activate
    */
-  const [pausedPhysics, setPausedPhysics] = useState(true);
+  const [pausedPhysics, setPausedPhysics] = useState(true)
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setPausedPhysics(false);
-    }, 500);
+      setPausedPhysics(false)
+    }, 500)
 
-    return () => clearTimeout(timeout);
-  }, []);
+    return () => clearTimeout(timeout)
+  }, [])
 
   /**
    * World Preferences
@@ -59,29 +66,29 @@ export default function Experience() {
    * Keyboard control preset
    */
   const keyboardMap = [
-    { name: "forward", keys: ["ArrowUp", "KeyW"] },
-    { name: "backward", keys: ["ArrowDown", "KeyS"] },
-    { name: "leftward", keys: ["ArrowLeft", "KeyA"] },
-    { name: "rightward", keys: ["ArrowRight", "KeyD"] },
-    { name: "jump", keys: ["Space"] },
-    { name: "run", keys: ["Shift"] },
-    { name: "action1", keys: ["1"] },
-    { name: "action2", keys: ["2"] },
-    { name: "action3", keys: ["3"] },
-    { name: "action4", keys: ["KeyF"] },
-  ];
+    { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
+    { name: 'backward', keys: ['ArrowDown', 'KeyS'] },
+    { name: 'leftward', keys: ['ArrowLeft', 'KeyA'] },
+    { name: 'rightward', keys: ['ArrowRight', 'KeyD'] },
+    { name: 'jump', keys: ['Space'] },
+    { name: 'run', keys: ['Shift'] },
+    { name: 'action1', keys: ['1'] },
+    { name: 'action2', keys: ['2'] },
+    { name: 'action3', keys: ['3'] },
+    { name: 'action4', keys: ['KeyF'] },
+  ]
 
   return (
     <>
       {/* <Perf
-        position="bottom-right"
+        position='bottom-right'
         // minimal
       /> */}
 
       {/* <Grid
         args={[480, 480]}
-        sectionColor={"darkgray"}
-        cellColor={"black"}
+        sectionColor={'darkgray'}
+        cellColor={'black'}
         position={[0, 0, 0]}
         userData={{ camExcludeCollision: true }} // this won't collide by camera ray
       /> */}
@@ -90,7 +97,7 @@ export default function Experience() {
 
       <Physics
         debug={physics}
-        timeStep="vary"
+        timeStep='vary'
         paused={pausedPhysics}
       >
 
@@ -116,12 +123,23 @@ export default function Experience() {
 
             disableFollowCam={disableFollowCam}
           >
-            {/* Replace your model here */}
-            {/* <CharacterModel /> */}
-            <CharacterModel />
-            {/* <CharacterModel /> */}
+            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
+              <CharacterModel0 />
+            </group> */}
+            <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
+              <CharacterModel1 />
+              <CharacterModel2 />
+            </group>
+            {/* <group rotation={[0, 0, 0]} scale={0.5} position={[0, 0, 0]}>
+              <CharacterModel2 />
+            </group> */}
           </Ecctrl>
         </KeyboardControls>
+
+        {/* // import Map from './Map' */}
+        <group rotation={[0, -Math.PI/2, 0]} scale={1.0} position={[0, 0, 24]}>
+          <Map />
+        </group>
 
         {/* Rough plan */}
         <RoughPlane />
@@ -146,7 +164,8 @@ export default function Experience() {
 
         {/* Shoting cubes */}
         <ShotCube />
+
       </Physics >
     </>
-  );
+  )
 }

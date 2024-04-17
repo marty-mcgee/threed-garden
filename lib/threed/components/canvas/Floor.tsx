@@ -1,3 +1,7 @@
+// 'use client'
+// ==========================================================
+// RESOURCES
+
 import { RigidBody } from "@react-three/rapier";
 import { Grid } from "@react-three/drei";
 

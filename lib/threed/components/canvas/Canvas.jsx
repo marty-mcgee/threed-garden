@@ -1,6 +1,6 @@
-'use client'
-// ==============================================================
-// ** RESOURCES
+// 'use client'
+// ==========================================================
+// RESOURCES
 
 // ** APOLLO Imports
 import { useReactiveVar } from '@apollo/client'
@@ -89,7 +89,7 @@ import ccm from '#/lib/utils/console-colors'
 // ==============================================================
 // ** VARIABLES
 
-const debug = true // false | true // ts: boolean
+const debug = false // false | true // ts: boolean
 const DEBUG = true // false | true // ts: boolean
 const debug_deep = false // false | true // ts: boolean
 
@@ -161,12 +161,12 @@ export function ThreeDEnvironment() {
   // **
   useEffect(() => {
     let newData = {...prefs}
-    // console.debug('%c preset newData', ccm.green, newData)
+    // if (debug) console.debug('%c preset newData', ccm.green, newData)
     newData.environmentPreset = preset
-    // console.debug('%c preset newData UPDATED', ccm.green, newData)
+    // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
-    // console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-    console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.environmentPreset', ccm.yellowAlert, prefs.environmentPreset)
+    // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.environmentPreset', ccm.yellowAlert, prefs.environmentPreset)
   }, [preset])
 
   // **
@@ -174,7 +174,7 @@ export function ThreeDEnvironment() {
     // if (prefs.environmentPreset != undefined) {
       setScenePreferencesLeva({ preset: prefs.environmentPreset })
     // }
-    console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.environmentPreset', ccm.greenAlert, prefs.environmentPreset)
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.environmentPreset', ccm.greenAlert, prefs.environmentPreset)
   }, [prefs.environmentPreset])
 
   // ==========================================================
@@ -188,7 +188,7 @@ export function ThreeDEnvironment() {
     preferencesDataVar(newData)
     // console.debug('%c blur preferencesDataVar', ccm.darkgreen, preferencesDataVar())
     // setScenePreferencesLeva({ blur: blur })
-    console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.yellowAlert, preferencesDataVar().environmentBgBlur)
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.yellowAlert, preferencesDataVar().environmentBgBlur)
   }, [blur])
 
   // **
@@ -196,7 +196,7 @@ export function ThreeDEnvironment() {
     // if (prefs.environmentBgBlur != undefined) {
       setScenePreferencesLeva({ blur: prefs.environmentBgBlur })
     // }
-    console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.greenAlert, prefs.environmentBgBlur)
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.greenAlert, prefs.environmentBgBlur)
   }, [prefs.environmentBgBlur])
 
   // ==========================================================
@@ -308,6 +308,9 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           {/* THREED ENVIRONMENT */}
           {/* <Stage environment='forest' intensity={0.7}></Stage> */}
           <ThreeDEnvironment />
+
+          <axesHelper args={[1024]} />
+          <gridHelper args={[1024, 16]} />
           {/* <Lights /> */}
           {/* <Perf position='top-left' minimal /> */}
 
@@ -372,9 +375,6 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
               />
             </group>
           </GizmoHelper>
-
-          {/* <axesHelper args={[1024]} /> */}
-          {/* <gridHelper args={[1024, 16]} /> */}
 
           {/* EFFECTS */}
           <ContactShadows

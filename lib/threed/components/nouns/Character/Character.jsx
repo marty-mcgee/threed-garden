@@ -1,12 +1,22 @@
+// 'use client'
+// ==========================================================
+// RESOURCES
+
 import { proxy, useSnapshot } from 'valtio'
-import { useState, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
 import { ContactShadows, useCursor, useGLTF, useFBX, useOBJ } from '@react-three/drei'
 
-import ThreeDModel from '#/lib/threed/components/nouns/Model'
+import ThreeDModel from '#/lib/threed/components/nouns/Model/Model'
 import Character1 from '#/lib/threed/components/nouns/Character/FarmerScarecrow'
 import Character2 from '#/lib/threed/components/nouns/Character/FarmerMan'
 import Character3 from '#/lib/threed/components/nouns/Character/FarmerOldMan'
+
+// React Spring (for actions)
+// import { useSpring, a, Globals } from '@react-spring/web'
+// Globals.assign({
+//   frameLoop: 'always',
+// })
 
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
@@ -73,6 +83,25 @@ const Character = (props) => {
 
   console.debug('THREEDCHARACTER: state', state)
 
+  // // ==============================================================
+  // // ** HOVER STATE (w support for ANIMATIONS ...)
+
+  // // Feed hover state into useCursor, which sets document.body.style.cursor to pointer|auto
+  // const [isHovered, setIsHovered] = useState(false)
+  // useCursor(isHovered)
+
+  // // // Animate the selection halo
+  // const { color, scale } = useSpring({
+  //   scale: isHovered ? [1.15, 1.15, 1] : [1, 1, 1],
+  //   color: isHovered ? '#ff6d6d' : '#569AFF',
+  // })
+
+  // // // Change cursor on hover-state
+  // useEffect(
+  //   () => void (document.body.style.cursor = isHovered ? 'pointer' : 'auto'), [isHovered])
+
+  // // ==============================================================
+
   // map threed to THREEDCHARACTER, to pass on to Model
   const THREEDCHARACTER = {
     // === threed
@@ -123,10 +152,10 @@ const Character = (props) => {
         rotation={THREEDCHARACTER.group.group_rotation}
         scale={THREEDCHARACTER.group.group_scale}
       >
-        <ThreeDModel
+        {/* <ThreeDModel
           // ref={THREEDCHARACTER.ref}
-          state={state}
-          // threed={THREEDCHARACTER}
+          // state={state}
+          threeds={[THREEDCHARACTER]}
           // file={THREEDCHARACTER.files[0].file_url}
           // name={THREEDCHARACTER.files[0].nodes[0].node_name}
           // position={THREEDCHARACTER.files[0].nodes[0].node_position}
@@ -135,12 +164,12 @@ const Character = (props) => {
           // doReturnOne={true}
           // doReturnEach={false}
           // doReturnAll={false}
-        />
+        /> */}
 
         {/* CHARACTER[S] */}
         <Character1 />
-          <Character2 />
-            <Character3 />
+          {/* <Character2 /> */}
+            {/* <Character3 /> */}
         {/* CHARACTER[S] */}
 
         <ContactShadows

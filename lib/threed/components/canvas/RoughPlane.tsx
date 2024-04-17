@@ -1,3 +1,7 @@
+// 'use client'
+// ==========================================================
+// RESOURCES
+
 import { RigidBody } from "@react-three/rapier";
 import { useGLTF } from "@react-three/drei";
 import { useEffect } from "react";
@@ -20,7 +24,7 @@ export default function RoughPlane() {
   }, []);
 
   return (
-    <RigidBody type="fixed" colliders="trimesh" position={[10, -0.2, 10]}>
+    <RigidBody type="fixed" colliders="trimesh" position={[10, -0.3, 10]}>
       <primitive object={roughPlane.scene} />
     </RigidBody>
   );
