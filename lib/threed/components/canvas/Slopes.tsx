@@ -20,7 +20,7 @@ export default function Slopes() {
   }, []);
 
   return (
-    <group position={[-10, -1, 10]}>
+    <group position={[-10, 0, 10]}>
       <RigidBody type="fixed" colliders="trimesh" rotation={[0, Math.PI, 0]}>
         <primitive object={slopes.scene} />
       </RigidBody>
