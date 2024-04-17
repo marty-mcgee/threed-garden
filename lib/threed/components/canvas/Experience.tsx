@@ -123,9 +123,9 @@ export default function Experience() {
 
             disableFollowCam={disableFollowCam}
           >
-            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
+            <group rotation={[0, 0, 0]} scale={0.7} position={[-1, 0, -1]}>
               <CharacterModel0 />
-            </group> */}
+            </group>
             <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
               <CharacterModel1 />
             </group>
@@ -140,7 +140,7 @@ export default function Experience() {
           <Map />
         </group>
 
-        {/* Rough plan */}
+        {/* Rough plane */}
         <RoughPlane />
 
         {/* Slopes and stairs */}
