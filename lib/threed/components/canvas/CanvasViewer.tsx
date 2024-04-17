@@ -1,4 +1,4 @@
-'use client'
+// 'use client'
 // ==========================================================
 // RESOURCES
 
@@ -33,7 +33,7 @@ import ccm from '#/lib/utils/console-colors'
 // ==========================================================
 
 // DEBUG PREFERENCES FOR THIS MODULE
-const debug: boolean = true
+const debug: boolean = false
 const DEBUG: boolean = true
 const debug_deep: boolean = false
 
@@ -55,7 +55,7 @@ export const ThreeDCanvasViewer = () => {
   // **
   const word: string = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
   // console.debug(`%c=======================================================`, ccm.orange)
-  console.debug('%c🥕 ThreeDCanvasViewer ...', ccm.darkredAlert)
+  if (debug || DEBUG) console.debug('%c🥕 ThreeDCanvasViewer ...', ccm.darkredAlert)
   // console.debug(`%c=======================================================`, ccm.black)
 
   // ** USE CLIENT

@@ -1,5 +1,9 @@
-// ==============================================================
-// ** RESOURCES
+// 'use client'
+// ==========================================================
+// RESOURCES
+
+// ** NEXT Imports
+// import dynamic from 'next/dynamic'
 
 // ** VALTIO (State) Imports
 import { proxy, useSnapshot } from 'valtio'
@@ -36,7 +40,10 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 // import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 
 // React Spring (for actions)
-// import { useSpring, a } from '@react-spring/three'
+// import { useSpring, a, Globals } from '@react-spring/three'
+// Globals.assign({
+//   frameLoop: 'always',
+// })
 
 // ** EXAMPLES
 import CoffeeCup from '~/lib/threed/components/examples/CoffeeCup/CoffeeCup'
@@ -390,7 +397,7 @@ const Model = ({
   // ==============================================================
   // ==============================================================
   // ==============================================================
-  // ** HOVER STATE (w support for ANIMAATIONS ...)
+  // ** HOVER STATE (w support for ANIMATIONS ...)
 
   // Feed hover state into useCursor, which sets document.body.style.cursor to pointer|auto
   // const [isHovered, setIsHovered] = useState(false)
@@ -960,7 +967,7 @@ function ThreeDControls() {
 
 // ===============================================================
 // **
-export default function ThreeDModels({ threeds }) {
+const ThreeDModels = ({ threeds }) => {
   // **
   // console.debug(`%c======================================`, ccm.red)
   // console.debug('%c🌱 threeds[]', ccm.darkredAlert, threeds)
@@ -999,7 +1006,8 @@ export default function ThreeDModels({ threeds }) {
             // rotation={threed.group.group_rotation}
             // scale={threed.group.group_scale}
           >
-          {_threed.files.nodes.map((_file, index) => {
+          { _threed.files.nodes &&
+            _threed.files.nodes.map((_file, index) => {
             // console.debug('_file', index + ': ', _file)
             // console.debug(`%c======================================`, ccm.red)
 
@@ -1024,3 +1032,9 @@ export default function ThreeDModels({ threeds }) {
     </group>
   )
 }
+
+// const ThreeDModel_UseClient = dynamic(() => Promise.resolve(ThreeDModels), {
+//   ssr: false
+// })
+// export default ThreeDModel_UseClient
+export default ThreeDModels

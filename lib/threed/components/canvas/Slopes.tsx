@@ -1,3 +1,7 @@
+// 'use client'
+// ==========================================================
+// RESOURCES
+
 import { RigidBody } from "@react-three/rapier";
 import { useGLTF, Text } from "@react-three/drei";
 import { useEffect } from "react";

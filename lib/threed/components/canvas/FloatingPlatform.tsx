@@ -1,3 +1,7 @@
+// 'use client'
+// ==========================================================
+// RESOURCES
+
 import {
   CuboidCollider,
   RapierRigidBody,

@@ -1,3 +1,7 @@
+// 'use client'
+// ==========================================================
+// RESOURCES
+
 import { Text } from "@react-three/drei";
 import {
   BallCollider,

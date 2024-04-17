@@ -507,8 +507,8 @@ const ThreeDGarden = (): JSX.Element => {
   )
 }
 
-export default ThreeDGarden
 // const ThreeDGarden_UseClient = dynamic(() => Promise.resolve(ThreeDGarden), {
 //   ssr: false
 // })
 // export default ThreeDGarden_UseClient
+export default ThreeDGarden

@@ -1,3 +1,7 @@
+// 'use client'
+// ==========================================================
+// RESOURCES
+
 import {
   useAnimations,
   useGLTF,
@@ -212,7 +216,7 @@ export default function CharacterModel(props: CharacterModelProps) {
     return () => {
       try {
         // Fade out previous action
-        action.fadeOut(0.2)
+        // action.fadeOut(0.2)
 
         // Clean up mixer listener, and empty the _listeners array
         (action as any)._mixer.removeEventListener('finished', () =>
@@ -328,5 +332,4 @@ export default function CharacterModel(props: CharacterModelProps) {
 
 export type CharacterModelProps = JSX.IntrinsicElements['group']
 
-// Change the character src to yours
 useGLTF.preload(theCharacterModelFile)

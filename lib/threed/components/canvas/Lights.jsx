@@ -1,3 +1,7 @@
+// 'use client'
+// ==========================================================
+// RESOURCES
+
 export default function Lights() {
   return (
     <>
