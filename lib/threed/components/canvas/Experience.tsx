@@ -128,11 +128,10 @@ export default function Experience() {
             </group> */}
             <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
               <CharacterModel1 />
+            </group>
+            <group rotation={[0, 0, 0]} scale={0.3} position={[0, 0, 0]}>
               <CharacterModel2 />
             </group>
-            {/* <group rotation={[0, 0, 0]} scale={0.5} position={[0, 0, 0]}>
-              <CharacterModel2 />
-            </group> */}
           </Ecctrl>
         </KeyboardControls>
 
