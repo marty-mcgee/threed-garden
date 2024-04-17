@@ -1,6 +1,6 @@
 // @ts-nocheck /* OR @ ts-ignore OR @ ts-expect-error */
-'use client'
-// ^ this file needs the 'use client' pragma
+// 'use client'
+// ^ needs the 'use client' pragma (inheriting from parent page)
 // ==============================================================
 // ** RESOURCES
 
