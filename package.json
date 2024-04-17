@@ -98,7 +98,7 @@
     "sharp": "^0.32.6",
     "styled-components": "^6.1.8",
     "swr": "^2.2.5",
-    "three": "^0.162.0",
+    "three": "^0.163.0",
     "three-mesh-ui": "^6.5.4",
     "use-count-up": "^3.0.1",
     "use-debounce": "^8.0.4",
