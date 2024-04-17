@@ -373,8 +373,8 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
             </group>
           </GizmoHelper>
 
-          <axesHelper args={[1024]} />
-          <gridHelper args={[1024, 16]} />
+          {/* <axesHelper args={[1024]} /> */}
+          {/* <gridHelper args={[1024, 16]} /> */}
 
           {/* EFFECTS */}
           <ContactShadows

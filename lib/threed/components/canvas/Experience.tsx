@@ -100,7 +100,7 @@ export default function Experience() {
         >
           {/* Character Control */}
           <Ecctrl
-            debug={true}
+            debug={false}
 
             animated={true}
 
