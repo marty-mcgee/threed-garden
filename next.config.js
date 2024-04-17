@@ -1,5 +1,5 @@
 // ==============================================================
-// ** NEXT.JS 13 BUILD CONFIGURATION FILE
+// ** NEXT.JS 14 BUILD CONFIGURATION FILE
 
 if (!process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL) {
   throw new Error(`
@@ -25,7 +25,7 @@ const path = require('path')
 // ])
 
 // MODULE
-/** @type {import("next").NextConfig} */
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   //
   reactStrictMode: false, // true: causes components to load TWICE in dev only, not active (moot) in production
@@ -50,22 +50,38 @@ const nextConfig = {
   transpilePackages: [
     // ORDER DOES NOT MATTER
 
+    // 'three',
+
+    'axios',
+    'axios-mock-adapter',
+
+    'yup',
+    '@hookform/resolvers',
+
     // '@fullcalendar/common',
     // '@fullcalendar/daygrid',
     // '@fullcalendar/interaction',
     // '@fullcalendar/react',
     // '@fullcalendar/timegrid',
 
-    'axios',
-    'axios-mock-adapter',
-
     // 'react-github-btn',
-
-    'three',
-
-    'yup',
-    '@hookform/resolvers',
   ],
+
+  async headers() {
+    return [
+      {
+        // matching all API routes
+        // source: '/api/:path*',
+        source: '/:path*',
+        headers: [
+          { key: 'Access-Control-Allow-Credentials', value: 'true' },
+          { key: 'Access-Control-Allow-Origin', value: 'https://threed.design/graphql' }, // replace this your actual origin
+          { key: 'Access-Control-Allow-Methods', value: 'GET,DELETE,PATCH,POST,PUT' },
+          { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version' },
+        ]
+      }
+    ]
+  },
 
   // productionBrowserSourceMaps: true,
 
@@ -79,14 +95,14 @@ const nextConfig = {
 
   // ** IMAGES (production use?)
   images: {
-    domains: [
-      process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL.match(/(?!(w+)\.)\w*(?:\w+\.)+\w+/)[0], // Valid WP Image domain.
-      '0.gravatar.com',
-      '1.gravatar.com',
-      '2.gravatar.com',
-      'secure.gravatar.com',
-      'images.cdndomain.com',
-    ],
+    // domains: [
+    //   process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL.match(/(?!(w+)\.)\w*(?:\w+\.)+\w+/)[0], // Valid WP Image domain.
+    //   '0.gravatar.com',
+    //   '1.gravatar.com',
+    //   '2.gravatar.com',
+    //   'secure.gravatar.com',
+    //   'images.cdndomain.com',
+    // ],
     remotePatterns: [
       {
         protocol: 'https',
@@ -103,15 +119,15 @@ const nextConfig = {
     // // minimumCacheTTL: 60,
     // disableStaticImages: true,
     // dangerouslyAllowSVG: true,
-    // contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // contentSecurityPolicy: 'default-src 'self'; script-src 'none'; sandbox;',
   },
 
   // ** REDIRECTS
   // async redirects() {
   //   return [
   //     {
-  //       source: "/",
-  //       destination: "/dashboards/sales",
+  //       source: '/',
+  //       destination: '/dashboards/sales',
   //       permanent: true,
   //     },
   //   ]
@@ -142,17 +158,17 @@ const nextConfig = {
     //   })
 
     // config.node = {
-    //   fs: "empty",
+    //   fs: 'empty',
     // }
 
     // config.module.rules.push({
     //   use: [
     //     options.defaultLoaders.babel,
     //     {
-    //       loader: "url-loader?limit=100000",
+    //       loader: 'url-loader?limit=100000',
     //     },
     //     {
-    //       loader: "file-loader",
+    //       loader: 'file-loader',
     //     },
     //   ],
     // })
@@ -174,7 +190,7 @@ const nextConfig = {
 
   // NOT NEEDED HERE: instead, use .env.local to safely load env variables as needed (NEXT_PUBLIC_)
   // env: {
-  //   customKey: process.env.HEY_HEY_HEY, // "HEY HEY HEY" | process.env.HEY_HEY_HEY
+  //   customKey: process.env.HEY_HEY_HEY, // 'HEY HEY HEY' | process.env.HEY_HEY_HEY
   // },
 } // end nextConfig
 

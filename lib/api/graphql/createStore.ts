@@ -1,7 +1,12 @@
+// 🫙 Store is a Jar, with States inside
+
 // ** "apollo-reactive-store": "0.0.4"
 import { makeVar, ReactiveVar, useReactiveVar } from '@apollo/client'
 
-// [MM] COLORFUL CONSOLE MESSAGES (ccm)
+// ** Helper Components
+import Spinner from '#/ui/components/spinner'
+// ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
+import ccm from '#/lib/utils/console-colors'
 
 type State<T> = Record<string | symbol, T>
 type Store<T> = Record<string | symbol, ReactiveVar<T>>
@@ -27,7 +32,12 @@ export interface StoreApi<Value> {
   reset(): void
 }
 
-export default function create<Value>(initialState: State<Value>, options = { debug: false }): StoreApi<Value> {
+export default function create<Value> (
+  initialState: State<Value>,
+  options = { debug: true }
+): StoreApi<Value> {
+
+  // ** CREATE STORE SINGLETON
   const createStore = () => {
     return Object.keys(initialState).reduce<Store<Value>>((sum, key) => {
       return {
@@ -36,6 +46,8 @@ export default function create<Value>(initialState: State<Value>, options = { de
       }
     }, {})
   }
+
+  // ** CREATE AN INSTANCE OF STORE
   let store = createStore()
 
   // DEBUGGING
@@ -72,13 +84,16 @@ export default function create<Value>(initialState: State<Value>, options = { de
       // })
 
       // console.debug(`${initialState._type}Store current state {fields}`, fields)
-      // console.debug('%c====================================', ccm5)
+      // console.debug('%c🫙====================================', ccm5)
     }
   }
 
   const debug = (key: string, value: Updater<Value>): void => {
     if (options.debug) {
-      console.debug(`store update(key) "${key}" with value: ${JSON.stringify(value)}`)
+      // console.debug(`%c🫙===================================================`, ccm.blueAlert)
+      // console.debug(`store update(key) "${key}" with value: ${JSON.stringify(value)}`)
+      console.debug(`%c🫙 store update(key) "${key}"`, ccm.blueAlert, value)
+      // console.debug(`%c🫙===================================================`, ccm.blueAlert)
     }
   }
 
@@ -97,7 +112,9 @@ export default function create<Value>(initialState: State<Value>, options = { de
         throw new Error(`store getState(): "${JSON.stringify(store)}" is invalid`, store)
       }
 
-      console.debug(`store getState(): {fields}`, fields)
+      // console.debug(`%c🫙===================================================`, ccm.blueAlert)
+      console.debug(`%c🫙 store getState(): {fields}`, ccm.blueAlert, fields)
+      // console.debug(`%c🫙===================================================`, ccm.blueAlert)
       return fields
     },
     get(key: string) {

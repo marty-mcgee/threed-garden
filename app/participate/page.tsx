@@ -1,14 +1,17 @@
 'use client'
+// ==========================================================
+// RESOURCES
 
-// ** Next Imports
+// ** AUTH GUARD
+// import { auth } from 'auth'
+// import { SessionProvider } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
+
+// ** NEXT Imports
+// import dynamic from 'next/dynamic'
+// import Image from 'next/image'
 // import type { NextPage } from 'next'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
-
-// ** React Imports
-import { useContext } from 'react'
-
-// ** Context Imports
-import { AbilityContext } from '#/lib/auth/acl/Can'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
@@ -17,59 +20,106 @@ import CardHeader from '@mui/material/CardHeader'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 
+// ** MAIN COMPONENTS
 // ** ThreeDGarden Imports
 import ThreeDGarden from '#/lib/threed/ThreeDGarden'
-// const ThreeDGarden = dynamic(() => import('#/lib/threed/ThreeDGarden'), {
-//   ssr: false,
-// })
+
+// ** Helper Components
+import Spinner from '#/ui/components/spinner'
+// ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
+import ccm from '#/lib/utils/console-colors'
 
 const ParticipatePage: TNextPageWithProps = () => {
-  // ** Hooks
-  const ability = useContext(AbilityContext)
+// const ParticipatePage: TNextPageWithProps = async () => {
+  // **
+  // const session = await auth()
+  const { data: session, status } = useSession()
+  // filter out sensitive data before passing to client.
+  // if (session) {
+    // console.debug('%c Participate page: session', ccm.greenAlert, session)
+    // if (session?.user) {
+    //   session.user = {
+    //     name: session.user.name,
+    //     email: session.user.email,
+    //     image: session.user.image,
+    //   }
+    // }
+  // }
+  // else {
+  //   console.debug('%c Participate page: NO session', ccm.redAlert)
+  // }
+  // let session = {
+  //   user: {
+  //     name: 'Marty',
+  //     email: 'mcgee.marty@gmail.com',
+  //     image: './ThreeD-Garden-Logo-Circle-Carrot.png'
+  //   }
+  // }
 
   return (
     <Grid
       container
-      spacing={2}
+      spacing={1}
     >
       {/* [MM] HEY HEY HEY */}
       <ThreeDGarden />
       {/* [MM] HEY HEY HEY */}
 
+      {/* {ability?.can('read', 'analytics') && ( */}
       <Grid
         item
         md={6}
         xs={12}
+        sx={{ display: 'none' }}
       >
         <Card>
-          <CardHeader title='Public Content' />
+          <CardHeader
+            title='Public Content'
+            sx={{paddingBottom: '0'}}
+            // avatar={session?.user?.image}
+          />
           <CardContent>
-            <Typography sx={{ mb: 4 }}>No user role 'ability' is required to view this card</Typography>
-            <Typography sx={{ color: 'primary.main' }}>This card is visible to both 'user' and 'admin'</Typography>
+            <Typography sx={{ color: 'primary.main', paddingBottom: '8px' }}>This card is visible to both 'public' and 'authorized' users</Typography>
+            { session?.user && (
+            <Typography sx={{ color: 'secondary.main' }}>
+              name: {session.user.name}<br/>
+              email: {session.user.email ? 'hidden' : ''}<br/>
+              <img src={session.user.image} width='8px' /><br/>
+            </Typography>
+            )}
           </CardContent>
         </Card>
       </Grid>
-      {ability?.can('read', 'analytics') && (
-        <Grid
-          item
-          md={6}
-          xs={12}
-        >
-          <Card>
-            <CardHeader title='Restricted Content' />
-            <CardContent>
-              <Typography sx={{ mb: 4 }}>User with "analytics: read" ability can view this card</Typography>
-              <Typography sx={{ color: 'error.main' }}>This card is visible to 'admin' only</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      )}
+      <Grid
+        item
+        md={6}
+        xs={12}
+        sx={{ display: 'none' }}
+      >
+        <Card>
+          <CardHeader title='Restricted/User Content'
+            sx={{paddingBottom: '0'}}
+            // avatar={session.user.image}
+          />
+          <CardContent>
+            <Typography sx={{ color: 'warning.main', paddingBottom: '8px' }}>This card is visible only to 'authorized' users</Typography>
+            { session?.user && (
+            <Typography sx={{ color: 'secondary.main' }}>
+              name: {session.user.name}<br/>
+              email: {session.user.email}<br/>
+              <img src={session.user.image} width='8px' /><br/>
+            </Typography>
+            )}
+          </CardContent>
+        </Card>
+      </Grid>
     </Grid>
+    // )}
   )
 }
-ParticipatePage.acl = {
-  action: 'read',
-  subject: 'participate-page',
-}
 
+// const ParticipatePage_UseClient = dynamic(() => Promise.resolve(ParticipatePage), {
+//   ssr: false
+// })
+// export default ParticipatePage_UseClient
 export default ParticipatePage
