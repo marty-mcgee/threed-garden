@@ -96,7 +96,7 @@ export function ThreeDLevaControls() {
       colors: folder({
         elevation1: 'rgba(0,0,0,0.0)', // '#09090D',
         elevation2: 'rgba(0,0,0,0.8)', // '#181C20',
-        elevation3: 'rgba(0,0,0,0.0)', // '#373C4B',
+        elevation3: 'rgba(255,255,255,0.1)', // '#373C4B',
         accent1: '#0066DC',
         accent2: '#007BFF',
         accent3: '#3C93FF',

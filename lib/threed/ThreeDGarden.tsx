@@ -304,7 +304,7 @@ const ThreeDGarden = (): JSX.Element => {
         // const loadPreferencesMM = await preferencesStore.store.useStore('one')
         // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: get one preferences => loadPreferencesMM', ccm.redAlert, loadPreferencesMM)
         preferencesDataVar(loadPreferencesMM.data)
-        console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
+        // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
         isPreferencesSetVar(true)
         setIsPrefsLoaded(isPreferencesSetVar())
         // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
@@ -327,7 +327,7 @@ const ThreeDGarden = (): JSX.Element => {
       fetchData()
       if (DEBUG) console.debug('%c fetching data ...', ccm.blue)
     } else {
-      console.debug('%c🦆 ThreeDGarden => APOLLO STORE: preferencesDataVar()', ccm.redAlert, preferencesDataVar())
+      // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: preferencesDataVar()', ccm.redAlert, preferencesDataVar())
     }
 
   }, []) // useEffect
