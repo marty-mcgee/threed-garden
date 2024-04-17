@@ -73,8 +73,10 @@ const getFarmbotToken = () => {
       password: 'XXXxxxXXX',
     }
   }
-  let MY_THREED_TOKEN = 'NADA LADA' // data.token.encoded
-  MY_THREED_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJ1bmtub3duIiwic3ViIjoxNTI2NywiaWF0IjoxNzEyNTc2MzU2LCJqdGkiOiJmNzNjZTAxZS00NWY5LTQ4NzUtYTRiMC0xOWJhM2E0OTZiM2EiLCJpc3MiOiIvL215LmZhcm0uYm90OjQ0MyIsImV4cCI6MTcxNzc2MDM1NiwibXF0dCI6ImNsZXZlci1vY3RvcHVzLnJtcS5jbG91ZGFtcXAuY29tIiwiYm90IjoiZGV2aWNlXzE1Mjk3Iiwidmhvc3QiOiJ4aWNvbmZ1bSIsIm1xdHRfd3MiOiJ3c3M6Ly9jbGV2ZXItb2N0b3B1cy5ybXEuY2xvdWRhbXFwLmNvbTo0NDMvd3MvbXF0dCJ9.ZLYoVODi7OmwTkbCBopuNcznXvmvTqMtvpl-JScH-IGT4EKQqUC-SZ8Un-u402ws4z4RIBAxovcQqsTuSqGo9Ai3jWUFaA4VQHg0EQGwWcKFtyNUzrKPeIKpzxXVQGlspBBm0QuZgHPNqQDzx_zaMdD6KbVAISoADaKPW5fIHe9qq4_y8-7m5lfIQKBL2AQkwPPKYBEX7TviX_YX3YpMyBauhBc1eKtcChGRwEBm7HkuYPLl5yRory_NzsN0C3VYgPvx9GnXaLwCxT7w9YTKkTfETXTviFoUP6GRwFS_zaM95yi89ocjAfYkR9tHtYfXVeRKQa0BRyZ_wZWJuoc68A'
+  // data.token.encoded
+  let MY_THREED_TOKEN = process.env.NEXT_PUBLIC_FARMBOT_TOKEN
+                      ? process.env.NEXT_PUBLIC_FARMBOT_TOKEN
+                      : 'NADA.LADA.DADA'
 
   return MY_THREED_TOKEN
 
