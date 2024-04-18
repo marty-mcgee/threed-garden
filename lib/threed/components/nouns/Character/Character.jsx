@@ -167,8 +167,8 @@ const Character = (props) => {
         /> */}
 
         {/* CHARACTER[S] */}
-        <Character1 />
-          {/* <Character2 /> */}
+        {/* <Character1 /> */}
+          <Character2 />
             {/* <Character3 /> */}
         {/* CHARACTER[S] */}
 

@@ -1,4 +1,4 @@
-# [🥕 ThreeD Garden: 3D Object Environment w Next.JS React TypeScript Web3 ThreeJS Poimandres React-Three w Apollo State + Leva Control UI w Apollo Stores w MUI + Tailwind CSS](https://github.com/marty-mcgee/threed-garden/)
+# [🥕 ThreeD Garden: 3D Object Environment w Next.JS React TypeScript Web3 ThreeJS Poimandres React-Three w Apollo State + Leva Control UI w Apollo Stores w MUI + Tailwind](https://github.com/marty-mcgee/threed-garden/)
 
 3D Dev Environment w React, TypeScript, Three.js, React-Three (poimandres), on Next.js, Apollo Client, GraphQL, WordPress REST API, MUI + Tailwind. ThreeD Web3 Interface for Three-Dimensional JavaScript Objects with React Server + Client Components, Web3 Contracts ...
 

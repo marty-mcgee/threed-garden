@@ -123,15 +123,22 @@ export default function Experience() {
 
             disableFollowCam={disableFollowCam}
           >
-            <group rotation={[0, 0, 0]} scale={0.7} position={[-1, 0, -1]}>
+
+            {/* THREED CHARACTER [0] -- DEMON / CHICKEN */}
+            {/* <group rotation={[0, 0, 0]} scale={0.7} position={[-1, 0.1, -1]}>
               <CharacterModel0 />
-            </group>
-            <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
+            </group> */}
+
+            {/* THREED CHARACTER [1] -- FLOATING PHYSICS CAPSULE*/}
+            <group rotation={[0, 0, 0]} scale={1.0} position={[1, 0.1, -1]}>
               <CharacterModel1 />
             </group>
-            <group rotation={[0, 0, 0]} scale={0.3} position={[0, 0, 0]}>
+
+            {/* THREED CHARACTER [2] -- FARMERS */}
+            <group rotation={[0, 0, 0]} scale={0.3} position={[0, 0.1, 0]}>
               <CharacterModel2 />
             </group>
+
           </Ecctrl>
         </KeyboardControls>
 
