@@ -53,20 +53,19 @@ const testing = false
 
 // ** MAIN FUNCTION to return JSX "EXPERIENCE"
 export default function Experience() {
-  /**
-   * Delay physics activate
-   */
+
+  // ** Delay physics activate
   const [pausedPhysics, setPausedPhysics] = useState(true)
   useEffect(() => {
     const timeout = setTimeout(() => {
       setPausedPhysics(false)
     }, 500)
-
     return () => clearTimeout(timeout)
   }, [])
 
+  // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
   const prefs = useReactiveVar(preferencesDataVar)
-  console.debug(`%c EXPERIENCE: prefs`, ccm.orangeAlert, prefs)
+  console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
 
   /**
    * World Preferences
@@ -112,6 +111,31 @@ export default function Experience() {
       order: 10,
     },
   )
+
+  // ==========================================================
+  // ** enableWorldDebug
+  // **
+  useEffect(() => {
+    let newData = {...prefs}
+    // if (debug) console.debug('%c preset newData', ccm.green, newData)
+    newData.enableWorldDebug = enableWorldDebug
+    // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.enableWorldDebug', ccm.yellowAlert, prefs.enableWorldDebug)
+  }, [enableWorldDebug])
+
+  // **
+  useEffect(() => {
+    // if (prefs.enableWorldDebug != undefined) {
+      setWorldPreferencesLeva({ enableWorldDebug: prefs.enableWorldDebug })
+    // }
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.enableWorldDebug', ccm.greenAlert, prefs.enableWorldDebug)
+  }, [prefs.enableWorldDebug])
+
+
+
+
 
   /**
    * Keyboard control preset
