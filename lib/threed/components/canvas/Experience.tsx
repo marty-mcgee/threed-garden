@@ -178,7 +178,7 @@ export default function Experience() {
           map={keyboardMap}
         >
           {/* Character 2 Control */}
-          <Ecctrl
+          {/* <Ecctrl
             debug={enableDebug}
 
             animated={enableCharacterAnimation}
@@ -194,7 +194,7 @@ export default function Experience() {
             autoBalanceDampingOnY={0.05}
 
             disableFollowCam={disableFollowCam}
-          >
+          > */}
 
             {/* THREED CHARACTER [0] -- DEMON / CHICKEN */}
             {/* <group rotation={[0, 0, 0]} scale={0.7} position={[-1, 0.1, -1]}>
@@ -217,7 +217,7 @@ export default function Experience() {
               <CharacterModel3 />
             </group> */}
 
-          </Ecctrl>
+          {/* </Ecctrl> */}
         </KeyboardControls>
         {/* )} // end testing */}
 

@@ -277,28 +277,28 @@ export default function CharacterModel(props: CharacterModelProps) {
     })
   })
 
-  // useFrame(() => {
-  //   if (curAnimation === animationSet.action4) {
-  //     if (rightHand) {
-  //       rightHand.getWorldPosition(rightHandPos)
-  //       group.current.getWorldPosition(bodyPos)
-  //       group.current.getWorldQuaternion(bodyRot)
-  //     }
+  useFrame(() => {
+    if (curAnimation === animationSet.action4) {
+      if (rightHand) {
+        rightHand.getWorldPosition(rightHandPos)
+        group.current.getWorldPosition(bodyPos)
+        group.current.getWorldQuaternion(bodyRot)
+      }
 
-  //     // Apply hands position to hand colliders
-  //     if (rightHandColliderRef.current) {
-  //       // check if parent group autobalance is on or off
-  //       if (group.current.parent.quaternion.y === 0 && group.current.parent.quaternion.w === 1) {
-  //         rightHandRef.current.position.copy(rightHandPos).sub(bodyPos).applyQuaternion(bodyRot.conjugate())
-  //       } else {
-  //         rightHandRef.current.position.copy(rightHandPos).sub(bodyPos)
-  //       }
-  //       rightHandColliderRef.current.setTranslationWrtParent(
-  //         rightHandRef.current.position
-  //       )
-  //     }
-  //   }
-  // })
+      // Apply hands position to hand colliders
+      if (rightHandColliderRef.current) {
+        // check if parent group autobalance is on or off
+        if (group.current.parent.quaternion.y === 0 && group.current.parent.quaternion.w === 1) {
+          rightHandRef.current.position.copy(rightHandPos).sub(bodyPos).applyQuaternion(bodyRot.conjugate())
+        } else {
+          rightHandRef.current.position.copy(rightHandPos).sub(bodyPos)
+        }
+        rightHandColliderRef.current.setTranslationWrtParent(
+          rightHandRef.current.position
+        )
+      }
+    }
+  })
 
   useEffect(() => {
 
