@@ -178,23 +178,23 @@ export default function Experience() {
           map={keyboardMap}
         >
           {/* Character 2 Control */}
-          {/* <Ecctrl
+          <Ecctrl
             debug={enableDebug}
 
             animated={enableCharacterAnimation}
 
-            followLight={false}
+            // followLight={false}
 
-            springK={2}
-            dampingC={0.2}
+            // springK={2}
+            // dampingC={0.2}
 
-            autoBalanceSpringK={1.2}
-            autoBalanceDampingC={0.04}
-            autoBalanceSpringOnY={0.7}
-            autoBalanceDampingOnY={0.05}
+            // autoBalanceSpringK={1.2}
+            // autoBalanceDampingC={0.04}
+            // autoBalanceSpringOnY={0.7}
+            // autoBalanceDampingOnY={0.05}
 
-            disableFollowCam={disableFollowCam}
-          > */}
+            // disableFollowCam={disableFollowCam}
+          >
 
             {/* THREED CHARACTER [0] -- DEMON / CHICKEN */}
             {/* <group rotation={[0, 0, 0]} scale={0.7} position={[-1, 0.1, -1]}>
@@ -217,7 +217,7 @@ export default function Experience() {
               <CharacterModel3 />
             </group> */}
 
-          {/* </Ecctrl> */}
+          </Ecctrl>
         </KeyboardControls>
         {/* )} // end testing */}
 

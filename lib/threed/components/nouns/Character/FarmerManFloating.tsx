@@ -320,7 +320,7 @@ export default function CharacterModel(props: CharacterModelProps) {
         action
           .reset()
           .fadeIn(0.2)
-          .setLoop(THREE.LoopOnce, undefined as number)
+          // .setLoop(THREE.LoopOnce, undefined as number) // [MM] POTENTIAL BUG POINT
           .play()
         action.clampWhenFinished = true
         // Only show mug during cheer action
