@@ -52,25 +52,25 @@ export default function Experience() {
   }, setWorldPreferencesLeva] = useControls(
     'World Preferences',
     () => ({
-      // worldDebug
+      // worldEnableDebug
       enableDebug: {
         label: 'World Debugger?',
-        value: true, // prefs.worldDebug,
+        value: false, // prefs.worldEnableDebug,
       },
-      // worldTesting
+      // worldEnableTesting
       enableTesting: {
         label: 'Testing?',
-        value: false, // prefs.worldTesting,
+        value: false, // prefs.worldEnableTesting,
       },
-      // worldPhysics
+      // worldEnablePhysics
       enablePhysics: {
         label: 'Physics Debugger?',
-        value: false, // prefs.worldPhysics,
+        value: false, // prefs.worldEnablePhysics,
       },
-      // worldCharacterAnimation
+      // worldEnableCharacterAnimation
       enableCharacterAnimation: {
         label: 'Animate Characters?',
-        value: false, // prefs.worldCharacterAnimation,
+        value: false, // prefs.worldEnableCharacterAnimation,
       },
       // worldDisableFollowCam
       disableFollowCam: {
@@ -172,8 +172,8 @@ export default function Experience() {
         {/* </KeyboardControls> */}
 
         {/* Keyboard preset */}
-        { enableDebug &&
-          enableTesting && (
+        {/* { enableDebug &&
+          enableTesting && ( */}
         <KeyboardControls
           map={keyboardMap}
         >
@@ -209,7 +209,7 @@ export default function Experience() {
             {/* THREED CHARACTER [2] -- FARMERS */}
             <group rotation={[0, 0, 0]} scale={0.02} position={[0, 0.0, 0]}>
               {/* <CharacterModel2 /> */}
-              <CharacterModel4 position={[0, 0.0, 0]} />
+              <CharacterModel4 />
             </group>
 
             {/* THREED CHARACTER [3] -- TESTING */}
@@ -219,7 +219,7 @@ export default function Experience() {
 
           </Ecctrl>
         </KeyboardControls>
-        )}
+        {/* )} // end testing */}
 
         {/* // import Map from './Map' */}
         <group rotation={[0, -Math.PI/2, 0]} scale={1.0} position={[0, 0, 24]}>
