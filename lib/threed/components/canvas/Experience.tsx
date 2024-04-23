@@ -144,8 +144,8 @@ export default function Experience() {
             autoBalanceSpringOnY={0.7}
             autoBalanceDampingOnY={0.05}
 
-            disableFollowCam={disableFollowCam} */}
-          >
+            disableFollowCam={disableFollowCam}
+          > */}
 
             {/* THREED CHARACTER [0] -- DEMON / CHICKEN */}
             {/* <group rotation={[0, 0, 0]} scale={0.7} position={[-1, 0.1, -1]}>
