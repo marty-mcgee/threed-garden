@@ -29,7 +29,7 @@ export default function CharacterModel(props: CharacterModelProps) {
   }
   const { actions } = useAnimations(animations, group)
   // gradientMapTexture for MeshToonMaterial
-  const gradientMapTexture = useTexture('./textures/3.jpg')
+  const gradientMapTexture = useTexture('/textures/3.jpg')
   gradientMapTexture.minFilter = THREE.NearestFilter
   gradientMapTexture.magFilter = THREE.NearestFilter
   gradientMapTexture.generateMipmaps = false

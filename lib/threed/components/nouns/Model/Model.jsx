@@ -32,6 +32,7 @@ import {
   // ContactShadows,
 } from '@react-three/drei'
 // Three Loaders
+import { TextureLoader } from 'three/src/loaders/TextureLoader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { TGALoader } from 'three/examples/jsm/loaders/TGALoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -176,6 +177,9 @@ const Model = ({
     'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/FBX/SM_Prop_Plant_Corn_01.fbx'
   const fileUrl = threed.file?.isUrl ? threed.file.url : fileUrlDefault
 
+  const textureUrlDefault = '' // blank string
+  const textureUrl = threed.file?.isUrl && threed.file?.isTexture ? threed.file.url : textureUrlDefault
+
   // this model = threed_model -||-
   const model = {
     ref:        useRef(null),
@@ -202,12 +206,14 @@ const Model = ({
     scaleY:     threed.data.scaleY,
     scaleZ:     threed.data.scaleZ,
 
+    texture:    textureUrl,
+
     // state:  modelVState, // for funzees ??
     // sceneState: sceneState, // for funzees ??
     // storeState: storeState, // for funzees ??
 
     // file type?
-    type: 'tbd', // fbx | gltf | obj | threed | threed_node
+    type: 'tbd', // fbx | gltf | obj | threed | threed_node | png | texture
     // ** decide file type from file extension (and other qualifiers)
     // const testExt = /\.(glb|gltf|fbx|obj|mtl|gif|jpe?g|tiff?|png|webp|bmp)$/i.test(fileUrl)
     // console.debug('testExt', testExt)
@@ -229,6 +235,8 @@ const Model = ({
       isGIF: /\.(gif)$/i.test(fileUrl),
       isSVG: /\.(svg)$/i.test(fileUrl),
       isWEBP: /\.(webp)$/i.test(fileUrl),
+      // Texture Files
+      isTexture: textureUrl ? true : false,
       // ThreeD Nodes
       isThreeD: false,
       isThreeDNode: false,
@@ -248,6 +256,24 @@ const Model = ({
     console.debug('%c🌱 model.is.isSupported: true', ccm.greenAlert, model.name, model)
     console.debug(`%c======================================`, ccm.darkgreen)
     if (model.is.isObject3D) {
+
+      // const OBJModel = ({ file, textureFile, ...props }) => {
+      //   const obj = useLoader(OBJLoader, file)
+      //   const texture = useTexture(textureFile)
+
+      //   useEffect(() => {
+      //     obj.traverse(child => {
+      //       if (child.isMesh) child.material.map = texture
+      //     })
+      //   }, [obj])
+
+      //   return <primitive object={obj} {...props} />
+      // }
+
+      // Which can be used with something like
+
+      // <OBJModel file='./a.obj' textureFile='./a.png' position-z={10} />
+
       // ** FBX
       if (model.is.isFBX) {
         model.type = 'fbx'
@@ -255,6 +281,7 @@ const Model = ({
         // const fbx = useFBX(model.file)
         const fbx = useLoader(FBXLoader, model.file, loader => {
           loader.manager.addHandler(/\.tga$/i, new TGALoader())
+          // loader.manager.addHandler(/\.png$/i, new TextureLoader())
         })
         console.debug('%c📐 FBX NODES: fbx', ccm.green, model.name, fbx)
         console.debug(`%c======================================`, ccm.darkgreen)
@@ -263,6 +290,15 @@ const Model = ({
           // model.node = fbx
           model.nodes = fbx
           // console.debug('RETURN ONLY NODE AS NODES: true', model.nodes)
+
+          if (model.texture) {
+            console.log(`%c LOADING TEXTURE ...`, ccm.orangeAlert, model.texture)
+            let texture = useTexture(TextureLoader, model.texture, loader => {
+              loader.manager.addHandler(/\.tga$/i, new TGALoader())
+              // loader.manager.addHandler(/\.png$/i, new TextureLoader())
+            })
+            console.log(`%c TEXTURE`, ccm.orangeAlert, texture)
+          }
 
           // ** ANIMATIONS
           if (fbx.animations) {
@@ -278,6 +314,8 @@ const Model = ({
           }
         }
       }
+
+
       // ** OBJ
       else if (model.is.isOBJ) {
         model.type = 'obj'
@@ -290,6 +328,8 @@ const Model = ({
           // console.debug('RETURN ONLY NODE AS NODES: true')
         }
       }
+
+
       // ** GLTF
       else if (model.is.isGLTF) {
         model.type = 'gltf'
@@ -496,6 +536,8 @@ const Model = ({
     // console.debug(`%c✔️📐 DRAW MODEL ${model.type}`, ccm.blue, model.name) // , model
     console.debug(`%c✔️📐 DRAW MODEL.nodes: ${model.type}`, ccm.blue, model.name, model.nodes)
     console.debug(`%c===========================================================`, ccm.blue)
+
+
     // return FBX node
     if (model.is.isFBX) {
       return (
@@ -517,10 +559,14 @@ const Model = ({
             // ref={model.ani.ref ? model.ani.ref : model.ref}
             object={model.nodes}
             dispose={null}
+
+            map={model.texture}
           />
         </group>
       )
     }
+
+
     // return GLTF node
     else if (model.is.isGLTF) {
       // console.debug('GLTF: model.nodes', model.name, model.nodes)
@@ -549,6 +595,8 @@ const Model = ({
             object={model.nodes.scene} // gltf.scene
             dispose={null}
             // scale={1.0}
+
+            map={model.texture}
           />
           {/* {model.nodes.map((_model_node, index) => (
             <mesh
@@ -576,6 +624,8 @@ const Model = ({
         </group>
       )
     }
+
+
     // return OBJ node
     else if (model.is.isOBJ) {
       return (
@@ -585,6 +635,8 @@ const Model = ({
           // ref={model.ani.ref}
           ref={model.ani.ref ? model.ani.ref : model.ref}
           dispose={null}
+
+          map={model.texture}
         />
       )
     }
