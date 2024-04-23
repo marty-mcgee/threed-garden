@@ -2,12 +2,33 @@
 // ==========================================================
 // RESOURCES
 
+// ** APOLLO Imports
+import { useReactiveVar } from '@apollo/client'
+// import { preferencesDataVar } from '#/lib/threed/components/nouns/Preferences/Preferences'
+import { preferencesDataVar } from '#/lib/stores/apollo'
+
+// ** REACT Imports
 import React, { useEffect, useState } from 'react'
+
+// ** REACT THREE Imports
 import { Grid, KeyboardControls } from '@react-three/drei'
-import { useControls } from 'leva'
-import { Perf } from 'r3f-perf'
 import { Physics } from '@react-three/rapier'
+
+// ** LEVA Imports
+import { useControls } from 'leva'
+
+// ** HELPER Imports
+import { Perf } from 'r3f-perf'
+
+// ** THREED.AI
+// ** THREED CHARACTER CONTROL Imports
 import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
+// import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
+// import CharacterModel1 from '#/lib/threed/components/nouns/Character/CharacterModelFloating'
+// import CharacterModel2 from '#/lib/threed/components/nouns/Character/FarmerMan'
+// import CharacterModel3 from '#/lib/threed/components/nouns/Character/Character'
+import CharacterModel4 from '#/lib/threed/components/nouns/Character/FarmerManFloating'
+// ** THREED OBJECTS
 import Floor from './Floor'
 import Lights from './Lights'
 import Steps from './Steps'
@@ -18,15 +39,16 @@ import FloatingPlatform from './FloatingPlatform'
 import DynamicPlatforms from './DynamicPlatforms'
 import ShotCube from './ShotCube'
 import Map from './Map'
-// import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
-// import CharacterModel1 from '#/lib/threed/components/nouns/Character/CharacterModelFloating'
-// import CharacterModel2 from '#/lib/threed/components/nouns/Character/FarmerMan'
-// import CharacterModel3 from '#/lib/threed/components/nouns/Character/Character'
-import CharacterModel4 from '#/lib/threed/components/nouns/Character/FarmerManFloating'
 
+// ** IMPORT RESOURCES complete
+
+// **
+// ** DEBUGGING
+// **
 const debug = false
 const testing = false
 
+// ** MAIN FUNCTION to return JSX "EXPERIENCE"
 export default function Experience() {
   /**
    * Delay physics activate
@@ -40,40 +62,43 @@ export default function Experience() {
     return () => clearTimeout(timeout)
   }, [])
 
+  const prefs = useReactiveVar(preferencesDataVar)
+  console.debug(`%c EXPERIENCE: prefs`, ccm.orangeAlert, prefs)
+
   /**
    * World Preferences
    */
   const [{
-    enableDebug,
-    enableTesting,
-    enablePhysics,
-    enableCharacterAnimation,
-    disableFollowCam,
+    enableWorldDebug,
+    enableWorldTesting,
+    enableWorldPhysics,
+    enableWorldCharacterAnimation,
+    disableWorldFollowCam,
   }, setWorldPreferencesLeva] = useControls(
     'World Preferences',
     () => ({
-      // worldEnableDebug
-      enableDebug: {
+      // enableWorldDebug
+      enableWorldDebug: {
         label: 'World Debugger?',
-        value: false, // prefs.worldEnableDebug,
+        value: false, // prefs.enableWorldDebug,
       },
-      // worldEnableTesting
-      enableTesting: {
+      // enableWorldTesting
+      enableWorldTesting: {
         label: 'Testing?',
-        value: false, // prefs.worldEnableTesting,
+        value: false, // prefs.enableWorldTesting,
       },
-      // worldEnablePhysics
-      enablePhysics: {
+      // enableWorldPhysics
+      enableWorldPhysics: {
         label: 'Physics Debugger?',
-        value: false, // prefs.worldEnablePhysics,
+        value: false, // prefs.enableWorldPhysics,
       },
-      // worldEnableCharacterAnimation
-      enableCharacterAnimation: {
+      // enableWorldCharacterAnimation
+      enableWorldCharacterAnimation: {
         label: 'Animate Characters?',
-        value: false, // prefs.worldEnableCharacterAnimation,
+        value: false, // prefs.enableWorldCharacterAnimation,
       },
       // worldDisableFollowCam
-      disableFollowCam: {
+      disableWorldFollowCam: {
         label: 'Camera Unfollow?',
         value: false, // prefs.worldDisableFollowCam,
       },
@@ -119,7 +144,7 @@ export default function Experience() {
       <Lights />
 
       <Physics
-        debug={enablePhysics}
+        debug={prefs.enableWorldPhysics}
         timeStep='vary'
         paused={pausedPhysics}
       >
@@ -130,9 +155,9 @@ export default function Experience() {
         > */}
           {/* Character 1 Control */}
           {/* <Ecctrl
-            debug={enableDebug}
+            debug={prefs.enableWorldDebug}
 
-            animated={enableCharacterAnimation}
+            animated={prefs.enableWorldCharacterAnimation}
 
             followLight={false}
 
@@ -144,7 +169,7 @@ export default function Experience() {
             autoBalanceSpringOnY={0.7}
             autoBalanceDampingOnY={0.05}
 
-            disableFollowCam={disableFollowCam}
+            disableFollowCam={prefs.disableWorldFollowCam}
           > */}
 
             {/* THREED CHARACTER [0] -- DEMON / CHICKEN */}
@@ -172,18 +197,20 @@ export default function Experience() {
         {/* </KeyboardControls> */}
 
         {/* Keyboard preset */}
-        {/* { enableDebug &&
-          enableTesting && ( */}
+        {/* { prefs.enableWorldDebug &&
+          prefs.enableTesting && ( */}
         <KeyboardControls
           map={keyboardMap}
         >
           {/* Character 2 Control */}
           <Ecctrl
-            debug={enableDebug}
+            debug={prefs.enableWorldDebug}
 
-            animated={enableCharacterAnimation}
+            animated={prefs.enableWorldCharacterAnimation}
 
-            // followLight={false}
+            followLight={false}
+
+            disableFollowCam={prefs.disableWorldFollowCam}
 
             // springK={2}
             // dampingC={0.2}
@@ -192,8 +219,6 @@ export default function Experience() {
             // autoBalanceDampingC={0.04}
             // autoBalanceSpringOnY={0.7}
             // autoBalanceDampingOnY={0.05}
-
-            // disableFollowCam={disableFollowCam}
           >
 
             {/* THREED CHARACTER [0] -- DEMON / CHICKEN */}
