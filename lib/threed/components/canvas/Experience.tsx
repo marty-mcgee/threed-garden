@@ -17,9 +17,6 @@ import { Physics } from '@react-three/rapier'
 // ** LEVA Imports
 import { useControls } from 'leva'
 
-// ** HELPER Imports
-import { Perf } from 'r3f-perf'
-
 // ** THREED.AI
 // ** THREED CHARACTER CONTROL Imports
 import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
@@ -39,6 +36,12 @@ import FloatingPlatform from './FloatingPlatform'
 import DynamicPlatforms from './DynamicPlatforms'
 import ShotCube from './ShotCube'
 import Map from './Map'
+
+// ** HELPER Imports
+import { Perf } from 'r3f-perf'
+import Spinner from '#/ui/components/spinner'
+// ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
+import ccm from '#/lib/utils/console-colors'
 
 // ** IMPORT RESOURCES complete
 
