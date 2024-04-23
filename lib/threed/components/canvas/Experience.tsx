@@ -134,9 +134,95 @@ export default function Experience() {
   }, [prefs.enableWorldDebug])
 
 
+// ==========================================================
+  // ** enableWorldTesting
+  // **
+  useEffect(() => {
+    let newData = {...prefs}
+    // if (debug) console.debug('%c preset newData', ccm.green, newData)
+    newData.enableWorldTesting = enableWorldTesting
+    // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.enableWorldTesting', ccm.yellowAlert, prefs.enableWorldTesting)
+  }, [enableWorldTesting])
+
+  // **
+  useEffect(() => {
+    // if (prefs.enableWorldTesting != undefined) {
+      setWorldPreferencesLeva({ enableWorldTesting: prefs.enableWorldTesting })
+    // }
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.enableWorldTesting', ccm.greenAlert, prefs.enableWorldTesting)
+  }, [prefs.enableWorldTesting])
 
 
+// ==========================================================
+  // ** enableWorldPhysics
+  // **
+  useEffect(() => {
+    let newData = {...prefs}
+    // if (debug) console.debug('%c preset newData', ccm.green, newData)
+    newData.enableWorldPhysics = enableWorldPhysics
+    // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.enableWorldPhysics', ccm.yellowAlert, prefs.enableWorldPhysics)
+  }, [enableWorldPhysics])
 
+  // **
+  useEffect(() => {
+    // if (prefs.enableWorldPhysics != undefined) {
+      setWorldPreferencesLeva({ enableWorldPhysics: prefs.enableWorldPhysics })
+    // }
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.enableWorldPhysics', ccm.greenAlert, prefs.enableWorldPhysics)
+  }, [prefs.enableWorldPhysics])
+
+
+// ==========================================================
+  // ** enableWorldCharacterAnimation
+  // **
+  useEffect(() => {
+    let newData = {...prefs}
+    // if (debug) console.debug('%c preset newData', ccm.green, newData)
+    newData.enableWorldCharacterAnimation = enableWorldCharacterAnimation
+    // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.enableWorldCharacterAnimation', ccm.yellowAlert, prefs.enableWorldCharacterAnimation)
+  }, [enableWorldCharacterAnimation])
+
+  // **
+  useEffect(() => {
+    // if (prefs.enableWorldCharacterAnimation != undefined) {
+      setWorldPreferencesLeva({ enableWorldCharacterAnimation: prefs.enableWorldCharacterAnimation })
+    // }
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.enableWorldCharacterAnimation', ccm.greenAlert, prefs.enableWorldCharacterAnimation)
+  }, [prefs.enableWorldCharacterAnimation])
+
+
+// ==========================================================
+  // ** disableWorldFollowCam
+  // **
+  useEffect(() => {
+    let newData = {...prefs}
+    // if (debug) console.debug('%c preset newData', ccm.green, newData)
+    newData.disableWorldFollowCam = disableWorldFollowCam
+    // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.disableWorldFollowCam', ccm.yellowAlert, prefs.disableWorldFollowCam)
+  }, [disableWorldFollowCam])
+
+  // **
+  useEffect(() => {
+    // if (prefs.disableWorldFollowCam != undefined) {
+      setWorldPreferencesLeva({ disableWorldFollowCam: prefs.disableWorldFollowCam })
+    // }
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.disableWorldFollowCam', ccm.greenAlert, prefs.disableWorldFollowCam)
+  }, [prefs.disableWorldFollowCam])
+
+
+  // ==========================================================
   /**
    * Keyboard control preset
    */
