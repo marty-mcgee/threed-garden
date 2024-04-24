@@ -213,13 +213,13 @@ export default function Experience() {
         // minimal
       />
 
-      {/* <Grid
+      <Grid
         args={[480, 480]}
         sectionColor={'darkgray'}
         cellColor={'black'}
-        position={[0, 0, 0]}
+        position={[0, -16, 0]}
         userData={{ camExcludeCollision: true }} // this won't collide by camera ray
-      /> */}
+      />
 
       <Lights />
 
@@ -268,16 +268,16 @@ export default function Experience() {
         >
           {/* Character 2 Control */}
           <Ecctrl
-            debug={prefs.doWorldDebug}
-            animated={prefs.doCharacterAnimation}
-            disableFollowCam={prefs.doWorldUnfollowCam}
-            followLight={false}
-            springK={2}
-            dampingC={0.2}
-            autoBalanceSpringK={1.2}
-            autoBalanceDampingC={0.04}
-            // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
-            // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
+            // debug={prefs.doWorldDebug}
+            // animated={prefs.doCharacterAnimation}
+            // disableFollowCam={prefs.doWorldUnfollowCam}
+            // followLight={false}
+            // springK={2}
+            // dampingC={0.2}
+            // autoBalanceSpringK={1.2}
+            // autoBalanceDampingC={0.04}
+            // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
+            // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
           >
             {/* THREED CHARACTER [2] -- FARMER */}
             <group rotation={[0, 0, 0]} scale={0.016} position={[0, -1.0, 0]}>
@@ -292,26 +292,29 @@ export default function Experience() {
           <Map />
         </group>
 
-        {/* Rough plane */}
-        <RoughPlane />
-
-        {/* Slopes and stairs */}
-        <Slopes />
-
-        {/* Small steps */}
+        {/* baby steps
+            flat-XY on the floor['ground']
+            aka: four-by-fours, 4"x4"[s], posts, logs
+        */}
         <Steps />
 
+        {/* Rough plane */}
+        {/* <RoughPlane /> */}
+
+        {/* Slopes and stairs */}
+        {/* <Slopes /> */}
+
         {/* Rigid body objects */}
-        <RigidObjects />
+        {/* <RigidObjects /> */}
 
         {/* Floating platform */}
-        <FloatingPlatform />
+        {/* <FloatingPlatform /> */}
 
         {/* Dynamic platforms */}
-        <DynamicPlatforms />
+        {/* <DynamicPlatforms /> */}
 
         {/* Shoting cubes */}
-        <ShotCube />
+        {/* <ShotCube /> */}
 
         {/* Floor */}
         <Floor />
