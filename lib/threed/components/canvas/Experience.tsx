@@ -310,11 +310,14 @@ export default function Experience() {
         {/* Dynamic platforms */}
         <DynamicPlatforms />
 
+        {/* Shoting cubes */}
+        <ShotCube />
+
         {/* Floor */}
         <Floor />
 
-        {/* Shoting cubes */}
-        <ShotCube />
+        {/* Sub-Floor[s] */}
+        {/* <SubFloor level={`${level[index]}`} /> */}
 
       </Physics>
     </>
