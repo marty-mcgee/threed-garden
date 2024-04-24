@@ -208,17 +208,18 @@ export default function Experience() {
 
   return (
     <>
-      <Perf
-        position='bottom-left'
-        // minimal
-      />
 
+      {/* HELPFUL GRID (PREVENTS INFINITE FALL):
+          SHALLOW BELOW SEA LEVEL -16 (-1rem)
+      */}
       <Grid
-        args={[480, 480]}
+        args={[64, 64]} // x = 4rem, z = 4rem
         sectionColor={'darkgray'}
         cellColor={'black'}
-        position={[0, -16, 0]}
-        userData={{ camExcludeCollision: true }} // this won't collide by camera ray
+        position={[0, -16, 0]} // sea level : -1rem
+        userData={{
+          camExcludeCollision: false, // collide by camera ray? true | false
+        }}
       />
 
       <Lights />
@@ -323,6 +324,11 @@ export default function Experience() {
         {/* <SubFloor level={`${level[index]}`} /> */}
 
       </Physics>
+
+      <Perf
+        position='bottom-left'
+        // minimal
+      />
     </>
   )
 }
