@@ -24,7 +24,11 @@ query GetProjects ($first: Int, $last: Int, $after: String, $before: String) {
       #     projectName
       #     environmentPreset
       #     environmentBgBlur
-      #     doAnimateCharacter
+      #     doCharacterAnimation
+      #     doWorldDebug
+      #     doWorldTesting
+      #     doWorldPhysics
+      #     doWorldUnfollowCam
       #     # owner
       #     version
       #   }
