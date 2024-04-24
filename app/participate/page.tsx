@@ -20,11 +20,11 @@ import CardHeader from '@mui/material/CardHeader'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 
-// ** MAIN COMPONENTS
+// ** MAIN COMPONENT Imports
 // ** ThreeDGarden Imports
 import ThreeDGarden from '#/lib/threed/ThreeDGarden'
 
-// ** Helper Components
+// ** HELPER Imports
 import Spinner from '#/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'

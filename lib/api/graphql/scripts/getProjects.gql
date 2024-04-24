@@ -24,7 +24,11 @@ query GetProjects ($first: Int, $last: Int, $after: String, $before: String) {
       #     projectName
       #     environmentPreset
       #     environmentBgBlur
-      #     doAnimateCharacter
+      #     doCharacterAnimation
+      #     doWorldDebug
+      #     doWorldTesting
+      #     doWorldPhysics
+      #     doWorldUnfollowCam
       #     # owner
       #     version
       #   }
@@ -184,9 +188,9 @@ query GetProjects ($first: Int, $last: Int, $after: String, $before: String) {
               title
               content
               link
-              version
               modified
               # custom fields
+              version
               positionX
               positionY
               positionZ
@@ -197,16 +201,19 @@ query GetProjects ($first: Int, $last: Int, $after: String, $before: String) {
               scaleY
               scaleZ
               # children
-              files {
+              modelFiles {
                 nodes {
                   fileId
                   title
-                  fileType
-                  isObject3d
+                  link
                   isUrl
                   url
-                  link
+                  fileType
+                  isObject3d
+                  isTexture
                   modified
+                  version
+                  # wordpress media/post file
                   file {
                     node {
                       title
@@ -217,6 +224,56 @@ query GetProjects ($first: Int, $last: Int, $after: String, $before: String) {
                       link
                     }
                   }
+                }
+              }
+              textureFiles {
+                nodes {
+                  fileId
+                  title
+                  link
+                  isUrl
+                  url
+                  fileType
+                  isObject3d
+                  isTexture
+                  modified
+                  version
+                  # wordpress media/post file
+                  file {
+                    node {
+                      title
+                      sourceUrl
+                      mediaItemId
+                      mediaItemUrl
+                      mediaType
+                      link
+                    }
+                  }
+                }
+              }
+              files {
+                nodes {
+                  fileId
+                  title
+                  # link
+                  # isUrl
+                  # url
+                  # fileType
+                  # isObject3d
+                  # isTexture
+                  # modified
+                  # version
+                  # # wordpress media/post file
+                  # file {
+                  #   node {
+                  #     title
+                  #     sourceUrl
+                  #     mediaItemId
+                  #     mediaItemUrl
+                  #     mediaType
+                  #     link
+                  #   }
+                  # }
                 }
               }
             }

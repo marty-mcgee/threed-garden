@@ -98,7 +98,13 @@ function noun(this: INoun, _type: string = 'noun') {
     projectName: 'blank', // 'string'
     environmentPreset: 'park', // park | forest | sunset | warehouse | studio ...
     environmentBgBlur: 0.00, // 0.00 to 1.00 // Background Blur
-    doAnimateCharacter: false, // true | false
+    // character prefs
+    doCharacterAnimation: true, // boolean: false | true
+    // world prefs
+    doWorldDebug: false, // boolean: false | true
+    doWorldTesting: false, // boolean: false | true
+    doWorldPhysics: false, // boolean: false | true
+    doWorldUnfollowCam: false, // boolean: false | true
   }
   // layers/levels
   this.layers = [
@@ -824,20 +830,32 @@ function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
 // ==============================================================
 
 // ** CREATE REACTIVE VARS (APOLLO LOCAL STATE)
-export const isPreferencesSetVar = makeVar(false) // boolean: true | false
+export const isPreferencesSetVar = makeVar(false) // boolean: false | true
 export const preferencesDataVar = makeVar(
   {
     // user prefs
     ownerId: 1,
     version: '0.0.0',
-    doAutoLoadData: false, // boolean: true | false
-    doAutoRotate: false, // boolean: true | false
+    doAutoLoadData: false, // boolean: false | true
+    doAutoRotate: false, // boolean: false | true
     // project prefs
     projectName: 'client should never see this string', // string: ''
     // scene prefs
     environmentPreset: 'warehouse', // default (client should never see this)
     environmentBgBlur: 0.20, // default (our chosen maximum blur)
-
+    // character prefs
+    doCharacterAnimation: true, // boolean: false | true
+    // world prefs
+    doWorldDebug: false, // boolean: false | true
+    doWorldTesting: false, // boolean: false | true
+    doWorldPhysics: false, // boolean: false | true
+    doWorldUnfollowCam: false, // boolean: false | true
+    setPreferencesDataVar: () => {}, // function: set properties of "this"
+    setUserPreferencesDataVar: () => {}, // function: set properties of "this"
+    setWorldPreferencesDataVar: () => {}, // function: set properties of "this"
+    setScenePreferencesDataVar: () => {}, // function: set properties of "this"
+    setProjectPreferencesDataVar: () => {}, // function: set properties of "this"
+    setCharacterPreferencesDataVar: () => {}, // function: set properties of "this"
   }
 )
 // console.debug('Apollo Stores ReactiveVar preferencesDataVar()', preferencesDataVar())
@@ -917,6 +935,7 @@ export const mutations = {
   UpdatePreferences: 'HEY HEY HEY UpdatePreferences',
   UpdateProjects: 'HEY HEY HEY UpdateProjects',
   UpdatePlans: 'HEY HEY HEY UpdatePlans',
+  UpdateThreeDs: 'HEY HEY HEY UpdateThreeDs', // :) [MM] THREED MILESTONE
 }
 
 // export { stores, queries, mutations }

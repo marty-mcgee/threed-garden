@@ -16,7 +16,11 @@ query GetPreferences {
       projectName
       environmentPreset
       environmentBgBlur
-      doAnimateCharacter
+      doCharacterAnimation
+      doWorldDebug
+      doWorldTesting
+      doWorldPhysics
+      doWorldUnfollowCam
       version
       # owner
     }
