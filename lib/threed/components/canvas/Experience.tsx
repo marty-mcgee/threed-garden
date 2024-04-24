@@ -4,7 +4,6 @@
 
 // ** APOLLO Imports
 import { useReactiveVar } from '@apollo/client'
-// import { preferencesDataVar } from '#/lib/threed/components/nouns/Preferences/Preferences'
 import { preferencesDataVar } from '#/lib/stores/apollo'
 
 // ** REACT Imports
@@ -54,6 +53,10 @@ const testing = false
 // ** MAIN FUNCTION to return JSX "EXPERIENCE"
 export default function Experience() {
 
+  // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
+  const prefs = useReactiveVar(preferencesDataVar)
+  // console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
+
   // ** Delay physics activate
   const [pausedPhysics, setPausedPhysics] = useState(true)
   useEffect(() => {
@@ -63,46 +66,32 @@ export default function Experience() {
     return () => clearTimeout(timeout)
   }, [])
 
-  // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
-  const prefs = useReactiveVar(preferencesDataVar)
-  console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
-
   /**
    * World Preferences
    */
   const [{
-    enableWorldDebug,
-    enableWorldTesting,
-    enableWorldPhysics,
-    enableWorldCharacterAnimation,
-    disableWorldFollowCam,
+    doWorldDebug,
+    doWorldTesting,
+    doWorldPhysics,
+    doWorldUnfollowCam,
   }, setWorldPreferencesLeva] = useControls(
     'World Preferences',
     () => ({
-      // enableWorldDebug
-      enableWorldDebug: {
+      doWorldDebug: {
         label: 'World Debugger?',
-        value: false, // prefs.enableWorldDebug,
+        value: prefs.doWorldDebug,
       },
-      // enableWorldTesting
-      enableWorldTesting: {
+      doWorldTesting: {
         label: 'Testing?',
-        value: false, // prefs.enableWorldTesting,
+        value: prefs.doWorldTesting,
       },
-      // enableWorldPhysics
-      enableWorldPhysics: {
+      doWorldPhysics: {
         label: 'Physics Debugger?',
-        value: false, // prefs.enableWorldPhysics,
+        value: prefs.doWorldPhysics,
       },
-      // enableWorldCharacterAnimation
-      enableWorldCharacterAnimation: {
-        label: 'Animate Characters?',
-        value: false, // prefs.enableWorldCharacterAnimation,
-      },
-      // worldDisableFollowCam
-      disableWorldFollowCam: {
+      doWorldUnfollowCam: {
         label: 'Camera Unfollow?',
-        value: false, // prefs.worldDisableFollowCam,
+        value: prefs.doWorldUnfollowCam,
       },
     }),
     {
@@ -113,113 +102,91 @@ export default function Experience() {
   )
 
   // ==========================================================
-  // ** enableWorldDebug
+  // ** doWorldDebug
   // **
   useEffect(() => {
     let newData = {...prefs}
     // if (debug) console.debug('%c preset newData', ccm.green, newData)
-    newData.enableWorldDebug = enableWorldDebug
+    newData.doWorldDebug = doWorldDebug
     // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
     // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.enableWorldDebug', ccm.yellowAlert, prefs.enableWorldDebug)
-  }, [enableWorldDebug])
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldDebug', ccm.yellowAlert, prefs.doWorldDebug)
+  }, [doWorldDebug])
 
   // **
   useEffect(() => {
-    // if (prefs.enableWorldDebug != undefined) {
-      setWorldPreferencesLeva({ enableWorldDebug: prefs.enableWorldDebug })
+    // if (prefs.doWorldDebug != undefined) {
+      setWorldPreferencesLeva({ doWorldDebug: prefs.doWorldDebug })
     // }
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.enableWorldDebug', ccm.greenAlert, prefs.enableWorldDebug)
-  }, [prefs.enableWorldDebug])
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldDebug', ccm.greenAlert, prefs.doWorldDebug)
+  }, [prefs.doWorldDebug])
 
 
 // ==========================================================
-  // ** enableWorldTesting
+  // ** doWorldTesting
   // **
   useEffect(() => {
     let newData = {...prefs}
     // if (debug) console.debug('%c preset newData', ccm.green, newData)
-    newData.enableWorldTesting = enableWorldTesting
+    newData.doWorldTesting = doWorldTesting
     // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
     // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.enableWorldTesting', ccm.yellowAlert, prefs.enableWorldTesting)
-  }, [enableWorldTesting])
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldTesting', ccm.yellowAlert, prefs.doWorldTesting)
+  }, [doWorldTesting])
 
   // **
   useEffect(() => {
-    // if (prefs.enableWorldTesting != undefined) {
-      setWorldPreferencesLeva({ enableWorldTesting: prefs.enableWorldTesting })
+    // if (prefs.doWorldTesting != undefined) {
+      setWorldPreferencesLeva({ doWorldTesting: prefs.doWorldTesting })
     // }
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.enableWorldTesting', ccm.greenAlert, prefs.enableWorldTesting)
-  }, [prefs.enableWorldTesting])
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldTesting', ccm.greenAlert, prefs.doWorldTesting)
+  }, [prefs.doWorldTesting])
 
 
 // ==========================================================
-  // ** enableWorldPhysics
+  // ** doWorldPhysics
   // **
   useEffect(() => {
     let newData = {...prefs}
     // if (debug) console.debug('%c preset newData', ccm.green, newData)
-    newData.enableWorldPhysics = enableWorldPhysics
+    newData.doWorldPhysics = doWorldPhysics
     // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
     // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.enableWorldPhysics', ccm.yellowAlert, prefs.enableWorldPhysics)
-  }, [enableWorldPhysics])
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldPhysics', ccm.yellowAlert, prefs.doWorldPhysics)
+  }, [doWorldPhysics])
 
   // **
   useEffect(() => {
-    // if (prefs.enableWorldPhysics != undefined) {
-      setWorldPreferencesLeva({ enableWorldPhysics: prefs.enableWorldPhysics })
+    // if (prefs.doWorldPhysics != undefined) {
+      setWorldPreferencesLeva({ doWorldPhysics: prefs.doWorldPhysics })
     // }
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.enableWorldPhysics', ccm.greenAlert, prefs.enableWorldPhysics)
-  }, [prefs.enableWorldPhysics])
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldPhysics', ccm.greenAlert, prefs.doWorldPhysics)
+  }, [prefs.doWorldPhysics])
 
 
 // ==========================================================
-  // ** enableWorldCharacterAnimation
+  // ** doWorldUnfollowCam
   // **
   useEffect(() => {
     let newData = {...prefs}
     // if (debug) console.debug('%c preset newData', ccm.green, newData)
-    newData.enableWorldCharacterAnimation = enableWorldCharacterAnimation
+    newData.doWorldUnfollowCam = doWorldUnfollowCam
     // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
     // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.enableWorldCharacterAnimation', ccm.yellowAlert, prefs.enableWorldCharacterAnimation)
-  }, [enableWorldCharacterAnimation])
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldUnfollowCam', ccm.yellowAlert, prefs.doWorldUnfollowCam)
+  }, [doWorldUnfollowCam])
 
   // **
   useEffect(() => {
-    // if (prefs.enableWorldCharacterAnimation != undefined) {
-      setWorldPreferencesLeva({ enableWorldCharacterAnimation: prefs.enableWorldCharacterAnimation })
+    // if (prefs.doWorldUnfollowCam != undefined) {
+      setWorldPreferencesLeva({ doWorldUnfollowCam: prefs.doWorldUnfollowCam })
     // }
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.enableWorldCharacterAnimation', ccm.greenAlert, prefs.enableWorldCharacterAnimation)
-  }, [prefs.enableWorldCharacterAnimation])
-
-
-// ==========================================================
-  // ** disableWorldFollowCam
-  // **
-  useEffect(() => {
-    let newData = {...prefs}
-    // if (debug) console.debug('%c preset newData', ccm.green, newData)
-    newData.disableWorldFollowCam = disableWorldFollowCam
-    // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
-    preferencesDataVar(newData)
-    // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.disableWorldFollowCam', ccm.yellowAlert, prefs.disableWorldFollowCam)
-  }, [disableWorldFollowCam])
-
-  // **
-  useEffect(() => {
-    // if (prefs.disableWorldFollowCam != undefined) {
-      setWorldPreferencesLeva({ disableWorldFollowCam: prefs.disableWorldFollowCam })
-    // }
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.disableWorldFollowCam', ccm.greenAlert, prefs.disableWorldFollowCam)
-  }, [prefs.disableWorldFollowCam])
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldUnfollowCam', ccm.greenAlert, prefs.doWorldUnfollowCam)
+  }, [prefs.doWorldUnfollowCam])
 
 
   // ==========================================================
@@ -241,10 +208,10 @@ export default function Experience() {
 
   return (
     <>
-      {/* <Perf
-        position='bottom-right'
+      <Perf
+        position='bottom-left'
         // minimal
-      /> */}
+      />
 
       {/* <Grid
         args={[480, 480]}
@@ -257,107 +224,68 @@ export default function Experience() {
       <Lights />
 
       <Physics
-        debug={prefs.enableWorldPhysics}
+        debug={prefs.doWorldPhysics}
         timeStep='vary'
         paused={pausedPhysics}
       >
 
+        {/* [MM] HEY HEY HEY : CHARACTER MODEL[S] */}
+
+        {/* {
+          prefs.doWorldDebug &&
+          prefs.enableTesting &&
+        ( */}
         {/* Keyboard preset */}
         {/* <KeyboardControls
           map={keyboardMap}
         > */}
           {/* Character 1 Control */}
           {/* <Ecctrl
-            debug={prefs.enableWorldDebug}
-
-            animated={prefs.enableWorldCharacterAnimation}
-
+            debug={prefs.doWorldDebug}
+            animated={prefs.doCharacterAnimation}
+            disableFollowCam={prefs.doWorldUnfollowCam}
             followLight={false}
-
             springK={2}
             dampingC={0.2}
-
             autoBalanceSpringK={1.2}
             autoBalanceDampingC={0.04}
             autoBalanceSpringOnY={0.7}
             autoBalanceDampingOnY={0.05}
-
-            disableFollowCam={prefs.disableWorldFollowCam}
           > */}
 
-            {/* THREED CHARACTER [0] -- DEMON / CHICKEN */}
+            {/* THREED CHARACTER [0] -- DEMON / CHICKEN / FLOATING PETE */}
             {/* <group rotation={[0, 0, 0]} scale={0.7} position={[-1, 0.1, -1]}>
               <CharacterModel0 />
             </group> */}
 
-            {/* THREED CHARACTER [1] -- FLOATING PHYSICS CAPSULE*/}
-            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0.2, 2]}>
-              <CharacterModel1 />
-            </group> */}
-
-            {/* THREED CHARACTER [2] -- FARMERS */}
-            {/* <group rotation={[0, 0, 0]} scale={0.02} position={[0, 0.0, 0]}> */}
-              {/* <CharacterModel2 /> */}
-              {/* <CharacterModel4 /> */}
-            {/* </group> */}
-
-            {/* THREED CHARACTER [3] -- TESTING */}
-            {/* <group rotation={[0, 0, 0]} scale={0.3} position={[0, 0.1, 0]}>
-              <CharacterModel3 />
-            </group> */}
-
           {/* </Ecctrl> */}
         {/* </KeyboardControls> */}
+        {/* )} // end testing */}
 
         {/* Keyboard preset */}
-        {/* { prefs.enableWorldDebug &&
-          prefs.enableTesting && ( */}
         <KeyboardControls
           map={keyboardMap}
         >
           {/* Character 2 Control */}
           <Ecctrl
-            debug={prefs.enableWorldDebug}
-
-            animated={prefs.enableWorldCharacterAnimation}
-
+            debug={prefs.doWorldDebug}
+            animated={prefs.doCharacterAnimation}
+            disableFollowCam={prefs.doWorldUnfollowCam}
             followLight={false}
-
-            disableFollowCam={prefs.disableWorldFollowCam}
-
-            // springK={2}
-            // dampingC={0.2}
-
-            // autoBalanceSpringK={1.2}
-            // autoBalanceDampingC={0.04}
-            // autoBalanceSpringOnY={0.7}
-            // autoBalanceDampingOnY={0.05}
+            springK={2}
+            dampingC={0.2}
+            autoBalanceSpringK={1.2}
+            autoBalanceDampingC={0.04}
+            // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
+            // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
           >
-
-            {/* THREED CHARACTER [0] -- DEMON / CHICKEN */}
-            {/* <group rotation={[0, 0, 0]} scale={0.7} position={[-1, 0.1, -1]}>
-              <CharacterModel0 />
-            </group> */}
-
-            {/* THREED CHARACTER [1] -- FLOATING PHYSICS CAPSULE*/}
-            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0.2, 2]}>
-              <CharacterModel1 />
-            </group> */}
-
-            {/* THREED CHARACTER [2] -- FARMERS */}
-            <group rotation={[0, 0, 0]} scale={0.02} position={[0, 0.0, 0]}>
+            {/* THREED CHARACTER [2] -- FARMER */}
+            <group rotation={[0, 0, 0]} scale={0.016} position={[0, -1.0, 0]}>
               {/* <CharacterModel2 /> */}
               <CharacterModel4 />
             </group>
-
-            {/* THREED CHARACTER [3] -- TESTING */}
-            {/* <group rotation={[0, 0, 0]} scale={0.3} position={[0, 0.1, 0]}>
-              <CharacterModel3 />
-            </group> */}
-
           </Ecctrl>
         </KeyboardControls>
-        {/* )} // end testing */}
 
         {/* // import Map from './Map' */}
         <group rotation={[0, -Math.PI/2, 0]} scale={1.0} position={[0, 0, 24]}>
@@ -388,7 +316,7 @@ export default function Experience() {
         {/* Shoting cubes */}
         <ShotCube />
 
-      </Physics >
+      </Physics>
     </>
   )
 }

@@ -18,7 +18,6 @@ import { useFrame } from '@react-three/fiber'
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
 const theCharacterModelFile = '/CharacterModelFloating.glb'
-// const theCharacterModelFile = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_01.glb'
 
 export default function CharacterModel(props: CharacterModelProps) {
   // Change the character src to yours
