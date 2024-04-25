@@ -152,7 +152,8 @@ export function ThreeDEnvironment() {
     ),
     {
       color: 'darkgreen',
-      collapsed: false,
+      collapsed: true,
+      order: 0,
     },
   )
 
