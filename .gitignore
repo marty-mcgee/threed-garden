@@ -21,6 +21,8 @@ desktop.ini
 .npmrc
 
 # assets
+public/assets
+public/assets/**
 public/demo
 public/demo/objects
 public/objects/**
