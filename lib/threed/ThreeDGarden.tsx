@@ -270,12 +270,12 @@ const ThreeDGarden = (): JSX.Element => {
   // ==========================================================
   // ** USE CLIENT
   const client = useApolloClient()
-  // console.debug('useApolloClient()', client)
+  console.debug('%c{duck} useApolloClient()', ccm.orangeAlert) // , client
 
   // **
   // const prefs = preferencesDataVar() // NO ??
   const prefs = useReactiveVar(preferencesDataVar) // YES ??
-  console.debug('%c⚙️ ThreeDGarden prefs', ccm.orangeAlert, prefs)
+  console.debug('%c⚙️ ThreeDGarden prefs', ccm.orangeAlert) // , prefs
 
   // // ** GET PREFERENCES
   const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
@@ -294,9 +294,9 @@ const ThreeDGarden = (): JSX.Element => {
           const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
           // const preferencesFromDataSource = async () => await preferencesStore.actions.loadFromDataSource(client)
           // preferencesFromDataSource()
-          if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert)
+          if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert) // , preferencesFromDataSource
           if (preferencesFromDataSource) {
-            if (DEBUG) console.debug('%c preferencesFromDataSource', ccm.greenAlert, preferencesFromDataSource)
+            if (DEBUG) console.debug('%c preferencesFromDataSource', ccm.greenAlert) // , preferencesFromDataSource
           }
         }
 
