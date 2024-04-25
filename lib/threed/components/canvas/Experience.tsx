@@ -325,10 +325,10 @@ export default function Experience() {
 
       </Physics>
 
-      <Perf
+      {/* <Perf
         position='bottom-left'
         // minimal
-      />
+      /> */}
     </>
   )
 }
