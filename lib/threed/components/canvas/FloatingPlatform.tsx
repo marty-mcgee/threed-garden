@@ -179,7 +179,7 @@ export default function FloatingPlatform() {
   });
 
   return (
-    <>
+    <group position={[0, 0.0, 0]}>
       {/* Platform 1 */}
       <RigidBody
         position={[0, 5, -10]}
@@ -248,6 +248,6 @@ export default function FloatingPlatform() {
           <meshStandardMaterial color={"lightsteelblue"} />
         </mesh>
       </RigidBody>
-    </>
+    </group>
   );
 }
