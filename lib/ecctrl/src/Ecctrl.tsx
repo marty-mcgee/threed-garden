@@ -1394,7 +1394,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
     <RigidBody
       colliders={false}
       ref={characterRef}
-      position={props.position || [0, 5, 0]}
+      position={props.position || [0, 4, 0]}
       friction={props.friction || -0.5}
       onContactForce={(e) => bodyContactForce.set(e.totalForce.x, e.totalForce.y, e.totalForce.z)}
       onCollisionExit={() => bodyContactForce.set(0, 0, 0)}
