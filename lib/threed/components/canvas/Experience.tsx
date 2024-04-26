@@ -209,19 +209,6 @@ export default function Experience() {
   return (
     <>
 
-      {/* HELPFUL GRID (PREVENTS INFINITE FALL):
-          SHALLOW BELOW SEA LEVEL -16 (-1rem)
-      */}
-      <Grid
-        args={[64, 64]} // x = 4rem, z = 4rem
-        sectionColor={'darkgray'}
-        cellColor={'black'}
-        position={[0, -16, 0]} // sea level : -1rem
-        userData={{
-          camExcludeCollision: false, // collide by camera ray? true | false
-        }}
-      />
-
       <Lights />
 
       <Physics
@@ -269,19 +256,19 @@ export default function Experience() {
         >
           {/* Character 2 Control */}
           <Ecctrl
-            // debug={prefs.doWorldDebug}
-            // animated={prefs.doCharacterAnimation}
-            // disableFollowCam={prefs.doWorldUnfollowCam}
-            // followLight={false}
-            // springK={2}
-            // dampingC={0.2}
-            // autoBalanceSpringK={1.2}
-            // autoBalanceDampingC={0.04}
+            debug={prefs.doWorldDebug}
+            animated={prefs.doCharacterAnimation}
+            disableFollowCam={prefs.doWorldUnfollowCam}
+            followLight={false}
+            springK={2}
+            dampingC={0.2}
+            autoBalanceSpringK={1.2}
+            autoBalanceDampingC={0.04}
             // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
             // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
           >
             {/* THREED CHARACTER [2] -- FARMER */}
-            <group rotation={[0, 0, 0]} scale={0.016} position={[0, -1.0, 0]}>
+            <group rotation={[0, 0, 0]} scale={0.016} position={[0, 0, 0]}>
               {/* <CharacterModel2 /> */}
               <CharacterModel4 />
             </group>
@@ -289,7 +276,7 @@ export default function Experience() {
         </KeyboardControls>
 
         {/* // import Map from './Map' */}
-        <group rotation={[0, -Math.PI/2, 0]} scale={1.0} position={[0, 0, 24]}>
+        <group rotation={[0, -Math.PI/2, 0]} scale={0.16} position={[0, 2.5, 24]}>
           <Map />
         </group>
 
@@ -299,36 +286,56 @@ export default function Experience() {
         */}
         <Steps />
 
-        {/* Rough plane */}
-        {/* <RoughPlane /> */}
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 1, 0]}>
+          {/* Rough plane */}
+          <RoughPlane />
 
-        {/* Slopes and stairs */}
-        {/* <Slopes /> */}
+          {/* Slopes and stairs */}
+          <Slopes />
 
-        {/* Rigid body objects */}
-        {/* <RigidObjects /> */}
+          {/* Rigid body objects */}
+          <RigidObjects />
 
-        {/* Floating platform */}
-        {/* <FloatingPlatform /> */}
+          {/* Floating platform */}
+          <FloatingPlatform />
 
-        {/* Dynamic platforms */}
-        {/* <DynamicPlatforms /> */}
+          {/* Dynamic platforms */}
+          <DynamicPlatforms />
 
-        {/* Shoting cubes */}
-        {/* <ShotCube /> */}
+          {/* Shoting cubes */}
+          <ShotCube />
+        </group>
 
         {/* Floor */}
-        <Floor />
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
+          <Floor />
+        </group>
 
         {/* Sub-Floor[s] */}
         {/* <SubFloor level={`${level[index]}`} /> */}
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -16, 0]}>
+          <Floor />
+        </group>
+
+        {/* HELPFUL GRID (PREVENTS INFINITE FALL):
+            SHALLOW BELOW SEA LEVEL -16 (-1rem)
+        */}
+        {/* <Grid
+          args={[64, 64]} // x = 4rem, z = 4rem
+          sectionColor={'darkgray'}
+          cellColor={'black'}
+          position={[0, -16, 0]} // sea level : -1rem
+          userData={{
+            camExcludeCollision: false, // collide by camera ray? true | false
+          }}
+        /> */}
 
       </Physics>
 
-      <Perf
+      {/* <Perf
         position='bottom-left'
         // minimal
-      />
+      /> */}
     </>
   )
 }
