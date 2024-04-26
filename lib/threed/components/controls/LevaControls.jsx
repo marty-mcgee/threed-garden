@@ -369,7 +369,7 @@ export function ThreeDLevaControls() {
         titleBar={showTitleBar && { drag, title, filter, position }} // TITLE | PROJECT_NAME
         hideTitleBar={false} // default = false. true hides the GUI header
         theme={theme} // you can pass a custom theme (see the styling section)
-        collapsed={false} // default = false. true makes the GUI collpased
+        collapsed={true} // default = false. true makes the GUI collpased
         fill={true} // default = false. true makes the pane fill the parent dom node it's rendered in
         flat={true} // default = false. true removes border radius and shadow
         hidden={false} // default = false. true hides the GUI
