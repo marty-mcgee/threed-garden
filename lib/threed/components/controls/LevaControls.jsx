@@ -23,6 +23,8 @@ import Spinner from '#/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
+const debug = false
+
 // ** WAVEFORM SUPPORT
 const noise = new Noise(Math.random())
 
@@ -294,7 +296,7 @@ export function ThreeDLevaControls() {
     // if (prefs.doAutoLoadData != undefined) {
       setUserPreferencesLeva({ doAutoLoadDataLeva: prefs.doAutoLoadData })
     // }
-    console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doAutoLoadData', ccm.greenAlert, prefs.doAutoLoadData)
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doAutoLoadData', ccm.greenAlert, prefs.doAutoLoadData)
   }, [prefs.doAutoLoadData])
 
   // ==========================================================
@@ -317,7 +319,7 @@ export function ThreeDLevaControls() {
     // if (prefs.doAutoRotateLeva != undefined) {
       setUserPreferencesLeva({ doAutoRotateLeva: prefs.doAutoRotate })
     // }
-    console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doAutoRotate', ccm.greenAlert, prefs.doAutoRotate)
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doAutoRotate', ccm.greenAlert, prefs.doAutoRotate)
   }, [prefs.doAutoRotate])
 
   // ==========================================================
@@ -330,7 +332,7 @@ export function ThreeDLevaControls() {
       setControlPanelLeva({ title: prefs.projectName})
       setProjectPreferencesLeva({ projectNameLeva: prefs.projectName })
     // }
-    console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.projectName', ccm.greenAlert, prefs.projectName)
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.projectName', ccm.greenAlert, prefs.projectName)
   }, [prefs.projectName])
   // **
   useEffect(() => {

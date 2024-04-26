@@ -8,17 +8,18 @@ import { Grid } from "@react-three/drei";
 export default function Floor() {
   return (
     <RigidBody type="fixed">
-      <mesh receiveShadow position={[0, -3.5, 0]}>
-        <boxGeometry args={[300, 5, 300]} />
-        <meshPhongMaterial color="black" opacity={0.5} transparent={true} />
+      <mesh receiveShadow position={[0, 0, 0]}>
+        <boxGeometry args={[300, 0, 300]} />
+        <meshPhongMaterial color="black" opacity={0.9} transparent={true} />
       </mesh>
-      <Grid
+      {/* <Grid
         args={[320, 320]}
-        sectionColor={"black"}
-        cellColor={"black"}
+        sectionColor={"white"}
+        cellColor={"white"}
         position={[0, 0, 0]}
-        userData={{ camExcludeCollision: true }} // this won't collide by camera ray
-      />
+        rotation={[Math.PI/2, 0, 0]}
+        userData={{ camExcludeCollision: false }} // this won't collide by camera ray
+      /> */}
     </RigidBody>
   );
 }
