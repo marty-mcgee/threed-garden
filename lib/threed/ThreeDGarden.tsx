@@ -270,7 +270,7 @@ const ThreeDGarden = (): JSX.Element => {
   // ==========================================================
   // ** USE CLIENT
   const client = useApolloClient()
-  console.debug('%c{duck} useApolloClient()', ccm.orangeAlert) // , client
+  console.debug('%c🦆 useApolloClient()', ccm.orangeAlert) // , client
 
   // **
   // const prefs = preferencesDataVar() // NO ??
