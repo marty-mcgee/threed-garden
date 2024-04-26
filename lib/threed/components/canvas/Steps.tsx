@@ -2,11 +2,11 @@
 // ==========================================================
 // RESOURCES
 
-import { RigidBody } from "@react-three/rapier";
+import { RigidBody } from "@react-three/rapier"
 
 export default function Steps() {
   return (
-    <>
+    <group position={[0, 0.0, 0]}>
       {/* Small steps */}
       <RigidBody type="fixed" position={[0, 0.0, 5]}>
         <mesh receiveShadow>
@@ -38,6 +38,6 @@ export default function Steps() {
           <meshStandardMaterial color={"saddlebrown"} />
         </mesh>
       </RigidBody>
-    </>
-  );
+    </group>
+  )
 }
