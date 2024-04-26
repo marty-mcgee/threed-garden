@@ -300,17 +300,22 @@ export default function Experience() {
           <FloatingPlatform />
 
           {/* Dynamic platforms */}
-          {/* <DynamicPlatforms /> */}
+          <DynamicPlatforms />
 
           {/* Shoting cubes */}
-          {/* <ShotCube /> */}
+          <ShotCube />
         </group>
 
         {/* Floor */}
-        <Floor />
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
+          <Floor />
+        </group>
 
         {/* Sub-Floor[s] */}
         {/* <SubFloor level={`${level[index]}`} /> */}
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -16, 0]}>
+          <Floor />
+        </group>
 
         {/* HELPFUL GRID (PREVENTS INFINITE FALL):
             SHALLOW BELOW SEA LEVEL -16 (-1rem)
