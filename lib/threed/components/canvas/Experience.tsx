@@ -209,19 +209,6 @@ export default function Experience() {
   return (
     <>
 
-      {/* HELPFUL GRID (PREVENTS INFINITE FALL):
-          SHALLOW BELOW SEA LEVEL -16 (-1rem)
-      */}
-      {/* <Grid
-        args={[64, 64]} // x = 4rem, z = 4rem
-        sectionColor={'darkgray'}
-        cellColor={'black'}
-        position={[0, -16, 0]} // sea level : -1rem
-        userData={{
-          camExcludeCollision: false, // collide by camera ray? true | false
-        }}
-      /> */}
-
       <Lights />
 
       <Physics
@@ -299,29 +286,44 @@ export default function Experience() {
         */}
         <Steps />
 
-        {/* Rough plane */}
-        {/* <RoughPlane /> */}
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 1, 0]}>
+          {/* Rough plane */}
+          <RoughPlane />
 
-        {/* Slopes and stairs */}
-        {/* <Slopes /> */}
+          {/* Slopes and stairs */}
+          <Slopes />
 
-        {/* Rigid body objects */}
-        {/* <RigidObjects /> */}
+          {/* Rigid body objects */}
+          <RigidObjects />
 
-        {/* Floating platform */}
-        {/* <FloatingPlatform /> */}
+          {/* Floating platform */}
+          <FloatingPlatform />
 
-        {/* Dynamic platforms */}
-        {/* <DynamicPlatforms /> */}
+          {/* Dynamic platforms */}
+          {/* <DynamicPlatforms /> */}
 
-        {/* Shoting cubes */}
-        {/* <ShotCube /> */}
+          {/* Shoting cubes */}
+          {/* <ShotCube /> */}
+        </group>
 
         {/* Floor */}
         <Floor />
 
         {/* Sub-Floor[s] */}
         {/* <SubFloor level={`${level[index]}`} /> */}
+
+        {/* HELPFUL GRID (PREVENTS INFINITE FALL):
+            SHALLOW BELOW SEA LEVEL -16 (-1rem)
+        */}
+        {/* <Grid
+          args={[64, 64]} // x = 4rem, z = 4rem
+          sectionColor={'darkgray'}
+          cellColor={'black'}
+          position={[0, -16, 0]} // sea level : -1rem
+          userData={{
+            camExcludeCollision: false, // collide by camera ray? true | false
+          }}
+        /> */}
 
       </Physics>
 
