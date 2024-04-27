@@ -262,29 +262,87 @@ export default function CharacterModel(props: CharacterModelProps) {
     [characterMainColor]
   )
 
-  /**
-   * Character animations setup
-   */
+  // **
+  // ** Character animations setup
+  // **
   const curAnimation = useGame((state) => state.curAnimation)
   const resetAnimation = useGame((state) => state.reset)
   const initializeAnimationSet = useGame(
     (state) => state.initializeAnimationSet
   )
 
+  // **
+  // ** ANIMATIONS ****************************************
+  // **
+  const anims = [
+    'Breathing Idle',
+    'Crouch To Stand',
+    'Crouching Idle',
+    'Crouching',
+    'Driving',
+    'Entering Car',
+    'Exiting Car',
+    'Idle',
+    'Left Turn',
+    'Moonwalk',
+    'Planting A Plant',
+    'Pointing Gesture',
+    'Pointing',
+    'Push Up',
+    'Right Turn',
+    'Running',
+    'Standing To Crouched',
+    'Talking',
+    'Turn',
+    'Walking Backwards',
+    'Walking',
+  ]
+  const animsFarming = [
+    'farming/box idle',
+    'farming/box idle',
+    'farming/box turn (2)',
+    'farming/box turn',
+    'farming/box walk arc',
+    'farming/cow milking',
+    'farming/dig and plant seeds',
+    'farming/holding idle',
+    'farming/holding turn left',
+    'farming/holding turn right',
+    'farming/holding walk',
+    'farming/kneeling idle',
+    'farming/pick fruit (2)',
+    'farming/pick fruit (3)',
+    'farming/pick fruit',
+    'farming/plant a plant',
+    'farming/plant tree',
+    'farming/pull plant (2)',
+    'farming/pull plant',
+    'farming/watering',
+    'farming/wheelbarrow dump',
+    'farming/wheelbarrow idle',
+    'farming/wheelbarrow walk (2)',
+    'farming/wheelbarrow walk turn (2)',
+    'farming/wheelbarrow walk turn',
+    'farming/wheelbarrow walk',
+  ]
+  anims.push(...animsFarming)
+  // console.log('anims', anims)
+
   // Rename your character animations here
   const animationSet = {
-    idle: 'Idle',
-    walk: 'Walk',
-    run: 'Run',
-    jump: 'Jump_Start',
-    jumpIdle: 'Jump_Idle',
-    jumpLand: 'Jump_Land',
-    fall: 'Climbing', // This is for falling from high sky
-    action1: 'Wave',
-    action2: 'Dance',
-    action3: 'Cheer',
-    action4: 'Attack(1h)',
+    idle:     'Breathing Idle',
+    walk:     'Walking',
+    run:      'Running',
+    jump:     'Crouch To Stand',
+    jumpIdle: 'Crouching',
+    jumpLand: 'Standing To Crouched',
+    fall:     'Idle',
+    action1:  'Planting A Plant',
+    action2:  'Talking',
+    action3:  'Pointing Gesture',
+    action4:  'Pointing',
   }
+  // console.log('animationSet', animationSet)
 
   useEffect(() => {
     // Initialize animation set
@@ -351,7 +409,7 @@ export default function CharacterModel(props: CharacterModelProps) {
   useEffect(() => {
 
     // Play animation
-    const action = actions[curAnimation ? curAnimation : animationSet.jumpIdle]
+    const action = actions[curAnimation ? curAnimation : animationSet.Idle]
 
     // [MM] HEY HEY HEY
     if (action) {
@@ -472,7 +530,7 @@ export default function CharacterModel(props: CharacterModelProps) {
         scale={1.0}
       >
 
-        <group name="RootNode">
+        <group name='RootNode'>
 
           {/* ANIMATED CHARACTER 'FARMER MAN' */}
           <group name='ThreeD_Animated_Character'>
@@ -492,7 +550,7 @@ export default function CharacterModel(props: CharacterModelProps) {
               castShadow
             /> */}
             <skinnedMesh
-              name="SK_Chr_Farmer_Male_01"
+              name='SK_Chr_Farmer_Male_01'
               geometry={nodes.SK_Chr_Farmer_Male_01.geometry}
               material={materials.lambert2}
               skeleton={nodes.SK_Chr_Farmer_Male_01.skeleton}
@@ -500,7 +558,7 @@ export default function CharacterModel(props: CharacterModelProps) {
               castShadow
             />
             {/* <skinnedMesh
-              name="SK_Chr_Farmer_Female_01"
+              name='SK_Chr_Farmer_Female_01'
               geometry={nodes.SK_Chr_Farmer_Female_01.geometry}
               material={materials.lambert2}
               skeleton={nodes.SK_Chr_Farmer_Female_01.skeleton}
@@ -518,36 +576,36 @@ export default function CharacterModel(props: CharacterModelProps) {
               <primitive object={nodes.Root} />
             </Trail>
 
-            <group name="Root">
-              <group name="Pelvis_$AssimpFbx$_Translation" position={[0, 87.628, 0]}>
-                <group name="Pelvis_$AssimpFbx$_PreRotation" rotation={[-0.179, 0.022, 0.006]}>
-                  <group name="Pelvis_$AssimpFbx$_PostRotation" rotation={[0.255, 1.548, 1.345]}>
+            <group name='Root'>
+              <group name='Pelvis_$AssimpFbx$_Translation' position={[0, 87.628, 0]}>
+                <group name='Pelvis_$AssimpFbx$_PreRotation' rotation={[-0.179, 0.022, 0.006]}>
+                  <group name='Pelvis_$AssimpFbx$_PostRotation' rotation={[0.255, 1.548, 1.345]}>
                     <primitive object={nodes.Pelvis} />
                   </group>
                 </group>
               </group>
-              <group name="ik_foot_root_$AssimpFbx$_PreRotation" rotation={[-Math.PI / 2, 0, 0]}>
-                <group name="ik_foot_root">
+              <group name='ik_foot_root_$AssimpFbx$_PreRotation' rotation={[-Math.PI / 2, 0, 0]}>
+                <group name='ik_foot_root'>
                   <group
-                    name="ik_foot_l"
+                    name='ik_foot_l'
                     position={[11.444, 3.687, 5.569]}
                     rotation={[0, -1.571, 0]}
                   />
                   <group
-                    name="ik_foot_r"
+                    name='ik_foot_r'
                     position={[-11.444, 3.687, 5.569]}
                     rotation={[Math.PI, -1.571, 0]}
                   />
                 </group>
               </group>
-              <group name="ik_hand_root_$AssimpFbx$_PreRotation" rotation={[-Math.PI / 2, 0, 0]}>
-                <group name="ik_hand_root">
+              <group name='ik_hand_root_$AssimpFbx$_PreRotation' rotation={[-Math.PI / 2, 0, 0]}>
+                <group name='ik_hand_root'>
                   <group
-                    name="ik_hand_gun"
+                    name='ik_hand_gun'
                     position={[-79.963, 3.417, 136.094]}
                     rotation={[Math.PI / 2, 0, 0]}>
-                    <group name="ik_hand_l" position={[159.926, 0, 0]} rotation={[-Math.PI, 0, 0]} />
-                    <group name="ik_hand_r" />
+                    <group name='ik_hand_l' position={[159.926, 0, 0]} rotation={[-Math.PI, 0, 0]} />
+                    <group name='ik_hand_r' />
                   </group>
                 </group>
               </group>
