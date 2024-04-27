@@ -155,12 +155,17 @@ type CharacterModelProps = JSX.IntrinsicElements['group']
 export default function CharacterModel(props: CharacterModelProps) {
 
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
-  const prefs = useReactiveVar(preferencesDataVar)
-  // console.debug(`%c CHARACTER: APOLLO prefs`, ccm.redAlert, prefs)
+  // const prefs = useReactiveVar(preferencesDataVar)
+  const prefs = {
+    doCharacterAnimation: false,
+    characterMainColor: 'mediumslateblue',
+    characterOutlineColor: 'black',
+    characterTrailColor: 'violet',
+  }
+  // console.debug(`%c CHARACTER MODEL: prefs`, ccm.redAlert, prefs)
 
   // const instances = useContext(context)
 
-  // Change the character src to yours
   const group = useRef<THREE.Group>()
 
   // @ts-expect-error: ignore a compile error, like this type mismatch
@@ -170,7 +175,7 @@ export default function CharacterModel(props: CharacterModelProps) {
   const { nodes, materials, animations } = useGLTF(file) as GLTF & {
     nodes: any
   }
-  // console.debug(`%c nodes`, ccm.yellow, nodes)
+  console.debug(`%c nodes`, ccm.yellowAlert, nodes)
 
   // const { actions } = useAnimations(animations, group)
   const { actions } = useAnimations<GLTFActions>(animations, group)
@@ -223,15 +228,15 @@ export default function CharacterModel(props: CharacterModelProps) {
       },
       characterMainColor: {
         label: 'Main Color',
-        value: 'mediumslateblue', // prefs.characterMainColor,
+        value: prefs.characterMainColor,
       },
       characterOutlineColor: {
         label: 'Outline Color',
-        value:'black', // prefs.characterOutlineColor,
+        value: prefs.characterOutlineColor,
       },
       characterTrailColor: {
         label: 'Trail Color',
-        value:'violet', // prefs.characterTrailColor,
+        value: prefs.characterTrailColor,
       },
     }),
     {
