@@ -7,7 +7,7 @@ import { useReactiveVar } from '@apollo/client'
 import { preferencesDataVar } from '#/lib/stores/apollo'
 
 // ** REACT Imports
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** REACT THREE Imports
 import { Grid, KeyboardControls } from '@react-three/drei'
