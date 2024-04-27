@@ -4,8 +4,8 @@
 // RESOURCES
 
 // ** APOLLO Imports (NOT HERE?, preferably)
-import { useReactiveVar } from '@apollo/client'
-import { preferencesDataVar } from '#/lib/stores/apollo'
+// import { useReactiveVar } from '@apollo/client'
+// import { preferencesDataVar } from '#/lib/stores/apollo'
 
 // ** REACT Imports
 import {
@@ -156,6 +156,7 @@ export default function CharacterModel(props: CharacterModelProps) {
 
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
   // const prefs = useReactiveVar(preferencesDataVar)
+  // console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
   const prefs = {
     doCharacterAnimation: false,
     characterMainColor: 'mediumslateblue',
