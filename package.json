@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.15.1-beta.5",
+  "version": "0.15.1-beta.6",
   "description": "3D Dev Environment w React, TypeScript, Three.js, React-Three (poimandres), on Next.js, Apollo Client, GraphQL, REST API, WordPress, MUI + Tailwind",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",

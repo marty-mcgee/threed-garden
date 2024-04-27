@@ -54,14 +54,14 @@ const testing = false
 export default function Experience() {
 
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
-  // const prefs = useReactiveVar(preferencesDataVar)
+  const prefs = useReactiveVar(preferencesDataVar)
   // console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
-  const prefs = {
-    doWorldDebug: false,
-    doWorldTesting: false,
-    doWorldPhysics: false,
-    doWorldUnfollowCam: false,
-  }
+  // const prefs = {
+  //   doWorldDebug: false,
+  //   doWorldTesting: false,
+  //   doWorldPhysics: false,
+  //   doWorldUnfollowCam: false,
+  // }
   // console.debug(`%c CHARACTER MODEL: prefs`, ccm.redAlert, prefs)
 
   // ** Delay physics activate
