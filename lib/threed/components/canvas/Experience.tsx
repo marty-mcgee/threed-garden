@@ -273,9 +273,11 @@ export default function Experience() {
             autoBalanceDampingC={0.04}
             // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
             // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
+            position={[0, 0, 0]}
           >
             {/* THREED CHARACTER [2] -- FARMER */}
-            <group rotation={[0, 0, 0]} scale={0.016} position={[0, 0, 0]}>
+            <group rotation={[0, 0, 0]} scale={0.016}
+            position={[0, -1.6, 0]}>
               {/* <CharacterModel2 /> */}
               <CharacterModel4 />
             </group>

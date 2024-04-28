@@ -63,10 +63,16 @@ import { GLTF } from 'three-stdlib'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
-// ** FILE Settings/Locations
+
+const debug: boolean = true
+const debugAnimation: boolean = false
+
+// ** FILES for CharacterModel: Settings/Locations
 // const theCharacterModelFile = '/CharacterModelFloating.glb'
 const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_01.glb'
-const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_A.png'
+// const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_A.png'
+const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_B.png'
+
 
 // ** TYPES for this GLTF
 // **
@@ -163,7 +169,7 @@ export default function CharacterModel(props: CharacterModelProps) {
     characterOutlineColor: 'black',
     characterTrailColor: 'violet',
   }
-  // console.debug(`%c CHARACTER MODEL: prefs`, ccm.redAlert, prefs)
+  console.debug(`%c CHARACTER MODEL: prefs`, ccm.redAlert, prefs)
 
   // const instances = useContext(context)
 
@@ -188,7 +194,7 @@ export default function CharacterModel(props: CharacterModelProps) {
   gradientMapTexture.generateMipmaps = false
 
   /**
-   * Prepare hands ref for attack action
+   * Prepare Hands+Body Refs+Memos for actions[action4]
    */
   const rightHandRef = useRef<THREE.Mesh>()
   const rightHandColliderRef = useRef<RapierCollider>()
@@ -196,8 +202,8 @@ export default function CharacterModel(props: CharacterModelProps) {
   const leftHandColliderRef = useRef<RapierCollider>()
   const rightHandPos = useMemo(() => new THREE.Vector3(), [])
   const leftHandPos = useMemo(() => new THREE.Vector3(), [])
-  const bodyPos = useMemo(() => new THREE.Vector3(), [])
-  const bodyRot = useMemo(() => new THREE.Quaternion(), [])
+  const bodyPosition = useMemo(() => new THREE.Vector3(), [])
+  const bodyRotation = useMemo(() => new THREE.Quaternion(), [])
   let rightHand: THREE.Object3D = null
   let leftHand: THREE.Object3D = null
   let mugModel: THREE.Object3D = null
@@ -332,7 +338,7 @@ export default function CharacterModel(props: CharacterModelProps) {
     'farming/wheelbarrow walk',
   ]
   anims.push(...animsFarming)
-  // console.log('anims', anims)
+  // console.debug('anims', anims)
 
   // Rename your character animations here
   const animationSet = {
@@ -348,7 +354,7 @@ export default function CharacterModel(props: CharacterModelProps) {
     action3:  'Pointing Gesture',
     action4:  'Pointing',
   }
-  // console.log('animationSet', animationSet)
+  // console.debug('animationSet', animationSet)
 
   useEffect(() => {
     // Initialize animation set
@@ -371,25 +377,36 @@ export default function CharacterModel(props: CharacterModelProps) {
   })
 
   useFrame(() => {
+
+    const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
+    const wordX: string = group.current.getWorldPosition(bodyPosition).x
+    const wordY: string = group.current.getWorldPosition(bodyPosition).y
+    const wordZ: string = group.current.getWorldPosition(bodyPosition).z
+    if (debugAnimation) {
+      // console.debug(`%c FarmerManFloating: useFrame :(`, ccm.redAlert, word)
+      if (debug) console.debug(`%c FarmerManFloating: useFrame :(`, ccm.darkredAlert, wordX, wordY, wordZ)
+    }
+    // [MM] END HEY HEY HEY
+
     if (curAnimation === animationSet.action4) {
       if (rightHand) {
         rightHand.getWorldPosition(rightHandPos)
-        group.current.getWorldPosition(bodyPos)
-        group.current.getWorldQuaternion(bodyRot)
+        group.current.getWorldPosition(bodyPosition)
+        group.current.getWorldQuaternion(bodyRotation)
       }
       if (leftHand) {
         leftHand.getWorldPosition(leftHandPos)
-        group.current.getWorldPosition(bodyPos)
-        group.current.getWorldQuaternion(bodyRot)
+        group.current.getWorldPosition(bodyPosition)
+        group.current.getWorldQuaternion(bodyRotation)
       }
 
       // Apply hands position to hand colliders
       if (rightHandColliderRef.current) {
         // check if parent group autobalance is on or off
         if (group.current.parent.quaternion.y === 0 && group.current.parent.quaternion.w === 1) {
-          rightHandRef.current.position.copy(rightHandPos).sub(bodyPos).applyQuaternion(bodyRot.conjugate())
+          rightHandRef.current.position.copy(rightHandPos).sub(bodyPosition).applyQuaternion(bodyRotation.conjugate())
         } else {
-          rightHandRef.current.position.copy(rightHandPos).sub(bodyPos)
+          rightHandRef.current.position.copy(rightHandPos).sub(bodyPosition)
         }
         rightHandColliderRef.current.setTranslationWrtParent(
           rightHandRef.current.position
@@ -400,9 +417,9 @@ export default function CharacterModel(props: CharacterModelProps) {
       if (leftHandColliderRef.current) {
         // check if parent group autobalance is on or off
         if (group.current.parent.quaternion.y === 0 && group.current.parent.quaternion.w === 1) {
-          leftHandRef.current.position.copy(leftHandPos).sub(bodyPos).applyQuaternion(bodyRot.conjugate())
+          leftHandRef.current.position.copy(leftHandPos).sub(bodyPosition).applyQuaternion(bodyRotation.conjugate())
         } else {
-          leftHandRef.current.position.copy(leftHandPos).sub(bodyPos)
+          leftHandRef.current.position.copy(leftHandPos).sub(bodyPosition)
         }
         leftHandColliderRef.current.setTranslationWrtParent(
           leftHandRef.current.position
@@ -413,6 +430,8 @@ export default function CharacterModel(props: CharacterModelProps) {
   })
 
   useEffect(() => {
+
+    const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
 
     // Play animation
     const action = actions[curAnimation ? curAnimation : animationSet.Idle]
@@ -446,9 +465,12 @@ export default function CharacterModel(props: CharacterModelProps) {
         mugModel.visible = false
       }
 
-      // When any action is clamp and finished reset animation
+      // When any action is clamped and animation finished resetting
       (action as any)._mixer.addEventListener('finished', () => resetAnimation())
 
+    }
+    else if (!action) {
+      if (debug) console.debug(`%c FarmerManFloating: no action :|`, ccm.darkgrayAlert, word)
     }
     // [MM] END HEY HEY HEY
 
@@ -479,7 +501,7 @@ export default function CharacterModel(props: CharacterModelProps) {
   }, [curAnimation])
 
   return (
-    <Suspense fallback={<capsuleGeometry args={[0.3, 0.7]} />}>
+    <Suspense fallback={<capsuleGeometry args={[0.4, 0.8]} />}>
 
       {/* Default capsule model */}
       {/* <mesh castShadow>
@@ -492,10 +514,10 @@ export default function CharacterModel(props: CharacterModelProps) {
       </mesh> */}
 
       {/* Head collider */}
-      <BallCollider args={[0.5]} position={[0, 0.45, 0]} />
+      {/* <BallCollider args={[0.5]} position={[0, 0.45, 0]} /> */}
 
       {/* Right hand collider */}
-      <mesh ref={rightHandRef} />
+      {/* <mesh ref={rightHandRef} />
       <BallCollider
         args={[0.1]}
         ref={rightHandColliderRef}
@@ -509,10 +531,10 @@ export default function CharacterModel(props: CharacterModelProps) {
             }))
           }
         }}
-      />
+      /> */}
 
       {/* Left hand collider */}
-      <mesh ref={leftHandRef} />
+      {/* <mesh ref={leftHandRef} />
       <BallCollider
         args={[0.1]}
         ref={leftHandColliderRef}
@@ -526,102 +548,19 @@ export default function CharacterModel(props: CharacterModelProps) {
             }))
           }
         }}
-      />
+      /> */}
 
-      {/* Character Model group */}
+      {/* ANIMATED CHARACTER Model Group */}
       <group
         ref={group}
         {...props}
         dispose={null}
         scale={1.0}
+        name='ThreeD_Animated_Character'
       >
 
-        <group name='RootNode'>
-
-          {/* ANIMATED CHARACTER 'FARMER MAN' */}
-          <group name='ThreeD_Animated_Character'>
-
-            {/* <skinnedMesh
-              name='outline'
-              geometry={nodes.outline.geometry}
-              material={outlineMaterial}
-              skeleton={nodes.outline.skeleton}
-            />
-            <skinnedMesh
-              name='PrototypePete'
-              geometry={nodes.PrototypePete.geometry}
-              material={meshToonMaterial}
-              skeleton={nodes.PrototypePete.skeleton}
-              receiveShadow
-              castShadow
-            /> */}
-            <skinnedMesh
-              name='SK_Chr_Farmer_Male_01'
-              geometry={nodes.SK_Chr_Farmer_Male_01.geometry}
-              material={materials.lambert2}
-              skeleton={nodes.SK_Chr_Farmer_Male_01.skeleton}
-              receiveShadow
-              castShadow
-            />
-            {/* <skinnedMesh
-              name='SK_Chr_Farmer_Female_01'
-              geometry={nodes.SK_Chr_Farmer_Female_01.geometry}
-              material={materials.lambert2}
-              skeleton={nodes.SK_Chr_Farmer_Female_01.skeleton}
-              receiveShadow
-              castShadow
-            /> */}
-
-            <Trail
-              width={1.5}
-              color={characterTrailColor}
-              length={3}
-              decay={2}
-              attenuation={(width) => width}
-            >
-              <primitive object={nodes.Root} />
-            </Trail>
-
-            <group name='Root'>
-              <group name='Pelvis_$AssimpFbx$_Translation' position={[0, 87.628, 0]}>
-                <group name='Pelvis_$AssimpFbx$_PreRotation' rotation={[-0.179, 0.022, 0.006]}>
-                  <group name='Pelvis_$AssimpFbx$_PostRotation' rotation={[0.255, 1.548, 1.345]}>
-                    <primitive object={nodes.Pelvis} />
-                  </group>
-                </group>
-              </group>
-              <group name='ik_foot_root_$AssimpFbx$_PreRotation' rotation={[-Math.PI / 2, 0, 0]}>
-                <group name='ik_foot_root'>
-                  <group
-                    name='ik_foot_l'
-                    position={[11.444, 3.687, 5.569]}
-                    rotation={[0, -1.571, 0]}
-                  />
-                  <group
-                    name='ik_foot_r'
-                    position={[-11.444, 3.687, 5.569]}
-                    rotation={[Math.PI, -1.571, 0]}
-                  />
-                </group>
-              </group>
-              <group name='ik_hand_root_$AssimpFbx$_PreRotation' rotation={[-Math.PI / 2, 0, 0]}>
-                <group name='ik_hand_root'>
-                  <group
-                    name='ik_hand_gun'
-                    position={[-79.963, 3.417, 136.094]}
-                    rotation={[Math.PI / 2, 0, 0]}>
-                    <group name='ik_hand_l' position={[159.926, 0, 0]} rotation={[-Math.PI, 0, 0]} />
-                    <group name='ik_hand_r' />
-                  </group>
-                </group>
-              </group>
-            </group>
-
-          </group>
-        </group>
-
         {/* CUSTOM ANIMATION 'PUNCH EFFECT' */}
-        <SpriteAnimator
+        {/* <SpriteAnimator
           visible={punchEffectProps.visible}
           scale={punchEffectProps.scale as any}
           position={punchEffectProps.position as any}
@@ -638,7 +577,86 @@ export default function CharacterModel(props: CharacterModelProps) {
           numberOfFrames={7}
           alphaTest={0.01}
           textureImageURL={'./punchEffect.png'}
-        />
+        /> */}
+
+        <group name='RootNode'>
+          {/* <skinnedMesh
+            name='outline'
+            geometry={nodes.outline.geometry}
+            material={outlineMaterial}
+            skeleton={nodes.outline.skeleton}
+          />
+          <skinnedMesh
+            name='PrototypePete'
+            geometry={nodes.PrototypePete.geometry}
+            material={meshToonMaterial}
+            skeleton={nodes.PrototypePete.skeleton}
+            receiveShadow
+            castShadow
+          /> */}
+          <skinnedMesh
+            name='SK_Chr_Farmer_Male_01'
+            geometry={nodes.SK_Chr_Farmer_Male_01.geometry}
+            material={materials.lambert2}
+            skeleton={nodes.SK_Chr_Farmer_Male_01.skeleton}
+            receiveShadow
+            castShadow
+          />
+          {/* <skinnedMesh
+            name='SK_Chr_Farmer_Female_01'
+            geometry={nodes.SK_Chr_Farmer_Female_01.geometry}
+            material={materials.lambert2}
+            skeleton={nodes.SK_Chr_Farmer_Female_01.skeleton}
+            receiveShadow
+            castShadow
+          /> */}
+
+          <Trail
+            width={1.5}
+            color={characterTrailColor}
+            length={3}
+            decay={2}
+            attenuation={(width) => width}
+          >
+            <primitive object={nodes.Root} />
+          </Trail>
+
+          <group name='Root'>
+            <group name='Pelvis_$AssimpFbx$_Translation' position={[0, 87.628, 0]}>
+              <group name='Pelvis_$AssimpFbx$_PreRotation' rotation={[-0.179, 0.022, 0.006]}>
+                <group name='Pelvis_$AssimpFbx$_PostRotation' rotation={[0.255, 1.548, 1.345]}>
+                  <primitive object={nodes.Pelvis} />
+                </group>
+              </group>
+            </group>
+            <group name='ik_foot_root_$AssimpFbx$_PreRotation' rotation={[-Math.PI / 2, 0, 0]}>
+              <group name='ik_foot_root'>
+                <group
+                  name='ik_foot_l'
+                  position={[11.444, 3.687, 5.569]}
+                  rotation={[0, -1.571, 0]}
+                />
+                <group
+                  name='ik_foot_r'
+                  position={[-11.444, 3.687, 5.569]}
+                  rotation={[Math.PI, -1.571, 0]}
+                />
+              </group>
+            </group>
+            <group name='ik_hand_root_$AssimpFbx$_PreRotation' rotation={[-Math.PI / 2, 0, 0]}>
+              <group name='ik_hand_root'>
+                <group
+                  name='ik_hand_gun'
+                  position={[-79.963, 3.417, 136.094]}
+                  rotation={[Math.PI / 2, 0, 0]}>
+                  <group name='ik_hand_l' position={[159.926, 0, 0]} rotation={[-Math.PI, 0, 0]} />
+                  <group name='ik_hand_r' />
+                </group>
+              </group>
+            </group>
+          </group>
+
+        </group>
 
       {/* END CharacterModel group */}
       </group>
