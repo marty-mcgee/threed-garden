@@ -276,8 +276,7 @@ export default function Experience() {
             position={[0, 0, 0]}
           >
             {/* THREED CHARACTER [2] -- FARMER */}
-            <group rotation={[0, 0, 0]} scale={0.016}
-            position={[0, -1.6, 0]}>
+            <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
               {/* <CharacterModel2 /> */}
               <CharacterModel4 />
             </group>
