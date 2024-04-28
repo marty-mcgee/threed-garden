@@ -270,25 +270,40 @@ export default function Experience() {
             animated={prefs.doCharacterAnimation}
             disableFollowCam={prefs.doWorldUnfollowCam}
             followLight={false}
-            springK={2}
-            dampingC={0.2}
-            autoBalanceSpringK={1.2}
-            autoBalanceDampingC={0.04}
+            // springK={2}
+            // dampingC={0.2}
+            // autoBalanceSpringK={1.2}
+            // autoBalanceDampingC={0.04}
+            // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
+            // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
+            position={[4, 0, 0]}
+          >
+            {/* THREED CHARACTER [n] -- FARMER */}
+            <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
+              {/* <CharacterModel0 /> */}
+              {/* <CharacterModel4 /> */}
+              <CharacterModel4 />
+            </group>
+          </Ecctrl>
+          {/* Character Model Control */}
+          <Ecctrl
+            debug={prefs.doWorldDebug}
+            animated={prefs.doCharacterAnimation}
+            disableFollowCam={prefs.doWorldUnfollowCam}
+            followLight={false}
+            // springK={2}
+            // dampingC={0.2}
+            // autoBalanceSpringK={1.2}
+            // autoBalanceDampingC={0.04}
             // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
             // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
             position={[0, 0, 0]}
           >
-            {/* THREED CHARACTER [female] -- FARMER */}
+            {/* THREED CHARACTER [n] -- FARMER */}
             <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
               {/* <CharacterModel0 /> */}
               {/* <CharacterModel4 /> */}
               <CharacterModel5 />
-            </group>
-            {/* THREED CHARACTER [male] -- FARMER */}
-            <group rotation={[0, 0, 0]} scale={0.016} position={[4, -0.63, 0]}>
-              {/* <CharacterModel0 /> */}
-              <CharacterModel4 />
-              {/* <CharacterModel5 /> */}
             </group>
           </Ecctrl>
         </KeyboardControls>
