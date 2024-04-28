@@ -81,7 +81,7 @@
     "graphql-tag": "^2.12.6",
     "leva": "^0.9.35",
     "mdi-material-ui": "^7.8.0",
-    "next": "^14.2.2",
+    "next": "^14.2.3",
     "next-auth": "^5.0.0-beta.16",
     "path": "^0.12.7",
     "pretty-time": "^1.1.0",
