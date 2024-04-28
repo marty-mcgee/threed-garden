@@ -19,11 +19,14 @@ import { useControls } from 'leva'
 // ** THREED.AI
 // ** THREED CHARACTER CONTROL Imports
 import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
-// import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
+import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
 // import CharacterModel1 from '#/lib/threed/components/nouns/Character/CharacterModelFloating'
 // import CharacterModel2 from '#/lib/threed/components/nouns/Character/FarmerMan'
 // import CharacterModel3 from '#/lib/threed/components/nouns/Character/Character'
 import CharacterModel4 from '#/lib/threed/components/nouns/Character/FarmerManFloating'
+import CharacterModel5 from '#/lib/threed/components/nouns/Character/FarmerWomanFloating'
+import CharacterModel6 from '#/lib/threed/components/nouns/Character/FarmerManFloating'
+import CharacterModel7 from '#/lib/threed/components/nouns/Character/FarmerManFloating'
 // ** THREED OBJECTS
 import Floor from './Floor'
 import Lights from './Lights'
@@ -261,7 +264,7 @@ export default function Experience() {
         <KeyboardControls
           map={keyboardMap}
         >
-          {/* Character 2 Control */}
+          {/* Character Model Control */}
           <Ecctrl
             debug={prefs.doWorldDebug}
             animated={prefs.doCharacterAnimation}
@@ -275,10 +278,17 @@ export default function Experience() {
             // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
             position={[0, 0, 0]}
           >
-            {/* THREED CHARACTER [2] -- FARMER */}
+            {/* THREED CHARACTER [female] -- FARMER */}
             <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
-              {/* <CharacterModel2 /> */}
+              {/* <CharacterModel0 /> */}
+              {/* <CharacterModel4 /> */}
+              <CharacterModel5 />
+            </group>
+            {/* THREED CHARACTER [male] -- FARMER */}
+            <group rotation={[0, 0, 0]} scale={0.016} position={[4, -0.63, 0]}>
+              {/* <CharacterModel0 /> */}
               <CharacterModel4 />
+              {/* <CharacterModel5 /> */}
             </group>
           </Ecctrl>
         </KeyboardControls>
