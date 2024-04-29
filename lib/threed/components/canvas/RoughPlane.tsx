@@ -24,7 +24,7 @@ export default function RoughPlane() {
   }, []);
 
   return (
-    <RigidBody type="fixed" colliders="trimesh" position={[8.4, -1, 10]}>
+    <RigidBody type="fixed" colliders="trimesh" position={[8.4, 0.0, 10]}>
       <primitive object={roughPlane.scene} />
     </RigidBody>
   );

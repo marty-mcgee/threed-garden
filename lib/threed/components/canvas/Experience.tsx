@@ -276,7 +276,7 @@ export default function Experience() {
             // autoBalanceDampingC={0.04}
             // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
             // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
-            position={[4, 0, 0]}
+            position={[4, 0.1, 0]}
           >
             {/* THREED CHARACTER [n] -- FARMER */}
             <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
@@ -297,7 +297,7 @@ export default function Experience() {
             // autoBalanceDampingC={0.04}
             // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
             // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
-            position={[0, 0, 0]}
+            position={[0, 0.1, 0]}
           >
             {/* THREED CHARACTER [n] -- FARMER */}
             <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
@@ -319,7 +319,7 @@ export default function Experience() {
         */}
         <Steps />
 
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 1, 0]}>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0.01, 0]}>
           {/* Rough plane */}
           <RoughPlane />
 
