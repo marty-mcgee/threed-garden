@@ -27,6 +27,7 @@ import CharacterModel4 from '#/lib/threed/components/nouns/Character/FarmerManFl
 import CharacterModel5 from '#/lib/threed/components/nouns/Character/FarmerWomanFloating'
 import CharacterModel6 from '#/lib/threed/components/nouns/Character/FarmerManFloating'
 import CharacterModel7 from '#/lib/threed/components/nouns/Character/FarmerManFloating'
+import Birds from '#/lib/threed/components/examples/Birds/Birds'
 // ** THREED OBJECTS
 import Floor from './Floor'
 import Lights from './Lights'
@@ -221,6 +222,10 @@ export default function Experience() {
 
       <Lights />
 
+      <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
+        <Birds />
+      </group>
+
       <Physics
         debug={prefs.doWorldPhysics}
         timeStep='vary'
@@ -276,7 +281,7 @@ export default function Experience() {
             // autoBalanceDampingC={0.04}
             // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
             // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
-            position={[4, 0.1, 0]}
+            position={[4, 0.2, 0]}
           >
             {/* THREED CHARACTER [n] -- FARMER */}
             <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
@@ -297,7 +302,7 @@ export default function Experience() {
             // autoBalanceDampingC={0.04}
             // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
             // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
-            position={[0, 0.1, 0]}
+            position={[0, 0.2, 0]}
           >
             {/* THREED CHARACTER [n] -- FARMER */}
             <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
