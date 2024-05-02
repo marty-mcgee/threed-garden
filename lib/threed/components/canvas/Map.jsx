@@ -20,12 +20,16 @@ export default function Map(props) {
 
   return (
     <RigidBody type="fixed" colliders="trimesh" ccd>
-      <group {...props} dispose={null}>
-        <group rotation={[-Math.PI / 2, 0, 0]} scale={1.0} position={[0, 0, 0]}>
-          <mesh castShadow receiveShadow geometry={nodes.TheInn_bakeInn_0.geometry}>
-            <meshStandardMaterial map={materials.bakeInn.map} />
-          </mesh>
-        </group>
+      <group 
+        rotation={[-Math.PI / 2, 0, 0]} 
+        scale={1.0} 
+        position={[0, 0, 0]}
+        {...props} 
+        dispose={null}
+      >
+        <mesh castShadow receiveShadow geometry={nodes.TheInn_bakeInn_0.geometry}>
+          <meshStandardMaterial map={materials.bakeInn.map} />
+        </mesh>
       </group>
     </RigidBody>
   )
