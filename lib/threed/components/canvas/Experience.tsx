@@ -220,8 +220,10 @@ export default function Experience() {
   return (
     <>
 
+      {/* LIGHTS */}
       <Lights />
 
+      {/* // import Birds from './Birds' */}
       <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
         <Birds />
       </group>
@@ -324,7 +326,7 @@ export default function Experience() {
         */}
         <Steps />
 
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0.01, 0]}>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}>
           {/* Rough plane */}
           <RoughPlane />
 
@@ -334,8 +336,14 @@ export default function Experience() {
           {/* Rigid body objects */}
           <RigidObjects />
 
+        </group>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 10.01, 0]}>
+
           {/* Floating platform */}
           <FloatingPlatform />
+
+        </group>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 4.01, 0]}>
 
           {/* Dynamic platforms */}
           <DynamicPlatforms />
