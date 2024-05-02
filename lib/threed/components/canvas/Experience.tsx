@@ -7,7 +7,7 @@ import { useReactiveVar } from '@apollo/client'
 import { preferencesDataVar } from '#/lib/stores/apollo'
 
 // ** REACT Imports
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** REACT THREE Imports
 import { Grid, KeyboardControls } from '@react-three/drei'
@@ -19,11 +19,15 @@ import { useControls } from 'leva'
 // ** THREED.AI
 // ** THREED CHARACTER CONTROL Imports
 import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
-// import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
+import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
 // import CharacterModel1 from '#/lib/threed/components/nouns/Character/CharacterModelFloating'
 // import CharacterModel2 from '#/lib/threed/components/nouns/Character/FarmerMan'
 // import CharacterModel3 from '#/lib/threed/components/nouns/Character/Character'
 import CharacterModel4 from '#/lib/threed/components/nouns/Character/FarmerManFloating'
+import CharacterModel5 from '#/lib/threed/components/nouns/Character/FarmerWomanFloating'
+import CharacterModel6 from '#/lib/threed/components/nouns/Character/FarmerManFloating'
+import CharacterModel7 from '#/lib/threed/components/nouns/Character/FarmerManFloating'
+import Birds from '#/lib/threed/components/examples/Birds/Birds'
 // ** THREED OBJECTS
 import Floor from './Floor'
 import Lights from './Lights'
@@ -56,6 +60,13 @@ export default function Experience() {
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
   const prefs = useReactiveVar(preferencesDataVar)
   // console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
+  // const prefs = {
+  //   doWorldDebug: false,
+  //   doWorldTesting: false,
+  //   doWorldPhysics: false,
+  //   doWorldUnfollowCam: false,
+  // }
+  // console.debug(`%c CHARACTER MODEL: prefs`, ccm.redAlert, prefs)
 
   // ** Delay physics activate
   const [pausedPhysics, setPausedPhysics] = useState(true)
@@ -209,7 +220,13 @@ export default function Experience() {
   return (
     <>
 
+      {/* LIGHTS */}
       <Lights />
+
+      {/* // import Birds from './Birds' */}
+      <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
+        <Birds />
+      </group>
 
       <Physics
         debug={prefs.doWorldPhysics}
@@ -254,23 +271,46 @@ export default function Experience() {
         <KeyboardControls
           map={keyboardMap}
         >
-          {/* Character 2 Control */}
+          {/* Character Model Control */}
           <Ecctrl
             debug={prefs.doWorldDebug}
             animated={prefs.doCharacterAnimation}
             disableFollowCam={prefs.doWorldUnfollowCam}
             followLight={false}
-            springK={2}
-            dampingC={0.2}
-            autoBalanceSpringK={1.2}
-            autoBalanceDampingC={0.04}
+            // springK={2}
+            // dampingC={0.2}
+            // autoBalanceSpringK={1.2}
+            // autoBalanceDampingC={0.04}
             // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
             // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
+            position={[4, 0.2, 0]}
           >
-            {/* THREED CHARACTER [2] -- FARMER */}
-            <group rotation={[0, 0, 0]} scale={0.016} position={[0, 0, 0]}>
-              {/* <CharacterModel2 /> */}
+            {/* THREED CHARACTER [n] -- FARMER */}
+            <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
+              {/* <CharacterModel0 /> */}
+              {/* <CharacterModel4 /> */}
               <CharacterModel4 />
+            </group>
+          </Ecctrl>
+          {/* Character Model Control */}
+          <Ecctrl
+            debug={prefs.doWorldDebug}
+            animated={prefs.doCharacterAnimation}
+            disableFollowCam={prefs.doWorldUnfollowCam}
+            followLight={false}
+            // springK={2}
+            // dampingC={0.2}
+            // autoBalanceSpringK={1.2}
+            // autoBalanceDampingC={0.04}
+            // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
+            // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
+            position={[0, 0.2, 0]}
+          >
+            {/* THREED CHARACTER [n] -- FARMER */}
+            <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
+              {/* <CharacterModel0 /> */}
+              {/* <CharacterModel4 /> */}
+              <CharacterModel5 />
             </group>
           </Ecctrl>
         </KeyboardControls>
@@ -286,7 +326,7 @@ export default function Experience() {
         */}
         <Steps />
 
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 1, 0]}>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}>
           {/* Rough plane */}
           <RoughPlane />
 
@@ -296,8 +336,14 @@ export default function Experience() {
           {/* Rigid body objects */}
           <RigidObjects />
 
+        </group>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 10.01, 0]}>
+
           {/* Floating platform */}
           <FloatingPlatform />
+
+        </group>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 4.01, 0]}>
 
           {/* Dynamic platforms */}
           <DynamicPlatforms />

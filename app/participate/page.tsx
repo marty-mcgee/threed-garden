@@ -29,8 +29,9 @@ import Spinner from '#/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
-const ParticipatePage: TNextPageWithProps = () => {
+const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
 // const ParticipatePage: TNextPageWithProps = async () => {
+// const ParticipatePage: TNextPageWithProps = async ({ children }: React.PropsWithChildren): Promise<JSX.Element> => {
   // **
   // const session = await auth()
   const { data: session, status } = useSession()

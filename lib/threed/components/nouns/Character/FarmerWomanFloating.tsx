@@ -69,7 +69,7 @@ const debugAnimation: boolean = false
 
 // ** FILES for CharacterModel: Settings/Locations
 // const theCharacterModelFile = '/CharacterModelFloating.glb'
-const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_01.glb'
+const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Female_01.glb'
 // const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_A.png'
 const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_B.png'
 
@@ -78,7 +78,7 @@ const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/
 // **
 type GLTFResult = GLTF & {
   nodes: {
-    SK_Chr_Farmer_Male_01: THREE.SkinnedMesh
+    SK_Chr_Farmer_Female_01: THREE.SkinnedMesh
     Pelvis: THREE.Bone
     spine_01: THREE.Bone
     spine_02: THREE.Bone
@@ -142,7 +142,7 @@ type GLTFActions = Record<ActionName, THREE.AnimationAction>
 //   const { nodes } = useGLTF(file) as GLTFResult
 //   const instances = useMemo(
 //     () => ({
-//       SKChrFarmer: nodes.SK_Chr_Farmer_Male_01,
+//       SKChrFarmer: nodes.SK_Chr_Farmer_Female_01,
 //     }),
 //     [nodes]
 //   )
@@ -595,10 +595,10 @@ export default function CharacterModel(props: CharacterModelProps) {
             castShadow
           /> */}
           <skinnedMesh
-            name='SK_Chr_Farmer_Male_01'
-            geometry={nodes.SK_Chr_Farmer_Male_01.geometry}
+            name='SK_Chr_Farmer_Female_01'
+            geometry={nodes.SK_Chr_Farmer_Female_01.geometry}
             material={materials.lambert2}
-            skeleton={nodes.SK_Chr_Farmer_Male_01.skeleton}
+            skeleton={nodes.SK_Chr_Farmer_Female_01.skeleton}
             receiveShadow
             castShadow
           />
