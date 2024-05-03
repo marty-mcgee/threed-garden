@@ -323,49 +323,49 @@ export default function Experience() {
         {/* baby steps
             flat-XY on the floor['ground']
             aka: four-by-fours, 4"x4"[s], posts, logs
+            rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}
         */}
-        <Steps />
+        <group>
+          <Steps />
+        </group>
 
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}>
           {/* Rough plane */}
           <RoughPlane />
-
           {/* Slopes and stairs */}
           <Slopes />
-
           {/* Rigid body objects */}
           <RigidObjects />
-
         </group>
+        
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, 10.01, 0]}>
-
           {/* Floating platform */}
           <FloatingPlatform />
-
         </group>
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 4.01, 0]}>
 
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 4.01, 0]}>
           {/* Dynamic platforms */}
           <DynamicPlatforms />
-
           {/* Shoting cubes */}
           <ShotCube />
         </group>
 
-        {/* Floor */}
+        {/* The Floor (Plane 0) */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
           <Floor />
         </group>
 
-        {/* Sub-Floor[s] */}
+        {/* Sub-Floor[s] (Plane < 0) */}
         {/* <SubFloor level={`${level[index]}`} /> */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, -16, 0]}>
           <Floor />
         </group>
-
-        {/* HELPFUL GRID (PREVENTS INFINITE FALL):
-            SHALLOW BELOW SEA LEVEL -16 (-1rem)
+        {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
+            SHALLOW BELOW SEA LEVEL -48 (-4rem)
         */}
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -48, 0]}>
+          <Floor />
+        </group>
         {/* <Grid
           args={[64, 64]} // x = 4rem, z = 4rem
           sectionColor={'darkgray'}
