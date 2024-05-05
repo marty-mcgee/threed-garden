@@ -19,14 +19,14 @@ import { useControls } from 'leva'
 // ** THREED.AI
 // ** THREED CHARACTER CONTROL Imports
 import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
-import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
+// import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
 // import CharacterModel1 from '#/lib/threed/components/nouns/Character/CharacterModelFloating'
 // import CharacterModel2 from '#/lib/threed/components/nouns/Character/FarmerMan'
 // import CharacterModel3 from '#/lib/threed/components/nouns/Character/Character'
 import CharacterModel4 from '#/lib/threed/components/nouns/Character/FarmerManFloating'
 import CharacterModel5 from '#/lib/threed/components/nouns/Character/FarmerWomanFloating'
-import CharacterModel6 from '#/lib/threed/components/nouns/Character/FarmerManFloating'
-import CharacterModel7 from '#/lib/threed/components/nouns/Character/FarmerManFloating'
+// import CharacterModel6 from '#/lib/threed/components/nouns/Character/FarmerBoyFloating'
+// import CharacterModel7 from '#/lib/threed/components/nouns/Character/FarmerGirlFloating'
 import Birds from '#/lib/threed/components/examples/Birds/Birds'
 // ** THREED OBJECTS
 import Floor from './Floor'
@@ -234,7 +234,8 @@ export default function Experience() {
         paused={pausedPhysics}
       >
 
-        {/* [MM] HEY HEY HEY : CHARACTER MODEL[S] */}
+        {/* [MM] HEY HEY HEY : CHARACTER MODEL[S] GROUP */}
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
 
         {/* {
           prefs.doWorldDebug &&
@@ -271,8 +272,8 @@ export default function Experience() {
         <KeyboardControls
           map={keyboardMap}
         >
-          {/* Character Model Control */}
-          <Ecctrl
+          {/* Character Model 1 Control */}
+          {/* <Ecctrl
             debug={prefs.doWorldDebug}
             animated={prefs.doCharacterAnimation}
             disableFollowCam={prefs.doWorldUnfollowCam}
@@ -284,36 +285,43 @@ export default function Experience() {
             // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
             // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
             position={[4, 0.2, 0]}
-          >
+          > */}
             {/* THREED CHARACTER [n] -- FARMER */}
-            <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
+            {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}> */}
               {/* <CharacterModel0 /> */}
               {/* <CharacterModel4 /> */}
-              <CharacterModel4 />
-            </group>
-          </Ecctrl>
-          {/* Character Model Control */}
+              {/* <CharacterModel5 /> */}
+            {/* </group> */}
+          {/* </Ecctrl> */}
+
+          {/* Character Model 2 Control */}
           <Ecctrl
             debug={prefs.doWorldDebug}
             animated={prefs.doCharacterAnimation}
             disableFollowCam={prefs.doWorldUnfollowCam}
-            followLight={false}
+            followLight={true}
             // springK={2}
             // dampingC={0.2}
             // autoBalanceSpringK={1.2}
             // autoBalanceDampingC={0.04}
             // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
             // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
-            position={[0, 0.2, 0]}
+            // position={[0, 0.2, 0]} 
           >
             {/* THREED CHARACTER [n] -- FARMER */}
             <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
+              {/* DEMON / GROUND DWELLER / PETE / AWWW */}
               {/* <CharacterModel0 /> */}
+              {/* MALE */}
               {/* <CharacterModel4 /> */}
+              {/* FEMALE */}
               <CharacterModel5 />
             </group>
           </Ecctrl>
         </KeyboardControls>
+        
+        {/* END: CHARACTER MODEL[S] GROUP */}
+        </group>
 
         {/* // import Map from './Map' */}
         <group rotation={[0, -Math.PI/2, 0]} scale={0.16} position={[0, 2.5, 24]}>
@@ -329,6 +337,11 @@ export default function Experience() {
           <Steps />
         </group>
 
+        {/* toddler steps (advanced degrees)
+            flat-XY on the floor['ground']
+            aka: four-by-fours, 4"x4"[s], posts, logs
+            rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}
+        */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}>
           {/* Rough plane */}
           <RoughPlane />
@@ -337,12 +350,22 @@ export default function Experience() {
           {/* Rigid body objects */}
           <RigidObjects />
         </group>
-        
+
+        {/* kinder steps (active objects)
+            flat-XY on the floor['ground']
+            aka: four-by-fours, 4"x4"[s], posts, logs
+            rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}
+        */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, 10.01, 0]}>
           {/* Floating platform */}
           <FloatingPlatform />
         </group>
 
+        {/* elementary steps (random active objects)
+            flat-XY on the floor['ground']
+            aka: four-by-fours, 4"x4"[s], posts, logs
+            rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}
+        */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, 4.01, 0]}>
           {/* Dynamic platforms */}
           <DynamicPlatforms />
@@ -350,11 +373,23 @@ export default function Experience() {
           <ShotCube />
         </group>
 
+
+        {/* solid steps (levels, safety)
+            flat-XY on the floor['ground']
+            aka: four-by-fours, 4"x4"[s], posts, logs
+            rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}
+        */}
         {/* The Floor (Plane 0) */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
           <Floor />
         </group>
 
+
+        {/* backup solid steps (levels[1+], safety)
+            flat-XY on the floor['ground']
+            aka: four-by-fours, 4"x4"[s], posts, logs
+            rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}
+        */}
         {/* Sub-Floor[s] (Plane < 0) */}
         {/* <SubFloor level={`${level[index]}`} /> */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, -16, 0]}>
@@ -378,10 +413,10 @@ export default function Experience() {
 
       </Physics>
 
-      {/* <Perf
+      <Perf
         position='bottom-left'
         // minimal
-      /> */}
+      />
     </>
   )
 }
