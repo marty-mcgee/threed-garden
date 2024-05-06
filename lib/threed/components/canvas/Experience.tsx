@@ -19,8 +19,8 @@ import { useControls } from 'leva'
 // ** THREED.AI
 // ** THREED CHARACTER CONTROL Imports
 import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
-// import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
-// import CharacterModel1 from '#/lib/threed/components/nouns/Character/CharacterModelFloating'
+import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
+import CharacterModel1 from '#/lib/threed/components/nouns/Character/CharacterModelFloating'
 // import CharacterModel2 from '#/lib/threed/components/nouns/Character/FarmerMan'
 // import CharacterModel3 from '#/lib/threed/components/nouns/Character/Character'
 import CharacterModel4 from '#/lib/threed/components/nouns/Character/FarmerManFloating'
@@ -41,7 +41,7 @@ import ShotCube from './ShotCube'
 import Map from './Map'
 
 // ** HELPER Imports
-import { Perf } from 'r3f-perf'
+import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
 import Spinner from '#/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
@@ -229,96 +229,50 @@ export default function Experience() {
       </group>
 
       <Physics
-        debug={prefs.doWorldPhysics}
-        timeStep='vary'
-        paused={pausedPhysics}
+        // debug={prefs.doWorldPhysics}
+        debug={false}
+        // timeStep='vary'
+        // paused={pausedPhysics}
       >
 
-        {/* [MM] HEY HEY HEY : CHARACTER MODEL[S] GROUP */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
+        {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
+            CHARACTER MODEL[S] GROUP */}
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 16, 0]}>
 
-        {/* {
-          prefs.doWorldDebug &&
-          prefs.enableTesting &&
-        ( */}
+        {/* Character Model 1 Control */}
+        {/* THREED CHARACTER [n] -- FARMER FEMALE */}
         {/* Keyboard preset */}
-        {/* <KeyboardControls
-          map={keyboardMap}
-        > */}
-          {/* Character 1 Control */}
-          {/* <Ecctrl
-            debug={prefs.doWorldDebug}
-            animated={prefs.doCharacterAnimation}
-            disableFollowCam={prefs.doWorldUnfollowCam}
-            followLight={false}
-            springK={2}
-            dampingC={0.2}
-            autoBalanceSpringK={1.2}
-            autoBalanceDampingC={0.04}
-            autoBalanceSpringOnY={0.7}
-            autoBalanceDampingOnY={0.05}
-          > */}
-
-            {/* THREED CHARACTER [0] -- DEMON / CHICKEN / FLOATING PETE */}
-            {/* <group rotation={[0, 0, 0]} scale={0.7} position={[-1, 0.1, -1]}>
-              <CharacterModel0 />
-            </group> */}
-
-          {/* </Ecctrl> */}
-        {/* </KeyboardControls> */}
-        {/* )} // end testing */}
-
-        {/* Keyboard preset */}
-        <KeyboardControls
-          map={keyboardMap}
-        >
-          {/* Character Model 1 Control */}
-          {/* <Ecctrl
-            debug={prefs.doWorldDebug}
-            animated={prefs.doCharacterAnimation}
-            disableFollowCam={prefs.doWorldUnfollowCam}
-            followLight={false}
-            // springK={2}
-            // dampingC={0.2}
-            // autoBalanceSpringK={1.2}
-            // autoBalanceDampingC={0.04}
-            // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
-            // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
-            position={[4, 0.2, 0]}
-          > */}
-            {/* THREED CHARACTER [n] -- FARMER */}
-            {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}> */}
-              {/* <CharacterModel0 /> */}
-              {/* <CharacterModel4 /> */}
-              {/* <CharacterModel5 /> */}
-            {/* </group> */}
-          {/* </Ecctrl> */}
-
-          {/* Character Model 2 Control */}
+        <KeyboardControls map={keyboardMap}>
           <Ecctrl
-            debug={prefs.doWorldDebug}
-            animated={prefs.doCharacterAnimation}
-            disableFollowCam={prefs.doWorldUnfollowCam}
-            followLight={true}
+            // debug={prefs.doWorldDebug}
+            debug={false}
+            // animated={prefs.doCharacterAnimation}
+            animated={false}
+            // disableFollowCam={prefs.doWorldUnfollowCam}
+            disableFollowCam={true}
+            // followLight={false}
             // springK={2}
             // dampingC={0.2}
             // autoBalanceSpringK={1.2}
             // autoBalanceDampingC={0.04}
             // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
             // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
-            // position={[0, 0.2, 0]} 
           >
-            {/* THREED CHARACTER [n] -- FARMER */}
-            <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
-              {/* DEMON / GROUND DWELLER / PETE / AWWW */}
+            {/* GROUND DWELLER / DEMON PETE / AWWW */}
+            <group rotation={[0, 0, 0]} scale={0.016} position={[0, 0, 0]}>
               {/* <CharacterModel0 /> */}
-              {/* MALE */}
-              {/* <CharacterModel4 /> */}
-              {/* FEMALE */}
+              <CharacterModel1 />
+            </group>
+            {/* FARMER: FEMALE */}
+            <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
               <CharacterModel5 />
             </group>
+            {/* FARMER: MALE */}
+            {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
+              <CharacterModel4 />
+            </group> */}
           </Ecctrl>
-        </KeyboardControls>
+        </KeyboardControls>     
         
         {/* END: CHARACTER MODEL[S] GROUP */}
         </group>
@@ -373,7 +327,6 @@ export default function Experience() {
           <ShotCube />
         </group>
 
-
         {/* solid steps (levels, safety)
             flat-XY on the floor['ground']
             aka: four-by-fours, 4"x4"[s], posts, logs
@@ -383,7 +336,6 @@ export default function Experience() {
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
           <Floor />
         </group>
-
 
         {/* backup solid steps (levels[1+], safety)
             flat-XY on the floor['ground']
