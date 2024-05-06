@@ -341,7 +341,7 @@ export default function CharacterModel(props: CharacterModelProps) {
   // console.debug('anims', anims)
 
   // Rename your character animations here
-  const animationSet = {
+  const animationSetNew = {
     idle:     'Breathing Idle',
     walk:     'Walking',
     run:      'Running',
@@ -353,6 +353,19 @@ export default function CharacterModel(props: CharacterModelProps) {
     action2:  'Talking',
     action3:  'Pointing Gesture',
     action4:  'Pointing',
+  }
+  const animationSet = {
+    idle: 'Idle',
+    walk: 'Walk',
+    run: 'Run',
+    jump: 'Jump_Start',
+    jumpIdle: 'Jump_Idle',
+    jumpLand: 'Jump_Land',
+    fall: 'Climbing', // This is for falling from high sky
+    action1: 'Wave',
+    action2: 'Dance',
+    action3: 'Cheer',
+    action4: 'Attack(1h)',
   }
   // console.debug('animationSet', animationSet)
 
@@ -383,8 +396,8 @@ export default function CharacterModel(props: CharacterModelProps) {
     const wordY: string = group.current.getWorldPosition(bodyPosition).y
     const wordZ: string = group.current.getWorldPosition(bodyPosition).z
     if (debugAnimation) {
-      // console.debug(`%c FarmerManFloating: useFrame :(`, ccm.redAlert, word)
-      if (debug) console.debug(`%c FarmerManFloating: useFrame :(`, ccm.darkredAlert, wordX, wordY, wordZ)
+      // console.debug(`%c FarmerWomanFloating: useFrame :(`, ccm.redAlert, word)
+      if (debug) console.debug(`%c FarmerWomanFloating: useFrame :(`, ccm.darkredAlert, wordX, wordY, wordZ)
     }
     // [MM] END HEY HEY HEY
 
@@ -434,7 +447,7 @@ export default function CharacterModel(props: CharacterModelProps) {
     const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
 
     // Play animation
-    const action = actions[curAnimation ? curAnimation : animationSet.Idle]
+    const action = actions[curAnimation ? curAnimation : animationSet.jumpIdle]
 
     // [MM] HEY HEY HEY
     if (action) {
@@ -470,7 +483,7 @@ export default function CharacterModel(props: CharacterModelProps) {
 
     }
     else if (!action) {
-      if (debug) console.debug(`%c FarmerManFloating: no action :|`, ccm.darkgrayAlert, word)
+      if (debug) console.debug(`%c FarmerWomanFloating: no action :|`, ccm.darkgrayAlert, word)
     }
     // [MM] END HEY HEY HEY
 

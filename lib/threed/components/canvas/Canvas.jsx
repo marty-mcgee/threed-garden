@@ -32,7 +32,7 @@ import {
   Canvas,
   useFrame,
   useThree,
-  extend
+  extend // extend({ OrbitControls })
 } from '@react-three/fiber'
 
 // R3F HELPERS
@@ -48,6 +48,9 @@ import {
   Html, Center,
   useGLTF, useFBX,
 } from '@react-three/drei'
+
+// do stuff with IMPORTS
+extend({ OrbitControls })
 
 // ** ThreeD Experience Imports
 // import { Physics } from '@react-three/rapier'
