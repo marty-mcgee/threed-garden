@@ -33,10 +33,96 @@ import Tab from '@mui/material/Tab'
 import MDTabPanel, { tabProps } from '#/lib/mui/MDTabPanel'
 import Typography from '@mui/material/Typography'
 
-// ** HELPER Components
+// ** HELPER Imports
+import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
 import Spinner from '#/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
+
+
+
+
+
+// ==========================================================
+// Debugging (Perf: Monitor Reports)
+// **
+const DebugHeadless = () => {
+
+  const [log, getReport] = usePerf((s) => [s.log, s.getReport])
+  // console.log(getReport())
+
+  return (
+    <div>
+      <b>LOG Realtime:</b>
+      <code>
+        {log &&
+          Object.entries(log).map(([key, val]) => (
+            <div key={key}>
+              {key}: {parseFloat(val).toFixed(3)}
+            </div>
+          ))}
+      </code>
+      <br />
+      <br />
+      <b>REPORT: Data gathered for {parseFloat(getReport().sessionTime).toFixed(2)}s</b>
+      <br />
+      <code>
+        average:
+        {Object.entries(getReport().log).map(([key, val]) => (
+          <div key={key}>
+            {key}: {parseFloat(val).toFixed(3)}
+          </div>
+        ))}
+      </code>
+    </div>
+  )
+}
+const Debug = () => {
+  const { width } = useThree((s) => s.size)
+  return (
+    /* This is it -> */
+    <PerfHeadless minimal={width < 712} />
+  )
+}
+
+const Controls = () => {
+  const { camera, gl, invalidate } = useThree()
+  const ref = useRef()
+  useFrame(() => ref.current.update())
+  useEffect(() => void ref.current.addEventListener('change', invalidate), [])
+  return <orbitControls ref={ref} enableDamping args={[camera, gl.domElement]} />
+}
+
+function App() {
+  // const control = useRef()
+
+  return (
+    <>
+      <DebugHeadless />
+      {/* <Canvas
+        linear={false}
+        concurrent
+        shadowMap
+        orthographic
+        pixelRatio={[1, 2]}
+        camera={{ position: [0, 0, 10], near: 1, far: 15, zoom: 50 }}>
+        <Controls ref={control} />
+        <ambientLight />
+        <directionalLight />
+        <Suspense fallback={null}>
+          <Cubes position={[0, 0, 0]} rotation={[0, 0, Math.PI]} />
+          <Debug />
+        </Suspense>
+      </Canvas> */}
+    </>
+  )
+}
+
+
+
+
+
+
 
 // ==========================================================
 
@@ -198,6 +284,9 @@ export const ThreeDControlPanels = (
               {/* <BearControlPanel /> */}
               {/* <BearInfoPanel /> */}
               {/* <hr /> */}
+            </Box>
+            <Box>
+              <App />
             </Box>
           </Box>
         </MDTabPanel>
