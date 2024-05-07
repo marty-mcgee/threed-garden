@@ -43,7 +43,7 @@ import { ApolloClientWrapper } from '#/lib/api/graphql/ApolloClientWrapper'
 // import AclGuard from '#/ui/auth/AclGuard'
 
 // ** @Fake-DB (axios mock adapter)
-import '#/lib/api/@fake-db'
+// import '#/lib/api/@fake-db'
 
 // ** Contexts for Theme Settings + MUI Components
 import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/settings/SettingsContext'
@@ -71,14 +71,14 @@ import ccm from '#/lib/utils/console-colors'
 // import '#/lib/threed/styles/garden.module.css'
 import './_styles.css'  // basic css
 import './_globals.css' // tailwind css
-import { Inter, Roboto } from 'next/font/google'
+import { Inter } from 'next/font/google' // Roboto
 // import type { Metadata } from 'next'
 import Header from '@/components/header'
 import Footer from '@/components/footer'
 
 // ** set google font 'inter'national css
-const inter = Inter({ subsets: ['latin'] })
-const roboto = Roboto({ weight: '400', subsets: ['latin'] })
+// const inter = Inter({ subsets: ['latin'] })
+// const roboto = Roboto({ weight: '400', subsets: ['latin'] })
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -96,7 +96,8 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
   return (
     <html lang='en'>
       <head />
-      <body className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}>
+      {/* <body className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}> */}
+      <body>
         {children}
       </body>
     </html>
