@@ -77,7 +77,7 @@ import Header from '@/components/header'
 import Footer from '@/components/footer'
 
 // ** set google font 'inter'national css
-// const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] })
 // const roboto = Roboto({ weight: '400', subsets: ['latin'] })
 
 // ==============================================================
