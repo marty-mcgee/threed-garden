@@ -53,7 +53,7 @@ const DebugHeadless = () => {
 
   return (
     <div>
-      <b>LOG Realtime:</b>
+      <div><b>LOG Realtime:</b></div>
       <code>
         {log &&
           Object.entries(log).map(([key, val]) => (
@@ -63,12 +63,10 @@ const DebugHeadless = () => {
             </div>
           ))}
       </code>
-      <br />
-      <br />
-      <b>REPORT: Data gathered for {parseFloat(getReport().sessionTime).toFixed(2)}s</b>
-      <br />
+      <br/>
+      <div><b>REPORT: Data gathered for {parseFloat(getReport().sessionTime).toFixed(2)}s</b></div>
       <code>
-        average:
+        averages:
         {Object.entries(getReport().log).map(([key, val]) => (
           <div key={key}>
             {/* @ts-expect-error */}
@@ -83,7 +81,36 @@ const Debug = () => {
   const { width } = useThree((s) => s.size)
   return (
     /* This is it -> */
-    <PerfHeadless minimal={width < 712} />
+    <PerfHeadless 
+      // logsPerSecond?: 10, // Refresh rate of the logs
+      // antialias?: true, // Take a bit more performances but render the text with antialiasing
+      // overClock?: false, // Disable the limitation of the monitor refresh rate for the fps
+      // deepAnalyze?: false, // More detailed informations about gl programs
+      // showGraph?: true // show the graphs
+      // minimal?: false // condensed version with the most important informations (gpu/memory/fps/custom data)
+      // customData?: {
+      //   value: 0, // initial value,
+      //   name: '', // name to show
+      //   round: 2, // precision of the float
+      //   info: '', // additional information about the data (fps/ms for instance)
+      // }
+      // matrixUpdate?: false // count the number of time matrixWorldUpdate is called per frame
+      // chart?: {
+      //   hz: 60, // graphs refresh frequency parameter
+      //   length: 120, // number of values shown on the monitor
+      // }
+      // colorBlind?: false // Color blind colors for accessibility
+      // className?: '' // override CSS class
+      // style?: {} // override style
+      // position?: 'top-right'|'top-left'|'bottom-right'|'bottom-left' // quickly set the position, default is top-right
+      minimal={width < 712} 
+      showGraph={false} // show the graphs
+      // logsPerSecond={1} // Refresh rate of the logs
+      // chart={{
+      //   hz: 1, // graphs refresh frequency parameter
+      //   length: 12, // number of values shown on the monitor
+      // }}
+    />
   )
 }
 

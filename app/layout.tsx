@@ -71,13 +71,13 @@ import ccm from '#/lib/utils/console-colors'
 // import '#/lib/threed/styles/garden.module.css'
 import './_styles.css'  // basic css
 import './_globals.css' // tailwind css
-import { Inter } from 'next/font/google' // Roboto
+// import { Inter } from 'next/font/google' // Roboto
 // import type { Metadata } from 'next'
 import Header from '@/components/header'
 import Footer from '@/components/footer'
 
 // ** set google font 'inter'national css
-const inter = Inter({ subsets: ['latin'] })
+// const inter = Inter({ subsets: ['latin'] })
 // const roboto = Roboto({ weight: '400', subsets: ['latin'] })
 
 // ==============================================================
