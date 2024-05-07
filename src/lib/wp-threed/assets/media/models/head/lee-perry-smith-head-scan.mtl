@@ -1,0 +1,22 @@
+# Blender MTL File: 'None'
+# Material Count: 2
+
+newmtl 505050
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.313726 0.313726 0.313726
+Ks 0.001176 0.001176 0.001176
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Skin1
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.639216 0.639216 0.639216
+Ks 0.005882 0.005882 0.005882
+Ni 1.000000
+d 1.000000
+illum 2
+map_Bump Face_Disp.jpg
+map_Kd Face_Color.jpg

@@ -1,0 +1,1480 @@
+[
+    {
+        "key": "group_5fa133ce0acf8",
+        "title": "Allotment Profile",
+        "fields": [
+            {
+                "key": "field_5fa55d7dc2fcb",
+                "label": "Allotment Width",
+                "name": "allotment_width",
+                "type": "text",
+                "instructions": "Horizontal datum \"X\"<br>(in feet or meters)",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "33",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa55deac2fcc",
+                "label": "Allotment Length",
+                "name": "allotment_length",
+                "type": "text",
+                "instructions": "Horizontal datum \"Y\"<br>(in feet or meters)",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "33",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa55e13c2fcd",
+                "label": "Allotment Height",
+                "name": "allotment_height",
+                "type": "text",
+                "instructions": "Vertical datum \"Z\"<br>(in feet or meters)<br>\r\n(0 for no fence)",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "33",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa8f5a58f44c",
+                "label": "Allotment Position X",
+                "name": "allotment_position_x",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa8f5ad8f44d",
+                "label": "Allotment Position Y",
+                "name": "allotment_position_y",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa8f5b38f44e",
+                "label": "Allotment Position Z",
+                "name": "allotment_position_z",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa8f8419824f",
+                "label": "Allotment Shape",
+                "name": "allotment_shape",
+                "type": "radio",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "Box": "Box",
+                    "Cone": "Cone",
+                    "Cylinder": "Cylinder",
+                    "Irregular": "Irregular",
+                    "Octahedron": "Octahedron",
+                    "Sphere": "Sphere",
+                    "Tetrahedron": "Tetrahedron",
+                    "Torus": "Torus"
+                },
+                "allow_null": 0,
+                "other_choice": 0,
+                "default_value": "",
+                "layout": "horizontal",
+                "return_format": "value",
+                "save_other_choice": 0
+            },
+            {
+                "key": "field_5fbf8cf71b0b8",
+                "label": "Allotment Texture Image",
+                "name": "allotment_texture_image",
+                "type": "image",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "return_format": "url",
+                "preview_size": "medium",
+                "library": "all",
+                "min_width": "",
+                "min_height": "",
+                "min_size": "",
+                "max_width": "",
+                "max_height": "",
+                "max_size": "",
+                "mime_types": ""
+            },
+            {
+                "key": "field_5fa8f85d98250",
+                "label": "Allotment Color",
+                "name": "allotment_color",
+                "type": "color_picker",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": ""
+            },
+            {
+                "key": "field_5fa56be4686b1",
+                "label": "Allotment Orientation",
+                "name": "allotment_orientation",
+                "type": "radio",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "North-to-South (NS)": "North-to-South (NS)",
+                    "East-to-West (EW)": "East-to-West (EW)",
+                    "Northeast-to-Southwest (NESW)": "Northeast-to-Southwest (NESW)",
+                    "Northwest-to-Southeast (NWSE)": "Northwest-to-Southeast (NWSE)",
+                    "Is this accurate or important? (HMM)": "Is this accurate or important? (HMM)"
+                },
+                "allow_null": 0,
+                "other_choice": 0,
+                "default_value": "",
+                "layout": "vertical",
+                "return_format": "value",
+                "save_other_choice": 0
+            },
+            {
+                "key": "field_5fa5a713a7ae1",
+                "label": "Allotment Light Penetration",
+                "name": "allotment_light_penetration",
+                "type": "checkbox",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "Full Sun": "Full Sun",
+                    "Partial Shade": "Partial Shade",
+                    "Seasonal Shade": "Seasonal Shade",
+                    "Full Shade": "Full Shade"
+                },
+                "allow_custom": 0,
+                "default_value": [],
+                "layout": "vertical",
+                "toggle": 0,
+                "return_format": "value",
+                "save_custom": 0
+            },
+            {
+                "key": "field_5fa5b3ab6a82d",
+                "label": "Allotment Moisture",
+                "name": "allotment_moisture",
+                "type": "checkbox",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "Extremely Dry": "Extremely Dry",
+                    "Dry": "Dry",
+                    "Free Draining": "Free Draining",
+                    "Average": "Average",
+                    "Moist": "Moist",
+                    "Wet": "Wet",
+                    "Poor Drainage": "Poor Drainage",
+                    "Boggy Wet": "Boggy Wet"
+                },
+                "allow_custom": 0,
+                "default_value": [],
+                "layout": "vertical",
+                "toggle": 0,
+                "return_format": "value",
+                "save_custom": 0
+            },
+            {
+                "key": "field_5fa5b4cdeb23f",
+                "label": "Allotment Last Frost Date",
+                "name": "allotment_last_frost_date",
+                "type": "date_picker",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "display_format": "F j, Y",
+                "return_format": "F j, Y",
+                "first_day": 1
+            },
+            {
+                "key": "field_5fa5b4fbeb240",
+                "label": "Allotment First Frost Date",
+                "name": "allotment_first_frost_date",
+                "type": "date_picker",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "display_format": "F j, Y",
+                "return_format": "F j, Y",
+                "first_day": 1
+            },
+            {
+                "key": "field_5fa5b5417ef98",
+                "label": "Allotment Hardiness Zone",
+                "name": "allotment_hardiness_zone",
+                "type": "select",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "9b": "9b"
+                },
+                "default_value": [],
+                "allow_null": 0,
+                "multiple": 0,
+                "ui": 0,
+                "return_format": "value",
+                "ajax": 0,
+                "placeholder": ""
+            },
+            {
+                "key": "field_5fa5dd701a0f8",
+                "label": "Allotment Wind Direction",
+                "name": "allotment_wind_direction",
+                "type": "checkbox",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "North-to-South (NS)": "North-to-South (NS)",
+                    "East-to-West (EW)": "East-to-West (EW)",
+                    "Northeast-to-Southwest (NESW)": "Northeast-to-Southwest (NESW)",
+                    "Northwest-to-Southeast (NWSE)": "Northwest-to-Southeast (NWSE)",
+                    "Is this accurate or important? (HMM)": "Is this accurate or important? (HMM)"
+                },
+                "allow_custom": 0,
+                "default_value": [],
+                "layout": "vertical",
+                "toggle": 0,
+                "return_format": "value",
+                "save_custom": 0
+            },
+            {
+                "key": "field_5fa5dde72dd62",
+                "label": "Allotment Wind Strength",
+                "name": "allotment_wind_strength",
+                "type": "checkbox",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "Very Windy \/ Exposed": "Very Windy \/ Exposed",
+                    "Light Winds \/ Exposed": "Light Winds \/ Exposed",
+                    "Light Winds \/ Some Shelter": "Light Winds \/ Some Shelter",
+                    "Light Winds \/ Very Sheltered": "Light Winds \/ Very Sheltered",
+                    "Little \/ No Wind": "Little \/ No Wind"
+                },
+                "allow_custom": 0,
+                "default_value": [],
+                "layout": "vertical",
+                "toggle": 0,
+                "return_format": "value",
+                "save_custom": 0
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "allotment"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "acf_after_title",
+        "style": "default",
+        "label_placement": "left",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": true,
+        "description": ""
+    },
+    {
+        "key": "group_5fa8f50b8fcf7",
+        "title": "Bed Profile",
+        "fields": [
+            {
+                "key": "field_5fbfa02c546a3",
+                "label": "Bed Allotment",
+                "name": "bed_allotment",
+                "type": "relationship",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "post_type": [
+                    "allotment"
+                ],
+                "taxonomy": "",
+                "filters": [
+                    "search",
+                    "post_type",
+                    "taxonomy"
+                ],
+                "elements": "",
+                "min": "",
+                "max": "",
+                "return_format": "object"
+            },
+            {
+                "key": "field_5fa8f51d340d8",
+                "label": "Bed Width",
+                "name": "bed_width",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa8f53d340d9",
+                "label": "Bed Length",
+                "name": "bed_length",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa8f548340da",
+                "label": "Bed Height",
+                "name": "bed_height",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa8f565340db",
+                "label": "Bed Position X",
+                "name": "bed_position_x",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa8f571340dc",
+                "label": "Bed Position Y",
+                "name": "bed_position_y",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa8f579340dd",
+                "label": "Bed Position Z",
+                "name": "bed_position_z",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa8f6d238449",
+                "label": "Bed Shape",
+                "name": "bed_shape",
+                "type": "radio",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "Rectangular": "Rectangular",
+                    "Elliptical": "Elliptical",
+                    "Conical": "Conical",
+                    "Irregular": "Irregular"
+                },
+                "allow_null": 0,
+                "other_choice": 0,
+                "default_value": "",
+                "layout": "vertical",
+                "return_format": "value",
+                "save_other_choice": 0
+            },
+            {
+                "key": "field_5fa8f7e8ca99c",
+                "label": "Bed Color",
+                "name": "bed_color",
+                "type": "color_picker",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": ""
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "bed"
+                }
+            ]
+        ],
+        "menu_order": 1,
+        "position": "acf_after_title",
+        "style": "default",
+        "label_placement": "left",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": true,
+        "description": ""
+    },
+    {
+        "key": "group_5fa1323dbb681",
+        "title": "Plant Profile",
+        "fields": [
+            {
+                "key": "field_5fa30c89ed561",
+                "label": "Common Name",
+                "name": "plant_common_name",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa30caaed562",
+                "label": "Common Cultivar",
+                "name": "plant_common_cultivar",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa30cb9ed563",
+                "label": "Common Variety",
+                "name": "plant_common_variety",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa316ac65301",
+                "label": "Botanical Family",
+                "name": "plant_botanical_family",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa316ce65302",
+                "label": "Botanical Genus",
+                "name": "plant_botanical_genus",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa316e065303",
+                "label": "Botanical Species",
+                "name": "plant_botanical_species",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa316f865304",
+                "label": "Botanical Varietal",
+                "name": "plant_botanical_varietal",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa317c7b217b",
+                "label": "Germination Period",
+                "name": "plant_germination_period",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa317eeb217c",
+                "label": "Harvest Period",
+                "name": "plant_harvest_period",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa318505c516",
+                "label": "Space Between Plants",
+                "name": "plant_space_between_plants",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa318825c517",
+                "label": "Space Between Rows",
+                "name": "plant_space_between_rows",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa318a05c518",
+                "label": "Space After Thinning",
+                "name": "plant_space_after_thinning",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa318cb5c519",
+                "label": "Sow Depth",
+                "name": "plant_sow_depth",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa319b9b23af",
+                "label": "Size Height",
+                "name": "plant_size_height",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa319c2b23b0",
+                "label": "Size Width",
+                "name": "plant_size_width",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa31968b23ae",
+                "label": "Hardiness",
+                "name": "plant_hardiness",
+                "type": "select",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "Hardy": "Hardy",
+                    "Half-Hardy": "Half-Hardy",
+                    "Tender": "Tender",
+                    "Delicate": "Delicate"
+                },
+                "default_value": [],
+                "allow_null": 1,
+                "multiple": 0,
+                "ui": 0,
+                "return_format": "value",
+                "ajax": 0,
+                "placeholder": ""
+            },
+            {
+                "key": "field_5fa31da0f8958",
+                "label": "Preferred Light",
+                "name": "plant_preferred_light",
+                "type": "checkbox",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "Full Sun": "Full Sun",
+                    "Partial Shade": "Partial Shade",
+                    "Dappled Shade": "Dappled Shade",
+                    "Full Shade": "Full Shade"
+                },
+                "allow_custom": 0,
+                "default_value": [],
+                "layout": "horizontal",
+                "toggle": 0,
+                "return_format": "value",
+                "save_custom": 0
+            },
+            {
+                "key": "field_5fa31dfaf8959",
+                "label": "Preferred Moisture",
+                "name": "plant_preferred_moisture",
+                "type": "checkbox",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "Extremely Dry": "Extremely Dry",
+                    "Dry": "Dry",
+                    "Average": "Average",
+                    "Moist": "Moist",
+                    "Wet": "Wet",
+                    "Poor Drainage": "Poor Drainage",
+                    "Boggy": "Boggy"
+                },
+                "allow_custom": 0,
+                "default_value": [],
+                "layout": "horizontal",
+                "toggle": 0,
+                "return_format": "value",
+                "save_custom": 0
+            },
+            {
+                "key": "field_5fa31ee4f895a",
+                "label": "Preferred Temp Low",
+                "name": "plant_preferred_temp_low",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa31ef3f895b",
+                "label": "Preferred Temp High",
+                "name": "plant_preferred_temp_high",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa31efbf895c",
+                "label": "Preferred Temp Germination",
+                "name": "plant_preferred_temp_germination",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa31f1fbee23",
+                "label": "Preferred Wind",
+                "name": "plant_preferred_wind",
+                "type": "checkbox",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "Very Windy \/ Exposed": "Very Windy \/ Exposed",
+                    "Light Winds \/ Exposed": "Light Winds \/ Exposed",
+                    "Light Winds \/ Some Shelter": "Light Winds \/ Some Shelter",
+                    "Light Winds \/ Very Sheltered": "Light Winds \/ Very Sheltered",
+                    "Little \/ No Wind": "Little \/ No Wind"
+                },
+                "allow_custom": 0,
+                "default_value": [],
+                "layout": "horizontal",
+                "toggle": 0,
+                "return_format": "value",
+                "save_custom": 0
+            },
+            {
+                "key": "field_5fa31f7ebee24",
+                "label": "Preferred Soil Type",
+                "name": "plant_preferred_soil_type",
+                "type": "checkbox",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "Sand": "Sand",
+                    "Loam": "Loam",
+                    "Clay": "Clay",
+                    "Peat": "Peat",
+                    "Silt": "Silt",
+                    "Chalky": "Chalky"
+                },
+                "allow_custom": 0,
+                "default_value": [],
+                "layout": "horizontal",
+                "toggle": 0,
+                "return_format": "value",
+                "save_custom": 0
+            },
+            {
+                "key": "field_5fa31fc2bee25",
+                "label": "Preferred Soil pH",
+                "name": "plant_preferred_soil_ph",
+                "type": "checkbox",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "-4.5 Acid": "-4.5 Acid",
+                    "4.5 Acid": "4.5 Acid",
+                    "5.0 Acid": "5.0 Acid",
+                    "5.5 Acid": "5.5 Acid",
+                    "6.0 Acid": "6.0 Acid",
+                    "6.5 Acid": "6.5 Acid",
+                    "7.0 Neutral": "7.0 Neutral",
+                    "7.5 Alkaline": "7.5 Alkaline",
+                    "8.0 Alkaline": "8.0 Alkaline",
+                    "8.0+ Alkaline": "8.0+ Alkaline"
+                },
+                "allow_custom": 0,
+                "default_value": [],
+                "layout": "horizontal",
+                "toggle": 0,
+                "return_format": "value",
+                "save_custom": 0
+            },
+            {
+                "key": "field_5fa8f8c7aca27",
+                "label": "Plant Width",
+                "name": "plant_width",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa8f90eaca28",
+                "label": "Plant Length",
+                "name": "plant_length",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa8f921aca29",
+                "label": "Plant Height",
+                "name": "plant_height",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5fa8f92daca2a",
+                "label": "Plant Shape",
+                "name": "plant_shape",
+                "type": "radio",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "Round": "Round",
+                    "Vase": "Vase",
+                    "Irregular": "Irregular",
+                    "Pyramidal": "Pyramidal",
+                    "Palm": "Palm",
+                    "Clump": "Clump",
+                    "Upright": "Upright",
+                    "Weeping": "Weeping"
+                },
+                "allow_null": 0,
+                "other_choice": 0,
+                "default_value": "",
+                "layout": "horizontal",
+                "return_format": "value",
+                "save_other_choice": 0
+            },
+            {
+                "key": "field_5fa8f9c127026",
+                "label": "Plant Color",
+                "name": "plant_color",
+                "type": "color_picker",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": ""
+            },
+            {
+                "key": "field_5fa9199be938f",
+                "label": "Plant Source",
+                "name": "plant_source",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "plant"
+                }
+            ]
+        ],
+        "menu_order": 2,
+        "position": "acf_after_title",
+        "style": "default",
+        "label_placement": "left",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": true,
+        "description": ""
+    },
+    {
+        "key": "group_5fa8fa54398a6",
+        "title": "Planting Plan Profile",
+        "fields": [
+            {
+                "key": "field_5fa8ff460ad7d",
+                "label": "Planting Plan Bed-Plant Schedule",
+                "name": "planting_plan_bed_plant_schedule",
+                "type": "repeater",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "planting_plan_bed_plant_schedule",
+                    "id": ""
+                },
+                "collapsed": "",
+                "min": 0,
+                "max": 0,
+                "layout": "row",
+                "button_label": "Add Plant",
+                "sub_fields": [
+                    {
+                        "key": "field_5fa8ff5e0ad7e",
+                        "label": "Planting Plan Bed",
+                        "name": "planting_plan_bed",
+                        "type": "relationship",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "planting_plan_bed",
+                            "id": ""
+                        },
+                        "post_type": [
+                            "bed"
+                        ],
+                        "taxonomy": "",
+                        "filters": [
+                            "search",
+                            "post_type",
+                            "taxonomy"
+                        ],
+                        "elements": [
+                            "featured_image"
+                        ],
+                        "min": "",
+                        "max": "",
+                        "return_format": "object"
+                    },
+                    {
+                        "key": "field_5fa9016b5d486",
+                        "label": "Planting Plan Plant",
+                        "name": "planting_plan_plant",
+                        "type": "relationship",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "planting_plan_plant",
+                            "id": ""
+                        },
+                        "post_type": [
+                            "plant"
+                        ],
+                        "taxonomy": "",
+                        "filters": [
+                            "search",
+                            "post_type",
+                            "taxonomy"
+                        ],
+                        "elements": [
+                            "featured_image"
+                        ],
+                        "min": "",
+                        "max": "",
+                        "return_format": "object"
+                    },
+                    {
+                        "key": "field_5fa903fb757f2",
+                        "label": "Plant Position X",
+                        "name": "plant_position_x",
+                        "type": "text",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": "",
+                        "maxlength": ""
+                    },
+                    {
+                        "key": "field_5fa90464757f3",
+                        "label": "Plant Position Y",
+                        "name": "plant_position_y",
+                        "type": "text",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": "",
+                        "maxlength": ""
+                    },
+                    {
+                        "key": "field_5fa90477757f4",
+                        "label": "Plant Position Z",
+                        "name": "plant_position_z",
+                        "type": "text",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": "",
+                        "maxlength": ""
+                    },
+                    {
+                        "key": "field_5fa904eb757f6",
+                        "label": "Planting Type",
+                        "name": "planting_type",
+                        "type": "radio",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "choices": {
+                            "Sow Seeds": "Sow Seeds",
+                            "Transplant": "Transplant"
+                        },
+                        "allow_null": 0,
+                        "other_choice": 0,
+                        "default_value": "",
+                        "layout": "vertical",
+                        "return_format": "value",
+                        "save_other_choice": 0
+                    },
+                    {
+                        "key": "field_5fa90498757f5",
+                        "label": "Planting Date",
+                        "name": "planting_date",
+                        "type": "date_picker",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "display_format": "F j, Y",
+                        "return_format": "F j, Y",
+                        "first_day": 1
+                    },
+                    {
+                        "key": "field_5fa9051f757f7",
+                        "label": "Planting Date Harvest",
+                        "name": "planting_date_harvest",
+                        "type": "date_picker",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "display_format": "F j, Y",
+                        "return_format": "F j, Y",
+                        "first_day": 1
+                    }
+                ]
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "planting_plan"
+                }
+            ]
+        ],
+        "menu_order": 3,
+        "position": "acf_after_title",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": true,
+        "description": ""
+    }
+]
