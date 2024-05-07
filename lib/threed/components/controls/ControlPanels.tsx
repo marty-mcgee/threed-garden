@@ -5,7 +5,7 @@
 // ** REACT Imports
 import {
   useEffect,
-  // useRef,
+  useRef,
   useState,
   // useCallback,
   ReactNode,
@@ -14,7 +14,8 @@ import {
   PointerEventHandler,
   SyntheticEvent,
 } from 'react'
-
+import { useFrame, useThree } from '@react-three/fiber'
+// import Cubes from './Cubes'
 // ** APOLLO Imports
 import { useReactiveVar, useApolloClient } from '@apollo/client'
 import { preferencesDataVar } from '#/lib/stores/apollo'
@@ -40,14 +41,13 @@ import Spinner from '#/ui/components/spinner'
 import ccm from '#/lib/utils/console-colors'
 
 
-
-
-
 // ==========================================================
 // Debugging (Perf: Monitor Reports)
+// https://codesandbox.io/p/sandbox/perlin-cubes-r3f-perf-headless-forked-zq734s
 // **
 const DebugHeadless = () => {
 
+  // @ts-expect-error
   const [log, getReport] = usePerf((s) => [s.log, s.getReport])
   // console.log(getReport())
 
@@ -58,6 +58,7 @@ const DebugHeadless = () => {
         {log &&
           Object.entries(log).map(([key, val]) => (
             <div key={key}>
+              {/* @ts-expect-error */}
               {key}: {parseFloat(val).toFixed(3)}
             </div>
           ))}
@@ -70,6 +71,7 @@ const DebugHeadless = () => {
         average:
         {Object.entries(getReport().log).map(([key, val]) => (
           <div key={key}>
+            {/* @ts-expect-error */}
             {key}: {parseFloat(val).toFixed(3)}
           </div>
         ))}
@@ -85,13 +87,13 @@ const Debug = () => {
   )
 }
 
-const Controls = () => {
-  const { camera, gl, invalidate } = useThree()
-  const ref = useRef()
-  useFrame(() => ref.current.update())
-  useEffect(() => void ref.current.addEventListener('change', invalidate), [])
-  return <orbitControls ref={ref} enableDamping args={[camera, gl.domElement]} />
-}
+// const Controls = () => {
+//   const { camera, gl, invalidate } = useThree()
+//   const ref = useRef()
+//   useFrame(() => ref.current.update())
+//   useEffect(() => void ref.current.addEventListener('change', invalidate), [])
+//   return <orbitControls ref={ref} enableDamping args={[camera, gl.domElement]} />
+// }
 
 function App() {
   // const control = useRef()
@@ -117,11 +119,6 @@ function App() {
     </>
   )
 }
-
-
-
-
-
 
 
 // ==========================================================
