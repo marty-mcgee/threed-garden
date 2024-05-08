@@ -232,7 +232,6 @@ export function ThreeDEnvironment() {
 // }
 
 
-
 const EcctrlJoystickControls = () => {
   const [isTouchScreen, setIsTouchScreen] = useState(false)
   useEffect(() => {
@@ -315,8 +314,6 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
 
           <axesHelper args={[1024]} />
           <gridHelper args={[1024, 16]} />
-          {/* <Lights /> */}
-          {/* <Perf position='top-left' minimal /> */}
 
           {/* THREED EXPERIENCE */}
           <ThreeDExperience />
