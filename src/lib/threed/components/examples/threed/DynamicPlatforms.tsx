@@ -54,7 +54,7 @@ export default function DynamicPlatforms() {
   })
 
   return (
-    <group position={[0, 0.0, 0]}>
+    <group>
       {/* Moving platform */}
       <RigidBody
         type='kinematicPosition'

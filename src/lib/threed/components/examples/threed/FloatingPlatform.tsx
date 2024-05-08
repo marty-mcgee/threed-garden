@@ -179,7 +179,7 @@ export default function FloatingPlatform() {
   });
 
   return (
-    <group position={[0, 0.0, 0]}>
+    <group>
       {/* Platform 1 */}
       <RigidBody
         position={[0, 5, -10]}
