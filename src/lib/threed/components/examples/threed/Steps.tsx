@@ -6,7 +6,7 @@ import { RigidBody } from "@react-three/rapier"
 
 export default function Steps() {
   return (
-    <group position={[0, 0.0, 0]}>
+    <group position={[0, 0.1, 0]}>
       {/* Small steps */}
       <RigidBody type="fixed" position={[0, 0.0, 5]}>
         <mesh receiveShadow>
