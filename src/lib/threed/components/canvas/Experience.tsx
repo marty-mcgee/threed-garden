@@ -17,6 +17,9 @@ import { Physics } from '@react-three/rapier'
 import { useControls } from 'leva'
 
 // ** THREED.AI
+// ** THREED OBJECTS
+import Floor from '#/lib/threed/components/canvas/Floor'
+import Lights from '#/lib/threed/components/canvas/Lights'
 // ** THREED CHARACTER CONTROL Imports
 import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
 import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
@@ -28,17 +31,15 @@ import CharacterModel5 from '#/lib/threed/components/nouns/Character/FarmerWoman
 // import CharacterModel6 from '#/lib/threed/components/nouns/Character/FarmerBoyFloating'
 // import CharacterModel7 from '#/lib/threed/components/nouns/Character/FarmerGirlFloating'
 import Birds from '#/lib/threed/components/examples/Birds/Birds'
-// ** THREED OBJECTS
-import Floor from './Floor'
-import Lights from './Lights'
-import Steps from './Steps'
-import Slopes from './Slopes'
-import RoughPlane from './RoughPlane'
-import RigidObjects from './RigidObjects'
-import FloatingPlatform from './FloatingPlatform'
-import DynamicPlatforms from './DynamicPlatforms'
-import ShotCube from './ShotCube'
-import Map from './Map'
+// ** THREED OBJECT EXAMPLES
+import Steps from '#/lib/threed/components/examples/threed/Steps'
+import Slopes from '#/lib/threed/components/examples/threed/Slopes'
+import RoughPlane from '#/lib/threed/components/examples/threed/RoughPlane'
+import RigidObjects from '#/lib/threed/components/examples/threed/RigidObjects'
+import FloatingPlatform from '#/lib/threed/components/examples/threed/FloatingPlatform'
+import DynamicPlatforms from '#/lib/threed/components/examples/threed/DynamicPlatforms'
+import ShotCube from '#/lib/threed/components/examples/threed/ShotCube'
+import Map from '#/lib/threed/components/examples/threed/Map'
 
 // ** HELPER Imports
 import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
@@ -287,7 +288,7 @@ export default function Experience() {
             aka: four-by-fours, 4"x4"[s], posts, logs
             rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}
         */}
-        <group>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0.00, 0]}>
           <Steps />
         </group>
 
@@ -296,11 +297,15 @@ export default function Experience() {
             aka: four-by-fours, 4"x4"[s], posts, logs
             rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}
         */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[8.4, -0.40, 10]}>
           {/* Rough plane */}
           <RoughPlane />
+        </group>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -0.00, 0]}>
           {/* Slopes and stairs */}
           <Slopes />
+        </group>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0.00, 0]}>
           {/* Rigid body objects */}
           <RigidObjects />
         </group>
@@ -310,7 +315,7 @@ export default function Experience() {
             aka: four-by-fours, 4"x4"[s], posts, logs
             rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}
         */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 10.01, 0]}>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 100.01, 0]}>
           {/* Floating platform */}
           <FloatingPlatform />
         </group>
@@ -320,7 +325,7 @@ export default function Experience() {
             aka: four-by-fours, 4"x4"[s], posts, logs
             rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}
         */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 4.01, 0]}>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 40.01, 0]}>
           {/* Dynamic platforms */}
           <DynamicPlatforms />
           {/* Shoting cubes */}
@@ -365,10 +370,10 @@ export default function Experience() {
 
       </Physics>
 
-      <Perf
+      {/* <Perf
         position='bottom-left'
         // minimal
-      />
+      /> */}
     </>
   )
 }

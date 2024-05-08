@@ -31,11 +31,10 @@
       "~/*": ["./*"], // preferable (next, nuxt, supports npm @ confusion)
       "~~/*": ["./src/*"], // (eth)
       "~common/*": ["../common/src/*"], // (eth~common)
-      "-||-*": ["./src/lib/assets/*"], // threeds (-||-)
       "@/*": ["./src/*"], // next-auth
       "auth": ["./auth"] // next-auth
     },
-    "typeRoots": ["node_modules/@types", "lib/types"],
+    "typeRoots": ["node_modules/@types", "src/lib/types"],
     // plugins
     "plugins": [
       {
