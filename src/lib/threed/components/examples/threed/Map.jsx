@@ -21,9 +21,6 @@ export default function Map(props) {
   return (
     <RigidBody type="fixed" colliders="trimesh" ccd>
       <group 
-        rotation={[-Math.PI / 2, 0, 0]} 
-        scale={1.0} 
-        position={[0, 0, 0]}
         {...props} 
         dispose={null}
       >

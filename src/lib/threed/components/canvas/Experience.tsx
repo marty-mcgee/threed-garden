@@ -279,7 +279,11 @@ export default function Experience() {
         </group>
 
         {/* // import Map from './Map' */}
-        <group rotation={[0, -Math.PI/2, 0]} scale={0.16} position={[0, 2.5, 24]}>
+        <group 
+          rotation={[(-Math.PI/2) + 0, 0, (-Math.PI/2) + 0]} 
+          scale={0.16} 
+          position={[0, 3, 24]}
+        >
           <Map />
         </group>
 
