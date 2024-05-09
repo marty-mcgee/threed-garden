@@ -31,7 +31,7 @@
       "~/*": ["*"], // preferable (next, nuxt, supports npm @ confusion)
       "~~/*": ["src/*"], // (eth)
       "~common/*": ["../common/src/*"], // (eth~common)
-      "@/*": ["app/*"], // next-auth
+      "@/*": ["src/*"], // next-auth
       "auth": ["app/auth"] // next-auth
     },
     "typeRoots": ["node_modules/@types", "src/lib/types"],
