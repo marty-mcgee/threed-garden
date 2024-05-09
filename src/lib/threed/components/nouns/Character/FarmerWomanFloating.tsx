@@ -169,7 +169,7 @@ export default function CharacterModel(props: CharacterModelProps) {
     characterOutlineColor: 'black',
     characterTrailColor: 'violet',
   }
-  console.debug(`%c CHARACTER MODEL: prefs`, ccm.redAlert, prefs)
+  // console.debug(`%c CHARACTER MODEL: prefs`, ccm.redAlert, prefs)
 
   // const instances = useContext(context)
 
@@ -182,7 +182,7 @@ export default function CharacterModel(props: CharacterModelProps) {
   const { nodes, materials, animations } = useGLTF(file) as GLTF & {
     nodes: any
   }
-  console.debug(`%c nodes`, ccm.yellowAlert, nodes)
+  // console.debug(`%c nodes`, ccm.yellowAlert, nodes)
 
   // const { actions } = useAnimations(animations, group)
   const { actions } = useAnimations<GLTFActions>(animations, group)

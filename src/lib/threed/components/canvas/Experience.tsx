@@ -235,45 +235,44 @@ export default function Experience() {
         // timeStep='vary'
         // paused={pausedPhysics}
       >
-
         {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
             CHARACTER MODEL[S] GROUP */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, 16, 0]}>
 
-        {/* Character Model 1 Control */}
-        {/* THREED CHARACTER [n] -- FARMER FEMALE */}
-        {/* Keyboard preset */}
-        <KeyboardControls map={keyboardMap}>
-          <Ecctrl
-            // debug={prefs.doWorldDebug}
-            debug={false}
-            // animated={prefs.doCharacterAnimation}
-            animated={false}
-            // disableFollowCam={prefs.doWorldUnfollowCam}
-            disableFollowCam={true}
-            // followLight={false}
-            // springK={2}
-            // dampingC={0.2}
-            // autoBalanceSpringK={1.2}
-            // autoBalanceDampingC={0.04}
-            // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
-            // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
-          >
-            {/* GROUND DWELLER / DEMON PETE / AWWW */}
-            <group rotation={[0, 0, 0]} scale={0.016} position={[0, 0, 0]}>
-              {/* <CharacterModel0 /> */}
-              <CharacterModel1 />
-            </group>
-            {/* FARMER: FEMALE */}
-            <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
-              <CharacterModel5 />
-            </group>
-            {/* FARMER: MALE */}
-            {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
-              <CharacterModel4 />
-            </group> */}
-          </Ecctrl>
-        </KeyboardControls>     
+          {/* Character Model 1 Control */}
+          {/* THREED CHARACTER [n] -- FARMER FEMALE */}
+          {/* Keyboard preset */}
+          <KeyboardControls map={keyboardMap}>
+            <Ecctrl
+              // debug={prefs.doWorldDebug}
+              debug={false}
+              // animated={prefs.doCharacterAnimation}
+              animated={false}
+              // disableFollowCam={prefs.doWorldUnfollowCam}
+              disableFollowCam={true}
+              // followLight={false}
+              // springK={2}
+              // dampingC={0.2}
+              // autoBalanceSpringK={1.2}
+              // autoBalanceDampingC={0.04}
+              // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
+              // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
+            >
+              {/* GROUND DWELLER / DEMON PETE / AWWW */}
+              {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, 0, 0]}> */}
+                {/* <CharacterModel0 /> */}
+                {/* <CharacterModel1 /> */}
+              {/* </group> */}
+              {/* FARMER: FEMALE */}
+              <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
+                <CharacterModel5 />
+              </group>
+              {/* FARMER: MALE */}
+              {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
+                <CharacterModel4 />
+              </group> */}
+            </Ecctrl>
+          </KeyboardControls>     
         
         {/* END: CHARACTER MODEL[S] GROUP */}
         </group>
@@ -287,92 +286,71 @@ export default function Experience() {
           <Map />
         </group>
 
-        {/* baby steps
-            flat-XY on the floor['ground']
-            aka: four-by-fours, 4"x4"[s], posts, logs
-            rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}
-        */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0.00, 0]}>
+        {/* baby steps */}
+        {/* Steps -- aka: four-by-fours, 4"x4"[s], posts, logs */}
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0.1, 0]}>
           <Steps />
         </group>
 
-        {/* toddler steps (advanced degrees)
-            flat-XY on the floor['ground']
-            aka: four-by-fours, 4"x4"[s], posts, logs
-            rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}
-        */}
+        {/* toddler steps (advanced degrees) */}
+        {/* Rough Plane */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[8.4, -0.40, 10]}>
-          {/* Rough plane */}
           <RoughPlane />
         </group>
+        {/* Slopes + Stairs */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, -0.00, 0]}>
-          {/* Slopes and stairs */}
           <Slopes />
         </group>
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0.00, 0]}>
-          {/* Rigid body objects */}
+        {/* Rigid Body Objects */}
+        <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
           <RigidObjects />
         </group>
 
-        {/* kinder steps (active objects)
-            flat-XY on the floor['ground']
-            aka: four-by-fours, 4"x4"[s], posts, logs
-            rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}
-        */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 100.01, 0]}>
-          {/* Floating platform */}
+        {/* kinder steps (active objects) */}
+        {/* Floating Platform */}
+        <group rotation={[0, 0, 0]} scale={1.0} position={[-12, 4.0, 8]}>
           <FloatingPlatform />
         </group>
 
-        {/* elementary steps (random active objects)
-            flat-XY on the floor['ground']
-            aka: four-by-fours, 4"x4"[s], posts, logs
-            rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}
-        */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 40.01, 0]}>
-          {/* Dynamic platforms */}
+        {/* elementary steps (random active objects) */}
+        {/* Dynamic Platforms */}
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 2.01, 0]}>
           <DynamicPlatforms />
-          {/* Shoting cubes */}
+        </group> */}
+        {/* Shot Cubes */}
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 4.0, 0]}>
           <ShotCube />
         </group>
 
-        {/* solid steps (levels, safety)
-            flat-XY on the floor['ground']
-            aka: four-by-fours, 4"x4"[s], posts, logs
-            rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}
-        */}
+        {/* solid steps (levels, safety) */}
         {/* The Floor (Plane 0) */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
           <Floor />
         </group>
 
-        {/* backup solid steps (levels[1+], safety)
-            flat-XY on the floor['ground']
-            aka: four-by-fours, 4"x4"[s], posts, logs
-            rotation={[0, 0, 0]} scale={1.0} position={[0, 1.01, 0]}
-        */}
+        {/* backup solid steps (levels[1+], safety) */}
         {/* Sub-Floor[s] (Plane < 0) */}
         {/* <SubFloor level={`${level[index]}`} /> */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -16, 0]}>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -64, 0]}>
           <Floor />
         </group>
         {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
-            SHALLOW BELOW SEA LEVEL -48 (-4rem)
-        */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -48, 0]}>
+            DEEP BELOW SEA LEVEL */}
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
           <Floor />
         </group>
-        {/* <Grid
-          args={[64, 64]} // x = 4rem, z = 4rem
-          sectionColor={'darkgray'}
-          cellColor={'black'}
-          position={[0, -16, 0]} // sea level : -1rem
-          userData={{
-            camExcludeCollision: false, // collide by camera ray? true | false
-          }}
-        /> */}
 
       </Physics>
+
+      {/* <Grid
+        args={[64, 64]} // x = 4rem, z = 4rem
+        sectionColor={'darkgray'}
+        cellColor={'black'}
+        position={[0, -16, 0]} // sea level : -1rem
+        userData={{
+          camExcludeCollision: false, // collide by camera ray? true | false
+        }}
+      /> */}
 
       {/* <Perf
         position='bottom-left'

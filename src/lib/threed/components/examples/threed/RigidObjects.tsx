@@ -12,7 +12,7 @@ import {
 
 export default function RigidObjects() {
   return (
-    <group position={[0, 10.0, 0]}>
+    <group>
       {/* Rigid body boxes */}
       <RigidBody position={[15, 2, 2]}>
         <mesh receiveShadow castShadow>
