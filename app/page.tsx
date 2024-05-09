@@ -8,7 +8,7 @@
 
 import CustomLink from "@/components/custom-link"
 import SessionData from "@/components/session-data"
-import { auth } from "auth"
+import { auth } from "~/app/auth"
 
 // ** Next
 import type { NextPage, NextPageContext } from 'next'
