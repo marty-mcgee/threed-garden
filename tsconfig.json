@@ -27,12 +27,12 @@
     // "rootDirs": [".", "../common/src"],
     "baseUrl": ".",
     "paths": {
-      "#/*": ["src/*"], // preferable (next-13)
-      "~/*": ["*"], // preferable (next, nuxt, supports npm @ confusion)
+      "auth": ["app/auth"], // next-auth
+      "@/*":  ["src/*"], // next-auth
+      "#/*":  ["src/*"], // preferable (next-14)
+      "~/*":  ["*"], // preferable (next, nuxt)
       "~~/*": ["src/*"], // (eth)
       "~common/*": ["../common/src/*"], // (eth~common)
-      "@/*": ["src/*"], // next-auth
-      "auth": ["app/auth"] // next-auth
     },
     "typeRoots": ["node_modules/@types", "src/lib/types"],
     // plugins
