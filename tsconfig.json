@@ -28,7 +28,7 @@
     "baseUrl": ".",
     "paths": {
       "#/*": ["src/*"], // preferable (next-13)
-      "~/*": ["src/*"], // preferable (next, nuxt, supports npm @ confusion)
+      "~/*": ["*"], // preferable (next, nuxt, supports npm @ confusion)
       "~~/*": ["src/*"], // (eth)
       "~common/*": ["../common/src/*"], // (eth~common)
       "@/*": ["app/*"], // next-auth
