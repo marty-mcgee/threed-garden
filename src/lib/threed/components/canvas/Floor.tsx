@@ -9,7 +9,7 @@ export default function Floor() {
     <RigidBody type='fixed'>
       <mesh receiveShadow>
         <boxGeometry args={[2048, 0, 2048]} />
-        <meshPhongMaterial color='black' opacity={0.5} transparent={true} />
+        <meshPhongMaterial color='green' opacity={1.5} transparent={true} />
       </mesh>
     </RigidBody>
   )
