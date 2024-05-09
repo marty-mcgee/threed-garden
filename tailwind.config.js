@@ -8,7 +8,7 @@ module.exports = {
   content: [
     './app/**/*.{js,ts,jsx,tsx}',
     './src/ui/**/*.{js,ts,jsx,tsx}',
-    './src/components/**/*.{ts,tsx}',
+    './src/components/**/*.{js,ts,jsx,tsx}',
     // './src/**/*.{ts,tsx}',
   ],
   darkMode: 'class', // or 'media' or 'class'
