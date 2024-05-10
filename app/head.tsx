@@ -1,8 +1,9 @@
+// 'use client'
 // ==============================================================
 // RESOURCES
 // this is your SEO metadata !!!
 
-'use client'
+// import type { Metadata } from 'next'
 
 // ** Metadata Components
 // import { DefaultTags } from '#/ui/playground/DefaultTags';
@@ -21,6 +22,9 @@ const meta = {
 }
 
 const HeadMeta = ({ title = meta.title }) => {
+// const HeadMeta = ({ title = meta.title }): Metadata => {
+
+  // ** Metadata
   return (
     <>
       {/* Recommended Meta Tags */}
