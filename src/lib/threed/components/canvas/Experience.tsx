@@ -36,7 +36,7 @@ import Steps from '#/lib/threed/components/examples/threed/Steps'
 import Slopes from '#/lib/threed/components/examples/threed/Slopes'
 import RoughPlane from '#/lib/threed/components/examples/threed/RoughPlane'
 import RigidObjects from '#/lib/threed/components/examples/threed/RigidObjects'
-import FloatingPlatform from '#/lib/threed/components/examples/threed/FloatingPlatform'
+import FloatingPlatforms from '@/lib/threed/components/examples/threed/FloatingPlatforms'
 import DynamicPlatforms from '#/lib/threed/components/examples/threed/DynamicPlatforms'
 import ShotCube from '#/lib/threed/components/examples/threed/ShotCube'
 import Map from '#/lib/threed/components/examples/threed/Map'
@@ -307,9 +307,9 @@ export default function Experience() {
         </group>
 
         {/* kinder steps (active objects) */}
-        {/* Floating Platform */}
+        {/* Floating Platforms */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[-12, 4.0, 8]}>
-          <FloatingPlatform />
+          <FloatingPlatforms />
         </group>
 
         {/* elementary steps (random active objects) */}
@@ -325,19 +325,19 @@ export default function Experience() {
         {/* solid steps (levels, safety) */}
         {/* The Floor (Plane 0) */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
-          <Floor color={'green'} opacity={1.0} />
+          <Floor color={'green'} opacity={0.8} />
         </group>
 
         {/* backup solid steps (levels[1+], safety) */}
         {/* Sub-Floor[s] (Plane < 0) */}
         {/* <SubFloor level={`${level[index]}`} /> */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, -64, 0]}>
-          <Floor color={'saddlebrown'} opacity={1.0} />
+          <Floor color={'saddlebrown'} opacity={0.8} />
         </group>
         {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
             DEEP BELOW SEA LEVEL */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
-          <Floor color={'black'} opacity={1.0} />
+          <Floor color={'black'} opacity={0.8} />
         </group>
 
       </Physics>
