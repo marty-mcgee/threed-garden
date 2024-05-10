@@ -35,12 +35,14 @@ export default function FloatingPlatforms() {
   const floatingDis = 0.8
   const springK = 2.5
   const dampingC = 0.15
+
   // Platform 2
   const springDirVec2 = useMemo(() => new THREE.Vector3(), [])
   const origin2 = useMemo(() => new THREE.Vector3(), [])
   const rayCast2 = new rapier.Ray(origin2, rayDir)
   let rayHit2: RayColliderToi = null
-  // Moving Platform
+  
+  // Platform 3 -- Moving Platform
   const springDirVecMove = useMemo(() => new THREE.Vector3(), [])
   const originMove = useMemo(() => new THREE.Vector3(), [])
   const rayCastMove = new rapier.Ray(originMove, rayDir)
@@ -180,9 +182,9 @@ export default function FloatingPlatforms() {
 
   return (
     <group>
-      {/* Platform 1 */}
+      {/* Platform 1 -- Moveable */}
       <RigidBody
-        position={[0, 4, -10]}
+        position={[-12, 4, 0]}
         mass={1}
         colliders={false}
         ref={floatingPlateRef}
@@ -194,7 +196,7 @@ export default function FloatingPlatforms() {
           textAlign='center'
           position={[0, 2.5, 0]}
         >
-          Floating Platform push to move
+          Floating Platform (push to move)
         </Text>
         <CuboidCollider args={[2.5, 0.1, 2.5]} />
         <mesh receiveShadow castShadow>
@@ -203,9 +205,9 @@ export default function FloatingPlatforms() {
         </mesh>
       </RigidBody>
 
-      {/* Platform 2 */}
+      {/* Platform 2 -- Rotateable */}
       <RigidBody
-        position={[7, 4, -10]}
+        position={[-5, 4, 0]}
         mass={1}
         colliders={false}
         ref={floatingPlateRef2}
@@ -217,7 +219,7 @@ export default function FloatingPlatforms() {
           textAlign='center'
           position={[0, 2.5, 0]}
         >
-          Floating Platform push to rotate
+          Floating Platform (push to rotate)
         </Text>
         <CuboidCollider args={[2.5, 0.1, 2.5]} />
         <mesh receiveShadow castShadow>
@@ -226,11 +228,11 @@ export default function FloatingPlatforms() {
         </mesh>
       </RigidBody>
 
-      {/* Floating moving Platform test */}
+      {/* Platform 3 -- Moving */}
       <RigidBody
-        position={[0, 20, -17]}
+        position={[-12, 4, -10]}
         mass={1}
-        // colliders={false}
+        colliders={false}
         ref={floatingMovingPlateRef}
       >
         <Text
