@@ -308,7 +308,7 @@ export default function Experience() {
 
         {/* kinder steps (active objects) */}
         {/* Floating Platforms */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[-12, 4.0, 8]}>
+        <group rotation={[0, 0, 0]} scale={1.0}>
           <FloatingPlatforms />
         </group>
 
