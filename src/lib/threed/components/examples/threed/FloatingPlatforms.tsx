@@ -14,7 +14,7 @@ import { useFrame } from '@react-three/fiber'
 import { Text } from '@react-three/drei'
 import type { RayColliderToi } from '@dimforge/rapier3d-compat'
 
-export default function FloatingPlatform() {
+export default function FloatingPlatforms() {
   // Preset
   // couldn't find the correct type
   const floatingPlateRef = useRef<any>()
