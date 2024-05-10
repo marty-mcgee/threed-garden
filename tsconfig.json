@@ -31,8 +31,6 @@
       "@/*":  ["src/*"], // next-auth
       "#/*":  ["src/*"], // preferable (next-14)
       "~/*":  ["*"], // preferable (next, nuxt)
-      "~~/*": ["src/*"], // (eth)
-      "~common/*": ["../common/src/*"], // (eth~common)
     },
     "typeRoots": ["node_modules/@types", "src/lib/types"],
     // plugins

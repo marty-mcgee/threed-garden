@@ -325,19 +325,19 @@ export default function Experience() {
         {/* solid steps (levels, safety) */}
         {/* The Floor (Plane 0) */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
-          <Floor />
+          <Floor color={'green'} opacity={1.0} />
         </group>
 
         {/* backup solid steps (levels[1+], safety) */}
         {/* Sub-Floor[s] (Plane < 0) */}
         {/* <SubFloor level={`${level[index]}`} /> */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, -64, 0]}>
-          <Floor />
+          <Floor color={'saddlebrown'} opacity={1.0} />
         </group>
         {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
             DEEP BELOW SEA LEVEL */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
-          <Floor />
+          <Floor color={'black'} opacity={1.0} />
         </group>
 
       </Physics>
