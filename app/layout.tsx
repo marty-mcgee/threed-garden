@@ -7,8 +7,8 @@
 // ** DEFAULT APP LAYOUT -- TEMPLATE CHILD
 // ?? FOR ENTIRE APP CONTEXTS ??
 
-import { auth } from 'auth'
-import { SessionProvider } from 'next-auth/react'
+// import { auth } from 'auth'
+// import { SessionProvider } from 'next-auth/react'
 
 // ** Next
 // import type { GetServerSideProps, GetStaticProps } from 'next'
@@ -60,7 +60,7 @@ import ThemeRegistry from '#/ui/theme/ThemeRegistry'
 // import UserLayout from '#/ui/layouts/UserLayout' // this is your user-authorized (new dashboard) layout
 
 // ** Helper Components
-import Spinner from '#/ui/components/spinner'
+// import Spinner from '#/ui/components/spinner'
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
 
@@ -70,8 +70,8 @@ import ccm from '#/lib/utils/console-colors'
 // import stylesDemo from '#/ui/styles/demo/demo.module.css'
 // import '#/lib/threed/styles/index.css'
 // import '#/lib/threed/styles/garden.module.css'
-import '~/app/_styles.css'  // basic css
-import '~/app/_globals.css' // tailwind css
+import '~/app/_globals.css' // global tailwind css
+import '~/app/_styles.css'  // additional global basic css
 
 // ** LAYOUT Components (Head, Main, Foot)
 import LayoutWrapper from '~/app/LayoutWrapper'
@@ -90,7 +90,7 @@ import LayoutWrapper from '~/app/LayoutWrapper'
 // ==============================================================
 // IMPORTS COMPLETE
 // console.debug('%c=======================================', ccm.black)
-// console.debug('%c🥕 ThreeDGarden<FC,R3F>: {layout.tsx}', ccm.lightgreen)
+console.debug('%c🥕 ThreeDGarden<FC,R3F>: {layout.tsx}', ccm.lightgreen)
 // console.debug('%c=======================================', ccm.black)
 
 // ==============================================================
@@ -109,7 +109,9 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
       {/* <body className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}> */}
       {/* <body className={inter.className}> */}
       <body>
-        <LayoutWrapper>{children}</LayoutWrapper>
+        <LayoutWrapper>
+          {children}
+        </LayoutWrapper>
       </body>
     </html>
   )
@@ -145,7 +147,7 @@ const AppRootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
       email: 'string',
       image: 'string',
     },
-    expires: 'datetime as string', // () => { new Date().getDate() }
+    expires: new Date().getDate() // 'datetime as type date or string?'
   }
   // const session = await auth()
   // const session = auth()
@@ -266,7 +268,8 @@ const AppRootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                                 {/* <>{children}</> */}
 
                                 {/* <Suspense fallback={<Spinner />}> */}
-                                <div id='ThreeDAppProvider' className='flex flex-col justify-between w-full h-full min-h-screen'>
+                                <div id='ThreeDAppProvider' 
+                                  className='flex flex-col justify-between w-full h-full min-h-screen'>
                                   {/* <Header /> */}
                                   <main className='flex-auto w-full px-2 py-1 mx-auto'>
                                     {children}
