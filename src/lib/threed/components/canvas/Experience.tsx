@@ -32,14 +32,14 @@ import CharacterModel5 from '#/lib/threed/components/nouns/Character/FarmerWoman
 // import CharacterModel7 from '#/lib/threed/components/nouns/Character/FarmerGirlFloating'
 import Birds from '#/lib/threed/components/examples/Birds/Birds'
 // ** THREED OBJECT EXAMPLES
-import Steps from '#/lib/threed/components/examples/threed/Steps'
-import Slopes from '#/lib/threed/components/examples/threed/Slopes'
-import RoughPlane from '#/lib/threed/components/examples/threed/RoughPlane'
-import RigidObjects from '#/lib/threed/components/examples/threed/RigidObjects'
+import Steps from '#/lib/threed/components/examples/Steps'
+import Slopes from '#/lib/threed/components/examples/Slopes'
+import RoughPlane from '#/lib/threed/components/examples/RoughPlane'
+import RigidObjects from '#/lib/threed/components/examples/RigidObjects'
 import FloatingPlatforms from '@/lib/threed/components/examples/threed/FloatingPlatforms'
 import DynamicPlatforms from '@/lib/threed/components/examples/DynamicPlatforms'
-import ShotCube from '#/lib/threed/components/examples/threed/ShotCube'
-import Map from '#/lib/threed/components/examples/threed/Map'
+import ShotCube from '#/lib/threed/components/examples/ShotCube'
+import Map from '#/lib/threed/components/examples/Map'
 
 // ** HELPER Imports
 import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
