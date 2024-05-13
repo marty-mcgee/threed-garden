@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.16.0-alpha.3",
+  "version": "0.16.0-alpha.4",
   "description": "ThreeD Garden: 3D Environment on 'Next.JS React TypeScript Three.JS React-Three Physics', using Apollo GraphQL State+Stores, Leva Control GUI, Material UI + Tailwind CSS",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
@@ -85,11 +85,6 @@
     
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "^7.51.2",
-    "react-query": "^3.39.2",
-    "react-use": "^17.5.0",
-    
-    "scheduler": "^0.19.0",
     
     "styled-components": "^6.1.9",
     
@@ -104,11 +99,12 @@
     "util": "^0.12.4",
     "uuid": "^8.3.2",
 
-    "valtio": "^1.13.2",
-    "yup": "^1.2.0",
+    "valtio": "^1.13.2",    
     "zustand": "^4.5.2",
     "@udecode/zustood": "^2.0.0"
+
   },
+  
   "optionalDependencies": {
     "axios": "^1.6.8",
     
@@ -131,7 +127,6 @@
     "@casl/ability": "5.4.3",
     "@casl/react": "3.1.0",
 
-    "@hookform/resolvers": "^2.9.11",
     "@popperjs/core": "2.11.2",
     
     "@radix-ui/react-avatar": "^1.0.3",
