@@ -1,5 +1,6 @@
+// STUDY !!!
+// {/* HEY HEY HEY */}
 
-import { Preload } from '@react-three/drei'
 import * as THREE from 'three'
 
 export default function Scene({ ...props }) {

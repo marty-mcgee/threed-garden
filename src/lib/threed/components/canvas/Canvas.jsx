@@ -2,7 +2,12 @@
 // ==========================================================
 // RESOURCES
 
-import { tunnelratIO } from '@/lib/threed/helpers/global'
+// import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
+import { threedIO } from '@/lib/threed/threedio/threedIO' // ThreeDExperience ExperienceViewer Experience
+
+
+
+
 
 // ** APOLLO Imports
 import { useReactiveVar } from '@apollo/client'
@@ -65,7 +70,7 @@ import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 // import Map from './Map'
 // import CharacterModel from './CharacterModel'
 // import Experience from '#/lib/ecctrl/example/Experience'
-import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
+// import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
 
 // ** ThreeD Noun Imports
 // import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene'
@@ -291,7 +296,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
       >
   
         {/* @ts-ignore */}
-        <tunnelratIO.Out />
+        <threedIO.Out />
 
         <Preload all />
       
@@ -325,7 +330,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           <gridHelper args={[1024, 16]} />
 
           {/* THREED EXPERIENCE */}
-          <ThreeDExperience />
+          {/* <ThreeDExperience /> */}
           {/* <Experience /> */}
 
           {/* THREED SCENE FILES TO CANVAS */}
