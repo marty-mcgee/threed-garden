@@ -5,17 +5,19 @@ import dynamic from 'next/dynamic'
 // const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false })
 
 const LayoutWrapper = ({ children }: { children: any}) => {
-  const ref = useRef<any>()
+  const id: string = 'HEYHEYHEY'
+  const ref: any = useRef<any>()
 
   return (
     <div
+      id={id}
       ref={ref}
       style={{
-        position: 'relative',
-        width: ' 100%',
-        height: '100%',
-        overflow: 'auto',
-        touchAction: 'auto',
+        position:     'relative',
+        width:        '100%',
+        height:       '100%',
+        overflow:     'auto',
+        touchAction:  'auto',
       }}
     >
       {children}
