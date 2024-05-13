@@ -6,7 +6,7 @@
 
 🌱 [threedgarden.com](https://threedgarden.com)
 
-🥕 [Demo: Participate](https://threedgarden.com/participate)
+🥕 [Demo: Actively Participate](https://threedgarden.com/participate)
 
 ## For Developers
 
