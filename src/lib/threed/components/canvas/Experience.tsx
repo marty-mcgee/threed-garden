@@ -37,7 +37,7 @@ import Slopes from '#/lib/threed/components/examples/threed/Slopes'
 import RoughPlane from '#/lib/threed/components/examples/threed/RoughPlane'
 import RigidObjects from '#/lib/threed/components/examples/threed/RigidObjects'
 import FloatingPlatforms from '@/lib/threed/components/examples/threed/FloatingPlatforms'
-import DynamicPlatforms from '#/lib/threed/components/examples/threed/DynamicPlatforms'
+import DynamicPlatforms from '@/lib/threed/components/examples/DynamicPlatforms'
 import ShotCube from '#/lib/threed/components/examples/threed/ShotCube'
 import Map from '#/lib/threed/components/examples/threed/Map'
 
