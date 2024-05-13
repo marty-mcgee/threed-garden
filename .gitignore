@@ -27,7 +27,6 @@ public/assets
 public/assets/**
 public/demo
 public/demo/objects
-public/media/**
 public/objects/**
 # !public/objects/threeds
 # public/objects/threeds/*
