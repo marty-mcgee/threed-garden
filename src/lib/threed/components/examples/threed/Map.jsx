@@ -8,6 +8,7 @@ Author: sirsaugsage (https://sketchfab.com/sirsausage)
 License: CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
 Source: https://sketchfab.com/3d-models/fantasy-game-inn-192bf30a7e28425ab385aef19769d4b0
 Title: Fantasy Game Inn
+Credits: "Fantasy Game Inn" (https://skfb.ly/JDD6) by sirsaugsage is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 */
 
 import { useGLTF } from '@react-three/drei'
