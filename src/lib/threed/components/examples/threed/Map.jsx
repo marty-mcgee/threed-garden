@@ -13,7 +13,7 @@ Title: Fantasy Game Inn
 import { useGLTF } from '@react-three/drei'
 import { RigidBody } from '@react-three/rapier'
 
-const theMapModelFile = '/fantasy_game_inn.glb'
+const theMapModelFile = './glb/fantasy_game_inn.glb'
 
 export default function Map(props) {
   const { nodes, materials } = useGLTF(theMapModelFile)

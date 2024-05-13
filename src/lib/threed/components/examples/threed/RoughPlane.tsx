@@ -9,7 +9,7 @@ import * as THREE from "three";
 
 export default function RoughPlane() {
   // Load models
-  const roughPlane = useGLTF("./roughPlane.glb");
+  const roughPlane = useGLTF("./glb/roughPlane.glb");
 
   useEffect(() => {
     // Receive Shadows
