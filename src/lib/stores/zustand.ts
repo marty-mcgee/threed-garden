@@ -2,7 +2,7 @@
 // state management (instead of React.useState or Redux)
 import { create } from 'zustand'
 import shallow from 'zustand/shallow'
-import { createStore } from '@udecode/zustood'
+import { createStore } from 'zustand-x'
 
 // ** UUID Imports
 import { v4 as newUUID } from 'uuid'
