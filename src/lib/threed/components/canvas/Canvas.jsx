@@ -2,6 +2,8 @@
 // ==========================================================
 // RESOURCES
 
+import { tunnelratIO } from '@/lib/threed/helpers/global'
+
 // ** APOLLO Imports
 import { useReactiveVar } from '@apollo/client'
 import {
@@ -287,8 +289,15 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
         //   }
         // }}
       >
+  
+        {/* @ts-ignore */}
+        <tunnelratIO.Out />
 
-        {/* <Preload all /> */}
+        <Preload all />
+      
+      
+      
+      
 
         {/* SUSPENSEFUL... */}
         {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
