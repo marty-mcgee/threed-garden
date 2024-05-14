@@ -2,7 +2,7 @@
 
 import { forwardRef, Suspense, useImperativeHandle, useRef } from 'react'
 import { OrbitControls, PerspectiveCamera, View as ThreeDViewer } from '@react-three/drei'
-import { ThreedIO } from '@/lib/threed/helpers/components/ThreedIO'
+import { ThreedIO } from '#/lib/threed/helpers/components/ThreedIO'
 
 // export const Common = ({ color }) => (
 //   <Suspense fallback={null}>

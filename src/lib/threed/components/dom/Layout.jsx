@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import dynamic from 'next/dynamic'
-const Scene = dynamic(() => import('@/lib/threed/components/canvas/Scene'), { ssr: false })
+const Scene = dynamic(() => import('#/lib/threed/components/canvas/Scene'), { ssr: false })
 
 const Layout = ({ children }) => {
   const ref = useRef()
