@@ -1,26 +1,51 @@
-'use client'
+// 'use client'
+// ==========================================================
+// RESOURCES
+
+// ** APOLLO Imports
+import { useReactiveVar } from '@apollo/client'
+import {
+  // isPreferencesSetVar,
+  preferencesDataVar,
+  // preferencesStore,
+  // projectStore,
+} from '#/lib/stores/apollo'
+
+// ** LEVA CONTROLS Imports
+import { useControls } from 'leva'
+
+// ** VALTIO ??
+// import { proxy, useSnapshot } from 'valtio'
 
 // REACT Imports
 import { 
   forwardRef, 
   Suspense, 
   useImperativeHandle, 
-  useRef 
+  useRef,
+
+
+  // Suspense,
+  useState,
+  useEffect,
+  // useRef,
+  useTransition,
+
 } from 'react'
 
 // R3F Imports
 import {
   Environment, Stage,
-  KeyboardControls,
+  // KeyboardControls,
   OrbitControls, TransformControls, PivotControls,
   GizmoHelper, GizmoViewcube, GizmoViewport,
   ContactShadows, BakeShadows,
   // softShadows, // softShadows()
-  Loader, useProgress,
-  Preload,
+  // Loader, useProgress,
+  // Preload,
   Html, Center,
   // **
-  useGLTF, useFBX,
+  // useGLTF, useFBX,
   // **
   PerspectiveCamera, 
   View as ThreeDViewer, 
@@ -29,6 +54,21 @@ import {
 // THREED:IO Imports
 import { ThreedIO } from '#/lib/threed/threedio/components/ThreedIO'
 import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
+
+// ** HELPER Components
+import Spinner from '#/ui/components/spinner'
+// ** UUID Imports
+// import { v4 as newUUID } from 'uuid'
+// ** COLORFUL CONSOLE MESSAGES (ccm)
+import ccm from '#/lib/utils/console-colors'
+// console.debug('%c ccm', ccm)
+
+// ==============================================================
+// ** VARIABLES
+
+const debug = false // false | true // ts: boolean
+const DEBUG = true // false | true // ts: boolean
+const debug_deep = false // false | true // ts: boolean
 
 // export const Common = ({ color }) => (
 //   <Suspense fallback={null}>
@@ -40,7 +80,122 @@ import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
 //   </Suspense>
 // )
 
+export function ThreeDEnvironment() {
+
+  // ** HOOKS
+  const prefs = useReactiveVar(preferencesDataVar)
+
+  // const [envPreset, setEnvPreset] = useState(prefs.environmentPreset) // 'park'
+  // You can use the 'inTransition' boolean to react to the loading in-between state,
+  // For instance by showing a message
+  // const [inTransition, startTransition] = useTransition()
+
+  const [{ preset, blur }, setScenePreferencesLeva] = useControls(
+    'Scene Preferences',
+    () => (
+      {
+        preset: {
+          label: 'Environment',
+          value: prefs.environmentPreset, // envPreset,
+          // const presetsObj = {
+          //   apartment: 'lebombo_1k.hdr',
+          //   city: 'potsdamer_platz_1k.hdr',
+          //   dawn: 'kiara_1_dawn_1k.hdr',
+          //   forest: 'forest_slope_1k.hdr',
+          //   lobby: 'st_fagans_interior_1k.hdr',
+          //   night: 'dikhololo_night_1k.hdr',
+          //   park: 'rooitou_park_1k.hdr',
+          //   studio: 'studio_small_03_1k.hdr',
+          //   sunset: 'venice_sunset_1k.hdr',
+          //   warehouse: 'empty_warehouse_01_1k.hdr'
+          // };
+          // export { presetsObj };
+          options: [
+            'park', 'sunset', 'dawn', 'night', 'forest',
+            'studio', 'warehouse', 'apartment', 'lobby', 'city'
+          ],
+          // If onChange is present the value will not be reactive,
+          // see https://github.com/pmndrs/leva/blob/main/docs/advanced/controlled-inputs.md#onchange
+          // Instead we transition the preset value, which will prevents the suspense bound from triggering its fallback
+          // That way we can hang onto the current environment until the new one has finished loading ...
+          // onChange: (value) => startTransition(() => setEnvPreset(value))
+        },
+        blur: {
+          label: 'Bg Blur',
+          value: prefs.environmentBgBlur, // 0.00,
+          min: 0.00,
+          max: 0.20,
+        },
+      }
+    ),
+    {
+      color: 'darkgreen',
+      collapsed: false,
+      order: 0,
+    },
+  )
+
+  // ==========================================================
+  // ** environmentPreset
+  // **
+  useEffect(() => {
+    let newData = {...prefs}
+    // if (debug) console.debug('%c preset newData', ccm.green, newData)
+    newData.environmentPreset = preset
+    // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.environmentPreset', ccm.yellowAlert, prefs.environmentPreset)
+  }, [preset])
+
+  // **
+  useEffect(() => {
+    // if (prefs.environmentPreset != undefined) {
+      setScenePreferencesLeva({ preset: prefs.environmentPreset })
+    // }
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.environmentPreset', ccm.greenAlert, prefs.environmentPreset)
+  }, [prefs.environmentPreset])
+
+  // ==========================================================
+  // ** environmentBgBlur
+  // **
+  useEffect(() => {
+    let newData = {...prefs}
+    // console.debug('%c blur newData', ccm.green, newData)
+    newData.environmentBgBlur = Math.round((blur + Number.EPSILON) * 100) / 100 // rounds to 2 decimal places
+    // console.debug('%c blur newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c blur preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // setScenePreferencesLeva({ blur: blur })
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.yellowAlert, preferencesDataVar().environmentBgBlur)
+  }, [blur])
+
+  // **
+  useEffect(() => {
+    // if (prefs.environmentBgBlur != undefined) {
+      setScenePreferencesLeva({ blur: prefs.environmentBgBlur })
+    // }
+    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.environmentBgBlur', ccm.greenAlert, prefs.environmentBgBlur)
+  }, [prefs.environmentBgBlur])
+
+  // ==========================================================
+
+  return (
+    <Environment
+      preset={prefs.environmentPreset}
+      blur={prefs.environmentBgBlur}
+      // blur={preferencesDataVar().environmentBgBlur}
+      background
+    />
+  )
+}
+
 const ExperienceViewer = forwardRef(({ enableOrbit, children, ...props }, ref) => {
+
+  // ** HOOKS
+  const prefs = useReactiveVar(preferencesDataVar)
+
+  // ** THREED IO
   const localRef = useRef(null)
   useImperativeHandle(ref, () => localRef.current)
 

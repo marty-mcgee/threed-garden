@@ -61,7 +61,7 @@ import {
 // ** MUI Imports
 // import { styled } from '@mui/material/styles'
 // mui: ui
-import Typography from '@mui/material/Typography'
+// import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 // import MuiButton from '@mui/material/Button'
@@ -71,7 +71,7 @@ import Grid from '@mui/material/Grid'
 // ** THREE JS Imports (not here, use R3F)
 // import * as THREE from 'three'
 // ** Three JS Loading Progress
-import { Html, Loader, useProgress } from '@react-three/drei'
+// import { Html, Loader, useProgress } from '@react-three/drei'
 
 // ** ThreeD r3f Canvas Imports
 import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
