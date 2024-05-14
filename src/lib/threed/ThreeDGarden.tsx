@@ -93,7 +93,7 @@ import ThreeDToolbar from '#/lib/threed/components/tools/Toolbar'
 import ThreeDModals from '#/lib/threed/components/modals/Modals'
 
 // ** View Imports
-import ThreeDViews from '#/lib/threed/components/views/Views'
+import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
 
 // ** CSS Styles Imports
 // import stylesDemo from '#/ui/styles/demo/demo.module.css'

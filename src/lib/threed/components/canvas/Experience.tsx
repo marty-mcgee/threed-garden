@@ -357,10 +357,10 @@ export default function Experience() {
         }}
       /> */}
 
-      {/* <Perf
+      <Perf
         position='bottom-left'
         // minimal
-      /> */}
+      />
     </>
   )
 }
