@@ -28,7 +28,7 @@ const path = require('path')
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   //
-  reactStrictMode: false, // true: causes components to load TWICE in dev only, not active (moot) in production
+  reactStrictMode: true, // true: causes components to load TWICE in dev only, not active (moot) in production
 
   // trailingSlash: false, // true: add a '/' to the final url address -- can cause url-based query string issues
 
@@ -47,25 +47,25 @@ const nextConfig = {
   // https://github.com/vercel/next.js/issues/36221
   // swcMinify: true, // true throws error at ErrorBoundary
 
-  transpilePackages: [
-    // ORDER DOES NOT MATTER
+  // transpilePackages: [
+  //   // ORDER DOES NOT MATTER
 
-    // 'three',
+  //   // 'three',
 
-    'axios',
-    'axios-mock-adapter',
+  //   'axios',
+  //   // 'axios-mock-adapter',
 
-    'yup',
-    '@hookform/resolvers',
+  //   'yup',
+  //   '@hookform/resolvers',
 
-    // '@fullcalendar/common',
-    // '@fullcalendar/daygrid',
-    // '@fullcalendar/interaction',
-    // '@fullcalendar/react',
-    // '@fullcalendar/timegrid',
+  //   // '@fullcalendar/common',
+  //   // '@fullcalendar/daygrid',
+  //   // '@fullcalendar/interaction',
+  //   // '@fullcalendar/react',
+  //   // '@fullcalendar/timegrid',
 
-    // 'react-github-btn',
-  ],
+  //   // 'react-github-btn',
+  // ],
 
   async headers() {
     return [

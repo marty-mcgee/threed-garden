@@ -27,16 +27,13 @@
     // "rootDirs": [".", "../common/src"],
     "baseUrl": ".",
     "paths": {
-      "#/*": ["./*"], // preferable (next-13)
-      "~/*": ["./*"], // preferable (next, nuxt, supports npm @ confusion)
-      // "@/*": ["src/*"], // deprecated (npm @)
-      "~~/*": ["./*"], // (eth)
-      "~common/*": ["../common/src/*"], // (eth~common)
-      "-||-*": ["lib/assets/*"], // threeds (-||-)
-      "@/*": ["./*"], // next-auth
-      "auth": ["./auth"] // next-auth
+      "auth": ["app/auth"], // next-auth
+      "@/*":  ["app/*"], // threed (next-14)
+      "#/*":  ["src/*"], // threed (next-14)
+      "~/*":  ["*"], // global
+      "~~/*":  ["src/*"], // global src
     },
-    "typeRoots": ["node_modules/@types", "lib/types"],
+    "typeRoots": ["node_modules/@types", "src/lib/types"],
     // plugins
     "plugins": [
       {

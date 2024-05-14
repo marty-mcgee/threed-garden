@@ -1,4 +1,4 @@
-# [🥕 ThreeD Garden: 3D Object Environment w Next.JS React TypeScript Web3 ThreeJS Poimandres React-Three w Apollo State + Leva Control UI w Apollo Stores w MUI + Tailwind](https://github.com/marty-mcgee/threed-garden/)
+# [🥕 ThreeD Garden: 3D Environment on 'Next.JS React TypeScript Three.JS React-Three Physics', using Apollo GraphQL State+Stores, Leva Control GUI, Material UI + Tailwind CSS](https://github.com/marty-mcgee/threed-garden/)
 
 3D Dev Environment w React, TypeScript, Three.js, React-Three (poimandres), on Next.js, Apollo Client, GraphQL, WordPress REST API, MUI + Tailwind. ThreeD Web3 Interface for Three-Dimensional JavaScript Objects with React Server + Client Components, Web3 Contracts ...
 
@@ -6,15 +6,15 @@
 
 🌱 [threedgarden.com](https://threedgarden.com)
 
-🥕 [Demo: Participate](https://threedgarden.com/participate)
+🥕 [Demo: Actively Participate](https://threedgarden.com/participate)
 
 ## For Developers
 
 🤖 ["name": "threed-garden",](https://www.npmjs.com/package/threed-garden)
 
-🤖 ["version": "0.15.1-beta.x",](https://www.npmjs.com/package/threed-garden?activeTab=versions)
+🤖 ["version": "0.16.0-beta.x",](https://www.npmjs.com/package/threed-garden?activeTab=versions)
 
-🤖 ["code": "0.15.1-beta.x",](https://www.npmjs.com/package/threed-garden?activeTab=code)
+🤖 ["code": "0.16.0-beta.x",](https://www.npmjs.com/package/threed-garden?activeTab=code)
 
 ### Install + Run
 
@@ -34,26 +34,27 @@
 
 ## FUNCTIONAL NOUNS : ACTIONS : GROUPS == NOUNS + ACTIONS + METADATA 🌱 🤖 🍅 🥕
 
-- Noun | as root JS Object | interface INoun | wp_type threed_noun
+- Noun | as root JS Object | interface INoun | type TNoun | wp_type threed_noun
 
 --- Nouns
 
-- Project | as JS Object | interface IProject | wp_type threed_project
-- Scene | extends THREE.Scene | interface IScene | wp_type threed_scene
-- Plan | as JS Object | interface IPlan | wp_type threed_plan
-- ThreeD | as root JS Object | interface IThreeD | wp_type threed_threed
-- File | as JS Object | interface IFile | wp_type threed_file
-- Participant | as JS Object | interface IParticipant | wp_type threed_participant
-- Character | as JS Object | interface ICharacter | wp_type threed_character
+- Project | interface IProject | type TProject | wp_type threed_project
+- Scene | extends THREE.Scene | interface IScene | type TScene | wp_type threed_scene
+- Plan | interface IPlan | type TPlan | wp_type threed_plan
+- ThreeD | as root JS Object | interface IThreeD | type TThreed | wp_type threed_threed
+- File | interface IFile | type TFile | wp_type threed_file
+- Participant | interface IParticipant | type TParticipant | wp_type threed_participant
+- Character | interface ICharacter | type TCharacter | wp_type threed_character
 
 --- Actions
 
-- Simulation | as JS Object | interface ISimulation | wp_type threed_simulation
-- Game | extends Simulation | interface IGame | wp_type threed_game
+- Simulation | interface ISimulation | type TSimulation | wp_type threed_simulation
+- Demo | extends Simulation | interface IDemo | type TDemo | wp_type threed_demo
+- Game | extends Simulation | interface IGame | type TGame | wp_type threed_game
 
---- Groups
+--- Groups [of Nouns]
 
-- World | as JS Object | interface IWorld | wp_type threed_world
+- World | interface IWorld | wp_type threed_world
 - Structure | extends THREE.Object3D | interface IStructure | wp_type threed_structure
 - Farm | extends THREE.Group | interface IFarm | wp_type threed_farm
 - Garden | extends THREE.Group | interface IGarden | wp_type threed_garden
@@ -68,16 +69,20 @@
 - PlantingPlan | Actions | Relationships | interface IPlantingPlan | wp_type threed_planting_plan
 - BuildingPlan | Actions | Relationships | interface IBuildingPlan | wp_type threed_building_plan
 
---- Helpers
+--- Helpers (Actions, Utilities)
 
-- Tool | as JS Object | extends ThreeD? | interface ITool
-- PlaneTool | extends Tool | interface IPlane
-- Camera | extends Tool | extends THREE.Camera | interface ICamera
-- Renderer | extends Tool | extends THREE.Renderer | interface IRenderer
-- Light | extends Tool | extends THREE.Light.DirectionalLight | interface ILight
-- Raster | extends Tool | extends THREE.Raster.Rasterizer | interface IRaster
-- Shader | extends Tool | extends THREE.Shader.Shaderizer | interface IShader
-- Animation | extends Tool | extends OBJ.animation | interface IAnimation
+- Tool | extends ThreeD? | interface ITool | type TTool
+- PlaneTool | extends Tool | interface IPlane | type TPlane
+- Camera | extends Tool | extends THREE.Camera | interface ICamera | type TCamera
+- Light | extends Tool | extends THREE.Light.DirectionalLight | interface ILight | type Light
+- Raster | extends Tool | extends THREE.Raster.Rasterizer | interface IRaster | type TRaster
+- Shader | extends Tool | extends THREE.Shader.Shaderizer | interface IShader | type TShader
+- Animation | extends Tool | extends OBJ.animation | interface IAnimation | type TAnimation
+
+--- Testing (Physics)
+
+- Collider | extends Physics? | interface ICollider | type TCollider
+- Energy | extends Physics? | interface IEnergy | type TEnergy
 
 ====
 
