@@ -1,0 +1,2 @@
+Failed to fetch RSC payload for http://localhost:7777/participate. Falling back to browser navigation. TypeError: NetworkError when attempting to fetch resource.
+

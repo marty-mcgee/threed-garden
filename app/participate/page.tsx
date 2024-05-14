@@ -13,6 +13,9 @@ import { useSession } from 'next-auth/react'
 // import type { NextPage } from 'next'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 
+// ** REACT Imports
+import { Suspense } from 'react'
+
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
@@ -34,7 +37,7 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
 // const ParticipatePage: TNextPageWithProps = async ({ children }: React.PropsWithChildren): Promise<JSX.Element> => {
   // **
   // const session = await auth()
-  const { data: session, status } = useSession()
+  // const { data: session, status } = useSession()
   // filter out sensitive data before passing to client.
   // if (session) {
     // console.debug('%c Participate page: session', ccm.greenAlert, session)
@@ -49,22 +52,31 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
   // else {
   //   console.debug('%c Participate page: NO session', ccm.redAlert)
   // }
-  // let session = {
-  //   user: {
-  //     name: 'Marty',
-  //     email: 'mcgee.marty@gmail.com',
-  //     image: './ThreeD-Garden-Logo-Circle-Carrot.png'
-  //   }
-  // }
+  let session = {
+    user: {
+      name: 'Marty',
+      email: 'mcgee.marty@gmail.com',
+      image: './ThreeD-Garden-Logo-Circle-Carrot.png'
+    },
+    expires: () => () => { new Date().getDate() }, // 'datetime as string',
+  }
 
   return (
     <Grid
       container
       spacing={1}
     >
-      {/* [MM] HEY HEY HEY */}
-      <ThreeDGarden />
-      {/* [MM] HEY HEY HEY */}
+      {/* [MM] HEY HEY HEY -- ThreeDGarden Component */}
+      <Suspense fallback={null}>
+
+        <ThreeDGarden />
+        
+        {/*
+          <Logo route='/blob' scale={0.6} position={[0, 0, 0]} />
+          <Common />
+        */}
+      </Suspense>
+      {/* [MM] HEY HEY HEY -- End ThreeDGarden Component */}
 
       {/* {ability?.can('read', 'analytics') && ( */}
       <Grid

@@ -21,8 +21,8 @@ desktop.ini
 .npmrc
 
 # assets
-lib/wp-threed
-lib/wp-threed/assets
+# src/lib/wp-threed
+# src/lib/wp-threed/assets
 public/assets
 public/assets/**
 public/demo
