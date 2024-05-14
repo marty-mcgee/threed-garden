@@ -205,14 +205,12 @@ const ExperienceViewer = forwardRef(({ enableOrbit, children, ...props }, ref) =
       <ThreedIO>
         <ThreeDViewer track={localRef}>
 
-          <ThreeDExperience />
+          {/* <ThreeDExperience /> */}
 
-          {children}
-
+          {/* {children} */}
 
           {/* THREED ENVIRONMENT */}
-          {/* <Stage environment='forest' intensity={0.7}></Stage> */}
-          <ThreeDEnvironment />
+          {/* <ThreeDEnvironment /> */}
 
           <axesHelper args={[1024]} />
           <gridHelper args={[1024, 16]} />
