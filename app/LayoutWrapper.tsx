@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import dynamic from 'next/dynamic'
-// const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false })
+// const Scene = dynamic(() => import('#/components/canvas/Scene'), { ssr: false })
 
 const LayoutWrapper = ({ children }: { children: any}) => {
   const id: string = 'HEYHEYHEY'

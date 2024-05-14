@@ -3,7 +3,7 @@
 // RESOURCES
 
 // import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
-import { threedIO } from '@/lib/threed/threedio/threedIO' // ThreeDExperience ExperienceViewer Experience
+import { threedIO } from '#/lib/threed/threedio/threedIO' // ThreeDExperience ExperienceViewer Experience
 
 
 
