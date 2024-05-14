@@ -2,13 +2,6 @@
 // ==========================================================
 // RESOURCES
 
-// import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
-import { threedIO } from '#/lib/threed/threedio/threedIO' // ThreeDExperience ExperienceViewer Experience
-
-
-
-
-
 // ** APOLLO Imports
 import { useReactiveVar } from '@apollo/client'
 import {
@@ -34,6 +27,7 @@ import { useControls } from 'leva'
 
 // THREE JS * ALL
 import * as THREE from 'three'
+
 // R3F
 import {
   Canvas,
@@ -56,8 +50,8 @@ import {
   useGLTF, useFBX,
 } from '@react-three/drei'
 
-// do stuff with IMPORTS
-extend({ OrbitControls })
+// do stuff with IMPORTS ??
+// extend({ OrbitControls })
 
 // ** ThreeD Experience Imports
 // import { Physics } from '@react-three/rapier'
@@ -71,6 +65,8 @@ import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 // import CharacterModel from './CharacterModel'
 // import Experience from '#/lib/ecctrl/example/Experience'
 // import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
+import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
+import { threedIO } from '#/lib/threed/threedio/threedIO'
 
 // ** ThreeD Noun Imports
 // import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene'
@@ -266,27 +262,39 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // ** HOOKS
   const prefs = useReactiveVar(preferencesDataVar)
 
+  // ** REF-erences using REACT
+  const ref = useRef()
+
   // **
   return (
     <>
 
       <EcctrlJoystickControls />
 
+      {/* HEY HEY HEY */}
       <Canvas
+        // {...props}
+        
         // id={_id}
-        camera={{ position: [-16, 16, 16], fov: 80 }}
-        dpr={[1, 2]}
-        shadows
         style={{
           height: '50vh',
           width: '100%',
         }}
+        
+        camera={{ position: [-16, 16, 16], fov: 80 }}
+        dpr={[1, 2]}
+        shadows
+
+        // @ts-expect-error
+        onCreated={(state) => (state.gl.toneMapping = THREE.AgXToneMapping)}
+
         // ** SCENE
         // scene={sceneState.stuff}
         // scene={{
         //   // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
         //   background: new THREE.Color(0x131313),
         // }}
+        
         // ** JOYSTICK
         // onPointerDown={(e) => {
         //   if (e.pointerType === 'mouse') {
@@ -297,12 +305,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   
         {/* @ts-ignore */}
         <threedIO.Out />
-
         <Preload all />
-      
-      
-      
-      
 
         {/* SUSPENSEFUL... */}
         {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
@@ -321,110 +324,20 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
             />
           </Html>
         }>
-
-          {/* THREED ENVIRONMENT */}
-          {/* <Stage environment='forest' intensity={0.7}></Stage> */}
-          <ThreeDEnvironment />
-
-          <axesHelper args={[1024]} />
-          <gridHelper args={[1024, 16]} />
-
-          {/* THREED EXPERIENCE */}
-          {/* <ThreeDExperience /> */}
+          
+          {/* THREED EXPERIENCE : VIEWER */}
           {/* <Experience /> */}
+          {/* <ThreeDExperience /> */}
+          {/* ExperienceViewer = forwardRef(({ children, enableOrbit, ...props }, ref) => {} */}
+          <ThreeDExperienceViewer ref={ref} enableOrbit={true}>
 
-          {/* THREED SCENE FILES TO CANVAS */}
-          {/* <ThreeDScene /> */}
-
-          {/* THREED MODELS: WORKING !!! */}
-          {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
-          {/* {threeds.length && ( */}
+            {/* THREED MODELS: WORKING !!! */}
+            {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
             <ThreeDModels
               threeds={threeds}
             />
-          {/* )} */}
-          {/* <ThreeDControls /> */}
 
-          {/* makeDefault makes the controls known to r3f,
-              now transform-controls can auto-disable them when active */}
-          <OrbitControls
-            makeDefault
-            minDistance={0.5}
-            maxDistance={1024}
-            // minZoom={10}
-            // maxZoom={20}
-            // minAzimuthAngle={-Math.PI / 4}
-            // maxAzimuthAngle={Math.PI / 4}
-            minPolarAngle={-1.75}
-            maxPolarAngle={Math.PI / 1.75}
-            enableZoom={true}
-            zoomToCursor={false} // default is false
-            zoomSpeed={1.0} // default is 1.0
-            enableRotate={true}
-            autoRotate={prefs.doAutoRotate} // default is false
-            // autoRotate={preferencesDataVar().doAutoRotate} // default is false
-            autoRotateSpeed={1.0} // default is 2.0
-            rotateSpeed={1.0} // default is 1.0
-            enableDamping={true} // slows down rotation after mouse release
-            dampingFactor={0.04} // default is 0.05
-            enablePan={true}
-            screenSpacePanning={true}
-          />
-
-          {/* GIZMO HELPER */}
-          <GizmoHelper
-            alignment='top-right'
-            margin={[64, 64]}
-          >
-            <group scale={1.00}>
-              <GizmoViewcube />
-            </group>
-            <group
-              scale={1.75}
-              position={[-30, -30, -30]}
-            >
-              <GizmoViewport
-                labelColor='white'
-                axisHeadScale={0.525}
-                hideNegativeAxes
-              />
-            </group>
-          </GizmoHelper>
-
-          {/* EFFECTS */}
-          <ContactShadows
-            position={[0, -1.4, 0]}
-            opacity={0.75}
-            scale={10}
-            blur={2.5}
-            far={4}
-          />
-          <BakeShadows />
-
-          {/* Camera + Animation Action Rig */}
-          {/* <ActionRig /> */}
-
-          {/* Transform Model using TransformControls */}
-          {/*
-              <TransformModel
-                name='Zeppelin' // must match node name
-                state={state}
-                modes={actionModes}
-                position={[-20, 10, 10]}
-                rotation={[3, -1, 3]}
-                scale={0.005}
-              />
-          */}
-
-          {/* SHOE + SHOES */}
-          {/*
-            <Stage intensity={0.7}>
-              <Shoe color='tomato' position={[0, 0, 0]} />
-              <Shoe color='orange' scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
-            </Stage>
-          */}
-
-          {/* {children} */}
+          </ThreeDExperienceViewer>
         </Suspense>
       </Canvas>
     </>
