@@ -227,7 +227,7 @@ export default function Experience() {
     <>
 
       {/* LIGHTS */}
-      {/* <Lights /> */}
+      <Lights />
 
       {/* // import Birds from './Birds' */}
       {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>

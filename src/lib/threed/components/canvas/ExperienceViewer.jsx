@@ -202,15 +202,15 @@ const ExperienceViewer = forwardRef(({ enableOrbit, children, ...props }, ref) =
   return (
     <>
       <Html ref={localRef} {...props} />
-      <ThreedIO>
-        <ThreeDViewer track={localRef}>
+      {/* <ThreedIO> */}
+        {/* <ThreeDViewer track={localRef}> */}
 
-          {/* <ThreeDExperience /> */}
 
           {/* {children} */}
 
           {/* THREED ENVIRONMENT */}
-          {/* <ThreeDEnvironment /> */}
+          <ThreeDEnvironment />
+          <ThreeDExperience />
 
           <axesHelper args={[1024]} />
           <gridHelper args={[1024, 16]} />
@@ -299,8 +299,8 @@ const ExperienceViewer = forwardRef(({ enableOrbit, children, ...props }, ref) =
             </Stage>
           */}
 
-        </ThreeDViewer>
-      </ThreedIO>
+        {/* </ThreeDViewer> */}
+      {/* </ThreedIO> */}
     </>
   )
 })
