@@ -179,16 +179,16 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
       >
   
         {/* @ts-ignore */}
-        {/* <threedIO.Out /> */}
+        <threedIO.Out />
 
-        {/* <Preload all /> */}
+        <Preload all />
 
         {/* SUSPENSEFUL... */}
         {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
         {/* <Suspense fallback={null}> */}
         {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
         {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
-        {/* <Suspense fallback={
+        <Suspense fallback={
           <Html center>
             <Loader
               // containerStyles={...container} // Flex layout styles
@@ -199,13 +199,13 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
               initialState={(active = true) => active} // Initial black out state
             />
           </Html>
-        }> */}
+        }>
           
           {/* THREED EXPERIENCE : VIEWER */}
           {/* <Experience /> */}
           {/* <ThreeDExperience /> */}
           {/* ExperienceViewer = forwardRef(({ children, enableOrbit, ...props }, ref) => {} */}
-          <ThreeDExperienceViewer ref={ref} enableOrbit={true} />
+          <ThreeDExperienceViewer ref={ref} enableOrbit={true}>
 
             {/* THREED MODELS: WORKING !!! */}
             {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
@@ -213,8 +213,8 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
               threeds={threeds}
             />
 
-          {/* </ThreeDExperienceViewer> */}
-        {/* </Suspense> */}
+          </ThreeDExperienceViewer>
+        </Suspense>
       </Canvas>
     </>
   )
