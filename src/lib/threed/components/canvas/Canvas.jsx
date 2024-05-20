@@ -49,9 +49,12 @@ import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 // import Map from './Map'
 // import CharacterModel from './CharacterModel'
 // import Experience from '#/lib/ecctrl/example/Experience'
-// import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
+import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
 import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
 import { threedIO } from '#/lib/threed/threedio/threedIO'
+
+// ** LAYOUT Components (Head, Main, Foot)
+import LayoutWrapper from '#/lib/threed/components/canvas/LayoutWrapper'
 
 // ** ThreeD Noun Imports
 // import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene'
@@ -143,6 +146,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
   return (
     <>
+      {/* <ThreeDCanvasViewer /> */}
 
       <EcctrlJoystickControls />
 
@@ -177,35 +181,38 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
         //   }
         // }}
       >
+
+      {/* SUSPENSEFUL... */}
+      {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
+      {/* <Suspense fallback={null}> */}
+      {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
+      {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
+      <Suspense fallback={
+        <Html center>
+          <Loader
+            // containerStyles={...container} // Flex layout styles
+            // innerStyles={...inner} // Inner container styles
+            // barStyles={...bar} // Loading-bar styles
+            // dataStyles={...data} // Text styles
+            dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
+            initialState={(active = true) => active} // Initial black out state
+          />
+        </Html>
+      }>
+
+        
+      {/* <LayoutWrapper> */}
   
         {/* @ts-ignore */}
         <threedIO.Out />
 
         <Preload all />
-
-        {/* SUSPENSEFUL... */}
-        {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
-        {/* <Suspense fallback={null}> */}
-        {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
-        {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
-        <Suspense fallback={
-          <Html center>
-            <Loader
-              // containerStyles={...container} // Flex layout styles
-              // innerStyles={...inner} // Inner container styles
-              // barStyles={...bar} // Loading-bar styles
-              // dataStyles={...data} // Text styles
-              dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
-              initialState={(active = true) => active} // Initial black out state
-            />
-          </Html>
-        }>
           
           {/* THREED EXPERIENCE : VIEWER */}
           {/* <Experience /> */}
-          {/* <ThreeDExperience /> */}
+          <ThreeDExperience />
           {/* ExperienceViewer = forwardRef(({ children, enableOrbit, ...props }, ref) => {} */}
-          <ThreeDExperienceViewer ref={ref} enableOrbit={true}>
+          {/* <ThreeDExperienceViewer ref={ref} enableOrbit={true}> */}
 
             {/* THREED MODELS: WORKING !!! */}
             {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
@@ -213,7 +220,9 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
               threeds={threeds}
             />
 
-          </ThreeDExperienceViewer>
+          {/* </ThreeDExperienceViewer> */}
+
+        {/* </LayoutWrapper> */}
         </Suspense>
       </Canvas>
     </>

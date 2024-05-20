@@ -66,9 +66,7 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
       spacing={1}
     >
       {/* [MM] HEY HEY HEY -- ThreeDGarden Component */}
-      <Suspense fallback={null}>
-        <ThreeDGarden />
-      </Suspense>
+      <ThreeDGarden />
       {/* [MM] HEY HEY HEY -- End ThreeDGarden Component */}
 
       {/* {ability?.can('read', 'analytics') && ( */}
