@@ -48,7 +48,7 @@ import {
   // useGLTF, useFBX,
   // **
   PerspectiveCamera, 
-  View as ThreeDViewer, 
+  View as ThreeDViewImpl, 
 } from '@react-three/drei'
 
 // THREED:IO Imports
@@ -201,12 +201,14 @@ const ExperienceViewer = forwardRef(({ enableOrbit, children, ...props }, ref) =
 
   return (
     <>
-      <Html ref={localRef} {...props} />
-      {/* <ThreedIO> */}
-        {/* <ThreeDViewer track={localRef}> */}
+      {/* <Html ref={localRef} {...props} /> */}
+      <ThreedIO>
+        <ThreeDViewImpl track={localRef}>
 
+          {children}
 
-          {/* {children} */}
+        </ThreeDViewImpl>
+      </ThreedIO>
 
           {/* THREED ENVIRONMENT */}
           <ThreeDEnvironment />
@@ -298,9 +300,6 @@ const ExperienceViewer = forwardRef(({ enableOrbit, children, ...props }, ref) =
               <Shoe color='orange' scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
             </Stage>
           */}
-
-        {/* </ThreeDViewer> */}
-      {/* </ThreedIO> */}
     </>
   )
 })
