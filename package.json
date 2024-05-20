@@ -80,6 +80,7 @@
     "clsx": "^2.1.0",
     
     "farmbot": "^15.8.8",
+    "lodash": "^4.17.21",
     
     "graphql": "^16.8.1",
     "graphql-tag": "^2.12.6",
@@ -152,6 +153,7 @@
     "@types/dat.gui": "^0.7.7",
     "@types/dropzone": "^5.7.4",
     "@types/jquery": "^3.5.14",
+    "@types/lodash": "^4.17.4",
     "@types/ms": "0.7.31",
     "@types/node": "^18.11.17",
     "@types/noisejs": "^0.0.31",
