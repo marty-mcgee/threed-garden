@@ -8,6 +8,7 @@ export default function Viewer() {
   return (
     <Canvas shadows dpr={[1, 2]} camera={{ fov: 50 }}>
       <Suspense fallback={null}>
+        {/* @ts-expect-error */}
         <Stage controls={ref} preset="rembrandt" intensity={1}  environment="city">
         false
           <Model />
