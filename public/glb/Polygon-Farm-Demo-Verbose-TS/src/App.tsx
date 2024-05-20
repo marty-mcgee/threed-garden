@@ -10,9 +10,7 @@ export default function Viewer() {
       <Suspense fallback={null}>
         {/* @ts-expect-error */}
         <Stage controls={ref} preset="rembrandt" intensity={1}  environment="city">
-        false
           <Model />
-        false
         </Stage>
       </Suspense>
       <OrbitControls ref={ref} />
