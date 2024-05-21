@@ -5,11 +5,12 @@
 // ** RESOURCES
 
 // ** NEXT Imports
-// import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic'
 // import Image from 'next/image'
 
 // ** NEXT AUTH Imports
-import { useSession } from "next-auth/react" // hint: const { data, data: session, status } = useSession()
+// hint: const { data, data: session, status } = useSession()
+import { useSession } from "next-auth/react" 
 
 // ** REACT Imports
 import {
@@ -74,7 +75,8 @@ import Grid from '@mui/material/Grid'
 // import { Html, Loader, useProgress } from '@react-three/drei'
 
 // ** ThreeD r3f Canvas Imports
-import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
+// import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
+const ThreeDCanvasViewer = dynamic(() => import('#/lib/threed/components/canvas/CanvasViewer'), { ssr: false })
 // import { Canvas } from '@react-three/fiber'
 // import { ThreeDCanvasViewer } from '#/lib/threed/components/canvas/Canvas'
 // import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
