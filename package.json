@@ -97,7 +97,10 @@
 
     "three": "^0.163.0",
     "three-mesh-ui": "^6.5.4",
-    "three-stdlib": "^2.29.11"
+    "three-stdlib": "^2.29.11",
+
+    "@ducanh2912/next-pwa": "^10.0.0",
+    "tunnel-rat": "^0.1.2"
 
   },
   
@@ -139,6 +142,9 @@
     "use-count-up": "^3.0.1"
   },
   "devDependencies": {
+    
+    "@next/bundle-analyzer": "^14.2.3",
+
     "typescript": "^5.3.3",
     "@emotion/types": "^0.7.0",
     "@types/chroma-js": "^2.1.4",
