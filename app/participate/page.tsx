@@ -8,13 +8,13 @@
 import { useSession } from 'next-auth/react'
 
 // ** NEXT Imports
-// import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic'
 // import Image from 'next/image'
 // import type { NextPage } from 'next'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 
 // ** REACT Imports
-import { Suspense } from 'react'
+// import { Suspense } from 'react'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
@@ -122,8 +122,8 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
   )
 }
 
-// const ParticipatePage_UseClient = dynamic(() => Promise.resolve(ParticipatePage), {
-//   ssr: false
-// })
-// export default ParticipatePage_UseClient
-export default ParticipatePage
+const ParticipatePage_UseClient = dynamic(() => Promise.resolve(ParticipatePage), {
+  ssr: false
+})
+export default ParticipatePage_UseClient
+// export default ParticipatePage
