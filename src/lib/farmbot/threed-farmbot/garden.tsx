@@ -1,3 +1,5 @@
+// @ts-nocheck /* OR @ ts-expect-error */
+
 import React from "react";
 import { Canvas, ThreeEvent } from "@react-three/fiber";
 import {

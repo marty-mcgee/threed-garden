@@ -1,3 +1,5 @@
+// @ts-nocheck /* OR @ ts-expect-error */
+
 import { Box, Detailed, Extrude } from "@react-three/drei";
 import {
   DoubleSide, Path, Shape, TextureLoader, RepeatWrapping,

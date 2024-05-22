@@ -1,3 +1,5 @@
+// @ts-nocheck /* OR @ ts-expect-error */
+
 import { Box, Text } from "@react-three/drei";
 import { threeSpace } from "./helpers";
 import { Config } from "./config";

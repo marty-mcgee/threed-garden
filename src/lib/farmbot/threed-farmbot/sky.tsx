@@ -1,3 +1,5 @@
+// @ ts-nocheck /* OR @ ts-expect-error */
+
 // Forked from https://github.com/pmndrs/drei/blob/master/src/core/Sky.tsx
 
 import * as React from 'react'

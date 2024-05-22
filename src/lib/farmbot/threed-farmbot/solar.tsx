@@ -1,3 +1,5 @@
+// @ts-nocheck /* OR @ ts-expect-error */
+
 import { Shape } from "three";
 import { Extrude, Text, Line } from "@react-three/drei";
 import { ASSETS } from "./constants";

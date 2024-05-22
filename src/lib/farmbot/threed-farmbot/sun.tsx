@@ -1,3 +1,5 @@
+// @ ts-nocheck /* OR @ ts-expect-error */
+
 import { Config, seasonProperties } from "./config";
 import { Vector3 } from "three";
 import { useSpring, animated } from "@react-spring/three";

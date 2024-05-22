@@ -1,3 +1,5 @@
+// @ ts-nocheck /* OR @ ts-expect-error */
+
 import { findIndex } from "lodash";
 import { Config } from "./config";
 import { threeSpace, zDir, zZero } from "./helpers";

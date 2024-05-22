@@ -147,10 +147,13 @@ const nextConfig = {
 
   // ** WEBPACK
   webpack(config, { isServer }) {
+    
+    // sharp support
     if (!isServer) {
       // We're in the browser build, so we can safely exclude the sharp module
       config.externals.push('sharp')
     }
+
     // audio support
     config.module.rules.push({
       test: /\.(ogg|mp3|wav|mpe?g)$/i,
@@ -178,47 +181,30 @@ const nextConfig = {
     })
     
     // ttf support
-    // config.module.rules.push({
-    //   test: /\.(ttf|ttf|ttf|ttf|ttf)$/,
-    //   exclude: /node_modules/,
-    //   use: [
-    //     {
-    //       loader: 'ttf-loader',
-    //       options: {
-    //         name: 'public/3D/fonts/[hash].[ext]',
-    //         // outputPath: 'public/3D/fonts/'
-    //       },
-    //     },
-    //   ],
-    // })
     config.module.rules.push({
       test: /\.ttf/,
       // include: [/public/],
       exclude: /node_modules/,
       type: 'asset/resource',
       generator: {
-        filename: 'public/3D/fonts/[hash][ext][query]'
+        // filename: 'public/3D/fonts/[hash][ext][query]'
+        filename: 'public/3D/fonts/[name][ext]'
       },
     })
 
+    // glb + gltf support
     config.module.rules.push({
       test: /\.(glb|gltf)$/,
       // include: [/public/],
       exclude: /node_modules/,
-      // use: [
-      //   {
-      //     loader: 'file-loader',
-      //     options: {
-      //       outputPath: 'public/3D/models/',
-      //     }
-      //   },
-      // ],
       type: 'asset/resource',
       generator: {
+        // filename: 'public/3D/models/[hash][ext][query]'
         filename: 'public/3D/models/[name][ext]'
       },
     })
     
+    // graphql + gql support
     config.module.rules.push({
       test: /\.(graphql|gql)$/,
       include: [/api/],

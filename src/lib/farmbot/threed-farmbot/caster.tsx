@@ -1,3 +1,5 @@
+// @ ts-nocheck /* OR @ ts-expect-error */
+
 import { Extrude, Cylinder } from "@react-three/drei";
 import { Shape } from "three";
 import { Config } from "./config";

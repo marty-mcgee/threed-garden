@@ -71,6 +71,7 @@
     "**/*.css",
     "tailwind.config.js",
     "**/.yalc/**/*",
-    ".yalc/**/*"
+    ".yalc/**/*",
+    // "src/lib/farmbot/threed-farmbot/*"
   ]
 }

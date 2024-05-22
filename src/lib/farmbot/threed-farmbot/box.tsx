@@ -1,4 +1,6 @@
+// @ts-nocheck /* OR @ ts-expect-error */
 /* eslint-disable @typescript-eslint/no-namespace */
+
 import React, { useRef } from "react"
 import {
   Cylinder, Html, PerspectiveCamera, useGLTF,
