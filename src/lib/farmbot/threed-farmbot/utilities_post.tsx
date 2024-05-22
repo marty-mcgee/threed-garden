@@ -1,3 +1,5 @@
+// @ts-nocheck /* OR @ ts-expect-error */
+
 import { Box, Cylinder, RoundedBox, Tube } from "@react-three/drei";
 import { TextureLoader, RepeatWrapping } from "three";
 import { ASSETS } from "./constants";

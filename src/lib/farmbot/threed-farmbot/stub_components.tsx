@@ -1,3 +1,5 @@
+// @ ts-nocheck /* OR @ ts-expect-error */
+
 import { ResourceIndex } from "./stub";
 
 export const BindingTargetDropdown = (props: {

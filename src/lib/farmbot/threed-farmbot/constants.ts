@@ -1,5 +1,6 @@
+// @ts-nocheck /* OR @ ts-expect-error */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
+
 import { sampleSize } from "lodash"
 import cabin from "/public/3D/fonts/Cabin.ttf"
 import cabinBold from "/public/3D/fonts/Cabin_Bold.ttf"

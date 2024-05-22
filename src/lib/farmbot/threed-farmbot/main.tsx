@@ -1,3 +1,5 @@
+// @ts-nocheck /* OR @ ts-expect-error */
+
 import React from "react"
 import ReactDOM from "react-dom/client"
 // import { ElectronicsBoxModel } from "./box"

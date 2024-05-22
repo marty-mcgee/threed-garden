@@ -1,3 +1,5 @@
+// @ ts-nocheck /* OR @ ts-expect-error */
+
 import { Sphere, Html } from "@react-three/drei";
 import React from "react";
 import { Config } from "./config";

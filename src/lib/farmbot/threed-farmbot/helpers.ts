@@ -1,3 +1,5 @@
+// @ ts-nocheck /* OR @ ts-expect-error */
+
 import { Config } from "./config";
 import * as THREE from 'three';
 

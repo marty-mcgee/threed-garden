@@ -110,7 +110,7 @@ import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
 // ** FARMBOT Imports
 // import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
 // const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/FarmBot'), { ssr: false })
-const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/threed-farmbot/main'), { ssr: false })
+// const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/threed-farmbot/main'), { ssr: false })
 
 // ** HELPER Components
 import Spinner from '#/ui/components/spinner'
@@ -181,10 +181,13 @@ interface IPlayer {
 // VARIABLES
 // ==========================================================
 
-// PARAMETERS FROM SERVER (PHP)
-console.debug("HEY HEY HEY window", window)
-// console.debug(window.postdata)
-// const postdata = window?.postdata ? window.postdata : {}
+// IF CLIENT BROWSER HAS A WINDOW OBJECT... (NOT SERVER SSR)
+// if (typeof window != undefined) {
+//   console.debug("[MM] HEY HEY HEY window", window)
+//   // TESTING PARAMETERS FROM SERVER (PHP)
+//   // const postdata = window?.postdata ? window.postdata : {}
+//   // console.debug(postdata)
+// }
 
 const postdata: IPostData = {
   plugin_name:    'ThreeD Garden',

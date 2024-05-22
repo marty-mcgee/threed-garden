@@ -1,66 +1,68 @@
+// @ts-nocheck /* OR @ ts-expect-error */
+
 export interface Config {
-  sizePreset: string;
-  bedType: string;
-  otherPreset: string;
-  label: string;
-  botSizeX: number;
-  botSizeY: number;
-  botSizeZ: number;
-  bedWallThickness: number;
-  bedHeight: number;
-  ccSupportSize: number;
-  x: number;
-  y: number;
-  z: number;
-  beamLength: number;
-  columnLength: number;
-  zAxisLength: number;
-  bedXOffset: number;
-  bedYOffset: number;
-  bedZOffset: number;
-  zGantryOffset: number;
-  bedWidthOuter: number;
-  bedLengthOuter: number;
-  legSize: number;
-  legsFlush: boolean;
-  extraLegsX: number;
-  extraLegsY: number;
-  bedBrightness: number;
-  soilBrightness: number;
-  soilHeight: number;
-  plants: string;
-  labels: boolean;
-  labelsOnHover: boolean;
-  ground: boolean;
-  grid: boolean;
-  axes: boolean;
-  trail: boolean;
-  tracks: boolean;
-  clouds: boolean;
-  sunInclination: number;
-  sunAzimuth: number;
-  perspective: boolean;
-  bot: boolean;
-  laser: boolean;
-  tool: string;
-  cableCarriers: boolean;
-  viewCube: boolean;
-  stats: boolean;
-  config: boolean;
-  zoom: boolean;
-  pan: boolean;
-  bounds: boolean;
-  threeAxes: boolean;
-  xyDimensions: boolean;
-  zDimension: boolean;
-  promoInfo: boolean;
-  solar: boolean;
-  utilitiesPost: boolean;
-  packaging: boolean;
-  lab: boolean;
-  people: boolean;
-  scene: string;
-  lowDetail: boolean;
+  sizePreset: string
+  bedType: string
+  otherPreset: string
+  label: string
+  botSizeX: number
+  botSizeY: number
+  botSizeZ: number
+  bedWallThickness: number
+  bedHeight: number
+  ccSupportSize: number
+  x: number
+  y: number
+  z: number
+  beamLength: number
+  columnLength: number
+  zAxisLength: number
+  bedXOffset: number
+  bedYOffset: number
+  bedZOffset: number
+  zGantryOffset: number
+  bedWidthOuter: number
+  bedLengthOuter: number
+  legSize: number
+  legsFlush: boolean
+  extraLegsX: number
+  extraLegsY: number
+  bedBrightness: number
+  soilBrightness: number
+  soilHeight: number
+  plants: string
+  labels: boolean
+  labelsOnHover: boolean
+  ground: boolean
+  grid: boolean
+  axes: boolean
+  trail: boolean
+  tracks: boolean
+  clouds: boolean
+  sunInclination: number
+  sunAzimuth: number
+  perspective: boolean
+  bot: boolean
+  laser: boolean
+  tool: string
+  cableCarriers: boolean
+  viewCube: boolean
+  stats: boolean
+  config: boolean
+  zoom: boolean
+  pan: boolean
+  bounds: boolean
+  threeAxes: boolean
+  xyDimensions: boolean
+  zDimension: boolean
+  promoInfo: boolean
+  solar: boolean
+  utilitiesPost: boolean
+  packaging: boolean
+  lab: boolean
+  people: boolean
+  scene: string
+  lowDetail: boolean
 }
 
 export const INITIAL: Config = {
@@ -126,11 +128,11 @@ export const INITIAL: Config = {
   people: false,
   scene: "Outdoor",
   lowDetail: false,
-};
+}
 
 export const STRING_KEYS = [
   "sizePreset", "bedType", "otherPreset", "label", "plants", "tool", "scene",
-];
+]
 
 export const NUMBER_KEYS = [
   "botSizeX", "botSizeY", "botSizeZ", "bedWallThickness", "bedHeight",
@@ -138,7 +140,7 @@ export const NUMBER_KEYS = [
   "bedXOffset", "bedYOffset", "bedZOffset", "zGantryOffset", "bedWidthOuter",
   "bedLengthOuter", "legSize", "extraLegsX", "extraLegsY", "bedBrightness",
   "soilBrightness", "soilHeight", "sunInclination", "sunAzimuth",
-];
+]
 
 export const BOOLEAN_KEYS = [
   "legsFlush", "labels", "labelsOnHover", "ground", "grid", "axes", "trail",
@@ -146,7 +148,7 @@ export const BOOLEAN_KEYS = [
   "viewCube", "stats", "config", "zoom", "pan", "bounds", "threeAxes",
   "xyDimensions", "zDimension", "promoInfo", "solar", "utilitiesPost",
   "packaging", "lab", "people", "lowDetail",
-];
+]
 
 export const PRESETS: Record<string, Config> = {
   "Jr": {
@@ -303,14 +305,14 @@ export const PRESETS: Record<string, Config> = {
     scene: "outdoor",
     lowDetail: false,
   },
-};
+}
 
 const SIZE_CONFIG_KEYS: (keyof Config)[] = [
   "sizePreset", "label", "bedType",
   "botSizeX", "botSizeY", "botSizeZ", "beamLength", "columnLength", "zAxisLength",
   "bedXOffset", "bedYOffset", "zGantryOffset", "bedWidthOuter", "bedLengthOuter",
   "extraLegsX", "extraLegsY", "soilHeight", "tracks",
-];
+]
 
 const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "bedWallThickness", "bedHeight", "x", "y", "z",
@@ -320,95 +322,95 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "tool", "cableCarriers", "viewCube", "stats", "config", "zoom", "bounds",
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo", "pan",
   "solar", "utilitiesPost", "packaging", "lab", "people", "scene", "lowDetail",
-];
+]
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {
-  const newConfig: Config = { ...config, ...update };
+  const newConfig: Config = { ...config, ...update }
   if (update.sizePreset) {
-    const presetConfig = PRESETS[update.sizePreset];
-    SIZE_CONFIG_KEYS.map(key => newConfig[key] = presetConfig[key] as never);
+    const presetConfig = PRESETS[update.sizePreset]
+    SIZE_CONFIG_KEYS.map(key => newConfig[key] = presetConfig[key] as never)
     if (update.sizePreset == "Jr") {
-      newConfig.x = 100;
-      newConfig.y = 100;
-      newConfig.z = 50;
+      newConfig.x = 100
+      newConfig.y = 100
+      newConfig.z = 50
     }
   }
   if (update.scene) {
-    newConfig.lab = update.scene == "Lab";
-    newConfig.solar = update.scene != "Lab";
-    newConfig.clouds = update.scene != "Lab";
-    newConfig.people = update.scene == "Lab";
+    newConfig.lab = update.scene == "Lab"
+    newConfig.solar = update.scene != "Lab"
+    newConfig.clouds = update.scene != "Lab"
+    newConfig.people = update.scene == "Lab"
     newConfig.bedType =
       (update.scene == "Lab" && newConfig.sizePreset != "Genesis XL")
         ? "Mobile"
-        : "Standard";
+        : "Standard"
   }
   if (update.bedType || (newConfig.bedType != config.bedType)) {
-    newConfig.bedZOffset = newConfig.bedType == "Mobile" ? 500 : 0;
-    newConfig.legsFlush = newConfig.bedType == "Mobile" ? false : true;
+    newConfig.bedZOffset = newConfig.bedType == "Mobile" ? 500 : 0
+    newConfig.legsFlush = newConfig.bedType == "Mobile" ? false : true
   }
   if (update.otherPreset) {
     if (update.otherPreset == "Reset all") {
       Object.keys(config).map(key => {
-        const configKey = key as keyof Config;
-        newConfig[configKey] = INITIAL[configKey] as never;
+        const configKey = key as keyof Config
+        newConfig[configKey] = INITIAL[configKey] as never
       })
     } else {
-      const presetConfig = PRESETS[update.otherPreset];
-      OTHER_CONFIG_KEYS.map(key => newConfig[key] = presetConfig[key] as never);
+      const presetConfig = PRESETS[update.otherPreset]
+      OTHER_CONFIG_KEYS.map(key => newConfig[key] = presetConfig[key] as never)
     }
   }
-  return newConfig;
-};
+  return newConfig
+}
 
 export const KIT_LOOKUP: { [x: string]: string } = {
   "genesis": "Genesis",
   "genesis_xl": "Genesis XL",
   "jr": "Jr",
-};
+}
 
 export const modifyConfigsFromUrlParams = (config: Config) => {
-  let newConfig: Config = { ...config };
-  const urlParams = new URLSearchParams(window.location.search);
-  const kit = urlParams.get("kit")?.toLowerCase();
+  let newConfig: Config = { ...config }
+  const urlParams = new URLSearchParams(window.location.search)
+  const kit = urlParams.get("kit")?.toLowerCase()
   if (kit) {
-    const sizePreset = KIT_LOOKUP[kit];
+    const sizePreset = KIT_LOOKUP[kit]
     if (sizePreset && sizePreset != config.sizePreset) {
-      newConfig = modifyConfig(newConfig, { sizePreset });
+      newConfig = modifyConfig(newConfig, { sizePreset })
     }
   }
   STRING_KEYS.map(key => {
-    const value = urlParams.get(key);
+    const value = urlParams.get(key)
     if (value) {
-      newConfig = modifyConfig(newConfig, { [key]: value });
+      newConfig = modifyConfig(newConfig, { [key]: value })
     }
-  });
+  })
   NUMBER_KEYS.map(key => {
-    const value = urlParams.get(key);
+    const value = urlParams.get(key)
     if (value) {
-      newConfig = modifyConfig(newConfig, { [key]: parseInt(value) });
+      newConfig = modifyConfig(newConfig, { [key]: parseInt(value) })
     }
-  });
+  })
   BOOLEAN_KEYS.map(key => {
-    const value = urlParams.get(key);
+    const value = urlParams.get(key)
     if (value) {
-      newConfig = modifyConfig(newConfig, { [key]: value == "true" });
+      newConfig = modifyConfig(newConfig, { [key]: value == "true" })
     }
-  });
-  return newConfig;
-};
+  })
+  return newConfig
+}
 
 type SeasonProperties = {
-  sunIntensity: number;
-  sunColor: string;
-  cloudOpacity: number;
-};
+  sunIntensity: number
+  sunColor: string
+  cloudOpacity: number
+}
 export const seasonProperties: Record<string, SeasonProperties> = {
   Winter: { sunIntensity: 4 / 4, sunColor: '#A0C4FF', cloudOpacity: 0.85 },
   Spring: { sunIntensity: 7 / 4, sunColor: '#BDE0FE', cloudOpacity: 0.2 },
   Summer: { sunIntensity: 9 / 4, sunColor: '#FFFFFF', cloudOpacity: 0 },
   Fall: { sunIntensity: 5.5 / 4, sunColor: '#FFD6BC', cloudOpacity: 0.3 },
-};
+}
 
 export const detailLevels = (config: Config) =>
-  config.lowDetail ? [0, 0] : [0, 15000];
+  config.lowDetail ? [0, 0] : [0, 15000]

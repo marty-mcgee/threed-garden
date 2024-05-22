@@ -1,3 +1,5 @@
+// @ts-nocheck /* OR @ ts-expect-error */
+
 export interface ResourceIndex {
 
 }

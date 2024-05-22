@@ -1,3 +1,5 @@
+// @ts-nocheck /* OR @ ts-expect-error */
+
 import * as THREE from "three";
 import { Cylinder, Extrude, Line, Trail, useGLTF } from "@react-three/drei";
 import { DoubleSide, Shape, TextureLoader, RepeatWrapping } from "three";
