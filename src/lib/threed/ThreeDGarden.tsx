@@ -5,11 +5,12 @@
 // ** RESOURCES
 
 // ** NEXT Imports
-// import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic'
 // import Image from 'next/image'
 
 // ** NEXT AUTH Imports
-import { useSession } from "next-auth/react" // hint: const { data, data: session, status } = useSession()
+// hint: const { data, data: session, status } = useSession()
+import { useSession } from "next-auth/react" 
 
 // ** REACT Imports
 import {
@@ -61,7 +62,7 @@ import {
 // ** MUI Imports
 // import { styled } from '@mui/material/styles'
 // mui: ui
-import Typography from '@mui/material/Typography'
+// import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 // import MuiButton from '@mui/material/Button'
@@ -71,10 +72,11 @@ import Grid from '@mui/material/Grid'
 // ** THREE JS Imports (not here, use R3F)
 // import * as THREE from 'three'
 // ** Three JS Loading Progress
-import { Html, Loader, useProgress } from '@react-three/drei'
+// import { Html, Loader, useProgress } from '@react-three/drei'
 
 // ** ThreeD r3f Canvas Imports
-import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
+// import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
+const ThreeDCanvasViewer = dynamic(() => import('#/lib/threed/components/canvas/CanvasViewer'), { ssr: false })
 // import { Canvas } from '@react-three/fiber'
 // import { ThreeDCanvasViewer } from '#/lib/threed/components/canvas/Canvas'
 // import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
@@ -84,7 +86,8 @@ import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
 import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
 
 // ** ThreeD using Apollo + React to View Control + Info Panels (Apollo Store/ReactiveVar/State Access)
-import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
+// import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
+const ThreeDControlPanels = dynamic(() => import('#/lib/threed/components/controls/ControlPanels'), { ssr: false })
 
 // ** ThreeD Toolbar
 import ThreeDToolbar from '#/lib/threed/components/tools/Toolbar'
@@ -93,7 +96,7 @@ import ThreeDToolbar from '#/lib/threed/components/tools/Toolbar'
 import ThreeDModals from '#/lib/threed/components/modals/Modals'
 
 // ** View Imports
-import ThreeDViews from '#/lib/threed/components/views/Views'
+import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
 
 // ** CSS Styles Imports
 // import stylesDemo from '#/ui/styles/demo/demo.module.css'
@@ -105,7 +108,9 @@ import ThreeDViews from '#/lib/threed/components/views/Views'
 // import * as $ from 'jquery'
 
 // ** FARMBOT Imports
-import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
+// import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
+// const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/FarmBot'), { ssr: false })
+// const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/threed-farmbot/main'), { ssr: false })
 
 // ** HELPER Components
 import Spinner from '#/ui/components/spinner'
@@ -141,8 +146,9 @@ interface IPostData {
   plugin_name: string
   plugin_version: string
   plugin_url: string
-  theme_uri: 'light' | 'dark'
-  rest_url: string
+  api_gql_url: string
+  api_rest_url: string
+  theme: 'dark' | 'light'
   world_id: number | string
   scene_id: number | string
 }
@@ -151,8 +157,9 @@ interface IThreeDEnv {
   pluginName: string
   pluginVersion: string
   pluginURL: string
-  themeURI: 'light' | 'dark'
-  restURL: string
+  apiGqlUrl: string
+  apiRestUrl: string
+  theme: 'light' | 'dark'
   worldID: number | string
   sceneID: number | string
 }
@@ -174,29 +181,34 @@ interface IPlayer {
 // VARIABLES
 // ==========================================================
 
-// PARAMETERS FROM SERVER (PHP)
-// console.debug("window", window)
-// console.debug(window.postdata)
-// const postdata = window?.postdata ? window.postdata : {}
+// IF CLIENT BROWSER HAS A WINDOW OBJECT... (NOT SERVER SSR)
+// if (typeof window != undefined) {
+//   console.debug("[MM] HEY HEY HEY window", window)
+//   // TESTING PARAMETERS FROM SERVER (PHP)
+//   // const postdata = window?.postdata ? window.postdata : {}
+//   // console.debug(postdata)
+// }
 
 const postdata: IPostData = {
-  plugin_name: 'ThreeD Garden',
+  plugin_name:    'ThreeD Garden',
   plugin_version: appVersion,
-  plugin_url: 'https://threed.design/',
-  theme_uri: 'dark', // dark | light
-  rest_url: 'https://threed.design/wp-json/wp/v2/',
-  world_id: 1, // default
-  scene_id: 1, // default
+  plugin_url:     'https://threed.design/',
+  api_gql_url:    'https://threed.design/graphql/',
+  api_rest_url:   'https://threed.design/wp-json/wp/v2/',
+  theme:          'dark', // dark | light
+  world_id:       0, // default
+  scene_id:       0, // default
 }
 
 const env: IThreeDEnv = {
-  pluginName: postdata.plugin_name,
-  pluginVersion: postdata.plugin_version,
-  pluginURL: postdata.plugin_url,
-  themeURI: postdata.theme_uri,
-  restURL: postdata.rest_url,
-  worldID: postdata.world_id,
-  sceneID: postdata.scene_id,
+  pluginName:     postdata.plugin_name,
+  pluginVersion:  postdata.plugin_version,
+  pluginURL:      postdata.plugin_url,
+  apiGqlUrl:      postdata.api_gql_url,
+  apiRestUrl:     postdata.api_rest_url,
+  theme:          postdata.theme,
+  worldID:        postdata.world_id,
+  sceneID:        postdata.scene_id,
 }
 
 if (debug_deep) {

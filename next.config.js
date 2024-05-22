@@ -8,27 +8,39 @@ if (!process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL) {
   `)
 }
 
-const path = require('path')
-// import path from 'path'
-// import { resolve } from 'path'
+// // import path from 'path'
+// // import { resolve } from 'path'
+// const path = require('path')
 // const __dirname = path.resolve()
 
-// does not work with Next 13, only use if Next 12 needed
-// const withTM = require('next-transpile-modules')([
-//   '@fullcalendar/common',
-//   '@fullcalendar/daygrid',
-//   '@fullcalendar/interaction',
-//   '@fullcalendar/react',
-//   '@fullcalendar/timegrid',
-//   'react-github-btn',
-//   'three',
-// ])
+// [MM] HEY HEY HEY 5/21/2024 == hide old.. 
+// ==== use new next.config.js from REACT-THREE-NEXT example app
+// module.exports = nextConfig
+
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: false, // process.env.ANALYZE === 'true',
+})
+
+/**
+ * A fork of 'next-pwa' that has app directory support
+ * @see https://github.com/shadowwalker/next-pwa/issues/424#issuecomment-1332258575
+ */
+const withPWA = require('@ducanh2912/next-pwa').default({
+  dest: 'public',
+  disable: true, // process.env.NODE_ENV === 'development',
+})
+
 
 // MODULE
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  //
-  reactStrictMode: true, // true: causes components to load TWICE in dev only, not active (moot) in production
+
+  // use the following snippet if using styled components
+  compiler: {
+    styledComponents: true,
+  },
+  
+  reactStrictMode: true, // true: causes components to load TWICE in dev only, not active (moot) in production // Recommended true for the `pages` directory, default in `app`.
 
   // trailingSlash: false, // true: add a '/' to the final url address -- can cause url-based query string issues
 
@@ -133,19 +145,86 @@ const nextConfig = {
   //   ]
   // },
 
-  // ** WEBPACK 5
-  webpack: (config, options) => {
-    //
-    // aliases
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      apexcharts: path.resolve(__dirname, './node_modules/apexcharts-clevision'),
-      // 'eth-hooks': path.resolve(__dirname, './node_modules/eth-hooks'),
-      // 'eth-components': path.resolve(__dirname, './node_modules/eth-components'),
-      // 'react-css-theme-switcher': path.resolve(__dirname, './node_modules/react-css-theme-switcher'),
-      // 'react': path.resolve(__dirname, './node_modules/react'),
-      // 'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
+  // ** WEBPACK
+  webpack(config, { isServer }) {
+    
+    // sharp support
+    if (!isServer) {
+      // We're in the browser build, so we can safely exclude the sharp module
+      config.externals.push('sharp')
     }
+
+    // audio support
+    config.module.rules.push({
+      test: /\.(ogg|mp3|wav|mpe?g)$/i,
+      exclude: config.exclude,
+      use: [
+        {
+          loader: require.resolve('url-loader'),
+          options: {
+            limit: config.inlineImageLimit,
+            fallback: require.resolve('file-loader'),
+            publicPath: `${config.assetPrefix}/_next/static/images/`,
+            outputPath: `${isServer ? '../' : ''}static/images/`,
+            name: '[name]-[hash].[ext]',
+            esModule: config.esModule || false,
+          },
+        },
+      ],
+    })
+
+    // shader support
+    config.module.rules.push({
+      test: /\.(glsl|vs|fs|vert|frag)$/,
+      exclude: /node_modules/,
+      use: ['raw-loader', 'glslify-loader'],
+    })
+    
+    // ttf support
+    config.module.rules.push({
+      test: /\.ttf/,
+      // include: [/public/],
+      exclude: /node_modules/,
+      type: 'asset/resource',
+      generator: {
+        // filename: 'public/3D/fonts/[hash][ext][query]'
+        filename: 'public/3D/fonts/[name][ext]'
+      },
+    })
+
+    // glb + gltf support
+    config.module.rules.push({
+      test: /\.(glb|gltf)$/,
+      // include: [/public/],
+      exclude: /node_modules/,
+      type: 'asset/resource',
+      generator: {
+        // filename: 'public/3D/models/[hash][ext][query]'
+        filename: 'public/3D/models/[name][ext]'
+      },
+    })
+    
+    // graphql + gql support
+    config.module.rules.push({
+      test: /\.(graphql|gql)$/,
+      include: [/api/],
+      exclude: /node_modules/,
+      use: [
+        {
+          loader: 'graphql-tag/loader',
+        },
+      ],
+    })
+
+    // // aliases
+    // config.resolve.alias = {
+    //   ...config.resolve.alias,
+    //   apexcharts: path.resolve(__dirname, './node_modules/apexcharts-clevision'),
+    //   // 'eth-hooks': path.resolve(__dirname, './node_modules/eth-hooks'),
+    //   // 'eth-components': path.resolve(__dirname, './node_modules/eth-components'),
+    //   // 'react': path.resolve(__dirname, './node_modules/react'),
+    //   // 'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
+    // }
 
     // doesn't work, but the thought is there
     // config.plugin('@typescript-eslint')
@@ -161,38 +240,35 @@ const nextConfig = {
     //   fs: 'empty',
     // }
 
-    // config.module.rules.push({
-    //   use: [
-    //     options.defaultLoaders.babel,
-    //     {
-    //       loader: 'url-loader?limit=100000',
-    //     },
-    //     {
-    //       loader: 'file-loader',
-    //     },
-    //   ],
-    // })
-
-    config.module.rules.push({
-      test: /\.(graphql|gql)$/,
-      include: [/api/],
-      exclude: /node_modules/,
-      use: [
-        {
-          loader: 'graphql-tag/loader',
-        },
-      ],
-    })
-
     return config
   },
-  // */
 
-  // NOT NEEDED HERE: instead, use .env.local to safely load env variables as needed (NEXT_PUBLIC_)
+  // ENV VARIABLES ?? :)
+  // instead, use .env.local to safely load env variables as needed (NEXT_PUBLIC_)
   // env: {
   //   customKey: process.env.HEY_HEY_HEY, // 'HEY HEY HEY' | process.env.HEY_HEY_HEY
   // },
+
 } // end nextConfig
 
-// module.exports = withTM(nextConfig)
-module.exports = nextConfig
+
+const KEYS_TO_OMIT = ['webpackDevMiddleware', 'configOrigin', 'target', 'analyticsId', 'webpack5', 'amp', 'assetPrefix']
+
+
+module.exports = (_phase, { defaultConfig }) => {
+  const plugins = [[withPWA], [withBundleAnalyzer, {}]]
+
+  const wConfig = plugins.reduce((acc, [plugin, config]) => plugin({ ...acc, ...config }), {
+    ...defaultConfig,
+    ...nextConfig,
+  })
+
+  const finalConfig = {}
+  Object.keys(wConfig).forEach((key) => {
+    if (!KEYS_TO_OMIT.includes(key)) {
+      finalConfig[key] = wConfig[key]
+    }
+  })
+
+  return finalConfig
+}

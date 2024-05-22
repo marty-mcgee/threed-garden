@@ -17,11 +17,15 @@ import { Physics } from '@react-three/rapier'
 import { useControls } from 'leva'
 
 // ** THREED.AI
+
 // ** THREED OBJECTS
 import Floor from '#/lib/threed/components/canvas/Floor'
 import Lights from '#/lib/threed/components/canvas/Lights'
+
 // ** THREED CHARACTER CONTROL Imports
-import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
+import CharacterControls from '#/lib/ecctrl/src/Ecctrl'
+
+// ** THREED CHARACTER MODEL Imports
 import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
 import CharacterModel1 from '#/lib/threed/components/nouns/Character/CharacterModelFloating'
 // import CharacterModel2 from '#/lib/threed/components/nouns/Character/FarmerMan'
@@ -30,8 +34,8 @@ import CharacterModel4 from '#/lib/threed/components/nouns/Character/FarmerManFl
 import CharacterModel5 from '#/lib/threed/components/nouns/Character/FarmerWomanFloating'
 // import CharacterModel6 from '#/lib/threed/components/nouns/Character/FarmerBoyFloating'
 // import CharacterModel7 from '#/lib/threed/components/nouns/Character/FarmerGirlFloating'
-import Birds from '#/lib/threed/components/examples/Birds/Birds'
-// ** THREED OBJECT EXAMPLES
+
+// ** THREED OBJECT INTERACTIVE EXAMPLES
 import Steps from '#/lib/threed/components/examples/Steps'
 import Slopes from '#/lib/threed/components/examples/Slopes'
 import RoughPlane from '#/lib/threed/components/examples/RoughPlane'
@@ -40,6 +44,7 @@ import FloatingPlatforms from '#/lib/threed/components/examples/FloatingPlatform
 import DynamicPlatforms from '#/lib/threed/components/examples/DynamicPlatforms'
 import ShotCube from '#/lib/threed/components/examples/ShotCube'
 import Map from '#/lib/threed/components/examples/Map'
+import Birds from '#/lib/threed/components/examples/Birds/Birds'
 
 // ** HELPER Imports
 import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
@@ -225,9 +230,9 @@ export default function Experience() {
       <Lights />
 
       {/* // import Birds from './Birds' */}
-      <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
+      {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
         <Birds />
-      </group>
+      </group> */}
 
       <Physics
         // debug={prefs.doWorldPhysics}
@@ -243,7 +248,7 @@ export default function Experience() {
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
           {/* Keyboard preset */}
           <KeyboardControls map={keyboardMap}>
-            <Ecctrl
+            <CharacterControls
               // debug={prefs.doWorldDebug}
               debug={false}
               // animated={prefs.doCharacterAnimation}
@@ -271,7 +276,7 @@ export default function Experience() {
               {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
                 <CharacterModel4 />
               </group> */}
-            </Ecctrl>
+            </CharacterControls>
           </KeyboardControls>     
         
         {/* END: CHARACTER MODEL[S] GROUP */}
@@ -352,10 +357,10 @@ export default function Experience() {
         }}
       /> */}
 
-      {/* <Perf
+      <Perf
         position='bottom-left'
         // minimal
-      /> */}
+      />
     </>
   )
 }

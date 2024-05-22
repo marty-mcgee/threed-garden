@@ -74,7 +74,7 @@ import '~/app/_globals.css' // global tailwind css
 import '~/app/_styles.css'  // additional global basic css
 
 // ** LAYOUT Components (Head, Main, Foot)
-import LayoutWrapper from '~/app/LayoutWrapper'
+// import LayoutWrapper from '#/lib/threed/components/canvas/LayoutWrapper'
 // // import { LayoutWrapper } from '~/app/LayoutWrapper'
 // import Header from '#/components/header'
 // import Footer from '#/components/footer'
@@ -109,9 +109,9 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
       {/* <body className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}> */}
       {/* <body className={inter.className}> */}
       <body>
-        <LayoutWrapper>
+        {/* <LayoutWrapper> */}
           {children}
-        </LayoutWrapper>
+        {/* </LayoutWrapper> */}
       </body>
     </html>
   )

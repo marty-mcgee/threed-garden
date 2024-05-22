@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.16.0-alpha.6",
+  "version": "0.16.0-alpha.7",
   "description": "ThreeD Garden: 3D Environment on 'Next.JS React TypeScript Three.JS React-Three Physics', using Apollo GraphQL State+Stores, Leva Control GUI, Material UI + Tailwind CSS",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
@@ -43,9 +43,14 @@
     "___________________X": "____ ___________________________________________________"
   },
   "dependencies": {
-    "@apollo/client": "^3.10.3",
+    "@apollo/client": "^3.10.4",
     "@apollo/experimental-nextjs-app-support": "^0.10.1",
     "@apollo/react-hooks": "^4.0.0",
+
+    "valtio": "^1.13.2",    
+    "zustand": "^4.5.2",
+    "zustand-x": "^3.0.3",
+    "scheduler": "^0.23.2",
 
     "@auth0/auth0-react": "^2.2.4",
     
@@ -54,30 +59,26 @@
     "@emotion/server": "^11.11.0",
     "@emotion/styled": "^11.11.5",
     
-    "@mui/icons-material": "^5.15.15",
+    "@mui/icons-material": "^5.15.18",
     "@mui/lab": "^5.0.0-alpha.170",
-    "@mui/material": "^5.15.15",
+    "@mui/material": "^5.15.18",
     "@mui/styled-engine": "^5.15.14",
     "@mui/system": "^5.15.15",
     "@mui/utils": "^5.15.14",
     "@mui/x-data-grid": "^6.19.6",
-    
-    "@react-spring/three": "^9.7.3",
-    "@react-spring/web": "^9.7.3",
-    
-    "@react-three/cannon": "^6.6.0",
-    "@react-three/drei": "^9.105.4",
-    "@react-three/fiber": "^8.16.2",
-    "@react-three/postprocessing": "^2.16.2",
-    "@react-three/rapier": "^1.3.1",
+    "mdi-material-ui": "^7.9.1",
     
     "@tweenjs/tween.js": "^18.6.4",
-    
-    "buffer": "^6.0.3",
-    "classnames": "^2.3.1",
-    "clsx": "^2.1.0",
+
+    "@react-three/cannon": "^6.6.0",
+    "@react-three/drei": "^9.105.6",
+    "@react-three/fiber": "^8.16.6",
+    "@react-three/postprocessing": "^2.16.2",
+    "@react-three/rapier": "^1.3.1",
+    "r3f-perf": "^7.2.1",
     
     "farmbot": "^15.8.8",
+    "lodash": "^4.17.21",
     
     "graphql": "^16.8.1",
     "graphql-tag": "^2.12.6",
@@ -86,8 +87,6 @@
     
     "next": "^14.2.3",
     "next-auth": "^5.0.0-beta.16",
-
-    "r3f-perf": "^7.2.1",
     
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -99,35 +98,28 @@
     "three": "^0.163.0",
     "three-mesh-ui": "^6.5.4",
     "three-stdlib": "^2.29.11",
-    
-    "use-count-up": "^3.0.1",
-    
-    "util": "^0.12.4",
-    "uuid": "^8.3.2",
 
-    "valtio": "^1.13.2",    
-    "zustand": "^4.5.2",
-    "zustand-x": "^3.0.3",
-    "scheduler": "^0.23.2"
+    "@ducanh2912/next-pwa": "^10.0.0",
+    "tunnel-rat": "^0.1.2"
 
   },
   
   "optionalDependencies": {
     "axios": "^1.6.8",
     
-    "html-react-parser": "3.0.4",
+    "html-react-parser": "^5.1.10",
 
     "glsl-random": "^0.0.5",
     "glslify-loader": "^2.0.0",
     "class-variance-authority": "^0.7.0",
     "lucide-react": "^0.274.0",
     "noisejs": "^2.1.0",
-
-    "mdi-material-ui": "^7.8.0",
     
     "date-fns": "2.27.0",
     "dinero.js": "2.0.0-alpha.8",
     "pretty-time": "^1.1.0",
+    
+    "chroma-js": "2.4.2",
 
     "@heroicons/react": "^1.0.6",
 
@@ -145,34 +137,30 @@
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "autoprefixer": "^10.4.15",
-    "postcss": "^8.4.29"
+    "postcss": "^8.4.29",
+    
+    "use-count-up": "^3.0.1"
   },
   "devDependencies": {
+    
+    "@next/bundle-analyzer": "^14.2.3",
+
     "typescript": "^5.3.3",
     "@emotion/types": "^0.7.0",
     "@types/chroma-js": "^2.1.4",
     "@types/cors": "^2.8.12",
-    "@types/dat.gui": "^0.7.7",
-    "@types/dropzone": "^5.7.4",
-    "@types/jquery": "^3.5.14",
-    "@types/ms": "0.7.31",
+    "@types/lodash": "^4.17.4",
     "@types/node": "^18.11.17",
     "@types/noisejs": "^0.0.31",
-    "@types/nprogress": "^0.2.0",
     "@types/pretty-time": "^1.1.2",
-    "@types/qrcode.react": "^1.0.2",
     "@types/react": "18.2.22",
-    "@types/react-blockies": "^1.4.1",
     "@types/react-dom": "18.2.7",
-    "@types/react-qr-reader": "^2.1.4",
-    "@types/react-router-dom": "^5.3.3",
-    "@types/react-table": "^7.7.12",
-    "@types/three": "^0.156.0",
+    "@types/three": "^0.164.0",
     "@types/uuid": "^8.3.4",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
 
     "eslint": "^8.30.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "eslint-config-next": "^13.1.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-alias": "^1.1.2",
@@ -189,9 +177,16 @@
     "path": "^0.12.7",
     "process": "^0.11.10",
     
+    "buffer": "^6.0.3",
+    "classnames": "^2.3.1",
+    "clsx": "^2.1.0",
+    "util": "^0.12.4",
+    "uuid": "^9.0.1",
+    
     "file-loader": "^6.2.0",
     "raw-loader": "^4.0.2",
     "url-loader": "^4.1.1"
+
   },
   "keywords": [
     "webgl",
