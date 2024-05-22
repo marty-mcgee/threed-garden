@@ -18,7 +18,7 @@ if (!process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL) {
 // module.exports = nextConfig
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
+  enabled: false, // process.env.ANALYZE === 'true',
 })
 
 /**
@@ -27,7 +27,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
  */
 const withPWA = require('@ducanh2912/next-pwa').default({
   dest: 'public',
-  disable: process.env.NODE_ENV === 'development',
+  disable: true, // process.env.NODE_ENV === 'development',
 })
 
 
@@ -176,6 +176,59 @@ const nextConfig = {
       exclude: /node_modules/,
       use: ['raw-loader', 'glslify-loader'],
     })
+    
+    // ttf support
+    // config.module.rules.push({
+    //   test: /\.(ttf|ttf|ttf|ttf|ttf)$/,
+    //   exclude: /node_modules/,
+    //   use: [
+    //     {
+    //       loader: 'ttf-loader',
+    //       options: {
+    //         name: 'public/3D/fonts/[hash].[ext]',
+    //         // outputPath: 'public/3D/fonts/'
+    //       },
+    //     },
+    //   ],
+    // })
+    config.module.rules.push({
+      test: /\.ttf/,
+      // include: [/public/],
+      exclude: /node_modules/,
+      type: 'asset/resource',
+      generator: {
+        filename: 'public/3D/fonts/[hash][ext][query]'
+      },
+    })
+
+    config.module.rules.push({
+      test: /\.(glb|gltf)$/,
+      // include: [/public/],
+      exclude: /node_modules/,
+      // use: [
+      //   {
+      //     loader: 'file-loader',
+      //     options: {
+      //       outputPath: 'public/3D/models/',
+      //     }
+      //   },
+      // ],
+      type: 'asset/resource',
+      generator: {
+        filename: 'public/3D/models/[name][ext]'
+      },
+    })
+    
+    config.module.rules.push({
+      test: /\.(graphql|gql)$/,
+      include: [/api/],
+      exclude: /node_modules/,
+      use: [
+        {
+          loader: 'graphql-tag/loader',
+        },
+      ],
+    })
 
     // // aliases
     // config.resolve.alias = {
@@ -183,7 +236,6 @@ const nextConfig = {
     //   apexcharts: path.resolve(__dirname, './node_modules/apexcharts-clevision'),
     //   // 'eth-hooks': path.resolve(__dirname, './node_modules/eth-hooks'),
     //   // 'eth-components': path.resolve(__dirname, './node_modules/eth-components'),
-    //   // 'react-css-theme-switcher': path.resolve(__dirname, './node_modules/react-css-theme-switcher'),
     //   // 'react': path.resolve(__dirname, './node_modules/react'),
     //   // 'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
     // }
@@ -202,35 +254,10 @@ const nextConfig = {
     //   fs: 'empty',
     // }
 
-    // config.module.rules.push({
-    //   use: [
-    //     options.defaultLoaders.babel,
-    //     {
-    //       loader: 'url-loader?limit=100000',
-    //     },
-    //     {
-    //       loader: 'file-loader',
-    //     },
-    //   ],
-    // })
-
-    config.module.rules.push({
-      test: /\.(graphql|gql)$/,
-      include: [/api/],
-      exclude: /node_modules/,
-      use: [
-        {
-          loader: 'graphql-tag/loader',
-        },
-      ],
-    })
-    // END OLD CODE
-
     return config
   },
 
   // ENV VARIABLES ?? :)
-  // NOT REALLY NEEDED HERE: 
   // instead, use .env.local to safely load env variables as needed (NEXT_PUBLIC_)
   // env: {
   //   customKey: process.env.HEY_HEY_HEY, // 'HEY HEY HEY' | process.env.HEY_HEY_HEY
@@ -238,7 +265,9 @@ const nextConfig = {
 
 } // end nextConfig
 
+
 const KEYS_TO_OMIT = ['webpackDevMiddleware', 'configOrigin', 'target', 'analyticsId', 'webpack5', 'amp', 'assetPrefix']
+
 
 module.exports = (_phase, { defaultConfig }) => {
   const plugins = [[withPWA], [withBundleAnalyzer, {}]]

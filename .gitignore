@@ -21,7 +21,7 @@ desktop.ini
 .npmrc
 
 # assets
-src/lib/farmbot/threed-farmbot
+# src/lib/farmbot/threed-farmbot
 # src/lib/wp-threed
 # src/lib/wp-threed/assets
 public/assets
