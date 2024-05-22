@@ -1,7 +1,7 @@
 'use client'
 
-// import { tunnelratIO } from '#/lib/threed/helpers/threedIO'
-import { threedIO } from '#/lib/threed/helpers/threedIO'
+// import { tunnelratIO } from '#/lib/threed/threedio/threedIO'
+import { threedIO } from '#/lib/threed/threedio/threedIO'
 
 export const ThreedIO = ({ children }) => {
   return <threedIO.In>{children}</threedIO.In>

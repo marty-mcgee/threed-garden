@@ -14,7 +14,7 @@ import { useSession } from 'next-auth/react'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 
 // ** REACT Imports
-import { Suspense } from 'react'
+// import { Suspense } from 'react'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
@@ -23,8 +23,7 @@ import CardHeader from '@mui/material/CardHeader'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 
-// ** MAIN COMPONENT Imports
-// ** ThreeDGarden Imports
+// ** THREED GARDEN Imports
 import ThreeDGarden from '#/lib/threed/ThreeDGarden'
 
 // ** HELPER Imports
@@ -58,7 +57,7 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
       email: 'mcgee.marty@gmail.com',
       image: './ThreeD-Garden-Logo-Circle-Carrot.png'
     },
-    expires: () => () => { new Date().getDate() }, // 'datetime as string',
+    expires: () => new Date().getDate(), // 'datetime as string',
   }
 
   return (
@@ -67,15 +66,7 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
       spacing={1}
     >
       {/* [MM] HEY HEY HEY -- ThreeDGarden Component */}
-      <Suspense fallback={null}>
-
-        <ThreeDGarden />
-        
-        {/*
-          <Logo route='/blob' scale={0.6} position={[0, 0, 0]} />
-          <Common />
-        */}
-      </Suspense>
+      <ThreeDGarden />
       {/* [MM] HEY HEY HEY -- End ThreeDGarden Component */}
 
       {/* {ability?.can('read', 'analytics') && ( */}
