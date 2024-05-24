@@ -186,10 +186,10 @@ const nextConfig = {
       // include: [/public/],
       exclude: /node_modules/,
       type: 'asset/resource',
-      generator: {
-        // filename: 'public/3D/fonts/[hash][ext][query]'
-        filename: 'public/3D/fonts/[name][ext]'
-      },
+      // generator: {
+      //   // filename: 'public/3D/fonts/[hash][ext][query]'
+      //   filename: 'public/3D/fonts/[name][ext]'
+      // },
     })
 
     // glb + gltf support
@@ -198,10 +198,10 @@ const nextConfig = {
       // include: [/public/],
       exclude: /node_modules/,
       type: 'asset/resource',
-      generator: {
-        // filename: 'public/3D/models/[hash][ext][query]'
-        filename: 'public/3D/models/[name][ext]'
-      },
+      // generator: {
+      //   // filename: 'public/3D/models/[hash][ext][query]'
+      //   filename: 'public/3D/models/[name][ext]'
+      // },
     })
     
     // graphql + gql support
