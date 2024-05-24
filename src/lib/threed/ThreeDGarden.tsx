@@ -110,7 +110,7 @@ import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
 // ** FARMBOT Imports
 // import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
 // const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/FarmBot'), { ssr: false })
-// const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/threed-farmbot/main'), { ssr: false })
+const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/threed-farmbot/main'), { ssr: false })
 
 // ** HELPER Components
 import Spinner from '#/ui/components/spinner'
@@ -510,7 +510,7 @@ const ThreeDGarden = (): JSX.Element => {
             // sx={{ borderTop: '1px solid darkgreen', padding: '16px' }}
           >
             {/* THREED FARMBOT */}
-            {/* <ThreeDFarmBot /> */}
+            <ThreeDFarmBot />
             {/* THREED FARMBOT */}
           </Grid>
         </Grid>

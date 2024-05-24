@@ -17,19 +17,19 @@ import "./box.css"
 import { BindingTargetDropdown } from "./stub_components"
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import box from "/public/3D/models/box.glb"
+import box from "public/3D/models/box.glb"
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import btn from "/public/3D/models/push_button.glb"
+import btn from "public/3D/models/push_button.glb"
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import led from "/public/3D/models/led_indicator.glb"
+import led from "public/3D/models/led_indicator.glb"
 
 import * as THREE from "three"
 
 // const DRACO_LIB_DIR = "../farmbot-3d-demo-react/public/3D/lib/"
 // const DRACO_LIB_DIR = "../public/3D/lib/"
-const DRACO_LIB_DIR = "/public/3D/lib/"
+const DRACO_LIB_DIR = "/3D/lib/"
 
 const MODELS = {
   box,
