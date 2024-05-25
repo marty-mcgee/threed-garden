@@ -3,9 +3,16 @@
 
 import React, { useRef } from "react"
 import {
-  Cylinder, Html, PerspectiveCamera, useGLTF,
+  Cylinder, 
+  Html, 
+  PerspectiveCamera, 
+  useGLTF,
 } from "@react-three/drei"
-import { Canvas, ThreeEvent, useFrame } from "@react-three/fiber"
+import { 
+  // Canvas, 
+  ThreeEvent, 
+  useFrame 
+} from "@react-three/fiber"
 import { GLTF } from "three-stdlib"
 import {
   pinBindingLabel, BoxTopBaseProps, PinBindingListItems, setPinBinding,
@@ -30,6 +37,7 @@ import * as THREE from "three"
 // const DRACO_LIB_DIR = "../farmbot-3d-demo-react/public/3D/lib/"
 // const DRACO_LIB_DIR = "../public/3D/lib/"
 const DRACO_LIB_DIR = "/3D/lib/"
+// const DRACO_LIB_DIR = "/draco/"
 
 const MODELS = {
   box,
@@ -154,7 +162,7 @@ export const ElectronicsBox = (props: BoxTopBaseProps) => {
 
   const BUTTONS: ButtonOrLedItem[] = [
     {
-      label: t("Button 1"),
+      label: t("Peripheral: Lights"),
       pinNumber: ButtonPin.estop,
       on: props.botOnline && !locked,
       position: -60,
@@ -165,7 +173,7 @@ export const ElectronicsBox = (props: BoxTopBaseProps) => {
       ref: estop,
     },
     {
-      label: t("Button 2"),
+      label: t("Peripheral: Camera"),
       pinNumber: ButtonPin.unlock,
       blink: props.botOnline && locked,
       position: -30,
@@ -176,7 +184,7 @@ export const ElectronicsBox = (props: BoxTopBaseProps) => {
       ref: unlock,
     },
     {
-      label: t("Button 3"),
+      label: t("Action: 0"),
       pinNumber: ButtonPin.btn3,
       position: 0,
       color: {
@@ -185,7 +193,7 @@ export const ElectronicsBox = (props: BoxTopBaseProps) => {
       },
     },
     {
-      label: t("Button 4"),
+      label: t("Action: 1"),
       pinNumber: ButtonPin.btn4,
       position: 30,
       color: {
@@ -194,7 +202,7 @@ export const ElectronicsBox = (props: BoxTopBaseProps) => {
       },
     },
     {
-      label: t("Button 5"),
+      label: t("Action: 2"),
       pinNumber: ButtonPin.btn5,
       position: 60,
       color: {
@@ -390,20 +398,39 @@ export const ElectronicsBox = (props: BoxTopBaseProps) => {
 }
 
 export const ElectronicsBoxModel = (props: BoxTopBaseProps) => {
-  return <div className={"electronics-box-3d-model"}>
-    <Canvas>
-      <group dispose={null}
-        rotation={[0, 0, Math.PI / 2]}>
-        <PerspectiveCamera makeDefault name="camera" fov={30} near={0.1} far={1000}
-          position={[-150, 0, 300]}
-          rotation={[0, -Math.PI / 6, -Math.PI / 2]} />
-        <pointLight intensity={2} position={[0, 0, 200]} rotation={[0, 0, 0]}
-          distance={0} decay={0} />
-        <directionalLight intensity={0.1}
-          position={[-100, 0, 100]} rotation={[0, 0, 0]} />
-        <ambientLight intensity={0.5} />
-        <ElectronicsBox {...props} showLabels={true} />
-      </group>
-    </Canvas>
-  </div>
+  return (
+    // <div className={"electronics-box-3d-model"}>
+      // <Canvas>
+        <group dispose={null}
+          rotation={[0, 0, Math.PI / 2]}>
+          <PerspectiveCamera makeDefault name="camera" fov={30} near={0.1} far={1000}
+            position={[-150, 0, 300]}
+            rotation={[0, -Math.PI / 6, -Math.PI / 2]} />
+          <pointLight intensity={2} position={[0, 0, 200]} rotation={[0, 0, 0]}
+            distance={0} decay={0} />
+          <directionalLight intensity={0.1}
+            position={[-100, 0, 100]} rotation={[0, 0, 0]} />
+          <ambientLight intensity={0.5} />
+          <ElectronicsBox {...props} showLabels={true} />
+        </group>
+      // </Canvas>
+    // </div>
+  )
+  // ** from main repo
+  // return <div className={"electronics-box-3d-model"}>
+  //   <Canvas>
+  //     <group dispose={null}
+  //       rotation={[0, 0, Math.PI / 2]}>
+  //       <PerspectiveCamera makeDefault name="camera" fov={30} near={0.1} far={1000}
+  //         position={[-150, 0, 300]}
+  //         rotation={[0, -Math.PI / 6, -Math.PI / 2]} />
+  //       <pointLight intensity={2} position={[0, 0, 200]} rotation={[0, 0, 0]}
+  //         distance={0} decay={0} />
+  //       <directionalLight intensity={0.1}
+  //         position={[-100, 0, 100]} rotation={[0, 0, 0]} />
+  //       <ambientLight intensity={0.5} />
+  //       <ElectronicsBox {...props} showLabels={true} />
+  //     </group>
+  //   </Canvas>
+  // </div>
 }

@@ -86,8 +86,8 @@ const ThreeDCanvasViewer = dynamic(() => import('#/lib/threed/components/canvas/
 import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
 
 // ** ThreeD using Apollo + React to View Control + Info Panels (Apollo Store/ReactiveVar/State Access)
-// import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
-const ThreeDControlPanels = dynamic(() => import('#/lib/threed/components/controls/ControlPanels'), { ssr: false })
+import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
+// const ThreeDControlPanels = dynamic(() => import('#/lib/threed/components/controls/ControlPanels'), { ssr: false })
 
 // ** ThreeD Toolbar
 import ThreeDToolbar from '#/lib/threed/components/tools/Toolbar'
@@ -110,7 +110,7 @@ import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
 // ** FARMBOT Imports
 // import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
 // const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/FarmBot'), { ssr: false })
-const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/threed-farmbot/main'), { ssr: false })
+// const ThreeDFarmBotMain = dynamic(() => import('#/lib/threed/threed-farmbot/main'), { ssr: false })
 
 // ** HELPER Components
 import Spinner from '#/ui/components/spinner'
@@ -126,7 +126,7 @@ const debug: boolean = true
 const DEBUG: boolean = true
 const debug_deep: boolean = false
 
-const appVersion = 'v0.15.1-a'
+const appVersion = 'v0.16.0-a'
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
 // const appVersion = process.env.npm_package_version
 // const appVersion: string = require('package.json').version
@@ -510,7 +510,7 @@ const ThreeDGarden = (): JSX.Element => {
             // sx={{ borderTop: '1px solid darkgreen', padding: '16px' }}
           >
             {/* THREED FARMBOT */}
-            <ThreeDFarmBot />
+            {/* <ThreeDFarmBotMain /> */}
             {/* THREED FARMBOT */}
           </Grid>
         </Grid>

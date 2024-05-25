@@ -1,33 +1,33 @@
 // @ts-nocheck /* OR @ ts-expect-error */
 
-import * as THREE from "three";
-import { Cylinder, Extrude, Line, Trail, useGLTF } from "@react-three/drei";
-import { DoubleSide, Shape, TextureLoader, RepeatWrapping } from "three";
-import { threeSpace, zDir, zZero as zZeroFunc } from "./helpers";
-import { Config } from "./config";
-import { GLTF } from "three-stdlib";
-import { ASSETS } from "./constants";
-import { SVGLoader } from "three/examples/jsm/Addons.js";
-import { useEffect, useState } from "react";
-import { range } from "lodash";
-import { CrossSlide, CrossSlideFull } from "./parts/cross_slide";
-import { GantryWheelPlate, GantryWheelPlateFull } from "./parts/gantry_wheel_plate";
-import { RotaryTool, RotaryToolFull } from "./parts/rotary_tool";
-import { DistanceIndicator } from "./distance_indicator";
-import { ElectronicsBox } from "./box";
-import { VacuumPumpCover, VacuumPumpCoverFull } from "./parts/vacuum_pump_cover";
-import { SoilSensor, SoilSensorFull } from "./parts/soil_sensor";
-import { SeedTroughAssembly, SeedTroughAssemblyFull } from "./parts/seed_trough_assembly";
-import { SeedTroughHolder, SeedTroughHolderFull } from "./parts/seed_trough_holder";
-import { PowerSupply } from "./power_supply";
-import { XAxisWaterTube } from "./x_axis_water_tube";
+import * as THREE from "three"
+import { Cylinder, Extrude, Line, Trail, useGLTF } from "@react-three/drei"
+import { DoubleSide, Shape, TextureLoader, RepeatWrapping } from "three"
+import { threeSpace, zDir, zZero as zZeroFunc } from "./helpers"
+import { Config } from "./config"
+import { GLTF } from "three-stdlib"
+import { ASSETS } from "./constants-threed"
+import { SVGLoader } from "three/examples/jsm/Addons.js"
+import { useEffect, useState } from "react"
+import { range } from "lodash"
+import { CrossSlide, CrossSlideFull } from "./parts/cross_slide"
+import { GantryWheelPlate, GantryWheelPlateFull } from "./parts/gantry_wheel_plate"
+import { RotaryTool, RotaryToolFull } from "./parts/rotary_tool"
+import { DistanceIndicator } from "./distance_indicator"
+import { ElectronicsBox } from "./box-threed"
+import { VacuumPumpCover, VacuumPumpCoverFull } from "./parts/vacuum_pump_cover"
+import { SoilSensor, SoilSensorFull } from "./parts/soil_sensor"
+import { SeedTroughAssembly, SeedTroughAssemblyFull } from "./parts/seed_trough_assembly"
+import { SeedTroughHolder, SeedTroughHolderFull } from "./parts/seed_trough_holder"
+import { PowerSupply } from "./power_supply"
+import { XAxisWaterTube } from "./x_axis_water_tube"
 
-const extrusionWidth = 20;
-const utmRadius = 35;
-const utmHeight = 35;
-const xTrackPadding = 280;
+const extrusionWidth = 20
+const utmRadius = 35
+const utmHeight = 35
+const xTrackPadding = 280
 
-const LIB_DIR = "/3D/lib/";
+const LIB_DIR = "/3D/lib/"
 
 enum PartName {
   gantryWheelPlate = "Gantry_Wheel_Plate",
@@ -60,146 +60,146 @@ enum PartName {
 }
 
 type GantryWheelPlate = GLTF & {
-  nodes: { [PartName.gantryWheelPlate]: THREE.Mesh };
-  materials: never;
+  nodes: { [PartName.gantryWheelPlate]: THREE.Mesh }
+  materials: never
 }
 type LeftBracket = GLTF & {
-  nodes: { [PartName.leftBracket]: THREE.Mesh };
-  materials: never;
+  nodes: { [PartName.leftBracket]: THREE.Mesh }
+  materials: never
 }
 type RightBracket = GLTF & {
-  nodes: { [PartName.rightBracket]: THREE.Mesh };
-  materials: never;
+  nodes: { [PartName.rightBracket]: THREE.Mesh }
+  materials: never
 }
 type CrossSlide = GLTF & {
   nodes: { [PartName.crossSlide]: THREE.Mesh }
-  materials: never;
+  materials: never
 }
 type ZStop = GLTF & {
   nodes: { [PartName.zStop]: THREE.Mesh }
-  materials: never;
+  materials: never
 }
 type BeltClip = GLTF & {
   nodes: { [PartName.beltClip]: THREE.Mesh }
-  materials: never;
+  materials: never
 }
 type UTM = GLTF & {
-  nodes: { [PartName.utm]: THREE.Mesh };
-  materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
+  nodes: { [PartName.utm]: THREE.Mesh }
+  materials: { PaletteMaterial001: THREE.MeshStandardMaterial }
 }
 type CCHorizontal = GLTF & {
-  nodes: { [PartName.ccHorizontal]: THREE.Mesh };
-  materials: never;
+  nodes: { [PartName.ccHorizontal]: THREE.Mesh }
+  materials: never
 }
 type CCVertical = GLTF & {
-  nodes: { [PartName.ccVertical]: THREE.Mesh };
-  materials: never;
+  nodes: { [PartName.ccVertical]: THREE.Mesh }
+  materials: never
 }
 type HousingVertical = GLTF & {
-  nodes: { [PartName.housingVertical]: THREE.Mesh };
-  materials: never;
+  nodes: { [PartName.housingVertical]: THREE.Mesh }
+  materials: never
 }
 type MotorHorizontal = GLTF & {
-  nodes: { [PartName.motorHorizontal]: THREE.Mesh };
-  materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
+  nodes: { [PartName.motorHorizontal]: THREE.Mesh }
+  materials: { PaletteMaterial001: THREE.MeshStandardMaterial }
 }
 type MotorVertical = GLTF & {
-  nodes: { [PartName.motorVertical]: THREE.Mesh };
-  materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
+  nodes: { [PartName.motorVertical]: THREE.Mesh }
+  materials: { PaletteMaterial001: THREE.MeshStandardMaterial }
 }
 type Toolbay3 = GLTF & {
   nodes: {
-    [PartName.toolbay3]: THREE.Mesh;
-    [PartName.toolbay3Logo]: THREE.Mesh;
-  };
-  materials: never;
+    [PartName.toolbay3]: THREE.Mesh
+    [PartName.toolbay3Logo]: THREE.Mesh
+  }
+  materials: never
 }
 type VacuumPump = GLTF & {
-  nodes: { [PartName.vacuumPump]: THREE.Mesh };
-  materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
+  nodes: { [PartName.vacuumPump]: THREE.Mesh }
+  materials: { PaletteMaterial001: THREE.MeshStandardMaterial }
 }
 type WateringNozzle = GLTF & {
-  nodes: { [PartName.wateringNozzle]: THREE.Mesh };
-  materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
+  nodes: { [PartName.wateringNozzle]: THREE.Mesh }
+  materials: { PaletteMaterial001: THREE.MeshStandardMaterial }
 }
 type SeedBin = GLTF & {
-  nodes: { [PartName.seedBin]: THREE.Mesh };
-  materials: never;
+  nodes: { [PartName.seedBin]: THREE.Mesh }
+  materials: never
 }
 type SeedTray = GLTF & {
-  nodes: { [PartName.seedTray]: THREE.Mesh };
-  materials: never;
+  nodes: { [PartName.seedTray]: THREE.Mesh }
+  materials: never
 }
 type CameraMountHalf = GLTF & {
-  nodes: { [PartName.cameraMountHalf]: THREE.Mesh };
-  materials: never;
+  nodes: { [PartName.cameraMountHalf]: THREE.Mesh }
+  materials: never
 }
 type Pi = GLTF & {
-  nodes: { [PartName.pi]: THREE.Mesh };
-  materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
+  nodes: { [PartName.pi]: THREE.Mesh }
+  materials: { PaletteMaterial001: THREE.MeshStandardMaterial }
 }
 type Farmduino = GLTF & {
-  nodes: { [PartName.farmduino]: THREE.Mesh };
-  materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
+  nodes: { [PartName.farmduino]: THREE.Mesh }
+  materials: { PaletteMaterial001: THREE.MeshStandardMaterial }
 }
 type ShaftCoupler = GLTF & {
   nodes: {
-    [PartName.shaftCoupler1]: THREE.Mesh;
-    [PartName.shaftCoupler2]: THREE.Mesh;
-  };
-  materials: never;
+    [PartName.shaftCoupler1]: THREE.Mesh
+    [PartName.shaftCoupler2]: THREE.Mesh
+  }
+  materials: never
 }
 type Solenoid = GLTF & {
-  nodes: { [PartName.solenoid]: THREE.Mesh };
-  materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
+  nodes: { [PartName.solenoid]: THREE.Mesh }
+  materials: { PaletteMaterial001: THREE.MeshStandardMaterial }
 }
 type XAxisCCMount = GLTF & {
-  nodes: { [PartName.xAxisCCMount]: THREE.Mesh };
-  materials: never;
+  nodes: { [PartName.xAxisCCMount]: THREE.Mesh }
+  materials: never
 }
 
-Object.values(ASSETS.models).map(model => useGLTF.preload(model, LIB_DIR));
+Object.values(ASSETS.models).map(model => useGLTF.preload(model, LIB_DIR))
 
 const ccPath =
   (axisLength: number, y: number, curveDia: number, isX?: boolean) => {
-    const lowerLength = (y + axisLength + 180) / 2;
-    const upperLength = lowerLength - y;
-    const outerRadius = curveDia / 2;
-    const height = isX ? 15 : 20;
-    const innerRadius = outerRadius - height;
+    const lowerLength = (y + axisLength + 180) / 2
+    const upperLength = lowerLength - y
+    const outerRadius = curveDia / 2
+    const height = isX ? 15 : 20
+    const innerRadius = outerRadius - height
 
-    const path = new Shape();
-    path.moveTo(y + 20, 0);
-    path.lineTo(y + upperLength, 0);
-    path.arc(0, outerRadius, outerRadius, -Math.PI / 2, Math.PI / 2);
-    path.lineTo(0, curveDia);
-    path.lineTo(0, curveDia - 5);
-    path.lineTo(20, curveDia - height);
-    path.lineTo(lowerLength, curveDia - height);
-    path.arc(0, -innerRadius, innerRadius, Math.PI / 2, -Math.PI / 2, true);
+    const path = new Shape()
+    path.moveTo(y + 20, 0)
+    path.lineTo(y + upperLength, 0)
+    path.arc(0, outerRadius, outerRadius, -Math.PI / 2, Math.PI / 2)
+    path.lineTo(0, curveDia)
+    path.lineTo(0, curveDia - 5)
+    path.lineTo(20, curveDia - height)
+    path.lineTo(lowerLength, curveDia - height)
+    path.arc(0, -innerRadius, innerRadius, Math.PI / 2, -Math.PI / 2, true)
     if (isX) {
-      path.lineTo(y + 20, height - 1);
-      path.lineTo(y, 5);
-      path.lineTo(y, 0);
+      path.lineTo(y + 20, height - 1)
+      path.lineTo(y, 5)
+      path.lineTo(y, 0)
     } else {
-      path.lineTo(y, height - 1);
-      path.lineTo(y, height - 5);
+      path.lineTo(y, height - 1)
+      path.lineTo(y, height - 5)
     }
-    path.lineTo(y + 20, 0);
-    return path;
-  };
+    path.lineTo(y + 20, 0)
+    return path
+  }
 
 interface FarmbotModelProps {
-  config: Config;
+  config: Config
 }
 
 const aluminumTexture = new TextureLoader()
   .load(ASSETS.textures.aluminum,
     texture => {
-      texture.wrapS = RepeatWrapping;
-      texture.wrapT = RepeatWrapping;
-      texture.repeat.set(.01, .0003);
-    });
+      texture.wrapS = RepeatWrapping
+      texture.wrapT = RepeatWrapping
+      texture.repeat.set(.01, .0003)
+    })
 
 export const Bot = (props: FarmbotModelProps) => {
   const config = props.config
@@ -208,129 +208,129 @@ export const Bot = (props: FarmbotModelProps) => {
     bedXOffset, bedYOffset, bedLengthOuter, bedWidthOuter, tracks, zDimension,
     columnLength, zAxisLength, zGantryOffset, bedWallThickness, tool, bedHeight,
     cableCarriers, bounds,
-  } = props.config;
-  const zZero = zZeroFunc(props.config);
+  } = props.config
+  const zZero = zZeroFunc(props.config)
   const zero = {
     x: threeSpace(bedXOffset, bedLengthOuter),
     y: threeSpace(bedYOffset, bedWidthOuter),
     z: zZero,
-  };
+  }
   const extents = {
     x: threeSpace(bedXOffset + botSizeX, bedLengthOuter),
     y: threeSpace(bedYOffset + botSizeY, bedWidthOuter),
     z: zZero + zDir * botSizeZ,
-  };
+  }
   const zDip = (x: number, y: number): [number, number, number][] => [
     [x, y, extents.z],
     [x, y, zero.z],
     [x, y, extents.z],
-  ];
+  ]
   const gantryWheelPlate =
-    useGLTF(ASSETS.models.gantryWheelPlate, LIB_DIR) as GantryWheelPlateFull;
-  const GantryWheelPlateComponent = GantryWheelPlate(gantryWheelPlate);
-  const leftBracket = useGLTF(ASSETS.models.leftBracket, LIB_DIR) as LeftBracket;
-  const rightBracket = useGLTF(ASSETS.models.rightBracket, LIB_DIR) as RightBracket;
-  const crossSlide = useGLTF(ASSETS.models.crossSlide, LIB_DIR) as CrossSlideFull;
-  const CrossSlideComponent = CrossSlide(crossSlide);
-  const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as BeltClip;
-  const zStop = useGLTF(ASSETS.models.zStop, LIB_DIR) as ZStop;
-  const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as UTM;
-  const ccHorizontal = useGLTF(ASSETS.models.ccHorizontal, LIB_DIR) as CCHorizontal;
-  const ccVertical = useGLTF(ASSETS.models.ccVertical, LIB_DIR) as CCVertical;
-  const housingVertical = useGLTF(ASSETS.models.housingVertical, LIB_DIR) as HousingVertical;
-  const motorHorizontal = useGLTF(ASSETS.models.motorHorizontal, LIB_DIR) as MotorHorizontal;
-  const motorVertical = useGLTF(ASSETS.models.motorVertical, LIB_DIR) as MotorVertical;
-  const toolbay3 = useGLTF(ASSETS.models.toolbay3, LIB_DIR) as Toolbay3;
-  const rotaryTool = useGLTF(ASSETS.models.rotaryTool, LIB_DIR) as RotaryToolFull;
-  const RotaryToolComponent = RotaryTool(rotaryTool);
-  const vacuumPump = useGLTF(ASSETS.models.vacuumPump, LIB_DIR) as VacuumPump;
-  const vacuumPumpCover = useGLTF(ASSETS.models.vacuumPumpCover, LIB_DIR) as VacuumPumpCoverFull;
-  const VacuumPumpCoverComponent = VacuumPumpCover(vacuumPumpCover);
-  const seedBin = useGLTF(ASSETS.models.seedBin, LIB_DIR) as SeedBin;
-  const seedTray = useGLTF(ASSETS.models.seedTray, LIB_DIR) as SeedTray;
-  const seedTroughHolder = useGLTF(ASSETS.models.seedTroughHolder, LIB_DIR) as SeedTroughHolderFull;
-  const SeedTroughHolderComponent = SeedTroughHolder(seedTroughHolder);
-  const seedTroughAssembly = useGLTF(ASSETS.models.seedTroughAssembly, LIB_DIR) as SeedTroughAssemblyFull;
-  const SeedTroughAssemblyComponent = SeedTroughAssembly(seedTroughAssembly);
-  const soilSensor = useGLTF(ASSETS.models.soilSensor, LIB_DIR) as SoilSensorFull;
-  const SoilSensorComponent = SoilSensor(soilSensor);
-  const wateringNozzle = useGLTF(ASSETS.models.wateringNozzle, LIB_DIR) as WateringNozzle;
-  const cameraMountHalf = useGLTF(ASSETS.models.cameraMountHalf, LIB_DIR) as CameraMountHalf;
-  const pi = useGLTF(ASSETS.models.pi, LIB_DIR) as Pi;
-  const farmduino = useGLTF(ASSETS.models.farmduino, LIB_DIR) as Farmduino;
-  const shaftCoupler = useGLTF(ASSETS.models.shaftCoupler, LIB_DIR) as ShaftCoupler;
-  const solenoid = useGLTF(ASSETS.models.solenoid, LIB_DIR) as Solenoid;
-  const xAxisCCMount = useGLTF(ASSETS.models.xAxisCCMount, LIB_DIR) as XAxisCCMount;
-  const [trackShape, setTrackShape] = useState<Shape>();
-  const [beamShape, setBeamShape] = useState<Shape>();
-  const [columnShape, setColumnShape] = useState<Shape>();
-  const [zAxisShape, setZAxisShape] = useState<Shape>();
+    useGLTF(ASSETS.models.gantryWheelPlate, LIB_DIR) as GantryWheelPlateFull
+  const GantryWheelPlateComponent = GantryWheelPlate(gantryWheelPlate)
+  const leftBracket = useGLTF(ASSETS.models.leftBracket, LIB_DIR) as LeftBracket
+  const rightBracket = useGLTF(ASSETS.models.rightBracket, LIB_DIR) as RightBracket
+  const crossSlide = useGLTF(ASSETS.models.crossSlide, LIB_DIR) as CrossSlideFull
+  const CrossSlideComponent = CrossSlide(crossSlide)
+  const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as BeltClip
+  const zStop = useGLTF(ASSETS.models.zStop, LIB_DIR) as ZStop
+  const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as UTM
+  const ccHorizontal = useGLTF(ASSETS.models.ccHorizontal, LIB_DIR) as CCHorizontal
+  const ccVertical = useGLTF(ASSETS.models.ccVertical, LIB_DIR) as CCVertical
+  const housingVertical = useGLTF(ASSETS.models.housingVertical, LIB_DIR) as HousingVertical
+  const motorHorizontal = useGLTF(ASSETS.models.motorHorizontal, LIB_DIR) as MotorHorizontal
+  const motorVertical = useGLTF(ASSETS.models.motorVertical, LIB_DIR) as MotorVertical
+  const toolbay3 = useGLTF(ASSETS.models.toolbay3, LIB_DIR) as Toolbay3
+  const rotaryTool = useGLTF(ASSETS.models.rotaryTool, LIB_DIR) as RotaryToolFull
+  const RotaryToolComponent = RotaryTool(rotaryTool)
+  const vacuumPump = useGLTF(ASSETS.models.vacuumPump, LIB_DIR) as VacuumPump
+  const vacuumPumpCover = useGLTF(ASSETS.models.vacuumPumpCover, LIB_DIR) as VacuumPumpCoverFull
+  const VacuumPumpCoverComponent = VacuumPumpCover(vacuumPumpCover)
+  const seedBin = useGLTF(ASSETS.models.seedBin, LIB_DIR) as SeedBin
+  const seedTray = useGLTF(ASSETS.models.seedTray, LIB_DIR) as SeedTray
+  const seedTroughHolder = useGLTF(ASSETS.models.seedTroughHolder, LIB_DIR) as SeedTroughHolderFull
+  const SeedTroughHolderComponent = SeedTroughHolder(seedTroughHolder)
+  const seedTroughAssembly = useGLTF(ASSETS.models.seedTroughAssembly, LIB_DIR) as SeedTroughAssemblyFull
+  const SeedTroughAssemblyComponent = SeedTroughAssembly(seedTroughAssembly)
+  const soilSensor = useGLTF(ASSETS.models.soilSensor, LIB_DIR) as SoilSensorFull
+  const SoilSensorComponent = SoilSensor(soilSensor)
+  const wateringNozzle = useGLTF(ASSETS.models.wateringNozzle, LIB_DIR) as WateringNozzle
+  const cameraMountHalf = useGLTF(ASSETS.models.cameraMountHalf, LIB_DIR) as CameraMountHalf
+  const pi = useGLTF(ASSETS.models.pi, LIB_DIR) as Pi
+  const farmduino = useGLTF(ASSETS.models.farmduino, LIB_DIR) as Farmduino
+  const shaftCoupler = useGLTF(ASSETS.models.shaftCoupler, LIB_DIR) as ShaftCoupler
+  const solenoid = useGLTF(ASSETS.models.solenoid, LIB_DIR) as Solenoid
+  const xAxisCCMount = useGLTF(ASSETS.models.xAxisCCMount, LIB_DIR) as XAxisCCMount
+  const [trackShape, setTrackShape] = useState<Shape>()
+  const [beamShape, setBeamShape] = useState<Shape>()
+  const [columnShape, setColumnShape] = useState<Shape>()
+  const [zAxisShape, setZAxisShape] = useState<Shape>()
   useEffect(() => {
     if (!(trackShape && beamShape && columnShape && zAxisShape)) {
-      const loader = new SVGLoader();
+      const loader = new SVGLoader()
       loader.load(ASSETS.shapes.track,
         svg => {
-          const smallCutout = SVGLoader.createShapes(svg.paths[0])[0];
-          const largeCutout = SVGLoader.createShapes(svg.paths[1])[0];
-          const outline = SVGLoader.createShapes(svg.paths[2])[0];
-          outline.holes.push(smallCutout);
-          outline.holes.push(largeCutout);
-          setTrackShape(outline);
-        });
+          const smallCutout = SVGLoader.createShapes(svg.paths[0])[0]
+          const largeCutout = SVGLoader.createShapes(svg.paths[1])[0]
+          const outline = SVGLoader.createShapes(svg.paths[2])[0]
+          outline.holes.push(smallCutout)
+          outline.holes.push(largeCutout)
+          setTrackShape(outline)
+        })
       loader.load(ASSETS.shapes.beam,
         svg => {
-          const outline = SVGLoader.createShapes(svg.paths[0])[0];
+          const outline = SVGLoader.createShapes(svg.paths[0])[0]
           range(1, 6).map(i => {
-            const hole = SVGLoader.createShapes(svg.paths[i])[0];
-            outline.holes.push(hole);
-          });
-          setBeamShape(outline);
-        });
+            const hole = SVGLoader.createShapes(svg.paths[i])[0]
+            outline.holes.push(hole)
+          })
+          setBeamShape(outline)
+        })
       loader.load(ASSETS.shapes.column,
         svg => {
-          const outline = SVGLoader.createShapes(svg.paths[3])[0];
+          const outline = SVGLoader.createShapes(svg.paths[3])[0]
           range(3).map(i => {
-            const hole = SVGLoader.createShapes(svg.paths[i])[0];
-            outline.holes.push(hole);
+            const hole = SVGLoader.createShapes(svg.paths[i])[0]
+            outline.holes.push(hole)
           })
-          setColumnShape(outline);
-        });
+          setColumnShape(outline)
+        })
       loader.load(ASSETS.shapes.zAxis,
         svg => {
-          const hole = SVGLoader.createShapes(svg.paths[1])[0];
-          const outline = SVGLoader.createShapes(svg.paths[0])[0];
-          outline.holes.push(hole);
-          setZAxisShape(outline);
-        });
+          const hole = SVGLoader.createShapes(svg.paths[1])[0]
+          const outline = SVGLoader.createShapes(svg.paths[0])[0]
+          outline.holes.push(hole)
+          setZAxisShape(outline)
+        })
     }
-  });
+  })
   const yBeltPath = () => {
-    const radius = 12;
-    const path = new Shape();
-    path.moveTo(0, 0);
-    path.lineTo(0, y + 30);
-    path.arc(radius, -5, radius, Math.PI, Math.PI / 2, true);
-    path.lineTo(45, y + 30);
-    path.arc(0, 10, 10, -Math.PI / 2, Math.PI / 4);
-    path.lineTo(0, y + 100);
-    path.arc(radius, 5, radius, (-3 / 4) * Math.PI, Math.PI, true);
-    path.lineTo(0, botSizeY + 220);
-    path.lineTo(-2, botSizeY + 220);
-    path.lineTo(-2, y + 100);
-    path.arc(radius, 4, radius, Math.PI, (-3 / 4) * Math.PI);
-    path.lineTo(45, y + 50);
-    path.arc(0, -10, 8, Math.PI / 4, -Math.PI / 2, true);
-    path.lineTo(radius, y + 40);
-    path.arc(-2, -radius, radius, Math.PI / 2, Math.PI);
-    path.lineTo(-2, 0);
-    return path;
-  };
-  const distanceToSoil = soilHeight + zDir * z;
-  const bedCCSupportHeight = Math.min(150, bedHeight / 2);
-  const isJr = props.config.sizePreset == "Jr";
+    const radius = 12
+    const path = new Shape()
+    path.moveTo(0, 0)
+    path.lineTo(0, y + 30)
+    path.arc(radius, -5, radius, Math.PI, Math.PI / 2, true)
+    path.lineTo(45, y + 30)
+    path.arc(0, 10, 10, -Math.PI / 2, Math.PI / 4)
+    path.lineTo(0, y + 100)
+    path.arc(radius, 5, radius, (-3 / 4) * Math.PI, Math.PI, true)
+    path.lineTo(0, botSizeY + 220)
+    path.lineTo(-2, botSizeY + 220)
+    path.lineTo(-2, y + 100)
+    path.arc(radius, 4, radius, Math.PI, (-3 / 4) * Math.PI)
+    path.lineTo(45, y + 50)
+    path.arc(0, -10, 8, Math.PI / 4, -Math.PI / 2, true)
+    path.lineTo(radius, y + 40)
+    path.arc(-2, -radius, radius, Math.PI / 2, Math.PI)
+    path.lineTo(-2, 0)
+    return path
+  }
+  const distanceToSoil = soilHeight + zDir * z
+  const bedCCSupportHeight = Math.min(150, bedHeight / 2)
+  const isJr = props.config.sizePreset == "Jr"
   return <group name={"bot"} visible={props.config.bot}>
     {[0 - extrusionWidth, bedWidthOuter].map((y, index) => {
-      const bedColumnYOffset = (tracks ? 0 : extrusionWidth) * (index == 0 ? 1 : -1);
+      const bedColumnYOffset = (tracks ? 0 : extrusionWidth) * (index == 0 ? 1 : -1)
       return <group key={y}>
         <Extrude name={"columns"}
           castShadow={true}
@@ -431,7 +431,7 @@ export const Bot = (props: FarmbotModelProps) => {
           ]}
           rotation={[0, 0, Math.PI / 2 + (index == 0 ? Math.PI : 0)]}
           scale={[1000, 1000 * (index == 0 ? -1 : 1), 1000]} />
-      </group>;
+      </group>
     })}
     <mesh name={"xCCMount"}
       position={[
@@ -884,5 +884,5 @@ export const Bot = (props: FarmbotModelProps) => {
           z: zZero - z + zAxisLength,
         }} />
     </group>
-  </group>;
-};
+  </group>
+}

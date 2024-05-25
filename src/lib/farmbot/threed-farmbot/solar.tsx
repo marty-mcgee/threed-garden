@@ -2,7 +2,7 @@
 
 import { Shape } from "three";
 import { Extrude, Text, Line } from "@react-three/drei";
-import { ASSETS } from "./constants";
+import { ASSETS } from "./constants-threed";
 import { threeSpace } from "./helpers";
 import { Config } from "./config";
 

@@ -92,7 +92,7 @@ import person1Flipped from "/public/3D/people/person_1_flipped.avif"
 import person2 from "/public/3D/people/person_2.avif"
 import person2Flipped from "/public/3D/people/person_2_flipped.avif"
 
-import gear from "/public/gear.svg"
+import gear from "/public/images/misc/gear.svg"
 
 
 export const ASSETS = {

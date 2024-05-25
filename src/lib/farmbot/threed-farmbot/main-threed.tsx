@@ -2,13 +2,14 @@
 
 // import React from "react"
 // import ReactDOM from "react-dom/client"
-import { ElectronicsBoxModel } from "./box"
-import { Garden } from "./garden"
+
+import { ElectronicsBoxModel } from "./box-threed"
+import { Garden } from "./garden-threed"
 
 const ThreeDFarmBotGardenMain = () => {
   return (
-    <>
-      {/* <Garden /> */}
+    <group>
+      <Garden />
       <ElectronicsBoxModel
         isEditing={false}
         dispatch={() => { }}
@@ -24,11 +25,12 @@ const ThreeDFarmBotGardenMain = () => {
         }}
         botOnline={true} 
       />
-    </>
+    </group>
   )
 }
 export default ThreeDFarmBotGardenMain
 
+// ** from main repo
 // ReactDOM.createRoot(document.getElementById("root")!).render(
 //   <React.StrictMode>
 //     <Garden />

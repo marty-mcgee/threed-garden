@@ -6,6 +6,10 @@
 import { useReactiveVar } from '@apollo/client'
 import { preferencesDataVar } from '#/lib/stores/apollo'
 
+// ** NEXT Imports
+import dynamic from 'next/dynamic'
+// import Image from 'next/image'
+
 // ** REACT Imports
 import { useEffect, useState } from 'react'
 
@@ -45,6 +49,14 @@ import DynamicPlatforms from '#/lib/threed/components/examples/DynamicPlatforms'
 import ShotCube from '#/lib/threed/components/examples/ShotCube'
 import Map from '#/lib/threed/components/examples/Map'
 import Birds from '#/lib/threed/components/examples/Birds/Birds'
+
+// ** FARMBOT Imports
+import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
+import ThreeDFarmBotMain from '#/lib/farmbot/threed-farmbot/main-threed'
+import ThreeDFarmBotGarden from '#/lib/farmbot/threed-farmbot/garden-threed'
+// const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/FarmBot'), { ssr: false })
+// const ThreeDFarmBotMain = dynamic(() => import('#/lib/farmbot/threed-farmbot/main'), { ssr: false })
+// const ThreeDFarmBotGarden = dynamic(() => import('#/lib/farmbot/threed-farmbot/garden'), { ssr: false })
 
 // ** HELPER Imports
 import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
@@ -229,17 +241,24 @@ export default function Experience() {
       {/* LIGHTS */}
       <Lights />
 
-      {/* // import Birds from './Birds' */}
+      {/* EXAMPLES: BIRDS */}
       <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
         <Birds />
       </group>
 
+      {/* THREED USING PHYSICS */}
       <Physics
         // debug={prefs.doWorldPhysics}
         debug={false}
         // timeStep='vary'
         // paused={pausedPhysics}
       >
+
+        {/* THREED FARMBOT */}
+        <group rotation={[0, 0, 0]} scale={0.2} position={[2, 2, 2]}>
+          <ThreeDFarmBotGarden />
+        </group>
+
         {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
             CHARACTER MODEL[S] GROUP */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, 16, 0]}>
