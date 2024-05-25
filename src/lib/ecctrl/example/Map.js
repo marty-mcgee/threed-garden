@@ -14,7 +14,7 @@ import { useGame } from 'ecctrl'
 export default function Map(props) {
   const circleRef = useRef()
   const date = useRef(0)
-  const { nodes, materials } = useGLTF('./glb/fantasy_game_inn.glb')
+  const { nodes, materials } = useGLTF('./objects/glb/fantasy_game_inn.glb')
 
   const setMoveToPoint = useGame((state) => state.setMoveToPoint)
 
@@ -55,4 +55,4 @@ export default function Map(props) {
   )
 }
 
-useGLTF.preload('./glb/fantasy_game_inn.glb')
+useGLTF.preload('./objects/glb/fantasy_game_inn.glb')

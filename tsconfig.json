@@ -32,21 +32,26 @@
     // "rootDirs": [".", "../common/src"],
     "baseUrl": ".",
     "paths": {
+      // next-auth
       "auth": [
         "app/auth"
-      ], // next-auth
+      ],
+      // threed (next-14)
       "@/*": [
         "app/*"
-      ], // threed (next-14)
+      ],
+      // threed (next-14)
       "#/*": [
         "src/*"
-      ], // threed (next-14)
+      ],
+      // global root
       "~/*": [
         "*"
-      ], // global
+      ],
+      // global src
       "~~/*": [
         "src/*"
-      ] // global src
+      ]
     },
     "typeRoots": [
       "node_modules/@types",
@@ -72,6 +77,7 @@
     "tailwind.config.js",
     "**/.yalc/**/*",
     ".yalc/**/*",
-    // "src/lib/farmbot/threed-farmbot/*"
+    // "src/lib/farmbot/threed-farmbot/*",
+    "src/lib/farmbot/farmbot-3d-demo-react",
   ]
 }

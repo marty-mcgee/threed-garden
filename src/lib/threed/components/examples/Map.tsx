@@ -14,9 +14,9 @@ Credits: "Fantasy Game Inn" (https://skfb.ly/JDD6) by sirsaugsage is licensed un
 import { useGLTF } from '@react-three/drei'
 import { RigidBody } from '@react-three/rapier'
 
-const theMapModelFile = './glb/fantasy_game_inn.glb'
+const theMapModelFile = './objects/glb/fantasy_game_inn.glb'
 
-export default function Map(props) {
+export default function Map(props: any) {
   const { nodes, materials } = useGLTF(theMapModelFile)
 
   return (
@@ -25,7 +25,9 @@ export default function Map(props) {
         {...props} 
         dispose={null}
       >
+        {/* @ts-expect-error */}
         <mesh castShadow receiveShadow geometry={nodes.TheInn_bakeInn_0.geometry}>
+          {/* @ts-expect-error */}
           <meshStandardMaterial map={materials.bakeInn.map} />
         </mesh>
       </group>
