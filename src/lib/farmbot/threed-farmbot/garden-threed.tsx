@@ -16,11 +16,16 @@ import { Bot } from "./bot-threed"
 import { Bed } from "./bed"
 import { threeSpace, zZero } from "./helpers"
 import { Sky } from "./sky"
+
 import {
   Config, INITIAL, detailLevels, modifyConfigsFromUrlParams, seasonProperties,
 } from "./config"
 import { ASSETS, GARDENS, PLANTS } from "./constants-threed"
-import "./garden.css"
+
+
+import "./styles/garden.css"
+
+
 import { PrivateOverlay, PublicOverlay, ToolTip } from "./config_overlays"
 import { useSpring, animated } from "@react-spring/three"
 import { Solar } from "./solar"
@@ -312,3 +317,5 @@ export const Garden = () => {
     // </div>
   )
 }
+
+export default Garden

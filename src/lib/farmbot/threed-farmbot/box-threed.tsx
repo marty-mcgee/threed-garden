@@ -20,16 +20,16 @@ import {
 } from "./stub"
 import { BufferGeometry } from "three"
 import { debounce, some } from "lodash"
-import "./box.css"
+import "./styles/box.css"
 import { BindingTargetDropdown } from "./stub_components"
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+// @ ts-ignore
 import box from "public/3D/models/box.glb"
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+// @ ts-ignore
 import btn from "public/3D/models/push_button.glb"
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+// @ ts-ignore
 import led from "public/3D/models/led_indicator.glb"
 
 import * as THREE from "three"
@@ -434,3 +434,5 @@ export const ElectronicsBoxModel = (props: BoxTopBaseProps) => {
   //   </Canvas>
   // </div>
 }
+
+export default ElectronicsBoxModel
