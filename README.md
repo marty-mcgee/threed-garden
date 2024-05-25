@@ -1,10 +1,10 @@
-# [🥕 ThreeD Garden: a 3D Environment on 'Next.JS React TypeScript Three.JS React-Three Physics', using Apollo GraphQL State+Stores, Leva Control GUI, Material UI + Tailwind](https://github.com/marty-mcgee/threed-garden/)
+# [🥕 ThreeD Garden: WebGL 3D Environment on 'Next.JS React TypeScript Three.JS React-Three Physics', using Apollo GraphQL State+Stores, Leva Control GUI, Material UI + Tailwind CSS, supporting 3D FarmBot React (Beta)](https://github.com/marty-mcgee/threed-garden/)
 
-3D Dev Environment w React, TypeScript, Three.js, React-Three (poimandres), on Next.js, Apollo Client, GraphQL, WordPress REST API, MUI + Tailwind. ThreeD Web3 Interface for Three-Dimensional JavaScript Objects with React Server + Client Components ...
+3D Dev Environment w React, TypeScript, Three.js, React-Three (poimandres), on Next.js, Apollo Client, GraphQL, WordPress REST API, MUI + Tailwind. ThreeD Web3 Interface for Three-Dimensional JavaScript Objects with React Server + Client Components ... now integrating with 3D FarmBot ...
 
 ## Live Demo
 
-🌱 [threedgarden.com](https://threedgarden.com)
+🌱 [threedgarden.com](https://threedgarden.com/particpate)
 
 🥕 [Demo: Actively Participate](https://threedgarden.com/participate)
 
