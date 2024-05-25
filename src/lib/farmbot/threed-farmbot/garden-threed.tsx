@@ -1,134 +1,137 @@
 // @ts-nocheck /* OR @ ts-expect-error */
 
-import React from "react";
-import { Canvas, ThreeEvent } from "@react-three/fiber";
+import React from "react"
+import { 
+  // Canvas, 
+  ThreeEvent,
+} from "@react-three/fiber"
 import {
   GizmoHelper, GizmoViewcube,
   OrbitControls, PerspectiveCamera,
   Circle, Stats, Billboard, Text, Image, Clouds, Cloud, OrthographicCamera,
   Detailed, Sphere,
-} from "@react-three/drei";
-import { TextureLoader, RepeatWrapping, Vector3, BackSide } from "three";
-import { Bot } from "./bot";
-import { Bed } from "./bed";
-import { threeSpace, zZero } from "./helpers";
-import { Sky } from "./sky";
+} from "@react-three/drei"
+import { TextureLoader, RepeatWrapping, Vector3, BackSide } from "three"
+import { Bot } from "./bot-threed"
+import { Bed } from "./bed"
+import { threeSpace, zZero } from "./helpers"
+import { Sky } from "./sky"
 import {
   Config, INITIAL, detailLevels, modifyConfigsFromUrlParams, seasonProperties,
-} from "./config";
-import { ASSETS, GARDENS, PLANTS } from "./constants";
-import "./garden.css";
-import { PrivateOverlay, PublicOverlay, ToolTip } from "./config_overlays";
-import { useSpring, animated } from "@react-spring/three";
-import { Solar } from "./solar";
-import { Sun, sunPosition } from "./sun";
-import { LabEnvironment } from "./lab";
-import { ZoomBeacons } from "./zoom_beacons";
-import { VectorXyz, getCamera } from "./zoom_beacons_constants";
+} from "./config"
+import { ASSETS, GARDENS, PLANTS } from "./constants-threed"
+import "./garden.css"
+import { PrivateOverlay, PublicOverlay, ToolTip } from "./config_overlays"
+import { useSpring, animated } from "@react-spring/three"
+import { Solar } from "./solar"
+import { Sun, sunPosition } from "./sun"
+import { LabEnvironment } from "./lab"
+import { ZoomBeacons } from "./zoom_beacons"
+import { VectorXyz, getCamera } from "./zoom_beacons_constants"
 
 const grassTexture = new TextureLoader()
   .load(ASSETS.textures.grass,
     texture => {
-      texture.wrapS = RepeatWrapping;
-      texture.wrapT = RepeatWrapping;
-      texture.repeat.set(24, 24);
-    });
+      texture.wrapS = RepeatWrapping
+      texture.wrapT = RepeatWrapping
+      texture.repeat.set(24, 24)
+    })
 
 const concreteTexture = new TextureLoader()
   .load(ASSETS.textures.concrete,
     texture => {
-      texture.wrapS = RepeatWrapping;
-      texture.wrapT = RepeatWrapping;
-      texture.repeat.set(16, 24);
-    });
+      texture.wrapS = RepeatWrapping
+      texture.wrapT = RepeatWrapping
+      texture.repeat.set(16, 24)
+    })
 
 interface ModelProps {
-  config: Config;
-  activeFocus: string;
-  setActiveFocus(focus: string): void;
+  config: Config
+  activeFocus: string
+  setActiveFocus(focus: string): void
 }
 
 interface Plant {
-  label: string;
-  icon: string;
-  size: number;
-  spread: number;
-  x: number;
-  y: number;
+  label: string
+  icon: string
+  size: number
+  spread: number
+  x: number
+  y: number
 }
 
 const Model = (props: ModelProps) => {
-  const { config } = props;
-  const groundZ = config.bedZOffset + config.bedHeight;
-  const Camera = config.perspective ? PerspectiveCamera : OrthographicCamera;
+  const { config } = props
+  const groundZ = config.bedZOffset + config.bedHeight
+  const Camera = config.perspective ? PerspectiveCamera : OrthographicCamera
 
-  const gardenPlants = GARDENS[config.plants] || [];
+  const gardenPlants = GARDENS[config.plants] || []
   const calculatePlantPositions = (): Plant[] => {
-    const positions: Plant[] = [];
-    const startX = 350;
-    let nextX = startX;
-    let index = 0;
+    const positions: Plant[] = []
+    const startX = 350
+    let nextX = startX
+    let index = 0
     while (nextX <= config.bedLengthOuter - 100) {
-      const plantKey = gardenPlants[index];
-      const plant = PLANTS[plantKey];
-      if (!plant) { return []; }
+      const plantKey = gardenPlants[index]
+      const plant = PLANTS[plantKey]
+      if (!plant) { return [] }
       positions.push({
         ...plant,
         x: nextX,
         y: config.bedWidthOuter / 2,
-      });
+      })
       const plantsPerHalfRow =
-        Math.ceil((config.bedWidthOuter - plant.spread) / 2 / plant.spread);
+        Math.ceil((config.bedWidthOuter - plant.spread) / 2 / plant.spread)
       for (let i = 1; i < plantsPerHalfRow; i++) {
         positions.push({
           ...plant,
           x: nextX,
           y: config.bedWidthOuter / 2 + plant.spread * i,
-        });
+        })
         positions.push({
           ...plant,
           x: nextX,
           y: config.bedWidthOuter / 2 - plant.spread * i,
-        });
+        })
       }
       if (index + 1 < gardenPlants.length) {
-        const nextPlant = PLANTS[gardenPlants[index + 1]];
-        nextX += (plant.spread / 2) + (nextPlant.spread / 2);
-        index++;
+        const nextPlant = PLANTS[gardenPlants[index + 1]]
+        nextX += (plant.spread / 2) + (nextPlant.spread / 2)
+        index++
       } else {
-        index = 0;
-        const nextPlant = PLANTS[gardenPlants[0]];
-        nextX += (plant.spread / 2) + (nextPlant.spread / 2);
+        index = 0
+        const nextPlant = PLANTS[gardenPlants[0]]
+        nextX += (plant.spread / 2) + (nextPlant.spread / 2)
       }
     }
-    return positions;
-  };
-  const plants = calculatePlantPositions();
+    return positions
+  }
+  const plants = calculatePlantPositions()
 
   const [hoveredPlant, setHoveredPlant] =
-    React.useState<number | undefined>(undefined);
+    React.useState<number | undefined>(undefined)
 
   const getI = (e: ThreeEvent<PointerEvent>) =>
-    e.buttons ? -1 : parseInt(e.intersections[0].object.name);
+    e.buttons ? -1 : parseInt(e.intersections[0].object.name)
 
   const setHover = (active: boolean) => {
     return (active && config.labelsOnHover)
       ? (e: ThreeEvent<PointerEvent>) => {
-        e.stopPropagation();
-        setHoveredPlant(getI(e));
+        e.stopPropagation()
+        setHoveredPlant(getI(e))
       }
-      : undefined;
-  };
+      : undefined
+  }
 
   interface PlantProps {
-    plant: Plant;
-    i: number;
-    labelOnly?: boolean;
+    plant: Plant
+    i: number
+    labelOnly?: boolean
   }
 
   const Plant = (props: PlantProps) => {
-    const { i, plant, labelOnly } = props;
-    const alwaysShowLabels = config.labels && !config.labelsOnHover;
+    const { i, plant, labelOnly } = props
+    const alwaysShowLabels = config.labels && !config.labelsOnHover
     return <Billboard follow={true}
       position={new Vector3(
         threeSpace(plant.x, config.bedLengthOuter),
@@ -151,16 +154,16 @@ const Model = (props: ModelProps) => {
         : <Image url={plant.icon} scale={plant.size} name={"" + i}
           transparent={true}
           renderOrder={1} />}
-    </Billboard>;
-  };
-  const isXL = config.sizePreset == "Genesis XL";
+    </Billboard>
+  }
+  const isXL = config.sizePreset == "Genesis XL"
   const { scale } = useSpring({
     scale: isXL ? 1.75 : 1,
     config: {
       tension: 300,
       friction: 40,
     },
-  });
+  })
 
   const Ground = ({ children }: { children: React.ReactElement }) =>
     <Circle name={"ground"}
@@ -169,15 +172,15 @@ const Model = (props: ModelProps) => {
       args={[30000, 16]}
       position={[0, 0, -groundZ]}>
       {children}
-    </Circle>;
+    </Circle>
 
   const initCamera: { position: VectorXyz, target: VectorXyz } = {
     // position: isXL ? [7500, -3500, 3200]
     position: [5000, -2500, 3200], // Small screens
     // position: [2200, -3500, 2000], // Large screens
     target: [0, 0, 0],
-  };
-  const camera = getCamera(config, props.activeFocus, initCamera);
+  }
+  const camera = getCamera(config, props.activeFocus, initCamera)
 
   return <group dispose={null}>
     {config.stats && <Stats />}
@@ -273,35 +276,39 @@ const Model = (props: ModelProps) => {
     </Text>
     <Solar config={config} />
     <LabEnvironment config={config} />
-  </group>;
-};
+  </group>
+}
 
 export const Garden = () => {
-  const [config, setConfig] = React.useState<Config>(INITIAL);
-  const [toolTip, setToolTip] = React.useState<ToolTip>({ timeoutId: 0, text: "" });
-  const [activeFocus, setActiveFocus] = React.useState("");
+  const [config, setConfig] = React.useState<Config>(INITIAL)
+  const [toolTip, setToolTip] = React.useState<ToolTip>({ timeoutId: 0, text: "" })
+  const [activeFocus, setActiveFocus] = React.useState("")
 
   React.useEffect(() => {
-    setConfig(modifyConfigsFromUrlParams(config));
+    setConfig(modifyConfigsFromUrlParams(config))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // intentionally empty dependency array
+  }, []) // intentionally empty dependency array
 
   const common = {
     config, setConfig,
     toolTip, setToolTip,
     activeFocus, setActiveFocus,
-  };
-  return <div className={"garden-bed-3d-model"}>
-    <Canvas shadows={true}>
-      <Model {...common} />
-    </Canvas>
-    <PublicOverlay {...common} />
-    {!config.config && <img className={"gear"} src={ASSETS.other.gear}
-      onClick={() => setConfig({ ...config, config: true })} />}
-    {config.config &&
-      <PrivateOverlay {...common} />}
-    <span className={"tool-tip"} hidden={!toolTip.text}>
-      {toolTip.text}
-    </span>
-  </div>;
-};
+  }
+  return (
+    <Model {...common} />
+    // ** from main repo
+    // <div className={"garden-bed-3d-model"}>
+    //   <Canvas shadows={true}>
+    //     <Model {...common} />
+    //   </Canvas>
+    //   <PublicOverlay {...common} />
+    //   {!config.config && <img className={"gear"} src={ASSETS.other.gear}
+    //     onClick={() => setConfig({ ...config, config: true })} />}
+    //   {config.config &&
+    //     <PrivateOverlay {...common} />}
+    //   <span className={"tool-tip"} hidden={!toolTip.text}>
+    //     {toolTip.text}
+    //   </span>
+    // </div>
+  )
+}

@@ -7,7 +7,7 @@ import {
 import { range } from "lodash";
 import { threeSpace, zZero, getColorFromBrightness } from "./helpers";
 import { Config, detailLevels } from "./config";
-import { ASSETS } from "./constants";
+import { ASSETS } from "./constants-threed";
 import { DistanceIndicator } from "./distance_indicator";
 import { FarmBotAxes } from "./farmbot_axes";
 import { FarmBotPackaging } from "./packaging";

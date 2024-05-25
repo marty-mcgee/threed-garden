@@ -1,7 +1,7 @@
 // @ts-nocheck /* OR @ ts-expect-error */
 
 import { Box, Text } from "@react-three/drei";
-import { ASSETS } from "./constants";
+import { ASSETS } from "./constants-threed";
 import { Arrow } from "./arrow";
 
 interface DistanceIndicatorProps {
