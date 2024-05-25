@@ -55,9 +55,9 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
     user: {
       name: 'Marty',
       email: 'mcgee.marty@gmail.com',
-      image: './ThreeD-Garden-Logo-Circle-Carrot.png'
+      image: './images/logos/threed-garden.png'
     },
-    expires: () => new Date().getDate(), // 'datetime as string',
+    expires: Date.now(), // 'datetime as string',
   }
 
   return (
