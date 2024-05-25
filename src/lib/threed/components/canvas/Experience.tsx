@@ -51,12 +51,12 @@ import Map from '#/lib/threed/components/examples/Map'
 import Birds from '#/lib/threed/components/examples/Birds/Birds'
 
 // ** FARMBOT Imports
-import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
-import ThreeDFarmBotMain from '#/lib/farmbot/threed-farmbot/main-threed'
-import ThreeDFarmBotGarden from '#/lib/farmbot/threed-farmbot/garden-threed'
+// import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
+// import ThreeDFarmBotMain from '#/lib/farmbot/threed-farmbot/main-threed'
+// import ThreeDFarmBotGarden from '#/lib/farmbot/threed-farmbot/garden-threed'
 // const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/FarmBot'), { ssr: false })
-// const ThreeDFarmBotMain = dynamic(() => import('#/lib/farmbot/threed-farmbot/main'), { ssr: false })
-// const ThreeDFarmBotGarden = dynamic(() => import('#/lib/farmbot/threed-farmbot/garden'), { ssr: false })
+// const ThreeDFarmBotMain = dynamic(() => import('#/lib/farmbot/threed-farmbot/main-threed'), { ssr: false })
+const ThreeDFarmBotGarden = dynamic(() => import('#/lib/farmbot/threed-farmbot/garden-threed'), { ssr: false })
 
 // ** HELPER Imports
 import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
