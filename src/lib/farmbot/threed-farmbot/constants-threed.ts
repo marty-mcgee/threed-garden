@@ -2,6 +2,8 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 
 import { sampleSize } from "lodash"
+
+
 import cabin from "/public/3D/fonts/Cabin.ttf"
 import cabinBold from "/public/3D/fonts/Cabin_Bold.ttf"
 import inknut from "/public/3D/fonts/InknutAntiqua-Bold.ttf"
@@ -87,10 +89,12 @@ import shaftCoupler from "/public/3D/models/shaft_coupler.glb"
 import solenoid from "/public/3D/models/solenoid.glb"
 import xAxisCCMount from "/public/3D/models/x_axis_cc_mount.glb"
 
+
 import person1 from "/public/3D/people/person_1.avif"
 import person1Flipped from "/public/3D/people/person_1_flipped.avif"
 import person2 from "/public/3D/people/person_2.avif"
 import person2Flipped from "/public/3D/people/person_2_flipped.avif"
+
 
 import gear from "/public/images/misc/gear.svg"
 
