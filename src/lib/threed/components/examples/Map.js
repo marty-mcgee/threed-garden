@@ -9,7 +9,11 @@ Title: Fantasy Game Inn
 import { useGLTF } from '@react-three/drei'
 import { RigidBody } from '@react-three/rapier'
 import { useRef } from 'react'
-import { useGame } from '#/lib/ecctrl/src/Ecctrl' // 'ecctrl'
+// import { useGame } from '#/lib/ecctrl/src/Ecctrl' // 'ecctrl'
+import { 
+  useGame, 
+  // type AnimationSet 
+} from '#/lib/ecctrl/src/hooks/useGame'
 
 export default function Map(props) {
   const circleRef = useRef()
