@@ -1112,16 +1112,12 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
 
     // Character current position
     if (characterRef.current) {
-      // @ts-expect-error
-      currentPos.copy(characterRef.current.translation() as THREE.Vector3)
+      currentPos.copy(characterRef.current.translation() as THREE.Vector3);
       // Assign userDate properties
-      // @ts-expect-error
-      (characterRef.current.userData as userDataType).canJump = canJump
-      // @ts-expect-error
-      (characterRef.current.userData as userDataType).slopeAngle = slopeAngle
-      // @ts-expect-error
-      (characterRef.current.userData as userDataType).characterRotated = characterRotated
-      (characterRef.current.userData as userDataType).isOnMovingObject = isOnMovingObject
+      (characterRef.current.userData as userDataType).canJump = canJump;
+      (characterRef.current.userData as userDataType).slopeAngle = slopeAngle;
+      (characterRef.current.userData as userDataType).characterRotated = characterRotated;
+      (characterRef.current.userData as userDataType).isOnMovingObject = isOnMovingObject;
     }
 
     /**
