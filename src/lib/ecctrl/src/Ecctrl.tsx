@@ -61,20 +61,20 @@ export interface EcctrlProps extends RigidBodyProps {
   characterInitDir?: number
   followLight?: boolean
   disableFollowCam?: boolean
-  disableFollowCamPos?: { x: number, y: number, z: number }
-  disableFollowCamTarget?: { x: number, y: number, z: number }
+  disableFollowCamPos?: { x: number, y: number, z: number, }
+  disableFollowCamTarget?: { x: number, y: number, z: number, }
   // Follow camera setups
   camInitDis?: number
   camMaxDis?: number
   camMinDis?: number
   camInitDir?: { x: number, y: number }
-  camTargetPos?: { x: number, y: number, z: number }
+  camTargetPos?: { x: number, y: number, z: number, }
   camMoveSpeed?: number
   camZoomSpeed?: number
   camCollision?: boolean
   camCollisionOffset?: number
   // Follow light setups
-  followLightPos?: { x: number, y: number, z: number }
+  followLightPos?: { x: number, y: number, z: number, }
   // Base control setups
   maxVelLimit?: number
   turnVelMultiplier?: number
@@ -94,10 +94,10 @@ export interface EcctrlProps extends RigidBodyProps {
   fallingMaxVel?: number
   wakeUpDelay?: number
   // Floating Ray setups
-  rayOriginOffest?: { x: number; y: number; z: number; }
+  rayOriginOffest?: { x: number, y: number, z: number, }
   rayHitForgiveness?: number
   rayLength?: number
-  rayDir?: { x: number; y: number; z: number; }
+  rayDir?: { x: number, y: number, z: number, }
   floatingDis?: number
   springK?: number
   dampingC?: number
@@ -106,14 +106,14 @@ export interface EcctrlProps extends RigidBodyProps {
   slopeMaxAngle?: number
   slopeRayOriginOffest?: number
   slopeRayLength?: number
-  slopeRayDir?: { x: number; y: number; z: number; }
+  slopeRayDir?: { x: number, y: number, z: number, }
   slopeUpExtraForce?: number
   slopeDownExtraForce?: number
   // Head Ray setups
   showHeadRayOrigin?: boolean
   headRayOriginOffest?: number
   headRayLength?: number
-  headRayDir?: { x: number; y: number; z: number; }
+  headRayDir?: { x: number, y: number, z: number, }
   // AutoBalance Force setups
   autoBalance?: boolean
   autoBalanceSpringK?: number
