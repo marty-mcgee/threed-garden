@@ -1,4 +1,4 @@
-// @ts-nocheck /* OR @ ts-expect-error */
+// @ ts-nocheck /* OR @ ts-expect-error */
 
 import { Box, Detailed, Extrude } from "@react-three/drei";
 import {
