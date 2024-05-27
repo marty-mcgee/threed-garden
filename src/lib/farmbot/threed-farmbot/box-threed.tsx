@@ -403,15 +403,15 @@ export const ElectronicsBoxModel = (props: BoxTopBaseProps) => {
       // <Canvas>
         <group dispose={null}
           rotation={[0, 0, Math.PI / 2]}>
-          <PerspectiveCamera makeDefault name="camera" fov={30} near={0.1} far={1000}
+          {/* <PerspectiveCamera makeDefault name="camera" fov={30} near={0.1} far={1000}
             position={[-150, 0, 300]}
-            rotation={[0, -Math.PI / 6, -Math.PI / 2]} />
+            rotation={[0, -Math.PI / 6, -Math.PI / 2]} /> */}
           <pointLight intensity={2} position={[0, 0, 200]} rotation={[0, 0, 0]}
             distance={0} decay={0} />
           <directionalLight intensity={0.1}
             position={[-100, 0, 100]} rotation={[0, 0, 0]} />
           <ambientLight intensity={0.5} />
-          <ElectronicsBox {...props} showLabels={true} />
+          <ElectronicsBox {...props} showLabels={false} />
         </group>
       // </Canvas>
     // </div>

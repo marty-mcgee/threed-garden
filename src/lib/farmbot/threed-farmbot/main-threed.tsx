@@ -4,12 +4,12 @@
 // import ReactDOM from "react-dom/client"
 
 import { ElectronicsBoxModel } from "./box-threed"
-import { Garden } from "./garden-threed"
+// import { Garden } from "./garden-threed"
 
 const ThreeDFarmBotGardenMain = () => {
   return (
     <group>
-      <Garden />
+      {/* <Garden /> */}
       <ElectronicsBoxModel
         isEditing={false}
         dispatch={() => { }}
