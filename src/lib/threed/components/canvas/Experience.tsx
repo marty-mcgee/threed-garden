@@ -257,18 +257,18 @@ export default function Experience() {
         {/* THREED FARMBOT */}
         <group rotation={[-Math.PI/2, 0, 0]} scale={0.002} position={[-8, 2, -2]}>
           {/* <ThreeDFarmBotMain /> */}
-          {/* <ThreeDFarmBotGarden /> */}
+          <ThreeDFarmBotGarden />
         </group>
 
         {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
             CHARACTER MODEL[S] GROUP */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 16, 0]}>
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 16, 0]}> */}
 
           {/* Character Model 1 Control */}
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
           {/* Keyboard preset */}
           <KeyboardControls map={keyboardMap}>
-            <CharacterControls
+            {/* <CharacterControls
               // debug={prefs.doWorldDebug}
               debug={false}
               // animated={prefs.doCharacterAnimation}
@@ -282,31 +282,31 @@ export default function Experience() {
               // autoBalanceDampingC={0.04}
               // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
               // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
-            >
+            > */}
               {/* GROUND DWELLER / DEMON PETE / AWWW */}
               {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, 0, 0]}> */}
                 {/* <CharacterModel0 /> */}
                 {/* <CharacterModel1 /> */}
               {/* </group> */}
               {/* FARMER: FEMALE */}
-              <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
+              <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63 + 0.63, 0]}>
                 <CharacterModel5 />
               </group>
               {/* FARMER: MALE */}
               {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
                 <CharacterModel4 />
               </group> */}
-            </CharacterControls>
+            {/* </CharacterControls> */}
           </KeyboardControls>     
         
         {/* END: CHARACTER MODEL[S] GROUP */}
-        </group>
+        {/* </group> */}
 
         {/* // import Map from './Map' */}
         <group 
           rotation={[(-Math.PI/2) + 0, (-Math.PI/2), (-Math.PI/2) + 0]} 
           scale={1.4} 
-          position={[0, 2, 24]}
+          position={[0, 2, 26]}
         >
           <Map />
         </group>
