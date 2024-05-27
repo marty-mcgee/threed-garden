@@ -55,7 +55,7 @@ import Birds from '#/lib/threed/components/examples/Birds/Birds'
 // import ThreeDFarmBotMain from '#/lib/farmbot/threed-farmbot/main-threed'
 // import ThreeDFarmBotGarden from '#/lib/farmbot/threed-farmbot/garden-threed'
 // const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/FarmBot'), { ssr: false })
-// const ThreeDFarmBotMain = dynamic(() => import('#/lib/farmbot/threed-farmbot/main-threed'), { ssr: false })
+const ThreeDFarmBotMain = dynamic(() => import('#/lib/farmbot/threed-farmbot/main-threed'), { ssr: false })
 const ThreeDFarmBotGarden = dynamic(() => import('#/lib/farmbot/threed-farmbot/garden-threed'), { ssr: false })
 
 // ** HELPER Imports
@@ -255,7 +255,8 @@ export default function Experience() {
       >
 
         {/* THREED FARMBOT */}
-        <group rotation={[0, 0, 0]} scale={0.2} position={[2, 2, 2]}>
+        <group rotation={[-Math.PI/2, 0, 0]} scale={0.002} position={[-8, 2, -2]}>
+          {/* <ThreeDFarmBotMain /> */}
           <ThreeDFarmBotGarden />
         </group>
 
@@ -303,9 +304,9 @@ export default function Experience() {
 
         {/* // import Map from './Map' */}
         <group 
-          rotation={[(-Math.PI/2) + 0, 0, (-Math.PI/2) + 0]} 
-          scale={0.16} 
-          position={[0, 3, 24]}
+          rotation={[(-Math.PI/2) + 0, (-Math.PI/2), (-Math.PI/2) + 0]} 
+          scale={1.4} 
+          position={[0, 2, 24]}
         >
           <Map />
         </group>
@@ -355,12 +356,12 @@ export default function Experience() {
         {/* backup solid steps (levels[1+], safety) */}
         {/* Sub-Floor[s] (Plane < 0) */}
         {/* <SubFloor level={`${level[index]}`} /> */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -64, 0]}>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
           <Floor color={'saddlebrown'} opacity={0.8} />
         </group>
         {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
             DEEP BELOW SEA LEVEL */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
           <Floor color={'black'} opacity={0.8} />
         </group>
 
@@ -376,10 +377,10 @@ export default function Experience() {
         }}
       /> */}
 
-      <Perf
+      {/* <Perf
         position='bottom-left'
         // minimal
-      />
+      /> */}
     </>
   )
 }
