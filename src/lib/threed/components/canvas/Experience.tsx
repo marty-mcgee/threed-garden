@@ -257,7 +257,7 @@ export default function Experience() {
         {/* THREED FARMBOT */}
         <group rotation={[-Math.PI/2, 0, 0]} scale={0.002} position={[-8, 2, -2]}>
           {/* <ThreeDFarmBotMain /> */}
-          <ThreeDFarmBotGarden />
+          {/* <ThreeDFarmBotGarden /> */}
         </group>
 
         {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
