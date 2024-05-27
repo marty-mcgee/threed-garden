@@ -1,4 +1,4 @@
-// @ ts-nocheck /* OR @ ts-expect-error */
+// @ts-nocheck /* OR @ ts-expect-error */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 
 import { sampleSize } from "lodash"
