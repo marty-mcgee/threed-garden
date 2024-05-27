@@ -190,6 +190,16 @@ const nextConfig = {
       //   // filename: 'public/3D/fonts/[hash][ext][query]'
       //   filename: 'public/3D/fonts/[name][ext]'
       // },
+      // options: {
+      //   // limit: config.inlineImageLimit,
+      //   // fallback: require.resolve('file-loader'),
+      //   // publicPath: `${config.assetPrefix}/_next/static/images/`,
+      //   // outputPath: `${isServer ? '../' : ''}static/images/`,
+      //   // name: '[name]-[hash].[ext]',
+      //   outputPath: '/public/3D/fonts/',
+      //   // name: '[name][ext]',
+      //   // esModule: config.esModule || false,
+      // },
     })
 
     // avif support
@@ -217,6 +227,16 @@ const nextConfig = {
       //     },
       //   },
       // ],
+      // options: {
+      //   // limit: config.inlineImageLimit,
+      //   // fallback: require.resolve('file-loader'),
+      //   // publicPath: `${config.assetPrefix}/_next/static/images/`,
+      //   // outputPath: `${isServer ? '../' : ''}static/images/`,
+      //   // name: '[name]-[hash].[ext]',
+      //   outputPath: '/public/3D/textures/',
+      //   name: '[name][ext]',
+      //   // esModule: config.esModule || false,
+      // },
     })
 
     // glb + gltf support
@@ -228,6 +248,16 @@ const nextConfig = {
       // generator: {
       //   // filename: 'public/3D/models/[hash][ext][query]'
       //   filename: 'public/3D/models/[name][ext]'
+      // },
+      // options: {
+      //   // limit: config.inlineImageLimit,
+      //   // fallback: require.resolve('file-loader'),
+      //   // publicPath: `${config.assetPrefix}/_next/static/images/`,
+      //   // outputPath: `${isServer ? '../' : ''}static/images/`,
+      //   // name: '[name]-[hash].[ext]',
+      //   outputPath: '/public/3D/objects/glb',
+      //   name: '[name][ext]',
+      //   // esModule: config.esModule || false,
       // },
     })
     
