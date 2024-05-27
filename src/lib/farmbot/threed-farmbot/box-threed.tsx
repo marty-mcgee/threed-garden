@@ -1,4 +1,4 @@
-// @ts-nocheck /* OR @ ts-expect-error */
+// @ ts-nocheck /* OR @ ts-expect-error */
 /* eslint-disable @typescript-eslint/no-namespace */
 
 import React, { useRef } from "react"
@@ -23,14 +23,14 @@ import { debounce, some } from "lodash"
 import "./styles/box.css"
 import { BindingTargetDropdown } from "./stub_components"
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ ts-ignore
-import box from "public/3D/models/box.glb"
+// @ts-expect-error
+import box from "/public/3D/models/box.glb"
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ ts-ignore
-import btn from "public/3D/models/push_button.glb"
+// @ts-expect-error
+import btn from "/public/3D/models/push_button.glb"
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ ts-ignore
-import led from "public/3D/models/led_indicator.glb"
+// @ts-expect-error
+import led from "/public/3D/models/led_indicator.glb"
 
 import * as THREE from "three"
 

@@ -192,6 +192,33 @@ const nextConfig = {
       // },
     })
 
+    // avif support
+    config.module.rules.push({
+      test: /\.avif/,
+      // include: [/public/],
+      exclude: /node_modules/,
+      type: 'asset/resource',
+      // type: 'asset/inline',
+      // generator: {
+      //   // filename: 'public/3D/fonts/[hash][ext][query]'
+      //   filename: 'public/3D/fonts/[name][ext]'
+      // },
+      // use: [
+      //   {
+      //     loader: require.resolve('url-loader'),
+      //     options: {
+      //       // limit: config.inlineImageLimit,
+      //       // fallback: require.resolve('file-loader'),
+      //       publicPath: `${config.assetPrefix}/_next/static/images/`,
+      //       outputPath: `${isServer ? '../' : ''}static/images/`,
+      //       // name: '[name]-[hash].[ext]',
+      //       name: '[name][ext]',
+      //       // esModule: config.esModule || false,
+      //     },
+      //   },
+      // ],
+    })
+
     // glb + gltf support
     config.module.rules.push({
       test: /\.(glb|gltf)$/,
