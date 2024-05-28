@@ -1,4 +1,6 @@
-// @ts-nocheck /* OR @ ts-expect-error */
+// @ ts-nocheck /* OR @ ts-expect-error */
+
+import { StaticImageData } from 'next/image'
 
 import React from "react"
 import { 
@@ -40,6 +42,7 @@ import {
 } from "./config"
 
 import { ASSETS, GARDENS, PLANTS } from "./constants-threed"
+console.debug('ASSETS, GARDENS, PLANTS', ASSETS, GARDENS, PLANTS)
 
 
 import { PrivateOverlay, PublicOverlay, ToolTip } from "./config_overlays"
@@ -86,7 +89,7 @@ interface ModelProps {
 
 interface Plant {
   label: string
-  icon: string
+  icon: string // | StaticImageData
   size: number
   spread: number
   x: number
@@ -164,8 +167,12 @@ const Model = (props: ModelProps) => {
   }
 
   const Plant = (props: PlantProps) => {
+    // **
     const { i, plant, labelOnly } = props
+    console.debug('plant', plant)
+
     const alwaysShowLabels = config.labels && !config.labelsOnHover
+    
     return <Billboard follow={true}
       position={new Vector3(
         threeSpace(plant.x, config.bedLengthOuter),
@@ -185,9 +192,10 @@ const Model = (props: ModelProps) => {
           outlineOpacity={0.7}>
           {plant.label}
         </Text>
-        : <Image url={plant.icon} scale={plant.size} name={"" + i}
+        : <></>}
+        {/* : <Image url={plant.icon} scale={plant.size} name={"" + i}
           transparent={true}
-          renderOrder={1} />}
+          renderOrder={1} />} */}
     </Billboard>
   }
   const isXL = config.sizePreset == "Genesis XL"
@@ -324,9 +332,10 @@ const Model = (props: ModelProps) => {
     
     
     
-    {/* <group name={"plant-icon-preload"} visible={false}>
+    <group name={"plant-icon-preload"} visible={false}>
       {Object.values(PLANTS).map((plant, i) =>
-        <Image key={i} url={plant.icon} />
+        // <Image key={i} url={plant.icon} />
+        <></>
       )}
     </group>
     <group name={"plant-labels"} visible={!props.activeFocus}>
@@ -342,7 +351,7 @@ const Model = (props: ModelProps) => {
       {plants.map((plant, i) =>
         <Plant key={i} i={i} plant={plant} />
       )}
-    </group> */}
+    </group>
 
 
     <Text 
