@@ -107,6 +107,7 @@ const nextConfig = {
 
   // ** IMAGES (production use?)
   images: {
+    
     // domains: [
     //   process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL.match(/(?!(w+)\.)\w*(?:\w+\.)+\w+/)[0], // Valid WP Image domain.
     //   '0.gravatar.com',
@@ -122,28 +123,35 @@ const nextConfig = {
         port: '443',
         pathname: '/threedpublic/**',
       },
+      {
+        protocol: 'http',
+        hostname: '**',
+        // port: '7777',
+        // pathname: '/**',
+      },
     ],
     // loader: 'default',
     // // path: 'https://somedomain.com/mydirectory/',
     // // deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     // // imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // // formats: ['image/webp'],
+    formats: ['image/avif', 'image/webp'],
     // // minimumCacheTTL: 60,
-    // disableStaticImages: true,
+    disableStaticImages: true,
     // dangerouslyAllowSVG: true,
     // contentSecurityPolicy: 'default-src 'self'; script-src 'none'; sandbox;',
   },
 
   // ** REDIRECTS
-  // async redirects() {
-  //   return [
-  //     {
-  //       source: '/',
-  //       destination: '/dashboards/sales',
-  //       permanent: true,
-  //     },
-  //   ]
-  // },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/participate',
+        // destination: '/dashboards/sales',
+        permanent: false,
+      },
+    ]
+  },
 
   // ** WEBPACK
   webpack(config, { isServer }) {
@@ -187,18 +195,13 @@ const nextConfig = {
       exclude: /node_modules/,
       type: 'asset/resource',
       // generator: {
-      //   // filename: 'public/3D/fonts/[hash][ext][query]'
-      //   filename: 'public/3D/fonts/[name][ext]'
-      // },
-      // options: {
-      //   // limit: config.inlineImageLimit,
-      //   // fallback: require.resolve('file-loader'),
-      //   // publicPath: `${config.assetPrefix}/_next/static/images/`,
-      //   // outputPath: `${isServer ? '../' : ''}static/images/`,
-      //   // name: '[name]-[hash].[ext]',
-      //   outputPath: '/public/3D/fonts/',
-      //   // name: '[name][ext]',
-      //   // esModule: config.esModule || false,
+      //   // outputPath: '/public',
+      //   outputPath: '../[path]',
+      //   // publicPath: '/public',
+      //   publicPath: '[path]',
+      //   filename: '[name][ext]',
+      //   // filename: '../[path]/[name][ext]',
+      //   // filename: 'static/chunks/[path]/[name][ext]'
       // },
     })
 
@@ -208,35 +211,27 @@ const nextConfig = {
       // include: [/public/],
       exclude: /node_modules/,
       type: 'asset/resource',
+      generator: {
+        // outputPath: '/public',
+        outputPath: '../[path]',
+        // publicPath: '/public',
+        publicPath: '[path]',
+        filename: '[name][ext]',
+        // filename: '../[path]/[name][ext]',
+        // filename: 'static/chunks/[path]/[name][ext]'
+      },
+    })
+
+    // svg support
+    config.module.rules.push({
+      test: /\.svg/,
+      // include: [/public/],
+      exclude: /node_modules/,
+      type: 'asset/resource',
       // type: 'asset/inline',
-      // generator: {
-      //   // filename: 'public/3D/fonts/[hash][ext][query]'
-      //   filename: 'public/3D/fonts/[name][ext]'
-      // },
-      // use: [
-      //   {
-      //     loader: require.resolve('url-loader'),
-      //     options: {
-      //       // limit: config.inlineImageLimit,
-      //       // fallback: require.resolve('file-loader'),
-      //       publicPath: `${config.assetPrefix}/_next/static/images/`,
-      //       outputPath: `${isServer ? '../' : ''}static/images/`,
-      //       // name: '[name]-[hash].[ext]',
-      //       name: '[name][ext]',
-      //       // esModule: config.esModule || false,
-      //     },
-      //   },
-      // ],
-      // options: {
-      //   // limit: config.inlineImageLimit,
-      //   // fallback: require.resolve('file-loader'),
-      //   // publicPath: `${config.assetPrefix}/_next/static/images/`,
-      //   // outputPath: `${isServer ? '../' : ''}static/images/`,
-      //   // name: '[name]-[hash].[ext]',
-      //   outputPath: '/public/3D/textures/',
-      //   name: '[name][ext]',
-      //   // esModule: config.esModule || false,
-      // },
+      generator: {
+        filename: '../[path]/[name][ext]'
+      },
     })
 
     // glb + gltf support
@@ -246,18 +241,13 @@ const nextConfig = {
       exclude: /node_modules/,
       type: 'asset/resource',
       // generator: {
-      //   // filename: 'public/3D/models/[hash][ext][query]'
-      //   filename: 'public/3D/models/[name][ext]'
-      // },
-      // options: {
-      //   // limit: config.inlineImageLimit,
-      //   // fallback: require.resolve('file-loader'),
-      //   // publicPath: `${config.assetPrefix}/_next/static/images/`,
-      //   // outputPath: `${isServer ? '../' : ''}static/images/`,
-      //   // name: '[name]-[hash].[ext]',
-      //   outputPath: '/public/3D/objects/glb',
-      //   name: '[name][ext]',
-      //   // esModule: config.esModule || false,
+      //   // outputPath: '/public',
+      //   outputPath: '../[path]',
+      //   // publicPath: '/public',
+      //   publicPath: '[path]',
+      //   filename: '[name][ext]',
+      //   // filename: '../[path]/[name][ext]',
+      //   // filename: 'static/chunks/[path]/[name][ext]'
       // },
     })
     

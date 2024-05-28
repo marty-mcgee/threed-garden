@@ -49,7 +49,7 @@ const bedStructure2D = (
 }
 
 const woodTexture = new TextureLoader()
-  // @ts-expect-error
+  // @ ts-expect-error
   .load(ASSETS.textures.wood,
     texture => {
       texture.wrapS = RepeatWrapping;
@@ -58,7 +58,7 @@ const woodTexture = new TextureLoader()
     });
 
 const legWoodTexture = new TextureLoader()
-// @ts-expect-error
+  // @ ts-expect-error
   .load(ASSETS.textures.wood,
     texture => {
       texture.wrapS = RepeatWrapping;
@@ -67,7 +67,7 @@ const legWoodTexture = new TextureLoader()
     });
 
 const soilTexture = new TextureLoader()
-// @ts-expect-error
+  // @ ts-expect-error
   .load(ASSETS.textures.soil,
     texture => {
       texture.wrapS = RepeatWrapping;

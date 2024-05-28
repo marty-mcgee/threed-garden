@@ -242,9 +242,9 @@ export default function Experience() {
       <Lights />
 
       {/* EXAMPLES: BIRDS */}
-      <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
+      {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
         <Birds />
-      </group>
+      </group> */}
 
       {/* THREED USING PHYSICS */}
       <Physics
@@ -269,7 +269,7 @@ export default function Experience() {
           {/* Character Model 1 Control */}
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
           {/* Keyboard preset */}
-          <KeyboardControls map={keyboardMap}>
+          {/* <KeyboardControls map={keyboardMap}> */}
             {/* <CharacterControls
               // debug={prefs.doWorldDebug}
               debug={false}
@@ -291,27 +291,27 @@ export default function Experience() {
                 {/* <CharacterModel1 /> */}
               {/* </group> */}
               {/* FARMER: FEMALE */}
-              <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63 + 0.63, 0]}>
+              {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63 + 0.63, 0]}>
                 <CharacterModel5 />
-              </group>
+              </group> */}
               {/* FARMER: MALE */}
               {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
                 <CharacterModel4 />
               </group> */}
             {/* </CharacterControls> */}
-          </KeyboardControls>     
+          {/* </KeyboardControls>      */}
         
         {/* END: CHARACTER MODEL[S] GROUP */}
         {/* </group> */}
 
         {/* // import Map from './Map' */}
-        <group 
+        {/* <group 
           rotation={[(-Math.PI/2) + 0, (-Math.PI/2), (-Math.PI/2) + 0]} 
           scale={1.4} 
           position={[0, 2, 26]}
         >
           <Map />
-        </group>
+        </group> */}
 
         {/* baby steps */}
         {/* Steps -- aka: four-by-fours, 4"x4"[s], posts, logs */}
@@ -321,23 +321,23 @@ export default function Experience() {
 
         {/* toddler steps (advanced degrees) */}
         {/* Rough Plane */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[8.4, -0.40, 10]}>
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[8.4, -0.40, 10]}>
           <RoughPlane />
-        </group>
+        </group> */}
         {/* Slopes + Stairs */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -0.00, 0]}>
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -0.00, 0]}>
           <Slopes />
-        </group>
+        </group> */}
         {/* Rigid Body Objects */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
           <RigidObjects />
-        </group>
+        </group> */}
 
         {/* kinder steps (active objects) */}
         {/* Floating Platforms */}
-        <group rotation={[0, 0, 0]} scale={1.0}>
+        {/* <group rotation={[0, 0, 0]} scale={1.0}>
           <FloatingPlatforms />
-        </group>
+        </group> */}
 
         {/* elementary steps (random active objects) */}
         {/* Dynamic Platforms */}
@@ -345,9 +345,9 @@ export default function Experience() {
           <DynamicPlatforms />
         </group> */}
         {/* Shot Cubes */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 4.0, 0]}>
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 4.0, 0]}>
           <ShotCube />
-        </group>
+        </group> */}
 
         {/* solid steps (levels, safety) */}
         {/* The Floor (Plane 0) */}
