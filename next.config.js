@@ -187,23 +187,6 @@ const nextConfig = {
       exclude: /node_modules/,
       use: ['raw-loader', 'glslify-loader'],
     })
-    
-    // ttf support
-    config.module.rules.push({
-      test: /\.ttf/,
-      // include: [/public/],
-      exclude: /node_modules/,
-      type: 'asset/resource',
-      // generator: {
-      //   // outputPath: '/public',
-      //   outputPath: '../[path]',
-      //   // publicPath: '/public',
-      //   publicPath: '[path]',
-      //   filename: '[name][ext]',
-      //   // filename: '../[path]/[name][ext]',
-      //   // filename: 'static/chunks/[path]/[name][ext]'
-      // },
-    })
 
     // avif support
     config.module.rules.push({
@@ -221,6 +204,14 @@ const nextConfig = {
         // filename: 'static/chunks/[path]/[name][ext]'
       },
     })
+    
+    // ttf support
+    config.module.rules.push({
+      test: /\.ttf/,
+      // include: [/public/],
+      exclude: /node_modules/,
+      type: 'asset/resource',
+    })
 
     // svg support
     config.module.rules.push({
@@ -228,10 +219,6 @@ const nextConfig = {
       // include: [/public/],
       exclude: /node_modules/,
       type: 'asset/resource',
-      // type: 'asset/inline',
-      generator: {
-        filename: '../[path]/[name][ext]'
-      },
     })
 
     // glb + gltf support
@@ -240,15 +227,6 @@ const nextConfig = {
       // include: [/public/],
       exclude: /node_modules/,
       type: 'asset/resource',
-      // generator: {
-      //   // outputPath: '/public',
-      //   outputPath: '../[path]',
-      //   // publicPath: '/public',
-      //   publicPath: '[path]',
-      //   filename: '[name][ext]',
-      //   // filename: '../[path]/[name][ext]',
-      //   // filename: 'static/chunks/[path]/[name][ext]'
-      // },
     })
     
     // graphql + gql support
