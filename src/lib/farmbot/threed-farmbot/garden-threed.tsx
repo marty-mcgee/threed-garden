@@ -42,7 +42,7 @@ import {
 } from "./config"
 
 import { ASSETS, GARDENS, PLANTS } from "./constants-threed"
-console.debug('ASSETS, GARDENS, PLANTS', ASSETS, GARDENS, PLANTS)
+// console.debug('ASSETS, GARDENS, PLANTS', ASSETS, GARDENS, PLANTS)
 
 
 import { PrivateOverlay, PublicOverlay, ToolTip } from "./config_overlays"
@@ -89,7 +89,7 @@ interface ModelProps {
 
 interface Plant {
   label: string
-  icon: string // | StaticImageData
+  icon: string | StaticImageData
   size: number
   spread: number
   x: number
@@ -169,7 +169,7 @@ const Model = (props: ModelProps) => {
   const Plant = (props: PlantProps) => {
     // **
     const { i, plant, labelOnly } = props
-    console.debug('plant', plant)
+    // console.debug('2D plant', plant)
 
     const alwaysShowLabels = config.labels && !config.labelsOnHover
     
@@ -392,8 +392,11 @@ export const Garden = () => {
     toolTip, setToolTip,
     activeFocus, setActiveFocus,
   }
+
+  const uniquekey = Date().toString() // 'heyheyhey'
+
   return (
-    <Model {...common} />
+    <Model key={uniquekey} {...common} />
     // ** from main repo
     // <div className={"garden-bed-3d-model"}>
     //   <Canvas shadows={true}>

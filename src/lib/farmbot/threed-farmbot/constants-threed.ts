@@ -106,7 +106,9 @@ import person2Flipped from "~/public/3D/people/person_2_flipped.avif"
 
 import gear from "~/public/images/misc/gear.svg"
 
+
 import { StaticImageData } from 'next/image'
+
 
 export const ASSETS = {
   fonts: {
