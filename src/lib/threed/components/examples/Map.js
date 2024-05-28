@@ -9,12 +9,16 @@ Title: Fantasy Game Inn
 import { useGLTF } from '@react-three/drei'
 import { RigidBody } from '@react-three/rapier'
 import { useRef } from 'react'
-import { useGame } from 'ecctrl'
+// import { useGame } from '#/lib/ecctrl/src/Ecctrl' // 'ecctrl'
+import { 
+  useGame, 
+  // type AnimationSet 
+} from '#/lib/ecctrl/src/hooks/useGame'
 
 export default function Map(props) {
   const circleRef = useRef()
   const date = useRef(0)
-  const { nodes, materials } = useGLTF('./glb/fantasy_game_inn.glb')
+  const { nodes, materials } = useGLTF('./objects/glb/fantasy_game_inn.glb')
 
   const setMoveToPoint = useGame((state) => state.setMoveToPoint)
 
@@ -55,4 +59,4 @@ export default function Map(props) {
   )
 }
 
-useGLTF.preload('./glb/fantasy_game_inn.glb')
+useGLTF.preload('./objects/glb/fantasy_game_inn.glb')

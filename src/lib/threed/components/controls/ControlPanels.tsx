@@ -23,7 +23,7 @@ import { preferencesDataVar } from '#/lib/stores/apollo'
 import stores from '#/lib/stores/apollo'
 
 // ** Leva GUI
-import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
+// import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
 
 // ** MUI Imports
 import { styled } from '@mui/material/styles'

@@ -3,7 +3,7 @@
 import { TextureLoader, RepeatWrapping } from "three";
 import * as THREE from "three";
 import { Box, Tube } from "@react-three/drei";
-import { ASSETS } from "./constants";
+import { ASSETS } from "./constants-threed";
 import { threeSpace, easyCubicBezierCurve3 } from "./helpers";
 import { Config } from "./config";
 

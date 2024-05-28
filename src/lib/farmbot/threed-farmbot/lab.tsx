@@ -2,7 +2,7 @@
 
 import { Box, Billboard, Image, Extrude } from "@react-three/drei";
 import { DoubleSide, Shape, TextureLoader, RepeatWrapping } from "three";
-import { ASSETS } from "./constants";
+import { ASSETS } from "./constants-threed";
 import { threeSpace } from "./helpers";
 import { Config } from "./config";
 import { Desk } from "./desk";

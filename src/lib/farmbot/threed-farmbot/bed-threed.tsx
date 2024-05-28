@@ -1,4 +1,4 @@
-// @ts-nocheck /* OR @ ts-expect-error */
+// @ ts-nocheck /* OR @ ts-expect-error */
 
 import { Box, Detailed, Extrude } from "@react-three/drei";
 import {
@@ -7,7 +7,7 @@ import {
 import { range } from "lodash";
 import { threeSpace, zZero, getColorFromBrightness } from "./helpers";
 import { Config, detailLevels } from "./config";
-import { ASSETS } from "./constants";
+import { ASSETS } from "./constants-threed";
 import { DistanceIndicator } from "./distance_indicator";
 import { FarmBotAxes } from "./farmbot_axes";
 import { FarmBotPackaging } from "./packaging";
@@ -49,6 +49,7 @@ const bedStructure2D = (
 }
 
 const woodTexture = new TextureLoader()
+  // @ ts-expect-error
   .load(ASSETS.textures.wood,
     texture => {
       texture.wrapS = RepeatWrapping;
@@ -57,6 +58,7 @@ const woodTexture = new TextureLoader()
     });
 
 const legWoodTexture = new TextureLoader()
+  // @ ts-expect-error
   .load(ASSETS.textures.wood,
     texture => {
       texture.wrapS = RepeatWrapping;
@@ -65,6 +67,7 @@ const legWoodTexture = new TextureLoader()
     });
 
 const soilTexture = new TextureLoader()
+  // @ ts-expect-error
   .load(ASSETS.textures.soil,
     texture => {
       texture.wrapS = RepeatWrapping;
