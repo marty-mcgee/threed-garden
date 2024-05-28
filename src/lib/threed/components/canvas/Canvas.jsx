@@ -49,7 +49,7 @@ import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 // import Map from './Map'
 // import CharacterModel from './CharacterModel'
 // import Experience from '#/lib/ecctrl/example/Experience'
-import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
+// import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
 import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
 import { threedIO } from '#/lib/threed/threedio/threedIO'
 
@@ -210,9 +210,9 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           
           {/* THREED EXPERIENCE : VIEWER */}
           {/* <Experience /> */}
-          <ThreeDExperience />
+          {/* <ThreeDExperience /> */}
           {/* ExperienceViewer = forwardRef(({ children, enableOrbit, ...props }, ref) => {} */}
-          {/* <ThreeDExperienceViewer ref={ref} enableOrbit={true}> */}
+          <ThreeDExperienceViewer ref={ref} enableOrbit={true}>
 
             {/* THREED MODELS: WORKING !!! */}
             {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
@@ -220,7 +220,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
               threeds={threeds}
             />
 
-          {/* </ThreeDExperienceViewer> */}
+          </ThreeDExperienceViewer>
 
         {/* </LayoutWrapper> */}
         </Suspense>

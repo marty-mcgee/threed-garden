@@ -2,7 +2,7 @@
 
 import { Shape } from "three";
 import { Extrude, Text, Line } from "@react-three/drei";
-import { ASSETS } from "./constants";
+import { ASSETS } from "./constants-threed";
 import { threeSpace } from "./helpers";
 import { Config } from "./config";
 
@@ -90,7 +90,7 @@ export const Solar = (props: SolarProps) => {
           outlineOpacity={0.75}
           position={[-200, 0, 200]}
           rotation={[0, Math.PI / 3, Math.PI / 2]}>
-          Solar array not included
+          Solar Panel Array
         </Text>
       </group>
       <Line name={"solar-wiring"}

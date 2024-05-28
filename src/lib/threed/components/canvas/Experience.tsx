@@ -6,6 +6,10 @@
 import { useReactiveVar } from '@apollo/client'
 import { preferencesDataVar } from '#/lib/stores/apollo'
 
+// ** NEXT Imports
+import dynamic from 'next/dynamic'
+// import Image from 'next/image'
+
 // ** REACT Imports
 import { useEffect, useState } from 'react'
 
@@ -45,6 +49,14 @@ import DynamicPlatforms from '#/lib/threed/components/examples/DynamicPlatforms'
 import ShotCube from '#/lib/threed/components/examples/ShotCube'
 import Map from '#/lib/threed/components/examples/Map'
 import Birds from '#/lib/threed/components/examples/Birds/Birds'
+
+// ** FARMBOT Imports
+// import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
+// import ThreeDFarmBotMain from '#/lib/farmbot/threed-farmbot/main-threed'
+// import ThreeDFarmBotGarden from '#/lib/farmbot/threed-farmbot/garden-threed'
+// const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/FarmBot'), { ssr: false })
+const ThreeDFarmBotMain = dynamic(() => import('#/lib/farmbot/threed-farmbot/main-threed'), { ssr: false })
+const ThreeDFarmBotGarden = dynamic(() => import('#/lib/farmbot/threed-farmbot/garden-threed'), { ssr: false })
 
 // ** HELPER Imports
 import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
@@ -229,26 +241,36 @@ export default function Experience() {
       {/* LIGHTS */}
       <Lights />
 
-      {/* // import Birds from './Birds' */}
+      {/* EXAMPLES: BIRDS */}
       {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
         <Birds />
       </group> */}
 
+      {/* THREED USING PHYSICS */}
       <Physics
         // debug={prefs.doWorldPhysics}
         debug={false}
         // timeStep='vary'
         // paused={pausedPhysics}
       >
+
+        {/* THREED FARMBOT */}
+        <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 1.6, -2]}>
+          <ThreeDFarmBotGarden />
+        </group>
+        <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 1.4, -0.6]}>
+          <ThreeDFarmBotMain />
+        </group>
+
         {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
             CHARACTER MODEL[S] GROUP */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 16, 0]}>
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 16, 0]}> */}
 
           {/* Character Model 1 Control */}
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
           {/* Keyboard preset */}
-          <KeyboardControls map={keyboardMap}>
-            <CharacterControls
+          {/* <KeyboardControls map={keyboardMap}> */}
+            {/* <CharacterControls
               // debug={prefs.doWorldDebug}
               debug={false}
               // animated={prefs.doCharacterAnimation}
@@ -262,34 +284,34 @@ export default function Experience() {
               // autoBalanceDampingC={0.04}
               // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
               // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
-            >
+            > */}
               {/* GROUND DWELLER / DEMON PETE / AWWW */}
               {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, 0, 0]}> */}
                 {/* <CharacterModel0 /> */}
                 {/* <CharacterModel1 /> */}
               {/* </group> */}
               {/* FARMER: FEMALE */}
-              <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
+              {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63 + 0.63, 0]}>
                 <CharacterModel5 />
-              </group>
+              </group> */}
               {/* FARMER: MALE */}
               {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
                 <CharacterModel4 />
               </group> */}
-            </CharacterControls>
-          </KeyboardControls>     
+            {/* </CharacterControls> */}
+          {/* </KeyboardControls>      */}
         
         {/* END: CHARACTER MODEL[S] GROUP */}
-        </group>
+        {/* </group> */}
 
         {/* // import Map from './Map' */}
-        <group 
-          rotation={[(-Math.PI/2) + 0, 0, (-Math.PI/2) + 0]} 
-          scale={0.16} 
-          position={[0, 3, 24]}
+        {/* <group 
+          rotation={[(-Math.PI/2) + 0, (-Math.PI/2), (-Math.PI/2) + 0]} 
+          scale={1.4} 
+          position={[0, 2, 26]}
         >
           <Map />
-        </group>
+        </group> */}
 
         {/* baby steps */}
         {/* Steps -- aka: four-by-fours, 4"x4"[s], posts, logs */}
@@ -299,23 +321,23 @@ export default function Experience() {
 
         {/* toddler steps (advanced degrees) */}
         {/* Rough Plane */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[8.4, -0.40, 10]}>
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[8.4, -0.40, 10]}>
           <RoughPlane />
-        </group>
+        </group> */}
         {/* Slopes + Stairs */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -0.00, 0]}>
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -0.00, 0]}>
           <Slopes />
-        </group>
+        </group> */}
         {/* Rigid Body Objects */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
           <RigidObjects />
-        </group>
+        </group> */}
 
         {/* kinder steps (active objects) */}
         {/* Floating Platforms */}
-        <group rotation={[0, 0, 0]} scale={1.0}>
+        {/* <group rotation={[0, 0, 0]} scale={1.0}>
           <FloatingPlatforms />
-        </group>
+        </group> */}
 
         {/* elementary steps (random active objects) */}
         {/* Dynamic Platforms */}
@@ -323,9 +345,9 @@ export default function Experience() {
           <DynamicPlatforms />
         </group> */}
         {/* Shot Cubes */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 4.0, 0]}>
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 4.0, 0]}>
           <ShotCube />
-        </group>
+        </group> */}
 
         {/* solid steps (levels, safety) */}
         {/* The Floor (Plane 0) */}
@@ -336,12 +358,12 @@ export default function Experience() {
         {/* backup solid steps (levels[1+], safety) */}
         {/* Sub-Floor[s] (Plane < 0) */}
         {/* <SubFloor level={`${level[index]}`} /> */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -64, 0]}>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
           <Floor color={'saddlebrown'} opacity={0.8} />
         </group>
         {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
             DEEP BELOW SEA LEVEL */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
           <Floor color={'black'} opacity={0.8} />
         </group>
 
@@ -357,10 +379,10 @@ export default function Experience() {
         }}
       /> */}
 
-      <Perf
+      {/* <Perf
         position='bottom-left'
         // minimal
-      />
+      /> */}
     </>
   )
 }

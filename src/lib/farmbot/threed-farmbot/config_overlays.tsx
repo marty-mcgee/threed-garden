@@ -1,66 +1,66 @@
 // @ts-nocheck /* OR @ ts-expect-error */
 
-import React from "react";
-import { Config, modifyConfig } from "./config";
+import React from "react"
+import { Config, modifyConfig } from "./config"
 
 export interface ToolTip {
-  timeoutId: number;
-  text: string;
+  timeoutId: number
+  text: string
 }
 
 interface OverlayProps {
-  config: Config;
-  setConfig(config: Config): void;
-  toolTip: ToolTip;
-  setToolTip(tooltip: ToolTip): void;
-  activeFocus: string;
-  setActiveFocus(focus: string): void;
+  config: Config
+  setConfig(config: Config): void
+  toolTip: ToolTip
+  setToolTip(tooltip: ToolTip): void
+  activeFocus: string
+  setActiveFocus(focus: string): void
 }
 
 interface SectionProps {
-  title: string;
-  configKey: keyof Config;
-  options: Record<string, string>;
+  title: string
+  configKey: keyof Config
+  options: Record<string, string>
 }
 
 export const PublicOverlay = (props: OverlayProps) => {
-  const { config, setConfig, toolTip, setToolTip } = props;
+  const { config, setConfig, toolTip, setToolTip } = props
 
   const Section = (sectionProps: SectionProps) => {
-    const { title, configKey, options } = sectionProps;
+    const { title, configKey, options } = sectionProps
     return <div className={"setting-section"}>
       <div className="setting-title">{title}</div>
       <div className={"row"}>
         {Object.entries(options).map(([preset, label]) => {
-          const active = label == config[configKey];
+          const active = label == config[configKey]
           const disabled = label == "Mobile"
-            && config.sizePreset == "Genesis XL";
+            && config.sizePreset == "Genesis XL"
           const className = [
             preset,
             active ? "active" : "",
             disabled ? "disabled" : "",
-          ].join(" ");
-          const update = { [configKey]: label };
+          ].join(" ")
+          const update = { [configKey]: label }
           return <button key={preset} className={className}
             onClick={() => {
-              clearTimeout(toolTip.timeoutId);
+              clearTimeout(toolTip.timeoutId)
               if (disabled) {
-                const text = "Mobile beds are not recommended for Genesis XL machines";
+                const text = "Mobile beds are not recommended for Genesis XL machines"
                 const timeoutId = setTimeout(() =>
-                  setToolTip({ timeoutId: 0, text: "" }), 3000);
-                setToolTip(({ timeoutId, text }));
-                return;
+                  setToolTip({ timeoutId: 0, text: "" }), 3000)
+                setToolTip(({ timeoutId, text }))
+                return
               } else {
-                setToolTip({ timeoutId: 0, text: "" });
+                setToolTip({ timeoutId: 0, text: "" })
               }
-              setConfig(modifyConfig(config, update));
+              setConfig(modifyConfig(config, update))
             }}>
             {label}
-          </button>;
+          </button>
         })}
       </div>
-    </div>;
-  };
+    </div>
+  }
 
   return <div className={"overlay"}>
     {!props.activeFocus &&
@@ -98,36 +98,29 @@ export const PublicOverlay = (props: OverlayProps) => {
     </div>}
     {config.promoInfo && !props.activeFocus &&
       <PromoInfo isGenesis={config.sizePreset == "Genesis"} />}
-  </div>;
-};
+  </div>
+}
 
 interface PromoInfoProps {
-  isGenesis: boolean;
+  isGenesis: boolean
 }
 
 const PromoInfo = (props: PromoInfoProps) => {
-  const { isGenesis } = props;
+  const { isGenesis } = props
   return <div className="promo-info">
-    <h2 className="title">Explore our models</h2>
+    <h2 className="title">ThreeD FarmBot</h2>
     {isGenesis ? (
       <div className="description">
-        <p className="short">FarmBot Genesis is our flagship kit for prosumers and enthusiasts.</p>
+        <p className="short">FarmBot Genesis XL is our flagship kit for ThreeD Garden participants.</p>
         <p className="full">
-          FarmBot Genesis is our flagship kit for prosumers and enthusiasts featuring
-          our most advanced technology, features, and options. Coming 90% pre-assembled
-          in the box, Genesis can be installed on an existing raised bed in an afternoon.
-          It is suitable for fixed or mobile raised beds in classrooms, research labs,
-          and backyards.
+          Featuring.. ThreeD Garden in Fort Bragg, California
         </p>
       </div>
     ) : (
       <div className="description">
-        <p className="short">Covering 400% the area, Genesis XL can grow enough veggies for a family of four.</p>
+        <p className="short">FarmBot Genesis XL is our flagship kit for ThreeD Garden participants.</p>
         <p className="full">
-          Covering 400% the area, FarmBot Genesis XL can grow enough veggies
-          for a family of four, provides ample room for student competitions,
-          and can take research experiments to new scale. Suitable for fixed installations
-          at home, farm to fork restaurants, schools and universities, and commercial research facilities.
+          Featuring.. ThreeD Garden in Fort Bragg, California
         </p>
       </div>
     )}
@@ -141,37 +134,37 @@ const PromoInfo = (props: PromoInfoProps) => {
         XL
       </p>
     </a>
-  </div>;
-};
+  </div>
+}
 
 interface ConfigRowProps {
-  configKey: keyof Config;
-  children: React.ReactNode;
+  configKey: keyof Config
+  children: React.ReactNode
 }
 
 const ConfigRow = (props: ConfigRowProps) => {
-  const { configKey } = props;
+  const { configKey } = props
   return <div className={"config-row"}>
     <span className={"config-key"}>{configKey}</span>
     {props.children}
-  </div>;
-};
+  </div>
+}
 
 interface SliderProps extends OverlayProps {
-  configKey: keyof Config;
-  min: number;
-  max: number;
+  configKey: keyof Config
+  min: number
+  max: number
 }
 
 const Slider = (props: SliderProps) => {
-  const { config, setConfig, configKey, min, max } = props;
+  const { config, setConfig, configKey, min, max } = props
   const change = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseInt(e.currentTarget.value);
-    if (isNaN(newValue)) { return; }
-    const update = { [configKey]: newValue };
-    setConfig(modifyConfig(config, update));
-  };
-  const value = config[configKey] as number;
+    const newValue = parseInt(e.currentTarget.value)
+    if (isNaN(newValue)) { return }
+    const update = { [configKey]: newValue }
+    setConfig(modifyConfig(config, update))
+  }
+  const value = config[configKey] as number
   return <ConfigRow configKey={configKey}>
     <input type={"number"} value={value} onChange={change} />
     <input
@@ -181,40 +174,40 @@ const Slider = (props: SliderProps) => {
       value={value}
       onChange={change}
     />
-  </ConfigRow>;
-};
+  </ConfigRow>
+}
 
 interface ToggleProps extends OverlayProps {
-  configKey: keyof Config;
+  configKey: keyof Config
 }
 
 const Toggle = (props: ToggleProps) => {
-  const { config, setConfig, configKey } = props;
+  const { config, setConfig, configKey } = props
   return <ConfigRow configKey={configKey}>
     <input
       type={"checkbox"}
       checked={!!config[configKey]}
       onChange={e => {
-        const newValue = e.currentTarget.checked;
-        const update = { [configKey]: newValue };
-        setConfig(modifyConfig(config, update));
+        const newValue = e.currentTarget.checked
+        const update = { [configKey]: newValue }
+        setConfig(modifyConfig(config, update))
       }}
     />
-  </ConfigRow>;
-};
+  </ConfigRow>
+}
 
 interface RadioProps extends OverlayProps {
-  configKey: keyof Config;
-  options: string[];
+  configKey: keyof Config
+  options: string[]
 }
 
 const Radio = (props: RadioProps) => {
-  const { config, setConfig, configKey, options } = props;
+  const { config, setConfig, configKey, options } = props
   const change = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.currentTarget.value;
-    const update = { [configKey]: newValue };
-    setConfig(modifyConfig(config, update));
-  };
+    const newValue = e.currentTarget.value
+    const update = { [configKey]: newValue }
+    setConfig(modifyConfig(config, update))
+  }
   return <ConfigRow configKey={configKey}>
     <div className={"options"}>
       {options.map(value =>
@@ -229,12 +222,12 @@ const Radio = (props: RadioProps) => {
           <label>{value}</label>
         </div>)}
     </div>
-  </ConfigRow>;
-};
+  </ConfigRow>
+}
 
 export const PrivateOverlay = (props: OverlayProps) => {
-  const bedMin = props.config.bedWallThickness * 2;
-  const { config, setConfig } = props;
+  const bedMin = props.config.bedWallThickness * 2
+  const { config, setConfig } = props
   return <div className={"all-configs"}>
     <details>
       <summary>
@@ -320,6 +313,6 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...props} configKey={"viewCube"} />
       <Toggle {...props} configKey={"config"} />
     </details>
-  </div>;
-};
+  </div>
+}
 

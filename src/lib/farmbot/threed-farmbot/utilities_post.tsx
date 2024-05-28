@@ -2,7 +2,7 @@
 
 import { Box, Cylinder, RoundedBox, Tube } from "@react-three/drei";
 import { TextureLoader, RepeatWrapping } from "three";
-import { ASSETS } from "./constants";
+import { ASSETS } from "./constants-threed";
 import { Config } from "./config";
 import { threeSpace, getColorFromBrightness, easyCubicBezierCurve3 } from "./helpers";
 import { outletDepth } from "./power_supply";

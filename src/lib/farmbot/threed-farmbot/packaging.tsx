@@ -3,7 +3,7 @@
 import { Box, Text } from "@react-three/drei";
 import { threeSpace } from "./helpers";
 import { Config } from "./config";
-import { ASSETS } from "./constants";
+import { ASSETS } from "./constants-threed";
 
 interface PackagingProps {
   config: Config;
