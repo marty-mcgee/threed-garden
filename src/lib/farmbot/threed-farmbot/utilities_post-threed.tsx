@@ -1,53 +1,54 @@
 // @ts-nocheck /* OR @ ts-expect-error */
 
-import { Box, Cylinder, RoundedBox, Tube } from "@react-three/drei";
-import { TextureLoader, RepeatWrapping } from "three";
-import { ASSETS } from "./constants-threed";
-import { Config } from "./config";
-import { threeSpace, getColorFromBrightness, easyCubicBezierCurve3 } from "./helpers";
-import { outletDepth } from "./power_supply";
-import * as THREE from 'three';
+import { Box, Cylinder, RoundedBox, Tube } from "@react-three/drei"
+import { TextureLoader, RepeatWrapping } from "three"
+import { ASSETS } from "./constants-threed"
+import { Config } from "./config-threed"
+import { threeSpace, getColorFromBrightness, easyCubicBezierCurve3 } from "./helpers"
+import { outletDepth } from "./power_supply"
+import * as THREE from 'three'
 
 interface UtilitiesPostProps {
-  config: Config;
+  config: Config
+  activeFocus: string
 }
 
 const WoodTexture = new TextureLoader()
   .load(ASSETS.textures.wood,
     texture => {
-      texture.wrapS = RepeatWrapping;
-      texture.wrapT = RepeatWrapping;
-      texture.repeat.set(.02, .05);
-    });
+      texture.wrapS = RepeatWrapping
+      texture.wrapT = RepeatWrapping
+      texture.repeat.set(.02, .05)
+    })
 
 export const UtilitiesPost = (props: UtilitiesPostProps) => {
   const {
     utilitiesPost, legSize, bedLengthOuter, bedWidthOuter,
     bedBrightness, bedHeight, bedZOffset,
-  } = props.config;
-  const groundZ = -bedHeight - bedZOffset;
-  const postColor = getColorFromBrightness(bedBrightness);
-  const faucetX = 0;
-  const faucetY = -115;
-  const faucetZ = 70;
-  const barbX = -bedLengthOuter / 2 - 200;
+  } = props.config
+  const groundZ = -bedHeight - bedZOffset
+  const postColor = getColorFromBrightness(bedBrightness)
+  const faucetX = 0
+  const faucetY = -115
+  const faucetZ = 70
+  const barbX = -bedLengthOuter / 2 - 200
   const barbY = -100
-  const barbZ = -130;
+  const barbZ = -130
 
   const hosePathCurved = easyCubicBezierCurve3(
     [faucetX, faucetY, faucetZ],
     [0, -60, -65],
     [200, 0, 0],
     [faucetX - 205, barbY, barbZ],
-  );
+  )
 
   const hosePathStraight = new THREE.LineCurve3(
     new THREE.Vector3(faucetX - 200, barbY, barbZ),
     new THREE.Vector3(barbX, barbY, barbZ),
-  );
+  )
 
   return <group name={"utilities"}
-    visible={utilitiesPost}
+    visible={utilitiesPost && props.activeFocus != "Planter bed"}
     position={[
       threeSpace(600, -bedLengthOuter),
       threeSpace(legSize / 2, bedWidthOuter),
@@ -167,4 +168,4 @@ export const UtilitiesPost = (props: UtilitiesPostProps) => {
       </Tube>
     </group>
   </group>
-};
+}

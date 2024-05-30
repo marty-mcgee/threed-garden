@@ -67,7 +67,7 @@ export interface Config {
 
 export const INITIAL: Config = {
   sizePreset: "Genesis",
-  bedType: "Mobile",
+  bedType: "Standard",
   otherPreset: "Initial",
   label: "FarmBot Genesis v1.7",
   botSizeX: 2720,
@@ -84,12 +84,12 @@ export const INITIAL: Config = {
   zAxisLength: 1000,
   bedXOffset: 140,
   bedYOffset: 60,
-  bedZOffset: 500,
+  bedZOffset: 0,
   zGantryOffset: 140,
   bedWidthOuter: 1360,
   bedLengthOuter: 3000,
   legSize: 100,
-  legsFlush: false,
+  legsFlush: true,
   extraLegsX: 1,
   extraLegsY: 0,
   bedBrightness: 8,
@@ -118,10 +118,10 @@ export const INITIAL: Config = {
   pan: false,
   bounds: false,
   threeAxes: false,
-  xyDimensions: true,
+  xyDimensions: false,
   zDimension: false,
   promoInfo: true,
-  solar: true,
+  solar: false,
   utilitiesPost: true,
   packaging: false,
   lab: false,
@@ -337,7 +337,6 @@ export const modifyConfig = (config: Config, update: Partial<Config>) => {
   }
   if (update.scene) {
     newConfig.lab = update.scene == "Lab"
-    newConfig.solar = update.scene != "Lab"
     newConfig.clouds = update.scene != "Lab"
     newConfig.people = update.scene == "Lab"
     newConfig.bedType =
@@ -413,4 +412,4 @@ export const seasonProperties: Record<string, SeasonProperties> = {
 }
 
 export const detailLevels = (config: Config) =>
-  config.lowDetail ? [0, 0] : [0, 15000]
+  config.lowDetail ? [0, 0] : [0, 25000]

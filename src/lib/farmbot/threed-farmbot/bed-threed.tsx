@@ -1,82 +1,83 @@
 // @ ts-nocheck /* OR @ ts-expect-error */
 
-import { Box, Detailed, Extrude } from "@react-three/drei";
+import { Box, Detailed, Extrude } from "@react-three/drei"
 import {
   DoubleSide, Path, Shape, TextureLoader, RepeatWrapping,
-} from "three";
-import { range } from "lodash";
-import { threeSpace, zZero, getColorFromBrightness } from "./helpers";
-import { Config, detailLevels } from "./config";
-import { ASSETS } from "./constants-threed";
-import { DistanceIndicator } from "./distance_indicator";
-import { FarmBotAxes } from "./farmbot_axes";
-import { FarmBotPackaging } from "./packaging";
-import { Caster } from "./caster";
-import { UtilitiesPost } from "./utilities_post";
+} from "three"
+import { range } from "lodash"
+import { threeSpace, zZero, getColorFromBrightness } from "./helpers"
+import { Config, detailLevels } from "./config-threed"
+import { ASSETS } from "./constants-threed"
+import { DistanceIndicator } from "./distance_indicator"
+import { FarmBotAxes } from "./farmbot_axes"
+import { FarmBotPackaging } from "./packaging"
+import { Caster } from "./caster"
+import { UtilitiesPost } from "./utilities_post-threed"
 
 const soil = (
   Type: typeof Path | typeof Shape,
   botSize: Record<"x" | "y" | "z" | "thickness", number>,
 ): Path | Shape => {
-  const { x, y, thickness } = botSize;
+  const { x, y, thickness } = botSize
 
-  const hole = new Type();
-  hole.moveTo(thickness, thickness);
-  hole.lineTo(thickness, y - thickness);
-  hole.lineTo(x - thickness, y - thickness);
-  hole.lineTo(x - thickness, thickness);
-  hole.lineTo(thickness, thickness);
-  return hole;
+  const hole = new Type()
+  hole.moveTo(thickness, thickness)
+  hole.lineTo(thickness, y - thickness)
+  hole.lineTo(x - thickness, y - thickness)
+  hole.lineTo(x - thickness, thickness)
+  hole.lineTo(thickness, thickness)
+  return hole
 }
 
 const bedStructure2D = (
   botSize: Record<"x" | "y" | "z" | "thickness", number>,
 ) => {
-  const { x, y } = botSize;
-  const shape = new Shape();
+  const { x, y } = botSize
+  const shape = new Shape()
 
   // outer edge
-  shape.moveTo(0, 0);
-  shape.lineTo(0, y);
-  shape.lineTo(x, y);
-  shape.lineTo(x, 0);
-  shape.lineTo(0, 0);
+  shape.moveTo(0, 0)
+  shape.lineTo(0, y)
+  shape.lineTo(x, y)
+  shape.lineTo(x, 0)
+  shape.lineTo(0, 0)
 
   // inner edge
-  shape.holes.push(soil(Path, botSize));
+  shape.holes.push(soil(Path, botSize))
 
-  return shape;
+  return shape
 }
 
 const woodTexture = new TextureLoader()
   // @ ts-expect-error
   .load(ASSETS.textures.wood,
     texture => {
-      texture.wrapS = RepeatWrapping;
-      texture.wrapT = RepeatWrapping;
-      texture.repeat.set(.0003, .003);
-    });
+      texture.wrapS = RepeatWrapping
+      texture.wrapT = RepeatWrapping
+      texture.repeat.set(.0003, .003)
+    })
 
 const legWoodTexture = new TextureLoader()
   // @ ts-expect-error
   .load(ASSETS.textures.wood,
     texture => {
-      texture.wrapS = RepeatWrapping;
-      texture.wrapT = RepeatWrapping;
-      texture.repeat.set(.02, .05);
-    });
+      texture.wrapS = RepeatWrapping
+      texture.wrapT = RepeatWrapping
+      texture.repeat.set(.02, .05)
+    })
 
 const soilTexture = new TextureLoader()
   // @ ts-expect-error
   .load(ASSETS.textures.soil,
     texture => {
-      texture.wrapS = RepeatWrapping;
-      texture.wrapT = RepeatWrapping;
-      texture.repeat.set(.00017, .00034);
-    });
+      texture.wrapS = RepeatWrapping
+      texture.wrapT = RepeatWrapping
+      texture.repeat.set(.00017, .00034)
+    })
 
 interface BedProps {
-  config: Config;
+  config: Config
+  activeFocus: string
 }
 
 export const Bed = (props: BedProps) => {
@@ -84,20 +85,20 @@ export const Bed = (props: BedProps) => {
     bedWidthOuter, bedLengthOuter, botSizeZ, bedHeight, bedZOffset,
     legSize, legsFlush, extraLegsX, extraLegsY, bedBrightness, soilBrightness,
     soilHeight, ccSupportSize, axes, xyDimensions,
-  } = props.config;
-  const thickness = props.config.bedWallThickness;
-  const botSize = { x: bedLengthOuter, y: bedWidthOuter, z: botSizeZ, thickness };
-  const bedStartZ = bedHeight;
-  const bedColor = getColorFromBrightness(bedBrightness);
-  const soilColor = getColorFromBrightness(soilBrightness);
-  const groundZ = -bedHeight - bedZOffset;
+  } = props.config
+  const thickness = props.config.bedWallThickness
+  const botSize = { x: bedLengthOuter, y: bedWidthOuter, z: botSizeZ, thickness }
+  const bedStartZ = bedHeight
+  const bedColor = getColorFromBrightness(bedBrightness)
+  const soilColor = getColorFromBrightness(soilBrightness)
+  const groundZ = -bedHeight - bedZOffset
   const legXPositions = [
     0 + legSize / 2 + thickness,
     ...(extraLegsX
       ? range(0, bedLengthOuter, bedLengthOuter / (extraLegsX + 1)).slice(1)
       : []),
     bedLengthOuter - legSize / 2 - thickness,
-  ];
+  ]
   const legYPositions = (index: number) =>
     [
       0 + legSize / 2 + thickness,
@@ -105,8 +106,8 @@ export const Bed = (props: BedProps) => {
         ? range(0, bedWidthOuter, bedWidthOuter / (extraLegsY + 1)).slice(1)
         : []),
       bedWidthOuter - legSize / 2 - thickness,
-    ];
-  const casterHeight = legSize * 1.375;
+    ]
+  const casterHeight = legSize * 1.375
 
   const Bed = ({ children }: { children: React.ReactElement }) =>
     <Extrude name={"bed"}
@@ -122,10 +123,10 @@ export const Bed = (props: BedProps) => {
         -bedStartZ,
       ]}>
       {children}
-    </Extrude>;
+    </Extrude>
 
   const Soil = ({ children }: { children: React.ReactElement }) => {
-    const soilDepth = bedHeight + zZero(props.config) - soilHeight;
+    const soilDepth = bedHeight + zZero(props.config) - soilHeight
     return <Extrude name={"soil"}
       castShadow={true}
       receiveShadow={true}
@@ -139,8 +140,8 @@ export const Bed = (props: BedProps) => {
         -bedStartZ,
       ]}>
       {children}
-    </Extrude>;
-  };
+    </Extrude>
+  }
 
   return <group>
     <Detailed distances={detailLevels(props.config)}>
@@ -233,7 +234,7 @@ export const Bed = (props: BedProps) => {
           </group>)}
       </group>
     )}
-    <UtilitiesPost config={props.config} />
+    <UtilitiesPost config={props.config} activeFocus={props.activeFocus} />
     <FarmBotPackaging config={props.config} />
-  </group>;
-};
+  </group>
+}

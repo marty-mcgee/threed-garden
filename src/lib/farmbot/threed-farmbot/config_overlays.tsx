@@ -1,7 +1,7 @@
 // @ts-nocheck /* OR @ ts-expect-error */
 
 import React from "react"
-import { Config, modifyConfig } from "./config"
+import { Config, modifyConfig } from "./config-threed"
 
 export interface ToolTip {
   timeoutId: number
