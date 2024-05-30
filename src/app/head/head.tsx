@@ -1,4 +1,4 @@
-import { DefaultTags } from '#/ui/playground/DefaultTags';
+import { DefaultTags } from '#/layout/ui/playground/DefaultTags';
 
 export default function Head() {
   return (

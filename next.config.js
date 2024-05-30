@@ -144,12 +144,12 @@ const nextConfig = {
   // ** REDIRECTS
   async redirects() {
     return [
-      {
-        source: '/',
-        destination: '/participate',
-        // destination: '/dashboards/sales',
-        permanent: false,
-      },
+      // {
+      //   source: '/',
+      //   destination: '/participate',
+      //   // destination: '/dashboards/sales',
+      //   permanent: false,
+      // },
     ]
   },
 

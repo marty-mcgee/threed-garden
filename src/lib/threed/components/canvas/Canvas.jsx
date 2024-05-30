@@ -73,7 +73,7 @@ import ThreeDModels from '#/lib/threed/components/nouns/Model/Model'
 // import Shoe from '#/lib/threed/components/examples/Shoes/Shoe'
 
 // ** HELPER Components
-import Spinner from '#/ui/components/spinner'
+import Spinner from '#/layout/ui/components/spinner'
 // ** UUID Imports
 // import { v4 as newUUID } from 'uuid'
 // ** COLORFUL CONSOLE MESSAGES (ccm)

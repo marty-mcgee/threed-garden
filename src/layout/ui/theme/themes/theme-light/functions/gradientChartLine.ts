@@ -3,7 +3,7 @@
  */
 
 // ThreeD Garden Helper Functions
-import rgba from '#/ui/theme/themes/theme-light/functions/rgba'
+import rgba from '#/layout/ui/theme/themes/theme-light/functions/rgba'
 
 function gradientChartLine(chart: any, color: string, opacity: number = 0.2): any {
   const ctx = chart.getContext('2d')

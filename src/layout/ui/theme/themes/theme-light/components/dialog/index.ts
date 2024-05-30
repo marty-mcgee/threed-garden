@@ -1,6 +1,6 @@
 // ThreeD Garden Base Styles
-import borders from '#/ui/theme/themes/theme-light/base/borders'
-import boxShadows from '#/ui/theme/themes/theme-light/base/boxShadows'
+import borders from '#/layout/ui/theme/themes/theme-light/base/borders'
+import boxShadows from '#/layout/ui/theme/themes/theme-light/base/boxShadows'
 
 const { borderRadius } = borders
 const { xxl } = boxShadows

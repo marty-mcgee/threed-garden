@@ -6,7 +6,7 @@ import BellOutline from 'mdi-material-ui/BellOutline'
 import ContentSaveOutline from 'mdi-material-ui/ContentSaveOutline'
 
 // ** Custom Components Imports
-import CustomAvatar from '#/ui/components/mui/avatar'
+import CustomAvatar from '#/layout/ui/components/mui/avatar'
 
 const AvatarsVariants = () => {
   return (

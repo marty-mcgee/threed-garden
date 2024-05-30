@@ -1,6 +1,6 @@
 // ThreeD Garden Base Styles
-import borders from '#/ui/theme/themes/theme-dark/base/borders'
-import colors from '#/ui/theme/themes/theme-dark/base/colors'
+import borders from '#/layout/ui/theme/themes/theme-dark/base/borders'
+import colors from '#/layout/ui/theme/themes/theme-dark/base/colors'
 
 const { white } = colors
 const { borderWidth } = borders

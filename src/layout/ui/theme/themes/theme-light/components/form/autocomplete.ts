@@ -1,11 +1,11 @@
 // ThreeD Garden Base Styles
-import boxShadows from '#/ui/theme/themes/theme-light/base/boxShadows'
-import typography from '#/ui/theme/themes/theme-light/base/typography'
-import colors from '#/ui/theme/themes/theme-light/base/colors'
-import borders from '#/ui/theme/themes/theme-light/base/borders'
+import boxShadows from '#/layout/ui/theme/themes/theme-light/base/boxShadows'
+import typography from '#/layout/ui/theme/themes/theme-light/base/typography'
+import colors from '#/layout/ui/theme/themes/theme-light/base/colors'
+import borders from '#/layout/ui/theme/themes/theme-light/base/borders'
 
 // ThreeD Garden Helper Functions
-import pxToRem from '#/ui/theme/themes/theme-light/functions/pxToRem'
+import pxToRem from '#/layout/ui/theme/themes/theme-light/functions/pxToRem'
 
 const { lg } = boxShadows
 const { size } = typography

@@ -8,7 +8,7 @@ import CardContent from '@mui/material/CardContent'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 
 // ** Custom Components Imports
-import CustomAvatar from '#/ui/components/mui/avatar'
+import CustomAvatar from '#/layout/ui/components/mui/avatar'
 
 const CardSupport = () => {
   return (

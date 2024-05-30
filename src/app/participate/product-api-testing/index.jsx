@@ -20,7 +20,7 @@ import create from '#/lib/api/graphql/createStore'
 import GetProducts from '#/lib/api/graphql/scripts/getProducts.gql'
 
 // ** Component Imports
-import Spinner from '#/ui/components/spinner'
+import Spinner from '#/layout/ui/components/spinner'
 
 // ** UUID Imports
 import { v4 as newUUID } from 'uuid'

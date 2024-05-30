@@ -1,8 +1,8 @@
 'use client';
 
 import { demos, type Item } from '#/lib/data/demos';
-import '#/ui/styles/globals.css'; // moved to _app.tsx ???
-import { NextLogo } from '#/ui/playground/NextLogo';
+import '#/layout/ui/styles/globals.css'; // moved to _app.tsx ???
+import { NextLogo } from '#/layout/ui/playground/NextLogo';
 import Link from 'next/link';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { MenuAlt2Icon, XIcon } from '@heroicons/react/solid';

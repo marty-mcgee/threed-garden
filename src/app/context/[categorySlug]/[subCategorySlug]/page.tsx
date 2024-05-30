@@ -1,5 +1,5 @@
 import { fetchSubCategory, type PageProps } from '#/lib/data/getCategories';
-import { Boundary } from '#/ui/playground/Boundary';
+import { Boundary } from '#/layout/ui/playground/Boundary';
 import { Counter } from '../../ContextClickCounter';
 
 export default async function Page({ params }: PageProps) {

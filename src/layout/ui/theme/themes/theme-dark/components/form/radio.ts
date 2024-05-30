@@ -1,10 +1,10 @@
 // ThreeD Garden Base Styles
-import borders from '#/ui/theme/themes/theme-dark/base/borders'
-import colors from '#/ui/theme/themes/theme-dark/base/colors'
+import borders from '#/layout/ui/theme/themes/theme-dark/base/borders'
+import colors from '#/layout/ui/theme/themes/theme-dark/base/colors'
 
 // ThreeD Garden Helper Functions
-import pxToRem from '#/ui/theme/themes/theme-dark/functions/pxToRem'
-import linearGradient from '#/ui/theme/themes/theme-dark/functions/linearGradient'
+import pxToRem from '#/layout/ui/theme/themes/theme-dark/functions/pxToRem'
+import linearGradient from '#/layout/ui/theme/themes/theme-dark/functions/linearGradient'
 
 const { borderWidth, borderColor } = borders
 const { transparent, info } = colors

@@ -3,8 +3,8 @@
  */
 
 // ThreeD Garden Helper Functions
-import rgba from '#/ui/theme/themes/theme-light/functions/rgba'
-import pxToRem from '#/ui/theme/themes/theme-light/functions/pxToRem'
+import rgba from '#/layout/ui/theme/themes/theme-light/functions/rgba'
+import pxToRem from '#/layout/ui/theme/themes/theme-light/functions/pxToRem'
 
 function boxShadow(offset: number[], radius: number[], color: string, opacity: number, inset: string = ''): string {
   const [x, y] = offset

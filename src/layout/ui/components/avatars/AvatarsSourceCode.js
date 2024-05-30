@@ -10,7 +10,7 @@ import FolderOutline from 'mdi-material-ui/FolderOutline'
 import CheckboxMarkedCircleOutline from 'mdi-material-ui/CheckboxMarkedCircleOutline'
 
 // ** Custom Components Imports
-import CustomAvatar from '#/ui/components/mui/avatar'
+import CustomAvatar from '#/layout/ui/components/mui/avatar'
 
 const AvatarsIcon = () => {
   return (
@@ -79,7 +79,7 @@ import Box from '@mui/material/Box'
 import MuiAvatar from '@mui/material/Avatar'
 
 // ** Custom Components Imports
-import CustomAvatar from '#/ui/components/mui/avatar'
+import CustomAvatar from '#/layout/ui/components/mui/avatar'
 
 const AvatarsLetter = () => {
   return (
@@ -132,7 +132,7 @@ import BellOutline from 'mdi-material-ui/BellOutline'
 import ContentSaveOutline from 'mdi-material-ui/ContentSaveOutline'
 
 // ** Custom Components Imports
-import CustomAvatar from '#/ui/components/mui/avatar'
+import CustomAvatar from '#/layout/ui/components/mui/avatar'
 
 const AvatarsVariants = () => {
   return (

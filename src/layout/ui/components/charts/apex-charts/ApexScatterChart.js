@@ -9,7 +9,7 @@ import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 
 // ** Component Import
-import ReactApexcharts from '#/ui/components/react-apexcharts'
+import ReactApexcharts from '#/layout/ui/components/react-apexcharts'
 
 const scatterColors = {
   series1: '#ff9f43',

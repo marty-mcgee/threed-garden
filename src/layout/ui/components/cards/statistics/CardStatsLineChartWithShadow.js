@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 
 // ** Custom Components Imports
-import ReactApexcharts from '#/ui/components/react-apexcharts'
+import ReactApexcharts from '#/layout/ui/components/react-apexcharts'
 
 const series = [
   {

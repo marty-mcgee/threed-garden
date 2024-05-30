@@ -99,7 +99,7 @@ import Avatar from '@mui/material/Avatar'
 import { styled } from '@mui/material/styles'
 
 // ** Custom Components Imports
-import CustomBadge from '#/ui/components/mui/badge'
+import CustomBadge from '#/layout/ui/components/mui/badge'
 
 // Styled component for a wrapper
 const Wrapper = styled('div')(({ theme }) => ({

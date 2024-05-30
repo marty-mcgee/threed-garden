@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 
 // ** Custom Components Imports
-import CardStatisticsCharacter from '#/ui/components/card-statistics/card-stats-with-image'
+import CardStatisticsCharacter from '#/layout/ui/components/card-statistics/card-stats-with-image'
 
 const CardStatsCharacter = ({ data }) => {
   if (data) {

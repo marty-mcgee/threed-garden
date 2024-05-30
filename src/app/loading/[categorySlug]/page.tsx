@@ -3,7 +3,7 @@ import {
   PageProps,
   type Category,
 } from '#/lib/data/getCategories';
-import { SkeletonCard } from '#/ui/playground/SkeletonCard';
+import { SkeletonCard } from '#/layout/ui/playground/SkeletonCard';
 
 const fetchCategory = async (
   categorySlug: string | undefined,

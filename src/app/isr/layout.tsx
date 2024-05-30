@@ -1,4 +1,4 @@
-import { TabGroup } from '#/ui/playground/TabGroup';
+import { TabGroup } from '#/layout/ui/playground/TabGroup';
 import React from 'react';
 
 export default function Layout({ children }: { children: React.ReactNode }) {

@@ -9,8 +9,8 @@ import CardContent from '@mui/material/CardContent'
 import ArrowUp from 'mdi-material-ui/ArrowUp'
 
 // ** Custom Components Imports
-import CustomChip from '#/ui/components/mui/chip'
-import ReactApexcharts from '#/ui/components/react-apexcharts'
+import CustomChip from '#/layout/ui/components/mui/chip'
+import ReactApexcharts from '#/layout/ui/components/react-apexcharts'
 
 const ApexLineChart = () => {
   const options = {

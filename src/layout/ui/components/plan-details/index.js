@@ -11,7 +11,7 @@ import CircleOutline from 'mdi-material-ui/CircleOutline'
 import { hexToRGBA } from '#/lib/utils/hex-to-rgba'
 
 // ** Custom Components Imports
-import CustomChip from '#/ui/components/mui/chip'
+import CustomChip from '#/layout/ui/components/mui/chip'
 
 // ** Styled Component for the wrapper of whole component
 const BoxWrapper = styled(Box)(({ theme }) => ({

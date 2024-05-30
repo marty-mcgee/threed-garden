@@ -12,7 +12,7 @@ import ArrowUp from 'mdi-material-ui/ArrowUp'
 import { Bubble } from 'react-chartjs-2'
 
 // ** Custom Components Imports
-import CustomChip from '#/ui/components/mui/chip'
+import CustomChip from '#/layout/ui/components/mui/chip'
 
 const ChartjsBubbleChart = (props) => {
   // ** Props

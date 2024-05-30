@@ -6,8 +6,8 @@
 // import type { Metadata } from 'next'
 
 // ** Metadata Components
-// import { DefaultTags } from '#/ui/playground/DefaultTags';
-// import HeadMeta from '#/ui/head'
+// import { DefaultTags } from '#/layout/ui/playground/DefaultTags';
+// import HeadMeta from '#/layout/ui/head'
 // import meta from './meta.json'
 
 const meta = {

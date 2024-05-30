@@ -75,7 +75,7 @@ export default ChipsArray
 export const ChipsLightJSXCode = (
   <pre className='language-jsx'>
     <code className='language-jsx'>{`// ** Custom Components Imports
-import CustomChip from '#/ui/components/mui/chip'
+import CustomChip from '#/layout/ui/components/mui/chip'
 
 const ChipsCustomized = () => {
   return (

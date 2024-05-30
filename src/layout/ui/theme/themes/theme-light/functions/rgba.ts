@@ -4,7 +4,7 @@
  */
 
 // ThreeD Garden Helper Functions
-import hexToRgb from '#/ui/theme/themes/theme-light/functions/hexToRgb'
+import hexToRgb from '#/layout/ui/theme/themes/theme-light/functions/hexToRgb'
 
 function rgba(color: string, opacity: number): string {
   return `rgba(${hexToRgb(color)}, ${opacity})`

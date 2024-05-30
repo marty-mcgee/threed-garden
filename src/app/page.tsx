@@ -25,7 +25,7 @@ import { useRouter, usePathname } from 'next/navigation'
 // import { useAuth } from '#/lib/auth/hooks/useAuth'
 
 // ** Helper Components
-import Spinner from '#/ui/components/spinner'
+import Spinner from '#/layout/ui/components/spinner'
 
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
