@@ -12,7 +12,7 @@ import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 
 // ** Custom Components Imports
-import CardStatisticsHorizontal from '#/ui/components/card-statistics/card-stats-horizontal'
+import CardStatisticsHorizontal from '#/layout/ui/components/card-statistics/card-stats-horizontal'
 
 const icons = {
   Poll,

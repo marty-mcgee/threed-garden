@@ -12,7 +12,7 @@ import CardContent from '@mui/material/CardContent'
 import DotsVertical from 'mdi-material-ui/DotsVertical'
 
 // ** Custom Components Imports
-import ReactApexcharts from '#/ui/components/react-apexcharts'
+import ReactApexcharts from '#/layout/ui/components/react-apexcharts'
 
 const CardWidgetsWeeklyOverview = () => {
   // ** Hook

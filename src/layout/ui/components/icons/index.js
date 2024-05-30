@@ -62,7 +62,7 @@ import AccountArrowRightOutline from 'mdi-material-ui/AccountArrowRightOutline'
 import AccountBoxMultipleOutline from 'mdi-material-ui/AccountBoxMultipleOutline'
 
 // ** Custom Components Imports
-import PageHeader from '#/ui/components/page-header'
+import PageHeader from '#/layout/ui/components/page-header'
 
 const icons = {
   Abacus,

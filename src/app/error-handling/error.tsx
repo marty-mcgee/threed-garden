@@ -1,7 +1,7 @@
 'use client';
 
-import { Boundary } from '#/ui/playground/Boundary';
-import Button from '#/ui/playground/Button';
+import { Boundary } from '#/layout/ui/playground/Boundary';
+import Button from '#/layout/ui/playground/Button';
 import React from 'react';
 
 export default function Error({ error, reset }: any) {

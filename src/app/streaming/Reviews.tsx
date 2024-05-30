@@ -1,5 +1,5 @@
 import reviews from '#/lib/data/reviews';
-import { ProductReviewCard } from '#/ui/playground/ProductReviewCard';
+import { ProductReviewCard } from '#/layout/ui/playground/ProductReviewCard';
 import { delay } from './delay';
 
 const shimmer = `relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.5s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent`;

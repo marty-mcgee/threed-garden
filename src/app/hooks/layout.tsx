@@ -1,9 +1,9 @@
 import { fetchCategories } from '#/lib/data/getCategories';
-import { Boundary } from '#/ui/playground/Boundary';
-import { ClickCounter } from '#/ui/playground/ClickCounter';
-// import HooksClient from '#/ui/playground/HooksClient';
-import HooksServer from '#/ui/playground/HooksServer';
-import { TabGroup } from '#/ui/playground/TabGroup';
+import { Boundary } from '#/layout/ui/playground/Boundary';
+import { ClickCounter } from '#/layout/ui/playground/ClickCounter';
+// import HooksClient from '#/layout/ui/playground/HooksClient';
+import HooksServer from '#/layout/ui/playground/HooksServer';
+import { TabGroup } from '#/layout/ui/playground/TabGroup';
 import React from 'react';
 
 export default async function Layout({

@@ -1,8 +1,8 @@
 // ThreeD Garden Base Styles
-import borders from '#/ui/theme/themes/theme-light/base/borders'
+import borders from '#/layout/ui/theme/themes/theme-light/base/borders'
 
 // ThreeD Garden Helper Functions
-import pxToRem from '#/ui/theme/themes/theme-light/functions/pxToRem'
+import pxToRem from '#/layout/ui/theme/themes/theme-light/functions/pxToRem'
 
 const { borderRadius } = borders
 

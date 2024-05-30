@@ -4,7 +4,7 @@ import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 
 // ** Component Import
-import ReactApexcharts from '#/ui/components/react-apexcharts'
+import ReactApexcharts from '#/layout/ui/components/react-apexcharts'
 
 const radarColors = {
   series1: '#9b88fa',

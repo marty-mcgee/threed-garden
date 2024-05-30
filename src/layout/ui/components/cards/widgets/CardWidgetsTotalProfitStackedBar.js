@@ -16,8 +16,8 @@ import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
 import DotsVertical from 'mdi-material-ui/DotsVertical'
 
 // ** Custom Components Imports
-import CustomAvatar from '#/ui/components/mui/avatar'
-import ReactApexcharts from '#/ui/components/react-apexcharts'
+import CustomAvatar from '#/layout/ui/components/mui/avatar'
+import ReactApexcharts from '#/layout/ui/components/react-apexcharts'
 
 const data = [
   {

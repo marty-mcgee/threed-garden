@@ -13,8 +13,8 @@ import LinearProgress from '@mui/material/LinearProgress'
 import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
 
 // ** Custom Components Imports
-import CustomChip from '#/ui/components/mui/chip'
-import CustomAvatar from '#/ui/components/mui/avatar'
+import CustomChip from '#/layout/ui/components/mui/chip'
+import CustomAvatar from '#/layout/ui/components/mui/avatar'
 
 const CardFinanceSummary = () => {
   return (

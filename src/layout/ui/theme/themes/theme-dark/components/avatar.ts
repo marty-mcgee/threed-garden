@@ -1,5 +1,5 @@
 // ThreeD Garden Base Styles
-import borders from '#/ui/theme/themes/theme-dark/base/borders'
+import borders from '#/layout/ui/theme/themes/theme-dark/base/borders'
 
 const { borderRadius } = borders
 

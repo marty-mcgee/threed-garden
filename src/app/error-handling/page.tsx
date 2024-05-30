@@ -1,5 +1,5 @@
-import BuggyButton from '#/ui/playground/BuggyButton';
-import { ExternalLink } from '#/ui/playground/ExternalLink';
+import BuggyButton from '#/layout/ui/playground/BuggyButton';
+import { ExternalLink } from '#/layout/ui/playground/ExternalLink';
 
 export default function Page() {
   return (

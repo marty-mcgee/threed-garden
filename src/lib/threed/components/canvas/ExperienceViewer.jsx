@@ -56,7 +56,7 @@ import { ThreedIO } from '#/lib/threed/threedio/components/ThreedIO'
 import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
 
 // ** HELPER Components
-import Spinner from '#/ui/components/spinner'
+import Spinner from '#/layout/ui/components/spinner'
 // ** UUID Imports
 // import { v4 as newUUID } from 'uuid'
 // ** COLORFUL CONSOLE MESSAGES (ccm)

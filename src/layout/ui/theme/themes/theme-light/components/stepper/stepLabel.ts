@@ -1,10 +1,10 @@
 // ThreeD Garden Base Styles
-import typography from '#/ui/theme/themes/theme-light/base/typography'
-import colors from '#/ui/theme/themes/theme-light/base/colors'
+import typography from '#/layout/ui/theme/themes/theme-light/base/typography'
+import colors from '#/layout/ui/theme/themes/theme-light/base/colors'
 
 // ThreeD Garden Helper Functions
-import pxToRem from '#/ui/theme/themes/theme-light/functions/pxToRem'
-import rgba from '#/ui/theme/themes/theme-light/functions/rgba'
+import pxToRem from '#/layout/ui/theme/themes/theme-light/functions/pxToRem'
+import rgba from '#/layout/ui/theme/themes/theme-light/functions/rgba'
 
 const { size, fontWeightRegular } = typography
 const { white } = colors

@@ -9,7 +9,7 @@ import CardContent from '@mui/material/CardContent'
 import ChevronUp from 'mdi-material-ui/ChevronUp'
 
 // ** Custom Components Imports
-import ReactApexcharts from '#/ui/components/react-apexcharts'
+import ReactApexcharts from '#/layout/ui/components/react-apexcharts'
 
 const CardStatisticsTotalSales = () => {
   // ** Hooks

@@ -6,17 +6,17 @@ import { ThemeProvider, createTheme, useTheme, responsiveFontSizes } from '@mui/
 import CssBaseline from '@mui/material/CssBaseline'
 // ** Global Styles
 import GlobalStyles from '@mui/material/GlobalStyles'
-import GlobalStyling from '#/ui/theme/GlobalStyling'
+import GlobalStyling from '#/layout/ui/theme/GlobalStyling'
 // ** Custom Theme
-import NextAppDirEmotionCacheProvider from '#/ui/theme/EmotionCache'
+import NextAppDirEmotionCacheProvider from '#/layout/ui/theme/EmotionCache'
 import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from '#/lib/contexts/MaterialUIContext'
 // import themeConfig from '#/lib/config/themeConfig' // returned as props {settings}
-import themeOptions from '#/ui/theme/ThemeOptions'
-// import ThemeOptionsUser from '#/ui/theme/ThemeOptionsUser'
+import themeOptions from '#/layout/ui/theme/ThemeOptions'
+// import ThemeOptionsUser from '#/layout/ui/theme/ThemeOptionsUser'
 // ** Custom themes available for use
-// import themeBasic from '#/ui/theme/themes/theme-basic'
-// import themeDark from '#/ui/theme/themes/theme-dark'
-// import themeLight from '#/ui/theme/themes/theme-light'
+// import themeBasic from '#/layout/ui/theme/themes/theme-basic'
+// import themeDark from '#/layout/ui/theme/themes/theme-dark'
+// import themeLight from '#/layout/ui/theme/themes/theme-light'
 
 export default function ThemeRegistry({ settings, children }: { settings: any, children: React.ReactNode }) {
   // ** set the app theme

@@ -1,5 +1,5 @@
 import { Review } from '#/lib/data/reviews';
-import { ProductRating } from '#/ui/playground/ProductRating';
+import { ProductRating } from '#/layout/ui/playground/ProductRating';
 
 export const ProductReviewCard = ({ review }: { review: Review }) => {
   return (

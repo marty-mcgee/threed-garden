@@ -1,5 +1,5 @@
-import { Boundary } from '#/ui/playground/Boundary';
-import { TabNavItem } from '#/ui/playground/TabNavItem';
+import { Boundary } from '#/layout/ui/playground/Boundary';
+import { TabNavItem } from '#/layout/ui/playground/TabNavItem';
 import React from 'react';
 
 export default function Layout({ children }: { children: React.ReactNode }) {

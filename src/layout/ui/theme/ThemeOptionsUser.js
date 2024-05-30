@@ -3,7 +3,7 @@
 import { useSettings } from '#/lib/hooks/useSettings'
 
 // ** To use core palette, uncomment the below import
-import corePalette from '#/ui/theme/palette'
+import corePalette from '#/layout/ui/theme/palette'
 
 const ThemeOptionsUser = () => {
   // ** To use core palette, uncomment the below line

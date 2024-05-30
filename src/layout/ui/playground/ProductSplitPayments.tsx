@@ -1,4 +1,4 @@
-import { ProductCurrencySymbol } from '#/ui/playground/ProductCurrencySymbol';
+import { ProductCurrencySymbol } from '#/layout/ui/playground/ProductCurrencySymbol';
 import { allocate, toUnit, up, type Dinero } from 'dinero.js';
 
 export const ProductSplitPayments = ({ price }: { price: Dinero<number> }) => {

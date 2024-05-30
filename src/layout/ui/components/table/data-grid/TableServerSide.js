@@ -12,9 +12,9 @@ import { DataGrid } from '@mui/x-data-grid'
 import axios from 'axios'
 
 // ** Custom Components
-import CustomChip from '#/ui/components/mui/chip'
-import CustomAvatar from '#/ui/components/mui/avatar'
-import ServerSideToolbar from '#/ui/table/data-grid/ServerSideToolbar'
+import CustomChip from '#/layout/ui/components/mui/chip'
+import CustomAvatar from '#/layout/ui/components/mui/avatar'
+import ServerSideToolbar from '#/layout/ui/table/data-grid/ServerSideToolbar'
 
 // ** Utils Import
 import { getInitials } from '#/lib/utils/get-initials'

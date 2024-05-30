@@ -2,13 +2,13 @@
 import { deepmerge } from '@mui/utils'
 
 // ** User Theme Options
-// import ThemeOptionsUser from '#/ui/theme/ThemeOptionsUser'
+// import ThemeOptionsUser from '#/layout/ui/theme/ThemeOptionsUser'
 
 // ** Theme Override Imports
-import palette from '#/ui/theme/common/palette'
-import spacing from '#/ui/theme/common/spacing'
-import shadows from '#/ui/theme/common/shadows'
-import breakpoints from '#/ui/theme/common/breakpoints'
+import palette from '#/layout/ui/theme/common/palette'
+import spacing from '#/layout/ui/theme/common/spacing'
+import shadows from '#/layout/ui/theme/common/shadows'
+import breakpoints from '#/layout/ui/theme/common/breakpoints'
 
 const themeOptions = (settings) => {
   // ** Vars

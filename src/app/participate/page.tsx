@@ -27,7 +27,7 @@ import CardContent from '@mui/material/CardContent'
 import ThreeDGarden from '#/lib/threed/ThreeDGarden'
 
 // ** HELPER Imports
-import Spinner from '#/ui/components/spinner'
+import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 

@@ -1,5 +1,5 @@
-import { Boundary } from '#/ui/playground/Boundary';
-import CountUp from '#/ui/playground/CountUp';
+import { Boundary } from '#/layout/ui/playground/Boundary';
+import CountUp from '#/layout/ui/playground/CountUp';
 import clsx from 'clsx';
 
 type Item = {

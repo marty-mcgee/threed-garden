@@ -1,8 +1,8 @@
 // ThreeD Garden Base Styles
-import colors from '#/ui/theme/themes/theme-light/base/colors'
+import colors from '#/layout/ui/theme/themes/theme-light/base/colors'
 
 // ThreeD Garden Helper Functions
-import rgba from '#/ui/theme/themes/theme-light/functions/rgba'
+import rgba from '#/layout/ui/theme/themes/theme-light/functions/rgba'
 
 const { info, white, gradients } = colors
 

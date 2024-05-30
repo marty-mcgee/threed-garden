@@ -1,4 +1,4 @@
-import { ExternalLink } from '#/ui/playground/ExternalLink';
+import { ExternalLink } from '#/layout/ui/playground/ExternalLink';
 import { HeadInfo } from './HeadInfo';
 
 export default function Page() {

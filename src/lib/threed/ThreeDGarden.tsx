@@ -99,7 +99,7 @@ import ThreeDModals from '#/lib/threed/components/modals/Modals'
 import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
 
 // ** CSS Styles Imports
-// import stylesDemo from '#/ui/styles/demo/demo.module.css'
+// import stylesDemo from '#/layout/ui/styles/demo/demo.module.css'
 
 // ** Paper Imports (DEPRECATED -- requires jQuery)
 // import paper from 'paper'
@@ -113,7 +113,7 @@ import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
 // const ThreeDFarmBotMain = dynamic(() => import('#/lib/threed/threed-farmbot/main'), { ssr: false })
 
 // ** HELPER Components
-import Spinner from '#/ui/components/spinner'
+import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 

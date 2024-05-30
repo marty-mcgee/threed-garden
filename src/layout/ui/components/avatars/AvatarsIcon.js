@@ -8,7 +8,7 @@ import FolderOutline from 'mdi-material-ui/FolderOutline'
 import CheckboxMarkedCircleOutline from 'mdi-material-ui/CheckboxMarkedCircleOutline'
 
 // ** Custom Components Imports
-import CustomAvatar from '#/ui/components/mui/avatar'
+import CustomAvatar from '#/layout/ui/components/mui/avatar'
 
 const AvatarsIcon = () => {
   return (

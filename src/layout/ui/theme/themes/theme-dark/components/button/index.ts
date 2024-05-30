@@ -1,8 +1,8 @@
 // ThreeD Garden Button Styles
-import root from '#/ui/theme/themes/theme-dark/components/button/root'
-import contained from '#/ui/theme/themes/theme-dark/components/button/contained'
-import outlined from '#/ui/theme/themes/theme-dark/components/button/outlined'
-import buttonText from '#/ui/theme/themes/theme-dark/components/button/text'
+import root from '#/layout/ui/theme/themes/theme-dark/components/button/root'
+import contained from '#/layout/ui/theme/themes/theme-dark/components/button/contained'
+import outlined from '#/layout/ui/theme/themes/theme-dark/components/button/outlined'
+import buttonText from '#/layout/ui/theme/themes/theme-dark/components/button/text'
 
 // types
 type Types = any

@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import MuiAvatar from '@mui/material/Avatar'
 
 // ** Custom Components Imports
-import CustomAvatar from '#/ui/components/mui/avatar'
+import CustomAvatar from '#/layout/ui/components/mui/avatar'
 
 const AvatarsLetter = () => {
   return (

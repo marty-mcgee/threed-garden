@@ -1,8 +1,8 @@
 // ThreeD Garden Base Styles
-import typography from '#/ui/theme/themes/theme-dark/base/typography'
+import typography from '#/layout/ui/theme/themes/theme-dark/base/typography'
 
 // ThreeD Garden Helper Functions
-import pxToRem from '#/ui/theme/themes/theme-dark/functions/pxToRem'
+import pxToRem from '#/layout/ui/theme/themes/theme-dark/functions/pxToRem'
 
 const { size } = typography
 

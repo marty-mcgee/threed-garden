@@ -1,4 +1,4 @@
-import { ProductDeal } from '#/ui/playground/ProductDeal';
+import { ProductDeal } from '#/layout/ui/playground/ProductDeal';
 import { add, formatDistanceToNow } from 'date-fns';
 import { type Dinero } from 'dinero.js';
 

@@ -10,18 +10,18 @@ import GlobalStyles from '@mui/material/GlobalStyles'
 
 // ** Theme
 import themeConfig from '#/lib/config/themeConfig'
-import themeOptions from '#/ui/theme/ThemeOptions'
-import ThemeOptionsUser from '#/ui/theme/ThemeOptionsUser'
+import themeOptions from '#/layout/ui/theme/ThemeOptions'
+import ThemeOptionsUser from '#/layout/ui/theme/ThemeOptionsUser'
 
 // ** Global Styles
-import GlobalStyling from '#/ui/theme/GlobalStyling'
+import GlobalStyling from '#/layout/ui/theme/GlobalStyling'
 
 // ** Direction component for LTR or RTL
-import Direction from '#/ui/layouts/common/Direction'
+import Direction from '#/layout/ui/layouts/common/Direction'
 
 // ** Theme Override Imports
-import overrides from '#/ui/theme/common/overrides'
-import typography from '#/ui/theme/common/typography'
+import overrides from '#/layout/ui/theme/common/overrides'
+import typography from '#/layout/ui/theme/common/typography'
 
 const ThemeComponent = (props) => {
   // ** Props

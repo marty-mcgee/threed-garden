@@ -1,7 +1,7 @@
 // ThreeD Garden Base Styles
-import colors from '#/ui/theme/themes/theme-light/base/colors'
-import typography from '#/ui/theme/themes/theme-light/base/typography'
-import borders from '#/ui/theme/themes/theme-light/base/borders'
+import colors from '#/layout/ui/theme/themes/theme-light/base/colors'
+import typography from '#/layout/ui/theme/themes/theme-light/base/typography'
+import borders from '#/layout/ui/theme/themes/theme-light/base/borders'
 
 const { info, inputBorderColor, dark } = colors
 const { size } = typography

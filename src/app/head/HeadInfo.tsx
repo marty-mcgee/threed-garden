@@ -1,6 +1,6 @@
 'use client';
 
-import { Boundary } from '#/ui/playground/Boundary';
+import { Boundary } from '#/layout/ui/playground/Boundary';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

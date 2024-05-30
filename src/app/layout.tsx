@@ -38,17 +38,17 @@ import { ApolloClientWrapper } from '#/lib/api/graphql/ApolloClientWrapper'
 // import { useAuth } from '#/lib/auth/hooks/useAuth'
 
 // ** User Authorization Guards/Boundaries (~CORE Components)
-// import ObjectStateReference from '#/ui/dom'
-// import AuthGuard from '#/ui/auth/AuthGuard'
-// import GuestGuard from '#/ui/auth/GuestGuard'
-// import AclGuard from '#/ui/auth/AclGuard'
+// import ObjectStateReference from '#/layout/ui/dom'
+// import AuthGuard from '#/layout/ui/auth/AuthGuard'
+// import GuestGuard from '#/layout/ui/auth/GuestGuard'
+// import AclGuard from '#/layout/ui/auth/AclGuard'
 
 // ** @Fake-DB (axios mock adapter)
 // import '#/lib/api/@fake-db'
 
 // ** Contexts for Theme Settings + MUI Components
 // import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/settings/SettingsContext'
-import ThemeRegistry from '#/ui/theme/ThemeRegistry'
+import ThemeRegistry from '#/layout/ui/theme/ThemeRegistry'
 
 // ** Configs
 // import '#/lib/config/i18n' // NOT YET SUPPORTED IN NEXT 13
@@ -56,18 +56,18 @@ import ThemeRegistry from '#/ui/theme/ThemeRegistry'
 // import themeConfig from '#/lib/config/themeConfig'
 
 // ** Layouts
-// import BlankLayout from '#/ui/layouts/BlankLayout' // this is your default and login layout
-// import UserLayout from '#/ui/layouts/UserLayout' // this is your user-authorized (new dashboard) layout
+// import BlankLayout from '#/layout/ui/layouts/BlankLayout' // this is your default and login layout
+// import UserLayout from '#/layout/ui/layouts/UserLayout' // this is your user-authorized (new dashboard) layout
 
 // ** Helper Components
-// import Spinner from '#/ui/components/spinner'
+// import Spinner from '#/layout/ui/components/spinner'
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
 
 // ** CSS Styles
-// import '#/ui/styles/globals.css'
-// import stylesGlobal from '#/ui/styles/globals.module.css'
-// import stylesDemo from '#/ui/styles/demo/demo.module.css'
+// import '#/layout/ui/styles/globals.css'
+// import stylesGlobal from '#/layout/ui/styles/globals.module.css'
+// import stylesDemo from '#/layout/ui/styles/demo/demo.module.css'
 // import '#/lib/threed/styles/index.css'
 // import '#/lib/threed/styles/garden.module.css'
 import '#/app/_globals.css' // global tailwind css

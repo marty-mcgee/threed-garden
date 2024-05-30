@@ -59,7 +59,7 @@ import { GLTF } from 'three-stdlib'
 
 // ** HELPER Imports
 // import { Perf } from 'r3f-perf'
-// import Spinner from '#/ui/components/spinner'
+// import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 

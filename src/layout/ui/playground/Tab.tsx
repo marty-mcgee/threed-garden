@@ -1,6 +1,6 @@
 'use client';
 
-import type { Item } from '#/ui/playground/TabGroup';
+import type { Item } from '#/layout/ui/playground/TabGroup';
 import clsx from 'clsx';
 import Link from 'next/link';
 import { useSelectedLayoutSegment } from 'next/navigation';

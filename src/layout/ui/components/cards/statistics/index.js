@@ -5,20 +5,20 @@ import Grid from '@mui/material/Grid'
 import axios from 'axios'
 
 // ** Styled Components
-import ApexChartWrapper from '#/ui/styles/react-apexcharts'
+import ApexChartWrapper from '#/layout/ui/styles/react-apexcharts'
 
 // ** Demo Components Imports
-import CardStatsLineChart from '#/ui/components/cards/statistics/CardStatsLineChart'
-import CardStatisticsVertical from '#/ui/components/cards/statistics/CardStatisticsVertical'
-import CardStatsLineAreaChart from '#/ui/components/cards/statistics/CardStatsLineAreaChart'
-import CardStatsRadialBarChart from '#/ui/components/cards/statistics/CardStatsRadialBarChart'
-import CardStatisticsHorizontal from '#/ui/components/cards/statistics/CardStatisticsHorizontal'
-import CardStatisticsTotalSales from '#/ui/components/cards/statistics/CardStatisticsTotalSales'
-import CardStatisticsCharacters from '#/ui/components/cards/statistics/CardStatisticsCharacters'
-import CardStatisticsTransactions from '#/ui/components/cards/statistics/CardStatisticsTransactions'
-import CardStatsLineChartWithShadow from '#/ui/components/cards/statistics/CardStatsLineChartWithShadow'
-import CardStatsDistributedColumnChart from '#/ui/components/cards/statistics/CardStatsDistributedColumnChart'
-import CardStatsBarChartWithNegativeValues from '#/ui/components/cards/statistics/CardStatsBarChartWithNegativeValues'
+import CardStatsLineChart from '#/layout/ui/components/cards/statistics/CardStatsLineChart'
+import CardStatisticsVertical from '#/layout/ui/components/cards/statistics/CardStatisticsVertical'
+import CardStatsLineAreaChart from '#/layout/ui/components/cards/statistics/CardStatsLineAreaChart'
+import CardStatsRadialBarChart from '#/layout/ui/components/cards/statistics/CardStatsRadialBarChart'
+import CardStatisticsHorizontal from '#/layout/ui/components/cards/statistics/CardStatisticsHorizontal'
+import CardStatisticsTotalSales from '#/layout/ui/components/cards/statistics/CardStatisticsTotalSales'
+import CardStatisticsCharacters from '#/layout/ui/components/cards/statistics/CardStatisticsCharacters'
+import CardStatisticsTransactions from '#/layout/ui/components/cards/statistics/CardStatisticsTransactions'
+import CardStatsLineChartWithShadow from '#/layout/ui/components/cards/statistics/CardStatsLineChartWithShadow'
+import CardStatsDistributedColumnChart from '#/layout/ui/components/cards/statistics/CardStatsDistributedColumnChart'
+import CardStatsBarChartWithNegativeValues from '#/layout/ui/components/cards/statistics/CardStatsBarChartWithNegativeValues'
 
 const CardStatistics = ({ apiData }) => {
   return (

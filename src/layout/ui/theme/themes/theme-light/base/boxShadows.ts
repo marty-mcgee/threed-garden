@@ -5,10 +5,10 @@
  */
 
 // ThreeD Garden Base Styles
-import colors from '#/ui/theme/themes/theme-light/base/colors'
+import colors from '#/layout/ui/theme/themes/theme-light/base/colors'
 
 // ThreeD Garden Helper Functions
-import boxShadow from '#/ui/theme/themes/theme-light/functions/boxShadow'
+import boxShadow from '#/layout/ui/theme/themes/theme-light/functions/boxShadow'
 
 const { black, white, tabs, coloredShadows } = colors
 
