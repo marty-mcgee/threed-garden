@@ -162,26 +162,6 @@ const nextConfig = {
       config.externals.push('sharp')
     }
 
-    // audio support
-    config.module.rules.push({
-      test: /\.(ogg|mp3|wav|mpe?g)$/i,
-      exclude: config.exclude,
-      type: 'asset/resource',
-      // use: [
-      //   {
-      //     loader: require.resolve('url-loader'),
-      //     options: {
-      //       limit: config.inlineImageLimit,
-      //       fallback: require.resolve('file-loader'),
-      //       publicPath: `${config.assetPrefix}/_next/static/images/`,
-      //       outputPath: `${isServer ? '../' : ''}static/images/`,
-      //       name: '[name]-[hash].[ext]',
-      //       esModule: config.esModule || false,
-      //     },
-      //   },
-      // ],
-    })
-
     // shader support
     config.module.rules.push({
       test: /\.(glsl|vs|fs|vert|frag)$/,
@@ -195,15 +175,15 @@ const nextConfig = {
       // include: [/public/],
       exclude: /node_modules/,
       type: 'asset/resource',
-      generator: {
-        // outputPath: '/public',
-        outputPath: '../[path]',
-        // publicPath: '/public',
-        publicPath: '[path]',
-        filename: '[name][ext]',
-        // filename: '../[path]/[name][ext]',
-        // filename: 'static/chunks/[path]/[name][ext]'
-      },
+      // generator: {
+      //   // outputPath: '/public',
+      //   outputPath: '../[path]',
+      //   // publicPath: '/public',
+      //   publicPath: '[path]',
+      //   filename: '[name][ext]',
+      //   // filename: '../[path]/[name][ext]',
+      //   // filename: 'static/chunks/[path]/[name][ext]'
+      // },
     })
     
     // ttf support
@@ -240,6 +220,26 @@ const nextConfig = {
           loader: 'graphql-tag/loader',
         },
       ],
+    })
+
+    // audio support
+    config.module.rules.push({
+      test: /\.(ogg|mp3|wav|mpe?g)$/i,
+      exclude: config.exclude,
+      type: 'asset/resource',
+      // use: [
+      //   {
+      //     loader: require.resolve('url-loader'),
+      //     options: {
+      //       limit: config.inlineImageLimit,
+      //       fallback: require.resolve('file-loader'),
+      //       publicPath: `${config.assetPrefix}/_next/static/images/`,
+      //       outputPath: `${isServer ? '../' : ''}static/images/`,
+      //       name: '[name]-[hash].[ext]',
+      //       esModule: config.esModule || false,
+      //     },
+      //   },
+      // ],
     })
 
     // // aliases

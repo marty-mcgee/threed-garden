@@ -1,6 +1,6 @@
 // @ ts-nocheck /* OR @ ts-expect-error */
 
-import { Config } from "./config";
+import { Config } from "./config-threed";
 import * as THREE from 'three';
 
 export const threeSpace = (position: number, max: number): number => position - max / 2;

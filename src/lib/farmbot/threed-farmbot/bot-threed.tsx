@@ -4,7 +4,7 @@ import * as THREE from "three"
 import { Cylinder, Extrude, Line, Trail, useGLTF } from "@react-three/drei"
 import { DoubleSide, Shape, TextureLoader, RepeatWrapping } from "three"
 import { threeSpace, zDir, zZero as zZeroFunc } from "./helpers"
-import { Config } from "./config"
+import { Config } from "./config-threed"
 import { GLTF } from "three-stdlib"
 import { ASSETS } from "./constants-threed"
 import { SVGLoader } from "three/examples/jsm/Addons.js"
@@ -191,6 +191,7 @@ const ccPath =
 
 interface FarmbotModelProps {
   config: Config
+  activeFocus: string
 }
 
 const aluminumTexture = new TextureLoader()
@@ -328,7 +329,8 @@ export const Bot = (props: FarmbotModelProps) => {
   const distanceToSoil = soilHeight + zDir * z
   const bedCCSupportHeight = Math.min(150, bedHeight / 2)
   const isJr = props.config.sizePreset == "Jr"
-  return <group name={"bot"} visible={props.config.bot}>
+  return <group name={"bot"}
+    visible={props.config.bot && props.activeFocus != "Planter bed"}>
     {[0 - extrusionWidth, bedWidthOuter].map((y, index) => {
       const bedColumnYOffset = (tracks ? 0 : extrusionWidth) * (index == 0 ? 1 : -1)
       return <group key={y}>

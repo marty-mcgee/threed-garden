@@ -39,20 +39,20 @@ import {
   detailLevels, 
   modifyConfigsFromUrlParams, 
   seasonProperties,
-} from "./config"
+} from "./config-threed"
 
 import { ASSETS, GARDENS, PLANTS } from "./constants-threed"
-// console.debug('ASSETS, GARDENS, PLANTS', ASSETS, GARDENS, PLANTS)
+console.debug('ASSETS, GARDENS, PLANTS', ASSETS, GARDENS, PLANTS)
 
 
 import { PrivateOverlay, PublicOverlay, ToolTip } from "./config_overlays"
 
 
-// import { Solar } from "./solar"
-// import { Sun, sunPosition } from "./sun"
-// import { LabEnvironment } from "./lab"
-// import { ZoomBeacons } from "./zoom_beacons"
-// import { VectorXyz, getCamera } from "./zoom_beacons_constants"
+import { Solar } from "./solar"
+import { Sun, sunPosition } from "./sun"
+import { LabEnvironment } from "./lab-threed"
+import { ZoomBeacons } from "./zoom_beacons-threed"
+import { VectorXyz, getCamera } from "./zoom_beacons_constants-threed"
 
 
 import "./styles/garden.css"
@@ -321,8 +321,8 @@ const Model = (props: ModelProps) => {
     
     
     {/* THREED FARMBOT */}
-    <ThreeDBed config={config} />
-    <ThreeDBot config={config} />
+    <ThreeDBed config={config} activeFocus={props.activeFocus} />
+    <ThreeDBot config={config} activeFocus={props.activeFocus} />
     {/* <Solar config={config} /> */}
     {/* <LabEnvironment config={config} /> */}
     
@@ -344,6 +344,7 @@ const Model = (props: ModelProps) => {
       )}
     </group>
     <group name={"plants"}
+      visible={props.activeFocus != "Planter bed"}
       onPointerEnter={setHover(true)}
       onPointerMove={setHover(true)}
       onPointerLeave={setHover(false)}
@@ -373,6 +374,9 @@ const Model = (props: ModelProps) => {
       {config.label}
     </Text>
 
+    <Solar config={config} activeFocus={props.activeFocus} />
+    <LabEnvironment config={config} activeFocus={props.activeFocus} />
+
   </group>
   )
 }
@@ -393,10 +397,8 @@ export const Garden = () => {
     activeFocus, setActiveFocus,
   }
 
-  const uniquekey = Date().toString() // 'heyheyhey'
-
   return (
-    <Model key={uniquekey} {...common} />
+    <Model {...common} />
     // ** from main repo
     // <div className={"garden-bed-3d-model"}>
     //   <Canvas shadows={true}>

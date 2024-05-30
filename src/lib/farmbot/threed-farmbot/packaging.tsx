@@ -2,7 +2,7 @@
 
 import { Box, Text } from "@react-three/drei";
 import { threeSpace } from "./helpers";
-import { Config } from "./config";
+import { Config } from "./config-threed";
 import { ASSETS } from "./constants-threed";
 
 interface PackagingProps {
