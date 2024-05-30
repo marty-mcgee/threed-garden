@@ -1,7 +1,7 @@
 // @ ts-nocheck /* OR @ ts-expect-error */
 
 import { Cylinder, Tube } from '@react-three/drei';
-import { Config } from "./config";
+import { Config } from "./config-threed";
 import { threeSpace, easyCubicBezierCurve3 } from './helpers';
 
 interface XAxisWaterTubeProps {

@@ -15,6 +15,7 @@ import wood from "~/public/3D/textures/wood.avif"
 import soil from "~/public/3D/textures/soil.avif"
 import aluminum from "~/public/3D/textures/aluminum.avif"
 import concrete from "~/public/3D/textures/concrete.avif"
+import screen from "~/public/3D/textures/screen.avif"
 
 
 import anaheimPepper from "~/public/3D/icons/anaheim_pepper.avif"
@@ -123,6 +124,7 @@ export const ASSETS = {
     soil,
     aluminum,
     concrete,
+    screen,
   },
   icons: {
     anaheimPepper,
@@ -218,7 +220,7 @@ export const ASSETS = {
 
 interface Plant {
   label: string
-  icon: StaticImageData
+  icon: string | StaticImageData
   spread: number
   size: number
 }
