@@ -70,12 +70,12 @@ import ccm from '#/lib/utils/console-colors'
 // import stylesDemo from '#/ui/styles/demo/demo.module.css'
 // import '#/lib/threed/styles/index.css'
 // import '#/lib/threed/styles/garden.module.css'
-import '~/app/_globals.css' // global tailwind css
-import '~/app/_styles.css'  // additional global basic css
+import '#/app/_globals.css' // global tailwind css
+import '#/app/_styles.css'  // additional global basic css
 
 // ** LAYOUT Components (Head, Main, Foot)
 // import LayoutWrapper from '#/lib/threed/components/canvas/LayoutWrapper'
-// // import { LayoutWrapper } from '~/app/LayoutWrapper'
+// // import { LayoutWrapper } from '#/app/LayoutWrapper'
 // import Header from '#/components/header'
 // import Footer from '#/components/footer'
 // // const Header = dynamic(() => import('#/components/header').then((mod) => mod), { ssr: false })
