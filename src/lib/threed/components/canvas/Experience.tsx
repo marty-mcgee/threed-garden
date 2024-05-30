@@ -70,6 +70,7 @@ import ccm from '#/lib/utils/console-colors'
 // ** DEBUGGING
 // **
 const debug = false
+const DEBUG = true
 const testing = false
 
 // ** MAIN FUNCTION to return JSX "EXPERIENCE"
@@ -242,9 +243,9 @@ export default function Experience() {
       <Lights />
 
       {/* EXAMPLES: BIRDS */}
-      {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
+      <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
         <Birds />
-      </group> */}
+      </group>
 
       {/* THREED USING PHYSICS */}
       <Physics
