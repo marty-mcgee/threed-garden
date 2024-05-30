@@ -148,7 +148,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
     <>
       {/* <ThreeDCanvasViewer /> */}
 
-      <EcctrlJoystickControls />
+      {/* <EcctrlJoystickControls /> */}
 
       {/* HEY HEY HEY */}
       <Canvas
