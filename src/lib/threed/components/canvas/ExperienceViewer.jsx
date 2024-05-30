@@ -253,16 +253,16 @@ const ExperienceViewer = forwardRef(({ enableOrbit, children, ...props }, ref) =
             alignment='top-right'
             margin={[64, 64]}
           >
-            <group scale={1.00}>
+            <group scale={0.8}>
               <GizmoViewcube />
             </group>
             <group
-              scale={1.75}
+              scale={1.6}
               position={[-30, -30, -30]}
             >
               <GizmoViewport
                 labelColor='white'
-                axisHeadScale={0.525}
+                axisHeadScale={0.5}
                 hideNegativeAxes
               />
             </group>
