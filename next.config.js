@@ -123,12 +123,12 @@ const nextConfig = {
         port: '443',
         pathname: '/threedpublic/**',
       },
-      {
-        protocol: 'http',
-        hostname: '**',
-        // port: '7777',
-        // pathname: '/**',
-      },
+      // {
+      //   protocol: 'http',
+      //   hostname: '**',
+      //   // port: '7777',
+      //   // pathname: '/**',
+      // },
     ],
     // loader: 'default',
     // // path: 'https://somedomain.com/mydirectory/',
