@@ -1,6 +1,6 @@
 // @ ts-nocheck /* OR @ ts-expect-error */
 
-import { Config } from "./config";
+import { Config } from "./config-threed";
 import { Arrow } from "./arrow";
 import { threeSpace, zZero } from "./helpers";
 

@@ -2,7 +2,7 @@
 
 import { Extrude, Cylinder } from "@react-three/drei";
 import { Shape } from "three";
-import { Config } from "./config";
+import { Config } from "./config-threed";
 
 interface CasterProps {
   config: Config;
