@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { Button } from "./ui/button"
-import { auth } from "~/app/auth"
+import { auth } from "#/app/auth"
 import {
   DropdownMenu,
   DropdownMenuContent,
