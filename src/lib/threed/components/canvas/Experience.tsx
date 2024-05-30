@@ -265,17 +265,17 @@ export default function Experience() {
 
         {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
             CHARACTER MODEL[S] GROUP */}
-        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 16, 0]}> */}
+        <group rotation={[0, 0, 0]} scale={0.016} position={[0, 0, 0]}>
 
           {/* Character Model 1 Control */}
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
           {/* Keyboard preset */}
-          {/* <KeyboardControls map={keyboardMap}> */}
+          <KeyboardControls map={keyboardMap}>
             {/* <CharacterControls
               // debug={prefs.doWorldDebug}
               debug={false}
               // animated={prefs.doCharacterAnimation}
-              animated={false}
+              animated={true}
               // disableFollowCam={prefs.doWorldUnfollowCam}
               disableFollowCam={true}
               // followLight={false}
@@ -286,24 +286,12 @@ export default function Experience() {
               // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
               // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
             > */}
-              {/* GROUND DWELLER / DEMON PETE / AWWW */}
-              {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, 0, 0]}> */}
-                {/* <CharacterModel0 /> */}
-                {/* <CharacterModel1 /> */}
-              {/* </group> */}
-              {/* FARMER: FEMALE */}
-              {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63 + 0.63, 0]}>
                 <CharacterModel5 />
-              </group> */}
-              {/* FARMER: MALE */}
-              {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
-                <CharacterModel4 />
-              </group> */}
             {/* </CharacterControls> */}
-          {/* </KeyboardControls>      */}
+          </KeyboardControls>
         
         {/* END: CHARACTER MODEL[S] GROUP */}
-        {/* </group> */}
+        </group>
 
         {/* // import Map from './Map' */}
         {/* <group 
@@ -322,17 +310,17 @@ export default function Experience() {
 
         {/* toddler steps (advanced degrees) */}
         {/* Rough Plane */}
-        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[8.4, -0.40, 10]}>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[8.4, -0.40, 10]}>
           <RoughPlane />
-        </group> */}
+        </group>
         {/* Slopes + Stairs */}
         {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -0.00, 0]}>
           <Slopes />
         </group> */}
         {/* Rigid Body Objects */}
-        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
           <RigidObjects />
-        </group> */}
+        </group>
 
         {/* kinder steps (active objects) */}
         {/* Floating Platforms */}
@@ -380,10 +368,10 @@ export default function Experience() {
         }}
       /> */}
 
-      {/* <Perf
+      <Perf
         position='bottom-left'
-        // minimal
-      /> */}
+        minimal
+      />
     </>
   )
 }
