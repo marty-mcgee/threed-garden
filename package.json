@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.10.4",
-    "@apollo/experimental-nextjs-app-support": "^0.10.1",
+    "@apollo/experimental-nextjs-app-support": "^0.11.0",
     "@apollo/react-hooks": "^4.0.0",
 
     "valtio": "^1.13.2",    
@@ -53,6 +53,10 @@
     "scheduler": "^0.23.2",
 
     "@auth0/auth0-react": "^2.2.4",
+
+    "@emotion/cache": "^11.11.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     
     "@mui/icons-material": "^5.15.18",
     "@mui/lab": "^5.0.0-alpha.170",
@@ -141,6 +145,7 @@
     "@next/bundle-analyzer": "^14.2.3",
 
     "typescript": "^5.3.3",
+    "@emotion/types": "^0.7.0",
     "@types/chroma-js": "^2.1.4",
     "@types/cors": "^2.8.12",
     "@types/lodash": "^4.17.4",
