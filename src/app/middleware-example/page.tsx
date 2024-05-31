@@ -1,4 +1,4 @@
-import CustomLink from "#/components/custom-link"
+import CustomLink from "#/layout/custom-link"
 
 export default function Page() {
   return (

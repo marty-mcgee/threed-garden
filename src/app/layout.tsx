@@ -76,10 +76,10 @@ import '#/app/_styles.css'  // additional global basic css
 // ** LAYOUT Components (Head, Main, Foot)
 // import LayoutWrapper from '#/lib/threed/components/canvas/LayoutWrapper'
 // // import { LayoutWrapper } from '#/app/LayoutWrapper'
-// import Header from '#/components/header'
-// import Footer from '#/components/footer'
-// // const Header = dynamic(() => import('#/components/header').then((mod) => mod), { ssr: false })
-// // const Footer = dynamic(() => import('#/components/footer').then((mod) => mod), { ssr: false })
+// import Header from '#/layout/header'
+// import Footer from '#/layout/footer'
+// // const Header = dynamic(() => import('#/layout/header').then((mod) => mod), { ssr: false })
+// // const Footer = dynamic(() => import('#/layout/footer').then((mod) => mod), { ssr: false })
 
 // ** FONTS ??
 // import { Inter } from 'next/font/google' // Roboto?
