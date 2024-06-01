@@ -76,7 +76,7 @@ import '#/app/_styles.css'  // additional global basic css
 // ** LAYOUT Components (Head, Main, Foot)
 // import LayoutWrapper from '#/lib/threed/components/canvas/LayoutWrapper'
 // // import { LayoutWrapper } from '#/app/LayoutWrapper'
-// import Header from '#/layout/header'
+import Header from '#/layout/header'
 // import Footer from '#/layout/footer'
 // // const Header = dynamic(() => import('#/layout/header').then((mod) => mod), { ssr: false })
 // // const Footer = dynamic(() => import('#/layout/footer').then((mod) => mod), { ssr: false })
@@ -272,7 +272,7 @@ const AppRootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                                 {/* <Suspense fallback={<Spinner />}> */}
                                 <div id='ThreeDAppProvider' 
                                   className='flex flex-col justify-between w-full h-full min-h-screen'>
-                                  {/* <Header /> */}
+                                  <Header />
                                   <main className='flex-auto w-full px-2 py-1 mx-auto'>
                                     {children}
                                   </main>
