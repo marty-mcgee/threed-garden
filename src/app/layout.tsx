@@ -80,6 +80,8 @@ import '#/app/_styles.css'  // additional global basic css
 // import Footer from '#/layout/footer'
 // // const Header = dynamic(() => import('#/layout/header').then((mod) => mod), { ssr: false })
 // // const Footer = dynamic(() => import('#/layout/footer').then((mod) => mod), { ssr: false })
+// const Header = dynamic(() => import('#/layout/header'), { ssr: false })
+// const Footer = dynamic(() => import('#/layout/footer'), { ssr: false })
 
 // ** FONTS ??
 // import { Inter } from 'next/font/google' // Roboto?
