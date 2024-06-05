@@ -142,25 +142,26 @@ const nextConfig = {
   },
 
   // ** REDIRECTS
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/home',
-        // destination: '/dashboards/sales',
-        permanent: true,
-      },
-    ]
-  },
+  // async redirects() {
+  //   return [
+  //     {
+  //       source: '/',
+  //       destination: '/home',
+  //       destination: '/participate',
+  //       // destination: '/dashboards/sales',
+  //       permanent: true,
+  //     },
+  //   ]
+  // },
 
   // ** WEBPACK
   webpack(config, { isServer }) {
     
     // sharp support
-    if (!isServer) {
-      // We're in the browser build, so we can safely exclude the sharp module
-      config.externals.push('sharp')
-    }
+    // if (!isServer) {
+    //   // We're in the browser build, so we can safely exclude the sharp module
+    //   config.externals.push('sharp')
+    // }
 
     // shader support
     config.module.rules.push({

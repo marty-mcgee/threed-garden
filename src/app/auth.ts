@@ -1,21 +1,20 @@
-import NextAuth from "next-auth"
+import NextAuth from 'next-auth'
 
-// import Apple from "next-auth/providers/apple"
-import Auth0 from "next-auth/providers/auth0"
-// import Coinbase from "next-auth/providers/coinbase"
-// import Facebook from "next-auth/providers/facebook"
-import GitHub from "next-auth/providers/github"
-// import Google from "next-auth/providers/google"
-// import Instagram from "next-auth/providers/instagram"
-// import LinkedIn from "next-auth/providers/linkedin"
-// import Wordpress from "next-auth/providers/wordpress"
+// import Apple from 'next-auth/providers/apple'
+import Auth0 from 'next-auth/providers/auth0'
+// import Coinbase from 'next-auth/providers/coinbase'
+// import Facebook from 'next-auth/providers/facebook'
+import GitHub from 'next-auth/providers/github'
+// import Google from 'next-auth/providers/google'
+// import Instagram from 'next-auth/providers/instagram'
+// import LinkedIn from 'next-auth/providers/linkedin'
+// import Wordpress from 'next-auth/providers/wordpress'
 
-import type { NextAuthConfig } from "next-auth"
+import type { NextAuthConfig } from 'next-auth'
 
 export const config = {
   theme: {
-    // logo: "https://threedgarden.com/favicon/apple-touch-icon.png",
-    logo: "/favicon/apple-touch-icon.png",
+    logo: '/favicon/apple-touch-icon.png',
   },
   providers: [
     // Apple,
@@ -31,7 +30,7 @@ export const config = {
   callbacks: {
     authorized({ request, auth }) {
       const { pathname } = request.nextUrl
-      if (pathname === "/middleware-example") return !!auth
+      if (pathname === '/middleware-example') return !!auth
       return true
     },
   },
