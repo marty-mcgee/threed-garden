@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+  button {
+    background-color: transparent;
+    border: 0;
+  }
   button:focus {
     outline: none;
   }
@@ -72,16 +76,16 @@
   }
 }
 
-@layer base {
+/* @layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
   }
-}
+} */
 
-@layer base {
+/* @layer base {
   * {
     box-sizing: border-box;
   }
@@ -95,7 +99,7 @@
     padding: 0;
     overflow: hidden;
   }
-}
+} */
 
 
 /* @import 'eth-components/ant/index.css'; */
