@@ -264,16 +264,36 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                               {/* <SessionProvider session={null}> */}
 
                                 {/* <Suspense fallback={<Spinner />}> */}
-                                <div id='ThreeDAppMain'
-                                  className='flex flex-col justify-between w-full h-full min-h-screen'
+                                <div 
+                                  id='ThreeDAppLayout'
+                                  className='
+                                    flex 
+                                    flex-col 
+                                    justify-between 
+                                    w-full 
+                                    h-full 
+                                    min-h-screen
+                                  '
                                 >
-                                  <Header />
+                                  <Header 
+                                    key='ThreeDAppHeader'
+                                  />
                                   <main 
-                                    className='flex-auto w-full px-2 py-1 mx-auto'
+                                    id='ThreeDAppMain'
+                                    key='ThreeDAppMain'
+                                    className='
+                                      flex-auto 
+                                      w-full 
+                                      px-2 
+                                      py-1 
+                                      mx-auto
+                                    '
                                   >
                                     {children}
                                   </main>
-                                  <Footer />
+                                  <Footer
+                                    key='ThreeDAppFooter'
+                                  />
                                 </div>
                                 {/* </Suspense> */}
 
@@ -299,11 +319,8 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
 }
 
 export default RootLayout
-// const RootLayout_UseClient = dynamic(() => Promise.resolve(RootLayout), {
-//   ssr: false
-// })
-// export default RootLayout_UseClient
 
+// ** NOTES
 
 /* not working, no longer supported in Next 14 SSR
 RootLayout.getInitialProps = async (ctx: NextPageContext) => {
