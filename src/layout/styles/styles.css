@@ -1,13 +1,9 @@
-#ThreeDAppProvider,
 #ThreeDApp {
+  padding: 4px 0;
+  margin: 0;
   font-family: sans-serif;
   height: 100vh;
   width: 100vw;
-}
-
-body {
-  padding: 4px 0;
-  margin: 0;
 }
 
 /* OVERRIDES !important */
