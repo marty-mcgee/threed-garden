@@ -71,7 +71,7 @@ import '#/layout/styles/styles.css' // additional global basic css
 // ** LAYOUT Components (Head, Main, Foot)
 // import { LayoutWrapper } from '#/app/LayoutWrapper'
 import Header from '#/layout/header'
-// import Footer from '#/layout/footer'
+import Footer from '#/layout/footer'
 // // const Header = dynamic(() => import('#/layout/header').then((mod) => mod), { ssr: false })
 // // const Footer = dynamic(() => import('#/layout/footer').then((mod) => mod), { ssr: false })
 // const Header = dynamic(() => import('#/layout/header'), { ssr: false })
@@ -270,7 +270,7 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                                   {/* <main className='flex-auto w-full px-2 py-1 mx-auto'>
                                     {children}
                                   </main> */}
-                                  {/* <Footer /> */}
+                                  <Footer />
                                 </div>
                                 {/* </Suspense> */}
 
