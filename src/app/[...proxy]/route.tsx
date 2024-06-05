@@ -17,7 +17,7 @@ async function handler(request: NextRequest) {
   const session = await auth()
 
   const headers = new Headers(request.headers)
-  headers.set("Authorization", `Bearer ${session?.accessToken}`)
+  // headers.set("Authorization", `Bearer ${session?.accessToken}`)
 
   let backendUrl =
     process.env.THIRD_PARTY_API_EXAMPLE_BACKEND ??

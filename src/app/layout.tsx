@@ -59,17 +59,12 @@ import ThemeRegistry from '#/layout/ui/theme/ThemeRegistry'
 // import BlankLayout from '#/layout/ui/layouts/BlankLayout' // this is your default and login layout
 // import UserLayout from '#/layout/ui/layouts/UserLayout' // this is your user-authorized (new dashboard) layout
 
-// ** Helper Components
-// import Spinner from '#/layout/ui/components/spinner'
-// ** Colorful Console Messages: Utility
-import ccm from '#/lib/utils/console-colors'
-
 // ** CSS Styles
 import '#/layout/styles/globals.css' // global tailwind css
 import '#/layout/styles/styles.css' // additional global basic css
 
 // ** LAYOUT Components (Head, Main, Foot)
-// import { LayoutWrapper } from '#/app/LayoutWrapper'
+import { LayoutWrapper } from '~/src/layout/LayoutWrapper'
 import Header from '#/layout/header'
 import Footer from '#/layout/footer'
 // // const Header = dynamic(() => import('#/layout/header').then((mod) => mod), { ssr: false })
@@ -82,6 +77,11 @@ import { Inter } from 'next/font/google' // Roboto?
 // ** set google font 'inter'national css
 const inter = Inter({ subsets: ['latin'] })
 // const roboto = Roboto({ weight: '400', subsets: ['latin'] })
+
+// ** Helper Components
+// import Spinner from '#/layout/ui/components/spinner'
+// ** Colorful Console Messages: Utility
+import ccm from '#/lib/utils/console-colors'
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -100,16 +100,16 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
   //   <>{children}</>
   // )
   return (
-    <html lang='en'>{/*  className='antialiased' */}
+    <html lang='en'>{/* className='antialiased' */}
       <head />
-      {/* <body className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}> */}
+      {/* <body id='ThreeDAppProvider'> */}
       <body id='ThreeDAppProvider' className={inter.className}>
-      {/* <body> */}
-        {/* <LayoutWrapper> */}
+      {/* <body id='ThreeDAppProvider' className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}> */}
+        <LayoutWrapper>
         <div id='ThreeDApp'>
           {children}
         </div>
-        {/* </LayoutWrapper> */}
+        </LayoutWrapper>
       </body>
     </html>
   )
@@ -257,21 +257,22 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                         {/* <ThemeRegistry settings={{}}> */}
                           {/* <UserLayout key='ThreeDRootLayout-UserLayout'> */}
 
-                            {/* <ApolloClientWrapper> */}
+                            <ApolloClientWrapper>
                             {/* <ApolloProvider client={client}> */}
 
                               {/* <SessionProvider session={session}> */}
                               {/* <SessionProvider session={null}> */}
-                                
-                                {/* <>{children}</> */}
 
                                 {/* <Suspense fallback={<Spinner />}> */}
-                                <div
-                                  className='flex flex-col justify-between w-full h-full min-h-screen'>
+                                <div id='ThreeDAppMain'
+                                  className='flex flex-col justify-between w-full h-full min-h-screen'
+                                >
                                   <Header />
-                                  {/* <main className='flex-auto w-full px-2 py-1 mx-auto'>
+                                  <main 
+                                    className='flex-auto w-full px-2 py-1 mx-auto'
+                                  >
                                     {children}
-                                  </main> */}
+                                  </main>
                                   <Footer />
                                 </div>
                                 {/* </Suspense> */}
@@ -279,7 +280,7 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                               {/* </SessionProvider> */}
 
                             {/* </ApolloProvider> */}
-                            {/* </ApolloClientWrapper> */}
+                            </ApolloClientWrapper>
 
                           {/* </UserLayout> */}
                         </ThemeRegistry>
