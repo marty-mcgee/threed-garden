@@ -65,17 +65,11 @@ import ThemeRegistry from '#/layout/ui/theme/ThemeRegistry'
 import ccm from '#/lib/utils/console-colors'
 
 // ** CSS Styles
-// import '#/layout/ui/styles/globals.css'
-// import stylesGlobal from '#/layout/ui/styles/globals.module.css'
-// import stylesDemo from '#/layout/ui/styles/demo/demo.module.css'
-// import '#/lib/threed/styles/index.css'
-// import '#/lib/threed/styles/garden.module.css'
-import '#/app/_globals.css' // global tailwind css
-import '#/app/_styles.css'  // additional global basic css
+import '#/layout/styles/globals.css' // global tailwind css
+import '#/layout/styles/styles.css' // additional global basic css
 
 // ** LAYOUT Components (Head, Main, Foot)
-// import LayoutWrapper from '#/lib/threed/components/canvas/LayoutWrapper'
-// // import { LayoutWrapper } from '#/app/LayoutWrapper'
+// import { LayoutWrapper } from '#/app/LayoutWrapper'
 import Header from '#/layout/header'
 // import Footer from '#/layout/footer'
 // // const Header = dynamic(() => import('#/layout/header').then((mod) => mod), { ssr: false })
@@ -84,9 +78,9 @@ import Header from '#/layout/header'
 // const Footer = dynamic(() => import('#/layout/footer'), { ssr: false })
 
 // ** FONTS ??
-// import { Inter } from 'next/font/google' // Roboto?
+import { Inter } from 'next/font/google' // Roboto?
 // ** set google font 'inter'national css
-// const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] })
 // const roboto = Roboto({ weight: '400', subsets: ['latin'] })
 
 // ==============================================================
@@ -106,11 +100,11 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
   //   <>{children}</>
   // )
   return (
-    <html lang='en' className='antialiased'>
+    <html lang='en'>{/*  className='antialiased' */}
       <head />
       {/* <body className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}> */}
-      {/* <body className={inter.className}> */}
-      <body>
+      <body id='ThreeDApp' className={inter.className}>
+      {/* <body> */}
         {/* <LayoutWrapper> */}
           {children}
         {/* </LayoutWrapper> */}
@@ -134,13 +128,13 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
 // const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayoutEmotion> = (props: any) => {
 // const App: NextComponentType<AppContext, AppInitialProps, AppPropsWithLayout> = (props: any) => {
 
-// const AppRootLayout = (
+// const RootLayout = (
 //   { children }: { children: ReactNode },
 //   { Component, pageProps }: AppProps)
 //   : JSX.Element => {
 
-const AppRootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
-// const AppRootLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Element> => {
+const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
+// const RootLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Element> => {
 
   // ** threed.session
   let session = {
@@ -164,14 +158,14 @@ const AppRootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
   // }
 
   // const { data } = await getClient().query({ query: queries.GetProjects })
-  // console.debug('🥕 QUERY: AppRootLayout.getClient.data', data)
+  // console.debug('🥕 QUERY: RootLayout.getClient.data', data)
 
   // // destructure props for vars
   // // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
   // const { Component, pageProps } = props
-  // console.debug('🥕 PROPS: AppRootLayout.props.children', children)
-  // console.debug('🥕 PROPS: AppRootLayout.props.Component', Component)
-  // console.debug('🥕 PROPS: AppRootLayout.props.pageProps', pageProps)
+  // console.debug('🥕 PROPS: RootLayout.props.children', children)
+  // console.debug('🥕 PROPS: RootLayout.props.Component', Component)
+  // console.debug('🥕 PROPS: RootLayout.props.pageProps', pageProps)
   // EXAMPLE: props.Component ??
   // const Component = {
   //   getLayout: () => {},
@@ -188,10 +182,10 @@ const AppRootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
 
   // ** Props.children
   // const { children } = props
-  // console.debug('🥕 PROPS: AppRootLayout.props.children', children)
+  // console.debug('🥕 PROPS: RootLayout.props.children', children)
   // ** Props.children.props
   // const props2 = children.props
-  // console.debug('🥕 PROPS: AppRootLayout.props.children.props', props2)
+  // console.debug('🥕 PROPS: RootLayout.props.children.props', props2)
 
   // // ** Hooks
   // const auth = useAuth()
@@ -206,18 +200,18 @@ const AppRootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
   // // const guestGuard = Component?.guestGuard ?? false
   // // const acl = Component?.acl ?? aclObjectDefault
 
-  // console.debug('%c🥕 PROPS: AppRootLayout.props', ccm.orange, props)
-  // console.debug('%c🥕 PROPS: AppRootLayout.Component', ccm.black, Component)
-  // console.debug('%c🥕 PROPS: AppRootLayout.pageProps', ccm.black, pageProps)
+  // console.debug('%c🥕 PROPS: RootLayout.props', ccm.orange, props)
+  // console.debug('%c🥕 PROPS: RootLayout.Component', ccm.black, Component)
+  // console.debug('%c🥕 PROPS: RootLayout.pageProps', ccm.black, pageProps)
 
   // console.debug('%c=======================================', ccm.black)
 
   /* ** PageComponent.Properties MOVED TO TEMPLATE.TSX
-  const getAppLayout = ({ children }: any): ReactNode => {
+  const getRootLayout = ({ children }: any): ReactNode => {
     //
     // const { children } = props
-    // console.debug('🥕 PROPS: getAppLayout.props', props)
-    // console.debug('🥕 PROPS: getAppLayout.props.children', children)
+    // console.debug('🥕 PROPS: getRootLayout.props', props)
+    // console.debug('🥕 PROPS: getRootLayout.props.children', children)
     // console.debug('%c=======================================', ccm.black)
 
     // authorized: UserLayout
@@ -225,7 +219,7 @@ const AppRootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
       (  children.props.childProp.segment !== ''
       && children.props.childProp.segment !== 'auth'  )) {
       return (
-        <UserLayout key='ThreeDAppLayout-UserLayout'>
+        <UserLayout key='ThreeDRootLayout-UserLayout'>
           <>{children}</>
         </UserLayout>
       )
@@ -234,7 +228,7 @@ const AppRootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
     // default: BlankLayout
     else {
       return (
-        <BlankLayout key='ThreeDAppLayout-BlankLayout'>
+        <BlankLayout key='ThreeDRootLayout-BlankLayout'>
           <>{children}</>
         </BlankLayout>
       )
@@ -259,9 +253,9 @@ const AppRootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                       {/* {({ settings }) => ( */}
                         <ThemeRegistry settings={{}}>
                         {/* <ThemeRegistry settings={{}}> */}
-                          {/* <UserLayout key='ThreeDAppLayout-UserLayout'> */}
+                          {/* <UserLayout key='ThreeDRootLayout-UserLayout'> */}
 
-                            <ApolloClientWrapper>
+                            {/* <ApolloClientWrapper> */}
                             {/* <ApolloProvider client={client}> */}
 
                               {/* <SessionProvider session={session}> */}
@@ -270,12 +264,12 @@ const AppRootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                                 {/* <>{children}</> */}
 
                                 {/* <Suspense fallback={<Spinner />}> */}
-                                <div id='ThreeDAppProvider' 
+                                <div
                                   className='flex flex-col justify-between w-full h-full min-h-screen'>
                                   <Header />
-                                  <main className='flex-auto w-full px-2 py-1 mx-auto'>
+                                  {/* <main className='flex-auto w-full px-2 py-1 mx-auto'>
                                     {children}
-                                  </main>
+                                  </main> */}
                                   {/* <Footer /> */}
                                 </div>
                                 {/* </Suspense> */}
@@ -283,7 +277,7 @@ const AppRootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                               {/* </SessionProvider> */}
 
                             {/* </ApolloProvider> */}
-                            </ApolloClientWrapper>
+                            {/* </ApolloClientWrapper> */}
 
                           {/* </UserLayout> */}
                         </ThemeRegistry>
@@ -301,15 +295,15 @@ const AppRootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
   )
 }
 
-export default AppRootLayout
-// const AppLayout_UseClient = dynamic(() => Promise.resolve(AppRootLayout), {
+export default RootLayout
+// const RootLayout_UseClient = dynamic(() => Promise.resolve(RootLayout), {
 //   ssr: false
 // })
-// export default AppLayout_UseClient
+// export default RootLayout_UseClient
 
 
 /* not working, no longer supported in Next 14 SSR
-AppRootLayout.getInitialProps = async (ctx: NextPageContext) => {
+RootLayout.getInitialProps = async (ctx: NextPageContext) => {
 //   const res = await fetch('https://api.github.com/repos/vercel/next.js')
 //   const json = await res.json()
 //   return { stars: json.stargazers_count }
@@ -318,8 +312,8 @@ AppRootLayout.getInitialProps = async (ctx: NextPageContext) => {
 // export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
 // export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
   // const allPosts = await getAllPostsForHome(preview)
-  // console.debug('getServerSideProps on AppRootLayout')
-  console.debug('getInitialProps on AppRootLayout')
+  // console.debug('getServerSideProps on RootLayout')
+  console.debug('getInitialProps on RootLayout')
   return {
     props: {
       Component: {
@@ -336,7 +330,7 @@ AppRootLayout.getInitialProps = async (ctx: NextPageContext) => {
 */
 
 // deprecated OLD NEXT 10
-// AppRootLayout.defaultProps = {
+// RootLayout.defaultProps = {
 //   Component: {
 //     getLayout: 'YO YO YO',
 //     setConfig: 'true',

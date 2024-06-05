@@ -1,14 +1,13 @@
-#ThreeDAppProvider {
+/* #ThreeDApp {
   font-family: sans-serif;
-  /* text-align: center; */
   height: 100vh;
   width: 100vw;
-}
+} */
 
-body {
+/* body {
   padding: 4px 0;
   margin: 0;
-}
+} */
 
 /* OVERRIDES !important */
 
@@ -16,9 +15,7 @@ body {
   line-height: 0.7 !important;
 }
 
-
-
-/* JOYSTICK */
+/* JOYSTICK 
 * {
   box-sizing: border-box;
 }
@@ -81,3 +78,4 @@ body {
     display: none;
   }
 }
+*/

@@ -1,42 +1,55 @@
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
-import { Button } from "./ui/button"
-import { auth } from "#/app/auth"
+// 'use client'
+
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { Button } from './ui/button'
+
+// ** AUTH GUARD
+import { auth } from 'auth'
+// import { SessionProvider } from 'next-auth/react'
+// import { useSession } from 'next-auth/react'
+import { SignIn, SignOut } from './auth-components'
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu"
-import { SignIn, SignOut } from "./auth-components"
+} from './ui/dropdown-menu'
 
 export default async function UserButton() {
   const session = await auth()
-  if (!session?.user) return <SignIn />
+  // const { data: session, status } = useSession()
+  if (!session?.user) {
+    return <SignIn />
+  }
   return (
-    <>
+    <div className="flex gap-2 items-center">
+      <span className="hidden text-sm sm:inline-flex">
+        {session.user.email}
+      </span>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className="relative rounded-full">
-            <div className="mr-2">{session.user.name}</div>
-            <Avatar className="w-12 h-12">
+          <Button className='relative rounded-full'>
+            <div className='mr-2'>{session.user.name}</div>
+            <Avatar className='w-12 h-12'>
               {session.user.image && (
                 <AvatarImage
                   src={session.user.image}
-                  alt={session.user.name ?? ""}
+                  alt={session.user.name ?? ''}
                 />
               )}
               <AvatarFallback>{session.user.email}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end" forceMount>
-          <DropdownMenuLabel className="font-normal">
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">
+        <DropdownMenuContent className='w-56' align='end' forceMount>
+          <DropdownMenuLabel className='font-normal'>
+            <div className='flex flex-col space-y-1'>
+              <p className='text-sm font-medium leading-none'>
                 {session.user.name}
               </p>
-              <p className="text-xs leading-none text-muted-foreground">
+              <p className='text-xs leading-none text-muted-foreground'>
                 {session.user.email}
               </p>
             </div>
@@ -46,6 +59,6 @@ export default async function UserButton() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    </>
+    </div>
   )
 }
