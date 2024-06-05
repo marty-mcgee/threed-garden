@@ -103,10 +103,12 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
     <html lang='en'>{/*  className='antialiased' */}
       <head />
       {/* <body className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}> */}
-      <body id='ThreeDApp' className={inter.className}>
+      <body id='ThreeDAppProvider' className={inter.className}>
       {/* <body> */}
         {/* <LayoutWrapper> */}
+        <div id='ThreeDApp'>
           {children}
+        </div>
         {/* </LayoutWrapper> */}
       </body>
     </html>
