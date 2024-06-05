@@ -1,7 +1,7 @@
 import CustomLink from "./custom-link"
 
 export default function Footer() {
-  const version = '0.15.1'
+  const version = '0.16.0'
   // removed className="w-full"
   return (
     <footer className="flex flex-col px-4 mx-0 my-2 space-y-1 text-sm md:my-12 md:mx-auto sm:px-4 md:h-5 md:items-center md:space-y-0 md:space-x-2 md:flex-row">
