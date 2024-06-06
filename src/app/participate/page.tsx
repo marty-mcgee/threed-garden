@@ -74,7 +74,7 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
         item
         md={6}
         xs={12}
-        sx={{ display: 'none' }}
+        // sx={{ display: 'none' }}
       >
         <Card>
           <CardHeader
@@ -98,7 +98,7 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
         item
         md={6}
         xs={12}
-        sx={{ display: 'none' }}
+        // sx={{ display: 'none' }}
       >
         <Card>
           <CardHeader title='Restricted/User Content'
