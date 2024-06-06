@@ -1,6 +1,6 @@
 import CustomLink from '#/layout/custom-link'
 import SessionData from '#/layout/session-data'
-import { auth } from '#/app/auth'
+import { auth } from '~/src/lib/auth/auth'
 
 export default async function Page() {
   const session = await auth()

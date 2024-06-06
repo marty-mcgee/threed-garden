@@ -1,6 +1,6 @@
 // 'use client'
 'use server'
-// ^ this file should need NO pragma
+// ^ this file should need NO pragma: default is 'use server'
 
 // ==============================================================
 // RESOURCES
@@ -14,7 +14,7 @@
 // import type { GetServerSideProps, GetStaticProps } from 'next'
 // import { AppProps } from 'next/app'
 // import { NextPageContext } from 'next'
-// import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic'
 
 // ** React
 import type { ReactNode } from 'react'
@@ -64,7 +64,8 @@ import '#/layout/styles/globals.css' // global tailwind css
 import '#/layout/styles/styles.css' // additional global basic css
 
 // ** LAYOUT Components (Head, Main, Foot)
-// import { LayoutWrapper } from '~/src/layout/LayoutWrapper'
+// import { LayoutWrapper } from '#/layout/LayoutWrapper'
+const LayoutWrapper = dynamic(() => import('#/layout/LayoutWrapper'), { ssr: false })
 import Header from '#/layout/header'
 import Footer from '#/layout/footer'
 // // const Header = dynamic(() => import('#/layout/header').then((mod) => mod), { ssr: false })
@@ -102,11 +103,11 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
       <body>
       {/* <body className={inter.className}> */}
       {/* <body className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}> */}
-        {/* <LayoutWrapper> */}
-        <div id='ThreeDApp'>
-          {children}
-        </div>
-        {/* </LayoutWrapper> */}
+        <LayoutWrapper>
+          <div id='ThreeDApp'>
+            {children}
+          </div>
+        </LayoutWrapper>
       </body>
     </html>
   )
