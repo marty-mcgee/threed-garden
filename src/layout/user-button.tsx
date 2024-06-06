@@ -1,4 +1,6 @@
 // 'use client'
+'use server'
+// ^^ this file requires server pragma
 
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
@@ -25,9 +27,9 @@ export default async function UserButton() {
   }
   return (
     <div className="flex gap-2 items-center">
-      <span className="hidden text-sm sm:inline-flex">
+      {/* <span className="hidden text-sm sm:inline-flex">
         {session.user.email}
-      </span>
+      </span> */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button className='relative rounded-full'>

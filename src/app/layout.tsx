@@ -1,5 +1,5 @@
 // 'use client'
-// 'use server'
+'use server'
 // ^ this file should need NO pragma
 
 // ==============================================================
@@ -64,7 +64,7 @@ import '#/layout/styles/globals.css' // global tailwind css
 import '#/layout/styles/styles.css' // additional global basic css
 
 // ** LAYOUT Components (Head, Main, Foot)
-import { LayoutWrapper } from '~/src/layout/LayoutWrapper'
+// import { LayoutWrapper } from '~/src/layout/LayoutWrapper'
 import Header from '#/layout/header'
 import Footer from '#/layout/footer'
 // // const Header = dynamic(() => import('#/layout/header').then((mod) => mod), { ssr: false })
@@ -73,9 +73,9 @@ import Footer from '#/layout/footer'
 // const Footer = dynamic(() => import('#/layout/footer'), { ssr: false })
 
 // ** FONTS ??
-import { Inter } from 'next/font/google' // Roboto?
+// import { Inter } from 'next/font/google' // Roboto?
 // ** set google font 'inter'national css
-const inter = Inter({ subsets: ['latin'] })
+// const inter = Inter({ subsets: ['latin'] })
 // const roboto = Roboto({ weight: '400', subsets: ['latin'] })
 
 // ** Helper Components
@@ -92,24 +92,21 @@ console.debug('%c🥕 ThreeDGarden<FC,R3F>: {layout.tsx}', ccm.lightgreen)
 // ==============================================================
 // MAIN APP TEMPLATE WRAPPER
 
-// provide basic React Provider context node with props.children
+// basic React Provider context node with props.children
 // const ThreeDAppProvider: FC<{ children?: ReactNode }> = (props) => {
 const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element => {
-  // const { children } = props
-  // return (
-  //   <>{children}</>
-  // )
+  // **
   return (
     <html lang='en'>{/* className='antialiased' */}
-      <head id='ThreeDAppMetaHead' />
-      {/* <body id='ThreeDAppProvider'> */}
-      <body id='ThreeDAppProvider' className={inter.className}>
-      {/* <body id='ThreeDAppProvider' className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}> */}
-        <LayoutWrapper key='ThreeDAppLayoutWrapper'>
+      <head />
+      <body>
+      {/* <body className={inter.className}> */}
+      {/* <body className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}> */}
+        {/* <LayoutWrapper> */}
         <div id='ThreeDApp'>
           {children}
         </div>
-        </LayoutWrapper>
+        {/* </LayoutWrapper> */}
       </body>
     </html>
   )
@@ -139,14 +136,14 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
 // const RootLayout = async ({ children }: React.PropsWithChildren): Promise<JSX.Element> => {
 
   // ** threed.session
-  let session = {
-    user: {
-      name: 'string',
-      email: 'string',
-      image: 'string',
-    },
-    expires: new Date().getDate() // 'datetime as type date or string?'
-  }
+  // let session = {
+  //   user: {
+  //     name: 'string',
+  //     email: 'string',
+  //     image: 'string',
+  //   },
+  //   expires: new Date().getDate() // 'datetime as type date or string?'
+  // }
   // const session = await auth()
   // const session = auth()
   // if (session?.user) {
@@ -276,14 +273,15 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                                   '
                                 >
                                   <Header 
-                                    key='ThreeDAppHeader'
+                                    // key='ThreeDAppHeader'
                                   />
                                   <main 
                                     id='ThreeDAppMain'
-                                    key='ThreeDAppMain'
+                                    // key='ThreeDAppMain'
                                     className='
                                       flex-auto 
                                       w-full 
+                                      h-full
                                       px-2 
                                       py-1 
                                       mx-auto
@@ -292,7 +290,7 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                                     {children}
                                   </main>
                                   <Footer
-                                    key='ThreeDAppFooter'
+                                    // key='ThreeDAppFooter'
                                   />
                                 </div>
                                 {/* </Suspense> */}

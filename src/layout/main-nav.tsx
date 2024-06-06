@@ -1,4 +1,5 @@
 'use client'
+// ^^ this file requires client pragma
 
 import Image from 'next/image'
 
@@ -14,15 +15,15 @@ import {
   navigationMenuTriggerStyle,
 } from './ui/navigation-menu'
 import React from 'react'
-import { Button } from './ui/button'
+// import { Button } from './ui/button'
 
 export function MainNav() {
   return (
-    <div className="flex gap-4 items-center">
+    <div className="flex gap-1 items-center">
       <CustomLink href='/'>
-        <Button variant="ghost" className="p-0">  
+        {/* <Button variant="ghost" className="p-0">   */}
           <Image src='/favicon/apple-icon.png' priority={true} alt='Home' width='48' height='48' />
-        </Button>
+        {/* </Button> */}
       </CustomLink>
       <h3 className='pl-2' style={{paddingBottom: '2px'}}>
         <CustomLink href='/participate' style={{color: '#DDDDDD'}}>
@@ -32,8 +33,12 @@ export function MainNav() {
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
-            <NavigationMenuTrigger>Participate</NavigationMenuTrigger>
-            <NavigationMenuContent>
+            <NavigationMenuTrigger 
+              style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
+            >
+              Participate
+            </NavigationMenuTrigger>
+            <NavigationMenuContent style={{backgroundColor: '#222222', color: '#DDDDDD'}}>
               <ul className='grid gap-0 p-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
                 <ListItem href='/home' title='Home'>
                   Go to the home page.
@@ -48,8 +53,12 @@ export function MainNav() {
             </NavigationMenuContent>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <NavigationMenuTrigger>Server</NavigationMenuTrigger>
-            <NavigationMenuContent>
+            <NavigationMenuTrigger
+              style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
+            >
+              Server
+            </NavigationMenuTrigger>
+            <NavigationMenuContent style={{backgroundColor: '#222222', color: '#DDDDDD'}}>
               <ul className='grid gap-0 p-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
                 <ListItem href='/server-example' title='RSC Example'>
                   Protecting React Server Component.
@@ -67,6 +76,7 @@ export function MainNav() {
             <NavigationMenuLink
               href='/client-example'
               className={navigationMenuTriggerStyle()}
+              style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
             >
               Client
             </NavigationMenuLink>

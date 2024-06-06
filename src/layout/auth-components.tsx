@@ -1,5 +1,3 @@
-
-
 import { signIn, signOut } from '#/app/auth'
 import { Button } from './ui/button'
 
@@ -16,7 +14,9 @@ export function SignIn({
         await signIn(provider)
       }}
     >
-      <Button {...props}>Sign In</Button>
+      <Button {...props}
+        style={{borderWidth: 0}}
+      >Sign In</Button>
     </form>
   )
 }
