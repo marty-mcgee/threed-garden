@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
 
 // ** AUTH GUARD
-import { auth } from 'auth'
+import { auth } from '~/src/lib/auth/auth'
 // import { SessionProvider } from 'next-auth/react'
 // import { useSession } from 'next-auth/react'
 import { SignIn, SignOut } from './auth-components'

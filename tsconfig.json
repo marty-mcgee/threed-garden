@@ -65,7 +65,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "src/layout/LayoutWrapper.tsx"  ],
   "exclude": [
     "node_modules",
     ".husky",

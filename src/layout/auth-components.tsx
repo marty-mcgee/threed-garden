@@ -1,4 +1,4 @@
-import { signIn, signOut } from '#/app/auth'
+import { signIn, signOut } from '~/src/lib/auth/auth'
 import { Button } from './ui/button'
 
 export function SignIn({

@@ -1,18 +1,17 @@
 #ThreeDApp {
-  padding: 4px 0;
-  margin: 0;
-  font-family: sans-serif;
-  height: 100vh;
-  width: 100vw;
+  /* padding: 4px 0; */
+  /* margin: 0; */
+  /* font-family: sans-serif; */
+  /* height: 100vh; */
+  /* width: 100vw; */
 }
-
-/* OVERRIDES !important */
 
 .MuiCardHeader-title {
   line-height: 0.7 !important;
 }
 
-/* JOYSTICK 
+/* JOYSTICK */ 
+/* 
 * {
   box-sizing: border-box;
 }
@@ -30,7 +29,7 @@ body,
 body {
   position: fixed;
   overflow: hidden;
-}
+} */
 
 .controlKeys {
   position: absolute;
@@ -58,21 +57,20 @@ body {
   color: rgb(79, 189, 249);
 }
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .controlKeys {
     display: none;
   }
   .title {
     display: none;
   }
-}
+} */
 
-@media (max-height: 450px) {
+/* @media (max-height: 450px) {
   .controlKeys {
     display: none;
   }
   .title {
     display: none;
   }
-}
-*/
+} */
