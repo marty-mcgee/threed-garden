@@ -36,7 +36,7 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
 // const ParticipatePage: TNextPageWithProps = async ({ children }: React.PropsWithChildren): Promise<JSX.Element> => {
   // **
   // const session = await auth()
-  // const { data: session, status } = useSession()
+  const { data: session, status } = useSession()
   // filter out sensitive data before passing to client.
   // if (session) {
     // console.debug('%c Participate page: session', ccm.greenAlert, session)
@@ -51,14 +51,14 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
   // else {
   //   console.debug('%c Participate page: NO session', ccm.redAlert)
   // }
-  let session = {
-    user: {
-      name: 'Marty',
-      email: 'mcgee.marty@gmail.com',
-      image: './images/logos/threed-garden.png'
-    },
-    expires: Date.now(), // 'datetime as string',
-  }
+  // let session = {
+  //   user: {
+  //     name: 'Marty',
+  //     email: 'mcgee.marty@gmail.com',
+  //     image: './images/logos/threed-garden.png'
+  //   },
+  //   expires: Date.now().toLocaleString(), // 'datetime as string',
+  // }
 
   return (
     <Grid
