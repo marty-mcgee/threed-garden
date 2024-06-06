@@ -75,8 +75,8 @@ import Grid from '@mui/material/Grid'
 // import { Html, Loader, useProgress } from '@react-three/drei'
 
 // ** ThreeD r3f Canvas Imports
-// import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
-const ThreeDCanvasViewer = dynamic(() => import('#/lib/threed/components/canvas/CanvasViewer'), { ssr: false })
+import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
+// const ThreeDCanvasViewer = dynamic(() => import('#/lib/threed/components/canvas/CanvasViewer'), { ssr: false })
 // import { Canvas } from '@react-three/fiber'
 // import { ThreeDCanvasViewer } from '#/lib/threed/components/canvas/Canvas'
 // import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
@@ -418,7 +418,7 @@ const ThreeDGarden = (): JSX.Element => {
               id='leva_controls'
               style={{
                 position: 'absolute',
-                zIndex: 10,
+                zIndex: 1000,
                 minWidth: '416px',
               }}
             >
@@ -459,7 +459,7 @@ const ThreeDGarden = (): JSX.Element => {
             sx={{ borderTop: '1px solid darkgreen' }}
           >
             {/* THREED TOOLBAR */}
-            <ThreeDToolbar />
+            {/* <ThreeDToolbar /> */}
             {/* THREED TOOLBAR */}
           </Grid>
           <Grid
