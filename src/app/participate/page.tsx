@@ -8,7 +8,7 @@
 import { useSession } from 'next-auth/react'
 
 // ** NEXT Imports
-// import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic'
 // import Image from 'next/image'
 // import type { NextPage } from 'next'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
@@ -24,7 +24,8 @@ import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 
 // ** THREED GARDEN Imports
-import ThreeDGarden from '#/lib/threed/ThreeDGarden'
+// import ThreeDGarden from '#/lib/threed/ThreeDGarden'
+const ThreeDGarden = dynamic(() => import('#/lib/threed/ThreeDGarden'), { ssr: false })
 
 // ** HELPER Imports
 import Spinner from '#/layout/ui/components/spinner'
