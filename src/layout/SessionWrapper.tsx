@@ -1,4 +1,5 @@
 // 'use client'
+'use server'
 
 // SESSSSSSION PROVIDERRRRRR
 import { SessionProvider } from 'next-auth/react'
@@ -8,17 +9,18 @@ import { auth } from '#/lib/auth/auth' // this goes in page?
 // import dynamic from 'next/dynamic'
 // const ExperienceViewer = dynamic(() => import('#/lib/threed/components/canvas/ExperienceViewer'), { ssr: false })
 
-const LayoutWrapper = async ({ children }: { children: any}) => {
-  const id: string = 'HEYHEYHEY'
+const SessionWrapper = async ({ children }: { children: any}) => {
+  // **
+  const id: string = 'ThreeDAppSession'
   // const ref: any = useRef<any>()
 
-  // this goes in page?
-  let session = await auth()
+  // get session from next-auth
+  const session = await auth()
   // console.debug('auth() session', session)
-  // const session = async () => await auth()
-  // console.debug('session', session())
-
-  // let session = {
+  // // const session = async () => await auth()
+  // // console.debug('auth() session', session())
+  // set session to static data
+  // const session = {
   //   user: {
   //     name: 'string',
   //     email: 'string',
@@ -40,5 +42,4 @@ const LayoutWrapper = async ({ children }: { children: any}) => {
   )
 }
 
-export { LayoutWrapper }
-export default LayoutWrapper
+export default SessionWrapper

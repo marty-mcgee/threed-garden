@@ -64,8 +64,8 @@ import '#/layout/styles/globals.css' // global tailwind css
 import '#/layout/styles/styles.css' // additional global basic css
 
 // ** LAYOUT Components (Head, Main, Foot)
-// import { LayoutWrapper } from '#/layout/LayoutWrapper'
-const LayoutWrapper = dynamic(() => import('#/layout/LayoutWrapper'), { ssr: false })
+// import { SessionWrapper } from '#/layout/SessionWrapper'
+const SessionWrapper = dynamic(() => import('~/src/layout/SessionWrapper'), { ssr: false })
 // import Header from '#/layout/header'
 // import Footer from '#/layout/footer'
 // // const Header = dynamic(() => import('#/layout/header').then((mod) => mod), { ssr: false })
@@ -103,11 +103,11 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
       <body>
       {/* <body className={inter.className}> */}
       {/* <body className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}> */}
-        <LayoutWrapper>
+        <SessionWrapper>
           <div id='ThreeDApp'>
             {children}
           </div>
-        </LayoutWrapper>
+        </SessionWrapper>
       </body>
     </html>
   )

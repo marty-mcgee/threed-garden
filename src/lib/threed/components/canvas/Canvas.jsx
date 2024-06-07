@@ -54,7 +54,7 @@ import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceVie
 import { threedIO } from '#/lib/threed/threedio/threedIO'
 
 // ** LAYOUT Components (Head, Main, Foot)
-import LayoutWrapper from '#/lib/threed/components/canvas/LayoutWrapper'
+// import LayoutWrapper from '#/lib/threed/components/canvas/LayoutWrapper'
 
 // ** ThreeD Noun Imports
 // import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene'
