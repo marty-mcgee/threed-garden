@@ -146,7 +146,6 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
   return (
     <>
-      {/* <ThreeDCanvasViewer /> */}
 
       <EcctrlJoystickControls />
 
@@ -160,7 +159,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           width: '100%',
         }}
         
-        camera={{ position: [-16, 16, 16], fov: 80 }}
+        camera={{ position: [-16, 16, 16], fov: 40 }}
         dpr={[1, 2]}
         shadows
 
@@ -181,32 +180,30 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
         //   }
         // }}
       >
-
-      {/* SUSPENSEFUL... */}
-      {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
-      {/* <Suspense fallback={null}> */}
-      {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
-      {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
-      <Suspense fallback={
-        <Html center>
-          <Loader
-            // containerStyles={...container} // Flex layout styles
-            // innerStyles={...inner} // Inner container styles
-            // barStyles={...bar} // Loading-bar styles
-            // dataStyles={...data} // Text styles
-            dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
-            initialState={(active = true) => active} // Initial black out state
-          />
-        </Html>
-      }>
-
-        
-      {/* <LayoutWrapper> */}
   
         {/* @ts-ignore */}
         <threedIO.Out />
 
         <Preload all />
+
+        {/* SUSPENSEFUL... */}
+        {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
+        {/* <Suspense fallback={null}> */}
+        {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
+        {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
+        <Suspense fallback={
+          <Html center>
+            <Spinner />
+            <Loader
+              // containerStyles={...container} // Flex layout styles
+              // innerStyles={...inner} // Inner container styles
+              // barStyles={...bar} // Loading-bar styles
+              // dataStyles={...data} // Text styles
+              dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
+              initialState={(active = true) => active} // Initial black out state
+            />
+          </Html>
+        }>
           
           {/* THREED EXPERIENCE : VIEWER */}
           {/* <Experience /> */}
@@ -222,7 +219,6 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
 
           </ThreeDExperienceViewer>
 
-        {/* </LayoutWrapper> */}
         </Suspense>
       </Canvas>
     </>
