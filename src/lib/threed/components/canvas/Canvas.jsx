@@ -54,7 +54,7 @@ import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceVie
 import { threedIO } from '#/lib/threed/threedio/threedIO'
 
 // ** LAYOUT Components (Head, Main, Foot)
-// import LayoutWrapper from '#/lib/threed/components/canvas/LayoutWrapper'
+// import CanvasWrapper from '#/lib/threed/components/canvas/CanvasWrapper'
 
 // ** ThreeD Noun Imports
 // import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene'
@@ -132,6 +132,36 @@ const EcctrlJoystickControls = () => {
 }
 
 
+
+// CAMERA DATA INTERFACE (USING ZUSTAND SESSION STATE STORE)
+import create from 'zustand'
+
+const useStoreCamera = create(set => ({
+  cameraPosition: [-16, 16, 16],
+  setCameraPosition: cameraPosition => set({ cameraPosition })
+}))
+
+// function CameraPositionTestApp() {
+//   const setCameraPosition = useStoreCamera(state => state.setCameraPosition)
+//   return (
+//     <>
+//       <Canvas>
+//         <MyCameraReactsToStateChanges />
+//       </Canvas>
+//       <button onClick={() => setCameraPosition([0, 10, 20])}>set cameraPosition</button>
+//     </>
+//   )
+// }
+
+function MyCameraReactsToStateChanges() {
+  const [x, y, z] = useStoreCamera(state => state.cameraPosition)
+  useFrame(state => {
+    // state.camera.lerp({ x, y, z }, 0.1)
+    state.camera.lookAt(0, 0, 0)
+  })
+}
+
+
 export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // **
   // if (debug) console.debug('%c📐 ThreeDCanvas props.threeds', ccm.darkredAlert, threeds)
@@ -143,11 +173,16 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // ** REF-erences using REACT
   const ref = useRef()
 
+  const setCameraPosition = useStoreCamera(state => state.setCameraPosition)
+
   // **
   return (
     <>
 
       <EcctrlJoystickControls />
+
+      {/* <CameraPositionTestApp /> */}
+      <button onClick={() => setCameraPosition([0, 10, 20])}>set cameraPosition</button>
 
       {/* HEY HEY HEY */}
       <Canvas
@@ -159,7 +194,10 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           width: '100%',
         }}
         
-        camera={{ position: [-16, 16, 16], fov: 40 }}
+        camera={{ 
+          position: [-12, 4, -16], 
+          fov: 24 
+        }}
         dpr={[1, 2]}
         shadows
 
@@ -180,6 +218,8 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
         //   }
         // }}
       >
+
+        <MyCameraReactsToStateChanges />
   
         {/* @ts-ignore */}
         <threedIO.Out />

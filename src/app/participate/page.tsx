@@ -14,7 +14,7 @@ import dynamic from 'next/dynamic'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 
 // ** REACT Imports
-// import { Suspense } from 'react'
+import { Suspense } from 'react'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
@@ -66,6 +66,8 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
       container
       spacing={1}
     >
+      <Suspense fallback={<Spinner />}>
+
       {/* [MM] HEY HEY HEY -- ThreeDGarden Component */}
       <ThreeDGarden />
       {/* [MM] HEY HEY HEY -- End ThreeDGarden Component */}
@@ -84,7 +86,9 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
             // avatar={session?.user?.image}
           />
           <CardContent>
-            <Typography sx={{ color: 'primary.main', paddingBottom: '8px' }}>This card is visible to both 'public' and 'authorized' users</Typography>
+            {/* <Typography sx={{ color: 'primary.main', paddingBottom: '8px' }}>
+              This card is visible to both 'public' and 'authorized' users
+            </Typography> */}
             { session?.user && (
             <Typography sx={{ color: 'secondary.main' }}>
               name: {session.user.name}<br/>
@@ -107,7 +111,9 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
             // avatar={session.user.image}
           />
           <CardContent>
-            <Typography sx={{ color: 'warning.main', paddingBottom: '8px' }}>This card is visible only to 'authorized' users</Typography>
+            {/* <Typography sx={{ color: 'warning.main', paddingBottom: '8px' }}>
+              This card is visible only to 'authorized' users
+            </Typography> */}
             { session?.user && (
             <Typography sx={{ color: 'secondary.main' }}>
               name: {session.user.name}<br/>
@@ -118,8 +124,8 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
           </CardContent>
         </Card>
       </Grid>
+      </Suspense>
     </Grid>
-    // )}
   )
 }
 
