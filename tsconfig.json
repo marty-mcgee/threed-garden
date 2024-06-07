@@ -46,7 +46,7 @@
       ],
       // next-auth
       "auth": [
-        "src/app/auth"
+        "src/lib/auth/auth"
       ],
     },
     "typeRoots": [
