@@ -190,12 +190,12 @@ const {
 
 // **
 export const ThreeDControlPanels = (
-  { projectName,
-    setProjectName
-  }: {
-    projectName: string,
-    setProjectName: Function
-  }
+  // { projectName,
+  //   setProjectName
+  // }: {
+  //   projectName: string,
+  //   setProjectName: Function
+  // }
 ): ReactNode => {
 
   // ==========================================================
