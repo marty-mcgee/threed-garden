@@ -13,6 +13,9 @@ import { preferencesDataVar } from '#/lib/stores/apollo'
 // ** REACT Imports
 import { useEffect, useState } from 'react'
 
+// THREE JS * ALL
+import * as THREE from 'three'
+
 // ** REACT THREE Imports
 import { Grid, KeyboardControls } from '@react-three/drei'
 import { Physics } from '@react-three/rapier'
@@ -236,6 +239,8 @@ export default function Experience() {
     { name: 'action4', keys: ['KeyF'] },
   ]
 
+  const camera = new THREE.PerspectiveCamera()
+
   return (
     <>
 
@@ -271,13 +276,13 @@ export default function Experience() {
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
           {/* Keyboard preset */}
           <KeyboardControls map={keyboardMap}>
-            {/* <CharacterControls
+            <CharacterControls
               // debug={prefs.doWorldDebug}
               debug={false}
               // animated={prefs.doCharacterAnimation}
               animated={true}
               // disableFollowCam={prefs.doWorldUnfollowCam}
-              disableFollowCam={true}
+              // disableFollowCam={true}
               // followLight={false}
               // springK={2}
               // dampingC={0.2}
@@ -285,9 +290,9 @@ export default function Experience() {
               // autoBalanceDampingC={0.04}
               // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
               // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
-            > */}
-                <CharacterModel5 />
-            {/* </CharacterControls> */}
+            >
+              <CharacterModel1 />
+            </CharacterControls>
           </KeyboardControls>
         
         {/* END: CHARACTER MODEL[S] GROUP */}
