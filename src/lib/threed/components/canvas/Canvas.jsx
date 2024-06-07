@@ -137,6 +137,8 @@ const EcctrlJoystickControls = () => {
 import create from 'zustand'
 
 const useStoreCamera = create(set => ({
+  position: [-12, 4, -16],
+  setPosition: position => set({ position }),
   cameraPosition: [-16, 16, 16],
   setCameraPosition: cameraPosition => set({ cameraPosition })
 }))
@@ -154,9 +156,10 @@ const useStoreCamera = create(set => ({
 // }
 
 function MyCameraReactsToStateChanges() {
-  const [x, y, z] = useStoreCamera(state => state.cameraPosition)
+  // const [x, y, z] = useStoreCamera(state => state.cameraPosition)
+  const [x, y, z] = useStoreCamera(state => state.position)
   useFrame(state => {
-    // state.camera.lerp({ x, y, z }, 0.1)
+    state.camera.lerp({ x, y, z }, 0.1)
     state.camera.lookAt(0, 0, 0)
   })
 }
@@ -173,7 +176,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // ** REF-erences using REACT
   const ref = useRef()
 
-  const setCameraPosition = useStoreCamera(state => state.setCameraPosition)
+  const setCameraPosition = useStoreCamera(state => state.setPosition)
 
   // **
   return (
@@ -219,7 +222,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
         // }}
       >
 
-        <MyCameraReactsToStateChanges />
+        {/* <MyCameraReactsToStateChanges /> */}
   
         {/* @ts-ignore */}
         <threedIO.Out />
