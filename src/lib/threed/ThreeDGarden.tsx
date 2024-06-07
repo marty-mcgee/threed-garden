@@ -5,12 +5,12 @@
 // ** RESOURCES
 
 // ** NEXT Imports
-import dynamic from 'next/dynamic'
+// import dynamic from 'next/dynamic'
 // import Image from 'next/image'
 
 // ** NEXT AUTH Imports
 // hint: const { data, data: session, status } = useSession()
-import { useSession } from "next-auth/react" 
+// import { useSession } from 'next-auth/react'
 
 // ** REACT Imports
 import {
@@ -126,7 +126,7 @@ const debug: boolean = true
 const DEBUG: boolean = true
 const debug_deep: boolean = false
 
-const appVersion = 'v0.16.0-a'
+const appVersion = 'v0.16.0-b'
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
 // const appVersion = process.env.npm_package_version
 // const appVersion: string = require('package.json').version
@@ -134,7 +134,7 @@ const appVersion = 'v0.16.0-a'
 
 if ((debug || DEBUG) && debug_deep) {
   console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm.green)
-  console.debug("%c🌱 appVersion", ccm.darkgreen, appVersion)
+  console.debug('%c🌱 appVersion', ccm.darkgreen, appVersion)
   console.debug(`%c====================================`, ccm.darkgreen)
 }
 
@@ -183,7 +183,7 @@ interface IPlayer {
 
 // IF CLIENT BROWSER HAS A WINDOW OBJECT... (NOT SERVER SSR)
 // if (typeof window != undefined) {
-//   console.debug("[MM] HEY HEY HEY window", window)
+//   console.debug('[MM] HEY HEY HEY window', window)
 //   // TESTING PARAMETERS FROM SERVER (PHP)
 //   // const postdata = window?.postdata ? window.postdata : {}
 //   // console.debug(postdata)

@@ -7,7 +7,7 @@ import { useReactiveVar } from '@apollo/client'
 import { preferencesDataVar } from '#/lib/stores/apollo'
 
 // ** NEXT Imports
-import dynamic from 'next/dynamic'
+// import dynamic from 'next/dynamic'
 // import Image from 'next/image'
 
 // ** REACT Imports
