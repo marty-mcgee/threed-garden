@@ -256,12 +256,12 @@ export default function Experience() {
       >
 
         {/* THREED FARMBOT */}
-        <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 1.6, -2]}>
+        <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.6, -2]}>
           <ThreeDFarmBotGarden />
         </group>
-        <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 1.4, -0.6]}>
+        {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
           <ThreeDFarmBotMain />
-        </group>
+        </group> */}
 
         {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
             CHARACTER MODEL[S] GROUP */}
