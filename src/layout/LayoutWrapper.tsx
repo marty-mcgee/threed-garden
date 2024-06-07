@@ -14,7 +14,7 @@ const LayoutWrapper = async ({ children }: { children: any}) => {
 
   // this goes in page?
   let session = await auth()
-  console.debug('auth() session', session)
+  // console.debug('auth() session', session)
   // const session = async () => await auth()
   // console.debug('session', session())
 
