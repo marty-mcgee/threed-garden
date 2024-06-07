@@ -4,7 +4,7 @@ import { useRef } from 'react'
 import dynamic from 'next/dynamic'
 const ExperienceViewer = dynamic(() => import('#/lib/threed/components/canvas/ExperienceViewer'), { ssr: false })
 
-const LayoutWrapper = ({ children }: { children: any}) => {
+const CanvasWrapper = ({ children }: { children: any}) => {
   const id: string = 'HEYHEYHEY'
   const ref: any = useRef<any>()
 
@@ -38,5 +38,5 @@ const LayoutWrapper = ({ children }: { children: any}) => {
   )
 }
 
-export { LayoutWrapper }
-export default LayoutWrapper
+export { CanvasWrapper }
+export default CanvasWrapper
