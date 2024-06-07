@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ ts-ignore
 // 'use client'
 // ==========================================================
 // RESOURCES
@@ -144,21 +144,6 @@ export interface userDataType {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Retrieve current moving direction of the character
 const getMovingDirection = (forward: boolean,
   backward: boolean,
@@ -176,8 +161,6 @@ const getMovingDirection = (forward: boolean,
   if (rightward) return pivot.rotation.y - Math.PI / 2
   if (forward) return pivot.rotation.y
 }
-
-
 
 
 

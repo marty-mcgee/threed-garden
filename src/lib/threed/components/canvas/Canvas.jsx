@@ -16,23 +16,24 @@ import * as THREE from 'three'
 // R3F
 import {
   Canvas,
+  Camera,
   useFrame,
   useThree,
-  extend // extend({ OrbitControls })
+  // extend, // extend({ OrbitControls })
 } from '@react-three/fiber'
 
 // R3F HELPERS
 import {
-  Environment, Stage,
-  KeyboardControls,
-  OrbitControls, TransformControls, PivotControls,
-  GizmoHelper, GizmoViewcube, GizmoViewport,
-  ContactShadows, BakeShadows,
+  // Environment, Stage,
+  // KeyboardControls,
+  // OrbitControls, TransformControls, PivotControls,
+  // GizmoHelper, GizmoViewcube, GizmoViewport,
+  // ContactShadows, BakeShadows,
   // softShadows, // softShadows()
   Loader, useProgress,
   Preload,
   Html, Center,
-  useGLTF, useFBX,
+  // useGLTF, useFBX,
 } from '@react-three/drei'
 
 // do stuff with IMPORTS ??
@@ -176,6 +177,12 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // ** REF-erences using REACT
   const ref = useRef()
 
+  const camera = { 
+    ref: ref,
+    position: [-12, 4, -16], 
+    fov: 24,
+  }
+
   const setCameraPosition = useStoreCamera(state => state.setPosition)
 
   // **
@@ -185,7 +192,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
       <EcctrlJoystickControls />
 
       {/* <CameraPositionTestApp /> */}
-      <button onClick={() => setCameraPosition([0, 10, 20])}>set cameraPosition</button>
+      {/* <button onClick={() => setCameraPosition([0, 10, 20])}>set cameraPosition</button> */}
 
       {/* HEY HEY HEY */}
       <Canvas
@@ -197,10 +204,12 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           width: '100%',
         }}
         
-        camera={{ 
-          position: [-12, 4, -16], 
-          fov: 24 
-        }}
+        camera={camera}
+        // camera={{ 
+        //   position: [-12, 4, -16], 
+        //   fov: 24 
+        // }}
+
         dpr={[1, 2]}
         shadows
 
