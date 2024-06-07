@@ -1,4 +1,4 @@
-// @ts-nocheck /* OR @ ts-ignore OR @ ts-expect-error */
+// @ ts-nocheck /* OR @ ts-ignore OR @ ts-expect-error */
 // 'use client'
 // ^ needs the 'use client' pragma (inheriting from parent page)
 // ==============================================================
@@ -70,7 +70,7 @@ import Grid from '@mui/material/Grid'
 // import MDTabPanel, { tabProps } from '#/lib/mui/MDTabPanel'
 
 // ** THREE JS Imports (not here, use R3F)
-// import * as THREE from 'three'
+import * as THREE from 'three'
 // ** Three JS Loading Progress
 // import { Html, Loader, useProgress } from '@react-three/drei'
 
@@ -167,8 +167,8 @@ interface IThreeDEnv {
 interface IPlayer {
   action: string
   actionTime: number | Date
-  object: Object3D
-  mixer: AnimationMixer
+  object: THREE.Object3D
+  mixer: THREE.AnimationMixer
   setAction: Function
   getAction: Function
   toggleAnimation: Function
@@ -366,7 +366,7 @@ const ThreeDGarden = (): JSX.Element => {
   // }
 
   // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
-  const loadNounData = (_type = 'project', threeds = []) => {
+  const loadNounData = (_type: string = 'project', threeds: any = []) => {
     // load these threeds into r3f canvas
     if (DEBUG || debug_deep) console.debug('%c🌱 ThreeDGarden loadNounData()', ccm.yellowAlert, _type, threeds)
     if (_type === 'project') {
