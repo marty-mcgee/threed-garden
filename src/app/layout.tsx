@@ -66,12 +66,12 @@ import '#/layout/styles/styles.css' // additional global basic css
 // ** LAYOUT Components (Head, Main, Foot)
 // import { LayoutWrapper } from '#/layout/LayoutWrapper'
 const LayoutWrapper = dynamic(() => import('#/layout/LayoutWrapper'), { ssr: false })
-import Header from '#/layout/header'
-import Footer from '#/layout/footer'
+// import Header from '#/layout/header'
+// import Footer from '#/layout/footer'
 // // const Header = dynamic(() => import('#/layout/header').then((mod) => mod), { ssr: false })
 // // const Footer = dynamic(() => import('#/layout/footer').then((mod) => mod), { ssr: false })
-// const Header = dynamic(() => import('#/layout/header'), { ssr: false })
-// const Footer = dynamic(() => import('#/layout/footer'), { ssr: false })
+const Header = dynamic(() => import('#/layout/header'), { ssr: false })
+const Footer = dynamic(() => import('#/layout/footer'), { ssr: false })
 
 // ** FONTS ??
 // import { Inter } from 'next/font/google' // Roboto?
