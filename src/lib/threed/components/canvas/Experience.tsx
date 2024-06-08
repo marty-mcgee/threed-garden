@@ -269,18 +269,15 @@ export default function Experience() {
         </group> */}
 
         {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
-            CHARACTER MODEL[S] GROUP */}
-        <group rotation={[0, 0, 0]} scale={0.016} position={[0, 0, 0]}>
-
-          {/* Character Model 1 Control */}
+            CHARACTER MODEL */}
+          
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
-          {/* Keyboard preset */}
           <KeyboardControls map={keyboardMap}>
             <CharacterControls
               // debug={prefs.doWorldDebug}
-              debug={false}
+              // debug={false}
               // animated={prefs.doCharacterAnimation}
-              animated={true}
+              // animated={true}
               // disableFollowCam={prefs.doWorldUnfollowCam}
               // disableFollowCam={true}
               // followLight={false}
@@ -291,12 +288,14 @@ export default function Experience() {
               // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
               // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
             >
-              <CharacterModel1 />
+            {/* <group scale={0.016}> */}
+              {/* <CharacterModel1 /> */}
+              <CharacterModel5 />
+            {/* </group> */}
             </CharacterControls>
           </KeyboardControls>
         
-        {/* END: CHARACTER MODEL[S] GROUP */}
-        </group>
+        {/* END: CHARACTER MODEL */}
 
         {/* // import Map from './Map' */}
         {/* <group 

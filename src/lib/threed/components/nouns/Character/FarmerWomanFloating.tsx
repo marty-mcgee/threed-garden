@@ -514,7 +514,8 @@ export default function CharacterModel(props: CharacterModelProps) {
   }, [curAnimation])
 
   return (
-    <Suspense fallback={<capsuleGeometry args={[0.4, 0.8]} />}>
+    // <Suspense fallback={<capsuleGeometry args={[0.4, 0.8]} />}>
+    <Suspense fallback={null}>
 
       {/* Default capsule model */}
       {/* <mesh castShadow>
@@ -527,10 +528,10 @@ export default function CharacterModel(props: CharacterModelProps) {
       </mesh> */}
 
       {/* Head collider */}
-      {/* <BallCollider args={[0.5]} position={[0, 0.45, 0]} /> */}
+      <BallCollider args={[0.5]} position={[0, 10.45, 0]} />
 
       {/* Right hand collider */}
-      {/* <mesh ref={rightHandRef} />
+      <mesh ref={rightHandRef} />
       <BallCollider
         args={[0.1]}
         ref={rightHandColliderRef}
@@ -544,10 +545,10 @@ export default function CharacterModel(props: CharacterModelProps) {
             }))
           }
         }}
-      /> */}
+      />
 
       {/* Left hand collider */}
-      {/* <mesh ref={leftHandRef} />
+      <mesh ref={leftHandRef} />
       <BallCollider
         args={[0.1]}
         ref={leftHandColliderRef}
@@ -561,14 +562,16 @@ export default function CharacterModel(props: CharacterModelProps) {
             }))
           }
         }}
-      /> */}
+      />
 
       {/* ANIMATED CHARACTER Model Group */}
       <group
         ref={group}
         {...props}
-        dispose={null}
-        scale={1.0}
+        // dispose={null}
+        // scale={1.0}
+        scale={0.016}
+        position={[0, 10, 0]}
         name='ThreeD_Animated_Character'
       >
 
