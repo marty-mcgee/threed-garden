@@ -252,7 +252,7 @@ export default function CharacterModel(props: CharacterModelProps) {
       {/* Replace your model here */}
 
       {/* Head collider */}
-      <BallCollider args={[0.5]} position={[0, 0.45, 0]} />
+      <BallCollider args={[0.5]} position={[0, 1.45, 0]} />
 
       {/* Right hand collider */}
       <mesh ref={rightHandRef} />
@@ -280,8 +280,11 @@ export default function CharacterModel(props: CharacterModelProps) {
         ref={group}
         {...props}
         dispose={null}
+        // scale={1.0}
+        // scale={0.016}
+        // position={[0, 10, 0]}
       >
-        <group name='Scene' scale={0.8} position={[0, 0, 0]}>
+        <group name='Scene' scale={0.8} position={[0, 1, 0]}>
           <group name='KayKit_Animated_Character'>
             <skinnedMesh
               name='outline'

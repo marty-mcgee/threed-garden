@@ -135,7 +135,7 @@ const EcctrlJoystickControls = () => {
 
 
 // CAMERA DATA INTERFACE (USING ZUSTAND SESSION STATE STORE)
-import create from 'zustand'
+import { create } from 'zustand'
 
 const useStoreCamera = create(set => ({
   position: [-12, 4, -16],

@@ -239,7 +239,7 @@ export default function Experience() {
     { name: 'action4', keys: ['KeyF'] },
   ]
 
-  const camera = new THREE.PerspectiveCamera()
+  // const camera = new THREE.PerspectiveCamera()
 
   return (
     <>
@@ -255,7 +255,7 @@ export default function Experience() {
       {/* THREED USING PHYSICS */}
       <Physics
         // debug={prefs.doWorldPhysics}
-        debug={false}
+        debug={true}
         // timeStep='vary'
         // paused={pausedPhysics}
       >
@@ -270,31 +270,29 @@ export default function Experience() {
 
         {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
             CHARACTER MODEL */}
-          
+        <group position={[0, 2, 0]}>
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
           <KeyboardControls map={keyboardMap}>
             <CharacterControls
               // debug={prefs.doWorldDebug}
-              // debug={false}
+              debug={false}
               // animated={prefs.doCharacterAnimation}
-              // animated={true}
+              animated={true}
               // disableFollowCam={prefs.doWorldUnfollowCam}
-              // disableFollowCam={true}
-              // followLight={false}
-              // springK={2}
-              // dampingC={0.2}
-              // autoBalanceSpringK={1.2}
-              // autoBalanceDampingC={0.04}
-              // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
-              // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
+              disableFollowCam={false}
+              followLight={false}
+              springK={2}
+              dampingC={0.2}
+              autoBalanceSpringK={1.2}
+              autoBalanceDampingC={0.04}
+              autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!!
+              autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!!
             >
-            {/* <group scale={0.016}> */}
-              {/* <CharacterModel1 /> */}
-              <CharacterModel5 />
-            {/* </group> */}
+              <CharacterModel1 />
+              {/* <CharacterModel5 /> */}
             </CharacterControls>
           </KeyboardControls>
-        
+        </group>
         {/* END: CHARACTER MODEL */}
 
         {/* // import Map from './Map' */}
