@@ -190,16 +190,13 @@ export function ThreeDCanvas(
   return (
     <>
 
-      <EcctrlJoystickControls />
+      {/* <EcctrlJoystickControls /> */}
 
       {/* <CameraPositionTestApp /> */}
       {/* <button onClick={() => setCameraPosition([0, 10, 20])}>set cameraPosition</button> */}
 
       {/* TUNNELING R3F with tunnelrat IO */}
-      <threedIO.Out />
-
-      {/* PRELOAD objects ??? -- does it seem necessary? */}
-      {/* <Preload all /> */}
+      {/* <threedIO.Out /> */}
 
       {/* HEY HEY HEY */}
       <Canvas
@@ -244,8 +241,6 @@ export function ThreeDCanvas(
   
         {/* <threedIO.Out /> */}
 
-        {/* <Preload all /> */}
-
         {/* SUSPENSEFUL... */}
         {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
         {/* <Suspense fallback={null}> */}
@@ -264,6 +259,9 @@ export function ThreeDCanvas(
             />
           </Html>
         }>
+
+        {/* PRELOAD objects ??? -- does it seem necessary? */}
+        <Preload all />
           
           {/* THREED EXPERIENCE : VIEWER */}
           {/* <Experience /> */}
@@ -279,6 +277,9 @@ export function ThreeDCanvas(
             />
 
           </ThreeDExperienceViewer>
+
+          {/* HERE ??? NO */}
+          {/* <EcctrlJoystickControls /> */}
 
         </Suspense>
       </Canvas>
