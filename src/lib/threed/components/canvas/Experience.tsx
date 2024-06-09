@@ -30,7 +30,7 @@ import Floor from '#/lib/threed/components/canvas/Floor'
 import Lights from '#/lib/threed/components/canvas/Lights'
 
 // ** THREED CHARACTER CONTROL Imports
-import CharacterControls from '#/lib/ecctrl/src/Ecctrl'
+import CharacterControls from '~/src/lib/ecctrl/src/EcctrlNew'
 
 // ** THREED CHARACTER MODEL Imports
 import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
@@ -270,7 +270,7 @@ export default function Experience() {
 
         {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
             CHARACTER MODEL */}
-        <group position={[0, 2, 0]}>
+        <group position={[0, 4, 0]}>
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
           <KeyboardControls map={keyboardMap}>
             <CharacterControls
@@ -285,11 +285,11 @@ export default function Experience() {
               dampingC={0.2}
               autoBalanceSpringK={1.2}
               autoBalanceDampingC={0.04}
-              autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!!
-              autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!!
+              // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
+              // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
             >
-              <CharacterModel1 />
-              {/* <CharacterModel5 /> */}
+              {/* <CharacterModel1 /> */}
+              <CharacterModel5 />
             </CharacterControls>
           </KeyboardControls>
         </group>

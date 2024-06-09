@@ -139,8 +139,10 @@ import { create } from 'zustand'
 
 const useStoreCamera = create(set => ({
   position: [-12, 4, -16],
+  // @ts-expect-error
   setPosition: position => set({ position }),
   cameraPosition: [-16, 16, 16],
+  // @ts-expect-error
   setCameraPosition: cameraPosition => set({ cameraPosition })
 }))
 
@@ -157,16 +159,21 @@ const useStoreCamera = create(set => ({
 // }
 
 function MyCameraReactsToStateChanges() {
+  // @ ts-expect-error
   // const [x, y, z] = useStoreCamera(state => state.cameraPosition)
+  // @ts-expect-error
   const [x, y, z] = useStoreCamera(state => state.position)
   useFrame(state => {
+    // @ts-expect-error
     state.camera.lerp({ x, y, z }, 0.1)
     state.camera.lookAt(0, 0, 0)
   })
 }
 
 
-export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
+export function ThreeDCanvas(
+  { _id, threeds }: { _id: string, threeds: any[]}
+) { // , sceneState ??
   // **
   // if (debug) console.debug('%c📐 ThreeDCanvas props.threeds', ccm.darkredAlert, threeds)
   // if (debug) console.debug(`%c=======================================================`, ccm.darkred)
@@ -177,13 +184,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
   // ** REF-erences using REACT
   const ref = useRef()
 
-  const camera = { 
-    ref: ref,
-    position: [-12, 4, -16], 
-    fov: 24,
-  }
-
-  const setCameraPosition = useStoreCamera(state => state.setPosition)
+  // const setCameraPosition = useStoreCamera(state => state.setPosition)
 
   // **
   return (
@@ -196,7 +197,6 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
 
       {/* HEY HEY HEY */}
       <Canvas
-        // {...props}
         
         // id={_id}
         style={{
@@ -204,17 +204,20 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           width: '100%',
         }}
         
-        camera={camera}
-        // camera={{ 
-        //   position: [-12, 4, -16], 
-        //   fov: 24 
-        // }}
+        // camera={camera}
+        camera={{ 
+          position: [-12, 4, -16], 
+          fov: 24,
+          near: 0.1,
+          far: 1000,
+        }}
 
         dpr={[1, 2]}
         shadows
 
-        // @ts-expect-error
-        onCreated={(state) => (state.gl.toneMapping = THREE.AgXToneMapping)}
+        onCreated={
+          (state) => (state.gl.toneMapping = THREE.AgXToneMapping)
+        }
 
         // ** SCENE
         // scene={sceneState.stuff}
@@ -229,11 +232,15 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
         //     e.target.requestPointerLock();
         //   }
         // }}
+        onPointerDown={(e) => {
+          if (e.pointerType === 'mouse') {
+            (e.target as HTMLCanvasElement).requestPointerLock()
+          }
+        }}
       >
 
         {/* <MyCameraReactsToStateChanges /> */}
   
-        {/* @ts-ignore */}
         <threedIO.Out />
 
         <Preload all />
@@ -252,7 +259,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
               // barStyles={...bar} // Loading-bar styles
               // dataStyles={...data} // Text styles
               dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
-              initialState={(active = true) => active} // Initial black out state
+              initialState={(active = false) => active} // Initial black out state
             />
           </Html>
         }>
@@ -261,6 +268,7 @@ export function ThreeDCanvas({ _id, threeds }) { // , sceneState ??
           {/* <Experience /> */}
           {/* <ThreeDExperience /> */}
           {/* ExperienceViewer = forwardRef(({ children, enableOrbit, ...props }, ref) => {} */}
+          {/* @ts-expect-error */}
           <ThreeDExperienceViewer ref={ref} enableOrbit={true}>
 
             {/* THREED MODELS: WORKING !!! */}

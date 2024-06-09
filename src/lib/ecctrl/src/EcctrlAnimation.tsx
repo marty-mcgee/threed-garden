@@ -1,7 +1,7 @@
 import { useGLTF, useAnimations } from "@react-three/drei";
 import { useEffect, useRef, Suspense } from "react";
 import * as THREE from "three";
-import { useGame, type AnimationSet } from '#/lib/ecctrl/src/hooks/useGame';
+import { useGame, type AnimationSet } from '#/lib/ecctrl/src/stores/useGame';
 import React from "react";
 
 export function EcctrlAnimation(props: EcctrlAnimationProps) {
