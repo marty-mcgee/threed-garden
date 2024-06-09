@@ -198,7 +198,7 @@ export function ThreeDCanvas(
       {/* TUNNELING R3F with tunnelrat IO */}
       <threedIO.Out />
 
-      {/* PRELOAD objects ??? */}
+      {/* PRELOAD objects ??? -- does it seem necessary? */}
       {/* <Preload all /> */}
 
       {/* HEY HEY HEY */}
