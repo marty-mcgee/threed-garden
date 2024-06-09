@@ -7,11 +7,14 @@ import { useReactiveVar } from '@apollo/client'
 import { preferencesDataVar } from '#/lib/stores/apollo'
 
 // ** NEXT Imports
-import dynamic from 'next/dynamic'
+// import dynamic from 'next/dynamic'
 // import Image from 'next/image'
 
 // ** REACT Imports
 import { useEffect, useState } from 'react'
+
+// THREE JS * ALL
+import * as THREE from 'three'
 
 // ** REACT THREE Imports
 import { Grid, KeyboardControls } from '@react-three/drei'
@@ -27,7 +30,7 @@ import Floor from '#/lib/threed/components/canvas/Floor'
 import Lights from '#/lib/threed/components/canvas/Lights'
 
 // ** THREED CHARACTER CONTROL Imports
-import CharacterControls from '#/lib/ecctrl/src/Ecctrl'
+import CharacterControls from '~/src/lib/ecctrl/src/EcctrlNew'
 
 // ** THREED CHARACTER MODEL Imports
 import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
@@ -52,15 +55,15 @@ import Birds from '#/lib/threed/components/examples/Birds/Birds'
 
 // ** FARMBOT Imports
 // import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
-// import ThreeDFarmBotMain from '#/lib/farmbot/threed-farmbot/main-threed'
-// import ThreeDFarmBotGarden from '#/lib/farmbot/threed-farmbot/garden-threed'
+import ThreeDFarmBotMain from '#/lib/farmbot/threed-farmbot/main-threed'
+import ThreeDFarmBotGarden from '#/lib/farmbot/threed-farmbot/garden-threed'
 // const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/FarmBot'), { ssr: false })
-const ThreeDFarmBotMain = dynamic(() => import('#/lib/farmbot/threed-farmbot/main-threed'), { ssr: false })
-const ThreeDFarmBotGarden = dynamic(() => import('#/lib/farmbot/threed-farmbot/garden-threed'), { ssr: false })
+// const ThreeDFarmBotMain = dynamic(() => import('#/lib/farmbot/threed-farmbot/main-threed'), { ssr: false })
+// const ThreeDFarmBotGarden = dynamic(() => import('#/lib/farmbot/threed-farmbot/garden-threed'), { ssr: false })
 
 // ** HELPER Imports
 import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
-import Spinner from '#/ui/components/spinner'
+import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
@@ -70,6 +73,7 @@ import ccm from '#/lib/utils/console-colors'
 // ** DEBUGGING
 // **
 const debug = false
+const DEBUG = true
 const testing = false
 
 // ** MAIN FUNCTION to return JSX "EXPERIENCE"
@@ -235,6 +239,8 @@ export default function Experience() {
     { name: 'action4', keys: ['KeyF'] },
   ]
 
+  // const camera = new THREE.PerspectiveCamera()
+
   return (
     <>
 
@@ -242,67 +248,52 @@ export default function Experience() {
       <Lights />
 
       {/* EXAMPLES: BIRDS */}
-      {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
+      <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
         <Birds />
-      </group> */}
+      </group>
 
       {/* THREED USING PHYSICS */}
       <Physics
         // debug={prefs.doWorldPhysics}
-        debug={false}
+        debug={true}
         // timeStep='vary'
         // paused={pausedPhysics}
       >
 
         {/* THREED FARMBOT */}
-        <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 1.6, -2]}>
+        <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.6, -2]}>
           <ThreeDFarmBotGarden />
         </group>
-        <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 1.4, -0.6]}>
+        {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
           <ThreeDFarmBotMain />
-        </group>
+        </group> */}
 
         {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
-            CHARACTER MODEL[S] GROUP */}
-        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 16, 0]}> */}
-
-          {/* Character Model 1 Control */}
+            CHARACTER MODEL */}
+        <group position={[0, 4, 0]}>
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
-          {/* Keyboard preset */}
-          {/* <KeyboardControls map={keyboardMap}> */}
-            {/* <CharacterControls
+          <KeyboardControls map={keyboardMap}>
+            <CharacterControls
               // debug={prefs.doWorldDebug}
               debug={false}
               // animated={prefs.doCharacterAnimation}
-              animated={false}
+              animated={true}
               // disableFollowCam={prefs.doWorldUnfollowCam}
-              disableFollowCam={true}
-              // followLight={false}
-              // springK={2}
-              // dampingC={0.2}
-              // autoBalanceSpringK={1.2}
-              // autoBalanceDampingC={0.04}
-              // // autoBalanceSpringOnY={0.7} // CAUSES HECK!!!
-              // // autoBalanceDampingOnY={0.05} // CAUSES HECK!!!
-            > */}
-              {/* GROUND DWELLER / DEMON PETE / AWWW */}
-              {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, 0, 0]}> */}
-                {/* <CharacterModel0 /> */}
-                {/* <CharacterModel1 /> */}
-              {/* </group> */}
-              {/* FARMER: FEMALE */}
-              {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63 + 0.63, 0]}>
-                <CharacterModel5 />
-              </group> */}
-              {/* FARMER: MALE */}
-              {/* <group rotation={[0, 0, 0]} scale={0.016} position={[0, -0.63, 0]}>
-                <CharacterModel4 />
-              </group> */}
-            {/* </CharacterControls> */}
-          {/* </KeyboardControls>      */}
-        
-        {/* END: CHARACTER MODEL[S] GROUP */}
-        {/* </group> */}
+              disableFollowCam={false}
+              followLight={false}
+              springK={2}
+              dampingC={0.2}
+              autoBalanceSpringK={1.2}
+              autoBalanceDampingC={0.04}
+              // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
+              // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
+            >
+              {/* <CharacterModel1 /> */}
+              <CharacterModel5 />
+            </CharacterControls>
+          </KeyboardControls>
+        </group>
+        {/* END: CHARACTER MODEL */}
 
         {/* // import Map from './Map' */}
         {/* <group 
@@ -321,17 +312,17 @@ export default function Experience() {
 
         {/* toddler steps (advanced degrees) */}
         {/* Rough Plane */}
-        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[8.4, -0.40, 10]}>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[8.4, -0.40, 10]}>
           <RoughPlane />
-        </group> */}
+        </group>
         {/* Slopes + Stairs */}
         {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -0.00, 0]}>
           <Slopes />
         </group> */}
         {/* Rigid Body Objects */}
-        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
+        <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
           <RigidObjects />
-        </group> */}
+        </group>
 
         {/* kinder steps (active objects) */}
         {/* Floating Platforms */}
@@ -379,10 +370,10 @@ export default function Experience() {
         }}
       /> */}
 
-      {/* <Perf
+      <Perf
         position='bottom-left'
-        // minimal
-      /> */}
+        minimal
+      />
     </>
   )
 }

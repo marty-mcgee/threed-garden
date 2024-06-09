@@ -49,7 +49,7 @@ import {
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
 // ** ECCRTL ZUSTAND STATE
-import { useGame } from '#/lib/ecctrl/src/hooks/useGame'
+import { useGame } from '#/lib/ecctrl/src/stores/useGame'
 
 // ** GLTF to JSX
 // import * as THREE from 'three'
@@ -59,7 +59,7 @@ import { GLTF } from 'three-stdlib'
 
 // ** HELPER Imports
 // import { Perf } from 'r3f-perf'
-// import Spinner from '#/ui/components/spinner'
+// import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
@@ -68,7 +68,7 @@ const debug: boolean = true
 const debugAnimation: boolean = false
 
 // ** FILES for CharacterModel: Settings/Locations
-// const theCharacterModelFile = '/CharacterModelFloating.glb'
+// const theCharacterModelFile = '/objects/glb/CharacterModelFloating.glb'
 const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_01.glb'
 // const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_A.png'
 const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_B.png'

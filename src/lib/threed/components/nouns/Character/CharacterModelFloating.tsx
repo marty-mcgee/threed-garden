@@ -12,12 +12,13 @@ import {
 import { useControls } from 'leva'
 import { Suspense, useEffect, useRef, useMemo, useState } from 'react'
 import * as THREE from 'three'
-import { useGame } from '#/lib/ecctrl/src/hooks/useGame'
+import { useGame } from '#/lib/ecctrl/src/stores/useGame'
 import { BallCollider, RapierCollider, vec3 } from '@react-three/rapier'
 import { useFrame } from '@react-three/fiber'
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
-const theCharacterModelFile = '/CharacterModelFloating.glb'
+const theCharacterModelFile = '/objects/glb/CharacterModelFloating.glb'
+const texture = '/textures/3.jpg'
 
 export default function CharacterModel(props: CharacterModelProps) {
   // Change the character src to yours
@@ -28,7 +29,7 @@ export default function CharacterModel(props: CharacterModelProps) {
   }
   const { actions } = useAnimations(animations, group)
   // gradientMapTexture for MeshToonMaterial
-  const gradientMapTexture = useTexture('/textures/3.jpg')
+  const gradientMapTexture = useTexture(texture) // '/textures/3.jpg'
   gradientMapTexture.minFilter = THREE.NearestFilter
   gradientMapTexture.magFilter = THREE.NearestFilter
   gradientMapTexture.generateMipmaps = false
@@ -251,7 +252,7 @@ export default function CharacterModel(props: CharacterModelProps) {
       {/* Replace your model here */}
 
       {/* Head collider */}
-      <BallCollider args={[0.5]} position={[0, 0.45, 0]} />
+      {/* <BallCollider args={[0.5]} position={[0, 0.80, 0]} /> */}
 
       {/* Right hand collider */}
       <mesh ref={rightHandRef} />
@@ -279,8 +280,11 @@ export default function CharacterModel(props: CharacterModelProps) {
         ref={group}
         {...props}
         dispose={null}
+        // scale={1.0}
+        // scale={0.016}
+        // position={[0, 10, 0]}
       >
-        <group name='Scene' scale={0.8} position={[0, 0, 0]}>
+        <group name='Scene' scale={0.8} position={[0, -0.48, 0]}>
           <group name='KayKit_Animated_Character'>
             <skinnedMesh
               name='outline'

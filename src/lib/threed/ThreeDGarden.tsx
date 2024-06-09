@@ -1,16 +1,16 @@
-// @ts-nocheck /* OR @ ts-ignore OR @ ts-expect-error */
+// @ ts-nocheck /* OR @ ts-ignore OR @ ts-expect-error */
 // 'use client'
 // ^ needs the 'use client' pragma (inheriting from parent page)
 // ==============================================================
 // ** RESOURCES
 
 // ** NEXT Imports
-import dynamic from 'next/dynamic'
+// import dynamic from 'next/dynamic'
 // import Image from 'next/image'
 
 // ** NEXT AUTH Imports
 // hint: const { data, data: session, status } = useSession()
-import { useSession } from "next-auth/react" 
+// import { useSession } from 'next-auth/react'
 
 // ** REACT Imports
 import {
@@ -70,13 +70,13 @@ import Grid from '@mui/material/Grid'
 // import MDTabPanel, { tabProps } from '#/lib/mui/MDTabPanel'
 
 // ** THREE JS Imports (not here, use R3F)
-// import * as THREE from 'three'
+import * as THREE from 'three'
 // ** Three JS Loading Progress
 // import { Html, Loader, useProgress } from '@react-three/drei'
 
 // ** ThreeD r3f Canvas Imports
-// import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
-const ThreeDCanvasViewer = dynamic(() => import('#/lib/threed/components/canvas/CanvasViewer'), { ssr: false })
+import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
+// const ThreeDCanvasViewer = dynamic(() => import('#/lib/threed/components/canvas/CanvasViewer'), { ssr: false })
 // import { Canvas } from '@react-three/fiber'
 // import { ThreeDCanvasViewer } from '#/lib/threed/components/canvas/Canvas'
 // import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
@@ -99,7 +99,7 @@ import ThreeDModals from '#/lib/threed/components/modals/Modals'
 import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
 
 // ** CSS Styles Imports
-// import stylesDemo from '#/ui/styles/demo/demo.module.css'
+// import stylesDemo from '#/layout/ui/styles/demo/demo.module.css'
 
 // ** Paper Imports (DEPRECATED -- requires jQuery)
 // import paper from 'paper'
@@ -113,7 +113,7 @@ import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
 // const ThreeDFarmBotMain = dynamic(() => import('#/lib/threed/threed-farmbot/main'), { ssr: false })
 
 // ** HELPER Components
-import Spinner from '#/ui/components/spinner'
+import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
@@ -126,7 +126,7 @@ const debug: boolean = true
 const DEBUG: boolean = true
 const debug_deep: boolean = false
 
-const appVersion = 'v0.16.0-a'
+const appVersion = 'v0.16.0-b'
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
 // const appVersion = process.env.npm_package_version
 // const appVersion: string = require('package.json').version
@@ -134,7 +134,7 @@ const appVersion = 'v0.16.0-a'
 
 if ((debug || DEBUG) && debug_deep) {
   console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm.green)
-  console.debug("%c🌱 appVersion", ccm.darkgreen, appVersion)
+  console.debug('%c🌱 appVersion', ccm.darkgreen, appVersion)
   console.debug(`%c====================================`, ccm.darkgreen)
 }
 
@@ -167,8 +167,8 @@ interface IThreeDEnv {
 interface IPlayer {
   action: string
   actionTime: number | Date
-  object: Object3D
-  mixer: AnimationMixer
+  object: THREE.Object3D
+  mixer: THREE.AnimationMixer
   setAction: Function
   getAction: Function
   toggleAnimation: Function
@@ -183,7 +183,7 @@ interface IPlayer {
 
 // IF CLIENT BROWSER HAS A WINDOW OBJECT... (NOT SERVER SSR)
 // if (typeof window != undefined) {
-//   console.debug("[MM] HEY HEY HEY window", window)
+//   console.debug('[MM] HEY HEY HEY window', window)
 //   // TESTING PARAMETERS FROM SERVER (PHP)
 //   // const postdata = window?.postdata ? window.postdata : {}
 //   // console.debug(postdata)
@@ -366,7 +366,7 @@ const ThreeDGarden = (): JSX.Element => {
   // }
 
   // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
-  const loadNounData = (_type = 'project', threeds = []) => {
+  const loadNounData = (_type: string = 'project', threeds: any = []) => {
     // load these threeds into r3f canvas
     if (DEBUG || debug_deep) console.debug('%c🌱 ThreeDGarden loadNounData()', ccm.yellowAlert, _type, threeds)
     if (_type === 'project') {
@@ -418,7 +418,7 @@ const ThreeDGarden = (): JSX.Element => {
               id='leva_controls'
               style={{
                 position: 'absolute',
-                zIndex: 10,
+                zIndex: 1000,
                 minWidth: '416px',
               }}
             >
@@ -459,7 +459,7 @@ const ThreeDGarden = (): JSX.Element => {
             sx={{ borderTop: '1px solid darkgreen' }}
           >
             {/* THREED TOOLBAR */}
-            <ThreeDToolbar />
+            {/* <ThreeDToolbar /> */}
             {/* THREED TOOLBAR */}
           </Grid>
           <Grid

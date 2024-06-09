@@ -10,7 +10,7 @@ import { Suspense, useEffect, useRef, useMemo, useState } from "react";
 
 import * as THREE from "three";
 
-import { useGame } from '#/lib/ecctrl/src/hooks/useGame'
+import { useGame } from '#/lib/ecctrl/src/stores/useGame'
 
 
 import { BallCollider, RapierCollider, vec3 } from "@react-three/rapier";
