@@ -217,12 +217,12 @@ export function ThreeDCanvas(
           // far: 1000,
         }}
 
-        dpr={[1, 2]}
-        shadows
+        // dpr={[1, 2]}
+        // shadows
 
-        onCreated={
-          (state) => (state.gl.toneMapping = THREE.AgXToneMapping)
-        }
+        // onCreated={
+        //   (state) => (state.gl.toneMapping = THREE.AgXToneMapping)
+        // }
 
         // ** SCENE
         // scene={sceneState.stuff}
