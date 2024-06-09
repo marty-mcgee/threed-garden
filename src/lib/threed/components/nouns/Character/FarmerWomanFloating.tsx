@@ -49,7 +49,7 @@ import {
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
 // ** ECCRTL ZUSTAND STATE
-import { useGame } from '#/lib/ecctrl/src/hooks/useGame'
+import { useGame } from '#/lib/ecctrl/src/stores/useGame'
 
 // ** GLTF to JSX
 // import * as THREE from 'three'
@@ -514,8 +514,7 @@ export default function CharacterModel(props: CharacterModelProps) {
   }, [curAnimation])
 
   return (
-    // <Suspense fallback={<capsuleGeometry args={[0.4, 0.8]} />}>
-    <Suspense fallback={null}>
+    <Suspense fallback={<capsuleGeometry args={[0.4, 0.8]} />}>
 
       {/* Default capsule model */}
       {/* <mesh castShadow>
@@ -528,7 +527,7 @@ export default function CharacterModel(props: CharacterModelProps) {
       </mesh> */}
 
       {/* Head collider */}
-      <BallCollider args={[0.5]} position={[0, 10.45, 0]} />
+      {/* <BallCollider args={[0.5]} position={[0, 0.45, 0]} /> */}
 
       {/* Right hand collider */}
       <mesh ref={rightHandRef} />
@@ -568,10 +567,10 @@ export default function CharacterModel(props: CharacterModelProps) {
       <group
         ref={group}
         {...props}
-        // dispose={null}
+        dispose={null}
         // scale={1.0}
         scale={0.016}
-        position={[0, 10, 0]}
+        position={[0, -0.64, 0]}
         name='ThreeD_Animated_Character'
       >
 

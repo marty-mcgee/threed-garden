@@ -38,19 +38,15 @@ import type {
   Vector,
 } from '@dimforge/rapier3d-compat'
 
-import { EcctrlAnimation } from './EcctrlAnimation'
+import { useFollowCam } from '#/lib/ecctrl/src/hooks/useFollowCam'
+import { useGame } from '#/lib/ecctrl/src/stores/useGame'
+import { useJoystickControls } from '~/src/lib/ecctrl/src/stores/useJoystickControls'
 
-// import { useFollowCam } from '#/lib/ecctrl/src/hooks/useFollowCam'
-import { useGame } from '#/lib/ecctrl/src/hooks/useGame'
-
-import { EcctrlJoystick } from './EcctrlJoystick'
-import { useJoystickControls } from './hooks/useJoystickControls'
-
-
-
-
-
-
+// export { EcctrlAnimation } from '#/lib/ecctrl/src/EcctrlAnimation'
+// export { useFollowCam } from '#/lib/ecctrl/src/hooks/useFollowCam'
+// export { useGame } from '#/lib/ecctrl/src/stores/useGame'
+// export { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
+// export { useJoystickControls } from '#/lib/ecctrl/src/stores/useJoystickControls'
 
 export interface EcctrlProps extends RigidBodyProps {
   children?: ReactNode
@@ -664,7 +660,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   /**
    * Load camera pivot and character move preset
    */
-  // const { pivot, cameraCollisionDetect, joystickCamMove } = useFollowCam(cameraSetups)
+  const { pivot, cameraCollisionDetect, joystickCamMove } = useFollowCam(cameraSetups)
   const pivotPosition = useMemo(() => new THREE.Vector3(), [])
   const modelEuler = useMemo(() => new THREE.Euler(), [])
   const modelQuat = useMemo(() => new THREE.Quaternion(), [])
@@ -875,8 +871,8 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
 
     // Check if is camera based movement
     if (getCameraBased().isCameraBased) {
-      // modelEuler.y = pivot.rotation.y
-      // pivot.getWorldDirection(modelFacingVec)
+      modelEuler.y = pivot.rotation.y
+      pivot.getWorldDirection(modelFacingVec)
     } else {
       characterModelIndicator.getWorldDirection(modelFacingVec)
     }
@@ -1121,8 +1117,8 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
       handleButtons(gamepad.buttons)
       handleSticks(gamepad.axes)
       // // Getting moving directions (IIFE)
-      // modelEuler.y = ((movingDirection) => movingDirection === null ? modelEuler.y : movingDirection)
-      //   (getMovingDirection(gamepadKeys.forward, gamepadKeys.backward, gamepadKeys.leftward, gamepadKeys.rightward, pivot))
+      modelEuler.y = ((movingDirection) => movingDirection === null ? modelEuler.y : movingDirection)
+        (getMovingDirection(gamepadKeys.forward, gamepadKeys.backward, gamepadKeys.leftward, gamepadKeys.rightward, pivot))
     }
 
     /**
@@ -1138,7 +1134,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
     // Move character to the moving direction (joystick controls)
     if (joystickDis > 0) {
       // Apply camera rotation to character model
-      // modelEuler.y = pivot.rotation.y + (joystickAng - Math.PI / 2)
+      modelEuler.y = pivot.rotation.y + (joystickAng - Math.PI / 2)
       moveCharacter(delta, runState, slopeAngle, movingObjectVelocity)
     }
 
@@ -1148,8 +1144,8 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
     const { forward, backward, leftward, rightward, jump, run } = isInsideKeyboardControls ? getKeys() : presetKeys
 
     // // Getting moving directions (IIFE)
-    // modelEuler.y = ((movingDirection) => movingDirection === null ? modelEuler.y : movingDirection)
-    //   (getMovingDirection(forward, backward, leftward, rightward, pivot))
+    modelEuler.y = ((movingDirection) => movingDirection === null ? modelEuler.y : movingDirection)
+      (getMovingDirection(forward, backward, leftward, rightward, pivot))
 
     // Move character to the moving direction
     if (forward || backward || leftward || rightward || gamepadKeys.forward || gamepadKeys.backward || gamepadKeys.leftward || gamepadKeys.rightward)
@@ -1192,7 +1188,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
     // If autobalance is off, rotate character model itself
     if (!autoBalance) {
       if (getCameraBased().isCameraBased) {
-        // characterModelRef.current.quaternion.copy(pivot.quaternion)
+        characterModelRef.current.quaternion.copy(pivot.quaternion)
       } else {
         characterModelRef.current.quaternion.copy(characterModelIndicator.quaternion)
       }
@@ -1206,8 +1202,8 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
       currentPos.y + (camTargetPos.y || (capsuleHalfHeight + capsuleRadius / 2)),
       currentPos.z + camTargetPos.z
     )
-    // pivot.position.lerp(pivotPosition, 1 - Math.exp(-camFollowMult * delta))
-    // !disableFollowCam && state.camera.lookAt(pivot.position)
+    pivot.position.lerp(pivotPosition, 1 - Math.exp(-camFollowMult * delta))
+    !disableFollowCam && state.camera.lookAt(pivot.position)
 
     /**
      * Ray casting detect if on ground
@@ -1472,7 +1468,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
     /**
      * Camera collision detect
      */
-    // camCollision && cameraCollisionDetect(delta)
+    camCollision && cameraCollisionDetect(delta)
 
     /**
      * Point to move feature
