@@ -195,6 +195,12 @@ export function ThreeDCanvas(
       {/* <CameraPositionTestApp /> */}
       {/* <button onClick={() => setCameraPosition([0, 10, 20])}>set cameraPosition</button> */}
 
+      {/* TUNNELING R3F with tunnelrat IO */}
+      <threedIO.Out />
+
+      {/* PRELOAD objects ??? */}
+      {/* <Preload all /> */}
+
       {/* HEY HEY HEY */}
       <Canvas
         
@@ -236,9 +242,9 @@ export function ThreeDCanvas(
 
         {/* <MyCameraReactsToStateChanges /> */}
   
-        <threedIO.Out />
+        {/* <threedIO.Out /> */}
 
-        <Preload all />
+        {/* <Preload all /> */}
 
         {/* SUSPENSEFUL... */}
         {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
