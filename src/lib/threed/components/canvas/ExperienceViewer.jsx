@@ -24,7 +24,6 @@ import {
   useImperativeHandle, 
   useRef,
 
-
   // Suspense,
   useState,
   useEffect,
@@ -56,7 +55,7 @@ import { ThreedIO } from '#/lib/threed/threedio/components/ThreedIO'
 import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
 
 // ** HELPER Components
-import Spinner from '#/ui/components/spinner'
+import Spinner from '#/layout/ui/components/spinner'
 // ** UUID Imports
 // import { v4 as newUUID } from 'uuid'
 // ** COLORFUL CONSOLE MESSAGES (ccm)
@@ -253,16 +252,16 @@ const ExperienceViewer = forwardRef(({ enableOrbit, children, ...props }, ref) =
             alignment='top-right'
             margin={[64, 64]}
           >
-            <group scale={1.00}>
+            <group scale={0.8}>
               <GizmoViewcube />
             </group>
             <group
-              scale={1.75}
+              scale={1.6}
               position={[-30, -30, -30]}
             >
               <GizmoViewport
                 labelColor='white'
-                axisHeadScale={0.525}
+                axisHeadScale={0.5}
                 hideNegativeAxes
               />
             </group>

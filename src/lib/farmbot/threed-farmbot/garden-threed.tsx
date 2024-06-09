@@ -192,10 +192,10 @@ const Model = (props: ModelProps) => {
           outlineOpacity={0.7}>
           {plant.label}
         </Text>
-        : <></>}
-        {/* : <Image url={plant.icon} scale={plant.size} name={"" + i}
+        // @ts-expect-error
+        : <Image url={plant.icon} scale={plant.size} name={"" + i}
           transparent={true}
-          renderOrder={1} />} */}
+          renderOrder={1} />}
     </Billboard>
   }
   const isXL = config.sizePreset == "Genesis XL"
@@ -248,9 +248,9 @@ const Model = (props: ModelProps) => {
       turbidity={5} 
     /> */}
 
-    <Sphere args={[30000, 8, 16]}>
+    {/* <Sphere args={[30000, 8, 16]}>
       <meshBasicMaterial color={"#59d8ff"} side={BackSide} />
-    </Sphere>
+    </Sphere> */}
 
 
 
@@ -334,8 +334,8 @@ const Model = (props: ModelProps) => {
     
     <group name={"plant-icon-preload"} visible={false}>
       {Object.values(PLANTS).map((plant, i) =>
-        // <Image key={i} url={plant.icon} />
-        <></>
+        // @ts-expect-error
+        <Image key={i} url={plant.icon} />
       )}
     </group>
     <group name={"plant-labels"} visible={!props.activeFocus}>

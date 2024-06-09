@@ -32,26 +32,22 @@
     // "rootDirs": [".", "../common/src"],
     "baseUrl": ".",
     "paths": {
-      // next-auth
-      "auth": [
-        "app/auth"
-      ],
-      // threed (next-14)
-      "@/*": [
-        "app/*"
+      // global root
+      "~/*": [
+        "*"
       ],
       // threed (next-14)
       "#/*": [
         "src/*"
       ],
-      // global root
-      "~/*": [
-        "*"
+      // threed (next-14)
+      "@/*": [
+        "src/app/*"
       ],
-      // global src
-      "~~/*": [
-        "src/*"
-      ]
+      // next-auth
+      "auth": [
+        "src/lib/auth/auth"
+      ],
     },
     "typeRoots": [
       "node_modules/@types",
@@ -68,7 +64,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
   ],
   "exclude": [
     "node_modules",

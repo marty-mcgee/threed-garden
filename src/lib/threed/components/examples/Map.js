@@ -13,7 +13,7 @@ import { useRef } from 'react'
 import { 
   useGame, 
   // type AnimationSet 
-} from '#/lib/ecctrl/src/hooks/useGame'
+} from '#/lib/ecctrl/src/stores/useGame'
 
 export default function Map(props) {
   const circleRef = useRef()

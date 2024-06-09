@@ -19,7 +19,7 @@ import { useReactiveVar } from '@apollo/client'
 import { isPreferencesSetVar, preferencesDataVar } from '#/lib/stores/apollo'
 
 // ** HELPER Components
-import Spinner from '#/ui/components/spinner'
+import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
