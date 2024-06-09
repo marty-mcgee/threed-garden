@@ -205,7 +205,7 @@ export function ThreeDCanvas(
         // id={_id}
         
         style={{
-          height: '64vh',
+          height: '50vh',
           // width: '100%',
         }}
         
