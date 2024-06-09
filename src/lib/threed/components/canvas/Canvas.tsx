@@ -226,17 +226,12 @@ export function ThreeDCanvas(
         //   background: new THREE.Color(0x131313),
         // }}
         
-        // ** JOYSTICK
+        // ** JOYSTICK (optional)
         // onPointerDown={(e) => {
         //   if (e.pointerType === 'mouse') {
-        //     e.target.requestPointerLock();
+        //     (e.target as HTMLCanvasElement).requestPointerLock()
         //   }
         // }}
-        onPointerDown={(e) => {
-          if (e.pointerType === 'mouse') {
-            (e.target as HTMLCanvasElement).requestPointerLock()
-          }
-        }}
       >
 
         {/* <MyCameraReactsToStateChanges /> */}

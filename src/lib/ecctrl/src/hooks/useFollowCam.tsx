@@ -5,6 +5,10 @@ import * as THREE from "three";
 
 export const useFollowCam = function (props: UseFollowCamProps) {
   const { scene, camera, gl } = useThree();
+  console.debug('{ scene, camera, gl } from useThree()', scene, camera, gl)
+  if (!camera) {
+    let camera = new THREE.PerspectiveCamera()
+  }
   const disableFollowCam = props.disableFollowCam;
   const disableFollowCamPos = props.disableFollowCamPos;
   const disableFollowCamTarget = props.disableFollowCamTarget;
@@ -181,7 +185,17 @@ export const useFollowCam = function (props: UseFollowCamProps) {
   /**
    * Camera collision detection function
    */
-  const cameraCollisionDetect = (delta: number) => {
+  const cameraCollisionDetect = (delta: number, camera: any = new THREE.Camera()) => {
+
+    // const { camera } = useThree();
+    // let camera = new THREE.PerspectiveCamera()
+    // const camera: THREE.PerspectiveCamera = ({ 
+    //   position: new THREE.Vector3(0), 
+    //   fov: 24,
+    //   near: 0.1,
+    //   far: 1000,
+    // })
+
     // Update collision detect ray origin and pointing direction
     // Which is from pivot point to camera position
     cameraRayOrigin.copy(pivot.position);
@@ -189,20 +203,21 @@ export const useFollowCam = function (props: UseFollowCamProps) {
     cameraRayDir.subVectors(cameraPosition, pivot.position);
     // rayLength = cameraRayDir.length();
 
-    // casting ray hit, if object in between character and camera,
-    // change the smallestDistance to the ray hit toi
-    // otherwise the smallestDistance is same as camera original position (originZDis)
-    intersects = camRayCast.intersectObjects(intersectObjects);
-    if (intersects.length && intersects[0].distance <= -originZDis) {
-      smallestDistance =
-        -intersects[0].distance * camCollisionOffset < -0.7
-          ? -intersects[0].distance * camCollisionOffset
-          : -0.7;
-    } else {
-      smallestDistance = originZDis;
-    }
+    // HEY HEY HEY -- debugging
+    // // casting ray hit, if object in between character and camera,
+    // // change the smallestDistance to the ray hit toi
+    // // otherwise the smallestDistance is same as camera original position (originZDis)
+    // intersects = camRayCast.intersectObjects(intersectObjects);
+    // if (intersects.length && intersects[0].distance <= -originZDis) {
+    //   smallestDistance =
+    //     -intersects[0].distance * camCollisionOffset < -0.7
+    //       ? -intersects[0].distance * camCollisionOffset
+    //       : -0.7;
+    // } else {
+    //   smallestDistance = originZDis;
+    // }
 
-    // Rapier ray hit setup (optional)
+    // // Rapier ray hit setup (optional)
     // rayHit = world.castRay(rayCast, rayLength + 1, true, null, null, character);
     // if (rayHit && rayHit.toi && rayHit.toi > originZDis) {
     //   smallestDistance = -rayHit.toi + 0.5;
@@ -210,14 +225,16 @@ export const useFollowCam = function (props: UseFollowCamProps) {
     //   smallestDistance = originZDis;
     // }
 
-    // Update camera next lerping position, and lerp the camera
-    camLerpingPoint.set(
-      followCam.position.x,
-      smallestDistance * Math.sin(-followCam.rotation.x),
-      smallestDistance * Math.cos(-followCam.rotation.x)
-    );
+    // // Update camera next lerping position, and lerp the camera
+    // camLerpingPoint.set(
+    //   followCam.position.x,
+    //   smallestDistance * Math.sin(-followCam.rotation.x),
+    //   smallestDistance * Math.cos(-followCam.rotation.x)
+    // );
 
-    followCam.position.lerp(camLerpingPoint, delta * 4); // delta * 2 for rapier ray setup
+    // followCam.position.lerp(camLerpingPoint, delta * 4); // delta * 2 for rapier ray setup
+    
+    // END HEY HEY HEY debugging
   };
 
   // Initialize camera facing direction
