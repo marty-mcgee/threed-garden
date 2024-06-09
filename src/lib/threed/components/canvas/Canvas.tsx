@@ -181,8 +181,8 @@ export function ThreeDCanvas(
   // // ** HOOKS
   // const prefs = useReactiveVar(preferencesDataVar)
 
-  // ** REF-erences using REACT
-  const ref = useRef()
+  // ** REF-erences using REACT ???
+  // const ref = useRef()
 
   // const setCameraPosition = useStoreCamera(state => state.setPosition)
 
@@ -190,6 +190,7 @@ export function ThreeDCanvas(
   return (
     <>
 
+      <EcctrlJoystick buttonNumber={5} />
       {/* <EcctrlJoystickControls /> */}
 
       {/* <CameraPositionTestApp /> */}
@@ -202,17 +203,18 @@ export function ThreeDCanvas(
       <Canvas
         
         // id={_id}
+        
         style={{
-          height: '50vh',
-          width: '100%',
+          height: '72vh',
+          // width: '100%',
         }}
         
         // camera={camera}
         camera={{ 
           position: [-12, 4, -16], 
           fov: 24,
-          near: 0.1,
-          far: 1000,
+          // near: 0.1,
+          // far: 1000,
         }}
 
         dpr={[1, 2]}
@@ -268,7 +270,8 @@ export function ThreeDCanvas(
           {/* <ThreeDExperience /> */}
           {/* ExperienceViewer = forwardRef(({ children, enableOrbit, ...props }, ref) => {} */}
           {/* @ts-expect-error */}
-          <ThreeDExperienceViewer ref={ref} enableOrbit={true}>
+          <ThreeDExperienceViewer>
+          {/* <ThreeDExperienceViewer ref={ref} enableOrbit={true}> */}
 
             {/* THREED MODELS: WORKING !!! */}
             {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
