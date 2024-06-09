@@ -68,62 +68,63 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
     >
       <Suspense fallback={<Spinner />}>
 
-      {/* [MM] HEY HEY HEY -- ThreeDGarden Component */}
-      <ThreeDGarden />
-      {/* [MM] HEY HEY HEY -- End ThreeDGarden Component */}
+        {/* [MM] HEY HEY HEY -- ThreeDGarden Component */}
+        <ThreeDGarden />
+        {/* [MM] HEY HEY HEY -- End ThreeDGarden Component */}
 
-      {/* {ability?.can('read', 'analytics') && ( */}
-      <Grid
-        item
-        md={6}
-        xs={12}
-        // sx={{ display: 'none' }}
-      >
-        <Card>
-          <CardHeader
-            title='Public Content'
-            sx={{paddingBottom: '0'}}
-            // avatar={session?.user?.image}
-          />
-          <CardContent>
-            {/* <Typography sx={{ color: 'primary.main', paddingBottom: '8px' }}>
-              This card is visible to both 'public' and 'authorized' users
-            </Typography> */}
-            { session?.user && (
-            <Typography sx={{ color: 'secondary.main' }}>
-              name: {session.user.name}<br/>
-              email: {session.user.email ? 'hidden' : ''}<br/>
-              <img src={session.user.image} width='8px' /><br/>
-            </Typography>
-            )}
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid
-        item
-        md={6}
-        xs={12}
-        // sx={{ display: 'none' }}
-      >
-        <Card>
-          <CardHeader title='Restricted/User Content'
-            sx={{paddingBottom: '0'}}
-            // avatar={session.user.image}
-          />
-          <CardContent>
-            {/* <Typography sx={{ color: 'warning.main', paddingBottom: '8px' }}>
-              This card is visible only to 'authorized' users
-            </Typography> */}
-            { session?.user && (
-            <Typography sx={{ color: 'secondary.main' }}>
-              name: {session.user.name}<br/>
-              email: {session.user.email}<br/>
-              <img src={session.user.image} width='8px' /><br/>
-            </Typography>
-            )}
-          </CardContent>
-        </Card>
-      </Grid>
+        {/* {ability?.can('read', 'analytics') && ( */}
+        {/* <Grid
+          item
+          md={6}
+          xs={12}
+          // sx={{ display: 'none' }}
+        >
+          <Card>
+            <CardHeader
+              title='Public Content'
+              sx={{paddingBottom: '0'}}
+              // avatar={session?.user?.image}
+            />
+            <CardContent>
+              <Typography sx={{ color: 'primary.main', paddingBottom: '8px' }}>
+                This card is visible to both 'public' and 'authorized' users
+              </Typography>
+              { session?.user && (
+              <Typography sx={{ color: 'secondary.main' }}>
+                name: {session.user.name}<br/>
+                email: {session.user.email ? 'hidden' : ''}<br/>
+                <img src={session.user.image} width='8px' /><br/>
+              </Typography>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid
+          item
+          md={6}
+          xs={12}
+          // sx={{ display: 'none' }}
+        >
+          <Card>
+            <CardHeader title='Restricted/User Content'
+              sx={{paddingBottom: '0'}}
+              // avatar={session.user.image}
+            />
+            <CardContent>
+              <Typography sx={{ color: 'warning.main', paddingBottom: '8px' }}>
+                This card is visible only to 'authorized' users
+              </Typography>
+              { session?.user && (
+              <Typography sx={{ color: 'secondary.main' }}>
+                name: {session.user.name}<br/>
+                email: {session.user.email}<br/>
+                <img src={session.user.image} width='8px' /><br/>
+              </Typography>
+              )}
+            </CardContent>
+          </Card>
+        </Grid> */}
+        
       </Suspense>
     </Grid>
   )

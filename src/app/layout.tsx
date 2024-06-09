@@ -264,18 +264,19 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                                 {/* <Suspense fallback={<Spinner />}> */}
                                 <div 
                                   id='ThreeDAppLayout'
-                                  className='
-                                    flex 
-                                    flex-col 
-                                    justify-between 
-                                    w-full 
-                                    h-full 
-                                    min-h-screen
-                                  '
+                                  // className='
+                                  //   flex 
+                                  //   flex-col 
+                                  //   justify-between 
+                                  //   w-full 
+                                  //   h-full 
+                                  //   min-h-screen
+                                  // '
                                 >
                                   <Header 
                                     // key='ThreeDAppHeader'
                                   />
+
                                   <main 
                                     id='ThreeDAppMain'
                                     // key='ThreeDAppMain'
@@ -290,9 +291,10 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                                   >
                                     {children}
                                   </main>
-                                  <Footer
+
+                                  {/* <Footer
                                     // key='ThreeDAppFooter'
-                                  />
+                                  /> */}
                                 </div>
                                 {/* </Suspense> */}
 
