@@ -281,9 +281,6 @@ export function ThreeDCanvas(
 
           </ThreeDExperienceViewer>
 
-          {/* HERE ??? NO */}
-          {/* <EcctrlJoystickControls /> */}
-
         </Suspense>
       </Canvas>
     </>
