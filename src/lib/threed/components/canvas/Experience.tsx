@@ -279,8 +279,8 @@ export default function Experience() {
               // animated={prefs.doCharacterAnimation}
               animated={true}
               // disableFollowCam={prefs.doWorldUnfollowCam}
-              disableFollowCam={false}
-              followLight={false}
+              disableFollowCam={true}
+              followLight={true}
               springK={2}
               dampingC={0.2}
               autoBalanceSpringK={1.2}
