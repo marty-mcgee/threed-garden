@@ -400,7 +400,15 @@ const ThreeDGarden = (): JSX.Element => {
         <Grid
           container
           id='threed_grid'
-          sx={{ border: '1px solid darkgreen' }}
+          // sx={{ border: '1px solid darkgreen' }}
+          sx={{ 
+            // display: 'flex', justifyContent: 'flex-end',
+            // mx: 0,
+            // px: 2,
+            // borderTop: '1px solid darkgreen',
+            border: '2px solid darkgreen',
+            borderTop: '2px solid darkgreen',
+          }}
         >
           <Grid
             item
@@ -417,9 +425,9 @@ const ThreeDGarden = (): JSX.Element => {
               item
               id='leva_controls'
               style={{
-                position: 'absolute',
-                zIndex: 1000,
-                minWidth: '416px',
+                // position: 'absolute',
+                // zIndex: 1000,
+                minWidth: '420px',
               }}
             >
               {/* <Typography>{project_title}</Typography> */}
@@ -442,26 +450,45 @@ const ThreeDGarden = (): JSX.Element => {
           </Grid>
           <Grid
             item
+            id='threed_toolbar'
+            md={12}
+            xs={12}
+            sx={{
+              // display: 'flex', justifyContent: 'flex-end',
+              px: 2, 
+              borderTop: '1px solid darkgreen',
+            }}
+          >
+            {/* THREED TOOLBAR */}
+            <ThreeDToolbar />
+            {/* THREED TOOLBAR */}
+          </Grid>
+          
+          
+          
+          {/* HEY HEY HEY -- THREED CANVAS: VIEWER COMPONENT WRAPPER */}
+          <Grid
+            item
             id='threed_canvas_viewer'
             md={12}
             xs={12}
-            sx={{ borderTop: '1px solid darkgreen' }}
+            sx={{ 
+              // display: 'flex', justifyContent: 'flex-end',
+              // mx: 0,
+              // px: 2,
+              // borderTop: '1px solid darkgreen',
+              border: '2px solid darkgreen',
+              borderTop: '2px solid darkgreen',
+            }}
           >
             {/* THREED CANVAS VIEWER */}
             <ThreeDCanvasViewer />
             {/* THREED CANVAS VIEWER */}
           </Grid>
-          <Grid
-            item
-            id='threed_toolbar'
-            md={12}
-            xs={12}
-            sx={{ borderTop: '1px solid darkgreen' }}
-          >
-            {/* THREED TOOLBAR */}
-            {/* <ThreeDToolbar /> */}
-            {/* THREED TOOLBAR */}
-          </Grid>
+
+
+
+
           <Grid
             item
             id='threed_control_panels'
@@ -471,7 +498,7 @@ const ThreeDGarden = (): JSX.Element => {
           >
             {/* THREED CANVAS VIEWER */}
             {/* <ThreeDControlPanels tabs={tabProps} /> */}
-            {/* <ThreeDControlPanels /> */}
+            <ThreeDControlPanels />
             {/* THREED CANVAS VIEWER */}
           </Grid>
           <Grid
