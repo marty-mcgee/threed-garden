@@ -181,8 +181,8 @@ export function ThreeDCanvas(
   // // ** HOOKS
   // const prefs = useReactiveVar(preferencesDataVar)
 
-  // ** REF-erences using REACT
-  const ref = useRef()
+  // ** REF-erences using REACT ???
+  // const ref = useRef()
 
   // const setCameraPosition = useStoreCamera(state => state.setPosition)
 
@@ -190,34 +190,39 @@ export function ThreeDCanvas(
   return (
     <>
 
-      <EcctrlJoystickControls />
+      <EcctrlJoystick buttonNumber={5} />
+      {/* <EcctrlJoystickControls /> */}
 
       {/* <CameraPositionTestApp /> */}
       {/* <button onClick={() => setCameraPosition([0, 10, 20])}>set cameraPosition</button> */}
+
+      {/* TUNNELING R3F with tunnelrat IO */}
+      {/* <threedIO.Out /> */}
 
       {/* HEY HEY HEY */}
       <Canvas
         
         // id={_id}
+        
         style={{
           height: '50vh',
-          width: '100%',
+          // width: '100%',
         }}
         
         // camera={camera}
         camera={{ 
           position: [-12, 4, -16], 
           fov: 24,
-          near: 0.1,
-          far: 1000,
+          // near: 0.1,
+          // far: 1000,
         }}
 
-        dpr={[1, 2]}
-        shadows
+        // dpr={[1, 2]}
+        // shadows
 
-        onCreated={
-          (state) => (state.gl.toneMapping = THREE.AgXToneMapping)
-        }
+        // onCreated={
+        //   (state) => (state.gl.toneMapping = THREE.AgXToneMapping)
+        // }
 
         // ** SCENE
         // scene={sceneState.stuff}
@@ -236,9 +241,7 @@ export function ThreeDCanvas(
 
         {/* <MyCameraReactsToStateChanges /> */}
   
-        <threedIO.Out />
-
-        <Preload all />
+        {/* <threedIO.Out /> */}
 
         {/* SUSPENSEFUL... */}
         {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
@@ -258,13 +261,17 @@ export function ThreeDCanvas(
             />
           </Html>
         }>
+
+        {/* PRELOAD objects ??? -- does it seem necessary? */}
+        <Preload all />
           
           {/* THREED EXPERIENCE : VIEWER */}
           {/* <Experience /> */}
           {/* <ThreeDExperience /> */}
           {/* ExperienceViewer = forwardRef(({ children, enableOrbit, ...props }, ref) => {} */}
           {/* @ts-expect-error */}
-          <ThreeDExperienceViewer ref={ref} enableOrbit={true}>
+          <ThreeDExperienceViewer>
+          {/* <ThreeDExperienceViewer ref={ref} enableOrbit={true}> */}
 
             {/* THREED MODELS: WORKING !!! */}
             {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}

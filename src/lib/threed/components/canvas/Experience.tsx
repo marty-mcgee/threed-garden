@@ -30,7 +30,9 @@ import Floor from '#/lib/threed/components/canvas/Floor'
 import Lights from '#/lib/threed/components/canvas/Lights'
 
 // ** THREED CHARACTER CONTROL Imports
-import CharacterControls from '~/src/lib/ecctrl/src/EcctrlNew'
+// import CharacterControls from '~/src/lib/ecctrl/src/Ecctrl'
+// import CharacterControls from '~/src/lib/ecctrl/src/EcctrlNew'
+import CharacterControls from '~/src/lib/ecctrl/src/CharacterControls'
 
 // ** THREED CHARACTER MODEL Imports
 import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
@@ -270,7 +272,7 @@ export default function Experience() {
 
         {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
             CHARACTER MODEL */}
-        <group position={[0, 4, 0]}>
+        <group position={[0, 16, 0]}>
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
           <KeyboardControls map={keyboardMap}>
             <CharacterControls
@@ -279,8 +281,8 @@ export default function Experience() {
               // animated={prefs.doCharacterAnimation}
               animated={true}
               // disableFollowCam={prefs.doWorldUnfollowCam}
-              disableFollowCam={false}
-              followLight={false}
+              disableFollowCam={true}
+              followLight={true}
               springK={2}
               dampingC={0.2}
               autoBalanceSpringK={1.2}
