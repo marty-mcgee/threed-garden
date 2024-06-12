@@ -30,7 +30,9 @@ import Floor from '#/lib/threed/components/canvas/Floor'
 import Lights from '#/lib/threed/components/canvas/Lights'
 
 // ** THREED CHARACTER CONTROL Imports
-import CharacterControls from '~/src/lib/ecctrl/src/EcctrlNew'
+// import CharacterControls from '~/src/lib/ecctrl/src/Ecctrl'
+// import CharacterControls from '~/src/lib/ecctrl/src/EcctrlNew'
+import CharacterControls from '~/src/lib/ecctrl/src/CharacterControls'
 
 // ** THREED CHARACTER MODEL Imports
 import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
