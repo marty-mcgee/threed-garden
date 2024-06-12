@@ -433,10 +433,11 @@ const ThreeDGarden = (): JSX.Element => {
               xs={12}
               sx={{
                 display: 'flex', 
-                justifyContent: 'flex-end',
+                // justifyContent: 'flex-end',
                 px: 2, 
                 py: 2,
                 borderTop: '1px solid darkgreen',
+                minWidth: '420px',
               }}
             >
               {/* <Typography>{project_title}</Typography> */}
