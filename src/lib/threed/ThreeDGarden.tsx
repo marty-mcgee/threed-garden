@@ -424,10 +424,19 @@ const ThreeDGarden = (): JSX.Element => {
             <Grid
               item
               id='leva_controls'
-              style={{
-                // position: 'absolute',
-                // zIndex: 1000,
-                minWidth: '420px',
+              // style={{
+              //   // position: 'absolute',
+              //   // zIndex: 1000,
+              //   minWidth: '420px',
+              // }}
+              md={12}
+              xs={12}
+              sx={{
+                display: 'flex', 
+                justifyContent: 'flex-end',
+                px: 2, 
+                py: 2,
+                borderTop: '1px solid darkgreen',
               }}
             >
               {/* <Typography>{project_title}</Typography> */}
