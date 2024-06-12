@@ -272,7 +272,7 @@ export default function Experience() {
 
         {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
             CHARACTER MODEL */}
-        <group position={[0, 4, 0]}>
+        <group position={[0, 16, 0]}>
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
           <KeyboardControls map={keyboardMap}>
             <CharacterControls
