@@ -1157,7 +1157,7 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz#1d572bfbbe14b7704e0ba0f39b74815b84870d70"
   integrity sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==
 
-"@ducanh2912/next-pwa@^10.0.0":
+"@ducanh2912/next-pwa@^10.2.7":
   version "10.2.7"
   resolved "https://registry.yarnpkg.com/@ducanh2912/next-pwa/-/next-pwa-10.2.7.tgz#9c737a7da2050762d11bdd1b19a1ff8e0c446a21"
   integrity sha512-FDIA5MEykCTxHlNJ8Gh+dCMjiKGVUfBX39r7OQO/9VU6qezFvkB56cvsBNNl2K41l2dFRkmK3BccHRnrxhWjrQ==

@@ -280,14 +280,14 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                                   <main 
                                     id='ThreeDAppMain'
                                     // key='ThreeDAppMain'
-                                    className='
-                                      flex-auto 
-                                      w-full 
-                                      h-full
-                                      px-2 
-                                      py-1 
-                                      mx-auto
-                                    '
+                                    // className='
+                                    //   flex-auto 
+                                    //   w-full 
+                                    //   h-full
+                                    //   px-2 
+                                    //   py-1 
+                                    //   mx-auto
+                                    // '
                                   >
                                     {children}
                                   </main>
