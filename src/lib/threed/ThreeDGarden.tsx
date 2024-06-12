@@ -471,7 +471,7 @@ const ThreeDGarden = (): JSX.Element => {
           >
             {/* THREED CANVAS VIEWER */}
             {/* <ThreeDControlPanels tabs={tabProps} /> */}
-            <ThreeDControlPanels />
+            {/* <ThreeDControlPanels /> */}
             {/* THREED CANVAS VIEWER */}
           </Grid>
           <Grid
