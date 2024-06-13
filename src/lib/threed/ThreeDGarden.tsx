@@ -407,7 +407,7 @@ const ThreeDGarden = (): JSX.Element => {
             // px: 2,
             // borderTop: '1px solid darkgreen',
             border: '2px solid darkgreen',
-            borderTop: '2px solid darkgreen',
+            // borderTop: '2px solid darkgreen',
           }}
         >
           <Grid
@@ -416,28 +416,25 @@ const ThreeDGarden = (): JSX.Element => {
             md={4}
             xs={12}
             sx={{
-              display: 'flex',
-              justifyContent: 'flex-start'
+              display: 'inline-block',
+              // justifyContent: 'flex-start'
             }}
           >
             {/* THREED CONTROL PANELS -- STORE ACCESS (apollo, valtio, leva) */}
             <Grid
               item
               id='leva_controls'
-              // style={{
-              //   // position: 'absolute',
-              //   // zIndex: 1000,
-              //   minWidth: '420px',
-              // }}
               md={12}
               xs={12}
               sx={{
-                display: 'flex', 
+                // display: 'flex', 
                 // justifyContent: 'flex-end',
-                px: 2, 
-                py: 2,
-                borderTop: '1px solid darkgreen',
+                px: 3.5, 
+                // py: 2,
+                // borderTop: '1px solid darkgreen',
                 minWidth: '420px',
+                // position: 'absolute',
+                zIndex: 9999,
               }}
             >
               {/* <Typography>{project_title}</Typography> */}
@@ -446,7 +443,8 @@ const ThreeDGarden = (): JSX.Element => {
               {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
             </Grid>
           </Grid>
-          <Grid
+
+          {/* <Grid
             item
             id='threed_actions'
             md={8}
@@ -457,8 +455,9 @@ const ThreeDGarden = (): JSX.Element => {
             <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
             <Button onClick={() => loadNounData('character', [])}>load character</Button>
             <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
-          </Grid>
-          <Grid
+          </Grid> */}
+
+          {/* <Grid
             item
             id='threed_toolbar'
             md={12}
@@ -468,11 +467,11 @@ const ThreeDGarden = (): JSX.Element => {
               px: 2, 
               borderTop: '1px solid darkgreen',
             }}
-          >
+          > */}
             {/* THREED TOOLBAR */}
-            <ThreeDToolbar />
+            {/* <ThreeDToolbar /> */}
             {/* THREED TOOLBAR */}
-          </Grid>
+          {/* </Grid> */}
           
           
           
