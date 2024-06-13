@@ -410,21 +410,28 @@ const ThreeDGarden = (): JSX.Element => {
             // borderTop: '2px solid darkgreen',
           }}
         >
+        
+          {/* <Typography>{project_title}</Typography> */}
+
+          
+          {/* THREED CONTROLS: ALL */}
           <Grid
             item
             id='threed_controls'
-            md={4}
+            md={12}
             xs={12}
             sx={{
-              display: 'inline-block',
+              // display: 'inline-block',
               // justifyContent: 'flex-start'
             }}
           >
-            {/* THREED CONTROL PANELS -- STORE ACCESS (apollo, valtio, leva) */}
+
+            
+            {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
             <Grid
               item
               id='leva_controls'
-              md={12}
+              md={4}
               xs={12}
               sx={{
                 // display: 'flex', 
@@ -437,26 +444,32 @@ const ThreeDGarden = (): JSX.Element => {
                 zIndex: 9999,
               }}
             >
-              {/* <Typography>{project_title}</Typography> */}
-              {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
               <ThreeDLevaControls />
-              {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
             </Grid>
+            {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+
+
+            {/* THREED CLICK LOADERS */}
+            {/* <Grid
+              item
+              id='threed_actions'
+              md={8}
+              xs={12}
+              style={{ display: 'flex', justifyContent: 'flex-end' }}
+            >
+              <Button onClick={() => loadNounData('project', [])}>load project</Button>
+              <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
+              <Button onClick={() => loadNounData('character', [])}>load character</Button>
+              <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
+            </Grid> */}
+            {/* END THREED CLICK LOADERS */}
+
+            
           </Grid>
+          {/* END: THREED CONTROLS: ALL */}
 
-          {/* <Grid
-            item
-            id='threed_actions'
-            md={8}
-            xs={12}
-            style={{ display: 'flex', justifyContent: 'flex-end' }}
-          >
-            <Button onClick={() => loadNounData('project', [])}>load project</Button>
-            <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
-            <Button onClick={() => loadNounData('character', [])}>load character</Button>
-            <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
-          </Grid> */}
 
+          {/* THREED TOOLBAR */}
           {/* <Grid
             item
             id='threed_toolbar'
@@ -467,14 +480,13 @@ const ThreeDGarden = (): JSX.Element => {
               px: 2, 
               borderTop: '1px solid darkgreen',
             }}
-          > */}
-            {/* THREED TOOLBAR */}
-            {/* <ThreeDToolbar /> */}
-            {/* THREED TOOLBAR */}
-          {/* </Grid> */}
+          >
+            <ThreeDToolbar />
+          </Grid> */}
+          {/* END: THREED TOOLBAR */}
+
           
-          
-          
+          {/* THREED CANVAS VIEWER */}
           {/* HEY HEY HEY -- THREED CANVAS: VIEWER COMPONENT WRAPPER */}
           <Grid
             item
@@ -485,19 +497,18 @@ const ThreeDGarden = (): JSX.Element => {
               // display: 'flex', justifyContent: 'flex-end',
               // mx: 0,
               // px: 2,
-              // borderTop: '1px solid darkgreen',
-              border: '2px solid darkgreen',
-              borderTop: '2px solid darkgreen',
+              borderTop: '1px solid darkgreen',
+              // border: '2px solid darkgreen',
+              // borderTop: '2px solid darkgreen',
             }}
           >
-            {/* THREED CANVAS VIEWER */}
             <ThreeDCanvasViewer />
-            {/* THREED CANVAS VIEWER */}
           </Grid>
+          {/* END: THREED CANVAS VIEWER */}
 
 
-
-
+          {/* THREED CONTROL PANELS */}
+          {/* -- STORE ACCESS (apollo, valtio, leva) */}
           <Grid
             item
             id='threed_control_panels'
@@ -505,11 +516,13 @@ const ThreeDGarden = (): JSX.Element => {
             xs={12}
             sx={{ borderTop: '1px solid darkgreen' }}
           >
-            {/* THREED CANVAS VIEWER */}
-            {/* <ThreeDControlPanels tabs={tabProps} /> */}
             <ThreeDControlPanels />
-            {/* THREED CANVAS VIEWER */}
+            {/* <ThreeDControlPanels tabs={tabProps} /> */}
           </Grid>
+          {/* END: THREED CONTROL PANELS */}
+
+
+          {/* THREED VIEWS */}
           <Grid
             item
             id='threed_views'
@@ -517,13 +530,15 @@ const ThreeDGarden = (): JSX.Element => {
             xs={12}
             sx={{ borderTop: '0px solid darkgreen' }}
           >
-            {/* THREED VIEWS */}
             {/* <CatalogView /> */}
             {/* <PropertiesView /> */}
             {/* <PlanView /> */}
             {/* <TheBottom /> */}
-            {/* THREED VIEWS */}
           </Grid>
+          {/* END: THREED VIEWS */}
+
+
+          {/* THREED MODALS */}
           <Grid
             item
             id='threed_modals'
@@ -531,13 +546,15 @@ const ThreeDGarden = (): JSX.Element => {
             xs={12}
             sx={{ borderTop: '0px solid darkgreen' }}
           >
-            {/* THREED MODALS */}
             <ModalAbout />
             {/* <ModalModel3d /> */}
             {/* <ModalLoading /> */}
             {/* <ModalShare /> */}
-            {/* THREED MODALS */}
           </Grid>
+          {/* END: THREED MODALS */}
+
+
+          {/* THREED FARMBOT */}
           <Grid
             item
             id='threed_farmbot'
@@ -545,10 +562,11 @@ const ThreeDGarden = (): JSX.Element => {
             xs={12}
             // sx={{ borderTop: '1px solid darkgreen', padding: '16px' }}
           >
-            {/* THREED FARMBOT */}
             {/* <ThreeDFarmBotMain /> */}
-            {/* THREED FARMBOT */}
           </Grid>
+          {/* END: THREED FARMBOT */}
+
+
         </Grid>
       )}
     </Box>
