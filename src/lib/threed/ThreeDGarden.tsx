@@ -261,7 +261,8 @@ const {
 // const ThreeDGarden = ({ session }: { session: Session | null }): JSX.Element => {
 // const ThreeDGarden = ({...props}): JSX.Element => {
 // const ThreeDGarden = ({threedData}): JSX.Element => {
-const ThreeDGarden = (): JSX.Element => {
+// const ThreeDGarden = (): JSX.Element => {
+const ThreeDGarden = (): React.ReactNode => {
   // **
   // ==========================================================
   // ** LOCAL VARS
