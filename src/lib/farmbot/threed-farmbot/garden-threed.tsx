@@ -246,12 +246,12 @@ const Model = (props: ModelProps) => {
     <RigidBody type='fixed' position={[0, 0.0, 5]}>
       <ThreeDBot config={config} activeFocus={props.activeFocus} />
     </RigidBody>
-    <RigidBody type='fixed' position={[0, 0.0, 5]}>
-      {/* <Solar config={config} /> */}
-    </RigidBody>
-    <RigidBody type='fixed' position={[0, 0.0, 5]}>
-      {/* <LabEnvironment config={config} /> */}
-    </RigidBody>
+    {/* <RigidBody type='fixed' position={[0, 0.0, 5]}>
+      <Solar config={config} />
+    </RigidBody> */}
+    {/* <RigidBody type='fixed' position={[0, 0.0, 5]}>
+      <LabEnvironment config={config} />
+    </RigidBody> */}
     {/* END: THREED FARMBOT */}
     
     {/* 2D PLANTS (FARMBOT AVIF) */}
