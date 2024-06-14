@@ -239,11 +239,11 @@ const Model = (props: ModelProps) => {
     
     {/* {config.stats && <Stats />} */}
 
-    {/* <ZoomBeacons
+    <ZoomBeacons
       config={config}
       activeFocus={props.activeFocus}
       setActiveFocus={props.setActiveFocus} 
-    /> */}
+    />
     
     {/* <Sky distance={450000}
       sunPosition={sunPosition(config)}
@@ -369,9 +369,9 @@ const Model = (props: ModelProps) => {
 
 
     <Text 
-      visible={config.labels}
+      visible={true} // {config.labels}
       font={ASSETS.fonts.inknut}
-      fontSize={200} 
+      fontSize={80} 
       color={"white"}
       outlineColor={"black"}
       outlineWidth={0}
@@ -387,8 +387,8 @@ const Model = (props: ModelProps) => {
       {config.label}
     </Text>
 
-    <Solar config={config} activeFocus={props.activeFocus} />
-    <LabEnvironment config={config} activeFocus={props.activeFocus} />
+    {/* <Solar config={config} activeFocus={props.activeFocus} /> */}
+    {/* <LabEnvironment config={config} activeFocus={props.activeFocus} /> */}
 
   </group>
   )
