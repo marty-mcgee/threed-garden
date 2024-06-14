@@ -20,7 +20,7 @@ import Image from 'next/image'
 import { modalLoadingStore } from '#/lib/stores/apollo'
 
 // ** CSS Styles Imports
-import stylesGarden from '#/lib/threed/styles/garden.module.css'
+import stylesThreeD from '#/lib/threed/styles/threed.module.css'
 
 // ==========================================================
 // STYLES
@@ -72,8 +72,8 @@ const ModalLoading: FunctionComponent = (): JSX.Element => {
         aria-describedby='modal-loading-description'
         sx={stylesModal}
       >
-        <Box className={stylesGarden.modalContent}>
-          <Box className={stylesGarden.modalHeader}>
+        <Box className={stylesThreeD.modalContent}>
+          <Box className={stylesThreeD.modalHeader}>
             <Image
               src='/favicon/favicon.png'
               width={50}
@@ -89,7 +89,7 @@ const ModalLoading: FunctionComponent = (): JSX.Element => {
             <textarea id='modalLoadingDataInfo'></textarea>
           </Box>
 
-          <Box className={stylesGarden.modalFooter}>
+          <Box className={stylesThreeD.modalFooter}>
             <Typography>
               🌱 a part of the <a href='https://threed.ai'>threed.ai</a> code family
             </Typography>
