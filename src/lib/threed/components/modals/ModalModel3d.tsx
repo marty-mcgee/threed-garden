@@ -20,7 +20,7 @@ import Image from 'next/image'
 import { modalModel3dStore } from '#/lib/stores/apollo'
 
 // ** CSS Styles Imports
-import stylesGarden from '#/lib/threed/styles/garden.module.css'
+import stylesThreeD from '#/lib/threed/styles/threed.module.css'
 
 // ==========================================================
 // STYLES
@@ -72,8 +72,8 @@ const ModalModel3d: FunctionComponent = (): JSX.Element => {
         aria-describedby='modal-model3d-description'
         sx={stylesModal}
       >
-        <Box className={stylesGarden.modalContent}>
-          <Box className={stylesGarden.modalHeader}>
+        <Box className={stylesThreeD.modalContent}>
+          <Box className={stylesThreeD.modalHeader}>
             <Image
               src='/favicon/favicon.png'
               width={50}
@@ -122,7 +122,7 @@ const ModalModel3d: FunctionComponent = (): JSX.Element => {
             </Box>
           </Box>
 
-          <Box className={stylesGarden.modalFooter}>
+          <Box className={stylesThreeD.modalFooter}>
             <Typography>
               🌱 a part of the <a href='https://threed.ai'>threed.ai</a> code family
             </Typography>

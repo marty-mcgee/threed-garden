@@ -182,10 +182,11 @@ export default function CharacterModel(props: CharacterModelProps) {
   const { nodes, materials, animations } = useGLTF(file) as GLTF & {
     nodes: any
   }
-  // console.debug(`%c nodes`, ccm.yellowAlert, nodes)
+  console.debug(`%c nodes, materials, animations`, ccm.yellowAlert, nodes, materials, animations)
 
   // const { actions } = useAnimations(animations, group)
   const { actions } = useAnimations<GLTFActions>(animations, group)
+  console.debug(`%c animations.actions, group`, ccm.yellowAlert, actions, materials, group)
 
   // gradientMapTexture for MeshToonMaterial
   const gradientMapTexture = useTexture(texture) // '/textures/3.jpg'
