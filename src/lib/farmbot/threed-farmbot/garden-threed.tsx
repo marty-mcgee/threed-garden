@@ -1,4 +1,9 @@
 // @ ts-nocheck /* OR @ ts-expect-error */
+// 'use client'
+// ==========================================================
+// RESOURCES
+
+import { RigidBody } from '@react-three/rapier'
 
 import { StaticImageData } from 'next/image'
 
@@ -321,11 +326,19 @@ const Model = (props: ModelProps) => {
     
     
     {/* THREED FARMBOT */}
-    <ThreeDBed config={config} activeFocus={props.activeFocus} />
-    <ThreeDBot config={config} activeFocus={props.activeFocus} />
-    {/* <Solar config={config} /> */}
-    {/* <LabEnvironment config={config} /> */}
-    
+    <RigidBody type='fixed' position={[0, 0.0, 5]}>
+      <ThreeDBed config={config} activeFocus={props.activeFocus} />
+    </RigidBody>
+    <RigidBody type='fixed' position={[0, 0.0, 5]}>
+      <ThreeDBot config={config} activeFocus={props.activeFocus} />
+    </RigidBody>
+    <RigidBody type='fixed' position={[0, 0.0, 5]}>
+      {/* <Solar config={config} /> */}
+    </RigidBody>
+    <RigidBody type='fixed' position={[0, 0.0, 5]}>
+      {/* <LabEnvironment config={config} /> */}
+    </RigidBody>
+    {/* END: THREED FARMBOT */}
     
     
     
