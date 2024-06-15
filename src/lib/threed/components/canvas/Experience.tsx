@@ -35,14 +35,14 @@ import Lights from '#/lib/threed/components/canvas/Lights'
 import CharacterControls from '~/src/lib/ecctrl/src/CharacterControls'
 
 // ** THREED CHARACTER MODEL Imports
-import CharacterModel0 from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
-import CharacterModel1 from '#/lib/threed/components/nouns/Character/CharacterModelFloating'
-// import CharacterModel2 from '#/lib/threed/components/nouns/Character/FarmerMan'
-// import CharacterModel3 from '#/lib/threed/components/nouns/Character/Character'
-import CharacterModel4 from '#/lib/threed/components/nouns/Character/FarmerManFloating'
-import CharacterModel5 from '#/lib/threed/components/nouns/Character/FarmerWomanFloating'
-// import CharacterModel6 from '#/lib/threed/components/nouns/Character/FarmerBoyFloating'
-// import CharacterModel7 from '#/lib/threed/components/nouns/Character/FarmerGirlFloating'
+import CharacterModelDemon from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
+import CharacterModelFloating from '#/lib/threed/components/nouns/Character/CharacterModelFloating'
+// import CharacterModelFarmerMan from '#/lib/threed/components/nouns/Character/FarmerMan'
+// import CharacterModelLegacy from '#/lib/threed/components/nouns/Character/Character'
+import CharacterModelFarmerManFloating from '#/lib/threed/components/nouns/Character/FarmerManFloating'
+import CharacterModelFarmerWomanFloating from '#/lib/threed/components/nouns/Character/FarmerWomanFloating'
+// import CharacterModelFarmerBoyFloating from '#/lib/threed/components/nouns/Character/FarmerBoyFloating'
+// import CharacterModelFarmerGirlFloating from '#/lib/threed/components/nouns/Character/FarmerGirlFloating'
 
 // ** THREED OBJECT INTERACTIVE EXAMPLES
 import Steps from '#/lib/threed/components/examples/Steps'
@@ -97,7 +97,7 @@ export default function Experience() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setPausedPhysics(false)
-    }, 1500)
+    }, 5000)
     return () => clearTimeout(timeout)
   }, [])
 
@@ -258,8 +258,8 @@ export default function Experience() {
       <Physics
         // debug={prefs.doWorldPhysics}
         debug={true}
-        // timeStep='vary'
-        // paused={pausedPhysics}
+        timeStep='vary'
+        paused={pausedPhysics}
       >
 
         {/* THREED FARMBOT */}
@@ -272,14 +272,14 @@ export default function Experience() {
 
         {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
             CHARACTER MODEL */}
-        <group position={[0, 16, 0]}>
+        <group position={[0, 8, 0]}>
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
           <KeyboardControls map={keyboardMap}>
             <CharacterControls
               // debug={prefs.doWorldDebug}
               debug={false}
               // animated={prefs.doCharacterAnimation}
-              animated={true}
+              animated={true} // <EcctrlAnimation>
               // disableFollowCam={prefs.doWorldUnfollowCam}
               disableFollowCam={true}
               followLight={true}
@@ -290,8 +290,8 @@ export default function Experience() {
               // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
               // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
             >
-              <CharacterModel1 />
-              {/* <CharacterModel5 /> */}
+              <CharacterModelFloating />
+              {/* <CharacterModelFarmerWomanFloating /> */}
             </CharacterControls>
           </KeyboardControls>
         </group>

@@ -48,6 +48,8 @@ import {
 // ** TYPES Imports
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
+// ** ECCRTL CHARACTER ANIMATION
+import { EcctrlAnimation } from '#/lib/ecctrl/src/EcctrlAnimation'
 // ** ECCRTL ZUSTAND STATE
 import { useGame } from '#/lib/ecctrl/src/stores/useGame'
 
@@ -514,6 +516,11 @@ export default function CharacterModel(props: CharacterModelProps) {
     }
   }, [curAnimation])
 
+
+
+
+
+  
   return (
     <Suspense fallback={<capsuleGeometry args={[0.4, 0.8]} />}>
 
@@ -564,6 +571,11 @@ export default function CharacterModel(props: CharacterModelProps) {
         }}
       />
 
+    {/* ANIMATED CHARACTER */}
+    <EcctrlAnimation
+      characterURL={file} // Must have property
+      animationSet={animationSet} // Must have property
+    >
       {/* ANIMATED CHARACTER Model Group */}
       <group
         ref={group}
@@ -676,6 +688,8 @@ export default function CharacterModel(props: CharacterModelProps) {
 
       {/* END CharacterModel group */}
       </group>
+
+    </EcctrlAnimation>
     </Suspense>
   )
 }
