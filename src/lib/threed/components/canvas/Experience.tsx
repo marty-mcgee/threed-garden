@@ -97,7 +97,7 @@ export default function Experience() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setPausedPhysics(false)
-    }, 500)
+    }, 1500)
     return () => clearTimeout(timeout)
   }, [])
 
