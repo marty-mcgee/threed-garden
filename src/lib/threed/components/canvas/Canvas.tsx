@@ -190,7 +190,7 @@ export function ThreeDCanvas(
   return (
     <>
 
-      <EcctrlJoystick buttonNumber={5} />
+      {/* <EcctrlJoystick buttonNumber={5} /> */}
       {/* <EcctrlJoystickControls /> */}
 
       {/* <CameraPositionTestApp /> */}
@@ -212,7 +212,7 @@ export function ThreeDCanvas(
         // camera={camera}
         camera={{ 
           position: [-12, 4, -16], 
-          fov: 24,
+          fov: 36,
           // near: 0.1,
           // far: 1000,
         }}

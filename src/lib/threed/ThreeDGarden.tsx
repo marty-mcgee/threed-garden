@@ -59,15 +59,23 @@ import {
   preferencesDataVar,
 } from '#/lib/stores/apollo'
 
+// ** RADIX-UI Imports
+import { 
+  Box,
+  Button,
+  Grid,
+  // Typography,
+} from '@radix-ui/themes'
 // ** MUI Imports
 // import { styled } from '@mui/material/styles'
 // mui: ui
 // import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
+// import Box from '@mui/material/Box'
+// import Button from '@mui/material/Button'
 // import MuiButton from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
+// import Grid from '@mui/material/Grid'
 // import MDTabPanel, { tabProps } from '#/lib/mui/MDTabPanel'
+
 
 // ** THREE JS Imports (not here, use R3F)
 import * as THREE from 'three'
@@ -261,7 +269,8 @@ const {
 // const ThreeDGarden = ({ session }: { session: Session | null }): JSX.Element => {
 // const ThreeDGarden = ({...props}): JSX.Element => {
 // const ThreeDGarden = ({threedData}): JSX.Element => {
-const ThreeDGarden = (): JSX.Element => {
+// const ThreeDGarden = (): JSX.Element => {
+const ThreeDGarden = (): React.ReactNode => {
   // **
   // ==========================================================
   // ** LOCAL VARS
@@ -385,137 +394,202 @@ const ThreeDGarden = (): JSX.Element => {
   // ==========================================================
   // ** React returns JSX
   return (
-    <Box
+    <Grid
       id='threed_garden'
-      style={{width: '100%'}}
+      columns={{ initial: '1', md: '1' }} 
+      width="100%"
+      px="2"
+      py="1"
     >
 
       { !isPrefsLoaded && (
-        <>
-          <Spinner />
-        </>
+        <Spinner />
       )}
 
       { isPrefsLoaded && (
         <Grid
-          container
+          // container
           id='threed_grid'
-          sx={{ border: '1px solid darkgreen' }}
+          columns={{ initial: '1', md: '1' }} 
+          gap="0" 
+          width="auto"
+          style={{
+            // borderTop: '1px solid darkgreen',
+            border: '1px solid darkgreen',
+          }}
         >
+        
+          {/* <Typography>{project_title}</Typography> */}
+
+          
+          {/* THREED CONTROLS: ALL */}
           <Grid
-            item
             id='threed_controls'
-            md={4}
-            xs={12}
-            sx={{
-              display: 'flex',
-              justifyContent: 'flex-start'
-            }}
+            columns={{ initial: '2', md: '2' }} 
+            gap="0" 
+            width="auto"
           >
-            {/* THREED CONTROL PANELS -- STORE ACCESS (apollo, valtio, leva) */}
-            <Grid
-              item
+
+            
+            {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+            <Box
+              // item
               id='leva_controls'
+              pl={'10px'}
+              // md={4}
+              // xs={12}
               style={{
-                position: 'absolute',
-                zIndex: 1000,
-                minWidth: '416px',
+                // display: 'flex', 
+                // justifyContent: 'flex-end',
+                // paddingLeft: 12,
+                // px: 2.5, 
+                // py: 2,
+                // borderTop: '1px solid darkgreen',
+                minWidth: '320px',
+                maxWidth: '480px',
+                // position: 'absolute',
+                // minHeight: '48px',
+                // display: 'inline',
+                // position: 'fixed',
+                // top: 0,
+                // left: 0, 
+                zIndex: 9999,
               }}
             >
-              {/* <Typography>{project_title}</Typography> */}
-              {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
               <ThreeDLevaControls />
-              {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+            </Box>
+            {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+
+
+            {/* THREED CLICK LOADERS */}
+            <Grid
+              // item
+              id='threed_actions'
+              // md={8}
+              // xs={12}
+              style={{ 
+                display: 'flex', 
+                justifyContent: 'flex-end' 
+              }}
+              gap='1'
+            >
+              <Button onClick={() => loadNounData('project', [])}>load project</Button>
+              <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
+              <Button onClick={() => loadNounData('character', [])}>load character</Button>
+              <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
             </Grid>
+            {/* END THREED CLICK LOADERS */}
+
+            
           </Grid>
-          <Grid
-            item
-            id='threed_actions'
-            md={8}
-            xs={12}
-            style={{ display: 'flex', justifyContent: 'flex-end' }}
-          >
-            <Button onClick={() => loadNounData('project', [])}>load project</Button>
-            <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
-            <Button onClick={() => loadNounData('character', [])}>load character</Button>
-            <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
-          </Grid>
-          <Grid
-            item
-            id='threed_canvas_viewer'
-            md={12}
-            xs={12}
-            sx={{ borderTop: '1px solid darkgreen' }}
-          >
-            {/* THREED CANVAS VIEWER */}
-            <ThreeDCanvasViewer />
-            {/* THREED CANVAS VIEWER */}
-          </Grid>
-          <Grid
+          {/* END: THREED CONTROLS: ALL */}
+
+
+          {/* THREED TOOLBAR */}
+          {/* <Grid
             item
             id='threed_toolbar'
             md={12}
             xs={12}
-            sx={{ borderTop: '1px solid darkgreen' }}
+            sx={{
+              // display: 'flex', justifyContent: 'flex-end',
+              px: 2, 
+              borderTop: '1px solid darkgreen',
+            }}
           >
-            {/* THREED TOOLBAR */}
-            {/* <ThreeDToolbar /> */}
-            {/* THREED TOOLBAR */}
-          </Grid>
+            <ThreeDToolbar />
+          </Grid> */}
+          {/* END: THREED TOOLBAR */}
+
+          
+          {/* THREED CANVAS VIEWER */}
+          {/* HEY HEY HEY -- THREED CANVAS: VIEWER COMPONENT WRAPPER */}
           <Grid
-            item
+            // item
+            id='threed_canvas_viewer'
+            // md={12}
+            // xs={12}
+            style={{ 
+              // display: 'flex', justifyContent: 'flex-end',
+              // mx: 0,
+              // px: 2,
+              // borderTop: '1px solid darkgreen',
+              // border: '2px solid darkgreen',
+              // borderTop: '2px solid darkgreen',
+              zIndex: -9999,
+            }}
+          >
+            <ThreeDCanvasViewer />
+          </Grid>
+          {/* END: THREED CANVAS VIEWER */}
+
+
+          {/* THREED CONTROL PANELS */}
+          {/* -- STORE ACCESS (apollo, valtio, leva) */}
+          <Grid
+            // item
             id='threed_control_panels'
-            md={12}
-            xs={12}
-            sx={{ borderTop: '1px solid darkgreen' }}
+            // md={12}
+            // xs={12}
+            style={{ borderTop: '1px solid darkgreen' }}
           >
-            {/* THREED CANVAS VIEWER */}
+            <ThreeDControlPanels />
             {/* <ThreeDControlPanels tabs={tabProps} /> */}
-            {/* <ThreeDControlPanels /> */}
-            {/* THREED CANVAS VIEWER */}
           </Grid>
+          {/* END: THREED CONTROL PANELS */}
+
+
+          {/* THREED VIEWS */}
           <Grid
-            item
+            // item
             id='threed_views'
-            md={12}
-            xs={12}
-            sx={{ borderTop: '0px solid darkgreen' }}
+            // md={12}
+            // xs={12}
+            style={{ borderTop: '0px solid darkgreen' }}
           >
-            {/* THREED VIEWS */}
             {/* <CatalogView /> */}
             {/* <PropertiesView /> */}
             {/* <PlanView /> */}
             {/* <TheBottom /> */}
-            {/* THREED VIEWS */}
           </Grid>
+          {/* END: THREED VIEWS */}
+
+
+          {/* THREED MODALS */}
           <Grid
-            item
+            // item
             id='threed_modals'
-            md={12}
-            xs={12}
-            sx={{ borderTop: '0px solid darkgreen' }}
+            // md={12}
+            // xs={12}
+            style={{ borderTop: '0px solid darkgreen' }}
           >
-            {/* THREED MODALS */}
             <ModalAbout />
             {/* <ModalModel3d /> */}
             {/* <ModalLoading /> */}
             {/* <ModalShare /> */}
-            {/* THREED MODALS */}
           </Grid>
+          {/* END: THREED MODALS */}
+
+
+          {/* THREED FARMBOT */}
           <Grid
-            item
+            // item
             id='threed_farmbot'
-            md={12}
-            xs={12}
-            // sx={{ borderTop: '1px solid darkgreen', padding: '16px' }}
+            // md={12}
+            // xs={12}
+            style={{ 
+              // borderTop: '1px solid darkgreen', 
+              // padding: '16px' 
+            }}
           >
-            {/* THREED FARMBOT */}
             {/* <ThreeDFarmBotMain /> */}
-            {/* THREED FARMBOT */}
           </Grid>
+          {/* END: THREED FARMBOT */}
+
+
         </Grid>
       )}
-    </Box>
+    </Grid>
   )
 }
 

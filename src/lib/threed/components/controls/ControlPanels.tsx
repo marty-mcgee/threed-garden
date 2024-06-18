@@ -15,7 +15,7 @@ import {
   SyntheticEvent,
 } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-// import Cubes from './Cubes'
+
 // ** APOLLO Imports
 import { useReactiveVar, useApolloClient } from '@apollo/client'
 import { preferencesDataVar } from '#/lib/stores/apollo'
@@ -25,17 +25,25 @@ import stores from '#/lib/stores/apollo'
 // ** Leva GUI
 // import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
 
+// ** RADIX-UI Imports
+import * as Accordion from '@radix-ui/react-accordion'
+import {
+  Box,
+  Button,
+  Text,
+} from '@radix-ui/themes'
 // ** MUI Imports
-import { styled } from '@mui/material/styles'
-import Box from '@mui/material/Box'
-import MuiButton from '@mui/material/Button'
-import MuiTabs from '@mui/material/Tabs'
-import Tab from '@mui/material/Tab'
-import MDTabPanel, { tabProps } from '#/lib/mui/MDTabPanel'
-import Typography from '@mui/material/Typography'
+// import { styled } from '@mui/material/styles'
+// import Box from '@mui/material/Box'
+// import MuiButton from '@mui/material/Button'
+// import MuiTabs from '@mui/material/Tabs'
+// import Tab from '@mui/material/Tab'
+// import Accordion.Item, { tabProps } from '#/lib/mui/Accordion.Item'
+// import Text from '@mui/material/Text'
 
 // ** HELPER Imports
 import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
+// import Cubes from './Cubes' // for PerfHeadless
 import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
@@ -122,7 +130,7 @@ const Debug = () => {
 //   return <orbitControls ref={ref} enableDamping args={[camera, gl.domElement]} />
 // }
 
-function App() {
+function DebugView() {
   // const control = useRef()
 
   return (
@@ -150,15 +158,15 @@ function App() {
 
 // ==========================================================
 
-const Tabs = styled(MuiTabs)(({ theme }) => ({
-  overflow: `scroll !important`,
-}))
+// const Tabs = styled(MuiTabs)(({ theme }) => ({
+//   overflow: `scroll !important`,
+// }))
 
-const Button = styled(MuiButton)(({ theme }) => ({
-  marginRight: `0.25rem !important`,
-  padding: `0.5rem 0.5rem !important`,
-  minWidth: `2.0rem !important`,
-}))
+// const Button = styled(MuiButton)(({ theme }) => ({
+//   marginRight: `0.25rem !important`,
+//   padding: `0.5rem 0.5rem !important`,
+//   minWidth: `2.0rem !important`,
+// }))
 
 // ==========================================================
 // FUNCTIONAL STORES
@@ -201,10 +209,10 @@ export const ThreeDControlPanels = (
   // ==========================================================
   // Tabs
   //
-  const [tabControlValue, setTabControlValue] = useState(0)
-  const onChangeTabControlValue = (event: SyntheticEvent, newValue: number) => {
+  const [tabControlValue, setTabControlValue] = useState('Preferences')
+  const onChangeTabControlValue = (event: SyntheticEvent, newValue: string) => {
     setTabControlValue(newValue)
-    localStorage.setItem('threed_tabControlValue', newValue.toString())
+    localStorage.setItem('threed_tabControlValue', newValue)
   }
 
   // ==========================================================
@@ -213,8 +221,8 @@ export const ThreeDControlPanels = (
   useEffect(() => {
     // **
     // set open tab
-    const openTab: number = Number(localStorage.getItem('threed_tabControlValue'))
-    setTabControlValue(openTab ? openTab : 0)
+    const openTab: string = String(localStorage.getItem('threed_tabControlValue'))
+    setTabControlValue(openTab ? openTab : 'Preferences')
 
     // ==========================================================
     // return () => {
@@ -224,78 +232,51 @@ export const ThreeDControlPanels = (
 
   // **
   return (
-    <Box id='storeControlPanel'>
-      <Box sx={{ borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs
-          value={tabControlValue}
-          onChange={onChangeTabControlValue}
-          aria-label='ThreeD Control Panel'
-        >
-          <Tab label='Preferences' {...tabProps(0)} />
-          <Tab label='Projects' {...tabProps(1)} />
-          <Tab label='Plans' {...tabProps(2)} />
-          <Tab label='ThreeDs' {...tabProps(3)} />
-          <Tab label='Files' {...tabProps(4)} />
-          <Tab label='Scenes' {...tabProps(5)} />
-          <Tab label='Allotments' {...tabProps(6)} />
-          <Tab label='Beds' {...tabProps(7)} />
-          <Tab label='Plants' {...tabProps(8)} />
-          <Tab label='Schedules' {...tabProps(9)} />
-          <Tab label='Tests' {...tabProps(10)} />
-        </Tabs>
-      </Box>
-      <Box sx={{ p: 2, borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
-        <MDTabPanel value={tabControlValue} index={0}>
-          <PreferencesControlPanel />
-          <PreferencesInfoPanel />
-        </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={1}>
-          <ProjectControlPanel />
-          <ProjectInfoPanel />
-        </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={2}>
-          <PlanControlPanel />
-          <PlanInfoPanel />
-        </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={3}>
-          <ThreeDControlPanel />
-          <ThreeDInfoPanel />
-        </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={4}>
-          <FileControlPanel />
-          <FileInfoPanel />
-        </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={5}>
-          <SceneControlPanel />
-          <SceneInfoPanel />
-        </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={6}>
-          <AllotmentControlPanel />
-          <AllotmentInfoPanel />
-        </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={7}>
-          <BedControlPanel />
-          <BedInfoPanel />
-        </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={8}>
-          <PlantControlPanel />
-          <PlantInfoPanel />
-        </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={9}>
-          <PlantingPlanControlPanel />
-          <PlantingPlanInfoPanel />
-        </MDTabPanel>
-        <MDTabPanel value={tabControlValue} index={10}>
-          <Box sx={{ p: 2}}>
+    <Box id='threedStoresControlPanel'>
+
+      {/* <Tabs
+        value={tabControlValue}
+        onChange={onChangeTabControlValue}
+        aria-label='ThreeD Control Panel'
+      >
+        <Tab label='Preferences' {...tabProps(0)} />
+        <Tab label='Projects' {...tabProps(1)} />
+        <Tab label='Plans' {...tabProps(2)} />
+        <Tab label='ThreeDs' {...tabProps(3)} />
+        <Tab label='Files' {...tabProps(4)} />
+        <Tab label='Scenes' {...tabProps(5)} />
+        <Tab label='Allotments' {...tabProps(6)} />
+        <Tab label='Beds' {...tabProps(7)} />
+        <Tab label='Plants' {...tabProps(8)} />
+        <Tab label='Schedules' {...tabProps(9)} />
+        <Tab label='Tests' {...tabProps(10)} />
+      </Tabs> */}
+        
+      {/**/}
+
+      <Accordion.Root 
+        type="multiple" 
+        orientation="horizontal" 
+        // @ts-expect-error
+        collapsible={'true'}
+        defaultValue="Preferences"
+        // value={tabControlValue}
+        // onChange={onChangeTabControlValue}
+        aria-label='ThreeD Control Panel'
+      >
+        {/**/}
+
+        <Accordion.Item value={'Tests'} key={tabControlValue + '_T'}>
+          <Accordion.Header>
+            <Accordion.Trigger 
+              className="AccordionTrigger"
+            >
+              Tests
+            </Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content className="AccordionContent">
             <Box>
-              Testing Panel
-            </Box>
-            {/* <Box sx={{ p: 2}}>
-              <ThreeDLevaComponent projectName={projectName} setProjectName={setProjectName} />
-              <input type='button' onClick={(e) => setProjectName('TEST')} value='TEST' />
-              <input type='button' onClick={(e) => setProjectName('PROJECT MMMM')} value='DEFAULT' />
-            </Box> */}
-            <Box>
+              <DebugView />
               {/* <CharacterControlPanel /> */}
               {/* <CharacterInfoPanel /> */}
               {/* <hr /> */}
@@ -309,12 +290,125 @@ export const ThreeDControlPanels = (
               {/* <BearInfoPanel /> */}
               {/* <hr /> */}
             </Box>
-            <Box>
-              <App />
-            </Box>
-          </Box>
-        </MDTabPanel>
-      </Box>
+            {/* <Box style={{ paddingLeft: 2}}>
+              <ThreeDLevaComponent projectName={projectName} setProjectName={setProjectName} />
+              <input type='button' onClick={(e) => setProjectName('TEST')} value='TEST' />
+              <input type='button' onClick={(e) => setProjectName('PROJECT MMMM')} value='DEFAULT' />
+            </Box> */}
+          </Accordion.Content>
+        </Accordion.Item>
+        
+        <Accordion.Item value={'Preferences'} key={tabControlValue + '_0'}>
+          <Accordion.Header>
+            <Accordion.Trigger 
+              // className="AccordionTrigger"
+            >
+              Preferences
+            </Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content className="AccordionContent">
+            <PreferencesControlPanel />
+            <PreferencesInfoPanel />
+          </Accordion.Content>
+        </Accordion.Item>
+
+        <Accordion.Item value={'Projects'} key={tabControlValue + '_1'}>
+          <Accordion.Header>
+            <Accordion.Trigger 
+              // className="AccordionTrigger"
+            >
+              Projects
+            </Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content className="AccordionContent">
+            <ProjectControlPanel />
+            <ProjectInfoPanel />
+          </Accordion.Content>
+        </Accordion.Item>
+
+        <Accordion.Item value={'Plans'} key={tabControlValue + '_2'}>
+          <Accordion.Header>
+            <Accordion.Trigger>Plans</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content className="AccordionContent">
+            <PlanControlPanel />
+            <PlanInfoPanel />
+          </Accordion.Content>
+        </Accordion.Item>
+
+        <Accordion.Item value={'ThreeDs'} key={tabControlValue + '_3'}>
+          <Accordion.Header>
+            <Accordion.Trigger>ThreeDs</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content className="AccordionContent">
+            <ThreeDControlPanel />
+            <ThreeDInfoPanel />
+          </Accordion.Content>
+        </Accordion.Item>
+
+        <Accordion.Item value={'Files'} key={tabControlValue + '_4'}>
+          <Accordion.Header>
+            <Accordion.Trigger>Files</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content className="AccordionContent">
+            <FileControlPanel />
+            <FileInfoPanel />
+          </Accordion.Content>
+        </Accordion.Item>
+
+        <Accordion.Item value={'Scenes'} key={tabControlValue + '_5'}>
+          <Accordion.Header>
+            <Accordion.Trigger>Scenes</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content className="AccordionContent">
+            <SceneControlPanel />
+            <SceneInfoPanel />
+          </Accordion.Content>
+        </Accordion.Item>
+
+        <Accordion.Item value={'Allotments'} key={tabControlValue + '_6'}>
+          <Accordion.Header>
+            <Accordion.Trigger>Allotments</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content className="AccordionContent">
+            <AllotmentControlPanel />
+            <AllotmentInfoPanel />
+          </Accordion.Content>
+        </Accordion.Item>
+
+        <Accordion.Item value={'Beds'} key={tabControlValue + '_7'}>
+          <Accordion.Header>
+            <Accordion.Trigger>Beds</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content className="AccordionContent">
+            <BedControlPanel />
+            <BedInfoPanel />
+          </Accordion.Content>
+        </Accordion.Item>
+
+        <Accordion.Item value={'Plants'} key={tabControlValue + '_8'}>
+          <Accordion.Header>
+            <Accordion.Trigger>Plants</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content className="AccordionContent">
+            <PlantControlPanel />
+            <PlantInfoPanel />
+          </Accordion.Content>
+        </Accordion.Item>
+
+        <Accordion.Item value={'Planting Plans'} key={tabControlValue + '_9'}>
+          <Accordion.Header>
+            <Accordion.Trigger>Planting Plans</Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content className="AccordionContent">
+            <PlantingPlanControlPanel />
+            <PlantingPlanInfoPanel />
+          </Accordion.Content>
+        </Accordion.Item>
+
+        {/**/}
+      </Accordion.Root>
+
     </Box>
   )
 }
@@ -336,18 +430,18 @@ const PreferencesInfoPanel = (): JSX.Element => {
   // const preferencesDB = preferencesStore.store.useStore('oneDB')
 
   return (
-    <Box sx={{ px: 2 }}>
-      <Typography><strong>prefs.projectName: {prefs.projectName}</strong></Typography>
-      <Typography>preferences[s].length: {preferencess.length} | count: {preferencesCount}</Typography>
+    <Box style={{ paddingLeft: 2 }}>
+      <Text as='div'><strong>prefs.projectName: {prefs.projectName}</strong></Text>
+      <Text as='div'>preferences[s].length: {preferencess.length} | count: {preferencesCount}</Text>
       { preferences?._id && (
-        <Typography>preferences._id: {preferences._id}</Typography>
+        <Text as='div'>preferences._id: {preferences._id}</Text>
       )}
-        {/* <Typography>preferences._ts: {preferences._ts}</Typography> */}
-        <Typography>preferences._name: {preferences._name}</Typography>
-        <Typography>preferences.data.title: {preferences.data.title}</Typography>
-        <Typography>preferences.data.doAutoLoadData: {preferences.data?.doAutoLoadData?.toString()}</Typography>
-        <Typography>preferences.data.doAutoRotate: {preferences.data?.doAutoRotate?.toString()}</Typography>
-        <Typography>preferences.data.projectName: {preferences.data?.projectName?.toString()}</Typography>
+        {/* <Text as='div'>preferences._ts: {preferences._ts}</Text> */}
+        <Text as='div'>preferences._name: {preferences._name}</Text>
+        <Text as='div'>preferences.data.title: {preferences.data.title}</Text>
+        <Text as='div'>preferences.data.doAutoLoadData: {preferences.data?.doAutoLoadData?.toString()}</Text>
+        <Text as='div'>preferences.data.doAutoRotate: {preferences.data?.doAutoRotate?.toString()}</Text>
+        <Text as='div'>preferences.data.projectName: {preferences.data?.projectName?.toString()}</Text>
     </Box>
   )
 }
@@ -398,16 +492,16 @@ const ProjectInfoPanel = (): JSX.Element => {
       projectName = prefs.projectName
 
   return (
-    <Box sx={{ px: 2 }}>
-      <Typography><strong>prefs.projectName: {projectName}</strong></Typography>
-      <Typography>projects.length: {projects.length} | count: {projectCount}</Typography>
-      {/* <Typography>projectsDB: {projectsDB.length}</Typography> */}
-      <Typography>project._id: {project._id}</Typography>
-      {/* <Typography>project._ts: {project._ts}</Typography> */}
-      <Typography>project._name: {project._name}</Typography>
-      <Typography>project.data.title: {project.data?.title}</Typography>
-      <Typography>project.data.scene[s]: {project.data?.scenes?.nodes[0].title}</Typography>
-      <Typography>project.data.plan[s]: {project.data?.plans?.nodes[0].title}</Typography>
+    <Box style={{ paddingLeft: 2 }}>
+      <Text as='div'><strong>prefs.projectName: {projectName}</strong></Text>
+      <Text as='div'>projects.length: {projects.length} | count: {projectCount}</Text>
+      {/* <Text as='div'>projectsDB: {projectsDB.length}</Text> */}
+      <Text as='div'>project._id: {project._id}</Text>
+      {/* <Text as='div'>project._ts: {project._ts}</Text> */}
+      <Text as='div'>project._name: {project._name}</Text>
+      <Text as='div'>project.data.title: {project.data?.title}</Text>
+      <Text as='div'>project.data.scene[s]: {project.data?.scenes?.nodes[0].title}</Text>
+      <Text as='div'>project.data.plan[s]: {project.data?.plans?.nodes[0].title}</Text>
     </Box>
   )
 }
@@ -473,14 +567,14 @@ const ParticipantInfoPanel = (): JSX.Element => {
   // const participantDB = participantStore.store.useStore('oneDB')
 
   return (
-    <Box sx={{ px: 2 }}>
-      <Typography>{participantCount} participants around here ...</Typography>
-      <Typography>participants: {participants.length}</Typography>
-      {/* <Typography>participantsDB: {participantsDB.length}</Typography> */}
-      <Typography>participant._id: {participant._id}</Typography>
-      <Typography>participant._ts: {participant._ts}</Typography>
-      <Typography>participant._name: {participant._name}</Typography>
-      <Typography>participant.data.title: {participant.data?.title}</Typography>
+    <Box style={{ paddingLeft: 2 }}>
+      <Text as='div'>{participantCount} participants around here ...</Text>
+      <Text as='div'>participants: {participants.length}</Text>
+      {/* <Text as='div'>participantsDB: {participantsDB.length}</Text> */}
+      <Text as='div'>participant._id: {participant._id}</Text>
+      <Text as='div'>participant._ts: {participant._ts}</Text>
+      <Text as='div'>participant._name: {participant._name}</Text>
+      <Text as='div'>participant.data.title: {participant.data?.title}</Text>
     </Box>
   )
 }
@@ -528,14 +622,14 @@ const PlanInfoPanel = (): JSX.Element => {
   // const planDB = planStore.store.useStore('oneDB')
 
   return (
-    <Box sx={{ px: 2 }}>
-      <Typography>{planCount} plans around here ...</Typography>
-      <Typography>plans: {plans.length}</Typography>
-      {/* <Typography>plansDB: {plansDB.length}</Typography> */}
-      <Typography>plan._id: {plan._id}</Typography>
-      <Typography>plan._ts: {plan._ts}</Typography>
-      <Typography>plan._name: {plan._name}</Typography>
-      <Typography>plan.data.title: {plan.data?.title}</Typography>
+    <Box style={{ paddingLeft: 2 }}>
+      <Text as='div'>{planCount} plans around here ...</Text>
+      <Text as='div'>plans: {plans.length}</Text>
+      {/* <Text as='div'>plansDB: {plansDB.length}</Text> */}
+      <Text as='div'>plan._id: {plan._id}</Text>
+      <Text as='div'>plan._ts: {plan._ts}</Text>
+      <Text as='div'>plan._name: {plan._name}</Text>
+      <Text as='div'>plan.data.title: {plan.data?.title}</Text>
     </Box>
   )
 }
@@ -583,14 +677,14 @@ const ThreeDInfoPanel = (): JSX.Element => {
   // const threedDB = threedStore.store.useStore('oneDB')
 
   return (
-    <Box sx={{ px: 2 }}>
-      <Typography>{threedCount} threeds around here ...</Typography>
-      <Typography>threeds: {threeds.length}</Typography>
-      {/* <Typography>threedsDB: {threedsDB.length}</Typography> */}
-      <Typography>threed._id: {threed._id}</Typography>
-      <Typography>threed._ts: {threed._ts}</Typography>
-      <Typography>threed._name: {threed._name}</Typography>
-      <Typography>threed.data.title: {threed.data?.title}</Typography>
+    <Box style={{ paddingLeft: 2 }}>
+      <Text as='div'>{threedCount} threeds around here ...</Text>
+      <Text as='div'>threeds: {threeds.length}</Text>
+      {/* <Text as='div'>threedsDB: {threedsDB.length}</Text> */}
+      <Text as='div'>threed._id: {threed._id}</Text>
+      <Text as='div'>threed._ts: {threed._ts}</Text>
+      <Text as='div'>threed._name: {threed._name}</Text>
+      <Text as='div'>threed.data.title: {threed.data?.title}</Text>
     </Box>
   )
 }
@@ -638,14 +732,14 @@ const FileInfoPanel = (): JSX.Element => {
   // const fileDB = fileStore.store.useStore('oneDB')
 
   return (
-    <Box sx={{ px: 2 }}>
-      <Typography>{fileCount} files around here ...</Typography>
-      <Typography>files: {files.length}</Typography>
-      {/* <Typography>filesDB: {filesDB.length}</Typography> */}
-      <Typography>file._id: {file._id}</Typography>
-      <Typography>file._ts: {file._ts}</Typography>
-      <Typography>file._name: {file._name}</Typography>
-      <Typography>file.data.title: {file.data?.title}</Typography>
+    <Box style={{ paddingLeft: 2 }}>
+      <Text as='div'>{fileCount} files around here ...</Text>
+      <Text as='div'>files: {files.length}</Text>
+      {/* <Text as='div'>filesDB: {filesDB.length}</Text> */}
+      <Text as='div'>file._id: {file._id}</Text>
+      <Text as='div'>file._ts: {file._ts}</Text>
+      <Text as='div'>file._name: {file._name}</Text>
+      <Text as='div'>file.data.title: {file.data?.title}</Text>
     </Box>
   )
 }
@@ -697,12 +791,12 @@ const SceneInfoPanel = (): JSX.Element => {
   // const sceneDB = sceneStore.store.useStore('oneDB')
 
   return (
-    <Box sx={{ px: 2 }}>
-      <Typography>all.length: {scenes.length}</Typography>
-      <Typography>one._id: {scene._id}</Typography>
-      <Typography>one._ts: {scene._ts}</Typography>
-      <Typography>one._name: {scene._name}</Typography>
-      <Typography>one.data.title: {scene.data?.title}</Typography>
+    <Box style={{ paddingLeft: 2 }}>
+      <Text as='div'>all.length: {scenes.length}</Text>
+      <Text as='div'>one._id: {scene._id}</Text>
+      <Text as='div'>one._ts: {scene._ts}</Text>
+      <Text as='div'>one._name: {scene._name}</Text>
+      <Text as='div'>one.data.title: {scene.data?.title}</Text>
     </Box>
   )
 }
@@ -750,14 +844,14 @@ const AllotmentInfoPanel = (): JSX.Element => {
   // const allotmentDB = allotmentStore.store.useStore('oneDB')
 
   return (
-    <Box sx={{ px: 2 }}>
-      <Typography>{allotmentCount} allotments around here ...</Typography>
-      <Typography>allotments: {allotments.length}</Typography>
-      {/* <Typography>allotmentsDB: {allotmentsDB.length}</Typography> */}
-      <Typography>allotment._id: {allotment._id}</Typography>
-      <Typography>allotment._ts: {allotment._ts}</Typography>
-      <Typography>allotment._name: {allotment._name}</Typography>
-      <Typography>allotment.data.title: {allotment.data?.title}</Typography>
+    <Box style={{ paddingLeft: 2 }}>
+      <Text as='div'>{allotmentCount} allotments around here ...</Text>
+      <Text as='div'>allotments: {allotments.length}</Text>
+      {/* <Text as='div'>allotmentsDB: {allotmentsDB.length}</Text> */}
+      <Text as='div'>allotment._id: {allotment._id}</Text>
+      <Text as='div'>allotment._ts: {allotment._ts}</Text>
+      <Text as='div'>allotment._name: {allotment._name}</Text>
+      <Text as='div'>allotment.data.title: {allotment.data?.title}</Text>
     </Box>
   )
 }
@@ -805,14 +899,14 @@ const BedInfoPanel = (): JSX.Element => {
   // const bedDB = bedStore.store.useStore('oneDB')
 
   return (
-    <Box sx={{ px: 2 }}>
-      <Typography>{bedCount} beds around here ...</Typography>
-      <Typography>beds: {beds.length}</Typography>
-      {/* <Typography>bedsDB: {bedsDB.length}</Typography> */}
-      <Typography>bed._id: {bed._id}</Typography>
-      <Typography>bed._ts: {bed._ts}</Typography>
-      <Typography>bed._name: {bed._name}</Typography>
-      <Typography>bed.data.title: {bed.data?.title}</Typography>
+    <Box style={{ paddingLeft: 2 }}>
+      <Text as='div'>{bedCount} beds around here ...</Text>
+      <Text as='div'>beds: {beds.length}</Text>
+      {/* <Text as='div'>bedsDB: {bedsDB.length}</Text> */}
+      <Text as='div'>bed._id: {bed._id}</Text>
+      <Text as='div'>bed._ts: {bed._ts}</Text>
+      <Text as='div'>bed._name: {bed._name}</Text>
+      <Text as='div'>bed.data.title: {bed.data?.title}</Text>
     </Box>
   )
 }
@@ -860,14 +954,14 @@ const PlantInfoPanel = (): JSX.Element => {
   // const plantDB = plantStore.store.useStore('oneDB')
 
   return (
-    <Box sx={{ px: 2 }}>
-      <Typography>{plantCount} plants around here ...</Typography>
-      <Typography>plants: {plants.length}</Typography>
-      {/* <Typography>plantsDB: {plantsDB.length}</Typography> */}
-      <Typography>plant._id: {plant._id}</Typography>
-      <Typography>plant._ts: {plant._ts}</Typography>
-      <Typography>plant._name: {plant._name}</Typography>
-      <Typography>plant.data.title: {plant.data?.title}</Typography>
+    <Box style={{ paddingLeft: 2 }}>
+      <Text as='div'>{plantCount} plants around here ...</Text>
+      <Text as='div'>plants: {plants.length}</Text>
+      {/* <Text as='div'>plantsDB: {plantsDB.length}</Text> */}
+      <Text as='div'>plant._id: {plant._id}</Text>
+      <Text as='div'>plant._ts: {plant._ts}</Text>
+      <Text as='div'>plant._name: {plant._name}</Text>
+      <Text as='div'>plant.data.title: {plant.data?.title}</Text>
     </Box>
   )
 }
@@ -915,14 +1009,14 @@ const PlantingPlanInfoPanel = (): JSX.Element => {
   // const plantingPlanDB = plantingPlanStore.store.useStore('oneDB')
 
   return (
-    <Box sx={{ px: 2 }}>
-      <Typography>{plantingPlanCount} plantingPlans around here ...</Typography>
-      <Typography>plantingPlans: {plantingPlans.length}</Typography>
-      {/* <Typography>plantingPlansDB: {plantingPlansDB.length}</Typography> */}
-      <Typography>plantingPlan._id: {plantingPlan._id}</Typography>
-      <Typography>plantingPlan._ts: {plantingPlan._ts}</Typography>
-      <Typography>plantingPlan._name: {plantingPlan._name}</Typography>
-      <Typography>plantingPlan.data.title: {plantingPlan.data?.title}</Typography>
+    <Box style={{ paddingLeft: 2 }}>
+      <Text as='div'>{plantingPlanCount} plantingPlans around here ...</Text>
+      <Text as='div'>plantingPlans: {plantingPlans.length}</Text>
+      {/* <Text as='div'>plantingPlansDB: {plantingPlansDB.length}</Text> */}
+      <Text as='div'>plantingPlan._id: {plantingPlan._id}</Text>
+      <Text as='div'>plantingPlan._ts: {plantingPlan._ts}</Text>
+      <Text as='div'>plantingPlan._name: {plantingPlan._name}</Text>
+      <Text as='div'>plantingPlan.data.title: {plantingPlan.data?.title}</Text>
     </Box>
   )
 }
