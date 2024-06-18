@@ -267,14 +267,14 @@ export const ThreeDControlPanels = (
         {/**/}
 
         <Accordion.Item value={'Tests'} key={tabControlValue + '_T'}>
-          <Accordion.Header>
+          <Accordion.Header asChild>
             <Accordion.Trigger 
               className="AccordionTrigger"
             >
               Tests
             </Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className="AccordionContent">
+          <Accordion.Content asChild className="AccordionContent">
             <Box>
               <DebugView />
               {/* <CharacterControlPanel /> */}
@@ -299,7 +299,7 @@ export const ThreeDControlPanels = (
         </Accordion.Item>
         
         <Accordion.Item value={'Preferences'} key={tabControlValue + '_0'}>
-          <Accordion.Header>
+          <Accordion.Header asChild>
             <Accordion.Trigger 
               // className="AccordionTrigger"
             >
@@ -313,7 +313,7 @@ export const ThreeDControlPanels = (
         </Accordion.Item>
 
         <Accordion.Item value={'Projects'} key={tabControlValue + '_1'}>
-          <Accordion.Header>
+          <Accordion.Header asChild>
             <Accordion.Trigger 
               // className="AccordionTrigger"
             >
@@ -327,7 +327,7 @@ export const ThreeDControlPanels = (
         </Accordion.Item>
 
         <Accordion.Item value={'Plans'} key={tabControlValue + '_2'}>
-          <Accordion.Header>
+          <Accordion.Header asChild>
             <Accordion.Trigger>Plans</Accordion.Trigger>
           </Accordion.Header>
           <Accordion.Content className="AccordionContent">
@@ -337,7 +337,7 @@ export const ThreeDControlPanels = (
         </Accordion.Item>
 
         <Accordion.Item value={'ThreeDs'} key={tabControlValue + '_3'}>
-          <Accordion.Header>
+          <Accordion.Header asChild>
             <Accordion.Trigger>ThreeDs</Accordion.Trigger>
           </Accordion.Header>
           <Accordion.Content className="AccordionContent">
@@ -347,7 +347,7 @@ export const ThreeDControlPanels = (
         </Accordion.Item>
 
         <Accordion.Item value={'Files'} key={tabControlValue + '_4'}>
-          <Accordion.Header>
+          <Accordion.Header asChild>
             <Accordion.Trigger>Files</Accordion.Trigger>
           </Accordion.Header>
           <Accordion.Content className="AccordionContent">
@@ -357,7 +357,7 @@ export const ThreeDControlPanels = (
         </Accordion.Item>
 
         <Accordion.Item value={'Scenes'} key={tabControlValue + '_5'}>
-          <Accordion.Header>
+          <Accordion.Header asChild>
             <Accordion.Trigger>Scenes</Accordion.Trigger>
           </Accordion.Header>
           <Accordion.Content className="AccordionContent">
@@ -367,7 +367,7 @@ export const ThreeDControlPanels = (
         </Accordion.Item>
 
         <Accordion.Item value={'Allotments'} key={tabControlValue + '_6'}>
-          <Accordion.Header>
+          <Accordion.Header asChild>
             <Accordion.Trigger>Allotments</Accordion.Trigger>
           </Accordion.Header>
           <Accordion.Content className="AccordionContent">
@@ -377,7 +377,7 @@ export const ThreeDControlPanels = (
         </Accordion.Item>
 
         <Accordion.Item value={'Beds'} key={tabControlValue + '_7'}>
-          <Accordion.Header>
+          <Accordion.Header asChild>
             <Accordion.Trigger>Beds</Accordion.Trigger>
           </Accordion.Header>
           <Accordion.Content className="AccordionContent">
@@ -387,7 +387,7 @@ export const ThreeDControlPanels = (
         </Accordion.Item>
 
         <Accordion.Item value={'Plants'} key={tabControlValue + '_8'}>
-          <Accordion.Header>
+          <Accordion.Header asChild>
             <Accordion.Trigger>Plants</Accordion.Trigger>
           </Accordion.Header>
           <Accordion.Content className="AccordionContent">
@@ -397,7 +397,7 @@ export const ThreeDControlPanels = (
         </Accordion.Item>
 
         <Accordion.Item value={'Planting Plans'} key={tabControlValue + '_9'}>
-          <Accordion.Header>
+          <Accordion.Header asChild>
             <Accordion.Trigger>Planting Plans</Accordion.Trigger>
           </Accordion.Header>
           <Accordion.Content className="AccordionContent">
