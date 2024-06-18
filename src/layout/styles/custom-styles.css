@@ -196,13 +196,15 @@ body {
 
 
 
-/**/ 
-@import '@radix-ui/colors/black-alpha.css';
+/*  
+** RADIX-UI CSS
+*/
+/* @import '@radix-ui/colors/black-alpha.css'; */
 /* @import '@radix-ui/colors/mauve.css'; */
-@import '@radix-ui/colors/violet.css';
+/* @import '@radix-ui/colors/violet.css'; */
 
 
-/* reset */
+/* resets ?? */
 /* 
 button,
 h3 {
@@ -244,19 +246,19 @@ h3 {
 }
 
 .AccordionTrigger {
-  font-family: inherit;
-  background-color: transparent;
-  padding: 0 20px;
-  height: 45px;
+  /* font-family: inherit; */
+  /* background-color: transparent; */
+  /* padding: 0 20px; */
+  /* height: 45px; */
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 15px;
-  line-height: 1;
+  /* font-size: 15px; */
+  /* line-height: 1; */
   color: var(--violet-11);
-  box-shadow: 0 1px 0 var(--mauve-6);
-  background-color: white;
+  /* box-shadow: 0 1px 0 var(--mauve-6); */
+  /* background-color: white; */
 }
 
 .AccordionTrigger:hover {

@@ -256,12 +256,13 @@ export const ThreeDControlPanels = (
 
       <Accordion.Root 
         type="multiple" 
-        // orientation="horizontal" 
+        orientation="horizontal" 
+        // @ts-expect-error
         collapsible={'true'}
         defaultValue="Preferences"
         // value={tabControlValue}
         // onChange={onChangeTabControlValue}
-        // aria-label='ThreeD Control Panel'
+        aria-label='ThreeD Control Panel'
       >
         {/**/}
 

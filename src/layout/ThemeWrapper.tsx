@@ -31,7 +31,7 @@ const ThemeWrapper = async ({ children }: { children: any}) => {
   
   return (
     <ThemeProvider // next-themes (not radix-ui, but radix-ui supports next-themes)
-      // attribute='class' // uses next-themes [ light | dark ] browser setting
+      attribute='class' // uses next-themes [ light | dark ] browser setting
     >
       <Theme 
         appearance='dark' // inherit | light | dark ... overrides next-themes attribute
