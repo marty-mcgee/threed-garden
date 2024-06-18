@@ -2,7 +2,10 @@
 // ==========================================================
 // RESOURCES
 
-import { useEffect, useRef } from 'react'
+import { 
+  useEffect, 
+  useRef, 
+} from 'react'
 import {
   Leva, LevaPanel,
   useControls, useCreateStore,
@@ -17,6 +20,14 @@ import { Noise } from 'noisejs'
 // import stores from '#/lib/stores/apollo'
 import { useReactiveVar } from '@apollo/client'
 import { isPreferencesSetVar, preferencesDataVar } from '#/lib/stores/apollo'
+
+// ** RADIX-UI Imports
+import { 
+  Box,
+  Button,
+  Grid,
+  // Typography,
+} from '@radix-ui/themes'
 
 // ** HELPER Components
 import Spinner from '#/layout/ui/components/spinner'
@@ -366,7 +377,7 @@ export function ThreeDLevaControls() {
   // ==========================================================
 
   return (
-    <div style={{ backgroundColor: 'transparent', minHeight: '0vh' }}>
+    <>
       <Leva
         titleBar={showTitleBar && { drag, title, filter, position }} // TITLE | PROJECT_NAME
         hideTitleBar={false} // default = false. true hides the GUI header
@@ -398,7 +409,7 @@ export function ThreeDLevaControls() {
         {/* <LevaPanel fill flat titleBar={false} store={fontWeightsStore} /> */}
       {/* </div> */}
       {/* <pre>{JSON.stringify(theme, null, '  ')}</pre> */}
-    </div>
+    </>
   )
 }
 

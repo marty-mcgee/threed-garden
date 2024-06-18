@@ -290,8 +290,8 @@ export default function Experience() {
               // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
               // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
             >
-              <CharacterModelFloating />
-              {/* <CharacterModelFarmerWomanFloating /> */}
+              {/* <CharacterModelFloating /> */}
+              <CharacterModelFarmerWomanFloating />
             </CharacterControls>
           </KeyboardControls>
         </group>

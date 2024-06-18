@@ -59,15 +59,23 @@ import {
   preferencesDataVar,
 } from '#/lib/stores/apollo'
 
+// ** RADIX-UI Imports
+import { 
+  Box,
+  Button,
+  Grid,
+  // Typography,
+} from '@radix-ui/themes'
 // ** MUI Imports
 // import { styled } from '@mui/material/styles'
 // mui: ui
 // import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
+// import Box from '@mui/material/Box'
+// import Button from '@mui/material/Button'
 // import MuiButton from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
+// import Grid from '@mui/material/Grid'
 // import MDTabPanel, { tabProps } from '#/lib/mui/MDTabPanel'
+
 
 // ** THREE JS Imports (not here, use R3F)
 import * as THREE from 'three'
@@ -386,29 +394,28 @@ const ThreeDGarden = (): React.ReactNode => {
   // ==========================================================
   // ** React returns JSX
   return (
-    <Box
+    <Grid
       id='threed_garden'
-      style={{width: '100%'}}
+      columns={{ initial: '1', md: '1' }} 
+      width="100%"
+      px="2"
+      py="1"
     >
 
       { !isPrefsLoaded && (
-        <>
-          <Spinner />
-        </>
+        <Spinner />
       )}
 
       { isPrefsLoaded && (
         <Grid
-          container
+          // container
           id='threed_grid'
-          // sx={{ border: '1px solid darkgreen' }}
-          sx={{ 
-            // display: 'flex', justifyContent: 'flex-end',
-            // mx: 0,
-            // px: 2,
+          columns={{ initial: '1', md: '1' }} 
+          gap="0" 
+          width="auto"
+          style={{
             // borderTop: '1px solid darkgreen',
-            border: '2px solid darkgreen',
-            // borderTop: '2px solid darkgreen',
+            border: '1px solid darkgreen',
           }}
         >
         
@@ -417,52 +424,60 @@ const ThreeDGarden = (): React.ReactNode => {
           
           {/* THREED CONTROLS: ALL */}
           <Grid
-            item
             id='threed_controls'
-            md={12}
-            xs={12}
-            sx={{
-              // display: 'inline-block',
-              // justifyContent: 'flex-start'
-            }}
+            columns={{ initial: '2', md: '2' }} 
+            gap="0" 
+            width="auto"
           >
 
             
             {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-            <Grid
-              item
+            <Box
+              // item
               id='leva_controls'
-              md={4}
-              xs={12}
-              sx={{
+              pl={'10px'}
+              // md={4}
+              // xs={12}
+              style={{
                 // display: 'flex', 
                 // justifyContent: 'flex-end',
-                px: 3.5, 
+                // paddingLeft: 12,
+                // px: 2.5, 
                 // py: 2,
                 // borderTop: '1px solid darkgreen',
-                minWidth: '420px',
+                minWidth: '320px',
+                maxWidth: '480px',
                 // position: 'absolute',
+                // minHeight: '48px',
+                // display: 'inline',
+                // position: 'fixed',
+                // top: 0,
+                // left: 0, 
                 zIndex: 9999,
               }}
             >
               <ThreeDLevaControls />
-            </Grid>
+            </Box>
             {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
 
 
             {/* THREED CLICK LOADERS */}
-            {/* <Grid
-              item
+            <Grid
+              // item
               id='threed_actions'
-              md={8}
-              xs={12}
-              style={{ display: 'flex', justifyContent: 'flex-end' }}
+              // md={8}
+              // xs={12}
+              style={{ 
+                display: 'flex', 
+                justifyContent: 'flex-end' 
+              }}
+              gap='1'
             >
               <Button onClick={() => loadNounData('project', [])}>load project</Button>
               <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
               <Button onClick={() => loadNounData('character', [])}>load character</Button>
               <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
-            </Grid> */}
+            </Grid>
             {/* END THREED CLICK LOADERS */}
 
             
@@ -490,17 +505,18 @@ const ThreeDGarden = (): React.ReactNode => {
           {/* THREED CANVAS VIEWER */}
           {/* HEY HEY HEY -- THREED CANVAS: VIEWER COMPONENT WRAPPER */}
           <Grid
-            item
+            // item
             id='threed_canvas_viewer'
-            md={12}
-            xs={12}
-            sx={{ 
+            // md={12}
+            // xs={12}
+            style={{ 
               // display: 'flex', justifyContent: 'flex-end',
               // mx: 0,
               // px: 2,
-              borderTop: '1px solid darkgreen',
+              // borderTop: '1px solid darkgreen',
               // border: '2px solid darkgreen',
               // borderTop: '2px solid darkgreen',
+              zIndex: -9999,
             }}
           >
             <ThreeDCanvasViewer />
@@ -511,11 +527,11 @@ const ThreeDGarden = (): React.ReactNode => {
           {/* THREED CONTROL PANELS */}
           {/* -- STORE ACCESS (apollo, valtio, leva) */}
           <Grid
-            item
+            // item
             id='threed_control_panels'
-            md={12}
-            xs={12}
-            sx={{ borderTop: '1px solid darkgreen' }}
+            // md={12}
+            // xs={12}
+            style={{ borderTop: '1px solid darkgreen' }}
           >
             <ThreeDControlPanels />
             {/* <ThreeDControlPanels tabs={tabProps} /> */}
@@ -525,11 +541,11 @@ const ThreeDGarden = (): React.ReactNode => {
 
           {/* THREED VIEWS */}
           <Grid
-            item
+            // item
             id='threed_views'
-            md={12}
-            xs={12}
-            sx={{ borderTop: '0px solid darkgreen' }}
+            // md={12}
+            // xs={12}
+            style={{ borderTop: '0px solid darkgreen' }}
           >
             {/* <CatalogView /> */}
             {/* <PropertiesView /> */}
@@ -541,11 +557,11 @@ const ThreeDGarden = (): React.ReactNode => {
 
           {/* THREED MODALS */}
           <Grid
-            item
+            // item
             id='threed_modals'
-            md={12}
-            xs={12}
-            sx={{ borderTop: '0px solid darkgreen' }}
+            // md={12}
+            // xs={12}
+            style={{ borderTop: '0px solid darkgreen' }}
           >
             <ModalAbout />
             {/* <ModalModel3d /> */}
@@ -557,11 +573,14 @@ const ThreeDGarden = (): React.ReactNode => {
 
           {/* THREED FARMBOT */}
           <Grid
-            item
+            // item
             id='threed_farmbot'
-            md={12}
-            xs={12}
-            // sx={{ borderTop: '1px solid darkgreen', padding: '16px' }}
+            // md={12}
+            // xs={12}
+            style={{ 
+              // borderTop: '1px solid darkgreen', 
+              // padding: '16px' 
+            }}
           >
             {/* <ThreeDFarmBotMain /> */}
           </Grid>
@@ -570,7 +589,7 @@ const ThreeDGarden = (): React.ReactNode => {
 
         </Grid>
       )}
-    </Box>
+    </Grid>
   )
 }
 

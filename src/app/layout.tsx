@@ -27,6 +27,9 @@ import { ApolloClientWrapper } from '#/lib/api/graphql/ApolloClientWrapper'
 // import { getClient } from '#/lib/api/graphql/__client'
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
 
+// import { SessionWrapper } from '#/layout/SessionWrapper'
+const SessionWrapper = dynamic(() => import('~/src/layout/SessionWrapper'), { ssr: false })
+
 // ** Redux Store
 // import { Provider as ReduxProvider } from 'react-redux'
 // import { store as reduxStore } from '#/lib/stores/redux'
@@ -48,24 +51,36 @@ import { ApolloClientWrapper } from '#/lib/api/graphql/ApolloClientWrapper'
 
 // ** Contexts for Theme Settings + MUI Components
 // import { SettingsProvider, SettingsConsumer } from '#/lib/contexts/settings/SettingsContext'
-import ThemeRegistry from '#/layout/ui/theme/ThemeRegistry'
+// import ThemeRegistry from '#/layout/ui/theme/ThemeRegistry'
 
 // ** Configs
 // import '#/lib/config/i18n' // NOT YET SUPPORTED IN NEXT 13
 // import { aclObjectDefault } from '#/lib/config/acl' // default has 'admin' privileges !!!
 // import themeConfig from '#/lib/config/themeConfig'
 
+// ** CSS Styles
+import '#/layout/styles/globals.css' // global tailwind css
+import '#/layout/styles/custom-styles.css' // additional global basic custom css
+
+// ** LAYOUT Components
+// ** Radix UI
+import '@radix-ui/themes/styles.css'
+import ThemeWrapper from '#/layout/ThemeWrapper'
+// const ThemeWrapper = dynamic(() => import('~/src/layout/ThemeWrapper'), { ssr: false })
+// import { Theme, ThemePanel } from '@radix-ui/themes'
+// import { ThemeProvider } from 'next-themes'
 // ** Layouts
 // import BlankLayout from '#/layout/ui/layouts/BlankLayout' // this is your default and login layout
 // import UserLayout from '#/layout/ui/layouts/UserLayout' // this is your user-authorized (new dashboard) layout
-
-// ** CSS Styles
-import '#/layout/styles/globals.css' // global tailwind css
-import '#/layout/styles/styles.css' // additional global basic css
-
-// ** LAYOUT Components (Head, Main, Foot)
-// import { SessionWrapper } from '#/layout/SessionWrapper'
-const SessionWrapper = dynamic(() => import('~/src/layout/SessionWrapper'), { ssr: false })
+// ** Material Design
+// import * as MUI_Getters from '@mui/material'
+// import {
+//   Accordion,
+//   AccordionActions,
+//   AccordionDetails,
+//   AccordionSummary,
+// } from '@mui/material'
+// ** LAYOUT Components (Head, Body, Foot)
 // import Header from '#/layout/header'
 // import Footer from '#/layout/footer'
 // // const Header = dynamic(() => import('#/layout/header').then((mod) => mod), { ssr: false })
@@ -79,7 +94,7 @@ const Footer = dynamic(() => import('#/layout/footer'), { ssr: false })
 // const inter = Inter({ subsets: ['latin'] })
 // const roboto = Roboto({ weight: '400', subsets: ['latin'] })
 
-// ** Helper Components
+// ** HELPER Components
 // import Spinner from '#/layout/ui/components/spinner'
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
@@ -87,7 +102,10 @@ import ccm from '#/lib/utils/console-colors'
 // ==============================================================
 // IMPORTS COMPLETE
 // console.debug('%c=======================================', ccm.black)
-console.debug('%c🥕 ThreeDGarden<FC,R3F>: {layout.tsx}', ccm.lightgreen)
+console.debug('%c🥕 ThreeDGarden: Layout', ccm.lightgreen)
+// console.debug('%c🥕 Radix-UI: Theme', ccm.lightgreen)
+// console.debug('%c🥕 MUI_Getters', ccm.lightgreen, MUI_Getters)
+// console.debug('%c🥕 MUI/Accordion', ccm.lightgreen, Accordion)
 // console.debug('%c=======================================', ccm.black)
 
 // ==============================================================
@@ -103,11 +121,9 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
       <body>
       {/* <body className={inter.className}> */}
       {/* <body className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}> */}
-        <SessionWrapper>
-          <div id='ThreeDApp'>
-            {children}
-          </div>
-        </SessionWrapper>
+        <div id='ThreeDApp'>
+          {children}
+        </div>
       </body>
     </html>
   )
@@ -239,6 +255,7 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
   // ** Return JSX
   return (
     <ThreeDAppProvider>
+      <SessionWrapper>
       {/* <ObjectStateReference> */}
         {/* <AuthProvider> */}
           {/* <AuthConsumer authGuard={authGuard} guestGuard={guestGuard}> */}
@@ -251,7 +268,6 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                   {/* <SettingsProvider pageSettings={{}}> */}
                     {/* <SettingsConsumer> */}
                       {/* {({ settings }) => ( */}
-                        <ThemeRegistry settings={{}}>
                         {/* <ThemeRegistry settings={{}}> */}
                           {/* <UserLayout key='ThreeDRootLayout-UserLayout'> */}
 
@@ -261,17 +277,9 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                               {/* <SessionProvider session={session}> */}
                               {/* <SessionProvider session={null}> */}
 
-                                {/* <Suspense fallback={<Spinner />}> */}
+                              <ThemeWrapper>
                                 <div 
                                   id='ThreeDAppLayout'
-                                  // className='
-                                  //   flex 
-                                  //   flex-col 
-                                  //   justify-between 
-                                  //   w-full 
-                                  //   h-full 
-                                  //   min-h-screen
-                                  // '
                                 >
                                   <Header 
                                     // key='ThreeDAppHeader'
@@ -280,23 +288,16 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                                   <main 
                                     id='ThreeDAppMain'
                                     // key='ThreeDAppMain'
-                                    // className='
-                                    //   flex-auto 
-                                    //   w-full 
-                                    //   h-full
-                                    //   px-2 
-                                    //   py-1 
-                                    //   mx-auto
-                                    // '
                                   >
                                     {children}
                                   </main>
 
-                                  {/* <Footer
+                                  <Footer
                                     // key='ThreeDAppFooter'
-                                  /> */}
+                                  />
                                 </div>
-                                {/* </Suspense> */}
+                                
+                              </ThemeWrapper>
 
                               {/* </SessionProvider> */}
 
@@ -304,7 +305,7 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                             </ApolloClientWrapper>
 
                           {/* </UserLayout> */}
-                        </ThemeRegistry>
+                        {/* </ThemeRegistry> */}
                       {/* )} */}
                     {/* </SettingsConsumer> */}
                   {/* </SettingsProvider> */}
@@ -315,6 +316,7 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
           {/* </AuthConsumer> */}
         {/* </AuthProvider> */}
       {/* </ObjectStateReference> */}
+      </SessionWrapper>
     </ThreeDAppProvider>
   )
 }

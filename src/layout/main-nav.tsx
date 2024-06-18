@@ -25,8 +25,12 @@ export function MainNav() {
           <Image src='/favicon/apple-icon.png' priority={true} alt='Home' width='48' height='48' />
         {/* </Button> */}
       </CustomLink>
-      <h3 className='pl-2' style={{paddingBottom: '2px'}}>
-        <CustomLink href='/participate' style={{color: '#DDDDDD'}}>
+      <h3 
+        // className='pl-2' style={{paddingBottom: '2px'}}
+      >
+        <CustomLink href='/participate' 
+          // style={{color: '#DDDDDD'}}
+        >
           THREED GARDEN
         </CustomLink>
       </h3>
@@ -34,11 +38,13 @@ export function MainNav() {
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuTrigger 
-              style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
+              // style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
             >
               Participate
             </NavigationMenuTrigger>
-            <NavigationMenuContent style={{backgroundColor: '#222222', color: '#DDDDDD'}}>
+            <NavigationMenuContent 
+              // style={{backgroundColor: '#222222', color: '#DDDDDD'}}
+            >
               <ul className='grid gap-0 p-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
                 <ListItem href='/home' title='Home'>
                   Go to the home page.
@@ -54,11 +60,13 @@ export function MainNav() {
           </NavigationMenuItem>
           <NavigationMenuItem>
             <NavigationMenuTrigger
-              style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
+              // style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
             >
               Server
             </NavigationMenuTrigger>
-            <NavigationMenuContent style={{backgroundColor: '#222222', color: '#DDDDDD'}}>
+            <NavigationMenuContent 
+              // style={{backgroundColor: '#222222', color: '#DDDDDD'}}
+            >
               <ul className='grid gap-0 p-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
                 <ListItem href='/server-example' title='RSC Example'>
                   Protecting React Server Component.
@@ -76,7 +84,7 @@ export function MainNav() {
             <NavigationMenuLink
               href='/client-example'
               className={navigationMenuTriggerStyle()}
-              style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
+              // style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
             >
               Client
             </NavigationMenuLink>
