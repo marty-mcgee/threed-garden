@@ -258,35 +258,20 @@ export const ThreeDControlPanels = (
         type="multiple" 
         // orientation="horizontal" 
         collapsible={'true'}
-        // defaultValue="Preferences"
+        defaultValue="Preferences"
         // value={tabControlValue}
         // onChange={onChangeTabControlValue}
         // aria-label='ThreeD Control Panel'
       >
         {/**/}
-        <Accordion.Item value={'Preferences'} key={tabControlValue + '_0'}>
-          <Accordion.Header>
-            <Accordion.Trigger>Preferences</Accordion.Trigger>
-          </Accordion.Header>
-          <Accordion.Content className="AccordionContent">
-            <PreferencesControlPanel />
-            <PreferencesInfoPanel />
-          </Accordion.Content>
-        </Accordion.Item>
-
-        <Accordion.Item value={'Projects'} key={tabControlValue + '_1'}>
-          <Accordion.Header>
-            <Accordion.Trigger>Projects</Accordion.Trigger>
-          </Accordion.Header>
-          <Accordion.Content className="AccordionContent">
-            <ProjectControlPanel />
-            <ProjectInfoPanel />
-          </Accordion.Content>
-        </Accordion.Item>
 
         <Accordion.Item value={'Tests'} key={tabControlValue + '_T'}>
           <Accordion.Header>
-            <Accordion.Trigger>Tests</Accordion.Trigger>
+            <Accordion.Trigger 
+              className="AccordionTrigger"
+            >
+              Tests
+            </Accordion.Trigger>
           </Accordion.Header>
           <Accordion.Content className="AccordionContent">
             <Box>
@@ -309,6 +294,34 @@ export const ThreeDControlPanels = (
               <input type='button' onClick={(e) => setProjectName('TEST')} value='TEST' />
               <input type='button' onClick={(e) => setProjectName('PROJECT MMMM')} value='DEFAULT' />
             </Box> */}
+          </Accordion.Content>
+        </Accordion.Item>
+        
+        <Accordion.Item value={'Preferences'} key={tabControlValue + '_0'}>
+          <Accordion.Header>
+            <Accordion.Trigger 
+              // className="AccordionTrigger"
+            >
+              Preferences
+            </Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content className="AccordionContent">
+            <PreferencesControlPanel />
+            <PreferencesInfoPanel />
+          </Accordion.Content>
+        </Accordion.Item>
+
+        <Accordion.Item value={'Projects'} key={tabControlValue + '_1'}>
+          <Accordion.Header>
+            <Accordion.Trigger 
+              // className="AccordionTrigger"
+            >
+              Projects
+            </Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content className="AccordionContent">
+            <ProjectControlPanel />
+            <ProjectInfoPanel />
           </Accordion.Content>
         </Accordion.Item>
 
@@ -382,9 +395,9 @@ export const ThreeDControlPanels = (
           </Accordion.Content>
         </Accordion.Item>
 
-        <Accordion.Item value={'Planting Plan'} key={tabControlValue + '_9'}>
+        <Accordion.Item value={'Planting Plans'} key={tabControlValue + '_9'}>
           <Accordion.Header>
-            <Accordion.Trigger>Planting Plan</Accordion.Trigger>
+            <Accordion.Trigger>Planting Plans</Accordion.Trigger>
           </Accordion.Header>
           <Accordion.Content className="AccordionContent">
             <PlantingPlanControlPanel />

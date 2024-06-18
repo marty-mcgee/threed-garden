@@ -30,13 +30,15 @@ const ThemeWrapper = async ({ children }: { children: any}) => {
   // }
   
   return (
-    <ThemeProvider attribute='class'>
+    <ThemeProvider 
+      // attribute='class' // uses next-themes [ light | dark ] browser setting
+    >
       <Theme 
-        // appearance='dark' // inherit | light | dark
-        accentColor='grass' // crimson
-        grayColor='sand' 
-        radius='small' 
-        scaling='95%'
+        appearance='dark' // inherit | light | dark ... overrides next-themes attribute
+        accentColor='grass' // gray | grass | green | crimson | ... many choices
+        grayColor='sand' // sand | olive | sage | slate | ... many choices
+        radius='none' // none | small | medium | large | full
+        scaling='90%' // 90 | 95 | 100 | 105 | 110
       >
         <div
           id='ThreeDAppThemeBody'
@@ -45,7 +47,7 @@ const ThemeWrapper = async ({ children }: { children: any}) => {
         >
           {children}
         </div>                  
-        <ThemePanel />
+        {/* <ThemePanel /> */}
       </Theme>
     </ThemeProvider>
   )
