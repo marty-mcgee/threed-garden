@@ -30,7 +30,7 @@ import {
   // GizmoHelper, GizmoViewcube, GizmoViewport,
   // ContactShadows, BakeShadows,
   // softShadows, // softShadows()
-  Loader, useProgress,
+  Loader, // useProgress,
   Preload,
   Html, Center,
   // useGLTF, useFBX,
@@ -92,10 +92,10 @@ const debug_deep = false // false | true // ts: boolean
 const actionModes = ['translate', 'rotate', 'scale']
 
 // example working simple <Loader />
-function ThreeDLoaderSimple() {
-  const { active, progress, errors, item, loaded, total } = useProgress()
-  return <Html center>THREED GUI LOADING... {Math.round(progress)} %</Html>
-}
+// function ThreeDLoaderSimple() {
+//   const { active, progress, errors, item, loaded, total } = useProgress()
+//   return <Html center>THREED GUI LOADING... {Math.round(progress)} %</Html>
+// }
 
 // const controls = new OrbitControls(camera, renderer.domElement)
 // camera.lookAt(0.5, 0.5, 0.5)
