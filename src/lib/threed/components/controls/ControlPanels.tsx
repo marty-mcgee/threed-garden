@@ -259,7 +259,7 @@ export const ThreeDControlPanels = (
         orientation="horizontal" 
         // @ts-expect-error
         collapsible={'true'}
-        defaultValue="Preferences"
+        // defaultValue="Preferences"
         // value={tabControlValue}
         // onChange={onChangeTabControlValue}
         aria-label='ThreeD Control Panel'
@@ -275,8 +275,8 @@ export const ThreeDControlPanels = (
             </Accordion.Trigger>
           </Accordion.Header>
           <Accordion.Content className="AccordionContent">
-            <Box>
-              <DebugView />
+            <DebugView />
+            {/* <Box> */}
               {/* <CharacterControlPanel /> */}
               {/* <CharacterInfoPanel /> */}
               {/* <hr /> */}
@@ -289,7 +289,7 @@ export const ThreeDControlPanels = (
               {/* <BearControlPanel /> */}
               {/* <BearInfoPanel /> */}
               {/* <hr /> */}
-            </Box>
+            {/* </Box> */}
             {/* <Box style={{ paddingLeft: 2}}>
               <ThreeDLevaComponent projectName={projectName} setProjectName={setProjectName} />
               <input type='button' onClick={(e) => setProjectName('TEST')} value='TEST' />
