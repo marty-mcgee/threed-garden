@@ -66,10 +66,10 @@ export interface Config {
 }
 
 export const INITIAL: Config = {
-  sizePreset: "Genesis",
-  bedType: "Standard",
+  sizePreset: "Genesis XL",
+  bedType: "Mobile",
   otherPreset: "Initial",
-  label: "FarmBot Genesis v1.7",
+  label: "ThreeD Garden FarmBot Genesis XL v1.6",
   botSizeX: 2720,
   botSizeY: 1230,
   botSizeZ: 500,
@@ -196,8 +196,8 @@ export const PRESETS: Record<string, Config> = {
   "Genesis XL": {
     ...INITIAL,
     sizePreset: "Genesis XL",
-    bedType: "Standard",
-    label: "FarmBot Genesis XL v1.7",
+    bedType: "Mobile",
+    label: "ThreeD FarmBot Genesis XL v1.6",
     botSizeX: 5720,
     botSizeY: 2730,
     botSizeZ: 500,

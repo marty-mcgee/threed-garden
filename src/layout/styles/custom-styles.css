@@ -1,0 +1,311 @@
+#ThreeDApp {
+  /* padding: 4px 0; */
+  /* margin: 0; */
+  /* font-family: sans-serif; */
+  /* height: 100vh; */
+  /* width: 100vw; */
+}
+
+.MuiCardHeader-title {
+  line-height: 0.7 !important;
+}
+
+/* JOYSTICK */ 
+/* 
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  position: fixed;
+  overflow: hidden;
+} */
+
+.controlKeys {
+  /* position: absolute; */
+  /* width: 18rem; */
+  /* left: 50%; */
+  /* margin-left: -9rem; */
+  /* bottom: 10%; */
+  /* user-select: none;
+  -moz-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  -ms-user-select: none; */
+}
+
+/* .title {
+  font-size: 0.8rem;
+  color: darkgray;
+  position: absolute;
+  width: 100%;
+  bottom: 2%;
+  text-align: center;
+}
+
+.title > a {
+  color: rgb(79, 189, 249);
+} */
+
+/* @media (max-width: 768px) {
+  .controlKeys {
+    display: none;
+  }
+  .title {
+    display: none;
+  }
+} */
+
+/* @media (max-height: 450px) {
+  .controlKeys {
+    display: none;
+  }
+  .title {
+    display: none;
+  }
+} */
+
+
+
+
+/* Set min-height to avoid page reflow while session loading */
+/* .signedInStatus {
+  display: block;
+  min-height: 4rem;
+  width: 100%;
+}
+
+.loading,
+.loaded {
+  position: relative;
+  top: 0;
+  opacity: 1;
+  overflow: hidden;
+  border-radius: 0 0 0.6rem 0.6rem;
+  padding: 0.6rem 1rem;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in;
+}
+
+.loading {
+  top: -2rem;
+  opacity: 0;
+}
+
+.signedInText,
+.notSignedInText {
+  position: absolute;
+  padding-top: 0.8rem;
+  left: 1rem;
+  right: 6.5rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: inherit;
+  z-index: 1;
+  line-height: 1.3rem;
+}
+
+.signedInText {
+  padding-top: 0rem;
+  left: 4.6rem;
+}
+
+.avatar {
+  border-radius: 2rem;
+  float: left;
+  height: 2.8rem;
+  width: 2.8rem;
+  background-color: white;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.button,
+.buttonPrimary {
+  float: right;
+  margin-right: -0.4rem;
+  font-weight: 500;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1.4rem;
+  padding: 0.7rem 0.8rem;
+  position: relative;
+  z-index: 10;
+  background-color: transparent;
+  color: #555;
+}
+
+.buttonPrimary {
+  background-color: #346df1;
+  border-color: #346df1;
+  color: #fff;
+  text-decoration: none;
+  padding: 0.7rem 1.4rem;
+}
+
+.buttonPrimary:hover {
+  box-shadow: inset 0 0 5rem rgba(0, 0, 0, 0.2);
+}
+
+.navItems {
+  margin-bottom: 2rem;
+  padding: 0;
+  list-style: none;
+}
+
+.navItem {
+  display: inline-block;
+  margin-right: 1rem;
+  background-color: black;
+} */
+
+
+
+
+/* .footer {
+  margin-top: 2rem;
+}
+
+.navItems {
+  margin-bottom: 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.navItem {
+  display: inline-block;
+  margin-right: 1rem;
+} */
+
+
+
+
+
+
+
+/*  
+** RADIX-UI CSS
+*/
+/* @import '@radix-ui/colors/black-alpha.css'; */
+/* @import '@radix-ui/colors/mauve.css'; */
+/* @import '@radix-ui/colors/violet.css'; */
+
+
+/* resets ?? */
+/* 
+button,
+h3 {
+  all: unset;
+}
+*/
+
+.AccordionRoot {
+  border-radius: 6px;
+  width: 300px;
+  background-color: var(--mauve-6);
+  box-shadow: 0 2px 10px var(--black-a4);
+}
+
+.AccordionItem {
+  overflow: hidden;
+  margin-top: 1px;
+}
+
+.AccordionItem:first-child {
+  margin-top: 0;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.AccordionItem:last-child {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.AccordionItem:focus-within {
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 0 2px var(--mauve-12);
+}
+
+.AccordionHeader {
+  display: flex;
+}
+
+.AccordionTrigger {
+  /* font-family: inherit; */
+  /* background-color: transparent; */
+  /* padding: 0 20px; */
+  /* height: 45px; */
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* font-size: 15px; */
+  /* line-height: 1; */
+  color: var(--violet-11);
+  /* box-shadow: 0 1px 0 var(--mauve-6); */
+  /* background-color: white; */
+}
+
+.AccordionTrigger:hover {
+  background-color: var(--mauve-2);
+}
+
+.AccordionContent {
+  overflow: hidden;
+  font-size: 15px;
+  color: var(--mauve-11);
+  background-color: var(--mauve-2);
+}
+.AccordionContent[data-state='open'] {
+  animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+.AccordionContent[data-state='closed'] {
+  animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+.AccordionContentText {
+  padding: 15px 20px;
+}
+
+.AccordionChevron {
+  color: var(--violet-10);
+  transition: transform 300ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+.AccordionTrigger[data-state='open'] > .AccordionChevron {
+  transform: rotate(180deg);
+}
+
+@keyframes slideDown {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+

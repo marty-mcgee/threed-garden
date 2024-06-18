@@ -3,21 +3,7 @@
 // ==========================================================
 // RESOURCES
 
-import { useKeyboardControls } from '@react-three/drei'
-import { useFrame } from '@react-three/fiber'
-
-import {
-  quat,
-  RigidBody,
-  CapsuleCollider,
-  useRapier,
-  RapierRigidBody,
-  type RigidBodyProps,
-  CylinderCollider,
-} from '@react-three/rapier'
-
-
-import React from 'react'
+// import React from 'react'
 import { 
   useEffect, 
   useRef, 
@@ -31,6 +17,19 @@ import {
 import * as THREE from 'three'
 
 import { useControls } from 'leva'
+
+import { useKeyboardControls } from '@react-three/drei'
+import { useFrame } from '@react-three/fiber'
+
+import {
+  quat,
+  RigidBody,
+  CapsuleCollider,
+  useRapier,
+  RapierRigidBody,
+  type RigidBodyProps,
+  CylinderCollider,
+} from '@react-three/rapier'
 
 import type {
   Collider,
@@ -48,6 +47,7 @@ import { useJoystickControls } from '~/src/lib/ecctrl/src/stores/useJoystickCont
 // export { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 // export { useJoystickControls } from '#/lib/ecctrl/src/stores/useJoystickControls'
 
+// ** INTERFACE
 export interface EcctrlProps extends RigidBodyProps {
   children?: ReactNode
   debug?: boolean
@@ -135,11 +135,6 @@ export interface userDataType {
 }
 
 
-
-
-
-
-
 // Retrieve current moving direction of the character
 const getMovingDirection = (forward: boolean,
   backward: boolean,
@@ -159,10 +154,7 @@ const getMovingDirection = (forward: boolean,
 }
 
 
-
-
-
-
+// ** ECCTRL: CharacterControls
 const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   children,
   debug = false,
@@ -235,9 +227,6 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   // Other rigibody props from parent
   ...props
 }: EcctrlProps, ref) => {
-
-
-
 
   const characterRef = ref as RefObject<RapierRigidBody> || useRef<RapierRigidBody>()
   const characterModelRef = useRef<THREE.Group>()

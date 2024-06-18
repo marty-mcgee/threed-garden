@@ -20,7 +20,7 @@ import Image from 'next/image'
 import { modalShareStore } from '#/lib/stores/apollo'
 
 // ** CSS Styles Imports
-import stylesGarden from '#/lib/threed/styles/garden.module.css'
+import stylesThreeD from '#/lib/threed/styles/threed.module.css'
 
 // ==========================================================
 // STYLES
@@ -72,8 +72,8 @@ const ModalShare: FunctionComponent = (): JSX.Element => {
         aria-describedby='modal-share-description'
         sx={stylesModal}
       >
-        <Box className={stylesGarden.modalContent}>
-          <Box className={stylesGarden.modalHeader}>
+        <Box className={stylesThreeD.modalContent}>
+          <Box className={stylesThreeD.modalHeader}>
             <Image
               src='/favicon/favicon.png'
               width={50}
@@ -84,7 +84,7 @@ const ModalShare: FunctionComponent = (): JSX.Element => {
             <h2>ThreeD Garden</h2>
           </Box>
 
-          <Box className={stylesGarden.smallModalBody}>
+          <Box className={stylesThreeD.smallModalBody}>
             <h3>Share Plan</h3>
             <Button
               id='getShareLinkBtn'
@@ -186,7 +186,7 @@ const ModalShare: FunctionComponent = (): JSX.Element => {
             </Box>
           </Box>
 
-          <Box className={stylesGarden.modalFooter}>
+          <Box className={stylesThreeD.modalFooter}>
             <Typography>
               🌱 a part of the <a href='https://threed.ai'>threed.ai</a> code family
             </Typography>
