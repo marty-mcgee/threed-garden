@@ -33,7 +33,7 @@ import {
 
 import type {
   Collider,
-  RayColliderToi,
+  RayCollider,
   Vector,
 } from '@dimforge/rapier3d-compat'
 
@@ -674,7 +674,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   const characterMassForce = useMemo(() => new THREE.Vector3(), [])
   const rayOrigin = useMemo(() => new THREE.Vector3(), [])
   const rayCast = new rapier.Ray(rayOrigin, rayDir)
-  let rayHit: RayColliderToi = null
+  let rayHit: RayCollider = null
 
   /**Test shape ray */
   // const shape = new rapier.Capsule(0.2,0.1)
@@ -690,7 +690,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   const slopeRayOriginRef = useRef<THREE.Mesh>()
   const slopeRayorigin = useMemo(() => new THREE.Vector3(), [])
   const slopeRayCast = new rapier.Ray(slopeRayorigin, slopeRayDir)
-  let slopeRayHit: RayColliderToi = null
+  let slopeRayHit: RayCollider = null
 
   /**
    * Point to move setup
