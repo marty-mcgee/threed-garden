@@ -292,9 +292,9 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                                     {children}
                                   </main>
 
-                                  <Footer
+                                  {/* <Footer
                                     // key='ThreeDAppFooter'
-                                  />
+                                  /> */}
                                 </div>
                                 
                               </ThemeWrapper>
