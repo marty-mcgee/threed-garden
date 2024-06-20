@@ -17,18 +17,19 @@ if (!process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL) {
 // ==== use new next.config.js from REACT-THREE-NEXT example app
 // module.exports = nextConfig
 
+// ** NEXT-PWA
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: false, // process.env.ANALYZE === 'true',
 })
 
-/**
+/** NEXT-PWA
  * A fork of 'next-pwa' that has app directory support
  * @see https://github.com/shadowwalker/next-pwa/issues/424#issuecomment-1332258575
  */
-const withPWA = require('@ducanh2912/next-pwa').default({
-  dest: 'public',
-  disable: true, // process.env.NODE_ENV === 'development',
-})
+// const withPWA = require('@ducanh2912/next-pwa').default({
+//   dest: 'public',
+//   disable: true, // process.env.NODE_ENV === 'development',
+// })
 
 
 // MODULE
@@ -278,24 +279,27 @@ const nextConfig = {
 
 } // end nextConfig
 
-
-const KEYS_TO_OMIT = ['webpackDevMiddleware', 'configOrigin', 'target', 'analyticsId', 'webpack5', 'amp', 'assetPrefix']
-
-
-module.exports = (_phase, { defaultConfig }) => {
-  const plugins = [[withPWA], [withBundleAnalyzer, {}]]
-
-  const wConfig = plugins.reduce((acc, [plugin, config]) => plugin({ ...acc, ...config }), {
-    ...defaultConfig,
-    ...nextConfig,
-  })
-
-  const finalConfig = {}
-  Object.keys(wConfig).forEach((key) => {
-    if (!KEYS_TO_OMIT.includes(key)) {
-      finalConfig[key] = wConfig[key]
-    }
-  })
-
-  return finalConfig
+module.exports = () => {
+  return nextConfig
 }
+
+// ** NEXT-PWA
+// const KEYS_TO_OMIT = ['webpackDevMiddleware', 'configOrigin', 'target', 'analyticsId', 'webpack5', 'amp', 'assetPrefix']
+// ** NEXT-PWA
+// module.exports = (_phase, { defaultConfig }) => {
+//   const plugins = [[withPWA], [withBundleAnalyzer, {}]]
+
+//   const wConfig = plugins.reduce((acc, [plugin, config]) => plugin({ ...acc, ...config }), {
+//     ...defaultConfig,
+//     ...nextConfig,
+//   })
+
+//   const finalConfig = {}
+//   Object.keys(wConfig).forEach((key) => {
+//     if (!KEYS_TO_OMIT.includes(key)) {
+//       finalConfig[key] = wConfig[key]
+//     }
+//   })
+
+//   return finalConfig
+// }
