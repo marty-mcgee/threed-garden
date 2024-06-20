@@ -211,7 +211,7 @@ const ExperienceViewer = forwardRef(({ enableOrbit, children, ...props }, ref) =
 
           {/* THREED ENVIRONMENT */}
           <ThreeDEnvironment />
-          <ThreeDExperience />
+          {/* <ThreeDExperience /> */}
 
           <axesHelper args={[1024]} />
           <gridHelper args={[1024, 16]} />

@@ -11,10 +11,15 @@ import {
   // ...stores
 } from '#/lib/stores/apollo'
 
+// ** RADIX-UI Imports
+import * as Accordion from '@radix-ui/react-accordion'
+import {
+  Box,
+  Button,
+  Text,
+} from '@radix-ui/themes'
 // ** MUI Imports
-import { styled } from '@mui/material/styles'
 import Grid from '@mui/material/Grid'
-import MuiButton from '@mui/material/Button'
 
 // ** THREED r3f Canvas Imports
 // import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
@@ -36,14 +41,6 @@ import ccm from '#/lib/utils/console-colors'
 const debug: boolean = false
 const DEBUG: boolean = true
 const debug_deep: boolean = false
-
-// ==========================================================
-
-const Button = styled(MuiButton)(({ theme }) => ({
-  marginRight: `0.25rem !important`,
-  padding: `0.5rem 0.5rem !important`,
-  minWidth: `2.0rem !important`,
-}))
 
 // ==========================================================
 
@@ -106,51 +103,78 @@ export const ThreeDCanvasViewer = () => {
 
   // console.debug(`%c=======================================================`, ccm.orange)
   return (
-    <Grid
-      container
-      id='_r3fCameras'
+    <Accordion.Root 
+      type='single' 
+      orientation='horizontal' 
+      // @ts-expect-error
+      collapsible={'true'} // string 'true' | 'false' -- bug: needs boolean, not string
+      defaultValue='Canvas 1'
+      // value={tabControlValue}
+      // onChange={onChangeTabControlValue}
+      aria-label='ThreeD Canvas[es] Viewer'
+      // style={{ display: 'flex', flexDirection: 'row' }}
     >
-      <Grid
-        item
-        id='_r3f_camera_1'
-        md={12}
-        xs={12}
-        sx={{ borderTop: '1px solid darkgreen' }}
-      >
+      {/**/}
 
-        {/* THREED CANVAS */}
-        <ThreeDCanvas
-          _id={'_r3fCanvas'}
-          threeds={threeds}
-        />
-        {/* THREED CANVAS */}
+      <Accordion.Item value={'Canvas 1'}>
+        <Accordion.Header>
+          <Accordion.Trigger 
+            className='AccordionTrigger'
+          >
+            Canvas 1
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content className='AccordionContent'>
+          <Grid
+            container
+            id='_r3fCameras'
+          >
+            <Grid
+              item
+              id='_r3f_camera_1'
+              md={12}
+              xs={12}
+              sx={{ borderTop: '1px solid darkgreen' }}
+            >
 
-      </Grid>
-      {/* <Grid item id='_r3f_camera_2'
-        md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
-      >
-        <ThreeDCanvas
-          _id={'_r3fCanvas2'}
-          threeds={threeds}
-        />
-      </Grid> */}
-      {/* <Grid item id='_r3f_camera_3'
-        md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
-      >
-        <ThreeDCanvas
-          _id={'_r3fCanvas3'}
-          threeds={threeds}
-        />
-      </Grid> */}
-      {/* <Grid item id='_r3f_camera_4'
-        md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
-      >
-        <ThreeDCanvas
-          _id={'_r3fCanvas4'}
-          threeds={threeds}
-        />
-      </Grid> */}
-    </Grid>
+              {/* THREED CANVAS */}
+              <ThreeDCanvas
+                _id={'_r3fCanvas'}
+                threeds={threeds}
+              />
+              {/* THREED CANVAS */}
+
+            </Grid>
+            {/* <Grid item id='_r3f_camera_2'
+              md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
+            >
+              <ThreeDCanvas
+                _id={'_r3fCanvas2'}
+                threeds={threeds}
+              />
+            </Grid> */}
+            {/* <Grid item id='_r3f_camera_3'
+              md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
+            >
+              <ThreeDCanvas
+                _id={'_r3fCanvas3'}
+                threeds={threeds}
+              />
+            </Grid> */}
+            {/* <Grid item id='_r3f_camera_4'
+              md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
+            >
+              <ThreeDCanvas
+                _id={'_r3fCanvas4'}
+                threeds={threeds}
+              />
+            </Grid> */}
+          </Grid>
+        </Accordion.Content>
+      </Accordion.Item>
+
+      {/**/}
+    </Accordion.Root>
   )
 }
 
