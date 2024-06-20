@@ -1084,7 +1084,7 @@
   dependencies:
     commander "^2.15.1"
 
-"@dimforge/rapier3d-compat@0.13.1":
+"@dimforge/rapier3d-compat@0.13.1", "@dimforge/rapier3d-compat@^0.13.1":
   version "0.13.1"
   resolved "https://registry.yarnpkg.com/@dimforge/rapier3d-compat/-/rapier3d-compat-0.13.1.tgz#d9da32941de5fcfae55ffb6ac26c38539f57ddf4"
   integrity sha512-SsQ/MTH4Vvs8f62g31iVV1VOmzwNwsJl91rVzafi5B2mCrI2OsQ3VyjJOb4/tvS5VNc6OLjIDgfClcOAkW+O2A==
@@ -2330,7 +2330,7 @@
   resolved "https://registry.yarnpkg.com/@react-spring/types/-/types-9.6.1.tgz#913d3a68c5cbc1124fdb18eff919432f7b6abdde"
   integrity sha512-POu8Mk0hIU3lRXB3bGIGe4VHIwwDsQyoD1F394OK7STTiX9w4dG3cTLljjYswkQN+hDSHRrj4O36kuVa7KPU8Q==
 
-"@react-three/drei@^9.103.0", "@react-three/drei@^9.106.0":
+"@react-three/drei@^9.103.0", "@react-three/drei@^9.107.0":
   version "9.107.0"
   resolved "https://registry.yarnpkg.com/@react-three/drei/-/drei-9.107.0.tgz#7dec097d85ede8a2aeb9d5b2c02d66e95f13610a"
   integrity sha512-8AxMfk3NmE/tPwN/wAcTyYIZgi4YCsm+ID3vEVb28CCJ4bo4b2UZPWfrMskO7zM1T2ePZaQwmN4Q+cxSpYWn0A==
@@ -2387,7 +2387,7 @@
     postprocessing "^6.32.1"
     three-stdlib "^2.23.4"
 
-"@react-three/rapier@^1.3.1":
+"@react-three/rapier@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@react-three/rapier/-/rapier-1.4.0.tgz#053329f4a6fc09404405092f9de5effcf1a46d78"
   integrity sha512-mQryvEx9mW6u0bHo3KDc7G6gURjKSOA1I+W9EVNDJmI8hC+HoS9WyDzc8QnXyMYmvUAMEqOQImECNXAtoLacHw==
