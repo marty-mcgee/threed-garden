@@ -17,26 +17,25 @@ if (!process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL) {
 // ==== use new next.config.js from REACT-THREE-NEXT example app
 // module.exports = nextConfig
 
-// ** NEXT-PWA
+// ** WITH BUNDLE ANALYZER
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: false, // process.env.ANALYZE === 'true',
 })
 
-/** NEXT-PWA
- * A fork of 'next-pwa' that has app directory support
- * @see https://github.com/shadowwalker/next-pwa/issues/424#issuecomment-1332258575
- */
-// const withPWA = require('@ducanh2912/next-pwa').default({
-//   dest: 'public',
-//   disable: true, // process.env.NODE_ENV === 'development',
-// })
+// ** WITH NEXT-PWA
+/* A fork of 'next-pwa' that has app directory support
+** @see https://github.com/shadowwalker/next-pwa/issues/424#issuecomment-1332258575
+*/
+const withPWA = require('@ducanh2912/next-pwa').default({
+  dest: 'public',
+  disable: true, // process.env.NODE_ENV === 'development',
+})
 
-
-// MODULE
+// ** MODULE
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 
-  // use the following snippet if using styled components
+  // ** use the following snippet if using styled components
   compiler: {
     styledComponents: true,
   },
@@ -60,25 +59,27 @@ const nextConfig = {
   // https://github.com/vercel/next.js/issues/36221
   // swcMinify: true, // true throws error at ErrorBoundary
 
-  // transpilePackages: [
-  //   // ORDER DOES NOT MATTER
+  transpilePackages: [
+    // ** (ORDER DOES NOT MATTER)
 
-  //   // 'three',
+    '@radix-ui/themes',
 
-  //   'axios',
-  //   // 'axios-mock-adapter',
+    // 'three',
 
-  //   'yup',
-  //   '@hookform/resolvers',
+    // 'axios',
+    // 'axios-mock-adapter',
 
-  //   // '@fullcalendar/common',
-  //   // '@fullcalendar/daygrid',
-  //   // '@fullcalendar/interaction',
-  //   // '@fullcalendar/react',
-  //   // '@fullcalendar/timegrid',
+    // 'yup',
+    // '@hookform/resolvers',
 
-  //   // 'react-github-btn',
-  // ],
+    // '@fullcalendar/common',
+    // '@fullcalendar/daygrid',
+    // '@fullcalendar/interaction',
+    // '@fullcalendar/react',
+    // '@fullcalendar/timegrid',
+
+    // 'react-github-btn',
+  ],
 
   async headers() {
     return [
@@ -150,7 +151,7 @@ const nextConfig = {
   //       destination: '/home',
   //       destination: '/participate',
   //       // destination: '/dashboards/sales',
-  //       permanent: true,
+  //       permanent: false,
   //     },
   //   ]
   // },
@@ -159,10 +160,10 @@ const nextConfig = {
   webpack(config, { isServer }) {
     
     // sharp support
-    // if (!isServer) {
-    //   // We're in the browser build, so we can safely exclude the sharp module
-    //   config.externals.push('sharp')
-    // }
+    if (!isServer) {
+      // We're in the browser build, so we can safely exclude the sharp module
+      config.externals.push('sharp')
+    }
 
     // shader support
     config.module.rules.push({
@@ -279,27 +280,26 @@ const nextConfig = {
 
 } // end nextConfig
 
-module.exports = () => {
-  return nextConfig
+// ** WITHOUT NEXT-PWA
+// module.exports = nextConfig
+
+// ** WITH NEXT-PWA
+const KEYS_TO_OMIT = ['webpackDevMiddleware', 'configOrigin', 'target', 'analyticsId', 'webpack5', 'amp', 'assetPrefix']
+// ** EXPORT MODULE
+module.exports = (_phase, { defaultConfig }) => {
+  const plugins = [[withPWA], [withBundleAnalyzer, {}]]
+
+  const wConfig = plugins.reduce((acc, [plugin, config]) => plugin({ ...acc, ...config }), {
+    ...defaultConfig,
+    ...nextConfig,
+  })
+
+  const finalConfig = {}
+  Object.keys(wConfig).forEach((key) => {
+    if (!KEYS_TO_OMIT.includes(key)) {
+      finalConfig[key] = wConfig[key]
+    }
+  })
+
+  return finalConfig
 }
-
-// ** NEXT-PWA
-// const KEYS_TO_OMIT = ['webpackDevMiddleware', 'configOrigin', 'target', 'analyticsId', 'webpack5', 'amp', 'assetPrefix']
-// ** NEXT-PWA
-// module.exports = (_phase, { defaultConfig }) => {
-//   const plugins = [[withPWA], [withBundleAnalyzer, {}]]
-
-//   const wConfig = plugins.reduce((acc, [plugin, config]) => plugin({ ...acc, ...config }), {
-//     ...defaultConfig,
-//     ...nextConfig,
-//   })
-
-//   const finalConfig = {}
-//   Object.keys(wConfig).forEach((key) => {
-//     if (!KEYS_TO_OMIT.includes(key)) {
-//       finalConfig[key] = wConfig[key]
-//     }
-//   })
-
-//   return finalConfig
-// }
