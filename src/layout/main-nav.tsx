@@ -19,14 +19,16 @@ import React from 'react'
 
 export function MainNav() {
   return (
-    <div className="flex gap-1 items-center">
+    <div 
+      className="flex items-center gap-2"
+    >
       <CustomLink href='/'>
         {/* <Button variant="ghost" className="p-0">   */}
-          <Image src='/favicon/apple-icon.png' priority={true} alt='Home' width='48' height='48' />
+          <Image src='/favicon/apple-icon.png' priority={true} alt='Home' width='40' height='40' />
         {/* </Button> */}
       </CustomLink>
       <h3 
-        // className='pl-2' style={{paddingBottom: '2px'}}
+        className='pb-2'
       >
         <CustomLink href='/participate' 
           // style={{color: '#DDDDDD'}}
@@ -83,7 +85,7 @@ export function MainNav() {
           <NavigationMenuItem>
             <NavigationMenuLink
               href='/client-example'
-              className={navigationMenuTriggerStyle()}
+              // className={navigationMenuTriggerStyle()}
               // style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
             >
               Client
