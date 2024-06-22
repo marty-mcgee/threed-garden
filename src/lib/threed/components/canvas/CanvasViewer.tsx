@@ -2,6 +2,7 @@
 // ==========================================================
 // RESOURCES
 
+// ** APOLLO CLIENT STORE+STATE Imports
 import { useApolloClient, useReactiveVar } from '@apollo/client'
 import {
   isPreferencesSetVar,
@@ -10,10 +11,17 @@ import {
   projectStore,
   // ...stores
 } from '#/lib/stores/apollo'
+// temporarily while coding
+import { useState } from 'react'
 
 // ** RADIX-UI Imports
+import * as Collapsible from '@radix-ui/react-collapsible'
 import * as Accordion from '@radix-ui/react-accordion'
-import { ChevronDownIcon } from '@radix-ui/react-icons'
+import {
+  ChevronDownIcon,
+  RowSpacingIcon, 
+  Cross2Icon,
+} from '@radix-ui/react-icons'
 import {
   Box,
   Button,
@@ -134,7 +142,6 @@ export const ThreeDCanvasViewer = () => {
             // className='AccordionContent'
           >
             <Grid
-              key='_r3fCanvas1'
               style={{ borderTop: '1px solid darkgreen' }}
             >
               <ThreeDCanvas
@@ -164,7 +171,6 @@ export const ThreeDCanvasViewer = () => {
             // className='AccordionContent'
           >
             <Grid
-              key='_r3fCanvas2'
               style={{ borderTop: '1px solid darkgreen' }}
             >
               <ThreeDCanvas
@@ -182,3 +188,40 @@ export const ThreeDCanvasViewer = () => {
 }
 
 export default ThreeDCanvasViewer
+
+
+// import React from 'react'
+// import * as Collapsible from '@radix-ui/react-collapsible'
+// import { RowSpacingIcon, Cross2Icon } from '@radix-ui/react-icons'
+// import './styles.css'
+
+const CollapsibleDemo = () => {
+  const [open, setOpen] = useState(false)
+  return (
+    <Collapsible.Root className="CollapsibleRoot" open={open} onOpenChange={setOpen}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span className="Text" style={{ color: 'white' }}>
+          @peduarte starred 3 repositories
+        </span>
+        <Collapsible.Trigger asChild>
+          <button className="IconButton">{open ? <Cross2Icon /> : <RowSpacingIcon />}</button>
+        </Collapsible.Trigger>
+      </div>
+
+      <div className="Repository">
+        <span className="Text">@radix-ui/primitives</span>
+      </div>
+
+      <Collapsible.Content>
+        <div className="Repository">
+          <span className="Text">@radix-ui/colors</span>
+        </div>
+        <div className="Repository">
+          <span className="Text">@stitches/react</span>
+        </div>
+      </Collapsible.Content>
+    </Collapsible.Root>
+  )
+}
+
+export { CollapsibleDemo }
