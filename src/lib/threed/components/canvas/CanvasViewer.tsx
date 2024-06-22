@@ -13,18 +13,16 @@ import {
 
 // ** RADIX-UI Imports
 import * as Accordion from '@radix-ui/react-accordion'
+import { ChevronDownIcon } from '@radix-ui/react-icons'
 import {
   Box,
   Button,
+  Grid,
   Text,
 } from '@radix-ui/themes'
-// ** MUI Imports
-import Grid from '@mui/material/Grid'
 
 // ** THREED r3f Canvas Imports
-// import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
 // import { Canvas } from '@react-three/fiber'
-// import { ThreeDCanvasViewer } from '#/lib/threed/components/canvas/Canvas'
 import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
 // import { ThreeDEnvironment } from '#/lib/threed/components/canvas/Canvas'
 
@@ -39,8 +37,7 @@ import ccm from '#/lib/utils/console-colors'
 
 // DEBUG PREFERENCES FOR THIS MODULE
 const debug: boolean = false
-const DEBUG: boolean = true
-const debug_deep: boolean = false
+const DEBUG: boolean = false
 
 // ==========================================================
 
@@ -58,7 +55,7 @@ export const ThreeDCanvasViewer = () => {
   // ** USE CLIENT
   // const client = useApolloClient()
 
-  // ** DECIDE WHETHER TO USE CANVAS, DEPENDING ON AVAILABLE threeds[nodes]
+  // ** threeds[nodes] to provide a canvas
   let threeds: [] = [] // threeds are nodes[] to load to canvas
 
   // return <Spinner />
@@ -69,29 +66,29 @@ export const ThreeDCanvasViewer = () => {
 
   let project = projectStore.store.get('one')
   if (prefs.doAutoLoadData) {
-    // if (DEBUG || debug_deep) console.debug('%c🥕 TRYING... ThreeDCanvasViewer {project} ', ccm.orange)
+    // if (debug || DEBUG) console.debug('%c🥕 TRYING... ThreeDCanvasViewer {project} ', ccm.orange)
     try {
       // const project = projectStore.store.get('one')
       // const project = projectStore.store.useStore('one') // causes an error, but may still be the way to go
       // project = async () => await projectStore.store.useStore('one') // same error
-      if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project} ', ccm.orange, project)
-      // if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project} ', ccm.orange, project())
+      if (debug || DEBUG) console.debug('%c🥕 ThreeDCanvasViewer {project} ', ccm.orange, project)
+      // if (debug || DEBUG) console.debug('%c🥕 ThreeDCanvasViewer {project} ', ccm.orange, project())
       if (project) {
         let project_title = project?.data?.title ? project.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
-        // if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.project_title ', ccm.orange, project_title)
+        // if (debug || DEBUG) console.debug('%c🥕 ThreeDCanvasViewer {project}.project_title ', ccm.orange, project_title)
         if (project.data.plans) {
           let nodesToLoad: [] = []
           // ** [MM] HEY HEY HEY
               nodesToLoad = project.data.plans.nodes[0].threedsActive.nodes
           // ** [MM] HEY HEY HEY
-          // if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.[nodesToLoad] ', ccm.orange, nodesToLoad)
+          // if (debug || DEBUG) console.debug('%c🥕 ThreeDCanvasViewer {project}.[nodesToLoad] ', ccm.orange, nodesToLoad)
           // ** [MM] HEY HEY HEY
           if (nodesToLoad) {
             // ** SET threeds[]
             // ** [MM] HEY HEY HEY
             threeds = nodesToLoad
             // ** [MM] HEY HEY HEY
-            if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer [nodesToLoad] as [threeds] ', ccm.orange, threeds)
+            if (debug || DEBUG) console.debug('%c🥕 ThreeDCanvasViewer [nodesToLoad] as [threeds] ', ccm.orange, threeds)
           }
           // ** [MM] HEY HEY HEY
         }
@@ -103,78 +100,84 @@ export const ThreeDCanvasViewer = () => {
 
   // console.debug(`%c=======================================================`, ccm.orange)
   return (
-    <Accordion.Root 
-      type='single' 
-      orientation='horizontal' 
-      // @ts-expect-error
-      collapsible={'true'} // string 'true' | 'false' -- bug: needs boolean, not string
-      defaultValue='Canvas 1'
-      // value={tabControlValue}
-      // onChange={onChangeTabControlValue}
-      aria-label='ThreeD Canvas[es] Viewer'
-      // style={{ display: 'flex', flexDirection: 'row' }}
-    >
-      {/**/}
+    <Box id='threedCanvasViewer'>
 
-      <Accordion.Item value={'Canvas 1'}>
-        <Accordion.Header>
-          <Accordion.Trigger 
-            className='AccordionTrigger'
+      {/* CANVAS[ES] as accordion */}
+      <Accordion.Root 
+        type='multiple' 
+        // orientation='vertical' 
+        // @ ts-expect-error
+        // collapsible={'true'} // string 'true' | 'false' -- bug: should be boolean, not string
+        defaultValue={['Canvas 1']}
+        // value={tabControlValue}
+        // onChange={onChangeTabControlValue}
+        // aria-label='ThreeD Canvas[es] Viewer'
+        className='AccordionRoot'
+      >
+
+        {/* THREED CANVAS 1 */}
+        <Accordion.Item 
+          value={'Canvas 1'}
+          className='AccordionItem'
+        >
+          <Accordion.Header
+            className='AccordionHeader'
           >
-            Canvas 1
-          </Accordion.Trigger>
-        </Accordion.Header>
-        <Accordion.Content className='AccordionContent'>
-          <Grid
-            container
-            id='_r3fCameras'
+            <Accordion.Trigger 
+              // className='AccordionTrigger'
+            >
+              <ChevronDownIcon className='AccordionChevron' aria-hidden />
+              <span>Canvas 1</span>
+            </Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content 
+            // className='AccordionContent'
           >
             <Grid
-              item
-              id='_r3f_camera_1'
-              md={12}
-              xs={12}
-              sx={{ borderTop: '1px solid darkgreen' }}
+              key='_r3fCanvas1'
+              style={{ borderTop: '1px solid darkgreen' }}
             >
-
-              {/* THREED CANVAS */}
               <ThreeDCanvas
-                _id={'_r3fCanvas'}
+                _id={'_r3fCanvas1'}
                 threeds={threeds}
               />
-              {/* THREED CANVAS */}
-
             </Grid>
-            {/* <Grid item id='_r3f_camera_2'
-              md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
+          </Accordion.Content>
+        </Accordion.Item>
+        
+        {/* THREED CANVAS 2 */}
+        <Accordion.Item 
+          value={'Canvas 2'}
+          className='AccordionItem'
+        >
+          <Accordion.Header
+            className='AccordionHeader'
+          >
+            <Accordion.Trigger 
+              // className='AccordionTrigger'
+            >
+              <ChevronDownIcon className='AccordionChevron' aria-hidden />
+              <span>Canvas 2</span>
+            </Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content 
+            // className='AccordionContent'
+          >
+            <Grid
+              key='_r3fCanvas2'
+              style={{ borderTop: '1px solid darkgreen' }}
             >
               <ThreeDCanvas
                 _id={'_r3fCanvas2'}
                 threeds={threeds}
               />
-            </Grid> */}
-            {/* <Grid item id='_r3f_camera_3'
-              md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
-            >
-              <ThreeDCanvas
-                _id={'_r3fCanvas3'}
-                threeds={threeds}
-              />
-            </Grid> */}
-            {/* <Grid item id='_r3f_camera_4'
-              md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
-            >
-              <ThreeDCanvas
-                _id={'_r3fCanvas4'}
-                threeds={threeds}
-              />
-            </Grid> */}
-          </Grid>
-        </Accordion.Content>
-      </Accordion.Item>
+            </Grid>
+          </Accordion.Content>
+        </Accordion.Item>
 
-      {/**/}
-    </Accordion.Root>
+        {/**/}
+      </Accordion.Root>
+    </Box>
   )
 }
 

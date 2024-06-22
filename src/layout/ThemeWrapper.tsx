@@ -2,7 +2,13 @@
 'use server'
 
 // LAYOUT PROVIDERRRRRR by RADIX-UI
-import { Theme, ThemePanel } from '@radix-ui/themes'
+import { 
+  Theme, 
+  ThemePanel, 
+  Container,
+  Grid,
+  Box,
+} from '@radix-ui/themes'
 import { ThemeProvider } from 'next-themes'
 
 // import { useRef } from 'react'
@@ -40,14 +46,17 @@ const ThemeWrapper = async ({ children }: { children: any}) => {
         radius='none' // none | small | medium | large | full
         scaling='90%' // 90 | 95 | 100 | 105 | 110
       >
-        <div
+        <Container
           id='ThreeDAppThemeBody'
           key={id}
           // ref={ref}
+          // size='4'
+          width={'100%'}
+          maxWidth={'100%'}
         >
           {children}
-        </div>                  
-        {/* <ThemePanel /> */}
+        </Container>                  
+        <ThemePanel />
       </Theme>
     </ThemeProvider>
   )

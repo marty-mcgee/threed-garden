@@ -253,29 +253,35 @@ export const ThreeDControlPanels = (
       </Tabs> */}
         
       {/**/}
-
+      
+      {/* CONTROL PANELS as accordion */}
       <Accordion.Root 
         type='multiple' // single | multiple
-        orientation='horizontal' // vertical | horizontal
+        // orientation='horizontal' // vertical | horizontal
         // @ts-expect-error
-        collapsible={'true'} // string 'true' | 'false' -- bug: needs boolean, not string
+        collapsible={'true'} // string 'true' | 'false' -- bug: should be boolean, not string
         // defaultValue='Preferences'
         // value={tabControlValue}
         // onChange={onChangeTabControlValue}
         aria-label='ThreeD Control Panel[s]'
-        style={{ display: 'flex', flexDirection: 'row' }}
+        style={{ 
+          display: 'flex', 
+          // flexDirection: 'row',
+        }}
       >
         {/**/}
 
         <Accordion.Item value={'Tests'} key={tabControlValue + '_T'}>
           <Accordion.Header>
             <Accordion.Trigger 
-              className='AccordionTrigger'
+              // className='AccordionTrigger'
             >
               Tests
             </Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className='AccordionContent'>
+          <Accordion.Content 
+            // className='AccordionContent'
+          >
             <DebugView />
             {/* <Box> */}
               {/* <CharacterControlPanel /> */}

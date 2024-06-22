@@ -202,12 +202,12 @@ export function ThreeDCanvas(
       {/* HEY HEY HEY */}
       <Canvas
         
-        // id={_id}
+        key={_id}
         
-        style={{
-          height: '50vh',
-          // width: '100%',
-        }}
+        // style={{
+        //   height: '50vh',
+        //   // width: '100%',
+        // }}
         
         // camera={camera}
         camera={{ 
