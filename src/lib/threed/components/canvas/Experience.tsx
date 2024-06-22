@@ -23,11 +23,10 @@ import { Physics } from '@react-three/rapier'
 // ** LEVA Imports
 import { useControls } from 'leva'
 
-// ** THREED.AI
-
 // ** THREED OBJECTS
-import Floor from '#/lib/threed/components/canvas/Floor'
 import Lights from '#/lib/threed/components/canvas/Lights'
+import Floor from '#/lib/threed/components/canvas/Floor'
+import Ground from '#/lib/threed/components/canvas/Ground'
 
 // ** THREED CHARACTER CONTROL Imports
 // import CharacterControls from '~/src/lib/ecctrl/src/Ecctrl'
@@ -69,6 +68,9 @@ import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
+// ** THREED.AI
+// import ThreeDAI from '#/lib/threed/components/tools/ThreeDAI' // TODO
+
 // ** IMPORT RESOURCES complete
 
 // **
@@ -76,7 +78,6 @@ import ccm from '#/lib/utils/console-colors'
 // **
 const debug = false
 const DEBUG = true
-const testing = false
 
 // ** MAIN FUNCTION to return JSX "EXPERIENCE"
 export default function Experience() {
@@ -358,6 +359,11 @@ export default function Experience() {
             DEEP BELOW SEA LEVEL */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
           <Floor color={'black'} opacity={0.8} />
+        </group>
+        {/* DEFAULT GROUND BOUNDARY (PREVENTS INFINITE FALL BACKUP):
+            DEEP DEEP DEEP BELOW SEA LEVEL */}
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -1024, 0]}>
+          <Ground color={'black'} opacity={0.0} />
         </group>
 
       </Physics>
