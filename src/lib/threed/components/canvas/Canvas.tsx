@@ -117,11 +117,11 @@ function ThreeDLoaderSimple() {
     // ** integrate drei with radix
     return (
       <Html center>
-        THREED UI LOADING... {Math.round(progress)} %
         <Progress.Root
           value={progressValue}
           className="ProgressRoot"
         >
+        THREED UI LOADING... {Math.round(progress)} %
           <Progress.Indicator
             className="ProgressIndicator"
             style={{ transform: `translateX(-${100 - progress}%)` }}
