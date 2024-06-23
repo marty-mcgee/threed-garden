@@ -91,7 +91,6 @@ import ccm from '#/lib/utils/console-colors'
 
 const debug = false // false | true // ts: boolean
 const DEBUG = true // false | true // ts: boolean
-const debug_deep = false // false | true // ts: boolean
 
 // Model interactive 'modes' using TransformControls
 const actionModes = ['translate', 'rotate', 'scale']
