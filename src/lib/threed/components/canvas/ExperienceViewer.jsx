@@ -201,9 +201,11 @@ const ExperienceViewer = forwardRef(({ enableOrbit, children, ...props }, ref) =
   return (
     <>
       {/* <Html ref={localRef} {...props} /> */}
+      
       {/* <ThreedIO>
         <ThreeDViewImpl track={localRef}> */}
 
+          {/* ThreeD Models as props.children */}
           {children}
 
         {/* </ThreeDViewImpl>
@@ -302,7 +304,7 @@ const ExperienceViewer = forwardRef(({ enableOrbit, children, ...props }, ref) =
     </>
   )
 })
-ExperienceViewer.displayName = 'ThreeD-View'
+ExperienceViewer.displayName = 'ThreeD-ExperienceViewer'
 
 export { ExperienceViewer }
 export default ExperienceViewer

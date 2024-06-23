@@ -85,8 +85,9 @@ const DebugHeadless = () => {
     </div>
   )
 }
+
 const Debug = () => {
-  const { width } = useThree((s) => s.size)
+  // const { width } = useThree((s) => s.size)
   return (
     /* This is it -> */
     <PerfHeadless 
@@ -111,8 +112,8 @@ const Debug = () => {
       // className?: '' // override CSS class
       // style?: {} // override style
       // position?: 'top-right'|'top-left'|'bottom-right'|'bottom-left' // quickly set the position, default is top-right
-      minimal={width < 712} 
-      showGraph={false} // show the graphs
+      // minimal={width < 712} 
+      showGraph={true} // show the graphs
       // logsPerSecond={1} // Refresh rate of the logs
       // chart={{
       //   hz: 1, // graphs refresh frequency parameter
@@ -253,30 +254,45 @@ export const ThreeDControlPanels = (
       </Tabs> */}
         
       {/**/}
-
+      
+      {/* CONTROL PANELS as accordion */}
       <Accordion.Root 
-        type="multiple" 
-        orientation="horizontal" 
+        type='multiple' // single | multiple
+        // orientation='horizontal' // vertical | horizontal
         // @ts-expect-error
-        collapsible={'true'}
-        defaultValue="Preferences"
+        collapsible={'true'} // string 'true' | 'false' -- bug: should be boolean, not string
+        // defaultValue='Preferences'
         // value={tabControlValue}
         // onChange={onChangeTabControlValue}
-        aria-label='ThreeD Control Panel'
+        aria-label='ThreeD Control Panel[s]'
+        style={{ 
+          display: 'flex', 
+          // flexDirection: 'row',
+        }}
       >
         {/**/}
 
         <Accordion.Item value={'Tests'} key={tabControlValue + '_T'}>
           <Accordion.Header>
             <Accordion.Trigger 
-              className="AccordionTrigger"
+              // className='AccordionTrigger'
             >
               Tests
             </Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className="AccordionContent">
-            <Box>
-              <DebugView />
+          <Accordion.Content 
+            // className='AccordionContent'
+          >
+            {/* <DebugView /> */}
+            <DebugHeadless />
+            {/* <Debug /> */}
+
+            {/* <Perf
+              position='bottom-left'
+              minimal
+            /> */}
+
+            {/* <Box> */}
               {/* <CharacterControlPanel /> */}
               {/* <CharacterInfoPanel /> */}
               {/* <hr /> */}
@@ -289,7 +305,7 @@ export const ThreeDControlPanels = (
               {/* <BearControlPanel /> */}
               {/* <BearInfoPanel /> */}
               {/* <hr /> */}
-            </Box>
+            {/* </Box> */}
             {/* <Box style={{ paddingLeft: 2}}>
               <ThreeDLevaComponent projectName={projectName} setProjectName={setProjectName} />
               <input type='button' onClick={(e) => setProjectName('TEST')} value='TEST' />
@@ -301,12 +317,12 @@ export const ThreeDControlPanels = (
         <Accordion.Item value={'Preferences'} key={tabControlValue + '_0'}>
           <Accordion.Header>
             <Accordion.Trigger 
-              // className="AccordionTrigger"
+              // className='AccordionTrigger'
             >
               Preferences
             </Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className="AccordionContent">
+          <Accordion.Content className='AccordionContent'>
             <PreferencesControlPanel />
             <PreferencesInfoPanel />
           </Accordion.Content>
@@ -315,12 +331,12 @@ export const ThreeDControlPanels = (
         <Accordion.Item value={'Projects'} key={tabControlValue + '_1'}>
           <Accordion.Header>
             <Accordion.Trigger 
-              // className="AccordionTrigger"
+              // className='AccordionTrigger'
             >
               Projects
             </Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className="AccordionContent">
+          <Accordion.Content className='AccordionContent'>
             <ProjectControlPanel />
             <ProjectInfoPanel />
           </Accordion.Content>
@@ -330,7 +346,7 @@ export const ThreeDControlPanels = (
           <Accordion.Header>
             <Accordion.Trigger>Plans</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className="AccordionContent">
+          <Accordion.Content className='AccordionContent'>
             <PlanControlPanel />
             <PlanInfoPanel />
           </Accordion.Content>
@@ -340,7 +356,7 @@ export const ThreeDControlPanels = (
           <Accordion.Header>
             <Accordion.Trigger>ThreeDs</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className="AccordionContent">
+          <Accordion.Content className='AccordionContent'>
             <ThreeDControlPanel />
             <ThreeDInfoPanel />
           </Accordion.Content>
@@ -350,7 +366,7 @@ export const ThreeDControlPanels = (
           <Accordion.Header>
             <Accordion.Trigger>Files</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className="AccordionContent">
+          <Accordion.Content className='AccordionContent'>
             <FileControlPanel />
             <FileInfoPanel />
           </Accordion.Content>
@@ -360,7 +376,7 @@ export const ThreeDControlPanels = (
           <Accordion.Header>
             <Accordion.Trigger>Scenes</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className="AccordionContent">
+          <Accordion.Content className='AccordionContent'>
             <SceneControlPanel />
             <SceneInfoPanel />
           </Accordion.Content>
@@ -370,7 +386,7 @@ export const ThreeDControlPanels = (
           <Accordion.Header>
             <Accordion.Trigger>Allotments</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className="AccordionContent">
+          <Accordion.Content className='AccordionContent'>
             <AllotmentControlPanel />
             <AllotmentInfoPanel />
           </Accordion.Content>
@@ -380,7 +396,7 @@ export const ThreeDControlPanels = (
           <Accordion.Header>
             <Accordion.Trigger>Beds</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className="AccordionContent">
+          <Accordion.Content className='AccordionContent'>
             <BedControlPanel />
             <BedInfoPanel />
           </Accordion.Content>
@@ -390,7 +406,7 @@ export const ThreeDControlPanels = (
           <Accordion.Header>
             <Accordion.Trigger>Plants</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className="AccordionContent">
+          <Accordion.Content className='AccordionContent'>
             <PlantControlPanel />
             <PlantInfoPanel />
           </Accordion.Content>
@@ -400,7 +416,7 @@ export const ThreeDControlPanels = (
           <Accordion.Header>
             <Accordion.Trigger>Planting Plans</Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content className="AccordionContent">
+          <Accordion.Content className='AccordionContent'>
             <PlantingPlanControlPanel />
             <PlantingPlanInfoPanel />
           </Accordion.Content>

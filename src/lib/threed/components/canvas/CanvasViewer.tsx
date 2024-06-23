@@ -2,6 +2,7 @@
 // ==========================================================
 // RESOURCES
 
+// ** APOLLO CLIENT STORE+STATE Imports
 import { useApolloClient, useReactiveVar } from '@apollo/client'
 import {
   isPreferencesSetVar,
@@ -10,16 +11,26 @@ import {
   projectStore,
   // ...stores
 } from '#/lib/stores/apollo'
+// temporarily while coding
+import { useState } from 'react'
 
-// ** MUI Imports
-import { styled } from '@mui/material/styles'
-import Grid from '@mui/material/Grid'
-import MuiButton from '@mui/material/Button'
+// ** RADIX-UI Imports
+import * as Collapsible from '@radix-ui/react-collapsible'
+import * as Accordion from '@radix-ui/react-accordion'
+import {
+  ChevronDownIcon,
+  RowSpacingIcon, 
+  Cross2Icon,
+} from '@radix-ui/react-icons'
+import {
+  Box,
+  Button,
+  Grid,
+  Text,
+} from '@radix-ui/themes'
 
 // ** THREED r3f Canvas Imports
-// import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
 // import { Canvas } from '@react-three/fiber'
-// import { ThreeDCanvasViewer } from '#/lib/threed/components/canvas/Canvas'
 import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
 // import { ThreeDEnvironment } from '#/lib/threed/components/canvas/Canvas'
 
@@ -34,16 +45,7 @@ import ccm from '#/lib/utils/console-colors'
 
 // DEBUG PREFERENCES FOR THIS MODULE
 const debug: boolean = false
-const DEBUG: boolean = true
-const debug_deep: boolean = false
-
-// ==========================================================
-
-const Button = styled(MuiButton)(({ theme }) => ({
-  marginRight: `0.25rem !important`,
-  padding: `0.5rem 0.5rem !important`,
-  minWidth: `2.0rem !important`,
-}))
+const DEBUG: boolean = false
 
 // ==========================================================
 
@@ -61,7 +63,7 @@ export const ThreeDCanvasViewer = () => {
   // ** USE CLIENT
   // const client = useApolloClient()
 
-  // ** DECIDE WHETHER TO USE CANVAS, DEPENDING ON AVAILABLE threeds[nodes]
+  // ** threeds[nodes] to provide a canvas
   let threeds: [] = [] // threeds are nodes[] to load to canvas
 
   // return <Spinner />
@@ -72,29 +74,29 @@ export const ThreeDCanvasViewer = () => {
 
   let project = projectStore.store.get('one')
   if (prefs.doAutoLoadData) {
-    // if (DEBUG || debug_deep) console.debug('%c🥕 TRYING... ThreeDCanvasViewer {project} ', ccm.orange)
+    // if (debug || DEBUG) console.debug('%c🥕 TRYING... ThreeDCanvasViewer {project} ', ccm.orange)
     try {
       // const project = projectStore.store.get('one')
       // const project = projectStore.store.useStore('one') // causes an error, but may still be the way to go
       // project = async () => await projectStore.store.useStore('one') // same error
-      if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project} ', ccm.orange, project)
-      // if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project} ', ccm.orange, project())
+      if (debug || DEBUG) console.debug('%c🥕 ThreeDCanvasViewer {project} ', ccm.orange, project)
+      // if (debug || DEBUG) console.debug('%c🥕 ThreeDCanvasViewer {project} ', ccm.orange, project())
       if (project) {
         let project_title = project?.data?.title ? project.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
-        // if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.project_title ', ccm.orange, project_title)
+        // if (debug || DEBUG) console.debug('%c🥕 ThreeDCanvasViewer {project}.project_title ', ccm.orange, project_title)
         if (project.data.plans) {
           let nodesToLoad: [] = []
           // ** [MM] HEY HEY HEY
               nodesToLoad = project.data.plans.nodes[0].threedsActive.nodes
           // ** [MM] HEY HEY HEY
-          // if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer {project}.[nodesToLoad] ', ccm.orange, nodesToLoad)
+          // if (debug || DEBUG) console.debug('%c🥕 ThreeDCanvasViewer {project}.[nodesToLoad] ', ccm.orange, nodesToLoad)
           // ** [MM] HEY HEY HEY
           if (nodesToLoad) {
             // ** SET threeds[]
             // ** [MM] HEY HEY HEY
             threeds = nodesToLoad
             // ** [MM] HEY HEY HEY
-            if (DEBUG || debug_deep) console.debug('%c🥕 ThreeDCanvasViewer [nodesToLoad] as [threeds] ', ccm.orange, threeds)
+            if (debug || DEBUG) console.debug('%c🥕 ThreeDCanvasViewer [nodesToLoad] as [threeds] ', ccm.orange, threeds)
           }
           // ** [MM] HEY HEY HEY
         }
@@ -106,52 +108,155 @@ export const ThreeDCanvasViewer = () => {
 
   // console.debug(`%c=======================================================`, ccm.orange)
   return (
-    <Grid
-      container
-      id='_r3fCameras'
-    >
-      <Grid
-        item
-        id='_r3f_camera_1'
-        md={12}
-        xs={12}
-        sx={{ borderTop: '1px solid darkgreen' }}
+    <Box id='threedCanvasViewer'>
+
+      {/* CANVAS[ES] as accordion */}
+      <Accordion.Root 
+        type='multiple' 
+        // orientation='vertical' 
+        // @ ts-expect-error
+        // collapsible={'true'} // string 'true' | 'false' -- bug: should be boolean, not string
+        defaultValue={['Canvas 1']}
+        // value={tabControlValue}
+        // onChange={onChangeTabControlValue}
+        // aria-label='ThreeD Canvas[es] Viewer'
+        className='AccordionRoot'
       >
 
-        {/* THREED CANVAS */}
-        <ThreeDCanvas
-          _id={'_r3fCanvas'}
-          threeds={threeds}
-        />
-        {/* THREED CANVAS */}
+        {/* THREED CANVAS 1 */}
+        <Accordion.Item 
+          value={'Canvas 1'}
+          className='AccordionItem'
+        >
+          <Accordion.Header
+            className='AccordionHeader'
+          >
+            <Accordion.Trigger 
+              // className='AccordionTrigger'
+            >
+              <ChevronDownIcon className='AccordionChevron' aria-hidden />
+              <span>Canvas 1</span>
+            </Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content 
+            // className='AccordionContent'
+          >
+            <Grid
+              style={{ borderTop: '1px solid darkgreen' }}
+            >
+              <ThreeDCanvas
+                _id={'_r3fCanvas1'}
+                threeds={threeds}
+              />
+            </Grid>
+          </Accordion.Content>
+        </Accordion.Item>
+        
+        {/* THREED CANVAS 2 */}
+        <Accordion.Item 
+          value={'Canvas 2'}
+          className='AccordionItem'
+        >
+          <Accordion.Header
+            className='AccordionHeader'
+          >
+            <Accordion.Trigger 
+              // className='AccordionTrigger'
+            >
+              <ChevronDownIcon className='AccordionChevron' aria-hidden />
+              <span>Canvas 2</span>
+            </Accordion.Trigger>
+          </Accordion.Header>
+          <Accordion.Content 
+            // className='AccordionContent'
+          >
+            <Grid
+              style={{ borderTop: '1px solid darkgreen' }}
+            >
+              <ThreeDCanvas
+                _id={'_r3fCanvas2'}
+                threeds={threeds}
+              />
+            </Grid>
+          </Accordion.Content>
+        </Accordion.Item>
 
-      </Grid>
-      {/* <Grid item id='_r3f_camera_2'
-        md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
-      >
-        <ThreeDCanvas
-          _id={'_r3fCanvas2'}
-          threeds={threeds}
-        />
-      </Grid> */}
-      {/* <Grid item id='_r3f_camera_3'
-        md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
-      >
-        <ThreeDCanvas
-          _id={'_r3fCanvas3'}
-          threeds={threeds}
-        />
-      </Grid> */}
-      {/* <Grid item id='_r3f_camera_4'
-        md={6} xs={12} sx={{ border: '1px solid darkgreen' }}
-      >
-        <ThreeDCanvas
-          _id={'_r3fCanvas4'}
-          threeds={threeds}
-        />
-      </Grid> */}
-    </Grid>
+        {/**/}
+      </Accordion.Root>
+
+      
+
+      {/* [MM] TESTING -- RADIX-UI.primitive.Collapsible */}
+      <CollapsibleDemo />
+
+
+
+    </Box>
   )
 }
 
 export default ThreeDCanvasViewer
+
+
+// import React from 'react'
+// import * as Collapsible from '@radix-ui/react-collapsible'
+// import { RowSpacingIcon, Cross2Icon } from '@radix-ui/react-icons'
+// import './styles.css'
+
+const CollapsibleDemo = () => {
+  const [openCanvas1, setOpenCanvas1] = useState(false)
+  const [openCanvas2, setOpenCanvas2] = useState(false)
+  return (
+    <>
+      <Collapsible.Root className="CollapsibleRoot" open={openCanvas1} onOpenChange={setOpenCanvas1}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Collapsible.Trigger asChild>
+            <button className="IconButton">{open ? <Cross2Icon /> : <RowSpacingIcon />}</button>
+          </Collapsible.Trigger>
+          <span className="Text">
+            CANVAS 1
+          </span>
+        </div>
+
+        {/* <div className="Repository">
+          <span className="Text">CANVAS 1</span>
+        </div> */}
+
+        <Collapsible.Content>
+          <div className="Repository">
+            <span className="Text">HEY HEY HEY 1</span>
+          </div>
+          <div className="Repository">
+            <span className="Text">YO YO YO 1</span>
+          </div>
+        </Collapsible.Content>
+      </Collapsible.Root>
+      
+      <Collapsible.Root className="CollapsibleRoot" open={openCanvas2} onOpenChange={setOpenCanvas2}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Collapsible.Trigger asChild>
+            <button className="IconButton">{open ? <Cross2Icon /> : <RowSpacingIcon />}</button>
+          </Collapsible.Trigger>
+          <span className="Text">
+            CANVAS 2
+          </span>
+        </div>
+
+        {/* <div className="Repository">
+          <span className="Text">CANVAS 2</span>
+        </div> */}
+
+        <Collapsible.Content>
+          <div className="Repository">
+            <span className="Text">HEY HEY HEY 2</span>
+          </div>
+          <div className="Repository">
+            <span className="Text">YO YO YO 2</span>
+          </div>
+        </Collapsible.Content>
+      </Collapsible.Root>
+    </>
+  )
+}
+
+export { CollapsibleDemo }
