@@ -203,8 +203,8 @@ body {
 ** RADIX-UI CSS
 */
 @import '@radix-ui/colors/black-alpha.css';
-/* @import '@radix-ui/colors/mauve.css'; */
 @import '@radix-ui/colors/violet.css';
+/* @import '@radix-ui/colors/mauve.css'; */
 
 
 /* resets ?? */
@@ -315,3 +315,109 @@ h3 {
 }
 
 
+/* RADIX-UI.primitive.COLLAPSIBLE */
+/* @import '@radix-ui/colors/black-alpha.css'; */
+/* @import '@radix-ui/colors/violet.css'; */
+
+/* reset */
+/* button {
+  all: unset;
+} */
+
+.CollapsibleRoot {
+  /* width: 100%; */
+  width: 480px;
+}
+
+
+.CollapsibleContent {
+  overflow: hidden;
+}
+.CollapsibleContent[data-state='open'] {
+  animation: slideDown 300ms ease-out;
+}
+.CollapsibleContent[data-state='closed'] {
+  animation: slideUp 300ms ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    height: var(--radix-collapsible-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+
+.IconButton {
+  font-family: inherit;
+  border-radius: 100%;
+  height: 25px;
+  width: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--violet-11);
+  box-shadow: 0 2px 10px var(--black-a7);
+}
+.IconButton[data-state='closed'] {
+  background-color: white;
+}
+.IconButton[data-state='open'] {
+  background-color: var(--violet-3);
+}
+.IconButton:hover {
+  background-color: var(--violet-3);
+}
+.IconButton:focus {
+  box-shadow: 0 0 0 2px black;
+}
+
+
+.Text {
+  /* color: var(--violet-11); */
+  color: white;
+  font-size: 15px;
+  line-height: 25px;
+}
+
+.Repository {
+  background-color: black;
+  border-radius: 4px;
+  margin: 10px 0;
+  padding: 10px;
+  box-shadow: 0 2px 10px var(--black-a7);
+}
+
+
+/* @import '@radix-ui/colors/black-alpha.css'; */
+
+.ProgressRoot {
+  position: relative;
+  overflow: hidden;
+  background: var(--black-a9);
+  border-radius: 99999px;
+  width: 300px;
+  height: 25px;
+
+  /* Fix overflow clipping in Safari */
+  /* https://gist.github.com/domske/b66047671c780a238b51c51ffde8d3a0 */
+  transform: translateZ(0);
+}
+
+.ProgressIndicator {
+  background-color: white;
+  width: 100%;
+  height: 100%;
+  transition: transform 660ms cubic-bezier(0.65, 0, 0.35, 1);
+}

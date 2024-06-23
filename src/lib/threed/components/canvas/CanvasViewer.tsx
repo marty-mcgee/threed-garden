@@ -183,6 +183,14 @@ export const ThreeDCanvasViewer = () => {
 
         {/**/}
       </Accordion.Root>
+
+      
+
+      {/* [MM] TESTING -- RADIX-UI.primitive.Collapsible */}
+      <CollapsibleDemo />
+
+
+
     </Box>
   )
 }
@@ -196,31 +204,58 @@ export default ThreeDCanvasViewer
 // import './styles.css'
 
 const CollapsibleDemo = () => {
-  const [open, setOpen] = useState(false)
+  const [openCanvas1, setOpenCanvas1] = useState(false)
+  const [openCanvas2, setOpenCanvas2] = useState(false)
   return (
-    <Collapsible.Root className="CollapsibleRoot" open={open} onOpenChange={setOpen}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span className="Text" style={{ color: 'white' }}>
-          @peduarte starred 3 repositories
-        </span>
-        <Collapsible.Trigger asChild>
-          <button className="IconButton">{open ? <Cross2Icon /> : <RowSpacingIcon />}</button>
-        </Collapsible.Trigger>
-      </div>
-
-      <div className="Repository">
-        <span className="Text">@radix-ui/primitives</span>
-      </div>
-
-      <Collapsible.Content>
-        <div className="Repository">
-          <span className="Text">@radix-ui/colors</span>
+    <>
+      <Collapsible.Root className="CollapsibleRoot" open={openCanvas1} onOpenChange={setOpenCanvas1}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Collapsible.Trigger asChild>
+            <button className="IconButton">{open ? <Cross2Icon /> : <RowSpacingIcon />}</button>
+          </Collapsible.Trigger>
+          <span className="Text">
+            CANVAS 1
+          </span>
         </div>
-        <div className="Repository">
-          <span className="Text">@stitches/react</span>
+
+        {/* <div className="Repository">
+          <span className="Text">CANVAS 1</span>
+        </div> */}
+
+        <Collapsible.Content>
+          <div className="Repository">
+            <span className="Text">HEY HEY HEY 1</span>
+          </div>
+          <div className="Repository">
+            <span className="Text">YO YO YO 1</span>
+          </div>
+        </Collapsible.Content>
+      </Collapsible.Root>
+      
+      <Collapsible.Root className="CollapsibleRoot" open={openCanvas2} onOpenChange={setOpenCanvas2}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Collapsible.Trigger asChild>
+            <button className="IconButton">{open ? <Cross2Icon /> : <RowSpacingIcon />}</button>
+          </Collapsible.Trigger>
+          <span className="Text">
+            CANVAS 2
+          </span>
         </div>
-      </Collapsible.Content>
-    </Collapsible.Root>
+
+        {/* <div className="Repository">
+          <span className="Text">CANVAS 2</span>
+        </div> */}
+
+        <Collapsible.Content>
+          <div className="Repository">
+            <span className="Text">HEY HEY HEY 2</span>
+          </div>
+          <div className="Repository">
+            <span className="Text">YO YO YO 2</span>
+          </div>
+        </Collapsible.Content>
+      </Collapsible.Root>
+    </>
   )
 }
 
