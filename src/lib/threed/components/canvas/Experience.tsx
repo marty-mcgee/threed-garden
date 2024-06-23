@@ -258,9 +258,9 @@ export default function Experience() {
       {/* THREED USING PHYSICS */}
       <Physics
         // debug={prefs.doWorldPhysics}
-        debug={true}
-        timeStep='vary'
-        paused={pausedPhysics}
+        // debug={true}
+        // timeStep={'vary'}
+        // paused={pausedPhysics}
       >
 
         {/* THREED FARMBOT */}
