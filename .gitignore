@@ -43,6 +43,11 @@ next-env.d.ts
 # typescript
 *.tsbuildinfo
 
+# pwa service workers
+public/sw.js
+public/sw.js.map
+public/workbox-*
+
 # assets
 src/lib/farmbot/farmbot-3d-demo-react
 # src/lib/farmbot/threed-farmbot

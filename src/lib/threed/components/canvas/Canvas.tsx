@@ -36,6 +36,11 @@ import {
   // useGLTF, useFBX,
 } from '@react-three/drei'
 
+
+// RADIX-UI Importa
+import * as Progress from '@radix-ui/react-progress'
+
+
 // do stuff with IMPORTS ??
 // extend({ OrbitControls })
 
@@ -86,15 +91,56 @@ import ccm from '#/lib/utils/console-colors'
 
 const debug = false // false | true // ts: boolean
 const DEBUG = true // false | true // ts: boolean
-const debug_deep = false // false | true // ts: boolean
 
 // Model interactive 'modes' using TransformControls
 const actionModes = ['translate', 'rotate', 'scale']
 
 // example working simple <Loader />
 function ThreeDLoaderSimple() {
+  
+  // ** using react-three-drei
   const { active, progress, errors, item, loaded, total } = useProgress()
-  return <Html center>THREED GUI LOADING... {Math.round(progress)} %</Html>
+
+  // ** using radix-ui
+  // import React from 'react'
+  // import * as Progress from '@radix-ui/react-progress'
+  // import './styles.css'
+
+  // const ProgressDemo = () => {
+    const [progressValue, setProgressValue] = useState(progress)
+
+    useEffect(() => {
+      const timer = setTimeout(() => setProgressValue(progress), 500)
+      return () => clearTimeout(timer)
+    }, [])
+
+    // ** integrate drei with radix
+    return (
+      <Html center>
+        <Progress.Root
+          value={progressValue}
+          className="ProgressRoot"
+        >
+          <span>THREED UI LOADING... {Math.round(progress)} %</span>
+          <Progress.Indicator
+            className="ProgressIndicator"
+            style={{ transform: `translateX(-${100 - progress}%)` }}
+          />
+        </Progress.Root>
+      </Html>
+    )
+  // }
+  // export default ProgressDemo
+
+  // ** integrate drei with radix
+  return (
+    <>
+      <Html center>
+        THREED GUI LOADING... {Math.round(progress)} %
+        {/* <ProgressDemo /> */}
+      </Html>
+    </>
+  )
 }
 
 // const controls = new OrbitControls(camera, renderer.domElement)
@@ -202,12 +248,12 @@ export function ThreeDCanvas(
       {/* HEY HEY HEY */}
       <Canvas
         
-        // id={_id}
+        key={_id}
         
-        style={{
-          height: '50vh',
-          // width: '100%',
-        }}
+        // style={{
+        //   height: '50vh',
+        //   // width: '100%',
+        // }}
         
         // camera={camera}
         camera={{ 
@@ -244,11 +290,13 @@ export function ThreeDCanvas(
         {/* <threedIO.Out /> */}
 
         {/* SUSPENSEFUL... */}
-        {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
         {/* <Suspense fallback={null}> */}
-        {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
+        {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
         {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
-        <Suspense fallback={
+        {/* using radix-ui + react-three-drei */}
+        <Suspense fallback={<ThreeDLoaderSimple />}>
+        {/* using react-three-drei Loader + useProgress */}
+        {/* <Suspense fallback={
           <Html center>
             <Spinner />
             <Loader
@@ -260,7 +308,7 @@ export function ThreeDCanvas(
               initialState={(active = false) => active} // Initial black out state
             />
           </Html>
-        }>
+        }> */}
 
         {/* PRELOAD objects ??? -- does it seem necessary? */}
         <Preload all />

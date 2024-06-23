@@ -17,7 +17,11 @@ const CustomLink = ({
 
   if (isInternalLink || isAnchorLink) {
     return (
-      <Link href={href} className={className} {...rest}>
+      <Link 
+        href={href} 
+        className={className} 
+        {...rest}
+      >
         {children}
       </Link>
     )
@@ -32,7 +36,9 @@ const CustomLink = ({
       {...rest}
     >
       {children}
-      <ExternalLink className=" ml-0.5 h-4 w-4 inline-block" />
+      <ExternalLink 
+        className="ml-0.5 h-4 w-4 inline-block" 
+      />
     </Link>
   )
 }
