@@ -17,7 +17,7 @@ import { useEffect, useState } from 'react'
 import * as THREE from 'three'
 
 // ** REACT THREE Imports
-import { Grid, KeyboardControls } from '@react-three/drei'
+import { KeyboardControls } from '@react-three/drei'
 import { Physics } from '@react-three/rapier'
 
 // ** LEVA Imports

@@ -85,8 +85,9 @@ const DebugHeadless = () => {
     </div>
   )
 }
+
 const Debug = () => {
-  const { width } = useThree((s) => s.size)
+  // const { width } = useThree((s) => s.size)
   return (
     /* This is it -> */
     <PerfHeadless 
@@ -111,8 +112,8 @@ const Debug = () => {
       // className?: '' // override CSS class
       // style?: {} // override style
       // position?: 'top-right'|'top-left'|'bottom-right'|'bottom-left' // quickly set the position, default is top-right
-      minimal={width < 712} 
-      showGraph={false} // show the graphs
+      // minimal={width < 712} 
+      showGraph={true} // show the graphs
       // logsPerSecond={1} // Refresh rate of the logs
       // chart={{
       //   hz: 1, // graphs refresh frequency parameter
@@ -282,7 +283,15 @@ export const ThreeDControlPanels = (
           <Accordion.Content 
             // className='AccordionContent'
           >
-            <DebugView />
+            {/* <DebugView /> */}
+            <DebugHeadless />
+            {/* <Debug /> */}
+
+            {/* <Perf
+              position='bottom-left'
+              minimal
+            /> */}
+
             {/* <Box> */}
               {/* <CharacterControlPanel /> */}
               {/* <CharacterInfoPanel /> */}
