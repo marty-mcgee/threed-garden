@@ -117,7 +117,7 @@ function ThreeDLoaderSimple() {
     // ** integrate drei with radix
     return (
       <Html center>
-        THREED GUI LOADING... {Math.round(progress)} %
+        THREED UI LOADING... {Math.round(progress)} %
         <Progress.Root
           value={progressValue}
           className="ProgressRoot"
