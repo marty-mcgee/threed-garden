@@ -121,7 +121,7 @@ function ThreeDLoaderSimple() {
           value={progressValue}
           className="ProgressRoot"
         >
-        THREED UI LOADING... {Math.round(progress)} %
+          <span>THREED UI LOADING... {Math.round(progress)} %</span>
           <Progress.Indicator
             className="ProgressIndicator"
             style={{ transform: `translateX(-${100 - progress}%)` }}
