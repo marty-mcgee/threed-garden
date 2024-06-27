@@ -58,9 +58,6 @@ import Birds from '#/lib/threed/components/examples/Birds/Birds'
 // import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
 import ThreeDFarmBotMain from '#/lib/farmbot/threed-farmbot/main-threed'
 import ThreeDFarmBotGarden from '#/lib/farmbot/threed-farmbot/garden-threed'
-// const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/FarmBot'), { ssr: false })
-// const ThreeDFarmBotMain = dynamic(() => import('#/lib/farmbot/threed-farmbot/main-threed'), { ssr: false })
-// const ThreeDFarmBotGarden = dynamic(() => import('#/lib/farmbot/threed-farmbot/garden-threed'), { ssr: false })
 
 // ** HELPER Imports
 import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
@@ -98,7 +95,7 @@ export default function Experience() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setPausedPhysics(false)
-    }, 5000)
+    }, 1500)
     return () => clearTimeout(timeout)
   }, [])
 
@@ -258,9 +255,9 @@ export default function Experience() {
       {/* THREED USING PHYSICS */}
       <Physics
         // debug={prefs.doWorldPhysics}
-        // debug={true}
-        // timeStep={'vary'}
-        // paused={pausedPhysics}
+        debug={true}
+        timeStep={'vary'}
+        paused={pausedPhysics}
       >
 
         {/* THREED FARMBOT */}
