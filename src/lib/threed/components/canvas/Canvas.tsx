@@ -16,10 +16,10 @@ import * as THREE from 'three'
 // R3F
 import {
   Canvas,
-  Camera,
+  // Camera, // use PerspectiveCamera from drei library
   useFrame,
   useThree,
-  // extend, // using function extend({ OrbitControls })
+  // extend, // if using function extend({ OrbitControls })
 } from '@react-three/fiber'
 
 // R3F HELPERS
