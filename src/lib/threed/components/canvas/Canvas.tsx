@@ -34,6 +34,7 @@ import {
   Preload,
   Html, Center,
   // useGLTF, useFBX,
+  PerspectiveCamera,t
 } from '@react-three/drei'
 
 
@@ -230,7 +231,36 @@ export function ThreeDCanvas(
   // ** REF-erences using REACT ???
   // const ref = useRef()
 
+
+
+
+  // CREATE THREED CAMERA
+  let threedCamera = { 
+    position: new THREE.Vector3(-12, 4, -16), 
+    fov: 32,
+    // near: 0.1,
+    // far: 1000,
+  }
+  // LINK 1: https://discourse.threejs.org/t/accessing-the-camera-in-react-three-fiber-out-of-the-canvas/39137/2
+  // LINK 2: https://discourse.threejs.org/t/accessing-the-camera-in-react-three-fiber-out-of-the-canvas/39137/4
+  // response: "not sure what you mean by outside, the camera only exists within the canvas..
+  // you can access it after the canvas has been created
+  // <Canvas onCreated=(state => ({ state.camera.fov = 45, state.camera.position = [0, 0, 0] }))
+  // within every component
+  // <Canvas>
+  //   <Foo />
+  // function Foo() {
+  //   const camera = useThree(state => state.camera)
+  // you could also use a declarative camera
+  // import { PerspectiveCamera } '@react-three/drei'
+  // const config = { fov: 35, position: [0, 0, 10] }
+  // <Canvas>
+  //   <PerspectiveCamera {...config} />
+
+  // ** interact with camera using a HOOK
   // const setCameraPosition = useStoreCamera(state => state.setPosition)
+
+
 
   // **
   return (
@@ -256,19 +286,26 @@ export function ThreeDCanvas(
         // }}
         
         // camera={camera}
-        camera={{ 
-          position: [-12, 4, -16], 
-          fov: 36,
-          // near: 0.1,
-          // far: 1000,
-        }}
+        // camera={{ 
+        //   position: [-12, 4, -16], 
+        //   fov: 32,
+        //   // near: 0.1,
+        //   // far: 1000,
+        // }}
 
         // dpr={[1, 2]}
-        // shadows
+        shadows
 
         // onCreated={
         //   (state) => (state.gl.toneMapping = THREE.AgXToneMapping)
         // }
+        onCreated={
+          (state) => {
+            state.gl.toneMapping = THREE.AgXToneMapping
+            // state.camera.fov = 32 // 8
+            // state.camera.position = [-12, 4, -16] //[0, 0, 0]
+          }
+        }
 
         // ** SCENE
         // scene={sceneState.stuff}
@@ -283,11 +320,19 @@ export function ThreeDCanvas(
         //     (e.target as HTMLCanvasElement).requestPointerLock()
         //   }
         // }}
-      >
+        
+      >{/* INSIDE CANVAS (canvas props.children)... */}
 
+        {/* USE THREED CAMERA */}
+        <PerspectiveCamera 
+          {...threedCamera} 
+        />
         {/* <MyCameraReactsToStateChanges /> */}
   
+
+        {/* TUNNEL RAT IO: TODO */}
         {/* <threedIO.Out /> */}
+
 
         {/* SUSPENSEFUL... */}
         {/* <Suspense fallback={null}> */}
@@ -310,8 +355,8 @@ export function ThreeDCanvas(
           </Html>
         }> */}
 
-        {/* PRELOAD objects ??? -- does it seem necessary? */}
-        <Preload all />
+          {/* PRELOAD objects ??? -- does it seem necessary? */}
+          <Preload all />
           
           {/* THREED EXPERIENCE : VIEWER */}
           {/* <Experience /> */}
