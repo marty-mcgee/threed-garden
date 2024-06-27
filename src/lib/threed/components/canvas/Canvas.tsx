@@ -24,6 +24,7 @@ import {
 
 // R3F HELPERS
 import {
+  PerspectiveCamera,
   // Environment, Stage,
   // KeyboardControls,
   // OrbitControls, TransformControls, PivotControls,
@@ -34,7 +35,6 @@ import {
   Preload,
   Html, Center,
   // useGLTF, useFBX,
-  PerspectiveCamera,
 } from '@react-three/drei'
 
 
