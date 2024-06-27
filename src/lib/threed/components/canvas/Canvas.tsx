@@ -34,7 +34,7 @@ import {
   Preload,
   Html, Center,
   // useGLTF, useFBX,
-  PerspectiveCamera,t
+  PerspectiveCamera,
 } from '@react-three/drei'
 
 
