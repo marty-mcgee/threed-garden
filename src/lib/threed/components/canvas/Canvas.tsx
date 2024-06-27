@@ -31,8 +31,8 @@ import {
   // GizmoHelper, GizmoViewcube, GizmoViewport,
   // ContactShadows, BakeShadows,
   // softShadows, // softShadows()
-  Loader, useProgress,
   Preload,
+  Loader, useProgress,
   Html, Center,
   // useGLTF, useFBX,
 } from '@react-three/drei'
