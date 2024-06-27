@@ -19,7 +19,7 @@ import {
   Camera,
   useFrame,
   useThree,
-  // extend, // extend({ OrbitControls })
+  // extend, // using function extend({ OrbitControls })
 } from '@react-three/fiber'
 
 // R3F HELPERS
