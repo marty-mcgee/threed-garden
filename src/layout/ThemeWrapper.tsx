@@ -55,8 +55,10 @@ const ThemeWrapper = async ({ children }: { children: any}) => {
           maxWidth={'100%'}
         >
           {children}
-        </Container>                  
-        <ThemePanel />
+        </Container>  
+
+        {/* <ThemePanel /> */}
+
       </Theme>
     </ThemeProvider>
   )
