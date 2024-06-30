@@ -11,7 +11,11 @@ import {
   projectStore,
   // ...stores
 } from '#/lib/stores/apollo'
+// ** ZUSTAND (X?) // for cameras, lights, canvas props
+// import { create } from 'zustand'
+import { createStore } from 'zustand-x'
 
+// ** REACT Imports
 import {
   Suspense,
   useState,
@@ -20,10 +24,10 @@ import {
   useTransition
 } from 'react'
 
-// THREE JS * ALL
+// ** THREE JS Imports
 import * as THREE from 'three'
 
-// R3F
+// ** R3F Imports
 import {
   Canvas,
   // Camera, // use PerspectiveCamera from drei library
@@ -32,7 +36,7 @@ import {
   // extend, // if using function extend({ OrbitControls })
 } from '@react-three/fiber'
 
-// R3F HELPERS
+// ** R3F HELPERS
 import {
   PerspectiveCamera,
   // Environment, Stage,
@@ -195,21 +199,44 @@ const EcctrlJoystickControls = () => {
 // ==========================================================
 // CAMERA DATA INTERFACE (USING ZUSTAND SESSION STATE STORE)
 // ==========================================================
-import { create } from 'zustand'
-
-const useStoreCamera = create(set => ({
-  position: [0, 0, 0],
-  setPosition: (position: number[]) => set({ position }),
+// import { create } from 'zustand'
+// const storeCamera = create(set => ({
+//   position: [0, 0, 0],
+//   setPosition: (position: number[]) => set({ position }),
+//   // cameraPosition: [-16, 4, -16],
+//   // setCameraPosition: (cameraPosition: number[]) => set({ cameraPosition })
+// }))
+// ** ZUSTAND-X : CAMERA STORE
+const storeCamera = createStore('threedCamera')(({
+  position: [-1, 1, -1],
+  // setPosition: (position: number[]) => set({ position }),
   // cameraPosition: [-16, 4, -16],
   // setCameraPosition: (cameraPosition: number[]) => set({ cameraPosition })
 }))
+// Note that the zustand store is accessible through:
+// // hook store
+// storeCamera.useStore
+// // vanilla store
+// storeCamera.store
+// // reactive (tracked) hooks
+// storeCamera.useTracked.owner()
+// Getters
+// Don't overuse hooks. If you don't need to subscribe to the state, use instead the get method:
+// storeCamera.get.name()
+// storeCamera.get.stars()
+// You can also get the whole state:
+// storeCamera.get.state()
+console.debug('%c storeCamera.get.state()', ccm.redAlert, storeCamera.get.state().position, storeCamera.get.position)
+
+
+
 
 const MyCameraReactsToStateChanges = () => {
   // ** GET + SET camera
   // @ts-expect-error
-  const [x, y, z] = useStoreCamera(state => state.position)
+  const [x, y, z] = storeCamera(state => state.position)
   // @ ts-expect-error
-  // const [x, y, z] = useStoreCamera(state => state.cameraPosition)
+  // const [x, y, z] = storeCamera(state => state.cameraPosition)
   // useFrame(state => {
   //   // @ ts-expect-error
   //   // state.camera.lerp({ x, y, z }, 0.1)
@@ -229,7 +256,7 @@ const setTheCameraPosition = () => {
     return state.camera.position
   })
   // ** SET camera position
-  const setCameraPosition = useStoreCamera(state => {
+  const setCameraPosition = storeCamera(state => {
     console.debug('%c MyCameraReactsToStateChanges: SET state.camera.position', ccm.redAlert)
     // @ts-expect-error
     return state.setPosition([12,2,12])
@@ -262,7 +289,7 @@ const setTheCameraPosition = () => {
 //   <PerspectiveCamera {...config} />
 
 // ** interact with camera using a HOOK
-// const setCameraPosition = useStoreCamera(state => state.setPosition)
+// const setCameraPosition = storeCamera(state => state.setPosition)
 
 // moved inside experience
 // const camera = useThree(state => state.camera)
@@ -338,14 +365,14 @@ export const ThreeDCanvas = (
   //   <PerspectiveCamera {...config} />
 
   // ** interact with camera using a HOOK
-  // const setCameraPosition = useStoreCamera(state => state.setPosition)
+  // const setCameraPosition = storeCamera(state => state.setPosition)
 
   // moved inside experience
   // const camera = useThree(state => state.camera)
   // console.debug('get camera', camera)
 
   // @ ts-expect-error
-  // const [x, y, z] = useStoreCamera(state => state.position)
+  // const [x, y, z] = storeCamera(state => state.position)
   // ** GET CAMERA
   // function FooGetCamera() {
     // const fooGetCamera = () => useThree(state => {
@@ -362,7 +389,7 @@ export const ThreeDCanvas = (
   // }
 
   // // @ ts-expect-error
-  // const setTheCameraPosition = useStoreCamera(state => {
+  // const setTheCameraPosition = storeCamera(state => {
   //   // @ts-expect-error
   //   state.setPosition
   //   console.debug('HEY HEY HEY')
@@ -469,8 +496,8 @@ export const ThreeDCanvas = (
           {/* ExperienceViewer = forwardRef(({ children, enableOrbit, ...props }, ref) => {} */}
           {/* @ ts-expect-error */}
           {/* <ThreeDExperienceViewer> */}
-          {/* @ts-expect-error */}
-          <ThreeDExperienceViewer ref={ref} enableOrbit={true}>
+          {/* @ ts-expect-error */}
+          {/* <ThreeDExperienceViewer ref={ref} enableOrbit={true}> */}
 
             {/* THREED MODELS: WORKING !!! */}
             {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
@@ -478,7 +505,7 @@ export const ThreeDCanvas = (
               threeds={threeds}
             /> */}
 
-          </ThreeDExperienceViewer>
+          {/* </ThreeDExperienceViewer> */}
 
         </Suspense>
       </Canvas>
