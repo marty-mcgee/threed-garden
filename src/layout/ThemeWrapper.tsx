@@ -57,7 +57,9 @@ const ThemeWrapper = async ({ children }: { children: any}) => {
           {children}
         </Container>  
 
-        {/* <ThemePanel /> */}
+        {/* <ThemePanel
+          // open={true} // true | false // private property, sorry
+        /> */}
 
       </Theme>
     </ThemeProvider>

@@ -30,9 +30,12 @@ export function SignOut(props: React.ComponentPropsWithRef<typeof Button>) {
         console.debug('SignOut Button Clicked')
         await signOut()
       }}
-      className='w-full'
+      // className='w-full'
     >
-      <Button className='w-full p-0' {...props}>
+      <Button 
+        // className='w-full p-0' 
+        {...props}
+      >
         Sign Out
       </Button>
     </form>
