@@ -17,7 +17,11 @@ import { useEffect, useState } from 'react'
 import * as THREE from 'three'
 
 // ** REACT THREE Imports
-import { KeyboardControls } from '@react-three/drei'
+import { 
+  KeyboardControls, 
+  Grid,
+} from '@react-three/drei'
+// ** PHYSICS LIBRARY
 import { Physics } from '@react-three/rapier'
 
 // ** LEVA Imports
@@ -74,7 +78,7 @@ import ccm from '#/lib/utils/console-colors'
 // ** DEBUGGING
 // **
 const debug = false
-const DEBUG = true
+const DEBUG = false
 
 // ** MAIN FUNCTION to return JSX "EXPERIENCE"
 export default function Experience() {
@@ -255,54 +259,10 @@ export default function Experience() {
       {/* THREED USING PHYSICS */}
       <Physics
         // debug={prefs.doWorldPhysics}
-        debug={true}
+        debug={false}
         timeStep={'vary'}
         paused={pausedPhysics}
       >
-
-        {/* THREED FARMBOT */}
-        <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.6, -2]}>
-          <ThreeDFarmBotGarden />
-        </group>
-        {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
-          <ThreeDFarmBotMain />
-        </group> */}
-
-        {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
-            CHARACTER MODEL */}
-        <group position={[0, 8, 0]}>
-          {/* THREED CHARACTER [n] -- FARMER FEMALE */}
-          <KeyboardControls map={keyboardMap}>
-            <CharacterControls
-              // debug={prefs.doWorldDebug}
-              debug={false}
-              // animated={prefs.doCharacterAnimation}
-              animated={true} // <EcctrlAnimation>
-              // disableFollowCam={prefs.doWorldUnfollowCam}
-              disableFollowCam={true}
-              followLight={true}
-              springK={2}
-              dampingC={0.2}
-              autoBalanceSpringK={1.2}
-              autoBalanceDampingC={0.04}
-              // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
-              // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
-            >
-              {/* <CharacterModelFloating /> */}
-              <CharacterModelFarmerWomanFloating />
-            </CharacterControls>
-          </KeyboardControls>
-        </group>
-        {/* END: CHARACTER MODEL */}
-
-        {/* // import Map from './Map' */}
-        {/* <group 
-          rotation={[(-Math.PI/2) + 0, (-Math.PI/2), (-Math.PI/2) + 0]} 
-          scale={1.4} 
-          position={[0, 2, 26]}
-        >
-          <Map />
-        </group> */}
 
         {/* baby steps */}
         {/* Steps -- aka: four-by-fours, 4"x4"[s], posts, logs */}
@@ -320,9 +280,9 @@ export default function Experience() {
           <Slopes />
         </group> */}
         {/* Rigid Body Objects */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
           <RigidObjects />
-        </group>
+        </group> */}
 
         {/* kinder steps (active objects) */}
         {/* Floating Platforms */}
@@ -359,19 +319,64 @@ export default function Experience() {
         </group>
         {/* DEFAULT GROUND BOUNDARY (PREVENTS INFINITE FALL BACKUP):
             DEEP DEEP DEEP BELOW SEA LEVEL */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -1024, 0]}>
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -1024, 0]}>
           <Ground color={'black'} opacity={0.0} />
+        </group> */}
+
+
+        {/* THREED FARMBOT */}
+        <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.6, -2]}>
+          <ThreeDFarmBotGarden />
+        </group>
+        {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
+          <ThreeDFarmBotMain />
+        </group> */}
+
+        {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
+            CHARACTER MODEL */}
+        <group position={[0, 8, 0]}>
+          {/* THREED CHARACTER [n] -- FARMER FEMALE */}
+          <KeyboardControls map={keyboardMap}>
+            <CharacterControls
+              // debug={prefs.doWorldDebug}
+              debug={false}
+              // animated={prefs.doCharacterAnimation}
+              animated={true} // <EcctrlAnimation>
+              // disableFollowCam={prefs.doWorldUnfollowCam}
+              disableFollowCam={true}
+              followLight={true}
+              springK={2}
+              dampingC={0.2}
+              autoBalanceSpringK={1.2}
+              autoBalanceDampingC={0.04}
+              // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
+              // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
+            >
+              {/* <CharacterModelFloating /> */}
+              {/* <CharacterModelFarmerWomanFloating /> */}
+            </CharacterControls>
+          </KeyboardControls>
+        </group>
+        {/* END: CHARACTER MODEL */}
+
+        {/* // import Map from './Map' */}
+        <group 
+          rotation={[(-Math.PI/2) + 0, (-Math.PI/2), (-Math.PI/2) + 0]} 
+          scale={1.4} 
+          position={[0, 2, 26]}
+        >
+          <Map />
         </group>
 
       </Physics>
 
       {/* <Grid
-        args={[64, 64]} // x = 4rem, z = 4rem
-        sectionColor={'darkgray'}
+        args={[128, 128]} // x = 4rem, z = 4rem
+        sectionColor={'black'}
         cellColor={'black'}
-        position={[0, -16, 0]} // sea level : -1rem
+        position={[0, -8, 0]} // sea level?
         userData={{
-          camExcludeCollision: false, // collide by camera ray? true | false
+          camExcludeCollision: true, // collide by camera ray? true | false
         }}
       /> */}
 

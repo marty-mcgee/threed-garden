@@ -187,7 +187,7 @@ export const ThreeDCanvasViewer = () => {
       
 
       {/* [MM] TESTING -- RADIX-UI.primitive.Collapsible */}
-      <CollapsibleDemo />
+      {/* <CollapsibleDemo /> */}
 
 
 

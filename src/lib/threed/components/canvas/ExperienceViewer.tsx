@@ -46,9 +46,12 @@ import {
   // **
   // useGLTF, useFBX,
   // **
-  PerspectiveCamera, 
-  View as ThreeDViewImpl, 
+  View as ThreeDViewImpl,
 } from '@react-three/drei'
+import {
+  useThree,
+  useFrame,
+} from '@react-three/fiber'
 
 // THREED:IO Imports
 import { ThreedIO } from '#/lib/threed/threedio/components/ThreedIO'
@@ -79,6 +82,7 @@ const debug_deep = false // false | true // ts: boolean
 //   </Suspense>
 // )
 
+// ** RETURN ThreeDEnvironment
 export function ThreeDEnvironment() {
 
   // ** HOOKS
@@ -181,6 +185,7 @@ export function ThreeDEnvironment() {
 
   return (
     <Environment
+      // @ts-expect-error
       preset={prefs.environmentPreset}
       blur={prefs.environmentBgBlur}
       // blur={preferencesDataVar().environmentBgBlur}
@@ -189,6 +194,10 @@ export function ThreeDEnvironment() {
   )
 }
 
+// ==========================================================
+
+// ** RETURN ExperienceViewer
+// @ts-expect-error
 const ExperienceViewer = forwardRef(({ enableOrbit, children, ...props }, ref) => {
 
   // ** HOOKS
@@ -200,16 +209,19 @@ const ExperienceViewer = forwardRef(({ enableOrbit, children, ...props }, ref) =
 
   return (
     <>
+
       {/* <Html ref={localRef} {...props} /> */}
       
-      {/* <ThreedIO>
+      {/* 
+      <ThreedIO>
         <ThreeDViewImpl track={localRef}> */}
 
           {/* ThreeD Models as props.children */}
           {children}
 
         {/* </ThreeDViewImpl>
-      </ThreedIO> */}
+      </ThreedIO> 
+      */}
 
           {/* THREED ENVIRONMENT */}
           <ThreeDEnvironment />
