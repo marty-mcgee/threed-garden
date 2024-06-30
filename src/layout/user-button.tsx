@@ -26,15 +26,29 @@ export default async function UserButton() {
     return <SignIn />
   }
   return (
-    <div className="flex gap-2 items-center">
-      {/* <span className="hidden text-sm sm:inline-flex">
+    <div 
+      className='
+        flex
+        items-center
+        gap-0
+      '
+    >
+      {/* <span className='hidden text-sm sm:inline-flex'>
         {session.user.email}
       </span> */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className='relative rounded-full'>
-            <div className='mr-2'>{session.user.name}</div>
-            <Avatar className='w-12 h-12'>
+          <Button 
+            className='relative rounded-full'
+          >
+            <div 
+              className='mr-2'
+            >
+              {session.user.name}
+            </div>
+            <Avatar 
+              className='w-12 h-12'
+            >
               {session.user.image && (
                 <AvatarImage
                   src={session.user.image}
