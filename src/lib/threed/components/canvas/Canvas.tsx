@@ -47,9 +47,21 @@ import {
   // useGLTF, useFBX,
 } from '@react-three/drei'
 
-
-// RADIX-UI Importa
+// ** RADIX-UI Imports
 import * as Progress from '@radix-ui/react-progress'
+import * as Collapsible from '@radix-ui/react-collapsible'
+import * as Accordion from '@radix-ui/react-accordion'
+import {
+  ChevronDownIcon,
+  RowSpacingIcon, 
+  Cross2Icon,
+} from '@radix-ui/react-icons'
+import {
+  Box,
+  Button,
+  Grid,
+  Text,
+} from '@radix-ui/themes'
 
 
 // do stuff with IMPORTS ??
@@ -174,7 +186,7 @@ const EcctrlJoystickControls = () => {
   }, [])
   return (
     <>
-      {isTouchScreen && <EcctrlJoystick buttonNumber={5} />}
+      {isTouchScreen && <EcctrlJoystick ButtonNumber={5} />}
     </>
   )
 }
@@ -267,7 +279,7 @@ function FooGetCamera() {
   })
   return (
     <Html>
-      <button onClick={() => fooGetCamera()}>get cameraPosition</button>
+      <Button onClick={() => fooGetCamera()}>get cameraPosition</Button>
     </Html>
   )
 }
@@ -344,7 +356,7 @@ export const ThreeDCanvas = (
     // })
   //   return (
   //     <Html>
-  //       <button onClick={() => fooGetCamera()}>get cameraPosition</button>
+  //       <Button onClick={() => fooGetCamera()}>get cameraPosition</Button>
   //     </Html>
   //   )
   // }
@@ -364,15 +376,16 @@ export const ThreeDCanvas = (
       {/* <threedIO.Out /> */}
 
       {/* CHARACTER CONTROL JOYSTICK */}
-      {/* <EcctrlJoystick buttonNumber={5} /> */}
+      {/* <EcctrlJoystick ButtonNumber={5} /> */}
       {/* <EcctrlJoystickControls /> */}
 
       {/* CAMERA INTERACTIONS */}
       {/* <CameraPositionTestApp /> */}
-      {/* <button onClick={() => setTheCameraPosition([-10,2,-10])}>set cameraPosition</button> */}
-      {/* <button onClick={() => fooGetCamera()}>get cameraPosition</button> */}
-      <button onClick={(e) => setTheCameraPosition()}>get+set cameraPosition</button>
-      {/* <button onClick={() => FooGetCamera()}>get cameraPosition</button> */}
+      {/* <Button onClick={() => setTheCameraPosition([-10,2,-10])}>set cameraPosition</Button> */}
+      {/* <Button onClick={() => fooGetCamera()}>get cameraPosition</Button> */}
+      {/* <Button onClick={(e) => setTheCameraPosition()}>get+set cameraPosition</Button> */}
+      {/* <Button onClick={() => FooGetCamera()}>get cameraPosition</Button> */}
+      {/* <Button onClick={(e) => getCameraState()}>Get Camera State</Button> */}
 
       {/* THREED CANVAS */}
       <Canvas
