@@ -24,28 +24,41 @@ export function MainNav() {
     >
       <CustomLink href='/'>
         {/* <Button variant="ghost" className="p-0">   */}
-          <Image src='/favicon/apple-icon.png' priority={true} alt='Home' width='40' height='40' />
+          <Image src='/favicon/apple-icon.png' priority={true} alt='Home' width='32' height='32' />
         {/* </Button> */}
       </CustomLink>
       <h3 
         className='pb-2'
       >
         <CustomLink href='/participate' 
-          style={{color: '#DDDDDD'}}
+          style={{
+            color: '#DDDDDD', 
+            textDecoration: 'none',
+          }}
         >
           THREED GARDEN
         </CustomLink>
       </h3>
+
+
       <NavigationMenu>
         <NavigationMenuList>
+
           <NavigationMenuItem>
             <NavigationMenuTrigger 
               style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
             >
-              Participate
+              <CustomLink href='/participate' 
+                style={{
+                  color: '#DDDDDD', 
+                  textDecoration: 'none',
+                }}
+              >
+                Participate
+              </CustomLink>
             </NavigationMenuTrigger>
             <NavigationMenuContent 
-              style={{backgroundColor: '#222222', color: '#DDDDDD'}}
+              style={{backgroundColor: '#222222', color: '#DDDDDD', listStyleType: 'none'}}
             >
               <ul className='grid gap-0 p-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
                 <ListItem href='/home' title='Home'>
@@ -60,14 +73,22 @@ export function MainNav() {
               </ul>
             </NavigationMenuContent>
           </NavigationMenuItem>
+
           <NavigationMenuItem>
             <NavigationMenuTrigger
               style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
             >
-              Server
+              <CustomLink href='/server-example' 
+                style={{
+                  color: '#DDDDDD', 
+                  textDecoration: 'none',
+                }}
+              >
+                Server
+              </CustomLink>
             </NavigationMenuTrigger>
             <NavigationMenuContent 
-              style={{backgroundColor: '#222222', color: '#DDDDDD'}}
+              style={{backgroundColor: '#222222', color: '#DDDDDD', listStyleType: 'none'}}
             >
               <ul className='grid gap-0 p-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
                 <ListItem href='/server-example' title='RSC Example'>
@@ -82,7 +103,43 @@ export function MainNav() {
               </ul>
             </NavigationMenuContent>
           </NavigationMenuItem>
+
           <NavigationMenuItem>
+            <NavigationMenuTrigger
+              style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
+            >
+              <CustomLink href='/client-example' 
+                style={{
+                  color: '#DDDDDD', 
+                  textDecoration: 'none',
+                }}
+              >
+                Client
+              </CustomLink>
+            </NavigationMenuTrigger>
+            <NavigationMenuContent 
+              style={{backgroundColor: '#222222', color: '#DDDDDD', listStyleType: 'none'}}
+            >
+              {/* <ul className='grid gap-0 p-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
+                <ListItem href='/server-example' title='RSC Example'>
+                  Protecting React Server Component.
+                </ListItem>
+                <ListItem href='/middleware-example' title='Middleware Example'>
+                  Using Middleware to protect pages & APIs.
+                </ListItem>
+                <ListItem href='/api-example' title='Route Handler Example'>
+                  Getting the session inside an API Route.
+                </ListItem>
+              </ul> */}
+              <ul className='grid gap-0 p-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
+                <ListItem href='/participate' title='ThreeD Garden: Participate'>
+                  Participate
+                </ListItem>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+
+          {/* <NavigationMenuItem>
             <NavigationMenuLink
               href='/client-example'
               // className={navigationMenuTriggerStyle()}
@@ -90,7 +147,9 @@ export function MainNav() {
             >
               Client
             </NavigationMenuLink>
-          </NavigationMenuItem>
+          </NavigationMenuItem> */}
+
+
         </NavigationMenuList>
       </NavigationMenu>
     </div>
