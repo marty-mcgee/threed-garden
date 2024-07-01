@@ -483,9 +483,11 @@ export const ThreeDCanvas = (
           {/* THREED EXPERIENCE : VIEWER */}
           {/* ExperienceViewer = forwardRef(({ children, enableOrbit, ...props }, ref) => {} */}
           {/* @ ts-expect-error */}
-          {/* <ThreeDExperienceViewer> */}
-          {/* @ts-expect-error */}
-          <ThreeDExperienceViewer ref={ref}>{/* enableOrbit={true} enablePerf={true}> */}
+          <ThreeDExperienceViewer 
+            // ref={ref} // when using function as a forwardRef // THREED IO
+            enableOrbit={true} 
+            enablePerf={true}
+          >
 
             {/* THREED MODELS: WORKING !!! */}
             {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}

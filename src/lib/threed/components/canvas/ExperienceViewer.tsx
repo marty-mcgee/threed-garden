@@ -197,22 +197,28 @@ export function ThreeDEnvironment() {
 // ==========================================================
 
 // ** RETURN ExperienceViewer
-// @ts-expect-error
-const ExperienceViewer = forwardRef(({ children, enableOrbit, enablePerf, ...props }, ref) => {
+const ExperienceViewer = (
+  { children, enableOrbit, enablePerf, ...props }:
+  { children: any, enableOrbit: boolean, enablePerf: boolean}, 
+  // ref
+) => {
+// ** THREED IO
+// @ ts-expect-error
+// const ExperienceViewer = forwardRef(({ children, enableOrbit, enablePerf, ...props }, ref) => {
 // const ExperienceViewer = forwardRef(({ ...props }, ref) => {
 
   // ** HOOKS
   const prefs = useReactiveVar(preferencesDataVar)
 
   // ** THREED IO
-  const localRef = useRef(null)
-  useImperativeHandle(ref, () => localRef.current)
+  // const localRef = useRef(null)
+  // useImperativeHandle(ref, () => localRef.current)
 
   return (
     <>
 
+      {/* THREED IO */}
       {/* <Html ref={localRef} {...props} /> */}
-      
       {/* 
       <ThreedIO>
         <ThreeDViewImpl track={localRef}> */}
@@ -316,7 +322,8 @@ const ExperienceViewer = forwardRef(({ children, enableOrbit, enablePerf, ...pro
           */}
     </>
   )
-})
+}
+// ) // forwardRef end
 ExperienceViewer.displayName = 'ThreeD-ExperienceViewer'
 
 export { ExperienceViewer }
