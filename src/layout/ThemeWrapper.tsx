@@ -1,5 +1,9 @@
 // 'use client'
 'use server'
+// ^^ does this file require client or server pragma ???
+
+// ** React
+import type { ReactNode } from 'react'
 
 // LAYOUT PROVIDERRRRRR by RADIX-UI
 import { 
@@ -17,7 +21,7 @@ import { ThemeProvider } from 'next-themes'
 // import dynamic from 'next/dynamic'
 // const ThemeViewer = dynamic(() => import('#/lib/threed/components/canvas/ExperienceViewer'), { ssr: false })
 
-const ThemeWrapper = ({ children }: { children: any}) => {
+const ThemeWrapper = ({ children }: { children: ReactNode}) => {
   // **
   const _id: string = 'ThreeDAppThemeWrapper'
   // const ref: any = useRef<any>() // for client components only

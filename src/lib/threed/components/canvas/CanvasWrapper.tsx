@@ -1,10 +1,13 @@
 'use client'
 
+// ** React
+import type { ReactNode } from 'react'
+
 import { useRef } from 'react'
 import dynamic from 'next/dynamic'
 const ExperienceViewer = dynamic(() => import('#/lib/threed/components/canvas/ExperienceViewer'), { ssr: false })
 
-const CanvasWrapper = ({ children }: { children: any}) => {
+const CanvasWrapper = ({ children }: { children: ReactNode}) => {
   const id: string = 'HEYHEYHEY'
   const ref: any = useRef<any>()
 

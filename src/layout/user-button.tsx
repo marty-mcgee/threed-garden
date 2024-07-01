@@ -30,7 +30,7 @@ export default async function UserButton() {
       className='
         flex
         items-center
-        gap-0
+        p-2
       '
     >
       {/* <span className='hidden text-sm sm:inline-flex'>
@@ -39,7 +39,8 @@ export default async function UserButton() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button 
-            className='relative rounded-full'
+            // className='relative rounded-full'
+            className='bg-background text-foreground text-xs p-2'
           >
             <div 
               className='mr-2'
@@ -47,12 +48,13 @@ export default async function UserButton() {
               {session.user.name}
             </div>
             <Avatar 
-              className='w-12 h-12'
+              className='w-10 h-10'
             >
               {session.user.image && (
                 <AvatarImage
                   src={session.user.image}
                   alt={session.user.name ?? ''}
+                  className='rounded-full'
                 />
               )}
               <AvatarFallback>{session.user.email}</AvatarFallback>
