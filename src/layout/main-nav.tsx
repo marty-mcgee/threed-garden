@@ -33,6 +33,12 @@ export default async function MainNav() {
       // justify={'between'}
       // gap={'2'}
       align={'center'}
+      // className='
+      //   m-0
+      // '
+      style={{
+        marginTop: -4, // wtf !!!
+      }}
     >
       <Flex
         // justify={'between'}
@@ -66,7 +72,7 @@ export default async function MainNav() {
         align={'center'}
         className='
           m-0
-          p-0
+          pb-1
         '
       >
         <NavigationMenu>
