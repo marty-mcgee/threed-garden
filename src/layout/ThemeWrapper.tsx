@@ -42,9 +42,9 @@ const ThemeWrapper = ({ children }: { children: any}) => {
           {children}
         </Flex>
 
-        <ThemePanel
+        {/* <ThemePanel
           // open={true} // true | false // private property, sorry
-        />
+        /> */}
 
       </Theme>
     </ThemeProvider>
