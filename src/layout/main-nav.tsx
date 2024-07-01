@@ -8,6 +8,7 @@ import {
   Grid,
   Flex,
   Text,
+  Button,
 } from '@radix-ui/themes'
 
 import Image from 'next/image'
@@ -46,14 +47,14 @@ export default async function MainNav() {
         align={'center'}
       >
         <CustomLink href='/#home'>
-          {/* <Button variant='ghost' className='p-0'>   */}
+          <Button variant='ghost'>  
             <Image src='/favicon/apple-icon.png' priority={true} alt='Home' width='32' height='32' />
-          {/* </Button> */}
+          </Button>
         </CustomLink>
         <Text
           as={'label'}
           weight={'medium'}
-          className='pl-2 pb-1'
+          className='pl-2'
         >
           <CustomLink href='/#threedgarden' 
             style={{
@@ -70,10 +71,6 @@ export default async function MainNav() {
         // justify={'between'}
         // gap={'2'}
         align={'center'}
-        className='
-          m-0
-          pb-1
-        '
       >
         <NavigationMenu>
           <NavigationMenuList>
