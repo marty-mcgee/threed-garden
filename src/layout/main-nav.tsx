@@ -64,15 +64,27 @@ export default async function MainNav() {
         // justify={'between'}
         // gap={'2'}
         align={'center'}
+        className='
+          m-0
+          p-0
+        '
       >
-        {/* <NavigationMenu>
+        <NavigationMenu>
           <NavigationMenuList>
-            
+        
             <NavigationMenuItem>
               <NavigationMenuLink
                 href='/participate'
                 className={navigationMenuTriggerStyle()}
-                style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
+                style={{
+                  // backgroundColor: '#222222', 
+                  color: '#DDDDDD', 
+                  textDecoration: 'underline',
+                  // borderWidth: 0,
+                  // margin: 0,
+                  // padding: 0,
+                  fontSize: 12,
+                }}
               >
                 Demo
               </NavigationMenuLink>
@@ -84,6 +96,7 @@ export default async function MainNav() {
                   // backgroundColor: '#222222', 
                   color: '#DDDDDD', 
                   borderWidth: 0,
+                  textDecoration: 'none',
                 }}
               >
                 <CustomLink href='/participate' 
@@ -100,6 +113,7 @@ export default async function MainNav() {
                   // backgroundColor: '#222222', 
                   color: '#DDDDDD', 
                   // listStyleType: 'none'
+                  textDecoration: 'none',
                 }}
               >
                 <ul 
@@ -113,6 +127,7 @@ export default async function MainNav() {
                   '
                   style={{
                     listStyleType: 'none',
+                    textDecoration: 'none',
                   }}
                 >
                   <ListItem href='/home' title='Home'>
@@ -221,9 +236,9 @@ export default async function MainNav() {
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
-
+ 
           </NavigationMenuList>
-        </NavigationMenu> */}
+        </NavigationMenu>
       </Flex>
 
     </Flex>
