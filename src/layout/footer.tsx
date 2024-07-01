@@ -2,13 +2,14 @@ import CustomLink from './custom-link'
 
 export default function Footer() {
   const version = '0.16.0-beta'
-  // removed className='w-full'
   return (
     <footer 
       id='ThreeDAppFooter'
-      className='flex flex-row space-x-2 text-xs mr-2 items-center'
-      style={{float: 'right'}}
+      // removed className='w-full'
+      // className='flex flex-row space-x-2 text-xs mr-2 items-center'
+      // style={{float: 'right'}}
     >
+      {/* 
       <CustomLink href='https://github.com/marty-mcgee/threed-garden/#readme' style={{color: 'gray'}}>
         Documentation
       </CustomLink>
@@ -30,6 +31,7 @@ export default function Footer() {
       <CustomLink href='/policy' style={{color: 'gray'}}>
         Policies
       </CustomLink>
+      */}
     </footer>
   )
 }

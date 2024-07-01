@@ -65,7 +65,7 @@ export default async function MainNav() {
         // gap={'2'}
         align={'center'}
       >
-        <NavigationMenu>
+        {/* <NavigationMenu>
           <NavigationMenuList>
             
             <NavigationMenuItem>
@@ -223,7 +223,7 @@ export default async function MainNav() {
             </NavigationMenuItem>
 
           </NavigationMenuList>
-        </NavigationMenu>
+        </NavigationMenu> */}
       </Flex>
 
     </Flex>

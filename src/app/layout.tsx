@@ -64,7 +64,8 @@ import '#/layout/styles/custom-styles.css' // additional global basic custom css
 
 // ** LAYOUT Components
 // ** Radix UI
-import '@radix-ui/themes/styles.css'
+// import '@radix-ui/themes/styles.css' // radix-ui theme default css in node_modules
+import '#/layout/styles/radix-ui-themes-styles.css' // copied from default, for editing
 import ThemeWrapper from '#/layout/ThemeWrapper'
 // const ThemeWrapper = dynamic(() => import('~/src/layout/ThemeWrapper'), { ssr: false })
 // import { Theme, ThemePanel } from '@radix-ui/themes'
