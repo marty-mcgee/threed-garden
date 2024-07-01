@@ -189,8 +189,8 @@ export function ThreeDEnvironment() {
     <Environment
       // @ts-expect-error
       preset={prefs.environmentPreset}
-      blur={prefs.environmentBgBlur}
-      // blur={preferencesDataVar().environmentBgBlur}
+      // blur={prefs.environmentBgBlur}
+      blur={preferencesDataVar().environmentBgBlur}
       background
     />
   )

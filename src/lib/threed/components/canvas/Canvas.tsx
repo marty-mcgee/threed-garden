@@ -86,9 +86,6 @@ import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
 import { threedIO } from '#/lib/threed/threedio/threedIO'
 
-// ** LAYOUT Components (Head, Main, Foot)
-// import CanvasWrapper from '#/lib/threed/components/canvas/CanvasWrapper'
-
 // ** ThreeD Noun Imports
 // import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene'
 // import ThreeDPlans from '#/lib/threed/components/nouns/Plan/Plan'
@@ -107,8 +104,6 @@ import ThreeDModels from '#/lib/threed/components/nouns/Model/Model'
 
 // ** HELPER Components
 import Spinner from '#/layout/ui/components/spinner'
-// ** UUID Imports
-// import { v4 as newUUID } from 'uuid'
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 // console.debug('%c ccm', ccm)
@@ -117,7 +112,7 @@ import ccm from '#/lib/utils/console-colors'
 // ** VARIABLES
 
 const debug = false // false | true // ts: boolean
-const DEBUG = true // false | true // ts: boolean
+const DEBUG = false // false | true // ts: boolean
 
 // Model interactive 'modes' using TransformControls
 const actionModes = ['translate', 'rotate', 'scale']
