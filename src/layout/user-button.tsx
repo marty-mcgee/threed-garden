@@ -46,7 +46,8 @@ export default async function UserButton() {
             // className='relative rounded-full'
             className='bg-background text-foreground text-xs p-2'
             style={{
-              border: 0,
+              // border: 0,
+              marginRight: 4,
             }}
           >
             <div 
