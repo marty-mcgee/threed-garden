@@ -198,7 +198,8 @@ export function ThreeDEnvironment() {
 
 // ** RETURN ExperienceViewer
 // @ts-expect-error
-const ExperienceViewer = forwardRef(({ enableOrbit, children, ...props }, ref) => {
+const ExperienceViewer = forwardRef(({ children, enableOrbit, enablePerf, ...props }, ref) => {
+// const ExperienceViewer = forwardRef(({ ...props }, ref) => {
 
   // ** HOOKS
   const prefs = useReactiveVar(preferencesDataVar)

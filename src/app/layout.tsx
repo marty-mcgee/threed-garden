@@ -60,7 +60,7 @@ const SessionWrapper = dynamic(() => import('~/src/layout/SessionWrapper'), { ss
 
 // ** CSS Styles
 import '#/layout/styles/globals.css' // global tailwind css
-// import '#/layout/styles/custom-styles.css' // additional global basic custom css
+import '#/layout/styles/custom-styles.css' // additional global basic custom css
 
 // ** LAYOUT Components
 // ** Radix UI
@@ -82,11 +82,11 @@ import ThemeWrapper from '#/layout/ThemeWrapper'
 // } from '@mui/material'
 // ** LAYOUT Components (Head, Body, Foot)
 import Header from '#/layout/header'
-// import Footer from '#/layout/footer'
+import Footer from '#/layout/footer'
 // // const Header = dynamic(() => import('#/layout/header').then((mod) => mod), { ssr: false })
 // // const Footer = dynamic(() => import('#/layout/footer').then((mod) => mod), { ssr: false })
 // const Header = dynamic(() => import('#/layout/header'), { ssr: false })
-const Footer = dynamic(() => import('#/layout/footer'), { ssr: false })
+// const Footer = dynamic(() => import('#/layout/footer'), { ssr: false })
 
 // ** FONTS ??
 // import { Inter } from 'next/font/google' // Roboto?

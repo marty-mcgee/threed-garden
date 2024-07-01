@@ -310,12 +310,12 @@ export default function Experience() {
         {/* Sub-Floor[s] (Plane < 0) */}
         {/* <SubFloor level={`${level[index]}`} /> */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
-          <Floor color={'saddlebrown'} opacity={0.8} />
+          <Floor color={'saddlebrown'} opacity={0.4} />
         </group>
         {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
             DEEP BELOW SEA LEVEL */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
-          <Floor color={'black'} opacity={0.8} />
+          <Floor color={'black'} opacity={0.2} />
         </group>
         {/* DEFAULT GROUND BOUNDARY (PREVENTS INFINITE FALL BACKUP):
             DEEP DEEP DEEP BELOW SEA LEVEL */}
@@ -325,9 +325,9 @@ export default function Experience() {
 
 
         {/* THREED FARMBOT */}
-        <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.6, -2]}>
+        {/* <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.6, -2]}>
           <ThreeDFarmBotGarden />
-        </group>
+        </group> */}
         {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
           <ThreeDFarmBotMain />
         </group> */}

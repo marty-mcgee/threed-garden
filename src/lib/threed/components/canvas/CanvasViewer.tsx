@@ -30,12 +30,10 @@ import {
 } from '@radix-ui/themes'
 
 // ** THREED r3f Canvas Imports
-// import { Canvas } from '@react-three/fiber'
 import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
-// import { ThreeDEnvironment } from '#/lib/threed/components/canvas/Canvas'
 
 // ** HELPER Components
-import Spinner from '#/layout/ui/components/spinner'
+// import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
@@ -51,10 +49,8 @@ const DEBUG: boolean = false
 
 // ** export default
 export const ThreeDCanvasViewer = () => {
-
-  // return <Spinner />
-
   // **
+  // return <Spinner />
   const word: string = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
   // console.debug(`%c=======================================================`, ccm.orange)
   if (debug || DEBUG) console.debug('%c🥕 ThreeDCanvasViewer ...', ccm.darkredAlert)
@@ -142,7 +138,14 @@ export const ThreeDCanvasViewer = () => {
             // className='AccordionContent'
           >
             <Grid
-              style={{ borderTop: '1px solid darkgreen' }}
+              style={{ 
+                borderTop: '1px solid darkgreen',
+                minHeight: '30vh',
+                // display: 'flex', 
+                // alignItems: 'center', 
+                // justifyContent: 'space-between',
+                // flexDirection: 'column',
+              }}
             >
               <ThreeDCanvas
                 _id={'_r3fCanvas1'}
@@ -171,7 +174,10 @@ export const ThreeDCanvasViewer = () => {
             // className='AccordionContent'
           >
             <Grid
-              style={{ borderTop: '1px solid darkgreen' }}
+              style={{ 
+                borderTop: '1px solid darkgreen',
+                // minHeight: '15vh',
+              }}
             >
               <ThreeDCanvas
                 _id={'_r3fCanvas2'}
