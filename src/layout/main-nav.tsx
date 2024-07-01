@@ -1,6 +1,14 @@
 // 'use client'
 // ^^ does this file require client or server pragma ???
 
+// ** UI Imports
+import {
+  Box,
+  Grid,
+  Flex,
+  Text,
+} from '@radix-ui/themes'
+
 import Image from 'next/image'
 
 import { cn } from '#/lib/utils/utils'
@@ -19,55 +27,117 @@ import React from 'react'
 
 export default function MainNav() {
   return (
-    <div 
-      className='
-        flex 
-        items-center 
-        gap-0
-      '
+    <Flex 
+      // display={'inline-flex'}
+      // justify={'between'}
+      // gap={'2'}
+      align={'center'}
     >
-      <CustomLink href='/#home'>
-        {/* <Button variant='ghost' className='p-0'>   */}
-          <Image src='/favicon/apple-icon.png' priority={true} alt='Home' width='32' height='32' />
-        {/* </Button> */}
-      </CustomLink>
-      <h3 
-        // className='pb-2'
+      <Flex
+        // justify={'between'}
+        // gap={'2'}
+        align={'center'}
       >
-        <CustomLink href='/participate' 
-          style={{
-            color: '#DDDDDD', 
-            textDecoration: 'none',
-          }}
-        >
-          THREED GARDEN
+        <CustomLink href='/#home'>
+          {/* <Button variant='ghost' className='p-0'>   */}
+            <Image src='/favicon/apple-icon.png' priority={true} alt='Home' width='32' height='32' />
+          {/* </Button> */}
         </CustomLink>
-      </h3>
+        <Text
+          as={'label'}
+          weight={'medium'}
+          className='pl-2 pb-1'
+        >
+          <CustomLink href='/participate' 
+            style={{
+              color: '#DDDDDD',
+              textDecoration: 'none',
+            }}
+          >
+            THREED GARDEN
+          </CustomLink>
+        </Text>
+      </Flex>
+      
+      <Flex
+        // justify={'between'}
+        // gap={'2'}
+        align={'center'}
+      >
+        <NavigationMenu>
+          <NavigationMenuList>
 
-
-      <NavigationMenu>
-        <NavigationMenuList>
-
-          <NavigationMenuItem>
-            <NavigationMenuTrigger 
-              style={{
-                backgroundColor: '#222222', 
-                color: '#DDDDDD', 
-                borderWidth: 0,
-              }}
-            >
-              <CustomLink href='/participate' 
+            <NavigationMenuItem>
+              <NavigationMenuTrigger 
                 style={{
+                  // backgroundColor: '#222222', 
                   color: '#DDDDDD', 
-                  textDecoration: 'none',
+                  borderWidth: 0,
                 }}
               >
-                Participate
-              </CustomLink>
-            </NavigationMenuTrigger>
-            <NavigationMenuContent 
-              style={{backgroundColor: '#222222', color: '#DDDDDD', listStyleType: 'none'}}
-            >
+                <CustomLink href='/participate' 
+                  style={{
+                    color: '#DDDDDD', 
+                    textDecoration: 'none',
+                  }}
+                >
+                  Participate
+                </CustomLink>
+              </NavigationMenuTrigger>
+              <NavigationMenuContent 
+                style={{
+                  // backgroundColor: '#222222', 
+                  color: '#DDDDDD', 
+                  // listStyleType: 'none'
+                }}
+              >
+                <ul 
+                  className='
+                    grid 
+                    gap-0 
+                    p-2 
+                    md:w-[400px] 
+                    lg:w-[500px] 
+                    lg:grid-cols-[.75fr_1fr]
+                  '
+                >
+                  <ListItem href='/home' title='Home'>
+                    Go to the home page of this app.
+                  </ListItem>
+                  <ListItem href='/participate' title='Participate'>
+                    Use the ThreeD Garden user interface.
+                  </ListItem>
+                  <ListItem href='/page' title='About Page'>
+                    Read more about this project's pages.
+                  </ListItem>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+
+            <NavigationMenuItem>
+              <NavigationMenuTrigger 
+                style={{
+                  // backgroundColor: '#222222', 
+                  color: '#DDDDDD', 
+                  borderWidth: 0,
+                }}
+              >
+                <CustomLink href='/server-example' 
+                  style={{
+                    color: '#DDDDDD', 
+                    textDecoration: 'none',
+                  }}
+                >
+                  Server
+                </CustomLink>
+              </NavigationMenuTrigger>
+              <NavigationMenuContent 
+                style={{
+                  // backgroundColor: '#222222', 
+                  color: '#DDDDDD', 
+                  // listStyleType: 'none'
+                }}
+              >
               <ul 
                 className='
                   grid 
@@ -78,126 +148,96 @@ export default function MainNav() {
                   lg:grid-cols-[.75fr_1fr]
                 '
               >
-                <ListItem href='/home' title='Home'>
-                  Go to the home page of this app.
-                </ListItem>
-                <ListItem href='/participate' title='Participate'>
-                  Use the ThreeD Garden user interface.
-                </ListItem>
-                <ListItem href='/page' title='About Page'>
-                  Read more about this project's pages.
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
+                  <ListItem href='/server-example' title='RSC Example'>
+                    Protecting React Server Component.
+                  </ListItem>
+                  <ListItem href='/middleware-example' title='Middleware Example'>
+                    Using Middleware to protect pages & APIs.
+                  </ListItem>
+                  <ListItem href='/api-example' title='Route Handler Example'>
+                    Getting the session inside an API Route.
+                  </ListItem>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
 
-          <NavigationMenuItem>
-            <NavigationMenuTrigger
-              style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
-            >
-              <CustomLink href='/server-example' 
+            <NavigationMenuItem>
+              <NavigationMenuTrigger 
                 style={{
+                  // backgroundColor: '#222222', 
                   color: '#DDDDDD', 
-                  textDecoration: 'none',
+                  borderWidth: 0,
                 }}
               >
-                Server
-              </CustomLink>
-            </NavigationMenuTrigger>
-            <NavigationMenuContent 
-              style={{backgroundColor: '#222222', color: '#DDDDDD', listStyleType: 'none'}}
-            >
-            <ul 
-              className='
-                grid 
-                gap-0 
-                p-2 
-                md:w-[400px] 
-                lg:w-[500px] 
-                lg:grid-cols-[.75fr_1fr]
-              '
-            >
-                <ListItem href='/server-example' title='RSC Example'>
-                  Protecting React Server Component.
-                </ListItem>
-                <ListItem href='/middleware-example' title='Middleware Example'>
-                  Using Middleware to protect pages & APIs.
-                </ListItem>
-                <ListItem href='/api-example' title='Route Handler Example'>
-                  Getting the session inside an API Route.
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-
-          <NavigationMenuItem>
-            <NavigationMenuTrigger
-              style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
-            >
-              <CustomLink href='/client-example' 
+                <CustomLink href='/client-example' 
+                  style={{
+                    color: '#DDDDDD', 
+                    textDecoration: 'none',
+                  }}
+                >
+                  Client
+                </CustomLink>
+              </NavigationMenuTrigger>
+              <NavigationMenuContent 
                 style={{
+                  // backgroundColor: '#222222', 
                   color: '#DDDDDD', 
-                  textDecoration: 'none',
+                  // listStyleType: 'none'
                 }}
+              >
+                {/* 
+                <ul 
+                  className='
+                    grid 
+                    gap-0 
+                    p-2 
+                    md:w-[400px] 
+                    lg:w-[500px] 
+                    lg:grid-cols-[.75fr_1fr]
+                  '
+                >
+                  <ListItem href='/server-example' title='RSC Example'>
+                    Protecting React Server Component.
+                  </ListItem>
+                  <ListItem href='/middleware-example' title='Middleware Example'>
+                    Using Middleware to protect pages & APIs.
+                  </ListItem>
+                  <ListItem href='/api-example' title='Route Handler Example'>
+                    Getting the session inside an API Route.
+                  </ListItem>
+                </ul> */}
+                <ul 
+                  className='
+                    grid 
+                    gap-0 
+                    p-2 
+                    md:w-[400px] 
+                    lg:w-[500px] 
+                    lg:grid-cols-[.75fr_1fr]
+                  '
+                >
+                  <ListItem href='/participate' title='ThreeD Garden: Participate'>
+                    Participate
+                  </ListItem>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+
+            {/* <NavigationMenuItem>
+              <NavigationMenuLink
+                href='/client-example'
+                // className={navigationMenuTriggerStyle()}
+                style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
               >
                 Client
-              </CustomLink>
-            </NavigationMenuTrigger>
-            <NavigationMenuContent 
-              style={{backgroundColor: '#222222', color: '#DDDDDD', listStyleType: 'none'}}
-            >
-              {/* 
-              <ul 
-                className='
-                  grid 
-                  gap-0 
-                  p-2 
-                  md:w-[400px] 
-                  lg:w-[500px] 
-                  lg:grid-cols-[.75fr_1fr]
-                '
-              >
-                <ListItem href='/server-example' title='RSC Example'>
-                  Protecting React Server Component.
-                </ListItem>
-                <ListItem href='/middleware-example' title='Middleware Example'>
-                  Using Middleware to protect pages & APIs.
-                </ListItem>
-                <ListItem href='/api-example' title='Route Handler Example'>
-                  Getting the session inside an API Route.
-                </ListItem>
-              </ul> */}
-              <ul 
-                className='
-                  grid 
-                  gap-0 
-                  p-2 
-                  md:w-[400px] 
-                  lg:w-[500px] 
-                  lg:grid-cols-[.75fr_1fr]
-                '
-              >
-                <ListItem href='/participate' title='ThreeD Garden: Participate'>
-                  Participate
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
+              </NavigationMenuLink>
+            </NavigationMenuItem> */}
 
-          {/* <NavigationMenuItem>
-            <NavigationMenuLink
-              href='/client-example'
-              // className={navigationMenuTriggerStyle()}
-              style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
-            >
-              Client
-            </NavigationMenuLink>
-          </NavigationMenuItem> */}
+          </NavigationMenuList>
+        </NavigationMenu>
+      </Flex>
 
-
-        </NavigationMenuList>
-      </NavigationMenu>
-    </div>
+    </Flex>
   )
 }
 

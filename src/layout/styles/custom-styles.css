@@ -1,3 +1,230 @@
+/* CUSTOM THREED CSS */
+
+/*  
+** RADIX-UI CSS
+*/
+@import '@radix-ui/colors/black-alpha.css';
+@import '@radix-ui/colors/grass.css';
+@import '@radix-ui/colors/violet.css';
+@import '@radix-ui/colors/gray-dark.css';
+
+/* resets ?? */
+// 
+button,
+h3 {
+  all: unset;
+}
+//
+
+.AccordionRoot {
+  display: flex; 
+  /* flexDirection: row; */
+  /* height: 60vh; */
+  /* width: auto; */
+  background-color: var(--grass-6);
+  box-shadow: 0 2px 10px var(--black-a4);
+  /* border-radius: 6px; */
+}
+
+.AccordionItem {
+  overflow: hidden;
+  margin-top: 1px;
+}
+
+.AccordionItem:first-child {
+  margin-top: 0;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.AccordionItem:last-child {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.AccordionItem:focus-within {
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 0 2px var(--gray-dark-12);
+}
+
+.AccordionHeader {
+  display: flex;
+}
+
+.AccordionTrigger {
+  /* font-family: inherit; */
+  /* background-color: transparent; */
+  /* padding: 0 20px; */
+  /* height: 45px; */
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* font-size: 15px; */
+  /* line-height: 1; */
+  color: var(--violet-11);
+  /* box-shadow: 0 1px 0 var(--gray-dark-6); */
+  /* background-color: white; */
+}
+
+.AccordionTrigger:hover {
+  background-color: var(--gray-dark-2);
+}
+
+.AccordionContent {
+  overflow: hidden;
+  font-size: 15px;
+  color: var(--gray-dark-11);
+  background-color: var(--gray-dark-2);
+}
+.AccordionContent[data-state='open'] {
+  animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+.AccordionContent[data-state='closed'] {
+  animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+.AccordionContentText {
+  padding: 15px 20px;
+}
+
+.AccordionChevron {
+  color: var(--violet-10);
+  transition: transform 300ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+.AccordionTrigger[data-state='open'] > .AccordionChevron {
+  transform: rotate(180deg);
+}
+
+@keyframes slideDown {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+
+/* RADIX-UI.primitive.COLLAPSIBLE */
+/* @import '@radix-ui/colors/black-alpha.css'; */
+/* @import '@radix-ui/colors/violet.css'; */
+
+/* reset */
+/* button {
+  all: unset;
+} */
+
+.CollapsibleRoot {
+  /* width: 100%; */
+  width: 480px;
+}
+
+
+.CollapsibleContent {
+  overflow: hidden;
+}
+.CollapsibleContent[data-state='open'] {
+  animation: slideDown 300ms ease-out;
+}
+.CollapsibleContent[data-state='closed'] {
+  animation: slideUp 300ms ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    height: var(--radix-collapsible-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+
+.IconButton {
+  font-family: inherit;
+  border-radius: 100%;
+  height: 25px;
+  width: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--grass-11);
+  box-shadow: 0 2px 10px var(--black-a7);
+}
+.IconButton[data-state='closed'] {
+  background-color: white;
+}
+.IconButton[data-state='open'] {
+  background-color: var(--violet-3);
+}
+.IconButton:hover {
+  background-color: var(--violet-3);
+}
+.IconButton:focus {
+  box-shadow: 0 0 0 2px black;
+}
+
+
+.Text {
+  /* color: var(--violet-11); */
+  color: white;
+  font-size: 15px;
+  line-height: 25px;
+}
+
+.Repository {
+  background-color: black;
+  border-radius: 4px;
+  margin: 10px 0;
+  padding: 10px;
+  box-shadow: 0 2px 10px var(--black-a7);
+}
+
+
+/* @import '@radix-ui/colors/black-alpha.css'; */
+
+.ProgressRoot {
+  position: relative;
+  overflow: hidden;
+  background: var(--gray-dark-a9);
+  border-radius: 99999px;
+  width: 300px;
+  height: 25px;
+
+  /* Fix overflow clipping in Safari */
+  /* https://gist.github.com/domske/b66047671c780a238b51c51ffde8d3a0 */
+  transform: translateZ(0);
+}
+
+.ProgressIndicator {
+  background-color: var(--grass-9);
+  width: 100%;
+  height: 100%;
+  transition: transform 660ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ============================================================================= */
+
 #ThreeDApp {
   /* padding: 4px 0; */
   /* margin: 0; */
@@ -8,31 +235,32 @@
 }
 
 /* 
-body {
-  margin: 0;
-}
 */
+body {
+  /* margin: 0; */
+  /* background-color: #111111; */
+}
 
 /* JOYSTICK */ 
-/* 
+/*  */
 * {
-  box-sizing: border-box;
+  /* box-sizing: border-box; */
 }
 
 html,
 body,
 #root {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
+  /* width: 100%;
+  height: 100%; */
+  /* margin: 0; */
+  /* padding: 0; */
+  /* overflow: hidden; */
 }
 
 body {
-  position: fixed;
-  overflow: hidden;
-} */
+  /* position: fixed; */
+  /* overflow: hidden; */
+}
 
 .controlKeys {
   /* position: absolute; */
@@ -192,232 +420,3 @@ body {
   display: inline-block;
   margin-right: 1rem;
 } */
-
-
-
-
-
-
-
-/*  
-** RADIX-UI CSS
-*/
-@import '@radix-ui/colors/black-alpha.css';
-@import '@radix-ui/colors/violet.css';
-/* @import '@radix-ui/colors/mauve.css'; */
-
-
-/* resets ?? */
-// 
-button,
-h3 {
-  all: unset;
-}
-//
-
-.AccordionRoot {
-  display: flex; 
-  /* flexDirection: row; */
-  /* height: 60vh; */
-  /* width: auto; */
-  background-color: var(--mauve-6);
-  box-shadow: 0 2px 10px var(--black-a4);
-  /* border-radius: 6px; */
-}
-
-.AccordionItem {
-  overflow: hidden;
-  margin-top: 1px;
-}
-
-.AccordionItem:first-child {
-  margin-top: 0;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-}
-
-.AccordionItem:last-child {
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-}
-
-.AccordionItem:focus-within {
-  position: relative;
-  z-index: 1;
-  box-shadow: 0 0 0 2px var(--mauve-12);
-}
-
-.AccordionHeader {
-  display: flex;
-}
-
-.AccordionTrigger {
-  /* font-family: inherit; */
-  /* background-color: transparent; */
-  /* padding: 0 20px; */
-  /* height: 45px; */
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  /* font-size: 15px; */
-  /* line-height: 1; */
-  color: var(--violet-11);
-  /* box-shadow: 0 1px 0 var(--mauve-6); */
-  /* background-color: white; */
-}
-
-.AccordionTrigger:hover {
-  background-color: var(--mauve-2);
-}
-
-.AccordionContent {
-  overflow: hidden;
-  font-size: 15px;
-  color: var(--mauve-11);
-  background-color: var(--mauve-2);
-}
-.AccordionContent[data-state='open'] {
-  animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
-}
-.AccordionContent[data-state='closed'] {
-  animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
-}
-
-.AccordionContentText {
-  padding: 15px 20px;
-}
-
-.AccordionChevron {
-  color: var(--violet-10);
-  transition: transform 300ms cubic-bezier(0.87, 0, 0.13, 1);
-}
-.AccordionTrigger[data-state='open'] > .AccordionChevron {
-  transform: rotate(180deg);
-}
-
-@keyframes slideDown {
-  from {
-    height: 0;
-  }
-  to {
-    height: var(--radix-accordion-content-height);
-  }
-}
-
-@keyframes slideUp {
-  from {
-    height: var(--radix-accordion-content-height);
-  }
-  to {
-    height: 0;
-  }
-}
-
-
-/* RADIX-UI.primitive.COLLAPSIBLE */
-/* @import '@radix-ui/colors/black-alpha.css'; */
-/* @import '@radix-ui/colors/violet.css'; */
-
-/* reset */
-/* button {
-  all: unset;
-} */
-
-.CollapsibleRoot {
-  /* width: 100%; */
-  width: 480px;
-}
-
-
-.CollapsibleContent {
-  overflow: hidden;
-}
-.CollapsibleContent[data-state='open'] {
-  animation: slideDown 300ms ease-out;
-}
-.CollapsibleContent[data-state='closed'] {
-  animation: slideUp 300ms ease-out;
-}
-
-@keyframes slideDown {
-  from {
-    height: 0;
-  }
-  to {
-    height: var(--radix-collapsible-content-height);
-  }
-}
-
-@keyframes slideUp {
-  from {
-    height: var(--radix-collapsible-content-height);
-  }
-  to {
-    height: 0;
-  }
-}
-
-
-.IconButton {
-  font-family: inherit;
-  border-radius: 100%;
-  height: 25px;
-  width: 25px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--violet-11);
-  box-shadow: 0 2px 10px var(--black-a7);
-}
-.IconButton[data-state='closed'] {
-  background-color: white;
-}
-.IconButton[data-state='open'] {
-  background-color: var(--violet-3);
-}
-.IconButton:hover {
-  background-color: var(--violet-3);
-}
-.IconButton:focus {
-  box-shadow: 0 0 0 2px black;
-}
-
-
-.Text {
-  /* color: var(--violet-11); */
-  color: white;
-  font-size: 15px;
-  line-height: 25px;
-}
-
-.Repository {
-  background-color: black;
-  border-radius: 4px;
-  margin: 10px 0;
-  padding: 10px;
-  box-shadow: 0 2px 10px var(--black-a7);
-}
-
-
-/* @import '@radix-ui/colors/black-alpha.css'; */
-
-.ProgressRoot {
-  position: relative;
-  overflow: hidden;
-  background: var(--black-a9);
-  border-radius: 99999px;
-  width: 300px;
-  height: 25px;
-
-  /* Fix overflow clipping in Safari */
-  /* https://gist.github.com/domske/b66047671c780a238b51c51ffde8d3a0 */
-  transform: translateZ(0);
-}
-
-.ProgressIndicator {
-  background-color: white;
-  width: 100%;
-  height: 100%;
-  transition: transform 660ms cubic-bezier(0.65, 0, 0.35, 1);
-}

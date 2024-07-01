@@ -7,17 +7,8 @@ import { createStore } from 'zustand-x'
 // ** UUID Imports
 import { v4 as newUUID } from 'uuid'
 
-// ==========================================================
-// [MM] COLORFUL CONSOLE MESSAGES (ccm)
-const ccm0 = 'color: white; font-size: 12px;'
-const ccm1 = 'color: green; font-size: 12px;'
-const ccm2 = 'color: red; font-size: 12px;'
-const ccm3 = 'color: orange; font-size: 12px;'
-const ccm4 = 'color: yellow; font-size: 12px;'
-const ccm5 = 'color: blue; font-size: 12px;'
-console.log('%c🥕 ThreeDGarden<FC,R3F> zustand', ccm1)
-// console.log("%cWHOOPSIES", ccm2)
-// ==========================================================
+// ** HELPER UTIL: COLORFUL CONSOLE MESSAGES (ccm)
+import ccm from '#/lib/utils/console-colors'
 
 const useStoreImpl = create(() => {
   return {
@@ -84,7 +75,7 @@ export const useThreeDStore = create((set, get, api) => ({
     // loadFromDisk
     get().loadFromDisk()
 
-    console.debug('%cAddThreeD', ccm1, get().threed)
+    console.debug('%cAddThreeD', ccm.greenAlert, get().threed)
   },
   saveProject: ({ set, get }: { set: any; get: any }) => {
     // saveToDisk
@@ -93,10 +84,10 @@ export const useThreeDStore = create((set, get, api) => ({
   saveToDisk: ({ set, get }: { set: any; get: any }) => {
     try {
       localStorage.setItem('threed_threedHistory', JSON.stringify({ subject: 'threed', payload: get().threed }))
-      console.debug('%cSaveToDisk', ccm1, get().threed)
+      console.debug('%cSaveToDisk', ccm.greenAlert, get().threed)
       return true
     } catch (err) {
-      console.debug('%cSaveToDisk', ccm3, err)
+      console.debug('%cSaveToDisk', ccm.redAlert, err)
       return false
     }
   },
@@ -104,13 +95,13 @@ export const useThreeDStore = create((set, get, api) => ({
     try {
       const loaded = localStorage.getItem('threed_threedHistory')
       if (loaded) {
-        console.debug('%cLoadFromDisk', ccm1, true) // loaded
+        console.debug('%cLoadFromDisk', ccm.greenAlert, true) // loaded
         return loaded // string[]
       }
-      console.debug('%cLoadFromDisk', ccm3, loaded)
+      console.debug('%cLoadFromDisk', ccm.redAlert, loaded)
       return false
     } catch (err) {
-      console.debug('%cLoadFromDisk', ccm3, err)
+      console.debug('%cLoadFromDisk', ccm.redAlert, err)
       return false
     }
   },
@@ -163,7 +154,7 @@ export const useProjectStore = create((set, get) => ({
     // loadFromDisk
     get().loadFromDisk()
 
-    console.debug('%cAddProject', ccm1, get().project)
+    console.debug('%cAddProject', ccm.greenAlert, get().project)
   },
   saveProject: ({ set, get }: { set: any; get: any }) => {
     // saveToDisk
@@ -172,10 +163,10 @@ export const useProjectStore = create((set, get) => ({
   saveToDisk: ({ set, get }: { set: any; get: any }) => {
     try {
       localStorage.setItem('threed_projectHistory', JSON.stringify({ subject: 'projects', payload: get().projects }))
-      console.debug('%cSaveToDisk', ccm1, get().projects)
+      console.debug('%cSaveToDisk', ccm.greenAlert, get().projects)
       return true
     } catch (err) {
-      console.debug('%cSaveToDisk', ccm3, err)
+      console.debug('%cSaveToDisk', ccm.redAlert, err)
       return false
     }
   },
@@ -183,13 +174,13 @@ export const useProjectStore = create((set, get) => ({
     try {
       const loaded = localStorage.getItem('threed_projectHistory')
       if (loaded) {
-        console.debug('%cLoadFromDisk', ccm1, true) // loaded
+        console.debug('%cLoadFromDisk', ccm.greenAlert, true) // loaded
         return loaded // string[]
       }
-      console.debug('%cLoadFromDisk', ccm3, loaded)
+      console.debug('%cLoadFromDisk', ccm.redAlert, loaded)
       return false
     } catch (err) {
-      console.debug('%cLoadFromDisk', ccm3, err)
+      console.debug('%cLoadFromDisk', ccm.redAlert, err)
       return false
     }
   },
@@ -331,7 +322,7 @@ export const usePlanStore = create((set, get) => ({
     // loadFromDisk
     get().loadFromDisk()
 
-    console.debug('%cAddPlan', ccm1, get().plan)
+    console.debug('%cAddPlan', ccm.greenAlert, get().plan)
   },
   savePlan: ({ set, get }: { set: any; get: any }) => {
     // saveToDisk
@@ -340,10 +331,10 @@ export const usePlanStore = create((set, get) => ({
   saveToDisk: ({ set, get }: { set: any; get: any }) => {
     try {
       localStorage.setItem('threed_planHistory', JSON.stringify({ subject: 'plans', payload: get().plans }))
-      console.debug('%cSaveToDisk', ccm1, get().plans)
+      console.debug('%cSaveToDisk', ccm.greenAlert, get().plans)
       return true
     } catch (err) {
-      console.debug('%cSaveToDisk', ccm3, err)
+      console.debug('%cSaveToDisk', ccm.redAlert, err)
       return false
     }
   },
@@ -351,13 +342,13 @@ export const usePlanStore = create((set, get) => ({
     try {
       const loaded = localStorage.getItem('threed_planHistory')
       if (loaded) {
-        console.debug('%cLoadFromDisk', ccm1, true) // loaded
+        console.debug('%cLoadFromDisk', ccm.greenAlert, true) // loaded
         return loaded // string[]
       }
-      console.debug('%cLoadFromDisk', ccm3, loaded)
+      console.debug('%cLoadFromDisk', ccm.redAlert, loaded)
       return false
     } catch (err) {
-      console.debug('%cLoadFromDisk', ccm3, err)
+      console.debug('%cLoadFromDisk', ccm.redAlert, err)
       return false
     }
   },

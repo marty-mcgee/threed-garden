@@ -190,7 +190,7 @@ const EcctrlJoystickControls = () => {
   }, [])
   return (
     <>
-      {isTouchScreen && <EcctrlJoystick ButtonNumber={5} />}
+      {isTouchScreen && <EcctrlJoystick buttonNumber={5} />}
     </>
   )
 }
@@ -213,20 +213,23 @@ const storeCamera = createStore('threedCamera')(({
   // cameraPosition: [-16, 4, -16],
   // setCameraPosition: (cameraPosition: number[]) => set({ cameraPosition })
 }))
-// Note that the zustand store is accessible through:
+// // Note that the zustand(x) store is accessible through:
 // // hook store
 // storeCamera.useStore
 // // vanilla store
 // storeCamera.store
 // // reactive (tracked) hooks
 // storeCamera.useTracked.owner()
-// Getters
-// Don't overuse hooks. If you don't need to subscribe to the state, use instead the get method:
+// // Getters
+// // Don't overuse hooks. If you don't need to subscribe to the state, use instead the get method:
 // storeCamera.get.name()
 // storeCamera.get.stars()
-// You can also get the whole state:
+// // You can also get the whole state object:
 // storeCamera.get.state()
-console.debug('%c storeCamera.get.state()', ccm.redAlert, storeCamera.get.state().position, storeCamera.get.position)
+// **
+// console.debug('%c storeCamera.get.state()', ccm.redAlert, storeCamera.get.state())
+console.debug('%c storeCamera.get.state().position()', ccm.redAlert, storeCamera.get.position())
+// console.debug('%c storeCamera.useTracked.position()', ccm.redAlert, storeCamera.useTracked.position())
 
 
 
@@ -255,12 +258,12 @@ const setTheCameraPosition = () => {
     console.debug('%c MyCameraReactsToStateChanges: GET state.camera.position', ccm.redAlert, state.camera.position)
     return state.camera.position
   })
-  // ** SET camera position
-  const setCameraPosition = storeCamera(state => {
-    console.debug('%c MyCameraReactsToStateChanges: SET state.camera.position', ccm.redAlert)
-    // @ts-expect-error
-    return state.setPosition([12,2,12])
-  })
+  // ** SET camera position -- TODO
+  // const setCameraPosition = storeCamera(state => {
+  //   console.debug('%c MyCameraReactsToStateChanges: SET state.camera.position', ccm.redAlert)
+  //   // @ts-expect-error
+  //   return state.setPosition([12,2,12])
+  // })
 }
 
 // ==========================================================
@@ -311,23 +314,11 @@ function FooGetCamera() {
   )
 }
 // ==========================================================
-// ** GET CAMERA
-// function FooGetCamera() {
-//   return useThree(state => {
-//     state.camera
-//     // console.debug('Foo: get state.camera', state.camera)
-//     console.debug('Foo: get state.camera.position', state.camera.position)
-//     // state.camera.position.x, state.camera.position.y, state.camera.position.z
-//   })
-// }
-// ==========================================================
-
-// ==========================================================
 
 // ** RETURN ThreeDCanvas
 export const ThreeDCanvas = (
   { _id, threeds }: { _id: string, threeds: any[]}
-) => { // , sceneState ??
+) => {
   
   // **
   // if (debug) console.debug('%c📐 ThreeDCanvas props.threeds', ccm.darkredAlert, threeds)
@@ -335,16 +326,16 @@ export const ThreeDCanvas = (
 
   // // ** HOOKS
   const prefs = useReactiveVar(preferencesDataVar)
-  console.debug('%c prefs', ccm.red, prefs)
+  // console.debug('%c prefs', ccm.red, prefs)
 
   // ** REF-erences using REACT ???
-  const ref = useRef()
+  const ref: any = useRef<any>()
 
   // ** CREATE THREED CAMERA
   let threedCamera = { 
     // position: new THREE.Vector3(x, y, z),
-    position: new THREE.Vector3(-12, 4, -16), // custom starting camera position
-    fov: 32, // 100
+    position: new THREE.Vector3(-16, 4, -32), // custom starting camera position
+    fov: 24, // 100
     // near: 0.1,
     // far: 1000,
   }
@@ -417,29 +408,26 @@ export const ThreeDCanvas = (
       {/* THREED CANVAS */}
       <Canvas
         key={_id}
-
         // shadows={true}
-        // dpr={[1, 2]}
+        // dpr={[1, 2]} // target pixel ratio ???
+                
+        onCreated={
+          (state) => {
+            console.debug('%c Canvas onCreated state', ccm.redAlert, state)
+            console.debug('%c Canvas onCreated state.camera', ccm.redAlert, state.camera)
+            console.debug('%c Canvas onCreated state.camera.position', ccm.redAlert, state.camera.position)
+            state.gl.toneMapping = THREE.AgXToneMapping
+            // state.camera.fov = 32 // 8
+            // state.camera.lookAt(2, -4, 8) // position [0, 0, 0]
+            // threedCamera.position = new THREE.Vector3(2, -4, 8)
+            // console.debug('%c Canvas onCreated state.camera.position(lookAt)', ccm.redAlert, state.camera.position)
+          }
+        }
         
-        // onCreated={
-        //   (state) => {
-        //     state.gl.toneMapping = THREE.AgXToneMapping
-        //     // state.camera.fov = 32 // 8
-        //     // state.camera.position = [12, -4, 16] // [0, 0, 0]
-        //   }
-        // }
-        
-        // ** CAMERA (now declarative inside canvas)
-        // camera={camera}
-        // camera={{ 
-        //   position: [-12, 4, -16], // custom starting camera position
-        //   fov: 32,
-        //   // near: 0.1,
-        //   // far: 1000,
-        // }}
+        // ** CAMERA (not using declarative inside canvas)
+        camera={threedCamera}
 
         // ** SCENE (needs to be declarative inside canvas)
-        // scene={sceneState.stuff}
         // scene={{
         //   // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
         //   background: new THREE.Color(0x131313),
@@ -456,9 +444,9 @@ export const ThreeDCanvas = (
         {/* INSIDE CANVAS (canvas props.children)... */}
 
         
-        {/* USE THREED CAMERA (NOT WORKING YET) */}
+        {/* USE DECLARATIVE THREED CAMERA (NOT WORKING YET) */}
         {/* <PerspectiveCamera 
-          // {...threedCamera} 
+          {...threedCamera} 
         /> */}
         {/* <MyCameraReactsToStateChanges /> */}
         {/* <FooGetCamera /> */}
@@ -473,7 +461,6 @@ export const ThreeDCanvas = (
         {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
         {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
         {/* using radix-ui + react-three-drei */}
-        <Suspense fallback={<ThreeDLoaderSimple />}>
         {/* using react-three-drei Loader + useProgress */}
         {/* <Suspense fallback={
           <Html center>
@@ -488,6 +475,7 @@ export const ThreeDCanvas = (
             />
           </Html>
         }> */}
+        <Suspense fallback={<ThreeDLoaderSimple />}>
 
           {/* PRELOAD objects ??? -- does it seem necessary? */}
           <Preload all />
@@ -496,16 +484,16 @@ export const ThreeDCanvas = (
           {/* ExperienceViewer = forwardRef(({ children, enableOrbit, ...props }, ref) => {} */}
           {/* @ ts-expect-error */}
           {/* <ThreeDExperienceViewer> */}
-          {/* @ ts-expect-error */}
-          {/* <ThreeDExperienceViewer ref={ref} enableOrbit={true}> */}
+          {/* @ts-expect-error */}
+          <ThreeDExperienceViewer ref={ref}>{/* enableOrbit={true} enablePerf={true}> */}
 
             {/* THREED MODELS: WORKING !!! */}
             {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
-            {/* <ThreeDModels
+            <ThreeDModels
               threeds={threeds}
-            /> */}
+            />
 
-          {/* </ThreeDExperienceViewer> */}
+          </ThreeDExperienceViewer>
 
         </Suspense>
       </Canvas>
