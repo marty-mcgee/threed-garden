@@ -14,9 +14,13 @@ export function SignIn({
         await signIn(provider)
       }}
     >
-      <Button {...props}
-        style={{borderWidth: 0}}
-      >Sign In</Button>
+      <Button
+        // style={{borderWidth: 0}}
+        className='mt-3 mr-2 bg-background text-foreground'
+        {...props}
+      >
+        Sign In
+      </Button>
     </form>
   )
 }
@@ -33,7 +37,8 @@ export function SignOut(props: React.ComponentPropsWithRef<typeof Button>) {
       // className='w-full'
     >
       <Button 
-        // className='w-full p-0' 
+        // style={{borderWidth: 0}}
+        className='mt-3 mr-2 bg-background text-foreground'
         {...props}
       >
         Sign Out
