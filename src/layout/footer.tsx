@@ -5,6 +5,7 @@ export default function Footer() {
   // removed className='w-full'
   return (
     <footer 
+      id='ThreeDAppFooter'
       className='flex flex-row space-x-2 text-xs mr-2 items-center'
       style={{float: 'right'}}
     >
