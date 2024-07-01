@@ -49,7 +49,7 @@ export default async function MainNav() {
           weight={'medium'}
           className='pl-2 pb-1'
         >
-          <CustomLink href='/participate' 
+          <CustomLink href='/#threedgarden' 
             style={{
               color: '#DDDDDD',
               textDecoration: 'none',
@@ -67,6 +67,16 @@ export default async function MainNav() {
       >
         <NavigationMenu>
           <NavigationMenuList>
+            
+            <NavigationMenuItem>
+              <NavigationMenuLink
+                href='/participate'
+                className={navigationMenuTriggerStyle()}
+                style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
+              >
+                Demo
+              </NavigationMenuLink>
+            </NavigationMenuItem>
 
             <NavigationMenuItem>
               <NavigationMenuTrigger 
@@ -96,11 +106,14 @@ export default async function MainNav() {
                   className='
                     grid 
                     gap-0 
-                    p-2 
+                    p-1
                     md:w-[400px] 
                     lg:w-[500px] 
                     lg:grid-cols-[.75fr_1fr]
                   '
+                  style={{
+                    listStyleType: 'none',
+                  }}
                 >
                   <ListItem href='/home' title='Home'>
                     Go to the home page of this app.
@@ -143,11 +156,14 @@ export default async function MainNav() {
                 className='
                   grid 
                   gap-0 
-                  p-2 
+                  p-1
                   md:w-[400px] 
                   lg:w-[500px] 
                   lg:grid-cols-[.75fr_1fr]
                 '
+                style={{
+                  listStyleType: 'none',
+                }}  
               >
                   <ListItem href='/server-example' title='RSC Example'>
                     Protecting React Server Component.
@@ -186,36 +202,18 @@ export default async function MainNav() {
                   // listStyleType: 'none'
                 }}
               >
-                {/* 
                 <ul 
                   className='
                     grid 
                     gap-0 
-                    p-2 
+                    p-1
                     md:w-[400px] 
                     lg:w-[500px] 
                     lg:grid-cols-[.75fr_1fr]
                   '
-                >
-                  <ListItem href='/server-example' title='RSC Example'>
-                    Protecting React Server Component.
-                  </ListItem>
-                  <ListItem href='/middleware-example' title='Middleware Example'>
-                    Using Middleware to protect pages & APIs.
-                  </ListItem>
-                  <ListItem href='/api-example' title='Route Handler Example'>
-                    Getting the session inside an API Route.
-                  </ListItem>
-                </ul> */}
-                <ul 
-                  className='
-                    grid 
-                    gap-0 
-                    p-2 
-                    md:w-[400px] 
-                    lg:w-[500px] 
-                    lg:grid-cols-[.75fr_1fr]
-                  '
+                  style={{
+                    listStyleType: 'none',
+                  }}
                 >
                   <ListItem href='/participate' title='ThreeD Garden: Participate'>
                     Participate
@@ -223,16 +221,6 @@ export default async function MainNav() {
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
-
-            {/* <NavigationMenuItem>
-              <NavigationMenuLink
-                href='/client-example'
-                // className={navigationMenuTriggerStyle()}
-                style={{backgroundColor: '#222222', color: '#DDDDDD', borderWidth: 0}}
-              >
-                Client
-              </NavigationMenuLink>
-            </NavigationMenuItem> */}
 
           </NavigationMenuList>
         </NavigationMenu>

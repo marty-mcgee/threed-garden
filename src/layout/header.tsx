@@ -15,6 +15,7 @@ import {
 export default function Header() {
   return (
     <Flex
+      id={'ThreeDAppHeader'}
       justify={'between'}
     >
       <MainNav />

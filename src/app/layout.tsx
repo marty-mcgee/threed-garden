@@ -277,24 +277,28 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                               {/* <SessionProvider session={session}> */}
                               {/* <SessionProvider session={null}> */}
 
-                              <ThemeWrapper>
+                              <ThemeWrapper
+                                // key='ThreeDAppThemeWrapper'
+                              >
+
                                 <div 
                                   id='ThreeDAppLayout'
                                 >
+                                  
                                   <Header 
                                     // key='ThreeDAppHeader'
                                   />
 
-                                  <main 
+                                  <div 
                                     id='ThreeDAppMain'
-                                    // key='ThreeDAppMain'
                                   >
                                     {children}
-                                  </main>
+                                  </div>
 
-                                  {/* <Footer
+                                  <Footer
                                     // key='ThreeDAppFooter'
-                                  /> */}
+                                  />
+                                
                                 </div>
                                 
                               </ThemeWrapper>
