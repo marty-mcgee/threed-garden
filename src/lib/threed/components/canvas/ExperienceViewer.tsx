@@ -31,6 +31,8 @@ import {
   useTransition,
 
 } from 'react'
+// ** React
+import type { ReactNode } from 'react'
 
 // R3F Imports
 import {
@@ -199,7 +201,7 @@ export function ThreeDEnvironment() {
 // ** RETURN ExperienceViewer
 const ExperienceViewer = (
   { children, enableOrbit, enablePerf, ...props }:
-  { children: any, enableOrbit: boolean, enablePerf: boolean}, 
+  { children: ReactNode, enableOrbit: boolean, enablePerf: boolean}, 
   // ref
 ) => {
 // ** THREED IO

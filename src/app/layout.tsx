@@ -102,7 +102,7 @@ import ccm from '#/lib/utils/console-colors'
 // ==============================================================
 // IMPORTS COMPLETE
 // console.debug('%c=======================================', ccm.black)
-console.debug('%c🥕 ThreeDGarden: Layout', ccm.lightgreen)
+// console.debug('%c🥕 ThreeDGarden: Layout', ccm.lightgreen)
 // console.debug('%c🥕 Radix-UI: Theme', ccm.lightgreen)
 // console.debug('%c🥕 MUI_Getters', ccm.lightgreen, MUI_Getters)
 // console.debug('%c🥕 MUI/Accordion', ccm.lightgreen, Accordion)
@@ -121,7 +121,7 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
       <body>
       {/* <body className={inter.className}> */}
       {/* <body className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}> */}
-        <div id='ThreeDApp'>
+        <div id='ThreeDAppProvider'>
           {children}
         </div>
       </body>

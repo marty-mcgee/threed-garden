@@ -1,4 +1,5 @@
 // 'use client'
+'use server'
 // ^^ does this file require client or server pragma ???
 
 // ** COMPONENT Imports
@@ -12,7 +13,7 @@ import {
 } from '@radix-ui/themes'
 
 // ** EXPORT Header
-export default function Header() {
+export default async function Header() {
   return (
     <Flex
       id={'ThreeDAppHeader'}
