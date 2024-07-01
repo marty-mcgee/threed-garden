@@ -32,6 +32,10 @@ export default async function UserButton() {
       //   items-center
       //   p-2
       // '
+      style={{
+        marginTop: 4, // wtf !!!
+        marginRight: 2, // wtf !!!
+      }}
     >
       {/* <span className='hidden text-sm sm:inline-flex'>
         {session.user.email}
@@ -57,11 +61,11 @@ export default async function UserButton() {
                 <AvatarImage
                   src={session.user.image}
                   alt={session.user.name ?? ''}
-                  className='rounded-full w-8 h-8'
-                  style={{
-                    maxWidth: '16px',
-                    maxHeight: '16px',
-                  }}
+                  className='rounded-full w-5 h-5 mt-1'
+                  // style={{
+                  //   maxWidth: '16px',
+                  //   maxHeight: '16px',
+                  // }}
                 />
               )}
               <AvatarFallback>{session.user.email}</AvatarFallback>
