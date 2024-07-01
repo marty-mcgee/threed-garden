@@ -19,7 +19,7 @@ import { ThemeProvider } from 'next-themes'
 
 const ThemeWrapper = ({ children }: { children: any}) => {
   // **
-  const _id: string = 'ThreeDAppTheme'
+  const _id: string = 'ThreeDAppThemeWrapper'
   // const ref: any = useRef<any>() // for client components only
   
   return (
