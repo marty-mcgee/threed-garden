@@ -64,6 +64,7 @@ import {
   Box,
   Button,
   Grid,
+  Flex,
   // Typography,
 } from '@radix-ui/themes'
 // ** MUI Imports
@@ -423,19 +424,19 @@ const ThreeDGarden = (): React.ReactNode => {
 
           
           {/* THREED CONTROLS: ALL */}
-          <Grid
+          <Flex
             id='threed_controls'
-            columns={{ initial: '2', md: '2' }} 
-            gap="0" 
-            width="auto"
+            // columns={{ initial: '2', md: '2' }} 
+            // gap="0" 
+            // width="auto"
           >
 
             
             {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-            <Box
+            <Flex
               // item
               id='leva_controls'
-              pl={'10px'}
+              // pl={'10px'}
               // md={4}
               // xs={12}
               style={{
@@ -445,24 +446,26 @@ const ThreeDGarden = (): React.ReactNode => {
                 // px: 2.5, 
                 // py: 2,
                 // borderTop: '1px solid darkgreen',
+                width: '360px',
                 minWidth: '320px',
                 maxWidth: '480px',
-                // position: 'absolute',
+                position: 'absolute',
                 // minHeight: '48px',
                 // display: 'inline',
                 // position: 'fixed',
-                // top: 0,
-                // left: 0, 
-                zIndex: 9999,
+                top: 2,
+                // left: 0,
+                right: '10%', 
+                // zIndex: 9999,
               }}
             >
               <ThreeDLevaControls />
-            </Box>
+            </Flex>
             {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
 
 
             {/* THREED CLICK LOADERS */}
-            <Grid
+            <Flex
               // item
               id='threed_actions'
               // md={8}
@@ -477,11 +480,11 @@ const ThreeDGarden = (): React.ReactNode => {
               <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
               <Button onClick={() => loadNounData('character', [])}>load character</Button>
               <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
-            </Grid>
+            </Flex>
             {/* END THREED CLICK LOADERS */}
 
             
-          </Grid>
+          </Flex>
           {/* END: THREED CONTROLS: ALL */}
 
 
