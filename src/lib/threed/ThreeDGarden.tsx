@@ -545,7 +545,7 @@ const ThreeDGarden = (): React.ReactNode => {
             // xs={12}
             style={{ borderTop: '1px solid darkgreen' }}
           >
-            {/* <ThreeDControlPanels /> */}
+            <ThreeDControlPanels />
             {/* <ThreeDControlPanels tabs={tabProps} /> */}
           </Grid>
           {/* END: THREED CONTROL PANELS */}

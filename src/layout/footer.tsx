@@ -6,10 +6,10 @@ export default function Footer() {
     <footer 
       id='ThreeDAppFooter'
       // removed className='w-full'
-      // className='flex flex-row space-x-2 text-xs mr-2 items-center'
-      // style={{float: 'right'}}
+      className='flex flex-row space-x-2 text-xs mr-2 items-center'
+      style={{float: 'right'}}
     >
-      {/* 
+      
       <CustomLink href='https://github.com/marty-mcgee/threed-garden/#readme' style={{color: 'gray'}}>
         Documentation
       </CustomLink>
@@ -22,16 +22,16 @@ export default function Footer() {
       <CustomLink href='https://threedgarden.com/participate' style={{color: 'gray'}}>
         Version: {version}
       </CustomLink>
-      <CustomLink href='/' style={{color: 'gray'}}>
-        App
-      </CustomLink>
-      <CustomLink href='/home' style={{color: 'gray'}}>
-        Home
-      </CustomLink>
       <CustomLink href='/policy' style={{color: 'gray'}}>
         Policies
       </CustomLink>
-      */}
+      <CustomLink href='/' style={{color: 'gray'}}>
+        App Root
+      </CustomLink>
+      <CustomLink href='/home' style={{color: 'gray'}}>
+        Home Page
+      </CustomLink>
+    
     </footer>
   )
 }
