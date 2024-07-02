@@ -26,7 +26,7 @@ import {
   Box,
   Button,
   Grid,
-  // Typography,
+  Text,
 } from '@radix-ui/themes'
 
 // ** HELPER Components
@@ -35,6 +35,7 @@ import Spinner from '#/layout/ui/components/spinner'
 import ccm from '#/lib/utils/console-colors'
 
 const debug = false
+const DEBUG = false
 
 // ** WAVEFORM SUPPORT
 const noise = new Noise(Math.random())
@@ -382,9 +383,9 @@ export function ThreeDLevaControls() {
         titleBar={showTitleBar && { drag, title, filter, position }} // TITLE | PROJECT_NAME
         hideTitleBar={false} // default = false. true hides the GUI header
         theme={theme} // you can pass a custom theme (see the styling section)
-        collapsed={true} // default = false. true makes the GUI collpased
+        collapsed={false} // default = false. true makes the GUI collpased
         fill={true} // default = false. true makes the pane fill the parent dom node it's rendered in
-        flat={true} // default = false. true removes border radius and shadow
+        flat={false} // default = false. true removes border radius and shadow
         hidden={false} // default = false. true hides the GUI
         neverHide={true} // default = true. false allows hiding of the GUI
         oneLineLabels={false} // default = false. true makes labels + fields on separate rows
@@ -439,7 +440,7 @@ export const ThreeDLevaComponent = ({ projectName, setProjectName }) => {
   // }, [projectName, set])
   // // }, [projectName])
 
-  // // console.debug("MyComponent")
+  // // console.debug('MyComponent')
   // useEffect(() => {
   //   setProjectName(projectName)
   // //   console.debug('MyComponent onMount')
