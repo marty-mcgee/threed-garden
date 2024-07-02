@@ -109,43 +109,50 @@ export const ThreeDCanvasViewer = () => {
     <Flex 
       id='threedCanvasViewer'
       // display={'inline-flex'}
-      direction={'column'}
+      // direction={'column'}
     >
-
-      {/* <Flex> */}
 
         {/* CANVAS[ES] as accordion */}
         <Accordion.Root 
-          type='multiple' 
-          // orientation='vertical' 
-          // @ ts-expect-error
-          // collapsible={'true'} // string 'true' | 'false' -- bug: should be boolean, not string
+          type='multiple' // single | multiple
+          // orientation='horizontal' // vertical | horizontal 
+          // @ts-expect-error
+          collapsible={'true'} // string 'true' | 'false' -- bug: should be boolean, not string
           defaultValue={['Canvas 1']}
           // value={tabControlValue}
           // onChange={onChangeTabControlValue}
-          // aria-label='ThreeD Canvas[es] Viewer'
-          className='AccordionRoot'
+          aria-label='ThreeD Canvas[es] Viewer'
+          // className='AccordionRoot'
+          style={{ 
+            display: 'flex', 
+            // flexDirection: 'row',
+          }}
         >
 
+
           {/* THREED CANVAS 1 */}
+          {/* <Flex> */}
           <Accordion.Item 
             value={'Canvas 1'}
-            className='AccordionItem'
+            // className='AccordionItem'
           >
             <Accordion.Header
-              className='AccordionHeader'
+              // className='AccordionHeader'
             >
               <Accordion.Trigger 
                 className='AccordionTrigger'
               >
-                <ChevronDownIcon className='AccordionChevron' aria-hidden />
+                <ChevronDownIcon 
+                  className='AccordionChevron' 
+                  aria-hidden 
+                />
                 <span>Canvas 1</span>
               </Accordion.Trigger>
             </Accordion.Header>
             <Accordion.Content 
               className='AccordionContent'
             >
-              <Grid
+              <Flex
                 style={{ 
                   borderTop: '1px solid darkgreen',
                   minHeight: '30vh',
@@ -159,29 +166,34 @@ export const ThreeDCanvasViewer = () => {
                   _id={'_r3fCanvas1'}
                   threeds={threeds}
                 />
-              </Grid>
+              </Flex>
             </Accordion.Content>
           </Accordion.Item>
+          {/* </Flex> */}
           
           {/* THREED CANVAS 2 */}
+          {/* <Flex> */}
           <Accordion.Item 
             value={'Canvas 2'}
-            className='AccordionItem'
+            // className='AccordionItem'
           >
             <Accordion.Header
-              className='AccordionHeader'
+              // className='AccordionHeader'
             >
               <Accordion.Trigger 
                 className='AccordionTrigger'
               >
-                <ChevronDownIcon className='AccordionChevron' aria-hidden />
+                <ChevronDownIcon 
+                  className='AccordionChevron' 
+                  aria-hidden 
+                />
                 <span>Canvas 2</span>
               </Accordion.Trigger>
             </Accordion.Header>
             <Accordion.Content 
               className='AccordionContent'
             >
-              <Grid
+              <Flex
                 style={{ 
                   borderTop: '1px solid darkgreen',
                   minHeight: '15vh',
@@ -191,19 +203,18 @@ export const ThreeDCanvasViewer = () => {
                   _id={'_r3fCanvas2'}
                   threeds={threeds}
                 />
-              </Grid>
+              </Flex>
             </Accordion.Content>
           </Accordion.Item>
+          {/* </Flex> */}
 
           {/**/}
         </Accordion.Root>
 
-      {/* </Flex> */}
-
       {/* [MM] TESTING -- RADIX-UI.primitive.Collapsible */}
-      <Flex>
+      {/* <Flex> */}
         {/* <CollapsibleDemo /> */}
-      </Flex>
+      {/* </Flex> */}
 
     </Flex>
   )

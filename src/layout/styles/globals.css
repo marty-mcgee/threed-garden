@@ -21,9 +21,14 @@
     /**/
     /* padding: 1px 0 0 2px; */
     
-    /* background-color: #111111; */
+    background-color: #111111;
     /* background-color: olive; */
     /* overflow: hidden; */
+  }
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 0;
   }
 
   /* 
