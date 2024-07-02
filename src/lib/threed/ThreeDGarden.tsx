@@ -397,10 +397,11 @@ const ThreeDGarden = (): React.ReactNode => {
   return (
     <Grid
       id='threed_garden'
-      columns={{ initial: '1', md: '1' }} 
-      width="100%"
-      px="2"
-      py="1"
+      // columns={{ initial: '1', md: '1' }} 
+      width='100%'
+      px='2'
+      py='1'
+      // justify='end'
     >
 
       { !isPrefsLoaded && (
@@ -410,25 +411,31 @@ const ThreeDGarden = (): React.ReactNode => {
       { isPrefsLoaded && (
         <Grid
           // container
-          id='threed_grid'
-          columns={{ initial: '1', md: '1' }} 
-          gap="0" 
-          width="auto"
+          id='threed_container'
+          // columns={{ initial: '1', md: '1' }} 
+          // gap='0'
+          // width='100%'
+          // flexGrow='1'
+          // justify='between'
+          // display='none'
           style={{
             // borderTop: '1px solid darkgreen',
             border: '1px solid darkgreen',
           }}
+          // direction='row'
         >
         
           {/* <Typography>{project_title}</Typography> */}
 
           
           {/* THREED CONTROLS: ALL */}
-          <Flex
+          <Grid
+            // item
             id='threed_controls'
             // columns={{ initial: '2', md: '2' }} 
-            // gap="0" 
-            // width="auto"
+            // gap='0' 
+            // width='auto'
+            width='100%'
           >
 
             
@@ -476,32 +483,33 @@ const ThreeDGarden = (): React.ReactNode => {
               }}
               gap='1'
             >
+              {/*
               <Button onClick={() => loadNounData('project', [])}>load project</Button>
               <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
               <Button onClick={() => loadNounData('character', [])}>load character</Button>
               <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
+              */}
             </Flex>
             {/* END THREED CLICK LOADERS */}
 
             
-          </Flex>
+          </Grid>
           {/* END: THREED CONTROLS: ALL */}
 
 
           {/* THREED TOOLBAR */}
-          {/* <Grid
-            item
+          <Grid
+            // item
             id='threed_toolbar'
-            md={12}
-            xs={12}
-            sx={{
+            // md={12}
+            // xs={12}
+            style={{
               // display: 'flex', justifyContent: 'flex-end',
-              px: 2, 
               borderTop: '1px solid darkgreen',
             }}
           >
-            <ThreeDToolbar />
-          </Grid> */}
+            {/* <ThreeDToolbar /> */}
+          </Grid>
           {/* END: THREED TOOLBAR */}
 
           
@@ -513,13 +521,14 @@ const ThreeDGarden = (): React.ReactNode => {
             // md={12}
             // xs={12}
             style={{ 
-              // display: 'flex', justifyContent: 'flex-end',
+              // display: 'flex', 
+              // justifyContent: 'flex-end',
               // mx: 0,
               // px: 2,
               // borderTop: '1px solid darkgreen',
               // border: '2px solid darkgreen',
               // borderTop: '2px solid darkgreen',
-              zIndex: -9999,
+              // zIndex: 0, // this does not work.. no negative numbers !!!!
             }}
           >
             <ThreeDCanvasViewer />
@@ -536,7 +545,7 @@ const ThreeDGarden = (): React.ReactNode => {
             // xs={12}
             style={{ borderTop: '1px solid darkgreen' }}
           >
-            <ThreeDControlPanels />
+            {/* <ThreeDControlPanels /> */}
             {/* <ThreeDControlPanels tabs={tabProps} /> */}
           </Grid>
           {/* END: THREED CONTROL PANELS */}
