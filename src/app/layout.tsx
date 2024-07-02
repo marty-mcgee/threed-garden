@@ -59,14 +59,17 @@ const SessionWrapper = dynamic(() => import('~/src/layout/SessionWrapper'), { ss
 // import themeConfig from '#/lib/config/themeConfig'
 
 // ** CSS Styles
+// ** TAILWIND CSS
 import '#/layout/styles/globals.css' // global tailwind css
-import '#/layout/styles/custom-styles.css' // additional global basic custom css
-
-// ** LAYOUT Components
-// ** Radix UI
+// ** Radix UI CSS
 // import '@radix-ui/themes/styles.css' // radix-ui theme default css in node_modules
 import '#/layout/styles/radix-ui-themes-styles.css' // copied from default, for editing
+// ** CUSTOM CSS (DOMINANT OVERRIDES)
+// import '#/layout/styles/custom-styles.css' // additional global basic custom css
+
+// ** LAYOUT Components
 import ThemeWrapper from '#/layout/ThemeWrapper'
+
 // const ThemeWrapper = dynamic(() => import('~/src/layout/ThemeWrapper'), { ssr: false })
 // import { Theme, ThemePanel } from '@radix-ui/themes'
 // import { ThemeProvider } from 'next-themes'

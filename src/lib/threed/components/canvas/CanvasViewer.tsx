@@ -26,6 +26,7 @@ import {
   Box,
   Button,
   Grid,
+  Flex,
   Text,
 } from '@radix-ui/themes'
 
@@ -53,7 +54,8 @@ export const ThreeDCanvasViewer = () => {
   // return <Spinner />
   const word: string = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
   // console.debug(`%c=======================================================`, ccm.orange)
-  if (debug || DEBUG) console.debug('%c🥕 ThreeDCanvasViewer ...', ccm.darkredAlert)
+  // if (debug || DEBUG) 
+  console.debug('%c🥕 ThreeDCanvasViewer ...', ccm.darkredAlert, word)
   // console.debug(`%c=======================================================`, ccm.black)
 
   // ** USE CLIENT
@@ -104,105 +106,110 @@ export const ThreeDCanvasViewer = () => {
 
   // console.debug(`%c=======================================================`, ccm.orange)
   return (
-    <Box id='threedCanvasViewer'>
+    <Flex 
+      id='threedCanvasViewer'
+      // display={'inline-flex'}
+      direction={'column'}
+    >
 
-      {/* CANVAS[ES] as accordion */}
-      <Accordion.Root 
-        type='multiple' 
-        // orientation='vertical' 
-        // @ ts-expect-error
-        // collapsible={'true'} // string 'true' | 'false' -- bug: should be boolean, not string
-        defaultValue={['Canvas 1']}
-        // value={tabControlValue}
-        // onChange={onChangeTabControlValue}
-        // aria-label='ThreeD Canvas[es] Viewer'
-        className='AccordionRoot'
-      >
+      {/* <Flex> */}
 
-        {/* THREED CANVAS 1 */}
-        <Accordion.Item 
-          value={'Canvas 1'}
-          className='AccordionItem'
+        {/* CANVAS[ES] as accordion */}
+        <Accordion.Root 
+          type='multiple' 
+          // orientation='vertical' 
+          // @ ts-expect-error
+          // collapsible={'true'} // string 'true' | 'false' -- bug: should be boolean, not string
+          defaultValue={['Canvas 1']}
+          // value={tabControlValue}
+          // onChange={onChangeTabControlValue}
+          // aria-label='ThreeD Canvas[es] Viewer'
+          className='AccordionRoot'
         >
-          <Accordion.Header
-            className='AccordionHeader'
-          >
-            <Accordion.Trigger 
-              // className='AccordionTrigger'
-            >
-              <ChevronDownIcon className='AccordionChevron' aria-hidden />
-              <span>Canvas 1</span>
-            </Accordion.Trigger>
-          </Accordion.Header>
-          <Accordion.Content 
-            // className='AccordionContent'
-          >
-            <Grid
-              style={{ 
-                borderTop: '1px solid darkgreen',
-                minHeight: '30vh',
-                // display: 'flex', 
-                // alignItems: 'center', 
-                // justifyContent: 'space-between',
-                // flexDirection: 'column',
-              }}
-            >
-              <ThreeDCanvas
-                _id={'_r3fCanvas1'}
-                threeds={threeds}
-              />
-            </Grid>
-          </Accordion.Content>
-        </Accordion.Item>
-        
-        {/* THREED CANVAS 2 */}
-        <Accordion.Item 
-          value={'Canvas 2'}
-          className='AccordionItem'
-        >
-          <Accordion.Header
-            className='AccordionHeader'
-          >
-            <Accordion.Trigger 
-              // className='AccordionTrigger'
-            >
-              <ChevronDownIcon className='AccordionChevron' aria-hidden />
-              <span>Canvas 2</span>
-            </Accordion.Trigger>
-          </Accordion.Header>
-          <Accordion.Content 
-            // className='AccordionContent'
-          >
-            <Grid
-              style={{ 
-                borderTop: '1px solid darkgreen',
-                // minHeight: '15vh',
-              }}
-            >
-              <ThreeDCanvas
-                _id={'_r3fCanvas2'}
-                threeds={threeds}
-              />
-            </Grid>
-          </Accordion.Content>
-        </Accordion.Item>
 
-        {/**/}
-      </Accordion.Root>
+          {/* THREED CANVAS 1 */}
+          <Accordion.Item 
+            value={'Canvas 1'}
+            className='AccordionItem'
+          >
+            <Accordion.Header
+              className='AccordionHeader'
+            >
+              <Accordion.Trigger 
+                className='AccordionTrigger'
+              >
+                <ChevronDownIcon className='AccordionChevron' aria-hidden />
+                <span>Canvas 1</span>
+              </Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content 
+              className='AccordionContent'
+            >
+              <Grid
+                style={{ 
+                  borderTop: '1px solid darkgreen',
+                  minHeight: '30vh',
+                  // display: 'flex', 
+                  // alignItems: 'center', 
+                  // justifyContent: 'space-between',
+                  // flexDirection: 'column',
+                }}
+              >
+                <ThreeDCanvas
+                  _id={'_r3fCanvas1'}
+                  threeds={threeds}
+                />
+              </Grid>
+            </Accordion.Content>
+          </Accordion.Item>
+          
+          {/* THREED CANVAS 2 */}
+          <Accordion.Item 
+            value={'Canvas 2'}
+            className='AccordionItem'
+          >
+            <Accordion.Header
+              className='AccordionHeader'
+            >
+              <Accordion.Trigger 
+                className='AccordionTrigger'
+              >
+                <ChevronDownIcon className='AccordionChevron' aria-hidden />
+                <span>Canvas 2</span>
+              </Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content 
+              className='AccordionContent'
+            >
+              <Grid
+                style={{ 
+                  borderTop: '1px solid darkgreen',
+                  minHeight: '15vh',
+                }}
+              >
+                <ThreeDCanvas
+                  _id={'_r3fCanvas2'}
+                  threeds={threeds}
+                />
+              </Grid>
+            </Accordion.Content>
+          </Accordion.Item>
 
-      
+          {/**/}
+        </Accordion.Root>
+
+      {/* </Flex> */}
 
       {/* [MM] TESTING -- RADIX-UI.primitive.Collapsible */}
-      {/* <CollapsibleDemo /> */}
+      <Flex>
+        {/* <CollapsibleDemo /> */}
+      </Flex>
 
-
-
-    </Box>
+    </Flex>
   )
 }
 
-export default ThreeDCanvasViewer
-
+// ** ======================================================================
 
 // import React from 'react'
 // import * as Collapsible from '@radix-ui/react-collapsible'
@@ -213,9 +220,16 @@ const CollapsibleDemo = () => {
   const [openCanvas1, setOpenCanvas1] = useState(false)
   const [openCanvas2, setOpenCanvas2] = useState(false)
   return (
-    <>
+    <Flex>
+      {/*  */}
       <Collapsible.Root className="CollapsibleRoot" open={openCanvas1} onOpenChange={setOpenCanvas1}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div 
+          style={{ 
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
           <Collapsible.Trigger asChild>
             <button className="IconButton">{open ? <Cross2Icon /> : <RowSpacingIcon />}</button>
           </Collapsible.Trigger>
@@ -223,23 +237,29 @@ const CollapsibleDemo = () => {
             CANVAS 1
           </span>
         </div>
-
-        {/* <div className="Repository">
-          <span className="Text">CANVAS 1</span>
-        </div> */}
-
+        {/*  */}
+        <div className="Repository">
+          <span className="Text">REPOSITORY 1: CANVAS 1</span>
+        </div>
+        {/*  */}
         <Collapsible.Content>
           <div className="Repository">
-            <span className="Text">HEY HEY HEY 1</span>
+            <span className="Text">1: HEY HEY HEY 1</span>
           </div>
           <div className="Repository">
-            <span className="Text">YO YO YO 1</span>
+            <span className="Text">1: YO YO YO 1</span>
           </div>
         </Collapsible.Content>
       </Collapsible.Root>
-      
+      {/*  */}
       <Collapsible.Root className="CollapsibleRoot" open={openCanvas2} onOpenChange={setOpenCanvas2}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div 
+          style={{ 
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
           <Collapsible.Trigger asChild>
             <button className="IconButton">{open ? <Cross2Icon /> : <RowSpacingIcon />}</button>
           </Collapsible.Trigger>
@@ -247,22 +267,25 @@ const CollapsibleDemo = () => {
             CANVAS 2
           </span>
         </div>
-
-        {/* <div className="Repository">
-          <span className="Text">CANVAS 2</span>
-        </div> */}
-
+        {/*  */}
+        <div className="Repository">
+          <span className="Text">REPOSITORY 2: CANVAS 2</span>
+        </div>
+        {/*  */}
         <Collapsible.Content>
           <div className="Repository">
-            <span className="Text">HEY HEY HEY 2</span>
+            <span className="Text">2: HEY HEY HEY 2</span>
           </div>
           <div className="Repository">
-            <span className="Text">YO YO YO 2</span>
+            <span className="Text">2: YO YO YO 2</span>
           </div>
         </Collapsible.Content>
       </Collapsible.Root>
-    </>
+    </Flex>
   )
 }
 
+// ** ======================================================================
 export { CollapsibleDemo }
+export default ThreeDCanvasViewer
+// ** ======================================================================
