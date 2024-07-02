@@ -508,7 +508,7 @@ const ThreeDGarden = (): React.ReactNode => {
               borderTop: '1px solid darkgreen',
             }}
           >
-            {/* <ThreeDToolbar /> */}
+            <ThreeDToolbar />
           </Grid>
           {/* END: THREED TOOLBAR */}
 
