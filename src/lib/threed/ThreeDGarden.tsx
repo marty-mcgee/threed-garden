@@ -506,6 +506,7 @@ const ThreeDGarden = (): React.ReactNode => {
             style={{
               // display: 'flex', justifyContent: 'flex-end',
               // borderTop: '1px solid darkgreen',
+              paddingLeft: '4px',
             }}
           >
             <ThreeDToolbar />

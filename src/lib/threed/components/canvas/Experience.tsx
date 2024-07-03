@@ -28,7 +28,8 @@ import { Physics } from '@react-three/rapier'
 import { useControls } from 'leva'
 
 // ** THREED OBJECTS
-import Lights from '#/lib/threed/components/canvas/Lights'
+// import Camera from '#/lib/threed/components/canvas/Camera'
+// import Lights from '#/lib/threed/components/canvas/Lights'
 import Floor from '#/lib/threed/components/canvas/Floor'
 import Ground from '#/lib/threed/components/canvas/Ground'
 
@@ -248,9 +249,6 @@ export default function ThreeDExperience() {
   return (
     <>
 
-      {/* LIGHTS */}
-      <Lights />
-
       {/* EXAMPLES: BIRDS */}
       <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
         <Birds />
@@ -369,16 +367,6 @@ export default function ThreeDExperience() {
         </group>
 
       </Physics>
-
-      {/* <Grid
-        args={[128, 128]} // x = 4rem, z = 4rem
-        sectionColor={'black'}
-        cellColor={'black'}
-        position={[0, -8, 0]} // sea level?
-        userData={{
-          camExcludeCollision: true, // collide by camera ray? true | false
-        }}
-      /> */}
 
       <Perf
         position='bottom-left'

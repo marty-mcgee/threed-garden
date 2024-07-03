@@ -403,6 +403,12 @@ export const ThreeDCanvas = (
       {/* THREED CANVAS */}
       <Canvas
         key={_id}
+
+        style={{
+          width: '100%',
+          // height: '100%',
+        }}
+
         // shadows={true}
         // dpr={[1, 2]} // target pixel ratio ???
                 
