@@ -19,7 +19,7 @@ export default function Footer() {
         JS Packages
       </CustomLink>
       <CustomLink href='/participate' style={{color: 'gray'}}>
-        V:{version}
+        v:{version}
       </CustomLink>
       <CustomLink href='/policy' style={{color: 'gray'}}>
         Policies
