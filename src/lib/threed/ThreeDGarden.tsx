@@ -505,7 +505,7 @@ const ThreeDGarden = (): React.ReactNode => {
             // xs={12}
             style={{
               // display: 'flex', justifyContent: 'flex-end',
-              borderTop: '1px solid darkgreen',
+              // borderTop: '1px solid darkgreen',
             }}
           >
             <ThreeDToolbar />
@@ -529,6 +529,7 @@ const ThreeDGarden = (): React.ReactNode => {
               // border: '2px solid darkgreen',
               // borderTop: '2px solid darkgreen',
               // zIndex: 0, // this does not work.. no negative numbers !!!!
+              width: '100%',
             }}
           >
             <ThreeDCanvasViewer />

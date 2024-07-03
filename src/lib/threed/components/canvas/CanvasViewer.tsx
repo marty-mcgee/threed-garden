@@ -113,10 +113,11 @@ export const ThreeDCanvasViewer = () => {
           style={{ 
             // display: 'flex', 
             // flexDirection: 'row',
-            minHeight: '40vh',
-            maxHeight: '60vh',
-            minWidth: '50vw',
-            maxWidth: '90vw',
+            // minHeight: '40vh',
+            // maxHeight: '60vh',
+            // minWidth: '50vw',
+            // maxWidth: '90vw',
+            width: '100%',
           }}
     >
 
@@ -134,10 +135,11 @@ export const ThreeDCanvasViewer = () => {
         style={{ 
           display: 'flex', 
           // flexDirection: 'row',
-          minHeight: '40vh',
-          maxHeight: '60vh',
-          minWidth: '50vw',
-          maxWidth: '90vw',
+          // minHeight: '40vh',
+          // maxHeight: '60vh',
+          // minWidth: '50vw',
+          // maxWidth: '90vw',
+          width: '100%',
         }}
       >
 
@@ -152,6 +154,11 @@ export const ThreeDCanvasViewer = () => {
             // alignItems: 'center', 
             // justifyContent: 'space-between',
             // flexDirection: 'column',
+            width: '100%',
+            minHeight: '40vh',
+            maxHeight: '50vh',
+            minWidth: '50vw',
+            maxWidth: '90vw',
           }}
         >
           <Accordion.Header
@@ -173,6 +180,20 @@ export const ThreeDCanvasViewer = () => {
 
           <Accordion.Content 
             className='AccordionContent'
+            style={{ 
+              // borderTop: '1px solid darkgreen',
+              // minHeight: '100vh',
+              // display: 'flex', 
+              // alignItems: 'center', 
+              // justifyContent: 'space-between',
+              // flexDirection: 'column',
+              width: '100%',
+              // height: '100%',
+              minHeight: '40vh',
+              maxHeight: '48vh',
+              minWidth: '50vw',
+              maxWidth: '90vw',
+            }}
           >
             <ThreeDCanvas
               _id={'_r3fCanvas1'}
@@ -204,6 +225,20 @@ export const ThreeDCanvasViewer = () => {
           </Accordion.Header>
           <Accordion.Content 
             className='AccordionContent'
+            style={{ 
+              // borderTop: '1px solid darkgreen',
+              // minHeight: '100vh',
+              // display: 'flex', 
+              // alignItems: 'center', 
+              // justifyContent: 'space-between',
+              // flexDirection: 'column',
+              width: '100%',
+              // height: '100%',
+              minHeight: '40vh',
+              maxHeight: '48vh',
+              minWidth: '50vw',
+              maxWidth: '90vw',
+            }}
           >
             <ThreeDCanvas
               _id={'_r3fCanvas2'}
@@ -235,6 +270,20 @@ export const ThreeDCanvasViewer = () => {
           </Accordion.Header>
           <Accordion.Content 
             className='AccordionContent'
+            style={{ 
+              // borderTop: '1px solid darkgreen',
+              // minHeight: '100vh',
+              // display: 'flex', 
+              // alignItems: 'center', 
+              // justifyContent: 'space-between',
+              // flexDirection: 'column',
+              width: '100%',
+              // height: '100%',
+              minHeight: '40vh',
+              maxHeight: '48vh',
+              minWidth: '50vw',
+              maxWidth: '90vw',
+            }}
           >
             <ThreeDCanvas
               _id={'_r3fCanvas3'}
