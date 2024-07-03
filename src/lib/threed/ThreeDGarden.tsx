@@ -458,7 +458,6 @@ const ThreeDGarden = (): React.ReactNode => {
             }}
           >
 
-            
             {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
             <Flex
               // item
@@ -493,7 +492,6 @@ const ThreeDGarden = (): React.ReactNode => {
             </Flex>
             {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
 
-
             {/* THREED CLICK LOADERS */}
             {/* <Flex
               // item
@@ -515,7 +513,6 @@ const ThreeDGarden = (): React.ReactNode => {
             {/* </Flex> */}
             {/* END THREED CLICK LOADERS */}
 
-            
           </Flex>
           {/* END: THREED CONTROLS: ALL */}
 
@@ -536,7 +533,6 @@ const ThreeDGarden = (): React.ReactNode => {
             <ThreeDToolbar />
           </Flex>
           {/* END: THREED TOOLBAR */}
-
           
           {/* THREED CANVAS VIEWER */}
           {/* HEY HEY HEY -- THREED CANVAS: VIEWER COMPONENT WRAPPER */}
@@ -562,7 +558,6 @@ const ThreeDGarden = (): React.ReactNode => {
           </Flex>
           {/* END: THREED CANVAS VIEWER */}
 
-
           {/* THREED CONTROL PANELS */}
           {/* -- STORE ACCESS (apollo, valtio, leva) */}
           <Flex
@@ -577,7 +572,6 @@ const ThreeDGarden = (): React.ReactNode => {
             {/* <ThreeDControlPanels tabs={tabProps} /> */}
           </Flex>
           {/* END: THREED CONTROL PANELS */}
-
 
           {/* THREED VIEWS */}
           <Flex
@@ -595,7 +589,6 @@ const ThreeDGarden = (): React.ReactNode => {
           </Flex>
           {/* END: THREED VIEWS */}
 
-
           {/* THREED MODALS */}
           <Flex
             // item
@@ -612,7 +605,6 @@ const ThreeDGarden = (): React.ReactNode => {
           </Flex>
           {/* END: THREED MODALS */}
 
-
           {/* THREED FARMBOT */}
           <Flex
             // item
@@ -628,7 +620,6 @@ const ThreeDGarden = (): React.ReactNode => {
             {/* <ThreeDFarmBotMain /> */}
           </Flex>
           {/* END: THREED FARMBOT */}
-
 
           {/* [MM] HEY HEY HEY */}
           {/* <Text>{project_title}</Text> */}
