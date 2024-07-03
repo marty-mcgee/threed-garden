@@ -48,6 +48,65 @@ const DEBUG: boolean = false
 
 // ==========================================================
 
+const SingleThreeDCanvas = ({ index = 0, threeds = [] }: { index: number, threeds: any[] }) => {
+  return (
+    <Accordion.Item 
+      value={'Canvas 1 Camera ' + index}
+      className='AccordionItem'
+      style={{ 
+        borderTop: '1px solid darkgreen',
+        // height: '100%',
+        // minHeight: '30%',
+        // minHeight: '100vh',
+        // display: 'flex', 
+        // alignItems: 'start', 
+        // justifyContent: 'space-between',
+        // flexDirection: 'row',
+        // width: '100%',
+        // minHeight: '40vh',
+        // maxHeight: '50vh',
+        // minWidth: '50vw',
+        // maxWidth: '90vw',
+      }}
+    >
+      <Accordion.Header
+        className='AccordionHeader'
+      >
+        <Accordion.Trigger 
+          className='AccordionTrigger'
+        >
+          <ChevronDownIcon 
+            className='AccordionChevron' 
+            aria-hidden 
+          />
+          <span style={{ position: 'absolute', left: '28px' }}>
+            Camera {index}
+          </span>
+        </Accordion.Trigger>
+      </Accordion.Header>
+
+      <Accordion.Content 
+        // className='AccordionContent'
+        style={{ 
+          // borderTop: '1px solid darkgreen',
+          // height: '100%',
+          height: '30vh',
+          // minHeight: '40%',
+          // maxHeight: '40vh',
+          // width: '100%',
+          // minWidth: '100%',
+          // maxWidth: '90vw',
+        }}
+      >
+        <ThreeDCanvas
+          _id={'_r3fCanvas' + index}
+          threeds={threeds}
+        />
+      </Accordion.Content>
+    </Accordion.Item>
+  )
+}
+
 // ** export default
 export const ThreeDCanvasViewer = () => {
   // **
@@ -110,15 +169,15 @@ export const ThreeDCanvasViewer = () => {
       id='threedCanvasViewer'
       // display={'inline-flex'}
       // direction={'column'}
-          style={{ 
-            // display: 'flex', 
-            // flexDirection: 'row',
-            // minHeight: '40vh',
-            // maxHeight: '60vh',
-            // minWidth: '50vw',
-            // maxWidth: '90vw',
-            width: '100%',
-          }}
+      style={{ 
+        // display: 'flex', 
+        // flexDirection: 'row',
+        // minHeight: '40vh',
+        // maxHeight: '60vh',
+        // minWidth: '50vw',
+        // maxWidth: '90vw',
+        // width: '100%',
+      }}
     >
 
       {/* CANVAS[ES] as accordion */}
@@ -127,170 +186,39 @@ export const ThreeDCanvasViewer = () => {
         // orientation='horizontal' // vertical | horizontal 
         // @ts-expect-error
         collapsible={'true'} // string 'true' | 'false' -- bug: should be boolean, not string
-        defaultValue={['Canvas 1 Camera 1', 'Canvas 1 Camera 2']}
+        defaultValue={['Canvas 1 Camera 1', 'Canvas 1 Camera 2']} // , 'Canvas 1 Camera 3'
         // value={tabControlValue}
         // onChange={onChangeTabControlValue}
         aria-label='ThreeD Canvas[es] Viewer'
         className='AccordionRoot'
         style={{ 
-          display: 'flex', 
+          // display: 'flex', 
           // flexDirection: 'row',
           // minHeight: '40vh',
           // maxHeight: '60vh',
           // minWidth: '50vw',
           // maxWidth: '90vw',
-          width: '100%',
+          // width: '100%',
         }}
       >
 
         {/* THREED CANVAS 1 */}
-        <Accordion.Item 
-          value={'Canvas 1 Camera 1'}
-          className='AccordionItem'
-          style={{ 
-            borderTop: '1px solid darkgreen',
-            // minHeight: '100vh',
-            // display: 'flex', 
-            // alignItems: 'center', 
-            // justifyContent: 'space-between',
-            // flexDirection: 'column',
-            width: '100%',
-            minHeight: '40vh',
-            maxHeight: '50vh',
-            minWidth: '50vw',
-            maxWidth: '90vw',
-          }}
-        >
-          <Accordion.Header
-            className='AccordionHeader'
-          >
-            <Accordion.Trigger 
-              className='AccordionTrigger'
-            >
-              <ChevronDownIcon 
-                className='AccordionChevron' 
-                aria-hidden 
-              />
-              {/* CC-1 */}
-              <span>
-                Camera 1
-              </span>
-            </Accordion.Trigger>
-          </Accordion.Header>
-
-          <Accordion.Content 
-            className='AccordionContent'
-            style={{ 
-              // borderTop: '1px solid darkgreen',
-              // minHeight: '100vh',
-              // display: 'flex', 
-              // alignItems: 'center', 
-              // justifyContent: 'space-between',
-              // flexDirection: 'column',
-              width: '100%',
-              // height: '100%',
-              minHeight: '40vh',
-              maxHeight: '48vh',
-              minWidth: '50vw',
-              maxWidth: '90vw',
-            }}
-          >
-            <ThreeDCanvas
-              _id={'_r3fCanvas1'}
-              threeds={threeds}
-            />
-          </Accordion.Content>
-        </Accordion.Item>
+        <SingleThreeDCanvas 
+          index={1} 
+          threeds={threeds} 
+        />
         
         {/* THREED CANVAS 2 */}
-        <Accordion.Item 
-          value={'Canvas 1 Camera 2'}
-          className='AccordionItem'
-        >
-          <Accordion.Header
-            className='AccordionHeader'
-          >
-            <Accordion.Trigger 
-              className='AccordionTrigger'
-            >
-              <ChevronDownIcon 
-                className='AccordionChevron' 
-                aria-hidden 
-              />
-              {/* CC-2 */}
-              <span>
-                Camera 2
-              </span>
-            </Accordion.Trigger>
-          </Accordion.Header>
-          <Accordion.Content 
-            className='AccordionContent'
-            style={{ 
-              // borderTop: '1px solid darkgreen',
-              // minHeight: '100vh',
-              // display: 'flex', 
-              // alignItems: 'center', 
-              // justifyContent: 'space-between',
-              // flexDirection: 'column',
-              width: '100%',
-              // height: '100%',
-              minHeight: '40vh',
-              maxHeight: '48vh',
-              minWidth: '50vw',
-              maxWidth: '90vw',
-            }}
-          >
-            <ThreeDCanvas
-              _id={'_r3fCanvas2'}
-              threeds={threeds}
-            />
-          </Accordion.Content>
-        </Accordion.Item>
-
+        <SingleThreeDCanvas 
+          index={2} 
+          threeds={threeds} 
+        />
+        
         {/* THREED CANVAS 3 */}
-        <Accordion.Item 
-          value={'Canvas 1 Camera 3'}
-          className='AccordionItem'
-        >
-          <Accordion.Header
-            className='AccordionHeader'
-          >
-            <Accordion.Trigger 
-              className='AccordionTrigger'
-            >
-              <ChevronDownIcon 
-                className='AccordionChevron' 
-                aria-hidden 
-              />
-              {/* CC-3 */}
-              <span>
-                Camera 3
-              </span>
-            </Accordion.Trigger>
-          </Accordion.Header>
-          <Accordion.Content 
-            className='AccordionContent'
-            style={{ 
-              // borderTop: '1px solid darkgreen',
-              // minHeight: '100vh',
-              // display: 'flex', 
-              // alignItems: 'center', 
-              // justifyContent: 'space-between',
-              // flexDirection: 'column',
-              width: '100%',
-              // height: '100%',
-              minHeight: '40vh',
-              maxHeight: '48vh',
-              minWidth: '50vw',
-              maxWidth: '90vw',
-            }}
-          >
-            <ThreeDCanvas
-              _id={'_r3fCanvas3'}
-              threeds={threeds}
-            />
-          </Accordion.Content>
-        </Accordion.Item>
+        <SingleThreeDCanvas 
+          index={3} 
+          threeds={threeds}
+        />
 
         {/**/}
       </Accordion.Root>

@@ -80,8 +80,11 @@ const Toolbar = styled(MuiToolbar)(({ theme }) => ({
   // borderBottomLeftRadius: 10,
   // borderBottomRightRadius: 10,
   // padding: `${theme.spacing(0)} !important`,
-  minHeight: `32px !important`,
+  minHeight: `24px !important`,
   // transition: 'padding .25s ease-in-out, box-shadow .25s ease-in-out, backdrop-filter .25s ease-in-out'
+  // color: theme.palette.text.primary,
+  color: 'purple',
+  opacity: 0.2,
 }))
 
 const Button = styled(MuiButton)(({ theme }) => ({

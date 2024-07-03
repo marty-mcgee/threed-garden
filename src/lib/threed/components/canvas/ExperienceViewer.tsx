@@ -31,10 +31,14 @@ import {
   useTransition,
 
 } from 'react'
-// ** React
+// ** REACT TYPES
 import type { ReactNode } from 'react'
 
-// R3F Imports
+// ** R3F Imports
+import {
+  useThree,
+  useFrame,
+} from '@react-three/fiber'
 import {
   Environment, Stage,
   // KeyboardControls,
@@ -49,15 +53,17 @@ import {
   // useGLTF, useFBX,
   // **
   View as ThreeDViewImpl,
+  // PerspectiveCamera,
+  Grid,
 } from '@react-three/drei'
-import {
-  useThree,
-  useFrame,
-} from '@react-three/fiber'
 
-// THREED:IO Imports
-import { ThreedIO } from '#/lib/threed/threedio/components/ThreedIO'
+// ** THREED:IO Imports
+// import { ThreedIO } from '#/lib/threed/threedio/components/ThreedIO'
+
+// ** THREED OBJECTS
 import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
+import ThreeDCamera from '#/lib/threed/components/canvas/Camera'
+import ThreeDLights from '#/lib/threed/components/canvas/Lights'
 
 // ** HELPER Components
 import Spinner from '#/layout/ui/components/spinner'
@@ -72,9 +78,10 @@ import ccm from '#/lib/utils/console-colors'
 
 const debug = false // false | true // ts: boolean
 const DEBUG = true // false | true // ts: boolean
-const debug_deep = false // false | true // ts: boolean
+// const debug_deep = false // false | true // ts: boolean
 
-// export const Common = ({ color }) => (
+// ** EXAMPLE OVERVIEW
+// export const CommonCanvasComponents = ({ color }: { color: string }) => (
 //   <Suspense fallback={null}>
 //     {color && <color attach='background' args={[color]} />}
 //     <ambientLight />
@@ -231,25 +238,77 @@ const ThreeDExperienceViewer = (
         {/* </ThreeDViewImpl>
       </ThreedIO> 
       */}
+          {/* LIGHTS, CAMERA, ACTION */}
+
+          {/* THREED LIGHTS */}
+          <ThreeDLights />
+
+          {/* THREED CAMERA */}
+          <ThreeDCamera />
+          
+          {/* THREED ACTION */}
+          {/* TESTING: Camera + Animation Action Rig */}
+          {/* <ActionRig /> */}
+
+          {/* AXES + GRID HELPERS */}
+          <axesHelper args={[1024]} />
+          {/* <gridHelper args={[1024, 128]} /> */}
+          <Grid
+            args={[128, 128]} // x = 4rem, z = 4rem
+            sectionColor={'black'}
+            cellColor={'black'}
+            position={[0, -8, 0]} // sea level?
+            userData={{
+              camExcludeCollision: true, // collide by camera ray? true | false
+            }}
+          />
+
+          {/* THREED SCENE
+            * Imports "Custom" Files/Assets via API for ThreeDs into Canvas */}
+          {/* <ThreeDScene /> */}
 
           {/* THREED ENVIRONMENT */}
           <ThreeDEnvironment />
           <ThreeDExperience />
 
-          <axesHelper args={[1024]} />
-          <gridHelper args={[1024, 16]} />
+          {/* SHADOW EFFECTS */}
+          <ContactShadows
+            position={[0, -1.4, 0]}
+            opacity={0.75}
+            scale={10}
+            blur={2.5}
+            far={4}
+          />
+          <BakeShadows />
 
-          {/* THREED SCENE FILES TO CANVAS */}
-          {/* <ThreeDScene /> */}
+          {/* Transform Model using TransformControls */}
+          {/*
+              <TransformModel
+                name='Zeppelin' // must match node name
+                state={state}
+                modes={actionModes}
+                position={[-20, 10, 10]}
+                rotation={[3, -1, 3]}
+                scale={0.005}
+              />
+          */}
 
+          {/* EXAMPLE: SHOE + SHOES */}
+          {/*
+            <Stage intensity={0.7}>
+              <Shoe color='tomato' position={[0, 0, 0]} />
+              <Shoe color='orange' scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
+            </Stage>
+          */}
 
+          {/* ORBIT CONTROLS (CAMERA CONTROLS) */}
           {/* makeDefault makes the controls known to r3f,
               now transform-controls can auto-disable them when active */}
           {/* {enableOrbit && <OrbitControls />} */}
           <OrbitControls
             makeDefault
-            minDistance={0.5}
-            maxDistance={1024}
+            minDistance={0.25}
+            maxDistance={640}
             // minZoom={10}
             // maxZoom={20}
             // minAzimuthAngle={-Math.PI / 4}
@@ -270,17 +329,17 @@ const ThreeDExperienceViewer = (
             screenSpacePanning={true}
           />
 
-          {/* GIZMO HELPER */}
+          {/* ORBIT CONTROLS GIZMO HELPER */}
           <GizmoHelper
             alignment='top-right'
-            margin={[64, 64]}
+            margin={[64, 48]}
           >
-            <group scale={0.8}>
+            <group scale={0.7}>
               <GizmoViewcube />
             </group>
             <group
-              scale={1.6}
-              position={[-30, -30, -30]}
+              scale={1.4}
+              position={[-24, -24, -24]}
             >
               <GizmoViewport
                 labelColor='white'
@@ -289,43 +348,12 @@ const ThreeDExperienceViewer = (
               />
             </group>
           </GizmoHelper>
-
-          {/* EFFECTS */}
-          <ContactShadows
-            position={[0, -1.4, 0]}
-            opacity={0.75}
-            scale={10}
-            blur={2.5}
-            far={4}
-          />
-          <BakeShadows />
-
-          {/* Camera + Animation Action Rig */}
-          {/* <ActionRig /> */}
-
-          {/* Transform Model using TransformControls */}
-          {/*
-              <TransformModel
-                name='Zeppelin' // must match node name
-                state={state}
-                modes={actionModes}
-                position={[-20, 10, 10]}
-                rotation={[3, -1, 3]}
-                scale={0.005}
-              />
-          */}
-
-          {/* SHOE + SHOES */}
-          {/*
-            <Stage intensity={0.7}>
-              <Shoe color='tomato' position={[0, 0, 0]} />
-              <Shoe color='orange' scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
-            </Stage>
-          */}
     </>
   )
 }
 // ) // forwardRef end
+
+// module properties
 ThreeDExperienceViewer.displayName = 'ThreeD-ExperienceViewer'
 
 export { ThreeDExperienceViewer }
