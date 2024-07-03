@@ -395,10 +395,10 @@ export const ThreeDCanvas = (
       {/* CAMERA INTERACTIONS */}
       {/* <CameraPositionTestApp /> */}
       {/* <Button onClick={() => setTheCameraPosition([-10,2,-10])}>set cameraPosition</Button> */}
+      {/* <Button onClick={() => setTheCameraPosition()}>get+set cameraPosition</Button> */}
       {/* <Button onClick={() => fooGetCamera()}>get cameraPosition</Button> */}
-      {/* <Button onClick={(e) => setTheCameraPosition()}>get+set cameraPosition</Button> */}
       {/* <Button onClick={() => FooGetCamera()}>get cameraPosition</Button> */}
-      {/* <Button onClick={(e) => getCameraState()}>Get Camera State</Button> */}
+      {/* <Button onClick={() => getCameraState()}>Get Camera State</Button> */}
 
       {/* THREED CANVAS */}
       <Canvas

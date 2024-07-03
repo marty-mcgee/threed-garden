@@ -282,11 +282,14 @@ export const ThreeDControlPanels = (
           </Accordion.Header>
           <Accordion.Content 
             className='AccordionContent'
+            style={{
+              paddingLeft: '4px',
+              paddingRight: '4px',
+            }}
           >
             {/* <DebugView /> */}
             <DebugHeadless />
             {/* <Debug /> */}
-
             {/* <Perf
               position='bottom-left'
               minimal
