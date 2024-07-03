@@ -80,8 +80,8 @@ import ccm from '#/lib/utils/console-colors'
 const debug = false
 const DEBUG = false
 
-// ** MAIN FUNCTION to return JSX "EXPERIENCE"
-export default function Experience() {
+// ** RETURN ThreeDExperience
+export default function ThreeDExperience() {
 
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
   const prefs = useReactiveVar(preferencesDataVar)
@@ -325,9 +325,9 @@ export default function Experience() {
 
 
         {/* THREED FARMBOT */}
-        <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.6, -2]}>
+        {/* <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.6, -2]}>
           <ThreeDFarmBotGarden />
-        </group>
+        </group> */}
         {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
           <ThreeDFarmBotMain />
         </group> */}
@@ -353,7 +353,7 @@ export default function Experience() {
               // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
             >
               {/* <CharacterModelFloating /> */}
-              <CharacterModelFarmerWomanFloating />
+              {/* <CharacterModelFarmerWomanFloating /> */}
             </CharacterControls>
           </KeyboardControls>
         </group>

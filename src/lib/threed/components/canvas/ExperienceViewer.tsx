@@ -198,16 +198,16 @@ export function ThreeDEnvironment() {
 
 // ==========================================================
 
-// ** RETURN ExperienceViewer
-const ExperienceViewer = (
+// ** RETURN ThreeDExperienceViewer
+const ThreeDExperienceViewer = (
   { children, enableOrbit, enablePerf, ...props }:
   { children: ReactNode, enableOrbit: boolean, enablePerf: boolean}, 
   // ref
 ) => {
 // ** THREED IO
 // @ ts-expect-error
-// const ExperienceViewer = forwardRef(({ children, enableOrbit, enablePerf, ...props }, ref) => {
-// const ExperienceViewer = forwardRef(({ ...props }, ref) => {
+// const ThreeDExperienceViewer = forwardRef(({ children, enableOrbit, enablePerf, ...props }, ref) => {
+// const ThreeDExperienceViewer = forwardRef(({ ...props }, ref) => {
 
   // ** HOOKS
   const prefs = useReactiveVar(preferencesDataVar)
@@ -326,7 +326,7 @@ const ExperienceViewer = (
   )
 }
 // ) // forwardRef end
-ExperienceViewer.displayName = 'ThreeD-ExperienceViewer'
+ThreeDExperienceViewer.displayName = 'ThreeD-ExperienceViewer'
 
-export { ExperienceViewer }
-export default ExperienceViewer
+export { ThreeDExperienceViewer }
+export default ThreeDExperienceViewer
