@@ -48,7 +48,7 @@ const DEBUG: boolean = false
 
 // ==========================================================
 
-const SingleThreeDCanvas = ({ index = 0, threeds = [] }: { index: number, threeds: any[] }) => {
+const ThreeDCanvasCamera = ({ index = 0, threeds = [] }: { index: number, threeds: any[] }) => {
   return (
     <Accordion.Item 
       value={'Canvas 1 Camera ' + index}
@@ -181,7 +181,10 @@ export const ThreeDCanvasViewer = () => {
     >
 
       {/* CANVAS[ES] as accordion */}
+
+      {/* THREED CANVAS VIEWER 1 */}
       <Accordion.Root 
+        key={'Canvas1'} 
         type='multiple' // single | multiple
         // orientation='horizontal' // vertical | horizontal 
         // @ts-expect-error
@@ -189,7 +192,7 @@ export const ThreeDCanvasViewer = () => {
         defaultValue={['Canvas 1 Camera 1', 'Canvas 1 Camera 2']} // , 'Canvas 1 Camera 3'
         // value={tabControlValue}
         // onChange={onChangeTabControlValue}
-        aria-label='ThreeD Canvas[es] Viewer'
+        aria-label='ThreeD Canvas Viewer 1'
         className='AccordionRoot'
         style={{ 
           // display: 'flex', 
@@ -201,25 +204,61 @@ export const ThreeDCanvasViewer = () => {
           // width: '100%',
         }}
       >
-
-        {/* THREED CANVAS 1 */}
-        <SingleThreeDCanvas 
+        {/* THREED CANVAS 1 : CAMERA 1 */}
+        <ThreeDCanvasCamera 
           index={1} 
           threeds={threeds} 
         />
-        
-        {/* THREED CANVAS 2 */}
-        <SingleThreeDCanvas 
+        {/* THREED CANVAS 1 : CAMERA 2 */}
+        <ThreeDCanvasCamera 
           index={2} 
           threeds={threeds} 
         />
-        
-        {/* THREED CANVAS 3 */}
-        <SingleThreeDCanvas 
+        {/* THREED CANVAS 1 : CAMERA 3 */}
+        <ThreeDCanvasCamera 
           index={3} 
           threeds={threeds}
         />
+        {/**/}
+      </Accordion.Root>
 
+      {/* THREED CANVAS VIEWER 2 */}
+      <Accordion.Root 
+        key={'Canvas2'} 
+        type='multiple' // single | multiple
+        // orientation='horizontal' // vertical | horizontal 
+        // @ts-expect-error
+        collapsible={'true'} // string 'true' | 'false' -- bug: should be boolean, not string
+        defaultValue={['Canvas 1 Camera 1', 'Canvas 1 Camera 2']} // , 'Canvas 1 Camera 3'
+        // value={tabControlValue}
+        // onChange={onChangeTabControlValue}
+        aria-label='ThreeD Canvas Viewer 2'
+        className='AccordionRoot'
+        style={{ 
+          // display: 'flex', 
+          // flexDirection: 'row',
+          // minHeight: '40vh',
+          // maxHeight: '60vh',
+          // minWidth: '50vw',
+          // maxWidth: '90vw',
+          // width: '100%',
+        }}
+      >
+        {/* THREED CANVAS 2 : CAMERA 1 */}
+        {/* <ThreeDCanvasCamera 
+          index={4} 
+          threeds={threeds} 
+        /> */}
+        {/* THREED CANVAS 2 : CAMERA 2 */}
+        {/* <ThreeDCanvasCamera 
+          index={5} 
+          threeds={threeds} 
+        /> */}
+        {/* THREED CANVAS 2 : CAMERA 3 */}
+        {/* <ThreeDCanvasCamera 
+          index={6} 
+          threeds={threeds}
+        /> */}
         {/**/}
       </Accordion.Root>
 
