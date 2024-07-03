@@ -379,28 +379,46 @@ export function ThreeDLevaControls() {
 
   return (
     <>
-      <Leva
-        titleBar={showTitleBar && { drag, title, filter, position }} // TITLE | PROJECT_NAME
-        hideTitleBar={false} // default = false. true hides the GUI header
-        theme={theme} // you can pass a custom theme (see the styling section)
-        collapsed={false} // default = false. true makes the GUI collpased
-        fill={true} // default = false. true makes the pane fill the parent dom node it's rendered in
-        flat={false} // default = false. true removes border radius and shadow
-        hidden={false} // default = false. true hides the GUI
-        neverHide={true} // default = true. false allows hiding of the GUI
-        oneLineLabels={false} // default = false. true makes labels + fields on separate rows
-        hideCopyButton={true} // default = false. true hides the onHover copy button
-      />
-      {/* <div
+    <Box
+      style={{
+        // display: 'grid',
+        // width: 300,
+        // gap: 10,
+        // paddingBottom: 0,
+        // marginRight: 0,
+        // float: 'left',
+        // background: '#181C20',
+        position: 'relative',
+        zIndex: 200,
+        // top: 0,
+        // left: 40,
+      }}>
+        <Leva
+          isRoot={true}
+          titleBar={showTitleBar && { drag, title, filter, position }} // TITLE | PROJECT_NAME
+          hideTitleBar={false} // default = false. true hides the GUI header
+          theme={theme} // you can pass a custom theme (see the styling section)
+          collapsed={true} // default = false. true makes the GUI collapsed to start
+          fill={true} // default = false. true makes the pane fill the parent dom node it's rendered in
+          flat={false} // default = false. true removes border radius and shadow
+          hidden={false} // default = false. true hides the GUI
+          neverHide={false} // default = true. false allows hiding of the GUI
+          oneLineLabels={false} // default = false. true makes labels + fields on separate rows
+          hideCopyButton={true} // default = false. true hides the onHover copy button
+        />
+      </Box>
+      <Box
         style={{
-          display: 'grid',
-          width: 300,
-          gap: 10,
-          paddingBottom: 0,
-          marginRight: 0,
-          float: 'left',
-          background: '#181C20',
-        }}> */}
+          display: 'none',
+          // display: 'grid',
+          // width: 300,
+          // gap: 10,
+          // paddingBottom: 0,
+          // marginRight: 0,
+          // float: 'left',
+          // background: '#181C20',
+        }}
+      >
         {/* <LevaPanel fill flat titleBar={false} store={colorsStore} /> */}
         {/* <LevaPanel fill flat titleBar={false} store={radiiStore} /> */}
         {/* <LevaPanel fill flat titleBar={false} store={spaceStore} /> */}
@@ -408,8 +426,8 @@ export function ThreeDLevaControls() {
         {/* <LevaPanel fill flat titleBar={false} store={sizesStore} /> */}
         {/* <LevaPanel fill flat titleBar={false} store={borderWidthsStore} /> */}
         {/* <LevaPanel fill flat titleBar={false} store={fontWeightsStore} /> */}
-      {/* </div> */}
-      {/* <pre>{JSON.stringify(theme, null, '  ')}</pre> */}
+        {/* <pre>{JSON.stringify(theme, null, '  ')}</pre> */}
+      </Box>
     </>
   )
 }

@@ -2,10 +2,11 @@
 'use server'
 // ^^ does this file require client or server pragma ???
 
-// ** React
+// ** REACT Imports
 import type { ReactNode } from 'react'
 
 // LAYOUT PROVIDERRRRRR by RADIX-UI
+// ** RADIX-UI Imports
 import { 
   Theme, 
   ThemePanel, 
@@ -14,6 +15,7 @@ import {
   Flex,
   Box,
 } from '@radix-ui/themes'
+// ** NEXT THEMES Imports
 import { ThemeProvider } from 'next-themes'
 
 // for client components only
@@ -46,9 +48,10 @@ const ThemeWrapper = ({ children }: { children: ReactNode}) => {
           {children}
         </Flex>
 
-        {/* <ThemePanel
-          // open={true} // true | false // private property, sorry
-        /> */}
+        <ThemePanel
+          defaultOpen={false} // true | false // public property :)
+          // open={true} // true | false // private property :(
+        />
 
       </Theme>
     </ThemeProvider>

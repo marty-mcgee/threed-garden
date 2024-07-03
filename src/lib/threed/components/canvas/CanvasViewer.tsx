@@ -48,7 +48,10 @@ const DEBUG: boolean = false
 
 // ==========================================================
 
-const ThreeDCanvasCamera = ({ index = 0, threeds = [] }: { index: number, threeds: any[] }) => {
+const ThreeDCanvasCamera = (
+  { index = 0, canvasKey = '0', threeds = [] }: 
+  { index: number, canvasKey: string, threeds: any[] }
+) => {
   return (
     <Accordion.Item 
       value={'Canvas 1 Camera ' + index}
@@ -189,7 +192,14 @@ export const ThreeDCanvasViewer = () => {
         // orientation='horizontal' // vertical | horizontal 
         // @ts-expect-error
         collapsible={'true'} // string 'true' | 'false' -- bug: should be boolean, not string
-        defaultValue={['Canvas 1 Camera 1', 'Canvas 1 Camera 2']} // , 'Canvas 1 Camera 3'
+        defaultValue={[
+          'Canvas 1 Camera 1', 
+          // 'Canvas 1 Camera 2',
+          // 'Canvas 1 Camera 3',
+          // 'Canvas 2 Camera 4',
+          // 'Canvas 2 Camera 5',
+          // 'Canvas 2 Camera 6',
+        ]}
         // value={tabControlValue}
         // onChange={onChangeTabControlValue}
         aria-label='ThreeD Canvas Viewer 1'
@@ -207,16 +217,19 @@ export const ThreeDCanvasViewer = () => {
         {/* THREED CANVAS 1 : CAMERA 1 */}
         <ThreeDCanvasCamera 
           index={1} 
+          canvasKey={'1'}
           threeds={threeds} 
         />
         {/* THREED CANVAS 1 : CAMERA 2 */}
         <ThreeDCanvasCamera 
           index={2} 
+          canvasKey={'1'}
           threeds={threeds} 
         />
         {/* THREED CANVAS 1 : CAMERA 3 */}
         <ThreeDCanvasCamera 
           index={3} 
+          canvasKey={'1'}
           threeds={threeds}
         />
         {/**/}
@@ -262,7 +275,8 @@ export const ThreeDCanvasViewer = () => {
         {/**/}
       </Accordion.Root>
 
-      {/* [MM] TESTING -- RADIX-UI.primitive.Collapsible */}
+      {/* [MM] HEY HEY HEY
+        * [MM] TESTING -- RADIX-UI.primitive.Collapsible */}
       {/* <CollapsibleDemo /> */}
 
     </Grid>
@@ -303,12 +317,18 @@ const CollapsibleDemo = () => {
         </div>
         {/*  */}
         <Collapsible.Content>
-          <div className="Repository">
+          {/* <div className="Repository">
             <span className="Text">1: HEY HEY HEY 1</span>
           </div>
           <div className="Repository">
             <span className="Text">1: YO YO YO 1</span>
-          </div>
+          </div> */}
+          {/* THREED CANVAS 1 : CAMERA 7 */}
+          <ThreeDCanvasCamera 
+            index={7} 
+            canvasKey={'1'}
+            threeds={[]} 
+          />
         </Collapsible.Content>
       </Collapsible.Root>
       {/*  */}
@@ -333,12 +353,18 @@ const CollapsibleDemo = () => {
         </div>
         {/*  */}
         <Collapsible.Content>
-          <div className="Repository">
+          {/* <div className="Repository">
             <span className="Text">2: HEY HEY HEY 2</span>
           </div>
           <div className="Repository">
             <span className="Text">2: YO YO YO 2</span>
-          </div>
+          </div> */}
+          {/* THREED CANVAS 2 : CAMERA 8 */}
+          <ThreeDCanvasCamera 
+            index={8}
+            canvasKey={'2'}
+            threeds={[]} 
+          />
         </Collapsible.Content>
       </Collapsible.Root>
     </Flex>

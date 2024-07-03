@@ -323,9 +323,9 @@ export default function ThreeDExperience() {
 
 
         {/* THREED FARMBOT */}
-        {/* <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.6, -2]}>
+        <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.6, -2]}>
           <ThreeDFarmBotGarden />
-        </group> */}
+        </group>
         {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
           <ThreeDFarmBotMain />
         </group> */}
