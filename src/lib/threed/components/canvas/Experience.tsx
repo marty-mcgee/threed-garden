@@ -350,8 +350,10 @@ export default function ThreeDExperience() {
               // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
               // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
             >
+              
               {/* <CharacterModelFloating /> */}
-              {/* <CharacterModelFarmerWomanFloating /> */}
+              <CharacterModelFarmerWomanFloating />
+
             </CharacterControls>
           </KeyboardControls>
         </group>
