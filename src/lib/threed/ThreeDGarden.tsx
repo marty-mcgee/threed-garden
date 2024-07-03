@@ -423,6 +423,10 @@ const ThreeDGarden = (): React.ReactNode => {
           style={{
             // borderTop: '1px solid darkgreen',
             border: '1px solid darkgreen',
+            marginLeft: '2px',
+            marginRight: '0px',
+            paddingLeft: '2px',
+            paddingRight: '2px',
           }}
         >
 
@@ -438,9 +442,7 @@ const ThreeDGarden = (): React.ReactNode => {
             style={{
               display: 'flex', 
               justifyContent: 'between',
-              // paddingLeft: 12,
-              // px: 2.5, 
-              // py: 2,
+              // paddingLeft: '2px',
               // borderTop: '1px solid darkgreen',
               // width: '360px',
               // minWidth: '320px',
@@ -461,17 +463,19 @@ const ThreeDGarden = (): React.ReactNode => {
             <Flex
               // item
               id='leva_controls'
-              justify='between'
+              justify='start'
+              width='100%'
               // pl={'10px'}
               // md={4}
               // xs={12}
               style={{
-                display: 'flex', 
-                justifyContent: 'flex-start',
+                // display: 'flex', 
+                // justifyContent: 'flex-start',
                 // paddingLeft: 12,
                 // px: 2.5, 
                 // py: 2,
                 // borderTop: '1px solid darkgreen',
+                // width: '100%',
                 // width: '360px',
                 // minWidth: '320px',
                 // maxWidth: '480px',
@@ -491,7 +495,7 @@ const ThreeDGarden = (): React.ReactNode => {
 
 
             {/* THREED CLICK LOADERS */}
-            <Flex
+            {/* <Flex
               // item
               id='threed_actions'
               // md={8}
@@ -501,14 +505,14 @@ const ThreeDGarden = (): React.ReactNode => {
                 justifyContent: 'flex-end' 
               }}
               gap='1'
-            >
+            > */}
               {/*
               <Button onClick={() => loadNounData('project', [])}>load project</Button>
               <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
               <Button onClick={() => loadNounData('character', [])}>load character</Button>
               <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
               */}
-            </Flex>
+            {/* </Flex> */}
             {/* END THREED CLICK LOADERS */}
 
             

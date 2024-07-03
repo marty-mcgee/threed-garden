@@ -236,7 +236,7 @@ export function ThreeDLevaControls() {
       drag: { value: true, render: (get) => get('Panel.showTitleBar') },
       filter: { value: false, render: (get) => get('Panel.showTitleBar') },
       position: { value: { x: 0, y: 0 }, render: (get) => get('Panel.showTitleBar') },
-      // fullScreen: false,
+      fullScreen: true,
       // oneLineLabels: false,
       // **
       // refMonitor: { value: monitor(refMon, { graph: true, interval: 60 }), render: (get) => get('Panel.showTitleBar') },
