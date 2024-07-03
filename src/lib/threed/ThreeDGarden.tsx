@@ -65,7 +65,7 @@ import {
   Button,
   Grid,
   Flex,
-  // Typography,
+  Text,
 } from '@radix-ui/themes'
 // ** MUI Imports
 // import { styled } from '@mui/material/styles'
@@ -395,7 +395,7 @@ const ThreeDGarden = (): React.ReactNode => {
   // ==========================================================
   // ** React returns JSX
   return (
-    <Grid
+    <Flex
       id='threed_garden'
       // columns={{ initial: '1', md: '1' }} 
       width='100%'
@@ -409,33 +409,51 @@ const ThreeDGarden = (): React.ReactNode => {
       )}
 
       { isPrefsLoaded && (
-        <Grid
+        <Flex
           // container
           id='threed_container'
           // columns={{ initial: '1', md: '1' }} 
           // gap='0'
-          // width='100%'
           // flexGrow='1'
           // justify='between'
           // display='none'
+          // direction='row'
+          direction='column'
+          width='100%'
           style={{
             // borderTop: '1px solid darkgreen',
             border: '1px solid darkgreen',
           }}
-          // direction='row'
         >
-        
-          {/* <Typography>{project_title}</Typography> */}
 
-          
           {/* THREED CONTROLS: ALL */}
-          <Grid
+          <Flex
             // item
             id='threed_controls'
             // columns={{ initial: '2', md: '2' }} 
             // gap='0' 
             // width='auto'
             width='100%'
+            direction='column'
+            style={{
+              display: 'flex', 
+              justifyContent: 'between',
+              // paddingLeft: 12,
+              // px: 2.5, 
+              // py: 2,
+              // borderTop: '1px solid darkgreen',
+              // width: '360px',
+              // minWidth: '320px',
+              // maxWidth: '480px',
+              // position: 'absolute',
+              // // minHeight: '48px',
+              // // display: 'inline',
+              // // position: 'fixed',
+              // top: 2,
+              // // left: 0,
+              // right: '10%', 
+              // // zIndex: 9999,
+            }}
           >
 
             
@@ -443,27 +461,28 @@ const ThreeDGarden = (): React.ReactNode => {
             <Flex
               // item
               id='leva_controls'
+              justify='between'
               // pl={'10px'}
               // md={4}
               // xs={12}
               style={{
-                // display: 'flex', 
-                // justifyContent: 'flex-end',
+                display: 'flex', 
+                justifyContent: 'flex-start',
                 // paddingLeft: 12,
                 // px: 2.5, 
                 // py: 2,
                 // borderTop: '1px solid darkgreen',
-                width: '360px',
-                minWidth: '320px',
-                maxWidth: '480px',
-                position: 'absolute',
-                // minHeight: '48px',
-                // display: 'inline',
-                // position: 'fixed',
-                top: 2,
-                // left: 0,
-                right: '10%', 
-                // zIndex: 9999,
+                // width: '360px',
+                // minWidth: '320px',
+                // maxWidth: '480px',
+                // position: 'absolute',
+                // // minHeight: '48px',
+                // // display: 'inline',
+                // // position: 'fixed',
+                // top: 2,
+                // // left: 0,
+                // right: '10%', 
+                // // zIndex: 9999,
               }}
             >
               <ThreeDLevaControls />
@@ -493,30 +512,31 @@ const ThreeDGarden = (): React.ReactNode => {
             {/* END THREED CLICK LOADERS */}
 
             
-          </Grid>
+          </Flex>
           {/* END: THREED CONTROLS: ALL */}
 
 
           {/* THREED TOOLBAR */}
-          <Grid
+          <Flex
             // item
             id='threed_toolbar'
             // md={12}
             // xs={12}
             style={{
               // display: 'flex', justifyContent: 'flex-end',
-              // borderTop: '1px solid darkgreen',
+              borderTop: '1px solid darkgreen',
               paddingLeft: '4px',
             }}
+            direction='column'
           >
             <ThreeDToolbar />
-          </Grid>
+          </Flex>
           {/* END: THREED TOOLBAR */}
 
           
           {/* THREED CANVAS VIEWER */}
           {/* HEY HEY HEY -- THREED CANVAS: VIEWER COMPONENT WRAPPER */}
-          <Grid
+          <Flex
             // item
             id='threed_canvas_viewer'
             // md={12}
@@ -532,61 +552,65 @@ const ThreeDGarden = (): React.ReactNode => {
               // zIndex: 0, // this does not work.. no negative numbers !!!!
               width: '100%',
             }}
+            direction='column'
           >
             <ThreeDCanvasViewer />
-          </Grid>
+          </Flex>
           {/* END: THREED CANVAS VIEWER */}
 
 
           {/* THREED CONTROL PANELS */}
           {/* -- STORE ACCESS (apollo, valtio, leva) */}
-          <Grid
+          <Flex
             // item
             id='threed_control_panels'
             // md={12}
             // xs={12}
             style={{ borderTop: '1px solid darkgreen' }}
+            direction='column'
           >
             <ThreeDControlPanels />
             {/* <ThreeDControlPanels tabs={tabProps} /> */}
-          </Grid>
+          </Flex>
           {/* END: THREED CONTROL PANELS */}
 
 
           {/* THREED VIEWS */}
-          <Grid
+          <Flex
             // item
             id='threed_views'
             // md={12}
             // xs={12}
             style={{ borderTop: '0px solid darkgreen' }}
+            direction='column'
           >
             {/* <CatalogView /> */}
             {/* <PropertiesView /> */}
             {/* <PlanView /> */}
             {/* <TheBottom /> */}
-          </Grid>
+          </Flex>
           {/* END: THREED VIEWS */}
 
 
           {/* THREED MODALS */}
-          <Grid
+          <Flex
             // item
             id='threed_modals'
             // md={12}
             // xs={12}
             style={{ borderTop: '0px solid darkgreen' }}
+            direction='column'
           >
             <ModalAbout />
             {/* <ModalModel3d /> */}
             {/* <ModalLoading /> */}
             {/* <ModalShare /> */}
-          </Grid>
+          </Flex>
           {/* END: THREED MODALS */}
 
 
           {/* THREED FARMBOT */}
-          <Grid
+          <Flex
             // item
             id='threed_farmbot'
             // md={12}
@@ -595,15 +619,20 @@ const ThreeDGarden = (): React.ReactNode => {
               // borderTop: '1px solid darkgreen', 
               // padding: '16px' 
             }}
+            direction='column'
           >
             {/* <ThreeDFarmBotMain /> */}
-          </Grid>
+          </Flex>
           {/* END: THREED FARMBOT */}
 
 
-        </Grid>
+          {/* [MM] HEY HEY HEY */}
+          {/* <Text>{project_title}</Text> */}
+          {/* [MM] HEY HEY HEY */}
+          
+        </Flex>
       )}
-    </Grid>
+    </Flex>
   )
 }
 
