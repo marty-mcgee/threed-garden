@@ -1031,7 +1031,7 @@ const ThreeDModels = ({ threeds }) => {
     return <></>
   }
 
-  console.debug('%c🌱 threeds[]', ccm.darkredAlert, threeds)
+  console.debug('%c🌱 threeds[i]', ccm.darkredAlert, threeds)
   return (
     <group
       position={[ 8, 0, 0 ]}
