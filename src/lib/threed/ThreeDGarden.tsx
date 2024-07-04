@@ -425,8 +425,6 @@ const ThreeDGarden = (): React.ReactNode => {
             border: '1px solid darkgreen',
             marginLeft: '2px',
             marginRight: '0px',
-            paddingLeft: '2px',
-            paddingRight: '2px',
           }}
         >
 
@@ -524,7 +522,8 @@ const ThreeDGarden = (): React.ReactNode => {
             // md={12}
             // xs={12}
             style={{
-              // display: 'flex', justifyContent: 'flex-end',
+              // display: 'flex', 
+              // justifyContent: 'flex-end',
               borderTop: '1px solid darkgreen',
               paddingLeft: '4px',
             }}
@@ -546,9 +545,7 @@ const ThreeDGarden = (): React.ReactNode => {
               // justifyContent: 'flex-end',
               // mx: 0,
               // px: 2,
-              // borderTop: '1px solid darkgreen',
-              // border: '2px solid darkgreen',
-              // borderTop: '2px solid darkgreen',
+              borderTop: '1px solid darkgreen',
               // zIndex: 0, // this does not work.. no negative numbers !!!!
               width: '100%',
             }}
@@ -565,7 +562,9 @@ const ThreeDGarden = (): React.ReactNode => {
             id='threed_control_panels'
             // md={12}
             // xs={12}
-            style={{ borderTop: '1px solid darkgreen' }}
+            style={{ 
+              borderTop: '1px solid darkgreen' 
+            }}
             direction='column'
           >
             <ThreeDControlPanels />
@@ -579,7 +578,9 @@ const ThreeDGarden = (): React.ReactNode => {
             id='threed_views'
             // md={12}
             // xs={12}
-            style={{ borderTop: '0px solid darkgreen' }}
+            style={{ 
+              borderTop: '0px solid darkgreen' 
+            }}
             direction='column'
           >
             {/* <CatalogView /> */}
@@ -595,7 +596,9 @@ const ThreeDGarden = (): React.ReactNode => {
             id='threed_modals'
             // md={12}
             // xs={12}
-            style={{ borderTop: '0px solid darkgreen' }}
+            style={{ 
+              borderTop: '0px solid darkgreen' 
+            }}
             direction='column'
           >
             <ModalAbout />

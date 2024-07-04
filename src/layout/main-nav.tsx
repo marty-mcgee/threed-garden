@@ -38,7 +38,8 @@ export default async function MainNav() {
       //   m-0
       // '
       style={{
-        marginTop: -4, // wtf !!!
+        marginTop: -4, // wth !!!
+        marginLeft: 4,
       }}
     >
       <Flex
