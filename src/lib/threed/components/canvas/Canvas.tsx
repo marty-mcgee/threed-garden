@@ -494,6 +494,7 @@ export const ThreeDCanvas = (
             {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
             <ThreeDModels
               threeds={threeds}
+              // position={[ -4, 0, 0 ]}
             />
 
           </ThreeDExperienceViewer>
