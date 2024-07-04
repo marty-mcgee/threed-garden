@@ -26,6 +26,7 @@ import {
   Box,
   Button,
   Grid,
+  Flex,
   Text,
 } from '@radix-ui/themes'
 
@@ -232,11 +233,12 @@ export function ThreeDLevaControls() {
     'ThreeD Control Panel',
     () => ({
       showTitleBar: { value: true, render: (get) => get('Panel.showTitleBar') },
-      title: { value: prefs.projectName, render: (get) => get('Panel.showTitleBar') },
+      // prefs.projectName
+      title: { value: 'Preferences', render: (get) => get('Panel.showTitleBar') },
       drag: { value: true, render: (get) => get('Panel.showTitleBar') },
       filter: { value: false, render: (get) => get('Panel.showTitleBar') },
       position: { value: { x: 0, y: 0 }, render: (get) => get('Panel.showTitleBar') },
-      fullScreen: true,
+      // fullScreen: true,
       // oneLineLabels: false,
       // **
       // refMonitor: { value: monitor(refMon, { graph: true, interval: 60 }), render: (get) => get('Panel.showTitleBar') },
@@ -379,7 +381,7 @@ export function ThreeDLevaControls() {
 
   return (
     <>
-    <Box
+    <Flex
       style={{
         // display: 'grid',
         // width: 300,
@@ -388,10 +390,10 @@ export function ThreeDLevaControls() {
         // marginRight: 0,
         // float: 'left',
         // background: '#181C20',
-        position: 'relative',
-        zIndex: 200,
-        // top: 0,
-        // left: 40,
+        // position: 'fixed',
+        zIndex: 9999,
+        // top: 30,
+        // left: 10,
       }}>
         <Leva
           isRoot={true}
@@ -406,10 +408,9 @@ export function ThreeDLevaControls() {
           oneLineLabels={false} // default = false. true makes labels + fields on separate rows
           hideCopyButton={true} // default = false. true hides the onHover copy button
         />
-      </Box>
-      <Box
+      </Flex>
+      {/* <Box
         style={{
-          display: 'none',
           // display: 'grid',
           // width: 300,
           // gap: 10,
@@ -418,7 +419,7 @@ export function ThreeDLevaControls() {
           // float: 'left',
           // background: '#181C20',
         }}
-      >
+      > */}
         {/* <LevaPanel fill flat titleBar={false} store={colorsStore} /> */}
         {/* <LevaPanel fill flat titleBar={false} store={radiiStore} /> */}
         {/* <LevaPanel fill flat titleBar={false} store={spaceStore} /> */}
@@ -427,7 +428,7 @@ export function ThreeDLevaControls() {
         {/* <LevaPanel fill flat titleBar={false} store={borderWidthsStore} /> */}
         {/* <LevaPanel fill flat titleBar={false} store={fontWeightsStore} /> */}
         {/* <pre>{JSON.stringify(theme, null, '  ')}</pre> */}
-      </Box>
+      {/* </Box> */}
     </>
   )
 }
