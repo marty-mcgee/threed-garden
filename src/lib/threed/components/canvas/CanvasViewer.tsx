@@ -57,7 +57,7 @@ const ThreeDCanvasCamera = (
       value={'Canvas 1 Camera ' + index}
       className='AccordionItem'
       style={{ 
-        borderTop: '1px solid darkgreen',
+        // borderTop: '1px solid darkgreen',
         // height: '100%',
         // minHeight: '30%',
         // minHeight: '100vh',
