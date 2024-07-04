@@ -1,4 +1,3 @@
-// @ ts-nocheck /* OR @ ts-ignore OR @ ts-expect-error */
 // 'use client'
 // ^ needs the 'use client' pragma (inheriting from parent page)
 // ==============================================================
@@ -395,7 +394,7 @@ const ThreeDGarden = (): React.ReactNode => {
   // ==========================================================
   // ** React returns JSX
   return (
-    <Flex
+    <Grid
       id='threed_garden'
       // columns={{ initial: '1', md: '1' }} 
       width='100%'
@@ -409,7 +408,8 @@ const ThreeDGarden = (): React.ReactNode => {
       )}
 
       { isPrefsLoaded && (
-        <Flex
+        <>
+        <Grid
           // container
           id='threed_container'
           // columns={{ initial: '1', md: '1' }} 
@@ -418,7 +418,7 @@ const ThreeDGarden = (): React.ReactNode => {
           // justify='between'
           // display='none'
           // direction='row'
-          direction='column'
+          // direction='column'
           width='100%'
           style={{
             // borderTop: '1px solid darkgreen',
@@ -427,93 +427,6 @@ const ThreeDGarden = (): React.ReactNode => {
             marginRight: '0px',
           }}
         >
-
-          {/* THREED CONTROLS: ALL */}
-          <Flex
-            // item
-            id='threed_controls'
-            // columns={{ initial: '2', md: '2' }} 
-            // gap='0' 
-            // width='auto'
-            width='100%'
-            direction='column'
-            style={{
-              display: 'flex', 
-              justifyContent: 'between',
-              // paddingLeft: '2px',
-              // borderTop: '1px solid darkgreen',
-              // width: '360px',
-              // minWidth: '320px',
-              // maxWidth: '480px',
-              // position: 'absolute',
-              // // minHeight: '48px',
-              // // display: 'inline',
-              // // position: 'fixed',
-              // top: 2,
-              // // left: 0,
-              // right: '10%', 
-              // // zIndex: 9999,
-            }}
-          >
-
-            {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-            <Flex
-              // item
-              id='leva_controls'
-              justify='start'
-              width='100%'
-              // pl={'10px'}
-              // md={4}
-              // xs={12}
-              style={{
-                // display: 'flex', 
-                // justifyContent: 'flex-start',
-                // paddingLeft: 12,
-                // px: 2.5, 
-                // py: 2,
-                // borderTop: '1px solid darkgreen',
-                // width: '100%',
-                // width: '360px',
-                // minWidth: '320px',
-                // maxWidth: '480px',
-                // position: 'absolute',
-                // // minHeight: '48px',
-                // // display: 'inline',
-                // // position: 'fixed',
-                // top: 2,
-                // // left: 0,
-                // right: '10%', 
-                // // zIndex: 9999,
-              }}
-            >
-              <ThreeDLevaControls />
-            </Flex>
-            {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-
-            {/* THREED CLICK LOADERS */}
-            {/* <Flex
-              // item
-              id='threed_actions'
-              // md={8}
-              // xs={12}
-              style={{ 
-                display: 'flex', 
-                justifyContent: 'flex-end' 
-              }}
-              gap='1'
-            > */}
-              {/*
-              <Button onClick={() => loadNounData('project', [])}>load project</Button>
-              <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
-              <Button onClick={() => loadNounData('character', [])}>load character</Button>
-              <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
-              */}
-            {/* </Flex> */}
-            {/* END THREED CLICK LOADERS */}
-
-          </Flex>
-          {/* END: THREED CONTROLS: ALL */}
-
 
           {/* THREED TOOLBAR */}
           <Flex
@@ -524,8 +437,8 @@ const ThreeDGarden = (): React.ReactNode => {
             style={{
               // display: 'flex', 
               // justifyContent: 'flex-end',
-              borderTop: '1px solid darkgreen',
-              paddingLeft: '4px',
+              // borderTop: '1px solid darkgreen',
+              paddingLeft: '5px',
             }}
             direction='column'
           >
@@ -628,9 +541,98 @@ const ThreeDGarden = (): React.ReactNode => {
           {/* <Text>{project_title}</Text> */}
           {/* [MM] HEY HEY HEY */}
           
-        </Flex>
+        </Grid>
+
+        
+
+        {/* THREED CONTROLS: ALL */}
+        <Grid
+          // item
+          id='threed_controls'
+          // columns={{ initial: '2', md: '2' }} 
+          // gap='0' 
+          // width='auto'
+          width='50%'
+          // direction='row'
+          style={{
+            // display: 'flex', 
+            // justifyContent: 'between',
+            // paddingLeft: '2px',
+            // borderTop: '1px solid darkgreen',
+            // width: '360px',
+            // minWidth: '320px',
+            // maxWidth: '480px',
+            // position: 'absolute',
+            // // minHeight: '48px',
+            // // display: 'inline',
+            // // position: 'fixed',
+            // top: 2,
+            // // left: 0,
+            // right: '10%', 
+            // // zIndex: 9999,
+          }}
+        >
+
+          {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+          {/* <Flex
+            // item
+            id='leva_controls'
+            // justify='start'
+            // width='100%'
+            // pl={'10px'}
+            // md={4}
+            // xs={12}
+            style={{
+              // display: 'flex', 
+              // justifyContent: 'flex-start',
+              // paddingLeft: 12,
+              // px: 2.5, 
+              // py: 2,
+              // borderTop: '1px solid darkgreen',
+              // width: '100%',
+              width: '400px',
+              minWidth: '320px',
+              maxWidth: '480px',
+              // position: 'absolute',
+              // // minHeight: '48px',
+              // // display: 'inline',
+              // // position: 'fixed',
+              // top: 2,
+              // // left: 0,
+              // right: '10%', 
+              zIndex: 9999,
+            }}
+          > */}
+            <ThreeDLevaControls />
+          {/* </Flex> */}
+          {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+
+          {/* THREED CLICK LOADERS */}
+          {/* <Flex
+            // item
+            id='threed_actions'
+            // md={8}
+            // xs={12}
+            style={{ 
+              display: 'flex', 
+              justifyContent: 'flex-end' 
+            }}
+            gap='1'
+          > */}
+            {/*
+            <Button onClick={() => loadNounData('project', [])}>load project</Button>
+            <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
+            <Button onClick={() => loadNounData('character', [])}>load character</Button>
+            <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
+            */}
+          {/* </Flex> */}
+          {/* END THREED CLICK LOADERS */}
+
+        </Grid>
+        {/* END: THREED CONTROLS: ALL */}
+        </>
       )}
-    </Flex>
+    </Grid>
   )
 }
 

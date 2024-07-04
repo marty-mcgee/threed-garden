@@ -256,8 +256,8 @@ export default function ThreeDExperience() {
 
       {/* THREED USING PHYSICS */}
       <Physics
-        // debug={prefs.doWorldPhysics}
-        debug={false}
+        debug={prefs.doWorldPhysics}
+        // debug={false}
         timeStep={'vary'}
         paused={pausedPhysics}
       >
@@ -323,19 +323,19 @@ export default function ThreeDExperience() {
 
 
         {/* THREED FARMBOT */}
-        <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.6, -2]}>
+        <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.665, -2]}>
           <ThreeDFarmBotGarden />
         </group>
         {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
           <ThreeDFarmBotMain />
         </group> */}
 
-        {/* [MM] HEY HEY HEY : FALL FROM SKY..........................
-            CHARACTER MODEL */}
-        <group position={[0, 8, 0]}>
+        {/* [MM] HEY HEY HEY : FALL FROM SKY.......................... */}
+        {/* CHARACTER MODEL */}
+        <group position={[-2, 0.665, -2]}>
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
           <KeyboardControls map={keyboardMap}>
-            <CharacterControls
+            {/* <CharacterControls
               // debug={prefs.doWorldDebug}
               debug={false}
               // animated={prefs.doCharacterAnimation}
@@ -349,12 +349,33 @@ export default function ThreeDExperience() {
               autoBalanceDampingC={0.04}
               // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
               // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
-            >
-              
-              {/* <CharacterModelFloating /> */}
+            > */}
+              <CharacterModelFloating />
+            {/* </CharacterControls> */}
+          </KeyboardControls>
+        </group>
+        {/* END: CHARACTER MODEL */}
+        {/* CHARACTER MODEL */}
+        <group position={[0, 0.665, 0]}>
+          {/* THREED CHARACTER [n] -- FARMER FEMALE */}
+          <KeyboardControls map={keyboardMap}>
+            {/* <CharacterControls
+              // debug={prefs.doWorldDebug}
+              debug={false}
+              // animated={prefs.doCharacterAnimation}
+              animated={true} // <EcctrlAnimation>
+              // disableFollowCam={prefs.doWorldUnfollowCam}
+              disableFollowCam={true}
+              followLight={true}
+              springK={2}
+              dampingC={0.2}
+              autoBalanceSpringK={1.2}
+              autoBalanceDampingC={0.04}
+              // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
+              // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
+            > */}
               <CharacterModelFarmerWomanFloating />
-
-            </CharacterControls>
+            {/* </CharacterControls> */}
           </KeyboardControls>
         </group>
         {/* END: CHARACTER MODEL */}
@@ -372,7 +393,7 @@ export default function ThreeDExperience() {
 
       <Perf
         position='bottom-left'
-        minimal
+        // minimal
       />
     </>
   )

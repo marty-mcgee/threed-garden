@@ -1104,7 +1104,6 @@ const ThreeDToolbar: FC = (): React.ReactNode => {
           <Box
             sx={{ flexGrow: 0 }} // , display: { xs: 'none', md: 'flex' }
           >
-            {/* <Button color="inherit">-||- TOOL MODES -||-</Button> */}
             <Tooltip title='Pointer Tool'>
               <IconButton
                 id='pointerTool'
@@ -1204,6 +1203,7 @@ const ThreeDToolbar: FC = (): React.ReactNode => {
               </IconButton>
             </Tooltip>
           </Box>
+
         </Toolbar>
       {/* </Box> */}
     {/* </AppBar> */}
