@@ -26,7 +26,8 @@ import {
   Box,
   Button,
   Grid,
-  // Typography,
+  Flex,
+  Text,
 } from '@radix-ui/themes'
 
 // ** HELPER Components
@@ -35,6 +36,7 @@ import Spinner from '#/layout/ui/components/spinner'
 import ccm from '#/lib/utils/console-colors'
 
 const debug = false
+const DEBUG = false
 
 // ** WAVEFORM SUPPORT
 const noise = new Noise(Math.random())
@@ -231,11 +233,12 @@ export function ThreeDLevaControls() {
     'ThreeD Control Panel',
     () => ({
       showTitleBar: { value: true, render: (get) => get('Panel.showTitleBar') },
-      title: { value: prefs.projectName, render: (get) => get('Panel.showTitleBar') },
+      // prefs.projectName
+      title: { value: 'Preferences', render: (get) => get('Panel.showTitleBar') },
       drag: { value: true, render: (get) => get('Panel.showTitleBar') },
       filter: { value: false, render: (get) => get('Panel.showTitleBar') },
       position: { value: { x: 0, y: 0 }, render: (get) => get('Panel.showTitleBar') },
-      // fullScreen: false,
+      // fullScreen: true,
       // oneLineLabels: false,
       // **
       // refMonitor: { value: monitor(refMon, { graph: true, interval: 60 }), render: (get) => get('Panel.showTitleBar') },
@@ -378,28 +381,45 @@ export function ThreeDLevaControls() {
 
   return (
     <>
-      <Leva
-        titleBar={showTitleBar && { drag, title, filter, position }} // TITLE | PROJECT_NAME
-        hideTitleBar={false} // default = false. true hides the GUI header
-        theme={theme} // you can pass a custom theme (see the styling section)
-        collapsed={true} // default = false. true makes the GUI collpased
-        fill={true} // default = false. true makes the pane fill the parent dom node it's rendered in
-        flat={true} // default = false. true removes border radius and shadow
-        hidden={false} // default = false. true hides the GUI
-        neverHide={true} // default = true. false allows hiding of the GUI
-        oneLineLabels={false} // default = false. true makes labels + fields on separate rows
-        hideCopyButton={true} // default = false. true hides the onHover copy button
-      />
-      {/* <div
+    <Flex
+      style={{
+        // display: 'grid',
+        // width: 300,
+        // gap: 10,
+        // paddingBottom: 0,
+        // marginRight: 0,
+        // float: 'left',
+        // background: '#181C20',
+        // position: 'fixed',
+        zIndex: 9999,
+        // top: 30,
+        // left: 10,
+      }}>
+        <Leva
+          isRoot={true}
+          titleBar={showTitleBar && { drag, title, filter, position }} // TITLE | PROJECT_NAME
+          hideTitleBar={false} // default = false. true hides the GUI header
+          theme={theme} // you can pass a custom theme (see the styling section)
+          collapsed={true} // default = false. true makes the GUI collapsed to start
+          fill={true} // default = false. true makes the pane fill the parent dom node it's rendered in
+          flat={false} // default = false. true removes border radius and shadow
+          hidden={false} // default = false. true hides the GUI
+          neverHide={false} // default = true. false allows hiding of the GUI
+          oneLineLabels={false} // default = false. true makes labels + fields on separate rows
+          hideCopyButton={true} // default = false. true hides the onHover copy button
+        />
+      </Flex>
+      {/* <Box
         style={{
-          display: 'grid',
-          width: 300,
-          gap: 10,
-          paddingBottom: 0,
-          marginRight: 0,
-          float: 'left',
-          background: '#181C20',
-        }}> */}
+          // display: 'grid',
+          // width: 300,
+          // gap: 10,
+          // paddingBottom: 0,
+          // marginRight: 0,
+          // float: 'left',
+          // background: '#181C20',
+        }}
+      > */}
         {/* <LevaPanel fill flat titleBar={false} store={colorsStore} /> */}
         {/* <LevaPanel fill flat titleBar={false} store={radiiStore} /> */}
         {/* <LevaPanel fill flat titleBar={false} store={spaceStore} /> */}
@@ -407,8 +427,8 @@ export function ThreeDLevaControls() {
         {/* <LevaPanel fill flat titleBar={false} store={sizesStore} /> */}
         {/* <LevaPanel fill flat titleBar={false} store={borderWidthsStore} /> */}
         {/* <LevaPanel fill flat titleBar={false} store={fontWeightsStore} /> */}
-      {/* </div> */}
-      {/* <pre>{JSON.stringify(theme, null, '  ')}</pre> */}
+        {/* <pre>{JSON.stringify(theme, null, '  ')}</pre> */}
+      {/* </Box> */}
     </>
   )
 }
@@ -439,7 +459,7 @@ export const ThreeDLevaComponent = ({ projectName, setProjectName }) => {
   // }, [projectName, set])
   // // }, [projectName])
 
-  // // console.debug("MyComponent")
+  // // console.debug('MyComponent')
   // useEffect(() => {
   //   setProjectName(projectName)
   // //   console.debug('MyComponent onMount')

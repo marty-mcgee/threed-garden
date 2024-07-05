@@ -59,12 +59,15 @@ const SessionWrapper = dynamic(() => import('~/src/layout/SessionWrapper'), { ss
 // import themeConfig from '#/lib/config/themeConfig'
 
 // ** CSS Styles
+// ** TAILWIND CSS
 import '#/layout/styles/globals.css' // global tailwind css
-import '#/layout/styles/custom-styles.css' // additional global basic custom css
+// ** Radix UI CSS
+// import '@radix-ui/themes/styles.css' // radix-ui theme default css in node_modules
+import '#/layout/styles/radix-ui-themes-styles.css' // copied from default, for editing
+// ** CUSTOM CSS (DOMINANT OVERRIDES)
+import '#/layout/styles/custom-styles.css' // custom css
 
 // ** LAYOUT Components
-// ** Radix UI
-import '@radix-ui/themes/styles.css'
 import ThemeWrapper from '#/layout/ThemeWrapper'
 // const ThemeWrapper = dynamic(() => import('~/src/layout/ThemeWrapper'), { ssr: false })
 // import { Theme, ThemePanel } from '@radix-ui/themes'
@@ -72,21 +75,13 @@ import ThemeWrapper from '#/layout/ThemeWrapper'
 // ** Layouts
 // import BlankLayout from '#/layout/ui/layouts/BlankLayout' // this is your default and login layout
 // import UserLayout from '#/layout/ui/layouts/UserLayout' // this is your user-authorized (new dashboard) layout
-// ** Material Design
-// import * as MUI_Getters from '@mui/material'
-// import {
-//   Accordion,
-//   AccordionActions,
-//   AccordionDetails,
-//   AccordionSummary,
-// } from '@mui/material'
 // ** LAYOUT Components (Head, Body, Foot)
-// import Header from '#/layout/header'
-// import Footer from '#/layout/footer'
+import Header from '#/layout/header'
+import Footer from '#/layout/footer'
 // // const Header = dynamic(() => import('#/layout/header').then((mod) => mod), { ssr: false })
 // // const Footer = dynamic(() => import('#/layout/footer').then((mod) => mod), { ssr: false })
-const Header = dynamic(() => import('#/layout/header'), { ssr: false })
-const Footer = dynamic(() => import('#/layout/footer'), { ssr: false })
+// const Header = dynamic(() => import('#/layout/header'), { ssr: false })
+// const Footer = dynamic(() => import('#/layout/footer'), { ssr: false })
 
 // ** FONTS ??
 // import { Inter } from 'next/font/google' // Roboto?
@@ -102,10 +97,8 @@ import ccm from '#/lib/utils/console-colors'
 // ==============================================================
 // IMPORTS COMPLETE
 // console.debug('%c=======================================', ccm.black)
-console.debug('%c🥕 ThreeDGarden: Layout', ccm.lightgreen)
+// console.debug('%c🥕 ThreeDGarden: Layout', ccm.lightgreen)
 // console.debug('%c🥕 Radix-UI: Theme', ccm.lightgreen)
-// console.debug('%c🥕 MUI_Getters', ccm.lightgreen, MUI_Getters)
-// console.debug('%c🥕 MUI/Accordion', ccm.lightgreen, Accordion)
 // console.debug('%c=======================================', ccm.black)
 
 // ==============================================================
@@ -121,7 +114,7 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
       <body>
       {/* <body className={inter.className}> */}
       {/* <body className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}> */}
-        <div id='ThreeDApp'>
+        <div id='ThreeDAppProvider'>
           {children}
         </div>
       </body>
@@ -277,24 +270,28 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                               {/* <SessionProvider session={session}> */}
                               {/* <SessionProvider session={null}> */}
 
-                              <ThemeWrapper>
+                              <ThemeWrapper
+                                // key='ThreeDAppThemeWrapper'
+                              >
+
                                 <div 
                                   id='ThreeDAppLayout'
                                 >
+                                  
                                   <Header 
                                     // key='ThreeDAppHeader'
                                   />
 
-                                  <main 
+                                  <div 
                                     id='ThreeDAppMain'
-                                    // key='ThreeDAppMain'
                                   >
                                     {children}
-                                  </main>
+                                  </div>
 
-                                  {/* <Footer
+                                  <Footer
                                     // key='ThreeDAppFooter'
-                                  /> */}
+                                  />
+                                
                                 </div>
                                 
                               </ThemeWrapper>

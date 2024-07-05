@@ -1,5 +1,9 @@
 // 'use client'
 'use server'
+// ^^ this file requires server pragma
+
+// ** React
+import type { ReactNode } from 'react'
 
 // SESSSSSSION PROVIDERRRRRR
 import { SessionProvider } from 'next-auth/react'
@@ -9,7 +13,7 @@ import { auth } from '#/lib/auth/auth' // this goes in page?
 // import dynamic from 'next/dynamic'
 // const ExperienceViewer = dynamic(() => import('#/lib/threed/components/canvas/ExperienceViewer'), { ssr: false })
 
-const SessionWrapper = async ({ children }: { children: any}) => {
+const SessionWrapper = async ({ children }: { children: ReactNode}) => {
   // **
   const id: string = 'ThreeDAppSession'
   // const ref: any = useRef<any>()

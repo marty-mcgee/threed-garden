@@ -34,8 +34,8 @@ import ccm from '#/lib/utils/console-colors'
 // console.debug(`%c====================================`, ccm.blue)
 
 // ** TESTING
-const debug: boolean = true // false | true
-const DEBUG: boolean = true // 1 == 0 | 1 == 1
+const debug: boolean = false // false | true
+const DEBUG: boolean = false // 1 == 0 | 1 == 1
 const debug_deep: boolean = false // false | true
 
 // ==============================================================

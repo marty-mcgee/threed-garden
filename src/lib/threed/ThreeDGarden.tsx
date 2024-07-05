@@ -1,4 +1,3 @@
-// @ ts-nocheck /* OR @ ts-ignore OR @ ts-expect-error */
 // 'use client'
 // ^ needs the 'use client' pragma (inheriting from parent page)
 // ==============================================================
@@ -64,7 +63,8 @@ import {
   Box,
   Button,
   Grid,
-  // Typography,
+  Flex,
+  Text,
 } from '@radix-ui/themes'
 // ** MUI Imports
 // import { styled } from '@mui/material/styles'
@@ -98,7 +98,7 @@ import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
 // const ThreeDControlPanels = dynamic(() => import('#/lib/threed/components/controls/ControlPanels'), { ssr: false })
 
 // ** ThreeD Toolbar
-import ThreeDToolbar from '#/lib/threed/components/tools/Toolbar'
+import ThreeDToolbar from '~/src/lib/threed/components/controls/Toolbar'
 
 // ** Modal Imports
 import ThreeDModals from '#/lib/threed/components/modals/Modals'
@@ -396,10 +396,11 @@ const ThreeDGarden = (): React.ReactNode => {
   return (
     <Grid
       id='threed_garden'
-      columns={{ initial: '1', md: '1' }} 
-      width="100%"
-      px="2"
-      py="1"
+      // columns={{ initial: '1', md: '1' }} 
+      width='100%'
+      px='2'
+      py='1'
+      // justify='end'
     >
 
       { !isPrefsLoaded && (
@@ -407,172 +408,121 @@ const ThreeDGarden = (): React.ReactNode => {
       )}
 
       { isPrefsLoaded && (
+        <>
         <Grid
           // container
-          id='threed_grid'
-          columns={{ initial: '1', md: '1' }} 
-          gap="0" 
-          width="auto"
+          id='threed_container'
+          // columns={{ initial: '1', md: '1' }} 
+          // gap='0'
+          // flexGrow='1'
+          // justify='between'
+          // display='none'
+          // direction='row'
+          // direction='column'
+          width='100%'
           style={{
             // borderTop: '1px solid darkgreen',
             border: '1px solid darkgreen',
+            marginLeft: '2px',
+            marginRight: '0px',
           }}
         >
-        
-          {/* <Typography>{project_title}</Typography> */}
-
-          
-          {/* THREED CONTROLS: ALL */}
-          <Grid
-            id='threed_controls'
-            columns={{ initial: '2', md: '2' }} 
-            gap="0" 
-            width="auto"
-          >
-
-            
-            {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-            <Box
-              // item
-              id='leva_controls'
-              pl={'10px'}
-              // md={4}
-              // xs={12}
-              style={{
-                // display: 'flex', 
-                // justifyContent: 'flex-end',
-                // paddingLeft: 12,
-                // px: 2.5, 
-                // py: 2,
-                // borderTop: '1px solid darkgreen',
-                minWidth: '320px',
-                maxWidth: '480px',
-                // position: 'absolute',
-                // minHeight: '48px',
-                // display: 'inline',
-                // position: 'fixed',
-                // top: 0,
-                // left: 0, 
-                zIndex: 9999,
-              }}
-            >
-              <ThreeDLevaControls />
-            </Box>
-            {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-
-
-            {/* THREED CLICK LOADERS */}
-            <Grid
-              // item
-              id='threed_actions'
-              // md={8}
-              // xs={12}
-              style={{ 
-                display: 'flex', 
-                justifyContent: 'flex-end' 
-              }}
-              gap='1'
-            >
-              <Button onClick={() => loadNounData('project', [])}>load project</Button>
-              <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
-              <Button onClick={() => loadNounData('character', [])}>load character</Button>
-              <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
-            </Grid>
-            {/* END THREED CLICK LOADERS */}
-
-            
-          </Grid>
-          {/* END: THREED CONTROLS: ALL */}
-
 
           {/* THREED TOOLBAR */}
-          {/* <Grid
-            item
+          <Flex
+            // item
             id='threed_toolbar'
-            md={12}
-            xs={12}
-            sx={{
-              // display: 'flex', justifyContent: 'flex-end',
-              px: 2, 
-              borderTop: '1px solid darkgreen',
+            // md={12}
+            // xs={12}
+            style={{
+              // display: 'flex', 
+              // justifyContent: 'flex-end',
+              // borderTop: '1px solid darkgreen',
+              paddingLeft: '5px',
             }}
+            direction='column'
           >
             <ThreeDToolbar />
-          </Grid> */}
+          </Flex>
           {/* END: THREED TOOLBAR */}
-
           
           {/* THREED CANVAS VIEWER */}
           {/* HEY HEY HEY -- THREED CANVAS: VIEWER COMPONENT WRAPPER */}
-          <Grid
+          <Flex
             // item
             id='threed_canvas_viewer'
             // md={12}
             // xs={12}
             style={{ 
-              // display: 'flex', justifyContent: 'flex-end',
+              // display: 'flex', 
+              // justifyContent: 'flex-end',
               // mx: 0,
               // px: 2,
-              // borderTop: '1px solid darkgreen',
-              // border: '2px solid darkgreen',
-              // borderTop: '2px solid darkgreen',
-              zIndex: -9999,
+              borderTop: '1px solid darkgreen',
+              // zIndex: 0, // this does not work.. no negative numbers !!!!
+              width: '100%',
             }}
+            direction='column'
           >
             <ThreeDCanvasViewer />
-          </Grid>
+          </Flex>
           {/* END: THREED CANVAS VIEWER */}
-
 
           {/* THREED CONTROL PANELS */}
           {/* -- STORE ACCESS (apollo, valtio, leva) */}
-          <Grid
+          <Flex
             // item
             id='threed_control_panels'
             // md={12}
             // xs={12}
-            style={{ borderTop: '1px solid darkgreen' }}
+            style={{ 
+              borderTop: '1px solid darkgreen' 
+            }}
+            direction='column'
           >
             <ThreeDControlPanels />
             {/* <ThreeDControlPanels tabs={tabProps} /> */}
-          </Grid>
+          </Flex>
           {/* END: THREED CONTROL PANELS */}
 
-
           {/* THREED VIEWS */}
-          <Grid
+          <Flex
             // item
             id='threed_views'
             // md={12}
             // xs={12}
-            style={{ borderTop: '0px solid darkgreen' }}
+            style={{ 
+              borderTop: '0px solid darkgreen' 
+            }}
+            direction='column'
           >
             {/* <CatalogView /> */}
             {/* <PropertiesView /> */}
             {/* <PlanView /> */}
             {/* <TheBottom /> */}
-          </Grid>
+          </Flex>
           {/* END: THREED VIEWS */}
 
-
           {/* THREED MODALS */}
-          <Grid
+          <Flex
             // item
             id='threed_modals'
             // md={12}
             // xs={12}
-            style={{ borderTop: '0px solid darkgreen' }}
+            style={{ 
+              borderTop: '0px solid darkgreen' 
+            }}
+            direction='column'
           >
             <ModalAbout />
             {/* <ModalModel3d /> */}
             {/* <ModalLoading /> */}
             {/* <ModalShare /> */}
-          </Grid>
+          </Flex>
           {/* END: THREED MODALS */}
 
-
           {/* THREED FARMBOT */}
-          <Grid
+          <Flex
             // item
             id='threed_farmbot'
             // md={12}
@@ -581,13 +531,110 @@ const ThreeDGarden = (): React.ReactNode => {
               // borderTop: '1px solid darkgreen', 
               // padding: '16px' 
             }}
+            direction='column'
           >
             {/* <ThreeDFarmBotMain /> */}
-          </Grid>
+          </Flex>
           {/* END: THREED FARMBOT */}
 
+          {/* [MM] HEY HEY HEY */}
+          {/* <Text>{project_title}</Text> */}
+          {/* [MM] HEY HEY HEY */}
+          
+        </Grid>
+
+        
+
+        {/* THREED CONTROLS: ALL */}
+        <Grid
+          // item
+          id='threed_controls'
+          // columns={{ initial: '2', md: '2' }} 
+          // gap='0' 
+          // width='auto'
+          width='50%'
+          // direction='row'
+          style={{
+            // display: 'flex', 
+            // justifyContent: 'between',
+            // paddingLeft: '2px',
+            // borderTop: '1px solid darkgreen',
+            // width: '360px',
+            // minWidth: '320px',
+            // maxWidth: '480px',
+            // position: 'absolute',
+            // // minHeight: '48px',
+            // // display: 'inline',
+            // // position: 'fixed',
+            // top: 2,
+            // // left: 0,
+            // right: '10%', 
+            // // zIndex: 9999,
+          }}
+        >
+
+          {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+          {/* <Flex
+            // item
+            id='leva_controls'
+            // justify='start'
+            // width='100%'
+            // pl={'10px'}
+            // md={4}
+            // xs={12}
+            style={{
+              // display: 'flex', 
+              // justifyContent: 'flex-start',
+              // paddingLeft: 12,
+              // px: 2.5, 
+              // py: 2,
+              // borderTop: '1px solid darkgreen',
+              // width: '100%',
+              width: '400px',
+              minWidth: '320px',
+              maxWidth: '480px',
+              // position: 'absolute',
+              // // minHeight: '48px',
+              // // display: 'inline',
+              // // position: 'fixed',
+              // top: 2,
+              // // left: 0,
+              // right: '10%', 
+              zIndex: 9999,
+            }}
+          > */}
+            <Box
+              width={'400px'}
+            >
+              <ThreeDLevaControls />
+            </Box>
+          {/* </Flex> */}
+          {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+
+          {/* THREED CLICK LOADERS */}
+          {/* <Flex
+            // item
+            id='threed_actions'
+            // md={8}
+            // xs={12}
+            style={{ 
+              display: 'flex', 
+              justifyContent: 'flex-end' 
+            }}
+            gap='1'
+          > */}
+            {/*
+            <Button onClick={() => loadNounData('project', [])}>load project</Button>
+            <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
+            <Button onClick={() => loadNounData('character', [])}>load character</Button>
+            <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
+            */}
+          {/* </Flex> */}
+          {/* END THREED CLICK LOADERS */}
 
         </Grid>
+        {/* END: THREED CONTROLS: ALL */}
+        </>
       )}
     </Grid>
   )
