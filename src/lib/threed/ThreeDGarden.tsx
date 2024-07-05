@@ -98,7 +98,7 @@ import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
 // const ThreeDControlPanels = dynamic(() => import('#/lib/threed/components/controls/ControlPanels'), { ssr: false })
 
 // ** ThreeD Toolbar
-import ThreeDToolbar from '#/lib/threed/components/tools/Toolbar'
+import ThreeDToolbar from '~/src/lib/threed/components/controls/Toolbar'
 
 // ** Modal Imports
 import ThreeDModals from '#/lib/threed/components/modals/Modals'
@@ -603,7 +603,11 @@ const ThreeDGarden = (): React.ReactNode => {
               zIndex: 9999,
             }}
           > */}
-            <ThreeDLevaControls />
+            <Box
+              width={'400px'}
+            >
+              <ThreeDLevaControls />
+            </Box>
           {/* </Flex> */}
           {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
 
