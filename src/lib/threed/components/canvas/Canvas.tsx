@@ -410,7 +410,16 @@ export const ThreeDCanvas = (
         }}
 
         // shadows={true}
-        // dpr={[1, 2]} // target pixel ratio ???
+        dpr={[1, 2]} // target pixel ratio ???
+        
+        // ** CAMERA (not using declarative inside canvas)
+        camera={threedCamera}
+
+        // ** SCENE (needs to be declarative inside canvas)
+        // scene={{
+        //   // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
+        //   background: new THREE.Color(0x131313),
+        // }}
                 
         onCreated={
           (state) => {
@@ -425,24 +434,15 @@ export const ThreeDCanvas = (
           }
         }
         
-        // ** CAMERA (not using declarative inside canvas)
-        camera={threedCamera}
-
-        // ** SCENE (needs to be declarative inside canvas)
-        // scene={{
-        //   // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
-        //   background: new THREE.Color(0x131313),
-        // }}
-        
         // ** JOYSTICK (optional)
-        // onPointerDown={(e) => {
-        //   if (e.pointerType === 'mouse') {
-        //     (e.target as HTMLCanvasElement).requestPointerLock()
-        //   }
-        // }}
+        onPointerDown={(e) => {
+          if (e.pointerType === 'mouse') {
+            (e.target as HTMLCanvasElement).requestPointerLock()
+          }
+        }}
         
       >
-        {/* INSIDE CANVAS (canvas props.children)... */}
+        {/* NOW INSIDE CANVAS (canvas.props.children)... */}
 
         
         {/* USE DECLARATIVE THREED CAMERA (NOT WORKING YET) */}
