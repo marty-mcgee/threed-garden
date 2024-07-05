@@ -359,7 +359,7 @@ export default function ThreeDExperience() {
         <group position={[0, 0.665, 0]}>
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
           <KeyboardControls map={keyboardMap}>
-            {/* <CharacterControls
+            <CharacterControls
               // debug={prefs.doWorldDebug}
               debug={false}
               // animated={prefs.doCharacterAnimation}
@@ -373,9 +373,9 @@ export default function ThreeDExperience() {
               autoBalanceDampingC={0.04}
               // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
               // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
-            > */}
+            >
               <CharacterModelFarmerWomanFloating />
-            {/* </CharacterControls> */}
+            </CharacterControls>
           </KeyboardControls>
         </group>
         {/* END: CHARACTER MODEL */}
