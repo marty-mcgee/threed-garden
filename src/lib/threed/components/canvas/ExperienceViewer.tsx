@@ -268,7 +268,7 @@ const ThreeDExperienceViewer = (
           {/* <ThreeDScene /> */}
 
           {/* THREED ENVIRONMENT */}
-          <ThreeDEnvironment />
+          {/* <ThreeDEnvironment /> */}
           <ThreeDExperience />
 
           {/* SHADOW EFFECTS */}
