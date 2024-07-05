@@ -1031,9 +1031,11 @@ const ThreeDModels = ({ threeds }) => {
     return <></>
   }
 
-  console.debug('%c🌱 threeds[]', ccm.darkredAlert, threeds)
+  console.debug('%c🌱 threeds[i]', ccm.darkredAlert, threeds)
   return (
-    <group>
+    <group
+      position={[ 8, 0, 0 ]}
+    >
       {/* <CoffeeCup /> */}
       {/* <ThreeDControls /> */}
       {/* THREED: LOOP OVER NODES FOR EACH FILE = MODEL */}

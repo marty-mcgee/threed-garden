@@ -275,18 +275,21 @@ export const ThreeDControlPanels = (
         <Accordion.Item value={'Tests'} key={tabControlValue + '_T'}>
           <Accordion.Header>
             <Accordion.Trigger 
-              // className='AccordionTrigger'
+              className='AccordionTrigger'
             >
               Tests
             </Accordion.Trigger>
           </Accordion.Header>
           <Accordion.Content 
-            // className='AccordionContent'
+            className='AccordionContent'
+            style={{
+              paddingLeft: '4px',
+              paddingRight: '4px',
+            }}
           >
             {/* <DebugView /> */}
             <DebugHeadless />
             {/* <Debug /> */}
-
             {/* <Perf
               position='bottom-left'
               minimal
@@ -317,7 +320,7 @@ export const ThreeDControlPanels = (
         <Accordion.Item value={'Preferences'} key={tabControlValue + '_0'}>
           <Accordion.Header>
             <Accordion.Trigger 
-              // className='AccordionTrigger'
+              className='AccordionTrigger'
             >
               Preferences
             </Accordion.Trigger>
@@ -331,7 +334,7 @@ export const ThreeDControlPanels = (
         <Accordion.Item value={'Projects'} key={tabControlValue + '_1'}>
           <Accordion.Header>
             <Accordion.Trigger 
-              // className='AccordionTrigger'
+              className='AccordionTrigger'
             >
               Projects
             </Accordion.Trigger>

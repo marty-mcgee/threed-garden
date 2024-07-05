@@ -26,16 +26,15 @@ import {
   Box,
   Button,
   Grid,
+  Flex,
   Text,
 } from '@radix-ui/themes'
 
 // ** THREED r3f Canvas Imports
-// import { Canvas } from '@react-three/fiber'
 import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
-// import { ThreeDEnvironment } from '#/lib/threed/components/canvas/Canvas'
 
 // ** HELPER Components
-import Spinner from '#/layout/ui/components/spinner'
+// import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
@@ -49,15 +48,76 @@ const DEBUG: boolean = false
 
 // ==========================================================
 
+const ThreeDCanvasCamera = (
+  { index = 0, canvasKey = '0', threeds = [] }: 
+  { index: number, canvasKey: string, threeds: any[] }
+) => {
+  return (
+    <Accordion.Item 
+      value={'Canvas 1 Camera ' + index}
+      className='AccordionItem'
+      style={{ 
+        // borderTop: '1px solid darkgreen',
+        // height: '100%',
+        // minHeight: '30%',
+        // minHeight: '100vh',
+        // display: 'flex', 
+        // alignItems: 'start', 
+        // justifyContent: 'space-between',
+        // flexDirection: 'row',
+        // width: '100%',
+        // minHeight: '40vh',
+        // maxHeight: '50vh',
+        // minWidth: '50vw',
+        // maxWidth: '90vw',
+      }}
+    >
+      <Accordion.Header
+        className='AccordionHeader'
+      >
+        <Accordion.Trigger 
+          className='AccordionTrigger'
+        >
+          <ChevronDownIcon 
+            className='AccordionChevron' 
+            aria-hidden 
+          />
+          <span style={{ position: 'absolute', left: '28px' }}>
+            Camera {index}
+          </span>
+        </Accordion.Trigger>
+      </Accordion.Header>
+
+      <Accordion.Content 
+        // className='AccordionContent'
+        style={{ 
+          // borderTop: '1px solid darkgreen',
+          // height: '100%',
+          height: '30vh',
+          // minHeight: '40%',
+          // maxHeight: '40vh',
+          // width: '100%',
+          // minWidth: '100%',
+          // maxWidth: '90vw',
+        }}
+      >
+        <ThreeDCanvas
+          _id={'_r3fCanvas' + index}
+          threeds={threeds}
+        />
+      </Accordion.Content>
+    </Accordion.Item>
+  )
+}
+
 // ** export default
 export const ThreeDCanvasViewer = () => {
-
-  // return <Spinner />
-
   // **
+  // return <Spinner />
   const word: string = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
   // console.debug(`%c=======================================================`, ccm.orange)
-  if (debug || DEBUG) console.debug('%c🥕 ThreeDCanvasViewer ...', ccm.darkredAlert)
+  // if (debug || DEBUG) 
+  console.debug('%c🥕 ThreeDCanvasViewer ...', ccm.darkredAlert, word)
   // console.debug(`%c=======================================================`, ccm.black)
 
   // ** USE CLIENT
@@ -108,95 +168,122 @@ export const ThreeDCanvasViewer = () => {
 
   // console.debug(`%c=======================================================`, ccm.orange)
   return (
-    <Box id='threedCanvasViewer'>
+    <Grid 
+      id='threedCanvasViewer'
+      // display={'inline-flex'}
+      // direction={'column'}
+      style={{ 
+        // display: 'flex', 
+        // flexDirection: 'row',
+        // minHeight: '40vh',
+        // maxHeight: '60vh',
+        // minWidth: '50vw',
+        // maxWidth: '90vw',
+        // width: '100%',
+      }}
+    >
 
       {/* CANVAS[ES] as accordion */}
+
+      {/* THREED CANVAS VIEWER 1 */}
       <Accordion.Root 
-        type='multiple' 
-        // orientation='vertical' 
-        // @ ts-expect-error
-        // collapsible={'true'} // string 'true' | 'false' -- bug: should be boolean, not string
-        defaultValue={['Canvas 1']}
+        key={'Canvas1'} 
+        type='multiple' // single | multiple
+        // orientation='horizontal' // vertical | horizontal 
+        // @ts-expect-error
+        collapsible={'true'} // string 'true' | 'false' -- bug: should be boolean, not string
+        defaultValue={[
+          'Canvas 1 Camera 1', 
+          // 'Canvas 1 Camera 2',
+          // 'Canvas 1 Camera 3',
+          // 'Canvas 2 Camera 4',
+          // 'Canvas 2 Camera 5',
+          // 'Canvas 2 Camera 6',
+        ]}
         // value={tabControlValue}
         // onChange={onChangeTabControlValue}
-        // aria-label='ThreeD Canvas[es] Viewer'
+        aria-label='ThreeD Canvas Viewer 1'
         className='AccordionRoot'
+        style={{ 
+          // display: 'flex', 
+          // flexDirection: 'row',
+          // minHeight: '40vh',
+          // maxHeight: '60vh',
+          // minWidth: '50vw',
+          // maxWidth: '90vw',
+          // width: '100%',
+        }}
       >
-
-        {/* THREED CANVAS 1 */}
-        <Accordion.Item 
-          value={'Canvas 1'}
-          className='AccordionItem'
-        >
-          <Accordion.Header
-            className='AccordionHeader'
-          >
-            <Accordion.Trigger 
-              // className='AccordionTrigger'
-            >
-              <ChevronDownIcon className='AccordionChevron' aria-hidden />
-              <span>Canvas 1</span>
-            </Accordion.Trigger>
-          </Accordion.Header>
-          <Accordion.Content 
-            // className='AccordionContent'
-          >
-            <Grid
-              style={{ borderTop: '1px solid darkgreen' }}
-            >
-              <ThreeDCanvas
-                _id={'_r3fCanvas1'}
-                threeds={threeds}
-              />
-            </Grid>
-          </Accordion.Content>
-        </Accordion.Item>
-        
-        {/* THREED CANVAS 2 */}
-        <Accordion.Item 
-          value={'Canvas 2'}
-          className='AccordionItem'
-        >
-          <Accordion.Header
-            className='AccordionHeader'
-          >
-            <Accordion.Trigger 
-              // className='AccordionTrigger'
-            >
-              <ChevronDownIcon className='AccordionChevron' aria-hidden />
-              <span>Canvas 2</span>
-            </Accordion.Trigger>
-          </Accordion.Header>
-          <Accordion.Content 
-            // className='AccordionContent'
-          >
-            <Grid
-              style={{ borderTop: '1px solid darkgreen' }}
-            >
-              <ThreeDCanvas
-                _id={'_r3fCanvas2'}
-                threeds={threeds}
-              />
-            </Grid>
-          </Accordion.Content>
-        </Accordion.Item>
-
+        {/* THREED CANVAS 1 : CAMERA 1 */}
+        <ThreeDCanvasCamera 
+          index={1} 
+          canvasKey={'1'}
+          threeds={threeds} 
+        />
+        {/* THREED CANVAS 1 : CAMERA 2 */}
+        <ThreeDCanvasCamera 
+          index={2} 
+          canvasKey={'1'}
+          threeds={threeds} 
+        />
+        {/* THREED CANVAS 1 : CAMERA 3 */}
+        <ThreeDCanvasCamera 
+          index={3} 
+          canvasKey={'1'}
+          threeds={threeds}
+        />
         {/**/}
       </Accordion.Root>
 
-      
+      {/* THREED CANVAS VIEWER 2 */}
+      <Accordion.Root 
+        key={'Canvas2'} 
+        type='multiple' // single | multiple
+        // orientation='horizontal' // vertical | horizontal 
+        // @ts-expect-error
+        collapsible={'true'} // string 'true' | 'false' -- bug: should be boolean, not string
+        defaultValue={['Canvas 1 Camera 1', 'Canvas 1 Camera 2']} // , 'Canvas 1 Camera 3'
+        // value={tabControlValue}
+        // onChange={onChangeTabControlValue}
+        aria-label='ThreeD Canvas Viewer 2'
+        className='AccordionRoot'
+        style={{ 
+          // display: 'flex', 
+          // flexDirection: 'row',
+          // minHeight: '40vh',
+          // maxHeight: '60vh',
+          // minWidth: '50vw',
+          // maxWidth: '90vw',
+          // width: '100%',
+        }}
+      >
+        {/* THREED CANVAS 2 : CAMERA 1 */}
+        {/* <ThreeDCanvasCamera 
+          index={4} 
+          threeds={threeds} 
+        /> */}
+        {/* THREED CANVAS 2 : CAMERA 2 */}
+        {/* <ThreeDCanvasCamera 
+          index={5} 
+          threeds={threeds} 
+        /> */}
+        {/* THREED CANVAS 2 : CAMERA 3 */}
+        {/* <ThreeDCanvasCamera 
+          index={6} 
+          threeds={threeds}
+        /> */}
+        {/**/}
+      </Accordion.Root>
 
-      {/* [MM] TESTING -- RADIX-UI.primitive.Collapsible */}
-      <CollapsibleDemo />
+      {/* [MM] HEY HEY HEY
+        * [MM] TESTING -- RADIX-UI.primitive.Collapsible */}
+      {/* <CollapsibleDemo /> */}
 
-
-
-    </Box>
+    </Grid>
   )
 }
 
-export default ThreeDCanvasViewer
-
+// ** ======================================================================
 
 // import React from 'react'
 // import * as Collapsible from '@radix-ui/react-collapsible'
@@ -207,9 +294,16 @@ const CollapsibleDemo = () => {
   const [openCanvas1, setOpenCanvas1] = useState(false)
   const [openCanvas2, setOpenCanvas2] = useState(false)
   return (
-    <>
+    <Flex>
+      {/*  */}
       <Collapsible.Root className="CollapsibleRoot" open={openCanvas1} onOpenChange={setOpenCanvas1}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div 
+          style={{ 
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
           <Collapsible.Trigger asChild>
             <button className="IconButton">{open ? <Cross2Icon /> : <RowSpacingIcon />}</button>
           </Collapsible.Trigger>
@@ -217,23 +311,35 @@ const CollapsibleDemo = () => {
             CANVAS 1
           </span>
         </div>
-
-        {/* <div className="Repository">
-          <span className="Text">CANVAS 1</span>
-        </div> */}
-
+        {/*  */}
+        <div className="Repository">
+          <span className="Text">REPOSITORY 1: CANVAS 1</span>
+        </div>
+        {/*  */}
         <Collapsible.Content>
-          <div className="Repository">
-            <span className="Text">HEY HEY HEY 1</span>
+          {/* <div className="Repository">
+            <span className="Text">1: HEY HEY HEY 1</span>
           </div>
           <div className="Repository">
-            <span className="Text">YO YO YO 1</span>
-          </div>
+            <span className="Text">1: YO YO YO 1</span>
+          </div> */}
+          {/* THREED CANVAS 1 : CAMERA 7 */}
+          <ThreeDCanvasCamera 
+            index={7} 
+            canvasKey={'1'}
+            threeds={[]} 
+          />
         </Collapsible.Content>
       </Collapsible.Root>
-      
+      {/*  */}
       <Collapsible.Root className="CollapsibleRoot" open={openCanvas2} onOpenChange={setOpenCanvas2}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div 
+          style={{ 
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
           <Collapsible.Trigger asChild>
             <button className="IconButton">{open ? <Cross2Icon /> : <RowSpacingIcon />}</button>
           </Collapsible.Trigger>
@@ -241,22 +347,31 @@ const CollapsibleDemo = () => {
             CANVAS 2
           </span>
         </div>
-
-        {/* <div className="Repository">
-          <span className="Text">CANVAS 2</span>
-        </div> */}
-
+        {/*  */}
+        <div className="Repository">
+          <span className="Text">REPOSITORY 2: CANVAS 2</span>
+        </div>
+        {/*  */}
         <Collapsible.Content>
-          <div className="Repository">
-            <span className="Text">HEY HEY HEY 2</span>
+          {/* <div className="Repository">
+            <span className="Text">2: HEY HEY HEY 2</span>
           </div>
           <div className="Repository">
-            <span className="Text">YO YO YO 2</span>
-          </div>
+            <span className="Text">2: YO YO YO 2</span>
+          </div> */}
+          {/* THREED CANVAS 2 : CAMERA 8 */}
+          <ThreeDCanvasCamera 
+            index={8}
+            canvasKey={'2'}
+            threeds={[]} 
+          />
         </Collapsible.Content>
       </Collapsible.Root>
-    </>
+    </Flex>
   )
 }
 
+// ** ======================================================================
 export { CollapsibleDemo }
+export default ThreeDCanvasViewer
+// ** ======================================================================

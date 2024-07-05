@@ -7,7 +7,7 @@ export default function Birds() {
       new Array(10).fill().map((_, index) => {
         const x =
           (15 + Math.random() * 30) * (Math.round(Math.random()) ? -1 : 1)
-        const y = -10 + Math.random() * 20
+        const y = -10 + Math.random() * 10
         const z = -5 + Math.random() * 10
         const bird = ['stork', 'parrot', 'flamingo'][
           Math.round(Math.random() * 2)

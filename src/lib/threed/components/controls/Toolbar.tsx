@@ -22,7 +22,7 @@ import Image from 'next/image'
 // ** MUI Imports
 import { styled } from '@mui/material/styles'
 // mui: ui
-import MuiAppBar from '@mui/material/AppBar'
+// import MuiAppBar from '@mui/material/AppBar'
 import MuiToolbar from '@mui/material/Toolbar'
 import Box from '@mui/material/Box'
 import MuiButton from '@mui/material/Button'
@@ -60,28 +60,32 @@ const debug_deep: boolean = false
 
 // ==========================================================
 
-const AppBar = styled(MuiAppBar)(({ theme }) => ({
-  position: 'static',
-  // transition: 'none',
-  // alignItems: 'center',
-  // justifyContent: 'center',
-  padding: theme.spacing(0, 0),
-  backgroundColor: 'transparent',
-  color: theme.palette.text.primary,
-  minHeight: `32px !important`,
-  // [theme.breakpoints.down('sm')]: {
-  //   paddingLeft: theme.spacing(4),
-  //   paddingRight: theme.spacing(4)
-  // }
-}))
+// const AppBar = styled(MuiAppBar)(({ theme }) => ({
+//   position: 'static',
+//   // transition: 'none',
+//   // alignItems: 'center',
+//   // justifyContent: 'center',
+//   padding: theme.spacing(0, 0),
+//   backgroundColor: 'transparent',
+//   color: theme.palette.text.primary,
+//   // minHeight: `32px !important`,
+//   // [theme.breakpoints.down('sm')]: {
+//   //   paddingLeft: theme.spacing(4),
+//   //   paddingRight: theme.spacing(4)
+//   // }
+// }))
 
 const Toolbar = styled(MuiToolbar)(({ theme }) => ({
   // width: '100%',
   // borderBottomLeftRadius: 10,
   // borderBottomRightRadius: 10,
   // padding: `${theme.spacing(0)} !important`,
-  minHeight: `32px !important`,
+  minHeight: `24px !important`,
   // transition: 'padding .25s ease-in-out, box-shadow .25s ease-in-out, backdrop-filter .25s ease-in-out'
+  // color: theme.palette.text.primary,
+  color: 'purple',
+  opacity: 0.25,
+  opacityHover: 1.00,
 }))
 
 const Button = styled(MuiButton)(({ theme }) => ({
@@ -91,7 +95,7 @@ const Button = styled(MuiButton)(({ theme }) => ({
 }))
 
 // ** Main ThreeDToolbar
-const ThreeDToolbar: FC = ({data}): JSX.Element => {
+const ThreeDToolbar: FC = (): React.ReactNode => {
   // **
   // console.debug("ThreeDToolbar props.data", data)
 
@@ -708,10 +712,11 @@ const ThreeDToolbar: FC = ({data}): JSX.Element => {
   // const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
   return (
-    <AppBar
+    <>
+    {/* <AppBar
       id='appBar'
       // position='static'
-    >
+    > */}
       {/* <Box
         maxWidth='xl'
         // sx={{ paddingLeft: 0, paddingRight: 0 }}
@@ -1099,7 +1104,6 @@ const ThreeDToolbar: FC = ({data}): JSX.Element => {
           <Box
             sx={{ flexGrow: 0 }} // , display: { xs: 'none', md: 'flex' }
           >
-            {/* <Button color="inherit">-||- TOOL MODES -||-</Button> */}
             <Tooltip title='Pointer Tool'>
               <IconButton
                 id='pointerTool'
@@ -1199,9 +1203,11 @@ const ThreeDToolbar: FC = ({data}): JSX.Element => {
               </IconButton>
             </Tooltip>
           </Box>
+
         </Toolbar>
       {/* </Box> */}
-    </AppBar>
+    {/* </AppBar> */}
+    </>
   )
 }
 
