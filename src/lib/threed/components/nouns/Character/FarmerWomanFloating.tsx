@@ -165,8 +165,9 @@ export default function CharacterModel(props: CharacterModelProps) {
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
   // const prefs = useReactiveVar(preferencesDataVar)
   // console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
-  const prefs = {
-    doCharacterAnimation: false,
+  let prefs = {
+    doAutoLoadData: true,
+    doCharacterAnimation: true,
     characterMainColor: 'mediumslateblue',
     characterOutlineColor: 'black',
     characterTrailColor: 'violet',
@@ -225,57 +226,66 @@ export default function CharacterModel(props: CharacterModelProps) {
   /**
    * Character Preferences
    */
-  const [{
-    characterMainColor,
-    characterOutlineColor,
-    characterTrailColor,
-  }, setCharacterPreferencesLeva] = useControls(
-    'Character Preferences',
-    () => ({
-      doCharacterAnimation: {
-        label: 'Animate Character?',
-        value: prefs.doCharacterAnimation,
-      },
-      characterMainColor: {
-        label: 'Main Color',
-        value: prefs.characterMainColor,
-      },
-      characterOutlineColor: {
-        label: 'Outline Color',
-        value: prefs.characterOutlineColor,
-      },
-      characterTrailColor: {
-        label: 'Trail Color',
-        value: prefs.characterTrailColor,
-      },
-    }),
-    {
-      color: 'darkgreen',
-      collapsed: false,
-      order: 10,
-    },
-  )
+  // const [{
+  //   characterMainColor,
+  //   characterOutlineColor,
+  //   characterTrailColor,
+  // }, setCharacterPreferencesLeva] = useControls(
+  //   'Character Preferences',
+  //   () => ({
+  //     doCharacterAnimation: {
+  //       label: 'Animate Character?',
+  //       value: prefs.doCharacterAnimation,
+  //     },
+  //     characterMainColor: {
+  //       label: 'Main Color',
+  //       value: prefs.characterMainColor,
+  //     },
+  //     characterOutlineColor: {
+  //       label: 'Outline Color',
+  //       value: prefs.characterOutlineColor,
+  //     },
+  //     characterTrailColor: {
+  //       label: 'Trail Color',
+  //       value: prefs.characterTrailColor,
+  //     },
+  //   }),
+  //   {
+  //     color: 'darkgreen',
+  //     collapsed: false,
+  //     order: 10,
+  //   },
+  // )
 
   /**
    * Prepare replacing materials
    */
-  const outlineMaterial = useMemo(
-    () =>
-      new THREE.MeshBasicMaterial({
-        color: characterOutlineColor,
-        transparent: true,
-      }),
-    [characterOutlineColor]
-  )
   const meshToonMaterial = useMemo(
     () =>
       new THREE.MeshToonMaterial({
-        color: characterMainColor,
+        color: prefs.characterMainColor,
         gradientMap: gradientMapTexture,
         transparent: true,
       }),
-    [characterMainColor]
+    [prefs.characterMainColor]
   )
+  const outlineMaterial = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: prefs.characterOutlineColor,
+        transparent: true,
+      }),
+    [prefs.characterOutlineColor]
+  )
+  // const trailMaterial = useMemo(
+  //   () =>
+  //     new THREE.MeshToonMaterial({
+  //       color: prefs.characterTrailColor,
+  //       gradientMap: gradientMapTexture,
+  //       transparent: true,
+  //     }),
+  //   [prefs.characterTrailColor]
+  // )
 
   // **
   // ** Character animations setup
@@ -641,7 +651,7 @@ export default function CharacterModel(props: CharacterModelProps) {
 
           <Trail
             width={1.5}
-            color={characterTrailColor}
+            color={prefs.characterTrailColor}
             length={3}
             decay={2}
             attenuation={(width) => width}
