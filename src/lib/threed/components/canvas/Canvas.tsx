@@ -463,7 +463,7 @@ export const ThreeDCanvas = (
         {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
         {/* using radix-ui + react-three-drei */}
         {/* using react-three-drei Loader + useProgress */}
-        {/* <Suspense fallback={
+        <Suspense fallback={
           <Html center>
             <Spinner />
             <Loader
@@ -475,8 +475,8 @@ export const ThreeDCanvas = (
               initialState={(active = false) => active} // Initial black out state
             />
           </Html>
-        }> */}
-        <Suspense fallback={<ThreeDLoaderSimple />}>
+        }>
+        {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
 
           {/* PRELOAD objects ??? -- does it seem necessary? */}
           <Preload all />

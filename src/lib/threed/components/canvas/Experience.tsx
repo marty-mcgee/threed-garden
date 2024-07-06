@@ -270,9 +270,9 @@ export default function ThreeDExperience() {
 
         {/* toddler steps (advanced degrees) */}
         {/* Rough Plane */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[8.4, -0.40, 10]}>
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[8.4, -0.40, 10]}>
           <RoughPlane />
-        </group>
+        </group> */}
         {/* Slopes + Stairs */}
         {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -0.00, 0]}>
           <Slopes />
