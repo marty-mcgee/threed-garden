@@ -175,7 +175,8 @@ const Model = ({
     // '/objects/examples/coffee-transformed.glb'
     // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/FBX/SM_Prop_Carrot_01.fbx'
     'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/FBX/SM_Prop_Plant_Corn_01.fbx'
-  const fileUrl = threed.file?.isUrl ? threed.file.url : fileUrlDefault
+  // const fileUrl = threed.file?.isUrl ? threed.file.url : fileUrlDefault
+  const fileUrl = threed.data.modelFiles.nodes[0].url ?? fileUrlDefault
 
   const textureUrlDefault = '' // blank string
   const textureUrl = threed.file?.isUrl && threed.file?.isTexture ? threed.file.url : textureUrlDefault
@@ -184,7 +185,7 @@ const Model = ({
   const model = {
     ref:        useRef(null),
     name:       threed.name,
-    file:       fileUrl,                // threed.file.url,
+    file:       fileUrl,                // threed.data.modelFiles.nodes[0].url,
     group:      threed.group,
     nodes:      threed.nodes,
     //** custom fields
@@ -251,10 +252,14 @@ const Model = ({
     },
   }
 
+
   // fetch the file (GLTF, FBX, OBJ, etc)
   if (model.is.isSupported) {
-    console.debug('%c🌱 model.is.isSupported: true', ccm.greenAlert, model.name, model)
+
+    console.debug('%c🌱 model.is.isSupported: true', ccm.darkgreen, model.name, model.file)
     console.debug(`%c======================================`, ccm.darkgreen)
+    
+    
     if (model.is.isObject3D) {
 
       // const OBJModel = ({ file, textureFile, ...props }) => {
@@ -409,17 +414,17 @@ const Model = ({
       // finally, decide if ready for _r3f canvas
       if (model.nodes && model.is.isFBX) {
         model.is.isReadyForCanvas = true // false
-        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model.name, model)
+        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model.name, model.file)
         console.debug(`%c===========================================================`, ccm.greenAlert)
       }
       else if (model.nodes && model.is.isGLTF) {
         model.is.isReadyForCanvas = false // true
-        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.orangeAlert, model.name, model)
+        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.orangeAlert, model.name, model.file)
         console.debug(`%c===========================================================`, ccm.orangeAlert)
       }
       else { // if (model.nodes && model.is.isOBJ) {
         model.is.isReadyForCanvas = false
-        console.debug('%c✖️📐 THREED MODEL IS NOT READY FOR CANVAS', ccm.redAlert, model.name, model)
+        console.debug('%c✖️📐 THREED MODEL IS NOT READY FOR CANVAS', ccm.redAlert, model.name, model.file)
         console.debug(`%c===========================================================`, ccm.redAlert)
       }
     }
@@ -1026,67 +1031,72 @@ function ThreeDControls() {
 // **
 const ThreeDModels = ({ threeds }) => {
   // **
-  // console.debug(`%c======================================`, ccm.red)
-  // console.debug('%c🌱 threeds[]', ccm.darkredAlert, threeds)
-  // console.debug(`%c======================================`, ccm.red)
+  // console.debug(`%c======================================`, ccm.darkredAlert)
+  // console.debug('%c🌱 threeds[i]', ccm.darkredAlert, threeds)
+  // console.debug('%c🌱 threeds ==========================', ccm.darkredAlert)
+  // console.debug(`%c======================================`, ccm.darkredAlert)
   // **
 
+  // ** TESTING
   // return <CoffeeCup />
+
+  // DEFAULT 0, RETURN BLANK JSX (no need to render this component)
   if (!threeds.length) {
     return <></>
   }
 
-  console.debug('%c🌱 threeds[i]', ccm.darkredAlert, threeds)
+  // RENDER THIS COMPONENT
   return (
     <group
+      key='threed_models'
       position={[ 8, 0, 0 ]}
     >
       {/* <CoffeeCup /> */}
       {/* <ThreeDControls /> */}
       {/* THREED: LOOP OVER NODES FOR EACH FILE = MODEL */}
       <Suspense fallback={null}>
-      {threeds.map((_threed, index) => {
-        // console.debug('_threed', index + ': ', _threed)
-        // console.debug(`%c======================================`, ccm.red)
-        const threed = new ThreeD()
-        threed.name = _threed.title
-        threed.data = _threed
-        // threed.group = threed.group
-        threed.group.group_position = [_threed.positionX, _threed.positionY, _threed.positionZ]
-        threed.group.group_rotation = [_threed.rotationX, _threed.rotationY, _threed.rotationZ]
-        threed.group.group_scale = [_threed.scaleX, _threed.scaleY, _threed.scaleZ]
-        return (
-          <group
-            // key={newUUID()}
-            // key={index}
-            key={threed.group.group_id} // no duplicates
-            // ref={ref}
-            // position={threed.group.group_position}
-            // rotation={threed.group.group_rotation}
-            // scale={threed.group.group_scale}
-          >
-          { _threed.files.nodes &&
-            _threed.files.nodes.map((_file, index) => {
-            // console.debug('_file', index + ': ', _file)
-            // console.debug(`%c======================================`, ccm.red)
+        {threeds.map((_threed, index) => {
+          // console.debug('_threed', index + ': ', _threed)
+          // console.debug(`%c======================================`, ccm.red)
+          const threed = new ThreeD()
+          threed.name = _threed.title
+          threed.data = _threed
+          // threed.group = threed.group
+          threed.group.group_position = [_threed.positionX, _threed.positionY, _threed.positionZ]
+          threed.group.group_rotation = [_threed.rotationX, _threed.rotationY, _threed.rotationZ]
+          threed.group.group_scale = [_threed.scaleX, _threed.scaleY, _threed.scaleZ]
+          return (
+            <group
+              // key={newUUID()}
+              // key={index}
+              key={threed.group.group_id} // no duplicates
+              // ref={ref}
+              // position={threed.group.group_position}
+              // rotation={threed.group.group_rotation}
+              // scale={threed.group.group_scale}
+            >
+            { _threed.files.nodes &&
+              _threed.files.nodes.map((_file, index) => {
+              console.debug('%c MODEL _file', ccm.redAlert, index + ': ', _file)
+              console.debug(`%c ======================================`, ccm.redAlert)
 
-            // const threed = new ThreeD()
-            // threed.name = _file.title
-            threed.file = _file
-            // threed.group = threed.group
+              // const threed = new ThreeD()
+              // threed.name = _file.title
+              threed.file = _file
+              // threed.group = threed.group
 
-            return (
-              <Model
-                // key={_file.fileId} // no, duplicates
-                // key={newUUID()}
-                key={index}
-                threed={threed}
-              />
-            )
-          })}
-          </group>
-        )
-      })}
+              return (
+                <Model
+                  // key={_file.fileId} // no, duplicates
+                  // key={newUUID()}
+                  key={index}
+                  threed={threed}
+                />
+              )
+            })}
+            </group>
+          )
+        })}
       </Suspense>
     </group>
   )
