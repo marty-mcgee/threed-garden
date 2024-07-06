@@ -332,31 +332,32 @@ export default function ThreeDExperience() {
 
         {/* [MM] HEY HEY HEY : FALL FROM SKY.......................... */}
         {/* CHARACTER MODEL */}
-        <group position={[-2, 0.665, -2]}>
+        <group key='character0' position={[-2, 0.665, -2]}>
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
           <KeyboardControls map={keyboardMap}>
-            {/* <CharacterControls
-              // // debug={prefs.doWorldDebug}
-              // debug={false}
-              // // animated={prefs.doCharacterAnimation}
-              // animated={true} // <EcctrlAnimation>
-              // // disableFollowCam={prefs.doWorldUnfollowCam}
-              // disableFollowCam={true}
-              // followLight={true}
-              // springK={2}
-              // dampingC={0.2}
-              // autoBalanceSpringK={1.2}
-              // autoBalanceDampingC={0.04}
-              // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
-              // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
-            > */}
+            <CharacterControls
+              // debug={prefs.doWorldDebug}
+              debug={false}
+              // animated={prefs.doCharacterAnimation}
+              animated={true} // <EcctrlAnimation>
+              // disableFollowCam={prefs.doWorldUnfollowCam}
+              disableFollowCam={true}
+              followLight={true}
+              springK={2}
+              dampingC={0.2}
+              autoBalanceSpringK={1.2}
+              autoBalanceDampingC={0.04}
+              // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
+              // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
+            >
               <CharacterModelFloating />
-            {/* </CharacterControls> */}
+              {/* <CharacterModelChicken /> */}
+            </CharacterControls>
           </KeyboardControls>
         </group>
         {/* END: CHARACTER MODEL */}
         {/* CHARACTER MODEL */}
-        <group position={[0, 0.665, 0]}>
+        <group key='character1' position={[0, 0.665, 0]}>
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
           <KeyboardControls map={keyboardMap}>
             <CharacterControls

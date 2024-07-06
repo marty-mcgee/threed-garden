@@ -232,12 +232,6 @@ const ThreeDExperienceViewer = (
       <ThreedIO>
         <ThreeDViewImpl track={localRef}> */}
 
-          {/* ThreeD Models as props.children */}
-          {children}
-
-        {/* </ThreeDViewImpl>
-      </ThreedIO> 
-      */}
           {/* LIGHTS, CAMERA, ACTION */}
 
           {/* THREED LIGHTS */}
@@ -269,7 +263,12 @@ const ThreeDExperienceViewer = (
 
           {/* THREED ENVIRONMENT */}
           {/* <ThreeDEnvironment /> */}
-          <ThreeDExperience />
+          
+          {/* THREED MODELS as props.children */}
+          {children}
+
+          {/* THREED EXPERIENCE */}
+          {/* <ThreeDExperience /> */}
 
           {/* SHADOW EFFECTS */}
           <ContactShadows
@@ -348,6 +347,10 @@ const ThreeDExperienceViewer = (
               />
             </group>
           </GizmoHelper>
+
+        {/* </ThreeDViewImpl>
+      </ThreedIO> 
+      */}
     </>
   )
 }
