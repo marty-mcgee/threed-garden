@@ -176,7 +176,7 @@ const Model = ({
     // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/FBX/SM_Prop_Carrot_01.fbx'
     'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/FBX/SM_Prop_Plant_Corn_01.fbx'
   // const fileUrl = threed.file?.isUrl ? threed.file.url : fileUrlDefault
-  const fileUrl = threed.data.modelFiles.nodes[0].url ?? fileUrlDefault
+  const fileUrl = threed.data.modelFiles.nodes[0].url ? threed.data.modelFiles.nodes[0].url : fileUrlDefault
 
   const textureUrlDefault = '' // blank string
   const textureUrl = threed.file?.isUrl && threed.file?.isTexture ? threed.file.url : textureUrlDefault
