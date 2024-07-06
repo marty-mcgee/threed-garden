@@ -265,10 +265,15 @@ const ThreeDExperienceViewer = (
           {/* <ThreeDEnvironment /> */}
           
           {/* THREED MODELS as props.children */}
-          {children}
+          <group
+            key='threed_models_children'
+            scale={0.3}
+          >
+            {children}
+          </group>
 
           {/* THREED EXPERIENCE */}
-          {/* <ThreeDExperience /> */}
+          <ThreeDExperience />
 
           {/* SHADOW EFFECTS */}
           <ContactShadows
