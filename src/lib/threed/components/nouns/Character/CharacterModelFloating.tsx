@@ -65,55 +65,68 @@ export default function CharacterModel(props: CharacterModelProps) {
   /**
    * Character Preferences
    */
-  const [{
-    mainColor,
-    outlineColor,
-    trailColor,
-  }, setCharacterPreferencesLeva] = useControls(
-    'Character Preferences',
-    () => ({
-      // characterMainColor
-      mainColor: {
-        label: 'Main Color',
-        value: 'mediumslateblue', // prefs.characterMainColor,
-      },
-      // characterOutlineColor
-      outlineColor: {
-        label: 'Outline Color',
-        value:'black', // prefs.characterOutlineColor,
-      },
-      // characterTrailColor
-      trailColor: {
-        label: 'Trail Color',
-        value:'violet', // prefs.characterTrailColor,
-      },
-    }),
-    {
-      color: 'darkgreen',
-      collapsed: false,
-      order: 10,
-    },
-  )
+  let characterPrefs = {
+    mainColor: 'mediumslateblue',
+    outlineColor: 'black',
+    trailColor: 'violet',
+  }
+  // const [{
+  //   mainColor,
+  //   outlineColor,
+  //   trailColor,
+  // }, setCharacterPreferencesLeva] = useControls(
+  //   'Character Preferences',
+  //   () => ({
+  //     // characterMainColor
+  //     mainColor: {
+  //       label: 'Main Color',
+  //       value: 'mediumslateblue', // prefs.characterMainColor,
+  //     },
+  //     // characterOutlineColor
+  //     outlineColor: {
+  //       label: 'Outline Color',
+  //       value: 'black', // prefs.characterOutlineColor,
+  //     },
+  //     // characterTrailColor
+  //     trailColor: {
+  //       label: 'Trail Color',
+  //       value: 'violet', // prefs.characterTrailColor,
+  //     },
+  //   }),
+  //   {
+  //     color: 'darkgreen',
+  //     collapsed: false,
+  //     order: 10,
+  //   },
+  // )
 
   /**
    * Prepare replacing materials
    */
-  const outlineMaterial = useMemo(
-    () =>
-      new THREE.MeshBasicMaterial({
-        color: outlineColor,
-        transparent: true,
-      }),
-    [outlineColor]
-  )
   const meshToonMaterial = useMemo(
     () =>
       new THREE.MeshToonMaterial({
-        color: mainColor,
+        color: 'mediumslateblue', // mainColor,
         gradientMap: gradientMapTexture,
         transparent: true,
       }),
-    [mainColor]
+    [characterPrefs.mainColor]
+  )
+  const outlineMaterial = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: 'black', // outlineColor,
+        transparent: true,
+      }),
+    [characterPrefs.outlineColor]
+  )
+  const trailMaterial = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: 'violet', // trailColor,
+        transparent: true,
+      }),
+    [characterPrefs.trailColor]
   )
 
   /**
@@ -309,7 +322,7 @@ export default function CharacterModel(props: CharacterModelProps) {
             />
             <Trail
               width={1.5}
-              color={trailColor}
+              color={characterPrefs.trailColor}
               length={3}
               decay={2}
               attenuation={(width) => width}
