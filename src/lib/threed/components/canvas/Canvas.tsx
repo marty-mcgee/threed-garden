@@ -437,7 +437,8 @@ export const ThreeDCanvas = (
         // ** JOYSTICK (optional)
         onPointerDown={(e) => {
           if (e.pointerType === 'mouse') {
-            (e.target as HTMLCanvasElement).requestPointerLock()
+            // testing
+            // (e.target as HTMLCanvasElement).requestPointerLock()
           }
         }}
         
