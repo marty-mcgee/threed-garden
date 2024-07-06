@@ -413,12 +413,12 @@ const Model = ({
 
       // finally, decide if ready for _r3f canvas
       if (model.nodes && model.is.isFBX) {
-        model.is.isReadyForCanvas = true // false
+        model.is.isReadyForCanvas = true // true | false
         console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model.name, model.file)
         console.debug(`%c===========================================================`, ccm.greenAlert)
       }
       else if (model.nodes && model.is.isGLTF) {
-        model.is.isReadyForCanvas = false // true
+        model.is.isReadyForCanvas = true // true | false
         console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.orangeAlert, model.name, model.file)
         console.debug(`%c===========================================================`, ccm.orangeAlert)
       }
