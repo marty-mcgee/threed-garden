@@ -416,10 +416,10 @@ export const ThreeDCanvas = (
         camera={threedCamera}
 
         // ** SCENE (needs to be declarative inside canvas)
-        // scene={{
-        //   // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
-        //   background: new THREE.Color(0x131313),
-        // }}
+        scene={{
+          // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
+          background: new THREE.Color(0x171717),
+        }}
                 
         onCreated={
           (state) => {
