@@ -35,6 +35,8 @@ import {
   useThree,
   // extend, // if using function extend({ OrbitControls })
 } from '@react-three/fiber'
+// ** QUESTION: do stuff with IMPORTS ??
+// extend({ OrbitControls })
 
 // ** R3F HELPERS Imports
 import {
@@ -66,9 +68,6 @@ import {
   Grid,
   Text,
 } from '@radix-ui/themes'
-
-// ** QUESTION: do stuff with IMPORTS ??
-// extend({ OrbitControls })
 
 // ** THREED EXPERIENCE Imports
 // import { Physics } from '@react-three/rapier'
