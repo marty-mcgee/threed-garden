@@ -390,7 +390,7 @@ export const ThreeDCanvas = (
 
       {/* CHARACTER CONTROL JOYSTICK */}
       {/* <EcctrlJoystick ButtonNumber={5} /> */}
-      {/* <EcctrlJoystickControls /> */}
+      <EcctrlJoystickControls />
 
       {/* CAMERA INTERACTIONS */}
       {/* <CameraPositionTestApp /> */}
@@ -471,7 +471,7 @@ export const ThreeDCanvas = (
               // innerStyles={...inner} // Inner container styles
               // barStyles={...bar} // Loading-bar styles
               // dataStyles={...data} // Text styles
-              dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
+              dataInterpolation={(p) => `THREED UI ${p.toFixed(0)}%`} // Text
               initialState={(active = false) => active} // Initial black out state
             />
           </Html>
