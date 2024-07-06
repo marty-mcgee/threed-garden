@@ -90,8 +90,9 @@ import { threedAI } from '#/lib/threed/threedai/threedAI'
 // import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene'
 // import ThreeDPlans from '#/lib/threed/components/nouns/Plan/Plan'
 // import ThreeDThreeDs from '#/lib/threed/components/nouns/ThreeD/ThreeD'
-import ThreeDModels from '#/lib/threed/components/nouns/Model/Model'
+import ThreeDModels from '#/lib/threed/components/nouns/Model/Model' // A MODEL IS A NOUN[i]
 // ** THREED NOUN EXAMPLES
+// import TransformModel from '#/lib/threed/components/examples/TransformModel/App'
 // import Character from '#/lib/threed/components/nouns/Character/Character'
 // import StacyApp from '#/lib/threed/components/examples/Stacy/StacyApp'
 // import Stacy from '#/lib/threed/components/examples/Stacy/Stacy'
@@ -99,7 +100,6 @@ import ThreeDModels from '#/lib/threed/components/nouns/Model/Model'
 // import CoffeeCup from '#/lib/threed/components/examples/CoffeeCup/CoffeeCup'
 // import JourneyLevel from '#/lib/threed/components/examples/JourneyLevel/App'
 // import Shoes from '#/lib/threed/components/examples/Shoes/App'
-// import TransformModel from '#/lib/threed/components/examples/TransformModel/App'
 // import Shoe from '#/lib/threed/components/examples/Shoes/Shoe'
 
 // ** HELPER Components
