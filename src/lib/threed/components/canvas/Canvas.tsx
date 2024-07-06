@@ -423,9 +423,9 @@ export const ThreeDCanvas = (
                 
         onCreated={
           (state) => {
-            console.debug('%c Canvas onCreated state', ccm.redAlert, state)
-            console.debug('%c Canvas onCreated state.camera', ccm.redAlert, state.camera)
-            console.debug('%c Canvas onCreated state.camera.position', ccm.redAlert, state.camera.position)
+            console.debug('%c Canvas onCreated state', ccm.darkred, state)
+            console.debug('%c Canvas onCreated state.camera', ccm.darkred, state.camera)
+            console.debug('%c Canvas onCreated state.camera.position', ccm.darkred, state.camera.position)
             state.gl.toneMapping = THREE.AgXToneMapping
             // state.camera.fov = 32 // 8
             // state.camera.lookAt(2, -4, 8) // position [0, 0, 0]
