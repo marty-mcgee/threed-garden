@@ -434,6 +434,7 @@ const ThreeDGarden = (): React.ReactNode => {
             // md={12}
             // xs={12}
             style={{
+              display: 'none',
               // display: 'flex', 
               // justifyContent: 'flex-end',
               // borderTop: '1px solid darkgreen',
@@ -457,7 +458,7 @@ const ThreeDGarden = (): React.ReactNode => {
               // justifyContent: 'flex-end',
               // mx: 0,
               // px: 2,
-              borderTop: '1px solid darkgreen',
+              // borderTop: '1px solid darkgreen',
               // zIndex: 0, // this does not work.. no negative numbers !!!!
               width: '100%',
             }}
