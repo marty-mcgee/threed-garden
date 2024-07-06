@@ -67,11 +67,10 @@ import {
   Text,
 } from '@radix-ui/themes'
 
-
-// do stuff with IMPORTS ??
+// ** QUESTION: do stuff with IMPORTS ??
 // extend({ OrbitControls })
 
-// ** ThreeD Experience Imports
+// ** THREED EXPERIENCE Imports
 // import { Physics } from '@react-three/rapier'
 // import { Perf } from 'r3f-perf'
 // import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
@@ -86,12 +85,12 @@ import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
 import { threedIO } from '#/lib/threed/threedio/threedIO'
 
-// ** ThreeD Noun Imports
+// ** THREED NOUN Imports
 // import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene'
 // import ThreeDPlans from '#/lib/threed/components/nouns/Plan/Plan'
 // import ThreeDThreeDs from '#/lib/threed/components/nouns/ThreeD/ThreeD'
 import ThreeDModels from '#/lib/threed/components/nouns/Model/Model'
-// ThreeD EXAMPLES
+// ** THREED NOUN EXAMPLES
 // import Character from '#/lib/threed/components/nouns/Character/Character'
 // import StacyApp from '#/lib/threed/components/examples/Stacy/StacyApp'
 // import Stacy from '#/lib/threed/components/examples/Stacy/Stacy'
