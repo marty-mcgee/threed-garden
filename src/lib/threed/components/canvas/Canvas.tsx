@@ -84,6 +84,7 @@ import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 // import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
 import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
 import { threedIO } from '#/lib/threed/threedio/threedIO'
+import { threedAI } from '#/lib/threed/threedai/threedAI'
 
 // ** THREED NOUN Imports
 // import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene'
