@@ -236,6 +236,7 @@ const ThreeDExperienceViewer = (
 
           {/* THREED LIGHTS */}
           <ThreeDLights />
+          {/* <ThreeDLights /> */}
 
           {/* THREED CAMERA */}
           <ThreeDCamera />
