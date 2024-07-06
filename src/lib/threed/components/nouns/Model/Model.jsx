@@ -316,20 +316,6 @@ const Model = ({
       }
 
 
-      // ** OBJ
-      else if (model.is.isOBJ) {
-        model.type = 'obj'
-        // const nodes = useOBJ(model.file)
-        const obj = new OBJLoader().load(model.file)
-        console.debug('%c🌱 OBJ NODES: obj', ccm.orange, obj)
-        console.debug(`%c======================================`, ccm.orange)
-        if (obj) {
-          model.nodes = obj
-          // console.debug('RETURN ONLY NODE AS NODES: true')
-        }
-      }
-
-
       // ** GLTF
       else if (model.is.isGLTF) {
         model.type = 'gltf'
@@ -406,21 +392,35 @@ const Model = ({
         }
       }
 
+
+      // ** OBJ
+      else if (model.is.isOBJ) {
+        model.type = 'obj'
+        // const nodes = useOBJ(model.file)
+        const obj = new OBJLoader().load(model.file)
+        console.debug('%c🌱 OBJ NODES: obj', ccm.orange, obj)
+        console.debug(`%c======================================`, ccm.orange)
+        if (obj) {
+          model.nodes = obj
+          // console.debug('RETURN ONLY NODE AS NODES: true')
+        }
+      }
+
       // finally, decide if ready for _r3f canvas
       if (model.nodes && model.is.isFBX) {
-        model.is.isReadyForCanvas = true
-        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.green, model.name, model)
-        console.debug(`%c===========================================================`, ccm.darkgreen)
+        model.is.isReadyForCanvas = true // false
+        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model.name, model)
+        console.debug(`%c===========================================================`, ccm.greenAlert)
       }
       else if (model.nodes && model.is.isGLTF) {
-        model.is.isReadyForCanvas = true
-        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.green, model.name, model)
-        console.debug(`%c===========================================================`, ccm.darkgreen)
+        model.is.isReadyForCanvas = false // true
+        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.orangeAlert, model.name, model)
+        console.debug(`%c===========================================================`, ccm.orangeAlert)
       }
-      else {
+      else { // if (model.nodes && model.is.isOBJ) {
         model.is.isReadyForCanvas = false
         console.debug('%c✖️📐 THREED MODEL IS NOT READY FOR CANVAS', ccm.redAlert, model.name, model)
-        console.debug(`%c===========================================================`, ccm.red)
+        console.debug(`%c===========================================================`, ccm.redAlert)
       }
     }
     // console.debug(`%c======================================`, ccm.black)
@@ -538,6 +538,7 @@ const Model = ({
     console.debug(`%c===========================================================`, ccm.blue)
 
 
+    // ** FBX
     // return FBX node
     if (model.is.isFBX) {
       return (
@@ -567,6 +568,7 @@ const Model = ({
     }
 
 
+    // ** GLTF
     // return GLTF node
     else if (model.is.isGLTF) {
       // console.debug('GLTF: model.nodes', model.name, model.nodes)
@@ -626,6 +628,7 @@ const Model = ({
     }
 
 
+    // ** OBJ
     // return OBJ node
     else if (model.is.isOBJ) {
       return (
@@ -641,9 +644,11 @@ const Model = ({
       )
     }
   }
-  // DEFAULT RETURN
+
+
+  // DEFAULT return mesh
   // 'error sphere' mesh object, with original model.name and props
-  else {
+  else { // !model.is.isReadyForCanvas
     return (
       <mesh
         key={newUUID()}
