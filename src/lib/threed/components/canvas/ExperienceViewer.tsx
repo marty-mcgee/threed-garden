@@ -269,14 +269,14 @@ const ThreeDExperienceViewer = (
           <ThreeDExperience threeds={threeds} />
 
           {/* SHADOW EFFECTS */}
-          <ContactShadows
+          {/* <ContactShadows
             position={[0, -1.4, 0]}
             opacity={0.75}
             scale={10}
             blur={2.5}
             far={4}
           />
-          <BakeShadows />
+          <BakeShadows /> */}
 
           {/* Transform Model using TransformControls */}
           {/*
