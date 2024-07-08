@@ -464,6 +464,7 @@ export const ThreeDCanvas = (
             enableOrbit={true} 
             enablePerf={true}
             threeds={threeds}
+            children={null}
           />
 
         </Suspense>
