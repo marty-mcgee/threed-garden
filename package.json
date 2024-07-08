@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.16.0-beta.10",
+  "version": "0.16.0-beta.11",
   "description": "ThreeD Garden: WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, using Apollo GraphQL State+Stores, Leva Control GUI, Radix-UI, supporting Material UI + Tailwind CSS, with 3D FarmBot React (Beta)",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
@@ -43,6 +43,7 @@
     "___________________X": "____ ___________________________________________________"
   },
   "dependencies": {
+    
     "@apollo/client": "^3.10.8",
     "@apollo/experimental-nextjs-app-support": "^0.11.2",
     "@apollo/react-hooks": "^4.0.0",
@@ -105,12 +106,12 @@
     
     "swr": "^2.2.5",
 
+    "@ducanh2912/next-pwa": "^10.2.7",
+    "tunnel-rat": "^0.1.2",
+
     "three": "^0.163.0",
     "three-mesh-ui": "^6.5.4",
-    "three-stdlib": "^2.29.11",
-
-    "@ducanh2912/next-pwa": "^10.2.7",
-    "tunnel-rat": "^0.1.2"
+    "three-stdlib": "^2.29.11"
 
   },
   
@@ -139,6 +140,7 @@
     
     "use-count-up": "^3.0.1"
   },
+
   "devDependencies": {
     
     "@next/bundle-analyzer": "^14.2.4",

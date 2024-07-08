@@ -12,7 +12,7 @@ import {
 import { useControls } from 'leva'
 import { Suspense, useEffect, useRef, useMemo, useState } from 'react'
 import * as THREE from 'three'
-import { useGame } from '#/lib/ecctrl/src/stores/useGame'
+import { useGame, type AnimationSet } from '#/lib/ecctrl/src/stores/useGame'
 import { BallCollider, RapierCollider, vec3 } from '@react-three/rapier'
 import { useFrame } from '@react-three/fiber'
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -30,6 +30,7 @@ export default function CharacterModel(props: CharacterModelProps) {
     nodes: any
   }
   const { actions } = useAnimations(animations, group)
+  
   // gradientMapTexture for MeshToonMaterial
   const gradientMapTexture = useTexture(texture) // '/textures/3.jpg'
   gradientMapTexture.minFilter = THREE.NearestFilter
