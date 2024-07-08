@@ -47,6 +47,7 @@ import CharacterModelFarmerManFloating from '#/lib/threed/components/nouns/Chara
 import CharacterModelFarmerWomanFloating from '#/lib/threed/components/nouns/Character/FarmerWomanFloating'
 // import CharacterModelFarmerBoyFloating from '#/lib/threed/components/nouns/Character/FarmerBoyFloating'
 // import CharacterModelFarmerGirlFloating from '#/lib/threed/components/nouns/Character/FarmerGirlFloating'
+import CharacterModelChicken from '#/lib/threed/components/nouns/Character/Chicken'
 
 // ** THREED OBJECT INTERACTIVE EXAMPLES
 import Steps from '#/lib/threed/components/examples/Steps'
@@ -351,8 +352,8 @@ export default function ThreeDExperience() {
               // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
               // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
             >
-              <CharacterModelFloating />
-              {/* <CharacterModelChicken /> */}
+              {/* <CharacterModelFloating /> */}
+              <CharacterModelChicken />
             </CharacterControls>
           </KeyboardControls>
         </group>
