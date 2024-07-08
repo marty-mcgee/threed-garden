@@ -70,37 +70,11 @@ import {
 } from '@radix-ui/themes'
 
 // ** THREED EXPERIENCE Imports
-// import { Physics } from '@react-three/rapier'
-// import { Perf } from 'r3f-perf'
-// import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
-// import { EcctrlAnimation } from '#/lib/ecctrl/src/EcctrlAnimation'
-import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
-// Components
-// import Lights from './Lights'
-// import Map from './Map'
-// import CharacterModel from './CharacterModel'
-// import Experience from '#/lib/ecctrl/example/Experience'
-// import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
 import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
 import { threedIO } from '#/lib/threed/threedio/threedIO'
 import { threedAI } from '#/lib/threed/threedai/threedAI'
-
-// ** THREED NOUN Imports
-// import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene' // A THREED:SCENE IS A THREED:NOUN[i]
-// import ThreeDPlans from '#/lib/threed/components/nouns/Plan/Plan' // A THREED:PLAN IS A THREED:NOUN[i]
-// import ThreeDThreeDs from '#/lib/threed/components/nouns/ThreeD/ThreeD' // A THREED:THREED IS A THREED:NOUN[i]
-import ThreeDModels from '#/lib/threed/components/nouns/Model/Model' // A THREED:MODEL IS A THREED:NOUN[i]
-
-// ** THREED NOUN EXAMPLES Imports
-// import TransformModel from '#/lib/threed/components/examples/TransformModel/App'
-// import Character from '#/lib/threed/components/nouns/Character/Character'
-// import StacyApp from '#/lib/threed/components/examples/Stacy/StacyApp'
-// import Stacy from '#/lib/threed/components/examples/Stacy/Stacy'
-// import Watch from '#/lib/threed/components/examples/Watch/Watch'
-// import CoffeeCup from '#/lib/threed/components/examples/CoffeeCup/CoffeeCup'
-// import JourneyLevel from '#/lib/threed/components/examples/JourneyLevel/App'
-// import Shoes from '#/lib/threed/components/examples/Shoes/App'
-// import Shoe from '#/lib/threed/components/examples/Shoes/Shoe'
+// ** THREED JOYSTICK
+import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 
 // ** HELPER Components
 import Spinner from '#/layout/ui/components/spinner'
@@ -312,7 +286,7 @@ function FooGetCamera() {
 
 // ** RETURN ThreeDCanvas
 export const ThreeDCanvas = (
-  { _id, threeds }: { _id: string, threeds: any[]}
+  { _id = 'heyheyhey', threeds = [] }: { _id: string, threeds: any[]}
 ) => {
   
   // **
@@ -410,7 +384,7 @@ export const ThreeDCanvas = (
         }}
 
         // shadows={true}
-        dpr={[1, 2]} // target pixel ratio ???
+        // dpr={[1, 2]} // dpr = target pixel ratio (need ???)
         
         // ** CAMERA (not using declarative inside canvas)
         camera={threedCamera}
@@ -489,16 +463,8 @@ export const ThreeDCanvas = (
             // ref={ref} // when using function as a forwardRef // THREED IO
             enableOrbit={true} 
             enablePerf={true}
-          >
-
-            {/* THREED MODELS: WORKING !!! */}
-            {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
-            <ThreeDModels
-              threeds={threeds}
-              // position={[ -4, 0, 0 ]}
-            />
-
-          </ThreeDExperienceViewer>
+            threeds={threeds}
+          />
 
         </Suspense>
       </Canvas>

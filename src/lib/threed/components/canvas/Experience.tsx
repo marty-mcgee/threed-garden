@@ -27,6 +27,23 @@ import { Physics } from '@react-three/rapier'
 // ** LEVA Imports
 import { useControls } from 'leva'
 
+// ** THREED NOUN Imports
+// import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene' // A THREED:SCENE IS A THREED:NOUN[i]
+// import ThreeDPlans from '#/lib/threed/components/nouns/Plan/Plan' // A THREED:PLAN IS A THREED:NOUN[i]
+// import ThreeDThreeDs from '#/lib/threed/components/nouns/ThreeD/ThreeD' // A THREED:THREED IS A THREED:NOUN[i]
+import ThreeDModels from '#/lib/threed/components/nouns/Model/Model' // A THREED:MODEL IS A THREED:NOUN[i]
+
+// ** THREED NOUN EXAMPLES Imports
+// import TransformModel from '#/lib/threed/components/examples/TransformModel/App'
+// import Character from '#/lib/threed/components/nouns/Character/Character'
+// import StacyApp from '#/lib/threed/components/examples/Stacy/StacyApp'
+// import Stacy from '#/lib/threed/components/examples/Stacy/Stacy'
+// import Watch from '#/lib/threed/components/examples/Watch/Watch'
+// import CoffeeCup from '#/lib/threed/components/examples/CoffeeCup/CoffeeCup'
+// import JourneyLevel from '#/lib/threed/components/examples/JourneyLevel/App'
+// import Shoes from '#/lib/threed/components/examples/Shoes/App'
+// import Shoe from '#/lib/threed/components/examples/Shoes/Shoe'
+
 // ** THREED OBJECTS
 // import Camera from '#/lib/threed/components/canvas/Camera'
 // import Lights from '#/lib/threed/components/canvas/Lights'
@@ -84,7 +101,7 @@ const debug = false
 const DEBUG = false
 
 // ** RETURN ThreeDExperience
-export default function ThreeDExperience() {
+export default function ThreeDExperience({ threeds }: { threeds: object[]}) {
 
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
   const prefs = useReactiveVar(preferencesDataVar)
@@ -392,12 +409,29 @@ export default function ThreeDExperience() {
           <Map />
         </group>
 
+        
+          
+        {/* THREED MODELS as props.children */}
+        <group
+          key='threed_models_children'
+          scale={0.3}
+        >
+          {/* {children} */}
+          {/* THREED MODELS: WORKING !!! */}
+          {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
+          <ThreeDModels
+            threeds={threeds}
+            // threeds={{}}
+            // position={[ -4, 0, 0 ]}
+          />
+        </group>
+
       </Physics>
 
-      <Perf
+      {/* <Perf
         position='bottom-left'
         // minimal
-      />
+      /> */}
     </>
   )
 }

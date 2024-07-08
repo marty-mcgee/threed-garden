@@ -2,9 +2,6 @@
 // ==========================================================
 // RESOURCES
 
-// ** NEXT Imports
-// import dynamic from 'next/dynamic'
-
 // ** VALTIO (State) Imports
 import { proxy, useSnapshot } from 'valtio'
 
@@ -16,7 +13,7 @@ import {
   Suspense
 } from 'react'
 
-// ** R3-Fiber + R3-Drei
+// ** R3F Imports
 import {
   useThree,
   useFrame,
@@ -46,11 +43,14 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 //   frameLoop: 'always',
 // })
 
-// ** EXAMPLES
+// ** PHYSICS Imports
+import { RigidBody } from '@react-three/rapier'
+
+// ** EXAMPLES Imports
 import CoffeeCup from '#/lib/threed/components/examples/CoffeeCup/CoffeeCup'
 
-// HELPERS
-// ** UUID Imports
+// HELPERS Imports
+// ** UUID Generator
 import { v4 as newUUID } from 'uuid'
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
@@ -1052,7 +1052,7 @@ const ThreeDModels = ({ threeds }) => {
   return (
     <group
       key='threed_models'
-      position={[ 8, -0.72, 0 ]}
+      position={[ 8, -1, 0 ]}
     >
       {/* <CoffeeCup /> */}
       {/* <ThreeDControls /> */}
@@ -1089,12 +1089,14 @@ const ThreeDModels = ({ threeds }) => {
               // threed.group = threed.group
 
               return (
-                <Model
-                  // key={_file.fileId} // no, duplicates
-                  // key={newUUID()}
-                  key={index}
-                  threed={threed}
-                />
+                <RigidBody type='fixed'>
+                  <Model
+                    // key={_file.fileId} // no, duplicates
+                    // key={newUUID()}
+                    key={index}
+                    threed={threed}
+                  />
+                </RigidBody>
               )
             })}
             </group>
