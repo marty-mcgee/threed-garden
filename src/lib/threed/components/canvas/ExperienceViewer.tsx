@@ -66,7 +66,7 @@ import ThreeDCamera from '#/lib/threed/components/canvas/Camera'
 import ThreeDLights from '#/lib/threed/components/canvas/Lights'
 
 // ** HELPER Components
-import Spinner from '#/layout/ui/components/spinner'
+// import Spinner from '#/layout/ui/components/spinner'
 // ** UUID Imports
 // import { v4 as newUUID } from 'uuid'
 // ** COLORFUL CONSOLE MESSAGES (ccm)
@@ -207,8 +207,8 @@ export function ThreeDEnvironment() {
 
 // ** RETURN ThreeDExperienceViewer
 const ThreeDExperienceViewer = (
-  { children, enableOrbit, enablePerf, ...props }:
-  { children: ReactNode, enableOrbit: boolean, enablePerf: boolean}, 
+  { children, enableOrbit, enablePerf, threeds, ...props }:
+  { children: ReactNode, enableOrbit: boolean, enablePerf: boolean, threeds: object[]}, 
   // ref
 ) => {
 // ** THREED IO
@@ -264,17 +264,9 @@ const ThreeDExperienceViewer = (
 
           {/* THREED ENVIRONMENT */}
           {/* <ThreeDEnvironment /> */}
-          
-          {/* THREED MODELS as props.children */}
-          <group
-            key='threed_models_children'
-            scale={0.3}
-          >
-            {children}
-          </group>
 
           {/* THREED EXPERIENCE */}
-          <ThreeDExperience />
+          <ThreeDExperience threeds={threeds} />
 
           {/* SHADOW EFFECTS */}
           <ContactShadows
