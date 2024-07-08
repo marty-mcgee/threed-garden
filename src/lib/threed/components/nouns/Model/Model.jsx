@@ -1052,7 +1052,7 @@ const ThreeDModels = ({ threeds }) => {
   return (
     <group
       key='threed_models'
-      position={[ 8, 0, 0 ]}
+      position={[ 8, -0.72, 0 ]}
     >
       {/* <CoffeeCup /> */}
       {/* <ThreeDControls /> */}
