@@ -69,6 +69,7 @@ import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
 import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
+import { EcctrlAnimation } from '~/src/lib/ecctrl/src/EcctrlAnimation'
 
 // ** THREED.AI
 // import ThreeDAI from '#/lib/threed/components/tools/ThreeDAI' // TODO
@@ -134,7 +135,7 @@ export default function ThreeDExperience() {
     }),
     {
       color: 'darkgreen',
-      collapsed: false,
+      collapsed: false, // !!! bug: true throws error !!!
       order: 10,
     },
   )

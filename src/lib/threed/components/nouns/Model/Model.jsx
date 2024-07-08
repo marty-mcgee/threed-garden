@@ -300,17 +300,17 @@ const Model = ({
           // console.debug('RETURN ONLY NODE AS NODES: true', model.nodes)
 
           if (model.texture) {
-            console.log(`%c LOADING TEXTURE ...`, ccm.orangeAlert, model.texture)
+            console.debug(`%c LOADING TEXTURE ...`, ccm.orangeAlert, model.texture)
             let texture = useTexture(TextureLoader, model.texture, loader => {
               loader.manager.addHandler(/\.tga$/i, new TGALoader())
               // loader.manager.addHandler(/\.png$/i, new TextureLoader())
             })
-            console.log(`%c TEXTURE`, ccm.orangeAlert, texture)
+            console.debug(`%c TEXTURE`, ccm.orangeAlert, texture)
           }
 
           // ** ANIMATIONS
           if (fbx.animations) {
-            // console.info('FBX animations', fbx.animations)
+            console.debug('%c FBX animations', ccm.orangeAlert, fbx.animations)
             // Extract animation actions
             const { ref, mixer, actions, names, clips } = useAnimations(fbx.animations)
             // console.debug('FBX useAnimations', ref, mixer, actions, names, clips)
@@ -387,7 +387,7 @@ const Model = ({
 
           // ** ANIMATIONS
           if (gltf.animations) {
-            // console.info('GLTF animations', gltf.animations)
+            console.debug('%c GLTF animations', ccm.orangeAlert, gltf.animations)
             // Extract animation actions
             const { ref, mixer, actions, names, clips } = useAnimations(gltf.animations)
             // console.debug('GLTF useAnimations', ref, mixer, actions, names, clips)
@@ -467,7 +467,7 @@ const Model = ({
   // ** ANIMATIONS
 
   // let index = 0 // testing
-  // console.info('index', index)
+  // console.debug('index', index)
 
   // Change animation when the index changes
   useEffect(() => {
@@ -476,23 +476,23 @@ const Model = ({
       && model.ani.names[index] != undefined
       // && model.ani.actions[model.ani.names[index]] != undefined
     ) {
-      console.info('index', index)
-      console.info('model', model)
-      // console.info('model.ani', model.ani)
-      // console.info('model.ani.actions', model.ani.actions)
-      // console.info('model.ani.names', model.ani.names)
-      // console.info('model.ani.names[index]', model.ani.names[index])
-      // console.info('model.ani.actions[model.ani.names[index]]', model.ani.actions[model.ani.names[index]])
-      // console.info('model.ani.actions["Take 001"]', model.ani.actions["Take 001"]))
-      console.info('Object.values(model.ani.actions)', Object.values(model.ani.actions))
-      console.info('Object.keys(model.ani.actions)', Object.keys(model.ani.actions))
-      // console.info('Object.keys(model.ani.actions)[index]', Object.keys(model.ani.actions)[index])
+      console.debug('index', index)
+      console.debug('model', model)
+      // console.debug('model.ani', model.ani)
+      // console.debug('model.ani.actions', model.ani.actions)
+      // console.debug('model.ani.names', model.ani.names)
+      // console.debug('model.ani.names[index]', model.ani.names[index])
+      // console.debug('model.ani.actions[model.ani.names[index]]', model.ani.actions[model.ani.names[index]])
+      // console.debug('model.ani.actions["Take 001"]', model.ani.actions["Take 001"]))
+      console.debug('Object.values(model.ani.actions)', Object.values(model.ani.actions))
+      console.debug('Object.keys(model.ani.actions)', Object.keys(model.ani.actions))
+      // console.debug('Object.keys(model.ani.actions)[index]', Object.keys(model.ani.actions)[index])
       let theAnimation = Object.keys(model.ani.actions)[index]
       // if (model.ani.actions[model.ani.names[index]]) {
-        // console.info('model.ani.actions[model.ani.names[index]]', model.ani.actions[model.ani.names[index]])
+        // console.debug('model.ani.actions[model.ani.names[index]]', model.ani.actions[model.ani.names[index]])
       if (theAnimation) {
-        console.info('Object.keys(model.ani.actions)[index] EXISTS', theAnimation)
-        console.info('model.ani.actions[theAnimation]', model.ani.actions[theAnimation])
+        console.debug('Object.keys(model.ani.actions)[index] EXISTS', theAnimation)
+        console.debug('model.ani.actions[theAnimation]', model.ani.actions[theAnimation])
 
         try {
           // model.ani.actions[model.ani.names[index]]
