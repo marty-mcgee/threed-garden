@@ -133,7 +133,7 @@ import ccm from '#/lib/utils/console-colors'
 const debug: boolean = false
 const DEBUG: boolean = true
 
-const appVersion = 'v0.16.0-b9'
+const appVersion = 'v0.16.0-beta'
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
 // const appVersion = process.env.npm_package_version
 // const appVersion: string = require('package.json').version
