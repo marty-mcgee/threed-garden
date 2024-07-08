@@ -545,7 +545,7 @@ export default function CharacterModel(props: CharacterModelProps) {
         {...props}
         dispose={null}
         // scale={1.0}
-        scale={0.016}
+        scale={0.024}
         position={[0, -0.64, 0]}
         name='ThreeD_Animated_Character'
       >
@@ -588,7 +588,7 @@ export default function CharacterModel(props: CharacterModelProps) {
             material={nodes.Hen_HP.material}
           />
 
-          <Trail
+          {/* <Trail
             width={1.5}
             color={prefs.characterTrailColor}
             length={3}
@@ -596,7 +596,7 @@ export default function CharacterModel(props: CharacterModelProps) {
             attenuation={(width) => width}
           >
             <primitive object={nodes.Hen_HP} />
-          </Trail>
+          </Trail> */}
 
           {/* <group name='Root'>
             <group name='Pelvis_$AssimpFbx$_Translation' position={[0, 87.628, 0]}>
