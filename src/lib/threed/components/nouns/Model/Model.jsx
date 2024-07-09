@@ -1072,7 +1072,7 @@ const ThreeDModels = ({ threeds }) => {
             <group
               // key={newUUID()}
               // key={index}
-              key={threed.group.group_id} // no duplicates
+              key={threed.group.group_id + '_' + newUUID()} // no duplicates
               // ref={ref}
               // position={threed.group.group_position}
               // rotation={threed.group.group_rotation}
@@ -1093,7 +1093,8 @@ const ThreeDModels = ({ threeds }) => {
                   <Model
                     // key={_file.fileId} // no, duplicates
                     // key={newUUID()}
-                    key={index}
+                    // key={index}
+                    key={index + '_' + newUUID()}
                     threed={threed}
                   />
                 </RigidBody>
