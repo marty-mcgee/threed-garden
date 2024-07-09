@@ -51,9 +51,9 @@ import Floor from '#/lib/threed/components/canvas/Floor'
 import Ground from '#/lib/threed/components/canvas/Ground'
 
 // ** THREED CHARACTER CONTROL Imports
-// import CharacterControls from '~/src/lib/ecctrl/src/Ecctrl'
+import CharacterControls from '~/src/lib/ecctrl/src/Ecctrl'
 // import CharacterControls from '~/src/lib/ecctrl/src/EcctrlNew'
-import CharacterControls from '~/src/lib/ecctrl/src/CharacterControls'
+// import CharacterControls from '~/src/lib/ecctrl/src/CharacterControls'
 
 // ** THREED CHARACTER MODEL Imports
 import CharacterModelDemon from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
@@ -332,7 +332,7 @@ export default function ThreeDExperience({ threeds }: { threeds: object[]}) {
         {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
             DEEP BELOW SEA LEVEL */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
-          <Floor color={'black'} opacity={0.2} />
+          <Floor color={'darkblue'} opacity={0.2} />
         </group>
         {/* DEFAULT GROUND BOUNDARY (PREVENTS INFINITE FALL BACKUP):
             DEEP DEEP DEEP BELOW SEA LEVEL */}
@@ -353,7 +353,7 @@ export default function ThreeDExperience({ threeds }: { threeds: object[]}) {
         {/* CHARACTER MODEL */}
         <group key='character0' position={[-2, 0.665, -2]}>
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
-          <KeyboardControls map={keyboardMap}>
+          {/* <KeyboardControls map={keyboardMap}>
             <CharacterControls
               // debug={prefs.doWorldDebug}
               debug={false}
@@ -368,11 +368,12 @@ export default function ThreeDExperience({ threeds }: { threeds: object[]}) {
               autoBalanceDampingC={0.04}
               // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
               // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
-            >
+              mode='FixedCamera'
+            > */}
               {/* <CharacterModelFloating /> */}
               <CharacterModelChicken />
-            </CharacterControls>
-          </KeyboardControls>
+            {/* </CharacterControls>
+          </KeyboardControls> */}
         </group>
         {/* END: CHARACTER MODEL */}
         {/* CHARACTER MODEL */}
@@ -380,12 +381,12 @@ export default function ThreeDExperience({ threeds }: { threeds: object[]}) {
           {/* THREED CHARACTER [n] -- FARMER FEMALE */}
           <KeyboardControls map={keyboardMap}>
             <CharacterControls
-              // debug={prefs.doWorldDebug}
-              debug={false}
-              // animated={prefs.doCharacterAnimation}
-              animated={true} // <EcctrlAnimation>
-              // disableFollowCam={prefs.doWorldUnfollowCam}
-              disableFollowCam={true}
+              debug={prefs.doWorldDebug}
+              // debug={false}
+              animated={prefs.doCharacterAnimation}
+              // animated={true}
+              disableFollowCam={prefs.doWorldUnfollowCam}
+              // disableFollowCam={true}
               followLight={true}
               springK={2}
               dampingC={0.2}
@@ -393,6 +394,7 @@ export default function ThreeDExperience({ threeds }: { threeds: object[]}) {
               autoBalanceDampingC={0.04}
               // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
               // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
+              mode='FixedCamera'
             >
               <CharacterModelFarmerWomanFloating />
             </CharacterControls>
