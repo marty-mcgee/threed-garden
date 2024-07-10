@@ -1,7 +1,7 @@
 {
   "name": "threed-garden",
-  "version": "0.16.0-beta.7",
-  "description": "ThreeD Garden: WebGL 3D Environment on 'Next.JS React TypeScript Three.JS React-Three Physics', using Apollo GraphQL State+Stores, Leva Control GUI, Radix-UI, Material UI, Tailwind CSS",
+  "version": "0.16.0-beta.12",
+  "description": "ThreeD Garden: WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, using Apollo GraphQL State+Stores, Leva Control GUI, Radix-UI, Material UI + Tailwind CSS, intro to 3D FarmBot React (Beta)",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
   "repository": {
@@ -43,14 +43,14 @@
     "___________________X": "____ ___________________________________________________"
   },
   "dependencies": {
-    "@apollo/client": "^3.10.4",
-    "@apollo/experimental-nextjs-app-support": "^0.11.0",
+    
+    "@apollo/client": "^3.10.8",
+    "@apollo/experimental-nextjs-app-support": "^0.11.2",
     "@apollo/react-hooks": "^4.0.0",
-
-    "valtio": "^1.13.2",    
     "zustand": "^4.5.2",
     "zustand-x": "^3.0.3",
     "scheduler": "^0.23.2",
+    "valtio": "^1.13.2", 
 
     "@auth0/auth0-react": "^2.2.4",
 
@@ -76,6 +76,13 @@
     "@radix-ui/react-navigation-menu": "^1.2.0",
     "@radix-ui/react-slot": "^1.0.2",
 
+    "tailwindcss": "^3.3.3",
+    "@tailwindcss/forms": "^0.5.6",
+    "tailwind-merge": "^1.14.0",
+    "tailwindcss-animate": "^1.0.7",
+    "autoprefixer": "^10.4.15",
+    "postcss": "^8.4.29",
+
     "@react-three/drei": "^9.107.0",
     "@react-three/fiber": "^8.16.8",
     "@react-three/postprocessing": "^2.16.2",
@@ -99,12 +106,12 @@
     
     "swr": "^2.2.5",
 
+    "@ducanh2912/next-pwa": "^10.2.7",
+    "tunnel-rat": "^0.1.2",
+
     "three": "^0.163.0",
     "three-mesh-ui": "^6.5.4",
-    "three-stdlib": "^2.29.11",
-
-    "@ducanh2912/next-pwa": "^10.2.7",
-    "tunnel-rat": "^0.1.2"
+    "three-stdlib": "^2.29.11"
 
   },
   
@@ -130,16 +137,10 @@
 
     "@casl/ability": "5.4.3",
     "@casl/react": "3.1.0",
-
-    "tailwindcss": "^3.3.3",
-    "@tailwindcss/forms": "^0.5.6",
-    "tailwind-merge": "^1.14.0",
-    "tailwindcss-animate": "^1.0.7",
-    "autoprefixer": "^10.4.15",
-    "postcss": "^8.4.29",
     
     "use-count-up": "^3.0.1"
   },
+
   "devDependencies": {
     
     "@next/bundle-analyzer": "^14.2.4",

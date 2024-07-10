@@ -130,17 +130,16 @@ import ccm from '#/lib/utils/console-colors'
 // ==========================================================
 
 // DEBUG PREFERENCES FOR THIS MODULE
-const debug: boolean = true
+const debug: boolean = false
 const DEBUG: boolean = true
-const debug_deep: boolean = false
 
-const appVersion = 'v0.16.0-b'
+const appVersion = 'v0.16.0-beta'
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
 // const appVersion = process.env.npm_package_version
 // const appVersion: string = require('package.json').version
 // const appVersion: string = require('../../package.json').version
 
-if ((debug || DEBUG) && debug_deep) {
+if ((debug || DEBUG)) {
   console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm.green)
   console.debug('%c🌱 appVersion', ccm.darkgreen, appVersion)
   console.debug(`%c====================================`, ccm.darkgreen)
@@ -219,14 +218,14 @@ const env: IThreeDEnv = {
   sceneID:        postdata.scene_id,
 }
 
-if (debug_deep) {
+if (debug) {
   console.debug('%c🌱 api plugin:', ccm.darkgreen, env.pluginName, env.pluginVersion, postdata)
   console.debug('postdata', postdata)
   console.debug(`%c====================================`, ccm.darkgreen)
 }
 
 // ==========================================================
-// STYLES
+// STYLED COMPONENTS (MUI: CSS) // legacy notes
 // ==========================================================
 
 const stylesModal = {
@@ -377,17 +376,17 @@ const ThreeDGarden = (): React.ReactNode => {
   // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
   const loadNounData = (_type: string = 'project', threeds: any = []) => {
     // load these threeds into r3f canvas
-    if (DEBUG || debug_deep) console.debug('%c🌱 ThreeDGarden loadNounData()', ccm.yellowAlert, _type, threeds)
+    if (DEBUG || debug) console.debug('%c🌱 ThreeDGarden loadNounData()', ccm.yellowAlert, _type, threeds)
     if (_type === 'project') {
-      projectStore.actions.loadToCanvas(threeds, '_r3fCanvas')
+      projectStore.actions.loadToCanvas(threeds, '_r3fCanvas1')
     }
     // return <Box>true</Box> // true
   }
 
   // ==========================================================
 
-  if (DEBUG || debug_deep) console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreenAlert, word)
-  // if (DEBUG || debug_deep) console.debug('%c=======================================================', ccm.darkgreenAlert)
+  if (DEBUG || debug) console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreenAlert, word)
+  // if (DEBUG || debug) console.debug('%c=======================================================', ccm.darkgreenAlert)
 
   let project_title = 'NOT EVEN CLOSE'
 
@@ -435,6 +434,7 @@ const ThreeDGarden = (): React.ReactNode => {
             // md={12}
             // xs={12}
             style={{
+              display: 'none',
               // display: 'flex', 
               // justifyContent: 'flex-end',
               // borderTop: '1px solid darkgreen',
@@ -458,7 +458,7 @@ const ThreeDGarden = (): React.ReactNode => {
               // justifyContent: 'flex-end',
               // mx: 0,
               // px: 2,
-              borderTop: '1px solid darkgreen',
+              // borderTop: '1px solid darkgreen',
               // zIndex: 0, // this does not work.. no negative numbers !!!!
               width: '100%',
             }}

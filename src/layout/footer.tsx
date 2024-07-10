@@ -9,7 +9,7 @@ export default function Footer() {
       className='flex flex-row space-x-2 text-xs mr-2 items-center'
       style={{position: 'absolute', bottom: '8px', right: '8px', }}
     >
-      <CustomLink href='https://github.com/marty-mcgee/threed-garden/#readme' style={{color: 'gray'}}>
+      {/* <CustomLink href='https://github.com/marty-mcgee/threed-garden/#readme' style={{color: 'gray'}}>
         Documentation
       </CustomLink>
       <CustomLink href='https://github.com/marty-mcgee/threed-garden' style={{color: 'gray'}}>
@@ -29,7 +29,7 @@ export default function Footer() {
       </CustomLink>
       <CustomLink href='/home' style={{color: 'gray'}}>
         Home Page
-      </CustomLink>
+      </CustomLink> */}
     </footer>
   )
 }

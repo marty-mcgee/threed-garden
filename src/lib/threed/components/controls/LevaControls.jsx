@@ -234,7 +234,7 @@ export function ThreeDLevaControls() {
     () => ({
       showTitleBar: { value: true, render: (get) => get('Panel.showTitleBar') },
       // prefs.projectName
-      title: { value: 'Preferences', render: (get) => get('Panel.showTitleBar') },
+      title: { value: 'START HERE: Project Settings', render: (get) => get('Panel.showTitleBar') },
       drag: { value: true, render: (get) => get('Panel.showTitleBar') },
       filter: { value: false, render: (get) => get('Panel.showTitleBar') },
       position: { value: { x: 0, y: 0 }, render: (get) => get('Panel.showTitleBar') },
@@ -400,7 +400,7 @@ export function ThreeDLevaControls() {
           titleBar={showTitleBar && { drag, title, filter, position }} // TITLE | PROJECT_NAME
           hideTitleBar={false} // default = false. true hides the GUI header
           theme={theme} // you can pass a custom theme (see the styling section)
-          collapsed={true} // default = false. true makes the GUI collapsed to start
+          collapsed={false} // default = false. true makes the GUI collapsed to start
           fill={true} // default = false. true makes the pane fill the parent dom node it's rendered in
           flat={false} // default = false. true removes border radius and shadow
           hidden={false} // default = false. true hides the GUI

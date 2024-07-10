@@ -21,14 +21,15 @@
     "jsx": "preserve", // "jsx": "react-jsx",
     // "jsxImportSource": "@emotion/react",
     "incremental": true,
-    // ** rules
+    // ** RULES
     "allowSyntheticDefaultImports": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": false,
     "downlevelIteration": true,
-    // ** directories + paths
+    "allowUnreachableCode": true,
+    // ** PATHS + DIRECTORIES
     // "rootDirs": [".", "../common/src"],
     "baseUrl": ".",
     "paths": {
@@ -49,11 +50,12 @@
         "src/lib/auth/auth"
       ],
     },
+    // ** TYPES
     "typeRoots": [
       "node_modules/@types",
       "src/lib/types"
     ],
-    // plugins
+    // ** PLUGINS
     "plugins": [
       {
         "name": "next"

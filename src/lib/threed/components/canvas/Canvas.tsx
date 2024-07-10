@@ -35,8 +35,10 @@ import {
   useThree,
   // extend, // if using function extend({ OrbitControls })
 } from '@react-three/fiber'
+// ** QUESTION: do stuff with IMPORTS ??
+// extend({ OrbitControls })
 
-// ** R3F HELPERS
+// ** R3F HELPERS Imports
 import {
   PerspectiveCamera,
   // Environment, Stage,
@@ -67,43 +69,17 @@ import {
   Text,
 } from '@radix-ui/themes'
 
-
-// do stuff with IMPORTS ??
-// extend({ OrbitControls })
-
-// ** ThreeD Experience Imports
-// import { Physics } from '@react-three/rapier'
-// import { Perf } from 'r3f-perf'
-// import Ecctrl from '#/lib/ecctrl/src/Ecctrl'
-// import { EcctrlAnimation } from '#/lib/ecctrl/src/EcctrlAnimation'
-import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
-// Components
-// import Lights from './Lights'
-// import Map from './Map'
-// import CharacterModel from './CharacterModel'
-// import Experience from '#/lib/ecctrl/example/Experience'
-// import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
+// ** THREED EXPERIENCE Imports
 import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
 import { threedIO } from '#/lib/threed/threedio/threedIO'
-
-// ** ThreeD Noun Imports
-// import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene'
-// import ThreeDPlans from '#/lib/threed/components/nouns/Plan/Plan'
-// import ThreeDThreeDs from '#/lib/threed/components/nouns/ThreeD/ThreeD'
-import ThreeDModels from '#/lib/threed/components/nouns/Model/Model'
-// ThreeD EXAMPLES
-// import Character from '#/lib/threed/components/nouns/Character/Character'
-// import StacyApp from '#/lib/threed/components/examples/Stacy/StacyApp'
-// import Stacy from '#/lib/threed/components/examples/Stacy/Stacy'
-// import Watch from '#/lib/threed/components/examples/Watch/Watch'
-// import CoffeeCup from '#/lib/threed/components/examples/CoffeeCup/CoffeeCup'
-// import JourneyLevel from '#/lib/threed/components/examples/JourneyLevel/App'
-// import Shoes from '#/lib/threed/components/examples/Shoes/App'
-// import TransformModel from '#/lib/threed/components/examples/TransformModel/App'
-// import Shoe from '#/lib/threed/components/examples/Shoes/Shoe'
+import { threedAI } from '#/lib/threed/threedai/threedAI'
+// ** THREED JOYSTICK
+import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 
 // ** HELPER Components
 import Spinner from '#/layout/ui/components/spinner'
+// ** UUID Imports
+import { v4 as newUUID } from 'uuid'
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 // console.debug('%c ccm', ccm)
@@ -132,7 +108,7 @@ function ThreeDLoaderSimple() {
     const [progressValue, setProgressValue] = useState(progress)
 
     useEffect(() => {
-      const timer = setTimeout(() => setProgressValue(progress), 500)
+      const timer = setTimeout(() => setProgressValue(progress), 0)
       return () => clearTimeout(timer)
     }, [])
 
@@ -312,7 +288,7 @@ function FooGetCamera() {
 
 // ** RETURN ThreeDCanvas
 export const ThreeDCanvas = (
-  { _id, threeds }: { _id: string, threeds: any[]}
+  { _id = 'heyheyhey_' + newUUID(), threeds = [] }: { _id: string, threeds: any[]}
 ) => {
   
   // **
@@ -390,7 +366,7 @@ export const ThreeDCanvas = (
 
       {/* CHARACTER CONTROL JOYSTICK */}
       {/* <EcctrlJoystick ButtonNumber={5} /> */}
-      {/* <EcctrlJoystickControls /> */}
+      <EcctrlJoystickControls />
 
       {/* CAMERA INTERACTIONS */}
       {/* <CameraPositionTestApp /> */}
@@ -409,40 +385,43 @@ export const ThreeDCanvas = (
           // height: '100%',
         }}
 
-        // shadows={true}
-        // dpr={[1, 2]} // target pixel ratio ???
-                
-        onCreated={
-          (state) => {
-            console.debug('%c Canvas onCreated state', ccm.redAlert, state)
-            console.debug('%c Canvas onCreated state.camera', ccm.redAlert, state.camera)
-            console.debug('%c Canvas onCreated state.camera.position', ccm.redAlert, state.camera.position)
-            state.gl.toneMapping = THREE.AgXToneMapping
-            // state.camera.fov = 32 // 8
-            // state.camera.lookAt(2, -4, 8) // position [0, 0, 0]
-            // threedCamera.position = new THREE.Vector3(2, -4, 8)
-            // console.debug('%c Canvas onCreated state.camera.position(lookAt)', ccm.redAlert, state.camera.position)
-          }
-        }
+        shadows={true}
+        // dpr={[1, 2]} // dpr = target pixel ratio (need ???)
         
         // ** CAMERA (not using declarative inside canvas)
         camera={threedCamera}
 
         // ** SCENE (needs to be declarative inside canvas)
-        // scene={{
-        //   // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
-        //   background: new THREE.Color(0x131313),
-        // }}
+        scene={{
+          // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
+          background: new THREE.Color(0x171717),
+        }}
+        // onCreated={
+        //   (state) => {
+        //     // console.debug('%c Canvas onCreated state', ccm.darkred, state)
+        //     // console.debug('%c Canvas onCreated state.camera', ccm.darkred, state.camera)
+        //     console.debug('%c Canvas onCreated state.camera.position', ccm.darkred, state.camera.position)
+        //     // state.gl.toneMapping = THREE.AgXToneMapping
+        //     // state.camera.fov = 32 // 8
+        //     // state.camera.lookAt(2, -4, 8) // position [0, 0, 0]
+        //     // threedCamera.position = new THREE.Vector3(2, -4, 8)
+        //     // console.debug('%c Canvas onCreated state.camera.position(lookAt)', ccm.redAlert, state.camera.position)
+        //   }
+        // }
         
-        // ** JOYSTICK (optional)
+        // ** JOYSTICK as mouse (optional)
         // onPointerDown={(e) => {
         //   if (e.pointerType === 'mouse') {
+        //     // testing
         //     (e.target as HTMLCanvasElement).requestPointerLock()
         //   }
         // }}
         
       >
-        {/* INSIDE CANVAS (canvas props.children)... */}
+        {/* NOW INSIDE CANVAS (canvas.props.children)... */}
+
+        {/* PRELOAD objects ??? -- does it seem necessary? */}
+        <Preload all />
 
         
         {/* USE DECLARATIVE THREED CAMERA (NOT WORKING YET) */}
@@ -463,41 +442,31 @@ export const ThreeDCanvas = (
         {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
         {/* using radix-ui + react-three-drei */}
         {/* using react-three-drei Loader + useProgress */}
-        {/* <Suspense fallback={
+        <Suspense fallback={
           <Html center>
-            <Spinner />
+            {/* <Spinner /> */}
             <Loader
               // containerStyles={...container} // Flex layout styles
               // innerStyles={...inner} // Inner container styles
               // barStyles={...bar} // Loading-bar styles
               // dataStyles={...data} // Text styles
-              dataInterpolation={(p) => `Building UI ${p.toFixed(0)}%`} // Text
+              dataInterpolation={(p) => `THREED UI ${p.toFixed(0)}%`} // Text
               initialState={(active = false) => active} // Initial black out state
             />
           </Html>
-        }> */}
-        <Suspense fallback={<ThreeDLoaderSimple />}>
-
-          {/* PRELOAD objects ??? -- does it seem necessary? */}
-          <Preload all />
+        }>
+        {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
           
           {/* THREED EXPERIENCE : VIEWER */}
           {/* ExperienceViewer = forwardRef(({ children, enableOrbit, ...props }, ref) => {} */}
           {/* @ ts-expect-error */}
           <ThreeDExperienceViewer 
-            // ref={ref} // when using function as a forwardRef // THREED IO
+            ref={ref} // when using function as a forwardRef // THREED IO
             enableOrbit={true} 
-            enablePerf={true}
-          >
-
-            {/* THREED MODELS: WORKING !!! */}
-            {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
-            <ThreeDModels
-              threeds={threeds}
-              // position={[ -4, 0, 0 ]}
-            />
-
-          </ThreeDExperienceViewer>
+            enablePerf={false}
+            threeds={threeds}
+            children={null}
+          />
 
         </Suspense>
       </Canvas>

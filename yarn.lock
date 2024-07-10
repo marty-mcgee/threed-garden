@@ -31,7 +31,7 @@
   dependencies:
     ts-invariant "^0.10.3"
 
-"@apollo/client@^3.10.4", "@apollo/client@latest":
+"@apollo/client@^3.10.8", "@apollo/client@latest":
   version "3.10.8"
   resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.10.8.tgz#96b1548818e45fac752ec2bd318e5466d9ca26b5"
   integrity sha512-UaaFEitRrPRWV836wY2L7bd3HRCfbMie1jlYMcmazFAK23MVhz/Uq7VG1nwbotPb5xzFsw5RF4Wnp2G3dWPM3g==
@@ -51,7 +51,7 @@
     tslib "^2.3.0"
     zen-observable-ts "^1.2.5"
 
-"@apollo/experimental-nextjs-app-support@^0.11.0":
+"@apollo/experimental-nextjs-app-support@^0.11.2":
   version "0.11.2"
   resolved "https://registry.yarnpkg.com/@apollo/experimental-nextjs-app-support/-/experimental-nextjs-app-support-0.11.2.tgz#3df9253229afd6ec94bc5873f649f23c487c9dfb"
   integrity sha512-HRQ8/Ux/tM2pezrhZeoHsJs55+nJvJZRV1B21QwEVtWhslQXjT5gqs5nKw86KURF0xR7gX18Nyy659NzJ09Pmw==

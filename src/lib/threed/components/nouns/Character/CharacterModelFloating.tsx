@@ -12,7 +12,7 @@ import {
 import { useControls } from 'leva'
 import { Suspense, useEffect, useRef, useMemo, useState } from 'react'
 import * as THREE from 'three'
-import { useGame } from '#/lib/ecctrl/src/stores/useGame'
+import { useGame, type AnimationSet } from '#/lib/ecctrl/src/stores/useGame'
 import { BallCollider, RapierCollider, vec3 } from '@react-three/rapier'
 import { useFrame } from '@react-three/fiber'
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -30,6 +30,7 @@ export default function CharacterModel(props: CharacterModelProps) {
     nodes: any
   }
   const { actions } = useAnimations(animations, group)
+  
   // gradientMapTexture for MeshToonMaterial
   const gradientMapTexture = useTexture(texture) // '/textures/3.jpg'
   gradientMapTexture.minFilter = THREE.NearestFilter
@@ -65,55 +66,68 @@ export default function CharacterModel(props: CharacterModelProps) {
   /**
    * Character Preferences
    */
-  const [{
-    mainColor,
-    outlineColor,
-    trailColor,
-  }, setCharacterPreferencesLeva] = useControls(
-    'Character Preferences',
-    () => ({
-      // characterMainColor
-      mainColor: {
-        label: 'Main Color',
-        value: 'mediumslateblue', // prefs.characterMainColor,
-      },
-      // characterOutlineColor
-      outlineColor: {
-        label: 'Outline Color',
-        value:'black', // prefs.characterOutlineColor,
-      },
-      // characterTrailColor
-      trailColor: {
-        label: 'Trail Color',
-        value:'violet', // prefs.characterTrailColor,
-      },
-    }),
-    {
-      color: 'darkgreen',
-      collapsed: false,
-      order: 10,
-    },
-  )
+  let characterPrefs = {
+    mainColor: 'mediumslateblue',
+    outlineColor: 'black',
+    trailColor: 'violet',
+  }
+  // const [{
+  //   mainColor,
+  //   outlineColor,
+  //   trailColor,
+  // }, setCharacterPreferencesLeva] = useControls(
+  //   'Character Preferences',
+  //   () => ({
+  //     // characterMainColor
+  //     mainColor: {
+  //       label: 'Main Color',
+  //       value: 'mediumslateblue', // prefs.characterMainColor,
+  //     },
+  //     // characterOutlineColor
+  //     outlineColor: {
+  //       label: 'Outline Color',
+  //       value: 'black', // prefs.characterOutlineColor,
+  //     },
+  //     // characterTrailColor
+  //     trailColor: {
+  //       label: 'Trail Color',
+  //       value: 'violet', // prefs.characterTrailColor,
+  //     },
+  //   }),
+  //   {
+  //     color: 'darkgreen',
+  //     collapsed: false,
+  //     order: 10,
+  //   },
+  // )
 
   /**
    * Prepare replacing materials
    */
-  const outlineMaterial = useMemo(
-    () =>
-      new THREE.MeshBasicMaterial({
-        color: outlineColor,
-        transparent: true,
-      }),
-    [outlineColor]
-  )
   const meshToonMaterial = useMemo(
     () =>
       new THREE.MeshToonMaterial({
-        color: mainColor,
+        color: 'mediumslateblue', // mainColor,
         gradientMap: gradientMapTexture,
         transparent: true,
       }),
-    [mainColor]
+    [characterPrefs.mainColor]
+  )
+  const outlineMaterial = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: 'black', // outlineColor,
+        transparent: true,
+      }),
+    [characterPrefs.outlineColor]
+  )
+  const trailMaterial = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: 'violet', // trailColor,
+        transparent: true,
+      }),
+    [characterPrefs.trailColor]
   )
 
   /**
@@ -254,7 +268,7 @@ export default function CharacterModel(props: CharacterModelProps) {
       {/* Replace your model here */}
 
       {/* Head collider */}
-      {/* <BallCollider args={[0.5]} position={[0, 0.80, 0]} /> */}
+      <BallCollider args={[0.5]} position={[0, 0.80, 0]} />
 
       {/* Right hand collider */}
       <mesh ref={rightHandRef} />
@@ -309,7 +323,7 @@ export default function CharacterModel(props: CharacterModelProps) {
             />
             <Trail
               width={1.5}
-              color={trailColor}
+              color={characterPrefs.trailColor}
               length={3}
               decay={2}
               attenuation={(width) => width}
