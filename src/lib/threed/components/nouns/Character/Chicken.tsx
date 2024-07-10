@@ -4,18 +4,17 @@
 // RESOURCES
 
 // ** APOLLO Imports (NOT HERE?, preferably)
-// import { useReactiveVar } from '@apollo/client'
-// import { preferencesDataVar } from '#/lib/stores/apollo'
+import { useReactiveVar } from '@apollo/client'
+import { preferencesDataVar } from '#/lib/stores/apollo'
 
 // ** REACT Imports
 import {
   Suspense,
   useEffect,
   useRef,
-  useMemo,
   useState,
   // (instances of):
-  // // useMemo,
+  useMemo,
   // useContext,
   // createContext,
 } from 'react'
@@ -116,15 +115,15 @@ type CharacterModelProps = JSX.IntrinsicElements['group']
 export default function CharacterModel(props: CharacterModelProps) {
 
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
-  // const prefs = useReactiveVar(preferencesDataVar)
+  const prefs = useReactiveVar(preferencesDataVar)
   // console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
-  let prefs = {
-    doAutoLoadData: true,
-    doCharacterAnimation: true,
-    characterMainColor: 'mediumslateblue',
-    characterOutlineColor: 'black',
-    characterTrailColor: 'violet',
-  }
+  // let prefs = {
+  //   doAutoLoadData: true,
+  //   doCharacterAnimation: true,
+  //   characterMainColor: 'mediumslateblue',
+  //   characterOutlineColor: 'black',
+  //   characterTrailColor: 'violet',
+  // }
   // console.debug(`%c CHARACTER MODEL: prefs`, ccm.redAlert, prefs)
 
   // const instances = useContext(context)

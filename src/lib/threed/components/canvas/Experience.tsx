@@ -358,12 +358,12 @@ const ThreeDExperience = forwardRef((
         {/* CHARACTER MODELS */}
         <KeyboardControls map={keyboardMap}>
           {/* CHARACTER MODEL */}
-          <group key='character0' position={[-2, 0.396, -2]}>
+          <group key='character0' position={[-1.6, 0.396, -1.6]}>
             <CharacterControls
               debug={prefs.doWorldDebug}
               // debug={false}
               // animated={prefs.doCharacterAnimation}
-              animated={true}
+              animated={false}
               disableFollowCam={prefs.doWorldUnfollowCam}
               // disableFollowCam={true}
               followLight={true}
@@ -400,6 +400,7 @@ const ThreeDExperience = forwardRef((
               {/* <CharacterModel /> */}
               {/* <CharacterModelFloating /> */}
               <CharacterModelFarmerWomanFloating />
+              {/* <CharacterModelFarmerManFloating /> */}
             </CharacterControls>
           </group>
           {/* END: CHARACTER MODEL */}
