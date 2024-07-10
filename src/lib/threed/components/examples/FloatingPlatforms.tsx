@@ -47,7 +47,7 @@ export default function FloatingPlatforms() {
   const rayCastMove = new rapier.Ray(originMove, rayDir)
   const movingVel = useMemo(() => new THREE.Vector3(), [])
   let movingDir = 1
-  let rayHitMove: RayColliderHit = | null null
+  let rayHitMove: RayColliderHit | null = null
 
   useEffect(() => {
     // Loack platform 1 rotation

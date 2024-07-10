@@ -11,7 +11,7 @@ import { preferencesDataVar } from '#/lib/stores/apollo'
 // import Image from 'next/image'
 
 // ** REACT Imports
-import { useEffect, useState } from 'react'
+import { useEffect, useState, forwardRef } from 'react'
 
 // THREE JS * ALL
 import * as THREE from 'three'
@@ -56,6 +56,7 @@ import CharacterControls from '~/src/lib/ecctrl/src/Ecctrl'
 // import CharacterControls from '~/src/lib/ecctrl/src/CharacterControls'
 
 // ** THREED CHARACTER MODEL Imports
+import CharacterModel from '#/lib/threed/components/nouns/Character/CharacterModel'
 import CharacterModelDemon from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
 import CharacterModelFloating from '#/lib/threed/components/nouns/Character/CharacterModelFloating'
 // import CharacterModelFarmerMan from '#/lib/threed/components/nouns/Character/FarmerMan'
@@ -83,7 +84,6 @@ import ThreeDFarmBotMain from '#/lib/farmbot/threed-farmbot/main-threed'
 import ThreeDFarmBotGarden from '#/lib/farmbot/threed-farmbot/garden-threed'
 
 // ** HELPER Imports
-import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
 import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
@@ -101,7 +101,12 @@ const debug = false
 const DEBUG = false
 
 // ** RETURN ThreeDExperience
-export default function ThreeDExperience({ threeds }: { threeds: object[]}) {
+// export default function ThreeDExperience({ threeds }: { threeds: object[]}, ref: any) {
+const ThreeDExperience = forwardRef((
+  { threeds, ...props }:
+  { threeds: object[]}, 
+  ref: any
+) => {
 
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
   const prefs = useReactiveVar(preferencesDataVar)
@@ -119,7 +124,7 @@ export default function ThreeDExperience({ threeds }: { threeds: object[]}) {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setPausedPhysics(false)
-    }, 1500)
+    }, 500)
     return () => clearTimeout(timeout)
   }, [])
 
@@ -139,7 +144,7 @@ export default function ThreeDExperience({ threeds }: { threeds: object[]}) {
         value: prefs.doWorldDebug,
       },
       doWorldTesting: {
-        label: 'Testing?',
+        label: 'ThreeD Testing?',
         value: prefs.doWorldTesting,
       },
       doWorldPhysics: {
@@ -147,13 +152,13 @@ export default function ThreeDExperience({ threeds }: { threeds: object[]}) {
         value: prefs.doWorldPhysics,
       },
       doWorldUnfollowCam: {
-        label: 'Camera Unfollow?',
+        label: 'Unfollow Character?',
         value: prefs.doWorldUnfollowCam,
       },
     }),
     {
       color: 'darkgreen',
-      collapsed: false, // !!! bug: true throws error !!!
+      collapsed: true, // !!! bug: true throws error !!!
       order: 10,
     },
   )
@@ -266,7 +271,7 @@ export default function ThreeDExperience({ threeds }: { threeds: object[]}) {
   // const camera = new THREE.PerspectiveCamera()
 
   return (
-    <>
+    <group ref={ref}>
 
       {/* EXAMPLES: BIRDS */}
       <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
@@ -277,7 +282,7 @@ export default function ThreeDExperience({ threeds }: { threeds: object[]}) {
       <Physics
         debug={prefs.doWorldPhysics}
         // debug={false}
-        timeStep={'vary'}
+        // timeStep={'vary'}
         paused={pausedPhysics}
       >
 
@@ -320,20 +325,20 @@ export default function ThreeDExperience({ threeds }: { threeds: object[]}) {
         {/* solid steps (levels, safety) */}
         {/* The Floor (Plane 0) */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
-          <Floor color={'green'} opacity={0.8} />
+          <Floor color={'darkgreen'} opacity={0.8} />
         </group>
 
         {/* backup solid steps (levels[1+], safety) */}
         {/* Sub-Floor[s] (Plane < 0) */}
         {/* <SubFloor level={`${level[index]}`} /> */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
           <Floor color={'saddlebrown'} opacity={0.4} />
-        </group>
+        </group> */}
         {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
             DEEP BELOW SEA LEVEL */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
           <Floor color={'darkblue'} opacity={0.2} />
-        </group>
+        </group> */}
         {/* DEFAULT GROUND BOUNDARY (PREVENTS INFINITE FALL BACKUP):
             DEEP DEEP DEEP BELOW SEA LEVEL */}
         {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -1024, 0]}>
@@ -342,49 +347,23 @@ export default function ThreeDExperience({ threeds }: { threeds: object[]}) {
 
 
         {/* THREED FARMBOT */}
-        <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.665, -2]}>
+        {/* <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.665, -2]}>
           <ThreeDFarmBotGarden />
-        </group>
+        </group> */}
         {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
           <ThreeDFarmBotMain />
         </group> */}
 
         {/* [MM] HEY HEY HEY : FALL FROM SKY.......................... */}
-        {/* CHARACTER MODEL */}
-        <group key='character0' position={[-2, 0.665, -2]}>
-          {/* THREED CHARACTER [n] -- FARMER FEMALE */}
-          {/* <KeyboardControls map={keyboardMap}>
-            <CharacterControls
-              // debug={prefs.doWorldDebug}
-              debug={false}
-              // animated={prefs.doCharacterAnimation}
-              animated={true} // <EcctrlAnimation>
-              // disableFollowCam={prefs.doWorldUnfollowCam}
-              disableFollowCam={true}
-              followLight={true}
-              springK={2}
-              dampingC={0.2}
-              autoBalanceSpringK={1.2}
-              autoBalanceDampingC={0.04}
-              // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
-              // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
-              mode='FixedCamera'
-            > */}
-              {/* <CharacterModelFloating /> */}
-              <CharacterModelChicken />
-            {/* </CharacterControls>
-          </KeyboardControls> */}
-        </group>
-        {/* END: CHARACTER MODEL */}
-        {/* CHARACTER MODEL */}
-        <group key='character1' position={[0, 0.665, 0]}>
-          {/* THREED CHARACTER [n] -- FARMER FEMALE */}
-          <KeyboardControls map={keyboardMap}>
+        {/* CHARACTER MODELS */}
+        <KeyboardControls map={keyboardMap}>
+          {/* CHARACTER MODEL */}
+          <group key='character0' position={[-2, 0.396, -2]}>
             <CharacterControls
               debug={prefs.doWorldDebug}
               // debug={false}
-              animated={prefs.doCharacterAnimation}
-              // animated={true}
+              // animated={prefs.doCharacterAnimation}
+              animated={true}
               disableFollowCam={prefs.doWorldUnfollowCam}
               // disableFollowCam={true}
               followLight={true}
@@ -396,22 +375,44 @@ export default function ThreeDExperience({ threeds }: { threeds: object[]}) {
               // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
               mode='FixedCamera'
             >
+              <CharacterModelChicken />
+            </CharacterControls>
+          </group>
+          {/* END: CHARACTER MODEL */}
+          {/* CHARACTER MODEL */}
+          <group key='character1' position={[0, 0.396, 0]}>
+            <CharacterControls
+              debug={prefs.doWorldDebug}
+              // debug={false}
+              // animated={prefs.doCharacterAnimation}
+              animated={true}
+              disableFollowCam={prefs.doWorldUnfollowCam}
+              // disableFollowCam={true}
+              followLight={true}
+              springK={2}
+              dampingC={0.2}
+              autoBalanceSpringK={1.2}
+              autoBalanceDampingC={0.04}
+              // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
+              // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
+              mode='FixedCamera'
+            >
+              {/* <CharacterModel /> */}
+              {/* <CharacterModelFloating /> */}
               <CharacterModelFarmerWomanFloating />
             </CharacterControls>
-          </KeyboardControls>
-        </group>
-        {/* END: CHARACTER MODEL */}
+          </group>
+          {/* END: CHARACTER MODEL */}
+        </KeyboardControls>
 
         {/* // import Map from './Map' */}
-        <group 
+        {/* <group 
           rotation={[(-Math.PI/2) + 0, (-Math.PI/2), (-Math.PI/2) + 0]} 
           scale={1.4} 
           position={[0, 2, 26]}
         >
           <Map />
-        </group>
-
-        
+        </group> */}
           
         {/* THREED MODELS as props.children */}
         <group
@@ -421,19 +422,17 @@ export default function ThreeDExperience({ threeds }: { threeds: object[]}) {
           {/* {children} */}
           {/* THREED MODELS: WORKING !!! */}
           {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
-          <ThreeDModels
+          {/* <ThreeDModels
             threeds={threeds}
             // threeds={{}}
             // position={[ -4, 0, 0 ]}
-          />
+          /> */}
         </group>
 
       </Physics>
-
-      {/* <Perf
-        position='bottom-left'
-        // minimal
-      /> */}
-    </>
+    </group>
   )
 }
+) // end forwardRef
+
+export default ThreeDExperience

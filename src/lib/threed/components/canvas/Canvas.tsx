@@ -78,6 +78,8 @@ import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 
 // ** HELPER Components
 import Spinner from '#/layout/ui/components/spinner'
+// ** UUID Imports
+import { v4 as newUUID } from 'uuid'
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 // console.debug('%c ccm', ccm)
@@ -106,7 +108,7 @@ function ThreeDLoaderSimple() {
     const [progressValue, setProgressValue] = useState(progress)
 
     useEffect(() => {
-      const timer = setTimeout(() => setProgressValue(progress), 500)
+      const timer = setTimeout(() => setProgressValue(progress), 0)
       return () => clearTimeout(timer)
     }, [])
 
@@ -286,7 +288,7 @@ function FooGetCamera() {
 
 // ** RETURN ThreeDCanvas
 export const ThreeDCanvas = (
-  { _id = 'heyheyhey', threeds = [] }: { _id: string, threeds: any[]}
+  { _id = 'heyheyhey_' + newUUID(), threeds = [] }: { _id: string, threeds: any[]}
 ) => {
   
   // **
@@ -383,7 +385,7 @@ export const ThreeDCanvas = (
           // height: '100%',
         }}
 
-        // shadows={true}
+        shadows={true}
         // dpr={[1, 2]} // dpr = target pixel ratio (need ???)
         
         // ** CAMERA (not using declarative inside canvas)
@@ -394,30 +396,32 @@ export const ThreeDCanvas = (
           // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
           background: new THREE.Color(0x171717),
         }}
-                
-        onCreated={
-          (state) => {
-            console.debug('%c Canvas onCreated state', ccm.darkred, state)
-            console.debug('%c Canvas onCreated state.camera', ccm.darkred, state.camera)
-            console.debug('%c Canvas onCreated state.camera.position', ccm.darkred, state.camera.position)
-            state.gl.toneMapping = THREE.AgXToneMapping
-            // state.camera.fov = 32 // 8
-            // state.camera.lookAt(2, -4, 8) // position [0, 0, 0]
-            // threedCamera.position = new THREE.Vector3(2, -4, 8)
-            // console.debug('%c Canvas onCreated state.camera.position(lookAt)', ccm.redAlert, state.camera.position)
-          }
-        }
+        // onCreated={
+        //   (state) => {
+        //     // console.debug('%c Canvas onCreated state', ccm.darkred, state)
+        //     // console.debug('%c Canvas onCreated state.camera', ccm.darkred, state.camera)
+        //     console.debug('%c Canvas onCreated state.camera.position', ccm.darkred, state.camera.position)
+        //     // state.gl.toneMapping = THREE.AgXToneMapping
+        //     // state.camera.fov = 32 // 8
+        //     // state.camera.lookAt(2, -4, 8) // position [0, 0, 0]
+        //     // threedCamera.position = new THREE.Vector3(2, -4, 8)
+        //     // console.debug('%c Canvas onCreated state.camera.position(lookAt)', ccm.redAlert, state.camera.position)
+        //   }
+        // }
         
-        // ** JOYSTICK (optional)
-        onPointerDown={(e) => {
-          if (e.pointerType === 'mouse') {
-            // testing
-            // (e.target as HTMLCanvasElement).requestPointerLock()
-          }
-        }}
+        // ** JOYSTICK as mouse (optional)
+        // onPointerDown={(e) => {
+        //   if (e.pointerType === 'mouse') {
+        //     // testing
+        //     (e.target as HTMLCanvasElement).requestPointerLock()
+        //   }
+        // }}
         
       >
         {/* NOW INSIDE CANVAS (canvas.props.children)... */}
+
+        {/* PRELOAD objects ??? -- does it seem necessary? */}
+        <Preload all />
 
         
         {/* USE DECLARATIVE THREED CAMERA (NOT WORKING YET) */}
@@ -440,7 +444,7 @@ export const ThreeDCanvas = (
         {/* using react-three-drei Loader + useProgress */}
         <Suspense fallback={
           <Html center>
-            <Spinner />
+            {/* <Spinner /> */}
             <Loader
               // containerStyles={...container} // Flex layout styles
               // innerStyles={...inner} // Inner container styles
@@ -452,17 +456,14 @@ export const ThreeDCanvas = (
           </Html>
         }>
         {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
-
-          {/* PRELOAD objects ??? -- does it seem necessary? */}
-          <Preload all />
           
           {/* THREED EXPERIENCE : VIEWER */}
           {/* ExperienceViewer = forwardRef(({ children, enableOrbit, ...props }, ref) => {} */}
           {/* @ ts-expect-error */}
           <ThreeDExperienceViewer 
-            // ref={ref} // when using function as a forwardRef // THREED IO
+            ref={ref} // when using function as a forwardRef // THREED IO
             enableOrbit={true} 
-            enablePerf={true}
+            enablePerf={false}
             threeds={threeds}
             children={null}
           />
