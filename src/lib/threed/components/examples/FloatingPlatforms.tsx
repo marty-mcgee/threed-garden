@@ -4,7 +4,6 @@
 
 import {
   CuboidCollider,
-  RapierRigidBody,
   RigidBody,
   useRapier,
 } from '@react-three/rapier'
@@ -31,7 +30,7 @@ export default function FloatingPlatforms() {
   const springDirVec = useMemo(() => new THREE.Vector3(), [])
   const origin = useMemo(() => new THREE.Vector3(), [])
   const rayCast = new rapier.Ray(origin, rayDir)
-  let rayHit: RayColliderHit = null
+  let rayHit: RayColliderHit | null = null
   const floatingDis = 0.8
   const springK = 2.5
   const dampingC = 0.15
@@ -40,7 +39,7 @@ export default function FloatingPlatforms() {
   const springDirVec2 = useMemo(() => new THREE.Vector3(), [])
   const origin2 = useMemo(() => new THREE.Vector3(), [])
   const rayCast2 = new rapier.Ray(origin2, rayDir)
-  let rayHit2: RayColliderHit = null
+  let rayHit2: RayColliderHit | null = null
   
   // Platform 3 -- Moving Platform
   const springDirVecMove = useMemo(() => new THREE.Vector3(), [])
@@ -48,7 +47,7 @@ export default function FloatingPlatforms() {
   const rayCastMove = new rapier.Ray(originMove, rayDir)
   const movingVel = useMemo(() => new THREE.Vector3(), [])
   let movingDir = 1
-  let rayHitMove: RayColliderHit = null
+  let rayHitMove: RayColliderHit | null = null
 
   useEffect(() => {
     // Loack platform 1 rotation
@@ -80,8 +79,8 @@ export default function FloatingPlatforms() {
         rayCast,
         rayLength,
         false,
-        null,
-        null,
+        undefined,
+        undefined,
         floatingPlateRef.current,
         floatingPlateRef.current
       )
@@ -97,8 +96,8 @@ export default function FloatingPlatforms() {
         rayCast2,
         rayLength,
         false,
-        null,
-        null,
+        undefined,
+        undefined,
         floatingPlateRef2.current,
         floatingPlateRef2.current
       )
@@ -114,8 +113,8 @@ export default function FloatingPlatforms() {
         rayCastMove,
         rayLength,
         false,
-        null,
-        null,
+        undefined,
+        undefined,
         floatingMovingPlateRef.current,
         floatingMovingPlateRef.current
       )

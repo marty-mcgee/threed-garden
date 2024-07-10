@@ -2,9 +2,6 @@
 // ==========================================================
 // RESOURCES
 
-// ** NEXT Imports
-// import dynamic from 'next/dynamic'
-
 // ** VALTIO (State) Imports
 import { proxy, useSnapshot } from 'valtio'
 
@@ -16,7 +13,7 @@ import {
   Suspense
 } from 'react'
 
-// ** R3-Fiber + R3-Drei
+// ** R3F Imports
 import {
   useThree,
   useFrame,
@@ -46,11 +43,14 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 //   frameLoop: 'always',
 // })
 
-// ** EXAMPLES
+// ** PHYSICS Imports
+import { RigidBody } from '@react-three/rapier'
+
+// ** EXAMPLES Imports
 import CoffeeCup from '#/lib/threed/components/examples/CoffeeCup/CoffeeCup'
 
-// HELPERS
-// ** UUID Imports
+// HELPERS Imports
+// ** UUID Generator
 import { v4 as newUUID } from 'uuid'
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
@@ -175,7 +175,11 @@ const Model = ({
     // '/objects/examples/coffee-transformed.glb'
     // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/FBX/SM_Prop_Carrot_01.fbx'
     'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/FBX/SM_Prop_Plant_Corn_01.fbx'
-  const fileUrl = threed.file?.isUrl ? threed.file.url : fileUrlDefault
+  // const fileUrl = threed.file?.isUrl ? threed.file.url : fileUrlDefault
+  let fileUrl = fileUrlDefault
+  if (threed.data.modelFiles.nodes[0].url) {
+    fileUrl = threed.data.modelFiles.nodes[0].url
+  }
 
   const textureUrlDefault = '' // blank string
   const textureUrl = threed.file?.isUrl && threed.file?.isTexture ? threed.file.url : textureUrlDefault
@@ -184,7 +188,7 @@ const Model = ({
   const model = {
     ref:        useRef(null),
     name:       threed.name,
-    file:       fileUrl,                // threed.file.url,
+    file:       fileUrl,                // threed.data.modelFiles.nodes[0].url,
     group:      threed.group,
     nodes:      threed.nodes,
     //** custom fields
@@ -251,10 +255,14 @@ const Model = ({
     },
   }
 
+
   // fetch the file (GLTF, FBX, OBJ, etc)
   if (model.is.isSupported) {
-    console.debug('%c🌱 model.is.isSupported: true', ccm.greenAlert, model.name, model)
+
+    console.debug('%c🌱 model.is.isSupported: true', ccm.darkgreen, model.name, model.file)
     console.debug(`%c======================================`, ccm.darkgreen)
+    
+    
     if (model.is.isObject3D) {
 
       // const OBJModel = ({ file, textureFile, ...props }) => {
@@ -292,17 +300,17 @@ const Model = ({
           // console.debug('RETURN ONLY NODE AS NODES: true', model.nodes)
 
           if (model.texture) {
-            console.log(`%c LOADING TEXTURE ...`, ccm.orangeAlert, model.texture)
+            console.debug(`%c LOADING TEXTURE ...`, ccm.orangeAlert, model.texture)
             let texture = useTexture(TextureLoader, model.texture, loader => {
               loader.manager.addHandler(/\.tga$/i, new TGALoader())
               // loader.manager.addHandler(/\.png$/i, new TextureLoader())
             })
-            console.log(`%c TEXTURE`, ccm.orangeAlert, texture)
+            console.debug(`%c TEXTURE`, ccm.orangeAlert, texture)
           }
 
           // ** ANIMATIONS
           if (fbx.animations) {
-            // console.info('FBX animations', fbx.animations)
+            console.debug('%c FBX animations', ccm.orangeAlert, fbx.animations)
             // Extract animation actions
             const { ref, mixer, actions, names, clips } = useAnimations(fbx.animations)
             // console.debug('FBX useAnimations', ref, mixer, actions, names, clips)
@@ -312,20 +320,6 @@ const Model = ({
             model.ani.names = names
             model.ani.clips = clips
           }
-        }
-      }
-
-
-      // ** OBJ
-      else if (model.is.isOBJ) {
-        model.type = 'obj'
-        // const nodes = useOBJ(model.file)
-        const obj = new OBJLoader().load(model.file)
-        console.debug('%c🌱 OBJ NODES: obj', ccm.orange, obj)
-        console.debug(`%c======================================`, ccm.orange)
-        if (obj) {
-          model.nodes = obj
-          // console.debug('RETURN ONLY NODE AS NODES: true')
         }
       }
 
@@ -393,7 +387,7 @@ const Model = ({
 
           // ** ANIMATIONS
           if (gltf.animations) {
-            // console.info('GLTF animations', gltf.animations)
+            console.debug('%c GLTF animations', ccm.orangeAlert, gltf.animations)
             // Extract animation actions
             const { ref, mixer, actions, names, clips } = useAnimations(gltf.animations)
             // console.debug('GLTF useAnimations', ref, mixer, actions, names, clips)
@@ -406,21 +400,35 @@ const Model = ({
         }
       }
 
+
+      // ** OBJ
+      else if (model.is.isOBJ) {
+        model.type = 'obj'
+        // const nodes = useOBJ(model.file)
+        const obj = new OBJLoader().load(model.file)
+        console.debug('%c🌱 OBJ NODES: obj', ccm.orange, obj)
+        console.debug(`%c======================================`, ccm.orange)
+        if (obj) {
+          model.nodes = obj
+          // console.debug('RETURN ONLY NODE AS NODES: true')
+        }
+      }
+
       // finally, decide if ready for _r3f canvas
       if (model.nodes && model.is.isFBX) {
-        model.is.isReadyForCanvas = true
-        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.green, model.name, model)
-        console.debug(`%c===========================================================`, ccm.darkgreen)
+        model.is.isReadyForCanvas = true // true | false
+        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model.name, model.file)
+        console.debug(`%c===========================================================`, ccm.greenAlert)
       }
       else if (model.nodes && model.is.isGLTF) {
-        model.is.isReadyForCanvas = true
-        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.green, model.name, model)
-        console.debug(`%c===========================================================`, ccm.darkgreen)
+        model.is.isReadyForCanvas = true // true | false
+        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.orangeAlert, model.name, model.file)
+        console.debug(`%c===========================================================`, ccm.orangeAlert)
       }
-      else {
+      else { // if (model.nodes && model.is.isOBJ) {
         model.is.isReadyForCanvas = false
-        console.debug('%c✖️📐 THREED MODEL IS NOT READY FOR CANVAS', ccm.redAlert, model.name, model)
-        console.debug(`%c===========================================================`, ccm.red)
+        console.debug('%c✖️📐 THREED MODEL IS NOT READY FOR CANVAS', ccm.redAlert, model.name, model.file)
+        console.debug(`%c===========================================================`, ccm.redAlert)
       }
     }
     // console.debug(`%c======================================`, ccm.black)
@@ -459,7 +467,7 @@ const Model = ({
   // ** ANIMATIONS
 
   // let index = 0 // testing
-  // console.info('index', index)
+  // console.debug('index', index)
 
   // Change animation when the index changes
   useEffect(() => {
@@ -468,23 +476,23 @@ const Model = ({
       && model.ani.names[index] != undefined
       // && model.ani.actions[model.ani.names[index]] != undefined
     ) {
-      console.info('index', index)
-      console.info('model', model)
-      // console.info('model.ani', model.ani)
-      // console.info('model.ani.actions', model.ani.actions)
-      // console.info('model.ani.names', model.ani.names)
-      // console.info('model.ani.names[index]', model.ani.names[index])
-      // console.info('model.ani.actions[model.ani.names[index]]', model.ani.actions[model.ani.names[index]])
-      // console.info('model.ani.actions["Take 001"]', model.ani.actions["Take 001"]))
-      console.info('Object.values(model.ani.actions)', Object.values(model.ani.actions))
-      console.info('Object.keys(model.ani.actions)', Object.keys(model.ani.actions))
-      // console.info('Object.keys(model.ani.actions)[index]', Object.keys(model.ani.actions)[index])
+      console.debug('index', index)
+      console.debug('model', model)
+      // console.debug('model.ani', model.ani)
+      // console.debug('model.ani.actions', model.ani.actions)
+      // console.debug('model.ani.names', model.ani.names)
+      // console.debug('model.ani.names[index]', model.ani.names[index])
+      // console.debug('model.ani.actions[model.ani.names[index]]', model.ani.actions[model.ani.names[index]])
+      // console.debug('model.ani.actions["Take 001"]', model.ani.actions["Take 001"]))
+      console.debug('Object.values(model.ani.actions)', Object.values(model.ani.actions))
+      console.debug('Object.keys(model.ani.actions)', Object.keys(model.ani.actions))
+      // console.debug('Object.keys(model.ani.actions)[index]', Object.keys(model.ani.actions)[index])
       let theAnimation = Object.keys(model.ani.actions)[index]
       // if (model.ani.actions[model.ani.names[index]]) {
-        // console.info('model.ani.actions[model.ani.names[index]]', model.ani.actions[model.ani.names[index]])
+        // console.debug('model.ani.actions[model.ani.names[index]]', model.ani.actions[model.ani.names[index]])
       if (theAnimation) {
-        console.info('Object.keys(model.ani.actions)[index] EXISTS', theAnimation)
-        console.info('model.ani.actions[theAnimation]', model.ani.actions[theAnimation])
+        console.debug('Object.keys(model.ani.actions)[index] EXISTS', theAnimation)
+        console.debug('model.ani.actions[theAnimation]', model.ani.actions[theAnimation])
 
         try {
           // model.ani.actions[model.ani.names[index]]
@@ -538,6 +546,7 @@ const Model = ({
     console.debug(`%c===========================================================`, ccm.blue)
 
 
+    // ** FBX
     // return FBX node
     if (model.is.isFBX) {
       return (
@@ -567,6 +576,7 @@ const Model = ({
     }
 
 
+    // ** GLTF
     // return GLTF node
     else if (model.is.isGLTF) {
       // console.debug('GLTF: model.nodes', model.name, model.nodes)
@@ -626,6 +636,7 @@ const Model = ({
     }
 
 
+    // ** OBJ
     // return OBJ node
     else if (model.is.isOBJ) {
       return (
@@ -641,9 +652,11 @@ const Model = ({
       )
     }
   }
-  // DEFAULT RETURN
+
+
+  // DEFAULT return mesh
   // 'error sphere' mesh object, with original model.name and props
-  else {
+  else { // !model.is.isReadyForCanvas
     return (
       <mesh
         key={newUUID()}
@@ -1021,67 +1034,75 @@ function ThreeDControls() {
 // **
 const ThreeDModels = ({ threeds }) => {
   // **
-  // console.debug(`%c======================================`, ccm.red)
-  // console.debug('%c🌱 threeds[]', ccm.darkredAlert, threeds)
-  // console.debug(`%c======================================`, ccm.red)
+  // console.debug(`%c======================================`, ccm.darkredAlert)
+  // console.debug('%c🌱 threeds[i]', ccm.darkredAlert, threeds)
+  // console.debug('%c🌱 threeds ==========================', ccm.darkredAlert)
+  // console.debug(`%c======================================`, ccm.darkredAlert)
   // **
 
+  // ** TESTING
   // return <CoffeeCup />
+
+  // DEFAULT 0, RETURN BLANK JSX (no need to render this component)
   if (!threeds.length) {
     return <></>
   }
 
-  console.debug('%c🌱 threeds[i]', ccm.darkredAlert, threeds)
+  // RENDER THIS COMPONENT
   return (
     <group
-      position={[ 8, 0, 0 ]}
+      key='threed_models'
+      position={[ 8, -1, 0 ]}
     >
       {/* <CoffeeCup /> */}
       {/* <ThreeDControls /> */}
       {/* THREED: LOOP OVER NODES FOR EACH FILE = MODEL */}
       <Suspense fallback={null}>
-      {threeds.map((_threed, index) => {
-        // console.debug('_threed', index + ': ', _threed)
-        // console.debug(`%c======================================`, ccm.red)
-        const threed = new ThreeD()
-        threed.name = _threed.title
-        threed.data = _threed
-        // threed.group = threed.group
-        threed.group.group_position = [_threed.positionX, _threed.positionY, _threed.positionZ]
-        threed.group.group_rotation = [_threed.rotationX, _threed.rotationY, _threed.rotationZ]
-        threed.group.group_scale = [_threed.scaleX, _threed.scaleY, _threed.scaleZ]
-        return (
-          <group
-            // key={newUUID()}
-            // key={index}
-            key={threed.group.group_id} // no duplicates
-            // ref={ref}
-            // position={threed.group.group_position}
-            // rotation={threed.group.group_rotation}
-            // scale={threed.group.group_scale}
-          >
-          { _threed.files.nodes &&
-            _threed.files.nodes.map((_file, index) => {
-            // console.debug('_file', index + ': ', _file)
-            // console.debug(`%c======================================`, ccm.red)
+        {threeds.map((_threed, index) => {
+          // console.debug('_threed', index + ': ', _threed)
+          // console.debug(`%c======================================`, ccm.red)
+          const threed = new ThreeD()
+          threed.name = _threed.title
+          threed.data = _threed
+          // threed.group = threed.group
+          threed.group.group_position = [_threed.positionX, _threed.positionY, _threed.positionZ]
+          threed.group.group_rotation = [_threed.rotationX, _threed.rotationY, _threed.rotationZ]
+          threed.group.group_scale = [_threed.scaleX, _threed.scaleY, _threed.scaleZ]
+          return (
+            <group
+              // key={newUUID()}
+              // key={index}
+              key={threed.group.group_id + '_' + newUUID()} // no duplicates
+              // ref={ref}
+              // position={threed.group.group_position}
+              // rotation={threed.group.group_rotation}
+              // scale={threed.group.group_scale}
+            >
+            { _threed.files.nodes &&
+              _threed.files.nodes.map((_file, index) => {
+              console.debug('%c MODEL _file', ccm.redAlert, index + ': ', _file)
+              console.debug(`%c ======================================`, ccm.redAlert)
 
-            // const threed = new ThreeD()
-            // threed.name = _file.title
-            threed.file = _file
-            // threed.group = threed.group
+              // const threed = new ThreeD()
+              // threed.name = _file.title
+              threed.file = _file
+              // threed.group = threed.group
 
-            return (
-              <Model
-                // key={_file.fileId} // no, duplicates
-                // key={newUUID()}
-                key={index}
-                threed={threed}
-              />
-            )
-          })}
-          </group>
-        )
-      })}
+              return (
+                <RigidBody type='fixed'>
+                  <Model
+                    // key={_file.fileId} // no, duplicates
+                    // key={newUUID()}
+                    // key={index}
+                    key={index + '_' + newUUID()}
+                    threed={threed}
+                  />
+                </RigidBody>
+              )
+            })}
+            </group>
+          )
+        })}
       </Suspense>
     </group>
   )

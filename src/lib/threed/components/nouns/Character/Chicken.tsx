@@ -4,18 +4,17 @@
 // RESOURCES
 
 // ** APOLLO Imports (NOT HERE?, preferably)
-// import { useReactiveVar } from '@apollo/client'
-// import { preferencesDataVar } from '#/lib/stores/apollo'
+import { useReactiveVar } from '@apollo/client'
+import { preferencesDataVar } from '#/lib/stores/apollo'
 
 // ** REACT Imports
 import {
   Suspense,
   useEffect,
   useRef,
-  useMemo,
   useState,
   // (instances of):
-  // // useMemo,
+  useMemo,
   // useContext,
   // createContext,
 } from 'react'
@@ -71,62 +70,15 @@ const debugAnimation: boolean = false
 
 // ** FILES for CharacterModel: Settings/Locations
 // const theCharacterModelFile = '/objects/glb/CharacterModelFloating.glb'
-const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Female_01.glb'
-// const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_A.png'
-const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_B.png'
+const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/fauna/Hen_HP.glb'
+const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/fauna/textures/Hen&Chicken_A.png'
 
 
 // ** TYPES for this GLTF
 // **
 type GLTFResult = GLTF & {
   nodes: {
-    SK_Chr_Farmer_Female_01: THREE.SkinnedMesh
-    Pelvis: THREE.Bone
-    spine_01: THREE.Bone
-    spine_02: THREE.Bone
-    spine_03: THREE.Bone
-    neck_01: THREE.Bone
-    head: THREE.Bone
-    clavicle_l: THREE.Bone
-    UpperArm_L: THREE.Bone
-    lowerarm_l: THREE.Bone
-    Hand_L: THREE.Bone
-    thumb_01_l: THREE.Bone
-    thumb_02_l: THREE.Bone
-    thumb_03_l: THREE.Bone
-    indexFinger_01_l: THREE.Bone
-    indexFinger_02_l: THREE.Bone
-    indexFinger_03_l: THREE.Bone
-    indexFinger_04_l: THREE.Bone
-    finger_01_l: THREE.Bone
-    finger_02_l: THREE.Bone
-    finger_03_l: THREE.Bone
-    finger_04_l: THREE.Bone
-    clavicle_r: THREE.Bone
-    UpperArm_R: THREE.Bone
-    lowerarm_r: THREE.Bone
-    Hand_R: THREE.Bone
-    thumb_01_r: THREE.Bone
-    thumb_02_r: THREE.Bone
-    thumb_03_r: THREE.Bone
-    indexFinger_01_r: THREE.Bone
-    indexFinger_02_r: THREE.Bone
-    indexFinger_03_r: THREE.Bone
-    indexFinger_04_r: THREE.Bone
-    finger_01_r: THREE.Bone
-    finger_02_r: THREE.Bone
-    finger_03_r: THREE.Bone
-    finger_04_r: THREE.Bone
-    Thigh_R: THREE.Bone
-    calf_r: THREE.Bone
-    Foot_R: THREE.Bone
-    ball_r: THREE.Bone
-    toes_r: THREE.Bone
-    Thigh_L: THREE.Bone
-    calf_l: THREE.Bone
-    Foot_L: THREE.Bone
-    ball_l: THREE.Bone
-    toes_l: THREE.Bone
+    Hen_HP: THREE.Mesh
   }
   materials: {
     lambert2: THREE.MeshStandardMaterial
@@ -144,7 +96,7 @@ type GLTFActions = Record<ActionName, THREE.AnimationAction>
 //   const { nodes } = useGLTF(file) as GLTFResult
 //   const instances = useMemo(
 //     () => ({
-//       SKChrFarmer: nodes.SK_Chr_Farmer_Female_01,
+//       Chicken: nodes.Hen_HP,
 //     }),
 //     [nodes]
 //   )
@@ -163,15 +115,15 @@ type CharacterModelProps = JSX.IntrinsicElements['group']
 export default function CharacterModel(props: CharacterModelProps) {
 
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
-  // const prefs = useReactiveVar(preferencesDataVar)
+  const prefs = useReactiveVar(preferencesDataVar)
   // console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
-  let prefs = {
-    doAutoLoadData: true,
-    doCharacterAnimation: true,
-    characterMainColor: 'mediumslateblue',
-    characterOutlineColor: 'black',
-    characterTrailColor: 'violet',
-  }
+  // let prefs = {
+  //   doAutoLoadData: true,
+  //   doCharacterAnimation: true,
+  //   characterMainColor: 'mediumslateblue',
+  //   characterOutlineColor: 'black',
+  //   characterTrailColor: 'violet',
+  // }
   // console.debug(`%c CHARACTER MODEL: prefs`, ccm.redAlert, prefs)
 
   // const instances = useContext(context)
@@ -409,8 +361,8 @@ export default function CharacterModel(props: CharacterModelProps) {
     const wordY: string = group.current.getWorldPosition(bodyPosition).y
     const wordZ: string = group.current.getWorldPosition(bodyPosition).z
     if (debugAnimation) {
-      // console.debug(`%c FarmerWomanFloating: useFrame :(`, ccm.redAlert, word)
-      if (debug) console.debug(`%c FarmerWomanFloating: useFrame :(`, ccm.darkredAlert, wordX, wordY, wordZ)
+      // console.debug(`%c Chicken: useFrame :(`, ccm.redAlert, word)
+      if (debug) console.debug(`%c Chicken: useFrame :(`, ccm.darkredAlert, wordX, wordY, wordZ)
     }
     // [MM] END HEY HEY HEY
 
@@ -496,7 +448,7 @@ export default function CharacterModel(props: CharacterModelProps) {
 
     }
     else if (!action) {
-      if (debug) console.debug(`%c FarmerWomanFloating: no action :|`, ccm.darkgrayAlert, word)
+      if (debug) console.debug(`%c Chicken: no action :|`, ccm.darkgrayAlert, word)
     }
     // [MM] END HEY HEY HEY
 
@@ -592,7 +544,7 @@ export default function CharacterModel(props: CharacterModelProps) {
         {...props}
         dispose={null}
         // scale={1.0}
-        scale={0.016}
+        scale={0.024}
         position={[0, -0.64, 0]}
         name='ThreeD_Animated_Character'
       >
@@ -619,47 +571,33 @@ export default function CharacterModel(props: CharacterModelProps) {
 
         <group name='RootNode'>
           {/* <skinnedMesh
-            name='outline'
-            geometry={nodes.outline.geometry}
-            material={outlineMaterial}
-            skeleton={nodes.outline.skeleton}
-          />
-          <skinnedMesh
-            name='PrototypePete'
-            geometry={nodes.PrototypePete.geometry}
-            material={meshToonMaterial}
-            skeleton={nodes.PrototypePete.skeleton}
+            name='Hen_HP'
+            geometry={nodes.Hen_HP.geometry}
+            // material={materials.lambert2}
+            material={nodes.Hen_HP.material}
+            // skeleton={nodes.Hen_HP.skeleton}
             receiveShadow
             castShadow
           /> */}
-          <skinnedMesh
-            name='SK_Chr_Farmer_Female_01'
-            geometry={nodes.SK_Chr_Farmer_Female_01.geometry}
-            material={materials.lambert2}
-            skeleton={nodes.SK_Chr_Farmer_Female_01.skeleton}
-            receiveShadow
+          <mesh
+            name="Hen_HP"
             castShadow
+            receiveShadow
+            geometry={nodes.Hen_HP.geometry}
+            material={nodes.Hen_HP.material}
           />
-          {/* <skinnedMesh
-            name='SK_Chr_Farmer_Female_01'
-            geometry={nodes.SK_Chr_Farmer_Female_01.geometry}
-            material={materials.lambert2}
-            skeleton={nodes.SK_Chr_Farmer_Female_01.skeleton}
-            receiveShadow
-            castShadow
-          /> */}
 
-          <Trail
+          {/* <Trail
             width={1.5}
             color={prefs.characterTrailColor}
             length={3}
             decay={2}
             attenuation={(width) => width}
           >
-            <primitive object={nodes.Root} />
-          </Trail>
+            <primitive object={nodes.Hen_HP} />
+          </Trail> */}
 
-          <group name='Root'>
+          {/* <group name='Root'>
             <group name='Pelvis_$AssimpFbx$_Translation' position={[0, 87.628, 0]}>
               <group name='Pelvis_$AssimpFbx$_PreRotation' rotation={[-0.179, 0.022, 0.006]}>
                 <group name='Pelvis_$AssimpFbx$_PostRotation' rotation={[0.255, 1.548, 1.345]}>
@@ -692,7 +630,7 @@ export default function CharacterModel(props: CharacterModelProps) {
                 </group>
               </group>
             </group>
-          </group>
+          </group> */}
 
         </group>
 

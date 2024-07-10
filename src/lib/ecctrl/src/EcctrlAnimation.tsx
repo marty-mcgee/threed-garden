@@ -53,8 +53,8 @@ export function EcctrlAnimation(props: EcctrlAnimationProps) {
       }
     }
 
-    // When any action is clamp and finished reset animation
-    ;(action as any)._mixer.addEventListener("finished", () => resetAnimation())
+    // When any action is clamped and finished, reset animation
+    (action as any)._mixer.addEventListener("finished", () => resetAnimation())
 
     return () => {
       // Fade out previous action

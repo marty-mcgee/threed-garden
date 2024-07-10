@@ -66,9 +66,11 @@ import ThreeDCamera from '#/lib/threed/components/canvas/Camera'
 import ThreeDLights from '#/lib/threed/components/canvas/Lights'
 
 // ** HELPER Components
-import Spinner from '#/layout/ui/components/spinner'
+// import Spinner from '#/layout/ui/components/spinner'
 // ** UUID Imports
 // import { v4 as newUUID } from 'uuid'
+// ** Performance Monitor
+import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 // console.debug('%c ccm', ccm)
@@ -196,8 +198,7 @@ export function ThreeDEnvironment() {
     <Environment
       // @ts-expect-error
       preset={prefs.environmentPreset}
-      // blur={prefs.environmentBgBlur}
-      blur={preferencesDataVar().environmentBgBlur}
+      blur={prefs.environmentBgBlur}
       background
     />
   )
@@ -206,10 +207,10 @@ export function ThreeDEnvironment() {
 // ==========================================================
 
 // ** RETURN ThreeDExperienceViewer
-const ThreeDExperienceViewer = (
-  { children, enableOrbit, enablePerf, ...props }:
-  { children: ReactNode, enableOrbit: boolean, enablePerf: boolean}, 
-  // ref
+const ThreeDExperienceViewer = forwardRef((
+  { children, enableOrbit, enablePerf, threeds, ...props }:
+  { children: ReactNode, enableOrbit: boolean, enablePerf: boolean, threeds: object[]}, 
+  ref
 ) => {
 // ** THREED IO
 // @ ts-expect-error
@@ -225,6 +226,20 @@ const ThreeDExperienceViewer = (
 
   return (
     <>
+      {enablePerf && (
+        <Perf
+          position='bottom-left'
+          // minimal
+        />
+      )}
+
+      {/* <Grid
+        args={[300, 300]}
+        sectionColor={"lightgray"}
+        cellColor={"gray"}
+        position={[0, -0.99, 0]}
+        userData={{ camExcludeCollision: true }} // this won't be collide by camera ray
+      /> */}
 
       {/* THREED IO */}
       {/* <Html ref={localRef} {...props} /> */}
@@ -232,16 +247,11 @@ const ThreeDExperienceViewer = (
       <ThreedIO>
         <ThreeDViewImpl track={localRef}> */}
 
-          {/* ThreeD Models as props.children */}
-          {children}
-
-        {/* </ThreeDViewImpl>
-      </ThreedIO> 
-      */}
           {/* LIGHTS, CAMERA, ACTION */}
 
           {/* THREED LIGHTS */}
           <ThreeDLights />
+          {/* <ThreeDLights /> */}
 
           {/* THREED CAMERA */}
           <ThreeDCamera />
@@ -254,7 +264,7 @@ const ThreeDExperienceViewer = (
           <axesHelper args={[1024]} />
           {/* <gridHelper args={[1024, 128]} /> */}
           <Grid
-            args={[128, 128]} // x = 4rem, z = 4rem
+            args={[320, 320]} // x = 4rem, z = 4rem
             sectionColor={'black'}
             cellColor={'black'}
             position={[0, -8, 0]} // sea level?
@@ -268,18 +278,20 @@ const ThreeDExperienceViewer = (
           {/* <ThreeDScene /> */}
 
           {/* THREED ENVIRONMENT */}
-          <ThreeDEnvironment />
-          <ThreeDExperience />
+          {/* <ThreeDEnvironment /> */}
+
+          {/* THREED EXPERIENCE */}
+          <ThreeDExperience threeds={threeds} ref={ref} />
 
           {/* SHADOW EFFECTS */}
-          <ContactShadows
+          {/* <ContactShadows
             position={[0, -1.4, 0]}
             opacity={0.75}
             scale={10}
             blur={2.5}
             far={4}
           />
-          <BakeShadows />
+          <BakeShadows /> */}
 
           {/* Transform Model using TransformControls */}
           {/*
@@ -304,54 +316,61 @@ const ThreeDExperienceViewer = (
           {/* ORBIT CONTROLS (CAMERA CONTROLS) */}
           {/* makeDefault makes the controls known to r3f,
               now transform-controls can auto-disable them when active */}
-          {/* {enableOrbit && <OrbitControls />} */}
-          <OrbitControls
-            makeDefault
-            minDistance={0.25}
-            maxDistance={640}
-            // minZoom={10}
-            // maxZoom={20}
-            // minAzimuthAngle={-Math.PI / 4}
-            // maxAzimuthAngle={Math.PI / 4}
-            minPolarAngle={-1.75}
-            maxPolarAngle={Math.PI / 1.75}
-            enableZoom={true}
-            zoomToCursor={false} // default is false
-            zoomSpeed={1.0} // default is 1.0
-            enableRotate={true}
-            autoRotate={prefs.doAutoRotate} // default is false
-            // autoRotate={preferencesDataVar().doAutoRotate} // default is false
-            autoRotateSpeed={1.0} // default is 2.0
-            rotateSpeed={1.0} // default is 1.0
-            enableDamping={true} // slows down rotation after mouse release
-            dampingFactor={0.04} // default is 0.05
-            enablePan={true}
-            screenSpacePanning={true}
-          />
+          {enableOrbit && (
+            <>
+            <OrbitControls
+              makeDefault
+              minDistance={0.25}
+              maxDistance={640}
+              // minZoom={10}
+              // maxZoom={20}
+              // minAzimuthAngle={-Math.PI / 4}
+              // maxAzimuthAngle={Math.PI / 4}
+              minPolarAngle={-1.75}
+              maxPolarAngle={Math.PI / 1.75}
+              enableZoom={true}
+              zoomToCursor={false} // default is false
+              zoomSpeed={1.0} // default is 1.0
+              enableRotate={true}
+              autoRotate={prefs.doAutoRotate} // default is false
+              // autoRotate={preferencesDataVar().doAutoRotate} // default is false
+              autoRotateSpeed={1.0} // default is 2.0
+              rotateSpeed={1.0} // default is 1.0
+              enableDamping={true} // slows down rotation after mouse release
+              dampingFactor={0.04} // default is 0.05
+              enablePan={true}
+              screenSpacePanning={true}
+            />
 
-          {/* ORBIT CONTROLS GIZMO HELPER */}
-          <GizmoHelper
-            alignment='top-right'
-            margin={[64, 48]}
-          >
-            <group scale={0.7}>
-              <GizmoViewcube />
-            </group>
-            <group
-              scale={1.4}
-              position={[-24, -24, -24]}
+            {/* ORBIT CONTROLS GIZMO HELPER */}
+            <GizmoHelper
+              alignment='top-right'
+              margin={[64, 48]}
             >
-              <GizmoViewport
-                labelColor='white'
-                axisHeadScale={0.5}
-                hideNegativeAxes
-              />
-            </group>
-          </GizmoHelper>
+              <group scale={0.7}>
+                <GizmoViewcube />
+              </group>
+              <group
+                scale={1.4}
+                position={[-24, -24, -24]}
+              >
+                <GizmoViewport
+                  labelColor='white'
+                  axisHeadScale={0.5}
+                  hideNegativeAxes
+                />
+              </group>
+            </GizmoHelper>
+            </>
+          )}
+
+        {/* </ThreeDViewImpl>
+      </ThreedIO> 
+      */}
     </>
   )
 }
-// ) // forwardRef end
+) // forwardRef end
 
 // module properties
 ThreeDExperienceViewer.displayName = 'ThreeD-ExperienceViewer'
