@@ -139,7 +139,7 @@ const appVersion = 'v0.16.0-beta'
 // const appVersion: string = require('package.json').version
 // const appVersion: string = require('../../package.json').version
 
-if ((debug || DEBUG)) {
+if (debug || DEBUG) {
   console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm.green)
   console.debug('%c🌱 appVersion', ccm.darkgreen, appVersion)
   console.debug(`%c====================================`, ccm.darkgreen)

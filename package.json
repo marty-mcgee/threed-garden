@@ -109,7 +109,7 @@
     "@ducanh2912/next-pwa": "^10.2.7",
     "tunnel-rat": "^0.1.2",
 
-    "three": "^0.163.0",
+    "three": "^0.166.1",
     "three-mesh-ui": "^6.5.4",
     "three-stdlib": "^2.29.11"
 
