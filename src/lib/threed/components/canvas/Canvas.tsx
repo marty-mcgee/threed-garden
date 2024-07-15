@@ -421,7 +421,7 @@ export const ThreeDCanvas = (
         {/* NOW INSIDE CANVAS (canvas.props.children)... */}
 
         {/* PRELOAD objects ??? -- does it seem necessary? */}
-        <Preload all />
+        {/* <Preload all /> */}
 
         
         {/* USE DECLARATIVE THREED CAMERA (NOT WORKING YET) */}

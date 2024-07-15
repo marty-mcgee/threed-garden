@@ -11,7 +11,12 @@ import { preferencesDataVar } from '#/lib/stores/apollo'
 // import Image from 'next/image'
 
 // ** REACT Imports
-import { useEffect, useState, forwardRef } from 'react'
+import { 
+  useEffect, 
+  useState, 
+  forwardRef, 
+  Suspense 
+} from 'react'
 
 // THREE JS * ALL
 import * as THREE from 'three'
@@ -286,6 +291,8 @@ const ThreeDExperience = forwardRef((
         paused={pausedPhysics}
       >
 
+        <Suspense fallback={null}>
+
         {/* baby steps */}
         {/* Steps -- aka: four-by-fours, 4"x4"[s], posts, logs */}
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0.1, 0]}>
@@ -345,10 +352,9 @@ const ThreeDExperience = forwardRef((
           <Ground color={'black'} opacity={0.0} />
         </group> */}
 
-
         {/* THREED FARMBOT */}
         <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.665, -2]}>
-          {/* <ThreeDFarmBotGarden /> */}
+          <ThreeDFarmBotGarden />
         </group>
         {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
           <ThreeDFarmBotMain />
@@ -430,6 +436,7 @@ const ThreeDExperience = forwardRef((
           />
         </group>
 
+        </Suspense>
       </Physics>
     </group>
   )
