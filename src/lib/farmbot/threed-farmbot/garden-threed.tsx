@@ -273,7 +273,8 @@ const Model = (props: ModelProps) => {
       onPointerLeave={setHover(false)}
     >
       {plants.map((plant, i) =>
-        <Plant key={i} i={i} plant={plant} />
+        // <Plant key={i} i={i} plant={plant} />
+        <></>
       )}
     </group>
     {/* END: 2D PLANTS (FARMBOT AVIF) */}
