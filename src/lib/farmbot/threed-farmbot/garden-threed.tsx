@@ -24,19 +24,23 @@ import {
   // Detailed, 
   Sphere,
 } from "@react-three/drei"
-import { TextureLoader, RepeatWrapping, Vector3, BackSide } from "three"
-
+import { 
+  TextureLoader, 
+  RepeatWrapping, 
+  Vector3, 
+  BackSide 
+} from "three"
+import { 
+  useSpring, 
+  animated 
+} from "@react-spring/three"
 
 
 // ** THREED FARMBOT
 import { Bot as ThreeDBot} from "./bot-threed"
 import { Bed as ThreeDBed } from "./bed-threed"
 
-
-import { useSpring, animated } from "@react-spring/three"
-
 import { threeSpace, zZero } from "./helpers"
-import { Sky } from "./sky"
 
 import {
   Config, 
@@ -49,10 +53,9 @@ import {
 import { ASSETS, GARDENS, PLANTS } from "./constants-threed"
 console.debug('ASSETS, GARDENS, PLANTS', ASSETS, GARDENS, PLANTS)
 
-
 import { PrivateOverlay, PublicOverlay, ToolTip } from "./config_overlays"
 
-
+import { Sky } from "./sky"
 import { Solar } from "./solar"
 import { Sun, sunPosition } from "./sun"
 import { LabEnvironment } from "./lab-threed"
@@ -246,11 +249,11 @@ const Model = (props: ModelProps) => {
     <RigidBody type='fixed' position={[0, 0.0, 5]}>
       <ThreeDBot config={config} activeFocus={props.activeFocus} />
     </RigidBody>
+    <RigidBody type='fixed' position={[0, 0.0, 5]}>
+      <Solar config={config} activeFocus={props.activeFocus} />
+    </RigidBody>
     {/* <RigidBody type='fixed' position={[0, 0.0, 5]}>
-      <Solar config={config} />
-    </RigidBody> */}
-    {/* <RigidBody type='fixed' position={[0, 0.0, 5]}>
-      <LabEnvironment config={config} />
+      <LabEnvironment config={config} activeFocus={props.activeFocus} />
     </RigidBody> */}
     {/* END: THREED FARMBOT */}
     
@@ -273,8 +276,10 @@ const Model = (props: ModelProps) => {
       onPointerLeave={setHover(false)}
     >
       {plants.map((plant, i) =>
-        // <Plant key={i} i={i} plant={plant} />
-        <></>
+        <>
+          {/* <Plant key={i} i={i} plant={plant} /> */}
+          <Plant key={i} i={i} plant={plant} labelOnly={true} />
+        </>
       )}
     </group>
     {/* END: 2D PLANTS (FARMBOT AVIF) */}
