@@ -133,13 +133,13 @@ import ccm from '#/lib/utils/console-colors'
 const debug: boolean = false
 const DEBUG: boolean = true
 
-const appVersion = 'v0.16.0-beta'
+const appVersion: string = 'v0.16.0-beta'
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
 // const appVersion = process.env.npm_package_version
 // const appVersion: string = require('package.json').version
 // const appVersion: string = require('../../package.json').version
 
-if ((debug || DEBUG)) {
+if (debug || DEBUG) {
   console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm.green)
   console.debug('%c🌱 appVersion', ccm.darkgreen, appVersion)
   console.debug(`%c====================================`, ccm.darkgreen)
@@ -225,23 +225,6 @@ if (debug) {
 }
 
 // ==========================================================
-// STYLED COMPONENTS (MUI: CSS) // legacy notes
-// ==========================================================
-
-const stylesModal = {
-  position: 'absolute' as const,
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '80vw',
-  height: '60vh',
-  bgcolor: '#09090D',
-  border: '2px solid #000000',
-  boxShadow: 24,
-  p: 2,
-}
-
-// ==========================================================
 // FUNCTIONAL STORES + NOUNS
 // ==========================================================
 // ==========================================================
@@ -292,12 +275,12 @@ const ThreeDGarden = (): React.ReactNode => {
   const client = useApolloClient()
   // console.debug('%c🦆 useApolloClient()', ccm.orangeAlert) // , client
 
-  // **
+  // ** GET PREFERENCES
   // const prefs = preferencesDataVar() // NO ??
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
   // console.debug('%c⚙️ ThreeDGarden prefs', ccm.orangeAlert) // , prefs
 
-  // // ** GET PREFERENCES
+  // ** INIT PREFERENCES
   const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
 
   // ==========================================================

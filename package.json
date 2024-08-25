@@ -1,7 +1,7 @@
 {
   "name": "threed-garden",
-  "version": "0.16.0-beta.12",
-  "description": "ThreeD Garden: WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, using Apollo GraphQL State+Stores, Leva Control GUI, Radix-UI, Material UI + Tailwind CSS, intro to 3D FarmBot React (Beta)",
+  "version": "0.16.0-canary.1",
+  "description": "ThreeD Garden: WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, using WordPress, Apollo GraphQL State+Stores, Leva Control GUI, Radix-UI, Material UI + Tailwind CSS, intro to 3D FarmBot React (Beta)",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
   "repository": {
@@ -44,15 +44,48 @@
   },
   "dependencies": {
     
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+
+    "three": "^0.167.1",
+    "three-mesh-ui": "^6.5.4",
+    "three-stdlib": "^2.30.5",
+
+    "@react-three/drei": "^9.109.2",
+    "@react-three/fiber": "^8.16.8",
+    "@react-three/postprocessing": "^2.16.2",
+    "@react-three/rapier": "^1.4.0",
+    "r3f-perf": "^7.2.1",
+
+    "@auth0/auth0-react": "^2.2.4",
+    
+    "farmbot": "^15.8.8",
+    "lodash": "^4.17.21",
+    
     "@apollo/client": "^3.10.8",
     "@apollo/experimental-nextjs-app-support": "^0.11.2",
     "@apollo/react-hooks": "^4.0.0",
+    "graphql": "^16.8.1",
+    "graphql-tag": "^2.12.6",
     "zustand": "^4.5.2",
     "zustand-x": "^3.0.3",
     "scheduler": "^0.23.2",
     "valtio": "^1.13.2", 
 
-    "@auth0/auth0-react": "^2.2.4",
+    "leva": "^0.9.35",
+    
+    "swr": "^2.2.5",
+
+    "@ducanh2912/next-pwa": "^10.2.7",
+    "tunnel-rat": "^0.1.2"
+
+  },
+  
+  "optionalDependencies": {
+    
+    "next": "^14.2.6",
+    "next-auth": "^5.0.0-beta.19",
+    "next-themes": "^0.3.0",
 
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.4",
@@ -82,40 +115,6 @@
     "tailwindcss-animate": "^1.0.7",
     "autoprefixer": "^10.4.15",
     "postcss": "^8.4.29",
-
-    "@react-three/drei": "^9.107.0",
-    "@react-three/fiber": "^8.16.8",
-    "@react-three/postprocessing": "^2.16.2",
-    "@react-three/rapier": "^1.4.0",
-    "r3f-perf": "^7.2.1",
-    
-    "farmbot": "^15.8.8",
-    "lodash": "^4.17.21",
-    
-    "graphql": "^16.8.1",
-    "graphql-tag": "^2.12.6",
-
-    "leva": "^0.9.35",
-    
-    "next": "^14.2.4",
-    "next-auth": "^5.0.0-beta.19",
-    "next-themes": "^0.3.0",
-    
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    
-    "swr": "^2.2.5",
-
-    "@ducanh2912/next-pwa": "^10.2.7",
-    "tunnel-rat": "^0.1.2",
-
-    "three": "^0.163.0",
-    "three-mesh-ui": "^6.5.4",
-    "three-stdlib": "^2.29.11"
-
-  },
-  
-  "optionalDependencies": {
     
     "html-react-parser": "^5.1.10",
     

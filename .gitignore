@@ -2,26 +2,30 @@
 
 # dependencies
 /node_modules
-/.pnp
-.pnp.js
+
+# private env
+# .env.*
+.env
+.env.local
 
 # testing
-/coverage
+/testing
 
 # production
 /build
+/dist
+
+# vs code
+*.code-workspace
 
 # misc
 desktop.ini
 .DS_Store
-.env
-.env.local
-# .env.*
 *.pem
 *.crt
 .npmrc
 
-# logs
+# log files
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -31,28 +35,19 @@ yarn-error.log*
 # yarn.lock
 # pnpm-lock.yaml
 
-# vs code
-*.code-workspace
-
 # next
 .next
 /.next/
 /out/
 next-env.d.ts
 
-# typescript
-*.tsbuildinfo
-
 # pwa service workers
 public/sw.js
 public/sw.js.map
 public/workbox-*
 
-# assets
-src/lib/farmbot/farmbot-3d-demo-react
-# src/lib/farmbot/threed-farmbot
-# src/lib/wp-threed
-# src/lib/wp-threed/assets
+## assets
+
 public/assets
 public/assets/**
 public/demo
@@ -67,3 +62,16 @@ public/objects/**
 # public/objects/threeds/synty/_old
 # public/objects/threeds/synty/simple/*
 # !public/objects/threeds/synty/polygon/*
+
+## threed
+
+## libraries
+
+# # wordpress cms plugin
+src/lib/threed/plugins/threed-garden
+
+# # farmbot
+src/lib/farmbot/farmbot-3d-demo-react
+# src/lib/farmbot/threed-farmbot
+# src/lib/wp-threed
+# src/lib/wp-threed/assets

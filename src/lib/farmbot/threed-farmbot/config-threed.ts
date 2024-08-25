@@ -1,6 +1,8 @@
 // @ts-nocheck /* OR @ ts-expect-error */
 
 export interface Config {
+  // activeType: string
+  // activeFocus: string
   sizePreset: string
   bedType: string
   otherPreset: string
