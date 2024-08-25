@@ -1,6 +1,8 @@
-# [🥕 ThreeD Garden: WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, using Apollo GraphQL State+Stores, Leva Control GUI, Radix-UI, supporting Material UI + Tailwind CSS, with 3D FarmBot React (Beta)](https://github.com/marty-mcgee/threed-garden/)
+# 🥕 ThreeD Garden
 
-3D Dev Environment w React, TypeScript, Three.js, React-Three (pmndrs), on Next.js, Apollo Client, GraphQL, WordPress REST API. ThreeD Web3 Interface for Three-Dimensional JavaScript Objects with React Server + Client Components ... now integrating with 3D FarmBot ...
+[WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, using WordPress, Apollo GraphQL State+Stores, Leva Control GUI, Radix-UI, supporting Material UI + Tailwind CSS, with 3D FarmBot React (Beta)](https://github.com/marty-mcgee/threed-garden/)
+
+3D Dev Environment w React, TypeScript, Three.js, React-Three (pmndrs), on Next.js, Apollo Client, GraphQL, WordPress, REST APIs. ThreeD Web3 Interface for Three-Dimensional JavaScript Objects with React Server + Client Components ... now integrating with 3D FarmBot with React...
 
 ## Live Demo
 
@@ -12,9 +14,9 @@
 
 🤖 ["name": "threed-garden"](https://www.npmjs.com/package/threed-garden)
 
-🤖 ["version": "0.16.0-beta.x"](https://www.npmjs.com/package/threed-garden?activeTab=versions)
+🤖 ["version": "0.16.0-x"](https://www.npmjs.com/package/threed-garden?activeTab=versions)
 
-🤖 ["code": "0.16.0-beta.x"](https://www.npmjs.com/package/threed-garden?activeTab=code)
+🤖 ["code": "0.16.0-x"](https://www.npmjs.com/package/threed-garden?activeTab=code)
 
 ### Install + Run
 

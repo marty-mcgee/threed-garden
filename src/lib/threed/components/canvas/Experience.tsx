@@ -11,7 +11,12 @@ import { preferencesDataVar } from '#/lib/stores/apollo'
 // import Image from 'next/image'
 
 // ** REACT Imports
-import { useEffect, useState, forwardRef } from 'react'
+import { 
+  useEffect, 
+  useState, 
+  forwardRef, 
+  Suspense 
+} from 'react'
 
 // THREE JS * ALL
 import * as THREE from 'three'
@@ -274,17 +279,19 @@ const ThreeDExperience = forwardRef((
     <group ref={ref}>
 
       {/* EXAMPLES: BIRDS */}
-      <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
+      {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
         <Birds />
-      </group>
+      </group> */}
 
       {/* THREED USING PHYSICS */}
       <Physics
         debug={prefs.doWorldPhysics}
         // debug={false}
-        // timeStep={'vary'}
+        timeStep={1/60} // 'vary' does not work well, try (default) 1/60 | 1/30 | 1/15 | 1/120 etc
         paused={pausedPhysics}
       >
+
+        <Suspense fallback={null}>
 
         {/* baby steps */}
         {/* Steps -- aka: four-by-fours, 4"x4"[s], posts, logs */}
@@ -345,11 +352,10 @@ const ThreeDExperience = forwardRef((
           <Ground color={'black'} opacity={0.0} />
         </group> */}
 
-
         {/* THREED FARMBOT */}
-        {/* <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.665, -2]}>
+        <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.665, -2]}>
           <ThreeDFarmBotGarden />
-        </group> */}
+        </group>
         {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
           <ThreeDFarmBotMain />
         </group> */}
@@ -360,20 +366,20 @@ const ThreeDExperience = forwardRef((
           {/* CHARACTER MODEL */}
           <group key='character0' position={[-1.6, 0.396, -1.6]}>
             <CharacterControls
-              debug={prefs.doWorldDebug}
-              // debug={false}
+              // debug={prefs.doWorldDebug}
+              debug={false}
               // animated={prefs.doCharacterAnimation}
               animated={false}
-              disableFollowCam={prefs.doWorldUnfollowCam}
-              // disableFollowCam={true}
+              // disableFollowCam={prefs.doWorldUnfollowCam}
+              disableFollowCam={true}
               followLight={true}
-              springK={2}
-              dampingC={0.2}
-              autoBalanceSpringK={1.2}
-              autoBalanceDampingC={0.04}
-              // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
-              // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
-              mode='FixedCamera'
+              // springK={2}
+              // dampingC={0.2}
+              // autoBalanceSpringK={1.2}
+              // autoBalanceDampingC={0.04}
+              // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
+              // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
+              // mode='FixedCamera'
             >
               <CharacterModelChicken />
             </CharacterControls>
@@ -423,13 +429,14 @@ const ThreeDExperience = forwardRef((
           {/* {children} */}
           {/* THREED MODELS: WORKING !!! */}
           {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
-          {/* <ThreeDModels
+          <ThreeDModels
             threeds={threeds}
             // threeds={{}}
             // position={[ -4, 0, 0 ]}
-          /> */}
+          />
         </group>
 
+        </Suspense>
       </Physics>
     </group>
   )
