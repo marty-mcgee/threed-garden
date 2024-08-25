@@ -49,10 +49,6 @@ public/sw.js.map
 public/workbox-*
 
 # assets
-src/lib/farmbot/farmbot-3d-demo-react
-# src/lib/farmbot/threed-farmbot
-# src/lib/wp-threed
-# src/lib/wp-threed/assets
 public/assets
 public/assets/**
 public/demo
@@ -67,3 +63,13 @@ public/objects/**
 # public/objects/threeds/synty/_old
 # public/objects/threeds/synty/simple/*
 # !public/objects/threeds/synty/polygon/*
+
+
+## libraries
+# farmbot
+src/lib/farmbot/farmbot-3d-demo-react
+# src/lib/farmbot/threed-farmbot
+# src/lib/wp-threed
+# src/lib/wp-threed/assets
+# wordpress cms plugin
+src/lib/threed/plugins/threed-garden
