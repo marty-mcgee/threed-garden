@@ -66,10 +66,10 @@ public/objects/**
 
 
 ## libraries
-# farmbot
-src/lib/farmbot/farmbot-3d-demo-react
-# src/lib/farmbot/threed-farmbot
-# src/lib/wp-threed
-# src/lib/wp-threed/assets
-# wordpress cms plugin
-src/lib/threed/plugins/threed-garden
+# # farmbot
+# src/lib/farmbot/farmbot-3d-demo-react
+# # src/lib/farmbot/threed-farmbot
+# # src/lib/wp-threed
+# # src/lib/wp-threed/assets
+# # wordpress cms plugin
+# src/lib/threed/plugins/threed-garden
