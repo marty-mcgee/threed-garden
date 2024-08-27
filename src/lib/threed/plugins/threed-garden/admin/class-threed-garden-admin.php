@@ -448,8 +448,8 @@ class ThreeD_Garden_Admin {
 		// if ('acf' == 'nope') {
 			add_submenu_page(
 				'threedgarden', 
-				'ThreeD: CMS Settings', 
-				'ThreeD: CMS Options', 
+				'CMS Settings', 
+				'CMS Options', 
 				'manage_options', 
 				'/custom', 
 				array($this, 'RenderPageCustom'),
@@ -457,8 +457,8 @@ class ThreeD_Garden_Admin {
 			);
 			add_submenu_page(
 				'threedgarden', 
-				'ThreeD: About', 
-				'ThreeD: About', 
+				'About ThreeD', 
+				'About ThreeD', 
 				'manage_options', 
 				'/about', 
 				array($this, 'RenderPageAbout'),
@@ -466,8 +466,8 @@ class ThreeD_Garden_Admin {
 			);
 			add_submenu_page(
 				'threedgarden', 
-				'ThreeD: Legacy Demo', 
-				'ThreeD: Legacy Demo', 
+				'Demo: Animations', 
+				'Demo: Animations', 
 				'manage_options', 
 				'threedgarden', 
 				array($this, 'RenderPage'),
