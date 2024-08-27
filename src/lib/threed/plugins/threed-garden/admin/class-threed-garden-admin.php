@@ -303,177 +303,33 @@ class ThreeD_Garden_Admin {
 			plugins_url('/assets/media/ThreeD-Garden-Logo-Circle-Carrot-Icon-24x24.png',__DIR__), //'dashicons-media-code',
 			null // 333 // null
 		);
-		// add_submenu_page(
-		// 	'threed.garden', 
-		// 	'Demo: Legacy', 
-		// 	'Demo: Legacy', 
-		// 	'manage_options',
-		// 	array($this, 'RenderPage'),
-		// 	plugins_url('/assets/media/ThreeD-Garden-Logo-Circle-Carrot-Icon-16x16.png',__DIR__), //'dashicons-media-code',
-		// 	1000
-		// );
-
-		// add_submenu_page(
-		// 	'threedgarden', 
-		// 	'Projects', 
-		// 	'Projects', 
-		// 	'manage_options', 
-		// 	'edit.php?post_type=threed_project',
-		// 	'dashicons-media-code',
-		// 	null
-		// );
-		// add_submenu_page(
-		// 	'threedgarden', 
-		// 	'Plans', 
-		// 	'Plans', 
-		// 	'manage_options', 
-		// 	'edit.php?post_type=threed_plan',
-		// 	'dashicons-media-code',
-		// 	null
-		// );
-
-		if ('acf' == 'nope') {
-			add_submenu_page(
-				'threedgarden', 
-				'Scenes', 
-				'Scenes', 
-				'manage_options', 
-				'edit.php?post_type=scene',
-				'',
-				null
-			);
-			add_submenu_page(
-				'threedgarden', 
-				'Allotments', 
-				'Allotments', 
-				'manage_options', 
-				'edit.php?post_type=allotment',
-							'',
-							null
-			);
-		}
-		if ('acf' == 'nope') {
-			add_submenu_page(
-				'threedgarden', 
-				'Allotment Types', 
-				'Allotment Types', 
-				'manage_options', 
-				'edit-tags.php?taxonomy=allotment_type&post_type=allotment',
-							'',
-							null
-			);
-			add_submenu_page(
-				'threedgarden', 
-				'Allotment Seasons', 
-				'Allotment Seasons', 
-				'manage_options', 
-				'edit-tags.php?taxonomy=allotment_season&post_type=allotment',
-							'',
-							null
-			);
-		}
-		if ('acf' == 'nope') {
-			add_submenu_page(
-				'threedgarden', 
-				'Beds', 
-				'Beds', 
-				'manage_options', 
-				'edit.php?post_type=bed',
-							'',
-							null
-			);
-		}
-		if ('acf' == 'nope') {
-			add_submenu_page(
-				'threedgarden', 
-				'Bed Types', 
-				'Bed Types', 
-				'manage_options', 
-				'edit-tags.php?taxonomy=bed_type&post_type=bed',
-							'',
-							null
-			);
-			add_submenu_page(
-				'threedgarden', 
-				'Bed Soils', 
-				'Bed Soils', 
-				'manage_options', 
-				'edit-tags.php?taxonomy=bed_soil&post_type=bed',
-							'',
-							null
-			);
-		}
-		if ('acf' == 'nope') {
-			add_submenu_page(
-				'threedgarden', 
-				'Plants', 
-				'Plants', 
-				'manage_options', 
-				'edit.php?post_type=plant',
-							'',
-							null
-			);
-		}
-		if ('acf' == 'nope') {
-			add_submenu_page(
-				'threedgarden', 
-				'Plant Types', 
-				'Plant Types', 
-				'manage_options', 
-				'edit-tags.php?taxonomy=plant_type&post_type=plant',
-							'',
-							null
-			);
-			add_submenu_page(
-				'threedgarden', 
-				'Plant Seasons', 
-				'Plant Seasons', 
-				'manage_options', 
-				'edit-tags.php?taxonomy=plant_season&post_type=plant',
-							'',
-							null
-			);
-		}
-		if ('acf' == 'nope') {
-			add_submenu_page(
-				'threedgarden', 
-				'Planting Plans', 
-				'Planting Plans', 
-				'manage_options', 
-				'edit.php?post_type=planting_plan',
-							'',
-							null
-			);
-		}
-		// if ('acf' == 'nope') {
-			add_submenu_page(
-				'threedgarden', 
-				'CMS Settings', 
-				'CMS Options', 
-				'manage_options', 
-				'/custom', 
-				array($this, 'RenderPageCustom'),
-				null
-			);
-			add_submenu_page(
-				'threedgarden', 
-				'About ThreeD', 
-				'About ThreeD', 
-				'manage_options', 
-				'/about', 
-				array($this, 'RenderPageAbout'),
-				null
-			);
-			add_submenu_page(
-				'threedgarden', 
-				'Demo: Animations', 
-				'Demo: Animations', 
-				'manage_options', 
-				'threedgarden', 
-				array($this, 'RenderPage'),
-				null
-			);
-		// }
+		add_submenu_page(
+			'threedgarden', 
+			'About ThreeD', 
+			'- About ThreeD', 
+			'manage_options', 
+			'/about', 
+			array($this, 'RenderPageAbout'),
+			null
+		);
+		add_submenu_page(
+			'threedgarden', 
+			'CMS Settings', 
+			'- CMS Options', 
+			'manage_options', 
+			'/custom', 
+			array($this, 'RenderPageCustom'),
+			null
+		);
+		add_submenu_page(
+			'threedgarden', 
+			'Demo: Animations', 
+			'- Demo: Animations', 
+			'manage_options', 
+			'threedgarden', 
+			array($this, 'RenderPage'),
+			null
+		);
 	}
 
 	/**
