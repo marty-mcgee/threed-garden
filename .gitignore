@@ -68,7 +68,7 @@ public/objects/**
 ## libraries
 
 # # wordpress cms plugin
-src/lib/threed/plugins/threed-garden
+src/lib/threed/plugins/threed-garden/assets
 
 # # farmbot
 src/lib/farmbot/farmbot-3d-demo-react

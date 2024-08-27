@@ -1,0 +1,52 @@
+.ethpress {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1em;
+	--ethpressinfowidth: 3em;
+}
+
+.ethpress .ethpress-metamask-login-button {
+	max-width: calc(100% - var(--ethpressinfowidth));
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.ethpress-info-container {
+	display: flex;
+	align-items: center;
+	align-self: stretch;
+	width: var(--ethpressinfowidth);
+	justify-content: center;
+	position: relative;
+}
+
+.ethpress-info-container .ethpress-info {
+	display: none;
+	min-width: 200px;
+	flex-direction: column;
+	padding: 10px;
+	position: absolute;
+	bottom: 0;
+	right: 3em;
+	right: calc(var(--ethpressinfowidth) - 0.1em);
+}
+
+.ethpress-info-container:hover,
+.ethpress-info {
+	background-color: gray;
+	color: white;
+}
+
+.ethpress-info img {
+	max-width: 100%;
+	margin-bottom: 10px;
+}
+
+.ethpress-info-container:hover .ethpress-info,
+.ethpress-info:hover {
+	display: block;
+	border-left: 3px solid transparent;
+	border-top: 3px solid transparent;
+}

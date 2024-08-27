@@ -1,0 +1,300 @@
+# Copyright (C) 2020 Lynn (lynn.mvp at tutanota dot com)
+# This file is distributed under the same license as the EthPress package.
+msgid ""
+msgstr ""
+"Project-Id-Version: EthPress 1.0.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ethpress\n"
+"POT-Creation-Date: 2020-09-27 10:54:57+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2021-02-01 00:45+0100\n"
+"Language-Team: \n"
+"X-Generator: Poedit 2.4.2\n"
+"X-Poedit-KeywordsList: __;_e;_x:1,2c;_ex:1,2c;_n:1,2;_nx:1,2,4c;_n_noop:1,2;"
+"_nx_noop:1,2,3c;esc_attr__;esc_html__;esc_attr_e;esc_html_e;esc_attr_x:1,2c;"
+"esc_html_x:1,2c\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ..\n"
+"X-Textdomain-Support: yes\n"
+"Last-Translator: \n"
+"Language: es_ES\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: app/Address.php:107
+msgid "Bad address."
+msgstr "Dirección errónea."
+
+#: app/Address.php:167
+msgid "No user for this address exists."
+msgstr "No existe ningún usuario para esta dirección."
+
+#: app/Address.php:282 app/Address.php:290
+msgid "No matching address."
+msgstr "La dirección no coincide."
+
+#: app/Address.php:313
+msgid "You have not registered on this site; we cannot log you in"
+msgstr "No te has registrado en este sitio; no puedes iniciar sesión"
+
+#: app/Address.php:341
+msgid "Empty username."
+msgstr "Nombre de usuario vacío."
+
+#: app/Address.php:346
+msgid "Username already exists."
+msgstr "Disculpa, este usuario ya existe."
+
+#: app/Address.php:355
+msgid "Error during creation"
+msgstr "Error durante la creación"
+
+#. Plugin Name of the plugin/theme
+msgid "EthPress"
+msgstr "EthPress"
+
+#: app/Admin/Options.php:55
+msgid "EthPress Options Page"
+msgstr "Página de opciones de EthPress"
+
+#: app/Admin/Options.php:56
+msgid "The MetaMask login plugin."
+msgstr "El plugin de inicio de sesión MetaMask."
+
+#: app/Admin/Options.php:57 app/Admin/Options.php:58
+msgid "Opens in new tab"
+msgstr "Se abre en una pestaña nueva"
+
+#: app/Admin/Options.php:58
+msgid "Developer's wallet, etherscan.io"
+msgstr "Cartera del desarrollador, etherscan.io"
+
+#: app/Admin/Options.php:58
+msgid "Donate to support development!"
+msgstr "¡Dona para apoyar el desarrollo!"
+
+#: app/Admin/Options.php:58
+msgid "For fiat, find the charity link on wp plugin directory."
+msgstr ""
+"Para fiat, encontrar el enlace de donación en el directorio del plugin wp."
+
+#: app/Admin/Options.php:58
+msgid "Rate EthPress on wp plugin directory!"
+msgstr "Valora EthPress en el directorio del plugin wp!"
+
+#: app/Admin/Options.php:91
+msgid "Main Settings"
+msgstr "Ajustes principales"
+
+#: app/Admin/Options.php:97
+msgid "Verification service"
+msgstr "Servicio de verificación"
+
+#: app/Admin/Options.php:120
+msgid ""
+"Your PHP installation has the necessary PHP extension to do verifications on "
+"your server, so there is nothing to configure."
+msgstr ""
+"Su instalación PHP tiene la extensión PHP necesaria para hacer "
+"verificaciones en su servidor, por lo que no hay nada que configurar."
+
+#: app/Admin/Options.php:125
+msgid ""
+"Use an API or install php-gmp or php-bcmath to verify Ethereum signatures."
+msgstr ""
+"Utilice una API o instale php-gmp o php-bcmath para verificar las firmas de "
+"Ethereum."
+
+#: app/Admin/Options.php:127
+msgid "Default API url:"
+msgstr "URL api predeterminada:"
+
+#. translators: a link.
+#: app/Admin/Options.php:131
+msgid "For more information, see %1$s."
+msgstr "Para obtener más información, consulte %1$s."
+
+#: app/Admin/Options.php:174
+msgid "Settings"
+msgstr "Ajustes"
+
+#: app/Front.php:28
+msgid "Enable JavaScript to log in with a crypto wallet."
+msgstr ""
+"Habilite JavaScript para iniciar sesión con tu cartera de criptomonedas."
+
+#: app/Front.php:60
+msgid "Log In With a Crypto Wallet"
+msgstr "Inicia sesión con una Cartera Crypto"
+
+#. translators: wallet address
+#: app/Linker.php:58
+msgid "Address %1$s... is already linked to an account. Doing nothing."
+msgstr "Dirección %1$s... ya está vinculada a una cuenta. No hacer nada."
+
+#. translators: wallet address
+#: app/Linker.php:80
+msgid ""
+"Success! Address %1$s... is now linked to your account. You may close this "
+"dialog, or link another address."
+msgstr ""
+"¡Éxito! Dirección %1$s... ahora está vinculado a tu cuenta. Puedes cerrar "
+"este cuadro de diálogo o vincular otra dirección."
+
+#: app/Linker.php:99
+msgid "Signature mismatch. Try again."
+msgstr "Desajuste de firma. Vuelve a intentarlo."
+
+#: app/Linker.php:102
+msgid "Invalid request."
+msgstr "Petición incorrecta."
+
+#: app/Linker.php:116
+msgid "Associate a wallet with your account"
+msgstr "Asocia una cartera crypto con tu cuenta"
+
+#: app/Linker.php:118
+msgid ""
+"Account and address have been linked successfully. You may close this dialog."
+msgstr ""
+"La cuenta y la dirección se han vinculado correctamente. Puedes cerrar este "
+"cuadro de diálogo."
+
+#: app/Linker.php:119
+msgid "Aborted"
+msgstr "Abortado"
+
+#: app/Linker.php:120
+msgid "Link a Wallet"
+msgstr "Vincular una cartera"
+
+#: app/Linker.php:121
+msgid "Fetching verification phrase..."
+msgstr "Obteniendo la frase de verificación..."
+
+#: app/Linker.php:149
+msgid "Linking your account to your crypto wallet."
+msgstr "Vinculando tu cuenta a tu crypto cartera."
+
+#: app/Login.php:35
+msgid "Invalid input"
+msgstr "Entrada inválida"
+
+#: app/Login.php:63 app/Plugin.php:154
+msgid "Logged in"
+msgstr "Registrado en"
+
+#: app/Login.php:70
+msgid "Signature err, try again."
+msgstr "Firma err, vuelve a intentarlo."
+
+#. translators: blog name.
+#: app/Login.php:127
+msgid "Log in to %1$s"
+msgstr "Inicia sesión en %1$s"
+
+#: app/Login.php:161
+msgid "Bad nonce, please refresh."
+msgstr "Mal nonce, por favor refresca."
+
+#: app/Login.php:168
+msgid "No address specified."
+msgstr "No se ha especificado ninguna dirección."
+
+#: app/Plugin.php:148
+msgid "Choose your login method"
+msgstr "Elije tu método de inicio de sesión"
+
+#: app/Plugin.php:149
+msgid "Error: cannot detect crypto wallet"
+msgstr "Error: no se puede detectar la cripto cartera"
+
+#: app/Plugin.php:150
+msgid "Waiting for your permission"
+msgstr "Esperando tu permiso"
+
+#: app/Plugin.php:151
+msgid "Fetching login phrase..."
+msgstr "Obteniendo la frase de inicio de sesión..."
+
+#: app/Plugin.php:152
+msgid "Waiting for your signature"
+msgstr "Esperando tu firma"
+
+#: app/Plugin.php:153
+msgid "Verifying signature..."
+msgstr "Verificando la firma..."
+
+#: app/Plugin.php:155
+msgid "Login aborted"
+msgstr "Inicio de sesión abortado"
+
+#: app/Plugin.php:156
+msgid "Log In"
+msgstr "Iniciar sesión"
+
+#: app/Plugin.php:157
+msgid "Scan a QR code with your wallet, https://walletconnect.org"
+msgstr "Escanea un código QR con tu cartera, https://walletconnect.org"
+
+#: app/Plugin.php:158
+msgid "Browser add-on and mobile app, https://metamask.io"
+msgstr "Complemento del navegador y aplicación móvil, https://metamask.io"
+
+#: app/Plugin.php:208
+msgid "Log out first"
+msgstr "Cierra la sesión primero"
+
+#: app/Widgets/Button.php:31
+msgid "EthPress Widget"
+msgstr "EthPress Widget"
+
+#: app/Widgets/Button.php:70
+msgid "Link Your Crypto Wallets"
+msgstr "Enlaza tus cripto carteras"
+
+#: app/Widgets/Button.php:87
+msgid "Title:"
+msgstr "Título:"
+
+#: app/Widgets/Button.php:149
+msgid "Crypto Wallet"
+msgstr "Cripto cartera"
+
+#: app/Widgets/Button.php:150
+msgid ""
+"After linking a crypto wallet to your account, you can use it to log in."
+msgstr ""
+"Después de vincular una cripto cartera a tu cuenta, puedes usarla para "
+"iniciar sesión."
+
+#. translators: version numbers.
+#: ethpress.php:34
+msgid ""
+"“%1$s” requires PHP %2$s (or newer) and WordPress %3$s (or newer) to "
+"function properly. Your site is using PHP %4$s and WordPress %5$s. Please "
+"upgrade. The plugin has been automatically deactivated."
+msgstr ""
+"\"%1$s\" requiere que php %2$s (o más reciente) y WordPress %3$s (o más "
+"reciente) funcionen correctamente. Tu sitio está utilizando PHP %4$s y "
+"WordPress %5$s. Por favor, actualiza. El plugin se ha desactivado "
+"automáticamente."
+
+#. Plugin URI of the plugin/theme
+msgid "https://gitlab.com/losnappas/ethpress"
+msgstr "https://gitlab.com/losnappas/ethpress"
+
+#. Description of the plugin/theme
+msgid "Ethereum Web3 login. Enable crypto wallet logins to WordPress."
+msgstr ""
+"Inicio de sesión en Ethereum Web3. Habilita los inicios de sesión con cripto "
+"carteras en WordPress."
+
+#. Author of the plugin/theme
+msgid "Lynn (lynn.mvp at tutanota dot com)"
+msgstr "Lynn (lynn.mvp en tutanota dot com)"
+
+#. Author URI of the plugin/theme
+msgid "https://ethpress.imlynn.xyz/"
+msgstr "https://ethpress.imlynn.xyz/"
