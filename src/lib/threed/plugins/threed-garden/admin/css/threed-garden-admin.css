@@ -1,14 +1,11 @@
 /**
+ * ThreeDGarden - Custom Admin Styles
+ * --
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
 
-/* ThreeDGarden - Custom Admin Styles */
-
-/** THREED GARDEN */
-.planting_plan_bed_plant_schedule { background-color: #999999; }
-.planting_plan_bed   { background-color: #330000; }
-.planting_plan_plant { background-color: #003300; }
+/*  */
 
 /** WEBGL */
 #webgl { width: 100%; height: 100%; }
@@ -16,6 +13,11 @@
 /** DAT.GUI */
 #gui { position: absolute; right: 5px; }
 #gui dd, #gui li { margin-bottom: 0; }
+
+/** THREED GARDEN */
+/* .planting_plan_bed_plant_schedule { background-color: #999999; }
+.planting_plan_bed   { background-color: #330000; }
+.planting_plan_plant { background-color: #003300; } */
 
 /** ANNOTATIONS */
 .annotation {
@@ -49,85 +51,153 @@
     } */
 }
 
-/** "x" */
+/* MESSAGES */
+
+/* [x] */
 .dismiss {
     cursor: pointer;
-    margin-left: 5px;
+    /* margin-left: 5px; */
 }
 
-/** 
- * loader spinner 
- */
-.lds-grid {
-    display: inline-block;
-    position: fixed;
-    width: 80px;
-    height: 80px;
-    z-index: -1;
+#message {
+    position:absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    font-family: 'Kavivanar', san-serif;
+    font-size: 40px;
+    width:80%;
+    max-width:280px;
+    padding: 15px 15px 50px 15px;
+    text-align: center;
+    display:none;
+    align-content: center;
+    justify-content: center;
+    background-color: aliceblue;
+    border: medium solid #3D455C;
+    border-radius: 20px;
+    color: #3D455C;
+    z-index: 99;
 }
-.lds-grid div {
+#message_ok {
     position: absolute;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #fff;
-    animation: lds-grid 1.2s linear infinite;
-}
-.lds-grid div:nth-child(1) {
-    top: 8px;
-    left: 8px;
-    animation-delay: 0s;
-}
-.lds-grid div:nth-child(2) {
-    top: 8px;
-    left: 32px;
-    animation-delay: -0.4s;
-}
-.lds-grid div:nth-child(3) {
-    top: 8px;
-    left: 56px;
-    animation-delay: -0.8s;
-}
-.lds-grid div:nth-child(4) {
-    top: 32px;
-    left: 8px;
-    animation-delay: -0.4s;
-}
-.lds-grid div:nth-child(5) {
-    top: 32px;
-    left: 32px;
-    animation-delay: -0.8s;
-}
-.lds-grid div:nth-child(6) {
-    top: 32px;
-    left: 56px;
-    animation-delay: -1.2s;
-}
-.lds-grid div:nth-child(7) {
-    top: 56px;
-    left: 8px;
-    animation-delay: -0.8s;
-}
-.lds-grid div:nth-child(8) {
-    top: 56px;
-    left: 32px;
-    animation-delay: -1.2s;
-}
-.lds-grid div:nth-child(9) {
-    top: 56px;
-    left: 56px;
-    animation-delay: -1.6s;
-}
-@keyframes lds-grid {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.5;
-    }
+    bottom: 10px;
+    padding: 10px 20px 10px 20px;
+    font-family: sans-serif;
+    font-size: 20px;
+    background-color: #3D455C;
+    color: #fff;
+    border-radius: 8px;
+    border: medium solid #696882;
 }
 
-.lds-default {
+/* BUTTONS */
+
+#sfx-btn {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background:#3B53A2;
+    font-size: 25px;
+    color: #fff;
+}
+
+#camera-btn {
+    position: absolute;
+    right: 15px;
+    bottom: 15px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background:#3B53A2;
+    font-size: 25px;
+    color: #fff;
+}
+
+#action-btn {
+    position: absolute;
+    left: 50%;
+    bottom: 5px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background:#3B53A2;
+    font-size: 25px;
+    color: #fff;
+    transform: translateX(-50%);
+    z-index: 9;
+}
+
+/* OVERLAY */
+#overlay {
+    position:absolute;
+    width: 100%;
+    height: 100%;
+    background: #000000;
+    z-index: 10;
+    opacity: 1;
+}
+
+/* CSS ACTIONS */
+.fade-in {
+    animation-name: fade-in;
+    animation-duration: 2s;
+}
+
+@keyframes fade-in {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+
+/* TEST: BRIEFCASE */
+#briefcase-btn {
+    position: absolute;
+    left: 15px;
+    bottom: 15px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background:#3B53A2;
+    font-size: 25px;
+    color: #fff;
+}
+#briefcase {
+    position: absolute;
+    left: 20px;
+    bottom: 60px;
+    width: auto;
+    opacity: 0;
+    padding: 8px;
+    border-radius: 8px;
+    background:#3B53A2;
+    transition: opacity 0.5s;
+}
+#briefcase ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+#briefcase li {
+    float: left;
+}
+#briefcase li a {
+    padding: 0 3px 0 3px;
+}
+#briefcase img {
+    width: 100px;
+    height: 75px;
+}
+
+/* LOADER: SPINNER "lds" 
+-- DEPRECATED */
+/* .lds-default {
     display: inline-block;
     position: fixed;
     top: 50%;
@@ -219,142 +289,73 @@
     50% {
         opacity: 0.2;
     }
+} */
+/* .lds-grid {
+    display: inline-block;
+    position: fixed;
+    width: 80px;
+    height: 80px;
+    z-index: -1;
 }
-  
-
-
-#message{
-    position:absolute;
-    left: 50%;
-    top: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    font-family: 'Kavivanar', san-serif;
-    font-size: 40px;
-    width:80%;
-    max-width:280px;
-    padding: 15px 15px 50px 15px;
-    text-align: center;
-    display:none;
-    align-content: center;
-    justify-content: center;
-    background-color: aliceblue;
-    border: medium solid #3D455C;
-    border-radius: 20px;
-    color: #3D455C;
-    z-index: 99;
-}
-#message_ok{
+.lds-grid div {
     position: absolute;
-    bottom: 10px;
-    padding: 10px 20px 10px 20px;
-    font-family: sans-serif;
-    font-size: 20px;
-    background-color: #3D455C;
-    color: #fff;
-    border-radius: 8px;
-    border: medium solid #696882;
-}
-
-#sfx-btn{
-    position: absolute;
-    right: 15px;
-    top: 15px;
-    width: 40px;
-    height: 40px;
-    border: none;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
-    background:#3B53A2;
-    font-size: 25px;
-    color: #fff;
+    background: #fff;
+    animation: lds-grid 1.2s linear infinite;
 }
-
-#camera-btn{
-    position: absolute;
-    right: 15px;
-    bottom: 15px;
-    width: 40px;
-    height: 40px;
-    border: none;
-    border-radius: 50%;
-    background:#3B53A2;
-    font-size: 25px;
-    color: #fff;
+.lds-grid div:nth-child(1) {
+    top: 8px;
+    left: 8px;
+    animation-delay: 0s;
 }
-
-#action-btn{
-    position: absolute;
-    left: 50%;
-    bottom: 5px;
-    width: 40px;
-    height: 40px;
-    border: none;
-    border-radius: 50%;
-    background:#3B53A2;
-    font-size: 25px;
-    color: #fff;
-    transform: translateX(-50%);
-    z-index: 9;
+.lds-grid div:nth-child(2) {
+    top: 8px;
+    left: 32px;
+    animation-delay: -0.4s;
 }
-
-#overlay{
-    position:absolute;
-    width: 100%;
-    height: 100%;
-    background: #000000;
-    z-index: 10;
-    opacity: 1;
+.lds-grid div:nth-child(3) {
+    top: 8px;
+    left: 56px;
+    animation-delay: -0.8s;
 }
-
-.fade-in {
-    animation-name: fade-in;
-    animation-duration: 2s;
+.lds-grid div:nth-child(4) {
+    top: 32px;
+    left: 8px;
+    animation-delay: -0.4s;
 }
-
-@keyframes fade-in {
-    from {opacity: 1;}
-    to {opacity: 0;}
+.lds-grid div:nth-child(5) {
+    top: 32px;
+    left: 32px;
+    animation-delay: -0.8s;
 }
-
-#briefcase-btn{
-    position: absolute;
-    left: 15px;
-    bottom: 15px;
-    width: 40px;
-    height: 40px;
-    border: none;
-    border-radius: 50%;
-    background:#3B53A2;
-    font-size: 25px;
-    color: #fff;
+.lds-grid div:nth-child(6) {
+    top: 32px;
+    left: 56px;
+    animation-delay: -1.2s;
 }
-
-#briefcase{
-    position: absolute;
-    left: 20px;
-    bottom: 60px;
-    width: auto;
-    opacity: 0;
-    padding: 8px;
-    border-radius: 8px;
-    background:#3B53A2;
-    transition: opacity 0.5s;
+.lds-grid div:nth-child(7) {
+    top: 56px;
+    left: 8px;
+    animation-delay: -0.8s;
 }
-
-#briefcase ul{
- list-style: none;
- padding: 0;
- margin: 0;
- }
-
-  #briefcase li{
-   float: left;
-  }
-
-  #briefcase li a{
-    padding: 0 3px 0 3px;
-  }
-
-  #briefcase img{
-    width: 100px;
-    height: 75px;
-  }
+.lds-grid div:nth-child(8) {
+    top: 56px;
+    left: 32px;
+    animation-delay: -1.2s;
+}
+.lds-grid div:nth-child(9) {
+    top: 56px;
+    left: 56px;
+    animation-delay: -1.6s;
+}
+@keyframes lds-grid {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+*/

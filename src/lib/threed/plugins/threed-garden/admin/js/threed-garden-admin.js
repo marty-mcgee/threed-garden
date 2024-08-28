@@ -363,10 +363,10 @@ function buildScene() {
 	let helperDirectionalLight = new THREE.CameraHelper(directionalLight.shadow.camera)
 	helperDirectionalLight.visible = false
 
-	// let directionalLight2 = getDirectionalLight(0xFFFFFF, 1.0)
-	// directionalLight2.castShadow = false
-	// directionalLight2.position.set( 90, 120, 120 )
-	// //directionalLight2.intensity = 1.4
+	let directionalLight2 = getDirectionalLight(0xFFFFFF, 1.0)
+	directionalLight2.castShadow = false
+	directionalLight2.position.set( 90, 120, 120 )
+	directionalLight2.intensity = 1.4
 
 	// let helperDirectionalLight2 = new THREE.CameraHelper(directionalLight2.shadow.camera)
 	// helperDirectionalLight2.visible = true
@@ -392,7 +392,7 @@ function buildScene() {
 	//plane.add(pointLight)
 	//plane.add(spotLight)
 	plane.add(directionalLight)
-	//plane.add(directionalLight2)
+	plane.add(directionalLight2)
 	//plane.add(ambientLight)
 	scene.add(helperDirectionalLight)
 	//scene.add(helperDirectionalLight2)
@@ -407,7 +407,7 @@ function buildScene() {
 		1000
 	)
 	camera.name = "gardencam1"
-	camera.position.set(86, 64, 182)
+	camera.position.set(64, 64, 128)
 	//camera.lookAt(new THREE.Vector3(0, 0, 0)) // overridden by OrbitControls.target
 
 	let helperCamera = new THREE.CameraHelper(camera)
@@ -422,12 +422,16 @@ function buildScene() {
 	/** RENDERER ************************************************************************** */
 	
 	renderer = new THREE.WebGLRenderer(
-		{ 	alpha: true, 
-			antialias: true 
+		{
+			alpha: true, 
+			antialias: true,
 		}
 	)
 	renderer.shadowMap.enabled = true
-	renderer.setSize(window.innerWidth - 240, window.innerHeight - 100)
+	renderer.setSize(
+		window.innerWidth - 240, 
+		window.innerHeight - 100
+	)
 
 	// utilize javascript prototyping.. add variables to the dom element :)
 	renderer.domElement.camera = camera
@@ -437,20 +441,20 @@ function buildScene() {
 	renderer.domElement.addEventListener("pointerdown", onPointerDown, false)
 	
 	/** CONTROLS *************************************************************************** */
-		controls = new THREE.OrbitControls(camera, renderer.domElement)
-		controls.enableDamping = true
-		controls.dampingFactor = 0.25
-		controls.enableZoom = true
-		controls.rotateSpeed = 0.5
-		controls.autoRotate = false
-		controls.autoRotateSpeed = 0.03
-		controls.minDistance = 0.01
-		controls.maxDistance = 340
-		controls.maxPolarAngle = Math.PI/2 - .04
-		controls.target = new THREE.Vector3(0, 0, 0) // where the camera actually points
-		//controls.target.set(0, 5, 0) // alternate way of setting target of camera
+	controls = new THREE.OrbitControls(camera, renderer.domElement)
+	controls.enableDamping = true
+	controls.dampingFactor = 0.25
+	controls.enableZoom = true
+	controls.rotateSpeed = 0.5
+	controls.autoRotate = false
+	controls.autoRotateSpeed = 0.03
+	controls.minDistance = 0.01
+	controls.maxDistance = 340
+	controls.maxPolarAngle = Math.PI/2 - .04
+	controls.target = new THREE.Vector3(0, 0, 0) // where the camera actually points
+	//controls.target.set(0, 5, 0) // alternate way of setting target of camera
 
-		renderer.domElement.controls = controls
+	renderer.domElement.controls = controls
 
 	/** WEBGL CANVAS *********************************************************************** */
 
@@ -473,6 +477,7 @@ function buildScene() {
 	//loaderFBX.load( `${params.assetsPath}fbx/people/FireFighter.fbx`, function (object) {
 	//loaderFBX.load( `${params.assetsPath}fbx/people/Trucker.fbx`, function (object) {
 	loaderFBX.load( `${params.assetsPath}characters/SK_Chr_Farmer_Male_01.fbx`, function (object) {
+	// loaderFBX.load( `${params.assetsPath}characters/SK_Chr_Farmer_Female_01.fbx`, function (object) {
 
 		object.mixer = new THREE.AnimationMixer( object )
 		player.mixer = object.mixer
@@ -531,7 +536,7 @@ function buildScene() {
 	//loadRooster(plane)
 	//loadChickenGLTF(plane)
 	//loadChickGLTF(plane)
-	//loadKitchenSink(plane)
+	loadKitchenSink(plane)
 	//loadChickenFree(plane)
 	loadRoad(plane)
 		
