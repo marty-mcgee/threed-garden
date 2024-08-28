@@ -27,10 +27,9 @@ const themeURI = postdata.theme_uri
 const restURL = postdata.rest_url
 const worldID = postdata.world_id
 const sceneID = postdata.scene_id
-console.debug("-----------------------")
-console.debug("pluginName-------------")
-console.debug(pluginName, pluginVersion)
-console.debug("-----------------------")
+// console.debug("-----------------------")
+console.debug("plugin: Name, Version", pluginName, pluginVersion)
+// console.debug("-----------------------")
 
 /** INSTANTIATE COMMON VARIABLES */
 let scene
