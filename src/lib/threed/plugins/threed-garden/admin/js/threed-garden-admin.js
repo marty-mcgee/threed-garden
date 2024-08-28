@@ -43,14 +43,14 @@ let gui
 	gui.domElement.id = "gui"
 	let guiFolderRotation 		= gui.addFolder("Rotation + Animation")
 	//let guiFolderAnimation 	= guiFolderRotation.addFolder("Animation")
-	let guiFolderCameras 		= gui.addFolder("Camera Position")
-	let guiFolderLights 		= gui.addFolder("Directional Light")
+	let guiFolderCameras 			= gui.addFolder("Camera Position")
+	let guiFolderLights 			= gui.addFolder("Directional Light")
 	let guiFolderAllotments 	= gui.addFolder("Allotments")
-	let guiFolderBeds 			= gui.addFolder("Beds")
-	let guiFolderPlants 		= gui.addFolder("Plants")
+	let guiFolderBeds 				= gui.addFolder("Beds")
+	let guiFolderPlants 			= gui.addFolder("Plants")
 	//let guiFolderInfospots 	= gui.addFolder("Infospots")
 	let guiFolderAnnotations 	= gui.addFolder("Annotations")
-	let guiFolderPlayer 		= gui.addFolder("Character")
+	let guiFolderPlayer 			= gui.addFolder("Character")
 let renderer
 let container
 let canvas
@@ -228,9 +228,9 @@ function init() {
 							default :
 								break
 						}
-						// console.debug("-----------------")
+						// console.debug("-----------------------")
 						// console.debug(data)
-						// console.debug("-----------------")
+						// console.debug("-----------------------")
 					})
 		)
 	)
@@ -244,10 +244,9 @@ function init() {
 					console.debug('result', result)
 				}
 			})
-			console.debug("-----------------")
-			console.debug("params.data------")
-			console.debug(params.data)
-			console.debug("-----------------")
+			// console.debug("-----------------------")
+			console.debug("params.data", params.data)
+			// console.debug("-----------------------")
 			/**
 			 * init scene constructor
 			 */
@@ -263,19 +262,16 @@ function init() {
  * *************************************************************************************** */
 function buildScene() {
 
-	console.debug("-----------------------")
-	console.debug("params.data.scene------")
-	console.debug(params.data.scene)
-	console.debug(params.data.scene.length)
-	console.debug("-----------------------")
+	// console.debug("-----------------------")
+	console.debug("params.data.scene", params.data.scene, params.data.scene.length)
+	// console.debug("-----------------------")
 
 	let wpScene = params.data.scene[2] ? params.data.scene[2] : {}
 	// sceneID = wpScene.id ? wpScene.id : 1
 
-	console.debug("-----------------------")
-	console.debug("wpScene----------------")
-	console.debug(wpScene)
-	console.debug("-----------------------")
+	// console.debug("-----------------------")
+	console.debug("wpScene", wpScene)
+	// console.debug("-----------------------")
 
 	/** THREE JS SCENE ******************************************************************* */
 
@@ -348,6 +344,26 @@ function buildScene() {
 
 	/** LIGHTS *************************************************************************** */
 
+	let ambientLight = getAmbientLight(0xFFFFFF, 0.6)
+	ambientLight.position.set( -100, 0, 25 )
+	guiFolderLights.add(ambientLight, "intensity", 0, 20)
+	guiFolderLights.add(ambientLight.position, "x", -500, 500)
+	guiFolderLights.add(ambientLight.position, "y", -500, 500)
+	guiFolderLights.add(ambientLight.position, "z", -500, 500)
+
+	let directionalLight = getDirectionalLight(0xFFFFFF, 1.8)
+	directionalLight.position.set( -90, -120, 120 )
+	//directionalLight.intensity = 2.4
+
+	let helperDirectionalLight = new THREE.CameraHelper(directionalLight.shadow.camera)
+	helperDirectionalLight.visible = false
+	
+	guiFolderLights.add(helperDirectionalLight, "visible", 0, 20).name("Show Light Helper")
+	guiFolderLights.add(directionalLight, "intensity", 0, 20)
+	guiFolderLights.add(directionalLight.position, "x", -500, 500)
+	guiFolderLights.add(directionalLight.position, "y", -500, 500)
+	guiFolderLights.add(directionalLight.position, "z", -500, 500)
+
 	// let pointLight = getPointLight(0xFFFFFF, 4.0)
 	// pointLight.position.set( -20, -60, 20 )
 	// //pointLight.intensity = 3.0
@@ -356,47 +372,16 @@ function buildScene() {
 	// spotLight.position.set( -20, -60, 20 )
 	// //spotLight.intensity = 3.0
 
-	let directionalLight = getDirectionalLight(0xFFFFFF, 2.1)
-	directionalLight.position.set( -90, -120, 120 )
-	//directionalLight.intensity = 2.4
-
-	let helperDirectionalLight = new THREE.CameraHelper(directionalLight.shadow.camera)
-	helperDirectionalLight.visible = false
-
-	let directionalLight2 = getDirectionalLight(0xFFFFFF, 1.0)
-	directionalLight2.castShadow = false
-	directionalLight2.position.set( 90, 120, 120 )
-	directionalLight2.intensity = 1.4
-
-	// let helperDirectionalLight2 = new THREE.CameraHelper(directionalLight2.shadow.camera)
-	// helperDirectionalLight2.visible = true
-
-	//let ambientLight = getAmbientLight(0xFFFFFF, 0.1)
-	//ambientLight.position.set( -100, -100, 25 )
-	
-	guiFolderLights.add(helperDirectionalLight, "visible", 0, 20).name("Show Light Helper")
-	guiFolderLights.add(directionalLight, "intensity", 0, 20)
-	guiFolderLights.add(directionalLight.position, "x", -500, 500)
-	guiFolderLights.add(directionalLight.position, "y", -500, 500)
-	guiFolderLights.add(directionalLight.position, "z", -500, 500)
-	// guiFolderLights.add(helperDirectionalLight2, "visible", 0, 20).name("Show Light 2 Helper")
-	// guiFolderLights.add(directionalLight2, "intensity", 0, 20)
-	// guiFolderLights.add(directionalLight2.position, "x", -500, 500)
-	// guiFolderLights.add(directionalLight2.position, "y", -500, 500)
-	// guiFolderLights.add(directionalLight2.position, "z", -500, 500)
-
 	/** SCENE ***************************************************************************** */
 
 	// add objects to scene
-	//plane.add(structure)
+	plane.add(ambientLight)
+	plane.add(directionalLight)
+	scene.add(helperDirectionalLight)
 	//plane.add(pointLight)
 	//plane.add(spotLight)
-	plane.add(directionalLight)
-	plane.add(directionalLight2)
-	//plane.add(ambientLight)
-	scene.add(helperDirectionalLight)
-	//scene.add(helperDirectionalLight2)
 	scene.add(plane)
+	//plane.add(structure)
 
 	/** CAMERA **************************************************************************** */
 
@@ -407,7 +392,7 @@ function buildScene() {
 		1000
 	)
 	camera.name = "gardencam1"
-	camera.position.set(64, 64, 128)
+	camera.position.set(-128, 48, 128)
 	//camera.lookAt(new THREE.Vector3(0, 0, 0)) // overridden by OrbitControls.target
 
 	let helperCamera = new THREE.CameraHelper(camera)
@@ -1486,10 +1471,10 @@ function loadRoad(plane) {
 			
 			scene.add(object)
 			
-			console.debug("-----------------------")
-			console.debug("ROAD----------------")
-			console.debug(object)
-			console.debug("-----------------------")
+			// console.debug("-----------------------")
+			// console.debug("ROAD----------------")
+			// console.debug(object)
+			// console.debug("-----------------------")
 			
 			//loadNextAnim(loader)
 		})
@@ -1499,10 +1484,10 @@ function loadRoad(plane) {
 	for ( i = 1; i <= 1; i++ ) {
 		loaderFBX.load(`${params.assetsPath}fbx/SM_Env_Road_Gravel_T_Section_01.fbx`, function(object){
 			
-			console.debug("-----------------------")
-			console.debug("ROAD T----------------")
-			console.debug(startX, startZ)
-			console.debug("-----------------------")
+			// console.debug("-----------------------")
+			// console.debug("ROAD T----------------")
+			// console.debug(startX, startZ)
+			// console.debug("-----------------------")
 
 			//params.farmhouse = object
 			//params.colliders = []
@@ -1536,10 +1521,10 @@ function loadRoad(plane) {
 			
 			scene.add(object)
 			
-			console.debug("-----------------------")
-			console.debug("ROAD T----------------")
-			console.debug(object)
-			console.debug("-----------------------")
+			// console.debug("-----------------------")
+			// console.debug("ROAD T----------------")
+			// console.debug(object)
+			// console.debug("-----------------------")
 			
 			//loadNextAnim(loader)
 		})
