@@ -405,6 +405,7 @@ export default function CharacterModel(props: CharacterModelProps) {
     })
   })
 
+  if ('areyouready?' == 'youareready.') {
   useFrame(() => {
 
     const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
@@ -457,6 +458,7 @@ export default function CharacterModel(props: CharacterModelProps) {
 
     }
   })
+  }
 
   useEffect(() => {
 
