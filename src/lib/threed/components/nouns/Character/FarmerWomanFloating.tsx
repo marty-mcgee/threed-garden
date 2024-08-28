@@ -66,8 +66,8 @@ import { GLTF } from 'three-stdlib'
 import ccm from '#/lib/utils/console-colors'
 
 
-const debug: boolean = false
-const debugAnimation: boolean = false
+const debug: boolean = true
+const debugAnimation: boolean = true
 
 // ** FILES for CharacterModel: Settings/Locations
 // const theCharacterModelFile = '/objects/glb/CharacterModelFloating.glb'
@@ -185,11 +185,14 @@ export default function CharacterModel(props: CharacterModelProps) {
   const { nodes, materials, animations } = useGLTF(file) as GLTF & {
     nodes: any
   }
-  if (debug) console.debug(`%c nodes, materials, animations`, ccm.yellowAlert, nodes, materials, animations)
+  if (debug) 
+    // console.debug(`%c model nodes, materials, animations`, ccm.yellow, nodes, materials, animations)
+    console.debug(`%c model group`, ccm.yellowAlert, group)
 
   // const { actions } = useAnimations(animations, group)
   const { actions } = useAnimations<GLTFActions>(animations, group)
-  if (debug) console.debug(`%c animations.actions, group`, ccm.yellowAlert, actions, materials, group)
+  if (debug) 
+    console.debug(`%c model group animations.actions`, ccm.yellow, actions)
 
   // gradientMapTexture for MeshToonMaterial
   const gradientMapTexture = useTexture(texture) // '/textures/3.jpg'
