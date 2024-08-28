@@ -151,30 +151,30 @@ class ThreeD_Garden_Admin {
 		 */
 		global $pagenow;
 		
-        if ( $pagenow == 'admin.php' 
-					&& isset( $_GET['page'] ) 
-					&& $_GET['page'] == 'threedgarden' )
-        {
+		if ( $pagenow == 'admin.php' 
+			&& isset( $_GET['page'] ) 
+			&& $_GET['page'] == 'threedgarden-demo-animations' )
+		{
 			// THREE JS
-			wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/three.min.js', array(), $this->version, true );
-			wp_enqueue_script( 'datgui', plugin_dir_url( __FILE__ ) . 'js/dat.gui.min.js', array(), $this->version, true );
-			wp_enqueue_script( 'orbitcontrols', plugin_dir_url( __FILE__ ) . 'js/OrbitControls.js', array(), $this->version, true );
-			//wp_enqueue_script( 'panolens', plugin_dir_url( __FILE__ ) . 'js/panolens.min.js', array(), $this->version, true );
-			wp_enqueue_script( 'css3drenderer', plugin_dir_url( __FILE__ ) . 'js/CSS3DRenderer.js', array(), $this->version, true );
-			wp_enqueue_script( 'inflate', plugin_dir_url( __FILE__ ) . 'js/inflate.min.js', array(), $this->version, true );
-			wp_enqueue_script( 'fbxloader', plugin_dir_url( __FILE__ ) . 'js/FBXLoader.js', array(), $this->version, true );
-			wp_enqueue_script( 'gltfloader', plugin_dir_url( __FILE__ ) . 'js/GLTFLoader.js', array(), $this->version, true );
-			wp_enqueue_script( 'objloader', plugin_dir_url( __FILE__ ) . 'js/OBJLoader.js', array(), $this->version, true );
-			wp_enqueue_script( 'detector', plugin_dir_url( __FILE__ ) . 'js/Detector.js', array(), $this->version, true );
-			wp_enqueue_script( 'toon3d', plugin_dir_url( __FILE__ ) . 'js/toon3d.js', array(), $this->version, true );
+			wp_enqueue_script( 'threejs', plugin_dir_url( __FILE__ ) . 'js/lib/three.min.js', array(), $this->version, true );
+			wp_enqueue_script( 'datgui', plugin_dir_url( __FILE__ ) . 'js/lib/dat.gui.min.js', array(), $this->version, true );
+			wp_enqueue_script( 'orbitcontrols', plugin_dir_url( __FILE__ ) . 'js/lib/OrbitControls.js', array(), $this->version, true );
+			// wp_enqueue_script( 'panolens', plugin_dir_url( __FILE__ ) . 'js/lib/panolens.min.js', array(), $this->version, true );
+			wp_enqueue_script( 'css3drenderer', plugin_dir_url( __FILE__ ) . 'js/lib/CSS3DRenderer.js', array(), $this->version, true );
+			wp_enqueue_script( 'inflate', plugin_dir_url( __FILE__ ) . 'js/lib/inflate.min.js', array(), $this->version, true );
+			wp_enqueue_script( 'fbxloader', plugin_dir_url( __FILE__ ) . 'js/lib/FBXLoader.js', array(), $this->version, true );
+			wp_enqueue_script( 'gltfloader', plugin_dir_url( __FILE__ ) . 'js/lib/GLTFLoader.js', array(), $this->version, true );
+			wp_enqueue_script( 'objloader', plugin_dir_url( __FILE__ ) . 'js/lib/OBJLoader.js', array(), $this->version, true );
+			wp_enqueue_script( 'detector', plugin_dir_url( __FILE__ ) . 'js/lib/Detector.js', array(), $this->version, true );
+			wp_enqueue_script( 'toon3d', plugin_dir_url( __FILE__ ) . 'js/lib/toon3d.js', array(), $this->version, true );
 
 			// THREE.TREE JS
-			wp_enqueue_script( 'tree', plugin_dir_url( __FILE__ ) . 'js/Tree.js', array(), $this->version, true );
-			wp_enqueue_script( 'treegeometry', plugin_dir_url( __FILE__ ) . 'js/TreeGeometry.js', array(), $this->version, true );
-			wp_enqueue_script( 'treehelper', plugin_dir_url( __FILE__ ) . 'js/TreeHelper.js', array(), $this->version, true );
+			// wp_enqueue_script( 'tree', plugin_dir_url( __FILE__ ) . 'js/lib/Tree.js', array(), $this->version, true );
+			// wp_enqueue_script( 'treegeometry', plugin_dir_url( __FILE__ ) . 'js/lib/TreeGeometry.js', array(), $this->version, true );
+			// wp_enqueue_script( 'treehelper', plugin_dir_url( __FILE__ ) . 'js/lib/TreeHelper.js', array(), $this->version, true );
 
 			// TWEEN JS
-			wp_enqueue_script( 'tweenjs', plugin_dir_url( __FILE__ ) . 'js/tween.umd.js', array(), $this->version, true );
+			wp_enqueue_script( 'tweenjs', plugin_dir_url( __FILE__ ) . 'js/lib/tween.umd.js', array(), $this->version, true );
 
 			// VUE 3
 			wp_enqueue_script( 'vue', 'https://unpkg.com/vue@3.2.26/dist/vue.global.js', array(), null, true );
@@ -199,9 +199,7 @@ class ThreeD_Garden_Admin {
 
 			// THREED GARDEN ADMIN JS
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin.js', array(), $this->version, true );
-			//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin-2.js', array(), $this->version, true );
-			//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/threed-garden-admin-3.js', array(), $this->version, true );
-			//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/game.js', array(), $this->version, true );
+			//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/lib/game.js', array(), $this->version, true );
 			
 			// THREED GARDEN WORDPRESS API REST CONNECTIONS :)
 			wp_localize_script( $this->plugin_name, 'postdata',
@@ -223,14 +221,15 @@ class ThreeD_Garden_Admin {
 	 * **************************************************************************
 	 */
 
-	public function RenderPage(){
+	public function RenderPageDemo(){
 		// check if user is allowed access
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
 	?>
 		<div class="wrap">
-			<h1><?php echo esc_html( get_admin_page_title() ); ?>: LEGACY DEMO</h1>
+			<?php settings_errors(); ?>
+			<h1><?php echo esc_html( get_admin_page_title() ); ?>: LEGACY (THREE v0.122.0)</h1>
 
 			<button onClick="javascript:toggleAnimation()">
 				Change Animation
@@ -253,8 +252,8 @@ class ThreeD_Garden_Admin {
 		?>
 		<div class="wrap">
 			<?php settings_errors(); ?>
-			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			<h2>Custom Options</h2>
+			<h1><?php echo esc_html( get_admin_page_title() ); ?>: Custom Options</h1>
+			<!-- <h2>Custom Options</h2> -->
 			<form action="options.php" method="post">
 				<?php
 				// output security fields
@@ -272,7 +271,7 @@ class ThreeD_Garden_Admin {
 	}
 	
 	/**
-     * output about page
+     * output page: "About ThreeD"
      */
 	public function RenderPageAbout(){
 		// check if user is allowed access
@@ -281,7 +280,9 @@ class ThreeD_Garden_Admin {
 		}
 		?>
 		<div class='wrap'>
-			<h2>ABOUT PAGE</h2>
+			<?php settings_errors(); ?>
+			<h1><?php echo esc_html( get_admin_page_title() ); ?>: About ThreeD</h1>
+			<h2>HEY HEY HEY</h2>
 		</div>
 		<?php
 	}
@@ -299,7 +300,7 @@ class ThreeD_Garden_Admin {
 			'ThreeD Garden', 
 			'manage_options',
 			'threedgarden', 
-			'', // array($this, 'RenderPage'), 
+			'', // array($this, 'RenderPageDemo'), 
 			plugins_url('/assets/media/ThreeD-Garden-Logo-Circle-Carrot-Icon-24x24.png',__DIR__), //'dashicons-media-code',
 			null // 333 // null
 		);
@@ -326,9 +327,9 @@ class ThreeD_Garden_Admin {
 			'Demo: Animations', 
 			'- Demo: Animations', 
 			'manage_options', 
-			'threedgarden', 
-			array($this, 'RenderPage'),
-			null
+			'threedgarden-demo-animations', 
+			array($this, 'RenderPageDemo'),
+			999999
 		);
 	}
 
