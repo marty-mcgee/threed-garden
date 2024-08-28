@@ -292,10 +292,6 @@ export default function CharacterModel(props: CharacterModelProps) {
       <BallCollider args={[0.1]} ref={leftHandColliderRef} />
 
 
-
-
-
-
       {/* Character model */}
       <group
         ref={group}

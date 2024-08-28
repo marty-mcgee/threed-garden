@@ -240,7 +240,7 @@ export default async function MainNav() {
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
- 
+
           </NavigationMenuList>
         </NavigationMenu>
       </Flex>
