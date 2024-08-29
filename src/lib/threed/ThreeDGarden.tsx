@@ -280,7 +280,7 @@ const ThreeDGarden = (): React.ReactNode => {
   // console.debug('%c🦆 useApolloClient()', ccm.orangeAlert) // , client
 
   // ** GET PREFERENCES
-  // const prefs = preferencesDataVar() // NO ??
+  // const prefs = preferencesDataVar() // NO
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
   // console.debug('%c⚙️ ThreeDGarden prefs', ccm.orangeAlert) // , prefs
 
