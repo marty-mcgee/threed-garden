@@ -3,8 +3,8 @@
 
 if (!process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL) {
   throw new Error(`
-    Please provide a valid WordPress instance URL for ThreeD API.
-    Add to your environment variables NEXT_PUBLIC_WP_GRAPHQL_API_URL.
+    Please provide a valid WordPress API URL for ThreeD.
+    Hint: Add your .environment variable NEXT_PUBLIC_WP_GRAPHQL_API_URL=
   `)
 }
 
@@ -17,10 +17,10 @@ if (!process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL) {
 // ==== use new next.config.js from REACT-THREE-NEXT example app
 // module.exports = nextConfig
 
-// ** WITH BUNDLE ANALYZER
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: false, // process.env.ANALYZE === 'true',
-})
+// // ** WITH BUNDLE ANALYZER
+// const withBundleAnalyzer = require('@next/bundle-analyzer')({
+//   enabled: false, // process.env.ANALYZE === 'true',
+// })
 
 // // ** WITH NEXT-PWA
 // /* A fork of 'next-pwa' that has app directory support
@@ -35,10 +35,10 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 
-  // ** use the following snippet if using styled components
-  compiler: {
-    styledComponents: true,
-  },
+  // // ** use the following snippet if using styled components
+  // compiler: {
+  //   styledComponents: true,
+  // },
   
   reactStrictMode: true, // true: causes components to load TWICE in dev only, not active (moot) in production // Recommended true for the `pages` directory, default in `app`.
 
