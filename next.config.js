@@ -59,27 +59,27 @@ const nextConfig = {
   // https://github.com/vercel/next.js/issues/36221
   // swcMinify: true, // true throws error at ErrorBoundary
 
-  transpilePackages: [
-    // ** (ORDER DOES NOT MATTER)
+  // transpilePackages: [
+  //   // ** (ORDER DOES NOT MATTER)
 
-    '@radix-ui/themes',
+  //   '@radix-ui/themes',
 
-    // 'three',
+  //   // 'three',
 
-    // 'axios',
-    // 'axios-mock-adapter',
+  //   // 'axios',
+  //   // 'axios-mock-adapter',
 
-    // 'yup',
-    // '@hookform/resolvers',
+  //   // 'yup',
+  //   // '@hookform/resolvers',
 
-    // '@fullcalendar/common',
-    // '@fullcalendar/daygrid',
-    // '@fullcalendar/interaction',
-    // '@fullcalendar/react',
-    // '@fullcalendar/timegrid',
+  //   // '@fullcalendar/common',
+  //   // '@fullcalendar/daygrid',
+  //   // '@fullcalendar/interaction',
+  //   // '@fullcalendar/react',
+  //   // '@fullcalendar/timegrid',
 
-    // 'react-github-btn',
-  ],
+  //   // 'react-github-btn',
+  // ],
 
   async headers() {
     return [
