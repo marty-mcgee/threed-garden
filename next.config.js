@@ -22,14 +22,14 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: false, // process.env.ANALYZE === 'true',
 })
 
-// ** WITH NEXT-PWA
-/* A fork of 'next-pwa' that has app directory support
-** @see https://github.com/shadowwalker/next-pwa/issues/424#issuecomment-1332258575
-*/
-const withPWA = require('@ducanh2912/next-pwa').default({
-  dest: 'public',
-  disable: true, // process.env.NODE_ENV === 'development',
-})
+// // ** WITH NEXT-PWA
+// /* A fork of 'next-pwa' that has app directory support
+// ** @see https://github.com/shadowwalker/next-pwa/issues/424#issuecomment-1332258575
+// */
+// const withPWA = require('@ducanh2912/next-pwa').default({
+//   dest: 'public',
+//   disable: true, // process.env.NODE_ENV === 'development',
+// })
 
 // ** MODULE
 /** @type {import('next').NextConfig} */
@@ -169,7 +169,8 @@ const nextConfig = {
     config.module.rules.push({
       test: /\.(glsl|vs|fs|vert|frag)$/,
       exclude: /node_modules/,
-      use: ['raw-loader', 'glslify-loader'],
+      // use: ['raw-loader', 'glslify-loader'],
+      use: ['glslify-loader'],
     })
 
     // avif support
@@ -284,6 +285,7 @@ const nextConfig = {
 module.exports = nextConfig
 
 // // ** WITH NEXT-PWA
+// yarn install "@ducanh2912/next-pwa": "^10.2.7",
 // const KEYS_TO_OMIT = ['webpackDevMiddleware', 'configOrigin', 'target', 'analyticsId', 'webpack5', 'amp', 'assetPrefix']
 // // ** EXPORT MODULE
 // module.exports = (_phase, { defaultConfig }) => {
