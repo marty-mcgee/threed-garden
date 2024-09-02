@@ -93,6 +93,9 @@ import Footer from '#/layout/footer'
 // import Spinner from '#/layout/ui/components/spinner'
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
+// ** Google Analytics
+import { GoogleAnalytics } from '@next/third-parties/google'
+
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -111,6 +114,14 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
   return (
     <html lang='en'>{/* className='antialiased' */}
       <head />
+      {/* <!-- Google tag (gtag.js) --> */}
+      {/* <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+      </script> */}
       <body>
       {/* <body className={inter.className}> */}
       {/* <body className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}> */}
@@ -118,6 +129,7 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
           {children}
         </div>
       </body>
+      <GoogleAnalytics gaId="G-B6H82RQ83V" />
     </html>
   )
 }
@@ -269,17 +281,6 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
 
                               {/* <SessionProvider session={session}> */}
                               {/* <SessionProvider session={null}> */}
-                              
-      
-                              {/* <!-- Google tag (gtag.js) --> */}
-                              {/* <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-                              <script>
-                                window.dataLayer = window.dataLayer || [];
-                                function gtag(){dataLayer.push(arguments);}
-                                gtag('js', new Date());
-                                gtag('config', 'G-XXXXXXXXXX');
-                              </script> */}
-
                               
                               <ThemeWrapper
                                 // key='ThreeDAppThemeWrapper'
