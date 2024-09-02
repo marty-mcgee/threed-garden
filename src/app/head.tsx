@@ -86,8 +86,6 @@ const HeadMeta = ({ title = meta.title }) => {
 
 export default function Head() {
   return (
-    <>
-      <HeadMeta />
-    </>
+    <HeadMeta />
   )
 }
