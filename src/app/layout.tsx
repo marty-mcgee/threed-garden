@@ -110,6 +110,10 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 // basic React Provider context node with props.children
 // const ThreeDAppProvider: FC<{ children?: ReactNode }> = (props) => {
 const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element => {
+
+  let gaId = 'B6H82RQ83V'   // 'XXXXXXXXXX'
+  gaId = 'G-' + gaId        // 'G-XXXXXXXXXX'
+  
   // **
   return (
     <html lang='en'>{/* className='antialiased' */}
@@ -127,9 +131,10 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', 'G-XXXXXXXXXX');
+        gtag('config', {gaId});
+        gtag('event', '[MM] HEY HEY HEY');
       </script> */}
-      <GoogleAnalytics gaId="G-B6H82RQ83V" />
+      <GoogleAnalytics gaId={gaId} />
     </html>
   )
 }
