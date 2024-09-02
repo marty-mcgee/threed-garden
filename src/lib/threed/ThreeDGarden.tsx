@@ -9,7 +9,7 @@
 
 // ** NEXT AUTH Imports
 // hint: const { data, data: session, status } = useSession()
-// import { useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 
 // ** REACT Imports
 import {
@@ -270,9 +270,10 @@ const ThreeDGarden = (): React.ReactNode => {
 
   // ==========================================================
   // ** USE SESSION
-  // const { data: session, status } = useSession()
+  const { data: sessionData, status: sessionStatus } = useSession()
   // const { data, status } = useSession()
-  // console.debug('useSession().data', data)
+  console.debug('useSession().data', sessionData)
+  console.debug('useSession().status', sessionStatus)
 
   // ==========================================================
   // ** USE CLIENT
@@ -335,12 +336,14 @@ const ThreeDGarden = (): React.ReactNode => {
       }
 
       fetchData()
-      if (DEBUG) console.debug('%c fetching data ...', ccm.blue)
+      if (DEBUG) 
+        console.debug('%c fetching data ...', ccm.blue)
 
       // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
       const loadNounData = (_type: string = 'project', threeds: any = []) => {
         // load these threeds into r3f canvas
-        if (DEBUG || debug) console.debug('%c🌱 ThreeDGarden loadNounData()', ccm.yellowAlert, _type, threeds)
+        if (DEBUG || debug) 
+          console.debug('%c🌱 ThreeDGarden loadNounData()', ccm.yellowAlert, _type, threeds)
         if (_type === 'project') {
           projectStore.actions.loadToCanvas(threeds, '_r3fCanvas1')
         }
@@ -365,7 +368,7 @@ const ThreeDGarden = (): React.ReactNode => {
       // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: preferencesDataVar()', ccm.redAlert, preferencesDataVar())
     }
 
-  }, []) // useEffect
+  }, [isPrefsLoaded]) // useEffect
 
   // ==========================================================
   // ** USE CONTEXT
@@ -390,8 +393,8 @@ const ThreeDGarden = (): React.ReactNode => {
 
   // ==========================================================
 
-  if (DEBUG || debug) console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreenAlert, word)
-  // if (DEBUG || debug) console.debug('%c=======================================================', ccm.darkgreenAlert)
+  if (DEBUG || debug) 
+    console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreenAlert, word)
 
   let project_title = 'NOT EVEN CLOSE'
 
