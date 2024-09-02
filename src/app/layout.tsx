@@ -114,6 +114,13 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
   return (
     <html lang='en'>{/* className='antialiased' */}
       <head />
+      <body>
+      {/* <body className={inter.className}> */}
+      {/* <body className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}> */}
+        <div id='ThreeDAppProvider'>
+          {children}
+        </div>
+      </body>
       {/* <!-- Google tag (gtag.js) --> */}
       {/* <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
       <script>
@@ -122,13 +129,6 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
         gtag('js', new Date());
         gtag('config', 'G-XXXXXXXXXX');
       </script> */}
-      <body>
-      {/* <body className={inter.className}> */}
-      {/* <body className={inter.className + ' ' + roboto.className + ' ' + roboto.style.fontFamily}> */}
-        <div id='ThreeDAppProvider'>
-          {children}
-        </div>
-      </body>
       <GoogleAnalytics gaId="G-B6H82RQ83V" />
     </html>
   )
