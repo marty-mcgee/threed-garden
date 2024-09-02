@@ -86,6 +86,19 @@ const HeadMeta = ({ title = meta.title }) => {
 
 export default function Head() {
   return (
-    <HeadMeta />
+    <>
+      <HeadMeta />
+      
+      {/* <!-- Google tag (gtag.js) --> */}
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-B6H82RQ83V"></script>
+      <script>
+        {/* Google tag (gtag.js) */}
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-B6H82RQ83V');
+      </script>
+
+    </>
   )
 }
