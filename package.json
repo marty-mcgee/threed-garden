@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.16.0-canary.5",
+  "version": "0.16.0-canary.6",
   "description": "ThreeD Garden: WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, using WordPress, Apollo GraphQL State+Stores, Leva Control GUI, Radix-UI, Material UI + Tailwind CSS, intro to 3D FarmBot React (Beta)",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
@@ -75,11 +75,7 @@
     "tunnel-rat": "^0.1.2",
     
     "farmbot": "^15.8.8",
-    "lodash": "^4.17.21"
-
-  },
-  
-  "optionalDependencies": {
+    "lodash": "^4.17.21",
     
     "next": "^14.2.6",
     "next-auth": "^5.0.0-beta.19",
