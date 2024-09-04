@@ -17,8 +17,7 @@
     "**/node_modules/": false,
     "**/obj": false,
     "yarn-error.log": true,
-    "**/yarn-error.log": true,
-    "packages\\eth-hooks/lib": true
+    "**/yarn-error.log": true
   },
   "search.exclude": {
     "**/package-lock.json": true,
