@@ -71,8 +71,8 @@ import {
 
 // ** THREED EXPERIENCE Imports
 import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
-import { threedIO } from '#/lib/threed/threedio/threedIO'
-import { threedAI } from '#/lib/threed/threedai/threedAI'
+import { threedIO } from '~/src/lib/threed/threed.io/threedIO'
+import { threedAI } from '~/src/lib/threed/threed.ai/threedAI'
 // ** THREED JOYSTICK
 import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 

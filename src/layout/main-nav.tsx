@@ -49,7 +49,7 @@ export default async function MainNav() {
       >
         <CustomLink href='/#home'>
           <Button variant='ghost'>  
-            <Image src='/favicon/apple-icon.png' priority={true} alt='Home' width='32' height='32' />
+            <Image src='/favicon/favicon.png' priority={true} alt='Home' width='32' height='32' />
           </Button>
         </CustomLink>
         <Text
@@ -240,7 +240,7 @@ export default async function MainNav() {
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
- 
+
           </NavigationMenuList>
         </NavigationMenu>
       </Flex>

@@ -93,7 +93,7 @@ const ThreeDCanvasCamera = (
         style={{ 
           // borderTop: '1px solid darkgreen',
           // height: '100%',
-          height: '30vh',
+          height: '48vh',
           // minHeight: '40%',
           // maxHeight: '40vh',
           // width: '100%',
