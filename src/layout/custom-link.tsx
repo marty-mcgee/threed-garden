@@ -1,4 +1,4 @@
-import { cn } from "#/lib/utils/utils"
+import { cn } from "~/src/lib/utils/tailwind-utils"
 import { ExternalLink } from "lucide-react"
 import Link from "next/link"
 
