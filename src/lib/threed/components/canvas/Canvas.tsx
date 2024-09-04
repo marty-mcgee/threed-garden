@@ -199,7 +199,7 @@ const storeCamera = createStore('threedCamera')(({
 // storeCamera.get.state()
 // **
 // console.debug('%c storeCamera.get.state()', ccm.redAlert, storeCamera.get.state())
-console.debug('%c storeCamera.get.state().position()', ccm.redAlert, storeCamera.get.position())
+console.debug('%c STORE storeCamera.get.state().position()', ccm.redAlert, storeCamera.get.position())
 // console.debug('%c storeCamera.useTracked.position()', ccm.redAlert, storeCamera.useTracked.position())
 
 
@@ -299,7 +299,7 @@ export const ThreeDCanvas = (
   const prefs = useReactiveVar(preferencesDataVar)
   // console.debug('%c prefs', ccm.red, prefs)
 
-  // ** REF-erences using REACT ???
+  // ** REF-erences using REACT
   const ref: any = useRef<any>()
 
   // ** CREATE THREED CAMERA
@@ -357,6 +357,8 @@ export const ThreeDCanvas = (
   //   console.debug('HEY HEY HEY')
   // })
 
+
+  // ==========================================================
   // ** RETURN JSX
   return (
     <>
@@ -466,6 +468,8 @@ export const ThreeDCanvas = (
             enablePerf={false}
             threeds={threeds}
             children={null}
+            // camera={threedCamera}
+            // camera={children.camera} available inside this component
           />
 
         </Suspense>
