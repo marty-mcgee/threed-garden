@@ -93,6 +93,9 @@ import Footer from '#/layout/footer'
 // import Spinner from '#/layout/ui/components/spinner'
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
+// ** Google Analytics
+import { GoogleAnalytics } from '@next/third-parties/google'
+
 
 // ==============================================================
 // IMPORTS COMPLETE
@@ -107,6 +110,10 @@ import ccm from '#/lib/utils/console-colors'
 // basic React Provider context node with props.children
 // const ThreeDAppProvider: FC<{ children?: ReactNode }> = (props) => {
 const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element => {
+
+  let gaId = 'B6H82RQ83V'   // 'XXXXXXXXXX'
+  gaId = 'G-' + gaId        // 'G-XXXXXXXXXX'
+  
   // **
   return (
     <html lang='en'>{/* className='antialiased' */}
@@ -118,6 +125,16 @@ const ThreeDAppProvider = ({ children }: { children: ReactNode }): JSX.Element =
           {children}
         </div>
       </body>
+      {/* <!-- Google tag (gtag.js) --> */}
+      {/* <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', {gaId});
+        gtag('event', '[MM] HEY HEY HEY');
+      </script> */}
+      <GoogleAnalytics gaId={gaId} />
     </html>
   )
 }
@@ -269,7 +286,7 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
 
                               {/* <SessionProvider session={session}> */}
                               {/* <SessionProvider session={null}> */}
-
+                              
                               <ThemeWrapper
                                 // key='ThreeDAppThemeWrapper'
                               >

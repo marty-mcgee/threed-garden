@@ -9,7 +9,7 @@
 
 // ** NEXT AUTH Imports
 // hint: const { data, data: session, status } = useSession()
-// import { useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 
 // ** REACT Imports
 import {
@@ -92,6 +92,8 @@ import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
 
 // ** ThreeD using Leva GUI
 import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
+// ** ThreeD using dat.GUI
+import * as dat from 'dat.gui'
 
 // ** ThreeD using Apollo + React to View Control + Info Panels (Apollo Store/ReactiveVar/State Access)
 import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
@@ -105,6 +107,8 @@ import ThreeDModals from '#/lib/threed/components/modals/Modals'
 
 // ** View Imports
 import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
+// import ThreeDViews from '#/lib/threed/components/views/ViewsPools'
+// import ThreeDViews from '#/lib/threed/components/views/ViewsCities'
 
 // ** CSS Styles Imports
 // import stylesDemo from '#/layout/ui/styles/demo/demo.module.css'
@@ -133,7 +137,7 @@ import ccm from '#/lib/utils/console-colors'
 const debug: boolean = false
 const DEBUG: boolean = true
 
-const appVersion: string = 'v0.16.0-beta'
+const appVersion: string = 'v0.16.0-canary' // almost ready to fly
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
 // const appVersion = process.env.npm_package_version
 // const appVersion: string = require('package.json').version
@@ -266,9 +270,10 @@ const ThreeDGarden = (): React.ReactNode => {
 
   // ==========================================================
   // ** USE SESSION
-  // const { data: session, status } = useSession()
+  const { data: sessionData, status: sessionStatus } = useSession()
   // const { data, status } = useSession()
-  // console.debug('useSession().data', data)
+  console.debug('useSession().data', sessionData)
+  console.debug('useSession().status', sessionStatus)
 
   // ==========================================================
   // ** USE CLIENT
@@ -276,64 +281,94 @@ const ThreeDGarden = (): React.ReactNode => {
   // console.debug('%c🦆 useApolloClient()', ccm.orangeAlert) // , client
 
   // ** GET PREFERENCES
-  // const prefs = preferencesDataVar() // NO ??
+  // const prefs = preferencesDataVar() // NO
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
   // console.debug('%c⚙️ ThreeDGarden prefs', ccm.orangeAlert) // , prefs
 
   // ** INIT PREFERENCES
+  const [isThreeDGardenLoaded, setIsThreeDGardenLoaded] = useState(false)
   const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
+  const [isDatGuiLoaded, setIsDatGuiLoaded] = useState(false)
 
   // ==========================================================
   // Component onMount hook
   // **
   useEffect(() => {
 
-    // ** GET PREFERENCES
-    const fetchData = async () => {
-      try {
-        // ** GET PREFERENCES
-        if (!isPrefsLoaded) {
-          // **
-          const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
-          // const preferencesFromDataSource = async () => await preferencesStore.actions.loadFromDataSource(client)
-          // preferencesFromDataSource()
-          if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert) // , preferencesFromDataSource
-          if (preferencesFromDataSource) {
-            if (DEBUG) console.debug('%c preferencesFromDataSource', ccm.greenAlert) // , preferencesFromDataSource
+    if (!isThreeDGardenLoaded && !isPrefsLoaded) {
+    
+      // ** GET PREFERENCES
+      const fetchData = async () => {
+        try {
+          // ** GET PREFERENCES
+          if (!isPrefsLoaded) {
+            // **
+            const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
+            // const preferencesFromDataSource = async () => await preferencesStore.actions.loadFromDataSource(client)
+            // preferencesFromDataSource()
+            if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert) // , preferencesFromDataSource
+            if (preferencesFromDataSource) {
+              if (DEBUG) console.debug('%c preferencesFromDataSource', ccm.greenAlert) // , preferencesFromDataSource
+            }
           }
-        }
 
-        const loadPreferencesMM = await preferencesStore.store.get('one')
-        // const loadPreferencesMM = await preferencesStore.store.useStore('one')
-        // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: get one preferences => loadPreferencesMM', ccm.redAlert, loadPreferencesMM)
-        preferencesDataVar(loadPreferencesMM.data)
-        // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
-        isPreferencesSetVar(true)
-        setIsPrefsLoaded(isPreferencesSetVar())
-        // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
-        if (preferencesDataVar().doAutoLoadData) {
-          const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
-          if (DEBUG) console.debug('%c projects loading...', ccm.orangeAlert, projectsFromDataSource)
-          //   if (projectsFromDataSource) {
-          //     console.debug('%c🥕 projectsFromDataSource', ccm.redAlert, projectsFromDataSource)
-          //     // ** TODO
-          //     // ** do more tasks here ??
-          //   }
-        }
+          const loadPreferencesMM = await preferencesStore.store.get('one')
+          // const loadPreferencesMM = await preferencesStore.store.useStore('one')
+          // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: get one preferences => loadPreferencesMM', ccm.redAlert, loadPreferencesMM)
+          preferencesDataVar(loadPreferencesMM.data)
+          // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
+          isPreferencesSetVar(true)
+          setIsPrefsLoaded(isPreferencesSetVar())
+          // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
+          if (preferencesDataVar().doAutoLoadData) {
+            const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
+            if (DEBUG) console.debug('%c projects loading...', ccm.orangeAlert, projectsFromDataSource)
+            //   if (projectsFromDataSource) {
+            //     console.debug('%c🥕 projectsFromDataSource', ccm.redAlert, projectsFromDataSource)
+            //     // ** TODO
+            //     // ** do more tasks here ??
+            //   }
+          }
 
-      } catch (error) {
-        console.error('Error fetching data:', error);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
       }
-    }
 
-    if (!isPrefsLoaded) {
       fetchData()
-      if (DEBUG) console.debug('%c fetching data ...', ccm.blue)
+      if (DEBUG) 
+        console.debug('%c fetching data ...', ccm.blue)
+
+      // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
+      const loadNounData = (_type: string = 'project', threeds: any = []) => {
+        // load these threeds into r3f canvas
+        if (DEBUG || debug) 
+          console.debug('%c🌱 ThreeDGarden loadNounData()', ccm.yellowAlert, _type, threeds)
+        if (_type === 'project') {
+          projectStore.actions.loadToCanvas(threeds, '_r3fCanvas1')
+        }
+        // return <Box>true</Box> // true
+      }
+    
+      // dat.gui
+      if (!isDatGuiLoaded) {
+        const datgui = new dat.GUI({ 
+          autoPlace: true, 
+          closed: false,
+          closeOnTop: true // keyboard toggle 'h'
+        })
+        console.debug('datgui', datgui)
+        setIsDatGuiLoaded(true)
+        setIsThreeDGardenLoaded(true)
+      }
+      
+    } else if (isThreeDGardenLoaded) {
+      console.debug('%c🦆 ThreeDGarden => LOADED !!', ccm.greenAlert, isThreeDGardenLoaded)
     } else {
       // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: preferencesDataVar()', ccm.redAlert, preferencesDataVar())
     }
 
-  }, []) // useEffect
+  }, [isPrefsLoaded]) // useEffect
 
   // ==========================================================
   // ** USE CONTEXT
@@ -356,20 +391,10 @@ const ThreeDGarden = (): React.ReactNode => {
   //   localStorage.setItem('threed_doAutoLoadData', bool)
   // }
 
-  // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
-  const loadNounData = (_type: string = 'project', threeds: any = []) => {
-    // load these threeds into r3f canvas
-    if (DEBUG || debug) console.debug('%c🌱 ThreeDGarden loadNounData()', ccm.yellowAlert, _type, threeds)
-    if (_type === 'project') {
-      projectStore.actions.loadToCanvas(threeds, '_r3fCanvas1')
-    }
-    // return <Box>true</Box> // true
-  }
-
   // ==========================================================
 
-  if (DEBUG || debug) console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreenAlert, word)
-  // if (DEBUG || debug) console.debug('%c=======================================================', ccm.darkgreenAlert)
+  if (DEBUG || debug) 
+    console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreenAlert, word)
 
   let project_title = 'NOT EVEN CLOSE'
 

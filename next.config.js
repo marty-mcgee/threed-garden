@@ -3,8 +3,8 @@
 
 if (!process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL) {
   throw new Error(`
-    Please provide a valid WordPress instance URL for ThreeD API.
-    Add to your environment variables NEXT_PUBLIC_WP_GRAPHQL_API_URL.
+    Please provide a valid WordPress API URL for ThreeD.
+    Hint: Add your .environment variable NEXT_PUBLIC_WP_GRAPHQL_API_URL=
   `)
 }
 
@@ -17,28 +17,28 @@ if (!process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL) {
 // ==== use new next.config.js from REACT-THREE-NEXT example app
 // module.exports = nextConfig
 
-// ** WITH BUNDLE ANALYZER
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: false, // process.env.ANALYZE === 'true',
-})
+// // ** WITH BUNDLE ANALYZER
+// const withBundleAnalyzer = require('@next/bundle-analyzer')({
+//   enabled: false, // process.env.ANALYZE === 'true',
+// })
 
-// ** WITH NEXT-PWA
-/* A fork of 'next-pwa' that has app directory support
-** @see https://github.com/shadowwalker/next-pwa/issues/424#issuecomment-1332258575
-*/
-const withPWA = require('@ducanh2912/next-pwa').default({
-  dest: 'public',
-  disable: true, // process.env.NODE_ENV === 'development',
-})
+// // ** WITH NEXT-PWA
+// /* A fork of 'next-pwa' that has app directory support
+// ** @see https://github.com/shadowwalker/next-pwa/issues/424#issuecomment-1332258575
+// */
+// const withPWA = require('@ducanh2912/next-pwa').default({
+//   dest: 'public',
+//   disable: true, // process.env.NODE_ENV === 'development',
+// })
 
 // ** MODULE
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 
-  // ** use the following snippet if using styled components
-  compiler: {
-    styledComponents: true,
-  },
+  // // ** use the following snippet if using styled components
+  // compiler: {
+  //   styledComponents: true,
+  // },
   
   reactStrictMode: true, // true: causes components to load TWICE in dev only, not active (moot) in production // Recommended true for the `pages` directory, default in `app`.
 
@@ -59,27 +59,27 @@ const nextConfig = {
   // https://github.com/vercel/next.js/issues/36221
   // swcMinify: true, // true throws error at ErrorBoundary
 
-  transpilePackages: [
-    // ** (ORDER DOES NOT MATTER)
+  // transpilePackages: [
+  //   // ** (ORDER DOES NOT MATTER)
 
-    '@radix-ui/themes',
+  //   '@radix-ui/themes',
 
-    // 'three',
+  //   // 'three',
 
-    // 'axios',
-    // 'axios-mock-adapter',
+  //   // 'axios',
+  //   // 'axios-mock-adapter',
 
-    // 'yup',
-    // '@hookform/resolvers',
+  //   // 'yup',
+  //   // '@hookform/resolvers',
 
-    // '@fullcalendar/common',
-    // '@fullcalendar/daygrid',
-    // '@fullcalendar/interaction',
-    // '@fullcalendar/react',
-    // '@fullcalendar/timegrid',
+  //   // '@fullcalendar/common',
+  //   // '@fullcalendar/daygrid',
+  //   // '@fullcalendar/interaction',
+  //   // '@fullcalendar/react',
+  //   // '@fullcalendar/timegrid',
 
-    // 'react-github-btn',
-  ],
+  //   // 'react-github-btn',
+  // ],
 
   async headers() {
     return [
@@ -169,7 +169,8 @@ const nextConfig = {
     config.module.rules.push({
       test: /\.(glsl|vs|fs|vert|frag)$/,
       exclude: /node_modules/,
-      use: ['raw-loader', 'glslify-loader'],
+      // use: ['raw-loader', 'glslify-loader'],
+      use: ['glslify-loader'],
     })
 
     // avif support
@@ -281,25 +282,26 @@ const nextConfig = {
 } // end nextConfig
 
 // ** WITHOUT NEXT-PWA
-// module.exports = nextConfig
+module.exports = nextConfig
 
-// ** WITH NEXT-PWA
-const KEYS_TO_OMIT = ['webpackDevMiddleware', 'configOrigin', 'target', 'analyticsId', 'webpack5', 'amp', 'assetPrefix']
-// ** EXPORT MODULE
-module.exports = (_phase, { defaultConfig }) => {
-  const plugins = [[withPWA], [withBundleAnalyzer, {}]]
+// // ** WITH NEXT-PWA
+// yarn install "@ducanh2912/next-pwa": "^10.2.7",
+// const KEYS_TO_OMIT = ['webpackDevMiddleware', 'configOrigin', 'target', 'analyticsId', 'webpack5', 'amp', 'assetPrefix']
+// // ** EXPORT MODULE
+// module.exports = (_phase, { defaultConfig }) => {
+//   const plugins = [[withPWA], [withBundleAnalyzer, {}]]
 
-  const wConfig = plugins.reduce((acc, [plugin, config]) => plugin({ ...acc, ...config }), {
-    ...defaultConfig,
-    ...nextConfig,
-  })
+//   const wConfig = plugins.reduce((acc, [plugin, config]) => plugin({ ...acc, ...config }), {
+//     ...defaultConfig,
+//     ...nextConfig,
+//   })
 
-  const finalConfig = {}
-  Object.keys(wConfig).forEach((key) => {
-    if (!KEYS_TO_OMIT.includes(key)) {
-      finalConfig[key] = wConfig[key]
-    }
-  })
+//   const finalConfig = {}
+//   Object.keys(wConfig).forEach((key) => {
+//     if (!KEYS_TO_OMIT.includes(key)) {
+//       finalConfig[key] = wConfig[key]
+//     }
+//   })
 
-  return finalConfig
-}
+//   return finalConfig
+// }
