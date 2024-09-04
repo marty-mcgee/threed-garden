@@ -56,7 +56,6 @@
     "@react-three/rapier": "^1.4.0",
     "r3f-perf": "^7.2.1",
     "leva": "^0.9.35",
-    "dat.gui": "^0.7.9",
 
     "@auth0/auth0-react": "^2.2.4",
     
