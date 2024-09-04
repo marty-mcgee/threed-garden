@@ -11,7 +11,7 @@
 // import meta from './meta.json'
 
 const meta = {
-  title: '🥕 ThreeD Garden on threed.ai',
+  title: '🥕 ThreeD Garden: 3D Web Environment',
   url: 'https://threedgarden.com',
   favicon: '/favicon/favicon.png',
   author: 'Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)',
@@ -44,16 +44,16 @@ const HeadMeta = ({ title = meta.title }) => {
 
       {/* Favicons */}
       <link rel='shortcut icon' href={meta.favicon} />
-      <link rel='apple-touch-icon' href='/favicon/apple-touch-icon.png' />
+      <link rel='apple-touch-icon' href='/favicon/favicon.png' />
       <link rel='apple-touch-icon' sizes='16x16' href='/favicon/favicon-16x16.png' />
       <link rel='apple-touch-icon' sizes='32x32' href='/favicon/favicon-32x32.png' />
-      <link rel='apple-touch-icon' sizes='180x180' href='/favicon/apple-touch-icon.png' />
+      <link rel='apple-touch-icon' sizes='180x180' href='/favicon/favicon.png' />
       <link rel='mask-icon' color='#000000' href='/favicon/safari-pinned-tab.svg' />
-      <link rel='apple-touch-startup-image' href='/favicon/apple-touch-icon.png' />
+      <link rel='apple-touch-startup-image' href='/favicon/favicon.png' />
       <meta name='msapplication-TileColor' content='#da532c' />
 
       {/* Manifest */}
-      <link rel='manifest' href='/favicon/site.webmanifest' />
+      <link rel='manifest' href='/manifest.json' />
 
       {/* Meta Tags for HTML pages on Mobile */}
       {/* <meta name='format-detection' content='telephone=yes'/> */}
@@ -69,7 +69,7 @@ const HeadMeta = ({ title = meta.title }) => {
       <meta property='og:type' content='website' />
       <meta property='og:description' content={meta.description} />
       <meta property='og:url' content={meta.url} />
-      <meta property='og:image' content='/favicon/android-chrome-512x512.png' />
+      <meta property='og:image' content='/favicon/favicon.png' />
       <meta property='og:image:width' content='512' />
       <meta property='og:image:height' content='512' />
 
