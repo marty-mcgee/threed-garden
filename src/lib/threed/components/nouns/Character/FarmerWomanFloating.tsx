@@ -166,11 +166,11 @@ export default function CharacterModel(props: CharacterModelProps) {
   // const prefs = useReactiveVar(preferencesDataVar)
   // console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
   let prefs = {
-    doAutoLoadData: true,
+    doAutoLoadData: false,
     doCharacterAnimation: true,
-    characterMainColor: 'mediumslateblue',
-    characterOutlineColor: 'black',
-    characterTrailColor: 'violet',
+    // characterMainColor: 'mediumslateblue',
+    // characterOutlineColor: 'black',
+    // characterTrailColor: 'violet',
   }
   // console.debug(`%c CHARACTER MODEL: prefs`, ccm.redAlert, prefs)
 
@@ -190,9 +190,12 @@ export default function CharacterModel(props: CharacterModelProps) {
     console.debug(`%c model group`, ccm.yellowAlert, group)
 
   // const { actions } = useAnimations(animations, group)
-  const { actions } = useAnimations<GLTFActions>(animations, group)
+  let { actions } = useAnimations<GLTFActions>(animations, group)
   if (debug) 
     console.debug(`%c model group animations.actions`, ccm.yellow, actions)
+  if (!actions) {
+    actions = []
+  }
 
   // gradientMapTexture for MeshToonMaterial
   const gradientMapTexture = useTexture(texture) // '/textures/3.jpg'
@@ -263,23 +266,23 @@ export default function CharacterModel(props: CharacterModelProps) {
   /**
    * Prepare replacing materials
    */
-  const meshToonMaterial = useMemo(
-    () =>
-      new THREE.MeshToonMaterial({
-        color: prefs.characterMainColor,
-        gradientMap: gradientMapTexture,
-        transparent: true,
-      }),
-    [prefs.characterMainColor]
-  )
-  const outlineMaterial = useMemo(
-    () =>
-      new THREE.MeshBasicMaterial({
-        color: prefs.characterOutlineColor,
-        transparent: true,
-      }),
-    [prefs.characterOutlineColor]
-  )
+  // const meshToonMaterial = useMemo(
+  //   () =>
+  //     new THREE.MeshToonMaterial({
+  //       color: prefs.characterMainColor,
+  //       gradientMap: gradientMapTexture,
+  //       transparent: true,
+  //     }),
+  //   [prefs.characterMainColor]
+  // )
+  // const outlineMaterial = useMemo(
+  //   () =>
+  //     new THREE.MeshBasicMaterial({
+  //       color: prefs.characterOutlineColor,
+  //       transparent: true,
+  //     }),
+  //   [prefs.characterOutlineColor]
+  // )
   // const trailMaterial = useMemo(
   //   () =>
   //     new THREE.MeshToonMaterial({
@@ -465,7 +468,7 @@ export default function CharacterModel(props: CharacterModelProps) {
     const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
 
     // Play animation
-    const action = actions[curAnimation ? curAnimation : animationSet.jumpIdle]
+    let action = false // actions[curAnimation ? curAnimation : animationSet.jumpIdle]
 
     // [MM] HEY HEY HEY
     if (action) {
@@ -501,13 +504,14 @@ export default function CharacterModel(props: CharacterModelProps) {
 
     }
     else if (!action) {
-      if (debug) console.debug(`%c FarmerWomanFloating: no action :|`, ccm.darkgrayAlert, word)
+      if (debug) console.debug(`%c FarmerWomanFloating: no action :|`, ccm.redAlert, word)
     }
     // [MM] END HEY HEY HEY
 
 
     return () => {
-      try {
+      
+      if (action) {
         // Fade out previous action
         action.fadeOut(0.2)
 
@@ -516,9 +520,8 @@ export default function CharacterModel(props: CharacterModelProps) {
           resetAnimation()
         )
         (action as any)._mixer._listeners = []
-      } catch (ERROR) {
-
       }
+
       // Move hand collider back to initial position after action
       if (curAnimation === animationSet.action4) {
         if (rightHandColliderRef.current) {
