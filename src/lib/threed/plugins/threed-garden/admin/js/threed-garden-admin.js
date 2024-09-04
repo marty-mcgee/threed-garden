@@ -37,8 +37,8 @@ let plane
 let camera
 let controls
 let gui
-	gui = new dat.GUI({ autoPlace: true, closeOnTop: true })
-	gui.close()
+	gui = new dat.GUI({ autoPlace: true, closed: false, closeOnTop: true })
+	// gui.close()
 	gui.domElement.id = "gui"
 	let guiFolderRotation 		= gui.addFolder("Rotation + Animation")
 	//let guiFolderAnimation 	= guiFolderRotation.addFolder("Animation")

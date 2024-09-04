@@ -92,8 +92,6 @@ import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
 
 // ** ThreeD using Leva GUI
 import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
-// ** ThreeD using dat.GUI
-import * as dat from 'dat.gui'
 
 // ** ThreeD using Apollo + React to View Control + Info Panels (Apollo Store/ReactiveVar/State Access)
 import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
@@ -288,7 +286,7 @@ const ThreeDGarden = (): React.ReactNode => {
   // ** INIT PREFERENCES
   const [isThreeDGardenLoaded, setIsThreeDGardenLoaded] = useState(false)
   const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
-  const [isDatGuiLoaded, setIsDatGuiLoaded] = useState(false)
+  // const [isDatGuiLoaded, setIsDatGuiLoaded] = useState(false)
 
   // ==========================================================
   // Component onMount hook
@@ -306,23 +304,26 @@ const ThreeDGarden = (): React.ReactNode => {
             const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
             // const preferencesFromDataSource = async () => await preferencesStore.actions.loadFromDataSource(client)
             // preferencesFromDataSource()
-            if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert) // , preferencesFromDataSource
+            if (DEBUG) 
+              console.debug('%c preferences loading...', ccm.greenAlert) // , preferencesFromDataSource
             if (preferencesFromDataSource) {
-              if (DEBUG) console.debug('%c preferencesFromDataSource', ccm.greenAlert) // , preferencesFromDataSource
+              if (DEBUG) 
+                console.debug('%c preferencesFromDataSource', ccm.greenAlert) // , preferencesFromDataSource
             }
           }
 
-          const loadPreferencesMM = await preferencesStore.store.get('one')
-          // const loadPreferencesMM = await preferencesStore.store.useStore('one')
-          // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: get one preferences => loadPreferencesMM', ccm.redAlert, loadPreferencesMM)
-          preferencesDataVar(loadPreferencesMM.data)
+          const loadPreferencesOne = await preferencesStore.store.get('one')
+          // const loadPreferencesOne = await preferencesStore.store.useStore('one')
+          // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: get one preferences => loadPreferencesOne', ccm.redAlert, loadPreferencesOne)
+          preferencesDataVar(loadPreferencesOne.data)
           // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
           isPreferencesSetVar(true)
           setIsPrefsLoaded(isPreferencesSetVar())
           // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
           if (preferencesDataVar().doAutoLoadData) {
             const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
-            if (DEBUG) console.debug('%c projects loading...', ccm.orangeAlert, projectsFromDataSource)
+            if (DEBUG) 
+              console.debug('%c projects loading...', ccm.orangeAlert, projectsFromDataSource)
             //   if (projectsFromDataSource) {
             //     console.debug('%c🥕 projectsFromDataSource', ccm.redAlert, projectsFromDataSource)
             //     // ** TODO
@@ -348,18 +349,6 @@ const ThreeDGarden = (): React.ReactNode => {
           projectStore.actions.loadToCanvas(threeds, '_r3fCanvas1')
         }
         // return <Box>true</Box> // true
-      }
-    
-      // dat.gui
-      if (!isDatGuiLoaded) {
-        const datgui = new dat.GUI({ 
-          autoPlace: true, 
-          closed: false,
-          closeOnTop: true // keyboard toggle 'h'
-        })
-        console.debug('datgui', datgui)
-        setIsDatGuiLoaded(true)
-        setIsThreeDGardenLoaded(true)
       }
       
     } else if (isThreeDGardenLoaded) {
@@ -399,7 +388,7 @@ const ThreeDGarden = (): React.ReactNode => {
   let project_title = 'NOT EVEN CLOSE'
 
   // ==========================================================
-  // ** React returns JSX
+  // ** RETURN JSX
   return (
     <Grid
       id='threed_garden'

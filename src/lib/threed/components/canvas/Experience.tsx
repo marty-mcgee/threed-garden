@@ -275,13 +275,15 @@ const ThreeDExperience = forwardRef((
 
   // const camera = new THREE.PerspectiveCamera()
 
+  // ==========================================================
+  // ** RETURN JSX
   return (
     <group ref={ref}>
 
       {/* EXAMPLES: BIRDS */}
-      {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
+      <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
         <Birds />
-      </group> */}
+      </group>
 
       {/* THREED USING PHYSICS */}
       <Physics

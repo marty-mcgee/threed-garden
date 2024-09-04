@@ -11,9 +11,6 @@ import {
   // projectStore,
 } from '#/lib/stores/apollo'
 
-// ** LEVA CONTROLS Imports
-import { useControls } from 'leva'
-
 // ** VALTIO ??
 // import { proxy, useSnapshot } from 'valtio'
 
@@ -56,6 +53,9 @@ import {
   // PerspectiveCamera,
   Grid,
 } from '@react-three/drei'
+
+// ** LEVA CONTROLS Imports
+import { useControls } from 'leva'
 
 // ** THREED:IO Imports
 // import { ThreedIO } from '#/lib/threed/threedio/components/ThreedIO'
@@ -209,7 +209,7 @@ export function ThreeDEnvironment() {
 // ** RETURN ThreeDExperienceViewer
 const ThreeDExperienceViewer = forwardRef((
   { children, enableOrbit, enablePerf, threeds, ...props }:
-  { children: ReactNode, enableOrbit: boolean, enablePerf: boolean, threeds: object[]}, 
+  { children: ReactNode, enableOrbit: boolean, enablePerf: boolean, threeds: object[] }, 
   ref
 ) => {
 // ** THREED IO
@@ -217,13 +217,20 @@ const ThreeDExperienceViewer = forwardRef((
 // const ThreeDExperienceViewer = forwardRef(({ children, enableOrbit, enablePerf, ...props }, ref) => {
 // const ThreeDExperienceViewer = forwardRef(({ ...props }, ref) => {
 
+  // ** children from parent
+  // const camera = children.camera
+  // const { camera } = children
+
   // ** HOOKS
   const prefs = useReactiveVar(preferencesDataVar)
 
   // ** THREED IO
   // const localRef = useRef(null)
   // useImperativeHandle(ref, () => localRef.current)
+  
 
+  // ==========================================================
+  // ** RETURN JSX
   return (
     <>
       {enablePerf && (
@@ -254,7 +261,7 @@ const ThreeDExperienceViewer = forwardRef((
           {/* <ThreeDLights /> */}
 
           {/* THREED CAMERA */}
-          <ThreeDCamera />
+          {/* <ThreeDCamera /> */}
           
           {/* THREED ACTION */}
           {/* TESTING: Camera + Animation Action Rig */}
