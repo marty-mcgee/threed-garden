@@ -21,12 +21,12 @@ import React, {
 import * as THREE from "three"
 import { useControls } from "leva"
 import { useFollowCam } from "./hooks/useFollowCam"
-import { useGame } from "./stores/useGame"
+import { useGame, type AnimationSet } from "./stores/useGame"
 import { useJoystickControls } from "./stores/useJoystickControls"
-import type {
-  Collider,
-  RayColliderHit,
-  Vector,
+import {
+  type Collider,
+  type RayColliderHit,
+  type Vector,
 } from "@dimforge/rapier3d-compat"
 // import React from "react"
 

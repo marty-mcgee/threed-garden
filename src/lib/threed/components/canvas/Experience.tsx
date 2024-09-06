@@ -356,7 +356,7 @@ const ThreeDExperience = forwardRef((
 
         {/* THREED FARMBOT */}
         <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.665, -2]}>
-          <ThreeDFarmBotGarden />
+          {/* <ThreeDFarmBotGarden /> */}
         </group>
         {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
           <ThreeDFarmBotMain />
@@ -366,7 +366,7 @@ const ThreeDExperience = forwardRef((
         {/* CHARACTER MODELS */}
         <KeyboardControls map={keyboardMap}>
           {/* CHARACTER MODEL */}
-          <group key='character0' position={[-1.6, 0.396, -1.6]}>
+          {/* <group key='character0' position={[-1.6, 0.396, -1.6]}>
             <CharacterControls
               // debug={prefs.doWorldDebug}
               debug={false}
@@ -385,15 +385,15 @@ const ThreeDExperience = forwardRef((
             >
               <CharacterModelChicken />
             </CharacterControls>
-          </group>
+          </group> */}
           {/* END: CHARACTER MODEL */}
           {/* CHARACTER MODEL */}
           <group key='character1' position={[0, 0.396, 0]}>
-            <CharacterControls
+            {/* <CharacterControls
               debug={prefs.doWorldDebug}
               // debug={false}
               // animated={prefs.doCharacterAnimation}
-              animated={false}
+              animated={true}
               disableFollowCam={prefs.doWorldUnfollowCam}
               // disableFollowCam={true}
               followLight={true}
@@ -404,12 +404,12 @@ const ThreeDExperience = forwardRef((
               // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
               // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
               mode='FixedCamera'
-            >
+            > */}
               {/* <CharacterModel /> */}
               {/* <CharacterModelFloating /> */}
-              <CharacterModelFarmerWomanFloating />
+              {/* <CharacterModelFarmerWomanFloating /> */}
               {/* <CharacterModelFarmerManFloating /> */}
-            </CharacterControls>
+            {/* </CharacterControls> */}
           </group>
           {/* END: CHARACTER MODEL */}
         </KeyboardControls>

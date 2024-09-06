@@ -534,10 +534,10 @@ export default function CharacterModel(props: CharacterModelProps) {
       />
 
     {/* ANIMATED CHARACTER */}
-    <EcctrlAnimation
+    {/* <EcctrlAnimation
       characterURL={file} // Must have property
       animationSet={animationSet} // Must have property
-    >
+    > */}
       {/* ANIMATED CHARACTER Model Group */}
       <group
         ref={group}
@@ -587,7 +587,7 @@ export default function CharacterModel(props: CharacterModelProps) {
             material={nodes.Hen_HP.material}
           />
 
-          {/* <Trail
+          <Trail
             width={1.5}
             color={prefs.characterTrailColor}
             length={3}
@@ -595,7 +595,7 @@ export default function CharacterModel(props: CharacterModelProps) {
             attenuation={(width) => width}
           >
             <primitive object={nodes.Hen_HP} />
-          </Trail> */}
+          </Trail>
 
           {/* <group name='Root'>
             <group name='Pelvis_$AssimpFbx$_Translation' position={[0, 87.628, 0]}>
@@ -637,7 +637,7 @@ export default function CharacterModel(props: CharacterModelProps) {
       {/* END CharacterModel group */}
       </group>
 
-    </EcctrlAnimation>
+    {/* </EcctrlAnimation> */}
     </Suspense>
   )
 }
